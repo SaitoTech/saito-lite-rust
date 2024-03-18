@@ -3186,6 +3186,7 @@ does_units_to_move_have_unit = true; }
     if (his_self.game.navalspaces[spacekey]) { space = his_self.game.navalspaces[spacekey]; }
 
     let neighbours = this.returnNavalAndPortNeighbours(spacekey);
+console.log("what retreat options are available: " + JSON.stringify(neighbours));
     let retreat_options = 0;
     for (let i = 0; i < neighbours.length; i++) {
       if (his_self.canFactionRetreatToNavalSpace(faction, neighbours[i])) {
@@ -5611,6 +5612,9 @@ console.log("squadrons protecting space: " + squadrons_protecting_space);
     let placed = 0;
 
     let count = his_self.countSpacesWithFilter(filter_func);
+
+console.log("count: " + count);
+
     if (count == 0) { his_self.endTurn(); return 0; }
 
     his_self.playerSelectSpaceWithFilter(
@@ -5625,6 +5629,7 @@ console.log("squadrons protecting space: " + squadrons_protecting_space);
 	his_self.addUnit(faction, spacekey, unittype);
 	his_self.displaySpace(spacekey);
         his_self.addMove("build\tland\t"+faction+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);	
+	if (mycallback != null) { mycallback(spacekey); }
 
 	if (num == 1) {
           his_self.endTurn();

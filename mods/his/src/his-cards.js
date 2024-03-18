@@ -3652,6 +3652,7 @@ console.log("selected: " + spacekey);
 	  return 0;
 	},
         onEvent : function(his_self, faction) {
+
           his_self.game.state.events.schmalkaldic_league_round = his_self.game.state.round;
           his_self.game.state.events.schmalkaldic_league = 1;
 	  his_self.schmalkaldic_overlay.render();
@@ -3762,6 +3763,7 @@ console.log("selected: " + spacekey);
 		    if (res.length > 0) {
 		      his_self.game.spaces[res[0].key].units["protestant"].push(u);
 		    }
+console.log("removing protestant unit in : " + key + " at index " + z);
     		    his_self.game.spaces[key].units["protestant"].splice(z, 1);
 		    z--;
 		  }
@@ -4252,13 +4254,13 @@ console.log("selected: " + spacekey);
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu === "pre_naval_battle_rolls") {
-	  his_self.addMove("add_naval_battle_bonus_rolls\t"+faction+"\t2");
+	  his_self.addMove("insert_before_counter_or_acknowledge\tadd_naval_battle_bonus_rolls\t"+faction+"\t2");
 	  his_self.addMove("discard\t"+faction+"\t024");
 	  his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction) + " triggers " + his_self.popup("024"));
 	  his_self.endTurn();
         }
         if (menu === "pre_field_battle_rolls") {
-	  his_self.addMove("add_field_battle_bonus_rolls\t"+faction+"\t2");
+	  his_self.addMove("insert_before_counter_or_acknowledge\tadd_field_battle_bonus_rolls\t"+faction+"\t2");
 	  his_self.addMove("discard\t"+faction+"\t024");
 	  his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction) + " triggers " + his_self.popup("024"));
 	  his_self.endTurn();
@@ -4301,9 +4303,9 @@ console.log("selected: " + spacekey);
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "pre_field_battle_rolls") {
 	  if (faction === "france" || faction === "ottoman") {
-	    his_self.addMove("add_field_battle_bonus_rolls\t"+faction+"\t3");
+	    his_self.addMove("insert_before_counter_or_acknowledge\tadd_field_battle_bonus_rolls\t"+faction+"\t3");
 	  } else {
-	    his_self.addMove("add_field_battle_bonus_rolls\t"+faction+"\t2");
+	    his_self.addMove("insert_before_counter_or_acknowledge\tadd_field_battle_bonus_rolls\t"+faction+"\t2");
 	  }
 	  his_self.addMove("discard\t"+faction+"\t024");
 	  his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction) + " triggers " + his_self.popup("025"));
@@ -4654,9 +4656,9 @@ console.log("selected: " + spacekey);
 	    }
 	  }
 	  if (is_attacker) {
-	    his_self.addMove("faction_assigns_hits_first_field_battle\tattacker");
+	    his_self.addMove("insert_before_counter_or_acknowledge\tfaction_assigns_hits_first_field_battle\tattacker");
 	  } else {
-	    his_self.addMove("faction_assigns_hits_first_field_battle\tdefender");
+	    his_self.addMove("insert_before_counter_or_acknowledge\tfaction_assigns_hits_first_field_battle\tdefender");
 	  }
 
 	  his_self.addMove("discard\t"+faction+"\t029");
@@ -4703,8 +4705,8 @@ console.log("selected: " + spacekey);
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu === "pre_field_battle_rolls") {
 	  if (faction === "hapsburg") {
-	    his_self.addMove("add_field_battle_bonus_rolls\t"+faction+"\t2");
-            his_self.addMove("SETVAR\tstate\tfield_battle\ttercios\t1");
+	    his_self.addMove("insert_before_counter_or_acknowledge\tadd_field_battle_bonus_rolls\t"+faction+"\t2");
+            his_self.addMove("insert_before_counter_or_acknowledge\tSETVAR\tstate\tfield_battle\ttercios\t1");
 	    his_self.addMove("discard\t"+faction+"\t024");
 	    his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction) + " triggers " + his_self.popup("024"));
 	    his_self.endTurn();
@@ -5014,17 +5016,8 @@ console.log("selected: " + spacekey);
         if (menu == "pre_field_battle_rolls") {
 	  if (faction == "ottoman" || faction == "france") {
 	  } else {
-            his_self.playerPlaceUnitsInSpaceWithFilter("mercenary", 4, faction, 
-	      function(space) {
-		if (!his_self.isSpaceUnderSiege(space.key)) { return 0; }
-		if (his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 1; }
-		if (!his_self.isSpaceFriendly(space.key)) { return 1; }
-	        return 0;
-	      } ,
-	      null ,
-	      null ,
-	      true
-	    );
+	    his_self.addMove("add_units_before_field_battle\t"+faction+"\t"+"mercenary"+"\t"+4);
+	    his_self.endTurn();            
 	  }
 	}
         return 0;
@@ -5224,8 +5217,9 @@ alert("ignoring hop depth issues...");
 	    target_number = 4;
 	  }
 	  his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" plays " + his_self.popup("036"));
+	  // this places the units, so if reset no problem
+	  his_self.addMove("add_units_before_field_battle\t"+target_faction+"\t"+"mercenary"+"\t"+target_number);
           his_self.addMove("discard\t"+faction+"\t036");
-          his_self.addMove("swiss_mercenaries_place\t"+target_faction+"\t"+target_number);
 	  his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" triggers " + his_self.popup("036"));
 	  his_self.endTurn();
 	}

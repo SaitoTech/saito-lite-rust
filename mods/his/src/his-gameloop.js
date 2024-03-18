@@ -1792,8 +1792,11 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
           this.addCard("papacy", "035");
           this.addCard("papacy", "036");
           this.addCard("papacy", "032");
+          this.addCard("papacy", "029");
           this.addCard("protestant", "026");
           this.addCard("protestant", "027");
+          this.addCard("protestant", "033");
+          this.addCard("protestant", "025");
 
 	  this.controlSpace("papacy", "linz");
 	  this.controlSpace("papacy", "vienna");
@@ -1855,7 +1858,6 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 console.log("----------------------------");
 console.log("---SHUFFLING IN DISCARDS ---");
 console.log("----------------------------");
-console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
           this.game.queue.push("DECK\t2\t"+JSON.stringify(reshuffle_cards));
 
@@ -2769,12 +2771,9 @@ console.log("DIPLO DECK RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	    let can_faction_retreat = 0;
 	    let player_of_faction = this.returnPlayerCommandingFaction(io[i]);
 	    if (player_of_faction != attacking_player && player_of_faction > 0) {
-console.log("evaluating whether: " + io[i] + " can retreat!");
   	      if (io[i] !== attacker && (io[i] != this.game.state.active_faction && !this.areAllies(this.game.state.active_faction, io[i], 1))) {
-console.log("faction is not attacker and is not active_faction and is not allies with active faction!");
 	        let units_in_space = this.returnFactionLandUnitsInSpace(io[i], spacekey);
 	        if (units_in_space > 0) {
-console.log("faction has units in space!");
 	          for (let zz = 0; zz < neighbours.length; zz++) {
 	            let fluis = this.canFactionRetreatToSpace(io[i], neighbours[zz], attacker_comes_from_this_spacekey);
 	            if (fluis > 0) {
@@ -2937,6 +2936,11 @@ console.log("faction has units in space!");
 	  let spacekey = mv[2];
 	  let attacker_comes_from_this_spacekey = mv[3];
 	  let defender = mv[4];
+
+	  //
+	  // cannot proactively retreat from port
+	  //
+	  if (this.game.spaces[spacekey]) { return 1; }
 
 	  let player_factions = this.returnPlayerFactions(this.game.player)
 
@@ -3107,7 +3111,6 @@ console.log("faction has units in space!");
 	      if (player_of_faction != attacking_player && player_of_faction != 0) {
   	        if (io[i] !== faction) {
 	          for (let zz = 0; zz < neighbours.length; zz++) {
-console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 	            let fluis = this.returnFactionSeaUnitsInSpace(io[i], neighbours[zz]);
 	            if (fluis > 0) {
 	              this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"\t"+io[i]+"\t"+neighbours[zz]);
@@ -3793,14 +3796,6 @@ console.log("CHECKING: " + io[i] + " / " + neighbours[zz]);
 	// exists to be removed by counter_or_acknowledge
 	//
 	if (mv[0] === "halted") {
-console.log("*");
-console.log("*");
-console.log("*");
-console.log("*");
-console.log("* at halted *");
-console.log(JSON.stringify(this.game.confirms_needed));
-console.log(JSON.stringify(this.game.future));
-
 	  return 0;
 	}
 	if (mv[0] === "counter_or_acknowledge") {
@@ -4355,6 +4350,7 @@ try {
 	  his_self.game.state.naval_battle.attacker_hits_first = 0;
 	  his_self.game.state.naval_battle.defender_hits_first = 0;
 	  his_self.game.state.naval_battle.faction_map = faction_map;
+	  his_self.game.state.naval_battle.is_battle_in_port = is_battle_in_port;
 
 	  let ap = {};
 	  let dp = {};
@@ -4387,7 +4383,6 @@ try {
 	    his_self.game.queue.push("ACKNOWLEDGE\tProceed to Hits Assignment");
 	  }
 
-
 	  //
 	  // this should stop execution while we are looking at the pre-naval battle overlay
 	  //
@@ -4406,8 +4401,6 @@ try {
 	  return 1;
 
         }
-
-
 
 
 
@@ -4825,8 +4818,6 @@ try {
 	    let max_possible_hits_assignable = 0;
 	    let faction_map = his_self.game.state.field_battle.faction_map;
 
-console.log("FACTION MAP USED FOR HITS ASSIGNMENT: " + JSON.stringify(faction_map));
-	  
 	    if (faction === "independent") {
 	      max_possible_hits_assignable += his_self.returnFactionLandUnitsInSpace(faction, space);
 	    } else {
@@ -4862,8 +4853,6 @@ console.log("FACTION MAP USED FOR HITS ASSIGNMENT: " + JSON.stringify(faction_ma
 	      } else {
 		number_of_targets = 1;
 	      }
-
-console.log("in assign_hits() : " + number_of_targets);
 
 	      while (hits_to_assign >= number_of_targets && hits_to_assign > 0) {
 
@@ -4985,25 +4974,15 @@ console.log("in assign_hits() : " + number_of_targets);
 	    }
 	  }
 
-console.log("assign hits");
-console.log("assign hits");
-console.log("assign hits - " + player);
-console.log("assign hits - " + faction);
-
 	  //
 	  // auto-assign hits to independent entities
 	  //
 	  if (player == 0) {
 	    if (faction === this.game.state.field_battle.attacker_faction) {
-console.log("assign hits A");
 	      assign_hits(faction, this.game.state.field_battle.defender_hits);
 	    } else {
-console.log("assign how many hits -- " + this.game.state.field_battle.attacker_hits);
 	      assign_hits(faction, this.game.state.field_battle.attacker_hits);
 	    }
-
-console.log("RES AFTER FIELD BATTLE: ");
-console.log(JSON.stringify(his_self.game.state.field_battle));
 
             his_self.field_battle_overlay.renderFieldBattle(his_self.game.state.field_battle);
             his_self.field_battle_overlay.updateInstructions("Independent Hits Assigned");
@@ -5044,7 +5023,6 @@ console.log(JSON.stringify(his_self.game.state.field_battle));
           }
 
 	  if (units_capable_of_taking_hits == 0) {
-console.log("how do we have a field battle against no-one? just clearing through!");
 	    return 1;
 	  }
 
@@ -5309,8 +5287,6 @@ console.log("how do we have a field battle against no-one? just clearing through
 		  }
 	        }
 	      }
-
-console.log("HOW MANY HITS TO ASSIGN: " + hits_to_assign);
 
 	      //
 	      // we now have fewer hits to assign than there are factions available
@@ -5912,7 +5888,7 @@ console.log("HOW MANY HITS TO ASSIGN: " + hits_to_assign);
                   }
                 }
 		if (space.units[f].length > 0) {
-		  if (his_self.isSpaceControlled(his_self.game.state.field_battle.defender_faction, space.key)) {
+		  if (his_self.isSpaceControlled(space.key, his_self.game.state.field_battle.defender_faction)) {
                     this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.attacker_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.defender_faction)+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
 	          }
 	        }
@@ -6012,8 +5988,6 @@ console.log("HOW MANY HITS TO ASSIGN: " + hits_to_assign);
 	  let faction = mv[1];
 	  let spacekey = mv[2];
 	  let unit_idx = parseInt(mv[3]);
-
-console.log("spacekey: " + spacekey);
 
 	  if (this.game.spaces[spacekey]) {
 	    this.game.spaces[spacekey].units[faction].splice(unit_idx, 1);
@@ -6478,21 +6452,22 @@ console.log("spacekey: " + spacekey);
 	    }
 	  }
 
-	  let faction_map      = his_self.game.state.naval_battle.faction_map;
-	  let attacker_faction = his_self.game.state.naval_battle.attacker_faction;
-	  let defender_faction = his_self.game.state.naval_battle.defender_faction;
-          let attacker_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
-          let defender_player  = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
-	  let attacker_results = his_self.game.state.naval_battle.attacker_results;
-	  let defender_results = his_self.game.state.naval_battle.defender_results;
-	  let attacker_rolls   = his_self.game.state.naval_battle.attacker_rolls;
-	  let defender_rolls   = his_self.game.state.naval_battle.defender_rolls;
-	  let attacker_units   = his_self.game.state.naval_battle.attacker_units;
-	  let defender_units   = his_self.game.state.naval_battle.defender_units;
+	  let faction_map       = his_self.game.state.naval_battle.faction_map;
+	  let attacker_faction  = his_self.game.state.naval_battle.attacker_faction;
+	  let defender_faction  = his_self.game.state.naval_battle.defender_faction;
+          let attacker_player   = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker_faction)-1];
+          let defender_player   = his_self.game.state.players_info[his_self.returnPlayerOfFaction(defender_faction)-1];
+	  let attacker_results  = his_self.game.state.naval_battle.attacker_results;
+	  let defender_results  = his_self.game.state.naval_battle.defender_results;
+	  let attacker_rolls    = his_self.game.state.naval_battle.attacker_rolls;
+	  let defender_rolls    = his_self.game.state.naval_battle.defender_rolls;
+	  let attacker_units    = his_self.game.state.naval_battle.attacker_units;
+	  let defender_units    = his_self.game.state.naval_battle.defender_units;
+	  let is_battle_in_port = his_self.game.state.naval_battle.is_battle_in_port;
 
-	  let winner	       = defender_faction;
-	  let attacker_hits    = 0;
-	  let defender_hits    = 0;
+	  let winner	        = defender_faction;
+	  let attacker_hits     = 0;
+	  let defender_hits     = 0;
 
 	  //
 	  // assign hits simultaneously
@@ -7690,6 +7665,8 @@ console.log("spacekey: " + spacekey);
           this.game.state.theological_debate.round2_attacker_debater = this.game.state.theological_debate.attacker_debater;
           this.game.state.theological_debate.round2_defender_debater = this.game.state.theological_debate.defender_debater;
 
+	  this.updateLog(this.game.state.theological_debate.attacker_debater + " vs. " + this.game.state.theological_debate.defender_debater);
+
 	  this.displayTheologicalDebate(this.game.state.theological_debate);
 	  this.displayTheologicalDebater(this.game.state.theological_debate.attacker_debater, true);
 	  this.displayTheologicalDebater(this.game.state.theological_debate.defender_debater, false);
@@ -7860,8 +7837,8 @@ console.log("spacekey: " + spacekey);
 	    }
 	  }
 
-console.log("SELECTED DEBATER AT: " + this.game.state.theological_debate.attacker_debater);
-console.log("SELECTED DEBATER DE: " + this.game.state.theological_debate.defender_debater);
+
+	  this.updateLog(this.game.state.theological_debate.attacker_debater + " vs. " + this.game.state.theological_debate.defender_debater);
 
           this.game.state.theological_debate.round1_attacker_debater = this.game.state.theological_debate.attacker_debater;
           this.game.state.theological_debate.round1_defender_debater = this.game.state.theological_debate.defender_debater;
@@ -8818,8 +8795,6 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
 	  this.game.queue.splice(qe, 1);
 	  let faction = mv[1];
 
-console.log("DIPL: " + JSON.stringify(this.game.state.diplomacy));
-
 	  let idx = parseInt(mv[2]);
 	  let proposal = this.game.state.diplomacy[idx];
 	  let terms = this.convertTermsToText(idx);
@@ -8839,14 +8814,6 @@ console.log("DIPL: " + JSON.stringify(this.game.state.diplomacy));
 	  let terms = this.convertTermsToText(proposal);
 	  for (let i = terms.length-1; i >= 0; i--) { this.updateLog("  "+terms[i]); }
 	  this.updateLog(this.returnFactionName(faction) + " accepts " + this.returnFactionName(proposal.proposer) + " offer:");
-
-console.log("PROPOSAL");
-console.log("PROPOSAL");
-console.log("PROPOSAL");
-console.log("PROPOSAL");
-console.log("PROPOSAL");
-console.log("PROPOSAL");
-console.log(JSON.stringify(this.game.state.diplomacy));
 
 	  for (let i = 0; i < proposal.parties.length; i++) { 
 	    if (!proposal.confirms) { proposal.confirms = []; }
@@ -8871,8 +8838,6 @@ console.log(JSON.stringify(this.game.state.diplomacy));
 	    this.game.state.diplomacy.splice(idx, 1);
 	    this.diplomacy_propose_overlay.purgeProposals();
 	  }
-
-console.log("after splicing: " + JSON.stringify(this.game.state.diplomacy));
 
 	  return 1;
 
@@ -8951,7 +8916,6 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  let anything_to_review = false;
 	  for (let i = 0; i < this.game.state.diplomacy.length; i++) {
 	    if (this.game.state.diplomacy[i].parties.includes(faction)) {
-console.log("faction is contained in: " + JSON.stringify(this.game.state.diplomacy[i].parties));
 	      this.game.queue.push("confirm_diplomatic_proposal\t"+faction+"\t"+i);
 	      anything_to_review = true;
 	    }
@@ -9541,7 +9505,6 @@ if (this.game.state.round == 2) {
 	  // remove any removed cards again for sanity sake (i.e. Clement VII)
 	  //
 	  for (let z = 0; z < this.game.state.removed.length; z++) {
-console.log("removed: " + this.game.state.removed[z]);
       	    delete this.game.deck[0].cards[this.game.state.removed[z]];
       	    delete discards[this.game.state.removed[z]];
 	  }
@@ -9597,7 +9560,6 @@ console.log("removed: " + this.game.state.removed[z]);
 console.log("----------------------------");
 console.log("---SHUFFLING IN DISCARDS ---");
 console.log("----------------------------");
-console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
     	  this.game.queue.push("restore_home_cards_to_deck");
     	  this.game.queue.push("DECK\t1\t"+JSON.stringify(reshuffle_cards));
@@ -9606,38 +9568,6 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
           this.game.queue.push("DECKBACKUP\t1");
 
 
-	  //
-	  // "The Protestant army leader Maurice of Saxony is placed
-	  // on the map at the start of Turn 6. Maurice is the only
-	  // army leader that doesn’t either start the game on the map
-	  // or enter via a Mandatory Event. Place Maurice in any
-	  // electorate under Protestant political control."
-	  //
-	  if (this.game.round == 2) {
-    	    this.game.queue.push("place_protestant_debater\tzwingli\tzurich");
-	  }
-	  if (this.game.round == 4) {
-    	    this.game.queue.push("place_protestant_debater\tcalvin\tgeneva");
-	  }
-
-	  //
-	  // dynamic - turn after Henry VIII maries Anne Boleyn
-	  //
-	  if (this.game.round == 6) {
-    	    this.game.queue.push("place_protestant_debater\tcranmer\tlondon");
-	  }
-
-	  //
-	  // "Naval leaders eliminated from play are also brought back
-	  // during the Card Draw Phase. Place them in a friendly port
-	  // if possible. If no friendly port exists, they remain on
-	  // the Turn Track for another turn. Naval units eliminated in
-	  // a previous turn are also returned to each power’s pool of
-	  // units available to be constructed at this time."
-	  //
-    	  //this.game.queue.push("restore\tnaval_leaders");
-
-	
 	  //
 	  // remove any card bonuses
 	  //
@@ -10779,6 +10709,40 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	}
 
 
+	// swiss mercenaries and landsnechts
+	if (mv[0] === "add_units_before_field_battle") {
+
+	  let his_self = this;
+	  let faction = mv[1];
+	  let unittype = mv[2];
+	  let num = parseInt(mv[3]);
+
+	  if (his_self.game.player === his_self.returnPlayerCommandingFaction(faction)) {
+            his_self.playerPlaceUnitsInSpaceWithFilter(unittype, num, faction,
+              function(space) {
+                if (his_self.isSpaceUnderSiege(space.key)) { return 0; }
+                if (!his_self.isSpaceFriendly(space.key, faction)) { return 0; }
+                if (his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 1; }
+                return 0;
+              },
+              function(spacekey) {
+		if (his_self.game.state.field_battle.spacekey == spacekey) {
+		  his_self.addMove("add_field_battle_bonus_rolls\t"+faction+"\t"+1+"\t"+unittype);
+		}
+	      } ,
+              null ,
+              true
+            );
+	  } else {
+	    his_self.updateStatus(his_self.returnFactionName(faction) + " placing units...");
+	  }
+
+	  this.game.queue.splice(qe, 1);
+
+	  return 0;
+
+	}
+
 	if (mv[0] === "add_field_battle_bonus_rolls") {
 
 	  let his_self = this;
@@ -10814,7 +10778,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
             }
 	  }
 
-          his_self.field_battle_overlay.render(his_self.game.state.field_battle);
+          his_self.field_battle_overlay.render(his_self.game.state.field_battle, 1);
 
 
 	  this.game.queue.splice(qe, 1);
@@ -10922,10 +10886,6 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  let cards = [];
 
 	  if (this.game.player == player) {
-
-console.log("EXISTING HAND: " + JSON.stringify(this.game.deck[deckidx].hand));
-console.log("EXISTING FHAND: " + JSON.stringify(this.game.deck[deckidx].fhand));
-
 	    if (!this.game.deck[deckidx].fhand) { this.game.deck[deckidx].fhand = []; }
 	    while (this.game.deck[deckidx].fhand.length < (fhand_idx+1)) { this.game.deck[deckidx].fhand.push([]); }
 
@@ -11133,7 +11093,10 @@ console.log("EXISTING FHAND: " + JSON.stringify(this.game.deck[deckidx].fhand));
 
 	  for (let i = 0; i < p_rolls; i++) {
 	    let x = this.rollDice(6);
-	    if (this.game.state.events.calvins_institutes == 1 && this.game.spaces[space].language === "french") { x++; }
+	    if (this.game.state.events.calvins_institutes == 1 && this.game.spaces[space].language === "french") {
+	      if (i == 0) { this.updateLog("Calvin's Institutes modifies Protestant rolls by +1"); }
+	      x++;
+	    }
 	    if (x > p_high) { p_high = x; }
 	    pdice.push(x);
 	  }

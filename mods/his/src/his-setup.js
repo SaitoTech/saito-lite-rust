@@ -495,8 +495,8 @@ console.log("\n\n\n\n");
 	  this.setEnemies("hapsburg", "ottoman");
 	  this.setEnemies("protestant", "ottoman");
 
-	  this.controlSpace("hapsburg", "prague");
-	  this.addRegular("hapsburg", "prague", 4);
+	  this.controlSpace("papacy", "prague");
+	  this.addRegular("papacy", "prague", 4);
 
           // DEBATERS
           this.addDebater("papacy", "gardiner-debater");
@@ -536,8 +536,6 @@ console.log("\n\n\n\n");
           this.addReformer("protestant", "geneva", "calvin-reformer");
 
 	  // PROTESTANTS   
-          this.addUnit("protestant", "wittenberg", "regular");
-          this.addUnit("protestant", "wittenberg", "regular");
           this.addReformer("protestant", "london", "cranmer-reformer");
           this.addArmyLeader("protestant", "brandenburg", "philip-hesse");
 
@@ -563,7 +561,7 @@ console.log("\n\n\n\n");
           // OTTOMAN
           this.addArmyLeader("ottoman", "sofia", "ibrahim-pasha");
           this.addArmyLeader("ottoman", "bucharest", "suleiman");
-          this.addMercenary("ottoman", "bucharest", 2);
+          this.addCavalry("ottoman", "bucharest", 2);
           this.addRegular("ottoman","athens", 3);
           this.addRegular("ottoman","istanbul", 3);
 
@@ -585,12 +583,15 @@ console.log("\n\n\n\n");
 
 
           // PROTESTANT
-          this.addRegular("protestant", "worms", 3);
           for (let key in this.game.spaces) {
             if (this.game.spaces[key].language == "german") {
               this.convertSpace("protestant", key);
             }
           }
+
+
+          this.addRegular("protestant", "worms", 3);
+          this.addRegular("protestant", "wittenberg", 1);
 
           // VENICE
           this.addRegular("venice", "venice", 2);
@@ -615,7 +616,7 @@ console.log("\n\n\n\n");
 	  //this.addMercenary("papacy", "prague", 5);
 
           this.setAllies("papacy", "hapsburg");
-          this.setActivatedPower("papacy", "hapsburg");
+          //this.setActivatedPower("papacy", "hapsburg");
 
 	  //this.addCard("ottoman", "024");
 	  //this.addCard("ottoman", "025");

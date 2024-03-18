@@ -205,18 +205,27 @@
   isNavalSpaceFriendly(space, faction) {
    
     // if a port, must be controlled by faction
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space];  } } catch (err) {}
-    if (space.language != undefined) { return this.isSpaceFriendly(space, faction); }
+    try {
+      if (this.game.spaces[space]) { 
+	space = this.game.spaces[space];  
+        if (space.language != undefined) { return this.isSpaceFriendly(space, faction); }
+      }
+    } catch (err) {}
 
     // if naval space, must not have enemy of faction
-    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
-    for (let f in space.units) {
-      if (space.units[f].length > 0) {
-	if (this.areEnemies(f, faction)) { return 0; }
-      }	
-    }    
+    try { 
+      if (this.game.navalspaces[space]) {
+	space = this.game.navalspaces[space]; 
+        for (let f in space.units) {
+          if (space.units[f].length > 0) {
+	    if (this.areEnemies(f, faction)) { return 0; }
+          }	
+        }
+      } 
+    } catch (err) {}
 
     return 1;
+
   }
 
 
@@ -255,6 +264,7 @@
   isSpaceFriendly(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let cf = this.returnFactionControllingSpace(space);
+console.log("is space friendly: " + space.key + " / " + faction + " / " + cf);
     if (cf === faction) { return true; }
     return this.areAllies(cf, faction);
   }
@@ -1041,6 +1051,7 @@ console.log("and we are great!");
 	if (!this.areAllies(z, faction, 1)) { return 0; }
       }
     }
+    if (this.isSpaceControlled(space, faction) == 1) { return 1; }
     if (this.isSpaceFriendly(space, faction) == 1) { return 1; }
     return 0;
   }
