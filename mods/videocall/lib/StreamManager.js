@@ -19,12 +19,15 @@ class StreamManager {
 		this.audioSource = null;
 		this.auto_disconnect = false;
 		this.active = true;
+		this.is_broadcasting = false;
 
 		this.updateSettings(settings);
 
 		app.connection.on('stun-toggle-video', async () => {
 			// Turn off Video
-			if (!this.active) { return; }
+			if (!this.active) {
+				return;
+			}
 
 			if (this.videoEnabled === true) {
 				if (!this.localStream.getVideoTracks()[0]) return;
@@ -38,7 +41,9 @@ class StreamManager {
 				if (!this.localStream.getVideoTracks()?.length) {
 					try {
 						const newLocalStream =
-							await navigator.mediaDevices.getUserMedia(this.returnConstraints(true));
+							await navigator.mediaDevices.getUserMedia(
+								this.returnConstraints(true)
+							);
 
 						const videoTrack = newLocalStream.getVideoTracks()[0];
 						this.localStream.addTrack(videoTrack);
@@ -49,7 +54,7 @@ class StreamManager {
 							this.localStream
 						);
 
-						for (let peer of this.app.options.stun.peers){
+						for (let peer of this.app.options.stun.peers) {
 							let peerConnection = this.mod.stun.peers.get(peer);
 							const videoSenders = peerConnection
 								.getSenders()
@@ -80,11 +85,13 @@ class StreamManager {
 				public_key: this.mod.publicKey
 			};
 
-			this.mod.sendOffChainMessage("toggle-video", data);
+			this.mod.sendOffChainMessage('toggle-video', data);
 		});
 
 		app.connection.on('stun-toggle-audio', async () => {
-			if (!this.active) { return; }
+			if (!this.active) {
+				return;
+			}
 
 			this.audioEnabled = !this.audioEnabled;
 
@@ -97,11 +104,13 @@ class StreamManager {
 				enabled: this.audioEnabled
 			};
 
-			this.mod.sendOffChainMessage("toggle-audio", data);
+			this.mod.sendOffChainMessage('toggle-audio', data);
 		});
 
 		app.connection.on('begin-share-screen', async () => {
-			if (!this.active) { return; }
+			if (!this.active) {
+				return;
+			}
 
 			try {
 				console.log('Start');
@@ -119,7 +128,7 @@ class StreamManager {
 				videoTrack.onended = this.endPresentation.bind(this);
 
 				this.mod.screen_share = true;
-				await this.mod.sendOffChainMessage("screen-share-start", {});
+				await this.mod.sendOffChainMessage('screen-share-start', {});
 
 				/// emit event to make presentation be the large screen and make presentation mode on
 				this.app.connection.emit(
@@ -128,75 +137,98 @@ class StreamManager {
 					this.presentationStream
 				);
 
-				console.log("Share screen with friends: ", this.app.options.stun.peers, this.mod.stun.peers);
+				console.log(
+					'Share screen with friends: ',
+					this.app.options.stun.peers,
+					this.mod.stun.peers
+				);
 				this.mod.stun.peers.forEach((pc, key) => {
 					console.log(key);
-					for (let peer of this.app.options.stun.peers){
+					for (let peer of this.app.options.stun.peers) {
 						let peerConnection = this.mod.stun.peers.get(peer);
-						console.log("Add Track");
-						peerConnection.addTrack(videoTrack);	
-
+						console.log('Add Track');
+						peerConnection.addTrack(videoTrack);
 					}
 				});
-
 			} catch (err) {
 				console.error('Error accessing media devices.', err);
 			}
 		});
 
 		app.connection.on('stop-share-screen', () => {
-			if (!this.active) { return; }
+			if (!this.active) {
+				return;
+			}
 
 			console.log('no more');
 			this.endPresentation();
 		});
 
-
-		app.connection.on('stun-connection-connected', (peerId)=> {
+		app.connection.on('stun-connection-connected', (peerId) => {
 			console.log('stun-connection-connected');
-			console.log(this.active, this.mod.room_obj, JSON.stringify(this.app.options.stun.peers));
+			console.log(
+				this.mod.stun.peers.size,
+				this.mod.stun.peers,
+				'peers length'
+			);
+			console.log(
+				this.active,
+				this.mod.room_obj,
+				JSON.stringify(this.app.options.stun.peers)
+			);
 
-			if (!this.active) { 
-				return; 
-			}
-
-			if (!this.mod?.room_obj || !this.app.options.stun.peers.includes(peerId)){
+			if (!this.active) {
 				return;
 			}
 
-			if (this.firstConnect){
+			if (
+				!this.mod?.room_obj ||
+				!this.app.options.stun.peers.includes(peerId)
+			) {
+				return;
+			}
+
+			if (this.firstConnect) {
 				let sound = new Audio('/videocall/audio/enter-call.mp3');
 				sound.play();
 				this.firstConnect = false;
 			}
 
-			this.mod.sendOffChainMessage("toggle-audio", {
+			this.mod.sendOffChainMessage('toggle-audio', {
 				public_key: this.mod.publicKey,
 				enabled: this.audioEnabled
 			});
 
-			this.mod.sendOffChainMessage("toggle-video", {
+			this.mod.sendOffChainMessage('toggle-video', {
 				public_key: this.mod.publicKey,
 				enabled: this.videoEnabled
 			});
 
+			if (
+				this.mod.stun.peers.size > 0 &&
+				this.is_broadcasting === false
+			) {
+				// begin sending peer list to peers
+				this.beginBroadcastingPeerList();
+			}
 		});
 
-		app.connection.on("stun-track-event", (peerId, event) => {
-			if (!this.active) { return; }
+		app.connection.on('stun-track-event', (peerId, event) => {
+			if (!this.active) {
+				return;
+			}
 
 			const remoteStream = new MediaStream();
 			console.log('STUN: another remote stream added', event.track);
 
 			if (peerId == this.mod.screen_share) {
-				console.log("Expecting presentation stream");
+				console.log('Expecting presentation stream');
 				remoteStream.addTrack(event.track);
 				this.app.connection.emit(
 					'add-remote-stream-request',
 					'presentation',
 					remoteStream
 				);
-
 			} else {
 				if (event.streams.length === 0) {
 					remoteStream.addTrack(event.track);
@@ -223,9 +255,15 @@ class StreamManager {
 
 		//Launch the Stun call
 		app.connection.on('start-stun-call', async () => {
-			if (!this.active) { return; }
+			if (!this.active) {
+				return;
+			}
 
-			console.log('STUN: start-stun-call', JSON.parse(JSON.stringify(this.mod.room_obj)), JSON.parse(JSON.stringify(this.app.options.stun)));
+			console.log(
+				'STUN: start-stun-call',
+				JSON.parse(JSON.stringify(this.mod.room_obj)),
+				JSON.parse(JSON.stringify(this.app.options.stun))
+			);
 			this.firstConnect = true;
 
 			//Render the UI component
@@ -262,64 +300,70 @@ class StreamManager {
 			this.analyzeAudio(this.localStream, 'local');
 		});
 
-		app.connection.on("stun-new-peer-connection", async (publicKey, peerConnection) => {
-			if (!this.active) { return; }
+		app.connection.on(
+			'stun-new-peer-connection',
+			async (publicKey, peerConnection) => {
+				if (!this.active) {
+					return;
+				}
 
-			console.log("New Stun peer connection");
-			if (this.app.options.stun.peers.includes(publicKey)){
-				console.log("Attach my audio/video!");
-				await this.getLocalMedia();
-				this.localStream.getTracks().forEach((track) => {
-					peerConnection.addTrack(track, this.localStream);
-				});
-			}	
-		});
+				console.log('New Stun peer connection');
+				if (this.app.options.stun.peers.includes(publicKey)) {
+					console.log('Attach my audio/video!');
+					await this.getLocalMedia();
+					this.localStream.getTracks().forEach((track) => {
+						peerConnection.addTrack(track, this.localStream);
+					});
+				}
+			}
+		);
 
 		app.connection.on('stun-disconnect', () => {
-			if (!this.active) { return; }
+			if (!this.active) {
+				return;
+			}
 
 			this.leaveCall();
 		});
-
 	}
 
-	updateSettings(settings){
-		if (settings?.video){
+	updateSettings(settings) {
+		if (settings?.video) {
 			this.videoEnabled = true;
-			if (settings.video !== true){
+			if (settings.video !== true) {
 				this.videoSource = settings.video;
 			}
-		}else{
+		} else {
 			this.videoEnabled = false;
 		}
 
-		if (settings?.audio){
+		if (settings?.audio) {
 			this.audioEnabled = true;
-			if (settings.audio !== true){
+			if (settings.audio !== true) {
 				this.audioSource = settings.audio;
 			}
-		}else{
+		} else {
 			this.audioEnabled = false;
 		}
-		 
+
 		this.auto_disconnect = settings?.auto_disconnect;
 	}
 
-	returnConstraints(onlyVideo = false){
+	returnConstraints(onlyVideo = false) {
 		let constraints = {};
 
-		if (this.videoSource){
-			constraints.video = { deviceId: this.videoSource};
-		}else if (this.videoEnabled){
+		if (this.videoSource) {
+			constraints.video = { deviceId: this.videoSource };
+		} else if (this.videoEnabled) {
 			constraints.video = true;
-		}else{
+		} else {
 			constraints.video = false;
 		}
 
-		if (!onlyVideo){
-			if (this.audioSource){
-				constraints.audio = { deviceId: this.audioSource};
-			}else {
+		if (!onlyVideo) {
+			if (this.audioSource) {
+				constraints.audio = { deviceId: this.audioSource };
+			} else {
 				constraints.audio = true;
 			}
 		}
@@ -345,7 +389,7 @@ class StreamManager {
 
 			this.videoEnabled = false;
 			c.video = false;
-			
+
 			this.localStream = await navigator.mediaDevices.getUserMedia(c);
 		}
 
@@ -364,27 +408,28 @@ class StreamManager {
 		});
 
 		//Plug local stream into UI component
-		this.app.connection.emit(
-			'add-local-stream-request',
-			this.localStream
-		);
-
+		this.app.connection.emit('add-local-stream-request', this.localStream);
 	}
 
-	removePeer(peer){
-
+	removePeer(peer) {
 		this.remoteStreams.delete(peer);
 
-		if (this.auto_disconnect){
-			siteMessage(`${this.app.keychain.returnUsername(peer)} hung up`, 2500);
-			this.app.connection.emit("stun-disconnect");
-		}else{
-			siteMessage(`${this.app.keychain.returnUsername(peer)} left the meeting`, 2500);
+		if (this.auto_disconnect) {
+			siteMessage(
+				`${this.app.keychain.returnUsername(peer)} hung up`,
+				2500
+			);
+			this.app.connection.emit('stun-disconnect');
+		} else {
+			siteMessage(
+				`${this.app.keychain.returnUsername(peer)} left the meeting`,
+				2500
+			);
 		}
 	}
 
 	async leaveCall() {
-		console.log("STUN: Hanging up...");
+		console.log('STUN: Hanging up...');
 
 		this.endPresentation();
 
@@ -412,8 +457,7 @@ class StreamManager {
 			this.audioStreamAnalysis = null;
 		}
 
-		console.log("STUN: Finished hanging up...");
-
+		console.log('STUN: Finished hanging up...');
 	}
 
 	analyzeAudio(stream, peer) {
@@ -454,25 +498,62 @@ class StreamManager {
 	}
 
 	endPresentation() {
-
-		if (this.mod.screen_share){
+		if (this.mod.screen_share) {
 			console.log('Screen sharing stopped by user');
 
 			this.app.connection.emit('remove-peer-box', 'presentation');
 			this.app.connection.emit('stun-switch-view', 'focus');
 			this.mod.screen_share = false;
 
-			this.mod.sendOffChainMessage("screen-share-stop");
+			this.mod.sendOffChainMessage('screen-share-stop');
 		}
 
 		if (this.presentationStream) {
-			this.presentationStream.getTracks()
+			this.presentationStream
+				.getTracks()
 				.forEach((track) => track.stop());
 		}
 
 		this.presentationStream = null;
 	}
 
+	async beginBroadcastingPeerList() {
+		this.is_broadcasting = true;
+		let peer_list = [];
+		this.mod.stun.peers.forEach((pc, address) => {
+			peer_list.push(address);
+		});
+
+		this.mod.stun.peers.forEach((pc, address) => {
+			let interval = setInterval(async () => {
+				if (pc.dc.readyState === 'open') {
+					clearInterval(interval);
+					let newtx = await this.mod.createBroadcastListTransaction(
+						peer_list,
+						address
+					);
+					this.mod.stun.sendTransaction(address, newtx);
+				}
+			}, 500);
+		});
+
+		setInterval(() => {
+			let peer_list = [];
+			this.mod.stun.peers.forEach((pc, address) => {
+				peer_list.push(address);
+			});
+
+			this.mod.stun.peers.forEach(async (pc, address) => {
+				let newtx = await this.mod.createBroadcastListTransaction(
+					peer_list,
+					address
+				);
+				this.mod.stun.sendTransaction(address, newtx);
+			});
+		}, 5000);
+
+		console.log(peer_list, 'peer list address');
+	}
 }
 
 module.exports = StreamManager;
