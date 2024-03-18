@@ -529,21 +529,25 @@ class StreamManager {
 				if (pc.dc.readyState === 'open') {
 					clearInterval(interval);
 					let newtx =
-						await this.app.wallet.createUnsignedTransactionWithDefaultFee(
-							peer
-						);
-
+						await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 					newtx.msg = {
-						module: 'Videocall',
-						request: 'broadcast-call-list'
+						module: 'Stun',
+
+						request: 'broadcast-call-list',
+						call_id: this.mod.room_obj.call_id,
+						data: {
+							peer_list,
+							sender: this.mod.publicKey
+						}
 					};
 
+					console.log('sending to address', address);
+					newtx.addTo(address);
+					newtx.addFrom(this.mod.publicKey);
 					await newtx.sign();
-					this.mod.stun.sendTransaction(newtx);
-					// this.app.connection.emit('relay-transaction', newtx);
-					// this.app.network.propagateTransaction(newtx);
+					this.mod.stun.sendTransaction(address, newtx);
 				}
-			}, 50);
+			}, 500);
 		});
 
 		console.log(peer_list, 'peer list address');
