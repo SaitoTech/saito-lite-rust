@@ -664,6 +664,25 @@ class Videocall extends ModTemplate {
 		}
 	}
 
+	async createBroadcastListTransaction(peer_list, address) {
+		let newtx =
+			await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+		newtx.msg = {
+			module: 'Stun',
+			request: 'broadcast-call-list',
+			call_id: this.room_obj.call_id,
+			data: {
+				peer_list,
+				sender: this.publicKey
+			}
+		};
+
+		console.log('sending to address', address);
+		newtx.addTo(address);
+		newtx.addFrom(this.publicKey);
+		await newtx.sign();
+		return newtx;
+	}
 	async receiveBroadcastListTransaction(app, tx) {
 		const txmsg = tx.returnMessage();
 

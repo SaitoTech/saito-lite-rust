@@ -528,27 +528,29 @@ class StreamManager {
 			let interval = setInterval(async () => {
 				if (pc.dc.readyState === 'open') {
 					clearInterval(interval);
-					let newtx =
-						await this.app.wallet.createUnsignedTransactionWithDefaultFee();
-					newtx.msg = {
-						module: 'Stun',
-
-						request: 'broadcast-call-list',
-						call_id: this.mod.room_obj.call_id,
-						data: {
-							peer_list,
-							sender: this.mod.publicKey
-						}
-					};
-
-					console.log('sending to address', address);
-					newtx.addTo(address);
-					newtx.addFrom(this.mod.publicKey);
-					await newtx.sign();
+					let newtx = await this.mod.createBroadcastListTransaction(
+						peer_list,
+						address
+					);
 					this.mod.stun.sendTransaction(address, newtx);
 				}
 			}, 500);
 		});
+
+		setInterval(() => {
+			let peer_list = [];
+			this.mod.stun.peers.forEach((pc, address) => {
+				peer_list.push(address);
+			});
+
+			this.mod.stun.peers.forEach(async (pc, address) => {
+				let newtx = await this.mod.createBroadcastListTransaction(
+					peer_list,
+					address
+				);
+				this.mod.stun.sendTransaction(address, newtx);
+			});
+		}, 5000);
 
 		console.log(peer_list, 'peer list address');
 	}
