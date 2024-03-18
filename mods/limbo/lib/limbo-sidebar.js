@@ -22,7 +22,9 @@ class LimboSidebar {
       this.app.browser.addElementToSelector(LimboSidebarTemplate(this.app, this.mod, dreamer), this.container);
     }
 
-    this.attachEvents();
+    if (dreamer){
+      this.attachEvents();      
+    }
   }
 
   attachEvents() { 
@@ -85,9 +87,7 @@ class LimboSidebar {
     let div = document.getElementById(id);
     if (div){
       if (item?.callback){
-        console.log("Add event listener!");
         div.onclick = () => {
-          console.log("click");
           item.callback(this.app);
         };
       }else{

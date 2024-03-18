@@ -6,7 +6,8 @@ class LimboMenu {
 		this.mod = mod;
 		this.container = container;
 
-		app.connection.on("limbo-populated", ()=>{ 
+		app.connection.on("limbo-populated", ()=>{
+			console.log("Update limbo menu"); 
 			this.render();
 		});
 	}

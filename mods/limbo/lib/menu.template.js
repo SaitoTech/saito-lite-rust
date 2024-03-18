@@ -9,7 +9,12 @@ module.exports = (app, mod) => {
     if (mod.dreamer == mod.publicKey){
       html += `<div id="exit-space" class="saito-button-primary">End Space</div>`  
     }else{
-      html += `<div id="exit-space" class="saito-button-primary">Exit Space</div>`  
+      if (mod.dreams[mod.dreamer]){
+        html += `<div id="exit-space" class="saito-button-primary">Exit Space</div>`  
+      }else{
+        html += `<div class="saito-button-primary">Entering Space...</div>`  
+      }
+      
     }
   }
 

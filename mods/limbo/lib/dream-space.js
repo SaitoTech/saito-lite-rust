@@ -8,6 +8,7 @@ class DreamSpace{
 		this.container = container;
 		this.video = new VideoBox(app, mod, "presentation", "video-preview");
 		this.startTime = new Date().getTime();
+		this.timer_interval = null;
 	}
 
 	render(stream) {
@@ -18,6 +19,7 @@ class DreamSpace{
 		}
 
 		if (stream){
+			console.log("Add stream", stream);
 			this.video.render(stream);
 			this.startTimer();
 		}
@@ -27,6 +29,7 @@ class DreamSpace{
 
 	remove(){
 		this.video.remove();
+		this.stopTimer();
 		if (document.getElementById("dream-controls")){
 			document.getElementById("dream-controls").remove();
 		}

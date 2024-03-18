@@ -1,6 +1,7 @@
 
 module.exports = LimboSideBarTemplate = (app, mod, dreamer) => {
 	if (!dreamer || !mod.dreams[dreamer]) {
+		console.log("Clear sidebar");
 		return '';
 	}
 
