@@ -1789,11 +1789,17 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
           let deck = this.returnDeck();
           deck['013'].onEvent(this, "protestant");
 
-          this.addCard("papacy", "024");
-          //this.addCard("ottoman", "025");
-          //this.addCard("ottoman", "026");
-          //this.addCard("ottoman", "027");
+          this.addCard("papacy", "035");
+          this.addCard("papacy", "036");
+          this.addCard("papacy", "032");
+          this.addCard("protestant", "026");
+          this.addCard("protestant", "027");
 
+	  this.controlSpace("papacy", "linz");
+	  this.controlSpace("papacy", "vienna");
+	  this.controlSpace("papacy", "graz");
+	  this.controlSpace("papacy", "trieste");
+	  this.controlSpace("papacy", "venice");
 
     	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -3896,24 +3902,9 @@ console.log(JSON.stringify(this.game.future));
               his_self.addMove("RESOLVE\t"+his_self.publicKey);
               his_self.endTurn();
 	      his_self.updateStatus("skipping acknowledge...");
-console.log("%%% sending RESOLVE ");
-console.log("%%% sending RESOLVE ");
-console.log("%%% sending RESOLVE ");
-console.log("%%% sending RESOLVE " + his_self.publicKey);
-console.log("%%% sending RESOLVE ");
-console.log("%%% sending RESOLVE ");
 	      return 0;
 	    }
 	  }
-
-
-console.log("^");
-console.log("^");
-console.log("^");
-console.log("^");
-console.log("^");
-console.log("c_o_a: " + this.faster_play + " / " + menu_index.length + " / " + attach_menu_events + " / " + this.isGameHalted());
-
 
 
 	  //
@@ -3975,10 +3966,14 @@ console.log("c_o_a: " + this.faster_play + " / " + menu_index.length + " / " + a
 	  }
 
 	  this.updateStatusWithOptions(msg, html);
+	  let deck = his_self.returnDeck(true);
 
 	  $('.option').off();
 	  $('.option').on('mouseover', function() {
             let action2 = $(this).attr("id");
+	    if (deck[action2]) {
+	      his_self.cardbox.show(his_self.returnCardImage(action2));
+	    }
 	    if (his_self.debaters[action2]) {
 	      his_self.cardbox.show(action2);
 	    }
@@ -3988,6 +3983,9 @@ console.log("c_o_a: " + this.faster_play + " / " + menu_index.length + " / " + a
           });
 	  $('.option').on('mouseout', function() {
             let action2 = $(this).attr("id");
+	    if (deck[action2]) {
+	      his_self.cardbox.hide(action2);
+	    }
 	    if (his_self.debaters[action2]) {
 	      his_self.cardbox.hide(action2);
 	    }
@@ -6923,10 +6921,10 @@ console.log("spacekey: " + spacekey);
           // this should stop execution while we are looking at the pre-field battle overlay
           //
           his_self.game.queue.push("assault_assign_hits_render");
-          his_self.game.queue.push("counter_or_acknowledge\tAssault results in "+space.name + "\tpre_assault_hits_assignment");
-          his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
+          //his_self.game.queue.push("counter_or_acknowledge\tAssault results in "+space.name + "\tpre_assault_hits_assignment");
+          //his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
           his_self.game.queue.push("assault_show_hits_render");
-          his_self.game.queue.push("counter_or_acknowledge\tAssault is about to begin in "+space.name + "\tpre_assault_hits_roll");
+          his_self.game.queue.push("counter_or_acknowledge\tAssault is about to begin in "+space.name + "\tpre_assault_rolls");
           his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
           his_self.assault_overlay.renderPreAssault(his_self.game.state.assault);
@@ -10713,17 +10711,19 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
 	if (mv[0] === "faction_assigns_hits_first_field_battle") {
 
+	  this.game.queue.splice(qe, 1);
 	  let which_player = "";
+
 	  if (mv[1] === "defender") {
 	    this.game.state.field_battle.defender_hits_first = 1;
-	    which_player == "defender";
+	    which_player = "defender";
 	  }
 
 	  if (mv[1] === "attacker") {
 
 	    let reversed = false;
+	    which_player = "defender";
 	    this.game.state.field_battle.attacker_hits_first = 1;
-	    which_player == "defender";
 
 	    for (let z = this.game.queue.length-1; reversed == false && z >= 1; z--) {
 
@@ -10744,6 +10744,8 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 	  return 1;
 	}
 	if (mv[0] === "faction_assigns_hits_first_naval_battle") {
+
+	  this.game.queue.splice(qe, 1);
 
 	  let which_player = "";
 	  if (mv[1] === "defender") {
@@ -10796,6 +10798,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
             for (let i = 0; i < bonus; i++) {
               let x = his_self.rollDice(6);
               if (x >= 5) { his_self.game.state.field_battle.attacker_hits++; }
+              if (his_self.game.state.field_battle.tercios == 1) { if (x >= 4 && x < 5) { his_self.game.state.field_battle.attacker_hits++; } }
               his_self.game.state.field_battle.attacker_modified_rolls.push(x);
               his_self.game.state.field_battle.attacker_units.push(comment);
               his_self.game.state.field_battle.attacker_units_faction.push(faction);
@@ -10804,6 +10807,7 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
             for (let i = 0; i < bonus; i++) {
               let x = his_self.rollDice(6);
               if (x >= 5) { his_self.game.state.field_battle.defender_hits++; }
+              if (his_self.game.state.field_battle.tercios == 1) { if (x >= 4 && x < 5) { his_self.game.state.field_battle.defender_hits++; } }
               his_self.game.state.field_battle.defender_modified_rolls.push(x);
               his_self.game.state.field_battle.defender_units.push(comment);
               his_self.game.state.field_battle.defender_units_faction.push(faction);
@@ -10812,6 +10816,50 @@ console.log("RESHUFFLE: " + JSON.stringify(reshuffle_cards));
 
           his_self.field_battle_overlay.render(his_self.game.state.field_battle);
 
+
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+
+
+
+	if (mv[0] === "add_assault_bonus_rolls") {
+
+	  let his_self = this;
+	  let faction = mv[1];
+	  let bonus = parseInt(mv[2]);
+	  let comment = "bonus";
+ 	  if (mv[3]) { comment = mv[3]; }
+
+	  let is_attacker = true;
+	  if (his_self.game.state.assault.faction_map[faction] === his_self.game.state.assault.defender_faction) { is_attacker = false; }
+
+
+          //
+          // add five bonus rolls
+          //
+	  if (is_attacker) {
+            for (let i = 0; i < bonus; i++) {
+              let x = his_self.rollDice(6);
+              if (x >= 5) { his_self.game.state.assault.attacker_hits++; }
+              if (his_self.game.state.assault.siege_artillery == 1) { if (x >= 3 && x < 5) { his_self.game.state.assault.attacker_hits++; } }
+              his_self.game.state.assault.attacker_modified_rolls.push(x);
+              his_self.game.state.assault.attacker_units_units.push(comment);
+              his_self.game.state.assault.attacker_units_faction.push(faction);
+            }
+          } else {
+            for (let i = 0; i < bonus; i++) {
+              let x = his_self.rollDice(6);
+              if (x >= 5) { his_self.game.state.assault.defender_hits++; }
+              if (his_self.game.state.assault.siege_artillery == 1) { if (x >= 3 && x < 5) { his_self.game.state.assault.attacker_hits++; } }
+              his_self.game.state.assault.defender_modified_rolls.push(x);
+              his_self.game.state.assault.defender_units_units.push(comment);
+              his_self.game.state.assault.defender_units_faction.push(faction);
+            }
+	  }
+
+          his_self.assault_overlay.render(his_self.game.state.assault);
 
 	  this.game.queue.splice(qe, 1);
 	  return 1;

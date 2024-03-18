@@ -342,8 +342,14 @@
       // capitals are good destinations
       function(spacekey) {
         let invalid_choice = false;
-        if (his_self.isSpaceFortified(spacekey) && his_self.isSpaceHomeSpace(spacekey, faction)) { invalid_choice = true; }
+        if (his_self.isSpaceFortified(spacekey) && his_self.isSpaceHomeSpace(spacekey, faction)) { 
+console.log("spacekey is: " + spacekey);
+	  invalid_choice = true;
+	}
         if (!his_self.isSpaceFriendly(spacekey, faction)) { invalid_choice = false; }
+if (invalid_choice) { 
+console.log("and we are great!");
+}
         return invalid_choice;
       },
 
@@ -383,6 +389,8 @@
 
     // home spaces that have not fallen to another power.
     if (space.home === faction && space.political == faction) { return true; }
+
+    if (space.home === "" && space.political == faction) { return true; }
 
     // independent (gray) spaces seized by the power.
     if (space.home === "independent" && space.political === faction) { return true; }

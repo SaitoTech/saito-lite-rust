@@ -4487,14 +4487,29 @@ does_units_to_move_have_unit = true; }
 
     if (his_self.game.state.events.foul_weather) { return 0; }
 
+console.log(" -- can player assault? ");
+console.log(" -- can player assault? ");
+console.log(" -- can player assault? ");
+console.log(" -- can player assault? ");
+console.log(" -- can player assault? ");
+console.log(" -- can player assault? ");
+
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
+
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
+
+console.log(" -- can player assault? " + JSON.stringify(conquerable_spaces));
+
     for (let i = 0; i < conquerable_spaces.length; i++) {
+console.log("i : " + i );
+console.log("is space in line of control? " + his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction));
       if (!his_self.isSpaceControlled(conquerable_spaces[i], faction) && his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction)) {
         if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1) {
+console.log("has this already been assaulted this turn?");
 	  if (!his_self.game.state.spaces_assaulted_this_turn.includes(conquerable_spaces[i])) {
+console.log("no!");
 
 	    //
 	    // now check if there are squadrons in the port or sea protecting the town
@@ -4503,6 +4518,8 @@ does_units_to_move_have_unit = true; }
 
 	    let squadrons_protecting_space = his_self.returnNumberOfSquadronsProtectingSpace(conquerable_spaces[i]);
 	    if (squadrons_protecting_space == 0) { return 1; }
+
+console.log("squadrons protecting space: " + squadrons_protecting_space);
 
 	    let attacker_squadrons_adjacent = 0;
 	    for (let y = 0; y < his_self.game.spaces[conquerable_spaces[i]].ports.length; y++) {

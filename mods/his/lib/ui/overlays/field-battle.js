@@ -203,12 +203,6 @@ class FieldBattleOverlay {
 		let am_i_attacker = false;
 		let am_i_defender = false;
 
-console.log("%");
-console.log("%");
-console.log("%");
-console.log("% Janissaries");
-console.log(JSON.stringify(res));
-
 		if (
 			this.mod
 				.returnPlayerFactions(this.mod.game.player)
