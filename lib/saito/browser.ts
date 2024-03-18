@@ -53,12 +53,24 @@ class Browser {
 		if (this.app.BROWSER != 1) {
 			return 0;
 		}
-		this.app.connection.on('new-version-detected', (version, peerIndex) => {
+
+		this.app.connection.on('new-version-detected', (version) => {
 			console.log('New wallet version detected: ' + version);
-			//localStorage.setItem('wallet_version', JSON.stringify(version));
-			setTimeout(() => {
-				window.location.reload();
-			}, 300);;
+			localStorage.setItem('wallet_version', JSON.stringify(version));
+			let shouldReload = false;
+			const scripts = document.querySelectorAll('script');
+			scripts.forEach((script) => {
+				const url = new URL(script.src, window.location.origin);
+				const params = new URLSearchParams(url.search);
+				if (params.has('build')) {
+					shouldReload = true
+				}
+			});
+			if (shouldReload) {
+				setTimeout(() => {
+					window.location.reload();
+				}, 300);
+			}
 		});
 
 		try {
@@ -2282,47 +2294,47 @@ class Browser {
 		return (decimal_separator == '.') ? ',' : '.';
 	}
 
-	addSaitoMentions(users, textarea, listDiv, inputType){
-		 const resolveFn = prefix => prefix === ''
-      ? users
-      : users.filter(user => user.username.startsWith(prefix))
+	addSaitoMentions(users, textarea, listDiv, inputType) {
+		const resolveFn = prefix => prefix === ''
+			? users
+			: users.filter(user => user.username.startsWith(prefix))
 
-	    const replaceFn = (user, trigger) => `${trigger}${user.username} `
+		const replaceFn = (user, trigger) => `${trigger}${user.username} `
 
-	    const menuItemFn = (user, setItem, selected) => {
-	      const parentDiv = document.createElement('div');
-	      parentDiv.classList.add('saito-mentions-contact');
+		const menuItemFn = (user, setItem, selected) => {
+			const parentDiv = document.createElement('div');
+			parentDiv.classList.add('saito-mentions-contact');
 
 
-	      // identifier 
-	      const identicon = document.createElement('img');
-	      identicon.classList.add('saito-identicon');
-	      identicon.setAttribute('src', user.identicon);
+			// identifier 
+			const identicon = document.createElement('img');
+			identicon.classList.add('saito-identicon');
+			identicon.setAttribute('src', user.identicon);
 
-	      parentDiv.appendChild(identicon);
+			parentDiv.appendChild(identicon);
 
-	      // username div
-	      const div = document.createElement('div')
-	      div.setAttribute('role', 'option')
-	      div.className = 'menu-item'
-	      if (selected) {
-	        div.classList.add('selected')
-	        div.setAttribute('aria-selected', '')
-	      }
-	      div.textContent = user.username
-	      
-	      parentDiv.appendChild(div);
-	      parentDiv.onclick = setItem;
-	      return parentDiv;
-	    }
+			// username div
+			const div = document.createElement('div')
+			div.setAttribute('role', 'option')
+			div.className = 'menu-item'
+			if (selected) {
+				div.classList.add('selected')
+				div.setAttribute('aria-selected', '')
+			}
+			div.textContent = user.username
+
+			parentDiv.appendChild(div);
+			parentDiv.onclick = setItem;
+			return parentDiv;
+		}
 
 		new SaitoMentions(
-		  textarea,
-		  listDiv,
-		  resolveFn,
-		  replaceFn,
-		  menuItemFn,
-		  inputType
+			textarea,
+			listDiv,
+			resolveFn,
+			replaceFn,
+			menuItemFn,
+			inputType
 		)
 	}
 }
