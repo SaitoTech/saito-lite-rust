@@ -281,7 +281,12 @@ emoji-picker {
 }
 
 .saito-mentions-list.hidden {
+	border: none;
+}
+
+.saito-mentions-list.empty {
   border: none;
+  background: none;
 }
 
 .saito-mentions-list .menu-item {
