@@ -639,18 +639,15 @@
             return { faction : extra , event : 'cop-debater', html : `<li class="option" id="cop-debater">Nicholas Cop +1 Roll</li>` };
           }
         } 
-console.log("returning empty for cop!");
         return {};
       },  
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
         if (menu == "protestant_reformation" && his_self.canPlayerCommitDebater("protestant", "cop-debater")) {
           let p = his_self.returnPlayerOfFaction("protestant");
           if (p === his_self.game.player && ["paris","stdizier","dijon","orleans","rouen","boulogne","stquentin","calais","brussels","metz","besancon","lyon","tours","nantes"].includes(spacekey)) {
-console.log("returning yes for: " + spacekey);
            return 1;
           }
         }
-console.log("returning no for: " + spacekey);
         return 0;
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {

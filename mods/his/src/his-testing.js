@@ -1,6 +1,5 @@
 
   addCard(faction, card) {
-
     let p = this.returnPlayerOfFaction(faction);
     if (p) {
       for (let z = 0; z < this.game.state.players_info[p-1].factions.length; z++) {

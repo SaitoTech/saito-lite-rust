@@ -60,8 +60,10 @@ class CallInterfaceVideo {
 		this.app.connection.on(
 			'stun-update-connection-message',
 			(peer_id, status) => {
-				if (this.app.options.stun.peers.includes(peer_id) && !this.video_boxes[peer_id]){
-					console.warn("Missing video box for expected peer");
+				if (!this.video_boxes[peer_id]){
+					if (this.app.options.stun.peers.includes(peer_id)){
+						console.warn("Missing video box for expected peer");	
+					}
 					return;
 				}
 

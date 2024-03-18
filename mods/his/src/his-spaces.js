@@ -342,8 +342,14 @@
       // capitals are good destinations
       function(spacekey) {
         let invalid_choice = false;
-        if (his_self.isSpaceFortified(spacekey) && his_self.isSpaceHomeSpace(spacekey, faction)) { invalid_choice = true; }
+        if (his_self.isSpaceFortified(spacekey) && his_self.isSpaceHomeSpace(spacekey, faction)) { 
+console.log("spacekey is: " + spacekey);
+	  invalid_choice = true;
+	}
         if (!his_self.isSpaceFriendly(spacekey, faction)) { invalid_choice = false; }
+if (invalid_choice) { 
+console.log("and we are great!");
+}
         return invalid_choice;
       },
 
@@ -383,6 +389,8 @@
 
     // home spaces that have not fallen to another power.
     if (space.home === faction && space.political == faction) { return true; }
+
+    if (space.home === "" && space.political == faction) { return true; }
 
     // independent (gray) spaces seized by the power.
     if (space.home === "independent" && space.political === faction) { return true; }
@@ -1205,9 +1213,16 @@
 
   doesPlayerHaveLandUnitsInSpace(p1, spacekey) {
     for (let f in this.game.spaces[spacekey].units) {
-      if (this.returnPlayerCommandingFaction(p1) == p1) {
-        for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
-          if (this.game.spaces[key].units[f][i].type === "regular" || this.game.spaces[key].units[f][i].type === "cavalry" || this.game.spaces[key].units[f][i].type === "mercenary") {
+console.log("check: " + f);
+      if (this.returnPlayerCommandingFaction(f) == p1) {
+console.log("player controls " + f);
+        for (let i = 0; i < this.game.spaces[spacekey].units[f].length; i++) {
+console.log(" ... " + i);
+          if (
+	    this.game.spaces[spacekey].units[f][i].type == "regular" || 
+	    this.game.spaces[spacekey].units[f][i].type == "cavalry" || 
+	    this.game.spaces[spacekey].units[f][i].type == "mercenary") 
+	  {
             return 1;
           }
         }

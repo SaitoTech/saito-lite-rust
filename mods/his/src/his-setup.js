@@ -483,14 +483,20 @@ console.log("\n\n\n\n");
 
 	  this.game.state.starting_round = 7;
 
-	  this.setAllies("france", "ottoman");
 	  this.setAllies("france", "genoa");
 	  this.setAllies("france", "protestant");
 	  this.setActivatedPower("protestant", "france");
 
           this.setAllies("papacy", "hapsburg");
           this.setAllies("papacy", "venice");
+	  this.setEnemies("france", "ottoman");
 	  this.setEnemies("papacy","france");
+	  this.setEnemies("papacy", "ottoman");
+	  this.setEnemies("hapsburg", "ottoman");
+	  this.setEnemies("protestant", "ottoman");
+
+	  this.controlSpace("hapsburg", "prague");
+	  this.addRegular("hapsburg", "prague", 4);
 
           // DEBATERS
           this.addDebater("papacy", "gardiner-debater");
@@ -543,7 +549,6 @@ console.log("\n\n\n\n");
           this.controlSpace("france", "ragusa");
           this.addRegular("france", "ragusa", 1);
           this.addNavalSquadron("france", "ragusa", 4);
-          this.addRegular("france","graz", 1);
 
           // HAPSBURG
           this.addArmyLeader("hapsburg", "gibraltar", "duke-of-alva");
@@ -581,7 +586,6 @@ console.log("\n\n\n\n");
 
           // PROTESTANT
           this.addRegular("protestant", "worms", 3);
-          this.addRegular("protestant", "graz", 3);
           for (let key in this.game.spaces) {
             if (this.game.spaces[key].language == "german") {
               this.convertSpace("protestant", key);
@@ -608,9 +612,22 @@ console.log("\n\n\n\n");
           this.addMercenary("protestant","trier", 3);
           this.addArmyLeader("protestant", "trier", "maurice-of-saxony");
 
-	  this.addRegular("papacy", "prague", 5);
+	  //this.addMercenary("papacy", "prague", 5);
 
           this.setAllies("papacy", "hapsburg");
+          this.setActivatedPower("papacy", "hapsburg");
+
+	  //this.addCard("ottoman", "024");
+	  //this.addCard("ottoman", "025");
+	  //this.addCard("ottoman", "026");
+	  //this.addCard("ottoman", "027");
+
+
+	  this.controlSpace("papacy", "linz");
+	  this.controlSpace("papacy", "vienna");
+	  this.controlSpace("papacy", "graz");
+	  this.controlSpace("papacy", "trieste");
+	  this.controlSpace("papacy", "venice");
 
           this.game.state.events.ottoman_piracy_enabled = 1;
           this.game.state.events.ottoman_corsairs_enabled = 1;

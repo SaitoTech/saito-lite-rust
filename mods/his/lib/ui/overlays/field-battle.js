@@ -87,7 +87,6 @@ class FieldBattleOverlay {
 	}
 
 	assignHitsManually(res = {}, faction = '', hits_to_assign = 1) {
-		console.log('Assign Hits Manually!');
 
 		let hits_assignable = 0;
 		let hits_assigned = 0;
@@ -110,8 +109,7 @@ class FieldBattleOverlay {
 			if (
 				factionspace === faction ||
 				his_self.returnAllyOfMinorPower(factionspace) === faction ||
-				his_self.game.player ===
-					his_self.returnPlayerCommandingFaction(faction)
+				his_self.areAllies(factionspace, faction)
 			) {
 				can_i_kill_this_guy = true;
 			}
@@ -233,8 +231,6 @@ class FieldBattleOverlay {
 		if (pre_battle == 1) {
 			res.defender_modified_rolls = res.defender_results;
 		}
-
-		console.log('RES: ' + JSON.stringify(res));
 
 		if (res.attacker_modified_rolls) {
 			for (let i = 0; i < res.attacker_modified_rolls.length; i++) {

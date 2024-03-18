@@ -9,6 +9,8 @@ class Screenrecord extends ModTemplate {
 		this.chunks = [];
 		this.localStream = null; // My Video Feed
 		this.mediaRecorder = null;
+	    this.description = "simple tool for recording a screen capture video";
+	    this.categories = "Utilities Communications";
 	}
 
 	respondTo(type, obj) {
@@ -98,7 +100,7 @@ class Screenrecord extends ModTemplate {
 							audio: true // Capture microphone audio
 						});
 
-					this.videoBox = new VideoBox(this.app, this.mod, 'local');
+					this.videoBox = new VideoBox(this.app, this, 'local');
 					this.videoBox.render(this.localStream);
 					let videoElement = document.querySelector(
 						'.video-box-container-large'

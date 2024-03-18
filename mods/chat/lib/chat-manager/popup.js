@@ -111,6 +111,7 @@ class ChatPopup {
 		}
 
 		this.is_rendered = false;
+		this.is_scrolling = null;
 		this.events_attached = false;
 		this.app.connection.emit('chat-manager-render-request');
 	}
@@ -322,24 +323,30 @@ class ChatPopup {
 		let chatBody = document.querySelector(popup_qs + ' .chat-body');
 		if (chatBody) {
 
+			let new_render = !this.is_rendered;
+
 			if (this.is_scrolling) {
+				console.info("CHAT render: keep position");
 				chatBody.scroll({ top: this.is_scrolling, left: 0 });
 				this.updateNotification(this.group.unread);
 			}else{
 
 				let anchor = (this.group?.last_read_message) ? document.querySelector(popup_qs + ' .message-' + this.group.last_read_message): null;
-					
-				if (anchor && this.group.unread && !this.is_rendered) {
+				console.info("CHAT render: ", anchor, this.group.unread, new_render);
+				if (anchor && this.group.unread && new_render) {
+					console.info("CHAT render: Scroll to anchor -- " + this.group.last_read_message);
 					anchor.scrollIntoView(false);
 					this.updateNotification(this.group.unread);
 				}else{
 					//
 					//Scroll to bottom
 					//
+					console.info("CHAT render: scroll to bottom");
 					chatBody.scroll(0, 1000000000);
 				}
 
 			}
+
 		}
 
 		//

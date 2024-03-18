@@ -7,10 +7,15 @@ const ModTemplate = require('../../lib/templates/modtemplate');
  *  API is a combination of respondTo and event space
  * 
  * Will emit (with publicKey of peer):
+ *  'stun-new-peer-connection'
+ * 
  * 	'stun-connection-connected' --- when you have created the basic stun connection (for media streaming)
  *  'stun-connection-failed'
  *  'stun-data-channel-open'
  *  'stun-data-channel-close'
+ *  'stun-update-connection-message'
+ * 
+ *  'stun-track-event'
  * 
  * 	Your modules can set a listener for these and process accordingly
  */ 

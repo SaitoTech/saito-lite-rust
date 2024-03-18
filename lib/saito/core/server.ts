@@ -216,11 +216,14 @@ export class NodeSharedMethods extends CustomSharedMethods {
 	}
 
 	async saveWallet(): Promise<void> {
-		this.app.options.wallet.publicKey =
-			await this.app.wallet.getPublicKey();
-		this.app.options.wallet.privateKey =
-			await this.app.wallet.getPrivateKey();
-		this.app.options.wallet.balance = await this.app.wallet.getBalance();
+		if (this.app.options.wallet && this.app.wallet) {
+			this.app.options.wallet.publicKey =
+				await this.app.wallet.getPublicKey();
+			this.app.options.wallet.privateKey =
+				await this.app.wallet.getPrivateKey();
+			this.app.options.wallet.balance =
+				await this.app.wallet.getBalance();
+		}
 	}
 
 	loadWallet(): void {
