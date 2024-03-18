@@ -641,7 +641,6 @@ class Chat extends ModTemplate {
 							text: 'Chat',
 							icon: 'fa-regular fa-comments',
 							callback: function (app) {
-								console.log("Chat action call back!");
 								app.connection.emit('open-chat-with', {
 									id: obj.call_id,
 								});
@@ -651,6 +650,30 @@ class Chat extends ModTemplate {
 				}
 
 				break;
+
+			case 'limbo-actions':
+				if (obj?.call_id) {
+					if (this.chat_manager == null) {
+						this.chat_manager = new ChatManager(this.app, this);
+					}
+
+					this.createFreshGroup(obj.group_name, obj.call_id);
+
+					return [
+						{
+							text: 'Chat',
+							icon: 'fa-regular fa-comments',
+							callback: function (app) {
+								app.connection.emit('open-chat-with', {
+									id: obj.call_id,
+								});
+							}
+						}
+					];
+				}
+
+				break;
+
 			default:
 				return super.respondTo(type);
 		}
