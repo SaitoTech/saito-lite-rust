@@ -5,14 +5,20 @@
 .persia {
     top: 500px;
     left: 3800px;
+    width: 475px;
+    height: 750px;
 }
 .ireland {
     top: 800px;
     left: 4125px;
+    width: 475px;
+    height: 750px;
 }
 .egypt {
     top: 800px;
     left: 4500px;
+    width: 475px;
+    height: 750px;
 }
 
 .university {

@@ -2171,13 +2171,11 @@ console.log("selected: " + spacekey);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player) {
         if (menu === "janissaries" || menu === "janissaries_naval") {
-          let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('001')) {
-              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
-              i = 100;
+              let f = "ottoman";
+              return { faction : f , event : '001', html : `<li class="option" id="001">janissaries (${f})</li>` };
             }
-            return { faction : f , event : '001', html : `<li class="option" id="001">janissaries (${f})</li>` };
           }
         }
         return {};
@@ -2235,11 +2233,9 @@ console.log("selected: " + spacekey);
 	      return 1;
 	    }
 	  }
-	  his_self.game.queue.push("add_field_battle_bonus_rolls\tottoman\t5");
-
+	  his_self.game.queue.push("add_field_battle_bonus_rolls\tottoman\t5\tjanissaries");
 
 	  return 1;
-
         }
 
 	return 1;
@@ -2527,8 +2523,26 @@ console.log("selected: " + spacekey);
 	    return 1;
 	  }
 
-	  his_self.updateLog("Henry VIII advances his marital status");
 	  his_self.game.state.henry_viii_marital_status++;
+
+	  if (his_self.game.state.henry_viii_marital_status == 1) {
+	    his_self.updateLog("Henry VIII requests a divorce...");
+	  }
+	  if (his_self.game.state.henry_viii_marital_status == 2) {
+	    his_self.updateLog("Henry VIII marries Anne Boleyn");
+	  }
+	  if (his_self.game.state.henry_viii_marital_status == 3) {
+	    his_self.updateLog("Henry VIII marries Jane Seymour");
+	  }
+	  if (his_self.game.state.henry_viii_marital_status == 4) {
+	    his_self.updateLog("Henry VIII marries Anne of Cleves");
+	  }
+	  if (his_self.game.state.henry_viii_marital_status == 5) {
+	    his_self.updateLog("Henry VIII marries Kathryn Howard");
+	  }
+	  if (his_self.game.state.henry_viii_marital_status == 6) {
+	    his_self.updateLog("Henry VIII marries Katherine Parr");
+	  }
 
 
 	  his_self.updateLog("Henry VIII marital status now: " + his_self.game.state.henry_viii_marital_status);
@@ -4233,7 +4247,9 @@ console.log("removing protestant unit in : " + key + " at index " + z);
               break;
             }
           }
-          return { faction : f , event : '024', html : `<li class="option" id="024">arquebusiers (${f})</li>` };
+	  if (!his_self.doesFactionHaveLandUnitsInSpace(f, his_self.game.state.field_battle.spacekey)) {
+            return { faction : f , event : '024', html : `<li class="option" id="024">arquebusiers (${f})</li>` };
+          }
         }
         return {};
       },
@@ -4290,7 +4306,9 @@ console.log("removing protestant unit in : " + key + " at index " + z);
               break;
             }
           }
-          return { faction : f , event : '025', html : `<li class="option" id="025">field artillery (${f})</li>` };
+	  if (!his_self.doesFactionHaveLandUnitsInSpace(f, his_self.game.state.field_battle.spacekey)) {
+            return { faction : f , event : '025', html : `<li class="option" id="025">field artillery (${f})</li>` };
+          }
         }
         return {};
       },
@@ -4338,7 +4356,9 @@ console.log("removing protestant unit in : " + key + " at index " + z);
             }
           }
 	  if (f === "ottoman") { return {}; }
-          return { faction : f , event : '026', html : `<li class="option" id="026">mercenaries bribed (${f})</li>` };
+	  if (!his_self.doesFactionHaveLandUnitsInSpace(f, his_self.game.state.field_battle.spacekey)) {
+            return { faction : f , event : '026', html : `<li class="option" id="026">mercenaries bribed (${f})</li>` };
+          }
         }
         return {};
       },
@@ -4633,7 +4653,9 @@ console.log("removing protestant unit in : " + key + " at index " + z);
               break;
             }
           }
-          return { faction : f , event : '029', html : `<li class="option" id="029">surprise attack (${f})</li>` };
+	  if (his_self.doesFactionHaveLandUnitsInSpace(f, his_self.game.state.field_battle.spacekey)) {
+            return { faction : f , event : '029', html : `<li class="option" id="029">surprise attack (${f})</li>` };
+          }
         }
         return {};
       },
@@ -5522,7 +5544,9 @@ alert("ignoring hop depth issues...");
 
           let html = '<ul>';
 	  for (let i = 0; i < powers.length; i++) {
-            html += `<li class="option" id="${powers[i]}">${powers[i]}</li>`;
+	    if (powers[i] !== faction) {
+              html += `<li class="option" id="${powers[i]}">${powers[i]}</li>`;
+	    }
 	  }
           html += '</ul>';
 
@@ -9154,7 +9178,7 @@ console.log("nothing is left!");
 	      let du = -1;
               for (let i = 0; i < space.units["ottoman"].length; i++) {
                 if (space.units["ottoman"][i].command_value == 0) {
-		  if (!unittypes.includes(space.units["ottoman"][i].type)) {
+		  if (!unittypes.includes(space.units["ottoman"][i].type) && space.units["ottoman"][i].army_leader != true && space.units["ottoman"][i].personage != true) {
 		    if (du == -1) { du = i; } else { du = -2; }
   		    html += `<li class="option nonskip" id="${space.units["ottoman"][i].type}">${space.units["ottoman"][i].type}</li>`;
 		    unittypes.push(space.units["ottoman"][i].type);
@@ -9277,8 +9301,10 @@ console.log("nothing is left!");
    	  $('.option').off();
 	  $('.option').on('click', function () {
 
-   	    $('.option').off();
 	    let options_idx = $(this).attr("id");
+   	    $('.option').off();
+
+	    his_self.updateStatus("shifting forces to Ireland...");
 
 	    if (options_idx === "skip") {
               his_self.endTurn();
@@ -9286,6 +9312,7 @@ console.log("nothing is left!");
 	    }
 
             his_self.addMove("move\tengland\tland\t"+options[options_idx].spacekey+"\tireland\t"+options[options_idx].idx);
+alert("MOVE IS: " + "move\tengland\tland\t"+options[options_idx].spacekey+"\tireland\t"+options[options_idx].idx);
             his_self.endTurn();
 
 	  });
@@ -9353,7 +9380,7 @@ console.log("nothing is left!");
 	      let du = -1;
               for (let i = 0; i < space.units["england"].length; i++) {
                 if (space.units["england"][i].command_value == 0) {
-		  if (!unittypes.includes(space.units["england"][i].type)) {
+		  if (!unittypes.includes(space.units["england"][i].type) && space.units["england"][i].army_leader != true && space.units["england"][i].personage != true) {
 		    if (du == -1) { du = i; } else { du = -2; }
   		    html += `<li class="option nonskip" id="${space.units["england"][i].type}">${space.units["england"][i].type}</li>`;
 		    unittypes.push(space.units["england"][i].type);
@@ -9472,18 +9499,17 @@ console.log("nothing is left!");
 
             	    html += '</ul>';
 
-
             	    his_self.updateStatusWithOptions(msg, html);
 
 	            $('.option').off();
         	    $('.option').on('click', function () {
 
-	              let action = $(this).attr("id");
+	              let action = parseInt($(this).attr("id"));
 
 		      his_self.addMove(	"remove_unit" + "\t" +
 					"land" + "\t" +
 					faction + "\t" +
-					space.units[faction][i].type + "\t" +
+					space.units[faction][action].type + "\t" +
 					space.key );
 		      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" removes unit from " + space.key);
 		      his_self.endTurn();
@@ -9961,10 +9987,10 @@ console.log("nothing is left!");
       },
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
-	if (faction == "england" && his_self.game.state.events.cabot_england == 0) { return 0; }
-	if (faction == "france" && his_self.game.state.events.cabot_france == 0) { return 0; }
-	if (faction == "hapsburg" && his_self.game.state.events.cabot_hapsburg == 0) { return 0; }
-	return 1;
+	if (faction == "england" && his_self.game.state.events.cabot_england == 0) { return 1; }
+	if (faction == "france" && his_self.game.state.events.cabot_france == 0) { return 1; }
+	if (faction == "hapsburg" && his_self.game.state.events.cabot_hapsburg == 0) { return 1; }
+	return 0;
       },
       onEvent(his_self, faction) {
 	if (faction == "england") { his_self.game.state.events.cabot_england = 1; }
@@ -10160,16 +10186,16 @@ console.log("nothing is left!");
 	  let msg = "Target Which Minor Army Leader?";
           let html = '<ul>';
 	  if (his_self.returnSpaceOfPersonage("england", "charles-brandon") != "") {
-            html += '<li class="option" id="brandon">Charles Brandon</li>';
+            html += '<li class="option" id="brandon">Charles Brandon (England)</li>';
 	  }
 	  if (his_self.returnSpaceOfPersonage("hapsburg", "duke-of-alva") != "") {
-            html += '<li class="option" id="duke">Duke of Alva</li>';
+            html += '<li class="option" id="duke">Duke of Alva (Hapsburgs)</li>';
           }
 	  if (his_self.returnSpaceOfPersonage("france", "montmorency") != "") {
-            html += '<li class="option" id="montmorency">Montmorency</li>';
+            html += '<li class="option" id="montmorency">Montmorency (France)</li>';
           }
 	  if (his_self.returnSpaceOfPersonage("ottoman", "ibrahim-pasha") != "") {
-            html += '<li class="option" id="pasha">Ibrahim Pasha</li>';
+            html += '<li class="option" id="pasha">Ibrahim Pasha (Ottomans)</li>';
           }
 	  html += '</ul>';
 
@@ -10228,7 +10254,7 @@ console.log("nothing is left!");
 	  } else {
 
             if (s !== "") {
-              idx = his_self.returnIndexOfPersonageInSpace(faction, reformer, s);
+              idx = his_self.returnIndexOfPersonageInSpace(faction, leader, s);
             }
 
             let obj = {};
@@ -10646,7 +10672,11 @@ console.log("nothing is left!");
       turn : 1 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) { return 1; },
+      canEvent : function(his_self, faction) { 
+	if (faction === "papacy") { return 1; }
+	if (faction === "ottoman") { return 1; }
+	return 0;
+      },
       onEvent : function(his_self, faction) {
 
 	let ally = his_self.returnAllyOfMinorPower("venice");
@@ -10945,7 +10975,7 @@ console.log("nothing is left!");
 	      let du = -1;
               for (let i = 0; i < space.units["ottoman"].length; i++) {
                 if (space.units["ottoman"][i].command_value == 0) {
-		  if (!unittypes.includes(space.units["ottoman"][i].type)) {
+		  if (!unittypes.includes(space.units["ottoman"][i].type) && space.units["ottoman"][i].army_leader != true && space.units["ottoman"][i].personage != true) {
 		    if (du == -1) { du = i; } else { du = -2; }
   		    html += `<li class="option nonskip" id="${space.units["ottoman"][i].type}">${space.units["ottoman"][i].type}</li>`;
 		    unittypes.push(space.units["ottoman"][i].type);
@@ -11412,7 +11442,7 @@ if (this.game.players.length == 2) {
     delete deck["116"];
 
 }
-if (this.game.options.scenario === "1532") {
+if (this.game.options.scenario === "1532" && include_removed == false) {
 
     delete deck["008"];
     delete deck["009"];

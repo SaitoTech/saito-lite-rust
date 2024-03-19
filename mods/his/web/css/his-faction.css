@@ -3,6 +3,29 @@
 	width: 5rem;
 }
 
+
+.show_wife.henry_viii_marital_status3 {
+    background-image: url(/his/img/tiles/wives/AnneBoleyn.svg);
+    background-size: cover;
+}
+.show_wife.henry_viii_marital_status4 {
+    background-image: url(/his/img/tiles/wives/JaneSeymour.svg);
+    background-size: cover;
+}
+.show_wife.henry_viii_marital_status5 {
+    background-image: url(/his/img/tiles/wives/AnneCleves.svg);
+    background-size: cover;
+}
+.show_wife.henry_viii_marital_status6 {
+    background-image: url(/his/img/tiles/wives/KathrynHoward.svg);
+    background-size: cover;
+}
+.show_wife.henry_viii_marital_status7 {
+    background-image: url(/his/img/tiles/wives/KatherineParr.svg);
+    background-size: cover;
+}
+
+
 .faction_sheet_notice {
     position: absolute;
     top: 0px;
@@ -36,6 +59,10 @@
     display: flex;
     flex-direction: column;
     border: 2px solid #ddd;
+}
+.factionbar-faction:hover {
+    background-color: #E3E3E3;
+    cursor: pointer;
 }
 .factionbar div {
     padding: 0.75rem;

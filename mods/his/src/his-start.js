@@ -336,6 +336,7 @@ if (this.game.players.length > 2) {
         game_mod.vp_overlay.render();
       }
     });
+/****
     this.menu.addSubMenuOption("game-info", {
       text : "New World",
       id : "game-new-world",
@@ -345,7 +346,6 @@ if (this.game.players.length > 2) {
         game_mod.newworld_overlay.render();
       }
     });
-/****
     this.menu.addSubMenuOption("game-info", {
       text : "Chateaux",
       id : "game-chateaux-building",
@@ -374,6 +374,7 @@ if (this.game.players.length > 2) {
         game_mod.displayDebaters();
       }
     });
+/***
     this.menu.addSubMenuOption("game-info", {
       text : "Explorers",
       id : "game-explorers",
@@ -392,7 +393,6 @@ if (this.game.players.length > 2) {
         game_mod.displayConquistadors();
       }
     });
-/***
 ***/
 
     this.menu.addMenuOption("game-factions", "Factions");

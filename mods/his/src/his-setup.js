@@ -341,7 +341,6 @@ console.log("\n\n\n\n");
 
 	  this.game.state['hapsburg_uncharted'] = 0;
 
-
 	  // ENGLAND
           this.addArmyLeader("england", "london", "henry-viii");
           this.addArmyLeader("england", "london", "charles-brandon");
@@ -357,8 +356,6 @@ console.log("\n\n\n\n");
 	  this.game.state.england_card_bonus = 1;
 	  this.game.state.henry_viii_marital_status = 1;
 	  this.game.state['england_uncharted'] = 0;
-
-
 
 	  // FRANCE
           this.addArmyLeader("france", "paris", "francis-i");
@@ -404,6 +401,11 @@ console.log("\n\n\n\n");
 	  this.addMercenary("protestant", "mainz", 2);	
 	  this.addRegular("protestant", "augsburg", 2);	
 
+          this.addReformer("protestant", "wittenberg", "luther-reformer");
+          this.addReformer("protestant", "geneva", "calvin-reformer");
+          this.addArmyLeader("protestant", "brandenburg", "philip-hesse");
+          this.addArmyLeader("protestant", "wittenberg", "john-frederick");
+
     	  this.game.state.augsburg_electoral_bonus = 1;
     	  this.game.state.mainz_electoral_bonus = 1;
     	  this.game.state.trier_electoral_bonus = 0;
@@ -420,6 +422,29 @@ console.log("\n\n\n\n");
 
 	  this.removeDebater("protestant", "zwingli-debater");
 	  this.removeReformer("protestant", "geneva", "zwingli-debater");
+
+	  this.convertSpace("protestant", "wittenberg");
+	  this.convertSpace("protestant", "brandenburg");
+	  this.convertSpace("protestant", "stettin");
+	  this.convertSpace("protestant", "lubeck");
+	  this.convertSpace("protestant", "magdeburg");
+
+	  this.convertSpace("protestant", "leipzig");
+	  this.convertSpace("protestant", "erfurt");
+	  this.convertSpace("protestant", "nuremberg");
+	  this.convertSpace("protestant", "hamburg");
+	  this.convertSpace("protestant", "bremen");
+
+	  this.convertSpace("protestant", "kassel");
+	  this.convertSpace("protestant", "brunswick");
+	  this.convertSpace("protestant", "mainz");
+	  this.convertSpace("protestant", "worms");
+	  this.convertSpace("protestant", "strasburg");
+
+	  this.convertSpace("protestant", "basel");
+	  this.convertSpace("protestant", "zurich");
+	  this.convertSpace("protestant", "augsburg");
+	  this.convertSpace("protestant", "breslau");
 
 
           // DEBATERS

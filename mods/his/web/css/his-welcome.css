@@ -3,6 +3,7 @@
 	min-height: 80vh;
 	border-radius: 2rem;
 	overflow: hidden;
+	background-size: cover;
 }
 
 .welcome-card {

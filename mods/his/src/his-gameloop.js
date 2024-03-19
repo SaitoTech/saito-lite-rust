@@ -1,5 +1,6 @@
 
 
+
   //
   // Core Game Logic
   //
@@ -62,9 +63,9 @@ this.updateLog(`###############`);
 	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
 	  this.game.queue.push("action_phase");
 if (this.game.options.scenario != "is_testing") {
-	  this.game.queue.push("spring_deployment_phase");
-	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
-	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+//	  this.game.queue.push("spring_deployment_phase");
+//	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
+//	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 }
 
 
@@ -98,6 +99,10 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.queue.push("is_testing");
 	    this.game.queue.push("card_draw_phase");
 } else {
+	if (this.game.options.scenario === "1532") {
+	    this.game.queue.push("is_1532");
+	    this.game.queue.push("card_draw_phase");
+	} else {
 	    this.game.queue.push("show_overlay\tvp");
 	    this.game.queue.push("hide_overlay\tdiet_of_worms");
 	    this.game.queue.push("diet_of_worms");
@@ -105,6 +110,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.queue.push("card_draw_phase");
 	    this.game.queue.push("event\tprotestant\t008");
 	    this.game.queue.push("game_help_start");
+	}
 }
 
 	  } else {
@@ -594,12 +600,23 @@ console.log("done cards left!");
 		  //
 		  if ((this.game.players.length == 2 && (key != "protestant" && key != "papacy")) || this.returnPlayerCommandingFaction(key) == 0) {
 		    if (res.length == 0) {
-		      this.game.spaces[i].units[key] = [];
+		      for (let z = 0; z < this.game.spaces[i].units[key].length; z++) {
+		        if (this.game.spaces[i].units[key][z].personage != true && this.game.spaces[i].units[key][z].reformer != true) {
+			  this.game.spaces[i].units[key].splice(z, 1);
+			  z--;
+			}
+	 	      }
 		      this.displaySpace(i);
 		    } else {
 		      if (res.length > 0) {
 	                this.autoResolveWinterRetreat(key, space.key);
 		      } else {
+		        for (let z = 0; z < this.game.spaces[i].units[key].length; z++) {
+		          if (this.game.spaces[i].units[key][z].personage != true && this.game.spaces[i].units[key][z].reformer != true) {
+			    this.game.spaces[i].units[key].splice(z, 1);
+			    z--;
+			  }
+			}
 		        this.game.spaces[i].units[key] = [];
 		        this.displaySpace(i);
 		      }
@@ -1817,7 +1834,7 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	if (mv[0] === "is_1532") {
 
 	  // SCHMALKALDIC LEAGUE
-	  let deck = this.returnDeck();
+	  let deck = this.returnDeck(true);
 	  deck['013'].onEvent(this, "protestant");
 
     	  this.game.queue.splice(qe, 1);
@@ -5681,7 +5698,14 @@ try {
 	  //
 	  // no need for cleanup unless battle is over
 	  //
-	  if (this.doesSpaceHaveNonFactionUnits(spacekey, faction)) {
+
+
+console.log("checking if " + spacekey + " has non " + faction + " units");
+
+	  if (!this.doesSpaceHaveNonFactionUnits(spacekey, faction)) {
+
+alert("War is Over -- no non-faction units identified!");
+console.log("yes it does!");
 
 	    //
 	    // move all soldiers back to capital (if controlled)
@@ -10115,7 +10139,8 @@ console.log(JSON.stringify(reshuffle_cards));
 	  if (this.game.player == player) {
 	    this.playerTurn(faction);
 	  } else {
-	    this.updateStatusAndListCards("Opponent Turn:", this.game.deck[0].fhand[0], () => {});
+	    let f = this.game.state.players_info[this.game.player-1].factions[0];
+	    this.updateStatusAndListCards(`${this.returnFactionName(f)} - Opponent Turn: `, this.game.deck[0].fhand[0], () => {});
 	  }
 
 	  this.game.queue.splice(qe, 1);
@@ -10771,32 +10796,37 @@ console.log(JSON.stringify(reshuffle_cards));
 	  let is_attacker = true;
 	  if (his_self.game.state.field_battle.faction_map[faction] === his_self.game.state.field_battle.defender_faction) { is_attacker = false; }
 
+console.log("is " + faction + " the attacker? " + is_attacker);
 
           //
           // add five bonus rolls
           //
 	  if (is_attacker) {
             for (let i = 0; i < bonus; i++) {
+console.log("adding bonus: " + (i+1) + " of " + bonus);
               let x = his_self.rollDice(6);
               if (x >= 5) { his_self.game.state.field_battle.attacker_hits++; }
               if (his_self.game.state.field_battle.tercios == 1) { if (x >= 4 && x < 5) { his_self.game.state.field_battle.attacker_hits++; } }
+              his_self.game.state.field_battle.attacker_results.push(x);
               his_self.game.state.field_battle.attacker_modified_rolls.push(x);
               his_self.game.state.field_battle.attacker_units.push(comment);
               his_self.game.state.field_battle.attacker_units_faction.push(faction);
             }
           } else {
             for (let i = 0; i < bonus; i++) {
+console.log("adding bonus: " + (i+1) + " of " + bonus);
               let x = his_self.rollDice(6);
               if (x >= 5) { his_self.game.state.field_battle.defender_hits++; }
               if (his_self.game.state.field_battle.tercios == 1) { if (x >= 4 && x < 5) { his_self.game.state.field_battle.defender_hits++; } }
+              his_self.game.state.field_battle.defender_results.push(x);
               his_self.game.state.field_battle.defender_modified_rolls.push(x);
               his_self.game.state.field_battle.defender_units.push(comment);
               his_self.game.state.field_battle.defender_units_faction.push(faction);
             }
 	  }
 
+console.log("re-rendering!");
           his_self.field_battle_overlay.render(his_self.game.state.field_battle, 1);
-
 
 	  this.game.queue.splice(qe, 1);
 	  return 1;

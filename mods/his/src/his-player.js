@@ -780,6 +780,15 @@ if (limit === "build") {
       img : '/his/img/backgrounds/move/control.jpg',
     });
     menu.push({
+      factions : ['ottoman','england'],
+      cost : [1,1],
+      name : "Foreign War",
+      check : this.canPlayerFightForeignWar,
+      fnct : this.playerFightForeignWar,
+      category : "attack" ,
+      img : '/his/img/backgrounds/move/assault.jpg',
+    });
+    menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
       cost : [1,1,1,1,1,1,1,1,1,1],
       name : "Assault",
@@ -4484,16 +4493,50 @@ console.log("what retreat options are available: " + JSON.stringify(neighbours))
     his_self.game.chateaux_overlay.render();
   }
 
+  canPlayerFightForeignWar(his_self, player, faction) {
+    if (faction === "ottoman" && his_self.game.state.events.war_in_persia == 1) { return 1; }
+    if (faction === "ottoman" && his_self.game.state.events.revolt_in_egypt == 1) { return 1; }
+    if (faction === "england" && his_self.game.state.events.revolt_in_ireland == 1) { return 1; }
+    return 0;
+  }
+  playerFightForeignWar(his_self, player, faction) {
+
+    let msg = "Attack in Foreign War: ";
+    let html = '<ul>';
+    if (faction === "ottoman" && his_self.game.state.events.war_in_persia == 1) {
+      html += '<li class="option" id="persia">War in Persia</li>';	
+    }
+    if (faction === "ottoman" && his_self.game.state.events.revolt_in_egypt == 1) {
+      html += '<li class="option" id="egypt">Revolt in Egypt</li>';	
+    }
+    if (faction === "england" && his_self.game.state.events.revolt_in_ireland == 1) {
+      html += '<li class="option" id="ireland">Revolt in Ireland</li>';	
+    }
+    html += '</ul>';
+
+    his_self.updateStatusWithOptions(msg, html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+      his_self.updateStatus("acknowledge");
+      let key = parseInt($(this).attr("id"));
+      if (key == "persia") {
+        his_self.addMove("field_battle\tpersia\tottoman");
+      }
+      if (key == "egypt") {
+        his_self.addMove("field_battle\tegypt\tottoman");
+      }
+      if (key == "ireland") {
+        his_self.addMove("field_battle\tireland\tengland");
+      }
+      his_self.endTurn();
+    });
+
+    return 0;
+  }
   canPlayerAssault(his_self, player, faction) {
 
     if (his_self.game.state.events.foul_weather) { return 0; }
-
-console.log(" -- can player assault? ");
-console.log(" -- can player assault? ");
-console.log(" -- can player assault? ");
-console.log(" -- can player assault? ");
-console.log(" -- can player assault? ");
-console.log(" -- can player assault? ");
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
@@ -4501,17 +4544,10 @@ console.log(" -- can player assault? ");
 
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
 
-console.log(" -- can player assault? " + JSON.stringify(conquerable_spaces));
-
     for (let i = 0; i < conquerable_spaces.length; i++) {
-console.log("i : " + i );
-console.log("is space in line of control? " + his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction));
       if (!his_self.isSpaceControlled(conquerable_spaces[i], faction) && his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction)) {
         if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1) {
-console.log("has this already been assaulted this turn?");
 	  if (!his_self.game.state.spaces_assaulted_this_turn.includes(conquerable_spaces[i])) {
-console.log("no!");
-
 	    //
 	    // now check if there are squadrons in the port or sea protecting the town
 	    //
@@ -4519,8 +4555,6 @@ console.log("no!");
 
 	    let squadrons_protecting_space = his_self.returnNumberOfSquadronsProtectingSpace(conquerable_spaces[i]);
 	    if (squadrons_protecting_space == 0) { return 1; }
-
-console.log("squadrons protecting space: " + squadrons_protecting_space);
 
 	    let attacker_squadrons_adjacent = 0;
 	    for (let y = 0; y < his_self.game.spaces[conquerable_spaces[i]].ports.length; y++) {

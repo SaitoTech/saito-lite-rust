@@ -57,10 +57,13 @@ class FactionOverlay {
 			for (let i = 0; i < 7; i++) {
 			  let hcss = ""; 
 			  if (i == his_self.game.state.henry_viii_marital_status) { hcss = "active "; }
+			  if (i > his_self.game.state.henry_viii_marital_status) {
+			    hcss = "show_wife";
+			  }
 			  keyboxen += `<div class="${hcss} faction_sheet_keytile henry_viii_marital_status henry_viii_marital_status${i + 1}" id="henry_viii_marital_status${i + 1}"></div>`;
 			}
 			for (let i = 1; i <= 9; i++) {
-				if (i == controlled_keys) {
+				if (i >= controlled_keys) {
 					keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i} england_keytile" id="faction_sheet_keytile${i}"></div>`;
 				}
 			}
@@ -147,7 +150,7 @@ class FactionOverlay {
 				}
 			}
 			for (let i = 1; i <= 7; i++) {
-				if (i == controlled_keys) {
+				if (i >= controlled_keys) {
 					keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i} papacy_keytile" id="faction_sheet_keytile${i}"></div>`;
 				}
 			}
