@@ -78,7 +78,6 @@
 	grid-template-columns: minmax(5rem, 1fr);
 }
 
-
 .stun-chatbox.minimize .footer {
 	padding: unset;
 }
@@ -170,8 +169,6 @@
 	flex-wrap: wrap;
 }
 
-
-
 .gallery {
 	grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
 	grid-template-rows: repeat(auto-fit, minmax(100px, 1fr));
@@ -202,6 +199,17 @@
 	max-height: 100%;
 }
 
+.stun-chatbox .peer-call-list {
+	display: flex;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 100;
+}
+
+.peer-list-item {
+	margin-right: 5px;
+}
 .expanded-video .video-box-container-large {
 	width: 100%;
 	height: 100%;
@@ -247,6 +255,7 @@
 
 .stun-chatbox .video-box-container-large {
 	border-radius: 0.5rem;
+	position: relative;
 }
 
 @keyframes fade-in {
@@ -572,7 +581,7 @@ video#local {
 	height: 4rem;
 }
 
-.control-panel{
+.control-panel {
 	display: flex;
 	gap: 5rem;
 }
@@ -594,7 +603,6 @@ video#local {
 	background-color: var(--saito-white);
 	position: relative;
 }
-
 
 .control-list .icon_click_area.disabled {
 	background-color: grey;
@@ -637,7 +645,6 @@ video#local {
 	transform: rotate(135deg);
 	color: var(--saito-red);
 }
-
 
 @media screen and (max-width: 900px) {
 	.stun-chatbox.full-screen main {
@@ -686,7 +693,6 @@ video#local {
 		width: 4.5rem;
 		height: 4.5rem;
 	}
-
 }
 
 /* CHAT SETTINGS */
@@ -833,13 +839,12 @@ video#local {
 	transition: width 0.1s;
 }
 
-
 @media screen and (max-width: 900px) {
 	.chat-settings-preview {
 		padding: 0.5rem;
 	}
 
-	.chat-settings-preview-section{
+	.chat-settings-preview-section {
 		width: 45rem;
 		max-width: 90vw;
 	}
@@ -893,7 +898,6 @@ video#local {
 		overflow: hidden;
 		min-width: 100%;
 	}
-
 }
 
 /* --chat in video calls -- */

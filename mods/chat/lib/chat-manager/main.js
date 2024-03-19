@@ -145,6 +145,11 @@ class ChatManager {
 				}
 			}
 
+			if (this.mod.browser_active) {
+				this.switchTabs();
+			}
+
+
 			//
 			// permit re-open
 			//

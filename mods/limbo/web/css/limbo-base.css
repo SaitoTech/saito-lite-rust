@@ -1,0 +1,106 @@
+
+
+/* Left Sidebar */
+
+.spaces-list{
+	gap: 0.5rem;
+	display: flex;
+	flex-direction: column;
+	min-height: 10rem;
+}
+
+.spaces-list .saito-user{
+	padding: 0.5rem;
+	cursor: pointer;
+	border-radius: 0.5rem;
+}
+
+.spaces-list .saito-user:hover, .spaces-list .dream.active{
+	background-color: var(--saito-primary);
+	color: var(--saito-background-color);
+}
+
+
+/*  Control Window */
+
+.dream-controls {
+	position: absolute;
+	max-width: 80vw;
+	max-height: 80vh;
+	display: grid;
+	grid-template-rows: 1fr 7rem;
+
+	border: 2px solid silver;
+	border-radius: 5px;
+	background-color: var(--saito-black);
+}
+
+.video-preview{
+}
+
+
+.dream-controls .control-panel{
+	align-items: center;
+	justify-content: space-between;
+}
+
+.dream-controls .control-panel .timer {
+	margin-left: 2rem;
+}
+
+
+
+
+.limbo-sidebar {
+	width: 35rem;
+	background: var(--saito-background-color);
+	height: calc(100vh - var(--saito-header-height));
+	border-left: 1px solid var(--saito-border-color);
+	display: grid;
+	grid-template-rows: min-content auto;
+}
+
+
+
+.limbo-sidebar .saito-profile-icons {
+	margin-right: 1rem;
+}
+
+.limbo-sidebar .saito-modal-menu-option {
+    font-size: 2rem;
+    height: unset;
+    width: 100%;
+    padding: 1rem;
+    margin: 0;
+}
+
+.limbo-sidebar .saito-modal-menu-option > div {
+	font-size: 1.8rem;
+}
+
+.limbo-sidebar .saito-profile-menu > div {
+	float: unset;
+}
+
+
+.limbo-sidebar .saito-user {
+	font-size: 1.8rem;
+	height: unset;
+}
+
+.limbo-sidebar .saito-contact {
+	padding: 1rem;
+}
+
+.limbo-sidebar .saito-modal-content {
+	display: flex;
+	flex-direction: column;
+	font-size: 1.3rem;
+	height: 100%;
+	overflow: auto;
+}
+
+.limbo-sidebar .saito-modal-content .saito-user .saito-identicon-box {
+    width: 3.5rem;
+    height: 3.5rem;
+}

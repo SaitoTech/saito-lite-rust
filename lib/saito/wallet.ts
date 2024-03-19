@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
 	default_fee = 0;
 
-	version = 5.621;
+	version = 5.623;
 	
 
 	nolan_per_saito = 100000000;
@@ -968,7 +968,7 @@ export default class Wallet extends SaitoWallet {
 		try {
 
 			// Empty placeholder protects data in case encryption fails to fire
-			let encryptedMessage = ''
+			let encryptedMessage = '';
 
 			// if recipient input has a shared secret in keychain
 			if (this.app.keychain.hasSharedSecret(recipient)) {
