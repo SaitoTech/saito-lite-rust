@@ -64,8 +64,8 @@ class LimboMenu {
 
 		let button = document.getElementById("new-space");
 		if (button){
-			button.onclick = async () => {
-				this.mod.broadcastDream();
+			button.onclick = () => {
+				this.mod.startDream();
 			}
 		}
 
