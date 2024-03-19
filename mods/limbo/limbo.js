@@ -883,8 +883,10 @@ class Limbo extends ModTemplate {
 	}
 
 
-	copyInviteLink(truthy) {
+	copyInviteLink(truthy = false) {
 		if (truthy) {
+			/*
+			Since there is a button in the UI now, no need to bother with this...
 			let data = {
 				name: 'Limbo',
 				path: '/limbo/',
@@ -892,7 +894,7 @@ class Limbo extends ModTemplate {
 			};
 
 			let invite = new InvitationLink(this.app, this, data);
-			invite.render();
+			invite.render();*/
 		} else {
 			try {
 

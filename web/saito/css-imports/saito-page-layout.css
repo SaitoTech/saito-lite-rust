@@ -19,10 +19,6 @@
   position: relative;
 }
 
-.saito-sidebar {
-  top: calc(var(--saito-header-height) + 1rem);
-}
-
 
 .saito-sidebar.left {
   position: sticky;
