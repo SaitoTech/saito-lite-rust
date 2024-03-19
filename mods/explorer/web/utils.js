@@ -230,6 +230,27 @@ async function checkAllBalance() {
   }
 }
 
+async function balanceAPI(pubkey = "") {
+  // API
+  let response = await fetch('/balance/' + pubkey);
+  let data = await response.text();
+
+  // format
+  data = data.split(/\n/).filter(Boolean); // undefined = 0?
+  let balance_list = {};
+  for (let i = 1; i < data.length; i++) { /**
+   * i = 0 -> first line is file name.
+   */
+    let row = data[i];
+    row = row.split(/\s/);
+    if (balance_list.hasOwnProperty(row[0])) {
+      balance_list[row[0]] = Number(balance_list[row[0]]) + Number(row[4]);
+    } else {
+      balance_list[row[0]] = Number(row[4]);
+    }
+  }
+  return balance_list;
+}
 function formatNumberLocale(number) {
   const locale = (window.navigator?.language) ? window.navigator?.language : 'en-US';
   const numberFormatter = new Intl.NumberFormat(locale, {
