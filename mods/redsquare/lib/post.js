@@ -163,16 +163,15 @@ class Post {
 
 				if ((e.keyCode == 50 || e.charCode == 64) && e.key == '@') {
 					let keys = post_self.input.findKeyOrIdentifier();
-					let users = [];
-					console.log('keys: ', keys);
 					for (let key of keys) {
-						let identicon = post_self.app.keychain.returnIdenticon(key.publicKey);
-						let username = post_self.app.keychain.returnUsername(key.publicKey);
-						users.push({username: key.publicKey, identicon: identicon});
+						let identicon = this_self.app.keychain.returnIdenticon(key.publicKey);
+						key.identicon =  identicon;
 					}
 
+					console.log('keys:', keys);
+
 				   post_self.app.browser.addSaitoMentions(
-				   	users, 
+				   	keys, 
 				   	document.querySelector('#tweet-overlay #post-tweet-textarea'), 
 				   	document.querySelector('#tweet-overlay #saito-mentions-list'),
 				   	'input'
