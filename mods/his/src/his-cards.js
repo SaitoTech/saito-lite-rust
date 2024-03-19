@@ -2397,11 +2397,12 @@ console.log("selected: " + spacekey);
 	return 1;
       },
       handleGameLoop : function(his_self, qe, mv) {
+
         if (mv[0] == "six-wives-of-henry-viii") {
 
+	    let faction = mv[1];
             his_self.game.queue.splice(qe, 1);
 
-	    let faction = mv[1];
 
 	    let target_haps = false;
 	    let target_france = false;
@@ -2442,11 +2443,11 @@ console.log("selected: " + spacekey);
 	          his_self.updateStatus("submitting...");
 
 	          if (action2 === "war") {
-	    	    his_self.game.queue.push("henry_viii_declaration_of_war");
+	    	    his_self.addMove("henry_viii_declaration_of_war");
 		    his_self.endTurn();
 	          }
 	          if (action2 === "marital") {
-	  	    his_self.game.queue.push("advance_henry_viii_marital_status");
+	  	    his_self.addMove("advance_henry_viii_marital_status");
 		    his_self.endTurn();
 	          }
 	        });
@@ -2471,8 +2472,6 @@ console.log("selected: " + spacekey);
 
 	if (mv[0] === "henry_viii_declaration_of_war") {
 
-          his_self.game.queue.splice(qe, 1);
-
 	  let target_haps = false;
 	  let target_france = false;
 	  let target_scotland = false;
@@ -2486,30 +2485,32 @@ console.log("selected: " + spacekey);
 
 	  if (his_self.game.player == his_self.returnPlayerCommandingFaction("england")) {
 
-          let msg = "Declare War on Whom?";
-          let html = '<ul>';
-          if (target_haps) { html += `<li class="option" id="hapsburg">Hapsburg</li>`; }
-          if (target_france) { html += `<li class="option" id="france">France</li>`; }
-          if (target_scotland) { html += `<li class="option" id="scotland">Scotland</li>`; }
-	  html += '</ul>';
-          his_self.updateStatusWithOptions(msg, html);
+            let msg = "Declare War on Whom?";
+            let html = '<ul>';
+            if (target_haps) { html += `<li class="option" id="hapsburg">Hapsburg</li>`; }
+            if (target_france) { html += `<li class="option" id="france">France</li>`; }
+            if (target_scotland) { html += `<li class="option" id="scotland">Scotland</li>`; }
+	    html += '</ul>';
+            his_self.updateStatusWithOptions(msg, html);
 
-          $('.option').off();
-          $('.option').on('click', function () {
+            $('.option').off();
+            $('.option').on('click', function () {
 		
-            let action2 = $(this).attr("id");
-	    his_self.updateStatus("acknowledge");
+              let action2 = $(this).attr("id");
+	      his_self.updateStatus("acknowledge");
 
-	    his_self.addMove("ops\tengland\t003\t5");
-	    if (action2 === "scotland" && !his_self.areEnemies("england","france")) {
-	      his_self.addMove("natural_ally_intervention\tfrance\tscotland\tengland\t0\tEngland declares war on Scotland");
-	    }	
-	    his_self.addMove("declare_war\tengland\t"+action2+"\t1"); // 1 = skip natural ally intervention
-	    his_self.endTurn();
+	      his_self.addMove("ops\tengland\t003\t5");
+	      if (action2 === "scotland" && !his_self.areEnemies("england","france")) {
+	        his_self.addMove("natural_ally_intervention\tfrance\tscotland\tengland\t0\tEngland declares war on Scotland");
+	      }	
+	      his_self.addMove("declare_war\tengland\t"+action2+"\t1"); // 1 = skip natural ally intervention
+	      his_self.endTurn();
 
-	  });
+	    });
 
 	  }
+
+          his_self.game.queue.splice(qe, 1);
 
 	  return 0;
 
@@ -2527,8 +2528,11 @@ console.log("selected: " + spacekey);
 	  }
 
 	  his_self.updateLog("Henry VIII advances his marital status");
-
 	  his_self.game.state.henry_viii_marital_status++;
+
+
+	  his_self.updateLog("Henry VIII marital status now: " + his_self.game.state.henry_viii_marital_status);
+
 	  if (his_self.game.state.henry_viii_marital_status > 7) { his_self.game.state.henry_viii_marital_status = 7; return 1; }
 
 	  if (his_self.game.state.henry_viii_marital_status > 2) {
@@ -2543,9 +2547,11 @@ console.log("selected: " + spacekey);
 	    his_self.game.state.henry_viii_rolls.push(dd);
 
 	    if (his_self.game.state.henry_viii_marital_status == 3) { 
-	      his_self.updateStatus("Henry VIII receives +1 bonus for Jane Seymour");
+	      his_self.updateLog("Henry VIII receives +1 bonus for Jane Seymour");
 	      dd++;
 	    }
+
+	    his_self.updateLog("Henry VIII rolls: " + dd);
 
 	    // results of pregnancy chart rolls
 	    if (dd == 1) {

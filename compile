@@ -3,7 +3,7 @@
 echo "Builing Lite Client ($1 $2)"
 echo ""
 
-     echo "  Updating build number in options file"
+echo "  Updating build number in options file"
 currentTime=$(date +%s)
 echo "  Current Timestamp: $currentTime"
 
@@ -20,8 +20,7 @@ if [ ! -f "$buildJsonFile" ]; then
     mkdir -p ./config
     echo '{"build_number": "0"}' > "$buildJsonFile"
 fi
-
-echo "Consolidaging CSS files"
+echo "  Consolidating CSS files"
 echo ""
 
 

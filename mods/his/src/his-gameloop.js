@@ -62,9 +62,9 @@ this.updateLog(`###############`);
 	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
 	  this.game.queue.push("action_phase");
 if (this.game.options.scenario != "is_testing") {
-	  this.game.queue.push("spring_deployment_phase");
-	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
-	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+//	  this.game.queue.push("spring_deployment_phase");
+//	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
+//	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 }
 
 
@@ -392,19 +392,24 @@ if (this.game.options.scenario == "is_testing") {
           let cards_left = parseInt(mv[2]);
 	  this.game.state.cards_left[faction] = cards_left;
 
+console.log("TESTING!");
 	  //
 	  // we don't send this if we aren't playing event or ops, so if cards_left > 0, we 
 	  // do not trigger auto-passing. this "unsets" pass if we have passed earlier, allowing
 	  // players to pass and then decide to continue later.
 	  //
 	  let player = this.returnPlayerCommandingFaction(faction);
+console.log("TESTING 1!");
           for (let z = 0; z < this.game.state.players_info[player-1].factions.length; z++) {
+console.log("TESTING 2!");
 	    if (this.game.state.players_info[player-1].factions[z] == faction) {
+console.log("TESTING 3!");
 	      this.game.state.players_info[player-1].factions_passed[z] = false;
 	    }
 	  }
-
+console.log("display cards left!");
 	  this.displayCardsLeft();
+console.log("done cards left!");
 
           this.game.queue.splice(qe, 1);
 	  return 1;
@@ -1858,7 +1863,6 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 console.log("----------------------------");
 console.log("---SHUFFLING IN DISCARDS ---");
 console.log("----------------------------");
-
           this.game.queue.push("DECK\t2\t"+JSON.stringify(reshuffle_cards));
 
           // backup any existing DECK #2
@@ -8549,7 +8553,7 @@ defender_hits - attacker_hits;
 	  // Paul III takes the Papacy by the end of round 4
 	  //
 	  if (this.game.state.round == 4 && this.game.state.events.paul_iii != 1) {
-	    this.game.queue.push("ACKNOWLEDGE\tTurn 4: Paul III is elected Pope");
+	    this.game.queue.push("display_custom_overlay\t014");
 	    this.game.queue.push("remove\tpapacy\t014");
 	    this.game.queue.push("event\tpapacy\t014");
 	  }
@@ -8557,7 +8561,7 @@ defender_hits - attacker_hits;
 	  // Barbary Pirates form by end of round 3 (not in 2P game)
 	  //
 	  if (this.game.players.length > 2 && this.game.state.round == 3 && this.game.state.events.barbary_pirates != 1) {
-	    this.game.queue.push("ACKNOWLEDGE\tTurn 3: Barbary Pirates Form!");
+	    this.game.queue.push("display_custom_overlay\t009");
 	    this.game.queue.push("remove\tottoman\t009");
 	    this.game.queue.push("event\tottoman\t009");
 	  }
@@ -9034,6 +9038,7 @@ if (this.game.state.round == 2) {
 	    for (let i = this.game.state.players_info.length; i > 0; i--) {
     	      this.game.queue.push("DECKXOR\t2\t"+(i));
 	    }
+
 	    let new_cards = this.returnNewDiplomacyCardsForThisTurn(this.game.state.round);
     	    this.game.queue.push("DECK\t2\t"+JSON.stringify(new_cards));
 
@@ -9405,6 +9410,9 @@ if (this.game.state.round == 2) {
 
                 let cardnum = this.factions[this.game.state.players_info[i].factions[z]].returnCardsDealt(this);
 
+
+console.log(f + " ----> " + cardnum);
+
 		//
 		// is_testing
 		//
@@ -9448,6 +9456,8 @@ if (this.game.state.round == 2) {
 	  	if (f == "ottoman" && this.game.state.new_world_bonus['ottoman'] > 0) { cardnum += this.game.state.new_world_bonus['ottoman']; }
 	  	if (f == "papacy" && this.game.state.new_world_bonus['papacy'] > 0) { cardnum += this.game.state.new_world_bonus['papacy']; }
 	  	if (f == "protestant" && this.game.state.new_world_bonus['protestant'] > 0) { cardnum += this.game.state.new_world_bonus['protestant']; }
+
+console.log("cardnum2: " + cardnum);
 
 		//
 		// sanity check
@@ -9537,18 +9547,24 @@ if (this.game.state.round == 2) {
 	  //
 	  // new cards this turn
 	  //
-	  if (this.game.state.starting_round > this.game.state.round) {
+console.log("ROUND: " + this.game.state.round);
+console.log("START: " + this.game.state.starting_round);
+	  if (this.game.state.starting_round <= this.game.state.round) {
+	    // reset round to 1 to capture cards from full game
+	    this.game.state.round = 0;
 	    for (let i = this.game.state.round; i < this.game.state.starting_round; i++) {
 	      this.game.state.round++;
+console.log("returning new cards for round: " + this.game.state.round);
 	      let deck_to_deal = this.returnNewCardsForThisTurn(this.game.state.round);
 	      for (let key in deck_to_deal) { 
-	        if (key !== "001" && key != "002" && key != "003" && key != "004" && key != "005" && key != "006" && key != "007" && key != "008") {
+	        if (key !== "001" && key !== "002" && key !== "003" && key !== "004" && key !== "005" && key !== "006" && key !== "007" && key !== "008") {
+console.log("adding: " + key);
 	          reshuffle_cards[key] = deck_to_deal[key]; 
 	        }
 	      }
 	    }
 	  } else {
-	    let deck_to_deal = this.returnNewCardsForThisTurn(this.game.state.round);;
+	    let deck_to_deal = this.returnNewCardsForThisTurn(this.game.state.round);
 	    for (let key in deck_to_deal) { 
 	      if (key !== "001" && key != "002" && key != "003" && key != "004" && key != "005" && key != "006" && key != "007" && key != "008") {
 	        reshuffle_cards[key] = deck_to_deal[key]; 
@@ -9560,6 +9576,7 @@ if (this.game.state.round == 2) {
 console.log("----------------------------");
 console.log("---SHUFFLING IN DISCARDS ---");
 console.log("----------------------------");
+console.log(JSON.stringify(reshuffle_cards));
 
     	  this.game.queue.push("restore_home_cards_to_deck");
     	  this.game.queue.push("DECK\t1\t"+JSON.stringify(reshuffle_cards));
@@ -11353,7 +11370,12 @@ console.log("----------------------------");
 	// objects and cards can add commands
 	//
         for (let i in z) {
-          if (!z[i].handleGameLoop(this, qe, mv)) { return 0; }
+	  //
+	  // an action may have removed a card / event
+	  //
+	  if (z[i]) {
+            if (!z[i].handleGameLoop(this, qe, mv)) { return 0; }
+	  }
         }
 
 

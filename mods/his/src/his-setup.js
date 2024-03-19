@@ -263,7 +263,7 @@ console.log("\n\n\n\n");
       if (this.game.options.scenario === "1532") {
 
 	  this.game.state.starting_round = 4;
-	  this.game.state.round = 3; // start for +1
+	  this.game.state.round = 3; // the one before 4
 
 	  // OTTOMAN
           this.addArmyLeader("ottoman", "istanbul", "suleiman");
