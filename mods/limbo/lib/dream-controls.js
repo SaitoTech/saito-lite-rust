@@ -10,7 +10,7 @@ class DreamControls{
 		this.timer_interval = null;
 	}
 
-	render(stream) {
+	render(stream, is_presentation = false) {
 		if (!document.getElementById("dream-controls")){
 
 			let withVideo = stream.getVideoTracks()?.length > 0;
@@ -25,6 +25,10 @@ class DreamControls{
 		}
 
 		if (stream){
+			if (is_presentation){
+				this.video.video_class = "noflip";
+			}
+
 			this.video.render(stream);
 			this.startTimer();
 		}

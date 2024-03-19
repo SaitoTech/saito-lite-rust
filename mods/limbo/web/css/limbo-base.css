@@ -49,7 +49,9 @@
 }
 
 
-
+video#local.noflip{
+	transform: unset;
+}
 
 .limbo-sidebar {
 	width: 35rem;

@@ -391,7 +391,7 @@ class Limbo extends ModTemplate {
 		}
 
 		if (this.controls) {
-			this.controls.render(this.combinedStream);
+			this.controls.render(this.combinedStream, screenStream);
 		}
 
 		this.sendDreamTransaction();
