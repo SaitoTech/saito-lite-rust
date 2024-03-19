@@ -337,6 +337,11 @@ class ChatPopup {
 					console.info("CHAT render: Scroll to anchor -- " + this.group.last_read_message);
 					anchor.scrollIntoView(false);
 					this.updateNotification(this.group.unread);
+				}else if (document[this.mod.hiddenTab]){
+					if (anchor){
+						anchor.scrollIntoView(false);
+					}
+					this.updateNotification(this.group.unread);
 				}else{
 					//
 					//Scroll to bottom

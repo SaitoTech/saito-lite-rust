@@ -12,6 +12,7 @@ const PeerService = require('saito-js/lib/peer_service').default;
 const ChatSettings = require('./lib/overlays/chat-manager-menu');
 const ChatSidebar = require('./lib/appspace/chat-sidebar');
 
+
 class Chat extends ModTemplate {
 	constructor(app) {
 		super(app);
@@ -62,8 +63,8 @@ class Chat extends ModTemplate {
 
 		this.isRelayConnected = false;
 
-		this.enable_notifications = false;
-		this.audio_notifications = false;
+		this.audio_notifications = true;
+		this.audio_chime = "Glass";
 		this.auto_open_community = false;
 
 		this.black_list = [];
@@ -1770,34 +1771,9 @@ class Chat extends ModTemplate {
 		}
 
 		if (!new_message.from.includes(this.publicKey)) {
-			//Send System notification
-			if (this.enable_notifications && !group.muted) {
-				let sender = this.app.keychain.returnIdentifierByPublicKey(
-					new_message.from[0],
-					true
-				);
-				if (group.unread > 1) {
-					sender += ` (${group.unread})`;
-				}
-				let new_msg =
-					content.indexOf('<img') == 0
-						? '[image]'
-						: this.app.browser.sanitize(content);
-				const regex = /<blockquote>.*<\/blockquote>/is;
-				new_msg = new_msg.replace(regex, 'reply: ').replace('<br>', '');
-				const regex2 = /<a[^>]+>/i;
-				new_msg = new_msg.replace(regex2, '').replace('</a>', '');
-
-				this.app.browser.sendNotification(
-					sender,
-					new_msg,
-					`chat-message-${group.id}`
-				);
-			}
-
 			//Flash new message in browser tab
 			if (!group.muted) {
-				this.startTabNotification();
+				this.notification(group);
 
 				// Flag the group that there is a new message
 				// This is so we can add an animation effect on rerender
@@ -2077,13 +2053,19 @@ class Chat extends ModTemplate {
 			};
 			this.app.options.chat = newObj;
 		} else {
-			//
-			//These default to false, so will only toggle on if a true value is stored in options
-			//
-			this.enable_notifications =
-				this.app.options.chat?.enable_notifications;
-			this.audio_notifications =
-				this.app.options.chat?.audio_notifications;
+		
+			if (this.app.options.chat.audio_notifications !== "undefined" && this.app.options.chat.audio_notifications !== false){
+				this.audio_notifications =	this.app.options.chat.audio_notifications;
+			}	
+		
+			if (this.app.options.chat?.audio_chime){
+				this.audio_chime = this.app.options.chat?.audio_chime;
+			}
+
+			this.chime = new Audio(`/saito/sound/${this.audio_chime}.mp3`);
+
+			delete this.app.options.chat.enable_notifications;
+
 			this.auto_open_community =
 				this.app.options.chat?.auto_open_community;
 			if (this.app.options.chat?.black_list) {
@@ -2099,8 +2081,8 @@ class Chat extends ModTemplate {
 	}
 
 	saveOptions() {
-		this.app.options.chat.enable_notifications = this.enable_notifications;
 		this.app.options.chat.audio_notifications = this.audio_notifications;
+		this.app.options.chat.audio_chime = this.audio_chime;
 		this.app.options.chat.auto_open_community = this.auto_open_community;
 		this.app.options.chat.black_list = this.black_list;
 
@@ -2248,25 +2230,81 @@ class Chat extends ModTemplate {
 		return 1;
 	}
 
-	startTabNotification() {
-		if (!this.app.BROWSER) {
+
+	notification(group){
+
+			/*Send System notification
+			if (this.enable_notifications && !group.muted) {
+				let sender = this.app.keychain.returnIdentifierByPublicKey(
+					new_message.from[0],
+					true
+				);
+				if (group.unread > 1) {
+					sender += ` (${group.unread})`;
+				}
+				let new_msg =
+					content.indexOf('<img') == 0
+						? '[image]'
+						: this.app.browser.sanitize(content);
+				const regex = /<blockquote>.*<\/blockquote>/is;
+				new_msg = new_msg.replace(regex, 'reply: ').replace('<br>', '');
+				const regex2 = /<a[^>]+>/i;
+				new_msg = new_msg.replace(regex2, '').replace('</a>', '');
+
+				this.app.browser.sendNotification(
+					sender,
+					new_msg,
+					`chat-message-${group.id}`
+				);
+			}*/
+
+		if (group.muted){
 			return;
 		}
-		//If we haven't already started flashing the tab
-		let notifications = 0;
-		for (let group of this.groups) {
-			if (group.name !== this.communityGroupName) {
-				notifications += group.unread;
-			}
+
+		this.startTabNotification(group);
+
+		if (!this.audio_notifications){
+			return;
 		}
 
-		if (!this.tabInterval && document[this.hiddenTab]) {
+		if (document[this.hiddenTab]){
+			this.playChime();
+			return;
+		}else if (this.audio_notifications === "tabs"){
+			return;
+		}
+
+		if (this.audio_notifications == "groups" && this.chat_manager.popups[group.id].is_rendered){
+			return;
+		}
+
+		this.playChime();
+	}
+
+	playChime(){
+		if (this.beeping){
+			console.log("Block multiple chimes");
+			return;
+		}
+
+		this.beeping = setTimeout(()=> {
+			this.beeping = null;
+		}, 1000);
+
+		this.chime.play();
+	}
+
+	startTabNotification(group) {
+		if (!this.app.BROWSER || !document[this.hiddenTab]) {
+			return;
+		}
+
+		if (!this.tabInterval) {
 			this.orig_title = document.title;
 			this.tabInterval = setInterval(() => {
 				if (document.title === 'New message') {
-					document.title = `(${notifications}) unread message${
-						notifications == 1 ? '' : 's'
-					}`;
+					document.title = group.name;
 				} else {
 					document.title = 'New message';
 				}
