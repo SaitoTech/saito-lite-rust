@@ -3,6 +3,7 @@ const PeerService = require('saito-js/lib/peer_service').default;
 const ModTemplate = require('../../lib/templates/modtemplate');
 const DreamControls = require('./lib/dream-controls');
 const DreamSpace = require('./lib/dream-space');
+const DreamWizard = require("./lib/dream-wizard");
 const LimboMain = require('./lib/main');
 const InvitationLink = require('./../../lib/saito/ui/modals/saito-link/saito-link');
 const SaitoHeader = require('./../../lib/saito/ui/saito-header/saito-header');
@@ -144,6 +145,8 @@ class Limbo extends ModTemplate {
 
 		if (type === 'call-actions') {
 			if (obj?.members) {
+
+				this.attachStyleSheets();
 				return [
 					{
 						text: 'Broadcast',
@@ -154,8 +157,7 @@ class Limbo extends ModTemplate {
 								mod_self.exitSpace();
 								mod_self.toggleNotification(false);
 							} else {
-								mod_self.broadcastDream(obj.members);
-								mod_self.toggleNotification(true);
+								mod_self.startDream(obj.members);
 							}
 						}
 					}
@@ -289,14 +291,13 @@ class Limbo extends ModTemplate {
 		}
 	}
 
-	async broadcastDream(keylist = null) {
+
+	startDream(keylist = null){
 		this.localStream = null;
 		this.externalMediaControl = false;
 
-		if (this.browser_active) {
-			this.controls = new DreamControls(this.app, this, '#limbo-main');
-		} else {
-			this.controls = null;
+		if (!this.wizard){
+			this.wizard = new DreamWizard(this.app, this);
 		}
 
 		//
@@ -309,35 +310,24 @@ class Limbo extends ModTemplate {
 			this.localStream = otherParties[0].localStream;
 			this.additionalSources = otherParties[0].remoteStreams;
 			this.externalMediaControl = true;
-		} else {
-			let includeCamera = await sconfirm('Add webcam to stream?');
+		} 
 
-			try {
-				//
-				// Get webcam video
-				//
-				if (includeCamera) {
-					this.localStream =
-						await navigator.mediaDevices.getUserMedia({
-							video: true,
-							audio: true // Capture microphone audio
-						});
-				} else {
-					//
-					// Get microphone input only
-					//
-					this.localStream =
-						await navigator.mediaDevices.getUserMedia({
-							audio: true // Capture microphone audio
-						});
-				}
-			} catch (error) {
-				console.error('Access to user media denied: ', error);
-				salert(
-					'Recording will continue without camera and/or microphone input'
-				);
-			}
+		this.wizard.render(keylist);
+
+		//Wizard will call broadcastDream with the options
+	}
+
+	async broadcastDream(options) {
+
+		//Set up controls for user...
+		if (this.browser_active) {
+			this.controls = new DreamControls(this.app, this, '#limbo-main');
+		} else {
+			// In video call, don't want controls
+			// todo: be more refined for game streaming or whatever...
+			this.controls = null;
 		}
+
 
 		// Set up the media recorder with the canvas stream
 		// Create a new stream for the combined video and audio
@@ -347,11 +337,39 @@ class Limbo extends ModTemplate {
 		// Attempt to stream of the screen -- user has to select it
 		// this should include any displayed video and audio...
 		//
-		let screenStream = await sconfirm('Share screen?');
+		let { keylist, includeCamera, screenStream } = options;
+
+		try {
+			//
+			// Get webcam video
+			//
+			if (includeCamera) {
+				this.localStream =
+					await navigator.mediaDevices.getUserMedia({
+						video: true,
+						audio: true // Capture microphone audio
+					});
+			} else {
+				//
+				// Get microphone input only
+				//
+				this.localStream =
+					await navigator.mediaDevices.getUserMedia({
+						audio: true // Capture microphone audio
+					});
+			}
+		} catch (error) {
+			console.error('Access to user media denied: ', error);
+			salert(
+				'Recording will continue without camera and/or microphone input'
+			);
+		}
+
+
+		//await sconfirm('Share screen?');
 
 		if (screenStream) {
 			try {
-				//const videoElemScreen = document.createElement('video');
 				let constraint = this.browser_active ? 'exclude' : 'include';
 
 				screenStream = await navigator.mediaDevices.getDisplayMedia({
@@ -391,11 +409,13 @@ class Limbo extends ModTemplate {
 		}
 
 		if (this.controls) {
-			this.controls.render(this.combinedStream);
+			this.controls.render(this.combinedStream, screenStream);
 		}
 
-		this.sendDreamTransaction();
+		this.sendDreamTransaction(keylist);
 		this.copyInviteLink(screenStream);
+		this.toggleNotification(true);
+
 	}
 
 	joinDream(dreamer) {
@@ -883,8 +903,10 @@ class Limbo extends ModTemplate {
 	}
 
 
-	copyInviteLink(truthy) {
+	copyInviteLink(truthy = false) {
 		if (truthy) {
+			/*
+			Since there is a button in the UI now, no need to bother with this...
 			let data = {
 				name: 'Limbo',
 				path: '/limbo/',
@@ -892,7 +914,7 @@ class Limbo extends ModTemplate {
 			};
 
 			let invite = new InvitationLink(this.app, this, data);
-			invite.render();
+			invite.render();*/
 		} else {
 			try {
 

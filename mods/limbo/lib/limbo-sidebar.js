@@ -32,6 +32,12 @@ class LimboSidebar {
 
     this.insertActions();
 
+    if (document.getElementById('share_link')){
+      document.getElementById('share_link').onclick = (e) => {
+        this.mod.copyInviteLink();
+      }
+    }
+
     //<div id="dream-space-chat" class="saito-modal-menu-option"><i class="fa-solid "></i><div>Space Chat</div></div>
 
   }
@@ -46,8 +52,6 @@ class LimboSidebar {
     if (!container) {
       return;
     }
-
-    container.innerHTML = "";
 
     let index = 0;
 

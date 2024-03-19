@@ -1,3 +1,11 @@
+/*  Page Layout */
+.saito-container.limbo-container {
+	padding: 0 1rem;
+}
+
+#saito-header {
+	padding: 1.3rem 3rem !important;
+}
 
 
 /* Left Sidebar */
@@ -20,39 +28,16 @@
 	color: var(--saito-background-color);
 }
 
-
-/*  Control Window */
-
-.dream-controls {
-	position: absolute;
-	max-width: 80vw;
-	max-height: 80vh;
-	display: grid;
-	grid-template-rows: 1fr 7rem;
-
-	border: 2px solid silver;
-	border-radius: 5px;
-	background-color: var(--saito-black);
+/* Right sidebar */
+.limbo-container .saito-sidebar.right {
+	width: 33rem;
+	height: 100%;
+	padding: 0;
 }
-
-.video-preview{
-}
-
-
-.dream-controls .control-panel{
-	align-items: center;
-	justify-content: space-between;
-}
-
-.dream-controls .control-panel .timer {
-	margin-left: 2rem;
-}
-
-
 
 
 .limbo-sidebar {
-	width: 35rem;
+	width: 100%;
 	background: var(--saito-background-color);
 	height: calc(100vh - var(--saito-header-height));
 	border-left: 1px solid var(--saito-border-color);
@@ -103,4 +88,62 @@
 .limbo-sidebar .saito-modal-content .saito-user .saito-identicon-box {
     width: 3.5rem;
     height: 3.5rem;
+}
+
+
+/*  Control Window */
+
+.dream-controls {
+	position: absolute;
+	max-width: 80vw;
+	max-height: 80vh;
+	display: grid;
+	grid-template-rows: 1fr 7rem;
+
+	border: 2px solid silver;
+	border-radius: 5px;
+	background-color: var(--saito-black);
+}
+
+.saito-container.limbo-container .dream-controls {
+	position: revert;
+}
+
+.video-preview{
+}
+
+
+.dream-controls .control-panel{
+	align-items: center;
+	justify-content: space-between;
+}
+
+.dream-controls .control-panel .timer {
+	margin-left: 2rem;
+}
+
+
+video#local.noflip{
+	transform: unset;
+}
+
+
+/* Wizard */
+
+.dream-wizard{
+	min-width: 550px;
+	max-width: 90vw;
+	padding: 3rem;
+	border-radius: 0.5rem;
+	border: 1px solid;
+	background-color: var(--saito-black);
+	color: var(--saito-white);
+}
+
+.dream-wizard h1{
+	font-size: 4rem;
+}
+
+.dream-wizard .button {
+	margin-top: 1rem;
 }
