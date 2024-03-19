@@ -20,16 +20,6 @@ class Dialer {
 	}
 
 	render(call_receiver, making_call = true) {
-		this.overlay.show(
-			DialerTemplate(this.app, this.mod, making_call),
-			() => {
-				this.app.connection.emit('close-preview-window');
-				this.stopRing();
-				this.app.connection.emit('reset-stun');
-			}
-		);
-		this.overlay.blockClose();
-
 		if (!this.receiver) {
 			this.receiver = new SaitoUser(
 				this.app,
@@ -40,6 +30,33 @@ class Dialer {
 		} else {
 			this.receiver.publicKey = call_receiver;
 		}
+
+		this.overlay.show(
+			DialerTemplate(this.app, this.mod, making_call),
+			() => {
+				console.log("Close dialer from exit button");
+				console.log(making_call, this.mod.room_obj);
+				this.app.connection.emit('close-preview-window');
+				if (making_call){
+					this.app.connection.emit('relay-send-message', {
+						recipient: this.receiver.publicKey,
+						request: 'stun-connection-request-cancel',
+						data: this.mod.room_obj
+					});
+
+				}else{
+					this.app.connection.emit('relay-send-message', {
+					recipient: this.receiver.publicKey,
+					request: 'stun-connection-rejected',
+					data: this.mod.room_obj
+				});
+				}
+
+				this.stopRing();
+				this.app.connection.emit('reset-stun');
+			}
+		);
+		this.overlay.blockClose();
 
 		this.receiver.render();
 
@@ -79,7 +96,8 @@ class Dialer {
 					data
 				});
 
-				this.startRing();
+				this.ring_sound = new Audio('/saito/sound/Cloud_edit.mp3');
+				this.startRing(4500);
 				this.updateMessage('Dialing...');
 				this.deactivateOptions();
 
@@ -168,21 +186,33 @@ class Dialer {
 		}
 	}
 
-	startRing() {
-		try {
-			if (!this.ring_sound) {
-				this.ring_sound = new Audio('/videocall/audio/ring.mp3');
-			}
-			this.ring_sound.play();
-		} catch (err) {
-			console.error(err);
+	startRing(interval) {
+		if (this.ringer){
+			clearInterval(this.ringer);
 		}
+
+		this.ring_sound.play();
+
+		this.ringer = setInterval(()=>{
+			try {
+				this.ring_sound.play();
+			} catch (err) {
+				console.error(err);
+			}
+
+		}, interval);
 	}
+
 	stopRing() {
 		try {
 			if (this.ring_sound) {
 				this.ring_sound.pause();
 			}
+			if (this.ringer){
+				clearInterval(this.ringer);
+				this.ringer = null;
+			}
+
 		} catch (err) {
 			console.error(err);
 		}
@@ -277,7 +307,8 @@ class Dialer {
 			if (!this.mod.room_obj) {
 				this.mod.room_obj = txmsg.data;
 				this.render(sender, false);
-				this.startRing();
+				this.ring_sound = new Audio('/saito/sound/Reverie_edit.mp3');
+				this.startRing(6000);
 
 				//
 				// Ping back to let caller know I am online
@@ -296,7 +327,7 @@ class Dialer {
 				this.stopRing();
 				this.overlay.remove();
 				this.app.connection.emit('reset-stun');
-				siteMessage(`${this.app.keychain.returnUsername(sender)} hung up`);
+				siteMessage(`${this.app.keychain.returnUsername(sender)} hung up`, 2000);
 			}
 			break;
 
