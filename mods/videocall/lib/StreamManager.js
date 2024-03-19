@@ -521,7 +521,9 @@ class StreamManager {
 		this.is_broadcasting = true;
 		let peer_list = [];
 		this.mod.stun.peers.forEach((pc, address) => {
-			peer_list.push(address);
+			if (pc.connectionState === 'connected') {
+				peer_list.push(address);
+			}
 		});
 
 		this.mod.stun.peers.forEach((pc, address) => {
@@ -540,7 +542,9 @@ class StreamManager {
 		setInterval(() => {
 			let peer_list = [];
 			this.mod.stun.peers.forEach((pc, address) => {
-				peer_list.push(address);
+				if (pc.connectionState === 'connected') {
+					peer_list.push(address);
+				}
 			});
 
 			this.mod.stun.peers.forEach(async (pc, address) => {
