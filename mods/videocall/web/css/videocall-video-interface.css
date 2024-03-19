@@ -207,10 +207,6 @@
 	z-index: 100;
 }
 
-.side-videos .video-call-info .saito-address {
-	max-width: 60%;
-}
-
 .peer-list-item {
 	margin-right: 1rem;
 }
@@ -433,6 +429,10 @@ video#local {
 	text-overflow: ellipsis;
 	margin-right: 1rem;
 	max-width: 90%;
+}
+
+.side-videos .video-call-info .saito-address {
+	max-width: 60%;
 }
 
 .video-call-info i {
