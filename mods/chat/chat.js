@@ -1545,12 +1545,20 @@ class Chat extends ModTemplate {
 						sender = block[z].from[0];
 						
 						// replace @mentions with saito treated address
-						block[z].msg = block[z].msg.replaceAll(/(@.*?(\w+))/g, function(k){
-							let key = (k.split('@'))[1];
+						block[z].msg = block[z].msg.replaceAll(/(?=@)([^\s]*)/g, function(k){
+							let split = (k.split('@'));
+							let username = '';
+							let key = '';
+
+							if (split.length > 2) {
+								username = split[1]+'@'+split[2];
+								key = chat_self.app.keychain.returnPublicKeyByIdentifier(username);
+							} else {
+								username = chat_self.app.keychain.returnUsername(split[1]);
+								key = split[1];
+							}
 							let replaced = `<span class="saito-mention saito-address" data-id="${key}" 
-															data-disable="true" contenteditable="false">${chat_self.app.keychain.returnUsername(
-								key
-							)}</span>`;
+															data-disable="true" contenteditable="false">${username}</span>`;
 							return replaced;
 						});
 

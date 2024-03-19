@@ -2297,9 +2297,24 @@ class Browser {
 	addSaitoMentions(users, textarea, listDiv, inputType) {
 		const resolveFn = prefix => prefix === ''
 			? users
-			: users.filter(user => user.username.startsWith(prefix))
+			: users.filter(user => {
+				if (typeof user.identifier != 'undefined') {
+					return user.identifier.startsWith(prefix)
+				} else {
+					return user.publicKey.startsWith(prefix)
+				}
+			})
 
-		const replaceFn = (user, trigger) => `${trigger}${user.username} `
+		const replaceFn = (user, trigger) => {
+			let replace = '';
+			if (typeof user.identifier != 'undefined') {
+				replace = `${trigger}${user.identifier} `;
+			} else {
+				replace = `${trigger}${user.publicKey} `;
+			}
+
+			return replace;
+		}
 
 		const menuItemFn = (user, setItem, selected) => {
 			const parentDiv = document.createElement('div');
@@ -2321,7 +2336,13 @@ class Browser {
 				div.classList.add('selected')
 				div.setAttribute('aria-selected', '')
 			}
-			div.textContent = user.username
+
+			if (typeof user.identifier != 'undefined') {
+				div.textContent = user.identifier
+			} else {
+				div.textContent = user.publicKey
+			}
+			
 
 			parentDiv.appendChild(div);
 			parentDiv.onclick = setItem;
