@@ -62,9 +62,9 @@ this.updateLog(`###############`);
 	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
 	  this.game.queue.push("action_phase");
 if (this.game.options.scenario != "is_testing") {
-//	  this.game.queue.push("spring_deployment_phase");
-//	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
-//	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	  this.game.queue.push("spring_deployment_phase");
+	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
+	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 }
 
 
@@ -9549,7 +9549,7 @@ console.log("cardnum2: " + cardnum);
 	  //
 console.log("ROUND: " + this.game.state.round);
 console.log("START: " + this.game.state.starting_round);
-	  if (this.game.state.starting_round <= this.game.state.round) {
+	  if (this.game.state.starting_round >= this.game.state.round && this.game.state.starting_round > 1) {
 	    // reset round to 1 to capture cards from full game
 	    this.game.state.round = 0;
 	    for (let i = this.game.state.round; i < this.game.state.starting_round; i++) {
