@@ -666,14 +666,15 @@ class Videocall extends ModTemplate {
 
 	async createBroadcastListTransaction(peer_list, address) {
 		let newtx =
-			await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+				address
+			);
 		newtx.msg = {
-			module: 'Stun',
+			module: 'Videocall',
 			request: 'broadcast-call-list',
 			call_id: this.room_obj.call_id,
 			data: {
-				peer_list,
-				sender: this.publicKey
+				peer_list
 			}
 		};
 
@@ -685,13 +686,9 @@ class Videocall extends ModTemplate {
 	}
 	async receiveBroadcastListTransaction(app, tx) {
 		const txmsg = tx.returnMessage();
-
+		let sender = tx.from[0].publicKey;
 		console.log(txmsg.data.sender, txmsg);
-		this.app.connection.emit(
-			'peer-list',
-			txmsg.data.sender,
-			txmsg.data.peer_list
-		);
+		this.app.connection.emit('peer-list', sender, txmsg.data.peer_list);
 		// send data
 	}
 }
