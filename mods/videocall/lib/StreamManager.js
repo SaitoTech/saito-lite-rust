@@ -188,10 +188,11 @@ class StreamManager {
 				return;
 			}
 
-			if (this.firstConnect) {
-				let sound = new Audio('/videocall/audio/enter-call.mp3');
+			let pc = this.mod.stun.peers.get(peerId);
+			if (pc.firstConnect) {
+				let sound = new Audio('/saito/sound/Polite.mp3');
 				sound.play();
-				this.firstConnect = false;
+				pc.firstConnect = false;
 			}
 
 			this.mod.sendOffChainMessage('toggle-audio', {
@@ -294,7 +295,7 @@ class StreamManager {
 				this.mod.sendCallEntryTransaction();
 			}
 
-			let sound = new Audio('/videocall/audio/enter-call.mp3');
+			let sound = new Audio('/saito/sound/Calm.mp3');
 			sound.play();
 
 			this.analyzeAudio(this.localStream, 'local');
@@ -309,6 +310,8 @@ class StreamManager {
 
 				console.log('New Stun peer connection');
 				if (this.app.options.stun.peers.includes(publicKey)) {
+					peerConnection.firstConnect = true;
+
 					console.log('Attach my audio/video!');
 					await this.getLocalMedia();
 					this.localStream.getTracks().forEach((track) => {
@@ -426,6 +429,10 @@ class StreamManager {
 				2500
 			);
 		}
+
+		let sound = new Audio('/saito/sound/Sharp.mp3');
+		sound.play();
+				
 	}
 
 	async leaveCall() {
@@ -458,6 +465,9 @@ class StreamManager {
 		}
 
 		console.log('STUN: Finished hanging up...');
+		let sound = new Audio('/saito/sound/Sharp.mp3');
+		sound.play();
+
 	}
 
 	analyzeAudio(stream, peer) {

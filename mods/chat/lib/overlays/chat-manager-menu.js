@@ -91,7 +91,7 @@ class ChatManagerMenu {
 			};
 		}
 
-		if (document.getElementById('enable-notifications')) {
+		/*if (document.getElementById('enable-notifications')) {
 			document
 				.getElementById('enable-notifications')
 				.addEventListener('change', (e) => {
@@ -119,20 +119,50 @@ class ChatManagerMenu {
 					}
 					this.mod.saveOptions();
 				});
-		}
+		}*/
 
-		if (document.getElementById('audio-notifications')) {
+		const f1 = document.getElementById("sensitivity-fieldset");
+		const f2 = document.getElementById("chime-fieldset");
+
+		if (document.getElementById('audio-notifications') && f1 && f2) {
 			document
 				.getElementById('audio-notifications')
 				.addEventListener('change', (e) => {
 					if (e.currentTarget.checked) {
-						this.mod.audio_notifications = true;
+						f1.style.display = "grid";
+						f2.style.display = "grid";
 					} else {
-						this.mod.audio_notifications = false;
+						this.mod.audio_notifications = "";
+						f1.style.display = "none";
+						f2.style.display = "none";
+						this.mod.saveOptions();
 					}
-					this.mod.saveOptions();
 				});
 		}
+
+		Array.from(
+			document.querySelectorAll(`input[name='chime-threshold']`)
+		).forEach((radio) => {
+			radio.addEventListener('change', (e) => {
+				if (e.currentTarget.value !== this.mod.audio_notifications) {
+					this.mod.audio_notifications = e.currentTarget.value;
+					this.mod.saveOptions();
+				}
+			});
+		});
+
+		Array.from(
+			document.querySelectorAll(`input[name='chat-chime']`)
+		).forEach((radio) => {
+			radio.addEventListener('change', (e) => {
+				if (e.currentTarget.value !== this.mod.audio_chime) {
+					this.mod.audio_chime = e.currentTarget.value;
+					this.mod.chime = new Audio(`/saito/sound/${this.mod.audio_chime}.mp3`);
+					this.mod.saveOptions();
+				}
+			});
+		});
+
 
 		if (document.getElementById('auto-open')) {
 			document

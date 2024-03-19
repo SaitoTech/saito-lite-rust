@@ -233,4 +233,17 @@
     background: var(--saito-background-color);
     border-radius: 0.5rem;
     border: 1px solid var(--saito-primary);
+    display: flex;
+    flex-direction: column;
+}
+
+
+.module-settings-overlay .saito-module-settings::-webkit-scrollbar {
+  display: none;
+}
+
+.module-settings-overlay .saito-module-settings {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  overflow-y: auto;
 }

@@ -6,13 +6,31 @@ module.exports = ChatManagerMenuTemplate = (app, mod) => {
 		html += `
 			<fieldset class="saito-grid">
 				<legend class="settings-label">Notifications</legend>
-				<input type="checkbox" id="enable-notifications" ${mod.enable_notifications ? "checked":"" }/>
-				<label for="enable-notifications">use system notifications</label>
 
 				<input type="checkbox" id="audio-notifications" ${mod?.audio_notifications ? "checked":"" }/>
-				<label for="audio-notifications">incoming message chime <span class="note">(coming soon)</span></label>
+				<label for="audio-notifications">incoming message chime</label>
+
+				<fieldset id="sensitivity-fieldset" class="saito-grid" ${mod?.audio_notifications ? "" : `style="display:none;"`}>
+					<legend class="settings-label">Sensitivity</legend>
+					<input type="radio" id="all" name="chime-threshold" value="all" ${mod?.audio_notifications=="all" ? "checked": "" }/>
+					<label for="all">All messages</label>
+					<input type="radio" id="groups" name="chime-threshold" value="groups" ${mod?.audio_notifications=="groups" ? "checked": "" }/>
+					<label for="groups">Unopened groups</label>
+					<input type="radio" id="tabs" name="chime-threshold" value="tabs" ${mod?.audio_notifications=="tabs" ? "checked": "" }/>
+					<label for="tabs">Hidden tab</label>
+				</fieldset>
+
+				<fieldset id="chime-fieldset" class="saito-grid" ${mod?.audio_notifications ? "" : `style="display:none;"`}>
+					<legend class="settings-label">Chimes</legend>
+					<input type="radio" id="Glass" name="chat-chime" value="Glass" ${mod?.audio_chime=="Glass" ? "checked": "" }/>
+					<label for="Glass">Chime A</label>
+					<input type="radio" id="Taptap" name="chat-chime" value="Taptap" ${mod?.audio_chime=="Taptap" ? "checked": "" }/>
+					<label for="Taptap">Chime B</label>
+				</fieldset>
+
 
 			</fieldset>
+
 
 			<fieldset class="saito-grid">
 				<input type="checkbox" id="auto-open" ${mod.auto_open_community ? "checked":"" }/>
@@ -57,3 +75,9 @@ module.exports = ChatManagerMenuTemplate = (app, mod) => {
 
 	return html;
 };
+
+/*
+				<!--input type="checkbox" id="enable-notifications" ${mod.audio_notifications ? "checked":"" }/>
+				<label for="enable-notifications">use system notifications <span class="note">(not recommended)</span></label-->
+
+*/

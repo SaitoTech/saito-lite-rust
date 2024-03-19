@@ -337,6 +337,11 @@ class ChatPopup {
 					console.info("CHAT render: Scroll to anchor -- " + this.group.last_read_message);
 					anchor.scrollIntoView(false);
 					this.updateNotification(this.group.unread);
+				}else if (document[this.mod.hiddenTab]){
+					if (anchor){
+						anchor.scrollIntoView(false);
+					}
+					this.updateNotification(this.group.unread);
 				}else{
 					//
 					//Scroll to bottom
@@ -406,23 +411,18 @@ class ChatPopup {
 
 		document.querySelector(`${popup_qs} .saito-input #text-input`).addEventListener('keydown', (e) => {				
 			if ((e.keyCode == 50 || e.charCode == 64) && e.key == '@') {
-
 				let keys = this_self.input.findKeyOrIdentifier();
-				let users = [];
-				console.log('keys: ', keys);
 				for (let key of keys) {
 					let identicon = this_self.app.keychain.returnIdenticon(key.publicKey);
-					let username = this_self.app.keychain.returnUsername(key.publicKey);
-					users.push({username: key.publicKey, identicon: identicon});
+					key.identicon =  identicon;
 				}
 
 			   this_self.app.browser.addSaitoMentions(
-			   	users, 
+			   	keys, 
 			   	document.querySelector(`${popup_qs} #text-input`), 
 			   	document.querySelector(`${popup_qs} #saito-mentions-list`),
 			   	'div'
 			   );
-
 			}
 		});
 
