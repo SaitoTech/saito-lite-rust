@@ -27,6 +27,13 @@ class Fileshare extends ModTemplate {
 				siteMessage('Transfer failed!');
 			}
 		});
+
+		this.bytesPrev = 0;
+		this.timestampPrev = 0;
+		this.timestampStart;
+		this.statsInterval = null;
+		this.byteRateMax = 0;
+		this.byteRatePerSec = '0 kbps';
 	}
 
 	async initialize(app) {
@@ -145,13 +152,13 @@ class Fileshare extends ModTemplate {
 		let gigabytes = megabytes / 1024;
 
 		if (gigabytes > 1) {
-			return `${gigabytes.toFixed(2)}GB`;
+			return `${(Math.round(gigabytes*100)/100)} GB`;
 		}
 		if (megabytes > 1) {
-			return `${megabytes.toFixed(2)}MB`;
+			return `${(Math.round(megabytes*100)/100)} MB`;
 		}
 		if (kilobytes > 1) {
-			return `${kilobytes.toFixed(2)}KB`;
+			return `${(Math.round(kilobytes*100)/100)} KB`;
 		}
 
 		return `${bytes}B`;
@@ -218,15 +225,35 @@ class Fileshare extends ModTemplate {
 						blob.receivedSize += restoredBinary.byteLength;
 						blob.receiveBuffer.push(restoredBinary);
 
-						siteMessage(
-							`Receiving: ${Math.floor(
-								(100 * blob.receivedSize) / blob.fileSize
-							)}%`
-						);
 						console.log(
 							restoredBinary.byteLength,
 							blob.receivedSize,
 							blob.fileSize
+						);
+
+			      // calculate file transfer speed	      
+						let bytesNow = blob.receivedSize;
+
+						let currentTimestamp = new Date().getTime();
+						if ((currentTimestamp - this.timestampPrev) > 1000) {
+				      
+				      const byteRate = Math.round((bytesNow - this.bytesPrev)  /
+				        (currentTimestamp - this.timestampPrev));
+				      this.byteRatePerSec = `${this.calcSize(byteRate*1000)}/s`;
+				      this.timestampPrev = (new Date()).getTime();
+				      this.bytesPrev = bytesNow;
+				      if (byteRate > this.byteRateMax) {
+				        this.byteRateMax = byteRate;
+				      }
+			    	}
+
+						siteMessage(
+							`Receiving: ${Math.floor(
+								(100 * blob.receivedSize) / blob.fileSize
+							)}% - 
+							${this.calcSize(blob.receivedSize)} 
+							of ${this.calcSize(blob.fileSize)}
+							(${this.byteRatePerSec})`
 						);
 
 						if (blob.receivedSize === blob.fileSize) {
@@ -324,18 +351,39 @@ class Fileshare extends ModTemplate {
 
 						this.offset += event.target.result.byteLength;
 
-						siteMessage(
-							`Sending: ${Math.floor(
-								(100 * this.offset) / file.size
-							)}%`
-						);
+						// calculate file transfer speed
+						let currentTimestamp = new Date().getTime();
+						if ((currentTimestamp - this.timestampPrev) > 1000) {
+				      const bytesNow = this.offset;
+				      const byteRate = Math.round((bytesNow - this.bytesPrev)  /
+				        (currentTimestamp - this.timestampPrev));
+				      this.byteRatePerSec = `${this.calcSize(byteRate*1000)}/s`;
+				      this.timestampPrev = (new Date()).getTime();
+				      this.bytesPrev = bytesNow;
+				      if (byteRate > this.byteRateMax) {
+				        this.byteRateMax = byteRate;
+				      }
+			    	}
 
+			    	let msg = ``;
 						if (this.offset < file.size) {
 							this.chunkFile(file, this.offset);
+							msg = `Sending: ${Math.floor(
+								(100 * this.offset) / file.size
+							)}% - 
+							${this.calcSize(this.offset)} 
+							of ${this.calcSize(file.size)}
+							(${this.byteRatePerSec})
+							`;
 						} else {
 							this.fileId = null;
 							this.file = null;
+							msg = `Sending: ${Math.floor(
+								(100 * this.offset) / file.size
+							)}%`;
 						}
+
+						siteMessage(msg);
 					});
 
 					this.fileId = this.app.crypto
