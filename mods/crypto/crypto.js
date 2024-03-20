@@ -23,6 +23,22 @@ class Crypto extends ModTemplate {
 		this.overlay_inadequate = new CryptoInadequate(app, this);
 	}
 
+
+
+	async initialize(app){
+		await super.initialize(app);
+
+		//
+		// Turn on crypto for all games that don't explicity opt out
+		//
+		let mod_list = app.modules.returnModulesRespondingTo('arcade-games');
+		for (let m of mod_list){
+			if (m.can_bet !== 0) {
+				m.can_bet = 1;
+			}
+		}
+	}
+
 	respondTo(type = '') {
 		if (type == 'game-menu') {
 			//

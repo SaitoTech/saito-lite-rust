@@ -40,8 +40,6 @@ class Settlers extends GameTemplate {
 		this.confirm_moves = true;
 		this.animationSpeed = 1200;
 
-		this.can_bet = 1;
-
 		//
 		// UI components
 		//
