@@ -34,6 +34,8 @@ class Fileshare extends ModTemplate {
 		this.statsInterval = null;
 		this.byteRateMax = 0;
 		this.byteRatePerSec = '0 kbps';
+		this.file_sending = false;
+		this.event_attached = false;
 	}
 
 	async initialize(app) {
@@ -344,6 +346,13 @@ class Fileshare extends ModTemplate {
 
 					this.reader.addEventListener('load', async (event) => {
 						//console.log('File Share: onload ', event);
+						
+						// attach event for checking closing of tab
+						if (this.file_sending == false && this.event_attached == false) {
+							this.file_sending = true;
+							this.checkCloseTab();
+						}
+
 						await this.createFileChunkTransaction(
 							file,
 							event.target.result
@@ -381,6 +390,10 @@ class Fileshare extends ModTemplate {
 							msg = `Sending: ${Math.floor(
 								(100 * this.offset) / file.size
 							)}%`;
+
+							// remove event for checking closing of tab
+							this.file_sending = false;
+							this.checkCloseTab();
 						}
 
 						siteMessage(msg);
@@ -476,6 +489,19 @@ class Fileshare extends ModTemplate {
 			b2[i] = b[i];
 		}
 		return b2;
+	}
+
+	checkCloseTab(){
+		let this_self = this;
+		if (this.file_sending == true && this.event_attached == false){
+			window.onbeforeunload = (e) => { 
+			  this_self.event_attached = true;
+			  return true; 
+			}
+		}
+		if (this.file_sending == false && this.event_attached == true){
+			window.onbeforeunload = null;
+		}
 	}
 }
 
