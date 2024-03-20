@@ -29,8 +29,7 @@ class Arcade extends ModTemplate {
 
 		this.description =
 			'Interface for creating and joining games coded for the Saito Open Source Game Engine.';
-		this.categories = 'Games Entertainment Utilities';
-		this.class = 'utility';
+		this.categories = 'Games Entertainment Appspace';
 
 		// We store reference to all the installed modules which are arcade compatible
 		// Useful for rendering the sidebar menu, or any list of games for game-selector (prior to game-wizard)

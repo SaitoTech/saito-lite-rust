@@ -24,7 +24,6 @@ class Nwasm extends OnePlayerGameTemplate {
 		this.description =
 			'The Saito Nintendo 64 emulator provides a user-friendly in-browser N64 emulator that allows players to archive and play the N64 games you own directly in your browser. Game files are encrypted so only you can access them and archived in your private transaction store.';
 		this.categories = 'Games Videogame Classic';
-		this.class = 'utility';
 		this.uploader = null;
 
 		this.library = new NwasmLibrary(this.app, this);
