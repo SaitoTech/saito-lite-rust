@@ -40,7 +40,7 @@ class InviteManager {
 			}
 		});
 
-		app.connection.on('arcade-game-initialize-render-request', () => {
+		app.connection.on('arcade-game-initialize-render-request', (game_id) => {
 			//
 			// If Arcade is the active module, Arcade.main will respond to this event
 			// Otherwise we launch an overlay and stick the spinner in there
@@ -61,6 +61,9 @@ class InviteManager {
 					mod,
 					target
 				);
+
+				this.mod.is_game_initializing = true;
+				game_loader.game_id = game_id;
 				
 				game_loader.render();
 			}

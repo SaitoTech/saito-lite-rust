@@ -1229,7 +1229,7 @@ class Arcade extends ModTemplate {
           */
 					//Start Spinner
 					this.app.connection.emit(
-						'arcade-game-initialize-render-request'
+						'arcade-game-initialize-render-request', txmsg.game_id
 					);
 				}
 			}
@@ -1313,7 +1313,7 @@ class Arcade extends ModTemplate {
 		// If I am a player in the game, let's start it initializing
 		//
 		if (txmsg.players.includes(this.publicKey)) {
-			this.app.connection.emit('arcade-game-initialize-render-request');
+			this.app.connection.emit('arcade-game-initialize-render-request', txmsg.game_id);
 
 			if (this.app.BROWSER == 1 && txmsg.players.length > 1) {
 				siteMessage(txmsg.game + ' invite accepted', 5000);
@@ -1516,7 +1516,7 @@ class Arcade extends ModTemplate {
 		});
 
 		//Start Spinner
-		this.app.connection.emit('arcade-game-initialize-render-request');
+		this.app.connection.emit('arcade-game-initialize-render-request', txmsg.game_id);
 
 		/*
     try {
@@ -2032,7 +2032,7 @@ class Arcade extends ModTemplate {
 
 		let game_mod = this.app.modules.returnModule(game_msg.game);
 
-		this.app.connection.emit('arcade-game-initialize-render-request');
+		this.app.connection.emit('arcade-game-initialize-render-request', game_id);
 
 		//We want to send a message to the players to add us to the game.accept list so they route their game moves to us as well
 		game_msg.game_id = game_id;

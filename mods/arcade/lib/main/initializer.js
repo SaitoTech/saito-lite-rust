@@ -9,7 +9,7 @@ class Initializer {
 		app.connection.on(
 			'arcade-game-ready-render-request',
 			(game_details) => {
-				this.render(game_details.id);
+				this.render(game_details?.id);
 				this.notify(game_details.name);
 				this.attachEvents(game_details.slug);
 				siteMessage(`${game_details.name} ready to play!`);
@@ -17,6 +17,7 @@ class Initializer {
 		);
 
 		app.connection.on('arcade-close-game', (game_id) => {
+			console.log("arcade-close-game", game_id, this?.game_id);
 			if (game_id == this?.game_id) {
 				this.mod.is_game_initializing = false;
 				this.app.connection.emit('rerender-whole-arcade');
@@ -24,11 +25,8 @@ class Initializer {
 		});
 	}
 
-	render(game_id = null) {
-		this.mod.is_game_initializing = true;
-		this.game_id = game_id;
-
-		let html = InitializerTemplate(game_id);
+	render(ready = false) {
+		let html = InitializerTemplate(ready);
 
 		if (document.querySelector('.arcade-initializer')) {
 			this.app.browser.replaceElementBySelector(
