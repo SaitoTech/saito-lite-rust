@@ -205,11 +205,15 @@
 	bottom: 0;
 	right: 0;
 	z-index: 100;
+	padding: 0.5rem;
+	gap: 1rem;
 }
 
-.peer-list-item {
-	margin-right: 1rem;
+.peer-call-list .saito-identicon {
+	width: 2.5rem;
+	height: 2.5rem;
 }
+
 
 .peer-list-item.not-connected {
 	filter: grayscale(100%);
