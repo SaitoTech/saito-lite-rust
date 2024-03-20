@@ -346,7 +346,7 @@ class Videocall extends ModTemplate {
 			return;
 		}
 		let txmsg = tx.returnMessage();
-		console.log('new ', txmsg);
+
 		if (this.app.BROWSER === 1) {
 			if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
 				//
