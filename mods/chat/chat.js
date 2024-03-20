@@ -11,7 +11,7 @@ const Transaction = require('../../lib/saito/transaction').default;
 const PeerService = require('saito-js/lib/peer_service').default;
 const ChatSettings = require('./lib/overlays/chat-manager-menu');
 const ChatSidebar = require('./lib/appspace/chat-sidebar');
-
+const HomePage = require('./index');
 
 class Chat extends ModTemplate {
 	constructor(app) {
@@ -20,7 +20,7 @@ class Chat extends ModTemplate {
 		this.name = 'Chat';
 
 		this.description = 'Saito instant-messaging client';
-
+		this.categories = "Messaging Chat";
 		this.groups = [];
 
 		/*
@@ -116,6 +116,15 @@ class Chat extends ModTemplate {
 			lite: 'fa-solid fa-sun',
 			dark: 'fa-solid fa-moon'
 		};
+
+		this.social = {
+			twitter: '@SaitoOfficial',
+			title: 'Saito Chat',
+			url: 'https://saito.io/chat/',
+			description: 'Instant messaging client on Saito Network blockchain',
+			image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
+		};
+
 
 	}
 
@@ -2207,6 +2216,26 @@ class Chat extends ModTemplate {
 		}
 		return 1;
 	}
+
+	webServer(app, expressapp, express) {
+		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
+		let mod_self = this;
+
+		expressapp.get(
+			'/' + encodeURI(this.returnSlug()),
+			async function (req, res) {
+				let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
+
+				res.setHeader('Content-type', 'text/html');
+				res.charset = 'UTF-8';
+				res.send(HomePage(app, mod_self, app.build_number, mod_self.social));
+				return;
+			}
+		);
+
+		expressapp.use('/' + encodeURI(this.returnSlug()),	express.static(webdir));
+	}
+
 
 
 	notification(group){
