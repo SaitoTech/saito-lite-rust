@@ -432,7 +432,6 @@ class StreamManager {
 
 		let sound = new Audio('/saito/sound/Sharp.mp3');
 		sound.play();
-				
 	}
 
 	async leaveCall() {
@@ -467,7 +466,6 @@ class StreamManager {
 		console.log('STUN: Finished hanging up...');
 		let sound = new Audio('/saito/sound/Sharp.mp3');
 		sound.play();
-
 	}
 
 	analyzeAudio(stream, peer) {
@@ -532,7 +530,10 @@ class StreamManager {
 		let peer_list = [];
 		this.mod.stun.peers.forEach((pc, address) => {
 			if (pc.connectionState === 'connected') {
-				peer_list.push(address);
+				peer_list.push({
+					address,
+					connectionState: pc.connectionState
+				});
 			}
 		});
 
@@ -552,9 +553,12 @@ class StreamManager {
 		setInterval(() => {
 			let peer_list = [];
 			this.mod.stun.peers.forEach((pc, address) => {
-				if (pc.connectionState === 'connected') {
-					peer_list.push(address);
-				}
+				// if (pc.connectionState === 'connected') {
+				peer_list.push({
+					address,
+					connectionState: pc.connectionState
+				});
+				// }
 			});
 
 			this.mod.stun.peers.forEach(async (pc, address) => {
