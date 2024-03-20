@@ -69,6 +69,30 @@ class ArcadeMenu {
 				});
 			}
 		);
+
+		let gameListContainer = document.querySelector(".arcade-menu");
+		let gameListContainerAlt = document.querySelector(".arcade-game-list-container")
+
+		const intersectionObserver = new IntersectionObserver((entries) => {
+		  entries.forEach(entry => {
+			  if (entry.intersectionRatio <= 0) {
+			  	if (entry.target.id == "top-of-game-list"){
+			  		gameListContainer.classList.add("can-scroll-up");
+			  	}else{
+			  		gameListContainerAlt.classList.add("can-scroll-down");
+			  	}
+			  }else{
+			  	if (entry.target.id == "top-of-game-list"){
+			  		gameListContainer.classList.remove("can-scroll-up");
+			  	}else{
+			  		gameListContainerAlt.classList.remove("can-scroll-down");
+			  	}
+			  }
+		  });
+		});
+		// start observing
+		intersectionObserver.observe(document.getElementById("top-of-game-list"));
+		intersectionObserver.observe(document.getElementById("bottom-of-game-list"));
 	}
 }
 
