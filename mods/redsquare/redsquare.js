@@ -2526,11 +2526,11 @@ class RedSquare extends ModTemplate {
                   og_image_secure_url: image,
                 }
 
+                res.setHeader("Content-type", "text/html");
+                res.charset = "UTF-8";
+                res.send(redsquareHome(app, redsquare_self, app.build_number, updated_social));
               }
 
-              res.setHeader("Content-type", "text/html");
-              res.charset = "UTF-8";
-              res.send(redsquareHome(app, redsquare_self, app.build_number, updated_social));
             });
 
             return;
