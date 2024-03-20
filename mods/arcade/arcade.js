@@ -62,6 +62,15 @@ class Arcade extends ModTemplate {
 			dark: 'fa-solid fa-moon',
 			arcade: 'fa-solid fa-gamepad'
 		};
+
+		this.social = {
+			twitter: '@SaitoOfficial',
+			title: 'Saito Arcade',
+			url: 'https://saito.io/arcade/',
+			description: 'Peer to peer gaming on the blockchain',
+			image: ' https://saito.io/website/img/arcade-banner3.jpg',
+		};
+
 	}
 
 	/////////////////////////////
@@ -1847,31 +1856,9 @@ class Arcade extends ModTemplate {
 			async function (req, res) {
 				let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
 
-				arcade_self.social = {
-					arcade_card: 'summary',
-					arcade_site: '@SaitoOfficial',
-					arcade_creator: '@SaitoOfficial',
-					arcade_title: 'Saito Arcade',
-					twitter_url: 'https://saito.io/redsquare/',
-					twitter_description: 'Play games on the blockchain',
-					twitter_image:
-						' https://saito.io/website/img/arcade-banner3.jpg',
-					og_title: 'Saito Arcade',
-					og_url: 'https://saito.io/arcade',
-					og_type: 'website',
-					og_description: 'Peer to peer social and more',
-					og_site_name: 'Saito Arcade',
-					og_image:
-						'https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png',
-					og_image_url:
-						'https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png',
-					og_image_secure_url:
-						'https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png'
-				};
-
 				res.setHeader('Content-type', 'text/html');
 				res.charset = 'UTF-8';
-				res.send(arcadeHome(app, arcade_self, app.build_number));
+				res.send(arcadeHome(app, arcade_self, app.build_number, arcade_self.social));
 				return;
 			}
 		);

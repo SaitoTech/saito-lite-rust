@@ -1,4 +1,4 @@
-module.exports = (app, mod, build_number) => {
+module.exports = (app, mod, build_number, og_card) => {
 	return `
 
   
@@ -25,10 +25,21 @@ module.exports = (app, mod, build_number) => {
     <meta name="msapplication-starturl" content="/index.html" />
   
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:site" content="@SaitoOfficial" />
-    <meta name="twitter:creator" content="@dlancashi" />
+    <meta name="twitter:site" content="${og_card.twitter}" />
+    <meta name="twitter:creator" content="${og_card.twitter}" />
+    <meta name="twitter:title" content="${og_card.title}" />
+    <meta name="twitter:url" content="${og_card.url}" />
+    <meta name="twitter:description" content="${og_card.description}" />
+    <meta name="twitter:image" content="${og_card.image}" />
   
-  
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="${og_card.title}" />
+    <meta property="og:url" content="${og_card.url}" />
+    <meta property="og:description" content="${og_card.description}"/>
+    <meta property="og:site_name" content="${og_card.title}" />
+    <meta property="og:image" content="${og_card.image}"/>
+    <meta property="og:image:url" content="${og_card.image}"/>
+    <meta property="og:image:secure_url" content="${og_card.image}"/>
   
     <link rel="icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
