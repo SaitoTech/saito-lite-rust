@@ -2494,6 +2494,8 @@ class RedSquare extends ModTemplate {
 
           if (sig) {
             redsquare_self.loadTweetWithSig(sig, (txs) => {
+              let updated_social = redsquare_self.social;
+
               for (let z = 0; z < txs.length; z++) {
                 let tx = txs[z];
 
@@ -2508,7 +2510,7 @@ class RedSquare extends ModTemplate {
                 let url = reqBaseURL + encodeURI(redsquare_self.returnSlug());
                 let image = url + "?og_img_sig=" + sig;
 
-                let updated_social = {
+                updated_social = {
                   twitter_card: "summary",
                   twitter_site: "@SaitoOfficial",
                   twitter_creator: "@SaitoOfficial",
@@ -2525,11 +2527,11 @@ class RedSquare extends ModTemplate {
                   og_image_url: image,
                   og_image_secure_url: image,
                 }
-
-                res.setHeader("Content-type", "text/html");
-                res.charset = "UTF-8";
-                res.send(redsquareHome(app, redsquare_self, app.build_number, updated_social));
               }
+
+              res.setHeader("Content-type", "text/html");
+              res.charset = "UTF-8";
+              res.send(redsquareHome(app, redsquare_self, app.build_number, updated_social));
 
             });
 
