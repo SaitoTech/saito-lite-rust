@@ -186,7 +186,7 @@
 .expanded-video {
 	resize: horizontal;
 	overflow: auto;
-	max-height: 100%;
+	max-height: calc(100vh - 13rem);
 	min-width: 50vw;
 	max-width: 85vw;
 	width: 75vw;
@@ -196,7 +196,8 @@
 	display: grid;
 	grid-template-rows: repeat(3, minmax(20vh, auto));
 	gap: 1rem;
-	max-height: 100%;
+	max-height: calc(100vh - 13rem);
+	overflow: auto;
 }
 
 .stun-chatbox .peer-call-list {
