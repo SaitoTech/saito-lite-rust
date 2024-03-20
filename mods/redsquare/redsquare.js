@@ -123,6 +123,11 @@ class RedSquare extends ModTemplate {
 
     this.styles = ["/saito/saito.css", "/redsquare/style.css"];
 
+    //
+    // This is the default Open Graph Card for Redsquare
+    // If we have a link to a specific tweet, we will use a different object to populate the
+    // generated html in the webserver
+    //
     this.social = {
       twitter_card: "summary",
       twitter_site: "@SaitoOfficial",
@@ -2500,23 +2505,32 @@ class RedSquare extends ModTemplate {
                 //
                 // We need adequate protection here
                 //
-                redsquare_self.social.twitter_description = app.browser.stripHtml(text);
-                redsquare_self.social.og_description = app.browser.stripHtml(text);
-                redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug());
+                let url = reqBaseURL + encodeURI(redsquare_self.returnSlug());
+                let image = url + "?og_img_sig=" + sig;
 
-                let image = (redsquare_self.social.og_url =
-                  reqBaseURL + encodeURI(redsquare_self.returnSlug()) + "?og_img_sig=" + sig);
-                redsquare_self.social.og_title = user + " posted on Saito 🟥";
-                redsquare_self.social.twitter_title = user + " posted on Saito 🟥";
-                redsquare_self.social.og_image = image;
-                redsquare_self.social.og_image_url = image;
-                redsquare_self.social.og_image_secure_url = image;
-                redsquare_self.social.twitter_image = image;
+                let updated_social = {
+                  twitter_card: "summary",
+                  twitter_site: "@SaitoOfficial",
+                  twitter_creator: "@SaitoOfficial",
+                  twitter_title: user + " posted on Saito 🟥",
+                  twitter_url: url,
+                  twitter_description: app.browser.stripHtml(text),
+                  twitter_image: image,
+                  og_title: user + " posted on Saito 🟥",
+                  og_url: url,
+                  og_type: "website",
+                  og_description: app.browser.stripHtml(text),
+                  og_site_name: "🟥 Saito Red Square",
+                  og_image: image,
+                  og_image_url: image,
+                  og_image_secure_url: image,
+                }
+
               }
 
               res.setHeader("Content-type", "text/html");
               res.charset = "UTF-8";
-              res.send(redsquareHome(app, redsquare_self, app.build_number));
+              res.send(redsquareHome(app, redsquare_self, app.build_number, updated_social));
             });
 
             return;
@@ -2568,23 +2582,13 @@ class RedSquare extends ModTemplate {
         console.log("Loading OG data failed with error: " + err);
       }
 
-      // default fallback
-      redsquare_self.social.twitter_description = "🟥 RedSquare P2P Social on Saito";
-      redsquare_self.social.og_description = "🟥 RedSquare P2P Social on Saito";
-      redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug());
-
-      let image = "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png";
-      redsquare_self.social.og_title = "saito.io RedSquare";
-      redsquare_self.social.twitter_title = "saito.io RedSquare";
-      redsquare_self.social.og_image = image;
-      redsquare_self.social.og_image_url = image;
-      redsquare_self.social.og_image_secure_url = image;
-      redsquare_self.social.twitter_image = image;
+      //Insert recent tweets into the index template directly
+      let recent_tweets = await redsquare_self.fetchRecentTweets();
 
       // fallback for default
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
-      res.send(redsquareHome(app, redsquare_self, app.build_number));
+      res.send(redsquareHome(app, redsquare_self, app.build_number, redsquare_self.social, recent_tweets));
       return;
     });
 
@@ -2592,7 +2596,7 @@ class RedSquare extends ModTemplate {
   }
 
   //
-  // servers can fetch open graph graphics
+  // servers can fetch open graph graphics (of links in tweets)
   //
   async fetchOpenGraphProperties(app, mod, link) {
     if (app.BROWSER != 1) {

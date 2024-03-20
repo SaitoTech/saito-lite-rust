@@ -1,4 +1,4 @@
-module.exports = (app, mod, build_number, recent_tweets = []) => {
+module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
 	let html = `
 
 <!DOCTYPE html>
@@ -23,22 +23,22 @@ module.exports = (app, mod, build_number, recent_tweets = []) => {
   <meta name="msapplication-starturl" content="/index.html" />
 
 
-  <meta name="twitter:card" content="${mod.social.twitter_card}" />
-  <meta name="twitter:site" content="${mod.social.twitter_site}" />
-  <meta name="twitter:creator" content="${mod.social.twitter_creator}" />
-  <meta name="twitter:title" content="${mod.social.twitter_title}" />
-  <meta name="twitter:url" content="${mod.social.twitter_url}" />
-  <meta name="twitter:description" content="${mod.social.twitter_description}" />
-  <meta name="twitter:image" content="${mod.social.twitter_image}" />
+  <meta name="twitter:card" content="${og_card.twitter_card}" />
+  <meta name="twitter:site" content="${og_card.twitter_site}" />
+  <meta name="twitter:creator" content="${og_card.twitter_creator}" />
+  <meta name="twitter:title" content="${og_card.twitter_title}" />
+  <meta name="twitter:url" content="${og_card.twitter_url}" />
+  <meta name="twitter:description" content="${og_card.twitter_description}" />
+  <meta name="twitter:image" content="${og_card.twitter_image}" />
 
-  <meta property="og:title" content="${mod.social.og_title}" />
-  <meta property="og:url" content="${mod.social.og_url}" />
-  <meta property="og:type" content="${mod.social.og_type}" />
-  <meta property="og:description" content="${mod.social.og_description}" />
-  <meta property="og:site_name" content="${mod.social.og_site_name}" />
-  <meta property="og:image" content="${mod.social.og_image}" />
-  <meta property="og:image:url" content="${mod.social.og_image_url}" />
-  <meta property="og:image:secure_url" content="${mod.social.og_image_secure_url}" />
+  <meta property="og:title" content="${og_card.og_title}" />
+  <meta property="og:url" content="${og_card.og_url}" />
+  <meta property="og:type" content="${og_card.og_type}" />
+  <meta property="og:description" content="${og_card.og_description}" />
+  <meta property="og:site_name" content="${og_card.og_site_name}" />
+  <meta property="og:image" content="${og_card.og_image}" />
+  <meta property="og:image:url" content="${og_card.og_image_url}" />
+  <meta property="og:image:secure_url" content="${og_card.og_image_secure_url}" />
 
   <link rel="icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
   <link rel="apple-touch-icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
