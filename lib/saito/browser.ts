@@ -47,6 +47,14 @@ class Browser {
 		// users are interacting with in the browser.
 		//
 		this.active_tab = 0;
+
+		//
+		//Expand browser support for hidden tabs
+		// Opera 12.10 and Firefox 18 and later support
+		//
+		this.hidden_tab_property = "hidden";
+		this.tab_event_name = "visibilitychange";
+		this.title_interval = null;
 	}
 
 	async initialize(app) {
@@ -74,7 +82,23 @@ class Browser {
 		});
 
 		try {
-			if (!document.hidden) {
+
+			if (typeof document.hidden === 'undefined') {
+				//
+				// Polyfill for other browsers...
+				//
+			 	if (typeof document.msHidden !== 'undefined') {
+					this.hidden_tab_property = 'msHidden';
+					this.tab_event_name = 'msvisibilitychange';
+				} else if (typeof document.webkitHidden !== 'undefined') {
+					this.hidden_tab_property = 'webkitHidden';
+					this.tab_event_name = 'webkitvisibilitychange';
+				}
+			}
+
+
+
+			if (!document[this.hidden_tab_property]) {
 				await this.setActiveTab(1);
 			}
 
@@ -89,13 +113,13 @@ class Browser {
 				this.attachWindowFunctions();
 
 				const channel = new BroadcastChannel('saito');
-				if (!document.hidden) {
+				if (!document[this.hidden_tab_property]) {
 					channel.postMessage({ active: 1, publicKey: publicKey });
 				}
 
 				/* channel.onmessage = async (e) => {
 				  console.log("document onmessage change");
-				  if (!document.hidden) {
+				  if (!document[this.hidden_tab_property]) {
 					channel.postMessage({active: 1, publicKey: publicKey});
 					this.setActiveTab(1);
 				  } else {
@@ -115,9 +139,9 @@ class Browser {
 		*/
 
 				document.addEventListener(
-					'visibilitychange',
+					this.tab_event_name,
 					() => {
-						if (document.hidden) {
+						if (document[this.hidden_tab_property]) {
 							this.setActiveTab(0);
 							channel.postMessage({
 								active: 0,
@@ -129,6 +153,18 @@ class Browser {
 								active: 1,
 								publicKey: publicKey
 							});
+
+							//
+							// We are standardizing a utility for mods to set a "flashing"
+							// browser tab title for background notifications
+							//
+							if (this.title_interval) {
+								clearInterval(this.title_interval);
+								this.title_interval = null;
+								if (this.original_title){
+									document.title = this.original_title;	
+								}
+							}
 						}
 					},
 					false
@@ -542,6 +578,23 @@ class Browser {
 					});
 				}
 			});
+		}
+	}
+
+	createTabNotification(message1, message2){
+		if (this.app.BROWSER == 0 || this.active_tab){
+			return;
+		}
+
+		if (!this.title_interval) {
+			this.original_title = document.title;
+			this.title_interval = setInterval(() => {
+				if (document.title === message1) {
+					document.title = message2;
+				} else {
+					document.title = message1;
+				}
+			}, 850);
 		}
 	}
 

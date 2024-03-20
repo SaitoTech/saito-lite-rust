@@ -117,8 +117,6 @@ class Chat extends ModTemplate {
 			dark: 'fa-solid fa-moon'
 		};
 
-		this.hiddenTab = 'hidden';
-		this.orig_title = '';
 	}
 
 	hasSettings() {
@@ -165,34 +163,6 @@ class Chat extends ModTemplate {
 		//Add script for emoji to work
 		this.attachPostScripts();
 
-		// Set the name of the hidden property and the change event for visibility
-		let visibilityChange;
-		if (typeof document.hidden !== 'undefined') {
-			// Opera 12.10 and Firefox 18 and later support
-			this.hiddenTab = 'hidden';
-			visibilityChange = 'visibilitychange';
-		} else if (typeof document.msHidden !== 'undefined') {
-			this.hiddenTab = 'msHidden';
-			visibilityChange = 'msvisibilitychange';
-		} else if (typeof document.webkitHidden !== 'undefined') {
-			this.hiddenTab = 'webkitHidden';
-			visibilityChange = 'webkitvisibilitychange';
-		}
-
-		document.addEventListener(
-			visibilityChange,
-			() => {
-				if (document[this.hiddenTab]) {
-				} else {
-					if (this.tabInterval) {
-						clearInterval(this.tabInterval);
-						this.tabInterval = null;
-						document.title = this.orig_title;
-					}
-				}
-			},
-			false
-		);
 	}
 
 	async render() {
@@ -2270,13 +2240,13 @@ class Chat extends ModTemplate {
 			return;
 		}
 
-		this.startTabNotification(group);
+		this.app.browser.createTabNotification("New Message", group.name);
 
 		if (!this.audio_notifications){
 			return;
 		}
 
-		if (document[this.hiddenTab]){
+		if (!this.app.browser.active_tab){
 			this.playChime();
 			return;
 		}else if (this.audio_notifications === "tabs"){
@@ -2303,22 +2273,6 @@ class Chat extends ModTemplate {
 		this.chime.play();
 	}
 
-	startTabNotification(group) {
-		if (!this.app.BROWSER || !document[this.hiddenTab]) {
-			return;
-		}
-
-		if (!this.tabInterval) {
-			this.orig_title = document.title;
-			this.tabInterval = setInterval(() => {
-				if (document.title === 'New message') {
-					document.title = group.name;
-				} else {
-					document.title = 'New message';
-				}
-			}, 850);
-		}
-	}
 }
 
 module.exports = Chat;
