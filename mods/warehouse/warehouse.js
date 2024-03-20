@@ -83,20 +83,22 @@ class Warehouse extends ModTemplate {
 				let ttype = 0;
 				let tname = '';
 				let tmodule = '';
-				if (blk.transactions[i].msg && blk.transactions[i].type) {
-					ttype = blk.transactions[i].type;
-				}
-				if (blk.transactions[i].msg && blk.transactions[i].msg.name) {
-					tname = blk.transactions[i].msg.name;
-				}
-				if (blk.transactions[i].msg && blk.transactions[i].msg.module) {
-					tmodule = blk.transactions[i].msg.module;
-				} else if (
-					blk.transactions[i].msg &&
-					Object.keys(blk.transactions[i].msg).length == 308
-				) {
-					tmodule = 'Encrypted';
-				}
+				if (blk.transactions[i].msg){
+					if(blk.transactions[i].type) {
+						ttype = blk.transactions[i].type;
+					}
+					if (blk.transactions[i].msg.name) {
+						tname = blk.transactions[i].msg.name;
+					}
+					if (blk.transactions[i].msg.module) {
+						tmodule = blk.transactions[i].msg.module;
+					} else if (
+						this.app.crypto.isAesEncrypted(blk.transactions[i].msg)
+					) {
+						tmodule = 'Encrypted';
+					}
+				} 
+
 				let tx_to = '';
 				if (
 					blk.transactions[i].to &&
