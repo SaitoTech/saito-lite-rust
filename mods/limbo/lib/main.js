@@ -34,6 +34,17 @@ class LimboMain {
 			}
 		});
 
+		app.connection.on("limbo-open-dream", (dreamer) => {
+			let container = document.querySelector(".limbo-container");
+			if (!container){
+				return;
+			}
+			if (dreamer){
+				container.classList.add("dreaming");
+			}else{
+				container.classList.remove("dreaming");
+			}
+		});
 	}
 
 	async render() {

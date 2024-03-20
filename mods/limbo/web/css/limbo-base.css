@@ -1,11 +1,18 @@
 /*  Page Layout */
 .saito-container.limbo-container {
 	padding: 0 1rem;
+	grid-template-columns: 30rem auto;
+}
+
+.saito-container.limbo-container.dreaming {
+	grid-template-columns: 30rem auto 33rem;	
 }
 
 #saito-header {
 	padding: 1.3rem 3rem !important;
 }
+
+
 
 
 /* Left Sidebar */
@@ -30,11 +37,15 @@
 
 /* Right sidebar */
 .limbo-container .saito-sidebar.right {
-	width: 33rem;
-	height: 100%;
 	padding: 0;
+	display: none;
 }
 
+.limbo-container.dreaming .saito-sidebar.right{
+	display: block;
+	width: 33rem;
+	height: 100%;
+}
 
 .limbo-sidebar {
 	width: 100%;
@@ -95,7 +106,7 @@
 
 .dream-controls {
 	position: absolute;
-	max-width: 80vw;
+	max-width: 90vw;
 	max-height: 80vh;
 	display: grid;
 	grid-template-rows: 1fr 7rem;
@@ -107,6 +118,7 @@
 
 .saito-container.limbo-container .dream-controls {
 	position: revert;
+	margin: auto;
 }
 
 .video-preview{
@@ -146,4 +158,66 @@ video#local.noflip{
 
 .dream-wizard .button {
 	margin-top: 1rem;
+}
+
+
+/* Dynamic Page Layout */
+
+@media screen and (max-width: 1200px){
+	/* Undo base changes */
+
+	.limbo-container .saito-sidebar.left{
+		display: flex;
+		visibility: unset;
+	}
+
+
+	/* But drop left sidebar in a dreamspace */
+	.saito-container.limbo-container.dreaming{
+		grid-template-columns: 1fr min-content;
+	}
+
+	.limbo-container.dreaming .saito-sidebar.left{
+		display: none;
+		visibility: hidden;
+	}	
+}
+
+@media screen and (max-width: 900px){
+	.saito-container.limbo-container.dreaming{
+		grid-template-columns: 1fr;
+		grid-template-rows: min-content auto;
+	}
+
+
+	.limbo-container.dreaming .saito-sidebar.right {
+		visibility: visible;
+		grid-column-start: unset;
+		grid-row: unset;
+		width: 100%;
+		max-width: 90vw;
+		margin: auto;
+	}
+
+	.limbo-container.dreaming .saito-sidebar.right .saito-profile-menu{
+		display: flex;
+	}
+
+	.limbo-sidebar{
+		border-left: unset;
+	}
+
+	.limbo-sidebar .saito-profile-cover {
+		height: 6rem;
+	}
+	.limbo-sidebar .saito-profile-identicon {
+		width: 6rem;
+		height: 6rem;
+	}
+	.limbo-sidebar .saito-profile-options-row{
+		height: 2.5rem;
+	}
+	.limbo-sidebar .saito-profile-info {
+		margin: unset;
+	}
 }
