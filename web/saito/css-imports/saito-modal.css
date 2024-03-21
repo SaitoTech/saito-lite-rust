@@ -18,7 +18,7 @@ This alows for a header with a header with title to be added without extra CSS
 
 
 .saito-modal-title {
-  font-size: 3rem;
+  font-size: 2rem;
   padding: unset;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid;
@@ -69,34 +69,55 @@ This alows for a header with a header with title to be added without extra CSS
   height: 4.5rem;
 }
 
+/*redux*/
 
-.saito-modal-menu .saito-modal-title .saito-user {
-  height: 6rem;
-  margin: 0 1.25rem;
-  padding: 0 1.25rem;
-  cursor: default;
-  align-items: center;
-  width: calc(100% - 2.5rem);
+.saito-modal-menu {
+  border: 1px solid var(--saito-border-color);
+  border-radius: 0.5rem;
+  min-width: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.saito-modal-menu .saito-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: none;
+}
+
+.saito-modal-menu .saito-modal-title {
   white-space: nowrap;
 }
 
+.saito-modal-menu .saito-modal-title .saito-user {
+  align-items: center;
+  white-space: nowrap;
+}
+
+/*
 .saito-modal-menu .saito-modal-title .saito-user .saito-identicon-box {
   width: 5.5rem;
   height: 5.5rem;
 }
-
+*/
 /* saito-modal-menu
 /* theming for a simple menu with font-awesome icon and text in a two col grid */
 .saito-modal-menu-option {
-  font-size: 3rem;
-  height: 6rem;
-  margin: 0 2rem;
-  padding: 1.5rem;
+  font-size: 1.662rem;
+  padding: 0.5rem 1rem;
   display: grid;
   align-items: center;
-  grid-gap: 1rem;
-  grid-template-columns: 4rem 1fr;
+  grid-template-columns: 3.25rem 1fr;
   cursor: pointer;
+  border: 1px solid var(--saito-border-color-dark);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.saito-modal-menu-option div {
+  text-wrap: nowrap;
 }
 
 .saito-modal-menu-option.disabled-option {
@@ -113,6 +134,7 @@ This alows for a header with a header with title to be added without extra CSS
   margin-right: 2rem;
 }
 
+/*
 .saito-modal-menu-option>div {
   float: left;
   margin-right: 2rem;
@@ -123,6 +145,7 @@ This alows for a header with a header with title to be added without extra CSS
   line-height: 3rem;
   height: 3rem;
 }
+*/
 
 .saito-modal-text-input {
   margin-left: 3rem;
