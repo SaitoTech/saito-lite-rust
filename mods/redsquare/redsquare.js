@@ -129,22 +129,12 @@ class RedSquare extends ModTemplate {
     // generated html in the webserver
     //
     this.social = {
-      twitter_card: "summary",
-      twitter_site: "@SaitoOfficial",
-      twitter_creator: "@SaitoOfficial",
-      twitter_title: "🟥 Saito Red Square",
-      twitter_url: "https://saito.io/redsquare/",
-      twitter_description: "Saito RedSquare - Web3 Social.",
-      twitter_image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
-      og_title: "🟥 Saito Red Square",
-      og_url: "https://saito.io/redsquare",
-      og_type: "website",
-      og_description: "Peer to peer social and more",
-      og_site_name: "🟥 Saito Red Square",
-      og_image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
-      og_image_url: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
-      og_image_secure_url:
-        "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
+      twitter: "@SaitoOfficial",
+      title: "🟥 Saito RedSquare - Web3 Social Media",
+      url: "https://saito.io/redsquare/",
+      description: "Peer to peer Web3 social media platform",
+      image: "https://saito.tech/wp-content/uploads/2023/11/Rs-300x300.png",
+      //image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
     };
 
     this.theme_options = {
@@ -2511,21 +2501,11 @@ class RedSquare extends ModTemplate {
                 let image = url + "?og_img_sig=" + sig;
 
                 updated_social = {
-                  twitter_card: "summary",
-                  twitter_site: "@SaitoOfficial",
-                  twitter_creator: "@SaitoOfficial",
-                  twitter_title: user + " posted on Saito 🟥",
-                  twitter_url: url,
-                  twitter_description: app.browser.stripHtml(text),
-                  twitter_image: image,
-                  og_title: user + " posted on Saito 🟥",
-                  og_url: url,
-                  og_type: "website",
-                  og_description: app.browser.stripHtml(text),
-                  og_site_name: "🟥 Saito Red Square",
-                  og_image: image,
-                  og_image_url: image,
-                  og_image_secure_url: image,
+                  twitter: "@SaitoOfficial",
+                  title: user + " posted on Saito 🟥",
+                  url: url,
+                  description: app.browser.escapeHTML(text),
+                  image: image,
                 }
               }
 

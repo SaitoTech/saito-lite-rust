@@ -65,10 +65,10 @@ class Arcade extends ModTemplate {
 
 		this.social = {
 			twitter: '@SaitoOfficial',
-			title: 'Saito Arcade',
+			title: '🟥 Saito Arcade',
 			url: 'https://saito.io/arcade/',
 			description: 'Peer to peer gaming on the blockchain',
-			image: 'https://saito.io/website/img/arcade-banner3.jpg',
+			image: 'https://saito.tech/wp-content/uploads/2023/11/arcade-300x300.png',
 		};
 
 	}
@@ -1856,9 +1856,25 @@ class Arcade extends ModTemplate {
 			async function (req, res) {
 				let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
 
+				let updatedSocial = Object.assign({}, arcade_self.social);
+
+        if (Object.keys(req.query).length > 0) {
+          let query_params = req.query;
+
+          let game = query_params?.game || query_params?.view_game;
+
+          if (game) {
+          	let gm = app.modules.returnModuleBySlug(game.toLowerCase());
+          	if (gm){
+          		updatedSocial.title = `Play ${gm.returnName()} on 🟥 Saito`;
+          		updatedSocial.image = `/${gm.returnSlug()}/img/arcade/arcade.jpg`;
+          	}
+          }
+				}
+
 				res.setHeader('Content-type', 'text/html');
 				res.charset = 'UTF-8';
-				res.send(arcadeHome(app, arcade_self, app.build_number, arcade_self.social));
+				res.send(arcadeHome(app, arcade_self, app.build_number, updatedSocial));
 				return;
 			}
 		);
@@ -1868,6 +1884,7 @@ class Arcade extends ModTemplate {
 			express.static(webdir)
 		);
 	}
+
 	showShareLink(game_sig) {
 		let data = {};
 		let accepted_game = null;

@@ -5,6 +5,7 @@ import { getDiffieHellman } from 'crypto';
 
 let marked = require('marked');
 let sanitizeHtml = require('sanitize-html');
+const sanitizer = require('sanitizer');
 const linkifyHtml = require('markdown-linkify');
 const emoji = require('node-emoji');
 const UserMenu = require('./ui/modals/user-menu/user-menu');
@@ -1957,6 +1958,15 @@ class Browser {
 
 		return html.replace(/(<([^>]+)>)/gi, '');
 	}
+
+	//
+	// This function should make strings friendly to put INSIDE an html tag
+	// escaping special characters like & < > "
+	//
+	escapeHTML(text){
+		return sanitizer.escapeAttrib(text);
+	}
+
 
 	//////////////////////
 	// helper functions //

@@ -7,6 +7,7 @@ const DialingInterface = require('./lib/components/dialer');
 
 const StreamManager = require('./lib/StreamManager');
 const AppSettings = require('./lib/stun-settings');
+const HomePage = require("index");
 
 class Videocall extends ModTemplate {
 	constructor(app) {
@@ -29,6 +30,16 @@ class Videocall extends ModTemplate {
 		this.stun = null; //The stun API
 		this.streams = null;
 		this.dialer = new DialingInterface(app, this);
+
+		this.social = {
+			twitter: '@SaitoOfficial',
+			title: '🟥 Saito Talk',
+			url: 'https://saito.io/videocall/',
+			description: 'Peer to peer voice and video calling with no middleman',
+			image: "/videocall/img/video-call-og.png",
+			//image: 'https://saito.tech/wp-content/uploads/2023/11/videocall-300x300.png',
+		};
+
 
 		//When CallLauncher is rendered or game-menu triggers it
 		app.connection.on('stun-init-call-interface', (settings) => {
@@ -691,6 +702,29 @@ class Videocall extends ModTemplate {
 		this.app.connection.emit('peer-list', sender, txmsg.data.peer_list);
 		// send data
 	}
+
+	webServer(app, expressapp, express) {
+		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
+		let mod_self = this;
+
+		expressapp.get(
+			'/' + encodeURI(this.returnSlug()),
+			async function (req, res) {
+				let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
+
+				res.setHeader('Content-type', 'text/html');
+				res.charset = 'UTF-8';
+				res.send(HomePage(app, mod_self, app.build_number, mod_self.social));
+				return;
+			}
+		);
+
+		expressapp.use(
+			'/' + encodeURI(this.returnSlug()),
+			express.static(webdir)
+		);
+	}
+
 }
 
 module.exports = Videocall;
