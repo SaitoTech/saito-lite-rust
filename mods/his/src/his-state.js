@@ -399,11 +399,14 @@
     //
     factions["protestant"].vp += this.game.state.protestant_war_winner_vp;
     factions["papacy"].vp     += this.game.state.papacy_war_winner_vp;
-    factions["ottoman"].vp    += this.game.state.ottoman_war_winner_vp;
-    factions["hapsburg"].vp   += this.game.state.hapsburg_war_winner_vp;
-    factions["england"].vp    += this.game.state.england_war_winner_vp;
-    factions["france"].vp     += this.game.state.france_war_winner_vp;    
+    try {
+      factions["ottoman"].vp    += this.game.state.ottoman_war_winner_vp;
+      factions["hapsburg"].vp   += this.game.state.hapsburg_war_winner_vp;
+      factions["england"].vp    += this.game.state.england_war_winner_vp;
+      factions["france"].vp     += this.game.state.france_war_winner_vp;    
+    } catch (err) {
 
+    }
 
     //
     // New World
