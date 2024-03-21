@@ -1,6 +1,7 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const DebateOverlay = require('./lib/ui/overlays/debate');
 const ChateauxOverlay = require('./lib/ui/overlays/chateaux');
+const PiracyOverlay = require('./lib/ui/overlays/piracy');
 const VPOverlay = require('./lib/ui/overlays/vp');
 const NewWorldOverlay = require('./lib/ui/overlays/newworld');
 const TreatiseOverlay = require('./lib/ui/overlays/treatise');
@@ -75,6 +76,7 @@ class HereIStand extends GameTemplate {
     this.diplomacy_propose_overlay = new DiplomacyProposeOverlay(this.app, this);
     this.council_of_trent_overlay = new CouncilOfTrentOverlay(this.app, this);  // council of trent
     this.chateaux_overlay = new ChateauxOverlay(this.app, this);  // build some fucking chateaux
+    this.piracy_overlay = new PiracyOverlay(this.app, this);  // rape and pillage but mostly steal
     this.vp_overlay = new VPOverlay(this.app, this);  // end-of-turn points overlay
     this.newworld_overlay = new NewWorldOverlay(this.app, this);
     this.theses_overlay = new ThesesOverlay(this.app, this);  // 95 theses

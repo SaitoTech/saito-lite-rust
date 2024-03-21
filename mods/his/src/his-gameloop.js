@@ -3896,11 +3896,13 @@ console.log("----------------------------");
 	    if (z[i].key !== this.game.state.active_card) {
               if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
                 let x = z[i].menuOption(this, stage, this.game.player, extra);
-                html += x.html;
-	        z[i].faction = x.faction; // add faction
-	        menu_index.push(i);
-	        menu_triggers.push(x.event);
-	        attach_menu_events = 1;
+		if (x.html) {
+                  html += x.html;
+	          z[i].faction = x.faction; // add faction
+	          menu_index.push(i);
+	          menu_triggers.push(x.event);
+	          attach_menu_events = 1;
+	        }
 	      }
 	    }
 
@@ -6093,6 +6095,14 @@ console.log("yes it does!");
 	  let target_port = mv[3];
 	  let target_faction = "";
 
+
+	  let anti_piracy_rolls = [];
+	  let anti_piracy_faction = [];
+	  let anti_piracy_unittype = [];
+	  let piracy_rolls = [];
+	  let piracy_faction = [];
+	  let piracy_unittype = [];
+
 	  let dragut = false;
       	  let barbarossa = false;
 
@@ -6130,7 +6140,13 @@ console.log("yes it does!");
           // 2 dice per naval squadron in sea zone
           //
           for (let z = 0; z < target_space.units[target_faction].length; z++) {
-            if (target_space.units[target_faction][z].type == "squadron") { opponent_dice += 2; }
+            if (target_space.units[target_faction][z].type == "squadron") {
+	      opponent_dice += 2;
+	      anti_piracy_faction.push(target_faction);
+	      anti_piracy_unittype.push("squadron");
+	      anti_piracy_faction.push(target_faction);
+	      anti_piracy_unittype.push("squadron");
+	    }
           }
 
           //
@@ -6142,6 +6158,8 @@ console.log("yes it does!");
                 let u = adjacent_spaces[i].units[factions_at_war_with_ottoman[k]][z];
                 if (u.type == "squadron") {
                   opponent_dice++;
+	          anti_piracy_faction.push(factions_at_war_with_ottoman[k]);
+	          anti_piracy_unittype.push("squadron");
                 }
               }
             }
@@ -6152,25 +6170,43 @@ console.log("yes it does!");
           //
           if (target_space.key == "atlantic" || target_space.key == "barbary") {
             let x = his_self.returnFactionControllingSpace("gibraltar");
-            if (factions_at_war_with_ottoman.includes(x)) { opponent_dice++; }
+            if (factions_at_war_with_ottoman.includes(x)) { 
+	      anti_piracy_faction.push("gibraltar");
+	      anti_piracy_unittype.push("fortress");
+	      opponent_dice++;
+	    }
           }
           if (target_space.key == "africa" || target_space.key == "ionian") {
             let x = his_self.returnFactionControllingSpace("malta");
-            if (factions_at_war_with_ottoman.includes(x)) { opponent_dice++; }
+            if (factions_at_war_with_ottoman.includes(x)) {
+	      anti_piracy_faction.push("malta");
+	      anti_piracy_unittype.push("fortress");
+	      opponent_dice++;
+            }
           }
           if (target_space.key == "africa" || target_space.key == "aegean") {
             let x = his_self.returnFactionControllingSpace("corfu");
-            if (factions_at_war_with_ottoman.includes(x)) { opponent_dice++; }
+            if (factions_at_war_with_ottoman.includes(x)) {
+	      anti_piracy_faction.push("corfu");
+	      anti_piracy_unittype.push("fortress");
+	      opponent_dice++;
+	    }
           }
           if (target_space.key == "adriatic" || target_space.key == "ionian") {
             let x = his_self.returnFactionControllingSpace("candia");
-            if (factions_at_war_with_ottoman.includes(x)) { opponent_dice++; }
+            if (factions_at_war_with_ottoman.includes(x)) {
+	      anti_piracy_faction.push("candia");
+	      anti_piracy_unittype.push("fortress");
+	      opponent_dice++;
+	    }
           }
           if (his_self.game.state.knights_of_st_john != "") {
             let indspace = his_self.game.spaces[his_self.game.state.knights_of_st_john];
             if (indspace.unrest == 0 && indspace.besieged == 0) {
               for (let b = 0; b < indspace.ports.length; b++) {
                 if (indspace.ports[b] === target_space.key) {
+	          anti_piracy_faction.push(indspace.ports[b]);
+	          anti_piracy_unittype.push("fortress");
                   opponent_dice++;
                 }
               }
@@ -6183,7 +6219,6 @@ console.log("yes it does!");
           // eliminate 1 corsair for each hit of 5 or 6
           //
           let hits = 0;
-	  let anti_piracy_rolls = [];
           for (let i = 0; i < opponent_dice; i++) {
 	    let x = his_self.rollDice(6);
 	    anti_piracy_rolls.push(x);
@@ -6209,7 +6244,9 @@ console.log("yes it does!");
 	  //
 	  let corsairs_remaining = 0;
 	  for (let z = 0; z < target_space.units["ottoman"].length; z++) {
-	    if (target_space.units["ottoman"][z].type == "corsair") { corsairs_remaining++; }
+	    if (target_space.units["ottoman"][z].type == "corsair") {
+	      corsairs_remaining++;
+	    }
 	  }
 
 	  //
@@ -6228,12 +6265,20 @@ console.log("yes it does!");
 	  if (corsairs_remaining > 0) {
 	    if (targetted_ports == 1) {
 	      piracy_dice = 1;
+	      piracy_unittype.push("corsairs");
+	      piracy_faction.push("targetting single port");
 	    } else {
 	      if (corsairs_remaining == 1) {
 	 	piracy_dice = 1;
+	        piracy_unittype.push("corsairs");
+	        piracy_faction.push("targeting multiple ports");
 	      } else {
 	 	if (corsairs_remaining > 1) {
 		  piracy_dice = 2;
+	          piracy_unittype.push("corsairs");
+	          piracy_unittype.push("corsairs");
+	          piracy_faction.push("targetting multiple ports");
+	          piracy_faction.push("targetting multiple ports");
 		}
 	      }
 	    }
@@ -6244,26 +6289,53 @@ console.log("yes it does!");
 	    return 1;
 	  }
 
-	  if (barbarossa) { piracy_dice += 1; }
-	  if (dragut) { piracy_dice += 2; }
+	  if (barbarossa) {
+	    piracy_dice += 1;
+	    piracy_unittype.push("barbarossa");
+	    piracy_faction.push("pirate leader");
+	  }
+	  if (dragut) {
+	    piracy_dice += 2;
+	    piracy_unittype.push("dragut");
+	    piracy_faction.push("pirate leader");
+	    piracy_unittype.push("dragut");
+	    piracy_faction.push("pirate leader");
+	  }
 
 	  his_self.updateLog("Piracy dice: " + piracy_dice);
 
-	  let total_piracy_hits = 0;
-	  let total_piracy_rolls = [];
+	  let piracy_hits = 0;
+	  piracy_rolls = [];
 	  for (let i = 0; i < piracy_dice; i++) {
 	    let x = his_self.rollDice(6);
-	    total_piracy_rolls.push(x);
-	    if (x >= 5) { total_piracy_hits++; }
+	    piracy_rolls.push(x);
+	    if (x >= 5) { piracy_hits++; }
 	  }
 
-	  his_self.updateLog("Piracy rolls: " + JSON.stringify(total_piracy_rolls));
+	  his_self.updateLog("Piracy rolls: " + JSON.stringify(piracy_rolls));
 
-	  if (total_piracy_hits > 0) {
+
+
+	  //
+	  // create piracy object foroverlay
+	  //
+	  let pobj = {
+	    anti_piracy_rolls : anti_piracy_rolls,
+	    anti_piracy_faction : anti_piracy_faction,
+	    anti_piracy_unittype : anti_piracy_unittype,
+	    piracy_rolls : piracy_rolls,
+	    piracy_faction : piracy_faction,
+	    piracy_unittype : piracy_unittype,
+	  };
+
+
+	  this.piracy_overlay.render(pobj);
+
+	  if (piracy_hits > 0) {
             if (his_self.game.state.events.julia_gonzaga_activated == 1 && target_navalspace === "tyrrhenian") {
               his_self.game.queue.push("SETVAR\tstate\tevents\tottoman_julia_gonzaga_vp\t1");
 	    }
-	    his_self.game.queue.push("piracy_hits\t"+target_faction+"\t"+total_piracy_hits+"\t"+target_port+"\t"+target_navalspace);
+	    his_self.game.queue.push("piracy_hits\t"+target_faction+"\t"+piracy_hits+"\t"+target_port+"\t"+target_navalspace);
 	  }
 
 	  return 1;
