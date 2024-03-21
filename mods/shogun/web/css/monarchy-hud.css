@@ -55,3 +55,11 @@
 	text-align: center;
 	text-shadow: 1px 1px 2px black;
 }
+
+.playcard{
+	cursor: pointer;
+}
+
+.card.nonplayable{
+	filter: grayscale(75%) brightness(0.75);
+}
