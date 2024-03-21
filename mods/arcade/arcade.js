@@ -1872,6 +1872,8 @@ class Arcade extends ModTemplate {
           }
 				}
 
+				updatedSocial.url = reqBaseURL + encodeURI(arcade_self.returnSlug());
+
 				res.setHeader('Content-type', 'text/html');
 				res.charset = 'UTF-8';
 				res.send(arcadeHome(app, arcade_self, app.build_number, updatedSocial));

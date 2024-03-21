@@ -712,8 +712,11 @@ class Videocall extends ModTemplate {
 			async function (req, res) {
 				let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
 
+				mod_self.social.url = reqBaseURL + encodeURI(mod_self.returnSlug());
+
 				res.setHeader('Content-type', 'text/html');
 				res.charset = 'UTF-8';
+
 				res.send(HomePage(app, mod_self, app.build_number, mod_self.social));
 				return;
 			}

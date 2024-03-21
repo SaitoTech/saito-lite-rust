@@ -2530,8 +2530,8 @@ class RedSquare extends ModTemplate {
                 let img = "";
                 let img_type;
 
-                if (typeof txmsg.data.images != "undefined") {
-                  let img_uri = txmsg.data?.images[0];
+                if (txmsg.data?.images?.length > 0) {
+                  let img_uri = txmsg.data.images[0];
                   img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
                   let base64Data = img_uri.replace(/^data:image\/(png|jpeg|jpg);base64,/, "");
                   img = Buffer.from(base64Data, "base64");
