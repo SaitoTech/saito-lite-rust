@@ -133,6 +133,68 @@ img {
 	background-repeat: no-repeat;
 }
 
+
+.piracy_marker {
+  	position: absolute;
+	width: 100px;
+	height: 100px;
+	background-image: url('/his/img/Piracy.svg');
+	background-size: cover;
+        z-index: -1;
+}
+.piracy_marker.channel {
+	top: 1025px;
+	left: 1320px;
+}
+.piracy_marker.north {
+	top: 80px;
+	left: 2150px;
+}
+.piracy_marker.baltic {
+	top: 40px;
+	left: 3040px;
+}
+.piracy_marker.biscay {
+	top: 1500px;
+	left: 1300px;
+}
+.piracy_marker.atlantic {
+	top: 2880px;
+	left: 1000px;
+}
+.piracy_marker.gulflyon {
+	top: 2150px;
+	left: 2500px;
+}
+.piracy_marker.barbary {
+	top: 2550px;
+	left: 2350px;
+}
+.piracy_marker.tyrrhenian {
+	top: 2100px;
+	left: 2950px;
+}
+.piracy_marker.africa {
+	top: 2775px;
+	left: 4100px;
+}
+.piracy_marker.adriatic {
+	top: 1800px;
+	left: 3350px;
+}
+.piracy_marker.ionian {
+	top: 2385px;
+	left: 3650px;
+}
+.piracy_marker.aegean {
+	top: 2500px;
+	left: 4350px;
+}
+.piracy_marker.black {
+	top: 1465px;
+	left: 4650px;
+}
+
 .navalspace {
 	width: 190px;
 	height: 100px;

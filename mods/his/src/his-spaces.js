@@ -872,6 +872,7 @@ console.log("and we are great!");
 	    }
 	    for (let y = 0; y < leaders.length; y++) {
 	      leaders[y].spacekey = key;
+	      leaders[y].faction = faction;
 	      units.push(leaders[y]);
 	    }
 	  }
@@ -1075,6 +1076,17 @@ console.log("and we are great!");
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.political = faction;
     space.occupier = faction;
+
+    if (space.key === "oran" || space.key === "tripoli") {
+      if (faction === "ottoman") {
+	space.home = "ottoman";
+      }
+      if (faction === "hapsburg") {
+	space.home = "hapsburg";
+      }
+    }
+
+
   }
 
 
@@ -2213,7 +2225,7 @@ try {
       home: "england",
       political: "england",
       religion: "catholic",
-      ports: ["irish"],
+      ports: ["channel"],
       neighbours: ["bristol","portsmouth"],
       language: "english",
       type: "town"
@@ -2791,7 +2803,7 @@ try {
     spaces['oran'] = {
       top: 2822,
       left: 1902,
-      home: "hapsburg ottoman",
+      home: "hapsburg",
       political: "",
       religion: "catholic",
       ports: ["barbary"],
@@ -2953,7 +2965,7 @@ try {
     spaces['tripoli'] = {
       top: 3030,
       left: 3316,
-      home: "hapsburg ottoman",
+      home: "hapsburg",
       political: "",
       religion: "catholic",
       ports: ["north"],

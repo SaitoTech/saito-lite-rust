@@ -95,13 +95,15 @@ class FactionOverlay {
 			let total_keys = 11;
 			let remaining_keys = total_keys - controlled_keys;
 			for (let i = 0; i < 7; i++) {
-				keyboxen += `<div class="faction_sheet_keytile france_chateaux_status${
-					i + 1
-				}" id="france_chateaux_status_keytile${i + 1}"></div>`;
+				let c = "";
+				if (i == his_self.game.state.french_chateaux_vp) {
+					c = "faction_sheet_france_vp_keytile";
+				}
+				keyboxen += `<div class="faction_sheet_keytile ${c} france_chateaux_status${i+1}" id="france_chateaux_status_keytile${i + 1}"></div>`;
 			}
 			for (let i = 1; i <= 11; i++) {
 				if (i > 11 - remaining_keys) {
-					keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
+					keyboxen += `<div class="faction_sheet_keytile faction_sheet_france_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
 				}
 			}
 
@@ -118,11 +120,15 @@ class FactionOverlay {
 			let total_keys = 11;
 			let remaining_keys = total_keys - controlled_keys;
 			for (let i = 0; i <= 10; i++) {
-				keyboxen += `<div class="faction_sheet_keytile ottoman_piracy_status${i}" id="ottoman_piracy_status_keytile${i}"></div>`;
+				let xcs = "";
+				if (i == his_self.game.state.events.ottoman_piracy_vp) {
+					xcs = "ottoman_piracy_keytile";
+				}
+				keyboxen += `<div class="faction_sheet_keytile ${xcs} ottoman_piracy_status${i}" id="ottoman_piracy_status_keytile${i}"></div>`;
 			}
 			for (let i = 1; i <= 11; i++) {
-				if (i > 11 - remaining_keys) {
-					keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
+				if (i > (11 - remaining_keys)) {
+					keyboxen += `<div class="faction_sheet_keytile ottoman_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
 				}
 			}
 		}
@@ -229,17 +235,8 @@ class FactionOverlay {
 			let total_keys = 14;
 			let remaining_keys = total_keys - controlled_keys;
 			for (let i = 1; i <= 14; i++) {
-				if (his_self.game.state.translations['german']['full'] == i) {
-					box_inserts += `<div class="bible_german_tile" id="bible_german_tile"></div>`;
-				}
-				if (his_self.game.state.translations['french']['full'] == i) {
-					box_inserts += `<div class="bible_french_tile" id="bible_french_tile"></div>`;
-				}
-				if (his_self.game.state.translations['english']['full'] == i) {
-					box_inserts += `<div class="bible_english_tile" id="bible_english_tile"></div>`;
-				}
-				if (i > 14 - remaining_keys) {
-					keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
+				if (i > (14 - remaining_keys)) {
+					keyboxen += `<div class="faction_sheet_keytile faction_sheet_hapsburg_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i}" id="faction_sheet_keytile${i}"></div>`;
 				}
 			}
 		}
@@ -262,6 +259,19 @@ class FactionOverlay {
 			);
 			war_winner_vp -= 1;
 		}
+
+		//
+		// New World Discoveries
+		//
+		for (let key in his_self.game.state.newworld) {
+			if (his_self.game.state.newworld[key].type == "discovery" && his_self.game.state.newworld[key].claimed == 1 && his_self.game.state.newworld[key].faction == faction) {
+				this.app.browser.addElementToSelector(
+					`<div class="new_world_vp ${key}"></div>`,
+					'.faction_sheet_vp'
+				);
+			}
+		}
+
 
 		//
 		// Disgraced and Burned Debaters

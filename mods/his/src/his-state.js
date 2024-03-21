@@ -52,6 +52,13 @@
   onNewRound() {
 
     //
+    // reset piracy markers
+    //
+    for (let key in this.game.navalspaces) {
+      this.hidePiracyMarker(key);
+    }
+
+    //
     // reset impulse commits
     //
     this.game.state.debater_committed_this_impulse = {};

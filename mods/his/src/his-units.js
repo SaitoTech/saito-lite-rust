@@ -877,9 +877,8 @@
     //
     // TODO -- implement limits on squadron and corsair construction
     //
-    if (unittype === "cavalry") { return 1; }
-
     if (unittype === "corsair") { unittype = "squadron"; }
+    if (unittype === "cavalry" && faction == "ottoman") { unittype = "regular"; }
     if (unittype === "mercenary") { unittype = "regular"; }
 
     let res = this.returnOnBoardUnits(faction);
@@ -899,6 +898,8 @@
     if (res.available[unittype]['4'] > 0) { x += (4 * res.available[unittype]['4']); }
     if (res.available[unittype]['5'] > 0) { x += (5 * res.available[unittype]['5']); }
     if (res.available[unittype]['6'] > 0) { x += (6 * res.available[unittype]['6']); }
+
+console.log("returning number of " + unittype + " units: " + x);
 
     return x;
 

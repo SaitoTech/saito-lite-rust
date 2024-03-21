@@ -421,7 +421,7 @@ if (this.game.players.length > 2) {
       }
     });
     this.menu.addSubMenuOption("game-factions", {
-      text : "Ottoman Empire",
+      text : "Ottomans",
       id : "game-ottoman",
       class : "game-ottoman",
       callback : function(app, game_mod) {

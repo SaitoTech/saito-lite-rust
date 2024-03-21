@@ -3874,6 +3874,8 @@ console.log("what retreat options are available: " + JSON.stringify(neighbours))
    	    unmoved_units : unmoved_units ,
    	    moved_units : moved_units ,
 	    destination : destination ,
+            units_to_move : units_to_move ,
+            max_formation_size : max_formation_size ,  
  	  }
 
    	  his_self.movement_overlay.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface); // no destination interface
@@ -3942,11 +3944,17 @@ console.log("what retreat options are available: " + JSON.stringify(neighbours))
 	i--;
       } else {
 	let s = his_self.game.spaces[spaces_with_infantry[i]];
-        for (let z = 0; z < s.ports.length; z++) {
-          if (his_self.doesFactionHaveNavalUnitsInSpace(faction, s.ports[z]) == 0) {
-	    spaces_with_infantry.splice(i, 1);
-	    i--;
-	    z = s.ports.length + 2;
+	if (s.besieged > 0) {
+	  spaces_with_infantry.splice(i, 1);
+	  i--;
+	  z = s.ports.length + 2;
+        } else {
+	  for (let z = 0; z < s.ports.length; z++) {
+            if (his_self.doesFactionHaveNavalUnitsInSpace(faction, s.ports[z]) == 0) {
+  	      spaces_with_infantry.splice(i, 1);
+	      i--;
+	      z = s.ports.length + 2;
+	    }
 	  }
 	}
       }
@@ -4058,7 +4066,6 @@ console.log("what retreat options are available: " + JSON.stringify(neighbours))
   async playerNavalMove(his_self, player, faction) {
 
     let units_to_move = [];
-
     let units_available = his_self.returnFactionNavalUnitsToMove(faction);
 
     let selectUnitsInterface = function(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface) {
@@ -4581,6 +4588,7 @@ console.log("what retreat options are available: " + JSON.stringify(neighbours))
       "Select Space for Siege/Assault: ",
 
       function(space) {
+	if (his_self.game.state.spaces_assaulted_this_turn.includes(space.key)) { return 0; }
 	if (faction == "ottoman" && space.key == "persia" && his_self.game.state.events.war_in_persia == 1) { return 1; }
 	if (faction == "ottoman" && space.key == "egypt" && his_self.game.state.events.revolt_in_egypt == 1) { return 1; }
 	if (faction == "england" && space.key == "ireland" && his_self.game.state.events.revolt_in_ireland == 1) { return 1; }
@@ -4906,7 +4914,23 @@ console.log("what retreat options are available: " + JSON.stringify(neighbours))
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
-    if (faction === "ottoman" && his_self.game.state.events.ottoman_piracy_attempts < 4 && his_self.game.state.events.ottoman_piracy_enabled == 1) { return 1; }
+    if (faction === "ottoman" && his_self.game.state.events.ottoman_piracy_attempts < 4 && his_self.game.state.events.ottoman_piracy_enabled == 1) { 
+
+      for (let key in his_self.game.navalspaces) {
+        let targetsea = false;
+        for (let i = 0; i < his_self.game.navalspaces[key].units[faction].length; i++) {
+  	  if (his_self.game.navalspaces[key].units[faction][i].type == "corsair") {
+	    if (!his_self.game.state.events.ottoman_piracy_seazones.includes(key)) {
+	      targetsea = true;
+	    }
+	  }
+        }
+        if (targetsea == true) {
+          return 1;
+        }
+      }
+
+    }
 
     return 0;
   }
@@ -4921,13 +4945,13 @@ console.log("what retreat options are available: " + JSON.stringify(neighbours))
     
     let msg = "Select Sea for Piracy: ";
     let html = '<ul>';
-    for (let key in this.game.navalspaces) {
+    for (let key in his_self.game.navalspaces) {
       let targetsea = false;
-      for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
-	if (this.game.navalspaces[key].units[faction][i].type == "corsair") { targetsea = true; }
+      for (let i = 0; i < his_self.game.navalspaces[key].units[faction].length; i++) {
+	if (his_self.game.navalspaces[key].units[faction][i].type == "corsair") { targetsea = true; }
       }
       if (targetsea == true) {
-        html += '<li class="option" id="'+key+'">'+this.returnSpaceName(key)+'</li>';
+        html += '<li class="option" id="'+key+'">'+his_self.returnSpaceName(key)+'</li>';
       }
     }
     html += '</ul>';
@@ -4938,15 +4962,14 @@ console.log("what retreat options are available: " + JSON.stringify(neighbours))
     $('.option').on('click', function () {
  
       his_self.updateStatus("acknowledge");
-      let key = parseInt($(this).attr("id"));
+      let key = $(this).attr("id");
       let ports = [];
       let dragut = false;
       let barbarossa = false;
 
-      let target_space = this.game.navalspaces[key];
+      let target_space = his_self.game.navalspaces[key];
       let adjacent_spaces = [];
-
-      let io = this.returnImpulseOrder();
+      let io = his_self.returnImpulseOrder();
       let factions_at_war_with_ottoman = his_self.returnEnemies("ottoman", true); // true = include minor powers
 
       for (let i = 0; i < target_space.neighbours.length; i++) {
@@ -4956,32 +4979,33 @@ console.log("what retreat options are available: " + JSON.stringify(neighbours))
 	adjacent_spaces.push(his_self.game.spaces[target_space.ports[i]]);
       }
 
-      ports = this.game.navalspaces[key].ports;
-      for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
-	if (this.game.navalspaces[key].units[faction][i].type == "dragut") { dragut = true; }
-	if (this.game.navalspaces[key].units[faction][i].type == "barbarossa") { barbarossa = true; }
+      ports = his_self.game.navalspaces[key].ports;
+      for (let i = 0; i < his_self.game.navalspaces[key].units[faction].length; i++) {
+	if (his_self.game.navalspaces[key].units[faction][i].type == "dragut") { dragut = true; }
+	if (his_self.game.navalspaces[key].units[faction][i].type == "barbarossa") { barbarossa = true; }
       }
 
       let msg = "Select Target for Piracy: ";
       let html = '<ul>';
 
       for (let z = 0; z < ports.length; z++) {
-	let controller = ports.political;
-	if (ports.political == "") { controller = ports.home; }
+	let controller = his_self.game.spaces[ports[z]].political;
+	if (his_self.game.spaces[ports[z]].political == "") { controller = his_self.game.spaces[ports[z]].home; }
         if (io.includes(controller)) {
-          html += '<li class="option" id="'+ports[z]+'">'+ports[z]+'</li>';
+          html += '<li class="option" id="'+ports[z]+'">'+his_self.returnSpaceName(ports[z])+'</li>';
         }
       }
       html += '</ul>';
+
       his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
       $('.option').on('click', function () {
  
-        let target_port = parseInt($(this).attr("id"));
+        let target_port = $(this).attr("id");
         his_self.updateStatus("acknowledge");
 	his_self.addMove("piracy\t"+faction+"\t"+key+"\t"+target_port);
-	his_endTurn();
+	his_self.endTurn();
 
       });
     });
@@ -5115,15 +5139,14 @@ console.log("what retreat options are available: " + JSON.stringify(neighbours))
       "Select Port for Corsair",
 
       function(space) {
-        if (space.owner === faction) { return 1; }
-        if (space.home === faction) { return 1; }
-        if (space.ports.length > 0 && space.pirate_haven == 1 && his_self.game.state.events.foreign_recruits == faction && space.political == faction) { return 1; }
+        if (space.home == faction && space.ports.length > 0) { return 1; }
+        if (space.key == "algiers" && his_self.isSpaceController("algiers", "ottoman")) { return 1; }
+        if (space.pirate_haven == 1 && his_self.isSpaceControlled(space.key, "ottoman")) { return 1; }
 	return 0;
       },
 
       function(destination_spacekey) {
 	his_self.updateStatus("acknowledge...");
-	// corsair is naval unit, but gets built in port (land --> game.spaces)
 	his_self.addMove("build\tland\t"+faction+"\t"+"corsair"+"\t"+destination_spacekey);
 	his_self.endTurn();
       },

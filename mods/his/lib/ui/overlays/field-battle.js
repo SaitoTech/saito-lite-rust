@@ -103,7 +103,11 @@ class FieldBattleOverlay {
 			el.remove();
 		});
 		document.querySelectorAll('.hits-assignable').forEach((el) => {
-			let factionspace = el.querySelector('.field-battle-unit .field-battle-desc').innerHTML;
+console.log("EL INNERHTML in ASSIGN HITS MANUALLY: ");
+console.log(el.innerHTML);
+try {
+			let obj = el.querySelector('.field-battle-unit .field-battle-desc');
+			let factionspace = obj.innerHTML;
 			let can_i_kill_this_guy = false;
 
 			if (
@@ -160,6 +164,9 @@ class FieldBattleOverlay {
 					}
 				};
 			}
+} catch (err) {
+  console.log("ERROR: " + JSON.stringify(err));
+}
 		});
 		if (faction != '') {
 			if (

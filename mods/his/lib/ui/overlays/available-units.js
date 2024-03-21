@@ -32,6 +32,9 @@ class AvailableUnitsOverlay {
 
 	renderMove(mobj, faction, spacekey) {
 
+console.log("spacekey in renderMove: " + spacekey);
+console.log(JSON.stringify(mobj));
+
                 let max_formation_size = this.mod.returnMaxFormationSize(
                         mobj.units_to_move,
                         faction,
@@ -726,6 +729,45 @@ if (us['mercenary']) {
                                 }
                                 if (f == 'independent') {
                                         imgtile = `<img id="6" class="army_tile ${muc}" src="/his/img/tiles/independent/IndependentMerc-6.svg" />`;
+                                }
+                                let qs = `.available-units-overlay`;
+                                his_self.app.browser.addElementToSelector(imgtile, qs);
+                        }
+	  }
+
+	  if (utype == "cavalry") {
+          		for (let i = 0; i < available['regular']['1']; i++) {
+				if (max_units < 1) { muc = " unavailable"; }
+                                let imgtile = '';
+                                if (f == 'ottoman') {
+                                        imgtile = `<img id="1" class="army_tile ${muc}" src="/his/img/tiles/ottoman/OttomanCav-1.svg" />`;
+                                }
+                                let qs = `.available-units-overlay`;
+                                his_self.app.browser.addElementToSelector(imgtile, qs);
+			}
+                        for (let i = 0; i < available['regular']['2']; i++) {
+				if (max_units < 2) { muc = " unavailable"; }
+                                let imgtile = '';
+                                if (f == 'ottoman') {
+                                        imgtile = `<img id="2" class="army_tile ${muc}" src="/his/img/tiles/ottoman/OttomanCav-2.svg" />`;
+                                }
+                                let qs = `.available-units-overlay`;
+                                his_self.app.browser.addElementToSelector(imgtile, qs);
+                        }
+                        for (let i = 0; i < available['regular']['4']; i++) {
+				if (max_units < 4) { muc = " unavailable"; }
+                                let imgtile = '';
+                                if (f == 'ottoman') {
+                                        imgtile = `<img id="4" class="army_tile ${muc}" src="/his/img/tiles/ottoman/OttomanCav-4.svg" />`;
+                                }
+                                let qs = `.available-units-overlay`;
+                                his_self.app.browser.addElementToSelector(imgtile, qs);
+                        }
+                        for (let i = 0; i < available['regular']['6']; i++) {
+				if (max_units < 6) { muc = " unavailable"; }
+                                let imgtile = '';
+                                if (f == 'ottoman') {
+                                        imgtile = `<img id="6" class="army_tile ${muc}" src="/his/img/tiles/ottoman/OttomanCav-6.svg" />`;
                                 }
                                 let qs = `.available-units-overlay`;
                                 his_self.app.browser.addElementToSelector(imgtile, qs);

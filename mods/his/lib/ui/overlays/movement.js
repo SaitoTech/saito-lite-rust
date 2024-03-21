@@ -31,6 +31,7 @@ class MovementOverlay {
 		let faction = mobj.faction;
 		let source = mobj.source;
 		let destination = mobj.destination;
+console.log("max formation size: " + source);
 		let max_formation_size = this.mod.returnMaxFormationSize(
 			units_to_move,
 			faction,
@@ -110,6 +111,7 @@ class MovementOverlay {
 		};
 
 		this.overlay.show(MovementOverlayTemplate(obj, this.mod));
+console.log("about to render move -- " + space.key);
 		this.mod.available_units_overlay.renderMove(mobj, faction, space.key);
 		if (this.fade_out_available_units) { this.mod.available_units_overlay.fadeOut(); }
 

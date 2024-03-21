@@ -3,6 +3,9 @@
 	width: 5rem;
 }
 
+.factionbar-faction.papacy , .factionbar-faction.protestant , .factionbar-faction {
+  width: 100%;
+}
 
 .show_wife.henry_viii_marital_status3 {
     background-image: url(/his/img/tiles/wives/AnneBoleyn.svg);
@@ -85,6 +88,24 @@
 	background-size: cover;
 	width: 50px;
 	height: 50px;
+}
+.france_keytile {
+        background-image: url(/his/img/tiles/france/France_key.svg);
+        background-size: cover;
+	width: 50px;
+	height: 50px;
+}
+.hapsburg_keytile {
+        background-image: url(/his/img/tiles/hapsburg/Hapsburg_key.svg);
+        background-size: cover;
+	width: 50px;
+	height: 50px;
+}
+.ottoman_keytile {
+        background-image: url(/his/img/tiles/ottoman/Ottoman_key.svg);
+        background-size: cover;
+	width: 8%;
+	height: 12%;
 }
 
 .new_testament_german_tile {
@@ -180,6 +201,39 @@
 	background-size: contain;
 }
 
+.new_world_vp {
+	width: 50px;
+	height: 50px;
+	background-size: cover;
+}
+.new_world_vp.amazon {
+	background-image: url(/his/img/vp/AmazonRiver2VP.svg);
+}
+.new_world_vp.aztec {
+	background-image: url(/his/img/vp/Aztecs2VP.svg);
+}
+.new_world_vp.circumnavigation {
+	background-image: url(/his/img/vp/Circumnavigation3VP.svg);
+}
+.new_world_vp.greatlakes {
+	background-image: url(/his/img/vp/GreatLakes1VP);
+}
+.new_world_vp.inca {
+	background-image: url(/his/img/vp/Inca2VP.svg);
+}
+.new_world_vp.maya {
+	background-image: url(/his/img/vp/Maya1VP);
+}
+.new_world_vp.mississippi {
+	background-image: url(/his/img/vp/MississippiRiver1VP.svg);
+}
+.new_world_vp.pacificstrait {
+	background-image: url(/his/img/vp/PacificStrait1VP.svg);
+}
+.new_world_vp.stlawrence {
+	background-image: url(/his/img/vp/StLawrenceRiver1VP);
+}
+
 .faction_sheet {
 	width: 1240px;
 	height: 800px;
@@ -214,6 +268,10 @@
 	height: 11%;
 	width: 7%;
 }
+.faction_sheet_keytile.ottoman_keytile {
+        height: 12.5%;
+        width: 8%;
+}
 .faction_sheet_keytile:hover {
 	opacity: 0.3;
 }
@@ -246,151 +304,187 @@
     left: 54.25%;
 }
 
+.faction_sheet_france_vp_keytile {
+	background-image: url('/his/img/vp/VP_France.svg');
+	background-size: cover;
+}
+.faction_sheet_france_keytile {
+	background-image: url('/his/img/tiles/france/France_key.svg');
+	background-size: cover;
+}
 .faction_sheet_france_keytile1 {
-	top: 572px;
-	left: 49px;
+	top: 70%;
+	left: 3%;
+    	height: 75px;
+    	width: 75px;
 }
 .faction_sheet_france_keytile2 {
-	top: 572px;
-	left: 156px;
+	top: 70%;
+	left: 11.5%;
+    	height: 75px;
+    	width: 75px;
 }
 .faction_sheet_france_keytile3 {
-	top: 572px;
-	left: 262px;
+	top: 70%;
+	left: 20%;
+    	height: 75px;
+    	width: 75px;
 }
 .faction_sheet_france_keytile4 {
-	top: 572px;
-	left: 370px;
+	top: 70%;
+	left: 29%;
+    	height: 75px;
+    	width: 75px;
 }
 .faction_sheet_france_keytile5 {
-	top: 678px;
-	left: 49px;
+	top: 83%;
+	left: 3%;
+    	height: 75px;
+    	width: 75px;
 }
 .faction_sheet_france_keytile6 {
-	top: 678px;
-	left: 156px;
+	top: 83%;
+	left: 11.5%;
+    	height: 75px;
+    	width: 75px;
 }
 .faction_sheet_france_keytile7 {
-	top: 678px;
-	left: 262px;
+	top: 83%;
+	left: 20%;
+    	height: 75px;
+    	width: 75px;
 }
 .faction_sheet_france_keytile8 {
-	top: 678px;
-	left: 370px;
+	top: 83%;
+	left: 29%;
+    	height: 75px;
+    	width: 75px;
 }
 .faction_sheet_france_keytile9 {
-	top: 678px;
-	left: 476px;
+	top: 83%;
+	left: 37.5%;
+    	height: 75px;
+    	width: 75px;
 }
 .faction_sheet_france_keytile10 {
-	top: 678px;
-	left: 580px;
+	top: 83%;
+	left: 46%;
+    	height: 75px;
+    	width: 75px;
 }
 .faction_sheet_france_keytile11 {
-	top: 678px;
-	left: 688px;
+	top: 83%;
+	left: 54.5%;
+    	height: 75px;
+    	width: 75px;
 }
 
 .faction_sheet_ottoman_keytile1 {
-	top: 572px;
-	left: 45px;
+	top: 70%;
+	left: 3%;
 }
 .faction_sheet_ottoman_keytile2 {
-	top: 572px;
-	left: 160px;
+	top: 70%;
+	left: 12%;
 }
 .faction_sheet_ottoman_keytile3 {
-	top: 572px;
-	left: 274px;
+	top: 70%;
+	left: 21%;
 }
 .faction_sheet_ottoman_keytile4 {
-	top: 572px;
-	left: 388px;
+	top: 70%;
+	left: 30%;
 }
 .faction_sheet_ottoman_keytile5 {
-	top: 572px;
-	left: 500px;
+	top: 70%;
+	left: 39.5%;
 }
 .faction_sheet_ottoman_keytile6 {
-	top: 572px;
-	left: 613px;
+	top: 70%;
+	left: 48.5%;
 }
 .faction_sheet_ottoman_keytile7 {
-	top: 680px;
-	left: 45px;
+	top: 83.5%;
+	left: 3%;
 }
 .faction_sheet_ottoman_keytile8 {
-	top: 680px;
-	left: 160px;
+	top: 83.5%;
+	left: 12%;
 }
 .faction_sheet_ottoman_keytile9 {
-	top: 680px;
-	left: 274px;
+	top: 83.5%;
+	left: 21%;
 }
 .faction_sheet_ottoman_keytile10 {
-	top: 680px;
-	left: 388px;
+	top: 83.5%;
+	left: 30%;
 }
 .faction_sheet_ottoman_keytile11 {
-	top: 680px;
-	left: 500px;
+	top: 83.5%;
+	left: 39.5%;
 }
 
+.faction_sheet_hapsburg_keytile{
+        background-image: url(/his/img/tiles/hapsburg/Hapsburg_key.svg);
+        background-size: cover;
+  	height: 75px;
+	width: 75px;
+}
 .faction_sheet_hapsburg_keytile1 {
-	top: 454px;
-	left: 43px;
+	top: 55.25%;
+	left: 2.75%;
 }
 .faction_sheet_hapsburg_keytile2 {
-	top: 454px;
-	left: 156px;
+	top: 55.25%;
+	left: 11.75%;
 }
 .faction_sheet_hapsburg_keytile3 {
-	top: 454px;
-	left: 270px;
+	top: 55.25%;
+	left: 21%;
 }
 .faction_sheet_hapsburg_keytile4 {
-	top: 454px;
-	left: 383px;
+	top: 55.25%;
+	left: 30%;
 }
 .faction_sheet_hapsburg_keytile5 {
-	top: 454px;
-	left: 497px;
+	top: 55.25%;
+	left: 39%;
 }
 .faction_sheet_hapsburg_keytile6 {
-	top: 567px;
-	left: 43px;
+	top: 69.5%;
+	left: 2.75%;
 }
 .faction_sheet_hapsburg_keytile7 {
-	top: 567px;
-	left: 156px;
+	top: 69.5%;
+	left: 11.75%;
 }
 .faction_sheet_hapsburg_keytile8 {
-	top: 567px;
-	left: 270px;
+	top: 69.5%;
+	left: 21%;
 }
 .faction_sheet_hapsburg_keytile9 {
-	top: 567px;
-	left: 383px;
+	top: 69.5%;
+	left: 30%;
 }
 .faction_sheet_hapsburg_keytile10 {
-	top: 567px;
-	left: 497px;
+	top: 69.5%;
+	left: 39%;
 }
 .faction_sheet_hapsburg_keytile11 {
-	top: 680px;
-	left: 43px;
+	top: 83.5%;
+	left: 2.75%;
 }
 .faction_sheet_hapsburg_keytile12 {
-	top: 680px;
-	left: 156px;
+	top: 83.5%;
+	left: 11.75%;
 }
 .faction_sheet_hapsburg_keytile13 {
-	top: 680px;
-	left: 270px;
+	top: 83.5%;
+	left: 21%;
 }
 .faction_sheet_hapsburg_keytile14 {
-	top: 680px;
-	left: 383px;
+	top: 83.5%;
+	left: 30%;
 }
 
 .protestant_translation_status0 {
@@ -533,113 +627,96 @@
 }
 
 .france_chateaux_status1 {
-	top: 472px;
-	left: 434px;
-	height: 84px;
-	width: 84px;
+    top: 58%;
+    left: 34.5%;
+    height: 60px;
+    width: 60px;
 }
 .france_chateaux_status2 {
-	top: 472px;
-	left: 524px;
-	height: 84px;
-	width: 84px;
+    top: 58%;
+    left: 41.5%;
+    height: 60px;
+    width: 60px;
 }
 .france_chateaux_status3 {
-	top: 472px;
-	left: 614px;
-	height: 84px;
-	width: 84px;
+    top: 58%;
+    left: 48.75%;
+    height: 60px;
+    width: 60px;
 }
 .france_chateaux_status4 {
-	top: 472px;
-	left: 702px;
-	height: 84px;
-	width: 84px;
+    top: 58%;
+    left: 56%;
+    height: 60px;
+    width: 60px;
 }
 .france_chateaux_status5 {
-	top: 560px;
-	left: 524px;
-	height: 84px;
-	width: 84px;
+    top: 69%;
+    left: 41.5%;
+    height: 60px;
+    width: 60px;
 }
 .france_chateaux_status6 {
-	top: 560px;
-	left: 614px;
-	height: 84px;
-	width: 84px;
+    top: 69%;
+    left: 48.75%;
+    height: 60px;
+    width: 60px;
 }
 .france_chateaux_status7 {
-	top: 560px;
-	left: 702px;
-	height: 84px;
-	width: 84px;
+    top: 69%;
+    left: 56%;
+    height: 60px;
+    width: 60px;
 }
 
-.ottoman_piracy_status_keytile1 {
-	height: 85px;
-	width: 85px;
-	top: 350px;
-	left: 141px;
+.ottoman_piracy_status0 {
+  top: 42%;
+  left: 10.5%;
 }
-.ottoman_piracy_status_keytile2 {
-	height: 85px;
-	width: 85px;
-	top: 350px;
-	left: 235px;
+.ottoman_piracy_status1 {
+  top: 42%;
+  left: 18%;
 }
-.ottoman_piracy_status_keytile3 {
-	height: 85px;
-	width: 85px;
-	top: 350px;
-	left: 329px;
+.ottoman_piracy_status2 {
+  top: 42%;
+  left: 25.75%;
 }
-.ottoman_piracy_status_keytile4 {
-	height: 85px;
-	width: 85px;
-	top: 350px;
-	left: 424px;
+.ottoman_piracy_status3 {
+  top: 42%;
+  left: 33.25%;
 }
-.ottoman_piracy_status_keytile5 {
-	height: 85px;
-	width: 85px;
-	top: 350px;
-	left: 518px;
+.ottoman_piracy_status4 {
+  top: 42%;
+  left: 41%;
 }
-.ottoman_piracy_status_keytile6 {
-	height: 85px;
-	width: 85px;
-	top: 440px;
-	left: 46px;
+
+.ottoman_piracy_status5 {
+  top: 53.5%;
+  left: 3%;
 }
-.ottoman_piracy_status_keytile7 {
-	height: 85px;
-	width: 85px;
-	top: 440px;
-	left: 141px;
+.ottoman_piracy_status6 {
+  top: 53.5%;
+  left: 10.5%;
 }
-.ottoman_piracy_status_keytile8 {
-	height: 85px;
-	width: 85px;
-	top: 440px;
-	left: 235px;
+.ottoman_piracy_status7 {
+  top: 53.5%;
+  left: 18%;
 }
-.ottoman_piracy_status_keytile9 {
-	height: 85px;
-	width: 85px;
-	top: 440px;
-	left: 329px;
+.ottoman_piracy_status8 {
+  top: 53.5%;
+  left: 25.75%;
 }
-.ottoman_piracy_status_keytile10 {
-	height: 85px;
-	width: 85px;
-	top: 440px;
-	left: 424px;
+.ottoman_piracy_status9 {
+  top: 53.5%;
+  left: 33.25%;
 }
-.ottoman_piracy_status_keytile11 {
-	height: 85px;
-	width: 85px;
-	top: 518px;
-	left: 141px;
+.ottoman_piracy_status10 {
+  top: 53.5%;
+  left: 41%;
+}
+.ottoman_piracy_keytile {
+  background-image: url(/his/img/tiles/ottoman/Ottoman_key.svg);
+  background-size: cover;
 }
 
 .papacy_construction_status1 {

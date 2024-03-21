@@ -402,7 +402,7 @@ console.log("\n\n\n\n");
 	  this.addRegular("protestant", "augsburg", 2);	
 
           this.addReformer("protestant", "wittenberg", "luther-reformer");
-          this.addReformer("protestant", "geneva", "calvin-reformer");
+          //this.addReformer("protestant", "geneva", "calvin-reformer");
           this.addArmyLeader("protestant", "brandenburg", "philip-hesse");
           this.addArmyLeader("protestant", "wittenberg", "john-frederick");
 
@@ -496,6 +496,17 @@ console.log("\n\n\n\n");
 	  this.setEnemies("hapsburg", "protestant");
 	  this.setEnemies("papacy", "protestant");
 	  this.setAllies("hapsburg", "hungary");
+
+
+          this.game.state.events.barbary_pirates = 1;
+          this.game.state.events.ottoman_piracy_enabled = 1;
+          this.game.state.events.ottoman_corsairs_enabled = 1;
+
+
+
+	// TESTING
+          this.addCorsair("ottoman", "algiers", 3);
+
 
       }
 

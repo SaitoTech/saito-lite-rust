@@ -2056,6 +2056,18 @@ try {
 
   }
 
+  showPiracyMarker(key) {
+    try {
+      document.querySelector(`.piracy_marker.${key}`).style.display = "block";
+    } catch (err) {}
+  }
+
+  hidePiracyMarker(key) {
+    try {
+      document.querySelector(`.piracy_marker.${key}`).style.display = "none";
+    } catch (err) {}
+  }
+
   displayNavalSpace(key) {
 
     if (this.game.spaces[key]) { this.displaySpace(key); return; }
@@ -2068,6 +2080,15 @@ try {
     // should we show the tile?
     //
     let show_tile = 1;
+
+    //
+    // show piracy marker if needed
+    //
+    if (this.game.state.events.ottoman_piracy_seazones.includes(key)) {
+      this.showPiracyMarker(key);
+    } else {
+      this.hidePiracyMarker(key);
+    }
 
     //
     // do not show under some conditions
