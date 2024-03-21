@@ -7,7 +7,7 @@ const DialingInterface = require('./lib/components/dialer');
 
 const StreamManager = require('./lib/StreamManager');
 const AppSettings = require('./lib/stun-settings');
-const HomePage = require("index");
+const HomePage = require("./index");
 
 class Videocall extends ModTemplate {
 	constructor(app) {
