@@ -63,9 +63,9 @@ this.updateLog(`###############`);
 	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
 	  this.game.queue.push("action_phase");
 if (this.game.options.scenario != "is_testing") {
-//	  this.game.queue.push("spring_deployment_phase");
-//	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
-//	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	  this.game.queue.push("spring_deployment_phase");
+	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
+	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 }
 
 
@@ -402,24 +402,18 @@ if (this.game.options.scenario == "is_testing") {
           let cards_left = parseInt(mv[2]);
 	  this.game.state.cards_left[faction] = cards_left;
 
-console.log("TESTING!");
 	  //
 	  // we don't send this if we aren't playing event or ops, so if cards_left > 0, we 
 	  // do not trigger auto-passing. this "unsets" pass if we have passed earlier, allowing
 	  // players to pass and then decide to continue later.
 	  //
 	  let player = this.returnPlayerCommandingFaction(faction);
-console.log("TESTING 1!");
           for (let z = 0; z < this.game.state.players_info[player-1].factions.length; z++) {
-console.log("TESTING 2!");
 	    if (this.game.state.players_info[player-1].factions[z] == faction) {
-console.log("TESTING 3!");
 	      this.game.state.players_info[player-1].factions_passed[z] = false;
 	    }
 	  }
-console.log("display cards left!");
 	  this.displayCardsLeft();
-console.log("done cards left!");
 
           this.game.queue.splice(qe, 1);
 	  return 1;
@@ -4807,6 +4801,7 @@ try {
 	  //
 	  // this should stop execution while we are looking at the pre-field battle overlay
 	  //
+	  his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
 	  his_self.game.queue.push("field_battle_assign_hits_render");
 	  if (is_janissaries_possible) {
 	    his_self.game.queue.push("counter_or_acknowledge\tOttomans considering playing Janissaries\tjanissaries\t"+space.key);
@@ -5566,8 +5561,8 @@ console.log("fb overlay render assign hits!");
           
 	if (mv[0] === "assault_assign_hits_render") {
           this.game.queue.splice(qe, 1);
-          this.assault_overlay.pushHudUnderOverlay();
           this.assault_overlay.render(his_self.game.state.assault);
+          this.assault_overlay.pullHudOverOverlay();
 	  return 1;
 	}
 
@@ -5580,6 +5575,7 @@ console.log("fb overlay render assign hits!");
 	if (mv[0] === "field_battle_assign_hits_render") {
           this.game.queue.splice(qe, 1);
           this.field_battle_overlay.render(his_self.game.state.field_battle);
+          this.field_battle_overlay.pullHudOverOverlay();
 	  return 1;
 	}
 
@@ -7232,6 +7228,7 @@ console.log("faction: " + faction);
           //
           // this should stop execution while we are looking at the pre-field battle overlay
           //
+	  his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
           his_self.game.queue.push("assault_assign_hits_render");
           //his_self.game.queue.push("counter_or_acknowledge\tAssault results in "+space.name + "\tpre_assault_hits_assignment");
           //his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
@@ -7518,15 +7515,6 @@ console.log("faction: " + faction);
 
           }
 
-//	  his_self.updateLog("Attacker UnModified: " + JSON.stringify(attacker_results));
-//	  his_self.updateLog("Defender UnModified: " + JSON.stringify(defender_results));
-//	  his_self.updateLog("Attacker Modified: " + JSON.stringify(his_self.game.state.assault.attacker_modified_rolls));
-//	  his_self.updateLog("Defender Modified: " + JSON.stringify(his_self.game.state.assault.defender_modified_rolls));
-//	  his_self.updateLog("Attacker Units: " + attacker_units);
-//	  his_self.updateLog("Defender Units: " + defender_units);
-//	  his_self.updateLog("Attacker Hits: " + attacker_hits);
-//	  his_self.updateLog("Defender Hits: " + defender_hits);
-
 	  //
 	  // who won?
 	  //
@@ -7809,14 +7797,24 @@ console.log("faction: " + faction);
           if (loser === attacker_faction) {
 	    let winning_faction = defender_faction;
 	    if (this.game.player == this.returnPlayerCommandingFaction(loser)) {
-	      this.playerEvaluatePostBattleRetreatOpportunity(loser, winning_faction, attacker_faction, spacekey, this.game.state.attacker_comes_from_this_spacekey);
+	      if (this.game.state.field_battle.relief_battle) {
+		this.playerEvaluateBreakSiegeRetreatOpportunity(loser, spacekey);
+//	        this.playerEvaluatePostBattleRetreatOpportunity(loser, winning_faction, attacker_faction, spacekey, this.game.state.attacker_comes_from_this_spacekey);
+	      } else {
+	        this.playerEvaluatePostBattleRetreatOpportunity(loser, winning_faction, attacker_faction, spacekey, this.game.state.attacker_comes_from_this_spacekey);
+	      }
             } else {
               this.updateStatus(this.returnFactionName(loser) + " considering post-battle retreat");
             }
           } else {
 	    let winning_faction = attacker_faction;
 	    if (this.game.player == this.returnPlayerCommandingFaction(loser)) {
-	      this.playerEvaluatePostBattleRetreatOpportunity(loser, winning_faction, attacker_faction, spacekey, this.game.state.attacker_comes_from_this_spacekey);
+	      if (this.game.state.field_battle.relief_battle) {
+		this.playerEvaluateBreakSiegeRetreatOpportunity(loser, spacekey);
+//	        this.playerEvaluatePostBattleRetreatOpportunity(loser, winning_faction, attacker_faction, spacekey, this.game.state.attacker_comes_from_this_spacekey);
+	      } else {
+	        this.playerEvaluatePostBattleRetreatOpportunity(loser, winning_faction, attacker_faction, spacekey, this.game.state.attacker_comes_from_this_spacekey);
+	      }
             } else {
               this.updateStatus(this.returnFactionName(loser) + " considering post-battle retreat");
             }
@@ -10335,26 +10333,31 @@ console.log(JSON.stringify(reshuffle_cards));
 	      let roll = this.rollDice(num_cards) - 1;
 	      let is_this_home_card = 0;
 	      let pulled = this.game.deck[0].fhand[fhand_idx][roll];
-	      if (pulled == "001" || pulled == "002" || pulled == "003" || pulled == "004" || pulled == "005" || pulled == "006" || pulled == "007") {
+	      if (pulled === "001" || pulled === "002" || pulled === "003" || pulled === "004" || pulled === "005" || pulled === "006" || pulled === "007") {
 		is_this_home_card = 1;
 	      }
 
 	      if (home_card_permitted == 0 && is_this_home_card == 1) {
+		let is_looped = false;
 	        while (roll >= 0 && is_this_home_card == 1) {
 		  is_this_home_card = 0;
 		  roll--;
 		  if (roll == -1) {
-		    this.addMove("NOTIFY\t"+this.returnFactionName(faction)+ " has no non-home cards to discard");
-		    this.endTurn();
-		    return 0;
+		    if (is_looped == true) {
+		      this.addMove("NOTIFY\t"+this.returnFactionName(faction)+ " has no non-home cards to discard");
+		      this.endTurn();
+		      return 0;
+		    } else {
+		      is_looped = true;
+		      roll = this.game.deck[0].fhand[fhand_idx].length-1;
+		    }
 		  }
 	      	  let pulled = this.game.deck[0].fhand[fhand_idx][roll];
-	      	  if (pulled == "001" || pulled == "002" || pulled == "003" || pulled == "004" || pulled == "005" || pulled == "006" || pulled == "007") {
+	      	  if (pulled === "001" || pulled === "002" || pulled === "003" || pulled === "004" || pulled === "005" || pulled === "006" || pulled === "007") {
 		    is_this_home_card = 1;
 		  }
 		}
 	      }
-
 
 	      discards.push(roll);
 	      discards.sort();

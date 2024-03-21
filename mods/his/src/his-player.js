@@ -1162,7 +1162,16 @@ if (this.game.state.events.cramner_active == 1) {
 
     $('.option').off();
     $('.option').on('click', function () {
+
       let action = $(this).attr("id");
+
+      // remove events to prevent re-firing
+      $('.option').off();
+      $('.hextile').off();
+      $('.space').off();
+
+      his_self.removeSelectable();
+
       if (action == "cancel") {
         cancel_func();
         return 0;
@@ -3195,7 +3204,6 @@ does_units_to_move_have_unit = true; }
     if (his_self.game.navalspaces[spacekey]) { space = his_self.game.navalspaces[spacekey]; }
 
     let neighbours = this.returnNavalAndPortNeighbours(spacekey);
-console.log("what retreat options are available: " + JSON.stringify(neighbours));
     let retreat_options = 0;
     for (let i = 0; i < neighbours.length; i++) {
       if (his_self.canFactionRetreatToNavalSpace(faction, neighbours[i])) {
@@ -3492,6 +3500,8 @@ console.log("what retreat options are available: " + JSON.stringify(neighbours))
     html    += `<li class="card" id="break">participate in battle</li>`;
     html    += `<li class="card" id="skip">remain besieged</li>`;
     html    += `</ul>`;
+
+    this.game.state.field_battle.relief_battle = true;
 
     this.updateStatusWithOptions(`Do Your Besieged Forces participate in this Field Battle?`, html);
     this.attachCardboxEvents(function(user_choice) {
