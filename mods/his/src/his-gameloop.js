@@ -99,10 +99,6 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.queue.push("is_testing");
 	    this.game.queue.push("card_draw_phase");
 } else {
-	if (this.game.options.scenario === "1532") {
-	    this.game.queue.push("is_1532");
-	    this.game.queue.push("card_draw_phase");
-	} else {
 	    this.game.queue.push("show_overlay\tvp");
 	    this.game.queue.push("hide_overlay\tdiet_of_worms");
 	    this.game.queue.push("diet_of_worms");
@@ -110,7 +106,6 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.queue.push("card_draw_phase");
 	    this.game.queue.push("event\tprotestant\t008");
 	    this.game.queue.push("game_help_start");
-	}
 }
 
 	  } else {
@@ -138,6 +133,15 @@ if (this.game.options.scenario == "is_testing") {
 	    // round 4 - calvin in genoa
 	    //
 	    if (this.game.state.round == 4) {
+
+		//
+		// 1532 starts in R4
+		//
+		if (this.game.options.scenario === "1532") {
+	  	  this.game.queue.push("is_1532");
+		}
+
+
 	      this.addDebater("protestant", "farel-debater");
 	      this.addDebater("protestant", "cop-debater");
 	      this.addDebater("protestant", "olivetan-debater");
@@ -492,6 +496,10 @@ console.log("done cards left!");
 	  return 1;
 
 	}
+
+
+
+
 
 	if (mv[0] === "game_help_start") {
 

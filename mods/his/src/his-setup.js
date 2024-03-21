@@ -65,6 +65,13 @@ console.log("\n\n\n\n");
       //
       if (this.game.options.scenario === "1517") {
 
+	//
+	// 1517 wars and allies / diplomatic situation
+	//
+	this.setEnemies("hapsburg", "france");
+	this.setEnemies("papacy", "france");
+	this.setEnemies("ottoman", "hungary");
+
         //
         // 2P variant
         //
@@ -260,10 +267,19 @@ console.log("\n\n\n\n");
       //
       // 1532 scenario
       //
-      if (this.game.options.scenario === "1532") {
+      if (this.game.options.scenario === "1532" || this.game.options.scenario === "tournament") {
 
 	  this.game.state.starting_round = 4;
 	  this.game.state.round = 3; // the one before 4
+
+	  //
+	  // 1532 wars and allies / diplomatic situation
+	  //
+	  this.setEnemies("hapsburg", "ottoman");
+	  this.setEnemies("hapsburg", "protestant");
+	  this.setEnemies("papacy", "protestant");
+	  this.setAllies("hapsburg", "hungary");
+	  this.setActivatedPower("hapsburg", "hungary");
 
 	  // OTTOMAN
           this.addArmyLeader("ottoman", "istanbul", "suleiman");
@@ -319,6 +335,9 @@ console.log("\n\n\n\n");
           this.controlSpace("hapsburg", "munster");
           this.controlSpace("hapsburg", "cologne");
           this.controlSpace("hapsburg", "trier");
+          this.controlSpace("hapsburg", "basel");
+          this.controlSpace("hapsburg", "zurich");
+          this.controlSpace("hapsburg", "vienna");
 
 	  this.game.state.hapsburg_war_winner_vp = 1;
 
@@ -375,7 +394,6 @@ console.log("\n\n\n\n");
 	  this.game.state['france_uncharted'] = 0;
 	  this.game.state.french_chateaux_vp = 2;
 
-
 	  // PAPACY
           this.addRegular("papacy", "rome", 1);
           this.addMercenary("papacy", "rome", 1);
@@ -386,7 +404,6 @@ console.log("\n\n\n\n");
           this.addRegular("papacy", "florence", 1);
 	  this.controlSpace("papacy", "siena");
 	
-	  // TODO Papal bonuses etc.
           this.game.state.saint_peters_cathedral['state'] = 0;
           this.game.state.saint_peters_cathedral['vp'] = 1;
 	  this.game.state.leaders.leo_x = 0;
@@ -402,7 +419,6 @@ console.log("\n\n\n\n");
 	  this.addRegular("protestant", "augsburg", 2);	
 
           this.addReformer("protestant", "wittenberg", "luther-reformer");
-          //this.addReformer("protestant", "geneva", "calvin-reformer");
           this.addArmyLeader("protestant", "brandenburg", "philip-hesse");
           this.addArmyLeader("protestant", "wittenberg", "john-frederick");
 
@@ -483,37 +499,27 @@ console.log("\n\n\n\n");
           this.game.spaces['stirling'].fortify = 1;
 	
 	  // INDEPENDENT
+          this.controlSpace("independent", "basel");
+          this.controlSpace("independent", "zurich");
+          this.controlSpace("independent", "milan");
+          this.controlSpace("independent", "tunis");	
+          this.controlSpace("independent", "malta", 1);
           this.addRegular("independent", "malta", 1);
-          this.controlSpace("hapsburg", "malta", 1);
           this.addRegular("independent", "metz", 1);
           this.addRegular("independent", "milan", 1);
           this.addRegular("independent", "tunis", 1);
-          this.controlSpace("independent", "basel", 1);
-          this.controlSpace("independent", "zurich", 1);
-	
+
 	  // DEBATERS
 	  this.setEnemies("ottoman", "hapsburg");
 	  this.setEnemies("hapsburg", "protestant");
 	  this.setEnemies("papacy", "protestant");
 	  this.setAllies("hapsburg", "hungary");
 
-
           this.game.state.events.barbary_pirates = 1;
           this.game.state.events.ottoman_piracy_enabled = 1;
           this.game.state.events.ottoman_corsairs_enabled = 1;
 
-
-
-	// TESTING
-          this.addCorsair("ottoman", "algiers", 3);
-
-
       }
-
-      if (this.game.options.scenario === "tournament") {
-
-      }
-
 
       if (this.game.options.scenario === "is_testing") {
 
@@ -617,15 +623,6 @@ console.log("\n\n\n\n");
           this.addRegular("papacy", "siena", 1);
           this.addRegular("hapsburg", "besancon", 1);
 
-
-          // PROTESTANT
-          for (let key in this.game.spaces) {
-            if (this.game.spaces[key].language == "german") {
-              this.convertSpace("protestant", key);
-            }
-          }
-
-
           this.addRegular("protestant", "worms", 3);
           this.addRegular("protestant", "wittenberg", 1);
 
@@ -658,7 +655,6 @@ console.log("\n\n\n\n");
 	  //this.addCard("ottoman", "025");
 	  //this.addCard("ottoman", "026");
 	  //this.addCard("ottoman", "027");
-
 
 	  this.controlSpace("papacy", "linz");
 	  this.controlSpace("papacy", "vienna");

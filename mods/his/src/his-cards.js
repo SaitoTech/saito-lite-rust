@@ -3683,12 +3683,16 @@ console.log("selected: " + spacekey);
 	  //
 	  // protestant home + political spaces
 	  //
+	  // skip keys are home for other factions
+	  let skip_keys = ["innsbruck","linz","vienna","graz","zurich","basel"];
 	  for (let key in his_self.game.spaces) {
 	    s = his_self.game.spaces[key];
 	    if (s.language == "german") { 
 	      if (s.religion == "protestant") {
-	        s.home = "protestant"; 
 		s.political = "protestant";
+		if (!skip_keys.includes(key)) {
+		  s.home = "protestant";
+		}
 	      }
 	    }
 	  }
@@ -3783,7 +3787,6 @@ console.log("selected: " + spacekey);
 		    if (res.length > 0) {
 		      his_self.game.spaces[res[0].key].units["protestant"].push(u);
 		    }
-console.log("removing protestant unit in : " + key + " at index " + z);
     		    his_self.game.spaces[key].units["protestant"].splice(z, 1);
 		    z--;
 		  }
@@ -8798,7 +8801,7 @@ console.log("nothing is left!");
 	  if (his_self.isUnoccupied("oran") && his_self.areEnemies("ottoman", his_self.returnFactionControllingSpace("oran"))) {
 	    let oran = his_self.game.spaces["oran"];
 	    for (let i = 0; i < oran.ports.length; i++) {
-	      let sea = oran.ports[i];
+	      let sea = his_self.game.navalspaces[oran.ports[i]];
 	      for (let z = 0; z < sea.ports.length; z++) {
 	        if (his_self.game.spaces[sea.ports[z]].fortress == 1) {
 	          if (his_self.returnFactionControllingSpace(sea.ports[z]) == "ottoman") {
@@ -8811,7 +8814,7 @@ console.log("nothing is left!");
 	  if (his_self.isUnoccupied("tripoli") && his_self.areEnemies("ottoman", his_self.returnFactionControllingSpace("tripoli"))) {
 	    let tripoli = his_self.game.spaces["tripoli"];
 	    for (let i = 0; i < tripoli.ports.length; i++) {
-	      let sea = tripoli.ports[i];
+	      let sea = his_self.game.navalspaces[tripoli.ports[i]];
 	      for (let z = 0; z < sea.ports.length; z++) {
 	        if (his_self.game.spaces[sea.ports[z]].fortress == 1) {
 	          if (his_self.returnFactionControllingSpace(sea.ports[z]) == "ottoman") {

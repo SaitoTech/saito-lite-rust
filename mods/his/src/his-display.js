@@ -654,9 +654,7 @@ try {
     this.displayExploration();
     this.displayColony();
     this.displayNewWorldBonuses();
-} catch (err) { 
-  console.log("display error: " + JSON.stringify(err));
-}
+} catch (err) {}
   }
 
   displaySpaceDetailedView(name) {

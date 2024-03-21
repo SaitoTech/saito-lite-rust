@@ -1,6 +1,6 @@
 module.exports = () => {
 
-	let help = 'Pirates Attacks';
+	let help = 'Pirate Attacks';
 
 	let html = `
       <div class="piracy-overlay" id="piracy-overlay">

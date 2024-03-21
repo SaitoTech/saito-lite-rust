@@ -124,11 +124,7 @@
     this.displayNewWorld();
     this.displayVictoryTrack();
 
-
   }
-
-
-
 
   returnLoanedUnits() {
     for (let i in this.game.spaces) {
@@ -202,8 +198,6 @@
     }
     return 0;
   }
-
-
 
   captureLeader(winning_faction, losing_faction, space, unit = false) {
     if (!unit) { return; }
@@ -396,20 +390,29 @@
       factions[this.game.state.events.michael_servetus].vp++;
     }
     if (this.game.state.events.copernicus) {
-      factions[this.game.state.events.copernicus].vp_special += this.game.state.events.copernicus_vp;
-      factions[this.game.state.events.copernicus].vp += this.game.state.events.copernicus_vp;
+      factions[this.game.state.events.copernicus].vp_special += parseInt(this.game.state.events.copernicus_vp);
+      factions[this.game.state.events.copernicus].vp += parseInt(this.game.state.events.copernicus_vp);
     }
+
+    //
+    // War Winner VP
+    //
+    factions["protestant"].vp += this.game.state.protestant_war_winner_vp;
+    factions["papacy"].vp     += this.game.state.papacy_war_winner_vp;
+    factions["ottoman"].vp    += this.game.state.ottoman_war_winner_vp;
+    factions["hapsburg"].vp   += this.game.state.hapsburg_war_winner_vp;
+    factions["england"].vp    += this.game.state.england_war_winner_vp;
+    factions["france"].vp     += this.game.state.france_war_winner_vp;    
+
 
     //
     // New World
     //
-    //• Successful voyage of exploration
-    //• Successful voyage of conquest
     for (let key in this.game.state.newworld) {
       if (this.game.state.newworld[key].vp > 0) {
 	if (this.game.state.newworld[key].faction) {	  
 	  if (this.factions[this.game.state.newworld[key].faction]) {
-	    this.factions[this.game.state.newworld[key].faction].vp += this.game.state.newworld[key].vp;
+	    factions[this.game.state.newworld[key].faction].vp += parseInt(this.game.state.newworld[key].vp);
 	  }
 	}
       }

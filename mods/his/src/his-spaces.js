@@ -1824,8 +1824,9 @@ try {
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].type === "key") {
         if (this.game.spaces[key].political === this.factions[faction].key || (this.game.spaces[key].political === "" && this.game.spaces[key].home === this.factions[faction].key)) {
+console.log("faction controls: " + key);
           controlled_keys++;
-        }
+	}
       }
     }
 
@@ -1850,10 +1851,22 @@ try {
         }
       }
     }
+console.log("faction is: " + faction);
     if (faction === this.returnAllyOfMinorPower("hungary")) {
+if (faction === "hapsburg") {
+  console.log("we are an ally of hungary...");	
+}
       for (let key in this.game.spaces) {
         if (this.game.spaces[key].type === "key") {
+if (faction === "hapsburg") {
+if (key == "prague") {
+  console.log("we are an ally of hungary...");	
+  console.log("p: " + this.game.spaces[key].political);
+  console.log("h: " + this.game.spaces[key].home);
+}
+}
           if (this.game.spaces[key].political === "hungary" || (this.game.spaces[key].political === "" && this.game.spaces[key].home === "hungary")) {
+console.log("any controlled keys from HUNGARY -- YES");
             controlled_keys++;
           }
         }
