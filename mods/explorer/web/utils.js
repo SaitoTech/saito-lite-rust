@@ -179,15 +179,11 @@ async function* makeTextFileLineIterator(fileURL) {
 
 async function checkBalance(pubkey = "") {
   if (pubkey) {
-    document.querySelector('.balance-search-input').placeholder = pubkey;
     // API
-    let response = await fetch('/balance/' + pubkey);
-    let data = await response.text();
-    // format
-    data = data.split(/\n/); // undefined = 0?
-    if (data.length <= 3) {
-      console.log(data);
-      let balance_nolan = data[1].split(/\s/)[4] || 0;
+    let balance = await balanceAPI();
+    if (balance.hasOwnProperty(pubkey)) {
+      document.querySelector('.balance-search-input').placeholder = pubkey;
+      let balance_nolan = balance[pubkey] || 0;
       let nolan_per_saito = 100000000;
       let balance_saito = formatNumberLocale(balance_nolan / nolan_per_saito);
       // draw
@@ -199,35 +195,49 @@ async function checkBalance(pubkey = "") {
 
 async function checkAllBalance() {
   // API
-  let response = await fetch('/balance/' + "");
-  let data = await response.text();
-  console.log(data);
-
-  // format
-  data = data.split(/\n/); // undefined = 0?
+  let balance = await balanceAPI();
 
   // draw
   let node = document.querySelector(".explorer-balance-table");
-  for (let i = 1; i < data.length - 1; i++) {
-    const e = data[i];
-    col_data = e.split(/\s/);
-
+  for (row in balance) {
     let wallet = document.createElement("div");
     wallet.setAttribute("class", "explorer-balance-data");
-    wallet.innerHTML = col_data[0];
+    wallet.innerHTML = row;
     node.appendChild(wallet);
 
     let balance_saito = document.createElement("div");
     balance_saito.setAttribute("class", "explorer-balance-data");
-    let nolan_per_saito = parseFloat(col_data[4]) / 100000000;
+    let nolan_per_saito = parseFloat(balance[row]) / 100000000;
     balance_saito.innerHTML = formatNumberLocale(nolan_per_saito);
     node.appendChild(balance_saito);
 
     let balance_nolan = document.createElement("div");
     balance_nolan.setAttribute("class", "explorer-balance-data");
-    balance_nolan.innerHTML = col_data[4];
+    balance_nolan.innerHTML = balance[row];
     node.appendChild(balance_nolan);
   }
+}
+
+async function balanceAPI(pubkey = "") {
+  // API
+  let response = await fetch('/balance/' + pubkey);
+  let data = await response.text();
+
+  // format
+  data = data.split(/\n/).filter(Boolean); // undefined = 0?
+  let balance_list = {};
+  for (let i = 1; i < data.length; i++) { /**
+   * i = 0 -> first line is file name.
+   */
+    let row = data[i];
+    row = row.split(/\s/);
+    if (balance_list.hasOwnProperty(row[0])) {
+      balance_list[row[0]] = Number(balance_list[row[0]]) + Number(row[4]);
+    } else {
+      balance_list[row[0]] = Number(row[4]);
+    }
+  }
+  return balance_list;
 }
 
 function formatNumberLocale(number) {

@@ -1,8 +1,11 @@
+	
+
 #advanced-options-overlay-container {
+	/* Be careful as this also matches the game wizard, and league css is always imported.... */
 	color: var(--saito-font-color-dark-modal);
 	background: #181818;
 	border-radius: 0.5rem;
-	width: 40rem;
+	min-width: 40rem;
 	min-height: 15rem;
 	display: flex;
 	padding: 1.5rem;

@@ -29,8 +29,7 @@ class Arcade extends ModTemplate {
 
 		this.description =
 			'Interface for creating and joining games coded for the Saito Open Source Game Engine.';
-		this.categories = 'Games Entertainment Utilities';
-		this.class = 'utility';
+		this.categories = 'Games Entertainment Appspace';
 
 		// We store reference to all the installed modules which are arcade compatible
 		// Useful for rendering the sidebar menu, or any list of games for game-selector (prior to game-wizard)
@@ -63,6 +62,15 @@ class Arcade extends ModTemplate {
 			dark: 'fa-solid fa-moon',
 			arcade: 'fa-solid fa-gamepad'
 		};
+
+		this.social = {
+			twitter: '@SaitoOfficial',
+			title: '🟥 Saito Arcade',
+			url: 'https://saito.io/arcade/',
+			description: 'Peer to peer gaming on the blockchain',
+			image: 'https://saito.tech/wp-content/uploads/2023/11/arcade-300x300.png',
+		};
+
 	}
 
 	/////////////////////////////
@@ -1230,7 +1238,7 @@ class Arcade extends ModTemplate {
           */
 					//Start Spinner
 					this.app.connection.emit(
-						'arcade-game-initialize-render-request'
+						'arcade-game-initialize-render-request', txmsg.game_id
 					);
 				}
 			}
@@ -1314,7 +1322,7 @@ class Arcade extends ModTemplate {
 		// If I am a player in the game, let's start it initializing
 		//
 		if (txmsg.players.includes(this.publicKey)) {
-			this.app.connection.emit('arcade-game-initialize-render-request');
+			this.app.connection.emit('arcade-game-initialize-render-request', txmsg.game_id);
 
 			if (this.app.BROWSER == 1 && txmsg.players.length > 1) {
 				siteMessage(txmsg.game + ' invite accepted', 5000);
@@ -1517,7 +1525,7 @@ class Arcade extends ModTemplate {
 		});
 
 		//Start Spinner
-		this.app.connection.emit('arcade-game-initialize-render-request');
+		this.app.connection.emit('arcade-game-initialize-render-request', txmsg.game_id);
 
 		/*
     try {
@@ -1848,31 +1856,27 @@ class Arcade extends ModTemplate {
 			async function (req, res) {
 				let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
 
-				arcade_self.social = {
-					arcade_card: 'summary',
-					arcade_site: '@SaitoOfficial',
-					arcade_creator: '@SaitoOfficial',
-					arcade_title: 'Saito Arcade',
-					twitter_url: 'https://saito.io/redsquare/',
-					twitter_description: 'Play games on the blockchain',
-					twitter_image:
-						' https://saito.io/website/img/arcade-banner3.jpg',
-					og_title: 'Saito Arcade',
-					og_url: 'https://saito.io/arcade',
-					og_type: 'website',
-					og_description: 'Peer to peer social and more',
-					og_site_name: 'Saito Arcade',
-					og_image:
-						'https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png',
-					og_image_url:
-						'https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png',
-					og_image_secure_url:
-						'https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png'
-				};
+				let updatedSocial = Object.assign({}, arcade_self.social);
+
+        if (Object.keys(req.query).length > 0) {
+          let query_params = req.query;
+
+          let game = query_params?.game || query_params?.view_game;
+
+          if (game) {
+          	let gm = app.modules.returnModuleBySlug(game.toLowerCase());
+          	if (gm){
+          		updatedSocial.title = `Play ${gm.returnName()} on 🟥 Saito`;
+          		updatedSocial.image = `/${gm.returnSlug()}/img/arcade/arcade.jpg`;
+          	}
+          }
+				}
+
+				updatedSocial.url = reqBaseURL + encodeURI(arcade_self.returnSlug());
 
 				res.setHeader('Content-type', 'text/html');
 				res.charset = 'UTF-8';
-				res.send(arcadeHome(app, arcade_self, app.build_number));
+				res.send(arcadeHome(app, arcade_self, app.build_number, updatedSocial));
 				return;
 			}
 		);
@@ -1882,6 +1886,7 @@ class Arcade extends ModTemplate {
 			express.static(webdir)
 		);
 	}
+
 	showShareLink(game_sig) {
 		let data = {};
 		let accepted_game = null;
@@ -2033,7 +2038,7 @@ class Arcade extends ModTemplate {
 
 		let game_mod = this.app.modules.returnModule(game_msg.game);
 
-		this.app.connection.emit('arcade-game-initialize-render-request');
+		this.app.connection.emit('arcade-game-initialize-render-request', game_id);
 
 		//We want to send a message to the players to add us to the game.accept list so they route their game moves to us as well
 		game_msg.game_id = game_id;

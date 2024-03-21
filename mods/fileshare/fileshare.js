@@ -27,6 +27,15 @@ class Fileshare extends ModTemplate {
 				siteMessage('Transfer failed!');
 			}
 		});
+
+		this.bytesPrev = 0;
+		this.timestampPrev = 0;
+		this.timestampStart;
+		this.statsInterval = null;
+		this.byteRateMax = 0;
+		this.byteRatePerSec = '0 kbps';
+		this.file_sending = false;
+		this.event_attached = false;
 	}
 
 	async initialize(app) {
@@ -145,13 +154,13 @@ class Fileshare extends ModTemplate {
 		let gigabytes = megabytes / 1024;
 
 		if (gigabytes > 1) {
-			return `${gigabytes.toFixed(2)}GB`;
+			return `${(Math.round(gigabytes*100)/100)} GB`;
 		}
 		if (megabytes > 1) {
-			return `${megabytes.toFixed(2)}MB`;
+			return `${(Math.round(megabytes*100)/100)} MB`;
 		}
 		if (kilobytes > 1) {
-			return `${kilobytes.toFixed(2)}KB`;
+			return `${(Math.round(kilobytes*100)/100)} KB`;
 		}
 
 		return `${bytes}B`;
@@ -218,16 +227,45 @@ class Fileshare extends ModTemplate {
 						blob.receivedSize += restoredBinary.byteLength;
 						blob.receiveBuffer.push(restoredBinary);
 
-						siteMessage(
-							`Receiving: ${Math.floor(
-								(100 * blob.receivedSize) / blob.fileSize
-							)}%`
-						);
 						console.log(
 							restoredBinary.byteLength,
 							blob.receivedSize,
 							blob.fileSize
 						);
+
+			      // calculate file transfer speed	      
+						let bytesNow = blob.receivedSize;
+
+						let currentTimestamp = new Date().getTime();
+						if ((currentTimestamp - this.timestampPrev) > 1000) {
+				      
+				      const byteRate = Math.round((bytesNow - this.bytesPrev)  /
+				        (currentTimestamp - this.timestampPrev));
+				      this.byteRatePerSec = `${this.calcSize(byteRate*1000)}/s`;
+				      this.timestampPrev = (new Date()).getTime();
+				      this.bytesPrev = bytesNow;
+				      if (byteRate > this.byteRateMax) {
+				        this.byteRateMax = byteRate;
+				      }
+			    	}
+
+			    	let msg = `<span class="fileshare-info monospace">
+												<span>
+													Receiving: ${Math.floor(
+														(100 * blob.receivedSize) / blob.fileSize
+													)}%
+												</span>
+												<span> 
+													${this.calcSize(blob.receivedSize)} of 
+													${this.calcSize(blob.fileSize)}
+												</span>
+												<span>
+													(${this.byteRatePerSec})
+												</span>
+											</span>`;
+
+						console.log('receive msg:', msg);
+						siteMessage(msg);
 
 						if (blob.receivedSize === blob.fileSize) {
 							const anchor = document.getElementById(
@@ -317,6 +355,13 @@ class Fileshare extends ModTemplate {
 
 					this.reader.addEventListener('load', async (event) => {
 						//console.log('File Share: onload ', event);
+						
+						// attach event for checking closing of tab
+						if (this.file_sending == false && this.event_attached == false) {
+							this.file_sending = true;
+							this.checkCloseTab();
+						}
+
 						await this.createFileChunkTransaction(
 							file,
 							event.target.result
@@ -324,18 +369,54 @@ class Fileshare extends ModTemplate {
 
 						this.offset += event.target.result.byteLength;
 
-						siteMessage(
-							`Sending: ${Math.floor(
-								(100 * this.offset) / file.size
-							)}%`
-						);
+						// calculate file transfer speed
+						let currentTimestamp = new Date().getTime();
+						if ((currentTimestamp - this.timestampPrev) > 1000) {
+				      const bytesNow = this.offset;
+				      const byteRate = Math.round((bytesNow - this.bytesPrev)  /
+				        (currentTimestamp - this.timestampPrev));
+				      this.byteRatePerSec = `${this.calcSize(byteRate*1000)}/s`;
+				      this.timestampPrev = (new Date()).getTime();
+				      this.bytesPrev = bytesNow;
+				      if (byteRate > this.byteRateMax) {
+				        this.byteRateMax = byteRate;
+				      }
+			    	}
 
+			    	let msg = ``;
 						if (this.offset < file.size) {
 							this.chunkFile(file, this.offset);
+							msg = `<span class="fileshare-info monospace">
+											<span>
+												Sending: ${Math.floor(
+													(100 * this.offset) / file.size
+												)}%
+											</span>
+											<span> 
+												${this.calcSize(this.offset)} 
+												of ${this.calcSize(file.size)}
+											</span>
+											<span>
+												(${this.byteRatePerSec})
+											</span>
+										</span>`;
 						} else {
 							this.fileId = null;
 							this.file = null;
+							msg = `<span class="fileshare-info monospace">
+												<span>
+													Sending: ${Math.floor(
+														(100 * this.offset) / file.size
+													)}%
+												</span>
+											</span>`;
+
+							// remove event for checking closing of tab
+							this.file_sending = false;
+							this.checkCloseTab();
 						}
+
+						siteMessage(msg);
 					});
 
 					this.fileId = this.app.crypto
@@ -428,6 +509,19 @@ class Fileshare extends ModTemplate {
 			b2[i] = b[i];
 		}
 		return b2;
+	}
+
+	checkCloseTab(){
+		let this_self = this;
+		if (this.file_sending == true && this.event_attached == false){
+			window.onbeforeunload = (e) => { 
+			  this_self.event_attached = true;
+			  return true; 
+			}
+		}
+		if (this.file_sending == false && this.event_attached == true){
+			window.onbeforeunload = null;
+		}
 	}
 }
 

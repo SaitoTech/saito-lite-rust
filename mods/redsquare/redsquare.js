@@ -123,23 +123,18 @@ class RedSquare extends ModTemplate {
 
     this.styles = ["/saito/saito.css", "/redsquare/style.css"];
 
+    //
+    // This is the default Open Graph Card for Redsquare
+    // If we have a link to a specific tweet, we will use a different object to populate the
+    // generated html in the webserver
+    //
     this.social = {
-      twitter_card: "summary",
-      twitter_site: "@SaitoOfficial",
-      twitter_creator: "@SaitoOfficial",
-      twitter_title: "🟥 Saito Red Square",
-      twitter_url: "https://saito.io/redsquare/",
-      twitter_description: "Saito RedSquare - Web3 Social.",
-      twitter_image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
-      og_title: "🟥 Saito Red Square",
-      og_url: "https://saito.io/redsquare",
-      og_type: "website",
-      og_description: "Peer to peer social and more",
-      og_site_name: "🟥 Saito Red Square",
-      og_image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
-      og_image_url: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
-      og_image_secure_url:
-        "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
+      twitter: "@SaitoOfficial",
+      title: "🟥 Saito RedSquare - Web3 Social Media",
+      url: "https://saito.io/redsquare/",
+      description: "Peer to peer Web3 social media platform",
+      image: "https://saito.tech/wp-content/uploads/2023/11/Rs-300x300.png",
+      //image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
     };
 
     this.theme_options = {
@@ -2489,6 +2484,8 @@ class RedSquare extends ModTemplate {
 
           if (sig) {
             redsquare_self.loadTweetWithSig(sig, (txs) => {
+              let updated_social = redsquare_self.social;
+
               for (let z = 0; z < txs.length; z++) {
                 let tx = txs[z];
 
@@ -2500,23 +2497,22 @@ class RedSquare extends ModTemplate {
                 //
                 // We need adequate protection here
                 //
-                redsquare_self.social.twitter_description = app.browser.stripHtml(text);
-                redsquare_self.social.og_description = app.browser.stripHtml(text);
-                redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug());
+                let url = reqBaseURL + encodeURI(redsquare_self.returnSlug());
+                let image = url + "?og_img_sig=" + sig;
 
-                let image = (redsquare_self.social.og_url =
-                  reqBaseURL + encodeURI(redsquare_self.returnSlug()) + "?og_img_sig=" + sig);
-                redsquare_self.social.og_title = user + " posted on Saito 🟥";
-                redsquare_self.social.twitter_title = user + " posted on Saito 🟥";
-                redsquare_self.social.og_image = image;
-                redsquare_self.social.og_image_url = image;
-                redsquare_self.social.og_image_secure_url = image;
-                redsquare_self.social.twitter_image = image;
+                updated_social = {
+                  twitter: "@SaitoOfficial",
+                  title: user + " posted on Saito 🟥",
+                  url: url,
+                  description: app.browser.escapeHTML(text),
+                  image: image,
+                }
               }
 
               res.setHeader("Content-type", "text/html");
               res.charset = "UTF-8";
-              res.send(redsquareHome(app, redsquare_self, app.build_number));
+              res.send(redsquareHome(app, redsquare_self, app.build_number, updated_social));
+
             });
 
             return;
@@ -2534,8 +2530,8 @@ class RedSquare extends ModTemplate {
                 let img = "";
                 let img_type;
 
-                if (typeof txmsg.data.images != "undefined") {
-                  let img_uri = txmsg.data?.images[0];
+                if (txmsg.data?.images?.length > 0) {
+                  let img_uri = txmsg.data.images[0];
                   img_type = img_uri.substring(img_uri.indexOf(":") + 1, img_uri.indexOf(";"));
                   let base64Data = img_uri.replace(/^data:image\/(png|jpeg|jpg);base64,/, "");
                   img = Buffer.from(base64Data, "base64");
@@ -2568,23 +2564,13 @@ class RedSquare extends ModTemplate {
         console.log("Loading OG data failed with error: " + err);
       }
 
-      // default fallback
-      redsquare_self.social.twitter_description = "🟥 RedSquare P2P Social on Saito";
-      redsquare_self.social.og_description = "🟥 RedSquare P2P Social on Saito";
-      redsquare_self.social.og_url = reqBaseURL + encodeURI(redsquare_self.returnSlug());
-
-      let image = "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png";
-      redsquare_self.social.og_title = "saito.io RedSquare";
-      redsquare_self.social.twitter_title = "saito.io RedSquare";
-      redsquare_self.social.og_image = image;
-      redsquare_self.social.og_image_url = image;
-      redsquare_self.social.og_image_secure_url = image;
-      redsquare_self.social.twitter_image = image;
+      //Insert recent tweets into the index template directly
+      let recent_tweets = await redsquare_self.fetchRecentTweets();
 
       // fallback for default
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
-      res.send(redsquareHome(app, redsquare_self, app.build_number));
+      res.send(redsquareHome(app, redsquare_self, app.build_number, redsquare_self.social, recent_tweets));
       return;
     });
 
@@ -2592,7 +2578,7 @@ class RedSquare extends ModTemplate {
   }
 
   //
-  // servers can fetch open graph graphics
+  // servers can fetch open graph graphics (of links in tweets)
   //
   async fetchOpenGraphProperties(app, mod, link) {
     if (app.BROWSER != 1) {

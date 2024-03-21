@@ -186,7 +186,7 @@
 .expanded-video {
 	resize: horizontal;
 	overflow: auto;
-	max-height: 100%;
+	max-height: calc(100vh - 13rem);
 	min-width: 50vw;
 	max-width: 85vw;
 	width: 75vw;
@@ -196,19 +196,28 @@
 	display: grid;
 	grid-template-rows: repeat(3, minmax(20vh, auto));
 	gap: 1rem;
-	max-height: 100%;
+	max-height: calc(100vh - 13rem);
+	overflow: auto;
 }
 
 .stun-chatbox .peer-call-list {
 	display: flex;
 	position: absolute;
-	top: 0;
-	left: 0;
+	bottom: 0;
+	right: 0;
 	z-index: 100;
+	padding: 0.5rem;
+	gap: 1rem;
 }
 
-.peer-list-item {
-	margin-right: 5px;
+.peer-call-list .saito-identicon {
+	width: 2.5rem;
+	height: 2.5rem;
+}
+
+
+.peer-list-item.not-connected {
+	filter: grayscale(100%);
 }
 .expanded-video .video-box-container-large {
 	width: 100%;
@@ -425,6 +434,10 @@ video#local {
 	text-overflow: ellipsis;
 	margin-right: 1rem;
 	max-width: 90%;
+}
+
+.side-videos .video-call-info .saito-address {
+	max-width: 60%;
 }
 
 .video-call-info i {

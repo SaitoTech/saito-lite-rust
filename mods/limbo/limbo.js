@@ -568,6 +568,12 @@ class Limbo extends ModTemplate {
 		}
 
 		if (this.app.BROWSER) {
+
+		// So if someone joins, and we have a stream, we send them an offer to share
+		// We impose a hard limit of 10 (to be adjusted downward) stun connections,
+		// and we set a delay proportional to the number of connections so that the 
+		// swarm has balance loading. I.e. no one downstream will biased to add someone
+
 			let peerCt = this.downstream.size;
 			if (this.publicKey === this.dreamer) {
 				peerCt += this.stun.peers.size;
@@ -577,17 +583,25 @@ class Limbo extends ModTemplate {
 				this.combinedStream &&
 				peerCt < 10
 			) {
-				this.sendOfferTransaction(sender);
-				this.downstream.set(sender, null);
-				setTimeout(() => {
-					//Rescind offer after 90 seconds if not taken up
-					if (
-						this.downstream.has(sender) &&
-						!this.downstream.get(sender)
-					) {
-						this.downstream.delete(sender);
-					}
-				}, 90000);
+
+				setTimeout(()=> {
+					this.sendOfferTransaction(sender);
+					this.downstream.set(sender, null);
+					setTimeout(() => {
+
+						//
+						// Because many people are sending an offer in a race,
+						// we rescind offer after 90 seconds if not taken up
+						//
+						if (
+							this.downstream.has(sender) &&
+							!this.downstream.get(sender)
+						) {
+							this.downstream.delete(sender);
+						}
+					}, 90000);
+
+				}, 100*peerCt);
 			}
 		}
 	}

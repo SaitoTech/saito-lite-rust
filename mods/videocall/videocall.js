@@ -7,6 +7,7 @@ const DialingInterface = require('./lib/components/dialer');
 
 const StreamManager = require('./lib/StreamManager');
 const AppSettings = require('./lib/stun-settings');
+const HomePage = require("./index");
 
 class Videocall extends ModTemplate {
 	constructor(app) {
@@ -29,6 +30,16 @@ class Videocall extends ModTemplate {
 		this.stun = null; //The stun API
 		this.streams = null;
 		this.dialer = new DialingInterface(app, this);
+
+		this.social = {
+			twitter: '@SaitoOfficial',
+			title: '🟥 Saito Talk',
+			url: 'https://saito.io/videocall/',
+			description: 'Peer to peer voice and video calling with no middleman',
+			image: "/videocall/img/video-call-og.png",
+			//image: 'https://saito.tech/wp-content/uploads/2023/11/videocall-300x300.png',
+		};
+
 
 		//When CallLauncher is rendered or game-menu triggers it
 		app.connection.on('stun-init-call-interface', (settings) => {
@@ -346,7 +357,7 @@ class Videocall extends ModTemplate {
 			return;
 		}
 		let txmsg = tx.returnMessage();
-		console.log('new ', txmsg);
+
 		if (this.app.BROWSER === 1) {
 			if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
 				//
@@ -666,14 +677,15 @@ class Videocall extends ModTemplate {
 
 	async createBroadcastListTransaction(peer_list, address) {
 		let newtx =
-			await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+				address
+			);
 		newtx.msg = {
-			module: 'Stun',
+			module: 'Videocall',
 			request: 'broadcast-call-list',
 			call_id: this.room_obj.call_id,
 			data: {
-				peer_list,
-				sender: this.publicKey
+				peer_list
 			}
 		};
 
@@ -685,15 +697,37 @@ class Videocall extends ModTemplate {
 	}
 	async receiveBroadcastListTransaction(app, tx) {
 		const txmsg = tx.returnMessage();
-
+		let sender = tx.from[0].publicKey;
 		console.log(txmsg.data.sender, txmsg);
-		this.app.connection.emit(
-			'peer-list',
-			txmsg.data.sender,
-			txmsg.data.peer_list
-		);
+		this.app.connection.emit('peer-list', sender, txmsg.data.peer_list);
 		// send data
 	}
+
+	webServer(app, expressapp, express) {
+		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
+		let mod_self = this;
+
+		expressapp.get(
+			'/' + encodeURI(this.returnSlug()),
+			async function (req, res) {
+				let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
+
+				mod_self.social.url = reqBaseURL + encodeURI(mod_self.returnSlug());
+
+				res.setHeader('Content-type', 'text/html');
+				res.charset = 'UTF-8';
+
+				res.send(HomePage(app, mod_self, app.build_number, mod_self.social));
+				return;
+			}
+		);
+
+		expressapp.use(
+			'/' + encodeURI(this.returnSlug()),
+			express.static(webdir)
+		);
+	}
+
 }
 
 module.exports = Videocall;

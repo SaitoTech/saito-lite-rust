@@ -54,23 +54,24 @@ class Warehousex extends ModTemplate {
                                 $tx_type,
                                 $tx_module
                             )`;
+				let tx_msg = '';
 				let tx_type = 0; // 0: normal tx | 1: Fee tx? | 2: block creator?
 				if (transaction.type) {
 					tx_type = transaction.type;
 				}
 				let tx_module = '';
-				if (transaction.msg.module) {
-					tx_module = transaction.msg.module;
-				} else if (Object.keys(transaction.msg).length == 308) {
-					tx_module = 'Encrypted';
+				if (transaction.msg) {
+					if (transaction.msg.module) {
+						tx_module = transaction.msg.module;
+						tx_msg = JSON.stringify(transaction.msg);
+					} else if (this.app.crypto.isAesEncrypted(transaction.msg)) {
+						tx_module = 'Encrypted';
+						tx_msg = transaction.msg;
+					}
 				}
 				let tx_from = '';
 				if (transaction.from.length > 0) {
 					tx_from = transaction.from[0].publicKey;
-				}
-				let tx_msg = '';
-				if (transaction.msg) {
-					tx_msg = JSON.stringify(transaction.msg);
 				}
 				let params = {
 					// $address: blk.transactions[i].to[ii]?.publicKey || "",

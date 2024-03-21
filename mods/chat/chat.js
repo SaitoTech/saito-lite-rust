@@ -11,7 +11,7 @@ const Transaction = require('../../lib/saito/transaction').default;
 const PeerService = require('saito-js/lib/peer_service').default;
 const ChatSettings = require('./lib/overlays/chat-manager-menu');
 const ChatSidebar = require('./lib/appspace/chat-sidebar');
-
+const HomePage = require('./index');
 
 class Chat extends ModTemplate {
 	constructor(app) {
@@ -20,7 +20,7 @@ class Chat extends ModTemplate {
 		this.name = 'Chat';
 
 		this.description = 'Saito instant-messaging client';
-
+		this.categories = "Messaging Chat";
 		this.groups = [];
 
 		/*
@@ -117,8 +117,15 @@ class Chat extends ModTemplate {
 			dark: 'fa-solid fa-moon'
 		};
 
-		this.hiddenTab = 'hidden';
-		this.orig_title = '';
+		this.social = {
+			twitter: '@SaitoOfficial',
+			title: 'Saito Chat',
+			url: 'https://saito.io/chat/',
+			description: 'Instant messaging client on Saito Network blockchain',
+			image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
+		};
+
+
 	}
 
 	hasSettings() {
@@ -165,34 +172,6 @@ class Chat extends ModTemplate {
 		//Add script for emoji to work
 		this.attachPostScripts();
 
-		// Set the name of the hidden property and the change event for visibility
-		let visibilityChange;
-		if (typeof document.hidden !== 'undefined') {
-			// Opera 12.10 and Firefox 18 and later support
-			this.hiddenTab = 'hidden';
-			visibilityChange = 'visibilitychange';
-		} else if (typeof document.msHidden !== 'undefined') {
-			this.hiddenTab = 'msHidden';
-			visibilityChange = 'msvisibilitychange';
-		} else if (typeof document.webkitHidden !== 'undefined') {
-			this.hiddenTab = 'webkitHidden';
-			visibilityChange = 'webkitvisibilitychange';
-		}
-
-		document.addEventListener(
-			visibilityChange,
-			() => {
-				if (document[this.hiddenTab]) {
-				} else {
-					if (this.tabInterval) {
-						clearInterval(this.tabInterval);
-						this.tabInterval = null;
-						document.title = this.orig_title;
-					}
-				}
-			},
-			false
-		);
 	}
 
 	async render() {
@@ -2238,6 +2217,29 @@ class Chat extends ModTemplate {
 		return 1;
 	}
 
+	webServer(app, expressapp, express) {
+		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
+		let mod_self = this;
+
+		expressapp.get(
+			'/' + encodeURI(this.returnSlug()),
+			async function (req, res) {
+				let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
+
+				mod_self.social.url = reqBaseURL + encodeURI(mod_self.returnSlug());
+
+				res.setHeader('Content-type', 'text/html');
+				res.charset = 'UTF-8';
+				res.send(HomePage(app, mod_self, app.build_number, mod_self.social));
+				return;
+			}
+		);
+
+
+		expressapp.use('/' + encodeURI(this.returnSlug()),	express.static(webdir));
+	}
+
+
 
 	notification(group){
 
@@ -2270,13 +2272,13 @@ class Chat extends ModTemplate {
 			return;
 		}
 
-		this.startTabNotification(group);
+		this.app.browser.createTabNotification("New Message", group.name);
 
 		if (!this.audio_notifications){
 			return;
 		}
 
-		if (document[this.hiddenTab]){
+		if (!this.app.browser.active_tab){
 			this.playChime();
 			return;
 		}else if (this.audio_notifications === "tabs"){
@@ -2303,22 +2305,6 @@ class Chat extends ModTemplate {
 		this.chime.play();
 	}
 
-	startTabNotification(group) {
-		if (!this.app.BROWSER || !document[this.hiddenTab]) {
-			return;
-		}
-
-		if (!this.tabInterval) {
-			this.orig_title = document.title;
-			this.tabInterval = setInterval(() => {
-				if (document.title === 'New message') {
-					document.title = group.name;
-				} else {
-					document.title = 'New message';
-				}
-			}, 850);
-		}
-	}
 }
 
 module.exports = Chat;

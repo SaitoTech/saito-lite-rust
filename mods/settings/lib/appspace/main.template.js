@@ -16,13 +16,10 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 	let modules_html = '';
 
 	try {
-		console.log(app.options.modules);
 		for (let i = 0; i < app.options.modules.length; i++) {
 			let mod = app.modules.returnModule(app.options.modules[i].name);
 			let shortName = app.options.modules[i].name;
 			let fullName = mod ? mod.returnName() : shortName;
-
-      console.log(mod);
 
 			let CHECKED = app.options.modules[i].active ? 'CHECKED' : '';
       let modClass = (typeof mod.class != 'undefined') ? mod.class : null;
