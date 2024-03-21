@@ -42,3 +42,10 @@
 .busy .online-status-indicator:after {
   background-color: var(--saito-font-color);
 }
+
+
+.fileshare-info {
+  display: grid;
+  grid-template-columns: 20rem 25rem 20rem;
+  text-align: center;
+}

@@ -249,14 +249,23 @@ class Fileshare extends ModTemplate {
 				      }
 			    	}
 
-						siteMessage(
-							`Receiving: ${Math.floor(
-								(100 * blob.receivedSize) / blob.fileSize
-							)}% - 
-							${this.calcSize(blob.receivedSize)} 
-							of ${this.calcSize(blob.fileSize)}
-							(${this.byteRatePerSec})`
-						);
+			    	let msg = `<span class="fileshare-info monospace">
+												<span>
+													Receiving: ${Math.floor(
+														(100 * blob.receivedSize) / blob.fileSize
+													)}%
+												</span>
+												<span> 
+													${this.calcSize(blob.receivedSize)} of 
+													${this.calcSize(blob.fileSize)}
+												</span>
+												<span>
+													(${this.byteRatePerSec})
+												</span>
+											</span>`;
+
+						console.log('receive msg:', msg);
+						siteMessage(msg);
 
 						if (blob.receivedSize === blob.fileSize) {
 							const anchor = document.getElementById(
@@ -377,19 +386,30 @@ class Fileshare extends ModTemplate {
 			    	let msg = ``;
 						if (this.offset < file.size) {
 							this.chunkFile(file, this.offset);
-							msg = `Sending: ${Math.floor(
-								(100 * this.offset) / file.size
-							)}% - 
-							${this.calcSize(this.offset)} 
-							of ${this.calcSize(file.size)}
-							(${this.byteRatePerSec})
-							`;
+							msg = `<span class="fileshare-info monospace">
+											<span>
+												Sending: ${Math.floor(
+													(100 * this.offset) / file.size
+												)}%
+											</span>
+											<span> 
+												${this.calcSize(this.offset)} 
+												of ${this.calcSize(file.size)}
+											</span>
+											<span>
+												(${this.byteRatePerSec})
+											</span>
+										</span>`;
 						} else {
 							this.fileId = null;
 							this.file = null;
-							msg = `Sending: ${Math.floor(
-								(100 * this.offset) / file.size
-							)}%`;
+							msg = `<span class="fileshare-info monospace">
+												<span>
+													Sending: ${Math.floor(
+														(100 * this.offset) / file.size
+													)}%
+												</span>
+											</span>`;
 
 							// remove event for checking closing of tab
 							this.file_sending = false;
