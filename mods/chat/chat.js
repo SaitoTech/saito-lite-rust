@@ -167,6 +167,8 @@ class Chat extends ModTemplate {
 
 		this.loadOptions();
 
+		this.chime = new Audio(`/saito/sound/${this.audio_chime}.mp3`);
+
 		await this.loadChatGroups();
 
 		//Add script for emoji to work
@@ -2049,8 +2051,6 @@ class Chat extends ModTemplate {
 				this.audio_chime = this.app.options.chat?.audio_chime;
 			}
 
-			this.chime = new Audio(`/saito/sound/${this.audio_chime}.mp3`);
-
 			delete this.app.options.chat.enable_notifications;
 
 			this.auto_open_community =
@@ -2302,7 +2302,12 @@ class Chat extends ModTemplate {
 			this.beeping = null;
 		}, 1000);
 
-		this.chime.play();
+		try{
+			this.chime.play();	
+		}catch(err){
+			console.error(err);
+		}
+		
 	}
 
 }
