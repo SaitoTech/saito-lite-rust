@@ -490,6 +490,8 @@ class Poker extends GameTableTemplate {
 				//Check for end of game -- everyone except 1 player has zero credit...
 				let alive_players = 0;
 				let winner = -1;
+				let am_i_out = false;
+
 				for (let i = 0; i < this.game.state.player_credit.length; i++) {
 					if (this.game.state.player_credit[i] > 0) {
 						alive_players++;
@@ -525,6 +527,10 @@ class Poker extends GameTableTemplate {
 							removal = true;
 							//
 							// remove any players who are missing
+							if (this.game.players[i] == this.publicKey){
+								am_i_out = true;
+							}
+
 							this.removePlayerFromState(i);
 							this.removePlayer(this.game.players[i]);
 
@@ -542,15 +548,12 @@ class Poker extends GameTableTemplate {
 
 				if (removal) {
 					this.halted = 1;
-					//Save game with fewer players
-					this.saveGame(this.game.id);
-					//Reload game to rebuild the html
-					setTimeout(() => {
-						this.initialize_game_run = 0;
-						this.playerbox.removeBoxes();
-						this.halted = 0;
-						this.initializeGameQueue(this.game.id);
-					}, 1000);
+
+					if (am_i_out){
+						this.updateStatusForPlayerOut("You have been eliminated!", true);
+					}else{
+						this.resetGameWithFewerPlayers();	
+					}
 					return 0;
 				}
 
@@ -1983,7 +1986,7 @@ class Poker extends GameTableTemplate {
 	}
 
 	async exitGame(){
-      if (this.game.over == 0){
+      if (this.game.over == 0 && this.game.player){
 	      let c = await sconfirm("forfeit the game?");
 	      if (c) {
 	      	await this.sendStopGameTransaction("forfeit");

@@ -719,6 +719,12 @@ video#local {
 	width: min(55rem, 60vw);
 }
 
+
+.stun-minimal-appspace .chat-settings-preview-section{
+	width: unset;
+}
+
+
 .chat-settings-preview-section p {
 	color: var(--saito-white);
 }
