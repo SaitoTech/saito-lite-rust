@@ -3,6 +3,7 @@ const JSON = require('json-bigint');
 const PokerGameRulesTemplate = require('./lib/poker-game-rules.template');
 const PokerGameOptionsTemplate = require('./lib/poker-game-options.template');
 const HealthMeter = require("./lib/poker-health-meter");
+const PokerStats = require("./lib/stats");
 
 //////////////////
 // CONSTRUCTOR  //
@@ -24,6 +25,8 @@ class Poker extends GameTableTemplate {
 		this.maxPlayers = 6;
 		this.settlement = [];
 		this.healthBars = [];
+
+		this.stats = new PokerStats(app, this);
 
 		this.animationSpeed = 800;
 
@@ -124,7 +127,7 @@ class Poker extends GameTableTemplate {
 			class: 'game-stats',
 			callback: function (app, game_mod) {
 				game_mod.menu.hideSubMenus();
-				game_mod.handleStatsMenu();
+				game_mod.stats.render();
 			}
 		});
 
@@ -340,6 +343,26 @@ class Poker extends GameTableTemplate {
 			msg += '...';
 		}
 
+		//
+		// We will calculate vpip here, before resetting the next round
+		// If a player voluntarily added money to the pot, +1
+		// >>>>>>>>>>
+		for (let i = 1; i <= this.game.players.length; i++){
+			let voluntary_bet = this.game.state.player_pot[i-1];
+			if (i == this.game.state.small_blind_player){
+				voluntary_bet -= this.game.state.small_blind;
+			}
+			if (i == this.game.state.big_blind_player){
+				voluntary_bet -= this.game.state.big_blind;
+			}
+
+			if (voluntary_bet > 0){
+				this.game.stats[this.game.players[i-1]].vpip++;
+			}
+		}
+
+
+
 		this.updateStatus(msg);
 		this.settlement = [];
 		this.game.queue.push(`ROUNDOVER\t${JSON.stringify(winner_array)}\t${method}`);
@@ -433,6 +456,12 @@ class Poker extends GameTableTemplate {
 					this.game.state.big_blind_player = this.game.players.length;
 				}
 
+				// This needs to be reset between rounds, hahaah
+				// Otherwise, you could fold and still win
+				this.game.state.player_cards = {};
+				this.game.state.player_cards_reported = 0;
+				this.game.state.player_cards_required = 0;
+
 				this.game.state.last_fold = null;
 				this.game.state.winners = [];
 
@@ -463,7 +492,7 @@ class Poker extends GameTableTemplate {
 				for (let i = 0; i < this.game.players.length; i++) {
 					this.game.state.passed[i] = 0;
 					this.game.state.player_pot[i] = 0;
-					this.game.stats[this.game.players[i]].handsPlayed++;
+					this.game.stats[this.game.players[i]].hands++;
 				}
 
 				this.startRound();
@@ -598,7 +627,16 @@ class Poker extends GameTableTemplate {
 					//this.game.state.player_credit[player_left_idx] +=	this.game.state.pot;
 					
 					this.game.stats[this.game.players[player_left_idx]]
-						.handsWon++;
+						.wins++;
+
+					if (this.game.state.flipped == 0){
+						if (this.game.state.pot == this.game.state.big_blind + this.game.state.small_blind){
+							// No one called or raised --> walk
+							for (let p of this.game.players){
+								this.game.stats[p].walks++;
+							}
+						}
+					}
 
 					//So that userline updates with winner
 					this.game.state.winners = [player_left_idx+1];
@@ -682,6 +720,8 @@ class Poker extends GameTableTemplate {
 								first_scorer = first_scorer || i;
 								this.game.state.player_cards_required++;
 								this.game.state.player_cards[i] = [];
+
+								this.game.stats[this.game.players[i]].showdowns++;
 							}
 						}
 
@@ -910,6 +950,8 @@ class Poker extends GameTableTemplate {
 				let topPlayer = winlist[winlist.length - 1];
 				let winning_hand = topPlayer.player_hand.hand_description;
 
+				console.log("Showdown:", winlist);
+
 				// ... and anyone else who ties
 				for (let p = 0; p < winlist.length; p++) {
 					if (
@@ -958,7 +1000,7 @@ class Poker extends GameTableTemplate {
 							winnerStr += ", and ";
 						}
 					} 
-					this.game.stats[this.game.players[winners[i]]].handsWon++;
+					this.game.stats[this.game.players[winners[i]]].wins++;
 					if (winners[i] == this.game.player - 1){
 						winnerStr += "You";
 					}else{
@@ -1246,7 +1288,7 @@ class Poker extends GameTableTemplate {
 					this.game.state.player_names[player - 1] + ' folds'
 				);
 
-				this.game.stats[this.game.players[player - 1]].handsFolded++;
+				this.game.stats[this.game.players[player - 1]].folds++;
 				this.game.state.passed[player - 1] = 1;
 				this.game.state.last_fold = player;
 				this.game.queue.splice(qe, 1);
@@ -1622,9 +1664,12 @@ class Poker extends GameTableTemplate {
 		let stats = {};
 		for (let i = 0; i < this.game.players.length; i++) {
 			stats[this.game.players[i]] = {};
-			stats[this.game.players[i]].handsPlayed = 0;
-			stats[this.game.players[i]].handsWon = 0;
-			stats[this.game.players[i]].handsFolded = 0;
+			stats[this.game.players[i]].hands = 0;
+			stats[this.game.players[i]].wins = 0;
+			stats[this.game.players[i]].folds = 0;
+			stats[this.game.players[i]].walks = 0;
+			stats[this.game.players[i]].vpip = 0;
+			stats[this.game.players[i]].showdowns = 0;
 		}
 		return stats;
 	}
@@ -2015,7 +2060,6 @@ class Poker extends GameTableTemplate {
 
 		let loser = -1;
 		for (let i = 0; i < this.game.players.length; i++){
-			console.log(this.game.players[i]);
 			if (this.game.players[i] == resigning_player){
 				loser = i + 1;
 				break;
@@ -2049,7 +2093,7 @@ class Poker extends GameTableTemplate {
 			this.game.state.player_names[loser - 1] + ' left the table'
 		);
 
-		this.game.stats[resigning_player].handsFolded++;
+		this.game.stats[resigning_player].folds++;
 		this.game.state.passed[loser - 1] = 1;
 		this.game.state.last_fold = loser;
 
@@ -3501,31 +3545,6 @@ class Poker extends GameTableTemplate {
 		} catch (err) {
 			console.log('ERR: ' + err);
 		}
-	}
-
-	handleStatsMenu() {
-		let stats = ['handsPlayed', 'handsWon', 'handsFolded'];
-		let html = `
-      <div class="rules-overlay" id="game-stats-overlay">
-        <div class="h1">Game Statistics:</div>
-        <table><thead><tr><th></th>
-       `;
-		for (let p in this.game.stats) {
-			html += `<th>${this.app.keychain.returnUsername(p, 10)}</th>`;
-		}
-		html += `</tr></thead><tbody>`;
-		for (let s of stats) {
-			html += `<tr><th>${s}</th>`;
-			for (let p in this.game.stats) {
-				html += `<td>${this.game.stats[p][s]}</td>`;
-			}
-			html += '</tr>';
-		}
-		html += '</tbody></table>';
-
-		html += `</div>`;
-
-		this.overlay.show(html);
 	}
 
 	handToHTML(hand, pocket) {
