@@ -84,7 +84,7 @@ class Warehousex extends ModTemplate {
 					// $rebroadcast: 0,
 					$tx_hash: transaction.signature,
 					$tx_time: transaction.timestamp,
-					$block_time: transaction.timestamp, // blk.timestamp deprecated afaik, using TX timestamp
+					$block_time: Number(blk.timestamp),
 					$tx_type: tx_type,
 					$tx_from: tx_from,
 					// $tx_to: tx_to,
