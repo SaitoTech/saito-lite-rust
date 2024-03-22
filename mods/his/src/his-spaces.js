@@ -264,7 +264,6 @@
   isSpaceFriendly(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let cf = this.returnFactionControllingSpace(space);
-console.log("is space friendly: " + space.key + " / " + faction + " / " + cf);
     if (cf === faction) { return true; }
     return this.areAllies(cf, faction);
   }
@@ -353,13 +352,9 @@ console.log("is space friendly: " + space.key + " / " + faction + " / " + cf);
       function(spacekey) {
         let invalid_choice = false;
         if (his_self.isSpaceFortified(spacekey) && his_self.isSpaceHomeSpace(spacekey, faction)) { 
-console.log("spacekey is: " + spacekey);
 	  invalid_choice = true;
 	}
         if (!his_self.isSpaceFriendly(spacekey, faction)) { invalid_choice = false; }
-if (invalid_choice) { 
-console.log("and we are great!");
-}
         return invalid_choice;
       },
 
@@ -1060,8 +1055,8 @@ console.log("and we are great!");
   canFactionRetreatToNavalSpace(faction, space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
-    if (this.isNavalSpaceFriendly(space, faction) == 1) { console.log("navalspace is friendly"); return 1; }
-    if (this.isSpaceFriendly(space, faction) == 1) { console.log("space is friendly!"); return 1; }
+    if (this.isNavalSpaceFriendly(space, faction) == 1) { return 1; }
+    if (this.isSpaceFriendly(space, faction) == 1) { return 1; }
     return 0;
   }
 
@@ -1236,11 +1231,8 @@ console.log("and we are great!");
 
   doesPlayerHaveLandUnitsInSpace(p1, spacekey) {
     for (let f in this.game.spaces[spacekey].units) {
-console.log("check: " + f);
       if (this.returnPlayerCommandingFaction(f) == p1) {
-console.log("player controls " + f);
         for (let i = 0; i < this.game.spaces[spacekey].units[f].length; i++) {
-console.log(" ... " + i);
           if (
 	    this.game.spaces[spacekey].units[f][i].type == "regular" || 
 	    this.game.spaces[spacekey].units[f][i].type == "cavalry" || 

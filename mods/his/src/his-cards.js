@@ -3598,7 +3598,7 @@ console.log("selected: " + spacekey);
 	let f = {};
 
 	for (let key in keys) {
-	  let fac = his_self.returnFactionControllingSpace(key);
+	  let fac = his_self.returnFactionControllingSpace(keys[key]);
 	  let owner = his_self.returnAllyOfMinorPower(fac);
 	  if (!f[owner]) { f[owner] = 1; }
 	  else { f[owner]++; }

@@ -7159,7 +7159,7 @@ console.log("selected: " + spacekey);
 	let f = {};
 
 	for (let key in keys) {
-	  let fac = his_self.returnFactionControllingSpace(key);
+	  let fac = his_self.returnFactionControllingSpace(keys[key]);
 	  let owner = his_self.returnAllyOfMinorPower(fac);
 	  if (!f[owner]) { f[owner] = 1; }
 	  else { f[owner]++; }
@@ -15299,7 +15299,6 @@ if (this.game?.state?.removed && include_removed == false) {
   isSpaceFriendly(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let cf = this.returnFactionControllingSpace(space);
-console.log("is space friendly: " + space.key + " / " + faction + " / " + cf);
     if (cf === faction) { return true; }
     return this.areAllies(cf, faction);
   }
@@ -15388,13 +15387,9 @@ console.log("is space friendly: " + space.key + " / " + faction + " / " + cf);
       function(spacekey) {
         let invalid_choice = false;
         if (his_self.isSpaceFortified(spacekey) && his_self.isSpaceHomeSpace(spacekey, faction)) { 
-console.log("spacekey is: " + spacekey);
 	  invalid_choice = true;
 	}
         if (!his_self.isSpaceFriendly(spacekey, faction)) { invalid_choice = false; }
-if (invalid_choice) { 
-console.log("and we are great!");
-}
         return invalid_choice;
       },
 
@@ -16095,8 +16090,8 @@ console.log("and we are great!");
   canFactionRetreatToNavalSpace(faction, space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
-    if (this.isNavalSpaceFriendly(space, faction) == 1) { console.log("navalspace is friendly"); return 1; }
-    if (this.isSpaceFriendly(space, faction) == 1) { console.log("space is friendly!"); return 1; }
+    if (this.isNavalSpaceFriendly(space, faction) == 1) { return 1; }
+    if (this.isSpaceFriendly(space, faction) == 1) { return 1; }
     return 0;
   }
 
@@ -16271,11 +16266,8 @@ console.log("and we are great!");
 
   doesPlayerHaveLandUnitsInSpace(p1, spacekey) {
     for (let f in this.game.spaces[spacekey].units) {
-console.log("check: " + f);
       if (this.returnPlayerCommandingFaction(f) == p1) {
-console.log("player controls " + f);
         for (let i = 0; i < this.game.spaces[spacekey].units[f].length; i++) {
-console.log(" ... " + i);
           if (
 	    this.game.spaces[spacekey].units[f][i].type == "regular" || 
 	    this.game.spaces[spacekey].units[f][i].type == "cavalry" || 
@@ -21133,7 +21125,7 @@ if (this.game.state.scenario != "is_testing") {
 
     let his_self = this;
 
-    if (!this.is_first_loop) {
+    if (this.is_first_loop == undefined) {
       this.is_first_loop = 1;
     } else {
       this.is_first_loop = 0;
@@ -24950,7 +24942,8 @@ console.log("----------------------------");
 	if (mv[0] === "halted") {
 	  // in order to avoid hangs, we auto-broadcast our RESOLVE again
 	  // if we reach this...
-	  if (this.is_first_loop) {
+	  if (this.is_first_loop == 1) {
+alert("workaround bug-fix: if you see this error the game is attempting to unlock a potentially frozen situation. this may cause issues, please flag for dev team if game does not recover");
 	    this.addMove("RESOLVE\t"+this.publicKey);
 	    this.endTurn();
 	  }
