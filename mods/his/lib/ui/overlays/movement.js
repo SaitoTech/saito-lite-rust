@@ -31,12 +31,12 @@ class MovementOverlay {
 		let faction = mobj.faction;
 		let source = mobj.source;
 		let destination = mobj.destination;
-console.log("max formation size: " + source);
 		let max_formation_size = this.mod.returnMaxFormationSize(
 			units_to_move,
 			faction,
 			source
 		);
+console.log("max formation size: " + max_formation_size);
 		let units = space.units[faction];
 
 		let from = this.mod.game.spaces[source].name;
@@ -111,7 +111,6 @@ console.log("max formation size: " + source);
 		};
 
 		this.overlay.show(MovementOverlayTemplate(obj, this.mod));
-console.log("about to render move -- " + space.key);
 		this.mod.available_units_overlay.renderMove(mobj, faction, space.key);
 		if (this.fade_out_available_units) { this.mod.available_units_overlay.fadeOut(); }
 

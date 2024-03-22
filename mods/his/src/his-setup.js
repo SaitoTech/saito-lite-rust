@@ -651,7 +651,7 @@ console.log("\n\n\n\n");
           this.setAllies("papacy", "hapsburg");
           //this.setActivatedPower("papacy", "hapsburg");
 
-	  //this.addCard("ottoman", "024");
+	  //this.addCard("ottoman", "033");
 	  //this.addCard("ottoman", "025");
 	  //this.addCard("ottoman", "026");
 	  //this.addCard("ottoman", "027");

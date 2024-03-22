@@ -1817,6 +1817,9 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
           let deck = this.returnDeck();
           deck['013'].onEvent(this, "protestant");
 
+	  if (this.game.players.length > 2) {
+	    this.addCard("ottoman", "033");
+	  }
           this.addCard("papacy", "035");
           this.addCard("papacy", "036");
           this.addCard("papacy", "032");
@@ -3490,6 +3493,8 @@ console.log("----------------------------");
 
         if (mv[0] === "diet_of_worms_hapsburgs") {
 
+	  this.factionbar.setActive("hapsburg");
+
 	  let game_self = this;
 	  let x = [];
           let fhand_idx = 0;
@@ -3528,6 +3533,8 @@ console.log("----------------------------");
 	}
 
         if (mv[0] === "diet_of_worms") {
+
+	  this.factionbar.setActive(["protestant","papacy"]);
 
 	  let game_self = this;
 	  let my_faction = "";
@@ -8821,6 +8828,8 @@ defender_hits - attacker_hits;
         }
         if (mv[0] === "winter_phase") {
 
+	  this.factionbar.setActive();
+
 	  // show the winter overlay to let people know WTF is happening
 	  this.winter_overlay.render();
 
@@ -10392,6 +10401,9 @@ console.log(JSON.stringify(reshuffle_cards));
         if (mv[0] === "play") {
 
 	  let faction = mv[1];
+
+	  this.factionbar.setActive(faction);
+
 	  let player = this.returnPlayerOfFaction(faction);
 
 	  // update board display

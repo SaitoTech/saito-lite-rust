@@ -14,6 +14,7 @@ const DiplomacyConfirmOverlay = require('./lib/ui/overlays/diplomacy-confirm');
 const DiplomacyProposeOverlay = require('./lib/ui/overlays/diplomacy-propose');
 const AvailableUnitsOverlay = require('./lib/ui/overlays/available-units');
 const FortificationOverlay = require('./lib/ui/overlays/fortification');
+const SpringDeploymentOverlay = require('./lib/ui/overlays/spring-deployment');
 const BuildOverlay = require('./lib/ui/overlays/build');
 const MovementOverlay = require('./lib/ui/overlays/movement');
 const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
@@ -88,6 +89,7 @@ class HereIStand extends GameTemplate {
     this.war_overlay = new WarOverlay(this.app, this);  // naval battles
     this.naval_battle_overlay = new NavalBattleOverlay(this.app, this);  // naval battles
     this.field_battle_overlay = new FieldBattleOverlay(this.app, this);  // field battles
+    this.spring_deployment_overlay = new SpringDeploymentOverlay(this.app, this);  // spring deployment
     this.build_overlay = new BuildOverlay(this.app, this);  // unit building
     this.available_units_overlay = new AvailableUnitsOverlay(this.app, this);  // unit movement
     this.movement_overlay = new MovementOverlay(this.app, this);  // unit movement

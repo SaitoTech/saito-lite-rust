@@ -139,7 +139,7 @@
 }
 .movement-unit.cavalry .movement-unit-img {
 	background-image: url('/his/img/tiles/abstract/cavalry.svg');
-	background-size: movement-unit;
+	background-size: cover;
 }
 
 .movement-submit-button {

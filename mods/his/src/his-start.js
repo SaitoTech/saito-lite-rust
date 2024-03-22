@@ -153,7 +153,7 @@
 ****/
     this.menu.addMenuOption("game-info", "Info");
     this.menu.addSubMenuOption("game-info", {
-      text: "Faction Units",
+      text: "Units",
       id: "game-units",
       class: "game-units",
       callback: function(app, game_mod){
@@ -161,6 +161,7 @@
         game_mod.units_overlay.render();
       }
     });
+/***
     this.menu.addSubMenuOption("game-info", {
       text: "Faction Cards",
       id: "game-faction-cards",
@@ -169,6 +170,7 @@
         game_mod.menu.showSubSubMenu("game-faction-cards");
       }
     });
+***/
     this.menu.addSubMenuOption("game-info", {
       text: "Discard Pile",
       id: "game-cards",

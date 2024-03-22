@@ -6,7 +6,7 @@
       army_leader	:	true,
       img		:	"Suleiman.svg",
       battle_rating	:	2,
-      command_value	:	10,
+      command_value	:	12,
     });
  
     this.importArmyLeader('ibrahim-pasha', {

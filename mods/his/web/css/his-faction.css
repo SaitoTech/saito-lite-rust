@@ -6,6 +6,9 @@
 .factionbar-faction.papacy , .factionbar-faction.protestant , .factionbar-faction {
   width: 100%;
 }
+.factionbar-faction.active {
+  text-decoration: underline;
+}
 
 .show_wife.henry_viii_marital_status3 {
     background-image: url(/his/img/tiles/wives/AnneBoleyn.svg);
@@ -53,7 +56,7 @@
 .factionbar {
     position: absolute;
     bottom: 0px;
-    right: 0px;
+    left: 0px;
     width: max-content;
     min-width: max-content;
     background-color: whitesmoke;
@@ -62,6 +65,8 @@
     display: flex;
     flex-direction: column;
     border: 2px solid #ddd;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 .factionbar-faction:hover {
     background-color: #E3E3E3;

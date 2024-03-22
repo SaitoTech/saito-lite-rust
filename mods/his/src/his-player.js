@@ -32,8 +32,6 @@
     }
 
 
-console.log("FACTIONS: " + JSON.stringify(factions));
-
     let f = [];
     if (factions["protestant"]) { f.push("protestant"); }
     if (factions["papacy"]) { f.push("papacy"); }
@@ -135,8 +133,6 @@ console.log("FACTIONS: " + JSON.stringify(factions));
 
     }
 
-
-console.log("PLAYERS: " + JSON.stringify(players));
 
     if (num == 3) {
       for (let i = 0; i < players.length; i++) {
@@ -291,8 +287,6 @@ console.log("PLAYERS: " + JSON.stringify(players));
     try { if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; } } catch (err) {}
 
     units_to_destroy = [];
-
-console.log("play assigning hits...");
 
     let selectUnitsInterface = function(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface) {
 
@@ -1013,7 +1007,7 @@ if (this.game.state.events.cramner_active == 1) {
       if (filter_func(this.game.spaces[key]) == 1) {
 
         at_least_one_option = true;
-        html += '<li class="option .'+key+'" id="' + key + '">' + his_self.returnSpaceName(key) + '</li>';
+        html += '<li class="option '+key+'" id="' + key + '">' + his_self.returnSpaceName(key) + '</li>';
 
 	//
 	// the spaces that are selectable are clickable on the main board (whatever board shows)
@@ -1836,7 +1830,7 @@ if (this.game.state.events.cramner_active == 1) {
     let pfactions = this.returnPlayerFactions(this.game.player);
 
     if (ops == null) { ops = 2; }
-    if (ops == 0) { console.log("OPS ARE ZERO!"); }
+    if (ops == 0) { }
 
     //
     // "ACTIVATED POWERS" are those for whom players have the choice of moving.
@@ -2526,14 +2520,17 @@ return;
       opt += `<li class="option" id="pass">skip</li>`;
       opt += '</ul>';
 
+
+      his_self.spring_deployment_overlay.render(faction);
+
       this.updateStatusWithOptions(msg, opt);
 
       $(".option").off();
       $(".option").on('click', function () {
 
         let id = $(this).attr('id');
-
         $(".option").off();
+        his_self.spring_deployment_overlay.hide();
 
 	source_spacekey = id;
 
@@ -2749,13 +2746,24 @@ does_units_to_move_have_unit = true; }
     if (units_to_move.length > 0) {
       if (typeof units_to_move[0] != "number") {
 	for (let z = 0; z < units_to_move.length; z++) {
-	  if (units_to_move[z].idx && !units_to_move[z].owner) {
-	    utm.push(this.game.spaces[spacekey].units[units_to_move[z].faction][units_to_move[z].idx]);
+	  if (units_to_move[z].type && !units_to_move[z].owner) {
+	    let added = 0;
+	    for (let y = 0; added == 0 && y < this.game.spaces[spacekey].units[units_to_move[z].faction].length; y++) {
+	      let u = this.game.spaces[spacekey].units[units_to_move[z].faction][y];
+	      if (u.type !== "regular" && u.type !== "mercenary" && u.type !== "cavalry" && u.type !== "corsair" && u.type !== "squadron") {
+		if (u.type === units_to_move[z].type) {
+	    	  utm.push(this.game.spaces[spacekey].units[units_to_move[z].faction][y]);
+		  added = 1;
+		}
+	      }
+	    }
+	    if (added == 0) {
+	      utm.push(this.game.spaces[spacekey].units[units_to_move[z].faction][units_to_move[z].idx]);
+	    }
 	  } else {
 	    utm.push(units_to_move[z]);
 	  }
 	}
-	
       } else {
         for (let i = 0; i < units_to_move.length; i++) { utm.push(this.game.spaces[spacekey].units[faction][units_to_move[i]]); }
       }
@@ -2772,9 +2780,9 @@ does_units_to_move_have_unit = true; }
 	  command_value_one = utm[i].command_value; 
 	} else {
 	  if (command_value_two == 0) {
-	    command_value_one = utm[i].command_value;
+	    command_value_two = utm[i].command_value;
 	  } else {
-	    if (command_value_one > command_value_two && utm[i].command_value > command_value_one) {
+  	    if (command_value_one > command_value_two && utm[i].command_value > command_value_one) {
 	      command_value_one = utm[i].command_value;
 	    } else {
 	      if (command_value_one < command_value_two && utm[i].command_value > command_value_two) {
@@ -2783,7 +2791,6 @@ does_units_to_move_have_unit = true; }
 	    }
 	  }
 	}
-
 	max_command_value = command_value_one + command_value_two;
       }
     }
@@ -4054,7 +4061,7 @@ does_units_to_move_have_unit = true; }
 
   canPlayerNavalMove(his_self, player, faction) {
 
-    if (his_self.game.state.events.foul_weather) { console.log("Foul Weather - cannot naval move"); return 0; }
+    if (his_self.game.state.events.foul_weather) { return 0; }
 
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
@@ -5679,8 +5686,6 @@ does_units_to_move_have_unit = true; }
 
     let count = his_self.countSpacesWithFilter(filter_func);
 
-console.log("count: " + count);
-
     if (count == 0) { his_self.endTurn(); return 0; }
 
     his_self.playerSelectSpaceWithFilter(
@@ -5717,7 +5722,11 @@ console.log("count: " + count);
     let placed = 0;
 
     let count = his_self.countSpacesWithFilter(filter_func);
-    if (count == 0) { his_self.endTurn(); return 0; }
+    if (count == 0) { 
+      his_self.updateStatus("No Spaces Available for Unit Removal"); 
+      his_self.endTurn();
+      return 0;
+    }
 
     his_self.playerSelectSpaceWithFilter(
 
@@ -5727,18 +5736,99 @@ console.log("count: " + count);
 
       function(spacekey) {
 
+	his_self.updateStatus("removing unit...");
+
 	his_self.removeUnit(faction, spacekey, unittype);
-        his_self.addMove("remove_unit\tland\t"+faction+"\t"+unittype+"\t"+spacekey+"\t"+this.game.player);	
+
+	his_self.displaySpace(spacekey);
+
+        his_self.addMove("remove_unit\tland\t"+faction+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);	
 
 	if (num == 1) {
           his_self.endTurn();
 	} else {
-  	  his_self.playerRemoveUnitsInSpaceWithFilter(msg, unittype, num-1, faction, filter_func, mycallback, cancel_func, board_clickable);
+  	  his_self.playerRemoveUnitsInSpaceWithFilter(unittype, num-1, faction, filter_func, mycallback, cancel_func, board_clickable);
 	}
 
       },
 
-      cancel_func 
+      cancel_func,
+
+      true
+
+    );
+  }
+
+
+
+  playerRemoveAnyFactionUnitsInSpaceWithFilter(unittype, num, filter_func=null, mycallback = null, cancel_func = null, board_clickable = false) {
+
+    let his_self = this;
+    let placed = 0;
+
+    let count = his_self.countSpacesWithFilter(filter_func);
+    if (count == 0) { 
+      his_self.updateStatus("No Spaces Available for Unit Removal"); 
+      his_self.endTurn();
+      return 0;
+    }
+
+    his_self.playerSelectSpaceWithFilter(
+
+      `Remove ${his_self.units[unittype].name} (${num})` ,
+
+      filter_func ,
+
+      function(spacekey) {
+
+	his_self.updateStatus("removing unit...");
+
+	let s = his_self.game.spaces[spacekey];
+	let factions_with_units = [];
+	for (let f in s.units) {
+	  for (let z = 0; z < s.units[f].length; z++) {
+	    if (s.units[f][z].type === unittype && !factions_with_units.includes(f)) { factions_with_units.push(f); z = 100; }
+	  }
+        }
+
+	if (factions_with_units.length == 1) {
+	  let faction = factions_with_units[0];
+	  his_self.removeUnit(faction, spacekey, unittype);
+	  his_self.displaySpace(spacekey);
+          his_self.addMove("remove_unit\tland\t"+faction+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);	
+  	  if (num == 1) {
+            his_self.endTurn();
+	  } else {
+  	    his_self.playerRemoveAnyFactionUnitsInSpaceWithFilter(unittype, num-1, filter_func, mycallback, cancel_func, board_clickable);
+	  }
+	} else {
+
+          let msg = "Remove Mercenary from which Faction?";
+          let html = '<ul>';
+          for (let z = 0; z < factions_with_units.length; z++) {
+	    html += `<li class="option" id="${factions_with_units[z]}">${his_self.returnFactionName(factions_with_units[z])}</li>`;
+	  }
+          html += '</ul>';
+          his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+          $('.option').on('click', function () {
+            let faction = $(this).attr("id");
+	    his_self.removeUnit(faction, spacekey, unittype);
+	    his_self.displaySpace(spacekey);
+            his_self.addMove("remove_unit\tland\t"+faction+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);	
+  	    if (num == 1) {
+              his_self.endTurn();
+	    } else {
+  	      his_self.playerRemoveAnyFactionUnitsInSpaceWithFilter(unittype, num-1, filter_func, mycallback, cancel_func, board_clickable);
+	    }
+          });
+	}
+      },
+
+      cancel_func,
+
+      true
 
     );
   }

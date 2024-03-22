@@ -1,5 +1,4 @@
 const AvailableUnitsTemplate = require('./available-units.template');
-
 class AvailableUnitsOverlay {
 
 	constructor(app, mod, c1, c2, c3) {
@@ -9,6 +8,7 @@ class AvailableUnitsOverlay {
 		this.max_units = 0;
 		this.ops_spend = 0;
 		this.units_already_moved_by_idx = [];
+		this.is_unit_already_moved_by_idx_a_leader = [];
 		this.added = 0; // just idx tracker
 		this.faded_out = false;
 	}
@@ -31,9 +31,6 @@ class AvailableUnitsOverlay {
 	}
 
 	renderMove(mobj, faction, spacekey) {
-
-console.log("spacekey in renderMove: " + spacekey);
-console.log(JSON.stringify(mobj));
 
                 let max_formation_size = this.mod.returnMaxFormationSize(
                         mobj.units_to_move,
@@ -173,9 +170,13 @@ if (us['mercenary']) {
 	  	  let num = parseInt(x[0]);
 	  	  let faction = x[1];
 	  	  let type = x[2];
-		  let is_army_leader = false;
+		  let is_army_leader = false
+
 		  // army leader
+		  let original_type = type;
 		  if (type.indexOf("_") > 0) { is_army_leader = true; type = type.replace(/_/g, "-"); }
+		  if (type === "renegade" || type === "dudley" || type === "montmorency" || type === "ferdinand" || type === "suleiman") { is_army_leader = true; }
+
 	  	  let idx = parseInt(x[3]);
 		  let mobj = this.mod.movement_overlay.mobj;
 
@@ -203,7 +204,14 @@ if (us['mercenary']) {
 
 		  if (adding == true) {
 
-		    this.units_already_moved_by_idx.push(idx);
+
+	  	    this.units_already_moved_by_idx.push(idx);
+		    if (is_army_leader) { 
+console.log("adding army leader!");
+		      this.is_unit_already_moved_by_idx_a_leader.push(1); 
+		    } else {
+		      this.is_unit_already_moved_by_idx_a_leader.push(0);
+		    }
 
 	 	    let qs = `.regular:nth-child(-n+` + num + `)`;
 	  	    let objs = document.querySelectorAll(qs);
@@ -224,9 +232,28 @@ if (us['mercenary']) {
 		  } else {
 
 		    for (let z = 0; z < this.units_already_moved_by_idx.length; z++) {
-		      if (this.units_already_moved_by_idx[z] === idx) {
-		        this.units_already_moved_by_idx.splice(z, 1);
-			z--;
+		      if (is_army_leader) {
+			if (this.is_unit_already_moved_by_idx_a_leader[z] == 1 && this.units_already_moved_by_idx[z] === idx) {
+		          this.units_already_moved_by_idx.splice(z, 1);
+		          this.is_unit_already_moved_by_idx_a_leader.splice(z, 1);
+			  //
+			  // because we are removing an army leader, we remove everything
+			  //
+			  this.units_already_moved_by_idx = [];
+			  this.is_unit_already_moved_by_idx_a_leader = [];
+			  z = 10000;
+			  for (let ii = mobj.moved_units.length-1; ii >= 0; ii--) { mobj.unmoved_units.push(mobj.moved_units[ii]); }
+			  mobj.moved_units = [];
+			  mobj.units_to_move = [];
+                  	  this.mod.movement_overlay.selectUnitsInterface(this.mod, mobj.units_to_move, this.mod.movement_overlay.selectUnitsInterface, this.mod.movement_overlay.selectDestinationInterface);
+			  return;
+		        }
+		      } else {
+			if (this.is_unit_already_moved_by_idx_a_leader[z] == 0 && this.units_already_moved_by_idx[z] === idx) {
+		          this.units_already_moved_by_idx.splice(z, 1);
+		          this.is_unit_already_moved_by_idx_a_leader.splice(z, 1);
+			  z--;
+		        }
 		      }
 		    }
 
@@ -251,7 +278,6 @@ if (us['mercenary']) {
 		      }
 		    }
 		  }
-
                   this.mod.movement_overlay.selectUnitsInterface(this.mod, mobj.units_to_move, this.mod.movement_overlay.selectUnitsInterface, this.mod.movement_overlay.selectDestinationInterface);
 		  //
 		  // disable manual
@@ -288,7 +314,23 @@ if (us['mercenary']) {
 	returnTile(faction, added = 0, utype, num=1, leader=false) {
 
 	  let muc = "opaque";
-	  if (this.units_already_moved_by_idx.includes(added)) { muc = "nonopaque"; }
+	  if (leader == false) {
+	    if (this.units_already_moved_by_idx.includes(added)) { 
+	      for (let z = 0; z < this.units_already_moved_by_idx.length; z++) {
+	        if (this.is_unit_already_moved_by_idx_a_leader[z] == 0 && this.units_already_moved_by_idx[z] === added) {
+	          muc = "nonopaque"; 
+	        }
+	      }
+	    }
+	  } else {
+	    if (this.units_already_moved_by_idx.includes(added)) { 
+	      for (let z = 0; z < this.units_already_moved_by_idx.length; z++) {
+	        if (this.is_unit_already_moved_by_idx_a_leader[z] == 1 && this.units_already_moved_by_idx[z] === added) {
+	          muc = "nonopaque"; 
+	        }
+	      }
+	    }
+	  }
 
 	  let imgtile = "";
 

@@ -3254,6 +3254,8 @@ console.log("selected: " + spacekey);
       },
       onEvent : function(his_self, faction) {
 
+	his_self.factionbar.setActive("protestant");
+
 	// set player to protestant
 	player = his_self.returnPlayerOfFaction("protestant");
 
@@ -5065,7 +5067,7 @@ console.log("selected: " + spacekey);
 	      );
 	    } else {
 	      if (faction === "ottoman") {
-                his_self.playerRemoveUnitsInSpaceWithFilter("mercenary", 2, faction,
+                his_self.playerRemoveAnyFactionUnitsInSpaceWithFilter("mercenary", 2,
 	          function(space) {
 		    for (let key in space.units) {
 		      for (let i = 0; i < space.units[key].length; i++) {
