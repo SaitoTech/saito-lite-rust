@@ -52,3 +52,31 @@ img.mcard {
 		grid-column-gap: 1.5rem;
 	}
 }
+
+
+
+.poker-stats-overlay{
+	min-width: 50rem;
+	max-width: 95vw;
+	background: var(--saito-black);
+	color: var(--saito-white);
+	padding: 2rem;
+	border: 1px solid;
+	border-radius: 5px;
+}
+
+.stats-table{
+	display: grid;
+	grid-template-columns: auto;
+	grid-template-rows: repeat(auto-fit, minmax(2rem,1fr));
+	grid-gap: 0.5rem;
+	margin: 1rem;
+}
+
+.stats-table-row {
+	width: 100%;
+	display: grid;
+	grid-template-rows: auto;
+	grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+	grid-column-gap: 1rem;
+}
