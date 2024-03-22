@@ -35,13 +35,11 @@ console.log("MOVE: " + mv[0]);
 
 	  this.game.state.round++;
 
-
           //
           // TODO - sanity placement here as earlier did not catch everything
           // maybe eliminate redundancy in the future.
 	  //
           this.returnOverstackedUnitsToCapitals();
-
 
 this.updateLog(`###############`);
 this.updateLog(`### Round ${this.game.state.round} ###`);
@@ -134,13 +132,12 @@ if (this.game.options.scenario == "is_testing") {
 	    //
 	    if (this.game.state.round == 4) {
 
-		//
-		// 1532 starts in R4
-		//
-		if (this.game.options.scenario === "1532") {
-	  	  this.game.queue.push("is_1532");
-		}
-
+	      //
+	      // 1532 starts in R4
+	      //
+	      if (this.game.options.scenario === "1532") {
+	        this.game.queue.push("is_1532");
+	      }
 
 	      this.addDebater("protestant", "farel-debater");
 	      this.addDebater("protestant", "cop-debater");
@@ -155,8 +152,6 @@ if (this.game.options.scenario == "is_testing") {
 	        this.game.state.henry_viii_marital_status = 2;
 	      }
 	    }
-
-
 
 	    //
 	    // round 5 - cranmer in london
@@ -182,7 +177,6 @@ if (this.game.options.scenario == "is_testing") {
 	      this.addDebater("papacy", "canisius-debater");
 	    }
 
-
 	    //
 	    // round 6 or higher - England (Mary, Elizabeth and Edward)
 	    //
@@ -196,14 +190,12 @@ if (this.game.options.scenario == "is_testing") {
 	      }
 	    }
 
-
 	    //
 	    // round 7
 	    //
 	    if (this.game.state.round == 7) {
 	      this.addDebater("papacy", "gardiner-debater");
 	    }
-
 	  }
 
 	  //
@@ -1258,6 +1250,7 @@ if (this.game.options.scenario == "is_testing") {
 	    resolved :  0 ,
 	    round :   this.game.state.round,
 	  });
+	  this.displayCustomOverlay("colonize", faction);
           this.game.state.may_colonize[faction] = 0;
     	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -1269,6 +1262,7 @@ if (this.game.options.scenario == "is_testing") {
 	    resolved :  0 ,
 	    round :   this.game.state.round,
 	  });
+	  this.displayCustomOverlay("explore", faction);
           this.game.state.may_explore[faction] = 0;
     	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -1805,6 +1799,7 @@ this.updateLog("RESOLVING CONQUEST: " + faction + " / " + conquistador + " / " +
 	    resolved :  0 ,
 	    round :   this.game.state.round,
 	  });
+	  this.displayCustomOverlay("conquer", faction);
           this.game.state.may_conquer[faction] = 0;
     	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -10471,7 +10466,13 @@ console.log(JSON.stringify(reshuffle_cards));
 	    this.playerTurn(faction);
 	  } else {
 	    let f = this.game.state.players_info[this.game.player-1].factions[0];
-	    this.updateStatusAndListCards(`${this.returnFactionName(f)} - Opponent Turn: `, this.game.deck[0].fhand[0], () => {});
+	    let fhand_idx = 0;
+	    try {
+	      f = this.game.state.players_info[this.game.player-1].active_faction;
+	      fhand_idx = this.game.state.players_info[this.game.player-1].active_faction_idx;
+	    } catch (err) {
+	    }
+	    this.updateStatusAndListCards(`${this.returnFactionName(f)} - Opponent Turn: `, this.game.deck[0].fhand[fhand_idx], () => {});
 	  }
 
 	  this.game.queue.splice(qe, 1);

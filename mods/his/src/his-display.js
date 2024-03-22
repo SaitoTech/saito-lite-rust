@@ -1,6 +1,36 @@
 
   displayCustomOverlay(c="", msg="") {
 
+    if (c === "colonize") {
+      this.welcome_overlay.renderCustom({
+        title : this.returnFactionName(msg) + " launches colony",
+        text : "Colonies may give factions bonus cards in the New World Phase",
+        img : '/his/img/backgrounds/move/colonize.jpg',
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} attempts to found a Colony`);
+      return;
+    }
+
+    if (c === "conquest") {
+      this.welcome_overlay.renderCustom({
+        title : this.returnFactionName(msg) + " launches conquest",
+        text : "Conquests may earn factions Victory Points and bonus cards in the New World Phase",
+        img : '/his/img/backgrounds/move/colonize.jpg',
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} attempts New World Conquest`);
+      return;
+    }
+
+    if (c === "explore") {
+      this.welcome_overlay.renderCustom({
+        title : this.returnFactionName(msg) + " launches exploration",
+        text : "Colonies may earn factions Victory Points in the New World Phase",
+        img : '/his/img/backgrounds/move/colonize.jpg',
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} launches New World Exploration`);
+      return;
+    }
+
     let deck = this.returnDeck(true); // include removed
     if (deck[c]) {
       if (deck[c].returnCustomOverlay) {

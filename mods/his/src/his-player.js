@@ -131,6 +131,9 @@
       players[i].vp_special = 0;
       players[i].vp_bonus = 0;
 
+      players[i].active_faction = players[i].factions[0];
+      players[i].active_faction_idx = 0;
+
     }
 
 
@@ -466,9 +469,6 @@
     }
   }
 
-
-  
-
   playerResolveWinterRetreat(faction, spacekey) {
 
     let his_self = this;
@@ -487,7 +487,6 @@
       return 0;
     }
 
-
     this.updateStatusWithOptions(msg, opt);
 
     $(".option").off();
@@ -503,7 +502,6 @@
     });
 
   }
-
 
   playerRetainUnitsWithFilter(faction, filter_func, num_to_retain) {
 
@@ -559,7 +557,6 @@
 
 	}
 
-
 	//
 	// add unit to units available
 	//
@@ -597,11 +594,9 @@
 
   }
 
-
   returnPlayerFactions(player) {
     return this.game.state.players_info[player-1].factions;
   }
-
 
   returnActionMenuOptions(player=null, faction=null, limit="") {
 
@@ -929,9 +924,6 @@ if (this.game.state.events.cramner_active == 1) {
 
   }
 
-
-
-
   playerSelectFactionWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
 
     let his_self = this;
@@ -961,7 +953,6 @@ if (this.game.state.events.cramner_active == 1) {
     return 0;
   }
 
-
   playerFactionSelectCardWithFilter(faction, msg, filter_func, mycallback = null, cancel_func = null) {
 
     let cards = [];
@@ -979,7 +970,6 @@ if (this.game.state.events.cramner_active == 1) {
     });
 
   }
-
 
   countSpacesWithFilter(filter_func) {
     let count = 0;
@@ -2512,6 +2502,7 @@ return;
     } else {
 
       let msg = this.returnFactionName(faction) + " - Spring Deploy from:";     
+      if (faction === "ottoman") { msg = "Ottomans - Spring Deploy from?"; }
 
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {

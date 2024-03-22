@@ -81,6 +81,8 @@ class FactionBarOverlay {
 				let f = e.currentTarget.id;
         			if (his_self.returnPlayerOfFaction(f) === his_self.game.player) {
           				let fhand_idx = his_self.returnFactionHandIdx(his_self.game.player, f);
+					his_self.game.state.players_info[his_self.game.player-1].active_faction = f;
+					his_self.game.state.players_info[his_self.game.player-1].active_faction_idx = fhand_idx;
           				let c = his_self.game.deck[0].fhand[fhand_idx];
           				his_self.deck_overlay.render("hand", c);
           				return;

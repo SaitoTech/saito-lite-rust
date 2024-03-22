@@ -6,7 +6,7 @@
 	background-size: cover;
 }
 
-.spring-deployment .instructions {
+.spring-deployment-overlay .instructions {
     position: absolute;
     bottom: 0px;
     background: #0009;
