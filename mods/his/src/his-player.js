@@ -2849,7 +2849,6 @@ does_units_to_move_have_unit = true; }
 		}
 	      }
 
-
 	      //
 	      // modify "continue" instruction if this is a move over a pass
 	      //

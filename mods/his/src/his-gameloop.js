@@ -3823,6 +3823,12 @@ console.log("----------------------------");
 	// exists to be removed by counter_or_acknowledge
 	//
 	if (mv[0] === "halted") {
+	  // in order to avoid hangs, we auto-broadcast our RESOLVE again
+	  // if we reach this...
+	  if (this.is_first_loop) {
+	    this.addMove("RESOLVE\t"+this.publicKey);
+	    this.endTurn();
+	  }
 	  return 0;
 	}
 	if (mv[0] === "counter_or_acknowledge") {
@@ -11394,10 +11400,6 @@ console.log("re-rendering!");
 	  //
 	  // temporary bonuses
 	  //
-	  if (this.game.state.english_bible_translation_bonus == 1 || this.game.state.french_bible_translation_bonus == 1 || this.game.state.german_bible_translation_bonus == 1) {
-	    p_rolls++;
-	    p_roll_desc.push({ name : "Bonus" , desc : "translation completed"});
-	  }
 	  if (this.game.state.printing_press_active) {
 	    p_rolls++;
 	    p_roll_desc.push({ name : "Bonus" , desc : "printing press"});
@@ -11456,6 +11458,7 @@ console.log("re-rendering!");
 	      if (i == 0) { this.updateLog("Calvin's Institutes modifies Protestant rolls by +1"); }
 	      x++;
 	    }
+	    if (this.game.state.english_bible_translation_bonus == 1 || this.game.state.french_bible_translation_bonus == 1 || this.game.state.german_bible_translation_bonus == 1) { x++; }
 	    if (x > p_high) { p_high = x; }
 	    pdice.push(x);
 	  }

@@ -3594,18 +3594,14 @@ console.log("selected: " + spacekey);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) { 
 
+	let keys = ["genoa","milan", "venice", "florence", "naples"];
 	let f = {};
-	if (!f[his_self.game.spaces['genoa'].political]) { f[his_self.game.spaces['genoa'].political] = 1; }
-	else { f[his_self.game.spaces['genoa'].political]++ }
 
-	//
-	// minor allied-controlled spaces count for the controlling power
-	//
-	for (let key in f) {
-	  if (his_self.returnAllyOfMinorPower(key) != key) { 
-	    if (!f[his_self.returnAllyOfMinorPower(key)]) { f[his_self.returnAllyOfMinorPower(key)] = 0; }
-	    f[his_self.returnAllyOfMinorPower(key)]++; 
-	  }
+	for (let key in keys) {
+	  let fac = his_self.returnFactionControllingSpace(key);
+	  let owner = his_self.returnAllyOfMinorPower(fac);
+	  if (!f[owner]) { f[owner] = 1; }
+	  else { f[owner]++; }
 	}
 
 	for (let key in f) {
@@ -3624,34 +3620,28 @@ console.log("selected: " + spacekey);
       } ,
       onEvent : function(his_self, faction) {
 
-	let f = {};
-	if (!f[his_self.game.spaces['genoa'].political]) { f[his_self.game.spaces['genoa'].political] = 1; }
-	else { f[his_self.game.spaces['genoa'].political]++ }
-
-	//
-	// minor allied-controlled spaces count for the controlling power
-	//
-	for (let key in f) {
-	  if (his_self.returnAllyOfMinorPower(key) != key) { 
-	    if (!f[his_self.returnAllyOfMinorPower(key)]) { f[his_self.returnAllyOfMinorPower(key)] = 0; }
-	    f[his_self.returnAllyOfMinorPower(key)]++; 
-	  }
-	}
-
-
-	for (let key in f) {
-	  if (f[key] >= 4) {
+        let keys = ["genoa","milan", "venice", "florence", "naples"];
+        let f = {};
+        for (let key in keys) {
+          let fac = his_self.returnFactionControllingSpace(key);
+          let owner = his_self.returnAllyOfMinorPower(fac);
+          if (!f[owner]) { f[owner] = 1; }
+          else { f[owner]++; }
+        } 
+        
+        for (let key in f) {
+          if (f[key] >= 4) {
 	    his_self.gainVictoryPoints(faction, 3);
-	  }
-	  if (f[key] == 3) {
+          }
+          if (f[key] == 3) {
 	    his_self.gainVictoryPoints(faction, 2);
-	  }
-	  if (f[key] == 2) {
-	    let faction_hand_idx = his_self.returnFactionHandIdx(player, key);
- 	    his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+his_self.game.state.players_info[player-1].factions[faction_hand_idx]+"\t1");
+          }
+          if (f[key] == 2) {
+	    let player = his_self.returnPlayerOfFaction(key);
+ 	    his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+key+"\t1");
 	    his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
-	  }
-	}
+          }
+        }
 
 	his_self.displayVictoryTrack();
 
@@ -3680,7 +3670,7 @@ console.log("selected: " + spacekey);
           his_self.setEnemies("protestant","hapsburg");
           his_self.setAllies("papacy","hapsburg");
 
-	  //
+	  //2
 	  // protestant home + political spaces
 	  //
 	  // skip keys are home for other factions
