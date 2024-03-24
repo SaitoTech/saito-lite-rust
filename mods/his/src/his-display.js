@@ -1341,6 +1341,7 @@ try {
       // this data object.
       //
       if (this.game.state.board[z]) {
+	// mercenary also handles cavalry
         html += this.returnMercenaryTiles(z, spacekey);
         html += this.returnArmyTiles(z, spacekey);
 	tile = html;
@@ -1707,23 +1708,23 @@ try {
 	    }
 	  }
           if (z === "ottoman") {
-	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['6']; i++) {
-              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanMerc-6.svg" />`;
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['cavalry']['6']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanCav-6.svg" />`;
 	    }
-	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['5']; i++) {
-              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanMerc-5.svg" />`;
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['cavalry']['5']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanCav-5.svg" />`;
 	    }
-	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['4']; i++) {
-              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanMerc-4.svg" />`;
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['cavalry']['4']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanCav-4.svg" />`;
 	    }
-	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['3']; i++) {
-              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanMerc-3.svg" />`;
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['cavalry']['3']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanCav-3.svg" />`;
 	    }
-	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['2']; i++) {
-              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanMerc-2.svg" />`;
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['cavalry']['2']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanCav-2.svg" />`;
 	    }
-	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['mercenary']['1']; i++) {
-              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanMerc-1.svg" />`;
+	    for (let i = 0; i < this.game.state.board[z].deployed[spacekey]['cavalry']['1']; i++) {
+              html += `<img class="army_tile" src="/his/img/tiles/ottoman/OttomanCav-1.svg" />`;
 	    }
 	  }
           if (z === "papacy") {

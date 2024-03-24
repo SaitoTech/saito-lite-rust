@@ -723,6 +723,13 @@
       deployed_units[key]['mercenary']['4'] = 0;
       deployed_units[key]['mercenary']['5'] = 0;
       deployed_units[key]['mercenary']['6'] = 0;
+      deployed_units[key]['cavalry'] = {};
+      deployed_units[key]['cavalry']['1'] = 0;
+      deployed_units[key]['cavalry']['2'] = 0;
+      deployed_units[key]['cavalry']['3'] = 0;
+      deployed_units[key]['cavalry']['4'] = 0;
+      deployed_units[key]['cavalry']['5'] = 0;
+      deployed_units[key]['cavalry']['6'] = 0;
       deployed_units[key]['squadron'] = {};
       deployed_units[key]['squadron']['1'] = 0;
       deployed_units[key]['corsair'] = {};
@@ -755,6 +762,13 @@
 	  continue_to_apportion = true;
           changed_anything = true;
 	}
+	if (my_spaces[key]['cavalry'] >= 6 && available_units['cavalry']['6'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['cavalry'] -= 6;
+	  available_units['regular']['6']--;
+	  deployed_units[key]['cavalry']['6']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
 
 	// !5
 
@@ -769,6 +783,13 @@
 	  my_spaces[key]['mercenary'] -= 4;
 	  available_units['regular']['4']--;
 	  deployed_units[key]['mercenary']['4']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+	if (my_spaces[key]['cavalry'] >= 4 && available_units['raegular']['4'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['cavalry'] -= 4;
+	  available_units['regular']['4']--;
+	  deployed_units[key]['cavalry']['4']++;
 	  continue_to_apportion = true;
           changed_anything = true;
 	}
@@ -789,6 +810,13 @@
 	  continue_to_apportion = true;
           changed_anything = true;
 	}
+	if (my_spaces[key]['cavalry'] >= 2 && available_units['regular']['2'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['cavalry'] -= 2;
+	  available_units['regular']['2']--;
+	  deployed_units[key]['cavalry']['2']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
 
 	if (my_spaces[key]['regular'] >= 1 && available_units['regular']['1'] > 0 && continue_to_apportion == false) { 
 	  my_spaces[key]['regular'] -= 1;
@@ -804,6 +832,14 @@
 	  continue_to_apportion = true;
           changed_anything = true;
 	}
+	if (my_spaces[key]['cavalry'] >= 1 && available_units['regular']['1'] > 0 && continue_to_apportion == false) { 
+	  my_spaces[key]['cavalry'] -= 1;
+	  available_units['regular']['1']--;
+	  deployed_units[key]['cavalry']['1']++;
+	  continue_to_apportion = true;
+          changed_anything = true;
+	}
+
 	if (my_spaces[key]['squadron'] >= 1 && available_units['squadron']['1'] > 0 && continue_to_apportion == false) { 
 	  my_spaces[key]['squadron'] -= 1;
 	  available_units['squadron']['1']--;
@@ -872,6 +908,11 @@
 	results.missing[key]['mercenary'] = my_spaces[key]['mercenary'];
 	results.overcapacity = 1;
       }	
+      if (my_spaces[key]['cavalry'] > 0) { 
+	if (!results.missing[key]) { results.missing[key] = {}; }
+	results.missing[key]['cavalry'] = my_spaces[key]['cavalry'];
+	results.overcapacity = 1;
+      }	
     }
 
     this.game.state.board_updated = new Date().getTime();
@@ -894,7 +935,7 @@
 
     let amount_over_capacity = 0;
     for (let key in res.missing) {
-      if ((unittype == "regular" && res.missing[key]['regular'] > 0) || (unittype == "mercenary" && res.missing[key]['mercenary'] > 0)) {
+      if ((unittype == "regular" && res.missing[key]['regular'] > 0) || (unittype == "mercenary" && res.missing[key]['mercenary'] > 0) || (unittype == "regular" && res.missing[key]['cavalry'] > 0)) {
         return 0;
       }
     }
@@ -907,8 +948,6 @@
     if (res.available[unittype]['4'] > 0) { x += (4 * res.available[unittype]['4']); }
     if (res.available[unittype]['5'] > 0) { x += (5 * res.available[unittype]['5']); }
     if (res.available[unittype]['6'] > 0) { x += (6 * res.available[unittype]['6']); }
-
-console.log("returning number of " + unittype + " units: " + x);
 
     return x;
 

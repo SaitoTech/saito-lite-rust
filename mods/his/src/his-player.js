@@ -139,15 +139,15 @@
 
     if (num == 3) {
       for (let i = 0; i < players.length; i++) {
-	if (players[i].factions[0] === "protestant") {
+	if (players[i].factions[0] == "protestant") {
 	  players[i].factions.push("england");
 	  players[i].factions_passed.push(false);
 	}
-	if (players[i].factions[0] === "papacy") {
+	if (players[i].factions[0] == "papacy") {
 	  players[i].factions.push("hapsburg");
 	  players[i].factions_passed.push(false);
 	}
-	if (players[i].factions[0] === "france") {
+	if (players[i].factions[0] == "france") {
 	  players[i].factions.push("ottoman");
 	  players[i].factions_passed.push(false);
 	}
@@ -156,11 +156,11 @@
 
     if (num == 4) {
       for (let i = 0; i < players.length; i++) {
-	if (players[i].factions[0] === "protestant") {
+	if (players[i].factions[0] == "protestant") {
 	  players[i].factions.push("england");
 	  players[i].factions_passed.push(false);
 	}
-	if (players[i].factions[0] === "papacy") {
+	if (players[i].factions[0] == "papacy") {
 	  players[i].factions.push("hapsburg");
 	  players[i].factions_passed.push(false);
 	}
@@ -169,7 +169,7 @@
 
     if (num == 5) {
       for (let i = 0; i < players.length; i++) {
-	if (players[i].factions[0] === "protestant") {
+	if (players[i].factions[0] == "protestant") {
 	  players[i].factions.push("england");
 	  players[i].factions_passed.push(false);
 	}
@@ -2832,26 +2832,14 @@ does_units_to_move_have_unit = true; }
 		if (space.type == "electorate") { return 0; }
 	      }
 	      // you cannot move into spaces that are not allied or enemies
-if (space.key === "navarre") {
-console.log("can we move into space: " + spacek.key);
-}
               if (!his_self.canFactionMoveIntoSpace(faction, space.key)) { return 0; }
-if (space.key === "navarre") {
-console.log("yes, what about our neighbours: " + spacekey);
-console.log("NS: " + JSON.stringify(space.neighbours));
-}
 	      if (space.neighbours.includes(spacekey)) {
-if (space.key === "navarre") {
-console.log("in navarre...");
-}
 	        if (!space.pass) { 
 		  return 1; 
 		} else {
-console.log("PASS: " + space.key);
  		  if (!space.pass.includes(spacekey)) {
 		    return 1;
 		  } else {
-console.log("this is in our ops: " + ops_remaining);
 		    if (ops_remaining >= 1) {
 		      // we have to flag and say, "this costs an extra op"
 		      return 1;
