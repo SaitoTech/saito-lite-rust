@@ -2654,7 +2654,8 @@ try {
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      neighbours: ["zaragoza","bilbao"],
+      neighbours: ["bordeaux","zaragoza","bilbao"],
+      pass: ["bordeaux"],
       language: "spanish",
       type: "key"
     }

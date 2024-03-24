@@ -97,7 +97,9 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.queue.push("is_testing");
 	    this.game.queue.push("card_draw_phase");
 } else {
-	    this.game.queue.push("show_overlay\tvp");
+	    if (this.game.players.length == 2) {
+	      this.game.queue.push("show_overlay\tvp");
+	    }
 	    this.game.queue.push("hide_overlay\tdiet_of_worms");
 	    this.game.queue.push("diet_of_worms");
 	    this.game.queue.push("show_overlay\tdiet_of_worms");
