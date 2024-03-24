@@ -61,9 +61,9 @@ this.updateLog(`###############`);
 	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
 	  this.game.queue.push("action_phase");
 if (this.game.options.scenario != "is_testing") {
-//	  this.game.queue.push("spring_deployment_phase");
-//	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
-//	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	  this.game.queue.push("spring_deployment_phase");
+	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
+	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 }
 
 
@@ -1304,6 +1304,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "St. Lawrence";
+	    this.game.state.newworld.results.explorations[idx].prize = "St. Lawrence";
 	  }
 	  if (bonus === 'greatlakes') {
 	    this.game.state.explorations[idx].resolved = 1;
@@ -1311,6 +1312,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Great Lakes";
+	    this.game.state.newworld.results.explorations[idx].prize = "Great Lakes";
 	  }
 	  if (bonus === 'mississippi') {
 	    this.game.state.explorations[idx].resolved = 1;
@@ -1318,6 +1320,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Mississippi";
+	    this.game.state.newworld.results.explorations[idx].prize = "Mississippi";
 	  }
 	  if (bonus === 'pacificstrait') {
 	    this.game.state.explorations[idx].resolved = 1;
@@ -1325,6 +1328,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Pacific Strait";
+	    this.game.state.newworld.results.explorations[idx].prize = "Pacific Strait";
 	  }
 	  if (bonus === 'amazon') {
 	    this.game.state.explorations[idx].resolved = 1;
@@ -1332,6 +1336,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Amazon";
+	    this.game.state.newworld.results.explorations[idx].prize = "Amazon";
 	  }
 	  if (bonus === 'circumnavigation') {
 
@@ -1349,19 +1354,15 @@ if (this.game.options.scenario == "is_testing") {
 	      this.game.state.newworld[bonus].faction = faction;
 	      this.game.state.newworld[bonus].claimed = 1;
 	      this.game.state.explorations[idx].prize = "Circumnavigation";
+	      this.game.state.newworld.results.explorations[idx].prize = "Circumnavigation";
 	    } else {
 	      this.updateLog("Circumnavigation Attempt fails: " + x + " rolled");
 	      this.game.state.explorations[idx].resolved = 1;
 	      this.game.state.explorations[idx].explorer_lost = 1;
 	      this.game.state.explorations[idx].prize = "-";
+	      this.game.state.newworld.results.explorations[idx].prize = "-";
 	    }
 
-	  }
-
-	  for (let p = 0; p < this.game.state.newworld.results.explorations.length; p++) {
-	    if (this.game.state.newworld.results.explorations[p].idx == idx) {
-	      this.game.state.newworld.results.explorations[p].prize = this.game.state.explorations[idx].prize;
-	    }
 	  }
 
 	  this.displayVictoryTrack();
@@ -1371,6 +1372,7 @@ if (this.game.options.scenario == "is_testing") {
 	}
 
 	if (mv[0] === "resolve_new_world_riches_rolls") {
+
 
 	  this.updateStatus("Resolving New World Riches...");
 
@@ -1758,7 +1760,7 @@ if (this.game.options.scenario == "is_testing") {
 	  this.updateStatus("Resolving "+this.returnFactionName(faction) + " Exploration Attempt...");
 
 	  if (hits <= 4) {
-	    this.updateLog(this.returnFactionName(faction) + ": " + explorer + " lost at sea");
+	    this.updateLog(this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " lost at sea");
 	    this.game.state.explorations[idx].prize = "lost at sea";
 	    this.game.state.explorations[idx].explorer_lost = 1;
 
@@ -1767,15 +1769,16 @@ if (this.game.options.scenario == "is_testing") {
 
 	  }
 	  if (hits > 4 && hits <= 6) {
-	    this.updateLog(this.returnFactionName(faction) + ": " + explorer + " makes no discovery");
+	    this.updateLog(this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " makes no discovery");
 	  }
 	  if (hits > 6 && hits <= 9) {
 	    if (hits == 9) {
 	      if (this.game.state.newworld['mississippi'].claimed != 1) {
 	        this.game.state.newworld['mississippi'].claimed = 1;
 	        this.game.state.newworld['mississippi'].faction = faction;
+	        this.game.state.newworld.results.explorations[idx].prize = "Mississippi";
 	        this.game.state.explorations[idx].prize = "Mississippi";
-	        this.updateLog(this.returnFactionName(faction) + ": " + explorer + " discovers the Mississippi (1VP)");
+	        this.updateLog(this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Mississippi (1VP)");
 	      } else { 
 		hits--;
 	      }
@@ -1784,8 +1787,9 @@ if (this.game.options.scenario == "is_testing") {
 	      if (this.game.state.newworld['greatlakes'].claimed != 1) {
 	        this.game.state.newworld['greatlakes'].claimed = 1;
 	        this.game.state.newworld['greatlakes'].faction = faction;
+	        this.game.state.newworld.results.explorations[idx].prize = "Great Lakes";
 	        this.game.state.explorations[idx].prize = "Great Lakes";
-	        this.updateLog(this.returnFactionName(faction) + ": " + explorer + " discovers the Great Lakes (1VP)");
+	        this.updateLog(this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Great Lakes (1VP)");
 	      } else { 
 		hits--;
 	      }
@@ -1794,34 +1798,26 @@ if (this.game.options.scenario == "is_testing") {
 	      if (this.game.state.newworld['stlawrence'].claimed != 1) {
 	        this.game.state.newworld['stlawrence'].claimed = 1;
 	        this.game.state.newworld['stlawrence'].faction = faction;
+	        this.game.state.newsworld.results.explorations[idx].prize = "St. Lawrence";
 	        this.game.state.explorations[idx].prize = "St. Lawrence";
-	        this.updateLog(this.returnFactionName(faction) + ": " + explorer + " discovers the St. Lawrence (1VP)");
+	        this.updateLog(this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the St. Lawrence (1VP)");
 	      } else {
+	        this.game.state.newworld.results.explorations[idx].prize = "-";
 	        this.game.state.explorations[idx].prize = "-";
-	        this.updateLog(this.returnFactionName(faction) + ": " + explorer + " makes no discovery");
+	        this.updateLog(this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " makes no discovery");
 	      }
 	    }
-
-            for (let p = 0; p < this.game.state.newworld.results.explorations.length; p++) {
-              if (this.game.state.newworld.results.explorations[p].idx == idx) {
-                this.game.state.newworld.results.explorations[p].prize = this.game.state.explorations[idx].prize;
-              }
-            }
 	  }
 
-	  if (hits > 10) {
+	  if (hits >= 10) {
 
 	    //
 	    // nope out if nothing to claim
 	    //
 	    if (this.game.state.newworld['stlawrence'].claimed == 1 && this.game.state.newworld['greatlakes'].claimed == 1 && this.game.state.newworld['mississippi'].claimed == 1 && this.game.state.newworld['amazon'].claimed == 1 && this.game.state.newworld['circumnavigation'].claimed == 1) {
-	      this.updateLog(this.returnFactionName(faction) + ": " + explorer + " makes no discovery");
+	      this.updateLog(this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " makes no discovery");
 	      this.game.state.explorations[idx].prize = "-";
-              for (let p = 0; p < this.game.state.newworld.results.explorations.length; p++) {
-                if (this.game.state.newworld.results.explorations[p].idx == idx) {
-                  this.game.state.newworld.results.explorations[p].prize = this.game.state.explorations[idx].prize;
-                }
-              }
+	      this.game.state.newworld.results.explorations[idx].prize = "-";
 	      return 1;
 	    }
 
@@ -9887,9 +9883,6 @@ if (this.game.state.round == 2) {
 	      if (f === "protestant" || f === "hapsburg" || f === "papacy" || f === "england" || f === "ottoman" || f === "france") {
 
                 let cardnum = this.factions[this.game.state.players_info[i].factions[z]].returnCardsDealt(this);
-
-cardnum = 1;
-console.log(f + " ----> " + cardnum);
 
 		//
 		// is_testing

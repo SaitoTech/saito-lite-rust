@@ -69,17 +69,27 @@ class NewWorldOverlay {
 		  }
 	 	  for (let i = 0; i < his_self.game.state.newworld.results.conquests.length; i++) {
 		    let con = his_self.game.state.newworld.results.conquests[i];
-		    let prize = "-"; if (con.prize) { prize = con.prize; }
+		    let prize = "-";
 		    let roll = 0;
-		    if (con.type.indexOf("Aztec") > -1) { roll = his_self.game.state.newworld['aztec'].roll; }
-		    if (con.type.indexOf("Inca") > -1) { roll = his_self.game.state.newworld['inca'].roll; }
-		    if (con.type.indexOf("Maya") > -1) { roll = his_self.game.state.newworld['maya'].roll; }
-		    if (con.idx) {
-		      if (his_self.game.state.conquests[con.idx].prize === "killed by natives") {
-			prize = "killed by natives";
+		    let bonus_to_issue = false;
+		    let ctype = "-";
+		    if (con.type) {
+		      ctype = con.type;
+	  	      if (con.type.indexOf("Aztec") > -1) { roll = his_self.game.state.newworld['aztec'].roll; }
+		      if (con.type.indexOf("Inca") > -1) { roll = his_self.game.state.newworld['inca'].roll; }
+		      if (con.type.indexOf("Maya") > -1) { roll = his_self.game.state.newworld['maya'].roll; }
+		    }
+		    if (con.prize) { prize = con.prize; }
+		    if (roll > 0) { bonus_to_issue = true; } else { roll = con.total_hits; }
+		    if (bonus_to_issue == true) {
+		    } else {
+		      if (con.idx) {
+		        if (his_self.game.state.conquests[con.idx].prize === "killed by natives") {
+		    	  prize = "killed by natives";
+		        }
 		      }
 		    }
-		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : con.img , type : "conquest" , name : con.type , faction : con.faction , conquistador : con.conquistador , total_hits : roll }, stage), ".new-world-overlay .content .conquests");
+		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : con.img , type : "conquest" , name : ctype , faction : con.faction , conquistador : con.conquistador , total_hits : roll }, stage), ".new-world-overlay .content .conquests");
 		  }
 	 	  for (let i = 0; i < his_self.game.state.newworld.results.explorations.length; i++) {
 		    let exp = his_self.game.state.newworld.results.explorations[i];
@@ -89,7 +99,7 @@ class NewWorldOverlay {
 			prize = his_self.game.state.explorations[exp.idx].prize;
 		      }
 		    }
-		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : exp.img , type : "exploration" , name : exp.type , faction : exp.faction , prize : exp.prize , explorer : exp.explorer , total_hits : exp.total_hits }, stage), ".new-world-overlay .content .explorations");
+		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : exp.img , type : "exploration" , name : exp.type , faction : exp.faction , prize : prize , explorer : exp.explorer , total_hits : exp.total_hits }, stage), ".new-world-overlay .content .explorations");
 		  }
 	 	}
 
@@ -111,6 +121,7 @@ class NewWorldOverlay {
 	returnRowHTML(obj={}, stage="") {
 
 		if (stage === "results") {
+
 		  let img = "";
 		  let total_hits = "?";
 		  let prize = obj.prize;

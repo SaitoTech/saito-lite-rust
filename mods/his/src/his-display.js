@@ -1,8 +1,6 @@
 
   displayCustomOverlay(c="", msg="") {
 
-return;
-
     if (c === "battle-of-mohacs") {
       this.welcome_overlay.renderCustom({
         title : "War between the Hapsburg and Ottman Empires" ,
