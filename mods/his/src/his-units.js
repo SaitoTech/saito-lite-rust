@@ -222,6 +222,15 @@
     }
   }
 
+  returnConquistadorName(key) {
+    if (this.conquistadors[key]) { return this.conquistadors[key].name; }
+    return "Conquerer";
+  }
+  returnExplorerName(key) {
+    if (this.explorers[key]) { return this.explorers[key].name; }
+    return "Explorer";
+  }
+
   returnAvailableExplorers(faction="") {
     let unavailable = [];
     let available = [];

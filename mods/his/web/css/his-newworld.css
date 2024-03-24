@@ -9,6 +9,19 @@
 	text-align: center;
 }
 
+.new-world-roll.goldenrod {
+        background-color: goldenrod;
+        color: black;
+}
+
+.conquest .nw_tile {
+    width: 100%;
+}
+
+.nw_tile.depleted {
+    opacity: 0.5;
+}
+
 .card_bonuses {
     position: absolute;
     bottom: 0px;

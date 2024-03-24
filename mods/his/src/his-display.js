@@ -1,10 +1,22 @@
 
   displayCustomOverlay(c="", msg="") {
 
+return;
+
+    if (c === "battle-of-mohacs") {
+      this.welcome_overlay.renderCustom({
+        title : "War between the Hapsburg and Ottman Empires" ,
+        text : "The Ottoman subjugation of Hungary-Bohemia forces the Hapsburg Empire to intervene on the side of Christian Europe and in pre-emptive defense of Vienna" ,
+        img : '/his/img/backgrounds/battle-of-mohacs.jpeg',
+      });
+      this.game.queue.push(`ACKNOWLEDGE\tThe Defeat of Hungary: the Hapsburg and Ottoman Empires are now At War`);
+      return;
+    }
+
     if (c === "colonize") {
       this.welcome_overlay.renderCustom({
-        title : this.returnFactionName(msg) + " launches colony",
-        text : "Colonies may give factions bonus cards in the New World Phase",
+        title : this.returnFactionName(msg) + " founds a Colony",
+        text : "Colonies earn factions bonus cards in the New World Phase",
         img : '/his/img/backgrounds/move/colonize.jpg',
       });
       this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} attempts to found a Colony`);
@@ -13,19 +25,19 @@
 
     if (c === "conquest") {
       this.welcome_overlay.renderCustom({
-        title : this.returnFactionName(msg) + " launches conquest",
-        text : "Conquests may earn factions Victory Points and bonus cards in the New World Phase",
-        img : '/his/img/backgrounds/move/colonize.jpg',
+        title : this.returnFactionName(msg) + " launches Conquest Expedition",
+        text : "Conquests earn factions Victory Points and bonus cards in the New World Phase",
+        img : '/his/img/backgrounds/move/conquer.jpg',
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} attempts New World Conquest`);
+      this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} attempts Conquest Expedition`);
       return;
     }
 
     if (c === "explore") {
       this.welcome_overlay.renderCustom({
-        title : this.returnFactionName(msg) + " launches exploration",
-        text : "Colonies may earn factions Victory Points in the New World Phase",
-        img : '/his/img/backgrounds/move/colonize.jpg',
+        title : this.returnFactionName(msg) + " launches Exploration",
+        text : "Explorations earn Victory Points for strategic discoveries in the New World Phase",
+        img : '/his/img/backgrounds/move/explore.jpg',
       });
       this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} launches New World Exploration`);
       return;
@@ -518,6 +530,48 @@
 	  }
 	  obj.innerHTML += `<img class="army_tile" src="${tile}" />`;
         }
+      }
+    }
+
+    let ec = [];
+    let fc = [];
+    let hc = [];
+
+    if (this.game.state.newworld['aztec'].claimed == 1) {
+      if (this.game.state.newworld['aztec'].faction == "england") { ec.push("aztec"); }
+      if (this.game.state.newworld['aztec'].faction == "france") { cc.push("aztec"); }
+      if (this.game.state.newworld['aztec'].faction == "hapsburg") { hc.push("aztec"); }
+    }
+    if (this.game.state.newworld['inca'].claimed == 1) {
+      if (this.game.state.newworld['inca'].faction == "england") { ec.push("inca"); }
+      if (this.game.state.newworld['inca'].faction == "france") { cc.push("inca"); }
+      if (this.game.state.newworld['inca'].faction == "hapsburg") { hc.push("inca"); }
+    }
+    if (this.game.state.newworld['maya'].claimed == 1) {
+      if (this.game.state.newworld['maya'].faction == "england") { ec.push("maya"); }
+      if (this.game.state.newworld['maya'].faction == "france") { cc.push("maya"); }
+      if (this.game.state.newworld['maya'].faction == "hapsburg") { hc.push("maya"); }
+    }
+
+    for (let z = 0, zz = 1; z < ec.length; z++) {
+      let depl = ""; if (this.game.state.newworld[ec[z]].deleted == 1) { depl = "depleted"; }
+      if (zz < 2) {
+	document.querySelector(`.england_conquest${zz}`).innerHTML = `<img class="nw_tile ${depl}" src="${this.game.state.newworld[ec[z]].img}" />`;
+        zz++;
+      }
+    }
+    for (let z = 0, zz = 1; z < fc.length; z++) {
+      let depl = ""; if (this.game.state.newworld[ec[z]].deleted == 1) { depl = "depleted"; }
+      if (zz < 2) {
+	document.querySelector(`.france_conquest${zz}`).innerHTML = `<img class="nw_tile ${depl}" src="${this.game.state.newworld[fc[z]].img}" />`;
+        zz++;
+      }
+    }
+    for (let z = 0, zz = 1; z < hc.length; z++) {
+      let depl = ""; if (this.game.state.newworld[ec[z]].deleted == 1) { depl = "depleted"; }
+      if (zz < 3) {
+	document.querySelector(`.hapsburg_conquest${zz}`).innerHTML = `<img class="nw_tile ${depl}" src="${this.game.state.newworld[hc[z]].img}" />`;
+        zz++;
       }
     }
 

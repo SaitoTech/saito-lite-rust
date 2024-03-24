@@ -50,7 +50,6 @@ class NewWorldOverlay {
 		    let faction = his_self.game.state.explorations[i];
 		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ img : "" , type : "exploration", name : "unknown", faction : faction }, stage), ".new-world-overlay .content .explorations");
 		  }
-
 		  if (his_self.game.state.events.cabot_england == 1) {
 		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ img : "/his/img/tiles/explorers/Cabot_English.svg" , type : "exploration" , name : "Sebastian Cabot", faction : "england" }, stage), ".new-world-overlay .content .explorations");
 		  }
@@ -61,30 +60,36 @@ class NewWorldOverlay {
 		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ img : "/his/img/tiles/explorers/Cabot_Hapsburg.svg" , type : "exploration" , name : "Sebastian Cabot", faction : "hapsburg" }, stage), ".new-world-overlay .content .explorations");
 		  }
 		} else {
+
 	 	  for (let i = 0; i < his_self.game.state.newworld.results.colonies.length; i++) {
 		    let col = his_self.game.state.newworld.results.colonies[i];
-		    let prize = col.type; if (col.prize) { prize = col.prize; }
-		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : col.img , type : "colony", name : col.type , faction : col.faction , total_hits : "/" }, stage), ".new-world-overlay .content .colonies");
+		    let roll = col.roll;
+		    let prize = col.name; if (col.prize) { prize = col.prize; }
+		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : col.img , type : "colony", name : col.type , faction : col.faction , total_hits : roll }, stage), ".new-world-overlay .content .colonies");
 		  }
 	 	  for (let i = 0; i < his_self.game.state.newworld.results.conquests.length; i++) {
 		    let con = his_self.game.state.newworld.results.conquests[i];
 		    let prize = "-"; if (con.prize) { prize = con.prize; }
+		    let roll = 0;
+		    if (con.type.indexOf("Aztec") > -1) { roll = his_self.game.state.newworld['aztec'].roll; }
+		    if (con.type.indexOf("Inca") > -1) { roll = his_self.game.state.newworld['inca'].roll; }
+		    if (con.type.indexOf("Maya") > -1) { roll = his_self.game.state.newworld['maya'].roll; }
 		    if (con.idx) {
 		      if (his_self.game.state.conquests[con.idx].prize === "killed by natives") {
 			prize = "killed by natives";
 		      }
 		    }
-		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : con.img , type : "conquest" , name : con.type , faction : con.faction , conquistador : con.conquistador , total_hits : con.total_hits }, stage), ".new-world-overlay .content .conquests");
+		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : con.img , type : "conquest" , name : con.type , faction : con.faction , conquistador : con.conquistador , total_hits : roll }, stage), ".new-world-overlay .content .conquests");
 		  }
 	 	  for (let i = 0; i < his_self.game.state.newworld.results.explorations.length; i++) {
 		    let exp = his_self.game.state.newworld.results.explorations[i];
 		    let prize = "-"; if (exp.prize) { prize = exp.prize; }
-		    if (exp.idx) {
-		      if (his_self.game.state.explorations[exp.idx].prize === "lost at sea") {
-			prize = "lost at sea";
+		    if (exp.idx > -1) {
+		      if (his_self.game.state.explorations[exp.idx].prize) {
+			prize = his_self.game.state.explorations[exp.idx].prize;
 		      }
 		    }
-		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : exp.img , type : "exploration" , name : exp.type , faction : exp.faction , explorer : exp.explorer , total_hits : exp.total_hits }, stage), ".new-world-overlay .content .explorations");
+		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : exp.img , type : "exploration" , name : exp.type , faction : exp.faction , prize : exp.prize , explorer : exp.explorer , total_hits : exp.total_hits }, stage), ".new-world-overlay .content .explorations");
 		  }
 	 	}
 
@@ -110,15 +115,21 @@ class NewWorldOverlay {
 		  let total_hits = "?";
 		  let prize = obj.prize;
 		  if (prize == 'undefined' || prize == "") { prize = "unsuccessful"; }
+		  if (prize == undefined || prize == "") { prize = "unsuccessful"; }
 		  if (obj.img != "") { img = `background-image:url('${obj.img}')`; }
 		  if (obj.total_hits != "") { total_hits = obj.total_hits; }
 		  if (obj.prize != "") { prize = obj.prize; }
+
+		  let goldenrod = "";
+ 		  if (prize.length > 3 && prize.indexOf("lost") == -1 && prize.indexOf("killed") == -1) {
+		    goldenrod = "goldenrod";
+		  }
 
 		  return `
 	    	    <div class="new-world-row">
             	      <div class="new-world-explorer" style="${img}"></div>
             	      <div class="new-world-description"><div class="new-world-details">${prize}</div><div class="new-world-faction">${obj.faction}</div></div>
-            	      <div class="new-world-roll ">${total_hits}</div>
+            	      <div class="new-world-roll ${goldenrod}">${total_hits}</div>
             	    </div>
 		  `;
 		} else {

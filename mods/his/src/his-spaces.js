@@ -1081,6 +1081,10 @@
       }
     }
 
+    //
+    // check if triggers defeat of Hungary Bohemia
+    //
+    this.triggerDefeatOfHungaryBohemia();
 
   }
 

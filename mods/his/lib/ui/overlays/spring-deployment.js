@@ -39,19 +39,22 @@ class SpringDeploymentOverlay {
 	render(faction = "", mycallback = null) {
 
 		this.visible = true;
-		this.overlay.show(SpringDeploymentTemplate());
+		this.overlay.show(SpringDeploymentTemplate(faction));
 
 		if (this.mod.game.state.round == 1 && faction == "ottoman") {
-			this.updateInstructions("First Game as Ottomans? Perhaps use Spring Deployment to move your forces to Nezh and attempt to seize Belgrade?");
+			this.updateInstructions("The Ottoman Empire starts at War with Hungary. You earn Victory Points and will get dealt more cards each turn if you expand your empire to control more strategic keys like Belgrade. Why not deploy north to Nezh and attempt to seize the city?");
+		}
+		if (this.mod.game.state.round == 1 && faction == "france") {
+			this.updateInstructions("France starts at War with the Hapsburgs and Papacy - should you deploy forces to the Italian or Spanish border? Or stay in defensive near Paris and move against the English if they aggress on Scotland?");
 		}
 		if (this.mod.game.state.round == 1 && faction == "papacy") {
-			this.updateInstructions("First Game as the Papacy? If you plan to attack Florence, using Spring Deployment to shift forces to Ravenna can help...");
+			this.updateInstructions("The Papacy starts at War with France. Beyond your duty to resist the Protestant menace, you earn Victory Points and get dealt more cards each turn if you expand your control over strategic keys like Florence or Milan...");
 		}
 		if (this.mod.game.state.round == 1 && faction == "england") {
-			this.updateInstructions("First Game as England? Spring Deployment can let you move forces to Scotland to help pacify the North, or shift forces south to Calais and France...");
+			this.updateInstructions("England can deploy north to pacify Scotland or south to protect Calais and aggress on France. If you choose the former, remember you need two squadrons in the North Sea to assault Edinburgh...");
 		}
 		if (this.mod.game.state.round == 1 && faction == "hapsburg") {
-			this.updateInstructions("First Game as the Hapsburg? Spring Deployment becomes more important for you as the game stretches on...");
+			this.updateInstructions("The Hapsburg Empire starts at War with France, but can deploy its forces to subdue independent keys like Metz as well...");
 		}
 
 		this.attachEvents(mycallback);

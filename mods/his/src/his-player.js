@@ -775,7 +775,7 @@ if (limit === "build") {
       check : this.canPlayerFightForeignWar,
       fnct : this.playerFightForeignWar,
       category : "attack" ,
-      img : '/his/img/backgrounds/move/assault.jpg',
+      img : '/his/img/backgrounds/move/foreign-war2.jpg',
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
@@ -1456,12 +1456,28 @@ if (this.game.state.events.cramner_active == 1) {
     let his_self = this;
     let units_to_move = [];
     let available_units = [];
+    let anyone_in_relief_force = false;
+
+    for (f in faction_map) {
+      if (this.returnPlayerCommandingFaction(f) != attacker_player) {
+        for (let i = 0; i < space.units[f].length; i++) {
+          if (space.units[f][i].relief_force == 1) { anyone_in_relief_force = true; }
+	}
+      }
+    }
+    if (this.game.state.field_battle.relief_battle == 1) { anyone_in_relief_force = true; }
 
     for (f in faction_map) { 
       if (this.returnPlayerCommandingFaction(f) != attacker_player) {
         for (let i = 0; i < space.units[f].length; i++) {
 	  if (space.units[f][i].type == "regular" || space.units[f][i].type == "mercenary" || space.units[f][i].type == "cavalry" || space.units[f][i].army_leader == true) {
-            available_units.push({ faction : f , unit_idx : i , type : space.units[f][i].type });
+	    if (anyone_in_relief_force == false) {
+              available_units.push({ faction : f , unit_idx : i , type : space.units[f][i].type });
+	    } else {
+	      if (space.units[f][i].relief_force == 1) {
+                available_units.push({ faction : f , unit_idx : i , type : space.units[f][i].type });
+	      } 
+	    } 
           }
         }
       }
@@ -1584,6 +1600,7 @@ if (this.game.state.events.cramner_active == 1) {
       for (let i = 0; i < available_units.length; i++) {
 	let u = space.units[available_units[i].faction][available_units[i].unit_idx];
 	if (u.type == "regular" || u.type == "cavalry" || u.type == "mercenary") { overunits++; }
+	if (u.relief_force == 1) { can_we_quick_fortify = false; }
       }
       if (overunits > 4) {
         can_we_quick_fortify = false; 
@@ -4508,22 +4525,22 @@ does_units_to_move_have_unit = true; }
   }
 
   canPlayerFightForeignWar(his_self, player, faction) {
-    if (faction === "ottoman" && his_self.game.state.events.war_in_persia == 1) { return 1; }
-    if (faction === "ottoman" && his_self.game.state.events.revolt_in_egypt == 1) { return 1; }
-    if (faction === "england" && his_self.game.state.events.revolt_in_ireland == 1) { return 1; }
+    if (faction === "ottoman" && his_self.game.state.events.war_in_persia == 1) { if (!his_self.game.state.foreign_wars_fought_this_impulse.includes("persia")) { return 1; } }
+    if (faction === "ottoman" && his_self.game.state.events.revolt_in_egypt == 1) { if (!his_self.game.state.foreign_wars_fought_this_impulse.includes("egypt")) { return 1; } }
+    if (faction === "england" && his_self.game.state.events.revolt_in_ireland == 1) { if (!his_self.game.state.foreign_wars_fought_this_impulse.includes("ireland")) { return 1; } }
     return 0;
   }
   playerFightForeignWar(his_self, player, faction) {
 
     let msg = "Attack in Foreign War: ";
     let html = '<ul>';
-    if (faction === "ottoman" && his_self.game.state.events.war_in_persia == 1) {
+    if (faction === "ottoman" && his_self.game.state.events.war_in_persia == 1 && !his_self.game.state.foreign_wars_fought_this_impulse.includes("persia")) {
       html += '<li class="option" id="persia">War in Persia</li>';	
     }
-    if (faction === "ottoman" && his_self.game.state.events.revolt_in_egypt == 1) {
+    if (faction === "ottoman" && his_self.game.state.events.revolt_in_egypt == 1 && !his_self.game.state.foreign_wars_fought_this_impulse.includes("egypt")) {
       html += '<li class="option" id="egypt">Revolt in Egypt</li>';	
     }
-    if (faction === "england" && his_self.game.state.events.revolt_in_ireland == 1) {
+    if (faction === "england" && his_self.game.state.events.revolt_in_ireland == 1 && !his_self.game.state.foreign_wars_fought_this_impulse.includes("ireland")) {
       html += '<li class="option" id="ireland">Revolt in Ireland</li>';	
     }
     html += '</ul>';
@@ -4559,30 +4576,32 @@ does_units_to_move_have_unit = true; }
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
 
     for (let i = 0; i < conquerable_spaces.length; i++) {
-      if (!his_self.isSpaceControlled(conquerable_spaces[i], faction) && his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction)) {
-        if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1) {
-	  if (!his_self.game.state.spaces_assaulted_this_turn.includes(conquerable_spaces[i])) {
-	    //
-	    // now check if there are squadrons in the port or sea protecting the town
-	    //
-	    let space = his_self.game.spaces[conquerable_spaces[i]];
+      if (conquerable_spaces[i] !== "egypt" && conquerable_spaces[i] !== "persia" && conquerable_spaces[i] !== "ireland") {
+        if (!his_self.isSpaceControlled(conquerable_spaces[i], faction) && his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction)) {
+          if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1) {
+	    if (!his_self.game.state.spaces_assaulted_this_turn.includes(conquerable_spaces[i])) {
+	      //
+	      // now check if there are squadrons in the port or sea protecting the town
+	      //
+	      let space = his_self.game.spaces[conquerable_spaces[i]];
 
-	    let squadrons_protecting_space = his_self.returnNumberOfSquadronsProtectingSpace(conquerable_spaces[i]);
-	    if (squadrons_protecting_space == 0) { return 1; }
+	      let squadrons_protecting_space = his_self.returnNumberOfSquadronsProtectingSpace(conquerable_spaces[i]);
+	      if (squadrons_protecting_space == 0) { return 1; }
 
-	    let attacker_squadrons_adjacent = 0;
-	    for (let y = 0; y < his_self.game.spaces[conquerable_spaces[i]].ports.length; y++) {
-	      let p = his_self.game.spaces[conquerable_spaces[i]].ports[y];
-	      for (let z = 0; z < his_self.game.navalspaces[p].units[faction].length; z++) {
-		let u = his_self.game.navalspaces[p].units[faction][z];
-		if (u.type == "squadron") { attacker_squadrons_adjacent++; }
+	      let attacker_squadrons_adjacent = 0;
+	      for (let y = 0; y < his_self.game.spaces[conquerable_spaces[i]].ports.length; y++) {
+	        let p = his_self.game.spaces[conquerable_spaces[i]].ports[y];
+	        for (let z = 0; z < his_self.game.navalspaces[p].units[faction].length; z++) {
+		  let u = his_self.game.navalspaces[p].units[faction][z];
+		  if (u.type == "squadron") { attacker_squadrons_adjacent++; }
+	        }
 	      }
+
+	      if (attacker_squadrons_adjacent > squadrons_protecting_space) { return 1; }
+
 	    }
-
-	    if (attacker_squadrons_adjacent > squadrons_protecting_space) { return 1; }
-
 	  }
-	}
+        }
       }
     }
 
@@ -4898,10 +4917,7 @@ does_units_to_move_have_unit = true; }
     return 0;
   }
   canPlayerConquer(his_self, player, faction) {
-
     if (his_self.game.state.may_conquer[faction] == 0) { return 0; }
-
-
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
     for (let i = 0; i < his_self.game.state.conquests.length; i++) {

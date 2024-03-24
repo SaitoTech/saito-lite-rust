@@ -7865,9 +7865,13 @@ console.log("nothing is left!");
 
           $('.option').off();
 	  $('.option').on('click', function () {
-
 	    let action = $(this).attr("id");
 	    if (ca.includes(action)) {
+
+	      if (faction === "hapsburg" && action == "hungary") {
+		his_self.game.state.events.diplomatic_alliance_triggers_hapsburg_hungary_alliance = 1;
+	      }
+
 	      his_self.addMove("activate_minor_power\t"+faction+"\t"+action);
 	    } else {
 	      his_self.addMove("deactivate_minor_power\t"+faction+"\t"+action);
@@ -8251,6 +8255,7 @@ console.log("nothing is left!");
 	          return 0;
 	        },
 		function(spacekey2) {
+		  his_self.updateStatus("adding unrest...");
 		  space2 = spacekey2;
 		  his_self.addMove("unrest\t"+space1);
 		  his_self.addMove("unrest\t"+space2);
@@ -10608,6 +10613,11 @@ alert("MOVE IS: " + "move\tengland\tland\t"+options[options_idx].spacekey+"\tire
 		      his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
 		      nonregulars_to_delete--;
 		    }
+		  }
+		  if (total_to_delete > 1) {
+		    his_self.addMove(`SALERT\tUnsanitary Camp destroys ${total_to_delete} ${his_self.returnFactionName(action)} mercenaries in ${his_self.returnSpaceName(spacekey)}`); 
+		  } else {
+		    his_self.addMove(`SALERT\tUnsanitary Camp destroys ${total_to_delete} ${his_self.returnFactionName(action)} mercenary in ${his_self.returnSpaceName(spacekey)}`); 
 		  }
 		  his_self.addMove(`NOTIFY\t${his_self.popup("107")} strikes ${his_self.returnSpaceName(spacekey)}`); 
 		  his_self.endTurn();

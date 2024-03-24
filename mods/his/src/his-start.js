@@ -190,6 +190,7 @@
       }
     });
 ****/
+/*****
     this.menu.addSubMenuOption("game-faction-cards", {
       text : "Papacy",
       id : "game-papacy-cards",
@@ -282,6 +283,7 @@ if (this.game.players.length > 2) {
       }
     });
 }
+****/
 /****
     this.menu.addSubMenuOption("game-cards", {
       text : "My Hand",

@@ -581,6 +581,12 @@ console.log("\n\n\n\n");
           this.addReformer("protestant", "london", "cranmer-reformer");
           this.addArmyLeader("protestant", "brandenburg", "philip-hesse");
 
+	  for (let key in this.game.spaces) {
+	    if (this.game.spaces[key].language == "german") {
+	      this.convertSpace("protestant", key);
+	    }
+	  }
+
           // FRANCE
           this.game.state.leaders.francis_i = 1;
           this.addArmyLeader("france", "paris", "francis-i");

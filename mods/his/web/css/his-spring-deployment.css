@@ -6,6 +6,24 @@
 	background-size: cover;
 }
 
+.spring-deployment-overlay.hapsburg {
+	background-image: url(/his/img/backgrounds/spring-deployment/sd-hapsburg.jpg);
+}
+.spring-deployment-overlay.papacy {
+	background-image: url(/his/img/backgrounds/spring-deployment/sd-papacy.png);
+	width: 90vw !important;
+	max-width: 90vw !important;
+}
+.spring-deployment-overlay.england {
+	background-image: url(/his/img/backgrounds/spring-deployment/sd-england.png);
+}
+.spring-deployment-overlay.france {
+	background-image: url(/his/img/backgrounds/spring-deployment/sd-france.png);
+}
+.spring-deployment-overlay.ottoman {
+	background-image: url(/his/img/backgrounds/spring-deployment/sd-ottoman.png);
+}
+
 .spring-deployment-overlay .instructions {
     position: absolute;
     bottom: 0px;

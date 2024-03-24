@@ -7,6 +7,7 @@
     this.game.state.events.foreign_recruits = "";
     this.game.state.spring_deploy_across_passes = [];
     this.game.state.spring_deploy_across_seas = [];
+    this.game.state.foreign_wars_fought_this_impulse = [];
     this.game.state.events.spring_preparations = "";
     this.game.state.events.henry_petitions_for_divorce_grant = 0;
     this.game.state.spaces_assaulted_this_turn = [];
@@ -33,6 +34,7 @@
         for (let f in space.units) {
           for (let z = space.units[f].length-1;  z >= 0; z--) {
 	    space.units[f][z].gout = false; 
+	    space.units[f][z].relief_force = 0;
   	  }
         }
       }
@@ -58,6 +60,11 @@
       this.hidePiracyMarker(key);
     }
 
+
+    this.game.state.colonies = [];
+    this.game.state.conquests = [];
+    this.game.state.explorations = [];
+
     //
     // reset impulse commits
     //
@@ -68,6 +75,7 @@
     this.game.state.events.julia_gonzaga_activated = 0;
     this.game.state.events.england_changed_rulers_this_turn = 0;
     this.game.state.cards_evented = [];
+    this.game.state.foreign_wars_fought_this_impulse = [];
 
     this.game.state.may_explore['england'] = 1;
     this.game.state.may_explore['france'] = 1;
@@ -109,7 +117,8 @@
     this.game.state.newworld.results.colonies = [];
     this.game.state.newworld.results.explorations = [];
     this.game.state.newworld.results.conquests = [];
-       
+
+ 
     //
     // allow stuff to move again
     //
@@ -665,6 +674,8 @@ if (this.game.state.scenario != "is_testing") {
     state.board = {}; // units on board
     state.cards_evented = [];
 
+    state.foreign_wars_fought_this_impulse = [];
+
     state.alliances = this.returnDiplomacyAlliance();
     state.diplomacy = [];
 
@@ -893,6 +904,10 @@ if (this.game.state.scenario != "is_testing") {
     state.events.paul_iii = 0;
     state.events.society_of_jesus = 0;
 
+    state.events.diplomatic_alliance_triggers_hapsburg_hungary_alliance = 0;
+    state.events.defeat_of_hungary_bohemia = 0;
+
+
 
     state.events.ottoman_piracy_enabled = 0;
     state.events.ottoman_corsairs_enabled = 0;
@@ -906,9 +921,6 @@ if (this.game.state.scenario != "is_testing") {
     //    round   : 0
     //  
     state.colonies = [];
-    state.english_colonies = 0;
-    state.french_colonies = 0;
-    state.hapsburg_colonies = 0;
     state.conquests = [];
     state.explorations = [];
 
@@ -1185,38 +1197,47 @@ if (this.game.state.scenario != "is_testing") {
       type : "conquest" ,
     }
     nw['greatlakes'] = {
+      img : "/his/img/vp/GreatLakes1VP.svg",
       type : "discovery" ,
       vp : 1
     }
     nw['stlawrence'] = {
+      img : "/his/img/vp/StLawrenceRiver1VP.svg",
       type : "discovery" ,
       vp : 1
     }
     nw['mississippi'] = {
+      img : "/his/img/vp/MississippiRiver1VP.svg",
       type : "discovery" ,
       vp : 1
     }
     nw['aztec'] = {
+      img : "/his/img/vp/Aztecs2VP.svg",
       type : "discovery" ,
       vp : 2
     }
     nw['maya'] = {
+      img : "/his/img/vp/Maya1VP.svg",
       type : "discovery" ,
-      vp : 2
+      vp : 1
     }
     nw['amazon'] = {
+      img : "/his/img/vp/AmazonRiver2VP.svg",
       type : "discovery" ,
       vp : 2
     }
     nw['inca'] = {
+      img : "/his/img/vp/Inca2VP.svg",
       type : "discovery" ,
       vp : 2
     }
     nw['circumnavigation'] = {
+      img : "/his/img/vp/Circumnavigation3VP.svg",
       type : "discovery" ,
       vp : 3
     }
     nw['pacificstrait'] = {
+      img : "/his/img/vp/PacificStraight1VP.svg",
       type : "discovery" ,
       vp : 1
     }
@@ -1772,4 +1793,91 @@ if (this.game.state.scenario != "is_testing") {
 
   }
 
+
+
+  triggerDefeatOfHungaryBohemia() {
+
+    if (this.areAllies("hapsburg", "hungary")) { return false; }
+    if (this.game.state.events.defeat_of_hungary_bohemia == 1) { return false; }
+
+    let does_this_trigger_the_defeat_of_hungary_bohemia = false;
+
+    //
+    // Hungary-Bohemia has been activated as a Hapsburg ally through Diplomatic Marriage 
+    // and the Ottomans control two home keys of Hungary-Bohemia
+    //
+    let ottoman_controlled_hungarian_home_spaces = 0;
+    let hungarian_regulars_remaining_on_map = 0;
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].home == "hungary") {
+        ottoman_controlled_hungarian_home_spaces++;
+      }
+      for (let z = 0; z < this.game.spaces[key].units["hungary"].length; z++) {
+	if (this.game.spaces[key].units["hungary"][z].type === "regular") {
+	  hungarian_regulars_remaining_on_map++;
+	}
+      }
+    }
+
+    //
+    //
+    //
+    if (this.game.state.events.diplomatic_alliance_triggers_hapsburg_hungary_alliance == 1 && ottoman_controlled_hungarian_home_spaces >= 2) { 
+      does_this_trigger_the_defeat_of_hungary_bohemia = true;
+    }
+
+    //
+    //
+    //
+    if (hungarian_regulars_remaining_on_map < 5 && ottoman_controlled_hungarian_home_spaces >= 1) {
+      does_this_trigger_the_defeat_of_hungary_bohemia = true;
+    }
+    //
+    //
+
+    if (does_this_trigger_the_defeat_of_hungary_bohemia) {
+
+      this.game.state.events.defeat_of_hungary_bohemia = 1;
+
+      //
+      // best friends forever
+      //
+      if (!this.areAllies("hapsburg", "hungary")) {
+        this.setAllies("hapsburg", "hungary");
+      }
+
+      //
+      // natural ally intervention
+      //
+      if (this.areAllies("hapsburg", "ottoman")) {
+	this.unsetAllies("hapsburg", "ottoman");
+	this.setEnemies("hapsburg", "ottoman");
+      }
+
+      //
+      // turks get control of more spaces
+      //
+      for (let key in this.game.spaces) {
+        if (this.game.spaces[key].home == "hungary") {
+	  if (this.game.spaces[key].units["ottoman"].length > 0) {
+	    this.game.spaces[key].units["hungary"] = [];
+	    this.controlSpace("ottoman", key);
+	  }
+	}
+      }
+
+      //
+      // Ottomans points for winning war
+      //
+      this.updateLog("Hungary-Bohemia are defeated, pulling the Hapsburgs into war with the Ottoman Empire");
+      this.game.state.ottoman_war_winner_vp += 2;
+      this.displayWarBox();
+      this.displayVictoryTrack();
+
+      // let's notify the player visually
+      this.displayCustomOverlay("battle-of-mohacs");
+
+    }
+
+  }
 

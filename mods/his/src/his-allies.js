@@ -276,7 +276,14 @@
   }
 
   unsetAllies(faction1, faction2, amp=1) {
-    try { this.game.state.alliances[faction1][faction2].allies = 0; } catch (err) {}
+
+    //
+    // hungary and hapsburgs locked-for-life
+    //
+    if (this.game.state.events.defeat_of_hungary_bohemia == 1 && (faction1 == "hapsburg" || faction2 == "hapsburg") && (faction1 == "hungary" || faction2 == "hungary")) {
+      return 0;
+    }
+
     try { this.game.state.alliances[faction2][faction1].allies = 0; } catch (err) {}
 
     if (this.game.players.length == 2) { if (faction1 === "hapsburg" && faction2 === "papacy") {
@@ -322,9 +329,7 @@
     try { this.game.state.alliances[faction2][faction1].allies = 0; } catch (err) {}
     try { this.game.state.alliances[faction1][faction2].enemies = 1; } catch (err) {}
     try { this.game.state.alliances[faction2][faction1].enemies = 1; } catch (err) {}
-
     this.displayWarBox();
-
   }
 
   unsetEnemies(faction1, faction2) {
