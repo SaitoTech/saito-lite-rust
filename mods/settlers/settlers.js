@@ -36,9 +36,9 @@ class Settlers extends GameTemplate {
 		this.minPlayers = 2;
 		this.maxPlayers = 4;
 		this.game_length = 20; //Estimated number of minutes to complete a game
-		this.is_sleeping = true;
 		this.confirm_moves = true;
 		this.animationSpeed = 1200;
+		this.sleep_timer = null;
 
 		//
 		// UI components
@@ -541,6 +541,9 @@ class Settlers extends GameTemplate {
 				this.app.keychain.returnUsername(this.game.players[i])
 			);
 		}
+
+		this.game.options.game_length = parseInt(this.game.options.game_length);
+		this.game.options.turn_limit = parseInt(this.game.options.turn_limit) * 1000;
 	}
 
 	initializeState() {
@@ -606,6 +609,17 @@ class Settlers extends GameTemplate {
 	returnTradeHelpOverlay() {
 		return SettlersTradeHelpOverlayTemplate(this.app, this);
 	}
+
+	endTurn(){
+		if (this.sleep_timer){
+			clearTimeout(this.sleep_timer);
+			this.sleep_timer = null;
+		}
+		this.clock.stopClock();
+
+		super.endTurn();
+	}
+
 }
 
 Settlers.importFunctions(

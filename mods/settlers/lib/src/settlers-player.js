@@ -370,6 +370,17 @@ class SettlersPlayer {
       return;
     }
 
+    //
+    // Set timer to auto-end my turn if I take too long
+    // 
+    if (this.game.options.turn_limit){
+      this.clock.startClock(this.game.options.turn_limit);
+      this.sleep_timer = setTimeout(()=> {
+        $("#pass").click();
+      }, this.game.options.turn_limit);
+    }
+
+
     let statushtml = settlers_self.getLastNotice() || `<div class="player-notice">YOUR TURN:</div>`;
     settlers_self.updateStatus(statushtml);
     settlers_self.updateControls(html);
