@@ -453,29 +453,25 @@ dt {
 }
 
 .display-name {
-	/*text-shadow: 0px 0px 1px ghostwhite, 1px 1px 0 ghostwhite, 1px 0px 0 ghostwhite;*/
+	text-shadow: 0px 0px 1px;
 	font-weight: bold;
-	margin-right: 2rem;
+	margin-right: 2.75rem;
 }
 
 .display-name.p1-lite {
 	color: var(--p1-color);
-	background-color: unset;
 }
 
 .display-name.p2-lite {
 	color: var(--p2-color);
-	background-color: unset;
 }
 
 .display-name.p3-lite {
 	color: var(--p3-color);
-	background-color: unset;
 }
 
 .display-name.p4-lite {
 	color: var(--p4-color);
-	background-color: unset;
 }
 
 .game-playerbox .saito-identicon-box {
@@ -773,11 +769,14 @@ ul.horizontal_list li.iconoption {
 	flex-direction: column;
 }
 
+#log-wrapper {
+	background-color: #111d;
+}
+
 .log > div {
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
-	gap: 0.5rem;
 }
 
 .log .die {
