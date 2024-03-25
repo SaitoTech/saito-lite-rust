@@ -61,6 +61,7 @@
     "localforage": "^1.10.0",
     "markdown-linkify": "^1.0.3",
     "marked": "^4.2.4",
+    "multicoin-address-validator": "^0.5.16",
     "node-cryptojs-aes": "^0.4.0",
     "node-emoji": "^1.10.0",
     "node-fetch": "^2.0.0",
