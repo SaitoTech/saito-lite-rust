@@ -10765,6 +10765,7 @@ alert("MOVE IS: " + "move\tengland\tland\t"+options[options_idx].spacekey+"\tire
 	  if (his_self.game.player === player) {
             his_self.addMove("discard\t"+faction+"\t109");
             his_self.addMove("venetian_informant\t"+faction);
+            his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" plays " + his_self.popup("109"));
 	    his_self.endTurn();
 	  }
         }

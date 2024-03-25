@@ -16,12 +16,14 @@
 
   returnArrayOfPlayersInSpacekey(spacekey="") {
     let res = [];
-    let s = this.game.spaces[this.game.state.field_battle.spacekey];
-    for (let key in s.units) {
-      if (s.units[key].length > 0) {
-        let p = this.returnPlayerCommandingFaction(key);
-        if (p > 0 && !res.includes(this.game.players[p-1])) {
-          res.push(this.game.players[p-1]);
+    let s = this.game.spaces[spacekey];
+    if (s) {
+      for (let key in s.units) {
+        if (s.units[key].length > 0) {
+          let p = this.returnPlayerCommandingFaction(key);
+          if (p > 0 && !res.includes(this.game.players[p-1])) {
+            res.push(this.game.players[p-1]);
+          }
         }
       }
     }

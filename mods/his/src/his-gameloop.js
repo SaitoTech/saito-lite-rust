@@ -62,8 +62,9 @@ this.updateLog(`###############`);
 	  this.game.queue.push("action_phase");
 if (this.game.options.scenario != "is_testing") {
 	  this.game.queue.push("spring_deployment_phase");
-	  this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
-	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
+	  //this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
+	  //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 }
 
 
@@ -2523,7 +2524,7 @@ console.log("----------------------------");
 	  //
 	  // if no-one is left to fortify
 	  //
-	  if (this.game.state.field_battle.defender_land_units_remaining <= 0) {
+	  if (this.game.state.field_battle.defender_land_units_remaining <= 0 && this.game.state.field_battle_attacker_land_units_remaining > 0) {
 	    //
 	    // immediately besiege if a key
 	    //
@@ -5865,6 +5866,10 @@ console.log("returning zero with a halt!");
 	  //
 	  if (!this.doesSpaceHaveNonFactionUnits(spacekey, faction)) {
 
+	    if (spacekey == "ireland") { this.updateLog("Revolt in Ireland finishes, English forces return to London"); }
+	    if (spacekey == "persia") { this.updateLog("War in Persia finishes, Turkish forces return to Istanbul"); }
+	    if (spacekey == "egypt") { this.updateLog("Revolt in Egypt finishes, Turkish forces return to Istanbul"); }
+
 	    //
 	    // move all soldiers back to capital (if controlled)
 	    //
@@ -6044,12 +6049,11 @@ console.log("returning zero with a halt!");
 		// attacker here means "not me", since "I'm fortifying"
                 this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
 	      }
-
 	    }
           }
+
           if (winner == his_self.game.state.field_battle.attacker_faction) {
 
-	    // March 15
             for (let f in his_self.game.state.field_battle.faction_map) {
               if (his_self.game.state.field_battle.faction_map[f] == his_self.game.state.field_battle.defender_faction) {
                 this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
@@ -6093,6 +6097,14 @@ console.log("returning zero with a halt!");
                 }
               }
             }
+
+	    //
+	    // if the space does not belong to the attacker and is a key, we put it under seige
+	    //
+	    if (!this.isSpaceFriendly(his_self.game.state.field_battle.spacekey, his_self.game.state.field_battle.attacker_faction) && space.besieged == 0 && (space.type == "key" || space.type == "electorate" || space.type == "fortress")) {
+	      this.game.queue.push("besiege_space\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
+	    }
+
 
 	    let defender_player = this.returnPlayerCommandingFaction(his_self.game.state.field_battle.defender_faction);
 	    let attacker_player = this.returnPlayerCommandingFaction(his_self.game.state.field_battle.attacker_faction);
@@ -6147,6 +6159,30 @@ console.log("returning zero with a halt!");
           return 1;
 
         }
+
+
+	if (mv[0] === "besiege_space") {
+
+	  let attacker = mv[1];
+	  let spacekey = mv[2];
+	  let space = this.game.spaces[spacekey];
+
+	  if (space) {
+	    if (space.besieged == 0) {
+              space.besieged = 2;
+              for (let key in space.units) {
+	        if (!this.areAllies(key, attacker)) {
+                  for (let ii = 0; ii < space.units[key].length; ii++) {
+                    space.units[key][ii].besieged = 1;
+                  }
+                }
+              }
+            }
+          }
+
+          this.game.queue.splice(qe, 1);
+	  return 1;
+	}
 
 
  	if (mv[0] === "destroy_unit_by_type") {
