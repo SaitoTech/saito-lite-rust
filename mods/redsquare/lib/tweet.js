@@ -1324,7 +1324,7 @@ class Tweet {
 			if (!first_link.startsWith('http')) {
 				first_link = 'http://' + first_link;
 			}
-			console.log(first_link);
+			//console.log(first_link);
 
 			if (typeof first_link == 'undefined') {
 				return this;

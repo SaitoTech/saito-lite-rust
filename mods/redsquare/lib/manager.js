@@ -3,6 +3,7 @@ const Tweet = require('./tweet');
 const Notification = require('./notification');
 const SaitoProfile = require('./../../../lib/saito/ui/saito-profile/saito-profile');
 const SaitoLoader = require('./../../../lib/saito/ui/saito-loader/saito-loader');
+const SaitoProgress = require('./../../../lib/saito/ui/saito-progress-bar/saito-progress-bar');
 
 class TweetManager {
 	constructor(app, mod, container = '.saito-main') {
@@ -18,6 +19,7 @@ class TweetManager {
 
 		//This is an in-place loader... not super useful when content is overflowing off the bottom of the screen
 		this.loader = new SaitoLoader(app, mod, '#redsquare-intersection');
+		this.alt_loader = new SaitoProgress(app, mod, '.redsquare-progress-banner');
 
 		//////////////////////////////
 		// load more on scroll-down //
@@ -303,7 +305,6 @@ class TweetManager {
 		}
 
 		this.profile.render();
-		this.showLoader();
 
 		this.loadProfile((txs) => {
 			this.filterAndRenderProfile(txs);
@@ -361,6 +362,14 @@ class TweetManager {
 			);
 		}
 
+		let np = this.mod.peers.length;
+		if (np > 1){
+			this.alt_loader.render(`Loading from ${np} peers...`);	
+		}else{
+			this.showLoader();
+		}
+		
+
     for (let peer of this.mod.peers) {
 			this.app.storage.loadTransactions(
 				{
@@ -372,8 +381,21 @@ class TweetManager {
 					if (mycallback) {
 						mycallback(txs);
 					}
+
 					//Will add them so they are cached (in array and local cache)
 					this.mod.processTweetsFromPeer(peer, txs);
+
+					if (peer.peer !== "localhost"){
+						this.alt_loader.render(`Processing response from ${this.app.keychain.returnUsername(peer.publicKey)}`);	
+					}
+					np--;
+					setTimeout(()=>{
+						if (np>0){
+							this.alt_loader.render(`Loading from ${np} peers...`);			
+						}else{
+							this.alt_loader.finish(`Finished Loading!`);			
+						}
+					}, 1500);
 				},
 				peer.peer
 			);
@@ -508,7 +530,6 @@ class TweetManager {
 	}
 
 	hideLoader() {
-		console.log("Hide loader");
 		this.loader.hide();
 	}
 }

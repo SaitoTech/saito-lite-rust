@@ -972,7 +972,6 @@ class RedSquare extends ModTemplate {
         //
         if (peer.publicKey != this.publicKey) {
           // Only cache top level tweets!!!!
-          console.log("RS: save tweet to local cache");
           //if (!tweet.parent_id) {
           this.saveTweet(txs[z].signature, 0);
           //}
