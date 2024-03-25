@@ -92,31 +92,6 @@ class TweetManager {
 
 						//
 						// load more profile tweets
-						/*
-            if (this.mode === "profile") {
-              this.profile.loadProfile((txs) => {
-                if (this.mode !== "profile") {
-                  return;
-                }
-
-                this.filterAndRenderProfile(txs);
-
-                this.hideLoader();
-                if (txs.length == 0) {
-                  if (!document.querySelector(".saito-end-of-redsquare")) {
-                    this.app.browser.addElementToSelector(
-                      `<div class="saito-end-of-redsquare">no more tweets</div>`,
-                      ".tweet-manager"
-                    );
-                  }
-                  if (document.querySelector("#intersection-observer-trigger")) {
-                    this.intersectionObserver.unobserve(
-                      document.querySelector("#intersection-observer-trigger")
-                    );
-                  }
-                } 
-              });
-            }*/
 					}
 				});
 			},
@@ -366,53 +341,43 @@ class TweetManager {
 			// Find likes...
 			// I already have a list of tweets I liked available
 			this.loadLikes(this.mod.liked_tweets, 'localhost');
+		}else{
+			this.app.storage.loadTransactions(
+				{ field1: 'RedSquareLike', field2: this.profile.publicKey },
+				(txs) => {
+					let liked_tweets = [];
+					for (tx of txs) {
+						let txmsg = tx.returnMessage();
+
+						let sig = txmsg?.data?.signature;
+						if (sig && !liked_tweets.includes(sig)) {
+							liked_tweets.push(sig);
+						}
+					}
+
+					this.loadLikes(liked_tweets, null);
+				},
+				null
+			);
 		}
 
-		this.app.storage.loadTransactions(
-			{
-				field1: 'RedSquare',
-				field2: this.profile.publicKey,
-				limit: 100
-			},
-			(txs) => {
-				if (mycallback) {
-					mycallback(txs);
-				}
-			},
-			'localhost'
-		);
-
-		this.app.storage.loadTransactions(
-			{
-				field1: 'RedSquare',
-				field2: this.profile.publicKey,
-				limit: 100
-			},
-			(txs) => {
-				if (mycallback) {
-					mycallback(txs);
-				}
-			},
-			null //Query network
-		);
-
-		this.app.storage.loadTransactions(
-			{ field1: 'RedSquareLike', field2: this.profile.publicKey },
-			(txs) => {
-				let liked_tweets = [];
-				for (tx of txs) {
-					let txmsg = tx.returnMessage();
-
-					let sig = txmsg?.data?.signature;
-					if (sig && !liked_tweets.includes(sig)) {
-						liked_tweets.push(sig);
+    for (let peer of this.mod.peers) {
+			this.app.storage.loadTransactions(
+				{
+					field1: 'RedSquare',
+					field2: this.profile.publicKey,
+					limit: 100
+				},
+				(txs) => {
+					if (mycallback) {
+						mycallback(txs);
 					}
-				}
-
-				this.loadLikes(liked_tweets, null);
-			},
-			null
-		);
+					//Will add them so they are cached (in array and local cache)
+					this.mod.processTweetsFromPeer(peer, txs);
+				},
+				peer.peer
+			);
+	   }		
 	}
 
 	/*
@@ -543,6 +508,7 @@ class TweetManager {
 	}
 
 	hideLoader() {
+		console.log("Hide loader");
 		this.loader.hide();
 	}
 }

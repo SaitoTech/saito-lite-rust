@@ -430,7 +430,7 @@ class RedSquare extends ModTemplate {
         return true;
       }
     }
-    return false;
+    return this.app.options.redsquare.following.includes(key);
   }
 
   ////////////
@@ -636,11 +636,10 @@ class RedSquare extends ModTemplate {
     // our followees for new content up top
     //
     if (service.service === "relay") {
-
       if (this.following.length > 0){
         console.log("Redsquare: ping colleagues", this.following);
         // Ping your colleagues 
-        this.app.connection.emit("relay-send-message", {recipient: this.following, request: "ping", data:{}});
+        this.app.connection.emit("relay-send-message", {recipient: this.app.options.redsquare.following, request: "ping", data:{}});
 
         setTimeout(()=> {
           console.log("1 second later");
@@ -973,9 +972,10 @@ class RedSquare extends ModTemplate {
         //
         if (peer.publicKey != this.publicKey) {
           // Only cache top level tweets!!!!
-          if (!tweet.parent_id) {
-            this.saveTweet(txs[z].signature, 0);
-          }
+          console.log("RS: save tweet to local cache");
+          //if (!tweet.parent_id) {
+          this.saveTweet(txs[z].signature, 0);
+          //}
         }
       }
     }
