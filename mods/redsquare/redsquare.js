@@ -2299,9 +2299,10 @@ class RedSquare extends ModTemplate {
         this.black_list = this.app.options.redsquare.black_list;
       }
 
-    } else {
-      this.saveOptions();
     }
+  
+    this.saveOptions();
+  
   }
 
   saveOptions() {
