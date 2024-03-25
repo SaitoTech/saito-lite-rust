@@ -18,6 +18,15 @@ class SettlersActions {
     } catch (err) {
       console.error("Error with ACKWNOLEDGE notice!: " + err);
     }
+
+    if (this.game.options.turn_limit){
+      this.sleep_timer = setTimeout(()=> {
+        $(".acknowledge").click();
+        clearTimeout(this.sleep_timer);
+      }, this.game.options.turn_limit);
+    }
+
+
     return 0;
   }
 

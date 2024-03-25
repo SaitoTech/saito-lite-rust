@@ -706,19 +706,17 @@ class SettlersGameloop {
           let statushtml = `<div class="player-notice">YOUR TURN:</div>`;
           let controlshtml = `<ul>`;
           
-          controlshtml += `<li class="option flashme" id="rolldice">roll dice</li>`;
+          controlshtml += `<li class="option" id="rolldice">roll dice</li>`;
           controlshtml += `</ul>`;
 
           this.updateStatus(statushtml);
           this.updateControls(controlshtml);
 
-          //
-          // Flash to be like "hey it's your move"
-          //
-          if (this.is_sleeping) {
-            this.currently_active_player = player;
-            $(".flashme").addClass("flash");
-            this.is_sleeping = false; //If player plays a knight first, we don't need to flash again when we bounce back to this state
+          if (this.game.options.turn_limit){
+            this.clock.startClock(this.game.options.turn_limit);
+            this.sleep_timer = setTimeout(()=> {
+              $("#rolldice").click();
+            }, this.game.options.turn_limit);
           }
 
           // **********************************************************
@@ -1005,7 +1003,6 @@ class SettlersGameloop {
         this.game.state.hasRolled = false;
         this.game.state.canTrade = false;
         this.game.queue.splice(qe - 1, 2);
-        this.is_sleeping = true;
         let divname = `.sector_value:not(.bandit)`;
         $(divname).attr("style", "");
         $(".rolled").removeClass("rolled");

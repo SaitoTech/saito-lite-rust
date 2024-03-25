@@ -18,14 +18,14 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 	try {
 		for (let i = 0; i < app.options.modules.length; i++) {
 			let mod = app.modules.returnModule(app.options.modules[i].name);
+
 			let shortName = app.options.modules[i].name;
 			let fullName = mod ? mod.returnName() : shortName;
 
 			let CHECKED = app.options.modules[i].active ? 'CHECKED' : '';
-      let modClass = (typeof mod.class != 'undefined') ? mod.class : null;
 
       // filter out core modules  
-      if (modClass != 'utility') {
+      if (!mod || mod?.class !== 'utility') {
   			modules_html += `
         <div class="settings-appspace-app">
             <div class="saito-switch">

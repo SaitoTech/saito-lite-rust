@@ -10,7 +10,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 	}
 
 	let player_count = stats.mod.game.state.players.length;
-	let max_bar_height = player_count >= 3 ? 15 : 15;
+	let max_bar_height = player_count >= 3 ? 10 : 12;
 
 	// height for 1 count;
 	let base_height = max_bar_height / highest_count;
@@ -92,8 +92,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 			}
 		}
 
-		html += ` <div class="settlers-stats-player p${stats.mod.game.colors[player]}">${stats.mod.game.playerNames[player]} (${ranking_scores[i]} Victory Points)</div>`;
-		html += ` <div class="settlers-stats-vp-row">
+		html += ` <div class="settlers-stats-row">
                       <div class="settlers-stats-vp settlers-stats-village" title="Village">
                         <img src="/settlers/img/icons/village.png">
                         <div class="settlers-stats-vp-count">${numVil}</div>
@@ -141,6 +140,8 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
                         <div class="settlers-stats-multiplier">+2</div>
                       </div>
                     </div>`;
+ 		html += ` <div class="settlers-stats-player p${stats.mod.game.colors[player]}"><span>${stats.mod.game.playerNames[player]}</span><span>(${ranking_scores[i]} Victory Points)</span></div>`;
+
 	}
 
 	html += `</div>`;
@@ -153,7 +154,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 		let player = ranking_players[j];
 		let count = 0;
 
-		let cards_html = `<div class="settlers-stats-resource-container">`;
+		let cards_html = `<div class="settlers-stats-row">`;
 		for (let r in stats.mod.game.stats.production) {
 			cards_html += `<div class="settlers-stats-card"> 
                             <img src="/settlers/img/cards/${r}.png" >
@@ -166,8 +167,8 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 
 		cards_html += `</div>`;
 
-		player_html += `<div class="settlers-stats-player p${stats.mod.game.colors[player]}">${stats.mod.game.playerNames[player]} (${count} resources)</div>`;
 		player_html += `${cards_html}`;
+		player_html += `<div class="settlers-stats-player p${stats.mod.game.colors[player]}"><span>${stats.mod.game.playerNames[player]}</span><span>(${count} resources)</span></div>`;
 	}
 
 	html += `<div class="settlers-state-container">

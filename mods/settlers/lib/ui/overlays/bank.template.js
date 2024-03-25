@@ -1,9 +1,10 @@
 module.exports = BankOverlayTemplate = (app, mod, bank) => {
 	console.log(bank?.selected_resource);
+	let prompt = (bank?.selected_resource) ? "R" : "Select r";
 	let html = `
         <div class="saitoa bank-overlay">
           <div class="settlers-items-container">
-            <div class="settlers-item-info-text">Select resource to give bank:</div>
+            <div class="settlers-item-info-text">${prompt}esource to give bank:</div>
   `;
 
 	if (Object.keys(bank.my_resources).length > 0) {
