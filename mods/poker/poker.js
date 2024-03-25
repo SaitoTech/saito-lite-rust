@@ -721,7 +721,7 @@ class Poker extends GameTableTemplate {
 								this.game.state.player_cards_required++;
 								this.game.state.player_cards[i] = [];
 
-								this.game.stats[this.game.players[i]].showdowns++;
+								this.game.stats[this.game.players[i-1]].showdowns++;
 							}
 						}
 

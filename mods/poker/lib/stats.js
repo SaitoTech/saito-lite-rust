@@ -9,23 +9,25 @@ class StatsOverlay {
 
 		this.tracked_stats = [
 			{
-				code: "hands",
-				readable: "Hands Played",
+				code: "vpip",
+				readable: "VPIP",
+				further: "Voluntarily put money in (discounts walks)",
+				percentage: "adjusted",
 			},
 			{
 				code: "wins",
 				readable: "Hands Won",
-				percentage: "hands",
+				percentage: true,
 			},
 			{
 				code: "folds",
 				readable: "Hands Folded",
-				percentage: "hands",
+				percentage: true,
 			},
 			{
 				code: "showdowns",
 				readable: "Hands Completed",
-				percentage: "hands",
+				percentage: true,
 			},
 			{
 				code: "walks",
@@ -33,10 +35,8 @@ class StatsOverlay {
 				further: "All players abandoned the hand",
 			},
 			{
-				code: "vpip",
-				readable: "VPIP",
-				further: "Voluntarily put money in (discounts walks)",
-				percentage: true,
+				code: "hands",
+				readable: "Hands Played",
 			},
 		];
 	}
