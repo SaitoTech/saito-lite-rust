@@ -76,17 +76,13 @@
       },
       calculateSpecialVictoryPoints  :  function(game_mod) {
         let base = 0;
-console.log("TESTING SPECIAL IN HAPS");
-console.log("GM: " + JSON.stringify(game_mod.game.state.events));
 	if (game_mod.game.state.events.schmalkaldic_league == 1) {
-console.log("LEAGUE IN ACTION!");
 	  if (game_mod.isSpaceControlled("mainz", "hapsburg")) { base += 1; }
 	  if (game_mod.isSpaceControlled("wittenberg", "hapsburg")) { base += 1; }
 	  if (game_mod.isSpaceControlled("augsburg", "hapsburg")) { base += 1; }
 	  if (game_mod.isSpaceControlled("trier", "hapsburg")) { base += 1; }
 	  if (game_mod.isSpaceControlled("cologne", "hapsburg")) { base += 1; }
 	  if (game_mod.isSpaceControlled("brandenburg", "hapsburg")) { base += 1; }
-console.log("special BP: " + base);
 	}
 	return base;
       },

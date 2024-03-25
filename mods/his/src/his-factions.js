@@ -1,4 +1,15 @@
 
+  returnArrayOfFactionsInSpacekey(spacekey="") {
+    let res = [];
+    let s = this.game.spaces[spacekey];
+    if (s) {
+      for (let f in s.units) {
+	if (s.units[key].length > 0) { res.push(f); }
+      }
+    };
+    return res;
+  }
+
   isPlayerControlledFaction(faction="") {
     if (faction === "") { return false; }
     if (this.isAlliedMinorPower(faction)) { return true; }

@@ -4251,9 +4251,13 @@ console.log("selected: " + spacekey);
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
         if (menu === "pre_field_battle_rolls") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
-            if (his_self.game.deck[0].fhand[i].includes('024')) {
-	      if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
-                return 1;
+	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	    let fis = his_self.returnArrayOfFactionsInSpace();
+	    if (fis.includes(f)) {
+              if (his_self.game.deck[0].fhand[i].includes('024')) {
+	        if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
+                  return 1;
+                }
               }
             }
           }
@@ -4310,9 +4314,13 @@ console.log("selected: " + spacekey);
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
         if (menu == "pre_field_battle_rolls") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
-            if (his_self.game.deck[0].fhand[i].includes('025')) {
-	      if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
-                return 1;
+	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	    let fis = his_self.returnArrayOfFactionsInSpace();
+	    if (fis.includes(f)) {
+              if (his_self.game.deck[0].fhand[i].includes('025')) {
+	        if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
+                  return 1;
+                }
               }
             }
           }
@@ -4360,9 +4368,13 @@ console.log("selected: " + spacekey);
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
         if (menu == "pre_field_battle_rolls") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
-            if (his_self.game.deck[0].fhand[i].includes('026')) {
-	      if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
-                return 1;
+	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	    let fis = his_self.returnArrayOfFactionsInSpace();
+	    if (fis.includes(f)) {
+              if (his_self.game.deck[0].fhand[i].includes('026')) {
+	        if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
+                  return 1;
+                }
               }
             }
           }
@@ -4476,13 +4488,17 @@ console.log("selected: " + spacekey);
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
         if (menu == "pre_assault_rolls") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
-            if (his_self.game.deck[0].fhand[i].includes('027')) {
-	      let assault_spacekey = "";
-	      if (his_self.game.state.assault) {
-	        if (his_self.game.state.assault.spacekey) {
-		  let fac = his_self.returnFactionControllingSpace(his_self.game.state.assault.spacekey);
-		  if (his_self.game.player == his_self.returnPlayerCommandingFaction(fac)) {
-                    return 1;
+	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	    let fis = his_self.returnArrayOfFactionsInSpace();
+	    if (fis.includes(f)) {
+              if (his_self.game.deck[0].fhand[i].includes('027')) {
+	        let assault_spacekey = "";
+	        if (his_self.game.state.assault) {
+	          if (his_self.game.state.assault.spacekey) {
+		    let fac = his_self.returnFactionControllingSpace(his_self.game.state.assault.spacekey);
+		    if (his_self.game.player == his_self.returnPlayerCommandingFaction(fac)) {
+                      return 1;
+	 	    }
 	 	  }
 	 	}
 	      }
@@ -4603,9 +4619,13 @@ console.log("selected: " + spacekey);
 
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
-            if (his_self.game.deck[0].fhand[i].includes('028')) {
-              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
-              return { faction : f , event : '028', html : `<li class="option" id="028">siege mining (${f})</li>` };
+	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	    let fis = his_self.returnArrayOfFactionsInSpace();
+	    if (fis.includes(f)) {
+              if (his_self.game.deck[0].fhand[i].includes('028')) {
+                f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+                return { faction : f , event : '028', html : `<li class="option" id="028">siege mining (${f})</li>` };
+              }
             }
           }
         }
@@ -4657,11 +4677,15 @@ console.log("selected: " + spacekey);
       menuOptionTriggers:  function(his_self, menu, player, extra) { // extra = spacekey of assault
         if (menu == "pre_field_battle_rolls") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
-            if (his_self.game.deck[0].fhand[i].includes('029')) {
-	      for (let f in his_self.game.spaces[extra].units) {
-		if (his_self.returnFactionLandUnitsInSpace(f, his_self.game.spaces[extra]) > 0) {
-		  if (his_self.game.player == his_self.returnPlayerCommandingFaction(f)) {
-                    return 1;
+	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	    let fis = his_self.returnArrayOfFactionsInSpace();
+	    if (fis.includes(f)) {
+              if (his_self.game.deck[0].fhand[i].includes('029')) {
+	        for (let f in his_self.game.spaces[extra].units) {
+		  if (his_self.returnFactionLandUnitsInSpace(f, his_self.game.spaces[extra]) > 0) {
+		    if (his_self.game.player == his_self.returnPlayerCommandingFaction(f)) {
+                      return 1;
+                    }
                   }
                 }
               }
@@ -4707,6 +4731,7 @@ console.log("selected: " + spacekey);
               break;
             }
           }
+	  if (f !== "hapsburg") { return {}; }
           return { faction : f , event : '024', html : `<li class="option" id="030">tercios (${f})</li>` };
         }
         return {};
@@ -4714,10 +4739,14 @@ console.log("selected: " + spacekey);
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
         if (menu === "pre_field_battle_rolls") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
-            if (his_self.game.deck[0].fhand[i].includes('030')) {
-	      if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
-	        if (his_self.game.spaces[spacekey].units["hapsburg"].length > 1) {
-                  return 1;
+	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	    let fis = his_self.returnArrayOfFactionsInSpace();
+	    if (fis.includes(f)) {
+              if (his_self.game.deck[0].fhand[i].includes('030')) {
+	        if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
+	          if (his_self.game.spaces[spacekey].units["hapsburg"].length > 1) {
+                    return 1;
+                  }
                 }
               }
             }
@@ -5011,16 +5040,13 @@ console.log("selected: " + spacekey);
       },
       menuOption  :       function(his_self, menu, player) {
         if (menu == "pre_field_battle_rolls") {
-
 	  let f = "";
-
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('033')) {
 	      f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
 	      break;
 	    }
 	  }
-
           return { faction : f , event : '033', html : `<li class="option" id="033">landsknechts (${f})</li>` };
         }
         return {};
@@ -5028,8 +5054,12 @@ console.log("selected: " + spacekey);
       menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "pre_field_battle_rolls") {
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
-	    if (his_self.game.deck[0].fhand[i].includes('033')) {
-	      return 1;
+	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	    let fis = his_self.returnArrayOfFactionsInSpace();
+	    if (fis.includes(f)) {
+	      if (his_self.game.deck[0].fhand[i].includes('033')) {
+	        return 1;
+	      }
 	    }
 	  }
         }

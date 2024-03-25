@@ -1,5 +1,34 @@
  
 
+  returnArrayOfPlayersInFieldBattle() {
+    if (this.game.state.field_battle.spacekey) {
+      return this.returnArrayOfPlayersInSpacekey(this.game.state.field_battle.spacekey);
+    }
+    return this.game.players;
+  }
+
+  returnArrayOfPlayersInAssault() {
+    if (this.game.state.assault.spacekey) {
+      return this.returnArrayOfPlayersInSpacekey(this.game.state.assault.spacekey);
+    }
+    return this.game.players;
+  }
+
+  returnArrayOfPlayersInSpacekey(spacekey="") {
+    let res = [];
+    let s = this.game.spaces[this.game.state.field_battle.spacekey];
+    for (let key in s.units) {
+      if (s.units[key].length > 0) {
+        let p = this.returnPlayerCommandingFaction(key);
+        if (p > 0 && !res.includes(this.game.players[p-1])) {
+          res.push(this.game.players[p-1]);
+        }
+      }
+    }
+    if (res.length > 0) { return res; }
+    return this.game.players;
+  }
+
   returnPlayers(num = 0) {
 
     var players = [];
@@ -3492,6 +3521,7 @@ does_units_to_move_have_unit = true; }
 
     this.updateStatusWithOptions(`Withdraw Units into Fortification?`, html);
     this.attachCardboxEvents(function(user_choice) {
+      this.updateStatus("acknowledge...");
       if (user_choice === "fortify") {
 	his_self.addMove("fortification\t"+attacker+"\t"+faction+"\t"+spacekey+"\t"+post_battle);
 	his_self.endTurn();

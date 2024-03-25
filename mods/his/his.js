@@ -469,17 +469,13 @@ class HereIStand extends GameTemplate {
       },
       calculateSpecialVictoryPoints  :  function(game_mod) {
         let base = 0;
-console.log("TESTING SPECIAL IN HAPS");
-console.log("GM: " + JSON.stringify(game_mod.game.state.events));
 	if (game_mod.game.state.events.schmalkaldic_league == 1) {
-console.log("LEAGUE IN ACTION!");
 	  if (game_mod.isSpaceControlled("mainz", "hapsburg")) { base += 1; }
 	  if (game_mod.isSpaceControlled("wittenberg", "hapsburg")) { base += 1; }
 	  if (game_mod.isSpaceControlled("augsburg", "hapsburg")) { base += 1; }
 	  if (game_mod.isSpaceControlled("trier", "hapsburg")) { base += 1; }
 	  if (game_mod.isSpaceControlled("cologne", "hapsburg")) { base += 1; }
 	  if (game_mod.isSpaceControlled("brandenburg", "hapsburg")) { base += 1; }
-console.log("special BP: " + base);
 	}
 	return base;
       },
@@ -7824,9 +7820,13 @@ console.log("selected: " + spacekey);
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
         if (menu === "pre_field_battle_rolls") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
-            if (his_self.game.deck[0].fhand[i].includes('024')) {
-	      if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
-                return 1;
+	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	    let fis = his_self.returnArrayOfFactionsInSpace();
+	    if (fis.includes(f)) {
+              if (his_self.game.deck[0].fhand[i].includes('024')) {
+	        if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
+                  return 1;
+                }
               }
             }
           }
@@ -7883,9 +7883,13 @@ console.log("selected: " + spacekey);
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
         if (menu == "pre_field_battle_rolls") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
-            if (his_self.game.deck[0].fhand[i].includes('025')) {
-	      if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
-                return 1;
+	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	    let fis = his_self.returnArrayOfFactionsInSpace();
+	    if (fis.includes(f)) {
+              if (his_self.game.deck[0].fhand[i].includes('025')) {
+	        if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
+                  return 1;
+                }
               }
             }
           }
@@ -7933,9 +7937,13 @@ console.log("selected: " + spacekey);
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
         if (menu == "pre_field_battle_rolls") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
-            if (his_self.game.deck[0].fhand[i].includes('026')) {
-	      if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
-                return 1;
+	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	    let fis = his_self.returnArrayOfFactionsInSpace();
+	    if (fis.includes(f)) {
+              if (his_self.game.deck[0].fhand[i].includes('026')) {
+	        if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
+                  return 1;
+                }
               }
             }
           }
@@ -8049,13 +8057,17 @@ console.log("selected: " + spacekey);
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
         if (menu == "pre_assault_rolls") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
-            if (his_self.game.deck[0].fhand[i].includes('027')) {
-	      let assault_spacekey = "";
-	      if (his_self.game.state.assault) {
-	        if (his_self.game.state.assault.spacekey) {
-		  let fac = his_self.returnFactionControllingSpace(his_self.game.state.assault.spacekey);
-		  if (his_self.game.player == his_self.returnPlayerCommandingFaction(fac)) {
-                    return 1;
+	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	    let fis = his_self.returnArrayOfFactionsInSpace();
+	    if (fis.includes(f)) {
+              if (his_self.game.deck[0].fhand[i].includes('027')) {
+	        let assault_spacekey = "";
+	        if (his_self.game.state.assault) {
+	          if (his_self.game.state.assault.spacekey) {
+		    let fac = his_self.returnFactionControllingSpace(his_self.game.state.assault.spacekey);
+		    if (his_self.game.player == his_self.returnPlayerCommandingFaction(fac)) {
+                      return 1;
+	 	    }
 	 	  }
 	 	}
 	      }
@@ -8176,9 +8188,13 @@ console.log("selected: " + spacekey);
 
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
-            if (his_self.game.deck[0].fhand[i].includes('028')) {
-              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
-              return { faction : f , event : '028', html : `<li class="option" id="028">siege mining (${f})</li>` };
+	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	    let fis = his_self.returnArrayOfFactionsInSpace();
+	    if (fis.includes(f)) {
+              if (his_self.game.deck[0].fhand[i].includes('028')) {
+                f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+                return { faction : f , event : '028', html : `<li class="option" id="028">siege mining (${f})</li>` };
+              }
             }
           }
         }
@@ -8230,11 +8246,15 @@ console.log("selected: " + spacekey);
       menuOptionTriggers:  function(his_self, menu, player, extra) { // extra = spacekey of assault
         if (menu == "pre_field_battle_rolls") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
-            if (his_self.game.deck[0].fhand[i].includes('029')) {
-	      for (let f in his_self.game.spaces[extra].units) {
-		if (his_self.returnFactionLandUnitsInSpace(f, his_self.game.spaces[extra]) > 0) {
-		  if (his_self.game.player == his_self.returnPlayerCommandingFaction(f)) {
-                    return 1;
+	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	    let fis = his_self.returnArrayOfFactionsInSpace();
+	    if (fis.includes(f)) {
+              if (his_self.game.deck[0].fhand[i].includes('029')) {
+	        for (let f in his_self.game.spaces[extra].units) {
+		  if (his_self.returnFactionLandUnitsInSpace(f, his_self.game.spaces[extra]) > 0) {
+		    if (his_self.game.player == his_self.returnPlayerCommandingFaction(f)) {
+                      return 1;
+                    }
                   }
                 }
               }
@@ -8280,6 +8300,7 @@ console.log("selected: " + spacekey);
               break;
             }
           }
+	  if (f !== "hapsburg") { return {}; }
           return { faction : f , event : '024', html : `<li class="option" id="030">tercios (${f})</li>` };
         }
         return {};
@@ -8287,10 +8308,14 @@ console.log("selected: " + spacekey);
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
         if (menu === "pre_field_battle_rolls") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
-            if (his_self.game.deck[0].fhand[i].includes('030')) {
-	      if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
-	        if (his_self.game.spaces[spacekey].units["hapsburg"].length > 1) {
-                  return 1;
+	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	    let fis = his_self.returnArrayOfFactionsInSpace();
+	    if (fis.includes(f)) {
+              if (his_self.game.deck[0].fhand[i].includes('030')) {
+	        if (his_self.doesPlayerHaveLandUnitsInSpace(his_self.game.player, spacekey)) {
+	          if (his_self.game.spaces[spacekey].units["hapsburg"].length > 1) {
+                    return 1;
+                  }
                 }
               }
             }
@@ -8584,16 +8609,13 @@ console.log("selected: " + spacekey);
       },
       menuOption  :       function(his_self, menu, player) {
         if (menu == "pre_field_battle_rolls") {
-
 	  let f = "";
-
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('033')) {
 	      f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
 	      break;
 	    }
 	  }
-
           return { faction : f , event : '033', html : `<li class="option" id="033">landsknechts (${f})</li>` };
         }
         return {};
@@ -8601,8 +8623,12 @@ console.log("selected: " + spacekey);
       menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "pre_field_battle_rolls") {
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
-	    if (his_self.game.deck[0].fhand[i].includes('033')) {
-	      return 1;
+	    let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	    let fis = his_self.returnArrayOfFactionsInSpace();
+	    if (fis.includes(f)) {
+	      if (his_self.game.deck[0].fhand[i].includes('033')) {
+	        return 1;
+	      }
 	    }
 	  }
         }
@@ -24035,36 +24061,38 @@ console.log("----------------------------");
 	  let faction_map = this.returnFactionMap(space, attacker, faction);
 	  let player = this.returnPlayerCommandingFaction(faction);
 
-	  if (this.game.player === player) {
-	    this.playerFortifySpace(faction, attacker, spacekey, post_battle);
-	  } else {
-	    this.updateLog(this.returnFactionName(faction) + " fortifies in " + this.returnSpaceName(spacekey));
-	    this.updateStatus(this.returnFactionName(faction) + " fortifying in " + this.returnSpaceName(spacekey));
-	    if (this.isPlayerControlledFaction(faction)) {
+
+	  if (player > 0) {
+	    if (this.game.player === player) {
+	      this.playerFortifySpace(faction, attacker, spacekey, post_battle);
 	    } else {
-	      //
-	      // non-player controlled, minor power or independent, so auto-handle
-	      //
-	      // If there are 4 or fewer land units in a space, they will always withdraw into
-	      // the fortifications and try to withstand a siege if their space is entered.
-	      // if there are 5 or more land units,they will hold their ground and fight a field
-	      // battle. If they lose that field battle, do not retreat their units from the
-	      // space as usual. Instead, they retain up to 4 units which withdraw into the
-	      // fortifications; all other land units in excess of 4 are eliminated.
-      	      //
-	      if (space.units[faction].length <= 4) {
-		// fortify everything
-		for (let i = 0; i < space.units[faction].length; i++) {
-		  his_self.game.queue.push("fortify_unit\t"+spacekey+"\t"+faction+"\t"+JSON.stringify(space.units[faction][i]));
-		}
-	      } else {
+	      this.updateLog(this.returnFactionName(faction) + " fortifies in " + this.returnSpaceName(spacekey));
+	      this.updateStatus(this.returnFactionName(faction) + " fortifying in " + this.returnSpaceName(spacekey));
+	    }
+	  } else {
+
+	    //
+	    // non-player controlled, minor power or independent, so auto-handle
+	    //
+	    // If there are 4 or fewer land units in a space, they will always withdraw into
+	    // the fortifications and try to withstand a siege if their space is entered.
+	    // if there are 5 or more land units,they will hold their ground and fight a field
+	    // battle. If they lose that field battle, do not retreat their units from the
+	    // space as usual. Instead, they retain up to 4 units which withdraw into the
+	    // fortifications; all other land units in excess of 4 are eliminated.
+      	    //
+	    if (space.units[faction].length <= 4) {
+	      // fortify everything
+	      for (let i = 0; i < space.units[faction].length; i++) {
+	        his_self.game.queue.push("fortify_unit\t"+spacekey+"\t"+faction+"\t"+JSON.stringify(space.units[faction][i]));
+	      }
+	    } else {
 		//
 		// go into field battle or next step
 		//
-	      }
-	      this.displaySpace(spacekey);
-	      return 1;
 	    }
+	    this.displaySpace(spacekey);
+	    return 1;
 	  }
 
 	  this.displaySpace(spacekey);
@@ -25210,6 +25238,9 @@ alert("workaround bug-fix: if you see this error the game is attempting to unloc
 	  //
 	  this.cardbox.hide();
 
+console.log("CONFIRMS NEEDED: ");
+console.log(JSON.stringify(this.game.confirms_needed));
+
 	  //
 	  // if i have already confirmed, we only splice and pass-through if everyone else has confirmed
 	  // otherwise we will set ack to 0 and return 0 which halts execution. so we should never clear 
@@ -25300,8 +25331,10 @@ alert("workaround bug-fix: if you see this error the game is attempting to unloc
 	      // replaces so we do not sent 2x
 	      //
 	      his_self.game.queue[his_self.game.queue.length-1] = "halted";
+if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
 	      his_self.game.confirms_needed[his_self.game.player-1] = 1;
               his_self.addMove("RESOLVE\t"+his_self.publicKey);
+}
               his_self.endTurn();
 	      his_self.updateStatus("skipping acknowledge...");
 	      return 0;
@@ -25358,11 +25391,10 @@ alert("workaround bug-fix: if you see this error the game is attempting to unloc
 
 	    });
 
-            //
-            // halt my game (copies from ACKNOWLEDGE)
-      	    //
+if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
             his_self.addMove("RESOLVE\t"+his_self.publicKey);
             his_self.endTurn();
+}
             return 0;
 
 	  }
@@ -25899,8 +25931,7 @@ try {
 	  //
 	  if (space.besieged == 2) {
 	    this.updateLog("Field Battle avoided by defenders withdrawing into fortifications");
-	    this.game.queue.push("counter_or_acknowledge\tField Battle avoided by defenders retreating into fortification\tsiege");
-	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("ACKNOWLEDGE\tField Battle avoided by defenders retreating into fortification");
 	    // besieged will become 1 and start of next impulse
 
 	    //
@@ -25946,7 +25977,6 @@ try {
 	        is_janissaries_possible = true;
 	      }
 	    }
-
 
 	    if (f !== attacker_faction && faction_map[f] === attacker_faction) {
 	      let p = his_self.game.state.players_info[his_self.returnPlayerOfFaction(attacker)-1];
@@ -26043,7 +26073,6 @@ try {
 	    this.displaySpace(space.key);
 	    return 1;	    
 	  }
-
 
 	  //
 	  // add rolls for highest battle ranking
@@ -26181,13 +26210,15 @@ try {
 	  //
 	  his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
 	  his_self.game.queue.push("field_battle_assign_hits_render");
+	  let from_whom = his_self.returnArrayOfPlayersInSpacekey(space.key);
 	  if (is_janissaries_possible) {
 	    his_self.game.queue.push("counter_or_acknowledge\tOttomans considering playing Janissaries\tjanissaries\t"+space.key);
-            his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
+            //his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
+            his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
 	  }
 	  his_self.game.queue.push("counter_or_acknowledge\tField Battle is about to being in "+space.name + "\tpre_field_battle_rolls\t"+space.key);
-          his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
-
+          his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
+          //his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
           his_self.field_battle_overlay.renderPreFieldBattle(his_self.game.state.field_battle);
           his_self.field_battle_overlay.pullHudOverOverlay();
@@ -28645,12 +28676,12 @@ console.log("faction: " + faction);
           // this should stop execution while we are looking at the pre-field battle overlay
           //
 	  his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+	  let from_whom = his_self.returnArrayOfPlayersInSpacekey(space.key);
           his_self.game.queue.push("assault_assign_hits_render");
-          //his_self.game.queue.push("counter_or_acknowledge\tAssault results in "+space.name + "\tpre_assault_hits_assignment");
-          //his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
           his_self.game.queue.push("assault_show_hits_render");
           his_self.game.queue.push("counter_or_acknowledge\tAssault is about to begin in "+space.name + "\tpre_assault_rolls");
-          his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
+          //his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
+          his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
 
           his_self.assault_overlay.renderPreAssault(his_self.game.state.assault);
           his_self.assault_overlay.pullHudOverOverlay();
@@ -33165,6 +33196,35 @@ console.log("re-rendering!");
 
  
 
+  returnArrayOfPlayersInFieldBattle() {
+    if (this.game.state.field_battle.spacekey) {
+      return this.returnArrayOfPlayersInSpacekey(this.game.state.field_battle.spacekey);
+    }
+    return this.game.players;
+  }
+
+  returnArrayOfPlayersInAssault() {
+    if (this.game.state.assault.spacekey) {
+      return this.returnArrayOfPlayersInSpacekey(this.game.state.assault.spacekey);
+    }
+    return this.game.players;
+  }
+
+  returnArrayOfPlayersInSpacekey(spacekey="") {
+    let res = [];
+    let s = this.game.spaces[this.game.state.field_battle.spacekey];
+    for (let key in s.units) {
+      if (s.units[key].length > 0) {
+        let p = this.returnPlayerCommandingFaction(key);
+        if (p > 0 && !res.includes(this.game.players[p-1])) {
+          res.push(this.game.players[p-1]);
+        }
+      }
+    }
+    if (res.length > 0) { return res; }
+    return this.game.players;
+  }
+
   returnPlayers(num = 0) {
 
     var players = [];
@@ -36657,6 +36717,7 @@ does_units_to_move_have_unit = true; }
 
     this.updateStatusWithOptions(`Withdraw Units into Fortification?`, html);
     this.attachCardboxEvents(function(user_choice) {
+      this.updateStatus("acknowledge...");
       if (user_choice === "fortify") {
 	his_self.addMove("fortification\t"+attacker+"\t"+faction+"\t"+spacekey+"\t"+post_battle);
 	his_self.endTurn();
@@ -39786,6 +39847,17 @@ does_units_to_move_have_unit = true; }
 
 
 
+
+  returnArrayOfFactionsInSpacekey(spacekey="") {
+    let res = [];
+    let s = this.game.spaces[spacekey];
+    if (s) {
+      for (let f in s.units) {
+	if (s.units[key].length > 0) { res.push(f); }
+      }
+    };
+    return res;
+  }
 
   isPlayerControlledFaction(faction="") {
     if (faction === "") { return false; }
