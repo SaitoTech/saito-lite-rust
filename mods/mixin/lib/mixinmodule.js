@@ -24,6 +24,7 @@
  **********************************************************************************/
 const CryptoModule = require('./../../../lib/templates/cryptomodule');
 const getUuid = require('uuid-by-string');
+const WAValidator = require('multicoin-address-validator');
 
 class MixinModule extends CryptoModule {
 	constructor(app, ticker, mixin_mod, asset_id) {
@@ -565,6 +566,16 @@ class MixinModule extends CryptoModule {
 		}
 
 		return null;
+	}
+
+	async validateAddress(address, ticker){
+		// suported cryptos by validator package
+		//https://www.npmjs.com/package/multicoin-address-validator?activeTab=readme		
+		try {
+			return WAValidator.validate(address, ticker);
+		} catch(err) {
+			console.error("Error 'validateAddress' MixinModule: ", err);
+		}
 	}
 
 }
