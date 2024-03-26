@@ -194,7 +194,7 @@ export default class Wallet extends SaitoWallet {
 			validateAddress(address){
 				/*
 					Note: This is temporary validation, until a 
-					solid way to validate saito publickey is determined.
+					solid way to validate saito publickey is merged in wasm.
 				*/
 				if (address.length < 30) {
 					return false;
