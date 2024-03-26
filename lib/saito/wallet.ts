@@ -1133,7 +1133,7 @@ export default class Wallet extends SaitoWallet {
 			let pc = await this.returnPreferredCrypto();
 			return await pc.validateAddress(address, ticker);
 		} catch(err) {
-			console.error("Error 'validateAddress' MixinModule: ", err);
+			console.error("Error 'isAddressValid' wallet.ts: ", err);
 		}
 	}
 
