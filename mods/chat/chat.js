@@ -1527,7 +1527,7 @@ class Chat extends ModTemplate {
 						sender = block[z].from[0];
 						
 						// replace @mentions with saito treated address
-						block[z].msg = block[z].msg.replaceAll(/(?=@)([^\s]*)/g, function(k){
+						block[z].msg = block[z].msg.replaceAll(/(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]*)/g, function(k){
 							let split = (k.split('@'));
 							let username = '';
 							let key = '';
