@@ -37,6 +37,17 @@
   z-index: 3;
 }
 
+.tweet.has-reply + .tweet-overlay:after{
+  content: "";
+  position: absolute;
+  width: 0rem;
+  height: 100%;
+  top: 5rem;
+  left: -1.5rem;
+  border-left: 5px dotted var(--saito-border-color);
+  z-index: 3;  
+}
+
 .tweet.has-reply-disconnected {
   border-bottom: none;
 }
