@@ -212,10 +212,10 @@ class Videocall extends ModTemplate {
 			this.app.connection.on('show-call-interface', () => {
 				document.getElementById(
 					'start-group-video-chat'
-				).style.display = 'none';
+				).classList.add("disable-menu");
 			});
 			this.app.connection.on('reset-stun', () => {
-				document.getElementById('start-group-video-chat').style = '';
+				document.getElementById('start-group-video-chat').classList.remove("disable-menu");
 			});
 
 			if (obj?.game?.players?.length > 1) {
@@ -675,32 +675,17 @@ class Videocall extends ModTemplate {
 		}
 	}
 
-	async createBroadcastListTransaction(peer_list, address) {
-		let newtx =
-			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
-				address
-			);
-		newtx.msg = {
-			module: 'Videocall',
-			request: 'broadcast-call-list',
-			call_id: this.room_obj.call_id,
-			data: {
-				peer_list
-			}
-		};
-
-		console.log('sending to address', address);
-		newtx.addTo(address);
-		newtx.addFrom(this.publicKey);
-		await newtx.sign();
-		return newtx;
-	}
 	async receiveBroadcastListTransaction(app, tx) {
 		const txmsg = tx.returnMessage();
 		let sender = tx.from[0].publicKey;
-		console.log(txmsg.data.sender, txmsg);
-		this.app.connection.emit('peer-list', sender, txmsg.data.peer_list);
-		// send data
+
+		// Need code here to process keys that aren't otherwise in our call list 
+		// retrigger stun connections
+
+		// ....
+
+		//Update display of videoboxes
+		this.app.connection.emit('peer-list', sender, txmsg.data);
 	}
 
 	webServer(app, expressapp, express) {

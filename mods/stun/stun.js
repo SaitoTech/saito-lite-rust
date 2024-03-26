@@ -142,8 +142,12 @@ class Stun extends ModTemplate {
 
 	sendTransaction(peerId, tx) {
 		let peerConnection = this.peers.get(peerId);
-		if (!peerConnection?.dc) {
+		if (peerConnection?.dc) {
 			console.warn('Stun: no data channel with peer');
+			return;
+		}
+		if (!this.hasConnectionWithPeer(peerId)){
+			console.warn("Stun: cannot send transaction over stun");
 			return;
 		}
 

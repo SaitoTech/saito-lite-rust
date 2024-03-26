@@ -205,10 +205,7 @@ class StreamManager {
 				enabled: this.videoEnabled
 			});
 
-			if (
-				this.mod.stun.peers.size > 0 &&
-				this.is_broadcasting === false
-			) {
+			if (this.mod.stun.peers.size > 0 &&	!this.is_broadcasting) {
 				// begin sending peer list to peers
 				this.beginBroadcastingPeerList();
 			}
@@ -441,10 +438,12 @@ class StreamManager {
 
 		await this.mod.sendCallDisconnectTransaction();
 
-		this.localStream.getTracks().forEach((track) => {
-			track.stop();
-			console.log('STUN: stopping track to leave call');
-		});
+		if (this.localStream){
+			this.localStream.getTracks().forEach((track) => {
+				track.stop();
+				console.log('STUN: stopping track to leave call');
+			});
+		}
 
 		this.localStream = null; //My Video Feed
 
@@ -457,6 +456,11 @@ class StreamManager {
 		this.audioEnabled = true;
 		this.auto_disconnect = false;
 		this.active = false;
+
+		if (this.is_broadcasting){
+			clearInterval(this.is_broadcasting);
+			this.is_broadcasting = null;
+		}
 
 		if (this.audioStreamAnalysis) {
 			clearInterval(this.audioStreamAnalysis);
@@ -526,51 +530,20 @@ class StreamManager {
 	}
 
 	async beginBroadcastingPeerList() {
-		this.is_broadcasting = true;
-		let peer_list = [];
-		this.mod.stun.peers.forEach((pc, address) => {
-			if (pc.connectionState === 'connected') {
-				peer_list.push({
-					address,
-					connectionState: pc.connectionState
-				});
-			}
-		});
 
-		this.mod.stun.peers.forEach((pc, address) => {
-			let interval = setInterval(async () => {
-				if (pc.dc.readyState === 'open') {
-					clearInterval(interval);
-					let newtx = await this.mod.createBroadcastListTransaction(
-						peer_list,
-						address
-					);
-					this.mod.stun.sendTransaction(address, newtx);
-				}
-			}, 500);
-		});
+		this.is_broadcasting = setInterval(async () => {
+			let peer_list = {};
 
-		setInterval(() => {
-			let peer_list = [];
 			this.mod.stun.peers.forEach((pc, address) => {
-				// if (pc.connectionState === 'connected') {
-				peer_list.push({
-					address,
-					connectionState: pc.connectionState
-				});
-				// }
+				if (this.app.options.stun.peers.includes(address)){
+					peer_list[address] = pc.connectionState;
+				}
 			});
 
-			this.mod.stun.peers.forEach(async (pc, address) => {
-				let newtx = await this.mod.createBroadcastListTransaction(
-					peer_list,
-					address
-				);
-				this.mod.stun.sendTransaction(address, newtx);
-			});
-		}, 5000);
+			this.mod.sendOffChainMessage("broadcast-call-list", peer_list);
 
-		console.log(peer_list, 'peer list address');
+		}, 3000);
+
 	}
 }
 
