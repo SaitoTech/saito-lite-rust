@@ -211,6 +211,14 @@ class ChatManagerMenu {
 	      }
 	    }
 
+	    document.querySelectorAll(".sound-preview").forEach(sound => {
+	    	sound.onclick = (e) => {
+	    		let chime = e.currentTarget.dataset.id;
+   				let preview = new Audio(`/saito/sound/${chime}.mp3`);
+   				preview.play();
+	    	};
+	    })
+
 	}
 }
 
