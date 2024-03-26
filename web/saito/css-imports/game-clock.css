@@ -7,7 +7,8 @@
   display:inline;
   background: #000;
   color: red;
-  font-size:3em;
+  font-size:3.6rem;
+  font-family: monospace;
   margin: 0 auto;
   padding-left: 10px;
   padding-right: 10px;
@@ -20,5 +21,7 @@
 }
 
 
-
+#game-clock-miliseconds{
+  font-size: 2.8rem;
+}
 
