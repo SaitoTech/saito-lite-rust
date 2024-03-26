@@ -10,12 +10,13 @@ class Keychain {
 	public groups: any;
 	public modtemplate: any;
 	public fetched_keys: Map<string, number>;
-	public publicKey: string;
+	public publicKey: string
 	public identifier: string;
 	public bid: bigint;
 	public bsh: string;
 	public lc: boolean;
 	public hash: string;
+	public subscriptionAddress: Array<any>
 
 	constructor(app: Saito) {
 		this.app = app;
@@ -24,6 +25,8 @@ class Keychain {
 		this.groups = [];
 		this.modtemplate = new modtemplate(this.app);
 		this.fetched_keys = new Map<string, number>();
+		this.subscriptionAddress = []
+
 	}
 
 	async initialize() {
@@ -58,6 +61,14 @@ class Keychain {
 		} else {
 			this.groups = this.app.options.groups;
 		}
+
+		//  saved subscriptions 
+		if (this.app.options.subscriptionAddress == null) {
+			this.app.options.subscriptionAddress = []
+		} else {
+			this.subscriptionAddress = this.app.options.subscriptionAddress;
+		}
+
 
 		//
 		// add my key if needed
@@ -147,6 +158,26 @@ class Keychain {
 		this.saveKeys();
 	}
 
+	addSubscriptionAddress(publicKey) {
+		console.log('adding subscription address', publicKey)
+		if (!publicKey || typeof publicKey !== 'string') {
+			console.warn('Invalid publicKey for subscription address');
+			return;
+		}
+
+		if (this.subscriptionAddress.includes(publicKey)) {
+			console.warn('Subscription address already exists');
+			return;
+		}
+
+		this.subscriptionAddress.push(publicKey);
+		console.log(`Subscription address ${publicKey} added successfully.`);
+
+		this.saveKeys()
+	}
+
+
+
 	decryptMessage(publicKey: string, encrypted_msg) {
 		// submit JSON parsed object after unencryption
 		for (let x = 0; x < this.keys.length; x++) {
@@ -179,13 +210,13 @@ class Keychain {
 				}
 			}
 		}
-		
+
 		console.warn(
 			"I don't share a decryption key with encrypter, cannot decrypt"
 		);
 
-		if (this.app.BROWSER){
-			this.app.connection.emit("encrypt-decryption-failed", publicKey);	
+		if (this.app.BROWSER) {
+			this.app.connection.emit("encrypt-decryption-failed", publicKey);
 		}
 
 		return encrypted_msg;
@@ -372,7 +403,7 @@ class Keychain {
 		if (data == null) {
 			for (let x = 0; x < this.keys.length; x++) {
 				if (
-					/*this.keys[x].lc &&*/ this.keys[x].publicKey !=
+                    /*this.keys[x].lc &&*/ this.keys[x].publicKey !=
 					this.publicKey
 				) {
 					kx.push(this.keys[x]);
@@ -404,6 +435,7 @@ class Keychain {
 
 	saveKeys() {
 		this.app.options.keys = this.keys;
+		this.app.options.subscriptionAddress = this.subscriptionAddress
 		this.app.storage.saveOptions();
 		if (this.returnHash() != this.hash) {
 			this.hash = this.returnHash();
@@ -572,3 +604,4 @@ class Keychain {
 }
 
 export default Keychain;
+

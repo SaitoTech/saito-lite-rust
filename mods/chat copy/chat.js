@@ -1,16 +1,16 @@
-const SaitoUserTemplate = require('./../../lib/saito/ui/saito-user/saito-user.template.js');
-const saito = require('../../lib/saito/saito');
-const ModTemplate = require('../../lib/templates/modtemplate');
-const ChatMain = require('./lib/appspace/main');
-const SaitoHeader = require('./../../lib/saito/ui/saito-header/saito-header');
-const ChatManager = require('./lib/chat-manager/main');
-const ChatManagerOverlay = require('./lib/overlays/chat-manager');
+const SaitoUserTemplate = require('../../lib/saito/ui/saito-user/saito-user.template.js');
+const saito = require('../../lib/saito/saito.js');
+const ModTemplate = require('../../lib/templates/modtemplate.js');
+const ChatMain = require('./lib/appspace/main.js');
+const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header.js');
+const ChatManager = require('./lib/chat-manager/main.js');
+const ChatManagerOverlay = require('./lib/overlays/chat-manager.js');
 const JSON = require('json-bigint');
 const localforage = require('localforage');
-const Transaction = require('../../lib/saito/transaction').default;
+const Transaction = require('../../lib/saito/transaction.js').default;
 const PeerService = require('saito-js/lib/peer_service').default;
-const ChatSettings = require('./lib/overlays/chat-manager-menu');
-const ChatSidebar = require('./lib/appspace/chat-sidebar');
+const ChatSettings = require('./lib/overlays/chat-manager-menu.js');
+const ChatSidebar = require('./lib/appspace/chat-sidebar.js');
 const HomePage = require('./index');
 
 class Chat extends ModTemplate {
@@ -22,6 +22,10 @@ class Chat extends ModTemplate {
 		this.description = 'Saito instant-messaging client';
 		this.categories = 'Messaging Chat';
 		this.groups = [];
+
+		let privateKey = this.app.crypto.generateKeys();
+		let publicKey = this.app.crypto.generatePublicKey(privateKey);
+		console.log(publicKey, ' this is the public key');
 
 		/*
      Array of:
@@ -66,9 +70,6 @@ class Chat extends ModTemplate {
 		this.audio_notifications = true;
 		this.audio_chime = 'Glass';
 		this.auto_open_community = false;
-
-		this.communityGroupAddress =
-			'yyNhTY8J4cbhW7VTYUYoYGLcGX96of3Wrx7EvtXES74D';
 
 		this.black_list = [];
 
@@ -176,101 +177,130 @@ class Chat extends ModTemplate {
 		this.attachPostScripts();
 	}
 
-	async render() {
-		if (!this.app.BROWSER) {
-			return;
-		}
+	attachEvents() {
+		document
+			.querySelector('#button-sender')
+			.addEventListener('click', async (e) => {
+				let newtx =
+					this.app.wallet.createUnsignedTransactionWithDefaultFee(
+						this.test_public_key
+					);
 
-		if (this.app.options.theme) {
-			let theme = this.app.options.theme[this.slug];
-
-			if (theme != null) {
-				this.app.browser.switchTheme(theme);
-			}
-		}
-
-		if (this.main == null) {
-			this.header = new SaitoHeader(this.app, this);
-			await this.header.initialize(this.app);
-			this.addComponent(this.header);
-
-			this.main = new ChatMain(this.app, this);
-			this.addComponent(this.main);
-
-			this.addComponent(new ChatSidebar(this.app, this));
-		}
-
-		if (this.chat_manager == null) {
-			this.chat_manager = new ChatManager(this.app, this);
-			this.addComponent(this.chat_manager);
-		}
-		this.chat_manager.container = '.saito-sidebar.left';
-
-		if (
-			!(
-				this.app.browser.isMobileBrowser(navigator.userAgent) &&
-				window.innerWidth < 750
-			) &&
-			window.innerWidth > 599
-		) {
-			this.chat_manager.chat_popup_container = '.saito-main';
-		}
-
-		this.chat_manager.render_popups_to_screen = 0;
-		this.chat_manager.render_manager_to_screen = 1;
-
-		this.styles = ['/saito/saito.css', '/chat/style.css'];
-
-		await super.render();
-
-		let chat_id = this.app.browser.returnURLParameter('chat_id');
-
-		if (chat_id) {
-			if (this.app.crypto.isPublicKey(chat_id)) {
-				//data.key = public key(s) of other chat parties
-				this.app.connection.emit('open-chat-with', { key: chat_id });
-			} else {
-				let chat_group = JSON.parse(
-					this.app.crypto.base64ToString(chat_id)
-				);
-
-				console.log('CHAT LINK:', chat_group);
-
-				let search = this.returnGroup(chat_group.id);
-				if (search) {
-					//data.id = group id
-					this.app.connection.emit('open-chat-with', {
-						id: chat_group.id
-					});
-				} else {
-					// To do -- add here
-
-					chat_group.members = [];
-					chat_group.txs = [];
-					chat_group.unread = 0;
-					chat_group.last_update = 0;
-
-					for (let i in chat_group.member_ids) {
-						if (chat_group.member_ids[i] !== -1) {
-							chat_group.members.push(i);
-						}
+				newtx.msg = {
+					module: 'ChatX',
+					request: 'lite-block-test',
+					data: {
+						msg: 'Hello world'
 					}
+				};
 
-					chat_group.members.push(this.publicKey);
-					chat_group.member_ids[this.publicKey] = 1;
+				await newtx.sign();
+				await this.app.network.propagateTransaction(newtx);
+			});
+	}
+	// async render() {
+	// 	if (!this.app.BROWSER) {
+	// 		return;
+	// 	}
 
-					this.groups.push(chat_group);
+	// 	if (this.app.options.theme) {
+	// 		let theme = this.app.options.theme[this.slug];
 
-					this.saveChatGroup(chat_group);
+	// 		if (theme != null) {
+	// 			this.app.browser.switchTheme(theme);
+	// 		}
+	// 	}
 
-					this.app.connection.emit('chat-manager-render-request');
-				}
+	// 	if (this.main == null) {
+	// 		this.header = new SaitoHeader(this.app, this);
+	// 		await this.header.initialize(this.app);
+	// 		this.addComponent(this.header);
 
-				this.sendJoinGroupTransaction(chat_group);
-			}
+	// 		this.main = new ChatMain(this.app, this);
+	// 		this.addComponent(this.main);
 
-			window.history.pushState({}, document.title, '/' + this.slug);
-		}
+	// 		this.addComponent(new ChatSidebar(this.app, this));
+	// 	}
+
+	// 	if (this.chat_manager == null) {
+	// 		this.chat_manager = new ChatManager(this.app, this);
+	// 		this.addComponent(this.chat_manager);
+	// 	}
+	// 	this.chat_manager.container = '.saito-sidebar.left';
+
+	// 	if (
+	// 		!(
+	// 			this.app.browser.isMobileBrowser(navigator.userAgent) &&
+	// 			window.innerWidth < 750
+	// 		) &&
+	// 		window.innerWidth > 599
+	// 	) {
+	// 		this.chat_manager.chat_popup_container = '.saito-main';
+	// 	}
+
+	// 	this.chat_manager.render_popups_to_screen = 0;
+	// 	this.chat_manager.render_manager_to_screen = 1;
+
+	// 	this.styles = ['/saito/saito.css', '/chat/style.css'];
+
+	// 	await super.render();
+
+	// 	let chat_id = this.app.browser.returnURLParameter('chat_id');
+
+	// 	if (chat_id) {
+	// 		if (this.app.crypto.isPublicKey(chat_id)) {
+	// 			//data.key = public key(s) of other chat parties
+	// 			this.app.connection.emit('open-chat-with', { key: chat_id });
+	// 		} else {
+	// 			let chat_group = JSON.parse(
+	// 				this.app.crypto.base64ToString(chat_id)
+	// 			);
+
+	// 			console.log('CHAT LINK:', chat_group);
+
+	// 			let search = this.returnGroup(chat_group.id);
+	// 			if (search) {
+	// 				//data.id = group id
+	// 				this.app.connection.emit('open-chat-with', {
+	// 					id: chat_group.id
+	// 				});
+	// 			} else {
+	// 				// To do -- add here
+
+	// 				chat_group.members = [];
+	// 				chat_group.txs = [];
+	// 				chat_group.unread = 0;
+	// 				chat_group.last_update = 0;
+
+	// 				for (let i in chat_group.member_ids) {
+	// 					if (chat_group.member_ids[i] !== -1) {
+	// 						chat_group.members.push(i);
+	// 					}
+	// 				}
+
+	// 				chat_group.members.push(this.publicKey);
+	// 				chat_group.member_ids[this.publicKey] = 1;
+
+	// 				this.groups.push(chat_group);
+
+	// 				this.saveChatGroup(chat_group);
+
+	// 				this.app.connection.emit('chat-manager-render-request');
+	// 			}
+
+	// 			this.sendJoinGroupTransaction(chat_group);
+	// 		}
+
+	// 		window.history.pushState({}, document.title, '/' + this.slug);
+	// 	}
+	// }
+
+	render() {
+		return `
+        <button id="button-sender'> 
+            Send Tx
+        </button>
+        `;
 	}
 
 	async onPeerServiceUp(app, peer, service = {}) {
@@ -377,10 +407,6 @@ class Chat extends ModTemplate {
 					'chat history',
 					msg,
 					(txs) => {
-						console.log(
-							'where is this running? ',
-							this.app.BROWSER
-						);
 						this.loading--;
 						if (this.debug) {
 							console.log('chat history callback: ' + txs.length);
@@ -713,9 +739,6 @@ class Chat extends ModTemplate {
 			if (txmsg.request == 'chat message') {
 				await this.receiveChatTransaction(tx, 1);
 			}
-			if (txmsg.request == 'chat message browser') {
-				await this.receiveChatBrowserTransaction(tx, 1);
-			}
 			if (txmsg.request == 'chat group') {
 				await this.receiveCreateGroupTransaction(tx);
 			}
@@ -760,7 +783,6 @@ class Chat extends ModTemplate {
 		if (txmsg.request === 'chat history') {
 			let group = this.returnGroup(txmsg?.data?.group_id);
 
-			console.log('handle peer, where is this running', app.BROWSER);
 			if (!group) {
 				console.log("Group doesn't exist?");
 				return 0;
@@ -874,8 +896,6 @@ class Chat extends ModTemplate {
 	// We have a single admin (who can add additional members or kick people out)
 	//
 	async sendCreateGroupTransaction(name, invitees = []) {
-		const pk = this.app.crypto.generateKeys();
-		const subscription_address = this.app.crypto.generatePublicKey(pk);
 		let newtx = await this.app.wallet.createUnsignedTransaction(
 			this.publicKey,
 			BigInt(0),
@@ -895,8 +915,7 @@ class Chat extends ModTemplate {
 			module: 'Chat',
 			request: 'chat group',
 			name: name,
-			admin: this.publicKey,
-			subscription_address
+			admin: this.publicKey
 		};
 
 		await newtx.sign();
@@ -911,17 +930,13 @@ class Chat extends ModTemplate {
 
 		if (tx.isTo(this.publicKey)) {
 			let txmsg = tx.returnMessage();
-			// add subscription address to keychain
-			this.app.keychain.addSubscriptionAddress(
-				txmsg.subscription_address
-			);
+
 			if (this.returnGroup(tx.signature)) {
 				return;
 			}
 
 			let newGroup = {
 				id: tx.signature,
-				subscription_address: txmsg.subscription_address,
 				members: [],
 				member_ids: {},
 				name: txmsg.name,
@@ -949,7 +964,7 @@ class Chat extends ModTemplate {
 			tx.msg.message = `<div class="saito-chat-notice"><span class="saito-mention saito-address" data-id="${
 				txmsg.admin
 			}">${this.app.keychain.returnUsername(txmsg.admin)}</span>
-            <span> created the group ${txmsg.name}</span></div>`;
+			<span> created the group ${txmsg.name}</span></div>`;
 			tx.notice = true;
 
 			this.addTransactionToGroup(newGroup, tx);
@@ -1301,11 +1316,11 @@ class Chat extends ModTemplate {
 			}
 
 			await app.network.propagateTransaction(tx);
-			// app.connection.emit('relay-send-message', {
-			// 	recipient,
-			// 	request: 'chat message broadcast',
-			// 	data: tx.toJson()
-			// });
+			app.connection.emit('relay-send-message', {
+				recipient,
+				request: 'chat message broadcast',
+				data: tx.toJson()
+			});
 		} else {
 			salert('Connection to chat server lost');
 		}
@@ -1328,37 +1343,29 @@ class Chat extends ModTemplate {
 		//I'm not sure we need either of these...
 		//
 		newtx.addFrom(this.publicKey);
-		// newtx.addTo(this.publicKey);
+		newtx.addTo(this.publicKey);
 
-		// for (let mention of to_keys) {
-		// 	newtx.addTo(mention);
-		// }
+		for (let mention of to_keys) {
+			newtx.addTo(mention);
+		}
 
 		let members = this.returnMembers(group_id);
 
-		// for (let i = 0; i < members.length; i++) {
-		// 	if (members[i] !== this.publicKey) {
-		// 		secret_holder = members[i];
-		// 	}
+		for (let i = 0; i < members.length; i++) {
+			if (members[i] !== this.publicKey) {
+				secret_holder = members[i];
+			}
 
-		// 	newtx.addTo(members[i]);
-		// }
+			newtx.addTo(members[i]);
+		}
 
-		// sending transaction to the server
-		let server = (await this.app.network.getPeers())[0].publicKey;
-		newtx.addTo(server);
-		let subscription_address =
-			this.returnSubscriptionAddressFromGroupID(group_id);
-
-		console.log(subscription_address, 'this is the subscription address');
 		newtx.msg = {
 			module: 'Chat',
 			request: 'chat message',
 			group_id: group_id,
 			message: msg,
 			timestamp: new Date().getTime(),
-			mentioned: to_keys,
-			subscription_address
+			mentioned: to_keys
 		};
 
 		// sanity check
@@ -1406,24 +1413,6 @@ class Chat extends ModTemplate {
 	 * So we make sure here it is actually for us (otherwise will be encrypted gobbledygook)
 	 */
 	async receiveChatTransaction(tx, onchain = 0) {
-		if (this.app.BROWSER === 0) {
-			// rebroadcast to every peer in the network
-			console.log(tx.msg, 'server received');
-			let newtx =
-				await this.app.wallet.createUnsignedTransactionWithDefaultFee();
-			newtx.msg = tx.returnMessage();
-			newtx.msg.request = 'chat message browser';
-			let peers = (await this.app.network.getPeers()).map(
-				(peer) => peer.publicKey
-			);
-			peers.forEach((peer) => {
-				newtx.addTo(peer);
-			});
-			console.log(newtx, 'server new transaction');
-			await newtx.sign();
-			this.app.network.propagateTransaction(newtx);
-			return;
-		}
 		if (this.inTransitImageMsgSig == tx.signature) {
 			this.inTransitImageMsgSig = null;
 		}
@@ -1500,139 +1489,6 @@ class Chat extends ModTemplate {
 				txmsg.group_name
 			);
 			group.id = txmsg.group_id;
-			group.subscription_address = txmsg.subscription_address;
-		}
-
-		//Have we already inserted this message into the chat?
-		for (let z = 0; z < group.txs.length; z++) {
-			if (group.txs[z].signature === tx.signature) {
-				if (this.debug) {
-					console.log('Duplicate received message');
-				}
-				return;
-			}
-		}
-
-		if (this.addTransactionToGroup(group, tx)) {
-			//Returns 1 if it is a new message
-
-			if (tx.isFrom(this.publicKey)) {
-				for (let key of this.black_list) {
-					if (tx.isTo(key)) {
-						let new_message = `<div class="saito-chat-notice">
-							<span class="saito-mention saito-address" data-id="${key}">${this.app.keychain.returnUsername(
-							key
-						)}</span>
-							<span> is blocked and cannot respond </span>
-						</div>`;
-
-						group.txs.push({
-							signature: tx.signature + '1',
-							timestamp: new Date().getTime(),
-							from: [],
-							msg: new_message,
-							mentioned: [],
-							notice: true
-						});
-					}
-				}
-			}
-		}
-		this.app.connection.emit('chat-popup-render-request', group);
-	}
-
-	async receiveChatBrowserTransaction(tx, onchain = 0) {
-		console.log('chat message', this.app.keychain);
-		if (
-			this.app.keychain.subscriptionAddress.includes(
-				tx.msg.subscription_address
-			)
-		) {
-			console.log('subscribed to the transaction', tx);
-		} else {
-			console.log('not subscribed to this address', tx, this.app.options);
-		}
-
-		if (this.inTransitImageMsgSig == tx.signature) {
-			this.inTransitImageMsgSig = null;
-		}
-
-		let txmsg = '';
-
-		try {
-			await tx.decryptMessage(this.app);
-			txmsg = tx.returnMessage();
-		} catch (err) {
-			console.log('ERROR: ' + JSON.stringify(err));
-		}
-
-		if (this.debug) {
-			console.log('Receive Chat Transaction:');
-			console.log(JSON.parse(JSON.stringify(tx)));
-			console.log(JSON.parse(JSON.stringify(txmsg)));
-		}
-
-		for (let blocked of this.black_list) {
-			if (tx.isFrom(blocked)) {
-				console.log('Refuse chat message from blocked account');
-				return;
-			}
-		}
-
-		//
-		// if to someone else and encrypted
-		// (i.e. I am sending an encrypted message and not waiting for relay)
-		//
-		//if (tx.from[0].publicKey == this.publicKey) {
-		//    if (app.keychain.hasSharedSecret(tx.to[0].publicKey ) {
-		//    }
-		//}
-
-		//
-		// save transactions if getting chat tx over chain
-		// and only trigger if you were the sender
-		// (should less the duplication effect)
-		//
-
-		// if (onchain) {
-		// 	if (this.app.BROWSER) {
-		// 		if (tx.isFrom(this.publicKey)) {
-		// 			//console.log("Save My Sent Chat TX");
-		// 			await this.app.storage.saveTransaction(tx, {
-		// 				field3: txmsg.group_id
-		// 			});
-		// 		}
-		// 	}
-		// }
-
-		let group = this.returnGroup(txmsg.group_id);
-
-		console.log('found group', group);
-
-		if (!group) {
-			// if (!tx.isTo(this.publicKey)) {
-			// 	if (this.debug) {
-			// 		console.log('Chat message not for me');
-			// 	}
-			// 	return;
-			// }
-
-			//
-			// Create a chat group on the fly if properly addressed to me
-			//
-			let members = [];
-			for (let x = 0; x < tx.to.length; x++) {
-				if (!members.includes(tx.to[x].publicKey)) {
-					members.push(tx.to[x].publicKey);
-				}
-			}
-
-			group = this.returnOrCreateChatGroupFromMembers(
-				members,
-				txmsg.group_name
-			);
-			group.id = txmsg.group_id;
-			group.subscription_address = txmsg.subscription_address;
 		}
 
 		//Have we already inserted this message into the chat?
@@ -2064,22 +1920,17 @@ class Chat extends ModTemplate {
 			console.log(JSON.stringify(members));
 		}
 
-		const pk = this.app.crypto.generateKeys();
-		const subscription_address = this.app.crypto.generatePublicKey(pk);
-
 		let newGroup = {
 			id: id,
 			members: members,
 			name: name,
 			txs: [],
 			unread: 0,
-			last_update: 0,
-			subscription_address
+			last_update: 0
 		};
 
 		//Prepend the community chat
 		if (name === this.communityGroupName) {
-			newGroup.subscription_address = this.communityGroupAddress;
 			this.groups.unshift(newGroup);
 		} else {
 			this.groups.push(newGroup);
@@ -2133,16 +1984,6 @@ class Chat extends ModTemplate {
 		return [];
 	}
 
-	returnSubscriptionAddressFromGroupID(group_id) {
-		for (let i = 0; i < this.groups.length; i++) {
-			if (group_id === this.groups[i].id) {
-				return this.groups[i].subscription_address;
-			}
-		}
-
-		return null;
-	}
-
 	returnGroupByName(name = '') {
 		for (let i = 0; i < this.groups.length; i++) {
 			if (this.groups[i].name === name) {
@@ -2191,7 +2032,6 @@ class Chat extends ModTemplate {
 		this.app.connection.emit('chat-manager-render-request');
 	}
 
-	// async getOlderTransactions(group_id, peer = null) {}
 	async getOlderTransactions(group_id, peer = null) {
 		let group = this.returnGroup(group_id);
 
@@ -2289,6 +2129,7 @@ class Chat extends ModTemplate {
 		this.app.options.chat.audio_chime = this.audio_chime;
 		this.app.options.chat.auto_open_community = this.auto_open_community;
 		this.app.options.chat.black_list = this.black_list;
+
 		this.app.storage.saveOptions();
 	}
 

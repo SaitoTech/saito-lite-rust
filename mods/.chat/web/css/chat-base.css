@@ -1,0 +1,157 @@
+.saito-container.chat-main-container {
+	padding: 0;
+	overflow-y: hidden;
+	grid-template-columns: min-content auto;
+}
+
+#saito-header {
+	padding: 1.3rem 3rem !important;
+}
+
+.saito-floating-container,
+.saito-floating-plus-btn {
+	display: none !important;
+}
+
+#chat-main {
+	padding: 0;
+	margin: 0 0 1rem;
+	height: calc(100vh - var(--saito-header-height));
+}
+
+.chat-main-container .chat-manager {
+	height: 100%;
+}
+
+
+.chat-main-container .chat-header,
+.chat-main-container .chat-footer {
+	padding: 0 1rem !important;
+}
+
+.chat-main-container .chat-header-info {
+	height: 5rem;
+}
+.chat-main-container .chat-header .chat-header-nav {
+	display: none;
+}
+
+.chat-main-container .saito-sidebar.left {
+	min-width: 20rem;
+	width: 30rem;
+	max-width: 50vw;
+	resize: horizontal;
+	overflow: auto;
+	border-right: 1px solid var(--saito-border-color);
+	padding: 1rem;
+}
+
+.chat-main-container .saito-sidebar.right {
+	display: none;
+	visibility: hidden;
+	padding: 0;
+}
+
+.chat-main-container .chat-header {
+	background-color: var(--saito-background-color);
+	cursor: default;
+}
+
+.chat-main-container .chat-footer {
+	border-top: unset;
+	max-width: 60rem;
+	position: relative;
+	left: 50%;
+	transform: translateX(-50%);
+	margin-bottom: 1.5rem;
+	/*position: absolute;
+	bottom: 0;*/
+	background: unset;
+}
+
+.chat-main-container .chat-body {
+	width: 99%;
+	padding: 0 calc(50% - 30rem);
+	height: 100%;
+	margin: auto;
+	margin-left: 1%;
+}
+
+.text-input {
+	border-radius: 5px;
+	box-shadow: 0 0 1px var(--saito-primary);
+}
+
+.chat-footer > i {
+	margin-left: 1rem;
+	border-radius: 50%;
+	background-color: var(--saito-background-color);
+	height: 4.3rem;
+	width: 4.3rem;
+	text-align: center;
+	box-shadow: 0 0 1px var(--saito-primary);
+}
+
+.chat-static.chat-popup .saito-notification-dot {
+	bottom: 7rem;
+	right: calc(50% - 28.5rem);
+	width: 4rem;
+	height: 4rem;
+}
+
+
+/* left align all chats in wide screen */ 
+@media screen and (min-width: 1200px) {
+	.chat-body .saito-user-self.saito-user {
+	  display: grid;
+	  justify-content: unset;
+	}
+	.chat-body .saito-user-self.saito-user > .saito-address, .chat-body .saito-user-self.saito-user > .saito-identicon-box {
+	  display: block;
+	}
+
+	.chat-main-container .saito-sidebar.right {
+		display: block;
+		visibility: visible;
+	}
+
+	.saito-container.chat-main-container {
+		grid-template-columns: min-content auto min-content;
+	}
+
+	.chat-main-container .chat-header, .chat-main-container .chat-header-info {
+		visibility: hidden;
+		height: 1rem;
+	}
+
+}
+
+@media screen and (max-width: 1200px) {
+	.chat-main-container .saito-sidebar.left {
+		visibility: visible;
+		display: block;
+	}
+}
+
+
+@media screen and (max-width: 900px) {
+	.chat-main-container .saito-main {
+		width: 100% !important;
+	}
+
+}
+
+@media screen and (max-width: 600px) {
+	.chat-main-container.saito-container {
+		grid-template-columns: 1fr;
+	}
+
+	.chat-main-container .saito-sidebar.left {
+		max-width: unset;
+		width: 100vw;
+		resize: none;
+	}
+	.saito-main {
+		display: none;
+	}
+}
