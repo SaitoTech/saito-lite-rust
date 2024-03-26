@@ -190,6 +190,17 @@ export default class Wallet extends SaitoWallet {
 				let balance_as_float = parseFloat(balance);
 				return (nf.format(balance_as_float)).toString();
 			}
+
+			validateAddress(address){
+				/*
+					Note: This is temporary validation, until a 
+					solid way to validate saito publickey is determined.
+				*/
+				if (address.length < 30) {
+					return false;
+				}
+				return true;
+			}
 		}
 
 		this.saitoCrypto = new SaitoCrypto(this.app);
@@ -1117,5 +1128,13 @@ export default class Wallet extends SaitoWallet {
 		return string;
 	}
 
+	public async isAddressValid(address, ticker) {
+		try {
+			let pc = await this.returnPreferredCrypto();
+			return await pc.validateAddress(address, ticker);
+		} catch(err) {
+			console.error("Error 'validateAddress' MixinModule: ", err);
+		}
+	}
 
 }
