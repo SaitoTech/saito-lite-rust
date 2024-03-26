@@ -712,11 +712,11 @@ class SettlersGameloop {
           this.updateStatus(statushtml);
           this.updateControls(controlshtml);
 
-          if (this.game.options.turn_limit){
-            this.clock.startClock(this.game.options.turn_limit);
+          if (this.turn_limit){
+            this.clock.startClock(this.turn_limit);
             this.sleep_timer = setTimeout(()=> {
               $("#rolldice").click();
-            }, this.game.options.turn_limit);
+            }, this.turn_limit);
           }
 
           // **********************************************************
