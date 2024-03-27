@@ -58,7 +58,7 @@
 
 		<title>Saito Mainnet: Token Transfers</title>
 		<link rel="stylesheet" href="https://saito.io/style.css" />
-		<link rel="stylesheet" href="/saito/style.css" />
+		<link rel="stylesheet" href="/saito/saito.css" />
 		<link rel="stylesheet" href="/migration/style.css" />
 	</head>
 
@@ -70,50 +70,50 @@
 
 				<div>
 					<div class="withdraw-title">
-						Withdraw ERC20 Saito to the Saito Network
+						Withdraw ERC20 or BEP20 Saito to the Saito Network
 					</div>
 
 					<div class="withdraw-intro">
-						To withdraw ERC20 tokens to the Saito on-chain network,
-						please provide an email address and on-chain Saito
-						address. We will email the address provided with
+						To withdraw ERC20/BEP20 tokens to the Saito on-chain
+						network, please provide an email address and on-chain
+						Saito address. <br> We will email the address provided with
 						instructions on completing the token transfer.
 					</div>
 
-					<p></p>
-
-					<input
-						type="text"
-						id="email"
-						name="email"
-						placeholder="your email"
-					/>
-
-					<p></p>
-
-					<input
-						type="text"
-						id="erc20"
-						placeholder="ethereum address"
-					/>
-
-					<p></p>
-
-					<input
-						type="text"
-						id="publickey"
-						placeholder="saito address"
-					/>
-
-					<p></p>
-
-					<button class="withdraw-button">submit</button>
-
-					<p></p>
+					<p>
+						<input
+							type="text"
+							id="email"
+							name="email"
+							placeholder="your email"
+						/>
+					</p>
+					<p>
+						<input
+							type="text"
+							id="erc20"
+							placeholder="ethereum/bsc address"
+						/>
+					</p>
+					<p>
+						<input
+							type="text"
+							id="publickey"
+							placeholder="saito address"
+						/>
+					</p>
+					<p>
+						<button class="withdraw-button">submit</button>
+					</p>
 
 					<div class="withdraw-intro withdraw-outtro">
-						Please note that withdrawal for BEP20 tokens is not yet
-						supported.
+						Given the current
+						<a
+							href="https://wiki.saito.io/en/tokenomics"
+							target="_blank"
+							>Token Persistence Threshold</a
+						>
+						Transfers of less than 250,000 Tokens will be rejected.
 					</div>
 				</div>
 

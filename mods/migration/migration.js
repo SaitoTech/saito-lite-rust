@@ -7,7 +7,7 @@ class Migration extends ModTemplate {
 
 		this.app = app;
 		this.name = 'Migration';
-		this.description = 'Migrate ERC20 tokens to Saito Migration';
+		this.description = 'Migrate ERC20 or BEP20 tokens to Saito Native Tokens';
 		this.categories = 'Core Utilities Messaging';
 		this.publickey = '';
 
@@ -36,7 +36,7 @@ class Migration extends ModTemplate {
 				'Confirm Transfer';
 			document.querySelector(
 				'.withdraw-intro'
-			).innerHTML = `Please confirm your ERC20 transfer is complete`;
+			).innerHTML = `Please confirm your ERC20/BEP20 transfer is complete`;
 			document.querySelector('.withdraw-button').innerHTML = `confirm`;
 			document.querySelector('#email').style.display = 'none';
 			document.querySelector('#publickey').style.display = 'none';
@@ -138,12 +138,13 @@ class Migration extends ModTemplate {
 
 	<div>
       <p>Dear Saitozen,</p>
-      <p>You have provided the following ERC20 address:</p>
+      <p>You have provided the following ERC20/BEP20 address:</p>
       <p>${erc20}</p>
       <p>And the following Saito address / publickey:</p>
       <p>${publickey}</p>
-      <p>If this information is correct, complete your withdrawal by sending your ERC20 tokens to our monitored multisig address:</p>
+      <p>If this information is correct, complete your withdrawal by sending your ERC20 or BEP20 tokens to our monitored multisig address:</p>
       <p>0x24F10EA2827717770270e3cc97F015Ba58fcB9b6</p>
+	  <p>(Note, the address is the same on both networks.)</b>
       <p>Once the transfer is complete, please click on the following link and confirm the submission - our team will complete the transfer within 24 hours:</p>
       <p>http://saito.io/migration?publickey=${publickey}&erc20=${erc20}&email=${email}</p>
       <p>Please reach out by email if you do not hear from us in a day.</p>
@@ -171,7 +172,8 @@ class Migration extends ModTemplate {
 			document.querySelector('.withdraw-title').innerHTML = 'Email Sent';
 			document.querySelector(
 				'.withdraw-intro'
-			).innerHTML = `We have emailed you instructions on transferring your ERC20 tokens and a link to report the transfer when complete. In the event of problems please reach out directly at <i>info@saito.tech</i>.`;
+			).innerHTML = `<p>We have emailed you instructions on transferring your ERC20/BEP20 tokens and a link to report the transfer when complete.</p>
+			 <p>In the event of problems please reach out directly at <i>info@saito.tech</i>.</p>`;
 			document.querySelector('#email').style.display = 'none';
 			document.querySelector('#publickey').style.display = 'none';
 			document.querySelector('#erc20').style.display = 'none';
