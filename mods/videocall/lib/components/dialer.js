@@ -15,20 +15,31 @@ class Dialer {
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(app, mod);
 		this.callSetting = new CallSetting(app, this);
-		this.receiver = null;
+		this.receiver = {};
 		this.call_log = [];
 	}
 
 	render(call_receiver, making_call = true) {
-		if (!this.receiver) {
-			this.receiver = new SaitoUser(
-				this.app,
-				this.mod,
-				'.stun-minimal-appspace .contact',
-				call_receiver
-			);
-		} else {
-			this.receiver.publicKey = call_receiver;
+		if (Array.isArray(call_receiver)){
+			for (let cr of call_receiver){
+				if (!this.receiver[cr]) {
+					this.receiver[cr] = new SaitoUser(
+						this.app,
+						this.mod,
+						'.stun-minimal-appspace .contact',
+						cr
+					);
+				} 
+			}
+		}else{
+			if (!this.receiver[call_receiver]) {
+				this.receiver[call_receiver] = new SaitoUser(
+					this.app,
+					this.mod,
+					'.stun-minimal-appspace .contact',
+					call_receiver
+				);
+			} 
 		}
 
 		this.overlay.show(
@@ -36,29 +47,28 @@ class Dialer {
 			() => {
 				console.log("Close dialer from exit button");
 				console.log(making_call, this.mod.room_obj);
-				this.app.connection.emit('close-preview-window');
 				if (making_call){
 					this.app.connection.emit('relay-send-message', {
-						recipient: this.receiver.publicKey,
+						recipient: Object.keys(this.receiver),
 						request: 'stun-connection-request-cancel',
 						data: this.mod.room_obj
 					});
 
 				}else{
 					this.app.connection.emit('relay-send-message', {
-					recipient: this.receiver.publicKey,
-					request: 'stun-connection-rejected',
-					data: this.mod.room_obj
-				});
+						recipient: Object.keys(this.receiver),
+						request: 'stun-connection-rejected',
+						data: this.mod.room_obj
+					});
 				}
-
-				this.stopRing();
-				this.app.connection.emit('reset-stun');
+				this.remove();
 			}
 		);
 		this.overlay.blockClose();
 
-		this.receiver.render();
+		for (let r of Object.values(this.receiver)){
+			r.render();
+		}
 
 		if (this.mod?.room_obj?.ui === 'video' && !making_call) {
 			this.callSetting.render();
@@ -71,7 +81,7 @@ class Dialer {
 		let video_switch = document.getElementById('video_call_switch');
 		let call_button = document.getElementById('startcall');
 
-		let recipient = this.receiver.publicKey;
+		let recipient = Object.keys(this.receiver);
 
 		console.log("Send messages to: " + recipient);
 
@@ -133,10 +143,7 @@ class Dialer {
 						request: 'stun-connection-request-cancel',
 						data
 					});
-					this.stopRing();
-					this.app.connection.emit('close-preview-window');
-					this.app.connection.emit('reset-stun');
-					this.overlay.remove();
+					this.remove();
 				};
 			};
 		}
@@ -152,9 +159,9 @@ class Dialer {
 					data: this.mod.room_obj
 				});
 
-				this.stopRing();
+				this.remove(false);
 				this.updateMessage('connecting...');
-				this.app.connection.emit('close-preview-window');
+
 				setTimeout(() => {
 					this.overlay.remove();
 					this.app.connection.emit(
@@ -178,12 +185,27 @@ class Dialer {
 					request: 'stun-connection-rejected',
 					data: this.mod.room_obj
 				});
-				this.stopRing();
-				this.app.connection.emit('close-preview-window');
-				this.app.connection.emit('reset-stun');
-				this.overlay.remove();
+				this.remove();
 			};
 		}
+	}
+
+	remove(closeOverlay = true){
+		this.stopRing();
+		this.app.connection.emit('close-preview-window');
+
+		this.receiver = {};
+
+		if (this.dialing) {
+			clearTimeout(this.dialing);
+			this.dialing = null;
+		}
+
+		if (closeOverlay){
+			this.app.connection.emit('reset-stun');
+			this.overlay.remove();
+		}
+
 	}
 
 	startRing(interval) {
@@ -266,13 +288,7 @@ class Dialer {
 			return player !== this.mod.publicKey;
 		});
 
-		//Temporary only 1 - 1 calls
-		if (recipients.length > 1) {
-			salert('P2P calling is currently limited to 2 parties');
-			console.log(recipients);
-		}
-
-		this.render(recipients[0], true);
+		this.render(recipients, true);
 	}
 
 	receiveStunCallMessageFromPeers(tx) {
@@ -324,9 +340,7 @@ class Dialer {
 
 		case 'stun-connection-request-cancel':
 			if (this.mod?.room_obj?.call_id == data.call_id) {
-				this.stopRing();
-				this.overlay.remove();
-				this.app.connection.emit('reset-stun');
+				this.remove();
 				siteMessage(`${this.app.keychain.returnUsername(sender)} hung up`, 2000);
 			}
 			break;
@@ -342,15 +356,10 @@ class Dialer {
 			break;
 
 		case 'stun-connection-accepted':
-			this.stopRing();
-			if (this.dialing) {
-				clearTimeout(this.dialing);
-				this.dialing = null;
-			}
 
+			this.remove(false);
 			this.updateMessage('connecting...');
 
-			this.app.connection.emit('close-preview-window');
 			setTimeout(() => {
 				this.overlay.remove();
 				this.app.connection.emit(

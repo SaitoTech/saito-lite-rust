@@ -162,9 +162,14 @@ fieldset.saito-grid > fieldset.saito-grid{
     font-style: italic;
 }
 
+.saito-grid input, .saito-grid label {
+    cursor: pointer;
+}
+
 .saito-grid i {
     margin: 0 0.5rem;
     font-size: 1.8rem;
+    cursor: pointer;
 }
 
 .settings-link, .settings-link label {
@@ -173,4 +178,13 @@ fieldset.saito-grid > fieldset.saito-grid{
 
 .settings-link:hover label{
     text-decoration: underline;
+}
+
+
+.flex-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 2rem;
 }

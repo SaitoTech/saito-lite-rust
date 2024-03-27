@@ -24,7 +24,9 @@ module.exports = ChatSideTemplate = (app, mod, group) => {
 			}
 		}
 
-		groupName = app.keychain.returnIdentifierByPublicKey(groupKey);
+		if (groupName == groupKey){
+			groupName = app.keychain.returnIdentifierByPublicKey(groupKey);	
+		}
 		if (!groupName) {
 			groupName = 'Anonymous Account';
 		}

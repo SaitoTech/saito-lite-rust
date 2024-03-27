@@ -55,6 +55,7 @@ class ChatUserMenu {
 						thisobj.mod.sendUpdateGroupTransaction(thisobj.chat_group);
 					}
 					thisobj.mod.saveChatGroup(thisobj.chat_group);
+					this.app.connection.emit('chat-manager-render-request');
 				}
 				thisobj.overlay.remove();
 			};
@@ -64,6 +65,7 @@ class ChatUserMenu {
 			document.getElementById('mute').onclick = (e) => {
 				this.chat_group.muted = true;
 				this.mod.saveChatGroup(this.chat_group);
+				this.app.connection.emit('chat-manager-render-request');
 				this.overlay.remove();
 			}
 		}
@@ -72,6 +74,7 @@ class ChatUserMenu {
 			document.getElementById('unmute').onclick = (e) => {
 				this.chat_group.muted = false;
 				this.mod.saveChatGroup(this.chat_group);
+				this.app.connection.emit('chat-manager-render-request');
 				this.overlay.remove();
 			}
 		}

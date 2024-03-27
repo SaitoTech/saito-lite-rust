@@ -67,6 +67,37 @@ class DiscardOverlay {
 					}
 				};
 			});
+
+	    // Set timer to auto-end my turn if I take too long
+	    // 
+	    if (this.mod.turn_limit){
+	      this.mod.clock.startClock(this.mod.turn_limit);
+	      this.mod.sleep_timer = setTimeout(()=> {
+			this.overlay.close();
+
+	      	let resources_available = this.mod.game.state.players[this.mod.game.player-1].resources.slice();
+	      	//remove already selected
+	      	for (let r of cardsToDiscard){
+  		        let target = resources_available.indexOf(r);
+        		if (target >= 0) {
+          			resources_available.splice(target, 1);
+          		}
+	      	}
+	      	//Randomly select other resources
+	      	while (cardsToDiscard.length < this.targetCt) {
+	      		let target = Math.floor(Math.random() * resources_available.length);
+	      		cardsToDiscard.push(resources_available.splice(target, 1));
+	      	}
+
+			for (let card of cardsToDiscard) {
+				this.mod.addMove(`spend_resource\t${this.mod.game.player}\t${card}`);
+			}
+
+			this.mod.endTurn();
+
+	      }, this.mod.turn_limit);
+	    }
+
 	}
 }
 

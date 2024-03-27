@@ -23,9 +23,9 @@ module.exports = ChatManagerMenuTemplate = (app, mod) => {
 				<fieldset id="chime-fieldset" class="saito-grid" ${mod?.audio_notifications ? "" : `style="display:none;"`}>
 					<legend class="settings-label">Chimes</legend>
 					<input type="radio" id="Glass" name="chat-chime" value="Glass" ${mod?.audio_chime=="Glass" ? "checked": "" }/>
-					<label for="Glass">Chime A</label>
+					<div class="flex-row"><label for="Glass">Chime A</label><i data-id="Glass" class="sound-preview fa-solid fa-volume-low"></i></div>
 					<input type="radio" id="Taptap" name="chat-chime" value="Taptap" ${mod?.audio_chime=="Taptap" ? "checked": "" }/>
-					<label for="Taptap">Chime B</label>
+					<div class="flex-row"><label for="Taptap">Chime B</label><i data-id="Taptap" class="sound-preview fa-solid fa-volume-low"></i></div>
 				</fieldset>
 
 

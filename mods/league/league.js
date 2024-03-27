@@ -71,10 +71,12 @@ class League extends ModTemplate {
 
 	async onUpgrade(type, privatekey, walletfile) {
 		if (type == 'nuke') {
-			for (let i = 0; i < this.app.options.leagues; i++) {
-				await localforage.removeItem(
-					`league_${this.this.app.options.leagues[i]}`
-				);
+			if (this.app.options?.leagues?.length > 0){
+				for (let i = 0; i < this.app.options.leagues.length; i++) {
+					await localforage.removeItem(
+						`league_${this.app.options.leagues[i]}`
+					);
+				}
 			}
 		}
 		return 1;
@@ -115,6 +117,10 @@ class League extends ModTemplate {
 
 		//Trial -- So that we can display league results in game page
 		this.overlay = new LeagueOverlay(app, this);
+
+		if (!this.app.options.leagues){
+			this.app.options.leagues = [];
+		}
 
 		//
 		// create initial leagues

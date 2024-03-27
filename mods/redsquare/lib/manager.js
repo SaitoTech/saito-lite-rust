@@ -1,5 +1,6 @@
 const TweetManagerTemplate = require('./manager.template');
 const Tweet = require('./tweet');
+const Post = require('./post');
 const Notification = require('./notification');
 const SaitoProfile = require('./../../../lib/saito/ui/saito-profile/saito-profile');
 const SaitoLoader = require('./../../../lib/saito/ui/saito-loader/saito-loader');
@@ -475,8 +476,14 @@ class TweetManager {
 	//
 	renderTweet(tweet) {
 		this.render('tweet');
-
+		console.log("Render Tweet");
 		this.showLoader();
+
+		let post = new Post(this.app, this.mod, tweet);
+		post.parent_id = tweet.tx.signature;
+		post.thread_id = tweet.thread_id;
+
+		post.source = 'Reply';
 
 		// show the basic tweet first
 		if (!tweet.parent_id) {
@@ -487,27 +494,33 @@ class TweetManager {
 					.querySelector(`.tweet-${tweet.tx.signature}`)
 					.classList.add('highlight-tweet');
 			}
-		}
-
-		// query the whole thread
-		let thread_id =
-			tweet.thread_id || tweet.parent_id || tweet.tx.signature;
-
-		this.mod.loadTweetThread(thread_id, () => {
-			let root_tweet = this.mod.returnTweet(thread_id);
-
-			if (root_tweet) {
-				root_tweet.renderWithChildrenWithTweet(tweet);
-			}
-
-			if (document.querySelector(`.tweet-${tweet.tx.signature}`)) {
-				document
-					.querySelector(`.tweet-${tweet.tx.signature}`)
-					.classList.add('highlight-tweet');
-			}
-
+			post.render(`.tweet-${tweet.tx.signature}`);
 			this.hideLoader();
-		});
+			
+		}else{
+
+			// query the whole thread
+			let thread_id =
+				tweet.thread_id || tweet.parent_id || tweet.tx.signature;
+
+			this.mod.loadTweetThread(thread_id, () => {
+				let root_tweet = this.mod.returnTweet(thread_id);
+
+				if (root_tweet) {
+					root_tweet.renderWithChildrenWithTweet(tweet);
+				}
+
+				if (document.querySelector(`.tweet-${tweet.tx.signature}`)) {
+					document
+						.querySelector(`.tweet-${tweet.tx.signature}`)
+						.classList.add('highlight-tweet');
+				}
+
+				post.render(`.tweet-${tweet.tx.signature}`);
+
+				this.hideLoader();
+			});
+		}
 	}
 
 	attachEvents() {

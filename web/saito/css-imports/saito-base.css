@@ -193,8 +193,10 @@ Scrollbars
   white-space: nowrap;
   text-overflow: ellipsis;
   display: inline-block/*!important*/;
+  min-width: 0px;
   width: auto;
-  max-width: 99%;
+  /* Why did that need to be less than 100%?? */
+  max-width: 100%;
   cursor: pointer;
 }
 

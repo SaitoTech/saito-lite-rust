@@ -738,9 +738,11 @@ class Browser {
 			);
 			this.app.browser.addElementToDom(html);
 		} else {
-			let obj = document.getElementAfterId(id);
+			let obj = document.getElementById(id);
 			if (obj) {
 				this.app.browser.addElementToDom(html, obj);
+			}else{
+				console.warn("ID not found (addelementafterid)");
 			}
 		}
 	}

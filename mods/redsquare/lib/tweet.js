@@ -893,7 +893,7 @@ class Tweet {
 					post.render();
 					this.app.browser.prependElementToSelector(
 						`<div id="post-tweet-preview-${this.tx.signature}" class="post-tweet-preview" data-id="${this.tx.signature}"></div>`,
-						'.tweet-overlay'
+						'.saito-overlay .tweet-overlay'
 					);
 
 					//
@@ -935,7 +935,7 @@ class Tweet {
 
 					this.app.browser.prependElementToSelector(
 						`<div id="post-tweet-preview-${this.tx.signature}" class="post-tweet-preview" data-id="${this.tx.signature}"></div>`,
-						'.tweet-overlay'
+						'.saito-overlay .tweet-overlay'
 					);
 
 					//Insert this tweet as a new Tweet in the post window

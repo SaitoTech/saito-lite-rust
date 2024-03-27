@@ -543,7 +543,10 @@ class Settlers extends GameTemplate {
 		}
 
 		this.game.options.game_length = parseInt(this.game.options.game_length);
-		this.game.options.turn_limit = parseInt(this.game.options.turn_limit) * 1000;
+		this.turn_limit = parseInt(this.game.options.turn_limit) * 1000;
+		if (this.turn_limit){
+			this.clock.useShotClock = true;
+		}
 	}
 
 	initializeState() {

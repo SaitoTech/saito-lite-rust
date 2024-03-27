@@ -1,11 +1,15 @@
 .tweet-overlay {
-  width: 75rem;
   max-width: 90vw;
   background-color: var(--saito-background-color);
   padding: 1rem;
   border-radius: 0.5rem;
   max-height: 95vh;
   overflow: visible;
+  position: relative;
+}
+
+.saito-overlay .tweet-overlay {
+  width: 75rem;
 }
 
 .tweet-overlay-content {
@@ -144,3 +148,28 @@
 
 }
 
+
+/**  In screen reply  */
+.tweet-manager .tweet-overlay {
+  margin-left: auto;
+  width: calc(100% - 5rem);
+}
+
+.tweet-manager .post-tweet-textarea{
+  min-height: unset;
+  height: 10rem;
+}
+
+.tweet-manager .post-tweet-button{
+  line-height: 3rem;
+}
+
+.tweet-manager .saito-input-large {
+  margin-bottom: 0;
+}
+
+.tweet-manager .saito-input-large .selection-box-tabs{
+  align-items: center;
+  width: 12rem;
+  margin-left: unset;
+}

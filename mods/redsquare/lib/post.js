@@ -14,24 +14,29 @@ class Post {
 		this.images = [];
 		this.tweet = tweet; //For reply or Retweet
 
-		this.user = new SaitoUser(
-			this.app,
-			this.mod,
-			`.tweet-overlay-header`,
-			this.mod.publicKey,
-			`create a text-tweet${
-				app.browser.isMobileBrowser() ? '' : ' or drag-and-drop images'
-			}...`
-		);
-
 		this.render_after_submit = 0;
 		this.file_event_added = false;
 		this.source = 'Post';
 	}
 
-	render() {
-		this.overlay.show(PostTemplate(this.app, this.mod, this));
-		this.overlay.blockClose();
+	render(container = "") {
+		this.container = (container) ? ".tweet-manager " : ".saito-overlay ";
+
+		console.log("Post render: " + this.container);
+
+		if (container){
+			if (document.getElementById("tweet-overlay")){
+				console.log("replace");
+				this.app.browser.replaceElementById(PostTemplate(this.app, this.mod, this), "tweet-overlay");
+			}else{
+				console.log("Insert post form");
+				this.app.browser.addElementAfterSelector(PostTemplate(this.app, this.mod, this), container);
+			}
+		}else{
+			console.log("overlay");
+			this.overlay.show(PostTemplate(this.app, this.mod, this));
+			this.overlay.blockClose();
+		}
 
 		//
 		//
@@ -41,9 +46,21 @@ class Post {
 			this.input = new SaitoInput(
 				this.app,
 				this.mod,
-				'.tweet-overlay-content'
+				this.container + '.tweet-overlay-content'
 			);
 			this.input.enable_mentions = false;
+		}
+
+		if (!this.user){
+			this.user = new SaitoUser(
+				this.app,
+				this.mod,
+				this.container + `.tweet-overlay-header`,
+				this.mod.publicKey,
+				`create a text-tweet${
+					this.app.browser.isMobileBrowser() ? '' : ' or drag-and-drop images'
+				}...`
+			);
 		}
 
 		this.input.display = 'large';
@@ -280,6 +297,9 @@ class Post {
 		// saito-loader
 		//
 		post_self.overlay.remove();
+		if (document.querySelector("#tweet-overlay")){
+			document.querySelector("#tweet-overlay").remove();
+		}
 
 		//Edit
 		if (source === 'Edit') {
