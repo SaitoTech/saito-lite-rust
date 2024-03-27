@@ -21404,12 +21404,12 @@ if (this.game.options.scenario == "is_testing") {
 	    if (this.game.players.length == 2) {
 	      this.game.queue.push("show_overlay\tvp");
 	    }
-//	    this.game.queue.push("hide_overlay\tdiet_of_worms");
-//	    this.game.queue.push("diet_of_worms");
-//	    this.game.queue.push("show_overlay\tdiet_of_worms");
+	    this.game.queue.push("hide_overlay\tdiet_of_worms");
+	    this.game.queue.push("diet_of_worms");
+	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    this.game.queue.push("card_draw_phase");
-//	    this.game.queue.push("event\tprotestant\t008");
-//	    this.game.queue.push("game_help_start");
+	    this.game.queue.push("event\tprotestant\t008");
+	    this.game.queue.push("game_help_start");
 }
 
 	  } else {
