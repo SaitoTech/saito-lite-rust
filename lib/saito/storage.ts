@@ -78,12 +78,20 @@ class Storage {
 	//
 	async saveTransaction(tx: Transaction, obj = {}, peer = null) {
 		try {
-			const txmsg = tx.returnMessage();
+
+			let txmsg
+			if (tx.returnMessage) {
+				txmsg = tx.returnMessage()
+			} else {
+				txmsg = tx.msg
+			}
 			const message = 'archive';
 
 			let data: any = {};
 			data.request = 'save';
-			data.serial_transaction = tx.serialize_to_web(this.app);
+			if (tx.serialize_to_web) {
+				data.serial_transaction = tx.serialize_to_web(this.app);
+			}
 
 			data = Object.assign(data, obj);
 
@@ -371,7 +379,7 @@ class Storage {
 	/**
 	 * DUMMY FUNCTIONS IMPLEMENTED BY STORAGE-CORE IN ./core/storage-core.js
 	 **/
-	deleteBlockFromDisk(filename) {}
+	deleteBlockFromDisk(filename) { }
 
 	async loadBlockById(bid): Promise<Block> {
 		return null;
@@ -405,25 +413,25 @@ class Storage {
 		return '';
 	}
 
-	saveClientOptions() {}
+	saveClientOptions() { }
 
 	async returnDatabaseByName(dbname) {
 		return null;
 	}
 
-	async returnBlockFilenameByHash(block_hash, mycallback) {}
+	async returnBlockFilenameByHash(block_hash, mycallback) { }
 
 	returnTokenSupplySlipsFromDisk(): any {
 		return [];
 	}
 
-	returnBlockFilenameByHashPromise(block_hash: string) {}
+	returnBlockFilenameByHashPromise(block_hash: string) { }
 
-	async queryDatabase(sql, params, database) {}
+	async queryDatabase(sql, params, database) { }
 
-	async runDatabase(sql, params, database, mycallback = null) {}
+	async runDatabase(sql, params, database, mycallback = null) { }
 
-	async executeDatabase(sql, database) {}
+	async executeDatabase(sql, database) { }
 
 	generateBlockFilename(block: Block): string {
 		return ''; // empty
