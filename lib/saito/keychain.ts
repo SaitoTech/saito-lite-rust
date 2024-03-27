@@ -158,6 +158,12 @@ class Keychain {
 		this.saveKeys();
 	}
 
+	generateSubscriptionAddress() {
+		const pk = this.app.crypto.generateKeys();
+		const subscription_address = this.app.crypto.generatePublicKey(pk);
+		return subscription_address
+	}
+
 	addSubscriptionAddress(publicKey) {
 		console.log('adding subscription address', publicKey)
 		if (!publicKey || typeof publicKey !== 'string') {
