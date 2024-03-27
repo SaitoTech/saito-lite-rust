@@ -245,7 +245,6 @@ class StorageCore extends Storage {
 			// console.log("instance : ", block.instance);
 			block.deserialize(data);
 
-			console.log(block.transactions, "transactions")
 			// block.generateHashes();
 			return block;
 		} catch (err) {

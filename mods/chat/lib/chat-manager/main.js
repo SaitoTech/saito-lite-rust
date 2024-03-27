@@ -149,7 +149,6 @@ class ChatManager {
 				this.switchTabs();
 			}
 
-
 			//
 			// permit re-open
 			//
@@ -291,7 +290,10 @@ class ChatManager {
 			if (this.popups[group.id]?.is_rendered) {
 				group_status = true;
 			}
+
+			console.log('this group', group);
 			let html = ChatTeaser(this.app, this.mod, group, group_status);
+
 			let divid = 'saito-user-' + group.id;
 
 			let obj = document.getElementById(divid);
@@ -401,7 +403,7 @@ class ChatManager {
 		if (document.querySelector('.chat-manager-options')) {
 			document.querySelector('.chat-manager-options').onclick = (e) => {
 				this.mod.loadSettings();
-			}
+			};
 		}
 	}
 }

@@ -760,21 +760,44 @@ class Chat extends ModTemplate {
 		this.groups.push(chat_group);
 	}
 
+	onNewBlock(blk) {
+		let hash = blk.hash;
+		let msg = {
+			hash,
+			subscription_address: this.app.keychain.subscriptionAddress
+		};
+		let chat_self = this;
+
+		this.app.network.sendRequestAsTransaction('listener', msg, (txs) => {
+			console.log(txs, 'listener');
+			if (txs.length > 0) {
+				txs.forEach((tx) => {
+					chat_self.onConfirmation(blk, tx, 0);
+				});
+			}
+		});
+	}
+
 	//
 	// ---------- on chain messages ------------------------
 	// ONLY processed if I am in the to/from of the transaction
 	// so I will process messages I send to community, but not other peoples
 	// it is mostly just a legacy safety catch for direct messaging
 	//
-	onNewBlock(block) {
-		console.log('newest block', block);
-	}
-	async onConfirmation(blk, tx, conf) {
-		// console.log(blk, 'new block');
-		if (conf == 0) {
-			await tx.decryptMessage(this.app);
 
-			let txmsg = tx.returnMessage();
+	async onConfirmation(blk, tx, conf) {
+		console.log(tx, 'tx.returnMessage');
+		if (conf == 0) {
+			if (tx.decryptMessage) {
+				await tx.decryptMessage(this.app);
+			}
+
+			let txmsg;
+			if (tx.returnMessage) {
+				txmsg = tx.returnMessage();
+			} else {
+				txmsg = tx.msg;
+			}
 
 			if (!txmsg.module == 'Chat') {
 				return;
@@ -786,9 +809,6 @@ class Chat extends ModTemplate {
 
 			if (txmsg.request == 'chat message') {
 				await this.receiveChatTransaction(tx, 1);
-			}
-			if (txmsg.request == 'chat message browser') {
-				await this.receiveChatBrowserTransaction(tx, 1);
 			}
 			if (txmsg.request == 'chat group') {
 				await this.receiveCreateGroupTransaction(tx);
@@ -914,12 +934,38 @@ class Chat extends ModTemplate {
 				counter++;
 				console.log(counter, liteBlock.previousBlockHash);
 			}
-			console.log(transactions, 'transactions');
 			if (mycallback) {
 				mycallback(transactions);
 			}
 
 			return 0;
+		}
+
+		if (txmsg.request === 'listener') {
+			let { hash, subscription_address } = txmsg.data;
+
+			console.log(
+				'this are the subscription addresses',
+				subscription_address
+			);
+
+			let transactions = [];
+			const blk = await this.app.storage.loadBlockByHash(hash);
+			if (!blk) return;
+			const liteBlock = blk.generateLiteBlock(subscription_address);
+			console.log(liteBlock.transactions, 'liteblocktransactions');
+			liteBlock.transactions.forEach((transaction) => {
+				let tx = transaction.toJson();
+				tx.msg = transaction.returnMessage();
+				tx.isFrom = function (key) {
+					return this.from.some((slip) => slip.publicKey === key);
+				};
+				if (tx.msg.request) {
+					transactions.push(tx);
+				}
+			});
+
+			mycallback(transactions);
 		}
 
 		if (txmsg.request == 'chat group') {
@@ -1003,6 +1049,7 @@ class Chat extends ModTemplate {
 	async sendCreateGroupTransaction(name, invitees = []) {
 		const pk = this.app.crypto.generateKeys();
 		const subscription_address = this.app.crypto.generatePublicKey(pk);
+		this.app.keychain.addSubscriptionAddress(subscription_address);
 		let newtx = await this.app.wallet.createUnsignedTransaction(
 			this.publicKey,
 			BigInt(0),
@@ -1035,9 +1082,9 @@ class Chat extends ModTemplate {
 
 	async receiveCreateGroupTransaction(tx) {
 		console.log('Receiving group creation tx');
-
 		if (tx.isTo(this.publicKey)) {
 			let txmsg = tx.returnMessage();
+
 			// add subscription address to keychain
 			this.app.keychain.addSubscriptionAddress(
 				txmsg.subscription_address
@@ -1068,7 +1115,6 @@ class Chat extends ModTemplate {
 			newGroup.member_ids[txmsg.admin] = 'admin';
 
 			this.groups.push(newGroup);
-
 			this.saveChatGroup(newGroup);
 
 			this.app.connection.emit('chat-manager-render-request');
@@ -1080,7 +1126,6 @@ class Chat extends ModTemplate {
 			tx.notice = true;
 
 			this.addTransactionToGroup(newGroup, tx);
-
 			if (!tx.isFrom(this.publicKey)) {
 				await this.sendJoinGroupTransaction(newGroup);
 			} else {
@@ -1457,7 +1502,6 @@ class Chat extends ModTemplate {
 		//I'm not sure we need either of these...
 		//
 		newtx.addFrom(this.publicKey);
-		newtx.addTo(this.publicKey);
 
 		// for (let mention of to_keys) {
 		// 	newtx.addTo(mention);
@@ -1473,14 +1517,11 @@ class Chat extends ModTemplate {
 		// 	newtx.addTo(members[i]);
 		// }
 
-		// sending transaction to the server
-		let server = (await this.app.network.getPeers())[0].publicKey;
-
+		// sending transaction to the address
 		let subscription_address =
 			this.returnSubscriptionAddressFromGroupID(group_id);
-
 		newtx.addTo(subscription_address);
-		newtx.addTo(server);
+		// newtx.addTo(server);
 
 		console.log(subscription_address, 'this is the subscription address');
 		newtx.msg = {
@@ -1537,7 +1578,7 @@ class Chat extends ModTemplate {
 	 * Everyone receives the chat message (via the Relay)
 	 * So we make sure here it is actually for us (otherwise will be encrypted gobbledygook)
 	 */
-	async receiveChatTransaction(tx, onchain = 0) {
+	async receiveChatBrowserTransaction(tx, onchain = 0) {
 		if (this.app.BROWSER === 0) {
 			// rebroadcast to every peer in the network
 
@@ -1600,7 +1641,7 @@ class Chat extends ModTemplate {
 		//
 		if (onchain) {
 			if (this.app.BROWSER) {
-				if (tx.isFrom(this.publicKey)) {
+				if (tx.from.some((slip) => slip.publicKey === this.publicKey)) {
 					//console.log("Save My Sent Chat TX");
 					await this.app.storage.saveTransaction(tx, {
 						field3: txmsg.group_id
@@ -1650,7 +1691,8 @@ class Chat extends ModTemplate {
 		if (this.addTransactionToGroup(group, tx)) {
 			//Returns 1 if it is a new message
 
-			if (tx.isFrom(this.publicKey)) {
+			if (tx.from.some((slip) => slip.publicKey === this.publicKey)) {
+				console.log('it is actually some');
 				for (let key of this.black_list) {
 					if (tx.isTo(key)) {
 						let new_message = `<div class="saito-chat-notice">
@@ -1675,22 +1717,7 @@ class Chat extends ModTemplate {
 		this.app.connection.emit('chat-popup-render-request', group);
 	}
 
-	async receiveChatBrowserTransaction(tx, onchain = 0) {
-		console.log('tx.from', tx.from);
-		for (let i = 0; i < tx.from.length; i++) {
-			if (tx.from[i].publicKey === this.publicKey) {
-				return;
-			}
-		}
-		if (
-			!this.app.keychain.subscriptionAddress.includes(
-				tx.msg.subscription_address
-			)
-		) {
-			console.warn('Not subscribed to this address');
-			return;
-		}
-
+	async receiveChatTransaction(tx, onchain = 0) {
 		if (this.inTransitImageMsgSig == tx.signature) {
 			this.inTransitImageMsgSig = null;
 		}
@@ -1698,8 +1725,12 @@ class Chat extends ModTemplate {
 		let txmsg = '';
 
 		try {
-			await tx.decryptMessage(this.app);
-			txmsg = tx.returnMessage();
+			// await tx.decryptMessage(this.app);
+			if (tx.returnMessage) {
+				txmsg = tx.returnMessage();
+			} else {
+				txmsg = tx.msg;
+			}
 		} catch (err) {
 			console.log('ERROR: ' + JSON.stringify(err));
 		}
@@ -1711,7 +1742,7 @@ class Chat extends ModTemplate {
 		}
 
 		for (let blocked of this.black_list) {
-			if (tx.isFrom(blocked)) {
+			if (tx.from.some((slip) => slip.publicKey === blocked)) {
 				console.log('Refuse chat message from blocked account');
 				return;
 			}
@@ -1786,7 +1817,7 @@ class Chat extends ModTemplate {
 		if (this.addTransactionToGroup(group, tx)) {
 			//Returns 1 if it is a new message
 
-			if (tx.isFrom(this.publicKey)) {
+			if (tx.from.some((slip) => slip.publicKey === this.publicKey)) {
 				for (let key of this.black_list) {
 					if (tx.isTo(key)) {
 						let new_message = `<div class="saito-chat-notice">
