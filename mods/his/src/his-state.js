@@ -61,10 +61,6 @@
     }
 
 
-    this.game.state.colonies = [];
-    this.game.state.conquests = [];
-    this.game.state.explorations = [];
-
     //
     // reset impulse commits
     //
@@ -1819,6 +1815,9 @@ if (this.game.state.scenario != "is_testing") {
       }
     }
 
+console.log("ochhs: " + ottoman_controlled_hungarian_home_spaces);
+console.log("hrrom: " + hungarian_regulars_remaining_on_map);
+
     //
     //
     //
@@ -1851,8 +1850,9 @@ if (this.game.state.scenario != "is_testing") {
       //
       if (this.areAllies("hapsburg", "ottoman")) {
 	this.unsetAllies("hapsburg", "ottoman");
-	this.setEnemies("hapsburg", "ottoman");
       }
+      this.setEnemies("hapsburg", "ottoman");
+
 
       //
       // turks get control of more spaces

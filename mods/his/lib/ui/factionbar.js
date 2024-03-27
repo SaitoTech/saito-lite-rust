@@ -56,7 +56,7 @@ class FactionBarOverlay {
 
 		this.app.browser.addElementToSelector(FactionBarTemplate());
 
-		let factions = ["ottoman","hapsburg","england","french","papacy","protestant"];
+		let factions = ["ottoman","hapsburg","england","france","papacy","protestant"];
 		for (let z = 0; z < factions.length; z++) {
 		  let active_faction = "";
 		  if (this.mod.returnPlayerCommandingFaction(factions[z]) === this.mod.game.player) { active_faction = "*"; }
@@ -74,7 +74,7 @@ class FactionBarOverlay {
 
 		let his_self = this.mod;
 
-		let factions = ["ottoman","hapsburg","england","french","papacy","protestant"];
+		let factions = ["ottoman","hapsburg","england","france","papacy","protestant"];
 		for (let z = 0; z < factions.length; z++) {
 			let f = factions[z];
 			document.querySelector(`.factionbar-faction.${f}`).onclick = (e) => {

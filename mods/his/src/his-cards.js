@@ -4889,7 +4889,7 @@ console.log("selected: " + spacekey);
 		  let unit_idx = -1;
 		  let space = his_self.game.spaces[source];
 		  for (let i = 0; i < space.units[faction].length; i++) {
-		    if (space.units[faction][i].army_leader) {
+		    if (space.units[faction][i].army_leader == true) {
 		      includes_army_leader = true;
 		    }
 		  }
@@ -4908,7 +4908,7 @@ console.log("selected: " + spacekey);
 		  let source = lmv[3];
 		  let unit_idx = parseInt(lmv[5]);
 		  let unit = his_self.game.spaces[source].units[faction][unit_idx];
-		  if (unit.army_leader) {
+		  if (unit.army_leader == true) {
 		    includes_army_leader = true;
 		  }
 		}
@@ -5002,7 +5002,7 @@ console.log("selected: " + spacekey);
 	  let source = mv[2];
 	  let unit_idx = parseInt(mv[3]);
 
-	  his_self.displayModal(his_self.returnFactionName(faction) + " triggers Foul Weather");
+	  his_self.displayModal(his_self.returnFactionName(faction) + " triggers Gout");
 
 	  his_self.game.spaces[source].units[faction][unit_idx].gout = true;
 	  his_self.updateLog(his_self.game.spaces[source].units[faction][unit_idx].name + " has come down with gout");
@@ -5150,6 +5150,7 @@ console.log("selected: " + spacekey);
               f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               i = 100;
             }
+	    if (his_self.game.state.naval_battle.attacker_faction != f && his_self.game.state.naval_battle.defender-faction != f) { return {}; }
             return { faction : f , event : '001', html : `<li class="option" id="001">janissaries (${f})</li>` };
           }
         }
@@ -5159,7 +5160,8 @@ console.log("selected: " + spacekey);
         if (menu === "pre_naval_battle_rolls") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('001')) {
-              if (his_self.doesFactionHaveNavalUnitsInSpace("ottoman", spacekey)) {
+              let f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+              if (his_self.doesFactionHaveNavalUnitsInSpace(f, spacekey)) {
                 his_self.naval_battle_overlay.render(his_self.game.state.naval_battle);
                 return 1;
               }
@@ -5205,11 +5207,10 @@ console.log("selected: " + spacekey);
             if (his_self.game.deck[0].fhand[i].includes('035')) {
 	      let assault_spacekey = his_self.game.state.assault.spacekey;
 	      let attacker_faction = his_self.game.state.assault.attacker_faction;
-alert("ignoring hop depth issues...");
-//	      if (4 >= his_self.returnHopsToFortifiedHomeSpace(assault_spacekey, attacker_faction)) {
+	      if (4 >= his_self.returnHopsToFortifiedHomeSpace(assault_spacekey, attacker_faction)) {
 		his_self.assault_overlay.render(his_self.game.state.assault);
 		return 1;
-//	      }
+	      }
               return 0;
             }
           }
@@ -8444,14 +8445,11 @@ console.log("nothing is left!");
 	//
 	//
 	//
-	if (his_self.game.spaces["buda"].besieged) {
+	if (his_self.game.spaces["buda"].besieged > 0) {
 
 	} else {
 
-	  //
-	  //
-	  //
-	  if (his_self.game.spaces["buda"].political === "" || his_self.game.spaces["buda"].political === "hungary") {
+	  if (his_self.game.spaces["buda"].political == "" || his_self.game.spaces["buda"].political === "hungary") {
 	    his_self.addRegular("hungary", "buda", 4);
 	  } else {
 	    his_self.addRegular(his_self.game.spaces["buda"].political, "buda", 4);
@@ -9970,7 +9968,7 @@ alert("MOVE IS: " + "move\tengland\tland\t"+options[options_idx].spacekey+"\tire
 	  let msg = "Cancel Which Expedition?";
           let html = '<ul>';
 	  for (let i = 0; i < his_self.game.state.colonies.length; i++) {
-            html += `<li class="option" id="${his_self.game.state.colonies[i]}">${his_self.returnFactionName(his_self.game.state.colonies[i])}</li>`;
+            html += `<li class="option" id="${his_self.game.state.colonies[i].faction}">${his_self.returnFactionName(his_self.game.state.colonies[i].faction)}</li>`;
 	  }
 	  if (his_self.game.state.events.cabot_england == 1) {
             html += `<li class="option" id="cabot_england">sebastian cabot (england)</li>`;
@@ -10644,10 +10642,11 @@ alert("MOVE IS: " + "move\tengland\tland\t"+options[options_idx].spacekey+"\tire
 		      nonregulars_to_delete--;
 		    }
 		  }
+
 		  if (total_to_delete > 1) {
-		    his_self.addMove(`SALERT\tUnsanitary Camp destroys ${total_to_delete} ${his_self.returnFactionName(action)} mercenaries in ${his_self.returnSpaceName(spacekey)}`); 
+		    his_self.addMove(`SALERT\tUnsanitary Camp destroys ${total_to_delete} ${his_self.returnFactionName(action)} units in ${his_self.returnSpaceName(spacekey)}`); 
 		  } else {
-		    his_self.addMove(`SALERT\tUnsanitary Camp destroys ${total_to_delete} ${his_self.returnFactionName(action)} mercenary in ${his_self.returnSpaceName(spacekey)}`); 
+		    his_self.addMove(`SALERT\tUnsanitary Camp destroys ${total_to_delete} ${his_self.returnFactionName(action)} units in ${his_self.returnSpaceName(spacekey)}`); 
 		  }
 		  his_self.addMove(`NOTIFY\t${his_self.popup("107")} strikes ${his_self.returnSpaceName(spacekey)}`); 
 		  his_self.endTurn();

@@ -1053,8 +1053,14 @@
   }
 
   canFactionRetreatToNavalSpace(faction, space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let is_port_space = false;
+    try { if (this.game.spaces[space]) { is_port_space = true; space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    if (is_port_space == true) {
+      let fac = this.returnFactionControllingSpace(space);
+      if (this.areEnemies(fac, faction)) { return 0; }
+      if (this.areAllies(fac, faction, 1)) { return 1; }
+    }
     if (this.isNavalSpaceFriendly(space, faction) == 1) { return 1; }
     if (this.isSpaceFriendly(space, faction) == 1) { return 1; }
     return 0;
@@ -1084,7 +1090,9 @@
     //
     // check if triggers defeat of Hungary Bohemia
     //
-    this.triggerDefeatOfHungaryBohemia();
+    if (this.game.step.game > 5) {
+      this.triggerDefeatOfHungaryBohemia();
+    }
 
   }
 

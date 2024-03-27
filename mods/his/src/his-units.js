@@ -15,7 +15,7 @@
     if (obj.img == null)                { obj.img = ""; }
     if (obj.committed == null)          { obj.committed = 0; }
     if (obj.active == null)		{ obj.active = 0; } // if bonus is active for debaters
-    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.besieged == null)           { obj.besieged = 0; }
     if (obj.captured == null)           { obj.captured = false; }
     if (obj.loaned == null)             { obj.loaned = false; }
     if (obj.key == null)                { obj.key = name; }
@@ -60,7 +60,7 @@
     if (obj.battle_rating == null)      { obj.battle_rating = 0; }
     if (obj.img == null)                { obj.img = ""; }
     if (obj.committed == null)          { obj.committed = 0; }
-    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.besieged == null)           { obj.besieged = 0; }
     if (obj.captured == null)           { obj.captured = false; }
     if (obj.loaned == null)		{ obj.loaned = false; }
     if (obj.key == null)		{ obj.key = name; }
@@ -88,7 +88,7 @@
     if (obj.battle_rating == null)      { obj.battle_rating = 0; }
     if (obj.img == null)                { obj.img = ""; }
     if (obj.committed == null)          { obj.committed = 0; }
-    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.besieged == null)           { obj.besieged = 0; }
     if (obj.captured == null)           { obj.captured = false; }
     if (obj.loaned == null)		{ obj.loaned = false; }
     if (obj.key == null)		{ obj.key = name; }
@@ -116,7 +116,7 @@
     if (obj.battle_rating == null)      { obj.battle_rating = 0; }
     if (obj.img == null)                { obj.img = ""; }
     if (obj.committed == null)          { obj.committed = 0; }
-    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.besieged == null)           { obj.besieged = 0; }
     if (obj.captured == null)           { obj.captured = false; }
     if (obj.loaned == null)		{ obj.loaned = false; }
     if (obj.key == null)		{ obj.key = name; }
@@ -144,7 +144,7 @@
     if (obj.battle_rating == null)      { obj.battle_rating = 0; }
     if (obj.img == null)                { obj.img = ""; }
     if (obj.committed == null)          { obj.committed = 0; }
-    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.besieged == null)           { obj.besieged = 0; }
     if (obj.captured == null)           { obj.captured = false; }
     if (obj.loaned == null)		{ obj.loaned = false; }
     if (obj.key == null)		{ obj.key = name; }
@@ -172,7 +172,7 @@
     if (obj.battle_rating == null)      { obj.battle_rating = 0; }
     if (obj.img == null)                { obj.img = ""; }
     if (obj.committed == null)          { obj.committed = 0; }
-    if (obj.besieged == null)           { obj.besieged = false; }
+    if (obj.besieged == null)           { obj.besieged = 0; }
     if (obj.captured == null)           { obj.captured = false; }
     if (obj.loaned == null)		{ obj.loaned = false; }
     if (obj.power == null)		{ obj.power = 0; }

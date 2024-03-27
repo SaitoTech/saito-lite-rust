@@ -135,6 +135,9 @@ class NewWorldOverlay {
  		  if (prize.length > 3 && prize.indexOf("lost") == -1 && prize.indexOf("killed") == -1) {
 		    goldenrod = "goldenrod";
 		  }
+		  if (prize == "Roanoke" || prize == "Puerto Rico" || prize == "Jamestown" || prize == "Hispanola" || prize == "Montreal" || prize == "Charlesbourg" || prize == "Cuba") {
+		    goldenrod = "";
+		  }
 
 		  return `
 	    	    <div class="new-world-row">

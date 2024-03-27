@@ -453,6 +453,9 @@
   playerResolveNavalWinterRetreat(faction, spacekey) {
 
     let his_self = this;
+    let space = null;
+    if (his_self.game.spaces[spacekey]) { space = his_self.game.spaces[spacekey]; }
+    if (his_self.game.navalspaces[spacekey]) { space = his_self.game.navalspaces[spacekey]; }
 
     let res = this.returnNearestFactionControlledPorts(faction, spacekey);
 

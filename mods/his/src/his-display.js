@@ -1,9 +1,99 @@
 
   displayCustomOverlay(c="", msg="") {
 
+    if (c === "st_lawrence") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Explnration" ,
+        text : msg + " discovers the St. Lawrence River" ,
+        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers St. Lawrence River`);
+      return;
+    }
+
+    if (c === "mississippi") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Explnration" ,
+        text : msg + " discovers the Mississippi River" ,
+        img : '/his/img/backgrounds/newworld/mississippi.jpg',
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Mississippi River`);
+      return;
+    }
+
+    if (c === "greatlakes") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Explnration" ,
+        text : msg + " discovers the Great Lakes" ,
+        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers St. Lawrence River`);
+      return;
+    }
+
+    if (c === "amazon") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Explnration" ,
+        text : msg + " discovers the Amazon River" ,
+        img : '/his/img/backgrounds/newworld/amazon2.jpg',
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Amazon River`);
+      return;
+    }
+
+    if (c === "pacificstrait") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Explnration" ,
+        text : msg + " discovers the Pacific Strait" ,
+        img : '/his/img/backgrounds/newworld/pacificstrait.jpg',
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Pacific Strait`);
+      return;
+    }
+
+    if (c === "circumnavigation") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Explnration" ,
+        text : msg + " circumnavigates the globe" ,
+        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} circumnavigates the globe`);
+      return;
+    }
+
+    if (c === "aztec") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Explnration" ,
+        text : msg + " conquers the Aztec" ,
+        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} conquers the Aztec`);
+      return;
+    }
+
+    if (c === "maya") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Explnration" ,
+        text : msg + " conquers the Maya" ,
+        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} conquers the Maya`);
+      return;
+    }
+
+    if (c === "inca") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Explnration" ,
+        text : msg + " conquers the Inca" ,
+        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} conquers the Inca`);
+      return;
+    }
+
     if (c === "battle-of-mohacs") {
       this.welcome_overlay.renderCustom({
-        title : "War between the Hapsburg and Ottman Empires" ,
+        title : "War between the Hapsburg and Ottoman Empires" ,
         text : "The Ottoman subjugation of Hungary-Bohemia forces the Hapsburg Empire to intervene on the side of Christian Europe and in pre-emptive defense of Vienna" ,
         img : '/his/img/backgrounds/battle-of-mohacs.jpeg',
       });

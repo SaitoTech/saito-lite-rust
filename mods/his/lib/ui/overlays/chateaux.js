@@ -111,6 +111,7 @@ class ChateauxOverlay {
 		} (modified: ${modified_roll})`;
 
 		if (modified_roll >= 8) {
+			this.mod.updateLog("Patron of the Arts: +1 VP, draw 2 discard 1");
 			document.querySelectorAll(".outcome1").forEach((el) => {
 				el.style.backgroundColor = "yellow";
 				el.style.color = "black";
@@ -128,6 +129,7 @@ class ChateauxOverlay {
 			);
 		}
 		if (modified_roll >= 5 && modified_roll < 8) {
+			this.mod.updateLog("Patron of the Arts: +1 VP, draw 1");
 			document.querySelectorAll(".outcome2").forEach((el) => {
 				el.style.backgroundColor = "yellow";
 				el.style.color = "black";
@@ -144,6 +146,7 @@ class ChateauxOverlay {
 			);
 		}
 		if (modified_roll >= 3 && modified_roll < 5) {
+			this.mod.updateLog("Patron of the Arts: +1 VP, draw 1 discard 1");
 			document.querySelectorAll(".outcome3").forEach((el) => {
 				el.style.backgroundColor = "yellow";
 				el.style.color = "black";
@@ -160,6 +163,7 @@ class ChateauxOverlay {
 			);
 		}
 		if (modified_roll <= 2) {
+			this.mod.updateLog("Patron of the Arts: draw 2 discard 1");
 			document.querySelectorAll(".outcome4").forEach((el) => {
 				el.style.backgroundColor = "yellow";
 				el.style.color = "black";

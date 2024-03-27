@@ -47,7 +47,7 @@
     if (f1 == "france") {
       if (f2 == "ottoman") 	{ return 2; }
       if (f2 == "hapsburg") 	{ return 3; }
-      if (f2 == "england") 	{ return 4; }
+      if (f2 == "england") 	{ return 3; }
       if (f2 == "france") 	{ return 0; }
       if (f2 == "papacy") 	{ return 3; }
       if (f2 == "protestant") 	{ return 2; }
@@ -284,18 +284,27 @@
       return 0;
     }
 
-    try { this.game.state.alliances[faction2][faction1].allies = 0; } catch (err) {}
-
+    //
+    // some conditions prevent deactivating alliances
+    //
     if (this.game.players.length == 2) { if (faction1 === "hapsburg" && faction2 === "papacy") {
       if (this.game.state.events.schmalkaldic_league) { 
 	this.updateLog("NOTE: Hapsburg and Papacy must remain allied in 2P game after Schmalkaldic League formed");
+	return 1;
       }
     } } 
     if (this.game.players.length == 2) { if (faction2 === "hapsburg" && faction1 === "papacy") {
       if (this.game.state.events.schmalkaldic_league) { 
 	this.updateLog("NOTE: Hapsburg and Papacy must remain allied in 2P game after Schmalkaldic League formed");
+	return 1;
       }
     } }
+
+    //
+    // and... no longer allies
+    //
+    try { this.game.state.alliances[faction2][faction1].allies = 0; } catch (err) {}
+    try { this.game.state.alliances[faction1][faction2].allies = 0; } catch (err) {}
 
 
     //
