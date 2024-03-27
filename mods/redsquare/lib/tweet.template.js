@@ -16,7 +16,7 @@ module.exports = (app, mod, tweet) => {
 	}
 
 	// replace @ key/identifer
-	text = text.replaceAll(/(?=@)([^\s]*)/g, function(k){
+	text = text.replaceAll(/(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]*)/g, function(k){
 		let split = (k.split('@'));
 		let username = '';
 		let key = '';
