@@ -3,6 +3,7 @@ import SaitoBlock from 'saito-js/lib/block';
 export default class Block extends SaitoBlock {
 	public force: boolean;
 
+
 	public txs_hmap: Map<string, number>;
 	public txs_hmap_generated: boolean;
 	public has_examined_block: boolean;

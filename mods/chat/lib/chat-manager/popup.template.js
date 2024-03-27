@@ -13,11 +13,11 @@ module.exports = (app, mod, group, isStatic = false) => {
 	}
 
 	let is_encrypted = ``;
-	let dm = (group.members.length == 2 && !group?.member_ids);
-	let dm_counterparty = "";
+	let dm = group.members.length == 2 && !group?.member_ids;
+	let dm_counterparty = '';
 
 	if (dm) {
-		for (let i = 0; i < group.members.length; i++){
+		for (let i = 0; i < group.members.length; i++) {
 			if (group.members[i] !== mod.publicKey) {
 				dm_counterparty = group.members[i];
 				if (app.keychain.hasSharedSecret(dm_counterparty)) {
@@ -27,7 +27,9 @@ module.exports = (app, mod, group, isStatic = false) => {
 		}
 	}
 
-	let html = `<div class="${class_name} chat-popup ${dm ? 'saito-dm-chat' : ''}" id="chat-popup-${group.id}">
+	let html = `<div class="${class_name} chat-popup ${
+		dm ? 'saito-dm-chat' : ''
+	}" id="chat-popup-${group.id}">
           			<div class="chat-header" id="chat-header-${group.id}">
             			<div class="chat-header-nav">
 				            <i class="fa-solid fa-window-minimize chat-sizing-icon chat-minimizer-icon"></i>
@@ -37,17 +39,23 @@ module.exports = (app, mod, group, isStatic = false) => {
 			            <div class="chat-header-info">
               			<div class="chat-details">
               				${is_encrypted}
-              				<div id="chat-group-${group.id}" class="chat-group${dm?" saito-address":""}" data-id="${dm ? dm_counterparty: group.name}">${group.name}</div>
+              				<div id="chat-group-${group.id}" class="chat-group${
+		dm ? ' saito-address' : ''
+	}" data-id="${dm ? dm_counterparty : group.name}">${group.name}</div>
               			</div>
 			              <div class="chat-action-icons">
 			                <div class="chat-actions"></div>
-			                <div class="chat-action-menu" data-id="${group.id}"><i class="fa-solid fa-ellipsis-vertical"></i></div>
+			                <div class="chat-action-menu" data-id="${
+								group.id
+							}"><i class="fa-solid fa-ellipsis-vertical"></i></div>
 				             </div>
 			            </div>
 			          </div>
 
           <div class="chat-body">
-            <!--div id="load-older-chats" class="saito-chat-button" data-id="${group.id}">check for earlier messages</div-->
+            <!--div id="load-older-chats" class="saito-chat-button" data-id="${
+				group.id
+			}">check for earlier messages</div-->
             ${mod.returnChatBody(group.id)}
           </div>
 

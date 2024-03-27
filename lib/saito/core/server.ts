@@ -32,6 +32,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 		this.app = app;
 	}
 
+
 	sendMessage(peerIndex: bigint, buffer: Uint8Array): void {
 		try {
 			let socket = S.getInstance().getSocket(peerIndex);
@@ -42,6 +43,8 @@ export class NodeSharedMethods extends CustomSharedMethods {
 			console.error(e);
 		}
 	}
+
+
 
 	sendMessageToAll(buffer: Uint8Array, exceptions: bigint[]): void {
 		S.getInstance().sockets.forEach((socket, key) => {
@@ -159,9 +162,9 @@ export class NodeSharedMethods extends CustomSharedMethods {
 			.then((buffer: ArrayBuffer) => {
 				console.log(
 					'block data fetched for ' +
-						url +
-						' with size : ' +
-						buffer.byteLength
+					url +
+					' with size : ' +
+					buffer.byteLength
 				);
 				return new Uint8Array(buffer);
 			})
@@ -250,7 +253,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 		minor: number,
 		patch: number,
 		peerIndex: bigint
-	): void {}
+	): void { }
 
 	ensureBlockDirExists(path: string): void {
 		if (fs.existsSync(path)) {
@@ -297,6 +300,7 @@ class Server {
 		this.server_file_encoding = 'utf8';
 	}
 
+
 	initializeWebSocketServer() {
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const ws = require('ws');
@@ -327,7 +331,7 @@ class Server {
 			socket.on('message', (buffer: any) => {
 				S.getLibInstance()
 					.process_msg_buffer_from_peer(new Uint8Array(buffer), index)
-					.then(() => {});
+					.then(() => { });
 			});
 			socket.on('close', () => {
 				S.getLibInstance().process_peer_disconnection(index);
@@ -651,9 +655,9 @@ class Server {
 				);
 				console.log(
 					'valid txs : ' +
-						newblk.transactions.filter(
-							(tx) => tx.type !== TransactionType.SPV
-						).length
+					newblk.transactions.filter(
+						(tx) => tx.type !== TransactionType.SPV
+					).length
 				);
 
 				res.writeHead(200, {
@@ -818,14 +822,14 @@ class Server {
 			// caching in prod
 			//
 			/* Not needed as handled by nginx.
-    const caching =
-    process.env.NODE_ENV === "prod"
-      ? "private max-age=31536000"
-      : "private, no-cache, no-store, must-revalidate";
-    res.setHeader("Cache-Control", caching);
-    res.setHeader("expires", "-1");
-    res.setHeader("pragma", "no-cache");
-    */
+	const caching =
+	process.env.NODE_ENV === "prod"
+	  ? "private max-age=31536000"
+	  : "private, no-cache, no-store, must-revalidate";
+	res.setHeader("Cache-Control", caching);
+	res.setHeader("expires", "-1");
+	res.setHeader("pragma", "no-cache");
+	*/
 			res.sendFile(this.web_dir + '/saito/saito.js');
 			return;
 		});

@@ -24,6 +24,7 @@ class StorageCore extends Storage {
 	public file_encoding_load: any;
 	public app: Saito;
 
+
 	constructor(app, data?, dest = 'blocks') {
 		super(app);
 
@@ -244,7 +245,7 @@ class StorageCore extends Storage {
 			// console.log("instance : ", block.instance);
 			block.deserialize(data);
 
-			// block.generateMetadata();
+			console.log(block.transactions, "transactions")
 			// block.generateHashes();
 			return block;
 		} catch (err) {
@@ -446,7 +447,7 @@ class StorageCore extends Storage {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	resetOptions() {}
+	resetOptions() { }
 
 	///////////////////////
 	// saveClientOptions //

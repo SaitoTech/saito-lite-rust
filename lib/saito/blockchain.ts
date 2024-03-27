@@ -10,13 +10,14 @@ import { DefaultEmptyBlockHash } from 'saito-js/lib/wallet';
 export default class Blockchain extends SaitoBlockchain {
 	public app: S;
 
+
+
 	constructor(data) {
 		super(data);
 	}
 
 	public async getBlock(blockHash: string): Promise<Block> {
 		let block = await Saito.getInstance().getBlock(blockHash);
-
 		return block as unknown as Block;
 	}
 
@@ -107,7 +108,7 @@ export default class Blockchain extends SaitoBlockchain {
 				console.assert(
 					callbacks.length === callbackIndices.length,
 					'callback lengths are not matching after block : ' +
-						block.hash
+					block.hash
 				);
 				validTxs++;
 			}
