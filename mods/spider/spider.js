@@ -72,11 +72,6 @@ class Spider extends OnePlayerGameTemplate {
 		let input_dif = this.game.options?.difficulty || 'medium';
 
 		if (this.browser_active) {
-			// Insert game board
-			this.injectGameHTML(htmlTemplate());
-			$('.gameboard').html(this.returnBoard());
-			this.removeEvents();
-
 			if (
 				this.changeDifficulty(input_dif) ||
 				this.game.deck.length == 0
@@ -88,13 +83,18 @@ class Spider extends OnePlayerGameTemplate {
 		}
 	}
 
-	render(app) {
+	async render(app) {
 		//console.trace("Initialize HTML");
 		if (!this.browser_active) {
 			return;
 		}
 
-		super.render(app);
+		// Insert game board
+		await this.injectGameHTML(htmlTemplate());
+		$('.gameboard').html(this.returnBoard());
+		this.removeEvents();
+
+		await super.render(app);
 
 		this.preloadImages();
 

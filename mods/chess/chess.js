@@ -47,7 +47,7 @@ class Chessgame extends GameTemplate {
 			return;
 		}
 
-		this.injectGameHTML(htmlTemplate());
+		await this.injectGameHTML(htmlTemplate());
 
 		super.render(app);
 

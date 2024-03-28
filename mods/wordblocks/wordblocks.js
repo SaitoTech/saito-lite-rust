@@ -47,7 +47,7 @@ class Wordblocks extends GameTemplate {
 			return;
 		}
 
-		this.injectGameHTML(htmlTemplate());
+		await this.injectGameHTML(htmlTemplate());
 
 		await super.render(app);
 

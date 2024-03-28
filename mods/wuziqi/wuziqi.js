@@ -45,7 +45,7 @@ class Wuziqi extends GameTemplate {
 			return 0;
 		}
 
-		this.injectGameHTML(htmlTemplate());
+		await this.injectGameHTML(htmlTemplate());
 
 		// Don't completly Override the game template render function
 		await super.render(app);

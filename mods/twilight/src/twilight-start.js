@@ -195,7 +195,7 @@ class Twilight extends GameTemplate {
 
     if (this.browser_active == 0) { return; }
 
-    this.injectGameHTML(htmlTemplate());
+    await this.injectGameHTML(htmlTemplate());
 
     await super.render(app);
 

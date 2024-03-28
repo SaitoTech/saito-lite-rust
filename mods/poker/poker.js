@@ -111,7 +111,7 @@ class Poker extends GameTableTemplate {
 			return;
 		}
 
-		this.injectGameHTML(htmlTemplate());
+		await this.injectGameHTML(htmlTemplate());
 
 		//
 		// ADD MENU
