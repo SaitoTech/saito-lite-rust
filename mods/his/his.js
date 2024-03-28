@@ -2579,15 +2579,6 @@ console.log("\n\n\n\n");
 	  this.addDebater("protestant", "bucer-debater");
 	  this.addDebater("protestant", "carlstadt-debater");
 
-
-//
-// TESTING
-//TEMP
-this.controlSpace("france", "granada");
-this.controlSpace("france", "cartagena");
-this.controlSpace("france", "cordoba");
-this.controlSpace("france", "valencia");
-
 	}
 
       }
