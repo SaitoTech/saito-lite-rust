@@ -31725,8 +31725,6 @@ if (this.game.state.round == 2) {
 
                 let cardnum = this.factions[this.game.state.players_info[i].factions[z]].returnCardsDealt(this);
 
-cardnum = 2;
-
 		//
 		// is_testing
 		//
