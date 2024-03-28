@@ -343,6 +343,20 @@
 
   unsetEnemies(faction1, faction2) {
 
+    //
+    // undo excommunication
+    //
+    if (faction1 == "papacy") {
+      if (this.game.state.excommunicated_factions[faction2] == 1) {
+	this.unexcommunicateFate(faction2);
+      }
+    }
+    if (faction2 == "papacy") {
+      if (this.game.state.excommunicated_factions[faction1] == 1) {
+	this.unexcommunicateFate(faction1);
+      }
+    }
+
     if (this.game.players.length == 2) { if (faction1 === "hapsburg" && faction2 === "protestant") {
       if (this.game.state.events.schmalkaldic_league) { 
 	this.updateLog("NOTE: Hapsburg and Protestants must remain at war in 2P variant");

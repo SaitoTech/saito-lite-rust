@@ -44,6 +44,13 @@ class WelcomeOverlay {
 		if (obj.text)  { document.querySelector('.welcome-text').innerHTML  = obj.text; }
 		if (obj.img)   { document.querySelector('.welcome').style.backgroundImage = `url(${obj.img})`; }
 		if (obj.card)  { his_self.app.browser.addElementToSelector(`<div class="welcome-card">${his_self.returnCardImage(obj.card)}<div>`, '.welcome'); }
+		if (obj.styles){ 
+		  for (let z = 0; z < obj.styles.length; z++) { 
+		    let s = obj.styles[z];
+console.log(s.key + " -- " + s.val);
+		    document.querySelector('.welcome').style[s.key] = s.val; 
+		  }
+		}
 
 		// this will clear any ACKNOWLEDGE
 		this.attachEvents();
@@ -55,6 +62,8 @@ class WelcomeOverlay {
 
 		this.overlay.show(WelcomeTemplate(faction));
 		this.pushHudUnderOverlay();
+
+		
 
 		// COMBOS
 		if (faction === 'hapsburg_papacy') {
@@ -162,15 +171,15 @@ class WelcomeOverlay {
 		let his_self = this.mod;
 
 		$('.welcome').on('click', () => {
+			this.hide();
 			if (document.querySelector('.option.acknowledge')) {
 				document.querySelector('.option.acknowledge').click();
-				this.hide();
 			}
 		});
 		$('.saito-overlay:has(> .welcome) + .saito-overlay-backdrop').on('click', () => {
+			this.hide();
 			if (document.querySelector('.option.acknowledge')) {
 				document.querySelector('.option.acknowledge').click();
-				this.hide();
 			}
 		});
 	}

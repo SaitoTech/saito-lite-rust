@@ -37,7 +37,6 @@ class NewWorldOverlay {
 		this.overlay.show(NewWorldTemplate(this.mod));
 
 	        if (stage != "results") {
-
 	 	  for (let i = 0; i < his_self.game.state.colonies.length; i++) {
 		    let faction = his_self.game.state.colonies[i];
 		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ img : "" , type : "colony" , name : "unknown", faction : faction }, stage), ".new-world-overlay .content .colonies");
@@ -61,36 +60,56 @@ class NewWorldOverlay {
 		  }
 		} else {
 
+		  //////////////
+		  // COLONIES //
+		  //////////////
 	 	  for (let i = 0; i < his_self.game.state.newworld.results.colonies.length; i++) {
 		    let col = his_self.game.state.newworld.results.colonies[i];
 		    let roll = col.roll;
 		    let prize = col.name; if (col.prize) { prize = col.prize; }
 		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : col.img , type : "colony", name : col.type , faction : col.faction , total_hits : roll }, stage), ".new-world-overlay .content .colonies");
 		  }
+
+		  ///////////////
+		  // CONQUESTS //
+		  ///////////////
 	 	  for (let i = 0; i < his_self.game.state.newworld.results.conquests.length; i++) {
 		    let con = his_self.game.state.newworld.results.conquests[i];
-		    let prize = "-";
-		    let roll = 0;
-		    let bonus_to_issue = false;
-		    let ctype = "-";
-		    if (con.type) {
-		      ctype = con.type;
-	  	      if (con.type.indexOf("Aztec") > -1) { roll = his_self.game.state.newworld['aztec'].roll; }
-		      if (con.type.indexOf("Inca") > -1) { roll = his_self.game.state.newworld['inca'].roll; }
-		      if (con.type.indexOf("Maya") > -1) { roll = his_self.game.state.newworld['maya'].roll; }
-		    }
-		    if (con.prize) { prize = con.prize; }
-		    if (roll > 0) { bonus_to_issue = true; } else { roll = con.total_hits; }
-		    if (bonus_to_issue == true) {
-		    } else {
-		      if (con.idx) {
-		        if (his_self.game.state.conquests[con.idx].prize === "killed by natives") {
-		    	  prize = "killed by natives";
+		    let c = his_self.game.state.conquests[con.idx];
+		    let active_conquest = 0;
+		    if (c) { if (c.active == 1) { active_conquest = 1; } }
+		    if (con.round == his_self.game.state.round) { active_conquest = 1; }
+		    if (active_conquest) {
+		      let prize = "-";
+		      let roll = 0;
+		      let bonus_to_issue = false;
+		      let ctype = "-";
+		      if (con.type) {
+		        ctype = con.type;
+	  	        if (con.type.indexOf("Aztec") > -1) { roll = his_self.game.state.newworld['aztec'].roll; }
+		        if (con.type.indexOf("Inca") > -1) { roll = his_self.game.state.newworld['inca'].roll; }
+		        if (con.type.indexOf("Maya") > -1) { roll = his_self.game.state.newworld['maya'].roll; }
+		      }
+		      if (con.prize) { prize = con.prize; }
+		      if (roll > 0) { bonus_to_issue = true; } else { roll = con.total_hits; }
+		      if (bonus_to_issue == true) {
+		      } else {
+		        if (con.idx) {
+		          if (his_self.game.state.conquests[con.idx].prize === "killed by natives") {
+		      	    prize = "killed by natives";
+		          }
+		          if (his_self.game.state.conquests[con.idx]) {
+			    roll = his_self.game.state.conquests[con.idx].hits;
+		          }
 		        }
 		      }
+		      his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : con.img , type : "conquest" , name : ctype , faction : con.faction , conquistador : con.conquistador , total_hits : roll }, stage), ".new-world-overlay .content .conquests");
 		    }
-		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : con.img , type : "conquest" , name : ctype , faction : con.faction , conquistador : con.conquistador , total_hits : roll }, stage), ".new-world-overlay .content .conquests");
 		  }
+
+		  //////////////////
+		  // EXPLORATIONS //
+		  //////////////////
 	 	  for (let i = 0; i < his_self.game.state.newworld.results.explorations.length; i++) {
 		    let exp = his_self.game.state.newworld.results.explorations[i];
 		    let prize = "-"; if (exp.prize) { prize = exp.prize; }
@@ -99,7 +118,7 @@ class NewWorldOverlay {
 			prize = his_self.game.state.explorations[exp.idx].prize;
 		      }
 		    }
-		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : exp.img , type : "exploration" , name : exp.type , faction : exp.faction , prize : prize , explorer : exp.explorer , total_hits : exp.total_hits }, stage), ".new-world-overlay .content .explorations");
+		    his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : exp.img , type : "exploration" , name : exp.type , faction : exp.faction , prize : prize , explorer : exp.explorer , total_hits : exp.total_hits }, stage, false), ".new-world-overlay .content .explorations");
 		  }
 	 	}
 
@@ -118,7 +137,7 @@ class NewWorldOverlay {
 	}
 
 
-	returnRowHTML(obj={}, stage="") {
+	returnRowHTML(obj={}, stage="", show_hits_as_goldenrod=true) {
 
 		if (stage === "results") {
 
@@ -132,12 +151,14 @@ class NewWorldOverlay {
 		  if (obj.prize != "") { prize = obj.prize; }
 
 		  let goldenrod = "";
- 		  if (prize.length > 3 && prize.indexOf("lost") == -1 && prize.indexOf("killed") == -1) {
+ 		  if (prize.length > 3 && prize.indexOf("destroyed") == -1 && prize.indexOf("eaten") == -1 && prize.indexOf("lost") == -1 && prize.indexOf("killed") == -1) {
 		    goldenrod = "goldenrod";
 		  }
 		  if (prize == "Roanoke" || prize == "Puerto Rico" || prize == "Jamestown" || prize == "Hispanola" || prize == "Montreal" || prize == "Charlesbourg" || prize == "Cuba") {
 		    goldenrod = "";
 		  }
+		  if (show_hits_as_goldenrod == false) { goldenrod = ""; }
+
 
 		  return `
 	    	    <div class="new-world-row">

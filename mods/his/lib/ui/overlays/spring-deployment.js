@@ -58,6 +58,7 @@ class SpringDeploymentOverlay {
 		}
 
 		this.attachEvents(mycallback);
+		this.pushHudUnderOverlay();
 
 	}
 

@@ -126,7 +126,7 @@
 
 	  active_conquests.push(z);
 
-          this.game.state.newworld.results.conquests.push({ faction : con.faction , base : base_hits , total_hits : total_hits , modifiers : modifiers , conquistador : conquistador , img : this.conquistadors[conquistador].img , idx : z });
+          this.game.state.newworld.results.conquests.push({ round : this.game.state.round , faction : con.faction , base : base_hits , total_hits : total_hits , modifiers : modifiers , conquistador : conquistador , img : this.conquistadors[conquistador].img , idx : z });
 
 	}
       }
@@ -221,7 +221,7 @@
 
 	  active_explorations.push(z);
  
-          this.game.state.newworld.results.explorations.push({ faction : exp.faction , base : base_hits , total_hits : total_hits , modifiers : modifiers , explorer : explorer , img : this.explorers[explorer].img , idx : z });
+          this.game.state.newworld.results.explorations.push({ round : this.game.state.round , prize : "-" , faction : exp.faction , base : base_hits , total_hits : total_hits , modifiers : modifiers , explorer : explorer , img : this.explorers[explorer].img , idx : z });
 
 	}
 

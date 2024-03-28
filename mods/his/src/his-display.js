@@ -1,11 +1,34 @@
 
   displayCustomOverlay(c="", msg="") {
 
-    if (c === "st_lawrence") {
+    if (c === "lost-at-sea") {
       this.welcome_overlay.renderCustom({
-        title : "New World Explnration" ,
+        title : "New World Losses" ,
+        text : msg + " exploration is lost at sea..." ,
+        img : '/his/img/backgrounds/newworld/lost_at_sea.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} mission is lost at sea`);
+      return;
+    }
+
+    if (c === "killed") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Losses" ,
+        text : msg + " expedition killed by natives" ,
+        img : '/his/img/backgrounds/newworld/killed.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} expedition killed by natives`);
+      return;
+    }
+
+    if (c === "stlawrence") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Discovery" ,
         text : msg + " discovers the St. Lawrence River" ,
         img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers St. Lawrence River`);
       return;
@@ -13,9 +36,10 @@
 
     if (c === "mississippi") {
       this.welcome_overlay.renderCustom({
-        title : "New World Explnration" ,
+        title : "New World Discovery" ,
         text : msg + " discovers the Mississippi River" ,
         img : '/his/img/backgrounds/newworld/mississippi.jpg',
+	styles : [{ key : "backgroundPosition" , val : "center" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Mississippi River`);
       return;
@@ -23,9 +47,10 @@
 
     if (c === "greatlakes") {
       this.welcome_overlay.renderCustom({
-        title : "New World Explnration" ,
+        title : "New World Discovery" ,
         text : msg + " discovers the Great Lakes" ,
         img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers St. Lawrence River`);
       return;
@@ -33,7 +58,7 @@
 
     if (c === "amazon") {
       this.welcome_overlay.renderCustom({
-        title : "New World Explnration" ,
+        title : "New World Discovery" ,
         text : msg + " discovers the Amazon River" ,
         img : '/his/img/backgrounds/newworld/amazon2.jpg',
       });
@@ -43,9 +68,10 @@
 
     if (c === "pacificstrait") {
       this.welcome_overlay.renderCustom({
-        title : "New World Explnration" ,
+        title : "New World Discovery" ,
         text : msg + " discovers the Pacific Strait" ,
         img : '/his/img/backgrounds/newworld/pacificstrait.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Pacific Strait`);
       return;
@@ -53,9 +79,9 @@
 
     if (c === "circumnavigation") {
       this.welcome_overlay.renderCustom({
-        title : "New World Explnration" ,
+        title : "New World Achievement" ,
         text : msg + " circumnavigates the globe" ,
-        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+        img : '/his/img/backgrounds/newworld/circumnavigation.jpg',
       });
       this.game.queue.push(`ACKNOWLEDGE\t${msg} circumnavigates the globe`);
       return;
@@ -63,9 +89,9 @@
 
     if (c === "aztec") {
       this.welcome_overlay.renderCustom({
-        title : "New World Explnration" ,
+        title : "New World Conquest" ,
         text : msg + " conquers the Aztec" ,
-        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+        img : '/his/img/backgrounds/newworld/aztec.jpg',
       });
       this.game.queue.push(`ACKNOWLEDGE\t${msg} conquers the Aztec`);
       return;
@@ -73,9 +99,9 @@
 
     if (c === "maya") {
       this.welcome_overlay.renderCustom({
-        title : "New World Explnration" ,
+        title : "New World Conquest" ,
         text : msg + " conquers the Maya" ,
-        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+        img : '/his/img/backgrounds/newworld/inca.jpg',
       });
       this.game.queue.push(`ACKNOWLEDGE\t${msg} conquers the Maya`);
       return;
@@ -83,9 +109,9 @@
 
     if (c === "inca") {
       this.welcome_overlay.renderCustom({
-        title : "New World Explnration" ,
+        title : "New World Conquest" ,
         text : msg + " conquers the Inca" ,
-        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+        img : '/his/img/backgrounds/newworld/inca2.jpg',
       });
       this.game.queue.push(`ACKNOWLEDGE\t${msg} conquers the Inca`);
       return;
@@ -106,6 +132,7 @@
         title : this.returnFactionName(msg) + " founds a Colony",
         text : "Colonies earn factions bonus cards in the New World Phase",
         img : '/his/img/backgrounds/move/colonize.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} attempts to found a Colony`);
       return;
@@ -115,7 +142,8 @@
       this.welcome_overlay.renderCustom({
         title : this.returnFactionName(msg) + " launches Conquest Expedition",
         text : "Conquests earn factions Victory Points and bonus cards in the New World Phase",
-        img : '/his/img/backgrounds/move/conquer.jpg',
+        img : '/his/img/backgrounds/move/inca2.jpg',
+	styles : [{ key : "backgroundPosition" , val : "center" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} attempts Conquest Expedition`);
       return;
@@ -126,6 +154,7 @@
         title : this.returnFactionName(msg) + " launches Exploration",
         text : "Explorations earn Victory Points for strategic discoveries in the New World Phase",
         img : '/his/img/backgrounds/move/explore.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} launches New World Exploration`);
       return;

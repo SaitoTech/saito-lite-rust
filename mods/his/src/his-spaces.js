@@ -1353,6 +1353,9 @@
         }
       }
     }
+    // ensures factions are listed even if their spaces are empty
+    if (!faction_map[faction1]) { faction_map[faction1] = faction1; }
+    if (!faction_map[faction2]) { faction_map[faction2] = faction2; }
     return faction_map;
   }
 

@@ -206,7 +206,7 @@ console.log(JSON.stringify(this.mod.game.state.diplomacy));
 	  // finish diplomacy stage
 	  //
 	  document.querySelector(".end").onclick = (e) => {
-	    this.mod.updateLog("NOTIFY\t"+this.mod.returnFactionName(faction)+" concludes diplomacy");
+	    this.mod.updateLog(this.mod.returnFactionName(faction)+" concludes diplomacy");
 	    for (let z = 0; z < this.proposals.length; z++) {
 	      this.mod.addMove("diplomacy_submit_proposal\t"+JSON.stringify(this.proposals[z]));
 	    }

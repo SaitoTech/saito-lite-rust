@@ -2635,7 +2635,7 @@ console.log("selected: " + spacekey);
 	return 1;
       },
     }
-    if (this.game.players.length == 2) {
+    if (this.game.players.length > 2) {
       deck['005'] = { 
         img : "cards/HIS-005.svg" , 
         name : "Papal Bull" ,
@@ -2649,8 +2649,184 @@ console.log("selected: " + spacekey);
         },
         onEvent : function(his_self, faction) {
 
+	  let do_grounds_for_excommunication_exist = [];
 	  let papacy = his_self.returnPlayerOfFaction("papacy");
+	  if (his_self.canPapacyExcommunicateFaction("france")) { do_grounds_for_excommunication_exist.push("france"); }
+	  if (his_self.canPapacyExcommunicateFaction("england")) { do_grounds_for_excommunication_exist.push("england"); }
+	  if (his_self.canPapacyExcommunicateFaction("hapsburg")) { do_grounds_for_excommunication_exist.push("hapsburg"); }
 
+	  //
+	  // both options call this function
+	  //
+	  let excommunicate_leader_subfunction = () => {
+
+	    if (papacy == his_self.game.player) {
+
+              let msg = "Excommunicate Which Leader?";
+              let html = '<ul>';
+	      for (let z = 0; z < do_grounds_for_excommunication_exist.length; z++) {
+                html += `<li class="option" id="${do_grounds_for_excommunication_exist[z]}">${his_self.returnFactionName(do_grounds_for_excommunication_exist[z])}</li>`;
+	      }
+	      html += '</ul>';
+              his_self.updateStatusWithOptions(msg, html);
+
+              $('.option').off();
+              $('.option').on('click', function () {
+
+                let action2 = $(this).attr("id");
+		his_self.updateStatus("clerics processing excommunication...");
+	        his_self.addMove("excommunicate_faction\t"+action2);
+	        his_self.endTurn();
+
+	      });
+	    } else {
+	      his_self.updateStatus("Papacy Excommunicating Heretic");
+	    }
+	  };
+
+	  let excommunicate_reformer_subfunction = () => {
+
+	    if (papacy == his_self.game.player) {
+
+              let msg = "Excommunicate Protestant Reformer:";
+	      let reformer_exists = 0;
+              let html = '<ul>';
+	      for (let key in his_self.reformers) {
+	        let s = his_self.returnSpaceOfPersonage("protestant", key);
+	        if (s) {
+	  	  if (!his_self.game.state.already_excommunicated.includes(key)) {
+	            reformer_exists = 1;
+                    html += `<li class="option" id="${key}">${his_self.reformers[key].name}</li>`;
+	          }
+	        }
+	      }
+	
+	      if (reformer_exists == 0) {
+
+                let msg = "Convene Theological Debate?";
+                let html = '<ul>';
+                html += `<li class="option" id="yes">yes</li>`;
+                html += `<li class="option" id="no">no</li>`;
+	        html += '</ul>';
+                his_self.updateStatusWithOptions(msg, html);
+
+                $('.option').off();
+                $('.option').on('click', function () {
+
+                  let action2 = $(this).attr("id");
+	          his_self.updateStatus("convening debate...");
+
+		  if (action2 === "yes") {
+		    his_self.playerCallTheologicalDebate(his_self, his_self.game.player, "papacy");
+		    return;
+		  }
+
+		  // no
+	          his_self.updateLog("No excommunicable Protestant reformers exist");
+	          his_self.endTurn();
+		  return 0;
+
+	        });
+
+	        return 0;
+	      }
+
+	      html += '</ul>';
+              his_self.updateStatusWithOptions(msg, html);
+  
+              $('.option').off();
+              $('.option').on('click', function () {
+
+                let selected_reformer = $(this).attr("id");
+
+	        if (selected_reformer === "cranmer-reformer") {
+	  	  his_self.addEndMove("counter_or_acknowledge\tPapal Bull announces excommunication of Cranmer\tpapal_bull_cranmer_excommunication");
+		  his_self.addEndMove("RESETCONFIRMSNEEDED\tall");
+	        }
+	        his_self.addEndMove("excommunicate_reformer\t"+selected_reformer);
+
+                let msg = "Convene Theological Debate after Excommunication?";
+                let html = '<ul>';
+                html += `<li class="option" id="yes">yes</li>`;
+                html += `<li class="option" id="no">no</li>`;
+	        html += '</ul>';
+
+                his_self.updateStatusWithOptions(msg, html);
+
+                $('.option').off();
+                $('.option').on('click', function () {
+		
+	          his_self.updateStatus("convening...");
+                  let action2 = $(this).attr("id");
+
+		  if (action2 === "yes") {
+	            his_self.addMove("excommunicate_reformer\t"+selected_reformer);
+	            his_self.addMove("player_call_theological_debate\tpapacy");
+		    his_self.endTurn();
+		    return;
+		  }
+
+		  // no
+	          his_self.updateLog("No excommunicable Protestant reformers exist");
+	          his_self.endTurn();
+		  return;
+
+	        });
+
+	      });
+            } else {
+	      his_self.updateStatus("Papacy playing "+his_self.popup("005"));
+	    }
+	  };
+
+
+	  if (do_grounds_for_excommunication_exist.length > 0) {
+
+	    if (papacy == his_self.game.player) {
+
+              let msg = "Excommunicate Which Heretic?";
+              let html = '<ul>';
+                  html += `<li class="option" id="reformer">Protestant Reformer</li>`;
+                  html += `<li class="option" id="leader">Unfaithful Monarch</li>`;
+	          html += '</ul>';
+              his_self.updateStatusWithOptions(msg, html);
+
+              $('.option').off();
+              $('.option').on('click', function () {
+
+                let action2 = $(this).attr("id");
+	        if (action2 == "reformer") {
+	  	  excommunicate_reformer_subfunction();
+	        } else {
+		  excommunicate_leader_subfunction();
+    	        }
+	      });
+	    } else {
+	      his_self.updateStatus("Papacy playing "+his_self.popup("005"));
+	    }
+	  } else {
+	    his_self.updateStatus("Papacy playing "+his_self.popup("005"));
+	  }
+
+
+	  return 0;
+	},
+      }
+    } else {
+      deck['005'] = { 
+        img : "cards/HIS-005-2P.svg" , 
+        name : "Papal Bull" ,
+        ops : 4 ,
+        turn : 1 ,
+        type : "normal" , 
+        faction : "papacy" ,
+        removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+        canEvent : function(his_self, faction) {
+	  return 1;
+        },
+        onEvent : function(his_self, faction) {
+
+	  let papacy = his_self.returnPlayerOfFaction("papacy");
 	  if (papacy == his_self.game.player) {
 
             let msg = "Excommunicate Protestant Reformer:";
@@ -2677,7 +2853,7 @@ console.log("selected: " + spacekey);
 
               $('.option').off();
               $('.option').on('click', function () {
-		
+
                 let action2 = $(this).attr("id");
 	        his_self.updateStatus("submitting...");
 
@@ -2701,7 +2877,9 @@ console.log("selected: " + spacekey);
   
             $('.option').off();
             $('.option').on('click', function () {
+
               let selected_reformer = $(this).attr("id");
+
 	      if (selected_reformer === "cranmer-reformer") {
 		his_self.addEndMove("counter_or_acknowledge\tPapal Bull announces excommunication of Cranmer\tpapal_bull_cranmer_excommunication");
 		his_self.addEndMove("RESETCONFIRMSNEEDED\tall");
@@ -2713,6 +2891,7 @@ console.log("selected: " + spacekey);
               html += `<li class="option" id="yes">yes</li>`;
               html += `<li class="option" id="no">no</li>`;
 	      html += '</ul>';
+
               his_self.updateStatusWithOptions(msg, html);
 
               $('.option').off();
@@ -2742,58 +2921,6 @@ console.log("selected: " + spacekey);
           } else {
 	    his_self.updateStatus("Papacy playing "+his_self.popup("005"));
 	  }
-
-	  return 0;
-	},
-      }
-    } else {
-      deck['005'] = { 
-        img : "cards/HIS-005-2P.svg" , 
-        name : "Papal Bull" ,
-        ops : 4 ,
-        turn : 1 ,
-        type : "normal" , 
-        faction : "papacy" ,
-        removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-        canEvent : function(his_self, faction) {
-	  return 1;
-        },
-        onEvent : function(his_self, faction) {
-
-	  let papacy = his_self.returnPlayerOfFaction("papacy");
-
-	  if (papacy == his_self.game.player) {
-
-            let msg = "Select Protestant Reformer:";
-	    let reformer_exists = 0;
-            let html = '<ul>';
-	    for (let key in his_self.reformers) {
-	      let s = his_self.returnSpaceOfPersonage("protestant", key);
-	      if (s) {
-		reformer_exists = 1;
-                html += `<li class="option" id="${key}">${his_self.reformers[key].name}</li>`;
-	      }
-	    }
-
-	    if (reformer_exists == 0) {
-	      his_self.updateLog("No excommunicable Protestant reformers exist");
-	      his_self.endTurn();
-	      return;
-	    }
-
-	    html += '</ul>';
-            his_self.updateStatusWithOptions(msg, html);
-  
-            $('.option').off();
-            $('.option').on('click', function () {
-              let selected_reformer = $(this).attr("id");
-	      his_self.addMove("excommunicate_reformer\t"+selected_reformer);
-	      his_self.endTurn();
-	    });
-
-	    return 0;
-
-          }
 
 	  return 0;
 	},
@@ -3525,6 +3652,7 @@ console.log("selected: " + spacekey);
 	// algiers space is now in play
 	his_self.game.spaces['algiers'].home = "ottoman";
 	his_self.game.spaces['algiers'].political = "ottoman";
+	his_self.game.spaces['algiers'].pirate_haven = 1;
 	his_self.addRegular("ottoman", "algiers", 2);
 	his_self.addCorsair("ottoman", "algiers", 2);
 	his_self.game.state.events.barbary_pirates = 1;
@@ -8920,6 +9048,9 @@ console.log("nothing is left!");
 	  his_self.addRegular("ottoman", spacekey, 1);
 	  his_self.addCorsair("ottoman", spacekey, 2);
 	  his_self.game.spaces[spacekey].pirate_haven = 1;
+	  his_self.game.spaces[spacekey].fortified = 1;
+
+	  his_self.displaySpace(spacekey);
 
 	  return 1;
 
@@ -10342,6 +10473,7 @@ alert("MOVE IS: " + "move\tengland\tland\t"+options[options_idx].spacekey+"\tire
 		if (controller == "") { controller = "independent"; }
                 his_self.addMove("build\tland\t"+controller+"\t"+"regular"+"\t"+spacekey);
 	      }
+	      his_self.addMove(`NOTIFY\${his_self.returnFactionName(faction)} adds fortress to ${his_self.returnName(spacekey)}`);
               his_self.addMove("fortify\t"+spacekey);
 	      his_self.endTurn();
             },

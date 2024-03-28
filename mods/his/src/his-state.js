@@ -170,22 +170,23 @@
   isSpaceBesieged(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let faction_with_units = "";
+    let faction_in_control = this.returnFactionControllingSpace(space);
     if (space.besieged == 1 || space.besieged == 2 || space.besieged == true) {
       //
       // are we still besieged? will be unit
       //
       for (let f in space.units) {
         for (let i = 0; i < space.units[f].length; i++) {
-  	  if (space.units[f][i].besieged) {
+  	  if (space.units[f][i].besieged == true || space.units[f][i].besieged == 1) {
 	    return true;
 	  } else {
-            faction_with_units = f;
+	    // if not allies, then someone must be besieged
+	    if (!this.areAllies(f, faction_in_control)) { return true; }    
 	  }
         }
       }
-      let faction_in_control = this.returnFactionControllingSpace(space);
-      if (!this.areAllies(faction_in_control, faction_with_units)) { return true; }
-      return false; // no besieging units left!
+
+      return false; // everyone here is allied
     }
     return false;
   }
@@ -939,6 +940,39 @@ if (this.game.state.scenario != "is_testing") {
     this.game.state.already_excommunicated.push(faction);
     this.game.state.excommunicated_factions[faction] = 1;
     return;
+  }
+
+
+  returnJustificationForExcommunication(faction) {
+    if (this.areEnemies(faction, "papacy")) { return "Wickedness against Saint Peter's Church and the Kingdom of Heaven"; }
+    if (this.areAllies(faction, "ottoman")) { return "Providing Succor to the Enemies of Christendom"; }
+    if (faction == "england") {
+      if (this.game.state.leaders.henry_viii == 1) {
+	for (let key in this.game.spaces) {
+	  if (this.game.spaces[key].home == "england") {
+	    if (this.game.spaces[key].religion == "protestant") { return "Tacit Support for the Protestant Sect in England"; }
+	  }
+	}
+      }
+    }
+    return "";
+  }
+
+
+  canPapacyExcommunicateFaction(faction) {
+    if (this.game.state.already_excommunicated.includes(faction)) { return 0; }
+    if (this.areEnemies(faction, "papacy")) { return 1; }
+    if (this.areAllies(faction, "ottoman")) { return 1; }
+    if (faction == "england") {
+      if (this.game.state.leaders.henry_viii == 1) {
+	for (let key in this.game.spaces) {
+	  if (this.game.spaces[key].home == "england") {
+	    if (this.game.spaces[key].religion == "protestant") { return 1; }
+	  }
+	}
+      }
+    }
+    return 0;
   }
 
   excommunicateReformer(reformer="") {
