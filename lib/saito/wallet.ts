@@ -1258,4 +1258,8 @@ export default class Wallet extends SaitoWallet {
 
 		return string;
 	}
+
+	public async setKeyList(keylist: string[]): Promise<void> {
+		return await this.instance.set_key_list(keylist);
+	}
 }
