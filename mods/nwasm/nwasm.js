@@ -670,6 +670,28 @@ class Nwasm extends OnePlayerGameTemplate {
 		this.nwasm.random = this.app.crypto.generateRandomNumber();
 		this.save();
 	}
+
+	webServer(app, expressapp, express){
+		//Opt out of fancy index.js
+		// revert to basic modtemplate code
+		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
+		let fs = app?.storage?.returnFileSystem();
+
+		if (fs != null) {
+			if (fs.existsSync(webdir)) {
+				expressapp.use(
+					'/' + encodeURI(this.returnSlug()),
+					express.static(webdir)
+				);
+			} else if (this.default_html) {
+				expressapp.use(
+					'/' + encodeURI(this.returnSlug()),
+					express.static(__dirname + '/../../lib/templates/html')
+				);
+			}
+		}
+	}
+
 }
 
 module.exports = Nwasm;

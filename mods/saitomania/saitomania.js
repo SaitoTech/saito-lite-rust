@@ -164,7 +164,6 @@ class SaitoMania extends OnePlayerGameTemplate {
 				);
 			}
 		}
-	
 	}
 }
 
