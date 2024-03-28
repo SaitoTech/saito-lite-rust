@@ -1374,7 +1374,7 @@ console.log(x + " -- " + faction + " -- " + navalspace);
 	    let base_x = this.rollDice(6) + this.rollDice(6);
 	    let x = base_x + this.game.state.explorations[idx].modifiers;
 
-	    this.updateLog("Circumnavigation Roll: " + x + " (+" + this.game.state.explorations[idx].modifiers +")");
+	    this.updateLog("Circumnavigation Roll: " + x + " (" + base_x + "+" + this.game.state.explorations[idx].modifiers +")");
 
 	    if (x > 9) {
 
