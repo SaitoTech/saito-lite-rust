@@ -1,6 +1,7 @@
 const OnePlayerGameTemplate = require('../../lib/templates/oneplayer-gametemplate');
 const SolitrioGameRulesTemplate = require('./lib/solitrio-game-rules.template');
 const SolitrioGameOptionsTemplate = require('./lib/solitrio-game-options.template');
+const htmlTemplate = require('./lib/game-html.template');
 
 //////////////////
 // CONSTRUCTOR  //
@@ -77,6 +78,8 @@ class Solitrio extends OnePlayerGameTemplate {
 		if (!this.browser_active) {
 			return;
 		}
+
+		this.injectGameHTML(htmlTemplate());
 
 		super.render(app);
 

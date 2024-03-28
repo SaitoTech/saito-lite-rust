@@ -4,6 +4,8 @@ const PokerGameRulesTemplate = require('./lib/poker-game-rules.template');
 const PokerGameOptionsTemplate = require('./lib/poker-game-options.template');
 const HealthMeter = require("./lib/poker-health-meter");
 const PokerStats = require("./lib/stats");
+const htmlTemplate = require('./lib/game-html.template');
+
 
 //////////////////
 // CONSTRUCTOR  //
@@ -14,6 +16,7 @@ class Poker extends GameTableTemplate {
 
 		this.app = app;
 		this.name = 'Poker';
+		this.title = "Saito Poker";
 
 		this.description =
 			'Texas Hold\'em Poker for the Saito Arcade. With five cards on the table and two in your hand, can you bet and bluff your way to victory?';
@@ -107,6 +110,8 @@ class Poker extends GameTableTemplate {
 		if (this.initialize_game_run) {
 			return;
 		}
+
+		this.injectGameHTML(htmlTemplate());
 
 		//
 		// ADD MENU

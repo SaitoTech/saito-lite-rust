@@ -1,5 +1,6 @@
 const OnePlayerGameTemplate = require('../../lib/templates/oneplayer-gametemplate');
 const MahjongGameRulesTemplate = require('./lib/mahjong-game-rules.template');
+const htmlTemplate = require('./lib/game-html.template');
 
 //////////////////
 // CONSTRUCTOR  //
@@ -54,6 +55,8 @@ class Mahjong extends OnePlayerGameTemplate {
 		if (!this.browser_active) {
 			return;
 		}
+		
+		this.injectGameHTML(htmlTemplate());
 
 		await super.render(app);
 

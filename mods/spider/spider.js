@@ -2,6 +2,7 @@ const OnePlayerGameTemplate = require('../../lib/templates/oneplayer-gametemplat
 const SpiderGameRulesTemplate = require('./lib/spider-game-rules.template');
 const SpiderGameOptionsTemplate = require('./lib/spider-game-options.template');
 const CardStack = require('../../lib/saito/ui/game-cardstack/game-cardstack');
+const htmlTemplate = require('./lib/game-html.template');
 
 //////////////////
 // CONSTRUCTOR  //
@@ -72,6 +73,7 @@ class Spider extends OnePlayerGameTemplate {
 
 		if (this.browser_active) {
 			// Insert game board
+			this.injectGameHTML(htmlTemplate());
 			$('.gameboard').html(this.returnBoard());
 			this.removeEvents();
 

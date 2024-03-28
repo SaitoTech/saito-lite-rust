@@ -1,5 +1,6 @@
 const OnePlayerGameTemplate = require('../../lib/templates/oneplayer-gametemplate');
 const BeleagueredGameRulesTemplate = require('./lib/beleaguered-game-rules.template');
+const htmlTemplate = require('./lib/game-html.template');
 
 const CardStack = require('../../lib/saito/ui/game-cardstack/game-cardstack');
 
@@ -38,6 +39,9 @@ class Beleaguered extends OnePlayerGameTemplate {
 			'm4',
 			'r4'
 		];
+
+		this.social.creator = "Pawel Pawlak";
+		this.social.twitter = "@PawelPawlak14";
 	}
 
 	returnGameRulesHTML() {
@@ -80,6 +84,8 @@ class Beleaguered extends OnePlayerGameTemplate {
 		if (!this.browser_active || !this.app.BROWSER) {
 			return;
 		}
+
+		this.injectGameHTML(htmlTemplate());
 
 		await super.render(app);
 
