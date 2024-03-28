@@ -1524,8 +1524,8 @@ class Arcade extends ModTemplate {
 			data: newtx.toJson()
 		});
 
-		//Start Spinner
-		this.app.connection.emit('arcade-game-initialize-render-request', txmsg.game_id);
+		//Start Spinner 
+		this.app.connection.emit('arcade-game-initialize-render-request', opentx.signature);
 
 		/*
     try {

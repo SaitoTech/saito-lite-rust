@@ -693,13 +693,13 @@ video#local {
 	}
 
 	.control-panel {
-		gap: 2rem;
-		max-width: 100%;
+		gap: 1rem;
+		width: calc(100vw - 1rem);
 		justify-content: space-between;
 	}
 
 	.full-screen .control-panel .control-list {
-		gap: 1rem;
+		gap: 0.5rem;
 	}
 
 	.full-screen .control-panel .control-list .icon_click_area {

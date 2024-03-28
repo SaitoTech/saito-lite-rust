@@ -1,5 +1,6 @@
 const OnePlayerGameTemplate = require('../../lib/templates/oneplayer-gametemplate');
 const MahjongGameRulesTemplate = require('./lib/mahjong-game-rules.template');
+const htmlTemplate = require('./lib/game-html.template');
 
 //////////////////
 // CONSTRUCTOR  //
@@ -7,6 +8,7 @@ const MahjongGameRulesTemplate = require('./lib/mahjong-game-rules.template');
 class Mahjong extends OnePlayerGameTemplate {
 	constructor(app) {
 		super(app);
+		this.app = app;
 
 		this.name = 'Mahjong';
 		this.gamename = 'Mahjong';
@@ -16,8 +18,9 @@ class Mahjong extends OnePlayerGameTemplate {
 		this.publisher_message =
 			'developed by Pawel (twitter: @PawelPawlak14). Feel free to pm me with any suggestions/feedback';
 
-		this.status = 'Beta';
-		this.app = app;
+		this.social.creator = "Pawel Pawlak";
+		this.social.twitter = "@PawelPawlak14";
+
 	}
 
 	returnGameRulesHTML() {
@@ -54,6 +57,8 @@ class Mahjong extends OnePlayerGameTemplate {
 		if (!this.browser_active) {
 			return;
 		}
+		
+		await this.injectGameHTML(htmlTemplate());
 
 		await super.render(app);
 

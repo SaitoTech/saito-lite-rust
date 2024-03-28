@@ -1,9 +1,15 @@
 
-  render(app) {
+  async render(app) {
 
     if (this.browser_active == 0) { return; }
 
-    super.render(app);
+    if (this.initialize_game_run) {
+      return;
+    }
+
+    await this.injectGameHTML(htmlTemplate());
+
+    await super.render(app);
 
     let game_mod = this;
 

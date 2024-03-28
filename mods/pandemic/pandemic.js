@@ -4,6 +4,7 @@ const PandemicRetroSkin = require('./lib/pandemicRetro.skin.js');
 const PandemicNewSkin = require('./lib/pandemicNew.skin.js');
 const PandemicGameRulesTemplate = require('./lib/pandemic-game-rules.template');
 const PandemicGameOptionsTemplate = require('./lib/pandemic-game-options.template');
+const htmlTemplate = require('./lib/game-html.template');
 
 class Pandemic extends GameTemplate {
 	//////////////////
@@ -137,6 +138,9 @@ class Pandemic extends GameTemplate {
 	}
 
 	async render(app) {
+
+		await this.injectGameHTML(htmlTemplate());
+
 		await super.render(app);
 
 		if (!this.skin) {
@@ -156,8 +160,6 @@ class Pandemic extends GameTemplate {
 		}
 
 		this.skin.render();
-
-		document.title = this.gamename || this.name;
 
 		this.boardWidth = this.skin.boardWidth;
 		this.card_height_ratio = this.skin.card_height_ratio;

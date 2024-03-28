@@ -5,6 +5,7 @@ const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
 const ShopOverlay = require("./lib/overlays/shop");
 const WelcomeOverlay = require("./lib/overlays/welcome");
 const AttackOverlay = require('./lib/overlays/attack');
+const htmlTemplate = require('./lib/core/game-html.template');
 
 //
 // TODO
@@ -102,11 +103,13 @@ constructor(app) {
   }
 
  
- render(app) {
+ async render(app) {
 
     if (this.browser_active == 0) { return; }
 
-    super.render(app);
+    await this.injectGameHTML(htmlTemplate());
+
+    await super.render(app);
 
     this.menu.addMenuOption("game-game", "Game");
     this.menu.addMenuOption("game-info", "Info");

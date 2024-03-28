@@ -1,6 +1,7 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const GameRulesTemplate = require('./lib/game-rules.template');
 const GameOptionsTemplate = require('./lib/game-options.template');
+const htmlTemplate = require('./lib/game-html.template');
 
 //////////////////
 // CONSTRUCTOR  //
@@ -45,12 +46,7 @@ class Jaipur extends GameTemplate {
 			return;
 		}
 
-		document.title = this.name;
-		var s = document.createElement('link');
-		s.rel = 'stylesheet';
-		s.type = 'text/css';
-		s.href = `/${this.name.toLowerCase()}/style.css`;
-		document.querySelector('head').appendChild(s);
+		await this.injectGameHTML(htmlTemplate());
 
 		await super.render(app);
 
