@@ -1,6 +1,7 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const GameRulesTemplate = require('./lib/game-rules.template');
 const GameOptionsTemplate = require('./lib/game-options.template');
+const htmlTemplate = require('./lib/game-html.template');
 
 //////////////////
 // CONSTRUCTOR  //
@@ -37,7 +38,7 @@ class Steamed extends GameTemplate {
 		return html;
 	}
 
-	render(app) {
+	async render(app) {
 		if (this.browser_active == 0) {
 			return;
 		}
@@ -45,14 +46,9 @@ class Steamed extends GameTemplate {
 			return;
 		}
 
-		document.title = this.name;
-		var s = document.createElement('link');
-		s.rel = 'stylesheet';
-		s.type = 'text/css';
-		s.href = `/${this.name.toLowerCase()}/style.css`;
-		document.querySelector('head').appendChild(s);
-
-		super.render(app);
+		await this.injectGameHTML(htmlTemplate());
+		
+		await super.render(app);
 
 		this.menu.addMenuOption('game-game', 'Game');
 		this.menu.addMenuOption('game-info', 'Info');

@@ -1,6 +1,7 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const WordblocksGameRulesTemplate = require('./lib/wordblocks-game-rules.template');
 const WordblocksGameOptionsTemplate = require('./lib/wordblocks-game-options.template');
+const htmlTemplate = require('./lib/game-html.template');
 
 class Wordblocks extends GameTemplate {
 	constructor(app) {
@@ -45,6 +46,8 @@ class Wordblocks extends GameTemplate {
 		if (this.initialize_game_run) {
 			return;
 		}
+
+		await this.injectGameHTML(htmlTemplate());
 
 		await super.render(app);
 

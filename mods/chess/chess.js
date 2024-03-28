@@ -5,6 +5,8 @@ const ChessGameOptions = require('./lib/chess-game-options.template');
 const ChessSingularGameOptions = require('./lib/chess-singular-game-options.template');
 const chess = require('./lib/chess.js');
 const chessboard = require('./lib/chessboard');
+const htmlTemplate = require('./lib/game-html.template');
+
 //const SaitoUser = require("../../lib/saito/ui/saito-user/saito-user");
 
 var this_chess = null;
@@ -24,6 +26,9 @@ class Chessgame extends GameTemplate {
 		this.minPlayers = 2;
 		this.maxPlayers = 2;
 
+		this.title = "Saito Chess";
+		this.styles = ["/chess/chessboard.css"];
+
 		this.description =
 			'An implementation of Chess for the Saito Blockchain';
 		this.categories = 'Games Boardgame Classic';
@@ -41,6 +46,8 @@ class Chessgame extends GameTemplate {
 		if (this.initialize_game_run) {
 			return;
 		}
+
+		await this.injectGameHTML(htmlTemplate());
 
 		super.render(app);
 
