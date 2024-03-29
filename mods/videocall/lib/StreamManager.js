@@ -165,13 +165,7 @@ class StreamManager {
 		});
 
 		app.connection.on('stun-connection-connected', (peerId) => {
-			console.log('stun-connection-connected');
-			console.log(
-				this.mod.stun.peers.size,
-				this.mod.stun.peers,
-				'peers length'
-			);
-			console.log(
+			console.log('stun-connection-connected',
 				this.active,
 				this.mod.room_obj,
 				JSON.stringify(this.app.options.stun.peers)

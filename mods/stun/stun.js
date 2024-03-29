@@ -365,6 +365,7 @@ class Stun extends ModTemplate {
 			})
 
 			if (!callback){
+				console.log("I will be impolite to peer: ", peerId);
 				pc.rude = true;
 			}
 
@@ -463,9 +464,9 @@ class Stun extends ModTemplate {
 		// However, need to further study "perfect negotiation" with polite/impolite peers
 		//
 		peerConnection.onnegotiationneeded = async () => {
-			console.log(`STUN: Negotation needed! sending offer to ${peerId} with peer connection`);
-
 			try {
+				console.log(`STUN: Negotation needed! sending offer to ${peerId} with peer connection`);
+
 				peerConnection.makingOffer = true;
 
 				await peerConnection.setLocalDescription();

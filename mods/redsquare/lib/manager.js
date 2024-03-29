@@ -29,6 +29,8 @@ class TweetManager {
 			(entries) => {
 				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
+						console.log("IntersectionObserver");
+
 						if (this.mode === 'tweet') {
 							return;
 						}
@@ -105,7 +107,7 @@ class TweetManager {
 		);
 	}
 
-	render(new_mode = '') {
+	render(new_mode = this.mode) {
 		this.app.connection.emit('redsquare-clear-menu-highlighting', new_mode);
 
 		if (document.querySelector('.highlight-tweet')) {
@@ -129,35 +131,37 @@ class TweetManager {
 		this.intersectionObserver.disconnect();
 		this.profile.remove();
 
-		let holder = document.getElementById('tweet-thread-holder');
-		let managerElem = document.querySelector(myqs);
-
 		if (!document.querySelector(myqs)) {
 			this.app.browser.addElementToSelector(
 				TweetManagerTemplate(),
 				this.container
 			);
+		} 
+
+		let holder = document.getElementById('tweet-thread-holder');
+		let managerElem = document.querySelector(myqs);
+
+		if (this.mode == 'tweets' && new_mode !== 'tweets') {
+			console.log("Stash rendered tweets from main feed");
+			let kids = managerElem.children;
+			holder.replaceChildren(...kids);
 		} else {
-			if (this.mode == 'tweets' && new_mode !== 'tweets') {
-				let kids = managerElem.children;
-				holder.replaceChildren(...kids);
-			} else {
-				while (managerElem.hasChildNodes()) {
-					managerElem.firstChild.remove();
-				}
+			console.log("Remove temporary content from page");
+			while (managerElem.hasChildNodes()) {
+				managerElem.firstChild.remove();
 			}
 		}
+	
 
 		//
 		// if someone asks the manager to render with a mode that is not currently
 		// set, we want to update our mode and proceed with it.
 		//
-		if (new_mode && new_mode != this.mode) {
+		if (new_mode != this.mode) {
 			this.mode = new_mode;
 		}
-		if (!this.mode) {
-			this.mode = 'tweets';
-		}
+
+		console.log("Redsquare manager rendering: ", this.mode);
 
 		this.showLoader();
 
@@ -494,33 +498,31 @@ class TweetManager {
 					.querySelector(`.tweet-${tweet.tx.signature}`)
 					.classList.add('highlight-tweet');
 			}
-			post.render(`.tweet-${tweet.tx.signature}`);
-			this.hideLoader();
-			
-		}else{
-
-			// query the whole thread
-			let thread_id =
-				tweet.thread_id || tweet.parent_id || tweet.tx.signature;
-
-			this.mod.loadTweetThread(thread_id, () => {
-				let root_tweet = this.mod.returnTweet(thread_id);
-
-				if (root_tweet) {
-					root_tweet.renderWithChildrenWithTweet(tweet);
-				}
-
-				if (document.querySelector(`.tweet-${tweet.tx.signature}`)) {
-					document
-						.querySelector(`.tweet-${tweet.tx.signature}`)
-						.classList.add('highlight-tweet');
-				}
-
-				post.render(`.tweet-${tweet.tx.signature}`);
-
-				this.hideLoader();
-			});
+			post.render(`.tweet-${tweet.tx.signature}`);			
 		}
+
+		// query the whole thread
+		let thread_id =
+			tweet.thread_id || tweet.parent_id || tweet.tx.signature;
+
+		this.mod.loadTweetThread(thread_id, () => {
+			let root_tweet = this.mod.returnTweet(thread_id);
+
+			if (root_tweet) {
+				root_tweet.renderWithChildrenWithTweet(tweet);
+			}
+
+			if (document.querySelector(`.tweet-${tweet.tx.signature}`)) {
+				document
+					.querySelector(`.tweet-${tweet.tx.signature}`)
+					.classList.add('highlight-tweet');
+			}
+
+			post.render(`.tweet-${tweet.tx.signature}`);
+
+			this.hideLoader();
+		});
+		
 	}
 
 	attachEvents() {

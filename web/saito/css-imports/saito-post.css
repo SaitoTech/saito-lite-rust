@@ -151,8 +151,7 @@
 
 /**  In screen reply  */
 .tweet-manager .tweet-overlay {
-  margin-left: auto;
-  width: calc(100% - 5rem);
+  padding-left: 5rem;
 }
 
 .tweet-manager .post-tweet-textarea{
