@@ -29,6 +29,7 @@ class RedSquareMain {
     this.app.connection.on("redsquare-home-render-request", (scroll_to_top = false) => {
 
       console.log("redsquare-home-render-request");
+
       if (document.querySelector(".saito-back-button")) {
         document.querySelector(".saito-back-button").remove();
       }
@@ -207,7 +208,8 @@ class RedSquareMain {
     } else {
       this.app.browser.addElementToDom(RedSquareMainTemplate());
     }
-    this.manager.render("tweets");
+    
+    this.manager.render();
     this.attachEvents();
 
     this.monitorUserInteraction();
