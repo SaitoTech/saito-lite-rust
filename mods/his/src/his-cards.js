@@ -5432,7 +5432,7 @@ console.log("selected: " + spacekey);
             his_self.playerPlaceUnitsInSpaceWithFilter("mercenary", num, faction,
 	      function(space) {
 		for (let z = 0; z < space.units[faction].length; z++) { 
-		  if (space.units[faction][i].besieged > 0) { return 0; }
+		  if (space.units[faction][z].besieged > 0) { return 0; }
 	        }
 		if (his_self.returnFactionLandUnitsInSpace(faction, space.key)) { return 1; }
 		if (his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 1; }

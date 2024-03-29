@@ -9008,7 +9008,7 @@ console.log("selected: " + spacekey);
             his_self.playerPlaceUnitsInSpaceWithFilter("mercenary", num, faction,
 	      function(space) {
 		for (let z = 0; z < space.units[faction].length; z++) { 
-		  if (space.units[faction][i].besieged > 0) { return 0; }
+		  if (space.units[faction][z].besieged > 0) { return 0; }
 	        }
 		if (his_self.returnFactionLandUnitsInSpace(faction, space.key)) { return 1; }
 		if (his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 1; }
@@ -26462,7 +26462,7 @@ try {
 	  let no_defender_units = false;
 	  if (defender_units.length < 1) { no_defender_units = true; } else {
 	    if (defender_units[0] == "defender") {
- 	      if (defender_units.length == 1) { no_defender_units = truel }
+ 	      if (defender_units.length == 1) { no_defender_units = true; }
 	    }
 	  }
 	  if (no_defender_units == true && (space.type == "electorate" || space.type == "key" || this.isSpaceFortified(space.key) || space.type == "fortress")) {
