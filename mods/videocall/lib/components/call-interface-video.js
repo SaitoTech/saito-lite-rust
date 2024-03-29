@@ -75,7 +75,6 @@ class CallInterfaceVideo {
 					this.video_boxes[
 						peer_id
 					].video_box.removeConnectionMessage();
-					console.log('removing reconnection message');
 					this.startTimer();
 					this.updateImages();
 				} else if (status === 'disconnected') {
