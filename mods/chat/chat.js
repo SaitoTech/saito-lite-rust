@@ -133,6 +133,10 @@ class Chat extends ModTemplate {
 		as.render();
 	}
 
+	onNewBlock(blk) {
+		console.log('new block', blk);
+	}
+
 	async initialize(app) {
 		await super.initialize(app);
 
@@ -255,7 +259,7 @@ class Chat extends ModTemplate {
 					chat_group.member_ids[this.publicKey] = 1;
 
 					this.groups.push(chat_group);
-					this.app.keychain.addSubscriptionAddress(
+					this.app.keychain.addWatchedPublicKey(
 						chat_group.subscription_address
 					);
 					this.saveChatGroup(chat_group);
@@ -276,6 +280,12 @@ class Chat extends ModTemplate {
 		if (!app.BROWSER) {
 			return;
 		}
+
+		this.app.keychain.addWatchedPublicKey(this.communityGroupAddress);
+
+		// setTimeout(() => {
+		// 	this.app.keychain.unwatchPublicKey(this.communityGroupAddress);
+		// }, 3000);
 
 		if (service.service === 'relay') {
 			this.isRelayConnected = true;
@@ -689,37 +699,37 @@ class Chat extends ModTemplate {
 	 * Upon successful transaction, it triggers the onConfirmation method for each transaction in the response.
 	 *
 	 */
-	onNewBlock(blk) {
-		// Check if the block object has a hash property
-		if (!blk || !blk.hash) {
-			console.error('Invalid block object received.');
-			return;
-		}
+	// onNewBlock(blk) {
+	// 	// Check if the block object has a hash property
+	// 	if (!blk || !blk.hash) {
+	// 		console.error('Invalid block object received.');
+	// 		return;
+	// 	}
 
-		let subscriptionAddress = this.app?.keychain?.subscriptionAddress;
+	// 	let subscriptionAddress = this.app?.keychain?.subscriptionAddress;
 
-		if (!subscriptionAddress) {
-			console.error('Subscription address not found.');
-			return;
-		}
+	// 	if (!subscriptionAddress) {
+	// 		console.error('Subscription address not found.');
+	// 		return;
+	// 	}
 
-		// Construct the message to be sent
-		let msg = {
-			hash: blk.hash,
-			subscription_address: subscriptionAddress
-		};
+	// 	// Construct the message to be sent
+	// 	let msg = {
+	// 		hash: blk.hash,
+	// 		subscription_address: subscriptionAddress
+	// 	};
 
-		let chat_self = this;
+	// 	let chat_self = this;
 
-		// Send the message as a transaction
-		this.app.network.sendRequestAsTransaction('listener', msg, (txs) => {
-			if (Array.isArray(txs) && txs.length > 0) {
-				txs.forEach((tx) => {
-					chat_self.onConfirmation(blk, tx, 0);
-				});
-			}
-		});
-	}
+	// 	// Send the message as a transaction
+	// 	this.app.network.sendRequestAsTransaction('listener', msg, (txs) => {
+	// 		if (Array.isArray(txs) && txs.length > 0) {
+	// 			txs.forEach((tx) => {
+	// 				chat_self.onConfirmation(blk, tx, 0);
+	// 			});
+	// 		}
+	// 	});
+	// }
 
 	//
 	// ---------- on chain messages ------------------------
@@ -953,10 +963,9 @@ class Chat extends ModTemplate {
 	//
 	async sendCreateGroupTransaction(name, invitees = []) {
 		// --- make this a function
-
-		let subscription_address =
-			this.app.keychain.generateSubscriptionAddress();
-		this.app.keychain.addSubscriptionAddress(subscription_address);
+		let pk = this.app.crypto.generateKeys();
+		let subscription_address = this.app.crypto.generatePublicKey(pk);
+		this.app.keychain.addWatchedPublicKey(subscription_address);
 
 		let newtx = await this.app.wallet.createUnsignedTransaction(
 			this.publicKey,
@@ -994,9 +1003,7 @@ class Chat extends ModTemplate {
 			let txmsg = tx.returnMessage();
 
 			// add subscription address to keychain
-			this.app.keychain.addSubscriptionAddress(
-				txmsg.subscription_address
-			);
+			this.app.keychain.addWatchedPublicKey(txmsg.subscription_address);
 			if (this.returnGroup(tx.signature)) {
 				return;
 			}
@@ -1968,8 +1975,8 @@ class Chat extends ModTemplate {
 				members.push(this.publicKey);
 			}
 			id = this.createGroupIdFromMembers(members);
-			subscription_address =
-				this.app.keychain.generateSubscriptionAddress();
+			let pk = this.app.crypto.generateKeys();
+			subscription_address = this.app.keychain.generatePublicKey(pk);
 		}
 
 		if (name == null) {

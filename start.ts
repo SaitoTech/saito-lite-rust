@@ -7,6 +7,7 @@ import process from 'process';
 import Factory from './lib/saito/factory';
 import Wallet from './lib/saito/wallet';
 import Blockchain from './lib/saito/blockchain';
+import { LogLevel } from 'saito-js/saito';
 
 function getCommandLineArg(key) {
 	const prefix = key + '=';
@@ -38,7 +39,7 @@ async function initSaito() {
 		new NodeSharedMethods(app),
 		new Factory(),
 		privateKey,
-		logLevel
+		LogLevel.Debug
 	).then(() => {
 		console.log('saito wasm lib initialized');
 	});

@@ -16,7 +16,6 @@ class Keychain {
 	public bsh: string;
 	public lc: boolean;
 	public hash: string;
-	public subscriptionAddress: Array<any>
 
 	constructor(app: Saito) {
 		this.app = app;
@@ -25,11 +24,15 @@ class Keychain {
 		this.groups = [];
 		this.modtemplate = new modtemplate(this.app);
 		this.fetched_keys = new Map<string, number>();
-		this.subscriptionAddress = []
+
+		this.watchKeys()
 
 	}
 
+
 	async initialize() {
+
+
 		if (this.app.options.keys == null) {
 			this.app.options.keys = [];
 		}
@@ -62,12 +65,6 @@ class Keychain {
 			this.groups = this.app.options.groups;
 		}
 
-		//  saved subscriptions 
-		if (this.app.options.subscriptionAddress == null) {
-			this.app.options.subscriptionAddress = []
-		} else {
-			this.subscriptionAddress = this.app.options.subscriptionAddress;
-		}
 
 
 		//
@@ -158,29 +155,6 @@ class Keychain {
 		this.saveKeys();
 	}
 
-	generateSubscriptionAddress() {
-		const pk = this.app.crypto.generateKeys();
-		const subscription_address = this.app.crypto.generatePublicKey(pk);
-		return subscription_address
-	}
-
-	addSubscriptionAddress(publicKey) {
-		console.log('adding subscription address', publicKey)
-		if (!publicKey || typeof publicKey !== 'string') {
-			console.warn('Invalid publicKey for subscription address');
-			return;
-		}
-
-		if (this.subscriptionAddress.includes(publicKey)) {
-			console.warn('Subscription address already exists');
-			return;
-		}
-
-		this.subscriptionAddress.push(publicKey);
-		console.log(`Subscription address ${publicKey} added successfully.`);
-
-		this.saveKeys()
-	}
 
 
 
@@ -438,7 +412,6 @@ class Keychain {
 
 	saveKeys() {
 		this.app.options.keys = this.keys;
-		this.app.options.subscriptionAddress = this.subscriptionAddress
 		this.app.storage.saveOptions();
 		if (this.returnHash() != this.hash) {
 			this.hash = this.returnHash();
@@ -577,11 +550,80 @@ class Keychain {
 		return x;
 	}
 
+
+
+
+	onKeysMutated() {
+		console.log('Keys have been mutated!');
+
+		let keys = this.returnWatchedPublicKeys()
+		console.log('watched keys', keys)
+	}
+
+	watchKeys() {
+		const keychain = this;
+		const handler = {
+			set(target, property, value) {
+				const result = Reflect.set(target, property, value);
+				keychain.onKeysMutated();
+				return result;
+			},
+			deleteProperty(target, property) {
+				const result = Reflect.deleteProperty(target, property);
+				keychain.onKeysMutated();
+				return result;
+			},
+			apply(target, thisArg, argumentsList) {
+				const result = Reflect.apply(target, thisArg, argumentsList);
+				keychain.onKeysMutated();
+				return result;
+			}
+		};
+
+		this.keys = new Proxy(this.keys, handler);
+	}
+
+
+
+
+	/**
+ * Adds a publicKey to the watch list and updates the keys storage.
+ * This function takes a publicKey as input, marks it as watched, saves the updated keys,
+ *
+ * @param {string} publicKey The public key to add to the watch list. Defaults to an empty string.
+ */
 	addWatchedPublicKey(publicKey = '') {
 		this.addKey(publicKey, { watched: true });
 		this.saveKeys();
-		this.app.network.updatePeersWithWatchedPublicKeys();
 	}
+
+	/**
+ * Marks a publicKey as not watched in the keys list.
+ * This function takes a publicKey as input and updates its status to not watched,
+ * without removing it from the list.
+ *
+ * @param {string} publicKey The public key to mark as not watched.
+ */
+	unwatchPublicKey(publicKey = '') {
+		if (typeof publicKey !== 'string') {
+			throw new Error('Invalid publicKey: must be a string');
+		}
+		const keyExists = this.keys.some(key => key.publicKey === publicKey);
+
+		if (keyExists) {
+			this.keys = this.keys.map(key => {
+				if (key.publicKey === publicKey) {
+					return { ...key, watched: false };
+				}
+				return key;
+			});
+			this.saveKeys();
+		} else {
+			console.warn(`PublicKey ${publicKey} not found.`);
+		}
+	}
+
+
 
 	updateEncryptionByPublicKey(
 		publicKey: string,

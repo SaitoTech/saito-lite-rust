@@ -101,7 +101,7 @@ class WebMethods extends WebSharedMethods {
 		return list;
 	}
 
-	ensureBlockDirExists(path: string): void {}
+	ensureBlockDirExists(path: string): void { }
 }
 
 async function init() {
@@ -124,7 +124,7 @@ async function init() {
 			new WebMethods(saito),
 			new Factory(),
 			saito.options.wallet?.privateKey || '',
-			LogLevel.Info
+			LogLevel.Debug
 		);
 	} catch (e) {
 		console.error(e);
