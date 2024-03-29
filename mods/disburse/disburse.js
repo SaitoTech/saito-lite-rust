@@ -167,7 +167,14 @@ class Disburse extends ModTemplate {
 				amounts,
 				timestamp,
 				unique_hash,
-				async function (res) { console.log("hash:\t" + res.hash) },
+				async function (res) { 
+					console.log("hash:\t" + res.hash);
+					if (res.hash){
+						salert("Success, please wait - transaction hash: " + res.hash);
+					} else {
+						salert("An error might have ocurred");
+					}
+				},
 				ticker
 			);
 			// } else {

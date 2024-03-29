@@ -72,3 +72,7 @@ textarea[readonly]{
 button{
     margin-right: 50px;
 }
+
+.saito-alert-message {
+    align-self: normal;
+}
