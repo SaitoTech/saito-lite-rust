@@ -9,17 +9,6 @@ module.exports = () => {
                     <i id="toggle-audio" class="fas fa-microphone chat-settings-toggle-icon"></i>
                 </div>
             </div>
-            <div class="chat-settings-preview-message">Please take a moment to review your video and audio settings.</div>
-            <select style="display:none" class="saito-select" id="video-input"></select>
-            <select style="display:none" class="saito-select" id="audio-input"></select>
-            <button style="display:none"  id="test-mic" class="chat-settings-test-mic">Test Microphone</button>
-            <div style="display:none"  class="chat-settings-audio-controls">
-            <i id="toggle-playback" class="fas fa-play chat-settings-toggle-icon"></i>
-                <span id="audio-progress">00:00 / 00:00</span>
-            </div>
-            <div style="display:none"  class="chat-settings-audio-progress-bar">
-                <div id="progress" class="chat-settings-progress"></div>
-            </div>
         </div>
     </div>
      `;

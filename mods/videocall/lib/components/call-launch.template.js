@@ -2,34 +2,38 @@ module.exports = StunLaunchTemplate = (app, mod) => {
 	let html = `
       <div class="stun-appspace"> 
         <div class="stun-appspace-content">
-          <card class="appear stunx-appspace-splash">
-            <div class="saito-page-header-title">Saito Talk</div>
-              <div>peer-to-peer video chat</div>
-            <div class="stunx-appspace-actions">`;
+          <div class="staun-appspace-cards">
+            <card class="appear stunx-appspace-splash">
+              <div class="saito-page-header-title">Saito Talk</div>
+                <div>peer-to-peer video chat</div>
+                <fieldset class="stun-input-settings">
+                <legend>Adjust Inputs</legend>
+                <select style="display:none" class="saito-select" id="video-input"></select>
+                <select style="display:none" class="saito-select" id="audio-input"></select>
+                <button style="display:none"  id="test-mic" class="chat-settings-test-mic">Test Microphone</button>
+                <div style="display:none"  class="chat-settings-audio-controls">
+                <i id="toggle-playback" class="fas fa-play chat-settings-toggle-icon"></i>
+                    <span id="audio-progress">00:00 / 00:00</span>
+                </div>
+                <div style="display:none"  class="chat-settings-audio-progress-bar">
+                  <div id="progress" class="chat-settings-progress"></div>
+                </div>
+                </fieldset>
+            </card>
+            <card class="stun-appspace-settings">
+            </card>
+          </div>  
+          <div class="stunx-appspace-actions">`;
 
-	if (mod.room_obj) {
-		html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom" data-id="${mod.room_obj?.call_id}">Join Meeting</div>`;
-	} else {
-		html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom">Start Meeting</div>`;
-	}
+          if (mod.room_obj) {
+            html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom" data-id="${mod.room_obj?.call_id}">Join Meeting</div>`;
+          } else {
+            html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom">Start Meeting</div>`;
+          }                       
+          html += `</div>
 
-	html += `</div>
-            <div class="my-stun-container-info">
-              <i class="fas fa-info-circle"></i>
-              <span class="saito-info-text">Blockchain-mediated peer-to-peer connections can take longer to negotiate if you are on a mobile network or behind an aggressive firewall.</span>
-            </div>
-          </card>
-          <card class="stun-appspace-settings">
-          </card>
         </div>
-        <div class="stun-appspace-navigation">
-          <div>
-            <div><a href="/redsquare"><i class="fa-solid fa-square"></i><span>RedSquare</span></a></div>
-          </div>
-          <div>
-            <div><a href="/arcade"><i class="fas fa-gamepad"></i><span>Arcade</span></a></div>
-          </div>
-        </div>
+      
       </div>
 
     `;
