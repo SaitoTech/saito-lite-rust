@@ -1317,10 +1317,10 @@
     let faction_map = {};
 
     for (let f in space.units) {
-      if (f === faction1) {
+      if (f === faction1 || this.returnPlayerCommandingFaction(f) == this.returnPlayerCommandingFaction(faction1)) {
         faction_map[f] = faction1;
       }
-      if (f === faction2) {
+      if (f === faction2 || this.returnPlayerCommandingFaction(f) == this.returnPlayerCommandingFaction(faction2)) {
         faction_map[f] = faction2;
       }
     }
@@ -1349,6 +1349,12 @@
             if (this.areAllies(f, faction2)) {
               faction_map[f] = faction2;
             }
+            if (this.returnPlayerCommandingFaction(f) === faction1) {
+              faction_map[f] = faction1;
+	    }
+            if (this.returnPlayerCommandingFaction(f) === faction2) {
+              faction_map[f] = faction2;
+	    }
           }
         }
       }
@@ -1937,8 +1943,8 @@ try {
     let seas = {};
 
     seas['irish'] = {
-      top : 875 ,
-      left : 900 ,
+      top : 775 ,
+      left : 1100 ,
       name : "Irish Sea" ,
       ports : ["glasgow"] ,
       neighbours : ["biscay","north","channel"] ,
@@ -1965,8 +1971,8 @@ try {
       neighbours : ["irish","biscay","north"] ,
     }
     seas['north'] = {
-      top : 200 ,
-      left : 2350 ,
+      top : 350 ,
+      left : 2100 ,
       name : "North Sea" ,
       ports : ["london", "norwich", "berwick", "edinburgh", "calais", "antwerp", "amsterdam", "bremen", "hamburg" ] ,
       neighbours : ["irish","channel","baltic"] ,

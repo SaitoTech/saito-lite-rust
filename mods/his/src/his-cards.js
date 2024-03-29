@@ -2499,6 +2499,7 @@ console.log("selected: " + spacekey);
 	      if (action2 === "scotland" && !his_self.areEnemies("england","france")) {
 	        his_self.addMove("natural_ally_intervention\tfrance\tscotland\tengland\t0\tEngland declares war on Scotland");
 	      }	
+	      his_self.addMove("unexpected_war\tengland\t"+action2);
 	      his_self.addMove("declare_war\tengland\t"+action2+"\t1"); // 1 = skip natural ally intervention
 	      his_self.endTurn();
 
@@ -5364,7 +5365,17 @@ console.log("selected: " + spacekey);
       ops : 1 ,
       turn : 1 ,
       type : "response" ,
+      canEvent : function(his_self, faction) { return 1; } ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      onEvent : function(his_self, faction) {
+
+	let target_number = 2;
+	if (faction == "ottoman") { target_number = 4; }
+	his_self.game.queue.push("swiss_mercenaries_place\t"+faction+"\t"+target_number);
+
+	return 1;
+
+      },
       menuOption  :       function(his_self, menu, player) {
         if (menu === "assault") {
           let f = "";
@@ -5447,6 +5458,7 @@ console.log("selected: " + spacekey);
       turn : 1 ,
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
+      canEvent : function(his_self, faction) { return 0; } ,
       menuOption  :       function(his_self, menu, player, card="") {
 
         if (menu == "event") {
@@ -5713,6 +5725,7 @@ console.log("selected: " + spacekey);
 	    let action = $(this).attr("id");
 
             his_self.addMove("ops\t"+faction+"\t"+"040"+"\t"+2);
+	    his_self.addMove("unexpected_war\t"+faction+"\t"+action);
             his_self.addMove("declare_war\t"+faction+"\t"+action);
 	    his_self.endTurn();
 
@@ -10473,7 +10486,7 @@ alert("MOVE IS: " + "move\tengland\tland\t"+options[options_idx].spacekey+"\tire
 		if (controller == "") { controller = "independent"; }
                 his_self.addMove("build\tland\t"+controller+"\t"+"regular"+"\t"+spacekey);
 	      }
-	      his_self.addMove(`NOTIFY\${his_self.returnFactionName(faction)} adds fortress to ${his_self.returnName(spacekey)}`);
+	      his_self.addMove(`NOTIFY\t${his_self.returnFactionName(faction)} adds fortress to ${his_self.returnName(spacekey)}`);
               his_self.addMove("fortify\t"+spacekey);
 	      his_self.endTurn();
             },
@@ -10534,12 +10547,25 @@ alert("MOVE IS: " + "move\tengland\tland\t"+options[options_idx].spacekey+"\tire
 
 	      for (let key in space.units) {
 		for (let i = 0; i < space.units[key].length; i++) {
-		  if (space.units[key][i].besieged == 0) {
-		    attacker = key;
-		    if (attacker == "protestant" || attacker == "papacy" || attacker == "hapsburg" || attacker == "ottoman" || attacker == "england" || attacker == "france") { break; }
+		  let u = space.units[key][i];
+		  if (u.type == "regular" || u.type == "mercenary" || u.type == "cavalry") {
+		    if (space.units[key][i].besieged != 1 && space.units[key][i].besieged != true) {
+		      attacker = key;
+		      if (attacker == "protestant" || attacker == "papacy" || attacker == "hapsburg" || attacker == "ottoman" || attacker == "england" || attacker == "france") { break; }
+		    }
 		  }
 		}
 	      }
+	      // emergency sanity check -- anyone
+	      if (attacker == "") {
+		for (let key in space.units) {
+		  for (let z = 0; z < space.units[key].length; z++) {
+		    let u = space.units[key][z];
+		    if (u.type == "regular" || u.type == "cavalry" || u.type == "mercenary") { attacker = key; }
+		  }
+	        }
+	      }	      
+
 
 	      if (attacker != "") {
                 his_self.addMove("treachery\t"+attacker+"\t"+spacekey);

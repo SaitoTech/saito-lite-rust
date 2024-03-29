@@ -3288,7 +3288,7 @@ does_units_to_move_have_unit = true; }
       function(space) {
 	let num_moveable = 0;
 	for (let z in space.units) {
-	  if (space.units[z].length > 0 && his_self.returnPlayerCommandingFaction(z) == his_self.game.player) {
+	  if (space.units[z].length > 0 && his_self.returnPlayerCommandingFaction(z) == his_self.game.player && (z == faction || his_self.returnControllingPower(z) == faction)) {
 	    //
 	    // Foul Weather prevents spaces with already moved units
 	    //
@@ -3515,7 +3515,11 @@ does_units_to_move_have_unit = true; }
     html    += `</ul>`;
 
     if (post_battle) {
-      this.updateStatusWithOptions(`${this.returnFactionName(faction)} loses the battle. Retreat?`, html);
+      if (this.game.state.events.unexpected_war == 1) {
+        this.updateStatusWithOptions(`${this.returnFactionName(faction)} must retreat. Retreat?`, html);
+      } else {
+        this.updateStatusWithOptions(`${this.returnFactionName(faction)} loses the battle. Retreat?`, html);
+      }
     } else {
       this.updateStatusWithOptions(`${this.returnFactionName(faction)} approaches ${this.returnSpaceName(spacekey)}. ${this.returnFactionName(defender)} Retreat?`, html);
     }
