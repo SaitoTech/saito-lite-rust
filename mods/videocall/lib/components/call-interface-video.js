@@ -172,7 +172,7 @@ class CallInterfaceVideo {
 			}
 
 			if (this.mod.browser_active) {
-				let homeModule = this.app.options?.homeModule || 'Stun';
+				let homeModule = this.app.options?.homeModule || this.name;
 				let mod = this.app.modules.returnModuleByName(homeModule);
 				let slug = mod?.returnSlug() || 'videocall';
 				let url = '/' + slug;
@@ -274,7 +274,7 @@ class CallInterfaceVideo {
 
 	createActionItem(item, container, index) {
 		let id = "call_action_item_" + index;
-		let html = `<div id="${id}" class="icon_click_area">
+		let html = `<div id="${id}" class="icon_click_area ${item?.hook}">
 						<label>${item.text}</label>
 						<i class="${item.icon}"></i>
 					</div>`;
