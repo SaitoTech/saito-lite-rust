@@ -159,31 +159,31 @@ class Disburse extends ModTemplate {
 			let unique_hash = btoa(senders + receivers + amounts + timestamp);
 			let ticker = 'SAITO';
 			console.log("senders.length :" + senders.length);
-			if (senders.length > 1) {
-				console.log("sendPayments");
-				let hash = await this.app.wallet.sendPayments(
-					senders,
-					receivers,
-					amounts,
-					timestamp,
-					unique_hash,
-					null,
-					ticker
-				);
-				console.log('hash: ' + hash);
-			} else {
-				console.log("sendPayment");
-				let hash = await this.app.wallet.sendPayment(
-					senders,
-					receivers,
-					amounts,
-					timestamp,
-					unique_hash,
-					null,
-					ticker
-				);
-				console.log('hash: ' + hash);
-			}
+			// if (senders.length > 1) {
+			console.log("sendPayments");
+			let hash = await this.app.wallet.sendPayments(
+				senders,
+				receivers,
+				amounts,
+				timestamp,
+				unique_hash,
+				async function (res) { console.log("hash:\t" + res.hash) },
+				ticker
+			);
+			// } else {
+			// 	console.log("sendPayment");
+			// 	amounts[0] = amounts[0]/100000000; // original send payment assume input its saito and not nolan
+			// 	let hash = await this.app.wallet.sendPayment(
+			// 		senders,
+			// 		receivers,
+			// 		amounts,
+			// 		timestamp,
+			// 		unique_hash,
+			// 		null,
+			// 		ticker
+			// 	);
+			// 	console.log('hash: ' + hash);
+			// }
 		} catch (error) {
 			console.log(error);
 		}
