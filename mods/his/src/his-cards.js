@@ -3644,6 +3644,7 @@ console.log("selected: " + spacekey);
           title : "Barbary Pirates!",
           img : "/his/img/backgrounds/events/An_Action_between_an_English_Ship_and_Vessels_of_the_Barbary_Corsairs.jpg",
 	  msg : "Barbary Pirates in Play...",
+	  styles : [{ key : "backgroundPosition" , val : "bottom" }],
         }
       } ,
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
