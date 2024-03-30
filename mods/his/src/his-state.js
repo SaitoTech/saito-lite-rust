@@ -1,5 +1,6 @@
 
   onNewImpulse() {
+
     //
     // remove foul weather
     //
@@ -60,6 +61,11 @@
       this.hidePiracyMarker(key);
     }
 
+    //
+    // reset variables that permit intervention
+    //
+    this.game.state.events.intervention_on_movement_possible = 0;
+    this.game.state.events.intervention_on_events_possible = 0;
 
     //
     // reset impulse commits
@@ -86,6 +92,9 @@
     this.game.state.events.ottoman_piracy_wartburg = 0;
     this.game.state.events.ottoman_piracy_attempts = 0;
     this.game.state.events.ottoman_piracy_seazones = [];
+
+    this.game.state.events.intervention_on_movement_possible = 0;
+    this.game.state.events.intervention_on_events_possible = 0;
 
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];

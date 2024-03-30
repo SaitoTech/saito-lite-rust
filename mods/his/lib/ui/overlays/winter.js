@@ -34,11 +34,14 @@ class WinterOverlay {
 		}
 	}
 
-	render(faction = '') {
+	render(stage = 'stage1') {
 		let his_self = this.mod;
 
-		this.overlay.show(WinterTemplate(faction));
-		this.pushHudUnderOverlay();
+		this.overlay.show(WinterTemplate(stage));
+
+	        document.querySelector(`.winter-text ul li.${stage}`).classList.add("active");
+
+		this.pullHudOverOverlay();
 
 		this.attachEvents();
 	}

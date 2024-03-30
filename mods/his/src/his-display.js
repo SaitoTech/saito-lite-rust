@@ -498,24 +498,28 @@
 
   displayBoard() {
 
-    if (this.game.state.events.war_in_persia) { this.displayPersia(); }
-    if (this.game.state.events.revolt_in_egypt) { this.displayEgypt(); }
-    if (this.game.state.events.revolt_in_ireland) { this.displayIreland(); }
+    try {
+      if (this.game.state.events.war_in_persia) { this.displayPersia(); }
+      if (this.game.state.events.revolt_in_egypt) { this.displayEgypt(); }
+      if (this.game.state.events.revolt_in_ireland) { this.displayIreland(); }
+    } catch (err) {
+      console.log("error displaying foreign wars... " + err);
+    }
 
     try {
       this.displayTurnTrack();
     } catch (err) {
-      console.log("error displaying board... " + err);
+      console.log("error displaying turn track... " + err);
     }
     try {
       this.displayWarBox();
     } catch (err) {
-      console.log("error displaying board... " + err);
+      console.log("error displaying diplomacy box... " + err);
     }
     try {
       this.displayColony();
     } catch (err) {
-      console.log("error displaying board... " + err);
+      console.log("error displaying colonies... " + err);
     }
     try {
       this.displayConquest();
@@ -2415,6 +2419,8 @@ try {
     let factions_and_scores = this.calculateVictoryPoints();
 
     let x = this.returnVictoryPointTrack();
+    let tiles = [];
+    for (let i = 0; i < 30; i++) { tiles.push(0); }
 
     for (f in factions_and_scores) {
 try {
@@ -2424,6 +2430,13 @@ try {
       obj.style.left = x[total_vp.toString()].left + "px";
       obj.style.top = x[total_vp.toString()].top + "px";
       obj.style.display = "block";
+      if (tiles[total_vp] > 0) {
+	let shift = 2 * tiles[total_vp];
+        obj.style.transform = `translateY(-${shift}rem) translateX(${shift}rem)`;
+        tiles[total_vp]++;
+      } else {
+	tiles[total_vp]++;
+      }
 } catch (err) {
 }
 

@@ -56,10 +56,14 @@ this.updateLog(`###############`);
           }
 
 	  this.game.queue.push("victory_determination_phase");
-	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("winter_phase");
+	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
 	  this.game.queue.push("action_phase");
+	  this.game.queue.push("check_interventions"); // players check and report cards that need to trigger waiting/check
+	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+
+
 if (this.game.options.scenario != "is_testing") {
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
@@ -97,7 +101,7 @@ if (this.game.options.scenario != "is_testing") {
 	        this.game.queue.push("sue_for_peace\thapsburg");
 	        this.game.queue.push("sue_for_peace\tottoman");
 	        this.game.queue.push("diplomacy_phase");
-	        this.game.queue.push("ACKNOWLEDGE\tProceed to Diplomacy Phase");
+	        this.game.queue.push("ACKNOWLEDGE\tProceed to Diplomatic Proposals");
 	      }
 }
 	    }
@@ -579,6 +583,49 @@ if (this.game.options.scenario == "is_testing") {
 	}
 
 
+/*****
+	// simultaneous moves, so returns 0
+	if (mv[0] === "winter_return_units_to_capital") {
+
+	  let his_self = this;
+	  let factions = this.game.state.players_info[this.game.player-1].factions;
+	  let faction = "";
+
+	  this.updateStatus("all factions (optionally) returning units to capital...");
+
+	  if (this.game.confirms_needed[this.game.player-1] == 1) {
+
+	    this.addMove("RESOLVE\t"+this.publicKey);
+
+	    let move_unit_subfunction = function() {
+              his_self.playerSelectSpaceWithFilter( 
+                "Move Additional Units to Capital?",
+                function(space) {
+                  if (space.home == "genoa") { return 1; }
+                  return 0;
+                },
+                function(spacekey) {
+                  his_self.addMove("build\tland\tgenoa\t"+"regular"+"\t"+spacekey);
+                  his_self.addMove("build\tland\tgenoa\t"+"regular"+"\t"+spacekey);
+                  his_self.addMove("build\tland\tgenoa\t"+"regular"+"\t"+spacekey);
+                  his_self.addMove("build\tland\tgenoa\t"+"regular"+"\t"+spacekey);
+                  his_self.endTurn();
+                }, 
+                null,
+                true
+              );
+	    };
+
+	    this.endTurn();
+
+	  }
+	
+	  this.game.queue.splice(qe, 1);
+	  return 1;
+
+	}
+******/
+
 	if (mv[0] === "winter_attrition") {
 
 	  let faction = mv[1];
@@ -904,6 +951,8 @@ if (this.game.options.scenario == "is_testing") {
 	if (mv[0] === "retreat_to_winter_ports") {
 
 	  let moves = [];
+
+	  this.winter_overlay.render("stage2");
 
 	  this.game.queue.splice(qe, 1);
 
@@ -1286,6 +1335,7 @@ if (this.game.options.scenario == "is_testing") {
 	    resolved :  0 ,
 	    round :   this.game.state.round,
 	  });
+	  this.updateLog(this.returnFactionName(faction) + " founds a colony");
 	  this.displayCustomOverlay("colonize", faction);
           this.game.state.may_colonize[faction] = 0;
     	  this.game.queue.splice(qe, 1);
@@ -1298,6 +1348,7 @@ if (this.game.options.scenario == "is_testing") {
 	    resolved :  0 ,
 	    round :   this.game.state.round,
 	  });
+	  this.updateLog(this.returnFactionName(faction) + " launches an expedition");
 	  this.displayCustomOverlay("explore", faction);
           this.game.state.may_explore[faction] = 0;
     	  this.game.queue.splice(qe, 1);
@@ -1456,6 +1507,7 @@ if (this.game.options.scenario == "is_testing") {
 
 	if (mv[0] === "resolve_new_world_riches_rolls") {
 
+	  this.winter_overlay.render("newworld1");
 
 	  this.updateStatus("Resolving New World Riches...");
 
@@ -1734,7 +1786,6 @@ if (this.game.options.scenario == "is_testing") {
 		stolen = 1;
 	      }
 	    }
-
 	  }
 
 	  this.newworld_overlay.render("results");
@@ -1976,6 +2027,7 @@ if (this.game.options.scenario == "is_testing") {
 	    resolved :  0 ,
 	    round :   this.game.state.round,
 	  });
+	  this.updateLog(this.returnFactionName(faction) + " launches a conquest");
 	  this.displayCustomOverlay("conquest", faction);
           this.game.state.may_conquer[faction] = 0;
     	  this.game.queue.splice(qe, 1);
@@ -4116,7 +4168,7 @@ console.log(JSON.stringify(this.game.confirms_needed));
 	    }
 	    //
 	    // if everyone has returned, splice out counter_or_acknowledge
- 	    // and continue to the 
+ 	    // and continue to the next move on the game queue
 	    //
 	    if (ack == 1) { 
 	      this.game.queue.splice(qe, 1);
@@ -5093,15 +5145,15 @@ try {
 	  //
 	  his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
 	  his_self.game.queue.push("field_battle_assign_hits_render");
-	  //let from_whom = his_self.returnArrayOfPlayersInSpacekey(space.key);
+	  let from_whom = his_self.returnArrayOfPlayersInSpacekey(space.key);
 	  if (is_janissaries_possible) {
 	    his_self.game.queue.push("counter_or_acknowledge\tOttomans considering playing Janissaries\tjanissaries\t"+space.key);
-            his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
-            //his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
+            //his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
+            his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
 	  }
 	  his_self.game.queue.push("counter_or_acknowledge\tField Battle is about to being in "+space.name + "\tpre_field_battle_rolls\t"+space.key);
-          //his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
-          his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
+          his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
+          //his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
           his_self.field_battle_overlay.renderPreFieldBattle(his_self.game.state.field_battle);
           his_self.field_battle_overlay.pullHudOverOverlay();
@@ -7707,12 +7759,12 @@ console.log(JSON.stringify(space.units));
           // this should stop execution while we are looking at the pre-field battle overlay
           //
 	  his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
-	  //let from_whom = his_self.returnArrayOfPlayersInSpacekey(space.key);
+	  let from_whom = his_self.returnArrayOfPlayersInSpacekey(space.key);
           his_self.game.queue.push("assault_assign_hits_render");
           his_self.game.queue.push("assault_show_hits_render");
           his_self.game.queue.push("counter_or_acknowledge\tAssault is about to begin in "+space.name + "\tpre_assault_rolls");
-          his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
-          //his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
+          //his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
+          his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
 
           his_self.assault_overlay.renderPreAssault(his_self.game.state.assault);
           his_self.assault_overlay.pullHudOverOverlay();
@@ -9300,7 +9352,7 @@ defender_hits - attacker_hits;
 	  this.factionbar.setActive();
 
 	  // show the winter overlay to let people know WTF is happening
-	  this.winter_overlay.render();
+	  this.winter_overlay.render("stage1");
 
 	  // unset any sieges
 	  this.removeSieges();
@@ -9320,7 +9372,6 @@ defender_hits - attacker_hits;
 	      }
 	    }
 	  }
-
 
 	  // Remove the Renegade Leader if in play
 	  let rl_idx = "";
@@ -9406,6 +9457,7 @@ defender_hits - attacker_hits;
 	  if (this.game.state.round == 4 && this.game.state.events.schmalkaldic_league != 1) {
 	    this.game.queue.push("ACKNOWLEDGE\tTurn 4: Schmalkaldic League Forms");
 	    this.game.queue.push("remove\tprotestant\t013");
+	    // custom overlay is shown here
 	    this.game.queue.push("event\tprotestant\t013");
 	  }
 
@@ -9418,6 +9470,56 @@ defender_hits - attacker_hits;
 	  this.game.queue.splice(qe, 1);
           return 1;
         }
+
+
+	// must be removed by RESOLVES -- but handled automatically
+	if (mv[0] === "check_interventions") {
+
+	  this.updateStatus("preparing for Action Phase...");
+
+	  if (this.game.confirms_needed[this.game.player-1] == 1) {
+
+	    //
+	    // we do not want to run this command multiple times, sending 
+	    // extra RESOLVES because we receive another RESOLVE before 
+	    // ours, so we swap out this for a HALTED command.
+	    //
+	    this.game.queue[his_self.game.queue.length-1] = "halted";
+	    this.addMove("RESOLVE\t"+this.publicKey);
+
+	    //
+	    // Wartburg permits intervention in events
+	    //
+	    if (this.game.player == this.returnPlayerOfFaction("protestant")) {
+              let fhand_idx = this.returnFactionHandIdx(this.game.player, "protestant");
+	      for (let i = 0; i < this.game.deck[0].fhand[fhand_idx].length; i++) {
+	        if (this.game.deck[0].fhand[fhand_idx][i] == "037") {
+                  this.addMove("SETVAR\tstate\tevents\tintervention_on_events_possible\t1");
+		  i == this.game.deck[0].fhand[fhand_idx].length+1;
+	        };
+	      }
+	    }
+
+	    //
+	    // Gout and Foul Weather block moves
+	    //
+	    for (let z = 0; z < this.game.deck[0].fhand.length; z++) {
+	      for (let i = 0; i < this.game.deck[0].fhand[z].length; i++) {
+	        if (this.game.deck[0].fhand[z][i] == "032" || this.game.deck[0].fhand[z][i] == "031") {
+                  this.addMove("SETVAR\tstate\tevents\tintervention_on_moves_possible\t1");
+		  i = this.game.deck[0].fhand[z].length+1;
+	        };
+	      }
+	    }
+
+	    this.endTurn();
+
+	  }
+
+          return 0;
+
+	}
+
 
 
         if (mv[0] === "action_phase") {
@@ -9677,6 +9779,7 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
 
 	  this.game.queue.splice(qe, 1);
 
+if (this.game.state.round == 1) {
 this.game_help.render(TutorialTemplate, {
   help : `What is the Diplomacy Phase?` ,
     content : `       
@@ -9696,8 +9799,8 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
     line1 : "what is", 
     line2 : "diplomacy?",
     fontsize : "2.1rem" ,
-  });  
-
+});  
+}
 	  this.game.state.diplomacy = [];
 
 	  if (this.game.players.length == 2) {
@@ -9737,6 +9840,8 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
+
+	  this.winter_overlay.render("stage3");
 
 	  //
 	  // first, if there are any outstanding proposals that
@@ -9808,6 +9913,8 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
 	  this.game.queue.splice(qe, 1);
 
+	  this.winter_overlay.render("stage4");
+
 	  let faction = mv[1];
 	  let can_faction_sue_for_peace = this.canFactionSueForPeace(faction);
 
@@ -9830,6 +9937,8 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
+
+	  this.winter_overlay.render("stage5");
 
 	  if (this.game.player == player) {
 	    this.playerMakeDeclarationsOfWar(this, faction);
@@ -10379,6 +10488,8 @@ if (this.game.state.round == 2) {
 
                 let cardnum = this.factions[this.game.state.players_info[i].factions[z]].returnCardsDealt(this);
 
+
+
 		//
 		// is_testing
 		//
@@ -10428,9 +10539,11 @@ if (this.game.state.round == 2) {
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
+cardnum = 1;
+
     	        this.game.queue.push("check_replacement_cards\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
-    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
+//    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 
 		//
@@ -11055,6 +11168,8 @@ console.log(JSON.stringify(reshuffle_cards));
 	  this.game.state.active_player = player;
 	  this.game.state.active_faction = faction;
 
+console.log("do we skip factions not in play?");
+
 	  // skip factions not-in-play
 	  if (player == -1) {
 	    this.game.queue.splice(qe, 1);
@@ -11064,16 +11179,19 @@ console.log(JSON.stringify(reshuffle_cards));
 	  //
 	  // skip turn if required
 	  //
+console.log("do we skip next impulse?");
 	  if (this.game.state.skip_next_impulse.includes(faction)) {
 	    for (let i = 0; i < this.game.state.skip_next_impulse.length; i++) {
 	      if (this.game.state.skip_next_impulse[i] == faction) {
 		this.game.state.skip_next_impulse.splice(i, 1);
 	      }
 	    }
+console.log("finally we are splicing them out!");
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }
 
+console.log("resetting turn!");
 
 	  //
 	  // reset player/state vars and set as active player
@@ -11081,6 +11199,7 @@ console.log(JSON.stringify(reshuffle_cards));
 	  this.resetPlayerTurn(player);
 
 	  if (this.game.player == player) {
+console.log("I am this player, so I am taking the turn: " + faction)
 	    this.playerTurn(faction);
 	  } else {
 	    let f = this.game.state.players_info[this.game.player-1].factions[0];
@@ -11093,6 +11212,7 @@ console.log(JSON.stringify(reshuffle_cards));
 	    this.updateStatusAndListCards(`${this.returnFactionName(f)} - Opponent Turn: `, this.game.deck[0].fhand[fhand_idx], () => {});
 	  }
 
+console.log("splice and return zero...");
 	  this.game.queue.splice(qe, 1);
           return 0;
         }

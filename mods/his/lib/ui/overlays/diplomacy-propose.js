@@ -11,9 +11,11 @@ class DiplomacyProposeOverlay {
 		this.faction = "";
 		this.proposals = [];
 		this.proposal = {};
+		this.proposal.confirms = [];
 		this.proposal.terms = [];
 		this.proposal.parties = [];
 		this.proposal.proposer = "";
+	
 	}
 
 	purgeProposals() {
@@ -136,15 +138,6 @@ class DiplomacyProposeOverlay {
 
 	renderAllProposals(faction="") {
 
-console.log("render all proposals!");
-console.log("render all proposals!");
-console.log("render all proposals!");
-console.log("render all proposals!");
-console.log("render all proposals!");
-console.log("render all proposals!");
-console.log("render all proposals!");
-console.log(JSON.stringify(this.mod.game.state.diplomacy));
-
 	  let any_proposals = false;
 	  let proposals_html = "<ol>";
           for (let i = 0; i < this.proposals.length; i++) {
@@ -161,10 +154,10 @@ console.log(JSON.stringify(this.mod.game.state.diplomacy));
 
 	  if (any_proposals) {
 	    this.updateInstructions(`${this.mod.returnFactionName(faction)} - Diplomacy Stage - All Proposals`);
-	    document.querySelector(".content").innerHTML = proposals_html;
+	    document.querySelector(".diplomacy-propose-overlay .content").innerHTML = proposals_html;
 	    try {
 	      document.querySelector(".mainmenu.add").innerHTML = "create new proposal";
-	      document.querySelector(".mainmenu.end").innerHTML = "submit/finish offers";
+	      document.querySelector(".mainmenu.end").innerHTML = "submit and see if they accept";
 	    } catch (err) {
 	      console.log(JSON.stringify(err));
 	    }
@@ -176,6 +169,7 @@ console.log(JSON.stringify(this.mod.game.state.diplomacy));
 	}
 
 	renderCurrentProposal() {
+
 	  let proposals_html = '<ul>';
 	  let t = this.mod.convertTermsToText(this.proposal.terms);
 	  let any_proposals = false;
@@ -188,8 +182,8 @@ console.log(JSON.stringify(this.mod.game.state.diplomacy));
 
 	  if (any_proposals) {
 	    document.querySelector(".diplomacy-propose-overlay .help").innerHTML = "your proposal consists of the following:";
-	    document.querySelector(".content").innerHTML = proposals_html;
-	    document.querySelector(".content").style.display = "block";
+	    document.querySelector(".diplomacy-propose-overlay .content").innerHTML = proposals_html;
+	    document.querySelector(".diplomacy-propose-overlay .content").style.display = "block";
 	  } else {
 	    document.querySelector(".diplomacy-propose-overlay .help").innerHTML = "add term to your new proposal";
 	    document.querySelector(".content").style.display = "none";

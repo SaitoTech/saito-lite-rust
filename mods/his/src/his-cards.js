@@ -3755,7 +3755,7 @@ console.log("selected: " + spacekey);
         let keys = ["genoa","milan", "venice", "florence", "naples"];
         let f = {};
         for (let key in keys) {
-          let fac = his_self.returnFactionControllingSpace(key);
+          let fac = his_self.returnFactionControllingSpace(keys[key]);
           let owner = his_self.returnAllyOfMinorPower(fac);
           if (!f[owner]) { f[owner] = 1; }
           else { f[owner]++; }
@@ -4953,6 +4953,9 @@ console.log("selected: " + spacekey);
         if (menu == "move" || menu == "assault" || menu == "piracy") {
 	  his_self.addMove(`foul_weather\t${player}\t${faction}`);
   	  his_self.addMove("discard\t"+faction+"\t"+"031");
+	  if (his_self.game.deck[0].discards["032"]) {
+            his_self.addMove("SETVAR\tstate\tevents\tintervention_on_movement_possible\t0");
+	  }
 	  his_self.endTurn();
         }
         return 1;
@@ -5090,6 +5093,9 @@ console.log("selected: " + spacekey);
 	  if (faction == null || source == null || unit_idx == null) { his_self.endTurn(); return 0; }
   	  his_self.addMove(`discard\t${faction}\t032`);
           his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
+	  if (his_self.game.deck[0].discards["031"]) {
+            his_self.addMove("SETVAR\tstate\tevents\tintervention_on_movement_possible\t0");
+	  }
           his_self.endTurn();
 
 	}
@@ -5371,8 +5377,10 @@ console.log("selected: " + spacekey);
       onEvent : function(his_self, faction) {
 
 	let target_number = 2;
-	if (faction == "ottoman") { target_number = 4; }
-	his_self.game.queue.push("swiss_mercenaries_place\t"+faction+"\t"+target_number);
+	let placing_faction = faction;
+	if (faction == "ottoman") { placing_faction = "france"; target_number = 4; }
+	if (faction == "france") { target_number = 4; }
+	his_self.game.queue.push("swiss_mercenaries_place\t"+placing_faction+"\t"+target_number);
 
 	return 1;
 
@@ -10866,8 +10874,8 @@ alert("MOVE IS: " + "move\tengland\tland\t"+options[options_idx].spacekey+"\tire
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) { 
-	if (faction === "papacy") { return 1; }
-	if (faction === "ottoman") { return 1; }
+	if (faction == "papacy") { return 1; }
+	if (faction == "ottoman") { return 1; }
 	return 0;
       },
       onEvent : function(his_self, faction) {
