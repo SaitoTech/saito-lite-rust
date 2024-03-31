@@ -177,7 +177,7 @@ class Chessgame extends GameTemplate {
 		}
 
 		this.board = new chessboard('board', {
-			pieceTheme: 'img/pieces/{piece}.png'
+			pieceTheme: '/chess/img/pieces/{piece}.png'
 		});
 		this.engine = new chess.Chess();
 
@@ -494,7 +494,7 @@ class Chessgame extends GameTemplate {
 			draggable: true,
 			position: position,
 			// pieceTheme: 'chess/pieces/{piece}.png',
-			pieceTheme: 'img/pieces/{piece}.png',
+			pieceTheme: '/chess/img/pieces/{piece}.png',
 			onDragStart: this.onDragStart,
 			onDrop: this.onDrop,
 			onMouseoutSquare: this.onMouseoutSquare,
@@ -522,7 +522,7 @@ class Chessgame extends GameTemplate {
 		}
 
 		let cfg = {
-			pieceTheme: 'img/pieces/{piece}.png',
+			pieceTheme: '/chess/img/pieces/{piece}.png',
 			moveSpeed: 0,
 			position: position
 		};
@@ -895,7 +895,7 @@ class Chessgame extends GameTemplate {
 	}
 
 	piecehtml(p, c) {
-		return `<img class="captured" alt="${p}" src = "img/pieces/${c}${p.toUpperCase()}.png">`;
+		return `<img class="captured" alt="${p}" src = "/chess/img/pieces/${c}${p.toUpperCase()}.png">`;
 	}
 
 	returnGameRulesHTML() {
