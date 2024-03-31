@@ -676,13 +676,15 @@ class Chat extends ModTemplate {
 
 	async createFreshGroup(name, id) {
 		let peer = (await this.app.network.getPeers())[0].publicKey;
+		let subscription_address = this.generateSubscriptionAddress();
 
 		let chat_group = {
 			id,
 			members: [peer],
 			name,
 			txs: [],
-			unread: 0
+			unread: 0,
+			subscription_address
 			//
 			// USE A TARGET Container if the chat box is supposed to show up embedded within the UI
 			// Don't include if you want it to be just a chat popup....
@@ -692,44 +694,6 @@ class Chat extends ModTemplate {
 
 		this.groups.push(chat_group);
 	}
-
-	/**
-	 * Handles the event when a new block is received.
-	 * It constructs a message with the block's hash and the subscription addresses, then sends this message as a transaction.
-	 * Upon successful transaction, it triggers the onConfirmation method for each transaction in the response.
-	 *
-	 */
-	// onNewBlock(blk) {
-	// 	// Check if the block object has a hash property
-	// 	if (!blk || !blk.hash) {
-	// 		console.error('Invalid block object received.');
-	// 		return;
-	// 	}
-
-	// 	let subscriptionAddress = this.app?.keychain?.subscriptionAddress;
-
-	// 	if (!subscriptionAddress) {
-	// 		console.error('Subscription address not found.');
-	// 		return;
-	// 	}
-
-	// 	// Construct the message to be sent
-	// 	let msg = {
-	// 		hash: blk.hash,
-	// 		subscription_address: subscriptionAddress
-	// 	};
-
-	// 	let chat_self = this;
-
-	// 	// Send the message as a transaction
-	// 	this.app.network.sendRequestAsTransaction('listener', msg, (txs) => {
-	// 		if (Array.isArray(txs) && txs.length > 0) {
-	// 			txs.forEach((tx) => {
-	// 				chat_self.onConfirmation(blk, tx, 0);
-	// 			});
-	// 		}
-	// 	});
-	// }
 
 	//
 	// ---------- on chain messages ------------------------
@@ -823,50 +787,6 @@ class Chat extends ModTemplate {
 			}
 
 			return 0;
-		}
-
-		if (txmsg.request === 'listener') {
-			if (!txmsg || txmsg.request !== 'listener' || !txmsg.data) {
-				console.error('Invalid transaction message or request type.');
-				return;
-			}
-			const { hash, subscription_address } = txmsg.data;
-
-			if (!hash || typeof hash !== 'string') {
-				console.error(
-					'Missing or invalid hash or subscription address in transaction message.'
-				);
-				return;
-			}
-
-			try {
-				const blk = await this.app.storage.loadBlockByHash(hash);
-				if (!blk) {
-					// console.error(`No block found with hash: ${hash}`);
-					return;
-				}
-
-				const liteBlock = blk.generateLiteBlock(subscription_address);
-
-				let transactions = [];
-
-				liteBlock.transactions.forEach((transaction) => {
-					let tx = transaction.toJson();
-					tx.msg = transaction.returnMessage();
-					tx.isFrom = function (key) {
-						return this.from.some((slip) => slip.publicKey === key);
-					};
-
-					if (tx.msg && tx.msg.request) {
-						transactions.push(tx);
-					}
-				});
-
-				mycallback(transactions);
-			} catch (error) {
-				// Log any errors that occur during the process
-				console.error('Error processing listener request:', error);
-			}
 		}
 
 		if (txmsg.request === 'chat message') {
@@ -964,9 +884,8 @@ class Chat extends ModTemplate {
 	async sendCreateGroupTransaction(name, invitees = []) {
 		// --- make this a function
 		let pk = this.app.crypto.generateKeys();
-		let subscription_address = this.app.crypto.generatePublicKey(pk);
+		let subscription_address = this.generateSubscriptionAddress();
 		this.app.keychain.addWatchedPublicKey(subscription_address);
-
 		let newtx = await this.app.wallet.createUnsignedTransaction(
 			this.publicKey,
 			BigInt(0),
@@ -1001,7 +920,6 @@ class Chat extends ModTemplate {
 		console.log('Receiving group creation tx');
 		if (tx.isTo(this.publicKey)) {
 			let txmsg = tx.returnMessage();
-
 			// add subscription address to keychain
 			this.app.keychain.addWatchedPublicKey(txmsg.subscription_address);
 			if (this.returnGroup(tx.signature)) {
@@ -1084,7 +1002,6 @@ class Chat extends ModTemplate {
 	async receiveJoinGroupTransaction(tx) {
 		if (tx.isTo(this.publicKey)) {
 			let txmsg = tx.returnMessage();
-
 			let group = this.returnGroup(txmsg.group_id);
 
 			if (!group) {
@@ -1975,8 +1892,8 @@ class Chat extends ModTemplate {
 				members.push(this.publicKey);
 			}
 			id = this.createGroupIdFromMembers(members);
-			let pk = this.app.crypto.generateKeys();
-			subscription_address = this.app.keychain.generatePublicKey(pk);
+
+			subscription_address = this.generateSubscriptionAddress();
 		}
 
 		if (name == null) {
@@ -2213,16 +2130,6 @@ class Chat extends ModTemplate {
 
 		if (this.app.options.chat.groups?.length == 0) {
 			this.createDefaultChatsFromKeys();
-		}
-
-		if (
-			!this.app.options.subscriptionAddress.includes(
-				this.communityGroupAddress
-			)
-		) {
-			this.app.options.subscriptionAddress.push(
-				this.communityGroupAddress
-			);
 		}
 
 		this.app.storage.saveOptions();
@@ -2475,6 +2382,11 @@ class Chat extends ModTemplate {
 		} catch (err) {
 			console.error(err);
 		}
+	}
+
+	generateSubscriptionAddress() {
+		let pk = this.app.crypto.generateKeys();
+		return this.app.keychain.generatePublicKey(pk);
 	}
 }
 

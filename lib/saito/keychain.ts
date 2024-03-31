@@ -17,6 +17,8 @@ class Keychain {
 	public lc: boolean;
 	public hash: string;
 
+
+
 	constructor(app: Saito) {
 		this.app = app;
 		this.publickey_keys_hmap = {}; // 1 if saved
@@ -24,9 +26,7 @@ class Keychain {
 		this.groups = [];
 		this.modtemplate = new modtemplate(this.app);
 		this.fetched_keys = new Map<string, number>();
-
-		this.watchKeys()
-
+		this.monitorKeys()
 	}
 
 
@@ -74,10 +74,13 @@ class Keychain {
 			this.addKey({ publicKey: this.publicKey, watched: true });
 		}
 
+
+
 		//
 		// creates hash of important info so we know if values change
 		//
 		this.hash = this.returnHash();
+
 	}
 
 	returnHash() {
@@ -411,7 +414,7 @@ class Keychain {
 	}
 
 	saveKeys() {
-		this.app.options.keys = this.keys;
+		this.app.options.keys = [...this.keys];
 		this.app.storage.saveOptions();
 		if (this.returnHash() != this.hash) {
 			this.hash = this.returnHash();
@@ -552,15 +555,23 @@ class Keychain {
 
 
 
-
+	/**
+ * Responds to any mutations in the watched keys. This method is called whenever there's an addition,
+ * deletion, or modification of keys within the keychain
+ */
 	onKeysMutated() {
-		console.log('Keys have been mutated!');
-
-		let keys = this.returnWatchedPublicKeys()
-		console.log('watched keys', keys)
+		let keys = this.returnWatchedPublicKeys();
+		this.app.network.updatePeersWithWatchedPublicKeys(keys);
 	}
 
-	watchKeys() {
+
+	/**
+ * Sets up a monitoring mechanism for the keychain's keys property to detect and react to changes.
+ * This allows the application to automatically update network peers with the latest set of watched public keys whenever
+ * the keychain is modified.
+ */
+	monitorKeys() {
+		let self = this
 		const keychain = this;
 		const handler = {
 			set(target, property, value) {
@@ -584,8 +595,6 @@ class Keychain {
 	}
 
 
-
-
 	/**
  * Adds a publicKey to the watch list and updates the keys storage.
  * This function takes a publicKey as input, marks it as watched, saves the updated keys,
@@ -595,6 +604,7 @@ class Keychain {
 	addWatchedPublicKey(publicKey = '') {
 		this.addKey(publicKey, { watched: true });
 		this.saveKeys();
+		// this.app.wallet.setKeyList(this.returnWatchedPublicKeys())
 	}
 
 	/**
