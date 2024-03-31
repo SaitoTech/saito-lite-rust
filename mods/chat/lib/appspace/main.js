@@ -19,7 +19,10 @@ class ChatMain {
 		this.attachEvents();
 	}
 
-	attachEvents() {}
+	attachEvents() {
+		let target_div = '#chat-main-sidebar-left';
+		this.app.browser.makeResizeable(target_div, null, null, 'horizontal');		
+	}
 }
 
 module.exports = ChatMain;

@@ -1579,14 +1579,25 @@ class Browser {
 	/**
 	 * Callback is called on mousedown
 	 */
-	makeResizeable(target_div, icon_div, unique_id, callback = null) {
+	makeResizeable(target_div, icon_div = null, unique_id = null, direction = 'diagonal', callback = null) {
+		
+		console.log("inside makeResizeable //");
+
 		let d = document;
 		let target = d.querySelector(target_div);
-		this.addElementToSelector(
-			`<div class="resize-icon" id="resize-icon-${unique_id}"></div>`,
-			icon_div
-		);
-		let pullTab = d.getElementById(`resize-icon-${unique_id}`);
+		let pullTab = null;
+
+		if (icon_div != null) {
+			this.addElementToSelector(
+				`<div class="resize-icon" id="resize-icon-${unique_id}"></div>`,
+				icon_div
+			);
+			pullTab = d.getElementById(`resize-icon-${unique_id}`);
+		} else {
+			pullTab = d.querySelector(target_div+` #resize-icon`);
+		}
+
+		console.log('pullTab:', pullTab);
 
 		let ht, wd, x, y, dx, dy;
 
@@ -1621,10 +1632,22 @@ class Browser {
 				dy = evt.screenY - y;
 				x = evt.screenX;
 				y = evt.screenY;
-				wd -= dx;
-				ht -= dy;
-				target.style.width = wd + 'px';
-				target.style.height = ht + 'px';
+				
+				if (direction == 'horizontal') {
+					wd += dx;
+					target.style.width = wd + 'px';
+				}
+				if (direction == 'vertical') {
+					ht += dy;
+					target.style.height = ht + 'px';
+				}
+
+				if (direction == 'diagonal') {
+					wd -= dx;
+					ht -= dy;
+					target.style.width = wd + 'px';
+					target.style.height = ht + 'px';
+				}
 			};
 
 			d.body.onmouseup = () => {

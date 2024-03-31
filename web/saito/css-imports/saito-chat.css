@@ -706,6 +706,16 @@
   max-height: unset;
 }
 
+.chat-main-resize-icon {
+  position: absolute;
+  right: 0px;
+  top: 50%;
+  transform: translate(65%, -50%) scale(1,1.5);
+  cursor: ew-resize;
+  font-size: 1.5rem;
+  filter: brightness(0.7);
+}
+
 
 @media screen and (max-width: 720px) {
   .chat-manager-overlay .chat-manager-title {
