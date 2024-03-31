@@ -1580,9 +1580,6 @@ class Browser {
 	 * Callback is called on mousedown
 	 */
 	makeResizeable(target_div, icon_div = null, unique_id = null, direction = 'diagonal', callback = null) {
-		
-		console.log("inside makeResizeable //");
-
 		let d = document;
 		let target = d.querySelector(target_div);
 		let pullTab = null;
