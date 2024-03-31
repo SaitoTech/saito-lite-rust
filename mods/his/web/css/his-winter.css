@@ -1,9 +1,10 @@
 .winter {
-	min-width: 80vw;
-	min-height: 80vh;
+	min-width: 100vw;
+	min-height: 100vh;
 	border-radius: 2rem;
 	background-image: url('/his/img/backgrounds/winter_background.jpg');
 	background-size: cover;
+	background-position: bottom;
 }
 
 .winter-title {

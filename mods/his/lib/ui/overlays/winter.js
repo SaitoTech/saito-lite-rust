@@ -6,7 +6,8 @@ class WinterOverlay {
 		this.app = app;
 		this.mod = mod;
 		this.visible = false;
-		this.overlay = new SaitoOverlay(app, mod, false, true, true);
+		this.overlay = new SaitoOverlay(app, mod, false, true, false);
+		this.stage = "stage1";
 	}
 
 	hide() {
@@ -34,12 +35,15 @@ class WinterOverlay {
 		}
 	}
 
-	render(stage = 'stage1') {
+	render(stage = '') {
+
+		if (stage != "") { this.stage = stage; } 
+
 		let his_self = this.mod;
 
 		this.overlay.show(WinterTemplate(stage));
 
-	        document.querySelector(`.winter-text ul li.${stage}`).classList.add("active");
+	        document.querySelector(`.winter-text ul li.${this.stage}`).classList.add("active");
 
 		this.pullHudOverOverlay();
 

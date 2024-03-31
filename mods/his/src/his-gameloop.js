@@ -59,6 +59,8 @@ this.updateLog(`###############`);
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
+// TODO -- add back with more elegant restore functionality
+//	  this.game.queue.push("SAVE"); // save before new world for everyone
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("check_interventions"); // players check and report cards that need to trigger waiting/check
 	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
@@ -101,7 +103,7 @@ if (this.game.options.scenario != "is_testing") {
 	        this.game.queue.push("sue_for_peace\thapsburg");
 	        this.game.queue.push("sue_for_peace\tottoman");
 	        this.game.queue.push("diplomacy_phase");
-	        this.game.queue.push("ACKNOWLEDGE\tProceed to Diplomatic Proposals");
+	        //this.game.queue.push("ACKNOWLEDGE\tProceed to Diplomatic Proposals");
 	      }
 }
 	    }
@@ -124,7 +126,6 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    this.game.queue.push("card_draw_phase");
 	    this.game.queue.push("event\tprotestant\t008");
-	    this.game.queue.push("game_help_start");
 }
 
 	  } else {
@@ -512,32 +513,6 @@ if (this.game.options.scenario == "is_testing") {
 	}
 
 
-
-
-
-	if (mv[0] === "game_help_start") {
-
-	  this.game.queue.splice(qe, 1);
-
-  this.game_help.render(TutorialTemplate, {
-    help : `First Time Playing?` ,
-    content : `
-
-	Here I Stand opens with the publication of Martin Luther's 95 Theses, which marked the start of the Protestant Reformation, and the convocation of the Diet of Worms, an Imperial assembly where Luther refused to recant and was declared a heretic.
-	
-	<p></p>
-
-	The early game occurs before the Protestants form a German Defense League and become an independent military power. During this period the Protestants should convert spaces in Germany, and particularly the six major German Electorates (Wittenberg, Brandenburg, Mainz, Trier, Augsburg, Cologne). The Papacy should slow the Protestant advance while expanding its own territorial claims and alliances in Italy.
-    `,
-    img : "/his/img/backgrounds/tutorials/95theses.jpg",
-    line1 : "first",
-    line2 : "time here?",
-    fontsize : "2.1rem" ,
-  });
-
-	  return 1;
-
-	}
 	if (mv[0] === "deactivate_minor_power") {
 
 	  let faction = mv[1];
@@ -1184,6 +1159,7 @@ if (this.game.options.scenario == "is_testing") {
 	    return 0;
 	  }
 
+	  this.winter_overlay.hide();
 	  let filter_find_spaces_with_squadrons = function(space) {
 	    let s = his_self.game.spaces[spacekey];
 	    for (let i = 0; i < s.units[faction_giving].length; i++) {
@@ -1206,6 +1182,7 @@ if (this.game.options.scenario == "is_testing") {
 	      },
 	      (destination_spacekey) => {
 		his_self.addMove("loan_squadron\t"+faction_giving+"\t"+source_spacekey+"\t"+faction_placing+"\t"+destination_spacekey);
+	        his_self.winter_overlay.render();
 		his_self.endTurn();
 	      },
 	      null,
@@ -1243,6 +1220,7 @@ if (this.game.options.scenario == "is_testing") {
 	    return 0;
 	  }
 
+	  this.winter_overlay.hide();
 	  let filter_find_spaces_with_mercenaries = function(space) {
 	    let s = his_self.game.spaces[spacekey];
 	    for (let i = 0; i < s.units[faction_giving].length; i++) {
@@ -1275,6 +1253,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.addMove(instructions[z]);
 	  }
 	  this.endTurn();
+	  this.winter_overlay.render();
 	  return 0;
 
 	}
@@ -1436,7 +1415,10 @@ if (this.game.options.scenario == "is_testing") {
 	          faction : faction,
 	          resolved :  0 ,
 	          round :   this.game.state.round,
+		  base : base_x ,
+		  total_hits : x ,
 		  modifiers : this.game.state.explorations[idx].modifiers ,
+		  prize : "-" , 
 	        });
 	        idx = this.game.state.explorations.length-1;
                 this.game.state.newworld.results.explorations.push({
@@ -1444,7 +1426,7 @@ if (this.game.options.scenario == "is_testing") {
 		  prize : "-" , 
 		  faction : faction , 
 		  base : base_x ,
-		  total_hits : base_x + this.game.state.explorations[idx].modifiers ,
+		  total_hits : x,
 		  modifiers : this.game.state.explorations[idx].modifiers ,
 		  explorer : explorer ,
 		  img : this.explorers[explorer].img ,
@@ -1472,6 +1454,9 @@ if (this.game.options.scenario == "is_testing") {
 	          faction : faction,
 	          resolved :  0 ,
 	          round :   this.game.state.round,
+		  base: base_x ,
+		  total_hits : base_x + this.game.state.explorations[idx].modifiers ,
+		  modifiers : this.game.state.explorations[idx].modifiers ,
 	        });
 	        idx = this.game.state.explorations.length-1;
                 this.game.state.newworld.results.explorations.push({
@@ -1790,7 +1775,7 @@ if (this.game.options.scenario == "is_testing") {
 
 	  this.newworld_overlay.render("results");
     	  this.game.queue.splice(qe, 1);
-	  this.game.queue.push("ACKNOWLEDGE\tProceed to Next Round...");
+	  //this.game.queue.push("ACKNOWLEDGE\tProceed to Next Round...");
 
 	  return 1;
 
@@ -1826,7 +1811,7 @@ if (this.game.options.scenario == "is_testing") {
 	  this.updateLog(this.returnFactionName(faction) + ": " + conquistador + " rolls " + unmodified_hits);
 
 	  if (hits <= 6) {
-	    if (this.game.player == this.returnPlayerCommandingFaxction(faction)) {
+	    if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
 	      this.displayCustomOverlay("killed", faction);
 	    }
 	    this.updateLog(this.returnFactionName(faction) + ": " + conquistador + " killed by natives");
@@ -3843,7 +3828,6 @@ console.log("TO: " + JSON.stringify(destination.units[faction]));
 
 	  let game_self = this;
 	  let my_faction = "";
-
 
   this.game_help.render(TutorialTemplate, {
     help : `Diet of Worms` ,
@@ -9525,47 +9509,42 @@ defender_hits - attacker_hits;
         if (mv[0] === "action_phase") {
 
 	  this.game.state.impulse++;
+
+	  let targs = {
+      	    line1 : "what is", 
+    	    line2 : "this game?",
+    	    fontsize : "2.1rem" ,
+	  }
+
 //
-// Papacy
+// Game Help Menu first Turn
 //
 if (this.game.state.round == 1 && this.game.state.impulse == 1) {
-if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
-  this.game_help.render(TutorialTemplate, {
-    help : `Your Goal` ,
-    content : `
-	<b>Burn Books</b> and hold <b>Theological Debates</b> to slow the Protestant expansion in Germany and flip spaces back to Catholicism. 
-	<p></p>
-	The Papacy is the harder faction to learn as it can also play an early-war military strategy. Consider building Regulars and Mercenaries in Rome and using them to capture strategic keys like Florence (the square spaces on the board). You will earn an additional 2 VP from each key you or your allies control and gain additional cards at the beginning of each turn.
-        <p></p>
-	If you do try to take control of additional keys, note that you will need an unbroken line of spaces controlled by the Papacy or your allies connecting your existing keys to these new spaces. If you do not have such a "line of control" you will be unable to assault and may lose all your forces if defeated in a military battle in the space.
-    `,
-    line1 : "your",
-    line2 : "first turn",
-    fontsize : "2.1rem",      
-    img : `/his/img/backgrounds/tutorials/action_phase.jpeg`,
-  });
+          if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
+            this.game_help.renderCustomOverlay("protestant", targs);
+          } else {
+            if (this.game.player == this.returnPlayerCommandingFaction("ottoman")) {
+              this.game_help.renderCustomOverlay("ottoman", targs);
+            } else {
+              if (this.game.player == this.returnPlayerCommandingFaction("hapsburg")) {
+                this.game_help.renderCustomOverlay("hapsburg", targs);
+              } else {
+                if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
+                  this.game_help.renderCustomOverlay("papacy", targs);
+                } else {
+                  if (this.game.player == this.returnPlayerCommandingFaction("england")) {
+                    this.game_help.renderCustomOverlay("england", targs);
+                  } else {
+                    if (this.game.player == this.returnPlayerCommandingFaction("france")) {
+                      this.game_help.renderCustomOverlay("france", targs);
+                    } else {
+                    }
+                  }
+                }
+              }
+            }
+          }
 }
-//
-// Protestant
-//
-if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
-  this.game_help.render(TutorialTemplate, {
-    help : `Your Goal` ,
-    content : `
-        Convert spaces to the Protestant religion.
-	<p></p>
-	<b>Publish Treatises</b> and hold <b>Theological Debates</b> to flip spaces to the Protestant religion. Spend additional OPs on translating the bible into any language for bonus reformation attempts in that language zone.
-	<p></p>
-	Remember that you cannot attempt to reform any space until it is adjacent to an existing Protestant space, so be careful not to use your translation bonuses in non-German regions until you are ready to take advantage of them!
-    `,
-    line1 : "your",
-    line2 : "first turn",
-    fontsize : "2.1rem",      
-    img : `/his/img/backgrounds/tutorials/action_phase.jpeg`,
-  });
-}
-}
-
 
 	  //
 	  // check if we are really ready for a new round, or just need another loop
@@ -9656,6 +9635,13 @@ if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
         if (mv[0] === "spring_deployment_phase") {
 
 	  this.game.queue.splice(qe, 1);
+
+	  //
+	  // hide winter overlay
+	  //
+	  this.game_help.hide();
+	  this.winter_overlay.hide();
+
 
 //
 // hide any other help (scoring!);
@@ -10488,8 +10474,6 @@ if (this.game.state.round == 2) {
 
                 let cardnum = this.factions[this.game.state.players_info[i].factions[z]].returnCardsDealt(this);
 
-
-
 		//
 		// is_testing
 		//
@@ -10539,11 +10523,9 @@ if (this.game.state.round == 2) {
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-cardnum = 1;
-
     	        this.game.queue.push("check_replacement_cards\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
-//    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
+    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 
 		//
