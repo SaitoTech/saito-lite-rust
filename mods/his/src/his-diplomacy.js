@@ -361,6 +361,8 @@
 
       let receiving_faction = $(this).attr("id");
 
+      his_self.winter_overlay.hide();
+
       his_self.playerSelectSpaceWithFilter(
 
         "Yield which Space?",
@@ -379,6 +381,7 @@
             if (mycallback == null) { return; }
             his_self.updateStatus("submitted");
             mycallback([`control\t${receiving_faction}\t${spacekey}\t${faction}`,`NOTIFY\t${his_self.returnFactionName(faction)} yields ${his_self.returnSpaceName(spacekey)} to ${his_self.returnFactionName(receiving_faction)}`]);
+            his_self.winter_overlay.render();
           },
           
           null,

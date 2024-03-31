@@ -78,9 +78,10 @@ class DiplomacyProposeOverlay {
 
 	  this.pushHudUnderOverlay();
 
-	  document.querySelector(".diplomacy-propose-overlay").style.visibility = "visible";
-  	  document.querySelector(".diplomacy-propose-overlay .buttons").style.visibility = "visible";
-  	  document.querySelector(".diplomacy-propose-overlay").style.display = "block";
+	  this.overlay.show();
+	  //document.querySelector(".diplomacy-propose-overlay").style.visibility = "visible";
+  	  //document.querySelector(".diplomacy-propose-overlay .buttons").style.visibility = "visible";
+  	  //document.querySelector(".diplomacy-propose-overlay").style.display = "block";
 
 	  this.showMainMenu();
 
@@ -93,6 +94,7 @@ class DiplomacyProposeOverlay {
 
 	  let his_self = this.mod;
 	  let menu = this.mod.returnDiplomacyMenuOptions(this.mod.game.player, faction);
+
 
   	  document.querySelector(".diplomacy-propose-overlay").style.backgroundImage = "";
   	  document.querySelector(".diplomacy-propose-overlay .buttons").style.visibility = "hidden";
@@ -112,10 +114,11 @@ class DiplomacyProposeOverlay {
 	      obj.onclick = (e) => {
 
 		// remove click event from all
-		document.querySelectorAll(".diplomacy-propose-overlay .menu").innerHTML = "";
-		document.querySelectorAll(".diplomacy-propose-overlay .help").innerHTML = "Please Continue Using Game HUD...";
-		document.querySelectorAll(".diplomacy-propose-overlay .content").innerHTML = "";
-  	        document.querySelector(".diplomacy-propose-overlay").style.display = "none";
+		this.overlay.hide();
+		//document.querySelectorAll(".diplomacy-propose-overlay .menu").innerHTML = "";
+		//document.querySelectorAll(".diplomacy-propose-overlay .help").innerHTML = "Please Continue Using Game HUD...";
+		//document.querySelectorAll(".diplomacy-propose-overlay .content").innerHTML = "";
+  	        //document.querySelector(".diplomacy-propose-overlay").style.display = "none";
 
 		this.pullHudOverOverlay();
 
