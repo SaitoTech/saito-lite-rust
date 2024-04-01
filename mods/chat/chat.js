@@ -69,10 +69,6 @@ class Chat extends ModTemplate {
 
 		this.black_list = [];
 
-		this.communityGroupAddress = this.app.crypto.generatePublicKey(
-			this.app.crypto.hash(this.communityGroupName)
-		);
-
 		this.app.connection.on('encrypt-key-exchange-confirm', (data) => {
 			let group = this.returnOrCreateChatGroupFromMembers(data?.members);
 			this.app.connection.emit('chat-manager-render-request');
@@ -673,7 +669,6 @@ class Chat extends ModTemplate {
 
 	async createFreshGroup(name, id) {
 		let peer = (await this.app.network.getPeers())[0].publicKey;
-
 		let gid = this.generatePublicKeyFromString(id);
 
 		let chat_group = {
