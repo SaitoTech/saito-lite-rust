@@ -322,6 +322,8 @@
 
     units_to_destroy = [];
 
+console.log("in player assign hits!");
+
     let selectUnitsInterface = function(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface) {
 
       let msg = "Hits Remaining: " + hits_to_assign;
@@ -4112,9 +4114,9 @@ does_units_to_move_have_unit = true; }
                 his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+spacekey+"\t"+destination+"\t"+units_to_move[i].idx);
               }
     	      if (his_self.game.state.events.intervention_on_movement_possible == 1) {
-      		his_self.addMove("ACKNOWLEDGE\t" + his_self.returnFactionName(faction) + " moves to " + his_self.game.spaces[destination_spacekey].name);
+      		his_self.addMove("ACKNOWLEDGE\t" + his_self.returnFactionName(faction) + " moves to " + his_self.game.spaces[destination].name);
 	      } else {
-                his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" moving to "+his_self.game.spaces[destination_spacekey].name + "\tmove");
+                his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" moving to "+his_self.game.spaces[destination].name + "\tmove");
 	        his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	      }
               his_self.endTurn();
