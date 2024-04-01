@@ -2467,12 +2467,18 @@ class RedSquare extends ModTemplate {
         field1: "RedSquare",
         flagged: 0,
         tx_size_less_than: 1000000,
-        limit: 8,
+        limit: 20,
       },
       (txs) => {
-        for (let i = 0; i < txs.length; i++) {
+        let cnt = 0;
+        for (let i = 0; i < txs.length && cnt < 8; i++) {
           try {
-            hex_values.push(txs[i].serialize_to_web(this.app));
+            if (txs[i].optional.parent_id){
+              //console.log("Tweet is a reply to " + txs[i].optional.parent_id);
+            }else{
+              hex_values.push(txs[i].serialize_to_web(this.app));
+              cnt++;
+            }
           } catch (err) {
             console.log(err);
           }
