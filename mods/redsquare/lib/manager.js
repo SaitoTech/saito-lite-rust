@@ -4,7 +4,6 @@ const Post = require('./post');
 const Notification = require('./notification');
 const SaitoProfile = require('./../../../lib/saito/ui/saito-profile/saito-profile');
 const SaitoLoader = require('./../../../lib/saito/ui/saito-loader/saito-loader');
-const SaitoProgress = require('./../../../lib/saito/ui/saito-progress-bar/saito-progress-bar');
 
 class TweetManager {
 	constructor(app, mod, container = '.saito-main') {
@@ -20,7 +19,6 @@ class TweetManager {
 
 		//This is an in-place loader... not super useful when content is overflowing off the bottom of the screen
 		this.loader = new SaitoLoader(app, mod, '#redsquare-intersection');
-		this.alt_loader = new SaitoProgress(app, mod, '.redsquare-progress-banner');
 
 		//////////////////////////////
 		// load more on scroll-down //
@@ -369,7 +367,7 @@ class TweetManager {
 
 		let np = this.mod.peers.length;
 		if (np > 1){
-			this.alt_loader.render(`Loading from ${np} peers...`);	
+			this.app.connection.emit("redsquare-insert-loading-message", `Checking with ${np} peers for profile tweets...`);
 		}else{
 			this.showLoader();
 		}
@@ -391,14 +389,14 @@ class TweetManager {
 					this.mod.processTweetsFromPeer(peer, txs);
 
 					if (peer.peer !== "localhost"){
-						this.alt_loader.render(`Processing response from ${this.app.keychain.returnUsername(peer.publicKey)}`);	
+						this.app.connection.emit("redsquare-insert-loading-message", `Processing response from ${this.app.keychain.returnUsername(peer.publicKey)}`);	
 					}
 					np--;
 					setTimeout(()=>{
 						if (np>0){
-							this.alt_loader.render(`Loading from ${np} peers...`);			
+							this.app.connection.emit("redsquare-insert-loading-message", `Loading from ${np} peers...`);			
 						}else{
-							this.alt_loader.finish(`Finished Loading!`);			
+							this.app.connection.emit("redsquare-remove-loading-message");
 						}
 					}, 1500);
 				},

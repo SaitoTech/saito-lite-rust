@@ -937,6 +937,21 @@ class RedSquare extends ModTemplate {
               )}`
             );
 
+            if (this.peers[i].peer !== "localhost"){
+              this.app.connection.emit("redsquare-insert-loading-message", `Processing ${txs.length} tweets returned from ${this.app.keychain.returnUsername(this.peers[i].publicKey)}`);  
+            }else{
+              this.app.connection.emit("redsquare-insert-loading-message", `Processing ${txs.length} tweets from my archive`);  
+            }
+            
+            peer_count--;
+            setTimeout(()=>{
+              if (peer_count > 0) {
+               this.app.connection.emit("redsquare-insert-loading-message", `Still waiting on ${peer_count} peer(s)...`);   
+              } else {
+                this.app.connection.emit("redsquare-remove-loading-message");
+              }
+            }, 1500);
+
             if (mycallback) {
               mycallback(count);
             }
@@ -2466,7 +2481,7 @@ class RedSquare extends ModTemplate {
       {
         field1: "RedSquare",
         flagged: 0,
-        tx_size_less_than: 1000000,
+        tx_size_less_than: 100000,
         limit: 20,
       },
       (txs) => {
