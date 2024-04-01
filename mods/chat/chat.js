@@ -69,8 +69,9 @@ class Chat extends ModTemplate {
 
 		this.black_list = [];
 
-		this.communityGroupAddress =
-			'yyNhTY8J4cbhW7VTYUYoYGLcGX96of3Wrx7EvtXES74D';
+		this.communityGroupAddress = this.app.crypto.generatePublicKey(
+			this.app.crypto.hash(this.communityGroupName)
+		);
 
 		this.app.connection.on('encrypt-key-exchange-confirm', (data) => {
 			let group = this.returnOrCreateChatGroupFromMembers(data?.members);
@@ -192,7 +193,6 @@ class Chat extends ModTemplate {
 			this.header = new SaitoHeader(this.app, this);
 			await this.header.initialize(this.app);
 			this.addComponent(this.header);
-
 			this.main = new ChatMain(this.app, this);
 			this.addComponent(this.main);
 
@@ -259,14 +259,11 @@ class Chat extends ModTemplate {
 					chat_group.member_ids[this.publicKey] = 1;
 
 					this.groups.push(chat_group);
-					this.app.keychain.addWatchedPublicKey(
-						chat_group.subscription_address
-					);
+					this.app.keychain.addWatchedPublicKey(chat_group.id);
 					this.saveChatGroup(chat_group);
 
 					this.app.connection.emit('chat-manager-render-request');
 				}
-
 				this.sendJoinGroupTransaction(chat_group);
 			}
 
@@ -676,15 +673,15 @@ class Chat extends ModTemplate {
 
 	async createFreshGroup(name, id) {
 		let peer = (await this.app.network.getPeers())[0].publicKey;
-		let subscription_address = this.generateSubscriptionAddress();
+
+		let gid = this.generatePublicKeyFromString(id);
 
 		let chat_group = {
-			id,
+			id: gid,
 			members: [peer],
 			name,
 			txs: [],
-			unread: 0,
-			subscription_address
+			unread: 0
 			//
 			// USE A TARGET Container if the chat box is supposed to show up embedded within the UI
 			// Don't include if you want it to be just a chat popup....
@@ -882,10 +879,16 @@ class Chat extends ModTemplate {
 	// We have a single admin (who can add additional members or kick people out)
 	//
 	async sendCreateGroupTransaction(name, invitees = []) {
-		// --- make this a function
-		let pk = this.app.crypto.generateKeys();
-		let subscription_address = this.generateSubscriptionAddress();
-		this.app.keychain.addWatchedPublicKey(subscription_address);
+		let id;
+		if (invitees.length > 0) {
+			id = this.createGroupIdFromMembers(invitees);
+		} else {
+			id = this.generatePublicKey();
+		}
+
+		console.log('hashes', id);
+
+		this.app.keychain.addWatchedPublicKey(id);
 		let newtx = await this.app.wallet.createUnsignedTransaction(
 			this.publicKey,
 			BigInt(0),
@@ -906,7 +909,7 @@ class Chat extends ModTemplate {
 			request: 'chat group',
 			name: name,
 			admin: this.publicKey,
-			subscription_address
+			id
 		};
 
 		await newtx.sign();
@@ -917,18 +920,16 @@ class Chat extends ModTemplate {
 	}
 
 	async receiveCreateGroupTransaction(tx) {
-		console.log('Receiving group creation tx');
 		if (tx.isTo(this.publicKey)) {
+			console.log('Receiving group creation tx', tx.returnMessage());
 			let txmsg = tx.returnMessage();
-			// add subscription address to keychain
-			this.app.keychain.addWatchedPublicKey(txmsg.subscription_address);
-			if (this.returnGroup(tx.signature)) {
+			this.app.keychain.addWatchedPublicKey(txmsg.id);
+			if (this.returnGroup(txmsg.id)) {
 				return;
 			}
 
 			let newGroup = {
-				id: tx.signature,
-				subscription_address: txmsg.subscription_address,
+				id: txmsg.id,
 				members: [],
 				member_ids: {},
 				name: txmsg.name,
@@ -981,12 +982,12 @@ class Chat extends ModTemplate {
 			return;
 		}
 
-		for (let i in group.member_ids) {
-			if (i !== this.publicKey) {
-				newtx.addTo(i);
-			}
-		}
-
+		// for (let i in group.member_ids) {
+		// 	if (i !== this.publicKey) {
+		// 		newtx.addTo(i);
+		// 	}
+		// }
+		newtx.addTo(group.id);
 		newtx.msg = {
 			module: 'Chat',
 			request: 'chat join',
@@ -1000,16 +1001,21 @@ class Chat extends ModTemplate {
 	}
 
 	async receiveJoinGroupTransaction(tx) {
-		if (tx.isTo(this.publicKey)) {
+		// find the to public key
+		// if i have a group subscribed to it,
+
+		let group = this.returnGroup(tx.returnMessage().group_id);
+
+		if (!group) {
+			console.warn(
+				"Receiving chat group transaction from a group I don't know"
+			);
+			return;
+		}
+
+		if (tx.isTo(group.id)) {
 			let txmsg = tx.returnMessage();
 			let group = this.returnGroup(txmsg.group_id);
-
-			if (!group) {
-				console.warn(
-					"Receiving chat group transaction from a group I don't know"
-				);
-				return;
-			}
 
 			let new_member = tx.from[0].publicKey;
 
@@ -1053,11 +1059,12 @@ class Chat extends ModTemplate {
 			return;
 		}
 
-		for (let i = 0; i < group.members.length; i++) {
-			if (group.members[i] !== this.publicKey) {
-				newtx.addTo(group.members[i]);
-			}
-		}
+		// for (let i = 0; i < group.members.length; i++) {
+		// 	if (group.members[i] !== this.publicKey) {
+		// 		newtx.addTo(group.members[i]);
+		// 	}
+		// }
+		newtx.addTo(group.id);
 
 		newtx.msg = {
 			module: 'Chat',
@@ -1085,18 +1092,17 @@ class Chat extends ModTemplate {
 	}
 
 	async receiveUpdateGroupTransaction(tx) {
-		if (tx.isTo(this.publicKey)) {
+		let group = this.returnGroup(tx.returnMessage().group_id);
+
+		if (!group) {
+			console.warn('Chat group not found');
+			return;
+		}
+
+		if (tx.isTo(group.id)) {
 			let txmsg = tx.returnMessage();
-
 			let group = this.returnGroup(txmsg.group_id);
-
-			if (!group) {
-				console.warn('Chat group not found');
-				return;
-			}
-
 			console.log('CHAT UPDATE:', txmsg);
-
 			let sender = tx.from[0].publicKey;
 
 			if (group.member_ids[sender] !== 'admin') {
@@ -1185,12 +1191,7 @@ class Chat extends ModTemplate {
 			return;
 		}
 
-		for (let i = 0; i < group.members.length; i++) {
-			if (group.members[i] !== this.publicKey) {
-				newtx.addTo(group.members[i]);
-			}
-		}
-
+		newtx.addTo(group.id);
 		newtx.msg = {
 			module: 'Chat',
 			request: 'chat remove',
@@ -1205,15 +1206,16 @@ class Chat extends ModTemplate {
 	}
 
 	async receiveRemoveMemberTransaction(tx) {
-		if (tx.isTo(this.publicKey)) {
+		let group = this.returnGroup(tx.returnMessage().group_id);
+
+		if (!group) {
+			console.warn(`Chat group doesn't exist locally`);
+			return;
+		}
+
+		if (tx.isTo(group.id)) {
 			let txmsg = tx.returnMessage();
-
 			let group = this.returnGroup(txmsg.group_id);
-
-			if (!group) {
-				console.warn(`Chat group doesn't exist locally`);
-				return;
-			}
 
 			let sender = tx.from[0].publicKey;
 
@@ -1326,6 +1328,8 @@ class Chat extends ModTemplate {
 			return null;
 		}
 
+		console.log('group id', group_id);
+
 		let secret_holder = '';
 
 		//
@@ -1348,9 +1352,7 @@ class Chat extends ModTemplate {
 		// 	newtx.addTo(members[i]);
 		// }
 
-		let subscription_address =
-			this.returnSubscriptionAddressFromGroupID(group_id);
-		newtx.addTo(subscription_address);
+		newtx.addTo(group_id);
 		newtx.msg = {
 			module: 'Chat',
 			request: 'chat message',
@@ -1359,6 +1361,8 @@ class Chat extends ModTemplate {
 			timestamp: new Date().getTime(),
 			mentioned: to_keys
 		};
+
+		console.log(newtx);
 
 		// sanity check
 		let wallet_balance = await this.app.wallet.getBalance('SAITO');
@@ -1653,15 +1657,6 @@ class Chat extends ModTemplate {
 		return html;
 	}
 
-	returnSubscriptionAddressFromGroupID(group_id) {
-		for (let i = 0; i < this.groups.length; i++) {
-			if (group_id === this.groups[i].id) {
-				return this.groups[i].subscription_address;
-			}
-		}
-
-		return null;
-	}
 	createMessageBlocks(group) {
 		let blocks = [];
 		let block = [];
@@ -1862,7 +1857,9 @@ class Chat extends ModTemplate {
 		//So David + Richard == Richard + David
 		clean_array.sort();
 
-		return this.app.crypto.hash(`${clean_array.join('_')}`);
+		return this.app.crypto.generatePublicKey(
+			this.app.crypto.hash(`${clean_array.join('_')}`)
+		);
 	}
 
 	//
@@ -1880,20 +1877,17 @@ class Chat extends ModTemplate {
 		}
 
 		let id;
-		let subscription_address;
 
 		//This might keep persistence across server resets
 		if (name === this.communityGroupName) {
-			id = this.app.crypto.hash(this.communityGroupName);
-			subscription_address = this.communityGroupAddress;
+			// create a separate functon for this
+			id = this.generatePublicKeyFromString(this.communityGroupName);
 		} else {
 			//Make sure that I am part of the chat group
 			if (!members.includes(this.publicKey)) {
 				members.push(this.publicKey);
 			}
 			id = this.createGroupIdFromMembers(members);
-
-			subscription_address = this.generateSubscriptionAddress();
 		}
 
 		if (name == null) {
@@ -1936,8 +1930,7 @@ class Chat extends ModTemplate {
 			name: name,
 			txs: [],
 			unread: 0,
-			last_update: 0,
-			subscription_address
+			last_update: 0
 		};
 
 		//Prepend the community chat
@@ -2266,14 +2259,12 @@ class Chat extends ModTemplate {
 		let obj = {
 			id: group.id,
 			name: group.name,
-			member_ids: group.member_ids,
-			subscription_address: group.subscription_address
+			member_ids: group.member_ids
 		};
 
 		let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
 
 		let link = window.location.origin + '/chat?chat_id=' + base64obj;
-
 		navigator.clipboard.writeText(link);
 		siteMessage('Link Copied', 2000);
 	}
@@ -2384,9 +2375,13 @@ class Chat extends ModTemplate {
 		}
 	}
 
-	generateSubscriptionAddress() {
+	generatePublicKey() {
 		let pk = this.app.crypto.generateKeys();
-		return this.app.keychain.generatePublicKey(pk);
+		return this.app.crypto.generatePublicKey(pk);
+	}
+
+	generatePublicKeyFromString(string) {
+		return this.app.crypto.generatePublicKey(this.app.crypto.hash(string));
 	}
 }
 
