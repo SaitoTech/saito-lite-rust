@@ -274,7 +274,9 @@ class Chat extends ModTemplate {
 			return;
 		}
 
-		this.app.keychain.addWatchedPublicKey(this.communityGroupAddress);
+		this.app.keychain.addWatchedPublicKey(
+			this.generatePublicKeyFromString(this.communityGroupName)
+		);
 
 		// setTimeout(() => {
 		// 	this.app.keychain.unwatchPublicKey(this.communityGroupAddress);
