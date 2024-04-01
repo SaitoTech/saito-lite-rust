@@ -59,9 +59,9 @@ this.updateLog(`###############`);
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
-// TODO -- add back with more elegant restore functionality
-//	  this.game.queue.push("SAVE"); // save before new world for everyone
+	  this.game.queue.push("SAVE"); // save before new world for everyone
 	  this.game.queue.push("action_phase");
+	  this.game.queue.push("SAVE"); // save before action phase
 	  this.game.queue.push("check_interventions"); // players check and report cards that need to trigger waiting/check
 	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
@@ -3261,20 +3261,12 @@ console.log("----------------------------");
 	  if (this.game.spaces[destination_spacekey]) { destination = this.game.spaces[destination_spacekey]; }
 	  if (this.game.navalspaces[destination_spacekey]) { destination = this.game.navalspaces[destination_spacekey]; }
 
-console.log("Retreating: " );
-console.log("FROM: " + JSON.stringify(source.units[faction]));
-console.log("TO: " + JSON.stringify(destination.units[faction]));
-
 	  for (let i = source.units[faction].length-1; i >= 0; i--) {
 	    if (source.units[faction][i].land_or_sea == "sea" || source.units[faction][i].land_or_sea == "both") {
 	      destination.units[faction].push(source.units[faction][i]);
 	      source.units[faction].splice(i, 1);
 	    }
 	  }
-
-console.log("AFTER MOVE: ");
-console.log("FROM: " + JSON.stringify(source.units[faction]));
-console.log("TO: " + JSON.stringify(destination.units[faction]));
 
 	  this.displaySpace(source_spacekey);
 	  this.displayNavalSpace(source_spacekey);
@@ -4135,9 +4127,6 @@ alert("workaround bug-fix: if you see this error the game is attempting to unloc
 	  //
 	  this.cardbox.hide();
 
-console.log("CONFIRMS NEEDED: ");
-console.log(JSON.stringify(this.game.confirms_needed));
-
 	  //
 	  // if i have already confirmed, we only splice and pass-through if everyone else has confirmed
 	  // otherwise we will set ack to 0 and return 0 which halts execution. so we should never clear 
@@ -4487,10 +4476,6 @@ console.log(JSON.stringify(this.game.confirms_needed));
 	  let attacking_factions = 0;
 	  let defending_factions = 0;
 	  let faction_map = this.returnNavalFactionMap(space, attacker_faction, defender_faction);
-
-
-console.log("FACTION MAP FOR NAVAL BATTLE");
-console.log(JSON.stringify(faction_map));
 
 	  //
 	  // migrate any bonuses to attacker or defender
@@ -7326,13 +7311,6 @@ try {
 	    }
 	  }
 
-
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("UNITS IN THIS SPACE: ");
-console.log(JSON.stringify(space.units));
-
           his_self.game.state.naval_battle.attacker_sea_units_remaining = attacker_sea_units_remaining;
           his_self.game.state.naval_battle.defender_sea_units_remaining = defender_sea_units_remaining;
 
@@ -9511,8 +9489,8 @@ defender_hits - attacker_hits;
 	  this.game.state.impulse++;
 
 	  let targs = {
-      	    line1 : "what is", 
-    	    line2 : "this game?",
+      	    line1 : "what", 
+    	    line2 : "to do?",
     	    fontsize : "2.1rem" ,
 	  }
 
@@ -11150,8 +11128,6 @@ console.log(JSON.stringify(reshuffle_cards));
 	  this.game.state.active_player = player;
 	  this.game.state.active_faction = faction;
 
-console.log("do we skip factions not in play?");
-
 	  // skip factions not-in-play
 	  if (player == -1) {
 	    this.game.queue.splice(qe, 1);
@@ -11161,19 +11137,15 @@ console.log("do we skip factions not in play?");
 	  //
 	  // skip turn if required
 	  //
-console.log("do we skip next impulse?");
 	  if (this.game.state.skip_next_impulse.includes(faction)) {
 	    for (let i = 0; i < this.game.state.skip_next_impulse.length; i++) {
 	      if (this.game.state.skip_next_impulse[i] == faction) {
 		this.game.state.skip_next_impulse.splice(i, 1);
 	      }
 	    }
-console.log("finally we are splicing them out!");
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }
-
-console.log("resetting turn!");
 
 	  //
 	  // reset player/state vars and set as active player
@@ -11181,7 +11153,6 @@ console.log("resetting turn!");
 	  this.resetPlayerTurn(player);
 
 	  if (this.game.player == player) {
-console.log("I am this player, so I am taking the turn: " + faction)
 	    this.playerTurn(faction);
 	  } else {
 	    let f = this.game.state.players_info[this.game.player-1].factions[0];
@@ -11194,7 +11165,6 @@ console.log("I am this player, so I am taking the turn: " + faction)
 	    this.updateStatusAndListCards(`${this.returnFactionName(f)} - Opponent Turn: `, this.game.deck[0].fhand[fhand_idx], () => {});
 	  }
 
-console.log("splice and return zero...");
 	  this.game.queue.splice(qe, 1);
           return 0;
         }
@@ -11893,14 +11863,11 @@ console.log("splice and return zero...");
 	  let is_attacker = true;
 	  if (his_self.game.state.field_battle.faction_map[faction] === his_self.game.state.field_battle.defender_faction) { is_attacker = false; }
 
-console.log("is " + faction + " the attacker? " + is_attacker);
-
           //
           // add five bonus rolls
           //
 	  if (is_attacker) {
             for (let i = 0; i < bonus; i++) {
-console.log("adding bonus: " + (i+1) + " of " + bonus);
               let x = his_self.rollDice(6);
               if (x >= 5) { his_self.game.state.field_battle.attacker_hits++; }
               if (his_self.game.state.field_battle.tercios == 1) { if (x >= 4 && x < 5) { his_self.game.state.field_battle.attacker_hits++; } }
@@ -11911,7 +11878,6 @@ console.log("adding bonus: " + (i+1) + " of " + bonus);
             }
           } else {
             for (let i = 0; i < bonus; i++) {
-console.log("adding bonus: " + (i+1) + " of " + bonus);
               let x = his_self.rollDice(6);
               if (x >= 5) { his_self.game.state.field_battle.defender_hits++; }
               if (his_self.game.state.field_battle.tercios == 1) { if (x >= 4 && x < 5) { his_self.game.state.field_battle.defender_hits++; } }
@@ -11922,7 +11888,6 @@ console.log("adding bonus: " + (i+1) + " of " + bonus);
             }
 	  }
 
-console.log("re-rendering!");
           his_self.field_battle_overlay.render(his_self.game.state.field_battle, 1);
 
 	  this.game.queue.splice(qe, 1);
