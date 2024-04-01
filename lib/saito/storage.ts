@@ -78,20 +78,12 @@ class Storage {
 	//
 	async saveTransaction(tx: Transaction, obj = {}, peer = null) {
 		try {
-
-			let txmsg
-			if (tx.returnMessage) {
-				txmsg = tx.returnMessage()
-			} else {
-				txmsg = tx.msg
-			}
+			const txmsg = tx.returnMessage();
 			const message = 'archive';
 
 			let data: any = {};
 			data.request = 'save';
-			if (tx.serialize_to_web) {
-				data.serial_transaction = tx.serialize_to_web(this.app);
-			}
+			data.serial_transaction = tx.serialize_to_web(this.app);
 
 			data = Object.assign(data, obj);
 
