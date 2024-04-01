@@ -1001,9 +1001,6 @@ class Chat extends ModTemplate {
 	}
 
 	async receiveJoinGroupTransaction(tx) {
-		// find the to public key
-		// if i have a group subscribed to it,
-
 		let group = this.returnGroup(tx.returnMessage().group_id);
 
 		if (!group) {
@@ -1328,8 +1325,6 @@ class Chat extends ModTemplate {
 			return null;
 		}
 
-		console.log('group id', group_id);
-
 		let secret_holder = '';
 
 		//
@@ -1361,8 +1356,6 @@ class Chat extends ModTemplate {
 			timestamp: new Date().getTime(),
 			mentioned: to_keys
 		};
-
-		console.log(newtx);
 
 		// sanity check
 		let wallet_balance = await this.app.wallet.getBalance('SAITO');
@@ -1920,7 +1913,6 @@ class Chat extends ModTemplate {
 		}
 
 		if (this.debug) {
-			console.log('Creating new chat group ' + id);
 			console.log(JSON.stringify(members));
 		}
 
