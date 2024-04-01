@@ -1554,6 +1554,7 @@ class Chat extends ModTemplate {
 								let split = k.split('@');
 								let username = '';
 								let key = '';
+
 								if (split.length > 2) {
 									username = split[1] + '@' + split[2];
 									key =
