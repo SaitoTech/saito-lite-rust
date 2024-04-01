@@ -133,7 +133,7 @@ class RedSquare extends ModTemplate {
       title: "🟥 Saito RedSquare - Web3 Social Media",
       url: "https://saito.io/redsquare/",
       description: "Peer to peer Web3 social media platform",
-      image: "https://saito.tech/wp-content/uploads/2023/11/Rs-300x300.png",
+      image: "https://saito.tech/wp-content/uploads/2022/04/saito_card.png",
       //image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
     };
 
