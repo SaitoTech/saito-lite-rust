@@ -278,10 +278,6 @@ class Chat extends ModTemplate {
 			this.generatePublicKeyFromString(this.communityGroupName)
 		);
 
-		// setTimeout(() => {
-		// 	this.app.keychain.unwatchPublicKey(this.communityGroupAddress);
-		// }, 3000);
-
 		if (service.service === 'relay') {
 			this.isRelayConnected = true;
 			this.app.connection.emit('chat-manager-render-request');
@@ -882,8 +878,6 @@ class Chat extends ModTemplate {
 		} else {
 			id = this.generatePublicKey();
 		}
-
-		console.log('hashes', id);
 
 		this.app.keychain.addWatchedPublicKey(id);
 		let newtx = await this.app.wallet.createUnsignedTransaction(
