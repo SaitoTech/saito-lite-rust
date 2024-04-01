@@ -1781,7 +1781,7 @@ class Chat extends ModTemplate {
 			insertion_index++;
 		}
 
-		if (!tx.from.some((slip) => slip.publicKey === this.publicKey)) {
+		if (!tx.isFrom(this.publicKey)) {
 			group.unread++;
 		} else {
 			group.last_read_message = tx.signature;
