@@ -63,3 +63,13 @@
 		width: 100%;
 	}
 }
+
+
+@media screen and (orientation: landscape) and (max-height: 600px) {
+
+	.card {
+		height: min(100px, 23vh);
+		width: min(65px, 15vh);
+	}
+
+}
