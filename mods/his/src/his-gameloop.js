@@ -1891,12 +1891,17 @@ if (this.game.options.scenario == "is_testing") {
 
 	  let his_self = this;
 	  let idx = parseInt(mv[1]);
+	  let results_idx = 0;
 
 	  let faction = this.game.state.explorations[idx].faction;
 	  let explorer = this.game.state.explorations[idx].explorer;
 	  let hits = this.game.state.explorations[idx].hits;
 	  let prize = "";
 	  this.game.state.explorations[idx].resolved = 1;
+
+	  for (let z = 0; z < this.game.state.newworld.results.explorations.length; z++) {
+	    if (this.game.state.newworld.results.explorations[z].idx == idx) { results_idx = z; }
+	  }
 
 	  this.updateStatus("Resolving "+this.returnFactionName(faction) + " Exploration Attempt...");
 
@@ -1917,7 +1922,7 @@ if (this.game.options.scenario == "is_testing") {
 	      if (this.game.state.newworld['mississippi'].claimed != 1) {
 	        this.game.state.newworld['mississippi'].claimed = 1;
 	        this.game.state.newworld['mississippi'].faction = faction;
-	        this.game.state.newworld.results.explorations[idx].prize = "Mississippi";
+	        this.game.state.newworld.results.explorations[results_idx].prize = "Mississippi";
 	        this.game.state.explorations[idx].prize = "Mississippi";
 	        this.updateLog(this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Mississippi (1VP)");
 		this.displayCustomOverlay("mississippi", this.returnFactionName(faction));
@@ -1929,7 +1934,7 @@ if (this.game.options.scenario == "is_testing") {
 	      if (this.game.state.newworld['greatlakes'].claimed != 1) {
 	        this.game.state.newworld['greatlakes'].claimed = 1;
 	        this.game.state.newworld['greatlakes'].faction = faction;
-	        this.game.state.newworld.results.explorations[idx].prize = "Great Lakes";
+	        this.game.state.newworld.results.explorations[results_idx].prize = "Great Lakes";
 	        this.game.state.explorations[idx].prize = "Great Lakes";
 	        this.updateLog(this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Great Lakes (1VP)");
 		this.displayCustomOverlay("greatlakes", this.returnFactionName(faction));
@@ -1941,12 +1946,12 @@ if (this.game.options.scenario == "is_testing") {
 	      if (this.game.state.newworld['stlawrence'].claimed != 1) {
 	        this.game.state.newworld['stlawrence'].claimed = 1;
 	        this.game.state.newworld['stlawrence'].faction = faction;
-	        this.game.state.newworld.results.explorations[idx].prize = "St. Lawrence";
+	        this.game.state.newworld.results.explorations[results_idx].prize = "St. Lawrence";
 	        this.game.state.explorations[idx].prize = "St. Lawrence";
 	        this.updateLog(this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the St. Lawrence (1VP)");
 		this.displayCustomOverlay("stlawrence", this.returnFactionName(faction));
 	      } else {
-	        this.game.state.newworld.results.explorations[idx].prize = "-";
+	        this.game.state.newworld.results.explorations[results_idx].prize = "-";
 	        this.game.state.explorations[idx].prize = "-";
 	        this.updateLog(this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " makes no discovery");
 	      }
@@ -1961,7 +1966,7 @@ if (this.game.options.scenario == "is_testing") {
 	    if (this.game.state.newworld['stlawrence'].claimed == 1 && this.game.state.newworld['greatlakes'].claimed == 1 && this.game.state.newworld['mississippi'].claimed == 1 && this.game.state.newworld['amazon'].claimed == 1 && this.game.state.newworld['circumnavigation'].claimed == 1) {
 	      this.updateLog(this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " makes no discovery");
 	      this.game.state.explorations[idx].prize = "-";
-	      this.game.state.newworld.results.explorations[idx].prize = "-";
+	      this.game.state.newworld.results.explorations[results_idx].prize = "-";
 	      return 1;
 	    }
 
