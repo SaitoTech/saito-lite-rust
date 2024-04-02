@@ -7,8 +7,6 @@ class HealthMeter {
 		this.ordinal = 0;
 
 		this.multiple = 100;
-		this.colors = ["#839e45", "#a8b1db", "#ffd800", "#ff6500", "#99cccc"];
-		this.divisor = 2;
 
 	}
 
@@ -58,12 +56,12 @@ class HealthMeter {
 
 	addHealthMeter(health){
 
-		let opacity = Math.floor(255/this.divisor);
-		opacity = opacity.toString(16);
+		//let opacity = Math.floor(255/this.divisor);
+		//opacity = opacity.toString(16);
 
 		let height = Math.round(100*health/this.multiple);
 		let border = (height > 0 && height < 100) ? "border-top: 1px solid;" : "";
-		let html = `<div class="health-meter-health" style="background:${this.colors[this.ordinal]}${opacity}; height:${height}%;${border}"></div>`;
+		let html = `<div class="health-meter-health" style="background:${this.color}99; height:${height}%;${border}"></div>`;
 
 		this.app.browser.addElementToId(html, "health-meter-"+this.ordinal);
 
