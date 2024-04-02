@@ -421,6 +421,7 @@ class Limbo extends ModTemplate {
 
 	joinDream(dreamer) {
 		this.controls = new DreamSpace(this.app, this, '#limbo-main');
+		this.controls.render(null);
 		this.dreamer = dreamer;
 		this.sendJoinTransaction();
 		this.app.connection.emit('limbo-open-dream', dreamer);

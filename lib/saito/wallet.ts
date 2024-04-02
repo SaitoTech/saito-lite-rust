@@ -224,6 +224,14 @@ export default class Wallet extends SaitoWallet {
 				let balance_as_float = parseFloat(balance);
 				return nf.format(balance_as_float).toString();
 			}
+
+			validateAddress(address){
+				let isPublicKey = this.app.crypto.isPublicKey(address);
+				if (isPublicKey) {
+					return true;
+				}
+				return false;
+			}
 		}
 
 		this.saitoCrypto = new SaitoCrypto(this.app);
@@ -1259,7 +1267,17 @@ export default class Wallet extends SaitoWallet {
 		return string;
 	}
 
+	public async isAddressValid(address, ticker) {
+		try {
+			let pc = await this.returnPreferredCrypto();
+			return await pc.validateAddress(address, ticker);
+		} catch(err) {
+			console.error("Error 'isAddressValid' wallet.ts: ", err);
+		}
+	}
+
 	public async setKeyList(keylist: string[]): Promise<void> {
 		return await this.instance.set_key_list(keylist);
 	}
+
 }

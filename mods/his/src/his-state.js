@@ -190,13 +190,15 @@
   	  if (space.units[f][i].besieged == true || space.units[f][i].besieged == 1) {
 	    return true;
 	  } else {
-	    // if not allies, then someone must be besieged
-	    if (!this.areAllies(f, faction_in_control)) { return true; }    
+	    // if not independent (which won't attack) or allies, then someone must be besieged
+	    if (f != "independent") {
+	      if (!this.areAllies(f, faction_in_control)) { return true; }    
+	    }
 	  }
         }
       }
 
-      return false; // everyone here is allied
+      return false; // everyone here is allied or independent and not-besieged
     }
     return false;
   }

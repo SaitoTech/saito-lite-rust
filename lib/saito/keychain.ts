@@ -180,11 +180,8 @@ class Keychain {
 			}
 		}
 		
-		console.warn(
-			'I don\'t share a decryption key with encrypter, cannot decrypt'
-		);
-
 		if (this.app.BROWSER){
+			console.warn('I don\'t share a decryption key with encrypter, cannot decrypt');
 			this.app.connection.emit('encrypt-decryption-failed', publicKey);	
 		}
 

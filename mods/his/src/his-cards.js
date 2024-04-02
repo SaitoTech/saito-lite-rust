@@ -5092,7 +5092,7 @@ console.log("selected: " + spacekey);
 
 	  if (faction == null || source == null || unit_idx == null) { his_self.endTurn(); return 0; }
   	  his_self.addMove(`discard\t${faction}\t032`);
-          his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
+	  his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
 	  if (his_self.game.deck[0].discards["031"]) {
             his_self.addMove("SETVAR\tstate\tevents\tintervention_on_movement_possible\t0");
 	  }
@@ -5122,7 +5122,10 @@ console.log("selected: " + spacekey);
 
 	  if (faction == null || source == null || unit_idx == null) { his_self.endTurn(); return 0; }
   	  his_self.addMove(`discard\t${faction}\t032`);
-          his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
+	  his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
+	  if (his_self.game.deck[0].discards["031"]) {
+            his_self.addMove("SETVAR\tstate\tevents\tintervention_on_movement_possible\t0");
+	  }
           his_self.endTurn();
 
         }
@@ -7797,12 +7800,11 @@ console.log("selected: " + spacekey);
 	  let hits = 0;
 	  for (let i = 0; i < 5; i++) {
 	    let roll = his_self.rollDice(6);
+            his_self.updateLog(` ... roll ${5-i}: + ${roll}`);
 	    if (roll >= 5) {
 	      hits++;
 	    }
 	  }
-
-console.log("HITS: " + hits);
 
 	  //
 	  // TODO, return zero and add choice of unit removal, for now remove army before navy
@@ -7820,7 +7822,7 @@ console.log("HITS: " + hits);
 	    return 1;
 	  }
 	  if (his_self.game.player == p) {
-console.log("a player will assign the hits!");
+console.log("this player will assign the hits!");
 	    his_self.addMove("finish-city-state-rebels\t"+faction+"\t"+respondent+"\t"+spacekey);
 	    his_self.playerAssignHits(faction, spacekey, hits, 1);
 	  }
@@ -7842,7 +7844,10 @@ console.log("finish city state rebels..");
 	  // do land or naval units remain
 	  let anything_left = 0; 
 	  for (let i = 0; i < space.units[respondent].length; i++) {
-	    if (!space.units[respondent][i].personage) { anything_left = 1; }
+	    let u = space.units[respondent][i];
+	    if (u.type == "regular" || u.type == "mercenary" || u.type == "squadron" || u.type == "corsair" || u.type != "mercenary") {
+	      anything_left = 1;
+	    }
 	  }
 
 	  if (!anything_left) {
@@ -7859,6 +7864,8 @@ console.log("nothing is left!");
 
 	  // add 1 regular - to home minor ally if needed
           his_self.addRegular(space.home, space.key, 1);
+
+	  his_self.displaySpace(spacekey);
 
 	  return 1;
 	}
@@ -8811,7 +8818,7 @@ console.log("nothing is left!");
 
 	    function (target) {
 	      his_self.addMove("mercendaries-demand-pay\t"+target+"\t"+faction);
-	      ahis_self.endTurn();
+	      his_self.endTurn();
 	    }
 	  );
 	}

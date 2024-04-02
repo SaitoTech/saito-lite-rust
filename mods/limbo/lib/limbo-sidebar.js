@@ -38,6 +38,20 @@ class LimboSidebar {
       }
     }
 
+    let alt_button = document.getElementById("exit_space");
+    if (alt_button){
+      alt_button.onclick = async () => {
+        if (this.mod.dreamer == this.mod.publicKey){
+          await this.mod.sendKickTransaction(); 
+        }else{
+          await this.mod.sendLeaveTransaction();  
+        }
+        
+        this.mod.exitSpace();
+      }
+    }
+
+
     //<div id="dream-space-chat" class="saito-modal-menu-option"><i class="fa-solid "></i><div>Space Chat</div></div>
 
   }
@@ -80,11 +94,11 @@ class LimboSidebar {
 
     const el = document.createElement('div');
 
-    if (item?.prepend){
+    //if (item?.prepend){
       container.prepend(el);
-    }else{
-      container.appendChild(el);
-    }
+    //}else{
+    //  container.appendChild(el);
+    //}
     
     el.outerHTML = html;
 
