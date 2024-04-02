@@ -26798,6 +26798,8 @@ try {
 
 	    while (are_hits_all_assigned == 0 && hits_to_assign > 0) {
 
+console.log("testing...");
+
 	      let number_of_targets = 0;
 
 	      //
@@ -26945,7 +26947,6 @@ try {
 	    } else {
 	      assign_hits(faction, this.game.state.field_battle.attacker_hits);
 	    }
-
             his_self.field_battle_overlay.renderFieldBattle(his_self.game.state.field_battle);
             his_self.field_battle_overlay.updateInstructions("Independent Hits Assigned");
 	    return 1;
@@ -26993,7 +26994,12 @@ try {
 	  //
 	  // every gets shared hits
 	  //
+
+console.log("hits to assign: " + hits_to_assign);
+console.log("defending factions hits: " + defending_factions_hits);
+
 	  while (hits_to_assign > defending_factions_hits.length) {
+console.log(hits_to_assign + " > " + defending_factions_hits.length);
 	    for (let i = 0; i < defending_factions_hits.length; i++) { defending_factions_hits[i]++; }
 	    hits_to_assign -= defending_factions_hits.length;
 	  }
@@ -27005,6 +27011,7 @@ try {
 	  for (let i = 0; i < hits_to_assign; i++) {
 	    let unlucky_faction = this.rollDice(defending_factions_hits.length)-1;
 	    while (already_punished.includes(unlucky_faction)) {
+console.log("unlucky faction spinout...");
 	      unlucky_faction = this.rollDice(defending_factions_hits.length)-1;
 	    }
 	    defending_factions_hits[unlucky_faction]++;
@@ -27020,6 +27027,8 @@ try {
 	    }
 	    return 1;
 	  }
+
+console.log("about to assign hits directly...");
 
 	  //
 	  // otherwise assign hits directly
