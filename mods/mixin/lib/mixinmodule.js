@@ -544,6 +544,23 @@ class MixinModule extends CryptoModule {
 		}
 	}
 
+	async getAddressByUserId(user_id, asset_id){
+		let address = null;
+		await this.mixin.sendFetchAddressByUserIdTransaction({
+			user_id: user_id,
+			asset_id: asset_id
+		}, 
+		function(res){
+			console.log('returning address 1////', res);
+			if (res.length > 0) {
+				address = res[0];
+			}
+		});
+
+		console.log('returning address 2////');
+		return address;
+	}
+
 	async addCryptoAddressToKey(publicKey, address, ticker){
 		console.log('address, asset_id', address, ticker);
 		let crypto_addresses = {};
@@ -596,6 +613,12 @@ class MixinModule extends CryptoModule {
 		} catch(err) {
 			console.error("Error 'validateAddress' MixinModule: ", err);
 		}
+	}
+
+	async fetchTransaction(transaction_id){
+		return await this.mixin.fetchSafeTransaction(transaction_id, function(res){
+			console.log('inside miximodule fetchTransaction ///', res);
+		});
 	}
 
 }
