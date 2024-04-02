@@ -1,30 +1,20 @@
 const JSON = require('json-bigint');
 const ArcadeMainTemplate = require('./main.template');
-const ArcadeMenu = require('./menu');
-const GameSlider = require('../game-slider');
 const ArcadeInitializer = require('./initializer');
-const SaitoSidebar = require('./../../../../lib/saito/ui/saito-sidebar/saito-sidebar');
+const CentralPanel = require('../overlays/game-selector.template.js');
 
 class ArcadeMain {
 	constructor(app, mod, container = '') {
 		this.app = app;
 		this.mod = mod;
 
-		//
-		// left sidebar
-		//
-		this.sidebar = new SaitoSidebar(this.app, this.mod, '.saito-container');
-		this.sidebar.align = 'nope';
-		this.menu = new ArcadeMenu(this.app, this.mod, '.saito-sidebar.left');
-		this.sidebar.addComponent(this.menu);
-		this.slider = new GameSlider(this.app, this.mod, '.arcade-game-slider');
+
 
 		//
 		// load init page
 		//
 		app.connection.on('arcade-game-initialize-render-request', (game_id) => {
 			document.querySelector('.arcade-central-panel').innerHTML = '';
-			this.slider.hide();
 
 			if (document.getElementById('saito-container')) {
 				document.getElementById('saito-container').scrollTop = 0;
@@ -60,12 +50,7 @@ class ArcadeMain {
 			);
 		}
 
-		await this.sidebar.render();
-
-		//
-		// slider
-		//
-		await this.slider.render();
+		this.app.browser.addElementToId(CentralPanel(this.app, this.mod), "arcade-central-panel");
 
 		//
 		// invite manager

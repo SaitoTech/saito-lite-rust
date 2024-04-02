@@ -16,6 +16,12 @@
 	background: var(--saito-arcade-background);
 }
 
+.arcade-container.saito-container{
+	grid-template-columns: 1fr min-content;
+
+	padding: 0 calc((100vw - var(--saito-width)) / 4);
+}
+
 .arcade-main {
 	display: flex;
 	flex-direction: column;
