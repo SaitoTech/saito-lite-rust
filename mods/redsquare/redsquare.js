@@ -509,10 +509,22 @@ class RedSquare extends ModTemplate {
       }
     }
 
-    
-
     await super.render();
     this.rendered = true;
+
+    if (this.app.browser.isMobileBrowser()){
+      this.app.browser.makeRefreshable(".saito-main", ()=> {
+
+        let ct = this.mod.loadTweets("later", (tx_count) => {
+          this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
+        });
+
+        if (ct){
+          this.app.connection.emit("redsquare-insert-loading-message", `Checking with ${ct} peers for new tweets...`);
+        }
+
+      });
+    }
 
 
     //this.loadLocalTweets();
