@@ -834,7 +834,7 @@ export default class Wallet extends SaitoWallet {
 					unique_hash,
 					ticker
 				);
-				//mycallback({err: err});
+				mycallback({err: err});
 				return;
 			}
 		} else {

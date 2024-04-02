@@ -115,7 +115,6 @@ class Disburse extends ModTemplate {
 				} else {
 					if (this_wallet_balance < total_out) alert("Not enought funds");
 					else {
-
 						alert('Unable to parse, please check wallet funds or recievers.');
 					}
 				}
@@ -165,8 +164,9 @@ class Disburse extends ModTemplate {
 					console.log("hash:\t" + res.hash);
 					if (res.hash) {
 						salert("Success, please wait - transaction hash: " + res.hash);
-					} else {
-						salert("An error might have ocurred");
+					} 
+					if (res.err) {
+						salert("Error: " + res.err);
 					}
 				},
 				ticker
