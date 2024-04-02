@@ -34,6 +34,7 @@
 	cursor: pointer;
 }
 
+
 .arcade-game-playerbox.requested_player {
 	opacity: 0.6;
 	filter: grayscale(0.7);
@@ -116,6 +117,9 @@
 	box-shadow: -1px -1px #000;
 	background-color: var(--saito-light-shim);
 	height: 3.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .arcade_game_overlay_loader {

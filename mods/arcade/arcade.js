@@ -1885,7 +1885,7 @@ class Arcade extends ModTemplate {
 		);
 	}
 
-	showShareLink(game_sig) {
+	showShareLink(game_sig, show = true) {
 		let data = {};
 		let accepted_game = null;
 
@@ -1906,7 +1906,7 @@ class Arcade extends ModTemplate {
 		}
 
 		let game_invitation_link = new GameInvitationLink(this.app, this, data);
-		game_invitation_link.render();
+		game_invitation_link.render(show);
 	}
 
 	async makeGameInvite(options, gameType = 'open', invite_obj = {}) {
