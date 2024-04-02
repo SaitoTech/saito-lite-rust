@@ -5379,6 +5379,7 @@ console.log("testing...");
 	    if (this.game.state.field_battle.attacker_hits == 0) { return 1; }
 	  }
 
+
 	  //
 	  // if we hit this point we need manual intervention to assign the hits.
 	  // the attacker can assign hits however they prefer if others join them
@@ -5400,8 +5401,23 @@ console.log("testing...");
 	      }
 	    }
           }
+	  //
+	  // this can happen if only minor powers, but controlled by major power
+	  //
 	  if (defending_factions_hits.length == 0) {
-	  }
+	    for (let f in this.game.state.field_battle.faction_map) {
+	      if (this.game.state.field_battle.faction_map[f] == faction || f == faction) {
+	        units_capable_of_taking_hits += this.returnFactionLandUnitsInSpace(f, this.game.state.field_battle.spacekey);
+	        defending_factions.push(f);
+                defending_factions_hits.push(0);
+	      }
+            }
+          }
+
+	  // this is needed, but we shouldn't hit it
+	  //if (defending_faction_hits.length == 0) {
+	  //  return 1;
+	  //}
 
 	  if (units_capable_of_taking_hits == 0) {
 	    return 1;
