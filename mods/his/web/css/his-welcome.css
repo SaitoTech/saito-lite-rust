@@ -4,17 +4,21 @@
 	border-radius: 2rem;
 	overflow: hidden;
 	background-size: cover;
+        -webkit-user-select: none; /* Safari */
+    	-moz-user-select: none; /* Firefox */
+    	-ms-user-select: none; /* Internet Explorer/Edge */
+    	user-select: none; /* Standard syntax */
 }
 
 .welcome-card {
-    position: relative;
-    display: block;
-    right: 2rem;
-    width: 30vw;
-    transform: rotate(5deg);
-    top: 0px;
-    float: right;
-    margin-top: 8vh;
+    	position: relative;
+    	display: block;
+    	right: 2rem;
+    	width: 30vw;
+    	transform: rotate(5deg);
+    	top: 0px;
+    	float: right;
+    	margin-top: 8vh;
 }
 
 .welcome-england {

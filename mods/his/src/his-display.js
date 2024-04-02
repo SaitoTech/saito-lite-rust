@@ -111,10 +111,10 @@
       this.welcome_overlay.renderCustom({
         title : "New World Discovery" ,
         text : msg + " discovers the Great Lakes" ,
-        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+        img : '/his/img/backgrounds/newworld/greatlakes.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers St. Lawrence River`);
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Great Lakes`);
       return;
     }
 
@@ -122,7 +122,8 @@
       this.welcome_overlay.renderCustom({
         title : "New World Discovery" ,
         text : msg + " discovers the Amazon River" ,
-        img : '/his/img/backgrounds/newworld/amazon2.jpg',
+        img : '/his/img/backgrounds/newworld/amazon3.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Amazon River`);
       return;
@@ -736,6 +737,8 @@
       if (this.game.state.newworld['maya'].faction == "hapsburg") { hc.push("maya"); }
     }
 
+
+
     for (let z = 0, zz = 1; z < ec.length; z++) {
       let depl = ""; if (this.game.state.newworld[ec[z]].deleted == 1) { depl = "depleted"; }
       if (zz < 2) {
@@ -744,14 +747,14 @@
       }
     }
     for (let z = 0, zz = 1; z < fc.length; z++) {
-      let depl = ""; if (this.game.state.newworld[ec[z]].deleted == 1) { depl = "depleted"; }
+      let depl = ""; if (this.game.state.newworld[fc[z]].deleted == 1) { depl = "depleted"; }
       if (zz < 2) {
 	document.querySelector(`.france_conquest${zz}`).innerHTML = `<img class="nw_tile ${depl}" src="${this.game.state.newworld[fc[z]].img}" />`;
         zz++;
       }
     }
     for (let z = 0, zz = 1; z < hc.length; z++) {
-      let depl = ""; if (this.game.state.newworld[ec[z]].deleted == 1) { depl = "depleted"; }
+      let depl = ""; if (this.game.state.newworld[hc[z]].deleted == 1) { depl = "depleted"; }
       if (zz < 3) {
 	document.querySelector(`.hapsburg_conquest${zz}`).innerHTML = `<img class="nw_tile ${depl}" src="${this.game.state.newworld[hc[z]].img}" />`;
         zz++;
