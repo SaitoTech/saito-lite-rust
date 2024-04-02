@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
 	default_fee = 0;
 
-	version = 5.625;
+	version = 5.626;
 
 	nolan_per_saito = 100000000;
 
@@ -138,8 +138,8 @@ export default class Wallet extends SaitoWallet {
 			async sendPayments(amounts: bigint[], to_addresses: string[]) {
 				let newTx =
 					await this.app.wallet.createUnsignedTransactionWithMultiplePayments(
-						amounts,
-						to_addresses
+						to_addresses,
+						amounts
 					);
 				await this.app.wallet.signAndEncryptTransaction(newTx);
 				await this.app.network.propagateTransaction(newTx);
@@ -223,6 +223,14 @@ export default class Wallet extends SaitoWallet {
 
 				let balance_as_float = parseFloat(balance);
 				return nf.format(balance_as_float).toString();
+			}
+
+			validateAddress(address){
+				let isPublicKey = this.app.crypto.isPublicKey(address);
+				if (isPublicKey) {
+					return true;
+				}
+				return false;
 			}
 		}
 
@@ -745,6 +753,105 @@ export default class Wallet extends SaitoWallet {
 	}
 
 	/**
+	 * Sends payments to the addresses provided if this user is the corresponding
+	 * sender. Will not send if similar payment was found after the given timestamp.
+	 * @param {Array} senders - Array of addresses -- in web3 currency
+	 * @param {Array} receivers - Array of addresses -- in web3 curreny
+	 * @param {Array} amounts - Array of amounts to send
+	 * @param {Int} timestamp - Timestamp of time after which payment should be made
+	 * @param {Function} mycallback - ({hash: {String}}) -> {...}
+	 * @param {String} ticker - Ticker of install crypto module
+	 */
+	async sendPayments(
+		senders = [],
+		receivers = [],
+		amounts = [],
+		timestamp,
+		unique_hash = '',
+		mycallback = null,
+		ticker
+	) {
+		console.log('wallet sendPayment 2');
+		// validate inputs
+		if (
+			senders.length != receivers.length ||
+			senders.length != amounts.length
+		) {
+			// mycallback({err: "Lengths of senders, receivers, and amounts must be the same"});
+			return;
+		}
+
+		if (
+			!this.doesPreferredCryptoTransactionExist(
+				senders,
+				receivers,
+				amounts,
+				unique_hash,
+				ticker
+			)
+		) {
+			const cryptomod = this.returnCryptoModuleByTicker(ticker);
+			await this.savePreferredCryptoTransaction(
+				senders,
+				receivers,
+				amounts,
+				unique_hash,
+				ticker
+			);
+			try {
+
+				let amounts_to_send = [];
+				let to_addresses = [];
+				for (let i = 0; i < senders.length; i++) {
+					amounts_to_send.push(BigInt(amounts[i]));
+					to_addresses.push(receivers[i]);
+				}
+				const hash = await cryptomod.sendPayments(
+					amounts_to_send,
+					to_addresses,
+				);
+				//
+				// hash is "" if unsuccessful, trace_id if successful
+				//
+				if (hash === '') {
+					console.log(
+						'Deleting preferred crypto transaction'
+					);
+					this.deletePreferredCryptoTransaction(
+						senders,
+						receivers,
+						amounts,
+						unique_hash,
+						ticker
+					);
+				} 
+				
+				if (mycallback) {
+					mycallback({ hash: hash });
+				}
+				return;
+			} catch (err) {
+				// it failed, delete the transaction
+				console.log(
+					'sendPayments ERROR: payment failed....\n' + err
+				);
+				this.deletePreferredCryptoTransaction(
+					senders,
+					receivers,
+					amounts,
+					unique_hash,
+					ticker
+				);
+				mycallback({err: err});
+				return;
+			}
+		} else {
+			console.log('sendPayment ERROR: already sent');
+			//mycallback({err: "already sent"});
+		}
+	}
+
+	/**
 	 * Checks that a payment has been received if the current user is the receiver.
 	 * @param {Array} senders - Array of addresses
 	 * @param {Array} receivers - Array of addresses
@@ -1259,7 +1366,17 @@ export default class Wallet extends SaitoWallet {
 		return string;
 	}
 
+	public async isAddressValid(address, ticker) {
+		try {
+			let pc = await this.returnPreferredCrypto();
+			return await pc.validateAddress(address, ticker);
+		} catch(err) {
+			console.error("Error 'isAddressValid' wallet.ts: ", err);
+		}
+	}
+
 	public async setKeyList(keylist: string[]): Promise<void> {
 		return await this.instance.set_key_list(keylist);
 	}
+
 }

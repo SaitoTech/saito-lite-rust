@@ -509,10 +509,23 @@ class RedSquare extends ModTemplate {
       }
     }
 
-    
-
     await super.render();
     this.rendered = true;
+
+    if (this.app.browser.isMobileBrowser()){
+
+      this.app.browser.makeRefreshable(".saito-main", ()=> {
+
+        let ct = this.loadTweets("later", (tx_count) => {
+          this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
+        });
+
+        if (ct){
+          this.app.connection.emit("redsquare-insert-loading-message", `Checking with ${ct} peers for new tweets...`);
+        }
+
+      });
+    }
 
 
     //this.loadLocalTweets();
@@ -642,7 +655,7 @@ class RedSquare extends ModTemplate {
       // Get tweets from my peers
       // will hit up local archive, central server and any peers around... 
       console.log("REDSQUARE: query peers on initial load");
-      this.loadTweets("earlier", (tx_count)=> {
+      this.loadTweets("later", (tx_count)=> {
         console.log("REDSQUARE CALLBACK: ", this.manager.mode);
         if (this.rendered && this.manager.mode == "tweets"){
           this.app.connection.emit("redsquare-home-render-request", true);  
@@ -937,20 +950,22 @@ class RedSquare extends ModTemplate {
               )}`
             );
 
-            if (this.peers[i].peer !== "localhost"){
-              this.app.connection.emit("redsquare-insert-loading-message", `Processing ${txs.length} tweets returned from ${this.app.keychain.returnUsername(this.peers[i].publicKey)}`);  
-            }else{
-              this.app.connection.emit("redsquare-insert-loading-message", `Processing ${txs.length} tweets from my archive`);  
-            }
-            
-            peer_count--;
-            setTimeout(()=>{
-              if (peer_count > 0) {
-               this.app.connection.emit("redsquare-insert-loading-message", `Still waiting on ${peer_count} peer(s)...`);   
-              } else {
-                this.app.connection.emit("redsquare-remove-loading-message");
+            if (created_at === "later"){
+              if (this.peers[i].peer !== "localhost"){
+                this.app.connection.emit("redsquare-insert-loading-message", `Processing ${txs.length} tweets returned from ${this.app.keychain.returnUsername(this.peers[i].publicKey)}`);  
+              }else{
+                this.app.connection.emit("redsquare-insert-loading-message", `Processing ${txs.length} tweets from my archive`);  
               }
-            }, 1500);
+              
+              peer_count--;
+              setTimeout(()=>{
+                if (peer_count > 0) {
+                 this.app.connection.emit("redsquare-insert-loading-message", `Still waiting on ${peer_count} peer(s)...`);   
+                } else {
+                  this.app.connection.emit("redsquare-remove-loading-message");
+                }
+              }, 1500);
+            }
 
             if (mycallback) {
               mycallback(count);

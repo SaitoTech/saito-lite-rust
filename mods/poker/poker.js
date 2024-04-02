@@ -151,7 +151,7 @@ class Poker extends GameTableTemplate {
 
 		for (let i = 0; i < this.game.players.length; i++){
 			let hm = new HealthMeter(this.app, this, `.game-playerbox-${i+1}`);
-			hm.divisor = this.game.players.length;
+			hm.color = this.app.keychain.returnIdenticonColor(this.game.players[i]);
 			this.healthBars.push(hm);
 			hm.render(this.game.state.player_credit[i]);
 		}

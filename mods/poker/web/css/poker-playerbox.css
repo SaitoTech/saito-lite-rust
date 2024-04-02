@@ -12,7 +12,7 @@
 	height: 250px;
 }
 
-.game-playerbox.game-playerbox-seat-4 {
+.game-playerbox-2.game-playerbox-seat-4 {
 	height: 100px;
 }
 
@@ -35,9 +35,9 @@
 
 .game-playerbox {
 	min-width: 250px;
-	max-width: 250px;
+	max-width: min(250px, 30vw);
 	border: 1px solid #fff3;
-	min-height: unset;
+	min-height: 11rem;
 	color: white;
 	background-color: #4448;
 }
@@ -87,15 +87,49 @@
 	z-index: -10;
 }
 
+.game-playerbox-seat-5 .game-playerbox-graphics, .game-playerbox-seat-3 .game-playerbox-graphics{
+	left: 20%;
+	top: 100%;
+}
+
+.game-playerbox-seat-5, .game-playerbox-seat-6{
+	left: 1.5rem;
+}
+
+
 @media screen and (max-width: 600px) {
 	.game-playerbox {
-		max-width: 50vw;
+		max-width: 45vw;
 		min-width: unset;
+		padding: 0.5rem;
+		min-height: 8rem;
 	}
 
 	.game-playerbox.game-playerbox-seat-1 {
 		min-width: 250px;
 		max-width: 250px;
 		margin-bottom: 0.5rem;
+	}
+
+	.game-playerbox-seat-5, .game-playerbox-seat-6{
+		left: 1.5rem;
+	}
+
+	.plog-update{
+		padding-top: 0.8rem;
+		padding-bottom: 0.6rem;
+	}
+
+}
+
+@media screen and (max-height: 600px) {
+	.game-playerbox {
+		min-width: unset;
+		padding: 0.5rem;
+		min-height: 8rem;
+	}
+	.game-playerbox.game-playerbox-seat-1 {
+		min-width: 250px;
+		max-width: 75vw;
 	}
 }

@@ -1227,6 +1227,11 @@ class Browser {
 			return;
 		}
 
+		if (!mycallback){
+			console.error("no callback!");
+			return;
+		}
+
 		element.addEventListener('touchstart', (e) => {
 			touchStartY = e.touches[0].clientY;
 			triggerRefresh = false;
@@ -1242,11 +1247,7 @@ class Browser {
 
 		element.addEventListener('touchend', (e) => {
 			if (triggerRefresh) {
-				if (mycallback) {
-					mycallback();
-				} else {
-					alert('Pull to refresh');
-				}
+				mycallback();
 			}
 		});
 	}
@@ -1579,14 +1580,16 @@ class Browser {
 	/**
 	 * Callback is called on mousedown
 	 */
-	makeResizeable(target_div, icon_div, unique_id, callback = null) {
+	makeResizeable(target_div, icon_div = null, unique_id = null, direction = 'diagonal', callback = null) {
 		let d = document;
 		let target = d.querySelector(target_div);
+		let pullTab = null;
+
 		this.addElementToSelector(
-			`<div class="resize-icon" id="resize-icon-${unique_id}"></div>`,
+			`<div class="resize-icon ${direction}" id="resize-icon-${unique_id}"></div>`,
 			icon_div
 		);
-		let pullTab = d.getElementById(`resize-icon-${unique_id}`);
+		pullTab = d.getElementById(`resize-icon-${unique_id}`);
 
 		let ht, wd, x, y, dx, dy;
 
@@ -1621,10 +1624,22 @@ class Browser {
 				dy = evt.screenY - y;
 				x = evt.screenX;
 				y = evt.screenY;
-				wd -= dx;
-				ht -= dy;
-				target.style.width = wd + 'px';
-				target.style.height = ht + 'px';
+				
+				if (direction == 'horizontal') {
+					wd += dx;
+					target.style.width = wd + 'px';
+				}
+				if (direction == 'vertical') {
+					ht += dy;
+					target.style.height = ht + 'px';
+				}
+
+				if (direction == 'diagonal') {
+					wd -= dx;
+					ht -= dy;
+					target.style.width = wd + 'px';
+					target.style.height = ht + 'px';
+				}
 			};
 
 			d.body.onmouseup = () => {
@@ -1637,7 +1652,7 @@ class Browser {
 			}
 		};
 	}
-
+	
 	returnAddressHTML(key) {
 		return `<div class="saito-address" data-id="${key}">${this.app.keychain.returnIdentifierByPublicKey(
 			key,
@@ -2357,6 +2372,28 @@ class Browser {
 	getThousandSeparator() {
 		let decimal_separator = this.getDecimalSeparator();
 		return (decimal_separator == '.') ? ',' : '.';
+	}
+
+	/**
+	 * Format a number to locale string
+	 * @returns String
+	 * @param number
+	 */
+
+	formatNumberToLocale(number) {
+		try {
+			const locale = (window.navigator?.language) ? window.navigator?.language : 'en-US';
+			const numberFormatter = new Intl.NumberFormat(locale, {
+				minimumFractionDigits: 1,
+				// maximumFractionDigits: 4,
+				minimumSignificantDigits: 1,
+				// maximumSignificantDigits: 4
+			});
+			return numberFormatter.format(number);
+		} catch (error) {
+			console.log(error);
+			return number;
+		}
 	}
 
 	addSaitoMentions(users, textarea, listDiv, inputType) {

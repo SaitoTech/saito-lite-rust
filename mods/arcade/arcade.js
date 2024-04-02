@@ -1,7 +1,5 @@
 const PeerService = require('saito-js/lib/peer_service').default;
-
 const Transaction = require('../../lib/saito/transaction').default;
-
 const saito = require('./../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const ArcadeMain = require('./lib/main/main');
@@ -16,6 +14,7 @@ const Invite = require('./lib/invite');
 const JoinGameOverlay = require('./lib/overlays/join-game');
 const GameCryptoTransferManager = require('./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager');
 const arcadeHome = require('./index');
+
 class Arcade extends ModTemplate {
 	constructor(app) {
 		super(app);
@@ -73,9 +72,9 @@ class Arcade extends ModTemplate {
 
 	}
 
-	/////////////////////////////
-	// INITIALIZATION FUNTIONS //
-	/////////////////////////////
+	//////////////////////////////
+	// INITIALIZATION FUNCTIONS //
+	//////////////////////////////
 	//
 	// runs when the module initializes, note that at this point the network
 	// may not be up. use onPeerHandshakeCompete() to make requests over the
@@ -1858,22 +1857,21 @@ class Arcade extends ModTemplate {
 
 				let updatedSocial = Object.assign({}, arcade_self.social);
 
-        if (Object.keys(req.query).length > 0) {
-          let query_params = req.query;
+        			if (Object.keys(req.query).length > 0) {
+        			  let query_params = req.query;
+	
+        			  let game = query_params?.game || query_params?.view_game;
 
-          let game = query_params?.game || query_params?.view_game;
-
-          if (game) {
-          	let gm = app.modules.returnModuleBySlug(game.toLowerCase());
-          	if (gm){
-          		updatedSocial.title = `Play ${gm.returnName()} on 🟥 Saito`;
-          		updatedSocial.image = `/${gm.returnSlug()}/img/arcade/arcade.jpg`;
-          	}
-          }
+       				  if (game) {
+          			    let gm = app.modules.returnModuleBySlug(game.toLowerCase());
+          			    if (gm){
+          		   	     updatedSocial.title = `Play ${gm.returnName()} on 🟥 Saito`;
+          			     updatedSocial.image = `/${gm.returnSlug()}/img/arcade/arcade.jpg`;
+          			    }
+         	 		  }
 				}
 
 				updatedSocial.url = reqBaseURL + encodeURI(arcade_self.returnSlug());
-
 				res.setHeader('Content-type', 'text/html');
 				res.charset = 'UTF-8';
 				res.send(arcadeHome(app, arcade_self, app.build_number, updatedSocial));
@@ -1887,7 +1885,7 @@ class Arcade extends ModTemplate {
 		);
 	}
 
-	showShareLink(game_sig) {
+	showShareLink(game_sig, show = true) {
 		let data = {};
 		let accepted_game = null;
 
@@ -1908,7 +1906,7 @@ class Arcade extends ModTemplate {
 		}
 
 		let game_invitation_link = new GameInvitationLink(this.app, this, data);
-		game_invitation_link.render();
+		game_invitation_link.render(show);
 	}
 
 	async makeGameInvite(options, gameType = 'open', invite_obj = {}) {

@@ -8668,7 +8668,7 @@ console.log("selected: " + spacekey);
 
 	  if (faction == null || source == null || unit_idx == null) { his_self.endTurn(); return 0; }
   	  his_self.addMove(`discard\t${faction}\t032`);
-          his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
+	  his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
 	  if (his_self.game.deck[0].discards["031"]) {
             his_self.addMove("SETVAR\tstate\tevents\tintervention_on_movement_possible\t0");
 	  }
@@ -8698,7 +8698,10 @@ console.log("selected: " + spacekey);
 
 	  if (faction == null || source == null || unit_idx == null) { his_self.endTurn(); return 0; }
   	  his_self.addMove(`discard\t${faction}\t032`);
-          his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
+	  his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
+	  if (his_self.game.deck[0].discards["031"]) {
+            his_self.addMove("SETVAR\tstate\tevents\tintervention_on_movement_possible\t0");
+	  }
           his_self.endTurn();
 
         }
@@ -11373,12 +11376,11 @@ console.log("selected: " + spacekey);
 	  let hits = 0;
 	  for (let i = 0; i < 5; i++) {
 	    let roll = his_self.rollDice(6);
+            his_self.updateLog(` ... roll ${5-i}: + ${roll}`);
 	    if (roll >= 5) {
 	      hits++;
 	    }
 	  }
-
-console.log("HITS: " + hits);
 
 	  //
 	  // TODO, return zero and add choice of unit removal, for now remove army before navy
@@ -11396,7 +11398,7 @@ console.log("HITS: " + hits);
 	    return 1;
 	  }
 	  if (his_self.game.player == p) {
-console.log("a player will assign the hits!");
+console.log("this player will assign the hits!");
 	    his_self.addMove("finish-city-state-rebels\t"+faction+"\t"+respondent+"\t"+spacekey);
 	    his_self.playerAssignHits(faction, spacekey, hits, 1);
 	  }
@@ -11418,7 +11420,10 @@ console.log("finish city state rebels..");
 	  // do land or naval units remain
 	  let anything_left = 0; 
 	  for (let i = 0; i < space.units[respondent].length; i++) {
-	    if (!space.units[respondent][i].personage) { anything_left = 1; }
+	    let u = space.units[respondent][i];
+	    if (u.type == "regular" || u.type == "mercenary" || u.type == "squadron" || u.type == "corsair" || u.type != "mercenary") {
+	      anything_left = 1;
+	    }
 	  }
 
 	  if (!anything_left) {
@@ -11435,6 +11440,8 @@ console.log("nothing is left!");
 
 	  // add 1 regular - to home minor ally if needed
           his_self.addRegular(space.home, space.key, 1);
+
+	  his_self.displaySpace(spacekey);
 
 	  return 1;
 	}
@@ -12387,7 +12394,7 @@ console.log("nothing is left!");
 
 	    function (target) {
 	      his_self.addMove("mercendaries-demand-pay\t"+target+"\t"+faction);
-	      ahis_self.endTurn();
+	      his_self.endTurn();
 	    }
 	  );
 	}
@@ -19124,7 +19131,7 @@ try {
   }
 
   areAllies(faction1, faction2, count_minor_activated_factions=1) {
-    if (faction1 === faction2) { return 1; }
+    if (faction1 == faction2) { return 1; }
     try { if (this.game.state.alliances[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.alliances[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 1; } } catch (err) {}
@@ -19721,13 +19728,15 @@ try {
   	  if (space.units[f][i].besieged == true || space.units[f][i].besieged == 1) {
 	    return true;
 	  } else {
-	    // if not allies, then someone must be besieged
-	    if (!this.areAllies(f, faction_in_control)) { return true; }    
+	    // if not independent (which won't attack) or allies, then someone must be besieged
+	    if (f != "independent") {
+	      if (!this.areAllies(f, faction_in_control)) { return true; }    
+	    }
 	  }
         }
       }
 
-      return false; // everyone here is allied
+      return false; // everyone here is allied or independent and not-besieged
     }
     return false;
   }
@@ -21611,9 +21620,9 @@ this.updateLog(`###############`);
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
-// TODO -- add back with more elegant restore functionality
-//	  this.game.queue.push("SAVE"); // save before new world for everyone
+	  this.game.queue.push("SAVE"); // save before new world for everyone
 	  this.game.queue.push("action_phase");
+	  this.game.queue.push("SAVE"); // save before action phase
 	  this.game.queue.push("check_interventions"); // players check and report cards that need to trigger waiting/check
 	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
@@ -22895,6 +22904,16 @@ if (this.game.options.scenario == "is_testing") {
 	  let faction = mv[1];
 	  let explorer = mv[2];
 	  let idx = parseInt(mv[3]);
+	  let results_idx = idx;
+
+	  for (let z = 0; z < this.game.state.newworld.results.explorations.length; z++) {
+	    if (this.game.state.newworld.results.explorations[z].idx == idx) { results_idx = z; }
+	  }
+
+console.log("IDX IN DETERMINING NEW WORLD BONUS; " + idx);
+console.log("EXPLO: " + JSON.stringify(this.game.state.explorations));
+console.log("NEW: " + JSON.stringify(this.game.state.newworld.results));
+
 	  let bonus = mv[4];
 
 	  if (bonus === 'stlawrence') {
@@ -22902,7 +22921,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.explorations[idx].explorer_lost = 0;
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
-	    this.game.state.newworld.results.explorations[idx].prize = "St. Lawrence";
+	    this.game.state.newworld.results.explorations[results_idx].prize = "St. Lawrence";
 	    this.game.state.explorations[idx].prize = "St. Lawrence";
 	    this.updateLog(this.returnFactionName(faction) + " discovers the St. Lawrence");
 	    this.displayCustomOverlay("stlawrence", this.returnFactionName(faction));
@@ -22913,7 +22932,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Great Lakes";
-	    this.game.state.newworld.results.explorations[idx].prize = "Great Lakes";
+	    this.game.state.newworld.results.explorations[results_idx].prize = "Great Lakes";
 	    this.updateLog(this.returnFactionName(faction) + " discovers the Great Lakes");
 	    this.displayCustomOverlay("greatlakes", this.returnFactionName(faction));
 	  }
@@ -22923,7 +22942,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Mississippi";
-	    this.game.state.newworld.results.explorations[idx].prize = "Mississippi";
+	    this.game.state.newworld.results.explorations[results_idx].prize = "Mississippi";
 	    this.updateLog(this.returnFactionName(faction) + " discovers the Mississippi");
 	    this.displayCustomOverlay("mississippi", this.returnFactionName(faction));
 	  }
@@ -22933,7 +22952,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Pacific Strait";
-	    this.game.state.newworld.results.explorations[idx].prize = "Pacific Strait";
+	    this.game.state.newworld.results.explorations[results_idx].prize = "Pacific Strait";
 	    this.updateLog(this.returnFactionName(faction) + " discovers the Pacific Strait");
 	    this.displayCustomOverlay("pacificstrait", this.returnFactionName(faction));
 	  }
@@ -22943,7 +22962,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Amazon";
-	    this.game.state.newworld.results.explorations[idx].prize = "Amazon";
+	    this.game.state.newworld.results.explorations[results_idx].prize = "Amazon";
 	    this.updateLog(this.returnFactionName(faction) + " discovers the Amazon");;
 	    this.displayCustomOverlay("amazon", this.returnFactionName(faction));
 	  }
@@ -22953,7 +22972,7 @@ if (this.game.options.scenario == "is_testing") {
 	    // circumnavigation attempt requires another roll here to claim
 	    //
 	    let base_x = this.rollDice(6) + this.rollDice(6);
-	    let x = base_x + this.game.state.explorations[idx].modifiers;
+	    let x = base_x + this.game.state.explorations[results_idx].modifiers;
 
 	    this.updateLog("Circumnavigation Roll: " + x + " (" + base_x + "+" + this.game.state.explorations[idx].modifiers +")");
 
@@ -22992,7 +23011,7 @@ if (this.game.options.scenario == "is_testing") {
 	      this.game.state.newworld[bonus].faction = faction;
 	      this.game.state.newworld[bonus].claimed = 1;
 	      this.game.state.explorations[idx].prize = "Circumnavigation";
-	      this.game.state.newworld.results.explorations[idx].prize = "Circumnavigation";
+	      this.game.state.newworld.results.explorations[this.game.state.newworld.results.explorations.length-1].prize = "Circumnavigation";
 	      this.updateLog(this.returnFactionName(faction) + " circumnavigates the Globe");
 	      this.displayCustomOverlay("circumnavigation", this.returnFactionName(faction));
 
@@ -23028,7 +23047,7 @@ if (this.game.options.scenario == "is_testing") {
 	      this.game.state.explorations[idx].resolved = 1;
 	      this.game.state.explorations[idx].explorer_lost = 1;
 	      this.game.state.explorations[idx].prize = "lost at sea";
-	      this.game.state.newworld.results.explorations[idx].prize = "lost at sea";
+	      this.game.state.newworld.results.explorations[this.game.state.newworld.results.explorations.length-1].prize = "lost at sea";
 	      this.updateLog(this.returnFactionName(faction) + " fails at Circumnavigation ("+x+")");
 	      if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
 	        this.displayCustomOverlay("lost-at-sea", this.returnFactionName(faction));
@@ -24813,20 +24832,12 @@ console.log("----------------------------");
 	  if (this.game.spaces[destination_spacekey]) { destination = this.game.spaces[destination_spacekey]; }
 	  if (this.game.navalspaces[destination_spacekey]) { destination = this.game.navalspaces[destination_spacekey]; }
 
-console.log("Retreating: " );
-console.log("FROM: " + JSON.stringify(source.units[faction]));
-console.log("TO: " + JSON.stringify(destination.units[faction]));
-
 	  for (let i = source.units[faction].length-1; i >= 0; i--) {
 	    if (source.units[faction][i].land_or_sea == "sea" || source.units[faction][i].land_or_sea == "both") {
 	      destination.units[faction].push(source.units[faction][i]);
 	      source.units[faction].splice(i, 1);
 	    }
 	  }
-
-console.log("AFTER MOVE: ");
-console.log("FROM: " + JSON.stringify(source.units[faction]));
-console.log("TO: " + JSON.stringify(destination.units[faction]));
 
 	  this.displaySpace(source_spacekey);
 	  this.displayNavalSpace(source_spacekey);
@@ -25687,9 +25698,6 @@ alert("workaround bug-fix: if you see this error the game is attempting to unloc
 	  //
 	  this.cardbox.hide();
 
-console.log("CONFIRMS NEEDED: ");
-console.log(JSON.stringify(this.game.confirms_needed));
-
 	  //
 	  // if i have already confirmed, we only splice and pass-through if everyone else has confirmed
 	  // otherwise we will set ack to 0 and return 0 which halts execution. so we should never clear 
@@ -26039,10 +26047,6 @@ console.log(JSON.stringify(this.game.confirms_needed));
 	  let attacking_factions = 0;
 	  let defending_factions = 0;
 	  let faction_map = this.returnNavalFactionMap(space, attacker_faction, defender_faction);
-
-
-console.log("FACTION MAP FOR NAVAL BATTLE");
-console.log(JSON.stringify(faction_map));
 
 	  //
 	  // migrate any bonuses to attacker or defender
@@ -28878,13 +28882,6 @@ try {
 	    }
 	  }
 
-
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("UNITS IN THIS SPACE: ");
-console.log(JSON.stringify(space.units));
-
           his_self.game.state.naval_battle.attacker_sea_units_remaining = attacker_sea_units_remaining;
           his_self.game.state.naval_battle.defender_sea_units_remaining = defender_sea_units_remaining;
 
@@ -31063,8 +31060,8 @@ defender_hits - attacker_hits;
 	  this.game.state.impulse++;
 
 	  let targs = {
-      	    line1 : "what is", 
-    	    line2 : "this game?",
+      	    line1 : "what", 
+    	    line2 : "to do?",
     	    fontsize : "2.1rem" ,
 	  }
 
@@ -32702,8 +32699,6 @@ console.log(JSON.stringify(reshuffle_cards));
 	  this.game.state.active_player = player;
 	  this.game.state.active_faction = faction;
 
-console.log("do we skip factions not in play?");
-
 	  // skip factions not-in-play
 	  if (player == -1) {
 	    this.game.queue.splice(qe, 1);
@@ -32713,19 +32708,15 @@ console.log("do we skip factions not in play?");
 	  //
 	  // skip turn if required
 	  //
-console.log("do we skip next impulse?");
 	  if (this.game.state.skip_next_impulse.includes(faction)) {
 	    for (let i = 0; i < this.game.state.skip_next_impulse.length; i++) {
 	      if (this.game.state.skip_next_impulse[i] == faction) {
 		this.game.state.skip_next_impulse.splice(i, 1);
 	      }
 	    }
-console.log("finally we are splicing them out!");
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }
-
-console.log("resetting turn!");
 
 	  //
 	  // reset player/state vars and set as active player
@@ -32733,7 +32724,6 @@ console.log("resetting turn!");
 	  this.resetPlayerTurn(player);
 
 	  if (this.game.player == player) {
-console.log("I am this player, so I am taking the turn: " + faction)
 	    this.playerTurn(faction);
 	  } else {
 	    let f = this.game.state.players_info[this.game.player-1].factions[0];
@@ -32746,7 +32736,6 @@ console.log("I am this player, so I am taking the turn: " + faction)
 	    this.updateStatusAndListCards(`${this.returnFactionName(f)} - Opponent Turn: `, this.game.deck[0].fhand[fhand_idx], () => {});
 	  }
 
-console.log("splice and return zero...");
 	  this.game.queue.splice(qe, 1);
           return 0;
         }
@@ -33445,14 +33434,11 @@ console.log("splice and return zero...");
 	  let is_attacker = true;
 	  if (his_self.game.state.field_battle.faction_map[faction] === his_self.game.state.field_battle.defender_faction) { is_attacker = false; }
 
-console.log("is " + faction + " the attacker? " + is_attacker);
-
           //
           // add five bonus rolls
           //
 	  if (is_attacker) {
             for (let i = 0; i < bonus; i++) {
-console.log("adding bonus: " + (i+1) + " of " + bonus);
               let x = his_self.rollDice(6);
               if (x >= 5) { his_self.game.state.field_battle.attacker_hits++; }
               if (his_self.game.state.field_battle.tercios == 1) { if (x >= 4 && x < 5) { his_self.game.state.field_battle.attacker_hits++; } }
@@ -33463,7 +33449,6 @@ console.log("adding bonus: " + (i+1) + " of " + bonus);
             }
           } else {
             for (let i = 0; i < bonus; i++) {
-console.log("adding bonus: " + (i+1) + " of " + bonus);
               let x = his_self.rollDice(6);
               if (x >= 5) { his_self.game.state.field_battle.defender_hits++; }
               if (his_self.game.state.field_battle.tercios == 1) { if (x >= 4 && x < 5) { his_self.game.state.field_battle.defender_hits++; } }
@@ -33474,7 +33459,6 @@ console.log("adding bonus: " + (i+1) + " of " + bonus);
             }
 	  }
 
-console.log("re-rendering!");
           his_self.field_battle_overlay.render(his_self.game.state.field_battle, 1);
 
 	  this.game.queue.splice(qe, 1);
@@ -34393,6 +34377,8 @@ console.log("re-rendering!");
     try { if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; } } catch (err) {}
 
     units_to_destroy = [];
+
+console.log("in player assign hits!");
 
     let selectUnitsInterface = function(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface) {
 
@@ -38184,9 +38170,9 @@ does_units_to_move_have_unit = true; }
                 his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+spacekey+"\t"+destination+"\t"+units_to_move[i].idx);
               }
     	      if (his_self.game.state.events.intervention_on_movement_possible == 1) {
-      		his_self.addMove("ACKNOWLEDGE\t" + his_self.returnFactionName(faction) + " moves to " + his_self.game.spaces[destination_spacekey].name);
+      		his_self.addMove("ACKNOWLEDGE\t" + his_self.returnFactionName(faction) + " moves to " + his_self.game.spaces[destination].name);
 	      } else {
-                his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" moving to "+his_self.game.spaces[destination_spacekey].name + "\tmove");
+                his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" moving to "+his_self.game.spaces[destination].name + "\tmove");
 	        his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	      }
               his_self.endTurn();
