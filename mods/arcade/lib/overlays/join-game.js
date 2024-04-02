@@ -209,7 +209,8 @@ class JoinGameOverlay {
 		Array.from(document.querySelectorAll('.available_slot')).forEach(
 			(emptySlot) => {
 				emptySlot.onclick = () => {
-					this.mod.showShareLink(this.invite.game_id);
+					this.mod.showShareLink(this.invite.game_id, false);
+					this.overlay.remove();
 				};
 			}
 		);
