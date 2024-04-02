@@ -4,9 +4,11 @@ module.exports = StunLaunchTemplate = (app, mod) => {
         <div class="stun-appspace-content">
           <div class="staun-appspace-cards">
             <card class="appear stunx-appspace-splash">
-              <div class="saito-page-header-title">Saito Talk</div>
+              <div>
+                <div class="saito-page-header-title">Saito Talk</div>
                 <div>peer-to-peer video chat</div>
-                <fieldset class="stun-input-settings">
+              </div>
+              <fieldset class="stun-input-settings">
                 <legend>Adjust Inputs</legend>
                 <select style="display:none" class="saito-select" id="video-input"></select>
                 <select style="display:none" class="saito-select" id="audio-input"></select>
@@ -18,7 +20,7 @@ module.exports = StunLaunchTemplate = (app, mod) => {
                 <div style="display:none"  class="chat-settings-audio-progress-bar">
                   <div id="progress" class="chat-settings-progress"></div>
                 </div>
-                </fieldset>
+              </fieldset>
             </card>
             <card class="stun-appspace-settings">
             </card>
