@@ -19,7 +19,7 @@
 .block-table {
     padding: 1rem;
     display: grid;
-    grid-template-columns: 10rem auto;
+    grid-template-columns: 15rem auto;
     font-size: 2rem;
 
 }
@@ -27,17 +27,17 @@
 .block-table-2 {
     padding: 1rem;
     display: grid;
-    grid-template-columns: 21rem auto;
-    font-size: 2rem;
+    grid-template-columns: 25rem auto;
     background-color: #ffffff;
     border-radius: 5px;
     border: 2px solid grey;
-
+    font-family: "Courier New", monospace;
 }
 
 .wallet-value, .balance-value{
     overflow: hidden;
     text-overflow: ellipsis;
+    font-family: "Courier New", monospace;
 }
 .disburse-textarea {
     height: 30vh;
