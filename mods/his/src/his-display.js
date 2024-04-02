@@ -2489,6 +2489,8 @@ try {
 
     for (f in factions_and_scores) {
 try {
+console.log("f:" + f);
+console.log(factions_and_scores[f]);
       let total_vp = factions_and_scores[f].vp;
       let ftile = f + "_vp_tile";
       obj = document.getElementById(ftile);

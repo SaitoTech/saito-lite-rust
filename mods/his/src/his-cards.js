@@ -7813,10 +7813,12 @@ console.log("selected: " + spacekey);
 
 	  if (p == 0) {
 	    for (let z = 0, assigned_hits = 0; assigned_hits < hits && z < his_self.game.spaces[spacekey].units[respondent].length; z++) {
-	      try { if (his_self.game.spaces[spacekey].units[respondent][z].type == "regular") {
-		his_self.game.spaces[spacekey].units[respondent].splice(z, 1);
-		z--;
-	      } } catch (err) {}
+	      try {
+	        if (his_self.game.spaces[spacekey].units[respondent][z].type == "regular") {
+		  his_self.game.spaces[spacekey].units[respondent].splice(z, 1);
+		  z--;
+	      } } catch (err) {
+	      }
 	    }
 	    his_self.game.queue.push("finish-city-state-rebels\t"+faction+"\t"+respondent+"\t"+spacekey);
 	    return 1;
@@ -7824,7 +7826,7 @@ console.log("selected: " + spacekey);
 	  if (his_self.game.player == p) {
 console.log("this player will assign the hits!");
 	    his_self.addMove("finish-city-state-rebels\t"+faction+"\t"+respondent+"\t"+spacekey);
-	    his_self.playerAssignHits(faction, spacekey, hits, 1);
+	    his_self.playerAssignHits(respondent, spacekey, hits, 1);
 	  }
 	  
 	  return 0;
