@@ -195,6 +195,7 @@ a {
 	font-weight: bold;
 }
 .explorer-balance-data{
+	font-family: 'Courier New', Courier, monospace;
 	padding: 1rem 1.5rem;
 	text-overflow: ellipsis;
     white-space: nowrap;
