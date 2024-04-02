@@ -13801,7 +13801,7 @@ alert("MOVE IS: " + "move\tengland\tland\t"+options[options_idx].spacekey+"\tire
               `Select Space to add ${num} Squadron` ,
 
               (space) => {
-                if (his_self.isSpaceControlled(space.key, faction) && space.home === "faction") {
+                if (his_self.isSpaceControlled(space.key, faction) && space.home === faction) {
 	          if (space.ports.length > 0) {
 	   	    return 1;
 		  }
