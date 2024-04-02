@@ -34,6 +34,7 @@
   transform: scaleX(1.3);
   width: 4rem;
   text-align: center;
+  color: var(--saito-white);
 }
 
 #saito-header-menu-toggle:hover {
