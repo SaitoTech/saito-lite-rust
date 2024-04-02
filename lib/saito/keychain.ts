@@ -26,12 +26,18 @@ class Keychain {
 		this.groups = [];
 		this.modtemplate = new modtemplate(this.app);
 		this.fetched_keys = new Map<string, number>();
-		this.monitorKeys()
+
+		app.connection.on('wallet-updated', () => {
+			let keys = this.returnWatchedPublicKeys();
+			this.app.network.updatePeersWithWatchedPublicKeys(keys);
+
+		});
+
+
 	}
 
 
 	async initialize() {
-
 
 		if (this.app.options.keys == null) {
 			this.app.options.keys = [];
@@ -555,45 +561,6 @@ class Keychain {
 
 
 
-	/**
- * Responds to any mutations in the watched keys. This method is called whenever there's an addition,
- * deletion, or modification of keys within the keychain
- */
-	onKeysMutated() {
-		let keys = this.returnWatchedPublicKeys();
-		this.app.network.updatePeersWithWatchedPublicKeys(keys);
-	}
-
-
-	/**
- * Sets up a monitoring mechanism for the keychain's keys property to detect and react to changes.
- * This allows the application to automatically update network peers with the latest set of watched public keys whenever
- * the keychain is modified.
- */
-	monitorKeys() {
-		let self = this
-		const keychain = this;
-		const handler = {
-			set(target, property, value) {
-				const result = Reflect.set(target, property, value);
-				keychain.onKeysMutated();
-				return result;
-			},
-			deleteProperty(target, property) {
-				const result = Reflect.deleteProperty(target, property);
-				keychain.onKeysMutated();
-				return result;
-			},
-			apply(target, thisArg, argumentsList) {
-				const result = Reflect.apply(target, thisArg, argumentsList);
-				keychain.onKeysMutated();
-				return result;
-			}
-		};
-
-		this.keys = new Proxy(this.keys, handler);
-	}
-
 
 	/**
  * Adds a publicKey to the watch list and updates the keys storage.
@@ -603,8 +570,6 @@ class Keychain {
  */
 	addWatchedPublicKey(publicKey = '') {
 		this.addKey(publicKey, { watched: true });
-		this.saveKeys();
-		// this.app.wallet.setKeyList(this.returnWatchedPublicKeys())
 	}
 
 	/**
