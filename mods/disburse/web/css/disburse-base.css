@@ -31,13 +31,13 @@
     background-color: #ffffff;
     border-radius: 5px;
     border: 2px solid grey;
-    font-family: "Courier New", monospace;
+    font-family: "Courier New", Courier, monospace;
 }
 
 .wallet-value, .balance-value{
     overflow: hidden;
     text-overflow: ellipsis;
-    font-family: "Courier New", monospace;
+    font-family: "Courier New", Courier, monospace;
 }
 .disburse-textarea {
     height: 30vh;
