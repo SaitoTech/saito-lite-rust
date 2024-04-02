@@ -1343,6 +1343,11 @@ if (this.game.options.scenario == "is_testing") {
 	  let faction = mv[1];
 	  let explorer = mv[2];
 	  let idx = parseInt(mv[3]);
+
+console.log("IDX IN DETERMINING NEW WORLD BONUS; " + idx);
+console.log("EXPLO: " + JSON.stringify(this.game.state.explorations));
+console.log("NEW: " + JSON.stringify(this.game.state.newworld.results));
+
 	  let bonus = mv[4];
 
 	  if (bonus === 'stlawrence') {
