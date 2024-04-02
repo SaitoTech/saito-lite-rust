@@ -513,9 +513,10 @@ class RedSquare extends ModTemplate {
     this.rendered = true;
 
     if (this.app.browser.isMobileBrowser()){
+
       this.app.browser.makeRefreshable(".saito-main", ()=> {
 
-        let ct = this.mod.loadTweets("later", (tx_count) => {
+        let ct = this.loadTweets("later", (tx_count) => {
           this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
         });
 
