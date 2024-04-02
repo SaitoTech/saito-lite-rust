@@ -2359,6 +2359,28 @@ class Browser {
 		return (decimal_separator == '.') ? ',' : '.';
 	}
 
+	/**
+	 * Format a number to locale string
+	 * @returns String
+	 * @param number
+	 */
+
+	formatNumberToLocale(number) {
+		try {
+			const locale = (window.navigator?.language) ? window.navigator?.language : 'en-US';
+			const numberFormatter = new Intl.NumberFormat(locale, {
+				minimumFractionDigits: 1,
+				// maximumFractionDigits: 4,
+				minimumSignificantDigits: 1,
+				// maximumSignificantDigits: 4
+			});
+			return numberFormatter.format(number);
+		} catch (error) {
+			console.log(error);
+			return number;
+		}
+	}
+
 	addSaitoMentions(users, textarea, listDiv, inputType) {
 		const resolveFn = prefix => prefix === ''
 			? users
