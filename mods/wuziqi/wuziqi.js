@@ -4,6 +4,7 @@ const GameTemplate = require('../../lib/templates/gametemplate');
 const WuziqiGameRulesTemplate = require('./lib/wuziqi-game-rules.template');
 const WuziqiGameOptionsTemplate = require('./lib/wuziqi-game-options.template');
 const WuziqiSingularGameOptionsTemplate = require('./lib/wuziqi-singular-game-options.template');
+const htmlTemplate = require('./lib/game-html.template');
 
 class Wuziqi extends GameTemplate {
 	constructor(app) {
@@ -12,7 +13,6 @@ class Wuziqi extends GameTemplate {
 		// Define static game parameters and add global variables.
 
 		this.name = 'Wuziqi';
-		this.title = '五子棋';
 		this.game_length = 10; //Estimated number of minutes to complete a game
 		this.description =
 			'五子棋, Gokomu, or Gobang -- whatever you call it, place five black or white tiles in a row to win.';
@@ -24,6 +24,9 @@ class Wuziqi extends GameTemplate {
 
 		this.moves = [];
 		this.bestof = 1;
+
+		this.social.creator = "Richard M Parris";
+		this.title = '五子棋 - Five-in-a-Row';
 
 		this.seats = [2, 5];
 		this.app = app;
@@ -41,6 +44,8 @@ class Wuziqi extends GameTemplate {
 		if (this.initialize_game_run) {
 			return 0;
 		}
+
+		await this.injectGameHTML(htmlTemplate());
 
 		// Don't completly Override the game template render function
 		await super.render(app);

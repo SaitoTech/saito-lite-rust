@@ -1016,7 +1016,9 @@
       // ports
       function(spacekey) {
         if (his_self.game.spaces[spacekey]) {
+console.log("checking: " + spacekey + "!");
 	  if (his_self.isSpaceControlled(spacekey, faction)) {
+console.log("yes " + faction + " controls it!");
 	    return 1;
 	  }
 	}
@@ -1053,8 +1055,14 @@
   }
 
   canFactionRetreatToNavalSpace(faction, space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    let is_port_space = false;
+    try { if (this.game.spaces[space]) { is_port_space = true; space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    if (is_port_space == true) {
+      let fac = this.returnFactionControllingSpace(space);
+      if (this.areEnemies(fac, faction)) { return 0; }
+      if (this.areAllies(fac, faction, 1)) { return 1; }
+    }
     if (this.isNavalSpaceFriendly(space, faction) == 1) { return 1; }
     if (this.isSpaceFriendly(space, faction) == 1) { return 1; }
     return 0;
@@ -1084,7 +1092,9 @@
     //
     // check if triggers defeat of Hungary Bohemia
     //
-    this.triggerDefeatOfHungaryBohemia();
+    if (this.game.step.game > 5) {
+      this.triggerDefeatOfHungaryBohemia();
+    }
 
   }
 
@@ -1159,10 +1169,14 @@
   returnFriendlyLandUnitsInSpace(faction, space) {
     let luis = 0;
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let i = 0; i < space.units[faction].length; i++) {
-      if (space.units[faction][i].type === "regular") { luis++; }
-      if (space.units[faction][i].type === "mercenary") { luis++; }
-      if (space.units[faction][i].type === "cavalry") { luis++; }
+    for (let f in space.units) {
+      if (this.areAllies(faction, f)) {
+        for (let i = 0; i < space.units[f].length; i++) {
+          if (space.units[f][i].type === "regular") { luis++; }
+          if (space.units[f][i].type === "mercenary") { luis++; }
+          if (space.units[f][i].type === "cavalry") { luis++; }
+        }
+      }
     }
     return luis;
   }
@@ -1309,10 +1323,10 @@
     let faction_map = {};
 
     for (let f in space.units) {
-      if (f === faction1) {
+      if (f === faction1 || this.returnPlayerCommandingFaction(f) == this.returnPlayerCommandingFaction(faction1)) {
         faction_map[f] = faction1;
       }
-      if (f === faction2) {
+      if (f === faction2 || this.returnPlayerCommandingFaction(f) == this.returnPlayerCommandingFaction(faction2)) {
         faction_map[f] = faction2;
       }
     }
@@ -1341,10 +1355,19 @@
             if (this.areAllies(f, faction2)) {
               faction_map[f] = faction2;
             }
+            if (this.returnPlayerCommandingFaction(f) === faction1) {
+              faction_map[f] = faction1;
+	    }
+            if (this.returnPlayerCommandingFaction(f) === faction2) {
+              faction_map[f] = faction2;
+	    }
           }
         }
       }
     }
+    // ensures factions are listed even if their spaces are empty
+    if (!faction_map[faction1]) { faction_map[faction1] = faction1; }
+    if (!faction_map[faction2]) { faction_map[faction2] = faction2; }
     return faction_map;
   }
 
@@ -1926,8 +1949,8 @@ try {
     let seas = {};
 
     seas['irish'] = {
-      top : 875 ,
-      left : 900 ,
+      top : 775 ,
+      left : 1100 ,
       name : "Irish Sea" ,
       ports : ["glasgow"] ,
       neighbours : ["biscay","north","channel"] ,
@@ -1954,8 +1977,8 @@ try {
       neighbours : ["irish","biscay","north"] ,
     }
     seas['north'] = {
-      top : 200 ,
-      left : 2350 ,
+      top : 350 ,
+      left : 2100 ,
       name : "North Sea" ,
       ports : ["london", "norwich", "berwick", "edinburgh", "calais", "antwerp", "amsterdam", "bremen", "hamburg" ] ,
       neighbours : ["irish","channel","baltic"] ,
@@ -3006,7 +3029,7 @@ try {
     spaces['coron'] = {
       top: 2510,
       left: 4146,
-      home: "",
+      home: "ottoman",
       political: "",
       religion: "other",
       ports:["ionian","aegean"],
@@ -3053,6 +3076,7 @@ try {
       home: "ottoman",
       political: "",
       religion: "other",
+      ports: ["aegean"],
       neighbours: ["larissa","edirne"],
       language: "other",
       type: "key"

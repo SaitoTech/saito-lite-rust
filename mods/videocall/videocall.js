@@ -538,7 +538,7 @@ class Videocall extends ModTemplate {
 			call_list.push(this.publicKey);
 		}
 
-		console.log('STUN: call list', call_list);
+		console.log('STUN: peer list request from ', from, call_list);
 
 		this.sendCallListResponseTransaction(from, call_list);
 
@@ -595,6 +595,7 @@ class Videocall extends ModTemplate {
 			}
 
 			if (peer !== this.publicKey) {
+				console.log("STUN: peer list member, create connection with ", peer);
 				this.stun.createPeerConnection(peer, (peerId) => {
 					this.sendCallJoinTransaction(peerId);
 				});

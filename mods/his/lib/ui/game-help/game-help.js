@@ -39,10 +39,33 @@ class GameHelp {
 	  }
 	}
 
+	renderCustomOverlay(c="", targs={}) {
+
+	  if (this.enabled != true) { return; }
+	  let gh = document.querySelector(".game-help");
+	  if (gh) {
+		gh.classList.remove("game-help-hidden");
+		gh.classList.add("game-help-visible");
+	  } else {
+		this.app.browser.addElementToDom(GameHelpTemplate(targs));
+		gh = document.querySelector(".game-help");
+	  }
+	  if (targs.fontsize) {
+	    document.querySelector(".game-help-text").style.fontSize = targs.fontsize;
+	  }
+	  if (targs.line1) {
+	    document.querySelector(".game-help-text .line1").innerHTML = targs.line1;
+	  }
+	  if (targs.line2) {
+	    document.querySelector(".game-help-text .line2").innerHTML = targs.line2;
+	  }
+	  this.attachEventsCustomOverlay(c);
+
+	}
+
 	render(t=null, targs={}) {
 
 	  if (this.enabled != true) { return; }
-
 		let gh = document.querySelector(".game-help");
 		if (gh) {
 			gh.classList.remove("game-help-hidden");
@@ -62,6 +85,17 @@ class GameHelp {
 	        }
 		this.attachEvents(t, targs);
 	}
+
+	attachEventsCustomOverlay(c="") {
+
+	  let gh = document.querySelector(".game-help");
+	  gh.onclick = (e) => {
+      	    this.game_mod.displayCustomOverlay(c);
+	    this.toggle();
+      	  };
+
+	}
+
 
 	attachEvents(t=null, targs={}) {
 

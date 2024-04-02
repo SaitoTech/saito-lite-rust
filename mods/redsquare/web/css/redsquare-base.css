@@ -206,13 +206,7 @@ body {
 	z-index: 5;
 }
 
-.saito-cached-loader {
-	padding: 1rem;
-	text-align: center;
-	animation-name: flash;
-	-webkit-animation: flash linear 1s infinite;
-	animation: flash linear 3s infinite;
-}
+
 .saito-main {
 	padding-top: 1.5rem;
 }

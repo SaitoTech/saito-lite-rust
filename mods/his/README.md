@@ -38,11 +38,14 @@ order to speed-up gameplay:
    the faction is registered as being in a state of "over-capacity" and cannot
    construct new units until the player is back under their token limit. 
 
+ - captured leaders are stored with PLAYERS as opposed to FACTIONS, which means
+   that in versions of the game where players control multiple factions any 
+   leaders captured by one can be handled by any faction controlled by the same
+   player.
+
  - current priorities are on getting the 2P version as flawless as possible. Once
    this is done we can move onto 6P game. Please report issues on RedSquare as
    possible.
-
- - Clement VII card can show up after he is removed from the deck.
 
 
 

@@ -112,26 +112,16 @@ class RedSquareNavigation {
         this.app.connection.emit("redsquare-home-render-request", true);
 
         //
-        // show loading new content message
-        //
-        this.app.connection.emit("redsquare-insert-loading-message");
-
-        //
         // and load any NEW tweets at the top
         //
         let ct = this.mod.loadTweets("later", (tx_count) => {
           this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
         });
 
-        console.log(ct);
-        
-        // if I don't have any valid peers to query, we won't otherwise run the callback, 
-        // which is just this
-        if (!ct){
-          setTimeout(()=>{
-            this.app.connection.emit("redsquare-remove-loading-message");
-          }, 1000);
+        if (ct){
+          this.app.connection.emit("redsquare-insert-loading-message", `Checking with ${ct} peers for new tweets...`);
         }
+
       }
 
       window.history.pushState({}, document.title, "/" + this.mod.slug);

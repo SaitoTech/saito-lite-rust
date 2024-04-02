@@ -7,6 +7,8 @@ const WarOverlay = require('./lib/overlays/war');
 const StatsOverlay = require('./lib/overlays/stats');
 const DeckOverlay = require('./lib/overlays/deck');
 const HeadlineOverlay = require('./lib/overlays/headline');
+const htmlTemplate = require('./lib/core/game-html.template');
+
 
 const JSON = require('json-bigint');
 
@@ -192,6 +194,12 @@ class Twilight extends GameTemplate {
   async render(app) {
 
     if (this.browser_active == 0) { return; }
+
+    if (this.initialize_game_run) {
+      return;
+    }
+
+    await this.injectGameHTML(htmlTemplate());
 
     await super.render(app);
 
@@ -9875,6 +9883,3 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
     let i_played_the_card = (this.roles[this.game.player] == player);
 
-  }
-
-}

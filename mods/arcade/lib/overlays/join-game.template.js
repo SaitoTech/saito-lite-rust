@@ -74,10 +74,17 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	// render empty slots; empty slots =  players needed - (players joined + players requested)
 	for (let i = 0; i < invite.empty_slots; i++) {
 		html += `
-	        <div class="arcade-game-playerbox saito-table-row${
-	mod.publicKey === invite.originator ? ' available_slot' : ''
-}">  
-	      		<div class="saito-identicon-box empty-slot"></div>
+	        <div class="arcade-game-playerbox saito-table-row`;
+
+	        if (mod.publicKey === invite.originator){
+	        	html += ` available_slot">  
+	      			<div class="saito-identicon-box empty-slot"><i class="fa-solid fa-link"></i>`;
+	        }else{
+	        	html += `">  
+	      			<div class="saito-identicon-box empty-slot">`;
+	        }
+					
+		html +=	`</div>
 	    			<div class="saito-address">open player slot</div>	
 	  			</div>
 		    `;

@@ -10,7 +10,7 @@ class Saveload extends ModTemplate {
 		this.description = 'Save and load games - useful for bughunting';
 		this.categories = 'Utility Entertainment';
 	}
-
+/*****
 	respondTo(type = '') {
 		if (type == 'game-menu') {
 			return {
@@ -41,9 +41,11 @@ class Saveload extends ModTemplate {
 		}
 		return null;
 	}
+*****/
 
 	initialize(app) {
 		if (this.app.browser.active_module === 'load') {
+alert("LOADING");
 			let game_id = this.app.browser.returnURLParameter('game_id');
 
 			if (game_id != '') {

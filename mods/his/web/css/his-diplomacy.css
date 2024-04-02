@@ -12,10 +12,19 @@
 }
 
 .diplomacy-propose-overlay .content ol li ul {
-	display: inline;
+    display: flex;
+    flex-direction: column;
+    font-size: 2rem;
+    row-gap: 1.25rem;
+    column-gap: 4rem;
 }
 .diplomacy-propose-overlay .content ol {
-	margin-left: 1rem;
+    margin-left: 1rem;
+    display: flex;
+    flex-direction: column;
+    font-size: 2rem;
+    row-gap: 1.25rem;
+    column-gap: 4rem;
 }
 
 .diplomacy-propose-overlay .menu {
@@ -52,6 +61,14 @@
     margin-right: auto;
     list-style: none;
     font-size: 1.8rem;
+}
+
+.diplomacy-confirm-overlay .content ul {
+    display: flex;
+    flex-direction: column;
+    column-gap: 2rem;
+    row-gap: 1rem;
+    font-size: 2rem;
 }
 
 .diplomacy-confirm-overlay .content ul li , .diplomacy-propose-overlay .content ul li {

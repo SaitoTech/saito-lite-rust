@@ -4,7 +4,6 @@ const Post = require('./post');
 const Notification = require('./notification');
 const SaitoProfile = require('./../../../lib/saito/ui/saito-profile/saito-profile');
 const SaitoLoader = require('./../../../lib/saito/ui/saito-loader/saito-loader');
-const SaitoProgress = require('./../../../lib/saito/ui/saito-progress-bar/saito-progress-bar');
 
 class TweetManager {
 	constructor(app, mod, container = '.saito-main') {
@@ -20,7 +19,6 @@ class TweetManager {
 
 		//This is an in-place loader... not super useful when content is overflowing off the bottom of the screen
 		this.loader = new SaitoLoader(app, mod, '#redsquare-intersection');
-		this.alt_loader = new SaitoProgress(app, mod, '.redsquare-progress-banner');
 
 		//////////////////////////////
 		// load more on scroll-down //
@@ -29,6 +27,8 @@ class TweetManager {
 			(entries) => {
 				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
+						console.log("IntersectionObserver");
+
 						if (this.mode === 'tweet') {
 							return;
 						}
@@ -105,7 +105,7 @@ class TweetManager {
 		);
 	}
 
-	render(new_mode = '') {
+	render(new_mode = this.mode) {
 		this.app.connection.emit('redsquare-clear-menu-highlighting', new_mode);
 
 		if (document.querySelector('.highlight-tweet')) {
@@ -129,35 +129,37 @@ class TweetManager {
 		this.intersectionObserver.disconnect();
 		this.profile.remove();
 
-		let holder = document.getElementById('tweet-thread-holder');
-		let managerElem = document.querySelector(myqs);
-
 		if (!document.querySelector(myqs)) {
 			this.app.browser.addElementToSelector(
 				TweetManagerTemplate(),
 				this.container
 			);
+		} 
+
+		let holder = document.getElementById('tweet-thread-holder');
+		let managerElem = document.querySelector(myqs);
+
+		if (this.mode == 'tweets' && new_mode !== 'tweets') {
+			console.log("Stash rendered tweets from main feed");
+			let kids = managerElem.children;
+			holder.replaceChildren(...kids);
 		} else {
-			if (this.mode == 'tweets' && new_mode !== 'tweets') {
-				let kids = managerElem.children;
-				holder.replaceChildren(...kids);
-			} else {
-				while (managerElem.hasChildNodes()) {
-					managerElem.firstChild.remove();
-				}
+			console.log("Remove temporary content from page");
+			while (managerElem.hasChildNodes()) {
+				managerElem.firstChild.remove();
 			}
 		}
+	
 
 		//
 		// if someone asks the manager to render with a mode that is not currently
 		// set, we want to update our mode and proceed with it.
 		//
-		if (new_mode && new_mode != this.mode) {
+		if (new_mode != this.mode) {
 			this.mode = new_mode;
 		}
-		if (!this.mode) {
-			this.mode = 'tweets';
-		}
+
+		console.log("Redsquare manager rendering: ", this.mode);
 
 		this.showLoader();
 
@@ -365,7 +367,7 @@ class TweetManager {
 
 		let np = this.mod.peers.length;
 		if (np > 1){
-			this.alt_loader.render(`Loading from ${np} peers...`);	
+			this.app.connection.emit("redsquare-insert-loading-message", `Checking with ${np} peers for profile tweets...`);
 		}else{
 			this.showLoader();
 		}
@@ -387,14 +389,14 @@ class TweetManager {
 					this.mod.processTweetsFromPeer(peer, txs);
 
 					if (peer.peer !== "localhost"){
-						this.alt_loader.render(`Processing response from ${this.app.keychain.returnUsername(peer.publicKey)}`);	
+						this.app.connection.emit("redsquare-insert-loading-message", `Processing response from ${this.app.keychain.returnUsername(peer.publicKey)}`);	
 					}
 					np--;
 					setTimeout(()=>{
 						if (np>0){
-							this.alt_loader.render(`Loading from ${np} peers...`);			
+							this.app.connection.emit("redsquare-insert-loading-message", `Loading from ${np} peers...`);			
 						}else{
-							this.alt_loader.finish(`Finished Loading!`);			
+							this.app.connection.emit("redsquare-remove-loading-message");
 						}
 					}, 1500);
 				},
@@ -494,33 +496,31 @@ class TweetManager {
 					.querySelector(`.tweet-${tweet.tx.signature}`)
 					.classList.add('highlight-tweet');
 			}
-			post.render(`.tweet-${tweet.tx.signature}`);
-			this.hideLoader();
-			
-		}else{
-
-			// query the whole thread
-			let thread_id =
-				tweet.thread_id || tweet.parent_id || tweet.tx.signature;
-
-			this.mod.loadTweetThread(thread_id, () => {
-				let root_tweet = this.mod.returnTweet(thread_id);
-
-				if (root_tweet) {
-					root_tweet.renderWithChildrenWithTweet(tweet);
-				}
-
-				if (document.querySelector(`.tweet-${tweet.tx.signature}`)) {
-					document
-						.querySelector(`.tweet-${tweet.tx.signature}`)
-						.classList.add('highlight-tweet');
-				}
-
-				post.render(`.tweet-${tweet.tx.signature}`);
-
-				this.hideLoader();
-			});
+			post.render(`.tweet-${tweet.tx.signature}`);			
 		}
+
+		// query the whole thread
+		let thread_id =
+			tweet.thread_id || tweet.parent_id || tweet.tx.signature;
+
+		this.mod.loadTweetThread(thread_id, () => {
+			let root_tweet = this.mod.returnTweet(thread_id);
+
+			if (root_tweet) {
+				root_tweet.renderWithChildrenWithTweet(tweet);
+			}
+
+			if (document.querySelector(`.tweet-${tweet.tx.signature}`)) {
+				document
+					.querySelector(`.tweet-${tweet.tx.signature}`)
+					.classList.add('highlight-tweet');
+			}
+
+			post.render(`.tweet-${tweet.tx.signature}`);
+
+			this.hideLoader();
+		});
+		
 	}
 
 	attachEvents() {

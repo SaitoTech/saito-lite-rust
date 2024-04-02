@@ -11,9 +11,11 @@ class DiplomacyProposeOverlay {
 		this.faction = "";
 		this.proposals = [];
 		this.proposal = {};
+		this.proposal.confirms = [];
 		this.proposal.terms = [];
 		this.proposal.parties = [];
 		this.proposal.proposer = "";
+	
 	}
 
 	purgeProposals() {
@@ -76,9 +78,10 @@ class DiplomacyProposeOverlay {
 
 	  this.pushHudUnderOverlay();
 
-	  document.querySelector(".diplomacy-propose-overlay").style.visibility = "visible";
-  	  document.querySelector(".diplomacy-propose-overlay .buttons").style.visibility = "visible";
-  	  document.querySelector(".diplomacy-propose-overlay").style.display = "block";
+	  this.overlay.show();
+	  //document.querySelector(".diplomacy-propose-overlay").style.visibility = "visible";
+  	  //document.querySelector(".diplomacy-propose-overlay .buttons").style.visibility = "visible";
+  	  //document.querySelector(".diplomacy-propose-overlay").style.display = "block";
 
 	  this.showMainMenu();
 
@@ -91,6 +94,7 @@ class DiplomacyProposeOverlay {
 
 	  let his_self = this.mod;
 	  let menu = this.mod.returnDiplomacyMenuOptions(this.mod.game.player, faction);
+
 
   	  document.querySelector(".diplomacy-propose-overlay").style.backgroundImage = "";
   	  document.querySelector(".diplomacy-propose-overlay .buttons").style.visibility = "hidden";
@@ -110,10 +114,11 @@ class DiplomacyProposeOverlay {
 	      obj.onclick = (e) => {
 
 		// remove click event from all
-		document.querySelectorAll(".diplomacy-propose-overlay .menu").innerHTML = "";
-		document.querySelectorAll(".diplomacy-propose-overlay .help").innerHTML = "Please Continue Using Game HUD...";
-		document.querySelectorAll(".diplomacy-propose-overlay .content").innerHTML = "";
-  	        document.querySelector(".diplomacy-propose-overlay").style.display = "none";
+		this.overlay.hide();
+		//document.querySelectorAll(".diplomacy-propose-overlay .menu").innerHTML = "";
+		//document.querySelectorAll(".diplomacy-propose-overlay .help").innerHTML = "Please Continue Using Game HUD...";
+		//document.querySelectorAll(".diplomacy-propose-overlay .content").innerHTML = "";
+  	        //document.querySelector(".diplomacy-propose-overlay").style.display = "none";
 
 		this.pullHudOverOverlay();
 
@@ -136,15 +141,6 @@ class DiplomacyProposeOverlay {
 
 	renderAllProposals(faction="") {
 
-console.log("render all proposals!");
-console.log("render all proposals!");
-console.log("render all proposals!");
-console.log("render all proposals!");
-console.log("render all proposals!");
-console.log("render all proposals!");
-console.log("render all proposals!");
-console.log(JSON.stringify(this.mod.game.state.diplomacy));
-
 	  let any_proposals = false;
 	  let proposals_html = "<ol>";
           for (let i = 0; i < this.proposals.length; i++) {
@@ -161,10 +157,10 @@ console.log(JSON.stringify(this.mod.game.state.diplomacy));
 
 	  if (any_proposals) {
 	    this.updateInstructions(`${this.mod.returnFactionName(faction)} - Diplomacy Stage - All Proposals`);
-	    document.querySelector(".content").innerHTML = proposals_html;
+	    document.querySelector(".diplomacy-propose-overlay .content").innerHTML = proposals_html;
 	    try {
 	      document.querySelector(".mainmenu.add").innerHTML = "create new proposal";
-	      document.querySelector(".mainmenu.end").innerHTML = "submit/finish offers";
+	      document.querySelector(".mainmenu.end").innerHTML = "submit and see if they accept";
 	    } catch (err) {
 	      console.log(JSON.stringify(err));
 	    }
@@ -176,6 +172,7 @@ console.log(JSON.stringify(this.mod.game.state.diplomacy));
 	}
 
 	renderCurrentProposal() {
+
 	  let proposals_html = '<ul>';
 	  let t = this.mod.convertTermsToText(this.proposal.terms);
 	  let any_proposals = false;
@@ -188,8 +185,8 @@ console.log(JSON.stringify(this.mod.game.state.diplomacy));
 
 	  if (any_proposals) {
 	    document.querySelector(".diplomacy-propose-overlay .help").innerHTML = "your proposal consists of the following:";
-	    document.querySelector(".content").innerHTML = proposals_html;
-	    document.querySelector(".content").style.display = "block";
+	    document.querySelector(".diplomacy-propose-overlay .content").innerHTML = proposals_html;
+	    document.querySelector(".diplomacy-propose-overlay .content").style.display = "block";
 	  } else {
 	    document.querySelector(".diplomacy-propose-overlay .help").innerHTML = "add term to your new proposal";
 	    document.querySelector(".content").style.display = "none";
@@ -206,7 +203,7 @@ console.log(JSON.stringify(this.mod.game.state.diplomacy));
 	  // finish diplomacy stage
 	  //
 	  document.querySelector(".end").onclick = (e) => {
-	    this.mod.updateLog("NOTIFY\t"+this.mod.returnFactionName(faction)+" concludes diplomacy");
+	    this.mod.updateLog(this.mod.returnFactionName(faction)+" concludes diplomacy");
 	    for (let z = 0; z < this.proposals.length; z++) {
 	      this.mod.addMove("diplomacy_submit_proposal\t"+JSON.stringify(this.proposals[z]));
 	    }

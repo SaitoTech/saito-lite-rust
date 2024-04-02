@@ -42,8 +42,8 @@
   position: absolute;
   width: 0rem;
   height: 100%;
-  top: 5rem;
-  left: -1.5rem;
+  top: 0;
+  left: 3.5rem;
   border-left: 5px dotted var(--saito-border-color);
   z-index: 3;  
 }
@@ -473,6 +473,11 @@
     top: 4.5rem;
     left: 1.55rem;
   }
+
+  .tweet.has-reply + .tweet-overlay::after {
+    top: 4rem;
+    left: 1.55rem;
+  }  
 
   .tweet.has-reply-disconnected::before {
     left: 1.3rem;

@@ -4,6 +4,7 @@ const SettlersWelcome = require('./lib/ui/overlays/welcome');
 const SettlersStats = require('./lib/ui/overlays/stats');
 const SettlersGameOptionsTemplate = require('./lib/ui/settlers-game-options.template');
 const SettlersTradeHelpOverlayTemplate = require('./lib/ui/settlers-trade-help-overlay.template');
+const htmlTemplate = require('./lib/ui/game-html.template');
 
 const SettlersGameLoop = require('./lib/src/settlers-gameloop.js');
 const SettlersPlayer = require('./lib/src/settlers-player');
@@ -228,6 +229,8 @@ class Settlers extends GameTemplate {
 		if (this.initialize_game_run) {
 			return;
 		}
+
+		await this.injectGameHTML(htmlTemplate());
 
 		await super.render(app);
 

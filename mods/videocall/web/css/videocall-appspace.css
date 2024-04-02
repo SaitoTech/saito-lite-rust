@@ -82,6 +82,7 @@
 }
 
 .stunx-appspace-splash {
+	text-align: center;
 	height: 25rem;
 	color: var(--saito-white);
 }

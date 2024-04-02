@@ -1,9 +1,187 @@
 
   displayCustomOverlay(c="", msg="") {
 
+    if (c === "protestants") {
+      this.welcome_overlay.renderCustom({
+        title : "New to the Protestants?" , 
+        text : "Why not play cards for OPS and publish treatises in Germany? " ,
+        card : this.returnCardImage("065") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "papacy") {
+      this.welcome_overlay.renderCustom({
+        title : "New to the Papacy?" , 
+        text : "Why not use your OPS to control Siena and move an invasion force to Florence?" ,
+        card : this.returnCardImage("067") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+    if (c === "ottoman") {
+      this.welcome_overlay.renderCustom({
+        title : "New to the Ottomans?" , 
+        text : "Why not use your OPS to invade Hungary and expand your empire?" ,
+        card : this.returnCardImage("042") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+    if (c === "england") {
+      this.welcome_overlay.renderCustom({
+        title : "New to England?" , 
+        text : "Why not use your Home Card to declare war on Scotland or France?" ,
+        card : this.returnCardImage("003") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+    if (c === "france") {
+      this.welcome_overlay.renderCustom({
+        title : "New to France?" , 
+        text : "Establishing Colonies and building Chateaux is crucial early-game! " ,
+        card : this.returnCardImage("004") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+    if (c === "hapsburg") {
+      this.welcome_overlay.renderCustom({
+        title : "New to the Hapsburgs?" , 
+        text : "Are there any independent keys you can conquer this turn? ",
+        card : this.returnCardImage("002") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "lost-at-sea") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Losses" ,
+        text : msg + " exploration is lost at sea..." ,
+        img : '/his/img/backgrounds/newworld/lost_at_sea.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} mission is lost at sea`);
+      return;
+    }
+
+    if (c === "killed") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Losses" ,
+        text : msg + " expedition killed by natives" ,
+        img : '/his/img/backgrounds/newworld/killed.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} expedition killed by natives`);
+      return;
+    }
+
+    if (c === "stlawrence") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Discovery" ,
+        text : msg + " discovers the St. Lawrence River" ,
+        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers St. Lawrence River`);
+      return;
+    }
+
+    if (c === "mississippi") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Discovery" ,
+        text : msg + " discovers the Mississippi River" ,
+        img : '/his/img/backgrounds/newworld/mississippi.jpg',
+	styles : [{ key : "backgroundPosition" , val : "center" }],
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Mississippi River`);
+      return;
+    }
+
+    if (c === "greatlakes") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Discovery" ,
+        text : msg + " discovers the Great Lakes" ,
+        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers St. Lawrence River`);
+      return;
+    }
+
+    if (c === "amazon") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Discovery" ,
+        text : msg + " discovers the Amazon River" ,
+        img : '/his/img/backgrounds/newworld/amazon2.jpg',
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Amazon River`);
+      return;
+    }
+
+    if (c === "pacificstrait") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Discovery" ,
+        text : msg + " discovers the Pacific Strait" ,
+        img : '/his/img/backgrounds/newworld/pacificstrait.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Pacific Strait`);
+      return;
+    }
+
+    if (c === "circumnavigation") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Achievement" ,
+        text : msg + " circumnavigates the globe" ,
+        img : '/his/img/backgrounds/newworld/circumnavigation.jpg',
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} circumnavigates the globe`);
+      return;
+    }
+
+    if (c === "aztec") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Conquest" ,
+        text : msg + " conquers the Aztec" ,
+        img : '/his/img/backgrounds/newworld/aztec.jpg',
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} conquers the Aztec`);
+      return;
+    }
+
+    if (c === "maya") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Conquest" ,
+        text : msg + " conquers the Maya" ,
+        img : '/his/img/backgrounds/newworld/inca.jpg',
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} conquers the Maya`);
+      return;
+    }
+
+    if (c === "inca") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Conquest" ,
+        text : msg + " conquers the Inca" ,
+        img : '/his/img/backgrounds/newworld/inca2.jpg',
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} conquers the Inca`);
+      return;
+    }
+
     if (c === "battle-of-mohacs") {
       this.welcome_overlay.renderCustom({
-        title : "War between the Hapsburg and Ottman Empires" ,
+        title : "War between the Hapsburg and Ottoman Empires" ,
         text : "The Ottoman subjugation of Hungary-Bohemia forces the Hapsburg Empire to intervene on the side of Christian Europe and in pre-emptive defense of Vienna" ,
         img : '/his/img/backgrounds/battle-of-mohacs.jpeg',
       });
@@ -16,6 +194,7 @@
         title : this.returnFactionName(msg) + " founds a Colony",
         text : "Colonies earn factions bonus cards in the New World Phase",
         img : '/his/img/backgrounds/move/colonize.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} attempts to found a Colony`);
       return;
@@ -25,7 +204,8 @@
       this.welcome_overlay.renderCustom({
         title : this.returnFactionName(msg) + " launches Conquest Expedition",
         text : "Conquests earn factions Victory Points and bonus cards in the New World Phase",
-        img : '/his/img/backgrounds/move/conquer.jpg',
+        img : '/his/img/backgrounds/move/inca2.jpg',
+	styles : [{ key : "backgroundPosition" , val : "center" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} attempts Conquest Expedition`);
       return;
@@ -36,6 +216,7 @@
         title : this.returnFactionName(msg) + " launches Exploration",
         text : "Explorations earn Victory Points for strategic discoveries in the New World Phase",
         img : '/his/img/backgrounds/move/explore.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} launches New World Exploration`);
       return;
@@ -379,24 +560,28 @@
 
   displayBoard() {
 
-    if (this.game.state.events.war_in_persia) { this.displayPersia(); }
-    if (this.game.state.events.revolt_in_egypt) { this.displayEgypt(); }
-    if (this.game.state.events.revolt_in_ireland) { this.displayIreland(); }
+    try {
+      if (this.game.state.events.war_in_persia) { this.displayPersia(); }
+      if (this.game.state.events.revolt_in_egypt) { this.displayEgypt(); }
+      if (this.game.state.events.revolt_in_ireland) { this.displayIreland(); }
+    } catch (err) {
+      console.log("error displaying foreign wars... " + err);
+    }
 
     try {
       this.displayTurnTrack();
     } catch (err) {
-      console.log("error displaying board... " + err);
+      console.log("error displaying turn track... " + err);
     }
     try {
       this.displayWarBox();
     } catch (err) {
-      console.log("error displaying board... " + err);
+      console.log("error displaying diplomacy box... " + err);
     }
     try {
       this.displayColony();
     } catch (err) {
-      console.log("error displaying board... " + err);
+      console.log("error displaying colonies... " + err);
     }
     try {
       this.displayConquest();
@@ -2296,6 +2481,8 @@ try {
     let factions_and_scores = this.calculateVictoryPoints();
 
     let x = this.returnVictoryPointTrack();
+    let tiles = [];
+    for (let i = 0; i < 30; i++) { tiles.push(0); }
 
     for (f in factions_and_scores) {
 try {
@@ -2305,6 +2492,13 @@ try {
       obj.style.left = x[total_vp.toString()].left + "px";
       obj.style.top = x[total_vp.toString()].top + "px";
       obj.style.display = "block";
+      if (tiles[total_vp] > 0) {
+	let shift = 2 * tiles[total_vp];
+        obj.style.transform = `translateY(-${shift}rem) translateX(${shift}rem)`;
+        tiles[total_vp]++;
+      } else {
+	tiles[total_vp]++;
+      }
 } catch (err) {
 }
 
