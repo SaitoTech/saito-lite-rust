@@ -9479,17 +9479,17 @@ defender_hits - attacker_hits;
 	  // Remove the Renegade Leader if in play
 	  let rl_idx = "";
 	  rl_s = his_self.returnSpaceOfPersonage("hapsburg", "renegade");
-          if (rl_s) { this.game.queue.push("remove_unit\thapsburg\trenegade\t"+rl_s+"\t0"); }
+          if (rl_s) { this.game.queue.push("remove_unit\tland\thapsburg\trenegade\t"+rl_s+"\t0"); }
 	  rl_s = his_self.returnSpaceOfPersonage("papacy", "renegade");
-          if (rl_s) { this.game.queue.push("remove_unit\tpapacy\trenegade\t"+rl_s+"\t0"); }
+          if (rl_s) { this.game.queue.push("remove_unit\tland\tpapacy\trenegade\t"+rl_s+"\t0"); }
 	  rl_s = his_self.returnSpaceOfPersonage("england", "renegade");
-          if (rl_s) { this.game.queue.push("remove_unit\tengland\trenegade\t"+rl_s+"\t0"); }
+          if (rl_s) { this.game.queue.push("remove_unit\tland\tengland\trenegade\t"+rl_s+"\t0"); }
 	  rl_s = his_self.returnSpaceOfPersonage("france", "renegade");
-          if (rl_s) { this.game.queue.push("remove_unit\tfrance\trenegade\t"+rl_s+"\t0"); }
+          if (rl_s) { this.game.queue.push("remove_unit\tland\tfrance\trenegade\t"+rl_s+"\t0"); }
 	  rl_s = his_self.returnSpaceOfPersonage("ottoman", "renegade");
-          if (rl_s) { this.game.queue.push("remove_unit\tottoman\trenegade\t"+rl_s+"\t0"); }
+          if (rl_s) { this.game.queue.push("remove_unit\tland\tottoman\trenegade\t"+rl_s+"\t0"); }
 	  rl_s = his_self.returnSpaceOfPersonage("protestant", "renegade");
-          if (rl_s) { this.game.queue.push("remove_unit\tprotestant\trenegade\t"+rl_s+"\t0"); }
+          if (rl_s) { this.game.queue.push("remove_unit\tland\tprotestant\trenegade\t"+rl_s+"\t0"); }
 
 	  // Remove major power alliance markers
 	  this.unsetAllies("hapsburg", "papacy");
