@@ -1227,6 +1227,11 @@ class Browser {
 			return;
 		}
 
+		if (!mycallback){
+			console.error("no callback!");
+			return;
+		}
+
 		element.addEventListener('touchstart', (e) => {
 			touchStartY = e.touches[0].clientY;
 			triggerRefresh = false;
@@ -1242,11 +1247,7 @@ class Browser {
 
 		element.addEventListener('touchend', (e) => {
 			if (triggerRefresh) {
-				if (mycallback) {
-					mycallback();
-				} else {
-					alert('Pull to refresh');
-				}
+				mycallback();
 			}
 		});
 	}
