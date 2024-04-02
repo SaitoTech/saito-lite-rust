@@ -1295,6 +1295,7 @@ class Chat extends ModTemplate {
 			}
 
 			await app.network.propagateTransaction(tx);
+			// await app.connection.emit('relay-send-message', tx)
 			// app.connection.emit('relay-send-message', {
 			// 	recipient,
 			// 	request: 'chat message broadcast',
