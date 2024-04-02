@@ -1585,17 +1585,11 @@ class Browser {
 		let target = d.querySelector(target_div);
 		let pullTab = null;
 
-		if (icon_div != null) {
-			this.addElementToSelector(
-				`<div class="resize-icon" id="resize-icon-${unique_id}"></div>`,
-				icon_div
-			);
-			pullTab = d.getElementById(`resize-icon-${unique_id}`);
-		} else {
-			pullTab = d.querySelector(target_div+` #resize-icon`);
-		}
-
-		console.log('pullTab:', pullTab);
+		this.addElementToSelector(
+			`<div class="resize-icon ${direction}" id="resize-icon-${unique_id}"></div>`,
+			icon_div
+		);
+		pullTab = d.getElementById(`resize-icon-${unique_id}`);
 
 		let ht, wd, x, y, dx, dy;
 

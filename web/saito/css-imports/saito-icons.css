@@ -39,3 +39,48 @@
   height: 3rem;
   padding: 0.75rem;
 }
+
+
+.resize-icon.horizontal{
+  right: 0rem;
+  top: 50%;
+  left: auto;
+  transform: translate(50%, -50%) rotate(0deg);
+  background-color: var(--saito-border-color-dark);
+  width: 1.2rem;
+  height: 5rem;
+  z-index: 2;
+  cursor: ew-resize;
+  border-radius: 0.25rem;
+}
+
+.resize-icon.horizontal:before {
+  content: "";
+  position: absolute;
+  right: 7px;
+  left: 15%;
+  top: 45%;
+  transform: rotate(90deg);
+  font-size: 1.5rem;
+  color: white;
+  z-index: 21;
+  height: 0rem;
+  padding: 0.3rem;
+  border-right: 2px solid #fff;
+  cursor: ew-resize;
+}
+
+.resize-icon.horizontal:after {
+  content: "";
+  position: absolute;
+  right: 0px;
+  top: 35%;
+  left: 22%;
+  transform: rotate(90deg);
+  font-size: 1.5rem;
+  z-index: 21;
+  height: 0rem;
+  padding: 0.3rem;
+  border-right: 2px solid #fff;
+  cursor: ew-resize;
+}
