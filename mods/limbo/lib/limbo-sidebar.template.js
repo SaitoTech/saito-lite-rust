@@ -53,6 +53,10 @@ module.exports = LimboSideBarTemplate = (app, mod, dreamer) => {
             		<i class="fas fa-link"></i>
             		<div>Share</div>
           		</div>
+				<div id="exit_space" class="saito-modal-menu-option">
+            		<i class="fa-solid fa-person-through-window"></i>
+            		<div>Exit</div>
+          		</div>
       		</div>
     		</div>
     		<div class="saito-modal-content">`;

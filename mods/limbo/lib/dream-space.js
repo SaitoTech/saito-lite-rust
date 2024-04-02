@@ -11,16 +11,17 @@ class DreamSpace{
 		this.timer_interval = null;
 	}
 
-	render(stream) {
+	render(stream = null) {
 		if (!document.getElementById("dream-controls")){
 
 			console.log("Render Dream space in " + this.container);
 			this.app.browser.addElementToSelectorOrDom(DreamSpaceTemplate(), this.container);
 		}
 
+		this.video.render(stream);
+
 		if (stream){
 			console.log("Add stream", stream);
-			this.video.render(stream);
 			this.startTimer();
 		}
 
