@@ -29,7 +29,7 @@ class Disburse extends ModTemplate {
 		let this_mod = this;
 		document.querySelector(".wallet-value").innerHTML = this.app.wallet.publicKey;
 		let this_wallet_balance = parseFloat(await this.app.wallet.getBalance());
-		document.querySelector(".balance-value").innerHTML = this_wallet_balance;
+		document.querySelector(".balance-value").innerHTML = this.app.browser.formatNumberToLocale(this_wallet_balance);
 		//
 		//	Manual input
 		//
@@ -84,18 +84,12 @@ class Disburse extends ModTemplate {
 					}
 				}
 				if (dataArray.length == rows.length && this_wallet_balance >= total_out) {
-					// console.log(dataArray);
-					// console.log("total recievers wallets:" + dataArray.length
-					// 	+ "\nWallet (nolan) sender balance: " + this_wallet_balance
-					// 	+ "\ntotal (nolan) out : " + total_out
-					// 	+ "\nFinal (nolan) balance: " + (this_wallet_balance - total_out)
-					// );
 					let message_area = document.querySelector(".disburse-message");
 					message_area.style.display = "block";
-					document.getElementById("total_wallet").innerHTML = dataArray.length
-					document.getElementById("total_out").innerHTML = total_out
-					document.getElementById("sender_balance").innerHTML = this_wallet_balance
-					document.getElementById("final_balance").innerHTML = (this_wallet_balance - total_out)
+					document.getElementById("total_wallet").innerHTML = dataArray.length;
+					document.getElementById("total_out").innerHTML = this.app.browser.formatNumberToLocale(total_out);
+					document.getElementById("sender_balance").innerHTML = this.app.browser.formatNumberToLocale(this_wallet_balance);
+					document.getElementById("final_balance").innerHTML = this.app.browser.formatNumberToLocale(this_wallet_balance - total_out);
 
 					document.getElementById("validate-input").remove();
 					document.getElementById("disburse-input").readOnly = true;
@@ -167,9 +161,9 @@ class Disburse extends ModTemplate {
 				amounts,
 				timestamp,
 				unique_hash,
-				async function (res) { 
+				async function (res) {
 					console.log("hash:\t" + res.hash);
-					if (res.hash){
+					if (res.hash) {
 						salert("Success, please wait - transaction hash: " + res.hash);
 					} else {
 						salert("An error might have ocurred");
