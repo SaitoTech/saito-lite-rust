@@ -21651,8 +21651,8 @@ this.updateLog(`###############`);
 
 
 if (this.game.options.scenario != "is_testing") {
-//	  this.game.queue.push("spring_deployment_phase");
-//	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
+	  this.game.queue.push("spring_deployment_phase");
+	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
 	  //this.game.queue.push("counter_or_acknowledge\tSpring Deployment is about to Start\tpre_spring_deployment");
 	  //this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 }
@@ -21705,9 +21705,9 @@ if (this.game.options.scenario == "is_testing") {
 	    if (this.game.players.length == 2) {
 	      this.game.queue.push("show_overlay\tvp");
 	    }
-//	    this.game.queue.push("hide_overlay\tdiet_of_worms");
-//	    this.game.queue.push("diet_of_worms");
-//	    this.game.queue.push("show_overlay\tdiet_of_worms");
+	    this.game.queue.push("hide_overlay\tdiet_of_worms");
+	    this.game.queue.push("diet_of_worms");
+	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    this.game.queue.push("card_draw_phase");
 	    this.game.queue.push("event\tprotestant\t008");
 }
