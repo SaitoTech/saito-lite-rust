@@ -1343,6 +1343,11 @@ if (this.game.options.scenario == "is_testing") {
 	  let faction = mv[1];
 	  let explorer = mv[2];
 	  let idx = parseInt(mv[3]);
+	  let results_idx = idx;
+
+	  for (let z = 0; z < this.game.state.newworld.results.explorations.length; z++) {
+	    if (this.game.state.newworld.results.explorations[z].idx == idx) { results_idx = z; }
+	  }
 
 console.log("IDX IN DETERMINING NEW WORLD BONUS; " + idx);
 console.log("EXPLO: " + JSON.stringify(this.game.state.explorations));
@@ -1355,7 +1360,7 @@ console.log("NEW: " + JSON.stringify(this.game.state.newworld.results));
 	    this.game.state.explorations[idx].explorer_lost = 0;
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
-	    this.game.state.newworld.results.explorations[idx].prize = "St. Lawrence";
+	    this.game.state.newworld.results.explorations[results_idx].prize = "St. Lawrence";
 	    this.game.state.explorations[idx].prize = "St. Lawrence";
 	    this.updateLog(this.returnFactionName(faction) + " discovers the St. Lawrence");
 	    this.displayCustomOverlay("stlawrence", this.returnFactionName(faction));
@@ -1366,7 +1371,7 @@ console.log("NEW: " + JSON.stringify(this.game.state.newworld.results));
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Great Lakes";
-	    this.game.state.newworld.results.explorations[idx].prize = "Great Lakes";
+	    this.game.state.newworld.results.explorations[results_idx].prize = "Great Lakes";
 	    this.updateLog(this.returnFactionName(faction) + " discovers the Great Lakes");
 	    this.displayCustomOverlay("greatlakes", this.returnFactionName(faction));
 	  }
@@ -1376,7 +1381,7 @@ console.log("NEW: " + JSON.stringify(this.game.state.newworld.results));
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Mississippi";
-	    this.game.state.newworld.results.explorations[idx].prize = "Mississippi";
+	    this.game.state.newworld.results.explorations[results_idx].prize = "Mississippi";
 	    this.updateLog(this.returnFactionName(faction) + " discovers the Mississippi");
 	    this.displayCustomOverlay("mississippi", this.returnFactionName(faction));
 	  }
@@ -1386,7 +1391,7 @@ console.log("NEW: " + JSON.stringify(this.game.state.newworld.results));
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Pacific Strait";
-	    this.game.state.newworld.results.explorations[idx].prize = "Pacific Strait";
+	    this.game.state.newworld.results.explorations[results_idx].prize = "Pacific Strait";
 	    this.updateLog(this.returnFactionName(faction) + " discovers the Pacific Strait");
 	    this.displayCustomOverlay("pacificstrait", this.returnFactionName(faction));
 	  }
@@ -1396,7 +1401,7 @@ console.log("NEW: " + JSON.stringify(this.game.state.newworld.results));
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Amazon";
-	    this.game.state.newworld.results.explorations[idx].prize = "Amazon";
+	    this.game.state.newworld.results.explorations[results_idx].prize = "Amazon";
 	    this.updateLog(this.returnFactionName(faction) + " discovers the Amazon");;
 	    this.displayCustomOverlay("amazon", this.returnFactionName(faction));
 	  }
@@ -1406,7 +1411,7 @@ console.log("NEW: " + JSON.stringify(this.game.state.newworld.results));
 	    // circumnavigation attempt requires another roll here to claim
 	    //
 	    let base_x = this.rollDice(6) + this.rollDice(6);
-	    let x = base_x + this.game.state.explorations[idx].modifiers;
+	    let x = base_x + this.game.state.explorations[results_idx].modifiers;
 
 	    this.updateLog("Circumnavigation Roll: " + x + " (" + base_x + "+" + this.game.state.explorations[idx].modifiers +")");
 
@@ -1445,7 +1450,7 @@ console.log("NEW: " + JSON.stringify(this.game.state.newworld.results));
 	      this.game.state.newworld[bonus].faction = faction;
 	      this.game.state.newworld[bonus].claimed = 1;
 	      this.game.state.explorations[idx].prize = "Circumnavigation";
-	      this.game.state.newworld.results.explorations[idx].prize = "Circumnavigation";
+	      this.game.state.newworld.results.explorations[this.game.state.newworld.results.explorations.length-1].prize = "Circumnavigation";
 	      this.updateLog(this.returnFactionName(faction) + " circumnavigates the Globe");
 	      this.displayCustomOverlay("circumnavigation", this.returnFactionName(faction));
 
@@ -1481,7 +1486,7 @@ console.log("NEW: " + JSON.stringify(this.game.state.newworld.results));
 	      this.game.state.explorations[idx].resolved = 1;
 	      this.game.state.explorations[idx].explorer_lost = 1;
 	      this.game.state.explorations[idx].prize = "lost at sea";
-	      this.game.state.newworld.results.explorations[idx].prize = "lost at sea";
+	      this.game.state.newworld.results.explorations[this.game.state.newworld.results.explorations.length-1].prize = "lost at sea";
 	      this.updateLog(this.returnFactionName(faction) + " fails at Circumnavigation ("+x+")");
 	      if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
 	        this.displayCustomOverlay("lost-at-sea", this.returnFactionName(faction));
