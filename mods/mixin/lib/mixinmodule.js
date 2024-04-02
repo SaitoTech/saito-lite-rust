@@ -568,7 +568,27 @@ class MixinModule extends CryptoModule {
 		return null;
 	}
 
-	async validateAddress(address, ticker){
+
+  async formatBalance(precision = 2) {
+		let balance = await this.returnBalance();
+
+		if (typeof balance == 'undefined') {
+			balance = '0.00';
+		}
+
+		let locale = window.navigator?.language
+			? window.navigator?.language
+			: 'en-US';
+		let nf = new Intl.NumberFormat(locale, {
+			minimumFractionDigits: 2,
+			maximumFractionDigits: precision
+		});
+
+		let balance_as_float = parseFloat(balance);
+		return nf.format(balance_as_float).toString();
+  }
+  
+  async validateAddress(address, ticker){
 		// suported cryptos by validator package
 		//https://www.npmjs.com/package/multicoin-address-validator?activeTab=readme		
 		try {
