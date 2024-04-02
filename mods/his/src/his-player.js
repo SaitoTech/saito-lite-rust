@@ -1243,6 +1243,9 @@ if (this.game.state.events.cramner_active == 1) {
       can_pass = false;
     }
 
+console.log("can we pass? " + can_pass);
+console.log("how many cards does this faction hand? " + this.game.deck[0].fhand[faction_hand_idx].length);
+
     if (this.game.deck[0].fhand[faction_hand_idx].length == 0) {
 
       can_pass = true;
@@ -1298,17 +1301,20 @@ if (this.game.state.events.cramner_active == 1) {
         //
         // halt my game (copies from ACKNOWLEDGE)
         //
+console.log("adding pass as no visible cards!");
         his_self.addMove("pass\t"+faction+"\t0"); // 0 => no cards in hand
         his_self.endTurn();
         return 0;
 
       }
     }
-
+console.log("we are out of this!");
 
     if (can_pass) {
       cards.push("pass");
     }
+
+console.log("faction is: " + faction);
 
     this.updateStatusAndListCards(this.returnFactionName(faction) + " - Select Your Card: ", cards);
     this.attachCardboxEvents((card) => {
@@ -2168,7 +2174,7 @@ if (this.game.state.events.cramner_active == 1) {
     // don't halt the game for the player moving.
 
     // wartburg is 037
-    if (faction == "protestant" || this.game.deck[0].discards["037"]) {
+    if (faction == "protestant" || this.game.deck[0].discards["037"] || this.game.state.events.intervention_on_events_possible == false) {
       this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
     } else {
       // ACKNOWLEDGE invites click but doesn't halt active player - we prefer this if
@@ -3130,16 +3136,18 @@ does_units_to_move_have_unit = true; }
 	        }
 	      }
 
-
 	      his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
-
               units_to_move.sort(function(a, b){return parseInt(a.idx)-parseInt(b.idx)});
 
 	      for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i].idx);
 	      }
-              his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" moving to "+his_self.game.spaces[destination_spacekey].name + "\tmove");
-	      his_self.addMove("RESETCONFIRMSNEEDED\tall");
+    	      if (his_self.game.state.events.intervention_on_movement_possible == 1) {
+      		his_self.addMove("ACKNOWLEDGE\t" + his_self.returnFactionName(faction) + " moves to " + his_self.game.spaces[destination_spacekey].name);
+	      } else {
+                his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" moving to "+his_self.game.spaces[destination_spacekey].name + "\tmove");
+	        his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	      }
 	      his_self.endTurn();
 	      his_self.available_units_overlay.faded_out = false;
 
@@ -3288,7 +3296,7 @@ does_units_to_move_have_unit = true; }
       function(space) {
 	let num_moveable = 0;
 	for (let z in space.units) {
-	  if (space.units[z].length > 0 && his_self.returnPlayerCommandingFaction(z) == his_self.game.player) {
+	  if (space.units[z].length > 0 && his_self.returnPlayerCommandingFaction(z) == his_self.game.player && (z == faction || his_self.returnControllingPower(z) == faction)) {
 	    //
 	    // Foul Weather prevents spaces with already moved units
 	    //
@@ -3515,7 +3523,11 @@ does_units_to_move_have_unit = true; }
     html    += `</ul>`;
 
     if (post_battle) {
-      this.updateStatusWithOptions(`${this.returnFactionName(faction)} loses the battle. Retreat?`, html);
+      if (this.game.state.events.unexpected_war == 1) {
+        this.updateStatusWithOptions(`${this.returnFactionName(faction)} must retreat. Retreat?`, html);
+      } else {
+        this.updateStatusWithOptions(`${this.returnFactionName(faction)} loses the battle. Retreat?`, html);
+      }
     } else {
       this.updateStatusWithOptions(`${this.returnFactionName(faction)} approaches ${this.returnSpaceName(spacekey)}. ${this.returnFactionName(defender)} Retreat?`, html);
     }
@@ -4099,8 +4111,12 @@ does_units_to_move_have_unit = true; }
               for (let i = 0; i < units_to_move.length; i++) {
                 his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+spacekey+"\t"+destination+"\t"+units_to_move[i].idx);
               }
-              his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" moving to "+his_self.game.spaces[destination].name + " via ship\tmove");
-              his_self.addMove("RESETCONFIRMSNEEDED\tall");
+    	      if (his_self.game.state.events.intervention_on_movement_possible == 1) {
+      		his_self.addMove("ACKNOWLEDGE\t" + his_self.returnFactionName(faction) + " moves to " + his_self.game.spaces[destination_spacekey].name);
+	      } else {
+                his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" moving to "+his_self.game.spaces[destination_spacekey].name + "\tmove");
+	        his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	      }
               his_self.endTurn();
 
     }

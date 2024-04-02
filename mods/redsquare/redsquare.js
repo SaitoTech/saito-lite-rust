@@ -133,7 +133,7 @@ class RedSquare extends ModTemplate {
       title: "🟥 Saito RedSquare - Web3 Social Media",
       url: "https://saito.io/redsquare/",
       description: "Peer to peer Web3 social media platform",
-      image: "https://saito.tech/wp-content/uploads/2023/11/Rs-300x300.png",
+      image: "https://saito.tech/wp-content/uploads/2022/04/saito_card.png",  //square image with "Saito" below logo
       //image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
     };
 
@@ -936,6 +936,21 @@ class RedSquare extends ModTemplate {
                 this.peers[i].tweets_earliest_ts
               )}`
             );
+
+            if (this.peers[i].peer !== "localhost"){
+              this.app.connection.emit("redsquare-insert-loading-message", `Processing ${txs.length} tweets returned from ${this.app.keychain.returnUsername(this.peers[i].publicKey)}`);  
+            }else{
+              this.app.connection.emit("redsquare-insert-loading-message", `Processing ${txs.length} tweets from my archive`);  
+            }
+            
+            peer_count--;
+            setTimeout(()=>{
+              if (peer_count > 0) {
+               this.app.connection.emit("redsquare-insert-loading-message", `Still waiting on ${peer_count} peer(s)...`);   
+              } else {
+                this.app.connection.emit("redsquare-remove-loading-message");
+              }
+            }, 1500);
 
             if (mycallback) {
               mycallback(count);
@@ -2466,13 +2481,19 @@ class RedSquare extends ModTemplate {
       {
         field1: "RedSquare",
         flagged: 0,
-        tx_size_less_than: 1000000,
-        limit: 8,
+        tx_size_less_than: 100000,
+        limit: 20,
       },
       (txs) => {
-        for (let i = 0; i < txs.length; i++) {
+        let cnt = 0;
+        for (let i = 0; i < txs.length && cnt < 8; i++) {
           try {
-            hex_values.push(txs[i].serialize_to_web(this.app));
+            if (txs[i].optional.parent_id){
+              //console.log("Tweet is a reply to " + txs[i].optional.parent_id);
+            }else{
+              hex_values.push(txs[i].serialize_to_web(this.app));
+              cnt++;
+            }
           } catch (err) {
             console.log(err);
           }

@@ -90,6 +90,7 @@ class NavalBattleOverlay {
 	}
 
 	assignHitsManually(res = {}, faction = '', hits_to_assign = 1) {
+
 		let hits_assignable = 0;
 		let hits_assigned = 0;
 		let his_self = this.mod;

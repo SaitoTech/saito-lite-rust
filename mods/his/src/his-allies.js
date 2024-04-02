@@ -83,6 +83,7 @@
     return 0;
   }
   returnDeclarationOfWarTargets(faction) {
+
     let na = [];
     let io = this.returnImpulseOrder();
     for (let i = 0; i < io.length; i++) {
@@ -91,10 +92,10 @@
       }
     }
     if (!this.areAllies(faction, "genoa")) { na.push("genoa"); }
-    if (this.areAllies(faction, "scotland")) { 
+    if (!this.areAllies(faction, "scotland")) { 
       if (faction != "protestant" && faction != "papacy" && faction != "ottoman") { na.push("scotland"); }
     }
-    if (this.areAllies(faction, "venice")) { 
+    if (!this.areAllies(faction, "venice")) { 
       if (faction != "england") { na.push("venice"); }
     }
 

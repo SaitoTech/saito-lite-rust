@@ -1016,7 +1016,9 @@
       // ports
       function(spacekey) {
         if (his_self.game.spaces[spacekey]) {
+console.log("checking: " + spacekey + "!");
 	  if (his_self.isSpaceControlled(spacekey, faction)) {
+console.log("yes " + faction + " controls it!");
 	    return 1;
 	  }
 	}
@@ -1167,10 +1169,14 @@
   returnFriendlyLandUnitsInSpace(faction, space) {
     let luis = 0;
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (let i = 0; i < space.units[faction].length; i++) {
-      if (space.units[faction][i].type === "regular") { luis++; }
-      if (space.units[faction][i].type === "mercenary") { luis++; }
-      if (space.units[faction][i].type === "cavalry") { luis++; }
+    for (let f in space.units) {
+      if (this.areAllies(faction, f)) {
+        for (let i = 0; i < space.units[f].length; i++) {
+          if (space.units[f][i].type === "regular") { luis++; }
+          if (space.units[f][i].type === "mercenary") { luis++; }
+          if (space.units[f][i].type === "cavalry") { luis++; }
+        }
+      }
     }
     return luis;
   }
@@ -1317,10 +1323,10 @@
     let faction_map = {};
 
     for (let f in space.units) {
-      if (f === faction1) {
+      if (f === faction1 || this.returnPlayerCommandingFaction(f) == this.returnPlayerCommandingFaction(faction1)) {
         faction_map[f] = faction1;
       }
-      if (f === faction2) {
+      if (f === faction2 || this.returnPlayerCommandingFaction(f) == this.returnPlayerCommandingFaction(faction2)) {
         faction_map[f] = faction2;
       }
     }
@@ -1349,6 +1355,12 @@
             if (this.areAllies(f, faction2)) {
               faction_map[f] = faction2;
             }
+            if (this.returnPlayerCommandingFaction(f) === faction1) {
+              faction_map[f] = faction1;
+	    }
+            if (this.returnPlayerCommandingFaction(f) === faction2) {
+              faction_map[f] = faction2;
+	    }
           }
         }
       }
@@ -1937,8 +1949,8 @@ try {
     let seas = {};
 
     seas['irish'] = {
-      top : 875 ,
-      left : 900 ,
+      top : 775 ,
+      left : 1100 ,
       name : "Irish Sea" ,
       ports : ["glasgow"] ,
       neighbours : ["biscay","north","channel"] ,
@@ -1965,8 +1977,8 @@ try {
       neighbours : ["irish","biscay","north"] ,
     }
     seas['north'] = {
-      top : 200 ,
-      left : 2350 ,
+      top : 350 ,
+      left : 2100 ,
       name : "North Sea" ,
       ports : ["london", "norwich", "berwick", "edinburgh", "calais", "antwerp", "amsterdam", "bremen", "hamburg" ] ,
       neighbours : ["irish","channel","baltic"] ,
@@ -3017,7 +3029,7 @@ try {
     spaces['coron'] = {
       top: 2510,
       left: 4146,
-      home: "",
+      home: "ottoman",
       political: "",
       religion: "other",
       ports:["ionian","aegean"],
@@ -3064,6 +3076,7 @@ try {
       home: "ottoman",
       political: "",
       religion: "other",
+      ports: ["aegean"],
       neighbours: ["larissa","edirne"],
       language: "other",
       type: "key"

@@ -219,6 +219,7 @@
       let action2 = $(this).attr("id");
       if (mycallback == null) { return; }
 
+      his_self.updateStatus("submitted");
       mycallback([`declare_peace\t${faction}\t${action2}`]);
 
     });
@@ -246,6 +247,7 @@
 
       let action2 = $(this).attr("id");
       if (mycallback == null) { return; }
+      his_self.updateStatus("submitted");
 
       mycallback([`set_allies\t${faction}\t${action2}`]);
 
@@ -274,6 +276,7 @@
 
       let action2 = $(this).attr("id");
       if (mycallback == null) { return; }
+      his_self.updateStatus("submitted");
 
       mycallback([`pull_card\t${faction}\t${action2}`,`NOTIFY\t${his_self.returnFactionName(action2)} pulls card from ${his_self.returnFactionName(faction)}`]);
 
@@ -301,6 +304,7 @@
 
       let action2 = $(this).attr("id");
       if (mycallback == null) { return; }
+      his_self.updateStatus("submitted");
 
       mycallback([`pull_card\t${action2}\t${faction}`,`NOTIFY\t${his_self.returnFactionName(faction)} pulls card from ${his_self.returnFactionName(action2)}`]);
 
@@ -328,6 +332,7 @@
     $('.option').on('click', function () {
       let give_which_leader = $(this).attr("id");
       if (mycallback == null) { return; }
+      his_self.updateStatus("submitted");
       mycallback([`ransom\t${give_which_leader}\t${faction}`]);
     });
 
@@ -356,6 +361,8 @@
 
       let receiving_faction = $(this).attr("id");
 
+      his_self.winter_overlay.hide();
+
       his_self.playerSelectSpaceWithFilter(
 
         "Yield which Space?",
@@ -372,7 +379,9 @@
 
           function(spacekey) {
             if (mycallback == null) { return; }
+            his_self.updateStatus("submitted");
             mycallback([`control\t${receiving_faction}\t${spacekey}\t${faction}`,`NOTIFY\t${his_self.returnFactionName(faction)} yields ${his_self.returnSpaceName(spacekey)} to ${his_self.returnFactionName(receiving_faction)}`]);
+            his_self.winter_overlay.render();
           },
           
           null,
@@ -409,6 +418,7 @@
     $('.option').on('click', function () {
 
       let beneficiary = $(this).attr("id");
+      his_self.updateStatus("submitted");
       mycallback([`unexcommunicate_faction\t${beneficiary}`,`NOTIFY\tThe Papacy rescinds the excommunication of ${his_self.returnFactionName(beneficiary)}`]);
 
     });
@@ -438,6 +448,7 @@
 
       let target_faction = $(this).attr("id");
       $('.option').off();
+      his_self.updateStatus("submitted");
       let num = 0;
       for (let key in his_self.game.spaces) {
 	let s = his_self.game.spaces[key];
@@ -462,6 +473,7 @@
         let target_number = parseInt($(this).attr("id"));
         $('.option').off();
 
+        his_self.updateStatus("submitted");
         mycallback([`place_mercenaries\t${faction}\t${target_faction}\t${target_number}`,`give_mercenaries\t${faction}\t${target_faction}\t${target_number}`]);
 
       });
@@ -489,6 +501,7 @@
     $('.option').on('click', function () {
 
       let target_faction = $(this).attr("id");
+      his_self.updateStatus("submitted");
       $('.option').off();
       let num = 0;
       for (let key in his_self.game.spaces) {
@@ -515,6 +528,7 @@
         $('.option').off();
 
 	let instructions = [];
+        his_self.updateStatus("submitted");
 
 	for (let z = 0; z < target_number; z++) {
 	  instructions.push(`give_squadron\t${faction}\t${target_faction}\t${target_number}`);

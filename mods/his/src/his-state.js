@@ -1,5 +1,6 @@
 
   onNewImpulse() {
+
     //
     // remove foul weather
     //
@@ -60,6 +61,11 @@
       this.hidePiracyMarker(key);
     }
 
+    //
+    // reset variables that permit intervention
+    //
+    this.game.state.events.intervention_on_movement_possible = 0;
+    this.game.state.events.intervention_on_events_possible = 0;
 
     //
     // reset impulse commits
@@ -87,6 +93,9 @@
     this.game.state.events.ottoman_piracy_attempts = 0;
     this.game.state.events.ottoman_piracy_seazones = [];
 
+    this.game.state.events.intervention_on_movement_possible = 0;
+    this.game.state.events.intervention_on_events_possible = 0;
+
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
     this.game.state.tmp_protestant_translation_bonus = 0;
@@ -109,6 +118,7 @@
     this.game.state.impulse = 0;
     this.game.state.events.more_executed_limits_debates = 0;
     this.game.state.events.more_bonus = 0;
+    this.game.state.events.unexpected_war = 0;
  
     this.game.state.newworld.results.colonies = [];
     this.game.state.newworld.results.explorations = [];
@@ -1849,24 +1859,13 @@ if (this.game.state.scenario != "is_testing") {
       }
     }
 
-console.log("ochhs: " + ottoman_controlled_hungarian_home_spaces);
-console.log("hrrom: " + hungarian_regulars_remaining_on_map);
-
-    //
-    //
-    //
     if (this.game.state.events.diplomatic_alliance_triggers_hapsburg_hungary_alliance == 1 && ottoman_controlled_hungarian_home_spaces >= 2) { 
       does_this_trigger_the_defeat_of_hungary_bohemia = true;
     }
 
-    //
-    //
-    //
     if (hungarian_regulars_remaining_on_map < 5 && ottoman_controlled_hungarian_home_spaces >= 1) {
       does_this_trigger_the_defeat_of_hungary_bohemia = true;
     }
-    //
-    //
 
     if (does_this_trigger_the_defeat_of_hungary_bohemia) {
 
@@ -1893,7 +1892,8 @@ console.log("hrrom: " + hungarian_regulars_remaining_on_map);
       //
       for (let key in this.game.spaces) {
         if (this.game.spaces[key].home == "hungary") {
-	  if (this.game.spaces[key].units["ottoman"].length > 0) {
+	  // ottoman gets the spaces, but not the keys
+	  if (this.game.spaces[key].units["ottoman"].length > 0 && this.game.spaces[key].type != "key") {
 	    this.game.spaces[key].units["hungary"] = [];
 	    this.controlSpace("ottoman", key);
 	  }
@@ -1911,7 +1911,18 @@ console.log("hrrom: " + hungarian_regulars_remaining_on_map);
       // let's notify the player visually
       this.displayCustomOverlay("battle-of-mohacs");
 
-    }
+      //
+      // add war
+      //
+      for (let z = this.game.queue.length-1; z >= 0; z--) {
+	let lmv = this.game.queue[z].split("\t");
+	if (lmv[0] === "cards_left" || lmv[0] == "continue" || lmv[0] == "play" || lmv[0] == "action_phase" || lmv[0] == "discard") {
+	  this.game.queue.splice(z, 0, `unexpected_war\thapsburg\tottoman`);
+	  z = 0;
+	  break;
+	}
+      }
 
+    }
   }
 
