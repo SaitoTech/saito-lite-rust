@@ -50,7 +50,6 @@
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	width: 80%;
 	padding: 3rem;
 	gap: 3rem;
 	border: 1px solid var(--saito-border-color);
