@@ -2438,7 +2438,7 @@ try {
       home: "france",
       political: "france",
       religion: "catholic",
-      ports: ["lyon"],
+      ports: ["gulflyon"],
       neighbours: ["avignon","nice"],
       language: "french",
       type: "key"

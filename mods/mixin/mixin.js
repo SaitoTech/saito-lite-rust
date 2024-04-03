@@ -109,6 +109,10 @@ class Mixin extends ModTemplate {
       await this.receiveFetchUserByPublickeyTransaction(app, tx, peer, mycallback);
     }
 
+    if (message.request === "mixin fetch address by user id") {
+      await this.receiveFetchAddressByUserIdTransaction(app, tx, peer, mycallback);
+    }
+
     return super.handlePeerTransaction(app, tx, peer, mycallback);
   }
 
@@ -483,6 +487,31 @@ class Mixin extends ModTemplate {
       return fee.amount;
     } catch(err) {
       console.error("ERROR: Mixin error check withdrawl fee: " + err);
+      return false;
+    }
+  }
+
+  async fetchSafeTransaction(transaction_id){
+    // currently mixin node is returning error
+    // on fetching transaction details
+    // Status: contatcted mixin team
+    try {
+      let user = MixinApi({
+        keystore: {
+          app_id: this.mixin.user_id,
+          session_id: this.mixin.session_id,
+          pin_token_base64: this.mixin.tip_key_base64,
+          session_private_key: this.mixin.session_seed
+        },
+      });
+
+      const transaction = await user.utxo.fetchTransaction(transaction_id);
+      
+      console.log('transaction: ', transaction);
+
+      return transaction;
+    } catch(err) {
+      console.error("ERROR: Mixin error fetch safe transaction: " + err);
       return false;
     }
   }
@@ -902,6 +931,44 @@ class Mixin extends ModTemplate {
       $asset_id: asset_id
     };
     let result = await this.app.storage.queryDatabase(sql, params, "Mixin");
+    if (result.length > 0) {
+      return callback(result);
+    }
+
+    return callback(false);
+  }
+
+  async sendFetchAddressByUserIdTransaction(params = {}, callback){
+    let peers = await this.app.network.getPeers();
+    if (peers.length == 0) {
+      console.warn("No peers");
+      return;
+    }
+
+    let data = params;
+    await this.app.network.sendRequestAsTransaction(
+      "mixin fetch address by user id",
+      data,
+      function (res) {
+        return callback(res);
+      },
+      peers[0].peerIndex
+    );
+  }
+
+  async receiveFetchAddressByUserIdTransaction(app, tx, peer, callback = null){
+    console.log('tx:', tx);
+    let message = tx.returnMessage();
+    let user_id = message.data.user_id;
+    let asset_id = message.data.asset_id;
+    let sql = `SELECT * FROM mixin_users 
+               WHERE user_id = $user_id AND asset_id = $asset_id ORDER BY created_at DESC;`;
+    let params = {
+      $user_id: user_id,
+      $asset_id: asset_id
+    };
+    let result = await this.app.storage.queryDatabase(sql, params, "Mixin");
+    console.log('result:', result);
     if (result.length > 0) {
       return callback(result);
     }

@@ -185,10 +185,31 @@
       //
       // are we still besieged? will be unit
       //
+console.log("we appear to be besieged...");
       for (let f in space.units) {
         for (let i = 0; i < space.units[f].length; i++) {
   	  if (space.units[f][i].besieged == true || space.units[f][i].besieged == 1) {
-	    return true;
+
+console.log("we appear to be besieged...");
+
+	    //
+	    // we are still besieged if there are any enemy units here
+	    //
+	    for (let zf in space.units) {
+	      if (zf != f) {
+		if (space.units[zf].length > 0) {
+console.log("faction: " + zf) ;
+		  if (!this.areAllies(zf, f)) {
+		    if (this.returnFactionLandUnitsInSpace(zf, space.key) > 0) { return true; }
+		  }
+		}
+	      }
+	    }
+
+	    //
+	    // no-one else is here, so I guess we aren't anymore
+	    //
+	    return false;
 	  } else {
 	    // if not independent (which won't attack) or allies, then someone must be besieged
 	    if (f != "independent") {

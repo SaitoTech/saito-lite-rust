@@ -240,44 +240,46 @@ class TweetManager {
 		}
 	}
 
-	insertOlderTweets(tx_count) {
+	insertOlderTweets(tx_count, peer = null) {
 		if (this.mode !== 'tweets') {
 			console.log('Not on main feed anymore, currently on: ' + this.mode);
 			return;
 		}
 
-		if (tx_count == 0) {
-			//
-			// So we didn't get any new renderable tweets, but that doesn't mean we
-			// should quit just yet
-			//
-			let out_of_content = true;
-			for (let i = 0; i < this.mod.peers.length; i++) {
-				if (this.mod.peers[i].tweets_earliest_ts) {
-					console.log(
-						`${this.mod.peers[i].publicKey} still has tweets as early as ${this.mod.peers[i].tweets_earliest_ts}`
-					);
-					out_of_content = false;
-				}
-			}
+		if (tx_count == 0 && peer) {
 
-			if (out_of_content) {
-				this.hideLoader();
-
-				if (!document.querySelector('.saito-end-of-redsquare')) {
-					this.app.browser.addElementToSelector(
-						`<div class="saito-end-of-redsquare">no more tweets</div>`,
-						'.tweet-manager'
-					);
-				}
-				if (document.querySelector('#intersection-observer-trigger')) {
-					this.intersectionObserver.unobserve(
-						document.querySelector('#intersection-observer-trigger')
-					);
-				}
+			if (peer.tweets_earliest_ts) {
+				console.log(`${peer.publicKey} still has tweets as early as ${peer.tweets_earliest_ts}, keep querying...`);
+				this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this), peer);
 			} else {
-				console.log('Keep looking for tweets');
-				this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this));
+
+				//If all peers have returned 0, then clear feed...
+
+				let out_of_content = true;
+
+				for (let i = 0; i < this.mod.peers.length; i++) {
+					if (this.mod.peers[i].tweets_earliest_ts) {
+						out_of_content = false;
+					}
+				}
+
+				if (out_of_content){
+					this.hideLoader();
+
+					if (!document.querySelector('.saito-end-of-redsquare')) {
+						this.app.browser.addElementToSelector(
+							`<div class="saito-end-of-redsquare">no more tweets</div>`,
+							'.tweet-manager'
+						);
+					}
+					if (document.querySelector('#intersection-observer-trigger')) {
+						this.intersectionObserver.unobserve(
+							document.querySelector('#intersection-observer-trigger')
+						);
+					}
+				}else{
+					console.log("Waiting on other peers to respond");
+				}
 			}
 		} else {
 			this.hideLoader();
@@ -495,8 +497,9 @@ class TweetManager {
 				document
 					.querySelector(`.tweet-${tweet.tx.signature}`)
 					.classList.add('highlight-tweet');
+
+				post.render(`.tweet-${tweet.tx.signature}`);			
 			}
-			post.render(`.tweet-${tweet.tx.signature}`);			
 		}
 
 		// query the whole thread
@@ -514,9 +517,10 @@ class TweetManager {
 				document
 					.querySelector(`.tweet-${tweet.tx.signature}`)
 					.classList.add('highlight-tweet');
+
+				post.render(`.tweet-${tweet.tx.signature}`);
 			}
 
-			post.render(`.tweet-${tweet.tx.signature}`);
 
 			this.hideLoader();
 		});
