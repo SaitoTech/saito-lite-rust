@@ -114,9 +114,6 @@ class RedSquare extends ModTemplate {
     this.notifications_last_viewed_ts = 0;
     this.notifications_number_unviewed = 0;
 
-    this.tweets_latest_ts = 0;
-    this.tweets_earliest_ts = new Date().getTime();
-
     this.allowed_upload_types = ["image/png", "image/jpg", "image/jpeg"];
 
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
@@ -653,13 +650,9 @@ class RedSquare extends ModTemplate {
  
       //
       // Get tweets from my peers
-      // will hit up local archive, central server and any peers around... 
       console.log("REDSQUARE: query peers on initial load");
       this.loadTweets("later", (tx_count)=> {
-        console.log("REDSQUARE CALLBACK: ", this.manager.mode);
-        if (this.rendered && this.manager.mode == "tweets"){
-          this.app.connection.emit("redsquare-home-render-request", true);  
-        }
+        this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
       });
 
     }
@@ -881,7 +874,7 @@ class RedSquare extends ModTemplate {
   // via the manager.
   //
 
-  loadTweets(created_at = "earlier", mycallback) {
+  loadTweets(created_at = "earlier", mycallback, peer = null) {
     //
     // Instead of just passing the txs to the callback, we count how many of these txs
     // are new to us so we can have a better UX
@@ -904,7 +897,7 @@ class RedSquare extends ModTemplate {
           created_at == "later" &&
           this.peers[i].publicKey == this.publicKey &&
           this.peers[i].tweets_latest_ts > 0
-        )
+        ) && (!peer || peer.publicKey == this.peers[i].publicKey)
       ) {
 
         peer_count++;
@@ -968,7 +961,7 @@ class RedSquare extends ModTemplate {
             }
 
             if (mycallback) {
-              mycallback(count);
+              mycallback(count, this.peers[i]);
             }
           },
           this.peers[i].peer
@@ -991,10 +984,6 @@ class RedSquare extends ModTemplate {
       }
       if (txs[z].updated_at > peer.tweets_latest_ts) {
         peer.tweets_latest_ts = txs[z].updated_at;
-
-        if (peer.publicKey == this.publicKey) {
-          this.tweets_latest_ts = txs[z].updated_at;
-        }
       }
 
       this.addNotification(txs[z]);
@@ -1166,6 +1155,10 @@ class RedSquare extends ModTemplate {
       return;
     }
 
+    this.app.connection.emit("redsquare-insert-loading-message", "Checking peers for more replies...");
+
+    let peer_count = this.peers.length;
+
     for (let i = 0; i < this.peers.length; i++) {
       let obj = {
         field1: "RedSquare",
@@ -1183,6 +1176,21 @@ class RedSquare extends ModTemplate {
               this.addTweet(txs[z], "tweet_thread");
             }
           }
+
+          if (this.peers[i].peer !== "localhost"){
+            this.app.connection.emit("redsquare-insert-loading-message", `Processing ${txs.length} tweets returned from ${this.app.keychain.returnUsername(this.peers[i].publicKey)}`);  
+          }else{
+            this.app.connection.emit("redsquare-insert-loading-message", `Processing ${txs.length} tweets from my archive`);  
+          }
+          
+          peer_count--;
+          setTimeout(()=>{
+            if (peer_count > 0) {
+             this.app.connection.emit("redsquare-insert-loading-message", `Still waiting on ${peer_count} peer(s)...`);   
+            } else {
+              this.app.connection.emit("redsquare-remove-loading-message");
+            }
+          }, 1500);
 
           if (mycallback) {
             mycallback(txs);
@@ -2297,10 +2305,6 @@ class RedSquare extends ModTemplate {
             txs[z].decryptMessage(this.app);
             this.addNotification(txs[z]);
             this.addTweet(txs[z], "local_cache");
-
-            if (txs[z].updated_at > this.tweets_latest_ts) {
-              this.tweets_latest_ts = txs[z].updated_at;
-            }
           }
         }
 
