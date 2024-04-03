@@ -105,7 +105,7 @@ constructor(app) {
  
  async render(app) {
 
-    if (this.browser_active == 0) { return; }
+    if (this.browser_active == 0 || this.initialize_game_run) { return; }
 
     await this.injectGameHTML(htmlTemplate());
 

@@ -81,7 +81,7 @@ class Beleaguered extends OnePlayerGameTemplate {
 
 	async render(app) {
 		//console.trace("Initialize HTML");
-		if (!this.browser_active || !this.app.BROWSER) {
+		if (!this.browser_active || !this.app.BROWSER || this.initialize_game_run) {
 			return;
 		}
 

@@ -49,7 +49,7 @@ class Thirteen extends GameTemplate {
 	}
 
 	async render(app) {
-		if (this.browser_active == 0) {
+		if (this.browser_active == 0 || this.initialize_game_run) {
 			return;
 		}
 

@@ -139,6 +139,10 @@ class Pandemic extends GameTemplate {
 
 	async render(app) {
 
+		if (!this.browser_active || this.initialize_game_run){
+			return;
+		}
+
 		await this.injectGameHTML(htmlTemplate());
 
 		await super.render(app);
