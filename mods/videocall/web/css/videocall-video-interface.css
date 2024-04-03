@@ -775,6 +775,7 @@ video#local {
 	border: 1px solid #e5e5e59d;
 	border-radius: var(--saito-border-radius);
 	width: 100%;
+	max-width: 90vh;
 	display: flex;
 }
 
