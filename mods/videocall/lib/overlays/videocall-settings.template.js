@@ -75,13 +75,6 @@ const VideoCallSettingsTemplate = (display_mode, mod) => {
               </label>
             </div>
 
-            <hr>
-            
-            <div class="videocall-option-label">
-              <i class="fa-solid fa-sliders"></i>
-              <div class="videocall-option-name advanced-settings-link">Module Settings</div>
-            </div>
-
           </div>
          
       `;
