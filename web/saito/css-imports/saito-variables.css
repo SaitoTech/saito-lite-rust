@@ -3,177 +3,312 @@ font imports
 -----------------------------------------------------------------*/
 
 @font-face {
-  font-family: "visuelt-black";
-  src: url("/saito/fonts/visuelt-black.eot");
-  src: url("/saito/fonts/visuelt-black.eot?#iefix") format("embedded-opentype"), url("/saito/fonts/visuelt-black.woff2") format("woff2"), url("/saito/fonts/visuelt-black.woff") format("woff"), url("/saito/fonts/visuelt-black.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
+    font-family: "visuelt-black";
+    src: url(/saito/fonts/visuelt-black.eot);
+    src: url(/saito/fonts/visuelt-black.eot?#iefix) format("embedded-opentype"), url(/saito/fonts/visuelt-black.woff2) format("woff2"), url(/saito/fonts/visuelt-black.woff) format("woff"), url(/saito/fonts/visuelt-black.ttf) format("truetype");
+    font-weight: normal;
+    font-style: normal
+    }
 
 @font-face {
-  font-family: "visuelt-light";
-  src: url("/saito/fonts/visuelt-light.eot");
-  src: url("/saito/fonts/visuelt-light.eot?#iefix") format("embedded-opentype"), url("/saito/fonts/visuelt-light.woff2") format("woff2"), url("/saito/fonts/visuelt-light.woff") format("woff"), url("/saito/fonts/visuelt-light.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
+    font-family: "visuelt-light";
+    src: url(/saito/fonts/visuelt-light.eot);
+    src: url(/saito/fonts/visuelt-light.eot?#iefix) format("embedded-opentype"), url(/saito/fonts/visuelt-light.woff2) format("woff2"), url(/saito/fonts/visuelt-light.woff) format("woff"), url(/saito/fonts/visuelt-light.ttf) format("truetype");
+    font-weight: normal;
+    font-style: normal
+    }
 
 @font-face {
-  font-family: "visuelt-medium";
-  src: url("/saito/fonts/visuelt-medium.eot");
-  src: url("/saito/fonts/visuelt-medium.eot?#iefix") format("embedded-opentype"), url("/saito/fonts/visuelt-medium.woff2") format("woff2"), url("/saito/fonts/visuelt-medium.woff") format("woff"), url("/saito/fonts/visuelt-medium.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
+    font-family: "visuelt-medium";
+    src: url(/saito/fonts/visuelt-medium.eot);
+    src: url(/saito/fonts/visuelt-medium.eot?#iefix) format("embedded-opentype"), url(/saito/fonts/visuelt-medium.woff2) format("woff2"), url(/saito/fonts/visuelt-medium.woff) format("woff"), url(/saito/fonts/visuelt-medium.ttf) format("truetype");
+    font-weight: normal;
+    font-style: normal
+    }
 
 @font-face {
-  font-family: "p-word";
-  src: url("/saito/fonts/password.ttf") format("truetype");
-}
+    font-family: "p-word";
+    src: url(/saito/fonts/password.ttf) format("truetype")
+    }
 
+/*changed - 1*/
 :root {
-  --saito-vh: 1vh;
-  --saito-font: "visuelt-light";
-  --saito-header-height: 7rem; /*formerly 5em*/
-  --saito-width: 1270px;
-  --saito-left-sidebar-width: 26rem;
-  --saito-main-appspace-width: 70rem;
-  /* static colors for all themes */
-  --saito-gray: #eaeaef45;
-  --saito-gray-mid: #444;
-  --saito-primary: #f71f3d;
-  --saito-complement: #1ff7d9;
-  --saito-green: #3df71f;
-  --saito-blue: #1f3df7;
-  --saito-red: #f71f3d;
-  --saito-secondary: #ff8235;
-  --saito-white: #fff;
-  --saito-black: #000;
-  --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%), linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000), linear-gradient(180deg, #e9ce93, #f71f3d);
-  --saito-primary-background: linear-gradient(45deg, var(--saito-primary) 0%, var(--saito-secondary) 55%, var(--saito-primary) 100%) transparent no-repeat left top / 400% auto;
-  --saito-primary-transparent: #f71f3d88;
-  /* variable colors overridden in themes */
-  --saito-bubble-shadow: #0006;
-  --saito-bubble-background: #efefef;
-  --saito-font-color: #3d3d3d;
-  --saito-font-color-heavy: #222;
-  --saito-font-color-light: #888;
-  --saito-font-color-inverse: #efefef;
-  --saito-profile-background: #fff;
-  --saito-border-color: #c5c5c5bb;
-  --saito-border-color-dark: #a5a5a5bb;
-  --saito-border: 1px solid #c5c5c5bb;
-  --saito-border-radius: 0.5rem;
-  --saito-background-color: #fff;
-  --saito-background-light: #f4f4f4;
-  --saito-sidebar-element-background: #efefef66;
-  --saito-gray-transparent: #5555550a;
-  --saito-hover-background: #00000045;
-  --saito-black-faded: #1c1c23b5;
-  --saito-dark-shim: #0009;
-  --saito-light-shim: #0002;
-  --saito-arcade-overlay-background: #11101ed1;
-  --saito-box-shadow: 0px 12px 17px 2px hsla(0, 0%, 0%, 0.14), 0px 5px 22px 4px hsla(0, 0%, 0%, 0.12), 0px 7px 8px -4px hsla(0, 0%, 0%, 0.2);
-  --saito-form-box-shadow:  1px 1px 5px var(--saito-border-color);
-  --saito-arcade-background: var(--saito-background-color);
-  --saito-button-background: var(--saito-primary);
-  --saito-arcade-header-background: var(--dreamscape);
-  --saito-modal-background: var(--dreamscape);
-  --saito-font-color-dark-modal: #efefef;
-  --saito-faded-icon-font: #6a6a6a;
-  --saito-faded-icon-border: #d7d7d7;
-  --saito-heart-animation: url('/redsquare/images/heart.png');
-  --saito-heart-animation-clicked: url('/redsquare/images/heart-all-red.png');
+    /* Variables! */
+/* BASIC FORMATTING */
+--saito-vh: 1vh;
+    --saito-width: 1270px;
+    --saito-left-sidebar-width: 26rem;
+    --saito-main-appspace-width: 70rem;
+    /* NEW SECTIONS */
+/* FONTS */
+--saito-font-default: "visuelt-light";
+    --saito-font-thin: "visuelt-thin";
+    --saito-font-extralight: "visuelt-extralight";
+    --saito-font-medium: "visuelt-medium";
+    /* COLOURS */
+--saito-color-primary: #f71f3d;
+    --saito-color-secondary: #ff8235;
+    /* potential change to #baaaaa */
+--saito-color-highlight: #fbd8dc;
+    --saito-color-faded: #baaaaa;
+    --saito-color-contrast: #3d3d3d;
+    --saito-color-white: #fff;
+    --saito-color-black: #000;
+    --saito-color-heavy: #222;
+    --saito-color-light: #888;
+    --saito-color-inverse: #efefef;
+    /* BACKGROUND COLORS -only */
+--saito-background-color: #fff /*variable*/;
+    --saito-background-light: #f4f4f4;
+    --saito-background-modal: #f4f4f4;
+    --saito-background-arcade: var(--saito-background-color);
+    --saito-arcade-header-background: var(--saito-dreamscape);
+    /* should be named: --saito-background-arcade-header: var(--saito-dreamscape);
+    but for some reason causes issues! */
+--saito-bubble-background: #efefef;
+    --saito-background-overlay: none;
+    /* only used about the profile page as an overlay on top of the banner image */
+--saito-primary-background-gradient: linear-gradient(45deg, var(--saito-color-primary) 0%, var(--saito-color-secondary) 75%, var(--saito-color-primary) 100%) no-repeat left top/500% auto;
+    /* ALL changed to soften the gradient */
+/* SHADOWS */
+--saito-box-shadow: 0 12px 17px 2px hsla(0, 0%, 0%, 0.14), 0 5px 22px 4px hsla(0, 0%, 0%, 0.12), 0 7px 8px -4px hsla(0, 0%, 0%, 0.2);
+    --saito-form-box-shadow: 1px 1px 5px var(--saito-box-order-color);
+    --saito-shadow-flat: 0 0 3px;
+    --saito-chat-glow: 0 0 10px rgba(255, 255, 255, 0.3);
+    /* BORDERS */
+--saito-sidebar-border-color: var(--saito-color-primary);
+    --saito-border-color-primary: var(--saito-color-highlight-light);
+    --saito-border-color-secondary: var(--saito-color-highlight-dark);
+    --saito-chat-popup-border-thickness: 2px;
+    --saito-border-thickness-none: 0;
+    --saito-border-thickness-thin: 1px;
+    --saito-border-thickness-thick: 2px;
+    --saito-sidebar-border-thickness: 0;
+    /* CORNERS */
+--saito-border-radius: var(--saito-corners-round);
+    /* set default */
+--saito-corners-sharp: 0.3rem;
+    --saito-corners-rigid: 0.5rem;
+    --saito-corners-round: 1.5rem;
+    --saito-corners-voluptuous: 2.5rem;
+    --saito-corners-obscene: 4rem;
+    --saito-border-radius-top-only: 1.5rem 1.5rem 0 0;
+    --saito-border-radius-topleft-only: 1.5rem 0 0 0;
+    /* BUTTONS */
+--saito-button-font-color-big: var(--saito-color-highlight);
+    --saito-button-font-color-medium: var(--saito-color-black-faded);
+    --saito-button-font-color-tiny: var(--saito-color-primary);
+    --saito-button-border-color-big: var(--saito-color-highlight);
+    --saito-button-background-color-big: var(--saito-color-faded);
+    /* temp using old button for post */
+--saito-button-background-post: linear-gradient(45deg, var(--saito-color-primary) 0%, var(--saito-color-secondary) 55%, var(--saito-color-primary) 100%) transparent no-repeat left top/400% auto;
+    --saito-button-border-thickness-big: 1px;
+    --saito-button-border-thickness-medium: 1px;
+    --saito-button-border-thickness-tiny: 1px;
+    /* on hover */
+--saito-button-hover-font-color-big: var(--saito-color-primary);
+    --saito-button-hover-font-color-medium: var(--saito-color-contrast);
+    --saito-button-hover-font-color-tiny: var(--saito-color-secondary);
+    --saito-button-hover-border-color-big: var(--saito-color-highlight);
+    --saito-button-hover-border-color-medium: var(--saito-color-heavy);
+    --saito-button-hover-background-color-big: var(--saito-dreamscape);
+    --saito-button-hover-background-color-medium: var(--saito-color-inverse);
+    --saito-button-hover-border-thickness-tiny: 1px;
+    --saito-button-hover-border-thickness-big: 0;
+    --saito-button-hover-border-thickness-medium: 1px;
+    /* TRANSITIONS */
+--transition-instant: none;
+    --transition-short: 0.2s;
+    --transition-medium: 0.5s;
+    --transition-long: 0.8s;
+    /* HEADER */
+--saito-header-height: var(--saito-header-height-normal);
+    --saito-header-height-thin: 5rem;
+    --saito-header-height-normal: 7rem;
+    --saito-header-height-fat: 10rem;
+    /* IDENTICON */
+--saito-identicon-border-thickness: var(--saito-identicon-border-thickness-thick);
+    --saito-identicon-border-thickness-thin: 1px;
+    --saito-identicon-border-thickness-normal: 2px;
+    --saito-identicon-border-thickness-thick: 3px;
+    --saito-identicon-border-color: var(--saito-identicon-border-color-primary);
+    --saito-identicon-border-color-primary: var(--saito-color-primary);
+    --saito-identicon-border-color-secondary: var(--saito-color-primary);
+    --saito-identicon-border-radius: var(--saito-identicon-border-radius-round);
+    --saito-identicon-border-radius-round: 20rem;
+    --saito-identicon-border-radius-squat: 10rem;
+    --saito-identicon-border-radius-square: 0.2rem;
+    /* OLD below */
+/* static colors for all themes */
+/*  --saito-button-background-post: linear-gradient(45deg, var(--saito-color-primary) 0%, var(--saito-color-secondary) 55%, var(--saito-color-primary) 100%) transparent no-repeat left top / 400% auto;
+    */
+/* variable colors overridden in themes */
+--saito-faded-icon-font: #6a6a6a;
+    --saito-faded-icon-border: #d7d7d7;
+    --saito-heart-animation: url(/redsquare/images/heart.png);
+    --saito-heart-animation-clicked: url(/redsquare/images/heart-all-red.png);
 }
 
+/*changed - 1*/
 html[data-theme="dark"] {
-  --saito-primary: #e05b08;
-  --saito-primary-transparent: #e05b0888;
-  --saito-secondary: #c1aa00;
-  --saito-font-color: #dedede;
-  --saito-font-color-heavy: #ddd;
-  --saito-font-color-light: #aaa;
-  --saito-font-color-inverse: #010101;
-  --saito-profile-background: #222;
-  --saito-border-color: #555;
-  --saito-border-color-dark: #666;
-  --saito-border: 1px solid #c5c5c5bb;
-  --saito-background-color: #211f25;
-  --saito-background-light: #333;
-  --saito-sidebar-element-background: #0003;
-  --saito-gray-transparent: #88888818;
-  --saito-box-shadow: 0 0 0 1px var(--saito-border-color);
-  --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color);
-  --saito-arcade-header-background: var(--saito-background-color);
-  --saito-button-background: var(--saito-primary);
-  --saito-bubble-background: #111;
-  --saito-bubble-shadow: #000c;
-  --saito-modal-background: #2e2636;
-  --saito-font-color-dark-modal: #efefef;
-  --saito-faded-icon-font: #bdbaba;
-  --saito-faded-icon-border: #000;
-  --saito-heart-animation: url('/redsquare/images/heart-orange.png');
-  --saito-heart-animation-clicked: url('/redsquare/images/heart-all-orange.png');
+    /* NEW SECTIONS */
+/* FONTS */
+--saito-font-default: "visuelt-light";
+    --saito-font-thin: "visuelt-thin";
+    --saito-font-extralight: "visuelt-extralight";
+    --saito-font-medium: "visuelt-medium";
+    /* COLOURS */
+--saito-color-primary: #363636;
+    --saito-color-secondary: #baaaaa;
+    /* potential change to #baaaaa */
+--saito-color-highlight: #fbd8dc;
+    --saito-color-faded: #baaaaa;
+    --saito-color-contrast: #dedede;
+    --saito-color-white: #fff;
+    --saito-color-black: #000;
+    --saito-color-heavy: #ddd;
+    --saito-color-light: #aaa;
+    --saito-color-inverse: #141414;
+    /* BACKGROUND COLORS -only */
+--saito-background-color: #000 /*variable*/;
+    --saito-background-light: #333;
+    --saito-background-modal: #22272a;
+    --saito-background-sidebar-element: #22272a;
+    /*
+      linear-gradient(
+          45deg, 
+          #333333 0%, 
+          rgba(255, 255, 255, 0.1) 55%, 
+          #2b2b2b 100%
+      ) no-repeat left top / 400% auto;
+    */
+--saito-background-arcade: var(--saito-background-color);
+    --saito-arcade-header-background: var(--saito-dreamscape);
+    /* should be named: --saito-background-arcade-header: var(--saito-dreamscape);
+    but for some reason causes issues! */
+--saito-bubble-background: var(--sait-font-color-inverse);
+    --saito-background-overlay: none;
+    /* only used about the profile page as an overlay on top of the banner image */
+--saito-dreamscape: none;
+    --saito-background-overlay: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+    --saito-primary-background-gradient: none;
+    /* SHADOWS */
+--saito-box-shadow: 0 12px 17px 2px hsla(0, 0%, 0%, 0.14), 0 5px 22px 4px hsla(0, 0%, 0%, 0.12), 0 7px 8px -4px hsla(0, 0%, 0%, 0.2);
+    --saito-form-box-shadow: 1px 1px 5px var(--saito-box-order-color);
+    --saito-shadow-flat: 0 0 3px;
+    --saito-button-shadow-post: var(--saito-chat-glow);
+    /* BORDERS */
+--saito-border-color-primary: var(--saito-background-light);
+    --saito-border-color-secondary: var(--saito-color-highlight-light);
+    --saito-sidebar-border-color: var(--saito-color-primary);
+    --saito-chat-popup-border-thickness: 1px;
+    --saito-border-thickness-none: 0;
+    --saito-border-thickness-thin: 1px;
+    --saito-border-thickness-thick: 2px;
+    --saito-sidebar-border-thickness: 0;
+    /* CORNERS */
+--saito-border-radius: var(--saito-corners-round);
+    /* set default */
+--saito-corners-sharp: 0.3rem;
+    --saito-corners-rigid: 0.5rem;
+    --saito-corners-round: 1.5rem;
+    --saito-corners-voluptuous: 2.5rem;
+    --saito-corners-obscene: 4rem;
+    --saito-border-radius-top-only: 1.5rem 1.5rem 0 0;
+    --saito-border-radius-topleft-only: 1.5rem 0 0 0;
+    /* BUTTONS */
+--saito-button-font-color-big: var(--saito-color-highlight);
+    --saito-button-font-color-medium: var(--saito-font-color-faded);
+    --saito-button-font-color-tiny: var(--saito-font-color-white);
+    --saito-button-border-color-big: var(--saito-color-highlight);
+    --saito-button-background-color-big: var(--saito-color-faded);
+    --saito-button-background-post: linear-gradient(45deg, #333 0%, rgba(255, 255, 255, 0.1) 55%, #2b2b2b 100%) no-repeat left top/400% auto;
+    /* temp using old button for post */
+--saito-button-border-thickness-big: 1px;
+    --saito-button-border-thickness-medium: 1px;
+    --saito-button-border-thickness-tiny: 1px;
+    /* on hover */
+--saito-button-hover-font-color-big: var(--saito-color-primary);
+    --saito-button-hover-font-color-medium: var(--saito-color-secondary);
+    --saito-button-hover-font-color-tiny: var(--saito-color-secondary);
+    --saito-button-hover-border-color-big: var(--saito-border-color-secondary);
+    --saito-button-hover-border-color-medium: var(--saito-color-heavy);
+    --saito-button-hover-background-color-big: var(--saito-color-secondary);
+    --saito-button-hover-background-color-medium: var(--saito-color-inverse);
+    --saito-button-hover-border-thickness-tiny: 1px;
+    --saito-button-hover-border-thickness-big: 0;
+    --saito-button-hover-border-thickness-medium: 1px;
+    /* TRANSITIONS */
+--transition-instant: none;
+    --transition-short: 0.2s;
+    --transition-medium: 0.5s;
+    --transition-long: 0.8s;
+    /* HEADER */
+--saito-header-height: var(--saito-header-height-normal);
+    --saito-header-height-thin: 5rem;
+    --saito-header-height-normal: 7rem;
+    --saito-header-height-fat: 10rem;
+    /* IDENTICON */
+--saito-identicon-border-thickness: var(--saito-identicon-border-thickness-thick);
+    --saito-identicon-border-thickness-thin: 1px;
+    --saito-identicon-border-thickness-normal: 2px;
+    --saito-identicon-border-thickness-thick: 3px;
+    --saito-identicon-border-color: var(--saito-identicon-border-color-primary);
+    --saito-identicon-border-color-primary: var(--saito-color-primary);
+    --saito-identicon-border-color-secondary: var(--saito-color-primary);
+    --saito-identicon-border-radius: var(--saito-identicon-border-radius-round);
+    --saito-identicon-border-radius-round: 20rem;
+    --saito-identicon-border-radius-squat: 10rem;
+    --saito-identicon-border-radius-square: 0.2rem;
 }
 
+/*changed - 1*/
 html[data-theme="sangre"] {
-  --saito-primary: #b70b0b;
-  --saito-primary-transparent: #b70b0b88;
-  --saito-secondary: #ff8235;
-  --saito-font-color: #dedede;
-  --saito-font-color-heavy: #ddd;
-  --saito-font-color-light: #aaa;
-  --saito-font-color-inverse: #010101;
-  --saito-profile-background: #222;
-  --saito-border-color: #555;
-  --saito-border-color-dark: #666;
-  --saito-border: 1px solid #c5c5c5bb;
-  --saito-background-color: #1f1a1b;
-  --saito-background-light: #333;
-  --saito-sidebar-element-background: #0003;
-  --saito-gray-transparent: #88888818;
-  --saito-box-shadow: 0 0 0 1px var(--saito-border-color);
-  --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color);
-  --saito-arcade-header-background: var(--saito-background-color);
-  --saito-button-background: var(--saito-primary);
-  --saito-bubble-shadow: #000c;
-  --saito-bubble-background: #111;
-  --saito-modal-background: #2e2636;
-  --saito-font-color-dark-modal: #efefef;
-  --saito-faded-icon-font: #bdbaba;
-  --saito-faded-icon-border: #000;
+    --saito-primary: #b70b0b;
+    --saito-secondary: #ff8235;
+    --saito-color-contrast: #dedede;
+    --saito-color-heavy: #ddd;
+    --saito-color-light: #aaa;
+    --saito-color-inverse: #010101;
+    --saito-profile-background: #222;
+    --saito-border-color: #555 /*variable*/;
+    --saito-border-color-dark: #666;
+    --saito-background-color: #1f1a1b /*variable*/;
+    --saito-background-light: #333;
+    --saito-box-shadow: 0 0 0 1px var(--saito-border-color-primary);
+    --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color-primary);
+    --saito-arcade-header-background: var(--saito-background-color);
+    --saito-button-background: var(--saito-color-primary);
+    --saito-bubble-background: #111;
+    --saito-modal-background: #2e2636;
+    --saito-faded-icon-font: #bdbaba;
+    --saito-faded-icon-border: #000;
+    --saito-background-overlay: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
+    --saito-sidebar-border: 0 solid var(--saito-color-primary);
 }
 
-
+/*changed - 1*/
 html[data-theme="arcade"] {
-  --saito-arcade-background: linear-gradient(-45deg, #0f0020 50%, #08000b 100%);
-  --saito-primary: #639;
-  --saito-primary-transparent: #6397;
-  /* --dreamscape: #84a; */
-  --saito-secondary: #85b;
-  --saito-font-color: #dedede;
-  --saito-font-color-heavy: #ddd;
-  --saito-font-color-light: #aaa;
-  --saito-font-color-inverse: #010101;
-  --saito-profile-background: #22222269;
-  --saito-border: 1px solid #c5c5c5bb;
-  --saito-border-color: #426;
-  --saito-background-color: #180c24;
-  --saito-background-light: #140a1e;
-  --saito-sidebar-element-background: #0004;
-  --saito-hover-background: #6395; /* A slightly transparent version of saito-primary, good contrast to normal background */
-  --saito-gray-transparent: #88888818;
-  --saito-background-shim: #0008;
-  --saito-dark-shim: #0009;
-  --saito-light-shim: #0001;
-  --saito-box-shadow: 0 0 0 1px var(--saito-border-color);
-  --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color);
-  --saito-button-background: linear-gradient(45deg, #540e81, #b539e8);
-  --saito-bubble-shadow: #000c;
-  --saito-bubble-background: #213;
-  --saito-arcade-header-background: transparent;
-  --saito-modal-background: var(--saito-background-light);
-  --saito-font-color-dark-modal: #efefef;
-  --saito-heart-animation: url('/redsquare/images/heart-orange.png');
-  --saito-heart-animation-clicked: url('/redsquare/images/heart-all-orange.png');
+    --saito-background-arcade: linear-gradient(-45deg, #0f0020 50%, #08000b 100%);
+    --saito-primary: #639;
+    /* disabled long ago --dreamscape: #84a;
+    */
+--saito-secondary: #85b;
+    --saito-color-contrast: #dedede;
+    --saito-color-heavy: #ddd;
+    --saito-color-light: #aaa;
+    --saito-color-inverse: #010101;
+    --saito-border-color: #426 /*variable*/;
+    --saito-background-color: #180c24 /*variable*/;
+    --saito-background-light: #140a1e;
+    /* A slightly transparent version of saito-primary, good contrast to normal background */
+--saito-box-shadow: 0 0 0 1px var(--saito-border-color-primary);
+    --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color-primary);
+    --saito-button-background: linear-gradient(45deg, #540e81, #b539e8);
+    --saito-bubble-background: #213;
+    --saito-arcade-header-background: transparent;
+    --saito-modal-background: var(--saito-background-light);
+    --saito-heart-animation: url(/redsquare/images/heart-orange.png);
+    --saito-heart-animation-clicked: url(/redsquare/images/heart-all-orange.png);
 }
+

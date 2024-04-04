@@ -1,42 +1,36 @@
 .saito-scheduler {
-  min-width: 50rem;
-  background-color: #fff;
-  border-radius: 1rem;
-  padding: 3rem;
+    min-width: 50rem;
+    background-color: #fff /*variable*/;
+    border-radius: 1rem;
+    padding: 3rem;
 }
 
 .saito-scheduler-button {
-  margin-top: 2rem;
-  margin-left: 0rem;
+    margin-top: 2rem;
+    margin-left: 0rem;
 }
 
 .saito-select-btn {
-  width: 100%;
+    width: 100%;
 }
 
-
+/*changed - 1*/
 input#schedule-datetime-input, .saito-scheduler-natural-time {
-  width: 100%;
-  border: none;
-  border-bottom: 1px solid var(--saito-border-color);
-  border-radius: 0;
-  height: 3rem;
-  line-height: 3rem;
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid var(--saito-border-color-primary);
+    border-radius: 0;
+    height: 3rem;
+    line-height: 3rem;
 }
-
-
 
 /*  Responsive */
 
-
 @media screen and (max-width: 503px) {
-  .saito-scheduler { 
-    min-width: auto;
-  }
-}
+    .saito-scheduler {
+        min-width: auto
+        }
+    }
 
 
 
-@media screen and (max-width: 396px) {
-
-}

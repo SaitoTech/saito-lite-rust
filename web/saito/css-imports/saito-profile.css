@@ -1,141 +1,145 @@
 .saito-profile {
-  min-width: 0;
-  width: 100%;
+    min-width: 0;
+    width: 100%;
 }
 
 .saito-profile-menu.float {
-  margin-left: 0.2rem;
-  min-height: 4rem;
+    margin-left: 0.2rem;
+    min-height: 4rem;
 }
 
 .saito-profile-menu.float > div {
-  float: left;
-  margin-right: min(5%, 5rem); /*Allow to shrink on narrow screens*/
-  cursor: pointer;
-  padding: 1rem;
+    float: left;
+    margin-right: min(5%, 5rem);
+    /*Allow to shrink on narrow screens*/
+cursor: pointer;
+    padding: 1rem;
 }
 
+/*changed - 1*/
 .saito-profile-menu > div:hover {
-  color: var(--saito-white);
-  background-color: var(--saito-primary);
+    color: var(--saito-color-white);
+    background-color: var(--saito-color-primary);
 }
 
+/*changed - 1*/
 .saito-profile-menu .active {
-  text-decoration: underline dashed;
-  text-underline-offset: 0.5rem;
-  /*border-bottom: 1px dashed var(--saito-font-color);*/
+    text-decoration: underline dashed;
+    text-underline-offset: 0.5rem;
+    /*border-bottom: 1px dashed var(--saito-color-contrast);
+    */;
 }
 
-
+/*changed - 1*/
 .saito-profile-cover {
-  width: 100%;
-  height: min(15rem, 12vh);
-  background: url("https://pbs.twimg.com/profile_banners/842988756/1679408451/1080x360");
-  background-size: cover;
+    width: 100%;
+    height: min(15rem, 12vh);
+    background: var(--saito-background-overlay), url(https://pbs.twimg.com/profile_banners/842988756/1679408451/1080x360);
+    background-size: cover;
+    border-radius: var(--saito-border-radius-top-only);
 }
 
 .saito-profile-identicon {
-  border: 3px solid var(--saito-background-color);
-  width: 10rem;
-  height: 10rem;
-  border-radius: 5%;
-  margin-top: -4.5rem;
-  z-index: 1;
-  margin-left: 1rem;
+    border: 3px solid var(--saito-background-color);
+    width: 10rem;
+    height: 10rem;
+    border-radius: 5%;
+    margin-top: -4.5rem;
+    z-index: 1;
+    margin-left: 1rem;
 }
 
 .saito-profile-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin: 2rem 0 0.5rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 2rem 0 0.5rem 1.2rem;
 }
-
 
 .saito-profile-info .saito-username {
-  font-size: 1.8rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    font-size: 1.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
+/*changed - 1*/
 .saito-follow {
-  font-size: 1.5rem;
-  color: var(--saito-font-color-light);
-  display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
-  cursor: pointer;
+    font-size: 1.5rem;
+    color: var(--saito-color-light);
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    cursor: pointer;
 }
 
-.saito-follow-count{
-  color: var(--saito-font-color-heavy);
-  font-weight: bold;
+/*changed - 1*/
+.saito-follow-count {
+    color: var(--saito-color-heavy);
+    font-weight: bold;
 }
-
-
 
 .saito-profile-options-row {
-  display: flex; 
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  height: 5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 5rem;
 }
 
-.saito-profile-icons { 
-  display: flex; 
-  flex-direction: row;
-  gap: 2rem;
-  width: fit-content;
+.saito-profile-icons {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    width: fit-content;
 }
 
 .saito-profile-icons i {
-  font-size: 2.4rem;
-  line-height: 4rem;
-  cursor: pointer;
-  color: var(--saito-faded-icon-font);
-  border: 1px solid var(--saito-faded-icon-border);
-  /* circular */
-  background: var(--saito-background-light);
-  padding: 0rem 0.6rem;
-  border-radius: 50%;
+    font-size: 2.4rem;
+    line-height: 4rem;
+    cursor: pointer;
+    color: var(--saito-faded-icon-font);
+    border: 1px solid var(--saito-faded-icon-border);
+    /* circular */
+background: var(--saito-background-light);
+    padding: 0rem 0.6rem;
+    border-radius: 50%;
 }
 
+/*changed - 1*/
 .saito-profile-follow-btn {
-  border: 1px solid var(--saito-font-color);
-  height: 4rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  text-align: center;
-  line-height: 4rem;
-  border-radius: 0.3rem;
-  color: var(--saito-font-color);
-  font-size: 1.1em;
-  cursor: pointer;
+    border: 1px solid var(--saito-color-contrast);
+    height: 4rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    text-align: center;
+    line-height: 4rem;
+    border-radius: var(--saito-corners-rigid);
+    color: var(--saito-color-contrast);
+    font-size: 1.1em;
+    cursor: pointer;
 }
 
+/*changed - 1*/
 .saito-profile-follow-btn:hover {
-  background: var(--saito-primary);
-  border: 1px solid var(--saito-primary);
-  color: #fff;
+    background: var(--saito-color-primary);
+    border: 1px solid var(--saito-color-primary);
+    color: #fff /*variable*/;
 }
 
-@media screen and (max-width: 600px){
-.saito-profile-identicon {
-  border-width: 2px;
-  width: 8rem;
-  height: 8rem;
-  margin-top: -4rem;
-  margin-left: 0.5rem;
-}
+@media screen and (max-width: 600px) {
+    .saito-profile-identicon {
+        border-width: 2px;
+        width: 8rem;
+        height: 8rem;
+        margin-top: -4rem;
+        margin-left: 0.5rem
+        }
+    .saito-profile-menu {
+        display: flex;
+        justify-content: space-between
+        }
+    .saito-profile-menu > div {
+        margin-right: unset
+        }
+    }
 
-.saito-profile-menu {
-  display: flex;
-  justify-content: space-between;
-}
-
-.saito-profile-menu > div {
-  margin-right: unset;
-}
-
-}

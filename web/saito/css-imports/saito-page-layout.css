@@ -1,137 +1,128 @@
 .saito-container {
-  width: 100vw;
-  height: calc(100% - var(--saito-header-height));
-  display: grid;
-  grid-template-columns: 30rem 5fr 33rem;
-  padding: 0 calc((100vw - var(--saito-width)) / 2);
-  z-index: 0;
-  margin: 0;
-  position: absolute;
-  top: var(--saito-header-height);
-  overflow-y: auto;
-  overflow-x: hidden;
-
+    width: 100vw;
+    height: calc(100% - var(--saito-header-height));
+    display: grid;
+    grid-template-columns: 30rem 5fr 33rem;
+    z-index: 0;
+    margin: 0;
+    position: absolute;
+    top: var(--saito-header-height);
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .saito-main {
-  min-width: 54rem;
-  margin: 0 2rem;
-  position: relative;
+    min-width: 54rem;
+    margin: 0 2rem;
+    position: relative;
 }
 
-
 .saito-sidebar.left {
-  position: sticky;
-  height: calc(100 * var(--saito-vh) - var(--saito-header-height));
-  top: 0;
-  padding: 1.5rem 1rem 1rem 0.5rem;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+    position: sticky;
+    height: calc(100 * var(--saito-vh) - var(--saito-header-height));
+    top: 0;
+    padding: 1.5rem 1rem 1rem 0.5rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .saito-sidebar.right {
-  padding: 1.5rem 1rem;
-  grid-column-start: 3;
-  grid-row: 1/2;
-  position: relative;
-  top: 0;
-  min-width: 30rem;
-  height: max-content;
-
+    padding: 1.5rem 1rem;
+    grid-column-start: 3;
+    grid-row: 1/2;
+    position: relative;
+    top: 0;
+    min-width: 30rem;
+    height: max-content;
 }
 
 .saito-sidebar h5 {
-  margin: 0;
+    margin: 0;
 }
 
+/*changed - 1*/
 .saito-sidebar-element {
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  box-shadow: 0px 2px 4px var(--saito-bubble-shadow);
-  background-color: var(--saito-sidebar-element-background);
+    padding: 0.5rem;
+    border: var(--saito-sidebar-border-thickness) solid var(--saito-sidebar-border-color);
+    border-radius: var(--saito-border-radius);
+    box-shadow: var(--saito-shadow-flat) var(--saito-shadow-flat-color);
+    /* box-shadow: 0px 1px 1px var(--saito-bubble-shadow);
+    */
+background-color: var(--saito-background-sidebar-element);
 }
-
 
 .sidebar-header {
-  display: flex;
-  align-items: center;
-  font-size: 22px;
-  justify-content: space-between;
-  height: 40px;
-  line-height: 24px;
-  padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    font-size: 22px;
+    justify-content: space-between;
+    height: 40px;
+    line-height: 24px;
+    padding: 0.5rem;
 }
-
 
 .sidebar-header > div {
-  width: fit-content;
-  cursor: pointer;
-  transition: transform 0.4s;
+    width: fit-content;
+    cursor: pointer;
+    transition: transform 0.4s;
 }
 
-.sidebar-header > div.sidebar-title{
-  cursor: default;
+.sidebar-header > div.sidebar-title {
+    cursor: default;
 }
-
 
 @media screen and (max-width: 1200px) {
-  .saito-container {
-    grid-template-columns: 1fr min-content;
-  }
-
-
-  .saito-sidebar.left {
-    display: none;
-    visibility: hidden;
-
-    /* What is the point of all this other stuff if we are hiding it???
-    position: fixed;
-    top: calc(var(--saito-header-height));
-    width: 35rem;
-    height: 100vh;
-    left: 0;
-    border-right: 1px solid var(--saito-primary);
-    */
-  }
-}
+    .saito-container {
+        grid-template-columns: 1fr min-content
+        }
+    .saito-sidebar.left {
+        display: none;
+        visibility: hidden;
+        /* What is the point of all this other stuff if we are hiding it???
+            position: fixed;
+            top: calc(var(--saito-header-height));
+            width: 35rem;
+            height: 100vh;
+            left: 0;
+            border-right: 1px solid var(--saito-primary);
+            */
+        }
+    }
 
 @media screen and (max-width: 900px) {
-  .saito-container {
-    padding: 0;
-    grid-template-columns: 1fr;
-  }
-
-  .saito-main {
-    min-width: 0;
-    width: 100%;
-    max-width: 100vw;
-    margin-left: 0rem !important;
-    margin-right: 0rem;
-    padding: 2rem 1rem 1rem 1rem;
-  }
-
-  /*
-  Hidden at 1200px, what does this do????
-  .saito-sidebar.left {
-    left: 0;
-    width: 100% !important;
-  }
-  */
-
-  .saito-sidebar.right {
-    visibility: hidden;
-    display: none;
-
+    .saito-container {
+        padding: 0;
+        grid-template-columns: 1fr
+        }
+    .saito-main {
+        min-width: 0;
+        width: 100%;
+        max-width: 100vw;
+        margin-left: 0rem !important;
+        margin-right: 0rem;
+        padding: 2rem 1rem 1rem 1rem
+        }
     /*
-    position: fixed;
-    left: 0;
-    width: 100%;
-    top: 0;
-    margin-top: var(--saito-header-height);
-    height: 100vh;
-    z-index: 12;
-    */
-  }
-}
+      Hidden at 1200px, what does this do????
+      .saito-sidebar.left {
+        left: 0;
+        width: 100% !important;
+      }
+      */
+    .saito-sidebar.right {
+        visibility: hidden;
+        display: none;
+        /*
+            position: fixed;
+            left: 0;
+            width: 100%;
+            top: 0;
+            margin-top: var(--saito-header-height);
+            height: 100vh;
+            z-index: 12;
+            */
+        }
+    }
+

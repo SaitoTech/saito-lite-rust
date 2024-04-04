@@ -1,11 +1,14 @@
+/*changed - 1*/
 .saito-crypto-deposit-container {
-	padding: 3rem;
-    background: var(--saito-background-color);
-    color: var(--saito-font-color);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    text-align: center;
+    align-items: center;
 }
 
 .saito-crypto-deposit-container {
-	    display: flex;
+    display: flex;
     flex-direction: column;
     gap: 2rem;
     text-align: center;
@@ -24,27 +27,27 @@
     margin-right: 0rem;
 }
 
+/*changed - 1*/
 #deposit-qrcode img {
-	height: auto;
-	max-width: 20rem;
-	width: 20vh;
-	border: 2px solid var(--saito-black);
-	padding: 0.5rem;
-	border-radius: 0.5rem;
-	background: var(--saito-white);
+    height: auto;
+    max-width: 20rem;
+    width: 20vh;
+    border: 2px solid var(--saito-color-black);
+    padding: 0.5rem;
+    border-radius: var(--saito-corners-rigid);
+    background: var(--saito-color-white);
 }
 
 .deposit-ticker {
-	font-size: 3rem;
+    font-size: 3rem;
 }
 
-
-
+/*changed - 1*/
 .crypto-activation-overlay {
     padding: 3rem 3rem;
     color: white;
     background-image: url(/saito/img/purple-background.jpg);
-    color: var(--saito-white);
+    color: var(--saito-color-white);
     line-height: 1.6em;
     font-size: 1.5em;
     width: auto;
@@ -52,37 +55,41 @@
     min-height: max-content;
     min-width: 40vw;
     max-width: 800px;
-    border-radius: 0.5rem;
-    border: 0.2rem solid var(--saito-border-color);
+    border-radius: var(--saito-corners-rigid);
+    border: 0.2rem solid var(--saito-border-color-primary);
     background-position: center;
     background-size: cover;
 }
+
 .activation-btn-grid {
     display: grid;
     justify-content: center;
     grid-template-columns: auto auto;
 }
+
 .crypto-activation-title {
     margin: 0.5em 0;
     font-size: 2em;
     font-weight: bold;
     margin-top: 2rem;
     text-align: center;
-}  
+}
+
 .crypto-activation-wallet {
     padding: 2rem;
     text-align: center;
 }
+
 .crypto-activation-message {
-    margin-top: 0px;
+    margin-top: 0;
     margin-bottom: 20px;
     margin-left: 2.5rem;
 }
+
 .crypto-activation-button {
     max-width: 200px;
     text-align: center;
     margin: 0;
     margin-top: 2rem;
 }
-
 

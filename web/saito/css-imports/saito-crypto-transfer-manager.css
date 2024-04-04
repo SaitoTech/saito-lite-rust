@@ -1,65 +1,68 @@
 .game-crypto-transfer-manager-container {
-  max-width: 95vw;
-  text-align:center;
-  color: white;
-  background-color:rgba(0,0,0,0.9);
-  border-radius: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.6rem;
-  width: auto;
-  padding: 3rem;
-  min-width: 55rem;
+    max-width: 95vw;
+    text-align: center;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.9);
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+    width: auto;
+    padding: 3rem;
+    min-width: 55rem;
 }
 
 .ignore {
-  font-size: 2rem;
-  margin-bottom: 1.5rem;
-  margin-top: 1rem;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    margin-top: 1rem;
 }
 
 input[type="checkbox"].ignore_checkbox {
-  border: 1px solid white;
-  vertical-align: bottom;
-  position: relative;
+    border: 1px solid white;
+    vertical-align: bottom;
+    position: relative;
 }
 
-.game-crypto-transfer-manager-container .stake-input-container{
-  margin: auto;
-  position: relative;
+.game-crypto-transfer-manager-container .stake-input-container {
+    margin: auto;
+    position: relative;
 }
 
+/*changed - 1*/
 .game-crypto-transfer-manager-container .stake {
-  background: none;
-  border: none;
-  color: var(--saito-white);
-  border-bottom: 1px solid var(--saito-white);
-  text-align: center;
-  padding: 1rem;
-  font-size: 4rem;
-  display: inline-block;
-  width: 18rem;
+    background: none;
+    border: none;
+    color: var(--saito-color-white);
+    border-bottom: 1px solid var(--saito-color-white);
+    text-align: center;
+    padding: 1rem;
+    font-size: 4rem;
+    display: inline-block;
+    width: 18rem;
 }
 
 .stake-input-container .crypto_msg {
-  display: flex;
-  flex-direction: row-reverse;
-  margin-top: 0.5rem;
-  font-style: italic;
+    display: flex;
+    flex-direction: row-reverse;
+    margin-top: 0.5rem;
+    font-style: italic;
 }
+
 .stake-input-container .crypto-ticker {
-  position: absolute;
-  right: 0;
-  bottom: 2.5rem;
+    position: absolute;
+    right: 0;
+    bottom: 2.5rem;
 }
 
 .auth_title {
-  font-size:1.7em;
+    font-size: 1.7em;
 }
 
 .game-crypto-transfer-manager-container .description p {
-  margin-top: 2rem;
+    margin-top: 2rem;
 }
+
 .game-crypto-transfer-manager-container .description {
     width: 80%;
     margin-left: auto;
@@ -69,29 +72,21 @@ input[type="checkbox"].ignore_checkbox {
     line-height: 2.8rem;
 }
 
+/*changed - 1*/
 .crypto_transfer_btn {
-  background-color: var(--saito-button-background);
-  color: var(--saito-white);
-  margin-left: auto;
-  margin-right: auto;
-  position: relative;
-  font-size: 1.8rem;
-  text-transform: uppercase;
-  transition: all .2s ease-in-out;
-  cursor: pointer;
-  border-radius: 0.5rem;
-  width: fit-content;
+    margin-top: 1rem;
 }
 
+/*changed - 1*/
 .crypto_transfer_btn.secondary {
-  background: none;
-  color: var(--saito-button-background);
-  border: 1px solid var(--saito-button-background);
+    background: none;
+    color: var(--saito-button-background-color-primary);
+    border: 1px solid var(--saito-button-background-color-primary);
 }
 
 .crypto-stake-offer-btn-container {
-  display: flex;
-  flex-direction: row;
+    display: flex;
+    flex-direction: row;
 }
 
 .crypto_amount_btn {
@@ -103,117 +98,121 @@ input[type="checkbox"].ignore_checkbox {
 }
 
 .commentary {
-  font-size: 1.6rem;
-  line-height: 2.5rem;
-  cursor: pointer;
+    font-size: 1.6rem;
+    line-height: 2.5rem;
+    cursor: pointer;
 }
 
-.crypto_transfer_btn.hidden{
-  display: none;
+.crypto_transfer_btn.hidden {
+    display: none;
 }
 
 .crypto-stake-confirm-container {
-  margin: 0rem;
-  display: flex;
-  flex-direction: row;
-  padding: 0rem;
-  gap: 1rem;
-  width: fit-content;
-  margin: auto;
+    margin: 0rem;
+    display: flex;
+    flex-direction: row;
+    padding: 0rem;
+    gap: 1rem;
+    width: fit-content;
+    margin: auto;
 }
 
 .crypto-stake-confirm-container input {
-  background: none;
+    background: none;
 }
 
 .crypto_msg {
-  font-size: 1.6rem;
+    font-size: 1.6rem;
 }
 
 .select_max:hover {
-  cursor: pointer;
-  font-weight: bold;
+    cursor: pointer;
+    font-weight: bold;
 }
 
 .amount {
-  font-size: 2.4em;
-  margin: 1rem auto;
+    font-size: 2.4em;
+    margin: 1rem auto;
 }
+
 .from_address {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
+
 .send_to {
-  font-size: 1.4em;
+    font-size: 1.4em;
 }
-.from_address,
-.to_address {
-  font-size: 1.6em;
-  text-overflow: ellipsis;
-  overflow: hidden;
+
+.from_address, .to_address {
+    font-size: 1.6em;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
+
 .game-crypto-transfer-manager-container .spinner {
-  margin-bottom: 2rem;
-  max-width: 10rem;
-  margin-left: auto;
-  margin-right: auto;
-  width: 10rem;
+    margin-bottom: 2rem;
+    max-width: 10rem;
+    margin-left: auto;
+    margin-right: auto;
+    width: 10rem;
 }
 
 .transfer-details {
-  align-items: center;
-  margin-left: auto;
-  margin-right: auto;
-  display: flex;
-  flex-direction: column; 
-  gap: 1rem;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .transfer-details .send_to .transfer-details .send_from {
-  display: block;
-  font-size: 1em;
-  margin-bottom: 0;
-  padding-right: 4px;
+    display: block;
+    font-size: 1em;
+    margin-bottom: 0;
+    padding-right: 4px;
 }
-.transfer-details .from_address,
-.transfer-details .to_address {
-  clear: both;
-  display: block;
-  font-weight: bold;
-  font-size: 1em;
-  max-width: 220px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  margin-bottom: 0;
+
+.transfer-details .from_address, .transfer-details .to_address {
+    clear: both;
+    display: block;
+    font-weight: bold;
+    font-size: 1em;
+    max-width: 220px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin-bottom: 0;
 }
 
 .transfer-details .saito-identicon-box {
-  display: flex;
-  gap: 1rem;
-  width: 100%;
-  align-items: center;
-  height: fit-content;
-  font-size: 1.5rem;
-  cursor: default;
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    align-items: center;
+    height: fit-content;
+    font-size: 1.5rem;
+    cursor: default;
 }
 
 .transfer-details .saito-identicon-box .saito-identicon {
-  width: 3.5rem;
-  height: 3.5rem;
+    width: 3.5rem;
+    height: 3.5rem;
 }
 
 .send_from {
-  font-size: 1.4em;
+    font-size: 1.4em;
 }
 
 .crypto_transfer_btn {
-  margin-top: 1rem;
+    margin-top: 1rem;
 }
 
 .transfer-address .to-publickey {
-  text-align: left;
-  line-height: 2.5rem;
+    text-align: left;
+    line-height: 2.5rem;
 }
 
 .transfer-address .to-address {
-  line-height: 2.5rem;
+    line-height: 2.5rem;
 }
+
