@@ -544,8 +544,8 @@ class ChatPopup {
 						sig
 					);
 					if (newtx) {
-						await mod.sendChatLikeTransaction(app, newtx);
-						mod.receiveChatLikeTransaction(newtx);
+						await mod.sendChatLikeTransaction(newtx);
+						await mod.receiveChatLikeTransaction(newtx);
 					}
 				});
 			});

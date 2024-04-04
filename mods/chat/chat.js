@@ -782,6 +782,18 @@ class Chat extends ModTemplate {
 			return 0;
 		}
 
+		if (txmsg.request === 'chat like') {
+			console.log('receiving chat like transactions liker');
+			await this.receiveChatLikeTransaction(tx);
+
+			if (mycallback) {
+				mycallback({ payload: 'success', error: {} });
+				return 1;
+			}
+
+			return 0;
+		}
+
 		if (txmsg.request == 'chat group') {
 			this.receiveCreateGroupTransaction(tx);
 			return;
@@ -818,6 +830,53 @@ class Chat extends ModTemplate {
 					// Addressed to chat server, so forward to all
 					//
 					console.log('Community Chat');
+					peers.forEach((p) => {
+						if (p.publicKey !== peer.publicKey) {
+							app.network.sendTransactionWithCallback(
+								inner_tx,
+								null,
+								p.peerIndex
+							);
+						}
+					});
+				} else {
+					console.log(txmsg.data.to);
+					peers.forEach((p) => {
+						if (inner_tx.isTo(p.publicKey)) {
+							//console.log("Forward private chat to " + p.publicKey);
+							app.network.sendTransactionWithCallback(
+								inner_tx,
+								null,
+								p.peerIndex
+							);
+						}
+					});
+				}
+			}
+
+			//
+			// notify sender if requested
+			//
+			if (mycallback) {
+				mycallback({ payload: 'success', error: {} });
+				return 1;
+			}
+
+			return 0;
+		}
+
+		if (txmsg.request === 'chat like broadcast') {
+			let inner_tx = new Transaction(undefined, txmsg.data);
+
+			if (inner_tx.to.length > 0 && app.BROWSER == 0) {
+				let peers = await app.network.getPeers();
+
+				if (inner_tx.isTo(this.publicKey)) {
+					console.log(
+						'receiving chat like transactions',
+						peers,
+						inner_tx
+					);
 					peers.forEach((p) => {
 						if (p.publicKey !== peer.publicKey) {
 							app.network.sendTransactionWithCallback(
@@ -1560,10 +1619,8 @@ class Chat extends ModTemplate {
 						let like_number;
 						this.groups.forEach((group) => {
 							group.txs.forEach((tx) => {
-								console.log(tx, 'transactionsss');
 								if (tx.signature === block[z].signature) {
 									if (tx.liked_by[this.publicKey]) {
-										console.log(tx);
 										liked = 'liked';
 									}
 									like_number = tx.likes;
@@ -1605,8 +1662,9 @@ class Chat extends ModTemplate {
 							);
 						}
 						msg +=
-							like_number > 0 &&
-							`<div class="chat-likes"> <i class="fas fa-thumbs-up"></i><div class="chat-like-number">${like_number}</div> </div>`;
+							like_number > 0
+								? `<div class="chat-likes"> <i class="fas fa-thumbs-up"></i><div class="chat-like-number">${like_number}</div> </div>`
+								: `<div> </div>`;
 						msg += `${replyButton}</div>`;
 
 						if (
@@ -1831,21 +1889,26 @@ class Chat extends ModTemplate {
 	}
 
 	async createChatLikeTransaction(group_id, sig) {
-		let newtx =
-			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
-				this.publicKey
-			);
+		let newtx = await this.app.wallet.createUnsignedTransaction(
+			this.publicKey,
+			BigInt(0),
+			BigInt(0)
+		);
 		if (newtx == null) {
 			console.error('Null tx created');
 			return null;
 		}
 		newtx.addTo(this.publicKey);
+		newtx.addTo(this.publicKey);
 
 		newtx.msg = {
+			module: 'Chat',
 			request: 'chat like',
 			group_id,
 			signature: sig
 		};
+		await newtx.sign();
+
 		return newtx;
 	}
 
@@ -1854,9 +1917,7 @@ class Chat extends ModTemplate {
 			console.warn('Chat: Cannot send null transaction');
 			return;
 		}
-
 		let peers = await this.app.network.getPeers();
-
 		if (peers.length > 0) {
 			let recipient = peers[0].publicKey;
 			for (let i = 0; i < peers.length; i++) {
@@ -1865,7 +1926,15 @@ class Chat extends ModTemplate {
 					break;
 				}
 			}
+
 			await this.app.network.propagateTransaction(tx);
+			this.app.connection.emit('relay-send-message', {
+				recipient: peers[0].publicKey,
+				request: 'chat like broadcast',
+				data: tx.toJson()
+			});
+
+			console.log('sending chat like transactigon');
 			// app.connection.emit('relay-send-message', {
 			// 	recipient,
 			// 	request: 'chat message broadcast',
@@ -1877,26 +1946,26 @@ class Chat extends ModTemplate {
 	}
 
 	async receiveChatLikeTransaction(tx) {
-		if (tx.isFrom(this.publicKey)) {
-			console.log('this is the chat like tx', tx);
-			let { group_id, signature } = tx.returnMessage();
-			this.groups.forEach((group) => {
-				if (group.id === group_id) {
-					group.txs.forEach((tx) => {
-						if (tx.signature === signature) {
-							if (tx.liked_by[this.publicKey]) {
-								tx.likes--;
-								tx.liked_by[this.publicKey] = false;
-								return;
-							}
-
-							tx.likes++;
-							tx.liked_by[this.publicKey] = true;
+		// if (tx.isFrom(this.publicKey)) {
+		console.log('this is the chat like tx', tx);
+		let { group_id, signature } = tx.returnMessage();
+		this.groups.forEach((group) => {
+			if (group.id === group_id) {
+				group.txs.forEach((tx) => {
+					if (tx.signature === signature) {
+						if (tx.liked_by[this.publicKey]) {
+							tx.likes--;
+							tx.liked_by[this.publicKey] = false;
+							return;
 						}
-					});
-				}
-			});
-		}
+
+						tx.likes++;
+						tx.liked_by[this.publicKey] = true;
+					}
+				});
+			}
+		});
+		// }
 
 		// render like
 		let group = this.groups.find((group) => group.id === group_id);
