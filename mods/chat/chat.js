@@ -713,6 +713,9 @@ class Chat extends ModTemplate {
 			if (txmsg.request == 'chat remove') {
 				await this.receiveRemoveMemberTransaction(tx);
 			}
+			if (txmsg.request == 'chat like') {
+				await this.receiveChatLikeTransaction(tx, 1);
+			}
 		}
 	}
 
@@ -1554,6 +1557,7 @@ class Chat extends ModTemplate {
 
 						// Get my like status
 						let liked = '';
+						let like_number;
 						this.groups.forEach((group) => {
 							group.txs.forEach((tx) => {
 								console.log(tx, 'transactionsss');
@@ -1562,6 +1566,7 @@ class Chat extends ModTemplate {
 										console.log(tx);
 										liked = 'liked';
 									}
+									like_number = tx.likes;
 								}
 							});
 						});
@@ -1599,7 +1604,9 @@ class Chat extends ModTemplate {
 								block[z].msg.indexOf('>') + 1
 							);
 						}
-						msg += `<div class="chat-likes"> <i class="fas fa-thumbs-up"></i><div class="chat-like-number">2</div> </div>`;
+						msg +=
+							like_number > 0 &&
+							`<div class="chat-likes"> <i class="fas fa-thumbs-up"></i><div class="chat-like-number">${like_number}</div> </div>`;
 						msg += `${replyButton}</div>`;
 
 						if (
@@ -1833,20 +1840,45 @@ class Chat extends ModTemplate {
 			return null;
 		}
 		newtx.addTo(this.publicKey);
+
 		newtx.msg = {
+			request: 'chat like',
 			group_id,
 			signature: sig
 		};
 		return newtx;
 	}
 
-	async sendChatLikeTransaction(tx) {}
+	async sendChatLikeTransaction(tx) {
+		if (!tx) {
+			console.warn('Chat: Cannot send null transaction');
+			return;
+		}
+
+		let peers = await this.app.network.getPeers();
+
+		if (peers.length > 0) {
+			let recipient = peers[0].publicKey;
+			for (let i = 0; i < peers.length; i++) {
+				if (peers[i].hasService('chat')) {
+					recipient = peers[i].publicKey;
+					break;
+				}
+			}
+			await this.app.network.propagateTransaction(tx);
+			// app.connection.emit('relay-send-message', {
+			// 	recipient,
+			// 	request: 'chat message broadcast',
+			// 	data: tx.toJson()
+			// });
+		} else {
+			salert('Connection to chat server lost');
+		}
+	}
 
 	async receiveChatLikeTransaction(tx) {
 		if (tx.isFrom(this.publicKey)) {
 			console.log('this is the chat like tx', tx);
-			// fetch the chat
-
 			let { group_id, signature } = tx.returnMessage();
 			this.groups.forEach((group) => {
 				if (group.id === group_id) {
@@ -1864,12 +1896,13 @@ class Chat extends ModTemplate {
 					});
 				}
 			});
-
-			// render like
-			let group = this.groups.find((group) => group.id === group_id);
-
-			this.app.connection.emit('chat-popup-render-request', group);
 		}
+
+		// render like
+		let group = this.groups.find((group) => group.id === group_id);
+
+		this.app.connection.emit('chat-popup-render-request', group);
+		// }
 	}
 
 	///////////////////
