@@ -56,11 +56,7 @@ class Arcade extends ModTemplate {
 
 		this.possibleHome = 1;
 
-		this.theme_options = {
-			lite: 'fa-solid fa-sun',
-			dark: 'fa-solid fa-moon',
-			arcade: 'fa-solid fa-gamepad'
-		};
+		this.theme_options["arcade"] = 'fa-solid fa-building-columns';
 
 		this.social = {
 			twitter: '@SaitoOfficial',
@@ -488,8 +484,8 @@ class Arcade extends ModTemplate {
 			let x = [];
 			if (!this.browser_active) {
 				x.push({
-					text: 'Arcade',
-					icon: 'fa-solid fa-square',
+					text: 'Arcade',  
+					icon: 'fa-solid fa-building-columns',
 					rank: 15,
 					callback: function (app, id) {
 						window.location = '/arcade';
