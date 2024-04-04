@@ -1908,13 +1908,13 @@ try {
     for (let key in this.game.spaces) {
       if (do_not_count_unrest == 0) {
         if ((this.game.spaces[key].unrest == 1 && this.game.spaces[key].religion == "protestant") || this.game.spaces[key].religion === "catholic") {
-  	  if (language == "" || this.game.spaces[key].language == language) {
+  	  if (language == "" || language == "all" || this.game.spaces[key].language == language) {
 	    catholic_spaces++;
 	  }
 	}
       } else {
         if (this.game.spaces[key].religion === "catholic") {
-  	  if (language == "" || this.game.spaces[key].language == language) {
+  	  if (language == "" || language == "all" || this.game.spaces[key].language == language) {
 	    catholic_spaces++;
 	  }
         }

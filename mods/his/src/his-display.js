@@ -12,6 +12,15 @@
       return;
     }
 
+    if (c === "excommunication") {
+      this.welcome_overlay.renderCustom({
+        title : "Excommunicated?" , 
+        text : this.returnFactionName(msg) + " has been excommunicated by Papal Decree" ,
+        card : this.returnCardImage("005") ,
+        img : '/his/img/backgrounds/events/excommunication.jpg',
+      });
+      return;
+    }
     if (c === "papacy") {
       this.welcome_overlay.renderCustom({
         title : "New to the Papacy?" , 
@@ -2489,8 +2498,6 @@ try {
 
     for (f in factions_and_scores) {
 try {
-console.log("f:" + f);
-console.log(factions_and_scores[f]);
       let total_vp = factions_and_scores[f].vp;
       let ftile = f + "_vp_tile";
       obj = document.getElementById(ftile);
@@ -2503,6 +2510,7 @@ console.log(factions_and_scores[f]);
         tiles[total_vp]++;
       } else {
 	tiles[total_vp]++;
+        obj.style.transform = ``;
       }
 } catch (err) {
 }
@@ -2560,15 +2568,18 @@ console.log(factions_and_scores[f]);
     //
     // add cancel button to uneventable cards
     //
+    let active_faction = faction;
+    if (active_faction == "") { active_faction = this.game.state.active_faction; }
+
     if (deckidx == 0) { 
       if (this.deck[cardname]) {
-        if (!this.deck[cardname].canEvent(this, faction)) {
+        if (!this.deck[cardname].canEvent(this, active_faction)) {
           html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
         }
       }
     }
     if (deckidx == 1) { 
-      if (!this.diplomatic_deck[cardname].canEvent(this, faction)) {
+      if (!this.diplomatic_deck[cardname].canEvent(this, active_faction)) {
         html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
       }
     }

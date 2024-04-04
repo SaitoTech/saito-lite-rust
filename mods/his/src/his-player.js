@@ -321,6 +321,17 @@
     try { if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; } } catch (err) {}
 
     units_to_destroy = [];
+    units_available = [];
+
+    for (f in space.units) {
+      if (f == faction || this.isAlliedMinorPower(f, faction)) {
+        for (let i = 0; i < space.units[f].length; i++) {
+          if (space.units[f][i].type === "regular")   { units_available.push(space.units[f][i]); }
+          if (space.units[f][i].type === "mercenary") { units_available.push(space.units[f][i]); }
+          if (space.units[f][i].type === "cavalry")   { units_available.push(space.units[f][i]); }
+        }
+      }
+    } 
 
     let selectUnitsInterface = function(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface) {
 
@@ -356,6 +367,8 @@
 
         $('.option').off();
         let id = $(this).attr("id");
+
+	his_self.updateStatus("assign hit...");
 
         if (!units_to_destroy.includes(id)) {
           units_to_destroy.push(parseInt(id));
@@ -1265,7 +1278,9 @@ if (this.game.state.events.cramner_active == 1) {
     if (this.game.deck[0].fhand[faction_hand_idx].length == 0) {
 
       can_pass = true;
-      cards.push("pass");
+      if (!cards.includes("pass")) {
+        cards.push("pass");
+      }
 
       //
       // in faster_play mode, we will switch to HALTED if there are     
@@ -1324,7 +1339,9 @@ if (this.game.state.events.cramner_active == 1) {
       }
     }
     if (can_pass) {
-      cards.push("pass");
+      if (!cards.includes("pass")) {
+        cards.push("pass");
+      }
     }
 
     this.updateStatusAndListCards(this.returnFactionName(faction) + " - Select Your Card: ", cards);
@@ -1941,6 +1958,7 @@ if (this.game.state.events.cramner_active == 1) {
         his_self.updateStatusWithOptions(`${his_self.returnFactionName(selected_faction)}: ${ops} ops remaining`, html, false);
         this.attachCardboxEvents(async (user_choice) => {      
 
+	  his_self.updateStatus("acknowledge");
 	  his_self.menu_overlay.hide();
 
           if (user_choice === "end_turn") {
@@ -3306,6 +3324,7 @@ does_units_to_move_have_unit = true; }
 
       function(space) {
 	let num_moveable = 0;
+	if (space.key == "persia" || space.key == "egypt" || space.key == "ireland") { return 0; }
 	for (let z in space.units) {
 	  if (space.units[z].length > 0 && his_self.returnPlayerCommandingFaction(z) == his_self.game.player && (z == faction || his_self.returnControllingPower(z) == faction)) {
 	    //
@@ -3540,6 +3559,9 @@ does_units_to_move_have_unit = true; }
       $('.option').off();
       $('.option').on('click', function () {
         let id = $(this).attr("id");
+
+	his_self.updateStatus("retreating...");
+
 	if (id === "skip") {
 	  his_self.endTurn();
 	  return;
@@ -3618,6 +3640,9 @@ does_units_to_move_have_unit = true; }
       $('.option').off();
       $('.option').on('click', function () {
         let id = $(this).attr("id");
+
+	his_self.updateStatus("retreating...");
+
         onFinishSelect(his_self, id);
       });
 
@@ -3682,6 +3707,8 @@ does_units_to_move_have_unit = true; }
 		  },
 
       		  function(spacekey) {
+		    his_self.updateStatus("retreating...");
+
                     onFinishSelect(his_self, spacekey);
 		  },
 
@@ -3712,9 +3739,6 @@ does_units_to_move_have_unit = true; }
     });
 
   }
-
-
-
 
 
   playerEvaluateRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey="", defender, is_attacker_loser=false) {
@@ -3755,6 +3779,7 @@ does_units_to_move_have_unit = true; }
       $('.option').off();
       $('.option').on('click', function () {
         let id = $(this).attr("id");
+	his_self.updateStatus("retreating...");
         onFinishSelect(his_self, id);
       });
 
@@ -4896,7 +4921,7 @@ does_units_to_move_have_unit = true; }
     $('.option').off();
     $('.option').on('click', function () {
       his_self.updateStatus("acknowledge");
-      let key = parseInt($(this).attr("id"));
+      let key = $(this).attr("id");
       if (key == "persia") {
         his_self.addMove("field_battle\tpersia\tottoman");
       }
@@ -4912,6 +4937,7 @@ does_units_to_move_have_unit = true; }
     return 0;
   }
   canPlayerAssaultTutorial(his_self, player, faction) {
+    if (his_self.game.state.assaulted_this_turn == 1) { return 0; }
     if (!his_self.canPlayerAssault(his_self, player, faction)) {
       let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
       for (let i = 0; i < conquerable_spaces.length; i++) {
@@ -5041,8 +5067,15 @@ does_units_to_move_have_unit = true; }
 	if (faction == "ottoman" && destination_spacekey == "egypt") { his_self.addMove("war\tottoman\tegypt"); his_self.endTurn(); return; }
 	if (faction == "england" && destination_spacekey == "ireland") { his_self.addMove("war\tottoman\tireland"); his_self.endTurn(); return; }
 	his_self.addMove("assault\t"+faction+"\t"+destination_spacekey);
-        his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" announces siege of "+his_self.game.spaces[destination_spacekey].name + "\tassault\t" + destination_spacekey);
-        his_self.addMove("RESETCONFIRMSNEEDED\tall");
+
+	if (this.game.state.events.intervention_on_movement_possible == 0) {
+	  let from_whom = his_self.returnArrayOfPlayersInSpacekey(destination_spacekey);
+          his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" announces siege of "+his_self.game.spaces[destination_spacekey].name + "\tassault\t" + destination_spacekey);
+          his_self.addMove("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
+	} else {
+          his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" announces siege of "+his_self.game.spaces[destination_spacekey].name + "\tassault\t" + destination_spacekey);
+          his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	}
 	his_self.endTurn();
       },
 
@@ -5576,6 +5609,7 @@ does_units_to_move_have_unit = true; }
       //
       // and place
       //
+      name : "" ,
       his_self.playerSelectSpaceWithFilter(
 
         `Select Destination for ${num} Cavalry`,
@@ -5606,7 +5640,9 @@ does_units_to_move_have_unit = true; }
 
         function(destination_spacekey) {
 	  his_self.updateStatus("acknowledge...");
-	  his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+destination_spacekey);
+	  for (let z = 0; z < num; z++) {
+	    his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+destination_spacekey);
+	  }
 	  his_self.endTurn();
         },
 
