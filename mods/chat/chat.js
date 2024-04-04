@@ -112,11 +112,6 @@ class Chat extends ModTemplate {
 
 		this.postScripts = ['/saito/lib/emoji-picker/emoji-picker.js'];
 
-		this.theme_options = {
-			lite: 'fa-solid fa-sun',
-			dark: 'fa-solid fa-moon'
-		};
-
 		this.social = {
 			twitter: '@SaitoOfficial',
 			title: 'Saito Chat',
