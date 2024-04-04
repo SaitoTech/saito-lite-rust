@@ -1,359 +1,351 @@
 .saito-input {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    min-height: fit-content;
-    overflow: visible;
+	position: relative;
+	width: 100%;
+	height: 100%;
+	min-height: fit-content;
+	overflow: visible;
 }
 
-/*changed - 1*/
 .saito-input .text-input:not(.post-tweet-textarea) {
-    width: 100%;
-    padding: 1.2rem 3rem 1.2rem 1rem;
-    cursor: text;
-    border: 1px solid transparent;
-    font-size: 1.6rem;
-    line-height: 2rem;
-    outline: none;
-    background: var(--saito-background-arcade);
-    overflow-y: auto;
-    word-break: break-word;
-    max-height: 15rem;
-    min-height: 4.5rem;
-    height: fit-content;
+	/*height: 100%;*/
+	width: 100%;
+	padding: 1.2rem 3rem 1.2rem 1rem;
+	cursor: text;
+	border: 1px solid transparent;
+	font-size: 1.6rem;
+	line-height: 2rem;
+	outline: none;
+	background: var(--saito-arcade-background);
+	max-height: 15rem;
+	overflow-y: auto;
+	word-break: break-word;
+	min-height: 4.5rem;
+	max-height: 12.5rem;
+	height: fit-content;
 }
 
-/*changed - 1*/
 .saito-input-selection-box {
-    position: absolute;
-    height: 46rem;
-    width: 36rem;
-    z-index: 150;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-direction: column;
-    border: 1px solid var(--saito-border-color-primary);
-    /*
+	position: absolute;
+	height: 46rem;
+	width: 36rem;
+	z-index: 150;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-direction: column;
+	border: 1px solid var(--saito-border-color);
+
+	/*
 	We can't control for if user resizes chat-popup, better to have visibile borders
 	border-top: none;
-    border-left: none;
-    */
-background-color: var(--saito-background-color);
+	border-left: none;
+	*/
+	background-color: var(--saito-background-color);
 }
 
-/*changed - 1*/
 .saito-mention {
-    cursor: pointer;
-    color: var(--saito-color-primary);
-    font-style: italic;
-    user-select: none;
-    margin-right: 8px !important;
-    width: fit-content;
+	cursor: pointer;
+	color: var(--saito-primary);
+	font-style: italic;
+	user-select: none;
+	margin-right: 8px !important;
+	width: fit-content;
 }
 
 * + .saito-mention {
-    margin-left: 8px;
+	margin-left: 8px;
 }
 
 .saito-mention.saito-address {
-    overflow: visible;
+	overflow: visible;
 }
 
 .selection-box-window {
-    position: relative;
-    width: 100%;
-    height: 100%;
+	position: relative;
+	width: 100%;
+	height: 100%;
 }
 
 .photo-window {
-    font-size: 3rem;
-    text-align: center;
-    padding: 4rem;
-    cursor: pointer;
-    opacity: 0.5;
+	font-size: 3rem;
+	text-align: center;
+	padding: 4rem;
+	cursor: pointer;
+	opacity: 0.5;
 }
 
 .selection-box-pane {
-    display: none;
-    position: absolute;
-    margin: auto;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
+	display: none;
+	position: absolute;
+	margin: auto;
+	width: 100%;
+	height: 100%;
+	align-items: center;
+	justify-content: center;
 }
 
 .selection-box-pane.active-tab {
-    display: flex;
+	display: flex;
 }
 
-/*changed - 1*/
 .selection-box-tabs {
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    width: 100%;
-    height: 5rem;
-    background-color: var(--saito-background-color);
-    border-top: 1px solid var(--saito-border-color-primary);
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+	width: 100%;
+	height: 5rem;
+	background-color: var(--saito-background-color);
+	border-top: 1px solid var(--saito-border-color);
 }
 
-/*changed - 1*/
 .selection-box-tabs i {
-    /*text-shadow: 1px 1px 3px var(--saito-color-black-faded);
-    */;
+	/*text-shadow: 1px 1px 3px var(--saito-black-faded);*/
 }
 
-/*changed - 1*/
 .saito-box-tab {
-    font-size: 2.6rem;
-    color: var(--saito-color-primary);
-    cursor: pointer;
-    line-height: 1rem;
+	font-size: 2.6rem;
+	color: var(--saito-primary);
+	cursor: pointer;
+	line-height: 1rem;
 }
 
-/*changed - 1*/
 .saito-box-tab:hover {
-    color: var(--saito-color-secondary);
+	color: var(--saito-secondary);
 }
 
 /* override definitions from giphy.css */
-
 .selection-box-window .saito-gif-container {
-    padding: 0.5rem;
+	padding: 0.5rem;
 }
 
 emoji-picker {
-    display: none;
-    --emoji-size: 2.5rem;
-    --emoji-padding: 0.5rem;
-    z-index: 2;
+	display: none;
+	--emoji-size: 2.5rem;
+	--emoji-padding: 0.5rem;
+	z-index: 2;
 }
 
-/*changed - 1*/
 .saito-emoji {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    padding: 0.8rem 0.5rem;
-    color: var(--saito-color-primary);
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 2rem;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	padding: 0.8rem 0.5rem;
+	color: var(--saito-primary);
+	cursor: pointer;
+	transition: all 0.2s;
+	font-size: 2rem;
 }
 
 .selection-box-window emoji-picker {
-    width: 100%;
-    height: 100%;
-    display: flex;
+	width: 100%;
+	height: 100%;
+	display: flex;
 }
 
 .saito-input-large {
-    margin-bottom: 2rem;
+	margin-bottom: 2rem;
 }
 
 .saito-input-large .selection-box-tabs {
-    width: 16rem;
-    border-top: unset;
-    background-color: unset;
-    align-items: flex-end;
-    margin-left: 1rem;
-    justify-content: space-between;
+	width: 16rem;
+	border-top: unset;
+	background-color: unset;
+	align-items: flex-end;
+	margin-left: 1rem;
+	justify-content: space-between;
 }
 
+
 .at-window {
-    flex-direction: column;
-    justify-content: flex-start;
+
+	flex-direction: column;
+	justify-content: flex-start;
 }
 
 .at-window .saito-input-mention-header {
-    font-size: 2.2rem;
-    width: 100%;
-    display: grid;
-    align-items: center;
-    grid-gap: 1rem;
-    grid-template-columns: 1fr 2rem;
-    padding: 1rem;
+	font-size: 2.2rem;
+	width: 100%;
+	display: grid;
+	align-items: center;
+	grid-gap: 1rem;
+	grid-template-columns: 1fr 2rem;
+	padding: 1rem;
 }
 
 .at-window .saito-input-mention-header input {
-    margin-bottom: 0;
+	margin-bottom: 0;
 }
 
-/*changed - 1*/
 .saito-input-contact-list {
-    width: calc(100% - 2px);
+	width: calc(100% - 2px);
     position: absolute;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    padding: 0.5rem;
+	padding: 0.5rem;
     font-size: 2rem;
     overflow: auto;
     flex: 1;
     background: var(--saito-background-color);
-    border-radius: var(--saito-corners-rigid);
+    border-radius: 0.5rem;
+
     /* for popping up over input field */
-max-height: 200px;
+    max-height: 200px;
     bottom: 0;
 }
 
 .at-window .saito-input-contact-list {
     bottom: unset;
-    top: 5rem;
-    max-height: calc(100% - 4.5rem);
-    position: static;
+	top: 5rem;
+	max-height: calc(100% - 4.5rem);
+	position: static;
 }
 
 .saito-input-contact {
-    cursor: pointer;
-    display: flex;
-    gap: 0.5rem;
-    width: 100%;
-    align-items: center;
-    height: 4rem;
-    padding: 0.75rem;
+	cursor: pointer;
+	display: flex;
+	gap: 0.5rem;
+	width: 100%;
+	align-items: center;
+	height: 4rem;
+	padding: 0.75rem;
 }
 
-/*changed - 1*/
 .saito-input-contact:hover, .saito-input-contact:focus {
-    background-color: var(--saito-color-primary);
+	background-color: var(--saito-primary);
 }
 
-.no-mouse .saito-input-contact:hover {
-    background-color: revert;
+.no-mouse .saito-input-contact:hover{
+	background-color: revert;
 }
 
 /*** Fix Redsquare Post ***/
 
-/*changed - 1*/
 .post-tweet-button {
-    position: absolute;
-    right: 3rem;
-    bottom: 2rem;
+	position: absolute;
+	right: 1rem;
+	bottom: 1rem;
 }
 
 .saito-input-quote {
-    display: grid;
-    grid-template-columns: 5rem auto 3rem;
-    align-items: center;
-    font-size: 1.5rem;
+	display: grid;
+	grid-template-columns: 5rem auto 3rem;
+	align-items: center;
+	font-size: 1.5rem;
 }
 
 .saito-input-quote i {
-    justify-self: center;
-    font-size: 2rem;
+	justify-self: center;
+	font-size: 2rem;
 }
 
 .saito-input-quote blockquote {
-    background-color: rgba(250, 250, 250, 0.1);
-    cursor: default;
+	background-color: rgba(250, 250, 250, 0.1);
+	cursor: default;
 }
 
 .saito-input-quote .cancel-quote {
-    cursor: pointer;
-    font-size: 2.5rem;
-    width: 40px;
-    height: 40px;
-    border-radius: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+	cursor: pointer;
+	font-size: 2.5rem;
+	width: 40px;
+	height: 40px;
+	border-radius: 40px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
+
 
 .chat-footer .saito-input-quote i:hover {
-    transform: unset;
+	transform: unset;
 }
 
-/*changed - 1*/
 .chat-footer .saito-input-quote i.cancel-quote:hover {
-    background-color: var(--saito-color-primary);
-    color: var(--saito-color-white);
+	background-color: var(--saito-primary);
+	color: var(--saito-white);
 }
+
 
 /* saito mentions list */
-
-/*changed - 1*/
 .saito-mentions-list {
-    background-color: var(--saito-background-color);
-    position: absolute;
-    z-index: 104;
-    color: var(--saito-color-contrast);
-    max-height: 30rem;
-    border: 1px solid var(--saito-border-color-primary);
-    overflow-y: scroll;
-    font-size: 1.6rem;
-    border-radius: var(--saito-corners-rigid);
-    padding: 0.5rem 0 0.5rem 0.2rem;
+  background-color: var(--saito-background-color);
+  position: absolute;
+  z-index: 104;
+  color: var(--saito-font-color);
+  max-height: 30rem;
+  border: 1px solid var(--saito-border-color);
+  overflow-y: scroll;
+  font-size: 1.6rem;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0 0.5rem 0.2rem;
 }
 
 .saito-mentions-list.hidden {
-    border: none;
+  border: none;
 }
 
 .saito-mentions-list.empty {
-    border: none;
-    background: none;
+  border: none;
+  background: none;
 }
 
 .saito-mentions-list .menu-item {
-    padding: 0.5rem;
+	padding: 0.5rem;
 }
 
 .saito-mentions-list .saito-identicon {
-    width: 3rem;
-    height: 3rem;
+	width: 3rem;
+	height: 3rem;
 }
 
-/*changed - 1*/
 .menu-item {
-    cursor: default;
-    padding: 1rem;
-    color: var(--saito-color-contrast);
+  cursor: default;
+  padding: 1rem;
+  color: var(--saito-font-color);
 }
 
-/*changed - 1*/
 .menu-item.selected {
-    background-color: var(--saito-color-primary);
-    color: white;
+  background-color: var(--saito-primary);
+  color: white;
 }
 
 .menu-item:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .saito-mentions-contact {
-    cursor: pointer;
-    display: flex;
-    gap: 0.5rem;
-    width: 100%;
-    align-items: center;
-    height: 4rem;
-    padding: 0.75rem 0.5rem;
+  cursor: pointer;
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  align-items: center;
+  height: 4rem;
+  padding: 0.75rem 0.5rem;
 }
 
-/*changed - 1*/
 .saito-mentions-contact:hover .menu-item {
-    background-color: #fafafa /*variable*/;
-    color: var(--saito-color-inverse);
+  background-color: #fafafa;
+  color: var(--saito-font-color-inverse); 
 }
+ 
 
 @media only screen and (max-width: 768px) {
-    .saito-input-large {
-        margin-bottom: 0rem
-        }
-    .saito-input-large .selection-box-tabs {
-        align-items: center;
-        height: 6rem;
-        width: 18rem
-        }
-    .saito-box-tab {
-        font-size: 3rem
-        }
-    .gif-icon {
-        height: 3rem;
-        width: 3rem
-        }
-    }
+	.saito-input-large {
+		margin-bottom: 0rem;
+	}
+
+	.saito-input-large .selection-box-tabs {
+		align-items: center;
+		height: 6rem;
+		width: 18rem;
+	}
+
+	.saito-box-tab {
+		font-size: 3rem;
+	}
+	.gif-icon {
+		height: 3rem;
+		width: 3rem;
+	}
+}
 

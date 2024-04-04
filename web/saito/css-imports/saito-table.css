@@ -3,55 +3,49 @@ Saito Table
 -----------------------------------------------------------------*/
 
 .saito-table-body {
-    font-size: 1.5rem;
-    display: grid;
-    grid-template-columns: auto;
-    grid-gap: 0.3rem;
-    width: 100%;
-    position: relative;
-    border-radius: 0.1rem;
-    max-height: 100%;
-    height: auto;
-    position: relative;
-    overflow-y: auto;
-    min-height: 2rem;
+  font-size: 1.5rem;
+  display: grid;
+  grid-template-columns: auto;
+  grid-gap: 0.3rem;
+  width: 100%;
+  position: relative;
+  border-radius: 0.1rem;
+  max-height: 100%;
+  height: auto;
+  position: relative;
+  overflow-y: auto;
+  min-height: 2rem;
 }
 
-/*changed - 1*/
 .saito-table-row {
-    border-radius: var(--saito-border-radius);
-    border: var(--saito-sidebar-border-thickness) solid var(--saito-sidebar-border-color);
-    display: grid;
-    grid-template-columns: 1fr min-content;
-    grid-gap: 0.5rem;
-    padding: 0.6rem 1rem 0.5rem;
-    cursor: pointer;
-    transition: all 0.2s;
+  display: grid;
+  grid-template-columns: 1fr min-content;
+  grid-gap: 0.5rem;
+  padding: 0.6rem 1rem 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: var(--saito-gray-transparent);
 }
 
-/*changed - 1*/
 .saito-table-row:hover {
-    background: var(--saito-background-hover);
-    color: var(--saito-color-white);
+  background: var(--saito-hover-background);
+  color: var(--saito-white);
 }
 
-/*changed - 1*/
 .saito-table-row:hover .saito-address {
-    color: var(--saito-color-white);
+  color: var(--saito-white);
 }
 
 .saito-table-rank {
-    font-family: courier, monospace;
-    font-size: 1.5rem;
+  font-family: courier, monospace;
+  font-size: 1.5rem;
 }
 
-/*changed - 1*/
 .saito-table-header {
-    display: grid;
-    grid-gap: 0.5rem;
-    padding: 0.6rem 1rem 0.5rem;
-    width: 100%;
-    text-align: center;
-    color: var(--saito-color-heavy);
+  display: grid;
+  grid-gap: 0.5rem;
+  padding: 0.6rem 1rem 0.5rem;
+  width: 100%;
+  text-align: center;
+  color: var(--saito-font-color-heavy);
 }
-

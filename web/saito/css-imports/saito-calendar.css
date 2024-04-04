@@ -1,20 +1,23 @@
+:root {
+    --calendar-width: 25rem;
+    --calendar-minwidth: 10rem;
+}
+
 /*
 .container {
     max-width: var(--calendar-width);
     min-width: var(--calendar-minwidth);
 }
 */
-
-/*changed - 1*/
 .saito-calendar {
-    border-radius: var(--saito-corners-rigid);
+    border-radius: 0.5rem;
     width: 100%;
     display: grid;
     grid-template-rows: min-content min-content min-content;
     flex-direction: column;
 }
 
-/*changed - 1*/
+
 .saito-modal.saito-modal-calendar {
     display: grid;
     grid-template-columns: 30rem 1fr;
@@ -22,7 +25,6 @@
     padding: 4rem;
     grid-gap: 0;
     margin: 0;
-    border-radius: var(--saito-border-radius);
 }
 
 .saito-modal-calendar-content {
@@ -33,7 +35,6 @@
     font-size: 5rem;
     margin-bottom: 1rem;
 }
-
 .saito-modal-calendar-note {
     font-size: 2rem;
     line-height: 2.8rem;
@@ -44,32 +45,30 @@
     background-color: whitesmoke;
     width: 40rem;
     height: 35rem;
-    padding: 0;
-    margin: 0;
+    padding: 0px;
+    margin: 0px;
     border: 1px solid var(--saito-background-color);
 }
 
 .saito-calendar-events-date {
-    float: right;
-    padding: 0.5rem;
-    color: #777;
-    font-size: 2rem;
-    font-style: italic;
+  float: right;
+  padding: 0.5rem;
+  color: #777;
+  font-size: 2rem;
+  font-style: italic;
 }
 
-/*changed - 1*/
 .saito-calendar-events-details {
-    clear: both;
-    font-size: 2rem;
-    color: var(--saito-color-contrast);
-    font-weight: bold;
-    padding-left: 2rem;
+  clear: both;
+  font-size: 2rem;
+  color: var(--saito-font-color);
+  font-weight: bold;
+  padding-left: 2rem;
 }
 
 .saito-calendar-month {
-    /* padding: 1rem 1rem;
-    */
-display: grid;
+    /* padding: 1rem 1rem; */
+    display: grid;
     grid-template-columns: min-content max-content min-content;
     justify-content: space-between;
     align-items: center;
@@ -103,12 +102,11 @@ display: grid;
     text-align: center;
 }
 
-.saito-calendar-days, .saito-calendar-weekdays {
+.saito-calendar-days, .saito-calendar-weekdays  {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-gap: 3px;
 }
-
 .saito-calendar-day {
     min-height: 3rem;
     font-size: 1.2rem;
@@ -123,11 +121,9 @@ display: grid;
     padding-right: 0.75rem;
 }
 
-/*changed - 1*/
 .saito-calendar-days div:hover {
-    background-color: var(--saito-color-faded);
-    color: var(--saito-color-white);
-    border-radius: 2.5rem;
+    background-color: var(--saito-primary);
+    color: var(--saito-white);
 }
 
 .prev-date {
@@ -138,10 +134,7 @@ display: grid;
     color: rgba(0, 0, 0, 0.391);
 }
 
-/*changed - 1*/
 .today {
-    background-color: var(--saito-color-faded);
-    color: var(--saito-color-white);
-    border-radius: 2.5rem;
+    background-color: var(--saito-primary);
+    color: var(--saito-white);
 }
-

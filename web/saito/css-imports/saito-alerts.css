@@ -1,60 +1,58 @@
-/*changed - 1*/
 #saito-alert-shim {
-    z-index: 2000;
-    background-color: var(--saito-background-shim-dark);
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
+  z-index: 2000;
+  background-color: var(--saito-dark-shim);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
 }
 
-/*changed - 1*/
 #saito-alert-box {
-    width: 75vw;
-    max-width: 70rem;
-    transition: all 333ms ease-in-out;
-    background: var(--saito-background-color);
-    margin: 1rem auto;
-    position: relative;
-    top: 0;
-    border: 1px solid var(--saito-border-color-primary);
-    border-radius: var(--saito-corners-rigid);
-    padding: 1.5rem;
-    color: var(--saito-color-contrast);
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    box-shadow: var(--saito-box-shadow);
+  width: 75vw;
+  max-width: 70rem;
+  transition: all 333ms ease-in-out;
+  background: var(--saito-background-color);
+  margin: 1rem auto;
+  position: relative;
+  top: 0;
+  border: 1px solid var(--saito-border-color);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  color: var(--saito-font-color);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  box-shadow: var(--saito-box-shadow);
 }
 
 #saito-alert-buttons, #alert-buttons {
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    flex-flow: row-reverse;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  flex-flow: row-reverse;
 }
 
 #saito-alert-buttons button {
-    min-width: 20rem;
+  min-width: 20rem;
 }
 
 .saito-alert-message {
-    font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
-    font-size: 2rem;
-    text-align: center;
-    align-self: center;
-    display: block;
-    margin: 1rem 0;
-    overflow-wrap: break-word;
-    line-height: 3rem;
+  font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+  font-size: 2rem;
+  text-align: center;
+  align-self: center;
+  display: block;
+  margin: 1rem 0;
+  overflow-wrap: break-word;
+  line-height: 3rem;
 }
 
 @media screen and (max-width: 740px) {
-    #saito-alert-buttons, #alert-buttons {
-        flex-direction: column
-        }
-    #saito-alert-buttons button, #alert-buttons button {
-        width: 100%
-        }
-    }
+  #saito-alert-buttons, #alert-buttons {
+    flex-direction: column;
+  }
+  #saito-alert-buttons button, #alert-buttons button {
+    width: 100%;
+  }
 
+}
