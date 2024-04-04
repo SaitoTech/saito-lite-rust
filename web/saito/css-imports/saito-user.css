@@ -2,34 +2,39 @@
 Saito Identicon
 -----------------------------------------------------------------*/
 
+/*changed - 1*/
 .saito-identicon {
-  width: 3.5rem;
-  height: 3.5rem;
-  border: 1px solid var(--saito-background-color);
+    width: 3.5rem;
+    height: 3.5rem;
+    border: var(--saito-identicon-border-radius-thickness) solid var(--saito-identicon-border-color);
+    border-radius: var(--saito-identicon-border-radius);
+    /* border: 1px solid var(--saito-background-color);
+    OLD*/;
 }
 
 .saito-identicon-box {
-  width: 3.5rem;
-  height: 3.5rem;
-  cursor: pointer; /* app.browser tries to turn all .saito-identicon into clickable target */
+    width: 3.5rem;
+    height: 3.5rem;
+    cursor: pointer;
+    /* app.browser tries to turn all .saito-identicon into clickable target */;
 }
 
 .saito-identicon-box .saito-identicon {
-  /* It should grow to fit the box! */
-  width: 100%;
-  height: 100%;
+    /* It should grow to fit the box! */
+width: 100%;
+    height: 100%;
 }
 
 /* ----------------------------------------------------------------
 Saito Username  --- Partially duplicated in saito-base
 -----------------------------------------------------------------*/
 
-.saito-user>.saito-address-long:nth-child(2) {
-  grid-column-end: 4;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  column-gap: 1rem;
+.saito-user > .saito-address-long:nth-child(2) {
+    grid-column-end: 4;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 1rem;
 }
 
 /* ----------------------------------------------------------------
@@ -37,63 +42,64 @@ Saito User
 -----------------------------------------------------------------*/
 
 .saito-user {
-  display: grid;
-  column-gap: 1rem;
-  grid-template-columns: min-content 1fr min-content;
-  grid-template-rows: min-content 1fr;
-  justify-items: start;
-  width: 100%;
-  position: relative;
+    display: grid;
+    column-gap: 1rem;
+    grid-template-columns: min-content 1fr min-content;
+    grid-template-rows: min-content 1fr;
+    justify-items: start;
+    width: 100%;
+    position: relative;
 }
 
 /*  saito-identicon-box  */
 
-.saito-user>.saito-identicon-box {
-  grid-column-start: 1;
-  grid-column-end: span 1;
-  grid-row: span 2;
-  position: relative;
+.saito-user > .saito-identicon-box {
+    grid-column-start: 1;
+    grid-column-end: span 1;
+    grid-row: span 2;
+    position: relative;
 }
 
-.saito-user>.saito-address {
-  color: var(--saito-font-color-heavy);
-  grid-column-start: 2;
-  grid-column-end: span 1;
-  grid-row-start: 1;
-  grid-row-end: span 1;
-  
+/*changed - 1*/
+.saito-user > .saito-address {
+    color: var(--saito-color-heavy);
+    grid-column-start: 2;
+    grid-column-end: span 1;
+    grid-row-start: 1;
+    grid-row-end: span 1;
 }
 
-.saito-user[data-disable="true"]>.saito-address, .saito-user[data-disable="true"]>.saito-identicon-box {
-  cursor: unset; /* allow inheritance from parent for otherwise clickable event */
+.saito-user[data-disable="true"] > .saito-address, .saito-user[data-disable="true"] > .saito-identicon-box {
+    cursor: unset;
+    /* allow inheritance from parent for otherwise clickable event */;
 }
 
-.saito-user>.saito-userline {
-  grid-column-start: 2;
-  grid-column-end: span 1;
-  grid-row-start: 2;
-  grid-row-end: span 1;
-  font-size: 1.4rem;
-  /* Added for all the publickeys in saito-userlines that overflow */ 
-  width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.saito-user > .saito-userline {
+    grid-column-start: 2;
+    grid-column-end: span 1;
+    grid-row-start: 2;
+    grid-row-end: span 1;
+    font-size: 1.4rem;
+    /* Added for all the publickeys in saito-userlines that overflow */
+width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .saito-user .saito-datetime {
-  cursor: pointer;
-  grid-column-start: 3;
-  grid-column-end: span 1;
-  grid-row: span 2;
-  font-size: 1.4rem;
-  align-items: top;
+    cursor: pointer;
+    grid-column-start: 3;
+    grid-column-end: span 1;
+    grid-row: span 2;
+    font-size: 1.4rem;
+    align-items: top;
 }
 
 .saito-user-fourth-elem-large {
-  grid-row: span 2;
+    grid-row: span 2;
 }
-
 
 .saito-overlay .saito-user {
-  max-width: 90vw;
+    max-width: 90vw;
 }
+

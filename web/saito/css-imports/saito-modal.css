@@ -1,427 +1,419 @@
 /* generic modal look and feel */
+
 /*
 NOTE: the .saito-model class is a grid with two sectiions
 This alows for a header with a header with title to be added without extra CSS
 */
-.saito-modal {
-  font-size: 1.25rem;
-  color: var(--saito-white);
-  background: var(--saito-modal-background);
-  min-width: 70rem;
-  height: min-content;
-  max-width: 80vw;
-  padding: 2rem;
-  display: grid;
-  grid-template-rows: min-content auto;
-  max-height: 95vh;
-}
 
+/*changed - 1*/
+.saito-modal {
+    font-size: 1.25rem;
+    color: var(--saito-color-light);
+    background: var(--saito-background-modal);
+    min-width: 70rem;
+    height: min-content;
+    max-width: 80vw;
+    padding: 2rem;
+    display: grid;
+    grid-template-rows: min-content auto;
+    max-height: 95vh;
+    border-radius: var(--saito-border-radius);
+}
 
 .saito-modal-title {
-  font-size: 3rem;
-  padding: unset;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid;
+    font-size: 3rem;
+    padding: unset;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid;
 }
 
-
 .saito-contact {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  gap: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    gap: 1rem;
 }
 
 /* We want to trigger the click event on the container */
+
 .saito-contact .saito-user .saito-identicon-box, .saito-contact .saito-user .saito-userline, .saito-contact .saito-user .saito-address {
-  pointer-events: none;
+    pointer-events: none;
 }
 
+/*changed - 1*/
 .secure_contact_notice {
-  position: absolute;
-  left: 3rem;
-  top: 0;
-  z-index: 2;
-  color: var(--saito-font-color-light);
-  text-shadow: 2px 2px 2px var(--saito-black);
-
+    position: absolute;
+    left: 3rem;
+    top: 0;
+    z-index: 2;
+    color: var(--saito-color-light);
+    text-shadow: 2px 2px 2px var(--saito-color-black);
 }
 
 .saito-contact.unconfirmed {
-  filter: brightness(0.7) grayscale(1);
+    filter: brightness(0.7) grayscale(1);
 }
 
-.saito-modal-content{
-  border-top: 1px solid;
-  padding: 0.5rem 0;
+.saito-modal-content {
+    border-top: 1px solid;
+    padding: 0.5rem 0;
 }
 
 .saito-modal-content .saito-user {
-  height: 5rem;
-  align-items: center;
-  font-size: 20px;
-  overflow: hidden;
+    height: 5rem;
+    align-items: center;
+    font-size: 20px;
+    overflow: hidden;
 }
 
 .saito-modal-content .saito-user .saito-identicon-box {
-  width: 4.5rem;
-  height: 4.5rem;
+    width: 4.5rem;
+    height: 4.5rem;
 }
 
-
 .saito-modal-menu .saito-modal-title .saito-user {
-  height: 6rem;
-  margin: 0 1.25rem;
-  padding: 0 1.25rem;
-  cursor: default;
-  align-items: center;
-  width: calc(100% - 2.5rem);
-  white-space: nowrap;
+    height: 6rem;
+    margin: 0 1.25rem;
+    padding: 0 1.25rem;
+    cursor: default;
+    align-items: center;
+    width: calc(100% - 2.5rem);
+    white-space: nowrap;
 }
 
 .saito-modal-menu .saito-modal-title .saito-user .saito-identicon-box {
-  width: 5.5rem;
-  height: 5.5rem;
+    width: 5.5rem;
+    height: 5.5rem;
 }
 
 /* saito-modal-menu
 /* theming for a simple menu with font-awesome icon and text in a two col grid */
+
 .saito-modal-menu-option {
-  font-size: 3rem;
-  height: 6rem;
-  margin: 0 2rem;
-  padding: 1.5rem;
-  display: grid;
-  align-items: center;
-  grid-gap: 1rem;
-  grid-template-columns: 4rem 1fr;
-  cursor: pointer;
+    font-size: 3rem;
+    height: 6rem;
+    margin: 0 2rem;
+    padding: 1.5rem;
+    display: grid;
+    align-items: center;
+    grid-gap: 1rem;
+    grid-template-columns: 4rem 1fr;
+    cursor: pointer;
 }
 
+/*changed - 1*/
 .saito-modal-menu-option.disabled-option {
-  color: var(--saito-gray-mid);
-  cursor: default;
+    color: var(--saito-font-color-highlight);
+    cursor: default;
 }
 
+/*changed - 1*/
 .saito-modal-menu-option:not(.disabled-option):hover, .saito-contact:hover {
-  background-color: var(--saito-hover-background);
+    background-color: var(--saito-button-hover-background-color-medium);
 }
 
-.saito-modal-menu-option>i {
-  float: left;
-  margin-right: 2rem;
+.saito-modal-menu-option > i {
+    float: left;
+    margin-right: 2rem;
 }
 
-.saito-modal-menu-option>div {
-  float: left;
-  margin-right: 2rem;
-  font-size: 2rem;
-  vertical-align: middle;
-  margin-bottom: auto;
-  margin-top: auto;
-  line-height: 3rem;
-  height: 3rem;
+.saito-modal-menu-option > div {
+    float: left;
+    margin-right: 2rem;
+    font-size: 2rem;
+    vertical-align: middle;
+    margin-bottom: auto;
+    margin-top: auto;
+    line-height: 3rem;
+    height: 3rem;
 }
 
 .saito-modal-text-input {
-  margin-left: 3rem;
-  margin-right: 3rem;
-  width: 50rem;
-  max-width: 50rem;
-  margin-top: 0.75rem;
+    margin-left: 3rem;
+    margin-right: 3rem;
+    width: 50rem;
+    max-width: 50rem;
+    margin-top: 0.75rem;
 }
 
+/*changed - 1*/
 .saito-modal-button {
-  background-color: var(--saito-white);
-  margin-top: 3rem;
-  margin-left: 3rem;
-  max-width: min-content;
-  padding-left: 4rem;
-  padding-right: 4rem;
+    background-color: var(--saito-button-background-color-medium);
+    margin-top: 3rem;
+    margin-left: 3rem;
+    max-width: min-content;
+    padding-left: 4rem;
+    padding-right: 4rem;
 }
 
+/*changed - 1*/
 .saito-modal-button:hover {
-  border: 1px solid var(--saito-white);
+    border: var(--saito-button-hover-border-thickness-tiny) solid var(--saito-button-hover-border-color-medium);
 }
 
+/*changed - 1*/
 #saito-confirm-add-publickey {
-  background-color:  var(--saito-white);
-  height: auto;
-  width: 30vh;
-  border-radius: 1.5rem;
-  padding: 2rem;
+    background-color: var(--saito-color-white);
+    height: auto;
+    width: 30vh;
+    border-radius: var(--saito-border-radius);
+    padding: 2rem;
 }
 
 #saito-confirm-add-publickey .saito-identicon-box {
-  display: inline-block;
-  margin-left: 50%;
-  transform: translateX(-50%);
-  width: 8rem;
-  height: 8rem;
-
+    display: inline-block;
+    margin-left: 50%;
+    transform: translatex(-50%);
+    width: 8rem;
+    height: 8rem;
 }
 
-
-#saito-confirm-add-publickey>.saito-address {
-  width: 100%;
-  max-width: 100%;
-  overflow: inherit;
-  display: block;
-  height: auto;
-  word-break: break-word;
-  text-overflow: inherit;
-  white-space: break-spaces;
-  text-align: center;
-  margin-top: 5rem;
-  margin-bottom: 1rem;
+#saito-confirm-add-publickey > .saito-address {
+    width: 100%;
+    max-width: 100%;
+    overflow: inherit;
+    display: block;
+    height: auto;
+    word-break: break-word;
+    text-overflow: inherit;
+    white-space: break-spaces;
+    text-align: center;
+    margin-top: 5rem;
+    margin-bottom: 1rem;
 }
 
-#saito-confirm-add-publickey>.saito-contact-status {
-  text-align: center;
+#saito-confirm-add-publickey > .saito-contact-status {
+    text-align: center;
 }
-
 
 .saito-modal-title .saito-user .saito-address {
-  font-size: 4rem;
+    font-size: 4rem;
 }
 
+/*changed - 1*/
 .share-link {
-  color: var(--saito-font-color);
+    color: var(--saito-color-contrast);
 }
-
 
 /* Exclusively for modal-add-user-confirm.template */
 
 .confirm-modal-wrapper {
-  font-size: 1.5em;
-  padding: 1.5em;
-  color: var(--saito-background-color);
-  font-weight: bold;
+    font-size: 1.5em;
+    padding: 1.5em;
+    color: var(--saito-background-color);
+    font-weight: bold;
 }
 
 .welcome-invite-box {
-  min-width: 200px;
-  min-height: 120px;
-  max-width: 325px;
-  padding: 10px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  font-size: 25px;
-  border: 1px solid;
-  margin: 1em;
+    min-width: 200px;
+    min-height: 120px;
+    max-width: 325px;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 25px;
+    border: 1px solid;
+    margin: 1em;
 }
-
 
 /* LIST SELECTION MODAL */
 
 .game-selection-list-overlay {
-  background-color: black;
-  max-height: 90vh;
-  overflow-y: scroll;
-  font-size: 2rem;
-  min-width: 400px;
+    background-color: black;
+    max-height: 90vh;
+    overflow-y: scroll;
+    font-size: 2rem;
+    min-width: 400px;
 }
 
 .selection-list li {
-  cursor: pointer;
-  border-bottom: 1px solid transparent;
-  padding: 10px 0px 10px 20px;
-  list-style: none;
+    cursor: pointer;
+    border-bottom: 1px solid transparent;
+    padding: 10px 0 10px 20px;
+    list-style: none;
 }
 
 .selection-list li:hover {
-  background-color: #33669999;
 }
 
 .selection-list li .tiptext {
-  width: fit-content;
-  ;
-  background-color: #000a;
-  color: #ffffff !important;
-  min-width: 0px;
-  padding: 3px;
-  pointer-events: none;
-  top: 5px;
-  right: 0;
+    width: fit-content;
+    color: #fff !important /*variable*/;
+    min-width: 0;
+    padding: 3px;
+    pointer-events: none;
+    top: 5px;
+    right: 0;
 }
-
-
-
-
 
 /* Welcome modal */
 
-
-
 .welcome-modal-wrapper {
-  max-width: 80vw;
-  font-size: 1.4em;
+    max-width: 80vw;
+    font-size: 1.4em;
 }
 
 .welcome-modal-input-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
 }
 
+/*changed - 1*/
 .welcome-modal-input {
-  padding: 0.5rem;
-  font-size: 2.5rem !important;
-  flex-grow: 5;
-  border-radius: 0.5rem;
-  color: var(--saito-font-color);
-  text-align: end;
+    padding: 0.5rem;
+    font-size: 2.5rem !important;
+    flex-grow: 5;
+    border-radius: var(--saito-corners-rigid);
+    color: var(--saito-color-contrast);
+    text-align: end;
 }
 
 .welcome-modal-main {
-  display: flex;
-  flex-direction: column;
-  row-gap: 2rem;
+    display: flex;
+    flex-direction: column;
+    row-gap: 2rem;
 }
 
 /* Exclusively for modal-add-user-confirm.template */
 
 .confirm-modal-wrapper {
-  font-size: 1.5em;
-  padding: 1.5em;
-  color: var(--saito-background-color);
-  font-weight: bold;
+    font-size: 1.5em;
+    padding: 1.5em;
+    color: var(--saito-background-color);
+    font-weight: bold;
 }
 
 .welcome-modal-header {
-  font-size: 3rem;
+    font-size: 3rem;
 }
 
 .welcome-modal-info {
-  clear: both;
+    clear: both;
 }
 
 .welcome-modal-action {
-  
 }
 
 .welcome-modal-left {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
 
 .welcome-modal-signup {
-  margin: 1em 0;
-  display: flex;
+    margin: 1em 0;
+    display: flex;
 }
 
 .welcome-modal-explanation {
-  font-size: 0.8em;
-  display: grid;
-  grid-template-columns: auto auto;
-  grid-gap: 1em;
-  line-height: 1.3em;
+    font-size: 0.8em;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-gap: 1em;
+    line-height: 1.3em;
 }
 
 .register-modal-controls {
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: space-between;
-  align-items: center;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    align-items: center;
 }
+
 #signup {
-  margin: 0;
-  width: 15px;
-  height: 21px;
+    margin: 0;
+    width: 15px;
+    height: 21px;
 }
 
 .welcome-modal-action button:hover {
-  border-color: var(--saito-background-color);
+    border-color: var(--saito-background-color);
 }
 
-
+/*changed - 1*/
 .saito-overlaid-icon {
-  color: var(--saito-red);
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  filter: drop-shadow(1px 1px 3px var(--saito-black));
+    color: var(--saito-color-primary);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(1px 1px 3px var(--saito-color-black));
 }
 
 /* Identicons aren't clickable in modals menus */
+
 .saito-modal-menu .saito-identicon-box {
-  cursor: default;
+    cursor: default;
 }
-
-
 
 /* mobile modals */
 
 @media only screen and (max-width: 1000px) {
-  .saito-modal {
-    min-width: unset;
-    max-width: unset;
-    padding: 0.5rem;
-    width: 90vw;
-    grid-template-columns: 100%;
-  }
-
-  .saito-modal > * {
-    max-width: 100%;
-  }
-
-  .welcome-modal-wrapper {
-    /*grid-template-columns: 1fr;*/
-    width: 90vw;
-  }
-  .modal-content-blank {
-    width: 100%;
-  }
-  .welcome-modal-action {
-    padding: 0.81em;
-  }
-  i.fas.fa-arrow-right {
-    right: -1em;
-  }
-}
-
+    .saito-modal {
+        min-width: unset;
+        max-width: unset;
+        padding: 0.5rem;
+        width: 90vw;
+        grid-template-columns: 100%
+        }
+    .saito-modal > * {
+        max-width: 100%
+        }
+    .welcome-modal-wrapper {
+        /*grid-template-columns: 1fr;*/
+        width: 90vw
+        }
+    .modal-content-blank {
+        width: 100%
+        }
+    .welcome-modal-action {
+        padding: 0.81em
+        }
+    i.fas.fa-arrow-right {
+        right: -1em
+        }
+    }
 
 @media only screen and (max-width: 768px) {
-  .saito-modal-menu-option>i {
-    font-size: 2rem;
-  }
-
-  .saito-modal-menu-option>div {
-    font-size: 1.5rem;
-  }
-}
+    .saito-modal-menu-option > i {
+        font-size: 2rem
+        }
+    .saito-modal-menu-option > div {
+        font-size: 1.5rem
+        }
+    }
 
 @media only screen and (max-width: 525px) {
-  .saito-modal-menu .saito-modal-title .saito-user {
-    margin: 0;
-  }
-
-  .saito-modal-menu-option {
-    margin: 0 1rem;
-  }
-
-
-}
+    .saito-modal-menu .saito-modal-title .saito-user {
+        margin: 0
+        }
+    .saito-modal-menu-option {
+        margin: 0 1rem
+        }
+    }
 
 /* not sure where this should be */
 
+/*changed - 1*/
 .saito-modal.contacts {
-  background-color: var(--saito-background-color);
-  background-image: url(/saito/img/tiled-logo.svg);
-  color: var(--saito-font-color);
-  grid-template-rows: min-content 1fr min-content;
+    background-color: var(--saito-background-modal);
+    /* WHY?  background-image: url(/saito/img/tiled-logo.svg);
+    */
+color: var(--saito-color-heavy);
+    grid-template-rows: min-content 1fr min-content;
+    border-radius: var(--saito-border-radius);
 }
 
 .saito-contacts-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1rem 0;
-  height: 100%;
-  overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 0;
+    height: 100%;
+    overflow: auto;
 }
+
