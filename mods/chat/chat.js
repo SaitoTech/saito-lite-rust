@@ -20,7 +20,7 @@ class Chat extends ModTemplate {
 		this.name = 'Chat';
 
 		this.description = 'Saito instant-messaging client';
-		this.categories = "Messaging Chat";
+		this.categories = 'Messaging Chat';
 		this.groups = [];
 
 		/*
@@ -64,7 +64,7 @@ class Chat extends ModTemplate {
 		this.isRelayConnected = false;
 
 		this.audio_notifications = true;
-		this.audio_chime = "Glass";
+		this.audio_chime = 'Glass';
 		this.auto_open_community = false;
 
 		this.black_list = [];
@@ -117,10 +117,8 @@ class Chat extends ModTemplate {
 			title: 'Saito Chat',
 			url: 'https://saito.io/chat/',
 			description: 'Instant messaging client on Saito Network blockchain',
-			image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
+			image: 'https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png'
 		};
-
-
 	}
 
 	hasSettings() {
@@ -168,7 +166,6 @@ class Chat extends ModTemplate {
 
 		//Add script for emoji to work
 		this.attachPostScripts();
-
 	}
 
 	async render() {
@@ -507,8 +504,14 @@ class Chat extends ModTemplate {
 													);
 												}
 											} else {
-												if (elem.querySelector('.saito-notification-dot')) {
-													elem.querySelector('.saito-notification-dot').remove();
+												if (
+													elem.querySelector(
+														'.saito-notification-dot'
+													)
+												) {
+													elem.querySelector(
+														'.saito-notification-dot'
+													).remove();
 												}
 											}
 										}
@@ -619,7 +622,7 @@ class Chat extends ModTemplate {
 							icon: 'fa-regular fa-comments',
 							callback: function (app) {
 								app.connection.emit('open-chat-with', {
-									id: obj.call_id,
+									id: obj.call_id
 								});
 							}
 						}
@@ -642,7 +645,7 @@ class Chat extends ModTemplate {
 							icon: 'fa-regular fa-comments',
 							callback: function (app) {
 								app.connection.emit('open-chat-with', {
-									id: obj.call_id,
+									id: obj.call_id
 								});
 							}
 						}
@@ -1479,7 +1482,9 @@ class Chat extends ModTemplate {
 							from: [],
 							msg: new_message,
 							mentioned: [],
-							notice: true
+							notice: true,
+							likes: 0,
+							liked_by: {}
 						});
 					}
 				}
@@ -1507,7 +1512,6 @@ class Chat extends ModTemplate {
 		let new_message_flag = false;
 
 		for (let block of message_blocks) {
-
 			let ts = 0;
 			if (block?.date) {
 				html += `<div class="saito-time-stamp">${block.date}</div>`;
@@ -1520,41 +1524,68 @@ class Chat extends ModTemplate {
 					for (let z = 0; z < block.length; z++) {
 						ts = ts || block[z].timestamp;
 						sender = block[z].from[0];
-						
-						// replace @mentions with saito treated address
-						block[z].msg = block[z].msg.replaceAll(/(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]*)/g, function(k){
-							let split = (k.split('@'));
-							let username = '';
-							let key = '';
 
-							if (split.length > 2) {
-								username = split[1]+'@'+split[2];
-								key = chat_self.app.keychain.returnPublicKeyByIdentifier(username);
-							} else {
-								username = chat_self.app.keychain.returnUsername(split[1]);
-								key = split[1];
-							}
-							let replaced = `<span class="saito-mention saito-address" data-id="${key}" 
+						// replace @mentions with saito treated address
+						block[z].msg = block[z].msg.replaceAll(
+							/(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]*)/g,
+							function (k) {
+								let split = k.split('@');
+								let username = '';
+								let key = '';
+
+								if (split.length > 2) {
+									username = split[1] + '@' + split[2];
+									key =
+										chat_self.app.keychain.returnPublicKeyByIdentifier(
+											username
+										);
+								} else {
+									username =
+										chat_self.app.keychain.returnUsername(
+											split[1]
+										);
+									key = split[1];
+								}
+								let replaced = `<span class="saito-mention saito-address" data-id="${key}" 
 															data-disable="true" contenteditable="false">${username}</span>`;
-							return replaced;
+								return replaced;
+							}
+						);
+
+						// Get my like status
+						let liked = '';
+						this.groups.forEach((group) => {
+							group.txs.forEach((tx) => {
+								console.log(tx, 'transactionsss');
+								if (tx.signature === block[z].signature) {
+									if (tx.liked_by[this.publicKey]) {
+										console.log(tx);
+										liked = 'liked';
+									}
+								}
+							});
 						});
 
 						const replyButton = `
-						 	<div data-id="${block[z].signature}" data-href="${sender + ts}" class="saito-userline-reply">
+						 	<div data-id="${block[z].signature}" data-href="${
+							sender + ts
+						}" class="saito-userline-reply">
+							<div class="chat-like  "><i class="fas fa-thumbs-up  ${liked}"></i> </div> 
 		                  <div class="chat-copy"><i class="fas fa-copy"></i></div>
 		                  <div class="chat-reply"><i class="fas fa-reply"></i></div>
 		                  <div class="saito-chat-line-controls">
-		                    <span class="saito-chat-line-timestamp">${this.app.browser.returnTime(ts)}</span>
+		                    <span class="saito-chat-line-timestamp">${this.app.browser.returnTime(
+								ts
+							)}</span>
 		                  </div>
 		               </div>`;
 
-
 						msg += `<div class="chat-message-line message-${block[z].signature}`;
-						if (block[z]?.flag_message){
+						if (block[z]?.flag_message) {
 							msg += ' user-mentioned-in-chat-line';
-						};
-						if (new_message_flag){
-							msg += ' new-message'
+						}
+						if (new_message_flag) {
+							msg += ' new-message';
 						}
 						msg += `">`;
 						if (block[z].msg.indexOf('<img') != 0) {
@@ -1563,12 +1594,20 @@ class Chat extends ModTemplate {
 								true
 							);
 						} else {
-							msg += block[z].msg.substring(0,	block[z].msg.indexOf('>') + 1);
+							msg += block[z].msg.substring(
+								0,
+								block[z].msg.indexOf('>') + 1
+							);
 						}
+						msg += `<div class="chat-likes"> <i class="fas fa-thumbs-up"></i><div class="chat-like-number">2</div> </div>`;
 						msg += `${replyButton}</div>`;
 
-						if (group?.last_read_message && block[z].signature == group.last_read_message && group.unread > 0){
-							console.log("Mark remaining messages as new!");
+						if (
+							group?.last_read_message &&
+							block[z].signature == group.last_read_message &&
+							group.unread > 0
+						) {
+							console.log('Mark remaining messages as new!');
 							new_message_flag = true;
 						}
 					}
@@ -1690,7 +1729,9 @@ class Chat extends ModTemplate {
 			timestamp: tx.timestamp,
 			from: [],
 			msg: content,
-			mentioned: mentions
+			mentioned: mentions,
+			likes: 0,
+			liked_by: {}
 		};
 
 		if (tx?.notice) {
@@ -1733,9 +1774,9 @@ class Chat extends ModTemplate {
 			insertion_index++;
 		}
 
-		if (!tx.isFrom(this.publicKey)){
+		if (!tx.isFrom(this.publicKey)) {
 			group.unread++;
-		}else{
+		} else {
 			group.last_read_message = tx.signature;
 		}
 
@@ -1780,6 +1821,55 @@ class Chat extends ModTemplate {
 		}
 
 		return 1;
+	}
+
+	async createChatLikeTransaction(group_id, sig) {
+		let newtx =
+			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+				this.publicKey
+			);
+		if (newtx == null) {
+			console.error('Null tx created');
+			return null;
+		}
+		newtx.addTo(this.publicKey);
+		newtx.msg = {
+			group_id,
+			signature: sig
+		};
+		return newtx;
+	}
+
+	async sendChatLikeTransaction(tx) {}
+
+	async receiveChatLikeTransaction(tx) {
+		if (tx.isFrom(this.publicKey)) {
+			console.log('this is the chat like tx', tx);
+			// fetch the chat
+
+			let { group_id, signature } = tx.returnMessage();
+			this.groups.forEach((group) => {
+				if (group.id === group_id) {
+					group.txs.forEach((tx) => {
+						if (tx.signature === signature) {
+							if (tx.liked_by[this.publicKey]) {
+								tx.likes--;
+								tx.liked_by[this.publicKey] = false;
+								return;
+							}
+
+							tx.likes++;
+							tx.liked_by[this.publicKey] = true;
+						}
+					});
+				}
+			});
+
+			// render like
+			let group = this.groups.find((group) => group.id === group_id);
+
+			this.app.connection.emit('chat-popup-render-request', group);
+		}
 	}
 
 	///////////////////
@@ -2037,12 +2127,15 @@ class Chat extends ModTemplate {
 			};
 			this.app.options.chat = newObj;
 		} else {
-		
-			if (this.app.options.chat.audio_notifications !== "undefined" && this.app.options.chat.audio_notifications !== false){
-				this.audio_notifications =	this.app.options.chat.audio_notifications;
-			}	
-		
-			if (this.app.options.chat?.audio_chime){
+			if (
+				this.app.options.chat.audio_notifications !== 'undefined' &&
+				this.app.options.chat.audio_notifications !== false
+			) {
+				this.audio_notifications =
+					this.app.options.chat.audio_notifications;
+			}
+
+			if (this.app.options.chat?.audio_chime) {
 				this.audio_chime = this.app.options.chat?.audio_chime;
 			}
 
@@ -2097,9 +2190,10 @@ class Chat extends ModTemplate {
 					}
 
 					currentGroup = chat_self.returnGroup(g_id);
-					if (!currentGroup?.last_read_message){
-						if (currentGroup.txs.length > 0){
-							currentGroup.last_read_message = currentGroup.txs.slice(-1)[0].signature;
+					if (!currentGroup?.last_read_message) {
+						if (currentGroup.txs.length > 0) {
+							currentGroup.last_read_message =
+								currentGroup.txs.slice(-1)[0].signature;
 						}
 					}
 
@@ -2221,24 +2315,26 @@ class Chat extends ModTemplate {
 			async function (req, res) {
 				let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
 
-				mod_self.social.url = reqBaseURL + encodeURI(mod_self.returnSlug());
+				mod_self.social.url =
+					reqBaseURL + encodeURI(mod_self.returnSlug());
 
 				res.setHeader('Content-type', 'text/html');
 				res.charset = 'UTF-8';
-				res.send(HomePage(app, mod_self, app.build_number, mod_self.social));
+				res.send(
+					HomePage(app, mod_self, app.build_number, mod_self.social)
+				);
 				return;
 			}
 		);
 
-
-		expressapp.use('/' + encodeURI(this.returnSlug()),	express.static(webdir));
+		expressapp.use(
+			'/' + encodeURI(this.returnSlug()),
+			express.static(webdir)
+		);
 	}
 
-
-
-	notification(group){
-
-			/*Send System notification
+	notification(group) {
+		/*Send System notification
 			if (this.enable_notifications && !group.muted) {
 				let sender = this.app.keychain.returnIdentifierByPublicKey(
 					new_message.from[0],
@@ -2263,48 +2359,49 @@ class Chat extends ModTemplate {
 				);
 			}*/
 
-		if (group.muted){
+		if (group.muted) {
 			return;
 		}
 
-		this.app.browser.createTabNotification("New Message", group.name);
+		this.app.browser.createTabNotification('New Message', group.name);
 
-		if (!this.audio_notifications){
+		if (!this.audio_notifications) {
 			return;
 		}
 
-		if (!this.app.browser.active_tab){
+		if (!this.app.browser.active_tab) {
 			this.playChime();
 			return;
-		}else if (this.audio_notifications === "tabs"){
+		} else if (this.audio_notifications === 'tabs') {
 			return;
 		}
 
-		if (this.audio_notifications == "groups" && this.chat_manager.popups[group.id].is_rendered){
+		if (
+			this.audio_notifications == 'groups' &&
+			this.chat_manager.popups[group.id].is_rendered
+		) {
 			return;
 		}
 
 		this.playChime();
 	}
 
-	playChime(){
-		if (this.beeping){
-			console.log("Block multiple chimes");
+	playChime() {
+		if (this.beeping) {
+			console.log('Block multiple chimes');
 			return;
 		}
 
-		this.beeping = setTimeout(()=> {
+		this.beeping = setTimeout(() => {
 			this.beeping = null;
 		}, 1000);
 
-		try{
-			this.chime.play();	
-		}catch(err){
+		try {
+			this.chime.play();
+		} catch (err) {
 			console.error(err);
 		}
-		
 	}
-
 }
 
 module.exports = Chat;

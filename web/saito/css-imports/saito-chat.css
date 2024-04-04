@@ -514,12 +514,29 @@
   font-size: 1.4rem;
 }
 
-.saito-user-self .chat-message-line:hover .saito-userline-reply{
-  right: -2.5rem;
+.liked {
+  color: var(--saito-primary);
 }
 
-.saito-user-self .chat-message-line .saito-userline-reply .chat-copy, .saito-user-self .chat-message-line .saito-userline-reply .chat-reply {
+.chat-likes {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+}
+
+.chat-likes .chat-like-number {
+  margin-left: .5rem;
+
+}
+.saito-user-self .chat-message-line:hover .saito-userline-reply{
+  right: -2.5rem;
+
+}
+
+.saito-user-self .chat-message-line .saito-userline-reply .chat-copy, .saito-user-self .chat-message-line .saito-userline-reply .chat-reply, .saito-user-self .chat-message-line .saito-userline-reply .chat-like {
   display: none;
+  cursor: pointer;
 }
 
 .saito-user .saito-userline-reply i:hover {
