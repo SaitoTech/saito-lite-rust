@@ -1,0 +1,40 @@
+
+.redsquare-tweet-icon {
+	display: none;
+}
+
+@media screen and (max-width: 1200px) {
+	.saito-sidebar.left .saito-menu > ul > li{
+		padding: unset;
+		width: 5rem;
+		height: 5rem;
+		justify-content: center;
+	}
+
+	.saito-sidebar.left .saito-menu > ul > li > i {
+		padding: unset;
+		margin: unset;
+		width: unset;
+	}
+
+	.saito-sidebar.left .saito-menu > ul > li > i + span {
+		display: none;
+	}
+
+	.redsquare-tweet-icon {
+		display: block;
+		font-size: 2.6rem;
+	}
+
+	.redsquare-menu .saito-button-primary{
+		min-width: unset;
+	}
+
+	.redsquare-menu .saito-button-primary span {
+		display: none;
+	}
+
+	.saito-sidebar.left .chat-manager {
+		display: none;
+	}
+}

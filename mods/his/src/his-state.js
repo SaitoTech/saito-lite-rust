@@ -21,7 +21,7 @@
     // reset impulse commits
     //
     this.game.state.debater_committed_this_impulse = {};
-    
+    this.game.state.assaulted_this_impulse = 0;
 
     // display cards left
     this.displayCardsLeft();
@@ -78,6 +78,7 @@
     this.game.state.events.england_changed_rulers_this_turn = 0;
     this.game.state.cards_evented = [];
     this.game.state.foreign_wars_fought_this_impulse = [];
+    this.game.state.henry_viii_pope_approves_divorce = 0;
 
     this.game.state.may_explore['england'] = 1;
     this.game.state.may_explore['france'] = 1;
@@ -279,7 +280,7 @@ console.log("faction: " + zf) ;
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     for (let i = space.units[faction].length - 1; i >= 0; i--) {
-      if (space.units[faction][i].type === type) {
+      if (space.units[faction][i].type == type) {
         this.updateLog(this.returnFactionName(faction) + " removes " + type + " in " + space.name);
 	space.units[faction].splice(i, 1);
         this.updateOnBoardUnits();
@@ -706,6 +707,7 @@ if (this.game.state.scenario != "is_testing") {
 
     state.foreign_wars_fought_this_impulse = [];
 
+    state.assaulted_this_impulse = 0;
     state.alliances = this.returnDiplomacyAlliance();
     state.diplomacy = [];
 
@@ -919,6 +921,7 @@ if (this.game.state.scenario != "is_testing") {
     state.henry_viii_add_elizabeth = 0;
     state.henry_viii_auto_reroll = 0;
     state.henry_viii_rolls = [];
+    state.henry_viii_pope_approves_divorce = 0;
 
     state.knights_of_st_john = "";
 
@@ -1262,46 +1265,55 @@ if (this.game.state.scenario != "is_testing") {
     nw['greatlakes'] = {
       img : "/his/img/vp/GreatLakes1VP.svg",
       type : "discovery" ,
+      name : "Great Lakes" ,
       vp : 1
     }
     nw['stlawrence'] = {
       img : "/his/img/vp/StLawrenceRiver1VP.svg",
       type : "discovery" ,
+      name : "St. Lawrence River" ,
       vp : 1
     }
     nw['mississippi'] = {
       img : "/his/img/vp/MississippiRiver1VP.svg",
       type : "discovery" ,
+      name : "Mississippi" ,
       vp : 1
     }
     nw['aztec'] = {
       img : "/his/img/vp/Aztecs2VP.svg",
       type : "discovery" ,
+      name : "Aztec" ,
       vp : 2
     }
     nw['maya'] = {
       img : "/his/img/vp/Maya1VP.svg",
       type : "discovery" ,
+      name : "Maya" ,
       vp : 1
     }
     nw['amazon'] = {
       img : "/his/img/vp/AmazonRiver2VP.svg",
       type : "discovery" ,
+      name : "Amazon River" ,
       vp : 2
     }
     nw['inca'] = {
       img : "/his/img/vp/Inca2VP.svg",
       type : "discovery" ,
+      name : "Inca" ,
       vp : 2
     }
     nw['circumnavigation'] = {
       img : "/his/img/vp/Circumnavigation3VP.svg",
       type : "discovery" ,
+      name : "Circumnavigation" ,
       vp : 3
     }
     nw['pacificstrait'] = {
       img : "/his/img/vp/PacificStraight1VP.svg",
       type : "discovery" ,
+      name : "Pacific Strait" ,
       vp : 1
     }
 

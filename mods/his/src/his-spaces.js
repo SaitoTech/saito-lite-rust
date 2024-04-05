@@ -288,6 +288,20 @@
     return false;
   }
 
+  doesSpaceHaveNonFactionNavalUnits(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let f in space.units) {
+      if (f != faction) {
+        for (let i = 0; i < space.units[f].length; i++) {
+	  let u = space.units[f][i];
+	  if (u.type == "squadron") { return true; }
+	  if (u.type == "corsair") { return true; }
+        }
+      }
+    }
+    return false;
+  }
+
   doesSpaceHaveNonFactionUnits(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let f in space.units) {
@@ -296,7 +310,7 @@
 	  let u = space.units[f][i];
 	  if (u.type == "regular") { return true; }
 	  if (u.type == "mercenary") { return true; }
-	  if (u.type == "corsair") { return true; }
+	  if (u.type == "cavalry") { return true; }
         }
       }
     }
@@ -1908,13 +1922,13 @@ try {
     for (let key in this.game.spaces) {
       if (do_not_count_unrest == 0) {
         if ((this.game.spaces[key].unrest == 1 && this.game.spaces[key].religion == "protestant") || this.game.spaces[key].religion === "catholic") {
-  	  if (language == "" || this.game.spaces[key].language == language) {
+  	  if (language == "" || language == "all" || this.game.spaces[key].language == language) {
 	    catholic_spaces++;
 	  }
 	}
       } else {
         if (this.game.spaces[key].religion === "catholic") {
-  	  if (language == "" || this.game.spaces[key].language == language) {
+  	  if (language == "" || language == "all" || this.game.spaces[key].language == language) {
 	    catholic_spaces++;
 	  }
         }
@@ -2139,7 +2153,7 @@ try {
       political: "scotland",
       religion: "catholic",
       ports: ["north"],
-      neighbours: ["stirling","carlisle","berwick"],
+      neighbours: ["stirling","glasgow","berwick"],
       language: "english",
       type: "key"
     }
@@ -3557,8 +3571,8 @@ try {
     // foreign war cards are spaces
     //
     spaces['egypt'] = {
-      top: 0,
-      left: 0,
+      top: 800,
+      left: 4500,
       home: "independent",
       political: "",
       religion: "",
@@ -3569,8 +3583,8 @@ try {
       type: "war"
     }
     spaces['ireland'] = {
-      top: 0,
-      left: 0,
+      top: 800,
+      left: 4125,
       home: "independent",
       political: "",
       religion: "",
@@ -3581,8 +3595,8 @@ try {
       type: "war"
     }
     spaces['persia'] = {
-      top: 0,
-      left: 0,
+      top: 500,
+      left: 3800,
       home: "independent",
       political: "",
       religion: "",

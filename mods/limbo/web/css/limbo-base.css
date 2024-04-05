@@ -111,8 +111,8 @@
 
 .dream-controls {
 	position: absolute;
-	max-width: 95vw;
-	max-height: 80vh;
+	width: fit-content;
+	max-width: 100%;
 	display: grid;
 	grid-template-rows: 1fr 7rem;
 	grid-template-columns: minmax(0px, 1fr);

@@ -2,19 +2,19 @@
 	padding-top: 15px;
 }
 
-.persia {
+.persia , .war_in_persia {
     top: 500px;
     left: 3800px;
     width: 475px;
     height: 750px;
 }
-.ireland {
+.ireland , .revolt_in_ireland {
     top: 800px;
     left: 4125px;
     width: 475px;
     height: 750px;
 }
-.egypt {
+.egypt , .revolt_in_egypt {
     top: 800px;
     left: 4500px;
     width: 475px;

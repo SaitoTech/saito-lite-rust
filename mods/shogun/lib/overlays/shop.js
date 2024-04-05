@@ -9,13 +9,13 @@ class ShopOverlay {
 
 	}
 
-	render(title = "", max = 0) {
+	render(title = "", max = 0, optional) {
 
 		$(".shop").removeClass("pay-attention");
 		if (this.overlay.callback_on_close){
 			this.overlay.show(null, this.overlay.callback_on_close);
 		}else{
-			this.overlay.show(ShopOverlayTemplate(this.mod, title));	
+			this.overlay.show(ShopOverlayTemplate(this.mod, title, optional));	
 		}
 		
 		if (max){
@@ -38,7 +38,7 @@ class ShopOverlay {
 	buyCard(title, max, optional, callback = null){
 
 		this.overlay.closebox = optional;
-		this.render(title, max);
+		this.render(title, max, optional);
 
 		if (!callback){
 			return;
@@ -79,6 +79,7 @@ class ShopOverlay {
 	}
 
   filterBoardDisplay(max){
+  	console.log(max);
     for (let c in this.mod.game.state.supply){
       if (c !== "curse"){
         if (this.mod.deck[c].cost > max || this.mod.game.state.supply[c] <= 0){

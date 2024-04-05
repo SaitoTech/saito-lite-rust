@@ -101,27 +101,44 @@ class Relay extends ModTemplate {
 
   async sendRelayTransaction(tx){
 
-    if (tx.to.length == 1 && this.stun) {
-      let addressee = tx.to[0].publicKey;
-      if (this.stun.hasConnection(addressee)){
-        this.stun.sendTransaction(addressee, tx);
-        return;
+    let need_server = true;
+
+    if (this.stun) {
+      need_server = false;
+      for (let i = 0; i < tx.to.length; i++){
+        let addressee = tx.to[i].publicKey;
+        if (addressee !== this.publicKey){
+          if (this.stun.hasConnection(addressee)){
+            this.stun.sendTransaction(addressee, tx);
+          }else {
+            console.log("Need to use Relay server because no stun connection with " + addressee);
+            need_server = true;
+          }
+        }
+      }
+
+      if (!need_server && tx.isTo(this.publicKey)){
+        // We won't send tx through relay service 
+        // but should make sure we process it ourselves as if it was coming in
+        this.app.modules.handlePeerTransaction(tx);
       }
     } 
 
-    let peers = await this.app.network.getPeers();
-    for (let i = 0; i < peers.length; i++) {
+    if (need_server){
+      let peers = await this.app.network.getPeers();
+      for (let i = 0; i < peers.length; i++) {
 
-      // *** NOTE ***
-      // tx.msg.data is a json-ready transaction
-      // this network function wraps the whole thing within another transaction
-      // newtx.msg.data.msg.data = original transactionn
-      this.app.network.sendRequestAsTransaction(
-        "relay peer message",
-        tx.toJson(),
-        null,
-        peers[i].peerIndex
-      );
+        // *** NOTE ***
+        // tx.msg.data is a json-ready transaction
+        // this network function wraps the whole thing within another transaction
+        // newtx.msg.data.msg.data = original transactionn
+        this.app.network.sendRequestAsTransaction(
+          "relay peer message",
+          tx.toJson(),
+          null,
+          peers[i].peerIndex
+        );
+      }
     }
 
   }
@@ -194,17 +211,17 @@ class Relay extends ModTemplate {
 
         if (relayed_tx.isTo(this.publicKey)) {
           return app.modules.handlePeerTransaction(relayed_tx, peer, mycallback);
-        } else {
+        } else if (this.app.BROWSER == 0) {
+
           // check to see if original tx is for a peer
           let peer_found = 0;
 
           let peers = await app.network.getPeers();
           for (let i = 0; i < peers.length; i++) {
             if (relayed_tx.isTo(peers[i].publicKey)) {
-              peer_found = 1;
+                
+                peer_found++;
 
-              if (this.app.BROWSER == 0) {
-                console.log("Relay tx to peer");
                 app.network.sendTransactionWithCallback(
                   relayed_tx,
                   async function () {
@@ -215,7 +232,7 @@ class Relay extends ModTemplate {
                   },
                   peers[i].peerIndex
                 );
-              }
+              
             }
           }
 
@@ -224,6 +241,8 @@ class Relay extends ModTemplate {
               mycallback({ err: "ERROR 141423: peer not found in relay module", success: 0 });
               return 1;
             }
+          }else{
+            console.log(`Relay ${txjson?.module} tx to ${peer_found} peers`);
           }
         }
       }
