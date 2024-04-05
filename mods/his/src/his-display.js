@@ -317,8 +317,8 @@
     for (let key in this.game.state.cards_left) {
 
       let qs = ".game-factions .game-menu-sub-options ";
-      if (key === "hapsburgs") { 
-        qs += ".game-hapsburgs .game-menu-option-label";
+      if (key === "hapsburg") { 
+        qs += ".game-hapsburg .game-menu-option-label";
 	document.querySelector(qs).innerHTML = `Hapsburgs (${this.game.state.cards_left[key]} cards)`;
       }
       if (key === "france") { 
@@ -2496,8 +2496,11 @@ try {
     let tiles = [];
     for (let i = 0; i < 30; i++) { tiles.push(0); }
 
+console.log("display victory track: ");
     for (f in factions_and_scores) {
 try {
+console.log("processing: " + f);
+console.log(JSON.stringify(factions_and_scores));
       let total_vp = factions_and_scores[f].vp;
       let ftile = f + "_vp_tile";
       obj = document.getElementById(ftile);
@@ -2513,6 +2516,7 @@ try {
         obj.style.transform = ``;
       }
 } catch (err) {
+console.log("error displaying victory track: " + JSON.stringify(err));
 }
 
     }

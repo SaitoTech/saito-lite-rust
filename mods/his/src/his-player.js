@@ -2202,13 +2202,18 @@ if (this.game.state.events.cramner_active == 1) {
     // the Protestants might have it. Otherwise ACKNOWLEDGE to ensure players know what is happening but
     // don't halt the game for the player moving.
 
-    // wartburg is 037
-    if (faction == "protestant" || this.game.deck[0].discards["037"] || this.game.state.events.intervention_on_events_possible == false) {
+    //
+    // wartburg is 037 -- mandatory events cannot be cancelled so we use ACKNOWLEDGE
+    // this prevents things like DEFENDER OF THE FAITH or CLEMENT VII from halting 
+    // gameplay mid-turn and slowing everything down.
+    //
+    if (deck[card].type == "mandatory" || !deck[card].canEvent(this, faction)) {
       this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
     } else {
-      // ACKNOWLEDGE invites click but doesn't halt active player - we prefer this if
-      // the event will not fire or it is not a mandatory event but will not fire
-      if (deck[card].type == "mandatory" || !deck[card].canEvent(this, faction)) {
+      //
+      // otherwise, we skip if the Protestants cannot interfere
+      //
+      if (faction == "protestant" || this.game.deck[0].discards["037"] || this.game.state.events.intervention_on_events_possible == false) {
         this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
       } else {
         this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
@@ -4540,7 +4545,7 @@ does_units_to_move_have_unit = true; }
 	let spacekey = destinations[i];
 	if (his_self.game.spaces[spacekey]) {
 	  if (his_self.isSpaceHostileOrIndependent(spacekey, faction)) {
-	    if (his_self.doesSpaceHaveNonFactionUnits(spacekey, faction)) {
+	    if (his_self.doesSpaceHaveNonFactionNavalUnits(spacekey, faction) || his_self.doesSpaceHaveNonFactionUnits(spacekey, faction)) {
               any_options = true;
   	      num_options++;
               html += `<li class="option" style="font-weight:bold" id="${spacekey}">${his_self.returnSpaceName(spacekey)}</li>`;

@@ -10763,6 +10763,8 @@ console.log("selected: " + spacekey);
 	let p = his_self.returnPlayerOfFaction(faction);
 	if (p == his_self.game.player) {
 
+	  let sswf_function = () => {
+
           his_self.playerSelectSpaceWithFilter(
 
             "Select Space With Land Units" ,
@@ -10801,6 +10803,11 @@ console.log("selected: " + spacekey);
 
  		  $('.option').off();
 	    	  let action = $(this).attr("id");
+
+		  if (his_self.game.player == his_self.returnPlayerCommandingFaction(action)) {
+                    let c = confirm("Unorthodox! Are you sure you want to sicken your own men?");
+                    if (!c) { sswf_function(); return; }
+            	  }
 
 		  let total_units = 0;
 		  let regular_units = 0;
@@ -10879,6 +10886,9 @@ console.log("selected: " + spacekey);
 
 	    true
           );
+
+	  } // sswf
+	  sswf_function();
 
         } else {
 	  his_self.updateLog(his_self.returnFactionName(faction) + " playing " + his_self.popup("107"));

@@ -14339,6 +14339,8 @@ console.log("selected: " + spacekey);
 	let p = his_self.returnPlayerOfFaction(faction);
 	if (p == his_self.game.player) {
 
+	  let sswf_function = () => {
+
           his_self.playerSelectSpaceWithFilter(
 
             "Select Space With Land Units" ,
@@ -14377,6 +14379,11 @@ console.log("selected: " + spacekey);
 
  		  $('.option').off();
 	    	  let action = $(this).attr("id");
+
+		  if (his_self.game.player == his_self.returnPlayerCommandingFaction(action)) {
+                    let c = confirm("Unorthodox! Are you sure you want to sicken your own men?");
+                    if (!c) { sswf_function(); return; }
+            	  }
 
 		  let total_units = 0;
 		  let regular_units = 0;
@@ -14455,6 +14462,9 @@ console.log("selected: " + spacekey);
 
 	    true
           );
+
+	  } // sswf
+	  sswf_function();
 
         } else {
 	  his_self.updateLog(his_self.returnFactionName(faction) + " playing " + his_self.popup("107"));
@@ -15569,6 +15579,20 @@ if (this.game?.state?.removed && include_removed == false) {
     return false;
   }
 
+  doesSpaceHaveNonFactionNavalUnits(space, faction) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let f in space.units) {
+      if (f != faction) {
+        for (let i = 0; i < space.units[f].length; i++) {
+	  let u = space.units[f][i];
+	  if (u.type == "squadron") { return true; }
+	  if (u.type == "corsair") { return true; }
+        }
+      }
+    }
+    return false;
+  }
+
   doesSpaceHaveNonFactionUnits(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let f in space.units) {
@@ -15577,7 +15601,7 @@ if (this.game?.state?.removed && include_removed == false) {
 	  let u = space.units[f][i];
 	  if (u.type == "regular") { return true; }
 	  if (u.type == "mercenary") { return true; }
-	  if (u.type == "corsair") { return true; }
+	  if (u.type == "cavalry") { return true; }
         }
       }
     }
@@ -17420,7 +17444,7 @@ try {
       political: "scotland",
       religion: "catholic",
       ports: ["north"],
-      neighbours: ["stirling","carlisle","berwick"],
+      neighbours: ["stirling","glasgow","berwick"],
       language: "english",
       type: "key"
     }
@@ -18838,8 +18862,8 @@ try {
     // foreign war cards are spaces
     //
     spaces['egypt'] = {
-      top: 0,
-      left: 0,
+      top: 800,
+      left: 4500,
       home: "independent",
       political: "",
       religion: "",
@@ -18850,8 +18874,8 @@ try {
       type: "war"
     }
     spaces['ireland'] = {
-      top: 0,
-      left: 0,
+      top: 800,
+      left: 4125,
       home: "independent",
       political: "",
       religion: "",
@@ -18862,8 +18886,8 @@ try {
       type: "war"
     }
     spaces['persia'] = {
-      top: 0,
-      left: 0,
+      top: 500,
+      left: 3800,
       home: "independent",
       political: "",
       religion: "",
@@ -21668,9 +21692,7 @@ this.updateLog(`###############`);
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
-	  this.game.queue.push("SAVE"); // save before new world for everyone
 	  this.game.queue.push("action_phase");
-	  this.game.queue.push("SAVE"); // save before action phase
 	  this.game.queue.push("check_interventions"); // players check and report cards that need to trigger waiting/check
 	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
@@ -22238,12 +22260,7 @@ if (this.game.options.scenario == "is_testing") {
 	        let space = this.game.spaces[i];
 
 		//
-		// space is fortified but i don't control it, OR
-		// space is not fortified
-		//
-		// AND
-		//
-		// (not) i am protestant and this is an electorate and league has not formed
+		// units we have to retreat from these spaces
 		//
 		if (  
 			((this.isSpaceFortified(space) && !this.isSpaceControlled(key, i)) || (!this.isSpaceFortified(space)))
@@ -22251,10 +22268,13 @@ if (this.game.options.scenario == "is_testing") {
 			(!(key == "protestant" && this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1))
 		) {
 
+		  //
+		  // find the nearest friendly fortified space
+		  //
 		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
 
 		  //
-		  // 2P has to happen automatically
+		  // and retreat automatically (2P)
 		  //
 		  if ((this.game.players.length == 2 && (key != "protestant" && key != "papacy")) || this.returnPlayerCommandingFaction(key) == 0) {
 		    if (res.length == 0) {
@@ -22278,6 +22298,10 @@ if (this.game.options.scenario == "is_testing") {
 		        this.displaySpace(i);
 		      }
 		    }
+
+		  //
+		  // or intervene manually
+		  //
 		  } else {
 
 	    	    let res = this.returnNearestFriendlyFortifiedSpaces(key, i);
@@ -22286,8 +22310,13 @@ if (this.game.options.scenario == "is_testing") {
 		    if (!res) { no_loc = true; }		  
 		    if (res.length == 0) { no_loc = true; }		  
 
+		    //
+		    // if there is no friendly fortified space within reach, we 
+		    // either destroy the units (2P) or subject them to winter 
+		    // attrition rules and return them to the capital.
+		    //
 		    if (no_loc) {
-		      // DELETE ALL UNITS INSTEAD OF ATTRITION IN 2P
+
 		      if (this.game.players.length == 2) {
 		        for (let z = 0; z < this.game.spaces[i].units[key].length; z++) {
 		          if (this.game.spaces[i].units[key][z].personage != true && this.game.spaces[i].units[key][z].reformer != true) {
@@ -22299,6 +22328,12 @@ if (this.game.options.scenario == "is_testing") {
 		      } else {
 		        moves.push("winter_attrition\t"+key+"\t"+space.key);
 		      }
+
+		    //
+		    // if there is only 1 retreat option, we pull the units there
+		    // and if there are multiple options, we ask the player to select
+		    // the space to move the stack.
+		    //
 		    } else {
 		      if (res.length > 1) {
 		        moves.push("retreat_to_winter_spaces_player_select\t"+key+"\t"+space.key);
@@ -22337,7 +22372,7 @@ if (this.game.options.scenario == "is_testing") {
           //
           // fortified spaces - any units in excess of stacking limit returned to capital
           //
-	  this.returnOverstackedUnitsToCapitals();
+	  //this.returnOverstackedUnitsToCapitals();
 
 	  return 1;
         }
@@ -26797,23 +26832,20 @@ console.log("FIELD BATTLE: " + JSON.stringify(his_self.game.state.field_battle))
 	    his_self.game.queue.push("field_battle_assign_hits\t"+his_self.game.state.field_battle.attacker_faction);
 	    his_self.game.queue.push("field_battle_assign_hits\t"+his_self.game.state.field_battle.defender_faction);
 	  }
-
-
 	  //
 	  // this should stop execution while we are looking at the pre-field battle overlay
 	  //
-	  his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
-	  his_self.game.queue.push("field_battle_assign_hits_render");
 	  let from_whom = his_self.returnArrayOfPlayersInSpacekey(space.key);
+if (from_whom.includes(this.game.players[this.game.player-1])) {
+	  his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+}
+	  his_self.game.queue.push("field_battle_assign_hits_render");
 	  if (is_janissaries_possible) {
 	    his_self.game.queue.push("counter_or_acknowledge\tOttomans considering playing Janissaries\tjanissaries\t"+space.key);
-            //his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
             his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
 	  }
 	  his_self.game.queue.push("counter_or_acknowledge\tField Battle is about to being in "+space.name + "\tpre_field_battle_rolls\t"+space.key);
           his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
-          //his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
-
           his_self.field_battle_overlay.renderPreFieldBattle(his_self.game.state.field_battle);
           his_self.field_battle_overlay.pullHudOverOverlay();
 
@@ -31381,6 +31413,13 @@ if (this.game.state.round == 1 && this.game.state.impulse == 1) {
 	  // players still to go...
 	  //
 	  if (factions_in_play.length > 0) {
+
+
+	    //
+	    // add save instruction!
+	    //
+	    this.game.queue.push("SAVE");
+
 	    let io = this.returnImpulseOrder();
 	    for (let i = io.length-1; i >= 0; i--) {
 	      for (let k = 0; k < factions_in_play.length; k++) {
@@ -32898,7 +32937,6 @@ console.log(JSON.stringify(reshuffle_cards));
 
 	  // update board display
 	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
-
           this.displayBoard();
 	  this.displayCardsLeft();
 
@@ -36503,13 +36541,18 @@ if (this.game.state.events.cramner_active == 1) {
     // the Protestants might have it. Otherwise ACKNOWLEDGE to ensure players know what is happening but
     // don't halt the game for the player moving.
 
-    // wartburg is 037
-    if (faction == "protestant" || this.game.deck[0].discards["037"] || this.game.state.events.intervention_on_events_possible == false) {
+    //
+    // wartburg is 037 -- mandatory events cannot be cancelled so we use ACKNOWLEDGE
+    // this prevents things like DEFENDER OF THE FAITH or CLEMENT VII from halting 
+    // gameplay mid-turn and slowing everything down.
+    //
+    if (deck[card].type == "mandatory" || !deck[card].canEvent(this, faction)) {
       this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
     } else {
-      // ACKNOWLEDGE invites click but doesn't halt active player - we prefer this if
-      // the event will not fire or it is not a mandatory event but will not fire
-      if (deck[card].type == "mandatory" || !deck[card].canEvent(this, faction)) {
+      //
+      // otherwise, we skip if the Protestants cannot interfere
+      //
+      if (faction == "protestant" || this.game.deck[0].discards["037"] || this.game.state.events.intervention_on_events_possible == false) {
         this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
       } else {
         this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
@@ -38841,7 +38884,7 @@ does_units_to_move_have_unit = true; }
 	let spacekey = destinations[i];
 	if (his_self.game.spaces[spacekey]) {
 	  if (his_self.isSpaceHostileOrIndependent(spacekey, faction)) {
-	    if (his_self.doesSpaceHaveNonFactionUnits(spacekey, faction)) {
+	    if (his_self.doesSpaceHaveNonFactionNavalUnits(spacekey, faction) || his_self.doesSpaceHaveNonFactionUnits(spacekey, faction)) {
               any_options = true;
   	      num_options++;
               html += `<li class="option" style="font-weight:bold" id="${spacekey}">${his_self.returnSpaceName(spacekey)}</li>`;
@@ -43486,8 +43529,8 @@ does_units_to_move_have_unit = true; }
     for (let key in this.game.state.cards_left) {
 
       let qs = ".game-factions .game-menu-sub-options ";
-      if (key === "hapsburgs") { 
-        qs += ".game-hapsburgs .game-menu-option-label";
+      if (key === "hapsburg") { 
+        qs += ".game-hapsburg .game-menu-option-label";
 	document.querySelector(qs).innerHTML = `Hapsburgs (${this.game.state.cards_left[key]} cards)`;
       }
       if (key === "france") { 
@@ -45665,8 +45708,11 @@ try {
     let tiles = [];
     for (let i = 0; i < 30; i++) { tiles.push(0); }
 
+console.log("display victory track: ");
     for (f in factions_and_scores) {
 try {
+console.log("processing: " + f);
+console.log(JSON.stringify(factions_and_scores));
       let total_vp = factions_and_scores[f].vp;
       let ftile = f + "_vp_tile";
       obj = document.getElementById(ftile);
@@ -45682,6 +45728,7 @@ try {
         obj.style.transform = ``;
       }
 } catch (err) {
+console.log("error displaying victory track: " + JSON.stringify(err));
 }
 
     }
