@@ -297,6 +297,18 @@ class Videocall extends ModTemplate {
 						);
 						call_self.loadSettings('.saito-module-settings');
 					}
+				},
+				{
+					text: 'Screen Share',
+					icon: 'fa-solid fa-display',
+					hook: 'screen_share',
+					callback: function (app) {
+						if (call_self.screen_share) {
+							call_self.app.connection.emit('stop-share-screen');
+						} else {
+							call_self.app.connection.emit('begin-share-screen');
+						}
+					}
 				}
 			];
 		}

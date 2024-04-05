@@ -2,80 +2,86 @@ const VideoCallSettingsTemplate = (display_mode, mod) => {
 	console.log('----- ', display_mode);
 
 	let html = `
-          <div class="videocall-setting-grid-item saito-modal">
+            <div class="saito-modal saito-modal-menu videocall-setting-grid-item" id="saito-user-menu">
+               <div class="saito-modal-title">Layout</div>
+               <div class="saito-modal-content">
 
-            <div class="videocall-option-grid">
-              <div class="videocall-setting-title">Change layout</div>
+                ${
+                    mod.screen_share
+                      ? `
+                      <div class="saito-modal-menu-option">
+                        <label class="videocall-option-label ${
+                          display_mode === 'presentation' ? `active` : ``
+                        }"  for="videocall-option-input-presentation">
+
+                        <input id="videocall-option-input-presentation" ${
+                            display_mode === 'presentation' ? `checked` : ``
+                          } type="radio" value="presentation"
+                          name="videocall-option-input" class="videocall-option-input">
+
+                        
+                          <i class="fa-solid fa-person-chalkboard"></i>
+                          <div>Presentation</div>
+                        </label>
+                      </div>
+
+                      `
+                      : ``
+                  }
+
+                  <div class="saito-modal-menu-option">
+                    <label class="videocall-option-label ${
+                      display_mode === 'focus' ? `active` : ``
+                    }"  for="videocall-option-input-focus">
+
+                    <input id="videocall-option-input-focus" ${
+                        display_mode === 'focus' ? `checked` : ``
+                      } type="radio" value="focus"
+                      name="videocall-option-input" class="videocall-option-input">
+
+                    
+                      <i class="fa-solid fa-users-viewfinder"></i>
+                      <div>Focus</div>
+                    </label>
+                  </div>
 
 
-              ${
-	mod.screen_share
-		? `
-              <div class="videocall-option-container">
-                <label class="videocall-option-label active" for="videocall-option-input-presentation">
-                  <input id="videocall-option-input-presentation" checked type="radio" value="presentation"
-                   name="videocall-option-input" class="videocall-option-input">
-                  <div class="videocall-option-name">Presentation</div> 
-                  <i class="fa-solid fa-person-chalkboard"></i>
-                </label>
-              </div>
-              `
-		: ``
-}
+                  <div class="saito-modal-menu-option">
+                    <label class="videocall-option-label ${
+                      display_mode === 'gallery' ? `active` : ``
+                    }"  for="videocall-option-input-gallery">
 
-              <div class="videocall-option-container">
-                <label class="videocall-option-label ${
-	display_mode === 'focus' ? `active` : ``
-}"  for="videocall-option-input-focus">
-                  <input id="videocall-option-input-focus" ${
-	display_mode === 'focus' ? `checked` : ``
-} type="radio" value="focus"
-                   name="videocall-option-input" class="videocall-option-input">
-                  <div class="videocall-option-name">Focus</div> 
-                  <i class="fa-solid fa-users-viewfinder"></i>
-                </label>
-              </div>
-            
-                <div class="videocall-option-container">
-                  <label class="videocall-option-label ${
-	display_mode === 'gallery' ? `active` : ``
-}" for="videocall-option-input-gallery">
                     <input id="videocall-option-input-gallery" ${
-	display_mode === 'gallery' ? `checked` : ``
-} type="radio" value="gallery" name="videocall-option-input" class="videocall-option-input">
-                    <div class="videocall-option-name">Gallery</div> 
-                    <i class="fa-solid fa-table-cells"></i>
-                  </label>
+                        display_mode === 'gallery' ? `checked` : ``
+                      } type="radio" value="gallery"
+                      name="videocall-option-input" class="videocall-option-input">
+
+
+                      <i class="fa-solid fa-table-cells"></i>
+                      <div>Gallery</div>
+                    </label>
+                  </div>
+
+
+                  <div class="saito-modal-menu-option">
+                    <label class="videocall-option-label ${
+                      display_mode === 'speaker' ? `active` : ``
+                    }"  for="videocall-option-input-speaker">
+
+                    <input id="videocall-option-input-speaker" ${
+                        display_mode === 'speaker' ? `checked` : ``
+                      } type="radio" value="speaker"
+                      name="videocall-option-input" class="videocall-option-input">
+
+
+                      <i class="fa-solid fa-user"></i>
+                      <div>Speaker</div>
+                    </label>
+                  </div>
+                  
+
                </div>
-              
-              <div class="videocall-option-container">
-                <label class="videocall-option-label ${
-	display_mode === 'speaker' ? `active` : ``
-}" for="videocall-option-input-speaker">
-                  <input id="videocall-option-input-speaker" ${
-	display_mode === 'speaker' ? `checked` : ``
-} type="radio" value="speaker" name="videocall-option-input" class="videocall-option-input">
-                  <div class="videocall-option-name">Speaker</div> 
-                  <i class="fa-solid fa-user"></i>
-                </label>
-              </div>
-            
-            </div>
-
-            <hr>
-
-
-            <div class="videocall-option-container share-control">
-              <label class="videocall-option-label" for="videocall-screenshare">
-              <input id="videocall-screenshare" ${
-	mod.screen_share ? `checked` : ``
-} type="checkbox" name="videocall-screenshare">
-                <div class="videocall-option-name">Share screen</div>
-                <i class="fa-solid fa-display"></i>
-              </label>
-            </div>
-
-          </div>
+             </div>
          
       `;
 
