@@ -868,8 +868,13 @@ class Chat extends ModTemplate {
 		if (txmsg.request === 'chat like broadcast') {
 			let inner_tx = new Transaction(undefined, txmsg.data);
 
-			if (inner_tx.to.length > 0 && app.BROWSER == 0) {
+			if (app.BROWSER == 0) {
 				let peers = await app.network.getPeers();
+
+				console.log(
+					'receiving chat like transactions',
+					inner_tx.isTo(this.publicKey)
+				);
 
 				if (inner_tx.isTo(this.publicKey)) {
 					console.log(
@@ -1620,7 +1625,12 @@ class Chat extends ModTemplate {
 						this.groups.forEach((group) => {
 							group.txs.forEach((tx) => {
 								if (tx.signature === block[z].signature) {
-									if (tx.liked_by[this.publicKey]) {
+									if (tx.liked_by[this.publicKey] === true) {
+										console.log(tx.liked_by);
+										console.log(
+											'is liked by me',
+											this.publicKey
+										);
 										liked = 'liked';
 									}
 									like_number = tx.likes;
@@ -1898,13 +1908,16 @@ class Chat extends ModTemplate {
 			console.error('Null tx created');
 			return null;
 		}
-		newtx.addTo(this.publicKey);
+
+		newtx.addFrom(this.publicKey);
+		newtx.addTo((await this.app.network.getPeers())[0].publicKey);
 		newtx.addTo(this.publicKey);
 
 		newtx.msg = {
 			module: 'Chat',
 			request: 'chat like',
 			group_id,
+			sender: this.publicKey,
 			signature: sig
 		};
 		await newtx.sign();
@@ -1927,6 +1940,8 @@ class Chat extends ModTemplate {
 				}
 			}
 
+			console.log(peers, 'peerser');
+
 			await this.app.network.propagateTransaction(tx);
 			this.app.connection.emit('relay-send-message', {
 				recipient: peers[0].publicKey,
@@ -1935,43 +1950,68 @@ class Chat extends ModTemplate {
 			});
 
 			console.log('sending chat like transactigon');
-			// app.connection.emit('relay-send-message', {
-			// 	recipient,
-			// 	request: 'chat message broadcast',
-			// 	data: tx.toJson()
-			// });
 		} else {
 			salert('Connection to chat server lost');
 		}
 	}
 
-	async receiveChatLikeTransaction(tx) {
-		// if (tx.isFrom(this.publicKey)) {
-		console.log('this is the chat like tx', tx);
-		let { group_id, signature } = tx.returnMessage();
+	async receiveChatLikeTransaction(tx, onchain = 0) {
+		let { group_id, signature, sender } = tx.returnMessage();
+
+		let group = this.groups.find((group) => group.id === group_id);
+
+		if (onchain) {
+			if (this.app.BROWSER) {
+				if (tx.isFrom(this.publicKey)) {
+					console.log('this is onchain', group);
+					await this.app.storage.loadTransactions(
+						{
+							field3: group_id,
+							limit: 100,
+							created_later_than: group.last_update
+						},
+						async (txs) => {
+							// chat_self.loading--;
+							console.log('gotten transactions', txs);
+							if (txs) {
+								// while (txs.length > 0) {
+								// 	//Process the chat transaction like a new message
+								// 	let tx = txs.pop();
+								// 	await tx.decryptMessage(chat_self.app);
+								// 	chat_self.addTransactionToGroup(group, tx);
+								// }
+							}
+						}
+					);
+					return;
+				}
+			}
+		}
+
 		this.groups.forEach((group) => {
 			if (group.id === group_id) {
 				group.txs.forEach((tx) => {
 					if (tx.signature === signature) {
-						if (tx.liked_by[this.publicKey]) {
+						if (!tx.liked_by) {
+							tx.liked_by = {};
+						}
+						if (!tx.likes) {
+							tx.likes = 0;
+						}
+						if (tx.liked_by[sender]) {
 							tx.likes--;
-							tx.liked_by[this.publicKey] = false;
+							tx.liked_by[sender] = false;
 							return;
 						}
 
 						tx.likes++;
-						tx.liked_by[this.publicKey] = true;
+						tx.liked_by[sender] = true;
 					}
 				});
 			}
 		});
-		// }
-
-		// render like
-		let group = this.groups.find((group) => group.id === group_id);
 
 		this.app.connection.emit('chat-popup-render-request', group);
-		// }
 	}
 
 	///////////////////
