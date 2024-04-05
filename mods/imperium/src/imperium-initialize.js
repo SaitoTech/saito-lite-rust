@@ -5,7 +5,7 @@
 
   async render(app) {
 
-    if (!this.browser_active) { return; }
+    if (!this.browser_active || this.initialize_game_run) { return; }
 
 
     let imperium_self = this;

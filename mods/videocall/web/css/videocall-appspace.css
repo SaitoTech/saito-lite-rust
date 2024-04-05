@@ -47,11 +47,19 @@
 
 .stun-appspace-content {
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	width: 80%;
-	max-width: 1028px;
-	gap: 5rem;
+	padding: 3rem;
+	gap: 3rem;
+	border: 1px solid var(--saito-border-color);
+	border-radius: var(--saito-border-radius);
+}
+
+.staun-appspace-cards {
+    display: flex;
+    gap: 5rem;
 }
 
 .chat-settings-preview-message {
@@ -69,22 +77,23 @@
 }
 
 .stunx-appspace-actions {
-	margin-bottom: 2rem;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	margin-top: 2rem;
+	width: 100%;
 }
 
 .stunx-appspace-launch-call-btn {
-	margin: 3rem;
-	/* display: none; */
+	width: 100%;
 }
 
 .stunx-appspace-splash {
-	text-align: center;
-	height: 25rem;
-	color: var(--saito-white);
+    text-align: center;
+    color: var(--saito-white);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 3rem;
 }
 
 .stun-appspace-navigation {
@@ -202,6 +211,14 @@ input:checked + .slider:before {
 	font-style: italic;
 }
 
+@media screen and (max-width: 900px) {
+  .staun-appspace-cards {
+	flex-direction: column;
+  }
+  .chat-settings-preview-section {
+	width: unset;
+  }
+}
 /*  responsive */
 
 @media screen and (max-width: 1028px) {
@@ -221,15 +238,18 @@ input:checked + .slider:before {
 	}
 }
 
-@media screen and (max-width: 600px) {
+@media (max-width: 600px) {
 	.stun-appspace {
 		padding: 1rem;
 		margin: 0;
+		justify-content: flex-start;
 	}
 
 	.stun-appspace-content {
 		margin-top: 1rem;
 		gap: 0;
+		padding: 0;
+		border: unset;
 	}
 
 	#createRoom {
@@ -263,3 +283,4 @@ input:checked + .slider:before {
 		min-width: 12rem;
 	}
 }
+

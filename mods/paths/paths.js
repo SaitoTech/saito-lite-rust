@@ -61,12 +61,12 @@ class PathsOfGlory extends GameTemplate {
 		this.maxPlayers = 6;
 	}
 
-	render(app) {
-		if (this.browser_active == 0) {
+	async render(app) {
+		if (this.browser_active == 0 || this.initialize_game_run) {
 			return;
 		}
 
-		super.render(app);
+		await super.render(app);
 
 		let game_mod = this;
 

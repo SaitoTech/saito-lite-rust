@@ -49,40 +49,13 @@ class TweetManager {
 						// load more notifications
 						//
 						if (this.mode === 'notifications') {
-							mod.loadNotifications((new_txs) => {
-								if (this.mode !== 'notifications') {
-									return;
-								}
-								for (let i = 0; i < new_txs.length; i++) {
-									let notification = new Notification(
-										this.app,
-										this.mod,
-										new_txs[i]
-									);
-									notification.render('.tweet-manager');
-								}
-								if (this.mod.notifications.length == 0) {
-									let notification = new Notification(
-										this.app,
-										this.mod,
-										null
-									);
-									notification.render('.tweet-manager');
 
-									if (
-										document.querySelector(
-											'#intersection-observer-trigger'
-										)
-									) {
-										this.intersectionObserver.unobserve(
-											document.querySelector(
-												'#intersection-observer-trigger'
-											)
-										);
-									}
-								}
-								this.hideLoader();
-							});
+							if (document.querySelector('#intersection-observer-trigger')) {
+								this.intersectionObserver.unobserve(document.querySelector('#intersection-observer-trigger'));
+							}
+
+							this.loadNotifications();
+
 						}
 
 						/////////////////////////////////////////////////
@@ -201,83 +174,94 @@ class TweetManager {
 				notification.render('.tweet-manager');
 			}
 
-			this.mod.loadNotifications((new_txs) => {
-				if (this.mode !== 'notifications') {
-					return;
-				}
-
-				for (let i = 0; i < new_txs.length; i++) {
-					let notification = new Notification(
-						this.app,
-						this.mod,
-						new_txs[i]
-					);
-					notification.render('.tweet-manager');
-				}
-				if (this.mod.notifications.length == 0) {
-					let notification = new Notification(
-						this.app,
-						this.mod,
-						null
-					);
-					notification.render('.tweet-manager');
-
-					if (
-						document.querySelector('#intersection-observer-trigger')
-					) {
-						this.intersectionObserver.unobserve(
-							document.querySelector(
-								'#intersection-observer-trigger'
-							)
-						);
-					}
-				}
-				this.hideLoader();
-
-				//Fire up the intersection observer after the callback completes...
-				this.attachEvents();
-			});
+			this.loadNotifications();
 		}
 	}
 
-	insertOlderTweets(tx_count) {
+	loadNotifications(){
+		this.mod.loadNotifications((new_txs) => {
+			if (this.mode !== 'notifications') {
+				return;
+			}
+
+			this.hideLoader();
+
+			for (let i = 0; i < new_txs.length; i++) {
+				let notification = new Notification(
+					this.app,
+					this.mod,
+					new_txs[i]
+				);
+				notification.render('.tweet-manager');
+			}
+
+			if (this.mod.notifications.length == 0) {
+
+				//Dummy "Notification" for end of history sign
+				let notification = new Notification(
+					this.app,
+					this.mod,
+					null
+				);
+				notification.render('.tweet-manager');
+
+				if (
+					document.querySelector('#intersection-observer-trigger')
+				) {
+					this.intersectionObserver.unobserve(
+						document.querySelector(
+							'#intersection-observer-trigger'
+						)
+					);
+				}
+			}else{
+				//Fire up the intersection observer after the callback completes...
+				this.attachEvents();
+			}
+
+		});
+	}
+
+	insertOlderTweets(tx_count, peer = null) {
 		if (this.mode !== 'tweets') {
 			console.log('Not on main feed anymore, currently on: ' + this.mode);
 			return;
 		}
 
-		if (tx_count == 0) {
-			//
-			// So we didn't get any new renderable tweets, but that doesn't mean we
-			// should quit just yet
-			//
-			let out_of_content = true;
-			for (let i = 0; i < this.mod.peers.length; i++) {
-				if (this.mod.peers[i].tweets_earliest_ts) {
-					console.log(
-						`${this.mod.peers[i].publicKey} still has tweets as early as ${this.mod.peers[i].tweets_earliest_ts}`
-					);
-					out_of_content = false;
-				}
-			}
+		if (tx_count == 0 && peer) {
 
-			if (out_of_content) {
-				this.hideLoader();
-
-				if (!document.querySelector('.saito-end-of-redsquare')) {
-					this.app.browser.addElementToSelector(
-						`<div class="saito-end-of-redsquare">no more tweets</div>`,
-						'.tweet-manager'
-					);
-				}
-				if (document.querySelector('#intersection-observer-trigger')) {
-					this.intersectionObserver.unobserve(
-						document.querySelector('#intersection-observer-trigger')
-					);
-				}
+			if (peer.tweets_earliest_ts) {
+				console.log(`${peer.publicKey} still has tweets as early as ${peer.tweets_earliest_ts}, keep querying...`);
+				this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this), peer);
 			} else {
-				console.log('Keep looking for tweets');
-				this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this));
+
+				//If all peers have returned 0, then clear feed...
+
+				let out_of_content = true;
+
+				for (let i = 0; i < this.mod.peers.length; i++) {
+					if (this.mod.peers[i].tweets_earliest_ts) {
+						out_of_content = false;
+					}
+				}
+
+				if (out_of_content){
+					this.hideLoader();
+
+					if (!document.querySelector('.saito-end-of-redsquare')) {
+						this.app.browser.addElementToSelector(
+							`<div class="saito-end-of-redsquare">no more tweets</div>`,
+							'.tweet-manager'
+						);
+					}
+					if (document.querySelector('#intersection-observer-trigger')) {
+						this.intersectionObserver.unobserve(
+							document.querySelector('#intersection-observer-trigger')
+						);
+					}
+				}else{
+					console.log("Waiting on other peers to respond");
+				}
 			}
 		} else {
 			this.hideLoader();
@@ -495,8 +479,9 @@ class TweetManager {
 				document
 					.querySelector(`.tweet-${tweet.tx.signature}`)
 					.classList.add('highlight-tweet');
+
+				post.render(`.tweet-${tweet.tx.signature}`);			
 			}
-			post.render(`.tweet-${tweet.tx.signature}`);			
 		}
 
 		// query the whole thread
@@ -514,9 +499,10 @@ class TweetManager {
 				document
 					.querySelector(`.tweet-${tweet.tx.signature}`)
 					.classList.add('highlight-tweet');
+
+				post.render(`.tweet-${tweet.tx.signature}`);
 			}
 
-			post.render(`.tweet-${tweet.tx.signature}`);
 
 			this.hideLoader();
 		});

@@ -716,7 +716,7 @@ video#local {
 	row-gap: 2rem;
 	align-items: center;
 	color: var(--saito-white);
-	width: min(55rem, 60vw);
+    width: calc(80vw - 40rem);
 }
 
 
@@ -773,22 +773,23 @@ video#local {
 .chat-settings-preview {
 	position: relative;
 	border: 1px solid #e5e5e59d;
-	padding: 1rem;
 	border-radius: var(--saito-border-radius);
 	width: 100%;
+	max-width: 90vh;
 	display: flex;
 }
 
 .chat-settings video {
 	width: 100%;
 	border-radius: var(--saito-border-radius);
-	max-height: 100%;
+	max-height: 50vh;
 }
 
 .chat-settings-toggle-icons {
 	cursor: pointer;
 	position: absolute;
-	bottom: 2rem;
+	bottom: 1rem;
+    left: 1rem;
 }
 
 .chat-settings-toggle-icon {
@@ -806,14 +807,29 @@ video#local {
 	color: var(--saito-secondary);
 }
 
-.chat-settings select {
-	background-color: var(--saito-black-faded);
-	color: var(--saito-white);
-	width: 95%;
-	padding-left: 1rem;
+.stun-appspace select {
+    background-color: var(--saito-black-faded);
+    color: var(--saito-white);
+    height: 3rem;
+    border-radius: var(--saito-border-radius);
+    padding: 0 0.5rem;
 }
 
-.chat-settings select option {
+
+.stun-input-settings {
+    padding: 1rem;
+    border: 0px solid var(--saito-border-color);
+    border-radius: var(--saito-border-radius);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.stun-input-settings legend {
+	text-align: left;
+}
+
+.stun-appspace select option {
 	background-color: var(--saito-black-faded);
 	color: var(--saito-white);
 }
@@ -858,9 +874,9 @@ video#local {
 	transition: width 0.1s;
 }
 
+/*
 @media screen and (max-width: 900px) {
 	.chat-settings-preview {
-		padding: 0.5rem;
 	}
 
 	.chat-settings-preview-section {
@@ -868,6 +884,7 @@ video#local {
 		max-width: 90vw;
 	}
 }
+*/
 
 @media screen and (max-width: 767px) {
 	.video-call-info i {
