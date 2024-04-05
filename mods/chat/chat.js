@@ -1613,6 +1613,8 @@ class Chat extends ModTemplate {
 						this.groups.forEach((group) => {
 							group.txs.forEach((tx) => {
 								if (tx.signature === block[z].signature) {
+									if (!tx.liked_by) tx.liked_by = {};
+									if (!tx.likes) tx.likes = 0;
 									if (tx.liked_by[this.publicKey] === true) {
 										liked = 'liked';
 									}
