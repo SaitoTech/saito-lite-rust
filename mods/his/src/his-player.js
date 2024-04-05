@@ -5073,7 +5073,7 @@ does_units_to_move_have_unit = true; }
 	if (faction == "england" && destination_spacekey == "ireland") { his_self.addMove("war\tottoman\tireland"); his_self.endTurn(); return; }
 	his_self.addMove("assault\t"+faction+"\t"+destination_spacekey);
 
-	if (this.game.state.events.intervention_on_movement_possible == 0) {
+	if (his_self.game.state.events.intervention_on_movement_possible == 0) {
 	  let from_whom = his_self.returnArrayOfPlayersInSpacekey(destination_spacekey);
           his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" announces siege of "+his_self.game.spaces[destination_spacekey].name + "\tassault\t" + destination_spacekey);
           his_self.addMove("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
