@@ -66,13 +66,13 @@ class NewWorldOverlay {
 	 	  for (let z = 0; z < his_self.game.state.newworld.results["colonies"].length; z++) {
 		    let col = "";
 		    let c = his_self.game.state.newworld.results["colonies"][z];
-		    if (c.colony == "england_colony1") { col = his_self.game.state.newworld["england_colony1"]; }
-		    if (c.colony == "england_colony2") { col = his_self.game.state.newworld["england_colony2"]; }
-		    if (c.colony == "france_colony1") { col = his_self.game.state.newworld["france_colony1"]; }
-		    if (c.colony == "france_colony2") { col = his_self.game.state.newworld["france_colony2"]; }
-		    if (c.colony == "hapsburg_colony1") { col = his_self.game.state.newworld["hapsburg_colony1"]; }
-		    if (c.colony == "hapsburg_colony2") { col = his_self.game.state.newworld["hapsburg_colony2"]; }
-		    if (c.colony == "hapsburg_colony3") { col = his_self.game.state.newworld["hapsburg_colony3"]; }
+		    if (c.colony == "england_colony1") { col = his_self.game.state.newworld["england_colony1"]; col.faction = "england"; }
+		    if (c.colony == "england_colony2") { col = his_self.game.state.newworld["england_colony2"]; col.faction = "england"; }
+		    if (c.colony == "france_colony1") { col = his_self.game.state.newworld["france_colony1"]; col.faction = "france"; }
+		    if (c.colony == "france_colony2") { col = his_self.game.state.newworld["france_colony2"]; col.faction = "france"; }
+		    if (c.colony == "hapsburg_colony1") { col = his_self.game.state.newworld["hapsburg_colony1"]; col.faction = "hapsburg"; }
+		    if (c.colony == "hapsburg_colony2") { col = his_self.game.state.newworld["hapsburg_colony2"]; col.faction = "hapsburg"; }
+		    if (c.colony == "hapsburg_colony3") { col = his_self.game.state.newworld["hapsburg_colony3"]; col.faction = "hapsburg"; }
 		    if (col) {
 		      if (col.type === "colony" && col.claimed == 1 && col.destroyed != 1) {
 		        let roll = c.roll;
@@ -106,6 +106,9 @@ class NewWorldOverlay {
 			if (con.prize.indexOf("Aztec") > -1) { roll = his_self.game.state.newworld['aztec'].roll; }
 		        if (con.prize.indexOf("Inca") > -1) { roll = his_self.game.state.newworld['inca'].roll; }
 		        if (con.prize.indexOf("Maya") > -1) { roll = his_self.game.state.newworld['maya'].roll; }
+		      }
+		      if (roll == 0) {
+			roll = his_self.game.state.conquests[c.idx].hits;
 		      }
 		      if (c.prize) {
 		        if (c.prize === "killed by natives") {

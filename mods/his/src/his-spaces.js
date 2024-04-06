@@ -1075,7 +1075,7 @@ console.log("yes " + faction + " controls it!");
     if (is_port_space == true) {
       let fac = this.returnFactionControllingSpace(space);
       if (this.areEnemies(fac, faction)) { return 0; }
-      if (this.areAllies(fac, faction, 1)) { return 1; }
+      if (this.areAllies(fac, faction, 1)) { return 1; } else { return 0; }
     }
     if (this.isNavalSpaceFriendly(space, faction) == 1) { return 1; }
     if (this.isSpaceFriendly(space, faction) == 1) { return 1; }

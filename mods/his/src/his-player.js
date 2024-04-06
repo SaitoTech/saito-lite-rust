@@ -2109,7 +2109,6 @@ if (this.game.state.events.cramner_active == 1) {
       this.updateStatusWithOptions(`${this.returnFactionName(faction)}: ${ops} ops remaining`, html, false);
       this.attachCardboxEvents(async (user_choice) => {      
 
-
 	his_self.menu_overlay.hide();
 
         if (user_choice === "end_turn") {
@@ -4761,6 +4760,10 @@ does_units_to_move_have_unit = true; }
         `Select Destination for ${num} Regular(s)`,
 
         function(space) {
+	  if (faction === "ottoman" && his_self.game.state.events.barbary_pirates == 1) {
+	    // can only build corsairs in a pirate haven
+	    if (space.key == "algiers" || space.pirate_haven == 1) { return 0; }
+	  }
   	  if (faction === "ottoman" && his_self.game.state.events.war_in_persia == 1) {
 	    if (his_self.returnFactionLandUnitsInSpace("ottoman", "persia") < 5) {
 	      if (space.key == "persia") { return 1; }
@@ -4877,6 +4880,10 @@ does_units_to_move_have_unit = true; }
       "Select Port for Naval Squadron",
 
       function(space) {
+	if (faction === "ottoman" && his_self.game.state.events.barbary_pirates == 1) {
+	  // can only build corsairs in a pirate haven
+	  if (space.key == "algiers" || space.pirate_haven == 1) { return 0; }
+	}
         if (space.ports.length === 0) { return 0; }
         if (space.besieged != 0) { return 0; }
 	if (his_self.game.state.events.foreign_recruits == faction && space.political == faction) { return 1; }
@@ -4942,8 +4949,8 @@ does_units_to_move_have_unit = true; }
     return 0;
   }
   canPlayerAssaultTutorial(his_self, player, faction) {
-    if (his_self.game.state.assaulted_this_turn == 1) { return 0; }
-    if (!his_self.canPlayerAssault(his_self, player, faction)) {
+    if (his_self.game.state.assaulted_this_impulse == 1) { return 0; }
+   if (!his_self.canPlayerAssault(his_self, player, faction)) {
       let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
       for (let i = 0; i < conquerable_spaces.length; i++) {
         if (conquerable_spaces[i] !== "egypt" && conquerable_spaces[i] !== "persia" && conquerable_spaces[i] !== "ireland") {
@@ -5007,11 +5014,15 @@ does_units_to_move_have_unit = true; }
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
-
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
 
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (conquerable_spaces[i] !== "egypt" && conquerable_spaces[i] !== "persia" && conquerable_spaces[i] !== "ireland") {
+
+console.log("checking: " + conquerable_spaces[i]);
+console.log("is controlled: " + his_self.isSpaceControlled(conquerable_spaces[i], faction));
+console.log("is in loc: " + his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction));
+
         if (!his_self.isSpaceControlled(conquerable_spaces[i], faction) && his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction)) {
           if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1) {
 	    if (!his_self.game.state.spaces_assaulted_this_turn.includes(conquerable_spaces[i])) {
@@ -5620,6 +5631,10 @@ does_units_to_move_have_unit = true; }
         `Select Destination for ${num} Cavalry`,
 
         function(space) {
+	  if (faction === "ottoman" && his_self.game.state.events.barbary_pirates == 1) {
+	    // can only build corsairs in a pirate haven
+	    if (space.key == "algiers" || space.pirate_haven == 1) { return 0; }
+	  }
   	  if (faction === "ottoman" && his_self.game.state.events.war_in_persia == 1) {
 	    if (his_self.returnFactionLandUnitsInSpace("ottoman", "persia") < 5) {
 	      if (space.key == "persia") { return 1; }

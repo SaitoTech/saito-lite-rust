@@ -117,9 +117,9 @@ if (this.game.options.scenario == "is_testing") {
 	    if (this.game.players.length == 2) {
 	      this.game.queue.push("show_overlay\tvp");
 	    }
-	    this.game.queue.push("hide_overlay\tdiet_of_worms");
-	    this.game.queue.push("diet_of_worms");
-	    this.game.queue.push("show_overlay\tdiet_of_worms");
+//	    this.game.queue.push("hide_overlay\tdiet_of_worms");
+//	    this.game.queue.push("diet_of_worms");
+//	    this.game.queue.push("show_overlay\tdiet_of_worms");
 	    this.game.queue.push("card_draw_phase");
 	    this.game.queue.push("event\tprotestant\t008");
 }
@@ -3297,8 +3297,6 @@ if (space.key != "persia" && space.key != "egypt" && space.key != "ireland") {
 	  let source_spacekey = mv[2];
 	  let destination_spacekey = mv[3];
 
-console.log("asked to handle naval retreat from " + source_spacekey + " to " + destination_spacekey);
-
 	  let source;
 	  if (this.game.spaces[source_spacekey]) { source = this.game.spaces[source_spacekey]; }
 	  if (this.game.navalspaces[source_spacekey]) { source = this.game.navalspaces[source_spacekey]; }
@@ -3308,13 +3306,10 @@ console.log("asked to handle naval retreat from " + source_spacekey + " to " + d
 	  if (this.game.navalspaces[destination_spacekey]) { destination = this.game.navalspaces[destination_spacekey]; }
 
 
-console.log("SOUND UNITS? " + JSON.stringify(source.units));
 	  for (let i = source.units[faction].length-1; i >= 0; i--) {
-let u = source.units[faction][i];
-console.log("unit: " + JSON.stringify(u));
-	    if (source.units[faction][i].land_or_sea == "sea" || source.units[faction][i].land_or_sea == "both") {
-console.log(" and this one retreats!");
-	      destination.units[faction].push(source.units[faction][i]);
+	    let u = source.units[faction][i];
+	    if (u.land_or_sea == "sea" || u.land_or_sea == "both") {
+	      destination.units[faction].push(u);
 	      source.units[faction].splice(i, 1);
 	    }
 	  }
@@ -3535,22 +3530,23 @@ console.log(" and this one retreats!");
 	  let defender_spacekey = mv[5];
 	  let controller_of_defender = this.returnPlayerCommandingFaction(defender);
 	  let controller_of_attacker = this.returnPlayerCommandingFaction(attacker);
-	  let space = this.game.spaces[defender_spacekey];
+	  let invaded_space = this.game.spaces[spacekey];
+	  let defender_space = this.game.spaces[defender_spacekey];
 
 	  //
 	  // you cannot intercept if besieged, so check if besieged, and one besieged unit
 	  // means the whole stack is besieged
 	  //
-	  if (space.besieged > 0) {
-	    for (let x = 0; x < space.units[defender].length; x++) {
-	      if (space.units[defender][x].besieged == 1) { return 1; }
+	  if (defender_space.besieged > 0) {
+	    for (let x = 0; x < defender_space.units[defender].length; x++) {
+	      if (defender_space.units[defender][x].besieged == 1) { return 1; }
 	    }
 	  }
 
 	  //
 	  // you cannot intercept if the space contains independent units
 	  //
-	  if (space.units["independent"].length > 0) { return 1; }
+	  if (invaded_space.units["independent"].length > 0) { return 1; }
 
 	  //
 	  // you cannot intercept if the land units in the space belong to a power
@@ -3558,10 +3554,14 @@ console.log(" and this one retreats!");
 	  // and being invited to intercept if the French invade a space with 
 	  // British regulars, but England and Haps are not allies.
 	  //
-	  for (let f in space.units) {
-	    if (this.returnFactionLandUnitsInSpace(f, space.key) > 0) {
+	  for (let f in invaded_space.units) {
+	    if (this.returnFactionLandUnitsInSpace(f, invaded_space.key) > 0) {
+console.log("this faction has land units: " + f);
 	      if (!this.areAllies(f, attacker) && f != attacker) {
-		if (!this.areAllies(f, defender) && f != defender) { return 1; }
+console.log("not allied to attacker!");
+		if (!this.areAllies(f, defender) && f != defender) { 
+console.log("not allied to defender!");
+return 1; }
 	      }
 	    }
 	  }
@@ -3569,7 +3569,7 @@ console.log(" and this one retreats!");
 	  //
 	  // you cannot intercept if the space is controlled by non-ally and non-enemy
 	  //
-	  let fcs = this.returnFactionControllingSpace(space.key);
+	  let fcs = this.returnFactionControllingSpace(invaded_space.key);
 	  if (!this.areAllies(fcs, defender, 1) &&  !this.areEnemies(fcs, defender, 1)) { return 1; }
 
 	  //
@@ -6346,6 +6346,7 @@ console.log("about to assign hits directly...");
 	  // unexpected war -- everyone retreats or gets destroyed
 	  //
 	  if (his_self.game.state.events.unexpected_war == 1) {
+console.log("IN UNEXPECTED WAR");
             for (let f in his_self.game.state.field_battle.faction_map) {
               if (his_self.game.state.field_battle.faction_map[f] == his_self.game.state.field_battle.attacker_faction) {
 	        this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
@@ -7436,7 +7437,6 @@ console.log("about to assign hits directly...");
 	  //
 	  // assign hits simultaneously
 	  //
-
 	  if (attacker_player > 0) {
 	    let ap = his_self.game.state.players_info[attacker_player-1];
 	    his_self.game.state.naval_battle.attacker_modified_rolls = modify_rolls(ap, attacker_results);
@@ -7460,17 +7460,19 @@ console.log("about to assign hits directly...");
 	  his_self.game.state.naval_battle.attacker_hits = attacker_hits;
 	  his_self.game.state.naval_battle.defender_hits = defender_hits;
 
-	  his_self.updateLog("Attacker Modified: " + JSON.stringify(his_self.game.state.naval_battle.attacker_modified_rolls));
-	  his_self.updateLog("Defender Modified: " + JSON.stringify(his_self.game.state.naval_battle.defender_modified_rolls));
-	  his_self.updateLog("Attacker Hits: " + attacker_hits);
-	  his_self.updateLog("Defender Hits: " + defender_hits);
-
 	  //
 	  // who won?
 	  //
 	  if (attacker_hits > defender_hits) {
 	    winner = attacker_faction;
 	  }
+
+	  his_self.updateLog("Winner: " + winner);
+	  his_self.updateLog("Attacker Hits: " + attacker_hits);
+	  his_self.updateLog("Defender Hits: " + defender_hits);
+	  his_self.updateLog("Attacker Modified: " + JSON.stringify(his_self.game.state.naval_battle.attacker_modified_rolls));
+	  his_self.updateLog("Defender Modified: " + JSON.stringify(his_self.game.state.naval_battle.defender_modified_rolls));
+
 
 	  //
 	  // calculate units remaining
@@ -7503,7 +7505,6 @@ console.log("about to assign hits directly...");
 	    }
 	  }
 
-
 	  //
 	  // capture stranded leaders
 	  //
@@ -7522,11 +7523,9 @@ console.log("about to assign hits directly...");
 	    }
 	  }
 
-
-                    
           //          
           // unexpected war -- everyone retreats or gets destroyed
-          //          
+          //   
           if (his_self.game.state.events.unexpected_war == 1) {
             for (let f in his_self.game.state.naval_battle.faction_map) {
               if (his_self.game.state.naval_battle.faction_map[f] == his_self.game.state.naval_battle.attacker_faction) {
@@ -7555,7 +7554,6 @@ console.log("about to assign hits directly...");
 	  this.updateLog("Attacker Units Remaining: "+attacker_sea_units_remaining);
 	  this.updateLog("Defender Units Remaining: "+defender_sea_units_remaining);
 
-          this.game.queue.push("purge_naval_units_and_capture_leaders\t"+f+"\t"+defender_faction+"\t"+space.key);
 
           //
           // conduct retreats
@@ -7574,10 +7572,12 @@ console.log("about to assign hits directly...");
 	    //
             if (winner == defender_faction) {
 	      if (attacker_sea_units_remaining > 0) {
+                this.game.queue.push("purge_naval_units_and_capture_leaders\t"+f+"\t"+attacker_faction+"\t"+space.key);
                 this.game.queue.push("player_evaluate_post_naval_battle_retreat\t"+attacker_faction+"\t"+space.key);
 	      }
 	    } else {
 	      if (defender_sea_units_remaining > 0) {
+                this.game.queue.push("purge_naval_units_and_capture_leaders\t"+f+"\t"+defender_faction+"\t"+space.key);
                 this.game.queue.push("player_evaluate_post_naval_battle_retreat\t"+defender_faction+"\t"+space.key);
 	      }
 	    }
@@ -8400,19 +8400,15 @@ console.log("about to assign hits directly...");
 
         if (mv[0] === "player_evaluate_post_naval_battle_retreat") {
 
-console.log("in player evaluate post naval battle retreat!");
-
           this.game.queue.splice(qe, 1);
 
           let loser = mv[1];
           let spacekey = mv[2];
 
 	  let commanding_player = this.returnPlayerCommandingFaction(loser);
-console.log("commanding player is: " + commanding_player);
 	  if (commanding_player == 0) { return 1; }
 
           if (this.game.player == commanding_player) {
-console.log("i will evaluate retreat!");
             this.playerEvaluateNavalRetreatOpportunity(loser, spacekey, "", loser, true);
           } else {
             this.updateStatus(this.returnFactionName(loser) + " considering post-battle retreat at sea");

@@ -14,7 +14,7 @@
 
     if (c === "excommunication") {
       this.welcome_overlay.renderCustom({
-        title : "Excommunicated?" , 
+        title : "Excommunicated!" , 
         text : this.returnFactionName(msg) + " has been excommunicated by Papal Decree" ,
         card : this.returnCardImage("005") ,
         img : '/his/img/backgrounds/events/excommunication.jpg',
@@ -2496,11 +2496,8 @@ try {
     let tiles = [];
     for (let i = 0; i < 30; i++) { tiles.push(0); }
 
-console.log("display victory track: ");
     for (f in factions_and_scores) {
 try {
-console.log("processing: " + f);
-console.log(JSON.stringify(factions_and_scores));
       let total_vp = factions_and_scores[f].vp;
       let ftile = f + "_vp_tile";
       obj = document.getElementById(ftile);
@@ -2516,7 +2513,6 @@ console.log(JSON.stringify(factions_and_scores));
         obj.style.transform = ``;
       }
 } catch (err) {
-console.log("error displaying victory track: " + JSON.stringify(err));
 }
 
     }

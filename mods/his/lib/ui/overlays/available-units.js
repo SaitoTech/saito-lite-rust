@@ -207,7 +207,6 @@ if (us['mercenary']) {
 
 	  	    this.units_already_moved_by_idx.push(idx);
 		    if (is_army_leader) { 
-console.log("adding army leader!");
 		      this.is_unit_already_moved_by_idx_a_leader.push(1); 
 		    } else {
 		      this.is_unit_already_moved_by_idx_a_leader.push(0);
@@ -503,7 +502,7 @@ console.log("adding army leader!");
 				if (max_units < 2) { muc = " unavailable"; }
                                 let imgtile = '';
                                 if (f == 'hapsburg') {
-                                        imgtile = `<img id="" class="army_tile ${muc}" src="/his/img/tiles/hapsburg/HapsburgReg-2.svg" />`;
+                                        imgtile = `<img id="2" class="army_tile ${muc}" src="/his/img/tiles/hapsburg/HapsburgReg-2.svg" />`;
                                 }
                                 if (f == 'protestant') {
                                         imgtile = `<img id="2" class="army_tile ${muc}" src="/his/img/tiles/protestant/ProtestantReg-2.svg" />`;

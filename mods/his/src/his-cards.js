@@ -5077,8 +5077,8 @@ console.log("selected: " + spacekey);
 	  }
 
 	  if (faction == null || source == null || unit_idx == null) { his_self.endTurn(); return 0; }
-  	  his_self.addMove(`discard\t${f}\t032`);
 	  his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
+  	  his_self.addMove(`discard\t${f}\t032`);
 	  if (his_self.game.deck[0].discards["031"]) {
             his_self.addMove("SETVAR\tstate\tevents\tintervention_on_movement_possible\t0");
 	  }
@@ -5353,11 +5353,11 @@ console.log("selected: " + spacekey);
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu === "pre_assault_rolls") {
-	  his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" plays " + his_self.popup("034"));
-          his_self.addMove("discard\t"+faction+"\t034");
+	  his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" plays " + his_self.popup("035"));
+          his_self.addMove("discard\t"+faction+"\t035");
           his_self.addMove("add_assault_bonus_rolls\t"+faction+"\t2");
           his_self.addMove("SETVAR\tstate\tassault\tsiege_artillery\t1");
-	  his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" triggers " + his_self.popup("034"));
+	  his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" triggers " + his_self.popup("035"));
 	  his_self.endTurn();
 	  his_self.updateStatus("acknowledge");
         }
@@ -8443,7 +8443,9 @@ console.log("selected: " + spacekey);
 		  his_self.addMove("unrest\t"+space1);
 		  his_self.addMove("unrest\t"+space2);
 		  his_self.endTurn();
-		}
+		},
+		null,
+		true
 	      );
 	    },
 	    null,
@@ -9659,7 +9661,7 @@ console.log("selected: " + spacekey);
 
 	      his_self.updateStatus("acknowledge");
 
-              if (action === "yes") {
+              if (action == "yes") {
 		
 		//
 		// pick unit on map with player land units and select one to remove
@@ -9668,7 +9670,7 @@ console.log("selected: " + spacekey);
 
 		  "Select Space to Remove 1 Land Unit",
 
-		  (space) => { return his_self.returnFactionLandUnitsInSpace(faction, space.key); },
+		  (space) => { if (his_self.returnFactionLandUnitsInSpace(faction, space.key) > 0) { return 1; } else { return 0; } },
 
 		  (spacekey) => {
 		    
@@ -9706,6 +9708,7 @@ console.log("selected: " + spacekey);
 
 	              let action = parseInt($(this).attr("id"));
 
+		      his_self.updateStatus("removing unit...");
 		      his_self.addMove(	"remove_unit" + "\t" +
 					"land" + "\t" +
 					faction + "\t" +
