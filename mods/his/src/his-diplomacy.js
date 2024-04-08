@@ -133,7 +133,20 @@
   canPlayerFormAlliance(his_self, player, faction) {
     let io = his_self.returnDiplomacyImpulseOrder(faction);
     for (let i = 0; i < io.length; i++) {
-      if (!his_self.areAllies(faction, io[i]) && faction !== io[i]) { return 1; }
+      let prohibited_alliance = false;
+      if (faction == "papacy" && io[i] == "hapsburg" && his_self.game.state.henry_viii_pope_approves_divorce == 1) {
+	prohibited_alliance = true;
+      }
+      if (faction == "papacy" && io[i] == "ottoman") {
+	prohibited_alliance = true;
+      }
+      if (faction == "ottoman" && io[i] == "papacy") {
+	prohibited_alliance = true;
+      }
+      if (faction == io[i]) {
+	prohibited_alliance = true;
+      }
+      if (prohibited_alliance == false && !his_self.areAllies(faction, io[i]) && faction !== io[i]) { return 1; }
     }
     return 0;
   }
@@ -235,7 +248,20 @@
     let io = his_self.returnDiplomacyImpulseOrder(faction);
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
-      if (!his_self.areAllies(faction, io[i]) && faction != io[i]) {
+      let prohibited_alliance = false;
+      if (faction == "papacy" && io[i] == "hapsburg" && his_self.game.state.henry_viii_pope_approves_divorce == 1) {
+	prohibited_alliance = true;
+      }
+      if (faction == "papacy" && io[i] == "ottoman") {
+	prohibited_alliance = true;
+      }
+      if (faction == "ottoman" && io[i] == "papacy") {
+	prohibited_alliance = true;
+      }
+      if (faction == io[i]) {
+	prohibited_alliance = true;
+      }
+      if (prohibited_alliance == false && !his_self.areAllies(faction, io[i])) {
         html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
       }
     }
@@ -394,7 +420,7 @@
   }
 
   async playerApproveDivorce(his_self, faction, mycallback) {
-    mycallback([`advance_henry_viii_marital_status`,`NOTIFY\tThe Papacy accedes to Henry VIII's request for a divorce.`]);
+    mycallback([`advance_henry_viii_marital_status`,`SETVAR\tstate\thenry_viii_pope_approves_divorce\t1`, `NOTIFY\tThe Papacy accedes to Henry VIII's request for a divorce.`]);
     return 0;
   }
 

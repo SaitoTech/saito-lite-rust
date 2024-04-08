@@ -149,287 +149,98 @@ module.exports = (app, mod) => {
 				<div
 					class="scoring_card"
 					id="europe"
-					style="
-						top: 60px;
-						left: 1090px;
-						width: 140px;
-						height: 100px;
-						position: absolute;
-						cursor: pointer;
-					"
 				></div>
 				<div
 					class="display_card"
 					id="europe"
-					style="
-						top: 60px;
-						left: 1380px;
-						width: 240px;
-						height: 100px;
-						position: absolute;
-						cursor: pointer;
-						display: none;
-						background-color: lightgrey;
-						border: 1px solid black;
-						border-radius: 5px;
-					"
 				>
 					<div
 						class="display_vp"
 						id="europe"
-						style="
-							font-size: 4em;
-							color: #222;
-							display: flex;
-							justify-content: center;
-							margin-top: 1rem;
-						"
 					></div>
 				</div>
 
 				<div
 					class="scoring_card"
 					id="mideast"
-					style="
-						top: 820px;
-						left: 1590px;
-						width: 140px;
-						height: 100px;
-						position: absolute;
-						cursor: pointer;
-					"
 				></div>
 				<div
 					class="display_card"
 					id="mideast"
-					style="
-						top: 930px;
-						left: 1540px;
-						width: 240px;
-						height: 100px;
-						position: absolute;
-						cursor: pointer;
-						display: none;
-						background-color: lightgrey;
-						border: 1px solid black;
-						border-radius: 5px;
-					"
 				>
 					<div
 						class="display_vp"
 						id="mideast"
-						style="
-							font-size: 4em;
-							color: #222;
-							display: flex;
-							justify-content: center;
-							margin-top: 1rem;
-						"
 					></div>
 				</div>
 
 				<div
 					class="scoring_card"
 					id="asia"
-					style="
-						top: 640px;
-						left: 1840px;
-						width: 140px;
-						height: 100px;
-						position: absolute;
-						cursor: pointer;
-					"
 				></div>
 				<div
 					class="display_card"
 					id="asia"
-					style="
-						top: 530px;
-						left: 1790px;
-						width: 240px;
-						height: 100px;
-						position: absolute;
-						cursor: pointer;
-						display: none;
-						background-color: lightgrey;
-						border: 1px solid black;
-						border-radius: 5px;
-					"
 				>
 					<div
 						class="display_vp"
 						id="asia"
-						style="
-							font-size: 4em;
-							color: #222;
-							display: flex;
-							justify-content: center;
-							margin-top: 1rem;
-						"
 					></div>
 				</div>
 
 				<div
 					class="scoring_card"
 					id="seasia"
-					style="
-						top: 960px;
-						left: 1870px;
-						width: 140px;
-						height: 100px;
-						position: absolute;
-						cursor: pointer;
-					"
 				></div>
 				<div
 					class="display_card"
 					id="seasia"
-					style="
-						top: 1070px;
-						left: 1820px;
-						width: 240px;
-						height: 100px;
-						position: absolute;
-						cursor: pointer;
-						display: none;
-						background-color: lightgrey;
-						border: 1px solid black;
-						border-radius: 5px;
-					"
 				>
 					<div
 						class="display_vp"
 						id="seasia"
-						style="
-							font-size: 4em;
-							color: #222;
-							display: flex;
-							justify-content: center;
-							margin-top: 1rem;
-						"
 					></div>
 				</div>
 
 				<div
 					class="scoring_card"
 					id="camerica"
-					style="
-						top: 670px;
-						left: 520px;
-						width: 140px;
-						height: 100px;
-						position: absolute;
-						cursor: pointer;
-					"
 				></div>
 				<div
 					class="display_card"
 					id="camerica"
-					style="
-						top: 560px;
-						left: 475px;
-						width: 240px;
-						height: 100px;
-						position: absolute;
-						cursor: pointer;
-						display: none;
-						background-color: lightgrey;
-						border: 1px solid black;
-						border-radius: 5px;
-					"
 				>
 					<div
 						class="display_vp"
 						id="camerica"
-						style="
-							font-size: 4em;
-							color: #222;
-							display: flex;
-							justify-content: center;
-							margin-top: 1rem;
-						"
 					></div>
 				</div>
 
 				<div
 					class="scoring_card"
 					id="samerica"
-					style="
-						top: 1070px;
-						left: 525px;
-						width: 140px;
-						height: 100px;
-						position: absolute;
-						cursor: pointer;
-					"
 				></div>
 				<div
 					class="display_card"
 					id="samerica"
-					style="
-						top: 940px;
-						left: 650px;
-						width: 240px;
-						height: 100px;
-						position: absolute;
-						cursor: pointer;
-						display: none;
-						background-color: lightgrey;
-						border: 1px solid black;
-						border-radius: 5px;
-					"
 				>
 					<div
 						class="display_vp"
 						id="samerica"
-						style="
-							font-size: 4em;
-							color: #222;
-							display: flex;
-							justify-content: center;
-							margin-top: 1rem;
-						"
 					></div>
 				</div>
 
 				<div
 					class="scoring_card"
 					id="africa"
-					style="
-						top: 1020px;
-						left: 935px;
-						width: 140px;
-						height: 100px;
-						position: absolute;
-						cursor: pointer;
-					"
 				></div>
 				<div
 					class="display_card"
 					id="africa"
-					style="
-						top: 1130px;
-						left: 890px;
-						width: 240px;
-						height: 100px;
-						position: absolute;
-						cursor: pointer;
-						display: none;
-						background-color: lightgrey;
-						border: 1px solid black;
-						border-radius: 5px;
-					"
 				>
 					<div
 						class="display_vp"
 						id="africa"
-						style="
-							font-size: 4em;
-							color: #222;
-							display: flex;
-							justify-content: center;
-							margin-top: 1rem;
-						"
 					></div>
 				</div>
 

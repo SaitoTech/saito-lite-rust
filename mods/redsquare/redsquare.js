@@ -134,11 +134,7 @@ class RedSquare extends ModTemplate {
       //image: "https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png",
     };
 
-    this.theme_options = {
-      lite: "fa-solid fa-sun",
-      dark: "fa-solid fa-moon",
-      sangre: "fa-solid fa-droplet",
-    };
+    this.theme_options["sangre"] = "fa-solid fa-droplet";
 
     return this;
   }
@@ -1075,6 +1071,10 @@ class RedSquare extends ModTemplate {
     let notifications = [];
     let return_count = 2;
 
+    //
+    // This is the callback to process the returned tweets, 
+    // which we DONT want to just insert into the feed
+    //
     const middle_callback = () => {
       let new_notifications = [];
       if (notifications.length > 0) {
@@ -1093,12 +1093,14 @@ class RedSquare extends ModTemplate {
         this.notifications_earliest_ts = 0;
       }
 
+      console.log(`Appending ${new_notifications.length} new notification notices to the page`);
+      
       if (mycallback) {
         mycallback(new_notifications);
       }
     };
 
-    if (this.notifications_earliest_ts !== 0) {
+    if (this.notifications_earliest_ts) {
       this.app.storage.loadTransactions(
         {
           field1: "RedSquare",
@@ -1109,6 +1111,9 @@ class RedSquare extends ModTemplate {
           for (let tx of txs) {
             notifications.push(tx);
           }
+          
+          console.log(`Found ${txs.length} tweet notifications`);
+
           return_count--;
           if (return_count == 0) {
             middle_callback();
@@ -1133,6 +1138,9 @@ class RedSquare extends ModTemplate {
           for (let tx of txs) {
             notifications.push(tx);
           }
+
+          console.log(`Found ${txs.length} like notifications`);
+
           return_count--;
           if (return_count == 0) {
             middle_callback();

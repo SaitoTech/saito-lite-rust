@@ -56,6 +56,26 @@
 }
 
 
+.no-purchase{
+	margin-left: auto;
+	width: 210px;
+}
+
+.cardbox-menu, .no-purchase {
+	padding: 0.75rem;
+	font-size: 2.4rem;
+	background-color: #eb2d2d;
+	border: 2px solid #111311;
+	border-radius: 1rem;
+	text-align: center;
+	cursor: pointer;
+	color: white;
+}
+
+.no-purchase:hover{
+	font-weight: bold;
+}
+
 
 .shop-overlay{
 	max-width: 95vw;
@@ -64,7 +84,7 @@
 	border: 2px solid black;
 	padding: 2rem;
 	display: grid;
-	grid-template-rows: auto auto;
+	grid-template-rows: auto auto auto;
 	grid-template-columns: auto auto;
 	grid-gap: 1rem;
 }
@@ -117,7 +137,7 @@
 .card-preview .game-cardbox {
 	position: relative;
 	width: 100%;
-	height: auto;
+	height: 100%;
 	top: unset;
 	left: unset;
 	transform: unset;

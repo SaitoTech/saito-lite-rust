@@ -34,12 +34,12 @@ class Realms extends GameTemplate {
 		return this;
 	}
 
-	render(app) {
-		if (!this.browser_active) {
+	async render(app) {
+		if (!this.browser_active || this.initialize_game_run) {
 			return;
 		}
 
-		super.render(app);
+		await super.render(app);
 
 		//
 		// ADD MENU

@@ -20,13 +20,14 @@ module.exports = ShopOverlayTemplate = (mod, prompt, optional = false) => {
 
   html += "</div>";
 
-  html += `<div class="card-preview">`;
+  html += `<div class="card-preview"></div>`;
   if (optional){
+    console.log("optional");
     html += `<div class="no-purchase">Don't buy a card</div>`;
   }
   
 
-  html += "</div></div>";
+  html += "</div>";
 
   return html;
 };

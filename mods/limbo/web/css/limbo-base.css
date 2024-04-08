@@ -16,6 +16,9 @@
 
 
 /* Left Sidebar */
+.limbo-container .saito-sidebar.left {
+	max-width: 30rem;
+}
 
 .spaces-list{
 	gap: 0.5rem;
@@ -108,8 +111,8 @@
 
 .dream-controls {
 	position: absolute;
-	max-width: 95vw;
-	max-height: 80vh;
+	width: fit-content;
+	max-width: 100%;
 	display: grid;
 	grid-template-rows: 1fr 7rem;
 	grid-template-columns: minmax(0px, 1fr);
@@ -191,15 +194,22 @@ video#local.noflip{
 	.limbo-container.dreaming .saito-sidebar.left{
 		display: none;
 		visibility: hidden;
+	}
+
+	.saito-floating-container .saito-floating-plus-btn {
+		display: none;
 	}	
 }
 
 @media screen and (max-width: 900px){
-	.saito-container.limbo-container.dreaming{
+	.saito-container.limbo-container, .saito-container.limbo-container.dreaming{
 		grid-template-columns: 1fr;
 		grid-template-rows: min-content auto;
 	}
 
+	.limbo-container .saito-sidebar.left{
+		margin: auto;
+	}
 
 	.dream-controls .control-panel .timer {
 		margin-left: 1rem;

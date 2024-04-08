@@ -67,11 +67,11 @@ class PathsOfGlory extends GameTemplate {
   }
 
 
-  render(app) {
+  async render(app) {
 
-    if (this.browser_active == 0) { return; }
+    if (this.browser_active == 0 || this.initialize_game_run) { return; }
 
-    super.render(app);
+    await super.render(app);
 
     let game_mod = this;
 
