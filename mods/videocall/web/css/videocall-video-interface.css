@@ -826,6 +826,7 @@ video#local {
 
 .stun-input-settings legend {
 	text-align: left;
+	display: none;
 }
 
 .stun-appspace select option {
