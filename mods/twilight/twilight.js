@@ -557,49 +557,6 @@ initializeGame(game_id) {
 
       this.placeInfluence("turkey", 2, "us");
       this.placeInfluence("cuba", 3, "ussr");
-/***
-      this.placeInfluence("cuba", 3, "ussr");
-      this.placeInfluence("panama", 4, "ussr");
-      this.placeInfluence("costarica", 3, "us");
-
-      this.placeInfluence("venezuela", 2, "us");
-      this.placeInfluence("brazil", 2, "us");
-      this.placeInfluence("chile", 3, "ussr");
-      this.placeInfluence("argentina", 2, "ussr");
-
-      this.placeInfluence("algeria", 2, "us");
-      this.placeInfluence("nigeria", 2, "us");
-      this.placeInfluence("zaire", 2, "ussr");
-      this.placeInfluence("angola", 2, "us");
-      this.placeInfluence("southafrica", 5, "us");
-      this.placeInfluence("botswana", 2, "us");
-      this.placeInfluence("seafricanstates", 2, "ussr");
-
-      this.placeInfluence("libya", 2, "us");
-      this.placeInfluence("egypt", 2, "us");
-      this.placeInfluence("israel", 5, "us");
-      this.placeInfluence("lebanon", 2, "us");
-      this.placeInfluence("jordan", 2, "us");
-      this.placeInfluence("iran", 3, "ussr");
-      this.placeInfluence("iraq", 3, "ussr");
-      this.placeInfluence("saudiarabia", 3, "ussr");
-      this.placeInfluence("syria", 3, "ussr");
-
-      this.placeInfluence("pakistan", 2, "us");
-      this.placeInfluence("india", 3, "us");
-      this.placeInfluence("northkorea", 7, "us");
-      this.placeInfluence("vietnam", 3, "ussr");
-      this.placeInfluence("afghanistan", 5, "us");
-      this.placeInfluence("burma", 2, "us");
-      this.placeInfluence("laos", 2, "us");
-      this.placeInfluence("thailand", 4, "us");
-      this.placeInfluence("malaysia", 3, "us");
-      this.placeInfluence("indonesia", 3, "us");
-      this.placeInfluence("philippines", 3, "us");
-      this.placeInfluence("japan", 4, "us");
-      this.placeInfluence("southkorea", 3, "us");
-      this.placeInfluence("taiwan", 3, "us");
-***/
 
       this.game.options.deck = "endofhistory";
       let a = this.returnEarlyWarCards();
@@ -957,7 +914,7 @@ try {
 
       $(`.display_card#${region}`).show();
       $(`.display_vp#${region}`).html(
-        `VP: <div style="color:${vp_color}">&nbsp${total_vp}</div>`
+        `VP <div style="color:${vp_color}">&nbsp${total_vp}</div>`
       );
     }).mouseout(function() {
       let region = this.id;
