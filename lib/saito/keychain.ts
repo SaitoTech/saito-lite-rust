@@ -569,7 +569,9 @@ class Keychain {
  * @param {string} publicKey The public key to add to the watch list. Defaults to an empty string.
  */
 	addWatchedPublicKey(publicKey = '') {
-		this.addKey(publicKey, { watched: true });
+		if (publicKey){
+			this.addKey(publicKey, { watched: true });			
+		}
 	}
 
 	/**

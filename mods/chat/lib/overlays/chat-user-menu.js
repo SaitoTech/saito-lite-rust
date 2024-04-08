@@ -183,6 +183,7 @@ class ChatUserMenu {
 					thisobj.chat_group.member_ids[person] = -1;
 				};
 				contactList.render(thisobj.chat_group.members.filter(x => thisobj.chat_group.member_ids[x] == 1));
+				console.log(thisobj.chat_group.members, thisobj.chat_group.member_ids);
 			}
 			
 		}
