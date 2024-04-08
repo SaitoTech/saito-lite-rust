@@ -296,6 +296,9 @@ class Chat extends ModTemplate {
 			for (let group of this.groups) {
 				//Let's not hit the Archive for community chat since that is seperately queried on service.service == chat
 				if (group.name !== this.communityGroupName) {
+					
+					console.log(group);
+
 					await this.app.storage.loadTransactions(
 						{
 							field3: group.id,
@@ -795,26 +798,29 @@ class Chat extends ModTemplate {
 			return 0;
 		}
 
-		if (txmsg.request === 'chat message') {
+		if (txmsg.request === 'chat message relay') {
+
+			let inner_tx = new Transaction(undefined, txmsg.data);
 
 			if (app.BROWSER){
-				await this.receiveChatTransaction(tx);
+				await this.receiveChatTransaction(inner_tx);
 			} else {
 				//
 				// if chat message broadcast is received - we are being asked to broadcast this
 				// to a peer if the inner_tx is addressed to one of our peers.
 				//
-				let peers = await app.network.getPeers();
-
 				if (tx.isTo(this.publicKey)) {
+
+					let peers = await app.network.getPeers();
+
 					//
 					// Addressed to chat server, so forward to all
 					//
-					console.log('Community Chat');
+					console.log('Community Chat, relay to all: ', txmsg);
 					peers.forEach((p) => {
 						if (p.publicKey !== peer.publicKey) {
 							app.network.sendTransactionWithCallback(
-								tx,
+								tx,   // the relay wrapped message
 								null,
 								p.peerIndex
 							);
@@ -1418,7 +1424,7 @@ class Chat extends ModTemplate {
 
 		this.app.connection.emit('relay-send-message', {
 		 	recipient: group.members,
-		 	request: 'chat message',
+		 	request: 'chat message relay',
 		 	data: newtx.toJson(),
 		});
 
