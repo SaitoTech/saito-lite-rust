@@ -716,7 +716,6 @@ video#local {
 	row-gap: 2rem;
 	align-items: center;
 	color: var(--saito-white);
-    width: calc(80vw - 40rem);
 }
 
 

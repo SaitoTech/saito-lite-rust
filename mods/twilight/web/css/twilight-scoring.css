@@ -1,3 +1,206 @@
+.scoring_card#europe {
+                                                top: 60px;
+                                                left: 1090px;
+                                                width: 140px;
+                                                height: 100px;
+                                                position: absolute;
+                                                cursor: pointer;
+}
+.display_card#europe {
+                                                top: 60px;
+                                                left: 1380px;
+                                                width: 240px;
+                                                height: 100px;
+                                                position: absolute;
+                                                cursor: pointer;
+                                                display: none;
+                                                background-color: lightgrey;
+                                                border: 1px solid black;
+                                                border-radius: 5px;
+}
+.display_vp#europe {
+		 	                                font-size: 4em;
+                                                        color: #222;
+                                                        display: flex;
+                                                        justify-content: center;
+                                                        margin-top: 1.5rem;
+}
+
+.scoring_card#mideast {
+                                                top: 820px;
+                                                left: 1590px;
+                                                width: 140px;
+                                                height: 100px;
+                                                position: absolute;
+                                                cursor: pointer;
+}
+
+.display_card#mideast {
+                                                top: 930px;
+                                                left: 1540px;
+                                                width: 240px;
+                                                height: 100px;
+                                                position: absolute;
+                                                cursor: pointer;
+                                                display: none;
+                                                background-color: lightgrey;
+                                                border: 1px solid black;
+                                                border-radius: 5px;
+}
+
+.display_vp#mideast {
+
+                                                        font-size: 4em;
+                                                        color: #222;
+                                                        display: flex;
+                                                        justify-content: center;
+                                                        margin-top: 1.5rem;
+}
+
+
+
+.scoring_card#asia {
+                                                top: 640px;
+                                                left: 1840px;
+                                                width: 140px;
+                                                height: 100px;
+                                                position: absolute;
+                                                cursor: pointer;
+}
+.display_card#asia { 
+                                                top: 530px;
+                                                left: 1790px;
+                                                width: 240px;
+                                                height: 100px;
+                                                position: absolute;
+                                                cursor: pointer;
+                                                display: none;
+                                                background-color: lightgrey;
+                                                border: 1px solid black;
+                                                border-radius: 5px;
+}
+.display_vp#asia {
+                                                        font-size: 4em;
+                                                        color: #222;
+                                                        display: flex;
+                                                        justify-content: center;
+                                                        margin-top: 1.5rem;
+}
+
+.scoring_card#seasia {
+                                                top: 960px;
+                                                left: 1870px;
+                                                width: 140px;
+                                                height: 100px;
+                                                position: absolute;
+                                                cursor: pointer;
+}
+.display_card@seasia {
+                                                top: 1070px;
+                                                left: 1820px;
+                                                width: 240px;
+                                                height: 100px;
+                                                position: absolute;
+                                                cursor: pointer;
+                                                display: none;
+                                                background-color: lightgrey;
+                                                border: 1px solid black;
+                                                border-radius: 5px;
+}
+.display_vp#seasia {
+                                                        font-size: 4em;
+                                                        color: #222;
+                                                        display: flex;
+                                                        justify-content: center;
+                                                        margin-top: 1.5rem;
+}
+
+.scoring_card#camerica {
+                                                top: 670px;
+                                                left: 520px;
+                                                width: 140px;
+                                                height: 100px;
+                                                position: absolute;
+                                                cursor: pointer;
+}
+.display_card#camerica {
+                                                top: 560px;
+                                                left: 475px;
+                                                width: 240px;
+                                                height: 100px;
+                                                position: absolute;
+                                                cursor: pointer;
+                                                display: none;
+                                                background-color: lightgrey;
+                                                border: 1px solid black;
+                                                border-radius: 5px;
+}
+.display_vp#camerica {
+                                                        font-size: 4em;
+                                                        color: #222;
+                                                        display: flex;
+                                                        justify-content: center;
+                                                        margin-top: 1.5rem;
+}
+
+.scoring_card#samerica {
+                                                top: 1070px;
+                                                left: 525px;
+                                                width: 140px;
+                                                height: 100px;
+                                                position: absolute;
+                                                cursor: pointer;
+}
+.display_card#samerica {
+                                                top: 940px;
+                                                left: 650px;
+                                                width: 240px;
+                                                height: 100px;
+                                                position: absolute;
+                                                cursor: pointer;
+                                                display: none;
+                                                background-color: lightgrey;
+                                                border: 1px solid black;
+                                                border-radius: 5px;
+}
+.display_vp#samerica {
+                                                        font-size: 4em;
+                                                        color: #222;
+                                                        display: flex;
+                                                        justify-content: center;
+                                                        margin-top: 1.5rem;
+}
+
+.scoring_card#africa {
+                                                top: 1020px;
+                                                left: 935px;
+                                                width: 140px;
+                                                height: 100px;
+                                                position: absolute;
+                                                cursor: pointer;
+}
+.display_card#africa {
+                                                top: 1130px;
+                                                left: 890px;
+                                                width: 240px;
+                                                height: 100px;
+                                                position: absolute;
+                                                cursor: pointer;
+                                                display: none;
+                                                background-color: lightgrey;
+                                                border: 1px solid black;
+                                                border-radius: 5px;
+}
+.display_vp#africa {
+                                                        font-size: 4em;
+                                                        color: #222;
+                                                        display: flex;
+                                                        justify-content: center;
+                                                        margin-top: 1.5rem;
+}
+
+
+
 .scoring-overlay {
 	display: grid;
 	grid-template-columns: 1fr 1fr;

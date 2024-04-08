@@ -49,40 +49,13 @@ class TweetManager {
 						// load more notifications
 						//
 						if (this.mode === 'notifications') {
-							mod.loadNotifications((new_txs) => {
-								if (this.mode !== 'notifications') {
-									return;
-								}
-								for (let i = 0; i < new_txs.length; i++) {
-									let notification = new Notification(
-										this.app,
-										this.mod,
-										new_txs[i]
-									);
-									notification.render('.tweet-manager');
-								}
-								if (this.mod.notifications.length == 0) {
-									let notification = new Notification(
-										this.app,
-										this.mod,
-										null
-									);
-									notification.render('.tweet-manager');
 
-									if (
-										document.querySelector(
-											'#intersection-observer-trigger'
-										)
-									) {
-										this.intersectionObserver.unobserve(
-											document.querySelector(
-												'#intersection-observer-trigger'
-											)
-										);
-									}
-								}
-								this.hideLoader();
-							});
+							if (document.querySelector('#intersection-observer-trigger')) {
+								this.intersectionObserver.unobserve(document.querySelector('#intersection-observer-trigger'));
+							}
+
+							this.loadNotifications();
+
 						}
 
 						/////////////////////////////////////////////////
@@ -201,43 +174,52 @@ class TweetManager {
 				notification.render('.tweet-manager');
 			}
 
-			this.mod.loadNotifications((new_txs) => {
-				if (this.mode !== 'notifications') {
-					return;
-				}
+			this.loadNotifications();
+		}
+	}
 
-				for (let i = 0; i < new_txs.length; i++) {
-					let notification = new Notification(
-						this.app,
-						this.mod,
-						new_txs[i]
+	loadNotifications(){
+		this.mod.loadNotifications((new_txs) => {
+			if (this.mode !== 'notifications') {
+				return;
+			}
+
+			this.hideLoader();
+
+			for (let i = 0; i < new_txs.length; i++) {
+				let notification = new Notification(
+					this.app,
+					this.mod,
+					new_txs[i]
+				);
+				notification.render('.tweet-manager');
+			}
+
+			if (this.mod.notifications.length == 0) {
+
+				//Dummy "Notification" for end of history sign
+				let notification = new Notification(
+					this.app,
+					this.mod,
+					null
+				);
+				notification.render('.tweet-manager');
+
+				if (
+					document.querySelector('#intersection-observer-trigger')
+				) {
+					this.intersectionObserver.unobserve(
+						document.querySelector(
+							'#intersection-observer-trigger'
+						)
 					);
-					notification.render('.tweet-manager');
 				}
-				if (this.mod.notifications.length == 0) {
-					let notification = new Notification(
-						this.app,
-						this.mod,
-						null
-					);
-					notification.render('.tweet-manager');
-
-					if (
-						document.querySelector('#intersection-observer-trigger')
-					) {
-						this.intersectionObserver.unobserve(
-							document.querySelector(
-								'#intersection-observer-trigger'
-							)
-						);
-					}
-				}
-				this.hideLoader();
-
+			}else{
 				//Fire up the intersection observer after the callback completes...
 				this.attachEvents();
-			});
-		}
+			}
+
+		});
 	}
 
 	insertOlderTweets(tx_count, peer = null) {
