@@ -112,10 +112,9 @@ class Registry extends ModTemplate {
 									this.app.keychain.addKey({
 										publicKey: key,
 										identifier: value.identifier,
-										data: {
-											bio: value.bio,
-											photo: value.photo
-										}
+										bio: value.bio,
+										photo: value.photo,
+										data: value.data
 									});
 								}
 
@@ -296,11 +295,19 @@ class Registry extends ModTemplate {
 	//
 	//  Registers an identifier
 	//
-	async tryRegisterProfile(identifier, domain = '@saito', data = '') {
+	async registerProfile(
+		identifier,
+		domain = '@saito',
+		bio = '',
+		photo = '',
+		data = ''
+	) {
 		let result = await this.sendRegisterRequestTransaction(
 			identifier,
 			domain,
-			JSON.stringify({ photo: '', bio: '' })
+			bio,
+			photo,
+			JSON.stringify(data)
 		);
 		return result;
 	}
@@ -393,7 +400,7 @@ class Registry extends ModTemplate {
 						);
 						return;
 					}
-					registry_self.tryRegisterProfile(
+					registry_self.registerProfile(
 						identifier[0],
 						'@' + identifier[1]
 					);
@@ -640,7 +647,9 @@ class Registry extends ModTemplate {
 		sig = '',
 		signer = '',
 		lc = 1,
-		data
+		bio = '',
+		photo = '',
+		data = ''
 	) {
 		let sql = `INSERT OR IGNORE INTO records (
 						identifier,
@@ -652,6 +661,8 @@ class Registry extends ModTemplate {
 						sig,
 						signer,
 						lc,
+						bio,
+						photo,
 						profile_data
 					)
 					VALUES (
@@ -664,6 +675,8 @@ class Registry extends ModTemplate {
 						$sig,
 						$signer,
 						$lc,
+						$bio,
+						$photo,
 						$data
 					)`;
 		let params = {
@@ -676,6 +689,8 @@ class Registry extends ModTemplate {
 			$sig: sig,
 			$signer: signer,
 			$lc: lc,
+			$bio: bio,
+			$photo: photo,
 			$data: data
 		};
 
@@ -701,18 +716,24 @@ class Registry extends ModTemplate {
 		return 0;
 	}
 
-	async sendRegisterRequestTransaction(identifier, domain, data) {
+	async sendRegisterRequestTransaction(
+		identifier,
+		domain,
+		bio = '',
+		photo = '',
+		data = ''
+	) {
 		try {
 			// Validate the identifier is a string
 			if (typeof identifier !== 'string') {
 				throw new Error('Identifier must be a string.');
 			}
 
-			const transaction =
+			const newtx =
 				await this.app.wallet.createUnsignedTransactionWithDefaultFee(
 					this.registry_publickey
 				);
-			if (!transaction) {
+			if (!newtx) {
 				throw new Error(
 					'Failed to create transaction in registry module.'
 				);
@@ -727,15 +748,17 @@ class Registry extends ModTemplate {
 			}
 
 			// Set transaction details
-			transaction.msg.module = 'Registry';
-			transaction.msg.request = 'register request';
-			transaction.msg.identifier = identifier + domain;
-			transaction.msg.data = data;
+			newtx.msg.module = 'Registry';
+			newtx.msg.request = 'register request';
+			newtx.msg.identifier = identifier + domain;
+			newtx.msg.bio = bio;
+			newtx.msg.photo = photo;
+			newtx.msg.data = data;
 
-			// Add sender, sign the transaction, and propagate it onchain
-			await transaction.addFrom(this.publicKey);
-			await transaction.sign();
-			await this.app.network.propagateTransaction(transaction);
+			// Add sender, sign the newtx, and propagate it onchain
+			await newtx.addFrom(this.publicKey);
+			await newtx.sign();
+			await this.app.network.propagateTransaction(newtx);
 
 			return true;
 		} catch (error) {
@@ -769,6 +792,8 @@ class Registry extends ModTemplate {
 				);
 				const signer = this.registry_publickey;
 				const data = txmsg.data;
+				const bio = txmsg.bio;
+				const photo = txmsg.photo;
 				const result = await this.addRecord(
 					identifier,
 					publicKey,
@@ -779,6 +804,8 @@ class Registry extends ModTemplate {
 					signature,
 					signer,
 					1,
+					bio,
+					photo,
 					data
 				);
 
@@ -794,6 +821,8 @@ class Registry extends ModTemplate {
 						signedMessage,
 						signature,
 						publicKey,
+						bio,
+						photo,
 						data
 					};
 
@@ -849,6 +878,8 @@ class Registry extends ModTemplate {
 				try {
 					let publickey = tx.to[0].publicKey;
 					let identifier = txmsg.identifier;
+					let bio = txmsg.bio;
+					let photo = txmsg.photo;
 					let data = txmsg.data;
 					let signedMessage = txmsg.signedMessage;
 					let signature = txmsg.signature;
@@ -878,10 +909,11 @@ class Registry extends ModTemplate {
 									signature,
 									signer,
 									1,
+									bio,
+									photo,
 									data
 								);
 							}
-							let parsed_data = JSON.parse(data);
 
 							if (tx.isTo(this.publicKey)) {
 								this.app.keychain.addKey(tx.to[0].publicKey, {
@@ -890,7 +922,9 @@ class Registry extends ModTemplate {
 									block_id: blk.id,
 									block_hash: blk.hash,
 									lc: 1,
-									data: parsed_data
+									bio: value.bio,
+									photo: value.photo,
+									data
 								});
 
 								console.info('***********************');
