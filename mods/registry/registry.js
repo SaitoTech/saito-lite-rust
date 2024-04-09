@@ -494,11 +494,10 @@ class Registry extends ModTemplate {
 							sig,
 							publickey
 						};
-						let newtx =
-							await this.createRegisterConfirmationTransaction(
-								tx,
-								data
-							);
+						let newtx = await this.createRegisterSuccessTransaction(
+							tx,
+							data
+						);
 						await this.sendRegisterConfirmationTransaction(newtx);
 					}
 
@@ -771,12 +770,12 @@ class Registry extends ModTemplate {
 		return true;
 	}
 
-	async createRegisterConfirmationTransaction(tx, data) {
+	async createRegisterSuccessTransaction(tx, data) {
 		try {
 			let from = tx.from[0].publicKey;
 			let { identifier } = tx.returnMessage();
 			if (!from) {
-				throw Error('PROFILE: NO "FROM" PUBLIC KEY');
+				throw Error('PROFILE: NO "FROM" PUBLIC KEY FOUND');
 			}
 
 			let newtx =
@@ -802,24 +801,25 @@ class Registry extends ModTemplate {
 		}
 	}
 
-	async sendRegisterConfirmationTransaction(newtx) {
+	async sendRegisterSuccessTransaction(newtx) {
 		await this.app.network.propagateTransaction(newtx);
 	}
 
-	async receiveRegisterConfirmationTransaction(tx) {
+	async receiveRegisterSuccessTransaction(tx) {
 		let txmsg = tx.returnMessage();
 
+		console.log(tx, 'received transaction');
 		if (tx.from[0].publicKey == this.registry_publickey) {
 			try {
 				let publickey = tx.to[0].publicKey;
-				let identifier = tx.msg.identifier;
-				let signed_message = tx.msg.signed_message;
-				let sig = tx.msg.signature;
-				let bid = tx.msg.bid;
-				let bsh = tx.msg.bsh;
-				let unixtime = tx.msg.unixtime;
-				let lock_block = tx.msg.lock_block;
-				let signer = tx.msg.signer;
+				let identifier = txmsg.identifier;
+				let signed_message = txmsg.signed_message;
+				let sig = txmsg.signature;
+				let bid = txmsg.bid;
+				let bsh = txmsg.bsh;
+				let unixtime = txmsg.unixtime;
+				let lock_block = txmsg.lock_block;
+				let signer = txmsg.signer;
 				let lc = 1;
 
 				if (
