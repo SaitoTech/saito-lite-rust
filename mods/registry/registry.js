@@ -466,7 +466,6 @@ class Registry extends ModTemplate {
 						signed_message,
 						await this.app.wallet.getPrivateKey()
 					);
-					//this.app.wallet.signMessage(signed_message);
 					let signer = this.registry_publickey;
 					let lc = 1;
 
@@ -482,6 +481,13 @@ class Registry extends ModTemplate {
 						signer,
 						1
 					);
+
+					if (res) {
+						let newtx =
+							this.createRegisterConfirmationTransaction(tx);
+						await this.sendRegisterConfirmationTransaction();
+					}
+
 					console.log(res, 'result after registering');
 					return;
 				}
@@ -786,12 +792,13 @@ class Registry extends ModTemplate {
 	}
 
 	async createRegisterTransaction(identifier, domain) {
-		if (typeof identifier !== 'string' || !identifier instanceof String) {
-			console.error('Identifier must be of type string');
-			return;
-		}
-
 		try {
+			if (
+				typeof identifier !== 'string' ||
+				!identifier instanceof String
+			) {
+				throw Error('Identifier must be of type string');
+			}
 			let newtx =
 				await this.app.wallet.createUnsignedTransactionWithDefaultFee(
 					this.registry_publickey
@@ -807,11 +814,13 @@ class Registry extends ModTemplate {
 			newtx.msg.module = 'Registry';
 			newtx.msg.request = 'register';
 			newtx.msg.identifier = identifier + domain;
+
+			await newtx.addFrom(this.publicKey);
 			await newtx.sign();
 			return newtx;
 		} catch (error) {
 			console.error(
-				'Profile: Error creating Register Transaction',
+				'PROFILE: Error creating Register Transaction',
 				error
 			);
 		}
@@ -825,6 +834,27 @@ class Registry extends ModTemplate {
 
 		return true;
 	}
+
+	async createRegisterConfirmationTransaction(tx) {
+		try {
+			let client = tx.from[0].publicKey;
+			if (!client) {
+				throw Error('PROFILE: NO "FROM" PUBLIC KEY');
+			}
+
+			let newtx =
+				await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+					client
+				);
+		} catch (error) {
+			console.error(
+				'PROFILE: error creating register transaction',
+				error
+			);
+		}
+	}
+
+	async sendRegisterConfirmationTransaction(newtx) {}
 }
 
 module.exports = Registry;
