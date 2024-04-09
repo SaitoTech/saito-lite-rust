@@ -849,14 +849,13 @@ class Registry extends ModTemplate {
 				await this.app.wallet.createUnsignedTransactionWithDefaultFee(
 					client
 				);
-
+			newtx.addFrom(this.publicKey);
 			newtx.msg = {
 				module: 'Registry',
 				identifier,
-				bid: blk.bid,
+				bid: blk.id,
 				bsh: blk.hash
 			};
-			newtx.addFrom(this.publicKey);
 			await newtx.sign();
 		} catch (error) {
 			console.error(
