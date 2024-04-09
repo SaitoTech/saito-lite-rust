@@ -93,7 +93,7 @@ class Mods {
 					this.app.browser.updateSoftwareVersion(receivedBuildNumber);
 				}
 			}
-		} catch (err) {}
+		} catch (err) { }
 
 		for (let iii = 0; iii < this.mods.length; iii++) {
 			try {
@@ -269,14 +269,19 @@ class Mods {
 				}
 				console.log('handshake complete');
 				await onPeerHandshakeComplete(peer);
+
+
+				// broadcasts my keylist to other peers
+				this.app.network.updatePeersWithWatchedPublicKeys(this.app.keychain.returnWatchedPublicKeys())
 			}
 		);
+
 
 		const onConnectionUnstable = this.onConnectionUnstable.bind(this);
 		this.app.connection.on('peer_disconnect', async (peerIndex: bigint) => {
 			console.log(
 				'connection dropped -- triggering on connection unstable : ' +
-					peerIndex
+				peerIndex
 			);
 			// // todo : clone peer before disconnection and send with event
 			// let peer = await this.app.network.getPeer(BigInt(peerIndex));
@@ -560,9 +565,9 @@ class Mods {
 
 	/*
   async getBuildNumber() {
-    for (let i = 0; i < this.mods.length; i++) {
-      await this.mods[i].getBuildNumber()
-    }
+	for (let i = 0; i < this.mods.length; i++) {
+	  await this.mods[i].getBuildNumber()
+	}
   }
   */
 }

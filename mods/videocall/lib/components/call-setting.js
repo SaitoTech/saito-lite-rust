@@ -208,9 +208,11 @@ class CallSetting {
 		});
 		if (videoCt > 1){
 			this.videoInput.style.display = "flex";
+			document.querySelector(".stun-input-settings legend").style.display = "block";
 		}
 		if (audioCt > 1){
 			this.audioInput.style.display = "flex";
+			document.querySelector(".stun-input-settings legend").style.display = "block";
 		}
 	}
 
