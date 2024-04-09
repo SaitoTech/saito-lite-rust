@@ -33,16 +33,6 @@ module.exports = (app, mod, chat_group) => {
 			let fourth = "";
 			let unconfirmed_tag = '';
 
-			//
-			//only display for admin
-			//
-			if (chat_group.member_ids[publickey] == 0) {
-				unconfirmed_tag = ' unconfirmed';
-				if (chat_group.member_ids[mod.publicKey] !== 'admin'){
-					continue;
-				}	
-			}
-
 			if (chat_group.member_ids[publickey] == "admin"){
 				icon = `<i class="saito-overlaid-icon fa-solid fa-dragon"></i>`;
 			}
@@ -55,8 +45,10 @@ module.exports = (app, mod, chat_group) => {
 				}
 			}
 
-
-			html += formatUser(publickey, icon, unconfirmed_tag, fourth) 
+			//Filter for deactivated users...
+			if (chat_group.member_ids[publickey] == 1 || icon){
+				html += formatUser(publickey, icon, unconfirmed_tag, fourth) 	
+			}
 
 		}
 		html += '</div>';
