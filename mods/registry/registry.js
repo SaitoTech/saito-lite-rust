@@ -483,8 +483,10 @@ class Registry extends ModTemplate {
 					);
 
 					if (res) {
-						let newtx =
-							this.createRegisterConfirmationTransaction(tx);
+						let newtx = this.createRegisterConfirmationTransaction(
+							blk,
+							tx
+						);
 						await this.sendRegisterConfirmationTransaction();
 					}
 
@@ -835,7 +837,7 @@ class Registry extends ModTemplate {
 		return true;
 	}
 
-	async createRegisterConfirmationTransaction(tx) {
+	async createRegisterConfirmationTransaction(blk, tx) {
 		try {
 			let client = tx.from[0].publicKey;
 			let { identifier } = tx.returnMessage();
@@ -851,8 +853,8 @@ class Registry extends ModTemplate {
 			newtx.msg = {
 				module: 'Registry',
 				identifier,
-				bid,
-				bsh
+				bid: blk.bid,
+				bsh: blk.hash
 			};
 			newtx.addFrom(this.publicKey);
 			await newtx.sign();
