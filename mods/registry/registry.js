@@ -114,7 +114,7 @@ class Registry extends ModTemplate {
 										identifier: value.identifier,
 										bio: value.bio,
 										photo: value.photo,
-										data: value.data
+										data: value.profile_data
 									});
 								}
 
@@ -956,8 +956,8 @@ class Registry extends ModTemplate {
 									block_id: blk.id,
 									block_hash: blk.hash,
 									lc: 1,
-									bio: value.bio,
-									photo: value.photo,
+									bio,
+									photo,
 									data
 								});
 
