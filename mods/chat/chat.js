@@ -708,6 +708,7 @@ class Chat extends ModTemplate {
 				return;
 			}
 
+
 			if (this.debug) {
 				console.log('Chat onConfirmation: ' + txmsg.request);
 			}
@@ -715,6 +716,13 @@ class Chat extends ModTemplate {
 			if (txmsg.request == 'chat message') {
 				await this.receiveChatTransaction(tx, 1);
 			}
+
+			// We put chat message above because we actually have some logic in 
+			// the "double" processing of chat messages
+			if (this.hasSeenTransaction(tx)){
+				return;
+			}
+
 			if (txmsg.request == 'chat group') {
 				await this.receiveCreateGroupTransaction(tx);
 			}
@@ -782,64 +790,81 @@ class Chat extends ModTemplate {
 			return 0;
 		}
 
-		if (txmsg.request === 'chat message relay') {
+		//
+		// Sometimes we use the relay to wrap the chat module transaction with a different set of keys
+		//
+		if (txmsg.request === 'chat relay') {
+
+			console.log(txmsg);
 
 			let inner_tx = new Transaction(undefined, txmsg.data);
+			await inner_tx.decryptMessage(app);
 
-			if (app.BROWSER){
-				await this.receiveChatTransaction(inner_tx);
-			} else {
-				//
-				// if chat message broadcast is received - we are being asked to broadcast this
-				// to a peer if the inner_tx is addressed to one of our peers.
-				//
-				if (tx.isTo(this.publicKey)) {
+			let inner_message = inner_tx.returnMessage();
 
-					let peers = await app.network.getPeers();
+			console.log(inner_message);
 
+			if (inner_message.request == "chat join"){
+				this.receiveJoinGroupTransaction(inner_tx);
+				return;
+			}
+
+			if (inner_message.request == 'chat update') {
+				this.receiveUpdateGroupTransaction(inner_tx);
+				return;
+			}
+
+			if (inner_message.request == 'chat remove') {
+				this.receiveRemoveMemberTransaction(inner_tx);
+				return;
+			}
+
+			// Should be chat message...
+			if (app.crypto.isAesEncrypted(inner_message) || inner_message.request == "chat message"){
+
+				if (app.BROWSER){
+					await this.receiveChatTransaction(inner_tx);
+				} else {
 					//
-					// Addressed to chat server, so forward to all
+					// if chat message broadcast is received - we are being asked to broadcast this
+					// to a peer if the inner_tx is addressed to one of our peers.
 					//
-					console.log('Community Chat, relay to all: ', txmsg);
-					peers.forEach((p) => {
-						if (p.publicKey !== peer.publicKey) {
-							app.network.sendTransactionWithCallback(
-								tx,   // the relay wrapped message
-								null,
-								p.peerIndex
-							);
-						}
-					});
+					if (tx.isTo(this.publicKey)) {
+
+						let peers = await app.network.getPeers();
+
+						//
+						// Addressed to chat server, so forward to all
+						//
+						console.log('Community Chat, relay to all: ', txmsg);
+						peers.forEach((p) => {
+							if (p.publicKey !== peer.publicKey) {
+								app.network.sendTransactionWithCallback(
+									tx,   // the relay wrapped message
+									null,
+									p.peerIndex
+								);
+							}
+						});
+					}
 				}
+
+				//
+				// notify sender if requested
+				//
+				if (mycallback) {
+					mycallback({ payload: 'success', error: {} });
+					return 1;
+				}
+
+				return 0;
+
 			}
 
-			//
-			// notify sender if requested
-			//
-			if (mycallback) {
-				mycallback({ payload: 'success', error: {} });
-				return 1;
-			}
-
-			return 0;
 		}
 
 		if (txmsg.request == 'chat group') {
 			this.receiveCreateGroupTransaction(tx);
-			return;
-		}
-		if (txmsg.request == 'chat join') {
-			this.receiveJoinGroupTransaction(tx);
-			return;
-		}
-
-		if (txmsg.request == 'chat update') {
-			this.receiveUpdateGroupTransaction(tx);
-			return;
-		}
-
-		if (txmsg.request == 'chat remove') {
-			this.receiveRemoveMemberTransaction(tx);
 			return;
 		}
 
@@ -955,7 +980,7 @@ class Chat extends ModTemplate {
 
 			let newGroup = {
 				id: txmsg.id,
-				members: [],
+				members: [txmsg.admin],
 				member_ids: {},
 				name: txmsg.name,
 				txs: [],
@@ -992,6 +1017,8 @@ class Chat extends ModTemplate {
 				await this.sendJoinGroupTransaction(newGroup);
 			}
 
+			console.log(JSON.parse(JSON.stringify(newGroup)));
+
 			//Update UI
 			this.app.connection.emit('chat-manager-opens-group', newGroup);
 			this.app.connection.emit('open-chat-with', { id: newGroup.id });
@@ -1019,7 +1046,11 @@ class Chat extends ModTemplate {
 		await newtx.sign();
 
 		await this.app.network.propagateTransaction(newtx);
-		this.app.connection.emit('relay-transaction', newtx);
+		this.app.connection.emit('relay-send-message', {
+			request: "chat relay",
+			recipient: group.members,
+			data: newtx.toJson(),
+		});
 	}
 
 	async receiveJoinGroupTransaction(tx) {
@@ -1100,7 +1131,11 @@ class Chat extends ModTemplate {
 		await newtx.sign();
 
 		await this.app.network.propagateTransaction(newtx);
-		this.app.connection.emit('relay-transaction', newtx);
+		this.app.connection.emit('relay-send-message', {
+			request: "chat relay",
+			recipient: group.members,
+			data: newtx.toJson(),
+		});
 	}
 
 	async receiveUpdateGroupTransaction(tx) {
@@ -1213,7 +1248,11 @@ class Chat extends ModTemplate {
 		await newtx.sign();
 
 		await this.app.network.propagateTransaction(newtx);
-		this.app.connection.emit('relay-transaction', newtx);
+		this.app.connection.emit('relay-send-message', {
+			request: "chat relay",
+			recipient: group.members,
+			data: newtx.toJson(),
+		});
 	}
 
 	async receiveRemoveMemberTransaction(tx) {
@@ -1398,7 +1437,7 @@ class Chat extends ModTemplate {
 
 		this.app.connection.emit('relay-send-message', {
 		 	recipient: group.members,
-		 	request: 'chat message relay',
+		 	request: 'chat relay',
 		 	data: newtx.toJson(),
 		});
 
