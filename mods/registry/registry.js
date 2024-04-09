@@ -838,6 +838,7 @@ class Registry extends ModTemplate {
 	async createRegisterConfirmationTransaction(tx) {
 		try {
 			let client = tx.from[0].publicKey;
+			let { identifier } = tx.returnMessage();
 			if (!client) {
 				throw Error('PROFILE: NO "FROM" PUBLIC KEY');
 			}
@@ -846,6 +847,15 @@ class Registry extends ModTemplate {
 				await this.app.wallet.createUnsignedTransactionWithDefaultFee(
 					client
 				);
+
+			newtx.msg = {
+				module: 'Registry',
+				identifier,
+				bid,
+				bsh
+			};
+			newtx.addFrom(this.publicKey);
+			await newtx.sign();
 		} catch (error) {
 			console.error(
 				'PROFILE: error creating register transaction',
