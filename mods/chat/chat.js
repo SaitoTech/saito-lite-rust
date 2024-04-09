@@ -667,10 +667,9 @@ class Chat extends ModTemplate {
 
 	async createFreshGroup(name, id) {
 		let peer = (await this.app.network.getPeers())[0].publicKey;
-		let gid = this.generatePublicKeyFromString(id);
 
 		let chat_group = {
-			id: gid,
+			id,
 			members: [peer],
 			name,
 			txs: [],
