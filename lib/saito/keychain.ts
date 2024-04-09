@@ -10,12 +10,14 @@ class Keychain {
 	public groups: any;
 	public modtemplate: any;
 	public fetched_keys: Map<string, number>;
-	public publicKey: string;
+	public publicKey: string
 	public identifier: string;
 	public bid: bigint;
 	public bsh: string;
 	public lc: boolean;
 	public hash: string;
+
+
 
 	constructor(app: Saito) {
 		this.app = app;
@@ -24,9 +26,19 @@ class Keychain {
 		this.groups = [];
 		this.modtemplate = new modtemplate(this.app);
 		this.fetched_keys = new Map<string, number>();
+
+		app.connection.on('wallet-updated', () => {
+			let keys = this.returnWatchedPublicKeys();
+			this.app.network.updatePeersWithWatchedPublicKeys(keys);
+
+		});
+
+
 	}
 
+
 	async initialize() {
+
 		if (this.app.options.keys == null) {
 			this.app.options.keys = [];
 		}
@@ -59,6 +71,8 @@ class Keychain {
 			this.groups = this.app.options.groups;
 		}
 
+
+
 		//
 		// add my key if needed
 		//
@@ -66,10 +80,13 @@ class Keychain {
 			this.addKey({ publicKey: this.publicKey, watched: true });
 		}
 
+
+
 		//
 		// creates hash of important info so we know if values change
 		//
 		this.hash = this.returnHash();
+
 	}
 
 	returnHash() {
@@ -147,6 +164,9 @@ class Keychain {
 		this.saveKeys();
 	}
 
+
+
+
 	decryptMessage(publicKey: string, encrypted_msg) {
 		// submit JSON parsed object after unencryption
 		for (let x = 0; x < this.keys.length; x++) {
@@ -179,10 +199,10 @@ class Keychain {
 				}
 			}
 		}
-		
-		if (this.app.BROWSER){
+
+		if (this.app.BROWSER) {
 			console.warn('I don\'t share a decryption key with encrypter, cannot decrypt');
-			this.app.connection.emit('encrypt-decryption-failed', publicKey);	
+			this.app.connection.emit('encrypt-decryption-failed', publicKey);
 		}
 
 		return encrypted_msg;
@@ -369,7 +389,7 @@ class Keychain {
 		if (data == null) {
 			for (let x = 0; x < this.keys.length; x++) {
 				if (
-					/*this.keys[x].lc &&*/ this.keys[x].publicKey !=
+                    /*this.keys[x].lc &&*/ this.keys[x].publicKey !=
 					this.publicKey
 				) {
 					kx.push(this.keys[x]);
@@ -400,7 +420,7 @@ class Keychain {
 	}
 
 	saveKeys() {
-		this.app.options.keys = this.keys;
+		this.app.options.keys = [...this.keys];
 		this.app.storage.saveOptions();
 		if (this.returnHash() != this.hash) {
 			this.hash = this.returnHash();
@@ -539,11 +559,48 @@ class Keychain {
 		return x;
 	}
 
+
+
+
+	/**
+ * Adds a publicKey to the watch list and updates the keys storage.
+ * This function takes a publicKey as input, marks it as watched, saves the updated keys,
+ *
+ * @param {string} publicKey The public key to add to the watch list. Defaults to an empty string.
+ */
 	addWatchedPublicKey(publicKey = '') {
-		this.addKey(publicKey, { watched: true });
-		this.saveKeys();
-		this.app.network.updatePeersWithWatchedPublicKeys();
+		if (publicKey){
+			this.addKey(publicKey, { watched: true });			
+		}
 	}
+
+	/**
+ * Marks a publicKey as not watched in the keys list.
+ * This function takes a publicKey as input and updates its status to not watched,
+ * without removing it from the list.
+ *
+ * @param {string} publicKey The public key to mark as not watched.
+ */
+	unwatchPublicKey(publicKey = '') {
+		if (typeof publicKey !== 'string') {
+			throw new Error('Invalid publicKey: must be a string');
+		}
+		const keyExists = this.keys.some(key => key.publicKey === publicKey);
+
+		if (keyExists) {
+			this.keys = this.keys.map(key => {
+				if (key.publicKey === publicKey) {
+					return { ...key, watched: false };
+				}
+				return key;
+			});
+			this.saveKeys();
+		} else {
+			console.warn(`PublicKey ${publicKey} not found.`);
+		}
+	}
+
+
 
 	updateEncryptionByPublicKey(
 		publicKey: string,
@@ -569,3 +626,4 @@ class Keychain {
 }
 
 export default Keychain;
+
