@@ -19,7 +19,6 @@ class StreamManager {
 		this.audioSource = null;
 		this.auto_disconnect = false;
 		this.active = true;
-		this.is_broadcasting = false;
 
 		this.terminationEvent = 'onpagehide' in self ? 'pagehide' : 'unload';
 
@@ -208,11 +207,11 @@ class StreamManager {
 				public_key: this.mod.publicKey,
 				enabled: this.videoEnabled
 			});
+		});
 
-			if (this.mod.stun.peers.size > 0 &&	!this.is_broadcasting) {
-				// begin sending peer list to peers
-				this.beginBroadcastingPeerList();
-			}
+
+		app.connection.on('stun-update-connection-message', (peerId, connectionState)=> {
+			this.broadcastPeerList();
 		});
 
 		app.connection.on('stun-track-event', (peerId, event) => {
@@ -439,6 +438,8 @@ class StreamManager {
 
 		let sound = new Audio('/saito/sound/Sharp.mp3');
 		sound.play();
+
+		this.broadcastPeerList();
 	}
 
 	async leaveCall() {
@@ -472,11 +473,6 @@ class StreamManager {
 		this.audioEnabled = true;
 		this.auto_disconnect = false;
 		this.active = false;
-
-		if (this.is_broadcasting){
-			clearInterval(this.is_broadcasting);
-			this.is_broadcasting = null;
-		}
 
 		if (this.audioStreamAnalysis) {
 			clearInterval(this.audioStreamAnalysis);
@@ -545,21 +541,17 @@ class StreamManager {
 		this.presentationStream = null;
 	}
 
-	async beginBroadcastingPeerList() {
+	broadcastPeerList() {
+		
+		let peer_list = {};
 
-		this.is_broadcasting = setInterval(async () => {
-			let peer_list = {};
+		this.mod.stun.peers.forEach((pc, address) => {
+			if (this.app.options.stun.peers.includes(address)){
+				peer_list[address] = pc.connectionState;
+			}
+		});
 
-			this.mod.stun.peers.forEach((pc, address) => {
-				if (this.app.options.stun.peers.includes(address)){
-					peer_list[address] = pc.connectionState;
-				}
-			});
-
-			this.mod.sendOffChainMessage("broadcast-call-list", peer_list);
-
-		}, 3000);
-
+		this.mod.sendOffChainMessage("broadcast-call-list", peer_list);
 	}
 
 	beforeUnloadHandler(event) {
