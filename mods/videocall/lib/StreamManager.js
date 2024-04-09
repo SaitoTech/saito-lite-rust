@@ -152,6 +152,9 @@ class StreamManager {
 						peerConnection.addTrack(videoTrack);
 					}
 				});
+
+				this.app.connection.emit('toggle-screen-share-label','Stop Screen');
+
 			} catch (err) {
 				console.error('Error accessing media devices.', err);
 			}
@@ -164,6 +167,11 @@ class StreamManager {
 
 			console.log('no more');
 			this.endPresentation();
+			this.app.connection.emit('toggle-screen-share-label','Screen Share');
+		});
+
+		app.connection.on('toggle-screen-share-label', async (text) => {
+			document.querySelector('.screen_share label').innerText = text;
 		});
 
 		app.connection.on('stun-connection-connected', (peerId) => {
