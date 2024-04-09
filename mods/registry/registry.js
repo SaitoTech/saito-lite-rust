@@ -699,6 +699,40 @@ class Registry extends ModTemplate {
 		return res?.changes;
 	}
 
+	async updateRecord(identifier, bio, photo, data) {
+		// Prepare the fields in an object for easy iteration
+		const fieldsToUpdate = {
+			bio: bio,
+			photo: photo,
+			profile_data: typeof data === 'object' ? JSON.stringify(data) : data
+		};
+
+		let sqlSetParts = [];
+		let params = { $identifier: identifier };
+
+		for (const [key, value] of Object.entries(fieldsToUpdate)) {
+			if (value !== undefined) {
+				sqlSetParts.push(`${key} = $${key}`);
+				params[`$${key}`] = value;
+			}
+		}
+
+		// Ensure there are fields to update
+		if (sqlSetParts.length === 0) {
+			throw new Error('No fields provided for update.');
+		}
+
+		let sql = `UPDATE records SET ${sqlSetParts.join(
+			', '
+		)} WHERE identifier = $identifier`;
+
+		// Execute the query
+		let res = await this.app.storage.runDatabase(sql, params, 'registry');
+
+		// Return the number of records updated
+		return res?.changes;
+	}
+
 	async onChainReorganization(bid, bsh, lc) {
 		var sql = 'UPDATE records SET lc = $lc WHERE bid = $bid AND bsh = $bsh';
 		var params = { $bid: bid, $bsh: bsh };
