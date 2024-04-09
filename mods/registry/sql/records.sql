@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS records (
   sig TEXT,
   signer TEXT,
   lc INTEGER,
+  profile_data TEXT DEFAULT '', 
   UNIQUE (identifier),
   PRIMARY KEY(id ASC)
 );

@@ -89,7 +89,7 @@ class RegisterUsername {
 							);
 							try {
 								let register_success =
-									await this.mod.tryRegisterIdentifier(
+									await this.mod.tryRegisterProfile(
 										identifier,
 										domain
 									);

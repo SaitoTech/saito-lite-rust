@@ -58,7 +58,7 @@ class Registry extends ModTemplate {
 		// process by showing a popup. The first is the entry point for most applications.
 		//
 		this.app.connection.on(
-			'register-fetch-identifiers-and-update-dom',
+			'registry-fetch-identifiers-and-update-dom',
 			async (keys) => {
 				//
 				// every 1 in 20 times, clear cache of anonymous keys to requery
@@ -76,7 +76,7 @@ class Registry extends ModTemplate {
 					if (this.cached_keys[keys[i]]) {
 						this.app.browser.updateAddressHTML(
 							keys[i],
-							this.cached_keys[keys[i]]
+							this.cached_keys[keys[i]].identifier
 						);
 					} else {
 						if (!this.keys_to_look_up.includes(keys[i])) {
@@ -99,6 +99,7 @@ class Registry extends ModTemplate {
 						//
 						//console.log("REGISTRY: event triggered fetchManyIdentifiers callback");
 						Object.entries(answer).forEach(([key, value]) => {
+							console.log('key value', key, value);
 							if (value !== this.publicKey) {
 								//
 								// if this is a key that is stored in our keychain, then we want
@@ -110,11 +111,18 @@ class Registry extends ModTemplate {
 								) {
 									this.app.keychain.addKey({
 										publicKey: key,
-										identifier: value
+										identifier: value.identifier,
+										data: {
+											bio: value.bio,
+											photo: value.photo
+										}
 									});
 								}
 
-								this.app.browser.updateAddressHTML(key, value);
+								this.app.browser.updateAddressHTML(
+									key,
+									value.identifier
+								);
 							}
 						});
 
@@ -218,13 +226,13 @@ class Registry extends ModTemplate {
 			return 1;
 		}
 
-		this.queryKeys(this.peers[0], missing_keys, (identifiers) => {
+		this.queryKeys(this.peers[0], missing_keys, (profiles) => {
 			//
 			// This callback is executed in the browser
 			//
-			for (let key in identifiers) {
-				registry_self.cached_keys[key] = identifiers[key];
-				found_keys[key] = identifiers[key];
+			for (let key in profiles) {
+				registry_self.cached_keys[key] = profiles[key];
+				found_keys[key] = profiles[key];
 			}
 			mycallback(found_keys);
 		});
@@ -252,11 +260,11 @@ class Registry extends ModTemplate {
 						if (key === data.publicKey) {
 							if (
 								this.cached_keys[key] &&
-								key !== this.cached_keys[key]
+								key !== this.cached_keys[key].publicKey
 							) {
 								return {
 									publicKey: key,
-									identifier: this.cached_keys[key]
+									identifier: this.cached_keys[key].identifier
 								};
 							} else {
 								return { publicKey: key };
@@ -288,10 +296,11 @@ class Registry extends ModTemplate {
 	//
 	//  Registers an identifier
 	//
-	async tryRegisterIdentifier(identifier, domain = '@saito') {
+	async tryRegisterProfile(identifier, domain = '@saito', data = '') {
 		let result = await this.sendRegisterRequestTransaction(
 			identifier,
-			domain
+			domain,
+			JSON.stringify({ photo: '', bio: '' })
 		);
 		return result;
 	}
@@ -347,16 +356,22 @@ class Registry extends ModTemplate {
 			let myKey = app.keychain.returnKey(this.publicKey, true);
 			if (myKey?.identifier) {
 				let registry_self = this;
-
-				this.queryKeys(peer, [this.publicKey], function (identifiers) {
+				this.queryKeys(peer, [this.publicKey], function (profiles) {
+					console.log('profiles', profiles);
 					//console.log(`REGISTRY lookup ${myKey.identifier}: ${registry_self.publicKey} in ${peer.publicKey}, found: `, identifiers);
-					for (let key in identifiers) {
-						if (key == myKey.publicKey) {
-							if (identifiers[key] !== myKey.identifier) {
+
+					for (let profile in profiles) {
+						console.log('profiles', profile);
+						if (profile.publicKey == myKey.publicKey) {
+							if (
+								profiles[profile].identifier !==
+								myKey.identifier
+							) {
 								console.log('REGISTRY: Identifier mismatch...');
 								console.log(
-									`REGISTRY: Expecting ${myKey.identifier}, but Registry has ${identifiers[key]}`
+									`REGISTRY: Expecting ${myKey.identifier}, but Registry has ${profiles[key].identifier}`
 								);
+
 								//Maybe we do an update here???
 							} else {
 								//console.log("REGISTRY: Identifier checks out");
@@ -378,7 +393,7 @@ class Registry extends ModTemplate {
 						);
 						return;
 					}
-					registry_self.tryRegisterIdentifier(
+					registry_self.tryRegisterProfile(
 						identifier[0],
 						'@' + identifier[1]
 					);
@@ -417,7 +432,7 @@ class Registry extends ModTemplate {
 			if (txmsg.data.request === 'registry query') {
 				let keys = txmsg.data?.keys;
 				//console.log("REGISTRY query lookup: ", keys);
-				return this.fetchIdentifiersFromDatabase(keys, mycallback);
+				return this.fetchProfilesFromDatabase(keys, mycallback);
 			}
 
 			if (txmsg.data.request === 'registry namecheck') {
@@ -466,7 +481,7 @@ class Registry extends ModTemplate {
 	 * Invoked through a peer request.
 	 * Any requested keys not found are passed on to any peers with the DNS publickey
 	 */
-	async fetchIdentifiersFromDatabase(keys, mycallback = null) {
+	async fetchProfilesFromDatabase(keys, mycallback = null) {
 		let registry_self = this;
 		let found_keys = {};
 		let missing_keys = [];
@@ -481,6 +496,10 @@ class Registry extends ModTemplate {
         found_keys[keys[i]] = this.cached_keys[keys[i]];
         keys.splice(i, 1);
       }*/
+
+			if (!this.cached_keys[keys[i]]) {
+				this.cached_keys[keys[i]] = {};
+			}
 		}
 
 		//
@@ -500,9 +519,8 @@ class Registry extends ModTemplate {
 			);
 			if (rows?.length > 0) {
 				for (let i = 0; i < rows.length; i++) {
-					found_keys[rows[i].publickey] = rows[i].identifier;
-					registry_self.cached_keys[rows[i].publickey] =
-						rows[i].identifier;
+					found_keys[rows[i].publickey] = rows[i];
+					registry_self.cached_keys[rows[i].publickey] = rows[i];
 				}
 			}
 		}
@@ -621,26 +639,33 @@ class Registry extends ModTemplate {
 		lock_block = 0,
 		sig = '',
 		signer = '',
-		lc = 1
+		lc = 1,
+		data
 	) {
-		let sql = `INSERT OR IGNORE INTO records (identifier,
-                                    publickey,
-                                    unixtime,
-                                    bid,
-                                    bsh,
-                                    lock_block,
-                                    sig,
-                                    signer,
-                                    lc)
-               VALUES ($identifier,
-                       $publickey,
-                       $unixtime,
-                       $bid,
-                       $bsh,
-                       $lock_block,
-                       $sig,
-                       $signer,
-                       $lc)`;
+		let sql = `INSERT OR IGNORE INTO records (
+						identifier,
+						publickey,
+						unixtime,
+						bid,
+						bsh,
+						lock_block,
+						sig,
+						signer,
+						lc,
+						profile_data
+					)
+					VALUES (
+						$identifier,
+						$publickey,
+						$unixtime,
+						$bid,
+						$bsh,
+						$lock_block,
+						$sig,
+						$signer,
+						$lc,
+						$data
+					)`;
 		let params = {
 			$identifier: identifier,
 			$publickey: publickey,
@@ -650,7 +675,8 @@ class Registry extends ModTemplate {
 			$lock_block: lock_block,
 			$sig: sig,
 			$signer: signer,
-			$lc: lc
+			$lc: lc,
+			$data: data
 		};
 
 		let res = await this.app.storage.runDatabase(sql, params, 'registry');
@@ -675,7 +701,7 @@ class Registry extends ModTemplate {
 		return 0;
 	}
 
-	async sendRegisterRequestTransaction(identifier, domain) {
+	async sendRegisterRequestTransaction(identifier, domain, data) {
 		try {
 			// Validate the identifier is a string
 			if (typeof identifier !== 'string') {
@@ -704,6 +730,7 @@ class Registry extends ModTemplate {
 			transaction.msg.module = 'Registry';
 			transaction.msg.request = 'register request';
 			transaction.msg.identifier = identifier + domain;
+			transaction.msg.data = data;
 
 			// Add sender, sign the transaction, and propagate it onchain
 			await transaction.addFrom(this.publicKey);
@@ -722,13 +749,13 @@ class Registry extends ModTemplate {
 
 	async receiveRegisterRequestTransaction(block, transaction) {
 		try {
-			const transactionMessage = transaction.returnMessage();
+			const txmsg = transaction.returnMessage();
 
 			if (
 				transaction.isTo(this.publicKey) &&
 				this.publicKey === this.registry_publickey
 			) {
-				const identifier = transactionMessage.identifier;
+				const identifier = txmsg.identifier;
 				const publicKey = transaction.from[0].publicKey;
 				const unixTime = new Date().getTime();
 				const blockId = block.id;
@@ -741,7 +768,7 @@ class Registry extends ModTemplate {
 					await this.app.wallet.getPrivateKey()
 				);
 				const signer = this.registry_publickey;
-
+				const data = txmsg.data;
 				const result = await this.addRecord(
 					identifier,
 					publicKey,
@@ -751,11 +778,13 @@ class Registry extends ModTemplate {
 					lockBlock,
 					signature,
 					signer,
-					1
+					1,
+					data
 				);
 
 				if (result) {
-					const data = {
+					console.log('added record');
+					const obj = {
 						lockBlock,
 						unixTime,
 						signer,
@@ -764,13 +793,11 @@ class Registry extends ModTemplate {
 						identifier,
 						signedMessage,
 						signature,
-						publicKey
+						publicKey,
+						data
 					};
 
-					await this.sendRegisterSuccessTransaction(
-						transaction,
-						data
-					);
+					await this.sendRegisterSuccessTransaction(transaction, obj);
 				}
 			}
 		} catch (error) {
@@ -781,7 +808,7 @@ class Registry extends ModTemplate {
 		}
 	}
 
-	async sendRegisterSuccessTransaction(tx, data) {
+	async sendRegisterSuccessTransaction(tx, obj) {
 		try {
 			let from = tx.from[0].publicKey;
 			let { identifier } = tx.returnMessage();
@@ -799,7 +826,7 @@ class Registry extends ModTemplate {
 				request,
 				module: 'Registry',
 				identifier,
-				...data
+				...obj
 			};
 
 			await newtx.sign();
@@ -822,6 +849,7 @@ class Registry extends ModTemplate {
 				try {
 					let publickey = tx.to[0].publicKey;
 					let identifier = txmsg.identifier;
+					let data = txmsg.data;
 					let signedMessage = txmsg.signedMessage;
 					let signature = txmsg.signature;
 					let bid = txmsg.bid;
@@ -849,9 +877,11 @@ class Registry extends ModTemplate {
 									lock_block,
 									signature,
 									signer,
-									1
+									1,
+									data
 								);
 							}
+							let parsed_data = JSON.parse(data);
 
 							if (tx.isTo(this.publicKey)) {
 								this.app.keychain.addKey(tx.to[0].publicKey, {
@@ -859,8 +889,10 @@ class Registry extends ModTemplate {
 									watched: true,
 									block_id: blk.id,
 									block_hash: blk.hash,
-									lc: 1
+									lc: 1,
+									data: parsed_data
 								});
+
 								console.info('***********************');
 								console.info(
 									'verification success for : ' + identifier
