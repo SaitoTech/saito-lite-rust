@@ -790,6 +790,12 @@ class Chat extends ModTemplate {
 			return 0;
 		}
 
+		// This is forwarded directly as it's transaction because
+		if (txmsg.request == 'chat group') {
+			this.receiveCreateGroupTransaction(tx);
+			return;
+		}
+
 		//
 		// Sometimes we use the relay to wrap the chat module transaction with a different set of keys
 		//
@@ -803,6 +809,11 @@ class Chat extends ModTemplate {
 			let inner_message = inner_tx.returnMessage();
 
 			console.log(inner_message);
+
+			if (this.hasSeenTransaction(inner_tx)){
+				console.warn("Relayed transaction already seen...");
+				return;
+			}
 
 			if (inner_message.request == "chat join"){
 				this.receiveJoinGroupTransaction(inner_tx);
@@ -819,7 +830,42 @@ class Chat extends ModTemplate {
 				return;
 			}
 
-			// Should be chat message...
+
+			if (inner_message.request === 'chat like') {
+
+				if (app.BROWSER){
+					console.log('receiving chat like transactions liker');
+					await this.receiveChatLikeTransaction(inner_tx);
+				}else{
+		
+					//We address to the chat service so it can relay to everyone
+					if (app.BROWSER == 0) {
+						if (tx.isTo(this.publicKey)) {
+
+							let peers = await app.network.getPeers();
+							peers.forEach((p) => {
+								if (p.publicKey !== peer.publicKey) {
+									app.network.sendTransactionWithCallback(
+										tx,
+										null,
+										p.peerIndex
+									);
+								}
+							});
+						} 
+					}
+				}
+
+				if (mycallback) {
+					mycallback({ payload: 'success', error: {} });
+					return 1;
+				}
+
+				return 0;
+			}
+
+
+			// Should be chat message if encrypted...
 			if (app.crypto.isAesEncrypted(inner_message) || inner_message.request == "chat message"){
 
 				if (app.BROWSER){
@@ -861,63 +907,6 @@ class Chat extends ModTemplate {
 
 			}
 
-		}
-
-		if (txmsg.request == 'chat group') {
-			this.receiveCreateGroupTransaction(tx);
-			return;
-		}
-
-		if (txmsg.request === 'chat like') {
-			console.log('receiving chat like transactions liker');
-			await this.receiveChatLikeTransaction(tx);
-
-			if (mycallback) {
-				mycallback({ payload: 'success', error: {} });
-				return 1;
-			}
-
-			return 0;
-		}
-
-		if (txmsg.request === 'chat like broadcast') {
-			let inner_tx = new Transaction(undefined, txmsg.data);
-
-			if (app.BROWSER == 0) {
-				let peers = await app.network.getPeers();
-				if (inner_tx.isTo(this.publicKey)) {
-					peers.forEach((p) => {
-						if (p.publicKey !== peer.publicKey) {
-							app.network.sendTransactionWithCallback(
-								inner_tx,
-								null,
-								p.peerIndex
-							);
-						}
-					});
-				} else {
-					console.log(txmsg.data.to);
-					peers.forEach((p) => {
-						if (inner_tx.isTo(p.publicKey)) {
-							app.network.sendTransactionWithCallback(
-								inner_tx,
-								null,
-								p.peerIndex
-							);
-						}
-					});
-				}
-			}
-
-			//
-			// notify sender if requested
-			//
-			if (mycallback) {
-				mycallback({ payload: 'success', error: {} });
-				return 1;
-			}
-
-			return 0;
 		}
 
 		return super.handlePeerTransaction(app, tx, peer, mycallback);
@@ -1922,90 +1911,60 @@ class Chat extends ModTemplate {
 	//  * Asynchronously creates a "like" transaction for a chat message.
 	//  *
 	//  */
-	async createChatLikeTransaction(group_id, sig) {
-		try {
-			let newtx = await this.app.wallet.createUnsignedTransaction(
-				this.publicKey,
-				BigInt(0),
-				BigInt(0)
-			);
-			if (newtx == null) {
-				console.error('Chat: Failed to create a new transaction');
-				return null;
-			}
+	async createChatLikeTransaction(group, signature, mentioned) {
+		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
-			const peers = await this.app.network.getPeers();
-			if (peers.length === 0) {
-				console.error('Chat: No peers found in the network');
-				return null;
-			}
-
-			newtx.addFrom(this.publicKey);
-			newtx.addTo(peers[0].publicKey);
-			newtx.addTo(this.publicKey);
-
-			newtx.msg = {
-				module: 'Chat',
-				request: 'chat like',
-				group_id,
-				sender: this.publicKey,
-				signature: sig
-			};
-			await newtx.sign();
-
-			return newtx;
-		} catch (error) {
-			console.error('Chat: Error creating chat like transaction', error);
+		if (newtx == null) {
+			console.error('Chat: Failed to create a new transaction');
 			return null;
 		}
-	}
 
-	/**
-	 * Asynchronously sends a "like" transaction.
-	 *
-	 */
-	async sendChatLikeTransaction(tx) {
-		// Validate input
-		if (!tx) {
-			console.warn('Chat: Cannot send null transaction');
-			return;
+
+		if (mentioned){
+			console.log("ADDRESS TO: ", mentioned);
+			newtx.addTo(mentioned);	
 		}
-		try {
-			const peers = await this.app.network.getPeers();
-
-			if (peers.length === 0) {
-				alert('Connection to chat server lost');
-				return;
+		
+		if (group?.member_ids){
+			newtx.addTo(group.id);
+		}else{
+			for (let i = 0; i < group.members.length; i++) {
+			 	newtx.addTo(group.members[i]);	
 			}
-
-			const recipient =
-				peers.find((peer) => peer.hasService('chat'))?.publicKey ||
-				peers[0].publicKey;
-
-			await this.app.network.propagateTransaction(tx);
-			this.app.connection.emit('relay-send-message', {
-				recipient: recipient,
-				request: 'chat like broadcast',
-				data: tx.toJson()
-			});
-
-			console.log('Chat like transaction sent successfully.');
-		} catch (error) {
-			console.error('Error sending chat like transaction:', error);
-			alert('Failed to send like. Please try again later.');
 		}
+
+		newtx.msg = {
+			module: 'Chat',
+			request: 'chat like',
+			group_id: group.id,
+			sender: this.publicKey,
+			signature,
+			mentioned,
+		};
+
+		await newtx.sign();
+
+		await this.app.network.propagateTransaction(newtx);
+
+		this.app.connection.emit('relay-send-message', {
+		 	recipient: group.members,
+		 	request: 'chat relay',
+		 	data: newtx.toJson(),
+		});
+
+		return newtx;
 	}
+
 
 	/**
 	 * Asynchronously handles the receipt of a "like" transaction.
 	 */
-	async receiveChatLikeTransaction(tx, onchain = 0) {
-		if (onchain && tx.isFrom(this.publicKey)) {
-			return;
-		}
+	async receiveChatLikeTransaction(tx) {
+
 		const { group_id, signature, sender } = tx.returnMessage();
 
-		const group = this.groups.find((group) => group.id === group_id);
+		const group = this.returnGroup(group_id);
+
 		if (!group) {
 			console.warn('Chat: Group not found for the given group ID');
 			return;

@@ -531,13 +531,11 @@ class ChatPopup {
 
 					// Retrieve the 'data-id' attribute from the found parent element
 					let sig = parentElement.getAttribute('data-id');
-					const newtx = await this.mod.createChatLikeTransaction(
-						group_id,
-						sig
-					);
+					let target = parentElement.closest(".saito-userline").getAttribute('data-id');
+					const newtx = await this.mod.createChatLikeTransaction(this.group, sig, target);
 					if (newtx) {
-						await mod.sendChatLikeTransaction(newtx);
-						await mod.receiveChatLikeTransaction(newtx);
+						mod.hasSeenTransaction(newtx);
+						mod.receiveChatLikeTransaction(newtx);
 					}
 				});
 			});
