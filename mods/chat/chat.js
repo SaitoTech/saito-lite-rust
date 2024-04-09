@@ -975,8 +975,6 @@ class Chat extends ModTemplate {
 			this.groups.push(newGroup);
 			this.saveChatGroup(newGroup);
 
-			this.app.connection.emit('chat-manager-render-request');
-
 			if (tx.isFrom(txmsg.admin)){
 				tx.msg.message = `<div class="saito-chat-notice"><span class="saito-mention saito-address" data-id="${
 					txmsg.admin
@@ -993,6 +991,10 @@ class Chat extends ModTemplate {
 			} else {
 				await this.sendJoinGroupTransaction(newGroup);
 			}
+
+			//Update UI
+			this.app.connection.emit('chat-manager-opens-group', newGroup);
+			this.app.connection.emit('open-chat-with', { id: newGroup.id });
 		}
 	}
 
@@ -1269,6 +1271,7 @@ class Chat extends ModTemplate {
 					//Flag this as a pseudo chat transaction
 					tx.notice = true;
 					this.addTransactionToGroup(group, tx);
+					this.app.connection.emit('chat-manager-opens-group', group);
 					this.app.connection.emit(
 						'chat-popup-render-request',
 						group
@@ -2346,6 +2349,8 @@ class Chat extends ModTemplate {
 		if (!group) {
 			return;
 		}
+
+		this.app.connection.emit('chat-popup-remove-request',	group);
 
 		let key_to_update = '';
 		for (let i = 0; i < this.groups.length; i++) {

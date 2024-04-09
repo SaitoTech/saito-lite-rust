@@ -45,8 +45,10 @@ module.exports = (app, mod, chat_group) => {
 				}
 			}
 
-
-			html += formatUser(publickey, icon, unconfirmed_tag, fourth) 
+			//Filter for deactivated users...
+			if (chat_group.member_ids[publickey] == 1 || icon){
+				html += formatUser(publickey, icon, unconfirmed_tag, fourth) 	
+			}
 
 		}
 		html += '</div>';
