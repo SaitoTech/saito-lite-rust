@@ -441,16 +441,16 @@ class Registry extends ModTemplate {
 	async onConfirmation(blk, tx, conf) {
 		let txmsg = tx.returnMessage();
 
+		if (txmsg.module !== 'Registry') {
+			return;
+		}
+
 		if (conf == 0) {
-			if (!!txmsg && txmsg.module === 'Registry') {
-				console.log(txmsg, 'this is the registry');
+			if (txmsg.request === 'register request') {
 				console.log(
 					`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
 				);
 
-				/////////////////////////////////////////
-				// REGISTRATION REQUESTS - main server //
-				/////////////////////////////////////////
 				if (
 					tx.isTo(this.publicKey) &&
 					this.publicKey === this.registry_publickey
@@ -483,99 +483,33 @@ class Registry extends ModTemplate {
 					);
 
 					if (res) {
-						let newtx = this.createRegisterConfirmationTransaction(
-							blk,
-							tx
-						);
-						await this.sendRegisterConfirmationTransaction();
+						let data = {
+							lock_block,
+							unixtime,
+							signer,
+							bid,
+							bsh,
+							identifier,
+							signed_message,
+							sig,
+							publickey
+						};
+						let newtx =
+							await this.createRegisterConfirmationTransaction(
+								tx,
+								data
+							);
+						await this.sendRegisterConfirmationTransaction(newtx);
 					}
 
-					console.log(res, 'result after registering');
 					return;
 				}
 			}
 
-			////////////////////////////////////////
-			// OTHER SERVERS - mirror central DNS //
-			////////////////////////////////////////
-			// if (!!txmsg && txmsg.module == 'Email') {
-			// 	console.log('REGISTRY: ' + txmsg.title);
-			// 	if (tx.from[0].publicKey == this.registry_publickey) {
-			// 		try {
-			// 			//
-			// 			// am email? for us? from the DNS registrar?
-			// 			//
-			// 			let publickey = tx.to[0].publicKey;
-			// 			let identifier = tx.msg.identifier;
-			// 			let signed_message = tx.msg.signed_message;
-			// 			let sig = tx.msg.signature;
-			// 			let bid = tx.msg.bid;
-			// 			let bsh = tx.msg.bsh;
-			// 			let unixtime = tx.msg.unixtime;
-			// 			let lock_block = tx.msg.lock_block;
-			// 			let signer = tx.msg.signer;
-			// 			let lc = 1;
-
-			// 			if (
-			// 				this.app.crypto.verifyMessage(
-			// 					signed_message,
-			// 					sig,
-			// 					this.registry_publickey
-			// 				)
-			// 			) {
-			// 				if (this.publicKey != this.registry_publickey) {
-			// 					// servers update database
-			// 					if (!this.app.BROWSER) {
-			// 						let res = await this.addRecord(
-			// 							identifier,
-			// 							publickey,
-			// 							unixtime,
-			// 							bid,
-			// 							bsh,
-			// 							lock_block,
-			// 							sig,
-			// 							signer,
-			// 							1
-			// 						);
-			// 					}
-
-			// 					if (tx.isTo(this.publicKey)) {
-			// 						this.app.keychain.addKey(
-			// 							tx.to[0].publicKey,
-			// 							{
-			// 								identifier: identifier,
-			// 								watched: true,
-			// 								block_id: blk.id,
-			// 								block_hash: blk.hash,
-			// 								lc: 1
-			// 							}
-			// 						);
-			// 						console.info('***********************');
-			// 						console.info(
-			// 							'verification success for : ' +
-			// 								identifier
-			// 						);
-			// 						console.info('***********************');
-
-			// 						this.app.browser.updateAddressHTML(
-			// 							tx.to[0].publicKey,
-			// 							identifier
-			// 						);
-			// 						this.app.connection.emit(
-			// 							'update_identifier',
-			// 							tx.to[0].publicKey
-			// 						);
-			// 					}
-			// 				}
-			// 			}
-			// 		} catch (err) {
-			// 			console.error(
-			// 				'ERROR verifying username registration message: ',
-			// 				err
-			// 			);
-			// 		}
-			// 	}
-			// }
+			if (txmsg.request === 'register success') {
+				console.log(txmsg, 'register success');
+				await this.receiveRegisterConfirmationTransaction(tx);
+			}
 		}
 	}
 
@@ -813,8 +747,9 @@ class Registry extends ModTemplate {
 			if (!regex.test(identifier)) {
 				throw Error('Alphanumeric Characters only');
 			}
+
 			newtx.msg.module = 'Registry';
-			newtx.msg.request = 'register';
+			newtx.msg.request = 'register request';
 			newtx.msg.identifier = identifier + domain;
 
 			await newtx.addFrom(this.publicKey);
@@ -833,30 +768,32 @@ class Registry extends ModTemplate {
 
 		// onchain
 		await this.app.network.propagateTransaction(tx);
-
 		return true;
 	}
 
-	async createRegisterConfirmationTransaction(blk, tx) {
+	async createRegisterConfirmationTransaction(tx, data) {
 		try {
-			let client = tx.from[0].publicKey;
+			let from = tx.from[0].publicKey;
 			let { identifier } = tx.returnMessage();
-			if (!client) {
+			if (!from) {
 				throw Error('PROFILE: NO "FROM" PUBLIC KEY');
 			}
 
 			let newtx =
 				await this.app.wallet.createUnsignedTransactionWithDefaultFee(
-					client
+					from
 				);
 			newtx.addFrom(this.publicKey);
+
 			newtx.msg = {
+				request: 'register success',
 				module: 'Registry',
 				identifier,
-				bid: blk.id,
-				bsh: blk.hash
+				...data
 			};
 			await newtx.sign();
+			console.log(newtx, 'new transaction');
+			return newtx;
 		} catch (error) {
 			console.error(
 				'PROFILE: error creating register transaction',
@@ -865,7 +802,81 @@ class Registry extends ModTemplate {
 		}
 	}
 
-	async sendRegisterConfirmationTransaction(newtx) {}
+	async sendRegisterConfirmationTransaction(newtx) {
+		await this.app.network.propagateTransaction(newtx);
+	}
+
+	async receiveRegisterConfirmationTransaction(tx) {
+		let txmsg = tx.returnMessage();
+
+		if (tx.from[0].publicKey == this.registry_publickey) {
+			try {
+				let publickey = tx.to[0].publicKey;
+				let identifier = tx.msg.identifier;
+				let signed_message = tx.msg.signed_message;
+				let sig = tx.msg.signature;
+				let bid = tx.msg.bid;
+				let bsh = tx.msg.bsh;
+				let unixtime = tx.msg.unixtime;
+				let lock_block = tx.msg.lock_block;
+				let signer = tx.msg.signer;
+				let lc = 1;
+
+				if (
+					this.app.crypto.verifyMessage(
+						signed_message,
+						sig,
+						this.registry_publickey
+					)
+				) {
+					if (this.publicKey != this.registry_publickey) {
+						if (!this.app.BROWSER) {
+							let res = await this.addRecord(
+								identifier,
+								publickey,
+								unixtime,
+								bid,
+								bsh,
+								lock_block,
+								sig,
+								signer,
+								1
+							);
+						}
+
+						if (tx.isTo(this.publicKey)) {
+							this.app.keychain.addKey(tx.to[0].publicKey, {
+								identifier: identifier,
+								watched: true,
+								block_id: blk.id,
+								block_hash: blk.hash,
+								lc: 1
+							});
+							console.info('***********************');
+							console.info(
+								'verification success for : ' + identifier
+							);
+							console.info('***********************');
+
+							this.app.browser.updateAddressHTML(
+								tx.to[0].publicKey,
+								identifier
+							);
+							this.app.connection.emit(
+								'update_identifier',
+								tx.to[0].publicKey
+							);
+						}
+					}
+				}
+			} catch (err) {
+				console.error(
+					'ERROR verifying username registration message: ',
+					err
+				);
+			}
+		}
+	}
 }
 
 module.exports = Registry;
