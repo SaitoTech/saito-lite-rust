@@ -48,7 +48,7 @@ class Registry extends ModTemplate {
 		// All it does is allows both main nodes and lite clients to update
 		// this.registry_publickey with the public key of the main node
 		//
-		this.local_dev = 0;
+		this.local_dev = 1;
 
 		//
 		// EVENTS
@@ -172,10 +172,9 @@ class Registry extends ModTemplate {
 	//
 	returnServices() {
 		let services = [];
-
 		//
 		// So all full nodes can act as a registry of sorts
-		// (or at leastreroute requests to the actual registry)
+		// (or at leastre route requests to the actual registry)
 		//
 		if (this.app.BROWSER == 0) {
 			services.push(new PeerService(null, 'registry', 'saito'));
@@ -196,11 +195,9 @@ class Registry extends ModTemplate {
 	//
 	fetchManyIdentifiers(publickeys = [], mycallback = null) {
 		let registry_self = this;
-
 		if (mycallback == null) {
 			return;
 		}
-
 		const found_keys = {};
 		const missing_keys = [];
 
@@ -288,36 +285,13 @@ class Registry extends ModTemplate {
 	}
 
 	//
-	// Creates and sends an on-chain tx to register the identifier @ the domain
-	// Throws errors for invalid identifier types
+	//
+	//  Registers an identifier
 	//
 	async tryRegisterIdentifier(identifier, domain = '@saito') {
-		let newtx =
-			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
-				this.registry_publickey
-			);
-		if (!newtx) {
-			throw Error('NULL TX CREATED IN REGISTRY MODULE');
-		}
-
-		if (typeof identifier === 'string' || identifier instanceof String) {
-			var regex = /^[0-9A-Za-z]+$/;
-			if (!regex.test(identifier)) {
-				throw Error('Alphanumeric Characters only');
-			}
-			newtx.msg.module = 'Registry';
-			newtx.msg.request = 'register';
-			newtx.msg.identifier = identifier + domain;
-
-			await newtx.sign();
-			await this.app.network.propagateTransaction(newtx);
-
-			//console.log("REGISTRY tx: ", newtx);
-
-			// sucessful send
+		let newtx = await this.createRegisterTransaction(identifier, domain);
+		if (await this.sendRegisterTransaction(newtx)) {
 			return true;
-		} else {
-			throw TypeError('identifier must be a string');
 		}
 	}
 
@@ -469,7 +443,10 @@ class Registry extends ModTemplate {
 
 		if (conf == 0) {
 			if (!!txmsg && txmsg.module === 'Registry') {
-				console.log(`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`);
+				console.log(txmsg, 'this is the registry');
+				console.log(
+					`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
+				);
 
 				/////////////////////////////////////////
 				// REGISTRATION REQUESTS - main server //
@@ -505,47 +482,7 @@ class Registry extends ModTemplate {
 						signer,
 						1
 					);
-					let fee = BigInt(0); //tx.returnPaymentTo(this.publicKey);
-
-					let newtx = await this.app.wallet.createUnsignedTransaction(
-						tx.from[0].publicKey,
-						BigInt(0),
-						fee
-					);
-
-					// send message
-					if (res == 1) {
-						newtx.msg.module = 'Email';
-						newtx.msg.origin = 'Registry';
-						newtx.msg.title = 'Address Registration Success!';
-						newtx.msg.identifier = identifier;
-						newtx.msg.publickey = publickey;
-						newtx.msg.unixtime = unixtime;
-						newtx.msg.bid = bid;
-						newtx.msg.bsh = bsh;
-						newtx.msg.lock_block = lock_block;
-						newtx.msg.bsh = unixtime;
-						newtx.msg.signer = signer;
-						newtx.msg.signed_message = signed_message;
-						newtx.msg.signature = sig;
-					} else {
-						newtx.msg.module = 'Email';
-						newtx.msg.title = 'Address Registration Failed!';
-						newtx.msg.identifier = identifier;
-						newtx.msg.publickey = publickey;
-						newtx.msg.unixtime = unixtime;
-						newtx.msg.bid = bid;
-						newtx.msg.bsh = bsh;
-						newtx.msg.lock_block = lock_block;
-						newtx.msg.bsh = unixtime;
-						newtx.msg.signer = signer;
-						newtx.msg.signed_message = '';
-						newtx.msg.signature = '';
-					}
-
-					await newtx.sign();
-					await this.app.network.propagateTransaction(newtx);
-
+					console.log(res, 'result after registering');
 					return;
 				}
 			}
@@ -553,85 +490,84 @@ class Registry extends ModTemplate {
 			////////////////////////////////////////
 			// OTHER SERVERS - mirror central DNS //
 			////////////////////////////////////////
-			if (!!txmsg && txmsg.module == 'Email') {
-				console.log('REGISTRY: ' + txmsg.title);
+			// if (!!txmsg && txmsg.module == 'Email') {
+			// 	console.log('REGISTRY: ' + txmsg.title);
+			// 	if (tx.from[0].publicKey == this.registry_publickey) {
+			// 		try {
+			// 			//
+			// 			// am email? for us? from the DNS registrar?
+			// 			//
+			// 			let publickey = tx.to[0].publicKey;
+			// 			let identifier = tx.msg.identifier;
+			// 			let signed_message = tx.msg.signed_message;
+			// 			let sig = tx.msg.signature;
+			// 			let bid = tx.msg.bid;
+			// 			let bsh = tx.msg.bsh;
+			// 			let unixtime = tx.msg.unixtime;
+			// 			let lock_block = tx.msg.lock_block;
+			// 			let signer = tx.msg.signer;
+			// 			let lc = 1;
 
-				if (tx.from[0].publicKey == this.registry_publickey) {
-					try {
-						//
-						// am email? for us? from the DNS registrar?
-						//
-						let publickey = tx.to[0].publicKey;
-						let identifier = tx.msg.identifier;
-						let signed_message = tx.msg.signed_message;
-						let sig = tx.msg.signature;
-						let bid = tx.msg.bid;
-						let bsh = tx.msg.bsh;
-						let unixtime = tx.msg.unixtime;
-						let lock_block = tx.msg.lock_block;
-						let signer = tx.msg.signer;
-						let lc = 1;
+			// 			if (
+			// 				this.app.crypto.verifyMessage(
+			// 					signed_message,
+			// 					sig,
+			// 					this.registry_publickey
+			// 				)
+			// 			) {
+			// 				if (this.publicKey != this.registry_publickey) {
+			// 					// servers update database
+			// 					if (!this.app.BROWSER) {
+			// 						let res = await this.addRecord(
+			// 							identifier,
+			// 							publickey,
+			// 							unixtime,
+			// 							bid,
+			// 							bsh,
+			// 							lock_block,
+			// 							sig,
+			// 							signer,
+			// 							1
+			// 						);
+			// 					}
 
-						if (
-							this.app.crypto.verifyMessage(
-								signed_message,
-								sig,
-								this.registry_publickey
-							)
-						) {
-							if (this.publicKey != this.registry_publickey) {
-								// servers update database
-								if (!this.app.BROWSER) {
-									let res = await this.addRecord(
-										identifier,
-										publickey,
-										unixtime,
-										bid,
-										bsh,
-										lock_block,
-										sig,
-										signer,
-										1
-									);
-								}
+			// 					if (tx.isTo(this.publicKey)) {
+			// 						this.app.keychain.addKey(
+			// 							tx.to[0].publicKey,
+			// 							{
+			// 								identifier: identifier,
+			// 								watched: true,
+			// 								block_id: blk.id,
+			// 								block_hash: blk.hash,
+			// 								lc: 1
+			// 							}
+			// 						);
+			// 						console.info('***********************');
+			// 						console.info(
+			// 							'verification success for : ' +
+			// 								identifier
+			// 						);
+			// 						console.info('***********************');
 
-								if (tx.isTo(this.publicKey)) {
-									this.app.keychain.addKey(
-										tx.to[0].publicKey,
-										{
-											identifier: identifier,
-											watched: true,
-											block_id: blk.id,
-											block_hash: blk.hash,
-											lc: 1
-										}
-									);
-									console.info('***********************');
-									console.info(
-										'verification success for : ' +
-											identifier
-									);
-									console.info('***********************');
-
-									this.app.browser.updateAddressHTML(
-										tx.to[0].publicKey,
-										identifier
-									);
-									this.app.connection.emit(
-										'update_identifier',
-										tx.to[0].publicKey
-									);
-								}
-							}
-						}
-					} catch (err) {
-						console.error(
-							'ERROR verifying username registration message: ',
-							err
-						);
-					}
-				}
-			}
+			// 						this.app.browser.updateAddressHTML(
+			// 							tx.to[0].publicKey,
+			// 							identifier
+			// 						);
+			// 						this.app.connection.emit(
+			// 							'update_identifier',
+			// 							tx.to[0].publicKey
+			// 						);
+			// 					}
+			// 				}
+			// 			}
+			// 		} catch (err) {
+			// 			console.error(
+			// 				'ERROR verifying username registration message: ',
+			// 				err
+			// 			);
+			// 		}
+			// 	}
+			// }
 		}
 	}
 
@@ -847,6 +783,47 @@ class Registry extends ModTemplate {
 			return 1;
 		}
 		return 0;
+	}
+
+	async createRegisterTransaction(identifier, domain) {
+		if (typeof identifier !== 'string' || !identifier instanceof String) {
+			console.error('Identifier must be of type string');
+			return;
+		}
+
+		try {
+			let newtx =
+				await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+					this.registry_publickey
+				);
+			if (!newtx) {
+				throw Error('NULL TX CREATED IN PROFILE MODULE');
+			}
+
+			var regex = /^[0-9A-Za-z]+$/;
+			if (!regex.test(identifier)) {
+				throw Error('Alphanumeric Characters only');
+			}
+			newtx.msg.module = 'Registry';
+			newtx.msg.request = 'register';
+			newtx.msg.identifier = identifier + domain;
+			await newtx.sign();
+			return newtx;
+		} catch (error) {
+			console.error(
+				'Profile: Error creating Register Transaction',
+				error
+			);
+		}
+	}
+
+	async sendRegisterTransaction(tx) {
+		//relay
+
+		// onchain
+		await this.app.network.propagateTransaction(tx);
+
+		return true;
 	}
 }
 
