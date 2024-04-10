@@ -255,6 +255,11 @@ class Mods {
 		this.app.connection.on(
 			'handshake_complete',
 			async (peerIndex: bigint) => {
+
+				if (this.app.BROWSER){
+					// broadcasts my keylist to other peers
+					await this.app.wallet.setKeyList(this.app.keychain.returnWatchedPublicKeys());
+				}
 				// await this.app.network.propagateServices(peerIndex);
 				let peer = await this.app.network.getPeer(BigInt(peerIndex));
 				if (this.app.BROWSER == 0) {
@@ -270,9 +275,6 @@ class Mods {
 				console.log('handshake complete');
 				await onPeerHandshakeComplete(peer);
 
-
-				// broadcasts my keylist to other peers
-				this.app.network.updatePeersWithWatchedPublicKeys(this.app.keychain.returnWatchedPublicKeys())
 			}
 		);
 

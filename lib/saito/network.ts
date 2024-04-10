@@ -81,11 +81,6 @@ export default class Network {
 	returnPeersWithService() { }
 
 
-	// broadcasts my keylist to my peers
-	updatePeersWithWatchedPublicKeys(keylist) {
-		this.app.wallet.setKeyList(keylist)
-	}
-
 	public getServices(): PeerService[] {
 		let my_services = [];
 		for (let i = 0; i < this.app.modules.mods.length; i++) {
