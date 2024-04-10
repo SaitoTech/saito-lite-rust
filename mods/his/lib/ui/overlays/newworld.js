@@ -63,6 +63,7 @@ class NewWorldOverlay {
 		  //////////////
 		  // COLONIES //
 		  //////////////
+console.log("COLONIES: " + JSON.stringify(his_self.game.state.newworld.results["colonies"]));
 	 	  for (let z = 0; z < his_self.game.state.newworld.results["colonies"].length; z++) {
 		    let col = "";
 		    let c = his_self.game.state.newworld.results["colonies"][z];
@@ -74,7 +75,7 @@ class NewWorldOverlay {
 		    if (c.colony == "hapsburg_colony2") { col = his_self.game.state.newworld["hapsburg_colony2"]; col.faction = "hapsburg"; }
 		    if (c.colony == "hapsburg_colony3") { col = his_self.game.state.newworld["hapsburg_colony3"]; col.faction = "hapsburg"; }
 		    if (col) {
-		      if (col.type === "colony" && col.claimed == 1 && col.destroyed != 1) {
+		      if (col.type === "colony" && col.claimed == 1 && col.destroyed == 0) {
 		        let roll = c.roll;
 		        let prize = c.name; if (c.prize) { prize = c.prize; }
 		        his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : col.img , type : "colony", name : col.type , faction : col.faction , total_hits : roll }, stage), ".new-world-overlay .content .colonies");
@@ -114,6 +115,9 @@ class NewWorldOverlay {
 		        if (c.prize == "killed") {
 		      	  prize = "killed";
 		        }
+			if (c.prize == "bonus card") {
+			  prize = "bonus card";
+			}
 		      }
 		      his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : con.img , type : "conquest" , name : ctype , faction : con.faction , conquistador : con.conquistador , total_hits : roll }, stage), ".new-world-overlay .content .conquests");
 		    }

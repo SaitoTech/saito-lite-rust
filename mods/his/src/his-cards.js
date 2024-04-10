@@ -9689,19 +9689,19 @@ console.log("selected: " + spacekey);
 
 		    for (let i = 0; i < space.units[faction].length; i++) {
 		      if (space.units[faction][i].type === "cavalry") {
-   	                html += '<li class="option" id="${i}">cavalry</li>';
+   	                html += `<li class="option" id="${i}">cavalry</li>`;
 			break;
 		      }
 		    }
 		    for (let i = 0; i < space.units[faction].length; i++) {
 		      if (space.units[faction][i].type === "regular") {
-   	                html += '<li class="option" id="${i}">regular</li>';
+   	                html += `<li class="option" id="${i}">regular</li>`;
 			break;
 		      }
 		    }
 		    for (let i = 0; i < space.units[faction].length; i++) {
 		      if (space.units[faction][i].type === "mercenary") {
-   	                html += '<li class="option" id="${i}">mercenary</li>';
+   	                html += `<li class="option" id="${i}">mercenary</li>`;
 			break;
 		      }
 		    }

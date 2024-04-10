@@ -41,7 +41,6 @@
 	      this.game.state.newworld.results.colonies.push({ faction : "hapsburg" , colony : 'hapsburg_colony3' , name : "Hispanola" , img : "/his/img/tiles/colonies/Hispanola.svg" });
 	    }
 	  }
-
 	  //
 	  // no "resolve colonies" stage, so we resolve here
 	  //

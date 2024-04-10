@@ -151,6 +151,14 @@ class HereIStand extends GameTemplate {
   // initialize //
   ////////////////
   initializeGame(game_id) {
+
+
+    this.realEndTurn = this.endTurn;
+    this.endTurn = () => {
+      console.log("TESTING REAL END TURN");
+      this.realEndTurn();
+    }
+
     //
     // check user preferences to update interface, if text
     //
@@ -13265,19 +13273,19 @@ console.log("selected: " + spacekey);
 
 		    for (let i = 0; i < space.units[faction].length; i++) {
 		      if (space.units[faction][i].type === "cavalry") {
-   	                html += '<li class="option" id="${i}">cavalry</li>';
+   	                html += `<li class="option" id="${i}">cavalry</li>`;
 			break;
 		      }
 		    }
 		    for (let i = 0; i < space.units[faction].length; i++) {
 		      if (space.units[faction][i].type === "regular") {
-   	                html += '<li class="option" id="${i}">regular</li>';
+   	                html += `<li class="option" id="${i}">regular</li>`;
 			break;
 		      }
 		    }
 		    for (let i = 0; i < space.units[faction].length; i++) {
 		      if (space.units[faction][i].type === "mercenary") {
-   	                html += '<li class="option" id="${i}">mercenary</li>';
+   	                html += `<li class="option" id="${i}">mercenary</li>`;
 			break;
 		      }
 		    }
@@ -26892,7 +26900,7 @@ if (from_whom.includes(this.game.players[this.game.player-1])) {
 	    his_self.game.queue.push("counter_or_acknowledge\tOttomans considering playing Janissaries\tjanissaries\t"+space.key);
             his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
 	  }
-	  his_self.game.queue.push("counter_or_acknowledge\tField Battle is about to being in "+space.name + "\tpre_field_battle_rolls\t"+space.key);
+	  his_self.game.queue.push("counter_or_acknowledge\tField Battle is about to begin in "+space.name + "\tpre_field_battle_rolls\t"+space.key);
           his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
           his_self.field_battle_overlay.renderPreFieldBattle(his_self.game.state.field_battle);
           his_self.field_battle_overlay.pullHudOverOverlay();
@@ -37555,8 +37563,7 @@ return;
               for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i].idx);
               }
-              his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
-              his_self.addMove("RESETCONFIRMSNEEDED\tall");
+              his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
               his_self.endTurn();
 	      his_self.available_units_overlay.faded_out = false;
               return;
@@ -37864,7 +37871,7 @@ does_units_to_move_have_unit = true; }
 	      for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i].idx);
 	      }
-    	      if (his_self.game.state.events.intervention_on_movement_possible == 1) {
+    	      if (his_self.game.state.events.intervention_on_movement_possible == 0) {
       		his_self.addMove("ACKNOWLEDGE\t" + his_self.returnFactionName(faction) + " moves to " + his_self.game.spaces[destination_spacekey].name);
 	      } else {
                 his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" moving to "+his_self.game.spaces[destination_spacekey].name + "\tmove");
@@ -38885,7 +38892,7 @@ does_units_to_move_have_unit = true; }
               for (let i = 0; i < units_to_move.length; i++) {
                 his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+spacekey+"\t"+destination+"\t"+units_to_move[i].idx);
               }
-    	      if (his_self.game.state.events.intervention_on_movement_possible == 1) {
+    	      if (his_self.game.state.events.intervention_on_movement_possible == 0) {
       		his_self.addMove("ACKNOWLEDGE\t" + his_self.returnFactionName(faction) + " moves to " + his_self.game.spaces[destination].name);
 	      } else {
                 his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" moving to "+his_self.game.spaces[destination].name + "\tmove");
@@ -39190,8 +39197,12 @@ does_units_to_move_have_unit = true; }
 	    let unit = revised_units_to_move[i];
             his_self.addMove("move\t"+revised_units_to_move[i].faction+"\tsea\t"+unit.spacekey+"\t"+unit.destination+"\t"+revised_units_to_move[i].idx);
 	  }
-          his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" shifting naval forces\tnavalmove");
-	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
+    	  if (his_self.game.state.events.intervention_on_movement_possible == 0) {
+	    his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" shifting naval forces\tnavalmove");
+          } else {
+	    his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" shifting naval forces\tnavalmove");
+	    his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	  }
 	  his_self.endTurn();
 	  return;
 
@@ -39774,8 +39785,7 @@ does_units_to_move_have_unit = true; }
 
 	if (his_self.game.state.events.intervention_on_movement_possible == 0) {
 	  let from_whom = his_self.returnArrayOfPlayersInSpacekey(destination_spacekey);
-          his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" announces siege of "+his_self.game.spaces[destination_spacekey].name + "\tassault\t" + destination_spacekey);
-          his_self.addMove("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
+          his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" announces siege of "+his_self.game.spaces[destination_spacekey].name + "\tassault\t" + destination_spacekey);
 	} else {
           his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" announces siege of "+his_self.game.spaces[destination_spacekey].name + "\tassault\t" + destination_spacekey);
           his_self.addMove("RESETCONFIRMSNEEDED\tall");
@@ -43341,7 +43351,6 @@ does_units_to_move_have_unit = true; }
 	      this.game.state.newworld.results.colonies.push({ faction : "hapsburg" , colony : 'hapsburg_colony3' , name : "Hispanola" , img : "/his/img/tiles/colonies/Hispanola.svg" });
 	    }
 	  }
-
 	  //
 	  // no "resolve colonies" stage, so we resolve here
 	  //
