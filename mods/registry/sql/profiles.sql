@@ -1,18 +1,10 @@
 CREATE TABLE IF NOT EXISTS profiles (
-  id INTEGER,
-  identifier TEXT,
-  publickey TEXT,
-  unixtime INTEGER,
-  bid INTEGER,
-  bsh TEXT,
-  lock_block INTEGER DEFAULT 0,
-  sig TEXT,
-  signer TEXT,
-  lc INTEGER,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  record_id INTEGER,
   bio TEXT DEFAULT '', 
   photo TEXT DEFAULT '', 
-  profile_data TEXT DEFAULT '', 
-  UNIQUE (identifier),
-  PRIMARY KEY(id ASC)
+  profile_data TEXT DEFAULT '',
+  UNIQUE (record_id),
+  FOREIGN KEY (record_id) REFERENCES records(id) ON DELETE CASCADE
 );
 

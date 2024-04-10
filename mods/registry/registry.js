@@ -111,9 +111,7 @@ class Registry extends ModTemplate {
 									this.app.keychain.addKey({
 										publicKey: key,
 										identifier: value.identifier,
-										bio: value.bio,
-										photo: value.photo,
-										data: value.profile_data
+										profile: value.profile
 									});
 								}
 
@@ -399,10 +397,19 @@ class Registry extends ModTemplate {
 						);
 						return;
 					}
-					registry_self.registerProfile(
-						identifier[0],
-						'@' + identifier[1]
+
+					registry_self.checkIdentifierInDatabase(
+						myKey.identifier,
+						(rows) => {
+							if (rows.length == 0) {
+								registry_self.registerProfile(
+									identifier[0],
+									'@' + identifier[1]
+								);
+							}
+						}
 					);
+
 					console.log(
 						'REGISTRY: Attempting to register our name again'
 					);
@@ -512,11 +519,12 @@ class Registry extends ModTemplate {
 		// check database if needed
 		//
 		if (keys.length > 0) {
-			//console.log("REGISTRY: DB lookup");
-			const where_statement = `publickey in ("${keys.join('","')}")`;
-			const sql = `SELECT * 
-                   FROM records
-                   WHERE ${where_statement}`;
+			// Assuming `publickey` is a unique identifier in the `records` table
+			const where_statement = `r.publickey IN ("${keys.join('","')}")`;
+			const sql = `SELECT r.*, p.bio, p.photo, p.profile_data 
+						 FROM records r
+						 LEFT JOIN profiles p ON r.id = p.record_id
+						 WHERE ${where_statement}`;
 
 			let rows = await this.app.storage.queryDatabase(
 				sql,
@@ -525,17 +533,26 @@ class Registry extends ModTemplate {
 			);
 			if (rows?.length > 0) {
 				for (let i = 0; i < rows.length; i++) {
-					found_keys[rows[i].publickey] = rows[i];
-					registry_self.cached_keys[rows[i].publickey] = rows[i];
+					found_keys[rows[i].publickey] = {
+						...rows[i],
+						profile:
+							rows[i].bio || rows[i].photo || rows[i].profile_data
+								? {
+										bio: rows[i].bio,
+										photo: rows[i].photo,
+										profile_data: rows[i].profile_data
+								  }
+								: null
+					};
+					registry_self.cached_keys[rows[i].publickey] =
+						found_keys[rows[i].publickey];
 				}
 			}
 		}
 
-		//
-		// which keys are we missing ?
-		//
+		// Which keys are we missing?
 		let found_check = Object.keys(found_keys);
-
+		console.log('found keys', found_keys);
 		for (let key of keys) {
 			if (!found_check.includes(key)) {
 				missing_keys.push(key);
@@ -648,37 +665,32 @@ class Registry extends ModTemplate {
 		lc = 1,
 		bio = '',
 		photo = '',
-		data = ''
+		data = '' // Assuming 'data' refers to 'profile_data'
 	) {
-		let sql = `INSERT OR IGNORE INTO profiles (
-						identifier,
-						publickey,
-						unixtime,
-						bid,
-						bsh,
-						lock_block,
-						sig,
-						signer,
-						lc,
-						bio,
-						photo,
-						profile_data
-					)
-					VALUES (
-						$identifier,
-						$publickey,
-						$unixtime,
-						$bid,
-						$bsh,
-						$lock_block,
-						$sig,
-						$signer,
-						$lc,
-						$bio,
-						$photo,
-						$data
-					)`;
-		let params = {
+		// Insert into `records` table
+		let sqlRecords = `INSERT INTO records (
+							identifier,
+							publickey,
+							unixtime,
+							bid,
+							bsh,
+							lock_block,
+							sig,
+							signer,
+							lc
+						)
+						VALUES (
+							$identifier,
+							$publickey,
+							$unixtime,
+							$bid,
+							$bsh,
+							$lock_block,
+							$sig,
+							$signer,
+							$lc
+						)`;
+		let paramsRecords = {
 			$identifier: identifier,
 			$publickey: publickey,
 			$unixtime: unixtime,
@@ -687,15 +699,46 @@ class Registry extends ModTemplate {
 			$lock_block: lock_block,
 			$sig: sig,
 			$signer: signer,
-			$lc: lc,
-			$bio: bio,
-			$photo: photo,
-			$data: data
+			$lc: lc
 		};
 
-		let res = await this.app.storage.runDatabase(sql, params, 'registry');
+		let recordRes = await this.app.storage.runDatabase(
+			sqlRecords,
+			paramsRecords,
+			'registry'
+		);
 
-		return res?.changes;
+		console.log(recordRes, 'record resulter');
+		let recordId = recordRes.lastID;
+
+		if (bio || photo || data) {
+			let sqlProfiles = `INSERT INTO profiles (
+								record_id,
+								bio,
+								photo,
+								profile_data
+							)
+							VALUES (
+								$record_id,
+								$bio,
+								$photo,
+								$data
+							)`;
+			let paramsProfiles = {
+				$record_id: recordId,
+				$bio: bio,
+				$photo: photo,
+				$data: data
+			};
+
+			await this.app.storage.runDatabase(
+				sqlProfiles,
+				paramsProfiles,
+				'registry'
+			);
+		}
+
+		return recordRes?.changes;
 	}
 
 	async updateRecord(identifier, bio, photo, data) {
@@ -892,6 +935,7 @@ class Registry extends ModTemplate {
 			};
 
 			await newtx.sign();
+			console.log('sending register success tx');
 			await this.app.network.propagateTransaction(newtx);
 		} catch (error) {
 			console.error(
@@ -948,6 +992,9 @@ class Registry extends ModTemplate {
 								);
 							}
 
+							console.log(
+								'receiving register success transaction'
+							);
 							if (tx.isTo(this.publicKey)) {
 								this.app.keychain.addKey(tx.to[0].publicKey, {
 									identifier: identifier,
@@ -955,9 +1002,7 @@ class Registry extends ModTemplate {
 									block_id: blk.id,
 									block_hash: blk.hash,
 									lc: 1,
-									bio,
-									photo,
-									data
+									profile: { bio, photo, data }
 								});
 
 								console.info('***********************');
