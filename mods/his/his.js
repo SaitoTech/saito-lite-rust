@@ -8653,7 +8653,7 @@ console.log("selected: " + spacekey);
 	  }
 
 	  if (faction == null || source == null || unit_idx == null) { his_self.endTurn(); return 0; }
-	  his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
+	  his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}\t${f}`);
   	  his_self.addMove(`discard\t${f}\t032`);
 	  if (his_self.game.deck[0].discards["031"]) {
             his_self.addMove("SETVAR\tstate\tevents\tintervention_on_movement_possible\t0");
@@ -9013,8 +9013,10 @@ console.log("selected: " + spacekey);
 	  if (his_self.game.player == player) {
             his_self.playerPlaceUnitsInSpaceWithFilter("mercenary", num, faction,
 	      function(space) {
-		for (let z = 0; z < space.units[faction].length; z++) { 
-		  if (space.units[faction][z].besieged > 0) { return 0; }
+		for (let f in space.units) {
+		  for (let z = 0; z < space.units[f].length; z++) { 
+		    if (space.units[f][z].besieged > 0) { return 0; }
+	          }
 	        }
 		if (his_self.returnFactionLandUnitsInSpace(faction, space.key)) { return 1; }
 		if (his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 1; }
@@ -9416,10 +9418,14 @@ console.log("selected: " + spacekey);
       canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
+	his_self.game.state.events.roxelana = 1;
+
 	if (faction === "ottoman") {
-	  his_self.game.queue.push("ops\tottoman\t042\t4");
-	  his_self.game.state.events.roxelana = 1;
-	  return 1;
+	  if (his_self.game.player == his_self.returnPlayerCommandingFaction("ottoman")) {
+	    his_self.addMove("ops\tottoman\t042\t4");
+	    his_self.endTurn();
+	    return 1;
+	  }
 	} else {
 
 	  if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
@@ -9443,11 +9449,11 @@ console.log("selected: " + spacekey);
 	      let sk_idx = his_self.returnIndexOfPersonageInSpace("ottoman", "suleiman", sk);
 
 	      if (action === "yes" && sk != "") {
-	        his_self.game.queue.push("ops\t"+faction+"\t042\t2");
+	        his_self.addMove("ops\t"+faction+"\t042\t2");
 	        his_self.addMove("move" + "\t" + "ottoman" + "\t" + "land" + "\t" + sk + "\t" + "istanbul" + "\t" + sk_idx + "\t1");
 	      }
 	      if (action === "no") {
-	        his_self.game.queue.push("ops\t"+faction+"\t042\t4"); 
+	        his_self.addMove("ops\t"+faction+"\t042\t4"); 
 	      }
 	      his_self.endTurn();
 
@@ -12548,6 +12554,7 @@ console.log("selected: " + spacekey);
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
+
 	if (his_self.game.state.events.barbary_pirates == 1) {
 
 	  let target_oran = false;
@@ -15698,22 +15705,22 @@ if (this.game?.state?.removed && include_removed == false) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
     // home spaces that have not fallen to another power.
-    if (space.home === faction && space.political == "") { return true; }
+    if (space.home == faction && space.political == "") { return true; }
 
     // home spaces that have not fallen to another power.
-    if (space.home === faction && space.political == faction) { return true; }
+    if (space.home == faction && space.political == faction) { return true; }
 
-    if (space.home === "" && space.political == faction) { return true; }
+    if (space.home == "" && space.political == faction) { return true; }
 
     // independent (gray) spaces seized by the power.
-    if (space.home === "independent" && space.political === faction) { return true; }
+    if (space.home == "independent" && space.political == faction) { return true; }
 
     // home spaces of other powers seized by the power.
-    if (space.home !== faction && space.political === faction) { return true; }
-    if (space.home === faction && space.political === faction) { return true; }
+    if (space.home != faction && space.political == faction) { return true; }
+    if (space.home == faction && space.political == faction) { return true; }
 
     // home spaces of allied minor powers. 
-    if (space.political == "" && space.home !== faction && this.isAlliedMinorPower(space.home, faction)) { return true; }
+    if (space.political == "" && space.home != faction && this.isAlliedMinorPower(space.home, faction)) { return true; }
 
     return false;
   }
@@ -16256,8 +16263,11 @@ if (this.game?.state?.removed && include_removed == false) {
   }
 
 
-
-  returnNearestFriendlyFortifiedSpaces(faction, space) {
+  // max-units is number of units permitted, usually passed as 4 to find spaces that are not over-capacity
+  returnNearestFriendlyFortifiedSpacesTransitPasses(faction, space, max_units=0) {
+    return this.returnNearestFriendlyFortifiedSpaces(faction, space, 1, max_units);
+  }
+  returnNearestFriendlyFortifiedSpaces(faction, space, transit_passes = 0, max_units=0) {
 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
@@ -16272,10 +16282,16 @@ if (this.game?.state?.removed && include_removed == false) {
       // fortified spaces
       function(spacekey) {
 
+	//
 	// non-protestants can't move into electorates, so they aren't friendly fortified spaces 
 	// for anyone at this point.
+	//
 	if (faction !== "protestant" && his_self.game.state.events.schmalkaldic_league != 1) {
 	  if (his_self.isElectorate(spacekey)) { return 0; }
+	}
+
+	if (max_units > 0) {
+	  if (his_self.returnFactionLandUnitsInSpace(faction, space.key, 1) >= max_units) { return 0; }
 	}
 
         if (his_self.isSpaceFortified(his_self.game.spaces[spacekey])) {
@@ -16300,6 +16316,8 @@ if (this.game?.state?.removed && include_removed == false) {
 
 
       true , // include source
+
+      transit_passes, // cross passes?
     );
 
     return res;
@@ -16982,6 +17000,13 @@ try {
   //
   // transit_eas = filters on spring deploment criteria of two friendly ports on either side of the zone + no uncontrolled ships in zone
   //
+  //
+  // res = {
+  //  hops : N ,   
+  //  key : spacekey ,
+  //  overseas : 1/0 ,
+  // }
+  //
   returnNearestSpaceWithFilter(sourcekey, destination_filter, propagation_filter, include_source=1, transit_passes=0, transit_seas=0, faction="", already_crossed_sea_zone=0, is_spring_deployment=0) {
 
     //
@@ -16997,7 +17022,7 @@ try {
     //
     if (include_source == 1) {
       if (destination_filter(sourcekey)) {
-        results.push({ space : sourcekey , hops : 0 });
+        results.push({ key : sourcekey , space : sourcekey , hops : 0 });
         return results;
       }
     }
@@ -21735,7 +21760,24 @@ if (this.game.options.scenario != "is_testing") {
 	        this.game.queue.push("sue_for_peace\thapsburg");
 	        this.game.queue.push("sue_for_peace\tottoman");
 	        this.game.queue.push("diplomacy_phase");
+
 	        //this.game.queue.push("ACKNOWLEDGE\tProceed to Diplomatic Proposals");
+
+		if (this.game.state.round > 1) {
+  	          this.game.queue.push("card_draw_phase");
+		}
+
+		if (this.game.players.length == 2) {
+	          this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
+	        } else {
+	          this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
+	          this.game.queue.push("winter_retreat_move_units_to_capital\tfrance");
+	          this.game.queue.push("winter_retreat_move_units_to_capital\tengland");
+	          this.game.queue.push("winter_retreat_move_units_to_capital\thapsburg");
+	          this.game.queue.push("winter_retreat_move_units_to_capital\tottoman");
+	        }
+
+	        this.game.queue.push("retreat_to_winter_spaces");
 	      }
 }
 	    }
@@ -21762,8 +21804,6 @@ if (this.game.options.scenario == "is_testing") {
 }
 
 	  } else {
-
-	    this.game.queue.push("card_draw_phase");
 
 	    //
 	    // round 2 - zwingli in zurich
@@ -22191,178 +22231,169 @@ if (this.game.options.scenario == "is_testing") {
 	}
 
 
-/*****
-	// simultaneous moves, so returns 0
-	if (mv[0] === "winter_return_units_to_capital") {
 
-	  let his_self = this;
-	  let factions = this.game.state.players_info[this.game.player-1].factions;
-	  let faction = "";
 
-	  this.updateStatus("all factions (optionally) returning units to capital...");
-
-	  if (this.game.confirms_needed[this.game.player-1] == 1) {
-
-	    this.addMove("RESOLVE\t"+this.publicKey);
-
-	    let move_unit_subfunction = function() {
-              his_self.playerSelectSpaceWithFilter( 
-                "Move Additional Units to Capital?",
-                function(space) {
-                  if (space.home == "genoa") { return 1; }
-                  return 0;
-                },
-                function(spacekey) {
-                  his_self.addMove("build\tland\tgenoa\t"+"regular"+"\t"+spacekey);
-                  his_self.addMove("build\tland\tgenoa\t"+"regular"+"\t"+spacekey);
-                  his_self.addMove("build\tland\tgenoa\t"+"regular"+"\t"+spacekey);
-                  his_self.addMove("build\tland\tgenoa\t"+"regular"+"\t"+spacekey);
-                  his_self.endTurn();
-                }, 
-                null,
-                true
-              );
-	    };
-
-	    this.endTurn();
-
-	  }
-	
-	  this.game.queue.splice(qe, 1);
-	  return 1;
-
-	}
-******/
-
-	if (mv[0] === "winter_attrition") {
+	if (mv[0] === "winter_retreat_move_units_to_capital") {
 
 	  let faction = mv[1];
-	  let spacekey = mv[2];
-
-	  this.game.spaces[spacekey].units[faction] = [];
 
 	  this.game.queue.splice(qe, 1);
-	  return 1;
+
+	  let p = this.returnPlayerCommandingFaction(faction);
+
+	  if (this.game.player == p) {
+	    this.winter_overlay.hide();
+	    this.playerReturnWinterUnits(faction);
+	  } else {
+	    this.updateStatus(this.returnFactionName(faction) + " returning units to capital");
+	  }
+
+	  return 0;
 
 	}
+
 
 	if (mv[0] === "retreat_to_winter_spaces") {
 
+	  let his_self = this;
 	  let moves = [];
 
 	  this.game.queue.splice(qe, 1);
 
-	  for (let i in this.game.spaces) {
-	    for (let key in this.game.spaces[i].units) {
+
+	  for (let spacekey in this.game.spaces) {
+	    for (let faction in this.game.spaces[spacekey].units) {
+
+	      let space = this.game.spaces[spacekey];
 
 	      let fluis = 0;
-	      if (this.game.spaces[i].units[key].length > 0 ) {
-		fluis = this.returnFactionLandUnitsInSpace(key, i);
-	      }
-
+	      if (space.units[faction].length > 0 ) { fluis = this.returnFactionLandUnitsInSpace(faction, spacekey, 0); }
 	      if (fluis > 0) {
-	        let space = this.game.spaces[i];
 
 		//
-		// units we have to retreat from these spaces
+		// we need to retreat from these spaces
 		//
 		if (  
-			((this.isSpaceFortified(space) && !this.isSpaceControlled(key, i)) || (!this.isSpaceFortified(space)))
+			((this.isSpaceFortified(spacekey) && !this.isSpaceControlled(spacekey, faction)) || (!this.isSpaceFortified(spacekey)))
 			&&
-			(!(key == "protestant" && this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1))
+			(!(space.religion == "protestant" && this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1))
 		) {
 
 		  //
-		  // find the nearest friendly fortified space
+		  // for every unit that needs to be moved
 		  //
-		  let res = this.returnNearestFriendlyFortifiedSpaces(key, space);
+		  for (let fluis_idx = 0; fluis_idx < fluis; fluis_idx++) {
 
-		  //
-		  // and retreat automatically (2P)
-		  //
-		  if ((this.game.players.length == 2 && (key != "protestant" && key != "papacy")) || this.returnPlayerCommandingFaction(key) == 0) {
+		    if (fluis_idx < 0) { fluis_idx = 0; }
+
+		    //
+		    // find the nearest friendly fortified space w/ less than 4 units
+		    //
+		    let res = this.returnNearestFriendlyFortifiedSpacesTransitPasses(faction, spacekey, 4);
+
+		    //
+		    // if we cannot find any spaces to receive them
+		    //
 		    if (res.length == 0) {
-		      for (let z = 0; z < this.game.spaces[i].units[key].length; z++) {
-		        if (this.game.spaces[i].units[key][z].personage != true && this.game.spaces[i].units[key][z].reformer != true) {
-			  this.game.spaces[i].units[key].splice(z, 1);
-			  z--;
-			}
-	 	      }
-		      this.displaySpace(i);
-		    } else {
-		      if (res.length > 0) {
-	                this.autoResolveWinterRetreat(key, space.key);
-		      } else {
-		        for (let z = 0; z < this.game.spaces[i].units[key].length; z++) {
-		          if (this.game.spaces[i].units[key][z].personage != true && this.game.spaces[i].units[key][z].reformer != true) {
-			    this.game.spaces[i].units[key].splice(z, 1);
+
+		      //
+		      // destroy stranded units in 2P version
+		      //
+		      if ((this.game.players.length == 2 && (faction != "protestant" && faction != "papacy")) || this.returnPlayerCommandingFaction(faction) == 0) {
+		        for (let z = 0; z < this.game.spaces[spacekey].units[faction].length; z++) {
+		          if (this.game.spaces[spacekey].units[faction][z].personage != true && this.game.spaces[spacekey].units[faction][z].reformer != true) {
+			    this.game.spaces[spacekey].units[faction].splice(z, 1);
 			    z--;
+			    // we have moved one guy...
+			    fluis--; fluis_idx--;
 			  }
-			}
-		        this.displaySpace(i);
-		      }
-		    }
+	 	        }
+		        this.displaySpace(spacekey);
 
-		  //
-		  // or intervene manually
-		  //
-		  } else {
-
-	    	    let res = this.returnNearestFriendlyFortifiedSpaces(key, i);
-
-		    let no_loc = false;
-		    if (!res) { no_loc = true; }		  
-		    if (res.length == 0) { no_loc = true; }		  
-
-		    //
-		    // if there is no friendly fortified space within reach, we 
-		    // either destroy the units (2P) or subject them to winter 
-		    // attrition rules and return them to the capital.
-		    //
-		    if (no_loc) {
-
-		      if (this.game.players.length == 2) {
-		        for (let z = 0; z < this.game.spaces[i].units[key].length; z++) {
-		          if (this.game.spaces[i].units[key][z].personage != true && this.game.spaces[i].units[key][z].reformer != true) {
-			    this.game.spaces[i].units[key].splice(z, 1);
-			    z--;
-			  }
-			}
-			this.displaySpace(i);
+		      //
+		      // otherwise attrition + return to capital
+		      //
+		      // TODO - attrition
+		      //
 		      } else {
-		        moves.push("winter_attrition\t"+key+"\t"+space.key);
+
+ 			let capitals = this.returnCapitals(faction);
+			let unitlen = this.game.spaces[spacekey].units[faction].length;
+		        for (let z = 0, y = 0, zz = 0; z < unitlen; z++, zz++) {
+			  if (capitals[y]) {
+		            if (this.game.spaces[spacekey].units[faction][z].reformer != true) {
+			      this.game.spaces[capitals[y]].units[faction].push(this.game.spaces[spacekey].units[faction][z]);
+			      this.game.spaces[spacekey].units[faction].splice(z, 1);
+			      zz--;
+			      // we have moved one guy...
+			      fluis--; fluis_idx--;
+			    }
+			  }
+			  y++;
+			  if (!capitals[y]) { y = 0; }
+			  unitlen = this.game.spaces[spacekey].units[faction].length;
+			}
 		      }
 
 		    //
-		    // if there is only 1 retreat option, we pull the units there
-		    // and if there are multiple options, we ask the player to select
-		    // the space to move the stack.
+		    // res.length > 0, so there are nearby fortified spaces
 		    //
 		    } else {
-		      if (res.length > 1) {
-		        moves.push("retreat_to_winter_spaces_player_select\t"+key+"\t"+space.key);
-		      } else {
-	                this.autoResolveWinterRetreat(key, space.key);
+
+		      //
+		      // how much space do we have?
+		      //
+		      let options = [];
+		      for (let b = 0; b < res.length; b++) {
+			options.push(4 - this.returnFactionLandUnitsInSpace(faction, res[b].key));
+		      }
+
+		      //
+		      // fill those spaces
+		      //
+		      for (let b = 0; b < res.length; b++) {
+			for (let zz = 0; zz < options[b]; zz++) {
+			  let unitlen = this.game.spaces[spacekey].units[faction].length;
+		          for (let zzz = 0, zzy = 0; zzz < unitlen; zzz++, zzy++) {
+		            if (this.game.spaces[spacekey].units[faction][zzy].reformer != true) {
+			      this.game.spaces[res[b].key].units[faction].push(this.game.spaces[spacekey].units[faction][zzy]);
+			      this.game.spaces[spacekey].units[faction].splice(zzy, 1);
+			      zzy--;
+			      // we have moved one guy...
+			      fluis--; fluis_idx--;
+
+			      //
+			      // and show new unit!
+			      //
+			      this.displaySpace(res[b].key);
+
+			    }
+			    unitlen = this.game.spaces[spacekey].units[faction].length;
+			  }
+			} 
 		      }
 		    }
-		  }
+		  } // fluis_idx loop
 
 		  //
 		  // if the space is besieged undo that, and un-besiege defenders
 		  //
 		  if (space.besieged > 0) {
 		    space.besieged = 0;
-		    for (let key in this.game.spaces[i].units) {
-		      for (let ii = 0; ii < this.game.spaces[i].units[key].length; ii++) {
-			this.game.spaces[i].units[key][ii].relief_force = 0;
-			this.game.spaces[i].units[key][ii].besieged = 0;
+		    for (let f in this.game.spaces[spacekey].units) {
+		      for (let ii = 0; ii < this.game.spaces[spacekey].units[f].length; ii++) {
+			this.game.spaces[spacekey].units[f][ii].relief_force = 0;
+			this.game.spaces[spacekey].units[f][ii].besieged = 0;
 		      }
 		    }
 		  }
-		}
-	      }
-	    }
-	  }
+
+		  this.displaySpace(spacekey);
+
+		} // if we need to retreat
+	      } // if there are units here
+	    } // loop faction
+	  } // loop spacekey
 
 	  //
 	  // prevents in-memory differences in processing resulting in a different
@@ -22489,6 +22520,11 @@ if (this.game.options.scenario == "is_testing") {
 
 	  this.game.queue.splice(qe, 1);
 
+	  //
+	  // make sure up-to-date
+	  //
+	  this.displayBoard();
+
 	  let x = this.returnPlayerOfFaction(mv[1]);
 
 	  if (this.game.player === x) {
@@ -22574,6 +22610,11 @@ if (this.game.options.scenario == "is_testing") {
 	if (mv[0] === "retreat_to_winter_ports") {
 
 	  let moves = [];
+
+	  //
+	  // make sure board up-to-date
+	  //
+	  this.displayBoard();
 
 	  this.winter_overlay.render("stage2");
 
@@ -23148,9 +23189,12 @@ if (this.game.options.scenario == "is_testing") {
 
 	if (mv[0] === "resolve_new_world_riches_rolls") {
 
-	  this.winter_overlay.render("newworld1");
-
 	  this.updateStatus("Resolving New World Riches...");
+
+	  //
+	  // show overlay
+	  //
+	  this.winter_overlay.render("newworld1");
 
 	  this.updateLog("************************");
 	  this.updateLog("*** New World Riches ***");
@@ -31110,6 +31154,7 @@ defender_hits - attacker_hits;
 
 	  this.game.queue.splice(qe, 1);
 
+
 	  //
 	  // new world phase only in > 2P games
 	  //
@@ -31313,6 +31358,8 @@ defender_hits - attacker_hits;
 
 
         if (mv[0] === "action_phase") {
+
+	  this.winter_overlay.hide();
 
 	  this.game.state.impulse++;
 
@@ -31640,7 +31687,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
 
-	  this.winter_overlay.render("stage3");
+	  this.winter_overlay.render("stage5");
 
 	  //
 	  // first, if there are any outstanding proposals that
@@ -31716,7 +31763,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
 	  this.game.queue.splice(qe, 1);
 
-	  this.winter_overlay.render("stage4");
+	  this.winter_overlay.render("stage6");
 
 	  let faction = mv[1];
 	  let can_faction_sue_for_peace = this.canFactionSueForPeace(faction);
@@ -31741,7 +31788,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
 
-	  this.winter_overlay.render("stage5");
+	  this.winter_overlay.render("stage7");
 
 	  if (this.game.player == player) {
 	    this.playerMakeDeclarationsOfWar(this, faction);
@@ -32281,6 +32328,11 @@ if (this.game.state.round == 2) {
 
         if (mv[0] === "card_draw_phase") {
 
+	  if (this.game.state.round > 1) {
+	    this.winter_overlay.render("stage4");
+	  }
+
+
 	  //
 	  // deal cards and add home card
 	  //
@@ -32313,20 +32365,23 @@ if (this.game.state.round == 2) {
 	        // war in persia
 	        //
                 if (this.game.state.events.war_in_persia == 1 && f === "ottoman") {
+		  this.updateLog("Ottomans penalized -1 card for War in Persia");
 		  cardnum--;
 	        }
 
 	        //
 	        // war in egypt
 	        //
-                if (this.game.state.events.war_in_egypt == 1 && f === "ottoman") {
+                if (this.game.state.events.revolt_in_egypt == 1 && f === "ottoman") {
+		  this.updateLog("Ottomans penalized -1 card for Revolt in Egypt");
 		  cardnum--;
 	        }
 
 	        //
 	        // war in egypt
 	        //
-                if (this.game.state.events.war_in_ireland == 1 && f === "england") {
+                if (this.game.state.events.revolt_in_ireland == 1 && f === "england") {
+		  this.updateLog("Ottomans penalized -1 card for Revolt in Ireland");
 		  cardnum--;
 	        }
 
@@ -34811,7 +34866,7 @@ console.log(JSON.stringify(reshuffle_cards));
 
     let res = this.returnNearestFactionControlledPorts(faction, spacekey);
 
-    let msg = "Select Winter Port for Naval Units in "+space.name;
+    let msg = this.returnFactionName(faction) + " - Select Winter Port for Naval Units in "+space.name;
     let opt = "<ul>";
     for (let i = 0; i < res.length; i++) {
       opt += `<li class="option" id="${res[i].key}">${res[i].key}</li>`;
@@ -34844,7 +34899,7 @@ console.log(JSON.stringify(reshuffle_cards));
   //
   autoResolveWinterRetreat(faction, spacekey) {
     let his_self = this;
-    let res = this.returnNearestFriendlyFortifiedSpaces(faction, spacekey);
+    let res = this.returnNearestFriendlyFortifiedSpacesTransitPasses(faction, spacekey);
     if (res.length > 0) {
       let space = this.game.spaces[spacekey];
       let roll = this.rollDice(res.length);
@@ -34861,7 +34916,7 @@ console.log(JSON.stringify(reshuffle_cards));
     let res = this.returnNearestFriendlyFortifiedSpaces(faction, spacekey);
     let space = this.game.spaces[spacekey];
 
-    let msg = "Select Winter Location for Units in "+space.name;
+    let msg = this.returnFactionName(faction) + " - Select Winter Location for Units in "+space.name;
     let opt = "<ul>";
     for (let i = 0; i < res.length; i++) {
       opt += `<li class="option" id="${res[i].key}">${res[i].key}</li>`;
@@ -36016,6 +36071,17 @@ if (this.game.state.events.cramner_active == 1) {
 
     if (can_we_quick_fortify == true) {
 
+      //
+      // prevents UI flickering to have AUTO copied here
+      //
+      if (post_battle == 0) {
+        for (let i = 0; i < available_units.length; i++) {
+          units_to_move.push({ faction : available_units[i].faction , idx : available_units[i].unit_idx , type : available_units[i].type });
+        }
+        finishAndFortify(his_self, units_to_move);
+	return 0;
+      }
+
       let msg = "Choose Fortification Option: ";
       let html = "<ul>";
       html += `<li class="option" id="auto">fortify everything (auto)</li>`;
@@ -36045,7 +36111,6 @@ if (this.game.state.events.cramner_active == 1) {
 
       });
 
-      if (post_battle == 0) { $('#auto').click(); }
       return 0;
 
     } else {
@@ -37118,6 +37183,288 @@ return;
   }
 
 
+  playerReturnWinterUnits(faction) {
+
+    let his_self = this;
+    let capitals = this.returnCapitals(faction);
+    let viable_capitals = [];
+    let units_to_move = [];
+    let cancel_func = null;
+
+    let processed_spacekeys = [];
+    let selected_destination = "";
+    let source_spacekey = "";
+
+    for (let i = 0; i < capitals.length; i++) {
+      let c = capitals[i];
+      if (this.isSpaceControlled(c, faction)) {
+        viable_capitals.push(capitals[i]);
+      }
+    }
+
+    var finish_selecting_from_space_function = function() {};
+    var select_units_function = function() {};
+    var pick_capital_function = function() {};
+    var select_spacekey_function = function() {};
+
+
+    finish_selecting_from_space_function = function(his_self, units_to_move) {
+
+      his_self.updateStatus("processing...");
+
+      processed_spacekeys.push(source_spacekey);
+
+      for (let i = 0; i < units_to_move.length; i++) {
+        his_self.removeUnit(units_to_move[i].faction, units_to_move[i].spacekey, units_to_move[i].type);
+        his_self.addMove("remove_unit\tland\t"+units_to_move[i].faction+"\t"+units_to_move[i].type+"\t"+units_to_move[i].spacekey+"\t"+his_self.game.player);
+        his_self.addMove("build\tland\t"+units_to_move[i].faction+"\t"+units_to_move[i].type+"\t"+units_to_move[i].spacekey+"\t"+his_self.game.player);
+      }
+
+      //
+      // reset !
+      //
+      units_to_move = [];
+
+      his_self.displayBoard();
+
+      let count = his_self.countSpacesWithFilter((space) => {
+        if (
+          his_self.returnFactionLandUnitsInSpace(faction, space.key) > 0 &&
+	  !capitals.includes(space.key) && 
+	  !processed_spacekeys.includes(space.key)
+	) { return 1; }
+        return 0;
+      });
+
+      //
+      // no viable spaces, so we exit
+      //
+      if (count == 0) {
+        his_self.updateStatus(this.returnFactionName(faction) + " no more spaces with units to withdraw");
+        his_self.endTurn(); 
+        return;
+      }
+
+      let msg = his_self.returnFactionName(faction) + " - Return Units to Capital?";
+      let opt = "<ul>";
+      for (let i = 0; i < viable_capitals.length; i++) {
+        opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
+      }
+      opt += `<li class="option" id="finish">finish</li>`;
+      opt += '</ul>';
+
+      his_self.updateStatusWithOptions(msg, opt);
+
+      $(".option").off();
+      $(".option").on('click', function () {
+
+        let id = $(this).attr('id');
+
+        if (id == "finish") {
+          his_self.updateStatus("processing winter relocation...");
+          his_self.endTurn();
+          return;
+        }
+
+        selected_destination = id;
+        select_spacekey_function(his_self, pick_capital_function, select_spacekey_function, select_units_function, finish_selecting_from_space_function);
+      });
+
+    }
+
+
+    select_units_function = function(his_self, units_to_move, select_units_function, pick_capital_function, select_spacekey_function) {
+
+      let unmoved_units = [];
+      let moved_units = [];
+
+      let space = his_self.game.spaces[source_spacekey];
+      let max_formation_size = 100;
+      let msg = his_self.returnFactionName(faction) + " - Select from " + his_self.returnSpaceName(source_spacekey);
+
+      let html = "<ul>";
+
+      for (let i = 0; i < space.units[faction].length; i++) {
+        let u = space.units[faction][i];
+        if (u.type != "corsair" && u.reformer != true && u.type != "squadron") {
+	  let does_units_to_move_have_unit = false;
+	  for (let z = 0; z < units_to_move.length; z++) {
+	    if (units_to_move[z].faction == faction && units_to_move[z].idx == i && units_to_move[z].spacekey == source_spacekey) { does_units_to_move_have_unit = true; break; }
+	  }
+	  if (does_units_to_move_have_unit) {
+	    html += `<li class="option" style="font-weight:bold" id="${faction}-${i}">*${u.name} (${faction})*</li>`;
+	    moved_units.push({ spacekey : source_spacekey , faction : faction , idx : i , type : u.type });
+	  } else {
+	    html += `<li class="option" id="${faction}-${i}">${u.name} (${faction})</li>`;
+	    unmoved_units.push({ spacekey : source_spacekey, faction : faction , idx : i , type : u.type });
+	  }
+	}
+      }
+
+      let mobj = {
+	    space : space ,
+	    faction : faction ,
+   	    source : source_spacekey ,
+   	    unmoved_units : unmoved_units ,
+   	    moved_units : moved_units ,
+	    destination : selected_destination ,
+	    units_to_move : units_to_move ,
+	    max_formation_size : max_formation_size , 
+	    selectUnitsInterface : select_units_function ,
+	    selectDestinationInterface : finish_selecting_from_space_function ,
+      }
+
+      his_self.movement_overlay.renderForceOpen(mobj, units_to_move, select_units_function, finish_selecting_from_space_function); // no destination interface
+
+      html += `<li class="option" id="end">finish</li>`;
+      html += "</ul>";
+
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let id = $(this).attr("id");
+
+        if (id == "end") {
+	    his_self.movement_overlay.hide();
+	    finish_selecting_from_space_function(his_self, units_to_move, select_units_function, pick_capital_function, select_spacekey_function, finish_selecting_from_space_function);
+	    return;
+	}
+
+	let x = id.split("-");
+	let f = x[0];
+	let idx = parseInt(x[1]);
+
+	let does_units_to_move_have_unit = false;
+	for (let z = 0; z < units_to_move.length; z++) {
+	    if (units_to_move[z].spacekey == source_spacekey && units_to_move[z].faction == f  && units_to_move[z].idx == idx) {
+	      does_units_to_move_have_unit = true; 
+	      break; 
+	    }
+	}
+
+	if (does_units_to_move_have_unit) {
+	  for (let z = 0; z < units_to_move.length; z++) {
+	    if (units_to_move[z].spacekey == source_spacekey && units_to_move[z].faction === f && units_to_move[z].idx == idx) {
+	      units_to_move.splice(z, 1);
+	      his_self.available_units_overlay.fadeOut(true);
+	      break;
+	    }
+	  }
+	  if (units_to_move.length == 0) {
+	    his_self.available_units_overlay.faded_out = false;
+	  }
+	} else {
+          units_to_move.push( { spacekey : source_spacekey , faction : f , idx : idx , type : space.units[f][idx].type });
+	}
+
+	select_units_function(his_self, units_to_move, select_units_function, pick_capital_function, select_spacekey_function, finish_selecting_from_space_function);
+
+      });
+    }
+  
+
+
+    select_spacekey_function = function(his_self, pick_capital_function, select_spacekey_function, select_units_function, finish_selecting_from_space_function) {
+
+      // reset u2m
+      units_to_move = [];
+
+      let count = his_self.countSpacesWithFilter((space) => {
+        if (
+          his_self.returnFactionLandUnitsInSpace(faction, space.key) > 0 &&
+	  !capitals.includes(space.key) && 
+	  !processed_spacekeys.includes(space.key)
+	) { return 1; }
+        return 0;
+      });
+
+      //
+      // no viable spaces, so we exit
+      //
+      if (count == 0) {
+        this.updateStatus(this.returnFactionName(faction) + " no more spaces with units to withdraw");
+        this.endTurn(); 
+        return;
+      }
+
+
+      if (faction == "protestant") { his_self.theses_overlay.render("german"); }
+      if (faction == "papacy") { his_self.theses_overlay.render("italian"); }
+      if (faction == "england") { his_self.theses_overlay.render("english"); }
+      if (faction == "france") { his_self.theses_overlay.render("french"); }
+      if (faction == "hapsburg") { his_self.theses_overlay.render("spanish"); }
+      if (faction == "ottoman") { his_self.theses_overlay.render("ottoman"); }
+
+      his_self.playerSelectSpaceWithFilter(
+
+        "Select Location to Move Units",
+
+        //
+        // any fortified non-capital space
+        //
+        function(space) {
+          if (
+            his_self.returnFactionLandUnitsInSpace(faction, space.key) > 0 &&
+	    !capitals.includes(space.key) && 
+	    !processed_spacekeys.includes(space.key)
+	  ) { return 1; }
+          return 0;
+        },
+
+        //
+        // launch unit selection overlay
+        //
+        function(spacekey) {
+	  source_spacekey = spacekey;
+	  select_units_function(his_self, units_to_move, select_units_function, pick_capital_function, select_spacekey_function, finish_selecting_from_space_function);
+        },
+        null ,
+        1 
+      );
+    }
+
+    pick_capital_function = function(his_self, pick_capital_function, select_spacekey_function, select_units_function, finish_selecting_from_space_function) {
+
+      let msg = his_self.returnFactionName(faction) + " - Return Units to Capital?";
+      let opt = "<ul>";
+      for (let i = 0; i < viable_capitals.length; i++) {
+        opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
+      }
+      opt += `<li class="option" id="finish">finish</li>`;
+      opt += '</ul>';
+
+      if (viable_capitals.length == 0) {
+        this.updateStatus(this.returnFactionName(faction) + " controls no capitals, cannot retreat during winter");
+        this.endTurn(); 
+	return;
+      }
+
+      his_self.updateStatusWithOptions(msg, opt);
+
+      $(".option").off();
+      $(".option").on('click', function () {
+        let id = $(this).attr('id');
+	if (id == "finish") {
+	  his_self.updateStatus("processing winter relocation...");
+	  his_self.endTurn();
+	  return;
+	}
+        selected_destination = id;
+        select_spacekey_function(his_self, pick_capital_function, select_spacekey_function, select_units_function, finish_selecting_from_space_function);
+      });
+
+    }
+
+    //
+    // start the magic
+    //
+    pick_capital_function(his_self, pick_capital_function, select_spacekey_function, select_units_function, finish_selecting_from_space_function);
+
+  }
+
   playerPlaySpringDeployment(faction, player) {
 
     let his_self = this;
@@ -37179,6 +37526,9 @@ return;
             if (his_self.isSpaceFriendly(space, faction)) {
               if (his_self.isSpaceConnectedToCapitalSpringDeployment(space, faction)) {
                 if (!his_self.isSpaceFactionCapital(space, faction)) {
+		  if (his_self.game.state.events.schmalkaldic_league == 0) {
+		    if (his_self.isSpaceElectorate(space.key)) { return 0; }
+		  }
                   return 1;
 		}
               }
@@ -37834,6 +38184,10 @@ does_units_to_move_have_unit = true; }
   }
 
 
+// faction is the attacker in pre-naval battles, but it should be the defender
+//            this.playerEvaluateNavalRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey, defender);
+//
+
   playerEvaluateNavalRetreatOpportunity(faction, spacekey, player_comes_from_this_spacekey="", defender="", post_battle=false) {
 
     let his_self = this;
@@ -37851,7 +38205,6 @@ does_units_to_move_have_unit = true; }
 	retreat_options++;
       }
     }
-
 
     let surviving_units = 0;
     for (let f in space.units) {
@@ -37931,9 +38284,12 @@ does_units_to_move_have_unit = true; }
       }
     } else {
       this.updateStatusWithOptions(`${this.returnFactionName(faction)} approaches ${this.returnSpaceName(spacekey)}. ${this.returnFactionName(defender)} Retreat?`, html);
+      //
+      // pre-battle, this swap is NEEDED as faction is what retreats
+      //
+      faction = defender;
     }
     this.attachCardboxEvents(function(user_choice) {
-
 
       if (user_choice === "retreat") {
         his_self.updateStatus("retreating...");
@@ -39357,11 +39713,6 @@ does_units_to_move_have_unit = true; }
 
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (conquerable_spaces[i] !== "egypt" && conquerable_spaces[i] !== "persia" && conquerable_spaces[i] !== "ireland") {
-
-console.log("checking: " + conquerable_spaces[i]);
-console.log("is controlled: " + his_self.isSpaceControlled(conquerable_spaces[i], faction));
-console.log("is in loc: " + his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction));
-
         if (!his_self.isSpaceControlled(conquerable_spaces[i], faction) && his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction)) {
           if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1) {
 	    if (!his_self.game.state.spaces_assaulted_this_turn.includes(conquerable_spaces[i])) {
@@ -39381,9 +39732,7 @@ console.log("is in loc: " + his_self.isSpaceInLineOfControl(conquerable_spaces[i
 		  if (u.type == "squadron") { attacker_squadrons_adjacent++; }
 	        }
 	      }
-
 	      if (attacker_squadrons_adjacent > squadrons_protecting_space) { return 1; }
-
 	    }
 	  }
         }
@@ -43441,7 +43790,7 @@ console.log("is in loc: " + his_self.isSpaceInLineOfControl(conquerable_spaces[i
       this.welcome_overlay.renderCustom({
         title : this.returnFactionName(msg) + " launches Conquest Expedition",
         text : "Conquests earn factions Victory Points and bonus cards in the New World Phase",
-        img : '/his/img/backgrounds/move/inca2.jpg',
+        img : '/his/img/backgrounds/newworld/inca2.jpg',
 	styles : [{ key : "backgroundPosition" , val : "center" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} attempts Conquest Expedition`);

@@ -26,14 +26,6 @@ class Keychain {
 		this.groups = [];
 		this.modtemplate = new modtemplate(this.app);
 		this.fetched_keys = new Map<string, number>();
-
-		app.connection.on('wallet-updated', () => {
-			let keys = this.returnWatchedPublicKeys();
-			this.app.network.updatePeersWithWatchedPublicKeys(keys);
-
-		});
-
-
 	}
 
 

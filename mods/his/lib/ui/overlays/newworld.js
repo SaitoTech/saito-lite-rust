@@ -107,12 +107,12 @@ class NewWorldOverlay {
 		        if (con.prize.indexOf("Inca") > -1) { roll = his_self.game.state.newworld['inca'].roll; }
 		        if (con.prize.indexOf("Maya") > -1) { roll = his_self.game.state.newworld['maya'].roll; }
 		      }
-		      if (roll == 0) {
-			roll = his_self.game.state.conquests[c.idx].hits;
+		      if (roll == 0 && c.hits > 0) {
+			roll = c.hits;
 		      }
 		      if (c.prize) {
-		        if (c.prize === "killed by natives") {
-		      	  prize = "killed by natives";
+		        if (c.prize == "killed") {
+		      	  prize = "killed";
 		        }
 		      }
 		      his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : prize , img : con.img , type : "conquest" , name : ctype , faction : con.faction , conquistador : con.conquistador , total_hits : roll }, stage), ".new-world-overlay .content .conquests");

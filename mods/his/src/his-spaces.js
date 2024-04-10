@@ -404,22 +404,22 @@
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
     // home spaces that have not fallen to another power.
-    if (space.home === faction && space.political == "") { return true; }
+    if (space.home == faction && space.political == "") { return true; }
 
     // home spaces that have not fallen to another power.
-    if (space.home === faction && space.political == faction) { return true; }
+    if (space.home == faction && space.political == faction) { return true; }
 
-    if (space.home === "" && space.political == faction) { return true; }
+    if (space.home == "" && space.political == faction) { return true; }
 
     // independent (gray) spaces seized by the power.
-    if (space.home === "independent" && space.political === faction) { return true; }
+    if (space.home == "independent" && space.political == faction) { return true; }
 
     // home spaces of other powers seized by the power.
-    if (space.home !== faction && space.political === faction) { return true; }
-    if (space.home === faction && space.political === faction) { return true; }
+    if (space.home != faction && space.political == faction) { return true; }
+    if (space.home == faction && space.political == faction) { return true; }
 
     // home spaces of allied minor powers. 
-    if (space.political == "" && space.home !== faction && this.isAlliedMinorPower(space.home, faction)) { return true; }
+    if (space.political == "" && space.home != faction && this.isAlliedMinorPower(space.home, faction)) { return true; }
 
     return false;
   }
@@ -962,8 +962,11 @@
   }
 
 
-
-  returnNearestFriendlyFortifiedSpaces(faction, space) {
+  // max-units is number of units permitted, usually passed as 4 to find spaces that are not over-capacity
+  returnNearestFriendlyFortifiedSpacesTransitPasses(faction, space, max_units=0) {
+    return this.returnNearestFriendlyFortifiedSpaces(faction, space, 1, max_units);
+  }
+  returnNearestFriendlyFortifiedSpaces(faction, space, transit_passes = 0, max_units=0) {
 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
@@ -978,10 +981,16 @@
       // fortified spaces
       function(spacekey) {
 
+	//
 	// non-protestants can't move into electorates, so they aren't friendly fortified spaces 
 	// for anyone at this point.
+	//
 	if (faction !== "protestant" && his_self.game.state.events.schmalkaldic_league != 1) {
 	  if (his_self.isElectorate(spacekey)) { return 0; }
+	}
+
+	if (max_units > 0) {
+	  if (his_self.returnFactionLandUnitsInSpace(faction, space.key, 1) >= max_units) { return 0; }
 	}
 
         if (his_self.isSpaceFortified(his_self.game.spaces[spacekey])) {
@@ -1006,6 +1015,8 @@
 
 
       true , // include source
+
+      transit_passes, // cross passes?
     );
 
     return res;
@@ -1688,6 +1699,13 @@ try {
   //
   // transit_eas = filters on spring deploment criteria of two friendly ports on either side of the zone + no uncontrolled ships in zone
   //
+  //
+  // res = {
+  //  hops : N ,   
+  //  key : spacekey ,
+  //  overseas : 1/0 ,
+  // }
+  //
   returnNearestSpaceWithFilter(sourcekey, destination_filter, propagation_filter, include_source=1, transit_passes=0, transit_seas=0, faction="", already_crossed_sea_zone=0, is_spring_deployment=0) {
 
     //
@@ -1703,7 +1721,7 @@ try {
     //
     if (include_source == 1) {
       if (destination_filter(sourcekey)) {
-        results.push({ space : sourcekey , hops : 0 });
+        results.push({ key : sourcekey , space : sourcekey , hops : 0 });
         return results;
       }
     }

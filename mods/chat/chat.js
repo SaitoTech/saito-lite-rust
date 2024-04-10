@@ -147,8 +147,6 @@ class Chat extends ModTemplate {
 			);
 			this.communityGroup.members = [this.publicKey];
 
-			console.log(this.communityGroup);
-
 			//
 			// Chat server hits archive on boot up so it has something to return
 			// on chat history request
@@ -169,8 +167,6 @@ class Chat extends ModTemplate {
 		this.chime = new Audio(`/saito/sound/${this.audio_chime}.mp3`);
 
 		await this.loadChatGroups();
-
-		console.log(JSON.parse(JSON.stringify(this.groups)));
 
 		//Add script for emoji to work
 		this.attachPostScripts();
@@ -281,8 +277,6 @@ class Chat extends ModTemplate {
 				//Let's not hit the Archive for community chat since that is seperately queried on service.service == chat
 				if (group.name !== this.communityGroupName) {
 					
-					console.log(group);
-
 					await this.app.storage.loadTransactions(
 						{
 							field3: group.id,
@@ -719,6 +713,7 @@ class Chat extends ModTemplate {
 			// We put chat message above because we actually have some logic in 
 			// the "double" processing of chat messages
 			if (this.hasSeenTransaction(tx)){
+				console.log("***************Already processed!");
 				return;
 			}
 
@@ -920,6 +915,7 @@ class Chat extends ModTemplate {
 		let id = this.generatePublicKey();
 
 		this.app.keychain.addWatchedPublicKey(id);
+		this.app.keychain.addKey(id, {identifier: name, group: 1});
 		
 		let newtx = await this.app.wallet.createUnsignedTransaction(
 			this.publicKey,
@@ -964,7 +960,7 @@ class Chat extends ModTemplate {
 			}
 
 			this.app.keychain.addWatchedPublicKey(txmsg.id);
-			this.app.keychain.addKey(txmsg.id, {name: txmsg.name});
+			this.app.keychain.addKey(txmsg.id, {identifier: txmsg.name, group: 1});
 
 			let newGroup = {
 				id: txmsg.id,
@@ -1002,7 +998,8 @@ class Chat extends ModTemplate {
 				// and can create a link for anyone else to find it
 				this.generateChatGroupLink(newGroup);
 			} else {
-				await this.sendJoinGroupTransaction(newGroup);
+				let inviter = txmsg?.sender || txmsg.admin;
+				await this.sendJoinGroupTransaction(newGroup, inviter);
 			}
 
 			console.log(JSON.parse(JSON.stringify(newGroup)));
@@ -1017,7 +1014,7 @@ class Chat extends ModTemplate {
 	// We automatically send a confirmation when added to a chat group (just so that we can make sure that the user was successfully added)
 	// But in the future, we may add a confirmation interface
 	//
-	async sendJoinGroupTransaction(group) {
+	async sendJoinGroupTransaction(group, inviter) {
 		let newtx =
 			await this.app.wallet.createUnsignedTransactionWithDefaultFee(group.id);
 
@@ -1028,8 +1025,15 @@ class Chat extends ModTemplate {
 		newtx.msg = {
 			module: 'Chat',
 			request: 'chat join',
-			group_id: group.id
+			group_id: group.id,
+			invited_by: inviter,
 		};
+
+		//just to make sure those txs go through
+		newtx.addTo(group.admin);
+		if (group.admin !== inviter){
+			newtx.addTo(inviter);
+		}
 
 		await newtx.sign();
 
@@ -1065,9 +1069,9 @@ class Chat extends ModTemplate {
 			if (!group.members.includes(new_member)) {
 				group.members.push(new_member);
 				tx.msg.message = `<div class="saito-chat-notice">
-											<span class="saito-mention saito-address" data-id="${new_member}">${this.app.keychain.returnUsername(
-					new_member
-				)}</span>
+											<span class="saito-mention saito-address" data-id="${new_member}">${this.app.keychain.returnUsername(txmsg.invited_by)}</span>
+											<span> added </span>
+											<span class="saito-mention saito-address" data-id="${new_member}">${this.app.keychain.returnUsername(new_member)}</span>
 											<span> joined the group</span>
 										</div>`;
 				tx.notice = true;
@@ -1081,8 +1085,10 @@ class Chat extends ModTemplate {
 
 			this.app.connection.emit('chat-popup-render-request', group);
 
-			if (group.member_ids[this.publicKey] == 'admin') {
-				this.sendUpdateGroupTransaction(group, new_member);
+			this.sendUpdateGroupTransaction(group, new_member);
+
+			if (tx.isTo(this.publicKey)) {
+				siteMessage(`${this.app.keychain.returnUsername(new_member)} joined ${group.name}`, 3000);
 			}
 		}
 	}
@@ -1091,8 +1097,7 @@ class Chat extends ModTemplate {
 	//
 	//
 	async sendUpdateGroupTransaction(group, target = null) {
-		let newtx =
-			await this.app.wallet.createUnsignedTransactionWithDefaultFee(group.id);
+		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(group.id);
 		if (newtx == null) {
 			return;
 		}
@@ -1110,15 +1115,16 @@ class Chat extends ModTemplate {
 		// but still (hopefully) compatible with the addTransactionToGroup logic
 		//
 		if (target) {
-			console.log(
-				`Sending ${group.txs.length} last messages to ${target}`
-			);
+			console.log(`Sending ${group.txs.length} last messages to ${target}`);
 			newtx.msg.chat_history = group.txs;
+
+			newtx.addTo(target);
 		}
 
 		await newtx.sign();
 
 		await this.app.network.propagateTransaction(newtx);
+
 		this.app.connection.emit('relay-send-message', {
 			request: "chat relay",
 			recipient: group.members,
@@ -1140,7 +1146,22 @@ class Chat extends ModTemplate {
 			let sender = tx.from[0].publicKey;
 
 			if (group.member_ids[sender] !== 'admin') {
-				console.log('Non-admin attempting to change the group!');
+				if (tx.isTo(this.publicKey)){
+					console.log('Accepting info from other group members');
+					for (let i in txmsg.member_ids) {
+						group.member_ids[i] = txmsg.member_ids[i];
+					}
+					for (let i in group.member_ids){
+						if (group.member_ids[i] !== -1){
+							if (!group.members.includes(i)){
+								group.members.push(i);
+							}
+						}
+					}
+
+				}else{
+					console.log('Non-admin attempting to change the group!');					
+				}
 				return;
 			}
 
@@ -1161,14 +1182,10 @@ class Chat extends ModTemplate {
 					if (txmsg.member_ids[i] == 'admin') {
 						group.member_ids[i] = 'admin';
 						notice += `<div class="saito-chat-notice">
-													<span class="saito-mention saito-address" data-id="${sender}">${this.app.keychain.returnUsername(
-							sender
-						)}</span>
-													<span>granted admin rights to </span>
-													<span class="saito-mention saito-address" data-id="${i}">${this.app.keychain.returnUsername(
-							i
-						)}</span>
-												</div>`;
+										<span class="saito-mention saito-address" data-id="${sender}">${this.app.keychain.returnUsername(sender)}</span>
+										<span>granted admin rights to </span>
+										<span class="saito-mention saito-address" data-id="${i}">${this.app.keychain.returnUsername(i)}</span>
+									  </div>`;
 						add_member = 1;
 					}
 					if (txmsg.member_ids[i] == 1) {
@@ -2390,6 +2407,7 @@ class Chat extends ModTemplate {
 		let obj = {
 			id: group.id,
 			name: group.name,
+			sender: this.publicKey,
 		};
 
 		for (let mem of group.members){

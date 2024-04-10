@@ -5077,7 +5077,7 @@ console.log("selected: " + spacekey);
 	  }
 
 	  if (faction == null || source == null || unit_idx == null) { his_self.endTurn(); return 0; }
-	  his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
+	  his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}\t${f}`);
   	  his_self.addMove(`discard\t${f}\t032`);
 	  if (his_self.game.deck[0].discards["031"]) {
             his_self.addMove("SETVAR\tstate\tevents\tintervention_on_movement_possible\t0");
@@ -5437,8 +5437,10 @@ console.log("selected: " + spacekey);
 	  if (his_self.game.player == player) {
             his_self.playerPlaceUnitsInSpaceWithFilter("mercenary", num, faction,
 	      function(space) {
-		for (let z = 0; z < space.units[faction].length; z++) { 
-		  if (space.units[faction][z].besieged > 0) { return 0; }
+		for (let f in space.units) {
+		  for (let z = 0; z < space.units[f].length; z++) { 
+		    if (space.units[f][z].besieged > 0) { return 0; }
+	          }
 	        }
 		if (his_self.returnFactionLandUnitsInSpace(faction, space.key)) { return 1; }
 		if (his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 1; }
@@ -5840,10 +5842,14 @@ console.log("selected: " + spacekey);
       canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
+	his_self.game.state.events.roxelana = 1;
+
 	if (faction === "ottoman") {
-	  his_self.game.queue.push("ops\tottoman\t042\t4");
-	  his_self.game.state.events.roxelana = 1;
-	  return 1;
+	  if (his_self.game.player == his_self.returnPlayerCommandingFaction("ottoman")) {
+	    his_self.addMove("ops\tottoman\t042\t4");
+	    his_self.endTurn();
+	    return 1;
+	  }
 	} else {
 
 	  if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
@@ -5867,11 +5873,11 @@ console.log("selected: " + spacekey);
 	      let sk_idx = his_self.returnIndexOfPersonageInSpace("ottoman", "suleiman", sk);
 
 	      if (action === "yes" && sk != "") {
-	        his_self.game.queue.push("ops\t"+faction+"\t042\t2");
+	        his_self.addMove("ops\t"+faction+"\t042\t2");
 	        his_self.addMove("move" + "\t" + "ottoman" + "\t" + "land" + "\t" + sk + "\t" + "istanbul" + "\t" + sk_idx + "\t1");
 	      }
 	      if (action === "no") {
-	        his_self.game.queue.push("ops\t"+faction+"\t042\t4"); 
+	        his_self.addMove("ops\t"+faction+"\t042\t4"); 
 	      }
 	      his_self.endTurn();
 
@@ -8972,6 +8978,7 @@ console.log("selected: " + spacekey);
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
+
 	if (his_self.game.state.events.barbary_pirates == 1) {
 
 	  let target_oran = false;

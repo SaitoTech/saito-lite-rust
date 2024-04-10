@@ -62,11 +62,11 @@ class Settlers extends GameTemplate {
 		this.empty = false;
 		this.c1 = {
 			name: 'village',
-			svg: `<img src="/settlers/img/icons/village2.png"/>`
+			svg: `<img src="/settlers/img/icons/village3.png"/>`
 		};
 		this.c2 = {
 			name: 'city',
-			svg: `<img src="/settlers/img/icons/city2.png"/>`
+			svg: `<img src="/settlers/img/icons/city3.png"/>`
 		};
 		this.r = {
 			name: 'road',
