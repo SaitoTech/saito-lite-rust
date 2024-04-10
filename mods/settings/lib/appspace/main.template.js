@@ -33,7 +33,7 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
             </div>
             <div id="${shortName}" class="settings-appspace-module settings-appspace-link">${fullName}</div>`;
 
-        if (mod.hasSettings()){
+        if (mod?.hasSettings()){
           modules_html += `<i class="fas fa-cog"></i>`
         }
 
