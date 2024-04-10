@@ -164,11 +164,11 @@ body {
 @media screen and (max-width: 1200px) {
 
 	:root {
-		--saito-width: 920px;
+		--saito-width: 940px;
 	}
 
 	.saito-container { 
-		grid-template-columns: 6.5rem 5fr 30rem;
+		grid-template-columns: 7rem 54rem 30rem;
 	 }
 
 	 .saito-sidebar.left{
@@ -183,17 +183,21 @@ body {
 
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 940px) {
 
 	:root {
-		--saito-width: 620px;
+		--saito-width: 640px;
 	}
 
 	.saito-container { 
-		grid-template-columns: 6.5rem 54rem;
+		grid-template-columns: 7rem 54rem;
 		padding: 0 calc((100vw - var(--saito-width)) / 2);
 	 }
 
+	 .saito-sidebar.right {
+	 	visibility: hidden;
+	 	display: none;
+	 }
 
 	.redsquare-page-header-title {
 		font-size: 2rem;
@@ -244,11 +248,18 @@ body {
 	padding-top: 1.5rem;
 }
 
+@media screen and (max-width: 900px) {
+	.saito-main{
+		padding: 0;
+		padding-top: 1.5rem;
+	}
+}
 
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 640px) {
 	.saito-container {
 		grid-template-columns: auto;
+		justify-content: center;
 	}
 
 	.saito-sidebar.left {
@@ -260,5 +271,9 @@ body {
 		display: flex;
 	}
 
-
+	.saito-main{
+		padding: 2rem 1rem 1rem 1rem;
+		max-width: 58rem;	
+	}
+    
 }
