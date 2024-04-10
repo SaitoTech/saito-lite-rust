@@ -139,15 +139,19 @@ class Registry extends ModTemplate {
 
 		this.app.connection.on('register-username-or-login', (obj) => {
 			let key = this.app.keychain.returnKey(this.publicKey);
-			if (key?.has_registered_username) {
-				return;
-			}
-			if (!this.register_username_overlay) {
-				this.register_username_overlay = new RegisterUsernameOverlay(
-					this.app,
-					this
-				);
-			}
+			this.register_username_overlay = new RegisterUsernameOverlay(
+				this.app,
+				this
+			);
+			// if (key?.has_registered_username) {
+			//  return;
+			// }
+			// if (!this.register_username_overlay) {
+			//  this.register_username_overlay = new RegisterUsernameOverlay(
+			//      this.app,
+			//      this
+			//  );
+			// }
 			if (obj?.success_callback) {
 				this.register_username_overlay.callback = obj.success_callback;
 			}
@@ -309,6 +313,16 @@ class Registry extends ModTemplate {
 		return result;
 	}
 
+	async updateProfile(identifier, bio = '', photo = '', data = '') {
+		let result = await this.sendUpdateRequestTransaction(
+			identifier,
+			bio,
+			photo,
+			JSON.stringify(data)
+		);
+		return result;
+	}
+
 	/**
 	 * QueryKeys is a cross network database search for a set of public keys
 	 * Typically we call it from the browser on the first peer claiming to have a registry service
@@ -401,7 +415,8 @@ class Registry extends ModTemplate {
 					registry_self.checkIdentifierInDatabase(
 						myKey.identifier,
 						(rows) => {
-							if (rows.length == 0) {
+							console.log('rowserr', rows);
+							if (rows.length === 0) {
 								registry_self.registerProfile(
 									identifier[0],
 									'@' + identifier[1]
@@ -486,6 +501,13 @@ class Registry extends ModTemplate {
 				);
 				await this.receiveRegisterSuccessTransaction(blk, tx);
 			}
+
+			if (txmsg.request === 'update request') {
+				console.log(
+					`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
+				);
+				await this.receiveUpdateRequestTransaction(blk, tx);
+			}
 		}
 	}
 
@@ -522,9 +544,9 @@ class Registry extends ModTemplate {
 			// Assuming `publickey` is a unique identifier in the `records` table
 			const where_statement = `r.publickey IN ("${keys.join('","')}")`;
 			const sql = `SELECT r.*, p.bio, p.photo, p.profile_data 
-						 FROM records r
-						 LEFT JOIN profiles p ON r.id = p.record_id
-						 WHERE ${where_statement}`;
+                         FROM records r
+                         LEFT JOIN profiles p ON r.id = p.record_id
+                         WHERE ${where_statement}`;
 
 			let rows = await this.app.storage.queryDatabase(
 				sql,
@@ -668,111 +690,148 @@ class Registry extends ModTemplate {
 		data = '' // Assuming 'data' refers to 'profile_data'
 	) {
 		// Insert into `records` table
-		let sqlRecords = `INSERT INTO records (
-							identifier,
-							publickey,
-							unixtime,
-							bid,
-							bsh,
-							lock_block,
-							sig,
-							signer,
-							lc
-						)
-						VALUES (
-							$identifier,
-							$publickey,
-							$unixtime,
-							$bid,
-							$bsh,
-							$lock_block,
-							$sig,
-							$signer,
-							$lc
-						)`;
-		let paramsRecords = {
-			$identifier: identifier,
-			$publickey: publickey,
-			$unixtime: unixtime,
-			$bid: Number(bid),
-			$bsh: bsh,
-			$lock_block: lock_block,
-			$sig: sig,
-			$signer: signer,
-			$lc: lc
-		};
 
-		let recordRes = await this.app.storage.runDatabase(
-			sqlRecords,
-			paramsRecords,
-			'registry'
-		);
+		try {
+			let sqlRecords = `INSERT INTO records (
+                identifier,
+                publickey,
+                unixtime,
+                bid,
+                bsh,
+                lock_block,
+                sig,
+                signer,
+                lc
+            )
+            VALUES (
+                $identifier,
+                $publickey,
+                $unixtime,
+                $bid,
+                $bsh,
+                $lock_block,
+                $sig,
+                $signer,
+                $lc
+            )`;
+			let paramsRecords = {
+				$identifier: identifier,
+				$publickey: publickey,
+				$unixtime: unixtime,
+				$bid: Number(bid),
+				$bsh: bsh,
+				$lock_block: lock_block,
+				$sig: sig,
+				$signer: signer,
+				$lc: lc
+			};
 
-		console.log(recordRes, 'record resulter');
-		let recordId = recordRes.lastID;
+			let recordRes = await this.app.storage.runDatabase(
+				sqlRecords,
+				paramsRecords,
+				'registry'
+			);
 
-		if (bio || photo || data) {
-			let sqlProfiles = `INSERT INTO profiles (
-								record_id,
-								bio,
-								photo,
-								profile_data
-							)
-							VALUES (
-								$record_id,
-								$bio,
-								$photo,
-								$data
-							)`;
+			console.log(recordRes, 'record result');
+			let recordId = recordRes.lastID;
+
+			if (bio || photo || data) {
+				let sqlProfiles = `INSERT INTO profiles (
+                    record_id,
+                    bio,
+                    photo,
+                    profile_data
+                )
+                VALUES (
+                    $record_id,
+                    $bio,
+                    $photo,
+                    $data
+                )`;
+				let paramsProfiles = {
+					$record_id: recordId,
+					$bio: bio,
+					$photo: photo,
+					$data: data
+				};
+
+				await this.app.storage.runDatabase(
+					sqlProfiles,
+					paramsProfiles,
+					'registry'
+				);
+			}
+
+			return recordRes?.changes;
+		} catch (error) {
+			console.error('Registry: error adding record', error);
+		}
+	}
+
+	async updateRecord(identifier, bio, photo, data) {
+		console.log('record', identifier, bio, photo, data);
+		try {
+			let findRecordIdSql = `SELECT id FROM records WHERE identifier = $identifier`;
+			let record = await this.app.storage.queryDatabase(
+				findRecordIdSql,
+				{ $identifier: identifier },
+				'registry'
+			);
+			if (record.length === 0) {
+				throw new Error('Record not found.');
+			}
+			let recordId = record[0].id;
+
+			// Check if a profile already exists for this record_id
+			let findProfileSql = `SELECT id FROM profiles WHERE record_id = $recordId`;
+			let profile = await this.app.storage.queryDatabase(
+				findProfileSql,
+				{ $recordId: recordId },
+				'registry'
+			);
+
+			let sqlProfiles;
 			let paramsProfiles = {
 				$record_id: recordId,
 				$bio: bio,
 				$photo: photo,
-				$data: data
+				$data: typeof data === 'object' ? JSON.stringify(data) : data
 			};
 
-			await this.app.storage.runDatabase(
+			// If a profile exists, update it. Otherwise, insert a new profile row.
+			if (profile.length > 0) {
+				sqlProfiles = `UPDATE profiles SET
+                           bio = $bio,
+                           photo = $photo,
+                           profile_data = $data
+                           WHERE record_id = $record_id`;
+			} else {
+				sqlProfiles = `INSERT INTO profiles (
+                           record_id,
+                           bio,
+                           photo,
+                           profile_data
+                           )
+                           VALUES (
+                           $record_id,
+                           $bio,
+                           $photo,
+                           $data
+                           )`;
+			}
+
+			// Execute the insert or update operation for the profile
+			let resProfiles = await this.app.storage.runDatabase(
 				sqlProfiles,
 				paramsProfiles,
 				'registry'
 			);
+
+			// Return the number of records updated or inserted in the profiles table
+			return resProfiles?.changes;
+		} catch (error) {
+			console.error('Registry: error updating records', error);
 		}
-
-		return recordRes?.changes;
-	}
-
-	async updateRecord(identifier, bio, photo, data) {
-		// Prepare the fields in an object for easy iteration
-		const fieldsToUpdate = {
-			bio: bio,
-			photo: photo,
-			profile_data: typeof data === 'object' ? JSON.stringify(data) : data
-		};
-
-		let sqlSetParts = [];
-		let params = { $identifier: identifier };
-
-		for (const [key, value] of Object.entries(fieldsToUpdate)) {
-			if (value !== undefined) {
-				sqlSetParts.push(`${key} = $${key}`);
-				params[`$${key}`] = value;
-			}
-		}
-
-		// Ensure there are fields to update
-		if (sqlSetParts.length === 0) {
-			throw new Error('No fields provided for update.');
-		}
-
-		let sql = `UPDATE records SET ${sqlSetParts.join(
-			', '
-		)} WHERE identifier = $identifier`;
-
-		// Execute the query
-		let res = await this.app.storage.runDatabase(sql, params, 'registry');
-
-		// Return the number of records updated
-		return res?.changes;
 	}
 
 	async onChainReorganization(bid, bsh, lc) {
@@ -1032,6 +1091,112 @@ class Registry extends ModTemplate {
 		} catch (error) {
 			console.error(
 				'Registry: Error receiving register success transaction'
+			);
+		}
+	}
+
+	async sendUpdateRequestTransaction(
+		identifier,
+		bio = '',
+		photo = '',
+		data = ''
+	) {
+		try {
+			// Validate the identifier is a string
+			if (typeof identifier !== 'string') {
+				throw new Error('Identifier must be a string.');
+			}
+
+			const newtx =
+				await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+					this.registry_publickey
+				);
+			if (!newtx) {
+				throw new Error(
+					'Failed to create transaction in registry module.'
+				);
+			}
+
+			// Set transaction details
+			newtx.msg.module = 'Registry';
+			newtx.msg.request = 'update request';
+			newtx.msg.identifier = identifier;
+			newtx.msg.bio = bio;
+			newtx.msg.photo = photo;
+			newtx.msg.data = data;
+
+			// Add sender, sign the newtx, and propagate it onchain
+			await newtx.addFrom(this.publicKey);
+			await newtx.sign();
+			await this.app.network.propagateTransaction(newtx);
+
+			return true;
+		} catch (error) {
+			console.error(
+				'Registry: Error creating Update Request Transaction.',
+				error
+			);
+			return false;
+		}
+	}
+
+	async receiveUpdateRequestTransaction(block, transaction) {
+		try {
+			const txmsg = transaction.returnMessage();
+
+			if (
+				transaction.isTo(this.publicKey) &&
+				this.publicKey === this.registry_publickey
+			) {
+				const identifier = txmsg.identifier;
+				const publicKey = transaction.from[0].publicKey;
+				const unixTime = new Date().getTime();
+				const blockId = block.id;
+				const blockHash = block.hash;
+				const lockBlock = 0;
+				const signedMessage =
+					identifier + publicKey + blockId + blockHash;
+				const signature = this.app.crypto.signMessage(
+					signedMessage,
+					await this.app.wallet.getPrivateKey()
+				);
+				const signer = this.registry_publickey;
+				const data = txmsg.data;
+				const bio = txmsg.bio;
+				const photo = txmsg.photo;
+				console.log(bio, data, photo, 'updating records');
+				const result = await this.updateRecord(
+					identifier,
+					bio,
+					photo,
+					data
+				);
+
+				console.log(result, 'result from updating record');
+				if (result) {
+					console.log('added record');
+					const obj = {
+						lockBlock,
+						unixTime,
+						signer,
+						blockId,
+						blockHash,
+						identifier,
+						signedMessage,
+						signature,
+						publicKey,
+						bio,
+						photo,
+						data
+					};
+
+					await this.sendRegisterSuccessTransaction(transaction, obj);
+				}
+			}
+		} catch (error) {
+			console.error(
+				'Registry: Error receiving register request transaction.',
+				error
 			);
 		}
 	}
