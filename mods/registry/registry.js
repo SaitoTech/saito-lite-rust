@@ -69,7 +69,6 @@ class Registry extends ModTemplate {
 							delete this.cached_keys[i];
 						}
 					}
-					//console.log("REGISTRY: reset cache: ", JSON.parse(JSON.stringify(this.cached_keys)));
 				}
 
 				for (let i = 0; i < keys.length; i++) {
@@ -651,7 +650,7 @@ class Registry extends ModTemplate {
 		photo = '',
 		data = ''
 	) {
-		let sql = `INSERT OR IGNORE INTO records (
+		let sql = `INSERT OR IGNORE INTO profiles (
 						identifier,
 						publickey,
 						unixtime,
