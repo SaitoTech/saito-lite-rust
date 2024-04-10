@@ -27,7 +27,7 @@ class Registry extends ModTemplate {
 		// database lookups. this is used primarily by browsers but also by servers
 		// to avoid the need for database hits on simple DNS queries.
 		//
-		// this set of cached keys is updated by the browser in fetchManyIdentifiers()
+		// this set of cached keys is updated by the browser in fetchManyProfiles()
 		// after it gets a response from the server. It is updated by the server in
 		// handlePeerTransaction() when it fields a request from the browser.
 		//
@@ -92,11 +92,11 @@ class Registry extends ModTemplate {
 					let unidentified_keys = Array.from(this.keys_to_look_up);
 					this.keys_to_look_up = [];
 
-					this.fetchManyIdentifiers(unidentified_keys, (answer) => {
+					this.fetchManyProfiles(unidentified_keys, (answer) => {
 						//
 						// This callback is run in the browser
 						//
-						//console.log("REGISTRY: event triggered fetchManyIdentifiers callback");
+						//console.log("REGISTRY: event triggered fetchManyProfiles callback");
 						Object.entries(answer).forEach(([key, value]) => {
 							console.log('key value', key, value);
 							if (value !== this.publicKey) {
@@ -201,7 +201,7 @@ class Registry extends ModTemplate {
 	// identifiers and only fetches information from the server when that does not work or find
 	// an address. this is intended to limit the load on the parent server.
 	//
-	fetchManyIdentifiers(publickeys = [], mycallback = null) {
+	fetchManyProfiles(publickeys = [], mycallback = null) {
 		let registry_self = this;
 		if (mycallback == null) {
 			return;
@@ -496,17 +496,24 @@ class Registry extends ModTemplate {
 				this.receiveRegisterRequestTransaction(blk, tx);
 			}
 			if (txmsg.request === 'register success') {
-				console.log(
-					`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
-				);
+				// console.log(
+				// 	`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
+				// );
 				await this.receiveRegisterSuccessTransaction(blk, tx);
 			}
 
 			if (txmsg.request === 'update request') {
-				console.log(
-					`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
-				);
+				// console.log(
+				// 	`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
+				// );
 				await this.receiveUpdateRequestTransaction(blk, tx);
+			}
+
+			if (txmsg.request === 'update success') {
+				// console.log(
+				// 	`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
+				// );
+				await this.receiveUpdateSuccessTransaction(blk, tx);
 			}
 		}
 	}
@@ -839,16 +846,6 @@ class Registry extends ModTemplate {
 		var params = { $bid: bid, $bsh: bsh };
 		await this.app.storage.runDatabase(sql, params, 'registry');
 		return;
-	}
-
-	shouldAffixCallbackToModule(modname) {
-		if (modname == this.name) {
-			return 1;
-		}
-		if (modname == 'Email') {
-			return 1;
-		}
-		return 0;
 	}
 
 	async sendRegisterRequestTransaction(
@@ -1190,13 +1187,127 @@ class Registry extends ModTemplate {
 						data
 					};
 
-					await this.sendRegisterSuccessTransaction(transaction, obj);
+					await this.sendUpdateSuccessTransaction(transaction, obj);
 				}
 			}
 		} catch (error) {
 			console.error(
 				'Registry: Error receiving register request transaction.',
 				error
+			);
+		}
+	}
+
+	async sendUpdateSuccessTransaction(tx, obj) {
+		try {
+			let from = tx.from[0].publicKey;
+			let { identifier } = tx.returnMessage();
+			if (!from) {
+				throw Error('REGISTRY: NO "FROM" PUBLIC KEY FOUND');
+			}
+			let request = 'update success';
+			let newtx =
+				await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+					from
+				);
+			newtx.addFrom(this.publicKey);
+
+			newtx.msg = {
+				request,
+				module: 'Registry',
+				identifier,
+				...obj
+			};
+
+			await newtx.sign();
+			console.log('sending register success tx');
+			await this.app.network.propagateTransaction(newtx);
+		} catch (error) {
+			console.error(
+				'REGISTRY: error creating register request transaction',
+				error
+			);
+		}
+	}
+	async receiveUpdateSuccessTransaction(blk, tx) {
+		try {
+			let txmsg = tx.returnMessage();
+			if (!txmsg) {
+				throw Error('txmsg is invalid');
+			}
+			if (tx.from[0].publicKey == this.registry_publickey) {
+				try {
+					let publickey = tx.to[0].publicKey;
+					let identifier = txmsg.identifier;
+					let bio = txmsg.bio;
+					let photo = txmsg.photo;
+					let data = txmsg.data;
+					let signedMessage = txmsg.signedMessage;
+					let signature = txmsg.signature;
+					let bid = txmsg.bid;
+					let bsh = txmsg.bsh;
+					let unixtime = txmsg.unixtime;
+					let lock_block = txmsg.lock_block;
+					let signer = txmsg.signer;
+					let lc = 1;
+
+					if (
+						this.app.crypto.verifyMessage(
+							signedMessage,
+							signature,
+							this.registry_publickey
+						)
+					) {
+						if (this.publicKey != this.registry_publickey) {
+							if (!this.app.BROWSER) {
+								let res = await this.updateRecord(
+									identifier,
+									bio,
+									photo,
+									data
+								);
+							}
+
+							console.log(
+								'receiving register success transaction'
+							);
+							if (tx.isTo(this.publicKey)) {
+								this.app.keychain.addKey(tx.to[0].publicKey, {
+									identifier: identifier,
+									watched: true,
+									block_id: blk.id,
+									block_hash: blk.hash,
+									lc: 1,
+									profile: { bio, photo, data }
+								});
+
+								console.info('***********************');
+								console.info(
+									'verification success for : ' + identifier
+								);
+								console.info('***********************');
+
+								this.app.browser.updateAddressHTML(
+									tx.to[0].publicKey,
+									identifier
+								);
+								this.app.connection.emit(
+									'update_identifier',
+									tx.to[0].publicKey
+								);
+							}
+						}
+					}
+				} catch (err) {
+					console.error(
+						'ERROR verifying username registration message: ',
+						err
+					);
+				}
+			}
+		} catch (error) {
+			console.error(
+				'Registry: Error receiving update success transaction'
 			);
 		}
 	}
