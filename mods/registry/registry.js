@@ -548,7 +548,6 @@ class Registry extends ModTemplate {
 		// check database if needed
 		//
 		if (keys.length > 0) {
-			// Assuming `publickey` is a unique identifier in the `records` table
 			const where_statement = `r.publickey IN ("${keys.join('","')}")`;
 			const sql = `SELECT r.*, p.bio, p.photo, p.profile_data 
                          FROM records r
