@@ -1029,6 +1029,12 @@ class Chat extends ModTemplate {
 			invited_by: inviter,
 		};
 
+		//just to make sure those txs go through
+		newtx.addTo(group.admin);
+		if (group.admin !== inviter){
+			newtx.addTo(inviter);
+		}
+
 		await newtx.sign();
 
 		await this.app.network.propagateTransaction(newtx);
@@ -1079,11 +1085,9 @@ class Chat extends ModTemplate {
 
 			this.app.connection.emit('chat-popup-render-request', group);
 
-			//if (group.member_ids[this.publicKey] == 'admin') {
 			this.sendUpdateGroupTransaction(group, new_member);
-			//}
 
-			if (group.member_ids[this.publicKey] == 'admin') {
+			if (tx.isTo(this.publicKey)) {
 				siteMessage(`${this.app.keychain.returnUsername(new_member)} joined ${group.name}`, 3000);
 			}
 		}
@@ -1113,6 +1117,8 @@ class Chat extends ModTemplate {
 		if (target) {
 			console.log(`Sending ${group.txs.length} last messages to ${target}`);
 			newtx.msg.chat_history = group.txs;
+
+			newtx.addTo(target);
 		}
 
 		await newtx.sign();
@@ -1140,7 +1146,22 @@ class Chat extends ModTemplate {
 			let sender = tx.from[0].publicKey;
 
 			if (group.member_ids[sender] !== 'admin') {
-				console.log('Non-admin attempting to change the group!');
+				if (tx.isTo(this.publicKey)){
+					console.log('Accepting info from other group members');
+					for (let i in txmsg.member_ids) {
+						group.member_ids[i] = txmsg.member_ids[i];
+					}
+					for (let i in group.member_ids){
+						if (group.member_ids[i] !== -1){
+							if (!group.members.includes(i)){
+								group.members.push(i);
+							}
+						}
+					}
+
+				}else{
+					console.log('Non-admin attempting to change the group!');					
+				}
 				return;
 			}
 
