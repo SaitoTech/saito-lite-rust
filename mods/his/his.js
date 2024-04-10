@@ -21726,8 +21726,8 @@ this.updateLog(`###############`);
 
 
 if (this.game.options.scenario != "is_testing") {
-//	  this.game.queue.push("spring_deployment_phase");
-//	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
+	  this.game.queue.push("spring_deployment_phase");
+	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
 }
 
 
@@ -21766,8 +21766,6 @@ if (this.game.options.scenario != "is_testing") {
 		if (this.game.state.round > 1) {
   	          this.game.queue.push("card_draw_phase");
 		}
-
-
 
 		if (this.game.players.length == 2) {
 	          this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
@@ -32367,20 +32365,23 @@ if (this.game.state.round == 2) {
 	        // war in persia
 	        //
                 if (this.game.state.events.war_in_persia == 1 && f === "ottoman") {
+		  this.updateLog("Ottomans penalized -1 card for War in Persia");
 		  cardnum--;
 	        }
 
 	        //
 	        // war in egypt
 	        //
-                if (this.game.state.events.war_in_egypt == 1 && f === "ottoman") {
+                if (this.game.state.events.revolt_in_egypt == 1 && f === "ottoman") {
+		  this.updateLog("Ottomans penalized -1 card for Revolt in Egypt");
 		  cardnum--;
 	        }
 
 	        //
 	        // war in egypt
 	        //
-                if (this.game.state.events.war_in_ireland == 1 && f === "england") {
+                if (this.game.state.events.revolt_in_ireland == 1 && f === "england") {
+		  this.updateLog("Ottomans penalized -1 card for Revolt in Ireland");
 		  cardnum--;
 	        }
 
