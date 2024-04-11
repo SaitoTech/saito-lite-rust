@@ -12,5 +12,3 @@ CREATE TABLE IF NOT EXISTS records (
   UNIQUE (identifier),
   PRIMARY KEY(id ASC)
 );
-
-
