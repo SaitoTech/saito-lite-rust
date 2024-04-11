@@ -1083,11 +1083,11 @@ class Browser {
 		read_as_array_buffer = false
 	) {
 		const hidden_upload_form = `
-      <div id="uploader_${id}" class="saito-file-uploader" style="display:none">
+      <form id="uploader_${id}" class="saito-file-uploader" style="display:none">
         <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
         <input type="file" id="hidden_file_element_${id}" multiple accept="*" class="treated hidden_file_element_${id}">
         <label class="button" class="hidden_file_element_button" id="hidden_file_element_button_${id}" for="hidden_file_element_${id}">Select some files</label>
-      </div>
+      </form>
     `;
 
 		if (!document.getElementById(`uploader_${id}`)) {
