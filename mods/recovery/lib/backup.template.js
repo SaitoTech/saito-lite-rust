@@ -3,12 +3,12 @@ module.exports = BackupTemplate = (identifier, newIdentifier) => {
 	if (identifier) {
 		if (identifier.indexOf('@saito') == -1) {
 			txt =
-				'<span style=\'color:var(--saito-secondary);\'>' +
+				"<span style='color:var(--saito-secondary);'>" +
 				identifier +
 				'@saito</span>';
 		} else {
 			txt =
-				'<span class=\'pending_registration\' style=\'color:var(--saito-secondary);\'>' +
+				"<span class='pending_registration' style='color:var(--saito-secondary);'>" +
 				identifier +
 				'</span>';
 		}
@@ -36,7 +36,7 @@ module.exports = BackupTemplate = (identifier, newIdentifier) => {
           <button type="submit" class="saito-button-primary fat saito-overlay-form-submit" id="saito-overlay-submit">Encrypt & Upload</button>
 	      </div>
         <button type="submit" class="saito-button-primary fat saito-overlay-form-cancel" id="saito-overlay-cancel">No Thanks</button>
-
+		<div class="saito-overlay-form-alt-opt" id="update-profile">Update Profile</div>
       </div>
     </form>
   `;

@@ -88,7 +88,7 @@ class Browser {
 				//
 				// Polyfill for other browsers...
 				//
-			 	if (typeof document.msHidden !== 'undefined') {
+				if (typeof document.msHidden !== 'undefined') {
 					this.hidden_tab_property = 'msHidden';
 					this.tab_event_name = 'msvisibilitychange';
 				} else if (typeof document.webkitHidden !== 'undefined') {
@@ -162,8 +162,8 @@ class Browser {
 							if (this.title_interval) {
 								clearInterval(this.title_interval);
 								this.title_interval = null;
-								if (this.original_title){
-									document.title = this.original_title;	
+								if (this.original_title) {
+									document.title = this.original_title;
 								}
 							}
 						}
@@ -582,8 +582,8 @@ class Browser {
 		}
 	}
 
-	createTabNotification(message1, message2){
-		if (this.app.BROWSER == 0 || this.active_tab){
+	createTabNotification(message1, message2) {
+		if (this.app.BROWSER == 0 || this.active_tab) {
 			return;
 		}
 
@@ -741,7 +741,7 @@ class Browser {
 			let obj = document.getElementById(id);
 			if (obj) {
 				this.app.browser.addElementToDom(html, obj);
-			}else{
+			} else {
 				console.warn("ID not found (addelementafterid)");
 			}
 		}
@@ -1083,11 +1083,11 @@ class Browser {
 		read_as_array_buffer = false
 	) {
 		const hidden_upload_form = `
-      <form id="uploader_${id}" class="saito-file-uploader" style="display:none">
+      <div id="uploader_${id}" class="saito-file-uploader" style="display:none">
         <p>Upload multiple files with the file dialog or by dragging and dropping images onto the dashed region</p>
         <input type="file" id="hidden_file_element_${id}" multiple accept="*" class="treated hidden_file_element_${id}">
         <label class="button" class="hidden_file_element_button" id="hidden_file_element_button_${id}" for="hidden_file_element_${id}">Select some files</label>
-      </form>
+      </div>
     `;
 
 		if (!document.getElementById(`uploader_${id}`)) {
@@ -1227,7 +1227,7 @@ class Browser {
 			return;
 		}
 
-		if (!mycallback){
+		if (!mycallback) {
 			console.error("no callback!");
 			return;
 		}
@@ -1624,7 +1624,7 @@ class Browser {
 				dy = evt.screenY - y;
 				x = evt.screenX;
 				y = evt.screenY;
-				
+
 				if (direction == 'horizontal') {
 					wd += dx;
 					target.style.width = wd + 'px';
@@ -1652,7 +1652,7 @@ class Browser {
 			}
 		};
 	}
-	
+
 	returnAddressHTML(key) {
 		return `<div class="saito-address" data-id="${key}">${this.app.keychain.returnIdentifierByPublicKey(
 			key,
@@ -1980,7 +1980,7 @@ class Browser {
 	// This function should make strings friendly to put INSIDE an html tag
 	// escaping special characters like & < > "
 	//
-	escapeHTML(text){
+	escapeHTML(text) {
 		return sanitizer.escapeAttrib(text);
 	}
 
@@ -2444,7 +2444,7 @@ class Browser {
 			} else {
 				div.textContent = user.publicKey
 			}
-			
+
 
 			parentDiv.appendChild(div);
 			parentDiv.onclick = setItem;

@@ -50,6 +50,8 @@ class Registry extends ModTemplate {
 		//
 		this.local_dev = 1;
 
+		this.styles = ['/saito/saito.css', '/registry/style.css'];
+
 		//
 		// EVENTS
 		//
@@ -179,11 +181,19 @@ class Registry extends ModTemplate {
 				console.log('Registry public key: ' + this.registry_publickey);
 			}
 		}
+
+		this.render();
 	}
 
 	//
 	// let people know we have a registry
 	//
+	async render() {
+		if (!this.app.BROWSER) {
+			return;
+		}
+		await super.render();
+	}
 	returnServices() {
 		let services = [];
 		//

@@ -1,0 +1,10 @@
+#uploaded-image {
+	width: 100%;
+	height: auto;
+	object-fit: cover;
+	position: absolute;
+	height: 12rem;
+	left: 0;
+	bottom: 0;
+	padding: 1rem;
+}

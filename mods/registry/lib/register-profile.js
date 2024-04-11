@@ -25,20 +25,28 @@ class RegisterUsername {
 
 	attachEvents() {
 		document.querySelector('.saito-overlay-form-input').select();
-		document.querySelector('.saito-overlay-form-alt-opt').onclick = (e) => {
+		document.querySelector(
+			'.saito-overlay-form-alt-opt#loginOrRecover'
+		).onclick = (e) => {
 			this.overlay.remove();
 			this.app.connection.emit('recovery-login-overlay-render-request');
 			return;
 		};
 
-		// document.querySelector('#upload-image').onclick = () => {
-		// 	this.app.browser.addDragAndDropFileUploadToElement(
-		// 		'saito-overlay-form',
-		// 		() => {
-		// 			console.log('handling drop');
-		// 		}
-		// 	);
-		// };
+		document.querySelector('#upload-image').onclick = () => {
+			this.app.browser.addDragAndDropFileUploadToElement(
+				'image-uploader',
+				(result) => {
+					console.log(result);
+					document.querySelector('#uploaded-image').src = result;
+
+					console.log('handling drop');
+				}
+			);
+
+			const profilerUploader = document.querySelector('#image-uploader');
+			profilerUploader.style.display = 'block';
+		};
 
 		document.querySelector('.saito-overlay-form-submit').onclick = async (
 			e
@@ -52,7 +60,6 @@ class RegisterUsername {
 				'.saito-overlay-form-textarea'
 			).value;
 
-			console.log(bio, 'this is the bio');
 			if (identifier) {
 				if (identifier.indexOf('@') > -1) {
 					identifier = identifier.substring(
@@ -64,7 +71,9 @@ class RegisterUsername {
 				try {
 					document.querySelector(
 						'.saito-overlay-form-header-title'
-					).innerHTML = 'Registering name...';
+					).innerHTML = `${
+						this.mode === 'update' ? 'Updating' : 'Registering'
+					} profile...`;
 					document
 						.querySelector('.saito-overlay-form-header-title')
 						.classList.add('saito-cached-loader', 'loading');

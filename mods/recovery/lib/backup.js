@@ -46,6 +46,13 @@ class Backup {
 		};
 
 		document.querySelector(
+			'.saito-overlay-form-alt-opt#update-profile'
+		).onclick = (e) => {
+			this.modal_overlay.remove();
+			this.app.connection.emit('update-profile');
+		};
+
+		document.querySelector(
 			'#backup-template .saito-overlay-form-submit'
 		).onclick = (e) => {
 			e.preventDefault();
