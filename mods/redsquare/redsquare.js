@@ -1374,7 +1374,7 @@ class RedSquare extends ModTemplate {
           should_rerender = true;
         }
 
-        if (t.isRendered()){
+        if (this.browser_active && t.isRendered()){
           t.rerenderControls(should_rerender);          
         }
       }
@@ -1812,7 +1812,7 @@ class RedSquare extends ModTemplate {
 
     if (retweeted_tweet?.tx) {
       await this.incrementRetweets(retweeted_tweet.tx, tx);
-      if (retweeted_tweet.isRendered()){
+      if (this.browser_active && retweeted_tweet.isRendered()){
         retweeted_tweet.rerenderControls(true);  
       }
     } else {
