@@ -1,7 +1,6 @@
 const JSON = require('json-bigint');
 const ArcadeMainTemplate = require('./main.template');
 const ArcadeInitializer = require('./initializer');
-const CentralPanel = require('../overlays/game-selector.template.js');
 
 class ArcadeMain {
 	constructor(app, mod, container = '') {
@@ -14,7 +13,7 @@ class ArcadeMain {
 		// load init page
 		//
 		app.connection.on('arcade-game-initialize-render-request', (game_id) => {
-			document.querySelector('.arcade-central-panel').innerHTML = '';
+			document.querySelector('.arcade-main').innerHTML = '';
 
 			if (document.getElementById('saito-container')) {
 				document.getElementById('saito-container').scrollTop = 0;
@@ -23,7 +22,7 @@ class ArcadeMain {
 			let initializer = new ArcadeInitializer(
 				this.app,
 				this.mod,
-				'.arcade-central-panel'
+				'.arcade-main'
 			);
 
 			this.mod.is_game_initializing = true;
@@ -40,17 +39,15 @@ class ArcadeMain {
 	async render() {
 		if (document.querySelector('.saito-container')) {
 			this.app.browser.replaceElementBySelector(
-				ArcadeMainTemplate(),
+				ArcadeMainTemplate(this.app, this.mod),
 				'.saito-container'
 			);
 		} else {
 			this.app.browser.addElementToSelector(
-				ArcadeMainTemplate(),
+				ArcadeMainTemplate(this.app, this.mod),
 				this.container
 			);
 		}
-
-		this.app.browser.addElementToId(CentralPanel(this.app, this.mod), "arcade-central-panel");
 
 		//
 		// invite manager
