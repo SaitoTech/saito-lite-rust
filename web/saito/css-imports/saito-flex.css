@@ -1,3 +1,17 @@
+
+.saito-flex {
+    display: flex;
+    align-items: center;
+}
+
+.saito-flex > * {
+    /* margin-right: 1rem; */
+}
+
+.saito-flex > *:last-child {
+    margin-right: 0;
+}
+
 .saito-img-flex {
     /*--image-height: 200px;*/
     display: flex;

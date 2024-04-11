@@ -195,6 +195,21 @@
     gap: 1rem;
 }
 
+
+.saito-overlay-form .saito-overlay-form-textarea {
+    width: 100%;
+	padding: 1rem 1.5rem;
+	cursor: text;
+	line-height: 2rem;
+	outline: none;
+	overflow-y: auto;
+	word-break: break-word;
+	min-height: 4.5rem;
+	height: 15rem;
+    font-size: 2.2rem;
+    margin: 1.25rem 0;
+
+}
 .saito-overlay-form textarea, .saito-overlay-form input {
   border: var(--border-thickness-overlay-input-area) solid var(--border-color-overlay-input-area);
 }

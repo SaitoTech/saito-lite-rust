@@ -86,8 +86,14 @@ class SettingsAppspace {
 			if (document.getElementById('register-identifier-btn')) {
 				document.getElementById('register-identifier-btn').onclick =
 					function (e) {
-						app.connection.emit('register-username-or-login');
+						app.connection.emit('register-profile-or-login');
 					};
+			}
+
+			if (document.getElementById('edit-profile')) {
+				document.getElementById('edit-profile').onclick = function (e) {
+					app.connection.emit('update-profile');
+				};
 			}
 
 			if (document.getElementById('trigger-appstore-btn')) {

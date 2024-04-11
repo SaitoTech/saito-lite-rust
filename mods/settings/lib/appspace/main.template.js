@@ -24,21 +24,21 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 
 			let CHECKED = app.options.modules[i].active ? 'CHECKED' : '';
 
-      // filter out core modules  
-      if (!mod || mod?.class !== 'utility') {
-  			modules_html += `
+			// filter out core modules
+			if (!mod || mod?.class !== 'utility') {
+				modules_html += `
         <div class="settings-appspace-app">
             <div class="saito-switch">
               <input type="checkbox"  id="${i}" class="modules_mods_checkbox" name="modules_mods_${i}" ${CHECKED}>
             </div>
             <div id="${shortName}" class="settings-appspace-module settings-appspace-link">${fullName}</div>`;
 
-        if (mod?.hasSettings()){
-          modules_html += `<i class="fas fa-cog"></i>`
-        }
+				if (mod?.hasSettings()) {
+					modules_html += `<i class="fas fa-cog"></i>`;
+				}
 
-        modules_html += "</div>";
-      }
+				modules_html += '</div>';
+			}
 		}
 	} catch (err) {
 		console.error(err);
@@ -63,8 +63,15 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
         <h6>Wallet</h6>
           <div class="settings-appspace-user-details">
             <div>Username:</div>
+            <div class="pubkey-containter">
             ${identifier_registered}
-      
+            ${
+				key?.identifier
+					? `<div>    <i class="fa-regular fa-pen-to-square" id="edit-profile"></i></div>`
+					: `<div> </div>`
+			}
+            </div>
+  
             <div>Public Key:</div>
             <div class="pubkey-containter" data-id="${publicKey}">
               <div class="profile-public-key">${publicKey}</div>
@@ -73,7 +80,9 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
       
             <div>Private Key:</div>
             <div class="pubkey-containter" data-id="${main.privateKey}">
-              <div class="profile-public-key saito-password">${main.privateKey}</div>
+              <div class="profile-public-key saito-password">${
+					main.privateKey
+				}</div>
               <i class="fas fa-copy" id="copy-private-key"></i>
             </div>
           </div>

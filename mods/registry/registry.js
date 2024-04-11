@@ -1,5 +1,5 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
-const RegisterUsernameOverlay = require('./lib/register-username');
+const RegisterUsernameOverlay = require('./lib/register-profile');
 const PeerService = require('saito-js/lib/peer_service').default;
 
 class Registry extends ModTemplate {
@@ -137,21 +137,27 @@ class Registry extends ModTemplate {
 			}
 		);
 
-		this.app.connection.on('register-username-or-login', (obj) => {
+		this.app.connection.on('register-profile-or-login', (obj) => {
 			let key = this.app.keychain.returnKey(this.publicKey);
 			this.register_username_overlay = new RegisterUsernameOverlay(
 				this.app,
 				this
 			);
-			// if (key?.has_registered_username) {
-			//  return;
-			// }
-			// if (!this.register_username_overlay) {
-			//  this.register_username_overlay = new RegisterUsernameOverlay(
-			//      this.app,
-			//      this
-			//  );
-			// }
+
+			if (obj?.success_callback) {
+				this.register_username_overlay.callback = obj.success_callback;
+			}
+			this.register_username_overlay.render(obj?.msg);
+		});
+
+		this.app.connection.on('update-profile', (obj) => {
+			let key = this.app.keychain.returnKey(this.publicKey);
+			this.register_username_overlay = new RegisterUsernameOverlay(
+				this.app,
+				this,
+				'update'
+			);
+
 			if (obj?.success_callback) {
 				this.register_username_overlay.callback = obj.success_callback;
 			}
@@ -1001,6 +1007,7 @@ class Registry extends ModTemplate {
 	}
 
 	async receiveRegisterSuccessTransaction(blk, tx) {
+		console.log('receiving register success');
 		try {
 			let txmsg = tx.returnMessage();
 			if (!txmsg) {
