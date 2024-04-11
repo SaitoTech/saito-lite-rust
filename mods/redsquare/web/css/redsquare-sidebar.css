@@ -3,12 +3,29 @@
 	display: none;
 }
 
+.redsquare-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+
+.redsquare-menu .saito-button-primary{
+	border: unset;
+	box-shadow: 0px 2px 4px var(--saito-bubble-shadow);
+}
+
 @media screen and (max-width: 1200px) {
+	.saito-sidebar.left .saito-menu > ul {
+		padding: 2.5px 0;
+	}
+
 	.saito-sidebar.left .saito-menu > ul > li{
 		padding: unset;
 		width: 5rem;
 		height: 5rem;
 		justify-content: center;
+		margin: auto;
 	}
 
 	.saito-sidebar.left .saito-menu > ul > li > i {
@@ -28,6 +45,14 @@
 
 	.redsquare-menu .saito-button-primary{
 		min-width: unset;
+		height: 5.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.redsquare-menu .saito-button-primary i::before{
+		-webkit-text-stroke: var(--saito-white) 2px;
 	}
 
 	.redsquare-menu .saito-button-primary span {
