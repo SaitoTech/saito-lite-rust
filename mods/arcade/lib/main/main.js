@@ -50,52 +50,82 @@ class ArcadeMain {
 		}
 
 		//
-		// invite manager
+		// invites box modules
 		//
-		await this.app.modules.renderInto('.arcade-invites-box');
-
-		//
-		// appspace modules
-		//
-		await this.app.modules.renderInto('.arcade-leagues');
+		await this.app.modules.renderInto('.arcade-sidebar');
 
 		this.attachEvents();
 	}
 
 	attachEvents() {
-		/*
 
-		const scrollableElement = document.querySelector('.saito-container');
-		const sidebar = document.querySelector('.saito-sidebar.right');
-		let scrollTop = 0;
-		let stop = 0;
+		let gameListContainerAlt = document.querySelector(".arcade-main");
+		let gameListContainer = document.querySelector(".arcade-game-filter-list")
 
-		scrollableElement.addEventListener('scroll', (e) => {
-			if (window.innerHeight - 150 < sidebar.clientHeight) {
-				if (scrollTop < scrollableElement.scrollTop) {
-					stop =
-						window.innerHeight -
-						sidebar.clientHeight +
-						scrollableElement.scrollTop;
-					if (
-						scrollableElement.scrollTop + window.innerHeight >
-						sidebar.clientHeight
-					) {
-						sidebar.style.top = stop + 'px';
-					}
-				} else {
-					if (stop > scrollableElement.scrollTop) {
-						stop = scrollableElement.scrollTop;
-						sidebar.style.top = stop + 'px';
-					}
-				}
-			} else {
-				stop = scrollableElement.scrollTop;
-				sidebar.style.top = stop + 'px';
-			}
-			scrollTop = scrollableElement.scrollTop;
+		const intersectionObserver = new IntersectionObserver((entries) => {
+		  entries.forEach(entry => {
+			  if (entry.intersectionRatio <= 0) {
+			  	if (entry.target.id == "top-of-game-list"){
+			  		gameListContainer.classList.add("can-scroll-up");
+			  	}else{
+			  		gameListContainerAlt.classList.add("can-scroll-down");
+			  	}
+			  }else{
+			  	if (entry.target.id == "top-of-game-list"){
+			  		gameListContainer.classList.remove("can-scroll-up");
+			  	}else{
+			  		gameListContainerAlt.classList.remove("can-scroll-down");
+			  	}
+			  }
+		  });
 		});
-		*/
+		// start observing
+		intersectionObserver.observe(document.getElementById("top-of-game-list"));
+		intersectionObserver.observe(document.getElementById("bottom-of-game-list"));
+
+
+		Array.from(
+			document.querySelectorAll('.arcade-game-selector-game .launch-league')
+		).forEach((game) => {
+			game.onclick = (e) => {
+				e.stopPropagation();
+				let modname = e.currentTarget.getAttribute('data-id');
+
+				this.app.browser.logMatomoEvent(
+					'LeagueOverlay',
+					'GameSelector',
+					modname
+				);
+
+				this.app.connection.emit(
+						'league-overlay-render-request',
+						modname
+				);
+
+			};
+		});
+
+		Array.from(
+			document.querySelectorAll('.arcade-game-selector-game .launch-wizard')
+		).forEach((game) => {
+			game.onclick = (e) => {
+				e.stopPropagation();
+				let modname = e.currentTarget.getAttribute('data-id');
+
+				this.app.browser.logMatomoEvent(
+					'GameWizard',
+					'GameSelector',
+					modname
+				);
+
+				this.app.connection.emit(
+						'arcade-launch-game-wizard',
+						{game: modname}
+				);
+
+			};
+		});
+
 	}
 }
 

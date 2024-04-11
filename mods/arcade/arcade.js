@@ -396,6 +396,10 @@ class Arcade extends ModTemplate {
 		if (qs === '.redsquare-sidebar') {
 			return true;
 		}
+		if (qs === '.arcade-sidebar') {
+			return true;
+		}
+
 		return qs == '.league-overlay-games-list';
 	}
 
@@ -403,14 +407,14 @@ class Arcade extends ModTemplate {
 	// render components into other modules on-request
 	//
 	async renderInto(qs) {
-		if (qs == '.redsquare-sidebar') {
+		if (qs == '.redsquare-sidebar' || qs == ".arcade-sidebar") {
 			if (!this.renderIntos[qs]) {
 				this.styles = ['/arcade/style.css'];
 				this.renderIntos[qs] = [];
 				let obj = new InviteManager(
 					this.app,
 					this,
-					'.redsquare-sidebar'
+					qs
 				);
 				obj.type = 'short';
 				this.renderIntos[qs].push(obj);

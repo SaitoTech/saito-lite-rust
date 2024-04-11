@@ -118,6 +118,14 @@ class League extends ModTemplate {
 			};
 		}
 
+		if (type == "leagues-for-arcade"){
+			this.styles = ['/league/style.css'];
+			this.attachStyleSheets();
+			return {
+				leagues: this.leagues,
+			};
+		}
+
 		return super.respondTo(type, obj);
 	}
 
@@ -248,14 +256,11 @@ class League extends ModTemplate {
 		if (qs == '.redsquare-sidebar') {
 			return true;
 		}
-		if (qs == '.arcade-leagues') {
-			return true;
-		}
 		return false;
 	}
 
 	renderInto(qs) {
-		if (qs == '.redsquare-sidebar' || qs == '.arcade-leagues') {
+		if (qs == '.redsquare-sidebar') {
 			if (!this.renderIntos[qs]) {
 				this.renderIntos[qs] = [];
 				this.renderIntos[qs].push(

@@ -1,8 +1,13 @@
+:root{
+	--saito-width: 1500px;
+}
 
 .arcade-container.saito-container{
 	grid-template-columns: auto 30rem;
+	grid-template-rows: minmax(5px, 1fr);
 	padding: 0 calc((100vw - var(--saito-width)) / 2);
-	column-gap: unset;
+	padding-left: calc((100vw - var(--saito-width)) / 4);
+	overflow: hidden;
 }
 
 /* Filter buttons */
@@ -11,13 +16,15 @@
 	width: 100%;
 	align-items: center;
 	justify-content: flex-end;
-	gap: 2rem;
+	gap: 1rem;
+	position: relative;
 }
 
 .game-filter-item{
 	padding: 1rem;
-	border-radius: 1.5rem;
+	border-radius: 1rem;
 	border: 1px solid;
+	cursor: pointer;
 }
 
 /* right sidebar*/ 
@@ -29,12 +36,18 @@
 
 /* main panel */ 
 .arcade-main {
-	display: flex;
+	position: relative;
+	display: grid;
 	flex-direction: column;
 	row-gap: 1rem;
-	padding-top: 2rem;
+	padding: 1rem;
+	height: 100%;
+	grid-template-rows: min-content minmax(0, 1fr);
 }
 
+.arcade-scrollable-panel-container{
+	height: 100%;
+}
 
 .arcade-initializer {
 	text-align: center;
@@ -63,18 +76,78 @@
 
 .arcade-central-panel {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 	grid-gap: 1rem;
+	position: relative;
 }
 
 
+
+/******************************************
+ *  OVER WRITE Game Selector Overlay code
+ *****************************************/
+.arcade-central-panel .arcade-game-selector-game{
+	box-shadow: 0px 2px 4px var(--saito-bubble-shadow);
+	border-radius: 0.5rem;
+}
+
+.arcade-game-selector-game-image img{
+	border-radius: 0.5rem;
+}
+
+.arcade-central-panel .arcade-game-selector-game-title{
+	height: 5rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 1.5rem;
+	border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.arcade-central-panel .arcade-game-selector-game-title span{
+	font-size: 2.4rem;
+	text-transform: unset;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	flex: 1;
+}
+
+.game-selector-card-buttons {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 5rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+}
+
+.game-selector-card-buttons .saito-button-primary {
+	min-width: 5rem;
+}
+
+.arcade-central-panel .arcade-game-selector-game:hover{
+	transform: none;
+	border-color: var(--saito-font-color-heavy);
+}
 
 /*************************************
  * Override saito-page-layout 
  * to make arcade better on mobile
 **************************************/
+@media screen and (max-width: 1200px){
+	.saito-floating-plus-btn{
+		display: none;
+	}
+}
+
 
 @media screen and (max-width: 900px) {
+	.saito-container.arcade-container{
+		grid-template-columns: 1fr;
+	}
+
 	.arcade-container .saito-sidebar.right {
 		display: block;
 		visibility: visible;
@@ -92,6 +165,15 @@
 	.arcade-container .saito-sidebar.right .saito-table-body {
 		grid-gap: 0.8rem;
 		font-size: 1.6rem;
+	}
+
+	.arcade-container .saito-sidebar.right .game-slider, 
+	.arcade-container .saito-sidebar.right .chat-manager{
+		display: none;
+	}
+
+	.arcade-central-panel {
+		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 	}
 }
 
@@ -111,19 +193,32 @@
 /**************************
  * Fancy scrolling
 **************************/
-.arcade-game-list-container.can-scroll-down::before {
+
+#top-of-game-list{
+	position: absolute;
+	top: 5rem;
+}
+
+#bottom-of-game-list{
+	position: relative;
+	bottom: 0;
+}
+
+
+
+.can-scroll-down::before {
 	content: " ";
 	position: absolute;
 	bottom: 0;
 	left: 0;
 	width: 100%;
-	height: 6rem;
+	height: 8rem;
 	z-index: 5;
 	pointer-events: none;
     background: linear-gradient(180deg, transparent, var(--saito-background-color));
 } 
 
-.arcade-game-list-container.can-scroll-down:hover::after {
+.can-scroll-down:hover::after {
   font-family: FontAwesome;
   content: "\f0d7";
   position: absolute;
@@ -139,24 +234,24 @@
 }
 
 /*  "\f0d8"  */
-.arcade-menu.can-scroll-up::before {
+.can-scroll-up::before {
 	content: " ";
 	position: absolute;
-	bottom: top;
+	top: calc(100% + 1rem);
 	left: 0;
 	width: 100%;
-	height: 6rem;
+	height: 8rem;
 	z-index: 5;
 	pointer-events: none;
     background: linear-gradient(0deg, transparent, var(--saito-background-color));
 } 
 
-.arcade-menu.can-scroll-up:hover::after {
+.can-scroll-up:hover::after {
   font-family: FontAwesome;
   content: "\f0d8";
   position: absolute;
-  top: 4rem;
   color: var(--border-color-general-dividers-dark);
+  top: calc(100% + 1rem);
   font-size: 4rem;
   z-index: 999;
   text-align: center;
