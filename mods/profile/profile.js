@@ -2,12 +2,12 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const RegisterUsernameOverlay = require('./lib/register-profile');
 const PeerService = require('saito-js/lib/peer_service').default;
 
-class Registry extends ModTemplate {
+class Profile extends ModTemplate {
 	constructor(app) {
 		super(app);
 
 		this.app = app;
-		this.name = 'Registry';
+		this.name = 'Profile';
 		this.description = 'Saito DNS support';
 		this.categories = 'Core Utilities Messaging';
 		this.class = 'utility';
@@ -50,12 +50,12 @@ class Registry extends ModTemplate {
 		//
 		this.local_dev = 1;
 
-		this.styles = ['/saito/saito.css', '/registry/style.css'];
+		this.styles = ['/saito/saito.css', '/profile/style.css'];
 
 		//
 		// EVENTS
 		//
-		// Saito Registry module supports two main events, one that fetches identifiers from
+		// Saito Profile module supports two main events, one that fetches identifiers from
 		// the DNS service and then updates the DOM, and a second that starts the registration
 		// process by showing a popup. The first is the entry point for most applications.
 		//
@@ -98,7 +98,7 @@ class Registry extends ModTemplate {
 						//
 						// This callback is run in the browser
 						//
-						//console.log("REGISTRY: event triggered fetchManyProfiles callback");
+						//console.log("PROFILE: event triggered fetchManyProfiles callback");
 						Object.entries(answer).forEach(([key, value]) => {
 							console.log('key value', key, value);
 							if (value !== this.publicKey) {
@@ -178,7 +178,7 @@ class Registry extends ModTemplate {
 		if (this.app.BROWSER == 0) {
 			if (this.local_dev) {
 				this.registry_publickey = this.publicKey;
-				console.log('Registry public key: ' + this.registry_publickey);
+				console.log('Profile public key: ' + this.registry_publickey);
 			}
 		}
 
@@ -354,7 +354,7 @@ class Registry extends ModTemplate {
 			keys: keys
 		};
 
-		//console.log(`REGISTRY queryKeys from ${this.publicKey} to ${peer.publicKey}`);
+		//console.log(`PROFILE queryKeys from ${this.publicKey} to ${peer.publicKey}`);
 		return this.app.network.sendRequestAsTransaction(
 			'registry query',
 			data,
@@ -385,14 +385,14 @@ class Registry extends ModTemplate {
 				this.registry_publickey = peer.publicKey;
 			}
 
-			//console.log(`Registry connected: ${peer.publicKey} and/but using: ${this.registry_publickey}`);
+			//console.log(`Profile connected: ${peer.publicKey} and/but using: ${this.registry_publickey}`);
 
 			let myKey = app.keychain.returnKey(this.publicKey, true);
 			if (myKey?.identifier) {
 				let registry_self = this;
 				this.queryKeys(peer, [this.publicKey], function (profiles) {
 					console.log('profiles', profiles);
-					//console.log(`REGISTRY lookup ${myKey.identifier}: ${registry_self.publicKey} in ${peer.publicKey}, found: `, identifiers);
+					//console.log(`PROFILE lookup ${myKey.identifier}: ${registry_self.publicKey} in ${peer.publicKey}, found: `, identifiers);
 
 					for (let profile in profiles) {
 						console.log('profiles', profile);
@@ -401,14 +401,14 @@ class Registry extends ModTemplate {
 								profiles[profile].identifier !==
 								myKey.identifier
 							) {
-								console.log('REGISTRY: Identifier mismatch...');
+								console.log('PROFILE: Identifier mismatch...');
 								console.log(
-									`REGISTRY: Expecting ${myKey.identifier}, but Registry has ${profiles[key].identifier}`
+									`PROFILE: Expecting ${myKey.identifier}, but Profile has ${profiles[key].identifier}`
 								);
 
 								//Maybe we do an update here???
 							} else {
-								//console.log("REGISTRY: Identifier checks out");
+								//console.log("PROFILE: Identifier checks out");
 								//Identifier checks out!
 							}
 							return;
@@ -422,7 +422,7 @@ class Registry extends ModTemplate {
 					let identifier = myKey.identifier.split('@');
 					if (identifier.length !== 2) {
 						console.log(
-							'REGISTRY: Invalid identifier',
+							'PROFILE: Invalid identifier',
 							myKey.identifier
 						);
 						return;
@@ -442,12 +442,12 @@ class Registry extends ModTemplate {
 					);
 
 					console.log(
-						'REGISTRY: Attempting to register our name again'
+						'PROFILE: Attempting to register our name again'
 					);
 					//}
 				});
 			} else if (myKey.has_registered_username) {
-				console.log('REGISTRY: unset registering... status');
+				console.log('PROFILE: unset registering... status');
 				this.app.keychain.addKey(this.publicKey, {
 					has_registered_username: false
 				});
@@ -475,13 +475,13 @@ class Registry extends ModTemplate {
 		if (txmsg.request == 'registry query') {
 			if (txmsg.data.request === 'registry query') {
 				let keys = txmsg.data?.keys;
-				//console.log("REGISTRY query lookup: ", keys);
+				//console.log("PROFILE query lookup: ", keys);
 				return this.fetchProfilesFromDatabase(keys, mycallback);
 			}
 
 			if (txmsg.data.request === 'registry namecheck') {
 				let identifier = txmsg.data?.identifier;
-				//console.log("REGISTRY check if identifer is registered: ", identifier);
+				//console.log("PROFILE check if identifer is registered: ", identifier);
 				return this.checkIdentifierInDatabase(identifier, mycallback);
 			}
 		}
@@ -501,33 +501,33 @@ class Registry extends ModTemplate {
 	//
 	async onConfirmation(blk, tx, conf) {
 		let txmsg = tx.returnMessage();
-		if (txmsg.module !== 'Registry') {
+		if (txmsg.module !== 'Profile') {
 			return;
 		}
 		if (conf == 0) {
 			if (txmsg.request === 'register request') {
 				console.log(
-					`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
+					`PROFILE: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
 				);
 				this.receiveRegisterRequestTransaction(blk, tx);
 			}
 			if (txmsg.request === 'register success') {
 				// console.log(
-				// 	`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
+				// 	`PROFILE: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
 				// );
 				await this.receiveRegisterSuccessTransaction(blk, tx);
 			}
 
 			if (txmsg.request === 'update request') {
 				// console.log(
-				// 	`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
+				// 	`PROFILE: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
 				// );
 				await this.receiveUpdateRequestTransaction(blk, tx);
 			}
 
 			if (txmsg.request === 'update success') {
 				// console.log(
-				// 	`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
+				// 	`PROFILE: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
 				// );
 				await this.receiveUpdateSuccessTransaction(blk, tx);
 			}
@@ -603,7 +603,7 @@ class Registry extends ModTemplate {
 			}
 		}
 
-		//console.log("this REGISTRY found", found_keys, "but not", missing_keys);
+		//console.log("this PROFILE found", found_keys, "but not", missing_keys);
 
 		//
 		// Fallback because browsers don't automatically have DNS as a peer
@@ -635,7 +635,7 @@ class Registry extends ModTemplate {
 							}
 
 							if (mycallback) {
-								//console.log("REGISTRY: run nested DB callback on found keys", found_keys);
+								//console.log("PROFILE: run nested DB callback on found keys", found_keys);
 								mycallback(found_keys);
 								return 1;
 							}
@@ -645,7 +645,7 @@ class Registry extends ModTemplate {
 			}
 
 			if (!has_peer) {
-				console.log('REGISTRY: Not a peer with the central DNS');
+				console.log('PROFILE: Not a peer with the central DNS');
 			}
 
 			//No peer found...
@@ -654,7 +654,7 @@ class Registry extends ModTemplate {
 			//
 			// This is run by either the main service node or the proper registry node
 			//
-			//console.log("REGISTRY: run DB callback on found keys", found_keys);
+			//console.log("PROFILE: run DB callback on found keys", found_keys);
 			mycallback(found_keys);
 			return 1;
 		}
@@ -679,7 +679,7 @@ class Registry extends ModTemplate {
 			return 1;
 		} else {
 			await this.sendPeerDatabaseRequestWithFilter(
-				'Registry',
+				'Profile',
 				`SELECT * FROM records WHERE identifier = "${identifier}"`,
 				(res) => {
 					mycallback(res?.rows);
@@ -786,7 +786,7 @@ class Registry extends ModTemplate {
 
 			return recordRes?.changes;
 		} catch (error) {
-			console.error('Registry: error adding record', error);
+			console.error('Profile: error adding record', error);
 		}
 	}
 
@@ -852,7 +852,7 @@ class Registry extends ModTemplate {
 			// Return the number of records updated or inserted in the profiles table
 			return resProfiles?.changes;
 		} catch (error) {
-			console.error('Registry: error updating records', error);
+			console.error('Profile: error updating records', error);
 		}
 	}
 
@@ -895,7 +895,7 @@ class Registry extends ModTemplate {
 			}
 
 			// Set transaction details
-			newtx.msg.module = 'Registry';
+			newtx.msg.module = 'Profile';
 			newtx.msg.request = 'register request';
 			newtx.msg.identifier = identifier + domain;
 			newtx.msg.bio = bio;
@@ -910,7 +910,7 @@ class Registry extends ModTemplate {
 			return true;
 		} catch (error) {
 			console.error(
-				'Registry: Error creating Register Request Transaction.',
+				'Profile: Error creating Register Request Transaction.',
 				error
 			);
 			return false;
@@ -978,7 +978,7 @@ class Registry extends ModTemplate {
 			}
 		} catch (error) {
 			console.error(
-				'Registry: Error receiving register request transaction.',
+				'Profile: Error receiving register request transaction.',
 				error
 			);
 		}
@@ -989,7 +989,7 @@ class Registry extends ModTemplate {
 			let from = tx.from[0].publicKey;
 			let { identifier } = tx.returnMessage();
 			if (!from) {
-				throw Error('REGISTRY: NO "FROM" PUBLIC KEY FOUND');
+				throw Error('PROFILE: NO "FROM" PUBLIC KEY FOUND');
 			}
 			let request = 'register success';
 			let newtx =
@@ -1000,7 +1000,7 @@ class Registry extends ModTemplate {
 
 			newtx.msg = {
 				request,
-				module: 'Registry',
+				module: 'Profile',
 				identifier,
 				...obj
 			};
@@ -1010,7 +1010,7 @@ class Registry extends ModTemplate {
 			await this.app.network.propagateTransaction(newtx);
 		} catch (error) {
 			console.error(
-				'REGISTRY: error creating register request transaction',
+				'PROFILE: error creating register request transaction',
 				error
 			);
 		}
@@ -1103,7 +1103,7 @@ class Registry extends ModTemplate {
 			}
 		} catch (error) {
 			console.error(
-				'Registry: Error receiving register success transaction'
+				'Profile: Error receiving register success transaction'
 			);
 		}
 	}
@@ -1131,7 +1131,7 @@ class Registry extends ModTemplate {
 			}
 
 			// Set transaction details
-			newtx.msg.module = 'Registry';
+			newtx.msg.module = 'Profile';
 			newtx.msg.request = 'update request';
 			newtx.msg.identifier = identifier;
 			newtx.msg.bio = bio;
@@ -1146,7 +1146,7 @@ class Registry extends ModTemplate {
 			return true;
 		} catch (error) {
 			console.error(
-				'Registry: Error creating Update Request Transaction.',
+				'Profile: Error creating Update Request Transaction.',
 				error
 			);
 			return false;
@@ -1208,7 +1208,7 @@ class Registry extends ModTemplate {
 			}
 		} catch (error) {
 			console.error(
-				'Registry: Error receiving register request transaction.',
+				'Profile: Error receiving register request transaction.',
 				error
 			);
 		}
@@ -1219,7 +1219,7 @@ class Registry extends ModTemplate {
 			let from = tx.from[0].publicKey;
 			let { identifier } = tx.returnMessage();
 			if (!from) {
-				throw Error('REGISTRY: NO "FROM" PUBLIC KEY FOUND');
+				throw Error('PROFILE: NO "FROM" PUBLIC KEY FOUND');
 			}
 			let request = 'update success';
 			let newtx =
@@ -1230,7 +1230,7 @@ class Registry extends ModTemplate {
 
 			newtx.msg = {
 				request,
-				module: 'Registry',
+				module: 'Profile',
 				identifier,
 				...obj
 			};
@@ -1240,7 +1240,7 @@ class Registry extends ModTemplate {
 			await this.app.network.propagateTransaction(newtx);
 		} catch (error) {
 			console.error(
-				'REGISTRY: error creating register request transaction',
+				'PROFILE: error creating register request transaction',
 				error
 			);
 		}
@@ -1323,10 +1323,10 @@ class Registry extends ModTemplate {
 			}
 		} catch (error) {
 			console.error(
-				'Registry: Error receiving update success transaction'
+				'Profile: Error receiving update success transaction'
 			);
 		}
 	}
 }
 
-module.exports = Registry;
+module.exports = Profile;
