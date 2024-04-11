@@ -34,7 +34,7 @@ class Settings extends ModTemplate {
 		// If you have the settings page open and you trigger a name registration event
 		// it will deactivate the button so you cannot reregister
 		//
-		this.app.connection.on('update_identifier', (publickey) => {
+		this.app.connection.on('update_profile', (publickey) => {
 			if (publickey === this.publicKey) {
 				if (document.getElementById('register-identifier-btn')) {
 					let username = app.keychain.returnIdentifierByPublicKey(

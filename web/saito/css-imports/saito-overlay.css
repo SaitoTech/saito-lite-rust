@@ -214,24 +214,7 @@
   border: var(--border-thickness-overlay-input-area) solid var(--border-color-overlay-input-area);
 }
 
-.saito-panel {
-    background-color: var(--saito-background-color);
-    height: 20rem;
-    width: 40rem;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid;
-    font-size: 2rem;
-    border-radius: .5rem;
-  
 
-}
 
 @media screen and (max-width: 768px) {
     .saito-overlay-form-submitline {

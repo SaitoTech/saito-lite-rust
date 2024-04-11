@@ -36,6 +36,12 @@
   border-radius: var(--border-radius-profile-banner);
 }
 
+.saito-profile-banner {
+  width: 100%;
+  height: min(15rem, 12vh);
+  background-size: cover;
+}
+
 .saito-profile-identicon {
   border: var(--border-thickness-identicon-square-profile) solid var(--border-color-identicon-square-profile);
   width: 10rem;

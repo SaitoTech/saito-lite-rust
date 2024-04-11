@@ -3,11 +3,13 @@ module.exports = RegisterUsernameTemplate = (msg, key, mode = 'register') => {
 
 	let bio = '';
 	let photo = '';
-	let identifier = key?.identifier || '';
-	if (key.profile) {
-		bio = key.profile.bio;
-		photo = key.profile.photo;
+	const identifier = key?.identifier || '';
+
+	if (key?.profile) {
+		bio = key.profile.bio || '';
+		photo = key.profile.photo || '';
 	}
+
 	let disabled = identifier.length > 0 ? true : false;
 	console.log(disabled);
 	if (!msg) {
@@ -16,7 +18,7 @@ module.exports = RegisterUsernameTemplate = (msg, key, mode = 'register') => {
 	}
 	return `
 	<div style="position: relative;">
-	<div id="image-uploader" class="image-uploader saito-panel" style="display:none;">
+	<div id="image-uploader" class="image-uploader " style="display:none;">
 	Click to select or drag and drop to upload an image
 	<div>
 	</div>
@@ -38,8 +40,8 @@ module.exports = RegisterUsernameTemplate = (msg, key, mode = 'register') => {
 				<div class="saito-box-tab" id="photo-tab">
 				<i class="fa-regular fa-image"></i>
 				</div>
-				<p class="saito-overlay-form-text"> Upload Photo <img id="uploaded-image"/> </p>
-				
+				<p class="saito-overlay-form-text"> Upload Photo </p>
+				<img src="${photo}" id="uploaded-image"/>
 			  </div>
 			
 			  </div>

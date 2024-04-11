@@ -76,7 +76,7 @@ NOTE: This event fires whenever a wallet receives or spends SAITO over the block
 #### UPDATE IDENTIFIER
 
 ```javascript
-app.connection.on('update_identifier', (key) => {});
+app.connection.on('update_profile', (key) => {});
 ```
 
 key - reference to the updated Saito key object

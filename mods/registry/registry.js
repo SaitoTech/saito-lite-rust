@@ -451,7 +451,7 @@ class Registry extends ModTemplate {
 				this.app.keychain.addKey(this.publicKey, {
 					has_registered_username: false
 				});
-				this.app.connection.emit('update_identifier', this.publicKey);
+				this.app.connection.emit('update_profile', this.publicKey);
 			}
 		}
 	}
@@ -1088,7 +1088,7 @@ class Registry extends ModTemplate {
 									identifier
 								);
 								this.app.connection.emit(
-									'update_identifier',
+									'update_profile',
 									tx.to[0].publicKey
 								);
 							}
@@ -1308,7 +1308,7 @@ class Registry extends ModTemplate {
 									identifier
 								);
 								this.app.connection.emit(
-									'update_identifier',
+									'update_profile',
 									tx.to[0].publicKey
 								);
 							}
