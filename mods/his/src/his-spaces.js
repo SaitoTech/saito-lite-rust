@@ -60,6 +60,17 @@
       }
     }
   }
+  removeSiege(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    space.besieged = 0;
+    for (let key in space.units) {
+      for (let i = 0; i < space.units[key].length; i++) {
+        space.units[key][i].besieged = 0;
+        space.units[key][i].relief_force = 0;
+      }
+    }
+  }
+
   resetLockedTroops() {
     for (let space in this.game.spaces) {
       for (let f in this.game.spaces[space].units) {
@@ -73,16 +84,6 @@
   addUnrest(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.unrest = 1;
-  }
-
-  removeSiege(space) {
-    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    space.besieged = 0;
-    for (let key in space.units) {
-      for (let i = 0; i < space.units[key].length; i++) {
-        space.units[key][i].besieged = 0;
-      }
-    }
   }
 
   removeUnrest(space) {

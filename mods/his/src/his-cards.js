@@ -3777,6 +3777,8 @@ console.log("selected: " + spacekey);
 
 	his_self.displayVictoryTrack();
 
+	return 1;
+
       }
     }
     let sl_img = "cards/HIS-013.svg";
@@ -10309,7 +10311,7 @@ console.log("selected: " + spacekey);
       onEvent(his_self, faction) {
         his_self.game.state.conquests.push(faction);
 	his_self.game.state.events.smallpox = faction;
-	his_self.displayColony();
+	his_self.displayConquest();
         return 1;
       },
     }

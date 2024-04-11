@@ -2119,6 +2119,7 @@ if (this.game.state.events.cramner_active == 1) {
       this.updateStatusWithOptions(`${this.returnFactionName(faction)}: ${ops} ops remaining`, html, false);
       this.attachCardboxEvents(async (user_choice) => {      
 
+	his_self.updateStatus("acknowledge");
 	his_self.menu_overlay.hide();
 
         if (user_choice === "end_turn") {
@@ -2135,10 +2136,8 @@ if (this.game.state.events.cramner_active == 1) {
 	  // skip if only 1 ops
 	  //
 	  if (ops == 1) {
-
             menu[user_choice].fnct(this, this.game.player, faction, 1, 0);
             return;
-
 	  }
 
 	  let msg = "How many OPs to Spend: ";
@@ -2183,12 +2182,10 @@ if (this.game.state.events.cramner_active == 1) {
 	}
       });
 
-
       } // attach events to menu options
 
       this.menu_overlay.render(menu, this.game.player, faction, ops, attachEventsToMenuOptions);
       attachEventsToMenuOptions();
-
 
     }
   }

@@ -828,6 +828,9 @@
         if (faction == "england") {
           obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/English_Conquest.svg" />`;
         }
+	if (this.game.state.events.smallpox != "") {
+          obj.innerHTML += `<img class="army_tile" src="/his/img/Smallpox.svg" />`;
+	}
       }
     }
 
@@ -2329,7 +2332,6 @@ try {
       if (this.isSpaceBesieged(space)) {
         obj.innerHTML += `<img class="siege" src="/his/img/tiles/siege.png" />`;
       }
-
     });
 
   }
