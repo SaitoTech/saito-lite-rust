@@ -29,6 +29,23 @@ input[type="checkbox"].ignore_checkbox {
   position: relative;
 }
 
+.stake-input-error {
+  display: none;
+  color: red;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
 .game-crypto-transfer-manager-container .stake {
   background: none;
   border: none;
@@ -38,7 +55,7 @@ input[type="checkbox"].ignore_checkbox {
   padding: 1rem;
   font-size: 4rem;
   display: inline-block;
-  width: 18rem;
+  width: 100%;
 }
 
 .stake-input-container .crypto_msg {
