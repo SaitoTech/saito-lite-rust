@@ -2788,6 +2788,8 @@ return;
 
   playerReturnWinterUnits(faction) {
 
+    this.addMove("RESOLVE\t"+this.publicKey);
+
     let his_self = this;
     let capitals = this.returnCapitals(faction);
     let viable_capitals = [];
@@ -2821,9 +2823,9 @@ return;
         his_self.removeUnit(units_to_move[i].faction, units_to_move[i].spacekey, units_to_move[i].type);
         his_self.addMove("remove_unit\tland\t"+units_to_move[i].faction+"\t"+units_to_move[i].type+"\t"+units_to_move[i].spacekey+"\t"+his_self.game.player);
         if (!capitals.includes(units_to_move[i].spacekey)) {
-          his_self.addMove("build\tland\t"+units_to_move[i].faction+"\t"+units_to_move[i].type+"\t"+selected_destination+"\t"+his_self.game.player);
+          his_self.addMove("build\tland\t"+units_to_move[i].faction+"\t"+units_to_move[i].type+"\t"+selected_destination+"\t"+0);
 	} else {
-          his_self.addMove("build\tland\t"+units_to_move[i].faction+"\t"+units_to_move[i].type+"\t"+units_to_move[i].spacekey+"\t"+his_self.game.player);
+          his_self.addMove("build\tland\t"+units_to_move[i].faction+"\t"+units_to_move[i].type+"\t"+units_to_move[i].spacekey+"\t"+0);
 	}
       }
 
@@ -3044,8 +3046,8 @@ return;
       opt += '</ul>';
 
       if (viable_capitals.length == 0) {
-        this.updateStatus(this.returnFactionName(faction) + " controls no capitals, cannot retreat during winter");
-        this.endTurn(); 
+        his_self.updateStatus(his_self.returnFactionName(faction) + " skipping wintering in capital");
+        his_self.endTurn(); 
 	return;
       }
 
@@ -3945,21 +3947,17 @@ does_units_to_move_have_unit = true; }
       $('.option').off();
       $('.option').on('click', function () {
         let id = $(this).attr("id");
-
 	his_self.updateStatus("retreating...");
-
         onFinishSelect(his_self, id);
       });
-
     };
 
-    
     let html = `<ul>`;
     html    += `<li class="card" id="retreat">retreat</li>`;
     html    += `<li class="card" id="skip">sacrifice forces</li>`;
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`Break Siege and Retreat: ${spacekey}?`, html);
+    this.updateStatusWithOptions(`${this.returnFactionName(faction)} - siege broken in ${this.returnSpaceName(spacekey)}?`, html);
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "retreat") {
 	selectDestinationInterface(his_self, selectDestinationInterface, onFinishSelect);

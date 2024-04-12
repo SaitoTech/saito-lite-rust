@@ -8038,13 +8038,14 @@ console.log("selected: " + spacekey);
 	  for (let i = 0; i < mp.length; i++) {
 	    if (his_self.canFactionActivateMinorPower(faction, mp[i])) {
 	      if (his_self.returnAllyOfMinorPower(mp[i]) == faction) {
-	        ca.push(mp[i]);
-	      } else {
 	        cd.push(mp[i]);
+	      } else {
+	        ca.push(mp[i]);
 	      }
 	    }
 	  }
 	
+	  let msg = 'Activate or De-activate a Minor Power?';
     	  let html = '<ul>';
 	  for (let i = 0; i < ca.length; i++) {
             html += `<li class="option" id="${ca[i]}">activate ${ca[i]}</li>`;

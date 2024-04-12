@@ -138,7 +138,9 @@ console.log("\n\n\n\n");
 	
 	  // INDEPENDENT
           this.addRegular("independent", "rhodes", 1);
-          this.addRegular("independent", "metz", 1);
+          //this.addRegular("independent", "metz", 1);
+// debug break siege
+          this.addRegular("independent", "metz", 2);
           this.addRegular("independent", "florence", 1);
 	
 	  // DEBATERS
