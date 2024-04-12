@@ -687,7 +687,7 @@
           for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
       	    if (!my_spaces[key]) { my_spaces[key] = {}; }
 	    let u = this.game.spaces[key].units[faction][i];
-	    if (u.type == "regular" || u.type == "mercenary" || u.type == "cavalry") {
+	    if (u.type == "squadron" || u.type == "corsair" || u.type == "regular" || u.type == "mercenary" || u.type == "cavalry") {
               if (!my_spaces[key][u.type]) { my_spaces[key][u.type] = 0; }
               my_spaces[key][this.game.spaces[key].units[faction][i].type]++;
 	    }
@@ -823,6 +823,8 @@
 	  continue_to_apportion = true;
           changed_anything = true;
 	}
+
+	// !1
 
 	if (my_spaces[key]['regular'] >= 1 && available_units['regular']['1'] > 0 && continue_to_apportion == false) { 
 	  my_spaces[key]['regular'] -= 1;

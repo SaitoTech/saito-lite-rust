@@ -5331,7 +5331,7 @@ console.log("selected: " + spacekey);
             if (his_self.game.deck[0].fhand[i].includes('035')) {
               f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               i = 100;
-              return { faction : f , event : '035', html : `<li class="option" id="035">seige artillery (${f})</li>` };
+              return { faction : f , event : '035', html : `<li class="option" id="035">siege artillery (${f})</li>` };
             }
           }
         }   
@@ -8029,7 +8029,7 @@ console.log("selected: " + spacekey);
       onEvent : function(his_self, faction) {
 
 	let p = his_self.returnPlayerOfFaction(faction);
-        if (his_self.game.player == 0) {
+        if (his_self.game.player == p) {
 
 	  let mp = his_self.returnMinorPowers();
 	  let ca = [];
@@ -8058,11 +8058,9 @@ console.log("selected: " + spacekey);
 	  $('.option').on('click', function () {
 	    let action = $(this).attr("id");
 	    if (ca.includes(action)) {
-
 	      if (faction === "hapsburg" && action == "hungary") {
 		his_self.game.state.events.diplomatic_alliance_triggers_hapsburg_hungary_alliance = 1;
 	      }
-
 	      his_self.addMove("activate_minor_power\t"+faction+"\t"+action);
 	    } else {
 	      his_self.addMove("deactivate_minor_power\t"+faction+"\t"+action);
@@ -10758,8 +10756,9 @@ console.log("selected: " + spacekey);
 	    true
           );
 
-          return 0;
         }
+
+        return 0;
       },
     }
     deck['107'] = { 

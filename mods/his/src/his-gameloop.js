@@ -1368,6 +1368,7 @@ if (this.game.options.scenario == "is_testing") {
 	  this.displayCustomOverlay("colonize", faction);
           this.game.state.may_colonize[faction] = 0;
     	  this.game.queue.splice(qe, 1);
+	  this.displayColony();
 	  return 1;
 	}
 	if (mv[0] === "explore") {
@@ -1381,6 +1382,7 @@ if (this.game.options.scenario == "is_testing") {
 	  this.displayCustomOverlay("explore", faction);
           this.game.state.may_explore[faction] = 0;
     	  this.game.queue.splice(qe, 1);
+	  this.displayExploration();
 	  return 1;
 	}
         if (mv[0] === "award_exploration_bonus") {
@@ -2080,6 +2082,7 @@ if (this.game.options.scenario == "is_testing") {
 	  this.displayCustomOverlay("conquest", faction);
           this.game.state.may_conquer[faction] = 0;
     	  this.game.queue.splice(qe, 1);
+	  this.displayConquest();
 	  return 1;
 	}
 
@@ -4620,6 +4623,22 @@ alert("workaround bug-fix: if you see this error the game is attempting to unloc
 	  let attacker = mv[2];
 	  let stage = "naval_battle";
 
+
+          //
+          // stop naval battle if only attacker is left (retreat)
+          //
+          let fluis = 0;
+          for (let f in space.units) {
+            if (f !== attacker && !this.areAllies(this.game.state.active_faction, f, 1)) {
+              fluis += this.returnFactionNavalUnitsInSpace(f, spacekey);
+            }
+          }
+          if (fluis == 0) {
+            return 1;
+          }
+
+
+
 	  //
 	  // who is here?
 	  //
@@ -4990,7 +5009,6 @@ try {
             }
           }
           if (fluis == 0) { 
-console.log("no units here but attacker, exiting: " + spacekey);
 	    return 1; 
 	  }
 
