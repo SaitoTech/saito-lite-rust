@@ -100,7 +100,7 @@ class Profile extends ModTemplate {
 						//
 						//console.log("PROFILE: event triggered fetchManyProfiles callback");
 						Object.entries(answer).forEach(([key, value]) => {
-							console.log('key value', key, value);
+							// console.log('key value', key, value);
 							if (value !== this.publicKey) {
 								//
 								// if this is a key that is stored in our keychain, then we want
@@ -178,7 +178,7 @@ class Profile extends ModTemplate {
 		if (this.app.BROWSER == 0) {
 			if (this.local_dev) {
 				this.registry_publickey = this.publicKey;
-				console.log('Profile public key: ' + this.registry_publickey);
+				// console.log('Profile public key: ' + this.registry_publickey);
 			}
 		}
 
@@ -391,7 +391,7 @@ class Profile extends ModTemplate {
 			if (myKey?.identifier) {
 				let registry_self = this;
 				this.queryKeys(peer, [this.publicKey], function (profiles) {
-					console.log('profiles', profiles);
+					// console.log('profiles', profiles);
 					//console.log(`PROFILE lookup ${myKey.identifier}: ${registry_self.publicKey} in ${peer.publicKey}, found: `, identifiers);
 
 					for (let profile in profiles) {
@@ -431,7 +431,6 @@ class Profile extends ModTemplate {
 					registry_self.checkIdentifierInDatabase(
 						myKey.identifier,
 						(rows) => {
-							console.log('rowserr', rows);
 							if (rows.length === 0) {
 								registry_self.registerProfile(
 									identifier[0],
@@ -596,7 +595,7 @@ class Profile extends ModTemplate {
 
 		// Which keys are we missing?
 		let found_check = Object.keys(found_keys);
-		console.log('found keys', found_keys);
+		// console.log('found keys', found_keys);
 		for (let key of keys) {
 			if (!found_check.includes(key)) {
 				missing_keys.push(key);
@@ -754,7 +753,6 @@ class Profile extends ModTemplate {
 				'registry'
 			);
 
-			console.log(recordRes, 'record result');
 			let recordId = recordRes.lastID;
 
 			if (bio || photo || data) {
@@ -791,7 +789,6 @@ class Profile extends ModTemplate {
 	}
 
 	async updateRecord(identifier, bio, photo, data) {
-		console.log('record', identifier, bio, photo, data);
 		try {
 			let findRecordIdSql = `SELECT id FROM records WHERE identifier = $identifier`;
 			let record = await this.app.storage.queryDatabase(
@@ -1177,7 +1174,7 @@ class Profile extends ModTemplate {
 				const data = txmsg.data;
 				const bio = txmsg.bio;
 				const photo = txmsg.photo;
-				console.log(bio, data, photo, 'updating records');
+				// console.log(bio, data, photo, 'updating records');
 				const result = await this.updateRecord(
 					identifier,
 					bio,
@@ -1185,7 +1182,7 @@ class Profile extends ModTemplate {
 					data
 				);
 
-				console.log(result, 'result from updating record');
+				// console.log(result, 'result from updating record');
 				if (result) {
 					console.log('added record');
 					const obj = {
@@ -1236,7 +1233,7 @@ class Profile extends ModTemplate {
 			};
 
 			await newtx.sign();
-			console.log('sending register success tx');
+			// console.log('sending register success tx');
 			await this.app.network.propagateTransaction(newtx);
 		} catch (error) {
 			console.error(
