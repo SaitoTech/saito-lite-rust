@@ -2499,7 +2499,7 @@ class Chat extends ModTemplate {
 
 		if (
 			this.audio_notifications == 'groups' &&
-			this.chat_manager.popups[group.id].is_rendered
+			this.chat_manager.popups[group.id]?.is_rendered
 		) {
 			return;
 		}
