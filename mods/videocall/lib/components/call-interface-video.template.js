@@ -20,9 +20,11 @@ module.exports = CallInterfaceVideoTemplate = (
               <div class="stun-identicon-list"></div>
               <div class="users-on-call-text"><span class="users-on-call-count">1</span> on call</div>
             </div>
-            <div class="add_users_container icon_click_area">
-              <label>Invite</label>
-              <i class="add_users fa fa-plus"></i>
+            <div class="add-users-container control-list">
+              <div class="icon_click_area">
+                <label>Invite</label>
+                <i class="add_users fa fa-plus"></i>
+              </div>
             </div>
           </div>
        
@@ -32,14 +34,22 @@ module.exports = CallInterfaceVideoTemplate = (
 
             <div class="control-list call-controls">
 
-              <div class="audio-control icon_click_area${audioEnabled ? '' : ' disabled'}">
+              <div class="audio-control icon_click_area${
+					audioEnabled ? '' : ' disabled'
+				}">
                 <label>Audio</label>
-                <i class="fa ${audioEnabled ? 'fa-microphone' : 'fa-microphone-slash'}"> </i>
+                <i class="fa ${
+					audioEnabled ? 'fa-microphone' : 'fa-microphone-slash'
+				}"> </i>
               </div>
             
-              <div class="video-control icon_click_area${	videoEnabled ? '' : ' disabled'}">
+              <div class="video-control icon_click_area${
+					videoEnabled ? '' : ' disabled'
+				}">
                 <label>Video</label>
-                <i class="fas ${	videoEnabled ? 'fa-video' : 'fa-video-slash'}"></i>
+                <i class="fas ${
+					videoEnabled ? 'fa-video' : 'fa-video-slash'
+				}"></i>
               </div>
               <div class="disconnect-control icon_click_area">
                  <label>End </label>
@@ -51,14 +61,14 @@ module.exports = CallInterfaceVideoTemplate = (
     </main>
 
     ${
-	mod.browser_active
-		? `<div class="maximizer">
+		mod.browser_active
+			? `<div class="maximizer">
       <i class="fa fa-window-maximize" aria-hidden="true"></i>
     </div>`
-		: `<div class="minimizer">
+			: `<div class="minimizer">
       <i class=" fas fa-caret-down"></i>
     </div>`
-}
+	}
 
   </div>`;
 

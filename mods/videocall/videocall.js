@@ -299,7 +299,7 @@ class Videocall extends ModTemplate {
 					}
 				},
 				{
-					text: 'Screen Share',
+					text: 'Share',
 					icon: 'fa-solid fa-display',
 					hook: 'screen_share',
 					callback: function (app) {
