@@ -161,7 +161,11 @@ class ChatManager {
 			this.render_popups_to_screen = popup_status;
 		});
 
-		app.connection.on('relay-is-online', (pkey) => {
+		app.connection.on("stun-connection-connected", (peer) => {
+			app.connection.emit("relay-is-online", peer, true);
+		});
+
+		app.connection.on('relay-is-online', (pkey, stun = false) => {
 			let target_id = this.mod.createGroupIdFromMembers([
 				pkey,
 				this.mod.publicKey
@@ -171,12 +175,21 @@ class ChatManager {
 			if (!group || group.members.length !== 2) {
 				return;
 			}
-			group.online = true;
+
+			if (stun){
+				group.online = " stun";	
+			}else{
+				group.online = " online";
+			}
+			
 			let cm_handle = document.querySelector(
 				`.chat-manager #saito-user-${group.id}`
 			);
 			if (cm_handle) {
 				cm_handle.classList.add('online');
+				if (stun){
+					cm_handle.classList.add("stun");
+				}
 				if (this.timers[group.id]) {
 					clearTimeout(this.timers[group.id]);
 				}
@@ -189,7 +202,10 @@ class ChatManager {
 				return;
 			}
 
-			group.online = true;
+			if (!group.online){
+				group.online = " online";	
+			}
+			
 			if (this.timers[group.id]) {
 				clearTimeout(this.timers[group.id]);
 			}
@@ -258,13 +274,10 @@ class ChatManager {
 							!this.pinged[group.id] ||
 							this.pinged[group.id] < now - 60000
 						) {
-							this.app.connection.emit('relay-send-message', {
-								recipient: [member],
-								request: 'ping',
-								data: {}
-							});
 
 							this.pinged[group.id] = now;
+
+							this.app.connection.emit('relay-ping-peer', member);
 
 							if (this.timers[group.id]) {
 								clearTimeout(this.timers[group.id]);

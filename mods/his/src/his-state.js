@@ -76,6 +76,7 @@
     this.game.state.events.sack_of_rome = 0;
     this.game.state.events.julia_gonzaga_activated = 0;
     this.game.state.events.england_changed_rulers_this_turn = 0;
+    this.game.state.events.smallpox = "";
     this.game.state.cards_evented = [];
     this.game.state.foreign_wars_fought_this_impulse = [];
     this.game.state.henry_viii_pope_approves_divorce = 0;
@@ -186,20 +187,15 @@
       //
       // are we still besieged? will be unit
       //
-console.log("we appear to be besieged...");
       for (let f in space.units) {
         for (let i = 0; i < space.units[f].length; i++) {
   	  if (space.units[f][i].besieged == true || space.units[f][i].besieged == 1) {
-
-console.log("we appear to be besieged...");
-
 	    //
 	    // we are still besieged if there are any enemy units here
 	    //
 	    for (let zf in space.units) {
 	      if (zf != f) {
 		if (space.units[zf].length > 0) {
-console.log("faction: " + zf) ;
 		  if (!this.areAllies(zf, f)) {
 		    if (this.returnFactionLandUnitsInSpace(zf, space.key) > 0) { return true; }
 		  }

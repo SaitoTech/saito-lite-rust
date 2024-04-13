@@ -746,8 +746,6 @@
       if (this.game.state.newworld['maya'].faction == "hapsburg") { hc.push("maya"); }
     }
 
-
-
     for (let z = 0, zz = 1; z < ec.length; z++) {
       let depl = ""; if (this.game.state.newworld[ec[z]].deleted == 1) { depl = "depleted"; }
       if (zz < 2) {
@@ -800,9 +798,8 @@
     if (this.game.state.events.potosi_silver_mines === "france") {
       document.querySelector('.france_colony2').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/Potosi.svg" />`;
     }
-
-
   }
+
 
   displayConquest() {
 
@@ -828,6 +825,9 @@
         if (faction == "england") {
           obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/English_Conquest.svg" />`;
         }
+	if (this.game.state.events.smallpox != "") {
+          obj.innerHTML += `<img class="army_tile" src="/his/img/Smallpox.svg" />`;
+	}
       }
     }
 
@@ -2329,7 +2329,6 @@ try {
       if (this.isSpaceBesieged(space)) {
         obj.innerHTML += `<img class="siege" src="/his/img/tiles/siege.png" />`;
       }
-
     });
 
   }
@@ -2494,6 +2493,7 @@ try {
 
     let x = this.returnVictoryPointTrack();
     let tiles = [];
+    let zindex = 1;
     for (let i = 0; i < 30; i++) { tiles.push(0); }
 
     for (f in factions_and_scores) {
@@ -2507,10 +2507,13 @@ try {
       if (tiles[total_vp] > 0) {
 	let shift = 2 * tiles[total_vp];
         obj.style.transform = `translateY(-${shift}rem) translateX(${shift}rem)`;
+	zindex = zindex-1;
+        obj.style.zIndex = zindex;
         tiles[total_vp]++;
       } else {
 	tiles[total_vp]++;
         obj.style.transform = ``;
+        obj.style.zIndex = zindex;
       }
 } catch (err) {
 }

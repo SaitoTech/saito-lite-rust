@@ -48,6 +48,14 @@ class Relay extends ModTemplate {
       this.busy = true;
     });
 
+    app.connection.on("relay-ping-peer", (publicKey) => {
+      if (this.stun?.hasConnection(publicKey)){
+        app.connection.emit("relay-is-online", publicKey, true);
+      }else{
+        this.sendRelayMessage([publicKey], "ping", {}); 
+      }
+    });
+
   }
 
 

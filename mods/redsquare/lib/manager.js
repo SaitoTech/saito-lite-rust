@@ -63,6 +63,7 @@ class TweetManager {
 						if (this.mode === 'notifications') {
 
 							if (document.querySelector('#intersection-observer-trigger')) {
+								console.log("REDSQUARE: Turn off intersection observer before loading more notifications...");
 								this.intersectionObserver.unobserve(document.querySelector('#intersection-observer-trigger'));
 							}
 
@@ -191,12 +192,17 @@ class TweetManager {
 	}
 
 	loadNotifications(){
+
+		this.showLoader();
+
 		this.mod.loadNotifications((new_txs) => {
 			if (this.mode !== 'notifications') {
 				return;
 			}
 
-			this.hideLoader();
+			setTimeout(() => {
+				this.hideLoader();
+			}, 50);
 
 			for (let i = 0; i < new_txs.length; i++) {
 				let notification = new Notification(
@@ -304,6 +310,9 @@ class TweetManager {
 		this.profile.render();
 
 		this.loadProfile((txs) => {
+			if (this.mode !== 'profile') {
+				return;
+			}
 			this.filterAndRenderProfile(txs);
 			if (this.profile.posts.length > 0) {
 				this.app.connection.emit(
@@ -405,6 +414,10 @@ class TweetManager {
     tweet transaction. Fortunately, if I am looking at my own profile, I should have everything stored locally
   */
 	loadLikes(list_of_liked_tweet_sigs, peer) {
+		if (this.mode !== 'profile') {
+			return;
+		}
+
 		let likes_to_load = list_of_liked_tweet_sigs.length;
 
 		for (let sig of list_of_liked_tweet_sigs) {
