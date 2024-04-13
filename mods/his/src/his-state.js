@@ -2,6 +2,12 @@
   onNewImpulse() {
 
     //
+    // reset player last move
+    //
+    this.game.state.player_last_move = "";
+    this.game.state.player_last_spacekey = "";
+
+    //
     // remove foul weather
     //
     this.game.state.events.foul_weather = 0;
@@ -733,7 +739,7 @@ if (this.game.state.scenario != "is_testing") {
     state.activated_powers['hungary'] = [];
     state.activated_powers['independent'] = [];
 
-    state.events.potosi_silver_miners = "";
+    state.events.potosi_silver_mines = "";
 
     state.translations = {};
     state.translations['new'] = {};
