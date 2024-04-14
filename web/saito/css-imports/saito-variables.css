@@ -64,6 +64,7 @@ font imports
   --shadow-chat-user: -4px 0px 2px -2px;
   --shadow-chat-message-bottom: 0px 2px 4px var(--color-shadow-bubble);
   --text-shadow-normal: 1px 1px 3px;
+
 /*REQUIRED COLORS*/
   --color-black: #000;
   --color-white: #fff;
@@ -95,7 +96,7 @@ font imports
   --font-size-h5: 2rem;
   --font-size-h6: 2rem;
 /*SHADOW SELECTION*/
-  --shadow-primary-button: none;
+  --shadow-primary-button: var(--shadow-standard);
   --shadow-chat-popup: none;
 /*TRANSITION SELECTION*/
   --transition-instant: none;
@@ -120,7 +121,9 @@ font imports
 /*BACKGROUND SHIM COLORS*/
   --background-color-shim-light: #0001;
   --background-color-shim-dark: #0009;
+
 /*========== REDEFINED ELEMENTS ===========*/
+
 /*FONTS SECTION*/
 /* Quick Settings - Basic Font Colors */
   --font-color-primary: var(--color-tint-primary);  /* dark grey font color */
@@ -204,6 +207,9 @@ font imports
   --font-color-hover-a-link: var(--color-primary); /* Exempt as system color */
   --font-color-mention: var(--color-primary); /* Exempt as system color */
   --font-color-hover-mention: var(--font-color-heavy);
+
+
+
 /*BORDER SECTION*/
 /*corner radius*/
   --border-radius-text-input: var(--border-radius-sharp); /*chat module*/
@@ -252,7 +258,7 @@ font imports
   --border-thickness-identicon-square-profile: var(--border-thickness-medium);
   --border-thickness-chat-popup: var(--border-thickness-thin);
   --border-thickness-chat-popup-message-tag: var(--border-thickness-thin);
-  --border-thickness-button-primary: none;
+  --border-thickness-button-primary: unset;
   --border-thickness-button-hover-primary: none;
   --border-thickness-button-sidebar: none;
   --border-thickness-button-hover-sidebar: none;
@@ -1174,7 +1180,7 @@ html[data-theme="milquetoast"] {
   --style-shadow-form-box:  1px 1px 5px var(--border-color-general-dividers);
   --color-shadow-bubble: #0006;
 /*SHADOW SELECTION*/
-  --shadow-primary-button: var(--shadow-shape-glow-big);
+  --shadow-primary-button: var(--shadow-shape-flat);
   --shadow-chat-popup: var(--shadow-shape-glow);
   --box-shadow-sidebar-elements: var(--shadow-shape-flat);
 

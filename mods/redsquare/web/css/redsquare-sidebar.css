@@ -11,8 +11,8 @@
 
 
 .redsquare-menu .saito-button-primary{
-	border: unset;
-	box-shadow: var(--shadow-standard);
+	border: var(--border-thickness-button-primary) solid var(--border-color-button-primary);
+	box-shadow: var(--shadow-primary-button);
 }
 
 @media screen and (max-width: 1200px) {
