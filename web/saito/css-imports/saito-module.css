@@ -107,6 +107,7 @@
   background: var(--background-color-module-menu); 
   color: var(--font-color-module-menu);
   border-radius: var(--border-radius-module-menu);
+  border: var(--border-thickness-module-appinfo) solid var(--border-color-module-appinfo);
 
 }
 
