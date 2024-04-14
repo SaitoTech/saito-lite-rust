@@ -149,7 +149,7 @@ class Limbo extends ModTemplate {
 				this.attachStyleSheets();
 				return [
 					{
-						text: 'Broadcast',
+						text: 'Cast',
 						icon: 'fa-solid fa-tower-broadcast',
 						hook: "onair",
 						callback: async function (app) {

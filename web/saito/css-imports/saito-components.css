@@ -32,11 +32,26 @@
   background-color: var(--background-color-notification-status);
 }
 
-.online .online-status-indicator:after {
+.online .online-status-indicator:after, .stun .online-status-indicator:after {
   display: block;
   top: 2.9rem;
   left: 2.75rem;
   border: 20px solid var(--border-color-notification-status);
+}
+
+.stun .online-status-indicator{
+}
+
+.online-status-indicator i {
+  display: none;
+  position: absolute;
+}
+
+.stun .online-status-indicator i {
+  display: block;
+  top: 2.9rem;
+  left: 2.75rem;
+  font-size: 8px;
 }
 
 .busy .online-status-indicator:after {

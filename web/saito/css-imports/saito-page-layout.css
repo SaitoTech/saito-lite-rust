@@ -2,8 +2,9 @@
   width: 100vw;
   height: calc(100% - var(--saito-header-height));
   display: grid;
-  grid-template-columns: 30rem 5fr 33rem;
+  grid-template-columns: 30rem 54rem 33rem;
   padding: 0 calc((100vw - var(--saito-width)) / 2);
+  column-gap: 1.5rem;
   z-index: 0;
   margin: 0;
   position: absolute;
@@ -14,8 +15,7 @@
 }
 
 .saito-main {
-  min-width: 54rem;
-  margin: 0 2rem;
+  width: 100%;
   position: relative;
 }
 

@@ -5,13 +5,16 @@ const ChatList = require('./chat-list');
 const ChatUserMenu = require('./chat-user-menu');
 
 class ChatManagerMenu {
-	constructor(app, mod, container) {
+	constructor(app, mod, container = null) {
 		this.app = app;
 		this.mod = mod;
 
 		this.container = container;
 
 		this.contactList = new ContactsList(app, mod, true);
+
+		//only used if no container provided!
+		this.overlay = new SaitoOverlay(this.app, this.mod);
 
 		this.chatList = new ChatList(app, mod);
 		this.chatList.callback = (gid) => {
@@ -26,8 +29,7 @@ class ChatManagerMenu {
 
 	async render() {
 		if (!this.container) {
-			let overlay = new SaitoOverlay(this.app, this.mod);
-			overlay.show(
+			this.overlay.show(
 				`<div class="module-settings-overlay"><h2>Chat Settings</h2></div>`
 			);
 			this.container = '.module-settings-overlay';
@@ -57,6 +59,7 @@ class ChatManagerMenu {
 						this.app.connection.emit('open-chat-with', {
 							key: person
 						});
+						this.overlay.close();
 					}
 				};
 				this.contactList.render();
@@ -81,6 +84,7 @@ class ChatManagerMenu {
 					}else{
 						this.mod.sendCreateGroupTransaction(name);		
 					}
+					this.overlay.close();
 				}
 			};
 		}

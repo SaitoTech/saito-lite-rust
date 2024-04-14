@@ -1,5 +1,5 @@
 module.exports = (his_self) => {
-	let help = `Voyages to the New World`;
+	let help = `New World Bonus Phase`;
 
 	let cb = "";
 

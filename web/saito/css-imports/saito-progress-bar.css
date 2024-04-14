@@ -6,6 +6,10 @@
 	display: flex;
 	align-items: center;
 	background-size: 400% auto;
+	position: absolute;
+    z-index: 999;
+    border-radius: var(--saito-border-radius);
+    border: 1px solid var(--saito-border-color);
 }
 
 .saito-progress-bar-container.active{

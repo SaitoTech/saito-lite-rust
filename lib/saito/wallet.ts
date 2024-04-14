@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
 	default_fee = 0;
 
-	version = 5.626;
+	version = 5.627;
 
 	nolan_per_saito = 100000000;
 
@@ -361,6 +361,7 @@ export default class Wallet extends SaitoWallet {
 
 			this.app.connection.on('wallet-updated', async () => {
 				await this.saveWallet();
+				this.setKeyList(this.app.keychain.returnWatchedPublicKeys());
 			});
 
 			// this.instance = Object.assign(this.instance, this.app.options.wallet);
@@ -1376,6 +1377,7 @@ export default class Wallet extends SaitoWallet {
 	}
 
 	public async setKeyList(keylist: string[]): Promise<void> {
+		console.log("Watched keys: ", keylist);
 		return await this.instance.set_key_list(keylist);
 	}
 

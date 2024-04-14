@@ -62,7 +62,7 @@ class ChateauxOverlay {
 
 		for (let x in this.mod.game.spaces) {
 			let s = this.mod.game.spaces[x];
-			if (s.language == 'italian') {
+			if (s.language == 'italian' && s.type == "key") {
 				if (this.mod.isSpaceControlled(s.key, 'france')) {
 					italian_keys++;
 				}
