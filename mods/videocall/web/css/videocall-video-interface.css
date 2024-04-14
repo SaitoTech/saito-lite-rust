@@ -3,7 +3,7 @@
 	z-index: 100;
 }
 
-.stun-overlay-container + .chat-container {
+.stun-overlay-container+.chat-container {
 	z-index: 101;
 }
 
@@ -14,12 +14,11 @@
 	height: 100vh;
 	height: calc(100 * var(--saito-vh));
 	position: fixed;
-	background-color: var(--saito-black);
+	background-color: var(--saito-background-color);
 	transition: all 0.2s;
 }
 
-.stun-chatbox .minimizer,
-.stun-chatbox .maximizer {
+.stun-chatbox .minimizer, .stun-chatbox .maximizer {
 	position: absolute;
 	right: 1.8rem;
 	top: 1.5rem;
@@ -67,7 +66,6 @@
 	/* animation-name: minimize;
   animation-duration: 1s;
   animation-fill-mode: forwards; */
-
 	cursor: grab;
 	border-radius: 0.5rem;
 }
@@ -81,6 +79,7 @@
 .stun-chatbox.minimize .footer {
 	padding: unset;
 }
+
 .stun-chatbox.minimize .minimizer i {
 	font-size: 2rem;
 }
@@ -117,10 +116,7 @@
 	height: 3rem;
 }
 
-.stun-chatbox.minimize .users-on-call-text,
-.stun-chatbox.minimize .add_users_container,
-.stun-chatbox.minimize .imported-actions,
-.stun-chatbox.minimize label {
+.stun-chatbox.minimize .users-on-call-text, .stun-chatbox.minimize .add-users-container, .stun-chatbox.minimize .imported-actions, .stun-chatbox.minimize label {
 	display: none;
 }
 
@@ -140,8 +136,7 @@
 	font-size: unset;
 }
 
-.stun-chatbox .minimizer:hover i,
-.stun-chatbox .maximizer:hover i {
+.stun-chatbox .minimizer:hover i, .stun-chatbox .maximizer:hover i {
 	color: var(--saito-primary);
 	transform: scale(1.1);
 }
@@ -182,8 +177,8 @@
 }
 
 /*  video box */
-.presentation,
-.expanded-video {
+
+.presentation, .expanded-video {
 	resize: horizontal;
 	overflow: auto;
 	max-height: calc(100vh - 13rem);
@@ -215,10 +210,10 @@
 	height: 2.5rem;
 }
 
-
 .peer-list-item.not-connected {
 	filter: grayscale(100%);
 }
+
 .expanded-video .video-box-container-large {
 	width: 100%;
 	height: 100%;
@@ -244,6 +239,7 @@
 	height: 100%;
 	margin-right: 10px;
 }
+
 .presentation .video-box-container-large {
 	width: 100%;
 	opacity: 0;
@@ -344,8 +340,8 @@
 }
 
 /* When staring at self, be like a mirror */
-.chat-settings-preview video,
-video#local {
+
+.chat-settings-preview video, video#local {
 	transform: rotateY(180deg);
 }
 
@@ -366,7 +362,7 @@ video#local {
 	height: 100%;
 }
 
-.video-box-container-large > #connection-message {
+.video-box-container-large>#connection-message {
 	color: var(--saito-white);
 	width: 50%;
 	line-height: 1.5;
@@ -407,15 +403,14 @@ video#local {
 	border: 1px solid transparent;
 }
 
-.video-box-container-large > #connection-message > p {
+.video-box-container-large>#connection-message>p {
 	color: var(--saito-white);
 	font-size: 2.8rem;
 }
 
 .video-call-info {
 	color: var(--saito-white);
-	text-shadow: 0px 1px 2px var(--saito-black-faded),
-		0px -1px 2px var(--saito-black-faded);
+	text-shadow: 0px 1px 2px var(--saito-black-faded), 0px -1px 2px var(--saito-black-faded);
 	line-height: 1.5;
 	position: absolute;
 	display: flex;
@@ -545,8 +540,6 @@ video#local {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	height: 100%;
-	color: var(--saito-white);
 }
 
 .footer .timer {
@@ -602,47 +595,59 @@ video#local {
 .control-list {
 	display: flex;
 	align-items: center;
+	border-radius: var(--saito-border-radius);
+	gap: 1px;
+	background-color: var(--saito-border-color);
+	padding: 1px;
+	width: fit-content;
 }
 
-.control-list .icon_click_area,
-.add_users_container {
-	margin-right: 2rem;
-	border-radius: 50%;
+.control-list .icon_click_area {
 	width: 5rem;
 	height: 5rem;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background-color: var(--saito-white);
+	background-color: var(--saito-background-light);
 	position: relative;
 }
+
+.control-list>div:first-child {
+	border-top-left-radius: var(--saito-border-radius);
+	border-bottom-left-radius: var(--saito-border-radius);
+}
+
+.control-list>div:last-child {
+    border-top-right-radius: var(--saito-border-radius);
+	border-bottom-right-radius: var(--saito-border-radius); 
+;}
 
 .control-list .icon_click_area.disabled {
 	background-color: grey;
 }
+
 .control-list .icon_click_area.disabled i {
-	color: black;
+	color: var(--saito-background-color)
 }
 
 .speaker {
 	border: 3px solid var(--saito-primary) !important;
 }
 
-.control-list .icon_click_area label,
-.add_users_container label {
+.control-list .icon_click_area label, .add-users-container label {
 	position: absolute;
-	color: white;
+	color: var(--saito-font-color);
 	bottom: -2.5rem;
-	font-weight: bold;
 	font-size: 1.2rem;
-	white-space: nowrap;
+	text-align: center;
 }
 
 .icon_click_area i {
-	color: green;
+	color: var(--saito-font-color);
 	transition: all 0.2s;
 	font-size: 2rem;
-	min-width: 2rem; /* make sure narrow icons center, bigger ones are fine */
+	min-width: 2rem;
+	/* make sure narrow icons center, bigger ones are fine */
 	text-align: center;
 }
 
@@ -664,7 +669,6 @@ video#local {
 		grid-template-rows: minmax(0, 1fr) minmax(200px, 20%);
 		grid-template-columns: minmax(100px, 1fr);
 	}
-
 	.full-screen .footer {
 		flex-direction: column;
 		align-items: flex-start;
@@ -673,16 +677,15 @@ video#local {
 		gap: 3rem;
 		padding-bottom: 3rem;
 	}
+	/*
 	.full-screen .footer .control-list {
 		margin-bottom: 1.7rem;
-		gap: 1.5rem;
 	}
-
 	.control-list .icon_click_area {
 		margin: 0;
 	}
-
-	.add_users_container label {
+	*/
+	.control-list label {
 		display: none;
 	}
 }
@@ -691,20 +694,19 @@ video#local {
 	.footer {
 		padding: 4rem 1rem;
 	}
-
 	.control-panel {
 		gap: 1rem;
-		width: calc(100vw - 1rem);
-		justify-content: space-between;
+		width: calc(100vw - 2rem);
+		justify-content: space-around;
 	}
-
+	/*
 	.full-screen .control-panel .control-list {
 		gap: 0.5rem;
 	}
-
+	*/
 	.full-screen .control-panel .control-list .icon_click_area {
-		width: 4.5rem;
-		height: 4.5rem;
+		width: 4rem;
+		height: 4rem;
 	}
 }
 
@@ -715,26 +717,18 @@ video#local {
 	flex-direction: column;
 	row-gap: 2rem;
 	align-items: center;
-	color: var(--saito-white);
-    width: calc(80vw - 40rem);
 }
 
-
-.stun-minimal-appspace .chat-settings-preview-section{
+.stun-minimal-appspace .chat-settings-preview-section {
 	width: unset;
 }
 
-
-.chat-settings-preview-section p {
-	color: var(--saito-white);
-}
 
 .chat-settings-join-section {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	color: var(--saito-white);
 }
 
 .chat-settings-join-section h2 {
@@ -743,7 +737,6 @@ video#local {
 
 .chat-settings-join-section p {
 	margin-bottom: 1.5rem;
-	color: var(--saito-white);
 }
 
 .chat-settings-test-mic {
@@ -761,7 +754,6 @@ video#local {
 }
 
 .chat-settings h1 {
-	color: var(--saito-white);
 	margin-bottom: 1rem;
 }
 
@@ -789,7 +781,7 @@ video#local {
 	cursor: pointer;
 	position: absolute;
 	bottom: 1rem;
-    left: 1rem;
+	left: 1rem;
 }
 
 .chat-settings-toggle-icon {
@@ -799,8 +791,7 @@ video#local {
 	font-size: 3rem;
 	padding: 0.25rem;
 	cursor: pointer;
-	text-shadow: 0px 1px 2px var(--saito-black-faded),
-		0px -1px 2px var(--saito-black-faded);
+	text-shadow: 0px 1px 2px var(--saito-black-faded), 0px -1px 2px var(--saito-black-faded);
 }
 
 .chat-settings-toggle-icon:hover {
@@ -808,27 +799,27 @@ video#local {
 }
 
 .stun-appspace select {
-    background-color: var(--saito-black-faded);
-    color: var(--saito-white);
-    height: 3rem;
-    border-radius: var(--saito-border-radius);
-    padding: 0 0.5rem;
+	background-color: var(--saito-background-color);
+	color: var(--saito-font-color);
+	height: 3rem;
+	border-radius: var(--saito-border-radius);
+	padding: 0 0.5rem;
 }
 
-
 .stun-input-settings {
-    padding: 1rem;
-    border: 0px solid var(--saito-border-color);
-    border-radius: var(--saito-border-radius);
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+	padding: 1rem;
+	border: 0px solid var(--saito-border-color);
+	border-radius: var(--saito-border-radius);
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
 }
 
 .stun-input-settings legend {
 	text-align: left;
+	display: none;
 }
-
+/*
 .stun-appspace select option {
 	background-color: var(--saito-black-faded);
 	color: var(--saito-white);
@@ -843,7 +834,7 @@ video#local {
 	font-size: 1rem;
 	cursor: pointer;
 }
-
+*/
 .chat-settings .toggle-icon {
 	color: var(--saito-white);
 	font-size: 1.5rem;
@@ -853,7 +844,7 @@ video#local {
 	border-radius: 50%;
 	padding: 0.5rem;
 }
-
+/*
 .chat-settings-audio-progress-bar {
 	position: relative;
 	background-color: var(--saito-white);
@@ -873,7 +864,7 @@ video#local {
 	width: 0%;
 	transition: width 0.1s;
 }
-
+*/
 /*
 @media screen and (max-width: 900px) {
 	.chat-settings-preview {
@@ -891,7 +882,6 @@ video#local {
 		font-size: 1rem;
 		margin-right: 0.5rem;
 	}
-
 	.video-container-large {
 		grid-template-columns: 1fr;
 	}
@@ -901,24 +891,20 @@ video#local {
 		grid-template-columns: repeat(auto-fit, minmax(100px, auto));
 		grid-gap: 0.5rem;
 	}
-
-	.side-videos .video-box-container-large,
-	.expanded-video .video-box-container-large {
+	.side-videos .video-box-container-large, .expanded-video .video-box-container-large {
 		height: min(100%, 37vh);
 		width: fit-content;
 		max-width: 100%;
 		margin: auto;
 	}
-
 	.video-box-container-large video {
 		height: 100%;
 		width: auto;
 	}
-
-	.video-box-container-large > #connection-message {
+	.video-box-container-large>#connection-message {
 		width: 100%;
 	}
-	.video-box-container-large > #connection-message p {
+	.video-box-container-large>#connection-message p {
 		font-size: 1rem;
 	}
 	.gallery {
@@ -928,8 +914,7 @@ video#local {
 		align-items: center;
 		height: 100%;
 	}
-	.presentation,
-	.expanded-video {
+	.presentation, .expanded-video {
 		resize: none;
 		overflow: hidden;
 		min-width: 100%;
@@ -937,6 +922,7 @@ video#local {
 }
 
 /* --chat in video calls -- */
+/*
 .stun-chatbox .chat-static {
 	border-radius: 2px solid var(--saito-border-color-dark);
 	border-radius: 0.5rem;
@@ -955,15 +941,7 @@ video#local {
 	color: var(--saito-grey);
 }
 
-.stun-chatbox .chat-header,
-.stun-chatbox .chat-header .saito-address {
-	cursor: default;
-}
-.stun-chatbox.minimize .chat-static {
-	display: none;
-}
-
-.stun-chatbox .chat-header .saito-address {
+.stun-chatbox .chat-header, .stun-chatbox .chat-header .saito-address {
 	cursor: default;
 }
 
@@ -971,6 +949,14 @@ video#local {
 	display: none;
 }
 
+.stun-chatbox .chat-header .saito-address {
+	cursor: default;
+}
+
+.stun-chatbox.minimize .chat-static {
+	display: none;
+}
+*/
 .fa-record-vinyl.recording {
 	color: red;
 }
@@ -987,7 +973,7 @@ video#local {
 	}
 }
 
-.onair.recording{
+.onair.recording {
 	background-color: var(--saito-red);
 }
 
@@ -1000,66 +986,19 @@ video#local {
   settings overlay
 */
 
-.videocall-setting-grid-item {
-	display: grid;
-	background: var(--saito-background-color);
-	color: var(--saito-font-color);
-	padding: 2rem;
-	font-size: 1.75rem;
-}
-
-.videocall-option-grid {
-	display: grid;
-	gap: 1.5rem;
-}
-
-.videocall-setting-title {
-	font-size: 2.2rem;
-}
-
 .videocall-option-label {
 	display: grid;
 	grid-template-columns: 0.07fr 1fr 0.1fr;
 	gap: 1.5rem;
 	align-items: center;
 	cursor: pointer;
-}
-
-.videocall-option-label:hover,
-.videocall-option-label.active {
-	background: var(--saito-background-light);
-}
-
-.videocall-option-name {
-	line-height: 4rem;
 	font-size: 2rem;
 }
 
-.videocall-option-label i {
-	font-size: 4rem;
+.videocall-setting-grid-item {
+	display: grid;
+	background: var(--saito-background-color);
 	color: var(--saito-font-color);
-	margin: auto;
-}
-
-.videocall-option-label i.fa-table-cells {
-	font-size: 4.5rem;
-}
-
-.videocall-option-label i.fa-user {
-	font-size: 3.5rem;
-}
-
-.videocall-setting-icon {
-	width: fit-content;
-}
-
-.videocall-setting-icon i {
-	font-size: 4rem;
-	transition: all 0.2s ease-in-out;
-	cursor: pointer;
-	color: var(--saito-font-color);
-}
-
-.videocall-setting-icon:hover i {
-	transform: scale(1.2);
+	padding: 2rem;
+	font-size: 1.75rem;
 }

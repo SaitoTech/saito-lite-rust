@@ -172,7 +172,7 @@
 .controls ul li , .options {
     background-color: whitesmoke;
     height: 8rem;
-    border-top: 1px solid var(--saito-border-color);
+    border-top: 1px solid var(--border-color-general-dividers);
     width: 100%;
     font-size: 1.8rem;
     display: list-item;

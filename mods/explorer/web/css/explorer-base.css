@@ -161,7 +161,7 @@ a {
 }
 
 .balance-button {
-	background: var(--saito-primary-background);
+	background: #000;
     transition: 0.5s;
     background-size: 400% auto;
     padding: 1rem 1.5rem;

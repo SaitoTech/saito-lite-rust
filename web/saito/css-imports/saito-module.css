@@ -7,7 +7,7 @@
  * 
  * maybe should change to saito-game...
  * 
- */
+ */ 
 
 .saito-module {
     display: flex;
@@ -22,7 +22,10 @@
     align-items: center;
     background-size: cover;
     background-position: center;
+    background-color: var(--background-mask-sidebar-game-module);
     background-blend-mode: soft-light;
+    border-radius: var(--border-radius-sidebar-game-module);
+    
 }
 
 .saito-module-titlebar {
@@ -34,22 +37,23 @@
     overflow: hidden;
     white-space: nowrap;
     overflow-wrap: break-word;
-    opacity: 0.8;
+    opacity: 0.80;
+    background: #000a;
 }
 
 .saito-module-titlebar > div {
     margin: 0.25rem;
 }
 
-/*changed - 1*/
 .saito-module-titlebar-title {
-    color: var(--saito-color-heavy);
+    color: var(--font-color-title-game);
     font-size: 2rem;
 }
 
 .saito-module-titlebar-details {
     font-size: 1.4rem;
     text-transform: uppercase;
+    color: var(--font-color-title-game-details);
 }
 
 .saito-game-details {
@@ -65,10 +69,10 @@
     border: none;
 }
 
+
 /*
     Small tweaks for when the saito-module is crammed into a sidebar
 */
-
 .saito-sidebar .saito-module {
     padding: 0.5rem;
 }
@@ -81,6 +85,7 @@
     font-size: 1.2rem;
 }
 
+
 /***
  * 
  * Here is fresh code for actual saito-module stuff, a new (19 Jan 2024) UI component
@@ -90,24 +95,23 @@
  * 
  * Maybe also useful when we resurrect the appstore
  * 
- */
+ */ 
 
-/*changed - 1*/
 .saito-module-overlay {
-    display: flex;
-    flex-direction: column;
-    row-gap: 1rem;
-    width: min(90vw, 80rem);
-    max-height: 70vh;
-    overflow: auto;
-    background: var(--saito-background-modal);
-    color: var(--saito-color-heavy);
-    border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+  width: min(90vw, 80rem);
+  max-height: 70vh;
+  overflow: auto;
+  background: var(--background-color-module-menu); 
+  color: var(--font-color-module-menu);
+  border-radius: var(--border-radius-module-menu);
+
 }
 
-/*changed - 1*/
 .saito-module-header {
-    background: var(--saito-dreamscape);
+    background: blue;
     background-size: cover;
     background-position: center;
     padding: 0.5rem;
@@ -119,32 +123,29 @@
     padding: 0.5rem 1rem;
 }
 
-/*changed - 1*/
 .saito-module-overlay .saito-module-titlebar {
-    color: var(--saito-color-secondary);
-    background-color: var(--saito-background-modal);
+    color: var(--font-color-module-menu-header);
+    background-color: unset;
 }
 
-/*changed - 1*/
 .saito-module-details {
     display: grid;
     grid-template-columns: 10rem 1fr;
     gap: 1rem;
     margin: 1rem;
     padding: 2rem;
-    border-radius: var(--saito-corners-rigid);
-    border: var(--saito-border-thickness-thin) solid var(--saito-border-color-primary);
+    border-radius: 0.5rem;
+    border: var(--border-thickness-module-appinfo) solid var(--border-color-module-appinfo); /* testing */
 }
 
 .saito-module-overlay > h4 {
     margin-left: 1rem;
 }
 
-.saito-module-settings {
+.saito-module-settings{
     padding: 1rem;
 }
 
-/*changed - 1*/
 fieldset.saito-grid {
     padding: 2rem;
     display: grid;
@@ -152,13 +153,13 @@ fieldset.saito-grid {
     gap: 2rem;
     align-items: center;
     margin: 1rem 0;
-    border: var(--saito-border-thickness-thick) solid var(--saito-border-color-primary);
-    border-radius: var(--saito-border-radius);
+    border: var(--border-thickness-button-modal) solid var(--border-color-button-modal);
+    border-radius: 0.5rem;
 }
 
-fieldset.saito-grid > fieldset.saito-grid {
-    grid-column-start: 1;
-    grid-column-end: span 2;
+fieldset.saito-grid > fieldset.saito-grid{
+  grid-column-start: 1;
+  grid-column-end: span 2;
 }
 
 .saito-module-settings .note {
@@ -167,6 +168,7 @@ fieldset.saito-grid > fieldset.saito-grid {
 
 .saito-grid input, .saito-grid label {
     cursor: pointer;
+    color: var(--font-color-module-menu);
 }
 
 .saito-grid i {
@@ -179,10 +181,12 @@ fieldset.saito-grid > fieldset.saito-grid {
     cursor: pointer;
 }
 
-/*changed - 1*/
-.settings-link:hover label {
-    color: var(--saito-button-font-color-tiny);
+.settings-link:hover label{
+    text-decoration: var(--text-decoration-switch-global);
+    color: var(--font-color-hover-module-menu);
+
 }
+
 
 .flex-row {
     display: flex;
@@ -191,4 +195,3 @@ fieldset.saito-grid > fieldset.saito-grid {
     justify-content: flex-start;
     gap: 2rem;
 }
-

@@ -87,7 +87,7 @@
 .game-menu ul.game-menu-sub-options li {
   max-width: unset;
   width: 100%;
-  border-bottom: 1px solid var(--saito-border-color-dark);
+  border-bottom: 1px solid var(--border-color-general-dividers-dark);
 }
 
 .game-menu-sub-option .game-menu-option-label {
@@ -131,8 +131,8 @@
 
 .game-menu .notification::before {
   content: "!";
-  color: var(--saito-white);
-  background-color: var(--saito-primary);
+  color: var(--color-white);
+  background-color: var(--color-primary);
   border-radius: 0.7rem;
   padding: 0.25rem 0.6rem;
   position: absolute;

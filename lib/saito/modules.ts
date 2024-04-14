@@ -93,7 +93,7 @@ class Mods {
 					this.app.browser.updateSoftwareVersion(receivedBuildNumber);
 				}
 			}
-		} catch (err) {}
+		} catch (err) { }
 
 		for (let iii = 0; iii < this.mods.length; iii++) {
 			try {
@@ -255,6 +255,11 @@ class Mods {
 		this.app.connection.on(
 			'handshake_complete',
 			async (peerIndex: bigint) => {
+
+				if (this.app.BROWSER){
+					// broadcasts my keylist to other peers
+					await this.app.wallet.setKeyList(this.app.keychain.returnWatchedPublicKeys());
+				}
 				// await this.app.network.propagateServices(peerIndex);
 				let peer = await this.app.network.getPeer(BigInt(peerIndex));
 				if (this.app.BROWSER == 0) {
@@ -269,14 +274,16 @@ class Mods {
 				}
 				console.log('handshake complete');
 				await onPeerHandshakeComplete(peer);
+
 			}
 		);
+
 
 		const onConnectionUnstable = this.onConnectionUnstable.bind(this);
 		this.app.connection.on('peer_disconnect', async (peerIndex: bigint) => {
 			console.log(
 				'connection dropped -- triggering on connection unstable : ' +
-					peerIndex
+				peerIndex
 			);
 			// // todo : clone peer before disconnection and send with event
 			// let peer = await this.app.network.getPeer(BigInt(peerIndex));
@@ -560,9 +567,9 @@ class Mods {
 
 	/*
   async getBuildNumber() {
-    for (let i = 0; i < this.mods.length; i++) {
-      await this.mods[i].getBuildNumber()
-    }
+	for (let i = 0; i < this.mods.length; i++) {
+	  await this.mods[i].getBuildNumber()
+	}
   }
   */
 }

@@ -1,171 +1,175 @@
-/*changed - 1*/
 .tweet-overlay {
-    max-width: 90vw;
-    background-color: var(--saito-background-modal);
-    padding: 3rem;
-    border-radius: var(--saito-border-radius);
-    max-height: 95vh;
-    overflow: visible;
-    position: relative;
+  max-width: 90vw;
+  background-color: var(--background-color-post);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  max-height: 95vh;
+  overflow: visible;
+  position: relative;
+  border-radius: var(--border-radius-modal-menu);
 }
 
 .saito-overlay .tweet-overlay {
-    width: 75rem;
+  width: 75rem;
 }
 
 .tweet-overlay-content {
-    display: grid;
+  display: grid;
 }
 
 .tweet-overlay-header {
-    grid-row: 1;
+  grid-row: 1;
 }
 
 .tweet-overlay-content-controls {
-    display: flex;
-    flex-direction: row;
-    justify-content: right;
-    align-items: center;
-    flex-wrap: wrap;
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
-/*changed - 1*/
 .tweet-overlay-content-controls i {
-    color: transparent;
-    font-size: 2rem;
-    -webkit-text-stroke: var(--saito-color-primary) 1px;
-    padding: 1rem;
-    cursor: pointer;
-    position: relative;
-    transition: all 0.1s;
+  color: transparent;
+  font-size: 2rem;
+  -webkit-text-stroke: green 10px; /* testing */
+  padding: 1rem;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.1s;
 }
 
-.tweet-overlay-content-controls i:hover {
-    transform: scale(1.1);
+.tweet-overlay-content-controls i:hover{
+  transform: scale(1.1);
 }
 
 .post-tweet-preview {
-    margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .post-tweet-preview > .tweet {
-    margin-bottom: 1.5rem;
-    padding: 0 0 2rem;
+  margin-bottom: 1.5rem;
+  padding: 0 0 2rem;
 }
 
-/*changed - 1*/
+
 .post-tweet-textarea {
-    display: block;
-    padding: 1rem;
-    border-radius: var(--saito-border-radius);
-    width: 100%;
-    outline: none;
-    font-size: 1.6rem;
-    margin: 1rem 0;
-    min-height: 14rem;
-    line-height: 2.25rem;
-    /* Copied from textarea in saito-form-elements */
-background-color: var(--saito-background-color);
-    color: var(--saito-color-contrast);
-    border: 1px solid var(--saito-border-color-primary);
+  display: block;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  outline: none;
+  font-size: 1.6rem;
+  margin: 1rem 0;
+  min-height: 14rem;
+  line-height: 2.25rem;
+
+  /* Copied from textarea in saito-form-elements */
+  background-color: var(--background-color-post-input);
+  color: var(--font-color-post-input);
+  border: var(--border-thickness-post-input) solid var(--border-color-post-input);
+
 }
 
 .post-tweet-img-preview-container {
-    position: absolute;
-    left: 19.5rem;
-    bottom: 1.1rem;
-    width: calc(100% - 42rem);
-    height: 6rem;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-gap: 1rem;
-    align-items: center;
+  position: absolute;
+  left: 19.5rem;
+  bottom: 1.1rem;
+  width: calc(100% - 42rem);
+  height: 6rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 1rem;
+  align-items: center;
 }
 
 .post-tweet-img-preview {
-    position: relative;
-    height: auto;
-    width: 100%;
-    cursor: pointer;
+  position: relative;
+  height: auto;
+  width: 100%;
+  cursor: pointer;
 }
 
 .post-tweet-img-preview img {
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-    max-height: 6rem;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  max-height: 6rem;
 }
 
-/*changed - 1*/
-.post-tweet-img-preview i {
-    position: absolute;
-    font-size: 6rem;
-    color: var(--saito-color-primary);
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    justify-content: center;
-    align-items: center;
-    display: none;
+.post-tweet-img-preview i{
+  position: absolute;
+  font-size: 6rem;
+  color: blue; /* testing */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  display: none;
 }
 
 .post-tweet-img-preview:hover img {
-    filter: brightness(0.5);
+  filter: brightness(0.5);
 }
 
 .post-tweet-img-preview:hover i {
-    display: flex;
+  display: flex;
 }
 
 .post-tweet-button, .post-delete-button {
-    width: 20rem;
-    margin-right: 0;
-    line-height: 4.5rem;
-    font-size: 2.2rem;
+  width: 20rem;
+  margin-right: 0;
+  line-height: 4.5rem;
+  font-size: 2.2rem;
 }
+
 
 @media screen and (max-width: 768px) {
-    .post-tweet-preview {
-        display: none
-        }
-    .tweet-overlay {
-        max-width: 98vw
-        }
-    .tweet-overlay .post-tweet-button {
-        min-width: unset;
-        max-width: calc(100% - 24rem);
-        padding: 0.5rem 0
-        }
-    .post-tweet-img-preview-container {
-        width: calc(100% - 2rem);
-        left: 1rem;
-        top: calc(100% + 0.5rem)
-        }
-    }
+  .post-tweet-preview {
+      display: none;
+  }
+
+  .tweet-overlay {
+    max-width: 98vw;
+  }
+
+  .tweet-overlay .post-tweet-button {
+    min-width: unset;
+    max-width: calc(100% - 24rem);
+    padding: 0.5rem 0;
+  }
+
+  .post-tweet-img-preview-container {
+    width: calc(100% - 2rem);
+    left: 1rem;
+    top: calc(100% + 0.5rem);
+  }
+
+}
+
 
 /**  In screen reply  */
-
 .tweet-manager .tweet-overlay {
-    padding-left: 5rem;
+  padding-left: 5rem;
 }
 
-.tweet-manager .post-tweet-textarea {
-    min-height: unset;
-    height: 10rem;
+.tweet-manager .post-tweet-textarea{
+  min-height: unset;
+  height: 10rem;
 }
 
-.tweet-manager .post-tweet-button {
-    line-height: 3rem;
+.tweet-manager .post-tweet-button{
+  line-height: 3rem;
 }
 
 .tweet-manager .saito-input-large {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
-.tweet-manager .saito-input-large .selection-box-tabs {
-    align-items: center;
-    width: 12rem;
-    margin-left: unset;
+.tweet-manager .saito-input-large .selection-box-tabs{
+  align-items: center;
+  width: 12rem;
+  margin-left: unset;
 }
-

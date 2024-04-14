@@ -1,34 +1,28 @@
 .saito-img-flex {
-    /*--image-height: 200px;
-    */
-display: flex;
+    /*--image-height: 200px;*/
+    display: flex;
     overflow: hidden;
     flex-wrap: wrap;
     margin: -2.5px;
 }
 
-/*changed - 1*/
-.saito-img-flex > * {
+.saito-img-flex>* {
     position: relative;
     display: block;
     height: var(--image-height);
-    /* Doesn't exist! */
-margin: 2.5px;
+    margin: 2.5px;
     flex-grow: 1;
     max-height: var(--multi-max-height);
-    /* Doesn't exist! */;
 }
 
-/*changed - 1*/
-.saito-img-flex > * > img {
+.saito-img-flex>*>img {
     height: var(--image-height);
-    object-fit: contain;
+    object-fit: cover;
     max-width: 100%;
     min-width: 100%;
     vertical-align: bottom;
     max-height: var(--multi-max-height);
-    /* Doesn't exist! */
-border-radius: 0.4rem;
+    border-radius: var(--border-radius-image-flex);
 }
 
 .saito-img-flex.saito-img-flex-margin {
@@ -36,16 +30,15 @@ border-radius: 0.4rem;
 }
 
 @media (max-width: 980px) {
-    .saito-img-flex > *, .saito-img-flex > * > img {
-        height: calc(var(--image-height) * 0.75)
-        }
+    .saito-img-flex>*, .saito-img-flex>*>img {
+        height: calc(var(--image-height) * 0.75);
     }
+}
 
 @media (max-width: 400px) {
-    .saito-img-flex > *, .saito-img-flex > * > img {
-        height: calc(var(--image-height) * 0.5)
-        }
+    .saito-img-flex>*, .saito-img-flex>*>img {
+        height: calc(var(--image-height) * 0.5);
     }
+}
 
 /* borrowing heavily from flexbin */
-

@@ -17,12 +17,29 @@ class MovementOverlay {
 		return;
 	}
 
+	renderForceOpen(mobj, units_to_move, selectUnitsInterface = null, selectDestinationInterface = null) {
+		this.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface, true);
+	}
+
+
 	render(
 		mobj,
 		units_to_move = null,
 		selectUnitsInterface = null,
-		selectDestinationInterface = null
+		selectDestinationInterface = null ,
+		force_open = false ,
 	) {
+
+		if (force_open == false) {
+                	this.overlay.closebox = false;
+                	this.overlay.clickToClose = false;
+                	this.overlay.clickBackdropToClose = false;
+		} else {
+                	this.overlay.closebox = true;
+                	this.overlay.clickToClose = false;
+                	this.overlay.clickBackdropToClose = true;
+		}
+
 		let his_self = this.mod;
 		let space = mobj.space;
 		this.mobj = mobj;
@@ -36,7 +53,6 @@ class MovementOverlay {
 			faction,
 			source
 		);
-console.log("max formation size: " + max_formation_size);
 		let units = space.units[faction];
 
 		let from = this.mod.game.spaces[source].name;
@@ -118,13 +134,11 @@ console.log("max formation size: " + max_formation_size);
 	}
 
 	attachEvents(obj) {
-	  
 	  document.querySelectorAll(".movement-unit.option").forEach((el) => {
 	    el.onclick = (e) => {
 	      this.fade_out_available_units = true;
 	    }
 	  });
-
 	}
 }
 

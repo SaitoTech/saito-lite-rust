@@ -1,4 +1,3 @@
-/*changed - 1*/
 .saito-overlay-backdrop {
     position: fixed !important;
     display: none;
@@ -6,41 +5,39 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: var(--saito-background-shim-dark);
+    background-color: var(--background-color-shim-normal);
     z-index: 100;
 }
 
-/*changed - 1*/
 .saito-overlay {
     position: fixed;
     display: inline-block;
     z-index: 1000;
     height: min-content;
     width: min-content;
-    /*min-height: 10%;
-    Why? */
-max-height: calc(100 * var(--saito-vh));
+    /*min-height: 10%; Why? */
+    max-height: calc(100 * var(--saito-vh));
     max-width: 100vw;
-    box-shadow: var(--saito-bubble-shadow);
-    /* problems here if changed */;
+    box-shadow: var(--shadow-standard);
+    border-radius: var(--border-radius-modal-menu);
+    background-color: var(--background-color-overlay-menu); /* Dont know why had to be added manually*/
+
 }
 
-.center-overlay {
+.center-overlay{
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     margin: 0 auto;
 }
 
-.saito-overlay > div, .saito-overlay > form {
+.saito-overlay>div, .saito-overlay>form {
     /* This is much too broad and adds all kinds of issues in a variety of places.
-    box-shadow: var(--saito-box-shadow);
-    */;
+    box-shadow: var(--saito-box-shadow); */
 }
 
 /* Clickable container for close icon */
 
-/*changed - 1*/
 .saito-overlay-closebox {
     position: absolute;
     width: 2.7rem;
@@ -49,12 +46,12 @@ max-height: calc(100 * var(--saito-vh));
     z-index: 100;
     top: -1.5rem;
     right: -1.5rem;
-    background-color: var(--saito-color-white);
+    background-color: var(--font-color-icon-close); /* testing */
     transition: all 0.3s;
     display: none;
 }
 
-.saito-overlay > .saito-overlay-closebox {
+.saito-overlay>.saito-overlay-closebox {
     box-shadow: unset;
 }
 
@@ -65,13 +62,12 @@ max-height: calc(100 * var(--saito-vh));
 
 /* Close icon */
 
-/*changed - 1*/
 .saito-overlay-closebox-btn {
     cursor: pointer;
     display: block;
     height: 3rem;
     width: 3rem;
-    color: var(--saito-color-primary);
+    color: var(--background-color-icon-close);
     font-size: 3rem;
     border-radius: 50%;
     position: absolute;
@@ -84,32 +80,29 @@ max-height: calc(100 * var(--saito-vh));
     transform: rotate(90deg);
 }
 
-/*changed - 1*/
 .saito-overlay-form {
     width: 60rem;
     min-width: 300px;
     max-width: 90vw;
     padding: 2rem;
-    background-color: var(--saito-background-color);
+    background-color: var(--background-color-overlay-menu);
     display: flex;
     flex-direction: column;
     gap: 3rem;
-    border-radius: var(--saito-corners-rigid);
+    border-radius: 0.5rem;
 }
 
-/*changed - 1*/
 .saito-overlay-form-header {
     height: 6rem;
-    background: var(--saito-dreamscape);
+    background: var(--background-color-overlay-form-header);
     width: 100%;
-    border-radius: var(--saito-corners-rigid);
+    border-radius: 0.5rem;
 }
 
-/*changed - 1*/
 .saito-overlay-form-header-title {
     position: absolute;
     height: 6rem;
-    color: var(--saito-color-white);
+    color: var(--font-color-overlay-form-header);
     width: calc(100% - 3.2rem);
     padding: 1.6rem;
     font-size: 2.5rem;
@@ -120,7 +113,7 @@ max-height: calc(100 * var(--saito-vh));
     text-overflow: ellipsis;
 }
 
-.saito-overlay-form-header-title.loading {
+.saito-overlay-form-header-title.loading{
     line-height: 6rem;
     text-align: left;
     padding-top: 0rem;
@@ -130,11 +123,10 @@ max-height: calc(100 * var(--saito-vh));
     margin: 0 3px;
 }
 
-/*changed - 1*/
 .saito-overlay-form-text {
     font-size: 2rem;
     line-height: 3rem;
-    color: var(--saito-color-contrast);
+    color: var(--font-color-overlay-form-text); 
     padding: 0 1rem;
 }
 
@@ -144,18 +136,18 @@ max-height: calc(100 * var(--saito-vh));
     gap: 1rem;
 }
 
-.saito-overlay-form-inputs > input[type="text"] {
+.saito-overlay-form-inputs>input[type="text"] {
     height: 6rem;
     font-size: 2.3rem;
     margin-top: 1.25rem;
 }
 
-.saito-overlay-form > input[type="text"], .saito-overlay-form-input[type="text"] {
+.saito-overlay-form>input[type="text"], .saito-overlay-form-input[type="text"] {
     height: 6rem;
     font-size: 2.3rem;
 }
 
-.saito-overlay-form > button[type="button"], .saito-overlay-form-submitline > button[type="button"] {
+.saito-overlay-form>button[type="button"], .saito-overlay-form-submitline>button[type="button"] {
     height: 7rem;
     font-size: 2.1rem;
     width: 20rem;
@@ -163,13 +155,12 @@ max-height: calc(100 * var(--saito-vh));
     align-self: flex-end;
 }
 
-/*changed - 1*/
 .saito-overlay-subform {
     display: grid;
     grid-template-columns: min-content 1fr;
     gap: 1rem;
-    border: 1px dashed var(--saito-border-color-secondary);
-    border-radius: var(--saito-border-radius);
+    border: var(--border-thickness-overlay-subform) dashed var(--border-color-overlay-subform); 
+    border-radius: 10px;
     padding: 1.4rem;
 }
 
@@ -185,11 +176,10 @@ max-height: calc(100 * var(--saito-vh));
     line-height: 3rem;
 }
 
-/*changed - 1*/
 .saito-overlay-form-alt-opt {
     margin-left: 2rem;
     font-size: 1.8rem;
-    color: var(--saito-color-contrast);
+    color: var(--font-color-overlay-subform-recover); /* testing */
     width: min-content;
     white-space: nowrap;
     cursor: pointer;
@@ -206,56 +196,57 @@ max-height: calc(100 * var(--saito-vh));
     gap: 1rem;
 }
 
-/*changed - 1*/
 .saito-overlay-form textarea, .saito-overlay-form input {
-    border: 1px solid var(--saito-color-light);
+    border: var(--border-thickness-overlay-input-area) solid var(--border-color-overlay-input-area);
 }
 
 @media screen and (max-width: 768px) {
     .saito-overlay-form-submitline {
-        flex-direction: column
-        }
-    .saito-overlay-form > button[type="button"], .saito-overlay-form-submitline > button[type="button"] {
-        width: 100%
-        }
+        flex-direction: column;
     }
+    .saito-overlay-form>button[type="button"], .saito-overlay-form-submitline>button[type="button"] {
+        width: 100%;
+    }
+}
 
 @media screen and (max-width: 600px) {
     .maximized-overlay .saito-overlay-closebox {
         top: 0.5rem;
-        right: 0.5rem
-        }
-    .saito-overlay-subform > div:first-child {
-        display: none
-        }
-    .saito-overlay-subform-inputs {
-        grid-column: span 2
-        }
+        right: 0.5rem;
     }
 
-/*changed - 1*/
+    .saito-overlay-subform > div:first-child {
+        display: none;
+    }
+
+    .saito-overlay-subform-inputs {
+        grid-column: span 2;
+    }
+
+
+}
+
+
 .module-settings-overlay {
     min-width: min(800px, 90vw);
     min-height: min(400px, 90vh);
     max-width: 95vw;
     max-height: 95vh;
-    padding: 2.5rem;
-    background: var(--saito-background-modal);
-    border-radius: 2.5rem;
-    border: 0 solid var(--saito-color-primary);
+    padding: 2rem;
+    background: var(--background-color-overlay-menu);
+    border-radius: var(--border-radius-overlay-menu);
+    border: var(--border-thickness-overlay-menu) solid var(--border-color-overlay-menu); 
     display: flex;
     flex-direction: column;
 }
 
+
 .module-settings-overlay .saito-module-settings::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 .module-settings-overlay .saito-module-settings {
-    -ms-overflow-style: none;
-    /* IE and Edge */
-scrollbar-width: none;
-    /* Firefox */
-overflow-y: auto;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+  overflow-y: auto;
 }
-

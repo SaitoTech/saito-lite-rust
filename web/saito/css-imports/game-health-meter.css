@@ -2,7 +2,7 @@
 	height: calc(100%);
 	width: 10px;
 	border: solid 1px gray;
-	background-color: black;
+	background-color: var(--color-black);
 	position: absolute;
 	left: -15px;
 	top: -1px;
@@ -13,4 +13,5 @@
 	width: 100%;
 	position: absolute;
 	bottom: 0;
+	background-color: var(--color-red);
 }

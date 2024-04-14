@@ -3777,6 +3777,8 @@ console.log("selected: " + spacekey);
 
 	his_self.displayVictoryTrack();
 
+	return 1;
+
       }
     }
     let sl_img = "cards/HIS-013.svg";
@@ -5077,8 +5079,8 @@ console.log("selected: " + spacekey);
 	  }
 
 	  if (faction == null || source == null || unit_idx == null) { his_self.endTurn(); return 0; }
+	  his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}\t${f}`);
   	  his_self.addMove(`discard\t${f}\t032`);
-	  his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}`);
 	  if (his_self.game.deck[0].discards["031"]) {
             his_self.addMove("SETVAR\tstate\tevents\tintervention_on_movement_possible\t0");
 	  }
@@ -5329,7 +5331,7 @@ console.log("selected: " + spacekey);
             if (his_self.game.deck[0].fhand[i].includes('035')) {
               f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               i = 100;
-              return { faction : f , event : '035', html : `<li class="option" id="035">seige artillery (${f})</li>` };
+              return { faction : f , event : '035', html : `<li class="option" id="035">siege artillery (${f})</li>` };
             }
           }
         }   
@@ -5353,11 +5355,11 @@ console.log("selected: " + spacekey);
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu === "pre_assault_rolls") {
-	  his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" plays " + his_self.popup("034"));
-          his_self.addMove("discard\t"+faction+"\t034");
+	  his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" plays " + his_self.popup("035"));
+          his_self.addMove("discard\t"+faction+"\t035");
           his_self.addMove("add_assault_bonus_rolls\t"+faction+"\t2");
           his_self.addMove("SETVAR\tstate\tassault\tsiege_artillery\t1");
-	  his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" triggers " + his_self.popup("034"));
+	  his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" triggers " + his_self.popup("035"));
 	  his_self.endTurn();
 	  his_self.updateStatus("acknowledge");
         }
@@ -5437,8 +5439,10 @@ console.log("selected: " + spacekey);
 	  if (his_self.game.player == player) {
             his_self.playerPlaceUnitsInSpaceWithFilter("mercenary", num, faction,
 	      function(space) {
-		for (let z = 0; z < space.units[faction].length; z++) { 
-		  if (space.units[faction][z].besieged > 0) { return 0; }
+		for (let f in space.units) {
+		  for (let z = 0; z < space.units[f].length; z++) { 
+		    if (space.units[f][z].besieged > 0) { return 0; }
+	          }
 	        }
 		if (his_self.returnFactionLandUnitsInSpace(faction, space.key)) { return 1; }
 		if (his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 1; }
@@ -5840,10 +5844,14 @@ console.log("selected: " + spacekey);
       canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
+	his_self.game.state.events.roxelana = 1;
+
 	if (faction === "ottoman") {
-	  his_self.game.queue.push("ops\tottoman\t042\t4");
-	  his_self.game.state.events.roxelana = 1;
-	  return 1;
+	  if (his_self.game.player == his_self.returnPlayerCommandingFaction("ottoman")) {
+	    his_self.addMove("ops\tottoman\t042\t4");
+	    his_self.endTurn();
+	    return 1;
+	  }
 	} else {
 
 	  if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
@@ -5867,11 +5875,11 @@ console.log("selected: " + spacekey);
 	      let sk_idx = his_self.returnIndexOfPersonageInSpace("ottoman", "suleiman", sk);
 
 	      if (action === "yes" && sk != "") {
-	        his_self.game.queue.push("ops\t"+faction+"\t042\t2");
+	        his_self.addMove("ops\t"+faction+"\t042\t2");
 	        his_self.addMove("move" + "\t" + "ottoman" + "\t" + "land" + "\t" + sk + "\t" + "istanbul" + "\t" + sk_idx + "\t1");
 	      }
 	      if (action === "no") {
-	        his_self.game.queue.push("ops\t"+faction+"\t042\t4"); 
+	        his_self.addMove("ops\t"+faction+"\t042\t4"); 
 	      }
 	      his_self.endTurn();
 
@@ -8021,7 +8029,7 @@ console.log("selected: " + spacekey);
       onEvent : function(his_self, faction) {
 
 	let p = his_self.returnPlayerOfFaction(faction);
-        if (his_self.game.player == 0) {
+        if (his_self.game.player == p) {
 
 	  let mp = his_self.returnMinorPowers();
 	  let ca = [];
@@ -8030,13 +8038,14 @@ console.log("selected: " + spacekey);
 	  for (let i = 0; i < mp.length; i++) {
 	    if (his_self.canFactionActivateMinorPower(faction, mp[i])) {
 	      if (his_self.returnAllyOfMinorPower(mp[i]) == faction) {
-	        ca.push(mp[i]);
-	      } else {
 	        cd.push(mp[i]);
+	      } else {
+	        ca.push(mp[i]);
 	      }
 	    }
 	  }
 	
+	  let msg = 'Activate or De-activate a Minor Power?';
     	  let html = '<ul>';
 	  for (let i = 0; i < ca.length; i++) {
             html += `<li class="option" id="${ca[i]}">activate ${ca[i]}</li>`;
@@ -8050,11 +8059,9 @@ console.log("selected: " + spacekey);
 	  $('.option').on('click', function () {
 	    let action = $(this).attr("id");
 	    if (ca.includes(action)) {
-
 	      if (faction === "hapsburg" && action == "hungary") {
 		his_self.game.state.events.diplomatic_alliance_triggers_hapsburg_hungary_alliance = 1;
 	      }
-
 	      his_self.addMove("activate_minor_power\t"+faction+"\t"+action);
 	    } else {
 	      his_self.addMove("deactivate_minor_power\t"+faction+"\t"+action);
@@ -8443,7 +8450,9 @@ console.log("selected: " + spacekey);
 		  his_self.addMove("unrest\t"+space1);
 		  his_self.addMove("unrest\t"+space2);
 		  his_self.endTurn();
-		}
+		},
+		null,
+		true
 	      );
 	    },
 	    null,
@@ -8970,6 +8979,7 @@ console.log("selected: " + spacekey);
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
+
 	if (his_self.game.state.events.barbary_pirates == 1) {
 
 	  let target_oran = false;
@@ -9659,7 +9669,7 @@ console.log("selected: " + spacekey);
 
 	      his_self.updateStatus("acknowledge");
 
-              if (action === "yes") {
+              if (action == "yes") {
 		
 		//
 		// pick unit on map with player land units and select one to remove
@@ -9668,7 +9678,7 @@ console.log("selected: " + spacekey);
 
 		  "Select Space to Remove 1 Land Unit",
 
-		  (space) => { return his_self.returnFactionLandUnitsInSpace(faction, space.key); },
+		  (space) => { if (his_self.returnFactionLandUnitsInSpace(faction, space.key) > 0) { return 1; } else { return 0; } },
 
 		  (spacekey) => {
 		    
@@ -9680,19 +9690,19 @@ console.log("selected: " + spacekey);
 
 		    for (let i = 0; i < space.units[faction].length; i++) {
 		      if (space.units[faction][i].type === "cavalry") {
-   	                html += '<li class="option" id="${i}">cavalry</li>';
+   	                html += `<li class="option" id="${i}">cavalry</li>`;
 			break;
 		      }
 		    }
 		    for (let i = 0; i < space.units[faction].length; i++) {
 		      if (space.units[faction][i].type === "regular") {
-   	                html += '<li class="option" id="${i}">regular</li>';
+   	                html += `<li class="option" id="${i}">regular</li>`;
 			break;
 		      }
 		    }
 		    for (let i = 0; i < space.units[faction].length; i++) {
 		      if (space.units[faction][i].type === "mercenary") {
-   	                html += '<li class="option" id="${i}">mercenary</li>';
+   	                html += `<li class="option" id="${i}">mercenary</li>`;
 			break;
 		      }
 		    }
@@ -9706,6 +9716,7 @@ console.log("selected: " + spacekey);
 
 	              let action = parseInt($(this).attr("id"));
 
+		      his_self.updateStatus("removing unit...");
 		      his_self.addMove(	"remove_unit" + "\t" +
 					"land" + "\t" +
 					faction + "\t" +
@@ -10299,7 +10310,7 @@ console.log("selected: " + spacekey);
       onEvent(his_self, faction) {
         his_self.game.state.conquests.push(faction);
 	his_self.game.state.events.smallpox = faction;
-	his_self.displayColony();
+	his_self.displayConquest();
         return 1;
       },
     }
@@ -10746,8 +10757,9 @@ console.log("selected: " + spacekey);
 	    true
           );
 
-          return 0;
         }
+
+        return 0;
       },
     }
     deck['107'] = { 

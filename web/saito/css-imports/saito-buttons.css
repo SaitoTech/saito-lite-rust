@@ -2,67 +2,69 @@
 buttons
 -----------------------------------------------------------------*/
 
-button, .saito-button-primary {
-    background: var(--saito-primary-background);
-    transition: 0.5s;
-    background-size: 400% auto;
-    padding: 1rem 1.5rem;
-    text-align: center;
-    letter-spacing: 1px;
-    min-width: 18rem;
-    font-size: 1.8rem;
-    color: var(--saito-white);
-    font-weight: 500;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    border: 1px solid transparent;
-    background-position: 1% 1%
-    }
-
-/*changed - 1*/
-.saito-button-secondary {
-    padding: 1rem 1.5rem;
-    text-align: center;
-    letter-spacing: 1px;
-    font-size: 1.8rem;
-    font-weight: 500;
-    min-width: 18rem;
-    border-radius: var(--saito-border-radius);
-    cursor: pointer;
-    margin: 0.5rem;
-    border: var(--saito-button-border-thickness-medium) solid var(--saito-button-border-color-medium);
-    color: var(--saito-button-font-color-medium);
-    background: var(--saito-background-color);
+button,
+.saito-button-primary { /* controls main post buttons */
+  background: var(--background-color-button-primary);
+  transition: 0.5s;
+  background-size: 400% auto;
+  padding: 1rem 1.5rem;
+  text-align: center;
+  letter-spacing: 1px;
+  min-width: 18rem;
+  font-size: 1.8rem;
+  color: var(--font-color-button-primary);
+  font-weight: 500;
+  border-radius: var(--border-radius-button-primary);
+  cursor: pointer;
+  border: var(--border-thickness-button-primary) solid var(--border-color-button-primary);
+  background-position: 1% 1%;
+  box-shadow: var(--shadow-primary-button);
 }
 
-button:hover, .saito-button-primary:hover {
-    background-position: 99% 99%;
-    /* change the direction of the change here */
-color: #fff /*variable*/;
-    text-decoration: none;
+.saito-button-secondary { /* found in the settings, top wallet control buttons */
+  padding: 1rem 1.5rem;
+  text-align: center;
+  letter-spacing: 1px;
+  font-size: 1.8rem;
+  font-weight: 500;
+  min-width: 18rem;
+  border-radius: var(--border-radius-button-wallet-control);
+  cursor: pointer;
+  margin: 0.5rem;
+  border: var(--border-thickness-button-wallet-control) solid var(--border-color-button-wallet-control);
+  color: var(--font-color-button-wallet-control);
+  background: var(--background-color-button-wallet-control);
 }
 
-/*changed - 1*/
+button:hover, .saito-button-primary:hover{
+  background-position: 99% 99%; /* change the direction of the change here */
+  color: var(--font-color-button-hover-primary);
+  border: var(--border-thickness-button-hover-primary) solid var(--border-color-button-hover-primary);
+
+  text-decoration: none;
+}
+
 .saito-button-primary.disabled {
-    background: var(--saito-background-color);
-    color: var(--saito-color-primary);
-    border: 1px solid var(--saito-color-primary);
-    cursor: unset;
-    pointer-events: none;
+  background: var(---background-color-main); /* testing */
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  cursor: unset;
+  pointer-events: none;
 }
 
-/*changed - 1*/
 .saito-button-secondary:hover {
-    background: var(--saito-color-primary);
-    color: var(--saito-color-white);
+  background: blue;
+  color: var(--font-color-button-hover-wallet-control);
 }
 
-button.small, .saito-button-primary.small, .saito-button-secondary.small, .saito-button-gradient.small {
-    padding: 0.75rem 0.7rem;
-    font-size: 1.4rem;
-    min-width: 4rem;
+button.small,
+.saito-button-primary.small,
+.saito-button-secondary.small,
+.saito-button-gradient.small {
+  padding: 0.75rem 0.7rem;
+  font-size: 1.4rem;
+  min-width: 4rem;
 }
-
 button.fat, saito-button-primary.fat, .saito-button-secondary.fat, saito-button-gradient.fat {
     height: 7rem;
     font-size: 2rem;

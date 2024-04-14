@@ -9,7 +9,7 @@ module.exports = StunLaunchTemplate = (app, mod) => {
                 <div>peer-to-peer video chat</div>
               </div>
               <fieldset class="stun-input-settings">
-                <legend>Adjust Inputs</legend>
+                <legend class="stun-input-settings-label">Adjust Inputs</legend>
                 <select style="display:none" class="saito-select" id="video-input"></select>
                 <select style="display:none" class="saito-select" id="audio-input"></select>
                 <button style="display:none"  id="test-mic" class="chat-settings-test-mic">Test Microphone</button>

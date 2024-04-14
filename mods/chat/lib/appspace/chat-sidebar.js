@@ -109,6 +109,29 @@ class ChatSidebar {
       }
     }
 
+    // Add .remove_user functionality
+    Array.from(document.querySelectorAll(".remove_user")).forEach((member) => {
+      member.onclick = async (e) => {
+        let person = e.currentTarget.dataset.id;
+        if (person){
+            await this.mod.sendRemoveMemberTransaction(
+            chat,
+            person
+          );
+
+          for (let i = 0; i < chat.members.length; i++) {
+            if (chat.members[i] == person) {
+              chat.members.splice(i, 1);
+              break;
+            }
+          }
+
+          chat.member_ids[person] = -1;
+        }
+      }
+    });
+
+
   }
 }
  
