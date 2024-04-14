@@ -59,11 +59,9 @@ class CryptoSelectAmount {
 				this_self.errors.checkbox) {
 				return;
 			}
-
-			alert('success!!');
-			return;
  
 			if (callback != null) {
+				let amount = stake_input.value;
 				this.overlay.hide();
 				callback(amount);
 			}

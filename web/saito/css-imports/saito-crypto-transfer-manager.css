@@ -32,6 +32,7 @@ input[type="checkbox"].ignore_checkbox {
 .stake-input-error {
   display: none;
   color: red;
+  font-size: 1.6rem;
 }
 
 /* Chrome, Safari, Edge, Opera */

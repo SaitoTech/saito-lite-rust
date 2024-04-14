@@ -11,15 +11,14 @@ module.exports = (app, mod) => {
 
         <div class="crypto_msg select_max">Max: ${mod.max_balance}</div>
         <div class="crypto-ticker">${mod.ticker}</div>
-
-        <div class="stake-input-error" id="stake-amount-error"></div>
       </div>
+      <div class="stake-input-error" id="stake-amount-error"></div>
 
       <div class="crypto-stake-confirm-container">
-        <input type="checkbox" name="crypto-stake-confirm-input" id="crypto-stake-confirm-input">
+        <input type="checkbox" checked name="crypto-stake-confirm-input" id="crypto-stake-confirm-input">
         <label for="crypto-stake-confirm-input" class="commentary">peer-to-peer gaming is legal in my jurisdiction</label>
-        <div class="stake-input-error" id="stake-checkbox-error"></div>
       </div>
+      <div class="stake-input-error" id="stake-checkbox-error"></div>
 
       <div class="button saito-button-primary crypto_amount_btn" id="enable_staking_no">confirm</div>
 
