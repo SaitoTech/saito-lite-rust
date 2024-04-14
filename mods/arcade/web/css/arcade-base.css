@@ -30,12 +30,12 @@
 }
 
 /*button, .saito-button-primary, .saito-button-secondary:hover {*/
-.saito-button-secondary:hover {
-	background: var(--saito-button-background);
+.saito-button-secondary:hover { 
+	background: var(--background-color-button-mod-arcade);
 }
 
 .saito-button-secondary {
-	color: var(--saito-font-color);
+	color: var(--font-color-button-module);
 }
 
 .arcade-initializer {
@@ -79,7 +79,7 @@
 	height: 6rem;
 	z-index: 5;
 	pointer-events: none;
-    background: linear-gradient(180deg, transparent, var(--saito-background-color));
+    background: linear-gradient(180deg, transparent, var(--background-color-main));
 } 
 
 .arcade-game-list-container.can-scroll-down:hover::after {
@@ -87,11 +87,11 @@
   content: "\f0d7";
   position: absolute;
   bottom: 0;
-  color: var(--saito-border-color-dark);
+  color: var(--border-color-general-dividers-dark);
   font-size: 4rem;
   z-index: 999;
   text-align: center;
-  border-radius: var(--saito-border-radius);
+  border-radius: var(--border-radius-arcade-game-list);
   left: 50%;
   transform: translateX(-50%);
   line-height: 4rem;
@@ -107,7 +107,7 @@
 	height: 6rem;
 	z-index: 5;
 	pointer-events: none;
-    background: linear-gradient(0deg, transparent, var(--saito-background-color));
+    background: linear-gradient(0deg, transparent, var(--background-color-main));
 } 
 
 .arcade-menu.can-scroll-up:hover::after {
@@ -115,11 +115,11 @@
   content: "\f0d8";
   position: absolute;
   top: 4rem;
-  color: var(--saito-border-color-dark);
+  color: var(--border-color-general-dividers-dark);
   font-size: 4rem;
   z-index: 999;
   text-align: center;
-  border-radius: var(--saito-border-radius);
+  border-radius: var(--border-radius-arcade-menu);
   left: 50%;
   transform: translateX(-50%);
   line-height: 4rem;

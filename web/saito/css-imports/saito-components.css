@@ -4,8 +4,8 @@
   min-width: 2rem;
   min-height: 2rem;
   border-radius: 0.5rem;
-  background-color: var(--saito-primary);
-  color: var(--saito-white);
+  background-color: var(--background-color-notification-status); 
+  color: var(--color-white); /* testing */
   position: absolute;
   bottom: 2.5rem;
   left: 3.5rem;
@@ -29,18 +29,18 @@
   border-radius: 100%;
   width: 1.5rem;
   height: 1.5rem;
-  background-color: var(--saito-primary);
+  background-color: var(--background-color-notification-status);
 }
 
 .online .online-status-indicator:after {
   display: block;
   top: 2.9rem;
   left: 2.75rem;
-  border: 2px solid var(--saito-background-color);
+  border: 20px solid var(--border-color-notification-status);
 }
 
 .busy .online-status-indicator:after {
-  background-color: var(--saito-font-color);
+  background-color: var(--background-color-notification-status-after);
 }
 
 

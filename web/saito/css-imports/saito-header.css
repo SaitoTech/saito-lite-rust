@@ -2,7 +2,7 @@
   position: fixed;
   display: flex;
   width: 100vw;
-  background: var(--saito-arcade-header-background);
+  background: var(--saito-arcade-header-background); /* seems it must remain!*/
   backdrop-filter: blur(5px);
   margin: 0;
   align-items: center;
@@ -34,7 +34,7 @@
   transform: scaleX(1.3);
   width: 4rem;
   text-align: center;
-  color: var(--saito-white);
+  color: var(--font-color-menu-hamburger);
 }
 
 #saito-header-menu-toggle:hover {
@@ -52,7 +52,7 @@
   height: 4px;
   margin-bottom: 5px;
   position: relative;
-  background: var(--saito-white);
+  background: green; /* testing */
   border-radius: 3px;
   z-index: 1;
   transform-origin: 4px 0px;
@@ -77,12 +77,13 @@
 .saito-header-hamburger-contents {
   display: block;
   pointer-events: none;
-  background-color: var(--saito-background-color);
+  background-color: var(--background-color-menu-hamburger-chat); /* affects chat only, it seems*/
+  border-radius: var(--border-radius-menu-hamburger);
   position: absolute;
   right: 0;
   top: var(--saito-header-height);
-  border-top: 1px solid var(--saito-border-color);
-  border-left: 1px solid var(--saito-border-color);
+  border-top: 1px solid var(--border-color-general-dividers);
+  border-left: 1px solid var(--border-color-general-dividers);
   transition: all 0.2s;
   opacity: 0;
   z-index: 20;
@@ -99,13 +100,13 @@
 }
 
 .saito-header-menu-section li i {
-  color: var(--saito-primary);
+  color: orange;
   font-size: 2rem !important;
   width: 0.5rem !important;
 }
 
 .saito-header-menu-section:not(:last-child) {
-  border-bottom: 1px solid var(--saito-border-color);
+  border-bottom: 1px solid var(--border-color-general-dividers);
 }
 
 .show-menu {
@@ -156,10 +157,10 @@
   height: auto;
   max-width: 20rem;
   width: 20vh;
-  border: 2px solid var(--saito-black);
+  border: var(--border-thickness-qr-code) solid var(--border-color-qr-code);
   padding: 0.5rem;
-  border-radius: 0.5rem;
-  background: var(--saito-white);
+  border-radius: var(--border-radius-qr-code);
+  background: var(--background-color-qr-code);
 }
 
 .balance-amount {
@@ -191,22 +192,22 @@
   background: none;
   width: auto;
   font-size: 2.2rem;
-  color: var(--saito-font-color);
+  color: var(--font-color-primary);
 }
 
 .wallet-btn-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-column-gap: 3.3rem;
-  background: var(--saito-font-color);
-  border-radius: 0.5rem;
+  background: var(--background-color-menu-hamburger-midsection);
+  border-radius: var(--border-radius-menu-hamburger-midsection);
   padding: 0.75rem;
   width: 95%;
   text-transform: uppercase;
 }
 
 .wallet-btn {
-  color: var(--saito-background-color);
+  color: var(--font-color-menu-hamburger-midsection);
   display: flex;
   cursor: pointer;
   flex-direction: column;
@@ -279,7 +280,7 @@
 }
 
 #header-username {
-  color: var(--saito-white);
+  color: var(--font-color-header-username);
   cursor: pointer;
   font-size: 2rem;
   padding: 0 0 0 2rem;
@@ -297,7 +298,7 @@
   width: 6rem;
   height: 6rem;
   transition: transform 200ms ease-out;
-  background-color: var(--saito-primary);
+  background-color: blue; /* testing */
   border-radius: 50%;
   z-index: 6;
   cursor: pointer;
@@ -324,12 +325,12 @@
   height: 5rem;
   border-radius: 50%;
   z-index: 5;
-  background-color: var(--saito-background-color);
+  background-color: blue;
   transition: box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  box-shadow: 1px 1px 1px var(--saito-border-color-dark), -1px -1px 1px var(--saito-border-color-dark), -1px 1px 1px var(--saito-border-color-dark), 1px -1px 1px var(--saito-border-color-dark);
+  box-shadow: 1px 1px 1px var(--border-color-general-dividers-dark), -1px -1px 1px var(--border-color-general-dividers-dark), -1px 1px 1px var(--border-color-general-dividers-dark), 1px -1px 1px var(--border-color-general-dividers-dark);
   line-height: 5.5rem;
-  border: 1px solid var(--saito-border-color);
-  color: var(--saito-font-color);
+  border: 10px solid var(--border-color-general-dividers); /* testing */
+  color: blue;
   cursor: pointer;
   text-align: center;
 }
@@ -348,7 +349,7 @@
 .saito-floating-menu-mask {
   width: 100%;
   height: 100%;
-  background: var(--saito-background-color);
+  background: green;
   position: absolute;
   top: 0rem;
   left: 0rem;
@@ -400,12 +401,12 @@
   position: absolute;
   font-size: 40px;
   padding: 0.75rem;
-  color: var(--saito-white);
+  color: var(--font-color-button-header-back);
   cursor: pointer;
   transition: transform 0.2s;
   top: 0;
   left: 0;
-  background: var(--saito-arcade-header-background);
+  background: var(--saito-arcade-header-background); /* Keep */
   background-size: 100vw;
   background-position-x: min(-2rem, calc(-(100vw - var(--saito-width)) / 2 + 0.5rem));
 }

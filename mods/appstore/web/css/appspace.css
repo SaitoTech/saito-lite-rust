@@ -68,7 +68,7 @@
 	min-width: 300px;
 	display: grid;
 	position: relative;
-	border: 1px solid var(--saito-border-color);
+	border: 1px solid var(--border-color-general-dividers); /* testing */
 	border-top: none;
 	margin-bottom: 2rem;
 }
@@ -102,18 +102,18 @@
 	margin: 0px;
 }
 .saito-button-secondary.small.saito-module-install-button:hover {
-	background-color: var(--saito-primary);
-	color: white;
-	border: 1px solid white;
+	background-color: var(--background-color-button-module); /* testing */
+	color: var(--color-white);
+	border: 1px solid var(--border-color-general-dividers); /* testing */
 	margin: 0px;
 }
 .appstore-bundler-install-notice {
 	font-size: 1.2em;
 	display: block;
-	border: 1px solid var(--saito-red);
-	background-color: var(--saito-cyber-black);
+	border: 1px solid var(--border-thickness-button-wallet-control); /* testing */
+	background-color: var(--color-black);
 	color: #fff;
 	font-family: 'visuelt-light', 'Microsoft Yahei', 'Hiragino Sans GB';
 	padding: 2rem;
-	color: black;
+	color: var(--font-color-text-primary);
 }

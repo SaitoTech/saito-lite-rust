@@ -5,7 +5,8 @@ Saito Identicon
 .saito-identicon {
   width: 3.5rem;
   height: 3.5rem;
-  border: 1px solid var(--saito-background-color);
+  border: var(--border-thickness-identicon) solid var(--border-color-identicon);
+  border-radius: var(--border-radius-identicon);
 }
 
 .saito-identicon-box {
@@ -56,7 +57,7 @@ Saito User
 }
 
 .saito-user>.saito-address {
-  color: var(--saito-font-color-heavy);
+  color: var(--font-color-chat-container-user-address);
   grid-column-start: 2;
   grid-column-end: span 1;
   grid-row-start: 1;

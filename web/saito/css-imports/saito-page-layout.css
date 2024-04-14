@@ -46,11 +46,11 @@
   margin: 0;
 }
 
-.saito-sidebar-element {
+.saito-sidebar-element { /* side bar controls*/
   padding: 0.5rem;
-  border-radius: 0.5rem;
-  box-shadow: 0px 2px 4px var(--saito-bubble-shadow);
-  background-color: var(--saito-sidebar-element-background);
+  border-radius: var(--border-radius-sidebar-menu);
+  box-shadow: var(--box-shadow-sidebar-elements);
+  background-color: var(--background-color-sidebar-left);
 }
 
 

@@ -41,7 +41,7 @@
 	width: 30rem;
 	max-width: 50vw;
 	overflow: visible;
-	border-right: 1px solid var(--saito-border-color);
+	border-right: var(--border-thickness-general-dividers) solid var(--border-color-general-dividers);
 	padding: 1rem;
 }
 
@@ -52,7 +52,7 @@
 }
 
 .chat-main-container .chat-header {
-	background-color: var(--saito-background-color);
+	background-color: var(--background-color-main);
 	cursor: default;
 }
 
@@ -77,18 +77,18 @@
 }
 
 .text-input {
-	border-radius: 5px;
-	box-shadow: 0 0 1px var(--saito-primary);
+	border-radius: var(--border-radius-text-input);
+	box-shadow: 0 0 1px var(--color-primary);
 }
 
 .chat-footer > i {
 	margin-left: 1rem;
 	border-radius: 50%;
-	background-color: var(--saito-background-color);
+	background-color: var(--background-color-main);
 	height: 4.3rem;
 	width: 4.3rem;
 	text-align: center;
-	box-shadow: 0 0 1px var(--saito-primary);
+	box-shadow: 0 0 1px var(--color-primary);
 }
 
 .chat-static.chat-popup .saito-notification-dot {

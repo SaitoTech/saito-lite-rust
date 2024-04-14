@@ -1,5 +1,5 @@
-.league-overlay {
-	background: var(--saito-arcade-background);
+.league-overlay { 
+	background: blue; /* testing */
 	width: 90vw;
 	padding: 2rem 1rem;
 	display: flex;
@@ -34,7 +34,7 @@
 	border-radius: 0.5rem;
 	height: 5rem;
 	width: 5rem;
-	border: 1px solid var(--saito-border-color);
+	border: 10px solid pink; /* testing */
 	line-height: 5rem;
 	text-align: center;
 }
@@ -70,7 +70,7 @@
 	top: 19%;
 	left: 43%;
 	font-size: 16px;
-	color: var(--saito-red);
+	color: blue; /* testing*/
 	width: unset;
 	padding: unset;
 	margin: unset;
@@ -87,8 +87,8 @@
 .menu-icon:hover i,
 .menu-icon.active-tab i,
 .league-overlay-controls .menu-icon.active-tab:hover i {
-	border-color: var(--saito-primary);
-	color: var(--saito-primary);
+	border-color: brown; /* testing */
+	color: brown;
 }
 
 .league-overlay-controls .menu-icon {
@@ -124,7 +124,7 @@
 	padding: 1.5rem;
 	border-radius: 0.5rem;
 	overflow-y: auto;
-	border: 1px solid var(--saito-border-color);
+	border: 10px solid orange; /* testing */
 	flex: 1;
 }
 
@@ -242,7 +242,7 @@ span.attention {
 	font-size: 30px;
 	font-weight: 900;
 	color: var(--saito-red);
-	text-shadow: 0px 0px 3px var(--saito-white);
+	text-shadow: var(--shadow-shape-flat) var(--color-white); /* testing */
 }
 
 .league_recent_game div {
@@ -257,7 +257,7 @@ span.attention {
 .alert_email,
 .alert_identifier {
 	position: relative;
-	box-shadow: 0px 0px 10px var(--saito-secondary) !important;
+	box-shadow: 0px 0px 10px var(--color-contrast) !important; /* testing */
 	cursor: pointer;
 }
 
