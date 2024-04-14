@@ -164,18 +164,16 @@ body {
 @media screen and (max-width: 1200px) {
 
 	:root {
-		--saito-width: 940px;
+		--saito-width: 920px;
 	}
 
 	.saito-container { 
-		grid-template-columns: minmax(7rem, auto) 54rem 30rem;
+		grid-template-columns: 6.5rem 5fr 30rem;
 	 }
 
 	 .saito-sidebar.left{
 	 	display: flex;
 	 	visibility: visible;
-	 	width: 7rem;
-	 	margin: 0 auto;
 	 }
 
  	.saito-floating-plus-btn {
@@ -185,22 +183,17 @@ body {
 
 }
 
-@media screen and (max-width: 940px) {
+@media screen and (max-width: 900px) {
 
 	:root {
-		--saito-width: 640px;
+		--saito-width: 620px;
 	}
 
 	.saito-container { 
-		grid-template-columns: minmax(7rem, auto) 54rem;
+		grid-template-columns: 6.5rem 54rem;
 		padding: 0 calc((100vw - var(--saito-width)) / 2);
-		column-gap: 1rem;
 	 }
 
-	 .saito-sidebar.right {
-	 	visibility: hidden;
-	 	display: none;
-	 }
 
 	.redsquare-page-header-title {
 		font-size: 2rem;
@@ -246,27 +239,16 @@ body {
 	z-index: 5;
 }
 
-@media screen and (max-width: 768px){
-	.saito-container{
-		column-gap: 0;
-	}
-}
+
 .saito-main {
 	padding-top: 1.5rem;
 }
 
-@media screen and (max-width: 900px) {
-	.saito-main{
-		padding: 0;
-		padding-top: 1.5rem;
-	}
-}
 
 
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 600px) {
 	.saito-container {
-		grid-template-columns: minmax(20rem, 1fr);
-		justify-content: center;
+		grid-template-columns: auto;
 	}
 
 	.saito-sidebar.left {
@@ -278,9 +260,5 @@ body {
 		display: flex;
 	}
 
-	.saito-main{
-		padding: 2rem 1rem 1rem 1rem;
-		max-width: 58rem;	
-	}
-    
+
 }

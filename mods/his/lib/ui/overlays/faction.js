@@ -36,14 +36,15 @@ class FactionOverlay {
 
 		for (let key in his_self.game.spaces) {
 			if (his_self.game.spaces[key].type === 'key') {
-
-			  	let owner = his_self.game.spaces[key].political;
-    			  	if (owner == "") { owner = his_self.game.spaces[key].home; }
-    			  	owner = his_self.returnControllingPower(owner);
-
-			  	if (owner == his_self.factions[faction].key) {
-			  	  controlled_keys++;
-			  	}
+				if (
+					his_self.game.spaces[key].political ===
+						his_self.factions[faction].key ||
+					(his_self.game.spaces[key].political === '' &&
+						his_self.game.spaces[key].home ===
+							his_self.factions[faction].key)
+				) {
+					controlled_keys++;
+				}
 			}
 		}
 

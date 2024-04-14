@@ -9,8 +9,8 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	background-color: var(--saito-background-color);
-	color: var(--saito-font-color);
+	background-color: black;
+	color: var(--saito-white);
 	padding: 3rem;
 	justify-content: center;
 	position: relative;
@@ -21,8 +21,8 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	background-color: var(--saito-background-color);
-    color: var(--saito-font-color);
+	background-color: black;
+	color: var(--saito-white);
 	justify-content: space-between;
 	width: min(400px, 98vw);
 	height: min(600px, 80vh);
@@ -88,6 +88,7 @@
 
 .stunx-appspace-splash {
 	text-align: center;
+	color: var(--saito-white);
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;

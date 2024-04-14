@@ -172,7 +172,7 @@ if (us['mercenary']) {
 	  	  let type = x[2];
 		  let is_army_leader = false
 
-
+		  // army leader
 		  let original_type = type;
 		  if (type.indexOf("_") > 0) { is_army_leader = true; type = type.replace(/_/g, "-"); }
 		  if (type === "renegade" || type === "dudley" || type === "montmorency" || type === "ferdinand" || type === "suleiman") { is_army_leader = true; }
@@ -203,6 +203,7 @@ if (us['mercenary']) {
 		  }
 
 		  if (adding == true) {
+
 
 	  	    this.units_already_moved_by_idx.push(idx);
 		    if (is_army_leader) { 
@@ -276,7 +277,6 @@ if (us['mercenary']) {
 		      }
 		    }
 		  }
-
                   this.mod.movement_overlay.selectUnitsInterface(this.mod, mobj.units_to_move, this.mod.movement_overlay.selectUnitsInterface, this.mod.movement_overlay.selectDestinationInterface);
 		  //
 		  // disable manual

@@ -56,8 +56,8 @@ export default class Network {
 	}
 
 	/*
-	You don't need to await this function, but it will pass back any return value
-	from the callback you provide (hopefully)
+    You don't need to await this function, but it will pass back any return value
+    from the callback you provide (hopefully)
   */
 	public async sendRequestAsTransaction(
 		message: string,
@@ -68,7 +68,7 @@ export default class Network {
 		return S.getInstance().sendRequest(message, data, callback, peerIndex);
 	}
 
-	public close() { }
+	public close() {}
 
 	addStunPeer() {
 		throw new Error('not implemented');
@@ -78,8 +78,9 @@ export default class Network {
 		throw new Error('not implemented');
 	}
 
-	returnPeersWithService() { }
+	returnPeersWithService() {}
 
+	updatePeersWithWatchedPublicKeys() {}
 
 	public getServices(): PeerService[] {
 		let my_services = [];

@@ -1,7 +1,3 @@
-.arcade-container{
-	column-gap: unset;
-}
-
 #saito-header {
 	background: var(--saito-arcade-header-background);
 	border-bottom: none;
@@ -135,11 +131,6 @@
  * Override saito-page-layout 
  * to make arcade better on mobile
 **************************************/
-@media screen and (max-width: 1200px) {
-	.arcade-main{
-		margin-left: 1rem;
-	}
-}
 
 @media screen and (max-width: 900px) {
 	.arcade-container .saito-sidebar.right {

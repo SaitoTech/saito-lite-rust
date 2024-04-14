@@ -42,7 +42,7 @@ module.exports = ChatTeaser = (app, mod, group, chat_open) => {
 
 	let classes = "saito-user " + notification;
 	if (group?.online) {
-		classes += group.online;
+		classes += " online";
 	}
 	if (chat_open){
 		classes += " saito-chat-active";
@@ -68,7 +68,7 @@ module.exports = ChatTeaser = (app, mod, group, chat_open) => {
     }
 
   html += `</div>
-    <div class="online-status-indicator"><i class="fa-solid fa-bolt-lightning"></i></div>
+    <div class="online-status-indicator"></div>
   </div>`;
 
   return html;

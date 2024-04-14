@@ -48,9 +48,5 @@
 
 .redsquare-progress-banner{
 	height: fit-content;
-	width: calc(100% - 2rem);
-	position: fixed;
-	z-index: 55;
-	max-width: 54rem;
-	top: var(--saito-header-height);
+	width: 100%;
 }

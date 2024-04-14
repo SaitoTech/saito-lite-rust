@@ -93,9 +93,6 @@ class RedSquareMain {
 
       }
 
-      // Update earliest so that we can set up infinite scroll
-      this.mod.tweets_earliest_ts--;
-
     });
 
     //

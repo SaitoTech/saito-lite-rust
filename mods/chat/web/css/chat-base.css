@@ -2,7 +2,6 @@
 	padding: 0;
 	overflow-y: hidden;
 	grid-template-columns: min-content auto;
-	column-gap: unset;
 }
 
 #saito-header {

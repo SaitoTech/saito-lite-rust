@@ -101,7 +101,7 @@ class WebMethods extends WebSharedMethods {
 		return list;
 	}
 
-	ensureBlockDirExists(path: string): void { }
+	ensureBlockDirExists(path: string): void {}
 }
 
 async function init() {

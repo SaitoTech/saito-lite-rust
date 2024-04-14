@@ -27,6 +27,20 @@ class VideoCallSettings {
 			};
 		});
 
+		if (document.querySelector('.share-control')) {
+			document.querySelector('.share-control').onclick = (e) => {
+				e.preventDefault();
+				e.stopPropagation();
+				if (this_self.mod.screen_share) {
+					console.log('Emit event to stop');
+					this_self.app.connection.emit('stop-share-screen');
+				} else {
+					console.log('Emit event to start');
+					this_self.app.connection.emit('begin-share-screen');
+				}
+				this_self.saitoOverlay.remove();
+			};
+		}
 
 		if (document.querySelector('.advanced-settings-link')) {
 			document.querySelector('.advanced-settings-link').onclick = (e) => {

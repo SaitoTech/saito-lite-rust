@@ -9,12 +9,6 @@
 	text-align: center;
 }
 
-.new-world-row.killed {
-    background: #000A;
-    opacity: 1;
-    color: #ffa3b5;
-}
-
 .new-world-roll.goldenrod {
         background-color: goldenrod;
         color: black;

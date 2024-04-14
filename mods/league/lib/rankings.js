@@ -36,32 +36,30 @@ class LeagueRankings {
 		//
 		// add content to league rankings
 		//
-		let leagues = this.mod.leagues.slice();
-
-		leagues.sort((a, b) => {
-			if (a.rank <= 0 && b.rank <= 0){
-				return 0;
-			}
-			if (a.rank <= 0) {
-				return 1;
-			}
-			if (b.rank <= 0) {
-				return -1;
-			}
-			return a.rank - b.rank;
-		});
-
+		let leagues = this.mod.leagues;
 		let html = '';
 		if (leagues.length > 0) {
 			let cnt = 0;
 			leagues.forEach((l) => {
-				html += `<div data-id="${l.id}" data-game="${l.game}" class="saito-table-row league-leaderboard-ranking">
-			              <div class="saito-table-gamename">${l.name}</div>`;
+				//if (this.mod.debug) { console.log((l.rank > 0), JSON.parse(JSON.stringify(l))); }
 
 				if (l.rank > 0) {
-					html += `<div class="saito-table-rank">${l.rank}</div></div>`;
-				} else {
-					html += `<div class="saito-table-rank saito-deemphasize">…</div></div>`;
+					html += `
+	          <div data-id="${l.id}" class="saito-table-row league-leaderboard-ranking">
+              <div class="saito-table-gamename">${l.name}</div>
+              <div class="saito-table-rank">${l.rank}</div>
+            </div>
+                  `;
+				}
+			});
+
+			leagues.forEach((l) => {
+				if (l.rank <= 0) {
+					html += `
+	    <div data-id="${l.id}" data-game="${l.game}" class="saito-table-row league-leaderboard-ranking">
+              <div class="saito-table-gamename">${l.name}</div>
+              <div class="saito-table-rank saito-deemphasize">…</div>
+            </div>`;
 				}
 			});
 		}

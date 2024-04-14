@@ -151,14 +151,6 @@ class HereIStand extends GameTemplate {
   // initialize //
   ////////////////
   initializeGame(game_id) {
-
-
-    //this.realEndTurn = this.endTurn;
-    //this.endTurn = () => {
-    //  console.log("TESTING REAL END TURN");
-    //  this.realEndTurn();
-    //}
-
     //
     // check user preferences to update interface, if text
     //

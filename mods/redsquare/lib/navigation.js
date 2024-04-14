@@ -107,7 +107,7 @@ class RedSquareNavigation {
 
       if (window.location.hash || window.location.search) {
         this.app.connection.emit("redsquare-home-render-request");
-        this.app.connection.emit("redsquare-remove-loading-message", "navigating...");
+
       } else {
         this.app.connection.emit("redsquare-home-render-request", true);
 
@@ -133,14 +133,12 @@ class RedSquareNavigation {
       window.history.pushState({}, document.title, "/" + this.mod.slug);
       window.location.hash = "#notifications";
       this.app.connection.emit("redsquare-notifications-render-request");
-      this.app.connection.emit("redsquare-remove-loading-message", "navigating...");
     };
 
     document.querySelector(".redsquare-menu-profile").onclick = (e) => {
       window.history.pushState({}, document.title, "/" + this.mod.slug);
       window.location.hash = "#profile";
       this.app.connection.emit("redsquare-profile-render-request", this.mod.publicKey);
-      this.app.connection.emit("redsquare-remove-loading-message", "navigating...");
     };
 
 

@@ -27,11 +27,7 @@ class CallInterfaceVideo {
 		this.app.connection.on(
 			'show-call-interface',
 			async (videoEnabled, audioEnabled) => {
-				console.log(
-					'Render Video Call Interface',
-					videoEnabled,
-					audioEnabled
-				);
+				console.log('Render Video Call Interface', videoEnabled, audioEnabled);
 
 				//This will render the (full-screen) component
 				if (!document.querySelector('.stun-chatbox')) {
@@ -64,9 +60,9 @@ class CallInterfaceVideo {
 		this.app.connection.on(
 			'stun-update-connection-message',
 			(peer_id, status) => {
-				if (!this.video_boxes[peer_id]) {
-					if (this.app.options.stun.peers.includes(peer_id)) {
-						console.warn('Missing video box for expected peer');
+				if (!this.video_boxes[peer_id]){
+					if (this.app.options.stun.peers.includes(peer_id)){
+						console.warn("Missing video box for expected peer");	
 					}
 					return;
 				}
@@ -90,8 +86,9 @@ class CallInterfaceVideo {
 		);
 
 		this.app.connection.on('remove-peer-box', (peer_id) => {
-			this.remote_streams.delete(peer_id);
 
+			this.remote_streams.delete(peer_id);
+			
 			if (this.video_boxes[peer_id]?.video_box) {
 				if (this.video_boxes[peer_id].video_box?.remove) {
 					this.video_boxes[peer_id].video_box.remove(true);
@@ -162,13 +159,15 @@ class CallInterfaceVideo {
 			this.insertActions(this.app.options.stun.peers);
 		});
 
-		app.connection.on('videocall-show-settings', () => {
-			this.videocall_settings.render(this.display_mode);
+
+		app.connection.on("videocall-show-settings", ()=> {
+				this.videocall_settings.render(this.display_mode);
 		});
 
 		app.connection.on('stun-disconnect', () => {
-			for (let peer in this.video_boxes) {
-				this.app.connection.emit('remove-peer-box', peer);
+
+			for (let peer in this.video_boxes){
+				this.app.connection.emit("remove-peer-box", peer);
 			}
 
 			if (this.mod.browser_active) {
@@ -195,6 +194,7 @@ class CallInterfaceVideo {
 					);
 					document.title = this.old_title;
 				}
+
 			}
 		});
 	}
@@ -217,10 +217,12 @@ class CallInterfaceVideo {
 			this.app.browser.addElementToDom(
 				CallInterfaceVideoTemplate(this.mod, videoEnabled, audioEnabled)
 			);
-
+	
 			this.insertActions();
 			this.attachEvents();
+
 		}
+
 
 		if (!this.full_screen) {
 			try {
@@ -231,25 +233,25 @@ class CallInterfaceVideo {
 		}
 	}
 
-	insertActions() {
+
+	insertActions(){
+
 		// add call icons
 
-		let container = document.querySelector(
-			'.control-list.imported-actions'
-		);
+		let container = document.querySelector(".control-list.imported-actions");
 
 		if (!container) {
 			return;
 		}
 
-		container.innerHTML = '';
+		container.innerHTML = "";
 
 		let index = 0;
 
 		for (const mod of this.app.modules.mods) {
 			let item = mod.respondTo('call-actions', {
 				call_id: this.mod.room_obj.call_id,
-				members: this.app.options.stun.peers
+				members: this.app.options.stun.peers,
 			});
 			if (item instanceof Array) {
 				item.forEach((j) => {
@@ -268,8 +270,9 @@ class CallInterfaceVideo {
 		*/
 	}
 
+
 	createActionItem(item, container, index) {
-		let id = 'call_action_item_' + index;
+		let id = "call_action_item_" + index;
 		let html = `<div id="${id}" class="icon_click_area ${item?.hook}">
 						<label>${item.text}</label>
 						<i class="${item.icon}"></i>
@@ -277,37 +280,41 @@ class CallInterfaceVideo {
 
 		const el = document.createElement('div');
 
-		if (item?.prepend) {
+		if (item?.prepend){
 			container.prepend(el);
-		} else {
+		}else{
 			container.appendChild(el);
 		}
-
+		
 		el.outerHTML = html;
 
 		let div = document.getElementById(id);
-		if (div) {
-			if (item?.callback) {
-				console.log('Add event listener!');
+		if (div){
+			if (item?.callback){
+				console.log("Add event listener!");
 				div.onclick = () => {
-					console.log('click');
+					console.log("click");
 					item.callback(this.app);
 				};
-			} else {
-				console.warn('Adding an action item with no callback');
+			}else{
+				console.warn("Adding an action item with no callback");
 			}
-		} else {
-			console.warn('Item not found');
+
+		}else{
+			console.warn("Item not found");
 		}
-	}
+
+	} 
+
 
 	attachEvents() {
-		let add_users = document.querySelector('.add-users-container');
+		let add_users = document.querySelector('.add_users_container');
 		if (add_users) {
 			add_users.addEventListener('click', (e) => {
 				this.copyInviteLink();
 			});
 		}
+
 
 		if (document.querySelector('.effects-control')) {
 			document
@@ -499,10 +506,12 @@ class CallInterfaceVideo {
 	}
 
 	addRemoteStream(peer, remoteStream) {
+
 		this.createVideoBox(peer);
 		this.video_boxes[peer].video_box.render(remoteStream);
 
 		if (remoteStream) {
+
 			let peer_elem = document.getElementById(`stream_${peer}`);
 			if (peer_elem) {
 				peer_elem.querySelector('.video-box').click();
@@ -580,14 +589,10 @@ class CallInterfaceVideo {
 		let images = ``;
 		let count = 0;
 
-		let imageDiv = document.querySelector(
-			'.users-on-call .stun-identicon-list'
-		);
-		let countDiv = document.querySelector(
-			'.users-on-call .users-on-call-count'
-		);
+		let imageDiv = document.querySelector('.users-on-call .stun-identicon-list');
+		let countDiv = document.querySelector('.users-on-call .users-on-call-count');
 
-		if (!imageDiv || !countDiv) {
+		if (!imageDiv || !countDiv){
 			return;
 		}
 
@@ -607,6 +612,7 @@ class CallInterfaceVideo {
 
 		imageDiv.innerHTML = images;
 		countDiv.innerHTML = count;
+		
 	}
 
 	startTimer() {

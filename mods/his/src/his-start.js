@@ -408,8 +408,8 @@ if (this.game.players.length > 2) {
     this.menu.addMenuOption("game-factions", "Factions");
     this.menu.addSubMenuOption("game-factions", {
       text : "Hapsburgs",
-      id : "game-hapsburg",
-      class : "game-hapsburg",
+      id : "game-hapsburgs",
+      class : "game-hapsburgs",
       callback : function(app, game_mod) {
         game_mod.faction_overlay.render("hapsburg");
       }

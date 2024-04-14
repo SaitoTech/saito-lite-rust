@@ -576,7 +576,7 @@
         available_units['regular'] = {};
         available_units['squadron'] = {};
         available_units['cavalry'] = {};
-        available_units['corsair'] = {};
+        available_units['squadron'] = {};
     let deployed_units = {};
 
     //
@@ -686,11 +686,8 @@
         if (this.game.spaces[key].units[faction].length > 0) {
           for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
       	    if (!my_spaces[key]) { my_spaces[key] = {}; }
-	    let u = this.game.spaces[key].units[faction][i];
-	    if (u.type == "squadron" || u.type == "corsair" || u.type == "regular" || u.type == "mercenary" || u.type == "cavalry") {
-              if (!my_spaces[key][u.type]) { my_spaces[key][u.type] = 0; }
-              my_spaces[key][this.game.spaces[key].units[faction][i].type]++;
-	    }
+            if (!my_spaces[key][this.game.spaces[key].units[faction][i].type]) { my_spaces[key][this.game.spaces[key].units[faction][i].type] = 0; }
+            my_spaces[key][this.game.spaces[key].units[faction][i].type]++;
           }
         }
       }
@@ -700,11 +697,8 @@
         if (this.game.navalspaces[key].units[faction].length > 0) {
           for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
       	    if (!my_spaces[key]) { my_spaces[key] = {}; }
-	    let u = this.game.navalspaces[key].units[faction][i];
-	    if (u.type == "squadron" || u.type == "corsair") {
-              if (!my_spaces[key][u.type]) { my_spaces[key][u.type] = 0; }
-              my_spaces[key][u.type]++;
-            }
+            if (!my_spaces[key][this.game.navalspaces[key].units[faction][i].type]) { my_spaces[key][this.game.navalspaces[key].units[faction][i].type] = 0; }
+            my_spaces[key][this.game.navalspaces[key].units[faction][i].type]++;
           }
         }
       }
@@ -792,7 +786,7 @@
 	  continue_to_apportion = true;
           changed_anything = true;
 	}
-	if (my_spaces[key]['cavalry'] >= 4 && available_units['regular']['4'] > 0 && continue_to_apportion == false) { 
+	if (my_spaces[key]['cavalry'] >= 4 && available_units['raegular']['4'] > 0 && continue_to_apportion == false) { 
 	  my_spaces[key]['cavalry'] -= 4;
 	  available_units['regular']['4']--;
 	  deployed_units[key]['cavalry']['4']++;
@@ -823,8 +817,6 @@
 	  continue_to_apportion = true;
           changed_anything = true;
 	}
-
-	// !1
 
 	if (my_spaces[key]['regular'] >= 1 && available_units['regular']['1'] > 0 && continue_to_apportion == false) { 
 	  my_spaces[key]['regular'] -= 1;

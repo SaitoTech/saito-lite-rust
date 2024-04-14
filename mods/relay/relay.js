@@ -48,14 +48,6 @@ class Relay extends ModTemplate {
       this.busy = true;
     });
 
-    app.connection.on("relay-ping-peer", (publicKey) => {
-      if (this.stun?.hasConnection(publicKey)){
-        app.connection.emit("relay-is-online", publicKey, true);
-      }else{
-        this.sendRelayMessage([publicKey], "ping", {}); 
-      }
-    });
-
   }
 
 
@@ -98,7 +90,6 @@ class Relay extends ModTemplate {
     }
 
     tx.timestamp = new Date().getTime();
-    tx.msg.module = "Relay";
     tx.msg.request = message_request;
     tx.msg.data = message_data;
 
@@ -120,7 +111,7 @@ class Relay extends ModTemplate {
           if (this.stun.hasConnection(addressee)){
             this.stun.sendTransaction(addressee, tx);
           }else {
-            //console.log("Need to use Relay server because no stun connection with " + addressee);
+            console.log("Need to use Relay server because no stun connection with " + addressee);
             need_server = true;
           }
         }
@@ -170,7 +161,7 @@ class Relay extends ModTemplate {
     if (tx == null) {
       return 0;
     }
-    let message = tx.returnMessage();
+    let message = tx.msg;
 
     try {
       if (tx.isTo(this.publicKey)) {
@@ -203,7 +194,8 @@ class Relay extends ModTemplate {
 
         if (this.debug) {
           console.log("Relay message: ", message);
-          console.log("Relayed message : ", txjson);
+          console.log("decrypting relay message");
+          console.log("txjson : ", txjson);
         }
 
         if (!relayed_tx.to[0]?.publicKey) {

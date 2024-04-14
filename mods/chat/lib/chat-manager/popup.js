@@ -330,7 +330,7 @@ class ChatPopup {
 			let new_render = !this.is_rendered;
 
 			if (this.is_scrolling) {
-				//console.info('CHAT render: keep position');
+				console.info('CHAT render: keep position');
 				chatBody.scroll({ top: this.is_scrolling, left: 0 });
 				this.updateNotification(this.group.unread);
 			} else {
@@ -341,13 +341,21 @@ class ChatPopup {
 								this.group.last_read_message
 					  )
 					: null;
-				//console.info('CHAT render: ',anchor,this.group.unread,new_render);
+				console.info(
+					'CHAT render: ',
+					anchor,
+					this.group.unread,
+					new_render
+				);
 				if (anchor && this.group.unread && new_render) {
-					//console.info(	'CHAT render: Scroll to anchor -- ' +this.group.last_read_message);
+					console.info(
+						'CHAT render: Scroll to anchor -- ' +
+							this.group.last_read_message
+					);
 					anchor.scrollIntoView(false);
 					this.updateNotification(this.group.unread);
 				} else if (this.app.browser.active_tab) {
-					//console.info('CHAT render: scroll to bottom');
+					console.info('CHAT render: scroll to bottom');
 					chatBody.scroll(0, 1000000000);
 				} else {
 					if (anchor) {
@@ -531,11 +539,13 @@ class ChatPopup {
 
 					// Retrieve the 'data-id' attribute from the found parent element
 					let sig = parentElement.getAttribute('data-id');
-					let target = parentElement.closest(".saito-userline").getAttribute('data-id');
-					const newtx = await this.mod.createChatLikeTransaction(this.group, sig, target);
+					const newtx = await this.mod.createChatLikeTransaction(
+						group_id,
+						sig
+					);
 					if (newtx) {
-						mod.hasSeenTransaction(newtx);
-						mod.receiveChatLikeTransaction(newtx);
+						await mod.sendChatLikeTransaction(newtx);
+						await mod.receiveChatLikeTransaction(newtx);
 					}
 				});
 			});
@@ -805,6 +815,7 @@ class ChatPopup {
 				this.input.getMentions()
 			);
 			if (newtx) {
+				await mod.sendChatTransaction(app, newtx);
 				mod.receiveChatTransaction(newtx);
 			}
 			this.input.clear();
