@@ -2,14 +2,14 @@
   cursor: pointer;
   padding: 1rem 2rem;
   border-top: 1px solid transparent;
-  border-bottom: var(--border-thickness-post-divider) solid var(--border-color-post-divider);
+  border-bottom: 1px solid var(--saito-border-color-dark);
   position: relative;
 }
 
 .tweet .saito-address, .tweet .saito-userline {
   font-size: 1.3rem;
   margin: 0.175rem;
-  color: var(--font-color-post-info);
+  color: var(--saito-font-color-light);
 }
 
 .tweet-preview .tweet .tweet-body {
@@ -33,7 +33,7 @@
   height: 100%;
   top: 5.5rem;
   left: 3.5rem;
-  border-left: 5px dotted var(--border-color-post-dotted-line);
+  border-left: 5px dotted var(--saito-border-color);
   z-index: 3;
 }
 
@@ -44,7 +44,7 @@
   height: 100%;
   top: 0;
   left: 3.5rem;
-  border-left: 5px dotted var(--border-color-post-dotted-line);
+  border-left: 5px dotted var(--saito-border-color);
   z-index: 3;  
 }
 
@@ -57,8 +57,8 @@
   position: absolute;
   font-size: 3rem;
   font-family: monospace;
-  color: green;
-  background-color: teal;
+  color: var(--saito-border-color);
+  background-color: var(--saito-background-color);
   z-index: 99;
   top: calc(50% + 1rem);
   left: 3.2rem;
@@ -66,7 +66,7 @@
 }
 
 .tweet:hover.has-reply-disconnected::before {
-  background: yellow;
+  background: var(--saito-background-light);
 }
 
 
@@ -83,7 +83,7 @@
   top: 50%;
   transform: translateY(-50%);
   left: 0.75rem;
-  border-left: 1px solid var(--border-color-post-solid-line);
+  border-left: 1px solid var(--saito-primary);
   z-index: 3;
 }
 
@@ -140,7 +140,7 @@
 .tweet-notice {
   display: flex;
   box-sizing: border-box;
-  color: blue;
+  color: var(--saito-font-color-light);
   font-family: var(--saito-font);
   word-wrap: break-word;
   padding-bottom: 1rem;
@@ -156,7 +156,7 @@
   margin-left: 0.3rem;
   font-weight: bold;
   font-size: 1.2rem;
-  color: orange; /* testing */
+  color: var(--saito-font-color-light);
 }
 
 .tweet-text {
@@ -172,7 +172,7 @@
 }
 
 .tweet-text .saito-mention.saito-address.treated {
-  color: var(--font-color-mention);
+  color: var(--saito-primary);
   font-style: normal;
   font-size: 1.6rem;
   margin: 0rem!important;
@@ -193,7 +193,7 @@
   left: 0;
   height: 10rem;
   width: 100%;
-  background: linear-gradient(180deg, transparent, var(--background-color-main));
+  background: linear-gradient(180deg, transparent, var(--saito-background-color));
   transition: all 2s ease;
 }
 
@@ -203,13 +203,13 @@
   position: absolute;
   bottom: 2rem;
   /* color: var(--saito-primary); */
-  color: var(--font-color-post-downward-arrow); 
+  color: var(--saito-border-color-dark);
   font-size: 6rem;
   z-index: 999;
   text-align: center;
   line-height: 2.7rem;
   padding: 0.3rem 1rem;
-  border-radius: 5rem; /* testing */
+  border-radius: var(--saito-border-radius);
   left: 50%;
   transform: translateX(-50%);
   transition: all 1s;
@@ -237,11 +237,11 @@
 
 
 .tweet:hover, .tweet.highlight-tweet {
-  background-color: var(--background-color-hover-post);
+  background-color: var(--saito-background-light);
 }
 
 .tweet:hover .tweet-text.preview::before {
-  background: linear-gradient(180deg, transparent, var(--background-color-main));
+  background: linear-gradient(180deg, transparent, var(--saito-background-light));
 }
 
 .tweet-controls {
@@ -261,12 +261,12 @@
   justify-content: center;
   padding: 1rem 0;
   cursor: pointer;
-  color: var(--font-color-post-controls);
+  color: var(--saito-font-color-light);
 }
 
 .tweet-controls>div.tweet-tool:hover {
   transform: scale(1.05);
-  color: var(--font-color-hover-post-controls);
+  color: var(--saito-primary);
 }
 
 .tweet-controls>div.tweet-tool.tweet-tool-more{
@@ -300,8 +300,8 @@
   width: 28rem;
   height: 26rem;
   padding: 1rem;
-  border: 1px solid cyan; /* testing */
-  background: green; /* testing */
+  border: 1px solid var(--saito-border-color);
+  background: var(--saito-background-color);
   z-index: 1;
   font-size: 1.8rem;
 
@@ -324,7 +324,7 @@
 }
 
 .tweet-menu-list-item:hover{
-  color: blue;
+  color: var(--saito-primary);
 }
 
 .tweet-menu-list-item i {
@@ -350,8 +350,8 @@
 
 .tweet-img-icon {
   font-size: 3rem;
-  color: orange; /* testing */
-  background: blue;
+  color: var(--saito-white);
+  background: var(--saito-gray-mid);
   padding: 1.5rem;
   border-radius: 50%;
   cursor: pointer;
@@ -428,7 +428,7 @@
 
 .link-info {
   padding: 2rem;
-  border: 10px solid cyan; /* testing */
+  border: 1px solid var(--saito-border-color);
   border-radius: 0.5rem;
   border-top: none;
   border-top-right-radius: unset;
@@ -437,16 +437,16 @@
 }
 
 .link-title {
-  color: blue;
+  color: var(--saito-font-color-light);
   margin: 0.3rem 0px;
 }
 
 .link-url {
-  color: orange; /* testing */
+  color: var(--saito-font-color);
 }
 
 .link-description {
-  color: green; /* testing */
+  color: var(--saito-font-color-light);
 }
 
 @media screen and (max-width: 1280px) {

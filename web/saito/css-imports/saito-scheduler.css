@@ -18,7 +18,7 @@
 input#schedule-datetime-input, .saito-scheduler-natural-time {
   width: 100%;
   border: none;
-  border-bottom: 1px solid var(--border-color-general-dividers); /* testing */
+  border-bottom: 1px solid var(--saito-border-color);
   border-radius: 0;
   height: 3rem;
   line-height: 3rem;

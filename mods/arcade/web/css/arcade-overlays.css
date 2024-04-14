@@ -1,5 +1,5 @@
 .arcade-game-overlay {
-	background: var(--background-saito-arcade);
+	background: var(--saito-arcade-background);
 	width: 60vw;
 	max-width: 100rem;
 	min-width: min(66rem, 95vw);
@@ -26,7 +26,7 @@
 	column-gap: 1.5rem;
 	padding: 1rem 1rem 1rem;
 	transition: all 0.2s;
-	background-color: var(--background-color-button-modal); 
+	background-color: var(--saito-gray-transparent);
 	position: relative;
 }
 
@@ -85,7 +85,7 @@
 
 .arcade-game-options {
 	overflow-y: auto;
-	box-shadow: var(--color-shadow-original);
+	box-shadow: var(--saito-box-shadow);
 	padding: 2rem;
 	border-radius: 0.5rem;
 	display: flex;
@@ -113,9 +113,9 @@
 
 .saito-identicon-box.empty-slot {
 	width: 3.5rem;
-	border: 1px solid var(--border-color-general-dividers);
+	border: 1px solid var(--saito-border-color);
 	box-shadow: -1px -1px #000;
-	background-color: var(--background-color-shim-normal);
+	background-color: var(--saito-light-shim);
 	height: 3.5rem;
 	display: flex;
 	align-items: center;
@@ -124,7 +124,7 @@
 
 .arcade_game_overlay_loader {
 	width: min(75rem, 100vw);
-	background: var(--saito-arcade-background); /* testing */
+	background: var(--saito-arcade-background);
 	padding: 10rem;
 }
 
@@ -162,8 +162,8 @@
 	left: -1rem;
 	font-size: 30px;
 	font-weight: 900;
-	color: var(--color-red);
-	text-shadow: 0px 0px 3px var(--color-white);
+	color: var(--saito-red);
+	text-shadow: 0px 0px 3px var(--saito-white);
 }
 
 .saito-scheduler-modal .saito-modal-title .saito-user .saito-address {

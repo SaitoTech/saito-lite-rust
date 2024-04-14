@@ -5,7 +5,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: var(--background-color-shim-normal);
+    background-color: var(--saito-dark-shim);
     z-index: 100;
 }
 
@@ -18,10 +18,7 @@
     /*min-height: 10%; Why? */
     max-height: calc(100 * var(--saito-vh));
     max-width: 100vw;
-    box-shadow: var(--shadow-standard);
-    border-radius: var(--border-radius-modal-menu);
-    background-color: var(--background-color-overlay-menu); /* Dont know why had to be added manually*/
-
+    box-shadow: 0px 2px 4px var(--saito-bubble-shadow);
 }
 
 .center-overlay{
@@ -46,7 +43,7 @@
     z-index: 100;
     top: -1.5rem;
     right: -1.5rem;
-    background-color: var(--font-color-icon-close); /* testing */
+    background-color: var(--saito-white);
     transition: all 0.3s;
     display: none;
 }
@@ -67,7 +64,7 @@
     display: block;
     height: 3rem;
     width: 3rem;
-    color: var(--background-color-icon-close);
+    color: var(--saito-primary);
     font-size: 3rem;
     border-radius: 50%;
     position: absolute;
@@ -85,7 +82,7 @@
     min-width: 300px;
     max-width: 90vw;
     padding: 2rem;
-    background-color: var(--background-color-overlay-menu);
+    background-color: var(--saito-background-color);
     display: flex;
     flex-direction: column;
     gap: 3rem;
@@ -94,7 +91,7 @@
 
 .saito-overlay-form-header {
     height: 6rem;
-    background: var(--background-color-overlay-form-header);
+    background: var(--dreamscape);
     width: 100%;
     border-radius: 0.5rem;
 }
@@ -102,7 +99,7 @@
 .saito-overlay-form-header-title {
     position: absolute;
     height: 6rem;
-    color: var(--font-color-overlay-form-header);
+    color: var(--saito-white);
     width: calc(100% - 3.2rem);
     padding: 1.6rem;
     font-size: 2.5rem;
@@ -126,7 +123,7 @@
 .saito-overlay-form-text {
     font-size: 2rem;
     line-height: 3rem;
-    color: var(--font-color-overlay-form-text); 
+    color: var(--saito-font-color);
     padding: 0 1rem;
 }
 
@@ -159,8 +156,8 @@
     display: grid;
     grid-template-columns: min-content 1fr;
     gap: 1rem;
-    border: var(--border-thickness-overlay-subform) dashed var(--border-color-overlay-subform); 
-    border-radius: 10px;
+    border: 1px dashed var(--saito-border-color-dark);
+    border-radius: var(--saito-border-radius);
     padding: 1.4rem;
 }
 
@@ -179,7 +176,7 @@
 .saito-overlay-form-alt-opt {
     margin-left: 2rem;
     font-size: 1.8rem;
-    color: var(--font-color-overlay-subform-recover); /* testing */
+    color: var(--saito-font-color);
     width: min-content;
     white-space: nowrap;
     cursor: pointer;
@@ -197,7 +194,7 @@
 }
 
 .saito-overlay-form textarea, .saito-overlay-form input {
-    border: var(--border-thickness-overlay-input-area) solid var(--border-color-overlay-input-area);
+    border: 1px solid var(--saito-font-color-light);
 }
 
 @media screen and (max-width: 768px) {
@@ -233,9 +230,9 @@
     max-width: 95vw;
     max-height: 95vh;
     padding: 2rem;
-    background: var(--background-color-overlay-menu);
-    border-radius: var(--border-radius-overlay-menu);
-    border: var(--border-thickness-overlay-menu) solid var(--border-color-overlay-menu); 
+    background: var(--saito-background-color);
+    border-radius: 0.5rem;
+    border: 1px solid var(--saito-primary);
     display: flex;
     flex-direction: column;
 }

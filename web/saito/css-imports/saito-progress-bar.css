@@ -1,5 +1,5 @@
 .saito-progress-bar-container{
-	background-color: ar(--background-progress-bar);
+	background-color: var(--saito-primary);
 	width: 100%;
 	height: 3rem;
 	padding: 0 2rem;
@@ -9,13 +9,13 @@
 }
 
 .saito-progress-bar-container.active{
-	background: var(--background-progress-bar-active); /* testing */
+	background: var(--saito-primary-background);
 	animation: shimmer 1.5s infinite alternate; ease-in-out;
 }
 
 .saito-progress-bar {
-	color: var(--font-color-progress-bar);
-	text-shadow: var(--text-shadow-progress-bar);	
+	color: var(--saito-white);
+	text-shadow: 1px 1px 3px var(--saito-black);	
 }
 
 @keyframes shimmer {

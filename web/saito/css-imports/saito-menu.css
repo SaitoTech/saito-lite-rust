@@ -18,19 +18,19 @@
   align-items: center;
   font-size: 1.92rem;
   position: relative;
-  border-radius: var(--border-radius-button-sidebar);
+  border-radius: 0.5rem;
 }
 
 
 .saito-menu>ul>li:hover {
-  background: var(--background-color-button-hover-sidebar);
-  color: var(--font-color-button-hover-sidebar);
-  border-radius: var(--border-radius-button-sidebar);
+  background: var(--saito-primary-background);
+  color: var(--saito-white);
+  border-radius: 0.5rem;
 }
 
 .saito-menu>ul>li:hover p {
   background-color: var(--saito-background-color);
-  color: var(--font-color-button-hover-sidebar);
+  color: var(--saito-font-color);
 }
 
 .saito-menu>ul>li>i {
@@ -87,15 +87,14 @@
   margin-left: 3.8rem;
 }
 
-/* left sidebar icons */
 .saito-menu i::before {
-  -webkit-text-stroke: var(--font-color-icons-left-sidebar) 1px;
+  -webkit-text-stroke: var(--saito-font-color) 1px;
   color: transparent;
   font-size: smaller;
 }
 
 .saito-menu li:hover i::before {
-  -webkit-text-stroke: var(--font-color-hover-icons-left-sidebar) 1px;
+  -webkit-text-stroke: var(--saito-white) 1px;
 }
 
 

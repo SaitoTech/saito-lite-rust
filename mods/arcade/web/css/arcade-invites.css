@@ -42,8 +42,7 @@
 .identicon-needed {
 	height: 3.5rem;
 	width: 3.5rem;
-	border: 1px solid var(--border-color-general-dividers);
+	border: 1px solid var(--saito-border-color);
 	box-shadow: -1px -1px #000;
-	background-color: var(--background-color-shim-light);
-    border-radius: var(--border-radius-identicon-needed);
+	background-color: var(--saito-light-shim);
 }
