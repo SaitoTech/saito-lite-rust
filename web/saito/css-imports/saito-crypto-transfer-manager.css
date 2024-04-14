@@ -32,8 +32,8 @@ input[type="checkbox"].ignore_checkbox {
 .game-crypto-transfer-manager-container .stake {
   background: none;
   border: none;
-  color: var(--saito-white);
-  border-bottom: 1px solid var(--saito-white);
+  color: var(--color-white);
+  border-bottom: 1px solid var(--color-white);
   text-align: center;
   padding: 1rem;
   font-size: 4rem;
@@ -70,8 +70,8 @@ input[type="checkbox"].ignore_checkbox {
 }
 
 .crypto_transfer_btn {
-  background-color: var(--saito-button-background);
-  color: var(--saito-white);
+  background-color: blue;
+  color: var(--color-white);
   margin-left: auto;
   margin-right: auto;
   position: relative;
@@ -85,8 +85,8 @@ input[type="checkbox"].ignore_checkbox {
 
 .crypto_transfer_btn.secondary {
   background: none;
-  color: var(--saito-button-background);
-  border: 1px solid var(--saito-button-background);
+  color: lightgreen;
+  border: 1px solid var(--border-color-general-dividers);
 }
 
 .crypto-stake-offer-btn-container {

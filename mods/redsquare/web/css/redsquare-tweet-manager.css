@@ -37,7 +37,7 @@
 }
 
 .saito-main-back span {
-	color: var(--saito-font-color);
+	color: #aaff00; /* test */
 	position: relative;
 	display: inline-block;
 	font-size: 2.2rem;

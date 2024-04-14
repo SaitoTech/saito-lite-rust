@@ -22,8 +22,10 @@
     align-items: center;
     background-size: cover;
     background-position: center;
-    background-color: #4444;
+    background-color: var(--background-mask-sidebar-game-module);
     background-blend-mode: soft-light;
+    border-radius: var(--border-radius-sidebar-game-module);
+    
 }
 
 .saito-module-titlebar {
@@ -44,13 +46,14 @@
 }
 
 .saito-module-titlebar-title {
-    color: var(--saito-font-color-heavy);
+    color: var(--font-color-title-game);
     font-size: 2rem;
 }
 
 .saito-module-titlebar-details {
     font-size: 1.4rem;
     text-transform: uppercase;
+    color: var(--font-color-title-game-details);
 }
 
 .saito-game-details {
@@ -101,13 +104,14 @@
   width: min(90vw, 80rem);
   max-height: 70vh;
   overflow: auto;
-  background: var(--saito-background-color);
-  color: var(--saito-font-color);
-  border-radius: 5px;
+  background: var(--background-color-module-menu); 
+  color: var(--font-color-module-menu);
+  border-radius: var(--border-radius-module-menu);
+
 }
 
 .saito-module-header {
-    background: var(--dreamscape);
+    background: blue;
     background-size: cover;
     background-position: center;
     padding: 0.5rem;
@@ -120,7 +124,7 @@
 }
 
 .saito-module-overlay .saito-module-titlebar {
-    color: var(--saito-white);
+    color: var(--font-color-module-menu-header);
     background-color: unset;
 }
 
@@ -131,7 +135,7 @@
     margin: 1rem;
     padding: 2rem;
     border-radius: 0.5rem;
-    border: 1px solid var(--saito-border-color);
+    border: var(--border-thickness-module-appinfo) solid var(--border-color-module-appinfo); /* testing */
 }
 
 .saito-module-overlay > h4 {
@@ -149,7 +153,7 @@ fieldset.saito-grid {
     gap: 2rem;
     align-items: center;
     margin: 1rem 0;
-    border: 1px solid var(--saito-border-color);
+    border: var(--border-thickness-button-modal) solid var(--border-color-button-modal);
     border-radius: 0.5rem;
 }
 
@@ -164,6 +168,7 @@ fieldset.saito-grid > fieldset.saito-grid{
 
 .saito-grid input, .saito-grid label {
     cursor: pointer;
+    color: var(--font-color-module-menu);
 }
 
 .saito-grid i {
@@ -177,7 +182,9 @@ fieldset.saito-grid > fieldset.saito-grid{
 }
 
 .settings-link:hover label{
-    text-decoration: underline;
+    text-decoration: var(--text-decoration-switch-global);
+    color: var(--font-color-hover-module-menu);
+
 }
 
 

@@ -19,7 +19,7 @@ body {
 .liked,
 .replied,
 .retweeted {
-	color: var(--saito-primary);
+	color: var(--font-color-reacted);
 }
 
 .post-delete-button {
@@ -42,7 +42,7 @@ body {
 }
 
 .redsquare-page-header-title {
-	color: var(--saito-white);
+	color: #aaFF00; /*test*/
 	font-size: 2.5rem;
 	padding: 1px;
 	text-transform: uppercase;
@@ -54,13 +54,13 @@ body {
 }
 
 .redsquare-redsquare::before {
-	-webkit-text-stroke: var(--saito-red) 1px;
+	-webkit-text-stroke: #aaff00 5px; /*test*/
 	color: transparent;
 }
 
 .redsquare-page-header-title i::before {
 	-webkit-text-stroke: unset;
-	color: var(--saito-white);
+	color: #aaff00; /*test*/
 	margin: 0 0 0 2rem;
 }
 
@@ -84,8 +84,8 @@ body {
 }
 
 .redsquare-appspace-profile-container {
-	border: 1px solid var(--saito-border-color);
-	border-radius: 0.5rem;
+	border: 1px solid #aaff00; /*test*/
+	border-radius: 0.5rem; /* ?? */
 }
 
 .redsquare-sidebar {
@@ -146,7 +146,7 @@ body {
 }
 
 .saito-menu .redsquare-page-active i::before {
-	-webkit-text-stroke: var(--saito-font-color) 2px;
+	-webkit-text-stroke: var(--border-color-button-sidebar-icons-active) var(--border-thickness-button-sidebar-icons-active);
 }
 
 .redsquare-menu-home .fa-house::before {
@@ -213,7 +213,7 @@ body {
 		border-radius: 50%;
 		width: 5rem;
 		height: 5rem;
-		background: var(--saito-primary);
+		background: #111fff; /*test*/
 		position: fixed;
 		z-index: 1;
 		bottom: 2rem;
@@ -225,7 +225,7 @@ body {
 	div#redsquare-tweet::after {
 		content: '\002B';
 		position: absolute;
-		color: var(--saito-white);
+		color: #111fff; /*test*/
 		font-size: 5rem;
 		text-align: center;
 		top: 0;
