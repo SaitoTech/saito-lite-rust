@@ -8254,10 +8254,14 @@ console.log("selected: " + spacekey);
 	  let msg = "Cancel Which Expedition / Conquest?";
           let html = '<ul>';
 	  for (let i = 0; i < his_self.game.state.explorations.length; i++) {
-            html += `<li class="option" id="exploration-${his_self.game.state.explorations[i].faction}">${his_self.returnFactionName(his_self.game.state.explorations[i].faction)} (exploration)</li>`;
+	    if (his_self.game.state.explorations[i].round == his_self.game.state.round) {
+              html += `<li class="option" id="exploration-${his_self.game.state.explorations[i].faction}">${his_self.returnFactionName(his_self.game.state.explorations[i].faction)} (exploration)</li>`;
+	    }
 	  }
 	  for (let i = 0; i < his_self.game.state.conquests.length; i++) {
-            html += `<li class="option" id="conquest-${his_self.game.state.conquests[i]}">${his_self.returnFactionName(his_self.game.state.conquests[i])} (conquest)</li>`;
+	    if (his_self.game.state.conquests[i].round == his_self.game.state.round) {
+              html += `<li class="option" id="conquest-${his_self.game.state.conquests[i].faction}">${his_self.returnFactionName(his_self.game.state.conquests[i])} (conquest)</li>`;
+	    }
 	  }
           html += '</ul>';
 

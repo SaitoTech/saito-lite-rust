@@ -41,32 +41,36 @@ class SpringDeploymentOverlay {
 		this.visible = true;
 		this.overlay.show(SpringDeploymentTemplate(faction));
 
+		let tips = [
+			"TIP: you need more squadrons in the sea adjacent to a port than defending it to assault..." ,
+			"TIP: you cannot assault a key without a line-of-controlled spaces connecting it to another controlled key..." ,
+			"TIP: once your ships are at sea, the \"Move Across Seas\" option lets you move units overseas..." ,
+			"TIP: you can only move into independent spaces, or those where you allied with or at war with its controller" ,
+			"TIP: when assaulting fortified troops you need 2 units for each dice roll (round up)",
+			"TIP: you cannot assault a space in the same turn you move into positition to assault it" ,
+			"TIP: you can't be excommunicated by the Papacy if you don't go to war with them and don't ally with the Ottomans" ,
+			"TIP: factions get -1 card each turn if excommunicated or stuck in an unfinished Foreign War" ,
+			"TIP: find something difficult to understand? suggest tips to include on this help screen..." ,
+		];
+
 		if (this.mod.game.state.round == 1 && faction == "ottoman") {
-			this.updateInstructions("The Ottoman Empire starts at War with Hungary. You earn Victory Points and will get dealt more cards each turn if you expand your empire to control more strategic keys like Belgrade. Why not deploy north to Nezh and attempt to seize the city?");
+			this.updateInstructions("The Ottoman Empire starts at War with Hungary. Why not deploy north to Nezh and attempt to seize the city?");
 		}
 		if (this.mod.game.state.round == 1 && faction == "france") {
-			this.updateInstructions("France starts at War with the Hapsburgs and Papacy - should you deploy forces to the Italian or Spanish border? Or stay in defensive near Paris and move against the English if they aggress on Scotland?");
+			this.updateInstructions("France starts at War with the Hapsburgs and Papacy - but the independent key of Metz is also within range of Paris...");
 		}
 		if (this.mod.game.state.round == 1 && faction == "papacy") {
-			this.updateInstructions("The Papacy starts at War with France. Beyond your duty to resist the Protestant menace, you earn Victory Points and get dealt more cards each turn if you expand your control over strategic keys like Florence or Milan...");
+			this.updateInstructions("The Papacy starts at War with France. Manage that conflict while fighting the Protestants and controlling strategic keys like Florence and Milan...");
 		}
 		if (this.mod.game.state.round == 1 && faction == "england") {
-			this.updateInstructions("England can deploy north to pacify Scotland or south to protect Calais and aggress on France. If you choose the former, remember you need two squadrons in the North Sea to assault Edinburgh...");
+			this.updateInstructions("England can deploy north to pacify Scotland or south to protect Calais. Remember you need more squadrons in the North Sea than are defending Edinburgh to assault the city...");
 		}
 		if (this.mod.game.state.round == 1 && faction == "hapsburg") {
-			this.updateInstructions("The Hapsburg Empire starts at War with France, but can deploy its forces to subdue independent keys like Metz as well...");
+			this.updateInstructions("Moving infantry into Germany to slow the Protestants, or subdue independent keys for the VP and bonus cards...");
 		}
-		if (this.mod.game.state.round == 2) {
-			this.updateInstructions("TIP: you must have more squadrons in the sea adjacent to a port in order to assault it during a siege...");
-		}
-		if (this.mod.game.state.round == 3) {
-			this.updateInstructions("TIP: once your fleet is in position, you can move units across open seas using the More Across Seas menu option...");
-		}
-		if (this.mod.game.state.round == 4) {
-			this.updateInstructions("TIP: you can't be excommunicated by the Papacy if you don't go to war with them and don't ally with the Ottomans");
-		}
-		if (this.mod.game.state.round > 4) {
-			this.updateInstructions("TIP: find something difficult to understand? suggestions on tips to include on this help screen are very welcome...");
+
+		if (this.mod.game.state.round > 1) {
+			this.updateInstructions(tips[Math.floor(Math.random() * tips.length)]);
 		}
 
 		this.attachEvents(mycallback);

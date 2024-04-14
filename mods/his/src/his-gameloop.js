@@ -1,6 +1,4 @@
 
-
-
   //
   // Core Game Logic
   //
@@ -1409,7 +1407,7 @@ if (this.game.options.scenario == "is_testing") {
 	if (mv[0] === "remove_conquest") {
 	  let faction = mv[1];
 	  for (let i = 0; i < this.game.state.conquests.length; i++) {
-	    if (this.game.state.conquests[i] === faction) {
+	    if (this.game.state.round == this.game.state.conquests[i].round && this.game.state.conquests[i] == faction) {
 	      this.game.state.conquests.splice(i, 1);
 	    }
 	  }
@@ -1419,7 +1417,7 @@ if (this.game.options.scenario == "is_testing") {
 	if (mv[0] === "remove_exploration") {
 	  let faction = mv[1];
 	  for (let i = 0; i < this.game.state.explorations.length; i++) {
-	    if (this.game.state.explorations[i] === faction) {
+	    if (this.game.state.round == this.game.state.explorations[i].round && this.game.state.explorations[i].faction == faction) {
 	      this.game.state.explorations.splice(i, 1);
 	    }
 	  }
@@ -1429,7 +1427,7 @@ if (this.game.options.scenario == "is_testing") {
 	if (mv[0] === "remove_colony") {
 	  let faction = mv[1];
 	  for (let i = 0; i < this.game.state.colonies.length; i++) {
-	    if (this.game.state.colonies[i] === faction) {
+	    if (this.game.state.round == this.game.state.colonies[i].round && this.game.state.colonies[i].faction == faction) {
 	      this.game.state.colonies.splice(i, 1);
 	    }
 	  }
@@ -9760,8 +9758,8 @@ defender_hits - attacker_hits;
 	  this.game.state.impulse++;
 
 	  let targs = {
-      	    line1 : "what", 
-    	    line2 : "to do?",
+      	    line1 : "new to", 
+    	    line2 : "game",
     	    fontsize : "2.1rem" ,
 	  }
 
@@ -9770,21 +9768,27 @@ defender_hits - attacker_hits;
 //
 if (this.game.state.round == 1 && this.game.state.impulse == 1) {
           if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
+	    targs.line2 = "protestants";
             this.game_help.renderCustomOverlay("protestant", targs);
           } else {
             if (this.game.player == this.returnPlayerCommandingFaction("ottoman")) {
+	      targs.line2 = "ottomans";
               this.game_help.renderCustomOverlay("ottoman", targs);
             } else {
               if (this.game.player == this.returnPlayerCommandingFaction("hapsburg")) {
+	        targs.line2 = "hapsburgs";
                 this.game_help.renderCustomOverlay("hapsburg", targs);
               } else {
                 if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
+	          targs.line2 = "papacy";
                   this.game_help.renderCustomOverlay("papacy", targs);
                 } else {
                   if (this.game.player == this.returnPlayerCommandingFaction("england")) {
+	            targs.line2 = "england";
                     this.game_help.renderCustomOverlay("england", targs);
                   } else {
                     if (this.game.player == this.returnPlayerCommandingFaction("france")) {
+	              targs.line2 = "france";
                       this.game_help.renderCustomOverlay("france", targs);
                     } else {
                     }
@@ -10795,8 +10799,6 @@ if (this.game.state.round == 2) {
 		// sanity check
 		//
 		if (cardnum < 0) { cardnum = 0; }
-
-cardnum = 1;
 
     	        this.game.queue.push("check_replacement_cards\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);

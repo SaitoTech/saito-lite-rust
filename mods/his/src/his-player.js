@@ -3104,6 +3104,7 @@ return;
       for (let i = 0; i < viable_capitals.length; i++) {
 	opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
       }
+      opt += `<li class="option" id="cards">( see my cards )</li>`;
       opt += `<li class="option" id="pass">skip</li>`;
       opt += '</ul>';
 
@@ -3116,10 +3117,17 @@ return;
       $(".option").on('click', function () {
 
         let id = $(this).attr('id');
-        $(".option").off();
-        his_self.spring_deployment_overlay.hide();
+
+	if (id === "cards") {
+          let fhand_idx = his_self.returnFactionHandIdx(his_self.game.player, faction);
+          let c = his_self.game.deck[0].fhand[fhand_idx];
+          his_self.deck_overlay.render("hand", c);
+	  return;
+        }
 
 	source_spacekey = id;
+        $(".option").off();
+        his_self.spring_deployment_overlay.hide();
 
 	if (id === "pass") {
 	  his_self.updateStatus("passing...");
