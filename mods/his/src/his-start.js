@@ -43,7 +43,6 @@
       class : "game-confirm",
       callback : null
     });
-
     this.confirm_moves = 0;
     if (this.app.options.gameprefs) {
       if (this.app.options.gameprefs.his_expert_mode) {
@@ -68,7 +67,6 @@
         }
       }
     });
-      
     this.menu.addSubMenuOption("game-confirm",{ 
       text: `Expert ${(this.confirm_moves==1)?"":"✔"}`,
       id:"game-confirm-expert",
@@ -167,6 +165,8 @@
         game_mod.units_overlay.render();
       }
     });
+
+
 /***
     this.menu.addSubMenuOption("game-info", {
       text: "Faction Cards",
@@ -177,27 +177,23 @@
       }
     });
 ***/
+
     this.menu.addSubMenuOption("game-info", {
+      text : "Cards",
+      id : "game-cards",
+      class : "game-cards",
+      callback : null
+    });
+    this.menu.addSubMenuOption("game-cards", {
       text: "Discard Pile",
-      id: "game-cards",
-      class: "game-cards",
+      id: "game-cards-discard",
+      class: "game-cards-discard",
       callback: function(app, game_mod){
 	game_mod.menu.hideSubMenus();
         game_mod.deck_overlay.render("discards");
       }
     });
-/****
-    this.menu.addSubMenuOption("game-info", {
-      text: "Diplomatic Cards",
-      id: "game-diplomatic",
-      class: "game-diplomatic",
-      callback: function(app, game_mod){
-        game_mod.menu.showSubSubMenu("game-diplomatic");
-      }
-    });
-****/
-/*****
-    this.menu.addSubMenuOption("game-faction-cards", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "Papacy",
       id : "game-papacy-cards",
       class : "game-papacy-cards",
@@ -212,7 +208,7 @@
         game_mod.deck_overlay.render("papacy");
       }
     });
-    this.menu.addSubMenuOption("game-faction-cards", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "Protestant",
       id : "game-protestant-cards",
       class : "game-protestant-cards",
@@ -228,7 +224,7 @@
       }
     });
 if (this.game.players.length > 2) {
-    this.menu.addSubMenuOption("game-faction-cards", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "England",
       id : "game-england-cards",
       class : "game-england-cards",
@@ -243,7 +239,7 @@ if (this.game.players.length > 2) {
         game_mod.deck_overlay.render("england");
       }
     });
-    this.menu.addSubMenuOption("game-faction-cards", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "France",
       id : "game-france-cards",
       class : "game-france-cards",
@@ -258,7 +254,7 @@ if (this.game.players.length > 2) {
         game_mod.deck_overlay.render("france");
       }
     });
-    this.menu.addSubMenuOption("game-faction-cards", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "Hapsburg",
       id : "game-hapsburg-cards",
       class : "game-hapsburg-cards",
@@ -273,7 +269,7 @@ if (this.game.players.length > 2) {
         game_mod.deck_overlay.render("hapsburg");
       }
     });
-    this.menu.addSubMenuOption("game-faction-cards", {
+    this.menu.addSubMenuOption("game-cards", {
       text : "Ottoman",
       id : "game-ottoman-cards",
       class : "game-ottoman-cards",
@@ -289,7 +285,9 @@ if (this.game.players.length > 2) {
       }
     });
 }
-****/
+
+
+
 /****
     this.menu.addSubMenuOption("game-cards", {
       text : "My Hand",

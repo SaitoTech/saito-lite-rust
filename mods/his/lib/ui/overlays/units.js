@@ -227,6 +227,36 @@ class UnitsOverlay {
 				let qs = `.units-faction-available.${f}-units`;
 				his_self.app.browser.addElementToSelector(imgtile, qs);
 			}
+
+			for (let i = 0; i < available['squadron']['1']; i++) {
+				let imgtile = '';
+				if (f == 'hapsburg') {
+					imgtile = `<img class="army_tile" src="/his/img/tiles/hapsburg/Hapsburg_squadron.svg" />`;
+				}
+				if (f == 'papacy') {
+					imgtile = `<img class="army_tile" src="/his/img/tiles/papacy/Papacy_squadron.svg" />`;
+				}
+				if (f == 'ottoman') {
+					imgtile = `<img class="army_tile" src="/his/img/tiles/ottoman/Ottoman_squadron.svg" />`;
+				}
+				if (f == 'france') {
+					imgtile = `<img class="army_tile" src="/his/img/tiles/france/French_squadron.svg" />`;
+				}
+				if (f == 'england') {
+					imgtile = `<img class="army_tile" src="/his/img/tiles/england/English_squadron.svg" />`;
+				}
+				if (f == 'scotland') {
+					imgtile = `<img class="army_tile" src="/his/img/tiles/scotland/Scottish_squadron.svg" />`;
+				}
+				if (f == 'venice') {
+					imgtile = `<img class="army_tile" src="/his/img/tiles/venice/Venice_squadron.svg" />`;
+				}
+				if (f == 'genoa') {
+					imgtile = `<img class="army_tile" src="/his/img/tiles/genoa/Genoa_squadron.svg" />`;
+				}
+				let qs = `.units-faction-available.${f}-units`;
+				his_self.app.browser.addElementToSelector(imgtile, qs);
+			}
 		}
 
 		this.attachEvents();

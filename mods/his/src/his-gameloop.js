@@ -2208,7 +2208,7 @@ console.log("----------------------------");
 	  this.game.queue.splice(qe, 1);
 
 	  for (let i = 0; i < this.game.spaces[source].units[faction].length; i++) {
-	    this.game.spaces[source].units[faction][i].locked = true;
+	    this.game.spaces[source].units[faction][i].locked = 1;
 	  }
 
           return 1;
@@ -2489,16 +2489,23 @@ console.log("----------------------------");
 
 		  if ((anyone_else_here == 0 || number_opposing_land_units == 0) && (space.type == "electorate" || space.type == "key" || this.isSpaceFortified(space.key) || space.type == "fortress")) {
 		    let f = this.returnFactionControllingSpace(space.key);
+
 		    if (!this.areAllies(f, faction) && f !== faction) {
 		      if (space.besieged != 1) { // not if already besieged
+		        //
+		        // besiege the defenders, and lock the attackers (preventing further movement)
+		        //
 		        for (let z = 0; z < space.units[f].length; z++) {
-			  if (space.units[f][z].army_leader) { space.units[f][z].besieged = true; }
-			  if (space.units[f][z].navy_leader) { space.units[f][z].besieged = true; }
+			  if (!space.units[f][z].reformer) { space.units[f][z].besieged = true; }
+		        }
+		        for (let z = 0; z < space.units[faction].length; z++) {
+			  if (!space.units[faction][z].reformer) { space.units[faction][z].locked = 1; }
 		        }
 	 	        space.besieged = 2;
 		        this.displaySpace(space.key);
 		      }
 		    }
+
 	          }
 
 	        } else {
@@ -3407,7 +3414,7 @@ console.log(" # --> is anyone not besieged");
 	  for (let i = source.units[faction].length-1; i >= 0; i--) {
 	    let u = source.units[faction][i];
 	    if (u.type == "regular" || u.type == "mercenary" || u.type == "cavalry" || u.army_leader == true || u.navy_leader == true) {
-	      source.units[faction][i].locked = true;
+	      source.units[faction][i].locked = 1;
 	      source.units[faction][i].already_moved = true;
 	      if (source.units[faction][i].besieged != 1) {
 	        destination.units[faction].push(source.units[faction][i]);
@@ -3622,11 +3629,8 @@ console.log(" # --> is anyone not besieged");
 	  //
 	  for (let f in invaded_space.units) {
 	    if (this.returnFactionLandUnitsInSpace(f, invaded_space.key) > 0) {
-console.log("this faction has land units: " + f);
 	      if (!this.areAllies(f, attacker) && f != attacker) {
-console.log("not allied to attacker!");
 		if (!this.areAllies(f, defender) && f != defender) { 
-console.log("not allied to defender!");
 return 1; }
 	      }
 	    }
@@ -11519,18 +11523,22 @@ console.log(JSON.stringify(reshuffle_cards));
 	    let mycallback = [];
 
 	    if (player_last_move == "move") {
- 	      mycallback.push({ text : "continue move" , mycallback : () => {this.playerContinueToMoveFormationInClear(his_self, this.game.player, faction, player_last_spacekey, 1, (ops)); }});
 	      if (player_last_spacekey != "") {
-	        if (!this.isSpaceControlled(faction, player_last_spacekey) && this.game.spaces[player_last_spacekey].type == "town" && !this.areAllies(faction, this.returnFactionControllingSpace(player_last_spacekey))) {
- 	          mycallback.push({ text : "control town" , mycallback : () => {
-		    if (ops > 1) {
-                      his_self.addMove(`continue\t${mv[1]}\t${mv[2]}\t${mv[3]}\t${ops}\t${mv[5]}`);
-                      his_self.game.queue.push("SETVAR\tstate\tplayer_last_move\tmove");
-                      his_self.game.queue.push("SETVAR\tstate\tplayer_last_spacekey\t"+player_last_spacekey);
-		    }
-                    his_self.addMove("pacify\t"+faction+"\t"+player_last_spacekey);
-                    his_self.endTurn();
-	 	  }});
+		if (this.game.spaces[player_last_spacekey]) {
+		  if (!this.isSpaceBesieged(this.game.spaces[player_last_spacekey])) {
+ 	            mycallback.push({ text : "continue move" , mycallback : () => {this.playerContinueToMoveFormationInClear(his_self, this.game.player, faction, player_last_spacekey, 1, (ops)); }});
+	            if (!this.isSpaceControlled(faction, player_last_spacekey) && this.game.spaces[player_last_spacekey].type == "town" && !this.areAllies(faction, this.returnFactionControllingSpace(player_last_spacekey))) {
+ 	              mycallback.push({ text : "control town" , mycallback : () => {
+		        if (ops > 1) {
+                          his_self.addMove(`continue\t${mv[1]}\t${mv[2]}\t${mv[3]}\t${ops}\t${mv[5]}`);
+                          his_self.game.queue.push("SETVAR\tstate\tplayer_last_move\tmove");
+                          his_self.game.queue.push("SETVAR\tstate\tplayer_last_spacekey\t"+player_last_spacekey);
+		        }
+                        his_self.addMove("pacify\t"+faction+"\t"+player_last_spacekey);
+                        his_self.endTurn();
+	 	      }});
+	            }
+	          }
 	        }
 	      }
 	    }

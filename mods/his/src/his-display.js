@@ -721,6 +721,31 @@
     let obj = document.querySelector(".crossing_atlantic");
         obj.innerHTML = "";
 
+    for (let z = 0; z < this.game.state.conquests.length; z++) {
+
+      let con = this.game.state.conquests[z];
+      let faction = con.faction;
+      let round = con.round;
+
+      //      
+      // current round are unresolved      
+      //      
+      if (round == this.game.state.round) {
+        if (faction == "hapsburg") {
+          obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/hapsburg/Hapsburg_Conquest.svg" />`;
+        }
+        if (faction == "france") {
+          obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/france/French_Conquest.svg" />`;
+        }
+        if (faction == "england") {
+          obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/English_Conquest.svg" />`;
+        }
+	if (this.game.state.events.smallpox != "") {
+          obj.innerHTML += `<img class="army_tile" src="/his/img/Smallpox.svg" />`;
+	}
+      }
+    }
+
     let ec = [];
     let fc = [];
     let hc = [];
@@ -760,31 +785,6 @@
       if (zz < 3) {
 	document.querySelector(`.hapsburg_conquest${zz}`).innerHTML = `<img class="nw_tile ${depl}" src="${this.game.state.newworld[hc[z]].img}" />`;
         zz++;
-      }
-    }
-
-    for (let z = 0; z < this.game.state.conquests.length; z++) {
-
-      let con = this.game.state.conquests[z];
-      let faction = con.faction;
-      let round = con.round;
-
-      //      
-      // current round are unresolved      
-      //      
-      if (round == this.game.state.round) {
-        if (faction == "hapsburg") {
-          obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/hapsburg/Hapsburg_Conquest.svg" />`;
-        }
-        if (faction == "france") {
-          obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/france/French_Conquest.svg" />`;
-        }
-        if (faction == "england") {
-          obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/English_Conquest.svg" />`;
-        }
-	if (this.game.state.events.smallpox != "") {
-          obj.innerHTML += `<img class="army_tile" src="/his/img/Smallpox.svg" />`;
-	}
       }
     }
 

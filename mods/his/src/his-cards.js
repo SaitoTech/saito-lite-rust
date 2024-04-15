@@ -10211,6 +10211,7 @@ console.log("selected: " + spacekey);
 	if (faction == "england") { his_self.game.state.events.cabot_england = 1; }
 	if (faction == "france") { his_self.game.state.events.cabot_france = 1; }
 	if (faction == "hapsburg") { his_self.game.state.events.cabot_hapsburg = 1; }
+	his_self.displayExploration();
         return 1;
       },
     }
@@ -10312,7 +10313,7 @@ console.log("selected: " + spacekey);
 	return 0;
       },
       onEvent(his_self, faction) {
-        his_self.game.state.conquests.push(faction);
+        his_self.game.queue.push("conquer\t"+faction);
 	his_self.game.state.events.smallpox = faction;
 	his_self.displayConquest();
         return 1;
@@ -10886,12 +10887,14 @@ console.log("selected: " + spacekey);
 		
 		for (let z = his_self.game.spaces[spacekey].units[action].length-1; z >= 0; z--) {
 		  let u = his_self.game.spaces[spacekey].units[action][z];
-		  if (u.type == "regular" && regulars_to_delete > 0) {
-		    his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
-		  }
-		  if ((u.type != "regular" && (u.type == "mercenary" || u.type == "cavalry")) && nonregulars_to_delete > 0) {
-		    his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
-		    nonregulars_to_delete--;
+		  if (u.army_leader != true) {
+		    if (u.type == "regular" && regulars_to_delete > 0) {
+		      his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
+		    }
+		    if ((u.type != "regular" && (u.type == "mercenary" || u.type == "cavalry")) && nonregulars_to_delete > 0) {
+		      his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
+		      nonregulars_to_delete--;
+		    }
 		  }
 		}
 		his_self.endTurn();
