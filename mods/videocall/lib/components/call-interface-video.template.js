@@ -1,3 +1,6 @@
+/*controll changes*/
+/*updated for git*/
+
 module.exports = CallInterfaceVideoTemplate = (
 	mod,
 	videoEnabled = true,
