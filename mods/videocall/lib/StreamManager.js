@@ -56,24 +56,25 @@ class StreamManager {
 							this.localStream
 						);
 
-						for (let peer of this.app.options.stun.peers) {
-							let peerConnection = this.mod.stun.peers.get(peer);
-							const videoSenders = peerConnection
-								.getSenders()
-								.filter(
-									(sender) =>
-										sender.track &&
-										sender.track.kind === 'video'
-								);
-							if (videoSenders.length > 0) {
-								videoSenders.forEach((sender) => {
-									sender.replaceTrack(videoTrack);
-								});
-							} else {
-								peerConnection.addTrack(videoTrack);
+						this.mod.stun.peers.forEach((peerConnection, key) => {
+							console.log("Attach new video to: " + key);
+							if (this.app.options.stun.peers.includes(key)) {
+								const videoSenders = peerConnection
+									.getSenders()
+									.filter(
+										(sender) =>
+											sender.track &&
+											sender.track.kind === 'video'
+									);
+								if (videoSenders.length > 0) {
+									videoSenders.forEach((sender) => {
+										sender.replaceTrack(videoTrack);
+									});
+								} else {
+									peerConnection.addTrack(videoTrack);
+								}
 							}
-							//this.renegotiate(peer);
-						}
+						});
 					} catch (err) {
 						console.error(err);
 					}
@@ -146,10 +147,9 @@ class StreamManager {
 				);
 				this.mod.stun.peers.forEach((pc, key) => {
 					console.log(key);
-					for (let peer of this.app.options.stun.peers) {
-						let peerConnection = this.mod.stun.peers.get(peer);
+					if (this.app.options.stun.peers.includes(key)) {
 						console.log('Add Track');
-						peerConnection.addTrack(videoTrack);
+						pc.addTrack(videoTrack);
 					}
 				});
 			} catch (err) {
