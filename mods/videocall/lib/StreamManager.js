@@ -319,6 +319,7 @@ class StreamManager {
 				}
 
 				console.log('New Stun peer connection with ' + publicKey);
+				console.log(this.app.options.stun.peers);
 				if (this.app.options.stun.peers.includes(publicKey)) {
 					peerConnection.firstConnect = true;
 
