@@ -1,3 +1,5 @@
+/*controll changes*/
+
 module.exports = CallInterfaceVideoTemplate = (
 	mod,
 	videoEnabled = true,
