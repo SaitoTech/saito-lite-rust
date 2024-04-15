@@ -39,6 +39,7 @@ const TutorialTemplate = require('./lib/ui/overlays/tutorials/tutorial.template'
 const HISRules = require('./lib/core/rules.template');
 const HISOptions = require('./lib/core/advanced-options.template');
 const HISingularOption = require('./lib/core/options.template');
+const htmlTemplate = require('./lib/core/game-html.template');
 
 const JSON = require('json-bigint');
 
@@ -150,6 +151,13 @@ class HereIStand extends GameTemplate {
   // initialize //
   ////////////////
   initializeGame(game_id) {
+
+
+    //this.realEndTurn = this.endTurn;
+    //this.endTurn = () => {
+    //  console.log("TESTING REAL END TURN");
+    //  this.realEndTurn();
+    //}
 
     //
     // check user preferences to update interface, if text

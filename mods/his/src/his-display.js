@@ -1,11 +1,105 @@
 
   displayCustomOverlay(c="", msg="") {
 
-    if (c === "st_lawrence") {
+    if (c === "protestants") {
       this.welcome_overlay.renderCustom({
-        title : "New World Explnration" ,
+        title : "New to the Protestants?" , 
+        text : "Why not play cards for OPS and publish treatises in Germany? " ,
+        card : this.returnCardImage("065") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "excommunication") {
+      this.welcome_overlay.renderCustom({
+        title : "Excommunicated!" , 
+        text : this.returnFactionName(msg) + " has been excommunicated by Papal Decree" ,
+        card : this.returnCardImage("005") ,
+        img : '/his/img/backgrounds/events/excommunication.jpg',
+      });
+      return;
+    }
+    if (c === "papacy") {
+      this.welcome_overlay.renderCustom({
+        title : "New to the Papacy?" , 
+        text : "Why not use your OPS to control Siena and move an invasion force to Florence?" ,
+        card : this.returnCardImage("067") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+    if (c === "ottoman") {
+      this.welcome_overlay.renderCustom({
+        title : "New to the Ottomans?" , 
+        text : "Why not use your OPS to invade Hungary and expand your empire?" ,
+        card : this.returnCardImage("042") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+    if (c === "england") {
+      this.welcome_overlay.renderCustom({
+        title : "New to England?" , 
+        text : "Why not use your Home Card to declare war on Scotland or France?" ,
+        card : this.returnCardImage("003") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+    if (c === "france") {
+      this.welcome_overlay.renderCustom({
+        title : "New to France?" , 
+        text : "Establishing Colonies and building Chateaux is crucial early-game! " ,
+        card : this.returnCardImage("004") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+    if (c === "hapsburg") {
+      this.welcome_overlay.renderCustom({
+        title : "New to the Hapsburgs?" , 
+        text : "Are there any independent keys you can conquer this turn? ",
+        card : this.returnCardImage("002") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "lost-at-sea") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Losses" ,
+        text : msg + " exploration is lost at sea..." ,
+        img : '/his/img/backgrounds/newworld/lost_at_sea.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} mission is lost at sea`);
+      return;
+    }
+
+    if (c === "killed") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Losses" ,
+        text : msg + " expedition killed by natives" ,
+        img : '/his/img/backgrounds/newworld/killed.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} expedition killed by natives`);
+      return;
+    }
+
+    if (c === "stlawrence") {
+      this.welcome_overlay.renderCustom({
+        title : "New World Discovery" ,
         text : msg + " discovers the St. Lawrence River" ,
         img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers St. Lawrence River`);
       return;
@@ -13,9 +107,10 @@
 
     if (c === "mississippi") {
       this.welcome_overlay.renderCustom({
-        title : "New World Explnration" ,
+        title : "New World Discovery" ,
         text : msg + " discovers the Mississippi River" ,
         img : '/his/img/backgrounds/newworld/mississippi.jpg',
+	styles : [{ key : "backgroundPosition" , val : "center" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Mississippi River`);
       return;
@@ -23,19 +118,21 @@
 
     if (c === "greatlakes") {
       this.welcome_overlay.renderCustom({
-        title : "New World Explnration" ,
+        title : "New World Discovery" ,
         text : msg + " discovers the Great Lakes" ,
-        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+        img : '/his/img/backgrounds/newworld/greatlakes.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers St. Lawrence River`);
+      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Great Lakes`);
       return;
     }
 
     if (c === "amazon") {
       this.welcome_overlay.renderCustom({
-        title : "New World Explnration" ,
+        title : "New World Discovery" ,
         text : msg + " discovers the Amazon River" ,
-        img : '/his/img/backgrounds/newworld/amazon2.jpg',
+        img : '/his/img/backgrounds/newworld/amazon3.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Amazon River`);
       return;
@@ -43,9 +140,10 @@
 
     if (c === "pacificstrait") {
       this.welcome_overlay.renderCustom({
-        title : "New World Explnration" ,
+        title : "New World Discovery" ,
         text : msg + " discovers the Pacific Strait" ,
         img : '/his/img/backgrounds/newworld/pacificstrait.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Pacific Strait`);
       return;
@@ -53,9 +151,9 @@
 
     if (c === "circumnavigation") {
       this.welcome_overlay.renderCustom({
-        title : "New World Explnration" ,
+        title : "New World Achievement" ,
         text : msg + " circumnavigates the globe" ,
-        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+        img : '/his/img/backgrounds/newworld/circumnavigation.jpg',
       });
       this.game.queue.push(`ACKNOWLEDGE\t${msg} circumnavigates the globe`);
       return;
@@ -63,9 +161,9 @@
 
     if (c === "aztec") {
       this.welcome_overlay.renderCustom({
-        title : "New World Explnration" ,
+        title : "New World Conquest" ,
         text : msg + " conquers the Aztec" ,
-        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+        img : '/his/img/backgrounds/newworld/aztec.jpg',
       });
       this.game.queue.push(`ACKNOWLEDGE\t${msg} conquers the Aztec`);
       return;
@@ -73,9 +171,9 @@
 
     if (c === "maya") {
       this.welcome_overlay.renderCustom({
-        title : "New World Explnration" ,
+        title : "New World Conquest" ,
         text : msg + " conquers the Maya" ,
-        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+        img : '/his/img/backgrounds/newworld/inca.jpg',
       });
       this.game.queue.push(`ACKNOWLEDGE\t${msg} conquers the Maya`);
       return;
@@ -83,9 +181,9 @@
 
     if (c === "inca") {
       this.welcome_overlay.renderCustom({
-        title : "New World Explnration" ,
+        title : "New World Conquest" ,
         text : msg + " conquers the Inca" ,
-        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+        img : '/his/img/backgrounds/newworld/inca2.jpg',
       });
       this.game.queue.push(`ACKNOWLEDGE\t${msg} conquers the Inca`);
       return;
@@ -106,6 +204,7 @@
         title : this.returnFactionName(msg) + " founds a Colony",
         text : "Colonies earn factions bonus cards in the New World Phase",
         img : '/his/img/backgrounds/move/colonize.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} attempts to found a Colony`);
       return;
@@ -115,7 +214,8 @@
       this.welcome_overlay.renderCustom({
         title : this.returnFactionName(msg) + " launches Conquest Expedition",
         text : "Conquests earn factions Victory Points and bonus cards in the New World Phase",
-        img : '/his/img/backgrounds/move/conquer.jpg',
+        img : '/his/img/backgrounds/newworld/inca2.jpg',
+	styles : [{ key : "backgroundPosition" , val : "center" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} attempts Conquest Expedition`);
       return;
@@ -126,6 +226,7 @@
         title : this.returnFactionName(msg) + " launches Exploration",
         text : "Explorations earn Victory Points for strategic discoveries in the New World Phase",
         img : '/his/img/backgrounds/move/explore.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
       this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} launches New World Exploration`);
       return;
@@ -216,8 +317,8 @@
     for (let key in this.game.state.cards_left) {
 
       let qs = ".game-factions .game-menu-sub-options ";
-      if (key === "hapsburgs") { 
-        qs += ".game-hapsburgs .game-menu-option-label";
+      if (key === "hapsburg") { 
+        qs += ".game-hapsburg .game-menu-option-label";
 	document.querySelector(qs).innerHTML = `Hapsburgs (${this.game.state.cards_left[key]} cards)`;
       }
       if (key === "france") { 
@@ -469,24 +570,28 @@
 
   displayBoard() {
 
-    if (this.game.state.events.war_in_persia) { this.displayPersia(); }
-    if (this.game.state.events.revolt_in_egypt) { this.displayEgypt(); }
-    if (this.game.state.events.revolt_in_ireland) { this.displayIreland(); }
+    try {
+      if (this.game.state.events.war_in_persia) { this.displayPersia(); }
+      if (this.game.state.events.revolt_in_egypt) { this.displayEgypt(); }
+      if (this.game.state.events.revolt_in_ireland) { this.displayIreland(); }
+    } catch (err) {
+      console.log("error displaying foreign wars... " + err);
+    }
 
     try {
       this.displayTurnTrack();
     } catch (err) {
-      console.log("error displaying board... " + err);
+      console.log("error displaying turn track... " + err);
     }
     try {
       this.displayWarBox();
     } catch (err) {
-      console.log("error displaying board... " + err);
+      console.log("error displaying diplomacy box... " + err);
     }
     try {
       this.displayColony();
     } catch (err) {
-      console.log("error displaying board... " + err);
+      console.log("error displaying colonies... " + err);
     }
     try {
       this.displayConquest();
@@ -592,34 +697,29 @@
   displayColony() {
 
     let obj = document.querySelector(".crossing_atlantic");
+
     for (let i = 0; i < this.game.state.colonies.length; i++) {
-      if (this.game.state.colonies[i].resolved != 1) {
-        if (this.game.state.colonies[i].faction == "france") {
-	  let tile = "/his/img/tiles/colonies/Charlesbourg.svg";
-	  if (this.game.state.newworld['french_colony1'].claimed == 1) {
-	    tile = "/his/img/tiles/colonies/Montreal.svg";
-	  }
-	  obj.innerHTML += `<img class="army_tile" src="${tile}" />`;
-        }
-        if (this.game.state.colonies[i].faction == "hapsburg") {
-	  let tile = "/his/img/tiles/colonies/PuertoRico.svg";
-	  if (this.game.state.newworld['hapsburg_colony1'].claimed == 1) {
-	    tile = "/his/img/tiles/colonies/Cuba.svg";
-	  }
-	  if (this.game.state.newworld['hapsburg_colony2'].claimed == 1) {
-	    tile = "/his/img/tiles/colonies/Hispanola.svg";
-	  }
-	  obj.innerHTML += `<img class="army_tile" src="${tile}" />`;
-        }
-        if (this.game.state.colonies[i].faction == "england") {
-	  let tile = "/his/img/tiles/colonies/Roanoke.svg";
-	  if (this.game.state.newworld['english_colony1'].claimed == 1) {
-	    tile = "/his/img/tiles/colonies/Jamestown.svg";
-	  }
-	  obj.innerHTML += `<img class="army_tile" src="${tile}" />`;
-        }
+      let c = this.game.state.colonies[i];
+      if (c.resolved != 1) { obj.innerHTML += `<img class="army_tile" src="${c.img}" />`; }
+
+      if (c.resolved == 1 && c.destroyed != 1) {
+        if (c.colony == "england_colony1")  { document.querySelector('.england_colony1').innerHTML  = `<img class="nw_tile" src="${c.img}" />`; }
+        if (c.colony == "england_colony2")  { document.querySelector('.england_colony2').innerHTML  = `<img class="nw_tile" src="${c.img}" />`; }
+        if (c.colony == "france_colony1")   { document.querySelector('.france_colony1').innerHTML   = `<img class="nw_tile" src="${c.img}" />`; }
+        if (c.colony == "france_colony2")   { document.querySelector('.france_colony2').innerHTML   = `<img class="nw_tile" src="${c.img}" />`; }
+        if (c.colony == "hapsburg_colony1") { document.querySelector('.hapsburg_colony1').innerHTML = `<img class="nw_tile" src="${c.img}" />`; }
+        if (c.colony == "hapsburg_colony2") { document.querySelector('.hapsburg_colony2').innerHTML = `<img class="nw_tile" src="${c.img}" />`; }
+        if (c.colony == "hapsburg_colony3") { document.querySelector('.hapsburg_colony3').innerHTML = `<img class="nw_tile" src="${c.img}" />`; }
       }
     }
+
+  }
+
+
+  displayConquest() {
+
+    let obj = document.querySelector(".crossing_atlantic");
+        obj.innerHTML = "";
 
     let ec = [];
     let fc = [];
@@ -627,17 +727,17 @@
 
     if (this.game.state.newworld['aztec'].claimed == 1) {
       if (this.game.state.newworld['aztec'].faction == "england") { ec.push("aztec"); }
-      if (this.game.state.newworld['aztec'].faction == "france") { cc.push("aztec"); }
+      if (this.game.state.newworld['aztec'].faction == "france") { fc.push("aztec"); }
       if (this.game.state.newworld['aztec'].faction == "hapsburg") { hc.push("aztec"); }
     }
     if (this.game.state.newworld['inca'].claimed == 1) {
       if (this.game.state.newworld['inca'].faction == "england") { ec.push("inca"); }
-      if (this.game.state.newworld['inca'].faction == "france") { cc.push("inca"); }
+      if (this.game.state.newworld['inca'].faction == "france") { fc.push("inca"); }
       if (this.game.state.newworld['inca'].faction == "hapsburg") { hc.push("inca"); }
     }
     if (this.game.state.newworld['maya'].claimed == 1) {
       if (this.game.state.newworld['maya'].faction == "england") { ec.push("maya"); }
-      if (this.game.state.newworld['maya'].faction == "france") { cc.push("maya"); }
+      if (this.game.state.newworld['maya'].faction == "france") { fc.push("maya"); }
       if (this.game.state.newworld['maya'].faction == "hapsburg") { hc.push("maya"); }
     }
 
@@ -649,58 +749,19 @@
       }
     }
     for (let z = 0, zz = 1; z < fc.length; z++) {
-      let depl = ""; if (this.game.state.newworld[ec[z]].deleted == 1) { depl = "depleted"; }
+      let depl = ""; if (this.game.state.newworld[fc[z]].deleted == 1) { depl = "depleted"; }
       if (zz < 2) {
 	document.querySelector(`.france_conquest${zz}`).innerHTML = `<img class="nw_tile ${depl}" src="${this.game.state.newworld[fc[z]].img}" />`;
         zz++;
       }
     }
     for (let z = 0, zz = 1; z < hc.length; z++) {
-      let depl = ""; if (this.game.state.newworld[ec[z]].deleted == 1) { depl = "depleted"; }
+      let depl = ""; if (this.game.state.newworld[hc[z]].deleted == 1) { depl = "depleted"; }
       if (zz < 3) {
 	document.querySelector(`.hapsburg_conquest${zz}`).innerHTML = `<img class="nw_tile ${depl}" src="${this.game.state.newworld[hc[z]].img}" />`;
         zz++;
       }
     }
-
-    if (this.game.state.newworld['england_colony1'].claimed == 1) {
-      document.querySelector('.england_colony1').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['england_colony1'].img}" />`;
-    }
-    if (this.game.state.newworld['england_colony2'].claimed == 1) {
-      document.querySelector('.england_colony2').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['england_colony2'].img}" />`;
-    }
-    if (this.game.state.newworld['france_colony1'].claimed == 1) {
-      document.querySelector('.france_colony1').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['france_colony1'].img}" />`;
-    }
-    if (this.game.state.newworld['france_colony2'].claimed == 1) {
-      document.querySelector('.france_colony2').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['france_colony2'].img}" />`;
-    }
-    if (this.game.state.newworld['hapsburg_colony1'].claimed == 1) {
-      document.querySelector('.hapsburg_colony1').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['hapsburg_colony1'].img}" />`;
-    }
-    if (this.game.state.newworld['hapsburg_colony2'].claimed == 1) {
-      document.querySelector('.hapsburg_colony2').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['hapsburg_colony2'].img}" />`;
-    }
-    if (this.game.state.newworld['hapsburg_colony3'].claimed == 1) {
-      document.querySelector('.hapsburg_colony3').innerHTML = `<img class="nw_tile" src="${this.game.state.newworld['hapsburg_colony3'].img}" />`;
-    }
-    if (this.game.state.events.potosi_silver_mines === "hapsburg") {
-      document.querySelector('.hapsburg_colony3').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/Potosi.svg" />`;
-    }
-    if (this.game.state.events.potosi_silver_mines === "england") {
-      document.querySelector('.england_colony2').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/Potosi.svg" />`;
-    }
-    if (this.game.state.events.potosi_silver_mines === "france") {
-      document.querySelector('.france_colony2').innerHTML = `<img class="nw_tile" src="/his/img/tiles/colonies/Potosi.svg" />`;
-    }
-
-
-  }
-
-  displayConquest() {
-
-    let obj = document.querySelector(".crossing_atlantic");
-        obj.innerHTML = "";
 
     for (let z = 0; z < this.game.state.conquests.length; z++) {
 
@@ -721,6 +782,9 @@
         if (faction == "england") {
           obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/English_Conquest.svg" />`;
         }
+	if (this.game.state.events.smallpox != "") {
+          obj.innerHTML += `<img class="army_tile" src="/his/img/Smallpox.svg" />`;
+	}
       }
     }
 
@@ -2222,7 +2286,6 @@ try {
       if (this.isSpaceBesieged(space)) {
         obj.innerHTML += `<img class="siege" src="/his/img/tiles/siege.png" />`;
       }
-
     });
 
   }
@@ -2386,6 +2449,9 @@ try {
     let factions_and_scores = this.calculateVictoryPoints();
 
     let x = this.returnVictoryPointTrack();
+    let tiles = [];
+    let zindex = 1;
+    for (let i = 0; i < 30; i++) { tiles.push(0); }
 
     for (f in factions_and_scores) {
 try {
@@ -2395,6 +2461,17 @@ try {
       obj.style.left = x[total_vp.toString()].left + "px";
       obj.style.top = x[total_vp.toString()].top + "px";
       obj.style.display = "block";
+      if (tiles[total_vp] > 0) {
+	let shift = 2 * tiles[total_vp];
+        obj.style.transform = `translateY(-${shift}rem) translateX(${shift}rem)`;
+	zindex = zindex-1;
+        obj.style.zIndex = zindex;
+        tiles[total_vp]++;
+      } else {
+	tiles[total_vp]++;
+        obj.style.transform = ``;
+        obj.style.zIndex = zindex;
+      }
 } catch (err) {
 }
 
@@ -2451,15 +2528,18 @@ try {
     //
     // add cancel button to uneventable cards
     //
+    let active_faction = faction;
+    if (active_faction == "") { active_faction = this.game.state.active_faction; }
+
     if (deckidx == 0) { 
       if (this.deck[cardname]) {
-        if (!this.deck[cardname].canEvent(this, faction)) {
+        if (!this.deck[cardname].canEvent(this, active_faction)) {
           html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
         }
       }
     }
     if (deckidx == 1) { 
-      if (!this.diplomatic_deck[cardname].canEvent(this, faction)) {
+      if (!this.diplomatic_deck[cardname].canEvent(this, active_faction)) {
         html += `<img class="${cardclass} cancel_x" src="/his/img/cancel_x.png" />`;
       }
     }

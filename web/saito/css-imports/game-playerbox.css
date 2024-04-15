@@ -93,35 +93,40 @@
 .game-playerbox-seat-6 {
   position: absolute;
   left: 1rem;
-  top: 45vh;
+  top: 60vh;
   transform: translateY(-50%);
 }
   
 .game-playerbox-seat-5 {
   position: absolute;
   left: 1rem;
-  top: 20vh;
+  top: 22vh;
   transform: translateY(-50%);
 }
 
 .game-playerbox-seat-4 {
   position: absolute;
   left: 50vw;
-  top: 40px;
+  top: 2rem;
   transform: translateX(-50%);
+}
+
+/* Only opponent */
+.game-playerbox-seat-4.game-playerbox-2 {
+  top: 4rem;
 }
 
 .game-playerbox-seat-3 {
   position: absolute;
   right: 1rem;
-  top: 20vh;
+  top: 22vh;
   transform: translateY(-50%);
 }
 
 .game-playerbox-seat-2 {
   position: absolute;
   right: 1rem;
-  top: 45vh;
+  top: 60vh;
   transform: translateY(-50%);
 }
 
@@ -157,12 +162,20 @@
     min-width: unset;
   }
 
-  .game-playerbox-seat-3{
-    right: 0;
+  .game-playerbox-seat-4 {
+    top: 1rem;
   }
 
-  .game-playerbox-seat-5{
-    left: 0;
+  .game-playerbox-seat-3, .game-playerbox-seat-5 {
+    top: 20vh;
+  }
+
+  .game-playerbox-seat-3, .game-playerbox-seat-2 {
+    right: 5px;
+  }
+
+  .game-playerbox-seat-5, .game-playerbox-seat-6 {
+    left: 5px;
   }
 }
 

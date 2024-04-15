@@ -55,7 +55,7 @@ class SaitoMania extends OnePlayerGameTemplate {
 	}
 
 	async render(app) {
-		if (!this.browser_active) {
+		if (!this.browser_active || this.initialize_game_run) {
 			return;
 		}
 
@@ -143,6 +143,27 @@ class SaitoMania extends OnePlayerGameTemplate {
 			return 1;
 		}
 		return 0;
+	}
+
+	webServer(app, expressapp, express){
+		//Opt out of fancy index.js
+		// revert to basic modtemplate code
+		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
+		let fs = app?.storage?.returnFileSystem();
+
+		if (fs != null) {
+			if (fs.existsSync(webdir)) {
+				expressapp.use(
+					'/' + encodeURI(this.returnSlug()),
+					express.static(webdir)
+				);
+			} else if (this.default_html) {
+				expressapp.use(
+					'/' + encodeURI(this.returnSlug()),
+					express.static(__dirname + '/../../lib/templates/html')
+				);
+			}
+		}
 	}
 }
 

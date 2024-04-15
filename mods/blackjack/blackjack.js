@@ -1,6 +1,7 @@
 const GameTableTemplate = require('../../lib/templates/table-gametemplate');
 const saito = require('../../lib/saito/saito');
 const BlackjackGameRulesTemplate = require('./lib/blackjack-game-rules.template');
+const htmlTemplate = require('./lib/game-html.template');
 
 //////////////////
 // CONSTRUCTOR  //
@@ -11,6 +12,8 @@ class Blackjack extends GameTableTemplate {
 
 		this.app = app;
 		this.name = 'Blackjack';
+		this.title = "Saito Blackjack";
+
 		this.description =
 			'Classic casino game with home rules. Try to get closest to 21 without going over and beat the dealer to win your bet, but look out! You may be dealer next hand.';
 
@@ -35,6 +38,8 @@ class Blackjack extends GameTableTemplate {
 		if (this.initialize_game_run) {
 			return;
 		}
+
+		await this.injectGameHTML(htmlTemplate());
 
 		await super.initializeHTML(app);
 

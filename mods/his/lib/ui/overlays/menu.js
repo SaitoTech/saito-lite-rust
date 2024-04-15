@@ -41,13 +41,6 @@ class MenuOverlay {
 		let menu_style = "classic"; 	// classic ==> starting menus, then submenus
 						// simple  ==> one-click up to 9 options
 
-console.log("MENU");
-console.log("MENU");
-console.log("MENU");
-console.log("MENU");
-console.log("MENU");
-console.log(JSON.stringify(menu));
-
 		this.overlay.show(MenuTemplate());
 
 		this.pushHudUnderOverlay();
@@ -69,10 +62,10 @@ console.log(JSON.stringify(menu));
 				        <div class="menu-option-title">${menu[idx].name} [${cost}]</div>
 				      </div>
 				`;
-				this.app.browser.addElementToSelector(html, `.menu`);
+				this.app.browser.addElementToSelector(html, `.movemenu`);
 			}
 
-			document.querySelector('.menu').classList.add(`m${options.length}entries`);
+			document.querySelector('.movemenu').classList.add(`m${options.length}entries`);
 
 			if (attachEventsToOptions != null) {
 				attachEventsToOptions();
@@ -97,8 +90,6 @@ console.log(JSON.stringify(menu));
 			for (let i = 0; i < menu.length; i++) {
 				let id = '';
 				let cost = 100;
-
-console.log("check: " + player + " - " + faction + " - " + ops);
 
 				if (menu[i].check(this.mod, player, faction, ops)) {
 					for (let z = 0; z < menu[i].factions.length; z++) {
@@ -170,12 +161,12 @@ console.log("active menu options? " + active_menu_options);
 				sub_menu(main_menu, sub_menu, move);
 				sub_menu(main_menu, sub_menu, build);
 				sub_menu(main_menu, sub_menu, special);
-				document.querySelector('.menu').classList.add(`m${active_menu_options}entries`);
+				document.querySelector('.movemenu').classList.add(`m${active_menu_options}entries`);
 				return;
 			}
 
 			if (menu.length > 3) {
-				document.querySelector('.menu').classList.add('menu-large');
+				document.querySelector('.movemenu').classList.add('menu-large');
 
 				let build_html = `
 				    <div id="build" class="menu-option-container-large build-menu">
@@ -183,7 +174,7 @@ console.log("active menu options? " + active_menu_options);
 				    </div>
 				`;
 				if (build.length > 0) {
-					this.app.browser.addElementToSelector(build_html, `.menu`);
+					this.app.browser.addElementToSelector(build_html, `.movemenu`);
 					let content = '';
 					for (let z = 0; z < build.length; z++) {
 						if (z > 0) {
@@ -205,7 +196,7 @@ console.log("active menu options? " + active_menu_options);
 				    </div>
 				  `;
 				if (move.length > 0) {
-					this.app.browser.addElementToSelector(move_html, `.menu`);
+					this.app.browser.addElementToSelector(move_html, `.movemenu`);
 					let content = '';
 					for (let z = 0; z < move.length; z++) {
 						if (z > 0) {
@@ -229,7 +220,7 @@ console.log("active menu options? " + active_menu_options);
 				if (special.length > 0) {
 					this.app.browser.addElementToSelector(
 						special_html,
-						`.menu`
+						`.movemenu`
 					);
 					let content = '';
 					for (let z = 0; z < special.length; z++) {
@@ -253,8 +244,8 @@ console.log("active menu options? " + active_menu_options);
 						obj.onclick = (e) => {
 							let id = e.currentTarget.id;
 
-							document.querySelector('.menu').classList.remove('menu-large');
-							document.querySelector('.menu').innerHTML = '';
+							document.querySelector('.movemenu').classList.remove('menu-large');
+							document.querySelector('.movemenu').innerHTML = '';
 
 							if (id == 'build') {
 								sub_menu(main_menu, sub_menu, build);
@@ -306,7 +297,7 @@ console.log("active menu options? " + active_menu_options);
 
 				if (cost != 100) {
 					if (active_option !== 'inactive') {
-						this.app.browser.addElementToSelector(this.returnMenuHTML(menu[i].name, menu[i].img, active_option, menu[i].cost), `.menu`);
+						this.app.browser.addElementToSelector(this.returnMenuHTML(menu[i].name, menu[i].img, active_option, menu[i].cost), `.movemenu`);
 					}
 				}
 			}

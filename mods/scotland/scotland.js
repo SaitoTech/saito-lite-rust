@@ -129,7 +129,7 @@ class Scotland extends GameTemplate {
 	}
 
 	async render(app) {
-		if (!this.browser_active) {
+		if (!this.browser_active || this.initialize_game_run) {
 			return;
 		}
 

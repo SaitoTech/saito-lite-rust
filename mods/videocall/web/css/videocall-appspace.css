@@ -1,4 +1,6 @@
 /* Appspace css */
+/*controll changes*/
+/*updated for git*/
 
 .stun-appspace {
 	width: 100vw;
@@ -9,8 +11,8 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	background-color: black;
-	color: var(--saito-white);
+	background-color: var(--saito-background-color);
+	color: var(--saito-font-color);
 	padding: 3rem;
 	justify-content: center;
 	position: relative;
@@ -21,14 +23,14 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	background-color: black;
-	color: var(--saito-white);
+	background-color: var(--saito-background-color);
+    color: var(--saito-font-color);
 	justify-content: space-between;
 	width: min(400px, 98vw);
 	height: min(600px, 80vh);
 }
 
-.stun-minimal-appspace .saito-user > .saito-address {
+.stun-minimal-appspace .saito-user>.saito-address {
 	color: #ddd;
 }
 
@@ -47,10 +49,17 @@
 
 .stun-appspace-content {
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	width: 80%;
-	max-width: 1028px;
+	padding: 3rem;
+	gap: 3rem;
+	border: 1px solid var(--saito-border-color);
+	border-radius: var(--saito-border-radius);
+}
+
+.staun-appspace-cards {
+	display: flex;
 	gap: 5rem;
 }
 
@@ -69,21 +78,22 @@
 }
 
 .stunx-appspace-actions {
-	margin-bottom: 2rem;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	margin-top: 2rem;
+	width: 100%;
 }
 
 .stunx-appspace-launch-call-btn {
-	margin: 3rem;
-	/* display: none; */
+	width: 100%;
 }
 
 .stunx-appspace-splash {
-	height: 25rem;
-	color: var(--saito-white);
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 3rem;
 }
 
 .stun-appspace-navigation {
@@ -130,6 +140,7 @@
 }
 
 /* Hide default HTML checkbox */
+
 .switch input {
 	opacity: 0;
 	width: 0;
@@ -137,6 +148,7 @@
 }
 
 /* The slider */
+
 .slider {
 	position: absolute;
 	cursor: pointer;
@@ -161,21 +173,22 @@
 	transition: 0.4s;
 }
 
-input:checked + .slider {
+input:checked+.slider {
 	background-color: #2196f3;
 }
 
-input:focus + .slider {
+input:focus+.slider {
 	box-shadow: 0 0 1px #2196f3;
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
 	-webkit-transform: translateX(26px);
 	-ms-transform: translateX(26px);
 	transform: translateX(26px);
 }
 
 /* Rounded sliders */
+
 .slider.round {
 	border-radius: 34px;
 }
@@ -188,8 +201,7 @@ input:checked + .slider:before {
 	width: 100%;
 }
 
-.stun-minimal-appspace .chat-settings-toggle-icons,
-.stun-minimal-appspace .chat-settings-preview-message {
+.stun-minimal-appspace .chat-settings-toggle-icons, .stun-minimal-appspace .chat-settings-preview-message {
 	display: none;
 }
 
@@ -199,6 +211,15 @@ input:checked + .slider:before {
 
 .stun-phone-notice {
 	font-style: italic;
+}
+
+@media screen and (max-width: 900px) {
+	.staun-appspace-cards {
+		flex-direction: column;
+	}
+	.chat-settings-preview-section {
+		width: unset;
+	}
 }
 
 /*  responsive */
@@ -220,17 +241,18 @@ input:checked + .slider:before {
 	}
 }
 
-@media screen and (max-width: 600px) {
+@media (max-width: 600px) {
 	.stun-appspace {
 		padding: 1rem;
 		margin: 0;
+		justify-content: flex-start;
 	}
-
 	.stun-appspace-content {
 		margin-top: 1rem;
 		gap: 0;
+		padding: 0;
+		border: unset;
 	}
-
 	#createRoom {
 		width: 100%;
 	}
@@ -238,26 +260,19 @@ input:checked + .slider:before {
 		padding: 0;
 		height: unset;
 	}
-
 	.stun-appspace-navigation {
 		gap: 2rem;
 		padding: 2rem;
 		justify-content: center;
 	}
-
-	.stunx-appspace-launch-call-btn {
-		margin: 2rem;
-	}
-
 	.stunx-appspace-actions {
-		margin-bottom: 0;
-		margin-top: 1rem;
+		position: fixed;
+		bottom: 1rem;
+		width: calc(100vw - 2rem);
 	}
-
 	.stun-minimal-appspace {
 		padding: 1rem;
 	}
-
 	.stun-button-row .saito-button-primary {
 		min-width: 12rem;
 	}

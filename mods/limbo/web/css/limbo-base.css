@@ -16,6 +16,9 @@
 
 
 /* Left Sidebar */
+.limbo-container .saito-sidebar.left {
+	max-width: 30rem;
+}
 
 .spaces-list{
 	gap: 0.5rem;
@@ -72,6 +75,12 @@
 
 .limbo-sidebar .saito-modal-menu-option > div {
 	font-size: 1.8rem;
+	margin-right: unset;
+}
+
+.limbo-sidebar .saito-modal-menu-option > i {
+	margin-right: unset;
+	margin: auto;
 }
 
 
@@ -102,11 +111,11 @@
 
 .dream-controls {
 	position: absolute;
-	max-width: 90vw;
-	max-height: 80vh;
+	width: fit-content;
+	max-width: 100%;
 	display: grid;
 	grid-template-rows: 1fr 7rem;
-
+	grid-template-columns: minmax(0px, 1fr);
 	border: 2px solid silver;
 	border-radius: 5px;
 	background-color: var(--saito-black);
@@ -124,6 +133,7 @@
 .dream-controls .control-panel{
 	align-items: center;
 	justify-content: space-between;
+	max-width: 100%;
 }
 
 .dream-controls .control-panel .timer {
@@ -139,8 +149,7 @@ video#local.noflip{
 /* Wizard */
 
 .dream-wizard{
-	min-width: 550px;
-	max-width: 90vw;
+	width: min(550px, 98vw);
 	padding: 3rem;
 	border-radius: 0.5rem;
 	border: 1px solid;
@@ -154,6 +163,15 @@ video#local.noflip{
 
 .dream-wizard .button {
 	margin-top: 1rem;
+}
+
+
+.video-call-info {
+	display: none;
+}
+
+#exit_space {
+	display: none;
 }
 
 
@@ -176,15 +194,35 @@ video#local.noflip{
 	.limbo-container.dreaming .saito-sidebar.left{
 		display: none;
 		visibility: hidden;
+	}
+
+	.saito-floating-container .saito-floating-plus-btn {
+		display: none;
 	}	
 }
 
 @media screen and (max-width: 900px){
-	.saito-container.limbo-container.dreaming{
+	.saito-container.limbo-container, .saito-container.limbo-container.dreaming{
 		grid-template-columns: 1fr;
 		grid-template-rows: min-content auto;
 	}
 
+	.limbo-container .saito-sidebar.left{
+		margin: auto;
+	}
+
+	.dream-controls .control-panel .timer {
+		margin-left: 1rem;
+	}
+
+	.dream-controls .control-list {
+		gap: 1rem;
+		margin-right: 1rem;
+	}
+
+	#exit_space{
+		display: grid;
+	}
 
 	.limbo-container.dreaming .saito-sidebar.right {
 		visibility: visible;
@@ -197,6 +235,10 @@ video#local.noflip{
 
 	.limbo-container.dreaming .saito-sidebar.right .saito-profile-menu{
 		display: flex;
+	}
+
+	.limbo-sidebar .saito-modal-menu-option{
+		grid-template-columns: 3rem 1fr;
 	}
 
 	.limbo-sidebar{
@@ -215,5 +257,18 @@ video#local.noflip{
 	}
 	.limbo-sidebar .saito-profile-info {
 		margin: unset;
+	}
+}
+
+
+@media screen and (max-width: 600px) {
+	.saito-main.limbo-main {
+		padding: unset;
+		margin-bottom: 2rem;
+	}
+
+	
+	.dream-controls{
+		grid-template-rows: 1fr 6rem;
 	}
 }

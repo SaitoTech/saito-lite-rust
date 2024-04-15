@@ -18599,7 +18599,7 @@ ACTION CARD - types
 	} // end initializeGameObjects
 
 	async render(app) {
-		if (!this.browser_active) {
+		if (!this.browser_active || this.initialize_game_run) {
 			return;
 		}
 

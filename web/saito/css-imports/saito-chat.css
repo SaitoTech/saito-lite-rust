@@ -364,6 +364,7 @@
 .chat-body .saito-user .saito-userline {
   font-size: 1.6rem;
   padding: 0.75rem;
+  padding-right: 3rem;
   border-radius: 0.5rem 0.5rem 0.5rem 0;
   background: var(--saito-background-color);
   box-shadow: 0px 2px 4px var(--saito-bubble-shadow), -4px 0px 2px -2px var(--key-color);
@@ -514,12 +515,34 @@
   font-size: 1.4rem;
 }
 
-.saito-user-self .chat-message-line:hover .saito-userline-reply{
-  right: -2.5rem;
+.liked {
+  color: var(--saito-primary);
 }
 
-.saito-user-self .chat-message-line .saito-userline-reply .chat-copy, .saito-user-self .chat-message-line .saito-userline-reply .chat-reply {
+.chat-likes {
+     right: -4rem;
+     bottom: 0;
+     display: flex;
+     width: 40px;
+     font-size: 1.3rem;
+}
+
+.chat-likes i {
+  color: var(--saito-primary);
+}
+
+.chat-likes .chat-like-number {
+  margin-left: .2rem;
+
+}
+.saito-user-self .chat-message-line:hover .saito-userline-reply{
+  right: -2.5rem;
+
+}
+
+.saito-user-self .chat-message-line .saito-userline-reply .chat-copy, .saito-user-self .chat-message-line .saito-userline-reply .chat-reply, .saito-user-self .chat-message-line .saito-userline-reply .chat-like {
   display: none;
+  cursor: pointer;
 }
 
 .saito-user .saito-userline-reply i:hover {

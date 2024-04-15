@@ -1,6 +1,7 @@
 const RedSquareMainTemplate = require('./main.template');
 const TweetManager = require('./manager');
 const SaitoOverlay = require('./../../../lib/saito/ui/saito-overlay/saito-overlay');
+const SaitoProgress = require('./../../../lib/saito/ui/saito-progress-bar/saito-progress-bar');
 
 class RedSquareMain {
   constructor(app, mod) {
@@ -13,6 +14,7 @@ class RedSquareMain {
     this.scroll_depth = 0;
 
     this.manager = new TweetManager(app, mod, ".saito-main");
+    this.loader = new SaitoProgress(app, mod, '.redsquare-progress-banner');
 
     //
     // measuring activity
@@ -29,6 +31,7 @@ class RedSquareMain {
     this.app.connection.on("redsquare-home-render-request", (scroll_to_top = false) => {
 
       console.log("redsquare-home-render-request");
+
       if (document.querySelector(".saito-back-button")) {
         document.querySelector(".saito-back-button").remove();
       }
@@ -59,7 +62,6 @@ class RedSquareMain {
       //
       if (num_tweets > 0) {
 
-        this.app.connection.emit("redsquare-remove-loading-message");
         //
         // Don't insert new tweets or button if looking at a tweet or profile
         //
@@ -89,11 +91,10 @@ class RedSquareMain {
 
         // So it will automatically insert new tweets if we navigate back to the main feed from looking at something else??
 
-      }else{
-        setTimeout(()=>{
-          this.app.connection.emit("redsquare-remove-loading-message");
-        }, 1000);
       }
+
+      // Update earliest so that we can set up infinite scroll
+      this.mod.tweets_earliest_ts--;
 
     });
 
@@ -153,19 +154,12 @@ class RedSquareMain {
 
     });
 
-    this.app.connection.on("redsquare-insert-loading-message", () => {
-      if (!document.querySelector(".saito-cached-loader")){
-        this.app.browser.prependElementToSelector(
-          `<div class="saito-cached-loader">loading new tweets...</div>`,
-          ".saito-main"
-        );
-      }
+    this.app.connection.on("redsquare-insert-loading-message", (message = "loading new tweets...") => {
+      this.loader.render(message);
     });
 
-    this.app.connection.on("redsquare-remove-loading-message", () => {
-      if (document.querySelector(".saito-cached-loader")) {
-        document.querySelector(".saito-cached-loader").remove();
-      }
+    this.app.connection.on("redsquare-remove-loading-message", (message = "") => {
+      this.loader.finish(`Finished Loading!`);      
     });
 
     //
@@ -207,7 +201,8 @@ class RedSquareMain {
     } else {
       this.app.browser.addElementToDom(RedSquareMainTemplate());
     }
-    this.manager.render("tweets");
+    
+    this.manager.render();
     this.attachEvents();
 
     this.monitorUserInteraction();

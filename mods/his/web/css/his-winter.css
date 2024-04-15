@@ -1,9 +1,10 @@
 .winter {
-	min-width: 80vw;
-	min-height: 80vh;
+	min-width: 100vw;
+	min-height: 100vh;
 	border-radius: 2rem;
 	background-image: url('/his/img/backgrounds/winter_background.jpg');
 	background-size: cover;
+	background-position: bottom;
 }
 
 .winter-title {
@@ -37,5 +38,22 @@
 }
 
 .winter-text ul {
-	margin-left: 3rem;
+	margin-left: 0rem;
 }
+.winter-text ul li {
+        position: relative;
+        padding-left: 3rem;
+	list-style: none;
+}
+.winter-text ul li::before {
+        content: " > ";
+        position: absolute;
+        left: 0;
+}
+
+.winter-text ul li.active {
+  font-weight: bold;
+  color: #e69500;
+}
+
+

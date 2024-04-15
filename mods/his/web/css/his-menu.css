@@ -1,4 +1,8 @@
-.menu {
+.saito-overlay:has(> .movemenu) {
+  box-shadow: none;
+}
+
+.movemenu {
 	display: flex;
 	flex-direction: columns;
 	flex-wrap: wrap;

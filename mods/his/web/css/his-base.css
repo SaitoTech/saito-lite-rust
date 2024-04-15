@@ -2,19 +2,19 @@
 	padding-top: 15px;
 }
 
-.persia {
+.persia , .war_in_persia {
     top: 500px;
     left: 3800px;
     width: 475px;
     height: 750px;
 }
-.ireland {
+.ireland , .revolt_in_ireland {
     top: 800px;
     left: 4125px;
     width: 475px;
     height: 750px;
 }
-.egypt {
+.egypt , .revolt_in_egypt {
     top: 800px;
     left: 4500px;
     width: 475px;
@@ -205,8 +205,8 @@ img {
 	left: 1420px;
 }
 #north {
-	top: 80px;
-	left: 2250px;
+	top: 360px;
+	left: 2150px;
 }
 #baltic {
 	top: 40px;
@@ -393,6 +393,30 @@ img {
 .navy_tile:nth-child(9) {
 	margin-left: 60px;
 	margin-top: -100px;
+}
+.navy_tile:nth-child(10) {
+	margin-left: 70px;
+	margin-top: -110px;
+}
+.navy_tile:nth-child(11) {
+	margin-left: 80px;
+	margin-top: -120px;
+}
+.navy_tile:nth-child(12) {
+	margin-left: 90px;
+	margin-top: -130px;
+}
+.navy_tile:nth-child(13) {
+	margin-left: 100px;
+	margin-top: -140px;
+}
+.navy_tile:nth-child(14) {
+	margin-left: 110px;
+	margin-top: -150px;
+}
+.navy_tile:nth-child(15) {
+	margin-left: 120px;
+	margin-top: -160px;
 }
 
 .army_tile {

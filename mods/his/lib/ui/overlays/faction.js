@@ -36,15 +36,14 @@ class FactionOverlay {
 
 		for (let key in his_self.game.spaces) {
 			if (his_self.game.spaces[key].type === 'key') {
-				if (
-					his_self.game.spaces[key].political ===
-						his_self.factions[faction].key ||
-					(his_self.game.spaces[key].political === '' &&
-						his_self.game.spaces[key].home ===
-							his_self.factions[faction].key)
-				) {
-					controlled_keys++;
-				}
+
+			  	let owner = his_self.game.spaces[key].political;
+    			  	if (owner == "") { owner = his_self.game.spaces[key].home; }
+    			  	owner = his_self.returnControllingPower(owner);
+
+			  	if (owner == his_self.factions[faction].key) {
+			  	  controlled_keys++;
+			  	}
 			}
 		}
 
@@ -134,6 +133,44 @@ class FactionOverlay {
 		}
 		// PAPACY
 		if (his_self.factions[faction].key === 'papacy') {
+
+			////////////////////
+		 	// excommunicated //
+			////////////////////
+			let exhtml = "";
+			if (his_self.game.state.excommunicated_factions["england"] == 1) {
+			  exhtml += `<div class="excommunicated england"></div>`;
+			}
+			if (his_self.game.state.excommunicated_factions["france"] == 1) {
+			  exhtml += `<div class="excommunicated france"></div>`;
+			}
+			if (his_self.game.state.excommunicated_factions["hapsburg"] == 1) {
+			  exhtml += `<div class="excommunicated hapsburg"></div>`;
+			}
+			for (let i = 0; i < his_self.game.state.excommunicated.length; i++) {
+			  let obj = his_self.game.state.excommunicated[i];
+			  if (obj.reformer) {
+			    if (obj.reformer.type == "luther-reformer") {
+			      exhtml += `<div class="excommunicated luther-reformer"></div>`;
+			    }
+			    if (obj.reformer.type == "zwingli-reformer") {
+			      exhtml += `<div class="excommunicated zwingli-reformer"></div>`;
+			    }
+			    if (obj.reformer.type == "calvin-reformer") {
+			      exhtml += `<div class="excommunicated calvin-reformer"></div>`;
+			    }
+			    if (obj.reformer.type == "cramner-reformer") {
+			      exhtml += `<div class="excommunicated cramner-reformer"></div>`;
+			    }
+			  }
+			}
+			if (exhtml != "") {
+				this.app.browser.addElementToSelector(
+					exhtml,
+					'.faction_sheet'
+				);
+			}
+
 			war_winner_vp = his_self.game.state.papacy_war_winner_vp;
 			let total_keys = 7;
 			controlled_keys =

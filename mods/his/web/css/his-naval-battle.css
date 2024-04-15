@@ -63,7 +63,7 @@
 .naval-battle-grid .defender .title {
 	color: whitesmoke;
 	background: #0005;
-	font-size: 25;
+	font-size: 25px;
 	text-align: center;
 	border: 1px solid black;
 	grid-column: 1 / span 2;

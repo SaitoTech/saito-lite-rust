@@ -83,6 +83,7 @@
     return 0;
   }
   returnDeclarationOfWarTargets(faction) {
+
     let na = [];
     let io = this.returnImpulseOrder();
     for (let i = 0; i < io.length; i++) {
@@ -91,10 +92,10 @@
       }
     }
     if (!this.areAllies(faction, "genoa")) { na.push("genoa"); }
-    if (this.areAllies(faction, "scotland")) { 
+    if (!this.areAllies(faction, "scotland")) { 
       if (faction != "protestant" && faction != "papacy" && faction != "ottoman") { na.push("scotland"); }
     }
-    if (this.areAllies(faction, "venice")) { 
+    if (!this.areAllies(faction, "venice")) { 
       if (faction != "england") { na.push("venice"); }
     }
 
@@ -144,7 +145,7 @@
   }
 
   areAllies(faction1, faction2, count_minor_activated_factions=1) {
-    if (faction1 === faction2) { return 1; }
+    if (faction1 == faction2) { return 1; }
     try { if (this.game.state.alliances[faction1][faction2].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.alliances[faction2][faction1].allies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 1; } } catch (err) {}
@@ -342,6 +343,20 @@
   }
 
   unsetEnemies(faction1, faction2) {
+
+    //
+    // undo excommunication
+    //
+    if (faction1 == "papacy") {
+      if (this.game.state.excommunicated_factions[faction2] == 1) {
+	this.unexcommunicateFaction(faction2);
+      }
+    }
+    if (faction2 == "papacy") {
+      if (this.game.state.excommunicated_factions[faction1] == 1) {
+	this.unexcommunicateFaction(faction1);
+      }
+    }
 
     if (this.game.players.length == 2) { if (faction1 === "hapsburg" && faction2 === "protestant") {
       if (this.game.state.events.schmalkaldic_league) { 

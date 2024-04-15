@@ -22,6 +22,7 @@ class Screenrecord extends ModTemplate {
 					{
 						text: 'Record',
 						icon: 'fa-solid fa-record-vinyl',
+						hook: "onair",
 						callback: function (app, public_key, id = '') {
 							console.log("Click on record");
 							if (mod_self.mediaRecorder){
@@ -362,6 +363,7 @@ class Screenrecord extends ModTemplate {
 		let vinyl = document.querySelector(".fa-record-vinyl");
 		if (vinyl){
 			vinyl.classList.toggle("recording");	
+			vinyl.parentElement.classList.toggle("recording");
 		}
 
 	}

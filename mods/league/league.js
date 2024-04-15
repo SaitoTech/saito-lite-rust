@@ -47,12 +47,6 @@ class League extends ModTemplate {
 		this.recent_game_cutoff = 10;
 		this.inactive_player_cutoff = 30 * 24 * 60 * 60 * 1000;
 
-		this.theme_options = {
-			lite: 'fa-solid fa-sun',
-			dark: 'fa-solid fa-moon',
-			arcade: 'fa-solid fa-gamepad'
-		};
-
 		this.auto_open_league_overlay_league_id = null;
 		this.icon_fa = 'fas fa-user-friends';
 		this.debug = false;

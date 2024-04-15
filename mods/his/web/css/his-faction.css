@@ -10,6 +10,42 @@
   text-decoration: underline;
 }
 
+.faction_sheet .excommunicated {
+    background-image: url(/his/img/Excommunicated.svg);
+    background-size: cover;
+    height: 10%;
+    width: 7%;
+    position: absolute;
+}
+.excommunicated.england {
+  top: 5.5%;
+  left: 44%;
+}
+.excommunicated.france {
+  top: 5.5%;
+  left: 51%;
+}
+.excommunicated.hapsburg {
+  top: 5.5%;
+  left: 57.5%%;
+}
+.excommunicated.luther-reformer {
+  top: 5.5%;
+  left: 17.5%;
+}
+.excommunicated.zwingli-reformer {
+  top: 5.5%;
+  left: 24%;
+}
+.excommunicated.calvin-reformer {
+  top: 5.5%;
+  left: 37.5%;
+}
+.excommunicated.cranmer-reformer {
+  top: 5.5%;
+  left: 31%;
+}
+
 .show_wife.henry_viii_marital_status3 {
     background-image: url(/his/img/tiles/wives/AnneBoleyn.svg);
     background-size: cover;

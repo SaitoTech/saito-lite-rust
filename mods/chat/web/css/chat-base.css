@@ -2,6 +2,7 @@
 	padding: 0;
 	overflow-y: hidden;
 	grid-template-columns: min-content auto;
+	column-gap: unset;
 }
 
 #saito-header {
@@ -40,8 +41,7 @@
 	min-width: 20rem;
 	width: 30rem;
 	max-width: 50vw;
-	resize: horizontal;
-	overflow: auto;
+	overflow: visible;
 	border-right: 1px solid var(--saito-border-color);
 	padding: 1rem;
 }

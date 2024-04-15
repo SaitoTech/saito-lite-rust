@@ -1,6 +1,7 @@
 const OnePlayerGameTemplate = require('../../lib/templates/oneplayer-gametemplate');
 const SolitrioGameRulesTemplate = require('./lib/solitrio-game-rules.template');
 const SolitrioGameOptionsTemplate = require('./lib/solitrio-game-options.template');
+const htmlTemplate = require('./lib/game-html.template');
 
 //////////////////
 // CONSTRUCTOR  //
@@ -72,13 +73,15 @@ class Solitrio extends OnePlayerGameTemplate {
 		}
 	}
 
-	render(app) {
+	async render(app) {
 		//console.trace("Initialize HTML");
-		if (!this.browser_active) {
+		if (!this.browser_active || this.initialize_game_run) {
 			return;
 		}
 
-		super.render(app);
+		await this.injectGameHTML(htmlTemplate());
+
+		await super.render(app);
 
 		//
 		// ADD MENU

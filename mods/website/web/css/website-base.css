@@ -234,6 +234,12 @@ body {
   flex-direction: column;
   gap: 1rem;
 }
+  .splash-option a {
+    color: #fff;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
 
 @media screen and (min-width: 801px) {
   .container>div {
@@ -258,12 +264,6 @@ body {
   .splash-option button {
     margin: 0 2rem;
   }
-  .splash-option a {
-    color: #fff;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
   .container>div label {
     width: 0;
     display: block;
@@ -306,6 +306,11 @@ body {
   }
   .splash-option label {
     overflow: hidden;
+  }
+  .splash-option a {
+    color: #fff;
+    flex-direction: column;
+    gap: 0.25rem;
   }
 }
 

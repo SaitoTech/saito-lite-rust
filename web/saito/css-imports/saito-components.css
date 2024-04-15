@@ -32,11 +32,26 @@
   background-color: var(--saito-primary);
 }
 
-.online .online-status-indicator:after {
+.online .online-status-indicator:after, .stun .online-status-indicator:after {
   display: block;
   top: 2.9rem;
   left: 2.75rem;
   border: 2px solid var(--saito-background-color);
+}
+
+.stun .online-status-indicator{
+}
+
+.online-status-indicator i {
+  display: none;
+  position: absolute;
+}
+
+.stun .online-status-indicator i {
+  display: block;
+  top: 2.9rem;
+  left: 2.75rem;
+  font-size: 8px;
 }
 
 .busy .online-status-indicator:after {

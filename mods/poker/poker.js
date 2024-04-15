@@ -4,6 +4,8 @@ const PokerGameRulesTemplate = require('./lib/poker-game-rules.template');
 const PokerGameOptionsTemplate = require('./lib/poker-game-options.template');
 const HealthMeter = require("./lib/poker-health-meter");
 const PokerStats = require("./lib/stats");
+const htmlTemplate = require('./lib/game-html.template');
+
 
 //////////////////
 // CONSTRUCTOR  //
@@ -14,6 +16,7 @@ class Poker extends GameTableTemplate {
 
 		this.app = app;
 		this.name = 'Poker';
+		this.title = "Saito Poker";
 
 		this.description =
 			'Texas Hold\'em Poker for the Saito Arcade. With five cards on the table and two in your hand, can you bet and bluff your way to victory?';
@@ -108,6 +111,8 @@ class Poker extends GameTableTemplate {
 			return;
 		}
 
+		await this.injectGameHTML(htmlTemplate());
+
 		//
 		// ADD MENU
 		//
@@ -146,7 +151,7 @@ class Poker extends GameTableTemplate {
 
 		for (let i = 0; i < this.game.players.length; i++){
 			let hm = new HealthMeter(this.app, this, `.game-playerbox-${i+1}`);
-			hm.divisor = this.game.players.length;
+			hm.color = this.app.keychain.returnIdenticonColor(this.game.players[i]);
 			this.healthBars.push(hm);
 			hm.render(this.game.state.player_credit[i]);
 		}

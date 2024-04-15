@@ -83,13 +83,14 @@ class NavalBattleOverlay {
 
 	assignHits(res = {}, faction = '') {
 		let hits_to_assign = res.attacker_hits;
-		if (faction === res.attacker_faction) {
+		if (this.mod.returnPlayerCommandingFaction(faction) === this.mod.returnPlayerCommandingFaction(res.attacker_faction)) {
 			hits_to_assign = res.defender_hits;
 		}
 		this.assignHitsManually(res, faction, hits_to_assign);
 	}
 
 	assignHitsManually(res = {}, faction = '', hits_to_assign = 1) {
+
 		let hits_assignable = 0;
 		let hits_assigned = 0;
 		let his_self = this.mod;
@@ -108,7 +109,7 @@ class NavalBattleOverlay {
 		let qs1 = '.attacker .not-assignable';
 		let qs2 = '.attacker .hits-assignable';
 
-		if (faction === res.defender_faction) {
+		if (this.mod.returnPlayerCommandingFaction(faction) === this.mod.returnPlayerCommandingFaction(res.defender_faction)) {
 			qs1 = '.defender .not-assignable';
 			qs2 = '.defender .hits-assignable';
 		}
@@ -117,6 +118,7 @@ class NavalBattleOverlay {
 			el.remove();
 		});
 		document.querySelectorAll(qs2).forEach((el) => {
+try {
 			let factionspace = el.querySelector('.naval-battle-desc').innerHTML;
 			let can_i_kill_this_guy = false;
 
@@ -194,6 +196,14 @@ class NavalBattleOverlay {
 					}
 				};
 			}
+} catch (err) {
+  console.log("#");
+  console.log("#");
+  console.log("# naval battle error? " + JSON.stringify(err));
+  console.log("#");
+  console.log("#");
+  alert("error assigning hits -- please check console.log!");
+}
 		});
 
 		if (hits_to_assign > hits_assignable) {

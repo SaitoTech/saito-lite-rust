@@ -258,6 +258,7 @@
 .mixin-txn-his-container .saito-table-body {
   height: auto;
   margin-top: 1rem;
+  overflow-x: hidden;
 }
 
 .mixin-txn-his-container .saito-table-row {
@@ -269,13 +270,38 @@
 }
 
 .mixin-txn-his-container .saito-table-header {
-  grid-template-columns: 16rem 16rem 15rem 15rem;
+  grid-template-columns: 16rem 16rem 15rem 15rem 15rem;
   text-align: center;
 }
 
 .mixin-txn-his-container .saito-table-row {
-  grid-template-columns: 16rem 16rem 14rem 16rem;
+  grid-template-columns: 16rem 16rem 14rem 16rem 35rem;
   text-align: center;
+  align-items: center;
+}
+
+.history-tx-link {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+}
+
+.history-tx-id {
+  padding: 1.5rem 0rem;
+  display: block;
+  min-width: 25rem;
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.saito-identicon-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
 }
 
 .mixin-items-container {

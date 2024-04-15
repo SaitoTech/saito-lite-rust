@@ -1,7 +1,7 @@
 	
 
 #advanced-options-overlay-container {
-	/* Be careful as this also matches the game wizard, and league css is always imported.... */
+	/* Be careful as this also matches the game wizard, and league css is always imported.... 
 	color: var(--saito-font-color-dark-modal);
 	background: #181818;
 	border-radius: 0.5rem;
@@ -36,7 +36,7 @@
 	margin-bottom: 1.2rem;
 	color: var(--saito-background-color);
 	font-style: italic;
-	text-align: center;
+	text-align: center;*/
 }
 
 .game-wizard-advanced-box {

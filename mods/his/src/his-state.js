@@ -1,5 +1,12 @@
 
   onNewImpulse() {
+
+    //
+    // reset player last move
+    //
+    this.game.state.player_last_move = "";
+    this.game.state.player_last_spacekey = "";
+
     //
     // remove foul weather
     //
@@ -20,7 +27,7 @@
     // reset impulse commits
     //
     this.game.state.debater_committed_this_impulse = {};
-    
+    this.game.state.assaulted_this_impulse = 0;
 
     // display cards left
     this.displayCardsLeft();
@@ -60,6 +67,11 @@
       this.hidePiracyMarker(key);
     }
 
+    //
+    // reset variables that permit intervention
+    //
+    this.game.state.events.intervention_on_movement_possible = 0;
+    this.game.state.events.intervention_on_events_possible = 0;
 
     //
     // reset impulse commits
@@ -70,8 +82,10 @@
     this.game.state.events.sack_of_rome = 0;
     this.game.state.events.julia_gonzaga_activated = 0;
     this.game.state.events.england_changed_rulers_this_turn = 0;
+    this.game.state.events.smallpox = "";
     this.game.state.cards_evented = [];
     this.game.state.foreign_wars_fought_this_impulse = [];
+    this.game.state.henry_viii_pope_approves_divorce = 0;
 
     this.game.state.may_explore['england'] = 1;
     this.game.state.may_explore['france'] = 1;
@@ -86,6 +100,9 @@
     this.game.state.events.ottoman_piracy_wartburg = 0;
     this.game.state.events.ottoman_piracy_attempts = 0;
     this.game.state.events.ottoman_piracy_seazones = [];
+
+    this.game.state.events.intervention_on_movement_possible = 0;
+    this.game.state.events.intervention_on_events_possible = 0;
 
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
@@ -109,6 +126,7 @@
     this.game.state.impulse = 0;
     this.game.state.events.more_executed_limits_debates = 0;
     this.game.state.events.more_bonus = 0;
+    this.game.state.events.unexpected_war = 0;
  
     this.game.state.newworld.results.colonies = [];
     this.game.state.newworld.results.explorations = [];
@@ -170,22 +188,41 @@
   isSpaceBesieged(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let faction_with_units = "";
+    let faction_in_control = this.returnFactionControllingSpace(space);
     if (space.besieged == 1 || space.besieged == 2 || space.besieged == true) {
       //
       // are we still besieged? will be unit
       //
       for (let f in space.units) {
         for (let i = 0; i < space.units[f].length; i++) {
-  	  if (space.units[f][i].besieged) {
-	    return true;
+  	  if (space.units[f][i].besieged == true || space.units[f][i].besieged == 1) {
+	    //
+	    // we are still besieged if there are any enemy units here
+	    //
+	    for (let zf in space.units) {
+	      if (zf != f) {
+		if (space.units[zf].length > 0) {
+		  if (!this.areAllies(zf, f)) {
+		    if (this.returnFactionLandUnitsInSpace(zf, space.key) > 0) { return true; }
+		  }
+		}
+	      }
+	    }
+
+	    //
+	    // no-one else is here, so I guess we aren't anymore
+	    //
+	    return false;
 	  } else {
-            faction_with_units = f;
+	    // if not independent (which won't attack) or allies, then someone must be besieged
+	    if (f != "independent") {
+	      if (!this.areAllies(f, faction_in_control)) { return true; }    
+	    }
 	  }
         }
       }
-      let faction_in_control = this.returnFactionControllingSpace(space);
-      if (!this.areAllies(faction_in_control, faction_with_units)) { return true; }
-      return false; // no besieging units left!
+
+      return false; // everyone here is allied or independent and not-besieged
     }
     return false;
   }
@@ -245,7 +282,7 @@
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     for (let i = space.units[faction].length - 1; i >= 0; i--) {
-      if (space.units[faction][i].type === type) {
+      if (space.units[faction][i].type == type) {
         this.updateLog(this.returnFactionName(faction) + " removes " + type + " in " + space.name);
 	space.units[faction].splice(i, 1);
         this.updateOnBoardUnits();
@@ -672,6 +709,7 @@ if (this.game.state.scenario != "is_testing") {
 
     state.foreign_wars_fought_this_impulse = [];
 
+    state.assaulted_this_impulse = 0;
     state.alliances = this.returnDiplomacyAlliance();
     state.diplomacy = [];
 
@@ -701,7 +739,7 @@ if (this.game.state.scenario != "is_testing") {
     state.activated_powers['hungary'] = [];
     state.activated_powers['independent'] = [];
 
-    state.events.potosi_silver_miners = "";
+    state.events.potosi_silver_mines = "";
 
     state.translations = {};
     state.translations['new'] = {};
@@ -885,6 +923,7 @@ if (this.game.state.scenario != "is_testing") {
     state.henry_viii_add_elizabeth = 0;
     state.henry_viii_auto_reroll = 0;
     state.henry_viii_rolls = [];
+    state.henry_viii_pope_approves_divorce = 0;
 
     state.knights_of_st_john = "";
 
@@ -939,6 +978,39 @@ if (this.game.state.scenario != "is_testing") {
     this.game.state.already_excommunicated.push(faction);
     this.game.state.excommunicated_factions[faction] = 1;
     return;
+  }
+
+
+  returnJustificationForExcommunication(faction) {
+    if (this.areEnemies(faction, "papacy")) { return "Wickedness against Saint Peter's Church and the Kingdom of Heaven"; }
+    if (this.areAllies(faction, "ottoman")) { return "Providing Succor to the Enemies of Christendom"; }
+    if (faction == "england") {
+      if (this.game.state.leaders.henry_viii == 1) {
+	for (let key in this.game.spaces) {
+	  if (this.game.spaces[key].home == "england") {
+	    if (this.game.spaces[key].religion == "protestant") { return "Tacit Support for the Protestant Sect in England"; }
+	  }
+	}
+      }
+    }
+    return "";
+  }
+
+
+  canPapacyExcommunicateFaction(faction) {
+    if (this.game.state.already_excommunicated.includes(faction)) { return 0; }
+    if (this.areEnemies(faction, "papacy")) { return 1; }
+    if (this.areAllies(faction, "ottoman")) { return 1; }
+    if (faction == "england") {
+      if (this.game.state.leaders.henry_viii == 1) {
+	for (let key in this.game.spaces) {
+	  if (this.game.spaces[key].home == "england") {
+	    if (this.game.spaces[key].religion == "protestant") { return 1; }
+	  }
+	}
+      }
+    }
+    return 0;
   }
 
   excommunicateReformer(reformer="") {
@@ -1195,46 +1267,55 @@ if (this.game.state.scenario != "is_testing") {
     nw['greatlakes'] = {
       img : "/his/img/vp/GreatLakes1VP.svg",
       type : "discovery" ,
+      name : "Great Lakes" ,
       vp : 1
     }
     nw['stlawrence'] = {
       img : "/his/img/vp/StLawrenceRiver1VP.svg",
       type : "discovery" ,
+      name : "St. Lawrence River" ,
       vp : 1
     }
     nw['mississippi'] = {
       img : "/his/img/vp/MississippiRiver1VP.svg",
       type : "discovery" ,
+      name : "Mississippi" ,
       vp : 1
     }
     nw['aztec'] = {
       img : "/his/img/vp/Aztecs2VP.svg",
       type : "discovery" ,
+      name : "Aztec" ,
       vp : 2
     }
     nw['maya'] = {
       img : "/his/img/vp/Maya1VP.svg",
       type : "discovery" ,
+      name : "Maya" ,
       vp : 1
     }
     nw['amazon'] = {
       img : "/his/img/vp/AmazonRiver2VP.svg",
       type : "discovery" ,
+      name : "Amazon River" ,
       vp : 2
     }
     nw['inca'] = {
       img : "/his/img/vp/Inca2VP.svg",
       type : "discovery" ,
+      name : "Inca" ,
       vp : 2
     }
     nw['circumnavigation'] = {
       img : "/his/img/vp/Circumnavigation3VP.svg",
       type : "discovery" ,
+      name : "Circumnavigation" ,
       vp : 3
     }
     nw['pacificstrait'] = {
       img : "/his/img/vp/PacificStraight1VP.svg",
       type : "discovery" ,
+      name : "Pacific Strait" ,
       vp : 1
     }
 
@@ -1815,24 +1896,13 @@ if (this.game.state.scenario != "is_testing") {
       }
     }
 
-console.log("ochhs: " + ottoman_controlled_hungarian_home_spaces);
-console.log("hrrom: " + hungarian_regulars_remaining_on_map);
-
-    //
-    //
-    //
     if (this.game.state.events.diplomatic_alliance_triggers_hapsburg_hungary_alliance == 1 && ottoman_controlled_hungarian_home_spaces >= 2) { 
       does_this_trigger_the_defeat_of_hungary_bohemia = true;
     }
 
-    //
-    //
-    //
     if (hungarian_regulars_remaining_on_map < 5 && ottoman_controlled_hungarian_home_spaces >= 1) {
       does_this_trigger_the_defeat_of_hungary_bohemia = true;
     }
-    //
-    //
 
     if (does_this_trigger_the_defeat_of_hungary_bohemia) {
 
@@ -1859,7 +1929,8 @@ console.log("hrrom: " + hungarian_regulars_remaining_on_map);
       //
       for (let key in this.game.spaces) {
         if (this.game.spaces[key].home == "hungary") {
-	  if (this.game.spaces[key].units["ottoman"].length > 0) {
+	  // ottoman gets the spaces, but not the keys
+	  if (this.game.spaces[key].units["ottoman"].length > 0 && this.game.spaces[key].type != "key") {
 	    this.game.spaces[key].units["hungary"] = [];
 	    this.controlSpace("ottoman", key);
 	  }
@@ -1877,7 +1948,18 @@ console.log("hrrom: " + hungarian_regulars_remaining_on_map);
       // let's notify the player visually
       this.displayCustomOverlay("battle-of-mohacs");
 
-    }
+      //
+      // add war
+      //
+      for (let z = this.game.queue.length-1; z >= 0; z--) {
+	let lmv = this.game.queue[z].split("\t");
+	if (lmv[0] === "cards_left" || lmv[0] == "continue" || lmv[0] == "play" || lmv[0] == "action_phase" || lmv[0] == "discard") {
+	  this.game.queue.splice(z, 0, `unexpected_war\thapsburg\tottoman`);
+	  z = 0;
+	  break;
+	}
+      }
 
+    }
   }
 

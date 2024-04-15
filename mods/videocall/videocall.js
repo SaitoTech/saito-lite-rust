@@ -4,6 +4,7 @@ const CallLauncher = require('./lib/components/call-launch');
 const CallInterfaceVideo = require('./lib/components/call-interface-video');
 const CallInterfaceFloat = require('./lib/components/call-interface-float');
 const DialingInterface = require('./lib/components/dialer');
+const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
 
 const StreamManager = require('./lib/StreamManager');
 const AppSettings = require('./lib/stun-settings');
@@ -278,11 +279,35 @@ class Videocall extends ModTemplate {
 		if (type === 'call-actions') {
 			return [
 				{
+					text: 'Layout',
+					icon: 'fa-solid fa-table-cells-large',
+					prepend: true,
+					callback: function (app) {
+						app.connection.emit('videocall-show-settings');
+					}
+				},
+				{
 					text: 'Settings',
 					icon: 'fa-solid fa-cog',
 					prepend: true,
 					callback: function (app) {
-						app.connection.emit('videocall-show-settings');
+						let anotherOverlay = new SaitoOverlay(call_self.app, call_self.mod);
+						anotherOverlay.show(
+							`<div class="videocall-setting-grid-item saito-module-settings"></div>`
+						);
+						call_self.loadSettings('.saito-module-settings');
+					}
+				},
+				{
+					text: 'Share',
+					icon: 'fa-solid fa-display',
+					hook: 'screen_share',
+					callback: function (app) {
+						if (call_self.screen_share) {
+							call_self.app.connection.emit('stop-share-screen');
+						} else {
+							call_self.app.connection.emit('begin-share-screen');
+						}
 					}
 				}
 			];
@@ -538,7 +563,7 @@ class Videocall extends ModTemplate {
 			call_list.push(this.publicKey);
 		}
 
-		console.log('STUN: call list', call_list);
+		console.log('STUN: peer list request from ', from, call_list);
 
 		this.sendCallListResponseTransaction(from, call_list);
 
@@ -595,6 +620,7 @@ class Videocall extends ModTemplate {
 			}
 
 			if (peer !== this.publicKey) {
+				console.log("STUN: peer list member, create connection with ", peer);
 				this.stun.createPeerConnection(peer, (peerId) => {
 					this.sendCallJoinTransaction(peerId);
 				});

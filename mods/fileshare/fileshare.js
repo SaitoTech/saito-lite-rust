@@ -141,7 +141,10 @@ class Fileshare extends ModTemplate {
 			}
 
 			if (type === 'call-actions') {
-				return returnObj;
+				if (!this.app.browser.isMobileBrowser()){
+					//Let's drop from the videocall interface altogether
+					//return returnObj;
+				}
 			}
 		}
 

@@ -142,10 +142,7 @@ class Stun extends ModTemplate {
 
 	sendTransaction(peerId, tx) {
 		let peerConnection = this.peers.get(peerId);
-		if (peerConnection?.dc) {
-			console.warn('Stun: no data channel with peer');
-			return;
-		}
+
 		if (!this.hasConnectionWithPeer(peerId)){
 			console.warn("Stun: cannot send transaction over stun");
 			return;
@@ -365,6 +362,7 @@ class Stun extends ModTemplate {
 			})
 
 			if (!callback){
+				console.log("I will be impolite to peer: ", peerId);
 				pc.rude = true;
 			}
 
@@ -463,9 +461,9 @@ class Stun extends ModTemplate {
 		// However, need to further study "perfect negotiation" with polite/impolite peers
 		//
 		peerConnection.onnegotiationneeded = async () => {
-			console.log(`STUN: Negotation needed! sending offer to ${peerId} with peer connection`);
-
 			try {
+				console.log(`STUN: Negotation needed! sending offer to ${peerId} with peer connection`);
+
 				peerConnection.makingOffer = true;
 
 				await peerConnection.setLocalDescription();

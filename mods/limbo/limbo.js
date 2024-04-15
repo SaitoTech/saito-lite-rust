@@ -96,7 +96,6 @@ class Limbo extends ModTemplate {
 			'stun-new-peer-connection',
 			async (publicKey, peerConnection) => {
 				if (!this.dreamer) {
-					console.warn('No dreamer');
 					return;
 				}
 
@@ -149,13 +148,14 @@ class Limbo extends ModTemplate {
 				this.attachStyleSheets();
 				return [
 					{
-						text: 'Broadcast',
+						text: 'Cast',
 						icon: 'fa-solid fa-tower-broadcast',
+						hook: "onair",
 						callback: async function (app) {
 							if (mod_self.dreamer) {
 								await mod_self.sendKickTransaction(obj.members);
 								mod_self.exitSpace();
-								mod_self.toggleNotification(false);
+								mod_self.toggleNotification(false, this.publicKey);
 							} else {
 								mod_self.startDream(obj.members);
 							}
@@ -386,7 +386,7 @@ class Limbo extends ModTemplate {
 						console.log('Stopping screen share');
 						await this.sendKickTransaction();
 						this.exitSpace();
-						this.toggleNotification(false);
+						this.toggleNotification(false, this.publicKey);
 					};
 				});
 			} catch (error) {
@@ -414,12 +414,13 @@ class Limbo extends ModTemplate {
 
 		this.sendDreamTransaction(keylist);
 		this.copyInviteLink(screenStream);
-		this.toggleNotification(true);
+		this.toggleNotification(true, this.publicKey);
 
 	}
 
 	joinDream(dreamer) {
 		this.controls = new DreamSpace(this.app, this, '#limbo-main');
+		this.controls.render(null);
 		this.dreamer = dreamer;
 		this.sendJoinTransaction();
 		this.app.connection.emit('limbo-open-dream', dreamer);
@@ -462,7 +463,7 @@ class Limbo extends ModTemplate {
 			}
 
 			if (tx.isTo(this.publicKey)) {
-				this.toggleNotification(true);
+				this.toggleNotification(true, sender);
 			}
 		}
 
@@ -512,7 +513,7 @@ class Limbo extends ModTemplate {
 		}
 
 		if (tx.isTo(this.publicKey)) {
-			this.toggleNotification(false);
+			this.toggleNotification(false, sender);
 		}
 
 		//
@@ -919,16 +920,17 @@ class Limbo extends ModTemplate {
 
 	copyInviteLink(truthy = false) {
 		if (truthy) {
-			/*
-			Since there is a button in the UI now, no need to bother with this...
-			let data = {
-				name: 'Limbo',
-				path: '/limbo/',
-				dream: this.app.crypto.stringToBase64(this.publicKey)
-			};
+			if (!this.browser_active){
+				//Since there is a button in the UI now, no need to bother with this...
+				let data = {
+					name: 'Limbo',
+					path: '/limbo/',
+					dream: this.app.crypto.stringToBase64(this.publicKey)
+				};
 
-			let invite = new InvitationLink(this.app, this, data);
-			invite.render();*/
+				let invite = new InvitationLink(this.app, this, data);
+				invite.render();
+			}
 		} else {
 			try {
 
@@ -944,15 +946,30 @@ class Limbo extends ModTemplate {
 		}
 	}
 
-	toggleNotification(value = true) {
+	toggleNotification(value = true, sender) {
 		let vinyl = document.querySelector('.fa-tower-broadcast');
 		if (vinyl) {
+			let full_icon = vinyl.parentElement;
 			if (value) {
 				vinyl.classList.add('recording');
+				full_icon.classList.add('recording');
+				if (sender != this.publicKey){
+					full_icon.title = `${this.app.keychain.returnUsername(sender)} is broadcasting the call`;
+				}else{
+					full_icon.title = "Stop Limbo Broadcast";
+				}
+
 			} else {
 				vinyl.classList.remove('recording');
+				full_icon.classList.remove('recording');
+				full_icon.title = "Start a Limbo Broadcast";
 			}
+		
+			
+
 		}
+
+
 	}
 }
 

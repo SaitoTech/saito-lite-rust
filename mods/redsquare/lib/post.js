@@ -114,7 +114,7 @@ class Post {
 		this.input.focus(true);
 
 		if (this.source == 'Edit') {
-			document.querySelector('.post-tweet-textarea').innerHTML =
+			document.querySelector(this.container + '.post-tweet-textarea').innerHTML =
 				this.tweet.text;
 		}
 
@@ -166,15 +166,15 @@ class Post {
 		}
 
 		//
-		if (document.querySelector('.saito-file-uploader')) {
-			document.querySelector('.saito-file-uploader').style.display = 'none';
+		if (document.querySelector(this.container + '.saito-file-uploader')) {
+			document.querySelector(this.container + '.saito-file-uploader').style.display = 'none';
 		}
 
 		document
-			.querySelector('.post-tweet-textarea')
+			.querySelector(this.container + '.post-tweet-textarea')
 			.addEventListener('keydown', (e) => {
 				if (e.keyCode === 13 && e.ctrlKey) {
-					document.getElementById('post-tweet-button').click();
+					document.querySelector(this.container + '#post-tweet-button').click();
 					e.preventDefault();
 				}
 
@@ -189,21 +189,21 @@ class Post {
 
 				   post_self.app.browser.addSaitoMentions(
 				   	keys, 
-				   	document.querySelector('#tweet-overlay #post-tweet-textarea'), 
-				   	document.querySelector('#tweet-overlay #saito-mentions-list'),
+				   	document.querySelector(this.container + '#tweet-overlay #post-tweet-textarea'), 
+				   	document.querySelector(this.container + '#tweet-overlay #saito-mentions-list'),
 				   	'input'
 				   );
 				}
 			});
 		try {
 			document
-				.getElementById('post-delete-button')
+				.querySelector(this.container + '#post-delete-button')
 				.addEventListener('click', (e) => {
 					this.deleteTweet();
 				});
 		} catch (err) {}
 		document
-			.getElementById('post-tweet-button')
+			.querySelector(this.container + '#post-tweet-button')
 			.addEventListener('click', (e) => {
 				this.postTweet();
 			});
@@ -235,9 +235,9 @@ class Post {
 		let post_self = this;
 		let text = this.input.getInput(false);
 
-		let parent_id = document.getElementById('parent_id').value;
-		let thread_id = document.getElementById('thread_id').value;
-		let source = document.getElementById('source').value;
+		let parent_id = document.querySelector(this.container + '#parent_id').value;
+		let thread_id = document.querySelector(this.container + '#thread_id').value;
+		let source = document.querySelector(this.container + '#source').value;
 		let keys = [];
 		let identifiers = [];
 
@@ -297,15 +297,15 @@ class Post {
 		// saito-loader
 		//
 		post_self.overlay.remove();
-		if (document.querySelector("#tweet-overlay")){
-			document.querySelector("#tweet-overlay").remove();
+		if (document.querySelector(this.container + "#tweet-overlay")){
+			document.querySelector(this.container + "#tweet-overlay").remove();
 		}
 
 		//Edit
 		if (source === 'Edit') {
 			data = { text: text, tweet_id: this.tweet.tx.signature };
 
-			let qs = `.tweet-${this.tweet.tx.signature} .tweet-body .tweet-main .tweet-text`;
+			let qs = this.container + `.tweet-${this.tweet.tx.signature} .tweet-body .tweet-main .tweet-text`;
 			let obj = document.querySelector(qs);
 			if (obj) {
 				obj.innerHTML = text;
@@ -459,13 +459,13 @@ class Post {
         <img src="${img}"/>
         <i class="fa fa-times"></i>
        </div>`,
-			document.getElementById('post-tweet-img-preview-container')
+			document.querySelector(this.container + '#post-tweet-img-preview-container')
 		);
 		this.images.push(img);
 
 		// attach img preview event
 		// event added here because img-prievew is added dynamically
-		let sel = '.post-tweet-img-preview';
+		let sel = this.container + '.post-tweet-img-preview';
 		document.querySelectorAll(sel).forEach((elem) => {
 			elem.addEventListener('click', function (e) {
 				e.preventDefault();
@@ -475,7 +475,7 @@ class Post {
 				e.target.parentNode.remove();
 				post_self.images.splice(array_position, 1);
 				document
-					.querySelectorAll('.post-tweet-img-preview')
+					.querySelectorAll(this.container + '.post-tweet-img-preview')
 					.forEach((el2) => {
 						let array_position2 = el2.getAttribute('data-id');
 						if (array_position2 > array_position) {
