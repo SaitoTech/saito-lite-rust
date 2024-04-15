@@ -16,10 +16,8 @@
 }
 
 .saito-profile-menu > div:hover {
-  color: var(--font-color-button-hover-profile);
-  background-color: var(--background-color-button-hover-profile);
-  border: var(--border-thickness-button-hover-profile) solid var(--border-color-button-hover-profile);
-  border-radius: var(--border-radius-button-hover-profile);
+  color: var(--saito-white);
+  background-color: var(--saito-primary);
 }
 
 .saito-profile-menu .active {
@@ -34,11 +32,10 @@
   height: min(15rem, 12vh);
   background: url("https://pbs.twimg.com/profile_banners/842988756/1679408451/1080x360");
   background-size: cover;
-  border-radius: var(--border-radius-profile-banner);
 }
 
 .saito-profile-identicon {
-  border: var(--border-thickness-identicon-square-profile) solid var(--border-color-identicon-square-profile);
+  border: 3px solid var(--saito-background-color);
   width: 10rem;
   height: 10rem;
   border-radius: 5%;
@@ -63,7 +60,7 @@
 
 .saito-follow {
   font-size: 1.5rem;
-  color: purple;
+  color: var(--saito-font-color-light);
   display: flex;
   flex-direction: row;
   gap: 0.5rem;
@@ -71,7 +68,7 @@
 }
 
 .saito-follow-count{
-  color: cyan;
+  color: var(--saito-font-color-heavy);
   font-weight: bold;
 }
 
@@ -96,33 +93,31 @@
   font-size: 2.4rem;
   line-height: 4rem;
   cursor: pointer;
-  color: var(--saito-faded-icon-font); /* testing */
-  border: 10px solid #000;
+  color: var(--saito-faded-icon-font);
+  border: 1px solid var(--saito-faded-icon-border);
   /* circular */
-  background: orange;
+  background: var(--saito-background-light);
   padding: 0rem 0.6rem;
   border-radius: 50%;
 }
 
 .saito-profile-follow-btn {
-  color: var(--font-color-button-simple-contact);
-  background-color: var(--background-color-button-simple-contact);
-  border: var(--border-thickness-button-simple-contact) solid var(--border-color-button-simple-contact);
+  border: 1px solid var(--saito-font-color);
   height: 4rem;
   padding-left: 1rem;
   padding-right: 1rem;
   text-align: center;
   line-height: 4rem;
-  border-radius: var(--border-radius-button-simple-contact);
+  border-radius: 0.3rem;
+  color: var(--saito-font-color);
   font-size: 1.1em;
   cursor: pointer;
 }
 
 .saito-profile-follow-btn:hover {
-  color: var(--font-color-button-hover-simple-contact);
-  background-color: var(--background-color-button-hover-simple-contact);
-  border: var(--border-thickness-button-hover-simple-contact) solid var(--border-color-button-hover-simple-contact);
-  border-radius: var(--border-radius-button-hover-simple-contact);
+  background: var(--saito-primary);
+  border: 1px solid var(--saito-primary);
+  color: #fff;
 }
 
 @media screen and (max-width: 600px){

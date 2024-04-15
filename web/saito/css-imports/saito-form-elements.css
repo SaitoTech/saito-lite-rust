@@ -26,8 +26,8 @@ Selects
   top: 0;
   right: 0;
   padding: 0 1em;
-  color: var(--color-white);
-  background-color: purple; /* testing */
+  color: var(--saito-white);
+  background-color: var(--saito-primary);
   cursor: pointer;
   pointer-events: none;
   -webkit-transition: 0.25s all ease;
@@ -37,25 +37,25 @@ Selects
 }
 
 .saito-select:hover::after {
-  color: var(--color-white) !important; /* testing */
+  color: var(--saito-white) !important;
 }
 
 .saito-select .saito-slct {
   font-size: 2rem;
 }
 
-.saito-slct { /* WHAT IS THIS??*/
+.saito-slct {
   appearance: none;
-  background-color: var(--color-white);
+  background-color: var(--saito-white);
   border-radius: 1rem;
   padding: 0 1rem;
 }
 
 textarea,
 input {
-  background-color: var(--background-color-form-input);
-  color: var(--font-color-form-input);
-  border: var(--border-thickness-form-input) solid var(--border-color-form-input);
+  background-color: var(--saito-background-color);
+  color: var(--saito-font-color);
+  border: 1px solid var(--saito-border-color);
 }
 
 
@@ -66,8 +66,8 @@ textarea:focus, input:focus, select:focus {
 }
 
 option {
-  background: green; /* testing */
-  color: brown;
+  background: var(--saito-background-color);
+  color: var(--saito-font-color);
 }
 
 /* ----------------------------------------------------------------
@@ -82,7 +82,7 @@ input[type="datetime-local"] {
   padding: 1rem 1.5rem;
   font-size: 1.6rem;
   width: 20rem;
-  color: var(--font-color-form-input-body);
+  color: var(--saito-font-color);
   border-radius: .5rem;
 }
 
@@ -94,7 +94,7 @@ input[type="datetime-local"] {
 
 input[type="text"]::placeholder,
 input[type="password"]::placeholder {
-  color: var(--font-color-form-input-body);
+  color: var(--saito-font-color);
   opacity: 0.33;
 }
 
@@ -106,7 +106,7 @@ input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
   border: none;
-  border: var(--border-thickness-form-input-checkbox) solid var(--border-color-form-input-checkbox);
+  border: 1px solid var(--saito-primary);
   width: 2rem;
   height: 2rem;
   margin: 3px 0.5rem;
@@ -131,11 +131,11 @@ input[type="checkbox"]::after {
 }
 
 input[type="checkbox"]:checked {
-  background-color: var(--background-color-form-input-checkbox-checked);
+  background-color: var(--saito-primary);
 }
 
 input[type="checkbox"]:checked::after {
-  color: var(--font-color-form-input-checkbox-checked);
+  color: var(--saito-white);
   opacity: 1;
 }
 
@@ -146,7 +146,7 @@ radio inputs
 input[type="radio"] {
   appearance: none;
   -webkit-appearance: none;
-  border: var(--border-thickness-form-input-checkbox) solid var(--border-color-form-input-checkbox);
+  border: 1px solid var(--saito-primary);
   width: 2rem;
   height: 2rem;
   margin: 0 0.5rem;
@@ -159,7 +159,7 @@ input[type="radio"]::after {
   content: "";
   width: 1.5rem;
   height: 1.5rem;
-  background-color: var(--background-color-form-input-checkbox-checked);
+  background-color: var(--saito-primary);
   position: absolute;
   left: 0;
   right: 0;
@@ -172,7 +172,7 @@ input[type="radio"]::after {
 }
 
 input[type="radio"]:checked::after {
-  color: var(--font-color-form-input-checkbox-checked);
+  color: var(--saito-white);
   opacity: 1;
 }
 
@@ -194,19 +194,19 @@ input[type="range"]::-webkit-slider-runnable-track {
   width: 100%;
   height: 0.6rem;
   cursor: pointer;
-  box-shadow: var(--box-shadow-standard);
-  background: var(--background-color-form-input-range);
-  border-radius: 0.5rem;
-  border: var(--border-color-general-dividers);
+  box-shadow: var(--saito-box-shadow);
+  background: var(--saito-primary);
+  border-radius: .5rempx;
+  border: var(--saito-border-color);
 }
 
 input[type="range"]::-webkit-slider-thumb {
-  box-shadow: var(--box-shadow-standard);
-  border: 1px solid var(--color-contrast);
+  box-shadow: var(--saito-box-shadow);
+  border: 1px solid var(--saito-black-faded);
   height: 3rem;
   width: 2rem;
-  border-radius: 0.5rem;
-  background: var(--color-white);
+  border-radius: .5rem;
+  background: var(--saito-white);
   cursor: pointer;
   -webkit-appearance: none;
   margin-top: -1.2rem;
@@ -216,19 +216,19 @@ input[type="range"]::-moz-range-track {
   width: 100%;
   height: 0.6rem;
   cursor: pointer;
-  box-shadow: var(--box-shadow-standard);
-  background: var(--background-color-form-input-range);
+  box-shadow: var(--saito-box-shadow);
+  background: var(--saito-primary);
   border-radius: .5rempx;
-  border: var(--border-color-general-dividers);
+  border: var(--saito-border-color);
 }
 
 input[type="range"]::-moz-range-thumb {
-  box-shadow: var(--box-shadow-standard);
-  border: 1px solid var(--color-contrast);
+  box-shadow: var(--saito-box-shadow);
+  border: 1px solid var(--saito-black-faded);
   height: 3rem;
   width: 2rem;
   border-radius: .5rem;
-  background: var(--color-white);
+  background: var(--saito-white);
   cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
@@ -236,7 +236,7 @@ input[type="range"]::-moz-range-thumb {
 }
 
 input[type="range"]:focus::-webkit-slider-runnable-track {
-  background: var(--background-color-form-input-range);
+  background: var(--saito-primary);
 }
 
 input[type="range"]::-ms-track {
@@ -250,35 +250,35 @@ input[type="range"]::-ms-track {
 }
 
 input[type="range"]::-ms-fill-lower {
-  background: var(--color-primary);
-  border: var(--border-color-general-dividers);
-  border-radius: 0.5rem;
-  box-shadow: var(--box-shadow-standard);
+  background: var(--saito-primary);
+  border: var(--saito-border-color);
+  border-radius: .5rempx;
+  box-shadow: var(--saito-box-shadow);
 }
 
 input[type="range"]::-ms-fill-upper {
   /* background: #3071a9; */
-  border: var(--border-color-general-dividers);
-  border-radius: .5rem;
-  box-shadow: var(--box-shadow-standard));
+  border: var(--saito-border-color);
+  border-radius: .5rempx;
+  box-shadow: var(--saito-box-shadow);
 }
 
 input[type="range"]::-ms-thumb {
-  box-shadow: var(--box-shadow-standard);
-  border: 1px solid var(--color-contrast);
+  box-shadow: var(--saito-box-shadow);
+  border: 1px solid var(--saito-black-faded);
   height: 3.6rem;
   width: 1.6rem;
-  border-radius: 0.5rem;
-  background: var(--color-white);
+  border-radius: .5rem;
+  background: var(--saito-white);
   cursor: pointer;
 }
 
 input[type="range"]:focus::-ms-fill-lower {
-  background: var(--background-color-form-input-range);
+  background: var(--saito-primary);
 }
 
 input[type="range"]:focus::-ms-fill-upper {
-  background: var(--background-color-form-input-range);
+  background: var(--saito-primary);
 }
 
 input[type="text"],

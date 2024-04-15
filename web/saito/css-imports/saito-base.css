@@ -20,7 +20,7 @@
 
 body {
   line-height: 1.2;
-  color: var(--font-color-main-body);
+  color: var(--saito-font-color);
   font-family: var(--saito-font);
   margin: 0;
   font-size: 1.6rem;
@@ -31,7 +31,7 @@ body {
   max-height: -webkit-fill-available;
   max-width: -webkit-fill-available;
   overflow: hidden;
-  background-color: var(--background-color-main);
+  background-color: var(--saito-background-color);
 }
 
 /* ----------------------------------------------------------------
@@ -41,11 +41,10 @@ body {
 a {
   text-decoration: none;
   cursor: pointer;
-  color: var(--font-color-a-link);
+  color: var(--saito-primary);
 }
 
 a:hover {
-  color: var(--font-color-hover-a-link);
   opacity: 0.8;
 }
 
@@ -59,29 +58,29 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  font-size: var(--font-size-h1);
+  font-size: 5rem;
 }
 
 h2 {
-  font-size: var(--font-size-h2);
+  font-size: 4.5rem;
 }
 
 h3 {
-  font-size: var(--font-size-h3);
+  font-size: 4rem;
 }
 
 h4 {
-  font-size: var(--font-size-h4)m;
+  font-size: 3.5rem;
 }
 
 h5 {
-  font-size: var(--font-size-h5);
+  font-size: 2rem;
   line-height: 3rem;
   margin-bottom: 1rem;
 }
 
 h6 {
-  font-size: var(--font-size-h6);
+  font-size: 2rem;
 }
 
 textarea {
@@ -97,13 +96,13 @@ iframe {
 -----------------------------------------------------------------*/
 
 p.large {
-  font-size: var(--font-size-large);
+  font-size: 2rem;
   font-weight: bold;
 }
 
 p, p.middle {
-  color: var(--font-color-paragraph);
-  font-size: var(--font-size-medium);
+  color: var(--saito-font-color);
+  font-size: 1.5rem;
   overflow: auto;
 }
 
@@ -112,7 +111,7 @@ p::-webkit-scrollbar {
 }
 
 p.small {
-  font-size: var(--font-size-tiny);
+  font-size: 1.3rem;
 }
 
 blockquote {
@@ -141,7 +140,7 @@ Divider
 -----------------------------------------------------------------*/
 
 hr {
-  color: var(--border-color-horizontal-rule);
+  color: var(--saito-font-color);
   margin: 2.5rem;
 }
 
@@ -166,7 +165,7 @@ Scrollbars
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--border-color-scrollbar-thumb);
+  background-color: var(--saito-primary);
   border-radius: 1rem;
 }
 
@@ -215,8 +214,8 @@ Scrollbars
   min-width: 300px;
   max-width: 750px;
   padding: 1em;
-  background-color: pink; /*testing*/
-  border-left: 2px solid var(--color-primary); /*testing*/
+  background-color: var(--saito-background-color);
+  border-left: 2px solid var(--saito-primary);
   font-style: italic;
   font-size: smaller;
   border-radius: 0 0.5rem 0.5rem 0;
@@ -228,22 +227,21 @@ Scrollbars
 }
 
 #message-wrapper {
-  border: var(--border-thickness-status-message) solid var(--border-color-status-message);
+  border: 2px solid var(--saito-primary);
   min-width: 500px;
   max-width: 100vw;
   padding: 3rem;
   font-size: 2rem;
-  background: var(--background-color-status-message);
+  background: var(--saito-primary);
   position: fixed;
   bottom: 5rem;
   left: 5rem;
   z-index: 200;
-  border-radius: var(border-radius-status-message);
 }
 
 .message-message {
   font-size: 2rem;
-  color: var(--font-color-status-message);
+  color: var(--saito-white);
   cursor: default;
 }
 

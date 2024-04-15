@@ -6,12 +6,12 @@
 	height: 80vh;
 	max-height: 80vh;
 	overflow: auto;
-	background: var(--background-color-modal-menu);
-	color: var(--font-color-primary); 
+	background: var(--saito-background-color);
+	color: var(--saito-font-color);
 	padding: 2rem;
 	/*margin: 2rem;*/
-	border: var(--border-thickness-modal-menu) solid var(--border-color-modal-menu);
-	border-radius: var(--border-radius-modal-menu);
+	border: 2px solid var(--saito-primary);
+	border-radius: 5px;
 }
 
 .settings-appspace-link {
@@ -20,7 +20,7 @@
 }
 
 .settings-appspace-link:hover {
-	text-decoration: bold;
+	text-decoration: underline;
 }
 
 .settings-actions-container {
@@ -36,7 +36,6 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-
 }
 
 .settings-appspace-user-details {
@@ -81,8 +80,8 @@
 	grid-template-columns: 2.4rem 1fr min-content;
 	align-items: center;
 	padding: 0 0.5rem;
-	border: var(--border-thickness-button-module) solid var(--border-color-button-module);
-	border-radius: var(--border-radius-button-module);
+	border: 1px solid var(--saito-border-color);
+	border-radius: 0.5rem;
 	height: 4rem;
 	gap: 0.5rem;
 	width: 100%;
@@ -97,7 +96,7 @@
 }
 
 .settings-appspace-app:hover {
-	border-color: var(--border-color-button-hover-module);
+	border-color: var(--saito-primary);
 }
 
 .settings-appspace-app div {

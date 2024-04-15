@@ -96,7 +96,6 @@ class Limbo extends ModTemplate {
 			'stun-new-peer-connection',
 			async (publicKey, peerConnection) => {
 				if (!this.dreamer) {
-					console.warn('No dreamer');
 					return;
 				}
 

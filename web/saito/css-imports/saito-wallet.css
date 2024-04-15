@@ -1,7 +1,6 @@
-/*changed*/
 .mixin_crypto_overlay {
   padding: 2rem;
-  background-color: var(--saito-color-white);
+  background-color: var(--saito-white);
   color: black;
   line-height: 1.6em;
   font-size: 1.5em;
@@ -28,7 +27,7 @@
 
 .email-appspace-deposit-overlay {
   padding: 2rem;
-  background-image: linear-gradient(to bottom right, #EA4843, #f78754); /*review*/
+  background-image: linear-gradient(to bottom right, #EA4843, #f78754);
   color: #fff;
   background-position: 0em;
   background-size: 120% 100%;
@@ -47,9 +46,8 @@
   padding-bottom: 10px;
 }
 
-
 .input-cont p {
-  color: #fff; /*variable*/
+  color: #fff;
 }
 
 .input-heading {
@@ -152,10 +150,10 @@
 #saito-withdraw-overlay {
   min-width: 32vw;
   padding: 2rem;
-  color: #fff; /*variable*/
+  color: #fff;
   background-position: 0em;
   background-size: 120% 100%;
-  color: white; /*variable*/
+  color: white;
   overflow: hidden;
 }
 
@@ -178,7 +176,7 @@
 }
 
 .mixin-withdraw-token-wrapper p {
-  color: #fff; /*variable*/
+  color: #fff;
 }
 
 .mixin-withdraw-input {
@@ -193,7 +191,7 @@
 
 .max-amount-error {
   display: none;
-  color: #5d1919; /*variable*/
+  color: #5d1919;
 }
 
 .input-heading {
@@ -201,14 +199,13 @@
   font-weight: 700;
   font-size: 18px;
 }
-/*changed*/
+
 .input-elem {
   width: 100% !important;
   height: 45px;
   padding: 10px 10px !important;
-  color: var(--saito-color-contrast);
+  color: var(--saito-font-color);
 }
-
 
 .info-cont {
   display: flex;
@@ -250,7 +247,7 @@
 
 #mixin-warning-note {
   font-size: 1.7rem;
-  color: #4a4848; /*variable*/
+  color: #4a4848;
   margin-bottom: 1.5rem;
 }
 
@@ -261,7 +258,7 @@
 .mixin-txn-his-container .saito-table-body {
   height: auto;
   margin-top: 1rem;
-  overflow-x: hidden; /*added*/
+  overflow-x: hidden;
 }
 
 .mixin-txn-his-container .saito-table-row {
@@ -279,7 +276,7 @@
 
 .mixin-txn-his-container .saito-table-row {
   grid-template-columns: 16rem 16rem 14rem 16rem 35rem;
-  text-align: center; /*added*/
+  text-align: center;
   align-items: center;
 }
 
@@ -311,13 +308,12 @@
   margin-top: 3rem;
 }
 
-/*changed*/
 .mixin-items-container .saito-table-header, .mixin-txn-his-container .saito-table-header {
   padding: 1rem 0rem;
-  border-radius: var(--saito-corners-rigid);
+  border-radius: 0.5rem;
   text-align: center;
-  background: var(--saito-dreamscape);
-  color: var(--saito-color-white);
+  background: var(--dreamscape);
+  color: var(--saito-white);
 }
 
 .mixin-items-container .saito-table-header {
@@ -359,23 +355,22 @@
     display: flex;
     gap: 2rem;
 }
-/*changed*/
+
 .pagination-number.active {
-  color: var(--color-white);
-  background: var(--color-primary);
+  color: var(--saito-white);
+  background: var(--saito-button-background);
 }
 
 .pagination-number {
-  border: 1px solid var(--border-color-general-dividers);
+  border: 1px solid var(--saito-background-color);
   cursor: pointer;
   padding: 0.3rem 1rem;
   transition: all 0.2s ease-in-out;
   border-radius: 0.2rem;
 }
 
-/*changed*/
 .pagination-number:hover {
-  border: 1px solid var(--border-color-general-dividers);
+  border: 1px solid var(--saito-button-background);
 }
 
 .pagination-button {
@@ -394,7 +389,7 @@
 
 
 .pagination-container.disabled .pagination-button {
-  color: #9f9b9b; /*variable*/
+  color: #9f9b9b;
 }
 
 .pagination-container.disabled .pagination-button:hover {
@@ -402,12 +397,12 @@
 }
 
 .deposit {
-  color: #00ae00; /*variable*/
+  color: #00ae00;
   font-weight: bold;
 }
 
 .withdraw {
-  color: #e34927; /*variable*/
+  color: #e34927;
   font-weight: bold;
 }
 
@@ -415,18 +410,16 @@
   width: calc(100% * (1/4));
 }
 
-/*changed*/
 .mixin-balances_deposit, .mixin-balances_withdraw, .mixin-balance-history {
-  color: var(--saito-color-primary);
+  color: var(--saito-primary);
 }
 
-/*changed*/
 .mixin-overlay-history {
   min-height: 20rem;
-  padding: 2.5rem;
-  border-radius: var(--saito-border-radius);
+  padding: 1.5rem;
+  border-radius: 0.5rem;
   background: var(--saito-background-color);
-  color: var(--saito-color-heavy);
+  color: var(--saito-font-color-heavy);
 }
 
 
@@ -450,16 +443,14 @@
   Withdrawl overlay 
 */
 
-/*changed*/
 .token-dropdown {
   display: flex;
   position: relative;
-  /* background: var(--saito-background-shim-light); /*/
+  background: var(--saito-light-shim);
   padding-right: 0.5rem;
-  border-radius: var(--border-radius-button-primary);
-  background: var(--background-color-wallet-inputs);
-  border: 1px solid var(--border-color-general-dividers);
-  color: var(--font-color-primary);
+  border-radius: 0.5rem;
+  background: var(--saito-background-light);
+  border: 1px solid var(--saito-font-color);
 }
 
 .token-dropdown img { 
@@ -469,14 +460,14 @@
   transform: translateY(-50%);
   left: 1rem;
 }
-/*changed*/
+
 .token-dropdown select {
   height: 45px;
   padding: 0rem 3rem;
   border: none;
   background: none;
   font-size: 1.6rem;
-  color: var(--saito-color-contrast);
+  color: var(--saito-font-color);
 }
 
 .withdraw-address-cont {
@@ -485,10 +476,11 @@
 
 .saito-overlay-form-input input {
   border: none;
-  color: blue;
+  background: var(--saito-light-shim);
+  color: var(--saito-gray-mid);
   font-size: 1.6rem;
-  background: var(--background-color-main);
-  border: 1px solid var(--border-color-general-dividers);
+  background: var(--saito-background-light);
+  border: 1px solid var(--saito-font-color);
 }
 
 /* Hide arrows, Chrome, Safari, Edge, Opera */
@@ -503,13 +495,12 @@
   -moz-appearance: textfield;
 }
 
-/*changed*/
 .withdraw-options-cont {
   position: absolute;
   right: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--saito-color-contrast);
+  color: var(--saito-font-color);
   cursor: pointer;
 }
 
@@ -518,12 +509,11 @@
 }
 
 
-/*changed*/
 .withdrawl-notes {
-  background: var(--saito-background-shim-light);
+  background: var(--saito-light-shim);
   padding: 1.5rem 1rem;
-  border-radius: var(--saito-corners-rigid);
-  color: var(--saito-color-black-faded);
+  border-radius: 0.5rem;
+  color: var(--saito-black-faded);
   font-size: 1.6rem;
 }
 
@@ -575,9 +565,8 @@
   padding: 1.5rem;
 }
 
-/*changed*/
 .confirm-msg-container {
-  color: var(--saito-color-contrast);
+  color: var(--saito-font-color);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -637,9 +626,8 @@
   width: 30%;
 }
 
-
 .withdraw-info-cont {
-  color: var(--font-color-primary);
+  color: var(--saito-font-color);
   line-height: 2rem;
   text-align: center;
 }
@@ -663,18 +651,16 @@
 
 
 #withdraw-step-one .input-elem {
-  color: var(--font-color-primary);
+  color: var(--saito-font-color);
 }
 
-/*changed*/
 .saito-history-msg {
-  color: var(--saito-color-contrast);
+  color: var(--saito-font-color);
 }
 
-/*changed*/
 .withdraw-error {
   padding: 0rem 1rem;
-  color: var(--saito-color-primary);
+  color: var(--saito-red);
   display: none;
 }
 
