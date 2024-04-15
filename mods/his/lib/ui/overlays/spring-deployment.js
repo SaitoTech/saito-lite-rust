@@ -54,7 +54,7 @@ class SpringDeploymentOverlay {
 		];
 
 		if (this.mod.game.state.round == 1 && faction == "ottoman") {
-			this.updateInstructions("The Ottoman Empire starts at War with Hungary. Why not deploy north to Nezh and attempt to seize the city?");
+			this.updateInstructions("The Ottoman Empire starts at War with Hungary. Why not deploy from Istanbul to Nezh and try to seize Belgrade?");
 		}
 		if (this.mod.game.state.round == 1 && faction == "france") {
 			this.updateInstructions("France starts at War with the Hapsburgs and Papacy - but the independent key of Metz is also within range of Paris...");

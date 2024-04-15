@@ -33282,7 +33282,6 @@ console.log(JSON.stringify(reshuffle_cards));
 	    }
  	    mycallback.push({ text : "back to menu" , mycallback : () => { this.playerPlayOps(card, faction, ops, limit); }});
 	    this.playerAcknowledgeNotice(`You have ${ops} OPS remaining...`, mycallback);
-
 	  } else {
 	    this.hideOverlays();
 	    this.updateStatusAndListCards("Opponent Turn", his_self.game.deck[0].fhand[0], () => {});
