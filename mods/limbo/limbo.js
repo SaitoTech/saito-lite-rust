@@ -96,7 +96,6 @@ class Limbo extends ModTemplate {
 			'stun-new-peer-connection',
 			async (publicKey, peerConnection) => {
 				if (!this.dreamer) {
-					//console.warn('No dreamer');
 					return;
 				}
 
@@ -149,7 +148,7 @@ class Limbo extends ModTemplate {
 				this.attachStyleSheets();
 				return [
 					{
-						text: 'Broadcast',
+						text: 'Cast',
 						icon: 'fa-solid fa-tower-broadcast',
 						hook: "onair",
 						callback: async function (app) {

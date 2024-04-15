@@ -114,6 +114,8 @@ class RedSquare extends ModTemplate {
     this.notifications_last_viewed_ts = 0;
     this.notifications_number_unviewed = 0;
 
+    this.tweets_earliest_ts = new Date().getTime();
+
     this.allowed_upload_types = ["image/png", "image/jpg", "image/jpeg"];
 
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
@@ -877,6 +879,8 @@ class RedSquare extends ModTemplate {
     //
     let peer_count = 0;
 
+    console.log(new Date(this.tweets_earliest_ts));    
+
     for (let i = 0; i < this.peers.length; i++) {
       //
       // We have two stop conditions,
@@ -888,7 +892,7 @@ class RedSquare extends ModTemplate {
       //
 
       if (
-        !(this.peers[i].tweets_earliest_ts == 0 && created_at == "earlier") &&
+        !(created_at == "earlier" && this.peers[i].tweets_earliest_ts <= this.tweets_earliest_ts) &&
         !(
           created_at == "later" &&
           this.peers[i].publicKey == this.publicKey &&
@@ -907,6 +911,7 @@ class RedSquare extends ModTemplate {
 
         if (created_at == "earlier") {
           obj.updated_earlier_than = this.peers[i].tweets_earliest_ts;
+          console.log(`REDSQUARE: fetch earlier tweets from ${this.peers[i].publicKey}`);
         } else if (created_at == "later") {
           //
           // For "new" tweets we maybe want to look at updated, not created
@@ -1015,6 +1020,12 @@ class RedSquare extends ModTemplate {
         }
       }
     }
+
+    if (peer.tweets_earliest_ts < this.tweets_earliest_ts){
+      this.tweets_earliest_ts = peer.tweets_earliest_ts;
+      console.log("Update mod timestamp: ", this.tweets_earliest_ts);
+    }
+
     return count;
   }
 
@@ -1363,7 +1374,7 @@ class RedSquare extends ModTemplate {
           should_rerender = true;
         }
 
-        if (t.isRendered()){
+        if (this.browser_active && t.isRendered()){
           t.rerenderControls(should_rerender);          
         }
       }
@@ -1801,7 +1812,7 @@ class RedSquare extends ModTemplate {
 
     if (retweeted_tweet?.tx) {
       await this.incrementRetweets(retweeted_tweet.tx, tx);
-      if (retweeted_tweet.isRendered()){
+      if (this.browser_active && retweeted_tweet.isRendered()){
         retweeted_tweet.rerenderControls(true);  
       }
     } else {
