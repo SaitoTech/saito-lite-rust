@@ -81,14 +81,23 @@ class Stun extends ModTemplate {
 				sendTransaction: (peerId, tx) => {
 					this.sendTransaction(peerId, tx);
 				},
+
+			  // For the API, it isn't enough for one party to create a peer connection, so if you don't 
+			  // provide a callback, it uses the sendJoinTransaction to message your peer and have them 
+			  // create a peer connection on their end, it is again to texting your friend to say call me.
+			  // This is good for most data channel set ups, but if you need more control over who messages 
+			  // who when you can get around this by setting the callback deliberately to false. (i.e. my friend
+			  // has texted me and it is on me to call them)
 				createPeerConnection: (peerId, callback = null) => {
 					//
 					// send ready message to peer, so if they want to create the channel, we are receptive
 					//
-					if (!callback){
+					if (callback == null){
 						callback = (peerId) => {
 							this.sendJoinTransaction(peerId);
 						}			
+					}else if (!callback){
+						console.log("We are intentionally not setting a callback in the stun connection API");
 					}
 
 					if (Array.isArray(peerId)){
@@ -283,8 +292,6 @@ class Stun extends ModTemplate {
 		let relayed_tx = new Transaction();
 		relayed_tx.deserialize_from_web(this.app, data);
 
-		console.log("Data Channel Message: ", relayed_tx, relayed_tx.returnMessage());
-
 		this.app.modules.handlePeerTransaction(relayed_tx);
 	}
 
@@ -346,13 +353,13 @@ class Stun extends ModTemplate {
 
 			if (pc.connectionState === "connected"){
 				this.app.connection.emit("stun-connection-connected", peerId);
+			}else{
+				this.app.connection.emit("stun-update-connection-message", peerId, pc.connectionState);
 			}
 
 			if (this.hasConnection(peerId)){
 				this.app.connection.emit("stun-data-channel-open", peerId);	
 			}
-
-			this.app.connection.emit("stun-update-connection-message", peerId, pc.connectionState);
 
 			return;
 		}else{

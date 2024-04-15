@@ -430,6 +430,8 @@ class Videocall extends ModTemplate {
 							this.app.storage.saveOptions();
 						}
 
+						this.stun.createPeerConnection(from, false);
+
 						return;
 					}
 
@@ -567,14 +569,6 @@ class Videocall extends ModTemplate {
 
 		this.sendCallListResponseTransaction(from, call_list);
 
-		call_list.push(from);
-
-		//
-		// We need to save here because if stun channel is already open
-		// messages go too fast to process
-		//
-		this.app.options.stun.peers = call_list;
-		this.app.storage.saveOptions();
 	}
 
 	async sendCallListResponseTransaction(public_key, call_list) {
@@ -631,10 +625,9 @@ class Videocall extends ModTemplate {
 	}
 
 	//
-	// This "overwrites" the sendJoinTransaction in Stun so that if we are in a video call
-	// but create a stun connection to data share with someone not in the call we don't rope
-	// them automatically into the call. The key difference is that we include the call_id
-	// which we use to filter video call transactions
+	// Videocall and stun both need a join connection, but we need videocall to process first so that the
+	// key is added to the white list and the stun connection can be treated as a call entry (as opposed to 
+	// someone else establising a stun connection for other purposes)
 	//
 	async sendCallJoinTransaction(publicKey) {
 		let newtx =
@@ -643,7 +636,7 @@ class Videocall extends ModTemplate {
 			);
 
 		newtx.msg = {
-			module: 'Stun',
+			module: 'Videocall',
 			request: 'peer-joined',
 			call_id: this.room_obj.call_id
 		};

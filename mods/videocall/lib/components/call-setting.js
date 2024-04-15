@@ -169,6 +169,7 @@ class CallSetting {
 		}
 
 		try {
+			console.log("hi");
 			this.videoStream = await navigator.mediaDevices.getUserMedia({
 				video: {
 					width: { min: 640, max: 1280 },
@@ -179,6 +180,7 @@ class CallSetting {
 			videoElement.srcObject = this.videoStream;
 			this.videoEnabled = true;
 		} catch (error) {
+			console.warn(error);
 			this.videoStream = null;
 			this.videoEnabled = false;
 			salert('Error access camera, using audio only mode ');

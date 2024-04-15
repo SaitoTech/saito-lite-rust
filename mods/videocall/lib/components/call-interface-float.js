@@ -27,19 +27,12 @@ class CallInterfaceFloat {
 			'add-remote-stream-request',
 			(peer, remoteStream) => {
 				this.addStream(peer, remoteStream);
-			}
-		);
-
-		this.app.connection.on(
-			'stun-update-connection-message',
-			(peer_id, status) => {
-				if (status === 'connected') {
+				if (remoteStream){
 					this.startTimer();
-				} else {
-					this.pauseTimer();
 				}
 			}
 		);
+
 
 		this.app.connection.on('stun-disconnect', this.hide.bind(this));
 
@@ -68,9 +61,6 @@ class CallInterfaceFloat {
 		this.app.connection.removeAllListeners('show-call-interface');
 		this.app.connection.removeAllListeners('add-local-stream-request');
 		this.app.connection.removeAllListeners('add-remote-stream-request');
-		this.app.connection.removeAllListeners(
-			'stun-update-connection-message'
-		);
 		this.app.connection.off('stun-disconnect', this.hide);
 		this.app.connection.removeAllListeners('remove-peer-box');
 		this.app.connection.removeAllListeners('stun-new-speaker');
