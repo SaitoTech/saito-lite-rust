@@ -58,16 +58,13 @@ class CallInterfaceVideo {
 			(peer, remoteStream) => {
 				this.remote_streams.set(peer, remoteStream);
 				this.addRemoteStream(peer, remoteStream);
+			
+				this.updateImages();
+				if (remoteStream){
+					this.startTimer();
+				}
 			}
 		);
-
-		this.app.connection.on('stun-connection-connected', (peer_id) => {
-			if (this.app.options.stun.peers.includes(peer_id)) {
-				return;
-			}
-			this.startTimer();
-			this.updateImages();
-		});
 
 		this.app.connection.on('remove-peer-box', (peer_id) => {
 			this.remote_streams.delete(peer_id);
@@ -183,7 +180,6 @@ class CallInterfaceVideo {
 		this.app.connection.removeAllListeners('show-call-interface');
 		this.app.connection.removeAllListeners('add-local-stream-request');
 		this.app.connection.removeAllListeners('add-remote-stream-request');
-		this.app.connection.removeAllListeners('stun-connection-connected');
 		this.app.connection.removeAllListeners('remove-peer-box');
 		this.app.connection.removeAllListeners('stun-new-speaker');
 		this.app.connection.removeAllListeners('stun-switch-view');
