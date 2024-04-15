@@ -606,10 +606,9 @@ video#local {
 	align-items: center;
 }
 
-.control-list .icon_click_area,
-.add_users_container {
-	margin-right: 2rem;
-	border-radius: 50%;
+/*updated for git*/
+
+.control-list .icon_click_area {
 	width: 5rem;
 	height: 5rem;
 	display: flex;
