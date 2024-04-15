@@ -19,7 +19,6 @@ class StreamManager {
 		this.audioSource = null;
 		this.auto_disconnect = false;
 		this.active = true;
-		this.is_broadcasting = false;
 
 		this.terminationEvent = 'onpagehide' in self ? 'pagehide' : 'unload';
 
@@ -56,25 +55,24 @@ class StreamManager {
 							this.localStream
 						);
 
-						this.mod.stun.peers.forEach((peerConnection, key) => {
-							console.log("Attach new video to: " + key);
-							if (this.app.options.stun.peers.includes(key)) {
-								const videoSenders = peerConnection
-									.getSenders()
-									.filter(
-										(sender) =>
-											sender.track &&
-											sender.track.kind === 'video'
-									);
-								if (videoSenders.length > 0) {
-									videoSenders.forEach((sender) => {
-										sender.replaceTrack(videoTrack);
-									});
-								} else {
-									peerConnection.addTrack(videoTrack);
-								}
+						for (let peer of this.app.options.stun.peers) {
+							let peerConnection = this.mod.stun.peers.get(peer);
+							const videoSenders = peerConnection
+								.getSenders()
+								.filter(
+									(sender) =>
+										sender.track &&
+										sender.track.kind === 'video'
+								);
+							if (videoSenders.length > 0) {
+								videoSenders.forEach((sender) => {
+									sender.replaceTrack(videoTrack);
+								});
+							} else {
+								peerConnection.addTrack(videoTrack);
 							}
-						});
+							//this.renegotiate(peer);
+						}
 					} catch (err) {
 						console.error(err);
 					}
@@ -147,11 +145,15 @@ class StreamManager {
 				);
 				this.mod.stun.peers.forEach((pc, key) => {
 					console.log(key);
-					if (this.app.options.stun.peers.includes(key)) {
+					for (let peer of this.app.options.stun.peers) {
+						let peerConnection = this.mod.stun.peers.get(peer);
 						console.log('Add Track');
-						pc.addTrack(videoTrack);
+						peerConnection.addTrack(videoTrack);
 					}
 				});
+
+				this.app.connection.emit('toggle-screen-share-label','Stop Screen');
+
 			} catch (err) {
 				console.error('Error accessing media devices.', err);
 			}
@@ -164,6 +166,11 @@ class StreamManager {
 
 			console.log('no more');
 			this.endPresentation();
+			this.app.connection.emit('toggle-screen-share-label','Screen Share');
+		});
+
+		app.connection.on('toggle-screen-share-label', async (text) => {
+			document.querySelector('.screen_share label').innerText = text;
 		});
 
 		app.connection.on('stun-connection-connected', (peerId) => {
@@ -200,11 +207,11 @@ class StreamManager {
 				public_key: this.mod.publicKey,
 				enabled: this.videoEnabled
 			});
+		});
 
-			if (this.mod.stun.peers.size > 0 &&	!this.is_broadcasting) {
-				// begin sending peer list to peers
-				this.beginBroadcastingPeerList();
-			}
+
+		app.connection.on('stun-update-connection-message', (peerId, connectionState)=> {
+			this.broadcastPeerList();
 		});
 
 		app.connection.on('stun-track-event', (peerId, event) => {
@@ -225,10 +232,8 @@ class StreamManager {
 				);
 			} else {
 				if (event.streams.length === 0) {
-					console.log("Use track");
 					remoteStream.addTrack(event.track);
 				} else {
-					console.log("Use stream", event.streams);
 					event.streams[0].getTracks().forEach((track) => {
 						remoteStream.addTrack(track);
 					});
@@ -309,7 +314,7 @@ class StreamManager {
 					return;
 				}
 
-				console.log('New Stun peer connection with ' + publicKey);
+				console.log('New Stun peer connection');
 				if (this.app.options.stun.peers.includes(publicKey)) {
 					peerConnection.firstConnect = true;
 
@@ -433,6 +438,8 @@ class StreamManager {
 
 		let sound = new Audio('/saito/sound/Sharp.mp3');
 		sound.play();
+
+		this.broadcastPeerList();
 	}
 
 	async leaveCall() {
@@ -466,11 +473,6 @@ class StreamManager {
 		this.audioEnabled = true;
 		this.auto_disconnect = false;
 		this.active = false;
-
-		if (this.is_broadcasting){
-			clearInterval(this.is_broadcasting);
-			this.is_broadcasting = null;
-		}
 
 		if (this.audioStreamAnalysis) {
 			clearInterval(this.audioStreamAnalysis);
@@ -539,21 +541,17 @@ class StreamManager {
 		this.presentationStream = null;
 	}
 
-	async beginBroadcastingPeerList() {
+	broadcastPeerList() {
+		
+		let peer_list = {};
 
-		this.is_broadcasting = setInterval(async () => {
-			let peer_list = {};
+		this.mod.stun.peers.forEach((pc, address) => {
+			if (this.app.options.stun.peers.includes(address)){
+				peer_list[address] = pc.connectionState;
+			}
+		});
 
-			this.mod.stun.peers.forEach((pc, address) => {
-				if (this.app.options.stun.peers.includes(address)){
-					peer_list[address] = pc.connectionState;
-				}
-			});
-
-			this.mod.sendOffChainMessage("broadcast-call-list", peer_list);
-
-		}, 3000);
-
+		this.mod.sendOffChainMessage("broadcast-call-list", peer_list);
 	}
 
 	beforeUnloadHandler(event) {

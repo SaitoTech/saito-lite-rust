@@ -355,7 +355,6 @@ class Stun extends ModTemplate {
 			this.app.connection.emit("stun-update-connection-message", peerId, pc.connectionState);
 
 			return;
-			
 		}else{
 
 			const pc = new RTCPeerConnection({

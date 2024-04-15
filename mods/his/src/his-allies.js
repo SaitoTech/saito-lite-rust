@@ -349,12 +349,12 @@
     //
     if (faction1 == "papacy") {
       if (this.game.state.excommunicated_factions[faction2] == 1) {
-	this.unexcommunicateFate(faction2);
+	this.unexcommunicateFaction(faction2);
       }
     }
     if (faction2 == "papacy") {
       if (this.game.state.excommunicated_factions[faction1] == 1) {
-	this.unexcommunicateFate(faction1);
+	this.unexcommunicateFaction(faction1);
       }
     }
 

@@ -338,12 +338,6 @@
   font-size: 2rem;
 }
 
-.redsquare-menu {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin: 1rem 0;
-}
 
 .saito-floating-menu-mask {
   width: 100%;
