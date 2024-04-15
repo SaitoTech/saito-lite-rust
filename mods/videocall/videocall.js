@@ -515,6 +515,9 @@ class Videocall extends ModTemplate {
 		await newtx.sign();
 
 		this.app.connection.emit('relay-transaction', newtx);
+		//
+		// Send on chain!
+		//
 		this.app.network.propagateTransaction(newtx);
 	}
 
@@ -606,7 +609,7 @@ class Videocall extends ModTemplate {
 	}
 
 	//
-	// This "overwrites" the sendJoinTransaction in Stun so that if we are in a video call
+	// This doubles up on the sendJoinTransaction in Stun so that if we are in a video call
 	// but create a stun connection to data share with someone not in the call we don't rope
 	// them automatically into the call. The key difference is that we include the call_id
 	// which we use to filter video call transactions

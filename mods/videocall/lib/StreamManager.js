@@ -225,8 +225,10 @@ class StreamManager {
 				);
 			} else {
 				if (event.streams.length === 0) {
+					console.log("Use track");
 					remoteStream.addTrack(event.track);
 				} else {
+					console.log("Use stream", event.streams);
 					event.streams[0].getTracks().forEach((track) => {
 						remoteStream.addTrack(track);
 					});
@@ -307,7 +309,7 @@ class StreamManager {
 					return;
 				}
 
-				console.log('New Stun peer connection');
+				console.log('New Stun peer connection with ' + publicKey);
 				if (this.app.options.stun.peers.includes(publicKey)) {
 					peerConnection.firstConnect = true;
 
