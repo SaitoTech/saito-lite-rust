@@ -283,8 +283,6 @@ class Stun extends ModTemplate {
 		let relayed_tx = new Transaction();
 		relayed_tx.deserialize_from_web(this.app, data);
 
-		console.log("Data Channel Message: ", relayed_tx, relayed_tx.returnMessage());
-
 		this.app.modules.handlePeerTransaction(relayed_tx);
 	}
 
