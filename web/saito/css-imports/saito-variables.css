@@ -207,9 +207,12 @@ font imports
   --font-color-hover-a-link: var(--color-primary); /* Exempt as system color */
   --font-color-mention: var(--color-primary); /* Exempt as system color */
   --font-color-hover-mention: var(--font-color-heavy);
-
-
-
+  --font-color-post-link-description: var(--font-color-secondary);
+  --font-color-post-link-title: var(--font-color-primary);
+  --font-color-post-link-url: var(--font-color-primary);
+  --font-color-post-saito-address: var(--font-color-primary);
+  --font-color-post-notice: var(--font-color-secondary);
+  
 /*BORDER SECTION*/
 /*corner radius*/
   --border-radius-text-input: var(--border-radius-sharp); /*chat module*/
@@ -291,6 +294,8 @@ font imports
   --border-thickness-form-input: var(--border-thickness-thin);
   --border-thickness-form-input-checkbox: var(--border-thickness-thin);
   --border-thickness-qr-code: var(--border-thickness-medium);
+  --border-thickness-post-link: var(--border-thickness-thin);
+  
 /* General Dividers and Borders */
 /*color*/
   --border-color-general-dividers: var(--color-complement);
@@ -303,6 +308,7 @@ font imports
   --border-color-post-input: var(--border-color-general-dividers);
   --border-color-post-dotted-line: var(--border-color-general-dividers);
   --border-color-post-divider: var(--border-color-general-dividers);
+  --border-color-post-link: var(--border-color-general-dividers);
   --border-color-overlay-input-area: var(--border-color-general-dividers);
   --border-color-overlay-subform: var(--border-color-general-dividers);
   --border-color-horizontal-rule: var(--border-color-general-dividers);
@@ -433,7 +439,7 @@ font imports
   --background-color-wallet-inputs: var(--background-color-main);
   --background-color-mode-arcade: (--color-base);
 /* Progress Bar and Notifications */
-  --background-progress-bar: var(--background-color-main);
+  --background-progress-bar: var(--color-secondary);
   --background-progress-bar-active: var(--color-primary);
   --background-color-notification-status: var(--color-primary);
   --background-color-notification-status-after: var(--color-contrast);

@@ -140,7 +140,7 @@
 .tweet-notice {
   display: flex;
   box-sizing: border-box;
-  color: blue;
+  color: var(--font-color-post-notice);
   font-family: var(--saito-font);
   word-wrap: break-word;
   padding-bottom: 1rem;
@@ -156,7 +156,7 @@
   margin-left: 0.3rem;
   font-weight: bold;
   font-size: 1.2rem;
-  color: orange; /* testing */
+  color: var(--font-color-post-saito-address); 
 }
 
 .tweet-text {
@@ -428,7 +428,7 @@
 
 .link-info {
   padding: 2rem;
-  border: 10px solid cyan; /* testing */
+  border: var(--border-thickness-post-link) solid var(--border-color-post-link);
   border-radius: 0.5rem;
   border-top: none;
   border-top-right-radius: unset;
@@ -437,16 +437,16 @@
 }
 
 .link-title {
-  color: blue;
+  color: var(--font-color-post-link-title);
   margin: 0.3rem 0px;
 }
 
 .link-url {
-  color: orange; /* testing */
+  color: var(--font-color-post-link-url); 
 }
 
 .link-description {
-  color: green; /* testing */
+  color: var(--font-color-post-link-description); 
 }
 
 @media screen and (max-width: 1280px) {
