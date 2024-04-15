@@ -8825,7 +8825,7 @@ console.log("selected: " + spacekey);
 	    },
 
 	    function (target) {
-	      his_self.addMove("mercendaries-demand-pay\t"+target+"\t"+faction);
+	      his_self.addMove("mercenaries-demand-pay\t"+target+"\t"+faction);
 	      his_self.endTurn();
 	    }
 	  );

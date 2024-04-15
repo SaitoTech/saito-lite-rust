@@ -13,6 +13,7 @@
 
 .saito-overlay:has(> .deck-overlay) {
   box-shadow: none;
+  background-color: transparent;
 }
 
 .deck-overlay .card {

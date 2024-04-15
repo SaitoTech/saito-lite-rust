@@ -2,6 +2,10 @@
 	padding-top: 15px;
 }
 
+:root {
+ --border-color-general-dividers: #ddd;
+}
+
 .persia , .war_in_persia {
     top: 500px;
     left: 3800px;
