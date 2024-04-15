@@ -344,13 +344,13 @@ class Stun extends ModTemplate {
 
 			if (pc.connectionState === "connected"){
 				this.app.connection.emit("stun-connection-connected", peerId);
+			}else{
+				this.app.connection.emit("stun-update-connection-message", peerId, pc.connectionState);
 			}
 
 			if (this.hasConnection(peerId)){
 				this.app.connection.emit("stun-data-channel-open", peerId);	
 			}
-
-			this.app.connection.emit("stun-update-connection-message", peerId, pc.connectionState);
 
 			return;
 		}else{

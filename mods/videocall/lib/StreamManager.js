@@ -175,15 +175,16 @@ class StreamManager {
 		});
 
 		app.connection.on('stun-connection-connected', (peerId) => {
+
+			if (!this.active) {
+				return;
+			}
+
 			console.log('stun-connection-connected',
 				this.active,
 				this.mod.room_obj,
 				JSON.stringify(this.app.options.stun.peers)
 			);
-
-			if (!this.active) {
-				return;
-			}
 
 			if (
 				!this.mod?.room_obj ||
@@ -221,7 +222,7 @@ class StreamManager {
 			}
 
 			const remoteStream = new MediaStream();
-			console.log('STUN: another remote stream added', event.track);
+			console.log('STUN: remote stream added for', peerId, event.track);
 
 			if (peerId == this.mod.screen_share) {
 				console.log('Expecting presentation stream');
