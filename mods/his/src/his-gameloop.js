@@ -1,6 +1,4 @@
 
-
-
   //
   // Core Game Logic
   //
@@ -1409,7 +1407,7 @@ if (this.game.options.scenario == "is_testing") {
 	if (mv[0] === "remove_conquest") {
 	  let faction = mv[1];
 	  for (let i = 0; i < this.game.state.conquests.length; i++) {
-	    if (this.game.state.conquests[i] === faction) {
+	    if (this.game.state.round == this.game.state.conquests[i].round && this.game.state.conquests[i] == faction) {
 	      this.game.state.conquests.splice(i, 1);
 	    }
 	  }
@@ -1419,7 +1417,7 @@ if (this.game.options.scenario == "is_testing") {
 	if (mv[0] === "remove_exploration") {
 	  let faction = mv[1];
 	  for (let i = 0; i < this.game.state.explorations.length; i++) {
-	    if (this.game.state.explorations[i] === faction) {
+	    if (this.game.state.round == this.game.state.explorations[i].round && this.game.state.explorations[i].faction == faction) {
 	      this.game.state.explorations.splice(i, 1);
 	    }
 	  }
@@ -1429,7 +1427,7 @@ if (this.game.options.scenario == "is_testing") {
 	if (mv[0] === "remove_colony") {
 	  let faction = mv[1];
 	  for (let i = 0; i < this.game.state.colonies.length; i++) {
-	    if (this.game.state.colonies[i] === faction) {
+	    if (this.game.state.round == this.game.state.colonies[i].round && this.game.state.colonies[i].faction == faction) {
 	      this.game.state.colonies.splice(i, 1);
 	    }
 	  }
@@ -2210,7 +2208,7 @@ console.log("----------------------------");
 	  this.game.queue.splice(qe, 1);
 
 	  for (let i = 0; i < this.game.spaces[source].units[faction].length; i++) {
-	    this.game.spaces[source].units[faction][i].locked = true;
+	    this.game.spaces[source].units[faction][i].locked = 1;
 	  }
 
           return 1;
@@ -2491,16 +2489,23 @@ console.log("----------------------------");
 
 		  if ((anyone_else_here == 0 || number_opposing_land_units == 0) && (space.type == "electorate" || space.type == "key" || this.isSpaceFortified(space.key) || space.type == "fortress")) {
 		    let f = this.returnFactionControllingSpace(space.key);
+
 		    if (!this.areAllies(f, faction) && f !== faction) {
 		      if (space.besieged != 1) { // not if already besieged
+		        //
+		        // besiege the defenders, and lock the attackers (preventing further movement)
+		        //
 		        for (let z = 0; z < space.units[f].length; z++) {
-			  if (space.units[f][z].army_leader) { space.units[f][z].besieged = true; }
-			  if (space.units[f][z].navy_leader) { space.units[f][z].besieged = true; }
+			  if (!space.units[f][z].reformer) { space.units[f][z].besieged = true; }
+		        }
+		        for (let z = 0; z < space.units[faction].length; z++) {
+			  if (!space.units[faction][z].reformer) { space.units[faction][z].locked = 1; }
 		        }
 	 	        space.besieged = 2;
 		        this.displaySpace(space.key);
 		      }
 		    }
+
 	          }
 
 	        } else {
@@ -3409,7 +3414,7 @@ console.log(" # --> is anyone not besieged");
 	  for (let i = source.units[faction].length-1; i >= 0; i--) {
 	    let u = source.units[faction][i];
 	    if (u.type == "regular" || u.type == "mercenary" || u.type == "cavalry" || u.army_leader == true || u.navy_leader == true) {
-	      source.units[faction][i].locked = true;
+	      source.units[faction][i].locked = 1;
 	      source.units[faction][i].already_moved = true;
 	      if (source.units[faction][i].besieged != 1) {
 	        destination.units[faction].push(source.units[faction][i]);
@@ -3624,11 +3629,8 @@ console.log(" # --> is anyone not besieged");
 	  //
 	  for (let f in invaded_space.units) {
 	    if (this.returnFactionLandUnitsInSpace(f, invaded_space.key) > 0) {
-console.log("this faction has land units: " + f);
 	      if (!this.areAllies(f, attacker) && f != attacker) {
-console.log("not allied to attacker!");
 		if (!this.areAllies(f, defender) && f != defender) { 
-console.log("not allied to defender!");
 return 1; }
 	      }
 	    }
@@ -9760,8 +9762,8 @@ defender_hits - attacker_hits;
 	  this.game.state.impulse++;
 
 	  let targs = {
-      	    line1 : "what", 
-    	    line2 : "to do?",
+      	    line1 : "new to", 
+    	    line2 : "game",
     	    fontsize : "2.1rem" ,
 	  }
 
@@ -9770,21 +9772,27 @@ defender_hits - attacker_hits;
 //
 if (this.game.state.round == 1 && this.game.state.impulse == 1) {
           if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
+	    targs.line2 = "protestants";
             this.game_help.renderCustomOverlay("protestant", targs);
           } else {
             if (this.game.player == this.returnPlayerCommandingFaction("ottoman")) {
+	      targs.line2 = "ottomans";
               this.game_help.renderCustomOverlay("ottoman", targs);
             } else {
               if (this.game.player == this.returnPlayerCommandingFaction("hapsburg")) {
+	        targs.line2 = "hapsburgs";
                 this.game_help.renderCustomOverlay("hapsburg", targs);
               } else {
                 if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
+	          targs.line2 = "papacy";
                   this.game_help.renderCustomOverlay("papacy", targs);
                 } else {
                   if (this.game.player == this.returnPlayerCommandingFaction("england")) {
+	            targs.line2 = "england";
                     this.game_help.renderCustomOverlay("england", targs);
                   } else {
                     if (this.game.player == this.returnPlayerCommandingFaction("france")) {
+	              targs.line2 = "france";
                       this.game_help.renderCustomOverlay("france", targs);
                     } else {
                     }
@@ -10796,8 +10804,6 @@ if (this.game.state.round == 2) {
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-cardnum = 1;
-
     	        this.game.queue.push("check_replacement_cards\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
@@ -11517,24 +11523,27 @@ console.log(JSON.stringify(reshuffle_cards));
 	    let mycallback = [];
 
 	    if (player_last_move == "move") {
- 	      mycallback.push({ text : "continue move" , mycallback : () => {this.playerContinueToMoveFormationInClear(his_self, this.game.player, faction, player_last_spacekey, 1, (ops)); }});
 	      if (player_last_spacekey != "") {
-	        if (!this.isSpaceControlled(faction, player_last_spacekey) && this.game.spaces[player_last_spacekey].type == "town" && !this.areAllies(faction, this.returnFactionControllingSpace(player_last_spacekey))) {
- 	          mycallback.push({ text : "control town" , mycallback : () => {
-		    if (ops > 1) {
-                      his_self.addMove(`continue\t${mv[1]}\t${mv[2]}\t${mv[3]}\t${ops}\t${mv[5]}`);
-                      his_self.game.queue.push("SETVAR\tstate\tplayer_last_move\tmove");
-                      his_self.game.queue.push("SETVAR\tstate\tplayer_last_spacekey\t"+player_last_spacekey);
-		    }
-                    his_self.addMove("pacify\t"+faction+"\t"+player_last_spacekey);
-                    his_self.endTurn();
-	 	  }});
+		if (this.game.spaces[player_last_spacekey]) {
+		  if (!this.isSpaceBesieged(this.game.spaces[player_last_spacekey])) {
+ 	            mycallback.push({ text : "continue move" , mycallback : () => {this.playerContinueToMoveFormationInClear(his_self, this.game.player, faction, player_last_spacekey, 1, (ops)); }});
+	            if (!this.isSpaceControlled(faction, player_last_spacekey) && this.game.spaces[player_last_spacekey].type == "town" && !this.areAllies(faction, this.returnFactionControllingSpace(player_last_spacekey))) {
+ 	              mycallback.push({ text : "control town" , mycallback : () => {
+		        if (ops > 1) {
+                          his_self.addMove(`continue\t${mv[1]}\t${mv[2]}\t${mv[3]}\t${ops}\t${mv[5]}`);
+                          his_self.game.queue.push("SETVAR\tstate\tplayer_last_move\tmove");
+                          his_self.game.queue.push("SETVAR\tstate\tplayer_last_spacekey\t"+player_last_spacekey);
+		        }
+                        his_self.addMove("pacify\t"+faction+"\t"+player_last_spacekey);
+                        his_self.endTurn();
+	 	      }});
+	            }
+	          }
 	        }
 	      }
 	    }
  	    mycallback.push({ text : "back to menu" , mycallback : () => { this.playerPlayOps(card, faction, ops, limit); }});
 	    this.playerAcknowledgeNotice(`You have ${ops} OPS remaining...`, mycallback);
-
 	  } else {
 	    this.hideOverlays();
 	    this.updateStatusAndListCards("Opponent Turn", his_self.game.deck[0].fhand[0], () => {});

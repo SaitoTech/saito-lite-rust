@@ -68,7 +68,7 @@ console.log(JSON.stringify(c));
 		      //
 		      // conquest earns bonus card
 		      //
-		      if (c.base_bonus_prize) {
+		      if (c.bonus_base_roll && c.depleted != 1) {
 			his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : c.prize , img : c.img , type : "conquest" , name : c.prize , faction : c.faction , conquistador : c.conquistador , total_hits : c.bonus_base_roll , depleted : 0 }, stage, true), ".new-world-overlay .content .conquests");
 		      } else {
 		        //

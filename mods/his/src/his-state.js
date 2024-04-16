@@ -247,12 +247,14 @@
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     let winning_player = this.returnPlayerCommandingFaction(winning_faction);
-    let p = this.game.state.players_info[winning_player-1];
-    let unitjson = JSON.stringify(unit);
-    for (let z = 0; z < p.captured.length; z++) {
-      if (JSON.stringify(p.captured[z]) === unitjson) { return; }
+    if (winning_player > 0) {
+      let p = this.game.state.players_info[winning_player-1];
+      let unitjson = JSON.stringify(unit);
+      for (let z = 0; z < p.captured.length; z++) {
+        if (JSON.stringify(p.captured[z]) === unitjson) { return; }
+      }
+      p.captured.push(unit);
     }
-    p.captured.push(unit);
   }
 
   captureNavalLeader(winning_faction, losing_faction, space, unit) {

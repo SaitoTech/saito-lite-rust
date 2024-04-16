@@ -20,7 +20,7 @@
     if (obj.loaned == null)             { obj.loaned = false; }
     if (obj.key == null)                { obj.key = name; }
     if (obj.gout == null)               { obj.gout = false; }
-    if (obj.locked == null)		{ obj.locked = false; }
+    if (obj.locked == null)		{ obj.locked = 0; }
     if (obj.already_moved == null)	{ obj.already_moved = 0; }
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
@@ -643,7 +643,8 @@
       available_units['regular']['3'] = 0;    
       available_units['regular']['4'] = 0;    
       available_units['regular']['5'] = 0;    
-      available_units['regular']['6'] = 1;    
+      available_units['regular']['6'] = 0;    
+      available_units['squadron']['1'] = 1;
     }
     if (faction == "genoa") {
       available_units['regular']['1'] = 2;    
@@ -652,6 +653,7 @@
       available_units['regular']['4'] = 0;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 1;    
+      available_units['squadron']['1'] = 1;    
     }
     if (faction == "venice") {
       available_units['regular']['1'] = 4;    
@@ -659,7 +661,8 @@
       available_units['regular']['3'] = 0;    
       available_units['regular']['4'] = 0;    
       available_units['regular']['5'] = 0;    
-      available_units['regular']['6'] = 4;    
+      available_units['regular']['6'] = 0;
+      available_units['squadron']['1'] = 4;    
     }
     if (faction == "hungary") {
       available_units['regular']['1'] = 3;    
@@ -668,6 +671,7 @@
       available_units['regular']['4'] = 1;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 0;    
+      available_units['squadron']['1'] = 0;
     }
     if (faction == "independent") {
       available_units['regular']['1'] = 3;    
@@ -676,6 +680,7 @@
       available_units['regular']['4'] = 0;    
       available_units['regular']['5'] = 0;    
       available_units['regular']['6'] = 0;    
+      available_units['squadron']['1'] = 0;
     }
 
     //

@@ -1377,7 +1377,6 @@ export default class Wallet extends SaitoWallet {
 	}
 
 	public async setKeyList(keylist: string[]): Promise<void> {
-		console.log("Watched keys: ", keylist);
 		return await this.instance.set_key_list(keylist);
 	}
 
