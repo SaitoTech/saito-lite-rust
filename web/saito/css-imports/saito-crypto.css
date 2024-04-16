@@ -1,7 +1,7 @@
 .saito-crypto-deposit-container {
 	padding: 3rem;
-    background: var(--saito-background-color);
-    color: var(--saito-font-color);
+    background: var(--background-color-main);
+    color: var(--font-color-primary);
 }
 
 .saito-crypto-deposit-container {
@@ -28,10 +28,10 @@
 	height: auto;
 	max-width: 20rem;
 	width: 20vh;
-	border: 2px solid var(--saito-black);
+	border: 2px solid var(--color-black);
 	padding: 0.5rem;
 	border-radius: 0.5rem;
-	background: var(--saito-white);
+	background: var(--color-white);
 }
 
 .deposit-ticker {
@@ -44,7 +44,7 @@
     padding: 3rem 3rem;
     color: white;
     background-image: url(/saito/img/purple-background.jpg);
-    color: var(--saito-white);
+    color: var(--color-white);
     line-height: 1.6em;
     font-size: 1.5em;
     width: auto;
@@ -53,7 +53,7 @@
     min-width: 40vw;
     max-width: 800px;
     border-radius: 0.5rem;
-    border: 0.2rem solid var(--saito-border-color);
+    border: 0.2rem solid var(--border-color-general-dividers);
     background-position: center;
     background-size: cover;
 }
