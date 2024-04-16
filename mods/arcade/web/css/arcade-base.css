@@ -82,6 +82,10 @@
 }
 
 
+.arcade-sidebar .saito-announcement {
+	margin-bottom: 1rem;
+}
+
 
 /******************************************
  *  OVER WRITE Game Selector Overlay code
@@ -175,6 +179,11 @@
 	.arcade-central-panel {
 		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 	}
+
+	.arcade-sidebar .saito-announcement {
+		display: none;
+	}
+
 }
 
 

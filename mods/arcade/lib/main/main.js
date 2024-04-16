@@ -3,7 +3,7 @@ const ArcadeMainTemplate = require('./main.template');
 const ArcadeInitializer = require('./initializer');
 
 class ArcadeMain {
-	constructor(app, mod, container = '') {
+	constructor(app, mod, container = 'body') {
 		this.app = app;
 		this.mod = mod;
 
@@ -85,11 +85,11 @@ class ArcadeMain {
 
 
 		Array.from(
-			document.querySelectorAll('.arcade-game-selector-game .launch-league')
+			document.querySelectorAll('.arcade-game-selector-game')
 		).forEach((game) => {
 			game.onclick = (e) => {
 				e.stopPropagation();
-				let modname = e.currentTarget.getAttribute('data-id');
+				let modname = e.currentTarget.getAttribute('data-league');
 
 				this.app.browser.logMatomoEvent(
 					'LeagueOverlay',
@@ -105,26 +105,6 @@ class ArcadeMain {
 			};
 		});
 
-		Array.from(
-			document.querySelectorAll('.arcade-game-selector-game .launch-wizard')
-		).forEach((game) => {
-			game.onclick = (e) => {
-				e.stopPropagation();
-				let modname = e.currentTarget.getAttribute('data-id');
-
-				this.app.browser.logMatomoEvent(
-					'GameWizard',
-					'GameSelector',
-					modname
-				);
-
-				this.app.connection.emit(
-						'arcade-launch-game-wizard',
-						{game: modname}
-				);
-
-			};
-		});
 
 	}
 }
