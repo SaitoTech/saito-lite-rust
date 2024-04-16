@@ -2490,6 +2490,11 @@ class Chat extends ModTemplate {
 			return;
 		}
 
+		// If we don't have chat enabled, don't chime!
+		if (!this.chat_manager){
+			return;
+		}
+
 		this.app.browser.createTabNotification('New Message', group.name);
 
 		if (!this.audio_notifications) {
