@@ -2263,7 +2263,7 @@ class Browser {
 		treat(nodeList);
 		if (unknown_keys.length > 0) {
 			this.app.connection.emit(
-				'registry-fetch-identifiers-and-update-dom',
+				'profile-fetch-identifiers-and-update-dom',
 				unknown_keys
 			);
 		}

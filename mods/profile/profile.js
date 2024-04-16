@@ -14,8 +14,7 @@ class Profile extends ModTemplate {
 		//
 		// master DNS publickey for this module
 		//
-		this.registry_publickey =
-			'zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK';
+		this.profile_publickey = 'zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK';
 
 		//
 		// peers
@@ -46,7 +45,7 @@ class Profile extends ModTemplate {
 		//
 		// set true for testing locally
 		// All it does is allows both main nodes and lite clients to update
-		// this.registry_publickey with the public key of the main node
+		// this.profile_publickey with the public key of the main node
 		//
 		this.local_dev = 1;
 
@@ -60,7 +59,7 @@ class Profile extends ModTemplate {
 		// process by showing a popup. The first is the entry point for most applications.
 		//
 		this.app.connection.on(
-			'registry-fetch-identifiers-and-update-dom',
+			'profile-fetch-identifiers-and-update-dom',
 			async (keys) => {
 				//
 				// every 1 in 20 times, clear cache of anonymous keys to requery
@@ -177,8 +176,8 @@ class Profile extends ModTemplate {
 
 		if (this.app.BROWSER == 0) {
 			if (this.local_dev) {
-				this.registry_publickey = this.publicKey;
-				// console.log('Profile public key: ' + this.registry_publickey);
+				this.profile_publickey = this.publicKey;
+				// console.log('Profile public key: ' + this.profile_publickey);
 			}
 		}
 
@@ -186,7 +185,7 @@ class Profile extends ModTemplate {
 	}
 
 	//
-	// let people know we have a registry
+	// let people know we have a profile
 	//
 	async render() {
 		if (!this.app.BROWSER) {
@@ -197,11 +196,11 @@ class Profile extends ModTemplate {
 	returnServices() {
 		let services = [];
 		//
-		// So all full nodes can act as a registry of sorts
-		// (or at leastre route requests to the actual registry)
+		// So all full nodes can act as a profile of sorts
+		// (or at leastre route requests to the actual profile)
 		//
 		if (this.app.BROWSER == 0) {
-			services.push(new PeerService(null, 'registry', 'saito'));
+			services.push(new PeerService(null, 'profile', 'saito'));
 		}
 		return services;
 	}
@@ -210,7 +209,7 @@ class Profile extends ModTemplate {
 	// fetching identifiers
 	//
 	// this function is run on the browsers, triggered by the event that wants to re-write the DOM
-	// so it will query the first peer it sees that runs the registry module and ask it for the
+	// so it will query the first peer it sees that runs the profile module and ask it for the
 	// identifiers
 	//
 	// this first checks the cache that browsers maintain in their own memory that maps keys to
@@ -218,7 +217,7 @@ class Profile extends ModTemplate {
 	// an address. this is intended to limit the load on the parent server.
 	//
 	fetchManyProfiles(publickeys = [], mycallback = null) {
-		let registry_self = this;
+		let profile_self = this;
 		if (mycallback == null) {
 			return;
 		}
@@ -247,7 +246,7 @@ class Profile extends ModTemplate {
 			// This callback is executed in the browser
 			//
 			for (let key in profiles) {
-				registry_self.cached_keys[key] = profiles[key];
+				profile_self.cached_keys[key] = profiles[key];
 				found_keys[key] = profiles[key];
 			}
 			mycallback(found_keys);
@@ -341,7 +340,7 @@ class Profile extends ModTemplate {
 
 	/**
 	 * QueryKeys is a cross network database search for a set of public keys
-	 * Typically we call it from the browser on the first peer claiming to have a registry service
+	 * Typically we call it from the browser on the first peer claiming to have a profile service
 	 */
 	queryKeys(peer, keys, mycallback) {
 		if (!peer?.peerIndex) {
@@ -350,13 +349,13 @@ class Profile extends ModTemplate {
 		}
 
 		let data = {
-			request: 'registry query',
+			request: 'profile query',
 			keys: keys
 		};
 
 		//console.log(`PROFILE queryKeys from ${this.publicKey} to ${peer.publicKey}`);
 		return this.app.network.sendRequestAsTransaction(
-			'registry query',
+			'profile query',
 			data,
 			mycallback,
 			peer.peerIndex
@@ -364,11 +363,11 @@ class Profile extends ModTemplate {
 	}
 
 	onPeerServiceUp(app, peer, service = {}) {
-		if (service.service === 'registry') {
+		if (service.service === 'profile') {
 			this.peers.push(peer);
 
 			//
-			// We want to allow service nodes to connect to each other as registry peers
+			// We want to allow service nodes to connect to each other as profile peers
 			// but don't need to do any of the other processing
 			//
 			if (!app.BROWSER) {
@@ -377,25 +376,21 @@ class Profile extends ModTemplate {
 
 			//
 			// if we have instructed the server to run this application locally then we
-			// want browsers (connecting to the server) to update their registry publickey
+			// want browsers (connecting to the server) to update their profile publickey
 			// so the publickey of the server.
 			//
 
 			if (this.local_dev) {
-				this.registry_publickey = peer.publicKey;
+				this.profile_publickey = peer.publicKey;
 			}
 
-			//console.log(`Profile connected: ${peer.publicKey} and/but using: ${this.registry_publickey}`);
-
 			let myKey = app.keychain.returnKey(this.publicKey, true);
+			console.log('myKey', myKey);
 			if (myKey?.identifier) {
-				let registry_self = this;
+				let profile_self = this;
 				this.queryKeys(peer, [this.publicKey], function (profiles) {
-					// console.log('profiles', profiles);
-					//console.log(`PROFILE lookup ${myKey.identifier}: ${registry_self.publicKey} in ${peer.publicKey}, found: `, identifiers);
-
+					console.log('profiles', profiles);
 					for (let profile in profiles) {
-						console.log('profiles', profile);
 						if (profile.publicKey == myKey.publicKey) {
 							if (
 								profiles[profile].identifier !==
@@ -408,8 +403,6 @@ class Profile extends ModTemplate {
 
 								//Maybe we do an update here???
 							} else {
-								//console.log("PROFILE: Identifier checks out");
-								//Identifier checks out!
 							}
 							return;
 						}
@@ -418,7 +411,7 @@ class Profile extends ModTemplate {
 					//
 					//Make sure that we actually checked the right source
 					//
-					//if (peer.publicKey == registry_self.registry_publickey) {
+					//if (peer.publicKey == profile_self.profile_publickey) {
 					let identifier = myKey.identifier.split('@');
 					if (identifier.length !== 2) {
 						console.log(
@@ -428,11 +421,11 @@ class Profile extends ModTemplate {
 						return;
 					}
 
-					registry_self.checkIdentifierInDatabase(
+					profile_self.checkIdentifierInDatabase(
 						myKey.identifier,
 						(rows) => {
 							if (rows.length === 0) {
-								registry_self.registerProfile(
+								profile_self.registerProfile(
 									identifier[0],
 									'@' + identifier[1]
 								);
@@ -471,16 +464,14 @@ class Profile extends ModTemplate {
 			return 0;
 		}
 
-		if (txmsg.request == 'registry query') {
-			if (txmsg.data.request === 'registry query') {
+		if (txmsg.request == 'profile query') {
+			if (txmsg.data.request === 'profile query') {
 				let keys = txmsg.data?.keys;
-				//console.log("PROFILE query lookup: ", keys);
 				return this.fetchProfilesFromDatabase(keys, mycallback);
 			}
 
-			if (txmsg.data.request === 'registry namecheck') {
+			if (txmsg.data.request === 'profile namecheck') {
 				let identifier = txmsg.data?.identifier;
-				//console.log("PROFILE check if identifer is registered: ", identifier);
 				return this.checkIdentifierInDatabase(identifier, mycallback);
 			}
 		}
@@ -491,7 +482,7 @@ class Profile extends ModTemplate {
 	//
 	// There are TWO types of requests that this module will process on-chain. The first is
 	// the request to REGISTER a @saito address. This will only be processed by the node that
-	// is running the publickey identified in this module as the "registry_publickey".
+	// is running the publickey identified in this module as the "profile_publickey".
 	//
 	// The second is a confirmation that the node running the domain broadcasts into the network
 	// with a proof-of-registration. All nodes that run the DNS service should listen for
@@ -516,6 +507,8 @@ class Profile extends ModTemplate {
 							'Profile: Error processing register request transaction:',
 							err
 						);
+
+						// send failed transaction
 					}
 				}
 				if (txmsg.request === 'register success') {
@@ -526,6 +519,7 @@ class Profile extends ModTemplate {
 							'Profile: Error processing register success transaction:',
 							err
 						);
+						salert('An error occured with registration');
 					}
 				}
 
@@ -537,6 +531,7 @@ class Profile extends ModTemplate {
 							'Profile: Error processing update request transaction:',
 							err
 						);
+						// send failed transaction
 					}
 				}
 
@@ -557,7 +552,7 @@ class Profile extends ModTemplate {
 	}
 
 	/*
-	 * Lightly recursive, server side code to look up keys in the registry database
+	 * Lightly recursive, server side code to look up keys in the profile database
 	 * Invoked through a peer request.
 	 * Any requested keys not found are passed on to any peers with the DNS publickey
 	 */
@@ -579,18 +574,13 @@ class Profile extends ModTemplate {
 
 		try {
 			if (keys.length > 0) {
-				const where_statement = `r.publickey IN ("${keys.join(
-					'","'
-				)}")`;
-				const sql = `SELECT r.*, p.bio, p.photo, p.profile_data 
-							 FROM records r
-							 LEFT JOIN profiles p ON r.id = p.record_id
-							 WHERE ${where_statement}`;
+				const where_statement = `publickey IN ("${keys.join('","')}")`;
+				const sql = `SELECT * FROM records WHERE ${where_statement}`;
 
 				let rows = await this.app.storage.queryDatabase(
 					sql,
 					{},
-					'registry'
+					'profile'
 				);
 				if (rows?.length > 0) {
 					for (let row of rows) {
@@ -627,11 +617,11 @@ class Profile extends ModTemplate {
 
 		if (
 			missing_keys.length > 0 &&
-			this.publicKey !== this.registry_publickey
+			this.publicKey !== this.profile_publickey
 		) {
 			let has_peer = false;
 			for (let peer of this.peers) {
-				if (peer.publicKey === this.registry_publickey) {
+				if (peer.publicKey === this.profile_publickey) {
 					has_peer = true;
 					try {
 						return await this.queryKeys(
@@ -677,13 +667,13 @@ class Profile extends ModTemplate {
 			return 0;
 		}
 
-		if (this.publicKey == this.registry_publickey) {
+		if (this.publicKey == this.profile_publickey) {
 			const sql = `SELECT * FROM records WHERE identifier = ?`;
 
 			let rows = await this.app.storage.queryDatabase(
 				sql,
 				[identifier],
-				'registry'
+				'profile'
 			);
 
 			mycallback(rows);
@@ -698,7 +688,7 @@ class Profile extends ModTemplate {
 				},
 
 				(p) => {
-					if (p.publicKey == this.registry_publickey) {
+					if (p.publicKey == this.profile_publickey) {
 						return 1;
 					}
 					return 0;
@@ -720,155 +710,97 @@ class Profile extends ModTemplate {
 		lc = 1,
 		bio = '',
 		photo = '',
-		data = '' // Assuming 'data' refers to 'profile_data'
+		data = ''
 	) {
-		// Insert into `records` table
+		let sql = `INSERT INTO records (
+				identifier,
+				publickey,
+				unixtime,
+				bid,
+				bsh,
+				lock_block,
+				sig,
+				signer,
+				lc,
+				bio,
+				photo,
+				profile_data
+			) VALUES (
+				$identifier,
+				$publickey,
+				$unixtime,
+				$bid,
+				$bsh,
+				$lock_block,
+				$sig,
+				$signer,
+				$lc,
+				$bio,
+				$photo,
+				$data
+			)`;
 
-		try {
-			let sqlRecords = `INSERT INTO records (
-                identifier,
-                publickey,
-                unixtime,
-                bid,
-                bsh,
-                lock_block,
-                sig,
-                signer,
-                lc
-            )
-            VALUES (
-                $identifier,
-                $publickey,
-                $unixtime,
-                $bid,
-                $bsh,
-                $lock_block,
-                $sig,
-                $signer,
-                $lc
-            )`;
-			let paramsRecords = {
-				$identifier: identifier,
-				$publickey: publickey,
-				$unixtime: unixtime,
-				$bid: Number(bid),
-				$bsh: bsh,
-				$lock_block: lock_block,
-				$sig: sig,
-				$signer: signer,
-				$lc: lc
-			};
+		let params = {
+			$identifier: identifier,
+			$publickey: publickey,
+			$unixtime: unixtime,
+			$bid: Number(bid),
+			$bsh: bsh,
+			$lock_block: lock_block,
+			$sig: sig,
+			$signer: signer,
+			$lc: lc,
+			$bio: bio,
+			$photo: photo,
+			$data: typeof data === 'object' ? JSON.stringify(data) : data
+		};
 
-			let recordRes = await this.app.storage.runDatabase(
-				sqlRecords,
-				paramsRecords,
-				'registry'
-			);
+		let result = await this.app.storage.runDatabase(sql, params, 'profile');
 
-			let recordId = recordRes.lastID;
-
-			if (bio || photo || data) {
-				let sqlProfiles = `INSERT INTO profiles (
-                    record_id,
-                    bio,
-                    photo,
-                    profile_data
-                )
-                VALUES (
-                    $record_id,
-                    $bio,
-                    $photo,
-                    $data
-                )`;
-				let paramsProfiles = {
-					$record_id: recordId,
-					$bio: bio,
-					$photo: photo,
-					$data: data
-				};
-
-				await this.app.storage.runDatabase(
-					sqlProfiles,
-					paramsProfiles,
-					'registry'
-				);
-			}
-
-			return recordRes?.changes;
-		} catch (error) {
-			console.error('Profile: error adding record', error);
+		if (!result) {
+			throw Error('Error adding record');
 		}
+		return result?.changes;
 	}
 
 	async updateRecord(identifier, bio, photo, data) {
-		try {
-			let findRecordIdSql = `SELECT id FROM records WHERE identifier = $identifier`;
-			let record = await this.app.storage.queryDatabase(
-				findRecordIdSql,
-				{ $identifier: identifier },
-				'registry'
-			);
-			if (record.length === 0) {
-				throw new Error('Record not found.');
-			}
-			let recordId = record[0].id;
+		let findRecordSql = `SELECT id FROM records WHERE identifier = $identifier`;
+		let records = await this.app.storage.queryDatabase(
+			findRecordSql,
+			{ $identifier: identifier },
+			'profile'
+		);
 
-			// Check if a profile already exists for this record_id
-			let findProfileSql = `SELECT id FROM profiles WHERE record_id = $recordId`;
-			let profile = await this.app.storage.queryDatabase(
-				findProfileSql,
-				{ $recordId: recordId },
-				'registry'
-			);
-
-			let sqlProfiles;
-			let paramsProfiles = {
-				$record_id: recordId,
-				$bio: bio,
-				$photo: photo,
-				$data: typeof data === 'object' ? JSON.stringify(data) : data
-			};
-
-			// If a profile exists, update it. Otherwise, insert a new profile row.
-			if (profile.length > 0) {
-				sqlProfiles = `UPDATE profiles SET
-                           bio = $bio,
-                           photo = $photo,
-                           profile_data = $data
-                           WHERE record_id = $record_id`;
-			} else {
-				sqlProfiles = `INSERT INTO profiles (
-                           record_id,
-                           bio,
-                           photo,
-                           profile_data
-                           )
-                           VALUES (
-                           $record_id,
-                           $bio,
-                           $photo,
-                           $data
-                           )`;
-			}
-
-			// Execute the insert or update operation for the profile
-			let resProfiles = await this.app.storage.runDatabase(
-				sqlProfiles,
-				paramsProfiles,
-				'registry'
-			);
-
-			// Return the number of records updated or inserted in the profiles table
-			return resProfiles?.changes;
-		} catch (error) {
-			console.error('Profile: error updating records', error);
+		if (records.length === 0) {
+			throw new Error('Record not found.');
 		}
+		let recordId = records[0].id;
+
+		let sql = `UPDATE records SET
+				bio = $bio,
+				photo = $photo,
+				profile_data = $data
+				WHERE id = $record_id`;
+
+		let params = {
+			$record_id: recordId,
+			$bio: bio,
+			$photo: photo,
+			$data: typeof data === 'object' ? JSON.stringify(data) : data
+		};
+
+		let result = await this.app.storage.runDatabase(sql, params, 'profile');
+
+		if (!result) {
+			throw Error('Error updating record');
+		}
+		return result?.changes;
 	}
 
 	async onChainReorganization(bid, bsh, lc) {
 		var sql = 'UPDATE records SET lc = $lc WHERE bid = $bid AND bsh = $bsh';
 		var params = { $bid: bid, $bsh: bsh };
-		await this.app.storage.runDatabase(sql, params, 'registry');
+		await this.app.storage.runDatabase(sql, params, 'profile');
 		return;
 	}
 
@@ -887,11 +819,11 @@ class Profile extends ModTemplate {
 
 			const newtx =
 				await this.app.wallet.createUnsignedTransactionWithDefaultFee(
-					this.registry_publickey
+					this.profile_publickey
 				);
 			if (!newtx) {
 				throw new Error(
-					'Failed to create transaction in registry module.'
+					'Failed to create transaction in profile module.'
 				);
 			}
 
@@ -927,69 +859,61 @@ class Profile extends ModTemplate {
 	}
 
 	async receiveRegisterRequestTransaction(block, transaction) {
-		try {
-			const txmsg = transaction.returnMessage();
+		const txmsg = transaction.returnMessage();
 
-			if (
-				transaction.isTo(this.publicKey) &&
-				this.publicKey === this.registry_publickey
-			) {
-				const identifier = txmsg.identifier;
-				const publicKey = transaction.from[0].publicKey;
-				const unixTime = new Date().getTime();
-				const blockId = block.id;
-				const blockHash = block.hash;
-				const lockBlock = 0;
-				const signedMessage =
-					identifier + publicKey + blockId + blockHash;
-				const signature = this.app.crypto.signMessage(
-					signedMessage,
-					await this.app.wallet.getPrivateKey()
-				);
-				const signer = this.registry_publickey;
-				const data = txmsg.data;
-				const bio = txmsg.bio;
-				const photo = txmsg.photo;
-				const result = await this.addRecord(
-					identifier,
-					publicKey,
+		if (
+			transaction.isTo(this.publicKey) &&
+			this.publicKey === this.profile_publickey
+		) {
+			const identifier = txmsg.identifier;
+			const publicKey = transaction.from[0].publicKey;
+			const unixTime = new Date().getTime();
+			const blockId = block.id;
+			const blockHash = block.hash;
+			const lockBlock = 0;
+			const signedMessage = identifier + publicKey + blockId + blockHash;
+			const signature = this.app.crypto.signMessage(
+				signedMessage,
+				await this.app.wallet.getPrivateKey()
+			);
+			const signer = this.profile_publickey;
+			const data = txmsg.data;
+			const bio = txmsg.bio;
+			const photo = txmsg.photo;
+			const result = await this.addRecord(
+				identifier,
+				publicKey,
+				unixTime,
+				blockId,
+				blockHash,
+				lockBlock,
+				signature,
+				signer,
+				1,
+				bio,
+				photo,
+				data
+			);
+
+			if (result) {
+				console.log('added record');
+				const obj = {
+					lockBlock,
 					unixTime,
+					signer,
 					blockId,
 					blockHash,
-					lockBlock,
+					identifier,
+					signedMessage,
 					signature,
-					signer,
-					1,
+					publicKey,
 					bio,
 					photo,
 					data
-				);
+				};
 
-				if (result) {
-					console.log('added record');
-					const obj = {
-						lockBlock,
-						unixTime,
-						signer,
-						blockId,
-						blockHash,
-						identifier,
-						signedMessage,
-						signature,
-						publicKey,
-						bio,
-						photo,
-						data
-					};
-
-					await this.sendRegisterSuccessTransaction(transaction, obj);
-				}
+				await this.sendRegisterSuccessTransaction(transaction, obj);
 			}
-		} catch (error) {
-			console.error(
-				'Profile: Error receiving register request transaction.',
-				error
-			);
 		}
 	}
 
@@ -1027,93 +951,81 @@ class Profile extends ModTemplate {
 
 	async receiveRegisterSuccessTransaction(blk, tx) {
 		console.log('receiving register success');
-		try {
-			let txmsg = tx.returnMessage();
-			if (!txmsg) {
-				throw Error('txmsg is invalid');
-			}
-			if (tx.from[0].publicKey == this.registry_publickey) {
-				try {
-					let publickey = tx.to[0].publicKey;
-					let identifier = txmsg.identifier;
-					let bio = txmsg.bio;
-					let photo = txmsg.photo;
-					let data = txmsg.data;
-					let signedMessage = txmsg.signedMessage;
-					let signature = txmsg.signature;
-					let bid = txmsg.bid;
-					let bsh = txmsg.bsh;
-					let unixtime = txmsg.unixtime;
-					let lock_block = txmsg.lock_block;
-					let signer = txmsg.signer;
-					let lc = 1;
 
-					if (
-						this.app.crypto.verifyMessage(
-							signedMessage,
+		let txmsg = tx.returnMessage();
+		if (!txmsg) {
+			throw Error('txmsg is invalid');
+		}
+		if (tx.from[0].publicKey == this.profile_publickey) {
+			let publickey = tx.to[0].publicKey;
+			let identifier = txmsg.identifier;
+			let bio = txmsg.bio;
+			let photo = txmsg.photo;
+			let data = txmsg.data;
+			let signedMessage = txmsg.signedMessage;
+			let signature = txmsg.signature;
+			let bid = txmsg.bid;
+			let bsh = txmsg.bsh;
+			let unixtime = txmsg.unixtime;
+			let lock_block = txmsg.lock_block;
+			let signer = txmsg.signer;
+			let lc = 1;
+
+			if (
+				this.app.crypto.verifyMessage(
+					signedMessage,
+					signature,
+					this.profile_publickey
+				)
+			) {
+				if (this.publicKey != this.profile_publickey) {
+					if (!this.app.BROWSER) {
+						let res = await this.addRecord(
+							identifier,
+							publickey,
+							unixtime,
+							bid,
+							bsh,
+							lock_block,
 							signature,
-							this.registry_publickey
-						)
-					) {
-						if (this.publicKey != this.registry_publickey) {
-							if (!this.app.BROWSER) {
-								let res = await this.addRecord(
-									identifier,
-									publickey,
-									unixtime,
-									bid,
-									bsh,
-									lock_block,
-									signature,
-									signer,
-									1,
-									bio,
-									photo,
-									data
-								);
-							}
-
-							console.log(
-								'receiving register success transaction'
-							);
-							if (tx.isTo(this.publicKey)) {
-								this.app.keychain.addKey(tx.to[0].publicKey, {
-									identifier: identifier,
-									watched: true,
-									block_id: blk.id,
-									block_hash: blk.hash,
-									lc: 1,
-									profile: { bio, photo, data }
-								});
-
-								console.info('***********************');
-								console.info(
-									'verification success for : ' + identifier
-								);
-								console.info('***********************');
-
-								this.app.browser.updateAddressHTML(
-									tx.to[0].publicKey,
-									identifier
-								);
-								this.app.connection.emit(
-									'update_profile',
-									tx.to[0].publicKey
-								);
-							}
-						}
+							signer,
+							1,
+							bio,
+							photo,
+							data
+						);
 					}
-				} catch (err) {
-					console.error(
-						'ERROR verifying username registration message: ',
-						err
-					);
+
+					console.log('receiving register success transaction');
+					if (tx.isTo(this.publicKey)) {
+						this.app.keychain.addKey(tx.to[0].publicKey, {
+							identifier: identifier,
+							watched: true,
+							block_id: blk.id,
+							block_hash: blk.hash,
+							lc: 1,
+							profile: { bio, photo, data }
+						});
+
+						console.info('***********************');
+						console.info(
+							'verification success for : ' + identifier
+						);
+						console.info('***********************');
+
+						this.app.browser.updateAddressHTML(
+							tx.to[0].publicKey,
+							identifier
+						);
+						this.app.connection.emit(
+							'update_profile',
+							tx.to[0].publicKey
+						);
+					}
 				}
+			} else {
+				throw Error('Error verifying username');
 			}
-		} catch (error) {
-			console.error(
-				'Profile: Error receiving register success transaction'
-			);
 		}
 	}
 
@@ -1131,11 +1043,11 @@ class Profile extends ModTemplate {
 
 			const newtx =
 				await this.app.wallet.createUnsignedTransactionWithDefaultFee(
-					this.registry_publickey
+					this.profile_publickey
 				);
 			if (!newtx) {
 				throw new Error(
-					'Failed to create transaction in registry module.'
+					'Failed to create transaction in profile module.'
 				);
 			}
 
@@ -1163,63 +1075,53 @@ class Profile extends ModTemplate {
 	}
 
 	async receiveUpdateRequestTransaction(block, transaction) {
-		try {
-			const txmsg = transaction.returnMessage();
+		const txmsg = transaction.returnMessage();
 
-			if (
-				transaction.isTo(this.publicKey) &&
-				this.publicKey === this.registry_publickey
-			) {
-				const identifier = txmsg.identifier;
-				const publicKey = transaction.from[0].publicKey;
-				const unixTime = new Date().getTime();
-				const blockId = block.id;
-				const blockHash = block.hash;
-				const lockBlock = 0;
-				const signedMessage =
-					identifier + publicKey + blockId + blockHash;
-				const signature = this.app.crypto.signMessage(
-					signedMessage,
-					await this.app.wallet.getPrivateKey()
-				);
-				const signer = this.registry_publickey;
-				const data = txmsg.data;
-				const bio = txmsg.bio;
-				const photo = txmsg.photo;
-				// console.log(bio, data, photo, 'updating records');
-				const result = await this.updateRecord(
+		if (
+			transaction.isTo(this.publicKey) &&
+			this.publicKey === this.profile_publickey
+		) {
+			const identifier = txmsg.identifier;
+			const publicKey = transaction.from[0].publicKey;
+			const unixTime = new Date().getTime();
+			const blockId = block.id;
+			const blockHash = block.hash;
+			const lockBlock = 0;
+			const signedMessage = identifier + publicKey + blockId + blockHash;
+			const signature = this.app.crypto.signMessage(
+				signedMessage,
+				await this.app.wallet.getPrivateKey()
+			);
+			const signer = this.profile_publickey;
+			const data = txmsg.data;
+			const bio = txmsg.bio;
+			const photo = txmsg.photo;
+			const result = await this.updateRecord(
+				identifier,
+				bio,
+				photo,
+				data
+			);
+
+			if (result) {
+				console.log('added record');
+				const obj = {
+					lockBlock,
+					unixTime,
+					signer,
+					blockId,
+					blockHash,
 					identifier,
+					signedMessage,
+					signature,
+					publicKey,
 					bio,
 					photo,
 					data
-				);
+				};
 
-				// console.log(result, 'result from updating record');
-				if (result) {
-					console.log('added record');
-					const obj = {
-						lockBlock,
-						unixTime,
-						signer,
-						blockId,
-						blockHash,
-						identifier,
-						signedMessage,
-						signature,
-						publicKey,
-						bio,
-						photo,
-						data
-					};
-
-					await this.sendUpdateSuccessTransaction(transaction, obj);
-				}
+				await this.sendUpdateSuccessTransaction(transaction, obj);
 			}
-		} catch (error) {
-			console.error(
-				'Profile: Error receiving register request transaction.',
-				error
-			);
 		}
 	}
 
@@ -1245,7 +1147,7 @@ class Profile extends ModTemplate {
 			};
 
 			await newtx.sign();
-			// console.log('sending register success tx');
+
 			await this.app.network.propagateTransaction(newtx);
 		} catch (error) {
 			console.error(
@@ -1254,13 +1156,14 @@ class Profile extends ModTemplate {
 			);
 		}
 	}
+
 	async receiveUpdateSuccessTransaction(blk, tx) {
 		try {
 			let txmsg = tx.returnMessage();
 			if (!txmsg) {
 				throw Error('txmsg is invalid');
 			}
-			if (tx.from[0].publicKey == this.registry_publickey) {
+			if (tx.from[0].publicKey == this.profile_publickey) {
 				try {
 					let publickey = tx.to[0].publicKey;
 					let identifier = txmsg.identifier;
@@ -1280,10 +1183,10 @@ class Profile extends ModTemplate {
 						this.app.crypto.verifyMessage(
 							signedMessage,
 							signature,
-							this.registry_publickey
+							this.profile_publickey
 						)
 					) {
-						if (this.publicKey != this.registry_publickey) {
+						if (this.publicKey != this.profile_publickey) {
 							if (!this.app.BROWSER) {
 								let res = await this.updateRecord(
 									identifier,

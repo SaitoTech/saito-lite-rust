@@ -147,7 +147,7 @@ function reset_nonpersistent {
   mkdir -p ./data/backup
   cp -v ./data/*.sq3 ./data/backup/
 
-  # we explicitly don't delete registry/balance databases
+  # we explicitly don't delete profile/balance databases
   rm -f ./data/appstore.sq3
   rm -f ./data/arcade.sq3
   rm -f ./data/records.sq3
@@ -171,7 +171,7 @@ function reset_nonpersistent {
   #
   # rm -rf ./mods/appstore/bundler/dist/
 
-  rm -f ./mods/registry/web/addresses.txt
+  rm -f ./mods/profile/web/addresses.txt
   rm -f ./mods/appstore/mods/*
   rm -rf ./mods/appstore/bundler/mods/*
   rm -rf ./mods/appstore/bundler/dist/*
@@ -207,7 +207,7 @@ function reset_persistent {
 #  rm -f ./data/post.sq3
 #  rm -f ./data/arcade.sq3
 #  rm -f ./data/archive.sq3
-  rm -f ./data/registry.sq3
+  rm -f ./data/profile.sq3
   rm -f ./data/league.sq3
   rm -f ./data/tutorial.sq3
   rm -f ./web/client.options

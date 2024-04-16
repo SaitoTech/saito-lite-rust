@@ -121,12 +121,12 @@ class RegisterUsername {
 
 				let data = {
 					identifier: identifier + domain,
-					request: 'registry namecheck'
+					request: 'profile namecheck'
 				};
 
-				let registry_peer = null;
+				let profile_peer = null;
 				if (this.mod.peers[0]?.peerIndex) {
-					registry_peer = this.mod.peers[0].peerIndex;
+					profile_peer = this.mod.peers[0].peerIndex;
 				}
 
 				if (this.mode === 'update') {
@@ -165,7 +165,7 @@ class RegisterUsername {
 
 				if (this.mode === 'register') {
 					this.app.network.sendRequestAsTransaction(
-						'registry query',
+						'profile query',
 						data,
 						async (results) => {
 							if (results.length > 0) {
@@ -237,7 +237,7 @@ class RegisterUsername {
 								}
 							}
 						},
-						registry_peer
+						profile_peer
 					);
 				}
 			}

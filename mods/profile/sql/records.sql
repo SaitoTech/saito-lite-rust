@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS records (
-  id INTEGER,
-  identifier TEXT,
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  identifier TEXT UNIQUE,
   publickey TEXT,
   unixtime INTEGER,
   bid INTEGER,
@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS records (
   sig TEXT,
   signer TEXT,
   lc INTEGER,
-  UNIQUE (identifier),
-  PRIMARY KEY(id ASC)
+  bio TEXT DEFAULT '',
+  photo TEXT DEFAULT '',
+  profile_data TEXT DEFAULT ''
 );
