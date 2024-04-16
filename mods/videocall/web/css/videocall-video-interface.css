@@ -538,10 +538,11 @@
 }
 
 .footer {
-	padding: 2rem 2rem;
+	padding: 2rem;
 	display: flex;
-	justify-content: space-between;
+	justify-content: left;
 	align-items: center;
+	gap: 2rem;
 }
 
 .footer .timer {
