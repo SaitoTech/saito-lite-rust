@@ -22,6 +22,12 @@ body {
   max-width: -webkit-fill-available;
 }
 
+body.scrollable-page {
+  overflow: auto;
+  position: relative;
+  height: 100vh;
+}
+
 .main {
   margin-top: unset;
   padding: unset;
@@ -148,4 +154,56 @@ div.h3{
   bottom: 0;
   left: 0;
   width: 20vw;
+}
+
+
+
+/***************************
+* Standardized Landing Pages
+****************************/
+.saito-splash-image {
+  background-position: center;
+  background-attachment: fixed;
+  background-size: cover;
+  position: relative;
+  min-height: min(400px, 50%);
+}
+
+.saito-splash-image.full{
+  height: 100%;
+}
+
+
+.saito-splash-section-title{
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  text-align: center;
+  transform: translateY(-50%);
+  color: var(--saito-white);
+  text-shadow: 2px 4px 2px black;
+}
+
+.saito-splash-info {
+  position: relative;
+  background-color: var(--saito-background-color);
+  color: var(--saito-font-color);
+  padding: min(5rem, 10vh) min(8rem, 10vw);
+}
+
+.saito-splash-info p {
+  font-size: 18px;
+  margin: 1rem 0;
+  line-height: 16px;
+}
+
+.saito-splash-info h4 {
+  margin-bottom: 3rem;
+}
+
+@media screen and (max-width: 600px) {
+  .saito-splash-image{
+    background-attachment: scroll;
+    min-height: min(200px, 25%);
+  }
 }
