@@ -117,6 +117,8 @@ font imports
   --saito-arcade-background: var(--background-color-main);
   --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%), linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000), linear-gradient(180deg, #e9ce93, #f71f3d);
   --background-saito-effects: linear-gradient(45deg, var(--color-primary) 0%, var(--color-secondary) 55%, var(--color-primary) 100%) transparent no-repeat left top / 400% auto;
+  --saito-primary-background: linear-gradient(45deg, var(--saito-primary) 0%, var(--saito-secondary) 55%, var(--saito-primary) 100%) transparent no-repeat left top / 400% auto;
+
   --saito-heart-animation: url('/redsquare/images/heart.png');
   --saito-heart-animation-clicked: url('/redsquare/images/heart-all-red.png');
 /*========== FIXED OPTIONS PRESETS ===========*/
@@ -294,6 +296,7 @@ font imports
   --border-radius-arcade-menu: var(--border-radius-soft);
   --border-radius-sidebar-game-module: var(--border-radius-soft);
   --border-radius-identicon-needed: var(--border-radius-sharp);
+  --border-radius-progress-bar: var(--border-radius-soft);
 /*thickness*/
   --border-thickness-general-dividers: var(--border-thickness-thin);
   --border-thickness-sidebar-menu: none;
@@ -339,6 +342,7 @@ font imports
   --border-thickness-form-input-checkbox: var(--border-thickness-thin);
   --border-thickness-qr-code: var(--border-thickness-medium);
   --border-thickness-post-link: var(--border-thickness-thin);
+  --border-thickness-progress-bar: var(--border-thickness-thin);
   
 /* General Dividers and Borders */
 /*color*/
@@ -398,6 +402,7 @@ font imports
   --border-color-form-input-checkbox: var(--color-primary);
   --border-color-qr-code: var(--color-primary);
   --border-color-league-primary: var(--color-primary);
+  --border-color-progress-bar: var(--background-color-main);
 /*shadow*/
   --box-shadow-sidebar-elements: var(--shadow-standard);
   --box-shadow-chat-popup:;
@@ -483,8 +488,7 @@ font imports
   --background-color-wallet-inputs: var(--background-color-main);
   --background-color-mode-arcade: (--color-base);
 /* Progress Bar and Notifications */
-  --background-progress-bar: var(--color-secondary);
-  --background-progress-bar-active: var(--color-primary);
+  --background-color-progress-bar: var(--background-saito-effects);
   --background-color-notification-status: var(--color-primary);
   --background-color-notification-status-after: var(--color-contrast);
   --background-color-alert-box: var(--background-color-main);
@@ -656,8 +660,7 @@ html[data-theme="dark"] {
   --background-color-button-hover-chat-popup-header: var(--color-primary);
   --background-color-button-chat-popup-send: var(--background-color-main);
 /* Progress Bar */
-  --background-progress-bar: var(--background-color-main);
-  --background-progress-bar-active: var(--color-primary);
+  --background-color-progress-bar: var(--background-color-main);
 /* Sidebar, Headers and Notification Colors */
   --background-color-notification-status: var(--color-primary);
   --background-color-notification-status-after: var(--color-contrast);
@@ -858,8 +861,7 @@ html[data-theme="sangre"] {
   --background-color-button-hover-chat-popup-header: var(--color-primary);
   --background-color-button-chat-popup-send: var(--background-color-main);
 /* Progress Bar */
-  --background-progress-bar: var(--background-color-main);
-  --background-progress-bar-active: var(--color-primary);
+  --background-color-progress-bar: var(--background-saito-effects);
 /* Sidebar, Headers and Notification Colors */
   --background-color-notification-status: var(--color-primary);
   --background-color-notification-status-after: var(--color-contrast);
@@ -1050,8 +1052,8 @@ html[data-theme="midnight"] {
   --background-color-overlay-menu: var(--color-base);
   --background-color-overlay-menu-header: var(--color-base);
   --background-color-overlay-form-header: var(--color-base);
-  --background-color-header: pink;
-  --background-color-header-menu: cyan;
+  --background-color-header: none; /* testing */
+  --background-color-header-menu: none; /* testing */
   --background-color-post: var(--color-base);
   --background-color-post-input: var(--background-color-main);
 /* Button Background Colors */
@@ -1074,8 +1076,7 @@ html[data-theme="midnight"] {
   --background-color-button-hover-chat-popup-header: var(--color-primary);
   --background-color-button-chat-popup-send: var(--background-color-main);
 /* Progress Bar */
-  --background-progress-bar: var(--background-color-main);
-  --background-progress-bar-active: var(--color-primary);
+  --background-color-progress-bar: var(--color-primary);
 /* Sidebar, Headers and Notification Colors */
   --background-color-notification-status: var(--color-primary);
   --background-color-notification-status-after: var(--color-contrast);
@@ -1279,8 +1280,7 @@ html[data-theme="arcade"] {
   --background-color-button-hover-chat-popup-header: var(--color-primary);
   --background-color-button-chat-popup-send: var(--background-color-main);
 /* Progress Bar */
-  --background-progress-bar: var(--background-color-main);
-  --background-progress-bar-active: var(--color-primary);
+  --background-color-progress-bar: var(--color-primary);
 /* Sidebar, Headers and Notification Colors */
   --background-color-notification-status: var(--color-primary);
   --background-color-notification-status-after: var(--color-contrast);
