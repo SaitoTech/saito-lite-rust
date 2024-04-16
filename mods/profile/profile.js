@@ -499,37 +499,60 @@ class Profile extends ModTemplate {
 	// signed proof-of-registration.
 	//
 	async onConfirmation(blk, tx, conf) {
-		let txmsg = tx.returnMessage();
-		if (txmsg.module !== 'Profile') {
-			return;
-		}
-		if (conf == 0) {
-			if (txmsg.request === 'register request') {
-				console.log(
-					`PROFILE: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
-				);
-				this.receiveRegisterRequestTransaction(blk, tx);
+		try {
+			let txmsg = tx.returnMessage();
+			if (txmsg.module !== 'Profile') {
+				return;
 			}
-			if (txmsg.request === 'register success') {
-				// console.log(
-				// 	`PROFILE: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
-				// );
-				await this.receiveRegisterSuccessTransaction(blk, tx);
-			}
+			if (conf == 0) {
+				if (txmsg.request === 'register request') {
+					console.log(
+						`PROFILE: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
+					);
+					try {
+						await this.receiveRegisterRequestTransaction(blk, tx);
+					} catch (err) {
+						console.error(
+							'Profile: Error processing register request transaction:',
+							err
+						);
+					}
+				}
+				if (txmsg.request === 'register success') {
+					try {
+						await this.receiveRegisterSuccessTransaction(blk, tx);
+					} catch (err) {
+						console.error(
+							'Profile: Error processing register success transaction:',
+							err
+						);
+					}
+				}
 
-			if (txmsg.request === 'update request') {
-				// console.log(
-				// 	`PROFILE: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
-				// );
-				await this.receiveUpdateRequestTransaction(blk, tx);
-			}
+				if (txmsg.request === 'update request') {
+					try {
+						await this.receiveUpdateRequestTransaction(blk, tx);
+					} catch (err) {
+						console.error(
+							'Profile: Error processing update request transaction:',
+							err
+						);
+					}
+				}
 
-			if (txmsg.request === 'update success') {
-				// console.log(
-				// 	`PROFILE: ${tx.from[0].publicKey} -> ${txmsg.identifier}`
-				// );
-				await this.receiveUpdateSuccessTransaction(blk, tx);
+				if (txmsg.request === 'update success') {
+					try {
+						await this.receiveUpdateSuccessTransaction(blk, tx);
+					} catch (err) {
+						console.error(
+							'Profile: Error processing update success transaction:',
+							err
+						);
+					}
+				}
 			}
+		} catch (err) {
+			console.error('Profile: Error in onConfirmation:', err);
 		}
 	}
 
@@ -539,7 +562,6 @@ class Profile extends ModTemplate {
 	 * Any requested keys not found are passed on to any peers with the DNS publickey
 	 */
 	async fetchProfilesFromDatabase(keys, mycallback = null) {
-		let registry_self = this;
 		let found_keys = {};
 		let missing_keys = [];
 
@@ -549,97 +571,92 @@ class Profile extends ModTemplate {
 				keys.splice(i, 1);
 				continue;
 			}
-			/*if (this.cached_keys[keys[i]] && this.cached_keys[keys[i]] !== keys[i]) {
-        found_keys[keys[i]] = this.cached_keys[keys[i]];
-        keys.splice(i, 1);
-      }*/
 
 			if (!this.cached_keys[keys[i]]) {
 				this.cached_keys[keys[i]] = {};
 			}
 		}
 
-		//
-		// check database if needed
-		//
-		if (keys.length > 0) {
-			const where_statement = `r.publickey IN ("${keys.join('","')}")`;
-			const sql = `SELECT r.*, p.bio, p.photo, p.profile_data 
-                         FROM records r
-                         LEFT JOIN profiles p ON r.id = p.record_id
-                         WHERE ${where_statement}`;
+		try {
+			if (keys.length > 0) {
+				const where_statement = `r.publickey IN ("${keys.join(
+					'","'
+				)}")`;
+				const sql = `SELECT r.*, p.bio, p.photo, p.profile_data 
+							 FROM records r
+							 LEFT JOIN profiles p ON r.id = p.record_id
+							 WHERE ${where_statement}`;
 
-			let rows = await this.app.storage.queryDatabase(
-				sql,
-				{},
-				'registry'
-			);
-			if (rows?.length > 0) {
-				for (let i = 0; i < rows.length; i++) {
-					found_keys[rows[i].publickey] = {
-						...rows[i],
-						profile:
-							rows[i].bio || rows[i].photo || rows[i].profile_data
-								? {
-										bio: rows[i].bio,
-										photo: rows[i].photo,
-										profile_data: rows[i].profile_data
-								  }
-								: null
-					};
-					registry_self.cached_keys[rows[i].publickey] =
-						found_keys[rows[i].publickey];
+				let rows = await this.app.storage.queryDatabase(
+					sql,
+					{},
+					'registry'
+				);
+				if (rows?.length > 0) {
+					for (let row of rows) {
+						found_keys[row.publickey] = {
+							...row,
+							profile:
+								row.bio || row.photo || row.profile_data
+									? {
+											bio: row.bio,
+											photo: row.photo,
+											profile_data: row.profile_data
+									  }
+									: null
+						};
+						this.cached_keys[row.publickey] =
+							found_keys[row.publickey];
+					}
 				}
 			}
+		} catch (err) {
+			console.error(
+				'Profile: Error fetching profiles from database:',
+				err
+			);
 		}
 
-		// Which keys are we missing?
+		// Determine missing keys
 		let found_check = Object.keys(found_keys);
-		// console.log('found keys', found_keys);
 		for (let key of keys) {
 			if (!found_check.includes(key)) {
 				missing_keys.push(key);
 			}
 		}
 
-		//console.log("this PROFILE found", found_keys, "but not", missing_keys);
-
-		//
-		// Fallback because browsers don't automatically have DNS as a peer
-		//
 		if (
 			missing_keys.length > 0 &&
 			this.publicKey !== this.registry_publickey
 		) {
 			let has_peer = false;
-			//
-			// if we were asked about any missing keys, ask our parent server
-			//
-			for (let i = 0; i < this.peers.length; i++) {
-				if (this.peers[i].publicKey == this.registry_publickey) {
+			for (let peer of this.peers) {
+				if (peer.publicKey === this.registry_publickey) {
 					has_peer = true;
-					// ask the parent for the missing values, cache results
-					return this.queryKeys(
-						this.peers[i],
-						missing_keys,
-						(res) => {
-							//
-							// This is run by the main service node
-							//
-							for (let key in res) {
-								if (res[key] !== key) {
-									registry_self.cached_keys[key] = res[key];
-									found_keys[key] = res[key];
+					try {
+						return await this.queryKeys(
+							peer,
+							missing_keys,
+							(res) => {
+								for (let key in res) {
+									if (res[key] !== key) {
+										this.cached_keys[key] = res[key];
+										found_keys[key] = res[key];
+									}
+								}
+
+								if (mycallback) {
+									mycallback(found_keys);
+									return 1;
 								}
 							}
-
-							if (mycallback) {
-								//console.log("PROFILE: run nested DB callback on found keys", found_keys);
-								mycallback(found_keys);
-								return 1;
-							}
-						}
-					);
+						);
+					} catch (err) {
+						console.error(
+							'Profile: Error querying keys from peer:',
+							err
+						);
+					}
 				}
 			}
 
@@ -647,13 +664,8 @@ class Profile extends ModTemplate {
 				console.log('PROFILE: Not a peer with the central DNS');
 			}
 
-			//No peer found...
 			return 0;
 		} else if (mycallback && found_check.length > 0) {
-			//
-			// This is run by either the main service node or the proper registry node
-			//
-			//console.log("PROFILE: run DB callback on found keys", found_keys);
 			mycallback(found_keys);
 			return 1;
 		}
