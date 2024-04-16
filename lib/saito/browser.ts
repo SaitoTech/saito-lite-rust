@@ -2460,6 +2460,33 @@ class Browser {
 			inputType
 		)
 	}
+
+	validateAmountLimit(amount, event){
+      // prevent user for adding number gretaer than 10^9 to input
+      if (amount > 1000000000) {
+        if (!isNaN(event.key)) {
+          event.preventDefault();
+          return false;
+        }
+      }
+
+      // prevent user for adding more than 8 decimal point precision
+      let amount_string = amount.toString();
+      let decimal_separator =  this.app.browser.getDecimalSeparator();
+     
+      if (amount_string.indexOf(decimal_separator)) {
+        let myArray = amount.split(decimal_separator);
+        if (typeof myArray[1] != 'undefined') {
+	       let decimal_value = myArray[1];
+	       if (decimal_value.length > 8) {
+	         if (!isNaN(event.key)) {
+	           event.preventDefault();
+	           return false;
+	         }
+	       }
+	      }
+      } 
+	}
 }
 
 export default Browser;
