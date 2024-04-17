@@ -2,14 +2,14 @@
   cursor: pointer;
   padding: 1rem 2rem;
   border-top: 1px solid transparent;
-  border-bottom: 1px solid var(--saito-border-color-dark);
+  border-bottom: var(--border-thickness-post-divider) solid var(--border-color-post-divider);
   position: relative;
 }
 
 .tweet .saito-address, .tweet .saito-userline {
   font-size: 1.3rem;
   margin: 0.175rem;
-  color: var(--saito-font-color-light);
+  color: var(--font-color-post-info);
 }
 
 .tweet-preview .tweet .tweet-body {
@@ -33,7 +33,7 @@
   height: 100%;
   top: 5.5rem;
   left: 3.5rem;
-  border-left: 5px dotted var(--saito-border-color);
+  border-left: 5px dotted var(--border-color-post-dotted-line);
   z-index: 3;
 }
 
@@ -44,7 +44,7 @@
   height: 100%;
   top: 0;
   left: 3.5rem;
-  border-left: 5px dotted var(--saito-border-color);
+  border-left: 5px dotted var(--border-color-post-dotted-line);
   z-index: 3;  
 }
 
@@ -52,13 +52,14 @@
   border-bottom: none;
 }
 
+/* Changed, not sure where exactly */
 .tweet.has-reply-disconnected::before {
   content: "\299A";
   position: absolute;
   font-size: 3rem;
   font-family: monospace;
-  color: var(--saito-border-color);
-  background-color: var(--saito-background-color);
+  color: var(--border-color-general-divider);
+  background-color: var(--background-color-main);
   z-index: 99;
   top: calc(50% + 1rem);
   left: 3.2rem;
@@ -83,7 +84,7 @@
   top: 50%;
   transform: translateY(-50%);
   left: 0.75rem;
-  border-left: 1px solid var(--saito-primary);
+  border-left: 1px solid var(--border-color-post-solid-line);
   z-index: 3;
 }
 
@@ -140,7 +141,7 @@
 .tweet-notice {
   display: flex;
   box-sizing: border-box;
-  color: var(--saito-font-color-light);
+  color: var(--font-color-post-notice);
   font-family: var(--saito-font);
   word-wrap: break-word;
   padding-bottom: 1rem;
@@ -156,7 +157,7 @@
   margin-left: 0.3rem;
   font-weight: bold;
   font-size: 1.2rem;
-  color: var(--saito-font-color-light);
+  color: var(--font-color-post-saito-address); 
 }
 
 .tweet-text {
@@ -172,7 +173,7 @@
 }
 
 .tweet-text .saito-mention.saito-address.treated {
-  color: var(--saito-primary);
+  color: var(--font-color-mention);
   font-style: normal;
   font-size: 1.6rem;
   margin: 0rem!important;
@@ -203,7 +204,7 @@
   position: absolute;
   bottom: 2rem;
   /* color: var(--saito-primary); */
-  color: var(--saito-border-color-dark);
+  color: var(--font-color-post-downward-arrow); 
   font-size: 6rem;
   z-index: 999;
   text-align: center;
@@ -237,7 +238,7 @@
 
 
 .tweet:hover, .tweet.highlight-tweet {
-  background-color: var(--saito-background-light);
+  background-color: var(--background-color-hover-post);
 }
 
 .tweet:hover .tweet-text.preview::before {
@@ -261,12 +262,12 @@
   justify-content: center;
   padding: 1rem 0;
   cursor: pointer;
-  color: var(--saito-font-color-light);
+  color: var(--font-color-post-controls);
 }
 
 .tweet-controls>div.tweet-tool:hover {
   transform: scale(1.05);
-  color: var(--saito-primary);
+  color: var(--font-color-hover-post-controls);
 }
 
 .tweet-controls>div.tweet-tool.tweet-tool-more{
@@ -300,7 +301,7 @@
   width: 28rem;
   height: 26rem;
   padding: 1rem;
-  border: 1px solid var(--saito-border-color);
+  border: 1px solid var(--saito-border-color); /* testing, not sure where */
   background: var(--saito-background-color);
   z-index: 1;
   font-size: 1.8rem;
@@ -351,7 +352,7 @@
 .tweet-img-icon {
   font-size: 3rem;
   color: var(--saito-white);
-  background: var(--saito-gray-mid);
+  background: var(--saito-gray-mid); /* testing, not sure where */
   padding: 1.5rem;
   border-radius: 50%;
   cursor: pointer;
@@ -428,7 +429,7 @@
 
 .link-info {
   padding: 2rem;
-  border: 1px solid var(--saito-border-color);
+  border: var(--border-thickness-post-link) solid var(--border-color-post-link);
   border-radius: 0.5rem;
   border-top: none;
   border-top-right-radius: unset;
@@ -437,16 +438,16 @@
 }
 
 .link-title {
-  color: var(--saito-font-color-light);
+  color: var(--font-color-post-link-title);
   margin: 0.3rem 0px;
 }
 
 .link-url {
-  color: var(--saito-font-color);
+  color: var(--font-color-post-link-url); 
 }
 
 .link-description {
-  color: var(--saito-font-color-light);
+  color: var(--font-color-post-link-description); 
 }
 
 @media screen and (max-width: 1280px) {

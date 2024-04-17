@@ -1,6 +1,6 @@
 .mixin_crypto_overlay {
   padding: 2rem;
-  background-color: var(--saito-white);
+  background-color: var(--color-white);
   color: black;
   line-height: 1.6em;
   font-size: 1.5em;
@@ -204,7 +204,7 @@
   width: 100% !important;
   height: 45px;
   padding: 10px 10px !important;
-  color: var(--saito-font-color);
+  color: var(--saito-color-contrast);
 }
 
 .info-cont {
@@ -308,12 +308,13 @@
   margin-top: 3rem;
 }
 
+/*changed*/
 .mixin-items-container .saito-table-header, .mixin-txn-his-container .saito-table-header {
   padding: 1rem 0rem;
-  border-radius: 0.5rem;
+  border-radius: var(--border-radius-sharp);
   text-align: center;
-  background: var(--dreamscape);
-  color: var(--saito-white);
+  background: var(--saito-dreamscape);
+  color: var(--color-white);
 }
 
 .mixin-items-container .saito-table-header {
@@ -356,23 +357,25 @@
     gap: 2rem;
 }
 
+/*changed*/
 .pagination-number.active {
-  color: var(--saito-white);
-  background: var(--saito-button-background);
+  color: var(--color-white);
+  background: var(--color-primary);
 }
 
 .pagination-number {
-  border: 1px solid var(--saito-background-color);
+  border: 1px solid var(--border-color-general-dividers);
   cursor: pointer;
   padding: 0.3rem 1rem;
   transition: all 0.2s ease-in-out;
   border-radius: 0.2rem;
 }
 
+/*changed*/
 .pagination-number:hover {
-  border: 1px solid var(--saito-button-background);
+  border: 1px solid var(--border-color-general-dividers);
 }
-
+  
 .pagination-button {
   cursor: pointer;
   font-size: 2rem;
@@ -414,10 +417,12 @@
   color: var(--saito-primary);
 }
 
+/* Unfinished changes */
 .mixin-overlay-history {
   min-height: 20rem;
   padding: 1.5rem;
   border-radius: 0.5rem;
+  border-radius: var(--saito-border-radius);
   background: var(--saito-background-color);
   color: var(--saito-font-color-heavy);
 }
@@ -443,14 +448,16 @@
   Withdrawl overlay 
 */
 
+/*changed*/
 .token-dropdown {
   display: flex;
   position: relative;
-  background: var(--saito-light-shim);
+  /* background: var(--saito-background-shim-light); /*/
   padding-right: 0.5rem;
-  border-radius: 0.5rem;
-  background: var(--saito-background-light);
-  border: 1px solid var(--saito-font-color);
+  border-radius: var(--border-radius-button-primary);
+  background: var(--background-color-wallet-inputs);
+  border: 1px solid var(--border-color-general-dividers);
+  color: var(--font-color-primary);
 }
 
 .token-dropdown img { 
@@ -474,13 +481,14 @@
   position: relative; 
 }
 
+/* unfinished changes, waiting testing */
 .saito-overlay-form-input input {
   border: none;
   background: var(--saito-light-shim);
   color: var(--saito-gray-mid);
   font-size: 1.6rem;
-  background: var(--saito-background-light);
-  border: 1px solid var(--saito-font-color);
+  background: var(--background-color-main);
+  border: 1px solid var(--border-color-general-dividers);
 }
 
 /* Hide arrows, Chrome, Safari, Edge, Opera */
@@ -510,7 +518,7 @@
 
 
 .withdrawl-notes {
-  background: var(--saito-light-shim);
+  background: var(--saito-background-shim-light);
   padding: 1.5rem 1rem;
   border-radius: 0.5rem;
   color: var(--saito-black-faded);
@@ -627,7 +635,7 @@
 }
 
 .withdraw-info-cont {
-  color: var(--saito-font-color);
+  color: var(--font-color-primary);
   line-height: 2rem;
   text-align: center;
 }
@@ -651,7 +659,7 @@
 
 
 #withdraw-step-one .input-elem {
-  color: var(--saito-font-color);
+  color: var(--font-color-primary);
 }
 
 .saito-history-msg {

@@ -6,7 +6,7 @@
 }
 
 .saito-loader::after {
-    background-color: var(--saito-primary);
+    background-color: var(--color-primary);
     background-image: url(/saito/img/saito-loader.svg);
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -77,10 +77,10 @@
 
 .game-loader-spinner {
   margin: auto;
-  border: 16px solid var(--saito-skyline-grey);
+  border: 16px solid var(--saito-skyline-grey); /* ?? */
   border-top: 16px solid var(--saito-red);
-  border: 16px solid var(--saito-primary);
-  border-top: 16px solid var(--saito-white);
+  border: 16px solid var(--color-primary);
+  border-top: 16px solid var(--color-white);
 
   border-radius: 50%;
   animation: spin 1.5s linear infinite;
