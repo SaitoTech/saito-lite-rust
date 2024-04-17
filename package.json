@@ -7,6 +7,7 @@
     "dev": "ts-node-dev --max_old_space_size=8144 start.ts",
     "dev-server": "./compile nuke ts-node-dev && npm run dev ",
     "cli": "ts-node cli.ts",
+    "generate-issuance": "NODE_OPTIONS='--max-old-space-size=12288' ts-node gen-issuance",
     "wh": "NODE_OPTIONS='--max-old-space-size=12288' ts-node wh.ts",
     "start": "NODE_OPTIONS='--max-old-space-size=8192' ts-node -T --files start.ts --",
     "init": "node ./scripts/install.js",
