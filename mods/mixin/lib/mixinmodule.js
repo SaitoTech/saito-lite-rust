@@ -160,7 +160,7 @@ class MixinModule extends CryptoModule {
 				this.balance_timestamp_last_fetched
 			);
 			this.balance_timestamp_last_fetched = new Date().getTime();
-			await this.mixin.fetchSafeUtxo(this.asset_id);
+			await this.mixin.fetchSafeUtxoBalance(this.asset_id);
 
 			this.app.connection.emit("update_balance", this.app.wallet);
 		}
@@ -343,58 +343,62 @@ class MixinModule extends CryptoModule {
 		//snapshot_datetime:  Mon Feb 12 2024 16:31:44 GMT+0500 (Pakistan Standard Time)
 		//mixinmodule.js:454 received_datetime:  Sun Sep 20 56111 06:01:14 GMT+0500 (Pakistan Standard Time)
 
-		let status = await this.mixin.fetchSafeSnapshots(this.asset_id, 1000, (d) => {
+		let status = await this.mixin.fetchUtxo('unspent', 1000, 'DESC', (d) => {
+
+			console.log('utxo: ', d);
 
 			if (d.length > 0) {
 
 				for (let i = (d.length - 1); i >= 0; i--) {
 					let row = d[i];
-					let snapshot_asset_id = row.asset_id;
 
-					console.log('*************************************')				
-					console.log("snapshot response ///");
+					//compare timestamps
+					let snapshot_date = new Date(row.created_at);
+					let received_date = new Date(timestamp);
 
-					// filter out specific asset
-					if (snapshot_asset_id == this_self.asset_id) {
+					console.log('received_datetime - snapshot_datetime - diff : ', 
+						received_date, snapshot_date, (snapshot_date - received_date));
 
-						console.log("assets matched ///");
+					if (snapshot_date - received_date > 0) {
 
-						let snapshot_opponent_id = row.opponent_id;
+						let snapshot_asset_id = row.asset_id;
 
-						console.log('snapshot_opponent_id: ', snapshot_opponent_id);
-						console.log('opponent_id: ', opponent_id);
+						console.log('*************************************');				
+						console.log("snapshot response ///");
+
+						// filter out specific asset
+						if (snapshot_asset_id == this_self.asset_id) {
+
+							console.log("assets matched ///");
+
+							let senders = row.senders;
+
+							console.log('snapshot_opponent_id: ', senders);
+							console.log('opponent_id: ', opponent_id);
+							console.log('oponnent id exists:', senders.includes(opponent_id));
 
 
-						// filter out opponents
-						if ((opponent_id == snapshot_opponent_id)) {
+							// filter out opponents
+							if (senders.includes(opponent_id)) {
 
-							console.log('opponent_id matched ////');
+								console.log('opponent_id matched ////');
 
-							let snapshot_amount = Number(row.amount);
+								let snapshot_amount = Number(row.amount);
+								console.log('row.amount: ', row.amount);
+								console.log('snapshot_amount: ', snapshot_amount);
 
-
-							console.log('row.amount: ', row.amount);
-							console.log('snapshot_amount: ', snapshot_amount);
-
-							// filter out deposit only
-							if (snapshot_amount > 0) {
-
-								//compare timestamps
-								let snapshot_date = new Date(row.created_at);
-								let received_date = new Date(timestamp);
-								
-								console.log('received_datetime - snapshot_datetime - diff : ', received_date, snapshot_date, (snapshot_date - received_date));
-
-								if ((snapshot_date - received_date > 0)  && (snapshot_amount == amount) 
-									&& (opponent_id == snapshot_opponent_id)){
+								if (snapshot_amount == amount){
 									
 									console.log('match found ///');
 									
 									return 1;
 								}
+								
 							}
 						}
+				
 					}
+
 				}
 
 				return 0;
@@ -468,6 +472,10 @@ class MixinModule extends CryptoModule {
 	 */
 	returnHistory(asset_id = '', records = 20, callback = null) {
 		return this.mixin.fetchSafeSnapshots(asset_id, records, callback);
+	}
+
+	async returnUtxo(state = 'unspent', limit = 500, order = 'DESC', callback = null) {
+		return await this.mixin.fetchUtxo(state, limit, order, callback);
 	}
 
 	async getMixinUser(address = '', callback = null) {
@@ -551,13 +559,10 @@ class MixinModule extends CryptoModule {
 			asset_id: asset_id
 		}, 
 		function(res){
-			console.log('returning address 1////', res);
 			if (res.length > 0) {
 				address = res[0];
 			}
 		});
-
-		console.log('returning address 2////');
 		return address;
 	}
 

@@ -136,7 +136,7 @@ class Mixin extends ModTemplate {
       let pc = await this.app.wallet.returnPreferredCryptoTicker();
       if (mixin_self.account_created !== 0 || (pc !== "SAITO" && pc !== "")) {
         if (crypto_module.returnIsActivated()) {
-          await this.fetchSafeUtxo();
+          await this.fetchSafeUtxoBalance();
         }
       }
     }
@@ -384,7 +384,7 @@ class Mixin extends ModTemplate {
     }
   }
 
-  async fetchSafeUtxo(asset_id){
+  async fetchSafeUtxoBalance(asset_id){
     try {
       let user = MixinApi({
         keystore: {
@@ -437,6 +437,35 @@ class Mixin extends ModTemplate {
       }
     } catch(err) {
       console.error("ERROR: Mixin error fetch safe snapshots: " + err);
+      return false;
+    }
+  }
+
+  async fetchUtxo(state = 'unspent', limit = 1000, order = 'DESC', callback = null){
+    try {
+      let user = MixinApi({
+        keystore: {
+          app_id: this.mixin.user_id,
+          session_id: this.mixin.session_id,
+          pin_token_base64: this.mixin.tip_key_base64,
+          session_private_key: this.mixin.session_seed
+        },
+      });
+
+      let params = {
+//        limit: limit,
+        state: state,
+        order: order,
+      };
+
+      let utxo_list = await user.utxo.safeOutputs(params);
+      console.log(`utxo_list ${state}:///`, utxo_list);
+
+      if (callback){
+        return callback(utxo_list);  
+      }
+    } catch(err) {
+      console.error("ERROR: Mixin error return utxo: " + err);
       return false;
     }
   }
