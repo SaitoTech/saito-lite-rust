@@ -11,11 +11,11 @@
 	width: 100%;
 	padding: 1.2rem 3rem 1.2rem 1rem;
 	cursor: text;
-	border: 1px solid transparent;
+	border: var(--border-thickness-message-input) solid var(--border-color-message-input);
 	font-size: 1.6rem;
 	line-height: 2rem;
 	outline: none;
-	background: var(--saito-arcade-background);
+	background: var(--background-color-message-input);
 	max-height: 15rem;
 	overflow-y: auto;
 	word-break: break-word;
@@ -33,19 +33,20 @@
 	align-items: center;
 	justify-content: space-between;
 	flex-direction: column;
-	border: 1px solid var(--saito-border-color);
+	border: var(--border-thickness-selection-box) solid var(--border-color-selection-box); 
+  border-radius: var(--border-radius-selection-box);
 
 	/*
 	We can't control for if user resizes chat-popup, better to have visibile borders
 	border-top: none;
 	border-left: none;
 	*/
-	background-color: var(--saito-background-color);
+	background-color: var(--background-color-selection-box); /* testing */
 }
 
 .saito-mention {
 	cursor: pointer;
-	color: var(--saito-primary);
+	color: var(--font-color-mention);
 	font-style: italic;
 	user-select: none;
 	margin-right: 8px !important;
@@ -94,8 +95,8 @@
 	justify-content: space-evenly;
 	width: 100%;
 	height: 5rem;
-	background-color: var(--saito-background-color);
-	border-top: 1px solid var(--saito-border-color);
+	background-color: var(--background-color-chat-popup-subheader);
+	border-top: 1px var(--border-color-chat-popup-bottom); 
 }
 
 .selection-box-tabs i {
@@ -104,14 +105,15 @@
 
 .saito-box-tab {
 	font-size: 2.6rem;
-	color: var(--saito-primary);
+	color: var(--font-color-post-icons);
 	cursor: pointer;
 	line-height: 1rem;
 }
 
 .saito-box-tab:hover {
-	color: var(--saito-secondary);
+	color: var(--font-color-hover-post-icons);
 }
+
 
 /* override definitions from giphy.css */
 .selection-box-window .saito-gif-container {
@@ -130,7 +132,7 @@ emoji-picker {
 	right: 0;
 	bottom: 0;
 	padding: 0.8rem 0.5rem;
-	color: var(--saito-primary);
+	color: var(--font-color-emoji);
 	cursor: pointer;
 	transition: all 0.2s;
 	font-size: 2rem;
@@ -186,7 +188,7 @@ emoji-picker {
     font-size: 2rem;
     overflow: auto;
     flex: 1;
-    background: var(--saito-background-color);
+    background: var(--background-color-main); /* testing */
     border-radius: 0.5rem;
 
     /* for popping up over input field */
@@ -212,7 +214,7 @@ emoji-picker {
 }
 
 .saito-input-contact:hover, .saito-input-contact:focus {
-	background-color: var(--saito-primary);
+	background-color: var(--color-primary);
 }
 
 .no-mouse .saito-input-contact:hover{
@@ -268,7 +270,7 @@ emoji-picker {
 
 /* saito mentions list */
 .saito-mentions-list {
-  background-color: var(--saito-background-color);
+  background-color: var(--background-color-main);
   position: absolute;
   z-index: 104;
   color: var(--saito-font-color);
@@ -305,7 +307,7 @@ emoji-picker {
 }
 
 .menu-item.selected {
-  background-color: var(--saito-primary);
+  background-color: var(--color-primary);
   color: white;
 }
 
@@ -324,10 +326,10 @@ emoji-picker {
 }
 
 .saito-mentions-contact:hover .menu-item {
-  background-color: #fafafa;
-  color: var(--saito-font-color-inverse); 
+  background-color: var(--background-color-hover-mention); /* #afafaf  old  testing */
+  color: var(--font-color-hover-mention); 
 }
- 
+
 
 @media only screen and (max-width: 768px) {
 	.saito-input-large {

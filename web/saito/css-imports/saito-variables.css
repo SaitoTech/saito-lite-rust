@@ -658,7 +658,8 @@ html[data-theme="dark"] {
   --background-color-button-module: ;
   --background-color-button-hover-module: ;
   --background-color-button-hover-chat-popup-header: var(--color-primary);
-  --background-color-button-chat-popup-send: var(--background-color-main);
+  --background-color-button-chat-popup-send: var(background-color-main); /* Not used yet, seems to not work*/
+  
 /* Progress Bar */
   --background-color-progress-bar: var(--background-color-main);
 /* Sidebar, Headers and Notification Colors */
