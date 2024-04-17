@@ -433,7 +433,7 @@ font imports
   --background-color-overlay-menu-header: var(--background-color-main);
   --background-color-overlay-form-header: var(--background-saito-effects);
   --background-color-header: ;
-  --background-color-header-menu: ;
+  --background-color-header-menu: var(--background-color-main);
   --background-color-post: var(--background-color-main);
   --background-color-post-input: var(--background-color-main);
   --background-color-hover-post: var(--background-color-gray-transparent);

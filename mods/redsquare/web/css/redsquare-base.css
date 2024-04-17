@@ -19,7 +19,7 @@ body {
 .liked,
 .replied,
 .retweeted {
-	color: var(--saito-primary);
+	color: var(--font-color-reacted);
 }
 
 .post-delete-button {
@@ -42,7 +42,7 @@ body {
 }
 
 .redsquare-page-header-title {
-	color: var(--saito-white);
+	color: var(--saito-white); /* testing */
 	font-size: 2.5rem;
 	padding: 1px;
 	text-transform: uppercase;
@@ -54,13 +54,13 @@ body {
 }
 
 .redsquare-redsquare::before {
-	-webkit-text-stroke: var(--saito-red) 1px;
+	-webkit-text-stroke: var(--saito-red) 1px; /* testing */
 	color: transparent;
 }
 
 .redsquare-page-header-title i::before {
 	-webkit-text-stroke: unset;
-	color: var(--saito-white);
+	color: var(--saito-white);/* testing */
 	margin: 0 0 0 2rem;
 }
 
@@ -146,7 +146,7 @@ body {
 }
 
 .saito-menu .redsquare-page-active i::before {
-	-webkit-text-stroke: var(--saito-font-color) 2px;
+	-webkit-text-stroke: var(--border-color-button-sidebar-icons-active) var(--border-thickness-button-sidebar-icons-active);
 }
 
 .redsquare-menu-home .fa-house::before {
@@ -225,7 +225,7 @@ body {
 	div#redsquare-tweet::after {
 		content: '\002B';
 		position: absolute;
-		color: var(--saito-white);
+		color: var(--saito-white); /* testing */
 		font-size: 5rem;
 		text-align: center;
 		top: 0;
