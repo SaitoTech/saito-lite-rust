@@ -343,7 +343,7 @@ class MixinModule extends CryptoModule {
 		//snapshot_datetime:  Mon Feb 12 2024 16:31:44 GMT+0500 (Pakistan Standard Time)
 		//mixinmodule.js:454 received_datetime:  Sun Sep 20 56111 06:01:14 GMT+0500 (Pakistan Standard Time)
 
-		let status = await this.mixin.fetchUtxo('unspent', 1000, 'DESC', (d) => {
+		let status = await this.mixin.fetchUtxo('unspent', 100000, 'DESC', (d) => {
 
 			console.log('utxo: ', d);
 

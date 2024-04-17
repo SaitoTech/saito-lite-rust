@@ -441,7 +441,7 @@ class Mixin extends ModTemplate {
     }
   }
 
-  async fetchUtxo(state = 'unspent', limit = 1000, order = 'DESC', callback = null){
+  async fetchUtxo(state = 'unspent', limit = 100000, order = 'DESC', callback = null){
     try {
       let user = MixinApi({
         keystore: {
@@ -453,7 +453,7 @@ class Mixin extends ModTemplate {
       });
 
       let params = {
-//        limit: limit,
+        limit: limit,
         state: state,
         order: order,
       };
