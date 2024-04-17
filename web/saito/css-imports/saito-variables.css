@@ -157,6 +157,11 @@ font imports
   --border-radius-top-only-round: 1.5rem 1.5rem 0 0;
   --border-radius-topleft-only-soft: 0.5rem 0 0 0;
   --border-radius-topleft-only-round: 1.5rem 0 0 0;
+ 
+ /*BORDER PADDING SELECTION*/ 
+  --border-padding-normal: 0.5rem;
+  --border-padding-wide: 0.8rem;
+  
 /*BORDER THICKNESS SELECTION*/
   --border-thickness-thin: 1px;
   --border-thickness-medium: 2px;
@@ -297,6 +302,8 @@ font imports
   --border-radius-sidebar-game-module: var(--border-radius-soft);
   --border-radius-identicon-needed: var(--border-radius-sharp);
   --border-radius-progress-bar: var(--border-radius-soft);
+/*Border padding*/ 
+  --border-padding-style: var(--border-padding-normal);
 /*thickness*/
   --border-thickness-general-dividers: var(--border-thickness-thin);
   --border-thickness-sidebar-menu: none;
@@ -1012,6 +1019,8 @@ html[data-theme="midnight"] {
   --border-radius-arcade-menu: var(--border-radius-soft);
   --border-radius-sidebar-game-module: var(--border-radius-round);
   --border-radius-identicon-needed: var(--border-radius-voluptuous);
+/*Border padding*/ 
+    --border-padding-style: var(--border-padding-wide);
 /* BORDER THICKNESS */
   --border-thickness-button-primary: var(--border-thickness-thin);
   --border-thickness-button-hover-primary: var(--border-thickness-thin);
@@ -1394,6 +1403,8 @@ html[data-theme="milquetoast"] {
   --border-radius-arcade-menu: var(--border-radius-soft);
   --border-radius-sidebar-game-module: var(--border-radius-round);
   --border-radius-identicon-needed: var(--border-radius-voluptuous);
+/*Border padding*/ 
+  --border-padding-style: var(--border-padding-wide);
 /* BORDER COLOR */
   --border-color-identicon: var(--color-highlight);
 /* BORDER THICKNESS */
