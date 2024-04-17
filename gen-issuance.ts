@@ -8,6 +8,9 @@ import process from 'process';
 
 function getCommandLineArg(key) {
 	const index = process.argv.findIndex((arg) => arg === key);
+	if (index === -1) {
+		return null;
+	}
 	return process.argv[index + 1];
 }
 
