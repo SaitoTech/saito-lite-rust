@@ -1,5 +1,6 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
-const RegisterUsernameOverlay = require('./lib/register-profile');
+const RegisterProfile = require('./lib/register-profile');
+const UpdateProfile = require('./lib/update-profile');
 const PeerService = require('saito-js/lib/peer_service').default;
 
 class Profile extends ModTemplate {
@@ -140,7 +141,7 @@ class Profile extends ModTemplate {
 
 		this.app.connection.on('register-profile-or-login', (obj) => {
 			let key = this.app.keychain.returnKey(this.publicKey);
-			this.register_username_overlay = new RegisterUsernameOverlay(
+			this.register_username_overlay = new RegisterProfile(
 				this.app,
 				this
 			);
@@ -153,11 +154,7 @@ class Profile extends ModTemplate {
 
 		this.app.connection.on('update-profile', (obj) => {
 			let key = this.app.keychain.returnKey(this.publicKey);
-			this.register_username_overlay = new RegisterUsernameOverlay(
-				this.app,
-				this,
-				'update'
-			);
+			this.register_username_overlay = new UpdateProfile(this.app, this);
 
 			if (obj?.success_callback) {
 				this.register_username_overlay.callback = obj.success_callback;
@@ -508,7 +505,10 @@ class Profile extends ModTemplate {
 							err
 						);
 
-						// send failed transaction
+						await this.sendFailureTransaction(
+							tx,
+							'Failed to register profile'
+						);
 					}
 				}
 				if (txmsg.request === 'register success') {
@@ -531,7 +531,10 @@ class Profile extends ModTemplate {
 							'Profile: Error processing update request transaction:',
 							err
 						);
-						// send failed transaction
+						await this.sendFailureTransaction(
+							tx,
+							'Failed to update profile'
+						);
 					}
 				}
 
@@ -544,6 +547,11 @@ class Profile extends ModTemplate {
 							err
 						);
 					}
+				}
+
+				if (txmsg.request === 'request failed') {
+					console.log(txmsg, 'request failed');
+					salert(txmsg.message);
 				}
 			}
 		} catch (err) {
@@ -1155,6 +1163,28 @@ class Profile extends ModTemplate {
 				error
 			);
 		}
+	}
+
+	async sendFailureTransaction(tx, message) {
+		try {
+			let from = tx.from[0].publicKey;
+			if (!from) {
+				throw Error('PROFILE: NO "FROM" PUBLIC KEY FOUND');
+			}
+			let newtx =
+				await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+					from
+				);
+
+			newtx.addFrom(this.publicKey);
+			newtx.msg = {
+				request: 'request failed',
+				module: 'Profile',
+				message
+			};
+			await newtx.sign();
+			await this.app.network.propagateTransaction(newtx);
+		} catch (error) {}
 	}
 
 	async receiveUpdateSuccessTransaction(blk, tx) {

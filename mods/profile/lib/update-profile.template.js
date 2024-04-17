@@ -1,4 +1,4 @@
-module.exports = RegisterUsernameTemplate = (msg, key, mode = 'register') => {
+module.exports = UpdateProfileTemplate = (msg, key, mode = 'register') => {
 	console.log('identifier', key?.identifier);
 
 	let bio = '';
@@ -17,12 +17,7 @@ module.exports = RegisterUsernameTemplate = (msg, key, mode = 'register') => {
 			'Registering a profile is free and makes it easier for others to find you on the network';
 	}
 	return `
-	<div style="position: relative;">
-	<div id="image-uploader" class="image-uploader " style="display:none;">
-	Click to select or drag and drop to upload an image
-	<div>
-	</div>
-	</div>
+	
 		<form id="register-profile-template" class="register-profile-template"> 
       <div class="saito-overlay-form" id="saito-overlay-form">
 	      <div class="saito-overlay-form-header">
@@ -32,16 +27,16 @@ module.exports = RegisterUsernameTemplate = (msg, key, mode = 'register') => {
 	      </div>
 	      <div class="saito-overlay-form-text">${msg}:</div>
 		  	<div class="saito-overlay-form-inputs"> 
-			  <input type="text" id="saito-overlay-form-input" class="saito-overlay-form-input" autocomplete="off" ${
+			  <input style="display: none;" type="text" id="saito-overlay-form-input" class="saito-overlay-form-input" autocomplete="off" ${
 					disabled ? `disabled` : ''
 				} placeholder="username@saito" value="${identifier}" />
-			  <textarea style="display: none;" id="saito-overlay-form-textarea" class="saito-overlay-form-textarea" autocomplete="off" placeholder="Something about yourself...">${bio}</textarea>
-			  <div style="display: none;" class="saito-flex" id="upload-image"> 
+			  <textarea id="saito-overlay-form-textarea" class="saito-overlay-form-textarea" autocomplete="off" placeholder="Something about yourself...">${bio}</textarea>
+			  <div class="saito-flex" id="upload-image"> 
 				<div class="saito-box-tab" id="photo-tab">
 				<i class="fa-regular fa-image"></i>
 				</div>
 				<p class="saito-overlay-form-text"> Upload Photo </p>
-				<img src="${photo}" id="uploaded-image"/>
+				<img src="${photo}" class="uploaded-photo" id="uploaded-photo"/>
 			  </div>
 			
 			  </div>

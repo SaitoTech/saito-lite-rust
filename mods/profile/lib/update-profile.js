@@ -1,9 +1,10 @@
-const RegisterProfileTemplate = require('./register-profile.template');
+const UpdateProfileTemplate = require('./update-profile.template');
+const PhotoUploader = require('./photo-uploader');
 const SaitoOverlay = require('../../../lib/saito/ui/saito-overlay/saito-overlay');
 const SaitoLoader = require('../../../lib/saito/ui/saito-loader/saito-loader');
 
-class RegisterUsername {
-	constructor(app, mod, mode = 'register') {
+class UpdateProfile {
+	constructor(app, mod, mode = 'update') {
 		this.app = app;
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(this.app, this.mod);
@@ -15,12 +16,19 @@ class RegisterUsername {
 		this.callback = null;
 		this.mode = mode;
 		this.image = null;
+		this.photoUploader = new PhotoUploader(app, mod);
+		this.unresized = null;
 	}
 
 	render(msg = '') {
 		let key = this.app.keychain.returnKey(this.mod.publicKey);
+		let photo = '';
 
-		this.overlay.show(RegisterProfileTemplate(msg, key, this.mode));
+		if (key?.profile) {
+			photo = key.profile.photo || '';
+		}
+		this.image = photo;
+		this.overlay.show(UpdateProfileTemplate(msg, key, this.mode));
 		this.attachEvents();
 	}
 
@@ -34,42 +42,40 @@ class RegisterUsername {
 			return;
 		};
 
-		// document.querySelector('#upload-image').onclick = (e) => {
-		// 	const profilerUploader = document.querySelector('#image-uploader');
-		// 	profilerUploader.style.display = 'flex';
-		// 	this.app.browser.addDragAndDropFileUploadToElement(
-		// 		'image-uploader',
-		// 		async (result) => {
-		// 			try {
-		// 				document.querySelector('#uploaded-image').src = result;
-		// 				profilerUploader.style.display = 'none';
-		// 				this.image = await this.app.browser.resizeImg(result);
-		// 			} catch (error) {
-		// 				console.error('Profile: error uploading image', error);
-		// 			}
-		// 		}
-		// 	);
+		document.querySelector('#upload-image').onclick = (e) => {
+			this.photoUploader.callbackAfterUpload = async (result) => {
+				try {
+					this.unresized = result;
+					this.image = await this.app.browser.resizeImg(result);
+					document.querySelector('#uploaded-photo').src = result;
+				} catch (error) {
+					console.error('Profile: error uploading image', error);
+				}
+			};
 
-		// 	const outsideClickListener = (event) => {
-		// 		const imageUploader = document.querySelector('#image-uploader');
-		// 		const uploadImageButton =
-		// 			document.querySelector('#upload-image');
+			console.log(this.unresized, this.image);
+			this.photoUploader.render(this.unresized || this.image);
 
-		// 		if (
-		// 			!imageUploader.contains(event.target) &&
-		// 			!uploadImageButton.contains(event.target)
-		// 		) {
-		// 			imageUploader.style.display = 'none';
-		// 			document.body.removeEventListener(
-		// 				'click',
-		// 				outsideClickListener
-		// 			);
-		// 		}
-		// 	};
+			// const outsideClickListener = (event) => {
+			// 	const imageUploader = document.querySelector('#image-uploader');
+			// 	const uploadImageButton =
+			// 		document.querySelector('#upload-image');
 
-		// 	// Attach the outside click listener to the body
-		// 	document.body.addEventListener('click', outsideClickListener);
-		// };
+			// 	if (
+			// 		!imageUploader.contains(event.target) &&
+			// 		!uploadImageButton.contains(event.target)
+			// 	) {
+			// 		imageUploader.style.display = 'none';
+			// 		document.body.removeEventListener(
+			// 			'click',
+			// 			outsideClickListener
+			// 		);
+			// 	}
+			// };
+
+			// Attach the outside click listener to the body
+			// document.body.addEventListener('click', outsideClickListener);
+		};
 
 		document.querySelector('.saito-overlay-form-submit').onclick = async (
 			e
@@ -245,4 +251,4 @@ class RegisterUsername {
 	}
 }
 
-module.exports = RegisterUsername;
+module.exports = UpdateProfile;
