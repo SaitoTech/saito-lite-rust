@@ -2781,34 +2781,30 @@ console.log("selected: " + spacekey);
 	  };
 
 
-	  if (do_grounds_for_excommunication_exist.length > 0) {
+	  if (papacy == his_self.game.player) {
 
-	    if (papacy == his_self.game.player) {
-
-              let msg = "Excommunicate Which Heretic?";
-              let html = '<ul>';
-                  html += `<li class="option" id="reformer">Protestant Reformer</li>`;
+            let msg = "Excommunicate Heretic?";
+            let html = '<ul>';
+                html += `<li class="option" id="reformer">Protestant Reformer</li>`;
+	        if (do_grounds_for_excommunication_exist.length > 0) {
                   html += `<li class="option" id="leader">Unfaithful Monarch</li>`;
-	          html += '</ul>';
-              his_self.updateStatusWithOptions(msg, html);
+	        }
+		html += '</ul>';
+            his_self.updateStatusWithOptions(msg, html);
 
-              $('.option').off();
-              $('.option').on('click', function () {
+            $('.option').off();
+            $('.option').on('click', function () {
 
-                let action2 = $(this).attr("id");
-	        if (action2 == "reformer") {
-	  	  excommunicate_reformer_subfunction();
-	        } else {
-		  excommunicate_leader_subfunction();
-    	        }
-	      });
-	    } else {
-	      his_self.updateStatus("Papacy playing "+his_self.popup("005"));
-	    }
+              let action2 = $(this).attr("id");
+	      if (action2 == "reformer") {
+	        excommunicate_reformer_subfunction();
+	      } else {
+	        excommunicate_leader_subfunction();
+    	      }
+	    });
 	  } else {
 	    his_self.updateStatus("Papacy playing "+his_self.popup("005"));
 	  }
-
 
 	  return 0;
 	},
@@ -4935,6 +4931,7 @@ console.log("selected: " + spacekey);
   	  his_self.addMove("discard\t"+faction+"\t"+"031");
 	  if (his_self.game.deck[0].discards["032"]) {
             his_self.addMove("SETVAR\tstate\tevents\tintervention_on_movement_possible\t0");
+            his_self.addMove("SETVAR\tstate\tevents\tintervention_on_assault_possible\t0");
 	  }
 	  his_self.endTurn();
         }
@@ -5083,6 +5080,7 @@ console.log("selected: " + spacekey);
   	  his_self.addMove(`discard\t${f}\t032`);
 	  if (his_self.game.deck[0].discards["031"]) {
             his_self.addMove("SETVAR\tstate\tevents\tintervention_on_movement_possible\t0");
+            his_self.addMove("SETVAR\tstate\tevents\tintervention_on_assault_possible\t0");
 	  }
           his_self.endTurn();
 
@@ -7756,10 +7754,8 @@ console.log("selected: " + spacekey);
 	        return 0;
 	      }
 
-	      // captured key
 	      if (space.type == "key" && space.home === "independent" && (space.political !== space.home && space.political !== "" && space.political)) { return 1; }
 
-	      // captured non-allied home
 	      if (space.home !== space.political && space.political !== "" && space.type == "key") {
 		if (!space.besieged) {
 	          if (!his_self.areAllies(space.home, space.political)) { 
@@ -9132,7 +9128,7 @@ console.log("selected: " + spacekey);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
 	for (let i = 0; i < his_self.game.state.players_info.length; i++) {
-	  for (let ii = 0; ii < his_self.game.state.players_info[i].captured.length; ii++) {
+	  if (his_self.game.state.players_info[i].captured.length > 0) {
 	    return 1;
 	  } 	
 	}	
@@ -9151,7 +9147,7 @@ console.log("selected: " + spacekey);
 
 	  for (let i = 0; i < his_self.game.state.players_info.length; i++) {
 	    for (let ii = 0; ii < his_self.game.state.players_info[i].captured.length; ii++) {
-	      captured_leaders.push({ leader : his_self.game.state.players_info[i].captured[ii].type , player : i , idx : ii });
+	      captured_leaders.push({ faction : his_self.game.state.players_info[i].captured[ii].faction , leader : his_self.game.state.players_info[i].captured[ii].type , player : i , idx : ii });
 	      options.push(his_self.game.state.players_info[i].captured[ii].type);
 	    } 	
 	  }	
@@ -11701,7 +11697,8 @@ if (this.game.options.scenario === "1532" && include_removed == false) {
     delete deck["009"];
     delete deck["010"];
     delete deck["011"];
-    delete deck["013"];
+    // deleted on creation
+    //delete deck["013"];
     delete deck["038"];
     delete deck["039"];
     delete deck["041"];
@@ -11715,9 +11712,12 @@ if (this.game.options.scenario === "1532" && include_removed == false) {
     delete deck["112"];
     delete deck["113"];
 }
-if (this.game?.state?.removed && include_removed == false) {
-  for (let z = 0; z < this.game.state.removed.length; z++) {
-    try { delete deck[this.game.state.removed[z]]; } catch (err) {}
+if (this.game.state) {
+  if (this.game.state.removed && include_removed == false) {
+    for (let z = 0; z < this.game.state.removed.length; z++) {
+console.log("DELETING Z: " + z);
+      try { delete deck[this.game.state.removed[z]]; } catch (err) {}
+    }
   }
 }
 

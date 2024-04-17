@@ -61,19 +61,20 @@ this.updateLog(`###############`);
 	  this.game.queue.push("check_interventions"); // players check and report cards that need to trigger waiting/check
 	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
-
 if (this.game.options.scenario != "is_testing") {
 	  this.game.queue.push("spring_deployment_phase");
 	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
 }
 
-
 	  if (this.game.players.length == 2) {
 	    this.game.queue.push("diplomacy_phase_2P");
 	  } else {
+
 	    if (this.game.state.starting_round != this.game.state.round) {
+
 if (this.game.options.scenario != "is_testing") {
 	      if (this.game.state.round > 1) {
+
   	        if (this.game.state.events.schmalkaldic_league) {
 	          this.game.queue.push("make_declarations_of_war\tprotestant");
 	        }
@@ -192,6 +193,15 @@ if (this.game.options.scenario != "is_testing") {
 }
 	    }
 	  }
+
+
+	  //
+	  // 1532 and testing need cards too!
+	  //
+	  if (this.game.state.round != 1 && (this.game.state.round == this.game.state.starting_round)) {
+	    this.game.queue.push("card_draw_phase");
+	  }
+
 
 	  //
 	  // start the game with the Protestant Reformation
@@ -1571,9 +1581,14 @@ if (this.game.options.scenario == "is_testing") {
 	          faction : faction,
 	          resolved :  0 ,
 	          round :   this.game.state.round,
+		  base_roll: base_x ,
+		  modified_roll: x ,
+		  explorer : explorer ,
+		  explorer_img : this.explorers[explorer].img ,
 		  base: base_x ,
 		  total_hits : base_x + this.game.state.explorations[idx].modifiers ,
 		  modifiers : this.game.state.explorations[idx].modifiers ,
+		  prize : "" ,
 	        });
 	        idx = this.game.state.explorations.length-1;
 	      }
@@ -2025,10 +2040,14 @@ if (this.game.options.scenario == "is_testing") {
 
 	if (mv[0] === "is_testing") {
 
-          // SCHMALKALDIC LEAGUE
-          let deck = this.returnDeck();
-          deck['013'].onEvent(this, "protestant");
+	  // SCHMALKALDIC LEAGUE
+	  let deck = this.returnDeck(true);
+	  deck['013'].onEvent(this, "protestant");
 
+//
+// this should be handled in setup now
+//
+/***
 	  if (this.game.players.length > 2) {
 	    this.addCard("ottoman", "033");
 	  }
@@ -2046,7 +2065,7 @@ if (this.game.options.scenario == "is_testing") {
 	  this.controlSpace("papacy", "graz");
 	  this.controlSpace("papacy", "trieste");
 	  this.controlSpace("papacy", "venice");
-
+***/
     	  this.game.queue.splice(qe, 1);
 	  return 1;
 
@@ -2239,16 +2258,26 @@ console.log("----------------------------");
 	    this.game.state.player_last_spacekey = destination;
 	  }
 
+	  //
 	  // winter retreat into port
+	  //
 	  if (movetype === "port") {
+
 	    let units = this.game.navalspaces[source].units[faction];
-	    this.game.navalspaces[source].units[faction] = [];
+
 	    for (let z = 0; z < units.length; z++) {
 	      this.game.spaces[destination].units[faction].push(units[z]);
 	    }
+
+	    this.game.navalspaces[source].units[faction] = [];
+	    this.displaySpace(source);
+	    this.displaySpace(destination);
+
 	  }
 
-
+	  //
+	  // movement at sea
+	  //
 	  if (movetype === "sea") {
 
 	    //
@@ -2377,7 +2406,9 @@ console.log("----------------------------");
 	    }
 	  }
 
-
+	  //
+	  // movement on land
+	  //
 	  if (movetype === "land") {
 
 	    let unit_to_move = this.game.spaces[source].units[faction][unitidx];
@@ -2623,7 +2654,6 @@ console.log(" # --> is anyone not besieged");
 	    this.displaySpace(destination);
 
 	  }
-
 
           return 1;
 	}
@@ -3431,8 +3461,6 @@ console.log(" # --> is anyone not besieged");
 	}
 
 
-
-
         if (mv[0] === "interception_check") {
 
 	  this.game.queue.splice(qe, 1);
@@ -3728,8 +3756,8 @@ return 1; }
 //
 // IS_TESTING -- ALL INTERCEPTIONS SUCCEED
 //
-//this.updateLog("IS_TESTING - HITS ON 2");
-//hits_on = 2;
+this.updateLog("IS_TESTING - HITS ON 2");
+hits_on = 2;
 
 	  if (dsum >= hits_on) {
 
@@ -4986,18 +5014,45 @@ try {
 	  //
 	  // the first thing we check is whether the land units that control the space have
 	  // withdrawn into fortifications, as if that is the case then land battle is avoided
+	  // note that besieged 2 means it is the same turn that the place was put under siege
 	  //
 	  if (space.besieged == 2) {
-	    this.updateLog("Field Battle avoided by defenders withdrawing into fortifications");
-	    this.game.queue.push("ACKNOWLEDGE\tField Battle avoided by defenders retreating into fortification");
-	    // besieged will become 1 and start of next impulse
+	    //
+	    // we can hit this point if there is an intercept from the player that controls the 
+	    // space, moving into a space that was undefended and was put under siege when the 
+	    // opponent moved in. in order to guard against this, we check to see if there are
+	    // any units that have withdrawn into the space..
+	    //
+	    let anyone_home = false;
+	    for (let f in this.game.spaces[spacekey].units) {
+	      for (let z = 0; z < this.game.spaces[spacekey].units[f].length; z++) {
+		if (this.game.spaces[spacekey].units[f][z].besieged != 0) { anyone_home = true; }
+	      }
+	    }
 
-	    //
-	    // and redraw
-	    //
-	    this.displaySpace(space.key);
-console.log("space is besieged! exiting!");
-	    return 1;
+	    if (anyone_home == true) {
+	      this.updateLog("Field Battle avoided by defenders withdrawing into fortifications");
+	      this.game.queue.push("ACKNOWLEDGE\tField Battle avoided by defenders retreating into fortification");
+	      //
+	      // and redraw
+	      //
+	      this.displaySpace(space.key);
+	      return 1;
+	    } else {
+
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+
+	      this.game.queue.push(`field_battle\t${spacekey}\t${attacker}`);
+	      this.game.queue.push(`fortification_check\t${attacker}\t${spacekey}\t${his_self.game.state.attacker_comes_from_this_spacekey}`);
+	      return 1;
+
+	    }
+
 	  }
 
 	  //
@@ -9739,7 +9794,8 @@ defender_hits - attacker_hits;
 	    for (let z = 0; z < this.game.deck[0].fhand.length; z++) {
 	      for (let i = 0; i < this.game.deck[0].fhand[z].length; i++) {
 	        if (this.game.deck[0].fhand[z][i] == "032" || this.game.deck[0].fhand[z][i] == "031") {
-                  this.addMove("SETVAR\tstate\tevents\tintervention_on_moves_possible\t1");
+                  this.addMove("SETVAR\tstate\tevents\tintervention_on_movement_possible\t1");
+                  this.addMove("SETVAR\tstate\tevents\tintervention_on_assault_possible\t1");
 		  i = this.game.deck[0].fhand[z].length+1;
 	        };
 	      }
@@ -10688,7 +10744,15 @@ if (this.game.state.round == 2) {
 
             let fhand_idx = this.returnFactionHandIdx(p, faction);
 	
-	    if (fhand_idx == -1) { return; }
+	    if (fhand_idx == -1) {
+
+	      //
+	      // TESTING can trigger but we are good - continue!
+	      //
+	      this.endTurn();
+	      return;
+
+	    }
 
   	    while (this.game.deck[0].fhand.length < (fhand_idx+1)) { this.game.deck[0].fhand.push([]); }
 	    for (let zz = 0; zz < this.game.deck[0].fhand[fhand_idx].length; zz++) {
@@ -10726,7 +10790,6 @@ if (this.game.state.round == 2) {
 	  }
 
 	  return 0;
-	  
 
 	}
 
@@ -10888,11 +10951,17 @@ if (this.game.state.round == 2) {
 	  // new cards this turn
 	  //
 	  if (this.game.state.starting_round >= this.game.state.round && this.game.state.starting_round > 1) {
-	    // reset round to 1 to capture cards from full game
 	    this.game.state.round = 0;
 	    for (let i = this.game.state.round; i < this.game.state.starting_round; i++) {
 	      this.game.state.round++;
 	      let deck_to_deal = this.returnNewCardsForThisTurn(this.game.state.round);
+
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("return new cards for this turn: " + this.game.state.round);
+
 	      for (let key in deck_to_deal) { 
 	        if (key !== "001" && key !== "002" && key !== "003" && key !== "004" && key !== "005" && key !== "006" && key !== "007" && key !== "008") {
 	          reshuffle_cards[key] = deck_to_deal[key]; 
@@ -11530,7 +11599,7 @@ console.log(JSON.stringify(reshuffle_cards));
 	            if (!this.isSpaceControlled(faction, player_last_spacekey) && this.game.spaces[player_last_spacekey].type == "town" && !this.areAllies(faction, this.returnFactionControllingSpace(player_last_spacekey))) {
  	              mycallback.push({ text : "control town" , mycallback : () => {
 		        if (ops > 1) {
-                          his_self.addMove(`continue\t${mv[1]}\t${mv[2]}\t${mv[3]}\t${ops}\t${mv[5]}`);
+                          his_self.addMove(`continue\t${mv[1]}\t${mv[2]}\t${mv[3]}\t${ops-1}\t${mv[5]}`);
                           his_self.game.queue.push("SETVAR\tstate\tplayer_last_move\tmove");
                           his_self.game.queue.push("SETVAR\tstate\tplayer_last_spacekey\t"+player_last_spacekey);
 		        }

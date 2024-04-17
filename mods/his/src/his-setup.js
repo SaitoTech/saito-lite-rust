@@ -31,16 +31,16 @@ console.log("\n\n\n\n");
       //
       this.game.queue.push("round");
 
-      let deck2 = JSON.parse(JSON.stringify(this.deck));
-      delete deck2['001'];
-      delete deck2['002'];
-      delete deck2['003'];
-      delete deck2['004'];
-      delete deck2['005'];
-      delete deck2['006'];
-      delete deck2['007'];
-      delete deck2['008'];
-
+//      let deck2 = JSON.parse(JSON.stringify(this.deck));
+//      delete deck2['001'];
+//      delete deck2['002'];
+//      delete deck2['003'];
+//      delete deck2['004'];
+//      delete deck2['005'];
+//      delete deck2['006'];
+//      delete deck2['007'];
+//      delete deck2['008'];
+//
 //      this.game.queue.push("DECK\t1\t"+JSON.stringify(deck2));
      this.game.queue.push("DECK\t1\t"+JSON.stringify({})); 
      this.game.queue.push("init");
@@ -310,6 +310,7 @@ console.log("\n\n\n\n");
           this.controlSpace("ottoman", "rhodes");
 
 	  this.game.state.ottoman_war_winner_vp = 2;
+	  this.game.spaces["algiers"].pirate_haven = 1;
 
 
 	  // HAPSBURG
