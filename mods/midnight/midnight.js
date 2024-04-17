@@ -14,8 +14,11 @@ class Midnight extends GameTemplate {
 		this.name = 'Midnight';
 		this.gamename = 'Midnight Rogue';
 
-		this.description = 'Experimental Interactive Fiction demo';
-		this.categories = 'Games Roleplaying One-player';
+		this.description = '';
+		this.categories = `Danger lurks around every corner in this second-person interactive role playing story. <br> 
+												As a thief apprentice, you are tasked to steal the EYE OF THE BASILISK and your special skills
+												will be put to the limit. What terrors await in the darkness as you test your luck and choose 
+												your way through this adventure?`;
 		this.maxPlayers = 1;
 		this.minPlayers = 1;
 		this.app = app;

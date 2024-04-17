@@ -137,7 +137,7 @@ font imports
   --font-size-h2: 4.5rem;
   --font-size-h3: 4rem;
   --font-size-h4: 3.5rem;
-  --font-size-h5: 2rem;
+  --font-size-h5: 2.5rem;
   --font-size-h6: 2rem;
 /*SHADOW SELECTION*/
   --shadow-primary-button: var(--shadow-standard);
@@ -644,8 +644,8 @@ html[data-theme="dark"] {
   --background-color-overlay-menu: var(--background-color-main);
   --background-color-overlay-menu-header: var(--color-base);
   --background-color-overlay-form-header: var(--color-base);
-  --background-color-header: ;
-  --background-color-header-menu: var(--background-color-main);
+  --background-color-header: pink;
+  --background-color-header-menu: cyan;
   --background-color-post: var(--background-color-main);
   --background-color-post-input: var(--background-color-main);
 /* Button Background Colors */
@@ -846,8 +846,8 @@ html[data-theme="sangre"] {
   --background-color-overlay-menu: var(--background-color-main);
   --background-color-overlay-menu-header: var(--color-base);
   --background-color-overlay-form-header: var(--color-base);
-  --background-color-header: ;
-  --background-color-header-menu: var(--background-color-main);
+  --background-color-header: pink;
+  --background-color-header-menu: cyan;
   --background-color-post: var(--background-color-main);
   --background-color-post-input: var(--background-color-main);
 /* Button Background Colors */
@@ -1267,8 +1267,8 @@ html[data-theme="arcade"] {
   --background-color-overlay-menu: var(--background-color-main);
   --background-color-overlay-menu-header: var(--color-base);
   --background-color-overlay-form-header: var(--color-base);
-  --background-color-header: ;
-  --background-color-header-menu: var(--background-color-main);
+  --background-color-header: pink;
+  --background-color-header-menu: cyan;
   --background-color-post: var(--background-color-main);
   --background-color-post-input: var(--background-color-main);
 /* Button Background Colors */

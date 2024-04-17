@@ -41,8 +41,10 @@ class Twilight extends GameTemplate {
     this.name  		 = "Twilight";
     this.gamename        = "Twilight Struggle";
     this.slug		 = "twilight";
-    this.description     = `Twilight Struggle is a card-driven strategy game for two players, with its theme taken from the Cold War.
-      One player plays the United States (US), and the other plays the Soviet Union (USSR).`;
+    this.description     = `Card-driven strategy board game for two players -- one representing the United States (US), and the other the Soviet Union (USSR) <br>
+                            Relive events of the cold war, such as the Berlin Airlift and Siezing of the Suez Canal as you compete to gain influence across Europe 
+                            and the rest of the world. Engage in nuclear brinksmanship while supporting coups in battleground states, but watch out, 
+                            if you end up causing world war three, you lose!`;
     this.publisher_message = "Twilight Struggle is owned by GMT Games. This module is made available under an open source license provided by GMT Games for usage in open source game engines. Publisher requirements is that at least one player per game has purchased a copy of the game.";
     this.categories      = "Games Boardgame Strategy";
 

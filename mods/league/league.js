@@ -62,6 +62,9 @@ class League extends ModTemplate {
 				return;
 			}
 
+			console.log(this.styles);
+			this.attachStyleSheets();
+
 			let leaderboard = new LeagueLeaderboard(app, this, container, league);
 			leaderboard.render();
 

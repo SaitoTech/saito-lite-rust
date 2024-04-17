@@ -188,7 +188,7 @@ div.h3{
   position: relative;
   background-color: var(--saito-background-color);
   color: var(--saito-font-color);
-  padding: min(5rem, 10vh) min(8rem, 10vw);
+  padding: min(5rem, 5vh) min(8rem, 5vw);
 }
 
 .saito-splash-info p {

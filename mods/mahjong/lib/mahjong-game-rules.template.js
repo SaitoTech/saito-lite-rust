@@ -1,12 +1,11 @@
 module.exports = (app, mod) => {
 	let html = `<div class="rules-overlay">
-              <h1>Mahjong Solitaire</h1>
-              <ul>
-                <li>Two pairs of 36 tiles (144 total) are placed into a multi-layered shape.</li>
-                <li>You can only select tiles which are open to the left or the right.</li>
-                <li>Match tiles to remove them from the board and reveal more tiles.</li>
-                <li>Match all the tiles to win the game.</li>
-              </ul>
+              
+              <p>Two pairs of 36 tiles (144 total) are randomly arranged into a multi-layered shape. 
+                  Tiles can only be selected if they are open on the left or the right.</p>
+              <p>Match tiles to remove them from the board and reveal the tiles under them or expose their neighbors for grabbing. 
+                    Match all the tiles to clear the board and win the game.</p>
+            
               <div class="image_container">
                 <img src="/mahjong/img/mahjong_rules.jpg"/>
               </div>
