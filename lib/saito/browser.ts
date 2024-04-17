@@ -2462,6 +2462,15 @@ class Browser {
 	}
 
 	validateAmountLimit(amount, event){
+		// allow only numbers, dot, backspace
+		if(!((event.keyCode > 95 && event.keyCode < 106)
+	      || (event.keyCode > 47 && event.keyCode < 58) 
+	      || event.keyCode == 8 || event.keyCode==190 || event.keyCode==110 || event.keyCode==46) 
+		  ) {
+	      	event.preventDefault();
+	        return false;
+	    }
+
       // prevent user for adding number gretaer than 10^9 to input
       if (amount > 1000000000) {
         if (!isNaN(event.key)) {
