@@ -1,3 +1,35 @@
+.photo-cropper {
+	background-color: var(--saito-background-color);
+	height: 80rem;
+	width: 80rem;
+	/* position: absolute; */
+	top: 50%;
+	left: 50%;
+	padding: 2rem;
+	/* transform: translate(-50%, -50%); */
+	text-align: center;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid;
+	font-size: 2rem;
+	border-radius: 0.5rem;
+	color: var(--saito-font-color);
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+}
+
+.crop-button {
+	margin-top: 1rem;
+	width: 100%;
+}
+
+.cropper-container {
+	width: 100% !important;
+	height: 100% !important;
+}
+
+
 /*!
  * Cropper.js v1.6.1
  * https://fengyuanchen.github.io/cropperjs
@@ -8,7 +40,7 @@
  * Date: 2023-09-17T03:44:17.565Z
  */
 
-.cropper-container {
+ .cropper-container {
 	direction: ltr;
 	font-size: 0;
 	line-height: 0;

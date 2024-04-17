@@ -1,5 +1,5 @@
 const UpdateProfileTemplate = require('./update-profile.template');
-const PhotoUploader = require('./photo-uploader');
+const PhotoUploader = require('../../../lib/saito/ui/photo-uploader/photo-uploader');
 const SaitoOverlay = require('../../../lib/saito/ui/saito-overlay/saito-overlay');
 const SaitoLoader = require('../../../lib/saito/ui/saito-loader/saito-loader');
 
