@@ -178,6 +178,9 @@ class TweetManager {
 		// notifications //
 		///////////////////
 		if (this.mode == 'notifications') {
+
+			console.log("Redsquare render notifications: already have " + this.mod.notifications.length + " in memory");
+
 			for (let i = 0; i < this.mod.notifications.length; i++) {
 				let notification = new Notification(
 					this.app,
@@ -213,16 +216,8 @@ class TweetManager {
 				notification.render('.tweet-manager');
 			}
 
-			if (this.mod.notifications.length == 0) {
-
-				//Dummy "Notification" for end of history sign
-				let notification = new Notification(
-					this.app,
-					this.mod,
-					null
-				);
-				notification.render('.tweet-manager');
-
+			if (new_txs.length == 0) {
+				this.app.browser.addElementToSelector('<div class="saito-end-of-redsquare">no further notifications</div>', ".tweet-manager");
 				if (
 					document.querySelector('#intersection-observer-trigger')
 				) {
@@ -232,7 +227,21 @@ class TweetManager {
 						)
 					);
 				}
+			
+
+				if (this.mod.notifications.length == 0){
+					//Dummy "Notification" for end of history sign
+					let notification = new Notification(
+						this.app,
+						this.mod,
+						null
+					);
+					notification.render('.tweet-manager');
+
+				}
+			
 			}else{
+				console.log("Redsquare turn on Intersection observer for notifications");
 				//Fire up the intersection observer after the callback completes...
 				this.attachEvents();
 			}

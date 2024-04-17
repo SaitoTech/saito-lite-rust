@@ -1088,6 +1088,9 @@ class RedSquare extends ModTemplate {
     //
     const middle_callback = () => {
       let new_notifications = [];
+
+      console.log(`Redsquare: process ${notifications.length} combined tweet and like notifications`);
+
       if (notifications.length > 0) {
         for (let z = 0; z < notifications.length; z++) {
           notifications[z].decryptMessage(this.app);
@@ -1101,6 +1104,7 @@ class RedSquare extends ModTemplate {
           }
         }
       } else {
+        console.log("Redsquare: last notification fetch returned nothing");
         this.notifications_earliest_ts = 0;
       }
 
@@ -1454,6 +1458,9 @@ class RedSquare extends ModTemplate {
         // only insert notification if doesn't already exist
         //
         if (this.notifications_sigs_hmap[tx.signature] != 1) {
+
+          console.log("Add notification", tx.msg);
+          
           //
           // Turn TX into a "Tweet" and insert into notification array
           //
@@ -1466,7 +1473,7 @@ class RedSquare extends ModTemplate {
           let insertion_index = 0;
 
           for (let i = 0; i < this.notifications.length; i++) {
-            if (tweet.updated_at > this.notifications[i].updated_at) {
+            if (tweet.created_at > this.notifications[i].created_at) {
               insertion_index = i;
               break;
             }
