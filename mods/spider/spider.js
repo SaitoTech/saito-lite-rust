@@ -16,7 +16,7 @@ class Spider extends OnePlayerGameTemplate {
 		this.gamename = 'Spider Solitaire';
 		this.game_length = 10; //Estimated number of minutes to complete a game
 		this.description =
-			'Two deck solitaire card game that traps you in a web of addiction';
+			'Classic multideck solitaire game with three levels of difficulty available. Complete stacks of Ace through King in a single suit to remove them from the board. Partial stacks of the same suit can be moved to access the cards below them.';
 		this.categories = 'Games Cardgame One-player';
 
 		this.status = 'Beta';
