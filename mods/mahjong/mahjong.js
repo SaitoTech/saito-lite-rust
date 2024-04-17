@@ -13,10 +13,10 @@ class Mahjong extends OnePlayerGameTemplate {
 		this.name = 'Mahjong';
 		this.gamename = 'Mahjong';
 		this.game_length = 10; //Estimated number of minutes to complete a game
-		this.description = `Remove matching mahjong tiles in pairs until the board is clear or you lose`;
+		this.description = `3D solitary puzzle game with mahjong tiles, also known as Taipei. Match tiles to remove them from the board, clear the board to receive a lucky fortune`;
 		this.categories = 'Games Cardgame One-player';
 		this.publisher_message =
-			'developed by Pawel (twitter: @PawelPawlak14). Feel free to pm me with any suggestions/feedback';
+			'originally developed by Pawel (twitter: @PawelPawlak14). Feel free to pm me with any suggestions/feedback';
 
 		this.social.creator = "Pawel Pawlak";
 		this.social.twitter = "@PawelPawlak14";

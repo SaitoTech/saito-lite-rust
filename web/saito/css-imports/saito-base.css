@@ -55,6 +55,8 @@ a:hover {
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: normal;
+  margin-bottom: 1rem;
+  line-height: 1.2em; /* make sure relative to the different sizes! */
   cursor: default; /* We don't want the text cursor on headers */
 }
 
@@ -71,13 +73,11 @@ h3 {
 }
 
 h4 {
-  font-size: var(--font-size-h4)m;
+  font-size: var(--font-size-h4);
 }
 
 h5 {
   font-size: var(--font-size-h5);
-  line-height: 3rem;
-  margin-bottom: 1rem;
 }
 
 h6 {

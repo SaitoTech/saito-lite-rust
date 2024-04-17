@@ -1,5 +1,7 @@
 /* Appspace css */
+
 /*controll changes*/
+
 /*updated for git*/
 
 .stun-appspace {
@@ -24,7 +26,7 @@
 	flex-direction: column;
 	align-items: center;
 	background-color: var(--saito-background-color);
-    color: var(--saito-font-color);
+	color: var(--saito-font-color);
 	justify-content: space-between;
 	width: min(400px, 98vw);
 	height: min(600px, 80vh);
@@ -174,11 +176,11 @@
 }
 
 input:checked+.slider {
-	background-color: #2196f3;
+	background-color: var(--saito-primary);
 }
 
 input:focus+.slider {
-	box-shadow: 0 0 1px #2196f3;
+	box-shadow: 0 0 1px var(--saito-primary);
 }
 
 input:checked+.slider:before {

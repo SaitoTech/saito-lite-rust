@@ -125,7 +125,7 @@
 .stun-chatbox.minimize .control-list {
 	width: 100%;
 	justify-content: flex-end;
-	gap: 1rem;
+	gap: 1px;
 }
 
 .stun-chatbox.minimize .call-controls .icon_click_area {
