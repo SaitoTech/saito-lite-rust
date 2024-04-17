@@ -97,12 +97,30 @@
 /** For various common overlays**/
 
 .rules-overlay {
-  background-color: whitesmoke;
-  border-color: black;
-  min-width: 600px;
+  background-color: var(--saito-arcade-background);
+  min-width: 800px;
   max-width: 90vw;
-  padding: 2rem;
+  padding: 4rem;
 }
+
+.rules-overlay h4 {
+  margin-bottom: 1rem;
+}
+
+.rules-overlay p {
+  margin: 1rem 0;
+  line-height: 1.5em;
+}
+
+.rules-overlay em {
+  font-weight: bold;
+}
+
+.saito-overlay .rules-overlay {
+  border-radius: 1rem;
+  border: 1px solid var(--saito-black);
+}
+
 
 .shim-notice {
   font-size: 20px;
