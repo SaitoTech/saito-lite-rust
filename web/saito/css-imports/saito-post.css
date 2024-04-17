@@ -1,8 +1,8 @@
 .tweet-overlay {
   max-width: 90vw;
-  background-color: var(--saito-background-color);
+  background-color: var(--background-color-post);
   padding: 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--border-radius-modal-menu);
   max-height: 95vh;
   overflow: visible;
   position: relative;
@@ -31,7 +31,7 @@
 .tweet-overlay-content-controls i {
   color: transparent;
   font-size: 2rem;
-  -webkit-text-stroke: var(--saito-primary) 1px;
+  -webkit-text-stroke: var(--saito-primary) 1px; /* testing */
   padding: 1rem;
   cursor: pointer;
   position: relative;
@@ -64,9 +64,9 @@
   line-height: 2.25rem;
 
   /* Copied from textarea in saito-form-elements */
-  background-color: var(--saito-background-color);
-  color: var(--saito-font-color);
-  border: 1px solid var(--saito-border-color);
+  background-color: var(--background-color-post-input);
+  color: var(--font-color-post-input);
+  border: var(--border-thickness-post-input) solid var(--border-color-post-input);
 
 }
 
@@ -99,7 +99,7 @@
 .post-tweet-img-preview i{
   position: absolute;
   font-size: 6rem;
-  color: var(--saito-primary);
+  color: var(--color-primary); /* testing */
   top: 0;
   left: 0;
   width: 100%;

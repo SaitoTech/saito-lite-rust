@@ -1,42 +1,15 @@
-/* 
-
-/* Overlay -- in case we still have a link to game rules from game creation wizard*/
-
-/* .rules-overlay {
-  padding: 1em;
-  font-size: 20px;
-  border-radius: 0.5rem;
-  max-width: 80vw;
-  min-width: 600px;
-  max-height: 80vh;
-  overflow-y: auto;
-  background: var(--saito-dark-purple);
-  color: var(--saito-white);
-}
-
-.rules-overlay p,
-.rules-overlay h1,
-.rules-overlay h2,
-.rules-overlay h3,
-.rules-overlay h4 {
-  color: var(--saito-white);
-}
-
-.rules-overlay p {
-  margin-top: 0.5em;
-} */
 
 /* Game Advanced Options Styling*/
 
 #advanced-options-overlay-container {
-	color: var(--saito-font-color-dark-modal);
+	color: var(--background-color-mode-arcade);
 	border-radius: 0.5rem;
 	width: min-content;
 	min-height: 15rem;
 	display: flex;
 	padding: 2.5rem;
 	flex-direction: column;
-	border: 1px solid var(--saito-primary);
+	border: 1px solid var(--color-primary);
 	gap: 2rem;
 	max-width: 90vw;
 	max-height: 95vh;
@@ -45,6 +18,7 @@
 	background: var(--saito-arcade-overlay-background);
 	min-width: min(40rem, 100vw);
 }
+
 
 .overlay-title {
 	width: 100%;
@@ -66,8 +40,8 @@
 #advanced-options-overlay-container select {
 	text-transform: capitalize;
 	background: transparent;
-	border: 1px solid var(--saito-primary);
-	color: var(--saito-white);
+	border: 1px solid var(--color-primary);
+	color: var(--color-white);
 	font-size: 2.5rem;
 	padding: 1rem;
 	height: 5rem;
@@ -75,7 +49,7 @@
 
 #advanced-options-overlay-container .options_notice {
 	margin-bottom: 1.2rem;
-	color: var(--saito-font-color-dark-modal);
+	color: var(--font-color-modal-arcade-body);
 	font-style: italic;
 	text-align: center;
 }
@@ -86,7 +60,7 @@
 }
 
 .game-wizard-advanced-box .list-header {
-	color: var(--saito-primary);
+	color: var(--color-primary);
 }
 
 #advanced-options-overlay-container label {
@@ -152,7 +126,7 @@
 	background: var(--saito-arcade-overlay-background);
 	padding: 2rem;
 	border-radius: 0.5rem;
-	color: var(--saito-white);
+	color: var(--color-white);
 }
 
 .arcade-wizard-overlay .arcade-wizard-game-container {
@@ -193,8 +167,8 @@
 
 .arcade-wizard-overlay select {
 	background: transparent;
-	border: 1px solid var(--saito-primary);
-	color: var(--saito-white);
+	border: 1px solid var(--color-primary);
+	color: var(--color-white);
 	font-size: 2rem;
 	appearance: none;
 	padding: 0 1rem;
@@ -205,8 +179,8 @@
 }
 
 .saito-select::after {
-	background: var(--saito-button-background);
-	border-left: 3px solid var(--saito-primary);
+	background: var(--background-color-button-mod-arcade);
+	border-left: 3px solid var(--color-primary);
 }
 
 .arcade-wizard-game-controls .settings > div.overlay-input {
@@ -235,15 +209,15 @@
 	top: 0;
 	right: 0;
 	padding: 0 1em;
-	color: var(--saito-white);
-	background: var(--saito-button-background);
+	color: var(--color-white);
+	background: var(--background-color-button-mod-arcade);
 	cursor: pointer;
 	pointer-events: none;
 	-webkit-transition: 0.25s all ease;
 	-o-transition: 0.25s all ease;
 	transition: 0.25s all ease;
 	border-radius: 0 1rem 1rem 0;
-	border-left: 1px solid var(--saito-primary);
+	border-left: 1px solid var(--color-primary);
 }
 
 .saito-module-intro-title {
@@ -306,13 +280,13 @@
 }
 
 .saito-multi-select_btn_options button {
-	background: var(--saito-button-background);
+	background: var(--background-color-button-mod-arcade);
 	margin: 0rem;
 	padding: 0rem;
 	width: 100%;
 	display: block;
 	margin-bottom: 0.2rem;
-	border: 1px solid var(--saito-primary);
+	border: 1px solid var(--color-primary);
 }
 
 /*.saito-multi-select_btn.showAll>.saito-multi-select_btn_options button {
@@ -350,7 +324,7 @@
 
 .arcade-advance-opt-text {
 	cursor: pointer;
-	border-bottom: 2px dotted var(--saito-border-color);
+	border-bottom: 2px dotted var(--border-thickness-general-dividers);
 	font-size: 2rem;
 }
 

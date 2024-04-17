@@ -11,8 +11,8 @@
 
 
 .redsquare-menu .saito-button-primary{
-	border: unset;
-	box-shadow: 0px 2px 4px var(--saito-bubble-shadow);
+	border: var(--border-thickness-button-primary) solid var(--border-color-button-primary);
+	box-shadow: var(--shadow-primary-button);
 }
 
 @media screen and (max-width: 1200px) {
@@ -52,7 +52,7 @@
 	}
 
 	.redsquare-menu .saito-button-primary i::before{
-		-webkit-text-stroke: var(--saito-white) 2px;
+		-webkit-text-stroke: var(--color-white) 2px;
 	}
 
 	.redsquare-menu .saito-button-primary span {

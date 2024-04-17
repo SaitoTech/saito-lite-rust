@@ -45,7 +45,7 @@
 }
 
 .game-wizard-advanced-box .list-header {
-	color: var(--saito-primary);
+	color: var(--border-color-league-primary);
 }
 
 .game-wizard-advanced-box .list-header:nth-of-type(n + 2) {
@@ -156,8 +156,8 @@ textarea {
 
 .league-wizard-overlay select {
 	background: transparent;
-	border: 1px solid var(--saito-primary);
-	color: var(--saito-white);
+	border: 1px solid var(--border-color-league-primary);
+	color: var(--color-white);
 	font-size: 2rem;
 	appearance: none;
 	padding: 0 1rem;
@@ -168,8 +168,8 @@ textarea {
 }
 
 .saito-select::after {
-	background: var(--saito-button-background);
-	border-left: 1px solid var(--saito-primary);
+	background: var(--background-color-button-mod-arcade);
+	border-left: 1px solid var(--border-color-league-primary);
 }
 
 .league-wizard-game-controls .settings > div:first-of-type {
@@ -199,14 +199,14 @@ textarea {
 	right: 0;
 	padding: 0 1em;
 	color: var(--saito-white);
-	background: var(--saito-button-background);
+	background: var(--background-color-button-mod-arcade);
 	cursor: pointer;
 	pointer-events: none;
 	-webkit-transition: 0.25s all ease;
 	-o-transition: 0.25s all ease;
 	transition: 0.25s all ease;
 	border-radius: 0 1rem 1rem 0;
-	border-left: 1px solid var(--saito-primary);
+	border-left: 1px solid var(--border-color-league-primary);
 }
 
 .saito-module-intro-title {
@@ -236,7 +236,7 @@ textarea {
 
 .league-wizard-rankings-select {
 	color: var(--saito-white);
-	border-color: var(--saito-border-color);
+	border-color: var(--border-color-general-dividers);
 }
 
 .league-wizard-game-invite {

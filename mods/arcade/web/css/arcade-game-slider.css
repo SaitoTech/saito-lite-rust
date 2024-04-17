@@ -119,7 +119,7 @@ li.slide[data-active-slide] {
 	text-align: center;
 	width: min-content;
 	padding-left: 2rem;
-	background: var(--saito-black-faded);
+	background: var(--color-complement);
 	white-space: nowrap;
 	padding: 1rem;
 	border-radius: 0 0 0.5rem 0;

@@ -1,5 +1,5 @@
 .league-overlay {
-	background: var(--saito-arcade-background);
+	background: var(--saito-arcade-background); 
 	width: 90vw;
 	padding: 2rem 1rem;
 	display: flex;
@@ -34,7 +34,7 @@
 	border-radius: 0.5rem;
 	height: 5rem;
 	width: 5rem;
-	border: 1px solid var(--saito-border-color);
+	border: 1px solid var(--border-color-general-dividers);
 	line-height: 5rem;
 	text-align: center;
 }
@@ -87,8 +87,8 @@
 .menu-icon:hover i,
 .menu-icon.active-tab i,
 .league-overlay-controls .menu-icon.active-tab:hover i {
-	border-color: var(--saito-primary);
-	color: var(--saito-primary);
+	border-color: var(--color-primary);
+	color: var(--color-primary);
 }
 
 .league-overlay-controls .menu-icon {
@@ -124,7 +124,7 @@
 	padding: 1.5rem;
 	border-radius: 0.5rem;
 	overflow-y: auto;
-	border: 1px solid var(--saito-border-color);
+	border: 1px solid var(--border-color-general-dividers);
 	flex: 1;
 }
 
@@ -242,7 +242,7 @@ span.attention {
 	font-size: 30px;
 	font-weight: 900;
 	color: var(--saito-red);
-	text-shadow: 0px 0px 3px var(--saito-white);
+	text-shadow: var(--shadow-shape-flat) var(--color-white); /* testing */
 }
 
 .league_recent_game div {
@@ -257,7 +257,7 @@ span.attention {
 .alert_email,
 .alert_identifier {
 	position: relative;
-	box-shadow: 0px 0px 10px var(--saito-secondary) !important;
+	box-shadow: 0px 0px 10px var(--color-contrast) !important;
 	cursor: pointer;
 }
 
@@ -273,7 +273,7 @@ span.attention {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	color: var(--saito-secondary);
+	color: var(--color-secondary);
 	font-size: 6.4rem;
 }
 
@@ -315,7 +315,7 @@ span.attention {
 
 .contactAdminWarning i {
 	font-size: 5rem;
-	color: var(--saito-secondary);
+	color: var(--color-secondary);
 }
 
 .menu-icon.mobile-only {
@@ -415,9 +415,9 @@ span.attention {
 		position: absolute;
 		left: 1rem;
 		top: 1.4rem;
-		text-shadow: 1px 1px 2px var(--saito-background-color),
+		text-shadow: 1px 1px 2px var(--saito-background-color), 
 			-1px -1px 2px var(--saito-background-color),
 			1px -1px 2px var(--saito-background-color),
-			-1px 1px 2px var(--saito-background-color);
+			-1px 1px 2px var(--saito-background-color); /* testing, haven t seen any of this */
 	}
 }

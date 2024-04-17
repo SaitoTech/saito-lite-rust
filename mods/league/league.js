@@ -50,6 +50,25 @@ class League extends ModTemplate {
 		this.auto_open_league_overlay_league_id = null;
 		this.icon_fa = 'fas fa-user-friends';
 		this.debug = false;
+
+		app.connection.on("league-render-into", (league_id, container)=>{
+			if (!app.BROWSER){
+				return;
+			}
+
+			let league = this.returnLeague(league_id);
+			
+			if (!league){
+				return;
+			}
+
+			console.log(this.styles);
+			this.attachStyleSheets();
+
+			let leaderboard = new LeagueLeaderboard(app, this, container, league);
+			leaderboard.render();
+
+		});
 	}
 
 	//
@@ -147,9 +166,7 @@ class League extends ModTemplate {
 				return;
 			}
 			//TODO: Reset the default leagues and make the hashes based on game slugs!!!!
-			this.auto_open_league_overlay_league_id = app.crypto.hash(
-				gm.returnName()
-			);
+			this.auto_open_league_overlay_league_id = app.crypto.hash(gm.returnName());
 			console.log('ID: ' + this.auto_open_league_overlay_league_id, game);
 			app.connection.emit(
 				'league-overlay-render-request',
@@ -479,9 +496,8 @@ class League extends ModTemplate {
 
 							//Refresh UI
 							app.connection.emit('leagues-render-request');
-							app.connection.emit(
-								'league-rankings-render-request'
-							);
+							app.connection.emit('league-rankings-render-request');
+							app.connection.emit('league-data-loaded');
 
 							//Save locally
 							this.saveLeagues();

@@ -125,7 +125,7 @@
 .stun-chatbox.minimize .control-list {
 	width: 100%;
 	justify-content: flex-end;
-	gap: 1rem;
+	gap: 1px;
 }
 
 .stun-chatbox.minimize .call-controls .icon_click_area {
@@ -538,10 +538,11 @@
 }
 
 .footer {
-	padding: 2rem 2rem;
+	padding: 2rem;
 	display: flex;
-	justify-content: space-between;
+	justify-content: left;
 	align-items: center;
+	gap: 2rem;
 }
 
 .footer .timer {

@@ -15,7 +15,7 @@ class Wuziqi extends GameTemplate {
 		this.name = 'Wuziqi';
 		this.game_length = 10; //Estimated number of minutes to complete a game
 		this.description =
-			'五子棋, Gokomu, or Gobang -- whatever you call it, place five black or white tiles in a row to win.';
+			'Take turns placing black or white tiles on a Go board of various sizes to make a line of five in a row to win the round. Also known as 五子棋, Gokomu, or Gobang.';
 		this.categories = 'Games Boardgame Classic';
 		//this.status = "Beta";
 

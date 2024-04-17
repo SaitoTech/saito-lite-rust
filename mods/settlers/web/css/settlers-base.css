@@ -411,7 +411,7 @@ dt {
 	transform: scale(1.4);
 	margin: 0 0 3rem;
 	position: relative;
-	top: -2px;
+	top: 2px;
 }
 
 .city > svg,

@@ -16,8 +16,6 @@ class Chessgame extends GameTemplate {
 		super(app);
 
 		this.name = 'Chess';
-		this.description =
-			'Chess is a two-player strategy board game played on a checkered board with 64 squares arranged in an 8×8 grid.';
 		this.board = null;
 		this.engine = null;
 		this_chess = this;
@@ -30,7 +28,7 @@ class Chessgame extends GameTemplate {
 		this.styles = ["/chess/chessboard.css"];
 
 		this.description =
-			'An implementation of Chess for the Saito Blockchain';
+			'"Minutes to learn, a lifetime to master" <br><br> Chess is the king of games and original application on the Saito Network. ';
 		this.categories = 'Games Boardgame Classic';
 
 		this.confirm_moves = 1;

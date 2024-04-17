@@ -15,7 +15,7 @@ class Steamed extends GameTemplate {
 		this.name = 'Steamed';
 		this.gamename = 'Steam Bonanza';
 
-		this.description = `Win the industrial revolution by building and liquidating factories`;
+		this.description = `Win the industrial revolution by building and liquidating factories in an open source clone of Bohnanza`;
 		this.status = 'Alpha';
 
 		this.card_height_ratio = 1.5;
