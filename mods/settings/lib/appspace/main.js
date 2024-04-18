@@ -12,6 +12,10 @@ class SettingsAppspace {
 		this.privateKey = null;
 
 		this.overlay = new SaitoOverlay(app, mod);
+
+		app.connection.on("update_profile", ()=> {
+			this.render()
+		})
 	}
 
 	async render() {

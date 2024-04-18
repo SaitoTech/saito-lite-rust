@@ -63,13 +63,27 @@
 	gap: 1rem;
 }
 
+  .settings-appspace-user-details .bio-container {
+    display: flex;
+    align-items: center; 
+    white-space: nowrap;
+    overflow: hidden; 
+    text-overflow: ellipsis;
+}
 
-.settings-appspace-user-details .bio-containter {
-
+.bio-text {
+	max-width: 50rem;
 	overflow: hidden;
 	text-overflow: ellipsis;
+   white-space: nowrap;
+   margin-right: 1.5rem;
+}
+
+.icon-container {
+    flex-shrink: 0;
+}
+
   
-  }
 .settings-appspace-user-details .profile-public-key {
 	width: 38rem;
 }

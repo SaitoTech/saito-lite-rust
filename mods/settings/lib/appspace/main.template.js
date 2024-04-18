@@ -69,14 +69,22 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
             <div>Username:</div>
             <div class="pubkey-containter">
             ${identifier_registered}
-            ${
-				key?.identifier
-					? `<div>    <i class="fa-regular fa-pen-to-square" id="edit-profile"></i></div>`
-					: `<div> </div>`
-			}
             </div>
 
-           <div>Bio:</div> <div class="bio-container"> ${bio ?? ""}</div>
+            <div>Bio:</div>
+            <div class="pubkey-container">
+                <div class="bio-container">
+                    <div class="bio-text">${bio ?? ""}</div>
+                    <div class="icon-container">
+                        ${
+                            key?.identifier
+                            ? `<i class="fa-regular fa-pen-to-square" id="edit-profile"></i>`
+                            : ''
+                        }
+                    </div>
+                </div>
+            </div>
+            
            
        
   

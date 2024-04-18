@@ -241,12 +241,7 @@
   cursor: pointer;
 }
 
-.bio-containter {
 
-  overflow: hidden;
-  text-overflow: ellipsis;
-
-}
 
 .pubkey-containter:hover i {
   transform: scale(1.1);
