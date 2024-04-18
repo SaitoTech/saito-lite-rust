@@ -22,6 +22,7 @@ class Midnight extends GameTemplate {
 		this.maxPlayers = 1;
 		this.minPlayers = 1;
 		this.app = app;
+		this.can_bet = 0;
 	}
 
 	/* Opt out of letting League create a default*/

@@ -188,7 +188,7 @@ font imports
   --saito-font-color-inverse: #efefef;
   
 /* Menu and Header Font Colors */
-  --font-color-menu-hamburger: var(--font-color-white);
+  --font-color-menu-hamburger: var(--font-color-white); /* hamburger icon itself */
   --font-color-menu-hamburger-midsection: var(--font-color-inverse);
   --font-color-header-menu: var(--font-color-primary);
   --font-color-header-username: var(--font-color-white);
@@ -444,7 +444,7 @@ font imports
   --background-color-post: var(--background-color-main);
   --background-color-post-input: var(--background-color-main);
   --background-color-hover-post: var(--background-color-gray-transparent);
-  --background-color-menu-hamburger-midsection: var(--color-complement);
+  --background-color-menu-hamburger-midsection: var(--font-color-primary);
   --background-mask-sidebar-game-module: var(--background-color-gray-transparent-light);
 /* Chat Related Colors */
   --background-color-chat-container-open: ;
@@ -537,7 +537,7 @@ html[data-theme="dark"] {
 /* ================= NEW UPDATED THEME ================== */  
   
 /*BASE COLOR SECTION*/
-  --color-primary: #e05b08;/* Dark gray */
+  --color-primary: #e05b08;/* Bright orange */
   --color-secondary: #c1aa00;  /* Gray with warm tint */
   --color-complement: #7f7f7f;/* MID gray  */
   --color-base: #010101; /*  super dark almost black */
@@ -558,8 +558,8 @@ html[data-theme="dark"] {
   --background-color-shim-normal: #0009;
 /*FONTS SECTION*/
 /*quick settings*/
-  --font-color-primary: var(--color-contrast); /* normal */
-  --font-color-secondary: var(--color-complement); /*  faded grey  */
+  --font-color-primary: var(color-tint-primary); /* normal */
+  --font-color-secondary: var(--color-contrast); /*  faded grey  */
   --font-color-heavy: var(--color-white); /* Bright! */
   --font-color-inverse: var(--background-color-main); /* background colory */
 /*Font Selection*/ 
@@ -585,7 +585,6 @@ html[data-theme="dark"] {
   --font-color-calendar-hover: var(--font-color-primary);
 /* Menu and Header Font Colors */
   --font-color-menu-hamburger: var(--font-color-heavy);
-  --font-color-menu-hamburger-midsection: var(--font-color-heavy);
   --font-color-header-menu: var(--font-color-primary);
   --font-color-header-username: var(--font-color-heavy);
 /* Alerts and Status Font Colors */
@@ -598,6 +597,7 @@ html[data-theme="dark"] {
   --font-color-mention: var(--font-color-primary); /* Exempt as system color */
   --font-color-hover-mention: var(--font-color-heavy);
 /* Module and Overlay Font Colors */
+  --font-color-title-game-details: var(--font-color-primary);
   --font-color-title-game: var(--font-color-primary);
   --font-color-module-menu: var(--font-color-primary);
   --font-color-modal-menu-oldschool: var(--font-color-primary);
@@ -633,9 +633,9 @@ html[data-theme="dark"] {
   --border-color-selection-box: var(--color-highlight);
   --border-color-form-input: var(--color-primary);
   --border-color-form-input-checkbox: var(--color-contrast);
+  --border-color-qr-code: var(--color-tint-dark);
 /* BACKGROUNDS */
 /* General Background Colors */
-  --background-color-menu-hamburger-midsection: var(--color-complement);
   --background-color-sidebar-left: var(--color-shadow-bubble-light);
   --background-color-modal-menu: var(--background-color-main);
   --background-color-modal-menu-oldschool: none;
@@ -645,7 +645,7 @@ html[data-theme="dark"] {
   --background-color-overlay-menu-header: var(--color-base);
   --background-color-overlay-form-header: var(--color-base);
   --background-color-header: pink;
-  --background-color-header-menu: cyan;
+  --background-color-header-menu: var(--background-color-main);
   --background-color-post: var(--background-color-main);
   --background-color-post-input: var(--background-color-main);
 /* Button Background Colors */
@@ -741,7 +741,7 @@ html[data-theme="sangre"] {
 /* ================= NEW UPDATED THEME ================== */  
     
 /*BASE COLOR SECTION*/
-  --color-primary: #b70b0b;/* Dark gray */
+  --color-primary: #b70b0b;/* blood red */
   --color-secondary: #ff8235;  /* Gray with warm tint */
   --color-complement: #7f7f7f;/* MID gray  */
   --color-base: #010101; /*  super dark almost black */
@@ -762,8 +762,8 @@ html[data-theme="sangre"] {
   --background-color-shim-normal: #0009;
 /*FONTS SECTION*/
 /*quick settings*/
-  --font-color-primary: var(--color-contrast); /* normal */
-  --font-color-secondary: var(--color-complement); /*  faded grey  */
+  --font-color-primary: var(--color-tint-primary); /* normal */
+  --font-color-secondary: var(--color-contrast); /*  faded grey  */
   --font-color-heavy: var(--color-white); /* Bright! */
   --font-color-inverse: var(--background-color-main); /* background colory */
 /*Font Selection*/ 
@@ -788,7 +788,6 @@ html[data-theme="sangre"] {
   --font-color-calendar-hover: var(--font-color-primary);
 /* Menu and Header Font Colors */
   --font-color-menu-hamburger: var(--font-color-heavy);
-  --font-color-menu-hamburger-midsection: var(--font-color-heavy);
   --font-color-header-menu: var(--font-color-primary);
   --font-color-header-username: var(--font-color-heavy);
 /* Alerts and Status Font Colors */
@@ -801,6 +800,7 @@ html[data-theme="sangre"] {
   --font-color-mention: var(--font-color-primary); /* Exempt as system color */
   --font-color-hover-mention: var(--font-color-heavy);
 /* Module and Overlay Font Colors */
+  --font-color-title-game-details: var(--font-color-primary);
   --font-color-title-game: var(--font-color-primary);
   --font-color-module-menu: var(--font-color-primary);
   --font-color-modal-menu-oldschool: var(--font-color-primary);
@@ -837,7 +837,6 @@ html[data-theme="sangre"] {
   --border-color-form-input-checkbox: var(--color-contrast);
 /* BACKGROUNDS */
 /* General Background Colors */
-  --background-color-menu-hamburger-midsection: var(--color-complement);
   --background-color-sidebar-left: var(--color-shadow-bubble);
   --background-color-modal-menu: var(--background-color-main);
   --background-color-modal-menu-oldschool: none;
@@ -847,7 +846,7 @@ html[data-theme="sangre"] {
   --background-color-overlay-menu-header: var(--color-base);
   --background-color-overlay-form-header: var(--color-base);
   --background-color-header: pink;
-  --background-color-header-menu: cyan;
+  --background-color-header-menu: var(--background-color-main);
   --background-color-post: var(--background-color-main);
   --background-color-post-input: var(--background-color-main);
 /* Button Background Colors */
@@ -960,7 +959,6 @@ html[data-theme="midnight"] {
   --font-color-calendar-hover: var(--font-color-primary);
 /* Menu and Header Font Colors */
   --font-color-menu-hamburger: var(--font-color-primary);
-  --font-color-menu-hamburger-midsection: var(--font-color-primary);
   --font-color-header-menu: var(--font-color-primary);
   --font-color-header-username: var(--font-color-primary);
 /* Alerts and Status Font Colors */
@@ -1053,7 +1051,6 @@ html[data-theme="midnight"] {
 /* General Background Colors */
   --background-color-main: #000;
   --background-color-shim-normal: #0009;
-  --background-color-menu-hamburger-midsection: var(--color-complement);
   --background-color-hover-post: none;   /* Turns it off for this theme*/
   --background-color-modal-menu: var(--color-base);
   --background-color-modal-menu-oldschool: none;
@@ -1063,7 +1060,7 @@ html[data-theme="midnight"] {
   --background-color-overlay-menu-header: var(--color-base);
   --background-color-overlay-form-header: var(--color-base);
   --background-color-header: none; /* testing */
-  --background-color-header-menu: none; /* testing */
+  --background-color-header-menu: var(--background-color-main);
   --background-color-post: var(--color-base);
   --background-color-post-input: var(--background-color-main);
 /* Button Background Colors */
@@ -1210,7 +1207,6 @@ html[data-theme="arcade"] {
   --font-color-calendar-hover: var(--font-color-primary);
 /* Menu and Header Font Colors */
   --font-color-menu-hamburger: var(--font-color-heavy);
-  --font-color-menu-hamburger-midsection: var(--font-color-heavy);
   --font-color-header-menu: var(--font-color-primary);
   --font-color-header-username: var(--font-color-heavy);
 /* Alerts and Status Font Colors */
@@ -1224,6 +1220,7 @@ html[data-theme="arcade"] {
   --font-color-hover-mention: var(--font-color-heavy);
 /* Module and Overlay Font Colors */
   --font-color-title-game: var(--font-color-primary);
+  --font-color-title-game-details: var(--font-color-primary);
   --font-color-module-menu: var(--font-color-primary);
   --font-color-modal-menu-oldschool: var(--font-color-primary);
   --font-color-module-menu-header: var(--font-color-primary);
@@ -1258,7 +1255,6 @@ html[data-theme="arcade"] {
 
 /* BACKGROUNDS */
 /* General Background Colors */
-  --background-color-menu-hamburger-midsection: var(--color-complement);
   --background-color-sidebar-left: var(--color-shadow-bubble);
   --background-color-modal-menu: var(--background-color-main);
   --background-color-modal-menu-oldschool: none;
@@ -1268,7 +1264,7 @@ html[data-theme="arcade"] {
   --background-color-overlay-menu-header: var(--color-base);
   --background-color-overlay-form-header: var(--color-base);
   --background-color-header: pink;
-  --background-color-header-menu: cyan;
+  --background-color-header-menu: var(--background-color-main);
   --background-color-post: var(--background-color-main);
   --background-color-post-input: var(--background-color-main);
 /* Button Background Colors */

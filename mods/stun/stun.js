@@ -368,7 +368,10 @@ class Stun extends ModTemplate {
 				iceServers: this.servers
 			})
 
-			if (!callback){
+			// use string compare of public keys rather than presence or absence of callback
+			// to determine who will be impolite in any pairing because we may be simultnaeously attempting
+			// to create connections with callbacks for whatever reason 
+			if (this.publicKey > peerId) {
 				console.log("I will be impolite to peer: ", peerId);
 				pc.rude = true;
 			}

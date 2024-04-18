@@ -57,7 +57,7 @@ class StreamManager {
 
 						this.mod.stun.peers.forEach((peerConnection, key) => {
 							console.log("Attach new video to: " + key);
-							if (this.app.options.stun.peers.includes(key)) {
+							if (this.mod.room_obj.call_peers.includes(key)) {
 								const videoSenders = peerConnection
 									.getSenders()
 									.filter(
@@ -142,12 +142,12 @@ class StreamManager {
 
 				console.log(
 					'Share screen with friends: ',
-					this.app.options.stun.peers,
+					this.mod.room_obj.call_peers,
 					this.mod.stun.peers
 				);
 				this.mod.stun.peers.forEach((pc, key) => {
 					console.log(key);
-					if (this.app.options.stun.peers.includes(key)) {
+					if (this.mod.room_obj.call_peers.includes(key)) {
 						console.log('Add Track');
 						pc.addTrack(videoTrack);
 					}
@@ -183,12 +183,12 @@ class StreamManager {
 			console.log('stun-connection-connected',
 				this.active,
 				this.mod.room_obj,
-				JSON.stringify(this.app.options.stun.peers)
+				JSON.stringify(this.mod.room_obj.call_peers)
 			);
 
 			if (
 				!this.mod?.room_obj ||
-				!this.app.options.stun.peers.includes(peerId)
+				!this.mod.room_obj.call_peers.includes(peerId)
 			) {
 				return;
 			}
@@ -273,7 +273,6 @@ class StreamManager {
 			console.log(
 				'STUN: start-stun-call',
 				JSON.parse(JSON.stringify(this.mod.room_obj)),
-				JSON.parse(JSON.stringify(this.app.options.stun))
 			);
 			this.firstConnect = true;
 
@@ -291,9 +290,12 @@ class StreamManager {
 			// peer connections, but if we reconnect, or refresh, we have saved in local storage the people in our call
 			//
 			if (this.mod.room_obj.host_public_key === this.mod.publicKey) {
-				if (this.app.options?.stun && !this.mod.room_obj?.ui) {
-					console.log('STUN HOST: my peers, ', this.app.options.stun);
-					for (peer of this.app.options.stun.peers) {
+				//
+				// Not direct calling!
+				//
+				if (!this.mod.room_obj?.ui) {
+					console.log('STUN HOST: my peers, ', this.mod.room_obj.call_peers);
+					for (peer of this.mod.room_obj.call_peers) {
 						if (peer !== this.mod.publicKey) {
 							this.mod.sendCallEntryTransaction(peer);
 							break;
@@ -319,8 +321,8 @@ class StreamManager {
 				}
 
 				console.log('New Stun peer connection with ' + publicKey);
-				console.log(this.app.options.stun.peers);
-				if (this.app.options.stun.peers.includes(publicKey)) {
+				console.log(this.mod.room_obj.call_peers);
+				if (this.mod.room_obj.call_peers.includes(publicKey)) {
 					peerConnection.firstConnect = true;
 
 					console.log('Attach my audio/video!');
@@ -551,7 +553,7 @@ class StreamManager {
 		let peer_list = {};
 
 		this.mod.stun.peers.forEach((pc, address) => {
-			if (this.app.options.stun.peers.includes(address)){
+			if (this.mod.room_obj.call_peers.includes(address)){
 				peer_list[address] = pc.connectionState;
 			}
 		});
