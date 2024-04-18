@@ -193,7 +193,7 @@ font imports
   --font-color-header-menu: var(--font-color-primary);
   --font-color-header-username: var(--font-color-white);
 /* Button Font Colors */
-  --font-color-button-header-back: var(--font-color-inverse);
+  --font-color-button-header-back: var(--font-color-white);
   --font-color-button-chat-popup-header: var(--font-color-heavy);
   --font-color-button-hover-chat-popup-header: var(--font-color-inverse);
   --font-color-button-primary: var(--font-color-inverse);
