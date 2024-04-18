@@ -4,7 +4,7 @@ const SaitoOverlay = require('../../../lib/saito/ui/saito-overlay/saito-overlay'
 const SaitoLoader = require('../../../lib/saito/ui/saito-loader/saito-loader');
 
 class UpdateProfile {
-	constructor(app, mod, mode = 'update') {
+	constructor(app, mod, mode="update") {
 		this.app = app;
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(this.app, this.mod);
@@ -100,9 +100,7 @@ class UpdateProfile {
 				try {
 					document.querySelector(
 						'.saito-overlay-form-header-title'
-					).innerHTML = `${
-						this.mode === 'update' ? 'Updating' : 'Registering'
-					} profile...`;
+					).innerHTML = `Updating profile...`;
 					document
 						.querySelector('.saito-overlay-form-header-title')
 						.classList.add('saito-cached-loader', 'loading');
@@ -135,7 +133,6 @@ class UpdateProfile {
 					profile_peer = this.mod.peers[0].peerIndex;
 				}
 
-				if (this.mode === 'update') {
 					let success = this.mod.updateProfile(
 						identifier + domain,
 						bio,
@@ -164,88 +161,12 @@ class UpdateProfile {
 							}
 						}, 2000);
 					} else {
-						salert('Error 411413: Error Updating Username');
+						salert('Error Updating Profile');
 						this.render();
 					}
-				}
+				
 
-				if (this.mode === 'register') {
-					this.app.network.sendRequestAsTransaction(
-						'profile query',
-						data,
-						async (results) => {
-							if (results.length > 0) {
-								salert(
-									'Identifier already in use. Please select another'
-								);
-								this.render();
-								return;
-							} else {
-								console.log(
-									'REGISTRY: name available, try to register'
-								);
-								try {
-									let success =
-										await this.mod.registerProfile(
-											identifier,
-											domain,
-											bio,
-											this.image
-										);
-									if (success) {
-										console.log(
-											'REGISTRY: tx to register successfully sent'
-										);
-										//
-										// mark wallet that we have registered username
-										//
-										this.app.keychain.addKey(
-											this.mod.publicKey,
-											{
-												has_registered_username: true
-											}
-										);
-
-										// Change Saito-header / Settings page
-										this.app.connection.emit(
-											'update_profile',
-											this.mod.publicKey
-										);
-
-										//Fake responsiveness
-										setTimeout(() => {
-											this.overlay.remove();
-											if (this.callback) {
-												this.callback(identifier);
-											}
-										}, 2000);
-									} else {
-										salert(
-											'Error 411413: Error Registering Username'
-										);
-										this.render();
-									}
-								} catch (err) {
-									if (
-										err.message ==
-										'Alphanumeric Characters only'
-									) {
-										salert(
-											'Error: Alphanumeric Characters only'
-										);
-									} else {
-										salert(
-											'Error: Error Registering Username'
-										);
-									}
-									this.render();
-									console.error(err);
-								}
-							}
-						},
-						profile_peer
-					);
-				}
+			
 			}
 		};
 	}

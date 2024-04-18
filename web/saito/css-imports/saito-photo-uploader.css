@@ -7,7 +7,7 @@
 	left: 0;
 	bottom: 0;
 	padding: 1rem;
-	display: none;
+	/* display: none; */
 	position: absolute;
 	height: 90%;
 	top: 0;
@@ -33,14 +33,78 @@
 	color: var(--saito-font-color);
 }
 
-.uploader-actions {
-	width: 100%;
-	position: absolute;
-	bottom: 0;
-	display: none;
-	margin-bottom: 1rem;
-	z-index: 10;
+@media (max-width: 768px) {
+    .photo-uploader {
+        width: 90vw; 
+        padding: 5vw; 
+    }
 }
+
+@media (max-width: 480px) {
+    .photo-uploader {
+        width: 95vw;
+        font-size: calc(14px + 1vw); 
+    }
+}
+
+.uploader-content {
+    display: none;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+.uploader-actions {
+    width: 100%; 
+    position: absolute;
+    bottom: 0; 
+
+    justify-content: space-between;
+    align-items: center; 
+    padding: 1rem;
+    z-index: 10; 
+  
+}
+
 .uploader-actions > :nth-child(1) {
-	margin-right: 1rem;
+    margin-right: 1rem; 
+}
+
+@media (max-width: 768px) {
+    .uploader-actions {
+        flex-direction: column; 
+        justify-content: center;
+    }
+
+    .uploader-actions > :nth-child(1) {
+        margin-right: 0; 
+        margin-bottom: 1rem;
+    }
+}
+
+
+ .uploader-change-photo, .uploader-remove-photo {
+
+    z-index: 10;
+    position: absolute;
+    bottom: 8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer; 
+   
+
+}
+
+.uploader-change-photo i, .uploader-remove-photo i {
+    color:var(--saito-red) ;
+}
+
+
+
+.uploader-remove-photo {
+    left: 2rem; 
+}
+
+.uploader-change-photo {
+    right: 2rem; 
 }

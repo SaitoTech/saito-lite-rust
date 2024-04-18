@@ -17,6 +17,8 @@ class TweetManager {
 
 		this.profile = new SaitoProfile(app, mod, '.saito-main');
 
+
+
 		//This is an in-place loader... not super useful when content is overflowing off the bottom of the screen
 		this.loader = new SaitoLoader(app, mod, '#redsquare-intersection');
 

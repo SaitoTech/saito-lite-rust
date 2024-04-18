@@ -202,37 +202,40 @@ class Profile extends ModTemplate {
 		return services;
 	}
 
-	//
-	// fetching identifiers
-	//
-	// this function is run on the browsers, triggered by the event that wants to re-write the DOM
-	// so it will query the first peer it sees that runs the profile module and ask it for the
-	// identifiers
-	//
-	// this first checks the cache that browsers maintain in their own memory that maps keys to
-	// identifiers and only fetches information from the server when that does not work or find
-	// an address. this is intended to limit the load on the parent server.
-	//
+
+
 	fetchManyProfiles(publickeys = [], mycallback = null) {
 		let profile_self = this;
 		if (mycallback == null) {
 			return;
 		}
 		const found_keys = {};
-		const missing_keys = [];
+		const missing_keys = [...publickeys];
 
-		publickeys.forEach((publickey) => {
-			const identifier =
-				this.app.keychain.returnIdentifierByPublicKey(publickey);
+		// Idealy, keys profiles be fetched from cache, this means on any profile change, contacts should be updated about the new profile change 
+		// 
 
-			//returns "" if not found
-			if (identifier) {
-				found_keys[publickey] = identifier;
-			} else {
-				missing_keys.push(publickey);
-			}
-		});
+		// publickeys.forEach((publickey) => {
 
+		// 	// missing_keys.push(publickey)
+
+		// 	// 
+
+		// 	// const profile =
+		// 	// 	this.app.keychain.returnKey(publickey);
+
+		// 	// 	if(profile){
+		// 	// 		if(profile.identifier){
+		// 	// 			missing_keys.push(publickey)
+		// 	// 		}else {
+		// 	// 			found_keys[publickey] = profile;
+		// 	// 		}
+		// 	// 	}else {
+		// 	// 		missing_keys.push(publickey)
+		// 	// 	}
+		// });
+
+		console.log(found_keys, "found keys")
 		if (missing_keys.length == 0) {
 			mycallback(found_keys);
 			return 1;
@@ -249,6 +252,7 @@ class Profile extends ModTemplate {
 			mycallback(found_keys);
 		});
 	}
+
 
 	respondTo(type = '') {
 		if (type == 'saito-return-key') {
@@ -300,6 +304,17 @@ class Profile extends ModTemplate {
 				}
 			};
 		}
+		if(type === "saito-profile"){
+			return {
+				fetchManyProfiles: (publicKeys, callback=null) => {
+					return this.fetchManyProfiles(publicKeys, callback)
+				},
+				updateProfile: (identifier, bio = "", photo="", data="")=> {
+					return this.updateProfile(identifier,bio, photo, data)
+				}
+			}
+			 
+		}
 
 		return super.respondTo(type);
 	}
@@ -326,6 +341,7 @@ class Profile extends ModTemplate {
 	}
 
 	async updateProfile(identifier, bio = '', photo = '', data = '') {
+		
 		let result = await this.sendUpdateRequestTransaction(
 			identifier,
 			bio,

@@ -118,8 +118,19 @@ body {
 	transition: opacity 0.8s;
 }
 
+.saito-profile-photo-container {
+	position: relative;
+}
 .saito-profile {
+
 	margin-bottom: 0.5rem;
+}
+
+.saito-profile-edit {
+	position: absolute;
+	right: 1rem;
+	color: var(--saito-red);
+	bottom: 1rem;
 }
 
 .saito-main > .saito-loader {
