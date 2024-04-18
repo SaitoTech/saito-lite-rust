@@ -96,6 +96,11 @@ class Arcade extends ModTemplate {
 				this.affix_callbacks_to.push(game_mod.name);
 			});
 
+
+		this.arcade_games = this.arcade_games.sort((a, b) => {
+			return (b.sort_priority - a.sort_priority);
+		});
+
 		this.games['mine'] = [];
 		this.games['open'] = [];
 

@@ -218,6 +218,9 @@ class Settlers extends GameTemplate {
 		this.currently_active_player = 0;
 
 		this.enable_observer = false;
+
+	    this.sort_priority = 1;
+
 	}
 
 	async render(app) {

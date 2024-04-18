@@ -122,7 +122,9 @@ class League extends ModTemplate {
 			this.styles = ['/league/style.css'];
 			this.attachStyleSheets();
 			return {
-				leagues: this.leagues,
+				returnLeague: (league_id) => {
+					return this.returnLeague(league_id);
+				}
 			};
 		}
 

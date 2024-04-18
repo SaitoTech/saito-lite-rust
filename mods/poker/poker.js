@@ -69,6 +69,8 @@ class Poker extends GameTableTemplate {
 
 		this.updateHTML = '';
 
+	    this.sort_priority = 1;
+
 	}
 
 	//

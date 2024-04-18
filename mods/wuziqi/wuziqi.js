@@ -17,7 +17,6 @@ class Wuziqi extends GameTemplate {
 		this.description =
 			'Take turns placing black or white tiles on a Go board of various sizes to make a line of five in a row to win the round. Also known as 五子棋, Gokomu, or Gobang.';
 		this.categories = 'Games Boardgame Classic';
-		//this.status = "Beta";
 
 		this.minPlayers = 2;
 		this.maxPlayers = 2;

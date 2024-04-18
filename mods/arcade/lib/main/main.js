@@ -6,14 +6,15 @@ class ArcadeMain {
 	constructor(app, mod, container = 'body') {
 		this.app = app;
 		this.mod = mod;
-
-
+		this.container = container;
 
 		//
 		// load init page
 		//
 		app.connection.on('arcade-game-initialize-render-request', (game_id) => {
 			document.querySelector('.arcade-main').innerHTML = '';
+			document.querySelector('.arcade-main').classList.remove("can-scroll-up");
+			document.querySelector('.arcade-main').classList.remove("can-scroll-down");
 
 			if (document.getElementById('saito-container')) {
 				document.getElementById('saito-container').scrollTop = 0;
@@ -60,7 +61,7 @@ class ArcadeMain {
 	attachEvents() {
 
 		let gameListContainerAlt = document.querySelector(".arcade-main");
-		let gameListContainer = document.querySelector(".arcade-game-filter-list")
+		let gameListContainer = document.querySelector(".arcade-main")
 
 		const intersectionObserver = new IntersectionObserver((entries) => {
 		  entries.forEach(entry => {
@@ -89,18 +90,33 @@ class ArcadeMain {
 		).forEach((game) => {
 			game.onclick = (e) => {
 				e.stopPropagation();
-				let modname = e.currentTarget.getAttribute('data-league');
+				let league_id = e.currentTarget.getAttribute('data-league');
 
-				this.app.browser.logMatomoEvent(
-					'LeagueOverlay',
-					'GameSelector',
-					modname
-				);
+				if (league_id){
+					this.app.browser.logMatomoEvent(
+						'LeagueOverlay',
+						'GameSelector',
+						league_id
+					);
 
-				this.app.connection.emit(
-						'league-overlay-render-request',
+					this.app.connection.emit(
+							'league-overlay-render-request',
+							league_id
+					);			
+				}else{
+					let modname = e.currentTarget.getAttribute('data-id');
+					this.app.browser.logMatomoEvent(
+						'GameWizard',
+						'GameSelector',
 						modname
-				);
+					);
+
+					this.app.connection.emit(
+							'arcade-launch-game-wizard',
+							{game: modname}
+					);			
+
+				}
 
 			};
 		});
