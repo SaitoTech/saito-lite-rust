@@ -1915,7 +1915,10 @@ if (this.game.state.events.cramner_active == 1) {
     let pfactions = this.returnPlayerFactions(this.game.player);
 
     if (ops == null) { ops = 2; }
-    if (ops == 0) { }
+    if (ops == 0) { 
+      this.endTurn();
+      return;
+    }
 
     //
     // "ACTIVATED POWERS" are those for whom players have the choice of moving.

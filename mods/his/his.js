@@ -26370,12 +26370,13 @@ alert("workaround bug-fix: if you see this error the game is attempting to unloc
           // stop naval battle if only attacker is left (retreat)
           //
           let fluis = 0;
+          let attacker_fluis = this.returnFactionNavalUnitsInSpace(attacker, spacekey);
           for (let f in space.units) {
-            if (f !== attacker && !this.areAllies(this.game.state.active_faction, f, 1)) {
+            if (!this.areAllies(attacker, f, 1)) {
               fluis += this.returnFactionNavalUnitsInSpace(f, spacekey);
             }
           }
-          if (fluis == 0) {
+          if (fluis == 0 || attacker_fluis == 0) {
             return 1;
           }
 
@@ -26783,18 +26784,9 @@ try {
 	      this.displaySpace(space.key);
 	      return 1;
 	    } else {
-
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-
 	      this.game.queue.push(`field_battle\t${spacekey}\t${attacker}`);
 	      this.game.queue.push(`fortification_check\t${attacker}\t${spacekey}\t${his_self.game.state.attacker_comes_from_this_spacekey}`);
 	      return 1;
-
 	    }
 
 	  }
@@ -26895,6 +26887,8 @@ console.log("#");
 	  let attacker_highest_battle_rating_figure = "";
 	  let defender_highest_battle_rating_figure = "";
 
+	  let unbesieged_defender_units = 0;
+
 	  for (let f in faction_map) {
 	    if (faction_map[f] === attacker_faction) {
 	      let x = calculate_rolls(f);
@@ -26906,6 +26900,12 @@ console.log("#");
 	      }
 	    }
 	    if (faction_map[f] === defender_faction) {
+	      for (let z = 0; z < space.units[f].length; z++) {
+		let u = space.units[f][z];
+		if (u.type == "regular" || u.type == "cavalry" || u.type == "mercenary") {
+		  if (u.besieged == 0) { unbesieged_defender_units++; }
+		}
+	      }
 	      let x = calculate_rolls(f);
 	      defender_rolls += x.rolls;
 	      defender_units.push(...x.units);
@@ -26936,9 +26936,17 @@ console.log("#");
 	      this.updateLog(space.name + " put under siege.");
 	    }
 	    this.displaySpace(space.key);
-console.log("no defender units in fortified space existing!");
 	    return 1;	    
 	  }
+
+	  //
+	  // no unbesieged defender units
+	  //
+	  if (unbesieged_defender_units == 0) {
+	    this.displaySpace(space.key);
+	    return 1;
+	  }
+
 
 	  //
 	  // if the defender has no units (retreat?) then we just exit the field battle
@@ -26946,7 +26954,6 @@ console.log("no defender units in fortified space existing!");
 	  // edge-cases with siege/assault above.
 	  //
 	  if (no_defender_units == true) {
-console.log("no defender units existing!");
 	    this.displaySpace(space.key);
 	    return 1;	    
 	  }
@@ -28230,7 +28237,6 @@ console.log("about to assign hits directly...");
 	  // unexpected war -- everyone retreats or gets destroyed
 	  //
 	  if (his_self.game.state.events.unexpected_war == 1) {
-console.log("IN UNEXPECTED WAR");
             for (let f in his_self.game.state.field_battle.faction_map) {
               if (his_self.game.state.field_battle.faction_map[f] == his_self.game.state.field_battle.attacker_faction) {
 	        this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
@@ -28862,7 +28868,15 @@ console.log("IN UNEXPECTED WAR");
 	      }
 	    }
 	    if (faction1_present == 1 && faction2_present == 1) {
-              his_self.game.queue.push("field_battle\t"+key+"\t"+faction1);
+	      if (!his_self.isSpaceBesieged(key)) {
+		// attacker will be one that does not control the space
+		let fac = his_self.returnFactionControllingSpace(key);
+		if (his_self.areAllies(fac, faction1)) {
+                  his_self.game.queue.push("field_battle\t"+key+"\t"+faction2);
+		} else {
+                  his_self.game.queue.push("field_battle\t"+key+"\t"+faction1);
+		}
+	      }
 	    }
 	  }
 
@@ -36564,7 +36578,10 @@ if (this.game.state.events.cramner_active == 1) {
     let pfactions = this.returnPlayerFactions(this.game.player);
 
     if (ops == null) { ops = 2; }
-    if (ops == 0) { }
+    if (ops == 0) { 
+      this.endTurn();
+      return;
+    }
 
     //
     // "ACTIVATED POWERS" are those for whom players have the choice of moving.
