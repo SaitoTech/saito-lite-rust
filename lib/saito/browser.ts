@@ -2462,6 +2462,19 @@ class Browser {
 	}
 
 	validateAmountLimit(amount, event){
+		// allow only numbers, dot, backspace
+		// 95 to 106 corresponds to Numpad 0 through 9;
+		// 47 to 58 corresponds to 0 through 9 on the Number Row; 
+		// 8 is Backspace
+		// 190, 110, 46 are for dot (.)
+		if(!((event.keyCode > 95 && event.keyCode < 106)
+	      || (event.keyCode > 47 && event.keyCode < 58) 
+	      || event.keyCode == 8 || event.keyCode==190 || event.keyCode==110 || event.keyCode==46) 
+		  ) {
+	      	event.preventDefault();
+	        return false;
+	    }
+
       // prevent user for adding number gretaer than 10^9 to input
       if (amount > 1000000000) {
         if (!isNaN(event.key)) {
