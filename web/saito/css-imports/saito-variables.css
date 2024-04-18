@@ -645,7 +645,7 @@ html[data-theme="dark"] {
   --background-color-overlay-menu-header: var(--color-base);
   --background-color-overlay-form-header: var(--color-base);
   --background-color-header: pink;
-  --background-color-header-menu: cyan;
+  --background-color-header-menu: var(--background-color-main);
   --background-color-post: var(--background-color-main);
   --background-color-post-input: var(--background-color-main);
 /* Button Background Colors */
@@ -847,7 +847,7 @@ html[data-theme="sangre"] {
   --background-color-overlay-menu-header: var(--color-base);
   --background-color-overlay-form-header: var(--color-base);
   --background-color-header: pink;
-  --background-color-header-menu: cyan;
+  --background-color-header-menu: var(--background-color-main);
   --background-color-post: var(--background-color-main);
   --background-color-post-input: var(--background-color-main);
 /* Button Background Colors */
@@ -1063,7 +1063,7 @@ html[data-theme="midnight"] {
   --background-color-overlay-menu-header: var(--color-base);
   --background-color-overlay-form-header: var(--color-base);
   --background-color-header: none; /* testing */
-  --background-color-header-menu: none; /* testing */
+  --background-color-header-menu: var(--background-color-main);
   --background-color-post: var(--color-base);
   --background-color-post-input: var(--background-color-main);
 /* Button Background Colors */
@@ -1268,7 +1268,7 @@ html[data-theme="arcade"] {
   --background-color-overlay-menu-header: var(--color-base);
   --background-color-overlay-form-header: var(--color-base);
   --background-color-header: pink;
-  --background-color-header-menu: cyan;
+  --background-color-header-menu: var(--background-color-main);
   --background-color-post: var(--background-color-main);
   --background-color-post-input: var(--background-color-main);
 /* Button Background Colors */
