@@ -624,4 +624,3 @@
  }
  
  module.exports = MixinModule;
- 
