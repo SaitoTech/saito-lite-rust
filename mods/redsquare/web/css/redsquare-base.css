@@ -178,11 +178,6 @@ body {
 	 	margin: 0 auto;
 	 }
 
- 	.saito-floating-plus-btn {
-		display: none;
-	}
-
-
 }
 
 @media screen and (max-width: 940px) {
@@ -272,10 +267,6 @@ body {
 	.saito-sidebar.left {
 		display: none;
 		visibility: hidden;
-	}
-
-	.saito-floating-plus-btn {
-		display: flex;
 	}
 
 	.saito-main{

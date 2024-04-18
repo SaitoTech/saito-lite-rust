@@ -137,12 +137,6 @@
  * Override saito-page-layout 
  * to make arcade better on mobile
 **************************************/
-@media screen and (max-width: 1200px){
-	.saito-floating-plus-btn{
-		display: none;
-	}
-}
-
 
 @media screen and (max-width: 900px) {
 	.saito-container.arcade-container{
