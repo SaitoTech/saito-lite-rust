@@ -397,7 +397,7 @@
   position: absolute;
   font-size: 40px;
   padding: 0.75rem;
-  color: var(--font-color-button-header-back);
+  color: var(--font-color-white);
   cursor: pointer;
   transition: transform 0.2s;
   top: 0;
