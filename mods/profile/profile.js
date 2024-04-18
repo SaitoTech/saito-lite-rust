@@ -321,7 +321,7 @@ class Profile extends ModTemplate {
 
 	//
 	//
-	//  Registers an identifier
+	//  Registers a profile
 	//
 	async registerProfile(
 		identifier,
@@ -341,7 +341,6 @@ class Profile extends ModTemplate {
 	}
 
 	async updateProfile(identifier, bio = '', photo = '', data = '') {
-		
 		let result = await this.sendUpdateRequestTransaction(
 			identifier,
 			bio,
@@ -1045,6 +1044,7 @@ class Profile extends ModTemplate {
 							'update_profile',
 							tx.to[0].publicKey
 						);
+						siteMessage("Profile successfully registered")
 					}
 				}
 			} else {
@@ -1270,6 +1270,7 @@ class Profile extends ModTemplate {
 									tx.to[0].publicKey
 								);
 							}
+							siteMessage("Profile successfully updated")
 						}
 					}
 				} catch (err) {

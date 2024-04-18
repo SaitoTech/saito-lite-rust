@@ -129,8 +129,9 @@ body {
 .saito-profile-edit {
 	position: absolute;
 	right: 1rem;
-	color: var(--saito-red);
+	color: var(--saito-black-faded);
 	bottom: 1rem;
+	font-size: 2.5rem;
 }
 
 .saito-main > .saito-loader {

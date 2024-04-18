@@ -1,6 +1,10 @@
 module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 	let publicKey = mod.publicKey;
 	let key = app.keychain.returnKey({ publicKey: publicKey });
+  let bio =""
+  if(key.profile){
+    bio = key.profile?.bio
+  }
 	let identifier_registered;
 
 	if (key?.identifier) {
@@ -71,6 +75,10 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 					: `<div> </div>`
 			}
             </div>
+
+            ${bio ?? ` <div>Bio:</div> <div class="bio-container"> ${bio}</div>`} 
+           
+       
   
             <div>Public Key:</div>
             <div class="pubkey-containter" data-id="${publicKey}">

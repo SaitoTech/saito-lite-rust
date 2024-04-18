@@ -3,7 +3,7 @@ const SaitoOverlay = require('../../../lib/saito/ui/saito-overlay/saito-overlay'
 const SaitoLoader = require('../../../lib/saito/ui/saito-loader/saito-loader');
 
 class RegisterUsername {
-	constructor(app, mod, mode = 'register') {
+	constructor(app, mod) {
 		this.app = app;
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(this.app, this.mod);
@@ -13,14 +13,14 @@ class RegisterUsername {
 			'.saito-overlay-form'
 		);
 		this.callback = null;
-		this.mode = mode;
+
 		this.image = null;
 	}
 
 	render(msg = '') {
 		let key = this.app.keychain.returnKey(this.mod.publicKey);
 
-		this.overlay.show(RegisterProfileTemplate(msg, key, this.mode));
+		this.overlay.show(RegisterProfileTemplate(msg, key));
 		this.attachEvents();
 	}
 
@@ -94,9 +94,7 @@ class RegisterUsername {
 				try {
 					document.querySelector(
 						'.saito-overlay-form-header-title'
-					).innerHTML = `${
-						this.mode === 'update' ? 'Updating' : 'Registering'
-					} profile...`;
+					).innerHTML = `Registering profile...`;
 					document
 						.querySelector('.saito-overlay-form-header-title')
 						.classList.add('saito-cached-loader', 'loading');
@@ -129,41 +127,6 @@ class RegisterUsername {
 					profile_peer = this.mod.peers[0].peerIndex;
 				}
 
-				if (this.mode === 'update') {
-					let success = this.mod.updateProfile(
-						identifier + domain,
-						bio,
-						this.image
-					);
-					if (success) {
-						console.log('REGISTRY: tx to update successfully sent');
-						//
-						// mark wallet that we have registered username
-						//
-						this.app.keychain.addKey(this.mod.publicKey, {
-							has_registered_username: true
-						});
-
-						// Change Saito-header / Settings page
-						this.app.connection.emit(
-							'update_profile',
-							this.mod.publicKey
-						);
-
-						//Fake responsiveness
-						setTimeout(() => {
-							this.overlay.remove();
-							if (this.callback) {
-								this.callback(identifier);
-							}
-						}, 2000);
-					} else {
-						salert('Error 411413: Error Updating Username');
-						this.render();
-					}
-				}
-
-				if (this.mode === 'register') {
 					this.app.network.sendRequestAsTransaction(
 						'profile query',
 						data,
@@ -183,8 +146,6 @@ class RegisterUsername {
 										await this.mod.registerProfile(
 											identifier,
 											domain,
-											bio,
-											this.image
 										);
 									if (success) {
 										console.log(
@@ -239,7 +200,7 @@ class RegisterUsername {
 						},
 						profile_peer
 					);
-				}
+				
 			}
 		};
 	}

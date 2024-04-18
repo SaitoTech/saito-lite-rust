@@ -1,4 +1,4 @@
-module.exports = RegisterUsernameTemplate = (msg, key, mode = 'register') => {
+module.exports = RegisterUsernameTemplate = (msg, key) => {
 	console.log('identifier', key?.identifier);
 
 	let bio = '';
@@ -26,9 +26,7 @@ module.exports = RegisterUsernameTemplate = (msg, key, mode = 'register') => {
 		<form id="register-profile-template" class="register-profile-template"> 
       <div class="saito-overlay-form" id="saito-overlay-form">
 	      <div class="saito-overlay-form-header">
-	        <div class="saito-overlay-form-header-title">${
-				mode === 'update' ? 'Update' : 'Register'
-			} Profile</div>
+	        <div class="saito-overlay-form-header-title">Register Profile</div>
 	      </div>
 	      <div class="saito-overlay-form-text">${msg}:</div>
 		  	<div class="saito-overlay-form-inputs"> 
@@ -49,9 +47,7 @@ module.exports = RegisterUsernameTemplate = (msg, key, mode = 'register') => {
              
 	      <div class="saito-overlay-form-submitline">
 					<div class="saito-overlay-form-alt-opt" id="loginOrRecover">or login/recover</div>
-          <button type="submit" class="saito-button-primary fat saito-overlay-form-submit" id="saito-overlay-submit">${
-				mode === 'update' ? 'Update' : 'Register'
-			} Profile</button> 
+          <button type="submit" class="saito-button-primary fat saito-overlay-form-submit" id="saito-overlay-submit">Register Profile</button> 
         </div>
       </div>
 		</form>

@@ -4,7 +4,7 @@ const SaitoOverlay = require('../../../lib/saito/ui/saito-overlay/saito-overlay'
 const SaitoLoader = require('../../../lib/saito/ui/saito-loader/saito-loader');
 
 class UpdateProfile {
-	constructor(app, mod, mode="update") {
+	constructor(app, mod) {
 		this.app = app;
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(this.app, this.mod);
@@ -14,7 +14,6 @@ class UpdateProfile {
 			'.saito-overlay-form'
 		);
 		this.callback = null;
-		this.mode = mode;
 		this.image = null;
 		this.photoUploader = new PhotoUploader(app, mod);
 		this.unresized = null;
@@ -28,7 +27,7 @@ class UpdateProfile {
 			photo = key.profile.photo || '';
 		}
 		this.image = photo;
-		this.overlay.show(UpdateProfileTemplate(msg, key, this.mode));
+		this.overlay.show(UpdateProfileTemplate(msg, key));
 		this.attachEvents();
 	}
 
@@ -47,6 +46,7 @@ class UpdateProfile {
 				try {
 					this.unresized = result;
 					this.image = await this.app.browser.resizeImg(result);
+					document.querySelector('#uploaded-photo').style.display = "block";
 					document.querySelector('#uploaded-photo').src = result;
 				} catch (error) {
 					console.error('Profile: error uploading image', error);
@@ -88,6 +88,11 @@ class UpdateProfile {
 			let bio = document.querySelector(
 				'.saito-overlay-form-textarea'
 			).value;
+
+			if (bio.length > 200) {
+				salert('Error: Bio must not exceed 200 characters.');
+				return; 
+			}
 
 			if (identifier) {
 				if (identifier.indexOf('@') > -1) {
@@ -133,6 +138,7 @@ class UpdateProfile {
 					profile_peer = this.mod.peers[0].peerIndex;
 				}
 
+				
 					let success = this.mod.updateProfile(
 						identifier + domain,
 						bio,

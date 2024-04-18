@@ -31,7 +31,7 @@ module.exports = UpdateProfileTemplate = (msg, key) => {
 				<i class="fa-regular fa-image"></i>
 				</div>
 				<p class="saito-overlay-form-text"> Upload Photo </p>
-				<img src="${photo}" class="uploaded-photo" id="uploaded-photo"/>
+				${photo ? `<img src="${photo}" class="uploaded-photo" id="uploaded-photo"/>`: `<img alt=""  style="display:none;" class="uploaded-photo" id="uploaded-photo"/>`}
 			  </div>
 			
 			  </div>

@@ -66,6 +66,20 @@
   text-overflow: ellipsis;
 }
 
+.saito-profile-info .saito-bio {
+  margin-top: 1rem;
+  font-size: 1.4rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-decoration: wavy;
+  width: 100%; 
+  white-space: normal; 
+  overflow-wrap: break-word; 
+  word-wrap: break-word; 
+
+
+}
+
 .saito-follow {
   font-size: 1.5rem;
   color: var(--saito-font-color-light);

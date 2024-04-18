@@ -63,6 +63,13 @@
 	gap: 1rem;
 }
 
+
+.settings-appspace-user-details .bio-containter {
+
+	overflow: hidden;
+	text-overflow: ellipsis;
+  
+  }
 .settings-appspace-user-details .profile-public-key {
 	width: 38rem;
 }
