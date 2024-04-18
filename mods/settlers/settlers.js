@@ -3,7 +3,6 @@ const SettlersRules = require('./lib/ui/overlays/rules');
 const SettlersWelcome = require('./lib/ui/overlays/welcome');
 const SettlersStats = require('./lib/ui/overlays/stats');
 const SettlersGameOptionsTemplate = require('./lib/ui/settlers-game-options.template');
-const SettlersTradeHelpOverlayTemplate = require('./lib/ui/settlers-trade-help-overlay.template');
 const htmlTemplate = require('./lib/ui/game-html.template');
 
 const SettlersGameLoop = require('./lib/src/settlers-gameloop.js');
@@ -31,7 +30,7 @@ class Settlers extends GameTemplate {
 
 		this.name = 'Settlers';
 		this.gamename = 'Settlers of Saitoa';
-		this.description = `Explore the island of Saitoa, collect resources, and build your way to dominance.`;
+		this.description = `Saitoa is an island rich in natural resources that are produced with every roll of the die. Collect, trade, and spend resources to grow your colony faster than your opponents to win the game!`;
 		this.categories = 'Games Boardgame Strategy';
 
 		this.minPlayers = 2;
@@ -611,12 +610,13 @@ class Settlers extends GameTemplate {
 		return stats;
 	}
 
-	returnAdvancedOptions() {
-		return SettlersGameOptionsTemplate(this.app, this);
+	returnGameRulesHTML() {
+		return this.rules_overlay.returnRules();
 	}
 
-	returnTradeHelpOverlay() {
-		return SettlersTradeHelpOverlayTemplate(this.app, this);
+
+	returnAdvancedOptions() {
+		return SettlersGameOptionsTemplate(this.app, this);
 	}
 
 	endTurn(){
