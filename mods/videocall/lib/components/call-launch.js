@@ -74,6 +74,7 @@ class CallLaunch {
 					this.mod.room_obj = {
 						call_id: this.mod.createRoomCode(),
 						host_public_key: this.mod.publicKey,
+						call_peers: [],
 					};
 				}
 
