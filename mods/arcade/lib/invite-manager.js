@@ -4,6 +4,7 @@ const JSON = require('json-bigint');
 const ArcadeInitializer = require('./main/initializer');
 const SaitoOverlay = require('./../../../lib/saito/ui/saito-overlay/saito-overlay');
 const JoinGameOverlay = require('./overlays/join-game');
+const GameSlider = require('./game-slider');
 
 class InviteManager {
 	constructor(app, mod, container = '') {
@@ -12,6 +13,8 @@ class InviteManager {
 		this.container = container;
 		this.name = 'InviteManager';
 		this.type = 'short';
+
+		this.slider = new GameSlider(this.app, this.mod, ".invite-manager");
 
 		// For filtering which games get displayed
 		// We may want to only display one type of game invite, so overwrite this before render()
@@ -129,6 +132,8 @@ class InviteManager {
 			);
 		}
 
+		let rendered_content = false;
+
 		for (let list of this.lists) {
 			if (this.list === 'all' || this.list === list) {
 				if (!this.mod.games[list]) {
@@ -186,8 +191,13 @@ class InviteManager {
 						}
 					}
 					newInvite.render();
+					rendered_content = true;
 				}
 			}
+		}
+
+		if (!rendered_content){
+			this.slider.render();
 		}
 
 		this.attachEvents();
