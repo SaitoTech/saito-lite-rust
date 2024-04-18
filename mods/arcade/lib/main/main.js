@@ -12,6 +12,7 @@ class ArcadeMain {
 		// load init page
 		//
 		app.connection.on('arcade-game-initialize-render-request', (game_id) => {
+			this.intersectionObserver.disconnect();
 			document.querySelector('.arcade-main').innerHTML = '';
 			document.querySelector('.arcade-main').classList.remove("can-scroll-up");
 			document.querySelector('.arcade-main').classList.remove("can-scroll-down");
@@ -35,6 +36,26 @@ class ArcadeMain {
 		app.connection.on('rerender-whole-arcade', () => {
 			this.render();
 		});
+
+		this.intersectionObserver = new IntersectionObserver((entries) => {
+		  let gameListContainer = document.querySelector(".arcade-main");			
+		  entries.forEach(entry => {
+			  if (entry.intersectionRatio <= 0) {
+			  	if (entry.target.id == "top-of-game-list"){
+			  		gameListContainer.classList.add("can-scroll-up");
+			  	}else{
+			  		gameListContainer.classList.add("can-scroll-down");
+			  	}
+			  }else{
+			  	if (entry.target.id == "top-of-game-list"){
+			  		gameListContainer.classList.remove("can-scroll-up");
+			  	}else{
+			  		gameListContainer.classList.remove("can-scroll-down");
+			  	}
+			  }
+		  });
+		});
+
 	}
 
 	async render() {
@@ -60,30 +81,9 @@ class ArcadeMain {
 
 	attachEvents() {
 
-		let gameListContainerAlt = document.querySelector(".arcade-main");
-		let gameListContainer = document.querySelector(".arcade-main")
-
-		const intersectionObserver = new IntersectionObserver((entries) => {
-		  entries.forEach(entry => {
-			  if (entry.intersectionRatio <= 0) {
-			  	if (entry.target.id == "top-of-game-list"){
-			  		gameListContainer.classList.add("can-scroll-up");
-			  	}else{
-			  		gameListContainerAlt.classList.add("can-scroll-down");
-			  	}
-			  }else{
-			  	if (entry.target.id == "top-of-game-list"){
-			  		gameListContainer.classList.remove("can-scroll-up");
-			  	}else{
-			  		gameListContainerAlt.classList.remove("can-scroll-down");
-			  	}
-			  }
-		  });
-		});
 		// start observing
-		intersectionObserver.observe(document.getElementById("top-of-game-list"));
-		intersectionObserver.observe(document.getElementById("bottom-of-game-list"));
-
+		this.intersectionObserver.observe(document.getElementById("top-of-game-list"));
+		this.intersectionObserver.observe(document.getElementById("bottom-of-game-list"));
 
 		Array.from(
 			document.querySelectorAll('.arcade-game-selector-game')
