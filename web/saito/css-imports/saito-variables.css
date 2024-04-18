@@ -453,6 +453,7 @@ font imports
   --background-color-chat-module-main: var(--background-color-main);
   --background-color-chat-popup-main: var(--color-base);
   --background-color-chat-popup-message: var(--background-color-main);
+  --background-color-chat-popup-message-self: var(--background-color-main);
   --background-color-chat-popup-subheader: var(--background-color-main);
   --background-color-chat-popup-header: var(--color-base);
   --background-color-chat-popup-input: var(--background-color-main);
@@ -695,10 +696,7 @@ html[data-theme="dark"] {
   --background-color-chat-module-sidebar-right-open: var(--background-color-main);
   --background-color-chat-module-sidebar-left: var(--background-color-main);
   --background-color-chat-module-main: var(--background-color-main);
-  --background-color-chat-popup-main: var(--color-base);
-  --background-color-chat-popup-message: var(--background-color-main);
   --background-color-chat-popup-subheader: var(--background-color-main);
-  --background-color-chat-popup-header: var(--color-base);
   --background-color-chat-popup-input: var(--background-color-main);
   --background-color-hover-chat-popup-message-tag: var(--background-color-main);
 /* Theme Specific */
@@ -895,10 +893,7 @@ html[data-theme="sangre"] {
   --background-color-chat-module-sidebar-right-open: var(--background-color-main);
   --background-color-chat-module-sidebar-left: var(--background-color-main);
   --background-color-chat-module-main: var(--background-color-main);
-  --background-color-chat-popup-main: var(--color-base);
-  --background-color-chat-popup-message: var(--background-color-main);
   --background-color-chat-popup-subheader: var(--background-color-main);
-  --background-color-chat-popup-header: var(--color-base);
   --background-color-chat-popup-input: var(--background-color-main);
   --background-color-hover-chat-popup-message-tag: var(--background-color-main);
 /* Theme Specific */
@@ -916,7 +911,7 @@ html[data-theme="midnight"] {
   --chat-header-icon-padding: 0 1.3rem;
 /*TINTS COLOR SECTION*/
   --color-tint-primary: #f8f8f8; /* bright-off-white */
-  --color-tint-dark: #3d3d3d; /* very dark gray */
+  --color-tint-dark: #4c4545; /* very dark gray */
   --color-highlight: #f71f3d; /* saito-red */
 /*SHADOW COLOR SECTION*/
   --color-shadow-primary: #1c1c23b5; /* almost black, transparent */
@@ -1110,10 +1105,10 @@ html[data-theme="midnight"] {
   --background-color-chat-module-sidebar-right-open: var(--background-color-main);
   --background-color-chat-module-sidebar-left: var(--background-color-main);
   --background-color-chat-module-main: var(--background-color-main);
-  --background-color-chat-popup-main: var(--color-base);
-  --background-color-chat-popup-message: var(--background-color-main);
-  --background-color-chat-popup-subheader: var(--background-color-main);
-  --background-color-chat-popup-header: var(--color-base);
+  --background-color-chat-popup-main: var(--background-color-main);
+  --background-color-chat-popup-message-self: var(--color-tint-dark);
+  --background-color-chat-popup-message: var(--color-primary);
+  --background-color-chat-popup-subheader: var(--color-base);
   --background-color-chat-popup-input: var(--background-color-main);
   --background-color-hover-chat-popup-message-tag: var(--background-color-main);
 /* Theme Specific */
@@ -1314,9 +1309,7 @@ html[data-theme="arcade"] {
   --background-color-chat-module-sidebar-left: var(--background-color-main);
   --background-color-chat-module-main: var(--background-color-main);
   --background-color-chat-popup-main: var(--background-color-main);
-  --background-color-chat-popup-message: var(--background-color-main);
   --background-color-chat-popup-subheader: var(--background-color-main);
-  --background-color-chat-popup-header: var(--color-base);
   --background-color-chat-popup-input: var(--background-color-main);
   --background-color-hover-chat-popup-message-tag: var(--background-color-main);
 /* Theme Specific */
@@ -1421,4 +1414,7 @@ html[data-theme="milquetoast"] {
   --background-color-button-hover-profile: var(--color-highlight);
   --background-color-calendar-today: var(--color-highlight);
   --background-color-calendar-hover: var(--color-highlight);
+  --background-color-chat-popup-message: var(--background-color-main);
+  --background-color-chat-popup-message-self: var(--color-highlight);
+  
 }

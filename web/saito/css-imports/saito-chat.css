@@ -368,12 +368,12 @@
   gap: 0 2rem;
 }
 
-.chat-body .saito-user .saito-userline {
+.chat-body .saito-user .saito-userline { /* others messages*/
   font-size: 1.6rem;
   padding: 0.75rem;
   padding-right: 3rem;
   border-radius: 0.5rem 0.5rem 0.5rem 0;
-  background: var(--background-color-chat-popup-message); /* consider slightly adjusted shade for the other user */
+  background: var(--background-color-chat-popup-message); 
   box-shadow: var(--shadow-chat-message-bottom), var(--shadow-chat-user) var(--key-color);
   margin-right: 1rem;
   height: fit-content;
@@ -407,8 +407,8 @@
   justify-content: flex-end;
 }
 
-.chat-body .saito-user-self.saito-user .saito-userline {
-  background: var(--background-color-chat-popup-message);
+.chat-body .saito-user-self.saito-user .saito-userline { /* self's messages */
+  background: var(--background-color-chat-popup-message-self);
 }
 
 /* hide my own name */
