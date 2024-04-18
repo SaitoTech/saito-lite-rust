@@ -14,7 +14,7 @@ class SettingsAppspace {
 		this.overlay = new SaitoOverlay(app, mod);
 
 		app.connection.on("update_profile", ()=> {
-			this.render()
+			// this.render()
 		})
 	}
 

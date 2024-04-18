@@ -1044,7 +1044,7 @@ class Profile extends ModTemplate {
 							'update_profile',
 							tx.to[0].publicKey
 						);
-						this.app.connection.emit('update_profile', this.publicKey);
+						// this.app.connection.emit('update_profile', this.publicKey);
 						siteMessage("Profile successfully registered")
 					}
 				}
