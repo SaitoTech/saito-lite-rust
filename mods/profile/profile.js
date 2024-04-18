@@ -1242,9 +1242,7 @@ class Profile extends ModTemplate {
 								);
 							}
 
-							console.log(
-								'receiving register success transaction'
-							);
+					
 							if (tx.isTo(this.publicKey)) {
 								this.app.keychain.addKey(tx.to[0].publicKey, {
 									identifier: identifier,
@@ -1269,8 +1267,10 @@ class Profile extends ModTemplate {
 									'update_profile',
 									tx.to[0].publicKey
 								);
+
+								siteMessage("Profile successfully updated")
 							}
-							siteMessage("Profile successfully updated")
+					
 						}
 					}
 				} catch (err) {

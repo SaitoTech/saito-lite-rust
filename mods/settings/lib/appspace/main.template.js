@@ -76,7 +76,7 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 			}
             </div>
 
-            ${bio ?? ` <div>Bio:</div> <div class="bio-container"> ${bio}</div>`} 
+           <div>Bio:</div> <div class="bio-container"> ${bio ?? ""}</div>
            
        
   
