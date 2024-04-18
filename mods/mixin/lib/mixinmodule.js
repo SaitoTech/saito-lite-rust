@@ -99,7 +99,7 @@
 						 salert('Having problem generating key for '+' '+this_self.ticker);
 						 await this.app.wallet.setPreferredCrypto('SAITO', 1);
 						 this.app.connection.emit("wallet-updated");
-						 this.app.connection.emit('update_profile', this.publicKey);
+						 this.app.connection.emit('update_identifier', this.publicKey);
 					 }
 				 });
 		 } else {
