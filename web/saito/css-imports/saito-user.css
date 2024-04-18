@@ -7,6 +7,7 @@ Saito Identicon
   height: 3.5rem;
   border: var(--border-thickness-identicon) solid var(--border-color-identicon);
   border-radius: var(--border-radius-identicon);
+  padding: var(--border-padding-identicon-style);
 }
 
 .saito-identicon-box {
