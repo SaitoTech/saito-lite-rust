@@ -19291,14 +19291,11 @@ try {
 
   areEnemies(faction1, faction2, count_minor_activated_factions=1) {
 
-console.log("ARE ENEMIES: " + faction1 + " " + faction2);
     if (faction1 === faction2) { return 0; }
     try { if (this.game.state.alliances[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.alliances[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
-console.log("not enemies in alliances table!");
     try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 0; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 0; } } catch (err) {}
-console.log("ARE ENEMIES: " + faction1 + " " + faction2);
     if (count_minor_activated_factions) {
       if (this.isMinorPower(faction1) || this.isMinorPower(faction2)) {
         let f1cp = this.returnControllingPower(faction1);
@@ -25503,8 +25500,8 @@ return 1; }
 //
 // IS_TESTING -- ALL INTERCEPTIONS SUCCEED
 //
-this.updateLog("IS_TESTING - HITS ON 2");
-hits_on = 2;
+//this.updateLog("IS_TESTING - HITS ON 2");
+//hits_on = 2;
 
 	  if (dsum >= hits_on) {
 
@@ -32614,6 +32611,8 @@ if (this.game.state.round == 2) {
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
+cardnum = 1;
+
     	        this.game.queue.push("check_replacement_cards\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
@@ -35204,9 +35203,9 @@ console.log(JSON.stringify(reshuffle_cards));
 
   playerRetainUnitsWithFilter(faction, filter_func, num_to_retain) {
 
+    let his_self = this;
     let units_available = [];
     let units_to_retain = [];
-
 
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].units[faction]) {
@@ -38596,7 +38595,9 @@ does_units_to_move_have_unit = true; }
       function(space) {
 	let num_moveable = 0;
 	if (space.key == "persia" || space.key == "egypt" || space.key == "ireland") { return 0; }
-	if (space.units[z].length > 0 && his_self.returnPlayerCommandingFaction(z) == his_self.game.player && (z == faction || his_self.returnControllingPower(z) == faction)) {
+
+	for (let z in space.units) {
+	  if (space.units[z].length > 0 && his_self.returnPlayerCommandingFaction(z) == his_self.game.player && (z == faction || his_self.returnControllingPower(z) == faction)) {
 	    //
 	    // Foul Weather prevents spaces with already moved units
 	    //
@@ -38618,6 +38619,7 @@ does_units_to_move_have_unit = true; }
             }
 
 	    return 1;
+	  }
 	}
 	return 0;
       },

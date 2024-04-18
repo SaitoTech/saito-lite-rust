@@ -164,14 +164,11 @@
 
   areEnemies(faction1, faction2, count_minor_activated_factions=1) {
 
-console.log("ARE ENEMIES: " + faction1 + " " + faction2);
     if (faction1 === faction2) { return 0; }
     try { if (this.game.state.alliances[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.alliances[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}
-console.log("not enemies in alliances table!");
     try { if (this.game.state.activated_powers[faction1].includes(faction2)) { return 0; } } catch (err) {}
     try { if (this.game.state.activated_powers[faction2].includes(faction1)) { return 0; } } catch (err) {}
-console.log("ARE ENEMIES: " + faction1 + " " + faction2);
     if (count_minor_activated_factions) {
       if (this.isMinorPower(faction1) || this.isMinorPower(faction2)) {
         let f1cp = this.returnControllingPower(faction1);

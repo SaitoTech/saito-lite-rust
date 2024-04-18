@@ -552,9 +552,9 @@
 
   playerRetainUnitsWithFilter(faction, filter_func, num_to_retain) {
 
+    let his_self = this;
     let units_available = [];
     let units_to_retain = [];
-
 
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].units[faction]) {
@@ -3944,7 +3944,9 @@ does_units_to_move_have_unit = true; }
       function(space) {
 	let num_moveable = 0;
 	if (space.key == "persia" || space.key == "egypt" || space.key == "ireland") { return 0; }
-	if (space.units[z].length > 0 && his_self.returnPlayerCommandingFaction(z) == his_self.game.player && (z == faction || his_self.returnControllingPower(z) == faction)) {
+
+	for (let z in space.units) {
+	  if (space.units[z].length > 0 && his_self.returnPlayerCommandingFaction(z) == his_self.game.player && (z == faction || his_self.returnControllingPower(z) == faction)) {
 	    //
 	    // Foul Weather prevents spaces with already moved units
 	    //
@@ -3966,6 +3968,7 @@ does_units_to_move_have_unit = true; }
             }
 
 	    return 1;
+	  }
 	}
 	return 0;
       },
