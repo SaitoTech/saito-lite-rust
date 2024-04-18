@@ -1049,7 +1049,7 @@ html[data-theme="midnight"] {
   --background-color-overlay-menu-header: var(--color-base);
   --background-color-overlay-form-header: var(--color-base);
   --background-color-header: none; /* testing */
-  --background-color-header-menu: none; /* testing */
+  --background-color-header-menu: var(--background-color-main);
   --background-color-post: var(--color-base);
   --background-color-post-input: var(--background-color-main);
 /* Button Background Colors */

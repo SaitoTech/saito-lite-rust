@@ -6,6 +6,13 @@
  --border-color-general-dividers: #ddd;
 }
 
+.saito-overlay {
+  background-color: transparent;
+}
+.saito-overlay-backdrop {
+  background-color: #0009;
+}
+
 .persia , .war_in_persia {
     top: 500px;
     left: 3800px;
@@ -203,6 +210,10 @@ img {
 	width: 190px;
 	height: 100px;
 	position: absolute;
+}
+#irish {
+	top: 900px;
+	left: 900px;
 }
 #channel {
 	top: 1025px;

@@ -72,6 +72,7 @@
     //
     this.game.state.events.intervention_on_movement_possible = 0;
     this.game.state.events.intervention_on_events_possible = 0;
+    this.game.state.events.intervention_on_assault_possible = 0;
 
     //
     // reset impulse commits
@@ -103,6 +104,7 @@
 
     this.game.state.events.intervention_on_movement_possible = 0;
     this.game.state.events.intervention_on_events_possible = 0;
+    this.game.state.events.intervention_on_assault_possible = 0;
 
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
@@ -181,7 +183,9 @@
   isCaptured(faction, unittype) {
     for (let i = 0; i < this.game.players.length; i++) {
       let p = this.game.state.players_info[i];
-      if (p.captured.includes(unittype)) { return 1; }
+      for (let z = 0; z < p.captured.length; z++) {
+        if (p.captured[z].type == unittype) { return 1; }
+      }
     }
     return 0;
   }
@@ -253,6 +257,7 @@
       for (let z = 0; z < p.captured.length; z++) {
         if (JSON.stringify(p.captured[z]) === unitjson) { return; }
       }
+      unit.capturing_faction = winning_faction;
       p.captured.push(unit);
     }
   }
@@ -441,13 +446,13 @@
     //
     // War Winner VP
     //
-    factions["protestant"].vp += this.game.state.protestant_war_winner_vp;
-    factions["papacy"].vp     += this.game.state.papacy_war_winner_vp;
+    factions["protestant"].vp += parseInt(this.game.state.protestant_war_winner_vp);
+    factions["papacy"].vp     += parseInt(this.game.state.papacy_war_winner_vp);
     try {
-      factions["ottoman"].vp    += this.game.state.ottoman_war_winner_vp;
-      factions["hapsburg"].vp   += this.game.state.hapsburg_war_winner_vp;
-      factions["england"].vp    += this.game.state.england_war_winner_vp;
-      factions["france"].vp     += this.game.state.france_war_winner_vp;    
+      factions["ottoman"].vp    += parseInt(this.game.state.ottoman_war_winner_vp);
+      factions["hapsburg"].vp   += parseInt(this.game.state.hapsburg_war_winner_vp);
+      factions["england"].vp    += parseInt(this.game.state.england_war_winner_vp);
+      factions["france"].vp     += parseInt(this.game.state.france_war_winner_vp);
     } catch (err) {
 
     }
@@ -498,15 +503,14 @@
 	leaders = [];
         leaders.push(key);
       }
-if (this.game.state.scenario != "is_testing") {
-      if (max_vp >= (runner_up_vp+lead_required) && this.game.state.round >= domination_round && this.game.players.length > 2) {
-	if (leaders.length == 1) {
-	  factions[leaders[0]].victory = 1;
-	  factions[leaders[0]].reason = "Domination Victory";
-	}
-      }
-}
     }
+    if (max_vp >= (runner_up_vp+lead_required) && this.game.state.round >= domination_round && this.game.players.length > 2) {
+      if (leaders.length == 1) {
+        factions[leaders[0]].victory = 1;
+	factions[leaders[0]].reason = "Domination Victory";
+      }
+    }
+
 
     //
     // final victory if round 9

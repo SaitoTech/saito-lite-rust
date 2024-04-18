@@ -201,6 +201,13 @@ div.h3{
   margin-bottom: 3rem;
 }
 
+.saito-splash-info .leaderboard-container{
+  max-height: calc(100vh - var(--saito-header-height) - 2rem);
+  max-width: 80rem;
+  margin: auto;
+  overflow: auto;
+}
+
 @media screen and (max-width: 600px) {
   .saito-splash-image{
     background-attachment: scroll;

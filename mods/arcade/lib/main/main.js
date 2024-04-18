@@ -1,30 +1,21 @@
 const JSON = require('json-bigint');
 const ArcadeMainTemplate = require('./main.template');
-const ArcadeMenu = require('./menu');
-const GameSlider = require('../game-slider');
 const ArcadeInitializer = require('./initializer');
-const SaitoSidebar = require('./../../../../lib/saito/ui/saito-sidebar/saito-sidebar');
 
 class ArcadeMain {
-	constructor(app, mod, container = '') {
+	constructor(app, mod, container = 'body') {
 		this.app = app;
 		this.mod = mod;
-
-		//
-		// left sidebar
-		//
-		this.sidebar = new SaitoSidebar(this.app, this.mod, '.saito-container');
-		this.sidebar.align = 'nope';
-		this.menu = new ArcadeMenu(this.app, this.mod, '.saito-sidebar.left');
-		this.sidebar.addComponent(this.menu);
-		this.slider = new GameSlider(this.app, this.mod, '.arcade-game-slider');
+		this.container = container;
 
 		//
 		// load init page
 		//
 		app.connection.on('arcade-game-initialize-render-request', (game_id) => {
-			document.querySelector('.arcade-central-panel').innerHTML = '';
-			this.slider.hide();
+			this.intersectionObserver.disconnect();
+			document.querySelector('.arcade-main').innerHTML = '';
+			document.querySelector('.arcade-main').classList.remove("can-scroll-up");
+			document.querySelector('.arcade-main').classList.remove("can-scroll-down");
 
 			if (document.getElementById('saito-container')) {
 				document.getElementById('saito-container').scrollTop = 0;
@@ -33,7 +24,7 @@ class ArcadeMain {
 			let initializer = new ArcadeInitializer(
 				this.app,
 				this.mod,
-				'.arcade-central-panel'
+				'.arcade-main'
 			);
 
 			this.mod.is_game_initializing = true;
@@ -45,75 +36,92 @@ class ArcadeMain {
 		app.connection.on('rerender-whole-arcade', () => {
 			this.render();
 		});
+
+		this.intersectionObserver = new IntersectionObserver((entries) => {
+		  let gameListContainer = document.querySelector(".arcade-main");			
+		  entries.forEach(entry => {
+			  if (entry.intersectionRatio <= 0) {
+			  	if (entry.target.id == "top-of-game-list"){
+			  		gameListContainer.classList.add("can-scroll-up");
+			  	}else{
+			  		gameListContainer.classList.add("can-scroll-down");
+			  	}
+			  }else{
+			  	if (entry.target.id == "top-of-game-list"){
+			  		gameListContainer.classList.remove("can-scroll-up");
+			  	}else{
+			  		gameListContainer.classList.remove("can-scroll-down");
+			  	}
+			  }
+		  });
+		});
+
 	}
 
 	async render() {
 		if (document.querySelector('.saito-container')) {
 			this.app.browser.replaceElementBySelector(
-				ArcadeMainTemplate(),
+				ArcadeMainTemplate(this.app, this.mod),
 				'.saito-container'
 			);
 		} else {
 			this.app.browser.addElementToSelector(
-				ArcadeMainTemplate(),
+				ArcadeMainTemplate(this.app, this.mod),
 				this.container
 			);
 		}
 
-		await this.sidebar.render();
-
 		//
-		// slider
+		// invites box modules
 		//
-		await this.slider.render();
-
-		//
-		// invite manager
-		//
-		await this.app.modules.renderInto('.arcade-invites-box');
-
-		//
-		// appspace modules
-		//
-		await this.app.modules.renderInto('.arcade-leagues');
+		await this.app.modules.renderInto('.arcade-sidebar');
 
 		this.attachEvents();
 	}
 
 	attachEvents() {
-		/*
 
-		const scrollableElement = document.querySelector('.saito-container');
-		const sidebar = document.querySelector('.saito-sidebar.right');
-		let scrollTop = 0;
-		let stop = 0;
+		// start observing
+		this.intersectionObserver.observe(document.getElementById("top-of-game-list"));
+		this.intersectionObserver.observe(document.getElementById("bottom-of-game-list"));
 
-		scrollableElement.addEventListener('scroll', (e) => {
-			if (window.innerHeight - 150 < sidebar.clientHeight) {
-				if (scrollTop < scrollableElement.scrollTop) {
-					stop =
-						window.innerHeight -
-						sidebar.clientHeight +
-						scrollableElement.scrollTop;
-					if (
-						scrollableElement.scrollTop + window.innerHeight >
-						sidebar.clientHeight
-					) {
-						sidebar.style.top = stop + 'px';
-					}
-				} else {
-					if (stop > scrollableElement.scrollTop) {
-						stop = scrollableElement.scrollTop;
-						sidebar.style.top = stop + 'px';
-					}
+		Array.from(
+			document.querySelectorAll('.arcade-game-selector-game')
+		).forEach((game) => {
+			game.onclick = (e) => {
+				e.stopPropagation();
+				let league_id = e.currentTarget.getAttribute('data-league');
+
+				if (league_id){
+					this.app.browser.logMatomoEvent(
+						'LeagueOverlay',
+						'GameSelector',
+						league_id
+					);
+
+					this.app.connection.emit(
+							'league-overlay-render-request',
+							league_id
+					);			
+				}else{
+					let modname = e.currentTarget.getAttribute('data-id');
+					this.app.browser.logMatomoEvent(
+						'GameWizard',
+						'GameSelector',
+						modname
+					);
+
+					this.app.connection.emit(
+							'arcade-launch-game-wizard',
+							{game: modname}
+					);			
+
 				}
-			} else {
-				stop = scrollableElement.scrollTop;
-				sidebar.style.top = stop + 'px';
-			}
-			scrollTop = scrollableElement.scrollTop;
+
+			};
 		});
-		*/
+
+
 	}
 }
 

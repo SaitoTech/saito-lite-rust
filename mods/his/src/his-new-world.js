@@ -24,6 +24,39 @@
 //
 //
 
+  returnNextColonyTile(faction="") {
+    if (faction == "england") {
+      if (this.game.state.newworld['england_colony1'].claimed != 1) {
+        return "/his/img/tiles/colonies/Roanoke.svg";
+      } else {
+	return "/his/img/tiles/colonies/Jamestown.svg";
+      }
+    }
+
+    if (faction == "france") {
+      if (this.game.state.newworld['france_colony1'].claimed != 1) {
+        return "/his/img/tiles/colonies/Charlesbourg.svg";
+      } else {
+	return "/his/img/tiles/colonies/Montreal.svg";
+      }
+    }
+
+    if (faction == "hapsburg") {
+      if (this.game.state.newworld['hapsburg_colony1'].claimed != 1) {
+        return "/his/img/tiles/colonies/PuertoRico.svg";
+      } else {
+	if (this.game.state.newworld['hapsburg_colony1'].claimed != 1) {
+          return "/his/img/tiles/colonies/Cuba.svg";
+	} else {
+          return "/his/img/tiles/colonies/Hispanola.svg";
+	}
+      }
+    }
+
+    return "/his/img/tiles/colonies/PuertoRico.svg";
+
+  }
+
   resolveColonies() {
 
     for (let z = 0; z < this.game.state.colonies.length; z++) {
@@ -214,8 +247,19 @@
     let active_explorations = [];
     let sorted_explorations = [];
 
+    let cabot_england_found = 0;
+    let cabot_france_found = 0;
+    let cabot_hapsburg_found = 0;
+
     for (let z = 0; z < this.game.state.explorations.length; z++) {
       let exp = this.game.state.explorations[z];
+
+      if (exp.cabot == 1) { 
+	if (exp.faction == "england") { cabot_england_found = 1; }
+	if (exp.faction == "france") { cabot_france_found = 1; }
+	if (exp.faction == "hapsburg") { cabot_hapsburg_found = 1; }
+      }
+
       if (exp.resolved == 0) {
 
         let available_explorers = this.returnAvailableExplorers(exp.faction);
@@ -273,12 +317,58 @@
 	  exp.modifiers = modifiers;
           exp.explorer = explorer;
           exp.explorer_img = this.explorers[explorer].img;
+          exp.cabot = 0;
 
 	  active_explorations.push(z);
  
 	}
       }
     }
+
+    //
+    // sebastian cabot is a special case
+    //
+    if ((this.game.state.events.cabot_england == 1 && cabot_england_found == 0) || (this.game.state.events.cabot_france == 1 && cabot_france_found == 0) || (this.game.state.events.cabot_hapsburg == 1 && cabot_hapsburg_found == 0)) {
+
+      //
+      // which faction has
+      //
+      let f = "england";
+      if (this.game.state.events.cabot_france == 1 && cabot_france_found == 0) { f = "france"; }
+      if (this.game.state.events.cabot_hapsburg == 1 && cabot_hapsburg_found == 0) { f = "hapsburg"; }
+
+      this.game.state.explorations.push({
+	faction : f ,
+	round : this.game.state.round ,
+	resolved : 0 ,
+      });
+      let idx = this.game.state.explorations.length - 1;
+      let exp = this.game.state.explorations[idx];
+
+      let yy = this.rollDice(6);
+      let zz = this.rollDice(6);
+
+      let total_hits = yy + zz;
+      let base_hits = total_hits;
+      let modifiers = 1;
+      total_hits += modifiers;
+
+      exp.base_roll = base_hits;
+      exp.modified_roll = total_hits;
+      exp.prize = "-";
+      exp.hits = total_hits;
+      exp.modifiers = modifiers;
+      exp.cabot = 1;
+      exp.explorer = "Cabot";
+      exp.explorer_img = "/his/img/tiles/explorers/Cabot_English.svg";
+      if (f == "france") { exp.explorer_img = "/his/img/tiles/explorers/Cabot_French.svg"; }
+      if (f == "hapsburg") { exp.explorer_img = "/his/img/tiles/explorers/Cabot_Hapsburg.svg"; }
+
+      active_explorations.push(idx);
+
+    }
+
+
 
     //
     // now determine sorted_explorations (order of resolution)

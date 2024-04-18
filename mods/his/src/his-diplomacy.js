@@ -124,8 +124,22 @@
 
   canPlayerEndWar(his_self, player, faction) {
     let io = his_self.returnDiplomacyImpulseOrder(faction);
+
+console.log("can we end a war: " + faction);
     for (let i = 0; i < io.length; i++) {
-      if (his_self.areEnemies(faction, io[i])) { return 1; }
+console.log("checking with: " + io[i] + " -- " + his_self.areEnemies(faction, io[i]));
+      if (his_self.areEnemies(faction, io[i])) { 
+console.log("enemies: " + faction + " / " + io[i]);
+	if (
+	  !((faction == "papacy" && io[i] == "protestant") || (faction == "protestant" && io[i] == "papacy"))
+	    && 
+	  !((faction == "hapsburg" && io[i] == "protestant") || (faction == "protestant" && io[i] == "hapsburg"))
+	) {
+
+console.log("this player can end war...");
+	  return 1;
+	}
+      }
     }
     return 0;
   }
@@ -135,6 +149,18 @@
     for (let i = 0; i < io.length; i++) {
       let prohibited_alliance = false;
       if (faction == "papacy" && io[i] == "hapsburg" && his_self.game.state.henry_viii_pope_approves_divorce == 1) {
+	prohibited_alliance = true;
+      }
+      if (faction == "papacy" && io[i] == "protestant") {
+	prohibited_alliance = true;
+      }
+      if (faction == "protestant" && io[i] == "papacy") {
+	prohibited_alliance = true;
+      }
+      if (faction == "hapsburg" && io[i] == "protestant") {
+	prohibited_alliance = true;
+      }
+      if (faction == "protestant" && io[i] == "hapsburg") {
 	prohibited_alliance = true;
       }
       if (faction == "papacy" && io[i] == "ottoman") {
@@ -160,7 +186,9 @@
 
   canPlayerReturnCapturedArmyLeader(his_self, player, faction) {
     let p = his_self.returnPlayerCommandingFaction(faction);
-    if (his_self.game.state.players_info[p-1].captured.length > 0) { return 1; }
+    for (let z = 0; z  < his_self.game.state.players_info[p-1].captured.length; z++) { 
+      if (faction == his_self.game.state.players_info[p-1].capturing_faction) { return 1; }
+    }
     return 0;
   }
 
@@ -304,7 +332,7 @@
       if (mycallback == null) { return; }
       his_self.updateStatus("submitted");
 
-      mycallback([`pull_card\t${faction}\t${action2}`,`NOTIFY\t${his_self.returnFactionName(action2)} pulls card from ${his_self.returnFactionName(faction)}`]);
+      mycallback([`pull_card\t${action2}\t${faction}`,`NOTIFY\t${his_self.returnFactionName(action2)} pulls card from ${his_self.returnFactionName(faction)}`]);
 
     });
 
@@ -332,7 +360,7 @@
       if (mycallback == null) { return; }
       his_self.updateStatus("submitted");
 
-      mycallback([`pull_card\t${action2}\t${faction}`,`NOTIFY\t${his_self.returnFactionName(faction)} pulls card from ${his_self.returnFactionName(action2)}`]);
+      mycallback([`pull_card\t${faction}\t${action2}`,`NOTIFY\t${his_self.returnFactionName(faction)} pulls card from ${his_self.returnFactionName(action2)}`]);
 
     });
 
@@ -348,7 +376,9 @@
     let html = '<ul>';
     for (let i = 0; i < his_self.game.state.players_info[p-1].captured.length; i++) {
       let u = his_self.game.state.players_info[p-1].captured[i];
-      html += `<li class="option" id="${u}">${u}</li>`;
+      if (u.capturing_faction == faction) {
+        html += `<li class="option" id="${u}">${u}</li>`;
+      }
     }
     html += '</ul>';
       

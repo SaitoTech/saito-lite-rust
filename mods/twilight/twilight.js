@@ -83,6 +83,8 @@ class Twilight extends GameTemplate {
     this.region_key = { "asia": "Asia", "seasia": "Southeast Asia", "europe":"Europe", "africa":"Africa", "mideast":"Middle East", "camerica": "Central America", "samerica":"South America"};
     this.grace_window = 25;
 
+    this.sort_priority = 1;
+
   }
 
   showCardOverlay(cards, title = ""){

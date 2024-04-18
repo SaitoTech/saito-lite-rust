@@ -28,7 +28,7 @@ class Screenrecord extends ModTemplate {
 							if (mod_self.mediaRecorder){
 								mod_self.stop();
 							}else{
-								mod_self.record(app.options.stun.peers);
+								mod_self.record(obj.members);
 							}
 						}
 					}

@@ -38,6 +38,21 @@ class AvailableUnitsOverlay {
                         spacekey
                 );     
 
+
+                //
+                // this manually moves multiple units, skirting the restrictions on moving
+                // single units that is imposed on the lowest-level (his-player) and which
+                // bites if we are already over-capacity on unit construction...
+                //
+	        if (mobj.units_to_move.length == 0) {
+                  document.querySelectorAll(".available-units-overlay .army_tile").forEach((el) => {
+                    if (el.classList.contains("opaque")) {
+                      el.classList.remove("opaque");
+                      el.classList.add("nonopaque");
+                    }
+		  });
+	        }
+
 		let his_self = this.mod;
 
 		let qs = ".movement-overlay .available-units-overlay";

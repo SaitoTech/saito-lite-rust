@@ -9,9 +9,13 @@ class RulesOverlay {
 	}
 
 	render() {
-		this.overlay.show(SettlersRulesOverlayTemplate(this));
+		this.overlay.show(SettlersRulesOverlayTemplate(this, "saitoa"));
 
 		this.attachEvents();
+	}
+
+	returnRules(){
+		return SettlersRulesOverlayTemplate(this);
 	}
 
 	attachEvents() {}
