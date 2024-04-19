@@ -56,6 +56,8 @@ class BuildOverlay {
 
 		this.overlay.show(BuildTemplate());
 
+console.log("TEST: " + unit);
+
 	 	if (unit === "mercenary") {
 		  document.querySelector(".unit-details").style.backgroundImage = 'linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url(/his/img/backgrounds/move/mercenary.jpg)';
 		}
@@ -68,6 +70,7 @@ class BuildOverlay {
 	 	if (unit === "squadron") {
 		  document.querySelector(".unit-details").style.backgroundImage = 'linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url(/his/img/backgrounds/move/squadron.jpg)';
 		}
+console.log("au overlay build!: " + unit);
 		this.mod.available_units_overlay.renderBuild(faction, unit, ops, cost, (num) => {
 	          this.hide();
 	    	  mycallback(num, this.cost);

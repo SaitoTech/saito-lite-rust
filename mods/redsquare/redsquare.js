@@ -107,6 +107,8 @@ class RedSquare extends ModTemplate {
 
     this.possibleHome = 1;
 
+    this.use_floating_plus = 1;
+
     //
     // is this a notification?
     //
