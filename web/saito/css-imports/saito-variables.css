@@ -497,7 +497,7 @@ font imports
   --background-color-qr-code: var(--color-base);
   --background-color-file-transfer: var(--color-base);
   --background-color-wallet-inputs: var(--background-color-main);
-  --background-color-mode-arcade: (--color-base);
+  --background-color-mode-arcade: var(--color-base);
 /* Progress Bar and Notifications */
   --background-color-progress-bar: var(--background-saito-effects);
   --background-color-notification-status: var(--color-primary);
@@ -668,7 +668,7 @@ html[data-theme="dark"] {
   --background-color-button-chat-popup-send: var(background-color-main); /* Not used yet, seems to not work*/
   
 /* Progress Bar */
-  --background-color-progress-bar: var(--background-color-main);
+  --background-color-progress-bar: var(--color-primary);
 /* Sidebar, Headers and Notification Colors */
   --background-color-notification-status: var(--color-primary);
   --background-color-notification-status-after: var(--color-contrast);
