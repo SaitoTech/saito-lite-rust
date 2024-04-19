@@ -1,17 +1,10 @@
 html[data-theme="milquetoast"] {
     /*THEME COLORS*/
-    /*BASE COLOR SECTION*/
-      --color-complement: #7f7f7f;/* MID gray  */
-      --color-base: #efefef; /* very light gray, almost white  */
-      --color-contrast: #3d3d3d; /* very dark gray */
+    /*BASE COLOR SECTION*//* MID gray  */ /* very light gray, almost white  */ /* very dark gray */
     /*TINTS COLOR SECTION*/
       --color-tint-dark: #1b1b1b; /* Super dark gray */
       --color-highlight: #d0d0d0; /* very light gray */
-    /*SHADOW COLOR SECTION*/
-      --color-shadow-primary: #1c1c23b5; /* almost black, transparent */
-      --color-shadow-original: 0px 12px 17px 2px #00000024, 0px 5px 22px 4px #0000001f, 0px 7px 8px -4px #00000033;
-      --style-shadow-form-box:  1px 1px 5px var(--border-color-general-dividers);
-      --color-shadow-bubble: #0006;
+    /*SHADOW COLOR SECTION*/ /* almost black, transparent */
     /*SHADOW SELECTION*/
       --shadow-primary-button: var(--shadow-shape-flat);
       --shadow-chat-popup: var(--shadow-shape-glow);
@@ -26,10 +19,8 @@ html[data-theme="milquetoast"] {
     /* Text decoration */
       --text-decoration-switch-global: none;
     /*quick settings-- repeated here, just in case and to make programming easier */
-      --font-color-primary: var(--color-contrast);  /* dark grey font color */
-      --font-color-secondary: var(--color-complement);  /* light grey font color */
-      --font-color-heavy: var(--color-tint-dark);  /* very dark grey font color */
-      --font-color-inverse: var(--color-base);  /* off-white white font color */
+      --font-color-primary: var(--color-contrast);  /* dark grey font color */  /* light grey font color */
+      --font-color-heavy: var(--color-tint-dark);  /* very dark grey font color */  /* off-white white font color */
     /*Font Selection*/
       --font-color-modal-menu-oldschool: none; /* get rid of the extra layer! */
       --font-color-button-hover-modal-oldschool: var(--font-color-heavy);
@@ -47,7 +38,6 @@ html[data-theme="milquetoast"] {
       --border-radius-module-menu: var(--border-radius-voluptuous);
       --border-radius-overlay-menu: var(--border-radius-voluptuous);
       --border-radius-menu-hamburger: var(--border-radius-topleft-only-round); /*hamburger menu*/
-      --border-radius-menu-hamburger-midsection: var(--border-radius-soft);
       --border-radius-sidebar-menu: var(--border-radius-voluptuous);
       --border-radius-sidebar-chat-manager: var(--border-radius-round);
       --border-radius-chat-menu: var(--border-radius-round);
@@ -57,7 +47,6 @@ html[data-theme="milquetoast"] {
       --border-radius-identicon-square: var(--border-radius-soft);
       --border-radius-image-flex: var(--border-radius-round);
       --border-radius-selection-box: var(--border-radius-soft);
-      --border-radius-qr-code: var(--border-radius-soft);
       --border-radius-button-primary: var(--border-radius-round);
       --border-radius-button-sidebar: var(--border-radius-round);
       --border-radius-button-chat-container: var(--border-radius-round);
@@ -72,9 +61,6 @@ html[data-theme="milquetoast"] {
       --border-radius-calendar-hover-days: var(--border-radius-round);
       --border-radius-calendar-hover-today: var(--border-radius-round);
       --border-radius-status-message: var(--border-radius-round);
-      --border-radius-file-transfer: var(--border-radius-soft);
-      --border-radius-arcade-game-list: var(--border-radius-soft);
-      --border-radius-arcade-menu: var(--border-radius-soft);
       --border-radius-sidebar-game-module: var(--border-radius-round);
       --border-radius-identicon-needed: var(--border-radius-voluptuous);
     /* BORDER COLOR */
@@ -90,15 +76,11 @@ html[data-theme="milquetoast"] {
       --background-color-button-sidebar-chat-active: var(--color-highlight);
       --background-color-button-hover-chat-container: var(--color-highlight);
       --background-color-button-hover-modal-oldschool: var(--color-base);
-      --background-color-button-wallet-control: none;
-      --background-color-button-mod-arcade: var(--background-color-button-hover-wallet-control);
       --background-color-button-hover-profile: var(--color-highlight);
       --background-color-calendar-today: var(--color-highlight);
       --background-color-calendar-hover: var(--color-highlight);
       --background-color-chat-popup-main: var(--background-color-main);
-      --background-color-chat-popup-header: var(--color-base);
       --background-color-chat-popup-subheader: var(--color-base);
-      --background-color-chat-popup-message: var(--background-color-main);
       --background-color-chat-popup-message-self: var(--color-base);
       
     }
