@@ -5115,10 +5115,11 @@ console.log("selected: " + spacekey);
 	  }
 
 	  if (faction == null || source == null || unit_idx == null) { his_self.endTurn(); return 0; }
-  	  his_self.addMove(`discard\t${f}\t032`);
 	  his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}\t${f}`);
+  	  his_self.addMove(`discard\t${f}\t032`);
 	  if (his_self.game.deck[0].discards["031"]) {
             his_self.addMove("SETVAR\tstate\tevents\tintervention_on_movement_possible\t0");
+            his_self.addMove("SETVAR\tstate\tevents\tintervention_on_assault_possible\t0");
 	  }
           his_self.endTurn();
 

@@ -8700,10 +8700,11 @@ console.log("selected: " + spacekey);
 	  }
 
 	  if (faction == null || source == null || unit_idx == null) { his_self.endTurn(); return 0; }
-  	  his_self.addMove(`discard\t${f}\t032`);
 	  his_self.addMove(`gout\t${faction}\t${source}\t${unit_idx}\t${f}`);
+  	  his_self.addMove(`discard\t${f}\t032`);
 	  if (his_self.game.deck[0].discards["031"]) {
             his_self.addMove("SETVAR\tstate\tevents\tintervention_on_movement_possible\t0");
+            his_self.addMove("SETVAR\tstate\tevents\tintervention_on_assault_possible\t0");
 	  }
           his_self.endTurn();
 
@@ -16316,8 +16317,13 @@ console.log("DELETING Z: " + z);
 	  if (his_self.isElectorate(spacekey)) { return 0; }
 	}
 
+	//
+	// we provide an exception for capitals as they can hold more than MAX_UNITS
+	//
 	if (max_units > 0) {
-	  if (his_self.returnFactionLandUnitsInSpace(faction, space.key, 1) >= max_units) { return 0; }
+	  if (spacekey != "paris" && spacekey != "london" && spacekey != "istanbul" && spacekey != "vienna" && spacekey != "valladolid" && spacekey != "rome") {
+	    if (his_self.returnFactionLandUnitsInSpace(faction, space.key, 1) >= max_units) { return 0; }
+	  }
 	}
 
         if (his_self.isSpaceFortified(his_self.game.spaces[spacekey])) {
@@ -16368,9 +16374,7 @@ console.log("DELETING Z: " + z);
       // ports
       function(spacekey) {
         if (his_self.game.spaces[spacekey]) {
-console.log("checking: " + spacekey + "!");
 	  if (his_self.isSpaceControlled(spacekey, faction)) {
-console.log("yes " + faction + " controls it!");
 	    return 1;
 	  }
 	}
@@ -17011,8 +17015,6 @@ try {
       pending_spaces[n[i]] = { hops : 0 , key : n[i] };
     }
 
-
-
     //
     // otherwise propagate outwards searching pending
     //
@@ -17026,7 +17028,6 @@ try {
 	let hops = pending_spaces[key].hops;
 
 	if (destination_filter(key)) {
-	  // found results? this is last pass
 	  results.push({ hops : (hops+1) , key : key });	
 	  continue_searching = 0;
 	  if (searched_spaces[key]) {
@@ -17035,6 +17036,28 @@ try {
 	    searched_spaces[key] = { hops : (hops+1) , key : key };
 	  }
 	} else {
+
+	  if (this.game.navalspaces[key]) {
+
+	    for (let z = 0; z < this.game.navalspaces[key].ports.length; z++) {
+
+	      let k = this.game.navalspaces[key].ports[z];
+
+	      if (destination_filter(k)) {
+	  	results.push({ hops : (hops+1) , key : k });	
+	  	continue_searching = 0;
+	  	if (searched_spaces[k]) {
+	  	  // we've searched for this before
+	  	} else {
+	  	  searched_spaces[k] = { hops : (hops+1) , key : k };
+	  	}
+	      }
+	    }
+	  }
+
+        }
+
+	if (continue_searching) {
 	  if (propagation_filter(key)) {
     	    for (let i = 0; i < this.game.navalspaces[key].neighbours.length; i++) {
 	      if (searched_spaces[this.game.navalspaces[key].neighbours[i]]) {
@@ -22810,11 +22833,20 @@ if (this.game.options.scenario == "is_testing") {
 
 	  this.game.queue.splice(qe, 1);
 
+console.log("#");
+console.log("#");
+console.log("# retreat to winter ports");
+console.log("#");
+console.log("#");
+
 	  for (let i in this.game.navalspaces) {
 	    for (let key in this.game.navalspaces[i].units) {
 	      if (this.game.navalspaces[i].units[key].length > 0) {
 	        let faction = key;
 	        let space = this.game.navalspaces[i];
+if (faction == "ottoman") {
+  console.log(" return nearest faction controlled ports!");
+}
 		let res = this.returnNearestFactionControlledPorts(faction, space);
 		if (res.length == 1) {
       	          moves.push("move\t"+faction+"\tport\t"+i+"\t"+res[0].key);
@@ -24200,11 +24232,11 @@ console.log("----------------------------");
 		  let source_space = this.game.spaces[source];
 		  let hoiluis = this.returnHostileOrIndependentLandUnitsInSpace(faction, source_space);
 		  let myluis = this.returnFactionLandUnitsInSpace(faction, source_space);
-		  if (hoiluis > myluis) {
+		  if (hoiluis > myluis && myluis > 0) {
 		    let fac = this.returnFactionControllingSpace(source_space);
 		    this.game.queue.push("ACKNOWLEDGE\t"+this.returnFactionName(faction) + " retreats after siege broken!");
 	            this.game.queue.push("remove_siege\t"+source);
-	            this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+fac+"\t"+faction+"\t"+source);
+	            this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+faction+"\t"+fac+"\t"+source);
 		    this.game.queue.push("player_evaluate_break_siege_retreat_opportunity\t"+faction+"\t"+source);
 		  }
 
@@ -26752,7 +26784,21 @@ try {
             }
           }
           if (fluis == 0) { 
+
+	    //
+	    // if key or fortress or electorate, we may need to besiege first
+	    //
+	    if (this.game.spaces[spacekey].type == "fortress" || this.game.spaces[spacekey].type == "electorate" || this.game.spaces[spacekey].type == "key") {
+	      let fac = this.returnFactionControllingSpace(spacekey);
+	      if (fac != attacker) {
+		this.game.spaces[spacekey].besieged = 2;
+                this.game.spaces[spacekey].besieged_factions.push(fac);
+	      }
+	    }
+
+	    this.displaySpace(spacekey);
 	    return 1; 
+
 	  }
 
 
@@ -31427,7 +31473,7 @@ defender_hits - attacker_hits;
 	    for (let key in his_self.game.spaces) {
 	      for (let z = 0; z < his_self.game.spaces[key].units[rl_f].length; z++) {
 		if (his_self.game.spaces[key].units[rl_f][z].type == "renegade") {
-		  his_self.game.splaces[key].units[rl_f].splice(z, 1);
+		  his_self.game.spaces[key].units[rl_f].splice(z, 1);
 		  z--;
 		}
 	      }
@@ -32285,6 +32331,8 @@ if (this.game.state.round == 2) {
   	  this.unsetEnemies(f1, f2);
 	  this.game.queue.splice(qe, 1);
 
+	  this.displayWarBox();
+
 	  return 1;
 	  
 	}
@@ -32295,6 +32343,8 @@ if (this.game.state.round == 2) {
 
   	  this.unsetAllies(f1, f2);
 	  this.game.queue.splice(qe, 1);
+
+	  this.displayWarBox();
 
 	  return 1;
 	  
@@ -32624,6 +32674,8 @@ if (this.game.state.round == 2) {
 		// sanity check
 		//
 		if (cardnum < 0) { cardnum = 0; }
+
+cardnum = 1;
 
     	        this.game.queue.push("check_replacement_cards\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
@@ -33304,6 +33356,11 @@ console.log(JSON.stringify(reshuffle_cards));
 	  let ops = parseInt(mv[4]);
 	  let limit = "";
 	  if (mv[5]) { limit = mv[5]; }
+
+	  //
+	  // no ops, just continue
+	  //
+	  if (ops == 0) { return 1; }
 
 	  //
 	  // cache our last move, as we will sometimes show a sub-menu if
@@ -41821,7 +41878,7 @@ does_units_to_move_have_unit = true; }
       //
       // no longer enemies
       //
-      his_self.addMove("unset_enemies\tfaction\t"+target_faction);
+      his_self.addMove("unset_enemies\t"+faction+"\t"+target_faction);
 
       //
       // +1 War Winner VP

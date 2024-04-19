@@ -1066,11 +1066,20 @@ if (this.game.options.scenario == "is_testing") {
 
 	  this.game.queue.splice(qe, 1);
 
+console.log("#");
+console.log("#");
+console.log("# retreat to winter ports");
+console.log("#");
+console.log("#");
+
 	  for (let i in this.game.navalspaces) {
 	    for (let key in this.game.navalspaces[i].units) {
 	      if (this.game.navalspaces[i].units[key].length > 0) {
 	        let faction = key;
 	        let space = this.game.navalspaces[i];
+if (faction == "ottoman") {
+  console.log(" return nearest faction controlled ports!");
+}
 		let res = this.returnNearestFactionControlledPorts(faction, space);
 		if (res.length == 1) {
       	          moves.push("move\t"+faction+"\tport\t"+i+"\t"+res[0].key);
@@ -2456,11 +2465,11 @@ console.log("----------------------------");
 		  let source_space = this.game.spaces[source];
 		  let hoiluis = this.returnHostileOrIndependentLandUnitsInSpace(faction, source_space);
 		  let myluis = this.returnFactionLandUnitsInSpace(faction, source_space);
-		  if (hoiluis > myluis) {
+		  if (hoiluis > myluis && myluis > 0) {
 		    let fac = this.returnFactionControllingSpace(source_space);
 		    this.game.queue.push("ACKNOWLEDGE\t"+this.returnFactionName(faction) + " retreats after siege broken!");
 	            this.game.queue.push("remove_siege\t"+source);
-	            this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+fac+"\t"+faction+"\t"+source);
+	            this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+faction+"\t"+fac+"\t"+source);
 		    this.game.queue.push("player_evaluate_break_siege_retreat_opportunity\t"+faction+"\t"+source);
 		  }
 
@@ -5008,7 +5017,21 @@ try {
             }
           }
           if (fluis == 0) { 
+
+	    //
+	    // if key or fortress or electorate, we may need to besiege first
+	    //
+	    if (this.game.spaces[spacekey].type == "fortress" || this.game.spaces[spacekey].type == "electorate" || this.game.spaces[spacekey].type == "key") {
+	      let fac = this.returnFactionControllingSpace(spacekey);
+	      if (fac != attacker) {
+		this.game.spaces[spacekey].besieged = 2;
+                this.game.spaces[spacekey].besieged_factions.push(fac);
+	      }
+	    }
+
+	    this.displaySpace(spacekey);
 	    return 1; 
+
 	  }
 
 
@@ -9683,7 +9706,7 @@ defender_hits - attacker_hits;
 	    for (let key in his_self.game.spaces) {
 	      for (let z = 0; z < his_self.game.spaces[key].units[rl_f].length; z++) {
 		if (his_self.game.spaces[key].units[rl_f][z].type == "renegade") {
-		  his_self.game.splaces[key].units[rl_f].splice(z, 1);
+		  his_self.game.spaces[key].units[rl_f].splice(z, 1);
 		  z--;
 		}
 	      }
@@ -10541,6 +10564,8 @@ if (this.game.state.round == 2) {
   	  this.unsetEnemies(f1, f2);
 	  this.game.queue.splice(qe, 1);
 
+	  this.displayWarBox();
+
 	  return 1;
 	  
 	}
@@ -10551,6 +10576,8 @@ if (this.game.state.round == 2) {
 
   	  this.unsetAllies(f1, f2);
 	  this.game.queue.splice(qe, 1);
+
+	  this.displayWarBox();
 
 	  return 1;
 	  
@@ -10880,6 +10907,8 @@ if (this.game.state.round == 2) {
 		// sanity check
 		//
 		if (cardnum < 0) { cardnum = 0; }
+
+cardnum = 1;
 
     	        this.game.queue.push("check_replacement_cards\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
@@ -11560,6 +11589,11 @@ console.log(JSON.stringify(reshuffle_cards));
 	  let ops = parseInt(mv[4]);
 	  let limit = "";
 	  if (mv[5]) { limit = mv[5]; }
+
+	  //
+	  // no ops, just continue
+	  //
+	  if (ops == 0) { return 1; }
 
 	  //
 	  // cache our last move, as we will sometimes show a sub-menu if

@@ -280,6 +280,31 @@ class FactionOverlay {
 		this.app.browser.addElementToSelector(keyboxen, '.faction_sheet');
 
 		//
+		// captured leaders
+		//
+		let p = his_self.returnPlayerCommandingFaction(faction);
+		if (p > 0) {
+		  for (let z = 0; z < his_self.game.state.players_info[p-1].captured.length; z++) {
+		    let c = his_self.game.state.players_info[p-1].captured[z];
+		    if (c.capturing_faction == faction) {
+		      if (his_self.army[c.type]) {
+			this.app.browser.addElementToSelector(
+				'<div class="army_tile" style="background-image: url(/his/img/tiles/army/${obj.img})"></div>',
+				'.faction_sheet_vp'
+			);
+		      }
+		      if (his_self.navy[c.type]) {
+			this.app.browser.addElementToSelector(
+				'<div class="army_tile" style="background-image: url(/his/img/tiles/navy/${obj.img})"></div>',
+				'.faction_sheet_vp'
+			);
+		      }
+		    }
+		  }
+		}
+
+
+		//
 		// War Winner VPs
 		//
 		while (war_winner_vp >= 2) {

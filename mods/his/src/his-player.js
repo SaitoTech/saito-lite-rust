@@ -7158,7 +7158,7 @@ does_units_to_move_have_unit = true; }
       //
       // no longer enemies
       //
-      his_self.addMove("unset_enemies\tfaction\t"+target_faction);
+      his_self.addMove("unset_enemies\t"+faction+"\t"+target_faction);
 
       //
       // +1 War Winner VP
