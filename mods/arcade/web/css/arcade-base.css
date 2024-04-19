@@ -1,12 +1,12 @@
 :root{
-	--saito-width: 1500px;
+	--saito-arcade-width: 1500px;
 }
 
 .arcade-container.saito-container{
 	grid-template-columns: auto 30rem;
 	grid-template-rows: minmax(5px, 1fr);
-	padding: 0 calc((100vw - var(--saito-width)) / 2);
-	padding-left: calc((100vw - var(--saito-width)) / 4);
+	padding: 0 calc((100vw - var(--saito-arcade-width)) / 2);
+	padding-left: calc((100vw - var(--saito-arcade-width)) / 4);
 	overflow: hidden;
 }
 
