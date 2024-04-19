@@ -141,6 +141,7 @@
 @media screen and (max-width: 900px) {
 	.saito-container.arcade-container{
 		grid-template-columns: 1fr;
+		grid-template-rows: repeat(auto-fit, minmax(0px, min-content));
 	}
 
 	.arcade-container .saito-sidebar.right {
@@ -153,6 +154,7 @@
 	}
 	.arcade-container .saito-main {
 		margin: 0;
+		order: 2;
 	}
 	.arcade-container .saito-sidebar.right .saito-table-row {
 		padding: 1rem;
@@ -177,6 +179,21 @@
 
 }
 
+@media screen and (max-width: 600px) {
+
+	.arcade-main {
+		padding: 0.5rem;
+	}
+
+	.arcade-central-panel {
+		grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+		grid-gap: 0.5rem;
+	}
+
+	.arcade-central-panel .arcade-game-selector-game-title span {
+		font-size: 1.8rem;
+	}
+}
 
 
 /************ DEPRECATED ***************/
