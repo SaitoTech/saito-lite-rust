@@ -20,6 +20,9 @@
 .saito-progress-bar {
 	color: var(--font-color-progress-bar);
 	text-shadow: var(--text-shadow-progress-bar);	
+	text-wrap: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 @keyframes shimmer {
