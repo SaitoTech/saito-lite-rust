@@ -497,7 +497,7 @@ font imports
   --background-color-qr-code: var(--color-base);
   --background-color-file-transfer: var(--color-base);
   --background-color-wallet-inputs: var(--background-color-main);
-  --background-color-mode-arcade: var(--color-base);
+  --background-color-mode-arcade: (--color-base);
 /* Progress Bar and Notifications */
   --background-color-progress-bar: var(--background-saito-effects);
   --background-color-notification-status: var(--color-primary);
@@ -518,7 +518,7 @@ html[data-theme="dark"] {
   --saito-font-color: #dedede;
   --saito-font-color-heavy: #ddd;
   --saito-font-color-light: #aaa;
-  --saito-font-color-inverse: #010101;
+  --saito-font-color-inverse: #1c1c23;
   --saito-profile-background: #222;
   --saito-border-color: #555;
   --saito-border-color-dark: #666;
@@ -544,13 +544,13 @@ html[data-theme="dark"] {
   --color-primary: #e05b08;/* Bright orange */
   --color-secondary: #c1aa00;  /* Gray with warm tint */
   --color-complement: #7f7f7f;/* MID gray  */
-  --color-base: #010101; /*  super dark almost black */
+  --color-base: ##1c1c23; /*  super dark almost black - updated to match brand book*/
   --color-contrast: #aaa; /* off-white */
 /* Spacing and padding adjustments */
   --chat-header-icon-padding: 0 1.3rem;
 /*TINTS COLOR SECTION*/
   --color-tint-primary: #ddd; /* bright-off-white */
-  --color-tint-dark: #3d3d3d; /* very dark gray */
+  --color-tint-dark: #1c1c23; /* very dark gray */
   --color-highlight: #f71f3d; /* saito-red */
 /*SHADOW COLOR SECTION*/
   --color-shadow-primary: #1c1c23b5; /* almost black, transparent */
@@ -668,7 +668,7 @@ html[data-theme="dark"] {
   --background-color-button-chat-popup-send: var(background-color-main); /* Not used yet, seems to not work*/
   
 /* Progress Bar */
-  --background-color-progress-bar: var(--color-primary);
+  --background-color-progress-bar: var(--background-color-main);
 /* Sidebar, Headers and Notification Colors */
   --background-color-notification-status: var(--color-primary);
   --background-color-notification-status-after: var(--color-contrast);
@@ -695,8 +695,11 @@ html[data-theme="dark"] {
   --background-color-chat-popup-subheader: var(--background-color-main);
   --background-color-chat-popup-input: var(--background-color-main);
   --background-color-hover-chat-popup-message-tag: var(--background-color-main);
-/* Theme Specific */
-  --saito-arcade-header-background: var(--background-color-main);
+  --background-color-chat-popup-main: var(--color-tint-dark);
+  --background-color-chat-popup-header: var(--color-tint-dark);
+
+  /* Theme Specific */
+--saito-arcade-header-background: var(--background-color-main);
   --saito-heart-animation: url('/redsquare/images/heart-orange.png');
   --saito-heart-animation-clicked: url('/redsquare/images/heart-all-orange.png');
 
@@ -711,7 +714,7 @@ html[data-theme="sangre"] {
   --saito-font-color: #dedede;
   --saito-font-color-heavy: #ddd;
   --saito-font-color-light: #aaa;
-  --saito-font-color-inverse: #010101;
+  --saito-font-color-inverse: #1c1c23;
   --saito-profile-background: #222;
   --saito-border-color: #555;
   --saito-border-color-dark: #666;
@@ -738,7 +741,7 @@ html[data-theme="sangre"] {
   --color-primary: #b70b0b;/* blood red */
   --color-secondary: #ff8235;  /* Gray with warm tint */
   --color-complement: #7f7f7f;/* MID gray  */
-  --color-base: #010101; /*  super dark almost black */
+  --color-base: #1c1c23; /*  super dark almost black */
   --color-contrast: #aaa; /* off-white */
 /* Spacing and padding adjustments */
   --chat-header-icon-padding: 0 1.3rem;
@@ -1117,7 +1120,7 @@ html[data-theme="arcade"] {
   --saito-font-color: #dedede;
   --saito-font-color-heavy: #ddd;
   --saito-font-color-light: #aaa;
-  --saito-font-color-inverse: #010101;
+  --saito-font-color-inverse: #1c1c23;
   --saito-profile-background: #22222269;
   --saito-border: 1px solid #c5c5c5bb;
   --saito-border-color: #426;
@@ -1148,7 +1151,7 @@ html[data-theme="arcade"] {
   --color-primary: #639;/* Dark gray */
   --color-secondary: #85b;  /* Gray with warm tint */
   --color-complement: #7f7f7f;/* MID gray  */
-  --color-base: #010101; /*  super dark almost black */
+  --color-base: #1c1c23; /*  super dark almost black */
   --color-contrast: #aaa; /* off-white */
 /*TINTS COLOR SECTION*/
   --color-tint-primary: #ddd; /* bright-off-white */
