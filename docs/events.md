@@ -66,7 +66,7 @@ NOTE: This event fires whenever a peer has completed its handshake and has verif
 #### UPDATE BALANCE
 
 ```javascript
-app.connection.on('update_balance', (wallet) => {});
+app.connection.on('header-update-balance', () => {});
 ```
 
 wallet - reference to the Saito wallet object

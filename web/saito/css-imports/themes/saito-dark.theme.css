@@ -1,0 +1,145 @@
+/*-------------------- DARK THEME -------------------- */
+html[data-theme="dark"] {
+
+  /* ====================== OLD VARIABLES SECTION =========================== */
+  
+  --saito-primary: #e05b08;
+  --saito-primary-transparent: #e05b0888;
+  --saito-secondary: #c1aa00;
+  --saito-font-color: #dedede;
+  --saito-font-color-heavy: #ddd;
+  --saito-font-color-light: #aaa;
+  --saito-font-color-inverse: #1c1c23;
+  --saito-profile-background: #222;
+  --saito-border-color: #555;
+  --saito-border-color-dark: #666;
+  --saito-background-color: #211f25;
+  --saito-background-light: #333;
+  --saito-sidebar-element-background: #0003;
+  --saito-gray-transparent: #88888818;
+  --saito-box-shadow: 0 0 0 1px var(--saito-border-color);
+  --saito-form-box-shadow: 0 0 0 1px var(--saito-border-color);
+  --saito-arcade-header-background: var(--saito-background-color);
+  --saito-bubble-background: #111;
+  --saito-bubble-shadow: #000c;
+  --saito-modal-background: #2e2636;
+  --saito-faded-icon-font: #bdbaba;
+  --saito-faded-icon-border: #000;
+  
+/* ================= NEW UPDATED THEME ================== */  
+  
+/*BASE COLOR SECTION*/
+  --color-primary: #e05b08;/* Bright orange */
+  --color-secondary: #c1aa00;  /* Gray with warm tint *//* MID gray  */
+  --color-base: #1c1c23; /*  super dark almost black - updated to match brand book*/
+  --color-contrast: #aaa; /* off-white */
+/* Spacing and padding adjustments */
+  --chat-header-icon-padding: 0 1.3rem;
+/*TINTS COLOR SECTION*/
+  --color-tint-primary: #ddd; /* bright-off-white */
+  --color-tint-dark: #1c1c23; /* very dark gray */
+  --color-highlight: #f71f3d; /* saito-red */
+/*SHADOW COLOR SECTION*/ /* almost black, transparent */
+  --color-shadow-bubble: #000c;
+/*MAIN BACKGROUND COLOR SECTION*/
+  --background-color-main: #211f25;
+  --background-color-shim-normal: #0009;
+/*FONTS SECTION*/
+/*quick settings*/
+  --font-color-primary: var(color-tint-primary); /* normal */
+  --font-color-secondary: var(--color-contrast); /*  faded grey  */
+  --font-color-heavy: var(--color-white); /* Bright! */
+  --font-color-inverse: var(--background-color-main); /* background colory */
+/*Font Selection*/ 
+  --font-color-paper-airplane: var(--font-color-secondary);
+  --font-color-emoji: var(--font-color-secondary);
+  --font-color-form-input-checkbox-checked: var(--font-color-primary);
+  --font-color-chat-popup-likes: var(--font-color-primary);
+  --font-color-hover-chat-popup-reply: var(--font-color-primary);
+  --font-color-button-chat-popup-header: var(--font-color-primary);
+  --font-color-button-hover-chat-popup-header: var(--font-color-heavy);
+  --font-color-button-primary: var(--font-color-heavy);
+  --font-color-button-hover-primary: var(--font-color-heavy);
+  --font-color-button-sidebar: var(--font-color-heavy);
+  --font-color-button-hover-sidebar: var(--font-color-heavy);
+  --font-color-button-hover-chat-container: var(--font-color-heavy);
+  --font-color-button-hover-sidebar-chat-active: var(--color-heavy);
+  --font-color-button-chat-container: var(--font-color-inverse);
+  --font-color-button-hover-modal-oldschool: var(--font-color-heavy);
+  --font-color-hover-icons-left-sidebar: var(--font-color-heavy);
+  --font-color-button-hover-wallet-control: var(--font-color-heavy);
+  --font-color-calendar-today: var(--font-color-primary);
+  --font-color-calendar-hover: var(--font-color-primary);
+/* Menu and Header Font Colors */
+  --font-color-menu-hamburger: var(--font-color-heavy);
+  --font-color-header-username: var(--font-color-heavy);
+/* Alerts and Status Font Colors */
+  --font-color-progress-bar: var(--font-color-primary);
+  --font-color-user-address: var(--font-color-heavy);
+  --font-color-status-message: var(--font-color-heavy); /* tag */
+  --font-color-a-link: var(--font-color-heavy); /* Exempt as system color */
+  --font-color-hover-a-link: var(--font-color-primary); /* Exempt as system color */
+  --font-color-mention: var(--font-color-primary); /* Exempt as system color */
+/* Module and Overlay Font Colors */
+  --font-color-title-game-details: var(--font-color-primary);
+  --font-color-title-game: var(--font-color-primary);
+  --font-color-modal-menu-oldschool: var(--font-color-primary);
+  --font-color-module-menu-header: var(--font-color-primary);
+  --font-color-overlay-form-header: var(--font-color-primary);
+  --font-color-overlay-form-text: var(--font-color-primary);
+  --font-color-overlay-subform-recover: var(--font-color-primary);
+/* BORDER RADIUS */
+  --border-radius-modal-menu: var(--border-radius-soft);
+/* BORDER THICKNESS */
+  --border-thickness-modal-menu: 0px;
+  --border-thickness-button-primary: var(--border-thickness-thin);
+  --border-thickness-button-hover-primary: var(--border-thickness-thin);
+/* BORDER COLORS */
+  --border-color-general-dividers: var(--saito-border-color);
+  --border-color-general-dividers-dark: var(--color-primary);
+  --border-color-button-wallet-control: var(--color-complement);
+  --border-color-button-modal: var(--color-complement);
+  --border-color-button-module: var(--color-complement);
+  --border-color-sidebar-menu: var(--color-tint-dark);
+  --border-color-module-menu: none;
+  --border-color-overlay-subform: var(--color-tint-dark);
+  --border-color-chat-menu: ;
+  --border-color-identicon: var(--color-contrast);
+  --border-color-identicon-square: ;
+  --border-color-identicon-square-profile: var(--border-color-general-dividers);
+  --border-color-chat-popup-docked: var(--color-primary);
+  --border-color-selection-box: var(--color-highlight);
+  --border-color-form-input-checkbox: var(--color-contrast);
+  --border-color-qr-code: var(--border-color-general-dividers);
+/* BACKGROUNDS */
+/* General Background Colors */
+  --background-color-sidebar-left: var(--color-shadow-bubble-light);
+  --background-color-modal-menu-oldschool: none;
+  --background-color-overlay-menu-header: var(--color-base);
+  --background-color-overlay-form-header: var(--color-base);
+/* Button Background Colors */
+  --background-color-button-hover-primary: none;
+  --background-color-button-hover-sidebar: var(--background-color-button-primary);
+ 
+  --background-color-button-sidebar-chat-active: var(--color-tint-dark);
+  --background-color-button-hover-modal-oldschool: var(--color-primary);
+  --background-color-button-hover-chat-popup-header: var(--color-primary);
+  --background-color-button-chat-popup-send: var(background-color-main); /* Not used yet, seems to not work*/
+  
+/* Progress Bar */
+  --background-color-progress-bar: var(--color-primary);
+/* Sidebar, Headers and Notification Colors */
+  --background-color-button-hover-sidebar: var(--color-primary);
+/* Special UI Components */
+  --background-color-icon-close: var(--color-complement);
+/* Chat Related Colors */
+  --background-color-chat-container-open: none;
+  --background-color-chat-popup-main: var(--color-tint-dark);
+  --background-color-chat-popup-header: var(--color-tint-dark);
+
+  /* Theme Specific */
+  --saito-arcade-header-background: var(--background-color-main);
+  --saito-heart-animation: url('/redsquare/images/heart-orange.png');
+  --saito-heart-animation-clicked: url('/redsquare/images/heart-all-orange.png');
+
+}

@@ -128,7 +128,7 @@ li.slide[data-active-slide] {
 	text-align: center;
 	width: min-content;
 	padding-left: 2rem;
-	background: var(--color-complement);
+	background: var(--hover-background-color);
 	white-space: nowrap;
 	padding: 1rem;
 	border-radius: 0 0 0.5rem 0;

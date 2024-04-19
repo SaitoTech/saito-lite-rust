@@ -146,7 +146,7 @@ body {
 }
 
 .saito-menu .redsquare-page-active i::before {
-	-webkit-text-stroke: var(--border-color-button-sidebar-icons-active) var(--border-thickness-button-sidebar-icons-active);
+	-webkit-text-stroke: var(--font-color-icons-left-sidebar) var(--border-thickness-button-sidebar-icons-active);
 }
 
 .redsquare-menu-home .fa-house::before {
@@ -177,11 +177,6 @@ body {
 	 	width: 7rem;
 	 	margin: 0 auto;
 	 }
-
- 	.saito-floating-plus-btn {
-		display: none;
-	}
-
 
 }
 
@@ -272,10 +267,6 @@ body {
 	.saito-sidebar.left {
 		display: none;
 		visibility: hidden;
-	}
-
-	.saito-floating-plus-btn {
-		display: flex;
 	}
 
 	.saito-main{
