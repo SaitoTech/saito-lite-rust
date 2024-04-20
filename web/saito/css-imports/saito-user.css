@@ -8,6 +8,7 @@ Saito Identicon
   border: var(--border-thickness-identicon) solid var(--border-color-identicon);
   border-radius: var(--border-radius-identicon);
   padding: var(--border-padding-identicon-style);
+  background: var(--background-color-identicon);
 }
 
 .saito-identicon-box {

@@ -85,7 +85,6 @@ html[data-theme="midnight"] {
       --border-radius-chat-popup: var(--border-radius-top-only-round);
       --border-radius-chat-popup-message-tag: var(--border-radius-round);
       --border-radius-identicon: var(--border-radius-obscene);
-      --border-radius-identicon-square: var(--border-radius-soft);
       --border-radius-image-flex: var(--border-radius-round);
       --border-radius-selection-box: var(--border-radius-soft);
       --border-radius-button-primary: var(--border-radius-round);
@@ -107,7 +106,7 @@ html[data-theme="midnight"] {
     /* BORDER THICKNESS */
       --border-thickness-button-primary: var(--border-thickness-thin);
       --border-thickness-button-hover-primary: var(--border-thickness-thin);
-      --border-thickness-identicon: var(--border-thickness-thick);
+      --border-thickness-identicon: var(--border-thickness-none);
     /* BORDER COLORS */
       --border-color-general-dividers-dark: var(--color-primary);
       --border-color-button-primary: var(--color-complement);
