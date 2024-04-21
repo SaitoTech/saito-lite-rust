@@ -166,7 +166,8 @@ class MenuOverlay {
 			}
 
 
-			if (active_menu_options <= 9) {
+			if (active_menu_options <= 20) {
+				if (active_menu_options > 9) { active_menu_options = 9; }
 				sub_menu(main_menu, sub_menu, move);
 				sub_menu(main_menu, sub_menu, build);
 				sub_menu(main_menu, sub_menu, special);
