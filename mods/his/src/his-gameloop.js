@@ -11599,7 +11599,10 @@ console.log(JSON.stringify(reshuffle_cards));
 	  //
 	  // no ops, just continue
 	  //
-	  if (ops == 0) { return 1; }
+	  if (ops == 0) { 
+	    this.game.queue.splice(qe, 1);
+	    return 1;
+	  }
 
 	  //
 	  // cache our last move, as we will sometimes show a sub-menu if
@@ -11615,7 +11618,6 @@ console.log(JSON.stringify(reshuffle_cards));
 	  //
 	  this.game.state.player_last_move = "";
 	  this.game.state.player_last_spacekey = "";
-
 
 	  this.game.queue.splice(qe, 1);
 

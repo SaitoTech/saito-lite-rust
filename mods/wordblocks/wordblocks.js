@@ -197,6 +197,7 @@ class Wordblocks extends GameTemplate {
 			for (let i = this.game.players.length; i > 0; i--) {
 				this.game.queue.push(`DEAL\t1\t${i}\t7`);
 			}
+			this.game.queue.push('SHUFFLE\t1');
 			for (let i = this.game.players.length; i > 0; i--) {
 				this.game.queue.push(`DECKENCRYPT\t1\t${i}`);
 			}
