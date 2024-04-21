@@ -53,15 +53,27 @@ class MenuOverlay {
 				let idx = menu_item.idx;
 				let cost = menu_item.cost;
 				let active_option = menu_item.active;
+				let costtext = "- " + cost + " op";
+				if (cost > 1) { costtext += "s"; } 
 
 				let html = `
 				      <div id="${idx}" class="menu-option-container ${active_option}">
 				        <div class="menu-option-image">
 				          <img src="${menu[idx].img}" />
 				        </div>
-				        <div class="menu-option-title">${menu[idx].name} [${cost}]</div>
+				        <div class="menu-option-title">${menu[idx].name} ${costtext}</div>
 				      </div>
 				`;
+				if (cost == 0) {
+				  html = `
+				      <div id="${idx}" class="menu-option-container ${active_option}">
+				        <div class="menu-option-image">
+				          <img src="${menu[idx].img}" />
+				        </div>
+				        <div class="menu-option-title">${menu[idx].name}</div>
+				      </div>
+				  `;
+				}
 				this.app.browser.addElementToSelector(html, `.movemenu`);
 			}
 
@@ -153,9 +165,6 @@ class MenuOverlay {
 				}
 			}
 
-
-
-console.log("active menu options? " + active_menu_options);
 
 			if (active_menu_options <= 9) {
 				sub_menu(main_menu, sub_menu, move);
@@ -314,14 +323,27 @@ console.log("active menu options? " + active_menu_options);
 	attachEvents() {}
 
 	returnMenuHTML(name="", img="", active_option="active card", cost=0) {
-	  return `
+          if (cost == 0) {
+	    return `
 	      <div id="${id}" class="menu-option-container ${active_option}">
 	        <div class="menu-option-image">
 	          <img src="${img}" />
 	        </div>
-	        <div class="menu-option-title">${name} [${cost}]</div>
+	        <div class="menu-option-title">${name}</div>
 	      </div>
-	  `;
+	    `;
+	  } else {
+	    let costtext = "- " + cost + " op";
+	    if (cost > 1) { costtext += "s"; } 
+	    return `
+	      <div id="${id}" class="menu-option-container ${active_option}">
+	        <div class="menu-option-image">
+	          <img src="${img}" />
+	        </div>
+	        <div class="menu-option-title">${name} ${costtext}</div>
+	      </div>
+	    `;
+	  }
 	}
 
 }

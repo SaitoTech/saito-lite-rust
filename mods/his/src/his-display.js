@@ -21,6 +21,16 @@
       });
       return;
     }
+    if (c === "protestant") {
+      this.welcome_overlay.renderCustom({
+        title : "New to the Protestants?" , 
+        text : "Use OPS to publish treatises and convert more spaces to Protestantism" ,
+        card : this.returnCardImage("007") ,
+        img : '/his/img/backgrounds/move/printing_press.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
     if (c === "papacy") {
       this.welcome_overlay.renderCustom({
         title : "New to the Papacy?" , 

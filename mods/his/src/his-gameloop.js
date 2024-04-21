@@ -57,6 +57,7 @@ this.updateLog(`###############`);
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
+	  this.game.queue.push("show_overlay\twinter_phase");
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("check_interventions"); // players check and report cards that need to trigger waiting/check
 	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
@@ -388,6 +389,9 @@ if (this.game.options.scenario == "is_testing") {
 	  this.cardbox.hide();
 
 	  this.displayElectorateDisplay();
+	  if (mv[1] === "winter_phase") {
+	    this.winter_overlay.render("stage1"); 
+	  }
 	  if (mv[1] === "welcome") { 
 	    let faction = mv[2];
 	    let player = this.returnPlayerOfFaction(faction);
@@ -707,7 +711,6 @@ if (this.game.options.scenario == "is_testing") {
 
 	  this.game.queue.splice(qe, 1);
 
-
 	  for (let spacekey in this.game.spaces) {
 	    for (let faction in this.game.spaces[spacekey].units) {
 
@@ -715,6 +718,7 @@ if (this.game.options.scenario == "is_testing") {
 
 	      let fluis = 0;
 	      if (space.units[faction].length > 0 ) { fluis = this.returnFactionLandUnitsInSpace(faction, spacekey, 0); }
+
 	      if (fluis > 0) {
 
 		//
@@ -792,12 +796,15 @@ if (this.game.options.scenario == "is_testing") {
 		    //
 		    } else {
 
+
 		      //
 		      // how much space do we have?
 		      //
 		      let options = [];
 		      for (let b = 0; b < res.length; b++) {
-			options.push(4 - this.returnFactionLandUnitsInSpace(faction, res[b].key));
+		        let unit_limit = 4;
+		        if (res[b].key == "paris" || res[b].key == "valladolid" || res[b].key == "london" || res[b].key == "vienna" || res[b].key == "istanbul" || res[b].key == "rome") { unit_limit = 1000; }
+			options.push(unit_limit - this.returnFactionLandUnitsInSpace(faction, res[b].key));
 		      }
 
 		      //
@@ -1062,7 +1069,7 @@ if (this.game.options.scenario == "is_testing") {
 	  //
 	  this.displayBoard();
 
-	  this.winter_overlay.render("stage2");
+	  this.winter_overlay.render("stage3");
 
 	  this.game.queue.splice(qe, 1);
 
@@ -1626,7 +1633,7 @@ if (faction == "ottoman") {
 	  //
 	  // show overlay
 	  //
-	  this.winter_overlay.render("newworld1");
+	  this.winter_overlay.render("stage1");
 
 	  this.updateLog("************************");
 	  this.updateLog("*** New World Riches ***");
@@ -5338,9 +5345,6 @@ try {
 	  his_self.game.state.field_battle.attacker_hits_first = 0;
 	  his_self.game.state.field_battle.defender_hits_first = 0;
 	  his_self.game.state.field_battle.faction_map = faction_map;
-
-console.log("FIELD BATTLE: " + JSON.stringify(his_self.game.state.field_battle));
-
 
 	  let ap = {};
 	  let dp = {};
@@ -9666,7 +9670,7 @@ defender_hits - attacker_hits;
 	  this.factionbar.setActive();
 
 	  // show the winter overlay to let people know WTF is happening
-	  this.winter_overlay.render("stage1");
+	  this.winter_overlay.render("stage2");
 
 	  // unset any sieges
 	  this.removeSieges();
@@ -10184,7 +10188,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
 
-	  this.winter_overlay.render("stage5");
+	  this.winter_overlay.render("stage6");
 
 	  //
 	  // first, if there are any outstanding proposals that
@@ -10260,7 +10264,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
 	  this.game.queue.splice(qe, 1);
 
-	  this.winter_overlay.render("stage6");
+	  this.winter_overlay.render("stage7");
 
 	  let faction = mv[1];
 	  let can_faction_sue_for_peace = this.canFactionSueForPeace(faction);
@@ -10285,7 +10289,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
 
-	  this.winter_overlay.render("stage7");
+	  this.winter_overlay.render("stage8");
 
 	  if (this.game.player == player) {
 	    this.playerMakeDeclarationsOfWar(this, faction);
@@ -10837,7 +10841,7 @@ if (this.game.state.round == 2) {
         if (mv[0] === "card_draw_phase") {
 
 	  if (this.game.state.round > 1) {
-	    this.winter_overlay.render("stage4");
+	    this.winter_overlay.render("stage5");
 	  }
 
 
@@ -10907,6 +10911,10 @@ if (this.game.state.round == 2) {
 		// sanity check
 		//
 		if (cardnum < 0) { cardnum = 0; }
+
+//cardnum = 1;
+//if (f == "papacy") { cardnum = 0; }
+//if (f == "hapsburg") { cardnum = 0; }
 
     	        this.game.queue.push("check_replacement_cards\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);

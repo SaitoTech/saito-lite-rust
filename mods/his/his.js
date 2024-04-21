@@ -21824,6 +21824,7 @@ this.updateLog(`###############`);
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("new_world_phase");
 	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
+	  this.game.queue.push("show_overlay\twinter_phase");
 	  this.game.queue.push("action_phase");
 	  this.game.queue.push("check_interventions"); // players check and report cards that need to trigger waiting/check
 	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
@@ -22155,6 +22156,9 @@ if (this.game.options.scenario == "is_testing") {
 	  this.cardbox.hide();
 
 	  this.displayElectorateDisplay();
+	  if (mv[1] === "winter_phase") {
+	    this.winter_overlay.render("stage1"); 
+	  }
 	  if (mv[1] === "welcome") { 
 	    let faction = mv[2];
 	    let player = this.returnPlayerOfFaction(faction);
@@ -22474,7 +22478,6 @@ if (this.game.options.scenario == "is_testing") {
 
 	  this.game.queue.splice(qe, 1);
 
-
 	  for (let spacekey in this.game.spaces) {
 	    for (let faction in this.game.spaces[spacekey].units) {
 
@@ -22482,6 +22485,7 @@ if (this.game.options.scenario == "is_testing") {
 
 	      let fluis = 0;
 	      if (space.units[faction].length > 0 ) { fluis = this.returnFactionLandUnitsInSpace(faction, spacekey, 0); }
+
 	      if (fluis > 0) {
 
 		//
@@ -22559,12 +22563,15 @@ if (this.game.options.scenario == "is_testing") {
 		    //
 		    } else {
 
+
 		      //
 		      // how much space do we have?
 		      //
 		      let options = [];
 		      for (let b = 0; b < res.length; b++) {
-			options.push(4 - this.returnFactionLandUnitsInSpace(faction, res[b].key));
+		        let unit_limit = 4;
+		        if (res[b].key == "paris" || res[b].key == "valladolid" || res[b].key == "london" || res[b].key == "vienna" || res[b].key == "istanbul" || res[b].key == "rome") { unit_limit = 1000; }
+			options.push(unit_limit - this.returnFactionLandUnitsInSpace(faction, res[b].key));
 		      }
 
 		      //
@@ -22829,7 +22836,7 @@ if (this.game.options.scenario == "is_testing") {
 	  //
 	  this.displayBoard();
 
-	  this.winter_overlay.render("stage2");
+	  this.winter_overlay.render("stage3");
 
 	  this.game.queue.splice(qe, 1);
 
@@ -23393,7 +23400,7 @@ if (faction == "ottoman") {
 	  //
 	  // show overlay
 	  //
-	  this.winter_overlay.render("newworld1");
+	  this.winter_overlay.render("stage1");
 
 	  this.updateLog("************************");
 	  this.updateLog("*** New World Riches ***");
@@ -27105,9 +27112,6 @@ try {
 	  his_self.game.state.field_battle.attacker_hits_first = 0;
 	  his_self.game.state.field_battle.defender_hits_first = 0;
 	  his_self.game.state.field_battle.faction_map = faction_map;
-
-console.log("FIELD BATTLE: " + JSON.stringify(his_self.game.state.field_battle));
-
 
 	  let ap = {};
 	  let dp = {};
@@ -31433,7 +31437,7 @@ defender_hits - attacker_hits;
 	  this.factionbar.setActive();
 
 	  // show the winter overlay to let people know WTF is happening
-	  this.winter_overlay.render("stage1");
+	  this.winter_overlay.render("stage2");
 
 	  // unset any sieges
 	  this.removeSieges();
@@ -31951,7 +31955,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
 
-	  this.winter_overlay.render("stage5");
+	  this.winter_overlay.render("stage6");
 
 	  //
 	  // first, if there are any outstanding proposals that
@@ -32027,7 +32031,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
 	  this.game.queue.splice(qe, 1);
 
-	  this.winter_overlay.render("stage6");
+	  this.winter_overlay.render("stage7");
 
 	  let faction = mv[1];
 	  let can_faction_sue_for_peace = this.canFactionSueForPeace(faction);
@@ -32052,7 +32056,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
 
-	  this.winter_overlay.render("stage7");
+	  this.winter_overlay.render("stage8");
 
 	  if (this.game.player == player) {
 	    this.playerMakeDeclarationsOfWar(this, faction);
@@ -32604,7 +32608,7 @@ if (this.game.state.round == 2) {
         if (mv[0] === "card_draw_phase") {
 
 	  if (this.game.state.round > 1) {
-	    this.winter_overlay.render("stage4");
+	    this.winter_overlay.render("stage5");
 	  }
 
 
@@ -32674,6 +32678,10 @@ if (this.game.state.round == 2) {
 		// sanity check
 		//
 		if (cardnum < 0) { cardnum = 0; }
+
+//cardnum = 1;
+//if (f == "papacy") { cardnum = 0; }
+//if (f == "hapsburg") { cardnum = 0; }
 
     	        this.game.queue.push("check_replacement_cards\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
@@ -35368,7 +35376,6 @@ console.log(JSON.stringify(reshuffle_cards));
     let menu = [];
 
 if (limit === "build") {
-
     menu.push({
       factions : ['hapsburg','england','france','papacy','protestant'],
       cost : [1,1,1,1,1],
@@ -35441,6 +35448,15 @@ if (limit === "build") {
       });
     } else {
 
+    menu.push({
+      factions : ['hapsburg','england','france','papacy','ottoman','protestant'],
+      cost : [0,0,0,0,0,0],
+      name : "First Game / Need Help?",
+      check : this.canPlayerShowTutorial,
+      fnct : this.playerShowTutorial,
+      category : "move" ,
+      img : '/his/img/backgrounds/move/help.jpeg',
+    });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
       cost : [1,1,1,1,1,1,1,1,1,1],
@@ -36787,14 +36803,22 @@ if (this.game.state.events.cramner_active == 1) {
 	    } else {
 
 	      let ops_to_spend = 0;
+	      let cost = 0;
 
               for (let z = 0; z < menu[user_choice].factions.length; z++) {
                 if (menu[user_choice].factions[z] === selected_faction) {
+		  cost = menu[user_choice].cost[z];
                   ops -= menu[user_choice].cost[z];
 		  ops_to_spend = menu[user_choice].cost[z];
 	          z = menu[user_choice].factions.length+1;
                 }
               }
+console.log("COST 1: " + cost);
+	      if (cost == 0) {
+                menu[user_choice].fnct(this, this.game.player, selected_faction, ops_to_spend, ops);
+		this.playerPlayOps(card, faction, ops, limit);
+                return;
+	      }
               if (ops > 0) {
 	        this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
               }
@@ -36885,15 +36909,22 @@ if (this.game.state.events.cramner_active == 1) {
 	} else {
 
 	  let ops_to_spend = 0;
+	  let cost = 0;
 
           for (let z = 0; z < menu[user_choice].factions.length; z++) {
             if (pfactions.includes(menu[user_choice].factions[z])) {
+	      cost = menu[user_choice].cost[z];
               ops -= menu[user_choice].cost[z];
 	      ops_to_spend = menu[user_choice].cost[z];
   	      z = menu[user_choice].factions.length+1;
             }
           }
 
+	  if (cost == 0) {
+            menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend, ops);
+	    this.playerPlayOps(card, faction, ops, limit);
+            return;
+	  }
           if (ops > 0) {
   	    this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
           }
@@ -41450,6 +41481,218 @@ does_units_to_move_have_unit = true; }
     his_self.endTurn();
     return 0;
   }
+
+  canPlayerShowTutorial(his_self, player, faction) {
+    if (his_self.game.state.round == 1) { return 1; }
+    return 0;
+  }
+  async playerShowTutorial(his_self, player, faction, ops_to_spend=1, ops_remaining=0) {
+
+    let title = "";
+    let text = "";
+    let img = "";
+    let card = "";
+
+    let options = [];
+
+    //
+    // Protestant
+    //
+    if (faction == "protestant") {
+
+      title = "Publish a Treatise?";
+      text = "You get +1 roll for each adjacent Protestant space. Committing debaters give you bonuses flipping spaces, but make them vulnerable in debates with their Catholic counterparts.";
+      img = "/his/img/backgrounds/move/printing_press.jpg";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Watch the Discard Pile";
+      text = "The Protestants are the only power that can retrieve cards from the discard pile. Retrieve valuable events and play or hold them for the next turn...";
+      img = "/his/img/backgrounds/move/publish_treatise.jpg";
+      card = his_self.returnCardImage("007");
+      options.push({ title : title , text : text , img : img , card : card });
+
+      if (ops_remaining == 1) {
+        title = "Low on Ops? Translate!";
+        text = "Translating the New Testament into a language gives you 6 reformation attempts in that language zone. Translating the Full Bible gives 6 more and earns 1 VP per translation.";
+        img = "/his/img/backgrounds/move/translate.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+    }
+
+    //
+    // Papacy
+    //
+    if (faction == "papacy") {
+
+      title = "Convene a Debate?";
+      text = "Leipzig Debate lets you pick your own debater - Eck is a great choice. If you get lucky, the Protestants will need to use their Home Card to send Luther, wasting 5 Protestant OPs";
+      img = "/his/img/backgrounds/move/theological_debate.jpg";
+      card = his_self.returnCardImage("007");
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Conquer Florence";
+      text = "Build troops in Rome. Move them north to Siena. Control Siena. Now you have a Line-of-Control to Florence. Move to Florence and besiege the city. The next turn you can assault it for control.";
+      img = "/his/img/backgrounds/move/papacy-florence.png";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      if (ops_remaining == 1) {
+        title = "Build St. Peters!";
+        text = "The Papacy can get up to 5 VP for building St. Peter's Cathedral. If you don't have a better use for them, use your excess OPs to build the basilica.";
+        img = "/his/img/backgrounds/move/saint_peters.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+    }
+
+    //
+    // Ottoman
+    //
+    if (faction == "ottoman") {
+
+      title = "Conquer Hungary";
+      text = "Conquering Belgrade and Buda will earn 2 VP for crushing the Hungarians, and force the Hapsburg into war with you.";
+      img = "/his/img/backgrounds/tutorials/ottoman-hungary.png";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Control the Mediterranean";
+      text = "Piracy is harder around fortresses. Build cavalry in Athens, move ships into the Aegean Sea, and transport those units to Rhodes to assault the fortress...";
+      img = "/his/img/backgrounds/tutorials/ottoman-rhodes.png";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      if (this.game.state.events.barbary_pirates == 1) {
+        title = "Piracy?!";
+        text = "Build corsairs in Algiers. Move them in packs around the Mediterranean and target opponents with Piracy. Every hit earns VP or a card draw...";
+        card = his_self.returnCardImage("009");
+        img = "/his/img/backgrounds/move/piracy.jpg";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+    }
+
+    //
+    // Hapsburg
+    //
+    if (faction == "hapsburg") {
+
+      title = "Conquer Metz?";
+      text = "You get +2 VP for each square key you control. Build troops in Becanson and move them north into Metz. You will automatically besiege the city. The next turn, spend 1 OP to assault and hopefully capture it.";
+      img = "/his/img/backgrounds/tutorials/hapsburg-metz.png";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Subdue the French";
+      text = "You start the game at War with France. Build infantry in Navarre and move them over the Alps to Bordeaux. You will automatically besiege the city. The next turn, spend 1 OP to assault and hopefully capture it.";
+      img = "/his/img/backgrounds/tutorials/hapsburg-bordeaux.png";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Conquer the New World";
+      text = "Conquests are harder than Explorations. In addition to earning VP if they succeed, they also roll dice for bonus cards at the end of every turn. Consider sending an expedition!";
+      img = "/his/img/backgrounds/move/conquer.jpg";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Found a Colony";
+      text = "You are allowed up to three colonies. At the end of every turn your surviving colonies will roll dice for bonus cards. Having more cards can provide a crucial advantage later in the game."
+      img = "/his/img/backgrounds/move/colonize.jpg";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+    }
+
+    //
+    // France
+    //
+    if (faction == "france") {
+
+      title = "Build a Chateaux";
+      text = "Your Home Card allows you to get VP and bonus cards, and your chance of success increases if France is not under attack.";
+      img = "/his/img/backgrounds/chateaux.png";
+      card = his_self.returnCardImage("004");
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Conquer the New World";
+      text = "Conquests are harder than Explorations. In addition to earning VP if they succeed, they also roll dice for bonus cards at the end of every turn. Consider sending an expedition!";
+      img = "/his/img/backgrounds/move/conquer.jpg";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Explore the New World";
+      text = "New World Explorations cost 2 OPs and earn VP if they succeed. Dice are rolled and discoveries are made at the end of each turn.";
+      img = "/his/img/backgrounds/move/explore.jpg";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Found a Colony";
+      text = "You are allowed up to three colonies. At the end of every turn your surviving colonies will roll dice for bonus cards. Having more cards can provide a crucial advantage later in the game."
+      img = "/his/img/backgrounds/move/colonize.jpg";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Fortify Italy";
+      text = "It is hard for France to move forces quickly into Italy, and Milan is vulnerable to attack. Consider building forces and moving them over to protect your Italian territories.";
+      img = "/his/img/backgrounds/tutorials/france-milan.png";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+    }
+
+    //
+    // England
+    //
+    if (faction == "protestant") {
+
+      title = "Unify the British Isles?";
+      text = "Your Home Card lets you declare war on Scotland, which is necessary for attacking Edinburgh. Remember you will need 2 squadrons in the North Sea to assault the city.";
+      img = "/his/img/backgrounds/tutorials/england-edinburgh.png";
+      card = his_self.returnCardImage("003");
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Fortify Calais?";
+      text = "Calais is vulnerable to attack from the French and offers your landing point for invasions of the continent. Consider reinforcing it sooner rather than later.";
+      img = "/his/img/backgrounds/tutorials/england-calais.png";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Conquer the New World";
+      text = "Conquests are harder than Explorations. In addition to earning VP if they succeed, they also roll dice for bonus cards at the end of every turn. Consider sending an expedition!";
+      img = "/his/img/backgrounds/move/conquer.jpg";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Explore the New World";
+      text = "New World Explorations cost 2 OPs and earn VP if they succeed. Dice are rolled and discoveries are made at the end of each turn.";
+      img = "/his/img/backgrounds/move/explore.jpg";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Found a Colony";
+      text = "You are allowed up to three colonies. At the end of every turn your surviving colonies will roll dice for bonus cards. Having more cards can provide a crucial advantage later in the game."
+      img = "/his/img/backgrounds/move/colonize.jpg";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+    }
+
+    let x = Math.floor(Math.random() * options.length);
+
+    his_self.welcome_overlay.renderCustom({
+      title : options[x].title ,
+      text : options[x].text ,
+      card : options[x].card ,
+      img : options[x].img ,
+    });
+
+    return;
+
+  }
+
   canPlayerBurnBooksMaryI(his_self, player, faction) {
     return this.canPlayerBurnBooks(his_self, player, faction, 1);
   }
@@ -42300,6 +42543,13 @@ does_units_to_move_have_unit = true; }
       img : "diplomacy.png" ,
     });
     menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
+      name : "Gain Territory",
+      check : this.canPlayerGainTerritory,
+      fnct : this.playerGainTerritory,
+      img : "diplomacy.png" ,
+    });
+    menu.push({
       factions : ['papacy'],
       name : "Approve Divorce",
       check : this.canPlayerApproveDivorce,
@@ -42454,6 +42704,10 @@ console.log("this player can end war...");
     );
     if (target_spaces) { return 1; }
     return 0;
+  }
+
+  canPlayerGainTerritory(his_self, player, faction) {
+    return 1;
   }
 
   canPlayerApproveDivorce(his_self, player, faction) {
@@ -42650,6 +42904,55 @@ console.log("this player can end war...");
 
   }
 
+
+  async playerGainTerritory(his_self, faction, mycallback=null) {
+
+    let terms = [];
+
+    let msg = `${his_self.returnFactionName(faction)} - Gain Territory from Whom: `;
+    let io = his_self.returnDiplomacyImpulseOrder(faction);
+    let html = '<ul>';
+    for (let i = 0; i < io.length; i++) {
+      if (faction != io[i]) {
+        html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
+      }
+    }
+    html += '</ul>';
+    his_self.updateStatusWithOptions(msg, html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+
+      let giving_faction = $(this).attr("id");
+
+      his_self.winter_overlay.hide();
+
+      his_self.playerSelectSpaceWithFilter(
+
+        "Gain which Space?",
+              
+          function(space) {
+            if (space.political === giving_faction || (space.home == giving_faction && space.political == "")) {
+	      return 1;
+	    }
+	    return 0;
+          },
+
+          function(spacekey) {
+            if (mycallback == null) { return; }
+            his_self.updateStatus("submitted");
+            mycallback([`control\t${faction}\t${spacekey}\t${giving_faction}`,`NOTIFY\t${his_self.returnFactionName(giving_faction)} yields ${his_self.returnSpaceName(spacekey)} to ${his_self.returnFactionName(faction)}`]);
+            his_self.winter_overlay.render();
+          },
+          
+          null,
+
+          true
+
+        );
+    });
+    return 0;
+  }
 
   async playerYieldTerritory(his_self, faction, mycallback=null) {
 
@@ -44445,6 +44748,16 @@ console.log("this player can end war...");
         text : this.returnFactionName(msg) + " has been excommunicated by Papal Decree" ,
         card : this.returnCardImage("005") ,
         img : '/his/img/backgrounds/events/excommunication.jpg',
+      });
+      return;
+    }
+    if (c === "protestant") {
+      this.welcome_overlay.renderCustom({
+        title : "New to the Protestants?" , 
+        text : "Use OPS to publish treatises and convert more spaces to Protestantism" ,
+        card : this.returnCardImage("007") ,
+        img : '/his/img/backgrounds/move/printing_press.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
       return;
     }

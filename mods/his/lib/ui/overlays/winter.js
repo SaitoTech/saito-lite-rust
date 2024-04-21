@@ -45,6 +45,38 @@ class WinterOverlay {
 
 	        document.querySelector(`.winter-text ul li.${this.stage}`).classList.add("active");
 
+
+		if (stage == "stage5" || stage == "stage6" || stage == "stage7" || stage == "stage8") {
+		  try {
+		    document.querySelector('.saito-overlay .winter').style.backgroundImage = "url(/his/img/backgrounds/diplomacy/ambassadors.jpeg)";
+		    document.querySelector('.saito-overlay .winter').style.backgroundSize = "cover";
+		    document.querySelector('.saito-overlay .winter .winter-title').innerHTML = "Diplomacy Phase";
+		    document.querySelector('.stage5').style.display = "block";
+		    document.querySelector('.stage6').style.display = "block";
+		    document.querySelector('.stage7').style.display = "block";
+		    document.querySelector('.stage8').style.display = "block";
+		    document.querySelector('.stage1').style.display = "none";
+		    document.querySelector('.stage2').style.display = "none";
+		    document.querySelector('.stage3').style.display = "none";
+		    document.querySelector('.stage4').style.display = "none";
+		  } catch (err) {
+
+		  }
+		} else {
+		    document.querySelector('.saito-overlay .winter').style.backgroundImage = "url(/his/img/backgrounds/winter_background.jpg)";
+		    document.querySelector('.saito-overlay .winter').style.backgroundSize = "cover";
+		    document.querySelector('.saito-overlay .winter .winter-title').innerHTML = "A Passage of Winter";
+		    document.querySelector('.stage1').style.display = "block";
+		    document.querySelector('.stage2').style.display = "block";
+		    document.querySelector('.stage3').style.display = "block";
+		    document.querySelector('.stage4').style.display = "block";
+		    document.querySelector('.stage5').style.display = "none";
+		    document.querySelector('.stage6').style.display = "none";
+		    document.querySelector('.stage7').style.display = "none";
+		    document.querySelector('.stage8').style.display = "none";
+		}
+
+
 		this.pullHudOverOverlay();
 
 		this.attachEvents();
