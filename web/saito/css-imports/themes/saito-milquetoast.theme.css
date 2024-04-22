@@ -1,10 +1,15 @@
 html[data-theme="milquetoast"] {
     /*THEME COLORS*/
-    /*BASE COLOR SECTION*//* MID gray  */ /* very light gray, almost white  */ /* very dark gray */
+    --color-primary: #f71f3d;/* red -same as base theme*/
+    --color-secondary: #ff8235;  /* Orange -same as base theme*/
+    --color-complement: #7f7f7f;/* MID gray  */
+    --color-base: #f5f5f5; /* very light gray, almost white  -whiter than base theme 'base' */
+    --color-contrast: #3d3d3d; /* very dark gray -same as base theme*/
     /*TINTS COLOR SECTION*/
-      --color-tint-dark: #1b1b1b; /* Super dark gray */
-      --color-highlight: #d0d0d0; /* very light gray */
-    /*SHADOW COLOR SECTION*/ /* almost black, transparent */
+    --color-tint-primary: #444; /* dark gray -same as base theme*/
+    --color-tint-dark: #1b1b1b; /* Super dark gray */
+    --color-highlight: #efefef; /* very light gray- almost white -- same as base theme 'base'! */
+
     /*SHADOW SELECTION*/
       --shadow-primary-button: var(--shadow-shape-flat);
       --shadow-chat-popup: var(--shadow-shape-glow);
@@ -49,6 +54,7 @@ html[data-theme="milquetoast"] {
       --border-radius-selection-box: var(--border-radius-soft);
       --border-radius-button-primary: var(--border-radius-round);
       --border-radius-button-sidebar: var(--border-radius-round);
+      --border-radius-button-sidebar-chat-manager: var(--border-radius-obscene); 
       --border-radius-button-chat-container: var(--border-radius-round);
       --border-radius-button-simple-contact: var(--border-radius-round);
       --border-radius-button-hover-simple-contact: var(--border-radius-round);
@@ -63,6 +69,9 @@ html[data-theme="milquetoast"] {
       --border-radius-status-message: var(--border-radius-round);
       --border-radius-sidebar-game-module: var(--border-radius-round);
       --border-radius-identicon-needed: var(--border-radius-voluptuous);
+
+      --border-radius-offset: 0.3rem;
+
     /* BORDER COLOR */
       --border-color-identicon: var(--color-highlight);
     /* BORDER THICKNESS */

@@ -26,7 +26,7 @@
 
 .chat-manager .saito-user {
   padding: 0.5rem;
-  border-radius: var(--border-radius-sidebar-chat-manager);
+  border-radius: var(--border-radius-button-sidebar-chat-manager); 
 }
 
 .chat-manager .saito-user:hover, .chat-manager .saito-user:hover .saito-address {
@@ -216,19 +216,22 @@
   font-size: 1.7rem;
   background: var(--background-color-chat-popup-header);
   border-radius: var(--border-radius-chat-popup);
-  padding: var(--chat-header-icon-padding);
+  padding-left: 1rem;
+  overflow: hidden; /* for extreme border radius */
 }
 
 .chat-header > .chat-header-nav > i {
   margin: 0;
   color: var(--font-color-button-chat-popup-header); /* popup-button colour */
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   display: inline-block;
   position: relative;
   transition: all 0.2s;
   cursor: pointer;
   padding: 0.5rem;
   height: 100%;
+  width: 2.4rem;
+  text-align: center;
 }
 
 .chat-header > .chat-header-nav > i:hover {
@@ -263,6 +266,7 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0px 1px 3px -1px; /* added some depth to the header here. Across all themes, but I feel it is necessary. */
 }
 
 .chat-header-info  i {

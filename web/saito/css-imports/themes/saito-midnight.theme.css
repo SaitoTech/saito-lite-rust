@@ -10,7 +10,6 @@ html[data-theme="midnight"] {
       --color-base: #151515; /*  super dark almost black */
       --color-contrast: #dedede; /* off-white */
     /* Spacing and padding adjustments */
-      --chat-header-icon-padding: 0 1.3rem;
       --border-padding-identicon-style: var(--border-padding-identicon-thin);
       --border-padding-style: var(--border-padding-wide);
     /*TINTS COLOR SECTION*/
@@ -85,11 +84,11 @@ html[data-theme="midnight"] {
       --border-radius-chat-popup: var(--border-radius-top-only-round);
       --border-radius-chat-popup-message-tag: var(--border-radius-round);
       --border-radius-identicon: var(--border-radius-obscene);
-      --border-radius-identicon-square: var(--border-radius-soft);
       --border-radius-image-flex: var(--border-radius-round);
       --border-radius-selection-box: var(--border-radius-soft);
       --border-radius-button-primary: var(--border-radius-round);
       --border-radius-button-sidebar: var(--border-radius-round);
+      --border-radius-button-sidebar-chat-manager: var(--border-radius-obscene); 
       --border-radius-button-chat-container: var(--border-radius-round);
       --border-radius-button-simple-contact: var(--border-radius-round);
       --border-radius-button-hover-simple-contact: var(--border-radius-round);
@@ -104,10 +103,13 @@ html[data-theme="midnight"] {
       --border-radius-status-message: var(--border-radius-round);
       --border-radius-sidebar-game-module: var(--border-radius-round);
       --border-radius-identicon-needed: var(--border-radius-voluptuous);
+
+      --border-radius-offset: 0.3rem;
+
     /* BORDER THICKNESS */
       --border-thickness-button-primary: var(--border-thickness-thin);
       --border-thickness-button-hover-primary: var(--border-thickness-thin);
-      --border-thickness-identicon: var(--border-thickness-thick);
+      --border-thickness-identicon: var(--border-thickness-none);
     /* BORDER COLORS */
       --border-color-general-dividers-dark: var(--color-primary);
       --border-color-button-primary: var(--color-complement);
@@ -128,6 +130,7 @@ html[data-theme="midnight"] {
     
     /* BACKGROUNDS */
     /* General Background Colors */
+      --saito-background-color: var(--background-color-main);
       --background-color-main: #000;
       --background-color-shim-normal: #0009;
       --background-color-hover-post: none;   /* Turns it off for this theme*/
@@ -146,7 +149,6 @@ html[data-theme="midnight"] {
      
       --background-color-button-sidebar-chat-active: var(--color-primary);
       --background-color-button-hover-modal-oldschool: var(--color-primary);
-      --background-color-button-hover-chat-popup-header: var(--color-primary);
       --background-color-button-chat-popup-send: var(--background-color-main);
     /* Progress Bar */
       --background-color-progress-bar: var(--color-primary);

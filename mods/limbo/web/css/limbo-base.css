@@ -134,11 +134,9 @@
 	align-items: center;
 	justify-content: space-between;
 	max-width: 100%;
+	padding: 0 1rem;
 }
 
-.dream-controls .control-panel .timer {
-	margin-left: 2rem;
-}
 
 
 video#local.noflip{
@@ -166,7 +164,7 @@ video#local.noflip{
 }
 
 
-.video-call-info {
+.dream-controls .video-call-info {
 	display: none;
 }
 
