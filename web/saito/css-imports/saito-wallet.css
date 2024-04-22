@@ -676,6 +676,16 @@
   cursor: not-allowed;
 }
 
+.withdraw-fee-cont {
+  font-size: 1.5rem;
+  color: var(--font-color-secondary);
+  display: none;
+}
+
+.withdraw-external-fee-span.saito {
+  display: none;
+}
+
 @keyframes spin {
   to { -webkit-transform: rotate(360deg); }
 }
