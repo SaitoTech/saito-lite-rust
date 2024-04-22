@@ -89,6 +89,7 @@ html[data-theme="dark"] {
   --font-color-overlay-subform-recover: var(--font-color-primary);
 /* BORDER RADIUS */
   --border-radius-modal-menu: var(--border-radius-soft);
+  --border-radius-sidebar-chat-manager: var(--border-radius-soft);
 /* BORDER THICKNESS */
   --border-thickness-modal-menu: 0px;
   --border-thickness-button-primary: var(--border-thickness-thin);
