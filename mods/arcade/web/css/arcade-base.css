@@ -150,7 +150,7 @@
 		position: unset;
 		grid-row: unset;
 		grid-column-start: unset;
-		padding: 1rem;
+		padding: 0 1rem;
 	}
 	.arcade-container .saito-main {
 		margin: 0;
@@ -218,7 +218,8 @@
 
 #bottom-of-game-list{
 	position: relative;
-	bottom: 0;
+	top: calc(100% - 25px);
+	height: 5px;
 }
 
 

@@ -66,6 +66,7 @@ html[data-theme="dark"] {
   --font-color-button-hover-modal-oldschool: var(--font-color-heavy);
   --font-color-hover-icons-left-sidebar: var(--font-color-heavy);
   --font-color-button-hover-wallet-control: var(--font-color-heavy);
+  --font-color-button-wallet-control: var(--saito-primary);
   --font-color-calendar-today: var(--font-color-primary);
   --font-color-calendar-hover: var(--font-color-primary);
 /* Menu and Header Font Colors */

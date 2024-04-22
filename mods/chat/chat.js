@@ -188,6 +188,7 @@ class Chat extends ModTemplate {
 		if (this.main == null) {
 			this.header = new SaitoHeader(this.app, this);
 			await this.header.initialize(this.app);
+			this.header.header_class = "wide-screen";
 			this.addComponent(this.header);
 			this.main = new ChatMain(this.app, this);
 			this.addComponent(this.main);

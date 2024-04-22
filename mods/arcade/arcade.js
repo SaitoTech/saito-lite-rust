@@ -400,6 +400,7 @@ class Arcade extends ModTemplate {
 			this.main = new ArcadeMain(this.app, this);
 			this.header = new SaitoHeader(this.app, this);
 			await this.header.initialize(this.app);
+			this.header.header_class = "arcade";
 			this.addComponent(this.header);
 			this.addComponent(this.main);
 		}
