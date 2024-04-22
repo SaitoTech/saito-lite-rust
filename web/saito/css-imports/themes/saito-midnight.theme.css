@@ -130,6 +130,7 @@ html[data-theme="midnight"] {
     
     /* BACKGROUNDS */
     /* General Background Colors */
+      --saito-background-color: var(--background-color-main);
       --background-color-main: #000;
       --background-color-shim-normal: #0009;
       --background-color-hover-post: none;   /* Turns it off for this theme*/
