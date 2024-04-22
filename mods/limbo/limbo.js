@@ -219,6 +219,7 @@ class Limbo extends ModTemplate {
 			this.main = new LimboMain(this.app, this);
 			this.header = new SaitoHeader(this.app, this);
 			await this.header.initialize(this.app);
+			this.header.header_class= "wide-screen";
 			this.addComponent(this.header);
 			this.addComponent(this.main);
 		}
