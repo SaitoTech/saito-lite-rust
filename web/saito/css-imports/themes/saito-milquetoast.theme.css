@@ -68,6 +68,9 @@ html[data-theme="milquetoast"] {
       --border-radius-status-message: var(--border-radius-round);
       --border-radius-sidebar-game-module: var(--border-radius-round);
       --border-radius-identicon-needed: var(--border-radius-voluptuous);
+
+      --border-radius-offset: 0.3rem;
+
     /* BORDER COLOR */
       --border-color-identicon: var(--color-highlight);
     /* BORDER THICKNESS */

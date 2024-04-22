@@ -40,7 +40,7 @@ module.exports = ArcadeMainTemplate = (app, mod) => {
         </div>
       </div>
       <div class="saito-sidebar right arcade-sidebar">
-        <div class='saito-announcement'>The Saito Arcade is a launch pad for a variety of peer-to-peer games hosted on Saito's unique blockchain. Games here integrate other features of the Saito Network, such as instant messaging, web3 cryptocurrency staking, and voice and video calling tools. Play any game to automatically join the leaderboard. Register a free username so that your opponents can remember who kicked their butt. Have fun!</div>
+        <div class='saito-announcement'>The Saito Arcade is an online hub for the peer-to-peer games, web3, and video apps that run on Saito. Play any game to automatically join the leaderboard. Have fun!</div>
       </div>
     </div>
   `;

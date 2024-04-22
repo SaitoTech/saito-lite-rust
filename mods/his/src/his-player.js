@@ -650,7 +650,6 @@
     let menu = [];
 
 if (limit === "build") {
-
     menu.push({
       factions : ['hapsburg','england','france','papacy','protestant'],
       cost : [1,1,1,1,1],
@@ -723,6 +722,15 @@ if (limit === "build") {
       });
     } else {
 
+    menu.push({
+      factions : ['hapsburg','england','france','papacy','ottoman','protestant'],
+      cost : [0,0,0,0,0,0],
+      name : "First Game / Need Help?",
+      check : this.canPlayerShowTutorial,
+      fnct : this.playerShowTutorial,
+      category : "move" ,
+      img : '/his/img/backgrounds/move/help.jpeg',
+    });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
       cost : [1,1,1,1,1,1,1,1,1,1],
@@ -1955,7 +1963,9 @@ if (this.game.state.events.cramner_active == 1) {
             for (let z = 0; z < menu[i].factions.length; z++) {
               if (menu[i].factions[z] === selected_faction) {
   	        if (menu[i].cost[z] <= ops) {
-                  html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+		  if (menu[i].cost[z] > 0) {
+                    html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+                  }
                 }
 	        z = menu[i].factions.length+1;
               }
@@ -2069,14 +2079,21 @@ if (this.game.state.events.cramner_active == 1) {
 	    } else {
 
 	      let ops_to_spend = 0;
+	      let cost = 0;
 
               for (let z = 0; z < menu[user_choice].factions.length; z++) {
                 if (menu[user_choice].factions[z] === selected_faction) {
+		  cost = menu[user_choice].cost[z];
                   ops -= menu[user_choice].cost[z];
 		  ops_to_spend = menu[user_choice].cost[z];
 	          z = menu[user_choice].factions.length+1;
                 }
               }
+	      if (cost == 0) {
+                menu[user_choice].fnct(this, this.game.player, selected_faction, ops_to_spend, ops);
+		this.playerPlayOps(card, faction, ops, limit);
+                return;
+	      }
               if (ops > 0) {
 	        this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
               }
@@ -2106,7 +2123,9 @@ if (this.game.state.events.cramner_active == 1) {
           for (let z = 0; z < menu[i].factions.length; z++) {
             if (menu[i].factions[z] === faction) {
   	      if (menu[i].cost[z] <= ops) {
-                html += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+		if (menu[i].cost[z] > 0) {
+                  html += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+                }
               }
 	      z = menu[i].factions.length+1;
             }
@@ -2167,15 +2186,22 @@ if (this.game.state.events.cramner_active == 1) {
 	} else {
 
 	  let ops_to_spend = 0;
+	  let cost = 0;
 
           for (let z = 0; z < menu[user_choice].factions.length; z++) {
             if (pfactions.includes(menu[user_choice].factions[z])) {
+	      cost = menu[user_choice].cost[z];
               ops -= menu[user_choice].cost[z];
 	      ops_to_spend = menu[user_choice].cost[z];
   	      z = menu[user_choice].factions.length+1;
             }
           }
 
+	  if (cost == 0) {
+            menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend, ops);
+	    this.playerPlayOps(card, faction, ops, limit);
+            return;
+	  }
           if (ops > 0) {
   	    this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
           }
@@ -6732,6 +6758,252 @@ does_units_to_move_have_unit = true; }
     his_self.endTurn();
     return 0;
   }
+
+  canPlayerShowTutorial(his_self, player, faction) {
+    if (his_self.game.state.round == 1) { return 1; }
+    return 0;
+  }
+  async playerShowTutorial(his_self, player, faction, ops_to_spend=1, ops_remaining=0) {
+
+    this.game.state.may_explore['england'] = 1;
+    this.game.state.may_explore['france'] = 1;
+    this.game.state.may_explore['hapsburg'] = 1;
+    this.game.state.may_conquer['england'] = 1;
+    this.game.state.may_conquer['france'] = 1;
+    this.game.state.may_conquer['hapsburg'] = 1;
+    this.game.state.may_colonize['england'] = 1;
+    this.game.state.may_colonize['france'] = 1;
+    this.game.state.may_colonize['hapsburg'] = 1;
+
+    let title = "";
+    let text = "";
+    let img = "";
+    let card = "";
+
+    let options = [];
+
+    //
+    // Protestant
+    //
+    if (faction == "protestant") {
+
+      title = "Publish a Treatise?";
+      text = "You get +1 roll for each adjacent Protestant space. Committing debaters give you bonuses flipping spaces, but make them more vulnerable in theological debates...";
+      img = "/his/img/backgrounds/move/printing_press.jpg";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Watch the Discard Pile";
+      text = "The Protestants are the only power that can retrieve cards from the discard pile. Retrieve valuable cards and play or hold them for the next turn...";
+      img = "/his/img/backgrounds/move/publish_treatise.jpg";
+      card = his_self.returnCardImage("007");
+      options.push({ title : title , text : text , img : img , card : card });
+
+      if (ops_remaining == 1) {
+        title = "Translate the Bible!";
+        text = "Translating the New Testament into a language gives 6 reformation attempts. Translating the Full Bible gives 6 more and earns 1 VP per translation.";
+        img = "/his/img/backgrounds/move/translate.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+    }
+
+    //
+    // Papacy
+    //
+    if (faction == "papacy") {
+
+      title = "Convene a Debate?";
+      text = "Leipzig Debate lets you pick your own debater - Eck is a great choice. If you get lucky, the Protestants will need to use their Home Card to send Luther, wasting 5 Protestant OPs";
+      img = "/his/img/backgrounds/move/theological_debate.jpg";
+      card = his_self.returnCardImage("007");
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Conquer Florence";
+      text = "Build troops in Rome. Move them to Siena. Control Siena. Then move them to Florence and besiege the city. The next turn you can assault it.";
+      img = "/his/img/backgrounds/move/papacy-florence.png";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      if (ops_remaining == 1) {
+        title = "Build St. Peters!";
+        text = "The Papacy earns VP for building St. Peter's Cathedral. Use any excess OPs to build the basilica.";
+        img = "/his/img/backgrounds/move/saint_peters.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+    }
+
+    //
+    // Ottoman
+    //
+    if (faction == "ottoman") {
+
+      title = "Crush the Hungarians";
+      text = "Conquering Belgrade and Buda will earn 2 VP and force the Hapsburgs into declaring war...";
+      img = "/his/img/backgrounds/tutorials/ottoman-hungary.png";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Control the Mediterranean";
+      text = "Piracy is harder around fortresses. Build troops in Athens, move ships into the Aegean Sea, and transport those units to Rhodes to assault the fortress...";
+      img = "/his/img/backgrounds/tutorials/ottoman-rhodes.png";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      if (his_self.game.state.events.barbary_pirates == 1) {
+        title = "Piracy?!";
+        text = "Build corsairs in Algiers. Move them in packs around the Mediterranean and target opponents with Piracy. Every hit earns VP or a card draw...";
+        card = his_self.returnCardImage("009");
+        img = "/his/img/backgrounds/move/piracy.jpg";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+    }
+
+    //
+    // Hapsburg
+    //
+    if (faction == "hapsburg") {
+
+      if (his_self.game.spaces["metz"].besieged == 0) {
+        title = "Control Metz";
+        text = "Build troops in Becanson. Move them north into Metz. Your forces will automatically besiege the city. The next turn, spend 1 OP to assault and hopefully capture it.";
+        img = "/his/img/backgrounds/tutorials/hapsburg-metz.png";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+      title = "Invade France";
+      text = "Build infantry in Navarre. Move them north to Bordeaux. If the French withdraw into fortifications spend 1 OP to assault Bordeaux the next turn.";
+      img = "/his/img/backgrounds/tutorials/hapsburg-bordeaux.png";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      if (his_self.game.state.may_conquer['hapsburg'] == 1) {
+        title = "New World Conquest";
+        text = "Conquests roll dice in the New World Phase to see if they succeed. In addition to earning VP, successful conquests can also earn bonus cards subsequent turns.";
+        img = "/his/img/backgrounds/move/conquer.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+      if (his_self.game.state.may_colonize['hapsburg'] == 1) {
+        title = "Found a Colony";
+        text = "At the end of every turn your colonies roll dice for bonus cards. Consider sending an expedition now for more ops later in the game.";
+        img = "/his/img/backgrounds/move/colonize.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+    }
+
+    //
+    // France
+    //
+    if (faction == "france") {
+
+      title = "Build a Chateaux";
+      text = "Your Home Card allows you to get VP and bonus cards, and your chance of success increases if France is not under attack.";
+      img = "/his/img/backgrounds/chateaux.png";
+      card = his_self.returnCardImage("004");
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Conquer the New World";
+      text = "Conquests are harder than Explorations. In addition to earning VP if they succeed, they also roll dice for bonus cards at the end of every turn. Consider sending an expedition!";
+      img = "/his/img/backgrounds/move/conquer.jpg";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      if (his_self.game.state.may_explore['france'] == 1) {
+        title = "Explore the New World";
+        text = "New World Explorations cost 2 OPs and earn VP if they succeed. Dice are rolled and discoveries are made at the end of each turn.";
+        img = "/his/img/backgrounds/move/explore.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+      if (his_self.game.state.may_colonize['france'] == 1) {
+        title = "Found a Colony";
+        text = "You are allowed up to three colonies. At the end of every turn your surviving colonies will roll dice for bonus cards. Having more cards can provide a crucial advantage later in the game."
+        img = "/his/img/backgrounds/move/colonize.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+      if (his_self.game.state.may_conquer['france'] == 1) {
+        title = "Fortify Italy";
+        text = "It is hard for France to move forces quickly into Italy, and Milan is vulnerable to attack. Consider building forces and moving them over to protect your Italian territories.";
+        img = "/his/img/backgrounds/tutorials/france-milan.png";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+    }
+
+    //
+    // England
+    //
+    if (faction == "england") {
+
+      title = "Unify the British Isles?";
+      text = "Your Home Card lets you declare war on Scotland, which is necessary for attacking Edinburgh. Remember you will need 2 squadrons in the North Sea to assault the city.";
+      img = "/his/img/backgrounds/tutorials/england-edinburgh.png";
+      card = his_self.returnCardImage("003");
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Henry VIII and Marriage";
+      text = "From round 2 on, event your Home Card to advance Henry VIII's marital status. England earns 6 VP once a male heir is born.";
+      img = "/his/img/backgrounds/henry_viii.jpeg";
+      card = his_self.returnCardImage("003");
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Fortify Calais?";
+      text = "Calais is vulnerable to attack from the French and offers your landing point for invasions of the continent. Consider reinforcing it sooner rather than later.";
+      img = "/his/img/backgrounds/tutorials/england-calais.png";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      if (his_self.game.state.may_conquer['england'] == 1) {
+        title = "Conquer the New World";
+        text = "Conquests are harder than Explorations. In addition to earning VP if they succeed, they also roll dice for bonus cards at the end of every turn. Consider sending an expedition!";
+        img = "/his/img/backgrounds/move/conquer.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+      if (his_self.game.state.may_explore['england'] == 1) {
+        title = "Explore the New World";
+        text = "New World Explorations cost 2 OPs and earn VP if they succeed. Dice are rolled and discoveries are made at the end of each turn.";
+        img = "/his/img/backgrounds/move/explore.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+      if (his_self.game.state.may_colonize['england'] == 1) {
+        title = "Found a Colony";
+        text = "You are allowed up to three colonies. At the end of every turn your surviving colonies will roll dice for bonus cards. Having more cards can provide a crucial advantage later in the game."
+        img = "/his/img/backgrounds/move/colonize.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+    }
+
+    let x = Math.floor(Math.random() * options.length);
+
+    his_self.welcome_overlay.renderCustom({
+      title : options[x].title ,
+      text : options[x].text ,
+      card : options[x].card ,
+      img : options[x].img ,
+    });
+
+    return;
+
+  }
+
   canPlayerBurnBooksMaryI(his_self, player, faction) {
     return this.canPlayerBurnBooks(his_self, player, faction, 1);
   }
