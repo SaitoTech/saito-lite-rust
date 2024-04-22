@@ -30,8 +30,6 @@ html[data-theme="sangre"] {
       --color-primary: #b70b0b;/* blood red */  /* Gray with warm tint *//* MID gray  */
       --color-base: #1c1c23; /*  super dark almost black */
       --color-contrast: #aaa; /* off-white */
-    /* Spacing and padding adjustments */
-      --chat-header-icon-padding: 0 1.3rem;
     /*TINTS COLOR SECTION*/
       --color-tint-primary: #ddd; /* bright-off-white */ /* very dark gray */
       --color-highlight: #f71f3d; /* saito-red */
@@ -114,7 +112,6 @@ html[data-theme="sangre"] {
       --background-color-button-hover-sidebar: var(--background-color-button-primary);
       --background-color-button-sidebar-chat-active: var(--color-primary);
       --background-color-button-hover-modal-oldschool: var(--color-primary);
-      --background-color-button-hover-chat-popup-header: var(--color-primary);
       --background-color-button-chat-popup-send: var(--background-color-main);
     /* Progress Bar */
     /* Sidebar, Headers and Notification Colors */

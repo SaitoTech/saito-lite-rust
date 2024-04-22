@@ -216,19 +216,22 @@
   font-size: 1.7rem;
   background: var(--background-color-chat-popup-header);
   border-radius: var(--border-radius-chat-popup);
-  padding: var(--chat-header-icon-padding);
+  padding-left: 1rem;
+  overflow: hidden; /* for extreme border radius */
 }
 
 .chat-header > .chat-header-nav > i {
   margin: 0;
   color: var(--font-color-button-chat-popup-header); /* popup-button colour */
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   display: inline-block;
   position: relative;
   transition: all 0.2s;
   cursor: pointer;
   padding: 0.5rem;
   height: 100%;
+  width: 2.4rem;
+  text-align: center;
 }
 
 .chat-header > .chat-header-nav > i:hover {

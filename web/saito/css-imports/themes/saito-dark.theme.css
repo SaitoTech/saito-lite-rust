@@ -33,8 +33,6 @@ html[data-theme="dark"] {
   --color-secondary: #c1aa00;  /* Gray with warm tint *//* MID gray  */
   --color-base: #1c1c23; /*  super dark almost black - updated to match brand book*/
   --color-contrast: #aaa; /* off-white */
-/* Spacing and padding adjustments */
-  --chat-header-icon-padding: 0 1.3rem;
 /*TINTS COLOR SECTION*/
   --color-tint-primary: #ddd; /* bright-off-white */
   --color-tint-dark: #1c1c23; /* very dark gray */
@@ -123,8 +121,7 @@ html[data-theme="dark"] {
  
   --background-color-button-sidebar-chat-active: var(--color-tint-dark);
   --background-color-button-hover-modal-oldschool: var(--color-primary);
-  --background-color-button-hover-chat-popup-header: var(--color-primary);
-  --background-color-button-chat-popup-send: var(background-color-main); /* Not used yet, seems to not work*/
+  --background-color-button-chat-popup-send: var(--background-color-main); /* Not used yet, seems to not work*/
   
 /* Progress Bar */
   --background-color-progress-bar: var(--color-primary);

@@ -155,7 +155,6 @@ html[data-theme="arcade"] {
       --background-color-button-hover-profile: var(--color-primary);
       --background-color-button-hover-modal: none;
       --background-color-button-hover-modal-oldschool: var(--color-primary);
-      --background-color-button-hover-chat-popup-header: var(--color-primary);
       --background-color-button-chat-popup-send: var(--background-color-main);
     /* Progress Bar */
       --background-color-progress-bar: var(--color-primary);

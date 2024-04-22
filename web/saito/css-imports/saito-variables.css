@@ -156,9 +156,10 @@ font imports
   --border-radius-top-only-round: 1.5rem 1.5rem 0 0;
   --border-radius-topleft-only-soft: 0.5rem 0 0 0;
   --border-radius-topleft-only-round: 1.5rem 0 0 0;
+
+  --border-radius-offset: 0rem;
  
  /*BORDER PADDING SELECTION*/ 
-  --chat-header-icon-padding: 0 1rem; /*consider rename*/
   --border-padding-normal: 0.5rem;
   --border-padding-wide: 0.8rem;
   --border-padding-identicon-none: 0px;
@@ -466,7 +467,8 @@ font imports
   --background-color-button-primary: var(--background-saito-effects);
   --background-color-button-sidebar: ;
   --background-color-button-hover-sidebar: var(--background-color-button-primary);
- 
+  --background-color-button-hover-chat-popup-header: var(--color-primary);
+
   --background-color-button-sidebar-chat-active: var(--background-color-gray-transparent);
   --background-color-button-hover-chat-container: var(--color-primary);
   --background-color-button-simple-contact: none;
