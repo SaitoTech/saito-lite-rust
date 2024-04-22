@@ -54,16 +54,16 @@ class SpringDeploymentOverlay {
 		];
 
 		if (this.mod.game.state.round == 1 && faction == "ottoman") {
-			this.updateInstructions("The Ottoman Empire starts at War with Hungary. Why not deploy from Istanbul to Nezh and try to seize Belgrade?");
+			this.updateInstructions("You start at War with Hungary. Why not deploy from Istanbul to Nezh and try to seize Belgrade?");
 		}
 		if (this.mod.game.state.round == 1 && faction == "france") {
-			this.updateInstructions("France starts at War with the Hapsburgs and Papacy - but the independent key of Metz is also within range of Paris...");
+			this.updateInstructions("France starts at War with the Hapsburgs and Papacy - the independent key of Metz is also within reach of Paris...");
 		}
 		if (this.mod.game.state.round == 1 && faction == "papacy") {
 			this.updateInstructions("The Papacy starts at War with France. Manage that conflict while fighting the Protestants and controlling strategic keys like Florence and Milan...");
 		}
 		if (this.mod.game.state.round == 1 && faction == "england") {
-			this.updateInstructions("England can deploy north to pacify Scotland or south to protect Calais. Remember you need more squadrons in the North Sea than are defending Edinburgh to assault the city...");
+			this.updateInstructions("England usually deploys north to pacify Scotland. Your home card will let you declare war on the Scots, but remember you need more squadrons in the North Sea than are defending Edinburgh to assault the city...");
 		}
 		if (this.mod.game.state.round == 1 && faction == "hapsburg") {
 			this.updateInstructions("Move infantry into Germany to slow the Protestants, or subdue independent keys for VP and bonus cards...");

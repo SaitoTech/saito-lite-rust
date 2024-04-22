@@ -231,6 +231,36 @@
       return;
     }
 
+    if (c === "spring_deployment") {
+      this.welcome_overlay.renderCustom({
+        title : "Spring Deployment" ,
+        text : "At the start of each round, players may move troops from their capital along any line of spaces controlled by them or their allies. Units may not cross passes or seas containing enemy ships. <b>New players can safely ignore Spring Deployment first turn</b>.",
+        img : '/his/img/backgrounds/spring-deployment.jpeg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "diet_of_worms") {
+      if (this.game.players.length == 2) {
+        this.welcome_overlay.renderCustom({
+          title : "Diet of Worms" ,
+          text : "Protestants pick a card and add 4. Papacy picks a card and adds the value of a card drawn randomly from the deck. Dice are rolled and the winner flips the difference in hits to the Protestant or Catholic religion.",
+          img : '/his/img/backgrounds/diet_of_worms.jpeg',
+	  styles : [{ key : "backgroundPosition" , val : "bottom" }],
+        });
+        return;
+      } else {
+        this.welcome_overlay.renderCustom({
+          title : "Diet of Worms" ,
+          text : "Protestants pick a card and add 4. Papacy and Hapsburg both pick cards and combine their values. Dice are rolled and the winner flips the difference in hits to the Protestant or Catholic religion.",
+          img : '/his/img/backgrounds/diet_of_worms.jpeg',
+	  styles : [{ key : "backgroundPosition" , val : "bottom" }],
+        });
+        return;
+      }
+    }
+
     if (c === "explore") {
       this.welcome_overlay.renderCustom({
         title : this.returnFactionName(msg) + " launches Exploration",

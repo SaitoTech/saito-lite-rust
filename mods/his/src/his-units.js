@@ -652,7 +652,7 @@
       available_units['regular']['3'] = 0;    
       available_units['regular']['4'] = 0;    
       available_units['regular']['5'] = 0;    
-      available_units['regular']['6'] = 1;    
+      available_units['regular']['6'] = 0;    
       available_units['squadron']['1'] = 1;    
     }
     if (faction == "venice") {

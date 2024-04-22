@@ -769,12 +769,65 @@ if (this.game.options.scenario == "is_testing") {
 		      //
 		      // otherwise attrition + return to capital
 		      //
-		      // TODO - attrition
-		      //
 		      } else {
 
  			let capitals = this.returnCapitals(faction);
 			let unitlen = this.game.spaces[spacekey].units[faction].length;
+			let number_to_move = 0;
+			let number_of_regulars = 0;
+			let number_of_mercenaries = 0;
+			let number_to_destroy = 0;
+
+			//
+			// calculate who is here
+			//
+		        for (let z = 0, y = 0; z < unitlen; z++) {
+		          if (this.game.spaces[spacekey].units[faction][z].reformer != true) {
+		    	    if (y == 0) { number_to_destroy++; y++; } else { y = 0; }
+			    number_to_move++;
+			    if (this.game.spaces[spacekey].units[faction][z].type == "regular") {
+			      number_of_regulars++;
+			    } else {
+			      number_of_mercenaries++;
+			    }
+			  }
+			}
+
+			//
+			// attrition
+			//
+			if (number_to_destroy > 0) {
+			  this.updateLog(this.returnFactionName(faction) + " units in " + this.returnSpaceName(spacekey) + " suffer attrition");
+			}
+
+			//
+			// remove mercenaries/cavalry first
+			//
+			for (let z = unitlen-1; z >= 0 && number_to_destroy > 0 && number_of_mercenaries > 0; z--) {
+		          if (this.game.spaces[spacekey].units[faction][z].reformer != true) {
+			    if (this.game.spaces[spacekey].units[faction][z].type == "mercenary" || this.game.spaces[spacekey].units[faction][z].type == "cavalry") {
+			      number_to_destroy--;
+			      number_of_mercenaries--;
+			      this.game.spaces[spacekey].units[faction].splice(z, 1);
+			      unitlen--;
+			    }
+			  }
+			}
+
+			//
+			// remove regulars last
+			//
+			for (let z = unitlen-1; z >= 0 && number_to_destroy > 0 && number_of_regulars > 0; z--) {
+		          if (this.game.spaces[spacekey].units[faction][z].reformer != true) {
+			    if (this.game.spaces[spacekey].units[faction][z].type == "regular") {
+			      number_to_destroy--;
+			      number_of_regulars--;
+			      this.game.spaces[spacekey].units[faction].splice(z, 1);
+			      unitlen--;
+			    }
+			  }
+			}
+
 		        for (let z = 0, y = 0, zz = 0; z < unitlen; z++, zz++) {
 			  if (capitals[y]) {
 		            if (this.game.spaces[spacekey].units[faction][z].reformer != true) {
@@ -4003,28 +4056,11 @@ return 1; }
 	  let game_self = this;
 	  let my_faction = "";
 
-  this.game_help.render(TutorialTemplate, {
-    help : `Diet of Worms` ,
-    content : `
-
-	The Diet of Worms was an Imperial Assembly convened by the Hapsburg Emperor in 1521 in the Free Imperial City of Worms. Its focus of discussion was on Martin Luther's critique of the Catholic Church and the question of whether he would recant. Luther refused to recant and the assembly ended with him fleeing Worms under the protection of Frederick III of Saxony before being condemned as a heretic by the religious and political establishment.
-
-	<p></p>
-
-	In simulating this event, the Protestant and Papacy both pick a card to reflect their level of commitment to the debate. In the two player game, the Protestants add +4 to the value of the card selected, while the Papacy pulls a card from the deck and adds its value. In all other games, the Hapsburg player contributes the second card for the Papacy.
-
-	<p></p>
-
-	Both players roll the appropriate number of dice and hit on all rolls of 5 or 6. The winner flips the difference in hits to the Protestant or Catholic faith.
-
-    `,
-    img : "/his/img/backgrounds/diet_of_worms.jpeg",
+  this.game_help.renderCustomOverlay("diet_of_worms", {
     line1 : "diet",
     line2 : "of worms?",
     fontsize : "2.1rem" ,
   });
-
-
 
 	  // first time it happens, lets update menu
 	  this.displayCardsLeft();
@@ -9471,12 +9507,12 @@ defender_hits - attacker_hits;
 	          his_self.game.state.german_bible_translation_bonus = 1;
 	          his_self.game.queue.push("remove_translation_bonus");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman\t1");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	          his_self.updateLog("Protestants +1 VP for completing German Bible");
 		}
@@ -9488,12 +9524,12 @@ defender_hits - attacker_hits;
         	  his_self.game.queue.push("hide_overlay\ttheses");
 	          his_self.game.queue.push("remove_translation_bonus");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tgerman\t1");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 		}
 	      }
@@ -9508,12 +9544,12 @@ defender_hits - attacker_hits;
         	  his_self.game.queue.push("hide_overlay\ttheses");
 	          his_self.game.queue.push("remove_translation_bonus");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench\t1");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	          his_self.updateLog("Protestants +1 VP for completing French Bible");
 		}
@@ -9526,12 +9562,12 @@ defender_hits - attacker_hits;
         	  his_self.game.queue.push("hide_overlay\ttheses");
 	          his_self.game.queue.push("remove_translation_bonus");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tfrench\t1");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 		}
 	      }
@@ -9546,12 +9582,12 @@ defender_hits - attacker_hits;
         	  his_self.game.queue.push("hide_overlay\ttheses");
 	          his_self.game.queue.push("remove_translation_bonus");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish\t1");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 	          his_self.updateLog("Protestants +1 VP for completing English Bible");
 		}
@@ -9564,12 +9600,12 @@ defender_hits - attacker_hits;
         	  his_self.game.queue.push("hide_overlay\ttheses");
 	          his_self.game.queue.push("remove_translation_bonus");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
-        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish\t1");
+        	  his_self.game.queue.push("protestant_reformation\t"+player+"\tenglish\t1");
         	  his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 		}
 	      }
@@ -9962,7 +9998,6 @@ if (this.game.state.round == 1 && this.game.state.impulse == 1) {
 	  //
 	  if (factions_in_play.length > 0) {
 
-
 	    //
 	    // add save instruction!
 	    //
@@ -10052,6 +10087,7 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
 
 	  this.game.queue.splice(qe, 1);
 
+
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
 
@@ -10059,6 +10095,11 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
 	  if (player == 0) { return 1; }
 
 	  if (this.game.player == player) {
+this.game_help.renderCustomOverlay("spring_deployment", {
+  line1 : "spring",
+  line2 : "deployment?",
+  fontsize : "2.1rem" ,
+});
 	    this.playerPlaySpringDeployment(faction, player);
 	  } else {
 	    this.updateStatus(this.returnFactionName(faction) + " Spring Deployment");

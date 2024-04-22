@@ -8,6 +8,7 @@
 	min-height: 622px;
 	text-align: center;
 	color: white;
+        overflow-y: auto;
 }
 
 .tutorial-overlay .help {
