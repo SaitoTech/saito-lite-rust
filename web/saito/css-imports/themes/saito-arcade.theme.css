@@ -58,7 +58,7 @@ html[data-theme="arcade"] {
     
     /*FONTS SECTION*/
     /*quick settings*/
-      --font-color-primary: var(--color-contrast); /* normal */
+      --font-color-primary: var(--color-tint-primary); /* normal */
       --font-color-secondary: var(--color-complement); /*  faded grey  */
       --font-color-heavy: var(--color-white); /* Bright! */
       --font-color-inverse: var(--background-color-main); /* background colory */

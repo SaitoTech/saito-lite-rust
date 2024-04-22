@@ -46,7 +46,7 @@ html[data-theme="dark"] {
   --background-color-shim-normal: #0009;
 /*FONTS SECTION*/
 /*quick settings*/
-  --font-color-primary: var(color-tint-primary); /* normal */
+  --font-color-primary: var(--color-tint-primary); /* normal */
   --font-color-secondary: var(--color-contrast); /*  faded grey  */
   --font-color-heavy: var(--color-white); /* Bright! */
   --font-color-inverse: var(--background-color-main); /* background colory */
