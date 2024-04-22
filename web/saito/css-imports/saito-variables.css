@@ -211,7 +211,7 @@ font imports
   --font-color-button-profile: none;
   --font-color-button-hover-profile: var(--font-color-inverse);
   --font-color-button-modal: none;
-  --font-color-button-hover-modal: var(--color-primary); /* Exempt as system color */
+  --font-color-button-hover-modal: var(--color-primary); 
   --font-color-button-hover-modal-oldschool: var(--font-color-inverse);
   --font-color-button-module: var(--font-color-primary);
   --font-color-button-hover-module: none;
@@ -220,8 +220,8 @@ font imports
 /* Chat Popup Font Colors */
   --font-color-chat-popup: none;
   --font-color-chat-popup-remove-user: var(--font-color-secondary);
-  --font-color-chat-popup-likes: var(--color-primary); /* Exempt as system color */
-  --font-color-hover-chat-popup-reply: var(--color-primary); /* Exempt as system color */
+  --font-color-chat-popup-likes: var(--color-primary);
+  --font-color-hover-chat-popup-reply: var(--color-primary); 
 /* Calendar and Post Font Colors */
   --font-color-calendar-today: var(--font-color-inverse);
   --font-color-calendar-hover: var(--font-color-inverse);
@@ -277,7 +277,6 @@ font imports
   --border-radius-menu-hamburger: var(--border-radius-topleft-only-soft); /*hamburger menu*/
   --border-radius-menu-hamburger-midsection: var(--border-radius-soft);
   --border-radius-sidebar-menu: var(--border-radius-soft);
-  --border-radius-sidebar-chat-manager: var(--border-radius-soft);
   --border-radius-chat-menu: var(--border-radius-soft);
   --border-radius-chat-popup: var(--border-radius-top-only-soft);
   --border-radius-chat-popup-message-tag: var(--border-radius-soft);
@@ -288,7 +287,7 @@ font imports
   --border-radius-qr-code: var(--border-radius-soft);
   --border-radius-button-primary: var(--border-radius-soft);
   --border-radius-button-sidebar: var(--border-radius-soft);
-  --border-radius-button-chat-container: var(--border-radius-soft);
+  --border-radius-button-sidebar-chat-manager: var(--border-radius-obscene); 
   --border-radius-button-simple-contact: var(--border-radius-soft);
   --border-radius-button-hover-simple-contact: var(--border-radius-soft);
   --border-radius-button-profile: var(--border-radius-soft);
@@ -468,7 +467,6 @@ font imports
   --background-color-button-sidebar: ;
   --background-color-button-hover-sidebar: var(--background-color-button-primary);
   --background-color-button-hover-chat-popup-header: var(--color-primary);
-
   --background-color-button-sidebar-chat-active: var(--background-color-gray-transparent);
   --background-color-button-hover-chat-container: var(--color-primary);
   --background-color-button-simple-contact: none;
@@ -500,6 +498,7 @@ font imports
   --background-color-file-transfer: var(--color-base);
   --background-color-wallet-inputs: var(--background-color-main);
   --background-color-mode-arcade: var(--color-base);
+  --background-color-identicon: var(--background-color-main);
 /* Progress Bar and Notifications */
   --background-color-progress-bar: var(--background-saito-effects);
   --background-color-notification-status: var(--color-primary);
