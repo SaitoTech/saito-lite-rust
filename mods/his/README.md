@@ -28,25 +28,15 @@ order to speed-up gameplay:
    hold that card. This feature can be disabled by switching into slow gameplay
    mode.
 
- - winter retreat is heavily automated, and overstacked units are returned to 
-   faction capitals automatically. this simplifies winter phase for newer 
-   players and avoids excessive complexity with token management.
+ - winter retreat is heavily automated, units are automatically returned to the
+   nearest fortified space, or returned to a random capital (with attrition if
+   needed) if no such space exists. attrition is automatically assigned to the 
+   lowest-cost units in the space. this simplifies and accellerates winter.
 
  - the game engine automatically handles token denomination, merging smaller 
-   units into larger ones as possible. units are not destroyed when combat 
-   or movement splits a larger tokens, but if smaller tokens are not available
-   the faction is registered as being in a state of "over-capacity" and cannot
-   construct new units until the player is back under their token limit. 
-
- - captured leaders are stored with PLAYERS as opposed to FACTIONS, which means
-   that in versions of the game where players control multiple factions any 
-   leaders captured by one can be handled by any faction controlled by the same
-   player.
-
- - current priorities are on getting the 2P version as flawless as possible. Once
-   this is done we can move onto 6P game. Please report issues on RedSquare as
-   possible.
-
+   units into larger ones as possible. if factions hit their limits units are
+   not destroyed by the faction is registered as being in "over-capacity" and 
+   cannot construct new units until the player is back under their token limit.
 
 
 

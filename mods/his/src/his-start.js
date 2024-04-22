@@ -37,6 +37,55 @@
 
 
     this.menu.addMenuOption("game-game", "Game");
+
+    this.menu.addSubMenuOption("game-game", {
+      text : "About H.I.S.",
+      id : "game-about",
+      class : "game-about",
+      callback : function(app, game_mod) {
+	let help = "Here I Stand";
+	let content = `
+This edition of Here I Stand is made available under an open source license provided
+by GMT Games. While it strives to be as faithful to the original game as possible,
+minor changes have been made to hasten gameplay, including:
+
+<p></p>
+<ul style="margin-left:2rem">
+<li>
+browsers will "automatically" respond "no" when asked if they want to play
+   event-response cards (like Wartburg) if they do not have those cards. This
+   speeds up gameplay at the cost of "leaking" info that some players do not
+   hold those cards. This feature can be disabled by switching to slow gameplay
+   mode.
+</li>
+<li>
+winter retreat is heavily automated, with units automatically returned to the
+   nearest fortified space, or returned to a random capital (with attrition if
+   needed) if no such space exists. attrition costs are automatically assigned 
+   to the lowest-cost units being moved.
+</li>
+<li>
+the game engine automatically handles token denomination, merging smaller
+   units into larger ones as possible. if factions hit their limits units are
+   not destroyed however - the faction is registered as being in "over-capacity" 
+   and blocked from constructing new units until back under their token limit.
+</li>
+</ul>
+`;
+        game_mod.menu.hideSubMenus();
+        game_mod.game_help.overlay.show(
+	  `
+      	    <div class="tutorial-overlay" id="tutorial-overlay">
+              <div class="help">${help}</div>
+              <div class="content">${content}</div>
+            </div>
+	  `
+	);
+      },
+    });
+
+
+
     this.menu.addSubMenuOption("game-game", {
       text : "Difficulty",
       id : "game-confirm",
@@ -133,7 +182,6 @@
         } 
       }
     });
-
 
     this.menu.addSubMenuOption("game-game", {
       text : "Log",
