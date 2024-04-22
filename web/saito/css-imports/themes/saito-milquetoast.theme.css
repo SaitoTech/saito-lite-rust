@@ -54,6 +54,7 @@ html[data-theme="milquetoast"] {
       --border-radius-selection-box: var(--border-radius-soft);
       --border-radius-button-primary: var(--border-radius-round);
       --border-radius-button-sidebar: var(--border-radius-round);
+      --border-radius-button-sidebar-chat-manager: var(--border-radius-obscene); 
       --border-radius-button-chat-container: var(--border-radius-round);
       --border-radius-button-simple-contact: var(--border-radius-round);
       --border-radius-button-hover-simple-contact: var(--border-radius-round);

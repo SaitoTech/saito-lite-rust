@@ -287,7 +287,7 @@ font imports
   --border-radius-qr-code: var(--border-radius-soft);
   --border-radius-button-primary: var(--border-radius-soft);
   --border-radius-button-sidebar: var(--border-radius-soft);
-  --border-radius-button-sidebar-chat-manager: var(--border-radius-obscene); 
+  --border-radius-button-sidebar-chat-manager: var(--border-radius-round); 
   --border-radius-button-simple-contact: var(--border-radius-soft);
   --border-radius-button-hover-simple-contact: var(--border-radius-soft);
   --border-radius-button-profile: var(--border-radius-soft);
