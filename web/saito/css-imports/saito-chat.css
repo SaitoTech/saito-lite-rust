@@ -97,6 +97,7 @@
 
 .chat-manager-list .saito-user {
   cursor: pointer;
+  min-height: 4.5rem;
 }
 
 .chat-body blockquote {
