@@ -16,8 +16,17 @@
 	--transition-delay: 0.5s;
 }
 
-.arcade-game-slider .game-slider .carousel .slider-button {
+.game-slider .carousel .slider-button {
 	display: none;
+}
+
+.saito-sidebar .game-slider{
+	border-radius: var(--border-radius-sidebar-menu);
+	box-shadow: var(--box-shadow-sidebar-elements);
+}
+
+.carousel, .slides, .slide, .slide img {
+	border-radius: inherit;
 }
 
 .carousel {
@@ -119,7 +128,7 @@ li.slide[data-active-slide] {
 	text-align: center;
 	width: min-content;
 	padding-left: 2rem;
-	background: var(--color-complement);
+	background: var(--hover-background-color);
 	white-space: nowrap;
 	padding: 1rem;
 	border-radius: 0 0 0.5rem 0;

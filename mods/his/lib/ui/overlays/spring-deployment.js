@@ -66,7 +66,7 @@ class SpringDeploymentOverlay {
 			this.updateInstructions("England can deploy north to pacify Scotland or south to protect Calais. Remember you need more squadrons in the North Sea than are defending Edinburgh to assault the city...");
 		}
 		if (this.mod.game.state.round == 1 && faction == "hapsburg") {
-			this.updateInstructions("Moving infantry into Germany to slow the Protestants, or subdue independent keys for the VP and bonus cards...");
+			this.updateInstructions("Move infantry into Germany to slow the Protestants, or subdue independent keys for VP and bonus cards...");
 		}
 
 		if (this.mod.game.state.round > 1) {

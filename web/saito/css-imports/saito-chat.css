@@ -26,7 +26,7 @@
 
 .chat-manager .saito-user {
   padding: 0.5rem;
-  border-radius: var(--border-radius-sidebar-chat-manager);
+  border-radius: var(--border-radius-button-sidebar-chat-manager); 
 }
 
 .chat-manager .saito-user:hover, .chat-manager .saito-user:hover .saito-address {
@@ -216,19 +216,22 @@
   font-size: 1.7rem;
   background: var(--background-color-chat-popup-header);
   border-radius: var(--border-radius-chat-popup);
-  padding: var(--chat-header-icon-padding);
+  padding-left: 1rem;
+  overflow: hidden; /* for extreme border radius */
 }
 
 .chat-header > .chat-header-nav > i {
   margin: 0;
   color: var(--font-color-button-chat-popup-header); /* popup-button colour */
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   display: inline-block;
   position: relative;
   transition: all 0.2s;
   cursor: pointer;
   padding: 0.5rem;
   height: 100%;
+  width: 2.4rem;
+  text-align: center;
 }
 
 .chat-header > .chat-header-nav > i:hover {
@@ -263,6 +266,7 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0px 1px 3px -1px; /* added some depth to the header here. Across all themes, but I feel it is necessary. */
 }
 
 .chat-header-info  i {
@@ -368,12 +372,12 @@
   gap: 0 2rem;
 }
 
-.chat-body .saito-user .saito-userline {
+.chat-body .saito-user .saito-userline { /* others messages*/
   font-size: 1.6rem;
   padding: 0.75rem;
   padding-right: 3rem;
   border-radius: 0.5rem 0.5rem 0.5rem 0;
-  background: var(--background-color-chat-popup-message); /* consider slightly adjusted shade for the other user */
+  background: var(--background-color-chat-popup-message); 
   box-shadow: var(--shadow-chat-message-bottom), var(--shadow-chat-user) var(--key-color);
   margin-right: 1rem;
   height: fit-content;
@@ -407,8 +411,8 @@
   justify-content: flex-end;
 }
 
-.chat-body .saito-user-self.saito-user .saito-userline {
-  background: var(--background-color-chat-popup-message);
+.chat-body .saito-user-self.saito-user .saito-userline { /* self's messages */
+  background: var(--background-color-chat-popup-message-self);
 }
 
 /* hide my own name */

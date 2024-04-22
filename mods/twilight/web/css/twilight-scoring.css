@@ -95,7 +95,7 @@
                                                 position: absolute;
                                                 cursor: pointer;
 }
-.display_card@seasia {
+.display_card#seasia {
                                                 top: 1070px;
                                                 left: 1820px;
                                                 width: 240px;

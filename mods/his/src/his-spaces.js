@@ -997,8 +997,13 @@
 	  if (his_self.isElectorate(spacekey)) { return 0; }
 	}
 
+	//
+	// we provide an exception for capitals as they can hold more than MAX_UNITS
+	//
 	if (max_units > 0) {
-	  if (his_self.returnFactionLandUnitsInSpace(faction, space.key, 1) >= max_units) { return 0; }
+	  if (spacekey != "paris" && spacekey != "london" && spacekey != "istanbul" && spacekey != "vienna" && spacekey != "valladolid" && spacekey != "rome") {
+	    if (his_self.returnFactionLandUnitsInSpace(faction, space.key, 1) >= max_units) { return 0; }
+	  }
 	}
 
         if (his_self.isSpaceFortified(his_self.game.spaces[spacekey])) {
@@ -1049,9 +1054,7 @@
       // ports
       function(spacekey) {
         if (his_self.game.spaces[spacekey]) {
-console.log("checking: " + spacekey + "!");
 	  if (his_self.isSpaceControlled(spacekey, faction)) {
-console.log("yes " + faction + " controls it!");
 	    return 1;
 	  }
 	}
@@ -1692,8 +1695,6 @@ try {
       pending_spaces[n[i]] = { hops : 0 , key : n[i] };
     }
 
-
-
     //
     // otherwise propagate outwards searching pending
     //
@@ -1707,7 +1708,6 @@ try {
 	let hops = pending_spaces[key].hops;
 
 	if (destination_filter(key)) {
-	  // found results? this is last pass
 	  results.push({ hops : (hops+1) , key : key });	
 	  continue_searching = 0;
 	  if (searched_spaces[key]) {
@@ -1716,6 +1716,28 @@ try {
 	    searched_spaces[key] = { hops : (hops+1) , key : key };
 	  }
 	} else {
+
+	  if (this.game.navalspaces[key]) {
+
+	    for (let z = 0; z < this.game.navalspaces[key].ports.length; z++) {
+
+	      let k = this.game.navalspaces[key].ports[z];
+
+	      if (destination_filter(k)) {
+	  	results.push({ hops : (hops+1) , key : k });	
+	  	continue_searching = 0;
+	  	if (searched_spaces[k]) {
+	  	  // we've searched for this before
+	  	} else {
+	  	  searched_spaces[k] = { hops : (hops+1) , key : k };
+	  	}
+	      }
+	    }
+	  }
+
+        }
+
+	if (continue_searching) {
 	  if (propagation_filter(key)) {
     	    for (let i = 0; i < this.game.navalspaces[key].neighbours.length; i++) {
 	      if (searched_spaces[this.game.navalspaces[key].neighbours[i]]) {

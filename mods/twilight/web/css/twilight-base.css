@@ -2,6 +2,15 @@
 /*** MOD DEFAULTS ****/
 /*********************/
 
+:root {
+  --background-color-shim-light: #0009;
+}
+
+.saito-overlay {
+  background: transparent;
+}
+
+
 .cancel_x {
 	opacity: 0.5;
 }

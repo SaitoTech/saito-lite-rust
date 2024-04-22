@@ -163,6 +163,7 @@
   }
 
   areEnemies(faction1, faction2, count_minor_activated_factions=1) {
+
     if (faction1 === faction2) { return 0; }
     try { if (this.game.state.alliances[faction1][faction2].enemies == 1) { return 1; } } catch (err) {}
     try { if (this.game.state.alliances[faction2][faction1].enemies == 1) { return 1; } } catch (err) {}

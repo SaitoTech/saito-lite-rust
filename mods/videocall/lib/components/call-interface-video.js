@@ -49,6 +49,11 @@ class CallInterfaceVideo {
 			}
 		);
 
+		this.app.connection.on('stun-update-link', ()=> {
+			this.room_link = this.createRoomLink();
+		});
+
+
 		this.app.connection.on('add-local-stream-request', (localStream) => {
 			this.addLocalStream(localStream);
 		});
@@ -77,7 +82,7 @@ class CallInterfaceVideo {
 				this.updateImages();
 			}
 
-			this.insertActions(this.app.options.stun.peers);
+			this.insertActions(this.mod.room_obj.call_peers);
 		});
 
 		// Change arrangement of video boxes (emitted from SwitchDisplay overlay)
@@ -136,7 +141,7 @@ class CallInterfaceVideo {
 		});
 
 		app.connection.on('stun-data-channel-open', (pkey) => {
-			this.insertActions(this.app.options.stun.peers);
+			this.insertActions(this.mod.room_obj.call_peers);
 		});
 
 		app.connection.on('videocall-show-settings', () => {
@@ -223,7 +228,7 @@ class CallInterfaceVideo {
 		for (const mod of this.app.modules.mods) {
 			let item = mod.respondTo('call-actions', {
 				call_id: this.mod.room_obj.call_id,
-				members: this.app.options.stun.peers
+				members: this.mod.room_obj.call_peers
 			});
 			if (item instanceof Array) {
 				item.forEach((j) => {

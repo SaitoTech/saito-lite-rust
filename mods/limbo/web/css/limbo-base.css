@@ -196,9 +196,6 @@ video#local.noflip{
 		visibility: hidden;
 	}
 
-	.saito-floating-container .saito-floating-plus-btn {
-		display: none;
-	}	
 }
 
 @media screen and (max-width: 900px){

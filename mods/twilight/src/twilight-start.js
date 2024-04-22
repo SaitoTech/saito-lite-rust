@@ -8,6 +8,7 @@ const StatsOverlay = require('./lib/overlays/stats');
 const DeckOverlay = require('./lib/overlays/deck');
 const HeadlineOverlay = require('./lib/overlays/headline');
 const htmlTemplate = require('./lib/core/game-html.template');
+const GameHelp = require('./lib/overlays/game-help');
 
 
 const JSON = require('json-bigint');
@@ -63,6 +64,7 @@ class Twilight extends GameTemplate {
     this.war_overlay = new WarOverlay(this.app, this);
     this.deck_overlay = new DeckOverlay(this.app, this);
     this.headline_overlay = new HeadlineOverlay(this.app, this);
+    this.game_help = new GameHelp(this.app, this);
 
     //
     // newbie mode
@@ -82,6 +84,8 @@ class Twilight extends GameTemplate {
     this.roles = ["observer", "ussr", "us"];
     this.region_key = { "asia": "Asia", "seasia": "Southeast Asia", "europe":"Europe", "africa":"Africa", "mideast":"Middle East", "camerica": "Central America", "samerica":"South America"};
     this.grace_window = 25;
+
+    this.sort_priority = 1;
 
   }
 
@@ -2783,6 +2787,11 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
     if (mv[0] === "headline") {
 
+      //
+      // in case still showing
+      //
+      this.game_help.hide();
+
       let stage  = mv[1] || "headline1";
       let hash   = mv[2] || "";
       let xor    = mv[3] || "";
@@ -3426,6 +3435,18 @@ try {
 
 
     if (mv[0] === "play") {
+
+/***
+this.game_help.render({
+    title : "Standard USSR Placement" ,
+    text : "A strong opening protects your critical battleground countries (East Germany and Poland) and uses your final OP to secure access to Italy and Greece",
+    img : "/twilight/img/backgrounds/ussr_placement.png" ,
+    color: "#d2242a" ,
+    line1 : "where",
+    line2 : "to place?",
+    fontsize : "2.1rem" ,
+});
+***/
 
       //if (this.game.player == 0) {
       //  this.game.queue.push("OBSERVER_CHECKPOINT");
@@ -5447,14 +5468,24 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
 
   playerPlaceInitialInfluence() {
+
     let twilight_self = this;
 
     try {
       this.startClock();
       twilight_self.addMove("resolve\tplacement");
 
-
       if (this.game.player == 1) { //USSR
+   
+this.game_help.render({
+    title : "Standard USSR Placement" ,
+    text : "A strong opening protects your critical battleground countries (East Germany and Poland) and uses your final OP to secure access to Italy and Greece",
+    img : "/twilight/img/backgrounds/ussr_placement.png" ,
+    color: "#d2242a" ,
+    line1 : "where",
+    line2 : "to place?",
+    fontsize : "2.1rem" ,
+}); 
 
         this.updateStatusAndListCards(`You are the USSR. Place six additional influence in Eastern Europe.`);
 
@@ -5491,6 +5522,17 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
         return;
       }else{ //US
+
+this.game_help.render({
+    title : "Standard US Placement" ,
+    text : "Controlling Italy and West Germany protects France. Consider using your bonus to protect Iran and your access to Asia from the Middle East",
+    img : "/twilight/img/backgrounds/us_placement.png" ,
+    color: "#008fd5" ,
+    line1 : "where",
+    line2 : "to place?",
+    fontsize : "2.1rem" ,
+}); 
+
 
         this.updateStatusAndListCards(`You are the US. Place seven additional influence in Western Europe.`)
 

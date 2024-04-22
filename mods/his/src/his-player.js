@@ -552,9 +552,9 @@
 
   playerRetainUnitsWithFilter(faction, filter_func, num_to_retain) {
 
+    let his_self = this;
     let units_available = [];
     let units_to_retain = [];
-
 
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].units[faction]) {
@@ -650,7 +650,6 @@
     let menu = [];
 
 if (limit === "build") {
-
     menu.push({
       factions : ['hapsburg','england','france','papacy','protestant'],
       cost : [1,1,1,1,1],
@@ -723,6 +722,15 @@ if (limit === "build") {
       });
     } else {
 
+    menu.push({
+      factions : ['hapsburg','england','france','papacy','ottoman','protestant'],
+      cost : [0,0,0,0,0,0],
+      name : "First Game / Need Help?",
+      check : this.canPlayerShowTutorial,
+      fnct : this.playerShowTutorial,
+      category : "move" ,
+      img : '/his/img/backgrounds/move/help.jpeg',
+    });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
       cost : [1,1,1,1,1,1,1,1,1,1],
@@ -1915,7 +1923,10 @@ if (this.game.state.events.cramner_active == 1) {
     let pfactions = this.returnPlayerFactions(this.game.player);
 
     if (ops == null) { ops = 2; }
-    if (ops == 0) { }
+    if (ops == 0) { 
+      this.endTurn();
+      return;
+    }
 
     //
     // "ACTIVATED POWERS" are those for whom players have the choice of moving.
@@ -1952,7 +1963,9 @@ if (this.game.state.events.cramner_active == 1) {
             for (let z = 0; z < menu[i].factions.length; z++) {
               if (menu[i].factions[z] === selected_faction) {
   	        if (menu[i].cost[z] <= ops) {
-                  html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+		  if (menu[i].cost[z] > 0) {
+                    html    += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+                  }
                 }
 	        z = menu[i].factions.length+1;
               }
@@ -2066,14 +2079,21 @@ if (this.game.state.events.cramner_active == 1) {
 	    } else {
 
 	      let ops_to_spend = 0;
+	      let cost = 0;
 
               for (let z = 0; z < menu[user_choice].factions.length; z++) {
                 if (menu[user_choice].factions[z] === selected_faction) {
+		  cost = menu[user_choice].cost[z];
                   ops -= menu[user_choice].cost[z];
 		  ops_to_spend = menu[user_choice].cost[z];
 	          z = menu[user_choice].factions.length+1;
                 }
               }
+	      if (cost == 0) {
+                menu[user_choice].fnct(this, this.game.player, selected_faction, ops_to_spend, ops);
+		this.playerPlayOps(card, faction, ops, limit);
+                return;
+	      }
               if (ops > 0) {
 	        this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
               }
@@ -2103,7 +2123,9 @@ if (this.game.state.events.cramner_active == 1) {
           for (let z = 0; z < menu[i].factions.length; z++) {
             if (menu[i].factions[z] === faction) {
   	      if (menu[i].cost[z] <= ops) {
-                html += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+		if (menu[i].cost[z] > 0) {
+                  html += `<li class="card" id="${i}">${menu[i].name} [${menu[i].cost[z]} ops]</li>`;
+                }
               }
 	      z = menu[i].factions.length+1;
             }
@@ -2164,15 +2186,22 @@ if (this.game.state.events.cramner_active == 1) {
 	} else {
 
 	  let ops_to_spend = 0;
+	  let cost = 0;
 
           for (let z = 0; z < menu[user_choice].factions.length; z++) {
             if (pfactions.includes(menu[user_choice].factions[z])) {
+	      cost = menu[user_choice].cost[z];
               ops -= menu[user_choice].cost[z];
 	      ops_to_spend = menu[user_choice].cost[z];
   	      z = menu[user_choice].factions.length+1;
             }
           }
 
+	  if (cost == 0) {
+            menu[user_choice].fnct(this, this.game.player, faction, ops_to_spend, ops);
+	    this.playerPlayOps(card, faction, ops, limit);
+            return;
+	  }
           if (ops > 0) {
   	    this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
           }
@@ -2849,7 +2878,7 @@ return;
       // no viable spaces, so we exit
       //
       if (count == 0) {
-        his_self.updateStatus(this.returnFactionName(faction) + " no more spaces with units to withdraw");
+        his_self.updateStatus(his_self.returnFactionName(faction) + " no more spaces with units to withdraw");
         his_self.endTurn(); 
         return;
       }
@@ -2994,8 +3023,8 @@ return;
       // no viable spaces, so we exit
       //
       if (count == 0) {
-        this.updateStatus(this.returnFactionName(faction) + " no more spaces with units to withdraw");
-        this.endTurn(); 
+        his_self.updateStatus(his_self.returnFactionName(faction) + " no more spaces with units to withdraw");
+        his_self.endTurn(); 
         return;
       }
 
@@ -3402,6 +3431,12 @@ does_units_to_move_have_unit = true; }
 //
   async playerContinueToMoveFormationInClear(his_self, player, faction, spacekey, ops_to_spend, ops_remaining=0) {
 
+    //
+    // we add this before broadcasting, or the turn ends 
+    //
+    // blank is "card", which we don't care about anymore so don't include
+    let continue_move = "continue\t"+this.game.player+"\t"+faction+"\t"+""+"\t"+(ops_remaining-ops_to_spend);
+
     let parent_faction = faction;
     let units_to_move = [];
     let cancel_func = null;
@@ -3461,18 +3496,9 @@ does_units_to_move_have_unit = true; }
 	      let space = his_self.game.spaces[spacekey];
 	      if (space.pass) {
 		if (space.pass.includes(destination_spacekey)) {
-	          for (let i = 0; i < his_self.moves.length; i++) {
-		    let x = his_self.moves[i];
-		    let y = x.split("\t");
-		    let new_ops_remaining = parseInt(y[4])-1;
-		    if (y[0] === "continue") {
-		      if (new_ops_remaining) {
-	  	        his_self.moves[i] = y[0] + "\t" + y[1] + "\t" + y[2] + "\t" + y[3] + "\t" + new_ops_remaining + "\t" + y[5];
-  	  	      } else {
-		        his_self.moves.splice(i, 1);
-		      }
-		    }
-	          }
+		  let y = continue_move.split("\t");
+		  let new_ops_remaining = parseInt(y[4])-1;
+	  	  continue_move = y[0] + "\t" + y[1] + "\t" + y[2] + "\t" + y[3] + "\t" + new_ops_remaining + "\t" + y[5];
 	        }
 	      }
 
@@ -3488,6 +3514,7 @@ does_units_to_move_have_unit = true; }
                 his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(faction)+" moving to "+his_self.game.spaces[destination_spacekey].name + "\tmove");
 	        his_self.addMove("RESETCONFIRMSNEEDED\tall");
 	      }
+	      his_self.prependMove(continue_move);
 	      his_self.endTurn();
 	      his_self.available_units_overlay.faded_out = false;
 
@@ -3946,6 +3973,7 @@ does_units_to_move_have_unit = true; }
       function(space) {
 	let num_moveable = 0;
 	if (space.key == "persia" || space.key == "egypt" || space.key == "ireland") { return 0; }
+
 	for (let z in space.units) {
 	  if (space.units[z].length > 0 && his_self.returnPlayerCommandingFaction(z) == his_self.game.player && (z == faction || his_self.returnControllingPower(z) == faction)) {
 	    //
@@ -3953,12 +3981,14 @@ does_units_to_move_have_unit = true; }
 	    //
             if (his_self.returnPlayerCommandingFaction(z) == his_self.game.player) {
               for (let i = 0; i < space.units[z].length; i++) {
-		if (space.units[z][i].type === "cavalry") { num_moveable++; }
-		if (space.units[z][i].type === "regular") { num_moveable++; }
-		if (space.units[z][i].type === "mercenary") { num_moveable++; }
-		if (space.units[z][i].battle_rating > 0) { num_moveable++; }
-                if (space.units[z][i].already_moved == 1 && his_self.game.state.events.foul_weather == 1) {
-	          num_moveable--;
+	        if (space.units[z][i].locked != 1) {
+		  if (space.units[z][i].type === "cavalry") { num_moveable++; }
+		  if (space.units[z][i].type === "regular") { num_moveable++; }
+		  if (space.units[z][i].type === "mercenary") { num_moveable++; }
+		  if (space.units[z][i].battle_rating > 0) { num_moveable++; }
+                  if (space.units[z][i].already_moved == 1 && his_self.game.state.events.foul_weather == 1) {
+	            num_moveable--;
+                  }
                 }
               }
 	      if (num_moveable <= 0) {
@@ -3967,7 +3997,7 @@ does_units_to_move_have_unit = true; }
             }
 
 	    return 1;
-          }
+	  }
 	}
 	return 0;
       },
@@ -4115,7 +4145,6 @@ does_units_to_move_have_unit = true; }
 // faction is the attacker in pre-naval battles, but it should be the defender
 //            this.playerEvaluateNavalRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey, defender);
 //
-
   playerEvaluateNavalRetreatOpportunity(faction, spacekey, player_comes_from_this_spacekey="", defender="", post_battle=false) {
 
     let his_self = this;
@@ -5292,6 +5321,7 @@ does_units_to_move_have_unit = true; }
           if (his_self.doesSpaceHaveEnemyUnits(space, faction)) { return 0; }
 	  if (his_self.game.state.events.foreign_recruits == faction && space.political == faction) { return 1; }
           if (his_self.isSpaceFriendly(space, faction) && space.home === faction) { return 1; }
+          if (his_self.isSpaceControlled(space, faction) && his_self.game.state.events.foreign_recruits == faction) { return 1; }
 	  return 0;
         },
 
@@ -5331,6 +5361,7 @@ does_units_to_move_have_unit = true; }
         if (space.besieged != 0) { return 0; }
         if (his_self.doesSpaceHaveEnemyUnits(space, faction)) { return 0; }
         if (his_self.isSpaceFriendly(space, faction) && space.home == faction) { return 1; }
+        if (his_self.isSpaceControlled(space, faction) && his_self.game.state.events.foreign_recruits == faction) { return 1; }
 	return 0;
       },
 
@@ -5421,6 +5452,7 @@ does_units_to_move_have_unit = true; }
           if (his_self.doesSpaceHaveEnemyUnits(space, faction)) { return 0; }
 	  if (his_self.game.state.events.foreign_recruits == faction && space.political == faction) { return 1; }
           if (his_self.isSpaceFriendly(space, faction) && space.home === faction) { return 1; }
+          if (his_self.isSpaceControlled(space, faction) && his_self.game.state.events.foreign_recruits == faction) { return 1; }
 	  return 0;
         },
 
@@ -5478,6 +5510,7 @@ does_units_to_move_have_unit = true; }
         if (space.besieged != 0) { return 0; }
         if (his_self.doesSpaceHaveEnemyUnits(space, faction)) { return 0; }
         if (his_self.isSpaceFriendly(space, faction) && space.home === faction) { return 1; }
+        if (his_self.isSpaceControlled(space, faction) && his_self.game.state.events.foreign_recruits == faction) { return 1; }
 	return 0;
       },
 
@@ -5518,6 +5551,7 @@ does_units_to_move_have_unit = true; }
 	if (his_self.game.state.events.foreign_recruits == faction && space.political == faction) { return 1; }
         if (space.owner === faction) { return 1; }
         if (space.home === faction) { return 1; }
+        if (his_self.isSpaceControlled(space, faction) && his_self.game.state.events.foreign_recruits == faction) { return 1; }
 	return 0;
       },
 
@@ -5705,8 +5739,7 @@ does_units_to_move_have_unit = true; }
 	if (faction == "ottoman" && destination_spacekey == "egypt") { his_self.addMove("war\tottoman\tegypt"); his_self.endTurn(); return; }
 	if (faction == "england" && destination_spacekey == "ireland") { his_self.addMove("war\tottoman\tireland"); his_self.endTurn(); return; }
 	his_self.addMove("assault\t"+faction+"\t"+destination_spacekey);
-
-	if (his_self.game.state.events.intervention_on_movement_possible == 0) {
+	if (his_self.game.state.events.intervention_on_assault_possible == 0 || (his_self.game.deck[0].discards["031"] && his_self.game.deck[0].discards["032"])) {
 	  let from_whom = his_self.returnArrayOfPlayersInSpacekey(destination_spacekey);
           his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" announces siege of "+his_self.game.spaces[destination_spacekey].name + "\tassault\t" + destination_spacekey);
 	} else {
@@ -6068,16 +6101,18 @@ does_units_to_move_have_unit = true; }
     if (faction === "ottoman") { return false; }
     if (faction === "papacy") { return false; }
     for (let i = 0; i < his_self.game.state.colonies.length; i++) {
-      if (his_self.game.state.colonies[i].faction == faction && his_self.game.state.colonies[i].round == his_self.game.state.round) { return 0; }
+      if (his_self.game.state.colonies[i].faction == faction) {
+        if (his_self.game.state.colonies[i].round == his_self.game.state.round) { return 0; }
+      }
     }
     if (faction === "england") {
-      if (his_self.game.state.newworld['england_colony1'].claimed == 1 && his_self.game.state.newworld['england_colony2'].claimed == 1){return 0;}
+      if (his_self.game.state.newworld['england_colony1'].claimed == 1 && his_self.game.state.newworld['england_colony2'].claimed == 1){ return 0; }
     }
-    if (faction === "england") {
-      if (his_self.game.state.newworld['france_colony1'].claimed == 1 && his_self.game.state.newworld['france_colony2'].claimed == 1){return 0;}
+    if (faction === "france") {
+      if (his_self.game.state.newworld['france_colony1'].claimed == 1 && his_self.game.state.newworld['france_colony2'].claimed == 1){ return 0; }
     }
-    if (faction === "england") {
-      if (his_self.game.state.newworld['hapsburg_colony1'].claimed == 1 && his_self.game.state.newworld['hapsburg_colony2'].claimed == 1 && his_self.game.state.newworld['hapsburg_colony3'].claimed == 1){return 0;}
+    if (faction === "hapsburg") {
+      if (his_self.game.state.newworld['hapsburg_colony1'].claimed == 1 && his_self.game.state.newworld['hapsburg_colony2'].claimed == 1 && his_self.game.state.newworld['hapsburg_colony3'].claimed == 1){ return 0; }
     }
     return 1;
   }
@@ -6148,7 +6183,11 @@ does_units_to_move_have_unit = true; }
     for (let key in his_self.game.navalspaces) {
       let targetsea = false;
       for (let i = 0; i < his_self.game.navalspaces[key].units[faction].length; i++) {
-	if (his_self.game.navalspaces[key].units[faction][i].type == "corsair") { targetsea = true; }
+	if (his_self.game.navalspaces[key].units[faction][i].type == "corsair") { 
+	  if (!his_self.game.state.events.ottoman_piracy_seazones.includes(key)) {
+	    targetsea = true;
+	  }
+	}
       }
       if (targetsea == true) {
         html += '<li class="option" id="'+key+'">'+his_self.returnSpaceName(key)+'</li>';
@@ -6276,6 +6315,7 @@ does_units_to_move_have_unit = true; }
 	  if (his_self.game.state.events.foreign_recruits == faction && space.political == faction) { return 1; }
           if (space.owner === faction) { return 1; }
           if (space.home === faction) { return 1; }
+          if (his_self.isSpaceControlled(space, faction) && his_self.game.state.events.foreign_recruits == faction) { return 1; }
 	  return 0;
         },
 
@@ -6319,6 +6359,7 @@ does_units_to_move_have_unit = true; }
         if (his_self.doesSpaceHaveEnemyUnits(space, faction)) { return 0; }
         if (space.owner === faction) { return 1; }
         if (space.home === faction) { return 1; }
+        if (his_self.isSpaceControlled(space, faction) && his_self.game.state.events.foreign_recruits == faction) { return 1; }
 	return 0;
       },
 
@@ -6717,6 +6758,252 @@ does_units_to_move_have_unit = true; }
     his_self.endTurn();
     return 0;
   }
+
+  canPlayerShowTutorial(his_self, player, faction) {
+    if (his_self.game.state.round == 1) { return 1; }
+    return 0;
+  }
+  async playerShowTutorial(his_self, player, faction, ops_to_spend=1, ops_remaining=0) {
+
+    this.game.state.may_explore['england'] = 1;
+    this.game.state.may_explore['france'] = 1;
+    this.game.state.may_explore['hapsburg'] = 1;
+    this.game.state.may_conquer['england'] = 1;
+    this.game.state.may_conquer['france'] = 1;
+    this.game.state.may_conquer['hapsburg'] = 1;
+    this.game.state.may_colonize['england'] = 1;
+    this.game.state.may_colonize['france'] = 1;
+    this.game.state.may_colonize['hapsburg'] = 1;
+
+    let title = "";
+    let text = "";
+    let img = "";
+    let card = "";
+
+    let options = [];
+
+    //
+    // Protestant
+    //
+    if (faction == "protestant") {
+
+      title = "Publish a Treatise?";
+      text = "You get +1 roll for each adjacent Protestant space. Committing debaters give you bonuses flipping spaces, but make them more vulnerable in theological debates...";
+      img = "/his/img/backgrounds/move/printing_press.jpg";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Watch the Discard Pile";
+      text = "The Protestants are the only power that can retrieve cards from the discard pile. Retrieve valuable cards and play or hold them for the next turn...";
+      img = "/his/img/backgrounds/move/publish_treatise.jpg";
+      card = his_self.returnCardImage("007");
+      options.push({ title : title , text : text , img : img , card : card });
+
+      if (ops_remaining == 1) {
+        title = "Translate the Bible!";
+        text = "Translating the New Testament into a language gives 6 reformation attempts. Translating the Full Bible gives 6 more and earns 1 VP per translation.";
+        img = "/his/img/backgrounds/move/translate.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+    }
+
+    //
+    // Papacy
+    //
+    if (faction == "papacy") {
+
+      title = "Convene a Debate?";
+      text = "Leipzig Debate lets you pick your own debater - Eck is a great choice. If you get lucky, the Protestants will need to use their Home Card to send Luther, wasting 5 Protestant OPs";
+      img = "/his/img/backgrounds/move/theological_debate.jpg";
+      card = his_self.returnCardImage("007");
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Conquer Florence";
+      text = "Build troops in Rome. Move them to Siena. Control Siena. Then move them to Florence and besiege the city. The next turn you can assault it.";
+      img = "/his/img/backgrounds/move/papacy-florence.png";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      if (ops_remaining == 1) {
+        title = "Build St. Peters!";
+        text = "The Papacy earns VP for building St. Peter's Cathedral. Use any excess OPs to build the basilica.";
+        img = "/his/img/backgrounds/move/saint_peters.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+    }
+
+    //
+    // Ottoman
+    //
+    if (faction == "ottoman") {
+
+      title = "Crush the Hungarians";
+      text = "Conquering Belgrade and Buda will earn 2 VP and force the Hapsburgs into declaring war...";
+      img = "/his/img/backgrounds/tutorials/ottoman-hungary.png";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Control the Mediterranean";
+      text = "Piracy is harder around fortresses. Build troops in Athens, move ships into the Aegean Sea, and transport those units to Rhodes to assault the fortress...";
+      img = "/his/img/backgrounds/tutorials/ottoman-rhodes.png";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      if (his_self.game.state.events.barbary_pirates == 1) {
+        title = "Piracy?!";
+        text = "Build corsairs in Algiers. Move them in packs around the Mediterranean and target opponents with Piracy. Every hit earns VP or a card draw...";
+        card = his_self.returnCardImage("009");
+        img = "/his/img/backgrounds/move/piracy.jpg";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+    }
+
+    //
+    // Hapsburg
+    //
+    if (faction == "hapsburg") {
+
+      if (his_self.game.spaces["metz"].besieged == 0) {
+        title = "Control Metz";
+        text = "Build troops in Becanson. Move them north into Metz. Your forces will automatically besiege the city. The next turn, spend 1 OP to assault and hopefully capture it.";
+        img = "/his/img/backgrounds/tutorials/hapsburg-metz.png";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+      title = "Invade France";
+      text = "Build infantry in Navarre. Move them north to Bordeaux. If the French withdraw into fortifications spend 1 OP to assault Bordeaux the next turn.";
+      img = "/his/img/backgrounds/tutorials/hapsburg-bordeaux.png";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      if (his_self.game.state.may_conquer['hapsburg'] == 1) {
+        title = "New World Conquest";
+        text = "Conquests roll dice in the New World Phase to see if they succeed. In addition to earning VP, successful conquests can also earn bonus cards subsequent turns.";
+        img = "/his/img/backgrounds/move/conquer.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+      if (his_self.game.state.may_colonize['hapsburg'] == 1) {
+        title = "Found a Colony";
+        text = "At the end of every turn your colonies roll dice for bonus cards. Consider sending an expedition now for more ops later in the game.";
+        img = "/his/img/backgrounds/move/colonize.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+    }
+
+    //
+    // France
+    //
+    if (faction == "france") {
+
+      title = "Build a Chateaux";
+      text = "Your Home Card allows you to get VP and bonus cards, and your chance of success increases if France is not under attack.";
+      img = "/his/img/backgrounds/chateaux.png";
+      card = his_self.returnCardImage("004");
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Conquer the New World";
+      text = "Conquests are harder than Explorations. In addition to earning VP if they succeed, they also roll dice for bonus cards at the end of every turn. Consider sending an expedition!";
+      img = "/his/img/backgrounds/move/conquer.jpg";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      if (his_self.game.state.may_explore['france'] == 1) {
+        title = "Explore the New World";
+        text = "New World Explorations cost 2 OPs and earn VP if they succeed. Dice are rolled and discoveries are made at the end of each turn.";
+        img = "/his/img/backgrounds/move/explore.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+      if (his_self.game.state.may_colonize['france'] == 1) {
+        title = "Found a Colony";
+        text = "You are allowed up to three colonies. At the end of every turn your surviving colonies will roll dice for bonus cards. Having more cards can provide a crucial advantage later in the game."
+        img = "/his/img/backgrounds/move/colonize.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+      if (his_self.game.state.may_conquer['france'] == 1) {
+        title = "Fortify Italy";
+        text = "It is hard for France to move forces quickly into Italy, and Milan is vulnerable to attack. Consider building forces and moving them over to protect your Italian territories.";
+        img = "/his/img/backgrounds/tutorials/france-milan.png";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+    }
+
+    //
+    // England
+    //
+    if (faction == "england") {
+
+      title = "Unify the British Isles?";
+      text = "Your Home Card lets you declare war on Scotland, which is necessary for attacking Edinburgh. Remember you will need 2 squadrons in the North Sea to assault the city.";
+      img = "/his/img/backgrounds/tutorials/england-edinburgh.png";
+      card = his_self.returnCardImage("003");
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Henry VIII and Marriage";
+      text = "From round 2 on, event your Home Card to advance Henry VIII's marital status. England earns 6 VP once a male heir is born.";
+      img = "/his/img/backgrounds/henry_viii.jpeg";
+      card = his_self.returnCardImage("003");
+      options.push({ title : title , text : text , img : img , card : card });
+
+      title = "Fortify Calais?";
+      text = "Calais is vulnerable to attack from the French and offers your landing point for invasions of the continent. Consider reinforcing it sooner rather than later.";
+      img = "/his/img/backgrounds/tutorials/england-calais.png";
+      card = "";
+      options.push({ title : title , text : text , img : img , card : card });
+
+      if (his_self.game.state.may_conquer['england'] == 1) {
+        title = "Conquer the New World";
+        text = "Conquests are harder than Explorations. In addition to earning VP if they succeed, they also roll dice for bonus cards at the end of every turn. Consider sending an expedition!";
+        img = "/his/img/backgrounds/move/conquer.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+      if (his_self.game.state.may_explore['england'] == 1) {
+        title = "Explore the New World";
+        text = "New World Explorations cost 2 OPs and earn VP if they succeed. Dice are rolled and discoveries are made at the end of each turn.";
+        img = "/his/img/backgrounds/move/explore.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+      if (his_self.game.state.may_colonize['england'] == 1) {
+        title = "Found a Colony";
+        text = "You are allowed up to three colonies. At the end of every turn your surviving colonies will roll dice for bonus cards. Having more cards can provide a crucial advantage later in the game."
+        img = "/his/img/backgrounds/move/colonize.jpg";
+        card = "";
+        options.push({ title : title , text : text , img : img , card : card });
+      }
+
+    }
+
+    let x = Math.floor(Math.random() * options.length);
+
+    his_self.welcome_overlay.renderCustom({
+      title : options[x].title ,
+      text : options[x].text ,
+      card : options[x].card ,
+      img : options[x].img ,
+    });
+
+    return;
+
+  }
+
   canPlayerBurnBooksMaryI(his_self, player, faction) {
     return this.canPlayerBurnBooks(his_self, player, faction, 1);
   }
@@ -7143,7 +7430,7 @@ does_units_to_move_have_unit = true; }
       //
       // no longer enemies
       //
-      his_self.addMove("unset_enemies\tfaction\t"+target_faction);
+      his_self.addMove("unset_enemies\t"+faction+"\t"+target_faction);
 
       //
       // +1 War Winner VP

@@ -67,7 +67,7 @@ class Mixin extends ModTemplate {
     await super.initialize(app);
     await this.load();
     await this.loadCryptos();
-    this.app.connection.emit('update_balance');
+    this.app.connection.emit('header-update-balance');
   }
 
   canRenderInto(qs) {
@@ -992,7 +992,7 @@ class Mixin extends ModTemplate {
           this.save();
 
           await this.app.wallet.setPreferredCrypto('SAITO', 1);
-          this.app.connection.emit("wallet-updated");
+          this.app.connection.emit("header-update-balance");
           this.app.connection.emit('update_profile', this.publicKey);
         }
       }

@@ -1,0 +1,95 @@
+html[data-theme="milquetoast"] {
+    /*THEME COLORS*/
+    --color-primary: #f71f3d;/* red -same as base theme*/
+    --color-secondary: #ff8235;  /* Orange -same as base theme*/
+    --color-complement: #7f7f7f;/* MID gray  */
+    --color-base: #f5f5f5; /* very light gray, almost white  -whiter than base theme 'base' */
+    --color-contrast: #3d3d3d; /* very dark gray -same as base theme*/
+    /*TINTS COLOR SECTION*/
+    --color-tint-primary: #444; /* dark gray -same as base theme*/
+    --color-tint-dark: #1b1b1b; /* Super dark gray */
+    --color-highlight: #efefef; /* very light gray- almost white -- same as base theme 'base'! */
+
+    /*SHADOW SELECTION*/
+      --shadow-primary-button: var(--shadow-shape-flat);
+      --shadow-chat-popup: var(--shadow-shape-glow);
+      --box-shadow-sidebar-elements: var(--shadow-shape-flat);
+      
+      --shadow-chat-message-bottom: 0px 0px 2px var(--color-shadow-bubble); /* flattened and centered the shadow */
+    /*Border padding*/ 
+      --border-padding-style: var(--border-padding-wide);
+      --border-padding-identicon-style: var(--border-padding-identicon-thin);
+       
+    /* FONTS */
+    /* Text decoration */
+      --text-decoration-switch-global: none;
+    /*quick settings-- repeated here, just in case and to make programming easier */
+      --font-color-primary: var(--color-contrast);  /* dark grey font color */  /* light grey font color */
+      --font-color-heavy: var(--color-tint-dark);  /* very dark grey font color */  /* off-white white font color */
+    /*Font Selection*/
+      --font-color-modal-menu-oldschool: none; /* get rid of the extra layer! */
+      --font-color-button-hover-modal-oldschool: var(--font-color-heavy);
+      --font-color-button-hover-sidebar: var(--font-color-primary);
+      --font-color-button-sidebar-chat-active: var(--font-color-inverse);
+      --font-color-button-hover-sidebar-chat-active: var(--font-color-inverse);
+      --font-color-button-hover-chat-container: var(--font-color-heavy);
+      --font-color-button-hover-profile: var(--font-color-primary);
+      --font-color-hover-icons-left-sidebar: var(--font-color-heavy);
+      --font-color-calendar-today: var(--font-color-secondary);
+      --font-color-calendar-hover: var(--font-color-secondary);
+    /* BORDER RADIUS */
+      --border-radius-text-input: var(--border-radius-soft); /*chat module*/
+      --border-radius-modal-menu: var(--border-radius-voluptuous);
+      --border-radius-module-menu: var(--border-radius-voluptuous);
+      --border-radius-overlay-menu: var(--border-radius-voluptuous);
+      --border-radius-menu-hamburger: var(--border-radius-topleft-only-round); /*hamburger menu*/
+      --border-radius-sidebar-menu: var(--border-radius-voluptuous);
+      --border-radius-sidebar-chat-manager: var(--border-radius-round);
+      --border-radius-chat-menu: var(--border-radius-round);
+      --border-radius-chat-popup: var(--border-radius-top-only-round);
+      --border-radius-chat-popup-message-tag: var(--border-radius-round);
+      --border-radius-identicon: var(--border-radius-obscene);
+      --border-radius-identicon-square: var(--border-radius-soft);
+      --border-radius-image-flex: var(--border-radius-round);
+      --border-radius-selection-box: var(--border-radius-soft);
+      --border-radius-button-primary: var(--border-radius-round);
+      --border-radius-button-sidebar: var(--border-radius-round);
+      --border-radius-button-sidebar-chat-manager: var(--border-radius-obscene); 
+      --border-radius-button-chat-container: var(--border-radius-round);
+      --border-radius-button-simple-contact: var(--border-radius-round);
+      --border-radius-button-hover-simple-contact: var(--border-radius-round);
+      --border-radius-button-profile: var(--border-radius-round);
+      --border-radius-button-hover-profile: var(--border-radius-round);
+      --border-radius-button-modal: var(--border-radius-round);
+      --border-radius-button-module: var(--border-radius-round);
+      --border-radius-button-wallet-control: var(--border-radius-round);
+      --border-radius-profile-banner: var(--border-radius-top-only-round);
+      --border-radius-calendar-hover-days: var(--border-radius-round);
+      --border-radius-calendar-hover-today: var(--border-radius-round);
+      --border-radius-status-message: var(--border-radius-round);
+      --border-radius-sidebar-game-module: var(--border-radius-round);
+      --border-radius-identicon-needed: var(--border-radius-voluptuous);
+
+      --border-radius-offset: 0.3rem;
+
+    /* BORDER COLOR */
+      --border-color-identicon: var(--color-highlight);
+    /* BORDER THICKNESS */
+      --border-thickness-identicon: var(--border-thickness-medium);
+      --border-thickness-modal-menu: 0px;
+      --border-thickness-overlay-menu: 0px;
+    /* BACKGROUND COLORS */
+      --background-color-modal-menu-oldschool: none; /* get rid of the extra layer! */
+      --background-color-hover-post: none;   /* Turns it off for this theme*/
+      --background-color-button-hover-sidebar: var(--color-highlight);
+      --background-color-button-sidebar-chat-active: var(--color-highlight);
+      --background-color-button-hover-chat-container: var(--color-highlight);
+      --background-color-button-hover-modal-oldschool: var(--color-base);
+      --background-color-button-hover-profile: var(--color-highlight);
+      --background-color-calendar-today: var(--color-highlight);
+      --background-color-calendar-hover: var(--color-highlight);
+      --background-color-chat-popup-main: var(--background-color-main);
+      --background-color-chat-popup-subheader: var(--color-base);
+      --background-color-chat-popup-message-self: var(--color-base);
+      
+    }

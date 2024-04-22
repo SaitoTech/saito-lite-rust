@@ -460,7 +460,9 @@
   .saito-back-button {
     font-size: 30px;
   }
-
+  .saito-floating-plus-btn {
+    display: flex;
+  }
 }
 
 @media screen and (max-width: 420px) {

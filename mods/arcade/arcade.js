@@ -96,6 +96,35 @@ class Arcade extends ModTemplate {
 				this.affix_callbacks_to.push(game_mod.name);
 			});
 
+		if (!app.options.arcade){
+			app.options.arcade = {};
+		}
+
+
+		// 
+		// Maybe good, maybe not... Only sorts on fresh load...
+		//
+		this.arcade_games = this.arcade_games.sort((a, b) => {
+			//Default sorting 1, 0, -1
+			let b_count = b.sort_priority;
+			let a_count = a.sort_priority;
+
+			if (app.options.arcade?.last_game == b.name){
+				return 1;
+			}
+
+			//Add user behavior metrics
+			if (app.options.arcade[b.name]){
+				b_count += 2*app.options.arcade[b.name];
+			}
+
+			if (app.options.arcade[a.name]){
+				a_count += 2*app.options.arcade[a.name];
+			}
+
+			return (b_count - a_count);
+		});
+
 		this.games['mine'] = [];
 		this.games['open'] = [];
 
@@ -379,7 +408,7 @@ class Arcade extends ModTemplate {
 			'chat-manager'
 		)) {
 			let cm = mod.respondTo('chat-manager');
-			cm.container = '.saito-sidebar.left';
+			cm.container = '.saito-sidebar.right';
 			cm.render_manager_to_screen = 1;
 			this.addComponent(cm);
 		}
@@ -396,6 +425,10 @@ class Arcade extends ModTemplate {
 		if (qs === '.redsquare-sidebar') {
 			return true;
 		}
+		if (qs === '.arcade-sidebar') {
+			return true;
+		}
+
 		return qs == '.league-overlay-games-list';
 	}
 
@@ -403,14 +436,14 @@ class Arcade extends ModTemplate {
 	// render components into other modules on-request
 	//
 	async renderInto(qs) {
-		if (qs == '.redsquare-sidebar') {
+		if (qs == '.redsquare-sidebar' || qs == ".arcade-sidebar") {
 			if (!this.renderIntos[qs]) {
 				this.styles = ['/arcade/style.css'];
 				this.renderIntos[qs] = [];
 				let obj = new InviteManager(
 					this.app,
 					this,
-					'.redsquare-sidebar'
+					qs
 				);
 				obj.type = 'short';
 				this.renderIntos[qs].push(obj);
@@ -1317,6 +1350,14 @@ class Arcade extends ModTemplate {
 		// If I am a player in the game, let's start it initializing
 		//
 		if (txmsg.players.includes(this.publicKey)) {
+
+			if (!this.app.options.arcade[txmsg.game]){
+				this.app.options.arcade[txmsg.game] = 0;
+			}
+			this.app.options.arcade[txmsg.game]++;
+
+			this.app.options.arcade.last_game = txmsg.game;
+
 			this.app.connection.emit('arcade-game-initialize-render-request', txmsg.game_id);
 
 			if (this.app.BROWSER == 1 && txmsg.players.length > 1) {

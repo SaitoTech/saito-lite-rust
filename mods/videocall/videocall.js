@@ -76,7 +76,6 @@ class Videocall extends ModTemplate {
 
 			this.streams = null;
 
-			this.app.options.stun.peers = [];
 			this.app.storage.saveOptions();
 		});
 	}
@@ -97,7 +96,6 @@ class Videocall extends ModTemplate {
 			if (!this.app.options?.stun?.settings) {
 				this.app.options.stun = {
 					settings: { privacy: 'all' },
-					peers: []
 				};
 			}
 
@@ -112,9 +110,8 @@ class Videocall extends ModTemplate {
 				if (!this.browser_active) {
 					this.renderInto('.saito-overlay');
 				}
-			} else {
-				this.app.options.stun.peers = [];
-			}
+			} 
+
 			try {
 				this.stun = app.modules.returnFirstRespondTo('peer-manager');
 			} catch (err) {
@@ -425,9 +422,9 @@ class Videocall extends ModTemplate {
 							null
 						);
 
-						if (!this.app.options.stun.peers.includes(from)) {
-							this.app.options.stun.peers.push(from);
-							this.app.storage.saveOptions();
+						if (!this.room_obj.call_peers.includes(from)) {
+							this.room_obj.call_peers.push(from);
+							this.app.connection.emit('stun-update-link');
 						}
 
 						this.stun.createPeerConnection(from, false);
@@ -440,15 +437,17 @@ class Videocall extends ModTemplate {
 
 						for (
 							let i = 0;
-							i < this.app.options.stun.peers.length;
+							i < this.room_obj.call_peers.length;
 							i++
 						) {
-							if (this.app.options.stun.peers[i] == from) {
-								this.app.options.stun.peers.splice(i, 1);
+							if (this.room_obj.call_peers[i] == from) {
+								this.room_obj.call_peers.splice(i, 1);
+								if (from !== this.publicKey){
+									this.app.connection.emit('stun-update-link');			
+								}
 								break;
 							}
 						}
-						this.app.storage.saveOptions();
 						this.app.connection.emit('remove-peer-box', from);
 
 						//See if we need to also hang up on our end
@@ -498,7 +497,7 @@ class Videocall extends ModTemplate {
 		let newtx =
 			await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
-		for (let peer of this.app.options.stun.peers) {
+		for (let peer of this.room_obj.call_peers) {
 			if (peer != this.publicKey) {
 				newtx.addTo(peer);
 			}
@@ -549,12 +548,12 @@ class Videocall extends ModTemplate {
 		let txmsg = tx.returnMessage();
 
 		let from = tx.from[0].publicKey;
+
+
 		let call_list = [];
 
-		let peers = this.app.options?.stun?.peers || [];
-
-		if (peers) {
-			peers.forEach((key) => {
+		if (this.room_obj.call_peers){
+			this.room_obj.call_peers.forEach((key) => {
 				if (!call_list.includes(key)) {
 					call_list.push(key);
 				}
@@ -603,17 +602,17 @@ class Videocall extends ModTemplate {
 		//
 		console.log(
 			'STUN: My peer list: ',
-			this.app.options.stun.peers,
+			this.room_obj.call_peers,
 			'Received list: ',
 			call_list
 		);
 
 		for (let peer of call_list) {
-			if (!this.app.options.stun.peers.includes(peer)) {
-				this.app.options.stun.peers.push(peer);
-			}
-
 			if (peer !== this.publicKey) {
+				if (!this.room_obj.call_peers.includes(peer)) {
+					this.room_obj.call_peers.push(peer);
+				}
+
 				console.log("STUN: peer list member, create connection with ", peer);
 				this.stun.createPeerConnection(peer, (peerId) => {
 					this.sendCallJoinTransaction(peerId);
@@ -659,13 +658,12 @@ class Videocall extends ModTemplate {
 		console.log(
 			'STUN: Send disconnect message:',
 			this.room_obj,
-			this.app.options.stun.peers
 		);
 
 		let newtx =
 			await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
-		for (let peer of this.app.options.stun.peers) {
+		for (let peer of this.room_obj.call_peers) {
 			if (peer != this.publicKey) {
 				newtx.addTo(peer);
 			}
@@ -685,7 +683,7 @@ class Videocall extends ModTemplate {
 		//
 		// Allow us to use stun connection to send tx before disconnecting!
 		//
-		for (let peer of this.app.options.stun.peers) {
+		for (let peer of this.room_obj.call_peers) {
 			if (peer != this.publicKey) {
 				//Disconnect stun on our end
 				// the send tx will tell (former) peers to do the same
@@ -701,7 +699,23 @@ class Videocall extends ModTemplate {
 		// Need code here to process keys that aren't otherwise in our call list 
 		// retrigger stun connections
 
-		// ....
+		let call_list = [];
+
+		for (let peer in txmsg.data){
+			console.log(peer, txmsg.data[peer]);
+			if (txmsg.data[peer] == "connected"){
+				if (peer !== this.publicKey) {
+					if (!this.room_obj.call_peers.includes(peer)) {
+						this.room_obj.call_peers.push(peer);
+
+						console.log("STUN: post hoc peer list member, attempt connection with ", peer);
+						this.stun.createPeerConnection(peer, (peerId) => {
+							this.sendCallJoinTransaction(peerId);
+						});
+					}
+				}
+			}
+		}
 
 		//Update display of videoboxes
 		this.app.connection.emit('peer-list', sender, txmsg.data);

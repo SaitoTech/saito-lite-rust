@@ -21,6 +21,16 @@
       });
       return;
     }
+    if (c === "protestant") {
+      this.welcome_overlay.renderCustom({
+        title : "New to the Protestants?" , 
+        text : "Use OPS to publish treatises and convert more spaces to Protestantism" ,
+        card : this.returnCardImage("007") ,
+        img : '/his/img/backgrounds/move/printing_press.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
     if (c === "papacy") {
       this.welcome_overlay.renderCustom({
         title : "New to the Papacy?" , 
@@ -698,9 +708,13 @@
 
     let obj = document.querySelector(".crossing_atlantic");
 
+
     for (let i = 0; i < this.game.state.colonies.length; i++) {
       let c = this.game.state.colonies[i];
-      if (c.resolved != 1) { obj.innerHTML += `<img class="army_tile" src="${c.img}" />`; }
+
+      if (c.resolved != 1) {
+        obj.innerHTML += `<img class="army_tile" src="${this.returnNextColonyTile(c.faction)}" />`;
+      }
 
       if (c.resolved == 1 && c.destroyed != 1) {
         if (c.colony == "england_colony1")  { document.querySelector('.england_colony1').innerHTML  = `<img class="nw_tile" src="${c.img}" />`; }
@@ -810,11 +824,19 @@
 
     let obj = document.querySelector(".crossing_atlantic");
 
+    let cabot_england_found = 0;
+    let cabot_france_found = 0;
+    let cabot_hapsburg_found = 0;
+
     for (let z = 0; z < this.game.state.explorations.length; z++) {
 
       let exp = this.game.state.explorations[z];
       let faction = exp.faction;
       let round = exp.round;
+
+      if (exp.cabot == 1) { if (faction == "england") { cabot_england_found = 1; } }
+      if (exp.cabot == 1) { if (faction == "france") { cabot_france_found = 1; } }
+      if (exp.cabot == 1) { if (faction == "hapsburg") { cabot_hapsburg_found = 1; } }
 
       //      
       // current round are unresolved      
@@ -873,6 +895,16 @@
       let f = this.game.state.newworld['circumnavigation'].faction;
       let t = this.returnExplorationTile(f);
       document.querySelector('.circumnavigation').innerHTML = `<img class="nw_tile" src="/his/img/tiles/${f}/${this.returnExplorationTile(f)}" />`;
+    }
+
+    if (cabot_england_found == 0 && this.game.state.events.cabot_england == 1) {
+      obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/explorers/Cabot_English.svg" />`;
+    }
+    if (cabot_france_found == 0 && this.game.state.events.cabot_france == 1) {
+      obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/explorers/Cabot_French.svg" />`;
+    }
+    if (cabot_hapsburg_found == 0 && this.game.state.events.cabot_hapsburg == 1) {
+      obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/explorers/Cabot_Hapsburg.svg" />`;
     }
 
   }

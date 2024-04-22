@@ -120,7 +120,7 @@
 	display: grid;
 	max-height: 95vh;
 	height: min-content;
-	width: min(900px, 85vw);
+	width: min(900px, 90vw);
 	overflow-y: auto;
 	grid-template-rows: min-content auto;
 	background: var(--saito-arcade-overlay-background);
