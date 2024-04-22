@@ -23,9 +23,9 @@ module.exports = ArcadeMainTemplate = (app, mod) => {
        <div id="${game_mod.name}" class="arcade-game-selector-game" data-id="${ game_mod.name }" data-league="${lid}">
          <div class="arcade-game-selector-game-image"><img src="${game_mod.respondTo('arcade-games').image}" /></div>
          <div class="arcade-game-selector-game-title"><span>${game_mod.returnName()}</span>`
-     if (game_mod?.can_bet){
+     /*if (game_mod?.can_bet){
         games_menu += `<i class="fa-solid fa-coins game-crypto-enabled-icon" title="you can stake web3 crypto on this game"></i>`;  
-     }
+     }*/
 
      games_menu +='</div></div>';
   }
