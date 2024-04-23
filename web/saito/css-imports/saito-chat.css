@@ -27,6 +27,8 @@
 .chat-manager .saito-user {
   padding: 0.5rem;
   border-radius: var(--border-radius-button-sidebar-chat-manager); 
+  overflow: hidden;
+  min-height: 4.5rem;
 }
 
 .chat-manager .saito-user:hover, .chat-manager .saito-user:hover .saito-address {
