@@ -83,6 +83,14 @@
 	line-height: 1.25em;
 }
 
+.saito-sidebar.arcade-sidebar {
+  height: calc(100 * var(--saito-vh) - var(--saito-header-height));
+  top: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
 /******************************************
  *  OVER WRITE Game Selector Overlay code
