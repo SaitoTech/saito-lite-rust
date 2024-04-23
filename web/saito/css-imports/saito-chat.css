@@ -412,6 +412,8 @@
 
 .chat-body .saito-user-self.saito-user .saito-userline { /* self's messages */
   background: var(--background-color-chat-popup-message-self);
+  box-shadow: var(--shadow-chat-message-bottom), var(--shadow-chat-user-self) var(--key-color); /* changed the look for messages from self. Theme-wide for now. */
+  border-radius: 0.5rem 0.5rem 0rem 0.5rem; /* changed the look for messages from self. Theme-wide for now. */
 }
 
 /* hide my own name */

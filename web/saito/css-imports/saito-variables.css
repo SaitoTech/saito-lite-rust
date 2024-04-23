@@ -103,6 +103,7 @@ font imports
   --shadow-shape-glow: 0 0 5px var(--color-complement);
   --shadow-shape-glow-big: 0 0 10px var(--color-complement);
   --shadow-chat-user: -4px 0px 2px -2px;
+  --shadow-chat-user-self: 4px 0px 2px -2px; /* for adjusting base theme chat messages from self --Adjusted for all themes - but can choose to make it theme-specific */
   --shadow-chat-message-bottom: 0px 2px 4px var(--color-shadow-bubble);
   --text-shadow-normal: 1px 1px 3px;
 

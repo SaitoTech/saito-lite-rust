@@ -23,7 +23,6 @@ html[data-theme="midnight"] {
       --box-shadow-sidebar-elements: var(--shadow-shape-flat);
       --shadow-chat-message-bottom: 0px 0px 0px var(--color-shadow-bubble); /* flattened and centered the shadow */
     
-    
     /*FONTS SECTION*/
     /*quick settings*/
       --text-decoration-switch-global: none;
