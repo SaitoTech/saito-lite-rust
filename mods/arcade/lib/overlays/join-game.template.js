@@ -5,7 +5,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 
 	//Uncreated games
 	let desc = invite.verbose_game_type;
-	//	invite?.desired_opponent_publickeys?.length > 0 || invite.game_status == "private"
+	//	invite?.desired_opponent_publickeys?.length > 0 || invite.invite_type == "private"
 	//			? "private invitation"
 	//		: "open invitation";
 	//If created
@@ -19,14 +19,10 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	let html = `
   <div class="arcade-game-overlay">
   <div class="arcade-game-overlay-header">
-	  <div class="arcade-game-overlay-header-image" style="background-image: url('${
-	invite.game_mod.respondTo('arcade-games').image
-}')">
+	  <div class="arcade-game-overlay-header-image" style="background-image: url('${ invite.game_mod.respondTo('arcade-games').image}')">
 	  </div>
 	  <div class="arcade-game-overlay-header-title-box">
-		  <div class="arcade-game-overlay-header-title-box-title">${
-	invite.game_name
-}</div>
+		  <div class="arcade-game-overlay-header-title-box-title">${invite.game_name}</div>
 		  <div class="arcade-game-overlay-header-title-box-desc">${desc}</div>
 	  </div>
   </div>
@@ -38,15 +34,9 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	// render players who have joined
 	for (let i = 0; i < invite.players.length; i++) {
 		html += `
-		  <div class="arcade-game-playerbox saito-table-row" id="invite-user-${
-	invite.players[i]
-}">
-		    <div class="saito-identicon-box${
-	invite.winner?.includes(invite.players[i]) ? ' winner' : ''
-}">
-          <img class="saito-identicon" src="${app.keychain.returnIdenticon(
-		invite.players[i]
-	)}">
+		  <div class="arcade-game-playerbox saito-table-row" id="invite-user-${invite.players[i]}">
+		    <div class="saito-identicon-box${invite.winner?.includes(invite.players[i]) ? ' winner' : ''}">
+          <img class="saito-identicon" src="${app.keychain.returnIdenticon(invite.players[i])}">
         </div>
 		    ${app.browser.returnAddressHTML(invite.players[i])}
         <div class="online-status-indicator"></div>
@@ -58,17 +48,14 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	for (let i = 0; i < invite.desired_opponent_publickeys.length; i++) {
 		html += `
 
-      <div class="arcade-game-playerbox empty saito-table-row requested_player" id="invite-user-${
-	invite.desired_opponent_publickeys[i]
-}">
-	      <div class="saito-identicon-box"><img class="saito-identicon" src="${app.keychain.returnIdenticon(
-		invite.desired_opponent_publickeys[i]
-	)}"></div>
+      <div class="arcade-game-playerbox empty saito-table-row requested_player" id="invite-user-${invite.desired_opponent_publickeys[i]}">
+	      <div class="saito-identicon-box">
+	      	<img class="saito-identicon" src="${app.keychain.returnIdenticon(invite.desired_opponent_publickeys[i])}">
+	      </div>
  	      ${app.browser.returnAddressHTML(invite.desired_opponent_publickeys[i])}
         <div class="online-status-indicator"></div>
 	    </div>
-
-      `;
+     `;
 	}
 
 	// render empty slots; empty slots =  players needed - (players joined + players requested)
@@ -76,15 +63,15 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 		html += `
 	        <div class="arcade-game-playerbox saito-table-row`;
 
-	        if (mod.publicKey === invite.originator){
-	        	html += ` available_slot">  
+		if (mod.publicKey === invite.originator) {
+			html += ` available_slot">  
 	      			<div class="saito-identicon-box empty-slot"><i class="fa-solid fa-link"></i>`;
-	        }else{
-	        	html += `">  
+		} else {
+			html += `">  
 	      			<div class="saito-identicon-box empty-slot">`;
-	        }
-					
-		html +=	`</div>
+		}
+
+		html += `</div>
 	    			<div class="saito-address">open player slot</div>	
 	  			</div>
 		    `;
@@ -113,6 +100,10 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 		html += `<div class="saito-table-row">
               <div class="arcade-game-options-key">game moves</div>
 							<div class="arcade-game-options-value">${invite.step}</div>
+					</div>`;
+		html += `<div class="saito-table-row">
+              <div class="arcade-game-options-key">status</div>
+							<div class="arcade-game-options-value">${invite.game_status}</div>
 					</div>`;
 	}
 	if (invite?.method) {
@@ -177,9 +168,9 @@ const formatOptions = (sgoa) => {
 	for (let i in sgoa) {
 		html += `<div class="saito-table-row">
                 <div class="arcade-game-options-key">${i.replace(
-		/_/g,
-		' '
-	)}</div>`;
+					/_/g,
+					' '
+				)}</div>`;
 		if (sgoa[i] !== null) {
 			html += `<div class="arcade-game-options-value">${sgoa[i]}</div>`;
 		}

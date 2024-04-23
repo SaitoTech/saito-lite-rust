@@ -47,3 +47,47 @@
 	background-color: var(--background-color-shim-light);
   border-radius: var(--border-radius-identicon-needed);
 }
+
+.my-turn {
+	border: solid 2px;
+}
+
+.player-turn {
+	position: relative;
+}
+
+.player-turn i {
+	display: none;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 2rem;
+	border-radius: 100%;
+	color: var(--saito-primary);
+	background-color: var(--saito-complement);
+	box-shadow: var(--shadow-standard);
+}
+
+.my-turn .player-turn i {
+	display: block;
+}
+
+.angled-notification {
+	position: absolute;
+	right: 0;
+	height: 100%;
+	width: 10rem;
+	padding: 0 1rem 0 3.5rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	font-size: 2rem;
+	font-weight: bold;
+	text-transform: uppercase;
+	white-space: break-spaces;
+	background-color: var(--background-color-notification-status);
+	clip-path: polygon(25% 0, 100% 0, 100% 100%, 0 100%);
+}

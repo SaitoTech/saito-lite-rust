@@ -66,6 +66,15 @@ class Arcade extends ModTemplate {
 			image: 'https://saito.tech/wp-content/uploads/2023/11/arcade-300x300.png',
 		};
 
+
+		app.connection.on("arcade-notify-player-turn", (game_id) => {
+			let game_invite = this.returnGame(game_id);
+			if (game_invite){
+				
+				siteMessage(`It's your turn in ${game_invite.msg.game}`, 5000);
+				app.connection.emit('arcade-invite-manager-render-request');
+			}
+		});
 	}
 
 	//////////////////////////////

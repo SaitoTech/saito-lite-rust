@@ -1,11 +1,11 @@
 module.exports = (app, mod, invite) => {
+
+	let invite_class = (invite.target && invite.players[invite.target - 1 ] == mod.publicKey) ? " my-turn" : ""; 
+
 	let html = `
 
-      <div class="saito-module saito-game" id="saito-game-${
-	invite.game_id
-}" style="background-image: url('/${
-	invite.game_slug
-}/img/arcade/arcade.jpg');">
+      <div class="saito-module saito-game${invite_class}" id="saito-game-${invite.game_id}" 
+      				style="background-image: url('/${invite.game_slug}/img/arcade/arcade.jpg');">
         <div class="saito-module-titlebar">
           <div class="saito-module-titlebar-title">${invite.game_name}</div>
           <div class="saito-module-titlebar-details game-type">${invite.game_type.toUpperCase()}</div>
@@ -17,27 +17,23 @@ module.exports = (app, mod, invite) => {
 
 	// render players who have joined
 	for (let i = 0; i < invite.players.length; i++) {
+		//invite_class = (invite.target && invite.target == i + 1) ? " player-turn" : ""; 
 		html += `
-
           <div>
-            <img class="saito-module-identicon saito-identicon" id-${
-	invite.players[i]
-}" src="${app.keychain.returnIdenticon(invite.players[i])}">
-          </div>
-
-      `;
+            <img class="saito-module-identicon saito-identicon" id-${invite.players[i]}" 
+            				src="${app.keychain.returnIdenticon(invite.players[i])}">`;
+//    if (invite_class){
+//      html += `<i class="fa-solid fa-circle-exclamation"></i>`;
+//    }
+    html+='</div>';
 	}
 
 	// render players who are requested to join (their slot isnt empty)
 	for (let i = 0; i < invite.desired_opponent_publickeys.length; i++) {
 		html += `
-
           <div class="requested_player">
-            <img class="saito-module-identicon saito-identicon" id-${
-	invite.desired_opponent_publickeys[i]
-}" src="${app.keychain.returnIdenticon(
-	invite.desired_opponent_publickeys[i]
-)}">
+            <img class="saito-module-identicon saito-identicon" id-${invite.desired_opponent_publickeys[i]}" 
+            			src="${app.keychain.returnIdenticon(invite.desired_opponent_publickeys[i])}">
           </div>
 
       `;
@@ -53,9 +49,13 @@ module.exports = (app, mod, invite) => {
 
 	html += `
           </div>
-        </div>
-      </div>
-    `;
+        </div>`;
+  
+  if (invite_class){
+    html += `<div class="angled-notification">your turn</div>`;
+  }      
+  
+  html += `</div>`;
 
 	return html;
 };
