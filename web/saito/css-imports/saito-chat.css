@@ -26,10 +26,12 @@
 
 .chat-manager .saito-user {
   padding: 0.5rem;
-  border-radius: var(--border-radius-button-sidebar-chat-manager); 
+  border-radius: var(--border-radius-sidebar-chat-manager); 
   overflow: hidden;
   min-height: 4.5rem;
+  cursor: pointer;
 }
+
 
 .chat-manager .saito-user:hover, .chat-manager .saito-user:hover .saito-address {
   background-color: var(--background-color-button-hover-chat-container);
@@ -95,12 +97,6 @@
   color: var(--font-color-button-sidebar-chat-container-active-subtitle);
 }
 
-/* We have a chat-manager click event on saito-user */
-
-.chat-manager-list .saito-user {
-  cursor: pointer;
-  min-height: 4.5rem;
-}
 
 .chat-body blockquote {
   cursor: help;
