@@ -297,7 +297,7 @@ class Wordblocks extends GameTemplate {
 		if (this.game.target == this.game.player) {
 			this.updateStatusWithTiles('YOUR GO! ' + this.defaultMsg);
 			if (this.game.queue.length == 0) {
-				this.startClock();
+				this.playerTurn();
 			}
 			this.enableEvents();
 		} else {
@@ -492,7 +492,6 @@ class Wordblocks extends GameTemplate {
 	enableEvents() {
 		if (this.browser_active == 1) {
 			this.addEventsToBoard();
-			this.setPlayReminder();
 			$('.gameboard').addClass('active_board');
 		}
 	}
@@ -2361,7 +2360,7 @@ class Wordblocks extends GameTemplate {
 				this.game.target = this.returnNextPlayer(player);
 				if (this.game.player == this.game.target) {
 					this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
-					this.startClock();
+					this.playerTurn();
 					this.enableEvents();
 				} else {
 					this.stopClock(); //Make sure clock didn't start again on browser refresh
@@ -2439,7 +2438,7 @@ class Wordblocks extends GameTemplate {
 				this.game.target = this.returnNextPlayer(player);
 				if (this.game.player == this.game.target) {
 					this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
-					this.startClock();
+					this.playerTurn();
 					this.enableEvents();
 				} else {
 					this.stopClock(); //Make sure clock didn't start again on browser refresh

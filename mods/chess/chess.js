@@ -166,6 +166,14 @@ class Chessgame extends GameTemplate {
 			this.switchColors();
 		}
 
+		this.engine = new chess.Chess();
+
+		if (this.game.position != undefined) {
+			this.engine.load(this.game.position);
+		} else {
+			this.game.position = this.engine.fen();
+		}
+
 		if (!this.browser_active) {
 			return;
 		}
@@ -177,13 +185,6 @@ class Chessgame extends GameTemplate {
 		this.board = new chessboard('board', {
 			pieceTheme: '/chess/img/pieces/{piece}.png'
 		});
-		this.engine = new chess.Chess();
-
-		if (this.game.position != undefined) {
-			this.engine.load(this.game.position);
-		} else {
-			this.game.position = this.engine.fen();
-		}
 
 		if (this.game.over) {
 			this.lockBoard(this.engine.fen());
@@ -195,10 +196,7 @@ class Chessgame extends GameTemplate {
 		//game.target is initialized to 1, which is white (switched above if "player 1" wanted to be black)
 		//
 		if (this.game.target == this.game.player) {
-			if (this.useClock) {
-				this.startClock();
-			}
-			this.setPlayReminder();
+			this.playerTurn();
 		}
 
 		// If we have a fast-ish timed game turn off move confirmations initially
@@ -257,7 +255,7 @@ class Chessgame extends GameTemplate {
 				this.game.draw_offered = msg.extra.target; //I am receving offer
 				if (this.game.player === msg.extra.target) {
 					this.updateStatusMessage(
-						'Opponent offers a draw; ' + this.status
+						'Opponent offers a draw; ' + this.game.status
 					);
 				}
 				this.initialize_game_run = 0;
@@ -282,33 +280,29 @@ class Chessgame extends GameTemplate {
 
 		this.updateLog(data.move);
 
-		if (this.browser_active == 1) {
-			this.updateBoard(this.game.position);
-			this.updateOpponent(msg.extra.target, data.move);
+		this.updateBoard(this.game.position);
+		this.updateOpponent(msg.extra.target, data.move);
 
-			//Check for draw according to game engine
-			if (this.engine.in_draw() === true) {
-				this.sendGameOverTransaction(this.game.players, 'draw');
+		//Check for draw according to game engine
+		if (this.engine.in_draw() === true) {
+			this.sendGameOverTransaction(this.game.players, 'draw');
+			return 0;
+		}
+
+		this.game.target = msg.extra.target;
+
+		this.updateStatusMessage();
+
+		if (msg.extra.target == this.game.player) {
+			//I announce that I am in checkmate to end the game
+			if (this.engine.in_checkmate() === true) {
+				this.sendStopGameTransaction('checkmate');
 				return 0;
 			}
 
-			this.game.target = msg.extra.target;
-
-			if (msg.extra.target == this.game.player) {
-				//I announce that I am in checkmate to end the game
-				if (this.engine.in_checkmate() === true) {
-					this.sendStopGameTransaction('checkmate');
-					return 0;
-				}
-
-				if (this.useClock) {
-					this.startClock();
-				}
-				this.setPlayReminder();
-			}
+			this.playerTurn();
 		}
 
-		this.updateStatusMessage();
 		this.saveGame(this.game.id);
 
 		return 0;
@@ -377,73 +371,54 @@ class Chessgame extends GameTemplate {
 	}
 
 	updateStatusMessage(str = '') {
-		if (!this.browser_active) {
-			return;
-		}
 
-		//
-		// print message
-		//
-		if (str != '') {
-			this.status = str;
-
-			if (document.querySelector('.status')) {
-				this.app.browser.replaceElementBySelector(
-					`<div class="status">${str}</div>`,
-					'.status'
-				);
-			} else {
-				this.playerbox.updateBody(
-					`<div class="status">${str}</div>`,
-					this.game.player
-				);
-			}
-
-			return;
-
-			//
-			// or print game info
-			//
-		} else {
-			var status = '';
+		if (!str){
 			var moveColor = this.engine.turn() === 'b' ? 'black' : 'white';
 
 			// check?
 			if (this.engine.in_check() === true) {
-				status = moveColor + ' is in check';
+				str = moveColor + ' is in check';
 			} else {
 				if (this.roles[this.game.player] == moveColor) {
-					status = 'your move';
+					str = 'your move';
 				} else {
-					status = 'waiting for ' + moveColor;
+					str = 'waiting for ' + moveColor;
 				}
 			}
 
-			this.status = status;
-			status = `<div class="status">${status}</div>`;
+			this.game.status = str;
+			str = `<div class="status">${str}</div>`;
+		
+			console.log(this.game.status);
+		}
 
-			if (this.game.player > 0) {
+		if (!this.browser_active) {
+			return;
+		}
+
+		if (this.game.player > 0) {
+			let captHTML = this.returnCapturedHTML(
+				this.returnCaptured(this.engine.fen()),
+				this.game.player
+			);
+
+			this.playerbox.updateBody(captHTML + str, this.game.player);
+		} else {
+
+			for (let i = 1; i < 3; i++) {
 				let captHTML = this.returnCapturedHTML(
 					this.returnCaptured(this.engine.fen()),
-					this.game.player
+					i
 				);
-
-				this.playerbox.updateBody(captHTML + status, this.game.player);
-			} else {
-				for (let i = 1; i < 3; i++) {
-					let captHTML = this.returnCapturedHTML(
-						this.returnCaptured(this.engine.fen()),
-						i
-					);
-					this.playerbox.updateBody(captHTML, i);
-					this.updateStatus(status);
-				}
+				this.playerbox.updateBody(captHTML, i);
+				this.updateStatus(status);
 			}
 		}
+
 	}
 
 	updateOpponent(target, move) {
-		if (this.game.player == 0) {
+		if (this.game.player == 0 || !this.browser_active) {
 			return;
 		}
 
@@ -471,9 +446,10 @@ class Chessgame extends GameTemplate {
 	}
 
 	updateBoard(position) {
-		console.log('MOVING OPPONENT\'s PIECE');
-
 		this.engine.load(position);
+
+		if (!this.browser_active) { return; }
+		console.log('MOVING OPPONENT\'s PIECE');
 		this.board.position(position, true);
 	}
 
