@@ -40,7 +40,7 @@ module.exports = ArcadeMainTemplate = (app, mod) => {
         </div>
       </div>
       <div class="saito-sidebar right arcade-sidebar">
-        <div class='saito-announcement'>The Saito Arcade is an online hub for the peer-to-peer games, web3, and video apps that run on Saito. Play any game to automatically join the leaderboard. Have fun!</div>
+        <div class='saito-announcement'>The Saito Arcade is an online hub for the peer-to-peer games, web3, and video apps that run on Saito. Play any game to automatically join the leaderboard!</div>
       </div>
     </div>
   `;

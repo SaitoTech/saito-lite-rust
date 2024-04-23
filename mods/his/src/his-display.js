@@ -1,6 +1,28 @@
 
   displayCustomOverlay(c="", msg="") {
 
+    if (c === "depleted") {
+      this.welcome_overlay.renderCustom({
+        title : "Depleted Conquest" , 
+        text : msg ,
+        card : "" ,
+        img : '/his/img/backgrounds/newworld/depleted_conquest.jpeg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "deserted") {
+      this.welcome_overlay.renderCustom({
+        title : "Deserted Colony" , 
+        text : msg ,
+        card : "" ,
+        img : '/his/img/backgrounds/newworld/deserted_colony.png',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
     if (c === "protestants") {
       this.welcome_overlay.renderCustom({
         title : "New to the Protestants?" , 
@@ -784,7 +806,7 @@
         if (faction == "england") {
           obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/English_Conquest.svg" />`;
         }
-	if (this.game.state.events.smallpox != "") {
+	if (this.game.state.events.smallpox == faction) {
           obj.innerHTML += `<img class="army_tile" src="/his/img/Smallpox.svg" />`;
 	}
       }

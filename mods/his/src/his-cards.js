@@ -2550,7 +2550,8 @@ console.log("selected: " + spacekey);
 
 	  if (his_self.game.state.henry_viii_marital_status > 7) { his_self.game.state.henry_viii_marital_status = 7; return 1; }
 
-	  if (his_self.game.state.henry_viii_marital_status > 2) {
+	  if (his_self.game.state.henry_viii_marital_status >= 2) {
+
 	    his_self.updateStatus("Henry VIII makes a roll on the pregnancy chart");
 	    let dd = his_self.rollDice(6);
 
@@ -2576,7 +2577,7 @@ console.log("selected: " + spacekey);
 	      his_self.updateLog("Henry VIII rolls 2: marriage barren");
 	    }
 	    if (dd == 3) {
-	      his_self.updateLog("Henry VIII rolls 3: wife beheaded - reroll");
+	      his_self.updateLog("Henry VIII rolls 3: wife beheaded: will re-roll when England passes");
 	      his_self.game.state.henry_viii_auto_reroll = 1;
 	    }
 	    if (dd == 4) {
@@ -3034,7 +3035,8 @@ console.log("selected: " + spacekey);
                     let selected_papal_debater = $(this).attr("id");
 	            his_self.addMove("theological_debate");
         	    his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate\t" + language_zone);
-        	    his_self.addMove("RESETCONFIRMSNEEDED\tall");
+                    let c = [this.game.players[this.returnPlayerOfFaction("papacy")-1],this.game.players[this.returnPlayerOfFaction("protestant")-1]];
+        	    his_self.addMove("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
 	            if (is_committed == 0) {
 		      his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted\t" + selected_papal_debater);
 	            } else { 
@@ -3075,7 +3077,8 @@ console.log("selected: " + spacekey);
 		    let prohibited_protestant_debater = his_self.game.state.debaters[selected_idx].type;
 	            his_self.addMove("theological_debate");
         	    his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate\t" + language_zone);
-        	    his_self.addMove("RESETCONFIRMSNEEDED\tall");
+                    let c = [this.game.players[this.returnPlayerOfFaction("papacy")-1],this.game.players[this.returnPlayerOfFaction("protestant")-1]];
+        	    his_self.addMove("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
 	 	    if (is_committed == 0) {
 	              his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted\t\t"+prohibited_protestant_debater);
 		    } else {
@@ -3756,13 +3759,15 @@ console.log("selected: " + spacekey);
           if (!f[owner]) { f[owner] = 1; }
           else { f[owner]++; }
         } 
+
+	his_self.game.queue.push("display_vp_track");
         
         for (let key in f) {
           if (f[key] >= 4) {
-	    his_self.gainVictoryPoints(faction, 3);
+	    his_self.game.queue.push("SETVAR\tstate\tmaster_of_italy\t"+faction+"\t"+parseInt(his_self.game.state.master_of_italy[faction])+2);
           }
           if (f[key] == 3) {
-	    his_self.gainVictoryPoints(faction, 2);
+	    his_self.game.queue.push("SETVAR\tstate\tmaster_of_italy\t"+faction+"\t"+parseInt(his_self.game.state.master_of_italy[faction])+1);
           }
           if (f[key] == 2) {
 	    let player = his_self.returnPlayerOfFaction(key);
@@ -10627,6 +10632,8 @@ console.log("selected: " + spacekey);
 
         if (mv[0] == "treachery") {
 
+          his_self.game.queue.splice(qe, 1);
+	  
 	  let attacker = mv[1];
 	  let spacekey = mv[2];
 	  let defender = "";
@@ -10657,8 +10664,6 @@ console.log("selected: " + spacekey);
 	    }
 	  }
 
-          his_self.game.queue.splice(qe, 1);
-	  
 	}
 
         return 1;

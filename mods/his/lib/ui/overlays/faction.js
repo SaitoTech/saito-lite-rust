@@ -303,6 +303,25 @@ class FactionOverlay {
 		  }
 		}
 
+		//
+		// master of italy
+		//
+		master_of_italy_vp = his_self.game.state.master_of_italy[faction];
+		while (master_of_italy_vp >= 2) {
+			this.app.browser.addElementToSelector(
+				'<div class="master_of_italy_vp vp2"></div>',
+				'.faction_sheet_vp'
+			);
+			master_of_italy_vp -= 2;
+		}
+		while (master_of_italy_vp >= 1) {
+			this.app.browser.addElementToSelector(
+				'<div class="master_of_italy_vp vp1"></div>',
+				'.faction_sheet_vp'
+			);
+			master_of_italy_vp -= 1;
+		}
+
 
 		//
 		// War Winner VPs

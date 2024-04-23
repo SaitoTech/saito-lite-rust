@@ -46,12 +46,18 @@ class NewWorldOverlay {
 		  //////////////
 	 	  for (let z = 0; z < his_self.game.state.colonies.length; z++) {
 		    let c = his_self.game.state.colonies[z];
-console.log("COLONY:");
-console.log(JSON.stringify(c));
 		    if (!c.prize) { c.prize = "-"; }
 		    if (c.destroyed != 1 && c.round <= his_self.game.state.round) {
 		      active_colonies++;
 		      his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : c.prize , img : c.img , type : "colony", name : c.name , faction : c.faction , total_hits : c.modified_roll }, stage), ".new-world-overlay .content .colonies");
+		    } else {
+		      if (c.destroyed == 1) {
+		        active_colonies++;
+			let x = c.colony;
+		        if (his_self.game.state.newworld[x].claimed != 1) {
+		          his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : c.name , img : c.img , type : "colony", name : c.name , faction : "abandoned" , total_hits : c.modified_roll , depleted : 1 }, stage), ".new-world-overlay .content .colonies");
+		        }
+		      }
 		    }
 		  }
 
@@ -61,8 +67,6 @@ console.log(JSON.stringify(c));
 		  ///////////////
 	 	  for (let i = 0; i < his_self.game.state.conquests.length; i++) {
 		    let c = his_self.game.state.conquests[i];
-console.log("CONQUEST:");
-console.log(JSON.stringify(c));
 		    if (c.round == his_self.game.state.round || (c.prize.indexOf("Aztec") > -1 || c.prize.indexOf("Maya") > -1 || c.prize.indexOf("Inca") > -1)) {
 		      active_conquests++;
 		      //

@@ -369,7 +369,6 @@
     }
 
 
-
     //
     // now determine sorted_explorations (order of resolution)
     //
@@ -386,8 +385,9 @@
   	  let exp = this.game.state.explorations[active_explorations[k]];
 	  if (exp.sorted != 1) {
 	    let explorer = exp.explorer;
-	    let f = this.explorers[explorer].faction;
-	    let p = this.explorers[explorer].power;
+	    let f = exp.faction;
+	    let p = 0;
+	    if (explorer === "Cabot") { p = 1; } else { p = this.explorers[explorer].power; }
 	    if (p == highest) {
 	      if (f == "england") { highest = -5; } // force next IF to execute
     	      if (f == "france" && highest_faction == "hapsburg") { highest = -5; } //force next-IF to execute

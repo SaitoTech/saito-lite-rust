@@ -453,9 +453,19 @@
       factions["hapsburg"].vp   += parseInt(this.game.state.hapsburg_war_winner_vp);
       factions["england"].vp    += parseInt(this.game.state.england_war_winner_vp);
       factions["france"].vp     += parseInt(this.game.state.france_war_winner_vp);
-    } catch (err) {
+    } catch (err) {}
 
-    }
+    //
+    // Master of Italy
+    //
+    factions["protestant"].vp += parseInt(this.game.state.master_of_italy["protestant"]);
+    factions["papacy"].vp += parseInt(this.game.state.master_of_italy["papacy"]);
+    try {
+      factions["ottoman"].vp += parseInt(this.game.state.master_of_italy["ottoman"]);
+      factions["hapsburg"].vp += parseInt(this.game.state.master_of_italy["hapsburg"]);
+      factions["england"].vp += parseInt(this.game.state.master_of_italy["england"]);
+      factions["france"].vp += parseInt(this.game.state.master_of_italy["france"]);
+    } catch (err) {}
 
     //
     // New World
@@ -730,6 +740,14 @@ if (this.game.state.scenario != "is_testing") {
     state.debater_committed_this_impulse = {};
 
     state.cards_left = {};
+
+    state.master_of_italy = {};
+    state.master_of_italy['ottoman'] = 0;
+    state.master_of_italy['hapsburg'] = 0;
+    state.master_of_italy['england'] = 0;
+    state.master_of_italy['france'] = 0;
+    state.master_of_italy['papacy'] = 0;
+    state.master_of_italy['protestant'] = 0;
 
     state.activated_powers = {};
     state.activated_powers['ottoman'] = [];

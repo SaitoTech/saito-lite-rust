@@ -53,6 +53,13 @@
       img : "diplomacy.png" ,
     });
     menu.push({
+      factions : ['england'],
+      name : "Request Divorce",
+      check : this.canPlayerRequestDivorce,
+      fnct : this.playerRequestDivorce,
+      img : "papal_decree.jpg" ,
+    });
+    menu.push({
       factions : ['papacy'],
       name : "Approve Divorce",
       check : this.canPlayerApproveDivorce,
@@ -213,8 +220,13 @@ console.log("this player can end war...");
     return 1;
   }
 
+  canPlayerRequestDivorce(his_self, player, faction) {
+    if (faction == "england" && his_self.game.state.henry_viii_marital_status == 1) { return 1; }
+    return 0;
+  }
+
   canPlayerApproveDivorce(his_self, player, faction) {
-    if (his_self.game.state.henry_viii_marital_status == 1) { return 1; }
+    if (faction == "papacy" && his_self.game.state.henry_viii_marital_status == 1) { return 1; }
     return 0;
   }
 
@@ -506,6 +518,11 @@ console.log("this player can end war...");
 
         );
     });
+    return 0;
+  }
+
+  async playerRequestDivorce(his_self, faction, mycallback) {
+    mycallback([`advance_henry_viii_marital_status`,`SETVAR\tstate\thenry_viii_pope_approves_divorce\t1`, `NOTIFY\tThe Papacy accedes to Henry VIII's request for a divorce.`]);
     return 0;
   }
 

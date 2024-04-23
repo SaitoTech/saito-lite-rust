@@ -5613,7 +5613,7 @@ does_units_to_move_have_unit = true; }
   }
   canPlayerAssaultTutorial(his_self, player, faction) {
     if (his_self.game.state.assaulted_this_impulse == 1) { return 0; }
-   if (!his_self.canPlayerAssault(his_self, player, faction)) {
+    if (!his_self.canPlayerAssault(his_self, player, faction)) {
       let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
       for (let i = 0; i < conquerable_spaces.length; i++) {
         if (conquerable_spaces[i] !== "egypt" && conquerable_spaces[i] !== "persia" && conquerable_spaces[i] !== "ireland") {
@@ -5630,8 +5630,6 @@ does_units_to_move_have_unit = true; }
     return 0;
   }
   playerAssaultTutorial(his_self, player, faction) {
-
-    his_self.endTurn();
 
     let player_warned = 0;
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
@@ -5668,7 +5666,9 @@ does_units_to_move_have_unit = true; }
 	}
       }
     }
+
     return 1;
+
   }
   canPlayerAssault(his_self, player, faction) {
 
@@ -7000,7 +7000,7 @@ does_units_to_move_have_unit = true; }
       img : options[x].img ,
     });
 
-    return;
+    return 0;
 
   }
 
