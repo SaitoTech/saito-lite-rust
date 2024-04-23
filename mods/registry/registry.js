@@ -69,7 +69,6 @@ class Registry extends ModTemplate {
 							delete this.cached_keys[i];
 						}
 					}
-					//console.log("REGISTRY: reset cache: ", JSON.parse(JSON.stringify(this.cached_keys)));
 				}
 
 				for (let i = 0; i < keys.length; i++) {
@@ -412,7 +411,7 @@ class Registry extends ModTemplate {
 					);
 					//}
 				});
-			} else if (myKey.has_registered_username) {
+			} else if (myKey?.has_registered_username) {
 				console.log('REGISTRY: unset registering... status');
 				this.app.keychain.addKey(this.publicKey, {
 					has_registered_username: false
