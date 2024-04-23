@@ -133,6 +133,7 @@ html[data-theme="midnight"] {
       --background-color-main: #000;
       --background-color-shim-normal: #0009;
       --background-color-hover-post: none;   /* Turns it off for this theme*/
+      --background-color-hover-post-preview: var(--background-color-main); /* solves the dark theme hover gradient problem*/
       --background-color-modal-menu: var(--color-base);
       --background-color-modal-menu-oldschool: none;
       --background-color-module-menu: var(--color-base);

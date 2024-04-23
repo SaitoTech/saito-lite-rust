@@ -448,6 +448,7 @@ font imports
   --background-color-post: var(--background-color-main);
   --background-color-post-input: var(--background-color-main);
   --background-color-hover-post: var(--background-color-gray-transparent);
+  --background-color-hover-post-preview: var(--color-highlight);
   --background-color-menu-hamburger-midsection: var(--font-color-primary);
   --background-mask-sidebar-game-module: var(--background-color-gray-transparent-light);
 /* Chat Related Colors */

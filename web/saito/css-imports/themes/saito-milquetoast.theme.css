@@ -80,6 +80,7 @@ html[data-theme="milquetoast"] {
     /* BACKGROUND COLORS */
       --background-color-modal-menu-oldschool: none; /* get rid of the extra layer! */
       --background-color-hover-post: none;   /* Turns it off for this theme*/
+      --background-color-hover-post-preview: var(--background-color-main); /* solves the hover gradient problem, since there is no hover on posts on this theme -- consider removing from base theme so that these controls are no longer needed.*/
       --background-color-button-hover-sidebar: var(--color-highlight);
       --background-color-button-sidebar-chat-active: var(--color-highlight);
       --background-color-button-hover-chat-container: var(--color-highlight);

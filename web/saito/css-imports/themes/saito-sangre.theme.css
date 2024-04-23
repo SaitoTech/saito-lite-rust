@@ -118,6 +118,7 @@ html[data-theme="sangre"] {
       --background-color-button-hover-sidebar: var(--color-primary);
     /* Special UI Components */
       --background-color-icon-close: var(--color-complement);
+      --background-color-hover-post-preview: var(--background-color-main); /* solves the dark theme hover gradient problem*/
     /* Chat Related Colors */
     /* Theme Specific */
       --saito-arcade-header-background: var(--background-color-main);
