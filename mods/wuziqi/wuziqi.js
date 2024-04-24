@@ -234,8 +234,9 @@ class Wuziqi extends GameTemplate {
 	}
 
 	// Add click events to the board
+	// This is the functional playerTurn() function of Wuziqi
 	addEvents(board) {
-		this.setPlayReminder();
+		this.playerTurn();
 
 		board.forEach((cell) => {
 			el = document.getElementById('tile_' + cell.id);
