@@ -23,7 +23,6 @@ html[data-theme="midnight"] {
       --box-shadow-sidebar-elements: var(--shadow-shape-flat);
       --shadow-chat-message-bottom: 0px 0px 0px var(--color-shadow-bubble); /* flattened and centered the shadow */
     
-    
     /*FONTS SECTION*/
     /*quick settings*/
       --text-decoration-switch-global: none;
@@ -133,6 +132,7 @@ html[data-theme="midnight"] {
       --background-color-main: #000;
       --background-color-shim-normal: #0009;
       --background-color-hover-post: none;   /* Turns it off for this theme*/
+      --background-color-hover-post-preview: var(--background-color-main); /* solves the dark theme hover gradient problem*/
       --background-color-modal-menu: var(--color-base);
       --background-color-modal-menu-oldschool: none;
       --background-color-module-menu: var(--color-base);

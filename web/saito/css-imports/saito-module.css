@@ -38,7 +38,8 @@
     white-space: nowrap;
     overflow-wrap: break-word;
     opacity: 0.80;
-    background: #000c;
+    background: #000a;
+    border-radius: var(--border-radius-sidebar-game-module);
 }
 
 .saito-module-titlebar > div {

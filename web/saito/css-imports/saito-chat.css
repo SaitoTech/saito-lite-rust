@@ -412,6 +412,8 @@
 
 .chat-body .saito-user-self.saito-user .saito-userline { /* self's messages */
   background: var(--background-color-chat-popup-message-self);
+  box-shadow: var(--shadow-chat-message-bottom), var(--shadow-chat-user-self) var(--key-color); /* changed the look for messages from self. Theme-wide for now. */
+  border-radius: 0.5rem 0.5rem 0rem 0.5rem; /* changed the look for messages from self. Theme-wide for now. */
 }
 
 /* hide my own name */
@@ -509,20 +511,27 @@
   max-width: 600px;
 }
 
-.chat-message-line:hover .saito-userline-reply {
+.chat-message-line .saito-userline-reply {
   display: flex;
   position: absolute;
   flex-direction: row;
   align-items: center;
   gap: 1rem;
-  right: -9rem;
-  bottom: 0;
+  right: -5rem;
+  bottom: 1; /* bumped it down a notch, and closer to the element */
   z-index: 9;
   background: var(--background-color-hover-chat-popup-message-tag);
   padding: 5px 7px 2px;
   border-radius: var(--border-radius-chat-popup-message-tag);
   border: var(--border-thickness-chat-popup-message-tag) solid var(--border-color-chat-popup-message-tag);
-  font-size: 1.4rem;
+  font-size: 1.1rem; /* made this way smaller, but this way access immediately below the line works better */
+  opacity: 0; /* Initial opacity set to 0 for invisibility */
+  transition: opacity 0.3s ease-in-out; /* Transition effect on opacity */
+  
+}
+
+.chat-message-line:hover .saito-userline-reply {
+  opacity: 1; /* Opacity set to 1 on hover to make the element visible */
 }
 
 .liked {
