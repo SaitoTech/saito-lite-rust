@@ -66,6 +66,23 @@ class Arcade extends ModTemplate {
 			image: 'https://saito.tech/wp-content/uploads/2023/11/arcade-300x300.png',
 		};
 
+
+		app.connection.on("arcade-notify-player-turn", (game_id, target, status) => {
+
+			for (let game of app.options.games){
+				if (game.id == game_id){
+					// Temporarily update these fields so can render nicely in arcade
+					// without having to save the game
+					game.status = status;
+					game.target = target;
+
+					console.log("Arcade notified", JSON.parse(JSON.stringify(game)));
+					siteMessage(`It's your turn in ${game.module}`, 5000);
+					app.connection.emit('arcade-invite-manager-render-request');
+
+				}
+			}
+		});
 	}
 
 	//////////////////////////////
@@ -1239,39 +1256,34 @@ class Arcade extends ModTemplate {
 
 			//Update UI
 			this.app.connection.emit('arcade-invite-manager-render-request');
+		}
+
+		//
+		// Do we have enough players?
+		//
+		if (game.msg.players.length >= game.msg.players_needed) {
+			//Temporarily change it....
+			game.msg.request = 'accepted';
 
 			//
-			// Do we have enough players?
+			// First player (originator) sends the accept message
 			//
-			if (game.msg.players.length >= game.msg.players_needed) {
-				//Temporarily change it....
-				game.msg.request = 'accepted';
+			if (game.msg.originator == this.publicKey) {
+				let newtx = await this.createAcceptTransaction(game);
+				this.app.network.propagateTransaction(newtx);
+				this.app.connection.emit('relay-send-message', {
+					recipient: 'PEERS',
+					request: 'arcade spv update',
+					data: newtx.toJson()
+				});
 
-				//
-				// First player (originator) sends the accept message
-				//
-				if (game.msg.originator == this.publicKey) {
-					let newtx = await this.createAcceptTransaction(game);
-					this.app.network.propagateTransaction(newtx);
-					this.app.connection.emit('relay-send-message', {
-						recipient: 'PEERS',
-						request: 'arcade spv update',
-						data: newtx.toJson()
-					});
-					/*
-          this.app.connection.emit("relay-send-message", {
-            recipient: game.msg.players,
-            request: "arcade spv update",
-            data: newtx..toJson(),
-          });
-          */
-					//Start Spinner
-					this.app.connection.emit(
-						'arcade-game-initialize-render-request', txmsg.game_id
-					);
-				}
+				//Start Spinner
+				this.app.connection.emit(
+					'arcade-game-initialize-render-request', txmsg.game_id
+				);
 			}
 		}
+		
 	}
 
 	/////////////////
@@ -1755,7 +1767,7 @@ class Arcade extends ModTemplate {
 			return true;
 		}
 		if (this.debug) {
-			console.log('Game cannot be joined or accepted');
+			console.log('Game cannot be joined or accepted because ' + game_tx.msg.request);
 		}
 		return false;
 	}

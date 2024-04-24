@@ -242,7 +242,7 @@
 }
 
 .tweet:hover .tweet-text.preview::before {
-  background: linear-gradient(180deg, transparent, var(--saito-background-light));
+  background: linear-gradient(180deg, transparent, var(--background-color-hover-post-preview));
 }
 
 .tweet-controls {

@@ -19,6 +19,7 @@ class Invite {
 			tx,
 			game_id: '',
 			game_name: '',
+			invite_type: '',
 			game_status: '',
 			originator: null,
 			players: [],
@@ -31,7 +32,8 @@ class Invite {
 			winner: '',
 			method: '',
 			time_created: 0,
-			time_finished: 0
+			time_finished: 0,
+			target: 0,
 		};
 
 		//
@@ -42,7 +44,7 @@ class Invite {
 
 			this.invite_data.game_id = tx.signature;
 			this.invite_data.game_name = txmsg.game;
-			this.invite_data.game_status = txmsg.request;
+			this.invite_data.invite_type = txmsg.request;
 			this.invite_data.originator = txmsg.originator;
 			this.invite_data.players = txmsg.players;
 			this.invite_data.players_needed = txmsg.players_needed;
@@ -175,6 +177,20 @@ class Invite {
 		// because we will pre-fill in the invitees
 		this.invite_data.empty_slots -=
 			this.invite_data.desired_opponent_publickeys.length;
+
+
+		//if this game already exists!
+		for (let i = 0; i < this.app?.options?.games?.length; i++) {
+			if (this.app.options.games[i].id == this.invite_data.game_id) {
+				console.log("Invite Constructor: ", JSON.parse(JSON.stringify(this.app.options.games[i])));
+				this.invite_data.target = this.app.options.games[i].target;
+				if (this.app.options.games[i].players){
+					this.invite_data.players = this.app.options.games[i].players;
+				}
+				this.invite_data.game_status = 	this.app.browser.stripHtml(this.app.options.games[i].status);
+			}
+		}
+
 	}
 
 	render() {
@@ -203,7 +219,7 @@ class Invite {
 
 					this.app.browser.logMatomoEvent(
 						'GameInvite',
-						this.invite_data.game_status,
+						this.invite_data.invite_type,
 						this.invite_data.game_mod.name
 					);
 					let game_overlay = new JoinGameOverlay(
