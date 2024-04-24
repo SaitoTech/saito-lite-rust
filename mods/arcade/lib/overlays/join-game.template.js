@@ -3,6 +3,8 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 		//console.log("INVITATION DETAILS: ", invite);
 	}
 
+	let game_tx = mod.returnGame(invite.game_id);
+
 	//Uncreated games
 	let desc = invite.verbose_game_type;
 	//	invite?.desired_opponent_publickeys?.length > 0 || invite.invite_type == "private"
@@ -10,7 +12,12 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	//		: "open invitation";
 	//If created
 	if (mod.isAcceptedGame(invite.game_id)) {
-		desc = 'active game';
+		if (!mod.isAvailableGame(game_tx, "accepted")){
+			desc = 'active game';
+		}else{
+			desc = 'initializing game';
+		}
+		
 	}
 	if (invite.time_finished) {
 		desc = 'finished game';
@@ -122,8 +129,8 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	  <div class="arcade-game-controls">`;
 
 	if (!invite.time_finished) {
-		if (mod.isAcceptedGame(invite.game_id)) {
-			if (mod.isMyGame(mod.returnGame(invite.game_id))) {
+		if (mod.isAcceptedGame(invite.game_id) && !mod.isAvailableGame(game_tx)) {
+			if (mod.isMyGame(game_tx)) {
 				html += `<div id="arcade-game-controls-continue-game" class="saito-button saito-button-primary">continue game</div>`;
 				if (invite.players.length > 1) {
 					html += `<div id="arcade-game-controls-forfeit-game" class="saito-button saito-button-primary">forfeit game</div>`;
@@ -135,7 +142,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 			}
 		} else {
 			if (invite.players.includes(mod.publicKey)) {
-				if (mod.publicKey === invite.originator) {
+				if (mod.publicKey === invite.originator || mod.isAcceptedGame(invite.game_id)) {
 					html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">cancel invite</div>`;
 				} else {
 					html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">leave invite</div>`;
