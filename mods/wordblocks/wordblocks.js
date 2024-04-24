@@ -220,6 +220,7 @@ class Wordblocks extends GameTemplate {
 		if (/*this.game.initializing == 1 ||*/ !this.browser_active) {
 			return;
 		}
+
 		console.log('InitializeGame Checkpoint');
 
 		if (this.wordlist == '') {
@@ -294,19 +295,23 @@ class Wordblocks extends GameTemplate {
 		}
 
 		/*This starts the game*/
-		if (this.game.target == this.game.player) {
-			this.updateStatusWithTiles('YOUR GO! ' + this.defaultMsg);
-			if (this.game.queue.length == 0) {
-				this.playerTurn();
+		console.log("Initialize Game, Queue:", this.game.queue);
+
+		if (this.game.queue.length == 0){
+			if (this.game.target == this.game.player) {
+				this.updateStatusWithTiles('YOUR GO! ' + this.defaultMsg);
+				if (this.game.queue.length == 0) {
+					this.playerTurn();
+				}
+				this.enableEvents();
+			} else {
+				this.stopClock();
+				this.updateStatusWithTiles(
+					`Waiting for ${
+						this.game.playerNames[this.game.target - 1]
+					} to move.`
+				);
 			}
-			this.enableEvents();
-		} else {
-			this.stopClock();
-			this.updateStatusWithTiles(
-				`Waiting for ${
-					this.game.playerNames[this.game.target - 1]
-				} to move.`
-			);
 		}
 		this.updateActivePlayerUserline(this.game.target);
 
@@ -367,6 +372,11 @@ class Wordblocks extends GameTemplate {
 				tile_html += this.returnTileHTML(
 					this.game.deck[0].cards[this.game.deck[0].hand[i]].name
 				);
+			}
+
+			if (!this.browser_active){
+				this.updateStatus(status + tile_html);
+				return;
 			}
 
 			let html = `
@@ -2317,8 +2327,16 @@ class Wordblocks extends GameTemplate {
 				let expanded = mv[6];
 				let score = 0;
 
+				//Set up next player's turn
+				this.game.target = this.returnNextPlayer(player);
+
 				//Don't process placement until user is in game
 				if (!this.browser_active) {
+					if (this.game.player == this.game.target) {
+						this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
+						this.playerTurn();
+						console.log("Trigger Playerturn: ", JSON.parse(JSON.stringify(this.game)));
+					}
 					return 0;
 				}
 
@@ -2356,8 +2374,6 @@ class Wordblocks extends GameTemplate {
 					return 1;
 				}
 
-				//Set up next player's turn
-				this.game.target = this.returnNextPlayer(player);
 				if (this.game.player == this.game.target) {
 					this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
 					this.playerTurn();
@@ -2383,7 +2399,14 @@ class Wordblocks extends GameTemplate {
 			}
 
 			if (mv[0] === 'discard_tiles') {
+
+				this.game.target = this.returnNextPlayer(player);
+
 				if (!this.browser_active) {
+					if (this.game.player == this.game.target) {
+						this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
+						this.playerTurn();
+					}
 					return 0;
 				}
 
@@ -2435,7 +2458,6 @@ class Wordblocks extends GameTemplate {
 					return 1;
 				}
 
-				this.game.target = this.returnNextPlayer(player);
 				if (this.game.player == this.game.target) {
 					this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
 					this.playerTurn();

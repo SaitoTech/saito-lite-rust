@@ -67,12 +67,20 @@ class Arcade extends ModTemplate {
 		};
 
 
-		app.connection.on("arcade-notify-player-turn", (game_id) => {
-			let game_invite = this.returnGame(game_id);
-			if (game_invite){
-				
-				siteMessage(`It's your turn in ${game_invite.msg.game}`, 5000);
-				app.connection.emit('arcade-invite-manager-render-request');
+		app.connection.on("arcade-notify-player-turn", (game_id, target, status) => {
+
+			for (let game of app.options.games){
+				if (game.id == game_id){
+					// Temporarily update these fields so can render nicely in arcade
+					// without having to save the game
+					game.status = status;
+					game.target = target;
+
+					console.log("Arcade notified", JSON.parse(JSON.stringify(game)));
+					siteMessage(`It's your turn in ${game.module}`, 5000);
+					app.connection.emit('arcade-invite-manager-render-request');
+
+				}
 			}
 		});
 	}
