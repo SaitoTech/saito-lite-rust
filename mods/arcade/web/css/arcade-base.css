@@ -54,7 +54,7 @@
 
 .arcade-main .arcade-initializer {
 	height: calc(100vh - var(--saito-header-height) - 3rem);
-	padding-top: 5rem;
+	padding-top: 2rem;
 	gap: 5rem;
 
 }
@@ -141,6 +141,11 @@
 	border-color: var(--saito-font-color-heavy);
 }
 
+.arcade-container.initializing-game .saito-sidebar.right {
+	display: none;
+}
+
+
 /*************************************
  * Override saito-page-layout 
  * to make arcade better on mobile
@@ -161,6 +166,7 @@
 		padding: 0 1rem;
 		height: unset;
 	}
+
 	.arcade-container .saito-main {
 		margin: 0;
 		order: 2;

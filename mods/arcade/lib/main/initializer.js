@@ -9,10 +9,15 @@ class Initializer {
 		app.connection.on(
 			'arcade-game-ready-render-request',
 			(game_details) => {
+
+				let game_mod = app.modules.returnModuleBySlug(game_details?.slug);
 				this.render(game_details?.id);
-				this.notify(game_details.name);
+
+				if (!(game_mod?.maxPlayers == 1 || app.browser.isMobileBrowser())) {
+					this.notify(game_details.name);				
+				}
+
 				this.attachEvents(game_details.slug);
-				siteMessage(`${game_details.name} ready to play!`);
 			}
 		);
 
@@ -28,6 +33,10 @@ class Initializer {
 	render(ready = false) {
 		let html = InitializerTemplate(ready);
 
+		if (document.querySelector(".arcade-container")){
+			document.querySelector(".arcade-container").classList.add("initializing-game");
+		}
+
 		if (document.querySelector('.arcade-initializer')) {
 			this.app.browser.replaceElementBySelector(
 				html,
@@ -42,6 +51,8 @@ class Initializer {
 
 		//Flash Tab if not in Saito
 		this.app.browser.createTabNotification('Game ready!', game_name);
+
+		siteMessage(`${game_name} ready to play!`);
 
 		//Play chime no matter what
 		try{

@@ -211,7 +211,6 @@ img.captured {
 
 @media only screen and (max-width: 900px) and (orientation: portrait) {
 	.main {
-		padding: 25px;
 		grid-template-rows: min(60vh, 90vw, 900px) 150px;
 		grid-template-columns: min(60vh, 90vw, 900px);
 		row-gap: 20px;
@@ -249,21 +248,24 @@ img.captured {
 
 @media only screen and (max-width: 525px) {
 	.main {
-		padding: 40px 5px;
+		padding: 40px 0px;
+		grid-template-columns: 100vw;
 	}
 
 	.alpha-d2270 {
+		display: none;
 		bottom: -15px;
 		font-size: 12px;
 	}
 
 	.numeric-fc462 {
+		display: none;
 		left: -12px;
 		font-size: 12px;
 	}
 
 	.board-b72b1 {
-		border-width: 16px;
+		border-width: 6px !important;
 	}
 
 	img.captured {

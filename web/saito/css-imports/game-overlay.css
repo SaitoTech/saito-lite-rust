@@ -289,7 +289,7 @@ Useful declarations for game stats
 }
 
 .solitaire-stats-overlay .saito-table-row {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: minmax(150px, 1fr) 1fr 1fr;
 }
 
 .solitaire-stats-overlay .saito-table-body {
@@ -310,6 +310,14 @@ Useful declarations for game stats
 .saito-table-body .saito-table-row > div:not(.saito-table-label) {
   text-align: center;
 }
+
+@media screen and (max-width: 600px) {
+  .solitaire-stats-overlay{
+    min-width: 90vw;
+    padding: 1rem;
+  }
+}
+
 
 
 
