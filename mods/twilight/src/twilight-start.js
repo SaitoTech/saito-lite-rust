@@ -54,7 +54,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 0;
+    this.is_testing 	 = 1;
 
     //
     // ui components
@@ -2708,9 +2708,9 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["nixonshock", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
+          this.game.deck[0].hand = ["grainsales", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["starwars", "khruschevthaw", "brezhnev", "cambridge", "specialrelation","tehran","wargames","romanianab","china"];
+          this.game.deck[0].hand = ["abmtreaty","wargames","romanianab"];
         }
 
       	//this.game.state.round = 1;
