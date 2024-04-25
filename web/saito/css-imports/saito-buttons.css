@@ -21,7 +21,7 @@ button,
   box-shadow: var(--shadow-primary-button);
 }
 
-.saito-button-secondary { /* found in the settings, top wallet control buttons */
+.saito-button-secondary { /* found in the settings, top wallet control buttons --AND also for loading new posts  */
   padding: 1rem 1.5rem;
   text-align: center;
   letter-spacing: 1px;
@@ -44,15 +44,15 @@ button:hover, .saito-button-primary:hover{
 }
 
 .saito-button-primary.disabled {
-  background: var(---background-color-main); /* testing */
+  background: var(---background-color-main); 
   color: var(--color-primary);
   border: 1px solid var(--color-primary);
   cursor: unset;
   pointer-events: none;
 }
 
-.saito-button-secondary:hover {
-  background: none;  /* testing */
+.saito-button-secondary:hover { /* found in the settings, top wallet control buttons --AND also for loading new posts  */
+  background: var(--background-color-button-hover-wallet-control); 
   color: var(--font-color-button-hover-wallet-control);
 }
 

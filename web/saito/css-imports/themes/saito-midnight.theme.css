@@ -47,6 +47,7 @@ html[data-theme="midnight"] {
       --font-color-button-modal: var(--font-color-primary);
       --font-color-button-hover-modal: var(--font-color-heavy);
       --font-color-hover-icons-left-sidebar: var(--font-color-heavy);
+      --font-color-button-wallet-control: var(--font-color-primary);
       --font-color-button-hover-wallet-control: var(--font-color-heavy);
       --font-color-button-chat-container: var(--font-color-primary);
       --font-color-calendar-today: var(--font-color-primary);

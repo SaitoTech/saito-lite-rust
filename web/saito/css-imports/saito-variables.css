@@ -479,7 +479,7 @@ font imports
   --background-color-button-hover-modal: none;
   --background-color-button-hover-modal-oldschool: var(--color-highlight);
   --background-color-button-hover-module: ;
-  --background-color-button-wallet-control: none;
+  --background-color-button-wallet-control: var(--background-color-main); /* wallet control buttons AND the load new tweets */
   --background-color-button-hover-wallet-control: var(--color-primary);
   --background-color-button-mod-arcade: var(--background-color-button-hover-wallet-control);
 /* Special UI Components */
