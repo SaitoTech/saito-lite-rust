@@ -5,6 +5,7 @@
 		url(https://cdn.discordapp.com/attachments/515671512209031192/1108345749378449418/hist_211-post_war.jpg);
 	background-position: center;
 	background-size: cover;
+    border-radius: var(--border-radius-modal-menu);
 	font-size: 2.2rem;
 	padding: 2rem;
 }

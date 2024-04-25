@@ -1,13 +1,14 @@
 .welcome {
 	min-width: 80vw;
 	min-height: 80vh;
-	border-radius: 2rem;
+  border-radius: var(--border-radius-modal-menu);
 	overflow: hidden;
 	background-size: cover;
-        -webkit-user-select: none; /* Safari */
-    	-moz-user-select: none; /* Firefox */
-    	-ms-user-select: none; /* Internet Explorer/Edge */
-    	user-select: none; /* Standard syntax */
+	background-position: center;
+  -webkit-user-select: none; /* Safari */
+	-moz-user-select: none; /* Firefox */
+	-ms-user-select: none; /* Internet Explorer/Edge */
+	user-select: none; /* Standard syntax */
 }
 
 .welcome-card {

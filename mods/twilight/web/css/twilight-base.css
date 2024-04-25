@@ -4,6 +4,8 @@
 
 :root {
   --background-color-shim-light: #0009;
+  --border-radius-modal-menu: var(--border-radius-round);
+
 }
 
 .saito-overlay {
@@ -61,7 +63,7 @@
 }
 
 .ts-overlay {
-	border-radius: 5px;
+  border-radius: var(--border-radius-modal-menu);
 	border: 5px solid blue;
 	border-right: 5px solid red;
 	border-bottom: 5px solid red;

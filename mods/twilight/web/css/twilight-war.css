@@ -5,7 +5,7 @@
 	width: min(750px, 90vw);
 	min-height: 50vh;
 	padding: 1rem 0;
-	border-radius: 0.5rem;
+    border-radius: var(--border-radius-modal-menu);
 	column-gap: 2rem;
 	padding: 2rem;
 	align-items: center;

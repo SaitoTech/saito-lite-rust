@@ -5,8 +5,13 @@
 	justify-items: center;
 	background-size: cover;
 	background-position-y: top;
+	border-radius: var(--border-radius-modal-menu);
 	background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
 		url(/twilight/img/backgrounds/headline-bg.png);
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
 }
 
 .headline-overlay .title {
@@ -57,8 +62,6 @@
 	padding: 1.5rem;
 	text-align: center;
 	font-size: 2rem;
-	bottom: 0px;
 	display: block;
-	position: absolute;
 	width: 100%;
 }
