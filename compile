@@ -171,7 +171,7 @@ function reset_nonpersistent {
   #
   # rm -rf ./mods/appstore/bundler/dist/
 
-  rm -f ./mods/registry/web/addresses.txt
+  # rm -f ./mods/registry/web/addresses.txt
   rm -f ./mods/appstore/mods/*
   rm -rf ./mods/appstore/bundler/mods/*
   rm -rf ./mods/appstore/bundler/dist/*
@@ -207,7 +207,7 @@ function reset_persistent {
 #  rm -f ./data/post.sq3
 #  rm -f ./data/arcade.sq3
 #  rm -f ./data/archive.sq3
-  rm -f ./data/registry.sq3
+  rm -f ./data/profile.sq3
   rm -f ./data/league.sq3
   rm -f ./data/tutorial.sq3
   rm -f ./web/client.options
@@ -403,7 +403,6 @@ if [ "$1" == "recompile" ]; then
 
 
 fi
-
 
 
 
