@@ -4423,7 +4423,7 @@ return 1; }
 	  // in order to avoid hangs, we auto-broadcast our RESOLVE again
 	  // if we reach this...
 	  if (this.is_first_loop == 1) {
-alert("workaround bug-fix: if you see this error the game is attempting to unlock a potentially frozen situation. this may cause issues, please flag for dev team if game does not recover");
+//alert("workaround bug-fix: if you see this error the game is attempting to unlock a potentially frozen situation. this may cause issues, please flag for dev team if game does not recover");
 	    this.addMove("RESOLVE\t"+this.publicKey);
 	    this.endTurn();
 	  }

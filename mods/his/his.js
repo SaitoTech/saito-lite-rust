@@ -1,6 +1,7 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
 const DebateOverlay = require('./lib/ui/overlays/debate');
 const ChateauxOverlay = require('./lib/ui/overlays/chateaux');
+const MarriageOverlay = require('./lib/ui/overlays/marriage');
 const PiracyOverlay = require('./lib/ui/overlays/piracy');
 const VPOverlay = require('./lib/ui/overlays/vp');
 const NewWorldOverlay = require('./lib/ui/overlays/newworld');
@@ -78,6 +79,7 @@ class HereIStand extends GameTemplate {
     this.diplomacy_propose_overlay = new DiplomacyProposeOverlay(this.app, this);
     this.council_of_trent_overlay = new CouncilOfTrentOverlay(this.app, this);  // council of trent
     this.chateaux_overlay = new ChateauxOverlay(this.app, this);  // build some fucking chateaux
+    this.marriage_overlay = new MarriageOverlay(this.app, this);  // marry, divorce, repeat
     this.piracy_overlay = new PiracyOverlay(this.app, this);  // rape and pillage but mostly steal
     this.vp_overlay = new VPOverlay(this.app, this);  // end-of-turn points overlay
     this.newworld_overlay = new NewWorldOverlay(this.app, this);
@@ -3054,6 +3056,16 @@ console.log("\n\n\n\n");
     this.menu.addMenuOption("game-game", "Game");
 
     this.menu.addSubMenuOption("game-game", {
+      text : "Marital Status",
+      id : "game-marriage",
+      class : "game-marriage",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+	game_mod.marriage_overlay.render();
+      },
+    });
+
+    this.menu.addSubMenuOption("game-game", {
       text : "About H.I.S.",
       id : "game-about",
       class : "game-about",
@@ -3126,7 +3138,7 @@ the game engine automatically handles token denomination, merging smaller
           game_mod.saveGamePreference('his_expert_mode', 0);
 	  game_mod.game_help.enabled = true;
 	  game_mod.confirm_moves = 1;
-        }else{
+        } else {
           game_mod.menu.hideSubMenus();
         }
       }
@@ -26261,7 +26273,7 @@ return 1; }
 	  // in order to avoid hangs, we auto-broadcast our RESOLVE again
 	  // if we reach this...
 	  if (this.is_first_loop == 1) {
-alert("workaround bug-fix: if you see this error the game is attempting to unlock a potentially frozen situation. this may cause issues, please flag for dev team if game does not recover");
+//alert("workaround bug-fix: if you see this error the game is attempting to unlock a potentially frozen situation. this may cause issues, please flag for dev team if game does not recover");
 	    this.addMove("RESOLVE\t"+this.publicKey);
 	    this.endTurn();
 	  }

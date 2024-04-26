@@ -1,0 +1,39 @@
+.marriage-overlay {
+	background-image: url(/his/img/backgrounds/marital_status.jpg);
+	background-size: cover;
+	max-height: 90vh;
+	max-width: 90vw;
+	height: auto;
+	min-height: 633px;
+	min-width: 1139px;
+	text-align: center;
+}
+
+.marriage-overlay .help {
+	background: #0009;
+	width: 100%;
+	color: white;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 2.4rem;
+	padding: 0.75rem;
+	max-width: 100%;
+	padding: 2rem;
+	line-height: 3.4rem;
+}
+
+.marriage-overlay .tile1 {
+}
+.marriage-overlay .tile2 {
+}
+.marriage-overlay .tile3 {
+}
+.marriage-overlay .tile4 {
+}
+.marriage-overlay .tile5 {
+}
+.marriage-overlay .tile6 {
+}
+.marriage-overlay .tile7 {
+}
+

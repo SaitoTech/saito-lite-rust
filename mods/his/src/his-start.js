@@ -39,6 +39,16 @@
     this.menu.addMenuOption("game-game", "Game");
 
     this.menu.addSubMenuOption("game-game", {
+      text : "Marital Status",
+      id : "game-marriage",
+      class : "game-marriage",
+      callback : function(app, game_mod) {
+        game_mod.menu.hideSubMenus();
+	game_mod.marriage_overlay.render();
+      },
+    });
+
+    this.menu.addSubMenuOption("game-game", {
       text : "About H.I.S.",
       id : "game-about",
       class : "game-about",
@@ -111,7 +121,7 @@ the game engine automatically handles token denomination, merging smaller
           game_mod.saveGamePreference('his_expert_mode', 0);
 	  game_mod.game_help.enabled = true;
 	  game_mod.confirm_moves = 1;
-        }else{
+        } else {
           game_mod.menu.hideSubMenus();
         }
       }

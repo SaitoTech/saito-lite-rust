@@ -58,12 +58,10 @@ console.log(s.key + " -- " + s.val);
 	}
 
 	render(faction = '') {
-		let his_self = this.mod;
 
+		let his_self = this.mod;
 		this.overlay.show(WelcomeTemplate(faction));
 		this.pushHudUnderOverlay();
-
-		
 
 		// COMBOS
 		if (faction === 'hapsburg_papacy') {
@@ -163,6 +161,7 @@ console.log(s.key + " -- " + s.val);
 		}
 
 
+alert("attach events for: " + faction);
 
 		this.attachEvents();
 	}
@@ -171,14 +170,17 @@ console.log(s.key + " -- " + s.val);
 		let his_self = this.mod;
 
 		$('.welcome').on('click', () => {
+alert("a1");
 			this.hide();
 			if (document.querySelector('.option.acknowledge')) {
+alert("a2");
 				document.querySelector('.option.acknowledge').click();
 			}
 		});
 		$('.saito-overlay:has(> .welcome) + .saito-overlay-backdrop').on('click', () => {
 			this.hide();
 			if (document.querySelector('.option.acknowledge')) {
+alert("b");
 				document.querySelector('.option.acknowledge').click();
 			}
 		});
