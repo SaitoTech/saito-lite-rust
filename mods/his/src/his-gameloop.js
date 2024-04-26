@@ -10349,6 +10349,14 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  for (let i = 0; i < this.game.state.diplomacy.length; i++) {
 	    if (this.game.state.diplomacy[i].parties.includes(faction)) {
 	      for (let z = 0; z < this.game.state.diplomacy[i].parties.length; z++) {
+
+	        if (!this.game.state.diplomacy[i].confirms) { this.game.state.diplomacy[i].confirms = []; }
+		while (this.game.state.diplomacy[i].confirms.length < this.game.state.diplomacy[i].parties.length) { this.game.state.diplomacy[i].confirms.push(0); }
+		for (let zz = 0; zz < this.game.state.diplomacy[i].parties.length; zz++) {
+		  if (this.game.state.diplomacy[i].parties[zz] == this.game.state.diplomacy[i].proposer) {
+		    this.game.state.diplomacy[i].confirms[zz] = 1;
+		  }
+		}
 		if (this.game.state.diplomacy[i].parties[z] == faction && this.game.state.diplomacy[i].confirms[z] != 1) {
 	          this.game.queue.push("confirm_diplomatic_proposal\t"+faction+"\t"+i);
 	          anything_to_review = true;
