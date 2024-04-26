@@ -532,7 +532,10 @@ console.log("\n\n\n\n");
 
 	  this.setAllies("france", "genoa");
 	  this.setAllies("france", "protestant");
-	  this.setActivatedPower("protestant", "france");
+
+	  if (this.game.players.length == 2) {
+	    this.setActivatedPower("protestant", "france");
+	  }
 
           this.setAllies("papacy", "hapsburg");
           this.setAllies("papacy", "venice");
@@ -660,7 +663,10 @@ console.log("\n\n\n\n");
 	  //this.addMercenary("papacy", "prague", 5);
 
           this.setAllies("papacy", "hapsburg");
-          //this.setActivatedPower("papacy", "hapsburg");
+
+	  if (this.game.players.length == 2) {
+            this.setActivatedPower("papacy", "hapsburg");
+	  }
 
 	  //this.addCard("ottoman", "033");
 	  //this.addCard("ottoman", "025");
