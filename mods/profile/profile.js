@@ -11,7 +11,8 @@ class Profile extends ModTemplate {
         this.app = app;
         this.name = 'Profile';
         this.description = 'Profile Module';
-        this.archive_public_key
+        this.archive_public_key;
+        this.cache = {}
     }
 
 
@@ -25,13 +26,10 @@ class Profile extends ModTemplate {
     }
 
 
-    async onPeerServiceUp(peer) {
+    onPeerHandshakeComplete() {
         if (this.app.BROWSER === 1) {
             this.sendProfileTransaction({ description: "a description", banner: "banner", image: "image", archive: JSON.stringify({ publicKey: "key" }) })
-
-
         }
-
     }
 
 
@@ -40,7 +38,8 @@ class Profile extends ModTemplate {
 
     /**
  * Asynchronously sends a transaction to update a user's profile.
- * 
+ *  
+ * data { image, banner, description, archive: {publicKey}}
  * 
  */
 
@@ -78,12 +77,12 @@ class Profile extends ModTemplate {
  */
     async receiveProfileTransaction(tx) {
         try {
-
             let from = tx.from && tx.from.length > 0 ? tx.from[0].publicKey : null;
             if (!from) {
                 throw new Error("No `from` public key");
             }
             let txmsg = tx.returnMessage();
+            console.log('from', from)
 
             if (this.app.keychain.returnKey(from)) {
                 let data = {};
@@ -103,12 +102,13 @@ class Profile extends ModTemplate {
                             data[key] = txmsg.data[key];
                         }
                     } else {
-                        // console.error("")
-                        // key not supported
+                        // todo: handle key not found
                     }
                 }
                 this.app.keychain.addKey(from, data);
                 await this.saveProfileTransaction(tx)
+                this.saveCache(tx, from)
+
             } else {
                 console.log("Key not found");
             }
@@ -120,38 +120,120 @@ class Profile extends ModTemplate {
 
 
 
-    // / LOAD PROFILE VALUES
+    // 
+    // 
+    //  LOAD PROFILE VALUES FUNCTIONS
+    // 
 
-    async returnProfilePicture(sig) {
-        let tx = await this.app.storage.loadTransactions({ field1: "Profile" }, (txs) => {
-            console.log(txs, "loaded transactions: profile picture")
-        });
-        console.log(tx)
+    async returnProfileImage(sig, callback, publicKey) {
+        if (typeof callback !== "function") {
+            console.error(`Callback not present or not a function for "returnProfileImage"`);
+            return;
+        }
+
+        if (this.cache[publicKey] && this.cache[publicKey].image) {
+            console.log('Cache hit for image');
+            callback(this.cache[publicKey].image);
+            return;
+        }
+
+        this.app.storage.loadTransactions({ sig, field1: "Profile" }, (txs) => {
+            if (txs?.length > 0) {
+                const tx = txs[0];
+                console.log(tx);
+                const image = tx.msg.data.image;
+                this.cache[publicKey] = this.cache[publicKey] || {};
+                this.cache[publicKey].image = image;  // Update cache
+                callback(image);
+            }
+        }, "localhost");
     }
 
-    async returnProfileBanner(sig) {
-        let tx = await this.app.storage.loadTransactions({}, (txs) => {
+    async returnProfileBanner(sig, callback, publicKey) {
+        if (typeof callback !== "function") {
+            console.error(`Callback not present or not a function for "returnProfileBanner"`);
+            return;
+        }
 
-        });
-        console.log(tx)
+        if (this.cache[publicKey] && this.cache[publicKey].banner) {
+            callback(this.cache[publicKey].banner);
+            return;
+        }
+
+        this.app.storage.loadTransactions({ sig, field1: "Profile" }, (txs) => {
+            if (txs?.length > 0) {
+                const tx = txs[0];
+                console.log(tx);
+                const banner = tx.msg.data.banner;
+                this.cache[publicKey] = this.cache[publicKey] || {};
+                this.cache[publicKey].banner = banner;  // Update cache
+                callback(banner);
+            }
+        }, "localhost");
     }
 
-    async returnProfileDescription(sig) {
-        let tx = await this.app.storage.loadTransactions({}, (txs) => {
+    async returnProfileDescription(sig, callback, publicKey) {
+        if (typeof callback !== "function") {
+            console.error(`Callback not present or not a function for "returnProfileDescription"`);
+            return;
+        }
 
-        });
-        console.log(tx)
+        if (this.cache[publicKey] && this.cache[publicKey].description) {
+            callback(this.cache[publicKey].description);
+            return;
+        }
+
+        this.app.storage.loadTransactions({ sig, field1: "Profile" }, (txs) => {
+            if (txs?.length > 0) {
+                const tx = txs[0];
+                console.log(tx);
+                const description = tx.msg.data.description;
+                this.cache[publicKey] = this.cache[publicKey] || {};
+                this.cache[publicKey].description = description;  // Update cache
+                callback(description);
+            }
+        }, "localhost");
     }
+
+
+
+    // 
+    // SAVE VALUE FUNCTIONS
+    // 
 
     async saveProfileTransaction(tx) {
-        await this.app.storage.saveTransaction(tx, {}, "localhost")
+        await this.app.storage.saveTransaction(tx, { field1: "Profile" }, "localhost")
+    }
 
-        await this.returnProfileBanner("55c9babb413976e8ab7ea68a2c295e4bd52fb595affe411d31366763d780315309f3946109adbde592e33f119aee8558c55cbaca286d2947c2a3114d3eccf3fd")
-        await this.returnProfileDescription("55c9babb413976e8ab7ea68a2c295e4bd52fb595affe411d31366763d780315309f3946109adbde592e33f119aee8558c55cbaca286d2947c2a3114d3eccf3fd")
-        await this.returnProfilePicture("55c9babb413976e8ab7ea68a2c295e4bd52fb595affe411d31366763d780315309f3946109adbde592e33f119aee8558c55cbaca286d2947c2a3114d3eccf3fd")
+    saveCache(tx, from) {
+        const cacheData = {};
+        if (tx.msg.data) {
+            if (tx.msg.data.banner) {
+                cacheData.banner = tx.msg.data.banner;
+            }
+            if (tx.msg.data.image) {
+                cacheData.image = tx.msg.data.image;
+            }
+            if (tx.msg.data.description) {
+                cacheData.description = tx.msg.data.description;
+            }
+        }
+
+        if (Object.keys(cacheData).length > 0) {
+            this.cache[from] = cacheData;
+            console.log("Cache saved locally:", this.cache[from]);
+        } else {
+            console.log("No valid data to cache.");
+        }
+
+
     }
 
 
 }
 
 module.exports = Profile;
+
+
+// save cache
+
