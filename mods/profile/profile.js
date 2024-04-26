@@ -26,11 +26,7 @@ class Profile extends ModTemplate {
     }
 
 
-    onPeerHandshakeComplete() {
-        if (this.app.BROWSER === 1) {
-            this.sendProfileTransaction({ description: "a description", banner: "banner", image: "image", archive: JSON.stringify({ publicKey: "key" }) })
-        }
-    }
+
 
 
 
