@@ -35,7 +35,7 @@ class Profile extends ModTemplate {
     /**
  * Asynchronously sends a transaction to update a user's profile.
  *  
- * data { image, banner, description, archive: {publicKey}}
+ * @param {Object} data { image, banner, description, archive: {publicKey}}
  * 
  */
 
