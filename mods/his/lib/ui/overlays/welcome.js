@@ -160,9 +160,6 @@ console.log(s.key + " -- " + s.val);
 			`;
 		}
 
-
-alert("attach events for: " + faction);
-
 		this.attachEvents();
 	}
 
@@ -170,17 +167,14 @@ alert("attach events for: " + faction);
 		let his_self = this.mod;
 
 		$('.welcome').on('click', () => {
-alert("a1");
 			this.hide();
 			if (document.querySelector('.option.acknowledge')) {
-alert("a2");
 				document.querySelector('.option.acknowledge').click();
 			}
 		});
 		$('.saito-overlay:has(> .welcome) + .saito-overlay-backdrop').on('click', () => {
 			this.hide();
 			if (document.querySelector('.option.acknowledge')) {
-alert("b");
 				document.querySelector('.option.acknowledge').click();
 			}
 		});

@@ -35,7 +35,23 @@ class MarriageOverlay {
 	}
 
 	render(faction = 'france') {
+
+		let his_self = this.mod;
+
 		this.overlay.show(MarriageTemplate());
+
+		for (let i = 0; i < 7; i++) {
+			tileqs = `.marriage-overlay .tile${i+1}`;
+			let obj = document.querySelector(tileqs);
+			obj.classList.add(`henry_viii_marital_status`);
+			obj.classList.add(`henry_viii_marital_status${i+1}`);
+                        if (i == his_self.game.state.henry_viii_marital_status) {
+			  obj.classList.add("active");
+			}
+                        if (i > his_self.game.state.henry_viii_marital_status) {
+			  obj.classList.add(`show_wife`);
+			}
+		}
 	}
 
 }

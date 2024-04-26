@@ -29,8 +29,29 @@
     for (let key in deck) {
       if (key != "001" && key != "002" && key != "003" && key != "004" && key != "005" && key != "006" && key != "007" && key != "008") {
         if (deck[key].turn === turn) {
-	  new_deck[key] = deck[key];
+
+	  // exception for boleyn cards below
+	  if (key != "064" && key != "063" && key != "062") {
+	    new_deck[key] = deck[key];
+	  }
         }
+      }
+    }
+
+    //
+    // Dissolution of the Monasteries, Pilgrimmage of Grace, Book of Common Prayer added as soon as Boleyn marries Henry
+    //
+    if (turn < 4 && this.game.state.henry_viii_marital_status >= 2 && this.game.state.henry_viii_boleyn_cards_added != 1) {
+      this.game.state.henry_viii_boleyn_cards_added = 1;
+      new_deck["064"] = deck["064"];
+      new_deck["063"] = deck["063"];
+      new_deck["062"] = deck["062"];
+    } else {
+      if (turn == 4) {
+	this.game.state.henry_viii_boleyn_cards_added = 1;
+        new_deck["064"] = deck["064"];
+        new_deck["063"] = deck["063"];
+        new_deck["062"] = deck["062"];
       }
     }
 

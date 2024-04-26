@@ -22,18 +22,40 @@
 	line-height: 3.4rem;
 }
 
+.marriage-overlay .tile {
+    display: block;
+    position: absolute;
+    height: 22%;
+    width: 12%;
+}
+
 .marriage-overlay .tile1 {
+    top: 74%;
+    left: 2%;
 }
 .marriage-overlay .tile2 {
+    top: 74%;
+    left: 16%;
 }
 .marriage-overlay .tile3 {
+    top: 74%;
+    left: 30%;
 }
 .marriage-overlay .tile4 {
+    top: 74%;
+    left: 44%;
 }
 .marriage-overlay .tile5 {
+    top: 74%;
+    left: 58%;
 }
 .marriage-overlay .tile6 {
+    top: 74%;
+    left: 72%;
 }
 .marriage-overlay .tile7 {
+    top: 74%;
+    left: 86%
 }
+
 

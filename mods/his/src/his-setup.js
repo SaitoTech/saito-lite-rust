@@ -527,7 +527,8 @@ console.log("\n\n\n\n");
 
       if (this.game.options.scenario === "is_testing") {
 
-	  this.game.state.starting_round = 7;
+	  this.game.state.starting_round = 2;
+	  this.game.state.henry_viii_marital_status = 1;
 
 	  this.setAllies("france", "genoa");
 	  this.setAllies("france", "protestant");
@@ -570,9 +571,9 @@ console.log("\n\n\n\n");
           this.addDebater("protestant", "cop-debater");
           this.addDebater("protestant", "olivetan-debater");
           this.addDebater("protestant", "calvin-debater");
-          this.addDebater("protestant", "cranmer-debater");
-          this.addDebater("protestant", "latimer-debater");
-          this.addDebater("protestant", "coverdale-debater");
+          //this.addDebater("protestant", "cranmer-debater");
+          //this.addDebater("protestant", "latimer-debater");
+          //this.addDebater("protestant", "coverdale-debater");
           this.addDebater("protestant", "wishart-debater");
           this.addDebater("protestant", "knox-debater");
 
@@ -582,7 +583,7 @@ console.log("\n\n\n\n");
           this.addReformer("protestant", "geneva", "calvin-reformer");
 
 	  // PROTESTANTS   
-          this.addReformer("protestant", "london", "cranmer-reformer");
+          //this.addReformer("protestant", "london", "cranmer-reformer");
           this.addArmyLeader("protestant", "brandenburg", "philip-hesse");
 
 	  for (let key in this.game.spaces) {

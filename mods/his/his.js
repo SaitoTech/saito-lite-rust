@@ -2855,7 +2855,8 @@ console.log("\n\n\n\n");
 
       if (this.game.options.scenario === "is_testing") {
 
-	  this.game.state.starting_round = 7;
+	  this.game.state.starting_round = 2;
+	  this.game.state.henry_viii_marital_status = 1;
 
 	  this.setAllies("france", "genoa");
 	  this.setAllies("france", "protestant");
@@ -2898,9 +2899,9 @@ console.log("\n\n\n\n");
           this.addDebater("protestant", "cop-debater");
           this.addDebater("protestant", "olivetan-debater");
           this.addDebater("protestant", "calvin-debater");
-          this.addDebater("protestant", "cranmer-debater");
-          this.addDebater("protestant", "latimer-debater");
-          this.addDebater("protestant", "coverdale-debater");
+          //this.addDebater("protestant", "cranmer-debater");
+          //this.addDebater("protestant", "latimer-debater");
+          //this.addDebater("protestant", "coverdale-debater");
           this.addDebater("protestant", "wishart-debater");
           this.addDebater("protestant", "knox-debater");
 
@@ -2910,7 +2911,7 @@ console.log("\n\n\n\n");
           this.addReformer("protestant", "geneva", "calvin-reformer");
 
 	  // PROTESTANTS   
-          this.addReformer("protestant", "london", "cranmer-reformer");
+          //this.addReformer("protestant", "london", "cranmer-reformer");
           this.addArmyLeader("protestant", "brandenburg", "philip-hesse");
 
 	  for (let key in this.game.spaces) {
@@ -3674,8 +3675,29 @@ if (this.game.players.length > 2) {
     for (let key in deck) {
       if (key != "001" && key != "002" && key != "003" && key != "004" && key != "005" && key != "006" && key != "007" && key != "008") {
         if (deck[key].turn === turn) {
-	  new_deck[key] = deck[key];
+
+	  // exception for boleyn cards below
+	  if (key != "064" && key != "063" && key != "062") {
+	    new_deck[key] = deck[key];
+	  }
         }
+      }
+    }
+
+    //
+    // Dissolution of the Monasteries, Pilgrimmage of Grace, Book of Common Prayer added as soon as Boleyn marries Henry
+    //
+    if (turn < 4 && this.game.state.henry_viii_marital_status >= 2 && this.game.state.henry_viii_boleyn_cards_added != 1) {
+      this.game.state.henry_viii_boleyn_cards_added = 1;
+      new_deck["064"] = deck["064"];
+      new_deck["063"] = deck["063"];
+      new_deck["062"] = deck["062"];
+    } else {
+      if (turn == 4) {
+	this.game.state.henry_viii_boleyn_cards_added = 1;
+        new_deck["064"] = deck["064"];
+        new_deck["063"] = deck["063"];
+        new_deck["062"] = deck["062"];
       }
     }
 
@@ -22139,6 +22161,20 @@ if (this.game.options.scenario == "is_testing") {
 	      this.addDebater("protestant", "bullinger-debater");
 	    }
 
+
+	    //
+	    //
+	    //
+    	    if (this.game.state.round < 5 && this.game.state.henry_viii_marital_status >= 2 && this.game.state.henry_viii_reformation_started != 1) {
+	      this.game.state.henry_viii_reformation_started = 1;
+	      this.addDebater("protestant", "cranmer-debater");
+	      this.addDebater("protestant", "latimer-debater");
+	      this.addDebater("protestant", "coverdale-debater");
+	      this.addReformer("protestant", "london", "cranmer-reformer");
+	      this.updateLog("Henry VIII's marriage to Anne Boleyn triggers the start of the British Reformation");
+	    }
+
+
 	    //
 	    // round 4 - calvin in genoa
 	    //
@@ -22169,10 +22205,12 @@ if (this.game.options.scenario == "is_testing") {
 	    // round 5 - cranmer in london
 	    //
 	    if (this.game.state.round == 5) {
-	      this.addDebater("protestant", "cranmer-debater");
-	      this.addDebater("protestant", "latimer-debater");
-	      this.addDebater("protestant", "coverdale-debater");
-	      this.addReformer("protestant", "london", "cranmer-reformer");
+	      if (this.game.state.henry_viii_reformation_started != 1) {
+	        this.addDebater("protestant", "cranmer-debater");
+	        this.addDebater("protestant", "latimer-debater");
+	        this.addDebater("protestant", "coverdale-debater");
+	        this.addReformer("protestant", "london", "cranmer-reformer");
+	      }
 	      this.addDebater("papacy", "pole-debater");
 	      this.addDebater("papacy", "caraffa-debater");
 	    }
@@ -32893,7 +32931,7 @@ if (this.game.state.round == 2) {
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 1;
+cardnum = 1;
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 0; }
 
@@ -33492,6 +33530,8 @@ console.log(JSON.stringify(reshuffle_cards));
 	  this.factionbar.setActive(faction);
 
 	  let player = this.returnPlayerOfFaction(faction);
+
+console.log(faction + " -- " + player + " -- " + this.game.player);
 
 	  // update board display
 	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
