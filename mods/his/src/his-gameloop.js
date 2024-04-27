@@ -1697,7 +1697,16 @@ if (faction == "ottoman") {
 
 	    this.updateLog("Circumnavigation Roll: " + x + " (" + base_x + "+" + this.game.state.explorations[idx].modifiers +")");
 
+	    let second_explorer_img = "";
+	    if (explorer != "Cabot") { second_explorer_img = this.explorers[explorer].img; }
+	    else {
+      	      second_explorer_img = "/his/img/tiles/explorers/Cabot_English.svg";
+      	      if (faction == "france") { second_explorer_img = "/his/img/tiles/explorers/Cabot_French.svg"; }
+      	      if (faction == "hapsburg") { second_explorer_img = "/his/img/tiles/explorers/Cabot_Hapsburg.svg"; }
+	    }
+
 	    if (x > 9) {
+
 
 	      //
 	      // if follow-on attempt from Pacific Strait, add new exploration
@@ -1710,7 +1719,7 @@ if (faction == "ottoman") {
 		  base_roll : base_x ,
 		  modified_roll : x ,
 		  explorer : explorer ,
-		  explorer_img : this.explorers[explorer].img ,
+		  explorer_img : second_explorer_img ,
 		  base : base_x ,
 		  total_hits : x ,
 		  modifiers : this.game.state.explorations[idx].modifiers ,
@@ -1741,7 +1750,7 @@ if (faction == "ottoman") {
 		  base_roll: base_x ,
 		  modified_roll: x ,
 		  explorer : explorer ,
-		  explorer_img : this.explorers[explorer].img ,
+		  explorer_img : second_explorer_img ,
 		  base: base_x ,
 		  total_hits : base_x + this.game.state.explorations[idx].modifiers ,
 		  modifiers : this.game.state.explorations[idx].modifiers ,
@@ -1753,6 +1762,10 @@ if (faction == "ottoman") {
 	      this.updateLog("Circumnavigation Attempt fails: " + x + " rolled");
 	      this.game.state.explorations[idx].resolved = 1;
 	      this.game.state.explorations[idx].explorer_lost = 1;
+	      if (explorer == "Cabot") {
+		this.game.state.cabot_dead = 1;
+		this.removeCardFromGame("099");
+	      }
 	      this.game.state.explorations[idx].prize = "lost at sea";
 	      this.updateLog(this.returnFactionName(faction) + " fails at Circumnavigation ("+x+")");
 	      if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
@@ -2089,12 +2102,15 @@ x = 2;
 	  this.updateStatus("Resolving "+this.returnFactionName(faction) + " Exploration Attempt...");
 
 	  if (hits <= 4) {
+
 	    this.updateLog(this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " lost at sea");
 	    this.game.state.explorations[idx].prize = "lost at sea";
 	    this.game.state.explorations[idx].explorer_lost = 1;
 
-	    // remove Cabot if he dies at sea
-	    if (explorer.indexOf("cabot") > -1) { this.removeCardFromGame("099"); }
+	    if (explorer == "Cabot") {
+	      this.game.state.cabot_dead = 1;
+	      this.removeCardFromGame("099");
+	    }
 
 	  }
 	  if (hits > 4 && hits <= 6) {

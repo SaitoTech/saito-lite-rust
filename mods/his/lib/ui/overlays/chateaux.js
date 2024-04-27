@@ -181,7 +181,28 @@ class ChateauxOverlay {
 		}
 
 		this.pushHudUnderOverlay();
+
+		this.attachEvents();
 	}
+
+
+        attachEvents() {
+                let his_self = this.mod;
+
+                $('.chateaux-overlay').on('click', () => {
+                        this.hide();
+                        if (document.querySelector('.option.acknowledge')) {
+                                document.querySelector('.option.acknowledge').click();
+                        }
+                });
+                $('.saito-overlay:has(> .chateaux-overlay) + .saito-overlay-backdrop').on('click', () => {
+                        this.hide();
+                        if (document.querySelector('.option.acknowledge')) {
+                                document.querySelector('.option.acknowledge').click();
+                        }
+                });
+        }
+
 }
 
 module.exports = ChateauxOverlay;

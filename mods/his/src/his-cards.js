@@ -2545,24 +2545,33 @@ console.log("selected: " + spacekey);
 	    return 1;
 	  }
 
+	
+
 	  his_self.game.state.henry_viii_marital_status++;
+	  if (!his_self.game.state.henry_viii_wives) { his_self.game.state.henry_viii_wives = []; }
+
 
 	  if (his_self.game.state.henry_viii_marital_status == 1) {
 	    his_self.updateLog("Henry VIII requests a divorce...");
 	  }
 	  if (his_self.game.state.henry_viii_marital_status == 2) {
+	    his_self.game.state.henry_viii_wives.push("boleyn");
 	    his_self.updateLog("Henry VIII marries Anne Boleyn");
 	  }
 	  if (his_self.game.state.henry_viii_marital_status == 3) {
+	    his_self.game.state.henry_viii_wives.push("seymour");
 	    his_self.updateLog("Henry VIII marries Jane Seymour");
 	  }
 	  if (his_self.game.state.henry_viii_marital_status == 4) {
+	    his_self.game.state.henry_viii_wives.push("cleves");
 	    his_self.updateLog("Henry VIII marries Anne of Cleves");
 	  }
 	  if (his_self.game.state.henry_viii_marital_status == 5) {
+	    his_self.game.state.henry_viii_wives.push("howard");
 	    his_self.updateLog("Henry VIII marries Kathryn Howard");
 	  }
 	  if (his_self.game.state.henry_viii_marital_status == 6) {
+	    his_self.game.state.henry_viii_wives.push("parr");
 	    his_self.updateLog("Henry VIII marries Katherine Parr");
 	  }
 
@@ -2618,6 +2627,9 @@ console.log("selected: " + spacekey);
 	    }
 
 	  }
+
+
+	  his_self.displayPregnancyChart();
 
 	  return 1;
 	}
@@ -10220,6 +10232,7 @@ console.log("selected: " + spacekey);
       turn : 1 ,
       type : "normal" ,
       canEvent : function(his_self, faction) {
+	if (his_self.game.state.cabot_dead == 1) { return 0; }
 	if (faction == "protestant" || faction == "england" || faction == "hapsburg") { return 1; }
 	return 0;
       },

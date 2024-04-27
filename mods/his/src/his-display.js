@@ -506,6 +506,40 @@
 
   }
 
+  displayPregnancyChart() {
+
+    let his_self = this;
+
+    document.querySelectorAll(".pregnancy_chart").forEach((el) => {
+      el.classList.remove("active");
+    });
+
+    for (let i = 0; i < his_self.game.state.henry_viii_wives.length && i < his_self.game.state.henry_viii_rolls.length; i++) {
+
+      let dd = his_self.game.state.henry_viii_rolls[i];
+      let wife = his_self.game.state.henry_viii_wives[i];
+      let wife_tile = "/his/img/tiles/wives/";
+
+      if (wife == "boleyn")  { wife_tile += "AnneBoleyn.svg"; }
+      if (wife == "cleves")  { wife_tile += "AnneCleves.svg"; }
+      if (wife == "aragon")  { wife_tile += "CatherineAragon.svg"; }
+      if (wife == "seymour") { wife_tile += "JaneSeymour.svg"; }
+      if (wife == "parr")    { wife_tile += "KatherineParr.svg"; }
+      if (wife == "howard")  { wife_tile += "KathrynHoward.svg"; }
+
+alert(dd + " - " + wife + " - " + wife_tile);
+
+      if (dd == 1) { document.querySelector("#pregnancy1").style.backgroundImage = `url("${wife_tile}")`; }
+      if (dd == 2) { document.querySelector("#pregnancy2").style.backgroundImage = `url("${wife_tile}")`; }
+      if (dd == 3) { document.querySelector("#pregnancy3").style.backgroundImage = `url("${wife_tile}")`; }
+      if (dd == 4) { document.querySelector("#pregnancy4").style.backgroundImage = `url("${wife_tile}")`; }
+      if (dd == 5) { document.querySelector("#pregnancy5").style.backgroundImage = `url("${wife_tile}")`; }
+      if (dd == 6) { document.querySelector("#pregnancy6").style.backgroundImage = `url("${wife_tile}")`; }
+
+    }
+
+  }
+
   displayTheologicalDebater(debater, attacker=true) {
 
     let tile_f = "/his/img/tiles/debaters/" + this.debaters[debater].img;
@@ -640,6 +674,11 @@
       console.log("error displaying foreign wars... " + err);
     }
 
+    try {
+      this.displayPregnancyChart();
+    } catch (err) {
+      console.log("error displaying turn track... " + err);
+    }
     try {
       this.displayTurnTrack();
     } catch (err) {

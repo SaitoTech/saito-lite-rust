@@ -6197,24 +6197,33 @@ console.log("selected: " + spacekey);
 	    return 1;
 	  }
 
+	
+
 	  his_self.game.state.henry_viii_marital_status++;
+	  if (!his_self.game.state.henry_viii_wives) { his_self.game.state.henry_viii_wives = []; }
+
 
 	  if (his_self.game.state.henry_viii_marital_status == 1) {
 	    his_self.updateLog("Henry VIII requests a divorce...");
 	  }
 	  if (his_self.game.state.henry_viii_marital_status == 2) {
+	    his_self.game.state.henry_viii_wives.push("boleyn");
 	    his_self.updateLog("Henry VIII marries Anne Boleyn");
 	  }
 	  if (his_self.game.state.henry_viii_marital_status == 3) {
+	    his_self.game.state.henry_viii_wives.push("seymour");
 	    his_self.updateLog("Henry VIII marries Jane Seymour");
 	  }
 	  if (his_self.game.state.henry_viii_marital_status == 4) {
+	    his_self.game.state.henry_viii_wives.push("cleves");
 	    his_self.updateLog("Henry VIII marries Anne of Cleves");
 	  }
 	  if (his_self.game.state.henry_viii_marital_status == 5) {
+	    his_self.game.state.henry_viii_wives.push("howard");
 	    his_self.updateLog("Henry VIII marries Kathryn Howard");
 	  }
 	  if (his_self.game.state.henry_viii_marital_status == 6) {
+	    his_self.game.state.henry_viii_wives.push("parr");
 	    his_self.updateLog("Henry VIII marries Katherine Parr");
 	  }
 
@@ -6270,6 +6279,9 @@ console.log("selected: " + spacekey);
 	    }
 
 	  }
+
+
+	  his_self.displayPregnancyChart();
 
 	  return 1;
 	}
@@ -13872,6 +13884,7 @@ console.log("selected: " + spacekey);
       turn : 1 ,
       type : "normal" ,
       canEvent : function(his_self, faction) {
+	if (his_self.game.state.cabot_dead == 1) { return 0; }
 	if (faction == "protestant" || faction == "england" || faction == "hapsburg") { return 1; }
 	return 0;
       },
@@ -20955,32 +20968,32 @@ if (this.game.state.scenario != "is_testing") {
     let chart = {};
 
     chart['1'] = {
-      top : 1307,
+      top : 1270,
       left : 4075,
     }
 
     chart['2'] = {
-      top : 1220,
+      top : 1185,
       left : 4075,
     }
 
     chart['3'] = {
-      top : 1135,
+      top : 1100,
       left : 4075,
     }
 
     chart['4'] = {
-      top : 1051,
+      top : 1015,
       left : 4075,
     }
 
     chart['5'] = {
-      top : 963,
+      top : 930,
       left : 4075,
     }
 
-    chart['1'] = {
-      top : 850,
+    chart['6'] = {
+      top : 810,
       left : 4075,
     }
 
@@ -23575,7 +23588,16 @@ if (faction == "ottoman") {
 
 	    this.updateLog("Circumnavigation Roll: " + x + " (" + base_x + "+" + this.game.state.explorations[idx].modifiers +")");
 
+	    let second_explorer_img = "";
+	    if (explorer != "Cabot") { second_explorer_img = this.explorers[explorer].img; }
+	    else {
+      	      second_explorer_img = "/his/img/tiles/explorers/Cabot_English.svg";
+      	      if (faction == "france") { second_explorer_img = "/his/img/tiles/explorers/Cabot_French.svg"; }
+      	      if (faction == "hapsburg") { second_explorer_img = "/his/img/tiles/explorers/Cabot_Hapsburg.svg"; }
+	    }
+
 	    if (x > 9) {
+
 
 	      //
 	      // if follow-on attempt from Pacific Strait, add new exploration
@@ -23588,7 +23610,7 @@ if (faction == "ottoman") {
 		  base_roll : base_x ,
 		  modified_roll : x ,
 		  explorer : explorer ,
-		  explorer_img : this.explorers[explorer].img ,
+		  explorer_img : second_explorer_img ,
 		  base : base_x ,
 		  total_hits : x ,
 		  modifiers : this.game.state.explorations[idx].modifiers ,
@@ -23619,7 +23641,7 @@ if (faction == "ottoman") {
 		  base_roll: base_x ,
 		  modified_roll: x ,
 		  explorer : explorer ,
-		  explorer_img : this.explorers[explorer].img ,
+		  explorer_img : second_explorer_img ,
 		  base: base_x ,
 		  total_hits : base_x + this.game.state.explorations[idx].modifiers ,
 		  modifiers : this.game.state.explorations[idx].modifiers ,
@@ -23631,6 +23653,10 @@ if (faction == "ottoman") {
 	      this.updateLog("Circumnavigation Attempt fails: " + x + " rolled");
 	      this.game.state.explorations[idx].resolved = 1;
 	      this.game.state.explorations[idx].explorer_lost = 1;
+	      if (explorer == "Cabot") {
+		this.game.state.cabot_dead = 1;
+		this.removeCardFromGame("099");
+	      }
 	      this.game.state.explorations[idx].prize = "lost at sea";
 	      this.updateLog(this.returnFactionName(faction) + " fails at Circumnavigation ("+x+")");
 	      if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
@@ -23967,12 +23993,15 @@ x = 2;
 	  this.updateStatus("Resolving "+this.returnFactionName(faction) + " Exploration Attempt...");
 
 	  if (hits <= 4) {
+
 	    this.updateLog(this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " lost at sea");
 	    this.game.state.explorations[idx].prize = "lost at sea";
 	    this.game.state.explorations[idx].explorer_lost = 1;
 
-	    // remove Cabot if he dies at sea
-	    if (explorer.indexOf("cabot") > -1) { this.removeCardFromGame("099"); }
+	    if (explorer == "Cabot") {
+	      this.game.state.cabot_dead = 1;
+	      this.removeCardFromGame("099");
+	    }
 
 	  }
 	  if (hits > 4 && hits <= 6) {
@@ -43978,6 +44007,7 @@ console.log("this player can end war...");
     return "Conquerer";
   }
   returnExplorerName(key) {
+    if (key == "Cabot" || key == "cabot") { return "Sebastian Cabot"; }
     if (this.explorers[key]) { return this.explorers[key].name; }
     return "Explorer";
   }
@@ -45646,6 +45676,40 @@ console.log("this player can end war...");
 
   }
 
+  displayPregnancyChart() {
+
+    let his_self = this;
+
+    document.querySelectorAll(".pregnancy_chart").forEach((el) => {
+      el.classList.remove("active");
+    });
+
+    for (let i = 0; i < his_self.game.state.henry_viii_wives.length && i < his_self.game.state.henry_viii_rolls.length; i++) {
+
+      let dd = his_self.game.state.henry_viii_rolls[i];
+      let wife = his_self.game.state.henry_viii_wives[i];
+      let wife_tile = "/his/img/tiles/wives/";
+
+      if (wife == "boleyn")  { wife_tile += "AnneBoleyn.svg"; }
+      if (wife == "cleves")  { wife_tile += "AnneCleves.svg"; }
+      if (wife == "aragon")  { wife_tile += "CatherineAragon.svg"; }
+      if (wife == "seymour") { wife_tile += "JaneSeymour.svg"; }
+      if (wife == "parr")    { wife_tile += "KatherineParr.svg"; }
+      if (wife == "howard")  { wife_tile += "KathrynHoward.svg"; }
+
+alert(dd + " - " + wife + " - " + wife_tile);
+
+      if (dd == 1) { document.querySelector("#pregnancy1").style.backgroundImage = `url("${wife_tile}")`; }
+      if (dd == 2) { document.querySelector("#pregnancy2").style.backgroundImage = `url("${wife_tile}")`; }
+      if (dd == 3) { document.querySelector("#pregnancy3").style.backgroundImage = `url("${wife_tile}")`; }
+      if (dd == 4) { document.querySelector("#pregnancy4").style.backgroundImage = `url("${wife_tile}")`; }
+      if (dd == 5) { document.querySelector("#pregnancy5").style.backgroundImage = `url("${wife_tile}")`; }
+      if (dd == 6) { document.querySelector("#pregnancy6").style.backgroundImage = `url("${wife_tile}")`; }
+
+    }
+
+  }
+
   displayTheologicalDebater(debater, attacker=true) {
 
     let tile_f = "/his/img/tiles/debaters/" + this.debaters[debater].img;
@@ -45780,6 +45844,11 @@ console.log("this player can end war...");
       console.log("error displaying foreign wars... " + err);
     }
 
+    try {
+      this.displayPregnancyChart();
+    } catch (err) {
+      console.log("error displaying turn track... " + err);
+    }
     try {
       this.displayTurnTrack();
     } catch (err) {

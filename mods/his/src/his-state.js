@@ -1159,32 +1159,32 @@ if (this.game.state.scenario != "is_testing") {
     let chart = {};
 
     chart['1'] = {
-      top : 1307,
+      top : 1270,
       left : 4075,
     }
 
     chart['2'] = {
-      top : 1220,
+      top : 1185,
       left : 4075,
     }
 
     chart['3'] = {
-      top : 1135,
+      top : 1100,
       left : 4075,
     }
 
     chart['4'] = {
-      top : 1051,
+      top : 1015,
       left : 4075,
     }
 
     chart['5'] = {
-      top : 963,
+      top : 930,
       left : 4075,
     }
 
-    chart['1'] = {
-      top : 850,
+    chart['6'] = {
+      top : 810,
       left : 4075,
     }
 

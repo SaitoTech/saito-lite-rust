@@ -227,6 +227,7 @@
     return "Conquerer";
   }
   returnExplorerName(key) {
+    if (key == "Cabot" || key == "cabot") { return "Sebastian Cabot"; }
     if (this.explorers[key]) { return this.explorers[key].name; }
     return "Explorer";
   }

@@ -9,6 +9,13 @@
 	text-align: center;
 }
 
+.pregnancy {
+  background-size: cover;
+  position: absolute;
+  height: 85px;
+  width: 85px;
+}
+
 .marriage-overlay .help {
 	background: #0009;
 	width: 100%;
