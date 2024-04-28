@@ -4373,37 +4373,13 @@ playerSelectStrategyCards(mycallback, selection = 0) {
     mycallback(action2);
   });
 
-
   //
   // provide simple interface for non-AC users
   //
   if (ac.length == 0) {
-
     imperium_self.strategy_card_selection_overlay.render(scards_objs, unselect_scards, mycallback);
-/***
-    let t = "Select Your Strategy Card";
-    if (selection == 1) { t = "Select Your FIRST Strategy Card"; }
-    if (selection == 2) { t = "Select Your SECOND Strategy Card"; }
-    if (selection == 3) { t = "Select Your THIRD Strategy Card"; }
-    if (selection == 4) { t = "Select Your FOURTH Strategy Card"; }
-
-    imperium_self.overlay.showCardSelectionOverlay(imperium_self.app, imperium_self, scards_objs, {
-                title : t ,
-                subtitle : "you must play this card sometime during your turn" ,
-		textAlign: "center",
-		rowGap: "30px",
-		columnGap: "30px",
-                columns : 4 ,
-		unselectableCards : unselect_scards,
-                backgroundImage : "/imperium/img/starscape_background3.jpg" ,
-                onCardSelect : function(cardname) {
-		  imperium_self.overlay.hide();
-	   	  imperium_self.hideStrategyCard(cardname);
-    		  mycallback(cardname);
-                }
-    });
-***/
   }
+
 }
 
 

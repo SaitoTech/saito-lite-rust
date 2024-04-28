@@ -4,7 +4,7 @@
       name     			:       "Leadership",
       rank			:	1,
       img			:	"/strategy/1_LEADERSHIP.png",
-      text			:	"<b>Player</b> gains three tokens.<hr /><b>All players</b> may purchase tokens for three influence each." ,
+      text			:	"<b>Player</b> gains three tokens.<hr /><b>All players</b> may purchase tokens." ,
       strategyPrimaryEvent 	:	function(imperium_self, player, strategy_card_player) {
 
 	if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {

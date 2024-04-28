@@ -4783,7 +4783,7 @@ this.playDevotionAssignHit = function(imperium_self, player, sector, mycallback,
       name     			:       "Leadership",
       rank			:	1,
       img			:	"/strategy/1_LEADERSHIP.png",
-      text			:	"<b>Player</b> gains three tokens.<hr /><b>All players</b> may purchase tokens for three influence each." ,
+      text			:	"<b>Player</b> gains three tokens.<hr /><b>All players</b> may purchase tokens." ,
       strategyPrimaryEvent 	:	function(imperium_self, player, strategy_card_player) {
 
 	if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
@@ -4820,7 +4820,7 @@ this.importStrategyCard("diplomacy", {
   name: "Diplomacy",
   rank: 2,
   img: "/strategy/2_DIPLOMACY.png",
-  text: "<b>Player</b> chooses non-Byzantium sector and refreshes two planets. All others activate sector.<hr /><b>Others</b> may spend strategy token to refresh two planets.",
+  text: "<b>Player</b> exhausts sector and refreshes two planets.<hr /><b>Others</b> may refresh two planets.",
   strategyPrimaryEvent: function(imperium_self, player, strategy_card_player) {
 
     if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
@@ -4975,7 +4975,7 @@ this.importStrategyCard("politics", {
   name: "Politics",
   rank: 3,
   img: "/strategy/3_POLITICS.png",
-  text: "<b>Player</b> picks new Speaker and gains 2 action cards.<hr /><b>Others</b> may spend strategy token for two action cards.",
+  text: "<b>Player</b> picks new Speaker and gains 2 action cards.<hr /><b>Others</b> may purchase action cards.",
   strategyPrimaryEvent: function (imperium_self, player, strategy_card_player) {
     //
     // card player goes for primary
@@ -5168,7 +5168,7 @@ this.importStrategyCard("construction", {
   rank: 4,
   img: "/strategy/4_CONSTRUCTION.png",
 
-  text: "<b>Player</b> builds Space Dock and PDS or two PDS units.<hr /><b>Others</b> may spend strategy token and activate sector to build PDS or Space Dock.",
+  text: "<b>Player</b> gets free Space Dock and PDS unit.<hr /><b>Others</b> may purchase a PDS or Space Dock.",
   strategyPrimaryEvent: function(imperium_self, player, strategy_card_player) {
 
     if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
@@ -5246,7 +5246,7 @@ this.importStrategyCard("trade", {
   name: "Trade",
   rank: 5,
   img: "/strategy/5_TRADE.png",
-  text: "<b>Player</b> gains 3 trade goods, may refresh any player's commodities.<hr /><b>Others</b> may spend strategy token to refresh their commodities.",
+  text: "<b>Player</b> gains 3 trade goods, may distribute commodities.<hr /><b>Others</b> may purchase commodities.",
   strategyPrimaryEvent: function(imperium_self, player, strategy_card_player) {
 
     if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
@@ -5354,7 +5354,7 @@ this.importStrategyCard("trade", {
       name     			:       "Warfare",
       rank			:	6,
       img			:	"/strategy/6_WARFARE.png",
-      text			:	"<b>Player</b> may de-activate any sector and gain 1 token.<hr /><b>Others</b> may spend strategy token to produce in home system" ,
+      text			:	"<b>Player</b> may de-activate sector.<hr /><b>Others</b> may produce units in home system." ,
       strategyPrimaryEvent 	:	function(imperium_self, player, strategy_card_player) {
 
         if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
@@ -5428,7 +5428,7 @@ this.importStrategyCard("technology", {
   name: "Technology",
   rank: 7,
   img: "/strategy/7_TECHNOLOGY.png",
-  text: "<b>Player</b> researches a tech and may spend 6 resources for a second.<hr /><b>Others</b> may research for strategy token and 4 resources",
+  text: "<b>Player</b> researches free tech with option to purchase a second.<hr /><b>Others</b> may purchase a single tech.",
   strategyPrimaryEvent: function (imperium_self, player, strategy_card_player) {
     if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
       imperium_self.playerAcknowledgeNotice(
@@ -5687,7 +5687,7 @@ this.importStrategyCard("imperial", {
   name: "Imperial",
   rank: 8,
   img: "/strategy/8_IMPERIAL.png",
-  text: "<b>Player</b> may score a public objective. 1 VP for New Byzantium or secret objective otherwise.<hr /><b>Others</b> may spend strategy token to buy secret objective",
+  text: "<b>Player</b> may score public objective, 1 VP for New Byzantium or gain secret objective.<hr /><b>Others</b> may purchase a secret objective",
   strategyPrimaryEvent: function (imperium_self, player, strategy_card_player) {
     if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
       let supplementary_scoring = function () {
@@ -12761,7 +12761,7 @@ console.log("ABOUT TO DINISH INITIALIZATION!");
   
   async preloadImages() {
 
-    var allImages = [	"img/starscape_background1.jpg", 
+    var allImages = [	"img/backgrounds/starscape_background1.jpg", 
                         "img/ships/carrier_100x200.png", 
                      	"img/ships/destroyer_100x200.png", 
                      	"img/ships/dreadnaught_100x200.png", 
@@ -12789,7 +12789,7 @@ console.log("ABOUT TO DINISH INITIALIZATION!");
 			"img/influence/6.png",
 			"img/agenda_card_template.png",
 			"img/card_template.jpg",
-			"img/secret_objective_ii_back.png",
+			"img/cards/secret_objective_ii_back.png",
 			"img/units/fighter.png",
 			"img/units/flagship.png",
 			"img/units/spacedock.png",
@@ -12803,7 +12803,7 @@ console.log("ABOUT TO DINISH INITIALIZATION!");
 			"img/action_card_back.jpg",
 			"img/arcade/arcade-banner-background.png",
 			"img/secret_objective2.jpg",
-			"img/objective_card_1_template.png",
+			"img/cards/objective_card_1_template.png",
 			"img/techicons/Cyber D.png",
 			"img/techicons/Warfare D.png",
 			"img/techicons/Warfare L.png",
@@ -12813,7 +12813,7 @@ console.log("ABOUT TO DINISH INITIALIZATION!");
 			"img/techicons/Cybernetic D.png",
 			"img/techicons/Propultion Light.png",
 			"img/techicons/Cybernetic L.png",
-			"img/secret_objective_back.png",
+			"img/cards/secret_objective_back.png",
 			"img/planet_card_template.png",
 			"img/secret_objective.jpg",
 			"img/arcade_release.jpg",
@@ -13976,7 +13976,7 @@ console.log("HERE: " + planet_idx + " -- " + sector);
     if (obj.minPlayers == null) { obj.minPlayers = 2; }
     if (obj.type == null)	{ obj.type = "normal"; }
     if (obj.phase == null)	{ obj.type = "imperial"; } // "action" if can be scored at end of turn
-    if (obj.img  == null) 	{ obj.img = "/imperium/img/secret_objective_1.png"; }
+    if (obj.img  == null) 	{ obj.img = "/imperium/img/cards/secret_objective_1.png"; }
     if (obj.vp == null)		{ obj.vp = 1; }
 
     if (obj.returnCardImage == null) {
@@ -14008,7 +14008,7 @@ console.log("HERE: " + planet_idx + " -- " + sector);
     if (obj.name == null) 	{ obj.name = "Unknown Objective"; }
     if (obj.text == null)	{ obj.type = "Unclear Objective"; }
     if (obj.type == null)	{ obj.type = "normal"; }
-    if (obj.img  == null) 	{ obj.img = "/imperium/img/victory_point_1.png"; }
+    if (obj.img  == null) 	{ obj.img = "/imperium/img/cards/victory_point_1.png"; }
     if (obj.vp == null)		{ obj.vp = 1; }
 
     if (obj.returnCardImage == null) {
@@ -14037,7 +14037,7 @@ console.log("HERE: " + planet_idx + " -- " + sector);
     if (obj.name == null) 	{ obj.name = "Unknown Objective"; }
     if (obj.text == null)	{ obj.type = "Unclear Objective"; }
     if (obj.type == null)	{ obj.type = "normal"; }
-    if (obj.img  == null) 	{ obj.img = "/imperium/img/objective_card_1_template.png"; }
+    if (obj.img  == null) 	{ obj.img = "/imperium/img/cards/objective_card_1_template.png"; }
     if (obj.vp == null)		{ obj.vp = 2; }
 
     if (obj.returnCardImage == null) {
@@ -14557,7 +14557,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 	try {
 	  this.app.browser.addElementToDom(`
 		  <div class="background_loader" style="display:none">
-		    <img src="/imperium/img/starscape_background1.jpg" style="width:10px;height:10px" />
+		    <img src="/imperium/img/backgrounds/starscape_background1.jpg" style="width:10px;height:10px" />
 		    <img src="/imperium/img/ships/carrier_100x200.png" style="width:10px;height:10px" />
 		    <img src="/imperium/img/ships/destroyer_100x200.png" style="width:10px;height:10px" />
 		    <img src="/imperium/img/ships/dreadnaught_100x200.png" style="width:10px;height:10px" />
@@ -24885,37 +24885,13 @@ playerSelectStrategyCards(mycallback, selection = 0) {
     mycallback(action2);
   });
 
-
   //
   // provide simple interface for non-AC users
   //
   if (ac.length == 0) {
-
     imperium_self.strategy_card_selection_overlay.render(scards_objs, unselect_scards, mycallback);
-/***
-    let t = "Select Your Strategy Card";
-    if (selection == 1) { t = "Select Your FIRST Strategy Card"; }
-    if (selection == 2) { t = "Select Your SECOND Strategy Card"; }
-    if (selection == 3) { t = "Select Your THIRD Strategy Card"; }
-    if (selection == 4) { t = "Select Your FOURTH Strategy Card"; }
-
-    imperium_self.overlay.showCardSelectionOverlay(imperium_self.app, imperium_self, scards_objs, {
-                title : t ,
-                subtitle : "you must play this card sometime during your turn" ,
-		textAlign: "center",
-		rowGap: "30px",
-		columnGap: "30px",
-                columns : 4 ,
-		unselectableCards : unselect_scards,
-                backgroundImage : "/imperium/img/starscape_background3.jpg" ,
-                onCardSelect : function(cardname) {
-		  imperium_self.overlay.hide();
-	   	  imperium_self.hideStrategyCard(cardname);
-    		  mycallback(cardname);
-                }
-    });
-***/
   }
+
 }
 
 
@@ -27511,18 +27487,18 @@ playerDiscardActionCards(num, mycallback=null) {
     sectors['sector29']        = { img : "/imperium/img/sectors/sector29.png" , name : "XXCha Homeworld" , type : 0 , hw : 1 , wormhole : 0 , mr : 0 , planets : ['giants-drink','otho'] }
     sectors['sector30']        = { img : "/imperium/img/sectors/sector30.png" , name : "Hacan Homeworld" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['hiraeth','quartil','surriel'] }
 
-    sectors['sector31']        = { img : "/imperium/img/sectors/sector1.png" , 	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector32']        = { img : "/imperium/img/sectors/sector2.png" , 	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } 
-    sectors['sector33']        = { img : "/imperium/img/sectors/sector3.png" , 	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector34']        = { img : "/imperium/img/sectors/sector4.png" , 	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector35']        = { img : "/imperium/img/sectors/sector5.png" , 	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector36']        = { img : "/imperium/img/sectors/sector6.png" , 	name : "Wormhole A" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector37']        = { img : "/imperium/img/sectors/sector7.png" , 	name : "Wormhole B" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } // black hole or rift
-    sectors['sector38']        = { img : "/imperium/img/sectors/sector8.png" , 	name : "Gravity Rift" , type : 1 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector39']        = { img : "/imperium/img/sectors/sector9.png" , 	name : "Nebula" , type : 2 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector40']        = { img : "/imperium/img/sectors/sector42.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector41']        = { img : "/imperium/img/sectors/sector44.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector42']        = { img : "/imperium/img/sectors/sector12.png" , name : "Supernova" , type : 4 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector31']        = { img : "/imperium/img/sectors/sector31.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector32']        = { img : "/imperium/img/sectors/sector32.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } 
+    sectors['sector33']        = { img : "/imperium/img/sectors/sector33.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector34']        = { img : "/imperium/img/sectors/sector34.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector35']        = { img : "/imperium/img/sectors/sector35.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector36']        = { img : "/imperium/img/sectors/sector36.png" ,	name : "Wormhole A" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector37']        = { img : "/imperium/img/sectors/sector37.png" ,	name : "Wormhole B" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } // black hole or rift
+    sectors['sector38']        = { img : "/imperium/img/sectors/sector38.png" ,	name : "Gravity Rift" , type : 1 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector39']        = { img : "/imperium/img/sectors/sector39.png" ,	name : "Nebula" , type : 2 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector40']        = { img : "/imperium/img/sectors/sector40.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector41']        = { img : "/imperium/img/sectors/sector41.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector42']        = { img : "/imperium/img/sectors/sector42.png" , name : "Supernova" , type : 4 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
 
     for (var i in sectors) {
 
@@ -31808,7 +31784,7 @@ Once you have "activated" a sector. You cannot move ships into or out of it unti
   font-family: 'orbitron-medium', helvetica, arial;
   line-height: 1.7em;
   font-size: 1.1em;
-  background-image: url('/imperium/img/starscape-background4.jpg');
+  background-image: url('/imperium/img/backgrounds/starscape-background4.jpg');
   background-size: cover;
   color: white;
   overflow-y: scroll;
@@ -31863,7 +31839,7 @@ moved. The <span class="resources_box">resources</span> and <span class="influen
   font-family: 'orbitron-medium', helvetica, arial;
   line-height: 1.7em;
   font-size: 1.1em;
-  background-image: url('/imperium/img/starscape-background4.jpg');
+  background-image: url('/imperium/img/backgrounds/starscape-background4.jpg');
   background-size: cover;
   color: white;
   overflow-y: scroll;

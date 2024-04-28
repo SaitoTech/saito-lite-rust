@@ -12,10 +12,6 @@ class SectorOverlay {
 		let sys = this.mod.returnSectorAndPlanets(sector);
 		let fleet = '';
 
-		console.log('SYS 2');
-		console.log(sector);
-		console.log(JSON.stringify(sys));
-
 		//
 		// fleet in sector
 		//

@@ -2,7 +2,7 @@ this.importStrategyCard("politics", {
   name: "Politics",
   rank: 3,
   img: "/strategy/3_POLITICS.png",
-  text: "<b>Player</b> picks new Speaker and gains 2 action cards.<hr /><b>Others</b> may spend strategy token for two action cards.",
+  text: "<b>Player</b> picks new Speaker and gains 2 action cards.<hr /><b>Others</b> may purchase action cards.",
   strategyPrimaryEvent: function (imperium_self, player, strategy_card_player) {
     //
     // card player goes for primary

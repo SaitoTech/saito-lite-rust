@@ -83,7 +83,7 @@ Once you have "activated" a sector. You cannot move ships into or out of it unti
   font-family: 'orbitron-medium', helvetica, arial;
   line-height: 1.7em;
   font-size: 1.1em;
-  background-image: url('/imperium/img/starscape-background4.jpg');
+  background-image: url('/imperium/img/backgrounds/starscape-background4.jpg');
   background-size: cover;
   color: white;
   overflow-y: scroll;
@@ -138,7 +138,7 @@ moved. The <span class="resources_box">resources</span> and <span class="influen
   font-family: 'orbitron-medium', helvetica, arial;
   line-height: 1.7em;
   font-size: 1.1em;
-  background-image: url('/imperium/img/starscape-background4.jpg');
+  background-image: url('/imperium/img/backgrounds/starscape-background4.jpg');
   background-size: cover;
   color: white;
   overflow-y: scroll;

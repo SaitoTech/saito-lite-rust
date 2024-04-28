@@ -2,7 +2,7 @@ this.importStrategyCard("trade", {
   name: "Trade",
   rank: 5,
   img: "/strategy/5_TRADE.png",
-  text: "<b>Player</b> gains 3 trade goods, may refresh any player's commodities.<hr /><b>Others</b> may spend strategy token to refresh their commodities.",
+  text: "<b>Player</b> gains 3 trade goods, may distribute commodities.<hr /><b>Others</b> may purchase commodities.",
   strategyPrimaryEvent: function(imperium_self, player, strategy_card_player) {
 
     if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {

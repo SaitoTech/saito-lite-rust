@@ -728,7 +728,7 @@ console.log("ABOUT TO DINISH INITIALIZATION!");
   
   async preloadImages() {
 
-    var allImages = [	"img/starscape_background1.jpg", 
+    var allImages = [	"img/backgrounds/starscape_background1.jpg", 
                         "img/ships/carrier_100x200.png", 
                      	"img/ships/destroyer_100x200.png", 
                      	"img/ships/dreadnaught_100x200.png", 
@@ -756,7 +756,7 @@ console.log("ABOUT TO DINISH INITIALIZATION!");
 			"img/influence/6.png",
 			"img/agenda_card_template.png",
 			"img/card_template.jpg",
-			"img/secret_objective_ii_back.png",
+			"img/cards/secret_objective_ii_back.png",
 			"img/units/fighter.png",
 			"img/units/flagship.png",
 			"img/units/spacedock.png",
@@ -770,7 +770,7 @@ console.log("ABOUT TO DINISH INITIALIZATION!");
 			"img/action_card_back.jpg",
 			"img/arcade/arcade-banner-background.png",
 			"img/secret_objective2.jpg",
-			"img/objective_card_1_template.png",
+			"img/cards/objective_card_1_template.png",
 			"img/techicons/Cyber D.png",
 			"img/techicons/Warfare D.png",
 			"img/techicons/Warfare L.png",
@@ -780,7 +780,7 @@ console.log("ABOUT TO DINISH INITIALIZATION!");
 			"img/techicons/Cybernetic D.png",
 			"img/techicons/Propultion Light.png",
 			"img/techicons/Cybernetic L.png",
-			"img/secret_objective_back.png",
+			"img/cards/secret_objective_back.png",
 			"img/planet_card_template.png",
 			"img/secret_objective.jpg",
 			"img/arcade_release.jpg",

@@ -172,18 +172,18 @@
     sectors['sector29']        = { img : "/imperium/img/sectors/sector29.png" , name : "XXCha Homeworld" , type : 0 , hw : 1 , wormhole : 0 , mr : 0 , planets : ['giants-drink','otho'] }
     sectors['sector30']        = { img : "/imperium/img/sectors/sector30.png" , name : "Hacan Homeworld" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['hiraeth','quartil','surriel'] }
 
-    sectors['sector31']        = { img : "/imperium/img/sectors/sector1.png" , 	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector32']        = { img : "/imperium/img/sectors/sector2.png" , 	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } 
-    sectors['sector33']        = { img : "/imperium/img/sectors/sector3.png" , 	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector34']        = { img : "/imperium/img/sectors/sector4.png" , 	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector35']        = { img : "/imperium/img/sectors/sector5.png" , 	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector36']        = { img : "/imperium/img/sectors/sector6.png" , 	name : "Wormhole A" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector37']        = { img : "/imperium/img/sectors/sector7.png" , 	name : "Wormhole B" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } // black hole or rift
-    sectors['sector38']        = { img : "/imperium/img/sectors/sector8.png" , 	name : "Gravity Rift" , type : 1 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector39']        = { img : "/imperium/img/sectors/sector9.png" , 	name : "Nebula" , type : 2 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector40']        = { img : "/imperium/img/sectors/sector42.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector41']        = { img : "/imperium/img/sectors/sector44.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector42']        = { img : "/imperium/img/sectors/sector12.png" , name : "Supernova" , type : 4 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector31']        = { img : "/imperium/img/sectors/sector31.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector32']        = { img : "/imperium/img/sectors/sector32.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } 
+    sectors['sector33']        = { img : "/imperium/img/sectors/sector33.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector34']        = { img : "/imperium/img/sectors/sector34.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector35']        = { img : "/imperium/img/sectors/sector35.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector36']        = { img : "/imperium/img/sectors/sector36.png" ,	name : "Wormhole A" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector37']        = { img : "/imperium/img/sectors/sector37.png" ,	name : "Wormhole B" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } // black hole or rift
+    sectors['sector38']        = { img : "/imperium/img/sectors/sector38.png" ,	name : "Gravity Rift" , type : 1 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector39']        = { img : "/imperium/img/sectors/sector39.png" ,	name : "Nebula" , type : 2 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector40']        = { img : "/imperium/img/sectors/sector40.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector41']        = { img : "/imperium/img/sectors/sector41.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector42']        = { img : "/imperium/img/sectors/sector42.png" , name : "Supernova" , type : 4 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
 
     for (var i in sectors) {
 

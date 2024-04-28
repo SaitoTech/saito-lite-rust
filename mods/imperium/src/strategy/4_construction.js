@@ -3,7 +3,7 @@ this.importStrategyCard("construction", {
   rank: 4,
   img: "/strategy/4_CONSTRUCTION.png",
 
-  text: "<b>Player</b> builds Space Dock and PDS or two PDS units.<hr /><b>Others</b> may spend strategy token and activate sector to build PDS or Space Dock.",
+  text: "<b>Player</b> gets free Space Dock and PDS unit.<hr /><b>Others</b> may purchase a PDS or Space Dock.",
   strategyPrimaryEvent: function(imperium_self, player, strategy_card_player) {
 
     if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {
