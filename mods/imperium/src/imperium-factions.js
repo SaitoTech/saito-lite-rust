@@ -6,6 +6,10 @@
   
   importFaction(name, obj) {
 
+console.log("#");
+console.log("# import faction " + name);
+console.log("#");
+
     if (obj.id == null)			{ obj.id = name; }
     if (obj.key == null)		{ obj.key = name; }
     if (obj.name == null) 		{ obj.name = "Unknown Faction"; }
@@ -29,6 +33,8 @@
     `; }
 
     obj = this.addEvents(obj);
+
+    if (!this.factions) { this.factions = {}; }
     this.factions[name] = obj;
 
   }  

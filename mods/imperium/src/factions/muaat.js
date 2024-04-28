@@ -3,7 +3,7 @@
       id		:	"faction7" ,
       name		: 	"Embers of Muaat",
       nickname		: 	"Muaat",
-      homeworld		: 	"sector36",
+      homeworld		: 	"sector24",
       space_units	: 	["warsun","fighter","fighter"],
       ground_units	: 	["infantry","infantry","infantry","infantry","spacedock"],
       tech		: 	["plasma-scoring", "faction7-star-forge", "faction7-gashlai-physiology", "faction7-advanced-warsun-i","faction7-flagship"],

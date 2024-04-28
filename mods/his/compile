@@ -7,11 +7,6 @@ rm ../../web/saito/saito.js
 #
 cat ./src/his-init.js > ./his.js
 
-for file in ./src/cards/core/*
-do
-  cat $file >> ./his.js
-done
-
 for file in ./src/factions/*
 do
   cat $file >> ./his.js

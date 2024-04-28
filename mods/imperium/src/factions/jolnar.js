@@ -2,7 +2,7 @@ this.importFaction("faction2", {
   id: "faction2",
   name: "Universities of Jol Nar",
   nickname: "Jol Nar",
-  homeworld: "sector39",
+  homeworld: "sector27",
   space_units: ["carrier", "carrier", "dreadnaught", "fighter"],
   ground_units: ["infantry", "infantry", "pds", "spacedock"],
   // is_testing -- you can use this to preseed action cards and objectives
