@@ -8,7 +8,12 @@
 
 .saito-overlay {
   background-color: transparent;
+  box-shadow: none;
 }
+//.saito-overlay:has(> .ovjectives-overlay) {
+//  box-shadow: none;
+//}
+
 .saito-overlay-backdrop {
   background-color: #0009;
 }

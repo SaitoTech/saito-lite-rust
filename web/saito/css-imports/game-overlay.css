@@ -1,5 +1,4 @@
 
-
 .game-overlay-menu {
   padding: 10px;
   background-color: whitesmoke;
@@ -23,15 +22,15 @@
   background: #0001;
 }
 .game-overlay-cardlist-container {
-  width: 80vw;
-  max-height:80vh;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  width: 85vw;
+  max-height: 85vh;
+  display: flex;
   overflow-y: scroll;
-  row-gap: 1em;
-  column-gap: 1em;
+  row-gap: 1rem;
+  column-gap: 1rem;
   text-align: left;
-  justify-items: center;
+  flex-direction: rows;
+  flex-wrap: wrap;
 }
 .game-overlay-button-close {
   margin-left: 50px;
