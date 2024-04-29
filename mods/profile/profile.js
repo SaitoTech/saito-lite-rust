@@ -153,14 +153,10 @@ class Profile extends ModTemplate {
     // 
 
     async returnProfileImage(sig, publicKey) {
-        // if (typeof callback !== "function") {
-        //     console.error(`Callback not present or not a function for "returnProfileImage"`);
-        //     return;
-        // }
 
         if (this.cache[publicKey] && this.cache[publicKey].image) {
             console.log('Cache hit for image');
-            // callback(this.cache[publicKey].image);
+            callback(this.cache[publicKey].image);
             return;
         }
 
@@ -171,8 +167,7 @@ class Profile extends ModTemplate {
                 const image = tx.msg.data.image;
                 this.cache[publicKey] = this.cache[publicKey] || {};
                 this.cache[publicKey].image = image;  // Update cache
-                // callback(image);/
-
+                callback(image);
                 // update the profile image with the gotten image
             }
         }, "localhost");
@@ -201,14 +196,14 @@ class Profile extends ModTemplate {
         }, "localhost");
     }
 
-    async returnProfileDescription(sig, publicKey) {
+    async returnProfileDescription(sig, publicKey, callback) {
         // if (typeof callback !== "function") {
         //     console.error(`Callback not present or not a function for "returnProfileDescription"`);
         //     return;
         // }
 
         if (this.cache[publicKey] && this.cache[publicKey].description) {
-            // callback(this.cache[publicKey].description);
+            callback(this.cache[publicKey].description);
             return;
         }
 
@@ -219,7 +214,7 @@ class Profile extends ModTemplate {
                 const description = tx.msg.data.description;
                 this.cache[publicKey] = this.cache[publicKey] || {};
                 this.cache[publicKey].description = description;  // Update cache
-                // callback(description);
+                callback(description);
             }
         }, "localhost");
     }
