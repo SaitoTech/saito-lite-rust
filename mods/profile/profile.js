@@ -13,6 +13,27 @@ class Profile extends ModTemplate {
         this.description = 'Profile Module';
         this.archive_public_key;
         this.cache = {}
+
+        app.connection.on('profile-fetch-content-and-update-dom', async (key) => {
+            console.log('retrieving keychain')
+
+
+            // get the sig using the key
+            let key_ = this.app.keychain.returnKey(key);
+            let signature = key_.banner
+            console.log(key_)
+
+            await this.returnProfileBanner(signature, key, (banner) => {
+                const elementId = `${key}-profile-banner`;
+                const element = document.querySelector(`#${elementId}`);
+                const imageUrl = URL.createObjectURL(banner);
+                element.style.backgroundImage = `url('${imageUrl}')`;
+            })
+
+
+            // await this.returnProfileDescription()
+            // await this.returnProfileImage()
+        })
     }
 
 
@@ -28,6 +49,16 @@ class Profile extends ModTemplate {
 
 
 
+    // async onPeerHandshakeComplete() {
+    //     await this.sendProfileTransaction({
+    //         archive: {
+    //             publicKey: ""
+    //         },
+    //         image: "an image",
+    //         banner: "a banner",
+    //         description: "dafadf"
+    //     })
+    // }
 
 
 
@@ -121,15 +152,15 @@ class Profile extends ModTemplate {
     //  LOAD PROFILE VALUES FUNCTIONS
     // 
 
-    async returnProfileImage(sig, callback, publicKey) {
-        if (typeof callback !== "function") {
-            console.error(`Callback not present or not a function for "returnProfileImage"`);
-            return;
-        }
+    async returnProfileImage(sig, publicKey) {
+        // if (typeof callback !== "function") {
+        //     console.error(`Callback not present or not a function for "returnProfileImage"`);
+        //     return;
+        // }
 
         if (this.cache[publicKey] && this.cache[publicKey].image) {
             console.log('Cache hit for image');
-            callback(this.cache[publicKey].image);
+            // callback(this.cache[publicKey].image);
             return;
         }
 
@@ -140,19 +171,18 @@ class Profile extends ModTemplate {
                 const image = tx.msg.data.image;
                 this.cache[publicKey] = this.cache[publicKey] || {};
                 this.cache[publicKey].image = image;  // Update cache
-                callback(image);
+                // callback(image);/
+
+                // update the profile image with the gotten image
             }
         }, "localhost");
     }
 
-    async returnProfileBanner(sig, callback, publicKey) {
-        if (typeof callback !== "function") {
-            console.error(`Callback not present or not a function for "returnProfileBanner"`);
-            return;
-        }
-
+    async returnProfileBanner(sig, publicKey, callback = null) {
         if (this.cache[publicKey] && this.cache[publicKey].banner) {
-            callback(this.cache[publicKey].banner);
+            if (callback) {
+                callback(this.cache[publicKey].banner)
+            }
             return;
         }
 
@@ -163,19 +193,22 @@ class Profile extends ModTemplate {
                 const banner = tx.msg.data.banner;
                 this.cache[publicKey] = this.cache[publicKey] || {};
                 this.cache[publicKey].banner = banner;  // Update cache
-                callback(banner);
+                console.log(banner, "this is the banner")
+                if (callback) {
+                    callback(banner)
+                }
             }
         }, "localhost");
     }
 
-    async returnProfileDescription(sig, callback, publicKey) {
-        if (typeof callback !== "function") {
-            console.error(`Callback not present or not a function for "returnProfileDescription"`);
-            return;
-        }
+    async returnProfileDescription(sig, publicKey) {
+        // if (typeof callback !== "function") {
+        //     console.error(`Callback not present or not a function for "returnProfileDescription"`);
+        //     return;
+        // }
 
         if (this.cache[publicKey] && this.cache[publicKey].description) {
-            callback(this.cache[publicKey].description);
+            // callback(this.cache[publicKey].description);
             return;
         }
 
@@ -186,7 +219,7 @@ class Profile extends ModTemplate {
                 const description = tx.msg.data.description;
                 this.cache[publicKey] = this.cache[publicKey] || {};
                 this.cache[publicKey].description = description;  // Update cache
-                callback(description);
+                // callback(description);
             }
         }, "localhost");
     }
