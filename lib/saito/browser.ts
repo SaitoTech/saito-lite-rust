@@ -1793,9 +1793,60 @@ class Browser {
 		return daniels_regex;
 	}
 
+	urlPreIdentifier(text){
+		let words = text.split(' ');
+
+		console.log('exploded: ', words);
+
+		
+		for (let key in words) {
+			let word = words[key];
+
+			// nope out if string contains @
+			if (!word.includes('@')) {
+				
+
+				// check for line break
+				let line_breaks = word.split('\n');
+				console.log('line break: ', line_breaks);
+
+
+				if (line_breaks.length > 1) {
+					for (let key in line_breaks) {
+						let line_break = line_breaks[key];
+
+						//console.log('line break: ', line_break);
+
+						if (line_break != '') {
+							line_breaks[key] = line_break.replace(this.urlRegexp(), function (url) {	
+								console.log('url matched: ', url);
+								return `<a href="${url}">${url}</a>`;
+							});
+						}
+					}
+
+					words[key] = line_breaks.join('\n')
+				}
+
+				
+			}
+		}
+
+
+		
+		text = words.join(' ');
+		
+		console.log('post url identification: ', text);
+		return text;
+	}
+
 	sanitize(text, createLinks = false) {
-		//console.log("Sanitize: ", text);
+		console.log('*********************************************');
+		console.log("Sanitize: ", text);
 		try {
+
+			
+
 			if (text !== '') {
 				text = marked.parseInline(text);
 				//trim trailing line breaks -
@@ -1866,27 +1917,30 @@ class Browser {
 			/* wrap link in <a> tag */
 
 			if (createLinks) {
-				text = text.replace(this.urlRegexp(), function (url) {
-					let url1 = url.trim();
-					let url2 = url1;
-					if (url2.length > 42) {
-						if (url2.indexOf('http') == 0 && url2.includes('://')) {
-							let temp = url2.split('://');
-							url2 = temp[1];
-						}
-						if (url2.indexOf('www.') == 0) {
-							url2 = url2.substr(4);
-						}
-						if (url2.length > 40) {
-							url2 = url2.substr(0, 37) + '...';
-						}
-					}
 
-					return `<a ${url.includes(window.location.host)
-						? ''
-						: "target='_blank' rel='noopener noreferrer' "
-						} class="saito-treated-link" href="${!url.includes('http') ? `http://${url1}` : url1}">${url2}</a>`;
-				});
+				text = this.urlPreIdentifier(text);
+
+				// text = text.replace(this.urlRegexp(), function (url) {
+				// 	let url1 = url.trim();
+				// 	let url2 = url1;
+				// 	if (url2.length > 42) {
+				// 		if (url2.indexOf('http') == 0 && url2.includes('://')) {
+				// 			let temp = url2.split('://');
+				// 			url2 = temp[1];
+				// 		}
+				// 		if (url2.indexOf('www.') == 0) {
+				// 			url2 = url2.substr(4);
+				// 		}
+				// 		if (url2.length > 40) {
+				// 			url2 = url2.substr(0, 37) + '...';
+				// 		}
+				// 	}
+
+				// 	return `<a ${url.includes(window.location.host)
+				// 		? ''
+				// 		: "target='_blank' rel='noopener noreferrer' "
+				// 		} class="saito-treated-link" href="${!url.includes('http') ? `http://${url1}` : url1}">${url2}</a>`;
+				// });
 			}
 
 			//trim lines at start and end
