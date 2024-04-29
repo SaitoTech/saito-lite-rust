@@ -31,6 +31,7 @@
   text-align: left;
   flex-direction: rows;
   flex-wrap: wrap;
+  justify-content: space-around;
 }
 .game-overlay-button-close {
   margin-left: 50px;
@@ -78,8 +79,6 @@
   font-size: 2em;
 }
 .game-overlay-cardlist-card {
-  min-width: 85%;
-  max-width: 100%;
   position:relative;
   z-index: 2;
   display: block;

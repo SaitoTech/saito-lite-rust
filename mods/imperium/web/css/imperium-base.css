@@ -1,5 +1,6 @@
 .saito-overlay {
         background: transparent;
+	box-shadow: none;
 }
 
 :root {
