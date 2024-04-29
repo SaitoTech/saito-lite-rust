@@ -39,7 +39,8 @@ async function initSaito() {
 		new NodeSharedMethods(app),
 		new Factory(),
 		privateKey,
-		logLevel
+		logLevel,
+		BigInt(10)
 	).then(() => {
 		console.log('saito wasm lib initialized');
 	});
