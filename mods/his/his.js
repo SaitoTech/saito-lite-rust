@@ -6720,7 +6720,7 @@ console.log("selected: " + spacekey);
                     let selected_papal_debater = $(this).attr("id");
 	            his_self.addMove("theological_debate");
         	    his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate\t" + language_zone);
-                    let c = [this.game.players[this.returnPlayerOfFaction("papacy")-1],this.game.players[this.returnPlayerOfFaction("protestant")-1]];
+                    let c = [his_self.game.players[his_self.returnPlayerOfFaction("papacy")-1],his_self.game.players[his_self.returnPlayerOfFaction("protestant")-1]];
         	    his_self.addMove("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
 	            if (is_committed == 0) {
 		      his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted\t" + selected_papal_debater);
@@ -6762,7 +6762,7 @@ console.log("selected: " + spacekey);
 		    let prohibited_protestant_debater = his_self.game.state.debaters[selected_idx].type;
 	            his_self.addMove("theological_debate");
         	    his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate\t" + language_zone);
-                    let c = [this.game.players[this.returnPlayerOfFaction("papacy")-1],this.game.players[this.returnPlayerOfFaction("protestant")-1]];
+                    let c = [his_self.game.players[his_self.returnPlayerOfFaction("papacy")-1],his_self.game.players[his_self.returnPlayerOfFaction("protestant")-1]];
         	    his_self.addMove("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
 	 	    if (is_committed == 0) {
 	              his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+"uncommitted\t\t"+prohibited_protestant_debater);

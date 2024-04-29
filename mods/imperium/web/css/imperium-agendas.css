@@ -35,11 +35,10 @@
 
 
 .agenda-overlay {
-	display: flex;
-	flex-direction: row;
-	gap: 2rem;
-	justify-content: space-evenly;
-	width: 100%;
-	max-width: 80vw;
-	max-height: 85vh;
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    justify-content: space-evenly;
+    width: 100%;
+    flex-wrap: wrap;
 }
