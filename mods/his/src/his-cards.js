@@ -2255,7 +2255,6 @@ console.log("selected: " + spacekey);
 	    }
 	  }
 	  his_self.game.queue.push("add_field_battle_bonus_rolls\tottoman\t5\tjanissaries");
-
 	  return 1;
         }
 
@@ -2420,7 +2419,6 @@ console.log("selected: " + spacekey);
 	    let faction = mv[1];
             his_self.game.queue.splice(qe, 1);
 
-
 	    let target_haps = false;
 	    let target_france = false;
 	    let target_scotland = false;
@@ -2545,11 +2543,8 @@ console.log("selected: " + spacekey);
 	    return 1;
 	  }
 
-	
-
 	  his_self.game.state.henry_viii_marital_status++;
 	  if (!his_self.game.state.henry_viii_wives) { his_self.game.state.henry_viii_wives = []; }
-
 
 	  if (his_self.game.state.henry_viii_marital_status == 1) {
 	    his_self.updateLog("Henry VIII requests a divorce...");
@@ -2575,7 +2570,6 @@ console.log("selected: " + spacekey);
 	    his_self.updateLog("Henry VIII marries Katherine Parr");
 	  }
 
-
 	  his_self.updateLog("Henry VIII marital status now: " + his_self.game.state.henry_viii_marital_status);
 
 	  if (his_self.game.state.henry_viii_marital_status > 7) { his_self.game.state.henry_viii_marital_status = 7; return 1; }
@@ -2590,7 +2584,6 @@ console.log("selected: " + spacekey);
 	        dd++;
 	      }
 	    }
-	    his_self.game.state.henry_viii_rolls.push(dd);
 
 	    if (his_self.game.state.henry_viii_marital_status == 3) { 
 	      his_self.updateLog("Henry VIII receives +1 bonus for Jane Seymour");
@@ -2598,6 +2591,7 @@ console.log("selected: " + spacekey);
 	    }
 
 	    his_self.updateLog("Henry VIII rolls: " + dd);
+	    his_self.game.state.henry_viii_rolls.push(dd);
 
 	    // results of pregnancy chart rolls
 	    if (dd == 1) {
@@ -2628,7 +2622,7 @@ console.log("selected: " + spacekey);
 
 	  }
 
-
+	  his_self.marriage_overlay.render();
 	  his_self.displayPregnancyChart();
 
 	  return 1;
@@ -6441,6 +6435,7 @@ console.log("selected: " + spacekey);
 
 	    his_self.addMove("display_new_world");
 	    his_self.addMove("SETVAR\tstate\tevents\tpotosi_silver_mines\t"+action);
+	    his_self.addMove("NOTIFY\t"+his_self.returnFactionName(action)+" discovers Potosi Silver Mines");
             his_self.endTurn();
 
 	  });
@@ -7840,16 +7835,18 @@ console.log("selected: " + spacekey);
 
           his_self.game.queue.splice(qe, 1);
 
-          his_self.updateLog(his_self.returnFactionName(faction) + " plays " + his_self.popup("071") + " against " + spacekey);
 
 	  let hits = 0;
 	  for (let i = 0; i < 5; i++) {
 	    let roll = his_self.rollDice(6);
-            his_self.updateLog(` ... roll ${5-i}: + ${roll}`);
+            his_self.updateLog(` ... roll ${5-i}: ${roll}`);
 	    if (roll >= 5) {
 	      hits++;
 	    }
 	  }
+
+          his_self.updateLog(` ... hits: ${hits}`);
+          his_self.updateLog(his_self.returnFactionName(faction) + " plays " + his_self.popup("071") + " against " + his_self.returnSpaceName(spacekey));
 
 	  let p = his_self.returnPlayerCommandingFaction(respondent);
 	  if (p == 0) {
@@ -7892,7 +7889,6 @@ console.log("selected: " + spacekey);
 	  }
 
 	  if (!anything_left) {
-
             for (let i = 0; i < space.units[f].length; i++) {
               his_self.captureLeader(faction, respondent, spacekey, space.units[f][i]);
               space.units[f].splice(i, 1);
@@ -7964,6 +7960,7 @@ console.log("selected: " + spacekey);
 	      "Select Home Space not under Siege",
 	      function(space) {
 	        if (space.besieged) { return 0; }
+	        if (space.type == "electorate" && his_self.game.state.events.schmalkaldic_league != 1) { return 0; }
 	        if (his_self.isSpaceControlled(space, faction)) { return 1; }
 	        return 0;
 	      },
@@ -7972,7 +7969,9 @@ console.log("selected: " + spacekey);
                 his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+spacekey);
                 his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+spacekey);
 	        his_self.endTurn();
-	      }
+	      },
+	      null,
+	      true
 	    );
 
 	  } else {
@@ -7984,6 +7983,7 @@ console.log("selected: " + spacekey);
 	      "Select Home Space not under Siege",
 	      function(space) {
 	        if (space.besieged) { return 0; }
+	        if (space.type == "electorate" && his_self.game.state.events.schmalkaldic_league != 1) { return 0; }
 	        if (his_self.isSpaceControlled(space, faction)) { return 1; }
 	        return 0;
 	      },
@@ -7995,6 +7995,9 @@ console.log("selected: " + spacekey);
 	      }
 	    );
 	  }
+
+	  return 0;
+
         }
 
 
@@ -8878,6 +8881,7 @@ console.log("selected: " + spacekey);
 	  let player = his_self.returnPlayerOfFaction(target);
 
 	  his_self.displayModal(his_self.returnFactionName(faction) + " plays Mercenaries Demand Pay");
+	  his_self.updateStatus(his_self.returnFactionName(target) + " discarding card...");
 
 	  if (player == his_self.game.player) {
 
@@ -8897,7 +8901,7 @@ console.log("selected: " + spacekey);
 
 		let c = his_self.game.deck[0].cards[card].ops;	      
 
-  	  	his_self.game.queue.push("discard\t"+faction+"\t"+card);
+  	  	his_self.addMove("discard\t"+target+"\t"+card);
 
 		let retained = 2;
 		if (c == 2) { retained = 4; }
@@ -9029,7 +9033,7 @@ console.log("selected: " + spacekey);
 	    for (let i = 0; i < oran.ports.length; i++) {
 	      let sea = his_self.game.navalspaces[oran.ports[i]];
 	      for (let z = 0; z < sea.ports.length; z++) {
-	        if (his_self.game.spaces[sea.ports[z]].fortress == 1) {
+	        if (his_self.game.spaces[sea.ports[z]].fortress == 1 || his_self.game.spaces[sea.ports[z]].type == "key") {
 	          if (his_self.returnFactionControllingSpace(sea.ports[z]) == "ottoman") {
 	  	    target_oran = true;
 		  }
@@ -9042,7 +9046,7 @@ console.log("selected: " + spacekey);
 	    for (let i = 0; i < tripoli.ports.length; i++) {
 	      let sea = his_self.game.navalspaces[tripoli.ports[i]];
 	      for (let z = 0; z < sea.ports.length; z++) {
-	        if (his_self.game.spaces[sea.ports[z]].fortress == 1) {
+	        if (his_self.game.spaces[sea.ports[z]].fortress == 1 || his_self.game.spaces[sea.ports[z]].type == "key") {
 	          if (his_self.returnFactionControllingSpace(sea.ports[z]) == "ottoman") {
 		    target_tripoli = true;
 		  }
@@ -9067,7 +9071,7 @@ console.log("selected: " + spacekey);
 	  for (let i = 0; i < oran.ports.length; i++) {
 	    let sea = oran.ports[i];
 	    for (let z = 0; z < sea.ports.length; z++) {
-	      if (his_self.game.spaces[sea.ports[z]].fortress == 1) {
+	      if (his_self.game.spaces[sea.ports[z]].fortress == 1 || his_self.game.spaces[sea.ports[z]].type == "key") {
 	        if (his_self.returnFactionControllingSpace(sea.ports[z]) == "ottoman") {
 		  target_oran = true;
 		}
@@ -9080,7 +9084,7 @@ console.log("selected: " + spacekey);
 	  for (let i = 0; i < tripoli.ports.length; i++) {
 	    let sea = tripoli.ports[i];
 	    for (let z = 0; z < sea.ports.length; z++) {
-	      if (his_self.game.spaces[sea.ports[z]].fortress == 1) {
+	      if (his_self.game.spaces[sea.ports[z]].fortress == 1 || his_self.game.spaces[sea.ports[z]].type == "key") {
 	        if (his_self.returnFactionControllingSpace(sea.ports[z]) == "ottoman") {
 		  target_tripoli = true;
 		}
@@ -9091,8 +9095,8 @@ console.log("selected: " + spacekey);
 
    	let msg = "Convert Space into Pirate Haven: ";
         let html = '<ul>';
+  	if (target_oran)    { html += `<li class="option" id="oran">Oran</li>`; }
   	if (target_tripoli) { html += `<li class="option" id="tripoli">Tripoli</li>`; }
-  	if (target_oran)    { html += `<li class="option" id="oran">oran</li>`; }
     	html += '</ul>';
 
         his_self.updateStatusWithOptions(msg, html);
@@ -10496,6 +10500,8 @@ console.log("selected: " + spacekey);
 	  //
 	  if (r >= 4) {
 
+	    his_self.updateLog(leader + " removed from game");
+
 	    if (leader_found) {
 	      his_self.game.spaces[s].units[faction].splice(idx, 1);
 	      his_self.displaySpace(s);
@@ -10505,6 +10511,8 @@ console.log("selected: " + spacekey);
 	  // temporarily removed from game
 	  //
 	  } else {
+
+	    his_self.updateLog(leader + " removed from game until next turn");
 
             if (s !== "") {
               idx = his_self.returnIndexOfPersonageInSpace(faction, leader, s);

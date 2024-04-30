@@ -527,8 +527,6 @@
       if (wife == "parr")    { wife_tile += "KatherineParr.svg"; }
       if (wife == "howard")  { wife_tile += "KathrynHoward.svg"; }
 
-alert(dd + " - " + wife + " - " + wife_tile);
-
       if (dd == 1) { document.querySelector("#pregnancy1").style.backgroundImage = `url("${wife_tile}")`; }
       if (dd == 2) { document.querySelector("#pregnancy2").style.backgroundImage = `url("${wife_tile}")`; }
       if (dd == 3) { document.querySelector("#pregnancy3").style.backgroundImage = `url("${wife_tile}")`; }

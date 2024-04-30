@@ -324,8 +324,10 @@
       if (this.areEnemies(faction, f)) {
         for (let i = 0; i < space.units[f].length; i++) {
 	  let u = space.units[f][i];
-	  if (i.army_leader || i.navy_leader) { return true; }
-	  if (i.personage == true) { return false; } else { return true; }
+	  if (u.reformer == true) {} else {
+	    if (u.army_leader || u.navy_leader) { return true; }
+	    if (u.type == "regular" || u.type == "mercenary" || u.type == "cavalry" || u.type == "squadron" || u.type == "corsair") { return true; }
+          }
         }
       }
     }
@@ -427,7 +429,7 @@
 
   isSpaceFortified(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    if (space.type === "electorate" || space.type === "key" || space.type === "fortress") { return true; }
+    if (space.type == "electorate" || space.type == "key" || space.type == "fortress") { return true; }
     return false;
   }
 
@@ -1002,7 +1004,7 @@
 	//
 	if (max_units > 0) {
 	  if (spacekey != "paris" && spacekey != "london" && spacekey != "istanbul" && spacekey != "vienna" && spacekey != "valladolid" && spacekey != "rome") {
-	    if (his_self.returnFactionLandUnitsInSpace(faction, space.key, 1) >= max_units) { return 0; }
+	    if (his_self.returnFactionLandUnitsInSpace(faction, spacekey, 1) >= max_units) { return 0; }
 	  }
 	}
 
@@ -1025,7 +1027,6 @@
 	if (spacekey == original_spacekey) { return 1; }
 	return 0;
       }, 
-
 
       true , // include source
 
@@ -1821,6 +1822,7 @@ try {
 	let hops = pending_spaces[key].hops;
 
 	if (destination_filter(key)) {
+
 	  // found results? this is last pass
 	  results.push({ hops : (hops+1) , key : key , overseas : pending_spaces[key].overseas });	
 	  continue_searching = 0;

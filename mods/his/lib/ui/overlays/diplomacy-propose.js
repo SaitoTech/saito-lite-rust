@@ -95,7 +95,6 @@ class DiplomacyProposeOverlay {
 	  let his_self = this.mod;
 	  let menu = this.mod.returnDiplomacyMenuOptions(this.mod.game.player, faction);
 
-
   	  document.querySelector(".diplomacy-propose-overlay").style.backgroundImage = "";
   	  document.querySelector(".diplomacy-propose-overlay .buttons").style.visibility = "hidden";
 
@@ -115,10 +114,6 @@ class DiplomacyProposeOverlay {
 
 		// remove click event from all
 		this.overlay.hide();
-		//document.querySelectorAll(".diplomacy-propose-overlay .menu").innerHTML = "";
-		//document.querySelectorAll(".diplomacy-propose-overlay .help").innerHTML = "Please Continue Using Game HUD...";
-		//document.querySelectorAll(".diplomacy-propose-overlay .content").innerHTML = "";
-  	        //document.querySelector(".diplomacy-propose-overlay").style.display = "none";
 
 		this.pullHudOverOverlay();
 
@@ -128,6 +123,8 @@ class DiplomacyProposeOverlay {
 		    let io = this.mod.returnDiplomacyImpulseOrder(faction);
 	 	    for (let y = 0; y < io.length; y++) {
 		      if (terms[z].indexOf(io[y]) > -1 && !this.proposal.parties.includes(io[y])) { this.proposal.parties.push(io[y]); }
+		      if (terms[z].indexOf("marital") > -1 && !this.proposal.parties.includes("papacy") && io[y] == "papacy") { this.proposal.parties.push("papacy"); }
+		      if (terms[z].indexOf("marriage") > -1 && !this.proposal.parties.includes("papacy") && io[y] == "papacy") { this.proposal.parties.push("papacy"); }
 		    }
 		    this.proposal.terms.push(terms[z]);
 		  }
