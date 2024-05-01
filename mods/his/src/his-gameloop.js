@@ -69,7 +69,14 @@ if (this.game.options.scenario != "is_testing") {
 }
 
 	  if (this.game.players.length == 2) {
+
+  	    this.game.queue.push("card_draw_phase");
 	    this.game.queue.push("diplomacy_phase_2P");
+
+	    this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy']));
+	    let c = [this.game.players[this.returnPlayerOfFaction("papacy")-1]];
+	    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
+
 	  } else {
 
 	    if (this.game.state.starting_round != this.game.state.round) {
@@ -158,83 +165,7 @@ if (this.game.options.scenario != "is_testing") {
 		    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 		    this.updateStatus("Other factions handling winter retreat...");
 		  }
-
-/*****
-		  if (this.game.players.length == 3) {
-
-		    let c = [this.game.players[this.returnPlayerOfFaction("england")-1],this.game.players[this.returnPlayerOfFaction("hapsburg")-1],this.game.players[this.returnPlayerOfFaction("ottoman")-1]];
-
-		    this.game.queue.push("halted");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tprotestant");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tfrance");
-		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
-
-		    this.game.queue.push("halted");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tengland");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\thapsburg");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tottoman");
-		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
-
-		  }
-
-		  if (this.game.players.length == 4) {
-
-		    let c = [this.game.players[this.returnPlayerOfFaction("protestant")-1],this.game.players[this.returnPlayerOfFaction("papacy")-1]];
-		    let c2 = [this.game.players[this.returnPlayerOfFaction("france")-1],this.game.players[this.returnPlayerOfFaction("england")-1],this.game.players[this.returnPlayerOfFaction("hapsburg")-1], this.game.players[this.returnPlayerOfFaction("ottoman")-1]];
-
-		    this.game.queue.push("halted");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tprotestant");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
-		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
-		    this.updateStatus("Other factions handling winter retreat...");
-
-		    this.game.queue.push("halted");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tfrance");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tengland");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\thapsburg");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tottoman");
-		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c2));
-		    this.updateStatus("Other factions handling winter retreat...");
-
-		  }
-
-		  if (this.game.players.length == 5) {
-
-		    let c = [this.game.players[this.returnPlayerOfFaction("protestant")-1]];
-		    let c2 = [this.game.players[this.returnPlayerOfFaction("papacy")-1],this.game.players[this.returnPlayerOfFaction("france")-1],this.game.players[this.returnPlayerOfFaction("england")-1],this.game.players[this.returnPlayerOfFaction("hapsburg")-1], this.game.players[this.returnPlayerOfFaction("ottoman")-1]];
-
-		    this.game.queue.push("halted");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tprotestant");
-		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
-		    this.updateStatus("Other factions handling winter retreat...");
-
-		    this.game.queue.push("halted");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tfrance");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tengland");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\thapsburg");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tottoman");
-		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c2));
-		    this.updateStatus("Other factions handling winter retreat...");
-
-		  }
-
-		  if (this.game.players.length == 6) {
-		    this.game.queue.push("halted");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tprotestant");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tfrance");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tengland");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\thapsburg");
-	            this.game.queue.push("winter_retreat_move_units_to_capital\tottoman");
-		    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
-		    this.updateStatus("Other factions handling winter retreat...");
-		  }
-*****/
-
 	        }
-
 	        this.game.queue.push("retreat_to_winter_spaces");
 	      }
 }
