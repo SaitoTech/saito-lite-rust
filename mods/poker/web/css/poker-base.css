@@ -1,8 +1,3 @@
-.outer {
-  height: 100vh;
-  width: 100vw;
-  background: linear-gradient(30deg, #214, #421);
-}
 .gameboard {
   border-radius: 2rem;
   position: absolute;
@@ -33,75 +28,9 @@
 
 .mystuff {
   position: absolute;
+  display: flex;
   bottom: 0px;
-  left: 10%;
-  display: flex;
+  width: 100vw;
   justify-content: space-around;
-  width: 80%;
 }
 
-.cardfan {
-  display: block;
-  position: relative;
-  top: 40px;
-  left: 60px;
-}
-
-.cardfan > .card:nth-child(1), .hand > .card:nth-child(1) {
-  transform: rotate(-15deg);
-  left: 0px;
-}
-
-.cardfan > .card:nth-child(2), .hand > .card:nth-child(2) {
-  transform: rotate(-5deg);
-  left: 3vh;
-}
-
-.cardfan .card {
-  position: absolute;
-  height: auto;
-}
-
-.stack img {
-  display: block;
-  width: 200px;
-  transform: rotate(3deg);
-}
-
-.stacklabel {
-  color: #fff;
-  font-size: 3rem;
-  font-family: sans;
-  text-align: center;
-  margin-top: -40px;
-}
-
-.pot img {
-  display: block;
-  width: 280px;
-  transform: rotate(3deg);
-}
-
-.pot {
-  position: absolute;
-  top: 10px;
-  display: flex;
-  justify-content: center;
-  width: 80vw;
-  margin-left: 10vw;
-}
-
-.potlabel {
-  color: #fff;
-  font-size: 3rem;
-  font-family: sans;
-  text-align: center;
-  position: absolute;
-  top: 80px;
-  width: 50px;
-  background-color: #0008;
-  padding: 5px 20px;
-  border-radius: 5px;
-  left: 50%;
-  transform: translateX(-50%);
-}

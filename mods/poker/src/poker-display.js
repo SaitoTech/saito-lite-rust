@@ -1,7 +1,4 @@
 
-
-
-
 	async render(app) {
 		if (!this.browser_active) {
 			return;
@@ -37,6 +34,9 @@
 
 		await super.render(app);
 
+		//
+		// board renders all subcomponents
+		//
 		this.board.render();
 
 		this.menu.addChatMenu();
@@ -44,18 +44,7 @@
 
 		this.log.render();
 
-//		this.playerbox.container = 'body';
-//		this.playerbox.mode = 2; // poker/cards
-//		this.playerbox.render();
-
 		this.insertCryptoLogo(this.game?.options?.crypto);
-
-//		for (let i = 0; i < this.game.players.length; i++){
-//			let hm = new HealthMeter(this.app, this, `.game-playerbox-${i+1}`);
-//			hm.color = this.app.keychain.returnIdenticonColor(this.game.players[i]);
-//			this.healthBars.push(hm);
-//			hm.render(this.game.state.player_credit[i]);
-//		}
 
 		//
 		// gametabletemplate adds a scoreboard DIV that shows HIDE / LEAVE / JOIN instructions
@@ -68,6 +57,7 @@
 	}
 
 	startRound() {
+
 		this.updateLog('===============');
 		this.updateLog('Round: ' + this.game.state.round);
 
@@ -89,95 +79,6 @@
 		this.initializeQueue();
 	}
 
-
-	returnState(num_of_players) {
-		let state = {};
-
-		state.round = 1;
-		state.flipped = 0;
-
-		state.player_cards = {};
-		state.player_cards_reported = 0;
-		state.player_cards_required = 0;
-
-		state.plays_since_last_raise = 0;
-
-		state.pot = 0;
-
-		state.big_blind_player = 1;
-		state.small_blind_player = 2;
-		state.button_player = 3;
-
-		if (num_of_players == 2) {
-			state.button_player = 2;
-			state.big_blind_player = 2;
-			state.small_blind_player = 1;
-		}
-
-		state.player_names = [];
-		state.player_pot = [];
-		state.player_credit = [];
-		state.passed = [];
-		state.debt = [];
-
-		state.winners = [];
-		state.last_fold = null;
-
-		//
-		// initializeGameStake should flesh this out
-		//
-		for (let i = 0; i < num_of_players; i++) {
-			state.passed[i] = 0;
-			state.player_pot[i] = 0;
-			state.player_credit[i] = 0;
-			state.debt[i] = 0;
-			state.player_names[i] = this.app.keychain.returnUsername(
-				this.game.players[i],
-				12
-			);
-		}
-
-		state.big_blind = 2;
-		state.small_blind = 1;
-		state.last_raise = 2;
-		state.required_pot = 2;
-		state.all_in = false;
-
-		return state;
-	}
-
-	returnStats() {
-		let stats = {};
-		for (let i = 0; i < this.game.players.length; i++) {
-			stats[this.game.players[i]] = {};
-			stats[this.game.players[i]].hands = 0;
-			stats[this.game.players[i]].wins = 0;
-			stats[this.game.players[i]].folds = 0;
-			stats[this.game.players[i]].walks = 0;
-			stats[this.game.players[i]].vpip = 0;
-			stats[this.game.players[i]].showdowns = 0;
-		}
-		return stats;
-	}
-
-	removePlayerFromState(index) {
-		if (index >= 0 && index < this.game.state.player_names.length){
-			this.game.state.player_names.splice(index, 1);
-			this.game.state.player_pot.splice(index, 1);
-			this.game.state.player_credit.splice(index, 1);
-			this.game.state.passed.splice(index, 1);
-			this.game.state.debt.splice(index, 1);
-		}else{
-			console.warn("Invalid index removePlayerFromState");
-		}
-	}
-
-
-	/****************
-	 *
-	 ***** GUI *****
-	 *
-	 ***************/
 
 	displayBoard() {
 		if (!this.browser_active) {
@@ -215,10 +116,10 @@
 		}
 		try {
 			for (let i = 1; i <= this.game.players.length; i++) {
-				this.refreshPlayerStack(i);
+				this.displayPlayerStack(i);
 				this.playerbox.updateIcons(``, i);
 				if (!preserveLog) {
-					this.refreshPlayerLog('', i);
+					this.displayPlayerNotice('', i);
 				}
 			}
 			this.playerbox.updateIcons(
@@ -250,16 +151,6 @@
 		return 'CHIPS';
 	}
 
-	updatePot() {
-		let poker_self = this;
-
-		let html = `<div class="pot-counter">${this.formatWager(this.game.state.pot)}</div>`;
-
-		$('#pot').css('display', 'flex');
-
-		this.app.browser.replaceElementBySelector(html, ".pot-counter");
-
-	}
 
 	displayTable() {
 		if (!this.browser_active) {
@@ -288,8 +179,17 @@
 		} catch (err) {
 			console.warn('Card error displaying table:', err);
 		}
-		this.updatePot();
+
+		this.pot.render();
 	}
+
+	displayPot() {
+		this.pot.render();
+	}
+
+
+
+
 
 	async animateRiver() {
 		if (!this.browser_active || !document.getElementById('deal')) {
@@ -329,8 +229,8 @@
 						callback: () => {
 							this.game.state.pot--;
 							this.game.state.player_credit[player_indices[j]]++;
-							this.updatePot();
-							this.refreshPlayerStack(player_indices[j] + 1);
+							this.pot.render();
+							this.displayPlayerStack(player_indices[j] + 1);
 						},
 						run_all_callbacks: true
 					},
@@ -363,8 +263,8 @@
 					callback: () => {
 						this.game.state.pot++;
 						this.game.state.player_credit[player_index]--;
-						this.updatePot();
-						this.refreshPlayerStack(player_index+1);
+						this.pot.render();
+						this.displayPlayerStack(player_index+1);
 					},
 					run_all_callbacks: !restartQueue
 				},
@@ -431,23 +331,20 @@
 		this.restartQueue();
 	}
 
-	refreshPlayerLog(html, player) {
+	displayPlayerLog(html, player) {
 		this.playerbox.updateBody(html, player);
 	}
 
-	refreshPlayerStack(player) {
-		if (!this.browser_active) {
-			return;
-		}
+	displayPlayerStack(player) {
+
+		if (!this.browser_active) { return; }
 
 		let credit = this.game.state.player_credit[player - 1]; 
+		let userline = `${this.returnPlayerRole(player)}<div class="saito-balance">${this.formatWager(credit)}</div>`;
 
-		let userline =
-			this.returnPlayerRole(player) +
-			`<div class="saito-balance">${this.formatWager(credit)}</div>`;
-		this.playerbox.updateUserline(userline, player);
+		this.playerbox.renderUserline(userline, player);
+		this.stack.render();
 
-		this.healthBars[player-1].render(credit);
 	}
 
 	async exitGame(){
@@ -502,7 +399,7 @@
 
 		if (this.browser_active) {
 			if (this.publicKey !== resigning_player) {
-				this.refreshPlayerLog(
+				this.displayPlayerNotice(
 					`<div class="plog-update">left the table</div>`,
 					loser
 				);
@@ -523,15 +420,9 @@
 		}
 	}
 
-	returnGameRulesHTML() {
-		return PokerGameRulesTemplate(this.app, this);
-	}
-
-	returnAdvancedOptions() {
-		return PokerGameOptionsTemplate(this.app, this);
-	}
 
 	attachAdvancedOptionsEventListeners() {
+
 		let blindModeInput = document.getElementById('blind_mode');
 		let numChips = document.getElementById('num_chips');
 		let blindDisplay = document.getElementById('blind_explainer');
@@ -569,50 +460,9 @@
 		if (crypto) {
 			crypto.onchange = updateChips;
 		}
-		// if (stake){
-		//   stake.onchange = updateChips;
-		// }
 		if (numChips) {
 			numChips.onchange = updateChips;
 		}
-	}
-
-	returnShortGameOptionsArray(options) {
-		let sgoa = super.returnShortGameOptionsArray(options);
-		let ngoa = {};
-		let crypto = '';
-		for (let i in sgoa) {
-			if (sgoa[i] != '') {
-				let okey = i;
-				let oval = sgoa[i];
-
-				let output_me = 1;
-				if (okey == 'chip') {
-					if (oval !== '0') {
-						okey = 'small blind';
-					} else {
-						output_me = 0;
-					}
-				}
-				if (okey == 'blind_mode') {
-					if (oval == 'increase') {
-						okey = 'mode';
-						oval = 'tournament';
-					} else {
-						output_me = 0;
-					}
-				}
-				if (okey == 'num_chips') {
-					okey = 'chips';
-				}
-
-				if (output_me == 1) {
-					ngoa[okey] = oval;
-				}
-			}
-		}
-
-		return ngoa;
 	}
 
 	updateStatus(str, hide_info = 0) {

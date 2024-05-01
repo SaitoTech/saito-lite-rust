@@ -1,9 +1,5 @@
 const GameBoardTemplate = require('./game-board.template');
-const SaitoOverlay = require('./../../../../../lib/saito/ui/saito-overlay/saito-overlay');
 
-/**
- * GameBoard is the main class that handles the Poker table.
- */
 class GameBoard {
 
 	/**
@@ -13,13 +9,21 @@ class GameBoard {
 	constructor(app, mod) {
 		this.app = app;
 		this.game_mod = mod;
-                this.overlay = new SaitoOverlay(this.app, this.game_mod);
 	}
 
 	render() {
 
-		this.app.browser.addElementToDom(GameBoardTemplate());
-		this.attachEvents();
+		if (!document.querySelector(".gameboard")) {
+		  this.app.browser.addElementToDom(GameBoardTemplate());
+		  this.attachEvents();
+		}
+
+
+		this.game_mod.playerbox.render();
+		this.game_mod.cardfan.render();
+		this.game_mod.stack.render();
+		this.game_mod.pot.render();
+
 	}
 
 	attachEvents() {

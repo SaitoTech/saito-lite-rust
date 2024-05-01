@@ -1,0 +1,22 @@
+
+.playerboxes {
+    display: flex;
+    flex-direction: row;
+    width: 95vw;
+    height: max-content;
+    justify-content: space-between;
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    top: 5rem;
+    left: 50%;
+    transform: translate(-50%, 0%);
+}
+
+.playerbox {
+    display: block;
+    height: 10rem;
+    width: 40rem;
+    background-color: red;
+}
+

@@ -1,15 +1,17 @@
 
 	handleGameLoop() {
+
 		///////////
 		// QUEUE //
 		///////////
 		if (this.game.queue.length > 0) {
+
 			let qe = this.game.queue.length - 1;
 			let mv = this.game.queue[qe].split('\t');
 			let shd_continue = 1;
 
 			if (this.browser_active) {
-				this.updatePot(); //to update pot on blinds and bets...
+				this.pot.render();
 			}
 
 			if (mv[0] === 'winner') {
@@ -145,17 +147,12 @@
 						i--
 					) {
 						if (this.game.state.player_credit[i] <= 0) {
-							this.updateLog(
-								`Player ${i + 1} (${
-									this.game.state.player_names[i]
-								}) has been eliminated from the game.`
-							);
+							this.updateLog(`Player ${i + 1} (${this.game.state.player_names[i]}) has been eliminated from the game.`);
 							removal = true;
 							//
 							// remove any players who are missing
-							if (this.game.players[i] == this.publicKey){
-								am_i_out = true;
-							}
+							//
+							if (this.game.players[i] == this.publicKey){ am_i_out = true; }
 
 							this.removePlayerFromState(i);
 							this.removePlayer(this.game.players[i]);
@@ -366,7 +363,7 @@
 					if (player_to_go == this.game.player) {
 						this.playerTurn();
 					} else {
-						this.refreshPlayerLog(
+						this.displayPlayerNotice(
 							`<div class="plog-update">active player</div>`,
 							player_to_go
 						);
@@ -510,7 +507,7 @@
 				var winlist = [];
 
 				for (let i = 1; i <= this.game.players.length; i++){
-					this.playerbox.updateUserline(`<span></span><div class="saito-balance">${this.formatWager(this.game.state.player_credit[i-1])}</div>`, i);			
+					this.playerbox.renderUserline(`<span></span><div class="saito-balance">${this.formatWager(this.game.state.player_credit[i-1])}</div>`, i);			
 				}
 
 				//Sort hands from low to high
@@ -755,8 +752,6 @@
 					this.animateBet(this.game.state.big_blind, bbpi);
 				}
 
-				//this.refreshPlayerLog(`<div class="plog-update">committed: ${this.formatWager(this.game.state.big_blind)}</div>`,this.game.state.big_blind_player);
-
 				//
 				// Small Blind
 				//
@@ -842,7 +837,7 @@
 							' goes all in to call'
 					);
 					if (this.game.player !== player) {
-					this.refreshPlayerLog(
+					this.displayPlayerNotice(
 						`<div class="plog-update">All in!</div>`,
 						player
 					);
@@ -853,7 +848,7 @@
 						this.game.state.player_names[player - 1] + ' calls'
 					);
 					if (this.game.player !== player) {
-						this.refreshPlayerLog(
+						this.displayPlayerNotice(
 							`<div class="plog-update">calls</div>`,
 							player
 						);
@@ -872,7 +867,7 @@
 				
 				this.game.queue.splice(qe, 1);
 
-				this.refreshPlayerStack(player); //Here we don't want to hide cards
+				this.displayPlayerStack(player); //Here we don't want to hide cards
 
 
 				return 0;
@@ -892,7 +887,7 @@
 
 				if (this.browser_active) {
 					if (this.game.player !== player) {
-						this.refreshPlayerLog(
+						this.displayPlayerNotice(
 							`<div class="plog-update">folds</div>`,
 							player
 						);
@@ -910,7 +905,7 @@
 					this.game.state.player_names[player - 1] + ' checks.'
 				);
 				if (this.game.player !== player && this.browser_active) {
-					this.refreshPlayerLog(
+					this.displayPlayerLog(
 						`<div class="plog-update">checks</div>`,
 						player
 					);
@@ -937,7 +932,7 @@
 					this.game.state.all_in = true;
 					raise_message = `goes all in `;
 					if (this.game.player !== player && this.browser_active) {
-						this.refreshPlayerLog(
+						this.displayPlayerNotice(
 							`<div class="plog-update">all in!</div>`,
 							player
 						);
@@ -966,7 +961,7 @@
 							this.game.player !== player &&
 							this.browser_active
 						) {
-							this.refreshPlayerLog(
+							this.displayPlayerNotice(
 								`<div class="plog-update">raises ${this.formatWager(
 									raise_portion
 								)}</div>`,
@@ -983,7 +978,7 @@
 							this.game.player !== player &&
 							this.browser_active
 						) {
-							this.refreshPlayerLog(
+							this.displayPlayerNotice(
 								`<div class="plog-update">calls ${this.formatWager(
 									call_portion
 								)}</div>`,
@@ -1000,7 +995,7 @@
 						)}`
 					);
 					if (this.game.player !== player && this.browser_active) {
-						this.refreshPlayerLog(
+						this.displayPlayerNotice(
 							`<div class="plog-update">raises ${this.formatWager(
 								raise
 							)}</div>`,
@@ -1009,7 +1004,7 @@
 					}
 				}
 				this.game.queue.splice(qe, 1);
-				this.refreshPlayerStack(player); //Here we don't want to hide cards
+				this.displayPlayerStack(player); //Here we don't want to hide cards
 
 				return 0;
 			}

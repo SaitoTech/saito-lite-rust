@@ -1,0 +1,30 @@
+
+.pot img {
+  display: block;
+  width: 280px;
+  transform: rotate(3deg);
+}
+
+.pot {
+  position: absolute;
+  top: 10px;
+  display: flex;
+  justify-content: center;
+  width: 80vw;
+  margin-left: 10vw;
+}
+
+.potlabel {
+  color: #fff;
+  font-size: 3rem;
+  font-family: sans;
+  text-align: center;
+  position: absolute;
+  top: 80px;
+  width: 50px;
+  background-color: #0008;
+  padding: 5px 20px;
+  border-radius: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+}

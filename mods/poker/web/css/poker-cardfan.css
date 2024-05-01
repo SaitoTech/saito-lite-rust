@@ -1,0 +1,23 @@
+
+.cardfan {
+  display: block;
+  position: relative;
+  top: 40px;
+  left: 60px;
+}
+
+.cardfan > .card:nth-child(1), .hand > .card:nth-child(1) {
+  transform: rotate(-15deg);
+  left: 0px;
+}
+
+.cardfan > .card:nth-child(2), .hand > .card:nth-child(2) {
+  transform: rotate(-5deg);
+  left: 3vh;
+}
+
+.cardfan .card {
+  position: absolute;
+  height: auto;
+}
+
