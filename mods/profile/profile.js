@@ -1,7 +1,7 @@
 const saito = require('../../lib/saito/saito');
 const Transaction = require("../../lib/saito/transaction").default;
 const ModTemplate = require('../../lib/templates/modtemplate');
-const PhotoUploader = require('../../lib/saito/ui/photo-uploader/photo-uploader');
+const PhotoUploader = require('../../lib/saito/ui/saito-photo-uploader/saito-photo-uploader');
 const UpdateDescription = require('./lib/ui/update-description');
 
 
