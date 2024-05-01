@@ -207,7 +207,7 @@ function reset_persistent {
 #  rm -f ./data/post.sq3
 #  rm -f ./data/arcade.sq3
 #  rm -f ./data/archive.sq3
-  rm -f ./data/profile.sq3
+  rm -f ./data/registry.sq3
   rm -f ./data/league.sq3
   rm -f ./data/tutorial.sq3
   rm -f ./web/client.options
