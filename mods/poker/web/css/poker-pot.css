@@ -6,9 +6,10 @@
 }
 
 .pot {
+  display: none;
+/*  display: flex; */
   position: absolute;
   top: 10px;
-  display: flex;
   justify-content: center;
   width: 80vw;
   margin-left: 10vw;

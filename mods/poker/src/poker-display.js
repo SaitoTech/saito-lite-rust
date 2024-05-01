@@ -153,7 +153,7 @@
 
 
 	displayPlayerNotice(msg, player) {
-		this.game_mod.playerbox.renderNotice(msg, player);
+		this.playerbox.renderNotice(msg, player);
 	}
 
 	displayTable() {

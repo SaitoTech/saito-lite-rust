@@ -7,6 +7,9 @@ class Cardfan {
 		this.game_mod = mod;
 	}
 
+	hide() {
+	}
+
 	render() {
 		if (!document.querySelector(".cardfan")) {
 		  this.app.browser.addElementToDom(CardfanTemplate());
