@@ -40,8 +40,6 @@ class Poker extends GameTableTemplate {
 		this.cardfan = new Cardfan(app, this);
 		this.playerbox = new Playerbox(app, this);
 
-		this.animationSpeed = 800;
-
      /********************
      *********************
      *********************
@@ -477,7 +475,6 @@ class Poker extends GameTableTemplate {
 					}
 
 					this.cardfan.hide();
-					this.animateWin(this.game.state.pot, [player_left_idx]);
 					this.playerAcknowledgeNotice(msg, async () => {
 						this.settleLastRound([this.game.players[player_left_idx]], "fold");
 						this.clearTable();
@@ -593,8 +590,6 @@ class Poker extends GameTableTemplate {
 					}
 					return 1;
 				}
-
-				this.animateRiver();
 
 				if (this.game.state.flipped === 3) {
 					this.updateLog(
@@ -899,7 +894,6 @@ class Poker extends GameTableTemplate {
 
 				this.halted = 1;
 				this.cardfan.hide();
-				this.animateWin(pot_size, winners);
 				this.playerAcknowledgeNotice(winnerStr, async () => {
 					this.settleLastRound(winner_keys, "besthand");
 					this.clearTable();
@@ -931,7 +925,6 @@ class Poker extends GameTableTemplate {
 						this.game.state.player_credit[bbpi];
 					//this.game.state.pot += this.game.state.player_credit[bbpi];
 					//this.game.state.player_credit[bbpi] = 0;
-					this.animateBet(this.game.state.player_credit[bbpi], bbpi);
 					this.game.state.passed[bbpi] = 1;
 				} else {
 					this.updateLog(
@@ -946,7 +939,6 @@ class Poker extends GameTableTemplate {
 					//this.game.state.pot += this.game.state.big_blind;
 					//this.game.state.player_credit[bbpi] -=
 					//	this.game.state.big_blind;
-					this.animateBet(this.game.state.big_blind, bbpi);
 				}
 
 				//
@@ -965,7 +957,6 @@ class Poker extends GameTableTemplate {
 						this.game.state.player_credit[sbpi];
 					//this.game.state.pot += this.game.state.player_credit[sbpi];
 					//this.game.state.player_credit[sbpi] = 0;
-					this.animateBet(this.game.state.player_credit[sbpi], sbpi);
 					this.game.state.passed[sbpi] = 1;
 				} else {
 					this.updateLog(
@@ -980,7 +971,6 @@ class Poker extends GameTableTemplate {
 					//this.game.state.pot += this.game.state.small_blind;
 					//this.game.state.player_credit[sbpi] -=
 					//	this.game.state.small_blind;
-					this.animateBet(this.game.state.small_blind, sbpi);
 				}
 
 				this.displayPlayers(true); //Update Chip stacks after betting
@@ -1058,7 +1048,6 @@ class Poker extends GameTableTemplate {
 				//
 				
 				this.game.state.player_pot[player - 1] += amount_to_call;
-				this.animateBet(amount_to_call, player - 1, true);
 				//this.game.state.pot += amount_to_call;
 				//this.game.state.player_credit[player - 1] -= amount_to_call;
 				
@@ -1135,8 +1124,6 @@ class Poker extends GameTableTemplate {
 						);
 					}
 				}
-
-				this.animateBet(raise, player - 1, true);
 
 				this.game.state.last_raise = raise_portion;
 				this.game.state.required_pot += raise_portion;
@@ -1371,6 +1358,10 @@ class Poker extends GameTableTemplate {
 	}
 
 
+	displayPlayerNotice(msg, player) {
+		this.game_mod.playerbox.renderNotice(msg, player);
+	}
+
 	displayTable() {
 		if (!this.browser_active) {
 			return;
@@ -1408,145 +1399,15 @@ class Poker extends GameTableTemplate {
 
 
 
-
-
-	async animateRiver() {
-		if (!this.browser_active || !document.getElementById('deal')) {
-			return;
-		}
-
-		for (let i = 0; i < this.game.pool[0].hand.length; i++) {
-			let card = this.game.pool[0].cards[this.game.pool[0].hand[i]];
-			let nthSlot = $('#deal').children().get(i);
-
-			if (
-				nthSlot.classList.contains('flipped') ||
-				!nthSlot.classList.contains('flip-card')
-			) {
-				continue;
-			}
-			$(nthSlot).append(
-				`<img class="card cardFront" src="${this.card_img_dir}/${card.name}">`
-			);
-			await this.timeout(250);
-			$(nthSlot).addClass('flipped');
-		}
-	}
-
-	//
-	// We will actually increment player stack / decrement the game pot in this function!!!
-	//
-	async animateWin(amount, player_indices){	
-
-		for (let i = 0; i < amount; i++){
-	
-			for (let j = 0; j < player_indices.length; j++){
-
-				this.moveGameElement(this.createGameElement(`<div class="poker-chip"></div>`, ".pot-chips"),
-					`.game-playerbox-${player_indices[j] + 1}`,
-					{
-						callback: () => {
-							this.game.state.pot--;
-							this.game.state.player_credit[player_indices[j]]++;
-							this.pot.render();
-							this.displayPlayerStack(player_indices[j] + 1);
-						},
-						run_all_callbacks: true
-					},
-					(item) => {
-						$(item).remove();
-					});
-				await this.timeout(1000/amount);
-			}
-		}
-
-		if (this.game.state.pot > 0) {
-			// ***TO DO: examine possibility of fractional chips
-			// Randomly give the remaining chip to one player
-		}
-
-
-	}
-
-	async animateBet(amount, player_index, restartQueue = false){
-
-		if (restartQueue){
-			this.halted = 1;
-		}
-		
-		for (let i = 0; i < amount; i++){
-
-			this.moveGameElement(this.createGameElement(`<div class="poker-chip"></div>`, `.game-playerbox-${player_index+1}`),
-				".pot-chips",
-				{
-					callback: () => {
-						this.game.state.pot++;
-						this.game.state.player_credit[player_index]--;
-						this.pot.render();
-						this.displayPlayerStack(player_index+1);
-					},
-					run_all_callbacks: !restartQueue
-				},
-				(item) => {
-					if (!restartQueue){
-						$(item).remove();	
-					}else{
-						$('.animated_elem').remove();
-						console.log("*******************************");
-						this.restartQueue();
-					}
-					
-				});
-			await this.timeout(500/amount);
-		}
-
-	}
-
 	async clearTable() {
 		if (!this.browser_active) {
 			return;
 		}
 
 		$('#pot').fadeOut(1650);
-
-
-		$('.game-playerbox-graphics .hand').animate(
-			{ left: '1000px' },
-			1200,
-			'swing',
-			function () {
-				$(this).remove();
-			}
-		);
-
-		await this.timeout(600);
-
-		$($('#deal').children().get().reverse()).each(function (index) {
-			$(this)
-				.delay(50 * index)
-				.queue(function () {
-					$(this)
-						.removeClass('flipped')
-						.delay(20 * index)
-						.queue(function () {
-							$(this)
-								.animate(
-									{ left: '1000px' },
-									1200,
-									'swing',
-									function () {
-										$(this).remove();
-									}
-								)
-								.dequeue();
-						})
-						.dequeue();
-				});
-		});
-
 		$('.winner').removeClass('winner');
 
-		await this.timeout(1000);
+		await this.timeout(200);
 		this.restartQueue();
 	}
 
@@ -1707,7 +1568,7 @@ class Poker extends GameTableTemplate {
 			if (status_obj) {
 				status_obj.innerHTML = str;
 			} else {
-				this.playerbox.updateBody(
+				this.playerbox.renderNotice(
 					`<div class="status">${str}</div>`,
 					this.game.player
 				);

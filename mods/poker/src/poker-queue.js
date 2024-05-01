@@ -280,7 +280,6 @@
 					}
 
 					this.cardfan.hide();
-					this.animateWin(this.game.state.pot, [player_left_idx]);
 					this.playerAcknowledgeNotice(msg, async () => {
 						this.settleLastRound([this.game.players[player_left_idx]], "fold");
 						this.clearTable();
@@ -396,8 +395,6 @@
 					}
 					return 1;
 				}
-
-				this.animateRiver();
 
 				if (this.game.state.flipped === 3) {
 					this.updateLog(
@@ -702,7 +699,6 @@
 
 				this.halted = 1;
 				this.cardfan.hide();
-				this.animateWin(pot_size, winners);
 				this.playerAcknowledgeNotice(winnerStr, async () => {
 					this.settleLastRound(winner_keys, "besthand");
 					this.clearTable();
@@ -734,7 +730,6 @@
 						this.game.state.player_credit[bbpi];
 					//this.game.state.pot += this.game.state.player_credit[bbpi];
 					//this.game.state.player_credit[bbpi] = 0;
-					this.animateBet(this.game.state.player_credit[bbpi], bbpi);
 					this.game.state.passed[bbpi] = 1;
 				} else {
 					this.updateLog(
@@ -749,7 +744,6 @@
 					//this.game.state.pot += this.game.state.big_blind;
 					//this.game.state.player_credit[bbpi] -=
 					//	this.game.state.big_blind;
-					this.animateBet(this.game.state.big_blind, bbpi);
 				}
 
 				//
@@ -768,7 +762,6 @@
 						this.game.state.player_credit[sbpi];
 					//this.game.state.pot += this.game.state.player_credit[sbpi];
 					//this.game.state.player_credit[sbpi] = 0;
-					this.animateBet(this.game.state.player_credit[sbpi], sbpi);
 					this.game.state.passed[sbpi] = 1;
 				} else {
 					this.updateLog(
@@ -783,7 +776,6 @@
 					//this.game.state.pot += this.game.state.small_blind;
 					//this.game.state.player_credit[sbpi] -=
 					//	this.game.state.small_blind;
-					this.animateBet(this.game.state.small_blind, sbpi);
 				}
 
 				this.displayPlayers(true); //Update Chip stacks after betting
@@ -861,7 +853,6 @@
 				//
 				
 				this.game.state.player_pot[player - 1] += amount_to_call;
-				this.animateBet(amount_to_call, player - 1, true);
 				//this.game.state.pot += amount_to_call;
 				//this.game.state.player_credit[player - 1] -= amount_to_call;
 				
@@ -938,8 +929,6 @@
 						);
 					}
 				}
-
-				this.animateBet(raise, player - 1, true);
 
 				this.game.state.last_raise = raise_portion;
 				this.game.state.required_pot += raise_portion;
