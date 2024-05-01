@@ -16,35 +16,38 @@ class Profile extends ModTemplate {
 
         app.connection.on('profile-fetch-content-and-update-dom', async (key) => {
             console.log('retrieving keychain')
-
-
             // get the sig using the key
-            let key_ = this.app.keychain.returnKey(key);
-            let signature = key_.banner
-            console.log(key_)
+            let returned_key = this.app.keychain.returnKey(key);
+            let banner_sig = returned_key.banner
+            let description_sig = returned_key.description
+            let image_sig = returned_key.image;
 
-            await this.returnProfileBanner(signature, key, (banner) => {
+            await this.returnProfileBanner(banner_sig, key, (banner) => {
                 const elementId = `${key}-profile-banner`;
                 const element = document.querySelector(`#${elementId}`);
-                element.style.backgroundImage = `url('${banner}')`;
+                if (element) {
+                    element.style.backgroundImage = `url('${banner}')`;
+                }
+
             })
 
 
-            await this.returnProfileDescription(signature, key, (description) => {
+            await this.returnProfileDescription(description_sig, key, (description) => {
                 const elementId = `${key}-profile-description`;
                 const element = document.querySelector(`#${elementId}`);
-                console.log("description here", description, key)
-                element.textContent = description
+                if (element) {
+                    element.textContent = description
+                }
+                // console.log("description here", description, key)
+
 
             })
-            await this.returnProfileImage(signature, key, (image) => {
+            await this.returnProfileImage(image_sig, key, (image) => {
                 const elementId = `${key}-profile-image`;
                 const element = document.querySelector(`#${elementId}`);
                 if (element) {
                     element.src = image
                 }
-
-                console.log('image here', image)
             })
         })
 
@@ -69,6 +72,10 @@ class Profile extends ModTemplate {
         }
     }
 
+
+    onPeerHandshakeComplete() {
+        this.sendProfileTransaction({ description: "my name is davik" })
+    }
 
 
 
@@ -216,10 +223,6 @@ class Profile extends ModTemplate {
     }
 
     async returnProfileDescription(sig, publicKey, callback) {
-        // if (typeof callback !== "function") {
-        //     console.error(`Callback not present or not a function for "returnProfileDescription"`);
-        //     return;
-        // }
 
         if (this.cache[publicKey] && this.cache[publicKey].description) {
             if (callback) {
