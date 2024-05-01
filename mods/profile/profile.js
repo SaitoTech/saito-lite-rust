@@ -15,8 +15,8 @@ class Profile extends ModTemplate {
         this.cache = {}
 
         app.connection.on('profile-fetch-content-and-update-dom', async (key) => {
-            console.log('retrieving keychain')
-            // get the sig using the key
+            console.log('retrieving key from keychain')
+            // get the signatures using the key
             let returned_key = this.app.keychain.returnKey(key);
             let banner_sig = returned_key.banner
             let description_sig = returned_key.description
