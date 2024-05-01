@@ -33,6 +33,7 @@ class UpdateDescription {
 
             console.log(description, this.mod)
             this.mod.sendProfileTransaction({ description })
+            siteMessage("Updating description")
             this.overlay.remove()
 
 
