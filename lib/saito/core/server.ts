@@ -107,6 +107,16 @@ export class NodeSharedMethods extends CustomSharedMethods {
 		}
 	}
 
+	appendValue(key: string, value: Uint8Array): void {
+		try {
+			fs.appendFileSync(key, value);
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
+	flushData(key: string): void {}
+
 	readValue(key: string): Uint8Array {
 		try {
 			return fs.readFileSync(key);
