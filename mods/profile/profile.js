@@ -2,6 +2,7 @@ const saito = require('../../lib/saito/saito');
 const Transaction = require("../../lib/saito/transaction").default;
 const ModTemplate = require('../../lib/templates/modtemplate');
 const PhotoUploader = require('../../lib/saito/ui/photo-uploader/photo-uploader');
+const UpdateDescription = require('./lib/ui/update-description');
 
 
 class Profile extends ModTemplate {
@@ -16,7 +17,7 @@ class Profile extends ModTemplate {
 
         app.connection.on('profile-fetch-content-and-update-dom', async (key) => {
             console.log('retrieving key from keychain')
-            // get the signatures using the key
+
             let returned_key = this.app.keychain.returnKey(key);
             let banner_sig = returned_key.banner
             let description_sig = returned_key.description
@@ -38,8 +39,6 @@ class Profile extends ModTemplate {
                 if (element) {
                     element.textContent = description
                 }
-                // console.log("description here", description, key)
-
 
             })
             await this.returnProfileImage(image_sig, key, (image) => {
@@ -60,6 +59,13 @@ class Profile extends ModTemplate {
             }
             this.photoUploader.render(this.photo)
         })
+
+        app.connection.on('profile-edit-description', (key) => {
+            const elementId = `${key}-profile-description`;
+            const element = document.querySelector(`#${elementId}`);
+            this.updateDescription = new UpdateDescription(this.app, this)
+            this.updateDescription.render(element.textContent)
+        })
     }
 
 
@@ -71,16 +77,6 @@ class Profile extends ModTemplate {
             }
         }
     }
-
-
-    onPeerHandshakeComplete() {
-        this.sendProfileTransaction({ description: "my name is davik" })
-    }
-
-
-
-
-
 
 
 
@@ -156,6 +152,7 @@ class Profile extends ModTemplate {
                 this.app.keychain.addKey(from, data);
                 await this.saveProfileTransaction(tx)
                 this.saveCache(tx, from)
+                this.app.connection.emit("rerender-profile")
 
             } else {
                 console.log("Key not found");
@@ -228,7 +225,6 @@ class Profile extends ModTemplate {
             if (callback) {
                 callback(this.cache[publicKey].description);
             }
-
             return;
         }
 
@@ -287,5 +283,5 @@ class Profile extends ModTemplate {
 module.exports = Profile;
 
 
-// save cache
+
 

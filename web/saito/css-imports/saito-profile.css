@@ -34,6 +34,7 @@
   height: min(15rem, 12vh);
   background: url("https://pbs.twimg.com/profile_banners/842988756/1679408451/1080x360");
   border-radius: var(--border-radius-profile-banner);
+  position: relative;
 }
 
 .saito-profile-identicon {
@@ -46,6 +47,13 @@
   margin-left: 1rem;
 }
 
+.saito-banner-edit {
+  margin-left: 0;
+  right: .5rem;
+  bottom: .5rem;
+  position: absolute;
+}
+
 .saito-profile-info {
   display: flex;
   flex-direction: column;
@@ -53,6 +61,13 @@
   margin: 2rem 0 0.5rem 1.2rem;
 }
 
+.saito-profile-description {
+  margin-right: .5rem;
+}
+
+.saito-description-edit {
+  font-size: 1.5rem;
+}
 
 .saito-profile-info .saito-username {
   font-size: 1.8rem;
