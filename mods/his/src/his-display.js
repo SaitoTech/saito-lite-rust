@@ -1231,10 +1231,6 @@ try {
             tile += `Ottoman_squadron.svg`;
 	    squadrons -= 2;
           }
-	  if (corsairs >= 1) {
-            tile += `Ottoman_corsair.svg`;
-	    corsairs -= 1;
-          }
         }
         if (z === "venice") {
           tile = "/his/img/tiles/venice/";	  
@@ -1261,7 +1257,6 @@ try {
         html += `<img class="navy_tile" src="${tile}" />`;
       }
 
- 
       while (corsairs >= 1) {
         if (z === "ottoman") {
           tile = "/his/img/tiles/ottoman/";	  
@@ -1270,7 +1265,9 @@ try {
 	    corsairs -= 1;
           }
         }
+
         html += `<img class="navy_tile" src="${tile}" />`;
+
       }
 
     return html;

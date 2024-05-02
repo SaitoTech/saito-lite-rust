@@ -5267,6 +5267,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
+
     if (spaces_with_units.length > 0) { 
       let any_unlocked_units = false;
       for (let i = 0; i < spaces_with_units.length; i++) {

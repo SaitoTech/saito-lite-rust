@@ -5172,6 +5172,7 @@ console.log("selected: " + spacekey);
 	  his_self.displayModal(his_self.returnFactionName(triggering_faction) + " triggers Gout");
 
 	  his_self.game.spaces[source].units[faction][unit_idx].gout = true;
+	  his_self.game.spaces[source].units[faction][unit_idx].locked = true;
 	  his_self.updateLog(his_self.game.spaces[source].units[faction][unit_idx].name + " has come down with gout");
           his_self.game.queue.splice(qe, 1);
 
@@ -5374,9 +5375,13 @@ console.log("selected: " + spacekey);
             if (his_self.game.deck[0].fhand[i].includes('035')) {
 	      let assault_spacekey = his_self.game.state.assault.spacekey;
 	      let attacker_faction = his_self.game.state.assault.attacker_faction;
-	      if (4 >= his_self.returnHopsToFortifiedHomeSpace(assault_spacekey, attacker_faction)) {
-		his_self.assault_overlay.render(his_self.game.state.assault);
-		return 1;
+	      for (let z = 0; z < his_self.game.state.players_info[his_self.game.player-1].factions.length; z++) {
+		if (attacker_faction == his_self.game.state.players_info[his_self.game.player-1].factions[z]) {
+	          if (4 >= his_self.returnHopsToFortifiedHomeSpace(assault_spacekey, attacker_faction)) {
+		    his_self.assault_overlay.render(his_self.game.state.assault);
+	 	    return 1;
+	          }
+	        }
 	      }
               return 0;
             }
@@ -5971,6 +5976,7 @@ console.log("selected: " + spacekey);
 
 	      if (catholic_land_units.length == 1) {
 		his_self.addMove("destroy_unit_by_index\t"+catholic_land_units[0].faction+"\t"+spacekey+"\t"+"\t"+catholic_land_units[0].unit_idx);
+		his_self.addMove("NOTIFY\tZwingli destroys Catholic unit in " + his_self.returnSpaceName(spacekey));
 		his_self.endTurn();
 		return 0;
 	      }
@@ -8235,38 +8241,40 @@ console.log("selected: " + spacekey);
       },
       onEvent : function(his_self, faction) {
 
-	if (his_self.game.state.activated_powers[faction].length > 0) {
+	if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 
-	  let msg = "Which Faction gets Recruits?";
-    	  let html = '<ul>';
-	  if (!(faction == "protestant" && his_self.game.state.events.schmalkaldic_league != 1)) {
-            html += `<li class="option" id="${faction}">${his_self.returnFactionName(faction)}</li>`;
+  	  if (his_self.game.state.activated_powers[faction].length > 0) {
+
+	    let msg = "Which Faction gets Recruits?";
+    	    let html = '<ul>';
+	    if (!(faction == "protestant" && his_self.game.state.events.schmalkaldic_league != 1)) {
+              html += `<li class="option" id="${faction}">${his_self.returnFactionName(faction)}</li>`;
+	    }
+	    for (let i = 0; i < his_self.game.state.activated_powers[faction].length; i++) {
+	      let f = his_self.game.state.activated_powers[faction][i];
+              html += `<li class="option" id="${f}">${his_self.returnFactionName(f)}</li>`;
+ 	    }  
+ 	    html += '</ul>';
+    	    his_self.updateStatusWithOptions(msg, html);
+
+	    $('.option').off();
+	    $('.option').on('click', function () {
+	      his_self.updateStatus("acknowledge");
+	      let action = $(this).attr("id");
+  	      his_self.playerPlayOps("", action, 4, "build");
+	    });
+
+	    return 0;
 	  }
-	  for (let i = 0; i < his_self.game.state.activated_powers[faction].length; i++) {
-	    let f = his_self.game.state.activated_powers[faction][i];
-            html += `<li class="option" id="${f}">${his_self.returnFactionName(f)}</li>`;
- 	  }  
- 	  html += '</ul>';
-    	  his_self.updateStatusWithOptions(msg, html);
 
-	  $('.option').off();
-	  $('.option').on('click', function () {
-	    his_self.updateStatus("acknowledge");
-	    let action = $(this).attr("id");
-  	    his_self.playerPlayOps("", action, 4, "build");
-	  });
-
-	  return 0;
-	}
-
-	//
-	// if no activated factions, must be us
-	//
-	his_self.updateStatus(his_self.returnFactionName(faction) + " playing "+ his_self.popup("076"));
-	let player = his_self.returnPlayerOfFaction(faction);
-	if (his_self.game.player == player) {
+	  //
+	  // if no activated factions, must be us
+	  //
 	  his_self.game.state.events.foreign_recruits = faction;
   	  his_self.playerPlayOps("", faction, 4, "build");
+
+	} else {
+	  his_self.updateStatus(his_self.returnFactionName(faction) + " playing " + his_self.popup("076"));
 	}
 
 	return 0;
@@ -10309,9 +10317,9 @@ console.log("selected: " + spacekey);
 		    his_self.endTurn();
 		  } else {
 
-	  	    let msg = "Produce Corsair instead of Squadron?";
+	  	    let msg = "Produce 2 Corsairs instead of Squadron?";
           	    let html = '<ul>';
-          	    html += '<li class="option" id="corsair">Corsair</li>';
+          	    html += '<li class="option" id="corsair">Corsairs</li>';
           	    html += '<li class="option" id="squadron">Squadron</li>';
           	    html += '</ul>';
 
@@ -10322,6 +10330,9 @@ console.log("selected: " + spacekey);
 
           	      $('.option').off();
 	  	      let unittype = $(this).attr("id");
+		      if (unittype == "corsair") {
+                        his_self.addMove("build\tland\t"+faction+"\t"+unittype+"\t"+spacekey);
+		      }
                       his_self.addMove("build\tland\t"+faction+"\t"+unittype+"\t"+spacekey);
 		      his_self.endTurn();
 
@@ -10487,6 +10498,8 @@ console.log("selected: " + spacekey);
 	  if (leader == "pasha") 	{ leader = "ibrahim-pasha"; faction = "ottoman"; }
 
 	  let r = his_self.rollDice(6);
+
+	  his_self.updateLog(his_self.popup("103") + " rolls " + r);
 
 	  let idx = -1;
 	  let s = his_self.returnSpaceOfPersonage(faction, leader);
