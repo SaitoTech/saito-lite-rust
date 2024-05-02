@@ -16,7 +16,7 @@ class Profile extends ModTemplate {
         this.cache = {}
 
         app.connection.on('profile-fetch-content-and-update-dom', async (key) => {
-            console.log('retrieving key from keychain')
+            // console.log('retrieving key from keychain')
 
             let returned_key = this.app.keychain.returnKey(key);
             let banner_sig = returned_key.banner;
@@ -153,7 +153,7 @@ class Profile extends ModTemplate {
                 this.app.connection.emit("rerender-profile")
 
             } else {
-                console.log("Key not found");
+                // console.log("Key not found");
             }
         } catch (error) {
             console.error("Profile: Error receiving profile transaction", error);
@@ -170,7 +170,7 @@ class Profile extends ModTemplate {
     async returnProfileImage(sig, publicKey, callback) {
 
         if (this.cache[publicKey] && this.cache[publicKey].image) {
-            console.log('Cache hit for image');
+            // console.log('Cache hit for image');
             if (callback) {
                 callback(this.cache[publicKey].image);
             }
@@ -208,7 +208,7 @@ class Profile extends ModTemplate {
                 const banner = tx.msg.data.banner;
                 this.cache[publicKey] = this.cache[publicKey] || {};
                 this.cache[publicKey].banner = banner;  // Update cache
-                console.log(banner, "this is the banner")
+                // console.log(banner, "this is the banner")
                 if (callback) {
                     callback(banner)
                 }
@@ -228,7 +228,7 @@ class Profile extends ModTemplate {
         this.app.storage.loadTransactions({ sig, field1: "Profile" }, (txs) => {
             if (txs?.length > 0) {
                 const tx = txs[0];
-                console.log(tx);
+                // console.log(tx);
                 const description = tx.msg.data.description;
                 this.cache[publicKey] = this.cache[publicKey] || {};
                 this.cache[publicKey].description = description;  // Update cache
