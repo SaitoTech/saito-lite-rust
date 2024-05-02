@@ -69,8 +69,6 @@ font imports
   --saito-faded-icon-font: #6a6a6a;
   --saito-faded-icon-border: #d7d7d7;
   
-  
-
 /*========== MAIN THEME PRESETS ===========*/
 /*CORE*/
   --saito-vh: 1vh;
@@ -106,7 +104,6 @@ font imports
   --shadow-chat-user-self: 4px 0px 2px -2px; /* for adjusting base theme chat messages from self --Adjusted for all themes - but can choose to make it theme-specific */
   --shadow-chat-message-bottom: 0px 2px 4px var(--color-shadow-bubble);
   --text-shadow-normal: 1px 1px 3px;
-
 /*REQUIRED COLORS*/
   --color-black: #000;
   --color-white: #fff;
@@ -118,7 +115,6 @@ font imports
   --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%), linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000), linear-gradient(180deg, #e9ce93, #f71f3d);
   --background-saito-effects: linear-gradient(45deg, var(--color-primary) 0%, var(--color-secondary) 55%, var(--color-primary) 100%) transparent no-repeat left top / 400% auto;
   --saito-primary-background: linear-gradient(45deg, var(--saito-primary) 0%, var(--saito-secondary) 55%, var(--saito-primary) 100%) transparent no-repeat left top / 400% auto;
-
   --saito-heart-animation: url('/redsquare/images/heart.png');
   --saito-heart-animation-clicked: url('/redsquare/images/heart-all-red.png');
 /*========== FIXED OPTIONS PRESETS ===========*/
@@ -157,7 +153,6 @@ font imports
   --border-radius-top-only-round: 1.5rem 1.5rem 0 0;
   --border-radius-topleft-only-soft: 0.5rem 0 0 0;
   --border-radius-topleft-only-round: 1.5rem 0 0 0;
-
   --border-radius-offset: 0rem;
  
  /*BORDER PADDING SELECTION*/ 
@@ -355,7 +350,7 @@ font imports
   --border-thickness-qr-code: var(--border-thickness-medium);
   --border-thickness-post-link: var(--border-thickness-thin);
   --border-thickness-progress-bar: var(--border-thickness-thin);
-  
+  --border-thickness-leaderboard-position: var(--border-thickness-thin);
 /* General Dividers and Borders */
 /*color*/
   --border-color-general-dividers: var(--color-complement);
@@ -415,28 +410,17 @@ font imports
   --border-color-qr-code: var(--color-primary);
   --border-color-league-primary: var(--color-primary);
   --border-color-progress-bar: var(--background-color-main);
+  --border-color-leaderboard-position: var(--color-primary);
 /*shadow*/
   --box-shadow-sidebar-elements: var(--shadow-standard);
-  --box-shadow-chat-popup:;
-  --box-shadow-header-modal
-  --box-shadow-button-primary: ;
-  --box-shadow-button-hover-primary: ;
-  --box-shadow-button-sidebar: ;
-  --box-shadow-button-hover-sidebar: ;
-  --box-shadow-button-chat-container: ;
-  --box-shadow-button-hover-chat-container: ;
-  --box-shadow-button-modal: ;
-  --box-shadow-button-hover-modal: ;
-  --box-shadow-button-module: ;
-  --box-shadow-button-hover-module: ;
-  --box-shadow-button-wallet-control: ;
-  --box-shadow-button-hover-wallet-control: ;
   --text-shadow-progress-bar: var(--text-shadow-normal) var(--color-black);
   --box-shadow-alerts: var(--color-shadow-original);
 /*BACKGROUND SECTION*/
-/* General Background Colors */
+/* Core Background Colors */
   --background-color-main: var(--color-white);
   --background-color-light: var(--color-base);
+  --background-color-ui-elements: var(--color-primary);
+    /* Select Button Background Colors */  
   --background-color-modal-menu: var(--background-color-main);
   --background-color-modal-menu-oldschool: var(--dreamscape);
   --background-color-modal-contacts: var(--background-color-main);
@@ -465,45 +449,49 @@ font imports
   --background-color-chat-popup-input: var(--background-color-main);
   --background-color-hover-chat-popup-message-tag: var(--background-color-main);
 /* Button Background Colors */
+    /* Core Button Background Colors */  
   --background-color-button-primary: var(--background-saito-effects);
-  --background-color-button-sidebar: ;
+  --background-color-button-sidebar: var(--color-primary);
+    /* Select Button Background Colors */ 
   --background-color-button-hover-sidebar: var(--background-color-button-primary);
-  --background-color-button-hover-chat-popup-header: var(--color-primary);
+  --background-color-button-hover-chat-popup-header: var(--color-primary); /**/
   --background-color-button-sidebar-chat-active: var(--background-color-gray-transparent);
-  --background-color-button-hover-chat-container: var(--color-primary);
+  --background-color-button-hover-chat-container: var(--background-color-button-sidebar); /*defaulting to the primary button style breaks it*/
   --background-color-button-simple-contact: none;
-  --background-color-button-hover-simple-contact: var(--color-primary);
+  --background-color-button-hover-simple-contact: var(--background-color-button-sidebar);
   --background-color-button-profile: none;
-  --background-color-button-hover-profile: var(--color-primary);
+  --background-color-button-hover-profile: var(--background-color-button-sidebar);
   --background-color-button-modal: var(--color-base);
   --background-color-button-hover-modal: none;
   --background-color-button-hover-modal-oldschool: var(--color-highlight);
   --background-color-button-hover-module: ;
   --background-color-button-wallet-control: var(--background-color-main); /* wallet control buttons AND the load new tweets */
-  --background-color-button-hover-wallet-control: var(--color-primary);
-  --background-color-button-mod-arcade: var(--background-color-button-hover-wallet-control);
-/* Special UI Components */
+  --background-color-button-hover-wallet-control: var(--background-color-button-sidebar);
+  --background-color-button-mod-arcade: var(--background-color-button-hover-wallet-control);/* buttons within each module's config*/
+  --background-color-button-hover-leaderboard-ranking: var(--background-color-button-sidebar);
+  /* Special UI Components */
   --background-color-sidebar-left: var(--color-base);
   --background-color-shim-normal: var(--background-color-shim-light);
   --background-color-shim-warning: var(--background-color-shim-dark);
-  --background-color-camera: var(--color-primary);
-  --background-color-calendar-today: var(--color-primary);
-  --background-color-calendar-hover: var(--color-primary);
-  --background-color-icon-close: var(--color-primary);
-  --background-color-status-message: var(--color-primary);
+  --background-color-camera: var(--background-color-ui-elements);
+  --background-color-calendar-today: var(--background-color-ui-elements);
+  --background-color-calendar-hover: var(--background-color-ui-elements);
+  --background-color-icon-close: var(--background-color-ui-elements);
+  --background-color-status-message: var(--background-color-ui-elements);
   --background-color-selection-box: var(--color-base);
   --background-color-hover-mention: var(--color-base);
   --background-color-form-input: var(--background-color-main);
-  --background-color-form-input-checkbox-checked: var(--color-primary);
-  --background-color-form-input-range: var(--color-primary);
+  --background-color-form-input-checkbox-checked: var(--background-color-ui-elements);
+  --background-color-form-input-range: var(--background-color-ui-elements);
   --background-color-qr-code: var(--color-base);
   --background-color-file-transfer: var(--color-base);
   --background-color-wallet-inputs: var(--background-color-main);
   --background-color-mode-arcade: var(--color-base);
   --background-color-identicon: var(--background-color-main);
+  --background-color-leaderboard-header: var(--background-color-light);
 /* Progress Bar and Notifications */
   --background-color-progress-bar: var(--background-saito-effects);
-  --background-color-notification-status: var(--color-primary);
+  --background-color-notification-status: var(--background-color-ui-elements);
   --background-color-notification-status-after: var(--color-contrast);
   --background-color-alert-box: var(--background-color-main);
 /* Theme Specific */
