@@ -125,7 +125,7 @@ async function init() {
 			new Factory(),
 			saito.options.wallet?.privateKey || '',
 			LogLevel.Info,
-			BigInt(10)
+			BigInt(1)
 		);
 	} catch (e) {
 		console.error(e);
