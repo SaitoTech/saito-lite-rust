@@ -3585,13 +3585,9 @@ console.log("selected: " + spacekey);
 	    }
 	  );
 
-	  //
-	  // no valid reformation targets
-	  //
 	  if (target_spaces == 0) {
 	    his_self.updateStatus("No valid reformation targets"); 
 	    his_self.updateLog("No valid reformation targets"); 
-	    his_self.game.queue.splice(qe, 1);
 	    return 1;
 	  }
 

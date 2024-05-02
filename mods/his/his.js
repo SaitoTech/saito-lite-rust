@@ -196,7 +196,7 @@ class HereIStand extends GameTemplate {
     this.conquistadors = {};
     this.wives = {};
 
-    this.deck = this.returnDeck();
+    this.deck = this.returnDeck(true);
     this.diplomatic_deck = this.returnDiplomaticDeck();
 
 
@@ -7237,13 +7237,9 @@ console.log("selected: " + spacekey);
 	    }
 	  );
 
-	  //
-	  // no valid reformation targets
-	  //
 	  if (target_spaces == 0) {
 	    his_self.updateStatus("No valid reformation targets"); 
 	    his_self.updateLog("No valid reformation targets"); 
-	    his_self.game.queue.splice(qe, 1);
 	    return 1;
 	  }
 
@@ -37325,7 +37321,7 @@ if (this.game.state.events.cramner_active == 1) {
       //
       // otherwise, we skip if the Protestants cannot interfere
       //
-      if (faction == "protestant" || this.game.deck[0].discards["037"] || this.game.state.events.intervention_on_events_possible == false) {
+      if ((faction == "england" && this.returnPlayerCommandingFaction("protestant") == this.returnPlayerCommandingFaction("england")) || faction == "protestant" || this.game.deck[0].discards["037"] || this.game.state.events.intervention_on_events_possible == false) {
         this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
       } else {
         this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
