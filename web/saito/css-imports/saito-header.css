@@ -290,14 +290,32 @@
   gap: 1rem;
 }
 
-#header-username {
-  color: var(--font-color-header-username);
+#header-msg {
+  color: var(--font-color-header-msg);
   cursor: pointer;
   font-size: 2rem;
   padding: 0 0 0 2rem;
   max-width: 20rem;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+#header-msg.flash {
+  width: fit-content;
+  max-width: fit-content;
+  animation: fade-animation 1.5s infinite ease-in-out;
+}
+
+@keyframes fade-animation {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 /*
@@ -473,7 +491,7 @@
 }
 
 @media screen and (max-width: 420px) {
-  #header-username {
+  #header-msg {
     font-size: 1.5rem;
   }
 }

@@ -85,7 +85,7 @@ html[data-theme="arcade"] {
     /* Menu and Header Font Colors */
       --font-color-menu-hamburger: var(--font-color-heavy);
       --font-color-header-menu: var(--font-color-primary);
-      --font-color-header-username: var(--font-color-heavy);
+      --font-color-header-msg: var(--font-color-heavy);
     /* Alerts and Status Font Colors */
       --font-color-progress-bar: var(--font-color-primary);
       --font-color-alert-box: var(--font-color-primary);

@@ -1006,6 +1006,34 @@ class Mixin extends ModTemplate {
   }
 
 
+  async fetchPendingDeposits(asset_id, destination, callback){
+    //try {
+      let user = MixinApi({
+        keystore: {
+          app_id: this.mixin.user_id,
+          session_id: this.mixin.session_id,
+          pin_token_base64: this.mixin.tip_key_base64,
+          session_private_key: this.mixin.session_seed
+        },
+      });
+
+      let params = {
+        'asset': asset_id,
+        'destination': destination
+      };
+
+      let deposits = await user.safe.pendingDeposits(params);
+    
+
+      console.log('deposits in mixin: ', deposits);
+      return callback(deposits);
+    // } catch(err) {
+    //   console.error("ERROR: Mixin error fetch fetchPendingDeposits: " + err);
+    //   return false;
+    // }
+  }
+
+
   async load() {
     if (this.app?.options?.mixin) {
       this.mixin = this.app.options.mixin;

@@ -626,6 +626,11 @@ class MixinModule extends CryptoModule {
 		});
 	}
 
+	async fetchPendingDeposits(callback = null) {
+
+		return await this.mixin.fetchPendingDeposits(this.asset_id, this.destination, callback);
+	}
+
 }
 
 module.exports = MixinModule;
