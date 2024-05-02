@@ -1716,14 +1716,13 @@ try {
 	  } else {
 	    searched_spaces[key] = { hops : (hops+1) , key : key };
 	  }
+
 	} else {
 
-	  if (this.game.navalspaces[key]) {
-
+	  if (this.game.navalspaces[key] && results.length == 0) {
 	    for (let z = 0; z < this.game.navalspaces[key].ports.length; z++) {
 
 	      let k = this.game.navalspaces[key].ports[z];
-
 	      if (destination_filter(k)) {
 	  	results.push({ hops : (hops+1) , key : k });	
 	  	continue_searching = 0;
@@ -1735,7 +1734,6 @@ try {
 	      }
 	    }
 	  }
-
         }
 
 	if (continue_searching) {
@@ -2202,15 +2200,25 @@ try {
     for (let key in this.game.spaces) {
       let added = false;
       if (this.game.spaces[key].units[faction].length > 0) {
-        spaces_with_infantry.push(key);
-        added = true;
+        for (let z = 0; added != true && z < this.game.spaces[key].units[faction].length; z++) {
+	  let u = this.game.spaces[key].units[faction][z];
+	  if (u.type == "regular" || u.type == "mercenary" || u.type == "cavalry") { 
+            spaces_with_infantry.push(key);
+            added = true;
+	  }
+	} 
       }
       if (adjacency_ok == true && added == false) {
         for (let i = 0; i < this.game.spaces[key].neighbours.length; i++) {
           let n = this.game.spaces[key].neighbours[i];
 	  if (added == false && this.game.spaces[n].units[faction].length > 0) {
-	    spaces_with_infantry.push(key);
-	    added = true;
+            for (let z = 0; added != true && z < this.game.spaces[n].units[faction].length; z++) {
+	      let u = this.game.spaces[n].units[faction][z];
+	      if (u.type == "regular" || u.type == "mercenary" || u.type == "cavalry") { 
+	        spaces_with_infantry.push(key);
+	        added = true;
+	      }
+	    }
 	  }
 	}
       }

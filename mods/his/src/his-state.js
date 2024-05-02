@@ -258,6 +258,7 @@
         if (JSON.stringify(p.captured[z]) === unitjson) { return; }
       }
       unit.capturing_faction = winning_faction;
+      this.updateLog(this.returnFactionName(winning_faction) + " captures " + unit.name);
       p.captured.push(unit);
     }
   }
