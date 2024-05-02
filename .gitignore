@@ -44,6 +44,7 @@ data/shashmaps/*.smap
 data/backup/*
 data/backup
 data/issuance/issuance
+data/saito.stats
 
 bundler
 bundler/*
