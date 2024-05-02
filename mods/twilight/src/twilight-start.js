@@ -54,7 +54,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 1;
+    this.is_testing 	 = 0;
 
     //
     // ui components
@@ -2705,7 +2705,6 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
       // them manually here. Be sure that all of the cards have been
       // dealt ento the DECK during the setup phase though.
       //
-
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
           this.game.deck[0].hand = ["grainsales", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
@@ -2764,6 +2763,7 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
       if (this.game.player == mv[1]) {
         this.playerPlaceInitialInfluence();
       } else {
+	this.game_help.hide();
         this.updateStatusAndListCards(`${(mv[1] == 1)?"USSR":"US"} is making its initial placement of influence:`);
       }
 
@@ -2773,8 +2773,9 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
 
     if (mv[0] === "placement_bonus") {
-      //Only the US gets a placement_bonus
-
+      //
+      // only the US gets a placement_bonus
+      //
       if (this.game.player == mv[1]) {
         this.playerPlaceBonusInfluence(mv[2]);
       } else {

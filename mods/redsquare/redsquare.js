@@ -360,6 +360,7 @@ class RedSquare extends ModTemplate {
       // And have the service node process the addTweet function (with a lot of pruning), to keep the most
       // recent tweets in memory, ready to serve up on a page load request...
     } else {
+
       //Add myself as a peer...
       this.addPeer("localhost");
 

@@ -269,6 +269,16 @@ class RedSquareMain {
       return 0;
     }
 
+    //
+    // if the user is typing something
+    //
+    let textareas = document.querySelectorAll('textarea');
+    for (var i = 0; i < textareas.length; i++) {
+      if (textareas[i].value.trim() !== '') {
+        return 1;
+      }
+    }
+
     if (this.idleTime >= 10) {
       return 1;
     }

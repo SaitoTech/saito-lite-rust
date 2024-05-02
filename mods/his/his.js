@@ -13969,9 +13969,9 @@ console.log("selected: " + spacekey);
 		    his_self.endTurn();
 		  } else {
 
-	  	    let msg = "Produce Corsair instead of Squadron?";
+	  	    let msg = "Produce 2 Corsairs instead of Squadron?";
           	    let html = '<ul>';
-          	    html += '<li class="option" id="corsair">Corsair</li>';
+          	    html += '<li class="option" id="corsair">Corsairs</li>';
           	    html += '<li class="option" id="squadron">Squadron</li>';
           	    html += '</ul>';
 
@@ -13982,6 +13982,9 @@ console.log("selected: " + spacekey);
 
           	      $('.option').off();
 	  	      let unittype = $(this).attr("id");
+		      if (unittype == "corsair") {
+                        his_self.addMove("build\tland\t"+faction+"\t"+unittype+"\t"+spacekey);
+		      }
                       his_self.addMove("build\tland\t"+faction+"\t"+unittype+"\t"+spacekey);
 		      his_self.endTurn();
 
@@ -46365,10 +46368,6 @@ try {
             tile += `Ottoman_squadron.svg`;
 	    squadrons -= 2;
           }
-	  if (corsairs >= 1) {
-            tile += `Ottoman_corsair.svg`;
-	    corsairs -= 1;
-          }
         }
         if (z === "venice") {
           tile = "/his/img/tiles/venice/";	  
@@ -46395,7 +46394,6 @@ try {
         html += `<img class="navy_tile" src="${tile}" />`;
       }
 
- 
       while (corsairs >= 1) {
         if (z === "ottoman") {
           tile = "/his/img/tiles/ottoman/";	  
@@ -46404,7 +46402,9 @@ try {
 	    corsairs -= 1;
           }
         }
+
         html += `<img class="navy_tile" src="${tile}" />`;
+
       }
 
     return html;

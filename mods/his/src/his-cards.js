@@ -10317,9 +10317,9 @@ console.log("selected: " + spacekey);
 		    his_self.endTurn();
 		  } else {
 
-	  	    let msg = "Produce Corsair instead of Squadron?";
+	  	    let msg = "Produce 2 Corsairs instead of Squadron?";
           	    let html = '<ul>';
-          	    html += '<li class="option" id="corsair">Corsair</li>';
+          	    html += '<li class="option" id="corsair">Corsairs</li>';
           	    html += '<li class="option" id="squadron">Squadron</li>';
           	    html += '</ul>';
 
@@ -10330,6 +10330,9 @@ console.log("selected: " + spacekey);
 
           	      $('.option').off();
 	  	      let unittype = $(this).attr("id");
+		      if (unittype == "corsair") {
+                        his_self.addMove("build\tland\t"+faction+"\t"+unittype+"\t"+spacekey);
+		      }
                       his_self.addMove("build\tland\t"+faction+"\t"+unittype+"\t"+spacekey);
 		      his_self.endTurn();
 
