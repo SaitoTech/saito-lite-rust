@@ -10,23 +10,28 @@
     return this.returnFactionName(this, player);
   }
   returnFactionNickname(player) {
+console.log("AAA 1");
     if (this.game.state.players_info[player-1] == null) { return "Unknown"; }
+console.log("AAA 2");
     if (this.game.state.players_info[player-1] == undefined) { return "Unknown"; }
+console.log("AAA 3");
     return this.returnFactionNameNickname(this, player);
   }
   returnFactionName(imperium_self, player) {
     let factions = imperium_self.returnFactions();
     return factions[imperium_self.game.state.players_info[player-1].faction].name;
   }
+  returnFactionNameNickname(imperium_self, player) {
+console.log("managed to get here: ");
+    let factions = imperium_self.returnFactions();
+console.log(JSON.stringify(factions));
+    return factions[imperium_self.game.state.players_info[player-1].faction].nickname;
+  }
   returnPlayerOfFaction(faction) {
     for (let i = 0; i < this.game.state.players_info.length; i++) {
       if (this.game.state.players_info[i].faction === faction) { return (i+1); }
     }
     return 0;
-  }
-  returnFactionNameNickname(imperium_self, player) {
-    let factions = imperium_self.returnFactions();
-    return factions[imperium_self.game.state.players_info[player-1].faction].nickname;
   }
   returnPlayerHomeworld(player) {
     let factions = this.returnFactions();
@@ -2439,11 +2444,7 @@ console.log(JSON.stringify(ship));
 
     let sys = null;
 
-console.log("pid: " + pid);
-console.log("board: " + JSON.stringify(this.game.board));
-    
     if (this.game.board[pid] == null) {
-console.log("A");
       //
       // then this must be the name of a sector
       //
@@ -2453,9 +2454,7 @@ console.log("A");
         return;
       }
     } else {
-console.log("B");
       if (this.game.board[pid].tile == null) {
-console.log("C");
         return;
       } else {
         sys = this.game.sectors[this.game.board[pid].tile];

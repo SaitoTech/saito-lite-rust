@@ -2,7 +2,7 @@ this.importStrategyCard("diplomacy", {
   name: "Diplomacy",
   rank: 2,
   img: "/strategy/2_DIPLOMACY.png",
-  text: "<b>Player</b> chooses non-Byzantium sector and refreshes two planets. All others activate sector.<hr /><b>Others</b> may spend strategy token to refresh two planets.",
+  text: "<b>Player</b> exhausts sector and refreshes two planets.<hr /><b>Others</b> may refresh two planets.",
   strategyPrimaryEvent: function(imperium_self, player, strategy_card_player) {
 
     if (imperium_self.game.player == strategy_card_player && player == strategy_card_player) {

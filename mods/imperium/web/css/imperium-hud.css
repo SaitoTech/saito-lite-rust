@@ -2,14 +2,15 @@
 	padding: 2rem;
 }
 
-.status-header-text {
+.status-header-text , .status-message {
 	padding-top: 1.5rem;
 	padding-bottom: 1.5rem;
 	font-family: helvetica, sans-serif;
 	font-size: 1.8rem;
 	line-height: 2.5rem;
+	box-shadow: none;
+	background-color: unset;
 }
-
 .status-update {
 	display: grid;
 	grid-template-columns: min-content 1fr;
@@ -74,10 +75,6 @@
 	width: 100%;
 }
 
-.status-message {
-	background-color: unset;
-	box-shadow: none;
-}
 
 .hud-header {
 	min-height: 40px;

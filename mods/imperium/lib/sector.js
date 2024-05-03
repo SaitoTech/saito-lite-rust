@@ -444,16 +444,13 @@ class Sector {
 			});
 
 			$(qs).on('mouseup', function (e) {
-				console.log('this sector: ' + sector);
-				imperium_self.sector_overlay.render(sector);
 				if (Math.abs(xpos - e.clientX) > 4) {
 					return;
 				}
 				if (Math.abs(ypos - e.clientY) > 4) {
 					return;
 				}
-				//        let pid = $(this).attr("id");
-				//        imperium_self.overlay.show(imperium_self.returnSectorInformationHTML(pid));
+				imperium_self.sector_overlay.render(sector);
 			});
 		} catch (err) {
 			console.log('error attaching events to sector...');

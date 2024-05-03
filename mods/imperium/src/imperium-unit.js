@@ -145,6 +145,7 @@
   loadUnitOntoPlanet(player, sector, planet_idx, unitname) {
     let sys = this.returnSectorAndPlanets(sector);
     let unit_to_add = this.returnUnit(unitname, player);
+console.log("HERE: " + planet_idx + " -- " + sector);
     sys.p[planet_idx].units[player - 1].push(unit_to_add);
     this.saveSystemAndPlanets(sys);
     return JSON.stringify(unit_to_add);

@@ -117,7 +117,7 @@
 	text.push(`${this.returnFactionName(x[3])} yields ${this.returnSpaceName(x[2])} to ${this.returnFactionName(x[1])}`);
       }
       if (x[0] === "approve_divorce" || x[0] === "advance_henry_viii_marital_status") {
-	text.push(`${this.returnFactionName(x[1])} approves Henry VIII divorce`);
+	text.push(`The Papacy approves Henry VIII's divorce`);
       }
       if (x[0] === "rescind_excommunication" || x[0] === "unexcommunicate_faction") {
 	text.push(`Papacy rescinds ${this.returnFactionName(x[1])} excommunication`);
@@ -138,19 +138,13 @@
 
   canPlayerEndWar(his_self, player, faction) {
     let io = his_self.returnDiplomacyImpulseOrder(faction);
-
-console.log("can we end a war: " + faction);
     for (let i = 0; i < io.length; i++) {
-console.log("checking with: " + io[i] + " -- " + his_self.areEnemies(faction, io[i]));
       if (his_self.areEnemies(faction, io[i])) { 
-console.log("enemies: " + faction + " / " + io[i]);
 	if (
 	  !((faction == "papacy" && io[i] == "protestant") || (faction == "protestant" && io[i] == "papacy"))
 	    && 
 	  !((faction == "hapsburg" && io[i] == "protestant") || (faction == "protestant" && io[i] == "hapsburg"))
 	) {
-
-console.log("this player can end war...");
 	  return 1;
 	}
       }
@@ -477,7 +471,7 @@ console.log("this player can end war...");
     let io = his_self.returnDiplomacyImpulseOrder(faction);
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
-      if (faction != io[i]) {
+      if (faction != io[i] && his_self.returnPlayerControllingFaction(faction) != his_self.returnPlayerControllingFaction(io[i])) {
         html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
       }
     }

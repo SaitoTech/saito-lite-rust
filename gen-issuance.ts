@@ -34,7 +34,8 @@ async function genIssuance() {
 		new NodeSharedMethods(app),
 		new Factory(),
 		privateKey,
-		logLevel
+		logLevel,
+		BigInt(1)
 	).then(() => {
 		console.log('saito wasm lib initialized');
 	});

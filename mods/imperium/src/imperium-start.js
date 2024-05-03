@@ -1,4 +1,5 @@
 const GameTemplate = require('../../lib/templates/gametemplate');
+const htmlTemplate = require('./lib/core/game-html.template');
 const JSON = require('json-bigint');
 //const RulesOverlay = require('./lib/overlays/rules');
 const FactionSheetOverlay = require('./lib/overlays/faction-sheet');
@@ -105,7 +106,9 @@ class Imperium extends GameTemplate {
     this.game.tmp_confirms_players  = [];
     
     //
-    // not specific to THIS game
+    // not specific to THIS game, but get events 
+    // attached to them so that there is always
+    // the event functions available here.
     //
     this.factions       	= {};
     this.sectors           	= {}; // objs used to render
@@ -150,7 +153,5 @@ class Imperium extends GameTemplate {
   //
   initializeGameObjects() {
 
-    this.hud.render();
-    this.log.render();
-
+    this.initialize_game_objects = 1;
 

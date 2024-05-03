@@ -353,7 +353,7 @@ console.log("WHO: " + this.returnFaction(z+1));
 	try {
 	  this.app.browser.addElementToDom(`
 		  <div class="background_loader" style="display:none">
-		    <img src="/imperium/img/starscape_background1.jpg" style="width:10px;height:10px" />
+		    <img src="/imperium/img/backgrounds/starscape_background1.jpg" style="width:10px;height:10px" />
 		    <img src="/imperium/img/ships/carrier_100x200.png" style="width:10px;height:10px" />
 		    <img src="/imperium/img/ships/destroyer_100x200.png" style="width:10px;height:10px" />
 		    <img src="/imperium/img/ships/dreadnaught_100x200.png" style="width:10px;height:10px" />

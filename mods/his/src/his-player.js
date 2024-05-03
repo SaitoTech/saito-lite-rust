@@ -374,11 +374,11 @@
           units_to_destroy.push(parseInt(id));
         }
 
-	if (units_available[id].type == "regular") { hits_to_assign -= 1; }
-	if (units_available[id].type == "mercenary") { hits_to_assign -= 1; }
-	if (units_available[id].type == "squadron") { hits_to_assign -= 1; }
-	if (units_available[id].type == "corsair") { hits_to_assign -= 1; }
-	if (units_available[id].type == "cavalry") { hits_to_assign -= 1; }
+	if (space.units[faction][id].type == "regular") { hits_to_assign -= 1; }
+	if (space.units[faction][id].type == "mercenary") { hits_to_assign -= 1; }
+	if (space.units[faction][id].type == "squadron") { hits_to_assign -= 1; }
+	if (space.units[faction][id].type == "corsair") { hits_to_assign -= 1; }
+	if (space.units[faction][id].type == "cavalry") { hits_to_assign -= 1; }
 
         selectUnitsInterface(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface);
 
@@ -447,8 +447,8 @@
           units_to_destroy.push(parseInt(id));
         }
 
-	if (units_available[id].type == "squadron") { hits_to_assign -= 2; }
-	if (units_available[id].type == "corsair") { hits_to_assign -= 1; }
+        if (space.units[faction][id].type == "squadron") { hits_to_assign -= 2; }
+        if (space.units[faction][id].type == "corsair") { hits_to_assign -= 1; }
 
         selectUnitsInterface(his_self, units_to_destroy, hits_to_assign, selectUnitsInterface);
 
@@ -574,9 +574,9 @@
 	let spacekey = units_available[i].spacekey;
 	let unit = his_self.game.spaces[spacekey].units[faction][units_available[i].idx];
         if (units_to_retain.includes(parseInt(i))) {
-          html += `<li class="option" style="font-weight:bold" id="${i}">${units_available[i].name} - (${units_available[i].spacekey})</li>`;
+          html += `<li class="option" style="font-weight:bold" id="${i}">* ${unit.type} - ${units_available[i].spacekey} *</li>`;
         } else {
-          html += `<li class="option" id="${i}">${units_available[i].name} - (${units_available[i].spacekey})</li>`;
+          html += `<li class="option" id="${i}">${unit.type} - ${units_available[i].spacekey}</li>`;
         }
       }
       html += `<li class="option" id="end">finish</li>`;
@@ -596,7 +596,7 @@
 	  //
 	  for (let i = units_available.length; i >= 0; i--) {
 	    if (!units_to_retain.includes(i)) {
-	      his_self.prependMove("destroy_unit_by_index\t"+faction+"\t"+spacekey+"\t"+units_available[i].idx);
+	      his_self.prependMove("destroy_unit_by_index\t"+faction+"\t"+units_available[i].spacekey+"\t"+units_available[i].idx);
 	    }
 	  }
 	  his_self.endTurn();
@@ -604,13 +604,15 @@
 
 	}
 
+	id = parseInt(id);
+
 	//
 	// add unit to units available
 	//
         if (units_to_retain.includes(id)) {
           let idx = units_to_retain.indexOf(id);
           if (idx > -1) {
-            units_to_move.splice(idx, 1);
+            units_to_retain.splice(idx, 1);
           }
         } else {
 	  units_to_retain.push(id);
@@ -621,17 +623,22 @@
 	//
 	if (units_to_retain.length === num_to_retain) {
 
+	  his_self.updateStatus("submitting...");
+
 	  //
 	  // moves prepended to last removed first
 	  //
-	  for (let i = units_available.length; i >= 0; i--) {
+	  for (let i = units_available.length-1; i >= 0; i--) {
 	    if (!units_to_retain.includes(i)) {
-	      his_self.prependMove("destroy_unit_by_index\t"+faction+"\t"+spacekey+"\t"+units_available[i].idx);
+	      his_self.prependMove("destroy_unit_by_index\t"+faction+"\t"+units_available[i].spacekey+"\t"+units_available[i].idx);
 	    }
 	  }
 	  his_self.endTurn();
 	  return;
 	}
+
+        selectUnitsInterface(his_self, units_to_retain, units_available, selectUnitsInterface);
+
       });
     }
 
@@ -2248,7 +2255,7 @@ if (this.game.state.events.cramner_active == 1) {
       //
       // otherwise, we skip if the Protestants cannot interfere
       //
-      if (faction == "protestant" || this.game.deck[0].discards["037"] || this.game.state.events.intervention_on_events_possible == false) {
+      if ((faction == "england" && this.returnPlayerCommandingFaction("protestant") == this.returnPlayerCommandingFaction("england")) || faction == "protestant" || this.game.deck[0].discards["037"] || this.game.state.events.intervention_on_events_possible == false) {
         this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
       } else {
         this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
@@ -4328,6 +4335,8 @@ does_units_to_move_have_unit = true; }
     let retreat_destination = "";
     let space_name = this.game.spaces[spacekey].name;
 
+console.log(loser + " retreating from " + spacekey);
+
     let onFinishSelect = function(his_self, destination_spacekey) {
       his_self.addMove("retreat"+"\t"+loser+"\t"+spacekey+"\t"+destination_spacekey);
       his_self.endTurn();
@@ -4344,12 +4353,16 @@ does_units_to_move_have_unit = true; }
                   "Choose Destination for Retreat:" ,
 
         	  function(space2) {
+console.log("checking: " + space2.key);
+
 	            if (space.neighbours.includes(space2.key)) {
+console.log("is neighbour");
 		      if (his_self.returnPlayerCommandingFaction(loser) === his_self.returnPlayerCommandingFaction(attacker)) {
 	  		if (space2.key === attacker_comes_from_this_spacekey) {
           		  return 1;
 	  		}
 		      } else {
+console.log("can we come from here? " + space2.key + " - " + attacker_comes_from_this_spacekey + " -- " + his_self.game.state.attacker_comes_from_this_spacekey);
           		if (his_self.canFactionRetreatToSpace(loser, space2.key, "") && space2.key !== attacker_comes_from_this_spacekey) {
           		  return 1;
 	  		}
@@ -5254,6 +5267,7 @@ does_units_to_move_have_unit = true; }
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
+
     if (spaces_with_units.length > 0) { 
       let any_unlocked_units = false;
       for (let i = 0; i < spaces_with_units.length; i++) {

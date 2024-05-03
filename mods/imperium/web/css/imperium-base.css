@@ -1,3 +1,12 @@
+.saito-overlay {
+        background: transparent;
+	box-shadow: none;
+}
+
+:root {
+    --background-color-shim-normal: #000C;
+}
+
 .help-question {
 	background-color: goldenrod;
 	padding: 0.5rem 1.5rem 0.5rem 1.5rem;
@@ -209,7 +218,7 @@ ul li {
 	background-size: cover;
 }
 .units-overlay-container {
-	background-image: url('/imperium/img/starscape_background1.jpg');
+	background-image: url('/imperium/img/backgrounds/starscape_background1.jpg');
 	background-size: cover;
 	min-width: 80vw;
 	min-height: 80vh;
@@ -278,7 +287,7 @@ ul li {
 }
 
 .new_secret_objective_overlay {
-	background-image: url('/imperium/img/starscape_background1.jpg');
+	background-image: url('/imperium/img/backgrounds/starscape_background1.jpg');
 	width: 50vw;
 	height: auto;
 	text-align: center;
@@ -334,7 +343,7 @@ ul li {
 }
 
 .new_objectives_overlay_container {
-	background-image: url('/imperium/img/starscape_background1.jpg');
+	background-image: url('/imperium/img/backgrounds/starscape_background1.jpg');
 	background-size: cover;
 	border-radius: 15px;
 	width: 80vw;
@@ -370,7 +379,7 @@ ul li {
 	display: inline-block;
 }
 .new_action_cards_overlay_container {
-	background-image: url('/imperium/img/starscape_background3.jpg');
+	background-image: url('/imperium/img/backgrounds/starscape_background3.jpg');
 	background-size: cover;
 	border-radius: 15px;
 	width: 80vw;
@@ -687,7 +696,7 @@ body {
 }
 
 .game_background {
-	background-image: url(/imperium/img/starscape_background3.jpg);
+	background-image: url(/imperium/img/backgrounds/starscape_background3.jpg);
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -2085,7 +2094,7 @@ input[type='range'] {
 	font-family: 'orbitron-medium', helvetica, arial;
 	line-height: 1.7em;
 	font-size: 1.1em;
-	background-image: url('/imperium/img/starscape-background4.jpg');
+	background-image: url('/imperium/img/backgrounds/starscape-background4.jpg');
 	background-size: cover;
 	color: white;
 	overflow-y: scroll;

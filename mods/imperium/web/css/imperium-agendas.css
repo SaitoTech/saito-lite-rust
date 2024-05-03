@@ -22,12 +22,23 @@
 	line-height: 2.1rem;
 }
 
+
+.saito-overlay:has(> .agenda-overlay) {
+    z-index: 103;
+    display: flex;
+    width: max-content;
+    margin-left: auto;
+    margin-right: auto;
+    height: 85vh; 
+    justify-content: space-between;
+}   
+
+
 .agenda-overlay {
-	display: flex;
-	flex-direction: row;
-	gap: 2rem;
-	justify-content: space-evenly;
-	width: 100%;
-	max-width: 80vw;
-	max-height: 85vh;
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    justify-content: space-evenly;
+    width: 100%;
+    flex-wrap: wrap;
 }

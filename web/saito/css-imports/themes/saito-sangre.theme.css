@@ -108,15 +108,14 @@ html[data-theme="sangre"] {
       --background-color-overlay-menu-header: var(--color-base);
       --background-color-overlay-form-header: var(--color-base);
     /* Button Background Colors */
-      --background-color-button-hover-primary: none;
+      --background-color-button-hover-sidebar: var(--color-primary);
       --background-color-button-hover-sidebar: var(--background-color-button-primary);
       --background-color-button-sidebar-chat-active: var(--color-primary);
       --background-color-button-hover-modal-oldschool: var(--color-primary);
       --background-color-button-chat-popup-send: var(--background-color-main);
     /* Progress Bar */
     /* Sidebar, Headers and Notification Colors */
-      --background-color-button-hover-sidebar: var(--color-primary);
-    /* Special UI Components */
+       /* Special UI Components */
       --background-color-icon-close: var(--color-complement);
       --background-color-hover-post-preview: var(--background-color-main); /* solves the dark theme hover gradient problem*/
     /* Chat Related Colors */

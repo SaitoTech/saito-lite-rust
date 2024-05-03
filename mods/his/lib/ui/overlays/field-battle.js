@@ -239,6 +239,13 @@ try {
 			res.defender_modified_rolls = res.defender_results;
 		}
 
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log(JSON.stringify(res));
+
 		if (res.attacker_modified_rolls) {
 			for (let i = 0; i < res.attacker_modified_rolls.length; i++) {
 				let roll = res.attacker_modified_rolls[i];
