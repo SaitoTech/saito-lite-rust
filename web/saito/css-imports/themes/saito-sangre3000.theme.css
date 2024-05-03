@@ -1,4 +1,4 @@
-html[data-theme="sangre300"] {
+html[data-theme="sangre3000"] {
 
     /* ====================== OLD VARIABLES SECTION =========================== */
       --saito-primary: #b70b0b;
@@ -32,11 +32,11 @@ html[data-theme="sangre300"] {
       --color-contrast: #aaa; /* off-white */
       --color-complement:#a8a8a896;
     /*TINTS COLOR SECTION*/
-      --color-tint-primary: #ddd; /* bright-off-white */ /* very dark gray */
+      --color-tint-primary: #ddd; /* bright-off-white */
       --color-tint-dark: #4c4545; /* very dark gray */
-      --color-highlight: #352c2c; /* saito-red */
+      --color-highlight: #352c2c; /* newly adjusted colour for sangre3000, used in chat and more soon*/
     /*SHADOW COLOR SECTION*/ /* almost black, transparent */
-      --color-shadow-bubble: rgba(0, 0, 0, 0.885);
+      --color-shadow-bubble: #000000E2;  /* slightly lightened shadow */
     /*SHADOW SELECTION*/
     --shadow-chat-popup: var(--shadow-shape-glow-big);
     --box-shadow-sidebar-elements: var(--shadow-shape-flat);
@@ -157,6 +157,7 @@ html[data-theme="sangre300"] {
     /* Button Background Colors */
       --background-color-button-hover-primary: ;
       --background-color-button-hover-chat-container: var(--color-base);
+      --background-color-button-active-sidebar: var(--color-primary);
       --background-color-button-sidebar-chat-active: var(--color-primary);
       --background-color-button-hover-modal-oldschool: var(--color-primary);
       --background-color-button-chat-popup-send: var(--background-color-main);

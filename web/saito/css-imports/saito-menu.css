@@ -29,6 +29,10 @@
   border-radius: var(--border-radius-button-sidebar);
 }
 
+.saito-menu>ul>li:active { /* newly added state, for use in Sangre3000 -only so far */
+  background: var(--background-color-button-active-sidebar);
+ }
+
 .saito-menu>ul>li:hover p {
   background-color: var(--saito-background-color);
   color: var(--font-color-button-hover-sidebar);
