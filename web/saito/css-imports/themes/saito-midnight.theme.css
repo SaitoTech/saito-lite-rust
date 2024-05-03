@@ -12,6 +12,7 @@ html[data-theme="midnight"] {
     /* Spacing and padding adjustments */
       --border-padding-identicon-style: var(--border-padding-identicon-thin);
       --border-padding-style: var(--border-padding-wide);
+      --border-padding-style-leaderboard-ranking: var(--border-padding-small);
     /*TINTS COLOR SECTION*/
       --color-tint-primary: #f8f8f8; /* bright-off-white */
       --color-tint-dark: #4c4545; /* very dark gray */
@@ -103,6 +104,7 @@ html[data-theme="midnight"] {
       --border-radius-sidebar-game-module: var(--border-radius-round);
       --border-radius-identicon-needed: var(--border-radius-voluptuous);
       --border-radius-offset: 0.3rem;
+      --border-radius-leaderboard-ranking: var(--border-radius-round);
 
     /* BORDER THICKNESS */
       --border-thickness-button-primary: var(--border-thickness-thin);

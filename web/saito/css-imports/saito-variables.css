@@ -157,6 +157,7 @@ font imports
   --border-radius-offset: 0rem;
  
  /*BORDER PADDING SELECTION*/ 
+  --border-padding-small: 0.3rem;
   --border-padding-normal: 0.5rem;
   --border-padding-wide: 0.8rem;
   --border-padding-identicon-none: 0px;
@@ -302,8 +303,10 @@ font imports
   --border-radius-identicon-needed: var(--border-radius-sharp);
   --border-radius-progress-bar: var(--border-radius-soft);
   --border-radius-sidebar-chat-manager: var(--border-radius-soft);
-/*Border padding*/ 
+  --border-radius-leaderboard-ranking: var(--border-radius-soft);
+  /*Border padding*/ 
   --border-padding-sidebar-style: var(--border-padding-normal);
+  --border-padding-style-leaderboard-ranking:; /* no override from arcade on main theme */
   --border-padding-identicon-style: var(--border-padding-identicon-none);
 /*thickness*/
   --border-thickness-general-dividers: var(--border-thickness-thin);

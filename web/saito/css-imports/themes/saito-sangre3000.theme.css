@@ -41,7 +41,10 @@ html[data-theme="sangre3000"] {
     --shadow-chat-popup: var(--shadow-shape-glow-big);
     --box-shadow-sidebar-elements: var(--shadow-shape-flat);
     --shadow-chat-message-bottom: 0px 0px 0px var(--color-shadow-bubble); /* flattened and centered the shadow */
-  
+      /* Spacing and padding adjustments */
+      --border-padding-identicon-style: var(--border-padding-identicon-thin);
+      --border-padding-style: var(--border-padding-wide);
+      --border-padding-style-leaderboard-ranking: var(--border-padding-small);
     /*MAIN BACKGROUND COLOR SECTION*/
       --background-color-main: #1f1a1b;
       --background-color-shim-normal: #0009;
@@ -121,6 +124,7 @@ html[data-theme="sangre3000"] {
       --border-radius-status-message: var(--border-radius-round);
       --border-radius-sidebar-game-module: var(--border-radius-round);
       --border-radius-identicon-needed: var(--border-radius-voluptuous);
+      --border-radius-leaderboard-ranking: var(--border-radius-comfortable);
       --border-radius-offset: 0.3rem;
 
     /* BORDER THICKNESS */
