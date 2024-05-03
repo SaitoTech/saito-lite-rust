@@ -54,6 +54,7 @@ html[data-theme="arcade"] {
       --color-shadow-bubble: #000c;
     /*MAIN BACKGROUND COLOR SECTION*/
       --background-color-main: #180c24;
+      --background-color-light: #140a1e;
       --background-color-shim-normal: #0009;
     
     /*FONTS SECTION*/
@@ -177,7 +178,8 @@ html[data-theme="arcade"] {
       --background-color-qr-code: var(--color-base);
       --background-color-wallet-inputs: var(--background-color-main);
       --background-color-button-mod-arcade: var(--background-color-button-hover-wallet-control);
-    /* Chat Related Colors */
+      --background-color-leaderboard-header: var(--background-color-light);
+      /* Chat Related Colors */
       --background-color-chat-container-open: ;
       --background-color-chat-module-sidebar-right-open: var(--background-color-main);
       --background-color-chat-module-sidebar-left: var(--background-color-main);
