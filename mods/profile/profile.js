@@ -19,8 +19,8 @@ class Profile extends ModTemplate {
             console.log('retrieving key from keychain')
 
             let returned_key = this.app.keychain.returnKey(key);
-            let banner_sig = returned_key.banner
-            let description_sig = returned_key.description
+            let banner_sig = returned_key.banner;
+            let description_sig = returned_key.description;
             let image_sig = returned_key.image;
 
             await this.returnProfileBanner(banner_sig, key, (banner) => {
@@ -37,7 +37,7 @@ class Profile extends ModTemplate {
                 const elementId = `${key}-profile-description`;
                 const element = document.querySelector(`#${elementId}`);
                 if (element) {
-                    element.textContent = description
+                    element.textContent = description;
                 }
 
             })
@@ -45,7 +45,7 @@ class Profile extends ModTemplate {
                 const elementId = `${key}-profile-image`;
                 const element = document.querySelector(`#${elementId}`);
                 if (element) {
-                    element.src = image
+                    element.src = image;
                 }
             })
         })
@@ -54,17 +54,17 @@ class Profile extends ModTemplate {
             this.photoUploader = new PhotoUploader(this.app, this.mod)
             this.photoUploader.callbackAfterUpload = async (photo) => {
                 let banner = await this.app.browser.resizeImg(photo);
-                this.sendProfileTransaction({ banner })
-                siteMessage("Updating profile photo")
+                this.sendProfileTransaction({ banner });
+                siteMessage("Updating profile photo");
             }
-            this.photoUploader.render(this.photo)
+            this.photoUploader.render(this.photo);
         })
 
         app.connection.on('profile-edit-description', (key) => {
             const elementId = `${key}-profile-description`;
             const element = document.querySelector(`#${elementId}`);
-            this.updateDescription = new UpdateDescription(this.app, this)
-            this.updateDescription.render(element.textContent)
+            this.updateDescription = new UpdateDescription(this.app, this);
+            this.updateDescription.render(element.textContent);
         })
     }
 
@@ -73,7 +73,7 @@ class Profile extends ModTemplate {
         let txmsg = tx.returnMessage();
         if (conf == 0) {
             if (txmsg.request === "update profile") {
-                this.receiveProfileTransaction(tx)
+                this.receiveProfileTransaction(tx);
             }
         }
     }
@@ -81,12 +81,11 @@ class Profile extends ModTemplate {
 
 
     /**
- * Asynchronously sends a transaction to update a user's profile.
- *  
- * @param {Object} data { image, banner, description, archive: {publicKey}}
- * 
- */
-
+     * Asynchronously sends a transaction to update a user's profile.
+     *  
+     * @param {Object} data { image, banner, description, archive: {publicKey}}
+     * 
+    **/
     async sendProfileTransaction(data) {
         try {
             const obj = {};
@@ -100,12 +99,12 @@ class Profile extends ModTemplate {
                 }
             }
 
-            let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey)
+            let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
             newtx.msg = {
                 module: this.name,
                 request: "update profile",
                 data: obj
-            }
+            };
             newtx.serialize_to_web(this.app);
             await newtx.sign();
             await this.app.network.propagateTransaction(newtx);
@@ -115,10 +114,10 @@ class Profile extends ModTemplate {
     }
 
     /**
- * Processes a received transaction to update a user's profile.
- *
- * @param {Object} tx - The transaction object received, containing data to be processed.
- */
+     * Processes a received transaction to update a user's profile.
+     *
+     * @param {Object} tx - The transaction object received, containing data to be processed.
+    **/
     async receiveProfileTransaction(tx) {
         try {
             let from = tx.from && tx.from.length > 0 ? tx.from[0].publicKey : null;
@@ -126,19 +125,18 @@ class Profile extends ModTemplate {
                 throw new Error("No `from` public key");
             }
             let txmsg = tx.returnMessage();
-            console.log('from', from)
+            console.log('from', from);
 
             if (this.app.keychain.returnKey(from)) {
                 let data = {};
                 for (let key in txmsg.data) {
 
-                    if (!txmsg.data.hasOwnProperty(key)) continue;
+                    if (!txmsg.data.hasOwnProperty(key)) { continue; }
 
 
                     if (key === "banner" || key === "image" || key === "description") {
                         data[key] = tx.signature;
                     } else if (key === "archive" && typeof txmsg.data[key] === 'string') {
-
                         try {
                             data[key] = JSON.parse(txmsg.data[key]);
                         } catch (parseError) {
@@ -169,7 +167,6 @@ class Profile extends ModTemplate {
     // 
     //  LOAD PROFILE VALUES FUNCTIONS
     // 
-
     async returnProfileImage(sig, publicKey, callback) {
 
         if (this.cache[publicKey] && this.cache[publicKey].image) {
@@ -244,11 +241,9 @@ class Profile extends ModTemplate {
     }
 
 
-
     // 
     // SAVE VALUE FUNCTIONS
     // 
-
     async saveProfileTransaction(tx) {
         await this.app.storage.saveTransaction(tx, { field1: "Profile" }, "localhost")
     }
