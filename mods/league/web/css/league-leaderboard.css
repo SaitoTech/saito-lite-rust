@@ -18,7 +18,8 @@
 }
 
 .saito-table-row.league-leaderboard-ranking {
-	border-radius: 0.5rem;
+	border-radius: var(--border-radius-leaderboard-ranking);
+	margin: var(--border-padding-style-leaderboard-ranking);
 }
 
 .saito-table-row.league-leaderboard-ranking:hover {
