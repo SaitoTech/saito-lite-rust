@@ -6,6 +6,7 @@
     //
     this.game.state.player_last_move = "";
     this.game.state.player_last_spacekey = "";
+    this.game.state.field_battle_relief_battle = false;
 
     //
     // remove foul weather
@@ -73,6 +74,8 @@
     this.game.state.events.intervention_on_movement_possible = 0;
     this.game.state.events.intervention_on_events_possible = 0;
     this.game.state.events.intervention_on_assault_possible = 0;
+
+    this.game.state.field_battle_relief_battle = false;
 
     //
     // reset impulse commits

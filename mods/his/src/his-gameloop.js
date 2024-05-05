@@ -746,6 +746,8 @@ if (this.game.options.scenario == "is_testing") {
 			((this.isSpaceFortified(spacekey) && !this.isSpaceControlled(spacekey, faction)) || (!this.isSpaceFortified(spacekey)))
 			&&
 			(!(faction == "protestant" && this.isSpaceElectorate(space.key) && this.game.state.events.schmalkaldic_league != 1))
+			&&
+			(spacekey != "ireland" && spacekey != "persia" && spacekey != "egypt")
 		) {
 
 		  //
@@ -802,13 +804,24 @@ if (this.game.options.scenario == "is_testing") {
 		        for (let z = 0, y = 0; z < unitlen; z++) {
 		          if (this.game.spaces[spacekey].units[faction][z].reformer != true) {
 		    	    if (y == 0) { number_to_destroy++; y++; } else { y = 0; }
-			    number_to_move++;
-			    if (this.game.spaces[spacekey].units[faction][z].type == "regular") {
-			      number_of_regulars++;
-			    } else {
-			      number_of_mercenaries++;
+			    if (this.game.spaces[spacekey].units[faction][z].type != "squadron" || this.game.spaces[spacekey].units[faction][z].type != "corsair") {
+			      number_to_move++;
+			      if (this.game.spaces[spacekey].units[faction][z].type == "regular") {
+			        number_of_regulars++;
+			      } else {
+			        number_of_mercenaries++;
+			      }
 			    }
 			  }
+			}
+
+			//
+			// shortcut - units with sea access almost always have a clear retreat to 
+			// their home capital, so check. this prevents attrition from stranded units
+			// on key-less islands.
+			//
+			if (this.game.spaces[spacekey].ports.length > 0) {
+			  number_to_destroy = 0;
 			}
 
 			//
@@ -848,7 +861,7 @@ if (this.game.options.scenario == "is_testing") {
 
 		        for (let z = 0, y = 0, zz = 0; z < unitlen; z++, zz++) {
 			  if (capitals[y]) {
-		            if (this.game.spaces[spacekey].units[faction][z].reformer != true) {
+		            if (this.game.spaces[spacekey].units[faction][z].reformer != true && this.game.spaces[spacekey].units[faction][z].type != "squadron" && this.game.spaces[spacekey].units[faction][z].type != "corsair") {
 			      this.game.spaces[capitals[y]].units[faction].push(this.game.spaces[spacekey].units[faction][z]);
 			      this.game.spaces[spacekey].units[faction].splice(z, 1);
 			      zz--;
@@ -2178,6 +2191,7 @@ x = 2;
 	  this.controlSpace("papacy", "graz");
 	  this.controlSpace("papacy", "trieste");
 	  this.controlSpace("papacy", "venice");
+	  this.controlSpace("papacy", "venice");
 ***/
     	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -2690,8 +2704,14 @@ console.log("#");
 		    // relief forces showing up
 		    //
 		    for (let f in space.units) {
+
  		      if (!this.areAllies(f, faction, 1) && f !== faction) {
+
+console.log("these factions are not allies: " + f + " - " + faction);
+
 		        if (this.returnFactionLandUnitsInSpace(f, space.key, 1) > 0 && field_battle_triggered == false) {
+
+console.log("these factions are not allies: " + f + " - " + faction);
 
 			  //
 			  // if all the units are besieged we skip field battle because attacker needs to assault
@@ -2721,15 +2741,51 @@ console.log(" # --> is anyone not besieged");
 			    // but maybe no-one is besieged, in which case we want to offer fortification option
 			    // to the defender.
 			    //
+
+console.log(" # --> is the defender the one who is besieged: " + is_defender_the_one_who_is_besieged);
+
 			    if (is_defender_the_one_who_is_besieged != true) {
-	                      this.game.queue.splice(lqe, 0, "fortification_check\t"+faction+"\t"+destination+"\t"+source);
-	                      this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
+
+			      //
+			      // the defender is not besieged, but if the defender is besieging a third party
+			      // then this is a relief expedition. so we check to see if there are any other
+			      // forces that are not allied with the defender.
+			      //
+			      let is_this_a_relief_force = false;
+			      for (let zf in space.units) {
+				if (space.units[zf].length > 0) {
+				  for (let zzz = 0; zzz < space.units[zf].length; zzz++) {
+				    if (space.units[zf][zzz].besieged) {
+				      if (this.areAllies(faction, zf) && zf != faction) {
+console.log(" # relief force check for: " + zf);
+					is_this_a_relief_force = true;
+				      }
+				    }
+				  }
+				}
+			      }
+
+			      if (is_this_a_relief_force == true) {
+console.log(" # --> this is considered a relief force!");
+	                        this.game.queue.splice(lqe, 0, "relief_forces\t"+faction+"\t"+destination);
+	                        this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
+			      } else {
+console.log(" # --> this is not considered a relief force!");
+	                        this.game.queue.splice(lqe, 0, "fortification_check\t"+faction+"\t"+destination+"\t"+source);
+	                        this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
+			      }
+
 			    } else {
 
 		              //
 		              // someone else is here, so let's trigger a field battle
 		              //
+console.log(" # --> is this an interception: " + is_this_an_interception);
+
 			      if (!is_this_an_interception) {
+
+console.log(" # --> check if this is a relief force!");
+
 	                        this.game.queue.splice(lqe, 0, "relief_forces\t"+faction+"\t"+destination);
 	                        this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
 		              }
@@ -2911,6 +2967,8 @@ console.log(" # --> is anyone not besieged");
 	  let faction = mv[3];
 	  let spacekey = mv[4];
           let space = this.game.spaces[spacekey];
+          let relief_siege = "";
+	  if (mv[6]) { relief_siege = mv[6]; }
 
 	  //
 	  // if no-one is left to fortify
@@ -2939,24 +2997,66 @@ console.log(" # --> is anyone not besieged");
 	  //
 	  // this was a relief battle, but no formerly-besieged units survived
 	  //
-	  if (this.game.state.field_battle.relief_battle) {
-	    let did_anyone_survive = false;
+console.log("@");
+console.log("@");
+console.log("@");
+console.log("@");
+console.log("@");
+console.log("@");
+console.log("IS THIS A RELIEF BATTLE: " + this.game.state.field_battle_relief_battle);
+	  let did_anyone_survive = false;
+	  let did_anyone_allied_with_me_survive = false;
+	  let did_anyone_allied_with_me_who_can_fortify_survive = false;
+
+
+	  if (this.game.state.field_battle_relief_battle) {
+console.log("evaluating...");
 	    for (let key in space.units) {
+console.log("looking at faction: " + key);
 	      for (let z = 0; z < space.units[key].length; z++) {
-		if (space.units[key][z].relief_force == 1) { did_anyone_survive = true; }
+		let u = space.units[key][z];
+		if (u.type == "regular" || u.type == "mercenary" || u.type == "cavalry") {
+		  if (this.areAllies(key, faction, 1)) { did_anyone_allied_with_me_survive = true; }
+		  if (relief_siege == 0) {
+		    did_anyone_allied_with_me_who_can_fortify_survive = 1;
+		  } else {
+		    if (u.relief_forces == 0) { did_anyone_allied_with_me_who_can_fortify_survive = true; }	
+		  }
+		}
+
+		//
+		// the units that came out of the fortified space will have relief_force = 0 while
+		// anyone who moved it will be the "relief force" and marked as relief_force = 1
+		// this matters as the only units that can retreat are those which 
+		//
+		if (space.units[key][z].relief_force == 0) { did_anyone_survive = true; }
 	      }
 	    }
+
+	    if (relief_siege == 1) {
+	      if (!did_anyone_allied_with_me_who_can_fortify_survive) {
+console.log("no-one survived who can fortify...");
+		return 1;
+	      }
+	    }
+
 	    if (!did_anyone_survive) {
+console.log("did anyone survive? " + did_anyone_survive);
+	      return 1;
+	    }
+	    if (!did_anyone_allied_with_me_survive) {
+console.log("did anyone allied with me survive? " + did_anyone_allied_with_me_survive);
 	      return 1;
 	    }
 	  }
 
+console.log("we are player: " + this.game.player + " and seeking " + player);
 	  //
 	  // otherwise, we have to evaluate fortifying
 	  //
 	  if (this.game.player == player) {
 	    this.field_battle_overlay.renderFortification(this.game.state.field_battle);
-	    this.playerEvaluateFortification(attacker, faction, spacekey, 1); // 1 = post battle
+	    this.playerEvaluateFortification(attacker, faction, spacekey, 1, 1); // 1 = post battle , 1 = relief_siege
 	  } else {
 	    if (this.isPlayerControlledFaction(faction)) {
 	      this.field_battle_overlay.renderFortification(this.game.state.field_battle);
@@ -3126,12 +3226,17 @@ console.log(" # --> is anyone not besieged");
 	  let spacekey = mv[2];
 	  let space = this.game.spaces[spacekey];
 
+          this.game.state.field_battle_relief_battle = true;
+
 	  //
 	  // mark relief forces - anyone friendly who is still there
 	  //
 	  for (let key in space.units) {
-	    if (key === faction || this.areAllies(key, faction)) {
+console.log("relief force? " + key);
+	    if (key == faction || this.areAllies(key, faction)) {
+console.log("allies! " + key);
 	      for (let z = 0; z < space.units[key].length; z++) {
+console.log("setting unit from " + key + " as relief force");
 		space.units[key][z].relief_force = 1;
 	      }
 	    }
@@ -3162,16 +3267,19 @@ console.log(" # --> is anyone not besieged");
 	  let faction = mv[2];
 	  let spacekey = mv[3];
 	  let post_battle = 0;
+	  let relief_siege = 0;
 	  if (mv[4]) { post_battle = parseInt(mv[4]); }
+	  // if this is set only those with relief_siege = 0 can fortify
+	  if (mv[5]) { relief_siege = parseInt(mv[5]); }
 	  let space = this.game.spaces[spacekey];
+
 
 	  let faction_map = this.returnFactionMap(space, attacker, faction);
 	  let player = this.returnPlayerCommandingFaction(faction);
 
-
 	  if (player > 0) {
 	    if (this.game.player === player) {
-	      this.playerFortifySpace(faction, attacker, spacekey, post_battle);
+	      this.playerFortifySpace(faction, attacker, spacekey, post_battle, relief_siege);
 	    } else {
 	      this.updateLog(this.returnFactionName(faction) + " fortifies in " + this.returnSpaceName(spacekey));
 	      this.updateStatus(this.returnFactionName(faction) + " fortifying in " + this.returnSpaceName(spacekey));
@@ -3282,13 +3390,21 @@ console.log(" # --> is anyone not besieged");
 	  // to skip this completely.
 	  //
 	  let anyone_besieged = 0;
-	  for (let z = 0; z < space.units[faction].length; z++) {
-	    if (space.units[faction][z].besieged > 0) { anyone_besieged = 1; }
+	  for (let f in space.units) {
+	    if (f == faction || this.areAllies(f, faction, 1)) {
+	      for (let z = 0; z < space.units[f].length; z++) {
+	        if (space.units[f][z].besieged > 0) { anyone_besieged = 1; }
+	      }
+	    }
 	  }
+
 	  //
 	  // pass through if attacker (not besieged)
 	  //
-	  if (anyone_besieged == 0) { return 1; }
+	  if (anyone_besieged == 0) {
+	    console.log("no-one found besieged...");
+	    return 1;
+	  }
 
 	  if (this.game.player == player) {
 	    this.playerEvaluateReliefForce(faction, spacekey);
@@ -6639,16 +6755,18 @@ console.log(hits_to_assign + " > " + defending_factions_hits.length);
 
             //
             // if the space is besieged and the attacker controls it, this was a field battle triggered by the 
-	    // defender putting it under siege earlier, in which case we want to permit the attacker to re-fortify
-	    // IF there are any attacker units that survived...
+	    // defender putting it under siege earlier and the attacker relieving the siege, in which case we 
+	    // want to permit the attacker to re-fortify IF there are any attacker units that survived AND the 
+	    // attacker was not "out-hit" by the defender...
 	    //
-            if (this.isSpaceControlled(space.key, his_self.game.state.field_battle.attacker_faction) && space.besieged > 0 && his_self.game.state.active_faction == his_self.game.state.attacker_faction) {
-	      // attacker and defender oddly reversed
+	    // attacker has more or equal hits, so they get to fortify everything without regard to wether it 
+	    // was fortified before, submit to "post_field_battle_..." without "relief_siege" argument.
+	    //
+            if (his_self.game.state.field_battle.attacker_hits >= his_self.game.state.field_battle.defender_hits && this.isSpaceFriendly(space.key, his_self.game.state.field_battle.attacker_faction) && space.besieged > 0 && his_self.game.state.active_faction == his_self.game.state.attacker_faction) {
 	      if (do_any_attacker_units_remain) {
                 this.game.queue.push("post_field_battle_player_evaluate_retreat\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
                 this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
 	      }
-
             } else {
 
               for (let f in his_self.game.state.field_battle.faction_map) {
@@ -6672,6 +6790,7 @@ console.log(hits_to_assign + " > " + defending_factions_hits.length);
                     }
 	            if (can_faction_retreat == 0) {
                       this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
+		      this.updateLog(his_self.returnFactionName(f) + ": no retreat options, units captured");
 	            }
 		  } else {
                     this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
@@ -6679,8 +6798,14 @@ console.log(hits_to_assign + " > " + defending_factions_hits.length);
                 }
 	      }
 	      if (this.isSpaceControlled(space.key, his_self.game.state.field_battle.attacker_faction)) {
-		// attacker here means "not me", since "I'm fortifying"
-                this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
+		//
+		// the attacker has lost, but they control the space... so this is going to be a relief siege
+		// in which case they can only fortify EVERYTHING if they have more hits, or they are limited
+		// to fortifying whatever was fortified before the battle...
+		//
+		// we indicate this by adding "relief_siege" as the final argument in the queue command
+		//
+                this.game.queue.push("post_field_battle_player_evaluate_fortification\t"+his_self.game.state.field_battle.defender_faction+"\t"+his_self.returnPlayerOfFaction(his_self.game.state.field_battle.attacker_faction)+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key+"\trelief_siege");
 	      }
 	    }
           }
@@ -6719,6 +6844,7 @@ console.log(hits_to_assign + " > " + defending_factions_hits.length);
 	        } else {
 		  // no retreat possible
                   this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
+		  this.updateLog(this.returnFactionName(f) + ": no retreat options, units captured");
 		}
               }
             }
@@ -8733,7 +8859,7 @@ console.log(hits_to_assign + " > " + defending_factions_hits.length);
           if (loser === attacker_faction) {
 	    let winning_faction = defender_faction;
 	    if (this.game.player == this.returnPlayerCommandingFaction(loser)) {
-	      if (this.game.state.field_battle.relief_battle) {
+	      if (this.game.state.field_battle_relief_battle) {
 		this.playerEvaluateBreakSiegeRetreatOpportunity(loser, spacekey);
 	      } else {
 	        this.playerEvaluatePostBattleRetreatOpportunity(loser, winning_faction, attacker_faction, spacekey, this.game.state.attacker_comes_from_this_spacekey);
@@ -8744,7 +8870,7 @@ console.log(hits_to_assign + " > " + defending_factions_hits.length);
           } else {
 	    let winning_faction = attacker_faction;
 	    if (this.game.player == this.returnPlayerCommandingFaction(loser)) {
-	      if (this.game.state.field_battle.relief_battle) {
+	      if (this.game.state.field_battle_relief_battle) {
 		this.playerEvaluateBreakSiegeRetreatOpportunity(loser, spacekey);
 	      } else {
 	        this.playerEvaluatePostBattleRetreatOpportunity(loser, winning_faction, attacker_faction, spacekey, this.game.state.attacker_comes_from_this_spacekey);
@@ -10980,7 +11106,7 @@ if (this.game.state.round == 2) {
 	        // war in egypt
 	        //
                 if (this.game.state.events.revolt_in_ireland == 1 && f === "england") {
-		  this.updateLog("Ottomans penalized -1 card for Revolt in Ireland");
+		  this.updateLog("England penalized -1 card for Revolt in Ireland");
 		  cardnum--;
 	        }
 
@@ -10999,9 +11125,12 @@ if (this.game.state.round == 2) {
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 1;
-//if (f == "papacy") { cardnum = 0; }
-//if (f == "hapsburg") { cardnum = 0; }
+//cardnum = 0;
+if (f == "papacy") { cardnum = 0; }
+if (f == "hapsburg") { cardnum = 0; }
+if (f == "protestant") { cardnum = 0; }
+if (f == "england") { cardnum = 0; }
+if (f == "ottoman") { cardnum = 0; }
 
     	        this.game.queue.push("check_replacement_cards\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
@@ -11749,8 +11878,8 @@ console.log(faction + " -- " + player + " -- " + this.game.player);
  	                mycallback.push({ text : "control town" , mycallback : () => {
 		          if (ops > 1) {
                             his_self.addMove(`continue\t${mv[1]}\t${mv[2]}\t${mv[3]}\t${ops-1}\t${mv[5]}`);
-                            his_self.game.queue.push("SETVAR\tstate\tplayer_last_move\tmove");
-                            his_self.game.queue.push("SETVAR\tstate\tplayer_last_spacekey\t"+player_last_spacekey);
+                            his_self.addMove("SETVAR\tstate\tplayer_last_move\tmove");
+                            his_self.addMove("SETVAR\tstate\tplayer_last_spacekey\t"+player_last_spacekey);
 		          }
                           his_self.addMove("pacify\t"+faction+"\t"+player_last_spacekey);
                           his_self.endTurn();

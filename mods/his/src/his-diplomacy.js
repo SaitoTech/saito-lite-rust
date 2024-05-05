@@ -321,6 +321,7 @@
       his_self.updateStatus("submitted");
 
       mycallback([`set_allies\t${faction}\t${action2}`]);
+      mycallback([`unset_enemies\t${faction}\t${action2}`]);
 
     });
 

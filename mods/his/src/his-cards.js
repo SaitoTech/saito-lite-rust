@@ -30,11 +30,14 @@
       if (key != "001" && key != "002" && key != "003" && key != "004" && key != "005" && key != "006" && key != "007" && key != "008") {
         if (deck[key].turn === turn) {
 
+	  //
 	  // exception for boleyn cards below
+	  //
 	  if (key != "064" && key != "063" && key != "062") {
 	    new_deck[key] = deck[key];
 	  }
         }
+
       }
     }
 
@@ -42,11 +45,18 @@
     // Dissolution of the Monasteries, Pilgrimmage of Grace, Book of Common Prayer added as soon as Boleyn marries Henry
     //
     if (turn < 4 && this.game.state.henry_viii_marital_status >= 2 && this.game.state.henry_viii_boleyn_cards_added != 1) {
+
       this.game.state.henry_viii_boleyn_cards_added = 1;
       new_deck["064"] = deck["064"];
       new_deck["063"] = deck["063"];
       new_deck["062"] = deck["062"];
+
     } else {
+ 
+      if (new_deck["064"]) { delete new_deck["064"]; }
+      if (new_deck["063"]) { delete new_deck["063"]; }
+      if (new_deck["062"]) { delete new_deck["062"]; }
+
       if (turn == 4) {
 	this.game.state.henry_viii_boleyn_cards_added = 1;
         new_deck["064"] = deck["064"];
@@ -2462,6 +2472,7 @@ console.log("selected: " + spacekey);
 		    his_self.endTurn();
 	          }
 	          if (action2 === "marital") {
+	  	    his_self.addMove("display_vp_track");
 	  	    his_self.addMove("advance_henry_viii_marital_status");
 		    his_self.endTurn();
 	          }
@@ -2606,15 +2617,28 @@ console.log("selected: " + spacekey);
 	    }
 	    if (dd == 4) {
 	      his_self.updateLog("Henry VIII rolls 4: Elizabeth I born");
+	      his_self.updateLog("England gains 2 VP for Female Succession");
 	      his_self.game.state.henry_viii_add_elizabeth = 1;
 	    }
 	    if (dd == 5) {
 	      his_self.updateLog("Henry VIII rolls 5: sickly Edward VI");
+	      if (his_self.game.state.henry_viii_add_elizabeth == 1) {
+	        his_self.updateLog("England gains additional 3 VP for Male Succession");
+	      } else {
+	        his_self.updateLog("England gains 5 VP for Male Succession");
+	      }
 	      his_self.game.state.henry_viii_sickly_edward = 1;
 	      his_self.game.state.henry_viii_add_elizabeth = 0;
 	    }
 	    if (dd >= 6) {
 	      his_self.updateLog("Henry VIII rolls 6: healthy Edward VI");
+	      if (his_self.game.state.henry_viii_sickly_edward == 0) {
+		if (his_self.game.state.henry_viii_add_elizabeth == 1) {
+	          his_self.updateLog("England gains additional 3 VP for Male Succession");
+	        } else {
+	          his_self.updateLog("England gains 5 VP for Male Succession");
+	        }
+	      }
 	      his_self.game.state.henry_viii_healthy_edward = 1;
 	      his_self.game.state.henry_viii_sickly_edward = 0;
 	      his_self.game.state.henry_viii_add_elizabeth = 0;
@@ -3724,9 +3748,10 @@ console.log("selected: " + spacekey);
 	let papacy = his_self.returnPlayerOfFaction("papacy");
 
 	if (faction === "england") {
-	  let faction_hand_idx = his_self.returnFactionHandIdx(player, "england");   
- 	  his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+his_self.game.state.players_info[player-1].factions[faction_hand_idx]+"\t1");
-	  his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
+	  if (his_self.game.player.length < 6) { let faction_hand_idx = 1;  }  
+	  let england_player = his_self.returnPlayerControllingFaction("england");
+ 	  his_self.game.queue.push("hand_to_fhand\t1\t"+england_player+"\t"+"england"+"\t1");
+	  his_self.game.queue.push(`DEAL\t1\t${england_player}\t1`);
         }
 	// three counter-reformation attempts
 	his_self.game.queue.push(`hide_overlay\tburn_books`);
@@ -5044,10 +5069,13 @@ console.log("selected: " + spacekey);
 		if (lmv[0] === "move") {
 		  let faction = lmv[1];
 		  let source = lmv[3];
-		  let unit_idx = parseInt(lmv[5]);
-		  let unit = his_self.game.spaces[source].units[faction][unit_idx];
-		  if (unit.army_leader == true) {
-		    includes_army_leader = true;
+		  let unit_idx = -1;
+		  for (let i = 0; i < his_self.game.spaces[source].units[faction].length; i++) {
+		    let unit = his_self.game.spaces[source].units[faction][unit_idx];
+		    if (unit.army_leader == true) {
+		      let unit_idx = -1;
+		      includes_army_leader = true;
+		    }
 		  }
 		}
 	      }
@@ -5095,6 +5123,11 @@ console.log("selected: " + spacekey);
 	    }
 	  }
 
+	  //
+	  // out of desperation, give random unit gout
+	  //
+	  if (unit_idx == null) { unit_idx = 0; }
+
 	  let f = "";
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('032')) {
@@ -5128,11 +5161,20 @@ console.log("selected: " + spacekey);
 	      if (lmv[0] === "move") {
 		faction = lmv[1];
 		source = lmv[3];
-		unit_idx = parseInt(lmv[5]);
-		break;
+	        let space = his_self.game.spaces[source];
+	        for (let i = 0; i < space.units[faction].length; i++) {
+	          if (space.units[faction][i].army_leader) {
+	            unit_idx = i;
+	          }
+	        }
 	      }
 	    }
 	  }
+
+	  //
+	  // out of desperation, give random unit gout
+	  //
+	  if (unit_idx == null) { unit_idx = 0; }
 
 	  let f = "";
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
@@ -7489,7 +7531,7 @@ console.log("selected: " + spacekey);
         let msg = "Steal Random Card from Which Faction?";
         let html = '<ul>';
         for (let i = 0; i < target_which_faction.length; i++) {
-           html += '<li class="option" id="${target_which_faction[i]}">${target_which_faction[i]}</li>';
+           html += `<li class="option" id="${target_which_faction[i]}">${target_which_faction[i]}</li>`;
 	}
 	html += '</ul>';
 
@@ -7498,6 +7540,7 @@ console.log("selected: " + spacekey);
 	$('.option').off();
 	$('.option').on('click', function () {
 
+	  his_self.updateStatus("submitting...");
 	  let action = $(this).attr("id");
 	  his_self.addMove("pull_card\tottoman\t"+action);
           his_self.endTurn();
@@ -10165,7 +10208,7 @@ console.log("selected: " + spacekey);
 	    }
 
 	    if (action === "no") {
-              his_self.addMove("ops\tfrance\t097\t3");
+              his_self.addMove("ops\tfrance\t097\t6");
 	      his_self.endTurn();
 	    }
 
