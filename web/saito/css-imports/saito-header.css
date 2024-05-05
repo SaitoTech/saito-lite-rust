@@ -438,7 +438,13 @@
   transform: scale(1.1);
 }
 
+.saito-backup-container .saito-backup-auto {
+  color: var(--color-primary);
+}
 
+#backup-template .saito-overlay-form {
+  gap: 0rem;
+}
 
 @media screen and (max-width: 1200px) {
   .saito-floating-plus-btn {

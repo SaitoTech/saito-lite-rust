@@ -48,7 +48,7 @@ class Registry extends ModTemplate {
 		// All it does is allows both main nodes and lite clients to update
 		// this.registry_publickey with the public key of the main node
 		//
-		this.local_dev = 0;
+		this.local_dev = 1;
 
 		//
 		// EVENTS
