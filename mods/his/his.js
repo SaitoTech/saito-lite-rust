@@ -19602,6 +19602,34 @@ try {
 
   setAllies(faction1, faction2, amp=1) {
 
+    if ((faction1 == "hungary" || faction2 == "hungary") && (faction1 == "hapsburg" || faction2 == "hapsburg")) {
+     this.game.state.events.defeat_of_hungary_bohemia = 1;
+
+      if (this.areEnemies("hungary", "ottoman"))    {
+	if (this.game.state.events.defeat_of_hungary_bohemia == 0) { 
+	  this.game.queue.push("natural_enemy_intervention\tottoman\thungary\thapsburg");
+	}
+      }
+      if (this.areEnemies("hungary", "protestant")) { this.game.queue.push("natural_enemy_intervention\tprotestant\thungary\thapsburg"); }
+      if (this.areEnemies("hungary", "france"))     { this.game.queue.push("natural_enemy_intervention\tfrance\thungary\thapsburg"); }
+      if (this.areEnemies("hungary", "papacy"))     { this.game.queue.push("natural_enemy_intervention\tpapacy\thungary\thapsburg"); }
+      if (this.areEnemies("hungary", "england"))    { this.game.queue.push("natural_enemy_intervention\tengland\thungary\thapsburg"); }
+    }
+    if ((faction1 == "scotland" || faction2 == "scotland") && (faction1 == "france" || faction2 == "france")) {
+      if (this.areEnemies("scotland", "ottoman"))    { this.game.queue.push("natural_enemy_intervention\tottoman\tscotland\tfrance"); }
+      if (this.areEnemies("scotland", "protestant")) { this.game.queue.push("natural_enemy_intervention\tprotestant\tscotland\tfrance"); }
+      if (this.areEnemies("scotland", "hapsburg"))   { this.game.queue.push("natural_enemy_intervention\thapsburg\tscotland\tfrance"); }
+      if (this.areEnemies("scotland", "papacy"))     { this.game.queue.push("natural_enemy_intervention\tpapacy\tscotland\tfrance"); }
+      if (this.areEnemies("scotland", "england"))    { this.game.queue.push("natural_enemy_intervention\tengland\tscotland\tfrance"); }
+    }
+    if ((faction1 == "venice" || faction2 == "venice") && (faction1 == "papacy" || faction2 == "papacy")) {
+      if (this.areEnemies("venice", "ottoman"))    { this.game.queue.push("natural_enemy_intervention\tottoman\tvenice\tpapacy"); }
+      if (this.areEnemies("venice", "protestant")) { this.game.queue.push("natural_enemy_intervention\tprotestant\tvenice\tpapacy"); }
+      if (this.areEnemies("venice", "france"))     { this.game.queue.push("natural_enemy_intervention\tfrance\tvenice\tpapacy"); }
+      if (this.areEnemies("venice", "hapsburg"))     { this.game.queue.push("natural_enemy_intervention\thapsburg\tvenice\tpapacy"); }
+      if (this.areEnemies("venice", "england"))    { this.game.queue.push("natural_enemy_intervention\tengland\tvenice\tpapacy"); }
+    }
+
     try { this.game.state.alliances[faction1][faction2].enemies = 0; } catch (err) {}
     try { this.game.state.alliances[faction2][faction1].enemies = 0; } catch (err) {}
     try { this.game.state.alliances[faction1][faction2].allies = 1; } catch (err) {}
@@ -25582,6 +25610,25 @@ console.log("setting unit from " + key + " as relief force");
           }
 
 
+          //
+          // roll dice to see if avoid battle is an option
+          //
+          let abr = this.rollDice(6) + this.rollDice(6);
+          let highest_battle_rating = 0;
+          if (space != null) {
+            for (let i = 0; i > space.units[defender].length; i++) {
+              let u = space.units[defender][i];
+              if (u.battle_rating > highest_battle_rating) { highest_battle_rating = u.battle_rating; }            
+            }
+            abr += highest_battle_rating;
+            if (abr < 9) {
+              this.updateLog(this.returnFactionName(defender) + " avoid battle roll succeeds: " + abr);
+            } else {
+              this.updateLog(this.returnFactionName(defender) + " avoid battle roll fails: " + abr);
+              return 1;
+            }
+          } 
+
 	  let player_factions = this.returnPlayerFactions(this.game.player)
 
 	  if (player_factions.includes(defender) || this.returnPlayerCommandingFaction(defender) == this.game.player) {
@@ -25609,6 +25656,28 @@ console.log("setting unit from " + key + " as relief force");
 	  // cannot proactively retreat from port
 	  //
 	  if (this.game.spaces[spacekey]) { return 1; }
+
+	  //
+	  // roll dice to see if avoid battle is an option -- only in sea zones
+	  //
+	  let abr = this.rollDice(6) + this.rollDice(6);
+	  let highest_battle_rating = 0;
+	  let space = null;
+	  if (this.game.navalspaces[spacekey]) { space = this.game.navalspaces[spacekey]; }
+	  if (space != null) {
+	    for (let i = 0; i > space.units[defender].length; i++) {
+	      let u = space.units[defender][i];
+	      if (u.battle_rating > highest_battle_rating) { highest_battle_rating = u.battle_rating; }	      
+	    }
+	    abr += highest_battle_rating;
+	    if (abr < 9) {
+	      this.updateLog(this.returnFactionName(defender) + " avoid battle roll succeeds: " + abr);
+	    } else {
+	      this.updateLog(this.returnFactionName(defender) + " avoid battle roll fails: " + abr);
+	      return 1;
+	    }
+	  }
+
 
 	  if (this.returnPlayerCommandingFaction(defender) == this.game.player) {
 	    this.playerEvaluateNavalRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey, defender);
@@ -27856,12 +27925,7 @@ console.log("testing...");
 	  //
 	  // every gets shared hits
 	  //
-
-console.log("hits to assign: " + hits_to_assign);
-console.log("defending factions hits: " + defending_factions_hits);
-
 	  while (hits_to_assign > defending_factions_hits.length) {
-console.log(hits_to_assign + " > " + defending_factions_hits.length);
 	    for (let i = 0; i < defending_factions_hits.length; i++) { defending_factions_hits[i]++; }
 	    hits_to_assign -= defending_factions_hits.length;
 	  }
@@ -28705,7 +28769,6 @@ console.log(hits_to_assign + " > " + defending_factions_hits.length);
 	      }
 	    }
 	  }
-
 
 	  //
 	  // sack of rome exits
@@ -32777,9 +32840,9 @@ if (this.game.state.round == 2) {
 	  let f1 = mv[1];
 	  let f2 = mv[2];
 
-  	  this.unsetEnemies(f1, f2);
 	  this.game.queue.splice(qe, 1);
 
+  	  this.unsetEnemies(f1, f2);
 	  this.displayWarBox();
 
 	  return 1;
@@ -32893,6 +32956,61 @@ if (this.game.state.round == 2) {
 	    }	
 	  } else {
             this.updateStatus(this.returnFactionName(faction) + " considering intervening for " + this.returnFactionName(natural_ally) + " against " + this.returnFactionName(enemy));
+	  }
+
+	  return 0;
+
+	}
+
+
+	//
+	// if a faction is at war with a minor power, and that power becomes allied / controlled by
+	// another major power, the power at war with the minor power has the option of a free 
+	// declaration of war on the major power
+	//
+	// this can happen if someone is already at war with Venice (French) and Ottomans declare war
+	// on it triggering Papal intervention. France must declare war on the Papacy in order to 
+	// remain at war with Venice.
+	//
+	if (mv[0] === "natural_enemy_intervention") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+	  let minor_power = mv[2];
+	  let minor_power_ally = mv[3];
+	  let his_self = this;
+
+	  let p = this.returnPlayerCommandingFaction(faction);
+	  if (p == 0) { return 1; }
+
+	  if (this.game.player == p) {
+
+            let msg = this.returnFactionName(minor_power_ally) + " allies with " + this.returnFactionName(minor_power) + ". Declare War?";
+            let html = '<ul>';
+            html += `<li class="option" id="yes">declare war</li>`;
+            html += `<li class="option" id="no">end war</li>`;
+            html += '</ul>';
+
+            his_self.updateStatusWithOptions(msg, html);
+
+            $('.option').off();
+            $('.option').on('click', function () {
+
+              $('.option').off();
+              his_self.updateStatus("acknowledge...");
+              let action = $(this).attr("id");
+
+	      if (action === "yes") {
+	        his_self.addMove("unexpected_war\t"+faction+"\t"+minor_power_ally);
+	        his_self.addMove("declare_war\t"+faction+"\t"+minor_power_ally);
+		his_self.endTurn();
+	      } else {
+		his_self.addMove("end_war\t"+faction+"\t"+minor_power);
+		his_self.endTurn();
+	      }
+
+	    });	
 	  }
 
 	  return 0;
@@ -33122,12 +33240,12 @@ if (this.game.state.round == 2) {
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-cardnum = 0;
-if (f == "papacy") { cardnum = 0; }
-if (f == "hapsburg") { cardnum = 1; }
-if (f == "protestant") { cardnum = 0; }
-if (f == "england") { cardnum = 0; }
-if (f == "ottoman") { cardnum = 0; }
+//cardnum = 0;
+//if (f == "papacy") { cardnum = 0; }
+//if (f == "hapsburg") { cardnum = 1; }
+//if (f == "protestant") { cardnum = 0; }
+//if (f == "england") { cardnum = 0; }
+//if (f == "ottoman") { cardnum = 0; }
 
     	        this.game.queue.push("check_replacement_cards\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
