@@ -1,15 +1,34 @@
 
   displayCustomOverlay(c="", msg="") {
 
+    //
+    // move HUD above winter if winter is showing
+    //
+    this.welcome_overlay.pullHudOverOverlay();
+    this.welcome_overlay.pushHudUnderOverlay();
+
+
+     
+    // is already showing
+    let ias = false;
+    if (document.querySelector(".welcome-overlay")) {
+      let lmv = this.game.queue[this.game.queue.length-1].split("\t");
+      if (lmv[0] == "ACKNOWLEDGE") {
+        ias = true;
+      }
+    }
+
+
+
     if (c === "depleted") {
-      this.welcome_overlay.renderCustom({
-        title : "Depleted Conquest" , 
-        text : msg ,
-        card : "" ,
-        img : '/his/img/backgrounds/newworld/depleted_conquest.jpeg',
-        styles : [{ key : "backgroundPosition" , val : "bottom" }],
-      });
-      return;
+        this.welcome_overlay.renderCustom({
+          title : "Depleted Conquest" , 
+          text : msg ,
+          card : "" ,
+          img : '/his/img/backgrounds/newworld/depleted_conquest.jpeg',
+          styles : [{ key : "backgroundPosition" , val : "bottom" }],
+        });
+        return;
     }
 
     if (c === "deserted") {
@@ -182,13 +201,18 @@
     }
 
     if (c === "circumnavigation") {
-      this.welcome_overlay.renderCustom({
-        title : "New World Achievement" ,
-        text : msg + " circumnavigates the globe" ,
-        img : '/his/img/backgrounds/newworld/circumnavigation.jpg',
-      });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} circumnavigates the globe`);
-      return;
+      if (ias) {
+        this.game.queue.splice(this.game.queue.length-2, 0 `display_custom_overlay\tcircumnavigation\tall\t\t${msg}`);
+	return;
+      } else {
+        this.welcome_overlay.renderCustom({
+          title : "New World Achievement" ,
+          text : msg + " circumnavigates the globe" ,
+          img : '/his/img/backgrounds/newworld/circumnavigation.jpg',
+        });
+        this.game.queue.push(`ACKNOWLEDGE\t${msg} circumnavigates the globe`);
+        return;
+      }
     }
 
     if (c === "aztec") {

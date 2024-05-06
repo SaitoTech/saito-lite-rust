@@ -22462,7 +22462,9 @@ if (this.game.options.scenario == "is_testing") {
 
           let card = mv[1];
 	  let obj = "";
+	  let msg = "";
 	  if (mv[2]) { obj = JSON.parse(mv[2]); }
+	  if (mv[3]) { msg = mv[3]; }
 	  let show_overlay = false;
 
 	  //
@@ -22489,7 +22491,7 @@ if (this.game.options.scenario == "is_testing") {
 	  }
 
 	  if (show_overlay) {
-	    this.displayCustomOverlay(card);
+	    this.displayCustomOverlay(card, msg);
 	  }
 
 	  return 1;
@@ -33120,9 +33122,9 @@ if (this.game.state.round == 2) {
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 0;
+cardnum = 0;
 if (f == "papacy") { cardnum = 0; }
-if (f == "hapsburg") { cardnum = 0; }
+if (f == "hapsburg") { cardnum = 1; }
 if (f == "protestant") { cardnum = 0; }
 if (f == "england") { cardnum = 0; }
 if (f == "ottoman") { cardnum = 0; }
@@ -45349,15 +45351,34 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
   displayCustomOverlay(c="", msg="") {
 
+    //
+    // move HUD above winter if winter is showing
+    //
+    this.welcome_overlay.pullHudOverOverlay();
+    this.welcome_overlay.pushHudUnderOverlay();
+
+
+     
+    // is already showing
+    let ias = false;
+    if (document.querySelector(".welcome-overlay")) {
+      let lmv = this.game.queue[this.game.queue.length-1].split("\t");
+      if (lmv[0] == "ACKNOWLEDGE") {
+        ias = true;
+      }
+    }
+
+
+
     if (c === "depleted") {
-      this.welcome_overlay.renderCustom({
-        title : "Depleted Conquest" , 
-        text : msg ,
-        card : "" ,
-        img : '/his/img/backgrounds/newworld/depleted_conquest.jpeg',
-        styles : [{ key : "backgroundPosition" , val : "bottom" }],
-      });
-      return;
+        this.welcome_overlay.renderCustom({
+          title : "Depleted Conquest" , 
+          text : msg ,
+          card : "" ,
+          img : '/his/img/backgrounds/newworld/depleted_conquest.jpeg',
+          styles : [{ key : "backgroundPosition" , val : "bottom" }],
+        });
+        return;
     }
 
     if (c === "deserted") {
@@ -45530,13 +45551,18 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     }
 
     if (c === "circumnavigation") {
-      this.welcome_overlay.renderCustom({
-        title : "New World Achievement" ,
-        text : msg + " circumnavigates the globe" ,
-        img : '/his/img/backgrounds/newworld/circumnavigation.jpg',
-      });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} circumnavigates the globe`);
-      return;
+      if (ias) {
+        this.game.queue.splice(this.game.queue.length-2, 0 `display_custom_overlay\tcircumnavigation\tall\t\t${msg}`);
+	return;
+      } else {
+        this.welcome_overlay.renderCustom({
+          title : "New World Achievement" ,
+          text : msg + " circumnavigates the globe" ,
+          img : '/his/img/backgrounds/newworld/circumnavigation.jpg',
+        });
+        this.game.queue.push(`ACKNOWLEDGE\t${msg} circumnavigates the globe`);
+        return;
+      }
     }
 
     if (c === "aztec") {

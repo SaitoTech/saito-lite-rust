@@ -467,7 +467,9 @@ if (this.game.options.scenario == "is_testing") {
 
           let card = mv[1];
 	  let obj = "";
+	  let msg = "";
 	  if (mv[2]) { obj = JSON.parse(mv[2]); }
+	  if (mv[3]) { msg = mv[3]; }
 	  let show_overlay = false;
 
 	  //
@@ -494,7 +496,7 @@ if (this.game.options.scenario == "is_testing") {
 	  }
 
 	  if (show_overlay) {
-	    this.displayCustomOverlay(card);
+	    this.displayCustomOverlay(card, msg);
 	  }
 
 	  return 1;
@@ -11125,9 +11127,9 @@ if (this.game.state.round == 2) {
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 0;
+cardnum = 0;
 if (f == "papacy") { cardnum = 0; }
-if (f == "hapsburg") { cardnum = 0; }
+if (f == "hapsburg") { cardnum = 1; }
 if (f == "protestant") { cardnum = 0; }
 if (f == "england") { cardnum = 0; }
 if (f == "ottoman") { cardnum = 0; }
