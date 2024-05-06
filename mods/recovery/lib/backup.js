@@ -101,6 +101,7 @@ class Backup {
 	success() {
 		siteMessage('Wallet backed up on blockchain', 4000);
 		this.app.wallet.backup_required = 1;
+		this.app.connection.emit('saito-header-update-message', {});
 	}
 
 	callBackFunction(){
