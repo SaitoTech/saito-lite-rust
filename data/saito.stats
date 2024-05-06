@@ -1,0 +1,270 @@
+2024-05-06 08:19:39.520 UTC - routing::received_txs                    - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:39.520 UTC - routing::received_blocks                 - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:39.520 UTC - routing::incoming_msgs                   - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:39.520 UTC - consensus::queue                         - capacity : 1000000 / 1000000
+2024-05-06 08:19:39.520 UTC - verification_0::queue                    - capacity : 1000000 / 1000000
+2024-05-06 08:19:39.520 UTC - peers::state                             - total peers : 0. in handshake : 0
+2024-05-06 08:19:39.520 UTC - consensus::blocks_fetched                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:39.520 UTC - consensus::blocks_created                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:39.520 UTC - consensus::received_tx                   - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:39.520 UTC - consensus::received_gts                  - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:39.520 UTC - wallet::state                            - total_slips : 0, unspent_slips : 0, current_balance : 0
+2024-05-06 08:19:39.520 UTC - blockchain::state                        - utxo_size : 0, block_count : 7, longest_chain_len : 7 full_block_count : 7 txs_in_blocks : 68
+2024-05-06 08:19:39.520 UTC - mempool:state                            - blocks_queue : 0, transactions : 0
+2024-05-06 08:19:39.520 UTC - verification::processed_msgs             - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:39.520 UTC - verification::invalid_txs                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:39.520 UTC - verification::processed_txs              - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:39.520 UTC - verification::processed_blocks           - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:39.520 UTC - mining::golden_tickets                   - total : 0, current difficulty : 0, miner_active : false, current target : "0000000000000000000000000000000000000000000000000000000000000000" 
+2024-05-06 08:19:44.521 UTC - routing::received_txs                    - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:44.521 UTC - routing::received_blocks                 - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:44.521 UTC - routing::incoming_msgs                   - total : 7, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:44.521 UTC - consensus::queue                         - capacity : 1000000 / 1000000
+2024-05-06 08:19:44.521 UTC - verification_0::queue                    - capacity : 1000000 / 1000000
+2024-05-06 08:19:44.521 UTC - peers::state                             - total peers : 1. in handshake : 0
+2024-05-06 08:19:44.521 UTC - consensus::blocks_fetched                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:44.521 UTC - consensus::blocks_created                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:44.521 UTC - consensus::received_tx                   - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:44.521 UTC - consensus::received_gts                  - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:44.521 UTC - wallet::state                            - total_slips : 0, unspent_slips : 0, current_balance : 0
+2024-05-06 08:19:44.521 UTC - blockchain::state                        - utxo_size : 0, block_count : 7, longest_chain_len : 7 full_block_count : 7 txs_in_blocks : 68
+2024-05-06 08:19:44.521 UTC - mempool:state                            - blocks_queue : 0, transactions : 0
+2024-05-06 08:19:44.521 UTC - verification::processed_msgs             - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:44.521 UTC - verification::invalid_txs                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:44.521 UTC - verification::processed_txs              - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:44.521 UTC - verification::processed_blocks           - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:44.521 UTC - mining::golden_tickets                   - total : 0, current difficulty : 0, miner_active : false, current target : "0000000000000000000000000000000000000000000000000000000000000000" 
+2024-05-06 08:19:49.522 UTC - routing::received_txs                    - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:49.522 UTC - routing::received_blocks                 - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:49.522 UTC - routing::incoming_msgs                   - total : 7, current_rate : 0.70, max_rate : 0.70, min_rate : 0.00
+2024-05-06 08:19:49.522 UTC - consensus::queue                         - capacity : 1000000 / 1000000
+2024-05-06 08:19:49.522 UTC - verification_0::queue                    - capacity : 1000000 / 1000000
+2024-05-06 08:19:49.522 UTC - peers::state                             - total peers : 1. in handshake : 0
+2024-05-06 08:19:49.522 UTC - consensus::blocks_fetched                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:49.522 UTC - consensus::blocks_created                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:49.522 UTC - consensus::received_tx                   - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:49.522 UTC - consensus::received_gts                  - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:49.522 UTC - wallet::state                            - total_slips : 0, unspent_slips : 0, current_balance : 0
+2024-05-06 08:19:49.522 UTC - blockchain::state                        - utxo_size : 0, block_count : 7, longest_chain_len : 7 full_block_count : 7 txs_in_blocks : 68
+2024-05-06 08:19:49.522 UTC - mempool:state                            - blocks_queue : 0, transactions : 0
+2024-05-06 08:19:49.522 UTC - verification::processed_msgs             - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:49.522 UTC - verification::invalid_txs                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:49.522 UTC - verification::processed_txs              - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:49.522 UTC - verification::processed_blocks           - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:49.522 UTC - mining::golden_tickets                   - total : 0, current difficulty : 0, miner_active : false, current target : "0000000000000000000000000000000000000000000000000000000000000000" 
+2024-05-06 08:19:54.524 UTC - routing::received_txs                    - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:54.524 UTC - routing::received_blocks                 - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:54.524 UTC - routing::incoming_msgs                   - total : 8, current_rate : 0.10, max_rate : 0.70, min_rate : 0.00
+2024-05-06 08:19:54.524 UTC - consensus::queue                         - capacity : 1000000 / 1000000
+2024-05-06 08:19:54.524 UTC - verification_0::queue                    - capacity : 1000000 / 1000000
+2024-05-06 08:19:54.524 UTC - peers::state                             - total peers : 1. in handshake : 0
+2024-05-06 08:19:54.524 UTC - consensus::blocks_fetched                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:54.524 UTC - consensus::blocks_created                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:54.524 UTC - consensus::received_tx                   - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:54.524 UTC - consensus::received_gts                  - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:54.524 UTC - wallet::state                            - total_slips : 0, unspent_slips : 0, current_balance : 0
+2024-05-06 08:19:54.524 UTC - blockchain::state                        - utxo_size : 0, block_count : 7, longest_chain_len : 7 full_block_count : 7 txs_in_blocks : 68
+2024-05-06 08:19:54.524 UTC - mempool:state                            - blocks_queue : 0, transactions : 0
+2024-05-06 08:19:54.524 UTC - verification::processed_msgs             - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:54.524 UTC - verification::invalid_txs                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:54.524 UTC - verification::processed_txs              - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:54.524 UTC - verification::processed_blocks           - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:54.524 UTC - mining::golden_tickets                   - total : 0, current difficulty : 0, miner_active : false, current target : "0000000000000000000000000000000000000000000000000000000000000000" 
+2024-05-06 08:19:59.526 UTC - routing::received_txs                    - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:59.526 UTC - routing::received_blocks                 - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:59.526 UTC - routing::incoming_msgs                   - total : 8, current_rate : 0.10, max_rate : 0.70, min_rate : 0.00
+2024-05-06 08:19:59.526 UTC - consensus::queue                         - capacity : 1000000 / 1000000
+2024-05-06 08:19:59.526 UTC - verification_0::queue                    - capacity : 1000000 / 1000000
+2024-05-06 08:19:59.526 UTC - peers::state                             - total peers : 1. in handshake : 0
+2024-05-06 08:19:59.526 UTC - consensus::blocks_fetched                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:59.526 UTC - consensus::blocks_created                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:59.526 UTC - consensus::received_tx                   - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:59.526 UTC - consensus::received_gts                  - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:59.526 UTC - wallet::state                            - total_slips : 0, unspent_slips : 0, current_balance : 0
+2024-05-06 08:19:59.526 UTC - blockchain::state                        - utxo_size : 0, block_count : 7, longest_chain_len : 7 full_block_count : 7 txs_in_blocks : 68
+2024-05-06 08:19:59.526 UTC - mempool:state                            - blocks_queue : 0, transactions : 0
+2024-05-06 08:19:59.526 UTC - verification::processed_msgs             - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:59.526 UTC - verification::invalid_txs                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:59.526 UTC - verification::processed_txs              - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:59.526 UTC - verification::processed_blocks           - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:19:59.526 UTC - mining::golden_tickets                   - total : 0, current difficulty : 0, miner_active : false, current target : "0000000000000000000000000000000000000000000000000000000000000000" 
+2024-05-06 08:20:04.527 UTC - routing::received_txs                    - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:04.527 UTC - routing::received_blocks                 - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:04.527 UTC - routing::incoming_msgs                   - total : 8, current_rate : 0.00, max_rate : 0.70, min_rate : 0.00
+2024-05-06 08:20:04.527 UTC - consensus::queue                         - capacity : 1000000 / 1000000
+2024-05-06 08:20:04.527 UTC - verification_0::queue                    - capacity : 1000000 / 1000000
+2024-05-06 08:20:04.527 UTC - peers::state                             - total peers : 1. in handshake : 0
+2024-05-06 08:20:04.527 UTC - consensus::blocks_fetched                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:04.527 UTC - consensus::blocks_created                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:04.527 UTC - consensus::received_tx                   - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:04.527 UTC - consensus::received_gts                  - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:04.527 UTC - wallet::state                            - total_slips : 0, unspent_slips : 0, current_balance : 0
+2024-05-06 08:20:04.527 UTC - blockchain::state                        - utxo_size : 0, block_count : 7, longest_chain_len : 7 full_block_count : 7 txs_in_blocks : 68
+2024-05-06 08:20:04.527 UTC - mempool:state                            - blocks_queue : 0, transactions : 0
+2024-05-06 08:20:04.527 UTC - verification::processed_msgs             - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:04.527 UTC - verification::invalid_txs                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:04.527 UTC - verification::processed_txs              - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:04.527 UTC - verification::processed_blocks           - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:04.527 UTC - mining::golden_tickets                   - total : 0, current difficulty : 0, miner_active : false, current target : "0000000000000000000000000000000000000000000000000000000000000000" 
+2024-05-06 08:20:09.527 UTC - routing::received_txs                    - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:09.527 UTC - routing::received_blocks                 - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:09.527 UTC - routing::incoming_msgs                   - total : 8, current_rate : 0.00, max_rate : 0.70, min_rate : 0.00
+2024-05-06 08:20:09.527 UTC - consensus::queue                         - capacity : 1000000 / 1000000
+2024-05-06 08:20:09.527 UTC - verification_0::queue                    - capacity : 1000000 / 1000000
+2024-05-06 08:20:09.527 UTC - peers::state                             - total peers : 1. in handshake : 0
+2024-05-06 08:20:09.527 UTC - consensus::blocks_fetched                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:09.527 UTC - consensus::blocks_created                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:09.527 UTC - consensus::received_tx                   - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:09.527 UTC - consensus::received_gts                  - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:09.527 UTC - wallet::state                            - total_slips : 0, unspent_slips : 0, current_balance : 0
+2024-05-06 08:20:09.527 UTC - blockchain::state                        - utxo_size : 0, block_count : 7, longest_chain_len : 7 full_block_count : 7 txs_in_blocks : 68
+2024-05-06 08:20:09.527 UTC - mempool:state                            - blocks_queue : 0, transactions : 0
+2024-05-06 08:20:09.527 UTC - verification::processed_msgs             - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:09.527 UTC - verification::invalid_txs                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:09.527 UTC - verification::processed_txs              - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:09.527 UTC - verification::processed_blocks           - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:09.527 UTC - mining::golden_tickets                   - total : 0, current difficulty : 0, miner_active : false, current target : "0000000000000000000000000000000000000000000000000000000000000000" 
+2024-05-06 08:20:14.528 UTC - routing::received_txs                    - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:14.528 UTC - routing::received_blocks                 - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:14.528 UTC - routing::incoming_msgs                   - total : 28883, current_rate : 2887.21, max_rate : 2887.21, min_rate : 0.00
+2024-05-06 08:20:14.528 UTC - consensus::queue                         - capacity : 1000000 / 1000000
+2024-05-06 08:20:14.528 UTC - verification_0::queue                    - capacity : 1000000 / 1000000
+2024-05-06 08:20:14.528 UTC - peers::state                             - total peers : 100. in handshake : 0
+2024-05-06 08:20:14.528 UTC - consensus::blocks_fetched                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:14.528 UTC - consensus::blocks_created                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:14.528 UTC - consensus::received_tx                   - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:14.528 UTC - consensus::received_gts                  - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:14.528 UTC - wallet::state                            - total_slips : 0, unspent_slips : 0, current_balance : 0
+2024-05-06 08:20:14.528 UTC - blockchain::state                        - utxo_size : 0, block_count : 7, longest_chain_len : 7 full_block_count : 7 txs_in_blocks : 68
+2024-05-06 08:20:14.528 UTC - mempool:state                            - blocks_queue : 0, transactions : 0
+2024-05-06 08:20:14.528 UTC - verification::processed_msgs             - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:14.528 UTC - verification::invalid_txs                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:14.528 UTC - verification::processed_txs              - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:14.528 UTC - verification::processed_blocks           - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:14.528 UTC - mining::golden_tickets                   - total : 0, current difficulty : 0, miner_active : false, current target : "0000000000000000000000000000000000000000000000000000000000000000" 
+2024-05-06 08:20:19.529 UTC - routing::received_txs                    - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:19.529 UTC - routing::received_blocks                 - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:19.529 UTC - routing::incoming_msgs                   - total : 28883, current_rate : 2886.92, max_rate : 2887.21, min_rate : 0.00
+2024-05-06 08:20:19.529 UTC - consensus::queue                         - capacity : 1000000 / 1000000
+2024-05-06 08:20:19.529 UTC - verification_0::queue                    - capacity : 1000000 / 1000000
+2024-05-06 08:20:19.529 UTC - peers::state                             - total peers : 100. in handshake : 0
+2024-05-06 08:20:19.529 UTC - consensus::blocks_fetched                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:19.529 UTC - consensus::blocks_created                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:19.529 UTC - consensus::received_tx                   - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:19.529 UTC - consensus::received_gts                  - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:19.529 UTC - wallet::state                            - total_slips : 0, unspent_slips : 0, current_balance : 0
+2024-05-06 08:20:19.529 UTC - blockchain::state                        - utxo_size : 0, block_count : 7, longest_chain_len : 7 full_block_count : 7 txs_in_blocks : 68
+2024-05-06 08:20:19.529 UTC - mempool:state                            - blocks_queue : 0, transactions : 0
+2024-05-06 08:20:19.529 UTC - verification::processed_msgs             - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:19.529 UTC - verification::invalid_txs                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:19.529 UTC - verification::processed_txs              - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:19.529 UTC - verification::processed_blocks           - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:19.529 UTC - mining::golden_tickets                   - total : 0, current difficulty : 0, miner_active : false, current target : "0000000000000000000000000000000000000000000000000000000000000000" 
+2024-05-06 08:20:24.530 UTC - routing::received_txs                    - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:24.530 UTC - routing::received_blocks                 - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:24.530 UTC - routing::incoming_msgs                   - total : 28883, current_rate : 0.00, max_rate : 2887.21, min_rate : 0.00
+2024-05-06 08:20:24.530 UTC - consensus::queue                         - capacity : 1000000 / 1000000
+2024-05-06 08:20:24.530 UTC - verification_0::queue                    - capacity : 1000000 / 1000000
+2024-05-06 08:20:24.530 UTC - peers::state                             - total peers : 100. in handshake : 0
+2024-05-06 08:20:24.530 UTC - consensus::blocks_fetched                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:24.530 UTC - consensus::blocks_created                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:24.530 UTC - consensus::received_tx                   - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:24.530 UTC - consensus::received_gts                  - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:24.530 UTC - wallet::state                            - total_slips : 0, unspent_slips : 0, current_balance : 0
+2024-05-06 08:20:24.530 UTC - blockchain::state                        - utxo_size : 0, block_count : 7, longest_chain_len : 7 full_block_count : 7 txs_in_blocks : 68
+2024-05-06 08:20:24.530 UTC - mempool:state                            - blocks_queue : 0, transactions : 0
+2024-05-06 08:20:24.530 UTC - verification::processed_msgs             - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:24.530 UTC - verification::invalid_txs                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:24.530 UTC - verification::processed_txs              - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:24.530 UTC - verification::processed_blocks           - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:24.530 UTC - mining::golden_tickets                   - total : 0, current difficulty : 0, miner_active : false, current target : "0000000000000000000000000000000000000000000000000000000000000000" 
+2024-05-06 08:20:29.531 UTC - routing::received_txs                    - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:29.531 UTC - routing::received_blocks                 - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:29.531 UTC - routing::incoming_msgs                   - total : 28883, current_rate : 0.00, max_rate : 2887.21, min_rate : 0.00
+2024-05-06 08:20:29.531 UTC - consensus::queue                         - capacity : 1000000 / 1000000
+2024-05-06 08:20:29.531 UTC - verification_0::queue                    - capacity : 1000000 / 1000000
+2024-05-06 08:20:29.531 UTC - peers::state                             - total peers : 100. in handshake : 0
+2024-05-06 08:20:29.531 UTC - consensus::blocks_fetched                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:29.531 UTC - consensus::blocks_created                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:29.531 UTC - consensus::received_tx                   - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:29.531 UTC - consensus::received_gts                  - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:29.531 UTC - wallet::state                            - total_slips : 0, unspent_slips : 0, current_balance : 0
+2024-05-06 08:20:29.531 UTC - blockchain::state                        - utxo_size : 0, block_count : 7, longest_chain_len : 7 full_block_count : 7 txs_in_blocks : 68
+2024-05-06 08:20:29.531 UTC - mempool:state                            - blocks_queue : 0, transactions : 0
+2024-05-06 08:20:29.531 UTC - verification::processed_msgs             - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:29.531 UTC - verification::invalid_txs                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:29.531 UTC - verification::processed_txs              - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:29.531 UTC - verification::processed_blocks           - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:29.531 UTC - mining::golden_tickets                   - total : 0, current difficulty : 0, miner_active : false, current target : "0000000000000000000000000000000000000000000000000000000000000000" 
+2024-05-06 08:20:34.532 UTC - routing::received_txs                    - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:34.532 UTC - routing::received_blocks                 - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:34.532 UTC - routing::incoming_msgs                   - total : 28883, current_rate : 0.00, max_rate : 2887.21, min_rate : 0.00
+2024-05-06 08:20:34.532 UTC - consensus::queue                         - capacity : 1000000 / 1000000
+2024-05-06 08:20:34.532 UTC - verification_0::queue                    - capacity : 1000000 / 1000000
+2024-05-06 08:20:34.532 UTC - peers::state                             - total peers : 100. in handshake : 0
+2024-05-06 08:20:34.532 UTC - consensus::blocks_fetched                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:34.532 UTC - consensus::blocks_created                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:34.532 UTC - consensus::received_tx                   - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:34.532 UTC - consensus::received_gts                  - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:34.532 UTC - wallet::state                            - total_slips : 0, unspent_slips : 0, current_balance : 0
+2024-05-06 08:20:34.532 UTC - blockchain::state                        - utxo_size : 0, block_count : 7, longest_chain_len : 7 full_block_count : 7 txs_in_blocks : 68
+2024-05-06 08:20:34.532 UTC - mempool:state                            - blocks_queue : 0, transactions : 0
+2024-05-06 08:20:34.532 UTC - verification::processed_msgs             - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:34.532 UTC - verification::invalid_txs                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:34.532 UTC - verification::processed_txs              - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:34.532 UTC - verification::processed_blocks           - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:34.532 UTC - mining::golden_tickets                   - total : 0, current difficulty : 0, miner_active : false, current target : "0000000000000000000000000000000000000000000000000000000000000000" 
+2024-05-06 08:20:39.534 UTC - routing::received_txs                    - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:39.534 UTC - routing::received_blocks                 - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:39.534 UTC - routing::incoming_msgs                   - total : 28883, current_rate : 0.00, max_rate : 2887.21, min_rate : 0.00
+2024-05-06 08:20:39.534 UTC - consensus::queue                         - capacity : 1000000 / 1000000
+2024-05-06 08:20:39.534 UTC - verification_0::queue                    - capacity : 1000000 / 1000000
+2024-05-06 08:20:39.534 UTC - peers::state                             - total peers : 100. in handshake : 0
+2024-05-06 08:20:39.534 UTC - consensus::blocks_fetched                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:39.534 UTC - consensus::blocks_created                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:39.534 UTC - consensus::received_tx                   - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:39.534 UTC - consensus::received_gts                  - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:39.534 UTC - wallet::state                            - total_slips : 0, unspent_slips : 0, current_balance : 0
+2024-05-06 08:20:39.534 UTC - blockchain::state                        - utxo_size : 0, block_count : 7, longest_chain_len : 7 full_block_count : 7 txs_in_blocks : 68
+2024-05-06 08:20:39.534 UTC - mempool:state                            - blocks_queue : 0, transactions : 0
+2024-05-06 08:20:39.534 UTC - verification::processed_msgs             - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:39.534 UTC - verification::invalid_txs                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:39.534 UTC - verification::processed_txs              - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:39.534 UTC - verification::processed_blocks           - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:39.534 UTC - mining::golden_tickets                   - total : 0, current difficulty : 0, miner_active : false, current target : "0000000000000000000000000000000000000000000000000000000000000000" 
+2024-05-06 08:20:44.535 UTC - routing::received_txs                    - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:44.535 UTC - routing::received_blocks                 - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:44.535 UTC - routing::incoming_msgs                   - total : 28883, current_rate : 0.00, max_rate : 2887.21, min_rate : 0.00
+2024-05-06 08:20:44.535 UTC - consensus::queue                         - capacity : 1000000 / 1000000
+2024-05-06 08:20:44.535 UTC - verification_0::queue                    - capacity : 1000000 / 1000000
+2024-05-06 08:20:44.535 UTC - peers::state                             - total peers : 100. in handshake : 0
+2024-05-06 08:20:44.535 UTC - consensus::blocks_fetched                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:44.535 UTC - consensus::blocks_created                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:44.535 UTC - consensus::received_tx                   - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:44.535 UTC - consensus::received_gts                  - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:44.535 UTC - wallet::state                            - total_slips : 0, unspent_slips : 0, current_balance : 0
+2024-05-06 08:20:44.535 UTC - blockchain::state                        - utxo_size : 0, block_count : 7, longest_chain_len : 7 full_block_count : 7 txs_in_blocks : 68
+2024-05-06 08:20:44.535 UTC - mempool:state                            - blocks_queue : 0, transactions : 0
+2024-05-06 08:20:44.535 UTC - verification::processed_msgs             - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:44.535 UTC - verification::invalid_txs                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:44.535 UTC - verification::processed_txs              - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:44.535 UTC - verification::processed_blocks           - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:44.535 UTC - mining::golden_tickets                   - total : 0, current difficulty : 0, miner_active : false, current target : "0000000000000000000000000000000000000000000000000000000000000000" 
+2024-05-06 08:20:49.541 UTC - routing::received_txs                    - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:49.541 UTC - routing::received_blocks                 - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:49.541 UTC - routing::incoming_msgs                   - total : 28883, current_rate : 0.00, max_rate : 2887.21, min_rate : 0.00
+2024-05-06 08:20:49.541 UTC - consensus::queue                         - capacity : 1000000 / 1000000
+2024-05-06 08:20:49.541 UTC - verification_0::queue                    - capacity : 1000000 / 1000000
+2024-05-06 08:20:49.541 UTC - peers::state                             - total peers : 100. in handshake : 0
+2024-05-06 08:20:49.541 UTC - consensus::blocks_fetched                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:49.541 UTC - consensus::blocks_created                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:49.541 UTC - consensus::received_tx                   - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:49.541 UTC - consensus::received_gts                  - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:49.541 UTC - wallet::state                            - total_slips : 0, unspent_slips : 0, current_balance : 0
+2024-05-06 08:20:49.541 UTC - blockchain::state                        - utxo_size : 0, block_count : 7, longest_chain_len : 7 full_block_count : 7 txs_in_blocks : 68
+2024-05-06 08:20:49.541 UTC - mempool:state                            - blocks_queue : 0, transactions : 0
+2024-05-06 08:20:49.541 UTC - verification::processed_msgs             - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:49.541 UTC - verification::invalid_txs                - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:49.541 UTC - verification::processed_txs              - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:49.541 UTC - verification::processed_blocks           - total : 0, current_rate : 0.00, max_rate : 0.00, min_rate : 0.00
+2024-05-06 08:20:49.541 UTC - mining::golden_tickets                   - total : 0, current difficulty : 0, miner_active : false, current target : "0000000000000000000000000000000000000000000000000000000000000000" 

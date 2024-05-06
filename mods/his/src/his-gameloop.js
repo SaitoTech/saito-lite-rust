@@ -3598,7 +3598,7 @@ console.log("setting unit from " + key + " as relief force");
               if (u.battle_rating > highest_battle_rating) { highest_battle_rating = u.battle_rating; }            
             }
             abr += highest_battle_rating;
-            if (abr < 9) {
+            if (abr >= 9) {
               this.updateLog(this.returnFactionName(defender) + " avoid battle roll succeeds: " + abr);
             } else {
               this.updateLog(this.returnFactionName(defender) + " avoid battle roll fails: " + abr);
@@ -3647,7 +3647,7 @@ console.log("setting unit from " + key + " as relief force");
 	      if (u.battle_rating > highest_battle_rating) { highest_battle_rating = u.battle_rating; }	      
 	    }
 	    abr += highest_battle_rating;
-	    if (abr < 9) {
+	    if (abr >= 9) {
 	      this.updateLog(this.returnFactionName(defender) + " avoid battle roll succeeds: " + abr);
 	    } else {
 	      this.updateLog(this.returnFactionName(defender) + " avoid battle roll fails: " + abr);
@@ -10912,14 +10912,14 @@ if (this.game.state.round == 2) {
 		    his_self.playerSelectOps(faction, cost, (card) => {
 		      his_self.addMove("discard\t"+faction+"\t"+card);
 	              his_self.addMove("unexpected_war\t"+faction+"\t"+enemy);
-		      his_self.addMove("declare_war\t"+faction+"\t"+enemy);
 		      his_self.addMove("set_allies\t"+faction+"\t"+natural_ally);
+		      his_self.addMove("declare_war\t"+faction+"\t"+enemy);
 		      his_self.endTurn();
 		    });
 		  } else {
 	            his_self.addMove("unexpected_war\t"+faction+"\t"+enemy);
-		    his_self.addMove("declare_war\t"+faction+"\t"+enemy);
 		    his_self.addMove("set_allies\t"+faction+"\t"+natural_ally);
+		    his_self.addMove("declare_war\t"+faction+"\t"+enemy);
 		    his_self.endTurn();
 		  }
 	        }
