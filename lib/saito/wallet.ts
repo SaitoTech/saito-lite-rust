@@ -26,6 +26,10 @@ export default class Wallet extends SaitoWallet {
 
 	nolan_per_saito = 100000000;
 
+	backup_required = 1;
+	
+	backup_required_ignore = 0;
+
 	cryptos = new Map<string, any>();
 	public saitoCrypto: any;
 

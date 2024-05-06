@@ -18,12 +18,16 @@ class Backup {
 	}
 
 	render() {
+		let this_self = this;
 		let key = this.app.keychain.returnKey(this.mod.publicKey);
 		let identifier = key?.identifier || '';
 		let newIdentifier = key?.has_registered_username && identifier === '';
 		identifier = this.desired_identifier || identifier;
 
 		this.modal_overlay.show(BackupTemplate(identifier, newIdentifier));
+		this.modal_overlay.callback_on_close = () => {
+			this_self.callBackFunction();
+		}
 		this.attachEvents();
 	}
 
@@ -31,19 +35,15 @@ class Backup {
 		this.render();
 	}
 	hide() {
-		this.remove();
+		this.close();
 	}
 
-	remove() {
-		this.modal_overlay.remove();
+	close() {
+		this.modal_overlay.close();
 	}
 
 	attachEvents() {
-		document.querySelector(
-			'#backup-template .saito-overlay-form-cancel'
-		).onclick = (e) => {
-			this.modal_overlay.remove();
-		};
+		let this_self = this;
 
 		document.querySelector(
 			'#backup-template .saito-overlay-form-submit'
@@ -86,7 +86,8 @@ class Backup {
 			this.mod.backupWallet(email, password);
 
 			setTimeout(() => {
-				this.remove();
+				this_self.app.wallet.backup_required = 0;
+				this.close();
 				if (this.success_callback) {
 					this.success_callback();
 				}
@@ -99,6 +100,28 @@ class Backup {
 	//
 	success() {
 		siteMessage('Wallet backed up on blockchain', 4000);
+		this.app.wallet.backup_required = 1;
+	}
+
+	callBackFunction(){
+		console.log('inside backup.js callback ////');
+		console.log('this.app.wallet.backup_required: ', this.app.wallet.backup_required);
+		let this_self = this;
+		if (this.app.wallet.backup_required == 1) {
+			
+			this_self.app.connection.emit(
+				'saito-header-update-message',
+				{
+					msg: 'Wallet backup required',
+					flash: true,
+					callback: function() {
+						this_self.app.connection.emit(
+							'recovery-backup-overlay-render-request'
+						);
+					}
+				}
+			);
+		}
 	}
 }
 

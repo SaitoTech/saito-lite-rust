@@ -442,9 +442,49 @@
   color: var(--color-primary);
 }
 
-#backup-template .saito-overlay-form {
-  gap: 0rem;
+.saito-overlay-auto-backup .saito-overlay-form {
+  gap: 1rem;
 }
+
+.saito-overlay-auto-backup .saito-overlay-subform {
+  gap: 2rem;
+}
+
+.saito-overlay-auto-backup .saito-overlay-subform {
+  display: flex;
+  gap: 2rem;
+  flex-direction: column;
+}
+
+
+.saito-overlay-auto-backup .saito-overlay-form-subtext {
+  font-size: 2rem;
+  line-height: 2.5rem;
+}
+ 
+.saito-overlay-auto-backup .saito-overlay-subform-text {
+  font-size: 1.8rem;
+  line-height: 2rem;
+}
+
+.saito-overlay-auto-backup .saito-overlay-form-checkbox-container,
+.saito-overlay-backup-reminder .saito-overlay-form-checkbox-container {
+  display: flex;
+  gap: 1rem;
+}
+
+.saito-overlay-auto-backup .saito-overlay-subform-checkbox {
+  width: 4rem;
+}
+
+.saito-overlay-backup-reminder .saito-overlay-subform-checkbox {
+  width: 2rem;
+}
+
+.saito-overlay-backup-reminder .saito-overlay-subform-text {
+  line-height: 3rem;
+}
+
 
 @media screen and (max-width: 1200px) {
   .saito-floating-plus-btn {
