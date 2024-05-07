@@ -439,11 +439,12 @@
 }
 
 .saito-backup-container .saito-backup-auto {
-  color: var(--color-primary);
+  padding: 1.5rem 1.5rem;
+  text-decoration: none;
 }
 
 .saito-overlay-auto-backup .saito-overlay-form {
-  gap: 1rem;
+  gap: 0rem;
 }
 
 .saito-overlay-auto-backup .saito-overlay-subform {
@@ -459,12 +460,17 @@
 
 .saito-overlay-auto-backup .saito-overlay-form-subtext {
   font-size: 2rem;
-  line-height: 2.5rem;
+  line-height: 2.8rem;
 }
  
 .saito-overlay-auto-backup .saito-overlay-subform-text {
   font-size: 1.8rem;
-  line-height: 2rem;
+  line-height: 2.5rem;
+}
+
+.saito-overlay-auto-backup .saito-overlay-form-submit {
+  width: fit-content;
+  align-self: end;
 }
 
 .saito-overlay-auto-backup .saito-overlay-form-checkbox-container,
@@ -474,7 +480,7 @@
 }
 
 .saito-overlay-auto-backup .saito-overlay-subform-checkbox {
-  width: 4rem;
+  width: 3.5rem;
 }
 
 .saito-overlay-backup-reminder .saito-overlay-subform-checkbox {

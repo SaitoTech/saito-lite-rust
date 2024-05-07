@@ -27,8 +27,8 @@ module.exports = BackupTemplate = (identifier, newIdentifier) => {
         <div class="saito-overlay-subform">
          
           <div class="saito-overlay-form-subtext">
-          	To use Account Recovery, you need to provide a password and an email address. 
-          	Your browser will encrypt your wallet and send it to your email address. Your password is never shared.
+          	Provide an email address and password to use Account Recovery. 
+          	Your browser will encrypt your wallet and email you a copy.
           </div>
          
           <div class="saito-overlay-subform-inputs">
@@ -39,12 +39,12 @@ module.exports = BackupTemplate = (identifier, newIdentifier) => {
       		<div class="saito-overlay-form-checkbox-container">	
 	      		<input type="checkbox" class="saito-overlay-subform-checkbox" checked />
 	      		<div class="saito-overlay-subform-text">
-	      			Please save an encrypted copy of my wallet online, 
-	      			so I can recovery my account on any device by using my email and password.
+	      			Please save an encrypted copy on-chain, 
+	      			so I can recover my account quickly and easily on any device
 	      		</div>
       		</div>
 
-          <button type="submit" class="saito-button-primary fat saito-overlay-form-submit" id="saito-overlay-submit">Encrypt & Upload</button>
+          <button type="submit" class="saito-button-primary fat saito-overlay-form-submit" id="saito-overlay-submit">Encrypt & Backup</button>
 	      </div>
       </div>
     </form>

@@ -26,10 +26,6 @@ export default class Wallet extends SaitoWallet {
 
 	nolan_per_saito = 100000000;
 
-	backup_required = 1;
-	
-	backup_required_ignore = 0;
-
 	cryptos = new Map<string, any>();
 	public saitoCrypto: any;
 
@@ -414,6 +410,11 @@ export default class Wallet extends SaitoWallet {
 
 		this.app.options.invites = [];
 		this.app.options.games = [];
+
+		// wallet backup
+		this.app.options.wallet.backup_required = 0;
+		this.app.options.wallet.backup_required_msg = 1;
+
 
 		await this.saveWallet();
 

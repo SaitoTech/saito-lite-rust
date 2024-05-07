@@ -28,6 +28,10 @@ class Backup {
 		this.modal_overlay.callback_on_close = () => {
 			this_self.callBackFunction();
 		}
+
+		this_self.app.options.wallet.backup_required_msg = 1;
+		this_self.app.wallet.saveWallet();
+
 		this.attachEvents();
 	}
 
@@ -57,7 +61,7 @@ class Backup {
 			).value;
 
 			if (!email || !password) {
-				console.warn('No email or password provided!');
+				salert('No email or password provided!');
 				return;
 			}
 
@@ -85,8 +89,9 @@ class Backup {
 
 			this.mod.backupWallet(email, password);
 
-			setTimeout(() => {
-				this_self.app.wallet.backup_required = 0;
+			setTimeout(async () => {
+				this_self.app.options.wallet.backup_required_msg = 0;
+				await this_self.app.wallet.saveWallet();
 				this.close();
 				if (this.success_callback) {
 					this.success_callback();
@@ -98,18 +103,18 @@ class Backup {
 	//
 	// This is called when we receive the backup wallet tx that we sent
 	//
-	success() {
+	async success() {
 		siteMessage('Wallet backed up on blockchain', 4000);
-		this.app.wallet.backup_required = 1;
-		this.app.connection.emit('saito-header-update-message', {});
+		this.app.options.wallet.backup_required_msg = 0;
+		await this.app.wallet.saveWallet();
 	}
 
 	callBackFunction(){
 		console.log('inside backup.js callback ////');
-		console.log('this.app.wallet.backup_required: ', this.app.wallet.backup_required);
+		console.log('this.app.wallet.backup_required: ', this.app.options.wallet.backup_required_msg);
+
 		let this_self = this;
-		if (this.app.wallet.backup_required == 1) {
-			
+		if (this.app.options.wallet.backup_required_msg == 1) {
 			this_self.app.connection.emit(
 				'saito-header-update-message',
 				{
@@ -122,6 +127,8 @@ class Backup {
 					}
 				}
 			);
+		} else {
+			this.app.connection.emit('saito-header-update-message', {});	
 		}
 	}
 }

@@ -95,11 +95,13 @@ class MixinModule extends CryptoModule {
 					if (Object.keys(res).length > 0) {
 						await this.mixin.createDepositAddress(this_self.asset_id);
 						super.activate();
+
+						this_self.app.options.wallet.backup_required = 1;
+						this_self.app.wallet.saveWallet();
 						
-						let msg = `You have added a new crypto keys to your wallet. 
-				  Unless your wallet is backed-up, you will lose this 
-				  account if your browser cache is cleared. 
-				  Do you want help backing up your wallet and setting up Account Recovery?`;
+						let msg = `Your wallet has added new crypto keys. 
+						Unless you backup your wallet, you may lose these keys. 
+						Do you want help backing up your wallet?`;
 						this.app.connection.emit(
 							'saito-backup-render-request',
 							{msg: msg}
