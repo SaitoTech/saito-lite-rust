@@ -43,7 +43,7 @@ module.exports = LimboSideBarTemplate = (app, mod, dreamer) => {
       		</div>
      		<div class="saito-profile-info">`;
 
-    if (group?.description){
+    if (mod.dreams[dreamer]?.description){
     	html += `<div class="saito-profile-about">${group.description}</div>`;	
     }
     
@@ -59,7 +59,14 @@ module.exports = LimboSideBarTemplate = (app, mod, dreamer) => {
           		</div>
       		</div>
     		</div>
-    		<div class="saito-modal-content">`;
+
+    		<div class="saito-modal-content">
+
+		    <div class="saito-profile-menu float">
+		      <div class="redsquare-profile-menu-tabs active">Listeners 
+		      	<span>${ group.length > 0 ? `(${group.length})` : '' }</span>
+		      </div>
+		    </div>`;
 
     for (let key of group){
     	html += formatUser(key);

@@ -1,18 +1,23 @@
 /*  Page Layout */
 .saito-container.limbo-container {
 	padding: 0 1rem;
-	grid-template-columns: 30rem auto;
+	grid-template-columns: 1fr;
 }
 
 .saito-container.limbo-container.dreaming {
-	grid-template-columns: 30rem auto 33rem;	
+	grid-template-columns: minmax(30rem, 1fr) 33rem;	
 }
 
 
 
-/* Left Sidebar */
-.limbo-container .saito-sidebar.left {
+.limbo-main .saito-menu {
 	max-width: 30rem;
+	margin: auto;
+	margin-top: 8rem;
+}
+
+.dreaming .limbo-main .saito-menu {
+	display: none;
 }
 
 .spaces-list{
@@ -37,6 +42,8 @@
 .limbo-container .saito-sidebar.right {
 	padding: 0;
 	display: none;
+	grid-column-start: unset;
+	grid-row: unset;
 }
 
 .limbo-container.dreaming .saito-sidebar.right{
@@ -160,10 +167,6 @@ video#local.noflip{
 
 
 .dream-controls .video-call-info {
-	display: none;
-}
-
-#exit_space {
 	display: none;
 }
 

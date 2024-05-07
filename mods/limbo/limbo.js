@@ -13,7 +13,6 @@ class Limbo extends ModTemplate {
 		super(app);
 		this.app = app;
 		this.name = 'Limbo';
-		this.chunks = [];
 		this.localStream = null; // My Video or Audio Feed
 		this.combinedStream = null;
 
@@ -224,16 +223,7 @@ class Limbo extends ModTemplate {
 			this.addComponent(this.main);
 		}
 
-		for (const mod of this.app.modules.returnModulesRespondingTo(
-			'chat-manager'
-		)) {
-			let cm = mod.respondTo('chat-manager');
-			cm.container = '.saito-sidebar.left';
-			cm.render_manager_to_screen = 1;
-			this.addComponent(cm);
-		}
-
-		console.log('rendering', this.main, this.header);
+		this.app.modules.returnModulesRespondingTo('chat-manager');
 
 		await super.render();
 

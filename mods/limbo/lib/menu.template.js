@@ -1,7 +1,7 @@
 module.exports = (app, mod) => {
 	
 
-  let html = `<div id="limbo-menu" class="saito-menu redsquare-menu">`;
+  let html = `<div id="limbo-menu" class="saito-menu">`;
 
   if (!mod.dreamer){
     html += `<div id="new-space" class="saito-button-primary">New Space</div>`
@@ -22,7 +22,7 @@ module.exports = (app, mod) => {
             <div class="sidebar-title">Spaces</div>
         </div>
 
-        <div id="spaces" class="spaces-list saito-sidebar-element"></div>
+        <div id="spaces" class="spaces-list"></div>
 
       </div>
   `;
