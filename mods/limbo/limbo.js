@@ -263,8 +263,6 @@ class Limbo extends ModTemplate {
 						});
 					}
 
-					this.app.connection.emit('limbo-populated', 'service');
-
 					if (this.dreamer && this.dreams[this.dreamer]) {
 						let c = await sconfirm(
 							`Will join ${this.app.keychain.returnUsername(
@@ -275,8 +273,12 @@ class Limbo extends ModTemplate {
 							this.joinDream(this.dreamer);
 						} else {
 							window.history.pushState('', '', `/limbo/`);
+							this.dreamer = null;
 						}
 					}
+					
+					this.app.connection.emit('limbo-populated', 'service');
+					
 				}
 			);
 		}
