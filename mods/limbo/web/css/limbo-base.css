@@ -11,9 +11,13 @@
 
 
 .limbo-main .saito-menu {
-	max-width: 30rem;
+	max-width: 50rem;
 	margin: auto;
 	margin-top: 8rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	grid-gap: 2rem;
 }
 
 .dreaming .limbo-main .saito-menu {

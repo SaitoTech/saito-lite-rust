@@ -263,15 +263,21 @@ class Limbo extends ModTemplate {
 						});
 					}
 
-					if (this.dreamer && this.dreams[this.dreamer]) {
-						let c = await sconfirm(
-							`Will join ${this.app.keychain.returnUsername(
-								this.dreamer
-							)}'s dream space`
-						);
-						if (c) {
-							this.joinDream(this.dreamer);
+					if (this.dreamer){
+						if (this.dreams[this.dreamer]) {
+							let c = await sconfirm(
+								`Will join ${this.app.keychain.returnUsername(
+									this.dreamer
+								)}'s dream space`
+							);
+							if (c) {
+								this.joinDream(this.dreamer);
+							} else {
+								window.history.pushState('', '', `/limbo/`);
+								this.dreamer = null;
+							}
 						} else {
+							salert(`${this.app.keychain.returnUsername(this.dreamer)}'s dream space is no longer available`);
 							window.history.pushState('', '', `/limbo/`);
 							this.dreamer = null;
 						}
@@ -477,6 +483,8 @@ class Limbo extends ModTemplate {
 			request: 'stop dream'
 		};
 
+		console.log(JSON.parse(JSON.stringify(this.dreams)));
+		
 		for (let key of this.dreams[this.publicKey].members){
 			if (key !== this.publicKey){
 				newtx.addTo(key);					

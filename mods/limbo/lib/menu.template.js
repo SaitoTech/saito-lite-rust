@@ -19,7 +19,8 @@ module.exports = (app, mod) => {
   }
 
   html +=`<div class="sidebar-header">
-            <div class="sidebar-title">Spaces</div>
+            <!--div class="sidebar-title">Spaces</div-->
+            Saito Limbo is a distributed video/audio broadcasting application, operating through P2P connections rather than a central authority.
         </div>
 
         <div id="spaces" class="spaces-list"></div>
