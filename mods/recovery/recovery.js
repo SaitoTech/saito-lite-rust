@@ -62,19 +62,19 @@ class Recovery extends ModTemplate {
 				//If we already have the email/password, just send the backup
 				//
 				let key = app.keychain.returnKey(this.publicKey);
-				// if (key) {
-				// 	if (
-				// 		key.wallet_decryption_secret &&
-				// 		key.wallet_retrieval_hash
-				// 	) {
-				// 		let newtx = await this.createBackupTransaction(
-				// 			key.wallet_decryption_secret,
-				// 			key.wallet_retrieval_hash
-				// 		);
-				// 		await this.app.network.propagateTransaction(newtx);
-				// 		return;
-				// 	}
-				// }
+				if (key) {
+					if (
+						key.wallet_decryption_secret &&
+						key.wallet_retrieval_hash
+					) {
+						let newtx = await this.createBackupTransaction(
+							key.wallet_decryption_secret,
+							key.wallet_retrieval_hash
+						);
+						await this.app.network.propagateTransaction(newtx);
+						return;
+					}
+				}
 
 				//
 				// Otherwise, call up the modal to query them from the user
