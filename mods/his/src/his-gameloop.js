@@ -1545,6 +1545,7 @@ if (faction == "ottoman") {
 	  return 1;
 	}
 	if (mv[0] === "colonize") {
+    	  this.game.queue.splice(qe, 1);
 	  let faction = mv[1];
 	  this.game.state.colonies.push({
 	    faction : faction,
@@ -1552,23 +1553,22 @@ if (faction == "ottoman") {
 	    round :   this.game.state.round,
 	  });
 	  this.updateLog(this.returnFactionName(faction) + " founds a colony");
-	  this.displayCustomOverlay("colonize", faction);
+	  this.game.queue.push("display_custom_overlay\tcolonize\t"+faction);
           this.game.state.may_colonize[faction] = 0;
-    	  this.game.queue.splice(qe, 1);
 	  this.displayColony();
 	  return 1;
 	}
 	if (mv[0] === "explore") {
 	  let faction = mv[1];
+    	  this.game.queue.splice(qe, 1);
 	  this.game.state.explorations.push({
 	    faction : faction,
 	    resolved :  0 ,
 	    round :   this.game.state.round,
 	  });
 	  this.updateLog(this.returnFactionName(faction) + " launches an expedition");
-	  this.displayCustomOverlay("explore", faction);
+	  this.game.queue.push("display_custom_overlay\texplore\t"+faction);
           this.game.state.may_explore[faction] = 0;
-    	  this.game.queue.splice(qe, 1);
 	  this.displayExploration();
 	  return 1;
 	}
@@ -1591,8 +1591,10 @@ if (faction == "ottoman") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "St. Lawrence";
-	    this.updateLog(this.returnFactionName(faction) + " discovers the St. Lawrence");
-	    this.displayCustomOverlay("stlawrence", this.returnFactionName(faction));
+	    let msg = this.returnFactionName(faction) + " discovers the St. Lawrence";
+	    this.updateLog(msg);
+	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
+	    this.game.queue.push("display_custom_overlay\tstlawrence\t"+msg);
 	  }
 	  if (bonus === 'greatlakes') {
 	    this.game.state.explorations[idx].resolved = 1;
@@ -1600,8 +1602,10 @@ if (faction == "ottoman") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Great Lakes";
-	    this.updateLog(this.returnFactionName(faction) + " discovers the Great Lakes");
-	    this.displayCustomOverlay("greatlakes", this.returnFactionName(faction));
+	    let msg = this.returnFactionName(faction) + " discovers the Great Lakes";
+	    this.updateLog(msg);
+	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
+	    this.game.queue.push("display_custom_overlay\tgreatlakes\t"+msg);
 	  }
 	  if (bonus === 'mississippi') {
 	    this.game.state.explorations[idx].resolved = 1;
@@ -1609,8 +1613,10 @@ if (faction == "ottoman") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Mississippi";
-	    this.updateLog(this.returnFactionName(faction) + " discovers the Mississippi");
-	    this.displayCustomOverlay("mississippi", this.returnFactionName(faction));
+	    let msg = this.returnFactionName(faction) + " discovers the Mississippi";
+	    this.updateLog(msg);
+	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
+	    this.game.queue.push("display_custom_overlay\tmississippi\t"+msg);
 	  }
 	  if (bonus === 'pacificstrait') {
 	    this.game.state.explorations[idx].resolved = 1;
@@ -1618,8 +1624,10 @@ if (faction == "ottoman") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Pacific Strait";
-	    this.updateLog(this.returnFactionName(faction) + " discovers the Pacific Strait");
-	    this.displayCustomOverlay("pacificstrait", this.returnFactionName(faction));
+	    let msg = this.returnFactionName(faction) + " discovers the Pacific Strait";
+	    this.updateLog(msg);
+	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
+	    this.game.queue.push("display_custom_overlay\tpacificstrait\t"+msg);
 	  }
 	  if (bonus === 'amazon') {
 	    this.game.state.explorations[idx].resolved = 1;
@@ -1627,8 +1635,10 @@ if (faction == "ottoman") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Amazon";
-	    this.updateLog(this.returnFactionName(faction) + " discovers the Amazon");;
-	    this.displayCustomOverlay("amazon", this.returnFactionName(faction));
+	    let msg = this.returnFactionName(faction) + " discovers the Amazon";
+	    this.updateLog(msg);
+	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
+	    this.game.queue.push("display_custom_overlay\tamazon\t"+msg);
 	  }
 	  if (bonus === 'circumnavigation') {
 
@@ -1677,8 +1687,10 @@ if (faction == "ottoman") {
 	      this.game.state.newworld[bonus].faction = faction;
 	      this.game.state.newworld[bonus].claimed = 1;
 	      this.game.state.explorations[idx].prize = "Circumnavigation";
-	      this.updateLog(this.returnFactionName(faction) + " circumnavigates the Globe");
-	      this.displayCustomOverlay("circumnavigation", this.returnFactionName(faction));
+	      let msg = this.returnFactionName(faction) + " circumnavigates the Globe";
+	      this.updateLog(msg);
+	      this.game.queue.push("ACKNOWLEDGE\t"+msg);
+	      this.game.queue.push("display_custom_overlay\tcircumnavigation\t"+msg);
 
 	    } else {
 
@@ -1712,7 +1724,10 @@ if (faction == "ottoman") {
 	      this.game.state.explorations[idx].prize = "lost at sea";
 	      this.updateLog(this.returnFactionName(faction) + " fails at Circumnavigation ("+x+")");
 	      if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
-	        this.displayCustomOverlay("lost-at-sea", this.returnFactionName(faction));
+	        let msg = this.returnFactionName(faction) + " lost at sea in attempt at circumnavigation";
+	        this.updateLog(msg);
+	        this.game.queue.push("ACKNOWLEDGE\t"+msg);
+	        this.game.queue.push("display_custom_overlay\tlost-at-sea\t"+msg);
 	      }
 	    }
 	  }
@@ -2159,15 +2174,15 @@ x = 2;
 
 	if (mv[0] === "conquer") {
 	  let faction = mv[1];
+    	  this.game.queue.splice(qe, 1);
 	  this.game.state.conquests.push({
 	    faction : faction,
 	    resolved :  0 ,
 	    round :   this.game.state.round,
 	  });
 	  this.updateLog(this.returnFactionName(faction) + " launches a conquest");
-	  this.displayCustomOverlay("conquest", faction);
+	  this.game.queue.push("display_custom_overlay\tconquest\t"+faction);
           this.game.state.may_conquer[faction] = 0;
-    	  this.game.queue.splice(qe, 1);
 	  this.displayConquest();
 	  return 1;
 	}
@@ -11522,9 +11537,10 @@ console.log(JSON.stringify(reshuffle_cards));
 	if (mv[0] === "excommunicate_faction") {
 
 	  let faction = mv[1];
-	  this.excommunicateFaction(faction);
-	  this.displayCustomOverlay("excommunication", faction);
 	  this.game.queue.splice(qe, 1);
+	  this.excommunicateFaction(faction);
+	  this.game.queue.push("ACKNOWLEDGE\t"+this.returnFactionName(faction) + " is excommunicated");
+	  this.game.queue.push("display-custom-overlay\texcommunication\t"+faction);
 
           return 1;
 

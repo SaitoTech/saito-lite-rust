@@ -111,7 +111,6 @@
         img : '/his/img/backgrounds/newworld/lost_at_sea.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} mission is lost at sea`);
       return;
     }
 
@@ -122,7 +121,6 @@
         img : '/his/img/backgrounds/newworld/killed.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} expedition killed by natives`);
       return;
     }
 
@@ -133,7 +131,6 @@
         img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers St. Lawrence River`);
       return;
     }
 
@@ -144,7 +141,6 @@
         img : '/his/img/backgrounds/newworld/mississippi.jpg',
 	styles : [{ key : "backgroundPosition" , val : "center" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Mississippi River`);
       return;
     }
 
@@ -155,7 +151,6 @@
         img : '/his/img/backgrounds/newworld/greatlakes.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Great Lakes`);
       return;
     }
 
@@ -166,7 +161,6 @@
         img : '/his/img/backgrounds/newworld/amazon3.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Amazon River`);
       return;
     }
 
@@ -177,7 +171,6 @@
         img : '/his/img/backgrounds/newworld/pacificstrait.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Pacific Strait`);
       return;
     }
 
@@ -187,7 +180,6 @@
         text : msg + " circumnavigates the globe" ,
         img : '/his/img/backgrounds/newworld/circumnavigation.jpg',
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} circumnavigates the globe`);
       return;
     }
 
@@ -197,7 +189,6 @@
         text : msg + " conquers the Aztec" ,
         img : '/his/img/backgrounds/newworld/aztec.jpg',
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} conquers the Aztec`);
       return;
     }
 
@@ -207,7 +198,6 @@
         text : msg + " conquers the Maya" ,
         img : '/his/img/backgrounds/newworld/inca.jpg',
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} conquers the Maya`);
       return;
     }
 
@@ -217,7 +207,6 @@
         text : msg + " conquers the Inca" ,
         img : '/his/img/backgrounds/newworld/inca2.jpg',
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} conquers the Inca`);
       return;
     }
 
@@ -227,7 +216,6 @@
         text : "The Ottoman subjugation of Hungary-Bohemia forces the Hapsburg Empire to intervene on the side of Christian Europe and in pre-emptive defense of Vienna" ,
         img : '/his/img/backgrounds/battle-of-mohacs.jpeg',
       });
-      this.game.queue.push(`ACKNOWLEDGE\tThe Defeat of Hungary: the Hapsburg and Ottoman Empires are now At War`);
       return;
     }
 
@@ -238,7 +226,6 @@
         img : '/his/img/backgrounds/move/colonize.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} attempts to found a Colony`);
       return;
     }
 
@@ -249,7 +236,6 @@
         img : '/his/img/backgrounds/newworld/inca2.jpg',
 	styles : [{ key : "backgroundPosition" , val : "center" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} attempts Conquest Expedition`);
       return;
     }
 
@@ -290,7 +276,6 @@
         img : '/his/img/backgrounds/move/explore.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} launches New World Exploration`);
       return;
     }
 
@@ -314,8 +299,6 @@
           img : img,
           card : card,
         });
-        this.game.queue.push(`ACKNOWLEDGE\t${msg}`);
-
       }
     }
 

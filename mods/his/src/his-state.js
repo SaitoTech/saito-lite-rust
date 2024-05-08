@@ -1969,9 +1969,6 @@ if (this.game.state.scenario != "is_testing") {
       this.displayWarBox();
       this.displayVictoryTrack();
 
-      // let's notify the player visually
-      this.displayCustomOverlay("battle-of-mohacs");
-
       //
       // add war
       //
@@ -1983,6 +1980,10 @@ if (this.game.state.scenario != "is_testing") {
 	  break;
 	}
       }
+
+      // let's notify the player visually
+      this.game.queue.push("ACKNOWLEDGE\tThe Hapsburgs are pulled into the War in Hungary");
+      this.game.queue.push("display-custom-overlay\tbattle-of-mohacs");
 
     }
   }
