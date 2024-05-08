@@ -48,7 +48,7 @@
 	if (this.game.state.newworld['hapsburg_colony1'].claimed != 1) {
           return "/his/img/tiles/colonies/Cuba.svg";
 	} else {
-          return "/his/img/tiles/colonies/Hispanola.svg";
+          return "/his/img/tiles/colonies/Hispaniola.svg";
 	}
       }
     }
@@ -107,8 +107,8 @@
 	    } else {
 	      this.game.state.newworld['hapsburg_colony3'].claimed = 1;
 	      this.game.state.colonies[z].colony = "hapsburg_colony3";
-	      this.game.state.colonies[z].name = "Hispanola";
-	      this.game.state.colonies[z].img = "/his/img/tiles/colonies/Hispanola.svg";
+	      this.game.state.colonies[z].name = "Hispaniola";
+	      this.game.state.colonies[z].img = "/his/img/tiles/colonies/Hispaniola.svg";
 	    }
 	  }
         }

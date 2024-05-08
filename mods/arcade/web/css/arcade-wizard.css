@@ -125,8 +125,9 @@
 	grid-template-rows: min-content auto;
 	background: var(--saito-arcade-overlay-background);
 	padding: 2rem;
-	border-radius: 0.5rem;
+	border-radius: inherit;
 	color: var(--color-white);
+	border: 1px solid var(--saito-arcade-overlay-background);
 }
 
 .arcade-wizard-overlay .arcade-wizard-game-container {

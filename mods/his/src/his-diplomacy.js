@@ -186,14 +186,15 @@
   }
 
   canPlayerIssueCards(his_self, player, faction) {
-    return 1;
+    if (his_self.game.state.cards_issued[faction] < 2) { return 1; }
+    return 0;
   }
   canPlayerPullCards(his_self, player, faction) {
     return 1;
   }
 
   canPlayerReturnCapturedArmyLeader(his_self, player, faction) {
-    let p = his_self.returnPlayerCommandingFaction(faction);
+    let p = his_self.returnPlayerControllingFaction(faction);
     for (let z = 0; z  < his_self.game.state.players_info[p-1].captured.length; z++) { 
       if (faction == his_self.game.state.players_info[p-1].capturing_faction) { return 1; }
     }
@@ -321,6 +322,7 @@
       his_self.updateStatus("submitted");
 
       mycallback([`set_allies\t${faction}\t${action2}`]);
+      mycallback([`unset_enemies\t${faction}\t${action2}`]);
 
     });
 
@@ -349,6 +351,7 @@
       if (mycallback == null) { return; }
       his_self.updateStatus("submitted");
 
+      his_self.game.state.cards_issued[faction] += 1;
       mycallback([`pull_card\t${action2}\t${faction}`,`NOTIFY\t${his_self.returnFactionName(action2)} pulls card from ${his_self.returnFactionName(faction)}`]);
 
     });
@@ -365,7 +368,9 @@
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
       if (faction != io[i]) {
-        html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
+	if (his_self.game.state.cards_issued[action2] < 2) {
+          html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
+        }
       }
     }
     his_self.updateStatusWithOptions(msg, html);
@@ -377,6 +382,7 @@
       if (mycallback == null) { return; }
       his_self.updateStatus("submitted");
 
+      his_self.game.state.cards_issued[action2] += 1;
       mycallback([`pull_card\t${faction}\t${action2}`,`NOTIFY\t${his_self.returnFactionName(faction)} pulls card from ${his_self.returnFactionName(action2)}`]);
 
     });
@@ -471,7 +477,7 @@
     let io = his_self.returnDiplomacyImpulseOrder(faction);
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
-      if (faction != io[i]) {
+      if (faction != io[i] && his_self.returnPlayerControllingFaction(faction) != his_self.returnPlayerControllingFaction(io[i])) {
         html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
       }
     }

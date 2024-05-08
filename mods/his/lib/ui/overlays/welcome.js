@@ -37,6 +37,11 @@ class WelcomeOverlay {
 	renderCustom(obj={}) {
 
 		let his_self = this.mod;
+
+    if (document.querySelector(".winter")) {
+        this.overlay.zIndex = his_self.winter_overlay.overlay.zIndex + 2;
+    }
+
 		this.overlay.show(WelcomeTemplate(""));
 		this.pushHudUnderOverlay();
 
@@ -47,7 +52,6 @@ class WelcomeOverlay {
 		if (obj.styles){ 
 		  for (let z = 0; z < obj.styles.length; z++) { 
 		    let s = obj.styles[z];
-console.log(s.key + " -- " + s.val);
 		    document.querySelector('.welcome').style[s.key] = s.val; 
 		  }
 		}

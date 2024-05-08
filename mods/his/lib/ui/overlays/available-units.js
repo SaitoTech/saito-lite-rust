@@ -38,7 +38,6 @@ class AvailableUnitsOverlay {
                         spacekey
                 );     
 
-
                 //
                 // this manually moves multiple units, skirting the restrictions on moving
                 // single units that is imposed on the lowest-level (his-player) and which
@@ -46,9 +45,9 @@ class AvailableUnitsOverlay {
                 //
 	        if (mobj.units_to_move.length == 0) {
                   document.querySelectorAll(".available-units-overlay .army_tile").forEach((el) => {
-                    if (el.classList.contains("opaque")) {
-                      el.classList.remove("opaque");
-                      el.classList.add("nonopaque");
+                    if (el.classList.contains("nonopaque")) {
+                      el.classList.remove("nonopaque");
+                      el.classList.add("opaque");
                     }
 		  });
 	        }

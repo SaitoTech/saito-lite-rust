@@ -1,15 +1,25 @@
 
   displayCustomOverlay(c="", msg="") {
 
+    //
+    // move HUD above winter if winter is showing
+    //
+    this.welcome_overlay.pullHudOverOverlay();
+    this.welcome_overlay.pushHudUnderOverlay();
+
+    if (document.querySelector(".winter")) {
+	this.welcome_overlay.overlay.zIndex = this.winter_overlay.overlay.zIndex + 2;
+    }
+
     if (c === "depleted") {
-      this.welcome_overlay.renderCustom({
-        title : "Depleted Conquest" , 
-        text : msg ,
-        card : "" ,
-        img : '/his/img/backgrounds/newworld/depleted_conquest.jpeg',
-        styles : [{ key : "backgroundPosition" , val : "bottom" }],
-      });
-      return;
+        this.welcome_overlay.renderCustom({
+          title : "Depleted Conquest" , 
+          text : msg ,
+          card : "" ,
+          img : '/his/img/backgrounds/newworld/depleted_conquest.jpeg',
+          styles : [{ key : "backgroundPosition" , val : "bottom" }],
+        });
+        return;
     }
 
     if (c === "deserted") {
@@ -1214,10 +1224,6 @@ try {
             tile += `Ottoman_squadron.svg`;
 	    squadrons -= 2;
           }
-	  if (corsairs >= 1) {
-            tile += `Ottoman_corsair.svg`;
-	    corsairs -= 1;
-          }
         }
         if (z === "venice") {
           tile = "/his/img/tiles/venice/";	  
@@ -1244,7 +1250,6 @@ try {
         html += `<img class="navy_tile" src="${tile}" />`;
       }
 
- 
       while (corsairs >= 1) {
         if (z === "ottoman") {
           tile = "/his/img/tiles/ottoman/";	  
@@ -1253,7 +1258,9 @@ try {
 	    corsairs -= 1;
           }
         }
+
         html += `<img class="navy_tile" src="${tile}" />`;
+
       }
 
     return html;

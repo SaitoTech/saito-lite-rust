@@ -17,6 +17,7 @@ html[data-theme="milquetoast"] {
       
       --shadow-chat-message-bottom: 0px 0px 2px var(--color-shadow-bubble); /* flattened and centered the shadow */
     /*Border padding*/ 
+      --border-padding-style-leaderboard-ranking: var(--border-padding-small);  
       --border-padding-style: var(--border-padding-wide);
       --border-padding-identicon-style: var(--border-padding-identicon-thin);
        
@@ -68,7 +69,7 @@ html[data-theme="milquetoast"] {
       --border-radius-status-message: var(--border-radius-round);
       --border-radius-sidebar-game-module: var(--border-radius-round);
       --border-radius-identicon-needed: var(--border-radius-voluptuous);
-
+      --border-radius-leaderboard-ranking: var(--border-radius-round);
       --border-radius-offset: 0.3rem;
 
     /* BORDER COLOR */

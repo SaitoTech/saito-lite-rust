@@ -95,6 +95,7 @@ class NavalBattleOverlay {
 		let hits_assigned = 0;
 		let his_self = this.mod;
 		let hitstext = ' Hits';
+		let undestroyed_corsairs = 0;
 		if (hits_to_assign == 1) {
 			hitstext = ' Hit';
 		}
@@ -117,6 +118,17 @@ class NavalBattleOverlay {
 		document.querySelectorAll(qs1).forEach((el) => {
 			el.remove();
 		});
+
+		//
+		// count undestroyed corsairs
+		//
+		document.querySelectorAll(qs2).forEach((el) => {
+			let factionspace = el.querySelector('.naval-battle-desc').innerHTML;
+			let unit_type = el.getAttribute('data-unit-type');
+			if (unit_type == "corsair") { undestroyed_corsairs++; }
+		});
+
+
 		document.querySelectorAll(qs2).forEach((el) => {
 try {
 			let factionspace = el.querySelector('.naval-battle-desc').innerHTML;
@@ -177,11 +189,14 @@ try {
 							'\t' +
 							unit_type
 					);
+					//
+					// Ottoman may have corsairs which can be destroyed in 1 hit
+					//
 					if (
 						hits_left == 0 ||
 						hits_assigned == hits_to_assign ||
 						hits_assigned >= hits_assignable ||
-						(hits_left == 1 && hits_assignable % 2 == 0)
+						(undestroyed_corsairs == 0 && hits_left == 1 && hits_assignable % 2 == 0)
 					) {
 						document
 							.querySelectorAll('.hits-assignable')
