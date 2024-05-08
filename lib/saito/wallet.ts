@@ -412,6 +412,9 @@ export default class Wallet extends SaitoWallet {
 		this.app.options.games = [];
 
 		// wallet backup
+		if (!this.app.options.wallet) {
+			this.app.options.wallet = {};
+		}
 		this.app.options.wallet.backup_required = 0;
 		this.app.options.wallet.backup_required_msg = 1;
 
