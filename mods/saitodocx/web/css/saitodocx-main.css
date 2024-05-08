@@ -1,0 +1,96 @@
+.saitodocx-main-container {
+    margin: auto;
+    margin-top: calc(var(--saito-header-height) + 1rem);
+    width: calc(var(--saito-width));
+    font-size: 1.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 5rem;
+}
+
+.saitodocx-main-container .saito-module {
+	background: none;
+    padding: 1rem 0rem;
+}
+
+
+.saito-module-title {
+	font-size: 2.6rem;
+}
+
+#create-new-saitodocx i {
+	font-size: 1.2rem;
+}
+
+.saitodocx-existing-docs {
+    padding: 0rem;
+}
+
+.saitodocx-action {
+	display: flex;
+    gap: 2rem;
+}
+
+.saitodocx-action span {
+	text-decoration: underline;
+}
+
+.saitodocx-action span:hover {
+	text-decoration: none;
+}
+
+
+.saitodocx-existing-docs-container {
+	display: flex;
+    flex-direction: column;
+    gap: 5rem;
+}
+
+.saitodocx-existing-docs-title {
+	font-size: 1.9rem;
+    font-weight: bold;
+}
+
+.saitodocx-existing-docs {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.saitodocx-existing-docs-items {
+	display: flex;
+    flex-direction: row;
+    gap: 2rem;
+}
+
+.saitodocx-existing-docs-item {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    max-width: 15rem;
+    gap: 0.5rem;
+    background: #f3f3f3;
+    padding: 1rem;
+    border-radius: 0.4rem;
+    text-align: center;
+    cursor: pointer;
+}
+
+.saitodocx-existing-docs-item-logo {
+	display: block;
+    font-size: 5rem;
+    align-self: center;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.saitodocx-existing-docs-item-author {
+	font-size: 1.5rem;
+	color: #7d7d7d;
+}
+
+.saitodocx-existing-docs-item-timestamp {
+	font-size: 1.5rem;
+	color: #7d7d7d;
+}

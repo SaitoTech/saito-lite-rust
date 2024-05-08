@@ -1,0 +1,79 @@
+.saitodocx-create-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+
+.saitodocx-create-container .saito-module-description{
+font-size: 1.5rem;
+}
+
+.saitodocx-section {
+  min-height: 3rem;
+}
+
+.saitodocx-panel {
+  border:1px solid rgba(0,0,0,.2);
+}
+
+.saitodocx-text {
+  border:none;
+  height: 40rem;
+  width: 100%;
+  resize: none;
+  padding: 1rem;
+}
+
+#saitodocx-texteditor {
+  min-height: 50rem;
+  height: fit-content;
+  padding: 1rem;
+}
+
+trix-toolbar .trix-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.trix-button-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.trix-button-group button {
+  background: none;
+  color: var(--font-color-primary);
+  box-shadow: none;
+  border: 1px solid var(--color-tint-primary);
+  border-radius: 0px;
+  min-width: auto;
+  width: 10rem;
+  max-width: -webkit-fill-available;
+}
+
+.saitodocx-create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  border: none!important;
+}
+
+.trix-button-group-spacer {
+  display: none;
+}
+
+trix-toolbar .trix-button-group:not(:first-child) {
+  margin-left: 0px;
+}
+
+trix-toolbar .trix-button-group {
+  border: none;
+}
+
+trix-toolbar .trix-button:not(:first-child) {
+ border: 1px solid var(--color-tint-primary);
+}
