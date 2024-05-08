@@ -5944,7 +5944,7 @@ console.log("selected: " + spacekey);
             function(space) {
               if (space.home == "ottoman") { return 1; }
               if (space.key === "algiers") { return 0; }
-              if (space.neighbours.length == 0) { return 1; }
+              if ((space.key == "persia" && his_self.game.state.events.war_in_persia == 1) || (space.key == "egypt" && his_self.game.state.events.revolt_in_egypt == 1)) { return 1; }
 	      return 0;
             },
 
@@ -7363,6 +7363,9 @@ console.log("selected: " + spacekey);
 	his_self.game.state.events.ottoman_piracy_enabled = 1;
 	his_self.game.state.events.ottoman_corsairs_enabled = 1;
 
+	// re-display algiers
+	his_self.displaySpace("algiers");
+
 	return 1;
       },
 
@@ -7405,7 +7408,7 @@ console.log("selected: " + spacekey);
 
 	if (faction === "england") {
 	  if (his_self.game.player.length < 6) { let faction_hand_idx = 1;  }  
-	  let england_player = his_self.returnPlayerControllingFaction("england");
+	  let england_player = his_self.returnPlayerCommandingFaction("england");
  	  his_self.game.queue.push("hand_to_fhand\t1\t"+england_player+"\t"+"england"+"\t1");
 	  his_self.game.queue.push(`DEAL\t1\t${england_player}\t1`);
         }
@@ -11992,16 +11995,32 @@ console.log("selected: " + spacekey);
 
         if (his_self.game.player === player) { 
 
+	  let cabot_england_found = 0;
+	  let cabot_france_found = 0;
+	  let cabot_hapsburg_found = 0;
+
 	  let msg = "Cancel Which Expedition / Conquest?";
           let html = '<ul>';
 	  for (let i = 0; i < his_self.game.state.explorations.length; i++) {
-	    if (his_self.game.state.explorations[i].round == his_self.game.state.round) {
-              html += `<li class="option" id="exploration-${his_self.game.state.explorations[i].faction}">${his_self.returnFactionName(his_self.game.state.explorations[i].faction)} (exploration)</li>`;
+	    let exp = his_self.game.state.explorations[i];
+
+            if (exp.cabot == 1) {
+              if (exp.faction == "england") { cabot_england_found = 1; }
+              if (exp.faction == "france") { cabot_france_found = 1; }
+              if (exp.faction == "hapsburg") { cabot_hapsburg_found = 1; }
+            }
+
+	    if (exp.round == his_self.game.state.round) {
+              html += `<li class="option" id="${his_self.game.state.explorations[i].faction}">${his_self.returnFactionName(his_self.game.state.explorations[i].faction)} (exploration)</li>`;
 	    }
-	  }
-	  for (let i = 0; i < his_self.game.state.conquests.length; i++) {
-	    if (his_self.game.state.conquests[i].round == his_self.game.state.round) {
-              html += `<li class="option" id="conquest-${his_self.game.state.conquests[i].faction}">${his_self.returnFactionName(his_self.game.state.conquests[i])} (conquest)</li>`;
+	    if (his_self.game.state.events.cabot_england == 1 && cabot_england_found == 0) {
+              html += `<li class="option" id="cabot_england">sebastian cabot (england)</li>`;
+	    }
+	    if (his_self.game.state.events.cabot_france == 1 && cabot_france_found == 0) {
+              html += `<li class="option" id="cabot_france">sebastian cabot (france)</li>`;
+	    }
+	    if (his_self.game.state.events.cabot_hapsburg == 1 && cabot_hapsburg_found == 0) {
+              html += `<li class="option" id="cabot_hapsburg">sebastian cabot (haps)</li>`;
 	    }
 	  }
           html += '</ul>';
@@ -12014,14 +12033,14 @@ console.log("selected: " + spacekey);
             $('.option').off();
 	    let action = $(this).attr("id");
 
-	    let x = action.split("-");
 	    his_self.addMove("display_new_world");
-	    if (x[0] === "exploration") {
-	      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" cancels "+his_self.returnFactionName(x[1])+" exploration");
-	      his_self.addMove("remove_exploration\t"+x[1]); 
+	    if (action == "cabot_england" || action == "cabot_hapsburg" || action == "cabot_france") {
+	      if (action === "cabot_england") {  his_self.addMove("SETVAR\tstate\tevents\tcabot_england\t0"); }
+	      if (action === "cabot_hapsburg") {  his_self.addMove("SETVAR\tstate\tevents\tcabot_hapsburg\t0"); }
+	      if (action === "cabot_france") {  his_self.addMove("SETVAR\tstate\tevents\tcabot_france\t0"); }
 	    } else {
-	      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" cancels "+his_self.returnFactionName(x[1])+" conquest");
-	      his_self.addMove("remove_conquest\t"+x[1]); 
+	      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" cancels "+his_self.returnFactionName(action)+" exploration");
+	      his_self.addMove("remove_exploration\t"+action); 
 	    }
 
 	    his_self.endTurn();
@@ -12587,6 +12606,36 @@ console.log("selected: " + spacekey);
 	  his_self.updateStatus(his_self.returnFactionName(target) + " discarding card...");
 
 	  if (player == his_self.game.player) {
+
+	    //
+	    // do we have any cards we can discard ?
+	    //
+            let fhand_idx = his_self.returnFactionHandIdx(his_self.game.player, target);
+	    let valid_options = 0;
+	    let invalid_options = 0;
+	    for (let i = 0; i < his_self.game.deck[0].fhand[fhand_idx].length; i++) {
+	      let card = his_self.game.deck[0].fhand[i];
+	      if (his_self.game.deck[0].cards[cards].type != "mandatory" && parseInt(card) > 8) { valid_options++; } else {
+		invalid_options++;
+	      }
+	    }
+
+	    //
+	    // if only invalid options, skip discard
+	    //
+	    if (valid_options == 0 && invalid_options == 0) {
+	      his_self.addMove("destroy_all_mercenaries\t"+target);
+	      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(target) + " must destroy_all_mercenaries");
+	      his_self.endTurn();
+	      return 0;
+	    }
+
+	    if (valid_options == 0 && invalid_options > 0) {
+	      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(target) + " cannot be forced to discard cards in hand.");
+	      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(target) + " mercenaries survive.");
+	      his_self.endTurn();
+	      return 0;
+	    }
 
             his_self.playerFactionSelectCardWithFilter(
 
@@ -13894,18 +13943,33 @@ console.log("selected: " + spacekey);
         let player = his_self.returnPlayerCommandingFaction(faction);
         if (his_self.game.player === player) { 
 
+	  let cabot_england_found = 0;
+	  let cabot_france_found = 0;
+	  let cabot_hapsburg_found = 0;
+
 	  let msg = "Cancel Which Expedition?";
           let html = '<ul>';
-	  for (let i = 0; i < his_self.game.state.colonies.length; i++) {
-            html += `<li class="option" id="${his_self.game.state.colonies[i].faction}">${his_self.returnFactionName(his_self.game.state.colonies[i].faction)}</li>`;
+	  for (let i = 0; i < his_self.game.state.explorations.length; i++) {
+
+	    let exp = his_self.game.state.explorations[i];
+
+            if (exp.cabot == 1) {
+              if (exp.faction == "england") { cabot_england_found = 1; }
+              if (exp.faction == "france") { cabot_france_found = 1; }
+              if (exp.faction == "hapsburg") { cabot_hapsburg_found = 1; }
+            }
+
+	    if (his_self.game.state.colonies[i].round == his_self.game.state.round) {
+              html += `<li class="option" id="${his_self.game.state.explorations[i].faction}">${his_self.returnFactionName(his_self.game.state.explorations[i].faction)}</li>`;
+	    }
 	  }
-	  if (his_self.game.state.events.cabot_england == 1) {
+	  if (his_self.game.state.events.cabot_england == 1 && cabot_england_found == 0) {
             html += `<li class="option" id="cabot_england">sebastian cabot (england)</li>`;
 	  }
-	  if (his_self.game.state.events.cabot_france == 1) {
+	  if (his_self.game.state.events.cabot_france == 1 && cabot_france_found == 0) {
             html += `<li class="option" id="cabot_france">sebastian cabot (france)</li>`;
 	  }
-	  if (his_self.game.state.events.cabot_hapsburg == 1) {
+	  if (his_self.game.state.events.cabot_hapsburg == 1 && cabot_hapsburg_found == 0) {
             html += `<li class="option" id="cabot_hapsburg">sebastian cabot (haps)</li>`;
 	  }
           html += '</ul>';
@@ -15052,7 +15116,7 @@ console.log("selected: " + spacekey);
       canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
-	let p = his_self.returnPlayerOfFaction(faction);
+	let p = his_self.returnPlayerCommandingFaction(faction);
 
 	if (his_self.game.player == p) {
 
@@ -18917,7 +18981,7 @@ try {
       home: "hungary",
       political: "",
       religion: "catholic",
-      neighbours: ["wittenberg","leipzig","linz"],
+      neighbours: ["brunn", "wittenberg","leipzig","linz"],
       language: "other",
       type: "key"
     }
@@ -20038,6 +20102,14 @@ try {
     this.game.state.may_colonize['france'] = 1;
     this.game.state.may_colonize['hapsburg'] = 1;
 
+    this.game.state.cards_issued = {};
+    this.game.state.cards_issued['ottoman'] = 0;
+    this.game.state.cards_issued['hapsburg'] = 0;
+    this.game.state.cards_issued['england'] = 0;
+    this.game.state.cards_issued['france'] = 0;
+    this.game.state.cards_issued['papacy'] = 0;
+    this.game.state.cards_issued['protestant'] = 0;
+
     this.game.state.events.ottoman_piracy_wartburg = 0;
     this.game.state.events.ottoman_piracy_attempts = 0;
     this.game.state.events.ottoman_piracy_seazones = [];
@@ -20906,8 +20978,6 @@ if (this.game.state.scenario != "is_testing") {
 
     state.events.diplomatic_alliance_triggers_hapsburg_hungary_alliance = 0;
     state.events.defeat_of_hungary_bohemia = 0;
-
-
 
     state.events.ottoman_piracy_enabled = 0;
     state.events.ottoman_corsairs_enabled = 0;
@@ -22489,10 +22559,10 @@ if (this.game.options.scenario == "is_testing") {
           this.game.queue.splice(qe, 1);
 
           let card = mv[1];
-	  let obj = "";
 	  let msg = "";
-	  if (mv[2]) { obj = JSON.parse(mv[2]); }
-	  if (mv[3]) { msg = mv[3]; }
+	  let obj = "";
+	  if (mv[2]) { msg = mv[2]; }
+	  if (mv[3]) { obj = JSON.parse(mv[3]); }
 	  let show_overlay = false;
 
 	  //
@@ -23803,7 +23873,7 @@ if (this.game.options.scenario == "is_testing") {
 	  ///////////////
 	  for (let i = 0; i < this.game.state.conquests.length; i++) {
 	    let c = this.game.state.conquests[i];
-
+	    if (!c.prize) { c.prize = ""; }
 	    if (c.prize.indexOf("Maya") > -1 && c.depleted != 1) {
 	      let x = this.rollDice(6) + this.rollDice(6);
 x = 2;
@@ -24744,10 +24814,12 @@ console.log("these factions are not allies: " + f + " - " + faction);
 			  let is_anyone_not_besieged = false;
 			  let is_anyone_besieged = false;
 			  let is_defender_the_one_who_is_besieged = false;
+			  let unbesieged_faction = "";
 
 			  for (let z = 0; z < space.units[f].length; z++) {
 			    if (!space.units[f][z].besieged) {
 			      is_anyone_not_besieged = true;
+			      unbesieged_faction = f;
 			    } else {
 			      is_anyone_besieged = true;
 			      if (!this.areAllies(f, faction)) { 
@@ -24778,11 +24850,11 @@ console.log(" # --> is the defender the one who is besieged: " + is_defender_the
 			      //
 			      let is_this_a_relief_force = false;
 			      for (let zf in space.units) {
+console.log("check: " + zf);
 				if (space.units[zf].length > 0) {
 				  for (let zzz = 0; zzz < space.units[zf].length; zzz++) {
 				    if (space.units[zf][zzz].besieged) {
-				      if (this.areAllies(faction, zf) && zf != faction) {
-console.log(" # relief force check for: " + zf);
+				      if ((faction == zf || this.areAllies(faction, zf)) && zf != unbesieged_faction) {
 					is_this_a_relief_force = true;
 				      }
 				    }
@@ -25621,7 +25693,7 @@ console.log("setting unit from " + key + " as relief force");
               if (u.battle_rating > highest_battle_rating) { highest_battle_rating = u.battle_rating; }            
             }
             abr += highest_battle_rating;
-            if (abr < 9) {
+            if (abr >= 9) {
               this.updateLog(this.returnFactionName(defender) + " avoid battle roll succeeds: " + abr);
             } else {
               this.updateLog(this.returnFactionName(defender) + " avoid battle roll fails: " + abr);
@@ -25670,7 +25742,7 @@ console.log("setting unit from " + key + " as relief force");
 	      if (u.battle_rating > highest_battle_rating) { highest_battle_rating = u.battle_rating; }	      
 	    }
 	    abr += highest_battle_rating;
-	    if (abr < 9) {
+	    if (abr >= 9) {
 	      this.updateLog(this.returnFactionName(defender) + " avoid battle roll succeeds: " + abr);
 	    } else {
 	      this.updateLog(this.returnFactionName(defender) + " avoid battle roll fails: " + abr);
@@ -26356,8 +26428,17 @@ return 1; }
 
 	  } else {
 
+	    if (game_self.game.spick_card != "") {
+	      for (let i = 0; i < x.length; i++) { if (x[i] == game_self.game.spick_card) { x.splice(i, 1); } }
+              this.updateStatusAndListCards("Waiting for Opponent(s) to Pick Cards");
+	      return 0;
+	    }
+
             this.updateStatusAndListCards(my_faction + " - Select Card to indicate your Commitment to Debate", x);
             this.attachCardboxEvents(async function(card) {
+
+	      for (let i = 0; i < x.length; i++) { if (x[i] == card) { x.splice(i, 1); } }
+              game_self.updateStatusAndListCards(my_faction + " - Card Selected", x);
 
   	      //
 	      // hide triangular help if game start -- papacy and other factions
@@ -28600,7 +28681,7 @@ console.log("testing...");
 	  let unit_destroyed = false;
 
 	  for (let i = 0; i < space.units[faction].length && unit_destroyed == false; i++) {
-	    if (space.units[faction][i].type == unit_type) {
+	    if (space.units[faction][i].type == unit_type && (unit_type === "corsair" || unit_type === "squadron")) {
 	      if (this.game.state.naval_battle.faction_map[faction] == this.game.state.naval_battle.attacker_faction) {
 		for (let z = 0; z < this.game.state.naval_battle.attacker_units.length; z++) {
 		  if (this.game.state.naval_battle.attacker_units[z] == space.units[faction][i].type) {
@@ -28620,6 +28701,9 @@ console.log("testing...");
 		  }
 		}
 	      }
+
+console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space.units[faction][i]));
+
 	      space.units[faction].splice(i, 1);
 	      unit_destroyed = true;
 	    }
@@ -29959,15 +30043,21 @@ console.log("testing...");
 	  if (attacker_sea_units_remaining <= 0) {
 	    let f = attacker_faction;
 	    for (let i = space.units[f].length-1; i >= 0; i--) {
-	      his_self.captureLeader(defender_faction, attacker_faction, mv[1], space.units[f][i]);
-	      space.units[f].splice(i, 1);
+	      if (space.units[f][i].type == "squadron" || space.units[f][i].type == "corsair" || space.units[f][i].navy_leader == true) {
+	        his_self.captureLeader(defender_faction, attacker_faction, mv[1], space.units[f][i]);
+	        space.units[f].splice(i, 1);
+	        i--;
+	      }
 	    }
 	  }
 	  if (defender_sea_units_remaining <= 0) {
 	    let f = defender_faction;
 	    for (let i = space.units[f].length-1; i >= 0; i--) {
-	      his_self.captureLeader(attacker_faction, defender_faction, mv[1], space.units[f][i]);
-	      space.units[f].splice(i, 1);
+	      if (space.units[f][i].type == "squadron" || space.units[f][i].type == "corsair" || space.units[f][i].navy_leader == true) {
+	        his_self.captureLeader(attacker_faction, defender_faction, mv[1], space.units[f][i]);
+	        space.units[f].splice(i, 1);
+	        i--;
+	      }
 	    }
 	  }
 
@@ -31311,6 +31401,27 @@ console.log("testing...");
 
 	}
 
+        if (mv[0] === "destroy_all_mercenaries") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+
+	  for (let key in this.game.spaces) {
+	    let space = this.game.spaces[key];
+	    for (let i = 0; i < space.units[faction].length; i++) {
+	      if (space.units[faction][i].type == "mercenary") {
+		space.units[faction].splice(i, 1);
+		i--;
+	      }
+	    }
+	  }
+
+	  this.updateLog(this.returnFactionName(faction) + " loses all mercenaries.");
+
+	  return 1;
+
+        }
 
         if (mv[0] === "commit") {
 
@@ -33651,6 +33762,7 @@ console.log(JSON.stringify(reshuffle_cards));
               his_self.updateStatus("acknowledge...");
               let action = $(this).attr("id");
               his_self.addMove("discard\t"+faction+"\t"+action);
+              his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" discards "+his_self.popup(action));
               his_self.endTurn();
             });
 	  } else {
@@ -34964,6 +35076,7 @@ console.log(faction + " -- " + player + " -- " + this.game.player);
 	  let c_roll_desc = [];
 
 	  let protestants_win = 0;
+	  let catholics_win = 1;
 
 	  let ties_resolve = "protestant";
 
@@ -35122,8 +35235,8 @@ console.log(faction + " -- " + player + " -- " + this.game.player);
 	  //
 	  // do protestants win?
 	  //
-	  if (p_high > c_high) { protestants_win = 1; }
-	  if (p_high == c_high && ties_resolve === "protestant") { protestants_win = 1; }
+	  if (p_high > c_high) { protestants_win = 1; catholics_win = 0; }
+	  if (p_high == c_high && ties_resolve === "protestant") { protestants_win = 1; catholics_win = 0; }
 
 	  //
 	  //
@@ -35137,9 +35250,11 @@ console.log(faction + " -- " + player + " -- " + this.game.player);
 	  obj.c_roll_desc = c_roll_desc;
 	  obj.p_high = p_high;
 	  obj.c_high = c_high;
+	  obj.ties_resolve = ties_resolve;
 	  obj.reformation = true;
 	  obj.counter_reformation = false;
           obj.protestants_win = protestants_win;
+          obj.catholics_win = catholics_win;
 	  this.reformation_overlay.render(obj);
 
 	  //
@@ -35184,6 +35299,7 @@ console.log(faction + " -- " + player + " -- " + this.game.player);
 	  let c_roll_desc = [];
 
 	  let catholics_win = 0;
+	  let protestants_win = 1;
 
 	  let ties_resolve = "protestant";
 
@@ -35323,8 +35439,8 @@ console.log(faction + " -- " + player + " -- " + this.game.player);
 	  //
 	  // do catholics win?
 	  //
-	  if (p_high < c_high) { catholics_win = 1; }
-	  if (p_high == c_high && ties_resolve === "catholics") { catholics_win = 1; }
+	  if (p_high < c_high) { catholics_win = 1; protestants_win = 0; }
+	  if (p_high == c_high && ties_resolve === "catholic") { catholics_win = 1; protestants_win = 0; }
 
           //
           // render results
@@ -35340,11 +35456,11 @@ console.log(faction + " -- " + player + " -- " + this.game.player);
           obj.c_roll_desc = c_roll_desc;
           obj.p_high = p_high;
           obj.c_high = c_high;
+          obj.ties_resolve = ties_resolve;
 	  obj.reformation = false;
 	  obj.counter_reformation = true;
           obj.catholics_win = catholics_win;
-	  obj.protestants_win = 1;
-	  if (catholics_win) { obj.protestants_win = 0; }
+	  obj.protestants_win = protestants_win;
           this.reformation_overlay.render(obj);
 
 	  //
@@ -43408,14 +43524,15 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   }
 
   canPlayerIssueCards(his_self, player, faction) {
-    return 1;
+    if (his_self.game.state.cards_issued[faction] < 2) { return 1; }
+    return 0;
   }
   canPlayerPullCards(his_self, player, faction) {
     return 1;
   }
 
   canPlayerReturnCapturedArmyLeader(his_self, player, faction) {
-    let p = his_self.returnPlayerCommandingFaction(faction);
+    let p = his_self.returnPlayerControllingFaction(faction);
     for (let z = 0; z  < his_self.game.state.players_info[p-1].captured.length; z++) { 
       if (faction == his_self.game.state.players_info[p-1].capturing_faction) { return 1; }
     }
@@ -43572,6 +43689,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       if (mycallback == null) { return; }
       his_self.updateStatus("submitted");
 
+      his_self.game.state.cards_issued[faction] += 1;
       mycallback([`pull_card\t${action2}\t${faction}`,`NOTIFY\t${his_self.returnFactionName(action2)} pulls card from ${his_self.returnFactionName(faction)}`]);
 
     });
@@ -43588,7 +43706,9 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
       if (faction != io[i]) {
-        html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
+	if (his_self.game.state.cards_issued[action2] < 2) {
+          html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
+        }
       }
     }
     his_self.updateStatusWithOptions(msg, html);
@@ -43600,6 +43720,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       if (mycallback == null) { return; }
       his_self.updateStatus("submitted");
 
+      his_self.game.state.cards_issued[action2] += 1;
       mycallback([`pull_card\t${faction}\t${action2}`,`NOTIFY\t${his_self.returnFactionName(faction)} pulls card from ${his_self.returnFactionName(action2)}`]);
 
     });
@@ -45098,7 +45219,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	if (this.game.state.newworld['hapsburg_colony1'].claimed != 1) {
           return "/his/img/tiles/colonies/Cuba.svg";
 	} else {
-          return "/his/img/tiles/colonies/Hispanola.svg";
+          return "/his/img/tiles/colonies/Hispaniola.svg";
 	}
       }
     }
@@ -45157,8 +45278,8 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	    } else {
 	      this.game.state.newworld['hapsburg_colony3'].claimed = 1;
 	      this.game.state.colonies[z].colony = "hapsburg_colony3";
-	      this.game.state.colonies[z].name = "Hispanola";
-	      this.game.state.colonies[z].img = "/his/img/tiles/colonies/Hispanola.svg";
+	      this.game.state.colonies[z].name = "Hispaniola";
+	      this.game.state.colonies[z].img = "/his/img/tiles/colonies/Hispaniola.svg";
 	    }
 	  }
         }
@@ -45670,7 +45791,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
     if (c === "circumnavigation") {
       if (ias) {
-        this.game.queue.splice(this.game.queue.length-2, 0 `display_custom_overlay\tcircumnavigation\tall\t\t${msg}`);
+        this.game.queue.splice(this.game.queue.length-2, 0 `display_custom_overlay\tcircumnavigation\t${msg}\tall`);
 	return;
       } else {
         this.welcome_overlay.renderCustom({

@@ -202,7 +202,7 @@
 
     if (c === "circumnavigation") {
       if (ias) {
-        this.game.queue.splice(this.game.queue.length-2, 0 `display_custom_overlay\tcircumnavigation\tall\t\t${msg}`);
+        this.game.queue.splice(this.game.queue.length-2, 0 `display_custom_overlay\tcircumnavigation\t${msg}\tall`);
 	return;
       } else {
         this.welcome_overlay.renderCustom({

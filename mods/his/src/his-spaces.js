@@ -3427,7 +3427,7 @@ try {
       home: "hungary",
       political: "",
       religion: "catholic",
-      neighbours: ["wittenberg","leipzig","linz"],
+      neighbours: ["brunn", "wittenberg","leipzig","linz"],
       language: "other",
       type: "key"
     }

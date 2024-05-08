@@ -67,7 +67,8 @@ class NewWorldOverlay {
 		  ///////////////
 	 	  for (let i = 0; i < his_self.game.state.conquests.length; i++) {
 		    let c = his_self.game.state.conquests[i];
-		    if (c.round == his_self.game.state.round || (c.prize.indexOf("Aztec") > -1 || c.prize.indexOf("Maya") > -1 || c.prize.indexOf("Inca") > -1)) {
+		    if (!c.prize) { c.prize = ""; }
+		    if (c.round == his_self.game.state.round || ((c.prize.indexOf("Aztec") > -1 || c.prize.indexOf("Maya") > -1 || c.prize.indexOf("Inca") > -1))) {
 		      active_conquests++;
 		      //
 		      // conquest earns bonus card
@@ -94,9 +95,7 @@ class NewWorldOverlay {
 		  // EXPLORATIONS //
 		  //////////////////
 	 	  for (let i = 0; i < his_self.game.state.explorations.length; i++) {
-console.log("EXPLORATION:");
 		    let exp = his_self.game.state.explorations[i];
-console.log(JSON.stringify(exp));
 		    if (exp.round == his_self.game.state.round) {
 		      active_explorations++;
 		      his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : exp.prize , img : exp.explorer_img , type : "exploration" , name : exp.name , faction : exp.faction , explorer : exp.explorer , total_hits : exp.modified_roll }, stage, false), ".new-world-overlay .content .explorations");
@@ -140,7 +139,7 @@ console.log(JSON.stringify(exp));
  		  if (prize.length > 3 && prize.indexOf("destroyed") == -1 && prize.indexOf("eaten") == -1 && prize.indexOf("lost") == -1 && prize.indexOf("killed") == -1) {
 		    goldenrod = "goldenrod";
 		  }
-		  if (prize == "Roanoke" || prize == "Puerto Rico" || prize == "Jamestown" || prize == "Hispanola" || prize == "Montreal" || prize == "Charlesbourg" || prize == "Cuba") {
+		  if (prize == "Roanoke" || prize == "Puerto Rico" || prize == "Jamestown" || prize == "Hispaniola" || prize == "Montreal" || prize == "Charlesbourg" || prize == "Cuba") {
 		    goldenrod = "";
 		  }
 		  if (show_hits_as_goldenrod == false) { goldenrod = ""; }

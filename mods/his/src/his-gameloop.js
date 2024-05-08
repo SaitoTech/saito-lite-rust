@@ -466,10 +466,10 @@ if (this.game.options.scenario == "is_testing") {
           this.game.queue.splice(qe, 1);
 
           let card = mv[1];
-	  let obj = "";
 	  let msg = "";
-	  if (mv[2]) { obj = JSON.parse(mv[2]); }
-	  if (mv[3]) { msg = mv[3]; }
+	  let obj = "";
+	  if (mv[2]) { msg = mv[2]; }
+	  if (mv[3]) { obj = JSON.parse(mv[3]); }
 	  let show_overlay = false;
 
 	  //
@@ -1780,7 +1780,7 @@ if (this.game.options.scenario == "is_testing") {
 	  ///////////////
 	  for (let i = 0; i < this.game.state.conquests.length; i++) {
 	    let c = this.game.state.conquests[i];
-
+	    if (!c.prize) { c.prize = ""; }
 	    if (c.prize.indexOf("Maya") > -1 && c.depleted != 1) {
 	      let x = this.rollDice(6) + this.rollDice(6);
 x = 2;
@@ -2721,10 +2721,12 @@ console.log("these factions are not allies: " + f + " - " + faction);
 			  let is_anyone_not_besieged = false;
 			  let is_anyone_besieged = false;
 			  let is_defender_the_one_who_is_besieged = false;
+			  let unbesieged_faction = "";
 
 			  for (let z = 0; z < space.units[f].length; z++) {
 			    if (!space.units[f][z].besieged) {
 			      is_anyone_not_besieged = true;
+			      unbesieged_faction = f;
 			    } else {
 			      is_anyone_besieged = true;
 			      if (!this.areAllies(f, faction)) { 
@@ -2755,11 +2757,11 @@ console.log(" # --> is the defender the one who is besieged: " + is_defender_the
 			      //
 			      let is_this_a_relief_force = false;
 			      for (let zf in space.units) {
+console.log("check: " + zf);
 				if (space.units[zf].length > 0) {
 				  for (let zzz = 0; zzz < space.units[zf].length; zzz++) {
 				    if (space.units[zf][zzz].besieged) {
-				      if (this.areAllies(faction, zf) && zf != faction) {
-console.log(" # relief force check for: " + zf);
+				      if ((faction == zf || this.areAllies(faction, zf)) && zf != unbesieged_faction) {
 					is_this_a_relief_force = true;
 				      }
 				    }
@@ -4333,8 +4335,17 @@ return 1; }
 
 	  } else {
 
+	    if (game_self.game.spick_card != "") {
+	      for (let i = 0; i < x.length; i++) { if (x[i] == game_self.game.spick_card) { x.splice(i, 1); } }
+              this.updateStatusAndListCards("Waiting for Opponent(s) to Pick Cards");
+	      return 0;
+	    }
+
             this.updateStatusAndListCards(my_faction + " - Select Card to indicate your Commitment to Debate", x);
             this.attachCardboxEvents(async function(card) {
+
+	      for (let i = 0; i < x.length; i++) { if (x[i] == card) { x.splice(i, 1); } }
+              game_self.updateStatusAndListCards(my_faction + " - Card Selected", x);
 
   	      //
 	      // hide triangular help if game start -- papacy and other factions
@@ -6577,7 +6588,7 @@ console.log("testing...");
 	  let unit_destroyed = false;
 
 	  for (let i = 0; i < space.units[faction].length && unit_destroyed == false; i++) {
-	    if (space.units[faction][i].type == unit_type) {
+	    if (space.units[faction][i].type == unit_type && (unit_type === "corsair" || unit_type === "squadron")) {
 	      if (this.game.state.naval_battle.faction_map[faction] == this.game.state.naval_battle.attacker_faction) {
 		for (let z = 0; z < this.game.state.naval_battle.attacker_units.length; z++) {
 		  if (this.game.state.naval_battle.attacker_units[z] == space.units[faction][i].type) {
@@ -6597,6 +6608,9 @@ console.log("testing...");
 		  }
 		}
 	      }
+
+console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space.units[faction][i]));
+
 	      space.units[faction].splice(i, 1);
 	      unit_destroyed = true;
 	    }
@@ -7936,15 +7950,21 @@ console.log("testing...");
 	  if (attacker_sea_units_remaining <= 0) {
 	    let f = attacker_faction;
 	    for (let i = space.units[f].length-1; i >= 0; i--) {
-	      his_self.captureLeader(defender_faction, attacker_faction, mv[1], space.units[f][i]);
-	      space.units[f].splice(i, 1);
+	      if (space.units[f][i].type == "squadron" || space.units[f][i].type == "corsair" || space.units[f][i].navy_leader == true) {
+	        his_self.captureLeader(defender_faction, attacker_faction, mv[1], space.units[f][i]);
+	        space.units[f].splice(i, 1);
+	        i--;
+	      }
 	    }
 	  }
 	  if (defender_sea_units_remaining <= 0) {
 	    let f = defender_faction;
 	    for (let i = space.units[f].length-1; i >= 0; i--) {
-	      his_self.captureLeader(attacker_faction, defender_faction, mv[1], space.units[f][i]);
-	      space.units[f].splice(i, 1);
+	      if (space.units[f][i].type == "squadron" || space.units[f][i].type == "corsair" || space.units[f][i].navy_leader == true) {
+	        his_self.captureLeader(attacker_faction, defender_faction, mv[1], space.units[f][i]);
+	        space.units[f].splice(i, 1);
+	        i--;
+	      }
 	    }
 	  }
 
@@ -9288,6 +9308,27 @@ console.log("testing...");
 
 	}
 
+        if (mv[0] === "destroy_all_mercenaries") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let faction = mv[1];
+
+	  for (let key in this.game.spaces) {
+	    let space = this.game.spaces[key];
+	    for (let i = 0; i < space.units[faction].length; i++) {
+	      if (space.units[faction][i].type == "mercenary") {
+		space.units[faction].splice(i, 1);
+		i--;
+	      }
+	    }
+	  }
+
+	  this.updateLog(this.returnFactionName(faction) + " loses all mercenaries.");
+
+	  return 1;
+
+        }
 
         if (mv[0] === "commit") {
 
@@ -11628,6 +11669,7 @@ console.log(JSON.stringify(reshuffle_cards));
               his_self.updateStatus("acknowledge...");
               let action = $(this).attr("id");
               his_self.addMove("discard\t"+faction+"\t"+action);
+              his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" discards "+his_self.popup(action));
               his_self.endTurn();
             });
 	  } else {
@@ -12941,6 +12983,7 @@ console.log(faction + " -- " + player + " -- " + this.game.player);
 	  let c_roll_desc = [];
 
 	  let protestants_win = 0;
+	  let catholics_win = 1;
 
 	  let ties_resolve = "protestant";
 
@@ -13099,8 +13142,8 @@ console.log(faction + " -- " + player + " -- " + this.game.player);
 	  //
 	  // do protestants win?
 	  //
-	  if (p_high > c_high) { protestants_win = 1; }
-	  if (p_high == c_high && ties_resolve === "protestant") { protestants_win = 1; }
+	  if (p_high > c_high) { protestants_win = 1; catholics_win = 0; }
+	  if (p_high == c_high && ties_resolve === "protestant") { protestants_win = 1; catholics_win = 0; }
 
 	  //
 	  //
@@ -13114,9 +13157,11 @@ console.log(faction + " -- " + player + " -- " + this.game.player);
 	  obj.c_roll_desc = c_roll_desc;
 	  obj.p_high = p_high;
 	  obj.c_high = c_high;
+	  obj.ties_resolve = ties_resolve;
 	  obj.reformation = true;
 	  obj.counter_reformation = false;
           obj.protestants_win = protestants_win;
+          obj.catholics_win = catholics_win;
 	  this.reformation_overlay.render(obj);
 
 	  //
@@ -13161,6 +13206,7 @@ console.log(faction + " -- " + player + " -- " + this.game.player);
 	  let c_roll_desc = [];
 
 	  let catholics_win = 0;
+	  let protestants_win = 1;
 
 	  let ties_resolve = "protestant";
 
@@ -13300,8 +13346,8 @@ console.log(faction + " -- " + player + " -- " + this.game.player);
 	  //
 	  // do catholics win?
 	  //
-	  if (p_high < c_high) { catholics_win = 1; }
-	  if (p_high == c_high && ties_resolve === "catholics") { catholics_win = 1; }
+	  if (p_high < c_high) { catholics_win = 1; protestants_win = 0; }
+	  if (p_high == c_high && ties_resolve === "catholic") { catholics_win = 1; protestants_win = 0; }
 
           //
           // render results
@@ -13317,11 +13363,11 @@ console.log(faction + " -- " + player + " -- " + this.game.player);
           obj.c_roll_desc = c_roll_desc;
           obj.p_high = p_high;
           obj.c_high = c_high;
+          obj.ties_resolve = ties_resolve;
 	  obj.reformation = false;
 	  obj.counter_reformation = true;
           obj.catholics_win = catholics_win;
-	  obj.protestants_win = 1;
-	  if (catholics_win) { obj.protestants_win = 0; }
+	  obj.protestants_win = protestants_win;
           this.reformation_overlay.render(obj);
 
 	  //

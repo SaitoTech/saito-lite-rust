@@ -2288,7 +2288,7 @@ console.log("selected: " + spacekey);
             function(space) {
               if (space.home == "ottoman") { return 1; }
               if (space.key === "algiers") { return 0; }
-              if (space.neighbours.length == 0) { return 1; }
+              if ((space.key == "persia" && his_self.game.state.events.war_in_persia == 1) || (space.key == "egypt" && his_self.game.state.events.revolt_in_egypt == 1)) { return 1; }
 	      return 0;
             },
 
@@ -3707,6 +3707,9 @@ console.log("selected: " + spacekey);
 	his_self.game.state.events.ottoman_piracy_enabled = 1;
 	his_self.game.state.events.ottoman_corsairs_enabled = 1;
 
+	// re-display algiers
+	his_self.displaySpace("algiers");
+
 	return 1;
       },
 
@@ -3749,7 +3752,7 @@ console.log("selected: " + spacekey);
 
 	if (faction === "england") {
 	  if (his_self.game.player.length < 6) { let faction_hand_idx = 1;  }  
-	  let england_player = his_self.returnPlayerControllingFaction("england");
+	  let england_player = his_self.returnPlayerCommandingFaction("england");
  	  his_self.game.queue.push("hand_to_fhand\t1\t"+england_player+"\t"+"england"+"\t1");
 	  his_self.game.queue.push(`DEAL\t1\t${england_player}\t1`);
         }
@@ -8336,16 +8339,32 @@ console.log("selected: " + spacekey);
 
         if (his_self.game.player === player) { 
 
+	  let cabot_england_found = 0;
+	  let cabot_france_found = 0;
+	  let cabot_hapsburg_found = 0;
+
 	  let msg = "Cancel Which Expedition / Conquest?";
           let html = '<ul>';
 	  for (let i = 0; i < his_self.game.state.explorations.length; i++) {
-	    if (his_self.game.state.explorations[i].round == his_self.game.state.round) {
-              html += `<li class="option" id="exploration-${his_self.game.state.explorations[i].faction}">${his_self.returnFactionName(his_self.game.state.explorations[i].faction)} (exploration)</li>`;
+	    let exp = his_self.game.state.explorations[i];
+
+            if (exp.cabot == 1) {
+              if (exp.faction == "england") { cabot_england_found = 1; }
+              if (exp.faction == "france") { cabot_france_found = 1; }
+              if (exp.faction == "hapsburg") { cabot_hapsburg_found = 1; }
+            }
+
+	    if (exp.round == his_self.game.state.round) {
+              html += `<li class="option" id="${his_self.game.state.explorations[i].faction}">${his_self.returnFactionName(his_self.game.state.explorations[i].faction)} (exploration)</li>`;
 	    }
-	  }
-	  for (let i = 0; i < his_self.game.state.conquests.length; i++) {
-	    if (his_self.game.state.conquests[i].round == his_self.game.state.round) {
-              html += `<li class="option" id="conquest-${his_self.game.state.conquests[i].faction}">${his_self.returnFactionName(his_self.game.state.conquests[i])} (conquest)</li>`;
+	    if (his_self.game.state.events.cabot_england == 1 && cabot_england_found == 0) {
+              html += `<li class="option" id="cabot_england">sebastian cabot (england)</li>`;
+	    }
+	    if (his_self.game.state.events.cabot_france == 1 && cabot_france_found == 0) {
+              html += `<li class="option" id="cabot_france">sebastian cabot (france)</li>`;
+	    }
+	    if (his_self.game.state.events.cabot_hapsburg == 1 && cabot_hapsburg_found == 0) {
+              html += `<li class="option" id="cabot_hapsburg">sebastian cabot (haps)</li>`;
 	    }
 	  }
           html += '</ul>';
@@ -8358,14 +8377,14 @@ console.log("selected: " + spacekey);
             $('.option').off();
 	    let action = $(this).attr("id");
 
-	    let x = action.split("-");
 	    his_self.addMove("display_new_world");
-	    if (x[0] === "exploration") {
-	      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" cancels "+his_self.returnFactionName(x[1])+" exploration");
-	      his_self.addMove("remove_exploration\t"+x[1]); 
+	    if (action == "cabot_england" || action == "cabot_hapsburg" || action == "cabot_france") {
+	      if (action === "cabot_england") {  his_self.addMove("SETVAR\tstate\tevents\tcabot_england\t0"); }
+	      if (action === "cabot_hapsburg") {  his_self.addMove("SETVAR\tstate\tevents\tcabot_hapsburg\t0"); }
+	      if (action === "cabot_france") {  his_self.addMove("SETVAR\tstate\tevents\tcabot_france\t0"); }
 	    } else {
-	      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" cancels "+his_self.returnFactionName(x[1])+" conquest");
-	      his_self.addMove("remove_conquest\t"+x[1]); 
+	      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" cancels "+his_self.returnFactionName(action)+" exploration");
+	      his_self.addMove("remove_exploration\t"+action); 
 	    }
 
 	    his_self.endTurn();
@@ -8931,6 +8950,36 @@ console.log("selected: " + spacekey);
 	  his_self.updateStatus(his_self.returnFactionName(target) + " discarding card...");
 
 	  if (player == his_self.game.player) {
+
+	    //
+	    // do we have any cards we can discard ?
+	    //
+            let fhand_idx = his_self.returnFactionHandIdx(his_self.game.player, target);
+	    let valid_options = 0;
+	    let invalid_options = 0;
+	    for (let i = 0; i < his_self.game.deck[0].fhand[fhand_idx].length; i++) {
+	      let card = his_self.game.deck[0].fhand[i];
+	      if (his_self.game.deck[0].cards[cards].type != "mandatory" && parseInt(card) > 8) { valid_options++; } else {
+		invalid_options++;
+	      }
+	    }
+
+	    //
+	    // if only invalid options, skip discard
+	    //
+	    if (valid_options == 0 && invalid_options == 0) {
+	      his_self.addMove("destroy_all_mercenaries\t"+target);
+	      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(target) + " must destroy_all_mercenaries");
+	      his_self.endTurn();
+	      return 0;
+	    }
+
+	    if (valid_options == 0 && invalid_options > 0) {
+	      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(target) + " cannot be forced to discard cards in hand.");
+	      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(target) + " mercenaries survive.");
+	      his_self.endTurn();
+	      return 0;
+	    }
 
             his_self.playerFactionSelectCardWithFilter(
 
@@ -10238,18 +10287,33 @@ console.log("selected: " + spacekey);
         let player = his_self.returnPlayerCommandingFaction(faction);
         if (his_self.game.player === player) { 
 
+	  let cabot_england_found = 0;
+	  let cabot_france_found = 0;
+	  let cabot_hapsburg_found = 0;
+
 	  let msg = "Cancel Which Expedition?";
           let html = '<ul>';
-	  for (let i = 0; i < his_self.game.state.colonies.length; i++) {
-            html += `<li class="option" id="${his_self.game.state.colonies[i].faction}">${his_self.returnFactionName(his_self.game.state.colonies[i].faction)}</li>`;
+	  for (let i = 0; i < his_self.game.state.explorations.length; i++) {
+
+	    let exp = his_self.game.state.explorations[i];
+
+            if (exp.cabot == 1) {
+              if (exp.faction == "england") { cabot_england_found = 1; }
+              if (exp.faction == "france") { cabot_france_found = 1; }
+              if (exp.faction == "hapsburg") { cabot_hapsburg_found = 1; }
+            }
+
+	    if (his_self.game.state.colonies[i].round == his_self.game.state.round) {
+              html += `<li class="option" id="${his_self.game.state.explorations[i].faction}">${his_self.returnFactionName(his_self.game.state.explorations[i].faction)}</li>`;
+	    }
 	  }
-	  if (his_self.game.state.events.cabot_england == 1) {
+	  if (his_self.game.state.events.cabot_england == 1 && cabot_england_found == 0) {
             html += `<li class="option" id="cabot_england">sebastian cabot (england)</li>`;
 	  }
-	  if (his_self.game.state.events.cabot_france == 1) {
+	  if (his_self.game.state.events.cabot_france == 1 && cabot_france_found == 0) {
             html += `<li class="option" id="cabot_france">sebastian cabot (france)</li>`;
 	  }
-	  if (his_self.game.state.events.cabot_hapsburg == 1) {
+	  if (his_self.game.state.events.cabot_hapsburg == 1 && cabot_hapsburg_found == 0) {
             html += `<li class="option" id="cabot_hapsburg">sebastian cabot (haps)</li>`;
 	  }
           html += '</ul>';
@@ -11396,7 +11460,7 @@ console.log("selected: " + spacekey);
       canEvent : function(his_self, faction) { return 1; },
       onEvent : function(his_self, faction) {
 
-	let p = his_self.returnPlayerOfFaction(faction);
+	let p = his_self.returnPlayerCommandingFaction(faction);
 
 	if (his_self.game.player == p) {
 
