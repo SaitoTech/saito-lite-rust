@@ -13,7 +13,6 @@ class Limbo extends ModTemplate {
 		super(app);
 		this.app = app;
 		this.name = 'Limbo';
-		this.chunks = [];
 		this.localStream = null; // My Video or Audio Feed
 		this.combinedStream = null;
 
@@ -224,16 +223,7 @@ class Limbo extends ModTemplate {
 			this.addComponent(this.main);
 		}
 
-		for (const mod of this.app.modules.returnModulesRespondingTo(
-			'chat-manager'
-		)) {
-			let cm = mod.respondTo('chat-manager');
-			cm.container = '.saito-sidebar.left';
-			cm.render_manager_to_screen = 1;
-			this.addComponent(cm);
-		}
-
-		console.log('rendering', this.main, this.header);
+		this.app.modules.returnModulesRespondingTo('chat-manager');
 
 		await super.render();
 
@@ -273,20 +263,28 @@ class Limbo extends ModTemplate {
 						});
 					}
 
-					this.app.connection.emit('limbo-populated', 'service');
-
-					if (this.dreamer && this.dreams[this.dreamer]) {
-						let c = await sconfirm(
-							`Will join ${this.app.keychain.returnUsername(
-								this.dreamer
-							)}'s dream space`
-						);
-						if (c) {
-							this.joinDream(this.dreamer);
+					if (this.dreamer){
+						if (this.dreams[this.dreamer]) {
+							let c = await sconfirm(
+								`Will join ${this.app.keychain.returnUsername(
+									this.dreamer
+								)}'s dream space`
+							);
+							if (c) {
+								this.joinDream(this.dreamer);
+							} else {
+								window.history.pushState('', '', `/limbo/`);
+								this.dreamer = null;
+							}
 						} else {
+							salert(`${this.app.keychain.returnUsername(this.dreamer)}'s dream space is no longer available`);
 							window.history.pushState('', '', `/limbo/`);
+							this.dreamer = null;
 						}
 					}
+					
+					this.app.connection.emit('limbo-populated', 'service');
+					
 				}
 			);
 		}
@@ -485,6 +483,8 @@ class Limbo extends ModTemplate {
 			request: 'stop dream'
 		};
 
+		console.log(JSON.parse(JSON.stringify(this.dreams)));
+		
 		for (let key of this.dreams[this.publicKey].members){
 			if (key !== this.publicKey){
 				newtx.addTo(key);					

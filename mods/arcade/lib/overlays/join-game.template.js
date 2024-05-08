@@ -129,7 +129,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	  <div class="arcade-game-controls">`;
 
 	if (!invite.time_finished) {
-		if (mod.isAcceptedGame(invite.game_id) && !mod.isAvailableGame(game_tx)) {
+		if (mod.isAcceptedGame(invite.game_id) && !mod.isAvailableGame(game_tx, "accepted")) {
 			if (mod.isMyGame(game_tx)) {
 				html += `<div id="arcade-game-controls-continue-game" class="saito-button saito-button-primary">continue game</div>`;
 				if (invite.players.length > 1) {
