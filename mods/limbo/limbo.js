@@ -792,6 +792,7 @@ class Limbo extends ModTemplate {
 					}
 
 					this.app.connection.emit('limbo-populated', 'tx');
+					
 					if (message?.dreamer === this.dreamer) {
 						this.app.connection.emit(
 							'limbo-open-dream',
