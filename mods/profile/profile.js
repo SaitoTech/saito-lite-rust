@@ -51,7 +51,7 @@ class Profile extends ModTemplate {
         })
 
         app.connection.on("profile-edit-banner", () => {
-            this.photoUploader = new PhotoUploader(this.app, this.mod)
+            this.photoUploader = new PhotoUploader(this.app, this.mod, 'banner')
             this.photoUploader.callbackAfterUpload = async (photo) => {
                 let banner = await this.app.browser.resizeImg(photo);
                 this.sendProfileTransaction({ banner });
