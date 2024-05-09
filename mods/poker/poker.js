@@ -578,7 +578,10 @@ class Poker extends GameTableTemplate {
 			}
 
 			if (mv[0] === 'announce') {
+
 				this.game.queue.splice(qe, 1);
+
+				this.board.render();
 
 				if (this.game.state.flipped === 0) {
 					if (this.game.player > 0) {
@@ -904,9 +907,10 @@ class Poker extends GameTableTemplate {
 
 			//Set up bets for beginning of round (new deal)
 			if (mv[0] == 'ante') {
+
 				this.game.queue.splice(qe, 1);
 
-				this.displayBoard(); //Clean HTML
+				this.board.render();
 
 				let bbpi = this.game.state.big_blind_player - 1;
 				//
@@ -1286,14 +1290,15 @@ class Poker extends GameTableTemplate {
 	}
 
 
-	displayBoard() {
+	eisplayBoard() {
 		if (!this.browser_active) {
 			return;
 		}
 		try {
-			this.displayPlayers(); //Clear player log
-			this.displayHand();
-			this.displayTable();
+alert("DISPLAY BOARD!");
+			this.board.render();
+			//this.displayHand();
+			//this.displayTable();
 		} catch (err) {
 			console.error('err: ' + err);
 		}

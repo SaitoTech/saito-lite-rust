@@ -24,7 +24,42 @@ class GameBoard {
 		this.game_mod.stack.render();
 		this.game_mod.pot.render();
 
+		this.displayTable();
+
 	}
+
+  	displayTable() {
+
+		let poker_self = this.game_mod;
+
+        	try {   
+                        if (document.getElementById('deal')) {
+                                let newHTML = '';
+                                for (
+                                        let i = 0;
+                                        i < 5 || i < poker_self.game.pool[0].hand.length;
+                                        i++
+                                ) {
+                                        let card = {};
+                
+                                        if (i < poker_self.game.pool[0].hand.length) {
+                                                card =
+                                                        poker_self.game.pool[0].cards[poker_self.game.pool[0].hand[i]];
+                                                newHTML += `<div class="flip-card card"><img class="cardFront" src="${poker_self.card_img_dir}/${card.name}"></div>`;
+                                        } else {
+                                                newHTML += `<div class="flip-card card"><img class="cardBack" src="${poker_self.card_img_dir}/red_back.png"></div>`;
+                                        }
+                                }
+                                document.getElementById('deal').innerHTML = newHTML;
+                        }       
+                } catch (err) {
+                        console.warn('Card error displaying table:', err);
+                }       
+
+                poker_self.pot.render();
+        }                                       
+                
+
 
 	attachEvents() {
 	}

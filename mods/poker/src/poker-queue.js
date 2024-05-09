@@ -386,6 +386,8 @@
 
 				this.game.queue.splice(qe, 1);
 
+				this.board.render();
+
 				if (this.game.state.flipped === 0) {
 					if (this.game.player > 0) {
 						this.updateLog(
@@ -710,9 +712,10 @@
 
 			//Set up bets for beginning of round (new deal)
 			if (mv[0] == 'ante') {
+
 				this.game.queue.splice(qe, 1);
 
-				this.displayBoard(); //Clean HTML
+				this.board.render();
 
 				let bbpi = this.game.state.big_blind_player - 1;
 				//

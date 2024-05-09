@@ -81,14 +81,15 @@
 	}
 
 
-	displayBoard() {
+	eisplayBoard() {
 		if (!this.browser_active) {
 			return;
 		}
 		try {
-			this.displayPlayers(); //Clear player log
-			this.displayHand();
-			this.displayTable();
+alert("DISPLAY BOARD!");
+			this.board.render();
+			//this.displayHand();
+			//this.displayTable();
 		} catch (err) {
 			console.error('err: ' + err);
 		}
