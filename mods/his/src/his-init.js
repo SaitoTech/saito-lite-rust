@@ -196,7 +196,7 @@ class HereIStand extends GameTemplate {
     this.conquistadors = {};
     this.wives = {};
 
-    this.deck = this.returnDeck();
+    this.deck = this.returnDeck(true);
     this.diplomatic_deck = this.returnDiplomaticDeck();
 
 

@@ -1486,7 +1486,7 @@ if (this.game.state.events.cramner_active == 1) {
         if (id === "end") {
           his_self.fortification_overlay.hide();
           finishAndFortify(his_self, units_to_move, selectUnitsInterface, finishAndFortify);
-          areturn;
+          return;
         }
 
 	let x = id.split("-");
@@ -1529,7 +1529,7 @@ if (this.game.state.events.cramner_active == 1) {
 
 
 
-  playerFortifySpace(faction, attacker, spacekey, post_battle=false) {
+  playerFortifySpace(faction, attacker, spacekey, post_battle=false, relief_siege=0) {
 
     let space = this.game.spaces[spacekey];
     let faction_map = this.returnFactionMap(space, attacker, faction);
@@ -1548,7 +1548,7 @@ if (this.game.state.events.cramner_active == 1) {
 	}
       }
     }
-    if (this.game.state.field_battle.relief_battle == 1) { anyone_in_relief_force = true; }
+    if (this.game.state.field_battle_relief_battle) { anyone_in_relief_force = true; }
 
     for (f in faction_map) { 
       if (this.returnPlayerCommandingFaction(f) != attacker_player) {
@@ -1557,9 +1557,13 @@ if (this.game.state.events.cramner_active == 1) {
 	    if (anyone_in_relief_force == false) {
               available_units.push({ faction : f , unit_idx : i , type : space.units[f][i].type });
 	    } else {
-	      if (space.units[f][i].relief_force == 1) {
+if (relief_siege == 1) {
+	      if (space.units[f][i].relief_force == 0) {
                 available_units.push({ faction : f , unit_idx : i , type : space.units[f][i].type });
 	      } 
+} else {
+                available_units.push({ faction : f , unit_idx : i , type : space.units[f][i].type });
+}
 	    } 
           }
         }
@@ -1640,7 +1644,7 @@ if (this.game.state.events.cramner_active == 1) {
         if (id === "end") {
           his_self.fortification_overlay.hide();
           finishAndFortify(his_self, units_to_move, selectUnitsInterface, finishAndFortify);
-          areturn;
+          return;
         }
 
 	let x = id.split("-");
@@ -2255,7 +2259,7 @@ if (this.game.state.events.cramner_active == 1) {
       //
       // otherwise, we skip if the Protestants cannot interfere
       //
-      if (faction == "protestant" || this.game.deck[0].discards["037"] || this.game.state.events.intervention_on_events_possible == false) {
+      if ((faction == "england" && this.returnPlayerCommandingFaction("protestant") == this.returnPlayerCommandingFaction("england")) || faction == "protestant" || this.game.deck[0].discards["037"] || this.game.state.events.intervention_on_events_possible == false) {
         this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
       } else {
         this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
@@ -2874,7 +2878,7 @@ return;
 
       let count = his_self.countSpacesWithFilter((space) => {
         if (
-          his_self.returnFactionLandUnitsInSpace(faction, space.key) > 0 &&
+          his_self.returnFactionLandUnitsAndLeadersInSpace(faction, space.key) > 0 &&
 	  !capitals.includes(space.key) && 
 	  !processed_spacekeys.includes(space.key)
 	) { return 1; }
@@ -3052,7 +3056,7 @@ return;
         //
         function(space) {
           if (
-            his_self.returnFactionLandUnitsInSpace(faction, space.key) > 0 &&
+            his_self.returnFactionLandUnitsAndLeadersInSpace(faction, space.key) > 0 &&
 	    !capitals.includes(space.key) && 
 	    !processed_spacekeys.includes(space.key)
 	  ) { return 1; }
@@ -4478,7 +4482,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   }
 
 
-  playerEvaluateFortification(attacker, faction, spacekey, post_battle=0) {
+  playerEvaluateFortification(attacker, faction, spacekey, post_battle=0, relief_siege = 0) {
 
     let his_self = this;
 
@@ -4491,7 +4495,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     this.attachCardboxEvents(function(user_choice) {
       this.updateStatus("acknowledge...");
       if (user_choice === "fortify") {
-	his_self.addMove("fortification\t"+attacker+"\t"+faction+"\t"+spacekey+"\t"+post_battle);
+	his_self.addMove("fortification\t"+attacker+"\t"+faction+"\t"+spacekey+"\t"+post_battle+"\t"+relief_siege);
 	his_self.endTurn();
         return;
       }
@@ -4513,7 +4517,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     html    += `<li class="card" id="skip">remain besieged</li>`;
     html    += `</ul>`;
 
-    this.game.state.field_battle.relief_battle = true;
+    this.game.state.field_battle_relief_battle = true;
 
     this.updateStatusWithOptions(`Do Your Besieged Forces participate in this Field Battle?`, html);
     this.attachCardboxEvents(function(user_choice) {
@@ -4975,12 +4979,16 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	  i--;
 	  z = s.ports.length + 2;
         } else {
+	  let w = 0;
 	  for (let z = 0; z < s.ports.length; z++) {
-            if (his_self.doesFactionHaveNavalUnitsInSpace(faction, s.ports[z]) == 0) {
-  	      spaces_with_infantry.splice(i, 1);
-	      i--;
-	      z = s.ports.length + 2;
+            if (his_self.doesFactionHaveNavalUnitsInSpace(faction, s.ports[z]) >= 0) {
+	      w = 1;
 	    }
+	  }
+	  if (w == 0) {
+  	    spaces_with_infantry.splice(i, 1);
+	    i--;
+	    z = s.ports.length + 2;
 	  }
 	}
       }
@@ -5267,6 +5275,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
 
     let spaces_with_units = his_self.returnSpacesWithFactionInfantry(faction);
+
     if (spaces_with_units.length > 0) { 
       let any_unlocked_units = false;
       for (let i = 0; i < spaces_with_units.length; i++) {
@@ -5707,9 +5716,9 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
 	      let attacker_squadrons_adjacent = 0;
 	      for (let y = 0; y < his_self.game.spaces[conquerable_spaces[i]].ports.length; y++) {
-	        let p = his_self.game.spaces[conquerable_spaces[i]].ports[y];
-	        for (let z = 0; z < his_self.game.navalspaces[p].units[faction].length; z++) {
-		  let u = his_self.game.navalspaces[p].units[faction][z];
+	        let sea = his_self.game.spaces[conquerable_spaces[i]].ports[y];
+	        for (let z = 0; z < his_self.game.navalspaces[sea].units[faction].length; z++) {
+		  let u = his_self.game.navalspaces[sea].units[faction][z];
 		  if (u.type == "squadron") { attacker_squadrons_adjacent++; }
 	        }
 	      }
@@ -5988,8 +5997,9 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   canPlayerExplore(his_self, player, faction) {
     if (his_self.game.state.may_explore[faction] == 0) { return 0; }
     if (faction === "protestant") {  return false; }
+    // already explored this round
     for (let i = 0; i < his_self.game.state.explorations.length; i++) {
-      if (his_self.game.state.explorations[i].faction == faction) { return 0; }
+      if (his_self.game.state.explorations[i].faction == faction && his_self.game.state.explorations[i].round >= his_self.game.state.round) { return 0; }
     }
     if (
       his_self.game.state.newworld['stlawrence'].claimed == 1 &&
@@ -6115,7 +6125,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (faction === "papacy") { return false; }
     for (let i = 0; i < his_self.game.state.colonies.length; i++) {
       if (his_self.game.state.colonies[i].faction == faction) {
-        if (his_self.game.state.colonies[i].round == his_self.game.state.round) { return 0; }
+        if (his_self.game.state.colonies[i].round >= his_self.game.state.round) { return 0; }
       }
     }
     if (faction === "england") {

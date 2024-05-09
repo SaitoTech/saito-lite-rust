@@ -141,8 +141,11 @@ console.log("\n\n\n\n");
           //this.addRegular("independent", "metz", 1);
 // debug break siege
           this.addRegular("independent", "metz", 2);
-          this.addRegular("independent", "florence", 1);
+          //this.addRegular("independent", "florence", 1);
 	
+	  this.addRegular("papacy", "florence", 3);
+	  this.controlSpace("papacy", "florence");
+
 	  // DEBATERS
 	  this.addDebater("papacy", "eck-debater");
 	  this.addDebater("papacy", "campeggio-debater");
@@ -250,7 +253,7 @@ console.log("\n\n\n\n");
           this.addRegular("independent", "rhodes", 1);
           this.addRegular("independent", "metz", 1);
           this.addRegular("independent", "florence", 1);
-	
+
 	  // DEBATERS
 	  this.addDebater("papacy", "eck-debater");
 	  this.addDebater("papacy", "campeggio-debater");

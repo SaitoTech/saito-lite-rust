@@ -14,6 +14,22 @@ class FortificationOverlay {
 		return;
 	}
 
+        pullHudOverOverlay() {
+                let overlay_zindex = parseInt(this.overlay.zIndex);
+                if (document.querySelector('.hud')) {
+                        document.querySelector('.hud').style.zIndex = overlay_zindex + 1;
+                        this.mod.hud.zIndex = overlay_zindex + 1;
+                }
+        }
+
+        pushHudUnderOverlay() {
+                let overlay_zindex = parseInt(this.overlay.zIndex);
+                if (document.querySelector('.hud')) {
+                        document.querySelector('.hud').style.zIndex = overlay_zindex - 2;
+                        this.mod.hud.zIndex = overlay_zindex - 2;
+                }
+        }
+
 	render(
 		mobj,
 		units_to_move = null,
@@ -34,6 +50,8 @@ class FortificationOverlay {
 		let destination_units = [];
 
 		this.overlay.show(FortificationOverlayTemplate(mobj, his_self));
+
+		this.pushHudUnderOverlay();
 
 		if (unfortification_mode == 1) {
 		  document.querySelector(".fortification-from").innerHTML = "Under Seige";

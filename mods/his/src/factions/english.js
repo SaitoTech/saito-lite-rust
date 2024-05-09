@@ -59,10 +59,11 @@
         return base;
       },
       calculateSpecialVictoryPoints  :	function(game_mod) {
+
         let base = 0;
 
 	//
-	// 5VP if 
+	// 5 VP if Edward is born 
 	//
 	if (game_mod.game.state.events.henry_viii_sickly_edward == 1 || game_mod.game.state.events.henry_viii_edward_added == 1 || game_mod.game.state.events.henry_viii_healthy_edward == 1) { 
 	  base += 5;

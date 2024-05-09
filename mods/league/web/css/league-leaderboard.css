@@ -13,20 +13,21 @@
 .saito-table-header {
 	position: sticky;
 	top: 0px;
-	background: var(--saito-background-light);
+	background: var(--background-color-leaderboard-header);
 	z-index: 3;
 }
 
 .saito-table-row.league-leaderboard-ranking {
-	border-radius: 0.5rem;
+	border-radius: var(--border-radius-leaderboard-ranking);
+	margin: var(--border-padding-style-leaderboard-ranking);
 }
 
 .saito-table-row.league-leaderboard-ranking:hover {
-	background: var(--saito-primary);
+	background: var(--background-color-button-hover-leaderboard-ranking);
 }
 
 .my-leaderboard-position {
-	border: 1px solid var(--saito-primary);
+	border: var(--border-thickness-leaderboard-position) solid var(--border-color-leaderboard-position);
 }
 
 .my-leaderboard-position > div:first-child {

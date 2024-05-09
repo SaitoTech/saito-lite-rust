@@ -246,6 +246,34 @@
 
   setAllies(faction1, faction2, amp=1) {
 
+    if ((faction1 == "hungary" || faction2 == "hungary") && (faction1 == "hapsburg" || faction2 == "hapsburg")) {
+     this.game.state.events.defeat_of_hungary_bohemia = 1;
+
+      if (this.areEnemies("hungary", "ottoman") && !this.areEnemies("ottoman", "hapsburg"))    {
+	if (this.game.state.events.defeat_of_hungary_bohemia == 0) { 
+	  this.game.queue.push("natural_enemy_intervention\tottoman\thungary\thapsburg");
+	}
+      }
+      if (this.areEnemies("hungary", "protestant") && !this.areEnemies("protestant", "hapsburg")) { this.game.queue.push("natural_enemy_intervention\tprotestant\thungary\thapsburg"); }
+      if (this.areEnemies("hungary", "france") && !this.areEnemies("france", "hapsburg"))     { this.game.queue.push("natural_enemy_intervention\tfrance\thungary\thapsburg"); }
+      if (this.areEnemies("hungary", "papacy") && !this.areEnemies("papacy", "hapsburg"))     { this.game.queue.push("natural_enemy_intervention\tpapacy\thungary\thapsburg"); }
+      if (this.areEnemies("hungary", "england") && !this.areEnemies("england", "hapsburg"))    { this.game.queue.push("natural_enemy_intervention\tengland\thungary\thapsburg"); }
+    }
+    if ((faction1 == "scotland" || faction2 == "scotland") && (faction1 == "france" || faction2 == "france")) {
+      if (this.areEnemies("scotland", "ottoman") && !this.areEnemies("ottoman", "france"))    { this.game.queue.push("natural_enemy_intervention\tottoman\tscotland\tfrance"); }
+      if (this.areEnemies("scotland", "protestant") && !this.areEnemies("protestant", "france")) { this.game.queue.push("natural_enemy_intervention\tprotestant\tscotland\tfrance"); }
+      if (this.areEnemies("scotland", "hapsburg") && !this.areEnemies("hapsburg", "france"))   { this.game.queue.push("natural_enemy_intervention\thapsburg\tscotland\tfrance"); }
+      if (this.areEnemies("scotland", "papacy") && !this.areEnemies("papacy", "france"))     { this.game.queue.push("natural_enemy_intervention\tpapacy\tscotland\tfrance"); }
+      if (this.areEnemies("scotland", "england") && !this.areEnemies("england", "france"))    { this.game.queue.push("natural_enemy_intervention\tengland\tscotland\tfrance"); }
+    }
+    if ((faction1 == "venice" || faction2 == "venice") && (faction1 == "papacy" || faction2 == "papacy")) {
+      if (this.areEnemies("venice", "ottoman") && !this.areEnemies("ottoman", "papacy"))    { this.game.queue.push("natural_enemy_intervention\tottoman\tvenice\tpapacy"); }
+      if (this.areEnemies("venice", "protestant") && !this.areEnemies("protestant", "papacy")) { this.game.queue.push("natural_enemy_intervention\tprotestant\tvenice\tpapacy"); }
+      if (this.areEnemies("venice", "france") && !this.areEnemies("france", "papacy"))     { this.game.queue.push("natural_enemy_intervention\tfrance\tvenice\tpapacy"); }
+      if (this.areEnemies("venice", "hapsburg") && !this.areEnemies("hapsburg", "papacy"))     { this.game.queue.push("natural_enemy_intervention\thapsburg\tvenice\tpapacy"); }
+      if (this.areEnemies("venice", "england") && !this.areEnemies("england", "papacy"))    { this.game.queue.push("natural_enemy_intervention\tengland\tvenice\tpapacy"); }
+    }
+
     try { this.game.state.alliances[faction1][faction2].enemies = 0; } catch (err) {}
     try { this.game.state.alliances[faction2][faction1].enemies = 0; } catch (err) {}
     try { this.game.state.alliances[faction1][faction2].allies = 1; } catch (err) {}

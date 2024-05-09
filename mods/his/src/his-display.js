@@ -1,15 +1,25 @@
 
   displayCustomOverlay(c="", msg="") {
 
+    //
+    // move HUD above winter if winter is showing
+    //
+    this.welcome_overlay.pullHudOverOverlay();
+    this.welcome_overlay.pushHudUnderOverlay();
+
+    if (document.querySelector(".winter")) {
+	this.welcome_overlay.overlay.zIndex = this.winter_overlay.overlay.zIndex + 2;
+    }
+
     if (c === "depleted") {
-      this.welcome_overlay.renderCustom({
-        title : "Depleted Conquest" , 
-        text : msg ,
-        card : "" ,
-        img : '/his/img/backgrounds/newworld/depleted_conquest.jpeg',
-        styles : [{ key : "backgroundPosition" , val : "bottom" }],
-      });
-      return;
+        this.welcome_overlay.renderCustom({
+          title : "Depleted Conquest" , 
+          text : msg ,
+          card : "" ,
+          img : '/his/img/backgrounds/newworld/depleted_conquest.jpeg',
+          styles : [{ key : "backgroundPosition" , val : "bottom" }],
+        });
+        return;
     }
 
     if (c === "deserted") {
@@ -107,7 +117,7 @@
     if (c === "lost-at-sea") {
       this.welcome_overlay.renderCustom({
         title : "New World Losses" ,
-        text : msg + " exploration is lost at sea..." ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/lost_at_sea.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
@@ -117,7 +127,7 @@
     if (c === "killed") {
       this.welcome_overlay.renderCustom({
         title : "New World Losses" ,
-        text : msg + " expedition killed by natives" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/killed.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
@@ -127,7 +137,7 @@
     if (c === "stlawrence") {
       this.welcome_overlay.renderCustom({
         title : "New World Discovery" ,
-        text : msg + " discovers the St. Lawrence River" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
@@ -137,7 +147,7 @@
     if (c === "mississippi") {
       this.welcome_overlay.renderCustom({
         title : "New World Discovery" ,
-        text : msg + " discovers the Mississippi River" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/mississippi.jpg',
 	styles : [{ key : "backgroundPosition" , val : "center" }],
       });
@@ -147,7 +157,7 @@
     if (c === "greatlakes") {
       this.welcome_overlay.renderCustom({
         title : "New World Discovery" ,
-        text : msg + " discovers the Great Lakes" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/greatlakes.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
@@ -157,7 +167,7 @@
     if (c === "amazon") {
       this.welcome_overlay.renderCustom({
         title : "New World Discovery" ,
-        text : msg + " discovers the Amazon River" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/amazon3.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
@@ -167,7 +177,7 @@
     if (c === "pacificstrait") {
       this.welcome_overlay.renderCustom({
         title : "New World Discovery" ,
-        text : msg + " discovers the Pacific Strait" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/pacificstrait.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
@@ -177,7 +187,7 @@
     if (c === "circumnavigation") {
       this.welcome_overlay.renderCustom({
         title : "New World Achievement" ,
-        text : msg + " circumnavigates the globe" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/circumnavigation.jpg',
       });
       return;
@@ -186,7 +196,7 @@
     if (c === "aztec") {
       this.welcome_overlay.renderCustom({
         title : "New World Conquest" ,
-        text : msg + " conquers the Aztec" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/aztec.jpg',
       });
       return;
@@ -195,7 +205,7 @@
     if (c === "maya") {
       this.welcome_overlay.renderCustom({
         title : "New World Conquest" ,
-        text : msg + " conquers the Maya" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/inca.jpg',
       });
       return;
@@ -204,7 +214,7 @@
     if (c === "inca") {
       this.welcome_overlay.renderCustom({
         title : "New World Conquest" ,
-        text : msg + " conquers the Inca" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/inca2.jpg',
       });
       return;
@@ -221,7 +231,7 @@
 
     if (c === "colonize") {
       this.welcome_overlay.renderCustom({
-        title : this.returnFactionName(msg) + " founds a Colony",
+        title : msg ,
         text : "Colonies earn factions bonus cards in the New World Phase",
         img : '/his/img/backgrounds/move/colonize.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
@@ -231,7 +241,7 @@
 
     if (c === "conquest") {
       this.welcome_overlay.renderCustom({
-        title : this.returnFactionName(msg) + " launches Conquest Expedition",
+        title : msg ,
         text : "Conquests earn factions Victory Points and bonus cards in the New World Phase",
         img : '/his/img/backgrounds/newworld/inca2.jpg',
 	styles : [{ key : "backgroundPosition" , val : "center" }],
@@ -271,7 +281,7 @@
 
     if (c === "explore") {
       this.welcome_overlay.renderCustom({
-        title : this.returnFactionName(msg) + " launches Exploration",
+        title : msg,
         text : "Explorations earn Victory Points for strategic discoveries in the New World Phase",
         img : '/his/img/backgrounds/move/explore.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
@@ -1214,10 +1224,6 @@ try {
             tile += `Ottoman_squadron.svg`;
 	    squadrons -= 2;
           }
-	  if (corsairs >= 1) {
-            tile += `Ottoman_corsair.svg`;
-	    corsairs -= 1;
-          }
         }
         if (z === "venice") {
           tile = "/his/img/tiles/venice/";	  
@@ -1244,7 +1250,6 @@ try {
         html += `<img class="navy_tile" src="${tile}" />`;
       }
 
- 
       while (corsairs >= 1) {
         if (z === "ottoman") {
           tile = "/his/img/tiles/ottoman/";	  
@@ -1253,7 +1258,9 @@ try {
 	    corsairs -= 1;
           }
         }
+
         html += `<img class="navy_tile" src="${tile}" />`;
+
       }
 
     return html;

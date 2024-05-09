@@ -13,7 +13,6 @@ class Limbo extends ModTemplate {
 		super(app);
 		this.app = app;
 		this.name = 'Limbo';
-		this.chunks = [];
 		this.localStream = null; // My Video or Audio Feed
 		this.combinedStream = null;
 
@@ -26,6 +25,8 @@ class Limbo extends ModTemplate {
 
 		this.stun = null;
 		this.rendered = false;
+
+		this.terminationEvent = 'unload';
 
 		/*
 		Indexed by public key of dreamer
@@ -224,16 +225,7 @@ class Limbo extends ModTemplate {
 			this.addComponent(this.main);
 		}
 
-		for (const mod of this.app.modules.returnModulesRespondingTo(
-			'chat-manager'
-		)) {
-			let cm = mod.respondTo('chat-manager');
-			cm.container = '.saito-sidebar.left';
-			cm.render_manager_to_screen = 1;
-			this.addComponent(cm);
-		}
-
-		console.log('rendering', this.main, this.header);
+		this.app.modules.returnModulesRespondingTo('chat-manager');
 
 		await super.render();
 
@@ -273,20 +265,28 @@ class Limbo extends ModTemplate {
 						});
 					}
 
-					this.app.connection.emit('limbo-populated', 'service');
-
-					if (this.dreamer && this.dreams[this.dreamer]) {
-						let c = await sconfirm(
-							`Will join ${this.app.keychain.returnUsername(
-								this.dreamer
-							)}'s dream space`
-						);
-						if (c) {
-							this.joinDream(this.dreamer);
+					if (this.dreamer){
+						if (this.dreams[this.dreamer]) {
+							let c = await sconfirm(
+								`Will join ${this.app.keychain.returnUsername(
+									this.dreamer
+								)}'s dream space`
+							);
+							if (c) {
+								this.joinDream(this.dreamer);
+							} else {
+								window.history.pushState('', '', `/limbo/`);
+								this.dreamer = null;
+							}
 						} else {
+							salert(`${this.app.keychain.returnUsername(this.dreamer)}'s dream space is no longer available`);
 							window.history.pushState('', '', `/limbo/`);
+							this.dreamer = null;
 						}
 					}
+					
+					this.app.connection.emit('limbo-populated', 'service');
+					
 				}
 			);
 		}
@@ -416,6 +416,7 @@ class Limbo extends ModTemplate {
 		this.sendDreamTransaction(keylist);
 		this.copyInviteLink(screenStream);
 		this.toggleNotification(true, this.publicKey);
+		this.attachMetaEvents();
 
 	}
 
@@ -426,6 +427,28 @@ class Limbo extends ModTemplate {
 		this.sendJoinTransaction();
 		this.app.connection.emit('limbo-open-dream', dreamer);
 		this.combinedStream = new MediaStream();
+		this.attachMetaEvents();
+	}
+
+	attachMetaEvents(){
+
+		if ('onpagehide' in self){
+			this.terminationEvent = 'pagehide';
+		}
+
+		window.addEventListener(this.terminationEvent, this.visibilityChange.bind(this));
+		window.addEventListener("beforeunload", this.beforeUnloadHandler);
+		if (this.app.browser.isMobileBrowser()){
+			document.addEventListener("visibilitychange", this.visibilityChange.bind(this));	
+		}
+	}
+
+	detachMetaEvents(){
+		window.removeEventListener("beforeunload", this.beforeUnloadHandler);
+		window.removeEventListener(this.terminationEvent, this.visibilityChange.bind(this));
+		if (this.app.browser.isMobileBrowser()){
+			document.removeEventListener("visibilitychange", this.visibilityChange.bind(this));	
+		}
 	}
 
 	async sendDreamTransaction(keylist) {
@@ -485,6 +508,8 @@ class Limbo extends ModTemplate {
 			request: 'stop dream'
 		};
 
+		console.log(JSON.parse(JSON.stringify(this.dreams)));
+		
 		for (let key of this.dreams[this.publicKey].members){
 			if (key !== this.publicKey){
 				newtx.addTo(key);					
@@ -631,6 +656,10 @@ class Limbo extends ModTemplate {
 
 		newtx.addTo(this.dreamer);
 
+		this.downstream.forEach((key, pc) => {
+			newtx.addTo(key);
+		});
+
 		await newtx.sign();
 
 		this.app.connection.emit('relay-transaction', newtx);
@@ -672,6 +701,9 @@ class Limbo extends ModTemplate {
 			this.downstream.delete(sender);
 		}
 
+		//
+		// If your upstream leaves, send a new join transaction to pick up a new stream
+		//
 		if (this.upstream.has(sender)) {
 			this.upstream.delete(sender);
 			this.sendJoinTransaction();
@@ -916,6 +948,7 @@ class Limbo extends ModTemplate {
 
 		this.app.connection.emit('limbo-open-dream');
 		this.controls = null;
+		this.detachMetaEvents();
 	}
 
 
@@ -972,6 +1005,24 @@ class Limbo extends ModTemplate {
 
 
 	}
+
+	beforeUnloadHandler(event) {
+		event.preventDefault();
+		event.returnValue = true;
+	}
+
+	async visibilityChange(){
+		console.log("visibilitychange triggered")
+        
+        if (this.dreamer == this.publicKey){
+          await this.sendKickTransaction(); 
+        }else{
+          await this.sendLeaveTransaction();  
+        }
+        
+        this.exitSpace();
+	}
+
 }
 
 module.exports = Limbo;
