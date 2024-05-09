@@ -6,7 +6,7 @@ const localforage = require('localforage');
 const PeerService = require('saito-js/lib/peer_service').default;
 const SaitoDocxMain = require('./lib/saitodocx-main');
 
-class League extends ModTemplate {
+class SaitoDocx extends ModTemplate {
 	constructor(app) {
 		super(app);
 
@@ -98,4 +98,4 @@ class League extends ModTemplate {
 
 }
 
-module.exports = League;
+module.exports = SaitoDocx;

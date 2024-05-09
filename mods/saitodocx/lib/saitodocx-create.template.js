@@ -18,7 +18,7 @@ module.exports = () => {
             
             <!--<textarea class="saitodocx-text" id="saitodocx-text"></textarea> -->
             <form class="saitodocx-create-form" id="saitodocx-create-form">
-              <input id="x" value="Editor content goes here" type="hidden" name="content">
+              <input id="x" value="" type="hidden" name="content">
               <trix-editor id="saitodocx-texteditor" input="x"></trix-editor>
             </form>
           </div>

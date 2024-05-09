@@ -1,6 +1,6 @@
 const SaitoDocxCreateTemplate = require('./saitodocx-create.template');
 
-const Trix = require('trix');
+//const Trix = require('trix');
 
 class SaitoDocxCreate {
 	constructor(app, mod) {
@@ -46,8 +46,80 @@ class SaitoDocxCreate {
 		
 		setTimeout(function() {
 
-			let editor_state = {"document":[{"text":[{"type":"string","attributes":{},"string":"Editor content goes here\n"},{"type":"string","attributes":{"blockBreak":true},"string":"\n"}],"attributes":[],"htmlAttributes":{}},{"text":[{"type":"string","attributes":{},"string":"hiii"},{"type":"string","attributes":{"blockBreak":true},"string":"\n"}],"attributes":["heading1"],"htmlAttributes":{}}],"selectedRange":[30,30]};
-			element.editor.loadJSON(JSON.parse(editor_state))
+			let editor_state = {
+    "document": [
+        {
+            "text": [
+                {
+                    "type": "string",
+                    "attributes": {},
+                    "string": "hello\nhow are you\n"
+                },
+                {
+                    "type": "string",
+                    "attributes": {
+                        "blockBreak": true
+                    },
+                    "string": "\n"
+                }
+            ],
+            "attributes": []
+        },
+        {
+            "text": [
+                {
+                    "type": "string",
+                    "attributes": {},
+                    "string": "heading "
+                },
+                {
+                    "type": "string",
+                    "attributes": {
+                        "blockBreak": true
+                    },
+                    "string": "\n"
+                }
+            ],
+            "attributes": [
+                "heading1"
+            ]
+        },
+        {
+            "text": [
+                {
+                    "type": "string",
+                    "attributes": {},
+                    "string": "\n"
+                },
+                {
+                    "type": "string",
+                    "attributes": {
+                        "href": "https://jsonlint.com/"
+                    },
+                    "string": "https://jsonlint.com/"
+                },
+                {
+                    "type": "string",
+                    "attributes": {
+                        "blockBreak": true
+                    },
+                    "string": "\n"
+                }
+            ],
+            "attributes": []
+        }
+    ],
+    "selectedRange": [
+        50,
+        50
+    ]
+};
+
+			console.log('json stringify: ', JSON.toString(editor_state));
+			//console.log('parse json string: ', JSON.parse(JSON.toString(editor_state)));
+
+
+			element.editor.loadJSON(editor_state);
 			document.getElementById('saitodocx-texteditor').focus();
 		}, 0);
 	}
