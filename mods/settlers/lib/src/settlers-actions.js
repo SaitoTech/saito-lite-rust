@@ -6,12 +6,17 @@ class SettlersActions {
     let html = `<ul><li class="textchoice acknowledge" id="confirmit">continue</li></ul>`;
     try {
       this.updateStatusWithOptions(`${this.getLastNotice()}<div class="player-notice"><span>${msg}</span></div>`, html);
+
       document.querySelectorAll(".acknowledge").forEach((el) => {
         el.onclick = async (e) => {
+
           // if player clicks multiple times, don't want callback executed multiple times
           document.querySelectorAll(".acknowledge").forEach((el) => {
             el.onclick = null;
           });
+          //Clear click options
+          this.updateControls('');
+
           await mycallback();
         };
       });
