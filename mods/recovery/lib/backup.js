@@ -13,7 +13,7 @@ class Backup {
 		this.loader = new SaitoLoader(
 			this.app,
 			this.mod,
-			'#backup-template .saito-overlay-subform'
+			'#backup-template #saito-overlay-loader'
 		);
 	}
 
@@ -69,11 +69,26 @@ class Backup {
 				document.querySelector('.saito-overlay-form-text').remove();
 			}
 
+			
+
 			let div = document.querySelector(
 				'#backup-template .saito-overlay-subform'
 			);
 			if (div) {
-				div.innerHTML = '';
+				div.innerHTML = `
+				<div id="saito-overlay-loader"></div>
+				<div class="saito-overlay-form-subtext">
+				    Your browser is encrypting your wallet with the password 
+				    provided. Once completed, it will send a copy of this 
+				    wallet to your email address.
+	            </div>
+
+				<div class="saito-overlay-form-subtext">
+					This entire process usually takes no more than a minute. 
+					Once done you will also be able to login to your account 
+					from any computer. Please be patient while the process finishes.
+          		</div>
+          		`;
 				div.classList.add('centerme');
 			}
 
@@ -88,15 +103,6 @@ class Backup {
 			}
 
 			this.mod.backupWallet(email, password);
-
-			setTimeout(async () => {
-				this_self.app.options.wallet.backup_required_msg = 0;
-				await this_self.app.wallet.saveWallet();
-				this.close();
-				if (this.success_callback) {
-					this.success_callback();
-				}
-			}, 3000);
 		};
 	}
 
@@ -106,7 +112,11 @@ class Backup {
 	async success() {
 		siteMessage('Wallet backed up on blockchain', 4000);
 		this.app.options.wallet.backup_required_msg = 0;
+		this.close();
 		await this.app.wallet.saveWallet();
+		if (this.success_callback) {
+			this.success_callback();
+		}
 	}
 
 	callBackFunction(){
