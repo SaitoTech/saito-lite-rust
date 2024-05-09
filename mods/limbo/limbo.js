@@ -970,7 +970,7 @@ class Limbo extends ModTemplate {
 				let data = {
 					name: 'Limbo',
 					path: '/limbo/',
-					dream: this.app.crypto.stringToBase64(this.publicKey)
+					dream: this.app.crypto.stringToBase64(this.dreamer)
 				};
 
 				let invite = new InvitationLink(this.app, this, data);
@@ -979,7 +979,7 @@ class Limbo extends ModTemplate {
 		} else {
 			try {
 
-				let base64obj = this.app.crypto.stringToBase64(this.publicKey);
+				let base64obj = this.app.crypto.stringToBase64(this.dreamer);
 				let url1 = window.location.origin + '/limbo/';
 				let link = `${url1}?dream=${base64obj}`;
 
