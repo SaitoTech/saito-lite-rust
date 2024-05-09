@@ -1827,7 +1827,7 @@ x = 2;
 		c.depleted = 1;
 	        this.updateLog(`${this.returnFactionName(c.faction)} - Aztec Empire is Depleted`);
 	        if (this.game.player == this.returnPlayerCommandingFaction(c.faction)) {
-	          let mg = this.returnFactionName(faction) + " - Aztec Empire is Depleted";
+	          let mg = this.returnFactionName(c.faction) + " - Aztec Empire is Depleted";
 	          this.updateLog(msg);
 	          this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	          this.game.queue.push("display_custom_overlay\tdepleted\t"+msg);

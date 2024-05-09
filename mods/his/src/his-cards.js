@@ -7705,7 +7705,7 @@ console.log("selected: " + spacekey);
 
 		  function(space) {
 		    if (space.home == "scotland") {
-		      if (his_self.isSpaceControlled(space, "france")) {
+		      if (his_self.isSpaceControlled(space.key, "france") || his_self.isSpaceControlled(space.key, "scotland")) {
 		        if (!space.besieged) {
 		          return 1;
 		        }
