@@ -207,7 +207,7 @@
 	}
 
 	displayPlayerLog(html, player) {
-		this.playerbox.updateBody(html, player);
+		this.playerbox.renderNotice(html, player);
 	}
 
 	displayPlayerStack(player) {

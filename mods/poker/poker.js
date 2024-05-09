@@ -1055,8 +1055,7 @@ class Poker extends GameTableTemplate {
 
 				this.displayPlayerStack(player); //Here we don't want to hide cards
 
-
-				return 0;
+				return 1;
 			}
 
 			if (mv[0] === 'fold') {
@@ -1413,7 +1412,7 @@ class Poker extends GameTableTemplate {
 	}
 
 	displayPlayerLog(html, player) {
-		this.playerbox.updateBody(html, player);
+		this.playerbox.renderNotice(html, player);
 	}
 
 	displayPlayerStack(player) {
@@ -1424,6 +1423,9 @@ class Poker extends GameTableTemplate {
 		let userline = `${this.returnPlayerRole(player)}<div class="saito-balance">${this.formatWager(credit)}</div>`;
 
 		this.playerbox.renderUserline(userline, player);
+
+alert("display player stack!");
+
 		this.stack.render();
 
 	}
