@@ -1,6 +1,6 @@
 module.exports = CardfanTemplate = () => {
 	return `
-	<div class="cardfan">
+	<div id="cardfan" class="cardfan">
 	</div>
 	`;
 };

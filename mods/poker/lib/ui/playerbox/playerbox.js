@@ -77,6 +77,7 @@ console.log("render!");
 	attachEvents() {
 	}
 
+	updateIcons() {}
 
 	updateGraphics() {}
 

@@ -1,5 +1,6 @@
 
 	async render(app) {
+
 		if (!this.browser_active) {
 			return;
 		}
@@ -217,6 +218,9 @@
 		let userline = `${this.returnPlayerRole(player)}<div class="saito-balance">${this.formatWager(credit)}</div>`;
 
 		this.playerbox.renderUserline(userline, player);
+
+alert("display player stack!");
+
 		this.stack.render();
 
 	}

@@ -1206,6 +1206,7 @@ class Poker extends GameTableTemplate {
 
 
 	async render(app) {
+
 		if (!this.browser_active) {
 			return;
 		}

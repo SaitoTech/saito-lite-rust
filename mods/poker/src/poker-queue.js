@@ -860,7 +860,6 @@
 
 				this.displayPlayerStack(player); //Here we don't want to hide cards
 
-
 				return 0;
 			}
 

@@ -129,6 +129,12 @@
 	left: 1.5rem;
 }
 
+.plog-update {
+	width: 100%;
+	text-align: center;
+	margin-top: 1rem;
+}
+
 
 @media screen and (max-width: 600px) {
 	.game-playerbox {
