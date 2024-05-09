@@ -142,7 +142,7 @@ class Poker extends GameTableTemplate {
 
 		console.log(JSON.parse(JSON.stringify(this.game.state)));
 
-		this.displayBoard();
+		this.board.render();
 
 		//Doesn't do anything substantial
 		super.initializeGameStake(crypto, stake);
@@ -187,7 +187,7 @@ class Poker extends GameTableTemplate {
 		// browsers display UI
 		//
 		if (this.browser_active) {
-			this.displayBoard();
+			this.board.render();
 		}
 	}
 
@@ -1289,21 +1289,6 @@ class Poker extends GameTableTemplate {
 		this.initializeQueue();
 	}
 
-
-	eisplayBoard() {
-		if (!this.browser_active) {
-			return;
-		}
-		try {
-alert("DISPLAY BOARD!");
-			this.board.render();
-			//this.displayHand();
-			//this.displayTable();
-		} catch (err) {
-			console.error('err: ' + err);
-		}
-	}
-
 	returnPlayerRole(player) {
 		if (this.game.state.winners.includes(player)){
 			return "Winner!";
@@ -1428,8 +1413,6 @@ alert("DISPLAY BOARD!");
 		let userline = `${this.returnPlayerRole(player)}<div class="saito-balance">${this.formatWager(credit)}</div>`;
 
 		this.playerbox.renderUserline(userline, player);
-
-alert("display player stack!");
 
 		this.stack.render();
 

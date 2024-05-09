@@ -142,7 +142,7 @@ class Poker extends GameTableTemplate {
 
 		console.log(JSON.parse(JSON.stringify(this.game.state)));
 
-		this.displayBoard();
+		this.board.render();
 
 		//Doesn't do anything substantial
 		super.initializeGameStake(crypto, stake);
@@ -187,7 +187,7 @@ class Poker extends GameTableTemplate {
 		// browsers display UI
 		//
 		if (this.browser_active) {
-			this.displayBoard();
+			this.board.render();
 		}
 	}
 

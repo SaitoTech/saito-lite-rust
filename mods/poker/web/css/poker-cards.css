@@ -14,28 +14,6 @@
 	filter: grayscale(100%) brightness(0.55);
 }
 
-.cardfan {
-	max-height: 20vh;
-	max-width: 20vw;
-}
-
-.cardfan > .card:nth-child(1),
-.hand > .card:nth-child(1) {
-	transform: rotate(-15deg);
-	left: 0px;
-}
-
-.cardfan > .card:nth-child(2),
-.hand > .card:nth-child(2) {
-	transform: rotate(-5deg);
-	left: 3vh;
-}
-
-.cardfan .card {
-	width: min(20vw, 130px);
-}
-
-.cardFront,
 .cardBack {
 	transition: transform 0.5s ease;
 	backface-visibility: hidden;
@@ -44,6 +22,9 @@
 
 .cardFront {
 	transform: rotateY(180deg);
+	transition: transform 0.5s ease;
+	backface-visibility: visible;
+	-webkit-backface-visibility: visible;
 }
 
 .flipped .cardFront,
