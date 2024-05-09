@@ -5,7 +5,7 @@ module.exports = LimboSideBarTemplate = (app, mod, dreamer) => {
 		return '';
 	}
 
-	const formatUser = (publickey) => {
+	const formatUser = (publickey, icon = "") => {
 			let imgsrc = app.crypto.isPublicKey(publickey)
 				? app.keychain.returnIdenticon(publickey)
 				: '';
@@ -16,7 +16,7 @@ module.exports = LimboSideBarTemplate = (app, mod, dreamer) => {
 
 			return `<div class="saito-contact" >
 								<div class="saito-user saito-add-user-menu" data-id="${publickey}">
-	                				<div class="saito-identicon-box"><img class="saito-identicon" src="${imgsrc}"></div>
+	                				<div class="saito-identicon-box"><img class="saito-identicon" src="${imgsrc}">${icon}</div>
 	                  				<div class="saito-address" data-id="${publickey}" data-disable="true">${name}</div>
 	                				<div class="saito-userline">${publickey}</div>
 	                				<div></div>
@@ -32,7 +32,6 @@ module.exports = LimboSideBarTemplate = (app, mod, dreamer) => {
 	let groupName = app.keychain.returnUsername(dreamer);
 	let identicon = app.keychain.returnIdenticon(dreamer, 'png');
 
-
 	let html = `
 	<div id="limbo-sidebar" class="limbo-sidebar">
     	<div class="saito-profile">
@@ -43,7 +42,7 @@ module.exports = LimboSideBarTemplate = (app, mod, dreamer) => {
       		</div>
      		<div class="saito-profile-info">`;
 
-    if (group?.description){
+    if (mod.dreams[dreamer]?.description){
     	html += `<div class="saito-profile-about">${group.description}</div>`;	
     }
     
@@ -59,10 +58,18 @@ module.exports = LimboSideBarTemplate = (app, mod, dreamer) => {
           		</div>
       		</div>
     		</div>
-    		<div class="saito-modal-content">`;
 
-    for (let key of group){
-    	html += formatUser(key);
+    		<div class="saito-modal-content">
+
+		    <div class="saito-profile-menu float">
+		      <div class="redsquare-profile-menu-tabs active">Listeners 
+		      	<span>${ group.length > 0 ? `(${group.length})` : '' }</span>
+		      </div>
+		    </div>`;
+
+    for (let key of group){ 
+    	let icon = (key == dreamer) ? `<i class="saito-overlaid-icon fa-solid fa-microphone-lines"></i>` : '';
+    	html += formatUser(key, icon);
     }
 
     html +=`</div></div>`;

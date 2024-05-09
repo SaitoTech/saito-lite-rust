@@ -21,6 +21,21 @@ class MovementOverlay {
 		this.render(mobj, units_to_move, selectUnitsInterface, selectDestinationInterface, true);
 	}
 
+        pullHudOverOverlay() {
+                let overlay_zindex = parseInt(this.overlay.zIndex);
+                if (document.querySelector('.hud')) {
+                        document.querySelector('.hud').style.zIndex = overlay_zindex + 1;
+                        this.mod.hud.zIndex = overlay_zindex + 1;
+                }
+        }
+
+        pushHudUnderOverlay() {
+                let overlay_zindex = parseInt(this.overlay.zIndex);
+                if (document.querySelector('.hud')) {
+                        document.querySelector('.hud').style.zIndex = overlay_zindex - 2;
+                        this.mod.hud.zIndex = overlay_zindex - 2;
+                }
+        }
 
 	render(
 		mobj,
@@ -129,6 +144,8 @@ class MovementOverlay {
 		this.overlay.show(MovementOverlayTemplate(obj, this.mod));
 		this.mod.available_units_overlay.renderMove(mobj, faction, space.key);
 		if (this.fade_out_available_units) { this.mod.available_units_overlay.fadeOut(); }
+
+		this.pushHudUnderOverlay();
 
 		this.attachEvents(obj);
 	}

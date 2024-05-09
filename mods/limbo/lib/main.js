@@ -14,11 +14,7 @@ class LimboMain {
 		//
 		// left sidebar
 		//
-		let menu = new LimboMenu(this.app, this.mod, '.saito-sidebar.left');
-
-		this.lsidebar = new SaitoSidebar(this.app, this.mod, '.saito-container');
-		this.lsidebar.align = 'left';
-		this.lsidebar.addComponent(menu);
+		let menu = new LimboMenu(this.app, this.mod, '.limbo-main');
 		
 		let sidebar = new LimboSidebar(this.app, this.mod, ".saito-sidebar.right");
 
@@ -60,13 +56,7 @@ class LimboMain {
 			);
 		}
 
-		await this.lsidebar.render();
 		await this.rsidebar.render();
-
-		//
-		// invite manager
-		//
-		await this.app.modules.renderInto('.limbo-chat-box');
 
 		this.loader.render();
 

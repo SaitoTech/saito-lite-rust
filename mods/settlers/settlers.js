@@ -223,6 +223,7 @@ class Settlers extends GameTemplate {
 	}
 
 	async render(app) {
+
 		if (!this.browser_active) {
 			return;
 		}
@@ -332,7 +333,6 @@ class Settlers extends GameTemplate {
 		//
 		// add extra controls to HUD
 		//
-		//console.log(this.game.deck[0].hand);
 		let has_cards = false;
 		if (this.game.deck[0]?.hand?.length > 0){
 			has_cards = true;
@@ -347,8 +347,6 @@ class Settlers extends GameTemplate {
 			}">cards</div><div class="score">score</div></div>`,
 			'.hud-body'
 		);
-
-		console.log('inside settlers render //////');
 
 		//
 		// hook up interactivity
@@ -451,7 +449,6 @@ class Settlers extends GameTemplate {
 		this.hexgrid.render('.gameboard');
 
 		if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
-			console.log('mobile environment');
 			this.hammer.render('#game-hexgrid');
 		} else {
 			this.sizer.render();
@@ -472,6 +469,7 @@ class Settlers extends GameTemplate {
 	}
 
 	initializeGame(game_id) {
+
 		console.log('inside initializeGame');
 		console.log(this.game.state);
 

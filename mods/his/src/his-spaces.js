@@ -231,11 +231,12 @@
 
 
   canFactionMoveIntoSpace(faction, space) {
+
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let cf = this.returnFactionControllingSpace(space);
-    // maybe space is controlled by minor power but we are allied with or enemies of actual controller
+    // we can move into spaces controlled by powers we are at war with
     if (this.isMinorPower(cf)) { cf = this.returnControllingPower(cf); }
-    if (cf === faction) { return 1; }
+    if (cf == faction) { return 1; }
     if (this.areEnemies(faction, cf)) { return 1; }
     if (this.areAllies(faction, cf)) { return 1; }
     if (this.isSpaceIndependent(space.key)) {
@@ -593,7 +594,7 @@
     for (let f in space.units) {
       for (let i = 0; i < space.units[f].length; i++) {
         if (space.units[f][i].type == "squadron") {
-	  if (space.units[f][i].besieged != 0) { number_of_squadrons_in_port++; }
+	  number_of_squadrons_in_port++;
 	}
       }
     }
@@ -1233,6 +1234,31 @@
           if (space.units[f][i].type === "regular") { luis++; }
           if (space.units[f][i].type === "mercenary") { luis++; }
           if (space.units[f][i].type === "cavalry") { luis++; }
+        }
+      }
+    }
+    return luis;
+  }
+
+  returnFactionLandUnitsAndLeadersInSpace(faction, space, include_minor_allies=false) {
+    let luis = 0;
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (f in space.units) {
+      if (include_minor_allies == false && f == faction) {
+        for (let i = 0; i < space.units[f].length; i++) {
+          if (space.units[f][i].type === "regular") { luis++; }
+          if (space.units[f][i].type === "mercenary") { luis++; }
+          if (space.units[f][i].type === "cavalry") { luis++; }
+          if (space.units[f][i].navy_leader == true || space.units[f][i].army_leader == true) { luis++; }
+        }
+      } else {
+	if (include_minor_allies == true && (f == faction || this.isAlliedMinorPower(f, faction))) {
+          for (let i = 0; i < space.units[f].length; i++) {
+            if (space.units[f][i].type === "regular") { luis++; }
+            if (space.units[f][i].type === "mercenary") { luis++; }
+            if (space.units[f][i].type === "cavalry") { luis++; }
+            if (space.units[f][i].navy_leader == true || space.units[f][i].army_leader == true) { luis++; }
+          }
         }
       }
     }
@@ -3401,7 +3427,7 @@ try {
       home: "hungary",
       political: "",
       religion: "catholic",
-      neighbours: ["wittenberg","leipzig","linz"],
+      neighbours: ["brunn", "wittenberg","leipzig","linz"],
       language: "other",
       type: "key"
     }
@@ -3600,7 +3626,7 @@ try {
       political: "",
       religion: "catholic",
       ports: ["gulflyon","tyrrhenian"],
-      neighbours: ["nice","pavia","turin","modena","siena"],
+      neighbours: ["florence", "nice","pavia","turin","siena"],
       pass: ["nice"],
       language: "italian",
       type: "key"

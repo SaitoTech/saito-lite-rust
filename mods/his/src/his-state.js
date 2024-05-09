@@ -6,6 +6,7 @@
     //
     this.game.state.player_last_move = "";
     this.game.state.player_last_spacekey = "";
+    this.game.state.field_battle_relief_battle = false;
 
     //
     // remove foul weather
@@ -74,6 +75,8 @@
     this.game.state.events.intervention_on_events_possible = 0;
     this.game.state.events.intervention_on_assault_possible = 0;
 
+    this.game.state.field_battle_relief_battle = false;
+
     //
     // reset impulse commits
     //
@@ -97,6 +100,14 @@
     this.game.state.may_colonize['england'] = 1;
     this.game.state.may_colonize['france'] = 1;
     this.game.state.may_colonize['hapsburg'] = 1;
+
+    this.game.state.cards_issued = {};
+    this.game.state.cards_issued['ottoman'] = 0;
+    this.game.state.cards_issued['hapsburg'] = 0;
+    this.game.state.cards_issued['england'] = 0;
+    this.game.state.cards_issued['france'] = 0;
+    this.game.state.cards_issued['papacy'] = 0;
+    this.game.state.cards_issued['protestant'] = 0;
 
     this.game.state.events.ottoman_piracy_wartburg = 0;
     this.game.state.events.ottoman_piracy_attempts = 0;
@@ -966,8 +977,6 @@ if (this.game.state.scenario != "is_testing") {
 
     state.events.diplomatic_alliance_triggers_hapsburg_hungary_alliance = 0;
     state.events.defeat_of_hungary_bohemia = 0;
-
-
 
     state.events.ottoman_piracy_enabled = 0;
     state.events.ottoman_corsairs_enabled = 0;
