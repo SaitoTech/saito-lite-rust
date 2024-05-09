@@ -6,7 +6,7 @@ class WelcomeOverlay {
 		this.app = app;
 		this.mod = mod;
 		this.visible = false;
-		this.overlay = new SaitoOverlay(app, mod, false, true, true);
+		this.overlay = new SaitoOverlay(app, mod, false, false, true);
 	}
 
 	hide() {
@@ -38,12 +38,13 @@ class WelcomeOverlay {
 
 		let his_self = this.mod;
 
-    if (document.querySelector(".winter")) {
-        this.overlay.zIndex = his_self.winter_overlay.overlay.zIndex + 2;
-    }
+	    	if (document.querySelector(".winter")) {
+        	  this.overlay.zIndex = his_self.winter_overlay.overlay.zIndex + 2;
+    		}
 
 		this.overlay.show(WelcomeTemplate(""));
 		this.pushHudUnderOverlay();
+		this.overlay.pullOverlayToFront();
 
 		if (obj.title) { document.querySelector('.welcome-title').innerHTML = obj.title; }
 		if (obj.text)  { document.querySelector('.welcome-text').innerHTML  = obj.text; }
@@ -55,6 +56,9 @@ class WelcomeOverlay {
 		    document.querySelector('.welcome').style[s.key] = s.val; 
 		  }
 		}
+		let overlay_zindex = parseInt(this.overlay.zIndex);
+		document.querySelector('.welcome').style["zIndex"] = overlay_zindex;
+		document.querySelector('.welcome').style["display"] = "block";
 
 		// this will clear any ACKNOWLEDGE
 		this.attachEvents();
@@ -168,19 +172,21 @@ class WelcomeOverlay {
 	}
 
 	attachEvents() {
+
 		let his_self = this.mod;
 
 		$('.welcome').on('click', () => {
-			this.hide();
-			if (document.querySelector('.option.acknowledge')) {
-				document.querySelector('.option.acknowledge').click();
-			}
+			// don't hide() AND removeOnClose
+			//this.hide();
+			  	if (document.querySelector('.option.acknowledge')) {
+					document.querySelector('.option.acknowledge').click();
+			  	}
 		});
 		$('.saito-overlay:has(> .welcome) + .saito-overlay-backdrop').on('click', () => {
-			this.hide();
-			if (document.querySelector('.option.acknowledge')) {
-				document.querySelector('.option.acknowledge').click();
-			}
+			//this.hide();
+				if (document.querySelector('.option.acknowledge')) {
+					document.querySelector('.option.acknowledge').click();
+				}
 		});
 	}
 }

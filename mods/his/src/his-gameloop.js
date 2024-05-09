@@ -1548,7 +1548,7 @@ if (this.game.options.scenario == "is_testing") {
 	  let msg = this.returnFactionName(faction) + " founds a colony";
 	  this.updateLog(msg);
 	  this.game.queue.push("ACKNOWLEDGE\t"+msg);
-	  this.game.queue.push("display_custom_overlay\tcolonize\t"+faction);
+	  this.game.queue.push("display_custom_overlay\tcolonize\t"+msg);
           this.game.state.may_colonize[faction] = 0;
 	  this.displayColony();
 	  return 1;
@@ -1657,7 +1657,6 @@ if (this.game.options.scenario == "is_testing") {
 
 	    if (x > 9) {
 
-
 	      //
 	      // if follow-on attempt from Pacific Strait, add new exploration
 	      //
@@ -1719,13 +1718,10 @@ if (this.game.options.scenario == "is_testing") {
 		this.removeCardFromGame("099");
 	      }
 	      this.game.state.explorations[idx].prize = "lost at sea";
-	      this.updateLog(this.returnFactionName(faction) + " fails at Circumnavigation ("+x+")");
-	      if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
-	        let msg = this.returnFactionName(faction) + " lost at sea in attempt at circumnavigation";
-	        this.updateLog(msg);
-	        this.game.queue.push("ACKNOWLEDGE\t"+msg);
-	        this.game.queue.push("display_custom_overlay\tlost-at-sea\t"+msg);
-	      }
+	      let msg = this.returnFactionName(faction) + " lost at sea in attempt at circumnavigation";
+	      this.updateLog(msg);
+	      this.game.queue.push("ACKNOWLEDGE\t"+msg);
+	      this.game.queue.push("display_custom_overlay\tlost-at-sea\t"+msg);
 	    }
 	  }
 
@@ -2173,6 +2169,8 @@ x = 2;
 	      }
 
               his_self.updateStatusWithOptions(msg, html);
+	      his_self.winter_overlay.pullHudOverOverlay();
+
 
               $('.option').off();
               $('.option').on('click', function () {
@@ -11309,11 +11307,11 @@ if (this.game.state.round == 2) {
 
 
 cardnum = 1;
-//if (f == "papacy") { cardnum = 0; }
+if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 1; }
-//if (f == "protestant") { cardnum = 0; }
+if (f == "protestant") { cardnum = 0; }
 //if (f == "england") { cardnum = 0; }
-//if (f == "ottoman") { cardnum = 0; }
+if (f == "ottoman") { cardnum = 0; }
 
     	        this.game.queue.push("check_replacement_cards\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);

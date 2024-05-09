@@ -23642,7 +23642,7 @@ if (this.game.options.scenario == "is_testing") {
 	  let msg = this.returnFactionName(faction) + " founds a colony";
 	  this.updateLog(msg);
 	  this.game.queue.push("ACKNOWLEDGE\t"+msg);
-	  this.game.queue.push("display_custom_overlay\tcolonize\t"+faction);
+	  this.game.queue.push("display_custom_overlay\tcolonize\t"+msg);
           this.game.state.may_colonize[faction] = 0;
 	  this.displayColony();
 	  return 1;
@@ -23751,7 +23751,6 @@ if (this.game.options.scenario == "is_testing") {
 
 	    if (x > 9) {
 
-
 	      //
 	      // if follow-on attempt from Pacific Strait, add new exploration
 	      //
@@ -23813,13 +23812,10 @@ if (this.game.options.scenario == "is_testing") {
 		this.removeCardFromGame("099");
 	      }
 	      this.game.state.explorations[idx].prize = "lost at sea";
-	      this.updateLog(this.returnFactionName(faction) + " fails at Circumnavigation ("+x+")");
-	      if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
-	        let msg = this.returnFactionName(faction) + " lost at sea in attempt at circumnavigation";
-	        this.updateLog(msg);
-	        this.game.queue.push("ACKNOWLEDGE\t"+msg);
-	        this.game.queue.push("display_custom_overlay\tlost-at-sea\t"+msg);
-	      }
+	      let msg = this.returnFactionName(faction) + " lost at sea in attempt at circumnavigation";
+	      this.updateLog(msg);
+	      this.game.queue.push("ACKNOWLEDGE\t"+msg);
+	      this.game.queue.push("display_custom_overlay\tlost-at-sea\t"+msg);
 	    }
 	  }
 
@@ -24267,6 +24263,8 @@ x = 2;
 	      }
 
               his_self.updateStatusWithOptions(msg, html);
+	      his_self.winter_overlay.pullHudOverOverlay();
+
 
               $('.option').off();
               $('.option').on('click', function () {
@@ -33403,11 +33401,11 @@ if (this.game.state.round == 2) {
 
 
 cardnum = 1;
-//if (f == "papacy") { cardnum = 0; }
+if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 1; }
-//if (f == "protestant") { cardnum = 0; }
+if (f == "protestant") { cardnum = 0; }
 //if (f == "england") { cardnum = 0; }
-//if (f == "ottoman") { cardnum = 0; }
+if (f == "ottoman") { cardnum = 0; }
 
     	        this.game.queue.push("check_replacement_cards\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
@@ -45758,7 +45756,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (c === "lost-at-sea") {
       this.welcome_overlay.renderCustom({
         title : "New World Losses" ,
-        text : msg + " exploration is lost at sea..." ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/lost_at_sea.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
@@ -45768,7 +45766,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (c === "killed") {
       this.welcome_overlay.renderCustom({
         title : "New World Losses" ,
-        text : msg + " expedition killed by natives" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/killed.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
@@ -45778,7 +45776,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (c === "stlawrence") {
       this.welcome_overlay.renderCustom({
         title : "New World Discovery" ,
-        text : msg + " discovers the St. Lawrence River" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
@@ -45788,7 +45786,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (c === "mississippi") {
       this.welcome_overlay.renderCustom({
         title : "New World Discovery" ,
-        text : msg + " discovers the Mississippi River" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/mississippi.jpg',
 	styles : [{ key : "backgroundPosition" , val : "center" }],
       });
@@ -45798,7 +45796,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (c === "greatlakes") {
       this.welcome_overlay.renderCustom({
         title : "New World Discovery" ,
-        text : msg + " discovers the Great Lakes" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/greatlakes.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
@@ -45808,7 +45806,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (c === "amazon") {
       this.welcome_overlay.renderCustom({
         title : "New World Discovery" ,
-        text : msg + " discovers the Amazon River" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/amazon3.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
@@ -45818,7 +45816,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (c === "pacificstrait") {
       this.welcome_overlay.renderCustom({
         title : "New World Discovery" ,
-        text : msg + " discovers the Pacific Strait" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/pacificstrait.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
@@ -45828,7 +45826,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (c === "circumnavigation") {
       this.welcome_overlay.renderCustom({
         title : "New World Achievement" ,
-        text : msg + " circumnavigates the globe" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/circumnavigation.jpg',
       });
       return;
@@ -45837,7 +45835,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (c === "aztec") {
       this.welcome_overlay.renderCustom({
         title : "New World Conquest" ,
-        text : msg + " conquers the Aztec" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/aztec.jpg',
       });
       return;
@@ -45846,7 +45844,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (c === "maya") {
       this.welcome_overlay.renderCustom({
         title : "New World Conquest" ,
-        text : msg + " conquers the Maya" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/inca.jpg',
       });
       return;
@@ -45855,7 +45853,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (c === "inca") {
       this.welcome_overlay.renderCustom({
         title : "New World Conquest" ,
-        text : msg + " conquers the Inca" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/inca2.jpg',
       });
       return;
@@ -45872,7 +45870,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
     if (c === "colonize") {
       this.welcome_overlay.renderCustom({
-        title : this.returnFactionName(msg) + " founds a Colony",
+        title : msg ,
         text : "Colonies earn factions bonus cards in the New World Phase",
         img : '/his/img/backgrounds/move/colonize.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
@@ -45882,7 +45880,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
     if (c === "conquest") {
       this.welcome_overlay.renderCustom({
-        title : this.returnFactionName(msg) + " launches Conquest Expedition",
+        title : msg ,
         text : "Conquests earn factions Victory Points and bonus cards in the New World Phase",
         img : '/his/img/backgrounds/newworld/inca2.jpg',
 	styles : [{ key : "backgroundPosition" , val : "center" }],
@@ -45922,7 +45920,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
     if (c === "explore") {
       this.welcome_overlay.renderCustom({
-        title : this.returnFactionName(msg) + " launches Exploration",
+        title : msg,
         text : "Explorations earn Victory Points for strategic discoveries in the New World Phase",
         img : '/his/img/backgrounds/move/explore.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
