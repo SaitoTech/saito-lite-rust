@@ -1993,7 +1993,7 @@ if (this.game.state.scenario != "is_testing") {
 
       // let's notify the player visually
       this.game.queue.push("ACKNOWLEDGE\tThe Hapsburgs are pulled into the War in Hungary");
-      this.game.queue.push("display-custom-overlay\tbattle-of-mohacs");
+      this.game.queue.push("display_custom_overlay\tbattle-of-mohacs");
 
     }
   }

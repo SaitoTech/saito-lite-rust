@@ -461,7 +461,7 @@ if (this.game.options.scenario == "is_testing") {
 	  return 1;
 	}
 
-	if (mv[0] === "display_custom_overlay") {
+	if (mv[0] === "display_custom_overlay" || mv[0] === "display-custom-overlay") {
 
           this.game.queue.splice(qe, 1);
 
@@ -11806,7 +11806,7 @@ console.log(JSON.stringify(reshuffle_cards));
 	  this.game.queue.splice(qe, 1);
 	  this.excommunicateFaction(faction);
 	  this.game.queue.push("ACKNOWLEDGE\t"+this.returnFactionName(faction) + " is excommunicated");
-	  this.game.queue.push("display-custom-overlay\texcommunication\t"+faction);
+	  this.game.queue.push("display_custom_overlay\texcommunication\t"+faction);
 
           return 1;
 
