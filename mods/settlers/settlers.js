@@ -591,6 +591,9 @@ class Settlers extends GameTemplate {
 		stats.dicePlayer = {};
 
 		stats.production = {};
+		stats.discarded = {};
+		stats.robbed = {};
+
 		for (let i = 2; i <= 12; i++) {
 			stats.dice[i] = 0;
 
@@ -604,7 +607,13 @@ class Settlers extends GameTemplate {
 			let array = new Array(this.game.players.length);
 			array.fill(0);
 			stats.production[r] = array;
+
+			stats.discarded[r] = array.slice();
+			stats.robbed[r] = array.slice();
 		}
+		
+		stats.history = [];
+
 		return stats;
 	}
 

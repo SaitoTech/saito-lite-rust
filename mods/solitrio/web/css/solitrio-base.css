@@ -6,6 +6,10 @@
 	height: 120px;
 }
 
+#saito-alert-shim {
+	z-index: 100;
+}
+
 .gameboard {
 	position: absolute;
 	background-image: url(/saito/img/arcade/greenfelt.jpg);

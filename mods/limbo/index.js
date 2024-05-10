@@ -10,7 +10,7 @@ module.exports = (app, mod, build_number, og_card) => {
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="description" content="${app.browser.escapeHTML(mod.description)}" />
     <meta name="keywords" content="${mod.categories}"/>
-    <meta name="author" content="Saito Team"/>
+    <meta name="author" content="Dominic Cobb with Saito Team"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes" />
   
     <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/fontawesome.min.css" type="text/css" media="screen" />
@@ -51,7 +51,7 @@ module.exports = (app, mod, build_number, og_card) => {
     <link rel="stylesheet" href="/saito/lib/pace/pace-theme.min.css">
   
   
-    <title>Saito Talk</title>
+    <title>Saito Limbo</title>
   
     <script type="text/javascript" src="/saito/lib/jquery/jquery-3.2.1.min.js"></script>
     
