@@ -176,12 +176,12 @@ class Solitrio extends OnePlayerGameTemplate {
 
 		let winner = await this.scanBoard(false);
 		if (winner) {
-			this.displayModal('Congratulations!', 'You win the deal!');
 			this.prependMove('win');
 			this.endTurn();
 		} else if (!this.hasAvailableMoves()) {
 			if (this.game.state.recycles_remaining == 0) {
 				this.prependMove('lose');
+				this.overlay.show(this.returnStatsHTML('Solitrio!', 1));
 				let go = await sconfirm('No more moves. Start new Game?');
 				if (go) {
 					await this.clearTable();
@@ -189,6 +189,7 @@ class Solitrio extends OnePlayerGameTemplate {
 				} else {
 					this.moves.shift();
 				}
+				this.overlay.hide();
 			} else {
 				this.shuffleFlash();
 				$('#hint').css('display', 'none');
@@ -231,21 +232,29 @@ class Solitrio extends OnePlayerGameTemplate {
 
 				solitrio_self.untoggleCard(card);
 
+				//console.log(`Animate ${x}: ${card} -> ${slot}`);
 				solitrio_self.moveGameElement(
 					solitrio_self.copyGameElement(`#${card} img`),
 					`#${slot}`,
 					{
-						resize: 1,
+						/*resize: 1,*/
 						insert: 1,
 						callback: () => {
-							//console.log(`Animate ${x}: ${card} -> ${slot}`);
-							$('#' + card).toggleClass('empty');
-							$('#' + slot).toggleClass('empty');
+							$('#' + card).addClass('empty');
+							$('#' + slot).removeClass('empty');
 						}
 					},
 					() => {
+
 						$('.animated_elem').remove();
-						$('#' + card).html(
+
+						//Redraw whole board
+						//for (let i in solitrio_self.game.board) {
+						//	let divname = '#' + i;
+						//	$(divname).html(solitrio_self.returnCardImageHTML(solitrio_self.game.board[i]));
+						//}
+						
+						/*$('#' + card).html(
 							solitrio_self.returnCardImageHTML(
 								solitrio_self.game.board[card]
 							)
@@ -254,7 +263,7 @@ class Solitrio extends OnePlayerGameTemplate {
 							solitrio_self.returnCardImageHTML(
 								solitrio_self.game.board[slot]
 							)
-						);
+						);*/
 
 						solitrio_self.checkBoardStatus();
 					}
@@ -586,6 +595,7 @@ class Solitrio extends OnePlayerGameTemplate {
 			if (mv[0] === 'win') {
 				this.game.state.session.round++;
 				this.game.state.session.wins++;
+				this.overlay.show(this.returnStatsHTML('Congratulations! You win the deal'));
 				this.newRound();
 				this.game.queue.push(
 					`ROUNDOVER\t${JSON.stringify([
@@ -707,14 +717,16 @@ class Solitrio extends OnePlayerGameTemplate {
 					);
 					$(divname)
 						.children()
-						.fadeOut(10 * timeInterval);
+						.fadeOut(10 * timeInterval, function(){
+							$(this).addClass("copied_elem");
+						});
 				}
 			}
 
 			//
 			// We will provide hints automatically until you win at least twice
 			//
-			if (this.game.state.lifetime.wins < 1) {
+			if (this.game.state.lifetime.wins < 1 && timeInterval > 0) {
 				this.provideHint();
 			}
 		} catch (err) {}
@@ -914,7 +926,7 @@ no status atm, but this is to update the hud
 		for (let i in this.game.board) {
 			if (targets.includes(this.game.board[i])) {
 				$(`#${i}`).toggleClass('misclick');
-				await this.timeout(250);
+				await this.timeout(150);
 			}
 		}
 	}

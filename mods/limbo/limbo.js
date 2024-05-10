@@ -7,6 +7,7 @@ const DreamWizard = require("./lib/dream-wizard");
 const LimboMain = require('./lib/main');
 const InvitationLink = require('./../../lib/saito/ui/modals/saito-link/saito-link');
 const SaitoHeader = require('./../../lib/saito/ui/saito-header/saito-header');
+const HomePage = require("./index");
 
 class Limbo extends ModTemplate {
 	constructor(app) {
@@ -17,7 +18,7 @@ class Limbo extends ModTemplate {
 		this.combinedStream = null;
 
 		this.description =
-			'Saito Dream Space: emit audio/video stream to arbitrary number of followers';
+			'a shared dream space allowing you to "peercast" voice or video with no middleman software';
 		this.categories = 'Utilities Communications';
 
 		this.styles = ['/videocall/style.css', '/limbo/style.css'];
@@ -27,6 +28,15 @@ class Limbo extends ModTemplate {
 		this.rendered = false;
 
 		this.terminationEvent = 'unload';
+
+		this.social = {
+			twitter: '@SaitoOfficial',
+			title: '🟥 Saito Limbo',
+			url: 'https://saito.io/limbo/',
+			description: 'Voice and video "peercasting" with no middleman',
+			image: 'https://saito.tech/wp-content/uploads/2023/11/videocall-300x300.png',
+		};
+
 
 		/*
 		Indexed by public key of dreamer
@@ -792,6 +802,7 @@ class Limbo extends ModTemplate {
 					}
 
 					this.app.connection.emit('limbo-populated', 'tx');
+					
 					if (message?.dreamer === this.dreamer) {
 						this.app.connection.emit(
 							'limbo-open-dream',
@@ -959,7 +970,7 @@ class Limbo extends ModTemplate {
 				let data = {
 					name: 'Limbo',
 					path: '/limbo/',
-					dream: this.app.crypto.stringToBase64(this.publicKey)
+					dream: this.app.crypto.stringToBase64(this.dreamer)
 				};
 
 				let invite = new InvitationLink(this.app, this, data);
@@ -968,7 +979,7 @@ class Limbo extends ModTemplate {
 		} else {
 			try {
 
-				let base64obj = this.app.crypto.stringToBase64(this.publicKey);
+				let base64obj = this.app.crypto.stringToBase64(this.dreamer);
 				let url1 = window.location.origin + '/limbo/';
 				let link = `${url1}?dream=${base64obj}`;
 
@@ -1021,6 +1032,31 @@ class Limbo extends ModTemplate {
         }
         
         this.exitSpace();
+	}
+
+	webServer(app, expressapp, express) {
+		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
+		let mod_self = this;
+
+		expressapp.get(
+			'/' + encodeURI(this.returnSlug()),
+			async function (req, res) {
+				let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
+
+				mod_self.social.url = reqBaseURL + encodeURI(mod_self.returnSlug());
+
+				res.setHeader('Content-type', 'text/html');
+				res.charset = 'UTF-8';
+
+				res.send(HomePage(app, mod_self, app.build_number, mod_self.social));
+				return;
+			}
+		);
+
+		expressapp.use(
+			'/' + encodeURI(this.returnSlug()),
+			express.static(webdir)
+		);
 	}
 
 }

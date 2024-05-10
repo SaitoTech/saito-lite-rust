@@ -4,7 +4,7 @@
 }
 
 .mahj-rowbox {
-	margin: 80px;
+	margin: 90px;
 	margin-left: 160px;
 	padding: 30px 10px 10px 30px;
 	display: grid;
@@ -27,6 +27,10 @@
 
 .mahjong-backdrop:hover {
 	/*background-color: rgba(200,200,200,0.1);*/
+}
+
+.logobox .controls {
+	margin: 0;
 }
 
 .slot {
@@ -124,21 +128,21 @@
 .logobox {
 	position: absolute;
 	font-size: 20px;
-	max-width: 205px;
-	margin: 60px 20px;
+	max-width: 225px;
+	margin: 50px 10px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: flex-start;
+	row-gap: 1rem;
 }
 
 .logobox div {
 	border-radius: 5px;
 }
 
-.logobox img {
+.logobox img, .tiles img {
 	width: 100%;
-	margin-bottom: 15px;
 }
 
 .status-header {
@@ -204,28 +208,41 @@ div[id^='row21'] {
 /** The side display of tiles **/
 /********************************/
 .tiles {
+	position: absolute;
+	bottom: 0;
+	width: 100vw;
+	height: 7.5vw; /* 100vw / 36 x 1.3 x 2 */ 
 	display: grid;
-	grid-template-columns: repeat(6, 1fr);
-	margin-top: 1rem;
+	grid-template: 1fr 1fr / repeat(36, 1fr);
+	grid-auto-flow: column;
 }
+
 
 .scoreboard_tile {
 	width: 100%;
 }
 
-.tiles .scoreboard_tile img {
-	margin-bottom: unset;
-}
 
 .notfound {
 	filter: grayscale(100%) brightness(0.7);
 }
 
-@media screen and (orientation: landscape) and (max-height: 900px) {
+
+
+@media screen and (orientation: portrait) and (min-height: 1100px) {
 	.tiles {
-		grid-template-columns: repeat(8, 1fr);
+		grid-template-columns: repeat(6, 1fr);
 	}
 }
+
+@media screen and (max-width: 900px) { 
+	.tiles {
+		grid-template: repeat(3, 1fr) / repeat(24, 1fr);
+		height: 18vw;
+		grid-auto-flow: row;
+	}
+}
+
 
 @media screen and (orientation: landscape) and (max-height: 700px) {
 	.logobox > img {
@@ -246,7 +263,15 @@ div[id^='row21'] {
 	.mahj-rowbox {
 		margin: 40px 60px 40px 180px;
 	}
+
+	.tiles {
+		grid-template: repeat(6, 1fr) / repeat(12, 1fr);
+		width: 28vw;
+		height: fit-content;
+	}
+
 }
+
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
 	.gameboard {
@@ -257,6 +282,12 @@ div[id^='row21'] {
 	.mahj-rowbox {
 		margin: 200px 10px 0 10px;
 	}
+
+	.tiles {
+		grid-template: repeat(4, 1fr) / repeat(18, 1fr);
+		height: 32vw;
+	}
+
 
 	.logobox {
 		margin: 10px;

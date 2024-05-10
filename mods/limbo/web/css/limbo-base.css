@@ -165,8 +165,8 @@ video#local.noflip{
 	padding: 3rem;
 	border-radius: 0.5rem;
 	border: 1px solid;
-	background-color: var(--saito-black);
-	color: var(--saito-white);
+	background-color: var(--color-base);
+	color: var(--color-contrast);
 }
 
 .dream-wizard h1{
@@ -263,17 +263,21 @@ video#local.noflip{
 	.limbo-sidebar .saito-profile-info {
 		margin: unset;
 	}
+
+	.video-box-container-large > #connection-message {
+		width: fit-content;
+		height: 7rem;
+		top: 100%;
+	}
+
 }
 
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 767px){
 	.saito-main.limbo-main {
 		padding: unset;
 		margin-bottom: 2rem;
 	}
 
-	
-	.dream-controls{
-		grid-template-rows: 1fr 6rem;
-	}
 }
+
