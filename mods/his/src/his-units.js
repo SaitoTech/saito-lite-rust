@@ -224,7 +224,7 @@
 
   returnConquistadorName(key) {
     if (this.conquistadors[key]) { return this.conquistadors[key].name; }
-    return "Conquerer";
+    return "Conquistador";
   }
   returnExplorerName(key) {
     if (key == "Cabot" || key == "cabot") { return "Sebastian Cabot"; }

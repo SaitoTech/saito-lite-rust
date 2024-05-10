@@ -7931,7 +7931,7 @@ console.log("selected: " + spacekey);
 	  let anything_left = 0; 
 	  for (let i = 0; i < space.units[respondent].length; i++) {
 	    let u = space.units[respondent][i];
-	    if (u.type == "regular" || u.type == "mercenary" || u.type == "squadron" || u.type == "corsair" || u.type != "mercenary") {
+	    if (u.type == "regular" || u.type == "mercenary" || u.type == "cavalry") {
 	      anything_left = 1;
 	    }
 	  }
@@ -11474,6 +11474,9 @@ console.log("selected: " + spacekey);
 
  	  $('.option').off();
 	  $('.option').on('click', function () {
+
+	    his_self.updateStatus("selecting...");
+
  	    $('.option').off();
 	    let action = $(this).attr("id");
 	    his_self.addMove("display_new_world");

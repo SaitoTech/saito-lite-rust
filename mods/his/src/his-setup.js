@@ -97,7 +97,7 @@ console.log("\n\n\n\n");
           this.addRegular("hapsburg", "brussels", 1);
           this.addRegular("hapsburg", "vienna", 4);
           this.addRegular("hapsburg", "antwerp", 3);
-	  this.addRegular("hapsburg", "valladolid");
+	  this.addRegular("hapsburg", "valladolid", 1);
 
 
 	  // ENGLAND
@@ -185,6 +185,7 @@ console.log("\n\n\n\n");
 	  // HAPSBURG
 	  this.addArmyLeader("hapsburg", "valladolid", "charles-v");
 	  this.addArmyLeader("hapsburg", "valladolid", "duke-of-alva");
+          this.addRegular("hapsburg", "valladolid", 4);
           this.addRegular("hapsburg", "seville", 1);
           this.addNavalSquadron("hapsburg", "seville", 1);
           this.addRegular("hapsburg", "barcelona", 1);
@@ -666,6 +667,10 @@ console.log("\n\n\n\n");
 	  //this.addMercenary("papacy", "prague", 5);
 
           this.setAllies("papacy", "hapsburg");
+          this.setEnemies("england", "scotland");
+          this.setEnemies("england", "france");
+	  this.addRegular("france", "stirling", 3);
+	  this.addRegular("scotland", "stirling", 1);
 
 	  if (this.game.players.length == 2) {
             this.setActivatedPower("papacy", "hapsburg");

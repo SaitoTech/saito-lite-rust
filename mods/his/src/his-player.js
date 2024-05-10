@@ -3990,19 +3990,23 @@ does_units_to_move_have_unit = true; }
 	    //
 	    // Foul Weather prevents spaces with already moved units
 	    //
+	    let army_and_navy_leaders = 0;
             if (his_self.returnPlayerCommandingFaction(z) == his_self.game.player) {
               for (let i = 0; i < space.units[z].length; i++) {
 	        if (space.units[z][i].locked != 1) {
 		  if (space.units[z][i].type === "cavalry") { num_moveable++; }
 		  if (space.units[z][i].type === "regular") { num_moveable++; }
 		  if (space.units[z][i].type === "mercenary") { num_moveable++; }
-		  if (space.units[z][i].battle_rating > 0) { num_moveable++; }
+		  if (space.units[z][i].battle_rating > 0) { army_and_navy_leaders++; num_moveable++; }
                   if (space.units[z][i].already_moved == 1 && his_self.game.state.events.foul_weather == 1) {
 	            num_moveable--;
                   }
                 }
               }
 	      if (num_moveable <= 0) {
+		return 0;
+	      }
+	      if (army_and_navy_leaders == num_moveable) {
 		return 0;
 	      }
             }
@@ -6489,7 +6493,14 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
   }
   canPlayerPublishTreatise(his_self, player, faction) {
-    if (faction === "protestant") { return 1; }
+    if (faction === "protestant") {
+      if (his_self.canProtestantsReformInLanguageZone("german")) { return 1; }
+      if (his_self.canProtestantsReformInLanguageZone("english")) { return 1; }
+      if (his_self.canProtestantsReformInLanguageZone("french")) { return 1; }
+      if (his_self.canProtestantsReformInLanguageZone("spanish")) { return 1; }
+      if (his_self.canProtestantsReformInLanguageZone("italian")) { return 1; }
+      return 0;
+    }
     if (faction === "england") {
       if (his_self.isPersonageOnMap("england", "cranmer") != null) {
 	return 1;
