@@ -272,6 +272,12 @@ class SettlersGameloop {
         } else {
           console.log("Resource not found...", resource, this.game.state.players[player - 1]);
         }
+
+        // Bandit discards 
+        if (this.game.state.bandit){
+          this.game.stats.discarded[resource][player - 1]++;
+        }
+
         this.game.queue.splice(qe, 1);
 
         return 1;
@@ -934,6 +940,13 @@ class SettlersGameloop {
           //victim 0 means nobody
           this.game.queue.push("spend_resource\t" + victim + "\t" + loot);
           this.game.state.players[thief - 1].resources.push(loot);
+
+          //Adjust bandit stats
+          this.game.stats.robbed[loot][victim - 1]++;
+          // The spend_resource to remove from hand will count twice when we roll a 7 but not on a knight
+          if (this.game.state.bandit) {
+            this.game.stats.discarded[loot][victim - 1]--;  
+          }
         }
 
         let x = (loot == "nothing") ? "nothing" : this.formatResource(loot);

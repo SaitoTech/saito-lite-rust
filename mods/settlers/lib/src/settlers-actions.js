@@ -44,49 +44,66 @@ class SettlersActions {
     let poor_harvest = true;
 
     let collection = {};
+    let blocked = {};
 
     for (let city of this.game.state.cities) {
       let player = city.player;
 
       for (let neighboringHex of city.neighbours) {
-        if (
-          this.game.state.hexes[neighboringHex].value == value &&
-          !this.game.state.hexes[neighboringHex].robber
-        ) {
+        if (this.game.state.hexes[neighboringHex].value == value) {
           let resource = this.game.state.hexes[neighboringHex].resource;
 
-          if (!collection[player]){
-            collection[player] = [];
-          }
+          if (this.game.state.hexes[neighboringHex].robber) {
+            if (!blocked[player]){
+              blocked[player] = [];
+            }
 
-          collection[player].push(resource);
+            blocked[player].push(resource);
 
-          if (this.game.player == player) {
-            notice += this.formatResource(resource);
-            poor_harvest = false;
-          }
+            if (city.level == 2){
+              blocked[player].push(resource);
+            }
 
-          this.game.state.players[player - 1].resources.push(resource);
-          this.game.stats.production[resource][player - 1]++;
-          this.animateHarvest(player, resource, neighboringHex);
-
-          //
-          //Double Resources for Upgraded City
-          //
-          if (city.level == 2) {
-            this.game.state.players[player - 1].resources.push(resource);
-            this.game.stats.production[resource][player - 1]++;
-            this.animateHarvest(player, resource, neighboringHex);
+          } else {
+            if (!collection[player]){
+              collection[player] = [];
+            }
 
             collection[player].push(resource);
 
             if (this.game.player == player) {
               notice += this.formatResource(resource);
+              poor_harvest = false;
+            }
+
+            this.game.state.players[player - 1].resources.push(resource);
+            this.game.stats.production[resource][player - 1]++;
+            this.animateHarvest(player, resource, neighboringHex);
+
+            //
+            //Double Resources for Upgraded City
+            //
+            if (city.level == 2) {
+              this.game.state.players[player - 1].resources.push(resource);
+              this.game.stats.production[resource][player - 1]++;
+              this.animateHarvest(player, resource, neighboringHex);
+
+              collection[player].push(resource);
+
+              if (this.game.player == player) {
+                notice += this.formatResource(resource);
+              }
             }
           }
         }
       }
     }
+
+    this.game.stats.history.push({
+      roll: value,
+      harvest: collection,
+      bandit: blocked,
+    });
 
     let firstMsg = (this.game.player == player_who_rolled)  ? "You" : this.game.playerNames[player_who_rolled - 1];
     firstMsg += ` rolled <span class='die_value'>${value}</span>`;
