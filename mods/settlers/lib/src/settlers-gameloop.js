@@ -946,7 +946,22 @@ class SettlersGameloop {
           // The spend_resource to remove from hand will count twice when we roll a 7 but not on a knight
           if (this.game.state.bandit) {
             this.game.stats.discarded[loot][victim - 1]--;  
+
           }
+        }
+
+        if (this.game.state.bandit){
+          let record = {
+            roll: 7,
+            harvest: {},
+            bandit: {},
+          }
+          if (loot == "nothing"){
+            record.harvest[thief] = [];
+          }else{
+            record.harvest[thief] = [loot];
+          }
+          this.game.stats.history.push(record);
         }
 
         let x = (loot == "nothing") ? "nothing" : this.formatResource(loot);
