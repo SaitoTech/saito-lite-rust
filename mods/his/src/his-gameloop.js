@@ -121,21 +121,31 @@ if (this.game.options.scenario != "is_testing") {
 		  this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
 
 	        } else {
+/*****
+
+		  this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
+		  this.game.queue.push("winter_retreat_move_units_to_capital\tfrance");
+		  this.game.queue.push("winter_retreat_move_units_to_capital\tengland");
+		  this.game.queue.push("winter_retreat_move_units_to_capital\thapsburg");
+		  this.game.queue.push("winter_retreat_move_units_to_capital\tottoman");
+
+****/
 
 		  if (this.game.players.length == 3) {
 		    let c = [this.game.players[this.returnPlayerOfFaction("england")-1],this.game.players[this.returnPlayerOfFaction("hapsburg")-1],this.game.players[this.returnPlayerOfFaction("ottoman")-1]];
-	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['protestant','papacy','france']));
-		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
+		    let c2 = [this.game.players[this.returnPlayerOfFaction("hapsburg")-1],this.game.players[this.returnPlayerOfFaction("ottoman")-1]];
+	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy','france']));
+		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c2));
 	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['england','hapsburg','ottoman']));
 		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
 		  }
 
 		  if (this.game.players.length == 4) {
 
-		    let c = [this.game.players[this.returnPlayerOfFaction("protestant")-1],this.game.players[this.returnPlayerOfFaction("papacy")-1]];
+		    let c = [this.game.players[this.returnPlayerOfFaction("papacy")-1]];
 		    let c2 = [this.game.players[this.returnPlayerOfFaction("france")-1],this.game.players[this.returnPlayerOfFaction("england")-1],this.game.players[this.returnPlayerOfFaction("hapsburg")-1], this.game.players[this.returnPlayerOfFaction("ottoman")-1]];
 
-	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['protestant','papacy']));
+	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy']));
 		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
 		    this.updateStatus("Other factions handling winter retreat...");
 
@@ -147,12 +157,13 @@ if (this.game.options.scenario != "is_testing") {
 
 		  if (this.game.players.length == 5) {
 
-		    let c = [this.game.players[this.returnPlayerOfFaction("protestant")-1]];
+		    // skipping protestant
+		    //let c = [this.game.players[this.returnPlayerOfFaction("protestant")-1]];
 		    let c2 = [this.game.players[this.returnPlayerOfFaction("papacy")-1],this.game.players[this.returnPlayerOfFaction("france")-1],this.game.players[this.returnPlayerOfFaction("england")-1],this.game.players[this.returnPlayerOfFaction("hapsburg")-1], this.game.players[this.returnPlayerOfFaction("ottoman")-1]];
 
-	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['protestant']));
-		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
-		    this.updateStatus("Other factions handling winter retreat...");
+	            //this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['protestant']));
+		    //this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
+		    //this.updateStatus("Other factions handling winter retreat...");
 
 	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy','france','england','hapsburg','ottoman']));
 		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c2));
@@ -861,16 +872,16 @@ if (this.game.options.scenario == "is_testing") {
 			  }
 			}
 
-		        for (let z = 0, y = 0, zz = 0; z < unitlen; z++, zz++) {
-			  if (capitals[y]) {
-		            if (this.game.spaces[spacekey].units[faction][z].reformer != true && this.game.spaces[spacekey].units[faction][z].type != "squadron" && this.game.spaces[spacekey].units[faction][z].type != "corsair") {
-			      this.game.spaces[capitals[y]].units[faction].push(this.game.spaces[spacekey].units[faction][z]);
-			      this.game.spaces[spacekey].units[faction].splice(z, 1);
-			      zz--;
-			      // we have moved one guy...
-			      fluis--; fluis_idx--;
-			    }
-			  }
+                        for (let z = 0, y = 0; z < unitlen; z++) {
+                          if (capitals[y]) {
+                            if (this.game.spaces[spacekey].units[faction][z].reformer != true && this.game.spaces[spacekey].units[faction][z].type != "squadron" && this.game.spaces[spacekey].units[faction][z].type != "corsair") {
+                              this.game.spaces[capitals[y]].units[faction].push(this.game.spaces[spacekey].units[faction][z]);
+                              this.game.spaces[spacekey].units[faction].splice(z, 1);
+                              z--;
+                              // we have moved one guy...
+                              fluis--; fluis_idx--;
+                            }
+                          }
 			  y++;
 			  if (!capitals[y]) { y = 0; }
 			  unitlen = this.game.spaces[spacekey].units[faction].length;
@@ -2010,7 +2021,6 @@ if (this.game.options.scenario == "is_testing") {
 	    if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
 	      this.displayCustomOverlay("killed", faction);
 	      let msg = this.returnFactionName(faction) + " conquistador is killed";
-	      this.updateLog(msg);
 	      this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	      this.game.queue.push("display_custom_overlay\tkilled\t"+msg);
 	    }
@@ -2165,7 +2175,12 @@ if (this.game.options.scenario == "is_testing") {
 	    //
 	    if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
 
-	      let msg = `${this.returnFactionName(faction)} - Choose Discovery:`;
+	      let explorer_power = this.explorers[explorer].power;
+	      let modifications = 0;
+              if (this.game.state[`${faction}_uncharted`]) { modifications--; }
+              if (this.game.state.mercators_map == faction) { modifications+=2; }
+
+	      let msg = `${this.returnFactionName(faction)} - ${this.returnExplorerName(explorer)} [+${explorer_power + modifications} on roll]:`;
 	      let html = '<ul>';
 	      if (this.game.state.newworld['stlawrence'].claimed != 1) {
 		html += '<li class="option" id="stlawrence">St. Lawrence (1 VP)</li>';
@@ -2181,8 +2196,8 @@ if (this.game.options.scenario == "is_testing") {
 	      }
 	      if (this.game.state.newworld['circumnavigation'].claimed != 1) {
 		let vp_at_stake = "2";
-		if (this.game.state.newworld['pacificstrait'].claimed != 1) { vp_at_stake = "2-4"; }
-		html += `<li class="option" id="circumnavigation">Attempt Circumnavigation (${vp_at_stake}VP, explorer retires)</li>`;
+		if (this.game.state.newworld['pacificstrait'].claimed != 1) { vp_at_stake = "2-5"; }
+		html += `<li class="option" id="circumnavigation">Attempt Circumnavigation (${vp_at_stake}VP, requires 12 and explorer retires)</li>`;
 	      }
 
               his_self.updateStatusWithOptions(msg, html);
@@ -10412,7 +10427,6 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
 
 	  this.game.queue.splice(qe, 1);
 
-
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
 
@@ -11346,7 +11360,7 @@ if (this.game.state.round == 2) {
 		if (cardnum < 0) { cardnum = 0; }
 
 
-//cardnum = 1;
+cardnum = 1;
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 1; }
 //if (f == "protestant") { cardnum = 0; }
@@ -11949,9 +11963,9 @@ console.log(JSON.stringify(reshuffle_cards));
 
 	  this.factionbar.setActive(faction);
 
-	  let player = this.returnPlayerOfFaction(faction);
+	  this.unbindBackButtonFunction();
 
-console.log(faction + " -- " + player + " -- " + this.game.player);
+	  let player = this.returnPlayerOfFaction(faction);
 
 	  // update board display
 	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
@@ -12431,6 +12445,16 @@ console.log(faction + " -- " + player + " -- " + this.game.player);
 
 	}
 
+	//
+	// similar to evacuate below
+	//
+	// the difference is that units will be sent en mass to the nearest fortified space
+	// even if that requires transiting water, so we can have the Hapsburgs positioned
+	// in Malta if they withdraw from Istanbul for instance. This makes the choice less
+	// optimal for some cases.
+	//
+	// overflow is sent to the capital at the end.
+	//
 	if (mv[0] === "withdraw_to_nearest_fortified_space") {
 
 	  this.game.queue.splice(qe, 1);
@@ -12528,9 +12552,132 @@ console.log(faction + " -- " + player + " -- " + this.game.player);
 	    all_naval_units_repositioned = true;
 	  }
 
+
+	  //
+	  // finally, return any overstacked units to capital
+	  //
+          this.returnOverstackedUnitsToCapitals();
+
 	  return 1;
 
 	}
+
+
+	//
+	// similar to withdraw to nearest fortify space above
+	//
+	// the difference is that units will be split out the nearest fortified spaces
+	// with the 4-unit limit affecting where they can go in this version, and any 
+	// surplus being randomly distributed to the various capitals.
+	//
+	if (mv[0] === "evacuate") {
+
+	  this.game.queue.splice(qe, 1);
+	  let spacekey = mv[1];
+ 	  let space = this.game.spaces[spacekey];
+
+	  for (let f in space.units) {
+
+	    //
+	    // move naval units if possible
+	    //
+	    let does_space_contain_naval_vessels = false;
+	    for (let i = 0; i < space.units[f].length; i++) {
+	      if (space.units[f][i].type == "squadron" || space.units[f][i].type == "corsair") {
+	 	does_space_contain_naval_vessels = true;
+	      }
+	    }
+	    if (does_space_contain_naval_vessels) {
+	      let spacekey_for_relocation = "";
+	      for (let key in this.game.spaces) {
+		if (this.game.spaces[key].home == f && spacekey_for_relocation == "") {
+		  if (this.game.spaces[key].ports.length > 0) {
+		    if (this.isSpaceControlled(key, f)) {
+		      spacekey_for_relocation = key;
+		    }
+		  }
+		}
+	      }
+	      for (let i = space.units[f].length-1; i >= 0; iii) {
+	        if (space.units[f][i].type == "squadron" || space.units[f][i].type == "corsair") {
+		  if (spacekey_for_relocation != "") {
+		    this.game.spaces[spacekey_for_relocation].units[f].push(space.units[f][i]);
+		  }
+		  space.units[f].splice(i, 1);
+	        }
+	      }
+	    }
+	
+
+	    let fluis = this.returnFactionLandUnitsInSpace(f, space.key, 0);
+	    for (let fluis_idx = 0; fluis_idx < fluis; fluis_idx++) {
+
+	      let res = this.returnNearestFriendlyFortifiedSpacesTransitPasses(f, spacekey, 4);
+
+	      //
+	      // split the units between capitals
+	      //
+	      if (res.length == 0) {
+
+	        let capitals = this.returnCapitals(faction);
+                for (let z = 0, y = 0; z < space.units[f].length; z++) {
+                  if (capitals[y]) {
+                    if (space.units[f][z].reformer != true) {
+                      this.game.spaces[capitals[y]].units[f].push(space.units[f][z]);
+                      this.game.spaces[spacekey].units[faction].splice(z, 1);
+                      z--;
+                    }
+                  }
+                  y++;
+                  if (!capitals[y]) { y = 0; }
+                }
+
+	      //
+	      // otherwise move to nearest spaces
+	      //
+	      } else {
+
+                let options = [];
+	        let faction = f;
+                for (let b = 0; b < res.length; b++) {
+                  let unit_limit = 4;
+                  if (res[b].key == "paris" || res[b].key == "valladolid" || res[b].key == "london" || res[b].key == "vienna" || res[b].key == "istanbul" || res[b].key == "rome") { unit_limit = 1000; } else {
+                    unit_limit = 4;
+                  }
+                  options.push(unit_limit - this.returnFactionLandUnitsInSpace(faction, res[b].key));
+                }
+
+                //
+                // fill those spaces
+                //
+                for (let b = 0; b < res.length; b++) {
+                  for (let zz = 0; zz < options[b]; zz++) {
+                    let unitlen = space.units[f].length;
+                    for (let zzz = 0, zzy = 0; zzz < unitlen; zzz++, zzy++) {
+                      if (this.game.spaces[spacekey].units[faction][zzy].reformer != true) {
+                        this.game.spaces[res[b].key].units[faction].push(this.game.spaces[spacekey].units[faction][zzy]);
+                        this.game.spaces[spacekey].units[faction].splice(zzy, 1);
+                        zzy--;
+                        // we have moved one guy...
+                        fluis--; fluis_idx--;
+			unitlen--;
+                        this.displaySpace(res[b].key);
+                      }
+                    }
+                  }
+                }
+	      }
+	    }
+	  }
+
+
+	  this.displaySpace(spacekey);
+
+	  return 1;
+
+	}
+
+
 
 	if (mv[0] === "pacify" || mv[0] === "control") {
 

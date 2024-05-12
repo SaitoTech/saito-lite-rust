@@ -3225,8 +3225,8 @@ console.log("selected: " + spacekey);
 
 	      } else {
 
-		his_self.addMove("discard\tprotestant\t007");
     		his_self.addMove("cards_left\tprotestant\t"+(parseInt(his_self.game.state.cards_left["protestant"])+1));
+		his_self.addMove("discard\tprotestant\t007");
 		his_self.addMove("NOTIFY\tProtestants retrieve "+his_self.popup(card));
 		his_self.addMove("here_i_stand_event\t"+card);
 		his_self.endTurn();

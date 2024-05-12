@@ -15,7 +15,7 @@ Habsburg conquistadores:
       this.importConquistador('english-conquistador1', {
 	   faction	     :       "england",
            type              :       "english-conquistador1" ,
-           name              :       "English Conquerer",
+           name              :       "Conquistador",
            personage         :       true,
            img               :       "/his/img/tiles/england/English_Conquest.svg",
 	   power	     :	     0,
@@ -23,7 +23,7 @@ Habsburg conquistadores:
       this.importConquistador('english-conquistador2', {
 	   faction	     :       "england",
            type              :       "english-conquistador2" ,
-           name              :       "English Conquerer",
+           name              :       "Conquistador",
            personage         :       true,
            img               :       "/his/img/tiles/england/English_Conquest.svg",
 	   power	     :	     0,
@@ -34,7 +34,7 @@ Habsburg conquistadores:
       this.importConquistador('french-conquistador1', {
 	   faction	     :       "france",
            type              :       "french-conquistador1" ,
-           name              :       "French Conquerer",
+           name              :       "Conquistador",
            personage         :       true,
            img               :       "/his/img/tiles/france/French_Conquest.svg",
 	   power	     :	     0,
@@ -42,7 +42,7 @@ Habsburg conquistadores:
       this.importConquistador('french-conquistador2', {
 	   faction	     :       "france",
            type              :       "french-conquistador2" ,
-           name              :       "French Conquerer",
+           name              :       "Conquistador",
            personage         :       true,
            img               :       "/his/img/tiles/france/French_Conquest.svg",
 	   power	     :	     0,

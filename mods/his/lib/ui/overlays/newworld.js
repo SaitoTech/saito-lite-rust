@@ -46,16 +46,18 @@ class NewWorldOverlay {
 		  //////////////
 	 	  for (let z = 0; z < his_self.game.state.colonies.length; z++) {
 		    let c = his_self.game.state.colonies[z];
+		    let bonus_card = 0; if (c.bonus_prize == "bonus card") { bonus_card = 1; }
+		    if (c.prize == "bonus card") { bonus_card = 1; }
 		    if (!c.prize) { c.prize = "-"; }
 		    if (c.destroyed != 1 && c.round <= his_self.game.state.round) {
 		      active_colonies++;
-		      his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : c.prize , img : c.img , type : "colony", name : c.name , faction : c.faction , total_hits : c.modified_roll }, stage), ".new-world-overlay .content .colonies");
+		      his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : c.prize , img : c.img , type : "colony", name : c.name , faction : c.faction , total_hits : c.modified_roll , bonus_card : bonus_card }, stage), ".new-world-overlay .content .colonies");
 		    } else {
 		      if (c.destroyed == 1) {
 		        active_colonies++;
 			let x = c.colony;
 		        if (his_self.game.state.newworld[x].claimed != 1) {
-		          his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : c.name , img : c.img , type : "colony", name : c.name , faction : "abandoned" , total_hits : c.modified_roll , depleted : 1 }, stage), ".new-world-overlay .content .colonies");
+		          his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : c.name , img : c.img , type : "colony", name : c.name , faction : "abandoned" , total_hits : c.modified_roll , depleted : 1 , bonus_card : bonus_card }, stage), ".new-world-overlay .content .colonies");
 		        }
 		      }
 		    }
@@ -67,25 +69,26 @@ class NewWorldOverlay {
 		  ///////////////
 	 	  for (let i = 0; i < his_self.game.state.conquests.length; i++) {
 		    let c = his_self.game.state.conquests[i];
+		    let bonus_card = 0; if (c.bonus_prize == "bonus card") { bonus_card = 1; }
 		    if (!c.prize) { c.prize = ""; }
 		    if (c.round == his_self.game.state.round || ((c.prize.indexOf("Aztec") > -1 || c.prize.indexOf("Maya") > -1 || c.prize.indexOf("Inca") > -1))) {
 		      active_conquests++;
 		      //
 		      // conquest earns bonus card
 		      //
-		      if (c.bonus_base_roll && c.depleted != 1) {
-			his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : c.prize , img : c.img , type : "conquest" , name : c.prize , faction : c.faction , conquistador : c.conquistador , total_hits : c.bonus_base_roll , depleted : 0 }, stage, true), ".new-world-overlay .content .conquests");
+		      if (bonus_card == 1 && c.depleted != 1) {
+			his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : c.prize , img : c.img , type : "conquest" , name : c.prize , faction : c.faction , conquistador : c.conquistador , total_hits : c.bonus_base_roll , depleted : 0 , bonus_card : bonus_card }, stage, true), ".new-world-overlay .content .conquests");
 		      } else {
 		        //
 		        // conquest depleted
 		        //
 		        if (c.depleted) {
-			  his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : c.prize , img : c.img , type : "conquest" , name : c.prize , faction : "depleted" , conquistador : c.conquistador , total_hits : c.bonus_base_roll , depleted : 1 }, stage, false), ".new-world-overlay .content .conquests");
+			  his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : c.prize , img : c.img , type : "conquest" , name : c.prize , faction : "depleted" , conquistador : c.conquistador , total_hits : c.bonus_base_roll , depleted : 1 , bonus_card : 0 }, stage, false), ".new-world-overlay .content .conquests");
 		        //
 		        // conquest unproductive
 		        //
 			} else {
-		          his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : c.prize , img : c.img , type : "conquest" , name : c.prize , faction : c.faction , conquistador : c.conquistador , total_hits : c.modified_roll , depleted : 0 }, stage, false), ".new-world-overlay .content .conquests");
+		          his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : c.prize , img : c.img , type : "conquest" , name : c.prize , faction : c.faction , conquistador : c.conquistador , total_hits : c.modified_roll , depleted : 0 , bonus_card : 0 }, stage, false), ".new-world-overlay .content .conquests");
 			}
 		      }
 		    }
@@ -134,16 +137,13 @@ class NewWorldOverlay {
 		  if (obj.prize != "") { prize = obj.prize; }
 		  if (obj.depleted == 1) { row_css += " killed"; }
 		  if (obj.killed == 1) { row_css += " killed"; }
+		  if (prize.indexOf("killed") > -1) { row_css += " killed"; }
+		  if (prize.indexOf("depleted") > -1) { row_css += " killed"; }
+		  if (prize.indexOf("lost at sea") > -1) { row_css += " killed"; }
+		  if (obj.bonus_card == 1) { goldenrod = "goldenrod"; }
 		  if (obj.goldenrod == 1) { goldenrod = "goldenrod"; }
 
- 		  if (prize.length > 3 && prize.indexOf("destroyed") == -1 && prize.indexOf("eaten") == -1 && prize.indexOf("lost") == -1 && prize.indexOf("killed") == -1) {
-		    goldenrod = "goldenrod";
-		  }
-		  if (prize == "Roanoke" || prize == "Puerto Rico" || prize == "Jamestown" || prize == "Hispaniola" || prize == "Montreal" || prize == "Charlesbourg" || prize == "Cuba") {
-		    goldenrod = "";
-		  }
 		  if (show_hits_as_goldenrod == false) { goldenrod = ""; }
-
 
 		  return `
 	    	    <div class="new-world-row ${row_css}">

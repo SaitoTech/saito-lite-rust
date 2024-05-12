@@ -1938,11 +1938,19 @@ if (relief_siege == 1) {
     //
     // unbind in all cases except where OPS are max from card
     //
-    let expected_ops = this.game.deck[0].cards[card].ops;
-    if (expected_ops != ops || ops == null || card == "") {
+    if (card == "") {
       this.unbindBackButtonFunction();
+    } else {
+try {
+      let expected_ops = this.game.deck[0].cards[card].ops;
+      if (expected_ops != ops || ops == null || card == "") {
+        this.unbindBackButtonFunction();
+      }
+} catch (err) {
+  // probably mandatory card already removed from deck
+  this.unbindBackButtonFunction();
+}
     }
-
 
     //
     // cards left

@@ -446,6 +446,14 @@
     this.debaters_overlay.render();
   }
 
+  displayExplorers() {
+    this.explorers_overlay.render();
+  }
+
+  displayConquistadors() {
+    this.conquistadors_overlay.render();
+  }
+
   displayPersia() {
     let obj = document.querySelector("#persia");
     obj.style.display = "block";
@@ -469,38 +477,6 @@
   hideIreland() {
     let obj = document.querySelector("#ireland");
     obj.style.display = "none";
-  }
-
-  displayExplorers() {
-
-    let html = `<div class="personage_overlay" id="personage_overlay">`;
-    let f = ["hapsburg","france","england"];
-    for (let i = 0; i < f.length; i++) {
-      let x = this.returnAvailableExplorers(f[i]);
-      for (let z = 0; z < x.length; z++) {
-        html += `	<div class="personage_tile${z}" data-id="${this.explorers[x[z]].type}" style="background-image:url('${this.explorers[x[z]].img}')"></div>`;
-      }
-    }
-    html += `</div>`;
-
-    this.overlay.showOverlay(html);
-
-  }
-
-  displayConquistadors() {
-
-    let html = `<div class="personage_overlay" id="personage_overlay">`;
-    let f = ["hapsburg","france","england"];
-    for (let i = 0; i < f.length; i++) {
-      let x = this.returnAvailableConquistadors(f[i]);
-      for (let z = 0; z < x.length; z++) {
-        html += `	<div class="personage_tile${z}" data-id="${this.conquistadors[x[z]].type}" style="background-image:url('${this.conquistadors[x[z]].img}')"></div>`;
-      }
-    }
-    html += `</div>`;
-
-    this.overlay.showOverlay(html);
-
   }
 
   displayPregnancyChart() {

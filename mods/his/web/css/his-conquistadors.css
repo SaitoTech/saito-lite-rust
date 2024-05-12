@@ -1,0 +1,29 @@
+.conquistador-card {
+	height: 25rem;
+	width: 25rem;
+	background-size: cover;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.conquistadors-tile {
+	height: 20rem;
+	width: 20rem;
+	background-size: cover;
+}
+
+.conquistadors-tile.opaque {
+	opacity: 0.6;
+}
+
+.conquistadors-overlay {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+	align-content: start;
+	min-width: 90vw;
+	max-width: 91vw;
+	min-height: 80vh;
+	max-height: 90vh;
+}
+
+
