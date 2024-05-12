@@ -1,6 +1,9 @@
 
   /* override default */
+/* -- disablingwhen adding back button, deleteif OK
   updateStatus(str, force = 0) {
+
+console.log("override default-- update status");
 
     this.updateControls("");
 
@@ -29,7 +32,6 @@
       console.warn("Error Updating Status: ignoring: " + err);
     }
   } 
-
-
+*/
 
 

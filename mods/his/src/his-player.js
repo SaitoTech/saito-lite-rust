@@ -1,4 +1,15 @@
- 
+
+  cancelBackButtonFunction() {
+    this.hud.back_button = false;
+    this.hud.back_button_callback = null;
+  }       
+  unbindBackButtonFunction() {
+    this.cancelBackButtonFunction();
+  } 
+  bindBackButtonFunction(mycallback) {
+    this.hud.back_button = true;
+    this.hud.back_button_callback = mycallback;
+  }   
 
   returnArrayOfPlayersInFieldBattle() {
     if (this.game.state.field_battle.spacekey) {
@@ -1005,7 +1016,7 @@ if (this.game.state.events.cramner_active == 1) {
 
   }
 
-  playerSelectFactionWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
+  playerSelectFactionWithFilter(msg, filter_func, mycallback = null, cancel_func = null, permit_no_selection = false) {
 
     let his_self = this;
     let factions = this.returnImpulseOrder();
@@ -1019,6 +1030,7 @@ if (this.game.state.events.cramner_active == 1) {
     for (let i = 0; i < f.length; i++) {
       html += `<li class="option" id="${f[i]}">${f[i]}</li>`;
     }
+    if (permit_no_selection){ html += `<li class="option" id="none">none</li>`; }
     html += "</ul>";
 
     his_self.updateStatusWithOptions(msg, html);
@@ -1034,7 +1046,7 @@ if (this.game.state.events.cramner_active == 1) {
     return 0;
   }
 
-  playerFactionSelectCardWithFilter(faction, msg, filter_func, mycallback = null, cancel_func = null) {
+  playerFactionSelectCardWithFilter(faction, msg, filter_func, mycallback = null, cancel_func = null, permit_no_selection = false) {
 
     let cards = [];
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
@@ -1043,6 +1055,10 @@ if (this.game.state.events.cramner_active == 1) {
       if (filter_func(this.game.deck[0].fhand[faction_hand_idx][i])) {
 	cards.push(this.game.deck[0].fhand[faction_hand_idx][i]);
       }
+    }
+
+    if (permit_no_selection) {
+      cards.push("pass");
     }
 
     this.updateStatusAndListCards(msg, cards);
@@ -1256,6 +1272,13 @@ if (this.game.state.events.cramner_active == 1) {
 
   playerTurn(faction, selected_card=null) {
 
+    //   
+    // back button should return us here, so unbind if here
+    //
+    this.unbindBackButtonFunction();
+
+
+
     this.startClock();
 
     let his_self = this;
@@ -1379,16 +1402,17 @@ if (this.game.state.events.cramner_active == 1) {
       // if faction is England and Mary I is ruler, we have 50% 
       //
       if (this.game.players.length > 2 && faction == "england" && this.game.state.leaders.mary_i == 1 && this.game.deck[0].cards[card].ops >= 2) {
-	let x = this.rollDice(6);
-	if (x >= 4) {
-	  this.addMove("mary_i_subverts_protestantism\t"+card+"\t"+x);
-	}
+	this.addMove("decide_if_mary_i_subverts_protestantism_in_6P\t"+card);
       }
 
       if (this.game.players.length == 2 && faction == "protestant" && this.game.state.leaders.mary_i) {
 	this.addMove("decide_if_mary_i_subverts_protestantism_in_2P");
       }
 
+      //
+      // set back button to move us back here
+      //
+      this.bindBackButtonFunction(() => { this.moves = []; this.playerTurn(faction, selected_card); });
       this.playerPlayCard(card, this.game.player, faction);
     });  
 
@@ -1774,7 +1798,7 @@ if (relief_siege == 1) {
   }
 
   playerPlayCard(card, player, faction) {
-    
+  
     //
     // cards left
     //
@@ -1807,6 +1831,7 @@ if (relief_siege == 1) {
     } catch (err) {}
 
     if (event_this) {
+      this.unbindBackButtonFunction();
       this.addMove("remove\t"+faction+"\t"+card);
       this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
       this.playerPlayEvent(card, faction);
@@ -1825,8 +1850,8 @@ if (relief_siege == 1) {
       html    += `</ul>`;
 
       let pick_card_function = () => {
-        this.updateStatusWithOptions(`Playing ${this.popup(card)}`, html, true);
-        this.bindBackButtonFunction(() => { this.playerTurn(faction); });
+
+        this.updateStatusWithOptions(`Playing ${this.popup(card)}`, html);
         this.attachCardboxEvents((user_choice) => {
           if (user_choice === "ops") {
             let ops = this.game.deck[0].cards[card].ops;
@@ -1834,6 +1859,7 @@ if (relief_siege == 1) {
             return;
           }
           if (user_choice === "event") {
+            this.unbindBackButtonFunction();
             if (this.game.deck[0].cards[card].warn.includes(faction)) {
               let c = confirm("Unorthodox! Are you sure you want to event this card?");
               if (!c) {
@@ -1869,7 +1895,7 @@ if (relief_siege == 1) {
 
     let attachEventsToMenuOptions = () => {
 
-      this.updateStatusWithOptions(`${this.returnFactionName(faction)}: ${ops} ops remaining`, html, false);
+      this.updateStatusWithOptions(`${this.returnFactionName(faction)}: ${ops} ops remaining`, html);
       this.attachCardboxEvents(async (user_choice) => {      
 
 	his_self.menu_overlay.hide();
@@ -1908,6 +1934,15 @@ if (relief_siege == 1) {
   }
 
   async playerPlayOps(card="", faction, ops=null, limit="") {
+
+    //
+    // unbind in all cases except where OPS are max from card
+    //
+    let expected_ops = this.game.deck[0].cards[card].ops;
+    if (expected_ops != ops || ops == null || card == "") {
+      this.unbindBackButtonFunction();
+    }
+
 
     //
     // cards left
@@ -1989,7 +2024,7 @@ if (relief_siege == 1) {
 
 	let attachEventsToMenuOptions = () => {
 
-        his_self.updateStatusWithOptions(`${his_self.returnFactionName(selected_faction)}: ${ops} ops remaining`, html, false);
+        his_self.updateStatusWithOptions(`${his_self.returnFactionName(selected_faction)}: ${ops} ops remaining`, html);
         this.attachCardboxEvents(async (user_choice) => {      
 
 	  his_self.updateStatus("acknowledge");
@@ -2072,7 +2107,7 @@ if (relief_siege == 1) {
                 }
                 html += '</ul>';
 
-                this.updateStatusWithOptions(msg, html, false);
+                this.updateStatusWithOptions(msg, html);
                 this.attachCardboxEvents(async (uc) => {      
 
 	          let ops_to_spend = parseInt(uc);
@@ -2149,7 +2184,7 @@ if (relief_siege == 1) {
 
       let attachEventsToMenuOptions = () => {
 
-      this.updateStatusWithOptions(`${this.returnFactionName(faction)}: ${ops} ops remaining`, html, false);
+      this.updateStatusWithOptions(`${this.returnFactionName(faction)}: ${ops} ops remaining`, html);
       this.attachCardboxEvents(async (user_choice) => {      
 
 	his_self.updateStatus("acknowledge");
@@ -2181,7 +2216,7 @@ if (relief_siege == 1) {
           }
           html += '</ul>';
 
-          this.updateStatusWithOptions(msg, html, false);
+          this.updateStatusWithOptions(msg, html);
           this.attachCardboxEvents(async (uc) => {      
 
 	    let ops_to_spend = parseInt(uc);
@@ -4813,12 +4848,15 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	i--;
       } else {
 	let s = his_self.game.spaces[spaces_with_infantry[i]];
+	let any_valid_moves = false;
         for (let z = 0; z < s.ports.length; z++) {
-          if (his_self.doesFactionHaveNavalUnitsInSpace(faction, s.ports[z]) == 0) {
-	    spaces_with_infantry.splice(i, 1);
-	    i--;
-	    z = s.ports.length + 2;
+          if (his_self.doesFactionHaveNavalUnitsInSpace(faction, s.ports[z]) == 1) {
+	    any_valid_moves = true;
 	  }
+	}
+	if (!any_valid_moves) {
+	  spaces_with_infantry.splice(i, 1);
+	  i--;
 	}
       }
     }

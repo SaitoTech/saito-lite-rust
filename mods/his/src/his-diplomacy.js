@@ -194,7 +194,7 @@
   }
 
   canPlayerReturnCapturedArmyLeader(his_self, player, faction) {
-    let p = his_self.returnPlayerControllingFaction(faction);
+    let p = his_self.returnPlayerCommandingFaction(faction);
     for (let z = 0; z  < his_self.game.state.players_info[p-1].captured.length; z++) { 
       if (faction == his_self.game.state.players_info[p-1].capturing_faction) { return 1; }
     }
@@ -368,7 +368,7 @@
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
       if (faction != io[i]) {
-	if (his_self.game.state.cards_issued[action2] < 2) {
+	if (his_self.game.state.cards_issued[io[i]] < 2) {
           html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
         }
       }
@@ -477,7 +477,7 @@
     let io = his_self.returnDiplomacyImpulseOrder(faction);
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
-      if (faction != io[i] && his_self.returnPlayerControllingFaction(faction) != his_self.returnPlayerControllingFaction(io[i])) {
+      if (faction != io[i] && his_self.returnPlayerCommandingFaction(faction) != his_self.returnPlayerCommandingFaction(io[i])) {
         html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
       }
     }

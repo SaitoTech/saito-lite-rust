@@ -1976,53 +1976,11 @@ try {
         let owner = this.game.spaces[key].political;
         if (owner == "") { owner = this.game.spaces[key].home; }
         owner = this.returnControllingPower(owner);
-        if (owner == this.factions[faction].key) {
+        if (owner == faction) {
           controlled_keys++;
         }
       }
     }
-
-/********* TODO - remove if no problems as OWNER check above 
-    //
-    // minor allied powers
-    //
-    if (faction === this.returnAllyOfMinorPower("genoa")) {
-      for (let key in this.game.spaces) {
-        if (this.game.spaces[key].type === "key") {
-          if (this.game.spaces[key].political === "genoa" || (this.game.spaces[key].political === "" && this.game.spaces[key].home === "genoa")) {
-            controlled_keys++;
-          }
-        }
-      }
-    }
-    if (faction === this.returnAllyOfMinorPower("scotland")) {
-      for (let key in this.game.spaces) {
-        if (this.game.spaces[key].type === "key") {
-          if (this.game.spaces[key].political === "scotland" || (this.game.spaces[key].political === "" && this.game.spaces[key].home === "scotland")) {
-            controlled_keys++;
-          }
-        }
-      }
-    }
-    if (faction === this.returnAllyOfMinorPower("hungary")) {
-      for (let key in this.game.spaces) {
-        if (this.game.spaces[key].type === "key") {
-          if (this.game.spaces[key].political === "hungary" || (this.game.spaces[key].political === "" && this.game.spaces[key].home === "hungary")) {
-            controlled_keys++;
-          }
-        }
-      }
-    }
-    if (faction === this.returnAllyOfMinorPower("venice")) {
-      for (let key in this.game.spaces) {
-        if (this.game.spaces[key].type === "key") {
-          if (this.game.spaces[key].political === "venice" || (this.game.spaces[key].political === "" && this.game.spaces[key].home === "venice")) {
-            controlled_keys++;
-          }
-        }
-      }
-    }
-***************/
 
     return controlled_keys;
   }
@@ -2166,7 +2124,7 @@ try {
       left : 3750 ,
       name : "Ionian Sea" ,
       ports : ["malta" , "messina" , "coron", "lepanto" , "corfu" , "taranto" ] ,
-      neighbours : ["black","aegean","adriatic"] ,
+      neighbours : ["barbary","africa","aegean","adriatic"] ,
     }
     seas['adriatic'] = {
       top : 1790 ,
@@ -3223,7 +3181,8 @@ try {
       political: "",
       religion: "other",
       ports: ["aegean"],
-      neighbours: ["larissa","edirne"],
+      neighbours: ["sofia","larissa","edirne"],
+      pass: ["sofia"],
       language: "other",
       type: "key"
     }
@@ -3310,8 +3269,8 @@ try {
       home: "ottoman",
       political: "",
       religion: "other",
-      neighbours: ["nicopolis","nezh","edirne"],
-      pass: ["nicopolis"],
+      neighbours: ["salonika","nicopolis","nezh","edirne"],
+      pass: ["salonika","nicopolis"],
       language: "other",
       type: "town"
     }

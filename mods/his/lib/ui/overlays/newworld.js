@@ -123,6 +123,7 @@ class NewWorldOverlay {
 		if (stage === "results") {
 
 		  let img = "";
+		  let goldenrod = "";
 		  let total_hits = "?";
 		  let row_css = "";
 		  let prize = obj.prize;
@@ -135,7 +136,6 @@ class NewWorldOverlay {
 		  if (obj.killed == 1) { row_css += " killed"; }
 		  if (obj.goldenrod == 1) { goldenrod = "goldenrod"; }
 
-		  let goldenrod = "";
  		  if (prize.length > 3 && prize.indexOf("destroyed") == -1 && prize.indexOf("eaten") == -1 && prize.indexOf("lost") == -1 && prize.indexOf("killed") == -1) {
 		    goldenrod = "goldenrod";
 		  }

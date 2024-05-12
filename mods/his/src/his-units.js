@@ -288,6 +288,15 @@
       }
     }
 
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      let c = this.game.state.players_info[i].captured;
+      for (let ii = 0; ii < c.length; ii++) {
+        if (c[ii].leader == leader) {
+	  c.splice(ii, 1);
+	}
+      }
+    }
+
   }
 
 

@@ -953,6 +953,23 @@ if (this.game.options.scenario == "is_testing") {
         }
 
 
+
+        if (mv[0] === "decide_if_mary_i_subverts_protestantism_in_6P") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let card = mv[1];
+
+          let x = this.rollDice(6);
+          if (x >= 4) {
+            this.game.queue.push("mary_i_subverts_protestantism\t"+card+"\t"+x);
+            this.game.queue.push("NOTIFY\t"+this.popup("021") + ": Mary I acts against Protestantism");
+          }
+          this.game.queue.push("NOTIFY\t"+this.popup("021") + ": Mary I rolls " + x);
+	  return 1;
+
+	}
+
         if (mv[0] === "decide_if_mary_i_subverts_protestantism_in_2P") {
 
 	  this.game.queue.splice(qe, 1);
@@ -1510,11 +1527,12 @@ if (this.game.options.scenario == "is_testing") {
 	if (mv[0] === "remove_conquest") {
 	  let faction = mv[1];
 	  for (let i = 0; i < this.game.state.conquests.length; i++) {
-	    if (this.game.state.round == this.game.state.conquests[i].round && this.game.state.conquests[i] == faction) {
+	    if (this.game.state.round == this.game.state.conquests[i].round && this.game.state.conquests[i].faction == faction) {
 	      this.game.state.conquests.splice(i, 1);
 	    }
 	  }
     	  this.game.queue.splice(qe, 1);
+	  this.displayNewWorld();
 	  return 1;
 	}
 	if (mv[0] === "remove_exploration") {
@@ -1524,6 +1542,7 @@ if (this.game.options.scenario == "is_testing") {
 	      this.game.state.explorations.splice(i, 1);
 	    }
 	  }
+	  this.displayNewWorld();
     	  this.game.queue.splice(qe, 1);
 	  return 1;
 	}
@@ -1534,6 +1553,7 @@ if (this.game.options.scenario == "is_testing") {
 	      this.game.state.colonies.splice(i, 1);
 	    }
 	  }
+	  this.displayNewWorld();
     	  this.game.queue.splice(qe, 1);
 	  return 1;
 	}
@@ -5196,18 +5216,24 @@ try {
 
 	  if (ap.tmp_roll_first == 1 && dp.tmp_roll_first != 1) {
 	    his_self.game.state.naval_battle.attacker_hits_first = 1;
-	    his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.defender_faction);
-	    his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.attacker_faction);
-	    his_self.game.queue.push("ACKNOWLEDGE\tProceed to Hits Assignment");
+	    if (attacker_hits > 0 || defender_hits > 0) {
+	      his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.defender_faction);
+	      his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.attacker_faction);
+	      his_self.game.queue.push("ACKNOWLEDGE\tProceed to Hits Assignment");
+	    }
 	  } else if (ap.tmp_roll_first != 1 && dp.tmp_roll_first == 1) {
-	    his_self.game.state.naval_battle.defender_hits_first = 1;
-	    his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.attacker_faction);
-	    his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.defender_faction);
-	    his_self.game.queue.push("ACKNOWLEDGE\tProceed to Hits Assignment");
+	    if (attacker_hits > 0 || defender_hits > 0) {
+	      his_self.game.state.naval_battle.defender_hits_first = 1;
+	      his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.attacker_faction);
+	      his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.defender_faction);
+	      his_self.game.queue.push("ACKNOWLEDGE\tProceed to Hits Assignment");
+	    }
 	  } else {
-	    his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.attacker_faction);
-	    his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.defender_faction);
-	    his_self.game.queue.push("ACKNOWLEDGE\tProceed to Hits Assignment");
+	    if (attacker_hits > 0 || defender_hits > 0) {
+	      his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.attacker_faction);
+	      his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.defender_faction);
+	      his_self.game.queue.push("ACKNOWLEDGE\tProceed to Hits Assignment");
+	    }
 	  }
 
 	  //
@@ -5684,9 +5710,9 @@ try {
 	  // this should stop execution while we are looking at the pre-field battle overlay
 	  //
 	  let from_whom = his_self.returnArrayOfPlayersInSpacekey(space.key);
-if (from_whom.includes(this.game.players[this.game.player-1])) {
-	  his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
-}
+	  if (from_whom.includes(this.game.players[this.game.player-1])) {
+	    his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+	  }
 	  his_self.game.queue.push("field_battle_assign_hits_render");
 	  if (is_janissaries_possible) {
 	    his_self.game.queue.push("counter_or_acknowledge\tOttomans considering playing Janissaries\tjanissaries\t"+space.key);
@@ -7382,10 +7408,8 @@ console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space
 
 	  his_self.updateLog("Piracy rolls: " + JSON.stringify(piracy_rolls));
 
-
-
 	  //
-	  // create piracy object foroverlay
+	  // create piracy object for overlay
 	  //
 	  let pobj = {
 	    anti_piracy_rolls : anti_piracy_rolls,
@@ -7395,7 +7419,6 @@ console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space
 	    piracy_faction : piracy_faction,
 	    piracy_unittype : piracy_unittype,
 	  };
-
 
 	  this.piracy_overlay.render(pobj);
 
@@ -8382,22 +8405,30 @@ console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space
 	  // are assigned but after they have been rolled.
           //
           if (ap.tmp_roll_first == 1 && dp.tmp_roll_first != 1) {
-            his_self.game.state.assault.attacker_hits_first = 1;
-            his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.defender_faction);
-            his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.attacker_faction);
+	    if (attacker_hits > 0 || defender_hits > 0) {
+              his_self.game.state.assault.attacker_hits_first = 1;
+              his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.defender_faction);
+              his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.attacker_faction);
+	      his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+	    }
           } else if (ap.tmp_roll_first != 1 && dp.tmp_roll_first == 1) {
-            his_self.game.state.field_battle.defender_hits_first = 1;
-            his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.attacker_faction);
-            his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.defender_faction);
+	    if (attacker_hits > 0 || defender_hits > 0) {
+              his_self.game.state.field_battle.defender_hits_first = 1;
+              his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.attacker_faction);
+              his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.defender_faction);
+	      his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+            }
           } else {
-            his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.attacker_faction);
-            his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.defender_faction);
+	    if (attacker_hits > 0 || defender_hits > 0) {
+              his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.attacker_faction);
+              his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.defender_faction);
+	      his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+            }
           }
 
           //
           // this should stop execution while we are looking at the pre-field battle overlay
           //
-	  his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
 	  let from_whom = his_self.returnArrayOfPlayersInSpacekey(space.key);
           his_self.game.queue.push("assault_assign_hits_render");
           his_self.game.queue.push("assault_show_hits_render");
@@ -10971,6 +11002,11 @@ if (this.game.state.round == 2) {
 	  let reason = mv[5];
 	  let his_self = this;
 
+	  //
+	  // factions cannot intervene against themselves
+	  //
+	  if (faction == enemy) { return 1; }
+
 	  let p = this.returnPlayerOfFaction(faction);
 	  if (p == 0) { return 1; }
 
@@ -12052,7 +12088,7 @@ console.log(faction + " -- " + player + " -- " + this.game.player);
 
 	    let mycallback = [];
 
-	    if (player_last_move == "move") {
+	    if (player_last_move == "move" && (card != "002" && ops != 5)) { // HRE moves asevent, so disable on first ops played
 	      if (player_last_spacekey != "") {
 		if (this.game.spaces[player_last_spacekey]) {
 		  if (!this.isSpaceBesieged(this.game.spaces[player_last_spacekey])) {
