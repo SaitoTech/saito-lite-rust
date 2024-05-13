@@ -53,7 +53,7 @@ class Chat extends ModTemplate {
 		this.communityGroup = null;
 		this.communityGroupName = 'Saito Community Chat';
 
-		this.debug = false;
+		this.debug = true;
 
 		this.chat_manager = null;
 
@@ -1475,9 +1475,9 @@ class Chat extends ModTemplate {
 		}
 
 		if (this.debug) {
-			console.log('Receive Chat Transaction:');
-			console.log(JSON.parse(JSON.stringify(tx)));
-			console.log(JSON.parse(JSON.stringify(txmsg)));
+			// console.log('Receive Chat Transaction:');
+			// console.log(JSON.parse(JSON.stringify(tx)));
+			// console.log(JSON.parse(JSON.stringify(txmsg)));
 		}
 
 		for (let blocked of this.black_list) {
