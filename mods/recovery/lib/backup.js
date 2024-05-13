@@ -15,6 +15,18 @@ class Backup {
 			this.mod,
 			'#backup-template #saito-overlay-loader'
 		);
+
+		app.connection.on('recovery-backup-loader-overlay-render-request',
+			async (obj) => {
+				let msg = null;
+				if (typeof obj.msg != 'undefined') {
+					msg = obj.msg;
+				}
+
+				this.render();
+				await this.showLoaderOverlay(msg);
+			}
+		);
 	}
 
 	render() {
@@ -42,7 +54,7 @@ class Backup {
 		this.close();
 	}
 
-	close() {
+	async close() {
 		this.modal_overlay.close();
 	}
 
@@ -51,7 +63,7 @@ class Backup {
 
 		document.querySelector(
 			'#backup-template .saito-overlay-form-submit'
-		).onclick = (e) => {
+		).onclick = async (e) => {
 			e.preventDefault();
 			let email = document.querySelector(
 				'#backup-template .saito-overlay-form-email'
@@ -65,44 +77,8 @@ class Backup {
 				return;
 			}
 
-			if (document.querySelector('.saito-overlay-form-text')) {
-				document.querySelector('.saito-overlay-form-text').remove();
-			}
-
-			
-
-			let div = document.querySelector(
-				'#backup-template .saito-overlay-subform'
-			);
-			if (div) {
-				div.innerHTML = `
-				<div id="saito-overlay-loader"></div>
-				<div class="saito-overlay-form-subtext">
-				    Your browser is encrypting your wallet with the password 
-				    provided. Once completed, it will send a copy of this 
-				    wallet to your email address.
-	            </div>
-
-				<div class="saito-overlay-form-subtext">
-					This entire process usually takes no more than a minute. 
-					Once done you will also be able to login to your account 
-					from any computer. Please be patient while the process finishes.
-          		</div>
-          		`;
-				div.classList.add('centerme');
-			}
-
-			this.loader.render();
-
-			let button = document.querySelector(
-				'#backup-template .saito-overlay-form-submit'
-			);
-			if (button) {
-				button.innerHTML = 'Uploading...';
-				button.onclick = null;
-			}
-
-			this.mod.backupWallet(email, password);
+			await this_self.showLoaderOverlay();
+			this_self.mod.backupWallet(email, password);
 		};
 	}
 
@@ -110,19 +86,21 @@ class Backup {
 	// This is called when we receive the backup wallet tx that we sent
 	//
 	async success() {
+		let this_self = this;
 		siteMessage('Wallet backed up on blockchain', 4000);
-		this.app.options.wallet.backup_required_msg = 0;
-		this.close();
-		await this.app.wallet.saveWallet();
-		if (this.success_callback) {
-			this.success_callback();
-		}
+		
+		setTimeout(async function(){
+			this_self.app.options.wallet.backup_required_msg = 0;
+			await this_self.app.wallet.saveWallet();
+			await this_self.close();
+
+			if (this_self.success_callback) {
+				this_self.success_callback();
+			}
+		}, 3000);
 	}
 
 	callBackFunction(){
-		console.log('inside backup.js callback ////');
-		console.log('this.app.wallet.backup_required: ', this.app.options.wallet.backup_required_msg);
-
 		let this_self = this;
 		if (this.app.options.wallet.backup_required_msg == 1) {
 			this_self.app.connection.emit(
@@ -139,6 +117,46 @@ class Backup {
 			);
 		} else {
 			this.app.connection.emit('saito-header-update-message', {});	
+		}
+	}
+
+	async showLoaderOverlay(msg = null){
+		this.app.options.wallet.backup_required_msg = 0;
+		await this.app.wallet.saveWallet();
+
+		let div = document.querySelector(
+			'#backup-template .saito-overlay-subform'
+		);
+		if (div) {
+			if (msg == null) {
+				msg = `
+					<div id="saito-overlay-loader"></div>
+					<div class="saito-overlay-form-subtext">
+					    Your browser is encrypting your wallet with the password 
+					    provided. Once completed, it will send a copy of this 
+					    wallet to your email address.
+		            </div>
+
+					<div class="saito-overlay-form-subtext">
+						This entire process usually takes no more than a minute. 
+						Once done you will also be able to login to your account 
+						from any computer. Please be patient while the process finishes.
+		      		</div>
+	      		`;
+			}
+
+			div.innerHTML = msg;
+			div.classList.add('centerme');
+		}
+
+		this.loader.render();
+
+		let button = document.querySelector(
+			'#backup-template .saito-overlay-form-submit'
+		);
+		if (button) {
+			button.innerHTML = 'Uploading...';
+			button.onclick = null;
 		}
 	}
 }
