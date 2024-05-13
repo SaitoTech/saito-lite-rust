@@ -829,13 +829,27 @@ class ChatPopup {
 			}
 		};
 
-		this.input.callbackOnUpload = async (filesrc) => {
-			filesrc = await app.browser.resizeImg(filesrc); // (img, dimensions, quality)
+		this.input.callbackOnUpload = async (result) => {
+			let imageUrl;
+
+			if (typeof result === 'string') {
+				let response = await fetch(result);
+				let blob = await response.blob();
+				imageUrl = URL.createObjectURL(blob);
+			} else if (result instanceof File) {
+				imageUrl = URL.createObjectURL(result);
+			} else {
+				throw new Error('Invalid filesrc type');
+			}
+			let resizedImageUrl = await app.browser.resizeImg(imageUrl); // (img, dimensions, quality)
+
 			let img = document.createElement('img');
 			img.classList.add('img-prev');
-			img.src = filesrc;
+			img.src = resizedImageUrl;
+
 			let msg = img.outerHTML;
 			this.input.callbackOnReturn(msg);
+
 			document.querySelector(
 				`${popup_qs} .saito-input .text-input`
 			).value = '';
