@@ -5,7 +5,7 @@ class SettlersActions {
   playerAcknowledgeNotice(msg, mycallback) {
     let html = `<ul><li class="textchoice acknowledge" id="confirmit">continue</li></ul>`;
     try {
-      this.updateStatusWithOptions(`${this.getLastNotice()}<div class="player-notice"><span>${msg}</span></div>`, html);
+      this.updateStatusWithOptions(`${this.getLastNotice()}<div class="player-notice"><span class="acknowledge-message">${msg}</span></div>`, html);
 
       document.querySelectorAll(".acknowledge").forEach((el) => {
         el.onclick = async (e) => {
@@ -125,7 +125,7 @@ class SettlersActions {
       this.updateStatus(`<div class="persistent player-notice"><span>${firstMsg}: ${this.randomMsg()}</span></div>`);
     } else {
       this.updateStatus(
-        `<div class="persistent player-notice"><span>${firstMsg}! You acquired: </span>${notice}</div>`
+        `<div class="persistent player-notice"><span>${firstMsg}! You acquired: </span><div class="hud-status-card-list">${notice}</div></div>`
       );
     }
 

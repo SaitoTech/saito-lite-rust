@@ -30,7 +30,19 @@
 	padding: 0;
 	width: 100%;
 	min-height: 4.5rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
+
+.hud-status-card-list{
+	display: inline-grid;
+	grid-template-columns: repeat(auto-fit, minmax(1.5rem, 1fr));
+	grid-template-rows: 1fr;
+	grid-gap: 1rem;
+	min-width: 8rem;
+}
+
 
 /* hide scrollbars */
 
@@ -107,12 +119,17 @@
 	width: 100%;
 }
 
+.status .player-notice span.acknowledge-message {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
 .player-notice span img {
 	width: 60px;
 	background-color: #456;
 	border-radius: 25%;
 	border: 1px solid #fff8;
-	margin-left: 1rem;
 }
 
 @media only screen and (max-width: 600px) and (orientation: portrait) {

@@ -25,7 +25,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
       `;
 
 	if (winner) {
-		html += `<h1>Game Over:<br>${winner} wins!</h1>`;
+		html += `<h1>${winner} wins!</h1>`;
 	} 
 
 
@@ -42,24 +42,20 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
               	<img src="/settlers/img/icons/city.png">
               	<div class="settlers-stats-multiplier">&times;2</div>
               </div>
-							<div class="settlers-stats-vp title="Victory Point Card">
+							<div class="settlers-stats-vp" title="Victory Point Card">
 								${stats.mod.vp.img}
 							</div>
-							<div class="settlers-stats-vp" title="Longest Road">`;
-	if (stats.mod.game.state.longestRoad.player == 0){
-		html += `${stats.mod.longest.svg}
-							<div class="settlers-stats-vp-count">${stats.mod.longest.min}</div>
-							<div class="settlers-stats-multiplier">+${stats.mod.longest.value}</div>`;
-	}
-
-	html +=		`</div>
-							<div class="settlers-stats-vp" title="Largest Army">`;
-	if (stats.mod.game.state.largestArmy.player == 0){
-		html += `${stats.mod.s.img}
-						<div class="settlers-stats-vp-count">3</div>
-						<div class="settlers-stats-multiplier">+2</div>
+							<div class="settlers-stats-vp" title="Longest Road">
+								${stats.mod.longest.svg}
+								<div class="settlers-stats-vp-count">${Math.max(stats.mod.longest.min, stats.mod.game.state.longestRoad.size)}</div>
+								<div class="settlers-stats-multiplier">+${stats.mod.longest.value}</div>
+							</div>
+							<div class="settlers-stats-vp" title="Largest Army">
+								${stats.mod.s.img}
+							<div class="settlers-stats-vp-count">${Math.max(3, stats.mod.game.state.largestArmy.size)}</div>
+							<div class="settlers-stats-multiplier">+2</div>
 		`;
-	}
+	
 		
 								 
 	html +=			`</div>
@@ -98,14 +94,18 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 			html += `<div class="settlers-stat-num"></div>`;
 		}	
   
-  	html += `<div class="settlers-stat-num">${stats.mod.game.state.players[i].road}</div>`;
+  	if (stats.mod.game.state.longestRoad.player == i+1 ){
+  		html += `<div class="settlers-stat-num"><i class="fa-solid fa-check"></i></div>`;	
 
-  	if (stats.mod.game.state.players[i].knights > 0){
-  		html += `<div class="settlers-stat-num">${stats.mod.game.state.players[i].knights}</div>`;
   	}else{
-  		html += `<div class="settlers-stat-num"></div>`;
+  		html += `<div class="settlers-stat-num"></div>`;	
   	}
 
+		if (stats.mod.game.state.largestArmy.player == i+1){
+  		html += `<div class="settlers-stat-num"><i class="fa-solid fa-check"></i></div>`;	
+		}else{
+  		html += `<div class="settlers-stat-num"></div>`;	
+		}
 
 	  html += `<div class="settlers-stat-num">${stats.mod.game.state.players[i].vp}</div></div>`;
   }
@@ -229,7 +229,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 		html += "</div>";
 
 		for (let j = stats.mod.game.stats.history.length - 1; j >= 0; j--){
-			html += `<div class="settlers-hist-row">
+			html += `<div class="settlers-hist-row${stats.mod.game.stats.history[j].roll == 7 ? " robber" :""}">
 						<div class="roll">
 							<span>${j+1}: </span>
 							<span>${stats.mod.game.stats.history[j].roll}</span>

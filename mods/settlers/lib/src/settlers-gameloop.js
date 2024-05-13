@@ -108,7 +108,7 @@ class SettlersGameloop {
             this.game.state.canPlayCard = true;
           }
 
-          this.updateStatus(`<div class="persistent player-notice"><span>You bought a ${html}</span></div>`);
+          this.updateStatus(`<div class="persistent player-notice"><span>You bought ${html}</span></div>`);
         }
         return 1;
       }

@@ -536,6 +536,7 @@ class RedSquare extends ModTemplate {
   addPeer(peer) {
     //For "localhost"
     let publicKey = peer?.publicKey || this.publicKey;
+    let tweet_limit = (peer?.publicKey) ? 20 : 10;
 
     let peer_idx = -1;
 
@@ -550,7 +551,7 @@ class RedSquare extends ModTemplate {
         publicKey: publicKey,
         tweets_earliest_ts: new Date().getTime(),
         tweets_latest_ts: 0,
-        tweets_limit: 10,
+        tweets_limit: tweet_limit,
       });
     } else {
       this.peers[peer_idx].peer = peer;
