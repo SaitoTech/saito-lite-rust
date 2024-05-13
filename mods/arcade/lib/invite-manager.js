@@ -75,6 +75,7 @@ class InviteManager {
 		app.connection.on(
 			'arcade-continue-game-from-options',
 			async (game_mod) => {
+
 				let id = game_mod.game?.id;
 				if (!id) {
 					return;

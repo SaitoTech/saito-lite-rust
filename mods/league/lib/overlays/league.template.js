@@ -46,11 +46,16 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
             </div>
             <div class="league-overlay-body">
                 <div class="league-overlay-body-content">
-                    <div class="league-overlay-description league-overlay-content-box ${
-	(newPlayer || league.unverified) && isMember
-		? 'hidden'
-		: ''
-}">${league.description}</div>
+                    <div class="league-overlay-description league-overlay-content-box ${(newPlayer || league.unverified) && isMember ? 'hidden'	: ''}">`
+    html +=  league.description;
+    if (!league?.admin && game_mod.publisher_message) {
+		html += `<div id="arcade-game-publisher-message" class="arcade-game-publisher-message">
+      				<span>NOTE: </span>
+      				${game_mod.publisher_message}
+      			</div>`;
+	}
+
+    html +=         `</div>
                     <div class="league-overlay-league-body-games league-overlay-content-box hidden">
                         <div class="league-overlay-games-list league_recent_games"></div>
                     </div>`;
@@ -121,9 +126,15 @@ module.exports = LeagueOverlayTemplate = (app, mod, league) => {
 		html += `<button id="league-chat-button" class="saito-button saito-button-primary">league chat</button>`;
 	}
 
-	html += `<button id="league-overlay-create-game-button" class="saito-button saito-button-primary${
-		league.admin && !isMember ? ' hidden' : ''
-	}">create game</button>
+	html += `<button id="league-overlay-create-game-button" 
+					class="saito-button saito-button-primary${league.admin && !isMember ? ' hidden' : ''}">`;
+	if (game_mod.maxPlayers === 1 && !game_mod.returnSingularGameOption() && !game_mod.returnAdvancedOptions()){
+		html += "play game";
+	}else{
+		html += "create game";
+	}
+
+	html +=`</button>
              </div>
 
             </div>

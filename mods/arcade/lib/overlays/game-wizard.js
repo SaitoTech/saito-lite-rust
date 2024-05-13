@@ -27,17 +27,22 @@ class GameWizard {
 					// we prompt them to continue that one instead of creating a new game
 					//
 					if (game_mod.doWeHaveAnOngoingGame()) {
-						console.log('Found existing game', game_mod.game);
-						app.connection.emit(
-							'arcade-continue-game-from-options',
-							game_mod
-						);
+						if (obj.skip){
+							window.location = `/${game_mod.returnSlug()}/`;
+						}else{
+							console.log('Found existing game', game_mod.game);
+							app.connection.emit(
+								'arcade-continue-game-from-options',
+								game_mod
+							);
+						}
 					} else {
 						//Launch game wizard
 						this.game_mod = game_mod;
 						this.obj = obj;
 						this.render();
 					}
+
 				} else {
 					salert('Module not found: ' + obj.game);
 				}
@@ -83,6 +88,17 @@ class GameWizard {
 		}
 
 		this.attachEvents();
+
+		if (this.obj?.skip){
+			if (this.game_mod.maxPlayers === 1){
+				if(!this.game_mod.returnSingularGameOption() && !this.game_mod.returnAdvancedOptions()){
+					let btn = document.querySelector(".game-invite-btn");
+					if (btn){
+						btn.click();
+					}
+				}
+			} 
+		}
 	}
 
 	//

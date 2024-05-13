@@ -93,7 +93,8 @@ class LeagueOverlay {
 				} else {
 					// default games skip as invites are open
 					this.app.connection.emit('arcade-launch-game-wizard', {
-						game: this.league.game
+						game: this.league.game,
+						skip: 1,
 					});
 				}
 			};
