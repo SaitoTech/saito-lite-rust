@@ -506,10 +506,15 @@ class ChatPopup {
 							text += child.textContent;
 						}
 						//We may want to also pull inner text from element nodes as long as they aren't the hidden buttons
-						if (child.nodeType === 1){
-							if (child.classList.contains("saito-treated-link")){
+						if (child.nodeType === 1) {
+							if (
+								child.classList.contains('saito-treated-link')
+							) {
 								text += child.href;
-							}else if (!child.classList.contains('saito-userline-reply') &&
+							} else if (
+								!child.classList.contains(
+									'saito-userline-reply'
+								) &&
 								child.nodeName !== 'BLOCKQUOTE'
 							) {
 								text += child.innerText;
@@ -533,8 +538,14 @@ class ChatPopup {
 
 					// Retrieve the 'data-id' attribute from the found parent element
 					let sig = parentElement.getAttribute('data-id');
-					let target = parentElement.closest(".saito-userline").getAttribute('data-id');
-					const newtx = await this.mod.createChatLikeTransaction(this.group, sig, target);
+					let target = parentElement
+						.closest('.saito-userline')
+						.getAttribute('data-id');
+					const newtx = await this.mod.createChatLikeTransaction(
+						this.group,
+						sig,
+						target
+					);
 					if (newtx) {
 						mod.hasSeenTransaction(newtx);
 						mod.receiveChatLikeTransaction(newtx);

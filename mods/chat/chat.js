@@ -1814,7 +1814,7 @@ class Chat extends ModTemplate {
 		} catch (err) {}
 
 		if (this.debug) {
-			console.log('Adding Chat TX to group: ', txmsg);
+			// console.log('Adding Chat TX to group: ', txmsg);
 		}
 
 		let content = txmsg.message || txmsg;
