@@ -2937,15 +2937,16 @@ return;
         return;
       }
 
-      let msg = his_self.returnFactionName(faction) + " - Return Units to Capital?";
+      let msg = his_self.returnFactionName(faction) + " - Return Extra Units to Capital?";
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
         opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
       }
-      opt += `<li class="option" id="finish">finish</li>`;
+      opt += `<li class="option" id="finish">no thanks</li>`;
       opt += '</ul>';
 
       his_self.updateStatusWithOptions(msg, opt);
+      his_self.theses_overlay.pushHudUnderOverlay();
 
       $(".option").off();
       $(".option").on('click', function () {
@@ -3007,6 +3008,7 @@ return;
       }
 
       his_self.movement_overlay.renderForceOpen(mobj, units_to_move, select_units_function, finish_selecting_from_space_function); // no destination interface
+      his_self.movement_overlay.pushHudUnderOverlay();
 
       html += `<li class="option" id="end">finish</li>`;
       html += "</ul>";
@@ -3082,13 +3084,13 @@ return;
         return;
       }
 
-
       if (faction == "protestant") { his_self.theses_overlay.render("german"); }
       if (faction == "papacy") { his_self.theses_overlay.render("italian"); }
       if (faction == "england") { his_self.theses_overlay.render("english"); }
       if (faction == "france") { his_self.theses_overlay.render("french"); }
       if (faction == "hapsburg") { his_self.theses_overlay.render("spanish"); }
       if (faction == "ottoman") { his_self.theses_overlay.render("ottoman"); }
+      his_self.theses_overlay.pushHudUnderOverlay();
 
       his_self.playerSelectSpaceWithFilter(
 
@@ -3120,12 +3122,12 @@ return;
 
     pick_capital_function = function(his_self, pick_capital_function, select_spacekey_function, select_units_function, finish_selecting_from_space_function) {
 
-      let msg = his_self.returnFactionName(faction) + " - Return Units to Capital?";
+      let msg = his_self.returnFactionName(faction) + " - Return Extra Units to Capital?";
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
         opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
       }
-      opt += `<li class="option" id="finish">finish</li>`;
+      opt += `<li class="option" id="finish">no thanks</li>`;
       opt += '</ul>';
 
       if (viable_capitals.length == 0) {
@@ -3134,6 +3136,13 @@ return;
 	return;
       }
 
+      if (faction == "protestant") { his_self.theses_overlay.render("german"); }
+      if (faction == "papacy") { his_self.theses_overlay.render("italian"); }
+      if (faction == "england") { his_self.theses_overlay.render("english"); }
+      if (faction == "france") { his_self.theses_overlay.render("french"); }
+      if (faction == "hapsburg") { his_self.theses_overlay.render("spanish"); }
+      if (faction == "ottoman") { his_self.theses_overlay.render("ottoman"); }
+      his_self.theses_overlay.pushHudUnderOverlay();
       his_self.updateStatusWithOptions(msg, opt);
 
       $(".option").off();
@@ -3193,6 +3202,7 @@ return;
 
 
       his_self.spring_deployment_overlay.render(faction);
+      his_self.spring_deployment_overlay.pushHudUnderOverlay();
 
       this.updateStatusWithOptions(msg, opt);
 
