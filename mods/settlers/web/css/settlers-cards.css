@@ -8,11 +8,16 @@
 	width: 4rem;
 }
 
+
 .player-notice .card.tiny {
 	width: 3rem;
 	height: calc(3rem * 1.4);
 	margin-left: 1rem;
 	transform: rotate(5deg);
+}
+
+.player-notice .hud-status-card-list .card.tiny {
+	margin: unset;
 }
 
 .log .card.tiny {
