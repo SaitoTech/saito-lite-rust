@@ -1,6 +1,6 @@
 const OnePlayerGameTemplate = require('../../lib/templates/oneplayer-gametemplate');
 const SolitrioGameRulesTemplate = require('./lib/solitrio-game-rules.template');
-const SolitrioGameOptionsTemplate = require('./lib/solitrio-game-options.template');
+const SolitrioGameOptions = require('./lib/solitrio-game-options');
 const htmlTemplate = require('./lib/game-html.template');
 
 //////////////////
@@ -25,10 +25,20 @@ class Solitrio extends OnePlayerGameTemplate {
 		return SolitrioGameRulesTemplate(this.app, this);
 	}
 
-	//Single player games don't allow game-creation and options prior to join
-	returnAdvancedOptions() {
-		return SolitrioGameOptionsTemplate(this.app, this);
-	}
+
+	  hasSettings() {
+	    return true;
+	  }
+
+	  loadSettings(container = null) {
+	    if (!container){
+	      this.overlay.show(`<div class="module-settings-overlay"><h2>Solitrio Settings</h2></div>`);
+	      container = ".module-settings-overlay";
+	    }
+	    let as = new SolitrioGameOptions(this.app, this, container);
+	    as.render();
+	  }
+
 
 	initializeGame(game_id) {
 		console.log('SET WITH GAMEID: ' + game_id);
@@ -100,43 +110,14 @@ class Solitrio extends OnePlayerGameTemplate {
 			}
 		});
 		this.menu.addSubMenuOption('game-game', {
-			text: 'Play Mode',
-			id: 'game-play',
-			class: 'game-play',
-			callback: null
-		});
-
-		this.menu.addSubMenuOption('game-play', {
-			text: `Auto ${this.game.options.play_mode == 'auto' ? '✔' : ''}`,
-			id: 'game-confirm-newbie',
-			class: 'game-confirm-newbie',
-			callback: function (app, game_mod) {
-				game_mod.game.options['play_mode'] = 'auto';
-				game_mod.attachEventsToBoard(); //change the click style
-				try {
-					document.querySelector('#game-confirm-newbie').textContent =
-						'Auto ✔';
-					document.querySelector('#game-confirm-expert').textContent =
-						'Manual';
-				} catch (err) {}
+			text: 'Settings',
+			id: 'game-settings',
+			class: 'game-settings',
+			callback: function(app, game_mod){
+				game_mod.loadSettings();
 			}
 		});
 
-		this.menu.addSubMenuOption('game-play', {
-			text: `Manual ${this.game.options.play_mode == 'auto' ? '' : '✔'}`,
-			id: 'game-confirm-expert',
-			class: 'game-confirm-expert',
-			callback: function (app, game_mod) {
-				game_mod.game.options['play_mode'] = 'manual';
-				game_mod.attachEventsToBoard(); //change the click style
-				try {
-					document.querySelector('#game-confirm-newbie').textContent =
-						'Auto';
-					document.querySelector('#game-confirm-expert').textContent =
-						'Manual ✔';
-				} catch (err) {}
-			}
-		});
 
 		this.menu.addSubMenuOption('game-game', {
 			text: 'How to Play',
@@ -160,6 +141,10 @@ class Solitrio extends OnePlayerGameTemplate {
 
 		this.menu.addChatMenu();
 		this.menu.render();
+
+		this.app.connection.on("solitrio-update-settings", ()=> {
+			this.attachEventsToBoard();
+		});
 	}
 
 	returnState() {
@@ -198,8 +183,9 @@ class Solitrio extends OnePlayerGameTemplate {
 	}
 
 	attachEventsToBoard() {
-		console.log(this.game.options);
-		if (this.game.options.play_mode == 'auto') {
+		let play_mode = this.loadGamePreference('solitrio-play-mode') || 'auto';
+		
+		if (play_mode == 'auto') {
 			this.attachEventsToBoardAutomatic();
 		} else {
 			this.attachEventsToBoardManual();
