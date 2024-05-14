@@ -141,10 +141,10 @@ console.log("\n\n\n\n");
           //this.addRegular("independent", "metz", 1);
 // debug break siege
           this.addRegular("independent", "metz", 2);
-          //this.addRegular("independent", "florence", 1);
-	
-	  this.addRegular("papacy", "florence", 3);
-	  this.controlSpace("papacy", "florence");
+          this.addRegular("independent", "florence", 1);	
+
+	  //this.addRegular("papacy", "florence", 3);
+	  //this.controlSpace("papacy", "florence");
 
 	  // DEBATERS
 	  this.addDebater("papacy", "eck-debater");

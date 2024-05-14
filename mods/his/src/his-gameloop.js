@@ -1811,22 +1811,31 @@ if (this.game.options.scenario == "is_testing") {
 	    if (this.game.state.plantations[c.faction] == 1) { x++; }
 	    if (c.name === "Potosi Silver Mines") { x++; }
 
+	    // modify rolls first so colonial governor
+	    if (x >= 8) { 
+	      if (this.game.state.galleons[c.faction] == 1) { x++; }
+	    }
+	    if (x > 4 && x < 9 && c.faction == this.game.state.events.native_uprising) {
+	      x = 2;
+	      this.game.state.events.native_uprising = "";
+	    }
+	    if (x > 4 && x < 9 && c.faction == this.game.state.events.colonial_governor) {
+	      x = 10;
+	      this.game.state.events.colonial_governor = "";
+	    }
 	    if (x <= 4) { 
 	      c.prize = "destroyed";
 	      c.destroyed = 1; 
 	      this.game.state.newworld[c.colony].claimed = 0; 
 	      this.updateLog(`${this.returnFactionName(c.faction)} - Colony Fails`);
 	      if (this.game.player == this.returnPlayerCommandingFaction(c.faction)) {
-	        let msg = this.returnFactionName(faction) + " colony fails...";
+	        let msg = this.returnFactionName(c.faction) + " colony fails...";
 	        this.updateLog(msg);
 	        this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	        this.game.queue.push("display_custom_overlay\tdeserted\t"+msg);
 	      }
 	    }
 
-	    if (x >= 8) { 
-	      if (this.game.state.galleons[c.faction] == 1) { x++; }
-	    }
 
 	    if (x >= 9) { 
 	      c.prize = "bonus card";
@@ -8760,6 +8769,10 @@ console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space
           his_self.game.state.assault.attacker_land_units_remaining = attacker_land_units_remaining;
           his_self.game.state.assault.defender_land_units_remaining = defender_land_units_remaining;
 
+console.log("ASSAULT: ");
+console.log("alur:" + attacker_land_units_remaining);
+console.log("dlur:" + defender_land_units_remaining);
+
 	  //
 	  // attacker and defender both wiped out
 	  //
@@ -8777,7 +8790,7 @@ console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space
 	      }
 	    }
 	    //
-	    // updarte log
+	    // update log
 	    //
 	    this.updateLog("Winner: "+this.returnFactionName(defender_faction));
 	  }
@@ -8861,7 +8874,6 @@ console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space
 	  // check if triggers defeat of Hungary Bohemia
 	  //
           this.triggerDefeatOfHungaryBohemia();
-
 
           return 1;
 
@@ -12397,20 +12409,6 @@ console.log(JSON.stringify(reshuffle_cards));
 
         }
 
-
-
-	if (mv[0] === "assault") {
-
-	  this.game.queue.splice(qe, 1);
-
-	  let faction = mv[1];
-	  let space = mv[2];
-
-	  this.displayVictoryTrack();
-
-	  return 1;
-
-	}
 
 
  	if (mv[0] === "unrest") {

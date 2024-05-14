@@ -2074,7 +2074,7 @@ Habsburg conquistadores:
       this.importExplorer('willoughby', {
            faction           :       "england" ,
            type              :       "willoughby" ,
-           name              :       "Katherine Willoughby",
+           name              :       "Hugh Willoughby",
            personage         :       true,
            img               :       "/his/img/tiles/explorers/Willoughby.svg",
            power	     :       1,
@@ -2474,10 +2474,10 @@ console.log("\n\n\n\n");
           //this.addRegular("independent", "metz", 1);
 // debug break siege
           this.addRegular("independent", "metz", 2);
-          //this.addRegular("independent", "florence", 1);
-	
-	  this.addRegular("papacy", "florence", 3);
-	  this.controlSpace("papacy", "florence");
+          this.addRegular("independent", "florence", 1);	
+
+	  //this.addRegular("papacy", "florence", 3);
+	  //this.controlSpace("papacy", "florence");
 
 	  // DEBATERS
 	  this.addDebater("papacy", "eck-debater");
@@ -11743,51 +11743,54 @@ console.log("selected: " + spacekey);
 	  let faction = mv[1];
 	  let p = his_self.returnPlayerOfFaction(faction);
 
-	  if (faction === "ottoman") {
+	  if (p == his_self.game.player) {
+	    if (faction === "ottoman") {
 
-	    //
-	    // place 2 cavalry in home space not under siege
-	    //
-	    his_self.playerSelectSpaceWithFilter(
-	      "Select Home Space not under Siege",
-	      function(space) {
-	        if (space.besieged) { return 0; }
-	        if (space.type == "electorate" && his_self.game.state.events.schmalkaldic_league != 1) { return 0; }
-	        if (his_self.isSpaceControlled(space, faction)) { return 1; }
-	        return 0;
-	      },
-	      function(spacekey) {
-	        let space = his_self.game.spaces[spacekey];
-                his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+spacekey);
-                his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+spacekey);
-	        his_self.endTurn();
-	      },
-	      null,
-	      true
-	    );
+	      //
+	      // place 2 cavalry in home space not under siege
+	      //
+	      his_self.playerSelectSpaceWithFilter(
+	        "Select Home Space not under Siege",
+	        function(space) {
+	          if (space.besieged) { return 0; }
+	          if (space.type == "electorate" && his_self.game.state.events.schmalkaldic_league != 1) { return 0; }
+	          if (his_self.isSpaceControlled(space, faction)) { return 1; }
+	          return 0;
+	        },
+	        function(spacekey) {
+	          let space = his_self.game.spaces[spacekey];
+                  his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+spacekey);
+                  his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+spacekey);
+	          his_self.endTurn();
+	        },
+	        null,
+	        true
+	      );
 
-	  } else {
+	    } else {
 
-	    //
-	    // place 2 mercenaries in home space not under siege
-	    //
-	    his_self.playerSelectSpaceWithFilter(
-	      "Select Home Space not under Siege",
-	      function(space) {
-	        if (space.besieged) { return 0; }
-	        if (space.type == "electorate" && his_self.game.state.events.schmalkaldic_league != 1) { return 0; }
-	        if (his_self.isSpaceControlled(space, faction)) { return 1; }
-	        return 0;
-	      },
-	      function(spacekey) {
-	        let space = his_self.game.spaces[spacekey];
-                his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+spacekey);
-                his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+spacekey);
-	        his_self.endTurn();
-	      }
-	    );
+	      //
+	      // place 2 mercenaries in home space not under siege
+	      //
+	      his_self.playerSelectSpaceWithFilter(
+	        "Select Home Space not under Siege",
+	        function(space) {
+	          if (space.besieged) { return 0; }
+	          if (space.type == "electorate" && his_self.game.state.events.schmalkaldic_league != 1) { return 0; }
+	          if (his_self.isSpaceControlled(space, faction)) { return 1; }
+	          return 0;
+	        },
+	        function(spacekey) {
+	          let space = his_self.game.spaces[spacekey];
+                  his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+spacekey);
+                  his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+spacekey);
+	          his_self.endTurn();
+	        },
+		null,
+		true
+	      );
+	    }
 	  }
-
 	  return 0;
 
         }
@@ -15245,28 +15248,64 @@ console.log("selected: " + spacekey);
 	if (his_self.game.player == p) {
 
           let html = '<ul>';
-              html += `<li class="option" id="hapsburg">Hapsburg Governor</li>`;
-              html += `<li class="option" id="england">English Governor</li>`;
-              html += `<li class="option" id="france">French Governor</li>`;
+              html += `<li class="option" id="governor">Colonial Governor</li>`;
+              html += `<li class="option" id="uprising">Native Uprising</li>`;
               html += '</ul>';
 
-          his_self.updateStatusWithOptions("Select Colonial Governor", html);
+          his_self.updateStatusWithOptions("Select Colony-Roll Modifier:", html);
 
  	  $('.option').off();
 	  $('.option').on('click', function () {
 
 	    his_self.updateStatus("selecting...");
-
  	    $('.option').off();
-	    let action = $(this).attr("id");
-	    his_self.addMove("display_new_world");
-	    his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" selected " + his_self.returnFactionName(action) + " governor");
-	    his_self.addMove("SETVAR\tstate\tevents\tcolonial_governor\t"+action);
-	    his_self.endTurn();	    
-	  });
+	    let modifier = $(this).attr("id");
 
-	} else {
-	  his_self.updateStatus(his_self.returnFactionName(faction) + " selecting Colonial Governor");
+	    if (modifier == "governor") {
+
+              let html = '<ul>';
+                  html += `<li class="option" id="hapsburg">Hapsburg Governor</li>`;
+                  html += `<li class="option" id="england">English Governor</li>`;
+                  html += `<li class="option" id="france">French Governor</li>`;
+                  html += '</ul>';
+              his_self.updateStatusWithOptions("Select Colonial Governor", html);
+
+ 	      $('.option').off();
+	      $('.option').on('click', function () {
+	        his_self.updateStatus("selecting...");
+ 	        $('.option').off();
+	        let action = $(this).attr("id");
+	        his_self.addMove("display_new_world");
+	        his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" selected " + his_self.returnFactionName(action) + " governor");
+	        his_self.addMove("SETVAR\tstate\tevents\tcolonial_governor\t"+action);
+	        his_self.addMove("SETVAR\tstate\tevents\tnative_uprising\t0");
+	        his_self.endTurn();	    
+	      });
+
+	    } else {
+
+              let html = '<ul>';
+                  html += `<li class="option" id="hapsburg">Destablize Hapsburg Colonies</li>`;
+                  html += `<li class="option" id="england">Destabilize English Colonies</li>`;
+                  html += `<li class="option" id="france">Destabilize French Colonies</li>`;
+                  html += '</ul>';
+              his_self.updateStatusWithOptions("Select Target for Native Uprising:", html);
+
+ 	      $('.option').off();
+	      $('.option').on('click', function () {
+	        his_self.updateStatus("selecting...");
+ 	        $('.option').off();
+	        let action = $(this).attr("id");
+	        his_self.addMove("display_new_world");
+	        his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" targets " + his_self.returnFactionName(action) + " colonies");
+	        his_self.addMove("SETVAR\tstate\tevents\tcolonial_governor\t0");
+	        his_self.addMove("SETVAR\tstate\tevents\tnative_uprising\t"+action);
+	        his_self.endTurn();	    
+	      });
+	    }
+	  });
+        } else {
+	  his_self.updateStatus(his_self.returnFactionName(faction) + " playing Colonial Governor");
 	}
 
 	return 0;
@@ -23991,22 +24030,31 @@ if (this.game.options.scenario == "is_testing") {
 	    if (this.game.state.plantations[c.faction] == 1) { x++; }
 	    if (c.name === "Potosi Silver Mines") { x++; }
 
+	    // modify rolls first so colonial governor
+	    if (x >= 8) { 
+	      if (this.game.state.galleons[c.faction] == 1) { x++; }
+	    }
+	    if (x > 4 && x < 9 && c.faction == this.game.state.events.native_uprising) {
+	      x = 2;
+	      this.game.state.events.native_uprising = "";
+	    }
+	    if (x > 4 && x < 9 && c.faction == this.game.state.events.colonial_governor) {
+	      x = 10;
+	      this.game.state.events.colonial_governor = "";
+	    }
 	    if (x <= 4) { 
 	      c.prize = "destroyed";
 	      c.destroyed = 1; 
 	      this.game.state.newworld[c.colony].claimed = 0; 
 	      this.updateLog(`${this.returnFactionName(c.faction)} - Colony Fails`);
 	      if (this.game.player == this.returnPlayerCommandingFaction(c.faction)) {
-	        let msg = this.returnFactionName(faction) + " colony fails...";
+	        let msg = this.returnFactionName(c.faction) + " colony fails...";
 	        this.updateLog(msg);
 	        this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	        this.game.queue.push("display_custom_overlay\tdeserted\t"+msg);
 	      }
 	    }
 
-	    if (x >= 8) { 
-	      if (this.game.state.galleons[c.faction] == 1) { x++; }
-	    }
 
 	    if (x >= 9) { 
 	      c.prize = "bonus card";
@@ -30940,6 +30988,10 @@ console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space
           his_self.game.state.assault.attacker_land_units_remaining = attacker_land_units_remaining;
           his_self.game.state.assault.defender_land_units_remaining = defender_land_units_remaining;
 
+console.log("ASSAULT: ");
+console.log("alur:" + attacker_land_units_remaining);
+console.log("dlur:" + defender_land_units_remaining);
+
 	  //
 	  // attacker and defender both wiped out
 	  //
@@ -30957,7 +31009,7 @@ console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space
 	      }
 	    }
 	    //
-	    // updarte log
+	    // update log
 	    //
 	    this.updateLog("Winner: "+this.returnFactionName(defender_faction));
 	  }
@@ -31041,7 +31093,6 @@ console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space
 	  // check if triggers defeat of Hungary Bohemia
 	  //
           this.triggerDefeatOfHungaryBohemia();
-
 
           return 1;
 
@@ -34577,20 +34628,6 @@ console.log(JSON.stringify(reshuffle_cards));
 
         }
 
-
-
-	if (mv[0] === "assault") {
-
-	  this.game.queue.splice(qe, 1);
-
-	  let faction = mv[1];
-	  let space = mv[2];
-
-	  this.displayVictoryTrack();
-
-	  return 1;
-
-	}
 
 
  	if (mv[0] === "unrest") {
