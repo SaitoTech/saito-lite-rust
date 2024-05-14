@@ -105,7 +105,7 @@ html[data-theme="arcade"] {
       --font-color-overlay-form-header: var(--font-color-primary);
       --font-color-overlay-form-text: var(--font-color-primary);
       --font-color-overlay-subform-recover: var(--font-color-primary);
-      --font-color-button-wallet-control: var(--saito-primary);
+      --font-color-button-wallet-control: var(--font-color-primary);
     /* BORDER THICKNESS */
       --border-thickness-button-primary: var(--border-thickness-thin);
       --border-thickness-button-hover-primary: var(--border-thickness-thin);
