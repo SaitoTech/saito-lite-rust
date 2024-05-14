@@ -96,6 +96,7 @@ class Crypto extends ModTemplate {
 				});
 			}
 
+
 			if (Object.keys(ac).length == 0) {
 				menu.submenus.push({
 					parent: 'game-crypto',
@@ -103,6 +104,9 @@ class Crypto extends ModTemplate {
 					id: 'game-crypto-none',
 					class: 'game-crypto-none',
 					callback: (app, game_mod) => {
+// this is how you re-start and re-display a standard game
+//						game_mod.initializeGameStake('SAITO', 0);
+//						game_mod.render(app);
 						game_mod.menu.hideSubMenus();
 						salert(
 							'The players do not have any common crypto available to play with'

@@ -205,7 +205,10 @@ class Twilight extends GameTemplate {
       return;
     }
 
-    await this.injectGameHTML(htmlTemplate());
+    if (this.game_html_injected != 1) {
+      await this.injectGameHTML(htmlTemplate());
+      this.game_html_injected = 1;
+    }
 
     await super.render(app);
 
@@ -456,9 +459,7 @@ class Twilight extends GameTemplate {
           default:
         }
       }
-
     }
-
   }
 
 
@@ -758,7 +759,9 @@ initializeGame(game_id) {
     this.game.queue.push("init");
 
   } else {
-    this.countries = this.game.countries; //strange choice
+    // old location for data structure so code uses this.countries
+    // moved to this.game so is saved properly
+    this.countries = this.game.countries;
   }
 
 
@@ -871,7 +874,11 @@ try {
   //
   this.displayBoard();
 
-} catch (err) {} // we must be in invite page
+} catch (err) {
+
+console.log("error in initialize game:" + err);
+
+} // we must be in invite page
 
   //
   // initialize interface
@@ -897,7 +904,9 @@ try {
         this.showInfluence(i);
       }
 
-    } catch (err) {} // invite page
+    } catch (err) {
+console.log("error here 222");
+    } // invite page
 
   }
 
@@ -939,7 +948,11 @@ try {
       twilight_self.scoring_overlay.render(region, scoring);
     });
 
-  } catch (err) {}
+  } catch (err) {
+
+console.log("error 2 in initializeGame: " + err);
+
+  }
 
 
   //
