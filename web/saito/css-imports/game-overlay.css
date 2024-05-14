@@ -342,3 +342,9 @@ Useful declarations for game stats
 .jsontree_node {
   list-style: none;
 }
+
+
+
+.module-settings-overlay {
+  min-height: unset;
+}

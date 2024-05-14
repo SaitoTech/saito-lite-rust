@@ -2400,6 +2400,9 @@ class Wordblocks extends GameTemplate {
 
 			if (mv[0] === 'discard_tiles') {
 
+				let player = parseInt(mv[1]);
+				let discardedTiles = mv[2]; //string
+
 				this.game.target = this.returnNextPlayer(player);
 
 				if (!this.browser_active) {
@@ -2412,8 +2415,6 @@ class Wordblocks extends GameTemplate {
 
 				this.game.queue.splice(this.game.queue.length - 1, 1);
 
-				let player = parseInt(mv[1]);
-				let discardedTiles = mv[2]; //string
 
 				let msg =
 					discardedTiles.length > 0

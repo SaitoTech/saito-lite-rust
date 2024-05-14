@@ -5,7 +5,7 @@ class SettlersActions {
   playerAcknowledgeNotice(msg, mycallback) {
     let html = `<ul><li class="textchoice acknowledge" id="confirmit">continue</li></ul>`;
     try {
-      this.updateStatusWithOptions(`${this.getLastNotice()}<div class="player-notice"><span>${msg}</span></div>`, html);
+      this.updateStatusWithOptions(`${this.getLastNotice()}<div class="player-notice"><span class="acknowledge-message">${msg}</span></div>`, html);
 
       document.querySelectorAll(".acknowledge").forEach((el) => {
         el.onclick = async (e) => {
@@ -59,9 +59,11 @@ class SettlersActions {
             }
 
             blocked[player].push(resource);
+            this.game.stats.blocked[resource][player-1]++;
 
             if (city.level == 2){
               blocked[player].push(resource);
+              this.game.stats.blocked[resource][player-1]++;
             }
 
           } else {
@@ -103,6 +105,7 @@ class SettlersActions {
       roll: value,
       harvest: collection,
       bandit: blocked,
+      threatened: this.game.state.threatened.slice(),
     });
 
     let firstMsg = (this.game.player == player_who_rolled)  ? "You" : this.game.playerNames[player_who_rolled - 1];
@@ -125,7 +128,7 @@ class SettlersActions {
       this.updateStatus(`<div class="persistent player-notice"><span>${firstMsg}: ${this.randomMsg()}</span></div>`);
     } else {
       this.updateStatus(
-        `<div class="persistent player-notice"><span>${firstMsg}! You acquired: </span>${notice}</div>`
+        `<div class="persistent player-notice"><span>${firstMsg}! You acquired: </span><div class="hud-status-card-list">${notice}</div></div>`
       );
     }
 

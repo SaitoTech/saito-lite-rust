@@ -72,6 +72,10 @@ stats overlay
 	margin-top: 1.5rem;
 }
 
+.hover-hint {
+	cursor: help;
+}
+
 .settlers-dice-bar {
 	width: calc(100% / 14);
 	height: 0;
@@ -187,18 +191,12 @@ stats overlay
 .settlers-stats-player {
 	font-size: 1.9rem;
 	line-height: 3rem;
-	/*color: whitesmoke;
-	text-shadow: 1px 1px 1px black;*/
-	padding-left: 0.5rem;
-	opacity: 0.85;
+	opacity: 0.90;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	background-color: unset !important;
-	margin-bottom: 0.75rem;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
+	width: 100%;
 }
 
 .settlers-stats-player.p1 {
@@ -222,7 +220,7 @@ stats overlay
 }
 
 .no-vp {
-	filter: brightness(65%) grayscale(50%) opacity(0.33);
+	filter: brightness(65%) grayscale(30%) opacity(0.50);
 }
 
 .settlers-achievements-row .victory_point_cards img {
@@ -497,7 +495,11 @@ stats overlay
 	align-items: center;
 }
 
-
+.settlers-stat-num-alt{
+	font-size: 2rem;
+	justify-self: center;
+	opacity: 70%;
+}
 
 .settlers-stat-num{
 	font-size: 3rem;
@@ -511,6 +513,8 @@ stats overlay
 .settlers-stats-card, .settlers-stats-vp {
 	width: 5rem;
 	justify-self: center;
+	display: flex;
+	justify-content: center;
 }
 
 .settlers-stats-card img, .settlers-stats-vp img {
@@ -573,6 +577,10 @@ stats overlay
 .settlers-hist-row .roll{
 	display: flex;
 	justify-content: space-between;
+}
+
+.settlers-hist-row.robber .settlers-stats-card img {
+	transform: rotate(90deg);
 }
 
 .hist-cards{

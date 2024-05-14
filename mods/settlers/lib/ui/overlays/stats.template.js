@@ -19,168 +19,15 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
       <div class="settlers-stats-overlay saitoa">
       	<div class="stats-header">
       		<div class="overlay-tab active-tab" id="overview-tab">Overview</div>
-      		<div class="overlay-tab" id="details-tab">Detailed History</div>
+      		<div class="overlay-tab" id="resource-tab">Resources</div>
+      		<div class="overlay-tab" id="timeline-tab">Timeline</div>
       	</div>
       	<div class="overlay-page active-page" id="overview-page">
       `;
 
 	if (winner) {
-		html += `<h1>Game Over:<br>${winner} wins!</h1>`;
+		html += `<h1>${winner} wins!</h1>`;
 	} 
-
-
-	//
-	//Scoring
-	//
-	html += `<div class="settlers-state-container">
-						 <div class="settlers-stats-row">
-             	<div class="settlers-stats-player">Scoring</div>
-              <div class="settlers-stats-vp" title="Village">
-                <img src="/settlers/img/icons/village.png">
-              </div>
-              <div class="settlers-stats-vp title="City">
-              	<img src="/settlers/img/icons/city.png">
-              	<div class="settlers-stats-multiplier">&times;2</div>
-              </div>
-							<div class="settlers-stats-vp title="Victory Point Card">
-								${stats.mod.vp.img}
-							</div>
-							<div class="settlers-stats-vp" title="Longest Road">`;
-	if (stats.mod.game.state.longestRoad.player == 0){
-		html += `${stats.mod.longest.svg}
-							<div class="settlers-stats-vp-count">${stats.mod.longest.min}</div>
-							<div class="settlers-stats-multiplier">+${stats.mod.longest.value}</div>`;
-	}
-
-	html +=		`</div>
-							<div class="settlers-stats-vp" title="Largest Army">`;
-	if (stats.mod.game.state.largestArmy.player == 0){
-		html += `${stats.mod.s.img}
-						<div class="settlers-stats-vp-count">3</div>
-						<div class="settlers-stats-multiplier">+2</div>
-		`;
-	}
-		
-								 
-	html +=			`</div>
-						<div></div>
-						</div>`;
-
-
-  for (let i = 0; i < stats.mod.game.players.length; i++) {
-		let numVil = 0;
-		let numCity = 0;
-
-		for (let j = 0; j < stats.mod.game.state.cities.length; j++) {
-			if (stats.mod.game.state.cities[j].player === i + 1) {
-				if (stats.mod.game.state.cities[j].level == 1) {
-					numVil++;
-				} else {
-					numCity++;
-				}
-			}
-		}
-
-		html += `
-		 <div class="settlers-stats-row">
-      	<div class="settlers-stats-player p${stats.mod.game.colors[i]}">${stats.mod.game.playerNames[i]}</div>
-				<div class="settlers-stat-num">${numVil}</div>`;
-
-		if (numCity > 0){
-			html += `<div class="settlers-stat-num">${numCity}</div>`;
-		}else{
-			html += `<div class="settlers-stat-num"></div>`;
-		}
-		
-		if (stats.mod.game.state.players[i].vpc > 0) {
-			html += `<div class="settlers-stat-num">${stats.mod.game.state.players[i].vpc}</div>`;
-		}	else {
-			html += `<div class="settlers-stat-num"></div>`;
-		}	
-  
-  	html += `<div class="settlers-stat-num">${stats.mod.game.state.players[i].road}</div>`;
-
-  	if (stats.mod.game.state.players[i].knights > 0){
-  		html += `<div class="settlers-stat-num">${stats.mod.game.state.players[i].knights}</div>`;
-  	}else{
-  		html += `<div class="settlers-stat-num"></div>`;
-  	}
-
-
-	  html += `<div class="settlers-stat-num">${stats.mod.game.state.players[i].vp}</div></div>`;
-  }
-
-  html += "<hr></div>";
-
-	//
-	//Production Log
-	//
-	html += `<div class="settlers-state-container">`;
-
-	html += ` <div class="settlers-stats-row"><div class="settlers-stats-player">Production</div>`;
-	for (let r in stats.mod.game.stats.production) {
-		html += `	<div class="settlers-stats-card">
-								<img src="/settlers/img/cards/${r}.png">
-							</div>
-		`;
-	}
-
-	html += `<div></div></div>`;
-
-	for (let i = 0; i < stats.mod.game.players.length; i++) {
-			let total = 0;
-			html += `<div class="settlers-stats-row">
-								<div class="settlers-stats-player p${stats.mod.game.colors[i]}">${stats.mod.game.playerNames[i]}</div>`;
-	
-			for (let r in stats.mod.game.stats.production) {
-				total += stats.mod.game.stats.production[r][i];
-					if (stats.mod.game.stats.production[r][i] > 0){
-						html += `<div class="settlers-stat-num">${stats.mod.game.stats.production[r][i]}</div>`;
-					}else{
-						html += `<div class="settlers-stat-num"></div>`;
-					}
-			}
-		html += `<div class="settlers-stat-num">${total}</div></div>`;	
-	}	
-
-	html += `<hr></div>`;	
-
-	//
-	// Losses
-	//
-	html += `<div class="settlers-state-container">`;
-	html += ` <div class="settlers-stats-row"><div class="settlers-stats-player">Losses</div>`;
-	for (let r in stats.mod.game.stats.production) {
-		html += `	<div class="settlers-stats-card">
-								<img src="/settlers/img/cards/${r}.png">
-							</div>
-		`;
-	}
-
-	html += `<div></div></div>`;
-
-	for (let i = 0; i < stats.mod.game.players.length; i++) {
-			let total = 0;
-			html += `<div class="settlers-stats-row">
-								<div class="settlers-stats-player p${stats.mod.game.colors[i]}">${stats.mod.game.playerNames[i]}</div>`;
-	
-			for (let r in stats.mod.game.stats.production) {
-				let sum = stats.mod.game.stats.robbed[r][i] + stats.mod.game.stats.discarded[r][i]; 
-				total += sum;
-					if (sum > 0){
-						html += `<div class="settlers-stat-num">-${sum}</div>`;
-					}else{
-						html += `<div class="settlers-stat-num"></div>`;
-					}
-			}
-		html += `<div class="settlers-stat-num">${total > 0? `-${total}` : ""}</div></div>`;	
-	}	
-
-	html += `</div>`;	
-
-
-	html += `</div>
-		<div class="overlay-page" id="details-page">`
 
 
 		//Fucking Dice
@@ -214,9 +61,220 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 		for (let i = 2; i <= 12; i++) {
 			html += `<div class="settlers-dice-number">${i}</div>`;
 		}
-		html += `</div>
-                </div>`;
+		html += `</div></div>`;
 
+
+
+	//
+	//Scoring
+	//
+	html += `<div class="settlers-state-container">
+						 <div class="settlers-stats-row">
+             	<div class="settlers-stats-player">Scoring</div>
+              <div class="settlers-stats-vp" title="Village">
+                <img src="/settlers/img/icons/village.png">
+              </div>
+              <div class="settlers-stats-vp title="City">
+              	<img src="/settlers/img/icons/city.png">
+              	<div class="settlers-stats-multiplier">&times;2</div>
+              </div>
+							<div class="settlers-stats-vp" title="Victory Point Card">
+								${stats.mod.vp.img}
+							</div>
+							<div class="settlers-stats-vp" title="Longest Road">
+								${stats.mod.longest.svg}
+								<div class="settlers-stats-vp-count">${Math.max(stats.mod.longest.min, stats.mod.game.state.longestRoad.size)}</div>
+								<div class="settlers-stats-multiplier">+${stats.mod.longest.value}</div>
+							</div>
+							<div class="settlers-stats-vp" title="Largest Army">
+								${stats.mod.s.img}
+								<div class="settlers-stats-vp-count">${Math.max(3, stats.mod.game.state.largestArmy.size)}</div>
+								<div class="settlers-stats-multiplier">+2</div>
+							</div>
+							<div></div>
+						</div>
+		`;
+	
+	
+  for (let i = 0; i < stats.mod.game.players.length; i++) {
+		let numVil = 0;
+		let numCity = 0;
+
+		for (let j = 0; j < stats.mod.game.state.cities.length; j++) {
+			if (stats.mod.game.state.cities[j].player === i + 1) {
+				if (stats.mod.game.state.cities[j].level == 1) {
+					numVil++;
+				} else {
+					numCity++;
+				}
+			}
+		}
+
+		html += `
+		 <div class="settlers-stats-row">
+      	<div class="settlers-stats-player p${stats.mod.game.colors[i]}">${stats.mod.game.playerNames[i]}</div>
+				<div class="settlers-stat-num">${numVil}</div>`;
+
+		if (numCity > 0){
+			html += `<div class="settlers-stat-num">${numCity}</div>`;
+		}else{
+			html += `<div class="settlers-stat-num"></div>`;
+		}
+		
+		if (stats.mod.game.state.players[i].vpc > 0) {
+			html += `<div class="settlers-stat-num">${stats.mod.game.state.players[i].vpc}</div>`;
+		}	else {
+			html += `<div class="settlers-stat-num"></div>`;
+		}	
+  
+  	if (stats.mod.game.state.longestRoad.player == i+1 ){
+  		html += `<div class="settlers-stat-num"><i class="fa-solid fa-check"></i></div>`;	
+
+  	}else{
+  		html += `<div class="settlers-stat-num"></div>`;	
+  	}
+
+		if (stats.mod.game.state.largestArmy.player == i+1){
+  		html += `<div class="settlers-stat-num"><i class="fa-solid fa-check"></i></div>`;	
+		}else{
+  		html += `<div class="settlers-stat-num"></div>`;	
+		}
+
+	  html += `<div class="settlers-stat-num">${stats.mod.game.state.players[i].vp}</div></div>`;
+  }
+
+  html += `<hr></div> <div class="settlers-state-container">
+			    	<div class="settlers-hist-row">
+			    		<div></div>`;
+
+ 	for (let i = 0; i < stats.mod.game.players.length; i++) {
+  	html += `<div class="settlers-stats-player p${stats.mod.game.colors[i]}">${stats.mod.game.playerNames[i]}</div>`;
+	}
+
+	html += "</div>";
+
+	let player_array = Array(stats.mod.game.players.length);
+	player_array.fill(0);
+	for (let j = 0; j < stats.mod.game.stats.history.length; j++){
+		for (let i of stats.mod.game.stats.history[j].threatened){
+			player_array[i-1]++;
+		}
+	}
+
+  html += `<div class="settlers-hist-row">
+  	<div class="settlers-stats-vp title="Bandit/Robber">
+	  	<img src="/settlers/img/icons/bandit.png">
+	  	<div class="settlers-stats-vp-count">%</div>
+  	</div>`;
+  for (let i of player_array){
+  	html += `<div class="settlers-stat-num">${Math.round(1000*i/stats.mod.game.stats.history.length)/10}</div>`;
+  }
+
+  html += `</div></div></div>`;
+
+	html += `<div class="overlay-page" id="resource-page">`;	
+
+	//
+	//Production Log
+	//
+	html += `<div class="settlers-state-container">`;
+
+	html += ` <div class="settlers-stats-row"><div class="settlers-stats-player hover-hint" title="Resources produced by dice rolls">Production</div>`;
+	for (let r in stats.mod.game.stats.production) {
+		html += `	<div class="settlers-stats-card">
+								<img src="/settlers/img/cards/${r}.png">
+							</div>
+		`;
+	}
+
+	html += `<div></div></div>`;
+
+	for (let i = 0; i < stats.mod.game.players.length; i++) {
+			let total = 0;
+			html += `<div class="settlers-stats-row">
+								<div class="settlers-stats-player p${stats.mod.game.colors[i]}">${stats.mod.game.playerNames[i]}</div>`;
+	
+			for (let r in stats.mod.game.stats.production) {
+				total += stats.mod.game.stats.production[r][i];
+					if (stats.mod.game.stats.production[r][i] > 0){
+						html += `<div class="settlers-stat-num">${stats.mod.game.stats.production[r][i]}</div>`;
+					}else{
+						html += `<div class="settlers-stat-num"></div>`;
+					}
+			}
+		html += `<div class="settlers-stat-num">${total}</div></div>`;	
+	}	
+
+	html += `<hr></div>`;	
+
+	//
+	// Losses
+	//
+	html += `<div class="settlers-state-container">`;
+	html += ` <div class="settlers-stats-row"><div class="settlers-stats-player hover-hint" title="Cards discarded or stolen by robber">Losses</div>`;
+	for (let r in stats.mod.game.stats.production) {
+		html += `	<div class="settlers-stats-card">
+								<img src="/settlers/img/cards/${r}.png">
+							</div>
+		`;
+	}
+
+	html += `<div></div></div>`;
+
+	for (let i = 0; i < stats.mod.game.players.length; i++) {
+			let total = 0;
+			html += `<div class="settlers-stats-row">
+								<div class="settlers-stats-player p${stats.mod.game.colors[i]}">${stats.mod.game.playerNames[i]}</div>`;
+	
+			for (let r in stats.mod.game.stats.production) {
+				let sum = stats.mod.game.stats.robbed[r][i] + stats.mod.game.stats.discarded[r][i]; 
+				total += sum;
+					if (sum > 0){
+						html += `<div class="settlers-stat-num">-${sum}</div>`;
+					}else{
+						html += `<div class="settlers-stat-num"></div>`;
+					}
+			}
+		html += `<div class="settlers-stat-num">${total > 0? `-${total}` : ""}</div></div>`;	
+	}	
+
+	html += "<hr></div>";
+
+	//
+	// Non-production
+	//
+	html += `<div class="settlers-state-container">`;
+	html += ` <div class="settlers-stats-row"><div class="settlers-stats-player hover-hint" title="Resources blocked by presence of bandit">Unrealized</div>`;
+	for (let r in stats.mod.game.stats.production) {
+		html += `	<div class="settlers-stats-card no-vp">
+								<img src="/settlers/img/cards/${r}.png">
+							</div>
+		`;
+	}
+
+	html += `<div></div></div>`;
+
+	for (let i = 0; i < stats.mod.game.players.length; i++) {
+			let total = 0;
+			html += `<div class="settlers-stats-row">
+								<div class="settlers-stats-player p${stats.mod.game.colors[i]}">${stats.mod.game.playerNames[i]}</div>`;
+	
+			for (let r in stats.mod.game.stats.production) {
+					if (stats.mod.game.stats.blocked[r][i] > 0){
+						total += stats.mod.game.stats.blocked[r][i];
+						html += `<div class="settlers-stat-num">${stats.mod.game.stats.blocked[r][i]}</div>`;
+					}else{
+						html += `<div class="settlers-stat-num"></div>`;
+					}
+			}
+		html += `<div class="settlers-stat-num">${total > 0? `${total}` : ""}</div></div>`;	
+	}	
+
+	html += "</div>";
+
+
+	html += `</div>
+		<div class="overlay-page" id="timeline-page">`;
 
     html += `<div class="settlers-hist-container hide-scrollbar">
     	<div class="settlers-hist-row">
@@ -228,8 +286,9 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 
 		html += "</div>";
 
+
 		for (let j = stats.mod.game.stats.history.length - 1; j >= 0; j--){
-			html += `<div class="settlers-hist-row">
+			html += `<div class="settlers-hist-row${stats.mod.game.stats.history[j].roll == 7 ? " robber" :""}">
 						<div class="roll">
 							<span>${j+1}: </span>
 							<span>${stats.mod.game.stats.history[j].roll}</span>

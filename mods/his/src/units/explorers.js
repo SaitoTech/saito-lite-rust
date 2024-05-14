@@ -13,7 +13,7 @@
       this.importExplorer('willoughby', {
            faction           :       "england" ,
            type              :       "willoughby" ,
-           name              :       "Katherine Willoughby",
+           name              :       "Hugh Willoughby",
            personage         :       true,
            img               :       "/his/img/tiles/explorers/Willoughby.svg",
            power	     :       1,

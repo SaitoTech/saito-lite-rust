@@ -121,7 +121,6 @@ if (this.game.options.scenario != "is_testing") {
 		  this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
 
 	        } else {
-/*****
 
 		  this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
 		  this.game.queue.push("winter_retreat_move_units_to_capital\tfrance");
@@ -129,15 +128,17 @@ if (this.game.options.scenario != "is_testing") {
 		  this.game.queue.push("winter_retreat_move_units_to_capital\thapsburg");
 		  this.game.queue.push("winter_retreat_move_units_to_capital\tottoman");
 
-****/
+/*****
 
 		  if (this.game.players.length == 3) {
 		    let c = [this.game.players[this.returnPlayerOfFaction("england")-1],this.game.players[this.returnPlayerOfFaction("hapsburg")-1],this.game.players[this.returnPlayerOfFaction("ottoman")-1]];
-		    let c2 = [this.game.players[this.returnPlayerOfFaction("hapsburg")-1],this.game.players[this.returnPlayerOfFaction("ottoman")-1]];
+		    let c2 = [this.game.players[this.returnPlayerOfFaction("papacy")-1],this.game.players[this.returnPlayerOfFaction("france")-1]];
 	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy','france']));
 		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c2));
+	            this.game.queue.push("reset_winter_retreat_move_units_to_capital_faction_array");
 	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['england','hapsburg','ottoman']));
 		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
+	            this.game.queue.push("reset_winter_retreat_move_units_to_capital_faction_array");
 		  }
 
 		  if (this.game.players.length == 4) {
@@ -147,10 +148,12 @@ if (this.game.options.scenario != "is_testing") {
 
 	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy']));
 		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
+	            this.game.queue.push("reset_winter_retreat_move_units_to_capital_faction_array");
 		    this.updateStatus("Other factions handling winter retreat...");
 
 	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['france','england','hapsburg','ottoman']));
 		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c2));
+	            this.game.queue.push("reset_winter_retreat_move_units_to_capital_faction_array");
 		    this.updateStatus("Other factions handling winter retreat...");
 
 		  }
@@ -167,6 +170,7 @@ if (this.game.options.scenario != "is_testing") {
 
 	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy','france','england','hapsburg','ottoman']));
 		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c2));
+	            this.game.queue.push("reset_winter_retreat_move_units_to_capital_faction_array");
 		    this.updateStatus("Other factions handling winter retreat...");
 
 		  }
@@ -174,8 +178,10 @@ if (this.game.options.scenario != "is_testing") {
 		  if (this.game.players.length == 6) {
 	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['protestant','papacy','france','england','hapsburg','ottoman']));
 		    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	            this.game.queue.push("reset_winter_retreat_move_units_to_capital_faction_array");
 		    this.updateStatus("Other factions handling winter retreat...");
 		  }
+****/
 	        }
 	        this.game.queue.push("retreat_to_winter_spaces");
 	      }
@@ -688,21 +694,29 @@ if (this.game.options.scenario == "is_testing") {
 
 
 
+	if (mv[0] === "reset_winter_retreat_move_units_to_capital_faction_array") {
+	  this.game.queue.splice(qe, 1);
+	  this.winter_retreat_waiting_for_confs = 0;
+	  return 1;
+	}
+	// please run reset_winter_retreat_move... first
 	if (mv[0] === "winter_retreat_move_units_to_capital_faction_array") {
 
 	  let factions = JSON.parse(mv[1]);
 
-	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+          if (this.game.confirms_needed[this.game.player-1] == 0) {
 	    this.updateStatus("waiting for others to complete winter retreat...");
-	    return;
-	    this.game.queue[this.game.queue.length-1] = "halted";
+	    return 0;
 	  }
+	  if (this.winter_retreat_waiting_for_confs == 1) { 
+	    return 0;
+	  }
+	  this.winter_retreat_waiting_for_confs = 1;
 
 	  for (let i = 0; i < factions.length; i++) {
-
 	    let p = this.returnPlayerCommandingFaction(factions[i]);
-
 	    if (this.game.player == p) {
+	      // prevent double execution
 	      this.winter_overlay.hide();
 	      this.playerReturnWinterUnits(factions[i]);
 	    }
@@ -1797,22 +1811,31 @@ if (this.game.options.scenario == "is_testing") {
 	    if (this.game.state.plantations[c.faction] == 1) { x++; }
 	    if (c.name === "Potosi Silver Mines") { x++; }
 
+	    // modify rolls first so colonial governor
+	    if (x >= 8) { 
+	      if (this.game.state.galleons[c.faction] == 1) { x++; }
+	    }
+	    if (x > 4 && x < 9 && c.faction == this.game.state.events.native_uprising) {
+	      x = 2;
+	      this.game.state.events.native_uprising = "";
+	    }
+	    if (x > 4 && x < 9 && c.faction == this.game.state.events.colonial_governor) {
+	      x = 10;
+	      this.game.state.events.colonial_governor = "";
+	    }
 	    if (x <= 4) { 
 	      c.prize = "destroyed";
 	      c.destroyed = 1; 
 	      this.game.state.newworld[c.colony].claimed = 0; 
 	      this.updateLog(`${this.returnFactionName(c.faction)} - Colony Fails`);
 	      if (this.game.player == this.returnPlayerCommandingFaction(c.faction)) {
-	        let msg = this.returnFactionName(faction) + " colony fails...";
+	        let msg = this.returnFactionName(c.faction) + " colony fails...";
 	        this.updateLog(msg);
 	        this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	        this.game.queue.push("display_custom_overlay\tdeserted\t"+msg);
 	      }
 	    }
 
-	    if (x >= 8) { 
-	      if (this.game.state.galleons[c.faction] == 1) { x++; }
-	    }
 
 	    if (x >= 9) { 
 	      c.prize = "bonus card";
@@ -8746,6 +8769,10 @@ console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space
           his_self.game.state.assault.attacker_land_units_remaining = attacker_land_units_remaining;
           his_self.game.state.assault.defender_land_units_remaining = defender_land_units_remaining;
 
+console.log("ASSAULT: ");
+console.log("alur:" + attacker_land_units_remaining);
+console.log("dlur:" + defender_land_units_remaining);
+
 	  //
 	  // attacker and defender both wiped out
 	  //
@@ -8763,7 +8790,7 @@ console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space
 	      }
 	    }
 	    //
-	    // updarte log
+	    // update log
 	    //
 	    this.updateLog("Winner: "+this.returnFactionName(defender_faction));
 	  }
@@ -8847,7 +8874,6 @@ console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space
 	  // check if triggers defeat of Hungary Bohemia
 	  //
           this.triggerDefeatOfHungaryBohemia();
-
 
           return 1;
 
@@ -11359,8 +11385,7 @@ if (this.game.state.round == 2) {
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-
-cardnum = 1;
+//cardnum = 1;
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 1; }
 //if (f == "protestant") { cardnum = 0; }
@@ -12384,20 +12409,6 @@ console.log(JSON.stringify(reshuffle_cards));
 
         }
 
-
-
-	if (mv[0] === "assault") {
-
-	  this.game.queue.splice(qe, 1);
-
-	  let faction = mv[1];
-	  let space = mv[2];
-
-	  this.displayVictoryTrack();
-
-	  return 1;
-
-	}
 
 
  	if (mv[0] === "unrest") {
