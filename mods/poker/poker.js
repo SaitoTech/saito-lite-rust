@@ -173,6 +173,7 @@ class Poker extends GameTableTemplate {
 	// initializes chips / pools / pots information
 	//
 	initializeGameStake(crypto = 'CHIPS', stake = '100') {
+
 		console.log("Initialize Poker Stakes!");
 		this.game.crypto = crypto;
 		this.game.stake = stake;
@@ -222,8 +223,11 @@ class Poker extends GameTableTemplate {
 
 		this.displayBoard();
 
-		//Doesn't do anything substantial
-		super.initializeGameStake(crypto, stake);
+                if (this.browser_active) {
+                        console.log("Get Logo for " + crypto);
+                        this.insertCryptoLogo(crypto);
+                }
+
 	}
 
 	initializeGame() {
