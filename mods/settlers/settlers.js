@@ -567,6 +567,7 @@ class Settlers extends GameTemplate {
 		state.placedCity = 'hello world'; //a slight hack for game iniitalization
 		state.welcome = 0;
 		state.hasRolled = false;
+		state.threatened = [];
 
 		for (let i = 0; i < this.game.players.length; i++) {
 			state.ads.push({});
@@ -593,6 +594,7 @@ class Settlers extends GameTemplate {
 		stats.production = {};
 		stats.discarded = {};
 		stats.robbed = {};
+		stats.blocked = {};
 
 		for (let i = 2; i <= 12; i++) {
 			stats.dice[i] = 0;
@@ -610,6 +612,7 @@ class Settlers extends GameTemplate {
 
 			stats.discarded[r] = array.slice();
 			stats.robbed[r] = array.slice();
+			stats.blocked[r] = array.slice();
 		}
 		
 		stats.history = [];

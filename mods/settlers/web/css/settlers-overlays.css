@@ -72,6 +72,10 @@ stats overlay
 	margin-top: 1.5rem;
 }
 
+.hover-hint {
+	cursor: help;
+}
+
 .settlers-dice-bar {
 	width: calc(100% / 14);
 	height: 0;
@@ -216,7 +220,7 @@ stats overlay
 }
 
 .no-vp {
-	filter: brightness(65%) grayscale(50%) opacity(0.33);
+	filter: brightness(65%) grayscale(30%) opacity(0.50);
 }
 
 .settlers-achievements-row .victory_point_cards img {
