@@ -61,12 +61,17 @@ class Recovery extends ModTemplate {
 				//
 				//If we already have the email/password, just send the backup
 				//
+
 				let key = app.keychain.returnKey(this.publicKey);
 				if (key) {
 					if (
 						key.wallet_decryption_secret &&
 						key.wallet_retrieval_hash
 					) {
+						this.app.options.wallet.backup_required_msg = 0;
+						await this.app.wallet.saveWallet();
+
+						app.connection.emit('recovery-backup-loader-overlay-render-request', {});
 						let newtx = await this.createBackupTransaction(
 							key.wallet_decryption_secret,
 							key.wallet_retrieval_hash
@@ -293,6 +298,11 @@ class Recovery extends ModTemplate {
 	async backupWallet(email, password) {
 		let decryption_secret = this.returnDecryptionSecret(email, password);
 		let retrieval_hash = this.returnRetrievalHash(email, password);
+
+		if (typeof this.app.options.wallet != 'undefined') {
+			this.app.options.wallet.account_recovery_secret = decryption_secret;
+			this.app.options.wallet.account_recovery_hash = retrieval_hash;
+		}
 
 		//
 		// save email

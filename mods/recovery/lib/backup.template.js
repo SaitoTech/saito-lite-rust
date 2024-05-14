@@ -39,7 +39,7 @@ module.exports = BackupTemplate = (identifier, newIdentifier) => {
       		<div class="saito-overlay-form-checkbox-container">	
 	      		<input type="checkbox" class="saito-overlay-subform-checkbox" checked />
 	      		<div class="saito-overlay-subform-text">
-	      			Please save an encrypted copy on-chain, 
+	      			Save an encrypted copy on-chain, 
 	      			so I can recover my account quickly and easily on any device
 	      		</div>
       		</div>

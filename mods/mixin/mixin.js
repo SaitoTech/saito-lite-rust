@@ -471,7 +471,7 @@ class Mixin extends ModTemplate {
   }
 
 
-  async checkNetworkFee(asset_id){
+  async returnNetworkInfo(asset_id){
     try {
       let user = MixinApi({
         keystore: {
@@ -483,12 +483,7 @@ class Mixin extends ModTemplate {
       });
 
       let asset = await user.network.fetchAsset(asset_id);
-      if (typeof asset.fee != 'undefined') {
-        return asset.fee;  
-      } else {
-        return 0;
-      }
-      
+      return asset;
     } catch(err) {
       console.error("ERROR: Mixin error check network fee: " + err);
       return false;
@@ -1007,7 +1002,7 @@ class Mixin extends ModTemplate {
 
 
   async fetchPendingDeposits(asset_id, destination, callback){
-    //try {
+    try {
       let user = MixinApi({
         keystore: {
           app_id: this.mixin.user_id,
@@ -1023,14 +1018,11 @@ class Mixin extends ModTemplate {
       };
 
       let deposits = await user.safe.pendingDeposits(params);
-    
-
-      console.log('deposits in mixin: ', deposits);
       return callback(deposits);
-    // } catch(err) {
-    //   console.error("ERROR: Mixin error fetch fetchPendingDeposits: " + err);
-    //   return false;
-    // }
+    } catch(err) {
+      console.error("ERROR: Mixin error fetch fetchPendingDeposits: " + err);
+      return false;
+    }
   }
 
 

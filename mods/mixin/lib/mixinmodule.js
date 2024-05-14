@@ -433,8 +433,8 @@ class MixinModule extends CryptoModule {
 	}
 
 
-	returnNetworkFee(asset_id) {
-		return this.mixin.checkNetworkFee(asset_id);
+	returnNetworkInfo() {
+		return this.mixin.returnNetworkInfo(this.asset_id);
 	}
 
 
