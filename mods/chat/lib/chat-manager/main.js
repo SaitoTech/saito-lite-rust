@@ -36,7 +36,7 @@ class ChatManager {
 				//
 				this.render();
 			} else {
-				console.log(' ! render manager to screen ');
+				console.log('*** ! render manager to screen ');
 			}
 		});
 
