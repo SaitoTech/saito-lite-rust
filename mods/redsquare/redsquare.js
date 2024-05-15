@@ -140,6 +140,10 @@ class RedSquare extends ModTemplate {
 
     this.theme_options["sangre"] = "fa-solid fa-droplet";
 
+    this.app.connection.on("saito-render-complete", ()=> {
+      this.app.connection.emit("redsquare-update-notifications", this.notifications_number_unviewed);
+    });
+
     return this;
   }
 
@@ -196,6 +200,13 @@ class RedSquare extends ModTemplate {
           callback: function (app, id) {
             window.location = "/redsquare";
           },
+          event: function (id) {
+            this_mod.app.connection.on("redsquare-update-notifications", (unread) => {
+              this_mod.app.browser.addNotificationToId(unread, id);
+              this_mod.app.connection.emit("saito-header-notification", "redsquare", unread);
+            });
+          },
+
         });
       }
 
@@ -216,25 +227,9 @@ class RedSquare extends ModTemplate {
             document.querySelector(".redsquare-menu-notifications").click();
           },
           event: function (id) {
-            this_mod.app.connection.on("redsquare-update-notification-hamburger", (unread) => {
-              let elem = document.getElementById(id);
-              //console.log("Redsquare notifications event, update", elem);
-              if (elem) {
-                if (unread) {
-                  if (elem.querySelector(".saito-notification-dot")) {
-                    elem.querySelector(".saito-notification-dot").innerHTML = unread;
-                  } else {
-                    this_mod.app.browser.addElementToId(
-                      `<div class="saito-notification-dot">${unread}</div>`,
-                      id
-                    );
-                  }
-                } else {
-                  if (elem.querySelector(".saito-notification-dot")) {
-                    elem.querySelector(".saito-notification-dot").remove();
-                  }
-                }
-              }
+            this_mod.app.connection.on("redsquare-update-notifications", (unread) => {
+              this_mod.app.browser.addNotificationToId(unread, id);
+              this_mod.app.connection.emit("saito-header-notification", "redsquare", unread);
             });
           },
         });
@@ -417,9 +412,8 @@ class RedSquare extends ModTemplate {
       }catch(err){
         console.warn("Stun not available for P2P Redsquare");
       }
- 
-
     }
+  
   }
 
   isFollowing(key){
@@ -524,7 +518,6 @@ class RedSquare extends ModTemplate {
 
       });
     }
-
 
     //this.loadLocalTweets();
 
@@ -1488,8 +1481,10 @@ class RedSquare extends ModTemplate {
 
           if (tx.timestamp > this.notifications_last_viewed_ts) {
             this.notifications_number_unviewed = this.notifications_number_unviewed + 1;
-            this.menu.incrementNotifications("notifications", this.notifications_number_unviewed);
+            this.app.connection.emit("redsquare-update-notifications", this.notifications_number_unviewed);
           }
+
+          this.saveOptions();
 
           return 1;
         }
@@ -1498,6 +1493,15 @@ class RedSquare extends ModTemplate {
 
     return 0;
   }
+
+  resetNotifications(){
+    this.notifications_last_viewed_ts = new Date().getTime();
+    this.notifications_number_unviewed = 0;
+    this.saveOptions();
+
+    this.app.connection.emit("redsquare-update-notifications", this.notifications_number_unviewed);
+  }
+      
 
   returnTweet(tweet_sig = null) {
     if (tweet_sig == null) {
@@ -2510,6 +2514,7 @@ class RedSquare extends ModTemplate {
     }
     this.saveOptions();
   }
+
 
 
   //

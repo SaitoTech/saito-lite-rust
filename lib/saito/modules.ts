@@ -321,6 +321,7 @@ class Mods {
 				await this.mods[icb].render(this.app, this.mods[icb]);
 			}
 		}
+		this.app.connection.emit("saito-render-complete");
 		return null;
 	}
 

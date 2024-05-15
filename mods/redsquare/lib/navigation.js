@@ -6,7 +6,6 @@ class RedSquareNavigation {
 		this.app = app;
 		this.mod = mod;
 		this.container = container;
-		this.increments = 0;
 
 		app.connection.on(
 			'redsquare-clear-menu-highlighting',
@@ -44,6 +43,10 @@ class RedSquareNavigation {
 				}
 			}
 		);
+
+    app.connection.on("redsquare-update-notifications", (num) => {
+      this.incrementNotifications(num);
+    });
 	}
 
 	render() {
@@ -165,28 +168,24 @@ class RedSquareNavigation {
     });
   }
 
-  incrementNotifications(menu_item, notifications = -1) {
-    let qs = `.redsquare-menu-${menu_item}`;
-
-    if (notifications < this.increments && notifications != -1) {
-      notifications = this.increments;
-    }
+  incrementNotifications(notifications = -1) {
+    let qs = `.redsquare-menu-notifications`;
 
     if (document.querySelector(qs)) {
-      qs = `.redsquare-menu-${menu_item} > .saito-notification-dot`;
+      qs = `.redsquare-menu-notifications > .saito-notification-dot`;
       let obj = document.querySelector(qs);
       if (!obj) {
         if (notifications > 0) {
           this.app.browser.addElementToSelector(
             `<div class="saito-notification-dot">${notifications}</div>`,
-            `.redsquare-menu-${menu_item}`
+            `.redsquare-menu-notifications`
           );
         } else {
           this.app.browser.addElementToSelector(
             `<div class="saito-notification-dot"></div>`,
-            `.redsquare-menu-${menu_item}`
+            `.redsquare-menu-notifications`
           );
-          qs = `.redsquare-menu-${menu_item} > .saito-notification-dot`;
+          qs = `.redsquare-menu-notifications > .saito-notification-dot`;
           let obj = document.querySelector(qs);
           obj.style.display = "none";
         }
@@ -205,13 +204,6 @@ class RedSquareNavigation {
         }
       }
     }
-
-    //
-    // Send a signal so that if we are in mobile and have notifications in the hamburger menu
-    // We can display the notification there
-    // ...would be easier if we didn't rely on attaching invisible elements to mobile dom and faking click events
-    // but fixing that would be such a pain
-    this.app.connection.emit("redsquare-update-notification-hamburger", notifications);
   }
 }
 

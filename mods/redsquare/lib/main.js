@@ -118,10 +118,7 @@ class RedSquareMain {
 
     this.app.connection.on("redsquare-notifications-render-request", () => {
       this.scrollFeed(0);
-      this.mod.notifications_last_viewed_ts = new Date().getTime();
-      this.mod.notifications_number_unviewed = 0;
-      this.mod.saveOptions();
-      this.mod.menu.incrementNotifications("notifications", 0);
+      this.mod.resetNotifications();
       this.manager.render("notifications");
 
       this.app.connection.emit("saito-header-replace-logo", (e) => {
