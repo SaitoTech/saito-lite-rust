@@ -328,7 +328,9 @@ class ChatPopup {
 		let chatBody = document.querySelector(popup_qs + ' .chat-body');
 		if (chatBody) {
 			let new_render = !this.is_rendered;
-
+			
+			//console.info('*** CHAT render: ',this.group.unread,new_render);
+			
 			if (this.is_scrolling) {
 				//console.info('CHAT render: keep position');
 				chatBody.scroll({ top: this.is_scrolling, left: 0 });
@@ -341,20 +343,15 @@ class ChatPopup {
 								this.group.last_read_message
 					  )
 					: null;
-				//console.info('CHAT render: ',anchor,this.group.unread,new_render);
-				if (anchor && this.group.unread && new_render) {
+				
+				if (anchor && new_render && this.group.unread > 2) {
 					//console.info(	'CHAT render: Scroll to anchor -- ' +this.group.last_read_message);
 					anchor.scrollIntoView(false);
 					this.updateNotification(this.group.unread);
-				} else if (this.app.browser.active_tab) {
+				} else {
 					//console.info('CHAT render: scroll to bottom');
 					chatBody.scroll(0, 1000000000);
-				} else {
-					if (anchor) {
-						anchor.scrollIntoView(false);
-					}
-					this.updateNotification(this.group.unread);
-				}
+				} 
 			}
 		}
 
@@ -602,6 +599,7 @@ class ChatPopup {
 		let myBody = document.querySelector(popup_qs + ' .chat-body');
 		if (myBody && myBody?.lastElementChild) {
 			const pollScrollHeight = () => {
+				console.log("scrolling...");
 				let lastChild = myBody.lastElementChild;
 				if (lastChild.querySelector('.saito-user .saito-userline')) {
 					lastChild =

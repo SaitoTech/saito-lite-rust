@@ -480,48 +480,17 @@ class Chat extends ModTemplate {
 								chat_self.app.connection.on(
 									'chat-manager-render-request',
 									() => {
-										let elem = document.getElementById(id);
-										//console.log("Chat event, update", elem);
-										if (elem) {
-											let unread = 0;
-											for (let group of chat_self.groups) {
-												unread += group.unread;
-											}
-
-											if (unread) {
-												if (
-													elem.querySelector(
-														'.saito-notification-dot'
-													)
-												) {
-													elem.querySelector(
-														'.saito-notification-dot'
-													).innerHTML = unread;
-												} else {
-													chat_self.app.browser.addElementToId(
-														`<div class="saito-notification-dot">${unread}</div>`,
-														id
-													);
-												}
-											} else {
-												if (
-													elem.querySelector(
-														'.saito-notification-dot'
-													)
-												) {
-													elem.querySelector(
-														'.saito-notification-dot'
-													).remove();
-												}
-											}
+										let unread = 0;
+										for (let group of chat_self.groups) {
+											unread += group.unread;
 										}
+										chat_self.app.browser.addNotificationToId(unread, id);	
+										chat_self.app.connection.emit("saito-header-notification", "chat", unread);
 									}
 								);
 
 								//Trigger my initial display
-								chat_self.app.connection.emit(
-									'chat-manager-render-request'
-								);
+								chat_self.app.connection.emit('chat-manager-render-request');
 							}
 						}
 					];
@@ -1875,7 +1844,7 @@ class Chat extends ModTemplate {
 			insertion_index++;
 		}
 
-		if (new_message.from.includes(this.publicKey)) {
+		if (!new_message.from.includes(this.publicKey)) {
 			group.unread++;
 		} else {
 			group.last_read_message = tx.signature;
