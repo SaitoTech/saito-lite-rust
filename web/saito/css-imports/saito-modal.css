@@ -56,7 +56,7 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .saito-modal-content{
-  border-top: 1px solid;
+  border-top: 1px solid var(--saito-border-color);
   padding: 0.5rem 0;
 }
 
@@ -349,12 +349,18 @@ This alows for a header with a header with title to be added without extra CSS
 
 
 .saito-overlaid-icon {
-  color: var(--saito-red); /* testing */
+  color: var(--saito-white);
   position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  filter: drop-shadow(1px 1px 3px var(--saito-black));
+  left: 34%;
+  top: 34%;
+  background: #000a;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--saito-font-color);
 }
 
 /* Identicons aren't clickable in modals menus */
