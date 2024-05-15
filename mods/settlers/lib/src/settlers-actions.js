@@ -59,9 +59,11 @@ class SettlersActions {
             }
 
             blocked[player].push(resource);
+            this.game.stats.blocked[resource][player-1]++;
 
             if (city.level == 2){
               blocked[player].push(resource);
+              this.game.stats.blocked[resource][player-1]++;
             }
 
           } else {
@@ -103,6 +105,7 @@ class SettlersActions {
       roll: value,
       harvest: collection,
       bandit: blocked,
+      threatened: this.game.state.threatened.slice(),
     });
 
     let firstMsg = (this.game.player == player_who_rolled)  ? "You" : this.game.playerNames[player_who_rolled - 1];

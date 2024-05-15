@@ -11,6 +11,7 @@ class SettlersPlayer {
           if (!thievingTargets.includes(city.player)) thievingTargets.push(city.player);
       }
     }
+
     if (thievingTargets.length > 0) {
       let robPlayer = (victim) => {
         let potentialLoot = settlers_self.game.state.players[victim - 1].resources;

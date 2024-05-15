@@ -671,6 +671,29 @@ class Browser {
 		}
 	}
 
+	addNotificationToId(count, id){
+	  let elem = document.getElementById(id);
+
+	  if (elem) {
+	    if (count) {
+	      if (elem.querySelector(".saito-notification-dot")) {
+	        elem.querySelector(".saito-notification-dot").innerHTML = count;
+	      } else {
+	        this.addElementToId(
+	          `<div class="saito-notification-dot">${count}</div>`,
+	          id
+	        );
+	      }
+	    } else {
+	      if (elem.querySelector(".saito-notification-dot")) {
+	        elem.querySelector(".saito-notification-dot").remove();
+	      }
+	    }
+	  }
+
+	}
+
+
 	addElementToDom(html, elemWhere = null) {
 		const el = document.createElement('div');
 		if (elemWhere == null || elemWhere === '') {
