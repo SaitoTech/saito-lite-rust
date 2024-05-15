@@ -380,12 +380,11 @@ class Encrypt extends ModTemplate {
 
     siteMessage(`Successfully added ${this.app.keychain.returnUsername(sender, 8)} as a friend`, 5000);
 
-    let msg = `Your wallet has added new crypto keys. 
-            Unless you backup your wallet, you may lose these keys. 
-            Do you want help backing up your wallet?`;
+    let msg = `Your wallet has generated new secret keys to keep correspondence with your new contact secure. 
+    Unless you backup your wallet you may lose these keys. Do you want help backing up your wallet?`;
     this.app.connection.emit(
       'saito-backup-render-request',
-      {msg: msg}
+      {msg: msg, title: 'NEW FRIEND ADDED'}
     );
  
     let alice_publicKey = Buffer.from(senderkeydata.aes_publicKey, "hex");

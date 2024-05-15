@@ -21,14 +21,14 @@ module.exports = BackupTemplate = (identifier, newIdentifier) => {
     <form id="backup-template" class="saito-overlay-auto-backup">
       <div class="saito-overlay-form">
         <div class="saito-overlay-form-header">
-          <div class="saito-overlay-form-header-title">EASY ACCOUNT RECOVERY</div>
+          <div class="saito-overlay-form-header-title" id="saito-overlay-form-header-title">EASY ACCOUNT RECOVERY</div>
         </div>
         <div class="saito-overlay-form-text">${intro}</div>
         <div class="saito-overlay-subform">
          
           <div class="saito-overlay-form-subtext">
-          	Provide an email address and password to use Account Recovery. 
-          	Your browser will encrypt your wallet and email you a copy.
+          	Provide an email address and password to enable Account Recovery. 
+          	Your browser will use this information to encrypt your wallet, and email you an encrypted copy.
           </div>
          
           <div class="saito-overlay-subform-inputs">
@@ -39,7 +39,7 @@ module.exports = BackupTemplate = (identifier, newIdentifier) => {
       		<div class="saito-overlay-form-checkbox-container">	
 	      		<input type="checkbox" class="saito-overlay-subform-checkbox" checked />
 	      		<div class="saito-overlay-subform-text">
-	      			Save an encrypted copy on-chain, 
+	      			save an encrypted copy on-chain, 
 	      			so I can recover my account quickly and easily on any device
 	      		</div>
       		</div>

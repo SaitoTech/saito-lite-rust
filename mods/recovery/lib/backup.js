@@ -87,7 +87,7 @@ class Backup {
 	//
 	async success() {
 		let this_self = this;
-		siteMessage('Wallet backed up on blockchain', 4000);
+		siteMessage('wallet backup successful', 10000);
 		
 		setTimeout(async function(){
 			this_self.app.options.wallet.backup_required_msg = 0;
@@ -106,7 +106,7 @@ class Backup {
 			this_self.app.connection.emit(
 				'saito-header-update-message',
 				{
-					msg: 'Wallet backup required',
+					msg: 'wallet backup needed',
 					flash: true,
 					callback: function() {
 						this_self.app.connection.emit(
@@ -123,6 +123,9 @@ class Backup {
 	async showLoaderOverlay(msg = null){
 		this.app.options.wallet.backup_required_msg = 0;
 		await this.app.wallet.saveWallet();
+
+		document.querySelector('#saito-overlay-form-header-title').innerHTML = 
+		`Enabling Account Recovery`;
 
 		let div = document.querySelector(
 			'#backup-template .saito-overlay-subform'
