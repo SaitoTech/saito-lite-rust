@@ -61,6 +61,7 @@ stats overlay
 
 .settlers-stats-overlay {
 	padding: min(2rem, 1.5vw, 2.5vh);
+	min-height: 650px;
 }
 
 .settlers-dice-histogram {
@@ -237,13 +238,26 @@ stats overlay
 }
 
 .stats-header .overlay-tab {
-	padding: 0.5rem;
-	border: 1px dotted;
+	padding: 0.5rem 2rem;
+	/*border: 1px dotted;*/
 	cursor: pointer;
+	position: relative;
+	text-shadow: 1px 1px 1px #62616388;
 }
 
 .stats-header .overlay-tab.active-tab{
-	border: 1px solid;
+	/*border: 1px solid;*/
+	text-shadow: 1px 1px 1px #626163;
+}
+
+.stats-header .overlay-tab.active-tab::after {
+    content: "~";
+    position: absolute;
+    top: 0.5rem;
+    font-size: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+	text-shadow: 1px 1px 1px #626163;
 }
 
 .overlay-page {

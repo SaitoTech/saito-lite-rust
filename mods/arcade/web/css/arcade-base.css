@@ -67,6 +67,7 @@
 
 .arcade-game-initializer-success-button {
 	margin: 3rem auto;
+	width: calc(100% -2rem);
 }
 
 .arcade-central-panel{
