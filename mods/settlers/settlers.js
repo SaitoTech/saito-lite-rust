@@ -341,12 +341,14 @@ class Settlers extends GameTemplate {
 			has_cards = true;
 		}
 
-		this.app.browser.prependElementToSelector(
-			`<div class="mobile"><div class="trade">trade</div><div class="cards ${
-				has_cards ? '' : 'hidden'
-			}">cards</div><div class="score">score</div></div>`,
-			'.hud-body'
-		);
+		if (!document.querySelector(".mobile")) {
+			this.app.browser.prependElementToSelector(
+				`<div class="mobile"><div class="trade">trade</div><div class="cards ${
+					has_cards ? '' : 'hidden'
+				}">cards</div><div class="score">score</div></div>`,
+				'.hud-body'
+			);
+		}
 
 		//
 		// hook up interactivity

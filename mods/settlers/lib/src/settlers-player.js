@@ -1,4 +1,5 @@
 class SettlersPlayer {
+
   //Select the person to steal from
   playerMoveBandit(player, hexId) {
     let settlers_self = this;
@@ -58,16 +59,25 @@ class SettlersPlayer {
   // Select the target spot
   //
   playerPlayBandit() {
+
+    let xpos = 0;
+    let ypos = 0;
+
     this.updateStatus(`<div class="player-notice"><span>Move the ${this.b.name}</span></div>`);
     this.updateControls("");
     let settlers_self = this;
     $(".sector-container").addClass("rhover");
     $(".sector-container").off();
-    $(".sector-container").on("click", function () {
+    $('.sector-container').on('mousedown', function (e) {
+      xpos = e.clientX;
+      ypos = e.clientY;
+    });
+    $('.sector-container').on('mouseup', function (e) {
+      if (Math.abs(xpos-e.clientX) > 4) { return; }
+      if (Math.abs(ypos-e.clientY) > 4) { return; }
       $(".sector-container").off();
       $(".sector-container").removeClass("rhover");
       let slot = $(this).attr("id");
-
       settlers_self.addMove(`move_bandit\t${settlers_self.game.player}\t${slot}`);
       settlers_self.endTurn();
     });
