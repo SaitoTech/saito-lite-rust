@@ -580,13 +580,15 @@ class Solitrio extends OnePlayerGameTemplate {
 			if (mv[0] === 'win') {
 				this.game.state.session.round++;
 				this.game.state.session.wins++;
-				this.overlay.show(this.returnStatsHTML('Congratulations!'));
+				this.overlay.show(this.returnStatsHTML('Congratulations!'), ()=> {
+					this.newRound();
+					this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.publicKey])}\troundover\t${JSON.stringify([])}`);
+					this.restartQueue();
+				});
 
 				$(".stats-menu-controls").html(`<button id="quit" class="option saito-button-primary">Start Next Game</button>`);
-				$(".stats-menu-controls .saito-button-primary").on("click", () => { this.overlay.hide(); });
-
-				this.newRound();
-				this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.publicKey])}\troundover\t${JSON.stringify([])}`);
+				$(".stats-menu-controls .saito-button-primary").on("click", () => { this.overlay.close(); });
+				return 0;
 			}
 
 			if (mv[0] === 'lose') {
