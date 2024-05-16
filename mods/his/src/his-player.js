@@ -3491,7 +3491,9 @@ does_units_to_move_have_unit = true; }
   }
 
 //
-// duplicates playerMoveFormationInClear
+// duplicates playerMoveFormationInClear -- this is the function we hit
+// if we use the shortcut "continue move". the reason we need to duplicate
+// is that the handling of the OPS is slightly different.
 //
   async playerContinueToMoveFormationInClear(his_self, player, faction, spacekey, ops_to_spend, ops_remaining=0) {
 
@@ -3507,6 +3509,10 @@ does_units_to_move_have_unit = true; }
     let space = this.game.spaces[spacekey];
     let protestant_player = his_self.returnPlayerOfFaction("protestant");
     let parent_player = his_self.returnPlayerCommandingFaction(faction);
+
+console.log("continue to move formation in clear: ");
+console.log("ops to spend: " + ops_to_spend);
+console.log("ops remaining: " + ops_remaining);
 
 	//
 	// first define the functions that will be used internally
@@ -3530,7 +3536,7 @@ does_units_to_move_have_unit = true; }
  		  if (!space.pass.includes(spacekey)) {
 		    return 1;
 		  } else {
-		    if (ops_remaining >= 1) {
+		    if (ops_remaining > 1) {
 		      // we have to flag and say, "this costs an extra op"
 		      return 1;
 		    } else {
@@ -6855,15 +6861,15 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   }
   async playerShowTutorial(his_self, player, faction, ops_to_spend=1, ops_remaining=0) {
 
-    this.game.state.may_explore['england'] = 1;
-    this.game.state.may_explore['france'] = 1;
-    this.game.state.may_explore['hapsburg'] = 1;
-    this.game.state.may_conquer['england'] = 1;
-    this.game.state.may_conquer['france'] = 1;
-    this.game.state.may_conquer['hapsburg'] = 1;
-    this.game.state.may_colonize['england'] = 1;
-    this.game.state.may_colonize['france'] = 1;
-    this.game.state.may_colonize['hapsburg'] = 1;
+    his_self.game.state.may_explore['england'] = 1;
+    his_self.game.state.may_explore['france'] = 1;
+    his_self.game.state.may_explore['hapsburg'] = 1;
+    his_self.game.state.may_conquer['england'] = 1;
+    his_self.game.state.may_conquer['france'] = 1;
+    his_self.game.state.may_conquer['hapsburg'] = 1;
+    his_self.game.state.may_colonize['england'] = 1;
+    his_self.game.state.may_colonize['france'] = 1;
+    his_self.game.state.may_colonize['hapsburg'] = 1;
 
     let title = "";
     let text = "";
@@ -6878,20 +6884,20 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (faction == "protestant") {
 
       title = "Publish a Treatise?";
-      text = "You get +1 roll for each adjacent Protestant space. Committing debaters give you bonuses flipping spaces, but make them more vulnerable in theological debates...";
+      text = "You get +1 roll for each adjacent Protestant space. Committing debaters give bonus but make debaters vulnerable in theological debates...";
       img = "/his/img/backgrounds/move/printing_press.jpg";
       card = "";
       options.push({ title : title , text : text , img : img , card : card });
 
       title = "Watch the Discard Pile";
-      text = "The Protestants are the only power that can retrieve cards from the discard pile. Retrieve valuable cards and play or hold them for the next turn...";
+      text = "Play your home card to retrieve cards from the discard pile. Play immediately or hold for future use...";
       img = "/his/img/backgrounds/move/publish_treatise.jpg";
       card = his_self.returnCardImage("007");
       options.push({ title : title , text : text , img : img , card : card });
 
       if (ops_remaining == 1) {
         title = "Translate the Bible!";
-        text = "Translating the New Testament into a language gives 6 reformation attempts. Translating the Full Bible gives 6 more and earns 1 VP per translation.";
+        text = "Translate the New Testament for 6 reformation attempts. Translate the Full Bible for 6 more with +1 modifier on each roll and a 1 VP bonus.";
         img = "/his/img/backgrounds/move/translate.jpg";
         card = "";
         options.push({ title : title , text : text , img : img , card : card });
@@ -6905,20 +6911,20 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (faction == "papacy") {
 
       title = "Convene a Debate?";
-      text = "Leipzig Debate lets you pick your own debater - Eck is a great choice. If you get lucky, the Protestants will need to use their Home Card to send Luther, wasting 5 Protestant OPs";
+      text = "Play Leipzig Debate and pick your strongest debater. You can burn opponents or force Luther to defend his flock, wasting 5 Protestant OPs";
       img = "/his/img/backgrounds/move/theological_debate.jpg";
       card = his_self.returnCardImage("007");
       options.push({ title : title , text : text , img : img , card : card });
 
       title = "Conquer Florence";
-      text = "Build troops in Rome. Move them to Siena. Control Siena. Then move them to Florence and besiege the city. The next turn you can assault it.";
+      text = "Move your troops into Siena. Control Siena to create a line of control to Florence. Then besiege and assault the city.";
       img = "/his/img/backgrounds/move/papacy-florence.png";
       card = "";
       options.push({ title : title , text : text , img : img , card : card });
 
       if (ops_remaining == 1) {
         title = "Build St. Peters!";
-        text = "The Papacy earns VP for building St. Peter's Cathedral. Use any excess OPs to build the basilica.";
+        text = "The Papacy earns VP for building St. Peter's Cathedral.";
         img = "/his/img/backgrounds/move/saint_peters.jpg";
         card = "";
         options.push({ title : title , text : text , img : img , card : card });
@@ -6931,20 +6937,20 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (faction == "ottoman") {
 
       title = "Crush the Hungarians";
-      text = "Conquering Belgrade and Buda will earn 2 VP and force the Hapsburgs into declaring war...";
+      text = "Conquer Belgrade and Buda to earn 2 VP and force the Hapsburgs into war...";
       img = "/his/img/backgrounds/tutorials/ottoman-hungary.png";
       card = "";
       options.push({ title : title , text : text , img : img , card : card });
 
       title = "Control the Mediterranean";
-      text = "Piracy is harder around fortresses. Build troops in Athens, move ships into the Aegean Sea, and transport those units to Rhodes to assault the fortress...";
+      text = "Piracy is harder around fortresses. Move ships into the Aegean Sea, and transport your units to Rhodes to assault the fortress...";
       img = "/his/img/backgrounds/tutorials/ottoman-rhodes.png";
       card = "";
       options.push({ title : title , text : text , img : img , card : card });
 
       if (his_self.game.state.events.barbary_pirates == 1) {
         title = "Piracy?!";
-        text = "Build corsairs in Algiers. Move them in packs around the Mediterranean and target opponents with Piracy. Every hit earns VP or a card draw...";
+        text = "Build corsairs in Algiers. Move them around the Mediterranean and target opponents with Piracy. Every hit earns VP or a card draw...";
         card = his_self.returnCardImage("009");
         img = "/his/img/backgrounds/move/piracy.jpg";
         options.push({ title : title , text : text , img : img , card : card });
@@ -6959,21 +6965,21 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
       if (his_self.game.spaces["metz"].besieged == 0) {
         title = "Control Metz";
-        text = "Build troops in Becanson. Move them north into Metz. Your forces will automatically besiege the city. The next turn, spend 1 OP to assault and hopefully capture it.";
+        text = "Build troops on Becanson and move them north to Metz. Assault the city the following turn.";
         img = "/his/img/backgrounds/tutorials/hapsburg-metz.png";
         card = "";
         options.push({ title : title , text : text , img : img , card : card });
       }
 
       title = "Invade France";
-      text = "Build infantry in Navarre. Move them north to Bordeaux. If the French withdraw into fortifications spend 1 OP to assault Bordeaux the next turn.";
+      text = "Build infantry in Navarre and move them north to besiege Bordeaux. Assault the city the following turn.";
       img = "/his/img/backgrounds/tutorials/hapsburg-bordeaux.png";
       card = "";
       options.push({ title : title , text : text , img : img , card : card });
 
       if (his_self.game.state.may_conquer['hapsburg'] == 1) {
         title = "New World Conquest";
-        text = "Conquests roll dice in the New World Phase to see if they succeed. In addition to earning VP, successful conquests can also earn bonus cards subsequent turns.";
+        text = "Conquests are more difficult than Explorations, but can earn you bonus cards in the New World phase...";
         img = "/his/img/backgrounds/move/conquer.jpg";
         card = "";
         options.push({ title : title , text : text , img : img , card : card });
@@ -6981,7 +6987,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
       if (his_self.game.state.may_colonize['hapsburg'] == 1) {
         title = "Found a Colony";
-        text = "At the end of every turn your colonies roll dice for bonus cards. Consider sending an expedition now for more ops later in the game.";
+        text = "At the end of every round each colony rolls dice to win bonus cards for the following round...";
         img = "/his/img/backgrounds/move/colonize.jpg";
         card = "";
         options.push({ title : title , text : text , img : img , card : card });
@@ -6995,13 +7001,13 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (faction == "france") {
 
       title = "Build a Chateaux";
-      text = "Your Home Card allows you to get VP and bonus cards, and your chance of success increases if France is not under attack.";
+      text = "Your Home Card earns VP and bonus cards, and your chance of success increases if France is not under attack.";
       img = "/his/img/backgrounds/chateaux.png";
       card = his_self.returnCardImage("004");
       options.push({ title : title , text : text , img : img , card : card });
 
       title = "Conquer the New World";
-      text = "Conquests are harder than Explorations. In addition to earning VP if they succeed, they also roll dice for bonus cards at the end of every turn. Consider sending an expedition!";
+      text = "Conquests are more difficult than Explorations, but can earn you bonus cards in the New World phase...";
       img = "/his/img/backgrounds/move/conquer.jpg";
       card = "";
       options.push({ title : title , text : text , img : img , card : card });
@@ -7016,7 +7022,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
       if (his_self.game.state.may_colonize['france'] == 1) {
         title = "Found a Colony";
-        text = "You are allowed up to three colonies. At the end of every turn your surviving colonies will roll dice for bonus cards. Having more cards can provide a crucial advantage later in the game."
+        text = "At the end of every round each colony rolls dice to win bonus cards for the following round...";
         img = "/his/img/backgrounds/move/colonize.jpg";
         card = "";
         options.push({ title : title , text : text , img : img , card : card });
@@ -7024,7 +7030,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
       if (his_self.game.state.may_conquer['france'] == 1) {
         title = "Fortify Italy";
-        text = "It is hard for France to move forces quickly into Italy, and Milan is vulnerable to attack. Consider building forces and moving them over to protect your Italian territories.";
+        text = "France struggles to move forces into Italy and Milan is vulnerable to attack. Protect and expand your Italian territories.";
         img = "/his/img/backgrounds/tutorials/france-milan.png";
         card = "";
         options.push({ title : title , text : text , img : img , card : card });
