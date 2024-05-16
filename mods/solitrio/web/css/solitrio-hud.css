@@ -10,3 +10,15 @@
 .controls ul {
 	border-radius: 0.5rem;
 }
+
+.controls.stats-menu-controls {
+	min-height: unset;
+	margin-top: unset;
+	width: 100%;
+	display: flex;
+	justify-content: space-evenly;
+}
+
+.controls.stats-menu-controls .option{
+	margin-top: 2rem;
+}

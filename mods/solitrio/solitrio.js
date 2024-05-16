@@ -135,7 +135,7 @@ class Solitrio extends OnePlayerGameTemplate {
 			class: 'game-stats',
 			callback: function (app, game_mod) {
 				game_mod.menu.hideSubMenus();
-				game_mod.overlay.show(game_mod.returnStatsHTML('Solitrio!'));
+				game_mod.overlay.show(game_mod.returnStatsHTML('Solitrio'));
 			}
 		});
 
@@ -166,15 +166,14 @@ class Solitrio extends OnePlayerGameTemplate {
 		} else if (!this.hasAvailableMoves()) {
 			if (this.game.state.recycles_remaining == 0) {
 				this.prependMove('lose');
-				this.overlay.show(this.returnStatsHTML('Solitrio!', 1));
-				let go = await sconfirm('No more moves. Start new Game?');
-				if (go) {
+				this.overlay.show(this.returnStatsHTML('Game over', 1), async ()=> {
 					await this.clearTable();
 					this.endTurn();
-				} else {
-					this.moves.shift();
-				}
-				this.overlay.hide();
+				});
+				$(".stats-menu-controls").html(`<button id="undo" class="option saito-button-primary">Go back</button><button id="quit" class="option saito-button-primary">Start Next Game</button>`);
+				this.attachHUDEvents();
+				$(".stats-menu-controls .saito-button-primary").on("click", () => { this.overlay.hide(); });
+
 			} else {
 				this.shuffleFlash();
 				$('#hint').css('display', 'none');
@@ -581,13 +580,13 @@ class Solitrio extends OnePlayerGameTemplate {
 			if (mv[0] === 'win') {
 				this.game.state.session.round++;
 				this.game.state.session.wins++;
-				this.overlay.show(this.returnStatsHTML('Congratulations! You win the deal'));
+				this.overlay.show(this.returnStatsHTML('Congratulations!'));
+
+				$(".stats-menu-controls").html(`<button id="quit" class="option saito-button-primary">Start Next Game</button>`);
+				$(".stats-menu-controls .saito-button-primary").on("click", () => { this.overlay.hide(); });
+
 				this.newRound();
-				this.game.queue.push(
-					`ROUNDOVER\t${JSON.stringify([
-						this.publicKey
-					])}\troundover\t${JSON.stringify([])}`
-				);
+				this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.publicKey])}\troundover\t${JSON.stringify([])}`);
 			}
 
 			if (mv[0] === 'lose') {
@@ -722,7 +721,6 @@ class Solitrio extends OnePlayerGameTemplate {
 no status atm, but this is to update the hud
 */
 	displayUserInterface() {
-		let solitrio_self = this;
 
 		let html =
 			'<span>Arrange the cards from 2 to 10, one suit per row by moving cards into empty spaces. </span>';
@@ -747,6 +745,11 @@ no status atm, but this is to update the hud
 		option += '</li></ul>';
 
 		this.updateStatusWithOptions(html, option);
+		this.attachHUDEvents();
+	}
+
+	attachHUDEvents(){
+		let solitrio_self = this;
 
 		$('.option').off();
 		$('.option').on('click', async function () {
@@ -779,6 +782,7 @@ no status atm, but this is to update the hud
 				return;
 			}
 		});
+
 	}
 
 	returnCardImageHTML(name) {
