@@ -107,7 +107,9 @@ input[type=number] {
   border: 1px solid var(--border-color-general-dividers); /* testing */
 }
 
-
+#cryptoManagerFeedback {
+  display: none;
+}
 
 .crypto-stake-offer-btn-container {
   display: flex;
