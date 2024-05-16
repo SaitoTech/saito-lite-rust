@@ -103,9 +103,11 @@ input[type=number] {
 
 .crypto_transfer_btn.secondary {
   background: none;
-  color: var(--saito-button-background);
+  color: var(--saito-white);
   border: 1px solid var(--border-color-general-dividers); /* testing */
 }
+
+
 
 .crypto-stake-offer-btn-container {
   display: flex;
