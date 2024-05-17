@@ -740,12 +740,10 @@ if (this.game.options.scenario == "is_testing") {
 	    this.winter_overlay.hide();
 	    this.playerReturnWinterUnits(faction);
 	  } else {
-	    //this.updateStatus(this.returnFactionName(faction) + " returning units to capital");
+	    this.updateStatus(this.returnFactionName(faction) + " returning units to capital");
 	  }
 
-	  // simultaneous so pass-through and resolve clears HALTED
-	  return 1;
-	  //return 0;
+	  return 0;
 
 	}
 
@@ -2198,12 +2196,19 @@ if (this.game.options.scenario == "is_testing") {
 	    //
 	    if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
 
-	      let explorer_power = this.explorers[explorer].power;
 	      let modifications = 0;
-              if (this.game.state[`${faction}_uncharted`]) { modifications--; }
+	      let explorer_power = 1;
+	      let explorer_name = "Cabot";
               if (this.game.state.mercators_map == faction) { modifications+=2; }
+	      let msg = `${this.returnFactionName(faction)} - Cabot [+${1+modifications} on roll]:`;
+              if (this.game.state[`${faction}_uncharted`] && explorer_name != "Cabot") { modifications--; }
+	
+	      if (this.explorers[explorer]) {
+		explorer_power = this.explorers[explorer].power;
+		explorer_name = this.explorers[explorer].name;
+	        msg = `${this.returnFactionName(faction)} - ${this.returnExplorerName(explorer)} [+${explorer_power + modifications} on roll]:`;
+	      }
 
-	      let msg = `${this.returnFactionName(faction)} - ${this.returnExplorerName(explorer)} [+${explorer_power + modifications} on roll]:`;
 	      let html = '<ul>';
 	      if (this.game.state.newworld['stlawrence'].claimed != 1) {
 		html += '<li class="option" id="stlawrence">St. Lawrence (1 VP)</li>';
@@ -3655,7 +3660,7 @@ console.log("setting unit from " + key + " as relief force");
 	  let player_factions = this.returnPlayerFactions(this.game.player)
 
 	  // if no-one survived, let's skip the formalities
-	  let survivors = this.returnHostileLandUnitsInSpace(attacker, spacekey);
+	  let survivors = this.returnHostileOrIndependentLandUnitsInSpace(attacker, spacekey);
 	  if (survivors == 0) { return 1; }
 
 	  if (player_factions.includes(attacker) || this.returnPlayerCommandingFaction(attacker) == this.game.player) {
