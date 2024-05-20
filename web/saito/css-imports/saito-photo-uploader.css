@@ -47,6 +47,22 @@
     }
 }
 
+
+.uploader-menu {
+    position: absolute;
+    bottom: 8rem;
+    z-index: 10;
+    background-color: #000000b0;
+    box-shadow: var(--box-shadow-sidebar-elements);
+    border-radius: 1rem; 
+    padding: 0 2rem; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 10rem;
+
+}
 .uploader-content {
     display: none;
     height: 100%;
@@ -83,10 +99,7 @@
 
 
  .uploader-change-photo, .uploader-remove-photo {
-
     z-index: 10;
-    position: absolute;
-    bottom: 8rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -98,14 +111,17 @@
 
 .uploader-change-photo i, .uploader-remove-photo i {
     color:var(--saito-red) ;
+    font-size: 2.6rem;
+    cursor: pointer;
 }
 
 
 
 .uploader-remove-photo {
-    left: 2rem; 
+
+
 }
 
 .uploader-change-photo {
-    right: 2rem; 
+margin-top: 2rem;
 }
