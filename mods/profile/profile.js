@@ -85,11 +85,10 @@ class Profile extends ModTemplate {
 					}
 			}
 			if(description){
-				console.l
-				const elementId = `${publicKey}-profile-description`;
+				const elementId = `${key}-profile-description`;
 				const element = document.querySelector(`#${elementId}`);
 				if (element) {
-					element.style.backgroundImage = `url('${description}')`;
+					element.textContent = description;
 				}
 			}
 
