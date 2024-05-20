@@ -56,6 +56,10 @@ class Relay extends ModTemplate {
       }
     });
 
+    app.connection.on('relay-notify-peer', (publicKeys, data) => {
+      this.sendRelayMessage(publicKeys, "notify", data); 
+    });
+
   }
 
 
@@ -190,6 +194,9 @@ class Relay extends ModTemplate {
           return 0;
         }
 
+        if (message.request === "notify"){
+          app.connection.emit("relay-notification", message.data.module, message.data.notification);
+        }
       }
 
       if (message.request === "relay peer message") {
