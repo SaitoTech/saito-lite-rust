@@ -29,21 +29,36 @@
 }
 
 
-.saito-profile-cover {
-  width: 100%;
-  height: min(15rem, 12vh);
-  background: url("https://pbs.twimg.com/profile_banners/842988756/1679408451/1080x360");
-  border-radius: var(--border-radius-profile-banner);
+
+
+.saito-profile-banner {
+  width: 100%;  
+  height: 0;    
+  padding-top: 33.33%; 
+  background-image: url("https://pbs.twimg.com/profile_banners/842988756/1679408451/1080x360");
+  background-size:contain;
+  background-position: center;
+  border-radius: var(--border-radius-profile-banner); 
+  position: relative;
 }
+
 
 .saito-profile-identicon {
   border: var(--border-thickness-identicon-square-profile) solid var(--border-color-identicon-square-profile);
   width: 10rem;
   height: 10rem;
+  background-size:  cover;
   border-radius: 5%;
   margin-top: -4.5rem;
   z-index: 1;
   margin-left: 1rem;
+}
+
+.saito-banner-edit {
+  margin-left: 0;
+  right: .5rem;
+  bottom: .5rem;
+  position: absolute;
 }
 
 .saito-profile-info {
@@ -53,6 +68,13 @@
   margin: 2rem 0 0.5rem 1.2rem;
 }
 
+.saito-profile-description {
+  margin-right: .5rem;
+}
+
+.saito-description-edit {
+  font-size: 1.5rem;
+}
 
 .saito-profile-info .saito-username {
   font-size: 1.8rem;

@@ -1,0 +1,127 @@
+
+.uploader-uploaded-photo {
+	height: auto;
+	object-fit: cover;
+	height: 100%;
+	width: 100%;
+	left: 0;
+	bottom: 0;
+	padding: 1rem;
+	/* display: none; */
+	position: absolute;
+	height: 90%;
+	top: 0;
+}
+
+.photo-uploader {
+	background-color: var(--saito-background-color);
+	height: 60rem;
+	width: 70rem;
+	/* position: absolute; */
+	/* top: 50%;
+	left: 50%; */
+	padding: 5rem;
+	/* transform: translate(-50%, -50%); */
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid;
+	font-size: 2rem;
+	border-radius: 0.5rem;
+	color: var(--saito-font-color);
+}
+
+@media (max-width: 768px) {
+    .photo-uploader {
+        width: 90vw; 
+        padding: 5vw; 
+    }
+}
+
+@media (max-width: 480px) {
+    .photo-uploader {
+        width: 95vw;
+        font-size: calc(14px + 1vw); 
+    }
+}
+
+
+.uploader-menu {
+    position: absolute;
+    bottom: 8rem;
+    z-index: 10;
+    background-color: #000000b0;
+    box-shadow: var(--box-shadow-sidebar-elements);
+    border-radius: 1rem; 
+    padding: 0 2rem; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 10rem;
+
+}
+.uploader-content {
+    display: none;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+.uploader-actions {
+    width: 100%; 
+    position: absolute;
+    bottom: 0; 
+
+    justify-content: space-between;
+    align-items: center; 
+    padding: 1rem;
+    z-index: 10; 
+  
+}
+
+.uploader-actions > :nth-child(1) {
+    margin-right: 1rem; 
+}
+
+@media (max-width: 768px) {
+    .uploader-actions {
+        flex-direction: column; 
+        justify-content: center;
+    }
+
+    .uploader-actions > :nth-child(1) {
+        margin-right: 0; 
+        margin-bottom: 1rem;
+    }
+}
+
+
+ .uploader-change-photo, .uploader-remove-photo {
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer; 
+    font-size: 4rem;
+   
+
+}
+
+.uploader-change-photo i, .uploader-remove-photo i {
+    color:var(--saito-red) ;
+    font-size: 2.6rem;
+    cursor: pointer;
+}
+
+
+
+.uploader-remove-photo {
+
+
+}
+
+.uploader-change-photo {
+margin-top: 2rem;
+}
