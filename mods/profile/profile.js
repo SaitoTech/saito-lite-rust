@@ -72,6 +72,28 @@ class Profile extends ModTemplate {
 			this.updateDescription = new UpdateDescription(this.app, this);
 			this.updateDescription.render(element.textContent);
 		});
+
+		app.connection.on("profile-update-dom", (newtx) => {
+			console.log(newtx, "this is the new transaction")
+			let {banner, description} = newtx.msg.data;
+				let publicKey = this.publicKey
+			if(banner) {
+				const elementId = `${publicKey}-profile-banner`;
+					const element = document.querySelector(`#${elementId}`);
+					if (element) {
+						element.style.backgroundImage = `url('${banner}')`;
+					}
+			}
+			if(description){
+				console.l
+				const elementId = `${publicKey}-profile-description`;
+				const element = document.querySelector(`#${elementId}`);
+				if (element) {
+					element.style.backgroundImage = `url('${description}')`;
+				}
+			}
+
+		})
 	}
 
 	async onConfirmation(blk, tx, conf) {
@@ -94,7 +116,7 @@ class Profile extends ModTemplate {
 			const obj = {};
 			for (const key in data) {
 				if (data.hasOwnProperty(key)) {
-					if (
+				if (
 						key === 'archive' &&
 						typeof data[key] === 'object' &&
 						!Array.isArray(data[key])
@@ -115,8 +137,10 @@ class Profile extends ModTemplate {
 				request: 'update profile',
 				data: obj
 			};
+			
 			newtx.serialize_to_web(this.app);
 			await newtx.sign();
+			this.app.connection.emit('profile-update-dom', newtx)
 			await this.app.network.propagateTransaction(newtx);
 		} catch (error) {
 			console.error(
