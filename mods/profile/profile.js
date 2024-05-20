@@ -61,7 +61,8 @@ class Profile extends ModTemplate {
 			this.photoUploader.callbackAfterUpload = async (photo) => {
 				let banner = await this.app.browser.resizeImg(photo);
 				this.sendProfileTransaction({ banner });
-				siteMessage('Updating profile photo');
+			
+		
 			};
 			this.photoUploader.render(this.photo);
 		});
@@ -85,7 +86,7 @@ class Profile extends ModTemplate {
 					}
 			}
 			if(description){
-				const elementId = `${key}-profile-description`;
+				const elementId = `${publicKey}-profile-description`;
 				const element = document.querySelector(`#${elementId}`);
 				if (element) {
 					element.textContent = description;
@@ -127,6 +128,7 @@ class Profile extends ModTemplate {
 				}
 			}
 
+			this.app.connection.emit("saito-header-update-message", {msg: "broadcasting profile update"})
 			let newtx =
 				await this.app.wallet.createUnsignedTransactionWithDefaultFee(
 					this.publicKey
@@ -163,6 +165,9 @@ class Profile extends ModTemplate {
 			}
 			let txmsg = tx.returnMessage();
 			console.log('from', from);
+
+			this.app.connection.emit("saito-header-update-message", {msg: ""})
+			siteMessage('Profile updated', 2000);
 
 			if (this.app.keychain.returnKey(from)) {
 				let data = {};
