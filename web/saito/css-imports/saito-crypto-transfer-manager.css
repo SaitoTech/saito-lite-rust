@@ -6,16 +6,18 @@
   border-radius: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 1.6rem;
+  gap: 2.5rem;
   width: auto;
   padding: 3rem;
   min-width: 55rem;
 }
 
+.game-crypto-transfer-manager-container .auth_title {
+  margin: 0rem;
+}
+
 .ignore {
   font-size: 2rem;
-  margin-bottom: 1.5rem;
-  margin-top: 1rem;
 }
 
 input[type="checkbox"].ignore_checkbox {
@@ -94,7 +96,6 @@ input[type=number] {
   margin-right: auto;
   position: relative;
   font-size: 1.8rem;
-  text-transform: uppercase;
   transition: all .2s ease-in-out;
   cursor: pointer;
   border-radius: 0.5rem;
@@ -159,7 +160,7 @@ input[type=number] {
 
 .amount {
   font-size: 2.4em;
-  margin: 1rem auto;
+  margin: auto;
 }
 .from_address {
   margin-bottom: 20px;
@@ -174,7 +175,6 @@ input[type=number] {
   overflow: hidden;
 }
 .game-crypto-transfer-manager-container .spinner {
-  margin-bottom: 2rem;
   max-width: 10rem;
   margin-left: auto;
   margin-right: auto;
@@ -228,7 +228,7 @@ input[type=number] {
 }
 
 .crypto_transfer_btn {
-  margin-top: 1rem;
+  
 }
 
 .transfer-address .to-publickey {
@@ -238,4 +238,10 @@ input[type=number] {
 
 .transfer-address .to-address {
   line-height: 2.5rem;
+}
+
+.crypto-transfer-fast-mode {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
