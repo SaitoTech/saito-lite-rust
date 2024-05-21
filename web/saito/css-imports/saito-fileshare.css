@@ -1,0 +1,35 @@
+
+.saito-file-transfer-overlay {
+	width: min(45rem, 90vw);
+	height: min(55rem, 90vh);
+	padding: 3rem;
+}
+
+.teleporter-status-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.5rem;
+	margin: 0.5rem;
+}
+
+
+/**** Temporary for developing file transfer in chat ***/
+.saito-file-transfer{
+  border-radius: var(--border-radius-file-transfer);
+  border: 1px dashed;
+  display: grid;
+  align-items: center;
+  margin: 1rem 0;
+  padding: 1rem;
+  grid-template-columns: min-content 1fr;
+  grid-template-rows: 1fr 1fr;
+  row-gap: 1rem;
+  column-gap: 2rem;
+}
+
+.saito-file-transfer i {
+  font-size: 4rem;
+  grid-row: 1 / span 2;
+}
+

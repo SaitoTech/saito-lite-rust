@@ -1,4 +1,6 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
+const FileShareOverlay = require('./lib/fileshare-overlay');
+//const FileReceiveOverlay = require('./lib/filereceive-overlay');
 
 class Fileshare extends ModTemplate {
 	constructor(app) {
@@ -11,8 +13,12 @@ class Fileshare extends ModTemplate {
 		this.chunkSize = 16348;
 		this.available = false;
 
-		this.callback = null;
 		this.stun = null;
+		/*
+		For the sender, this is the uploaded file
+		For the recipient, this is an object with file metadata
+		*/
+		this.file = null;
 		this.fileId = null;
 		this.incoming = {};
 
@@ -80,50 +86,34 @@ class Fileshare extends ModTemplate {
 
 							fss.recipient = recipient;
 							fss.offset = 0;
-							fss.addFileUploader(id);
 
-							const input = document.getElementById(
-								`hidden_file_element_${id}`
-							);
+							fss.overlay = new FileShareOverlay(app, fss);
+							fss.overlay.render();
 
 							//
-							if (fss.stun.hasConnection(recipient)) {
-								//
-								// When stun connection is established, select a file to upload
-								//
-								console.log('Stun fileshare: select file');
-								input.click();
-							} else {
-								console.log(
-									'Stun fileshare: createPeerConnection'
-								);
+							if (!fss.stun.hasConnection(recipient)) {
 								fss.stun.createPeerConnection(recipient);
-								siteMessage("Establishing connection...", 1000);
-								let oneUse = true;
-								fss.app.connection.on("stun-data-channel-open", async peerId => {
-									if (oneUse && peerId == recipient){
-										oneUse = false;
-										let c = await sconfirm("Connection Established. Select a file to send");
-										if (c){
-											input.click();	
-										}
+
+								fss.app.connection.on("stun-data-channel-open", peerId => {
+									if (peerId == recipient){
+										fss.overlay?.onConnectionSuccess();
 									}
 								})
+							}else{
+								fss.overlay.onConnectionSuccess();
 							}
+							
+							fss.app.connection.on("stun-data-channel-close", (peerId) => {
+								if (peerId == recipient){
+									fss.overlay?.onConnectionFailure();
+								}
+							});
+							fss.app.connection.on("stun-connection-faled", (peerId) => {
+								if (peerId == recipient){
+									fss.overlay?.onConnectionFailure();
+								}
+							});
 
-							fss.callback = (file) => {
-								let html = `
-									<div class="saito-file-transfer" id="saito-file-transfer-${fss.fileId}">
-									<i class="fa-solid fa-file"></i>
-									<div class="file-name">${file.name.replace(/\s+/g, '')}</div>
-									<div class="file-size">${fss.calcSize(file.size)}</div>
-									</div>`;
-								fss.app.connection.emit(
-									'chat-message-user',
-									chat_id,
-									html.replace(/\s+/, '')
-								);
-							};
 						}
 					}
 				];
@@ -184,11 +174,20 @@ class Fileshare extends ModTemplate {
 					);
 					if (answer) {
 						this.fileId = txmsg.data.id;
+
+						this.file = {
+							name: txmsg.data.name,
+							size: txmsg.data.size,
+							type: txmsg.data.type
+						};
+
 						this.app.connection.emit('relay-send-message', {
 							recipient: tx.from[0].publicKey,
 							request: 'grant file permission',
 							data: {}
 						});
+						this.overlay.render();
+
 					} else {
 						this.app.connection.emit('relay-send-message', {
 							recipient: tx.from[0].publicKey,
@@ -200,6 +199,7 @@ class Fileshare extends ModTemplate {
 				}
 
 				if (txmsg.request == 'grant file permission') {
+					this.overlay.render();
 					this.chunkFile(this.file, 0);
 					return;
 				}
@@ -253,21 +253,12 @@ class Fileshare extends ModTemplate {
 			    	}
 
 			    	let msg = `<span class="fileshare-info monospace">
-												<span>
-													Receiving: ${Math.floor(
-														(100 * blob.receivedSize) / blob.fileSize
-													)}%
-												</span>
-												<span> 
-													${this.calcSize(blob.receivedSize)} of 
-													${this.calcSize(blob.fileSize)}
-												</span>
-												<span>
-													(${this.byteRatePerSec})
-												</span>
+												<span>Receiving: ${Math.floor((100 * blob.receivedSize) / blob.fileSize)}% </span>
+												<span>${this.calcSize(blob.receivedSize)}</span>
+												<span> of ${this.calcSize(blob.fileSize)}</span>
+												<span>(${this.byteRatePerSec})</span>
 											</span>`;
 
-						console.log('receive msg:', msg);
 						siteMessage(msg);
 
 						if (blob.receivedSize === blob.fileSize) {
@@ -304,139 +295,95 @@ class Fileshare extends ModTemplate {
 		return super.handlePeerTransaction(app, tx, peer, mycallback);
 	}
 
-	addFileUploader(id) {
+	addFileUploader(file) {
 		const fss = this; //file share self
 
-		const hidden_upload_form = `
-      <form id="uploader_${id}" class="saito-file-uploader" style="display:none">
-        <input type="file" id="hidden_file_element_${id}" accept="*" class="hidden_file_element_${id}">
-      </form>
-    `;
+		if (!file) {
+			console.warn('No file chosen');
+			return;
+		}
+		if (file.size === 0) {
+			console.warn('File is empty');
+			return;
+		}
 
-		if (!document.getElementById(`uploader_${id}`)) {
-			if (id) {
-				this.app.browser.addElementToId(hidden_upload_form, id);
-			} else {
-				this.app.browser.addElementToDom(hidden_upload_form);
+
+
+		console.log(
+			`File is ${[file.name, file.size, file.type, file.lastModified].join(' ')}`
+		);
+
+		this.reader = new FileReader();
+
+		this.reader.addEventListener('error', (error) =>
+			console.error('Error reading file:', error)
+		);
+		this.reader.addEventListener('abort', (event) =>
+			console.log('File reading aborted:', event)
+		);
+
+		this.reader.addEventListener('load', async (event) => {
+			//console.log('File Share: onload ', event);
+
+			// attach event for checking closing of tab
+			if (this.file_sending == false && this.event_attached == false) {
+				this.file_sending = true;
+				this.checkCloseTab();
 			}
 
-			const input = document.getElementById(`hidden_file_element_${id}`);
+			await this.createFileChunkTransaction(file, event.target.result);
 
-			console.log(`hidden_file_element_${id}`);
+			this.offset += event.target.result.byteLength;
 
-			input.addEventListener(
-				'change',
-				(e) => {
-					const file = input.files[0];
+			// calculate file transfer speed
+			let currentTimestamp = new Date().getTime();
+			if (currentTimestamp - this.timestampPrev > 1000) {
+				const bytesNow = this.offset;
+				const byteRate = Math.round(
+					(bytesNow - this.bytesPrev) /
+						(currentTimestamp - this.timestampPrev)
+				);
+				this.byteRatePerSec = `${this.calcSize(byteRate * 1000)}/s`;
+				this.timestampPrev = new Date().getTime();
+				this.bytesPrev = bytesNow;
+				if (byteRate > this.byteRateMax) {
+					this.byteRateMax = byteRate;
+				}
+			}
 
-					if (!file) {
-						console.warn('No file chosen');
-						return;
-					}
-					if (file.size === 0) {
-						console.warn('File is empty');
-						return;
-					}
+			let msg = ``;
+			if (this.offset < file.size) {
+				this.chunkFile(file, this.offset);
+				msg = `<span class="fileshare-info monospace">
+													<span>Sending: ${Math.floor((100 * this.offset) / file.size)}%</span>
+													<span>${this.calcSize(this.offset)}</span>
+													<span> of ${this.calcSize(file.size)}</span>
+													<span>(${this.byteRatePerSec})</span>
+												</span>`;
+			} else {
+				this.fileId = null;
+				this.file = null;
+				msg = `<span class="fileshare-info monospace">
+														<span>
+															Sending: ${Math.floor((100 * this.offset) / file.size)}%
+														</span>
+													</span>`;
 
-					console.log(
-						`File is ${[
-							file.name,
-							file.size,
-							file.type,
-							file.lastModified
-						].join(' ')}`
-					);
+				// remove event for checking closing of tab
+				this.file_sending = false;
+				this.checkCloseTab();
+			}
 
-					this.reader = new FileReader();
+			siteMessage(msg);
+		});
 
-					this.reader.addEventListener('error', (error) =>
-						console.error('Error reading file:', error)
-					);
-					this.reader.addEventListener('abort', (event) =>
-						console.log('File reading aborted:', event)
-					);
+		this.fileId = this.app.crypto.generateRandomNumber().substring(0, 12);
 
-					this.reader.addEventListener('load', async (event) => {
-						//console.log('File Share: onload ', event);
-						
-						// attach event for checking closing of tab
-						if (this.file_sending == false && this.event_attached == false) {
-							this.file_sending = true;
-							this.checkCloseTab();
-						}
+		this.file = file;
 
-						await this.createFileChunkTransaction(
-							file,
-							event.target.result
-						);
+		this.overlay.updateFileData();
 
-						this.offset += event.target.result.byteLength;
-
-						// calculate file transfer speed
-						let currentTimestamp = new Date().getTime();
-						if ((currentTimestamp - this.timestampPrev) > 1000) {
-				      const bytesNow = this.offset;
-				      const byteRate = Math.round((bytesNow - this.bytesPrev)  /
-				        (currentTimestamp - this.timestampPrev));
-				      this.byteRatePerSec = `${this.calcSize(byteRate*1000)}/s`;
-				      this.timestampPrev = (new Date()).getTime();
-				      this.bytesPrev = bytesNow;
-				      if (byteRate > this.byteRateMax) {
-				        this.byteRateMax = byteRate;
-				      }
-			    	}
-
-			    	let msg = ``;
-						if (this.offset < file.size) {
-							this.chunkFile(file, this.offset);
-							msg = `<span class="fileshare-info monospace">
-											<span>
-												Sending: ${Math.floor(
-													(100 * this.offset) / file.size
-												)}%
-											</span>
-											<span> 
-												${this.calcSize(this.offset)} 
-												of ${this.calcSize(file.size)}
-											</span>
-											<span>
-												(${this.byteRatePerSec})
-											</span>
-										</span>`;
-						} else {
-							this.fileId = null;
-							this.file = null;
-							msg = `<span class="fileshare-info monospace">
-												<span>
-													Sending: ${Math.floor(
-														(100 * this.offset) / file.size
-													)}%
-												</span>
-											</span>`;
-
-							// remove event for checking closing of tab
-							this.file_sending = false;
-							this.checkCloseTab();
-						}
-
-						siteMessage(msg);
-					});
-
-					this.fileId = this.app.crypto
-						.generateRandomNumber()
-						.substring(0, 12);
-
-					if (this.callback) {
-						this.callback(file);
-					}
-
-					this.file = file;
-
-					this.sendFileTransferRequest();
-				},
-				false
-			);
-		}
+		this.sendFileTransferRequest();
 	}
 
 	chunkFile(file, o) {
