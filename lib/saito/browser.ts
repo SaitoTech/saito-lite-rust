@@ -1009,11 +1009,8 @@ class Browser {
 		} else {
 			x = `${h}`;
 		}
-		if (m < 10) {
-			x += `:${m}`;
-		} else {
-			x += `:${m}`;
-		}
+		x += `:${m}`;
+
 		return x;
 	}
 
