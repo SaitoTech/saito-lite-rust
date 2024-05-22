@@ -3,29 +3,29 @@ module.exports = FileShareOverlayTemplate = (app, mod) => {
 	<div class='saito-file-transfer-overlay'>
 		<h1>Saito Teleporter</h1>
 		<div class="teleporter-status-list">
-			<div class="teleporter-status-item">
+			<form id="uploader_overlay" class="saito-file-uploader needs-file teleporter-status-item">
 				<div>Selecting File</div>
 				<div class="teleporter-status" id="file-selection-status"><i class="fa-solid fa-ellipsis"></i></div>
-			</div>
+			    <input type="file" id="hidden_file_element_uploader_overlay" style="display:none" accept="*" class="hidden_file_element">
+			</form>
 			<div class="teleporter-status-item">
 				<div>Establishing Connection</div>
 				<div class="teleporter-status" id="peer-connection-status"><i class="fa-solid fa-ellipsis"></i></div>
 			</div>
 			<div class="teleporter-status-item">
-				<div>Requesting Permission</div>
+				<div>Peer Accept</div>
 				<div class="teleporter-status" id="peer-accept-status"><i class="fa-solid fa-ellipsis"></i></div>
 			</div>
-			<div class="teleporter-status-item">
+			<div id="transfer-speed-row" class="teleporter-status-item hideme">
 				<div>Transfering File</div>
 				<div class="teleporter-status" id="file-transfer-status"><i class="fa-solid fa-ellipsis"></i></div>
 			</div>
 		</div>
 		<div class="teleporter-file-data"></div>
 		<div class="teleporter-transfer-field"></div>
-
-		<form id="uploader_overlay" class="saito-file-uploader" style="display:none">
-		    <input type="file" id="hidden_file_element_uploader_overlay" accept="*" class="hidden_file_element">
-		</form>
+		<div id="file-transfer-buttons" class="file-button-row hideme">
+			<div class="saito-button-primary" id="cancel-transfer">Cancel</div>
+		</div>
 
 	</div>`;
 

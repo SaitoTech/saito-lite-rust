@@ -18,6 +18,7 @@ class FileShareOverlay {
 
 	updateFileData(){
 		let html = `<div class="saito-file-transfer" id="saito-file-transfer-${this.mod.fileId}">
+					<div class="file-transfer-progress"></div>
 					<i class="fa-solid fa-file"></i>
 					<div class="file-name">${this.mod.file.name}</div>
 					<div class="file-size">${this.mod.calcSize(this.mod.file.size)}</div>
@@ -26,13 +27,70 @@ class FileShareOverlay {
 		this.app.browser.addElementToSelector(html, ".teleporter-file-data");
 	}
 
-	transfering(){
+	beginTransfer(){
+		console.log("H1");
+
+		let field = document.getElementById('transfer-speed-row');
+		if (field){
+			field.classList.remove("hideme");
+		}	
+
+		let field2 = document.getElementById("file-transfer-buttons");
+		if (field2){
+			field2.classList.remove('hideme');
+		}
+	}
+
+	renderStats(stats){
+		let field = document.getElementById("file-transfer-status");
+		if (field){
+			field.innerHTML = `<span>${stats.speed}</span>`;
+		}
+
+		let progress_bar = document.querySelector(".file-transfer-progress");
+		if (progress_bar){
+			progress_bar.style.width = `${stats.percentage}%`;
+		}
+	}
+
+	finishTransfer(){
+		console.log("Finish in share");
+		let field = document.getElementById("file-transfer-status");
+		if (field){
+			console.log(1);
+			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
+		}
+
+		let progress_bar = document.querySelector(".file-transfer-progress");
+		if (progress_bar){
+			progress_bar.style.width = `100%`;
+		}
+
+		let field2 = document.getElementById("file-transfer-buttons");
+		if (field2){
+			console.log(2);
+			field2.remove();
+		}
 
 	}
 
-	complete(){
+
+
+	onPeerAccept(){
+		let field = document.getElementById("peer-accept-status");
+		if (field){
+			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
+		}
 
 	}
+
+	onPeerReject(){
+		let field = document.getElementById("peer-accept-status");
+		if (field){
+			field.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
+		}
+	}
+
 
 	onConnectionSuccess(){
 		let field = document.getElementById("peer-connection-status");
@@ -55,8 +113,26 @@ class FileShareOverlay {
 		}
 		if (!file || !file.size){
 			field.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
+
 		}else{
 			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
+			let hidden_form = document.querySelector(".saito-file-uploader.needs-file");
+			if (hidden_form){
+				hidden_form.onclick = null;
+				hidden_form.classList.remove("needs-file");
+			}
+		}
+	}
+
+	onCancel(){
+		let field2 = document.getElementById("file-transfer-buttons");
+		if (field2){
+			field2.classList.add('hideme');
+		}
+
+		let field = document.getElementById("file-transfer-status");
+		if (field){
+			field.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
 		}
 	}
 
@@ -69,6 +145,21 @@ class FileShareOverlay {
 			});
 			
 			input.click();
+
+			let hidden_form = document.querySelector(".saito-file-uploader.needs-file");
+			if (hidden_form){
+				hidden_form.onclick = () => {
+					input.click();
+				}
+			}
+
+		}
+
+		let cancel = document.getElementById('cancel-transfer');
+		if (cancel){
+			cancel.onclick = () => {
+				this.mod.interrupt(true);
+			}
 		}
 	}
 }

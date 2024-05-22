@@ -1,8 +1,11 @@
 
 .saito-file-transfer-overlay {
 	width: min(45rem, 90vw);
-	height: min(55rem, 90vh);
+	height: min(45rem, 90vh);
 	padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .teleporter-status-item {
@@ -17,6 +20,7 @@
 /**** Temporary for developing file transfer in chat ***/
 .saito-file-transfer{
   border-radius: var(--border-radius-file-transfer);
+  position: relative;
   border: 1px dashed;
   display: grid;
   align-items: center;
@@ -26,6 +30,17 @@
   grid-template-rows: 1fr 1fr;
   row-gap: 1rem;
   column-gap: 2rem;
+  justify-items: flex-end;
+}
+
+.file-transfer-progress{
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0%;
+  background-color: var(--saito-primary);
+  z-index: -1;
 }
 
 .saito-file-transfer i {
@@ -33,3 +48,20 @@
   grid-row: 1 / span 2;
 }
 
+
+.saito-file-uploader.needs-file {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.file-button-row{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.hideme {
+  display: none;
+}
