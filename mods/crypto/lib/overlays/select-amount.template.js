@@ -16,7 +16,7 @@ module.exports = (app, mod) => {
 
       <div class="crypto-stake-confirm-container">
         <input type="checkbox" checked name="crypto-stake-confirm-input" id="crypto-stake-confirm-input">
-        <label for="crypto-stake-confirm-input" class="commentary">peer-to-peer gaming is legal in my jurisdiction</label>
+        <label for="crypto-stake-confirm-input" class="commentary">autorize in-game crypto transfer</label>
       </div>
       <div class="stake-input-error" id="stake-checkbox-error"></div>
 
