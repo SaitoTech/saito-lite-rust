@@ -27,7 +27,8 @@ class Wordblocks extends GameTemplate {
 		this.letters = {};
 		this.grace_window = 10;
 
-		this.async_dealing = 1;
+		//All Wordblocks games will be async enabled
+		this.async_dealing = 1; 
 
 		this.tilesToHighlight = [];
 		this.moves = [];

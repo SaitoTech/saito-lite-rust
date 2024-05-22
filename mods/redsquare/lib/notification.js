@@ -166,9 +166,12 @@ class RedSquareNotification {
 			//
 			// and render the user
 			//
-			this.user.fourthelem = this.app.browser.returnTime(
-				this.tx.timestamp
-			);
+			if ((new Date().getTime() - this.tx.timestamp) > (24 * 60 * 60 * 100)){
+				this.user.fourthelem = this.app.browser.prettifyTimeStamp(this.tx.timestamp, true);
+			}else{
+				this.user.fourthelem = this.app.browser.returnTime(this.tx.timestamp);
+			}
+
 			this.user.render();
 
 			// check and render images if any in notification

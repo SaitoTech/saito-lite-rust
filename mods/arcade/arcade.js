@@ -191,7 +191,7 @@ class Arcade extends ModTemplate {
 						//
 						// and add to list of my games
 						//
-						if (game.over == 0) {
+						if (!game.over) {
 							this.addGame(game_tx, 'active');
 						}
 					}

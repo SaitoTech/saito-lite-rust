@@ -104,7 +104,7 @@ class MixinModule extends CryptoModule {
 						Do you want help backing up your wallet?`;
 						this.app.connection.emit(
 							'saito-backup-render-request',
-							{msg: msg}
+							{msg: msg, title: 'BACKUP YOUR WALLET'}
 						);
 
 					} else {
