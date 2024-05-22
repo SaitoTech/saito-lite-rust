@@ -114,7 +114,7 @@ class Invite {
 				if (defaultKeys.length == inviteKeys.length) {
 					for (const key of defaultKeys) {
 						if (
-							defaultOptions[key] !== txmsg.options[key] &&
+							defaultOptions[key] != txmsg.options[key] &&
 							!key.includes('game-wizard-players')
 						) {
 							alt_game_type += 'custom ';
@@ -125,6 +125,10 @@ class Invite {
 				} else {
 					alt_game_type += 'custom ';
 					this.invite_data.game_type = 'custom game';
+				}
+
+				if (this.invite_data.game_type == 'custom game'){
+					console.log(defaultOptions, txmsg.options);
 				}
 			}
 

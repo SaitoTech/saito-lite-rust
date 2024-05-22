@@ -79,7 +79,7 @@ class ChatSidebar {
     //This is not in a respondTo????
     this.addMenuItem({ 
       icon: 'fas fa-money-check-dollar', 
-      text: 'Send SAITO',
+      text: 'Send Crypto',
       callback: function (app, publicKey) {
         app.connection.emit(
           'saito-crypto-withdraw-render-request',

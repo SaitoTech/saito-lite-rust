@@ -4366,7 +4366,11 @@ return 1; }
 
         if (mv[0] === "diet_of_worms") {
 
+	  this.game.queue.splice(qe, 1);
+
 	  this.factionbar.setActive(["protestant","papacy"]);
+
+console.log("INTO DIET OF WORMS");
 
 	  let game_self = this;
 	  let my_faction = "";
@@ -4417,6 +4421,8 @@ return 1; }
 
 	  if (this.game.player != this.returnPlayerCommandingFaction("papacy") && this.game.player != this.returnPlayerCommandingFaction("protestant")) {
 
+console.log("INTO DIET OF WORMS 2");
+
             this.updateStatusAndListCards("Protestants and Papacy assemble at the Diet of Worms", x);
 
             let hash1 = game_self.app.crypto.hash("");    // my card
@@ -4437,6 +4443,8 @@ return 1; }
 
 	  } else {
 
+console.log("INTO DIET OF WORMS 3");
+
 	    if (game_self.game.spick_card != "") {
 	      for (let i = 0; i < x.length; i++) { if (x[i] == game_self.game.spick_card) { x.splice(i, 1); } }
               this.updateStatusAndListCards("Waiting for Opponent(s) to Pick Cards");
@@ -4446,8 +4454,8 @@ return 1; }
             this.updateStatusAndListCards(my_faction + " - Select Card to indicate your Commitment to Debate", x);
             this.attachCardboxEvents(async function(card) {
 
-	      for (let i = 0; i < x.length; i++) { if (x[i] == card) { x.splice(i, 1); } }
-              game_self.updateStatusAndListCards(my_faction + " - Card Selected", x);
+	      //for (let i = 0; i < x.length; i++) { if (x[i] == card) { x.splice(i, 1); } }
+              //game_self.updateStatusAndListCards(my_faction + " - Card Selected", x);
 
   	      //
 	      // hide triangular help if game start -- papacy and other factions
@@ -4475,7 +4483,6 @@ return 1; }
             });
 	  }
 
-	  this.game.queue.splice(qe, 1);
           return 0;
         }
 
@@ -4525,7 +4532,6 @@ return 1; }
 	  this.game.queue.push("discard\tprotestant\t"+this.game.state.sp[protestant-1]);
 	  this.game.queue.push("discard\tpapacy\t"+this.game.state.sp[papacy-1]);
 	  this.game.queue.push("discard\tall\t"+hapsburg_card);
-
 
 
 	  //
@@ -5325,7 +5331,7 @@ try {
 	    let rolls = 0;
 	    let units = [];
             for (let i = 0; i < space.units[faction].length; i++) {
-	      if (space.units[faction][i].personage == false && space.units[faction][i].besieged == 0) {
+	      if (space.units[faction][i].navy_header != true && space.units[faction][i].army_leader != true && space.units[faction][i].personage == false && space.units[faction][i].besieged == 0) {
 		if (space.units[faction][i].land_or_sea === "land" || space.units[faction][i].land_or_sea === "both") {
 	          rolls++;
 		  units.push(space.units[faction][i].key);
@@ -8167,7 +8173,7 @@ console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space
           let calculate_units = function(faction, space) {
 	    let num = 0;
             for (let i = 0; i < space.units[faction].length; i++) {
-	      if (space.units[faction][i].type != "cavalry" && space.units[faction][i].personage == false) { num++; }
+	      if (space.units[faction][i].army_leader != true && space.units[faction][i].navy_leader != true && space.units[faction][i].type != "cavalry" && space.units[faction][i].personage == false) { num++; }
 	    }
 	    return num;
           }
@@ -11258,6 +11264,9 @@ if (this.game.state.round == 2) {
 
 	  if (this.game.player == p) {
 
+
+console.log("TESTING A: " + p);
+
 	    this.updateStatus("checking "+this.returnFactionName(faction)+" has no removed cards...");
 
             let fhand_idx = this.returnFactionHandIdx(p, faction);
@@ -11267,6 +11276,7 @@ if (this.game.state.round == 2) {
 	      //
 	      // TESTING can trigger but we are good - continue!
 	      //
+alert("TRIGGERING WITH FHAND_IDX of -1...");
 	      this.endTurn();
 	      return;
 
@@ -11317,6 +11327,21 @@ if (this.game.state.round == 2) {
 	    this.winter_overlay.render("stage5");
 	  }
 
+
+	  //
+	  // check cards
+	  //
+	  if (this.game.players.length == 2) {
+    	    this.game.queue.push("check_replacement_cards\tpapacy");
+    	    this.game.queue.push("check_replacement_cards\tprotestant");
+	  } else {
+    	    this.game.queue.push("check_replacement_cards\tottoman");
+    	    this.game.queue.push("check_replacement_cards\thapsburg");
+    	    this.game.queue.push("check_replacement_cards\tfrance");
+    	    this.game.queue.push("check_replacement_cards\tengland");
+    	    this.game.queue.push("check_replacement_cards\tpapacy");
+    	    this.game.queue.push("check_replacement_cards\tprotestant");
+	  }
 
 	  //
 	  // deal cards and add home card
@@ -11392,7 +11417,6 @@ if (this.game.state.round == 2) {
 //if (f == "england") { cardnum = 0; }
 //if (f == "ottoman") { cardnum = 0; }
 
-    	        this.game.queue.push("check_replacement_cards\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));

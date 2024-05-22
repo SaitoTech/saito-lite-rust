@@ -165,10 +165,6 @@ class TweetManager {
 				}
 			}
 
-			setTimeout(() => {
-				this.hideLoader();
-			}, 50);
-
 			//Fire up the intersection observer
 			this.attachEvents();
 			return;
@@ -179,33 +175,37 @@ class TweetManager {
 		///////////////////
 		if (this.mode == 'notifications') {
 
-			console.log("Redsquare render notifications: already have " + this.mod.notifications.length + " in memory");
+			if (this.mod.notifications.length > 0){
 
-			for (let i = 0; i < this.mod.notifications.length; i++) {
-				let notification = new Notification(
-					this.app,
-					this.mod,
-					this.mod.notifications[i].tx
-				);
-				notification.render('.tweet-manager');
+				console.log("Redsquare render notifications: already have " + this.mod.notifications.length + " in memory");
+
+				for (let i = 0; i < this.mod.notifications.length; i++) {
+					let notification = new Notification(
+						this.app,
+						this.mod,
+						this.mod.notifications[i].tx
+					);
+					notification.render('.tweet-manager');
+				}
+				this.attachEvents();
+
+			}else{
+				this.loadNotifications();
 			}
 
-			this.loadNotifications();
 		}
 	}
 
 	loadNotifications(){
 
 		this.showLoader();
+		console.log("Redsquare load more notificaitons");
 
 		this.mod.loadNotifications((new_txs) => {
 			if (this.mode !== 'notifications') {
 				return;
 			}
 
-			setTimeout(() => {
-				this.hideLoader();
-			}, 50);
 
 			for (let i = 0; i < new_txs.length; i++) {
 				let notification = new Notification(
@@ -239,6 +239,10 @@ class TweetManager {
 					notification.render('.tweet-manager');
 
 				}
+
+				setTimeout(() => {
+					this.hideLoader();
+				}, 50);
 			
 			}else{
 				console.log("Redsquare turn on Intersection observer for notifications");
@@ -545,6 +549,10 @@ class TweetManager {
 		//
 		// dynamic content loading
 		//
+		setTimeout(() => {
+			this.hideLoader();
+		}, 5);
+
 
 		let ob = document.getElementById('intersection-observer-trigger');
 		if (ob) {

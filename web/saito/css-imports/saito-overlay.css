@@ -18,7 +18,7 @@
     /*min-height: 10%; Why? */
     max-height: calc(100 * var(--saito-vh));
     max-width: 100vw;
-    box-shadow: var(--shadow-standard);
+    box-shadow: var(--shadow-overlay);
     border-radius: var(--border-radius-modal-menu);
     background-color: var(--background-color-overlay-menu); /* Dont know why had to be added manually*/
 }

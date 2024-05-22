@@ -279,6 +279,7 @@ Useful declarations for game stats
   border-radius: 5px;
   border: 2px solid var(--saito-black-faded);
   box-shadow:  4px 4px 6px 4px black;
+  max-height: 99vh;
 }
 
 .solitaire-stats-overlay hr {
@@ -309,14 +310,19 @@ Useful declarations for game stats
   text-align: center;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 600px) and (orientation: portrait){
   .solitaire-stats-overlay{
     min-width: 90vw;
-    padding: 1rem;
+    padding: 2rem;
   }
 }
 
-
+@media screen and (max-height: 600px) and (orientation: landscape){
+  .solitaire-stats-overlay {
+    min-height: 90vh;
+    padding: 2rem;
+  }
+}
 
 
 

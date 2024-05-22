@@ -1132,6 +1132,13 @@ export default class Wallet extends SaitoWallet {
 	async backupWallet() {
 		try {
 			if (this.app.BROWSER == 1) {
+
+				if (this.app.options.wallet.backup_required_msg) {
+					this.app.options.wallet.backup_required_msg = 0;
+					await this.saveWallet();
+					this.app.connection.emit('saito-header-update-message', {});
+				}
+
 				//let content = JSON.stringify(this.app.options);
 				let pom = document.createElement('a');
 				pom.setAttribute('type', 'hidden');

@@ -61,6 +61,6 @@
 
 .fileshare-info {
   display: grid;
-  grid-template-columns: 20rem 25rem 20rem;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
   text-align: center;
 }

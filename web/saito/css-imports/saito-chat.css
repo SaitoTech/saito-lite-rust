@@ -830,30 +830,6 @@
 
 
 
-/**** Temporary for developing file transfer in chat ***/
-.saito-file-transfer{
-  height: 20rem;
-  width: 18rem;
-  border-radius: var(--border-radius-file-transfer);
-  border: 1px dashed;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-evenly;
-  background: var(--background-color-file-transfer);
-  margin: 1rem 0;
-  padding: 1rem;
-}
-
-.saito-file-transfer i {
-  font-size: 3rem;
-}
-
-.saito-file-transfer .file-name{
-  word-wrap: anywhere;
-}
-
-
 .chat-member-list-overlay{
   min-width: 30rem;
   max-height: 90vh;
