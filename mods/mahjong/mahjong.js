@@ -305,6 +305,10 @@ class Mahjong extends OnePlayerGameTemplate {
 
 		let deckSize = 144;
 
+		if (timeInterval){
+			$("#tiles").hide();
+		}
+
 		this.game.availableMoves = [];
 
 		for (let row = 1; row <= 21; row++) {
@@ -677,7 +681,7 @@ class Mahjong extends OnePlayerGameTemplate {
        `;
 		}
 		$('#tiles').html(html);
-
+		$('#tiles').show();
 		$('.option').off();
 		$('.option').on('click', function () {
 			let action = $(this).attr('id');
