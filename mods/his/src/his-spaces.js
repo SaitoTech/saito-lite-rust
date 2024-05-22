@@ -234,10 +234,47 @@
 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let cf = this.returnFactionControllingSpace(space);
+
+    //
     // we can move into spaces controlled by powers we are at war with
+    //
     if (this.isMinorPower(cf)) { cf = this.returnControllingPower(cf); }
     if (cf == faction) { return 1; }
-    if (this.areEnemies(faction, cf)) { return 1; }
+
+    //
+    // if we're enemies with the faction that controls the space
+    //
+    if (this.areEnemies(faction, cf)) { 
+
+      //
+      // ... we can normally move into this space, unless there are besieging units
+      // with whom we are not allied. so check with each faction
+      //
+      for (let f in space.units) {
+
+	//
+	// ... if this faction is an enemy of the controlling space
+	//
+	if (this.areEnemies(f, cf)) {
+	
+	  //
+	  // ... and it has units in the space
+	  //
+	  let fluis = this.returnFactionLandUnitsInSpace(f, space.key);
+	  if (fluis > 0) {
+
+	    //
+	    // ... then we need to be allies with them to move in
+	    //
+	    if (!this.areAllies(f, faction)) { return 0; }
+
+	  }
+	}
+      }
+
+      return 1;
+
+    }
     if (this.areAllies(faction, cf)) { return 1; }
     if (this.isSpaceIndependent(space.key)) {
 

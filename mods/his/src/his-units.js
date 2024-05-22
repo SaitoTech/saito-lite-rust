@@ -346,6 +346,11 @@
     space.units[faction][space.units[faction].length-1].owner = faction; 
   }
 
+  returnDebaterName(key) {
+    if (this.debaters[key]) { return this.debaters[key].name; }
+    return "Debater";
+  }
+
   removeDebater(faction, debater) {
     if (!this.debaters[debater]) {
       console.log("DEBATER: " + debater + " not found");

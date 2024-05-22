@@ -3382,7 +3382,6 @@ if (this.game.players.length > 2) {
 }
 
 
-
 /****
     this.menu.addSubMenuOption("game-cards", {
       text : "My Hand",
@@ -15953,10 +15952,47 @@ console.log("DELETING Z: " + z);
 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let cf = this.returnFactionControllingSpace(space);
+
+    //
     // we can move into spaces controlled by powers we are at war with
+    //
     if (this.isMinorPower(cf)) { cf = this.returnControllingPower(cf); }
     if (cf == faction) { return 1; }
-    if (this.areEnemies(faction, cf)) { return 1; }
+
+    //
+    // if we're enemies with the faction that controls the space
+    //
+    if (this.areEnemies(faction, cf)) { 
+
+      //
+      // ... we can normally move into this space, unless there are besieging units
+      // with whom we are not allied. so check with each faction
+      //
+      for (let f in space.units) {
+
+	//
+	// ... if this faction is an enemy of the controlling space
+	//
+	if (this.areEnemies(f, cf)) {
+	
+	  //
+	  // ... and it has units in the space
+	  //
+	  let fluis = this.returnFactionLandUnitsInSpace(f, space.key);
+	  if (fluis > 0) {
+
+	    //
+	    // ... then we need to be allies with them to move in
+	    //
+	    if (!this.areAllies(f, faction)) { return 0; }
+
+	  }
+	}
+      }
+
+      return 1;
+
+    }
     if (this.areAllies(faction, cf)) { return 1; }
     if (this.isSpaceIndependent(space.key)) {
 
@@ -22353,10 +22389,10 @@ if (this.game.options.scenario != "is_testing") {
 		    let c2 = [this.game.players[this.returnPlayerOfFaction("papacy")-1],this.game.players[this.returnPlayerOfFaction("france")-1]];
 	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy','france']));
 		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c2));
-	            this.game.queue.push("reset_winter_retreat_move_units_to_capital_faction_array");
+	            this.game.queue.push("faction_array_reset_winter_retreat_move_units_to_capital");
 	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['england','hapsburg','ottoman']));
 		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
-	            this.game.queue.push("reset_winter_retreat_move_units_to_capital_faction_array");
+	            this.game.queue.push("faction_array_reset_winter_retreat_move_units_to_capital");
 		  }
 
 		  if (this.game.players.length == 4) {
@@ -22366,12 +22402,12 @@ if (this.game.options.scenario != "is_testing") {
 
 	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy']));
 		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
-	            this.game.queue.push("reset_winter_retreat_move_units_to_capital_faction_array");
+	            this.game.queue.push("faction_array_reset_winter_retreat_move_units_to_capital");
 		    this.updateStatus("Other factions handling winter retreat...");
 
 	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['france','england','hapsburg','ottoman']));
 		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c2));
-	            this.game.queue.push("reset_winter_retreat_move_units_to_capital_faction_array");
+	            this.game.queue.push("faction_array_reset_winter_retreat_move_units_to_capital");
 		    this.updateStatus("Other factions handling winter retreat...");
 
 		  }
@@ -22388,7 +22424,7 @@ if (this.game.options.scenario != "is_testing") {
 
 	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy','france','england','hapsburg','ottoman']));
 		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c2));
-	            this.game.queue.push("reset_winter_retreat_move_units_to_capital_faction_array");
+	            this.game.queue.push("faction_array_reset_winter_retreat_move_units_to_capital");
 		    this.updateStatus("Other factions handling winter retreat...");
 
 		  }
@@ -22396,7 +22432,7 @@ if (this.game.options.scenario != "is_testing") {
 		  if (this.game.players.length == 6) {
 	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['protestant','papacy','france','england','hapsburg','ottoman']));
 		    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
-	            this.game.queue.push("reset_winter_retreat_move_units_to_capital_faction_array");
+	            this.game.queue.push("faction_array_reset_winter_retreat_move_units_to_capital");
 		    this.updateStatus("Other factions handling winter retreat...");
 		  }
 ****/
@@ -22912,7 +22948,7 @@ if (this.game.options.scenario == "is_testing") {
 
 
 
-	if (mv[0] === "reset_winter_retreat_move_units_to_capital_faction_array") {
+	if (mv[0] === "faction_array_reset_winter_retreat_move_units_to_capital") {
 	  this.game.queue.splice(qe, 1);
 	  this.winter_retreat_waiting_for_confs = 0;
 	  return 1;
@@ -23623,10 +23659,13 @@ if (this.game.options.scenario == "is_testing") {
 	  let destination_spacekey = mv[4];
 
 	  this.removeUnit(faction_giving, source_spacekey, "squadron");
-	  this.addSquadron(faction_placing, destination_spacekey, "squadron");
+	  this.addNavalSquadron(faction_placing, destination_spacekey, "squadron");
 	  let s = his_self.game.spaces[destination_spacekey];
 	  let u = s.units[faction_placing][s.units[faction_placing].length-1];
 	  u.owner = faction_giving;
+
+	  this.displaySpace(source_spacekey);
+	  this.displaySpace(destination_spacekey);
 
 	  return 1;
 
@@ -23639,6 +23678,8 @@ if (this.game.options.scenario == "is_testing") {
 	  let his_self = this;
 	  let faction_giving = mv[1];
 	  let faction_placing = mv[2];
+	  let num = 1;
+	  if (mv[3]) { num = parseInt(mv[3]); }
 
 	  let instructions = [];
 
@@ -23649,7 +23690,7 @@ if (this.game.options.scenario == "is_testing") {
 
 	  this.winter_overlay.hide();
 	  let filter_find_spaces_with_squadrons = function(space) {
-	    let s = his_self.game.spaces[spacekey];
+	    let s = his_self.game.spaces[space.key];
 	    for (let i = 0; i < s.units[faction_giving].length; i++) {
 	      let u = s.units[faction_giving][i];
 	      if (u.type == "squadron") { return 1; }
@@ -23849,7 +23890,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "St. Lawrence";
-	    let msg = this.returnFactionName(faction) + " discovers the St. Lawrence";
+	    let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the St. Lawrence (1VP)";
 	    this.updateLog(msg);
 	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	    this.game.queue.push("display_custom_overlay\tstlawrence\t"+msg);
@@ -23860,7 +23901,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Great Lakes";
-	    let msg = this.returnFactionName(faction) + " discovers the Great Lakes";
+	    let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Great Lakes (1VP)";
 	    this.updateLog(msg);
 	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	    this.game.queue.push("display_custom_overlay\tgreatlakes\t"+msg);
@@ -23871,7 +23912,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Mississippi";
-	    let msg = this.returnFactionName(faction) + " discovers the Mississippi";
+	    let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Mississippi (1VP)";
 	    this.updateLog(msg);
 	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	    this.game.queue.push("display_custom_overlay\tmississippi\t"+msg);
@@ -23882,7 +23923,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Pacific Strait";
-	    let msg = this.returnFactionName(faction) + " discovers the Pacific Strait";
+	    let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Pacific Strait (2VP)";
 	    this.updateLog(msg);
 	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	    this.game.queue.push("display_custom_overlay\tpacificstrait\t"+msg);
@@ -23893,7 +23934,7 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.newworld[bonus].faction = faction;
 	    this.game.state.newworld[bonus].claimed = 1;
 	    this.game.state.explorations[idx].prize = "Amazon";
-	    let msg = this.returnFactionName(faction) + " discovers the Amazon";
+	    let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Amazon (2VP)";
 	    this.updateLog(msg);
 	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	    this.game.queue.push("display_custom_overlay\tamazon\t"+msg);
@@ -23944,7 +23985,7 @@ if (this.game.options.scenario == "is_testing") {
 	      this.game.state.newworld[bonus].faction = faction;
 	      this.game.state.newworld[bonus].claimed = 1;
 	      this.game.state.explorations[idx].prize = "Circumnavigation";
-	      let msg = this.returnFactionName(faction) + " circumnavigates the Globe";
+	      let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " circumnavigates the globe...";
 	      this.updateLog(msg);
 	      this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	      this.game.queue.push("display_custom_overlay\tcircumnavigation\t"+msg);
@@ -23971,7 +24012,6 @@ if (this.game.options.scenario == "is_testing") {
 	        idx = this.game.state.explorations.length-1;
 	      }
 
-	      this.updateLog("Circumnavigation Attempt fails: " + x + " rolled");
 	      this.game.state.explorations[idx].resolved = 1;
 	      this.game.state.explorations[idx].explorer_lost = 1;
 	      if (explorer == "Cabot") {
@@ -23979,7 +24019,7 @@ if (this.game.options.scenario == "is_testing") {
 		this.removeCardFromGame("099");
 	      }
 	      this.game.state.explorations[idx].prize = "lost at sea";
-	      let msg = this.returnFactionName(faction) + " lost at sea in attempt at circumnavigation";
+	      let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " lost at sea...";
 	      this.updateLog(msg);
 	      this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	      this.game.queue.push("display_custom_overlay\tlost-at-sea\t"+msg);
@@ -25449,6 +25489,23 @@ console.log("we are player: " + this.game.player + " and seeking " + player);
 	  let faction = mv[3];
 	  let spacekey = mv[4];
 	  let space = this.game.spaces[spacekey];
+
+	  let any_unbesieged_units = false;
+	  for (let f in this.game.spaces[spacekey].units) {
+	    if (f == faction || this.areAllies(f, faction, true)) {
+	      for (let z = 0; z < this.game.spaces[spacekey].units[f].length; z++) {
+		let u = this.game.spaces[spacekey].units[f][z];
+		if (u.type != reformer && u.besieged == false) {
+		  any_unbesieged_units = true;
+		}
+	      }
+	    }
+	  }
+
+	  //
+	  // nothing to fortify
+	  //
+	  if (any_unbesieged_units == false) { return 1; }
 
 	  let decider = this.returnPlayerCommandingFaction(faction);
 	  if (decider > 0) {
@@ -31149,11 +31206,20 @@ console.log("dlur:" + defender_land_units_remaining);
 	    this.updateLog(this.returnFactionName(loser) + " eliminated in " + this.returnSpaceName(spacekey));
 	  }
 
-	  for (let i = 0; i < space.units[loser].length; i++) {
-	    this.captureLeader(loser, winner, spacekey, space.units[loser][i]);
+	  for (let f in space.units) {
+	    let cf = this.returnControllingPower(f);
+	    if (f == loser || cf == loser) {
+	      for (let i = 0; i < space.units[f].length; i++) {
+	        this.captureLeader(f, winner, spacekey, space.units[f][i]);
+	      }
+	      for (let i = 0; i < space.units[f].length; i++) {
+		if (space.units[f][i].reformer != true) {
+		  space.units[f].splice(i, 1);
+		  i--;
+		}
+	      }
+	    }
 	  }
-
-	  space.units[loser] = [];
 
 	  return 1;
 
@@ -31172,15 +31238,18 @@ console.log("dlur:" + defender_land_units_remaining);
 	  if (this.game.spaces[spacekey]) { space = this.game.spaces[spacekey]; }
 	  if (this.game.navalspaces[spacekey]) { space = this.game.navalspaces[spacekey]; }
 
-	  if (space.units[loser].length > 0) {
-	    this.updateLog(this.returnFactionName(loser) + " eliminated in " + this.returnSpaceName(spacekey));
+	  for (let f in space.units) {
+	    let cf = this.returnControllingPower(f);
+	    if (f == loser || cf == loser) {
+	      if (space.units[f].length > 0) {
+	        this.updateLog(this.returnFactionName(f) + " eliminated in " + this.returnSpaceName(spacekey));
+	      }
+	      for (let i = 0; i < space.units[f].length; i++) {
+	        this.captureNavalLeader(f, winner, spacekey, space.units[f][i]);
+	      }
+	      space.units[f] = [];
+	    }
 	  }
-
-	  for (let i = 0; i < space.units[loser].length; i++) {
-	    this.captureNavalLeader(loser, winner, spacekey, space.units[f][i]);
-	  }
-
-	  space.units[loser] = [];
 
 	  this.displaySpace(space.key);
 	  this.displayNavalSpace(space.key);
@@ -38779,7 +38848,7 @@ return;
 
   playerReturnWinterUnits(faction) {
 
-    this.addMove("RESOLVE\t"+this.publicKey);
+    //this.addMove("RESOLVE\t"+this.publicKey);
 
     let his_self = this;
     let capitals = this.returnCapitals(faction);
@@ -38802,7 +38871,6 @@ return;
     var select_units_function = function() {};
     var pick_capital_function = function() {};
     var select_spacekey_function = function() {};
-
 
     finish_selecting_from_space_function = function(his_self, units_to_move) {
 
@@ -40127,6 +40195,10 @@ console.log("ops remaining: " + ops_remaining);
 // faction is the attacker in pre-naval battles, but it should be the defender
 //            this.playerEvaluateNavalRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey, defender);
 //
+// post battle this is:
+//
+// this.playerEvaluateNavalRetreatOpportunity(loser, spacekey, "", loser, true); 
+//
   playerEvaluateNavalRetreatOpportunity(faction, spacekey, player_comes_from_this_spacekey="", defender="", post_battle=false) {
 
     let his_self = this;
@@ -40147,7 +40219,8 @@ console.log("ops remaining: " + ops_remaining);
 
     let surviving_units = 0;
     for (let f in space.units) {
-      if (f == faction || this.areAllies(f, faction)) {
+      let cf = this.returnCommandingFaction(f);
+      if (cf == faction || f == faction || this.areAllies(f, faction)) {
         for (let i = 0; i < space.units[f].length; i++) {
 	  let u = space.units[f][i];
 	  if (u.type == "squadron" || u.type == "corsair") {
@@ -40171,7 +40244,12 @@ console.log("ops remaining: " + ops_remaining);
     }
 
     let onFinishSelect = function(his_self, destination_spacekey) {
-      his_self.addMove("naval_retreat"+"\t"+faction+"\t"+spacekey+"\t"+destination_spacekey);
+      for (let f in space.units) {
+        let cf = this.returnCommandingFaction(f);
+        if (cf == faction || f == faction) {
+          his_self.addMove("naval_retreat"+"\t"+f+"\t"+spacekey+"\t"+destination_spacekey);
+	}
+      }
       his_self.endTurn();
     };
 
@@ -44999,6 +45077,11 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.reformers[reformer]);
     space.units[faction][space.units[faction].length-1].owner = faction; 
+  }
+
+  returnDebaterName(key) {
+    if (this.debaters[key]) { return this.debaters[key].name; }
+    return "Debater";
   }
 
   removeDebater(faction, debater) {
