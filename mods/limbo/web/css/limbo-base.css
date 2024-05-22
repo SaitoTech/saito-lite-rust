@@ -270,6 +270,9 @@ video#local.noflip{
 		top: 100%;
 	}
 
+	.dream-controls .video-box-container-large video {
+		position: relative;
+	}
 }
 
 
