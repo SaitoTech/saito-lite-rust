@@ -1,6 +1,6 @@
 html[data-theme="sangre3000"] {
 
-    /* ====================== OLD VARIABLES SECTION =========================== */
+    /* ====================== OLD VARIABLES SECTION ========REMOVE ONCE SAFE==== */
       --saito-primary: #b70b0b;
       --saito-primary-transparent: #b70b0b88;
       --saito-font-color: #dedede;
@@ -41,10 +41,12 @@ html[data-theme="sangre3000"] {
     --shadow-chat-popup: var(--shadow-shape-glow-big);
     --box-shadow-sidebar-elements: var(--shadow-shape-flat);
     --shadow-chat-message-bottom: 0px 0px 0px var(--color-shadow-bubble); /* flattened and centered the shadow */
+    --shadow-overlay: 0 0 150px -60px var(--color-primary); /* gives it that famous sangre glow */
       /* Spacing and padding adjustments */
       --border-padding-identicon-style: var(--border-padding-identicon-thin);
       --border-padding-style: var(--border-padding-wide);
       --border-padding-style-leaderboard-ranking: var(--border-padding-small);
+      --border-padding-overlay-post: var(--border-padding-huge);
     /*MAIN BACKGROUND COLOR SECTION*/
       --background-color-main: #1f1a1b;
       --background-color-shim-normal: #0009;
@@ -131,23 +133,30 @@ html[data-theme="sangre3000"] {
       --border-thickness-button-primary: var(--border-thickness-thin);
       --border-thickness-button-hover-primary: var(--border-thickness-thin);
       --border-thickness-identicon: var(--border-thickness-none);
+      --border-thickness-overlay-post: var(--border-thickness-fat);
+      --border-thickness-overlay-menu: var(--border-thickness-fat);
+      --border-thickness-modal-menu: var(--border-thickness-fat);
       /* BORDER COLORS */
       --border-color-general-dividers-dark: var(--color-primary);
       --border-color-button-wallet-control: var(--color-complement);
       --border-color-button-modal: var(--color-complement);
       --border-color-button-module: var(--color-complement);
       --border-color-sidebar-menu: var(--color-tint-dark);
-      --border-color-modal-menu: var(--color-complement);
+      --border-color-modal-menu: var(--color-highlight);
       --border-color-module-menu: none;
+      --border-color-overlay-menu: var(--color-highlight);
       --border-color-overlay-subform: var(--color-tint-dark);
-      --border-color-chat-menu: ;
+      --border-color-overlay-post: var(--color-highlight);
+      --border-color-chat-menu: none;
       --border-color-identicon: var(--color-contrast);
       --border-color-identicon-square: ;
       --border-color-identicon-square-profile: var(--border-color-general-dividers);
       --border-color-chat-popup-docked: var(--color-primary);
       --border-color-selection-box: var(--color-primary);
       --border-color-form-input-checkbox: var(--color-contrast);
-    /* BACKGROUNDS */
+      --border-color-post-input: var(--color-complement);
+      
+      /* BACKGROUNDS */
     /* General Background Colors */
       --background-color-sidebar-left: var(--color-shadow-bubble);
       --background-color-header-menu:  var(--background-color-sidebar-left);
