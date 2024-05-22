@@ -1,8 +1,9 @@
 .tweet-overlay {
   max-width: 90vw;
   background-color: var(--background-color-post);
-  padding: 1rem;
+  padding: var(--border-padding-overlay-post);
   border-radius: var(--border-radius-modal-menu);
+  border: var(--border-thickness-overlay-post) solid var(--border-color-overlay-post);
   max-height: 95vh;
   overflow: visible;
   position: relative;

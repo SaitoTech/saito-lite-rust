@@ -43,6 +43,19 @@ class MenuOverlay {
 
 		this.overlay.show(MenuTemplate());
 
+		//
+		// Foul Weather remove Assault
+		//
+	        if (his_self.game.state.events.foul_weather == 1) {
+		  for (let i = 0; i < menu.length; i++) {
+		    if (menu[i].name == "Assault") {
+		      menu.splice(i, 1);
+		      i--;
+		    }
+		  }
+		}
+
+
 		this.pushHudUnderOverlay();
 
 		let sub_menu = (main_menu, sub_menu, options) => {

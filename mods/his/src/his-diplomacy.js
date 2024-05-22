@@ -5,6 +5,13 @@
 
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
+      name : "Cancel",
+      check : this.canPlayerCancel,
+      fnct : this.playerCancel,
+      img : "dove.jpeg" ,
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       name : "End War",
       check : this.canPlayerEndWar,
       fnct : this.playerEndWar,
@@ -134,6 +141,16 @@
 
     return text;
   }
+
+  canPlayerCancel(his_self, player, faction) {
+    return 1;
+  }
+  async playerCancel(his_self, faction, mycallback=null) {
+    his_self.diplomacy_propose_overlay.render(faction);
+    return 1;
+  }
+
+
 
 
   canPlayerEndWar(his_self, player, faction) {

@@ -5034,12 +5034,10 @@ console.log("selected: " + spacekey);
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('032')) {
 	      f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
-	      break;
 	    }
 	  }
 
 	  if (his_self.game.state.active_player === his_self.game.player) { return {}; }
-
 	  if (f == "") { return {}; }
 
 	  let includes_army_leader = false;
@@ -5074,7 +5072,7 @@ console.log("selected: " + spacekey);
 		  let source = lmv[3];
 		  let unit_idx = -1;
 		  for (let i = 0; i < his_self.game.spaces[source].units[faction].length; i++) {
-		    let unit = his_self.game.spaces[source].units[faction][unit_idx];
+		    let unit = his_self.game.spaces[source].units[faction][i];
 		    if (unit.army_leader == true) {
 		      let unit_idx = -1;
 		      includes_army_leader = true;
@@ -5214,7 +5212,7 @@ console.log("selected: " + spacekey);
 
 	  his_self.game.spaces[source].units[faction][unit_idx].gout = true;
 	  his_self.game.spaces[source].units[faction][unit_idx].locked = true;
-	  his_self.updateLog(his_self.game.spaces[source].units[faction][unit_idx].name + " has come down with gout");
+	  his_self.updateLog(his_self.game.spaces[source].units[faction][unit_idx].name + " has come down with " + his_self.popup("032"));
           his_self.game.queue.splice(qe, 1);
 
 	  //
@@ -5225,9 +5223,10 @@ console.log("selected: " + spacekey);
 	    if (lqe.indexOf("continue") != 0 && lqe.indexOf("play") != 0) {
 	      his_self.game.queue.splice(i, 1);
 	    } else {
-	      break;
+	      i = -1;
 	    }
 	  }
+
 	  return 1;
 
 	}

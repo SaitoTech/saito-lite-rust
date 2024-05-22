@@ -910,7 +910,10 @@ class ChatPopup {
 		}
 
 		this.dimensions = {};
-		chatPopup.querySelector('.resize-icon').style.display = 'block';
+		if (chatPopup.querySelector('.resize-icon')){
+			chatPopup.querySelector('.resize-icon').style.display = 'block';	
+		}
+		
 	}
 
 	savePopupDimensions(chatPopup) {
