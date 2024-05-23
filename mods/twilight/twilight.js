@@ -7341,7 +7341,7 @@ this.game_help.render({
           if (key === "energycrisis") { deck['energycrisis']      = { img : "TNRnTS-212png" ,name : "Energy Crisis", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 3 }; }
           if (key === "nixonshock") { deck['nixonshock']       	= { img : "TNRnTS-213png" ,name : "Nixon Shock", scoring : 0 , player : "us"   , recurring : 0 , ops : 2 }; }
           if (key === "kissinger") { deck['kissinger'] 	     	= { img : "TNRnTS-218png" ,name : "Kissinger Bombs Cambodia", scoring : 0 , player : "us"     , recurring : 1 , ops : 2 }; }
-          if (key === "kissinger") { deck['khruschevthaw'] 	     	= { img : "TNRnTS-230png" ,name : "Khrushchev Thaw", scoring : 0 , player : "ussr"     , recurring : 0 , ops : 3 }; }
+          if (key === "khruschevthaw") { deck['khruschevthaw'] 	     	= { img : "TNRnTS-230png" ,name : "Khrushchev Thaw", scoring : 0 , player : "ussr"     , recurring : 0 , ops : 3 }; }
           //if (key === "handshake") { deck['handshake'] 		= { img : "TNRnTS-201png" , name : "Handshake in Space", scoring : 0 , player : "both" , recurring : 1 , ops : 1 }; }
           if (key === "fischerspassky") { deck['fischerspassky']  = { img : "TNRnTS-221png" ,name : "Fischer-Spassky", scoring : 0 , player : "both"   , recurring : 0 , ops : 3 }; }
           if (key === "sudan") { deck['sudan']       		= { img : "TNRnTS-219png" ,name : "Sudanese Civil War", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 }; }
@@ -15673,10 +15673,15 @@ if (card == "defectors") {
 
     if (card == "nixonshock") {
 
-      this.game.state.events.nixonshock = 1;
-      this.cancelEvent("energycrisis");
-
       let twilight_self = this;
+
+      if (twilight_self.game.state.events.energycrisis == 1) {
+        twilight_self.updateLog("Energy Crisis cancels Nixon Shock");
+        return 1;
+      }
+
+      twilight_self.game.state.events.nixonshock = 1;
+      twilight_self.cancelEvent("energycrisis");
 
       if (twilight_self.game.player == 2) {
 
@@ -15748,6 +15753,7 @@ if (card == "defectors") {
     if (card == "pinochet") {
 
       this.game.state.events.pinochet = 1;
+      this.game.state.events.pinochet_added = 1;
 
       if (this.game.player == 2) {
 

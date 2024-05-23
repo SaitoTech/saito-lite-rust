@@ -345,7 +345,6 @@ if (this.game.players.length > 2) {
 }
 
 
-
 /****
     this.menu.addSubMenuOption("game-cards", {
       text : "My Hand",

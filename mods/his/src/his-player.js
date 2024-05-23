@@ -2871,7 +2871,7 @@ return;
 
   playerReturnWinterUnits(faction) {
 
-    this.addMove("RESOLVE\t"+this.publicKey);
+    //this.addMove("RESOLVE\t"+this.publicKey);
 
     let his_self = this;
     let capitals = this.returnCapitals(faction);
@@ -2894,7 +2894,6 @@ return;
     var select_units_function = function() {};
     var pick_capital_function = function() {};
     var select_spacekey_function = function() {};
-
 
     finish_selecting_from_space_function = function(his_self, units_to_move) {
 
@@ -4219,6 +4218,10 @@ console.log("ops remaining: " + ops_remaining);
 // faction is the attacker in pre-naval battles, but it should be the defender
 //            this.playerEvaluateNavalRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey, defender);
 //
+// post battle this is:
+//
+// this.playerEvaluateNavalRetreatOpportunity(loser, spacekey, "", loser, true); 
+//
   playerEvaluateNavalRetreatOpportunity(faction, spacekey, player_comes_from_this_spacekey="", defender="", post_battle=false) {
 
     let his_self = this;
@@ -4239,7 +4242,8 @@ console.log("ops remaining: " + ops_remaining);
 
     let surviving_units = 0;
     for (let f in space.units) {
-      if (f == faction || this.areAllies(f, faction)) {
+      let cf = this.returnCommandingFaction(f);
+      if (cf == faction || f == faction || this.areAllies(f, faction)) {
         for (let i = 0; i < space.units[f].length; i++) {
 	  let u = space.units[f][i];
 	  if (u.type == "squadron" || u.type == "corsair") {
@@ -4263,7 +4267,12 @@ console.log("ops remaining: " + ops_remaining);
     }
 
     let onFinishSelect = function(his_self, destination_spacekey) {
-      his_self.addMove("naval_retreat"+"\t"+faction+"\t"+spacekey+"\t"+destination_spacekey);
+      for (let f in space.units) {
+        let cf = this.returnCommandingFaction(f);
+        if (cf == faction || f == faction) {
+          his_self.addMove("naval_retreat"+"\t"+f+"\t"+spacekey+"\t"+destination_spacekey);
+	}
+      }
       his_self.endTurn();
     };
 

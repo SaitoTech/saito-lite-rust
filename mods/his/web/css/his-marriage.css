@@ -1,12 +1,10 @@
 .marriage-overlay {
-	background-image: url(/his/img/backgrounds/marital_status.jpg);
-	background-size: cover;
-	max-height: 90vh;
-	max-width: 90vw;
-	height: auto;
-	min-height: 633px;
-	min-width: 1139px;
-	text-align: center;
+	background-image: url(/his/img/backgrounds/marital_status.png);
+    	background-size: contain;
+    	max-height: 90vh;
+    	max-width: 140vh;
+    	min-width: 90vw;
+    	min-height: 60vw;
 }
 
 .pregnancy {
@@ -32,37 +30,38 @@
 .marriage-overlay .tile {
     display: block;
     position: absolute;
-    height: 22%;
-    width: 12%;
+    height: 13.5vw;
+    width: 13.5vw;
 }
 
 .marriage-overlay .tile1 {
-    top: 74%;
-    left: 2%;
+    top: 75vh;
+    left: 2vw;
 }
 .marriage-overlay .tile2 {
-    top: 74%;
-    left: 16%;
+    top: 75vh;
+    left: 16.5vw;
 }
 .marriage-overlay .tile3 {
-    top: 74%;
+    top: 75vh;
+    left: 16.5vw;
     left: 30%;
 }
 .marriage-overlay .tile4 {
-    top: 74%;
-    left: 44%;
+    top: 75vh;
+    left: 31vw;
 }
 .marriage-overlay .tile5 {
-    top: 74%;
-    left: 58%;
+    top: 75vh;
+    left: 46vw;
 }
 .marriage-overlay .tile6 {
-    top: 74%;
-    left: 72%;
+    top: 75vh;
+    left: 50.5vw;
 }
 .marriage-overlay .tile7 {
-    top: 74%;
-    left: 86%
+    top: 75vh;
+    left: 75vw;
 }
 
 
