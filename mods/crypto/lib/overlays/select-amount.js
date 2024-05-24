@@ -51,7 +51,7 @@ class CryptoSelectAmount {
       		this_self.validateAmount();
   		};
 
-		document.querySelector('.crypto_amount_btn').onclick = (e) => {
+		document.querySelector('.crypto_amount_btn').onclick = async (e) => {
 			this_self.validateAmount();
 			this_self.validateCheckbox();
 
@@ -59,6 +59,10 @@ class CryptoSelectAmount {
 				this_self.errors.checkbox) {
 				return;
 			}
+
+			let confirm = document.getElementById('crypto-stake-confirm-input').checked;
+			this_self.app.options.gameprefs.crypto_transfers_inbound_trusted = confirm ? 1 : 0;
+			await this_self.app.wallet.saveWallet();
  
 			if (callback != null) {
 				let amount = stake_input.value;
