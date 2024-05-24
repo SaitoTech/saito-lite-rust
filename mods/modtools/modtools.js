@@ -36,14 +36,14 @@ class ModTools extends ModTemplate {
 		this.app.connection.on(
                         'saito-blacklist',
                         async (address) => {
-				modtools_self.blacklist();
+				modtools_self.blacklist(address);
                         }
 		}
 
 		this.app.connection.on(
                         'saito-whitelist',
                         async (address) => {
-				modtools_self.whitelist();
+				modtools_self.whitelist(address);
                         }
 		}
 

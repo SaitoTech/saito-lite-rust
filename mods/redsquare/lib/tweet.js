@@ -289,10 +289,11 @@ class Tweet {
 	}
 
 	render(prepend = false) {
-		if (this.mod.hidden_tweets.includes(this.tx.signature)) {
-			console.log('Not rendering hidden tweet');
-			return;
-		}
+
+//		if (this.mod.hidden_tweets.includes(this.tx.signature)) {
+//			console.log('Not rendering hidden tweet');
+//			return;
+//		}
 
 		//
 		// handle if link
