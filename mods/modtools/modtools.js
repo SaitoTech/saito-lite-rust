@@ -77,7 +77,7 @@ class ModTools extends ModTemplate {
 		//
 		if (type === 'core-moderation') {
 			return {
-                                moderate: (tx = null) => {
+                                filter_func: (tx = null) => {
                                         if (tx == null) { return 0; }
 					if (this.whitelist.includes(tx.from[0].publicKey) { return 1; }
 					if (this.blacklist.includes(tx.from[0].publicKey) { return 0; }
@@ -93,7 +93,7 @@ class ModTools extends ModTemplate {
 		//
 		if (type === 'app-moderation') {
 			return {
-                                moderate: (app = null , tx = null) => {
+                                filter_func: (app = null , tx = null) => {
                                         if (tx == null || app == null) { return 0; }
 					if (this.whitelist.includes(tx.from[0].publicKey) { return 1; }
 					if (this.blacklist.includes(tx.from[0].publicKey) { return 0; }
@@ -117,7 +117,7 @@ class ModTools extends ModTemplate {
 		//
 		if (type === 'swarm-moderation') {
 			return {
-                                moderate: (tx = null) => {
+                                filter_func: (tx = null) => {
                                         if (tx == null) { return 0; }
 					if (this.whitelist.includes(tx.from[0].publicKey) { return 1; }
 					if (this.blacklist.includes(tx.from[0].publicKey) { return 0; }

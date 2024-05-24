@@ -5,16 +5,23 @@ import path from 'path';
 import fs from 'fs';
 
 class Mods {
+
 	public app: Saito;
 	public mods: any;
 	public uimods: any;
 	public mods_list: any;
 	public is_initialized: any;
 	public lowest_sync_bid: any;
+	public core_filter_func: any;
+	public swarm_filter_func: any;
+	public app_filter_func: any;
 
 	constructor(app: Saito, config) {
 		this.app = app;
 		this.mods = [];
+		this.core_filter_func = []; // moderation functions -- onchain txs
+		this.swarm_filter_func = []; // moderation functions -- handle peer request txs
+		this.app_filter_func = []; // moderation functions -- app-specific
 		this.uimods = [];
 		this.mods_list = config;
 		this.is_initialized = false;
@@ -51,11 +58,19 @@ class Mods {
 	}
 
 	affixCallbacks(tx, txindex, message, callbackArray, callbackIndexArray) {
+
 		//
 		// no callbacks on type=9 spv stubs
 		//
 		if (tx.type == 5) {
 			return;
+		}
+
+		//
+		// no callbacks if core-moderation disables
+		//
+		for (let i = 0; i < this.core_filter_func.length; i++) {
+			if (this.core_filter_func[i](tx) != 1) { return; }
 		}
 
 		for (let i = 0; i < this.mods.length; i++) {
@@ -66,10 +81,20 @@ class Mods {
 					tx
 				) == 1
 			) {
-				callbackArray.push(
-					this.mods[i].onConfirmation.bind(this.mods[i])
-				);
-				callbackIndexArray.push(txindex);
+
+				let affix_callback = true;
+
+				for (let z = 0; z < this.app_filter_func.length; z++) {
+					if (this.app_filter_func[i](this.mods[i], tx) == 0) { affix_callback = false; }
+				}
+
+				if (affix_callback == true) {
+					callbackArray.push(
+						this.mods[i].onConfirmation.bind(this.mods[i])
+					);
+					callbackIndexArray.push(txindex);
+				}
+
 			}
 		}
 	}
@@ -82,17 +107,29 @@ class Mods {
 		let have_responded = false;
 		let request = '';
 		try {
+
+                        
+	                //
+	                // no callbacks if core-moderation disables
+	                //
+	                for (let i = 0; i < this.swarm_filter_func.length; i++) {
+	                        if (this.swarm_filter_func[i](tx) != 1) { 
+					if (mycallback) { mycallback({}); }
+					return;
+				}
+	                }
+
 			let txmsg = tx.returnMessage();
 			request = txmsg?.request;
 			if (txmsg?.request === 'software-update') {
 				let receivedBuildNumber = JSON.parse(tx.msg.data).build_number;
-
 				let active_mod = this.app.modules.returnActiveModule();
 				// check if not inside game
 				if (!active_mod.game) {
 					this.app.browser.updateSoftwareVersion(receivedBuildNumber);
 				}
 			}
+
 		} catch (err) { }
 
 		for (let iii = 0; iii < this.mods.length; iii++) {
@@ -310,6 +347,20 @@ class Mods {
 			await this.app.modules.render();
 			await this.app.modules.attachEvents();
 		}
+
+		//
+		// ... setup moderation / filter functions
+		//
+		for (let xmod of this.app.modules.respondTo('core-moderation')) { 
+                  this.core_filter_func.push(xmod.respondTo('core-moderation').filter_func);
+		}
+		for (let xmod of this.app.modules.respondTo('swarm-moderation')) { 
+                  this.swarm_filter_func.push(xmod.respondTo('swarm-moderation').filter_func);
+		}
+		for (let xmod of this.app.modules.respondTo('app-moderation')) { 
+                  this.app_filter_func.push(xmod.respondTo('app-moderation').filter_func);
+		}
+
 	}
 
 	async render() {
@@ -368,7 +419,6 @@ class Mods {
 
 	//
 	// respondTo returns Object, Array or null
-	// this function "mistakenly" filters for Objects only
 	// 
 	getRespondTos(request, obj = null) {
 		const compliantInterfaces = [];

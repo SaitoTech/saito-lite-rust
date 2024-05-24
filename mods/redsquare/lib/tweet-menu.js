@@ -70,25 +70,28 @@ class TweetMenu {
 	}
 
 	muteContact() {
-		this.mod.mute_list.push(this.tweeter);
-		this.mod.saveOptions();
+		this.app.connection.emit('saito-blacklist', this.tweeter);
+
+//		this.mod.mute_list.push(this.tweeter);
+//		this.mod.saveOptions();
 		siteMessage('User muted... reloading feed');
-		setTimeout(() => {
-			setTimeout(() => {
-				window.location.reload();
-			}, 300);
-		}, 1500);
+//		setTimeout(() => {
+//			setTimeout(() => {
+//				window.location.reload();
+//			}, 300);
+//		}, 1500);
 	}
 
 	blockContact() {
-		this.mod.black_list.push(this.tweeter);
-		this.mod.saveOptions();
+		this.app.connection.emit('saito-blacklist', this.tweeter);
+//		this.mod.black_list.push(this.tweeter);
+//		this.mod.saveOptions();
 		siteMessage('User blocked... reloading feed');
-		setTimeout(() => {
-			setTimeout(() => {
-				window.location.reload();
-			}, 300);
-		}, 1500);
+//		setTimeout(() => {
+//			setTimeout(() => {
+//				window.location.reload();
+//			}, 300);
+//		}, 1500);
 	}
 
 	async reportTweet() {
