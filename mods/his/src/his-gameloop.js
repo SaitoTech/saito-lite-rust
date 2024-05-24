@@ -10626,7 +10626,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  if (this.game.player == player) {
 	    this.diplomacy_confirm_overlay.render(faction, proposal_idx);
 	  } else {
-	    this.updateStatus(this.returnFactionName(faction) + " reviewing diplomatic proposal...");
+	    this.updateStatus(this.returnFactionName(faction) + " conducting diplomacy...");
 	  }
 
 	  this.game.queue.splice(qe, 1);
@@ -10688,7 +10688,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	    this.diplomacy_propose_overlay.purgeProposals();
 	    this.diplomacy_propose_overlay.render(faction);
 	  } else {
-	    this.updateStatus(this.returnFactionName(faction) + " considering diplomatic proposals");
+	    this.updateStatus(this.returnFactionName(faction) + " conducting diplomacy...");
 	  }
 
 	  this.game.queue.splice(qe, 1);
@@ -10709,7 +10709,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
 	    this.playerManuallyRemoveExcommunication(this, faction);
 	  } else {
-	    this.updateStatus(this.returnFactionName(faction) + " considering Removing Excommunication");
+	    this.updateStatus(this.returnFactionName(faction) + " conducting diplomacy...");
 	  }
 
 	  return 0;
