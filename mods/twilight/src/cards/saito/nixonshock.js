@@ -1,10 +1,15 @@
 
     if (card == "nixonshock") {
 
-      this.game.state.events.nixonshock = 1;
-      this.cancelEvent("energycrisis");
-
       let twilight_self = this;
+
+      if (twilight_self.game.state.events.energycrisis == 1) {
+        twilight_self.updateLog("Energy Crisis cancels Nixon Shock");
+        return 1;
+      }
+
+      twilight_self.game.state.events.nixonshock = 1;
+      twilight_self.cancelEvent("energycrisis");
 
       if (twilight_self.game.player == 2) {
 

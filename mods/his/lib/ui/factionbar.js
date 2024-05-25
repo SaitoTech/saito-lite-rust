@@ -49,7 +49,7 @@ class FactionBarOverlay {
 
 	render(faction = '') {
 
-		if (this.mod.game.state.players_info[this.mod.game.player-1].factions.length == 1) { return; }
+		if (this.mod.game.state.players.length == 2) { return; }
 	 	if (this.visible) { return; }
 
 		let his_self = this.mod;
@@ -65,7 +65,6 @@ class FactionBarOverlay {
 		}
 
 		this.visible = true;
-
 		this.attachEvents();
 
 	}

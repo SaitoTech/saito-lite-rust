@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
 	default_fee = 0;
 
-	version = 5.631;
+	version = 5.632;
 
 	nolan_per_saito = 100000000;
 
@@ -417,6 +417,16 @@ export default class Wallet extends SaitoWallet {
 		}
 		this.app.options.wallet.backup_required = 0;
 		this.app.options.wallet.backup_required_msg = 0;
+
+		// in-game crypto transfer preferences
+		if (!this.app.options.gameprefs) {
+			this.app.options.gameprefs = {};
+		}
+
+		this.app.options.gameprefs.crypto_transfers_inbound_approved = 1;
+		this.app.options.gameprefs.crypto_transfers_outbound_approved = 1;
+		this.app.options.gameprefs.crypto_transfers_inbound_trusted = 0;
+		this.app.options.gameprefs.crypto_transfers_outbound_trusted = 1;
 
 
 		await this.saveWallet();
