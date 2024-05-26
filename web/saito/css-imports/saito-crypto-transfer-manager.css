@@ -12,6 +12,10 @@
   min-width: 55rem;
 }
 
+.saito-overlay:has(.game-crypto-transfer-manager-container) {
+  background: none;
+}
+
 .game-crypto-transfer-manager-container .auth_title {
   margin: 0rem;
 }
