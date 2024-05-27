@@ -67,10 +67,10 @@ class Settings extends ModTemplate {
 	}
 
 	/*
-  Note: we are "hacking" the renderInto function to make sure when we render a settings 
-  overlay that we have the style sheets attached. Otherwise it isn't used in the general
-  module fitting into component in other module modality
-  */
+	  Note: we are "hacking" the renderInto function to make sure when we render a settings 
+	  overlay that we have the style sheets attached. Otherwise it isn't used in the general
+	  module fitting into component in other module modality
+	  */
 	renderInto(qs) {
 		if (qs == '.theme-selector') {
 			if (!this.renderIntos[qs]) {
@@ -87,8 +87,8 @@ class Settings extends ModTemplate {
 	}
 
 	/*
-  Note: Account Settings is hardcoded into saito-header
-  */
+  	Note: Account Settings is hardcoded into saito-header
+  	*/
 	respondTo(type = '') {
 		let settings_self = this;
 

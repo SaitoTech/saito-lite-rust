@@ -15,6 +15,7 @@ class SettingsAppspace {
 	}
 
 	async render() {
+
 		this.privateKey = await this.app.wallet.getPrivateKey();
 		this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod, this));
 
@@ -29,9 +30,12 @@ class SettingsAppspace {
 					this.app.modules.mods[i].respondTo('settings-appspace') !=
 					null
 				) {
+console.log("settings appspace possible for: " + this.app.modules.mods[i].name);
 					let mod_settings_obj =
 						this.app.modules.mods[i].respondTo('settings-appspace');
 					mod_settings_obj.render(this.app, this.mod);
+				} else {
+console.log("settings appspace impossible for: " + this.app.modules.mods[i].name);
 				}
 			}
 		}

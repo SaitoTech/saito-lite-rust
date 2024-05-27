@@ -18,20 +18,6 @@ module.exports = (app, mod) => {
 			`;
 
 
-	if (mod?.mute_list?.length > 0){
-		html += `<fieldset id="muted-accounts" class="saito-grid settings-link">
-		<i class="fa-solid fa-volume-xmark"></i>
-		<label>Manage Muted Accounts</label>
-		</fieldset>`;
-	}
-
-	if (mod?.black_list?.length > 0){
-		html += `<fieldset id="blocked-accounts" class="saito-grid settings-link">
-		<i class="fa-solid fa-ban"></i>
-		<label>Manage Blocked Accounts</label>
-		</fieldset>`;
-	}
-
 	html += "</div>";
 
 	return html;

@@ -1,5 +1,7 @@
 var saito = require('../../lib/saito/saito');
 var ModTemplate = require('../../lib/templates/modtemplate');
+var SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
+var AppSettings = require('./lib/modtools-settings');
 
 class ModTools extends ModTemplate {
 
@@ -11,8 +13,8 @@ class ModTools extends ModTemplate {
 		this.appname = 'ModTools';
 		this.slug = 'modtools';
 		this.description = 'Module for managing and customizing wallet and application moderation tools';
-		this.class = 'utility';
-		this.categories = 'Core Utilities';
+		this.class = 'modtools';
+		this.categories = 'Core Moderation';
 		this.icon = 'fas fa-eye-slash';
 		this.styles = [
 			'/modtools/style.css',
@@ -24,6 +26,21 @@ class ModTools extends ModTemplate {
 
 		return this;
 	}
+
+
+  	hasSettings() {
+    		return true;
+  	}
+ 
+  	loadSettings(container = null) {
+    		if (!container){
+      			let overlay = new SaitoOverlay(this.app, this.mod);
+      			overlay.show(`<div class="module-settings-overlay"><h2>Moderation Settings</h2></div>`);
+      			container = ".module-settings-overlay";
+    		}
+    		let as = new AppSettings(this.app, this, container);
+    		as.render();
+  	}
 
 	async initialize(app) {
 
@@ -41,9 +58,23 @@ class ModTools extends ModTemplate {
 		);
 
 		this.app.connection.on(
+                        'saito-unblacklist',
+                        async (address) => {
+				modtools_self.unblacklistAddress(address);
+                        }
+		);
+
+		this.app.connection.on(
                         'saito-whitelist',
                         async (address) => {
 				modtools_self.whitelistAddress(address);
+                        }
+		)
+
+		this.app.connection.on(
+                        'saito-unwhitelist',
+                        async (address) => {
+				modtools_self.unwhitelistAddress(address);
                         }
 		)
 
@@ -101,6 +132,30 @@ class ModTools extends ModTemplate {
 		}
 
 		return null;
+	}
+
+	unblacklistAddress(add) {
+		if (this.blacklist.includes(add)) {
+			for (let i = 0; i < this.blacklist.length; i++) {
+				if (this.blacklist[i] == add) {
+					this.blacklist.splice(i, 1);
+					this.save();
+					return;
+				}
+			}
+                }
+	}
+
+	unwhitelistAddress(add) {
+		if (this.whitelist.includes(add)) {
+			for (let i = 0; i < this.whitelist.length; i++) {
+				if (this.whitelist[i] == add) {
+					this.whitelist.splice(i, 1);
+					this.save();
+					return;
+				}
+			}
+                }
 	}
 
 	blacklistAddress(add) {

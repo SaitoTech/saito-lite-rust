@@ -1,4 +1,5 @@
 module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
+
 	let publicKey = mod.publicKey;
 	let key = app.keychain.returnKey({ publicKey: publicKey });
 	let identifier_registered;
@@ -17,6 +18,7 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 
 	try {
 		for (let i = 0; i < app.options.modules.length; i++) {
+
 			let mod = app.modules.returnModule(app.options.modules[i].name);
 
 			let shortName = app.options.modules[i].name;
@@ -26,6 +28,7 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 
       // filter out core modules  
       if (!mod || mod?.class !== 'utility') {
+
   			modules_html += `
         <div class="settings-appspace-app">
             <div class="saito-switch">
