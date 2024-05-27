@@ -350,29 +350,6 @@ class RedSquare extends ModTemplate {
       //
       this.addPeer("localhost");
 
-      //
-      // fetch tweets from server
-      //
-console.log("moderating cached tweets...");
-
-/*******
-      if (this.browser_active) {
-        if (!this.ignoreCentralServer && window?.tweets?.length){
-          for (let z = 0; z < window.tweets.length; z++) {
-            let newtx = new Transaction();
-            newtx.deserialize_from_web(this.app, window.tweets[z]);
-//
-// we want to moderate
-//
-if (this.app.modules.moderate(newtx, "swarm")) {
-	console.log("adding tx from: " + newtx.from[0].publicKey);
-            this.addTweet(newtx, "server_cache");
-}
-          }
-        }
-      }
-******/
-
     }
 
     //
@@ -457,7 +434,7 @@ if (this.app.modules.moderate(newtx, "swarm")) {
 //
 // we want to moderate
 //
-if (this.app.modules.moderate(newtx, "swarm")) {
+if (this.app.modules.moderate(newtx, this.name) != -1) {
         console.log("adding tx from: " + newtx.from[0].publicKey);
             this.addTweet(newtx, "server_cache");
 }
@@ -1002,7 +979,7 @@ if (this.app.modules.moderate(newtx, "swarm")) {
 //
 // moderation loop
 //
-if (this.app.modules.moderate(txs[z], "swarm") != 0) {
+if (this.app.modules.moderate(txs[z], this.name) != -1) {
 
       if (txs[z].updated_at < peer.tweets_earliest_ts) {
         peer.tweets_earliest_ts = txs[z].updated_at;

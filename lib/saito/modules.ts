@@ -12,15 +12,11 @@ class Mods {
 	public mods_list: any;
 	public is_initialized: any;
 	public lowest_sync_bid: any;
-	public core_filter_func: any;
-	public swarm_filter_func: any;
 	public app_filter_func: any;
 
 	constructor(app: Saito, config) {
 		this.app = app;
 		this.mods = [];
-		this.core_filter_func = []; // moderation functions -- onchain txs
-		this.swarm_filter_func = []; // moderation functions -- handle peer request txs
 		this.app_filter_func = []; // moderation functions -- app-specific
 		this.uimods = [];
 		this.mods_list = config;
@@ -59,6 +55,8 @@ class Mods {
 
 	affixCallbacks(tx, txindex, message, callbackArray, callbackIndexArray) {
 
+		let core_accepts = 0;
+
 		//
 		// no callbacks on type=9 spv stubs
 		//
@@ -66,12 +64,9 @@ class Mods {
 			return;
 		}
 
-		//
-		// no callbacks if core-moderation disables
-		//
-		for (let i = 0; i < this.core_filter_func.length; i++) {
-			if (this.core_filter_func[i](tx) != 1) { return; }
-		}
+
+		core_accepts = this.moderateCore(tx);
+
 
 		for (let i = 0; i < this.mods.length; i++) {
 			// if (!!message && message.module != undefined) {
@@ -84,17 +79,22 @@ class Mods {
 
 				let affix_callback = true;
 
-				for (let z = 0; z < this.app_filter_func.length; z++) {
-					if (this.app_filter_func[z](this.mods[i], tx) == 0) { affix_callback = false; }
-				}
+				//
+				// module-level moderation can OVERRIDE the core moderation which 
+				// is why we check module-level moderation here and permit the mod
+				// to handlePeerTransaction() if mod_accepts even if core does not
+				//
+				let mod_accepts = this.moderateModule(tx, this.mods[i]);
+				if (mod_accepts == 1 || (mod_accepts == 0 && core_accepts != -1)) {
 
-				if (affix_callback == true) {
-					callbackArray.push(
-						this.mods[i].onConfirmation.bind(this.mods[i])
-					);
-					callbackIndexArray.push(txindex);
-				}
+					if (affix_callback == true) {
+						callbackArray.push(
+							this.mods[i].onConfirmation.bind(this.mods[i])
+						);
+						callbackIndexArray.push(txindex);
+					}
 
+				}
 			}
 		}
 	}
@@ -106,21 +106,15 @@ class Mods {
 	) {
 		let have_responded = false;
 		let request = '';
+		let core_accepts = 0;
+		let txmsg = tx.returnMessage();
+
 		try {
 
-                        
-	                //
-	                // no callbacks if core-moderation disables
-	                //
-	                for (let i = 0; i < this.swarm_filter_func.length; i++) {
-	                        if (this.swarm_filter_func[i](tx) != 1) { 
-					if (mycallback) { mycallback({}); }
-					return;
-				}
-	                }
-
-			let txmsg = tx.returnMessage();
 			request = txmsg?.request;
+
+			core_accepts = this.moderateCore(tx);
+
 			if (txmsg?.request === 'software-update') {
 				let receivedBuildNumber = JSON.parse(tx.msg.data).build_number;
 				let active_mod = this.app.modules.returnActiveModule();
@@ -132,17 +126,30 @@ class Mods {
 
 		} catch (err) { }
 
+
+
 		for (let iii = 0; iii < this.mods.length; iii++) {
 			try {
-				if (
-					await this.mods[iii].handlePeerTransaction(
-						this.app,
-						tx,
-						peer,
-						mycallback
-					)
-				) {
-					have_responded = true;
+
+				//
+				// module-level moderation can OVERRIDE the core moderation which 
+				// is why we check module-level moderation here and permit the mod
+				// to handlePeerTransaction() if mod_accepts even if core does not
+				//
+				let mod_accepts = this.moderateModule(tx, this.mods[iii]);
+				if (mod_accepts == 1 || (mod_accepts == 0 && core_accepts != -1)) {
+
+					if (
+						await this.mods[iii].handlePeerTransaction(
+							this.app,
+							tx,
+							peer,
+							mycallback
+						)
+					) {
+						have_responded = true;
+					}
+
 				}
 			} catch (err) {
 				console.error(
@@ -276,14 +283,8 @@ class Mods {
 		//
 		// ... setup moderation / filter functions
 		//
-		for (let xmod of this.app.modules.respondTo('core-moderation')) { 
-                  this.core_filter_func.push(xmod.respondTo('core-moderation').filter_func);
-		}
-		for (let xmod of this.app.modules.respondTo('swarm-moderation')) { 
-                  this.swarm_filter_func.push(xmod.respondTo('swarm-moderation').filter_func);
-		}
-		for (let xmod of this.app.modules.respondTo('app-moderation')) { 
-                  this.app_filter_func.push(xmod.respondTo('app-moderation').filter_func);
+		for (let xmod of this.app.modules.respondTo('saito-moderation')) { 
+                  this.app_filter_func.push(xmod.respondTo('saito-moderation').filter_func);
 		}
 
 		//
@@ -364,31 +365,75 @@ class Mods {
 
 	}
 
+
 	//
-	// 1 = permit, 0 = do not permit
+	// 1 = permit, -1 = do not permit
 	//
-	moderate(tx=null, type="swarm") {
-console.log("moderate 1");
+	moderateModule(tx=null, mod=null) {
+
+		if (mod == null || tx == null) { return 0; }
+
+		for (let z = 0; z < this.app_filter_func.length; z++) {
+			let permit_through = this.app_filter_func[z](mod, tx);
+			if (permit_through == 1) { 
+				return 1;
+			}
+			if (permit_through == -1) { 
+				return -1;
+			}
+		}
+
+		return 0;
+
+	}
+
+	moderateCore(tx=null) {
+
 		if (tx == null) { return 0; }
-		if (type == "core") {
-console.log("moderate 2");
-			for (let z = 0; z < this.core_filter_func.length; z++) {
-				if (this.core_filter_func[z](tx) == 0) { return 0; }
+
+		if (!this.app.options.modtools) { this.app.options.modtools = {}; }
+		if (!this.app.options.modtools.whitelist) { this.app.options.modtools.whitelist = []; }
+		if (!this.app.options.modtools.blacklist) { this.app.options.modtools.blacklist = []; }
+                if (this.app.options.modtools.whitelist.includes(tx.from[0].publicKey)) { return 1; }
+                if (this.app.options.modtools.blacklist.includes(tx.from[0].publicKey)) { return -1; }
+
+		return 0;
+
+	}
+
+
+	moderate(tx=null, app="") {
+
+		let permit_through = 0;
+
+		//
+		// if there is a relevant app-filter-function, respect it
+		//
+		for (let i = 0; i < this.mods.length; i++) {
+			if (this.mods[i].name == app || app == "*") {
+				permit_through = this.moderateModule(tx, this.mods[i]);
+				if (permit_through == -1) { return -1; }
+				if (permit_through == 1) { return 1; }
 			}
-			return 1;
 		}
-		if (type == "swarm") {
-console.log("moderate 3 - " + this.swarm_filter_func.length);
-			for (let z = 0; z < this.swarm_filter_func.length; z++) {
-console.log("checking swarm filter func for: " + tx.from[0].publicKey);
-console.log("result is: " + this.swarm_filter_func[z](tx));
-				if (this.swarm_filter_func[z](tx) == 0) { return 0; }
-			}
-console.log("and returning 1...");
-			return 1;
-		}
+
+		//
+		// otherwise go through blacklist
+		//
+		permit_through = this.moderateCore(tx);
+
+console.log("core moderation: " + permit_through);
+
+		if (permit_through == -1) { return -1; }
+		if (permit_through == 1) { return 1; }
+		
+
+		//
+		// seems OK if we made it this far
+		//
 		return 1;
 	}
+
 
 	async render() {
 		console.log('modules.render');

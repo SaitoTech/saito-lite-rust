@@ -47,6 +47,12 @@ class ModTools extends ModTemplate {
                         }
 		)
 
+
+		//
+		// parse wallet to add 
+		//
+		this.apps['Chat'] = "*";
+
 	}
 
 
@@ -69,56 +75,27 @@ class ModTools extends ModTemplate {
 		let modtools_self = this;
 
 		//
-		// this moderation-level examines ALL transactions and permits or prevents them
-		// from being processed by ALL applications.
-		//
-		if (type === 'core-moderation') {
-			return {
-                                filter_func: (tx = null) => {
-                                        if (tx == null) { return 0; }
-					if (this.whitelist.includes(tx.from[0].publicKey)) { return 1; }
-					if (this.blacklist.includes(tx.from[0].publicKey)) { return 0; }
-					return 1;
-				}
-			}
-		}
-
-		//
 		// this moderation-level examines ALL transactions that are sent into specific 
 		// applications and checks to see if they are permitted. it will block applications
 		// from being processed if they do not meet criteria.
 		//
-		if (type === 'app-moderation') {
+		// 1 = definitely show
+		// -1 = definitely filter
+		// 0 = no preference
+		//
+		if (type === 'saito-moderation') {
 			return {
                                 filter_func: (app = null , tx = null) => {
                                         if (tx == null || app == null) { return 0; }
-					if (this.whitelist.includes(tx.from[0].publicKey)) { return 1; }
-					if (this.blacklist.includes(tx.from[0].publicKey)) { return 0; }
 
 					//
-					// any app-specific custom settings?
+					// any app-specific moderation settings?
 					//
 					if (this.apps[app.name]) {
-
-
+						if (this.apps[app.name] == "*") { return 1; }
 					}
 
-					return 1;
-				}
-			}
-		}
-
-		//
-		// this moderation-level examines ALL transactions that arrive via handlePeerRequest
-		// and permits or prevents them from being processed by ALL applications.
-		//
-		if (type === 'swarm-moderation') {
-			return {
-                                filter_func: (tx = null) => {
-                                        if (tx == null) { return 0; }
-					if (this.whitelist.includes(tx.from[0].publicKey)) { return 1; }
-					if (this.blacklist.includes(tx.from[0].publicKey)) { return 0; }
-					return 1;
+					return 0;
 				}
 			}
 		}
