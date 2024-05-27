@@ -326,7 +326,8 @@ class Fileshare extends ModTemplate {
 	interrupt(send_message = false){
 		if (send_message){
 			this.app.connection.emit("relay-send-message", {recipient: this.recipient, request: "stop file transfer", data: {}});
-
+		}else{
+			siteMessage("File transfer cancelled", 5000);
 		}
 		this.available = false;
 		this.fileId = null;

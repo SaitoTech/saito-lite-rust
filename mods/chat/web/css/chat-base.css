@@ -112,6 +112,7 @@
 
 	.chat-main-container .chat-header, .chat-main-container .chat-header-info {
 		visibility: hidden;
+		min-height: unset;
 		height: 1rem;
 	}
 
