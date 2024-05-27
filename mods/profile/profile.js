@@ -209,7 +209,10 @@ class Profile extends ModTemplate {
 				this.app.keychain.addKey(from, data);
 				await this.saveProfileTransaction(tx);
 				this.saveCache(tx, from);
-				this.app.connection.emit('rerender-profile');
+				if(from === this.publicKey){
+					this.app.connection.emit('rerender-profile');
+				}
+				
 			} else {
 				// console.log("Key not found");
 			}
