@@ -16,8 +16,8 @@ class Profile extends ModTemplate {
 		app.connection.on(
 			'profile-fetch-content-and-update-dom',
 			async (key) => {
-				// console.log('retrieving key from keychain')
-
+				try {
+					
 				let returned_key = this.app.keychain.returnKey(key);
 				let banner_sig = returned_key.banner;
 				let description_sig = returned_key.description;
@@ -49,6 +49,10 @@ class Profile extends ModTemplate {
 						element.src = image;
 					}
 				});
+				} catch (error) {
+					console.log(error)
+				}
+
 			}
 		);
 
@@ -167,7 +171,10 @@ class Profile extends ModTemplate {
 			console.log('from', from);
 
 			this.app.connection.emit("saito-header-update-message", {msg: ""})
-			siteMessage('Profile updated', 2000);
+			if(from === this.publicKey){
+				siteMessage('Profile updated', 2000);
+			}
+	
 
 			if (this.app.keychain.returnKey(from)) {
 				let data = {};
