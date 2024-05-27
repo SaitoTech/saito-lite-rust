@@ -27,7 +27,7 @@ class NoticeOverlay {
 		<div class="notice_overlay splash_overlay saitoa">
 		<h2>Two Player Settlers Variant</h2>
 		<div>If you are familiar with the standard rules of Settlers, here are some changes to the two player version to make gameplay more fair and fun:</div>
-		<ul style="margin-left:5rem;margin-right:5rem;">
+		<ul class="notice-ul">
 		<li>longest road requires <em>6</em> road segments</li>
 		<li>longest road worth only <em>1</em> victory point</li>
 		<li><em>*NEW*</em> largest army worth only <em>1</em> victory point</li>

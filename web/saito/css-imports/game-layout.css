@@ -121,7 +121,7 @@ div.h3{
   .chat-container {
     max-height: 50vh !important;
     height: 280px !important;
-    top: unset;
+    top: 45px;
   }
 }
 
