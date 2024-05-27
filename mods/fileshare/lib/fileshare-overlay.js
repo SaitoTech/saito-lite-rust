@@ -6,6 +6,7 @@ class FileShareOverlay {
 		this.app = app;
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(app, mod);
+		this.throttle_me = false;
 	}
 
 	render(){
@@ -42,9 +43,15 @@ class FileShareOverlay {
 	}
 
 	renderStats(stats){
-		let field = document.getElementById("file-transfer-status");
-		if (field){
-			field.innerHTML = `<span>${stats.speed}</span>`;
+		if (!this.throttle_me){
+			let field = document.getElementById("file-transfer-status");
+			if (field){
+				field.innerHTML = `<span class="fixed-width">${stats.speed}</span>`;
+			}
+			this.throttle_me = true;
+			setTimeout(()=>{
+				this.throttle_me = false;
+			}, 500);			
 		}
 
 		let progress_bar = document.querySelector(".file-transfer-progress");
@@ -54,7 +61,6 @@ class FileShareOverlay {
 	}
 
 	finishTransfer(){
-		console.log("Finish in share");
 		let field = document.getElementById("file-transfer-status");
 		if (field){
 			console.log(1);
