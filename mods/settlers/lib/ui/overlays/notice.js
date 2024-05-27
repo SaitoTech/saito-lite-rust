@@ -30,6 +30,7 @@ class NoticeOverlay {
 		<ul style="margin-left:5rem;margin-right:5rem;">
 		<li>longest road requires <em>6</em> road segments</li>
 		<li>longest road worth only <em>1</em> victory point</li>
+		<li><em>*NEW*</em> largest army worth only <em>1</em> victory point</li>
 		<li>if a player is losing by 2 or more points, Robin Hood (the famous bandit) will come to their aid whenever a 7 is rolled.</li>
 		</ul>
 		</div>

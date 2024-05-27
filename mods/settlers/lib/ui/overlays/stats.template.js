@@ -89,7 +89,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 							<div class="settlers-stats-vp" title="Largest Army">
 								${stats.mod.s.img}
 								<div class="settlers-stats-vp-count">${Math.max(3, stats.mod.game.state.largestArmy.size)}</div>
-								<div class="settlers-stats-multiplier">+2</div>
+								<div class="settlers-stats-multiplier">+${stats.mod.largest.value}</div>
 							</div>
 							<div></div>
 						</div>
