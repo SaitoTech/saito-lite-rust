@@ -103,7 +103,7 @@ class Encrypt extends ModTemplate {
           if (receiver == this.publicKey) {
             console.log("ENCRYPT: You have received an encrypted channel request from " + sender);
             this.accept_key_exchange(tx);
-            // this.app.keychain.addWatchedPublicKey(sender)
+
           }
         }
 
@@ -114,7 +114,7 @@ class Encrypt extends ModTemplate {
           if (sender !== this.publicKey){
             console.log(`ENCRYPT: ${sender} has accepted your encrypted channel request`);
             this.confirm_key_exchange(txmsg.bob, sender); 
-            // this.app.keychain.addWatchedPublicKey(sender) 
+
           }else{
             console.log("ENCRYPT: You have accepted an encrypted channel request from " + sender);
           }          
