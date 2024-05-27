@@ -36,19 +36,16 @@ class ModTools extends ModTemplate {
 		this.app.connection.on(
                         'saito-blacklist',
                         async (address) => {
-				modtools_self.blacklist(address);
+				modtools_self.blacklistAddress(address);
                         }
-		}
+		);
 
 		this.app.connection.on(
                         'saito-whitelist',
                         async (address) => {
-				modtools_self.whitelist(address);
+				modtools_self.whitelistAddress(address);
                         }
-		}
-
-
-
+		)
 
 	}
 
@@ -79,8 +76,8 @@ class ModTools extends ModTemplate {
 			return {
                                 filter_func: (tx = null) => {
                                         if (tx == null) { return 0; }
-					if (this.whitelist.includes(tx.from[0].publicKey) { return 1; }
-					if (this.blacklist.includes(tx.from[0].publicKey) { return 0; }
+					if (this.whitelist.includes(tx.from[0].publicKey)) { return 1; }
+					if (this.blacklist.includes(tx.from[0].publicKey)) { return 0; }
 					return 1;
 				}
 			}
@@ -95,8 +92,8 @@ class ModTools extends ModTemplate {
 			return {
                                 filter_func: (app = null , tx = null) => {
                                         if (tx == null || app == null) { return 0; }
-					if (this.whitelist.includes(tx.from[0].publicKey) { return 1; }
-					if (this.blacklist.includes(tx.from[0].publicKey) { return 0; }
+					if (this.whitelist.includes(tx.from[0].publicKey)) { return 1; }
+					if (this.blacklist.includes(tx.from[0].publicKey)) { return 0; }
 
 					//
 					// any app-specific custom settings?
@@ -119,8 +116,8 @@ class ModTools extends ModTemplate {
 			return {
                                 filter_func: (tx = null) => {
                                         if (tx == null) { return 0; }
-					if (this.whitelist.includes(tx.from[0].publicKey) { return 1; }
-					if (this.blacklist.includes(tx.from[0].publicKey) { return 0; }
+					if (this.whitelist.includes(tx.from[0].publicKey)) { return 1; }
+					if (this.blacklist.includes(tx.from[0].publicKey)) { return 0; }
 					return 1;
 				}
 			}
@@ -129,27 +126,31 @@ class ModTools extends ModTemplate {
 		return null;
 	}
 
-	blacklist(add) {
-		if (!this.blacklist.includes(address)) {
-                	this.blacklist.push(address);
+	blacklistAddress(add) {
+		if (!this.blacklist.includes(add)) {
+                	this.blacklist.push(add);
 			this.save();
                 }
 	}
 
-	whitelist(add) {
-		if (!this.whitelist.includes(address)) {
-                	this.whitelist.push(address);
+	whitelistAddress(add) {
+		if (!this.whitelist.includes(add)) {
+                	this.whitelist.push(add);
 			this.save();
                 }
 	}
 
 	save() {
+		if (!this.app.options.modtools) { this.app.options.modtools = {}; }
 	  	this.app.options.modtools.whitelist = this.whitelist;
 	  	this.app.options.modtools.blacklist = this.blacklist;
 		this.app.storage.saveOptions();
 	}
 
 	load() {
+		if (!this.app.options.modtools) { this.app.options.modtools = {}; }
+		if (!this.app.options.modtools.whitelist) { this.app.options.modtools.whitelist = []; }
+		if (!this.app.options.modtools.blacklist) { this.app.options.modtools.blacklist = []; }
 	  	this.whitelist = this.app.options.modtools.whitelist;
 	  	this.blacklist = this.app.options.modtools.blacklist;
 	}

@@ -118,7 +118,7 @@ class Browser {
 					channel.postMessage({ active: 1, publicKey: publicKey });
 				}
 
-				/* channel.onmessage = async (e) => {
+/* channel.onmessage = async (e) => {
 				  console.log("document onmessage change");
 				  if (!document[this.hidden_tab_property]) {
 					channel.postMessage({active: 1, publicKey: publicKey});
@@ -137,7 +137,7 @@ class Browser {
 					}
 				  }
 				};
-		*/
+*/
 
 				document.addEventListener(
 					this.tab_event_name,

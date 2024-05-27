@@ -85,7 +85,7 @@ class Mods {
 				let affix_callback = true;
 
 				for (let z = 0; z < this.app_filter_func.length; z++) {
-					if (this.app_filter_func[i](this.mods[i], tx) == 0) { affix_callback = false; }
+					if (this.app_filter_func[z](this.mods[i], tx) == 0) { affix_callback = false; }
 				}
 
 				if (affix_callback == true) {
@@ -165,6 +165,7 @@ class Mods {
 	}
 
 	async initialize() {
+
 		//
 		// remove any disabled / inactive modules
 		//
@@ -273,6 +274,19 @@ class Mods {
 		}
 
 		//
+		// ... setup moderation / filter functions
+		//
+		for (let xmod of this.app.modules.respondTo('core-moderation')) { 
+                  this.core_filter_func.push(xmod.respondTo('core-moderation').filter_func);
+		}
+		for (let xmod of this.app.modules.respondTo('swarm-moderation')) { 
+                  this.swarm_filter_func.push(xmod.respondTo('swarm-moderation').filter_func);
+		}
+		for (let xmod of this.app.modules.respondTo('app-moderation')) { 
+                  this.app_filter_func.push(xmod.respondTo('app-moderation').filter_func);
+		}
+
+		//
 		// initialize the modules
 		//
 		let module_name = '';
@@ -348,19 +362,32 @@ class Mods {
 			await this.app.modules.attachEvents();
 		}
 
-		//
-		// ... setup moderation / filter functions
-		//
-		for (let xmod of this.app.modules.respondTo('core-moderation')) { 
-                  this.core_filter_func.push(xmod.respondTo('core-moderation').filter_func);
-		}
-		for (let xmod of this.app.modules.respondTo('swarm-moderation')) { 
-                  this.swarm_filter_func.push(xmod.respondTo('swarm-moderation').filter_func);
-		}
-		for (let xmod of this.app.modules.respondTo('app-moderation')) { 
-                  this.app_filter_func.push(xmod.respondTo('app-moderation').filter_func);
-		}
+	}
 
+	//
+	// 1 = permit, 0 = do not permit
+	//
+	moderate(tx=null, type="swarm") {
+console.log("moderate 1");
+		if (tx == null) { return 0; }
+		if (type == "core") {
+console.log("moderate 2");
+			for (let z = 0; z < this.core_filter_func.length; z++) {
+				if (this.core_filter_func[z](tx) == 0) { return 0; }
+			}
+			return 1;
+		}
+		if (type == "swarm") {
+console.log("moderate 3 - " + this.swarm_filter_func.length);
+			for (let z = 0; z < this.swarm_filter_func.length; z++) {
+console.log("checking swarm filter func for: " + tx.from[0].publicKey);
+console.log("result is: " + this.swarm_filter_func[z](tx));
+				if (this.swarm_filter_func[z](tx) == 0) { return 0; }
+			}
+console.log("and returning 1...");
+			return 1;
+		}
+		return 1;
 	}
 
 	async render() {
