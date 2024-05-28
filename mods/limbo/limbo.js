@@ -157,11 +157,15 @@ class Limbo extends ModTemplate {
 		if (type === 'call-actions') {
 			if (obj?.members) {
 
+				if (this.browser_active){
+					return null;
+				}
+
 				this.attachStyleSheets();
 				return [
 					{
 						text: 'Cast',
-						icon: 'fa-solid fa-tower-broadcast',
+						icon: 'fa-solid fa-podcast',
 						hook: "onair",
 						callback: async function (app) {
 							if (mod_self.dreamer) {
@@ -432,11 +436,13 @@ class Limbo extends ModTemplate {
 			}
 		}
 
+
+		await this.sendDreamTransaction(keylist);
+
 		if (this.controls) {
 			this.controls.render(this.combinedStream, screenStream);
 		}
 
-		await this.sendDreamTransaction(keylist);
 		this.copyInviteLink(screenStream);
 		this.toggleNotification(true, this.publicKey);
 		this.attachMetaEvents();
@@ -977,11 +983,8 @@ class Limbo extends ModTemplate {
 
 
 	copyInviteLink(truthy = false) {
-		console.log("A");
 		if (truthy) {
-			console.log("B");
 			if (!this.browser_active){
-				console.log("C");
 				//Since there is a button in the UI now, no need to bother with this...
 				let data = {
 					name: 'Limbo',
@@ -993,7 +996,6 @@ class Limbo extends ModTemplate {
 				invite.render();
 			}
 		} else {
-			console.log("D");
 			try {
 
 				let base64obj = this.app.crypto.stringToBase64(this.dreamer);
@@ -1009,14 +1011,14 @@ class Limbo extends ModTemplate {
 	}
 
 	toggleNotification(value = true, sender) {
-		let vinyl = document.querySelector('.fa-tower-broadcast');
+		let vinyl = document.querySelector('.fa-podcast');
 		if (vinyl) {
 			let full_icon = vinyl.parentElement;
 			if (value) {
 				vinyl.classList.add('recording');
 				full_icon.classList.add('recording');
 				if (sender != this.publicKey){
-					full_icon.title = `${this.app.keychain.returnUsername(sender)} is broadcasting the call`;
+					full_icon.title = `${this.app.keychain.returnUsername(sender)} is peercasting the call`;
 				}else{
 					full_icon.title = "Stop Limbo Broadcast";
 				}

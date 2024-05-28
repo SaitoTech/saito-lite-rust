@@ -23,7 +23,7 @@ module.exports = LiteDreamControlsTemplate = (videoEnabled = false) => {
             <i class="fas fa-link"></i>
           </div>
           <div class="disconnect-control icon_click_area">
-             <i class="disconnect_btn fas fa-phone"> </i>
+             <i class="fa-solid fa-x"></i>
           </div>
         </div>
       </div>

@@ -12,8 +12,10 @@ class DreamControls{
 
 		//Oof, I should change the name in video call (this actually refers to the hang up action)
 		app.connection.on('stun-disconnect', async ()=> {
-			await this.mod.sendKickTransaction();
-			this.mod.exitSpace();
+			if (this.mod?.dreamer == this.mod.publicKey){
+				await this.mod.sendKickTransaction();
+				this.mod.exitSpace();
+			}
 			this.remove();
 		});
 	}
@@ -28,12 +30,17 @@ class DreamControls{
 	}
 
 	remove(){
+		this.stopTimer();
 		if (document.getElementById("dream-controls")){
 			document.getElementById("dream-controls").remove();
 		}
 	}
 
 	attachEvents(){
+
+		if (this.mod.dreamer){
+			this.insertActions();
+		}
 
 		if (document.querySelector(".dream-controls .video-control")){
 			document.querySelector(".dream-controls .video-control").onclick = () => {
@@ -105,14 +112,13 @@ class DreamControls{
 
 	startTimer() {
 
-		console.log("hi");
 		if (this.timer_interval) {
 			return;
 		}
-		let timerElement = document.querySelector('.dream-controls .counter');
 		let seconds = 0;
 
 		const timer = () => {
+			let timerElement = document.querySelector('.dream-controls .counter');
 			seconds++;
 
 			// Get hours
@@ -163,6 +169,7 @@ class DreamControls{
         group_name: this.app.keychain.returnUsername(this.mod.dreamer) + "'s dream",
         call_id: this.mod.dreamer + "dream",
       });
+
       if (item instanceof Array) {
         item.forEach((j) => {
           this.createActionItem(j, container, index++);
@@ -175,7 +182,8 @@ class DreamControls{
 
 
   createActionItem(item, container, index) {
-    let id = "call_action_item_" + index;
+
+    let id = "limbo_item_" + index;
     let html = `<div id="${id}" class="icon_click_area">
             <i class="${item.icon}"></i>
           </div>`;
@@ -187,8 +195,11 @@ class DreamControls{
     el.outerHTML = html;
 
     let div = document.getElementById(id);
+
     if (div){
+
       if (item?.callback){
+      	
         div.onclick = () => {
           item.callback(this.app);
         };
