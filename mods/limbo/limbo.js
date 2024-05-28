@@ -2,6 +2,7 @@ const Transaction = require('../../lib/saito/transaction').default;
 const PeerService = require('saito-js/lib/peer_service').default;
 const ModTemplate = require('../../lib/templates/modtemplate');
 const DreamControls = require('./lib/dream-controls');
+const LiteDreamControls = require('./lib/lite-dream-controls');
 const DreamSpace = require('./lib/dream-space');
 const DreamWizard = require("./lib/dream-wizard");
 const LimboMain = require('./lib/main');
@@ -168,7 +169,10 @@ class Limbo extends ModTemplate {
 								mod_self.exitSpace();
 								mod_self.toggleNotification(false, this.publicKey);
 							} else {
-								mod_self.startDream(obj.members);
+								let c = await sconfirm("Begin peercasting audio from this call?");
+								if (c){
+									mod_self.startDream(obj.members);
+								}
 							}
 						}
 					}
@@ -321,6 +325,15 @@ class Limbo extends ModTemplate {
 			this.localStream = otherParties[0].localStream;
 			this.additionalSources = otherParties[0].remoteStreams;
 			this.externalMediaControl = true;
+
+			//Temporary exclusion of wizard if piggybacking off of streamed media
+			let obj = {
+				keylist,
+				includeCamera: false,
+				screenStream: false
+			};
+			this.broadcastDream(obj);
+			return;
 		} 
 
 		this.wizard.render(keylist);
@@ -336,7 +349,7 @@ class Limbo extends ModTemplate {
 		} else {
 			// In video call, don't want controls
 			// todo: be more refined for game streaming or whatever...
-			this.controls = null;
+			this.controls = new LiteDreamControls(this.app, this);
 		}
 
 
@@ -423,7 +436,7 @@ class Limbo extends ModTemplate {
 			this.controls.render(this.combinedStream, screenStream);
 		}
 
-		this.sendDreamTransaction(keylist);
+		await this.sendDreamTransaction(keylist);
 		this.copyInviteLink(screenStream);
 		this.toggleNotification(true, this.publicKey);
 		this.attachMetaEvents();
@@ -964,8 +977,11 @@ class Limbo extends ModTemplate {
 
 
 	copyInviteLink(truthy = false) {
+		console.log("A");
 		if (truthy) {
+			console.log("B");
 			if (!this.browser_active){
+				console.log("C");
 				//Since there is a button in the UI now, no need to bother with this...
 				let data = {
 					name: 'Limbo',
@@ -977,6 +993,7 @@ class Limbo extends ModTemplate {
 				invite.render();
 			}
 		} else {
+			console.log("D");
 			try {
 
 				let base64obj = this.app.crypto.stringToBase64(this.dreamer);

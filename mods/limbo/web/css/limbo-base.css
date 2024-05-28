@@ -130,6 +130,22 @@
 	background-color: var(--saito-black);
 }
 
+.dream-controls.lite {
+	width: unset;
+	height: unset;
+	display: flex;
+	z-index: 1000;
+	cursor: grab;
+}
+
+.dream-controls.lite .control-panel{
+	padding: 2px;
+}
+
+.dream-controls.lite .timer{
+	text-align: right;
+}
+
 .dream-controls .video-box-container-large video {
 	position: absolute;
 	object-fit: contain;
