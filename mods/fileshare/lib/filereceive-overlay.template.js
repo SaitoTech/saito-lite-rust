@@ -13,8 +13,12 @@ module.exports = FileReceiveOverlayTemplate = (app, mod) => {
 				<div class="file-transfer-progress"></div>
 				<i class="fa-solid fa-file"></i>
 				<div class="file-name">${mod.file.name}</div>
-				<div class="file-size">${mod.calcSize(mod.file.size)}</div>
+				<div class="fixed-width">${mod.calcSize(mod.file.size)}</div>
 			</div>
+		</div>
+		<div class="teleporter-status-item">
+			<div>Establishing Connection</div>
+			<div class="teleporter-status" id="peer-connection-status"><i class="fa-solid fa-ellipsis"></i></div>
 		</div>
 		<div class="teleporter-transfer-field"></div>
 		<div id="peer-permission-buttons" class="file-button-row">

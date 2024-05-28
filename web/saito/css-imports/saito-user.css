@@ -47,6 +47,7 @@ Saito User
   justify-items: start;
   width: 100%;
   position: relative;
+  white-space: nowrap; /* don't auto wrap time stamps or stuff */
 }
 
 /*  saito-identicon-box  */
@@ -81,6 +82,7 @@ Saito User
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: wrap; /* allow the userline to wrap intuitively (for chat messages) */
 }
 
 .saito-user .saito-datetime {

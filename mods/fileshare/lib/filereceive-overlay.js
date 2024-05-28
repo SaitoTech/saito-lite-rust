@@ -7,6 +7,7 @@ class FileReceiveOverlay {
 		this.app = app;
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(app, mod);
+		this.throttle_me = false;
 	}
 
 	render(sender) {
@@ -17,11 +18,19 @@ class FileReceiveOverlay {
 		this.sender.render();
 		this.overlay.blockClose();
 		this.attachEvents();
+
+		if (!this.mod.stun.hasConnection(sender)) {
+			this.app.connection.on("stun-data-channel-open", peerId => {
+				if (peerId == sender){
+					this.onConnectionSuccess();
+				}
+			})
+		}else{
+			this.onConnectionSuccess();
+		}
 	}
 
 	beginTransfer() {
-		console.log("H1");
-		
 		let field = document.getElementById('transfer-speed-row');
 		if (field){
 			field.classList.remove("hideme");
@@ -39,9 +48,15 @@ class FileReceiveOverlay {
 	}
 
 	renderStats(stats){
-		let field = document.getElementById("file-transfer-status");
-		if (field){
-			field.innerHTML = `<span>${stats.speed}</span>`;
+		if (!this.throttle_me){
+			let field = document.getElementById("file-transfer-status");
+			if (field){
+				field.innerHTML = `<span class="fixed-width">${stats.speed}</span>`;
+			}
+			this.throttle_me = true;
+			setTimeout(()=>{
+				this.throttle_me = false;
+			}, 500);			
 		}
 
 		let progress_bar = document.querySelector(".file-transfer-progress");
@@ -55,6 +70,11 @@ class FileReceiveOverlay {
 		let field = document.getElementById("file-transfer-status");
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
+		}
+
+		let progress_bar = document.querySelector(".file-transfer-progress");
+		if (progress_bar){
+			progress_bar.style.width = `100%`;
 		}
 
 		const received = new Blob(blob.receiveBuffer);
@@ -92,6 +112,22 @@ class FileReceiveOverlay {
 
 	}
 
+
+	onConnectionSuccess(){
+		let field = document.getElementById("peer-connection-status");
+		if (field){
+			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
+		}
+	}
+
+	onConnectionFailure(){
+		let field = document.getElementById("peer-connection-status");
+		if (field){
+			field.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
+		}
+	}
+
+
 	attachEvents(){
 
 		let accept_btn = document.getElementById("accept-file");
@@ -99,11 +135,7 @@ class FileReceiveOverlay {
 
 		if (accept_btn){
 			accept_btn.onclick = () => {
-				this.app.connection.emit('relay-send-message', {
-					recipient: this.sender.publicKey,
-					request: 'grant file permission',
-					data: {}
-				});
+				this.mod.prepareToReceive();
 
 				let button_row = document.getElementById('peer-permission-buttons');
 				if (button_row){

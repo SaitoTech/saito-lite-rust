@@ -1023,6 +1023,8 @@ ul.horizontal_list li.iconoption {
 
 	.player-notice {
 		font-size: 18px;
+		max-width: 100%;
+		flex-wrap: unset;
 	}
 
 	.saitoa {

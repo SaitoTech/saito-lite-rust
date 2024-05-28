@@ -16,6 +16,10 @@
 	margin: 0.5rem;
 }
 
+.fixed-width {
+  font-family: monospace;
+}
+
 
 /**** Temporary for developing file transfer in chat ***/
 .saito-file-transfer{

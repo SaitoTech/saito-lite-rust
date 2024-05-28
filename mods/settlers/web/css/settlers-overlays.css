@@ -8,7 +8,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 2rem;
-	width: min(600px, 90vw);
+	width: min(600px, 99vw);
 	max-height: 90vh;
 
 	overflow-x: hidden;
@@ -242,11 +242,15 @@ stats overlay
     cursor: pointer;
     position: relative;
     text-shadow: 1px 1px 1px #62616388;
+    max-width: 30%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .stats-header .overlay-tab.active-tab{
 	text-shadow: 1px 1px 1px #626163;
     border-bottom: 2px solid #424143;
+    min-width: fit-content;
 }
 
 .stats-header .overlay-tab.active-tab::after {
@@ -605,6 +609,25 @@ stats overlay
 	grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr));
 }
 
+
+.notice_overlay {
+	padding: 3rem;
+	font-size: 1.8rem;
+}
+
+.notice_overlay > div {
+	margin: 1rem;
+}
+
+.notice_overlay ul {
+	margin: 0 5rem;
+}
+
+.notice_overlay ul li {
+	margin-bottom: 0.5rem;
+	font-size: 2rem;
+}
+
 @media screen and (orientation: portrait) and (max-width: 600px) {
 	.combined-player-stats {
 		display: flex;
@@ -613,6 +636,46 @@ stats overlay
 
 	.vp-3p .settlers-stats-row img {
 		height: min(6.5rem, 13vw);
+	}
+
+	.splash_overlay h2 {
+		font-size: 3rem;
+	}
+
+	.notice_overlay {
+		padding: 1.5rem;
+	}
+	.notice_overlay ul {
+		margin: 0 2rem 0 3rem;
+	}
+
+	.notice_overlay ul li {
+		font-size: inherit;
+	}
+
+	.stats-header .overlay-tab {
+    	padding: 0.5rem;
+	}
+
+	.settlers-stats-row {
+		grid-template-columns: 7rem repeat(auto-fit, minmax(4rem, 1fr));
+	}
+
+	.settlers-stats-card, .settlers-stats-vp {
+		width: 100%;
+	}
+
+	.settlers-stats-card img, .settlers-stats-vp img {
+		height: min(4rem, 9vw);
+	}
+
+	.settlers-stats-multiplier, .settlers-stats-vp-count{
+		width: 2.2rem;
+		height: 2.2rem;
+		font-size: 2.2rem;
+	}
+	.settlers-stats-vp-count{
+		line-height: 2.2rem;
 	}
 }
 
@@ -637,17 +700,3 @@ stats overlay
 	}
 }
 
-
-.notice_overlay {
-	padding: 3rem;
-	font-size: 1.8rem;
-}
-
-.notice_overlay > div {
-	margin: 1rem;
-}
-
-.notice_overlay ul li {
-	margin-bottom: 0.5rem;
-	font-size: 2rem;
-}

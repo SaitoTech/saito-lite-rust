@@ -130,7 +130,7 @@ try {
       }
       //Update Largest Army
       if (this.game.state.largestArmy.player == i + 1) {
-        score += 2;
+        score += this.largest.value;
       }
       //Count (played) Victory Points
       score += this.game.state.players[i].vpc;
@@ -258,7 +258,7 @@ try {
           statshtml += this.s.img;
         }
         if (this.game.state.largestArmy.player == i) {
-          statshtml += `<div class="army_knights vproundel">2</div>`;
+          statshtml += `<div class="army_knights vproundel">${this.largest.value}</div>`;
         }
         statshtml += `</div>`;
 

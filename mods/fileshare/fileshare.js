@@ -24,10 +24,7 @@ class Fileshare extends ModTemplate {
 
 		this.bytesPrev = 0;
 		this.timestampPrev = 0;
-		this.timestampStart;
-		this.statsInterval = null;
 		this.byteRateMax = 0;
-		this.byteRatePerSec = '0 kbps';
 
 	}
 
@@ -128,19 +125,27 @@ class Fileshare extends ModTemplate {
 		return super.respondTo(type, obj);
 	}
 
-	calcSize(bytes) {
+	calcSize(bytes, digits = 0) {
 		let kilobytes = bytes / 1024;
 		let megabytes = kilobytes / 1024;
 		let gigabytes = megabytes / 1024;
 
+		const roundMe = (num, digits) => {
+			if (digits){
+				return num.toFixed(digits);
+			}else{
+				return Math.round(num*100)/100;
+			}
+		}
+
 		if (gigabytes > 1) {
-			return `${(Math.round(gigabytes*100)/100)} GB`;
+			return `${roundMe(gigabytes, digits)} GB`;
 		}
 		if (megabytes > 1) {
-			return `${(Math.round(megabytes*100)/100)} MB`;
+			return `${roundMe(megabytes, digits)} MB`;
 		}
 		if (kilobytes > 1) {
-			return `${(Math.round(kilobytes*100)/100)} KB`;
+			return `${roundMe(kilobytes, digits)} KB`;
 		}
 
 		return `${bytes}B`;
@@ -178,12 +183,6 @@ class Fileshare extends ModTemplate {
 					this.overlay.onPeerReject();
 					this.file = null;
 					this.fileId = null;
-					return;
-				}
-
-				if (txmsg.request == 'deny file permission') {
- 					this.available = false;
-					this.overlay.onCancel();
 					return;
 				}
 
@@ -226,6 +225,7 @@ class Fileshare extends ModTemplate {
 
 						if (blob.receivedSize === blob.fileSize) {
 							this.overlay.finishTransfer(blob)
+							this.reset();
 						}
 					}
 				}
@@ -238,27 +238,25 @@ class Fileshare extends ModTemplate {
 	transferStats(bytesNow){
 
 		let currentTimestamp = new Date().getTime();
-		if (currentTimestamp - this.timestampPrev > 1000) {
-			const byteRate = Math.round((bytesNow - this.bytesPrev) /
-					(currentTimestamp - this.timestampPrev)
-			);
-			this.byteRatePerSec = `${this.calcSize(byteRate * 1000)}/s`;
-			
-			this.timestampPrev = new Date().getTime();
-			this.bytesPrev = bytesNow;
 
-			if (byteRate > this.byteRateMax) {
-				this.byteRateMax = byteRate;
-			}
+		const byteRate = Math.round((bytesNow - this.bytesPrev) /
+				(currentTimestamp - this.timestampPrev)
+		);
+		
+		this.timestampPrev = new Date().getTime();
+
+		if (byteRate > this.byteRateMax) {
+			this.byteRateMax = byteRate;
 		}
 
 		let stats = {
-			percentage: Math.floor((100 * bytesNow) / this.file.size),
+			percentage: ((100 * bytesNow) / this.file.size).toFixed(1),
 			amount: this.calcSize(bytesNow),
-			speed: this.byteRatePerSec,
+			speed: `${this.calcSize(byteRate * 1000, 2)}/s`,
 			max: this.byteRateMax,
 		};
 
+		this.bytesPrev = bytesNow;
 		this.overlay.renderStats(stats);
 
 	}
@@ -310,6 +308,7 @@ class Fileshare extends ModTemplate {
 			} else {
 				console.log("Finished!");
 				this.overlay.finishTransfer();
+				this.reset();
 			}
 
 		});
@@ -323,15 +322,49 @@ class Fileshare extends ModTemplate {
 		this.sendFileTransferRequest();
 	}
 
+	prepareToReceive(){
+		
+		// Send confirmation message to sender
+		this.app.connection.emit('relay-send-message', {
+			recipient: this.recipient,
+			request: 'grant file permission',
+			data: {}
+		});
+
+		//set up stun listeners for interruptions
+		this.app.connection.on("stun-data-channel-close", (peerId) => {
+			if (peerId == recipient){
+				this.overlay?.onConnectionFailure();
+			}
+		});
+		this.app.connection.on("stun-connection-faled", (peerId) => {
+			if (peerId == recipient){
+				this.overlay?.onConnectionFailure();
+			}
+		});
+
+
+	}
+
 	interrupt(send_message = false){
 		if (send_message){
 			this.app.connection.emit("relay-send-message", {recipient: this.recipient, request: "stop file transfer", data: {}});
-
+		}else{
+			siteMessage("File transfer cancelled", 5000);
 		}
 		this.available = false;
+		this.overlay.onCancel();
+		this.reset();
+	}
+
+	reset(){
 		this.fileId = null;
 		this.file = null;
-		this.overlay.onCancel();
+		this.recipient = null;
+
+		this.bytesPrev = 0;
+		this.timestampPrev = 0;
+		this.byteRateMax = 0;
 	}
 
 	chunkFile(file, o) {
