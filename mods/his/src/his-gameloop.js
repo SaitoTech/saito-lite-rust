@@ -70,13 +70,11 @@ if (this.game.options.scenario != "is_testing") {
 
 	  if (this.game.players.length == 2) {
 
-  	    this.game.queue.push("card_draw_phase");
 	    this.game.queue.push("diplomacy_phase_2P");
 
-	    //this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
-	    //this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy']));
-	    //let c = [this.game.players[this.returnPlayerOfFaction("papacy")-1]];
-	    //this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
+	    if (this.game.state.round > 1) {
+	      this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
+	    }
 
 	  } else {
 
@@ -111,80 +109,14 @@ if (this.game.options.scenario != "is_testing") {
 
 	        //this.game.queue.push("ACKNOWLEDGE\tProceed to Diplomatic Proposals");
 
-		if (this.game.state.round > 1) {
-  	          this.game.queue.push("card_draw_phase");
-		}
+  	        this.game.queue.push("card_draw_phase");
 
-		if (this.game.players.length == 2) {
+		this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
+		this.game.queue.push("winter_retreat_move_units_to_capital\tfrance");
+		this.game.queue.push("winter_retreat_move_units_to_capital\tengland");
+		this.game.queue.push("winter_retreat_move_units_to_capital\thapsburg");
+		this.game.queue.push("winter_retreat_move_units_to_capital\tottoman");
 
-		  this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
-	          //this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy']));
-		  //let c = [this.game.players[this.returnPlayerOfFaction("papacy")-1]];
-		  //this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
-
-	        } else {
-
-		  this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
-		  this.game.queue.push("winter_retreat_move_units_to_capital\tfrance");
-		  this.game.queue.push("winter_retreat_move_units_to_capital\tengland");
-		  this.game.queue.push("winter_retreat_move_units_to_capital\thapsburg");
-		  this.game.queue.push("winter_retreat_move_units_to_capital\tottoman");
-
-/*****
-
-		  if (this.game.players.length == 3) {
-		    let c = [this.game.players[this.returnPlayerOfFaction("england")-1],this.game.players[this.returnPlayerOfFaction("hapsburg")-1],this.game.players[this.returnPlayerOfFaction("ottoman")-1]];
-		    let c2 = [this.game.players[this.returnPlayerOfFaction("papacy")-1],this.game.players[this.returnPlayerOfFaction("france")-1]];
-	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy','france']));
-		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c2));
-	            this.game.queue.push("faction_array_reset_winter_retreat_move_units_to_capital");
-	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['england','hapsburg','ottoman']));
-		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
-	            this.game.queue.push("faction_array_reset_winter_retreat_move_units_to_capital");
-		  }
-
-		  if (this.game.players.length == 4) {
-
-		    let c = [this.game.players[this.returnPlayerOfFaction("papacy")-1]];
-		    let c2 = [this.game.players[this.returnPlayerOfFaction("france")-1],this.game.players[this.returnPlayerOfFaction("england")-1],this.game.players[this.returnPlayerOfFaction("hapsburg")-1], this.game.players[this.returnPlayerOfFaction("ottoman")-1]];
-
-	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy']));
-		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
-	            this.game.queue.push("faction_array_reset_winter_retreat_move_units_to_capital");
-		    this.updateStatus("Other factions handling winter retreat...");
-
-	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['france','england','hapsburg','ottoman']));
-		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c2));
-	            this.game.queue.push("faction_array_reset_winter_retreat_move_units_to_capital");
-		    this.updateStatus("Other factions handling winter retreat...");
-
-		  }
-
-		  if (this.game.players.length == 5) {
-
-		    // skipping protestant
-		    //let c = [this.game.players[this.returnPlayerOfFaction("protestant")-1]];
-		    let c2 = [this.game.players[this.returnPlayerOfFaction("papacy")-1],this.game.players[this.returnPlayerOfFaction("france")-1],this.game.players[this.returnPlayerOfFaction("england")-1],this.game.players[this.returnPlayerOfFaction("hapsburg")-1], this.game.players[this.returnPlayerOfFaction("ottoman")-1]];
-
-	            //this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['protestant']));
-		    //this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
-		    //this.updateStatus("Other factions handling winter retreat...");
-
-	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy','france','england','hapsburg','ottoman']));
-		    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c2));
-	            this.game.queue.push("faction_array_reset_winter_retreat_move_units_to_capital");
-		    this.updateStatus("Other factions handling winter retreat...");
-
-		  }
-
-		  if (this.game.players.length == 6) {
-	            this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['protestant','papacy','france','england','hapsburg','ottoman']));
-		    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
-	            this.game.queue.push("faction_array_reset_winter_retreat_move_units_to_capital");
-		    this.updateStatus("Other factions handling winter retreat...");
-		  }
-****/
-	        }
 	        this.game.queue.push("retreat_to_winter_spaces");
 	      }
 }
@@ -197,132 +129,130 @@ if (this.game.options.scenario != "is_testing") {
 	  //
 	  if (this.game.state.round != 1 && (this.game.state.round == this.game.state.starting_round)) {
 	    this.game.queue.push("card_draw_phase");
-	  }
-
-
-	  //
-	  // start the game with the Protestant Reformation
-	  //
-	  if (this.game.state.round == 1) {
-
-if (this.game.options.scenario == "is_testing") {
-	    this.game.queue.push("is_testing");
-	    this.game.queue.push("card_draw_phase");
-} else {
-	    if (this.game.players.length == 2) {
-	      this.game.queue.push("show_overlay\tvp");
-	    }
-
-	    this.game.queue.push("hide_overlay\tdiet_of_worms");
-	    this.game.queue.push("diet_of_worms");
-	    this.game.queue.push("show_overlay\tdiet_of_worms");
-	    this.game.queue.push("card_draw_phase");
-	    this.game.queue.push("event\tprotestant\t008");
-}
-
 	  } else {
 
 	    //
-	    // round 2 - zwingli in zurich
+	    // start the game with the Protestant Reformation
 	    //
-	    if (this.game.state.round == 2) {
-	      this.addDebater("protestant", "oekolampadius-debater");
-	      this.addDebater("protestant", "zwingli-debater");
-	      this.addReformer("protestant", "zurich", "zwingli-reformer");
-	      this.addDebater("papacy", "contarini-debater");
-	    }
+	    if (this.game.state.round == 1) {
 
-	    //
-	    // round 3
-	    //
-	    if (this.game.state.round == 3) {
-	      this.addDebater("protestant", "bullinger-debater");
-	    }
-
-
-	    //
-	    //
-	    //
-    	    if (this.game.state.round < 5 && this.game.state.henry_viii_marital_status >= 2 && this.game.state.henry_viii_reformation_started != 1) {
-	      this.game.state.henry_viii_reformation_started = 1;
-	      this.addDebater("protestant", "cranmer-debater");
-	      this.addDebater("protestant", "latimer-debater");
-	      this.addDebater("protestant", "coverdale-debater");
-	      this.addReformer("protestant", "london", "cranmer-reformer");
-	      this.updateLog("Henry VIII's marriage to Anne Boleyn triggers the start of the British Reformation");
-	    }
-
-
-	    //
-	    // round 4 - calvin in genoa
-	    //
-	    if (this.game.state.round == 4) {
-
-	      //
-	      // 1532 starts in R4
-	      //
-	      if (this.game.options.scenario === "1532") {
-	        this.game.queue.push("is_1532");
-	      }
-
-	      this.addDebater("protestant", "farel-debater");
-	      this.addDebater("protestant", "cop-debater");
-	      this.addDebater("protestant", "olivetan-debater");
-	      this.addDebater("protestant", "calvin-debater");
-	      this.addReformer("protestant", "geneva", "calvin-reformer");
-
+if (this.game.options.scenario == "is_testing") {
+	      this.game.queue.push("is_testing");
+	      this.game.queue.push("card_draw_phase");
+} else {
 	      if (this.game.players.length == 2) {
-	        //
-	        // Henry VIII marries Anne Boleyn
-	        //
-	        this.game.state.henry_viii_marital_status = 2;
+	        this.game.queue.push("show_overlay\tvp");
 	      }
-	    }
 
-	    //
-	    // round 5 - cranmer in london
-	    //
-	    if (this.game.state.round == 5) {
-	      if (this.game.state.henry_viii_reformation_started != 1) {
+	      this.game.queue.push("hide_overlay\tdiet_of_worms");
+	      this.game.queue.push("diet_of_worms");
+	      this.game.queue.push("show_overlay\tdiet_of_worms");
+	      this.game.queue.push("card_draw_phase");
+	      this.game.queue.push("event\tprotestant\t008");
+}
+
+	    } else {
+
+	      //
+	      // round 2 - zwingli in zurich
+	      //
+	      if (this.game.state.round == 2) {
+	        this.addDebater("protestant", "oekolampadius-debater");
+	        this.addDebater("protestant", "zwingli-debater");
+	        this.addReformer("protestant", "zurich", "zwingli-reformer");
+	        this.addDebater("papacy", "contarini-debater");
+	      }
+
+	      //
+	      // round 3
+	      //
+	      if (this.game.state.round == 3) {
+	        this.addDebater("protestant", "bullinger-debater");
+	      }
+
+	      //
+	      //
+	      //
+    	      if (this.game.state.round < 5 && this.game.state.henry_viii_marital_status >= 2 && this.game.state.henry_viii_reformation_started != 1) {
+	        this.game.state.henry_viii_reformation_started = 1;
 	        this.addDebater("protestant", "cranmer-debater");
 	        this.addDebater("protestant", "latimer-debater");
 	        this.addDebater("protestant", "coverdale-debater");
 	        this.addReformer("protestant", "london", "cranmer-reformer");
+	        this.updateLog("Henry VIII's marriage to Anne Boleyn triggers the start of the British Reformation");
 	      }
-	      this.addDebater("papacy", "pole-debater");
-	      this.addDebater("papacy", "caraffa-debater");
-	    }
 
-	    //
-	    // round 6 - maurice of saxony
-	    //
-	    if (this.game.state.round == 6) {
-	      this.addDebater("protestant", "wishart-debater");
-	      this.addDebater("protestant", "knox-debater");
-	      this.game.queue.push("protestants-place-maurice-of-saxony-round-six");
-	      this.addDebater("papacy", "loyola-debater");
-	      this.addDebater("papacy", "faber-debater");
-	      this.addDebater("papacy", "canisius-debater");
-	    }
+	      //
+	      // round 4 - calvin in genoa
+	      //
+	      if (this.game.state.round == 4) {
 
-	    //
-	    // round 6 or higher - England (Mary, Elizabeth and Edward)
-	    //
-	    // this logic is implemented in newCards
-	    //
-	    if (this.game.players.length == 2) {
-	      if (this.game.state.round >= 6 ) {
-                this.game.state.henry_viii_healthy_edward = 1;
-                this.game.state.henry_viii_sickly_edward = 0;
-                this.game.state.henry_viii_add_elizabeth = 0;
+	        //
+	        // 1532 starts in R4
+	        //
+	        if (this.game.options.scenario === "1532") {
+	          this.game.queue.push("is_1532");
+	        }
+
+	        this.addDebater("protestant", "farel-debater");
+	        this.addDebater("protestant", "cop-debater");
+	        this.addDebater("protestant", "olivetan-debater");
+	        this.addDebater("protestant", "calvin-debater");
+	        this.addReformer("protestant", "geneva", "calvin-reformer");
+
+	        if (this.game.players.length == 2) {
+	          //
+	          // Henry VIII marries Anne Boleyn
+	          //
+	          this.game.state.henry_viii_marital_status = 2;
+	        }
 	      }
-	    }
 
-	    //
-	    // round 7
-	    //
-	    if (this.game.state.round == 7) {
-	      this.addDebater("papacy", "gardiner-debater");
+	      //
+	      // round 5 - cranmer in london
+	      //
+	      if (this.game.state.round == 5) {
+	        if (this.game.state.henry_viii_reformation_started != 1) {
+	          this.addDebater("protestant", "cranmer-debater");
+	          this.addDebater("protestant", "latimer-debater");
+	          this.addDebater("protestant", "coverdale-debater");
+	          this.addReformer("protestant", "london", "cranmer-reformer");
+	        }
+	        this.addDebater("papacy", "pole-debater");
+	        this.addDebater("papacy", "caraffa-debater");
+	      }
+
+	      //
+	      // round 6 - maurice of saxony
+	      //
+	      if (this.game.state.round == 6) {
+	        this.addDebater("protestant", "wishart-debater");
+	        this.addDebater("protestant", "knox-debater");
+	        this.game.queue.push("protestants-place-maurice-of-saxony-round-six");
+	        this.addDebater("papacy", "loyola-debater");
+	        this.addDebater("papacy", "faber-debater");
+	        this.addDebater("papacy", "canisius-debater");
+	      }
+
+	      //
+	      // round 6 or higher - England (Mary, Elizabeth and Edward)
+	      //
+	      // this logic is implemented in newCards
+	      //
+	      if (this.game.players.length == 2) {
+	        if (this.game.state.round >= 6 ) {
+                  this.game.state.henry_viii_healthy_edward = 1;
+                  this.game.state.henry_viii_sickly_edward = 0;
+                  this.game.state.henry_viii_add_elizabeth = 0;
+	        }
+	      }
+
+	      //
+	      // round 7
+	      //
+	      if (this.game.state.round == 7) {
+	        this.addDebater("papacy", "gardiner-debater");
+	      }
 	    }
 	  }
 

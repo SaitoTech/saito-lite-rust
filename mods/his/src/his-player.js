@@ -1782,7 +1782,7 @@ if (relief_siege == 1) {
     let p = this.returnPlayerOfFaction(faction);
     let his_self = this;
 
-    this.updateStatusAndListCards("Select Diplomacy Card to Play", this.game.deck[1].hand);
+    this.updateStatusAndListCards(his_self.returnFactionName(faction) + " - Select Diplomacy Card", this.game.deck[1].hand);
     this.attachCardboxEvents(function(card) {
 
       this.updateStatus(`Playing ${this.popup(card)}`, this.game.deck[1].hand);
