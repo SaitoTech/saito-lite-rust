@@ -645,11 +645,14 @@
 
       for (let f in sea.units) {
 
-	// faction at sea is friendly to port space controller
 	if (this.isSpaceFriendly(space, f)) {
 	  for (let i = 0; i < sea.units[f].length; i++) {
 	    if (sea.units[f][i].type == "squadron") {
-	      number_of_squadrons_at_sea++;
+
+	      //
+	      // any squadrons in ANY space mean not-assaultable
+	      //
+	      number_of_squadrons_at_sea += 10000;
 	    }
 	  }
 	}

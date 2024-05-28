@@ -16363,11 +16363,14 @@ console.log("DELETING Z: " + z);
 
       for (let f in sea.units) {
 
-	// faction at sea is friendly to port space controller
 	if (this.isSpaceFriendly(space, f)) {
 	  for (let i = 0; i < sea.units[f].length; i++) {
 	    if (sea.units[f][i].type == "squadron") {
-	      number_of_squadrons_at_sea++;
+
+	      //
+	      // any squadrons in ANY space mean not-assaultable
+	      //
+	      number_of_squadrons_at_sea += 10000;
 	    }
 	  }
 	}
@@ -32880,7 +32883,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  if (this.game.player == player) {
 	    this.diplomacy_confirm_overlay.render(faction, proposal_idx);
 	  } else {
-	    this.updateStatus(this.returnFactionName(faction) + " reviewing diplomatic proposal...");
+	    this.updateStatus(this.returnFactionName(faction) + " conducting diplomacy...");
 	  }
 
 	  this.game.queue.splice(qe, 1);
@@ -32942,7 +32945,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	    this.diplomacy_propose_overlay.purgeProposals();
 	    this.diplomacy_propose_overlay.render(faction);
 	  } else {
-	    this.updateStatus(this.returnFactionName(faction) + " considering diplomatic proposals");
+	    this.updateStatus(this.returnFactionName(faction) + " conducting diplomacy...");
 	  }
 
 	  this.game.queue.splice(qe, 1);
@@ -32963,7 +32966,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
 	    this.playerManuallyRemoveExcommunication(this, faction);
 	  } else {
-	    this.updateStatus(this.returnFactionName(faction) + " considering Removing Excommunication");
+	    this.updateStatus(this.returnFactionName(faction) + " conducting diplomacy...");
 	  }
 
 	  return 0;
@@ -41733,8 +41736,13 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	      }
 
 	      if (attacker_squadrons_adjacent < squadrons_protecting_space) {
-		alert("You have a space under siege, but it is protected by a fleet. To assault such a space, you need more naval forces adjacent to this space than the defender has protecting it.");
-		player_warned = 1;
+	        if (999 < squadrons_protecting_space) {
+		  alert("Space cannot be assaulted if protected by fleet in adjacent sea");
+		  player_warned = 1;
+	        } else {
+		  alert("You have a space under siege, but it is protected by a fleet. To assault such a space, you need more naval forces adjacent to this space than the defender has protecting it.");
+		  player_warned = 1;
+	        }
 	      }
 	  }
 	}
@@ -44005,7 +44013,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	text.push(`${this.returnFactionName(x[1])} and ${this.returnFactionName(x[2])} agree to ally`);
       }
       if (x[0] === "yield_cards" || x[0] === "pull_card") {
-	text.push(`${this.returnFactionName(x[1])} offers ${this.returnFactionName(x[2])} a card`);
+	text.push(`${this.returnFactionName(x[2])} offers ${this.returnFactionName(x[1])} a card`);
       }
       if (x[0] === "returns_captured" || x[0] === "ransom") {
 	text.push(`${this.returnFactionName(x[1])} returns ${x[1]}`);
