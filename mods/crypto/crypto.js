@@ -90,6 +90,14 @@ class Crypto extends ModTemplate {
 
 						this.overlay.render((amount) => {
 							game_mod.menu.hideSubMenus();
+
+							console.log('game_mod //////////', game_mod);
+
+							if (game_mod.game.players_needed > game_mod.game.players_set) {
+								salert("Cant send crypto stake request until all players have joined the game");
+								return;
+							}
+
 							game_mod.proposeGameStake(ticker, amount);
 						});
 					}
