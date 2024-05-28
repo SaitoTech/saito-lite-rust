@@ -498,7 +498,7 @@
 .chat-message-line {
   position: relative;
   padding: 0.25rem;
-  word-wrap: break-all;
+  word-wrap: anywhere;
 }
 
 .saito-userline-reply {
