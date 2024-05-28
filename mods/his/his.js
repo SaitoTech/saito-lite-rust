@@ -22330,9 +22330,10 @@ if (this.game.options.scenario != "is_testing") {
   	    this.game.queue.push("card_draw_phase");
 	    this.game.queue.push("diplomacy_phase_2P");
 
-	    this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy']));
-	    let c = [this.game.players[this.returnPlayerOfFaction("papacy")-1]];
-	    this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
+	    //this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
+	    //this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy']));
+	    //let c = [this.game.players[this.returnPlayerOfFaction("papacy")-1]];
+	    //this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
 
 	  } else {
 
@@ -22373,9 +22374,10 @@ if (this.game.options.scenario != "is_testing") {
 
 		if (this.game.players.length == 2) {
 
-	          this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy']));
-		  let c = [this.game.players[this.returnPlayerOfFaction("papacy")-1]];
-		  this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
+		  this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
+	          //this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(['papacy']));
+		  //let c = [this.game.players[this.returnPlayerOfFaction("papacy")-1]];
+		  //this.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(c));
 
 	        } else {
 
