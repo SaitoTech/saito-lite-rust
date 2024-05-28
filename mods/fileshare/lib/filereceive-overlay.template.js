@@ -1,6 +1,10 @@
 module.exports = FileReceiveOverlayTemplate = (app, mod) => {
 	let html = `
-	<div class='saito-file-transfer-overlay'>
+	<div id='file-transfer' class='saito-file-transfer-overlay'>
+		<div class="pseudo-overlay-controls">
+            <div class="icon-button" id="resize"><i class="fa-solid fa-window-minimize"></i></div>
+            <div class="icon-button" id="close"><i class="fas fa-times"></i></div>
+        </div>
 		<h1>Saito Teleporter</h1>
       	<div class="contact"></div>
 		<div class="stun-phone-notice">wants to send you:</div>

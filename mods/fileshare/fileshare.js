@@ -11,7 +11,6 @@ class Fileshare extends ModTemplate {
 		this.description = 'Send files over STUN';
 		this.categories = 'Utility Entertainment';
 		this.chunkSize = 16348;
-		this.available = false;
 
 		this.stun = null;
 		/*
@@ -22,9 +21,13 @@ class Fileshare extends ModTemplate {
 		this.fileId = null;
 		this.incoming = {};
 
+		this.sending = false;
+
 		this.bytesPrev = 0;
 		this.timestampPrev = 0;
 		this.byteRateMax = 0;
+
+		this.terminationEvent = 'unload';
 
 	}
 
@@ -32,9 +35,12 @@ class Fileshare extends ModTemplate {
 		await super.initialize(app);
 
 		if (app.BROWSER) {
+			if ('onpagehide' in self){
+				this.terminationEvent =  'pagehide';
+			}
+
 			try {
 				this.stun = app.modules.returnFirstRespondTo('peer-manager');
-				this.available = true;
 			} catch (err) {
 				console.warn('No Stun available');
 			}
@@ -63,7 +69,7 @@ class Fileshare extends ModTemplate {
 						text: 'Send File',
 						icon,
 						callback: function (app, public_key, id = '') {
-							if (fss.fileId) {
+							if (fss.fileId || fss.sending) {
 								salert('Currently sending a file!');
 								return;
 							}
@@ -173,6 +179,7 @@ class Fileshare extends ModTemplate {
 				}
 
 				if (txmsg.request == 'grant file permission') {
+					this.startTransfer();
 					this.overlay.onPeerAccept();
 					this.overlay.beginTransfer();
 					this.chunkFile(this.file, 0);
@@ -183,6 +190,7 @@ class Fileshare extends ModTemplate {
 					this.overlay.onPeerReject();
 					this.file = null;
 					this.fileId = null;
+					siteMessage("File transfer declined");
 					return;
 				}
 
@@ -193,7 +201,7 @@ class Fileshare extends ModTemplate {
 
 				if (txmsg.module == this.name) {
 					if (txmsg.request == 'share file') {
-						if (!this.available) {
+						if (!this.stun || !this.sending) {
 							return;
 						}
 
@@ -291,7 +299,7 @@ class Fileshare extends ModTemplate {
 		this.reader.addEventListener('load', async (event) => {
 			console.log('File Share: onload ', event);
 
-			if (!this.available){
+			if (!this.sending){
 				return;
 			}
 
@@ -322,8 +330,23 @@ class Fileshare extends ModTemplate {
 		this.sendFileTransferRequest();
 	}
 
+
+	startTransfer(){
+		//Flag so we know if sending/receiving a file
+		this.sending = true;
+
+		//navigation away checks...
+		window.addEventListener(this.terminationEvent, this.visibilityChange.bind(this));
+		window.addEventListener("beforeunload", this.beforeUnloadHandler);
+		if (this.app.browser.isMobileBrowser()){
+			document.addEventListener("visibilitychange", this.visibilityChange.bind(this));	
+		}
+	}
+
 	prepareToReceive(){
-		
+
+		this.startTransfer();
+
 		// Send confirmation message to sender
 		this.app.connection.emit('relay-send-message', {
 			recipient: this.recipient,
@@ -343,17 +366,20 @@ class Fileshare extends ModTemplate {
 			}
 		});
 
-
 	}
 
 	interrupt(send_message = false){
-		if (send_message){
-			this.app.connection.emit("relay-send-message", {recipient: this.recipient, request: "stop file transfer", data: {}});
-		}else{
-			siteMessage("File transfer cancelled", 5000);
+		if (this.sending){
+			if (send_message){
+				this.app.connection.emit("relay-send-message", {recipient: this.recipient, request: "stop file transfer", data: {}});
+			}else{
+				siteMessage("File transfer cancelled", 5000);
+			}
+			this.sending = false;
 		}
-		this.available = false;
+
 		this.overlay.onCancel();
+
 		this.reset();
 	}
 
@@ -365,6 +391,15 @@ class Fileshare extends ModTemplate {
 		this.bytesPrev = 0;
 		this.timestampPrev = 0;
 		this.byteRateMax = 0;
+
+		this.sending = false;
+
+		window.removeEventListener("beforeunload", this.beforeUnloadHandler);
+		window.removeEventListener(this.terminationEvent, this.visibilityChange.bind(this));
+		if (this.app.browser.isMobileBrowser()){
+			document.removeEventListener("visibilitychange", this.visibilityChange.bind(this));	
+		}
+
 	}
 
 	chunkFile(file, o) {
@@ -423,9 +458,7 @@ class Fileshare extends ModTemplate {
 		//
 		if (this?.stun && this.stun.hasConnection(this.recipient)) {
 			this.stun.sendTransaction(this.recipient, tx);
-		} else {
-			this.available = false;
-		}
+		} 
 	}
 
 	convertByteArrayToBase64(data) {
@@ -439,6 +472,16 @@ class Fileshare extends ModTemplate {
 			b2[i] = b[i];
 		}
 		return b2;
+	}
+
+	beforeUnloadHandler(event) {
+		event.preventDefault();
+		event.returnValue = true;
+	}
+
+	visibilityChange(){
+		console.log("visibilitychange triggered")
+		this.interrupt(true);
 	}
 
 }

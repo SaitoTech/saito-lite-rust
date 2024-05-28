@@ -1,4 +1,3 @@
-const SaitoOverlay = require('./../../../lib/saito/ui/saito-overlay/saito-overlay');
 const FileReceiveOverlayTemplate = require('./filereceive-overlay.template');
 const SaitoUser = require('./../../../lib/saito/ui/saito-user/saito-user');
 
@@ -6,7 +5,6 @@ class FileReceiveOverlay {
 	constructor(app, mod) {
 		this.app = app;
 		this.mod = mod;
-		this.overlay = new SaitoOverlay(app, mod);
 		this.throttle_me = false;
 	}
 
@@ -14,9 +12,9 @@ class FileReceiveOverlay {
 
 		this.sender = new SaitoUser(this.app, this.mod,	'.saito-file-transfer-overlay .contact', sender);
 
-		this.overlay.show(FileReceiveOverlayTemplate(this.app, this.mod));
+		this.app.browser.addElementToDom(FileReceiveOverlayTemplate(this.app, this.mod));
+
 		this.sender.render();
-		this.overlay.blockClose();
 		this.attachEvents();
 
 		if (!this.mod.stun.hasConnection(sender)) {
@@ -27,6 +25,12 @@ class FileReceiveOverlay {
 			})
 		}else{
 			this.onConnectionSuccess();
+		}
+	}
+
+	remove(){
+		if (document.querySelector('.saito-file-transfer-overlay')){
+			document.querySelector('.saito-file-transfer-overlay').remove();
 		}
 	}
 
@@ -129,6 +133,7 @@ class FileReceiveOverlay {
 
 
 	attachEvents(){
+		this.app.browser.makeDraggable('file-transfer');
 
 		let accept_btn = document.getElementById("accept-file");
 		let reject_btn = document.getElementById("reject-file");
@@ -156,7 +161,7 @@ class FileReceiveOverlay {
 					data: {}
 				});
 
-				this.overlay.remove();
+				this.remove();
 			}
 		}
 
@@ -167,6 +172,35 @@ class FileReceiveOverlay {
 			}
 		}
 
+		let close = document.querySelector(".icon-button#close");
+		if (close){
+			close.onclick = (e) => {
+				if (this.mod.sending){
+					this.mod.interrupt(true);	
+				}else{
+					this.mod.file = null;
+					this.mod.fileId = null;
+
+					this.app.connection.emit('relay-send-message', {
+						recipient: this.sender.publicKey,
+						request: 'deny file permission',
+						data: {}
+					});
+				}
+				
+				this.remove();
+			}
+		}
+
+
+		let resize = document.querySelector(".icon-button#resize");
+		if (resize){
+			resize.onclick = (e) => {
+				let overlay = document.getElementById("file-transfer");
+				overlay.classList.toggle("minimize");
+				overlay.removeAttr("style");
+			}
+		}
 	}
 }
 

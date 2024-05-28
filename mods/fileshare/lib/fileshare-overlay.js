@@ -1,21 +1,23 @@
-const SaitoOverlay = require('./../../../lib/saito/ui/saito-overlay/saito-overlay');
 const FileShareOverlayTemplate = require('./fileshare-overlay.template');
 
 class FileShareOverlay {
 	constructor(app, mod) {
 		this.app = app;
 		this.mod = mod;
-		this.overlay = new SaitoOverlay(app, mod);
 		this.throttle_me = false;
 	}
 
 	render(){
-		this.overlay.show(FileShareOverlayTemplate(this.app, this.mod));
-		this.overlay.blockClose();
-
+		this.app.browser.addElementToDom(FileShareOverlayTemplate(this.app, this.mod));
 		this.attachEvents();
-
 	}
+
+	remove(){
+		if (document.querySelector('.saito-file-transfer-overlay')){
+			document.querySelector('.saito-file-transfer-overlay').remove();
+		}
+	}
+
 
 	updateFileData(){
 		let html = `<div class="saito-file-transfer" id="saito-file-transfer-${this.mod.fileId}">
@@ -143,6 +145,8 @@ class FileShareOverlay {
 	}
 
 	attachEvents(){
+		this.app.browser.makeDraggable('file-transfer');
+
 		let input = document.getElementById(`hidden_file_element_uploader_overlay`);
 		if (input) {
 			input.addEventListener('change', (e) => {
@@ -167,6 +171,25 @@ class FileShareOverlay {
 				this.mod.interrupt(true);
 			}
 		}
+
+
+		let close = document.querySelector(".icon-button#close");
+		if (close){
+			close.onclick = (e) => {
+				this.mod.interrupt(true);
+				this.remove();
+			}
+		}
+
+		let resize = document.querySelector(".icon-button#resize");
+		if (resize){
+			resize.onclick = (e) => {
+				let overlay = document.getElementById("file-transfer");
+				overlay.classList.toggle("minimize");
+				overlay.removeAttr("style");
+			}
+		}
+
 	}
 }
 
