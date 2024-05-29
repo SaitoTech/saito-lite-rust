@@ -169,9 +169,14 @@ class Limbo extends ModTemplate {
 						hook: "onair",
 						callback: async function (app) {
 							if (mod_self.dreamer) {
-								await mod_self.sendKickTransaction(obj.members);
-								mod_self.exitSpace();
-								mod_self.toggleNotification(false, this.publicKey);
+								if (mod_self.dreamer == this.publicKey){
+									await mod_self.sendKickTransaction(obj.members);
+									mod_self.exitSpace();
+									mod_self.toggleNotification(false, this.publicKey);
+								}else{
+									//need a flow for others in call to seed the swarm...
+									//
+								}
 							} else {
 								let c = await sconfirm("Begin peercasting audio from this call?");
 								if (c){
@@ -351,8 +356,6 @@ class Limbo extends ModTemplate {
 		if (this.browser_active) {
 			this.controls = new DreamControls(this.app, this, '#limbo-main');
 		} else {
-			// In video call, don't want controls
-			// todo: be more refined for game streaming or whatever...
 			this.controls = new LiteDreamControls(this.app, this);
 		}
 
@@ -509,17 +512,6 @@ class Limbo extends ModTemplate {
 	}
 
 	receiveDreamTransaction(sender, tx) {
-		if (this.app.BROWSER) {
-			if (this.publicKey == sender) {
-				this.dreamer = this.publicKey;
-				this.upstream = new Map();
-				this.downstream = new Map();
-			}
-
-			if (tx.isTo(this.publicKey)) {
-				this.toggleNotification(true, sender);
-			}
-		}
 
 		let txmsg = tx.returnMessage();
 
@@ -531,6 +523,28 @@ class Limbo extends ModTemplate {
 			speakers: txmsg.speakers,
 			ts: tx.timestamp
 		};
+
+
+		if (this.app.BROWSER) {
+			if (this.publicKey == sender) {
+				this.dreamer = this.publicKey;
+				this.upstream = new Map();
+				this.downstream = new Map();
+			}
+
+			if (tx.isTo(this.publicKey)) {
+				this.toggleNotification(true, sender);
+				
+				if (sender !== this.publicKey){
+					this.dreamer = sender;
+					this.controls = new LiteDreamControls(this.app, this);
+					this.controls.render();
+					this.controls.startTime = tx.timestamp;
+					this.controls.startTimer();
+				}
+			}
+		}
+
 	}
 
 	async sendKickTransaction(keylist) {
@@ -585,7 +599,7 @@ class Limbo extends ModTemplate {
 			return;
 		}
 
-		if (this.dreamer !== this.publicKey) {
+		if (this.dreamer !== this.publicKey && this.dreams[this.dreamer].members.includes(this.publicKey)) {
 			siteMessage(
 				`${this.app.keychain.returnUsername(this.dreamer)} woke up...`
 			);
@@ -1041,12 +1055,7 @@ class Limbo extends ModTemplate {
 				full_icon.classList.remove('recording');
 				full_icon.title = "Start a Limbo Broadcast";
 			}
-		
-			
-
 		}
-
-
 	}
 
 	beforeUnloadHandler(event) {

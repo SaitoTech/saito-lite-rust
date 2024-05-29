@@ -251,6 +251,11 @@ video#local.noflip{
 		margin-right: 1rem;
 	}
 
+	.dream-controls.lite .control-list{
+		gap: revert;
+		margin-right: unset;
+	}
+
 	#exit_space{
 		display: grid;
 	}

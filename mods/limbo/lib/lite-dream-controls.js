@@ -6,6 +6,7 @@ class DreamControls{
 		this.app = app;
 		this.mod = mod;
 		this.timer_interval = null;
+		this.startTime = new Date().getTime();
 
 		app.connection.on('limbo-open-dream', ()=>{
 			this.startTimer();
@@ -24,7 +25,7 @@ class DreamControls{
 		app.connection.on("limbo-populated", ()=>{
 			let ct = 0;
 			this.mod.dreams[this.mod.dreamer].members.forEach((mem) => {
-				if (mem !== this.mod.publicKey){
+				if (mem !== this.mod.dreamer){
 					ct++;
 				}
 			});
@@ -34,7 +35,7 @@ class DreamControls{
 
 	render() {
 		if (!document.getElementById("dream-controls")){
-			this.app.browser.addElementToDom(DreamControlTemplate());
+			this.app.browser.addElementToDom(DreamControlTemplate(this.app, this.mod));
 		}
 
 		this.attachEvents();
@@ -75,7 +76,7 @@ class DreamControls{
 
 		if (document.querySelector(".dream-controls .disconnect-control")){
 			document.querySelector(".dream-controls .disconnect-control").onclick = async () => {
-				await this.mod.sendKickTransaction();
+				await this.mod.sendKickTransaction(this.mod.dreams[this.mod.publicKey].speakers);
 				this.mod.exitSpace();
 				this.remove();
 			}
@@ -133,10 +134,14 @@ class DreamControls{
 
 	startTimer() {
 
+		console.log("Start Timer!");
+
 		if (this.timer_interval) {
 			return;
 		}
-		let seconds = 0;
+		let seconds = new Date().getTime();
+		seconds -= this.startTime;
+		seconds = seconds / 1000;
 
 		const timer = () => {
 			let timerElement = document.querySelector('.dream-controls .counter');

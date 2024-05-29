@@ -1,4 +1,4 @@
-module.exports = LiteDreamControlsTemplate = (videoEnabled = false) => {
+module.exports = LiteDreamControlsTemplate = (app, mod, videoEnabled = false) => {
 
   let html = `
     <div class="dream-controls lite" id="dream-controls">
@@ -10,10 +10,13 @@ module.exports = LiteDreamControlsTemplate = (videoEnabled = false) => {
         <div class="control-list">
           <div id="dreamspace-member-count" class="members-control icon_click_area">
             <i class="fa-solid fa-users"></i>
-          </div>
-          <div class="audio-control icon_click_area">
+          </div>`;
+  
+  if (mod.publicKey == mod.dreamer){
+    html += `<div class="audio-control icon_click_area">
             <i class="fa fa-microphone"> </i>
           </div>`;
+  }
 
   if (videoEnabled){
     html += `<div class="video-control icon_click_area">
@@ -24,11 +27,15 @@ module.exports = LiteDreamControlsTemplate = (videoEnabled = false) => {
   html += `
           <div class="share-control icon_click_area">
             <i class="fas fa-link"></i>
-          </div>
-          <div class="disconnect-control icon_click_area">
+          </div>`
+
+  if (mod.publicKey == mod.dreamer){
+    html += `<div class="disconnect-control icon_click_area">
              <i class="fa-solid fa-x"></i>
-          </div>
-        </div>
+          </div>`;
+  }
+
+  html += `</div>
       </div>
     </div>`;
 

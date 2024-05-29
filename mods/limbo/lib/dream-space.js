@@ -40,7 +40,6 @@ class DreamSpace{
 
 	}
 
-
 	startTimer() {
 		if (this.timer_interval) {
 			return;
