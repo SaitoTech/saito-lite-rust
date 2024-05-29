@@ -125,7 +125,7 @@ class ChatPopup {
 		let popup_qs = '#chat-popup-' + this.group.id;
 		let chatPopup = document.querySelector(popup_qs);
 
-		if (!chatPopup) {
+		if (!chatPopup || this.container) {
 			this.render();
 			return;
 		}

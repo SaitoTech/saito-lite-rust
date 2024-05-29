@@ -1782,7 +1782,7 @@ if (relief_siege == 1) {
     let p = this.returnPlayerOfFaction(faction);
     let his_self = this;
 
-    this.updateStatusAndListCards("Select Diplomacy Card to Play", this.game.deck[1].hand);
+    this.updateStatusAndListCards(his_self.returnFactionName(faction) + " - Select Diplomacy Card", this.game.deck[1].hand);
     this.attachCardboxEvents(function(card) {
 
       this.updateStatus(`Playing ${this.popup(card)}`, this.game.deck[1].hand);
@@ -5756,8 +5756,13 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	      }
 
 	      if (attacker_squadrons_adjacent < squadrons_protecting_space) {
-		alert("You have a space under siege, but it is protected by a fleet. To assault such a space, you need more naval forces adjacent to this space than the defender has protecting it.");
-		player_warned = 1;
+	        if (999 < squadrons_protecting_space) {
+		  alert("Space cannot be assaulted if protected by fleet in adjacent sea");
+		  player_warned = 1;
+	        } else {
+		  alert("You have a space under siege, but it is protected by a fleet. To assault such a space, you need more naval forces adjacent to this space than the defender has protecting it.");
+		  player_warned = 1;
+	        }
 	      }
 	  }
 	}

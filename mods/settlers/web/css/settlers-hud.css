@@ -182,7 +182,7 @@
 
 @media only screen and (max-width: 600px) and (orientation: portrait) {
 	.hud-body .mobile {
-		height: 3rem;
+		height: 2.2rem;
 	}
 }
 

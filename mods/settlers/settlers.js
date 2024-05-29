@@ -93,7 +93,8 @@ class Settlers extends GameTemplate {
 		};
 		this.largest = {
 			name: 'Largest Army',
-			img: `<img src="/settlers/img/icons/knight.png"/>`
+			img: `<img src="/settlers/img/icons/knight.png"/>`,
+			value: 2,
 		};
 		this.resources = [
 			{
@@ -538,6 +539,7 @@ class Settlers extends GameTemplate {
 
 			this.longest.value = 1;
 			this.longest.min = 6;
+			this.largest.value = 1;
 		}
 
 		this.game.playerNames = [];

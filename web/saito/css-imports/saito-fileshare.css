@@ -6,6 +6,69 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
+  /* pseudo overlay */
+  max-height: calc(100 * var(--saito-vh));
+  max-width: 100vw;
+  box-shadow: var(--shadow-overlay);
+  border-radius: var(--border-radius-modal-menu);
+  background-color: var(--background-color-overlay-menu); 
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+
+.pseudo-overlay-controls {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  width: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pseudo-overlay-controls .icon-button {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.pseudo-overlay-controls .icon-button:hover {
+  background-color: var(--background-color-button-hover-chat-popup-header);
+  color: var(--font-color-button-hover-chat-popup-header);
+}
+
+.saito-file-transfer-overlay.minimize {
+  padding: 2rem 0 0 0;
+  bottom: 0;
+  left: 0;
+  top: unset;
+  height: fit-content;
+  transform: unset;
+}
+
+.saito-file-transfer-overlay.minimize h1, 
+.saito-file-transfer-overlay.minimize > div {
+  display: none;
+}
+
+.saito-file-transfer-overlay.minimize .pseudo-overlay-controls {
+  display: flex;
+}
+
+.saito-file-transfer-overlay.minimize .teleporter-file-data {
+  display: block;
+}
+
+.saito-file-transfer-overlay.minimize .saito-file-transfer {
+  margin-bottom: 0;
 }
 
 .teleporter-status-item {
@@ -14,6 +77,10 @@
 	justify-content: space-between;
 	padding: 0.5rem;
 	margin: 0.5rem;
+}
+
+.fixed-width {
+  font-family: monospace;
 }
 
 

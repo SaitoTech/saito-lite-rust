@@ -130,6 +130,22 @@
 	background-color: var(--saito-black);
 }
 
+.dream-controls.lite {
+	width: unset;
+	height: unset;
+	display: flex;
+	z-index: 1000;
+	cursor: grab;
+}
+
+.dream-controls.lite .control-panel{
+	padding: 2px;
+}
+
+.dream-controls.lite .timer{
+	text-align: right;
+}
+
 .dream-controls .video-box-container-large video {
 	position: absolute;
 	object-fit: contain;
@@ -138,6 +154,16 @@
 .saito-container.limbo-container .dream-controls {
 	position: revert;
 	margin: auto;
+}
+
+
+.dream-controls .members-control{
+	position: relative;
+}
+
+.dream-controls .members-control .saito-notification-dot{
+	bottom: 2.8rem;
+	left: 2.8rem;
 }
 
 .video-preview{
@@ -223,6 +249,11 @@ video#local.noflip{
 	.dream-controls .control-list {
 		gap: 1rem;
 		margin-right: 1rem;
+	}
+
+	.dream-controls.lite .control-list{
+		gap: revert;
+		margin-right: unset;
 	}
 
 	#exit_space{

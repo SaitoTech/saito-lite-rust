@@ -15,6 +15,7 @@ class SettingsAppspace {
 	}
 
 	async render() {
+
 		this.privateKey = await this.app.wallet.getPrivateKey();
 		this.overlay.show(SettingsAppspaceTemplate(this.app, this.mod, this));
 

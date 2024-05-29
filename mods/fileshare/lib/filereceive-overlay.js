@@ -1,4 +1,3 @@
-const SaitoOverlay = require('./../../../lib/saito/ui/saito-overlay/saito-overlay');
 const FileReceiveOverlayTemplate = require('./filereceive-overlay.template');
 const SaitoUser = require('./../../../lib/saito/ui/saito-user/saito-user');
 
@@ -6,22 +5,36 @@ class FileReceiveOverlay {
 	constructor(app, mod) {
 		this.app = app;
 		this.mod = mod;
-		this.overlay = new SaitoOverlay(app, mod);
+		this.throttle_me = false;
 	}
 
 	render(sender) {
 
 		this.sender = new SaitoUser(this.app, this.mod,	'.saito-file-transfer-overlay .contact', sender);
 
-		this.overlay.show(FileReceiveOverlayTemplate(this.app, this.mod));
+		this.app.browser.addElementToDom(FileReceiveOverlayTemplate(this.app, this.mod));
+
 		this.sender.render();
-		this.overlay.blockClose();
 		this.attachEvents();
+
+		if (!this.mod.stun.hasConnection(sender)) {
+			this.app.connection.on("stun-data-channel-open", peerId => {
+				if (peerId == sender){
+					this.onConnectionSuccess();
+				}
+			})
+		}else{
+			this.onConnectionSuccess();
+		}
+	}
+
+	remove(){
+		if (document.querySelector('.saito-file-transfer-overlay')){
+			document.querySelector('.saito-file-transfer-overlay').remove();
+		}
 	}
 
 	beginTransfer() {
-		console.log("H1");
-		
 		let field = document.getElementById('transfer-speed-row');
 		if (field){
 			field.classList.remove("hideme");
@@ -39,9 +52,15 @@ class FileReceiveOverlay {
 	}
 
 	renderStats(stats){
-		let field = document.getElementById("file-transfer-status");
-		if (field){
-			field.innerHTML = `<span>${stats.speed}</span>`;
+		if (!this.throttle_me){
+			let field = document.getElementById("file-transfer-status");
+			if (field){
+				field.innerHTML = `<span class="fixed-width">${stats.speed}</span>`;
+			}
+			this.throttle_me = true;
+			setTimeout(()=>{
+				this.throttle_me = false;
+			}, 500);			
 		}
 
 		let progress_bar = document.querySelector(".file-transfer-progress");
@@ -55,6 +74,11 @@ class FileReceiveOverlay {
 		let field = document.getElementById("file-transfer-status");
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
+		}
+
+		let progress_bar = document.querySelector(".file-transfer-progress");
+		if (progress_bar){
+			progress_bar.style.width = `100%`;
 		}
 
 		const received = new Blob(blob.receiveBuffer);
@@ -92,18 +116,31 @@ class FileReceiveOverlay {
 
 	}
 
+
+	onConnectionSuccess(){
+		let field = document.getElementById("peer-connection-status");
+		if (field){
+			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
+		}
+	}
+
+	onConnectionFailure(){
+		let field = document.getElementById("peer-connection-status");
+		if (field){
+			field.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
+		}
+	}
+
+
 	attachEvents(){
+		this.app.browser.makeDraggable('file-transfer');
 
 		let accept_btn = document.getElementById("accept-file");
 		let reject_btn = document.getElementById("reject-file");
 
 		if (accept_btn){
 			accept_btn.onclick = () => {
-				this.app.connection.emit('relay-send-message', {
-					recipient: this.sender.publicKey,
-					request: 'grant file permission',
-					data: {}
-				});
+				this.mod.prepareToReceive();
 
 				let button_row = document.getElementById('peer-permission-buttons');
 				if (button_row){
@@ -124,7 +161,7 @@ class FileReceiveOverlay {
 					data: {}
 				});
 
-				this.overlay.remove();
+				this.remove();
 			}
 		}
 
@@ -135,6 +172,35 @@ class FileReceiveOverlay {
 			}
 		}
 
+		let close = document.querySelector(".icon-button#close");
+		if (close){
+			close.onclick = (e) => {
+				if (this.mod.sending){
+					this.mod.interrupt(true);	
+				}else{
+					this.mod.file = null;
+					this.mod.fileId = null;
+
+					this.app.connection.emit('relay-send-message', {
+						recipient: this.sender.publicKey,
+						request: 'deny file permission',
+						data: {}
+					});
+				}
+				
+				this.remove();
+			}
+		}
+
+
+		let resize = document.querySelector(".icon-button#resize");
+		if (resize){
+			resize.onclick = (e) => {
+				let overlay = document.getElementById("file-transfer");
+				overlay.classList.toggle("minimize");
+				overlay.removeAttr("style");
+			}
+		}
 	}
 }
 

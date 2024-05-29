@@ -91,6 +91,8 @@ class QRScanner extends ModTemplate {
 				}
 			];
 		}
+
+		return super.respondTo(type);
 	}
 
 	attachEvents(app) {

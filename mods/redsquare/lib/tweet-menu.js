@@ -45,14 +45,8 @@ class TweetMenu {
 						case 'unfollow_contact':
 							this.mod.sendUnfollowTransaction(this.tweeter);
 							break;
-						case 'mute_contact':
-							this.muteContact();
-							break;
 						case 'block_contact':
 							this.blockContact();
-							break;
-						case 'hide_tweet':
-							this.hideTweet();
 							break;
 						case 'report_tweet':
 							await this.reportTweet();
@@ -69,26 +63,14 @@ class TweetMenu {
 		this.container = null;
 	}
 
-	muteContact() {
-		this.mod.mute_list.push(this.tweeter);
-		this.mod.saveOptions();
-		siteMessage('User muted... reloading feed');
-		setTimeout(() => {
-			setTimeout(() => {
-				window.location.reload();
-			}, 300);
-		}, 1500);
-	}
-
 	blockContact() {
-		this.mod.black_list.push(this.tweeter);
-		this.mod.saveOptions();
+		this.app.connection.emit('saito-blacklist', this.tweeter);
 		siteMessage('User blocked... reloading feed');
 		setTimeout(() => {
 			setTimeout(() => {
 				window.location.reload();
-			}, 300);
-		}, 1500);
+			}, 200);
+		}, 2000);
 	}
 
 	async reportTweet() {
