@@ -1,4 +1,5 @@
 const DreamControlTemplate = require("./lite-dream-controls.template");
+const ContactsList = require('./../../../lib/saito/ui/modals/saito-contacts/saito-contacts');
 
 class DreamControls{
 	constructor(app, mod) {
@@ -17,6 +18,17 @@ class DreamControls{
 				this.mod.exitSpace();
 			}
 			this.remove();
+		});
+
+		//Fires every time there is limbo activity (dream starting/ending, people joining/leaving)
+		app.connection.on("limbo-populated", ()=>{
+			let ct = 0;
+			this.mod.dreams[this.mod.dreamer].members.forEach((mem) => {
+				if (mem !== this.mod.publicKey){
+					ct++;
+				}
+			});
+			this.app.browser.addNotificationToId(ct, "dreamspace-member-count");
 		});
 	}
 
@@ -68,6 +80,15 @@ class DreamControls{
 				this.remove();
 			}
 		}
+
+		if (document.querySelector(".dream-controls .members-control")){
+			document.querySelector(".dream-controls .members-control").onclick = () => {
+				const contactList = new ContactsList(this.app, this.mod, false);
+				contactList.title = "Peercast Audience";
+				contactList.render(this.mod.dreams[this.mod.dreamer].members.filter((key) => key !== this.mod.dreamer));
+			}
+		}
+
 	}
 
 	toggleAudio() {

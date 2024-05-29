@@ -156,6 +156,16 @@
 	margin: auto;
 }
 
+
+.dream-controls .members-control{
+	position: relative;
+}
+
+.dream-controls .members-control .saito-notification-dot{
+	bottom: 2.8rem;
+	left: 2.8rem;
+}
+
 .video-preview{
 }
 

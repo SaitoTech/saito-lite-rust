@@ -8,6 +8,9 @@ module.exports = LiteDreamControlsTemplate = (videoEnabled = false) => {
           <div class="stun-identicon-list"></div>
         </div>  
         <div class="control-list">
+          <div id="dreamspace-member-count" class="members-control icon_click_area">
+            <i class="fa-solid fa-users"></i>
+          </div>
           <div class="audio-control icon_click_area">
             <i class="fa fa-microphone"> </i>
           </div>`;

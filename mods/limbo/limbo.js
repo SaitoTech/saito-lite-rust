@@ -311,7 +311,7 @@ class Limbo extends ModTemplate {
 	}
 
 
-	startDream(keylist = null){
+	startDream(keylist = []){
 		this.localStream = null;
 		this.externalMediaControl = false;
 
@@ -488,7 +488,8 @@ class Limbo extends ModTemplate {
 
 		newtx.msg = {
 			module: this.name,
-			request: 'start dream'
+			request: 'start dream',
+			speakers: keylist,
 		};
 
 		if (keylist) {
@@ -520,8 +521,14 @@ class Limbo extends ModTemplate {
 			}
 		}
 
+		let txmsg = tx.returnMessage();
+
+		//
+		// Services remembers who is dreaming... for browsing
+		//
 		this.dreams[sender] = {
 			members: [sender],
+			speakers: txmsg.speakers,
 			ts: tx.timestamp
 		};
 	}
@@ -587,7 +594,7 @@ class Limbo extends ModTemplate {
 	}
 
 	async sendJoinTransaction() {
-		if (!this.dreamer) {
+		if (!this.dreamer || !this.dreams[this.dreamer]) {
 			console.error('No dreamer to join');
 		}
 
@@ -738,6 +745,11 @@ class Limbo extends ModTemplate {
 			this.sendJoinTransaction();
 		}
 	}
+
+
+	//
+	// "Offer" Transactions are for figuring out the tree structure of the swarm
+	//
 
 	async sendOfferTransaction(target) {
 		if (!this.dreamer) {
@@ -893,6 +905,7 @@ class Limbo extends ModTemplate {
 			}
 
 			this.app.connection.emit('limbo-populated', 'tx');
+
 			if (txmsg?.dreamer === this.dreamer) {
 				this.app.connection.emit('limbo-open-dream', this.dreamer);
 			}
