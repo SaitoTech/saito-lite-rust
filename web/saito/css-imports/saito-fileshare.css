@@ -17,6 +17,7 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  z-index: 500;
 }
 
 
@@ -83,6 +84,12 @@
   font-family: monospace;
 }
 
+
+.saito-button-primary#download-transfer{
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
 
 /**** Temporary for developing file transfer in chat ***/
 .saito-file-transfer{

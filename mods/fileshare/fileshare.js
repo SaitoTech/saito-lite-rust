@@ -164,6 +164,16 @@ class Fileshare extends ModTemplate {
 			if (tx.isTo(this.publicKey)) {
 				if (txmsg.request == 'query file permission') {
 
+					if (this.sending || this.fileId){
+						this.app.connection.emit('relay-send-message', {
+							recipient: tx.from[0].publicKey,
+							request: 'deny file permission',
+							data: {}
+						});
+
+						return;
+					}
+
 					this.recipient = tx.from[0].publicKey;
 					this.fileId = txmsg.data.id;
 					this.file = {
@@ -233,7 +243,6 @@ class Fileshare extends ModTemplate {
 
 						if (blob.receivedSize === blob.fileSize) {
 							this.overlay.finishTransfer(blob)
-							this.reset();
 						}
 					}
 				}

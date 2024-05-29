@@ -6,6 +6,7 @@ class FileReceiveOverlay {
 		this.app = app;
 		this.mod = mod;
 		this.throttle_me = false;
+		this.ready = false;
 	}
 
 	render(sender) {
@@ -32,6 +33,7 @@ class FileReceiveOverlay {
 		if (document.querySelector('.saito-file-transfer-overlay')){
 			document.querySelector('.saito-file-transfer-overlay').remove();
 		}
+		this.ready = false;
 	}
 
 	beginTransfer() {
@@ -92,6 +94,8 @@ class FileReceiveOverlay {
 			download_btn.classList.remove("hideme");
 			download_btn.onclick = () => {
 				document.querySelector(".saito-file-transfer-overlay a").click();
+				this.mod.reset();
+				this.remove();
 			}
 		}
 
@@ -100,6 +104,7 @@ class FileReceiveOverlay {
 			cancel_btn.style.visibility = "hidden";
 		}
 
+		this.ready = true;
 	}
 	
 
@@ -174,8 +179,14 @@ class FileReceiveOverlay {
 
 		let close = document.querySelector(".icon-button#close");
 		if (close){
-			close.onclick = (e) => {
-				if (this.mod.sending){
+			close.onclick = async (e) => {
+				if (this.ready){
+					let c = await sconfirm("Don't you want to save the file first?");
+					if (!c){
+						console.log("Okay Don't close overlay yet");
+						return;
+					}
+				}else if (this.mod.sending){
 					this.mod.interrupt(true);	
 				}else{
 					this.mod.file = null;
@@ -188,6 +199,7 @@ class FileReceiveOverlay {
 					});
 				}
 				
+				this.mod.reset();
 				this.remove();
 			}
 		}
@@ -198,7 +210,7 @@ class FileReceiveOverlay {
 			resize.onclick = (e) => {
 				let overlay = document.getElementById("file-transfer");
 				overlay.classList.toggle("minimize");
-				overlay.removeAttr("style");
+				overlay.removeAttribute("style");
 			}
 		}
 	}
