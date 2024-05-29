@@ -581,6 +581,15 @@ class Limbo extends ModTemplate {
 	}
 
 	receiveKickTransaction(sender, tx) {
+		
+		if (this.app.BROWSER){
+			if (this.dreamer !== this.publicKey && this.dreams[this.dreamer]?.members.includes(this.publicKey)) {
+				siteMessage(
+					`${this.app.keychain.returnUsername(this.dreamer)} woke up...`
+				);
+			}
+		}
+
 		if (this.dreams[sender]) {
 			delete this.dreams[sender];
 		} else {
@@ -599,11 +608,6 @@ class Limbo extends ModTemplate {
 			return;
 		}
 
-		if (this.dreamer !== this.publicKey && this.dreams[this.dreamer].members.includes(this.publicKey)) {
-			siteMessage(
-				`${this.app.keychain.returnUsername(this.dreamer)} woke up...`
-			);
-		}
 		this.exitSpace();
 	}
 
