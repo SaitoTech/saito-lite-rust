@@ -168,25 +168,24 @@ class Keychain {
 				this.keys[x].aes_secret
 			) {
 				//console.log(encrypted_msg, "------>");
-
-				const tmpmsg = this.app.crypto.aesDecrypt(
-					encrypted_msg,
-					this.keys[x].aes_secret
-				);
-				if (tmpmsg == null) {
-					console.log('Failed decryption with aes_secret');
-					return encrypted_msg;
-				}
-
 				try {
+					const tmpmsg = this.app.crypto.aesDecrypt(
+						encrypted_msg,
+						this.keys[x].aes_secret
+					);
+					if (tmpmsg == null) {
+						console.log('Failed decryption with aes_secret');
+						return encrypted_msg;
+					}
+
 					const decrypted_msg = JSON.parse(tmpmsg);
+
 					// Succesful decryption and parsing returns here
 					return decrypted_msg;
+				
 				} catch (err) {
-					console.error(
-						'Failed to JSON.parse decrypted message',
-						err
-					);
+					console.error('Failed to JSON.parse decrypted message',	err);
+					//this.app.connection.emit('encrypt-decryption-failed', publicKey);
 					return encrypted_msg;
 				}
 			}
