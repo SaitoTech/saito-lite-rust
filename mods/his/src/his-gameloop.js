@@ -153,6 +153,11 @@ if (this.game.options.scenario == "is_testing") {
 
 	    } else {
 
+
+	      if (this.game.players.length > 2) {
+	        this.game.queue.push("card_draw_phase");
+	      }
+
 	      //
 	      // round 2 - zwingli in zurich
 	      //

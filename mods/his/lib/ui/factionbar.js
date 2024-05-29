@@ -1,12 +1,12 @@
 const FactionBarTemplate = require('./factionbar.template');
 
 class FactionBarOverlay {
+
 	constructor(app, mod) {
 		this.app = app;
 		this.mod = mod;
 		this.visible = false;
 	}
-
 
 	//
 	// one or multiple factions
@@ -29,6 +29,7 @@ class FactionBarOverlay {
 	    }
 	  } catch (err) {}
 	}
+
 	setInactive(faction=null) {
 	  try {
 	    if (typeof faction === 'string') {
@@ -46,9 +47,9 @@ class FactionBarOverlay {
 	}
 
 
-
 	render(faction = '') {
 
+		if (this.mod.game.players.length == 2) { return; }
 		if (this.mod.game.state.players.length == 2) { return; }
 	 	if (this.visible) { return; }
 
