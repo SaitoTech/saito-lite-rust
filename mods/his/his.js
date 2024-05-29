@@ -22389,7 +22389,7 @@ if (this.game.options.scenario != "is_testing") {
 
 
 	  //
-	  // 1532 and testing need cards too!
+	  // 1532 mode and testing need cards too!
 	  //
 	  if (this.game.state.round != 1 && (this.game.state.round == this.game.state.starting_round)) {
 	    this.game.queue.push("card_draw_phase");
@@ -22418,9 +22418,9 @@ if (this.game.options.scenario == "is_testing") {
 	    } else {
 
 
-	      if (this.game.players.length > 2) {
-	        this.game.queue.push("card_draw_phase");
-	      }
+	      //if (this.game.players.length > 2) {
+	      //  this.game.queue.push("card_draw_phase");
+	      //}
 
 	      //
 	      // round 2 - zwingli in zurich
