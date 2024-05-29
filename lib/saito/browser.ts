@@ -750,6 +750,8 @@ class Browser {
 			let obj = document.getElementById(id);
 			if (obj) {
 				this.app.browser.addElementToDom(html, obj);
+			}else{
+				console.warn("id not found");
 			}
 		}
 	}
