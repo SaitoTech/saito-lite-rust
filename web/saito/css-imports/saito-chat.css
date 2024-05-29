@@ -499,6 +499,7 @@
   position: relative;
   padding: 0.25rem;
   word-wrap: anywhere;
+  white-space: normal;
 }
 
 .saito-userline-reply {
