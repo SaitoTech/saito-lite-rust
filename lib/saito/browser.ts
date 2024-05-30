@@ -2225,6 +2225,17 @@ class Browser {
 				);
 			};
 
+			window.ntfy = function (
+				to,
+				content
+			) {
+				content.topic = to;
+				fetch('https://ntfy.hda0.net/', {
+					method: 'POST',
+					body: JSON.stringify(content)
+				  });
+			};
+
 			HTMLElement.prototype.destroy = function destroy() {
 				try {
 					this.parentNode.removeChild(this);
