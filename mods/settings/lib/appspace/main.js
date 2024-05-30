@@ -76,14 +76,14 @@ class SettingsAppspace {
 			                <input type="checkbox" id="${key}" class="crypto_transfers_checkbox" name="${key}" 
 			                ${parseInt(gameprefs[key]) == 1 ? `checked="checked"` : ``}">
 			              </div>
-			              <div class="settings-appspace-crypto_transfer">${option_name[2]} ${option_name[3]}</div>
+			              <div class="settings-appspace-crypto-transfer-name">${option_name[2]} ${option_name[3]}</div>
 			          </div>`;
 				}
 			}
 			document.querySelector('#settings-appspace-crypto-transfer').innerHTML = html;
 		} else {
 			// hide container from settings overlay
-			document.querySelector('.settings-appspace-crypto-transfer-container').styles.display = 'none';
+			document.querySelector('.settings-appspace-crypto-transfer-container').style.display = 'none';
 		}
 	}
 
