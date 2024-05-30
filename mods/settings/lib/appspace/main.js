@@ -37,6 +37,7 @@ class SettingsAppspace {
 		}
 
 		this.renderDebugTree();
+		this.renderCryptoGameSettings();
 
 		await this.attachEvents();
 	}
@@ -60,6 +61,29 @@ class SettingsAppspace {
 			var tree = jsonTree.create(optjson, el);
 		} catch (err) {
 			console.log('error creating jsonTree: ' + err);
+		}
+	}
+
+	renderCryptoGameSettings(){
+		if (this.app.options.gameprefs != null) {
+			let gameprefs = this.app.options.gameprefs;
+			let html = ``;
+			for(var key in gameprefs){
+				if (key.includes('inbound_trusted') || key.includes('outbound_trusted')) {
+					let option_name = key.split('_');
+					html += `<div class="settings-appspace-app">
+			              <div class="saito-switch">
+			                <input type="checkbox" id="${key}" class="crypto_transfers_checkbox" name="${key}" 
+			                ${parseInt(gameprefs[key]) == 1 ? `checked="checked"` : ``}">
+			              </div>
+			              <div class="settings-appspace-crypto_transfer">${option_name[2]} ${option_name[3]}</div>
+			          </div>`;
+				}
+			}
+			document.querySelector('#settings-appspace-crypto-transfer').innerHTML = html;
+		} else {
+			// hide container from settings overlay
+			document.querySelector('.settings-appspace-crypto-transfer-container').styles.display = 'none';
 		}
 	}
 
@@ -131,6 +155,35 @@ class SettingsAppspace {
 							currentTarget.checked = true;
 						}
 					}
+				};
+			});
+
+			//
+			// in-game crypto transfers
+			//
+			Array.from(
+				document.getElementsByClassName('crypto_transfers_checkbox')
+			).forEach((ckbx) => {
+				ckbx.onclick = async (e) => {
+					let thisid = e.currentTarget.id;
+					let currentTarget = e.currentTarget;
+
+					console.log("Checbox id: //////", thisid);
+
+					if (currentTarget.checked == false) {
+						let sc = await sconfirm(
+							'Turning off this setting will make gameplay slower, are you sure?'
+						);
+						if (sc) {
+							app.options.gameprefs[thisid] = 0;
+						} else {
+							currentTarget.checked = true;
+						}
+					} else {
+						app.options.gameprefs[thisid] = 1;
+					}
+
+					await app.wallet.saveWallet();
 				};
 			});
 
