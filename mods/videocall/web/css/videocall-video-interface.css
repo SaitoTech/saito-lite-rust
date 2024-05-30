@@ -433,8 +433,8 @@
 .video-call-info i {
 	font-size: 2rem;
 	border-radius: 50%;
-	background-color: darkred;
-	box-shadow: 0 0 8px 4px darkred;
+	background-color: red;
+	box-shadow: 0 0 8px 4px red;
 }
 
 .video-call-info i.disabled, .video-call-info i.fa-microphone-slash {
