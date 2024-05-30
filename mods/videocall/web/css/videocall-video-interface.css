@@ -199,12 +199,8 @@
 
 .stun-chatbox .peer-call-list {
 	display: flex;
-	position: absolute;
-	bottom: 0;
-	right: 0;
-	z-index: 100;
 	padding: 0.5rem;
-	gap: 1rem;
+	gap: 0.5rem;
 }
 
 .peer-call-list .saito-identicon {
@@ -415,13 +411,15 @@
 	text-shadow: 0px 1px 2px var(--saito-black-faded), 0px -1px 2px var(--saito-black-faded);
 	line-height: 1.5;
 	position: absolute;
-	display: flex;
+	display: grid;
+	grid-template-columns: min-content 1fr min-content;
 	align-items: center;
-	left: 1rem;
+	width: calc(100% - 2rem);
 	font-size: 1rem;
+	left: 1rem;
+	gap: 1rem;
 	bottom: 0;
 	z-index: 2;
-	width: calc(100% - 1rem);
 }
 
 .video-call-info .saito-address {
@@ -429,17 +427,19 @@
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	margin-right: 1rem;
-	max-width: 90%;
-}
-
-.side-videos .video-call-info .saito-address {
-	max-width: 60%;
+	max-width: 100%;
 }
 
 .video-call-info i {
 	font-size: 2rem;
-	margin-right: 1rem;
+	border-radius: 50%;
+	background-color: darkred;
+	box-shadow: 0 0 8px 4px darkred;
+}
+
+.video-call-info i.disabled, .video-call-info i.fa-microphone-slash {
+	background-color: unset;
+	box-shadow: unset;
 }
 
 .video-box-container-large canvas#oscilloscope {
