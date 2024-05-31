@@ -155,9 +155,9 @@ class Videocall extends ModTemplate {
 
 		if (type === 'user-menu') {
 			//Don't provide a calling hook if in the video call app!
-			if (call_self.browser_active) {
-				return null;
-			}
+			// if (call_self.browser_active) {
+			// 	return null;
+			// }
 			if (obj?.publicKey) {
 				if (obj.publicKey !== this.app.wallet.publicKey) {
 					this.attachStyleSheets();
