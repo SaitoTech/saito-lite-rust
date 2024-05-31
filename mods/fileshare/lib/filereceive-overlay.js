@@ -73,6 +73,8 @@ class FileReceiveOverlay {
 
 	finishTransfer(blob){
 
+		console.log("Finish transfer!!!!!");
+
 		let field = document.getElementById("file-transfer-status");
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
@@ -181,7 +183,7 @@ class FileReceiveOverlay {
 		if (close){
 			close.onclick = async (e) => {
 				if (this.ready){
-					let c = await sconfirm("Don't you want to save the file first?");
+					let c = await sconfirm("Close without saving the file first?");
 					if (!c){
 						console.log("Okay Don't close overlay yet");
 						return;
