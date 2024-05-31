@@ -8,14 +8,12 @@ class DreamControls{
 		this.timer_interval = null;
 		this.startTime = new Date().getTime();
 
-		app.connection.on('limbo-open-dream', ()=>{
-			this.startTimer();
-		});
-
 		//Oof, I should change the name in video call (this actually refers to the hang up action)
 		app.connection.on('stun-disconnect', async ()=> {
 			if (this.mod?.dreamer == this.mod.publicKey){
-				await this.mod.sendKickTransaction();
+				console.log("Quit Dream by hanging up: ", this.mod.dreams[this.mod.publicKey]);
+				this.remove();
+				await this.mod.sendKickTransaction(this.mod.dreams[this.mod.publicKey].speakers);
 				this.mod.exitSpace();
 			}
 			this.remove();
@@ -24,12 +22,14 @@ class DreamControls{
 		//Fires every time there is limbo activity (dream starting/ending, people joining/leaving)
 		app.connection.on("limbo-populated", ()=>{
 			let ct = 0;
-			this.mod.dreams[this.mod.dreamer].members.forEach((mem) => {
-				if (mem !== this.mod.dreamer){
-					ct++;
-				}
-			});
-			this.app.browser.addNotificationToId(ct, "dreamspace-member-count");
+			if (this.mod.dreamer && this.mod.dreams[this.mod.dreamer]){
+				this.mod.dreams[this.mod.dreamer].members.forEach((mem) => {
+					if (mem !== this.mod.dreamer){
+						ct++;
+					}
+				});
+				this.app.browser.addNotificationToId(ct, "dreamspace-member-count");
+			}
 		});
 	}
 
@@ -39,6 +39,8 @@ class DreamControls{
 		}
 
 		this.attachEvents();
+		this.startTimer();
+
 		this.app.browser.makeDraggable("dream-controls");
 	}
 
@@ -76,9 +78,10 @@ class DreamControls{
 
 		if (document.querySelector(".dream-controls .disconnect-control")){
 			document.querySelector(".dream-controls .disconnect-control").onclick = async () => {
+				console.log("Quit Dream: ", this.mod.dreams[this.mod.publicKey]);
+				this.remove();
 				await this.mod.sendKickTransaction(this.mod.dreams[this.mod.publicKey].speakers);
 				this.mod.exitSpace();
-				this.remove();
 			}
 		}
 

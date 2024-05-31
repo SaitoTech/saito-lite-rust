@@ -20783,6 +20783,8 @@ if (this.game.state.scenario != "is_testing") {
 
   canProtestantsReformInLanguageZone(lang="german") {
     let access_spots = [];
+    let zone_has_catholic_spaces = false;
+    let zone_has_protestant_spaces = false;
     if (lang == "german") { access_spots = ["amsterdam","liege","metz","becanson","geneva","trent","trieste","agram","pressburg","brunn","prague","breslau","antwerp","calais","london","norwich","berwick","edinburgh"]; }
     if (lang == "italian") { access_spots = ["innsbruck","graz","geneva","grenoble","nice","agram","zara","bastia","ragusa","scutari","durazzo","corfu","nice"]; }
     if (lang == "spanish") { access_spots = ["bordeaux","toulouse","avignon","marseille","nice","bastia","palma","cagliari","tunis","algiers","oran","nantes","brest"]; }
@@ -20791,9 +20793,14 @@ if (this.game.state.scenario != "is_testing") {
 
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].religion == "protestant") {
+        if (this.game.spaces[key].language == lang) { zone_has_protestant_spaces = true; }
 	if (access_spots.includes(key)) { return 1; }
+      } else {
+        if (this.game.spaces[key].language == lang) { zone_has_catholic_spaces = true; }
       }
     }
+
+    if (zone_has_protestant_spaces == true && zone_has_catholic_spaces == true) { return 1; }
 
     //
     // add access to any space with a reformer
@@ -22382,7 +22389,7 @@ if (this.game.options.scenario != "is_testing") {
 
 
 	  //
-	  // 1532 and testing need cards too!
+	  // 1532 mode and testing need cards too!
 	  //
 	  if (this.game.state.round != 1 && (this.game.state.round == this.game.state.starting_round)) {
 	    this.game.queue.push("card_draw_phase");
@@ -22409,6 +22416,11 @@ if (this.game.options.scenario == "is_testing") {
 }
 
 	    } else {
+
+
+	      //if (this.game.players.length > 2) {
+	      //  this.game.queue.push("card_draw_phase");
+	      //}
 
 	      //
 	      // round 2 - zwingli in zurich

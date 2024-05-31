@@ -22,9 +22,9 @@ class FileShareOverlay {
 	updateFileData(){
 		let html = `<div class="saito-file-transfer" id="saito-file-transfer-${this.mod.fileId}">
 					<div class="file-transfer-progress"></div>
-					<i class="fa-solid fa-file"></i>
+					<i class="fa-solid fa-file-export"></i>
 					<div class="file-name">${this.mod.file.name}</div>
-					<div class="file-size">${this.mod.calcSize(this.mod.file.size)}</div>
+					<div class="file-size fixed-width">${this.mod.calcSize(this.mod.file.size)}</div>
 					</div>`;
 
 		this.app.browser.addElementToSelector(html, ".teleporter-file-data");
@@ -76,7 +76,6 @@ class FileShareOverlay {
 
 		let field2 = document.getElementById("file-transfer-buttons");
 		if (field2){
-			console.log(2);
 			field2.remove();
 		}
 
@@ -177,6 +176,7 @@ class FileShareOverlay {
 		if (close){
 			close.onclick = (e) => {
 				this.mod.interrupt(true);
+				this.mod.reset();
 				this.remove();
 			}
 		}
@@ -186,7 +186,7 @@ class FileShareOverlay {
 			resize.onclick = (e) => {
 				let overlay = document.getElementById("file-transfer");
 				overlay.classList.toggle("minimize");
-				overlay.removeAttr("style");
+				overlay.removeAttribute("style");
 			}
 		}
 

@@ -17,6 +17,7 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  z-index: 500;
 }
 
 
@@ -84,6 +85,12 @@
 }
 
 
+.saito-button-primary#download-transfer{
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
 /**** Temporary for developing file transfer in chat ***/
 .saito-file-transfer{
   border-radius: var(--border-radius-file-transfer);
@@ -119,6 +126,7 @@
 .saito-file-uploader.needs-file {
   text-decoration: underline;
   cursor: pointer;
+  font-weight: bold;
 }
 
 .file-button-row{
@@ -129,6 +137,6 @@
   width: 100%;
 }
 
-.hideme {
+.hideme, .saito-button-primary.hideme#download-transfer {
   display: none;
 }

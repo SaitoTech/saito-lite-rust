@@ -107,6 +107,8 @@ class StreamManager {
 				enabled: this.audioEnabled
 			};
 
+			this.app.connection.emit("peer-toggle-audio-status", {enabled: this.audioEnabled, public_key: "local"});	
+
 			this.mod.sendOffChainMessage('toggle-audio', data);
 		});
 

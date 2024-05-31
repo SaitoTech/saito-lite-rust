@@ -74,6 +74,8 @@ class Fileshare extends ModTemplate {
 								return;
 							}
 
+							fss.fileId = fss.app.crypto.generateRandomNumber().substring(0, 12);
+
 							fss.recipient = recipient;
 							fss.offset = 0;
 
@@ -164,6 +166,16 @@ class Fileshare extends ModTemplate {
 			if (tx.isTo(this.publicKey)) {
 				if (txmsg.request == 'query file permission') {
 
+					if (this.sending || this.fileId){
+						this.app.connection.emit('relay-send-message', {
+							recipient: tx.from[0].publicKey,
+							request: 'deny file permission',
+							data: {}
+						});
+
+						return;
+					}
+
 					this.recipient = tx.from[0].publicKey;
 					this.fileId = txmsg.data.id;
 					this.file = {
@@ -188,9 +200,7 @@ class Fileshare extends ModTemplate {
 
 				if (txmsg.request == 'deny file permission') {
 					this.overlay.onPeerReject();
-					this.file = null;
-					this.fileId = null;
-					siteMessage("File transfer declined");
+					siteMessage("File transfer declined", 5000);
 					return;
 				}
 
@@ -222,18 +232,17 @@ class Fileshare extends ModTemplate {
 						blob.receivedSize += restoredBinary.byteLength;
 						blob.receiveBuffer.push(restoredBinary);
 
-						console.log(
+						/*console.log(
 							restoredBinary.byteLength,
 							blob.receivedSize,
 							blob.fileSize
-						);
+						);*/
 
 			      // calculate file transfer speed
 			      		this.transferStats(blob.receivedSize);
 
 						if (blob.receivedSize === blob.fileSize) {
 							this.overlay.finishTransfer(blob)
-							this.reset();
 						}
 					}
 				}
@@ -321,8 +330,6 @@ class Fileshare extends ModTemplate {
 
 		});
 
-		this.fileId = this.app.crypto.generateRandomNumber().substring(0, 12);
-
 		this.file = file;
 
 		this.overlay.updateFileData();
@@ -380,7 +387,6 @@ class Fileshare extends ModTemplate {
 
 		this.overlay.onCancel();
 
-		this.reset();
 	}
 
 	reset(){

@@ -136,10 +136,13 @@
 	display: flex;
 	z-index: 1000;
 	cursor: grab;
+	top: 1rem;
+	left: 1rem;
 }
 
 .dream-controls.lite .control-panel{
 	padding: 2px;
+	gap: 2rem;
 }
 
 .dream-controls.lite .timer{
