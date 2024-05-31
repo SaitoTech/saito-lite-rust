@@ -156,29 +156,29 @@ class Record extends ModTemplate {
 	}
 
 
-	async captureStream(container) {
-		let element = document.querySelector(container);
+	// async captureStream(container) {
+	// 	let element = document.querySelector(container);
 
-		const canvas = document.createElement('canvas');
-		canvas.width = element.scrollWidth;
-		canvas.height = element.scrollHeight;
-		const context = canvas.getContext('2d');
-		const stream = canvas.captureStream(60);
+	// 	const canvas = document.createElement('canvas');
+	// 	canvas.width = element.scrollWidth;
+	// 	canvas.height = element.scrollHeight;
+	// 	const context = canvas.getContext('2d');
+	// 	const stream = canvas.captureStream(60); 
 
-		const draw = async () => {
-			try {
-				const tempCanvas = await html2canvas(element, { scale: 2, useCORS: true });
-				context.clearRect(0, 0, canvas.width, canvas.height);
-				context.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
-				requestAnimationFrame(draw);
-			} catch (error) {
-				console.error('Error capturing stream:', error);
-			}
-		};
+	// 	const draw = async () => {
+	// 		try {
+	// 			const tempCanvas = await html2canvas(element, { scale: 2, useCORS: true });
+	// 			context.clearRect(0, 0, canvas.width, canvas.height);
+	// 			context.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
+	// 			requestAnimationFrame(draw); // Ensure smooth rendering
+	// 		} catch (error) {
+	// 			console.error('Error capturing stream:', error);
+	// 		}
+	// 	};
 
-		await draw();
-		return stream;
-	}
+	// 	await draw();
+	// 	return stream;
+	// }
 
 	stopHtml2Canvas() {
 		if (this.interval) {
