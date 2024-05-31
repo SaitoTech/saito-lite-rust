@@ -107,6 +107,10 @@
 	/*max-width: 13rem;*/
 }
 
+.settings-appspace-app .settings-appspace-crypto-transfer-name {
+	text-transform: capitalize;
+}
+
 label.treated {
 	display: none;
 }
