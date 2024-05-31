@@ -176,6 +176,7 @@ class FileShareOverlay {
 		if (close){
 			close.onclick = (e) => {
 				this.mod.interrupt(true);
+				this.mod.reset();
 				this.remove();
 			}
 		}
