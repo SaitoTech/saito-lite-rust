@@ -31,12 +31,12 @@ class Record extends ModTemplate {
 					text: 'Record',
 					icon: 'fas fa-record-vinyl record-icon',
 					callback: async function (app) {
-						let { container, streams, useMicrophone, callbackAfterStreamStart } = obj;
+						let { container, streams, useMicrophone, callbackAfterRecord } = obj;
 
 						if (container) {
 							const recordIcon = document.querySelector('.fa-record-vinyl');
 							if (record_self.recording_status === false) {
-								await record_self.startRecording(container, streams, useMicrophone, callbackAfterStreamStart);
+								await record_self.startRecording(container, streams, useMicrophone, callbackAfterRecord);
 								recordIcon.classList.add('recording', 'pulsate');
 							} else {
 								record_self.stopRecording();
@@ -49,7 +49,7 @@ class Record extends ModTemplate {
 		}
 	}
 
-	async startRecording(container, streams = [], useMicrophone = true, callbackAfterStreamStart = null) {
+	async startRecording(container, streams = [], useMicrophone = true, callbackAfterRecord = null) {
 		let mediaRecorder;
 		let chunks = [];
 
@@ -61,7 +61,14 @@ class Record extends ModTemplate {
 
 		if (useMicrophone) {
 			try {
-				const microphoneStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+				const microphoneStream = await navigator.mediaDevices.getUserMedia({
+					audio: {
+						sampleRate: 48000,
+						channelCount: 2,
+						noiseSuppression: true,
+						echoCancellation: true
+					}
+				});
 				const micAudioTracks = microphoneStream.getAudioTracks();
 				micAudioTracks.forEach(track => combinedStream.addTrack(track));
 			} catch (error) {
@@ -81,21 +88,23 @@ class Record extends ModTemplate {
 
 
 
-		mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm; codecs=vp9' });
-		mediaRecorder.ondataavailable = (event) => {
+		mediaRecorder = new MediaRecorder(combinedStream, {
+			mimeType: 'video/webm; codecs=vp9', videoBitsPerSecond: 25 * 1024 * 1024,
+			audioBitsPerSecond: 320 * 1024,
+		})
+
+		this.mediaRecorder = mediaRecorder;
+		this.mediaRecorder.ondataavailable = (event) => {
 			if (event.data.size > 0) {
 				chunks.push(event.data
-
-
 				);
-
-				if (callbackAfterStreamStart) {
-					callbackAfterStreamStart(event.data);
+				if (callbackAfterRecord) {
+					callbackAfterRecord(event.data);
 				}
 			}
 		};
 
-		mediaRecorder.onstop = () => {
+		this.mediaRecorder.onstop = () => {
 			this.stopHtml2Canvas();
 			const blob = new Blob(chunks, { type: 'video/webm' });
 			const url = URL.createObjectURL(blob);
@@ -108,10 +117,12 @@ class Record extends ModTemplate {
 			URL.revokeObjectURL(url);
 		};
 
-		mediaRecorder.start();
+		this.mediaRecorder.start();
 		this.recording_status = true;
-		this.mediaRecorder = mediaRecorder;
+
 	}
+
+
 
 	async stopRecording() {
 		if (this.mediaRecorder) {
@@ -140,9 +151,32 @@ class Record extends ModTemplate {
 		};
 
 		await draw();
-		this.interval = setInterval(draw, 1000 / 30); // Redraw at 30fps
+		this.interval = setInterval(draw, 1000 / 30);
+		return stream;
+	}
 
 
+	async captureStream(container) {
+		let element = document.querySelector(container);
+
+		const canvas = document.createElement('canvas');
+		canvas.width = element.scrollWidth;
+		canvas.height = element.scrollHeight;
+		const context = canvas.getContext('2d');
+		const stream = canvas.captureStream(60);
+
+		const draw = async () => {
+			try {
+				const tempCanvas = await html2canvas(element, { scale: 2, useCORS: true });
+				context.clearRect(0, 0, canvas.width, canvas.height);
+				context.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
+				requestAnimationFrame(draw);
+			} catch (error) {
+				console.error('Error capturing stream:', error);
+			}
+		};
+
+		await draw();
 		return stream;
 	}
 
