@@ -200,6 +200,7 @@
     }
     return 0;
   }
+
   isSpaceBesieged(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let faction_with_units = "";
@@ -619,6 +620,8 @@ if (this.game.state.scenario != "is_testing") {
 
   canProtestantsReformInLanguageZone(lang="german") {
     let access_spots = [];
+    let zone_has_catholic_spaces = false;
+    let zone_has_protestant_spaces = false;
     if (lang == "german") { access_spots = ["amsterdam","liege","metz","becanson","geneva","trent","trieste","agram","pressburg","brunn","prague","breslau","antwerp","calais","london","norwich","berwick","edinburgh"]; }
     if (lang == "italian") { access_spots = ["innsbruck","graz","geneva","grenoble","nice","agram","zara","bastia","ragusa","scutari","durazzo","corfu","nice"]; }
     if (lang == "spanish") { access_spots = ["bordeaux","toulouse","avignon","marseille","nice","bastia","palma","cagliari","tunis","algiers","oran","nantes","brest"]; }
@@ -627,9 +630,14 @@ if (this.game.state.scenario != "is_testing") {
 
     for (let key in this.game.spaces) {
       if (this.game.spaces[key].religion == "protestant") {
+        if (this.game.spaces[key].language == lang) { zone_has_protestant_spaces = true; }
 	if (access_spots.includes(key)) { return 1; }
+      } else {
+        if (this.game.spaces[key].language == lang) { zone_has_catholic_spaces = true; }
       }
     }
+
+    if (zone_has_protestant_spaces == true && zone_has_catholic_spaces == true) { return 1; }
 
     //
     // add access to any space with a reformer
@@ -820,6 +828,7 @@ if (this.game.state.scenario != "is_testing") {
     state.events.michael_servetus = "";  // faction that gets VP
     state.events.copernicus = "";        // faction that gets VP
     state.events.copernicus_vp = 0;     // 1 or 2 VP
+    state.events.scots_raid = 0;	// 1 if active, limits French activities
 
     state.french_chateaux_vp = 0;
 
@@ -959,6 +968,7 @@ if (this.game.state.scenario != "is_testing") {
     state.henry_viii_add_elizabeth = 0;
     state.henry_viii_auto_reroll = 0;
     state.henry_viii_rolls = [];
+    state.henry_viii_wives = [];
     state.henry_viii_pope_approves_divorce = 0;
 
     state.knights_of_st_john = "";
@@ -1979,9 +1989,6 @@ if (this.game.state.scenario != "is_testing") {
       this.displayWarBox();
       this.displayVictoryTrack();
 
-      // let's notify the player visually
-      this.displayCustomOverlay("battle-of-mohacs");
-
       //
       // add war
       //
@@ -1993,6 +2000,10 @@ if (this.game.state.scenario != "is_testing") {
 	  break;
 	}
       }
+
+      // let's notify the player visually
+      this.game.queue.push("ACKNOWLEDGE\tThe Hapsburgs are pulled into the War in Hungary");
+      this.game.queue.push("display_custom_overlay\tbattle-of-mohacs");
 
     }
   }

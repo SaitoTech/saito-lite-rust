@@ -55,7 +55,7 @@ html[data-theme="midnight"] {
       --font-color-calendar-hover: var(--font-color-primary);
     /* Menu and Header Font Colors */
       --font-color-menu-hamburger: var(--font-color-primary);
-      --font-color-header-username: var(--font-color-primary);
+      --font-color-header-msg: var(--font-color-primary);
     /* Alerts and Status Font Colors */
       --font-color-progress-bar: var(--font-color-primary);
       --font-color-user-address: var(--font-color-heavy);

@@ -5,13 +5,18 @@ class SettlersActions {
   playerAcknowledgeNotice(msg, mycallback) {
     let html = `<ul><li class="textchoice acknowledge" id="confirmit">continue</li></ul>`;
     try {
-      this.updateStatusWithOptions(`${this.getLastNotice()}<div class="player-notice"><span>${msg}</span></div>`, html);
+      this.updateStatusWithOptions(`${this.getLastNotice()}<div class="player-notice"><span class="acknowledge-message">${msg}</span></div>`, html);
+
       document.querySelectorAll(".acknowledge").forEach((el) => {
         el.onclick = async (e) => {
+
           // if player clicks multiple times, don't want callback executed multiple times
           document.querySelectorAll(".acknowledge").forEach((el) => {
             el.onclick = null;
           });
+          //Clear click options
+          this.updateControls('');
+
           await mycallback();
         };
       });
@@ -39,49 +44,69 @@ class SettlersActions {
     let poor_harvest = true;
 
     let collection = {};
+    let blocked = {};
 
     for (let city of this.game.state.cities) {
       let player = city.player;
 
       for (let neighboringHex of city.neighbours) {
-        if (
-          this.game.state.hexes[neighboringHex].value == value &&
-          !this.game.state.hexes[neighboringHex].robber
-        ) {
+        if (this.game.state.hexes[neighboringHex].value == value) {
           let resource = this.game.state.hexes[neighboringHex].resource;
 
-          if (!collection[player]){
-            collection[player] = [];
-          }
+          if (this.game.state.hexes[neighboringHex].robber) {
+            if (!blocked[player]){
+              blocked[player] = [];
+            }
 
-          collection[player].push(resource);
+            blocked[player].push(resource);
+            this.game.stats.blocked[resource][player-1]++;
 
-          if (this.game.player == player) {
-            notice += this.formatResource(resource);
-            poor_harvest = false;
-          }
+            if (city.level == 2){
+              blocked[player].push(resource);
+              this.game.stats.blocked[resource][player-1]++;
+            }
 
-          this.game.state.players[player - 1].resources.push(resource);
-          this.game.stats.production[resource][player - 1]++;
-          this.animateHarvest(player, resource, neighboringHex);
-
-          //
-          //Double Resources for Upgraded City
-          //
-          if (city.level == 2) {
-            this.game.state.players[player - 1].resources.push(resource);
-            this.game.stats.production[resource][player - 1]++;
-            this.animateHarvest(player, resource, neighboringHex);
+          } else {
+            if (!collection[player]){
+              collection[player] = [];
+            }
 
             collection[player].push(resource);
 
             if (this.game.player == player) {
               notice += this.formatResource(resource);
+              poor_harvest = false;
+            }
+
+            this.game.state.players[player - 1].resources.push(resource);
+            this.game.stats.production[resource][player - 1]++;
+            this.animateHarvest(player, resource, neighboringHex);
+
+            //
+            //Double Resources for Upgraded City
+            //
+            if (city.level == 2) {
+              this.game.state.players[player - 1].resources.push(resource);
+              this.game.stats.production[resource][player - 1]++;
+              this.animateHarvest(player, resource, neighboringHex);
+
+              collection[player].push(resource);
+
+              if (this.game.player == player) {
+                notice += this.formatResource(resource);
+              }
             }
           }
         }
       }
     }
+
+    this.game.stats.history.push({
+      roll: value,
+      harvest: collection,
+      bandit: blocked,
+      threatened: this.game.state.threatened.slice(),
+    });
 
     let firstMsg = (this.game.player == player_who_rolled)  ? "You" : this.game.playerNames[player_who_rolled - 1];
     firstMsg += ` rolled <span class='die_value'>${value}</span>`;
@@ -103,7 +128,7 @@ class SettlersActions {
       this.updateStatus(`<div class="persistent player-notice"><span>${firstMsg}: ${this.randomMsg()}</span></div>`);
     } else {
       this.updateStatus(
-        `<div class="persistent player-notice"><span>${firstMsg}! You acquired: </span>${notice}</div>`
+        `<div class="persistent player-notice"><span>${firstMsg}! You acquired: </span><div class="hud-status-card-list">${notice}</div></div>`
       );
     }
 

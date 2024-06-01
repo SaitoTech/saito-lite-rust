@@ -66,6 +66,7 @@ class SettlersDisplay {
   }
 
   displayBoard() {
+try {
     console.log("Display board");
     $(".road.empty").remove();
     for (let i in this.game.state.hexes) {
@@ -106,9 +107,13 @@ class SettlersDisplay {
     }
 
     this.displayPlayers();
+} catch (err) {
+  console.log(err);
+}
   }
 
   displayScore() {
+try {
     for (let i = 0; i < this.game.state.players.length; i++) {
       let score = 0;
       //Count towns and cities
@@ -125,7 +130,7 @@ class SettlersDisplay {
       }
       //Update Largest Army
       if (this.game.state.largestArmy.player == i + 1) {
-        score += 2;
+        score += this.largest.value;
       }
       //Count (played) Victory Points
       score += this.game.state.players[i].vpc;
@@ -155,10 +160,14 @@ class SettlersDisplay {
         $(".gameboard").removeClass("robinhood");
       }
     }
-        
+   
+} catch (err) {
+  console.log(err);
+}     
   }
 
   displayCardfan(deck = "") {
+try {
     try {
       let cards = "";
 
@@ -178,10 +187,14 @@ class SettlersDisplay {
     } catch (err) {
       //console.log(err);
     }
+} catch (err) {
+  console.log(err);
+}
   }
 
   // Only for the game Observer
   showPlayerResources() {
+try {
     $(".player-box-graphic .hand").remove();
     for (let i = 0; i < this.game.players.length; i++) {
       let hand = `<div class="hand">`;
@@ -195,6 +208,10 @@ class SettlersDisplay {
 
       this.playerbox.appendGraphic(hand, i + 1);
     }
+} catch (err) {
+  console.log(err);
+}
+
   }
 
   formatPlayer(playerNumber){
@@ -241,7 +258,7 @@ class SettlersDisplay {
           statshtml += this.s.img;
         }
         if (this.game.state.largestArmy.player == i) {
-          statshtml += `<div class="army_knights vproundel">2</div>`;
+          statshtml += `<div class="army_knights vproundel">${this.largest.value}</div>`;
         }
         statshtml += `</div>`;
 
@@ -559,12 +576,11 @@ class SettlersDisplay {
           $(".status").disableSelection();
         }
       }
+      if (this.hud.user_dragged == 0) {
+        this.setHudHeight();
+      }
     } catch (err) {
       //console.log("ERR: " + err);
-    }
-
-    if (this.hud.user_dragged == 0) {
-      this.setHudHeight();
     }
   }
 
@@ -572,6 +588,7 @@ class SettlersDisplay {
   // this affixes HUD to bottom of screen...
   //
   setHudHeight() {
+try {
     console.log("Adjusting hud");
     let hud = document.querySelector(".hud");
     if (hud) {
@@ -579,6 +596,9 @@ class SettlersDisplay {
       //hud.style.height = "auto";
       //hud.style.top = "unset";
     }
+} catch (err) {
+  console.log(err);
+}
   }
 }
 

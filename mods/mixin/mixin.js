@@ -401,8 +401,8 @@ class Mixin extends ModTemplate {
         asset: asset_id
       });
 
-      console.log("utxo ///");
-      console.log(utxo);
+      // console.log("utxo ///");
+      // console.log(utxo);
 
       for (let i = 0; i < this.mods.length; i++) {
         if (this.mods[i].asset_id === asset_id) {  
@@ -471,7 +471,7 @@ class Mixin extends ModTemplate {
   }
 
 
-  async checkNetworkFee(asset_id){
+  async returnNetworkInfo(asset_id){
     try {
       let user = MixinApi({
         keystore: {
@@ -483,12 +483,7 @@ class Mixin extends ModTemplate {
       });
 
       let asset = await user.network.fetchAsset(asset_id);
-      if (typeof asset.fee != 'undefined') {
-        return asset.fee;  
-      } else {
-        return 0;
-      }
-      
+      return asset;
     } catch(err) {
       console.error("ERROR: Mixin error check network fee: " + err);
       return false;
@@ -1003,6 +998,31 @@ class Mixin extends ModTemplate {
     }
 
     return callback(false);
+  }
+
+
+  async fetchPendingDeposits(asset_id, destination, callback){
+    try {
+      let user = MixinApi({
+        keystore: {
+          app_id: this.mixin.user_id,
+          session_id: this.mixin.session_id,
+          pin_token_base64: this.mixin.tip_key_base64,
+          session_private_key: this.mixin.session_seed
+        },
+      });
+
+      let params = {
+        'asset': asset_id,
+        'destination': destination
+      };
+
+      let deposits = await user.safe.pendingDeposits(params);
+      return callback(deposits);
+    } catch(err) {
+      console.error("ERROR: Mixin error fetch fetchPendingDeposits: " + err);
+      return false;
+    }
   }
 
 

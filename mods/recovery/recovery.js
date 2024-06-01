@@ -17,32 +17,35 @@ class Recovery extends ModTemplate {
 
 		this.keychain_hash = '';
 
-		app.connection.on('wallet-updated', async () => {
-			let new_keychain_hash = app.crypto.hash(
-				JSON.stringify(app.keychain.keys) +
-					JSON.stringify(app.keychain.groups)
-			);
-			if (new_keychain_hash != this.keychain_hash) {
-				this.keychain_hash = new_keychain_hash;
-				let key = app.keychain.returnKey(this.publicKey);
-				if (key) {
-					if (
-						key.wallet_decryption_secret &&
-						key.wallet_retrieval_hash
-					) {
-						console.info(
-							'our wallet has updated, so rebroadcasting wallet recovery TX'
-						);
-						let newtx = await this.createBackupTransaction(
-							key.wallet_decryption_secret,
-							key.wallet_retrieval_hash
-						);
-						await this.app.network.propagateTransaction(newtx);
-					}
-				}
-				return;
-			}
-		});
+		// commenting this out for now until new event
+		// wallet-updated-backup-required hasnt been added
+		
+		// app.connection.on('wallet-updated', async () => {
+		// 	let new_keychain_hash = app.crypto.hash(
+		// 		JSON.stringify(app.keychain.keys) +
+		// 			JSON.stringify(app.keychain.groups)
+		// 	);
+		// 	if (new_keychain_hash != this.keychain_hash) {
+		// 		this.keychain_hash = new_keychain_hash;
+		// 		let key = app.keychain.returnKey(this.publicKey);
+		// 		if (key) {
+		// 			if (
+		// 				key.wallet_decryption_secret &&
+		// 				key.wallet_retrieval_hash
+		// 			) {
+		// 				console.info(
+		// 					'our wallet has updated, so rebroadcasting wallet recovery TX'
+		// 				);
+		// 				let newtx = await this.createBackupTransaction(
+		// 					key.wallet_decryption_secret,
+		// 					key.wallet_retrieval_hash
+		// 				);
+		// 				await this.app.network.propagateTransaction(newtx);
+		// 			}
+		// 		}
+		// 		return;
+		// 	}
+		// });
 
 		app.connection.on(
 			'recovery-backup-overlay-render-request',
@@ -61,12 +64,17 @@ class Recovery extends ModTemplate {
 				//
 				//If we already have the email/password, just send the backup
 				//
+
 				let key = app.keychain.returnKey(this.publicKey);
 				if (key) {
 					if (
 						key.wallet_decryption_secret &&
 						key.wallet_retrieval_hash
 					) {
+						this.app.options.wallet.backup_required_msg = 0;
+						await this.app.wallet.saveWallet();
+
+						app.connection.emit('recovery-backup-loader-overlay-render-request', {});
 						let newtx = await this.createBackupTransaction(
 							key.wallet_decryption_secret,
 							key.wallet_retrieval_hash
@@ -293,6 +301,11 @@ class Recovery extends ModTemplate {
 	async backupWallet(email, password) {
 		let decryption_secret = this.returnDecryptionSecret(email, password);
 		let retrieval_hash = this.returnRetrievalHash(email, password);
+
+		if (typeof this.app.options.wallet != 'undefined') {
+			this.app.options.wallet.account_recovery_secret = decryption_secret;
+			this.app.options.wallet.account_recovery_hash = retrieval_hash;
+		}
 
 		//
 		// save email

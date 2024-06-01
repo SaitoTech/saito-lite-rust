@@ -1,4 +1,17 @@
- 
+
+  cancelBackButtonFunction() {
+    this.hud.back_button = false;
+    this.hud.back_button_callback = null;
+  }       
+  unbindBackButtonFunction() {
+alert("and unbinding back button function!");
+    this.cancelBackButtonFunction();
+  } 
+  bindBackButtonFunction(mycallback) {
+alert("binding back button function!");
+    this.hud.back_button = true;
+    this.hud.back_button_callback = mycallback;
+  }   
 
   returnArrayOfPlayersInFieldBattle() {
     if (this.game.state.field_battle.spacekey) {
@@ -656,6 +669,62 @@
 
     let menu = [];
 
+if (faction === "france" && this.game.state.events.scots_raid == 1) {
+    menu.push({
+      factions : ['scotland'],
+      cost : [2],
+      name : "Regular",
+      check : this.canPlayerBuyRegular,
+      fnct : this.playerBuyRegular,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/regular.jpg',
+    });
+    menu.push({
+      factions : ['scotland'],
+      cost : [2],
+      name : "Squadron",
+      check : this.canPlayerBuyNavalSquadron,
+      fnct : this.playerBuyNavalSquadron,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/squadron.jpg',
+    });
+    menu.push({
+      factions : ['france','scotland'],
+      cost : [1,1],
+      name : "Move",
+      check : this.canPlayerMoveFormationInClear,
+      fnct : this.playerMoveFormationInClear,
+      category : "move" ,
+      img : '/his/img/backgrounds/move/move_in_clear.jpg',
+    });
+    menu.push({
+      factions : ['france','scotland'],
+      cost : [1,1],
+      name : "Control",
+      check : this.canPlayerControlUnfortifiedSpace,
+      fnct : this.playerControlUnfortifiedSpace,
+      category : "attack" ,
+      img : '/his/img/backgrounds/move/control.jpg',
+    });
+    menu.push({
+      factions : ['france', 'scotland'],
+      cost : [0,0],
+      name : "Assault",
+      check : this.canPlayerAssaultTutorial,
+      fnct : this.playerAssaultTutorial,
+      category : "attack" ,
+      img : '/his/img/backgrounds/move/assault.jpg',
+    });
+    menu.push({
+      factions : ['france', 'scotland'],
+      cost : [1,1],
+      name : "Assault",
+      check : this.canPlayerAssault,
+      fnct : this.playerAssault,
+      category : "attack" ,
+      img : '/his/img/backgrounds/move/assault.jpg',
+    });
+} else {
 if (limit === "build") {
     menu.push({
       factions : ['hapsburg','england','france','papacy','protestant'],
@@ -977,6 +1046,7 @@ if (this.game.state.events.cramner_active == 1) {
 
     } // mary_i limit check
 }
+} // scots raid
 
     //
     // major powers have limited options in 2P version
@@ -1005,7 +1075,7 @@ if (this.game.state.events.cramner_active == 1) {
 
   }
 
-  playerSelectFactionWithFilter(msg, filter_func, mycallback = null, cancel_func = null) {
+  playerSelectFactionWithFilter(msg, filter_func, mycallback = null, cancel_func = null, permit_no_selection = false) {
 
     let his_self = this;
     let factions = this.returnImpulseOrder();
@@ -1019,6 +1089,7 @@ if (this.game.state.events.cramner_active == 1) {
     for (let i = 0; i < f.length; i++) {
       html += `<li class="option" id="${f[i]}">${f[i]}</li>`;
     }
+    if (permit_no_selection){ html += `<li class="option" id="none">none</li>`; }
     html += "</ul>";
 
     his_self.updateStatusWithOptions(msg, html);
@@ -1034,7 +1105,7 @@ if (this.game.state.events.cramner_active == 1) {
     return 0;
   }
 
-  playerFactionSelectCardWithFilter(faction, msg, filter_func, mycallback = null, cancel_func = null) {
+  playerFactionSelectCardWithFilter(faction, msg, filter_func, mycallback = null, cancel_func = null, permit_no_selection = false) {
 
     let cards = [];
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
@@ -1043,6 +1114,10 @@ if (this.game.state.events.cramner_active == 1) {
       if (filter_func(this.game.deck[0].fhand[faction_hand_idx][i])) {
 	cards.push(this.game.deck[0].fhand[faction_hand_idx][i]);
       }
+    }
+
+    if (permit_no_selection) {
+      cards.push("pass");
     }
 
     this.updateStatusAndListCards(msg, cards);
@@ -1256,6 +1331,13 @@ if (this.game.state.events.cramner_active == 1) {
 
   playerTurn(faction, selected_card=null) {
 
+    //   
+    // back button should return us here, so unbind if here
+    //
+    this.unbindBackButtonFunction();
+
+
+
     this.startClock();
 
     let his_self = this;
@@ -1379,16 +1461,17 @@ if (this.game.state.events.cramner_active == 1) {
       // if faction is England and Mary I is ruler, we have 50% 
       //
       if (this.game.players.length > 2 && faction == "england" && this.game.state.leaders.mary_i == 1 && this.game.deck[0].cards[card].ops >= 2) {
-	let x = this.rollDice(6);
-	if (x >= 4) {
-	  this.addMove("mary_i_subverts_protestantism\t"+card+"\t"+x);
-	}
+	this.addMove("decide_if_mary_i_subverts_protestantism_in_6P\t"+card);
       }
 
       if (this.game.players.length == 2 && faction == "protestant" && this.game.state.leaders.mary_i) {
 	this.addMove("decide_if_mary_i_subverts_protestantism_in_2P");
       }
 
+      //
+      // set back button to move us back here
+      //
+      this.bindBackButtonFunction(() => { this.moves = []; this.playerTurn(faction, selected_card); });
       this.playerPlayCard(card, this.game.player, faction);
     });  
 
@@ -1758,7 +1841,7 @@ if (relief_siege == 1) {
     let p = this.returnPlayerOfFaction(faction);
     let his_self = this;
 
-    this.updateStatusAndListCards("Select Diplomacy Card to Play", this.game.deck[1].hand);
+    this.updateStatusAndListCards(his_self.returnFactionName(faction) + " - Select Diplomacy Card", this.game.deck[1].hand);
     this.attachCardboxEvents(function(card) {
 
       this.updateStatus(`Playing ${this.popup(card)}`, this.game.deck[1].hand);
@@ -1774,7 +1857,7 @@ if (relief_siege == 1) {
   }
 
   playerPlayCard(card, player, faction) {
-    
+  
     //
     // cards left
     //
@@ -1807,6 +1890,7 @@ if (relief_siege == 1) {
     } catch (err) {}
 
     if (event_this) {
+      this.unbindBackButtonFunction();
       this.addMove("remove\t"+faction+"\t"+card);
       this.addMove("ops\t"+faction+"\t"+card+"\t"+2);
       this.playerPlayEvent(card, faction);
@@ -1825,8 +1909,8 @@ if (relief_siege == 1) {
       html    += `</ul>`;
 
       let pick_card_function = () => {
-        this.updateStatusWithOptions(`Playing ${this.popup(card)}`, html, true);
-        this.bindBackButtonFunction(() => { this.playerTurn(faction); });
+
+        this.updateStatusWithOptions(`Playing ${this.popup(card)}`, html);
         this.attachCardboxEvents((user_choice) => {
           if (user_choice === "ops") {
             let ops = this.game.deck[0].cards[card].ops;
@@ -1834,6 +1918,7 @@ if (relief_siege == 1) {
             return;
           }
           if (user_choice === "event") {
+            this.unbindBackButtonFunction();
             if (this.game.deck[0].cards[card].warn.includes(faction)) {
               let c = confirm("Unorthodox! Are you sure you want to event this card?");
               if (!c) {
@@ -1869,7 +1954,7 @@ if (relief_siege == 1) {
 
     let attachEventsToMenuOptions = () => {
 
-      this.updateStatusWithOptions(`${this.returnFactionName(faction)}: ${ops} ops remaining`, html, false);
+      this.updateStatusWithOptions(`${this.returnFactionName(faction)}: ${ops} ops remaining`, html);
       this.attachCardboxEvents(async (user_choice) => {      
 
 	his_self.menu_overlay.hide();
@@ -1908,6 +1993,23 @@ if (relief_siege == 1) {
   }
 
   async playerPlayOps(card="", faction, ops=null, limit="") {
+
+    //
+    // unbind in all cases except where OPS are max from card
+    //
+    if (card == "") {
+      this.unbindBackButtonFunction();
+    } else {
+try {
+      let expected_ops = this.game.deck[0].cards[card].ops;
+      if (expected_ops != ops || ops == null || card == "") {
+        this.unbindBackButtonFunction();
+      }
+} catch (err) {
+  // probably mandatory card already removed from deck
+  this.unbindBackButtonFunction();
+}
+    }
 
     //
     // cards left
@@ -1989,7 +2091,7 @@ if (relief_siege == 1) {
 
 	let attachEventsToMenuOptions = () => {
 
-        his_self.updateStatusWithOptions(`${his_self.returnFactionName(selected_faction)}: ${ops} ops remaining`, html, false);
+        his_self.updateStatusWithOptions(`${his_self.returnFactionName(selected_faction)}: ${ops} ops remaining`, html);
         this.attachCardboxEvents(async (user_choice) => {      
 
 	  his_self.updateStatus("acknowledge");
@@ -2072,7 +2174,7 @@ if (relief_siege == 1) {
                 }
                 html += '</ul>';
 
-                this.updateStatusWithOptions(msg, html, false);
+                this.updateStatusWithOptions(msg, html);
                 this.attachCardboxEvents(async (uc) => {      
 
 	          let ops_to_spend = parseInt(uc);
@@ -2149,7 +2251,7 @@ if (relief_siege == 1) {
 
       let attachEventsToMenuOptions = () => {
 
-      this.updateStatusWithOptions(`${this.returnFactionName(faction)}: ${ops} ops remaining`, html, false);
+      this.updateStatusWithOptions(`${this.returnFactionName(faction)}: ${ops} ops remaining`, html);
       this.attachCardboxEvents(async (user_choice) => {      
 
 	his_self.updateStatus("acknowledge");
@@ -2181,7 +2283,7 @@ if (relief_siege == 1) {
           }
           html += '</ul>';
 
-          this.updateStatusWithOptions(msg, html, false);
+          this.updateStatusWithOptions(msg, html);
           this.attachCardboxEvents(async (uc) => {      
 
 	    let ops_to_spend = parseInt(uc);
@@ -2828,7 +2930,7 @@ return;
 
   playerReturnWinterUnits(faction) {
 
-    this.addMove("RESOLVE\t"+this.publicKey);
+    //this.addMove("RESOLVE\t"+this.publicKey);
 
     let his_self = this;
     let capitals = this.returnCapitals(faction);
@@ -2851,7 +2953,6 @@ return;
     var select_units_function = function() {};
     var pick_capital_function = function() {};
     var select_spacekey_function = function() {};
-
 
     finish_selecting_from_space_function = function(his_self, units_to_move) {
 
@@ -2894,15 +2995,16 @@ return;
         return;
       }
 
-      let msg = his_self.returnFactionName(faction) + " - Return Units to Capital?";
+      let msg = his_self.returnFactionName(faction) + " - Return Extra Units to Capital?";
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
         opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
       }
-      opt += `<li class="option" id="finish">finish</li>`;
+      opt += `<li class="option" id="finish">no thanks</li>`;
       opt += '</ul>';
 
       his_self.updateStatusWithOptions(msg, opt);
+      his_self.theses_overlay.pushHudUnderOverlay();
 
       $(".option").off();
       $(".option").on('click', function () {
@@ -2964,6 +3066,7 @@ return;
       }
 
       his_self.movement_overlay.renderForceOpen(mobj, units_to_move, select_units_function, finish_selecting_from_space_function); // no destination interface
+      his_self.movement_overlay.pushHudUnderOverlay();
 
       html += `<li class="option" id="end">finish</li>`;
       html += "</ul>";
@@ -3039,13 +3142,13 @@ return;
         return;
       }
 
-
       if (faction == "protestant") { his_self.theses_overlay.render("german"); }
       if (faction == "papacy") { his_self.theses_overlay.render("italian"); }
       if (faction == "england") { his_self.theses_overlay.render("english"); }
       if (faction == "france") { his_self.theses_overlay.render("french"); }
       if (faction == "hapsburg") { his_self.theses_overlay.render("spanish"); }
       if (faction == "ottoman") { his_self.theses_overlay.render("ottoman"); }
+      his_self.theses_overlay.pushHudUnderOverlay();
 
       his_self.playerSelectSpaceWithFilter(
 
@@ -3077,12 +3180,12 @@ return;
 
     pick_capital_function = function(his_self, pick_capital_function, select_spacekey_function, select_units_function, finish_selecting_from_space_function) {
 
-      let msg = his_self.returnFactionName(faction) + " - Return Units to Capital?";
+      let msg = his_self.returnFactionName(faction) + " - Return Extra Units to Capital?";
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
         opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
       }
-      opt += `<li class="option" id="finish">finish</li>`;
+      opt += `<li class="option" id="finish">no thanks</li>`;
       opt += '</ul>';
 
       if (viable_capitals.length == 0) {
@@ -3091,6 +3194,13 @@ return;
 	return;
       }
 
+      if (faction == "protestant") { his_self.theses_overlay.render("german"); }
+      if (faction == "papacy") { his_self.theses_overlay.render("italian"); }
+      if (faction == "england") { his_self.theses_overlay.render("english"); }
+      if (faction == "france") { his_self.theses_overlay.render("french"); }
+      if (faction == "hapsburg") { his_self.theses_overlay.render("spanish"); }
+      if (faction == "ottoman") { his_self.theses_overlay.render("ottoman"); }
+      his_self.theses_overlay.pushHudUnderOverlay();
       his_self.updateStatusWithOptions(msg, opt);
 
       $(".option").off();
@@ -3150,6 +3260,7 @@ return;
 
 
       his_self.spring_deployment_overlay.render(faction);
+      his_self.spring_deployment_overlay.pushHudUnderOverlay();
 
       this.updateStatusWithOptions(msg, opt);
 
@@ -3438,7 +3549,9 @@ does_units_to_move_have_unit = true; }
   }
 
 //
-// duplicates playerMoveFormationInClear
+// duplicates playerMoveFormationInClear -- this is the function we hit
+// if we use the shortcut "continue move". the reason we need to duplicate
+// is that the handling of the OPS is slightly different.
 //
   async playerContinueToMoveFormationInClear(his_self, player, faction, spacekey, ops_to_spend, ops_remaining=0) {
 
@@ -3454,6 +3567,10 @@ does_units_to_move_have_unit = true; }
     let space = this.game.spaces[spacekey];
     let protestant_player = his_self.returnPlayerOfFaction("protestant");
     let parent_player = his_self.returnPlayerCommandingFaction(faction);
+
+console.log("continue to move formation in clear: ");
+console.log("ops to spend: " + ops_to_spend);
+console.log("ops remaining: " + ops_remaining);
 
 	//
 	// first define the functions that will be used internally
@@ -3477,7 +3594,7 @@ does_units_to_move_have_unit = true; }
  		  if (!space.pass.includes(spacekey)) {
 		    return 1;
 		  } else {
-		    if (ops_remaining >= 1) {
+		    if (ops_remaining > 1) {
 		      // we have to flag and say, "this costs an extra op"
 		      return 1;
 		    } else {
@@ -3990,19 +4107,23 @@ does_units_to_move_have_unit = true; }
 	    //
 	    // Foul Weather prevents spaces with already moved units
 	    //
+	    let army_and_navy_leaders = 0;
             if (his_self.returnPlayerCommandingFaction(z) == his_self.game.player) {
               for (let i = 0; i < space.units[z].length; i++) {
 	        if (space.units[z][i].locked != 1) {
 		  if (space.units[z][i].type === "cavalry") { num_moveable++; }
 		  if (space.units[z][i].type === "regular") { num_moveable++; }
 		  if (space.units[z][i].type === "mercenary") { num_moveable++; }
-		  if (space.units[z][i].battle_rating > 0) { num_moveable++; }
+		  if (space.units[z][i].battle_rating > 0) { army_and_navy_leaders++; num_moveable++; }
                   if (space.units[z][i].already_moved == 1 && his_self.game.state.events.foul_weather == 1) {
 	            num_moveable--;
                   }
                 }
               }
 	      if (num_moveable <= 0) {
+		return 0;
+	      }
+	      if (army_and_navy_leaders == num_moveable) {
 		return 0;
 	      }
             }
@@ -4156,6 +4277,10 @@ does_units_to_move_have_unit = true; }
 // faction is the attacker in pre-naval battles, but it should be the defender
 //            this.playerEvaluateNavalRetreatOpportunity(attacker, spacekey, attacker_comes_from_this_spacekey, defender);
 //
+// post battle this is:
+//
+// this.playerEvaluateNavalRetreatOpportunity(loser, spacekey, "", loser, true); 
+//
   playerEvaluateNavalRetreatOpportunity(faction, spacekey, player_comes_from_this_spacekey="", defender="", post_battle=false) {
 
     let his_self = this;
@@ -4176,7 +4301,8 @@ does_units_to_move_have_unit = true; }
 
     let surviving_units = 0;
     for (let f in space.units) {
-      if (f == faction || this.areAllies(f, faction)) {
+      let cf = this.returnCommandingFaction(f);
+      if (cf == faction || f == faction || this.areAllies(f, faction)) {
         for (let i = 0; i < space.units[f].length; i++) {
 	  let u = space.units[f][i];
 	  if (u.type == "squadron" || u.type == "corsair") {
@@ -4200,7 +4326,12 @@ does_units_to_move_have_unit = true; }
     }
 
     let onFinishSelect = function(his_self, destination_spacekey) {
-      his_self.addMove("naval_retreat"+"\t"+faction+"\t"+spacekey+"\t"+destination_spacekey);
+      for (let f in space.units) {
+        let cf = this.returnCommandingFaction(f);
+        if (cf == faction || f == faction) {
+          his_self.addMove("naval_retreat"+"\t"+f+"\t"+spacekey+"\t"+destination_spacekey);
+	}
+      }
       his_self.endTurn();
     };
 
@@ -4809,12 +4940,15 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	i--;
       } else {
 	let s = his_self.game.spaces[spaces_with_infantry[i]];
+	let any_valid_moves = false;
         for (let z = 0; z < s.ports.length; z++) {
-          if (his_self.doesFactionHaveNavalUnitsInSpace(faction, s.ports[z]) == 0) {
-	    spaces_with_infantry.splice(i, 1);
-	    i--;
-	    z = s.ports.length + 2;
+          if (his_self.doesFactionHaveNavalUnitsInSpace(faction, s.ports[z]) == 1) {
+	    any_valid_moves = true;
 	  }
+	}
+	if (!any_valid_moves) {
+	  spaces_with_infantry.splice(i, 1);
+	  i--;
 	}
       }
     }
@@ -5681,8 +5815,13 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	      }
 
 	      if (attacker_squadrons_adjacent < squadrons_protecting_space) {
-		alert("You have a space under siege, but it is protected by a fleet. To assault such a space, you need more naval forces adjacent to this space than the defender has protecting it.");
-		player_warned = 1;
+	        if (999 < squadrons_protecting_space) {
+		  alert("Space cannot be assaulted if protected by fleet in adjacent sea");
+		  player_warned = 1;
+	        } else {
+		  alert("You have a space under siege, but it is protected by a fleet. To assault such a space, you need more naval forces adjacent to this space than the defender has protecting it.");
+		  player_warned = 1;
+	        }
 	      }
 	  }
 	}
@@ -6489,7 +6628,14 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
   }
   canPlayerPublishTreatise(his_self, player, faction) {
-    if (faction === "protestant") { return 1; }
+    if (faction === "protestant") {
+      if (his_self.canProtestantsReformInLanguageZone("german")) { return 1; }
+      if (his_self.canProtestantsReformInLanguageZone("english")) { return 1; }
+      if (his_self.canProtestantsReformInLanguageZone("french")) { return 1; }
+      if (his_self.canProtestantsReformInLanguageZone("spanish")) { return 1; }
+      if (his_self.canProtestantsReformInLanguageZone("italian")) { return 1; }
+      return 0;
+    }
     if (faction === "england") {
       if (his_self.isPersonageOnMap("england", "cranmer") != null) {
 	return 1;
@@ -6788,15 +6934,15 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   }
   async playerShowTutorial(his_self, player, faction, ops_to_spend=1, ops_remaining=0) {
 
-    this.game.state.may_explore['england'] = 1;
-    this.game.state.may_explore['france'] = 1;
-    this.game.state.may_explore['hapsburg'] = 1;
-    this.game.state.may_conquer['england'] = 1;
-    this.game.state.may_conquer['france'] = 1;
-    this.game.state.may_conquer['hapsburg'] = 1;
-    this.game.state.may_colonize['england'] = 1;
-    this.game.state.may_colonize['france'] = 1;
-    this.game.state.may_colonize['hapsburg'] = 1;
+    his_self.game.state.may_explore['england'] = 1;
+    his_self.game.state.may_explore['france'] = 1;
+    his_self.game.state.may_explore['hapsburg'] = 1;
+    his_self.game.state.may_conquer['england'] = 1;
+    his_self.game.state.may_conquer['france'] = 1;
+    his_self.game.state.may_conquer['hapsburg'] = 1;
+    his_self.game.state.may_colonize['england'] = 1;
+    his_self.game.state.may_colonize['france'] = 1;
+    his_self.game.state.may_colonize['hapsburg'] = 1;
 
     let title = "";
     let text = "";
@@ -6811,20 +6957,20 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (faction == "protestant") {
 
       title = "Publish a Treatise?";
-      text = "You get +1 roll for each adjacent Protestant space. Committing debaters give you bonuses flipping spaces, but make them more vulnerable in theological debates...";
+      text = "You get +1 roll for each adjacent Protestant space. Committing debaters give bonus but make debaters vulnerable in theological debates...";
       img = "/his/img/backgrounds/move/printing_press.jpg";
       card = "";
       options.push({ title : title , text : text , img : img , card : card });
 
       title = "Watch the Discard Pile";
-      text = "The Protestants are the only power that can retrieve cards from the discard pile. Retrieve valuable cards and play or hold them for the next turn...";
+      text = "Play your home card to retrieve cards from the discard pile. Play immediately or hold for future use...";
       img = "/his/img/backgrounds/move/publish_treatise.jpg";
       card = his_self.returnCardImage("007");
       options.push({ title : title , text : text , img : img , card : card });
 
       if (ops_remaining == 1) {
         title = "Translate the Bible!";
-        text = "Translating the New Testament into a language gives 6 reformation attempts. Translating the Full Bible gives 6 more and earns 1 VP per translation.";
+        text = "Translate the New Testament for 6 reformation attempts. Translate the Full Bible for 6 more with +1 modifier on each roll and a 1 VP bonus.";
         img = "/his/img/backgrounds/move/translate.jpg";
         card = "";
         options.push({ title : title , text : text , img : img , card : card });
@@ -6838,20 +6984,20 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (faction == "papacy") {
 
       title = "Convene a Debate?";
-      text = "Leipzig Debate lets you pick your own debater - Eck is a great choice. If you get lucky, the Protestants will need to use their Home Card to send Luther, wasting 5 Protestant OPs";
+      text = "Play Leipzig Debate and pick your strongest debater. You can burn opponents or force Luther to defend his flock, wasting 5 Protestant OPs";
       img = "/his/img/backgrounds/move/theological_debate.jpg";
       card = his_self.returnCardImage("007");
       options.push({ title : title , text : text , img : img , card : card });
 
       title = "Conquer Florence";
-      text = "Build troops in Rome. Move them to Siena. Control Siena. Then move them to Florence and besiege the city. The next turn you can assault it.";
+      text = "Move your troops into Siena. Control Siena to create a line of control to Florence. Then besiege and assault the city.";
       img = "/his/img/backgrounds/move/papacy-florence.png";
       card = "";
       options.push({ title : title , text : text , img : img , card : card });
 
       if (ops_remaining == 1) {
         title = "Build St. Peters!";
-        text = "The Papacy earns VP for building St. Peter's Cathedral. Use any excess OPs to build the basilica.";
+        text = "The Papacy earns VP for building St. Peter's Cathedral.";
         img = "/his/img/backgrounds/move/saint_peters.jpg";
         card = "";
         options.push({ title : title , text : text , img : img , card : card });
@@ -6864,20 +7010,20 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (faction == "ottoman") {
 
       title = "Crush the Hungarians";
-      text = "Conquering Belgrade and Buda will earn 2 VP and force the Hapsburgs into declaring war...";
+      text = "Conquer Belgrade and Buda to earn 2 VP and force the Hapsburgs into war...";
       img = "/his/img/backgrounds/tutorials/ottoman-hungary.png";
       card = "";
       options.push({ title : title , text : text , img : img , card : card });
 
       title = "Control the Mediterranean";
-      text = "Piracy is harder around fortresses. Build troops in Athens, move ships into the Aegean Sea, and transport those units to Rhodes to assault the fortress...";
+      text = "Piracy is harder around fortresses. Move ships into the Aegean Sea, and transport your units to Rhodes to assault the fortress...";
       img = "/his/img/backgrounds/tutorials/ottoman-rhodes.png";
       card = "";
       options.push({ title : title , text : text , img : img , card : card });
 
       if (his_self.game.state.events.barbary_pirates == 1) {
         title = "Piracy?!";
-        text = "Build corsairs in Algiers. Move them in packs around the Mediterranean and target opponents with Piracy. Every hit earns VP or a card draw...";
+        text = "Build corsairs in Algiers. Move them around the Mediterranean and target opponents with Piracy. Every hit earns VP or a card draw...";
         card = his_self.returnCardImage("009");
         img = "/his/img/backgrounds/move/piracy.jpg";
         options.push({ title : title , text : text , img : img , card : card });
@@ -6892,21 +7038,21 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
       if (his_self.game.spaces["metz"].besieged == 0) {
         title = "Control Metz";
-        text = "Build troops in Becanson. Move them north into Metz. Your forces will automatically besiege the city. The next turn, spend 1 OP to assault and hopefully capture it.";
+        text = "Build troops on Becanson and move them north to Metz. Assault the city the following turn.";
         img = "/his/img/backgrounds/tutorials/hapsburg-metz.png";
         card = "";
         options.push({ title : title , text : text , img : img , card : card });
       }
 
       title = "Invade France";
-      text = "Build infantry in Navarre. Move them north to Bordeaux. If the French withdraw into fortifications spend 1 OP to assault Bordeaux the next turn.";
+      text = "Build infantry in Navarre and move them north to besiege Bordeaux. Assault the city the following turn.";
       img = "/his/img/backgrounds/tutorials/hapsburg-bordeaux.png";
       card = "";
       options.push({ title : title , text : text , img : img , card : card });
 
       if (his_self.game.state.may_conquer['hapsburg'] == 1) {
         title = "New World Conquest";
-        text = "Conquests roll dice in the New World Phase to see if they succeed. In addition to earning VP, successful conquests can also earn bonus cards subsequent turns.";
+        text = "Conquests are more difficult than Explorations, but can earn you bonus cards in the New World phase...";
         img = "/his/img/backgrounds/move/conquer.jpg";
         card = "";
         options.push({ title : title , text : text , img : img , card : card });
@@ -6914,7 +7060,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
       if (his_self.game.state.may_colonize['hapsburg'] == 1) {
         title = "Found a Colony";
-        text = "At the end of every turn your colonies roll dice for bonus cards. Consider sending an expedition now for more ops later in the game.";
+        text = "At the end of every round each colony rolls dice to win bonus cards for the following round...";
         img = "/his/img/backgrounds/move/colonize.jpg";
         card = "";
         options.push({ title : title , text : text , img : img , card : card });
@@ -6928,13 +7074,13 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (faction == "france") {
 
       title = "Build a Chateaux";
-      text = "Your Home Card allows you to get VP and bonus cards, and your chance of success increases if France is not under attack.";
+      text = "Your Home Card earns VP and bonus cards, and your chance of success increases if France is not under attack.";
       img = "/his/img/backgrounds/chateaux.png";
       card = his_self.returnCardImage("004");
       options.push({ title : title , text : text , img : img , card : card });
 
       title = "Conquer the New World";
-      text = "Conquests are harder than Explorations. In addition to earning VP if they succeed, they also roll dice for bonus cards at the end of every turn. Consider sending an expedition!";
+      text = "Conquests are more difficult than Explorations, but can earn you bonus cards in the New World phase...";
       img = "/his/img/backgrounds/move/conquer.jpg";
       card = "";
       options.push({ title : title , text : text , img : img , card : card });
@@ -6949,7 +7095,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
       if (his_self.game.state.may_colonize['france'] == 1) {
         title = "Found a Colony";
-        text = "You are allowed up to three colonies. At the end of every turn your surviving colonies will roll dice for bonus cards. Having more cards can provide a crucial advantage later in the game."
+        text = "At the end of every round each colony rolls dice to win bonus cards for the following round...";
         img = "/his/img/backgrounds/move/colonize.jpg";
         card = "";
         options.push({ title : title , text : text , img : img , card : card });
@@ -6957,7 +7103,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
       if (his_self.game.state.may_conquer['france'] == 1) {
         title = "Fortify Italy";
-        text = "It is hard for France to move forces quickly into Italy, and Milan is vulnerable to attack. Consider building forces and moving them over to protect your Italian territories.";
+        text = "France struggles to move forces into Italy and Milan is vulnerable to attack. Protect and expand your Italian territories.";
         img = "/his/img/backgrounds/tutorials/france-milan.png";
         card = "";
         options.push({ title : title , text : text , img : img , card : card });

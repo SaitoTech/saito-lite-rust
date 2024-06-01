@@ -108,7 +108,7 @@ class SettlersGameloop {
             this.game.state.canPlayCard = true;
           }
 
-          this.updateStatus(`<div class="persistent player-notice"><span>You bought a ${html}</span></div>`);
+          this.updateStatus(`<div class="persistent player-notice"><span>You bought ${html}</span></div>`);
         }
         return 1;
       }
@@ -272,6 +272,12 @@ class SettlersGameloop {
         } else {
           console.log("Resource not found...", resource, this.game.state.players[player - 1]);
         }
+
+        // Bandit discards 
+        if (this.game.state.bandit){
+          this.game.stats.discarded[resource][player - 1]++;
+        }
+
         this.game.queue.splice(qe, 1);
 
         return 1;
@@ -779,6 +785,14 @@ class SettlersGameloop {
           this.game.state.bandit = true;
           this.game.queue.push("roll_bandit\t" + player);
 
+          let record = {
+            roll: 7,
+            harvest: {},
+            bandit: {},
+            threatened: this.game.state.threatened.slice(),
+          }
+          this.game.stats.history.push(record);
+          
           //Manage discarding before bandit comes into play
           let playersToDiscard = [];
           for (let i = 0; i < this.game.state.players.length; i++) {
@@ -910,6 +924,19 @@ class SettlersGameloop {
           `${this.formatPlayer(player)} moved the ${this.b.name} to ${hexName}`
         );
 
+
+        this.game.state.threatened = [];
+
+        for (let city of this.game.state.cities) {
+          if (city.neighbours.includes(hexId)) {
+            if (!this.game.state.threatened.includes(city.player)) {
+              this.game.state.threatened.push(city.player);
+            }
+          }
+        }
+
+        console.log("Bandit moved:", JSON.stringify(this.game.state.threatened));
+
         if (this.game.player === player) {
           this.playerMoveBandit(player, hexId);
         } else {
@@ -934,6 +961,24 @@ class SettlersGameloop {
           //victim 0 means nobody
           this.game.queue.push("spend_resource\t" + victim + "\t" + loot);
           this.game.state.players[thief - 1].resources.push(loot);
+
+          //Adjust bandit stats
+          this.game.stats.robbed[loot][victim - 1]++;
+          // The spend_resource to remove from hand will count twice when we roll a 7 but not on a knight
+          if (this.game.state.bandit) {
+            this.game.stats.discarded[loot][victim - 1]--;  
+
+          }
+        }
+
+        if (this.game.state.bandit){
+          let record = this.game.stats.history.pop();
+          if (loot == "nothing"){
+            record.harvest[thief] = [];
+          }else{
+            record.harvest[thief] = [loot];
+          }
+          this.game.stats.history.push(record);
         }
 
         let x = (loot == "nothing") ? "nothing" : this.formatResource(loot);

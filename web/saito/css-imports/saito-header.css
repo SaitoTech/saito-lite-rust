@@ -37,16 +37,20 @@
 #saito-header-menu-toggle {
   margin-right: auto;
   cursor: pointer;
-  transition: all 0.2s;
   position: relative;
-  font-size: 3rem;
-  transform: scaleX(1.3);
   width: 4rem;
-  text-align: center;
   color: var(--font-color-menu-hamburger);
+  display: flex;
+  justify-content: center;
 }
 
-#saito-header-menu-toggle:hover {
+#saito-header-menu-toggle i {
+  transition: all 0.2s;
+  font-size: 3rem;
+  transform: scaleX(1.2);
+}
+
+#saito-header-menu-toggle:hover i {
   opacity: 0.9;
   transform: scale(1.2);
 }
@@ -180,6 +184,10 @@
   display: flex;
 }
 
+.balance-amount.flash {
+  animation: fade-animation 1.5s infinite ease-in-out;
+}
+
 .balance-amount-whole,
 .balance-amount-separator,
 .balance-amount-decimal {
@@ -290,14 +298,32 @@
   gap: 1rem;
 }
 
-#header-username {
-  color: var(--font-color-header-username);
+#header-msg {
+  color: var(--font-color-header-msg);
   cursor: pointer;
   font-size: 2rem;
   padding: 0 0 0 2rem;
   max-width: 20rem;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+#header-msg.flash {
+  width: fit-content;
+  max-width: fit-content;
+  animation: fade-animation 1.5s infinite ease-in-out;
+}
+
+@keyframes fade-animation {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 /*
@@ -420,6 +446,58 @@
   transform: scale(1.1);
 }
 
+.saito-backup-container .saito-backup-auto {
+  padding: 1.5rem 1.5rem;
+  text-decoration: none;
+}
+
+.saito-overlay-auto-backup .saito-overlay-form {
+  gap: 0rem;
+}
+
+.saito-overlay-auto-backup .saito-overlay-subform {
+  gap: 2rem;
+}
+
+.saito-overlay-auto-backup .saito-overlay-subform {
+  display: flex;
+  gap: 2rem;
+  flex-direction: column;
+}
+
+
+.saito-overlay-auto-backup .saito-overlay-form-subtext {
+  font-size: 2rem;
+  line-height: 2.8rem;
+}
+ 
+.saito-overlay-auto-backup .saito-overlay-subform-text {
+  font-size: 1.8rem;
+  line-height: 2.5rem;
+}
+
+.saito-overlay-auto-backup .saito-overlay-form-submit {
+  width: fit-content;
+  align-self: end;
+}
+
+.saito-overlay-auto-backup .saito-overlay-form-checkbox-container,
+.saito-overlay-backup-reminder .saito-overlay-form-checkbox-container {
+  display: flex;
+  gap: 1rem;
+}
+
+.saito-overlay-auto-backup .saito-overlay-subform-checkbox {
+  width: 3.5rem;
+}
+
+.saito-overlay-backup-reminder .saito-overlay-subform-checkbox {
+  width: 2rem;
+}
+
+.saito-overlay-backup-reminder .saito-overlay-subform-text {
+  line-height: 3rem;
+}
 
 
 @media screen and (max-width: 1200px) {
@@ -473,7 +551,7 @@
 }
 
 @media screen and (max-width: 420px) {
-  #header-username {
+  #header-msg {
     font-size: 1.5rem;
   }
 }

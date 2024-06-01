@@ -96,6 +96,7 @@ class Crypto extends ModTemplate {
 				});
 			}
 
+
 			if (Object.keys(ac).length == 0) {
 				menu.submenus.push({
 					parent: 'game-crypto',
@@ -105,7 +106,7 @@ class Crypto extends ModTemplate {
 					callback: (app, game_mod) => {
 						game_mod.menu.hideSubMenus();
 						salert(
-							'The players do not have any common crypto available to play with'
+							'Players do not have any common crypto to play with...'
 						);
 					}
 				});

@@ -67,12 +67,11 @@ class RedSquareMain {
         //
         if (this.manager.mode == "tweets") {
           if (this.canRefreshPage()) {
-            console.log("postcache-render-request: refresh the page automatically!");
+
             document.querySelector(".saito-main").innerHTML = "";
             this.app.connection.emit("redsquare-home-render-request", true);
 
           } else {
-            console.log("postcache-render-request: CANNOT refresh the page!");
 
             if (!document.getElementById("saito-new-tweets")) {
               this.app.browser.prependElementToSelector(
@@ -82,15 +81,11 @@ class RedSquareMain {
             }
 
             document.getElementById("saito-new-tweets").onclick = (e) => {
-
               document.querySelector(".saito-main").innerHTML = "";
               this.app.connection.emit("redsquare-home-render-request", true);
             };
           }
         }
-
-        // So it will automatically insert new tweets if we navigate back to the main feed from looking at something else??
-
       }
 
       // Update earliest so that we can set up infinite scroll
@@ -118,10 +113,7 @@ class RedSquareMain {
 
     this.app.connection.on("redsquare-notifications-render-request", () => {
       this.scrollFeed(0);
-      this.mod.notifications_last_viewed_ts = new Date().getTime();
-      this.mod.notifications_number_unviewed = 0;
-      this.mod.saveOptions();
-      this.mod.menu.incrementNotifications("notifications", 0);
+      this.mod.resetNotifications();
       this.manager.render("notifications");
 
       this.app.connection.emit("saito-header-replace-logo", (e) => {

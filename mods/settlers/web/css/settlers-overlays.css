@@ -8,7 +8,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 2rem;
-	width: min(600px, 90vw);
+	width: min(600px, 99vw);
 	max-height: 90vh;
 
 	overflow-x: hidden;
@@ -60,7 +60,8 @@ stats overlay
 */
 
 .settlers-stats-overlay {
-	gap: 1rem;
+	padding: min(2rem, 1.5vw, 2.5vh);
+	min-height: 650px;
 }
 
 .settlers-dice-histogram {
@@ -70,6 +71,10 @@ stats overlay
 	align-content: flex-end;
 	flex-wrap: wrap-reverse;
 	margin-top: 1.5rem;
+}
+
+.hover-hint {
+	cursor: help;
 }
 
 .settlers-dice-bar {
@@ -154,16 +159,6 @@ stats overlay
 }
 
 
-.settlers-stats-card {
-	position: relative;
-	filter: grayscale(0.1); /* Make a little less bright */
-}
-
-.settlers-stats-card img {
-	/*width: 5.3rem;*/
-	width: auto;
-	height: min(6.5rem, 13vw);
-}
 
 .settlers-stats-resource-count {
 	position: absolute;
@@ -197,18 +192,12 @@ stats overlay
 .settlers-stats-player {
 	font-size: 1.9rem;
 	line-height: 3rem;
-	/*color: whitesmoke;
-	text-shadow: 1px 1px 1px black;*/
-	padding-left: 0.5rem;
-	opacity: 0.85;
+	opacity: 0.90;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	background-color: unset !important;
-	margin-bottom: 0.75rem;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
+	width: 100%;
 }
 
 .settlers-stats-player.p1 {
@@ -232,13 +221,62 @@ stats overlay
 }
 
 .no-vp {
-	filter: brightness(65%) grayscale(50%) opacity(0.33);
+	filter: brightness(65%) grayscale(30%) opacity(0.50);
 }
 
 .settlers-achievements-row .victory_point_cards img {
 	height: 6.5rem;
 	width: auto !important;
 }
+
+.stats-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+	font-size: 2rem;
+	text-transform: uppercase;
+}
+
+.stats-header .overlay-tab {
+    padding: 0.5rem 2rem;
+    cursor: pointer;
+    position: relative;
+    text-shadow: 1px 1px 1px #62616388;
+    max-width: 30%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.stats-header .overlay-tab.active-tab{
+	text-shadow: 1px 1px 1px #626163;
+    border-bottom: 2px solid #424143;
+    min-width: fit-content;
+}
+
+.stats-header .overlay-tab.active-tab::after {
+    content: "";
+    position: absolute;
+    top: 31px;
+    font-size: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-shadow: 1px 1px 1px #626163;
+    width: 25%;
+    border: 4px solid #424143;
+    border-radius: 5px;
+}
+
+.overlay-page {
+	display: none;
+	padding: min(1rem, 1vw, 1.5vh);
+}
+
+.overlay-page.active-page{
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+}
+
 
 /*********
  * 
@@ -472,19 +510,36 @@ stats overlay
 }
 
 .settlers-stats-row {
-	position: relative;
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
+	display: grid;
+	grid-template-columns: 12rem repeat(auto-fit, minmax(5rem, 1fr));
+	align-items: center;
 }
 
-.settlers-stats-row img {
-	height: min(6.5rem, 13vw);
-	width: auto;
+.settlers-stat-num-alt{
+	font-size: 2rem;
+	justify-self: center;
+	opacity: 70%;
+}
+
+.settlers-stat-num{
+	font-size: 3rem;
+	justify-self: center;
 }
 
 .settlers-stats-vp {
 	position: relative;
+}
+
+.settlers-stats-card, .settlers-stats-vp {
+	width: 5rem;
+	justify-self: center;
+	display: flex;
+	justify-content: center;
+}
+
+.settlers-stats-card img, .settlers-stats-vp img {
+	 height: min(5rem, 10vw);
+	 width: auto;
 }
 
 .settlers-stats-vp-count {
@@ -527,41 +582,50 @@ stats overlay
 	right: -0.5rem;
 }
 
-.settlers-state-container.combined-player-stats {
-	flex-direction: row;
-	gap: 6rem;
+#details-page {
+	overflow: hidden;
 }
 
-.vp-3p.settlers-stats-overlay {
-	width: min(760px, 98vw);
-}
-
-.combined-player-stats {
+.settlers-hist-row {
 	display: grid;
-	grid-template-columns: repeat(2, 1fr);
+	grid-template-columns: 5rem repeat(auto-fit, minmax(8rem, 1fr));
 	grid-gap: 2rem;
+	font-size: 1.8rem;
+	align-items: center;
 }
 
-.vp-3p .settlers-stats-row {
-	gap: 0.5rem;
+.settlers-hist-row .roll{
+	display: flex;
+	justify-content: space-between;
 }
 
-.vp-3p .settlers-stats-row {
-	height: min(6.5rem, 13vw);
+.settlers-hist-row.robber .settlers-stats-card img {
+	transform: rotate(90deg);
 }
 
-.vp-3p .settlers-stats-row img {
-	height: min(5.5rem, 8vw);
+.hist-cards{
+	display: grid;
+	max-width: 100%;
+	grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr));
 }
 
-.vp-3p
-	.settlers-stats-row
-	.settlers-stats-card
-	.settlers-stats-resource-count {
-	font-size: 3rem;
-	width: 82%;
-	height: 58%;
-	line-height: 5.3rem;
+
+.notice_overlay {
+	padding: 3rem;
+	font-size: 1.8rem;
+}
+
+.notice_overlay > div {
+	margin: 1rem;
+}
+
+.notice_overlay ul {
+	margin: 0 5rem;
+}
+
+.notice_overlay ul li {
+	margin-bottom: 0.5rem;
+	font-size: 2rem;
 }
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
@@ -572,6 +636,46 @@ stats overlay
 
 	.vp-3p .settlers-stats-row img {
 		height: min(6.5rem, 13vw);
+	}
+
+	.splash_overlay h2 {
+		font-size: 3rem;
+	}
+
+	.notice_overlay {
+		padding: 1.5rem;
+	}
+	.notice_overlay ul {
+		margin: 0 2rem 0 3rem;
+	}
+
+	.notice_overlay ul li {
+		font-size: inherit;
+	}
+
+	.stats-header .overlay-tab {
+    	padding: 0.5rem;
+	}
+
+	.settlers-stats-row {
+		grid-template-columns: 7rem repeat(auto-fit, minmax(4rem, 1fr));
+	}
+
+	.settlers-stats-card, .settlers-stats-vp {
+		width: 100%;
+	}
+
+	.settlers-stats-card img, .settlers-stats-vp img {
+		height: min(4rem, 9vw);
+	}
+
+	.settlers-stats-multiplier, .settlers-stats-vp-count{
+		width: 2.2rem;
+		height: 2.2rem;
+		font-size: 2.2rem;
+	}
+	.settlers-stats-vp-count{
+		line-height: 2.2rem;
 	}
 }
 
@@ -596,17 +700,3 @@ stats overlay
 	}
 }
 
-
-.notice_overlay {
-	padding: 3rem;
-	font-size: 1.8rem;
-}
-
-.notice_overlay > div {
-	margin: 1rem;
-}
-
-.notice_overlay ul li {
-	margin-bottom: 0.5rem;
-	font-size: 2rem;
-}

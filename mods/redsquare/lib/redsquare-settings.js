@@ -45,49 +45,6 @@ class Settings {
       });
 
     }
-
-    if (document.getElementById("muted-accounts")){
-      document.getElementById("muted-accounts").onclick = (e) => {
-        this.contacts.title = "Muted Accounts";
-        this.contacts.multi_button = "Unmute Selected Accounts";
-        this.contacts.callback = (keys) => {
-          for (let key of keys){
-            for (let i = this.mod.mute_list.length; i >= 0; i--){
-              if (this.mod.mute_list[i] == key){
-                this.mod.mute_list.splice(i, 1);
-                break;
-              }
-            }
-          }
-          this.mod.saveOptions();
-          this.render();
-        }
-
-        this.contacts.render(this.mod.mute_list);
-      }
-    }
-
-    if (document.getElementById("blocked-accounts")){
-      document.getElementById("blocked-accounts").onclick = (e) => {
-        this.contacts.title = "Blocked Accounts";
-        this.contacts.multi_button = "Unblock Selected Accounts";
-        this.contacts.callback = (keys) => {
-          for (let key of keys){
-            for (let i = this.mod.black_list.length; i >= 0; i--){
-              if (this.mod.black_list[i] == key){
-                this.mod.black_list.splice(i, 1);
-                break;
-              }
-            }
-          }
-          this.mod.saveOptions();
-          this.render();
-        }
-
-        this.contacts.render(this.mod.black_list);
-      }
-    }
-
   }
 }
 

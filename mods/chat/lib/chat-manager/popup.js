@@ -125,7 +125,7 @@ class ChatPopup {
 		let popup_qs = '#chat-popup-' + this.group.id;
 		let chatPopup = document.querySelector(popup_qs);
 
-		if (!chatPopup) {
+		if (!chatPopup || this.container) {
 			this.render();
 			return;
 		}
@@ -328,7 +328,9 @@ class ChatPopup {
 		let chatBody = document.querySelector(popup_qs + ' .chat-body');
 		if (chatBody) {
 			let new_render = !this.is_rendered;
-
+			
+			//console.info('*** CHAT render: ',this.group.unread,new_render);
+			
 			if (this.is_scrolling) {
 				//console.info('CHAT render: keep position');
 				chatBody.scroll({ top: this.is_scrolling, left: 0 });
@@ -341,20 +343,15 @@ class ChatPopup {
 								this.group.last_read_message
 					  )
 					: null;
-				//console.info('CHAT render: ',anchor,this.group.unread,new_render);
-				if (anchor && this.group.unread && new_render) {
+				
+				if (anchor && new_render && this.group.unread > 2) {
 					//console.info(	'CHAT render: Scroll to anchor -- ' +this.group.last_read_message);
 					anchor.scrollIntoView(false);
 					this.updateNotification(this.group.unread);
-				} else if (this.app.browser.active_tab) {
+				} else {
 					//console.info('CHAT render: scroll to bottom');
 					chatBody.scroll(0, 1000000000);
-				} else {
-					if (anchor) {
-						anchor.scrollIntoView(false);
-					}
-					this.updateNotification(this.group.unread);
-				}
+				} 
 			}
 		}
 
@@ -506,10 +503,15 @@ class ChatPopup {
 							text += child.textContent;
 						}
 						//We may want to also pull inner text from element nodes as long as they aren't the hidden buttons
-						if (child.nodeType === 1){
-							if (child.classList.contains("saito-treated-link")){
+						if (child.nodeType === 1) {
+							if (
+								child.classList.contains('saito-treated-link')
+							) {
 								text += child.href;
-							}else if (!child.classList.contains('saito-userline-reply') &&
+							} else if (
+								!child.classList.contains(
+									'saito-userline-reply'
+								) &&
 								child.nodeName !== 'BLOCKQUOTE'
 							) {
 								text += child.innerText;
@@ -533,8 +535,14 @@ class ChatPopup {
 
 					// Retrieve the 'data-id' attribute from the found parent element
 					let sig = parentElement.getAttribute('data-id');
-					let target = parentElement.closest(".saito-userline").getAttribute('data-id');
-					const newtx = await this.mod.createChatLikeTransaction(this.group, sig, target);
+					let target = parentElement
+						.closest('.saito-userline')
+						.getAttribute('data-id');
+					const newtx = await this.mod.createChatLikeTransaction(
+						this.group,
+						sig,
+						target
+					);
 					if (newtx) {
 						mod.hasSeenTransaction(newtx);
 						mod.receiveChatLikeTransaction(newtx);
@@ -591,6 +599,7 @@ class ChatPopup {
 		let myBody = document.querySelector(popup_qs + ' .chat-body');
 		if (myBody && myBody?.lastElementChild) {
 			const pollScrollHeight = () => {
+				console.log("scrolling...");
 				let lastChild = myBody.lastElementChild;
 				if (lastChild.querySelector('.saito-user .saito-userline')) {
 					lastChild =
@@ -818,13 +827,27 @@ class ChatPopup {
 			}
 		};
 
-		this.input.callbackOnUpload = async (filesrc) => {
-			filesrc = await app.browser.resizeImg(filesrc); // (img, dimensions, quality)
+		this.input.callbackOnUpload = async (result) => {
+			let imageUrl;
+
+			if (typeof result === 'string') {
+				let response = await fetch(result);
+				let blob = await response.blob();
+				imageUrl = URL.createObjectURL(blob);
+			} else if (result instanceof File) {
+				imageUrl = URL.createObjectURL(result);
+			} else {
+				throw new Error('Invalid filesrc type');
+			}
+			let resizedImageUrl = await app.browser.resizeImg(imageUrl); // (img, dimensions, quality)
+
 			let img = document.createElement('img');
 			img.classList.add('img-prev');
-			img.src = filesrc;
+			img.src = resizedImageUrl;
+
 			let msg = img.outerHTML;
 			this.input.callbackOnReturn(msg);
+
 			document.querySelector(
 				`${popup_qs} .saito-input .text-input`
 			).value = '';
@@ -887,7 +910,10 @@ class ChatPopup {
 		}
 
 		this.dimensions = {};
-		chatPopup.querySelector('.resize-icon').style.display = 'block';
+		if (chatPopup.querySelector('.resize-icon')){
+			chatPopup.querySelector('.resize-icon').style.display = 'block';	
+		}
+		
 	}
 
 	savePopupDimensions(chatPopup) {

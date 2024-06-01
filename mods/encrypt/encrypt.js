@@ -103,6 +103,7 @@ class Encrypt extends ModTemplate {
           if (receiver == this.publicKey) {
             console.log("ENCRYPT: You have received an encrypted channel request from " + sender);
             this.accept_key_exchange(tx);
+
           }
         }
 
@@ -112,7 +113,8 @@ class Encrypt extends ModTemplate {
         if (txmsg.request == "key exchange confirm") {
           if (sender !== this.publicKey){
             console.log(`ENCRYPT: ${sender} has accepted your encrypted channel request`);
-            this.confirm_key_exchange(txmsg.bob, sender);  
+            this.confirm_key_exchange(txmsg.bob, sender); 
+
           }else{
             console.log("ENCRYPT: You have accepted an encrypted channel request from " + sender);
           }          
@@ -358,6 +360,7 @@ class Encrypt extends ModTemplate {
       bob_privatekey.toString("hex"),
       bob_secret.toString("hex")
     );
+    this.app.keychain.addWatchedPublicKey(remote_address);
     this.sendEvent("encrypt-key-exchange-confirm", { members: [remote_address, our_address] });
     
   }
@@ -379,6 +382,13 @@ class Encrypt extends ModTemplate {
     }
 
     siteMessage(`Successfully added ${this.app.keychain.returnUsername(sender, 8)} as a friend`, 5000);
+
+    let msg = `Your wallet has generated new secret keys to keep correspondence with your new contact secure. 
+    Unless you backup your wallet you may lose these keys. Do you want help backing up your wallet?`;
+    this.app.connection.emit(
+      'saito-backup-render-request',
+      {msg: msg, title: 'NEW FRIEND ADDED'}
+    );
  
     let alice_publicKey = Buffer.from(senderkeydata.aes_publicKey, "hex");
     let alice_privatekey = Buffer.from(senderkeydata.aes_privatekey, "hex");
@@ -390,8 +400,10 @@ class Encrypt extends ModTemplate {
       sender,
       alice_publicKey.toString("hex"),
       alice_privatekey.toString("hex"),
-      alice_secret.toString("hex")
+      alice_secret.toString("hex"),
+    
     );
+    this.app.keychain.addWatchedPublicKey(sender)
 
     //
     //

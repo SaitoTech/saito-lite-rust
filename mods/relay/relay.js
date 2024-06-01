@@ -56,6 +56,10 @@ class Relay extends ModTemplate {
       }
     });
 
+    app.connection.on('relay-notify-peer', (publicKeys, data) => {
+      this.sendRelayMessage(publicKeys, "notify", data); 
+    });
+
   }
 
 
@@ -190,6 +194,18 @@ class Relay extends ModTemplate {
           return 0;
         }
 
+        if (message.request === "notify"){
+
+          /*
+            Should probably add processing in modtemplate and gametemplate (and double check that all mods
+            include super.handlePeerTransaction)... but for now, the relay-notification event is only picked 
+            up by the gametemplate so we can get away with this...
+          */
+
+          app.connection.emit("relay-notification", message.data.module, message.data.notification);
+
+          //return app.modules.handlePeerTransaction(relayed_tx, peer, mycallback);
+        }
       }
 
       if (message.request === "relay peer message") {

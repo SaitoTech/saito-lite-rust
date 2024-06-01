@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
 	default_fee = 0;
 
-	version = 5.629;
+	version = 5.632;
 
 	nolan_per_saito = 100000000;
 
@@ -410,6 +410,24 @@ export default class Wallet extends SaitoWallet {
 
 		this.app.options.invites = [];
 		this.app.options.games = [];
+
+		// wallet backup
+		if (!this.app.options.wallet) {
+			this.app.options.wallet = {};
+		}
+		this.app.options.wallet.backup_required = 0;
+		this.app.options.wallet.backup_required_msg = 0;
+
+		// in-game crypto transfer preferences
+		if (!this.app.options.gameprefs) {
+			this.app.options.gameprefs = {};
+		}
+
+		this.app.options.gameprefs.crypto_transfers_inbound_approved = 1;
+		this.app.options.gameprefs.crypto_transfers_outbound_approved = 1;
+		this.app.options.gameprefs.crypto_transfers_inbound_trusted = 0;
+		this.app.options.gameprefs.crypto_transfers_outbound_trusted = 1;
+
 
 		await this.saveWallet();
 
@@ -1124,6 +1142,13 @@ export default class Wallet extends SaitoWallet {
 	async backupWallet() {
 		try {
 			if (this.app.BROWSER == 1) {
+
+				if (this.app.options.wallet.backup_required_msg) {
+					this.app.options.wallet.backup_required_msg = 0;
+					await this.saveWallet();
+					this.app.connection.emit('saito-header-update-message', {});
+				}
+
 				//let content = JSON.stringify(this.app.options);
 				let pom = document.createElement('a');
 				pom.setAttribute('type', 'hidden');

@@ -93,7 +93,8 @@ class Settlers extends GameTemplate {
 		};
 		this.largest = {
 			name: 'Largest Army',
-			img: `<img src="/settlers/img/icons/knight.png"/>`
+			img: `<img src="/settlers/img/icons/knight.png"/>`,
+			value: 2,
 		};
 		this.resources = [
 			{
@@ -341,12 +342,14 @@ class Settlers extends GameTemplate {
 			has_cards = true;
 		}
 
-		this.app.browser.prependElementToSelector(
-			`<div class="mobile"><div class="trade">trade</div><div class="cards ${
-				has_cards ? '' : 'hidden'
-			}">cards</div><div class="score">score</div></div>`,
-			'.hud-body'
-		);
+		if (!document.querySelector(".mobile")) {
+			this.app.browser.prependElementToSelector(
+				`<div class="mobile"><div class="trade">trade</div><div class="cards ${
+					has_cards ? '' : 'hidden'
+				}">cards</div><div class="score">score</div></div>`,
+				'.hud-body'
+			);
+		}
 
 		//
 		// hook up interactivity
@@ -536,6 +539,7 @@ class Settlers extends GameTemplate {
 
 			this.longest.value = 1;
 			this.longest.min = 6;
+			this.largest.value = 1;
 		}
 
 		this.game.playerNames = [];
@@ -567,6 +571,7 @@ class Settlers extends GameTemplate {
 		state.placedCity = 'hello world'; //a slight hack for game iniitalization
 		state.welcome = 0;
 		state.hasRolled = false;
+		state.threatened = [];
 
 		for (let i = 0; i < this.game.players.length; i++) {
 			state.ads.push({});
@@ -591,6 +596,10 @@ class Settlers extends GameTemplate {
 		stats.dicePlayer = {};
 
 		stats.production = {};
+		stats.discarded = {};
+		stats.robbed = {};
+		stats.blocked = {};
+
 		for (let i = 2; i <= 12; i++) {
 			stats.dice[i] = 0;
 
@@ -604,7 +613,14 @@ class Settlers extends GameTemplate {
 			let array = new Array(this.game.players.length);
 			array.fill(0);
 			stats.production[r] = array;
+
+			stats.discarded[r] = array.slice();
+			stats.robbed[r] = array.slice();
+			stats.blocked[r] = array.slice();
 		}
+		
+		stats.history = [];
+
 		return stats;
 	}
 

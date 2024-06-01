@@ -39,16 +39,6 @@
     this.menu.addMenuOption("game-game", "Game");
 
     this.menu.addSubMenuOption("game-game", {
-      text : "Marital Status",
-      id : "game-marriage",
-      class : "game-marriage",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	game_mod.marriage_overlay.render();
-      },
-    });
-
-    this.menu.addSubMenuOption("game-game", {
       text : "About H.I.S.",
       id : "game-about",
       class : "game-about",
@@ -345,7 +335,6 @@ if (this.game.players.length > 2) {
 }
 
 
-
 /****
     this.menu.addSubMenuOption("game-cards", {
       text : "My Hand",
@@ -440,7 +429,6 @@ if (this.game.players.length > 2) {
         game_mod.displayDebaters();
       }
     });
-/***
     this.menu.addSubMenuOption("game-info", {
       text : "Explorers",
       id : "game-explorers",
@@ -459,7 +447,6 @@ if (this.game.players.length > 2) {
         game_mod.displayConquistadors();
       }
     });
-***/
 
     this.menu.addMenuOption("game-factions", "Factions");
     this.menu.addSubMenuOption("game-factions", {

@@ -95,6 +95,18 @@ class MixinModule extends CryptoModule {
 					if (Object.keys(res).length > 0) {
 						await this.mixin.createDepositAddress(this_self.asset_id);
 						super.activate();
+
+						this_self.app.options.wallet.backup_required = 1;
+						this_self.app.wallet.saveWallet();
+						
+						let msg = `Your wallet has added new crypto keys. 
+						Unless you backup your wallet, you may lose these keys. 
+						Do you want help backing up your wallet?`;
+						this.app.connection.emit(
+							'saito-backup-render-request',
+							{msg: msg, title: 'BACKUP YOUR WALLET'}
+						);
+
 					} else {
 						salert('Having problem generating key for '+' '+this_self.ticker);
 						await this.app.wallet.setPreferredCrypto('SAITO', 1);
@@ -150,15 +162,15 @@ class MixinModule extends CryptoModule {
 	 * @return {Number}
 	 */
 	async returnBalance() {
-		console.log('Query balance for ' + this.ticker);
+		//console.log('Query balance for ' + this.ticker);
 		if (
 			new Date().getTime() - this.balance_timestamp_last_fetched >
 			this.minimum_delay_between_balance_queries
 		) {
-			console.log(
-				'Return Balance: ',
-				this.balance_timestamp_last_fetched
-			);
+			// console.log(
+			// 	'Return Balance: ',
+			// 	this.balance_timestamp_last_fetched
+			// );
 			this.balance_timestamp_last_fetched = new Date().getTime();
 			await this.mixin.fetchSafeUtxoBalance(this.asset_id);
 
@@ -421,8 +433,8 @@ class MixinModule extends CryptoModule {
 	}
 
 
-	returnNetworkFee(asset_id) {
-		return this.mixin.checkNetworkFee(asset_id);
+	returnNetworkInfo() {
+		return this.mixin.returnNetworkInfo(this.asset_id);
 	}
 
 
@@ -624,6 +636,11 @@ class MixinModule extends CryptoModule {
 		return await this.mixin.fetchSafeTransaction(transaction_id, function(res){
 			console.log('inside miximodule fetchTransaction ///', res);
 		});
+	}
+
+	async fetchPendingDeposits(callback = null) {
+
+		return await this.mixin.fetchPendingDeposits(this.asset_id, this.destination, callback);
 	}
 
 }

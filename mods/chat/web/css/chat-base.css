@@ -85,7 +85,7 @@
 
 .chat-static.chat-popup .saito-notification-dot {
 	bottom: 7rem;
-	right: calc(50% - 28.5rem);
+	right: max(calc(50% - 28.5rem), 1rem);
 	width: 4rem;
 	height: 4rem;
 }
@@ -112,6 +112,7 @@
 
 	.chat-main-container .chat-header, .chat-main-container .chat-header-info {
 		visibility: hidden;
+		min-height: unset;
 		height: 1rem;
 	}
 

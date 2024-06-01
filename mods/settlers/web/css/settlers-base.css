@@ -683,7 +683,7 @@ input[type='checkbox'] {
 }
 
 .button {
-	min-width: 90px;
+	min-width: 120px;
 	text-align: center;
 }
 
@@ -915,10 +915,9 @@ ul.horizontal_list li.iconoption {
 	align-items: center;
 	flex-wrap: wrap;
 	width: max-content;
-	margin-right: auto;
-	margin-left: auto;
 	font-size: 20px;
 	padding: 8px;
+	gap: 1rem;
 }
 
 .player-notice ul {
@@ -1024,6 +1023,8 @@ ul.horizontal_list li.iconoption {
 
 	.player-notice {
 		font-size: 18px;
+		max-width: 100%;
+		flex-wrap: unset;
 	}
 
 	.saitoa {

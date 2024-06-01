@@ -5,8 +5,8 @@ module.exports = (app, mod) => {
 				<img src="/mahjong/img/arcade/arcade-banner-background.png" />
 				<div id="status" class="status hidable"></div>
 				<div id="controls" class="controls"></div>
-				<div id="tiles" class="tiles hidable"></div>
 			</div>
+			<div id="tiles" class="tiles"></div>
 
 			<div class="mahj-rowbox" id="mahj-rowbox">
 				<div class="mahjong-backdrop"></div>

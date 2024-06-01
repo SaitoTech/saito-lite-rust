@@ -87,6 +87,13 @@ class FactionOverlay {
 					'.faction_sheet_ruler'
 				);
 			}
+
+
+              his_self.game.state.henry_viii_healthy_edward = 1;
+              his_self.game.state.henry_viii_sickly_edward = 0;
+              his_self.game.state.henry_viii_add_elizabeth = 0;
+
+
 		}
 		// FRANCE
 		if (his_self.factions[faction].key === 'france') {
@@ -351,6 +358,28 @@ class FactionOverlay {
 					'.faction_sheet_vp'
 				);
 			}
+		}
+
+
+		//
+		// Edward and Elizabeth
+		//
+	  	if (his_self.factions[faction].key === "england") {
+		  if (his_self.game.state.henry_viii_healthy_edward == 1 || his_self.game.state.henry_viii_sickly_edward == 1) {
+		    let html = `<div class="debaters-tile" data-key="" data-id="" style="background-image: url(/his/img/tiles/vp/Edward.svg);"></div>`;
+		    this.app.browser.addElementToSelector(
+			html,
+			'.faction_sheet_vp'
+		    );
+		  } else {
+		    if (his_self.game.state.henry_viii_add_elizabeth > 0) {
+		      let html = `<div class="debaters-tile" data-key="" data-id="" style="background-image: url(/his/img/tiles/vp/Elizabeth.svg);"></div>`;
+		      this.app.browser.addElementToSelector(
+			html,
+			'.faction_sheet_vp'
+		      );
+		    }	    
+		  }	    
 		}
 
 

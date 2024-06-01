@@ -7,6 +7,7 @@ class DreamSpace{
 		this.mod = mod;
 		this.container = container;
 		this.video = new VideoBox(app, mod, "presentation", "video-preview");
+		this.video.display_wave_form = true;
 		this.startTime = new Date().getTime();
 		this.timer_interval = null;
 	}
@@ -39,7 +40,6 @@ class DreamSpace{
 	attachEvents(){
 
 	}
-
 
 	startTimer() {
 		if (this.timer_interval) {

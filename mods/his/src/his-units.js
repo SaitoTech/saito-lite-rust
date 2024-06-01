@@ -224,7 +224,7 @@
 
   returnConquistadorName(key) {
     if (this.conquistadors[key]) { return this.conquistadors[key].name; }
-    return "Conquerer";
+    return "Conquistador";
   }
   returnExplorerName(key) {
     if (key == "Cabot" || key == "cabot") { return "Sebastian Cabot"; }
@@ -288,6 +288,15 @@
       }
     }
 
+    for (let i = 0; i < this.game.state.players_info.length; i++) {
+      let c = this.game.state.players_info[i].captured;
+      for (let ii = 0; ii < c.length; ii++) {
+        if (c[ii].leader == leader) {
+	  c.splice(ii, 1);
+	}
+      }
+    }
+
   }
 
 
@@ -335,6 +344,11 @@
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.reformers[reformer]);
     space.units[faction][space.units[faction].length-1].owner = faction; 
+  }
+
+  returnDebaterName(key) {
+    if (this.debaters[key]) { return this.debaters[key].name; }
+    return "Debater";
   }
 
   removeDebater(faction, debater) {

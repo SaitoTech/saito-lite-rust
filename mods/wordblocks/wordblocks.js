@@ -27,6 +27,9 @@ class Wordblocks extends GameTemplate {
 		this.letters = {};
 		this.grace_window = 10;
 
+		//All Wordblocks games will be async enabled
+		this.async_dealing = 1; 
+
 		this.tilesToHighlight = [];
 		this.moves = [];
 		this.firstmove = 1;
@@ -300,20 +303,21 @@ class Wordblocks extends GameTemplate {
 		if (this.game.queue.length == 0){
 			if (this.game.target == this.game.player) {
 				this.updateStatusWithTiles('YOUR GO! ' + this.defaultMsg);
-				if (this.game.queue.length == 0) {
-					this.playerTurn();
-				}
+				this.playerTurn();
 				this.enableEvents();
 			} else {
 				this.stopClock();
-				this.updateStatusWithTiles(
-					`Waiting for ${
-						this.game.playerNames[this.game.target - 1]
-					} to move.`
-				);
+				this.updateStatusWithTiles(`Waiting on ${this.game.playerNames[this.game.target - 1]}`);
 			}
 		}
+
 		this.updateActivePlayerUserline(this.game.target);
+		this.playerbox.setActive(this.game.target);
+
+		if (this.game.target == this.game.player) {
+			this.playerbox.alertPlayer(this.game.target, 'flash');
+		}
+
 
 		if (this.game.players.length > 2) {
 			this.grace_window = this.game.players.length * 8;
@@ -1140,9 +1144,6 @@ class Wordblocks extends GameTemplate {
 					score: myscore
 				});
 				this.updateLog(`You played ${fullword} for ${myscore} points.`);
-				this.addMove(
-					`place\t${word}\t${this.game.player}\t${x}\t${y}\t${orientation}\t${fullword}`
-				);
 				//
 				// discard tiles
 				// (not really a discard, just changing flags on the board spaces to enable scoring??)
@@ -1153,6 +1154,10 @@ class Wordblocks extends GameTemplate {
 				this.finalizeWord(word, orientation, x, y); //update board
 				this.addScoreToPlayer(this.game.player, myscore);
 				this.drawTiles();
+
+				this.addMove(
+					`place\t${word}\t${this.game.player}\t${x}\t${y}\t${orientation}\t${fullword}`
+				);
 
 				if (this.checkForEndGame() == 1) {
 					this.prependMove('gameover');
@@ -1194,8 +1199,8 @@ class Wordblocks extends GameTemplate {
 	discardAndDrawTiles(tiles) {
 		salert('Tossed: ' + tiles);
 		this.removeTilesFromHand(tiles);
-		this.addMove('discard_tiles\t' + this.game.player + '\t' + tiles);
 		this.drawTiles();
+		this.addMove('discard_tiles\t' + this.game.player + '\t' + tiles);
 		this.endTurn();
 	}
 
@@ -2312,7 +2317,6 @@ class Wordblocks extends GameTemplate {
 						: `${this.game.playerNames[player - 1]} is`;
 				this.updateLog(`${name} down to ${tileCt} tiles`);
 
-				return 1;
 			}
 
 			//
@@ -2329,6 +2333,7 @@ class Wordblocks extends GameTemplate {
 
 				//Set up next player's turn
 				this.game.target = this.returnNextPlayer(player);
+				console.log("Update target: ", this.game.target);
 
 				//Don't process placement until user is in game
 				if (!this.browser_active) {
@@ -2373,35 +2378,16 @@ class Wordblocks extends GameTemplate {
 				) {
 					return 1;
 				}
-
-				if (this.game.player == this.game.target) {
-					this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
-					this.playerTurn();
-					this.enableEvents();
-				} else {
-					this.stopClock(); //Make sure clock didn't start again on browser refresh
-					this.updateStatusWithTiles(
-						`${this.game.playerNames[this.game.target - 1]}'s turn`
-					);
-				}
-
-				this.updateActivePlayerUserline(this.game.target);
-				this.playerbox.setActive(this.game.target);
-
-				if (this.game.target == this.game.player) {
-					this.playerbox.alertPlayer(this.game.target, 'flash');
-				}
-
-				//Normally, we would return 0 to wait for the player to make their turn,
-				//but this game keeps a zero queue, so it will stop when the queue is emptied
-				//and at endgame we have a second command that adds to the playerbox log
-				return 1;
 			}
 
 			if (mv[0] === 'discard_tiles') {
 
-				this.game.target = this.returnNextPlayer(player);
+				let player = parseInt(mv[1]);
+				let discardedTiles = mv[2]; //string
 
+				this.game.target = this.returnNextPlayer(player);
+				console.log("Update target: ", this.game.target);
+				
 				if (!this.browser_active) {
 					if (this.game.player == this.game.target) {
 						this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
@@ -2412,8 +2398,6 @@ class Wordblocks extends GameTemplate {
 
 				this.game.queue.splice(this.game.queue.length - 1, 1);
 
-				let player = parseInt(mv[1]);
-				let discardedTiles = mv[2]; //string
 
 				let msg =
 					discardedTiles.length > 0
@@ -2457,7 +2441,11 @@ class Wordblocks extends GameTemplate {
 				) {
 					return 1;
 				}
+			}
+		}
 
+		console.log("After Game Loop!");
+		// Set UI here...
 				if (this.game.player == this.game.target) {
 					this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
 					this.playerTurn();
@@ -2469,13 +2457,15 @@ class Wordblocks extends GameTemplate {
 					);
 				}
 
-				this.playerbox.setInactive(this.game.target);
-				this.playerbox.alertPlayer(this.game.target, 'flash');
-				return 1;
-			}
-		}
+				this.updateActivePlayerUserline(this.game.target);
+				this.playerbox.setActive(this.game.target);
 
-		return 0;
+				if (this.game.target == this.game.player) {
+					this.playerbox.alertPlayer(this.game.target, 'flash');
+				}
+
+
+		return 1;
 	}
 
 	checkForEndGame() {

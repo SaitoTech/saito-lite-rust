@@ -234,10 +234,47 @@
 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let cf = this.returnFactionControllingSpace(space);
+
+    //
     // we can move into spaces controlled by powers we are at war with
+    //
     if (this.isMinorPower(cf)) { cf = this.returnControllingPower(cf); }
     if (cf == faction) { return 1; }
-    if (this.areEnemies(faction, cf)) { return 1; }
+
+    //
+    // if we're enemies with the faction that controls the space
+    //
+    if (this.areEnemies(faction, cf)) { 
+
+      //
+      // ... we can normally move into this space, unless there are besieging units
+      // with whom we are not allied. so check with each faction
+      //
+      for (let f in space.units) {
+
+	//
+	// ... if this faction is an enemy of the controlling space
+	//
+	if (this.areEnemies(f, cf)) {
+	
+	  //
+	  // ... and it has units in the space
+	  //
+	  let fluis = this.returnFactionLandUnitsInSpace(f, space.key);
+	  if (fluis > 0) {
+
+	    //
+	    // ... then we need to be allies with them to move in
+	    //
+	    if (!this.areAllies(f, faction)) { return 0; }
+
+	  }
+	}
+      }
+
+      return 1;
+
+    }
     if (this.areAllies(faction, cf)) { return 1; }
     if (this.isSpaceIndependent(space.key)) {
 
@@ -608,11 +645,14 @@
 
       for (let f in sea.units) {
 
-	// faction at sea is friendly to port space controller
 	if (this.isSpaceFriendly(space, f)) {
 	  for (let i = 0; i < sea.units[f].length; i++) {
 	    if (sea.units[f][i].type == "squadron") {
-	      number_of_squadrons_at_sea++;
+
+	      //
+	      // any squadrons in ANY space mean not-assaultable
+	      //
+	      number_of_squadrons_at_sea += 10000;
 	    }
 	  }
 	}
@@ -1976,53 +2016,11 @@ try {
         let owner = this.game.spaces[key].political;
         if (owner == "") { owner = this.game.spaces[key].home; }
         owner = this.returnControllingPower(owner);
-        if (owner == this.factions[faction].key) {
+        if (owner == faction) {
           controlled_keys++;
         }
       }
     }
-
-/********* TODO - remove if no problems as OWNER check above 
-    //
-    // minor allied powers
-    //
-    if (faction === this.returnAllyOfMinorPower("genoa")) {
-      for (let key in this.game.spaces) {
-        if (this.game.spaces[key].type === "key") {
-          if (this.game.spaces[key].political === "genoa" || (this.game.spaces[key].political === "" && this.game.spaces[key].home === "genoa")) {
-            controlled_keys++;
-          }
-        }
-      }
-    }
-    if (faction === this.returnAllyOfMinorPower("scotland")) {
-      for (let key in this.game.spaces) {
-        if (this.game.spaces[key].type === "key") {
-          if (this.game.spaces[key].political === "scotland" || (this.game.spaces[key].political === "" && this.game.spaces[key].home === "scotland")) {
-            controlled_keys++;
-          }
-        }
-      }
-    }
-    if (faction === this.returnAllyOfMinorPower("hungary")) {
-      for (let key in this.game.spaces) {
-        if (this.game.spaces[key].type === "key") {
-          if (this.game.spaces[key].political === "hungary" || (this.game.spaces[key].political === "" && this.game.spaces[key].home === "hungary")) {
-            controlled_keys++;
-          }
-        }
-      }
-    }
-    if (faction === this.returnAllyOfMinorPower("venice")) {
-      for (let key in this.game.spaces) {
-        if (this.game.spaces[key].type === "key") {
-          if (this.game.spaces[key].political === "venice" || (this.game.spaces[key].political === "" && this.game.spaces[key].home === "venice")) {
-            controlled_keys++;
-          }
-        }
-      }
-    }
-***************/
 
     return controlled_keys;
   }
@@ -2166,7 +2164,7 @@ try {
       left : 3750 ,
       name : "Ionian Sea" ,
       ports : ["malta" , "messina" , "coron", "lepanto" , "corfu" , "taranto" ] ,
-      neighbours : ["black","aegean","adriatic"] ,
+      neighbours : ["barbary","africa","aegean","adriatic"] ,
     }
     seas['adriatic'] = {
       top : 1790 ,
@@ -2541,7 +2539,7 @@ try {
       political: "france",
       religion: "catholic",
       ports: ["biscay"],
-      neighbours: ["navarre", "nantes","tours","limoges"],
+      neighbours: ["toulouse", "navarre", "nantes","tours","limoges"],
       pass: ["navarre"],
       language: "french",
       type: "key"
@@ -3223,7 +3221,8 @@ try {
       political: "",
       religion: "other",
       ports: ["aegean"],
-      neighbours: ["larissa","edirne"],
+      neighbours: ["sofia","larissa","edirne"],
+      pass: ["sofia"],
       language: "other",
       type: "key"
     }
@@ -3310,8 +3309,8 @@ try {
       home: "ottoman",
       political: "",
       religion: "other",
-      neighbours: ["nicopolis","nezh","edirne"],
-      pass: ["nicopolis"],
+      neighbours: ["salonika","nicopolis","nezh","edirne"],
+      pass: ["salonika","nicopolis"],
       language: "other",
       type: "town"
     }

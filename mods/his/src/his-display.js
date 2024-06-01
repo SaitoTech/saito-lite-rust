@@ -7,18 +7,9 @@
     this.welcome_overlay.pullHudOverOverlay();
     this.welcome_overlay.pushHudUnderOverlay();
 
-
-     
-    // is already showing
-    let ias = false;
-    if (document.querySelector(".welcome-overlay")) {
-      let lmv = this.game.queue[this.game.queue.length-1].split("\t");
-      if (lmv[0] == "ACKNOWLEDGE") {
-        ias = true;
-      }
+    if (document.querySelector(".winter")) {
+	this.welcome_overlay.overlay.zIndex = this.winter_overlay.overlay.zIndex + 2;
     }
-
-
 
     if (c === "depleted") {
         this.welcome_overlay.renderCustom({
@@ -126,154 +117,139 @@
     if (c === "lost-at-sea") {
       this.welcome_overlay.renderCustom({
         title : "New World Losses" ,
-        text : msg + " exploration is lost at sea..." ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/lost_at_sea.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} mission is lost at sea`);
       return;
     }
 
     if (c === "killed") {
       this.welcome_overlay.renderCustom({
         title : "New World Losses" ,
-        text : msg + " expedition killed by natives" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/killed.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} expedition killed by natives`);
       return;
     }
 
     if (c === "stlawrence") {
       this.welcome_overlay.renderCustom({
         title : "New World Discovery" ,
-        text : msg + " discovers the St. Lawrence River" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers St. Lawrence River`);
       return;
     }
 
     if (c === "mississippi") {
       this.welcome_overlay.renderCustom({
         title : "New World Discovery" ,
-        text : msg + " discovers the Mississippi River" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/mississippi.jpg',
 	styles : [{ key : "backgroundPosition" , val : "center" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Mississippi River`);
       return;
     }
 
     if (c === "greatlakes") {
       this.welcome_overlay.renderCustom({
         title : "New World Discovery" ,
-        text : msg + " discovers the Great Lakes" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/greatlakes.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Great Lakes`);
       return;
     }
 
     if (c === "amazon") {
       this.welcome_overlay.renderCustom({
         title : "New World Discovery" ,
-        text : msg + " discovers the Amazon River" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/amazon3.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Amazon River`);
       return;
     }
 
     if (c === "pacificstrait") {
       this.welcome_overlay.renderCustom({
         title : "New World Discovery" ,
-        text : msg + " discovers the Pacific Strait" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/pacificstrait.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} discovers the Pacific Strait`);
       return;
     }
 
     if (c === "circumnavigation") {
-      if (ias) {
-        this.game.queue.splice(this.game.queue.length-2, 0 `display_custom_overlay\tcircumnavigation\t${msg}\tall`);
-	return;
-      } else {
-        this.welcome_overlay.renderCustom({
-          title : "New World Achievement" ,
-          text : msg + " circumnavigates the globe" ,
-          img : '/his/img/backgrounds/newworld/circumnavigation.jpg',
-        });
-        this.game.queue.push(`ACKNOWLEDGE\t${msg} circumnavigates the globe`);
-        return;
-      }
+      this.welcome_overlay.renderCustom({
+        title : "New World Achievement" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/circumnavigation.jpg',
+      });
+      return;
     }
 
     if (c === "aztec") {
       this.welcome_overlay.renderCustom({
         title : "New World Conquest" ,
-        text : msg + " conquers the Aztec" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/aztec.jpg',
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} conquers the Aztec`);
       return;
     }
 
     if (c === "maya") {
       this.welcome_overlay.renderCustom({
         title : "New World Conquest" ,
-        text : msg + " conquers the Maya" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/inca.jpg',
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} conquers the Maya`);
       return;
     }
 
     if (c === "inca") {
       this.welcome_overlay.renderCustom({
         title : "New World Conquest" ,
-        text : msg + " conquers the Inca" ,
+        text : msg ,
         img : '/his/img/backgrounds/newworld/inca2.jpg',
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${msg} conquers the Inca`);
       return;
     }
 
     if (c === "battle-of-mohacs") {
+      let t = "The Ottoman subjugation of Hungary-Bohemia forces the Hapsburg Empire to intervene on the side of Christian Europe and in pre-emptive defense of Vienna";
+      if (this.areEnemies("hapsburg", "ottoman")) {  
+      t = "The Ottoman subjugation of Hungary-Bohemia prompts a Hapsburg-Hungarian Alliance in defense of Christian Europe and th city of Vienna";
+      }
       this.welcome_overlay.renderCustom({
         title : "War between the Hapsburg and Ottoman Empires" ,
-        text : "The Ottoman subjugation of Hungary-Bohemia forces the Hapsburg Empire to intervene on the side of Christian Europe and in pre-emptive defense of Vienna" ,
+	text : t,
         img : '/his/img/backgrounds/battle-of-mohacs.jpeg',
       });
-      this.game.queue.push(`ACKNOWLEDGE\tThe Defeat of Hungary: the Hapsburg and Ottoman Empires are now At War`);
       return;
     }
 
     if (c === "colonize") {
       this.welcome_overlay.renderCustom({
-        title : this.returnFactionName(msg) + " founds a Colony",
+        title : msg ,
         text : "Colonies earn factions bonus cards in the New World Phase",
         img : '/his/img/backgrounds/move/colonize.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} attempts to found a Colony`);
       return;
     }
 
     if (c === "conquest") {
       this.welcome_overlay.renderCustom({
-        title : this.returnFactionName(msg) + " launches Conquest Expedition",
+        title : msg ,
         text : "Conquests earn factions Victory Points and bonus cards in the New World Phase",
         img : '/his/img/backgrounds/newworld/inca2.jpg',
 	styles : [{ key : "backgroundPosition" , val : "center" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} attempts Conquest Expedition`);
       return;
     }
 
@@ -309,12 +285,11 @@
 
     if (c === "explore") {
       this.welcome_overlay.renderCustom({
-        title : this.returnFactionName(msg) + " launches Exploration",
+        title : msg,
         text : "Explorations earn Victory Points for strategic discoveries in the New World Phase",
         img : '/his/img/backgrounds/move/explore.jpg',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
-      this.game.queue.push(`ACKNOWLEDGE\t${this.returnFactionName(msg)} launches New World Exploration`);
       return;
     }
 
@@ -338,8 +313,6 @@
           img : img,
           card : card,
         });
-        this.game.queue.push(`ACKNOWLEDGE\t${msg}`);
-
       }
     }
 
@@ -473,6 +446,14 @@
     this.debaters_overlay.render();
   }
 
+  displayExplorers() {
+    this.explorers_overlay.render();
+  }
+
+  displayConquistadors() {
+    this.conquistadors_overlay.render();
+  }
+
   displayPersia() {
     let obj = document.querySelector("#persia");
     obj.style.display = "block";
@@ -498,38 +479,6 @@
     obj.style.display = "none";
   }
 
-  displayExplorers() {
-
-    let html = `<div class="personage_overlay" id="personage_overlay">`;
-    let f = ["hapsburg","france","england"];
-    for (let i = 0; i < f.length; i++) {
-      let x = this.returnAvailableExplorers(f[i]);
-      for (let z = 0; z < x.length; z++) {
-        html += `	<div class="personage_tile${z}" data-id="${this.explorers[x[z]].type}" style="background-image:url('${this.explorers[x[z]].img}')"></div>`;
-      }
-    }
-    html += `</div>`;
-
-    this.overlay.showOverlay(html);
-
-  }
-
-  displayConquistadors() {
-
-    let html = `<div class="personage_overlay" id="personage_overlay">`;
-    let f = ["hapsburg","france","england"];
-    for (let i = 0; i < f.length; i++) {
-      let x = this.returnAvailableConquistadors(f[i]);
-      for (let z = 0; z < x.length; z++) {
-        html += `	<div class="personage_tile${z}" data-id="${this.conquistadors[x[z]].type}" style="background-image:url('${this.conquistadors[x[z]].img}')"></div>`;
-      }
-    }
-    html += `</div>`;
-
-    this.overlay.showOverlay(html);
-
-  }
-
   displayPregnancyChart() {
 
     let his_self = this;
@@ -538,6 +487,8 @@
       el.classList.remove("active");
     });
 
+    if (!his_self.game.state.henry_viii_rolls) { his_self.game.state.henry_viii_rolls = []; }
+    if (!his_self.game.state.henry_viii_wives) { his_self.game.state.henry_viii_wives = []; }
     for (let i = 0; i < his_self.game.state.henry_viii_wives.length && i < his_self.game.state.henry_viii_rolls.length; i++) {
 
       let dd = his_self.game.state.henry_viii_rolls[i];

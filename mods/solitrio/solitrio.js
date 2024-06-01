@@ -1,6 +1,6 @@
 const OnePlayerGameTemplate = require('../../lib/templates/oneplayer-gametemplate');
 const SolitrioGameRulesTemplate = require('./lib/solitrio-game-rules.template');
-const SolitrioGameOptionsTemplate = require('./lib/solitrio-game-options.template');
+const SolitrioGameOptions = require('./lib/solitrio-game-options');
 const htmlTemplate = require('./lib/game-html.template');
 
 //////////////////
@@ -25,10 +25,20 @@ class Solitrio extends OnePlayerGameTemplate {
 		return SolitrioGameRulesTemplate(this.app, this);
 	}
 
-	//Single player games don't allow game-creation and options prior to join
-	returnAdvancedOptions() {
-		return SolitrioGameOptionsTemplate(this.app, this);
-	}
+
+	  hasSettings() {
+	    return true;
+	  }
+
+	  loadSettings(container = null) {
+	    if (!container){
+	      this.overlay.show(`<div class="module-settings-overlay"><h2>Solitrio Settings</h2></div>`);
+	      container = ".module-settings-overlay";
+	    }
+	    let as = new SolitrioGameOptions(this.app, this, container);
+	    as.render();
+	  }
+
 
 	initializeGame(game_id) {
 		console.log('SET WITH GAMEID: ' + game_id);
@@ -100,43 +110,14 @@ class Solitrio extends OnePlayerGameTemplate {
 			}
 		});
 		this.menu.addSubMenuOption('game-game', {
-			text: 'Play Mode',
-			id: 'game-play',
-			class: 'game-play',
-			callback: null
-		});
-
-		this.menu.addSubMenuOption('game-play', {
-			text: `Auto ${this.game.options.play_mode == 'auto' ? '✔' : ''}`,
-			id: 'game-confirm-newbie',
-			class: 'game-confirm-newbie',
-			callback: function (app, game_mod) {
-				game_mod.game.options['play_mode'] = 'auto';
-				game_mod.attachEventsToBoard(); //change the click style
-				try {
-					document.querySelector('#game-confirm-newbie').textContent =
-						'Auto ✔';
-					document.querySelector('#game-confirm-expert').textContent =
-						'Manual';
-				} catch (err) {}
+			text: 'Settings',
+			id: 'game-settings',
+			class: 'game-settings',
+			callback: function(app, game_mod){
+				game_mod.loadSettings();
 			}
 		});
 
-		this.menu.addSubMenuOption('game-play', {
-			text: `Manual ${this.game.options.play_mode == 'auto' ? '' : '✔'}`,
-			id: 'game-confirm-expert',
-			class: 'game-confirm-expert',
-			callback: function (app, game_mod) {
-				game_mod.game.options['play_mode'] = 'manual';
-				game_mod.attachEventsToBoard(); //change the click style
-				try {
-					document.querySelector('#game-confirm-newbie').textContent =
-						'Auto';
-					document.querySelector('#game-confirm-expert').textContent =
-						'Manual ✔';
-				} catch (err) {}
-			}
-		});
 
 		this.menu.addSubMenuOption('game-game', {
 			text: 'How to Play',
@@ -154,12 +135,16 @@ class Solitrio extends OnePlayerGameTemplate {
 			class: 'game-stats',
 			callback: function (app, game_mod) {
 				game_mod.menu.hideSubMenus();
-				game_mod.overlay.show(game_mod.returnStatsHTML('Solitrio!'));
+				game_mod.overlay.show(game_mod.returnStatsHTML('Solitrio'));
 			}
 		});
 
 		this.menu.addChatMenu();
 		this.menu.render();
+
+		this.app.connection.on("solitrio-update-settings", ()=> {
+			this.attachEventsToBoard();
+		});
 	}
 
 	returnState() {
@@ -176,19 +161,19 @@ class Solitrio extends OnePlayerGameTemplate {
 
 		let winner = await this.scanBoard(false);
 		if (winner) {
-			this.displayModal('Congratulations!', 'You win the deal!');
 			this.prependMove('win');
 			this.endTurn();
 		} else if (!this.hasAvailableMoves()) {
 			if (this.game.state.recycles_remaining == 0) {
 				this.prependMove('lose');
-				let go = await sconfirm('No more moves. Start new Game?');
-				if (go) {
+				this.overlay.show(this.returnStatsHTML('Game over', 1), async ()=> {
 					await this.clearTable();
 					this.endTurn();
-				} else {
-					this.moves.shift();
-				}
+				});
+				$(".stats-menu-controls").html(`<button id="undo" class="option saito-button-primary">Go back</button><button id="quit" class="option saito-button-primary">Start Next Game</button>`);
+				this.attachHUDEvents();
+				$(".stats-menu-controls .saito-button-primary").on("click", () => { this.overlay.hide(); });
+
 			} else {
 				this.shuffleFlash();
 				$('#hint').css('display', 'none');
@@ -197,8 +182,9 @@ class Solitrio extends OnePlayerGameTemplate {
 	}
 
 	attachEventsToBoard() {
-		console.log(this.game.options);
-		if (this.game.options.play_mode == 'auto') {
+		let play_mode = this.loadGamePreference('solitrio-play-mode') || 'auto';
+		
+		if (play_mode == 'auto') {
 			this.attachEventsToBoardAutomatic();
 		} else {
 			this.attachEventsToBoardManual();
@@ -231,21 +217,29 @@ class Solitrio extends OnePlayerGameTemplate {
 
 				solitrio_self.untoggleCard(card);
 
+				//console.log(`Animate ${x}: ${card} -> ${slot}`);
 				solitrio_self.moveGameElement(
 					solitrio_self.copyGameElement(`#${card} img`),
 					`#${slot}`,
 					{
-						resize: 1,
+						/*resize: 1,*/
 						insert: 1,
 						callback: () => {
-							//console.log(`Animate ${x}: ${card} -> ${slot}`);
-							$('#' + card).toggleClass('empty');
-							$('#' + slot).toggleClass('empty');
+							$('#' + card).addClass('empty');
+							$('#' + slot).removeClass('empty');
 						}
 					},
 					() => {
+
 						$('.animated_elem').remove();
-						$('#' + card).html(
+
+						//Redraw whole board
+						//for (let i in solitrio_self.game.board) {
+						//	let divname = '#' + i;
+						//	$(divname).html(solitrio_self.returnCardImageHTML(solitrio_self.game.board[i]));
+						//}
+						
+						/*$('#' + card).html(
 							solitrio_self.returnCardImageHTML(
 								solitrio_self.game.board[card]
 							)
@@ -254,7 +248,7 @@ class Solitrio extends OnePlayerGameTemplate {
 							solitrio_self.returnCardImageHTML(
 								solitrio_self.game.board[slot]
 							)
-						);
+						);*/
 
 						solitrio_self.checkBoardStatus();
 					}
@@ -586,12 +580,15 @@ class Solitrio extends OnePlayerGameTemplate {
 			if (mv[0] === 'win') {
 				this.game.state.session.round++;
 				this.game.state.session.wins++;
-				this.newRound();
-				this.game.queue.push(
-					`ROUNDOVER\t${JSON.stringify([
-						this.publicKey
-					])}\troundover\t${JSON.stringify([])}`
-				);
+				this.overlay.show(this.returnStatsHTML('Congratulations!'), ()=> {
+					this.newRound();
+					this.game.queue.push(`ROUNDOVER\t${JSON.stringify([this.publicKey])}\troundover\t${JSON.stringify([])}`);
+					this.restartQueue();
+				});
+
+				$(".stats-menu-controls").html(`<button id="quit" class="option saito-button-primary">Start Next Game</button>`);
+				$(".stats-menu-controls .saito-button-primary").on("click", () => { this.overlay.close(); });
+				return 0;
 			}
 
 			if (mv[0] === 'lose') {
@@ -707,14 +704,16 @@ class Solitrio extends OnePlayerGameTemplate {
 					);
 					$(divname)
 						.children()
-						.fadeOut(10 * timeInterval);
+						.fadeOut(10 * timeInterval, function(){
+							$(this).addClass("copied_elem");
+						});
 				}
 			}
 
 			//
 			// We will provide hints automatically until you win at least twice
 			//
-			if (this.game.state.lifetime.wins < 1) {
+			if (this.game.state.lifetime.wins < 1 && timeInterval > 0) {
 				this.provideHint();
 			}
 		} catch (err) {}
@@ -724,7 +723,6 @@ class Solitrio extends OnePlayerGameTemplate {
 no status atm, but this is to update the hud
 */
 	displayUserInterface() {
-		let solitrio_self = this;
 
 		let html =
 			'<span>Arrange the cards from 2 to 10, one suit per row by moving cards into empty spaces. </span>';
@@ -749,6 +747,11 @@ no status atm, but this is to update the hud
 		option += '</li></ul>';
 
 		this.updateStatusWithOptions(html, option);
+		this.attachHUDEvents();
+	}
+
+	attachHUDEvents(){
+		let solitrio_self = this;
 
 		$('.option').off();
 		$('.option').on('click', async function () {
@@ -781,6 +784,7 @@ no status atm, but this is to update the hud
 				return;
 			}
 		});
+
 	}
 
 	returnCardImageHTML(name) {
@@ -914,7 +918,7 @@ no status atm, but this is to update the hud
 		for (let i in this.game.board) {
 			if (targets.includes(this.game.board[i])) {
 				$(`#${i}`).toggleClass('misclick');
-				await this.timeout(250);
+				await this.timeout(150);
 			}
 		}
 	}

@@ -62,7 +62,7 @@ module.exports = LimboSideBarTemplate = (app, mod, dreamer) => {
     		<div class="saito-modal-content">
 
 		    <div class="saito-profile-menu float">
-		      <div class="redsquare-profile-menu-tabs active">Listeners 
+		      <div class="redsquare-profile-menu-tabs active">Attendees 
 		      	<span>${ group.length > 0 ? `(${group.length})` : '' }</span>
 		      </div>
 		    </div>`;

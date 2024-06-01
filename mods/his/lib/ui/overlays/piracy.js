@@ -40,7 +40,6 @@ class PiracyOverlay {
                 this.visible = true;
                 this.overlay.show(PiracyTemplate());
 
-
 		let corsairs_destroyed = 0;
 
 		for (let i = 0; i < res.anti_piracy_rolls.length; i++) {

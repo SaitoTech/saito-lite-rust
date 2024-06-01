@@ -135,9 +135,6 @@ font imports
   --font-size-h4: 3.5rem;
   --font-size-h5: 2.5rem;
   --font-size-h6: 2rem;
-/*SHADOW SELECTION*/
-  --shadow-primary-button: var(--shadow-standard);
-  --shadow-chat-popup: none;
 /*TRANSITION SELECTION*/
   --transition-instant: none;
   --transition-short: 0.2s;
@@ -160,6 +157,8 @@ font imports
   --border-padding-small: 0.3rem;
   --border-padding-normal: 0.5rem;
   --border-padding-wide: 0.8rem;
+  --border-padding-ultra-wide: 1rem;
+  --border-padding-huge: 2rem;
   --border-padding-identicon-none: 0px;
   --border-padding-identicon-thin: 1px;
   --border-padding-identicon-thick: 2px;
@@ -175,6 +174,10 @@ font imports
 
 /*========== REDEFINED ELEMENTS ===========*/
 
+/*SHADOW SELECTION*/
+--shadow-primary-button: var(--shadow-standard);
+--shadow-chat-popup: none;
+--shadow-overlay: var(--shadow-standard);
 /*FONTS SECTION*/
 /* Quick Settings - Basic Font Colors */
   --font-color-primary: var(--color-tint-primary);  /* dark grey font color */
@@ -193,7 +196,7 @@ font imports
   --font-color-menu-hamburger: var(--font-color-white); /* hamburger icon itself */
   --font-color-menu-hamburger-midsection: var(--font-color-inverse);
   --font-color-header-menu: var(--font-color-primary);
-  --font-color-header-username: var(--font-color-white);
+  --font-color-header-msg: var(--font-color-white);
 /* Button Font Colors */
   --font-color-button-header-back: var(--font-color-white);
   --font-color-button-chat-popup-header: var(--font-color-heavy);
@@ -308,7 +311,8 @@ font imports
   --border-padding-sidebar-style: var(--border-padding-normal);
   --border-padding-style-leaderboard-ranking:; /* no override from arcade on main theme */
   --border-padding-identicon-style: var(--border-padding-identicon-none);
-/*thickness*/
+  --border-padding-overlay-post: var(--border-padding-ultra-wide);
+  /*thickness*/
   --border-thickness-general-dividers: var(--border-thickness-thin);
   --border-thickness-sidebar-menu: none;
   --border-thickness-modal-menu: var(--border-thickness-thin);
@@ -345,8 +349,9 @@ font imports
   --border-thickness-post-divider: var(--border-thickness-thin);
   --border-thickness-message-input: var(--border-thickness-medium);
   --border-thickness-overlay-input-area: var(--border-thickness-thin);
-  --border-thickness-overlay-menu: var(--border-thickness-thin);
+  --border-thickness-overlay-menu: none;
   --border-thickness-overlay-subform: var(--border-thickness-thin);
+  --border-thickness-overlay-post: none;
   --border-thickness-status-message: var(--border-thickness-medium);
   --border-thickness-selection-box: var(--border-thickness-medium);
   --border-thickness-form-input: var(--border-thickness-thin);
@@ -377,6 +382,7 @@ font imports
   --border-color-sidebar-menu: none;
   --border-color-modal-menu: var(--color-primary);
   --border-color-overlay-menu: var(--color-primary);
+  --border-color-overlay-post: none;
   --border-color-module-appinfo: var(--border-color-general-dividers-dark);
 /* Icon and Identity Borders */
   --border-color-identicon: var(--background-color-main);

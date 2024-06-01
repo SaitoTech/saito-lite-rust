@@ -118,7 +118,7 @@ class Browser {
 					channel.postMessage({ active: 1, publicKey: publicKey });
 				}
 
-				/* channel.onmessage = async (e) => {
+/* channel.onmessage = async (e) => {
 				  console.log("document onmessage change");
 				  if (!document[this.hidden_tab_property]) {
 					channel.postMessage({active: 1, publicKey: publicKey});
@@ -137,7 +137,7 @@ class Browser {
 					}
 				  }
 				};
-		*/
+*/
 
 				document.addEventListener(
 					this.tab_event_name,
@@ -671,6 +671,29 @@ class Browser {
 		}
 	}
 
+	addNotificationToId(count, id){
+	  let elem = document.getElementById(id);
+
+	  if (elem) {
+	    if (count) {
+	      if (elem.querySelector(".saito-notification-dot")) {
+	        elem.querySelector(".saito-notification-dot").innerHTML = count;
+	      } else {
+	        this.addElementToId(
+	          `<div class="saito-notification-dot">${count}</div>`,
+	          id
+	        );
+	      }
+	    } else {
+	      if (elem.querySelector(".saito-notification-dot")) {
+	        elem.querySelector(".saito-notification-dot").remove();
+	      }
+	    }
+	  }
+
+	}
+
+
 	addElementToDom(html, elemWhere = null) {
 		const el = document.createElement('div');
 		if (elemWhere == null || elemWhere === '') {
@@ -727,6 +750,8 @@ class Browser {
 			let obj = document.getElementById(id);
 			if (obj) {
 				this.app.browser.addElementToDom(html, obj);
+			}else{
+				console.warn("id not found");
 			}
 		}
 	}
@@ -986,11 +1011,8 @@ class Browser {
 		} else {
 			x = `${h}`;
 		}
-		if (m < 10) {
-			x += `:${m}`;
-		} else {
-			x += `:${m}`;
-		}
+		x += `:${m}`;
+
 		return x;
 	}
 

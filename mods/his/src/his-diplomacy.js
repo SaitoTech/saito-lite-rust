@@ -5,6 +5,13 @@
 
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
+      name : "Cancel",
+      check : this.canPlayerCancel,
+      fnct : this.playerCancel,
+      img : "dove.jpeg" ,
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       name : "End War",
       check : this.canPlayerEndWar,
       fnct : this.playerEndWar,
@@ -108,7 +115,7 @@
 	text.push(`${this.returnFactionName(x[1])} and ${this.returnFactionName(x[2])} agree to ally`);
       }
       if (x[0] === "yield_cards" || x[0] === "pull_card") {
-	text.push(`${this.returnFactionName(x[1])} offers ${this.returnFactionName(x[2])} a card`);
+	text.push(`${this.returnFactionName(x[2])} offers ${this.returnFactionName(x[1])} a card`);
       }
       if (x[0] === "returns_captured" || x[0] === "ransom") {
 	text.push(`${this.returnFactionName(x[1])} returns ${x[1]}`);
@@ -134,6 +141,16 @@
 
     return text;
   }
+
+  canPlayerCancel(his_self, player, faction) {
+    return 1;
+  }
+  async playerCancel(his_self, faction, mycallback=null) {
+    his_self.diplomacy_propose_overlay.render(faction);
+    return 1;
+  }
+
+
 
 
   canPlayerEndWar(his_self, player, faction) {
@@ -194,7 +211,7 @@
   }
 
   canPlayerReturnCapturedArmyLeader(his_self, player, faction) {
-    let p = his_self.returnPlayerControllingFaction(faction);
+    let p = his_self.returnPlayerCommandingFaction(faction);
     for (let z = 0; z  < his_self.game.state.players_info[p-1].captured.length; z++) { 
       if (faction == his_self.game.state.players_info[p-1].capturing_faction) { return 1; }
     }
@@ -368,7 +385,7 @@
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
       if (faction != io[i]) {
-	if (his_self.game.state.cards_issued[action2] < 2) {
+	if (his_self.game.state.cards_issued[io[i]] < 2) {
           html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
         }
       }
@@ -456,7 +473,7 @@
           function(spacekey) {
             if (mycallback == null) { return; }
             his_self.updateStatus("submitted");
-            mycallback([`control\t${faction}\t${spacekey}\t${giving_faction}`,`NOTIFY\t${his_self.returnFactionName(giving_faction)} yields ${his_self.returnSpaceName(spacekey)} to ${his_self.returnFactionName(faction)}`]);
+            mycallback([`evacuate\t${giving_faction}\t${spacekey}`,`control\t${faction}\t${spacekey}\t${giving_faction}`,`NOTIFY\t${his_self.returnFactionName(giving_faction)} yields ${his_self.returnSpaceName(spacekey)} to ${his_self.returnFactionName(faction)}`]);
             his_self.winter_overlay.render();
           },
           
@@ -477,7 +494,7 @@
     let io = his_self.returnDiplomacyImpulseOrder(faction);
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
-      if (faction != io[i] && his_self.returnPlayerControllingFaction(faction) != his_self.returnPlayerControllingFaction(io[i])) {
+      if (faction != io[i] && his_self.returnPlayerCommandingFaction(faction) != his_self.returnPlayerCommandingFaction(io[i])) {
         html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
       }
     }
@@ -508,7 +525,7 @@
           function(spacekey) {
             if (mycallback == null) { return; }
             his_self.updateStatus("submitted");
-            mycallback([`control\t${receiving_faction}\t${spacekey}\t${faction}`,`NOTIFY\t${his_self.returnFactionName(faction)} yields ${his_self.returnSpaceName(spacekey)} to ${his_self.returnFactionName(receiving_faction)}`]);
+            mycallback([`evacuate\t${faction}\t${spacekey}`,`control\t${receiving_faction}\t${spacekey}\t${faction}`,`NOTIFY\t${his_self.returnFactionName(faction)} yields ${his_self.returnSpaceName(spacekey)} to ${his_self.returnFactionName(receiving_faction)}`]);
             his_self.winter_overlay.render();
           },
           

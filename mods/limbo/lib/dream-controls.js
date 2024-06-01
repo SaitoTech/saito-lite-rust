@@ -7,6 +7,7 @@ class DreamControls{
 		this.mod = mod;
 		this.container = container;
 		this.video = new VideoBox(app, mod, "local", "video-preview");
+		this.video.display_wave_form = true;
 		this.timer_interval = null;
 	}
 
@@ -37,6 +38,7 @@ class DreamControls{
 	}
 
 	remove(){
+		this.stopTimer();
 		this.video.remove();
 		if (document.getElementById("dream-controls")){
 			document.getElementById("dream-controls").remove();

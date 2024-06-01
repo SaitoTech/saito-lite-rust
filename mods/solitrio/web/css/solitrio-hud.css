@@ -10,3 +10,13 @@
 .controls ul {
 	border-radius: 0.5rem;
 }
+
+.stats-menu-controls {
+	width: 100%;
+	display: flex;
+	justify-content: space-evenly;
+}
+
+.stats-menu-controls .option{
+	margin-top: 2rem;
+}

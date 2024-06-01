@@ -542,10 +542,6 @@
   grid-column: span 2;
 }
 
-#backup-template .saito-overlay-subform {
-  gap: 2rem 1rem;
-}
-
 .input-elements-container {
   gap: 1rem;
   display: flex;

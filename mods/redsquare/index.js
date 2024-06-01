@@ -8,12 +8,13 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   
-  <meta name="description" content="${mod.description}" />
+  <meta name="description" content="${app.browser.escapeHTML(mod.description)}" />
   <meta name="keywords" content="${mod.categories}"/>
   <meta name="author" content="Saito Team"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes" />
 
   <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen" />
+  <link rel="stylesheet" href="/modtools/style.css" type="text/css" media="screen" />
 
 
   <meta name="mobile-web-app-capable" content="yes" />
@@ -31,13 +32,13 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
   <meta name="twitter:creator" content="${og_card.twitter}" />
   <meta name="twitter:title" content="${og_card.title}" />
   <meta name="twitter:url" content="${og_card.url}" />
-  <meta name="twitter:description" content="${og_card.description}" />
+  <meta name="twitter:description" content="${app.browser.escapeHTML(og_card.description)}" />
   <meta name="twitter:image" content="${og_card.image}" />
 
   <meta property="og:type" content="website" />
   <meta property="og:title" content="${og_card.title}" />
   <meta property="og:url" content="${og_card.url}" />
-  <meta property="og:description" content="${og_card.description}"/>
+  <meta property="og:description" content="${app.browser.escapeHTML(og_card.description)}"/>
   <meta property="og:site_name" content="${og_card.title}" />
   <meta property="og:image" content="${og_card.image}"/>
   <meta property="og:image:url" content="${og_card.image}"/>

@@ -22,8 +22,8 @@ class ThesesOverlay {
 	pushHudUnderOverlay() {
 		let overlay_zindex = parseInt(this.overlay.zIndex);
 		if (document.querySelector('.hud')) {
-			document.querySelector('.hud').style.zIndex = overlay_zindex - 2;
-			this.mod.hud.zIndex = overlay_zindex - 2;
+			document.querySelector('.hud').style.zIndex = overlay_zindex - 3;
+			this.mod.hud.zIndex = overlay_zindex - 3;
 		}
 	}
 
