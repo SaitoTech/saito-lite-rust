@@ -120,6 +120,8 @@
 
 .dream-controls {
 	position: absolute;
+	top: 2rem;
+	left: 2rem;
 	width: 100%;
 	height: 100%;
 	display: grid;
@@ -135,8 +137,8 @@
 	display: flex;
 	z-index: 1000;
 	cursor: grab;
-	top: 1rem;
-	left: 1rem;
+	top: 2rem;
+	left: 2rem;
 	padding: 0;
 }
 
