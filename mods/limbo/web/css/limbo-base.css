@@ -125,9 +125,8 @@
 	display: grid;
 	grid-template-rows: 1fr 7rem;
 	grid-template-columns: minmax(0px, 1fr);
-	border: 2px solid silver;
-	border-radius: 5px;
-	background-color: var(--saito-black);
+	border-radius: var(--saito-border-radius);
+	background-color: #6666;
 }
 
 .dream-controls.lite {
@@ -138,6 +137,7 @@
 	cursor: grab;
 	top: 1rem;
 	left: 1rem;
+	padding: 0;
 }
 
 .dream-controls.lite .control-panel{
@@ -177,7 +177,6 @@
 	align-items: center;
 	justify-content: space-between;
 	max-width: 100%;
-	padding: 0 1rem;
 }
 
 
@@ -255,7 +254,7 @@ video#local.noflip{
 	}
 
 	.dream-controls.lite .control-list{
-		gap: revert;
+		gap: 1px;
 		margin-right: unset;
 	}
 
