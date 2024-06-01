@@ -125,6 +125,19 @@ label.treated {
 	list-style: none;
 }
 
+.settings-appspace-storage-content {
+	font-family: 'Courier New', Courier, monospace;
+}
+
+.setting-appspace-localstorage-info, .setting-appspace-indexdb-info {
+    display: grid;
+    grid-template-columns: 15rem 1fr;
+    width: 100%;
+}
+
+
+
+
 @media only screen and (max-width: 900px) {
 	.settings-appspace {
 		padding: 1.5rem;

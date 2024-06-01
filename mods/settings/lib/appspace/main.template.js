@@ -101,6 +101,27 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
         <h6>Debug Info</h6>
         <div class="settings-appspace-debug-content"></div>
       </div>
+
+      <div class="settings-storage-info">
+      <h6>Storage Info</h6>
+      <div class="settings-appspace-storage-content">
+
+        <div class="setting-appspace-localstorage-info">
+          <div class="title">Local Storage</div><div></div>
+          <div>Quota (Bytes)</div><div class="quota"></div>
+          <div>Usage (Bytes)</div><div class="usage"></div>
+          <div>Used (%)</div><div class="percent"></div>
+        </div>
+
+        <div class="setting-appspace-indexdb-info">
+          <div class="title">IndexDB</div><div></div>
+          <div>Quota (Bytes)</div><div class="quota"></div>
+          <div>Usage (Bytes)</div><div class="usage"></div>
+          <div>Used (%)</div><div class="percent"></div>
+        </div>
+
+      </div>
+      </div>
     </div>
   </div>
   <input id="file-input" class="file-input" type="file" name="name" style="display:none;" />

@@ -38,6 +38,7 @@ class SettingsAppspace {
 		}
 
 		this.renderDebugTree();
+		this.renderStorageInfo();
 		this.renderCryptoGameSettings();
 
 		await this.attachEvents();
@@ -87,6 +88,39 @@ class SettingsAppspace {
 			document.querySelector('.settings-appspace-crypto-transfer-container').style.display = 'none';
 		}
 	}
+
+	renderStorageInfo() {
+		navigator.storage.estimate().then(estimate => {
+			let percentage = estimate.usage / estimate.quota * 100;
+			document.querySelector('.setting-appspace-indexdb-info .quota').innerHTML = estimate.quota;
+			document.querySelector('.setting-appspace-indexdb-info .usage').innerHTML = estimate.usage;
+			document.querySelector('.setting-appspace-indexdb-info .percent').innerHTML = percentage;
+    	});
+
+		function getLocalStorageSize() {
+			let total = 0;
+			for (let key in localStorage) {
+				if (localStorage.hasOwnProperty(key)) {
+					total += localStorage[key].length + key.length;
+				}
+			}
+			return total * 2; // Because JavaScript strings are UTF-16, each character is 2 bytes
+		}
+		
+		function getLocalStorageUsagePercentage() {
+			const totalSize = getLocalStorageSize();
+			const maxSize = 5 * 1024 * 1024; // Estimated 5MB limit
+			const percentageUsed = (totalSize / maxSize) * 100;
+			return percentageUsed.toFixed(2); // Returns the percentage with 2 decimal points
+		}
+		
+		document.querySelector('.setting-appspace-localstorage-info .quota').innerHTML = 5 * 1024 * 1024;
+		document.querySelector('.setting-appspace-localstorage-info .usage').innerHTML = getLocalStorageSize();
+		document.querySelector('.setting-appspace-localstorage-info .percent').innerHTML = getLocalStorageUsagePercentage();
+
+
+		console.log(`LocalStorage is ${getLocalStorageUsagePercentage()}% full.`);
+    }
 
 	async attachEvents() {
 		let app = this.app;
