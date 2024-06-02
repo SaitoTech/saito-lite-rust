@@ -401,8 +401,8 @@ class Mixin extends ModTemplate {
         asset: asset_id
       });
 
-      console.log("utxo ///");
-      console.log(utxo);
+      // console.log("utxo ///");
+      // console.log(utxo);
 
       for (let i = 0; i < this.mods.length; i++) {
         if (this.mods[i].asset_id === asset_id) {  

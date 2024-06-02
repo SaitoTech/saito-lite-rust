@@ -3225,6 +3225,16 @@ console.log("selected: " + spacekey);
 
 	      } else {
 
+		//
+		// remove any cards_left update that runs after this coming cards_left update and undoes us
+		//
+		for (let i = 0; i < his_self.moves.length; i++) {
+		  let lmv = his_self.moves[i].splice("\t");
+		  if (lmv[0] == "cards_left") {
+		    his_self.moves.splice(i, 1);
+		  }
+		}
+
     		his_self.addMove("cards_left\tprotestant\t"+(parseInt(his_self.game.state.cards_left["protestant"])+1));
 		his_self.addMove("discard\tprotestant\t007");
 		his_self.addMove("NOTIFY\tProtestants retrieve "+his_self.popup(card));
@@ -7349,7 +7359,7 @@ console.log("selected: " + spacekey);
 	
 	if (his_self.game.players.length > 2) {
 	  let eng = his_self.returnPlayerCommandingFaction("england");
-	  his_self.game.queue.push("hand_to_fhand\t1\t"+p+"\t"+"england"+"\t1"); // 1 = overlay
+	  his_self.game.queue.push("hand_to_fhand\t1\t"+eng+"\t"+"england"+"\t1"); // 1 = overlay
           his_self.game.queue.push(`DEAL\t1\t${eng}\t2`);
         }
 
@@ -7909,6 +7919,8 @@ console.log("selected: " + spacekey);
 	    "Select Occupied Territory",
 
 	    function(space) {
+
+	      if (his_self.isSpaceBesieged(space.key)) { return 0; }
 
 	      // 2P game - may be played against electorate under Hapsburg Control
 	      if (his_self.game.players.length == 2) {
@@ -10283,7 +10295,7 @@ console.log("selected: " + spacekey);
 	let f = his_self.game.state.newworld['circumnavigation'].faction;
 	let p = his_self.returnPlayerCommandingFaction(f);
 
-        his_self.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction + "\t1");
+        his_self.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + f + "\t1");
         his_self.game.queue.push('DEAL\t1\t' + p + '\t' + 2);
 	
 	return 1;
@@ -10360,7 +10372,9 @@ console.log("selected: " + spacekey);
                 let options_idx = $(this).attr("id");
 		his_self.updateStatus("acknowledge");
 
+                his_self.addMove("SETVAR\tstate\events\tscots_raid\t0");
                 his_self.addMove("ops\tfrance\t097\t3");
+                his_self.addMove("SETVAR\tstate\events\tscots_raid\t1");
                 his_self.addMove("move\tfrance\tland\t"+options[options_idx].spacekey+"\tstirling\t"+options[options_idx].idx);
                 his_self.endTurn();
 
@@ -10368,7 +10382,9 @@ console.log("selected: " + spacekey);
 	    }
 
 	    if (action === "no") {
+              his_self.addMove("SETVAR\tstate\events\tscots_raid\t0");
               his_self.addMove("ops\tfrance\t097\t6");
+              his_self.addMove("SETVAR\tstate\events\tscots_raid\t1");
 	      his_self.endTurn();
 	    }
 
@@ -10442,15 +10458,42 @@ console.log("selected: " + spacekey);
             $('.option').off();
 	    let action = $(this).attr("id");
 
-	    if (action === "conquest-england") {  his_self.addMove("remove_conquest\tengland"); }
-	    if (action === "conquest-france") {  his_self.addMove("remove_conquest\tfrance"); }
-	    if (action === "conquest-hapsburg") {  his_self.addMove("remove_conquest\thapsburg"); }
-	    if (action === "cabot_england") {  his_self.addMove("SETVAR\tstate\tevents\tcabot_england\t0"); }
-	    if (action === "cabot_hapsburg") {  his_self.addMove("SETVAR\tstate\tevents\tcabot_hapsburg\t0"); }
-	    if (action === "cabot_france") {  his_self.addMove("SETVAR\tstate\tevents\tcabot_france\t0"); }
-	    if (action === "england") {  his_self.addMove("remove_exploration\tengland"); }
-	    if (action === "hapsburg") {  his_self.addMove("remove_exploration\thapsburg"); }
-	    if (action === "france") {  his_self.addMove("remove_exploration\tfrance"); }
+	    if (action === "conquest-england") {  
+		his_self.addMove("NOTIFY\t"+his_self.popup('098')+" cancels English conquest");
+		his_self.addMove("remove_conquest\tengland"); 
+	    }
+	    if (action === "conquest-france") {  
+		his_self.addMove("NOTIFY\t"+his_self.popup('098')+" cancels French conquest");
+		his_self.addMove("remove_conquest\tfrance"); 
+	    }
+	    if (action === "conquest-hapsburg") {  
+		his_self.addMove("NOTIFY\t"+his_self.popup('098')+" cancels Hapsburg conquest");
+		his_self.addMove("remove_conquest\thapsburg"); 
+	    }
+	    if (action === "cabot_england") {  
+		his_self.addMove("NOTIFY\t"+his_self.popup('098')+" cancels Sebastian Cabot");
+		his_self.addMove("SETVAR\tstate\tevents\tcabot_england\t0"); 
+	    }
+	    if (action === "cabot_hapsburg") {  
+		his_self.addMove("NOTIFY\t"+his_self.popup('098')+" cancels Sebastian Cabot");
+		his_self.addMove("SETVAR\tstate\tevents\tcabot_hapsburg\t0"); 
+	    }
+	    if (action === "cabot_france") {  
+		his_self.addMove("NOTIFY\t"+his_self.popup('098')+" cancels Sebastian Cabot");
+		his_self.addMove("SETVAR\tstate\tevents\tcabot_france\t0"); 
+	    }
+	    if (action === "england") {  
+		his_self.addMove("NOTIFY\t"+his_self.popup('098')+" cancels English exploration");
+		his_self.addMove("remove_exploration\tengland"); 
+	    }
+	    if (action === "hapsburg") {  
+		his_self.addMove("NOTIFY\t"+his_self.popup('098')+" cancels Hapsburg exploration");
+		his_self.addMove("remove_exploration\thapsburg"); 
+	    }
+	    if (action === "france") {  
+		his_self.addMove("NOTIFY\t"+his_self.popup('098')+" cancels French exploration");
+		his_self.addMove("remove_exploration\tfrance"); 
+	    }
 
 	    his_self.endTurn();
 
@@ -11127,7 +11170,7 @@ console.log("selected: " + spacekey);
 		      his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
 		      regulars_to_delete--;
 		    }
-		    if (u.type != "regular" && nonregulars_to_delete > 0) {
+		    if (u.army_leader != true && u.navy_leader != true && u.type != "regular" && (u.type == "mercenary" || u.type == "cavalry") && nonregulars_to_delete > 0) {
 		      his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
 		      nonregulars_to_delete--;
 		    }

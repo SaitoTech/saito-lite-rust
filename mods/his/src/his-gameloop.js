@@ -3178,7 +3178,7 @@ console.log("we are player: " + this.game.player + " and seeking " + player);
 	    if (f == faction || this.areAllies(f, faction, true)) {
 	      for (let z = 0; z < this.game.spaces[spacekey].units[f].length; z++) {
 		let u = this.game.spaces[spacekey].units[f][z];
-		if (u.type != reformer && u.besieged == false) {
+		if (u.reformer != true && u.besieged == false) {
 		  any_unbesieged_units = true;
 		}
 	      }
@@ -8738,10 +8738,6 @@ console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space
           his_self.game.state.assault.attacker_land_units_remaining = attacker_land_units_remaining;
           his_self.game.state.assault.defender_land_units_remaining = defender_land_units_remaining;
 
-console.log("ASSAULT: ");
-console.log("alur:" + attacker_land_units_remaining);
-console.log("dlur:" + defender_land_units_remaining);
-
 	  //
 	  // attacker and defender both wiped out
 	  //
@@ -8795,11 +8791,14 @@ console.log("dlur:" + defender_land_units_remaining);
 
 	  if (defender_land_units_remaining <= 0 && attacker_hits > 0) {
 	    for (let f in faction_map) {
-	      if (faction_map[f] == defender_faction) {
+	      let cf = this.returnControllingPower(f);
+	      if (cf == defender_faction || f == defender_faction || faction_map[f] == defender_faction) {
 	        for (let i = 0; i < space.units[f].length; i++) {
-	          his_self.captureLeader(attacker_faction, defender_faction, mv[1], space.units[f][i]);
-		  space.units[f].splice(i, 1);
-		  i--;
+		  if (space.units[f][i].reformer != true) {
+	            his_self.captureLeader(attacker_faction, defender_faction, mv[1], space.units[f][i]);
+	  	    space.units[f].splice(i, 1);
+		    i--;
+		  }
 		}
 	      }
 	    }

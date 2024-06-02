@@ -184,6 +184,10 @@
   display: flex;
 }
 
+.balance-amount.flash {
+  animation: fade-animation 1.5s infinite ease-in-out;
+}
+
 .balance-amount-whole,
 .balance-amount-separator,
 .balance-amount-decimal {

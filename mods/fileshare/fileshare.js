@@ -74,6 +74,8 @@ class Fileshare extends ModTemplate {
 								return;
 							}
 
+							fss.fileId = fss.app.crypto.generateRandomNumber().substring(0, 12);
+
 							fss.recipient = recipient;
 							fss.offset = 0;
 
@@ -198,9 +200,7 @@ class Fileshare extends ModTemplate {
 
 				if (txmsg.request == 'deny file permission') {
 					this.overlay.onPeerReject();
-					this.file = null;
-					this.fileId = null;
-					siteMessage("File transfer declined");
+					siteMessage("File transfer declined", 5000);
 					return;
 				}
 
@@ -232,11 +232,11 @@ class Fileshare extends ModTemplate {
 						blob.receivedSize += restoredBinary.byteLength;
 						blob.receiveBuffer.push(restoredBinary);
 
-						console.log(
+						/*console.log(
 							restoredBinary.byteLength,
 							blob.receivedSize,
 							blob.fileSize
-						);
+						);*/
 
 			      // calculate file transfer speed
 			      		this.transferStats(blob.receivedSize);
@@ -330,8 +330,6 @@ class Fileshare extends ModTemplate {
 
 		});
 
-		this.fileId = this.app.crypto.generateRandomNumber().substring(0, 12);
-
 		this.file = file;
 
 		this.overlay.updateFileData();
@@ -389,7 +387,6 @@ class Fileshare extends ModTemplate {
 
 		this.overlay.onCancel();
 
-		this.reset();
 	}
 
 	reset(){

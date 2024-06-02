@@ -83,15 +83,44 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
           </div>
         </div>
       </div>
+      
       <div class="settings-appspace-modules-container">
           <h6> Installed Modules </h6>
           <div class="settings-appspace-modules">
               ${modules_html}
           </div>
       </div>
+
+      <div class="settings-appspace-crypto-transfer-container">
+        <h6>In-Game Crypto Transfers</h6>
+        <div id="settings-appspace-crypto-transfer" class="settings-appspace-modules">     
+        </div>
+      </div>
+
       <div class="settings-appspace-debug">
         <h6>Debug Info</h6>
         <div class="settings-appspace-debug-content"></div>
+      </div>
+
+      <div class="settings-storage-info">
+      <h6>Storage Info</h6>
+      <div class="settings-appspace-storage-content">
+
+        <div class="settings-appspace-localstorage-info">
+          <div class="title">Local Storage</div><div></div>
+          <div>Quota (Bytes)</div><div class="quota"></div>
+          <div>Usage (Bytes)</div><div class="usage"></div>
+          <div>Used (%)</div><div class="percent"></div>
+        </div>
+
+        <div class="settings-appspace-indexdb-info">
+          <div class="title">IndexDB</div><div></div>
+          <div>Quota (Bytes)</div><div class="quota"></div>
+          <div>Usage (Bytes)</div><div class="usage"></div>
+          <div>Used (%)</div><div class="percent"></div>
+        </div>
+
+      </div>
       </div>
     </div>
   </div>
