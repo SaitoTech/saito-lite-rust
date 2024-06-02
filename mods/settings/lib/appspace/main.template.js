@@ -106,14 +106,14 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
       <h6>Storage Info</h6>
       <div class="settings-appspace-storage-content">
 
-        <div class="setting-appspace-localstorage-info">
+        <div class="settings-appspace-localstorage-info">
           <div class="title">Local Storage</div><div></div>
           <div>Quota (Bytes)</div><div class="quota"></div>
           <div>Usage (Bytes)</div><div class="usage"></div>
           <div>Used (%)</div><div class="percent"></div>
         </div>
 
-        <div class="setting-appspace-indexdb-info">
+        <div class="settings-appspace-indexdb-info">
           <div class="title">IndexDB</div><div></div>
           <div>Quota (Bytes)</div><div class="quota"></div>
           <div>Usage (Bytes)</div><div class="usage"></div>

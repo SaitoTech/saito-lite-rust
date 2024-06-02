@@ -92,9 +92,9 @@ class SettingsAppspace {
 	renderStorageInfo() {
 		navigator.storage.estimate().then(estimate => {
 			let percentage = estimate.usage / estimate.quota * 100;
-			document.querySelector('.setting-appspace-indexdb-info .quota').innerHTML = estimate.quota;
-			document.querySelector('.setting-appspace-indexdb-info .usage').innerHTML = estimate.usage;
-			document.querySelector('.setting-appspace-indexdb-info .percent').innerHTML = percentage;
+			document.querySelector('.settings-appspace-indexdb-info .quota').innerHTML = this.app.browser.formatNumberToLocale(estimate.quota);
+			document.querySelector('.settings-appspace-indexdb-info .usage').innerHTML = this.app.browser.formatNumberToLocale(estimate.usage);
+			document.querySelector('.settings-appspace-indexdb-info .percent').innerHTML = this.app.browser.formatNumberToLocale(percentage);
     	});
 
 		function getLocalStorageSize() {
@@ -114,9 +114,9 @@ class SettingsAppspace {
 			return percentageUsed.toFixed(2); // Returns the percentage with 2 decimal points
 		}
 		
-		document.querySelector('.setting-appspace-localstorage-info .quota').innerHTML = 5 * 1024 * 1024;
-		document.querySelector('.setting-appspace-localstorage-info .usage').innerHTML = getLocalStorageSize();
-		document.querySelector('.setting-appspace-localstorage-info .percent').innerHTML = getLocalStorageUsagePercentage();
+		document.querySelector('.settings-appspace-localstorage-info .quota').innerHTML = this.app.browser.formatNumberToLocale(5 * 1024 * 1024);
+		document.querySelector('.settings-appspace-localstorage-info .usage').innerHTML = this.app.browser.formatNumberToLocale(getLocalStorageSize());
+		document.querySelector('.settings-appspace-localstorage-info .percent').innerHTML = this.app.browser.formatNumberToLocale(getLocalStorageUsagePercentage());
 
 
 		console.log(`LocalStorage is ${getLocalStorageUsagePercentage()}% full.`);
