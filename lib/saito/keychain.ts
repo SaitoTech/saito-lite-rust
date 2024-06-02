@@ -94,11 +94,13 @@ class Keychain {
 	// ({ publicKey : x, data : y })
 	//
 	addKey(pa = null, da = null) {
-		let data = { publicKey: '' };
 
-		if (!pa == null) {
+		// You need at least one argument!
+		if (pa === null) {
 			return;
 		}
+
+		let data = { publicKey: '' };
 
 		//
 		// argument-overloading permitted !!
@@ -185,7 +187,7 @@ class Keychain {
 				
 				} catch (err) {
 					console.error('Failed to JSON.parse decrypted message',	err);
-					//this.app.connection.emit('encrypt-decryption-failed', publicKey);
+					this.app.connection.emit('encrypt-decryption-failed', publicKey);
 					return encrypted_msg;
 				}
 			}
@@ -607,6 +609,13 @@ class Keychain {
 			aes_privatekey: aes_privatekey,
 			aes_secret: shared_secret
 		});
+
+		//
+		// remove the flag from broken encryption
+		//
+		let key = this.returnKey(publicKey, true);
+		delete key.encryption_failure;
+
 		this.saveKeys();
 
 		console.log('SAVED CRYPTO AES: ' + publicKey);
