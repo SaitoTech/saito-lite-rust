@@ -144,9 +144,11 @@
 	}
 
 	displayTable() {
+
 		if (!this.browser_active) {
 			return;
 		}
+
 		try {
 			if (document.getElementById('deal')) {
 				let newHTML = '';
@@ -181,14 +183,19 @@
 
 
 	async clearTable() {
+
 		if (!this.browser_active) {
 			return;
 		}
 
+		// triggers animation
+		this.board.clearTable();
+
 		$('#pot').fadeOut(1650);
 		$('.winner').removeClass('winner');
 
-		await this.timeout(200);
+		// allow animations to work
+		await this.timeout(600);
 		this.restartQueue();
 	}
 

@@ -96,7 +96,6 @@ class Poker extends GameTableTemplate {
 	// initializes chips / pools / pots information
 	//
 	initializeGameStake(crypto = 'CHIPS', stake = '100') {
-
 		console.log("Initialize Poker Stakes!");
 		this.game.crypto = crypto;
 		this.game.stake = stake;
@@ -145,11 +144,8 @@ class Poker extends GameTableTemplate {
 
 		this.board.render();
 
-                if (this.browser_active) {
-                        console.log("Get Logo for " + crypto);
-                        this.insertCryptoLogo(crypto);
-                }
-
+		//Doesn't do anything substantial
+		super.initializeGameStake(crypto, stake);
 	}
 
 	initializeGame() {
@@ -1357,9 +1353,11 @@ class Poker extends GameTableTemplate {
 	}
 
 	displayTable() {
+
 		if (!this.browser_active) {
 			return;
 		}
+
 		try {
 			if (document.getElementById('deal')) {
 				let newHTML = '';
@@ -1394,14 +1392,19 @@ class Poker extends GameTableTemplate {
 
 
 	async clearTable() {
+
 		if (!this.browser_active) {
 			return;
 		}
 
+		// triggers animation
+		this.board.clearTable();
+
 		$('#pot').fadeOut(1650);
 		$('.winner').removeClass('winner');
 
-		await this.timeout(200);
+		// allow animations to work
+		await this.timeout(600);
 		this.restartQueue();
 	}
 

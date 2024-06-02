@@ -64,6 +64,52 @@ class GameBoard {
 	attachEvents() {
 	}
 
+
+	clearTable() {
+
+		//
+		// this animation sweeps the cards off the table
+		//
+                $($('#deal').children().get().reverse()).each(function (index) {
+                        $(this)
+                                .delay(50 * index)
+                                .queue(function () {
+                                        $(this)
+                                                .removeClass('flipped')
+                                                .delay(20 * index)
+                                                .queue(function () {
+                                                        $(this)
+                                                                .animate(
+                                                                        { left: '1000px' },
+                                                                        1200,
+                                                                        'swing',
+                                                                        function () {
+                                                                                $(this).remove();
+                                                                        }
+                                                                )
+                                                                .dequeue();
+                                                })
+                                                .dequeue();
+                                });
+                });
+
+
+		//
+		// this animation sweeps the hands off the table
+		//
+                $('.game-playerbox-graphics .hand').animate(
+                        { left: '1000px' },
+                        1200,
+                        'swing',
+                        function () {
+                                $(this).remove();
+                        }
+                );
+
+
+
+	}
+
 }
 
 module.exports = GameBoard;
