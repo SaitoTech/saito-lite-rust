@@ -115,7 +115,6 @@
     height: 3.5rem;
 }
 
-
 /*  Control Window */
 
 .dream-controls {
@@ -128,7 +127,7 @@
 	grid-template-rows: 1fr 7rem;
 	grid-template-columns: minmax(0px, 1fr);
 	border-radius: var(--saito-border-radius);
-	background-color: #6666;
+	background-color: #0008;
 }
 
 .dream-controls.lite {
