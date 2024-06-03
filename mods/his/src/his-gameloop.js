@@ -10585,11 +10585,11 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  // papacy asked for Henry VIII marriage
 	  //
 	  if (faction == "marriage") {
-	    if (player == this.returnPlayerCommandingFaction("papacy")) {
+	    if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
 	      this.marriage_overlay.renderApproveDivorce();
-	      this.game.queue.splice(qe, 1);
-	      return 0;
 	    }
+	    this.game.queue.splice(qe, 1);
+	    return 0;
 	  }
 
 
@@ -11401,12 +11401,12 @@ alert("TRIGGERING WITH FHAND_IDX of -1...");
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-cardnum = 1;
-if (f == "papacy") { cardnum = 0; }
-if (f == "hapsburg") { cardnum = 1; }
-if (f == "protestant") { cardnum = 0; }
-if (f == "england") { cardnum = 0; }
-if (f == "ottoman") { cardnum = 0; }
+//cardnum = 1;
+//if (f == "papacy") { cardnum = 0; }
+//if (f == "hapsburg") { cardnum = 1; }
+//if (f == "protestant") { cardnum = 0; }
+//if (f == "england") { cardnum = 0; }
+//if (f == "ottoman") { cardnum = 0; }
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);

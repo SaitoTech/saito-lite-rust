@@ -1525,8 +1525,6 @@ class Chat extends ModTemplate {
 		}
 
 		if (this.addTransactionToGroup(group, tx)) {
-			//Returns 1 if it is a new message
-
 			//
 			// Just a little warning that it isn't nice to @ people if you blocked them and they cannot reply
 			//

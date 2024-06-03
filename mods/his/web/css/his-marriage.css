@@ -5,6 +5,13 @@
     height: 80vh;
 }
 
+.marriage-overlay .tile {
+    opacity: 1;
+}
+.marriage-overlay .tile:hover {
+    opacity: 0.05;
+}
+
 .marriage-overlay .status {
         position: relative;
         height: 4rem;
