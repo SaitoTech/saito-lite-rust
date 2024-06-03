@@ -4,11 +4,9 @@
     this.hud.back_button_callback = null;
   }       
   unbindBackButtonFunction() {
-alert("and unbinding back button function!");
     this.cancelBackButtonFunction();
   } 
   bindBackButtonFunction(mycallback) {
-alert("binding back button function!");
     this.hud.back_button = true;
     this.hud.back_button_callback = mycallback;
   }   

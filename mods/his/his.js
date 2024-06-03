@@ -3075,6 +3075,18 @@ console.log("\n\n\n\n");
 
     this.menu.addMenuOption("game-game", "Game");
 
+/***
+    this.menu.addSubMenuOption("game-game", {
+      text: "Divorce",
+      id: "game-divorce",
+      class: "game-divorce",
+      callback: function(app, game_mod){
+	game_mod.menu.hideSubMenus();
+        game_mod.marriage_overlay.renderApproveDivorce();
+      }
+    });
+***/
+
     this.menu.addSubMenuOption("game-game", {
       text : "About H.I.S.",
       id : "game-about",
@@ -32847,6 +32859,9 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  for (let i = io.length-1; i>= 0; i--) {
 	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+io[i]);
 	  }
+	  if (this.game.state.henry_viii_marital_status == 1) {
+	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\tmarriage");
+	  }
 
 	  return 1;
 
@@ -32876,6 +32891,20 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  let player = this.returnPlayerOfFaction(faction);
 
 	  this.winter_overlay.render("stage6");
+
+
+	  //
+	  // papacy asked for Henry VIII marriage
+	  //
+	  if (faction == "marriage") {
+	    if (player == this.returnPlayerCommandingFaction("papacy")) {
+	      this.marriage_overlay.renderApproveDivorce();
+	      this.game.queue.splice(qe, 1);
+	      return 0;
+	    }
+	  }
+
+
 
 	  //
 	  // first, if there are any outstanding proposals that
@@ -33684,12 +33713,12 @@ alert("TRIGGERING WITH FHAND_IDX of -1...");
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 1;
-//if (f == "papacy") { cardnum = 0; }
-//if (f == "hapsburg") { cardnum = 1; }
-//if (f == "protestant") { cardnum = 0; }
-//if (f == "england") { cardnum = 0; }
-//if (f == "ottoman") { cardnum = 0; }
+cardnum = 1;
+if (f == "papacy") { cardnum = 0; }
+if (f == "hapsburg") { cardnum = 1; }
+if (f == "protestant") { cardnum = 0; }
+if (f == "england") { cardnum = 0; }
+if (f == "ottoman") { cardnum = 0; }
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
@@ -35963,11 +35992,9 @@ console.log(JSON.stringify(reshuffle_cards));
     this.hud.back_button_callback = null;
   }       
   unbindBackButtonFunction() {
-alert("and unbinding back button function!");
     this.cancelBackButtonFunction();
   } 
   bindBackButtonFunction(mycallback) {
-alert("binding back button function!");
     this.hud.back_button = true;
     this.hud.back_button_callback = mycallback;
   }   
