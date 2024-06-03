@@ -125,6 +125,34 @@ label.treated {
 	list-style: none;
 }
 
+.settings-appspace-storage-content {
+	display: flex;
+	flex-wrap: wrap;
+    padding: 1rem;
+    gap: 3rem;
+}
+
+.settings-appspace-localstorage-info, .settings-appspace-indexdb-info {
+    display: grid;
+    grid-template-columns: 12rem 20rem;
+}
+
+.settings-appspace-localstorage-info .title, .settings-appspace-indexdb-info .title {
+	font-size: larger;
+	margin: 0.5rem 0;
+}
+
+.settings-appspace-localstorage-info div:nth-child(2n+0), .settings-appspace-indexdb-info div:nth-child(2n+0) {
+	font-family: 'Courier New', Courier, monospace;
+	text-align: right;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+
+
+
 @media only screen and (max-width: 900px) {
 	.settings-appspace {
 		padding: 1.5rem;
