@@ -9,6 +9,7 @@ const PokerGameRulesTemplate = require('./lib/poker-game-rules.template');
 const PokerGameOptionsTemplate = require('./lib/poker-game-options.template');
 const PokerStats = require("./lib/stats");
 const htmlTemplate = require('./lib/game-html.template');
+const GameHelp = require('./lib/ui/game-help/game-help');
 
 
 //////////////////
@@ -39,6 +40,12 @@ class Poker extends GameTableTemplate {
 		this.pot = new Pot(app, this);
 		this.cardfan = new Cardfan(app, this);
 		this.playerbox = new Playerbox(app, this);
+
+    		//
+    		// triangular help button
+    		//
+    		this.game_help = new GameHelp(this.app, this);
+
 
      /********************
      *********************
@@ -145,7 +152,9 @@ class Poker extends GameTableTemplate {
 		this.board.render();
 
 		//Doesn't do anything substantial
+		console.log("Initialize Poker Stakes 2!");
 		super.initializeGameStake(crypto, stake);
+		console.log("Initialize Poker Stakes 3!");
 	}
 
 	initializeGame() {

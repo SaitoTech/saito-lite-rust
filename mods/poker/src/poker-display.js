@@ -10,6 +10,13 @@
 
 		await this.injectGameHTML(htmlTemplate());
 
+  this.game_help.renderCustomOverlay("diet_of_worms", {
+    line1 : "diet",
+    line2 : "of worms?",
+    fontsize : "2.1rem" ,
+  }); 
+
+
 		//
 		// ADD MENU
 		//
