@@ -242,16 +242,11 @@
   color: var(--font-color-button-hover-chat-popup-header);
 }
 
-.chat-header > .chat-header-nav > i.noclick:hover {
-  background-color: revert;
-  color: var(--color-primary);
-  cursor: revert;
-}
 
-
-.chat-header > .chat-header-nav > i:last-child {
+.fix-me {
   cursor: pointer;
 }
+
 
 .chat-container.minimized .chat-header-nav {
   align-items: center;

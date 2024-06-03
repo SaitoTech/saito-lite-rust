@@ -38,6 +38,7 @@ class SettingsAppspace {
 		}
 
 		this.renderDebugTree();
+		this.renderStorageInfo();
 		this.renderCryptoGameSettings();
 
 		await this.attachEvents();
@@ -87,6 +88,39 @@ class SettingsAppspace {
 			document.querySelector('.settings-appspace-crypto-transfer-container').style.display = 'none';
 		}
 	}
+
+	renderStorageInfo() {
+		navigator.storage.estimate().then(estimate => {
+			let percentage = estimate.usage / estimate.quota * 100;
+			document.querySelector('.settings-appspace-indexdb-info .quota').innerHTML = this.app.browser.formatNumberToLocale(estimate.quota);
+			document.querySelector('.settings-appspace-indexdb-info .usage').innerHTML = this.app.browser.formatNumberToLocale(estimate.usage);
+			document.querySelector('.settings-appspace-indexdb-info .percent').innerHTML = this.app.browser.formatNumberToLocale(percentage);
+    	});
+
+		function getLocalStorageSize() {
+			let total = 0;
+			for (let key in localStorage) {
+				if (localStorage.hasOwnProperty(key)) {
+					total += localStorage[key].length + key.length;
+				}
+			}
+			return total * 2; // Because JavaScript strings are UTF-16, each character is 2 bytes
+		}
+		
+		function getLocalStorageUsagePercentage() {
+			const totalSize = getLocalStorageSize();
+			const maxSize = 5 * 1024 * 1024; // Estimated 5MB limit
+			const percentageUsed = (totalSize / maxSize) * 100;
+			return percentageUsed.toFixed(2); // Returns the percentage with 2 decimal points
+		}
+		
+		document.querySelector('.settings-appspace-localstorage-info .quota').innerHTML = this.app.browser.formatNumberToLocale(5 * 1024 * 1024);
+		document.querySelector('.settings-appspace-localstorage-info .usage').innerHTML = this.app.browser.formatNumberToLocale(getLocalStorageSize());
+		document.querySelector('.settings-appspace-localstorage-info .percent').innerHTML = this.app.browser.formatNumberToLocale(getLocalStorageUsagePercentage());
+
+
+		console.log(`LocalStorage is ${getLocalStorageUsagePercentage()}% full.`);
+    }
 
 	async attachEvents() {
 		let app = this.app;

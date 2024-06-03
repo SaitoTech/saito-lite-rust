@@ -5,6 +5,62 @@
     height: 80vh;
 }
 
+.marriage-overlay .tile {
+    opacity: 1;
+}
+.marriage-overlay .tile:hover {
+    opacity: 0.05;
+}
+
+.marriage-overlay .status {
+        position: relative;
+        height: 4rem;
+        line-height: 4rem;
+        min-height: 0;
+        width: 30rem;
+        max-width: 35rem;
+        background-color: whitesmoke;
+        z-index: 10;
+        border-radius: 1rem;
+        top: 0px;
+        left: 0px;
+        white-space: nowrap;
+        float: left;
+        margin-left: 1rem;
+        margin-top: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+}
+
+.marriage-overlay .controls {
+        max-height: 80vh;
+}
+
+.marriage-overlay .controls ul {
+        overflow-y: auto;
+        display: block;
+        position: relative;
+        background-color: whitesmoke;
+        line-height: 4rem;
+        width: 30rem;
+        max-width: 35rem;
+        max-height: 80vh;
+        z-index: 10;
+        border-radius: 1rem;
+        top: 0px;
+        left: 0px;
+        white-space: nowrap;
+        float: left;
+        margin-left: 1rem;
+        margin-top: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        clear: both;
+        min-height: max-content;
+        height: auto;
+        cursor: pointer;
+}
+
 .pregnancy {
   background-size: cover;
   position: absolute;

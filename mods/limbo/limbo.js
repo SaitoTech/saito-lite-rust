@@ -165,7 +165,7 @@ class Limbo extends ModTemplate {
 				return [
 					{
 						text: 'Cast',
-						icon: 'fa-solid fa-podcast',
+						icon: 'fa-solid fa-tower-broadcast',
 						hook: "onair",
 						callback: async function (app) {
 							if (mod_self.dreamer) {
