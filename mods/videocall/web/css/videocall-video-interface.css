@@ -433,9 +433,15 @@
 .video-call-info i {
 	font-size: 2rem;
 	border-radius: 50%;
-	background-color: red;
-	box-shadow: 0 0 8px 4px red;
+	height: 1.5rem;
+	width: 1.5rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: var(--saito-primary);
+	box-shadow: 0 0 8px 4px var(--saito-primary);
 }
+
 
 .video-call-info i.disabled, .video-call-info i.fa-microphone-slash {
 	background-color: unset;
@@ -443,9 +449,16 @@
 }
 
 .video-box-container-large canvas#oscilloscope {
-  position: absolute;
-  width: 95%;
-  height: min(90%, 600px);
+	position: absolute;
+	width: min(60vw, 40vh);
+	height: min(60vw, 40vh);
+	border-radius: 50%;
+	border: 2px solid var(--saito-border-color-dark);
+	background-image: url(../saito/img/saito-background-icon.svg);
+	background-color: #222;
+	background-size: 66%;
+	background-repeat: no-repeat;
+	background-position: center;
 }
 
 .lds-dual-ring {
@@ -690,6 +703,11 @@
 	*/
 	.control-list label {
 		display: none;
+	}
+
+	.video-box-container-large canvas#oscilloscope {
+		width: 10rem;
+		height: 10rem;
 	}
 }
 

@@ -487,6 +487,8 @@
       el.classList.remove("active");
     });
 
+    if (!his_self.game.state.henry_viii_rolls) { his_self.game.state.henry_viii_rolls = []; }
+    if (!his_self.game.state.henry_viii_wives) { his_self.game.state.henry_viii_wives = []; }
     for (let i = 0; i < his_self.game.state.henry_viii_wives.length && i < his_self.game.state.henry_viii_rolls.length; i++) {
 
       let dd = his_self.game.state.henry_viii_rolls[i];

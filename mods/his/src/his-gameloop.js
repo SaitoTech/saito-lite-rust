@@ -3178,7 +3178,7 @@ console.log("we are player: " + this.game.player + " and seeking " + player);
 	    if (f == faction || this.areAllies(f, faction, true)) {
 	      for (let z = 0; z < this.game.spaces[spacekey].units[f].length; z++) {
 		let u = this.game.spaces[spacekey].units[f][z];
-		if (u.type != reformer && u.besieged == false) {
+		if (u.reformer != true && u.besieged == false) {
 		  any_unbesieged_units = true;
 		}
 	      }
@@ -8738,10 +8738,6 @@ console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space
           his_self.game.state.assault.attacker_land_units_remaining = attacker_land_units_remaining;
           his_self.game.state.assault.defender_land_units_remaining = defender_land_units_remaining;
 
-console.log("ASSAULT: ");
-console.log("alur:" + attacker_land_units_remaining);
-console.log("dlur:" + defender_land_units_remaining);
-
 	  //
 	  // attacker and defender both wiped out
 	  //
@@ -8795,11 +8791,14 @@ console.log("dlur:" + defender_land_units_remaining);
 
 	  if (defender_land_units_remaining <= 0 && attacker_hits > 0) {
 	    for (let f in faction_map) {
-	      if (faction_map[f] == defender_faction) {
+	      let cf = this.returnControllingPower(f);
+	      if (cf == defender_faction || f == defender_faction || faction_map[f] == defender_faction) {
 	        for (let i = 0; i < space.units[f].length; i++) {
-	          his_self.captureLeader(attacker_faction, defender_faction, mv[1], space.units[f][i]);
-		  space.units[f].splice(i, 1);
-		  i--;
+		  if (space.units[f][i].reformer != true) {
+	            his_self.captureLeader(attacker_faction, defender_faction, mv[1], space.units[f][i]);
+	  	    space.units[f].splice(i, 1);
+		    i--;
+		  }
 		}
 	      }
 	    }
@@ -10548,6 +10547,9 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  for (let i = io.length-1; i>= 0; i--) {
 	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+io[i]);
 	  }
+	  if (this.game.state.henry_viii_marital_status == 1) {
+	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\tmarriage");
+	  }
 
 	  return 1;
 
@@ -10577,6 +10579,20 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  let player = this.returnPlayerOfFaction(faction);
 
 	  this.winter_overlay.render("stage6");
+
+
+	  //
+	  // papacy asked for Henry VIII marriage
+	  //
+	  if (faction == "marriage") {
+	    if (player == this.returnPlayerCommandingFaction("papacy")) {
+	      this.marriage_overlay.renderApproveDivorce();
+	      this.game.queue.splice(qe, 1);
+	      return 0;
+	    }
+	  }
+
+
 
 	  //
 	  // first, if there are any outstanding proposals that
@@ -11385,12 +11401,12 @@ alert("TRIGGERING WITH FHAND_IDX of -1...");
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 1;
-//if (f == "papacy") { cardnum = 0; }
-//if (f == "hapsburg") { cardnum = 1; }
-//if (f == "protestant") { cardnum = 0; }
-//if (f == "england") { cardnum = 0; }
-//if (f == "ottoman") { cardnum = 0; }
+cardnum = 1;
+if (f == "papacy") { cardnum = 0; }
+if (f == "hapsburg") { cardnum = 1; }
+if (f == "protestant") { cardnum = 0; }
+if (f == "england") { cardnum = 0; }
+if (f == "ottoman") { cardnum = 0; }
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);

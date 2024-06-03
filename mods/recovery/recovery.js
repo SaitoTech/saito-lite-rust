@@ -90,6 +90,22 @@ class Recovery extends ModTemplate {
 				this.backup_overlay.render();
 			}
 		);
+
+
+		app.connection.on("encrypt-key-exchange-confirm", (data)=> {
+
+			let member_array = data.members;
+
+			//We want to say who this is, no?
+
+		    let msg = `Your wallet has generated new secret keys to keep correspondence with your new contact secure. 
+		    Unless you backup your wallet you may lose these keys. Do you want help backing up your wallet?`;
+		    this.app.connection.emit(
+		      'saito-backup-render-request',
+		      {msg: msg, title: 'NEW FRIEND ADDED'}
+		    );
+
+		});
 	}
 
 	returnDecryptionSecret(email = '', pass = '') {
