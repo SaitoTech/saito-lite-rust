@@ -422,12 +422,9 @@ class Mods {
 		//
 		permit_through = this.moderateCore(tx);
 
-console.log("core moderation: " + permit_through);
-
 		if (permit_through == -1) { return -1; }
 		if (permit_through == 1) { return 1; }
 		
-
 		//
 		// seems OK if we made it this far
 		//
