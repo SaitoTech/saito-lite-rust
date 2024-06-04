@@ -63,27 +63,36 @@
   right: .5rem;
   bottom: .5rem;
   position: absolute;
-}
-
-.saito-profile-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin: 2rem 0 0.5rem 1.2rem;
+  text-shadow: 1px 1px 4px var(--saito-black);
+  cursor: pointer;
 }
 
 .saito-profile-description {
-  margin-right: .5rem;
+  position: relative;
+  margin-left: 1rem;
+  padding: 0.2rem;
+}
+
+.saito-profile-description.can-edit {
+  border: 1px dotted;
+  min-height: 5rem;
+  display: grid;
+  grid-template-columns: 1fr min-content;
 }
 
 .saito-description-edit {
+  display: none;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: flex-end;
   font-size: 1.5rem;
 }
 
-.saito-profile-info .saito-username {
-  font-size: 1.8rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
+
+.saito-profile-description.can-edit .saito-description-edit {
+  display: flex;
 }
 
 .saito-follow {
@@ -105,49 +114,30 @@
 .saito-profile-options-row {
   display: flex; 
   flex-direction: row;
-  justify-content: space-between;
   align-items: center;
   height: 5rem;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
-.saito-profile-icons { 
+.saito-profile-header { 
   display: flex; 
-  flex-direction: row;
-  gap: 2rem;
-  width: fit-content;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-evenly;
+  height: 100%;
 }
 
-.saito-profile-icons i {
-  font-size: 2.4rem;
-  line-height: 4rem;
-  cursor: pointer;
-  color: var(--saito-faded-icon-font);
-  border: 1px solid var(--saito-faded-icon-border); /* testing Not found*/
-  /* circular */
-  background: var(--saito-background-light);
-  padding: 0rem 0.6rem;
-  border-radius: 50%;
+.saito-profile-username {
+  font-size: 2.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.saito-profile-follow-btn {
-  color: var(--font-color-button-simple-contact);
-  background-color: var(--background-color-button-simple-contact);
-  border: var(--border-thickness-button-simple-contact) solid var(--border-color-button-simple-contact);
-  height: 4rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  text-align: center;
-  line-height: 4rem;
-  border-radius: var(--border-radius-button-simple-contact);
-  font-size: 1.1em;
-  cursor: pointer;
-}
-
-.saito-profile-follow-btn:hover {
-  color: var(--font-color-button-hover-simple-contact);
-  background-color: var(--background-color-button-hover-simple-contact);
-  border: var(--border-thickness-button-hover-simple-contact) solid var(--border-color-button-hover-simple-contact);
-  border-radius: var(--border-radius-button-hover-simple-contact);
+.saito-profile-key {
+  font-size: 1.4rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 
