@@ -173,6 +173,11 @@ class Recovery extends ModTemplate {
 	}
 
 	async onConfirmation(blk, tx, conf) {
+
+		if (this.app.BROWSER && !tx.isTo(this.publicKey)) {
+			return;
+		}
+
 		if (conf == 0) {
 			let txmsg = tx.returnMessage();
 
