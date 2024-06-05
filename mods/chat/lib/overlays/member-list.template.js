@@ -25,7 +25,7 @@ module.exports = (app, mod, chat_group) => {
 
 	if (chat_group?.member_ids){
 
-		html += `<div class="saito-modal-content">`;
+		html += `<div class="saito-modal-content hide-scrollbar">`;
  
 		for (let publickey in chat_group.member_ids) {
 

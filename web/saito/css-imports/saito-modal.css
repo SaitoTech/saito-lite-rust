@@ -112,7 +112,7 @@ This alows for a header with a header with title to be added without extra CSS
   color: var(--font-color-button-hover-chat-container);
 }
 
-.saito-modal .saito-modal-menu-option:not(.disabled-option):hover, .saito-modal .saito-contact:hover {
+.saito-modal-menu-option:not(.disabled-option):hover, .saito-modal .saito-contact:hover {
   background-color: var(--background-color-button-hover-modal-oldschool);
   color: var(--font-color-button-hover-modal-oldschool);
 }
