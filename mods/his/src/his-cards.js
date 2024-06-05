@@ -2546,6 +2546,7 @@ console.log("selected: " + spacekey);
         if (mv[0] === "advance_henry_viii_marital_status") {
 
           his_self.game.queue.splice(qe, 1);
+	  let msg = "Henry VIII is pleased with his marital progress...";
 
 	  //
 	  // Henry VIII already dead, cannot roll
@@ -2581,8 +2582,6 @@ console.log("selected: " + spacekey);
 	    his_self.updateLog("Henry VIII marries Katherine Parr");
 	  }
 
-	  his_self.updateLog("Henry VIII marital status now: " + his_self.game.state.henry_viii_marital_status);
-
 	  if (his_self.game.state.henry_viii_marital_status > 7) { his_self.game.state.henry_viii_marital_status = 7; return 1; }
 	  if (his_self.game.state.henry_viii_marital_status >= 2) {
 
@@ -2600,21 +2599,27 @@ console.log("selected: " + spacekey);
 	      dd++;
 	    }
 
-	    his_self.updateLog("Henry VIII rolls: " + dd);
+	    //his_self.updateLog("Henry VIII rolls: " + dd);
 	    his_self.game.state.henry_viii_rolls.push(dd);
+
+	    msg = "Henry VIII is pleased with his marital progress...";
 
 	    // results of pregnancy chart rolls
 	    if (dd == 1) {
+	      msg = "Marriage Result: Marriage Fails...";
 	      his_self.updateLog("Henry VIII rolls 1: marriage fails");
 	    }
 	    if (dd == 2) {
+	      msg = "Marriage Result: Wife Barren...";
 	      his_self.updateLog("Henry VIII rolls 2: marriage barren");
 	    }
 	    if (dd == 3) {
+	      msg = "Marriage Result: Wife Beheaded for Unbecoming Conduct...";
 	      his_self.updateLog("Henry VIII rolls 3: wife beheaded: will re-roll when England passes");
 	      his_self.game.state.henry_viii_auto_reroll = 1;
 	    }
 	    if (dd == 4) {
+	      msg = "Marriage Result: Elizabeth I born, +2VP for Female Succession...";
 	      his_self.updateLog("Henry VIII rolls 4: Elizabeth I born");
 	      his_self.updateLog("England gains 2 VP for Female Succession");
 	      his_self.game.state.henry_viii_add_elizabeth = 1;
@@ -2622,8 +2627,10 @@ console.log("selected: " + spacekey);
 	    if (dd == 5) {
 	      his_self.updateLog("Henry VIII rolls 5: sickly Edward VI");
 	      if (his_self.game.state.henry_viii_add_elizabeth == 1) {
+	        msg = "Marriage Result: Edward VI born sickly, +3VP for Male Succession...";
 	        his_self.updateLog("England gains additional 3 VP for Male Succession");
 	      } else {
+	        msg = "Marriage Result: Edward VI born sickly, +5VP for Male Succession...";
 	        his_self.updateLog("England gains 5 VP for Male Succession");
 	      }
 	      his_self.game.state.henry_viii_sickly_edward = 1;
@@ -2633,9 +2640,10 @@ console.log("selected: " + spacekey);
 	      his_self.updateLog("Henry VIII rolls 6: healthy Edward VI");
 	      if (his_self.game.state.henry_viii_sickly_edward == 0) {
 		if (his_self.game.state.henry_viii_add_elizabeth == 1) {
+	          msg = "Marriage Result: Edward VI born healthy, +3VP for Male Succession...";
 	          his_self.updateLog("England gains additional 3 VP for Male Succession");
 	        } else {
-	          his_self.updateLog("England gains 5 VP for Male Succession");
+	          msg = "Marriage Result: Edward VI born healthy, +5VP for Male Succession...";
 	        }
 	      }
 	      his_self.game.state.henry_viii_healthy_edward = 1;
@@ -2643,9 +2651,10 @@ console.log("selected: " + spacekey);
 	      his_self.game.state.henry_viii_add_elizabeth = 0;
 	    }
 
+	    his_self.updateStatus(msg);
 	  }
 
-	  his_self.marriage_overlay.render();
+	  his_self.marriage_overlay.render(msg);
 	  his_self.displayVictoryTrack();
 	  his_self.displayPregnancyChart();
 

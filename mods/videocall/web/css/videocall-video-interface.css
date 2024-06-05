@@ -454,7 +454,7 @@
 	height: min(60vw, 40vh);
 	border-radius: 50%;
 	border: 2px solid var(--saito-border-color-dark);
-	background-image: url(../saito/img/saito-background-icon.svg);
+	background-image: url(/saito/img/saito-background-icon.svg);
 	background-color: #222;
 	background-size: 66%;
 	background-repeat: no-repeat;
@@ -573,6 +573,7 @@
 	font-size: 2rem;
 	min-width: 7rem;
 	font-family: monospace;
+	text-align: right;
 }
 
 .minimize .timer .counter {

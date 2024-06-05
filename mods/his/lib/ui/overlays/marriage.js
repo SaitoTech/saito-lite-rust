@@ -73,11 +73,15 @@ class MarriageOverlay {
 		});
 	}
 
-	render(faction = 'france') {
+	render(msg="") {
 
 		let his_self = this.mod;
 
 		this.overlay.show(MarriageTemplate());
+
+		if (msg != "") {
+		  document.querySelector(".marriage-overlay .help").innerHTML = msg;
+		}
 
 		for (let i = 0; i < 7; i++) {
 			tileqs = `.marriage-overlay .tile${i+1}`;

@@ -655,6 +655,12 @@ class Chat extends ModTemplate {
 	//
 	async onConfirmation(blk, tx, conf) {
 		if (conf == 0) {
+
+			//Does this break chat or fix the encryption bugs...?
+			if (this.app.BROWSER && !tx.isTo(this.publicKey)) {
+				return;
+			}
+
 			if (tx.decryptMessage) {
 				await tx.decryptMessage(this.app);
 			}
@@ -1525,8 +1531,6 @@ class Chat extends ModTemplate {
 		}
 
 		if (this.addTransactionToGroup(group, tx)) {
-			//Returns 1 if it is a new message
-
 			//
 			// Just a little warning that it isn't nice to @ people if you blocked them and they cannot reply
 			//
