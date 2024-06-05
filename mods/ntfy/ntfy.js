@@ -23,69 +23,87 @@ class NTFY extends ModTemplate {
     }
   }
 
-	onNewBlock(blk, lc) {
-		// console.log('warehouse - on new block');
-		//var json_block = JSON.parse(blk.toJson());
-		var txs = [];
-		try {
-			blk.transactions.forEach((transaction) => {
-				let tx = transaction.toJson();
-				tx.msg = transaction.returnMessage();
-				txs.push(tx);
-			});
-		} catch (err) {
-			console.error(err);
-		}
-		if (txs.length > 0) {
-			//json_block.transactions = txwmsgs;
-			this.sendNotifications(txs);
-		}
-	}
+  onNewBlock(blk, lc) {
+    // console.log('warehouse - on new block');
+    //var json_block = JSON.parse(blk.toJson());
+    var txs = [];
+    try {
+      blk.transactions.forEach((transaction) => {
+        let tx = transaction.toJson();
+        tx.msg = transaction.returnMessage();
+        txs.push(tx);
+      });
+    } catch (err) {
+      console.error(err);
+    }
+    if (txs.length > 0) {
+      //json_block.transactions = txwmsgs;
+      this.sendNotifications(txs);
+    }
+  }
 
-  sendNotifications(txs) {
+  async sendNotifications(txs) {
     let this_self = this;
+
+    //make a list of peer keys to filer on.
+    let peerkeys = [];
+    let peers = await app.network.getPeers();
+    peers.forEach((p) => {
+      peerkeys.push(p.publicKey);
+    });
+
     txs.forEach((tx) => {
       //console.log(tx);
       let to = [];
       tx.to.forEach((slip) => {
-        if (slip?.publicKey != tx.from[0]?.publicKey && slip?.publicKey != this_self.app.wallet.publicKey) {
-          to.push(slip.publicKey);
+        //don't send messages to connected peers - use native
+        if (!peerkeeys.includes(slip?.publicKey)) {
+          //don't send messages sent to myself and don't message the node.
+          if (
+            slip?.publicKey != tx.from[0]?.publicKey &&
+            slip?.publicKey != this_self.app.wallet.publicKey
+          ) {
+            to.push(slip.publicKey);
+          }
         }
       });
 
-      let notification = {
-        topic: '', // string: Target topic name
-        message: '', // string: Message body; set to triggered if empty or not passed
-        title: '', // string: Message title
-        tags: [], // string array: List of tags that may or not map to emojis
-        priority: 3, // int (one of: 1, 2, 3, 4, or 5): Message priority with 1=min, 3=default and 5=max
-        actions: [], // JSON array: Custom user action buttons for notifications
-        //{ name: "Action1", url: "https://example.com/action1" },
-        //{ name: "Action2", url: "https://example.com/action2" }
-        click: '', // URL: Website opened when notification is clicked
-        attach: '', // URL: URL of an attachment, see attach via URL
-        markdown: true, // bool: Set to true if the message is Markdown-formatted
-        icon: 'https://saito.tech/wp-content/uploads/2024/05/Logo_256x256.png', // string: URL to use as notification icon
-        filename: '', // string: File name of the attachment
-        delay: '', // string: Timestamp or duration for delayed delivery
-        email: '', // e-mail address: E-mail address for e-mail notifications
-        call: '' // phone number or 'yes': Phone number to use for voice call
-      };
-
-
       if (to.length > 0 && JSON.stringify(tx.msg).length > 2) {
+        
+        // here i would like to add logic to ask the module to return the notifcation message and actions.
+
+        let notification = {
+          topic: '', // string: Target topic name
+          message: '', // string: Message body; set to triggered if empty or not passed
+          title: '', // string: Message title
+          tags: [], // string array: List of tags that may or not map to emojis
+          priority: 3, // int (one of: 1, 2, 3, 4, or 5): Message priority with 1=min, 3=default and 5=max
+          actions: [], // JSON array: Custom user action buttons for notifications
+          //{ name: "Action1", url: "https://example.com/action1" },
+          //{ name: "Action2", url: "https://example.com/action2" }
+          click: '', // URL: Website opened when notification is clicked
+          attach: '', // URL: URL of an attachment, see attach via URL
+          markdown: true, // bool: Set to true if the message is Markdown-formatted
+          icon: 'https://saito.tech/wp-content/uploads/2024/05/Logo_256x256.png', // string: URL to use as notification icon
+          filename: '', // string: File name of the attachment
+          delay: '', // string: Timestamp or duration for delayed delivery
+          email: '', // e-mail address: E-mail address for e-mail notifications
+          call: '' // phone number or 'yes': Phone number to use for voice call
+        };
+
         notification.title = 'Saito ' + tx.msg.module;
-        let data = "";
-        if (typeof tx.msg != "undefined") {
+        let data = '';
+        if (typeof tx.msg != 'undefined') {
           data = JSON.stringify(tx.msg);
           data = data.substring(0, 50);
         }
-        notification.message = "Message: " + tx.msg.request?.substring(0, 50) + "\nData: " + data;
+        notification.message =
+          'Message: ' + tx.msg.request?.substring(0, 50) + '\nData: ' + data;
         notification.tags = ['exclamation'];
         notification.actions = [
           { action: 'view', label: 'Open Saito', url: 'https://saito.io/' }
         ];
-        
+
         to.forEach((key) => {
           console.log(to.toString());
           notification.topic = key;
@@ -97,16 +115,10 @@ class NTFY extends ModTemplate {
           } catch (err) {
             console.log(err);
           }
-  
         });
-
       } else {
         //handle fee transactions later
       }
-  
-
-      
-      
     });
   }
 
