@@ -53,7 +53,7 @@ class Chat extends ModTemplate {
 		this.communityGroup = null;
 		this.communityGroupName = 'Saito Community Chat';
 
-		this.debug = true;
+		this.debug = false;
 
 		this.chat_manager = null;
 
@@ -736,6 +736,7 @@ class Chat extends ModTemplate {
 		}
 
 		if (txmsg.request === 'chat history') {
+			console.log("Chat history request for: ", peer.publicKey, peer.peerIndex);
 			let group = this.returnGroup(txmsg?.data?.group_id);
 
 			if (!group) {
