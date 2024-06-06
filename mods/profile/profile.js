@@ -19,7 +19,7 @@ class Profile extends ModTemplate {
 				console.log('profile-fetch-content-and-update-dom');
 
 				// 
-				// If not cached, check my local archives
+				// If not cached, check archives
 				// 
 				if (!this.cache[key]) {
 					this.cache[key] = {};
@@ -28,44 +28,49 @@ class Profile extends ModTemplate {
 
 						let returned_key = this.app.keychain.returnKey(key);
 
-						if (returned_key?.banner){
-							this.cache[key].banner = await this.fetchProfileFromArchive("banner", returned_key.banner);
+						if (returned_key?.profile) {
+
+							if (returned_key.profile?.banner){
+								this.cache[key].banner = await this.fetchProfileFromArchive("banner", returned_key.profile.banner);
+							}
+
+							if (returned_key.profile?.description){
+								this.cache[key].description = await this.fetchProfileFromArchive("description", returned_key.profile.description);
+							}
+
+							if (returned_key.profile?.image){
+								this.cache[key].image = await this.fetchProfileFromArchive("image", returned_key.profile.image);
+							}
+						
 						}
 
-						if (returned_key?.description){
-							this.cache[key].description = await this.fetchProfileFromArchive("description", returned_key.description);
-						}
+					} else {
 
-						if (returned_key?.image){
-							this.cache[key].image = await this.fetchProfileFromArchive("image", returned_key.image);
-						}
+						//Check remote archives
+						this.app.storage.loadTransactions(
+							{ field1: "Profile", field2: key }, 
+							async (txs) => {
+								let data_found = {};
+								if (txs?.length > 0) {
+									//Go reverse order for oldest first
+									for (let i = txs.length - 1; i >= 0; i--) {
+										let txmsg = txs[i].returnMessage();
+										console.log("Remote Archive Profile TX: ", txmsg);
+										Object.assign(data_found, txmsg.data);
+									}
+								}
+
+								Object.assign(this.cache[key], data_found);
+								this.updateProfileDom(this.cache[key], key);
+							},
+						null);
+
+						return;
 					}
 				}
 
 				this.updateProfileDom(this.cache[key], key);
 
-				if (this.publicKey !== key && !this.app.keychain.isWatched(key)) {
-					//Check remote archives
-					this.app.storage.loadTransactions(
-						{ field1: "Profile", field2: key }, 
-						async (txs) => {
-							let data_found = {};
-							if (txs?.length > 0) {
-								//Go reverse order for oldest first
-								for (let i = txs.length - 1; i >= 0; i--) {
-									let txmsg = txs[i].returnMessage();
-									console.log("Remote Archive Profile TX: ", txmsg);
-									Object.assign(data_found, txmsg.data);
-								}
-							}
-
-							Object.assign(this.cache[key], data_found);
-							this.updateProfileDom(this.cache[key], key);
-						},
-					null);
-				}
-
-				console.log(this.cache);
 			}
 		);
 
@@ -91,6 +96,7 @@ class Profile extends ModTemplate {
 
 	}
 
+
 	async onConfirmation(blk, tx, conf) {
 		let txmsg = tx.returnMessage();
 		if (conf == 0) {
@@ -101,6 +107,53 @@ class Profile extends ModTemplate {
 
 			}
 		}
+	}
+
+
+	async onPeerServiceUp(app, peer, service = {}) {
+
+		if (!app.BROWSER) {
+			return;
+		}
+
+		if (service.service === 'archive') {
+
+			for (let key of this.app.keychain.returnKeys()){
+
+				if (!key?.profile && key.watched) {
+
+					// Save an empty profile, so we don't keep querying on every page load... 
+					// if we are watching them, we will get the tx when they update...
+					//
+					this.app.keychain.addKey(key.publicKey, { profile: {} });
+
+					//Check remote archives
+					await app.storage.loadTransactions(
+						{ field1: "Profile", field2: key.publicKey }, 
+						async (txs) => {
+							let txs_found = {};
+							
+							// We want to get the most recent tx for description/image/banner
+							if (txs?.length > 0) {
+								for (let i = txs.length - 1; i >= 0; i--) {
+									let txmsg = txs[i].returnMessage();
+									for (let k in txmsg.data){
+										txs_found[k] = txs[i];
+									}
+								}
+							}
+
+							for (let k in txs_found){
+								await this.receiveProfileTransaction(txs_found[k]);
+							}
+						},
+
+					null);
+				}
+
+			}
+		}
+
 	}
 
 	/**
@@ -146,21 +199,11 @@ class Profile extends ModTemplate {
 		}
 
 		let txmsg = tx.returnMessage();
-		let data = {};
 
 		console.log("PROFILE UPDATE: ", txmsg.data);
 
-		for (let key in txmsg.data) {
-			if (key == "archive") {
-				data[key] = txmsg.data[key];
-			} else {
-				data[key] = tx.signature;
-			}
-		}
-
-
 		//
-		// Update (server) cache
+		// Update (server) cache with profile data
 		//
 		if (!this.cache[from]){
 			this.cache[from] = {};
@@ -169,16 +212,37 @@ class Profile extends ModTemplate {
 		Object.assign(this.cache[from], txmsg.data);
 
 		//
-		// Save update transaction in archive if server or we do the key
-		//
-		if (this.app.keychain.isWatched(from) || !this.app.BROWSER){
-			// 
-			// Save index reference in keychain (if we follow the key)
-			//
-			if (this.app.keychain.isWatched(from)) {
-				this.app.keychain.addKey(from, data);
+		// If we follow the key, save the indices (tx sig) in our keychain
+		// and archive the transactions
+ 		//
+		if (this.app.keychain.isWatched(from)) {
+
+			let data = {};
+
+			for (let key in txmsg.data) {
+				if (key == "archive") {
+					data[key] = txmsg.data[key];
+				} else {
+					data[key] = tx.signature;
+				}
 			}
 
+			let returned_key = this.app.keychain.returnKey(from);
+
+			let profile = Object.assign({}, returned_key?.profile);
+			
+			profile = Object.assign(profile, data);
+
+			console.log(profile);
+
+			this.app.keychain.addKey(from, { profile } );
+
+			await this.saveProfileTransaction(tx);	
+
+		}else if (!this.app.BROWSER){
+			//
+			// Save update transaction in archive if server 
+			//
 			await this.saveProfileTransaction(tx);	
 		}
 

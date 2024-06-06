@@ -69,14 +69,16 @@
 .saito-profile-description {
   position: relative;
   margin-left: 1rem;
-  padding: 0.2rem;
+  padding: 0.5rem;
 }
 
 .saito-profile-description.can-edit {
   border: 1px dotted;
+  border-radius: 3px;
   min-height: 5rem;
   display: grid;
   grid-template-columns: 1fr min-content;
+  cursor: pointer;
 }
 
 .saito-description-edit {

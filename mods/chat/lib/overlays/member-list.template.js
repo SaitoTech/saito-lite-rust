@@ -74,7 +74,7 @@ module.exports = (app, mod, chat_group) => {
 			html += formatUser(publickey);
 		}
 
-		html = `<div class="saito-modal-content">${html}</div>`;
+		html = `<div class="saito-modal-content hide-scrollbar">${html}</div>`;
 	}
 
 	return html;
