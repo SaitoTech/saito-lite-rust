@@ -25,11 +25,10 @@ class Chessgame extends GameTemplate {
 		this.maxPlayers = 2;
 
 		this.recordOptions = {
-			container: ".main",
+			container: "#board",
 			useMicrophone: true,
 			streams: null,
 			callbackAfterRecord: null
-
 		}
 
 		this.title = "Saito Chess";

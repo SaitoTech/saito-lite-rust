@@ -42,6 +42,7 @@ class Record extends ModTemplate {
 			];
 		}
 		if (type === 'game-menu') {
+			if(!obj.recordOptions) return;
 			let menu = {
 				id: 'game-record',
 				text: 'Record',
@@ -55,6 +56,7 @@ class Record extends ModTemplate {
 				class: 'record-game',
 				callback: async function (app, game_mod) {
 					let recordButton = document.getElementById('record-game');
+		
 					let { container, useMicrophone , callbackAfterRecord} = game_mod.recordOptions;
 
 					if (!this.recording_status) {
