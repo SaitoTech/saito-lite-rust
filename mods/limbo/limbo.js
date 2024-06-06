@@ -429,11 +429,17 @@ class Limbo extends ModTemplate {
 
 		if (this.localStream) {
 			if (this.localStream.getAudioTracks().length > 0) {
+				console.log("Add my audio:" , this.localStream.getAudioTracks()[0]);
 				this.combinedStream.addTrack(
 					this.localStream.getAudioTracks()[0]
 				);
 			}
-			if (!screenStream && this.localStream.getVideoTracks().length > 0) {
+
+			//
+			// Just make sure we don't add video if coming from video call or screen sharing...
+			//
+			if (!screenStream && !this.additionalSources && this.localStream.getVideoTracks().length > 0) {
+				console.log("Add my video");
 				this.combinedStream.addTrack(
 					this.localStream.getVideoTracks()[0]
 				);
@@ -441,8 +447,9 @@ class Limbo extends ModTemplate {
 		}
 
 		if (this.additionalSources) {
+			console.log("Add other sources...");
 			this.additionalSources.forEach((values, keys) => { 
-				console.log(keys, values);
+				console.log(keys, values.remoteStream.getAudioTracks());
 				values.remoteStream.getAudioTracks().forEach(track => {
 					this.combinedStream.addTrack(track);
 				});
@@ -1054,8 +1061,8 @@ class Limbo extends ModTemplate {
 	}
 
 	toggleNotification(value = true, sender) {
-		let vinyl = document.querySelector('.fa-podcast');
-		if (vinyl) {
+		let vinyl = document.querySelector('.fa-tower-broadcast');
+			if (vinyl) {
 			let full_icon = vinyl.parentElement;
 			if (value) {
 				vinyl.classList.add('recording');

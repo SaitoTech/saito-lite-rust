@@ -14,8 +14,6 @@ class Migration extends ModTemplate {
 		return this;
 	}
 
-	async onConfirmation(blk, tx, conf) {}
-
 	async render() {
 		if (!this.browser_active) {
 			return;
@@ -182,6 +180,11 @@ class Migration extends ModTemplate {
 	}
 
 	async onConfirmation(blk, tx, conf) {
+
+		if (this.app.BROWSER && !tx.isTo(this.publicKey)) {
+			return;
+		}
+
 		let txmsg = tx.returnMessage();
 		try {
 			if (conf == 0) {
