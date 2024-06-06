@@ -250,8 +250,9 @@ class CallInterfaceVideo {
 
 				let item = mod.respondTo('record-actions', {
 					container: ".video-container-large",
-					streams, // because we want to get the audio tracks from the video chat
-					useMicrophone: false,// false because we will get the audio tracks from the saved streams, we also want the mute button to mute audio streams
+					streams, 
+					useMicrophone: false, 
+					members: this.mod.room_obj.call_peers,
 					callbackAfterRecord: (data) => {
 						console.log("", data)
 					}

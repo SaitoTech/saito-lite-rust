@@ -12,11 +12,11 @@ class Record extends ModTemplate {
 		this.record_video = false;
 		this.recording_status = false;
 		this.styles = ['/saito/saito.css', '/record/style.css'];
-		this.interval = null; // Store the interval reference here
+		this.interval = null;
 	}
 
 	respondTo(type, obj) {
-		if (type === 'video-call-actions') {
+		if (type === 'record-actions') {
 			this.attachStyleSheets();
 			super.render(this.app, this);
 
@@ -25,12 +25,12 @@ class Record extends ModTemplate {
 					text: 'Record',
 					icon: 'fas fa-record-vinyl record-icon',
 					callback: async function (app) {
-						let { container, streams, useMicrophone, callbackAfterRecord } = obj;
+						let { container, streams, useMicrophone, callbackAfterRecord, members } = obj;
 
 						if (container) {
 							const recordIcon = document.querySelector('.fa-record-vinyl');
 							if (!this.recording_status) {
-								await this.startRecording(container, streams, useMicrophone, callbackAfterRecord);
+								await this.startRecording(container, streams, useMicrophone, callbackAfterRecord, members);
 								recordIcon.classList.add('recording', 'pulsate');
 							} else {
 								this.stopRecording();
@@ -59,7 +59,7 @@ class Record extends ModTemplate {
 
 					if (!this.recording_status) {
 
-						await this.startRecording(container, null, false, () => "");
+						await this.startRecording(container, null, false, () => "" );
 						recordButton.textContent = "stop recording";
 						this.recording_status = true;
 					} else {
@@ -77,14 +77,51 @@ class Record extends ModTemplate {
 
 	}
 
-	async startRecording(container, streams = [], useMicrophone = true, callbackAfterRecord = null) {
+	onConfirmation(blk, tx, conf) {
+		if (tx == null) {
+			return;
+		}
+
+		let message = tx.returnMessage();
+
+		if (conf === 0) {
+			if (message.module === 'record') {
+				if (this.app.BROWSER === 1) {
+					if (this.hasSeenTransaction(tx)) return;
+
+					if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
+						if (message.request === "start recording"){
+							siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} started recording their screen`, 1500);
+						}
+						if (message.request === "stop recording"){
+							siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} stopped recording their screen`, 1500);
+						}
+
+						this.toggleNotification();
+					}
+
+				}
+			}
+		}
+	}
+
+
+	async startRecording(container, streams = [], useMicrophone = true, callbackAfterRecord = null, members = []) {
 		let chunks = [];
 		const targetDiv = document.querySelector(container);
-		const { top, left, width, height } = targetDiv.getBoundingClientRect();
+
+		function updateDimensions() {
+			const { top, left, width, height } = targetDiv.getBoundingClientRect();
+
+			return { top, left, width, height };
+		}
+	
+		let { top, left, width, height } = updateDimensions();
+	
 
 		console.log(`Div dimensions - Top: ${top}, Left: ${left}, Width: ${width}, Height: ${height}`);
 
-		// Capture the screen
+		
 		let stream = await navigator.mediaDevices.getDisplayMedia({
 			video: {
 				displaySurface: 'browser'
@@ -97,21 +134,21 @@ class Record extends ModTemplate {
 
 		stream.getVideoTracks()[0].addEventListener('ended', () => {
 			console.log('Screen sharing stopped.');
-			this.mediaRecorder.stop(); // Stop the recording
+			this.mediaRecorder.stop(); 
 		});
 
-		// Create a video element to play the captured stream
+		
 		const video = document.createElement('video');
 		video.srcObject = stream;
 		video.style.position = 'absolute';
 		video.style.top = '0';
 		video.style.left = '0';
-		video.style.zIndex = '-1'; // Ensure the video does not cover other elements
+		video.style.zIndex = '-1'; 
 		video.play();
 
-		document.body.appendChild(video); // Append the video to the body for correct positioning
+		document.body.appendChild(video); 
 
-		// Create a canvas element to draw the specific portion of the video
+		// Create a canvas element to draw the wanted portion of the video
 		const canvas = document.createElement('canvas');
 		const ctx = canvas.getContext('2d');
 		canvas.width = width;
@@ -124,17 +161,19 @@ class Record extends ModTemplate {
 
 			function draw() {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+				let {top, left, width, height} = updateDimensions();
 				ctx.drawImage(video, left * scaleX, top * scaleY, width * scaleX, height * scaleY - 10, 0, 0, width, height);
 				requestAnimationFrame(draw);
 			}
 			draw();
 		};
 
-		// Capture the canvas stream
+		window.addEventListener('resize', updateDimensions);
+		window.addEventListener('orientationchange', updateDimensions);
+		
 		let recordedStream = canvas.captureStream();
 
-		// Combine the canvas stream with audio streams
+
 		const combinedStream = new MediaStream([...recordedStream.getTracks()]);
 
 		if (useMicrophone) {
@@ -153,7 +192,7 @@ class Record extends ModTemplate {
 			audioTracks.forEach(track => combinedStream.addTrack(track));
 		}
 
-		// Record the combined stream
+
 		const mediaRecorder = new MediaRecorder(combinedStream, {
 			mimeType: 'video/webm; codecs=vp9',
 			videoBitsPerSecond: 25 * 1024 * 1024,
@@ -187,11 +226,20 @@ class Record extends ModTemplate {
 			document.body.appendChild(a);
 			a.click();
 			URL.revokeObjectURL(url);
-			document.body.removeChild(video); // Remove the video element after recording
+			document.body.removeChild(video); 
+			if(members.length > 0){
+				this.sendStopRecordingTransaction(members);
+			}
+		
 		};
 
 		this.mediaRecorder.start();
 		this.recording_status = true;
+
+		if(members.length > 0){
+				this.sendStartRecordingTransaction(members);
+		}
+	
 	}
 
 
@@ -225,7 +273,6 @@ class Record extends ModTemplate {
 			}
 		};
 
-		// await draw();
 		this.interval = setInterval(draw, 1000 / 50);
 		return stream;
 	}
@@ -246,62 +293,48 @@ class Record extends ModTemplate {
 		});
 		return audioTracks;
 	}
+
+	async sendStartRecordingTransaction(keys){
+		let newtx =	await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
+
+		newtx.msg = {
+			module: 'Screenrecord',
+			request: 'start recording',
+		};
+
+		for (let peer of keys){
+			if (peer != this.publicKey){
+				newtx.addTo(peer);
+			}
+		}
+
+		await newtx.sign();
+
+		this.app.connection.emit('relay-transaction', newtx);
+		this.app.network.propagateTransaction(newtx);
+	}
+
+	async sendStopRecordingTransaction(keys){
+		let newtx =	await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
+
+		newtx.msg = {
+			module: 'Screenrecord',
+			request: 'stop recording',
+		};
+
+		for (let peer of keys){
+			if (peer != this.publicKey){
+				newtx.addTo(peer);
+			}
+		}
+
+		await newtx.sign();
+
+		this.app.connection.emit('relay-transaction', newtx);
+		this.app.network.propagateTransaction(newtx);
+	}
 }
 
 module.exports = Record;
 
 
-// let recorder;
-// let chunks = [];
-// let stream;
-// let recordedStream;
-
-// async function startCapture() {
-// 	const targetDiv = document.getElementById('targetDiv');
-// 	const { top, left, width, height } = targetDiv.getBoundingClientRect();
-
-// 	// Capture the screen
-// 	stream = await navigator.mediaDevices.getDisplayMedia({
-// 		video: { cursor: "always" },
-// 		audio: false
-// 	});
-
-// 	const video = document.createElement('video');
-// 	video.srcObject = stream;
-// 	video.play();
-
-// 	const canvas = document.createElement('canvas');
-// 	const ctx = canvas.getContext('2d');
-// 	canvas.width = width;
-// 	canvas.height = height;
-
-// 	video.onloadedmetadata = () => {
-// 		// Update canvas every frame
-// 		function draw() {
-// 			// Draw a specific portion of the video (x, y, width, height)
-// 			ctx.drawImage(video, left, top, width, height, 0, 0, width, height);
-// 			requestAnimationFrame(draw);
-// 		}
-// 		draw();
-// 	};
-
-// 	// Capture canvas content as a stream
-// 	recordedStream = canvas.captureStream();
-// 	recorder = new MediaRecorder(recordedStream);
-// 	recorder.ondataavailable = event => chunks.push(event.data);
-// 	recorder.onstop = onRecordingStop;
-// 	recorder.start();
-// }
-
-// function stopCapture() {
-// 	recorder.stop();
-// 	stream.getTracks().forEach(track => track.stop());
-// }
-
-// function onRecordingStop() {
-// 	const blob = new Blob(chunks, { type: 'video/webm' });
-// 	const url = URL.createObjectURL(blob);
-// 	const recordedVideo = document.getElementById('recordedVideo');
-// 	recordedVideo.src = url;
-// 	recordedVideo.play();
-// }
