@@ -157,11 +157,10 @@ class Record extends ModTemplate {
 		const ctx = canvas.getContext('2d');
 		canvas.width = width;
 		canvas.height = height;
+		const self = this
 
 		video.onloadedmetadata = () => {
 			function draw() {
-				requestAnimationFrame(draw);
-			
 				let {top, left, width, height} = updateDimensions();
 				canvas.width = width; 
 				canvas.height = height;
@@ -180,6 +179,8 @@ class Record extends ModTemplate {
 				const clipHeight = Math.min(scaledHeight, video.videoHeight - srcY);
 			
 				ctx.drawImage(video, srcX, srcY, clipWidth, clipHeight, 0, 0, canvas.width, canvas.height);
+				self.animation_id = requestAnimationFrame(draw);
+				console.log('framer')
 			}
 			draw();
 			
@@ -288,9 +289,11 @@ class Record extends ModTemplate {
 
 
 	async stopRecording() {
+
 		if (this.mediaRecorder) {
 			this.mediaRecorder.stop();
 		}
+		cancelAnimationFrame(this.animation_id)
 		const recordIcon = document.querySelector('.fa-record-vinyl');
 		if(recordIcon){
 			recordIcon.classList.remove('recording', 'pulsate');
