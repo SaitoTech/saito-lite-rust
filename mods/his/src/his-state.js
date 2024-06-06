@@ -200,6 +200,7 @@
     }
     return 0;
   }
+
   isSpaceBesieged(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let faction_with_units = "";
@@ -827,6 +828,7 @@ if (this.game.state.scenario != "is_testing") {
     state.events.michael_servetus = "";  // faction that gets VP
     state.events.copernicus = "";        // faction that gets VP
     state.events.copernicus_vp = 0;     // 1 or 2 VP
+    state.events.scots_raid = 0;	// 1 if active, limits French activities
 
     state.french_chateaux_vp = 0;
 
@@ -966,6 +968,7 @@ if (this.game.state.scenario != "is_testing") {
     state.henry_viii_add_elizabeth = 0;
     state.henry_viii_auto_reroll = 0;
     state.henry_viii_rolls = [];
+    state.henry_viii_wives = [];
     state.henry_viii_pope_approves_divorce = 0;
 
     state.knights_of_st_john = "";

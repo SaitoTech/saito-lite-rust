@@ -1,10 +1,64 @@
 .marriage-overlay {
-	background-image: url(/his/img/backgrounds/marital_status.png);
-    	background-size: contain;
-    	max-height: 90vh;
-    	max-width: 140vh;
-    	min-width: 90vw;
-    	min-height: 60vw;
+    background-image: url(/his/img/backgrounds/marital_status.png);
+    background-size: contain;
+    aspect-ratio: 1875 / 1249;
+    height: 80vh;
+}
+
+.marriage-overlay .tile {
+    opacity: 1;
+}
+.marriage-overlay .tile:hover {
+    opacity: 0.05;
+}
+
+.marriage-overlay .status {
+        position: relative;
+        height: 4rem;
+        line-height: 4rem;
+        min-height: 0;
+        width: 30rem;
+        max-width: 35rem;
+        background-color: whitesmoke;
+        z-index: 10;
+        border-radius: 1rem;
+        top: 0px;
+        left: 0px;
+        white-space: nowrap;
+        float: left;
+        margin-left: 1rem;
+        margin-top: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+}
+
+.marriage-overlay .controls {
+        max-height: 80vh;
+}
+
+.marriage-overlay .controls ul {
+        overflow-y: auto;
+        display: block;
+        position: relative;
+        background-color: whitesmoke;
+        line-height: 4rem;
+        width: 30rem;
+        max-width: 35rem;
+        max-height: 80vh;
+        z-index: 10;
+        border-radius: 1rem;
+        top: 0px;
+        left: 0px;
+        white-space: nowrap;
+        float: left;
+        margin-left: 1rem;
+        margin-top: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        clear: both;
+        min-height: max-content;
+        height: auto;
+        cursor: pointer;
 }
 
 .pregnancy {
@@ -30,38 +84,37 @@
 .marriage-overlay .tile {
     display: block;
     position: absolute;
-    height: 13.5vw;
-    width: 13.5vw;
+    height: 22%;
+    width: 15%;
 }
 
 .marriage-overlay .tile1 {
-    top: 75vh;
-    left: 2vw;
+    top: 75%;
+    left: 2%;
 }
 .marriage-overlay .tile2 {
-    top: 75vh;
-    left: 16.5vw;
+    top: 75%;
+    left: 2%;
 }
 .marriage-overlay .tile3 {
-    top: 75vh;
-    left: 16.5vw;
-    left: 30%;
+    top: 75%;
+    left: 18%;
 }
 .marriage-overlay .tile4 {
-    top: 75vh;
-    left: 31vw;
+    top: 75%;
+    left: 35%;
 }
 .marriage-overlay .tile5 {
-    top: 75vh;
-    left: 46vw;
+    top: 75%;
+    left: 51%;
 }
 .marriage-overlay .tile6 {
-    top: 75vh;
-    left: 50.5vw;
+    top: 75%;
+    left: 67%;
 }
 .marriage-overlay .tile7 {
-    top: 75vh;
-    left: 75vw;
+    top: 75%;
+    left: 83%;
 }
 
 

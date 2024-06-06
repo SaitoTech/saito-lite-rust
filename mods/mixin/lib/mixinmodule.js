@@ -162,15 +162,15 @@ class MixinModule extends CryptoModule {
 	 * @return {Number}
 	 */
 	async returnBalance() {
-		console.log('Query balance for ' + this.ticker);
+		//console.log('Query balance for ' + this.ticker);
 		if (
 			new Date().getTime() - this.balance_timestamp_last_fetched >
 			this.minimum_delay_between_balance_queries
 		) {
-			console.log(
-				'Return Balance: ',
-				this.balance_timestamp_last_fetched
-			);
+			// console.log(
+			// 	'Return Balance: ',
+			// 	this.balance_timestamp_last_fetched
+			// );
 			this.balance_timestamp_last_fetched = new Date().getTime();
 			await this.mixin.fetchSafeUtxoBalance(this.asset_id);
 

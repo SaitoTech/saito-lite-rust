@@ -63,8 +63,8 @@ class Limbo extends ModTemplate {
 		});
 
 		app.connection.on('limbo-toggle-audio', () => {
-			if (this.localStream) {
-				this.localStream.getAudioTracks().forEach((track) => {
+			if (this.combinedStream) {
+				this.combinedStream.getAudioTracks().forEach((track) => {
 					track.enabled = !track.enabled;
 				});
 			}
@@ -165,7 +165,7 @@ class Limbo extends ModTemplate {
 				return [
 					{
 						text: 'Cast',
-						icon: 'fa-solid fa-podcast',
+						icon: 'fa-solid fa-tower-broadcast',
 						hook: "onair",
 						callback: async function (app) {
 							if (mod_self.dreamer) {
@@ -370,32 +370,33 @@ class Limbo extends ModTemplate {
 		//
 		let { keylist, includeCamera, screenStream } = options;
 
-		try {
-			//
-			// Get webcam video
-			//
-			if (includeCamera) {
-				this.localStream =
-					await navigator.mediaDevices.getUserMedia({
-						video: true,
-						audio: true // Capture microphone audio
-					});
-			} else {
+		if (!this.localStream){
+			try {
 				//
-				// Get microphone input only
+				// Get webcam video
 				//
-				this.localStream =
-					await navigator.mediaDevices.getUserMedia({
-						audio: true // Capture microphone audio
-					});
+				if (includeCamera) {
+					this.localStream =
+						await navigator.mediaDevices.getUserMedia({
+							video: true,
+							audio: true // Capture microphone audio
+						});
+				} else {
+					//
+					// Get microphone input only
+					//
+					this.localStream =
+						await navigator.mediaDevices.getUserMedia({
+							audio: true // Capture microphone audio
+						});
+				}
+			} catch (error) {
+				console.error('Access to user media denied: ', error);
+				salert(
+					'Recording will continue without camera and/or microphone input'
+				);
 			}
-		} catch (error) {
-			console.error('Access to user media denied: ', error);
-			salert(
-				'Recording will continue without camera and/or microphone input'
-			);
 		}
-
 
 		//await sconfirm('Share screen?');
 
@@ -428,17 +429,32 @@ class Limbo extends ModTemplate {
 
 		if (this.localStream) {
 			if (this.localStream.getAudioTracks().length > 0) {
+				console.log("Add my audio:" , this.localStream.getAudioTracks()[0]);
 				this.combinedStream.addTrack(
 					this.localStream.getAudioTracks()[0]
 				);
 			}
-			if (!screenStream && this.localStream.getVideoTracks().length > 0) {
+
+			//
+			// Just make sure we don't add video if coming from video call or screen sharing...
+			//
+			if (!screenStream && !this.additionalSources && this.localStream.getVideoTracks().length > 0) {
+				console.log("Add my video");
 				this.combinedStream.addTrack(
 					this.localStream.getVideoTracks()[0]
 				);
 			}
 		}
 
+		if (this.additionalSources) {
+			console.log("Add other sources...");
+			this.additionalSources.forEach((values, keys) => { 
+				console.log(keys, values.remoteStream.getAudioTracks());
+				values.remoteStream.getAudioTracks().forEach(track => {
+					this.combinedStream.addTrack(track);
+				});
+			});
+		}
 
 		await this.sendDreamTransaction(keylist);
 
@@ -956,16 +972,19 @@ class Limbo extends ModTemplate {
 		if (!this.externalMediaControl) {
 			if (this.localStream) {
 				this.localStream.getTracks().forEach((track) => track.stop());
-				this.localStream = null;
 			}
 			if (this.combinedStream) {
 				this.combinedStream.getTracks().forEach((track) => {
 					track.onended = null;
 					track.stop();
 				});
-				this.combinedStream = null;
 			}
 		}
+
+		this.localStream = null;
+		this.combinedStream = null;
+		this.additionalSources = null;
+
 	}
 
 	exitSpace() {
@@ -1042,8 +1061,8 @@ class Limbo extends ModTemplate {
 	}
 
 	toggleNotification(value = true, sender) {
-		let vinyl = document.querySelector('.fa-podcast');
-		if (vinyl) {
+		let vinyl = document.querySelector('.fa-tower-broadcast');
+			if (vinyl) {
 			let full_icon = vinyl.parentElement;
 			if (value) {
 				vinyl.classList.add('recording');

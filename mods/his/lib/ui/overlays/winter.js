@@ -37,6 +37,12 @@ class WinterOverlay {
 
 	render(stage = '') {
 
+		// skip showing on first round start
+		if (this.mod.game.state.starting_round == this.mod.game.state.round) {
+		  return;
+		}
+
+
 		if (stage != "") { this.stage = stage; } 
 
 		let his_self = this.mod;

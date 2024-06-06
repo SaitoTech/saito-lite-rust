@@ -667,6 +667,62 @@
 
     let menu = [];
 
+if (faction === "france" && this.game.state.events.scots_raid == 1) {
+    menu.push({
+      factions : ['scotland'],
+      cost : [2],
+      name : "Regular",
+      check : this.canPlayerBuyRegular,
+      fnct : this.playerBuyRegular,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/regular.jpg',
+    });
+    menu.push({
+      factions : ['scotland'],
+      cost : [2],
+      name : "Squadron",
+      check : this.canPlayerBuyNavalSquadron,
+      fnct : this.playerBuyNavalSquadron,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/squadron.jpg',
+    });
+    menu.push({
+      factions : ['france','scotland'],
+      cost : [1,1],
+      name : "Move",
+      check : this.canPlayerMoveFormationInClear,
+      fnct : this.playerMoveFormationInClear,
+      category : "move" ,
+      img : '/his/img/backgrounds/move/move_in_clear.jpg',
+    });
+    menu.push({
+      factions : ['france','scotland'],
+      cost : [1,1],
+      name : "Control",
+      check : this.canPlayerControlUnfortifiedSpace,
+      fnct : this.playerControlUnfortifiedSpace,
+      category : "attack" ,
+      img : '/his/img/backgrounds/move/control.jpg',
+    });
+    menu.push({
+      factions : ['france', 'scotland'],
+      cost : [0,0],
+      name : "Assault",
+      check : this.canPlayerAssaultTutorial,
+      fnct : this.playerAssaultTutorial,
+      category : "attack" ,
+      img : '/his/img/backgrounds/move/assault.jpg',
+    });
+    menu.push({
+      factions : ['france', 'scotland'],
+      cost : [1,1],
+      name : "Assault",
+      check : this.canPlayerAssault,
+      fnct : this.playerAssault,
+      category : "attack" ,
+      img : '/his/img/backgrounds/move/assault.jpg',
+    });
+} else {
 if (limit === "build") {
     menu.push({
       factions : ['hapsburg','england','france','papacy','protestant'],
@@ -988,6 +1044,7 @@ if (this.game.state.events.cramner_active == 1) {
 
     } // mary_i limit check
 }
+} // scots raid
 
     //
     // major powers have limited options in 2P version
@@ -2936,7 +2993,7 @@ return;
         return;
       }
 
-      let msg = his_self.returnFactionName(faction) + " - Return Extra Units to Capital?";
+      let msg = his_self.returnFactionName(faction) + " - Return Units to Capital?";
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
         opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
@@ -3121,7 +3178,7 @@ return;
 
     pick_capital_function = function(his_self, pick_capital_function, select_spacekey_function, select_units_function, finish_selecting_from_space_function) {
 
-      let msg = his_self.returnFactionName(faction) + " - Return Extra Units to Capital?";
+      let msg = his_self.returnFactionName(faction) + " - Return Units to Capital?";
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
         opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;

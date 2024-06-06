@@ -3075,15 +3075,17 @@ console.log("\n\n\n\n");
 
     this.menu.addMenuOption("game-game", "Game");
 
+/***
     this.menu.addSubMenuOption("game-game", {
-      text : "Marital Status",
-      id : "game-marriage",
-      class : "game-marriage",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	game_mod.marriage_overlay.render();
-      },
+      text: "Divorce",
+      id: "game-divorce",
+      class: "game-divorce",
+      callback: function(app, game_mod){
+	game_mod.menu.hideSubMenus();
+        game_mod.marriage_overlay.renderApproveDivorce();
+      }
     });
+***/
 
     this.menu.addSubMenuOption("game-game", {
       text : "About H.I.S.",
@@ -6208,6 +6210,7 @@ console.log("selected: " + spacekey);
         if (mv[0] === "advance_henry_viii_marital_status") {
 
           his_self.game.queue.splice(qe, 1);
+	  let msg = "Henry VIII is pleased with his marital progress...";
 
 	  //
 	  // Henry VIII already dead, cannot roll
@@ -6243,8 +6246,6 @@ console.log("selected: " + spacekey);
 	    his_self.updateLog("Henry VIII marries Katherine Parr");
 	  }
 
-	  his_self.updateLog("Henry VIII marital status now: " + his_self.game.state.henry_viii_marital_status);
-
 	  if (his_self.game.state.henry_viii_marital_status > 7) { his_self.game.state.henry_viii_marital_status = 7; return 1; }
 	  if (his_self.game.state.henry_viii_marital_status >= 2) {
 
@@ -6262,21 +6263,27 @@ console.log("selected: " + spacekey);
 	      dd++;
 	    }
 
-	    his_self.updateLog("Henry VIII rolls: " + dd);
+	    //his_self.updateLog("Henry VIII rolls: " + dd);
 	    his_self.game.state.henry_viii_rolls.push(dd);
+
+	    msg = "Henry VIII is pleased with his marital progress...";
 
 	    // results of pregnancy chart rolls
 	    if (dd == 1) {
+	      msg = "Marriage Result: Marriage Fails...";
 	      his_self.updateLog("Henry VIII rolls 1: marriage fails");
 	    }
 	    if (dd == 2) {
+	      msg = "Marriage Result: Wife Barren...";
 	      his_self.updateLog("Henry VIII rolls 2: marriage barren");
 	    }
 	    if (dd == 3) {
+	      msg = "Marriage Result: Wife Beheaded for Unbecoming Conduct...";
 	      his_self.updateLog("Henry VIII rolls 3: wife beheaded: will re-roll when England passes");
 	      his_self.game.state.henry_viii_auto_reroll = 1;
 	    }
 	    if (dd == 4) {
+	      msg = "Marriage Result: Elizabeth I born, +2VP for Female Succession...";
 	      his_self.updateLog("Henry VIII rolls 4: Elizabeth I born");
 	      his_self.updateLog("England gains 2 VP for Female Succession");
 	      his_self.game.state.henry_viii_add_elizabeth = 1;
@@ -6284,8 +6291,10 @@ console.log("selected: " + spacekey);
 	    if (dd == 5) {
 	      his_self.updateLog("Henry VIII rolls 5: sickly Edward VI");
 	      if (his_self.game.state.henry_viii_add_elizabeth == 1) {
+	        msg = "Marriage Result: Edward VI born sickly, +3VP for Male Succession...";
 	        his_self.updateLog("England gains additional 3 VP for Male Succession");
 	      } else {
+	        msg = "Marriage Result: Edward VI born sickly, +5VP for Male Succession...";
 	        his_self.updateLog("England gains 5 VP for Male Succession");
 	      }
 	      his_self.game.state.henry_viii_sickly_edward = 1;
@@ -6295,9 +6304,10 @@ console.log("selected: " + spacekey);
 	      his_self.updateLog("Henry VIII rolls 6: healthy Edward VI");
 	      if (his_self.game.state.henry_viii_sickly_edward == 0) {
 		if (his_self.game.state.henry_viii_add_elizabeth == 1) {
+	          msg = "Marriage Result: Edward VI born healthy, +3VP for Male Succession...";
 	          his_self.updateLog("England gains additional 3 VP for Male Succession");
 	        } else {
-	          his_self.updateLog("England gains 5 VP for Male Succession");
+	          msg = "Marriage Result: Edward VI born healthy, +5VP for Male Succession...";
 	        }
 	      }
 	      his_self.game.state.henry_viii_healthy_edward = 1;
@@ -6305,9 +6315,10 @@ console.log("selected: " + spacekey);
 	      his_self.game.state.henry_viii_add_elizabeth = 0;
 	    }
 
+	    his_self.updateStatus(msg);
 	  }
 
-	  his_self.marriage_overlay.render();
+	  his_self.marriage_overlay.render(msg);
 	  his_self.displayVictoryTrack();
 	  his_self.displayPregnancyChart();
 
@@ -6886,6 +6897,16 @@ console.log("selected: " + spacekey);
 		his_self.endTurn();
 
 	      } else {
+
+		//
+		// remove any cards_left update that runs after this coming cards_left update and undoes us
+		//
+		for (let i = 0; i < his_self.moves.length; i++) {
+		  let lmv = his_self.moves[i].splice("\t");
+		  if (lmv[0] == "cards_left") {
+		    his_self.moves.splice(i, 1);
+		  }
+		}
 
     		his_self.addMove("cards_left\tprotestant\t"+(parseInt(his_self.game.state.cards_left["protestant"])+1));
 		his_self.addMove("discard\tprotestant\t007");
@@ -11011,7 +11032,7 @@ console.log("selected: " + spacekey);
 	
 	if (his_self.game.players.length > 2) {
 	  let eng = his_self.returnPlayerCommandingFaction("england");
-	  his_self.game.queue.push("hand_to_fhand\t1\t"+p+"\t"+"england"+"\t1"); // 1 = overlay
+	  his_self.game.queue.push("hand_to_fhand\t1\t"+eng+"\t"+"england"+"\t1"); // 1 = overlay
           his_self.game.queue.push(`DEAL\t1\t${eng}\t2`);
         }
 
@@ -11571,6 +11592,8 @@ console.log("selected: " + spacekey);
 	    "Select Occupied Territory",
 
 	    function(space) {
+
+	      if (his_self.isSpaceBesieged(space.key)) { return 0; }
 
 	      // 2P game - may be played against electorate under Hapsburg Control
 	      if (his_self.game.players.length == 2) {
@@ -13945,7 +13968,7 @@ console.log("selected: " + spacekey);
 	let f = his_self.game.state.newworld['circumnavigation'].faction;
 	let p = his_self.returnPlayerCommandingFaction(f);
 
-        his_self.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction + "\t1");
+        his_self.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + f + "\t1");
         his_self.game.queue.push('DEAL\t1\t' + p + '\t' + 2);
 	
 	return 1;
@@ -14022,7 +14045,9 @@ console.log("selected: " + spacekey);
                 let options_idx = $(this).attr("id");
 		his_self.updateStatus("acknowledge");
 
+                his_self.addMove("SETVAR\tstate\events\tscots_raid\t0");
                 his_self.addMove("ops\tfrance\t097\t3");
+                his_self.addMove("SETVAR\tstate\events\tscots_raid\t1");
                 his_self.addMove("move\tfrance\tland\t"+options[options_idx].spacekey+"\tstirling\t"+options[options_idx].idx);
                 his_self.endTurn();
 
@@ -14030,7 +14055,9 @@ console.log("selected: " + spacekey);
 	    }
 
 	    if (action === "no") {
+              his_self.addMove("SETVAR\tstate\events\tscots_raid\t0");
               his_self.addMove("ops\tfrance\t097\t6");
+              his_self.addMove("SETVAR\tstate\events\tscots_raid\t1");
 	      his_self.endTurn();
 	    }
 
@@ -14104,15 +14131,42 @@ console.log("selected: " + spacekey);
             $('.option').off();
 	    let action = $(this).attr("id");
 
-	    if (action === "conquest-england") {  his_self.addMove("remove_conquest\tengland"); }
-	    if (action === "conquest-france") {  his_self.addMove("remove_conquest\tfrance"); }
-	    if (action === "conquest-hapsburg") {  his_self.addMove("remove_conquest\thapsburg"); }
-	    if (action === "cabot_england") {  his_self.addMove("SETVAR\tstate\tevents\tcabot_england\t0"); }
-	    if (action === "cabot_hapsburg") {  his_self.addMove("SETVAR\tstate\tevents\tcabot_hapsburg\t0"); }
-	    if (action === "cabot_france") {  his_self.addMove("SETVAR\tstate\tevents\tcabot_france\t0"); }
-	    if (action === "england") {  his_self.addMove("remove_exploration\tengland"); }
-	    if (action === "hapsburg") {  his_self.addMove("remove_exploration\thapsburg"); }
-	    if (action === "france") {  his_self.addMove("remove_exploration\tfrance"); }
+	    if (action === "conquest-england") {  
+		his_self.addMove("NOTIFY\t"+his_self.popup('098')+" cancels English conquest");
+		his_self.addMove("remove_conquest\tengland"); 
+	    }
+	    if (action === "conquest-france") {  
+		his_self.addMove("NOTIFY\t"+his_self.popup('098')+" cancels French conquest");
+		his_self.addMove("remove_conquest\tfrance"); 
+	    }
+	    if (action === "conquest-hapsburg") {  
+		his_self.addMove("NOTIFY\t"+his_self.popup('098')+" cancels Hapsburg conquest");
+		his_self.addMove("remove_conquest\thapsburg"); 
+	    }
+	    if (action === "cabot_england") {  
+		his_self.addMove("NOTIFY\t"+his_self.popup('098')+" cancels Sebastian Cabot");
+		his_self.addMove("SETVAR\tstate\tevents\tcabot_england\t0"); 
+	    }
+	    if (action === "cabot_hapsburg") {  
+		his_self.addMove("NOTIFY\t"+his_self.popup('098')+" cancels Sebastian Cabot");
+		his_self.addMove("SETVAR\tstate\tevents\tcabot_hapsburg\t0"); 
+	    }
+	    if (action === "cabot_france") {  
+		his_self.addMove("NOTIFY\t"+his_self.popup('098')+" cancels Sebastian Cabot");
+		his_self.addMove("SETVAR\tstate\tevents\tcabot_france\t0"); 
+	    }
+	    if (action === "england") {  
+		his_self.addMove("NOTIFY\t"+his_self.popup('098')+" cancels English exploration");
+		his_self.addMove("remove_exploration\tengland"); 
+	    }
+	    if (action === "hapsburg") {  
+		his_self.addMove("NOTIFY\t"+his_self.popup('098')+" cancels Hapsburg exploration");
+		his_self.addMove("remove_exploration\thapsburg"); 
+	    }
+	    if (action === "france") {  
+		his_self.addMove("NOTIFY\t"+his_self.popup('098')+" cancels French exploration");
+		his_self.addMove("remove_exploration\tfrance"); 
+	    }
 
 	    his_self.endTurn();
 
@@ -14789,7 +14843,7 @@ console.log("selected: " + spacekey);
 		      his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
 		      regulars_to_delete--;
 		    }
-		    if (u.type != "regular" && nonregulars_to_delete > 0) {
+		    if (u.army_leader != true && u.navy_leader != true && u.type != "regular" && (u.type == "mercenary" || u.type == "cavalry") && nonregulars_to_delete > 0) {
 		      his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
 		      nonregulars_to_delete--;
 		    }
@@ -18257,7 +18311,7 @@ try {
       political: "france",
       religion: "catholic",
       ports: ["biscay"],
-      neighbours: ["navarre", "nantes","tours","limoges"],
+      neighbours: ["toulouse", "navarre", "nantes","tours","limoges"],
       pass: ["navarre"],
       language: "french",
       type: "key"
@@ -20364,6 +20418,7 @@ try {
     }
     return 0;
   }
+
   isSpaceBesieged(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let faction_with_units = "";
@@ -20991,6 +21046,7 @@ if (this.game.state.scenario != "is_testing") {
     state.events.michael_servetus = "";  // faction that gets VP
     state.events.copernicus = "";        // faction that gets VP
     state.events.copernicus_vp = 0;     // 1 or 2 VP
+    state.events.scots_raid = 0;	// 1 if active, limits French activities
 
     state.french_chateaux_vp = 0;
 
@@ -21130,6 +21186,7 @@ if (this.game.state.scenario != "is_testing") {
     state.henry_viii_add_elizabeth = 0;
     state.henry_viii_auto_reroll = 0;
     state.henry_viii_rolls = [];
+    state.henry_viii_wives = [];
     state.henry_viii_pope_approves_divorce = 0;
 
     state.knights_of_st_john = "";
@@ -25442,7 +25499,7 @@ console.log("we are player: " + this.game.player + " and seeking " + player);
 	    if (f == faction || this.areAllies(f, faction, true)) {
 	      for (let z = 0; z < this.game.spaces[spacekey].units[f].length; z++) {
 		let u = this.game.spaces[spacekey].units[f][z];
-		if (u.type != reformer && u.besieged == false) {
+		if (u.reformer != true && u.besieged == false) {
 		  any_unbesieged_units = true;
 		}
 	      }
@@ -31002,10 +31059,6 @@ console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space
           his_self.game.state.assault.attacker_land_units_remaining = attacker_land_units_remaining;
           his_self.game.state.assault.defender_land_units_remaining = defender_land_units_remaining;
 
-console.log("ASSAULT: ");
-console.log("alur:" + attacker_land_units_remaining);
-console.log("dlur:" + defender_land_units_remaining);
-
 	  //
 	  // attacker and defender both wiped out
 	  //
@@ -31059,11 +31112,14 @@ console.log("dlur:" + defender_land_units_remaining);
 
 	  if (defender_land_units_remaining <= 0 && attacker_hits > 0) {
 	    for (let f in faction_map) {
-	      if (faction_map[f] == defender_faction) {
+	      let cf = this.returnControllingPower(f);
+	      if (cf == defender_faction || f == defender_faction || faction_map[f] == defender_faction) {
 	        for (let i = 0; i < space.units[f].length; i++) {
-	          his_self.captureLeader(attacker_faction, defender_faction, mv[1], space.units[f][i]);
-		  space.units[f].splice(i, 1);
-		  i--;
+		  if (space.units[f][i].reformer != true) {
+	            his_self.captureLeader(attacker_faction, defender_faction, mv[1], space.units[f][i]);
+	  	    space.units[f].splice(i, 1);
+		    i--;
+		  }
 		}
 	      }
 	    }
@@ -32812,6 +32868,9 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  for (let i = io.length-1; i>= 0; i--) {
 	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+io[i]);
 	  }
+	  if (this.game.state.henry_viii_marital_status == 1) {
+	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\tmarriage");
+	  }
 
 	  return 1;
 
@@ -32841,6 +32900,20 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  let player = this.returnPlayerOfFaction(faction);
 
 	  this.winter_overlay.render("stage6");
+
+
+	  //
+	  // papacy asked for Henry VIII marriage
+	  //
+	  if (faction == "marriage") {
+	    if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
+	      this.marriage_overlay.renderApproveDivorce();
+	    }
+	    this.game.queue.splice(qe, 1);
+	    return 0;
+	  }
+
+
 
 	  //
 	  // first, if there are any outstanding proposals that
@@ -36591,6 +36664,62 @@ console.log(JSON.stringify(reshuffle_cards));
 
     let menu = [];
 
+if (faction === "france" && this.game.state.events.scots_raid == 1) {
+    menu.push({
+      factions : ['scotland'],
+      cost : [2],
+      name : "Regular",
+      check : this.canPlayerBuyRegular,
+      fnct : this.playerBuyRegular,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/regular.jpg',
+    });
+    menu.push({
+      factions : ['scotland'],
+      cost : [2],
+      name : "Squadron",
+      check : this.canPlayerBuyNavalSquadron,
+      fnct : this.playerBuyNavalSquadron,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/squadron.jpg',
+    });
+    menu.push({
+      factions : ['france','scotland'],
+      cost : [1,1],
+      name : "Move",
+      check : this.canPlayerMoveFormationInClear,
+      fnct : this.playerMoveFormationInClear,
+      category : "move" ,
+      img : '/his/img/backgrounds/move/move_in_clear.jpg',
+    });
+    menu.push({
+      factions : ['france','scotland'],
+      cost : [1,1],
+      name : "Control",
+      check : this.canPlayerControlUnfortifiedSpace,
+      fnct : this.playerControlUnfortifiedSpace,
+      category : "attack" ,
+      img : '/his/img/backgrounds/move/control.jpg',
+    });
+    menu.push({
+      factions : ['france', 'scotland'],
+      cost : [0,0],
+      name : "Assault",
+      check : this.canPlayerAssaultTutorial,
+      fnct : this.playerAssaultTutorial,
+      category : "attack" ,
+      img : '/his/img/backgrounds/move/assault.jpg',
+    });
+    menu.push({
+      factions : ['france', 'scotland'],
+      cost : [1,1],
+      name : "Assault",
+      check : this.canPlayerAssault,
+      fnct : this.playerAssault,
+      category : "attack" ,
+      img : '/his/img/backgrounds/move/assault.jpg',
+    });
+} else {
 if (limit === "build") {
     menu.push({
       factions : ['hapsburg','england','france','papacy','protestant'],
@@ -36912,6 +37041,7 @@ if (this.game.state.events.cramner_active == 1) {
 
     } // mary_i limit check
 }
+} // scots raid
 
     //
     // major powers have limited options in 2P version
@@ -38860,7 +38990,7 @@ return;
         return;
       }
 
-      let msg = his_self.returnFactionName(faction) + " - Return Extra Units to Capital?";
+      let msg = his_self.returnFactionName(faction) + " - Return Units to Capital?";
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
         opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
@@ -39045,7 +39175,7 @@ return;
 
     pick_capital_function = function(his_self, pick_capital_function, select_spacekey_function, select_units_function, finish_selecting_from_space_function) {
 
-      let msg = his_self.returnFactionName(faction) + " - Return Extra Units to Capital?";
+      let msg = his_self.returnFactionName(faction) + " - Return Units to Capital?";
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
         opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
@@ -46576,6 +46706,8 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       el.classList.remove("active");
     });
 
+    if (!his_self.game.state.henry_viii_rolls) { his_self.game.state.henry_viii_rolls = []; }
+    if (!his_self.game.state.henry_viii_wives) { his_self.game.state.henry_viii_wives = []; }
     for (let i = 0; i < his_self.game.state.henry_viii_wives.length && i < his_self.game.state.henry_viii_rolls.length; i++) {
 
       let dd = his_self.game.state.henry_viii_rolls[i];

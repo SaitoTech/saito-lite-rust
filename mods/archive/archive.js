@@ -214,6 +214,11 @@ class Archive extends ModTemplate {
 	// by default we just save everything that is an application
 	//
 	async onConfirmation(blk, tx, conf) {
+
+		if (this.app.BROWSER && !tx.isTo(this.publicKey)) {
+			return;
+		}
+
 		//
 		// save all on-chain transactions -- but only the service node...
 		//
