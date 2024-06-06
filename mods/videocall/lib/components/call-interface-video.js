@@ -251,7 +251,7 @@ class CallInterfaceVideo {
 				let item = mod.respondTo('record-actions', {
 					container: ".video-container-large",
 					streams, 
-					useMicrophone: false, 
+					useMicrophone: true, 
 					members: this.mod.room_obj.call_peers,
 					callbackAfterRecord: (data) => {
 						console.log("", data)

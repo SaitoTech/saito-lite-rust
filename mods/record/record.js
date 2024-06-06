@@ -1,3 +1,4 @@
+const { call } = require('file-loader');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const html2canvas = require('html2canvas');
 
@@ -55,11 +56,11 @@ class Record extends ModTemplate {
 				class: 'record-game',
 				callback: async function (app, game_mod) {
 					let recordButton = document.getElementById('record-game');
-					let { container } = game_mod.recordOptions;
+					let { container, useMicrophone , callbackAfterRecord} = game_mod.recordOptions;
 
 					if (!this.recording_status) {
 
-						await this.startRecording(container, null, false, () => "" );
+						await this.startRecording(container, null, useMicrophone, callbackAfterRecord );
 						recordButton.textContent = "stop recording";
 						this.recording_status = true;
 					} else {
@@ -107,6 +108,8 @@ class Record extends ModTemplate {
 
 
 	async startRecording(container, streams = [], useMicrophone = true, callbackAfterRecord = null, members = []) {
+
+		console.log(streams, useMicrophone)
 		let chunks = [];
 		const targetDiv = document.querySelector(container);
 
