@@ -838,6 +838,3 @@
   border-radius: var(--border-radius-modal-menu);
 
 }
-.chat-member-list-overlay .saito-modal-content{
-  border: unset;
-}

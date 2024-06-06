@@ -12,7 +12,7 @@ This alows for a header with a header with title to be added without extra CSS
   max-width: 80vw;
   padding: 2rem;
   display: grid;
-  grid-template-rows: min-content auto;
+  grid-template-rows: min-content 1fr;
   max-height: 95vh;
   border: var(--border-thickness-modal-menu) solid var(--border-color-modal-menu);
   border-radius: var(--border-radius-modal-menu);
@@ -55,7 +55,7 @@ This alows for a header with a header with title to be added without extra CSS
   filter: brightness(0.7) grayscale(1);
 }
 
-.saito-modal-content{
+.saito-modal .saito-modal-content{
   border-top: 1px solid var(--saito-border-color);
   padding: 0.5rem 0;
 }
@@ -64,10 +64,9 @@ This alows for a header with a header with title to be added without extra CSS
   height: 5rem;
   align-items: center;
   font-size: 20px;
-  overflow: hidden;
 }
 
-.saito-modal-content .saito-user .saito-identicon-box {
+.saito-modal .saito-modal-content .saito-user .saito-identicon-box {
   width: 4.5rem;
   height: 4.5rem;
 }

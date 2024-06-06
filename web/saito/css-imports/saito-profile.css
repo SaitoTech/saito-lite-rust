@@ -144,6 +144,22 @@
   max-width: 100%;
 }
 
+.saito-profile .saito-modal-menu-option {
+    font-size: 2rem;
+    height: unset;
+    width: 100%;
+    padding: 1rem;
+    margin: 0;
+}
+
+.saito-profile .saito-modal-menu-option > div {
+  font-size: 1.8rem;
+}
+
+.saito-profile .saito-modal-menu-option > i {
+  justify-self: center;
+  margin: 0;
+}
 
 @media screen and (max-width: 600px){
 .saito-profile-identicon {

@@ -1,7 +1,7 @@
 module.exports = (app, mod, chat_group) => {
 	let html = "";
 
-	const formatUser = (publickey, usericon = "", unconfirmed = "", fourthElement = '<div></div>') => {
+	const formatUser = (publickey, usericon = "", fourthElement = '<div></div>') => {
 			let imgsrc = app.crypto.isPublicKey(publickey)
 				? app.keychain.returnIdenticon(publickey)
 				: '';
@@ -10,7 +10,7 @@ module.exports = (app, mod, chat_group) => {
 				name = 'Anonymous User';
 			}
 
-			return `<div class="saito-contact${unconfirmed}" >
+			return `<div class="saito-contact" >
 								<div class="saito-user saito-add-user-menu" data-id="${publickey}">
 	                				<div class="saito-identicon-box"><img class="saito-identicon" src="${imgsrc}">${usericon}</div>
 	                  				<div class="saito-address" data-id="${publickey}" data-disable="true">${name}</div>
@@ -31,7 +31,6 @@ module.exports = (app, mod, chat_group) => {
 
 			let icon = "";
 			let fourth = "";
-			let unconfirmed_tag = '';
 
 			if (chat_group.member_ids[publickey] == "admin"){
 				icon = `<i class="saito-overlaid-icon fa-solid fa-dragon"></i>`;
@@ -47,7 +46,7 @@ module.exports = (app, mod, chat_group) => {
 
 			//Filter for deactivated users...
 			if (chat_group.member_ids[publickey] == 1 || icon){
-				html += formatUser(publickey, icon, unconfirmed_tag, fourth) 	
+				html += formatUser(publickey, icon, fourth) 	
 			}
 
 		}

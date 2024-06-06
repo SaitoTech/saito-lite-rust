@@ -1,6 +1,7 @@
 const ChatSidebarTemplate = require('./chat-sidebar.template');
 const SaitoProfile = require('./../../../../lib/saito/ui/saito-profile/saito-profile');
 const ChatUserMenu = require('../overlays/chat-user-menu');
+const SaitoUser = require('./../../../../lib/saito/ui/saito-user/saito-user');
 
 class ChatSidebar {
 	constructor(app, mod, container = '.saito-sidebar.right') {
@@ -9,6 +10,7 @@ class ChatSidebar {
 		this.container = container;
 
     this.profile = new SaitoProfile(app, mod, '.chat-sidebar');
+    this.profile.tab_container = ".saito-modal-content";
 
     app.connection.on('chat-manager-opens-group', (group = null) => {
       if (group) {
@@ -35,33 +37,90 @@ class ChatSidebar {
     }
 
     let groupKey = chat.id;
-    let groupName = chat.name;
+
     let dm = false;
+
+    this.profile.mask_key = true;
 
     if (chat.member_ids) {
       // Multiparty Group
-    } else if (chat.id == this.mod.communityGroup?.id || chat.name == this.mod.communityGroupName || chat.members.length !== 2) {
+      this.profile.reset(groupKey, "members", ["members"]);
+      for (let m of chat.members){
+
+        let name = m;
+        if (m == this.app.keychain.returnIdentifierByPublicKey(m, true)) {
+          name = '';
+        }
+
+        let user = new SaitoUser(this.app, this.mod, ".chat-sidebar .saito-modal-content", m, name, )
+        user.extra_classes = "saito-add-user-menu saito-contact";
+        
+        if (chat.member_ids[m] == "admin"){
+          user.icon = `<i class="saito-overlaid-icon fa-solid fa-dragon"></i>`;
+        }
+
+        this.profile.menu.members.push(user);
+      }
+
+    } else if (chat.id == this.mod.communityGroup?.id || chat.name == this.mod.communityGroupName){
       // Community Chat
       // If the peerservices haven't come up, we won't have a communityGroup obj yet....
+      this.profile.reset(groupKey, "active", ["active"]);
+      this.profile.name = chat.name;
+
+      //Scan stored transactions for list of people active in community
+      let active_users = [];
+      for (let i = chat.txs.length - 1; i >= 0; i--){
+        let key = chat.txs[i].from;
+        if (Array.isArray(key)){
+          for (let k of key){
+            if (!active_users.includes(k)){
+              active_users.push(k);
+            } 
+          }
+        }else{
+          if (!active_users.includes(key)){
+            active_users.push(key);
+          }
+        }
+      }
+
+      //Build data structure
+      for (let m of active_users){
+        let name = m;
+        if (m == this.app.keychain.returnIdentifierByPublicKey(m, true)) {
+          name = '';
+        }
+
+        let user = new SaitoUser(this.app, this.mod, ".chat-sidebar .saito-modal-content", m, name, )
+        user.extra_classes = "saito-add-user-menu saito-contact";
+        
+        this.profile.menu.active.push(user);
+      }
+
+    } else if (chat.members.length !== 2) {
       groupKey = "";
+
+      this.profile.reset();
     } else {
       // 1-1 chat
       dm = true;
+      this.profile.mask_key = false;
+
       for (let member of chat.members) {
         if (member !== this.mod.publicKey) {
           groupKey = member;
         }
       }
+
+      this.profile.reset(groupKey);
     }
 
-    this.profile.reset(groupKey);
     this.profile.description = chat.description;
 
-    if (!groupKey){
-      this.profile.name = groupName;
-    }
-
     this.profile.render();
+
+    this.app.browser.addElementToSelector(`<div id="chat-group-edit" class="saito-modal-menu-option"><i class="fa-solid fa-users-gear"></i><div>Manage Chat</div></div>`, ".saito-profile-controls");
 
     if (dm) {
       this.addUserMenu(groupKey);
