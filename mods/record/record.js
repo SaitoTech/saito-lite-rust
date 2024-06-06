@@ -1,6 +1,6 @@
 const { call } = require('file-loader');
 const ModTemplate = require('../../lib/templates/modtemplate');
-const html2canvas = require('html2canvas');
+
 
 class Record extends ModTemplate {
 	constructor(app) {
@@ -302,37 +302,9 @@ class Record extends ModTemplate {
 		this.recording_status = false;
 	}
 
-	async captureStream(container) {
-		const element = document.querySelector(container);
-		const canvas = document.createElement('canvas');
-		canvas.width = element.clientWidth;
-		canvas.height = element.clientHeight;
-		const context = canvas.getContext('2d');
-		const stream = canvas.captureStream();
+	
 
-		const draw = async () => {
-			try {
-				const tempCanvas = await html2canvas(element, {
-					logging: false,
-					useCORS: true,
-				});
-				context.clearRect(0, 0, canvas.width, canvas.height);
-				context.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
-			} catch (error) {
-				console.error('Error capturing stream:', error);
-			}
-		};
-
-		this.interval = setInterval(draw, 1000 / 50);
-		return stream;
-	}
-
-	stopHtml2Canvas() {
-		if (this.interval) {
-			clearInterval(this.interval);
-			this.interval = null;
-		}
-	}
+	
 
 	getAudioTracksFromStreams(streams) {
 		const audioTracks = [];
