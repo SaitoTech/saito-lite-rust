@@ -4271,7 +4271,12 @@ if (this.game.players.length > 2) {
 	      if (finished == 0) {
 	        let x = action.split("_");
 	        action = x[1];
-	        his_self.addMove("activate_minor_power\t"+faction+"\t"+action);
+		// some cases, same power can be deactivated
+		if (x[0] === "deactivate") {
+	          his_self.addMove("deactivate_minor_power\t"+his_self.returnAllyOfMinorPower(action)+"\t"+action);
+		} else {
+	          his_self.addMove("activate_minor_power\t"+faction+"\t"+action);
+	        }
 	      }
 
 	    } else {
@@ -22392,8 +22397,9 @@ if (this.game.options.scenario != "is_testing") {
 	  if (this.game.players.length == 2) {
 
 	    this.game.queue.push("diplomacy_phase_2P");
-
+	    // R1 cards dealt below
 	    if (this.game.state.round > 1) {
+	      this.game.queue.push("card_draw_phase");
 	      this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
 	    }
 
@@ -22444,7 +22450,6 @@ if (this.game.options.scenario != "is_testing") {
 	    }
 	  }
 
-
 	  //
 	  // 1532 mode and testing need cards too!
 	  //
@@ -22457,27 +22462,26 @@ if (this.game.options.scenario != "is_testing") {
 	    //
 	    if (this.game.state.round == 1) {
 
-if (this.game.options.scenario == "is_testing") {
-	      this.game.queue.push("is_testing");
-	      this.game.queue.push("card_draw_phase");
-} else {
-	      if (this.game.players.length == 2) {
-	        this.game.queue.push("show_overlay\tvp");
+	      if (this.game.options.scenario == "is_testing") {
+
+	        this.game.queue.push("is_testing");
+	        this.game.queue.push("card_draw_phase");
+
+	      } else {
+
+	        if (this.game.players.length == 2) {
+	          this.game.queue.push("show_overlay\tvp");
+	        }
+
+	        this.game.queue.push("hide_overlay\tdiet_of_worms");
+	        this.game.queue.push("diet_of_worms");
+	        this.game.queue.push("show_overlay\tdiet_of_worms");
+	        this.game.queue.push("card_draw_phase");
+	        this.game.queue.push("event\tprotestant\t008");
+
 	      }
 
-	      this.game.queue.push("hide_overlay\tdiet_of_worms");
-	      this.game.queue.push("diet_of_worms");
-	      this.game.queue.push("show_overlay\tdiet_of_worms");
-	      this.game.queue.push("card_draw_phase");
-	      this.game.queue.push("event\tprotestant\t008");
-}
-
 	    } else {
-
-
-	      //if (this.game.players.length > 2) {
-	      //  this.game.queue.push("card_draw_phase");
-	      //}
 
 	      //
 	      // round 2 - zwingli in zurich
@@ -39008,6 +39012,7 @@ return;
 
         if (id == "finish") {
           his_self.updateStatus("processing winter relocation...");
+          his_self.theses_overlay.hide();
           his_self.endTurn();
           return;
         }
@@ -39203,6 +39208,7 @@ return;
         let id = $(this).attr('id');
 	if (id == "finish") {
 	  his_self.updateStatus("processing winter relocation...");
+	  his_self.theses_overlay.hide();
 	  his_self.endTurn();
 	  return;
 	}

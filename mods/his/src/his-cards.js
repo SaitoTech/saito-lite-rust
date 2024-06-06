@@ -607,7 +607,12 @@
 	      if (finished == 0) {
 	        let x = action.split("_");
 	        action = x[1];
-	        his_self.addMove("activate_minor_power\t"+faction+"\t"+action);
+		// some cases, same power can be deactivated
+		if (x[0] === "deactivate") {
+	          his_self.addMove("deactivate_minor_power\t"+his_self.returnAllyOfMinorPower(action)+"\t"+action);
+		} else {
+	          his_self.addMove("activate_minor_power\t"+faction+"\t"+action);
+	        }
 	      }
 
 	    } else {

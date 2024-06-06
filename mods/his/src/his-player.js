@@ -3011,6 +3011,7 @@ return;
 
         if (id == "finish") {
           his_self.updateStatus("processing winter relocation...");
+          his_self.theses_overlay.hide();
           his_self.endTurn();
           return;
         }
@@ -3206,6 +3207,7 @@ return;
         let id = $(this).attr('id');
 	if (id == "finish") {
 	  his_self.updateStatus("processing winter relocation...");
+	  his_self.theses_overlay.hide();
 	  his_self.endTurn();
 	  return;
 	}
