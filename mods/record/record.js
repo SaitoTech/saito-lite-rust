@@ -29,13 +29,12 @@ class Record extends ModTemplate {
 						let { container, streams, useMicrophone, callbackAfterRecord, members } = obj;
 
 						if (container) {
-							const recordIcon = document.querySelector('.fa-record-vinyl');
 							if (!this.recording_status) {
 								await this.startRecording(container, streams, useMicrophone, callbackAfterRecord, members);
-								recordIcon.classList.add('recording', 'pulsate');
+								
 							} else {
 								this.stopRecording();
-								recordIcon.classList.remove('recording', 'pulsate');
+							
 							}
 						}
 					}.bind(this)
@@ -137,7 +136,7 @@ class Record extends ModTemplate {
 
 		stream.getVideoTracks()[0].addEventListener('ended', () => {
 			console.log('Screen sharing stopped.');
-			this.mediaRecorder.stop(); 
+			this.stopRecording()
 		});
 
 		
@@ -146,7 +145,7 @@ class Record extends ModTemplate {
 		video.style.position = 'absolute';
 		video.style.top = '0';
 		video.style.left = '0';
-		video.style.zIndex = '-1'; 
+		video.style.zIndex = '-300'; 
 		video.play();
 
 		document.body.appendChild(video); 
@@ -158,21 +157,55 @@ class Record extends ModTemplate {
 		canvas.height = height;
 
 		video.onloadedmetadata = () => {
-
-			const scaleX = video.videoWidth / window.innerWidth;
-			const scaleY = video.videoHeight / window.innerHeight;
-
 			function draw() {
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				let {top, left, width, height} = updateDimensions();
-				ctx.drawImage(video, left * scaleX, top * scaleY, width * scaleX, height * scaleY - 10, 0, 0, width, height);
 				requestAnimationFrame(draw);
+			
+				let {top, left, width, height} = updateDimensions();
+				canvas.width = width; 
+				canvas.height = height;
+			
+				const scaleX = video.videoWidth / window.innerWidth;
+				const scaleY = video.videoHeight / window.innerHeight;
+			
+				const scaledWidth = Math.min(video.videoWidth, width * scaleX); 
+				const scaledHeight = Math.min(video.videoHeight, height * scaleY); 
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+			
+			
+				const srcX = left * scaleX;
+				const srcY = top * scaleY;
+				const clipWidth = Math.min(scaledWidth, video.videoWidth - srcX);
+				const clipHeight = Math.min(scaledHeight, video.videoHeight - srcY);
+			
+				ctx.drawImage(video, srcX, srcY, clipWidth, clipHeight, 0, 0, canvas.width, canvas.height);
 			}
 			draw();
+			
+			
 		};
+		targetDiv.addEventListener('dragstart', (event) => {
+			event.dataTransfer.setData('text/plain', null); 
+		});
+	
+		targetDiv.addEventListener('drag', (event) => {
+			if (event.clientX > 0 && event.clientY > 0) { 
+				let { top, left, width, height } = updateDimensions();
+				canvas.width = width;
+				canvas.height = height;
+			}
+		});
+	
+		targetDiv.addEventListener('dragend', (event) => {
+			let { top, left, width, height } = updateDimensions();
+			canvas.width = width;
+			canvas.height = height;
+		});
 
-		window.addEventListener('resize', updateDimensions);
-		window.addEventListener('orientationchange', updateDimensions);
+
+		 
+	  
+		  window.addEventListener('resize', updateDimensions);
+		  window.addEventListener('orientationchange', updateDimensions);
 		
 		let recordedStream = canvas.captureStream();
 
@@ -238,6 +271,10 @@ class Record extends ModTemplate {
 
 		this.mediaRecorder.start();
 		this.recording_status = true;
+		const recordIcon = document.querySelector('.fa-record-vinyl');
+		if(recordIcon){
+			recordIcon.classList.add('recording', 'pulsate');
+		}
 
 		if(members.length > 0){
 				this.sendStartRecordingTransaction(members);
@@ -252,6 +289,16 @@ class Record extends ModTemplate {
 		if (this.mediaRecorder) {
 			this.mediaRecorder.stop();
 		}
+		const recordIcon = document.querySelector('.fa-record-vinyl');
+		if(recordIcon){
+			recordIcon.classList.remove('recording', 'pulsate');
+		}
+
+		const recordButtonGame = document.getElementById('record-game');
+		if(recordButtonGame){
+			recordButtonGame.textContent = "record game";
+		}
+		
 		this.recording_status = false;
 	}
 

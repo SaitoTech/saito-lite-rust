@@ -25,7 +25,7 @@ class Chessgame extends GameTemplate {
 		this.maxPlayers = 2;
 
 		this.recordOptions = {
-			container: "#board",
+			container: ".main",
 			useMicrophone: true,
 			streams: null,
 			callbackAfterRecord: null
