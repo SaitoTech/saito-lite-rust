@@ -110,7 +110,7 @@ class Videocall extends ModTemplate {
 				if (!this.browser_active) {
 					this.renderInto('.saito-overlay');
 				}
-			}
+			} 
 
 			try {
 				this.stun = app.modules.returnFirstRespondTo('peer-manager');
@@ -442,8 +442,8 @@ class Videocall extends ModTemplate {
 						) {
 							if (this.room_obj.call_peers[i] == from) {
 								this.room_obj.call_peers.splice(i, 1);
-								if (from !== this.publicKey) {
-									this.app.connection.emit('stun-update-link');
+								if (from !== this.publicKey){
+									this.app.connection.emit('stun-update-link');			
 								}
 								break;
 							}
@@ -552,7 +552,7 @@ class Videocall extends ModTemplate {
 
 		let call_list = [];
 
-		if (this.room_obj.call_peers) {
+		if (this.room_obj.call_peers){
 			this.room_obj.call_peers.forEach((key) => {
 				if (!call_list.includes(key)) {
 					call_list.push(key);
@@ -701,9 +701,9 @@ class Videocall extends ModTemplate {
 
 		let call_list = [];
 
-		for (let peer in txmsg.data) {
+		for (let peer in txmsg.data){
 			console.log(peer, txmsg.data[peer]);
-			if (txmsg.data[peer] == "connected") {
+			if (txmsg.data[peer] == "connected"){
 				if (peer !== this.publicKey) {
 					if (!this.room_obj.call_peers.includes(peer)) {
 						this.room_obj.call_peers.push(peer);
