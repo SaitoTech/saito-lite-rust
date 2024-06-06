@@ -246,7 +246,7 @@ class Record extends ModTemplate {
 		};
 
 		this.mediaRecorder.onstop = async () => {
-			this.stopHtml2Canvas();
+
 			const blob = new Blob(chunks, { type: 'video/webm' });
 			const url = URL.createObjectURL(blob);
 			const a = document.createElement('a');
