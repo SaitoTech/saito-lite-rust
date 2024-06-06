@@ -101,9 +101,6 @@ class Nwasm extends OnePlayerGameTemplate {
 		}
 		let message = tx.returnMessage();
 
-		//
-		// this code doubles onConfirmation
-		//
 		if (message?.request === 'nwasm testing') {
 			if (mycallback) {
 				mycallback(

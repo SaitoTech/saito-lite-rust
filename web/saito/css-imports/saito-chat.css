@@ -127,7 +127,11 @@
   height: 50rem;
   width: 36rem;
   border-radius: var(--border-radius-chat-popup);
-  z-index: 15;
+  z-index: 103;
+  /* making z-index greater than overlay so that users
+     can chat or send each other their crypto address without
+     closing the withdraw overlay
+  */
   /* So weird, at 15 it blocks the z-index 20 slide in menu*/
   /* reason: the slidein is child of saito header, so whatever z-index is assigned to saito header,
   the child (slidein menu) inherits it */
@@ -163,11 +167,11 @@
 }
 
 .chat-container.active {
-  z-index: 16;
+  z-index: 104;
 }
 
 .chat-container.dragging {
-  z-index: 17;
+  z-index: 105;
 }
 
 .chat-container.minimized {
@@ -238,16 +242,11 @@
   color: var(--font-color-button-hover-chat-popup-header);
 }
 
-.chat-header > .chat-header-nav > i.noclick:hover {
-  background-color: revert;
-  color: var(--color-primary);
-  cursor: revert;
-}
 
-
-.chat-header > .chat-header-nav > i:last-child {
+.fix-me {
   cursor: pointer;
 }
+
 
 .chat-container.minimized .chat-header-nav {
   align-items: center;

@@ -34,11 +34,54 @@ class MarriageOverlay {
 		}
 	}
 
-	render(faction = 'france') {
+	renderApproveDivorce() {
+
+		let his_self = this.mod;
+
+		this.render();
+
+		document.querySelector(".marriage-overlay .help").innerHTML = "Annulling Henry VIII's Marriage prevents Papal-Hapsburg Alliance for one turn...";
+
+		this.app.browser.addElementToSelector('<div class="status"></div>', ".marriage-overlay");
+		this.app.browser.addElementToSelector('<div class="controls"></div>', ".marriage-overlay");
+	
+            	let msg = "Approve Henry VIII's Divorce?";
+            	let html = '<ul>';
+            	html += '<li class="option" id="approve">approve divorce</li>';
+            	html += '<li class="option" id="disapprove">do not approve</li>';
+            	html += '</ul>';
+
+            	his_self.updateStatusWithOptions(msg, html);
+
+                $('.option').off();
+                $('.option').on('click', function () {
+
+                  let action = $(this).attr("id");
+
+                  if (action === "approve") {
+		    his_self.addMove("advance_henry_viii_marital_status");
+		    his_self.addMove(`SETVAR\tstate\thenry_viii_pope_approves_divorce\t1`);
+		    his_self.addMove(`NOTIFY\tThe Papacy accedes to Henry VIII's request for a divorce.`);
+		    his_self.endTurn(); 
+                  }
+                  if (action === "disapprove") {
+		    his_self.endTurn(); 
+                  }
+
+		  this.hide();
+
+		});
+	}
+
+	render(msg="") {
 
 		let his_self = this.mod;
 
 		this.overlay.show(MarriageTemplate());
+
+		if (msg != "") {
+		  document.querySelector(".marriage-overlay .help").innerHTML = msg;
+		}
 
 		for (let i = 0; i < 7; i++) {
 			tileqs = `.marriage-overlay .tile${i+1}`;

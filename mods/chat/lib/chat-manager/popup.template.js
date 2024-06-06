@@ -21,7 +21,12 @@ module.exports = (app, mod, group, isStatic = false) => {
 			if (group.members[i] !== mod.publicKey) {
 				dm_counterparty = group.members[i];
 				if (app.keychain.hasSharedSecret(dm_counterparty)) {
-					is_encrypted = `<i class="fa-solid fa-lock noclick"></i>`;
+					is_encrypted = `<i class="fa-solid fa-lock"></i>`;
+				
+					let key = app.keychain.returnKey(dm_counterparty);
+					if (key.encryption_failure){
+						is_encrypted = `<i class="fa-solid fa-unlock fix-me" data-id="${dm_counterparty}"></i>`;		
+					}
 				}
 			}
 		}

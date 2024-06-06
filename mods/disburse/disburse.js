@@ -52,6 +52,11 @@ class Disburse extends ModTemplate {
 	}
 
 	async onConfirmation(blk, tx, conf) {
+
+		if (this.app.BROWSER && !tx.isTo(this.publicKey)) {
+			return;
+		}
+
 		let txmsg = tx.returnMessage();
 		try {
 			if (conf == 0) {

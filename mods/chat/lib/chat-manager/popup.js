@@ -550,6 +550,14 @@ class ChatPopup {
 				});
 			});
 
+
+		if (chatPopup.querySelector(".fix-me.fa-unlock")){
+			chatPopup.querySelector(".fix-me.fa-unlock").onclick = (e) => {
+				this.app.connection.emit("encrypt-reset-key-exchange", e.currentTarget.dataset.id); 
+			}
+		}
+
+
 		//
 		// Click on a block quote to see original message being replied to
 		//

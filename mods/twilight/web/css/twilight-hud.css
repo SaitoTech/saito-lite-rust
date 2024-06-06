@@ -4,6 +4,11 @@
 	flex-wrap: wrap;
 }
 
+#hud-toggle-button {
+  font-size: 2rem;
+  padding-left: 0.5rem;
+}
+
 .controls ul li,
 .options {
 	background-color: whitesmoke;

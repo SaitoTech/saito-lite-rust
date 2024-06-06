@@ -38,15 +38,17 @@
 
     this.menu.addMenuOption("game-game", "Game");
 
+/***
     this.menu.addSubMenuOption("game-game", {
-      text : "Marital Status",
-      id : "game-marriage",
-      class : "game-marriage",
-      callback : function(app, game_mod) {
-        game_mod.menu.hideSubMenus();
-	game_mod.marriage_overlay.render();
-      },
+      text: "Divorce",
+      id: "game-divorce",
+      class: "game-divorce",
+      callback: function(app, game_mod){
+	game_mod.menu.hideSubMenus();
+        game_mod.marriage_overlay.renderApproveDivorce();
+      }
     });
+***/
 
     this.menu.addSubMenuOption("game-game", {
       text : "About H.I.S.",

@@ -678,11 +678,10 @@ if (this.app.modules.moderate(newtx, this.name) != -1) {
 
         if (txmsg.module == this.name){
 
-
-          if (this.black_list.includes(tx.from[0].publicKey)){
-            console.log("Don't process transactions from blacklisted keys");
-            return;
-          }
+//          if (this.black_list.includes(tx.from[0].publicKey)){
+//            console.log("Don't process transactions from blacklisted keys");
+//            return;
+//          }
 
           if (txmsg.request == "loadTweets"){
 

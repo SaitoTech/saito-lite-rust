@@ -2539,7 +2539,7 @@ try {
       political: "france",
       religion: "catholic",
       ports: ["biscay"],
-      neighbours: ["navarre", "nantes","tours","limoges"],
+      neighbours: ["toulouse", "navarre", "nantes","tours","limoges"],
       pass: ["navarre"],
       language: "french",
       type: "key"

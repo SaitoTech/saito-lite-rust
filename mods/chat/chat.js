@@ -655,6 +655,12 @@ class Chat extends ModTemplate {
 	//
 	async onConfirmation(blk, tx, conf) {
 		if (conf == 0) {
+
+			//Does this break chat or fix the encryption bugs...?
+			if (this.app.BROWSER && !tx.isTo(this.publicKey)) {
+				return;
+			}
+
 			if (tx.decryptMessage) {
 				await tx.decryptMessage(this.app);
 			}
@@ -1525,8 +1531,6 @@ class Chat extends ModTemplate {
 		}
 
 		if (this.addTransactionToGroup(group, tx)) {
-			//Returns 1 if it is a new message
-
 			//
 			// Just a little warning that it isn't nice to @ people if you blocked them and they cannot reply
 			//
@@ -2016,6 +2020,11 @@ class Chat extends ModTemplate {
 			id = this.createGroupIdFromMembers(members);
 		}
 
+		if (!id){
+			console.warn("Chat error: ", members);
+			console.trace();
+		}
+
 		if (name == null) {
 			name = '';
 			for (let i = 0; i < members.length; i++) {
@@ -2295,7 +2304,7 @@ class Chat extends ModTemplate {
 	}
 
 	saveChatGroup(group) {
-		if (!this.app.BROWSER) {
+		if (!this.app.BROWSER || !group?.id) {
 			return;
 		}
 		let chat_self = this;
