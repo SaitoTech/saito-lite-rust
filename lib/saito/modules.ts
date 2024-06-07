@@ -13,11 +13,13 @@ class Mods {
 	public is_initialized: any;
 	public lowest_sync_bid: any;
 	public app_filter_func: any;
+	public core_filter_func: any;
 
 	constructor(app: Saito, config) {
 		this.app = app;
 		this.mods = [];
 		this.app_filter_func = []; // moderation functions -- app-specific
+		this.core_filter_func = []; // core moderation functions (general whitelist / blacklsit)
 		this.uimods = [];
 		this.mods_list = config;
 		this.is_initialized = false;
@@ -283,8 +285,11 @@ class Mods {
 		//
 		// ... setup moderation / filter functions
 		//
-		for (let xmod of this.app.modules.respondTo('saito-moderation')) { 
-                  this.app_filter_func.push(xmod.respondTo('saito-moderation').filter_func);
+		for (let xmod of this.app.modules.respondTo('saito-moderation-app')) { 
+                  this.app_filter_func.push(xmod.respondTo('saito-moderation-app').filter_func);
+		}
+		for (let xmod of this.app.modules.respondTo('saito-moderation-core')) { 
+                  this.core_filter_func.push(xmod.respondTo('saito-moderation-core').filter_func);
 		}
 
 		//
