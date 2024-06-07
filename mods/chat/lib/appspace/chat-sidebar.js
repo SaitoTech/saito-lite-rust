@@ -52,7 +52,9 @@ class ChatSidebar {
           name = '';
         }
 
-        let user = new SaitoUser(this.app, this.mod, ".chat-sidebar .saito-modal-content", m, name, )
+        // Could add a fourth element so admins can delete people...
+
+        let user = new SaitoUser(this.app, this.mod, ".chat-sidebar .saito-modal-content", m, name)
         user.extra_classes = "saito-add-user-menu saito-contact";
         
         if (chat.member_ids[m] == "admin"){
@@ -92,7 +94,7 @@ class ChatSidebar {
           name = '';
         }
 
-        let user = new SaitoUser(this.app, this.mod, ".chat-sidebar .saito-modal-content", m, name, )
+        let user = new SaitoUser(this.app, this.mod, ".chat-sidebar .saito-modal-content", m, name)
         user.extra_classes = "saito-add-user-menu saito-contact";
         
         this.profile.menu.active.push(user);

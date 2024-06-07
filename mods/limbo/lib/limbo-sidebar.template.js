@@ -5,74 +5,10 @@ module.exports = LimboSideBarTemplate = (app, mod, dreamer) => {
 		return '';
 	}
 
-	const formatUser = (publickey, icon = "") => {
-			let imgsrc = app.crypto.isPublicKey(publickey)
-				? app.keychain.returnIdenticon(publickey)
-				: '';
-			let name = app.keychain.returnIdentifierByPublicKey(publickey, true);
-			if (name == publickey) {
-				name = 'Anonymous User';
-			}
-
-			return `<div class="saito-contact" >
-								<div class="saito-user saito-add-user-menu" data-id="${publickey}">
-	                				<div class="saito-identicon-box"><img class="saito-identicon" src="${imgsrc}">${icon}</div>
-	                  				<div class="saito-address" data-id="${publickey}" data-disable="true">${name}</div>
-	                				<div class="saito-userline">${publickey}</div>
-	                				<div></div>
-	                			</div>
-	            			  </div>`;
-
-	}
-
-
-
-	let group = mod.dreams[dreamer].members;
-
-	let groupName = app.keychain.returnUsername(dreamer);
-	let identicon = app.keychain.returnIdenticon(dreamer, 'png');
-
-	let html = `
+	return `
 	<div id="limbo-sidebar" class="limbo-sidebar">
-    	<div class="saito-profile">
-      		<div class="saito-profile-cover"></div>
-    		<div class="saito-profile-options-row">
-        		<img class="saito-profile-identicon" src="${identicon}">
-        		<div class="saito-profile-icons">${groupName}</div>
-      		</div>
-     		<div class="saito-profile-info">`;
+    	<div class="saito-profile"></div>
+    	<div class="saito-modal-content hide-scrollbar"></div>
+    </div>`;
 
-    if (mod.dreams[dreamer]?.description){
-    	html += `<div class="saito-profile-about">${group.description}</div>`;	
-    }
-    
-    html += `</div>
-      		<div class="saito-profile-menu vertical">
-				<div id="share_link" class="saito-modal-menu-option">
-            		<i class="fas fa-link"></i>
-            		<div>Share</div>
-          		</div>
-				<div id="exit_space" class="saito-modal-menu-option">
-            		<i class="fa-solid fa-person-through-window"></i>
-            		<div>Exit</div>
-          		</div>
-      		</div>
-    		</div>
-
-    		<div class="saito-modal-content">
-
-		    <div class="saito-profile-menu float">
-		      <div class="redsquare-profile-menu-tabs active">Attendees 
-		      	<span>${ group.length > 0 ? `(${group.length})` : '' }</span>
-		      </div>
-		    </div>`;
-
-    for (let key of group){ 
-    	let icon = (key == dreamer) ? `<i class="saito-overlaid-icon fa-solid fa-microphone-lines"></i>` : '';
-    	html += formatUser(key, icon);
-    }
-
-    html +=`</div></div>`;
-
-	return html;
 };

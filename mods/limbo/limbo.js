@@ -126,6 +126,8 @@ class Limbo extends ModTemplate {
 					console.log('Set sender');
 					this.upstream.set(publicKey, peerConnection);
 				}
+
+				this.app.connection.emit('limbo-open-dream', this.dreamer);
 			}
 		);
 	}
