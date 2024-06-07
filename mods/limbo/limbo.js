@@ -310,7 +310,8 @@ class Limbo extends ModTemplate {
 					
 					this.app.connection.emit('limbo-populated', 'service');
 					
-				}
+				},
+				peer.peerIndex
 			);
 		}
 	}
