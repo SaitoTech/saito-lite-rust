@@ -24,12 +24,6 @@ class Chessgame extends GameTemplate {
 		this.minPlayers = 2;
 		this.maxPlayers = 2;
 
-		this.recordOptions = {
-			container: "#board",
-			useMicrophone: true,
-			streams: null,
-			callbackAfterRecord: null
-		}
 
 		this.title = "Saito Chess";
 		this.styles = ["/chess/chessboard.css"];
