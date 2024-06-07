@@ -49,12 +49,27 @@ class LimboSidebar {
         let user = new SaitoUser(this.app, this.mod, ".limbo-sidebar .saito-modal-content", m, name)
         user.extra_classes = "saito-add-user-menu saito-contact";
         
-        if (m == dreamer){
+        if (m == dreamer) {
+          user.icon = `<i class="saito-overlaid-icon fa-solid fa-microphone-lines"></i>`;
+          this.profile.menu.speakers.push(user);
+        }else{
+          this.profile.menu.attendees.push(user);  
+        }
+      }
+
+      // Speakers are from videocall and not in the peer cast stream....
+      if (this.mod.dreams[dreamer]?.speakers) {
+        for (let m of this.mod.dreams[dreamer].speakers){ 
+          let name = m;
+          if (m == this.app.keychain.returnIdentifierByPublicKey(m, true)) {
+            name = '';
+          }
+
+          let user = new SaitoUser(this.app, this.mod, ".limbo-sidebar .saito-modal-content", m, name)
+          user.extra_classes = "saito-add-user-menu saito-contact";
           user.icon = `<i class="saito-overlaid-icon fa-solid fa-microphone-lines"></i>`;
           this.profile.menu.speakers.push(user);
         }
-
-        this.profile.menu.attendees.push(user);
       }
 
       this.mod.upstream.forEach((value, key) => {

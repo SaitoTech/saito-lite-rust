@@ -479,6 +479,8 @@ class Limbo extends ModTemplate {
 		this.app.connection.emit('limbo-open-dream', dreamer);
 		this.combinedStream = new MediaStream();
 		this.attachMetaEvents();
+
+		console.log("Join dream:", this.dreams);
 	}
 
 	attachMetaEvents(){
@@ -502,7 +504,7 @@ class Limbo extends ModTemplate {
 		}
 	}
 
-	async sendDreamTransaction(keylist) {
+	async sendDreamTransaction(keylist = null) {
 		let newtx =
 			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
 				this.publicKey

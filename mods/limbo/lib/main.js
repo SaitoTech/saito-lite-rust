@@ -77,7 +77,14 @@ class LimboMain {
 				profileCard.reset(key, "", ["attendees", "speakers"]);
 
 				//We won't process this array other than checking length... i hope!
-				profileCard.menu.attendees = this.mod.dreams[key].members;
+				profileCard.menu.attendees = this.mod.dreams[key].members.filter( k => k !== key );
+
+				profileCard.menu.speakers.push(0);
+				if (this.mod.dreams[key].speakers){
+					for (let i of this.mod.dreams[key].speakers){
+						profileCard.menu.speakers.push(0);
+					}
+				}
 
 				profileCard.render();
 			}
