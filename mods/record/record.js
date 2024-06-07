@@ -125,16 +125,25 @@ class Record extends ModTemplate {
 
 		console.log(`Div dimensions - Top: ${top}, Left: ${left}, Width: ${width}, Height: ${height}`);
 
-		
-		let stream = await navigator.mediaDevices.getDisplayMedia({
-			video: {
-				displaySurface: 'browser'
-			},
-			audio: true,
-			preferCurrentTab: true,
-			selfBrowserSurface: 'include',
-			monitorTypeSurfaces: 'exclude'
-		});
+		let stream;
+		try{
+		    stream = await navigator.mediaDevices.getDisplayMedia({
+				video: {
+					displaySurface: 'browser'
+				},
+				audio: true,
+				preferCurrentTab: true,
+				selfBrowserSurface: 'include',
+				monitorTypeSurfaces: 'exclude'
+			});
+		}
+	
+		catch (error) {
+			console.error('Error fetching display media:', error);
+			this.showAlert("Error fetching display media")
+			return;
+		}
+	
 
 		stream.getVideoTracks()[0].addEventListener('ended', () => {
 			console.log('Screen sharing stopped.');
@@ -180,7 +189,7 @@ class Record extends ModTemplate {
 			
 				ctx.drawImage(video, srcX, srcY, clipWidth, clipHeight, 0, 0, canvas.width, canvas.height);
 				self.animation_id = requestAnimationFrame(draw);
-				console.log('framer')
+
 			}
 			draw();
 			
