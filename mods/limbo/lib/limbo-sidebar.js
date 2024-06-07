@@ -13,7 +13,7 @@ class LimboSidebar {
     this.profile.tab_container = ".limbo-sidebar .saito-modal-content";
 
     app.connection.on('limbo-open-dream', (dreamer = null) => {
-      console.log('limbo-open-dream', dreamer);
+      console.log('EVENT (Sidebar): limbo-open-dream', dreamer);
       this.render(dreamer);
     });
 
@@ -26,7 +26,6 @@ class LimboSidebar {
     }else{
       this.app.browser.addElementToSelector(LimboSidebarTemplate(this.app, this.mod, dreamer), this.container);
     }
-
 
     if (dreamer){
 
@@ -139,14 +138,14 @@ class LimboSidebar {
                 <div>Share</div>
               </div>`;
 
-    this.app.browser.addElementToSelector(h1, ".saito-profile-controls");
+    this.app.browser.addElementToSelector(h1, "#limbo-sidebar .saito-profile-controls");
 
     let h2 = `<div id="exit_space" class="saito-modal-menu-option">
                 <i class="fa-solid fa-person-through-window"></i>
                 <div>Exit</div>
               </div>`;
 
-    this.app.browser.addElementToSelector(h2, ".saito-profile-controls");
+    this.app.browser.addElementToSelector(h2, "#limbo-sidebar .saito-profile-controls");
 
 
     let index = 0;

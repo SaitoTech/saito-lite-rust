@@ -306,7 +306,7 @@ class Limbo extends ModTemplate {
 						} else {
 							salert(`${this.app.keychain.returnUsername(this.dreamer)}'s dream space is no longer available`);
 							window.history.pushState('', '', `/limbo/`);
-							this.dreamer = null;
+							this.exitSpace();
 						}
 					}
 					
@@ -426,6 +426,7 @@ class Limbo extends ModTemplate {
 			} catch (error) {
 				console.error('Access to screen denied: ', error);
 				screenStream = false;
+				return;
 			}
 		}
 
@@ -561,6 +562,8 @@ class Limbo extends ModTemplate {
 					this.controls.startTimer();
 				}
 			}
+
+
 		}
 
 	}
@@ -614,6 +617,8 @@ class Limbo extends ModTemplate {
 			console.log('Sender not found...');
 			console.log(sender, this.dreams, tx);
 		}
+
+		console.log(this.dreams, this.dreamer);
 
 		if (tx.isTo(this.publicKey)) {
 			this.toggleNotification(false, sender);

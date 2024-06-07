@@ -7,7 +7,6 @@ module.exports = LimboSideBarTemplate = (app, mod, dreamer) => {
 
 	return `
 	<div id="limbo-sidebar" class="limbo-sidebar">
-    	<div class="saito-profile"></div>
     	<div class="saito-modal-content hide-scrollbar"></div>
     </div>`;
 

@@ -36,6 +36,11 @@ class ChatSidebar {
       this.app.browser.addElementToSelector(ChatSidebarTemplate(this.app, this.mod, chat), this.container);
     }
 
+    if (!document.querySelector(".chat-sidebar .saito-modal-content")){
+      this.app.browser.addElementToSelector(`<div class="saito-modal-content hide-scrollbar"></div>`, ".chat-sidebar");
+    }
+
+
     let groupKey = chat.id;
 
     let dm = false;
@@ -122,7 +127,7 @@ class ChatSidebar {
 
     this.profile.render();
 
-    this.app.browser.addElementToSelector(`<div id="chat-group-edit" class="saito-modal-menu-option"><i class="fa-solid fa-users-gear"></i><div>Manage Chat</div></div>`, ".saito-profile-controls");
+    this.app.browser.addElementToSelector(`<div id="chat-group-edit" class="saito-modal-menu-option"><i class="fa-solid fa-users-gear"></i><div>Manage Chat</div></div>`, ".chat-sidebar .saito-profile-controls");
 
     if (dm) {
       this.addUserMenu(groupKey);
