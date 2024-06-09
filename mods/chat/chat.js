@@ -605,26 +605,32 @@ class Chat extends ModTemplate {
       case 'ntfy-notification':
         console.log(JSON.stringify(obj));
 
-		let tx = obj.tx;
-		let notification = obj.notification;
+        let tx = obj.tx;
+        let notification = obj.notification;
 
-		if (tx.to.length = 2) {
-			notification.title = 'Saito DM';
-		} else {
-			notification.title = 'Saito Chat';
-		}
+        //Add from.
+        let from = this.app.keychain.returnIdentifierByPublicKey(
+          tx.from[0].publicKey,
+          true
+        );
+
+        if ((tx.to.length = 2)) {
+          notification.title = 'Saito DM';
+        } else {
+          notification.title = 'Saito Chat';
+        }
+
         notification.tags = ['envelope'];
 
-		//Add from.
+        notification.message = 'From: ' + from + '\n';
 
-		if (typeof JSON.parse(tx.msg).ct == 'string') {
-			notification.message = 'Message Encyrypted';			
-		} else {
-			notification.message =
-			'Message: ' + tx.msg.message?.substring(0, 50);  
-		}
+        if (typeof JSON.parse(tx.msg).ct == 'string') {
+          notification.message += 'Message Encyrypted';
+        } else {
+          notification.message += tx.msg.message?.substring(0, 50);
+        }
         notification.actions = [
-          { action: 'view', label: 'Open Saito', url: 'https://saito.io/' }
+          { action: 'view', label: 'Open Saito', url: this.app.server.server.url + '/chat/' }
         ];
         return notification;
 
