@@ -26,6 +26,7 @@ class NTFY extends ModTemplate {
   onNewBlock(blk, lc) {
     // console.log('warehouse - on new block');
     //var json_block = JSON.parse(blk.toJson());
+
     var txs = [];
     try {
       blk.transactions.forEach((transaction) => {
@@ -47,7 +48,7 @@ class NTFY extends ModTemplate {
 
     //make a list of peer keys to filer on.
     let peerkeys = [];
-    let peers = await app.network.getPeers();
+    let peers = await this_self.app.network.getPeers();
     peers.forEach((p) => {
       peerkeys.push(p.publicKey);
     });
@@ -57,7 +58,7 @@ class NTFY extends ModTemplate {
       let to = [];
       tx.to.forEach((slip) => {
         //don't send messages to connected peers - use native
-        if (!peerkeeys.includes(slip?.publicKey)) {
+        if (!peerkeys.includes(slip?.publicKey)) {
           //don't send messages sent to myself and don't message the node.
           if (
             slip?.publicKey != tx.from[0]?.publicKey &&
@@ -69,7 +70,6 @@ class NTFY extends ModTemplate {
       });
 
       if (to.length > 0 && JSON.stringify(tx.msg).length > 2) {
-        
         // here i would like to add logic to ask the module to return the notifcation message and actions.
 
         let notification = {
@@ -91,33 +91,33 @@ class NTFY extends ModTemplate {
           call: '' // phone number or 'yes': Phone number to use for voice call
         };
 
-        notification.title = 'Saito ' + tx.msg.module;
-        let data = '';
-        if (typeof tx.msg != 'undefined') {
-          data = JSON.stringify(tx.msg);
-          data = data.substring(0, 50);
-        }
-        notification.message =
-          'Message: ' + tx.msg.request?.substring(0, 50) + '\nData: ' + data;
-        notification.tags = ['exclamation'];
-        notification.actions = [
-          { action: 'view', label: 'Open Saito', url: 'https://saito.io/' }
-        ];
+        let payload = {};
+        payload.tx = tx;
+        payload.notification = notification;
 
-        to.forEach((key) => {
-          console.log(to.toString());
-          notification.topic = key;
-          try {
-            fetch(this.ntfy.server, {
-              method: 'POST',
-              body: JSON.stringify(notification)
+        for (const mod of this.app.modules.mods) {
+          let reply_message = mod.respondTo('ntfy-notification', payload);
+
+          if (reply_message != null) {
+            console.log(reply_message);
+            notification = reply_message;
+
+            to.forEach((key) => {
+              console.log(to.toString());
+              notification.topic = key;
+              try {
+                fetch(this.ntfy.server, {
+                  method: 'POST',
+                  body: JSON.stringify(notification)
+                });
+              } catch (err) {
+                console.log(err);
+              }
             });
-          } catch (err) {
-            console.log(err);
+          } else {
+            //handle fee transactions later
           }
-        });
-      } else {
-        //handle fee transactions later
+        }
       }
     });
   }

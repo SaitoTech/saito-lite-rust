@@ -823,6 +823,7 @@ class ChatPopup {
 				message,
 				this.input.getMentions()
 			);
+			/*
 			if (newtx) {
 				mod.receiveChatTransaction(newtx);
 				//XXX mod.sendNtfy(newtx);
@@ -846,6 +847,7 @@ class ChatPopup {
 					console.log(this_self.input.mentions);
 				}
 			}
+			*/
 			this.input.clear();
 			if (document.querySelector(popup_qs + ' .chat-body')) {
 				this.is_scrolling = null;
