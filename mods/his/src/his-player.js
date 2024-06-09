@@ -4,11 +4,9 @@
     this.hud.back_button_callback = null;
   }       
   unbindBackButtonFunction() {
-alert("and unbinding back button function!");
     this.cancelBackButtonFunction();
   } 
   bindBackButtonFunction(mycallback) {
-alert("binding back button function!");
     this.hud.back_button = true;
     this.hud.back_button_callback = mycallback;
   }   
@@ -2995,7 +2993,7 @@ return;
         return;
       }
 
-      let msg = his_self.returnFactionName(faction) + " - Return Extra Units to Capital?";
+      let msg = his_self.returnFactionName(faction) + " - Return Units to Capital?";
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
         opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
@@ -3013,6 +3011,7 @@ return;
 
         if (id == "finish") {
           his_self.updateStatus("processing winter relocation...");
+          his_self.theses_overlay.hide();
           his_self.endTurn();
           return;
         }
@@ -3180,7 +3179,7 @@ return;
 
     pick_capital_function = function(his_self, pick_capital_function, select_spacekey_function, select_units_function, finish_selecting_from_space_function) {
 
-      let msg = his_self.returnFactionName(faction) + " - Return Extra Units to Capital?";
+      let msg = his_self.returnFactionName(faction) + " - Return Units to Capital?";
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
         opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
@@ -3208,6 +3207,7 @@ return;
         let id = $(this).attr('id');
 	if (id == "finish") {
 	  his_self.updateStatus("processing winter relocation...");
+	  his_self.theses_overlay.hide();
 	  his_self.endTurn();
 	  return;
 	}

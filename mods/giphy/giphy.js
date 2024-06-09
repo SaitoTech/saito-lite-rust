@@ -121,7 +121,8 @@ class Giphy extends ModTemplate {
 				{},
 				function (res) {
 					gif_self.auth = res;
-				}
+				},
+				peer.peerIndex
 			);
 		}
 	}

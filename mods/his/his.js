@@ -3075,6 +3075,18 @@ console.log("\n\n\n\n");
 
     this.menu.addMenuOption("game-game", "Game");
 
+/***
+    this.menu.addSubMenuOption("game-game", {
+      text: "Divorce",
+      id: "game-divorce",
+      class: "game-divorce",
+      callback: function(app, game_mod){
+	game_mod.menu.hideSubMenus();
+        game_mod.marriage_overlay.renderApproveDivorce();
+      }
+    });
+***/
+
     this.menu.addSubMenuOption("game-game", {
       text : "About H.I.S.",
       id : "game-about",
@@ -4259,7 +4271,12 @@ if (this.game.players.length > 2) {
 	      if (finished == 0) {
 	        let x = action.split("_");
 	        action = x[1];
-	        his_self.addMove("activate_minor_power\t"+faction+"\t"+action);
+		// some cases, same power can be deactivated
+		if (x[0] === "deactivate") {
+	          his_self.addMove("deactivate_minor_power\t"+his_self.returnAllyOfMinorPower(action)+"\t"+action);
+		} else {
+	          his_self.addMove("activate_minor_power\t"+faction+"\t"+action);
+	        }
 	      }
 
 	    } else {
@@ -6198,6 +6215,7 @@ console.log("selected: " + spacekey);
         if (mv[0] === "advance_henry_viii_marital_status") {
 
           his_self.game.queue.splice(qe, 1);
+	  let msg = "Henry VIII is pleased with his marital progress...";
 
 	  //
 	  // Henry VIII already dead, cannot roll
@@ -6233,8 +6251,6 @@ console.log("selected: " + spacekey);
 	    his_self.updateLog("Henry VIII marries Katherine Parr");
 	  }
 
-	  his_self.updateLog("Henry VIII marital status now: " + his_self.game.state.henry_viii_marital_status);
-
 	  if (his_self.game.state.henry_viii_marital_status > 7) { his_self.game.state.henry_viii_marital_status = 7; return 1; }
 	  if (his_self.game.state.henry_viii_marital_status >= 2) {
 
@@ -6252,21 +6268,27 @@ console.log("selected: " + spacekey);
 	      dd++;
 	    }
 
-	    his_self.updateLog("Henry VIII rolls: " + dd);
+	    //his_self.updateLog("Henry VIII rolls: " + dd);
 	    his_self.game.state.henry_viii_rolls.push(dd);
+
+	    msg = "Henry VIII is pleased with his marital progress...";
 
 	    // results of pregnancy chart rolls
 	    if (dd == 1) {
+	      msg = "Marriage Result: Marriage Fails...";
 	      his_self.updateLog("Henry VIII rolls 1: marriage fails");
 	    }
 	    if (dd == 2) {
+	      msg = "Marriage Result: Wife Barren...";
 	      his_self.updateLog("Henry VIII rolls 2: marriage barren");
 	    }
 	    if (dd == 3) {
+	      msg = "Marriage Result: Wife Beheaded for Unbecoming Conduct...";
 	      his_self.updateLog("Henry VIII rolls 3: wife beheaded: will re-roll when England passes");
 	      his_self.game.state.henry_viii_auto_reroll = 1;
 	    }
 	    if (dd == 4) {
+	      msg = "Marriage Result: Elizabeth I born, +2VP for Female Succession...";
 	      his_self.updateLog("Henry VIII rolls 4: Elizabeth I born");
 	      his_self.updateLog("England gains 2 VP for Female Succession");
 	      his_self.game.state.henry_viii_add_elizabeth = 1;
@@ -6274,8 +6296,10 @@ console.log("selected: " + spacekey);
 	    if (dd == 5) {
 	      his_self.updateLog("Henry VIII rolls 5: sickly Edward VI");
 	      if (his_self.game.state.henry_viii_add_elizabeth == 1) {
+	        msg = "Marriage Result: Edward VI born sickly, +3VP for Male Succession...";
 	        his_self.updateLog("England gains additional 3 VP for Male Succession");
 	      } else {
+	        msg = "Marriage Result: Edward VI born sickly, +5VP for Male Succession...";
 	        his_self.updateLog("England gains 5 VP for Male Succession");
 	      }
 	      his_self.game.state.henry_viii_sickly_edward = 1;
@@ -6285,9 +6309,10 @@ console.log("selected: " + spacekey);
 	      his_self.updateLog("Henry VIII rolls 6: healthy Edward VI");
 	      if (his_self.game.state.henry_viii_sickly_edward == 0) {
 		if (his_self.game.state.henry_viii_add_elizabeth == 1) {
+	          msg = "Marriage Result: Edward VI born healthy, +3VP for Male Succession...";
 	          his_self.updateLog("England gains additional 3 VP for Male Succession");
 	        } else {
-	          his_self.updateLog("England gains 5 VP for Male Succession");
+	          msg = "Marriage Result: Edward VI born healthy, +5VP for Male Succession...";
 	        }
 	      }
 	      his_self.game.state.henry_viii_healthy_edward = 1;
@@ -6295,9 +6320,10 @@ console.log("selected: " + spacekey);
 	      his_self.game.state.henry_viii_add_elizabeth = 0;
 	    }
 
+	    his_self.updateStatus(msg);
 	  }
 
-	  his_self.marriage_overlay.render();
+	  his_self.marriage_overlay.render(msg);
 	  his_self.displayVictoryTrack();
 	  his_self.displayPregnancyChart();
 
@@ -22371,8 +22397,9 @@ if (this.game.options.scenario != "is_testing") {
 	  if (this.game.players.length == 2) {
 
 	    this.game.queue.push("diplomacy_phase_2P");
-
+	    // R1 cards dealt below
 	    if (this.game.state.round > 1) {
+	      this.game.queue.push("card_draw_phase");
 	      this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
 	    }
 
@@ -22423,7 +22450,6 @@ if (this.game.options.scenario != "is_testing") {
 	    }
 	  }
 
-
 	  //
 	  // 1532 mode and testing need cards too!
 	  //
@@ -22436,27 +22462,26 @@ if (this.game.options.scenario != "is_testing") {
 	    //
 	    if (this.game.state.round == 1) {
 
-if (this.game.options.scenario == "is_testing") {
-	      this.game.queue.push("is_testing");
-	      this.game.queue.push("card_draw_phase");
-} else {
-	      if (this.game.players.length == 2) {
-	        this.game.queue.push("show_overlay\tvp");
+	      if (this.game.options.scenario == "is_testing") {
+
+	        this.game.queue.push("is_testing");
+	        this.game.queue.push("card_draw_phase");
+
+	      } else {
+
+	        if (this.game.players.length == 2) {
+	          this.game.queue.push("show_overlay\tvp");
+	        }
+
+	        this.game.queue.push("hide_overlay\tdiet_of_worms");
+	        this.game.queue.push("diet_of_worms");
+	        this.game.queue.push("show_overlay\tdiet_of_worms");
+	        this.game.queue.push("card_draw_phase");
+	        this.game.queue.push("event\tprotestant\t008");
+
 	      }
 
-	      this.game.queue.push("hide_overlay\tdiet_of_worms");
-	      this.game.queue.push("diet_of_worms");
-	      this.game.queue.push("show_overlay\tdiet_of_worms");
-	      this.game.queue.push("card_draw_phase");
-	      this.game.queue.push("event\tprotestant\t008");
-}
-
 	    } else {
-
-
-	      //if (this.game.players.length > 2) {
-	      //  this.game.queue.push("card_draw_phase");
-	      //}
 
 	      //
 	      // round 2 - zwingli in zurich
@@ -32847,6 +32872,9 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  for (let i = io.length-1; i>= 0; i--) {
 	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+io[i]);
 	  }
+	  if (this.game.state.henry_viii_marital_status == 1) {
+	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\tmarriage");
+	  }
 
 	  return 1;
 
@@ -32876,6 +32904,20 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  let player = this.returnPlayerOfFaction(faction);
 
 	  this.winter_overlay.render("stage6");
+
+
+	  //
+	  // papacy asked for Henry VIII marriage
+	  //
+	  if (faction == "marriage") {
+	    if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
+	      this.marriage_overlay.renderApproveDivorce();
+	    }
+	    this.game.queue.splice(qe, 1);
+	    return 0;
+	  }
+
+
 
 	  //
 	  // first, if there are any outstanding proposals that
@@ -35963,11 +36005,9 @@ console.log(JSON.stringify(reshuffle_cards));
     this.hud.back_button_callback = null;
   }       
   unbindBackButtonFunction() {
-alert("and unbinding back button function!");
     this.cancelBackButtonFunction();
   } 
   bindBackButtonFunction(mycallback) {
-alert("binding back button function!");
     this.hud.back_button = true;
     this.hud.back_button_callback = mycallback;
   }   
@@ -38954,7 +38994,7 @@ return;
         return;
       }
 
-      let msg = his_self.returnFactionName(faction) + " - Return Extra Units to Capital?";
+      let msg = his_self.returnFactionName(faction) + " - Return Units to Capital?";
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
         opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
@@ -38972,6 +39012,7 @@ return;
 
         if (id == "finish") {
           his_self.updateStatus("processing winter relocation...");
+          his_self.theses_overlay.hide();
           his_self.endTurn();
           return;
         }
@@ -39139,7 +39180,7 @@ return;
 
     pick_capital_function = function(his_self, pick_capital_function, select_spacekey_function, select_units_function, finish_selecting_from_space_function) {
 
-      let msg = his_self.returnFactionName(faction) + " - Return Extra Units to Capital?";
+      let msg = his_self.returnFactionName(faction) + " - Return Units to Capital?";
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
         opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
@@ -39167,6 +39208,7 @@ return;
         let id = $(this).attr('id');
 	if (id == "finish") {
 	  his_self.updateStatus("processing winter relocation...");
+	  his_self.theses_overlay.hide();
 	  his_self.endTurn();
 	  return;
 	}

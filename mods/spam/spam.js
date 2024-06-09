@@ -119,6 +119,11 @@ class Spam extends ModTemplate {
 
 	async onConfirmation(blk, tx, conf) {
 		let txmsg = tx.returnMessage();
+
+		if (this.app.BROWSER && !tx.isTo(this.publicKey)) {
+			return;
+		}
+
 		try {
 			if (conf == 0) {
 				if (txmsg.request === 'send spam tx') {

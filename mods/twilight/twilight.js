@@ -5679,6 +5679,8 @@ this.game_help.render({
 
   placeInfluence(country, inf, player, mycallback=null) {
 
+    this.game_help.hide();
+
     if (player == "us") {
       this.countries[country].us = parseInt(this.countries[country].us) + parseInt(inf);
     } else {

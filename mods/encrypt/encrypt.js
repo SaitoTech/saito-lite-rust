@@ -37,6 +37,7 @@ class Encrypt extends ModTemplate {
     this.description = "A Diffie-Hellman encryption tool for Saito";
     this.categories = "Encryption Utilities";
     this.class = 'utility';
+
     app.connection.on("encrypt-key-exchange", (publicKey) => {
       console.log("initiating key exchange...");
       this.initiate_key_exchange(publicKey, 0);
@@ -44,11 +45,36 @@ class Encrypt extends ModTemplate {
     });
 
     app.connection.on("encrypt-decryption-failed", (publicKey) => {
+      let key = app.keychain.returnKey(publicKey, true);
+      if (key && key?.aes_secret){
+        siteMessage(`Your encrypted channel with ${publicKey} is broken`, 10000);  
+        app.keychain.addKey(publicKey, { encryption_failure: true});
+      }
+    });
+
+    app.connection.on("encrypt-reset-key-exchange", (publicKey) => {
+      siteMessage(`Resetting key exchange with ${publicKey}`, 30000);  
       this.reset_key_exchange(publicKey);
     });
 
+
     return this;
   }
+
+  async initialize(app) {
+    await super.initialize(app);
+
+    if (app.BROWSER){
+      //Clear mistaken broken encryption notices...
+      let keys = app.keychain.returnKeys();
+
+      for (let key of keys) {
+        delete key.encryption_failure;
+      }
+    }
+
+  }
+
 
   respondTo(type, obj) {
     let encrypt_self = this;
@@ -383,13 +409,6 @@ class Encrypt extends ModTemplate {
 
     siteMessage(`Successfully added ${this.app.keychain.returnUsername(sender, 8)} as a friend`, 5000);
 
-    let msg = `Your wallet has generated new secret keys to keep correspondence with your new contact secure. 
-    Unless you backup your wallet you may lose these keys. Do you want help backing up your wallet?`;
-    this.app.connection.emit(
-      'saito-backup-render-request',
-      {msg: msg, title: 'NEW FRIEND ADDED'}
-    );
- 
     let alice_publicKey = Buffer.from(senderkeydata.aes_publicKey, "hex");
     let alice_privatekey = Buffer.from(senderkeydata.aes_privatekey, "hex");
     let alice = this.app.crypto.createDiffieHellman(alice_publicKey, alice_privatekey);

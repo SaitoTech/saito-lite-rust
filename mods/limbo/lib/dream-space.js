@@ -22,7 +22,7 @@ class DreamSpace{
 		this.video.render(stream);
 
 		if (stream){
-			console.log("Add stream", stream);
+			console.log("Render with stream", stream);
 			this.startTimer();
 		}
 

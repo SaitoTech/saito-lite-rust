@@ -18,6 +18,7 @@ class GameHelp {
 		this.game_mod = mod;
                 this.overlay = new SaitoOverlay(this.app, this.game_mod);
 		this.enabled = true;
+		this.visible = true;
 	}
 
 
@@ -45,6 +46,8 @@ class GameHelp {
 
 	hide() {
 	  if (this.enabled != true) { return; }
+	  if (this.visible != true) { return; }
+	  this.visible = false;
 	  let gh = document.querySelector(".game-help");
 	  if (gh) {
 	    gh.classList.remove("game-help-visible");
@@ -53,8 +56,6 @@ class GameHelp {
 	}
 
 	renderCustomOverlay(obj={}) {
-
-console.log("HERE: " + JSON.stringify(obj));
 
                 let twilight_self = this.game_mod;
                 this.overlay.show(WelcomeTemplate());
@@ -77,6 +78,8 @@ console.log("HERE: " + JSON.stringify(obj));
 	}
 
 	render(targs={}) {
+
+	  this.visible = true;
 
 	  if (this.enabled != true) { return; }
 		let gh = document.querySelector(".game-help");

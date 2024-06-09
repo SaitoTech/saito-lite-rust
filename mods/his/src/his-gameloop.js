@@ -71,8 +71,9 @@ if (this.game.options.scenario != "is_testing") {
 	  if (this.game.players.length == 2) {
 
 	    this.game.queue.push("diplomacy_phase_2P");
-
+	    // R1 cards dealt below
 	    if (this.game.state.round > 1) {
+	      this.game.queue.push("card_draw_phase");
 	      this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
 	    }
 
@@ -123,7 +124,6 @@ if (this.game.options.scenario != "is_testing") {
 	    }
 	  }
 
-
 	  //
 	  // 1532 mode and testing need cards too!
 	  //
@@ -136,27 +136,26 @@ if (this.game.options.scenario != "is_testing") {
 	    //
 	    if (this.game.state.round == 1) {
 
-if (this.game.options.scenario == "is_testing") {
-	      this.game.queue.push("is_testing");
-	      this.game.queue.push("card_draw_phase");
-} else {
-	      if (this.game.players.length == 2) {
-	        this.game.queue.push("show_overlay\tvp");
+	      if (this.game.options.scenario == "is_testing") {
+
+	        this.game.queue.push("is_testing");
+	        this.game.queue.push("card_draw_phase");
+
+	      } else {
+
+	        if (this.game.players.length == 2) {
+	          this.game.queue.push("show_overlay\tvp");
+	        }
+
+	        this.game.queue.push("hide_overlay\tdiet_of_worms");
+	        this.game.queue.push("diet_of_worms");
+	        this.game.queue.push("show_overlay\tdiet_of_worms");
+	        this.game.queue.push("card_draw_phase");
+	        this.game.queue.push("event\tprotestant\t008");
+
 	      }
 
-	      this.game.queue.push("hide_overlay\tdiet_of_worms");
-	      this.game.queue.push("diet_of_worms");
-	      this.game.queue.push("show_overlay\tdiet_of_worms");
-	      this.game.queue.push("card_draw_phase");
-	      this.game.queue.push("event\tprotestant\t008");
-}
-
 	    } else {
-
-
-	      //if (this.game.players.length > 2) {
-	      //  this.game.queue.push("card_draw_phase");
-	      //}
 
 	      //
 	      // round 2 - zwingli in zurich
@@ -10547,6 +10546,9 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  for (let i = io.length-1; i>= 0; i--) {
 	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+io[i]);
 	  }
+	  if (this.game.state.henry_viii_marital_status == 1) {
+	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\tmarriage");
+	  }
 
 	  return 1;
 
@@ -10576,6 +10578,20 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  let player = this.returnPlayerOfFaction(faction);
 
 	  this.winter_overlay.render("stage6");
+
+
+	  //
+	  // papacy asked for Henry VIII marriage
+	  //
+	  if (faction == "marriage") {
+	    if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
+	      this.marriage_overlay.renderApproveDivorce();
+	    }
+	    this.game.queue.splice(qe, 1);
+	    return 0;
+	  }
+
+
 
 	  //
 	  // first, if there are any outstanding proposals that
