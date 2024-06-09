@@ -404,7 +404,8 @@ class Chat extends ModTemplate {
 
 							this.app.connection.emit('chat-ready');
 						}
-					}
+					},
+					peer.peerIndex
 				);
 			}
 
