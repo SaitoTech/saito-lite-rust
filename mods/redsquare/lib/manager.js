@@ -12,10 +12,14 @@ class TweetManager {
 		this.container = container;
 
 		this.mode = 'loading';
-		this.profile_posts = [];
-		this.profile_replies = [];
 
 		this.profile = new SaitoProfile(app, mod, '.saito-main');
+
+		this.profile.tab_container = ".tweet-manager";
+
+		this.profile_tabs = ["posts", "replies", "retweets", "likes"];
+
+		this.profile.reset(this.mod.publicKey, "posts", this.profile_tabs);
 
 		//This is an in-place loader... not super useful when content is overflowing off the bottom of the screen
 		this.loader = new SaitoLoader(app, mod, '#redsquare-intersection');
@@ -79,8 +83,6 @@ class TweetManager {
 						//
 						//////////////////////////////////////////////////
 
-						//
-						// load more profile tweets
 					}
 				});
 			},
@@ -306,7 +308,7 @@ class TweetManager {
 
 	renderProfile(publicKey) {
 
-    this.render("profile")
+    	this.render("profile");
 
 		if (!document.querySelector('.tweet-manager')) {
 			this.app.browser.addElementToSelector(
@@ -317,7 +319,7 @@ class TweetManager {
 
 		//Reset Profile
 		if (publicKey != this.profile.publicKey) {
-			this.profile.reset(publicKey);
+			this.profile.reset(publicKey, "posts", this.profile_tabs);
 		}
 
 		this.profile.render();
@@ -326,28 +328,9 @@ class TweetManager {
 			if (this.mode !== 'profile') {
 				return;
 			}
+
+			// Sort txs into posts/replies/retweets...
 			this.filterAndRenderProfile(txs);
-			if (this.profile.posts.length > 0) {
-				this.app.connection.emit(
-					'update-profile-stats',
-					'posts',
-					this.profile.posts.length
-				);
-			}
-			if (this.profile.replies.length > 0) {
-				this.app.connection.emit(
-					'update-profile-stats',
-					'replies',
-					this.profile.replies.length
-				);
-			}
-			if (this.profile.retweets.length > 0) {
-				this.app.connection.emit(
-					'update-profile-stats',
-					'retweets',
-					this.profile.retweets.length
-				);
-			}
 
 			this.hideLoader();
 			this.profile.render();
@@ -421,6 +404,9 @@ class TweetManager {
 	   }		
 	}
 
+
+
+
 	/*
     Liked tweets are more complicated than tweets I have sent because it is a 2-step look up
     We can find the 1, 2...n txs where I liked the tweet, which contains the signature of the original 
@@ -440,7 +426,7 @@ class TweetManager {
 			let old_tweet = this.mod.returnTweet(sig);
 			if (old_tweet) {
 				likes_to_load--;
-				this.profile.insertTweet(old_tweet, this.profile.likes);
+				this.insertTweet(old_tweet, this.profile.menu.likes);
 				if (likes_to_load == 0) {
 					this.app.connection.emit(
 						'update-profile-stats',
@@ -458,7 +444,7 @@ class TweetManager {
 						likes_to_load--;
 						for (let z = 0; z < txs.length; z++) {
 							let tweet = new Tweet(this.app, this.mod, txs[z]);
-							this.profile.insertTweet(tweet, this.profile.likes);
+							this.insertTweet(tweet, this.profile.menu.likes);
 						}
 						if (likes_to_load == 0) {
 							this.app.connection.emit(
@@ -474,19 +460,39 @@ class TweetManager {
 		}
 	}
 
+	insertTweet(tweet, list) {
+
+		let insertion_index = 0;
+
+		for (let i = 0; i < list.length; i++) {
+			if (list[i].tx.signature === tweet.tx.signature) {
+				return;
+			}
+
+			if (tweet.created_at > list[i].created_at) {
+				break;
+			} else {
+				insertion_index++;
+			}
+		}
+
+		list.splice(insertion_index, 0, tweet);
+	}
+
+
 	filterAndRenderProfile(txs) {
 		for (let z = 0; z < txs.length; z++) {
 			let tweet = new Tweet(this.app, this.mod, txs[z]);
 			if (tweet?.noerrors) {
 				if (tweet.isRetweet()) {
-					this.profile.insertTweet(tweet, this.profile.retweets);
+					this.insertTweet(tweet, this.profile.menu.retweets);
 					return;
 				}
 				if (tweet.isPost()) {
-					this.profile.insertTweet(tweet, this.profile.posts);
+					this.insertTweet(tweet, this.profile.menu.posts);
 				}
 				if (tweet.isReply()) {
-					this.profile.insertTweet(tweet, this.profile.replies);
+					this.insertTweet(tweet, this.profile.menu.replies);
 				}
 			}
 		}

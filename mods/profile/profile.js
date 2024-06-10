@@ -13,45 +13,63 @@ class Profile extends ModTemplate {
 		this.archive_public_key;
 		this.cache = {};
 
-		app.connection.on(
-			'profile-fetch-content-and-update-dom',
+		app.connection.on('profile-fetch-content-and-update-dom',
 			async (key) => {
-				try {
+
+				console.log('profile-fetch-content-and-update-dom');
+
+				// 
+				// If not cached, check archives
+				// 
+				if (!this.cache[key]) {
+					this.cache[key] = {};
 					
-				let returned_key = this.app.keychain.returnKey(key);
-				let banner_sig = returned_key.banner;
-				let description_sig = returned_key.description;
-				let image_sig = returned_key.image;
+					if (this.app.keychain.isWatched(key)) {
 
-				await this.returnProfileBanner(banner_sig, key, (banner) => {
-					const elementId = `${key}-profile-banner`;
-					const element = document.querySelector(`#${elementId}`);
-					if (element) {
-						element.style.backgroundImage = `url('${banner}')`;
-					}
-				});
+						let returned_key = this.app.keychain.returnKey(key);
 
-				await this.returnProfileDescription(
-					description_sig,
-					key,
-					(description) => {
-						const elementId = `${key}-profile-description`;
-						const element = document.querySelector(`#${elementId}`);
-						if (element) {
-							element.textContent = description;
+						if (returned_key?.profile) {
+
+							if (returned_key.profile?.banner){
+								this.cache[key].banner = await this.fetchProfileFromArchive("banner", returned_key.profile.banner);
+							}
+
+							if (returned_key.profile?.description){
+								this.cache[key].description = await this.fetchProfileFromArchive("description", returned_key.profile.description);
+							}
+
+							if (returned_key.profile?.image){
+								this.cache[key].image = await this.fetchProfileFromArchive("image", returned_key.profile.image);
+							}
+						
 						}
+
+					} else {
+
+						//Check remote archives
+						this.app.storage.loadTransactions(
+							{ field1: "Profile", field2: key }, 
+							async (txs) => {
+								let data_found = {};
+								if (txs?.length > 0) {
+									//Go reverse order for oldest first
+									for (let i = txs.length - 1; i >= 0; i--) {
+										let txmsg = txs[i].returnMessage();
+										console.log("Remote Archive Profile TX: ", txmsg);
+										Object.assign(data_found, txmsg.data);
+									}
+								}
+
+								Object.assign(this.cache[key], data_found);
+								this.updateProfileDom(this.cache[key], key);
+							},
+						null);
+
+						return;
 					}
-				);
-				await this.returnProfileImage(image_sig, key, (image) => {
-					const elementId = `${key}-profile-image`;
-					const element = document.querySelector(`#${elementId}`);
-					if (element) {
-						element.src = image;
-					}
-				});
-				} catch (error) {
-					console.log(error)
 				}
+
+				this.updateProfileDom(this.cache[key], key);
 
 			}
 		);
@@ -65,48 +83,77 @@ class Profile extends ModTemplate {
 			this.photoUploader.callbackAfterUpload = async (photo) => {
 				let banner = await this.app.browser.resizeImg(photo);
 				this.sendProfileTransaction({ banner });
-			
-		
 			};
 			this.photoUploader.render(this.photo);
 		});
 
 		app.connection.on('profile-edit-description', (key) => {
-			const elementId = `${key}-profile-description`;
+			const elementId = `profile-description-${key}`;
 			const element = document.querySelector(`#${elementId}`);
 			this.updateDescription = new UpdateDescription(this.app, this);
 			this.updateDescription.render(element.textContent);
 		});
 
-		app.connection.on("profile-update-dom", (newtx) => {
-			console.log(newtx, "this is the new transaction")
-			let {banner, description} = newtx.msg.data;
-				let publicKey = this.publicKey
-			if(banner) {
-				const elementId = `${publicKey}-profile-banner`;
-					const element = document.querySelector(`#${elementId}`);
-					if (element) {
-						element.style.backgroundImage = `url('${banner}')`;
-					}
-			}
-			if(description){
-				const elementId = `${publicKey}-profile-description`;
-				const element = document.querySelector(`#${elementId}`);
-				if (element) {
-					element.textContent = description;
-				}
-			}
-
-		})
 	}
+
 
 	async onConfirmation(blk, tx, conf) {
 		let txmsg = tx.returnMessage();
 		if (conf == 0) {
 			if (txmsg.request === 'update profile') {
-				this.receiveProfileTransaction(tx);
+				console.log("Profile onConfirmation");
+
+				await this.receiveProfileTransaction(tx);
+
 			}
 		}
+	}
+
+
+	async onPeerServiceUp(app, peer, service = {}) {
+
+		if (!app.BROWSER) {
+			return;
+		}
+
+		if (service.service === 'archive') {
+
+			for (let key of this.app.keychain.returnKeys()){
+
+				if (!key?.profile && key.watched) {
+
+					// Save an empty profile, so we don't keep querying on every page load... 
+					// if we are watching them, we will get the tx when they update...
+					//
+					this.app.keychain.addKey(key.publicKey, { profile: {} });
+
+					//Check remote archives
+					await app.storage.loadTransactions(
+						{ field1: "Profile", field2: key.publicKey }, 
+						async (txs) => {
+							let txs_found = {};
+							
+							// We want to get the most recent tx for description/image/banner
+							if (txs?.length > 0) {
+								for (let i = txs.length - 1; i >= 0; i--) {
+									let txmsg = txs[i].returnMessage();
+									for (let k in txmsg.data){
+										txs_found[k] = txs[i];
+									}
+								}
+							}
+
+							for (let k in txs_found){
+								await this.receiveProfileTransaction(txs_found[k]);
+							}
+						},
+
+					null);
+				}
+
+			}
+		}
+
 	}
 
 	/**
@@ -116,43 +163,25 @@ class Profile extends ModTemplate {
 	 *
 	 **/
 	async sendProfileTransaction(data) {
-		try {
-			const obj = {};
-			for (const key in data) {
-				if (data.hasOwnProperty(key)) {
-				if (
-						key === 'archive' &&
-						typeof data[key] === 'object' &&
-						!Array.isArray(data[key])
-					) {
-						obj[key] = JSON.stringify(data[key]);
-					} else {
-						obj[key] = data[key];
-					}
-				}
-			}
 
-			this.app.connection.emit("saito-header-update-message", {msg: "broadcasting profile update"})
-			let newtx =
-				await this.app.wallet.createUnsignedTransactionWithDefaultFee(
-					this.publicKey
-				);
-			newtx.msg = {
-				module: this.name,
-				request: 'update profile',
-				data: obj
-			};
-			
-			newtx.serialize_to_web(this.app);
-			await newtx.sign();
-			this.app.connection.emit('profile-update-dom', newtx)
-			await this.app.network.propagateTransaction(newtx);
-		} catch (error) {
-			console.error(
-				'Profile: Error creating profile transaction ',
-				error
+		this.app.connection.emit("saito-header-update-message", {msg: "broadcasting profile update"})
+
+		let newtx =
+			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+				this.publicKey
 			);
-		}
+		newtx.msg = {
+			module: this.name,
+			request: 'update profile',
+			data
+		};
+		
+		await newtx.sign();
+
+		this.app.connection.emit('profile-update-dom', this.publicKey, data);
+
+		await this.app.network.propagateTransaction(newtx);
+
 	}
 
 	/**
@@ -161,187 +190,140 @@ class Profile extends ModTemplate {
 	 * @param {Object} tx - The transaction object received, containing data to be processed.
 	 **/
 	async receiveProfileTransaction(tx) {
-		try {
-			let from =
-				tx.from && tx.from.length > 0 ? tx.from[0].publicKey : null;
-			if (!from) {
-				throw new Error('No `from` public key');
-			}
-			let txmsg = tx.returnMessage();
-			console.log('from', from);
 
-			this.app.connection.emit("saito-header-update-message", {msg: ""})
-			if(from === this.publicKey){
-				siteMessage('Profile updated', 2000);
-			}
-	
+		let from = tx?.from[0]?.publicKey;
 
-			if (this.app.keychain.returnKey(from)) {
-				let data = {};
-				for (let key in txmsg.data) {
-					if (!txmsg.data.hasOwnProperty(key)) {
-						continue;
-					}
-
-					if (
-						key === 'banner' ||
-						key === 'image' ||
-						key === 'description'
-					) {
-						data[key] = tx.signature;
-					} else if (
-						key === 'archive' &&
-						typeof txmsg.data[key] === 'string'
-					) {
-						try {
-							data[key] = JSON.parse(txmsg.data[key]);
-						} catch (parseError) {
-							console.error(
-								'Error parsing archive data',
-								parseError
-							);
-							data[key] = txmsg.data[key];
-						}
-					} else {
-						// todo: handle key not found
-					}
-				}
-				this.app.keychain.addKey(from, data);
-				await this.saveProfileTransaction(tx);
-				this.saveCache(tx, from);
-				if(from === this.publicKey){
-					this.app.connection.emit('rerender-profile');
-				}
-				
-			} else {
-				// console.log("Key not found");
-			}
-		} catch (error) {
-			console.error(
-				'Profile: Error receiving profile transaction',
-				error
-			);
+		if (!from) {
+			console.error("Profile: Invalid TX");
+			return;
 		}
+
+		let txmsg = tx.returnMessage();
+
+		console.log("PROFILE UPDATE: ", txmsg.data);
+
+		//
+		// Update (server) cache with profile data
+		//
+		if (!this.cache[from]){
+			this.cache[from] = {};
+		}
+
+		Object.assign(this.cache[from], txmsg.data);
+
+		//
+		// If we follow the key, save the indices (tx sig) in our keychain
+		// and archive the transactions
+ 		//
+		if (this.app.keychain.isWatched(from)) {
+
+			let data = {};
+
+			for (let key in txmsg.data) {
+				if (key == "archive") {
+					data[key] = txmsg.data[key];
+				} else {
+					data[key] = tx.signature;
+				}
+			}
+
+			let returned_key = this.app.keychain.returnKey(from);
+
+			let profile = Object.assign({}, returned_key?.profile);
+			
+			profile = Object.assign(profile, data);
+
+			console.log(profile);
+
+			this.app.keychain.addKey(from, { profile } );
+
+			await this.saveProfileTransaction(tx);	
+
+		}else if (!this.app.BROWSER){
+			//
+			// Save update transaction in archive if server 
+			//
+			await this.saveProfileTransaction(tx);	
+		}
+
+		//
+		// Update my UI to confirm that tx was received on chain
+		//
+		if (tx.isFrom(this.publicKey)) {
+			// Clear the saito-header notification from sendProfileTransaction
+			this.app.connection.emit("saito-header-update-message", {msg: ""})
+			siteMessage('Profile updated', 2000);
+		}
+
+		if (this.app.keychain.isWatched(from)){
+			this.updateProfileDom(this.cache[from], from);
+		}
+
 	}
 
 	//
 	//
 	//  LOAD PROFILE VALUES FUNCTIONS
 	//
-	async returnProfileImage(sig, publicKey, callback) {
-		if (this.cache[publicKey] && this.cache[publicKey].image) {
-			// console.log('Cache hit for image');
-			if (callback) {
-				callback(this.cache[publicKey].image);
-			}
-
-			return;
-		}
-
-		this.app.storage.loadTransactions(
-			{ sig, field1: 'Profile' },
+ 	async fetchProfileFromArchive(field, sig) {
+ 		return this.app.storage.loadTransactions({ sig, field1: 'Profile' },
 			(txs) => {
 				if (txs?.length > 0) {
-					const tx = txs[0];
-					console.log(tx);
-					const image = tx.msg.data.image;
-					this.cache[publicKey] = this.cache[publicKey] || {};
-					this.cache[publicKey].image = image; //go
-					if (callback) {
-						callback(image);
-					}
-					// update the profile image with the gotten image
-				}
-			},
-			'localhost'
-		);
-	}
-
-	async returnProfileBanner(sig, publicKey, callback = null) {
-		if (this.cache[publicKey] && this.cache[publicKey].banner) {
-			if (callback) {
-				callback(this.cache[publicKey].banner);
-			}
-			return;
-		}
-
-		this.app.storage.loadTransactions(
-			{ sig, field1: 'Profile' },
-			(txs) => {
-				if (txs?.length > 0) {
-					const tx = txs[0];
-					console.log(tx);
-					const banner = tx.msg.data.banner;
-					this.cache[publicKey] = this.cache[publicKey] || {};
-					this.cache[publicKey].banner = banner; // Update cache
-					// console.log(banner, "this is the banner")
-					if (callback) {
-						callback(banner);
+					for (let tx of txs){
+						let txmsg = tx.returnMessage();
+						if (txmsg.data[field]){
+							return txmsg.data[field];
+						}
 					}
 				}
+				return null;
 			},
-			'localhost'
-		);
-	}
+			'localhost');
+ 	}
 
-	async returnProfileDescription(sig, publicKey, callback) {
-		if (this.cache[publicKey] && this.cache[publicKey].description) {
-			if (callback) {
-				callback(this.cache[publicKey].description);
-			}
-			return;
-		}
-
-		this.app.storage.loadTransactions(
-			{ sig, field1: 'Profile' },
-			(txs) => {
-				if (txs?.length > 0) {
-					const tx = txs[0];
-					// console.log(tx);
-					const description = tx.msg.data.description;
-					this.cache[publicKey] = this.cache[publicKey] || {};
-					this.cache[publicKey].description = description; // Update cache
-					if (callback) {
-						callback(description);
-					}
-				}
-			},
-			'localhost'
-		);
-	}
 
 	//
-	// SAVE VALUE FUNCTIONS
+	// Every profile update saves a new transaction to the archive, and in the keychain 
+	// we store the signature of the most recent update so that we can pull that up
 	//
 	async saveProfileTransaction(tx) {
+
 		await this.app.storage.saveTransaction(
 			tx,
-			{ field1: 'Profile' },
+			{ field1: 'Profile', preserve: 1 },
 			'localhost'
 		);
 	}
 
-	saveCache(tx, from) {
-		const cacheData = {};
-		if (tx.msg.data) {
-			if (tx.msg.data.banner) {
-				cacheData.banner = tx.msg.data.banner;
-			}
-			if (tx.msg.data.image) {
-				cacheData.image = tx.msg.data.image;
-			}
-			if (tx.msg.data.description) {
-				cacheData.description = tx.msg.data.description;
+
+	updateProfileDom(profile, key){
+		//
+		// Plug in any info I found
+		//
+		if (profile?.banner){
+			const element = document.querySelector(`#profile-banner-${key}`);
+			if (element){
+				element.style.backgroundImage = `url('${profile.banner}')`;
 			}
 		}
 
-		if (Object.keys(cacheData).length > 0) {
-			this.cache[from] = cacheData;
-			console.log('Cache saved locally:', this.cache[from]);
-		} else {
-			console.log('No valid data to cache.');
+		if (profile?.description){
+			const element = document.querySelector(`#profile-description-${key}`);
+			if (element){
+				element.textContent = profile.description;
+			}
 		}
+
+		if (profile?.image){
+			const element = document.querySelector(`#profile-image-${key}`);
+			if (element){
+				element.src = profile.image;
+			}
+		}
+
+
 	}
+
 }
 
 module.exports = Profile;

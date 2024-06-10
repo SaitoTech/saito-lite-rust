@@ -10,39 +10,69 @@
 
 
 .limbo-main {
-	padding-bottom: 1rem;
+	padding: 2rem 0;
 }
 
-.limbo-main .saito-menu {
-	max-width: 50rem;
-	margin: auto;
-	margin-top: 8rem;
+.limbo-menu {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	grid-gap: 2rem;
+	gap: 2rem;
 }
 
-.dreaming .limbo-main .saito-menu {
+.dreaming .limbo-main .limbo-menu {
 	display: none;
 }
 
-.spaces-list{
-	gap: 0.5rem;
+.limbo-launch-options {
+	width: 100%;
+	max-width: 100rem;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-gap: 2rem;
+}
+
+.limbo-option {
 	display: flex;
 	flex-direction: column;
-	min-height: 10rem;
-}
-
-.spaces-list .saito-user{
-	padding: 0.5rem;
+	align-items: center;
+	gap: 1rem;
+	border-radius: 1rem;
+	border: 2px solid;
+	padding: 2rem;
 	cursor: pointer;
-	border-radius: 0.5rem;
+	height: min(25vw, 28rem);
+	justify-content: space-evenly;
 }
 
-.spaces-list .saito-user:hover, .spaces-list .dream.active{
-	background-color: var(--saito-primary);
-	color: var(--saito-background-color);
+.limbo-option i {
+	font-size: max(8vw, 40px);
+}
+
+.limbo-option label {
+	font-size: max(4vw, 20px);
+}
+
+.limbo-option:hover{
+	transform: scale(1.05);
+}
+
+.spaces-list{
+	gap: 2.5rem;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, 35rem);
+}
+
+.spaces-list .saito-profile {
+	border-radius: 1rem;
+	border: 2px solid;
+	cursor: pointer;
+	overflow: hidden;
+}
+
+.spaces-list .saito-profile-identicon{
+	width: 7rem;
+	height: 7rem;
 }
 
 /* Right sidebar */
@@ -226,11 +256,6 @@ video#local.noflip{
 	/* But drop left sidebar in a dreamspace */
 	.saito-container.limbo-container.dreaming{
 		grid-template-columns: 1fr min-content;
-	}
-
-	.limbo-container.dreaming .saito-sidebar.left{
-		display: none;
-		visibility: hidden;
 	}
 
 }

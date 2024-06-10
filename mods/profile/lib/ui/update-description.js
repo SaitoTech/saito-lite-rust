@@ -21,20 +21,19 @@ class UpdateDescription {
     }
 
     attachEvents() {
-        document.querySelector('.saito-overlay-form-input').select();
 
+        const inputBox = document.getElementById('saito-overlay-form-input');
+
+        inputBox.select();
 
         document.querySelector('.saito-overlay-form-submit').onclick = (e) => {
             e.preventDefault();
-            console.log(e)
-            var description = document.querySelector(
-                '.saito-overlay-form-input'
-            ).value;
+
+            var description = inputBox.innerText || inputBox.value;
 
             console.log(description, this.mod)
             this.mod.sendProfileTransaction({ description })
             this.overlay.remove()
-
 
         };
     }
