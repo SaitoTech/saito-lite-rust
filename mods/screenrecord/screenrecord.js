@@ -1,87 +1,111 @@
-const VideoBox = require('./../../lib/saito/ui/saito-videobox/video-box');
-const ModTemplate = require('../../lib/templates/modtemplate');
 
-class Screenrecord extends ModTemplate {
+const ModTemplate = require('../../lib/templates/modtemplate');
+const VideoBox = require('../../lib/saito/ui/saito-videobox/video-box');
+
+class Record extends ModTemplate {
 	constructor(app) {
 		super(app);
 		this.app = app;
-		this.name = "Screenrecord";
-		this.chunks = [];
-		this.localStream = null; // My Video Feed
-		this.mediaRecorder = null;
-	    this.description = "simple tool for recording a screen capture video";
-	    this.categories = "Utilities Communications";
+		this.name = 'Record';
+		this.description = 'Recording Module';
+		this.categories = 'Utilities Communications';
+		this.class = 'utility';
+		this.record_video = false;
+
+		this.styles = ['/saito/saito.css', '/record/style.css'];
+		this.interval = null;
 	}
 
 	respondTo(type, obj) {
-		let mod_self = this;
+		if (type === 'record-actions') {
+			this.attachStyleSheets();
+			super.render(this.app, this);
 
-		if (type === 'call-actions') {
-			if (obj?.members){
-				return [
-					{
-						text: 'Record',
-						icon: 'fa-solid fa-record-vinyl',
-						hook: "onair",
-						callback: function (app, public_key, id = '') {
-							console.log("Click on record");
-							if (mod_self.mediaRecorder){
-								mod_self.stop();
-							}else{
-								mod_self.record(obj.members);
+			return [
+				{
+					text: 'Record',
+					icon: 'fas fa-record-vinyl record-icon',
+					callback: async function (app) {
+						let { container, streams, useMicrophone, callbackAfterRecord, members } = obj;
+
+						if (container) {
+							if (!this.mediaRecorder) {
+								await this.startRecording(container, members, callbackAfterRecord);
+							} else {
+								this.stopRecording();
 							}
 						}
-					}
-				];
-			}
+					}.bind(this)
+				}
+			];
 		}
-
-		//
-		//Game-Menu passes the game_mod as the obj, so we can test if we even want to add the option
-		//
-		if (type == 'game-menu') {
-			return {
+		if (type === 'game-menu') {
+			if (!obj.recordOptions) return;
+			let menu = {
 				id: 'game-game',
 				text: 'Game',
-				submenus: [
-					{
-						parent: 'game-game',
-						text: 'Record Game',
-						id: 'record-stream',
-						class: 'record-stream',
-						callback: function (app, game_mod) {
-							game_mod.menu.hideSubMenus();
-							if (mod_self?.mediaRecorder) {
-								mod_self.stop();
-								document.getElementById(
-									'record-stream'
-								).textContent = 'Start Recording';
-							} else {
-								mod_self.record(game_mod.game.players);
-								document.getElementById(
-									'record-stream'
-								).textContent = 'Stop Recording';
-							}
-						}
-					}
-				]
+				submenus: [],
 			};
+
+			menu.submenus.push({
+				parent: 'game-game',
+				text: "Record game",
+				id: 'record-stream',
+				class: 'record-stream',
+				callback: async function (app, game_mod) {
+					let recordButton = document.getElementById('record-stream');
+					let { container, callbackAfterRecord } = game_mod.recordOptions;
+					if (!this.mediaRecorder) {
+						await this.startRecording(container, [], callbackAfterRecord);
+						recordButton.textContent = "Stop recording";
+					} else {
+						this.mediaRecorder.stop();
+						this.stopRecording()
+					}
+				}.bind(this)
+			});
+
+			return menu;
 		}
 
-		return super.respondTo(type, obj);
 	}
 
-	async record(keylist) {
-		
+	onConfirmation(blk, tx, conf) {
+		if (tx == null) {
+			return;
+		}
+
+		let message = tx.returnMessage();
+
+		if (conf === 0) {
+			if (message.module === 'record') {
+				if (this.app.BROWSER === 1) {
+					if (this.hasSeenTransaction(tx)) return;
+
+					if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
+						if (message.request === "start recording") {
+							siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} started recording their screen`, 1500);
+						}
+						if (message.request === "stop recording") {
+							siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} stopped recording their screen`, 1500);
+						}
+
+						this.toggleNotification();
+					}
+
+				}
+			}
+		}
+	}
+
+
+	async startRecording(container, members = [], callbackAfterRecord = null,) {
+
 		this.localStream = null;
 		this.externalMediaControl = false;
 
-		//
-		// First check if any other modules are fetching media
-		//
 		const otherParties = this.app.modules.getRespondTos('media-request');
 		if (otherParties.length > 0) {
-
 			// We hope there is only 1!
 			this.localStream = otherParties[0].localStream;
 			this.additionalSources = otherParties[0].remoteStreams;
@@ -95,11 +119,15 @@ class Screenrecord extends ModTemplate {
 				// Get webcam video
 				//
 				if (includeCamera) {
-					this.localStream =
-						await navigator.mediaDevices.getUserMedia({
-							video: true,
-							audio: true // Capture microphone audio
-						});
+
+					try {
+						this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+					} catch (error) {
+						console.error("Failed to get user media:", error);
+						alert("Failed to access camera and microphone.");
+						return;
+					}
+	
 
 					this.videoBox = new VideoBox(this.app, this, 'local');
 					this.videoBox.render(this.localStream);
@@ -123,9 +151,9 @@ class Screenrecord extends ModTemplate {
 							(videoElemCamera.onloadedmetadata = resolve)
 					);*/
 				} else {
-				//
-				// Get microphone input only
-				//	
+					//
+					// Get microphone input only
+					//	
 					this.localStream =
 						await navigator.mediaDevices.getUserMedia({
 							audio: true // Capture microphone audio
@@ -139,17 +167,22 @@ class Screenrecord extends ModTemplate {
 			}
 		}
 
-		//
-		// Attempt to stream of the screen -- user has to select it
-		// this should include any displayed video and audio...
-		//
 
-		let screenStream = null;
+		let chunks = [];
+		const targetDiv = document.querySelector(container);
+		console.log(container, targetDiv, "containers")
 
+		function updateDimensions() {
+			const { top, left, width, height } = targetDiv.getBoundingClientRect();
+
+			return { top, left, width, height };
+		}
+
+		let { top, left, width, height } = updateDimensions();
+		console.log(`Div dimensions - Top: ${top}, Left: ${left}, Width: ${width}, Height: ${height}`);
+		this.screenStream = null;
 		try {
-			//const videoElemScreen = document.createElement('video');
-
-			screenStream = await navigator.mediaDevices.getDisplayMedia({
+			this.screenStream = await navigator.mediaDevices.getDisplayMedia({
 				video: {
 					displaySurface: 'browser'
 				},
@@ -158,118 +191,228 @@ class Screenrecord extends ModTemplate {
 				selfBrowserSurface: 'include',
 				monitorTypeSurfaces: 'exclude'
 			});
+		}
 
-			/*videoElemScreen.srcObject = screenStream;
-			videoElemScreen.muted = true;
-			videoElemScreen.play();
-			await new Promise(
-				(resolve) => (videoElemScreen.onloadedmetadata = resolve)
-			);*/
-		} catch (error) {
-			console.error('Access to screen denied: ', error);
-			salert('Screen recording permission is required.');
-			this.stop();
+		catch (error) {
+			console.error('Error fetching display media:', error);
+			this.showAlert("Error fetching display media")
 			return;
 		}
 
-		this.toggleNotification();
 
-		// Set up the media recorder with the canvas stream
-		// Create a new stream for the combined video and audio
-		const combinedStream = new MediaStream();
+		// this.screenStream.getVideoTracks()[0].addEventListener('ended', () => {
+		// 	console.log('Screen sharing stopped.');
+		// 	this.stopRecording()
+		// });
 
-		// Add the audio tracks from the screen and camera to the combined stream
-		screenStream
-			.getTracks()
-			.forEach((track) => {
-				combinedStream.addTrack(track);
+		this.screenStream
+			.getTracks().forEach((track) => {
 				track.onended = () => {
-					this.stop();
+					console.log('onended', this,)
+					this.stopRecording();
 				}
 			});
 
-		if (this.localStream && this.localStream.getAudioTracks().length > 0) {
-			combinedStream.addTrack(this.localStream.getAudioTracks()[0]);
-		}
+		const video = document.createElement('video');
+		video.srcObject = this.screenStream;
+		video.style.position = 'absolute';
+		video.style.top = '0';
+		video.style.left = '0';
+		video.style.zIndex = '-300';
+		video.play();
 
-		this.mediaRecorder = new MediaRecorder(combinedStream, {
-			mimeType: 'video/webm'
+		document.body.appendChild(video);
+
+		// Create a canvas element to draw the wanted portion of the video
+		const canvas = document.createElement('canvas');
+		const ctx = canvas.getContext('2d');
+		canvas.width = width;
+		canvas.height = height;
+		const self = this
+
+		video.onloadedmetadata = () => {
+			function draw() {
+				let { top, left, width, height } = updateDimensions();
+				canvas.width = width;
+				canvas.height = height;
+
+				const scaleX = video.videoWidth / window.innerWidth;
+				const scaleY = video.videoHeight / window.innerHeight;
+
+				const scaledWidth = Math.min(video.videoWidth, width * scaleX);
+				const scaledHeight = Math.min(video.videoHeight, height * scaleY);
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+
+				const srcX = left * scaleX;
+				const srcY = top * scaleY;
+				const clipWidth = Math.min(scaledWidth, video.videoWidth - srcX);
+				const clipHeight = Math.min(scaledHeight, video.videoHeight - srcY);
+
+				ctx.drawImage(video, srcX, srcY, clipWidth, clipHeight, 0, 0, canvas.width, canvas.height);
+				self.animation_id = requestAnimationFrame(draw);
+
+			}
+			draw();
+
+
+		};
+		targetDiv.addEventListener('dragstart', (event) => {
+			event.dataTransfer.setData('text/plain', null);
 		});
 
-		// When data is available, push it to the chunks array
-		this.mediaRecorder.ondataavailable = (e) => {
-			if (e.data.size > 0) {
-				this.chunks.push(e.data);
+		targetDiv.addEventListener('drag', (event) => {
+			if (event.clientX > 0 && event.clientY > 0) {
+				let { top, left, width, height } = updateDimensions();
+				canvas.width = width;
+				canvas.height = height;
+			}
+		});
+
+		targetDiv.addEventListener('dragend', (event) => {
+			let { top, left, width, height } = updateDimensions();
+			canvas.width = width;
+			canvas.height = height;
+		});
+
+
+		window.addEventListener('resize', updateDimensions);
+		window.addEventListener('orientationchange', updateDimensions);
+		let recordedStream = canvas.captureStream();
+
+
+
+		const combinedStream = new MediaStream([...recordedStream.getTracks()]);
+
+		if (this.localStream) {
+			let streams = [this.localStream]
+			console.log(this.localStream, this.additionalSources, "local and addtional sources")
+			if (this.additionalSources) {
+				this.additionalSources.forEach(stream => streams.push(stream))
+			}
+			const audioTracks = this.getAudioTracksFromStreams(streams);
+			audioTracks.forEach(track => combinedStream.addTrack(track));
+		}
+
+
+
+		this.mediaRecorder = new MediaRecorder(combinedStream, {
+			mimeType: 'video/webm; codecs=vp9',
+			videoBitsPerSecond: 25 * 1024 * 1024,
+			audioBitsPerSecond: 320 * 1024
+		});
+
+
+		this.mediaRecorder.ondataavailable = event => {
+			if (event.data.size > 0) {
+				chunks.push(event.data);
+				if (callbackAfterRecord) {
+					callbackAfterRecord(event.data);
+				}
 			}
 		};
 
-		// When the recording stops, create a video file
 		this.mediaRecorder.onstop = async () => {
-			console.log("Media Recorder stopped!");
-			this.toggleNotification();
-			screenStream.getTracks().forEach((track) => track.stop());
-
-			const completeBlob = new Blob(this.chunks, { type: 'video/webm' });
+			const blob = new Blob(chunks, { type: 'video/webm' });
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a');
 			const defaultFileName = 'saito_video.webm';
 			const fileName =
 				(await sprompt(
 					'Please enter a recording name',
 					'saito_video'
 				)) || defaultFileName;
+			a.style.display = 'none';
+			a.href = url;
+			a.download = fileName
+			document.body.appendChild(a);
+			a.click();
+			URL.revokeObjectURL(url);
+			document.body.removeChild(video);
+			if (members.length > 0) {
+				this.sendStopRecordingTransaction(members);
+			}
 
-			const videoURL = window.URL.createObjectURL(completeBlob);
-
-			const downloadLink = document.createElement('a');
-			document.body.appendChild(downloadLink);
-			downloadLink.style = 'display: none';
-			downloadLink.href = videoURL;
-			downloadLink.download = fileName;
-			downloadLink.click();
-
-			downloadLink.remove();
-			window.URL.revokeObjectURL(videoURL);
-
-			this.sendStopRecordingTransaction(keylist);
-			this.chunks = [];
 		};
 
-		this.sendStartRecordingTransaction(keylist);
-
-
-		// Start recording
 		this.mediaRecorder.start();
+
+		this.updateUIForRecordingStart()
+
+
+		if (members.length > 0) {
+			this.sendStartRecordingTransaction(members);
+		}
+
+
 
 	}
 
-	async stop() {
-		console.log('Stop recording!');
+
+
+
+	async stopRecording() {
 
 		if (this.mediaRecorder) {
-			await this.mediaRecorder.stop();
+			this.mediaRecorder.stop();
 			this.mediaRecorder = null;
 		}
+
+		if (this.screenStream) {
+			this.screenStream.getTracks().forEach(track => track.stop());
+		}
+		cancelAnimationFrame(this.animation_id);
 
 		if (this.localStream && !this.externalMediaControl) {
 			this.localStream.getTracks().forEach((track) => track.stop());
 			this.localStream = null;
 		}
 
+
+
 		if (this.videoBox) {
 			this.videoBox.remove();
 			this.videoBox = null;
 		}
+
+		this.updateUIForRecordingStop()
+
+		const recordButtonGame = document.getElementById('record-stream');
+		if (recordButtonGame) {
+			recordButtonGame.textContent = "record game";
+		}
+
+		// window.removeEventListener('resize', updateDimensions);
+		// window.removeEventListener('orientationchange', updateDimensions);
+
+
+
 	}
 
-	async sendStartRecordingTransaction(keys){
-		let newtx =	await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
+
+
+
+
+	getAudioTracksFromStreams(streams) {
+		const audioTracks = [];
+		streams.forEach(stream => {
+			if (stream instanceof MediaStream) {
+				audioTracks.push(...stream.getAudioTracks());
+			}
+		});
+		return audioTracks;
+	}
+
+	async sendStartRecordingTransaction(keys) {
+		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
 
 		newtx.msg = {
 			module: 'Screenrecord',
 			request: 'start recording',
 		};
 
-		for (let peer of keys){
-			if (peer != this.publicKey){
+		for (let peer of keys) {
+			if (peer != this.publicKey) {
 				newtx.addTo(peer);
 			}
 		}
@@ -280,16 +423,16 @@ class Screenrecord extends ModTemplate {
 		this.app.network.propagateTransaction(newtx);
 	}
 
-	async sendStopRecordingTransaction(keys){
-		let newtx =	await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
+	async sendStopRecordingTransaction(keys) {
+		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
 
 		newtx.msg = {
 			module: 'Screenrecord',
 			request: 'stop recording',
 		};
 
-		for (let peer of keys){
-			if (peer != this.publicKey){
+		for (let peer of keys) {
+			if (peer != this.publicKey) {
 				newtx.addTo(peer);
 			}
 		}
@@ -300,75 +443,21 @@ class Screenrecord extends ModTemplate {
 		this.app.network.propagateTransaction(newtx);
 	}
 
-
-	onConfirmation(blk, tx, conf) {
-		if (tx == null) {
-			return;
-		}
-
-		let message = tx.returnMessage();
-
-		if (conf === 0) {
-			if (message.module === 'Screenrecord') {
-				if (this.app.BROWSER === 1) {
-					if (this.hasSeenTransaction(tx)) return;
-
-					if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
-						if (message.request === "start recording"){
-							siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} started recording their screen`, 1500);
-						}
-						if (message.request === "stop recording"){
-							siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} stopped recording their screen`, 1500);
-						}
-
-						this.toggleNotification();
-					}
-
-				}
-			}
+	updateUIForRecordingStart() {
+		const recordIcon = document.querySelector('.fa-record-vinyl');
+		if (recordIcon) {
+			recordIcon.classList.add('recording', 'pulsate');
 		}
 	}
 
-
-	async handlePeerTransaction(app, tx = null, peer, mycallback) {
-		if (tx == null) {
-			return;
+	updateUIForRecordingStop() {
+		const recordIcon = document.querySelector('.fa-record-vinyl');
+		if (recordIcon) {
+			recordIcon.classList.remove('recording', 'pulsate');
 		}
-		let txmsg = tx.returnMessage();
-
-		if (this.app.BROWSER === 1) {
-			
-			if (this.hasSeenTransaction(tx) || txmsg.module !== this.name) {
-				return;
-			}
-
-			if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
-				if (txmsg.request === "start recording"){
-					siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} started recording their screen`, 1500);
-				}
-				if (txmsg.request === "stop recording"){
-					siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} stopped recording their screen`, 1500);
-				}
-
-				this.toggleNotification();
-			}
-
-		}
-
-		return super.handlePeerTransaction(app, tx, peer, mycallback);
 	}
-
-
-	toggleNotification(){
-		let vinyl = document.querySelector(".fa-record-vinyl");
-		if (vinyl){
-			vinyl.classList.toggle("recording");	
-			vinyl.parentElement.classList.toggle("recording");
-		}
-
-	}
-
 }
 
-module.exports = Screenrecord;
+module.exports = Record;
+
 
