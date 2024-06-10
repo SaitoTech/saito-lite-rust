@@ -1,0 +1,24 @@
+.record-icon {
+    color: grey;
+    transition: color 0.3s ease;
+}
+
+.recording {
+    color: red;
+}
+
+.pulsate {
+    animation: pulsate 1s infinite;
+}
+
+@keyframes pulsate {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}

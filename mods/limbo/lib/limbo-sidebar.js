@@ -1,4 +1,6 @@
 const LimboSidebarTemplate = require('./limbo-sidebar.template');
+const SaitoProfile = require('./../../../lib/saito/ui/saito-profile/saito-profile');
+const SaitoUser = require('./../../../lib/saito/ui/saito-user/saito-user');
 
 
 class LimboSidebar {
@@ -7,8 +9,11 @@ class LimboSidebar {
 		this.mod = mod;
 		this.container = container;
 
+    this.profile = new SaitoProfile(app, mod, '.limbo-sidebar');
+    this.profile.tab_container = ".limbo-sidebar .saito-modal-content";
+
     app.connection.on('limbo-open-dream', (dreamer = null) => {
-      console.log('limbo-open-dream', dreamer);
+      console.log('EVENT (Sidebar): limbo-open-dream', dreamer);
       this.render(dreamer);
     });
 
@@ -23,9 +28,81 @@ class LimboSidebar {
     }
 
     if (dreamer){
+
+      //
+      // Need a way to override/customize profile of "dreamer" to profile of dream!
+      //
+      
+      this.profile.reset(dreamer, "attendees", ["attendees", "speakers", "peers"]);
+
+      //
+      // Build audience lists
+      //
+
+      for (let m of this.mod.dreams[dreamer].members){
+
+        let name = m;
+        if (m == this.app.keychain.returnIdentifierByPublicKey(m, true)) {
+          name = '';
+        }
+
+        let user = new SaitoUser(this.app, this.mod, ".limbo-sidebar .saito-modal-content", m, name)
+        user.extra_classes = "saito-add-user-menu saito-contact";
+        
+        if (m == dreamer) {
+          user.icon = `<i class="saito-overlaid-icon fa-solid fa-microphone-lines"></i>`;
+          this.profile.menu.speakers.push(user);
+        }else{
+          this.profile.menu.attendees.push(user);  
+        }
+      }
+
+      // Speakers are from videocall and not in the peer cast stream....
+      if (this.mod.dreams[dreamer]?.speakers) {
+        for (let m of this.mod.dreams[dreamer].speakers){ 
+          let name = m;
+          if (m == this.app.keychain.returnIdentifierByPublicKey(m, true)) {
+            name = '';
+          }
+
+          let user = new SaitoUser(this.app, this.mod, ".limbo-sidebar .saito-modal-content", m, name)
+          user.extra_classes = "saito-add-user-menu saito-contact";
+          user.icon = `<i class="saito-overlaid-icon fa-solid fa-microphone-lines"></i>`;
+          this.profile.menu.speakers.push(user);
+        }
+      }
+
+      this.mod.upstream.forEach((value, key) => {
+        let name = key;
+        if (key == this.app.keychain.returnIdentifierByPublicKey(key, true)) {
+          name = '';
+        }
+        let user = new SaitoUser(this.app, this.mod, ".limbo-sidebar .saito-modal-content", key, name)
+        user.extra_classes = "saito-add-user-menu saito-contact";
+        user.icon = `<i class="saito-overlaid-icon fa-solid fa-right-to-bracket"></i>`;
+        this.profile.menu.peers.push(user);
+      });
+
+      this.mod.downstream.forEach((value, key) => {
+        let name = key;
+        if (key == this.app.keychain.returnIdentifierByPublicKey(key, true)) {
+          name = '';
+        }
+        let user = new SaitoUser(this.app, this.mod, ".limbo-sidebar .saito-modal-content", key, name)
+        user.extra_classes = "saito-add-user-menu saito-contact";
+        user.icon = `<i class="saito-overlaid-icon fa-solid fa-right-from-bracket"></i>`;
+        this.profile.menu.peers.push(user);
+      });
+
+
+      this.profile.render();
+
       this.attachEvents();      
+    } else {
+      this.profile.reset();
     }
   }
+
 
   attachEvents() { 
     //Dynamically add buttons to .saito-profile-menu
@@ -61,11 +138,30 @@ class LimboSidebar {
 
     // add call icons
 
-    let container = document.querySelector("#limbo-sidebar .saito-profile-menu");
+    let container = document.querySelector("#limbo-sidebar .saito-profile-controls");
 
     if (!container) {
       return;
     }
+
+    //
+    // Add command functions 
+    //
+    
+    let h1 = `<div id="share_link" class="saito-modal-menu-option">
+                <i class="fas fa-link"></i>
+                <div>Share</div>
+              </div>`;
+
+    this.app.browser.addElementToSelector(h1, "#limbo-sidebar .saito-profile-controls");
+
+    let h2 = `<div id="exit_space" class="saito-modal-menu-option">
+                <i class="fa-solid fa-person-through-window"></i>
+                <div>Exit</div>
+              </div>`;
+
+    this.app.browser.addElementToSelector(h2, "#limbo-sidebar .saito-profile-controls");
+
 
     let index = 0;
 

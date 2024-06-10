@@ -25,20 +25,9 @@ class ModTools extends ModTemplate {
 		//
 		// stores the objects
 		//
-		//	{
-		//		publickey: ____________
-		//		from:	[] , 
-		//		created_at:	time to live
-		//	}
-		//
 		this.whitelist = [];
 		this.blacklist = [];
-
-		//
-		// share with peers
-		//
-		this.whitelist_to_share = [];
-		this.blacklist_to_share = [];
+		this.permissions = {};
 
 		//
 		// searchable publickeys, nothing more
@@ -49,6 +38,105 @@ class ModTools extends ModTemplate {
 		this.apps = {};
 
 		return this;
+	}
+
+
+	async initialize(app) {
+
+		await super.initialize(app);
+
+		let modtools_self = this;
+		modtools_self.load();
+
+
+		//
+		// obj = {
+		//   
+		//
+		// }
+		//
+		this.app.connection.on(
+                        'saito-blacklist',
+                        async (obj) => {
+
+				//
+				// first we blacklist the address
+				//
+				if (!obj.address) { obj.address = ""; }
+				if (!obj.duration) { obj.duration = 0; }
+				if (!obj.moderator) { obj.moderator = ""; }
+				let address = obj.address;
+				let duration = obj.duration;
+				let moderator = obj.moderator;
+				if (duration == 0) { duration = modtools_self.prune_after; }
+				if (!moderator) { moderator = this.publicKey; }
+				let cd = new Date().getTime();
+				modtools_self.blacklistAddress(address, moderator, cd, duration);
+				//
+				// next we share it with peers
+				//
+				let newtx = await this.createBlacklistTransaction(address, moderator, duration);
+				let txmsg = newtx.returnMessage();
+
+				this.app.network.sendRequestAsTransaction(
+					'modtools',
+					txmsg.data
+				);
+			}
+		);
+
+
+		this.app.connection.on(
+                        'saito-whitelist',
+                        async (obj) => {
+
+				//
+				// first we whitelist the address
+				//
+				if (!obj.address) { obj.address = ""; }
+				if (!obj.duration) { obj.duration = 0; }
+				if (!obj.moderator) { obj.moderator = ""; }
+				let address = obj.address;
+				let duration = obj.duration;
+				let moderator = obj.moderator;
+				if (duration == 0) { duration = modtools_self.prune_after; }
+				if (!moderator) { moderator = this.publicKey; }
+				let cd = new Date().getTime();
+				modtools_self.whitelistAddress(address, moderator, cd, duration);
+
+				//
+				// next we share it with peers
+				//
+				let newtx = await this.createWhitelistTransaction(address, moderator, duration);
+				let txmsg = newtx.returnMessage();
+
+				this.app.network.sendRequestAsTransaction(
+					'modtools',
+					txmsg.data
+				);
+			}
+		);
+
+		this.app.connection.on(
+                        'saito-unblacklist',
+                        async (address) => {
+				modtools_self.unblacklistAddress(address, moderator);
+                        }
+		);
+
+		this.app.connection.on(
+                        'saito-unwhitelist',
+                        async (address, moderator="", duration=modtools_self.prune_after) => {
+				modtools_self.unwhitelistAddress(address);
+                        }
+		)
+
+
+		//
+		// parse wallet to add 
+		//
+		this.apps['Chat'] = "*";
+
 	}
 
 
@@ -64,6 +152,8 @@ class ModTools extends ModTemplate {
 	////////////////////////
 	async onPeerServiceUp(app, peer, service = {}) {
 
+		let modtools_self = this;
+
 		//
 		// modtools -- share whitelists / blacklists
 		//
@@ -72,21 +162,15 @@ class ModTools extends ModTemplate {
 			let message = {};
                         message.request = 'modtools';
                         message.data = {};
-                        message.data.request = 'whitelist';
+                        message.data.request = 'load_whitelist';
 
                         app.network.sendRequestAsTransaction(
                         	message.request,
                                 message.data,
                                 (res) => {
 					if (res.whitelist) {
-
-console.log("*");
-console.log("*");
-console.log("*");
-console.log("FETCHED WHITELIST: " + JSON.stringify(res));
-
                                 		if (res.whitelist.length > 0) {
-                                        		modtools_self.addPeerWhitelist(res.whitelist);
+                                        		modtools_self.addPeerWhitelist(peer.publicKey, res.whitelist);
                                         	}
                                         }
 				},
@@ -96,21 +180,15 @@ console.log("FETCHED WHITELIST: " + JSON.stringify(res));
 			let bmessage = {};
                         bmessage.request = 'modtools';
                         bmessage.data = {};
-                        bmessage.data.request = 'blacklist';
+                        bmessage.data.request = 'load_blacklist';
 
                         app.network.sendRequestAsTransaction(
                         	bmessage.request,
                                 bmessage.data,
                                 (res) => {
 					if (res.blacklist) {
-
-console.log("*");
-console.log("*");
-console.log("*");
-console.log("FETCHED BLACKLIST: " + JSON.stringify(res));
-
                                 		if (res.blacklist.length > 0) {
-                                        		modtools_self.addPeerBlacklist(res.blacklist);
+                                        		modtools_self.addPeerBlacklist(peer.publicKey, res.blacklist);
                                         	}
                                         }
 				},
@@ -123,7 +201,29 @@ console.log("FETCHED BLACKLIST: " + JSON.stringify(res));
 
 
 	//
-	// happy to share whitelists and blacklists with peers
+	// on-chain transactions
+	//
+	async onConfirmation(blk, tx, conf) {
+
+		let txmsg = tx.returnMessage();
+
+		if (txmsg.request === "modtools") {
+			if (txmsg.data) {
+				if (txmsg.data.request == "whitelist") {
+        				await this.receiveWhitelistTransaction(blk, tx, conf, this.app);
+				}
+				if (txmsg.data.request == "blacklist") {
+        				await this.receiveBlacklistTransaction(blk, tx, conf, this.app);
+				}
+			}
+		}
+
+		return 0;
+	}
+
+
+	//
+	// off-chain transactions
 	//
         async handlePeerTransaction(app, tx = null, peer, mycallback) {
 
@@ -143,18 +243,25 @@ console.log("FETCHED BLACKLIST: " + JSON.stringify(res));
                 // saves TX containing archive insert instruction
                 //
                 if (req.request === 'modtools') {
-                        if (req.data.request === 'whitelist') {
+                        if (req.data.request === 'load_whitelist') {
                                 if (mycallback) {
-                                        mycallback({ whitelist : ["THIS IS A THE WHITELIST PROVIDED BY HANDLE PEER TRANSACTION"] });
+                                        mycallback({ whitelist : this.whitelist });
                                         return 1;
                                 }
                         }
-
-                        if (req.data.request === 'blacklist') {
+                        if (req.data.request === 'load_blacklist') {
                                 if (mycallback) {
-                                        mycallback({ blacklist : ["THIS IS A THE BLACKLIST PROVIDED BY HANDLE PEER TRANSACTION"] });
+                                        mycallback({ blacklist : this.blacklist });
                                         return 1;
                                 }
+                        }
+                        if (req.data.request === 'whitelist') {
+        			this.receiveWhitelistTransaction(null, tx, 0, this.app);
+                                return 1;
+                        }
+                        if (req.data.request === 'blacklist') {
+        			this.receiveBlacklistTransaction(null, tx, 0, this.app);
+                                return 1;
                         }
 		}
 	
@@ -163,6 +270,68 @@ console.log("FETCHED BLACKLIST: " + JSON.stringify(res));
 
                 return super.handlePeerTransaction(app, tx, peer, mycallback);
         }
+
+
+	async createBlacklistTransaction(key) {
+    		let newtx = await this.app.wallet.createUnsignedTransaction();
+        
+    		newtx.msg = {
+      			module: this.name,
+      			request: "modtools",
+      			data: { request : "blacklist" , address : key },
+    		};
+  
+    		//await newtx.sign();
+    		//await this.app.network.propagateTransaction(newtx);
+    
+    		return newtx;
+  	}
+        
+	async createWhitelistTransaction(key) {
+    		let newtx = await this.app.wallet.createUnsignedTransaction();
+    		newtx.msg = {
+      			module: this.name,
+      			request: "modtools",
+      			data: { request : "whitelist" , address : key },
+    		};
+  
+    		//await newtx.sign();
+    		//await this.app.network.propagateTransaction(newtx);
+    
+    		return newtx;
+  	}
+        
+	async receiveBlacklistTransaction(blk, tx, conf, app) {
+		let txmsg = tx.returnMessage();
+		let address = txmsg.data.address;
+		let moderator = tx.from[0].publicKey;
+		let created_at = new Date().getTime();
+		let duration = this.prune_after;
+		if (txmsg.data.duration) {
+			let d = parseInt(txmsg.data.duration);
+			if (d > 0) { duration = d; }
+		}
+		if (this.canPeerBlacklist(moderator)) {
+			this.blacklistAddress(address, moderator, created_at, duration);
+		}
+	}
+
+	async receiveWhitelistTransaction(blk, tx, conf, app) {
+		let txmsg = tx.returnMessage();
+		let address = txmsg.data.address;
+		let moderator = tx.from[0].publicKey;
+		let created_at = new Date().getTime();
+		let duration = this.prune_after;
+		if (txmsg.data.duration) {
+			let d = parseInt(txmsg.data.duration);
+			if (d > 0) { duration = d; }
+		}
+		if (this.canPeerWhitelist(moderator)) {
+			this.whitelistAddress(address, moderator, created_at, duration);
+		}
+	}
+
+
 
 
   	hasSettings() {
@@ -178,51 +347,6 @@ console.log("FETCHED BLACKLIST: " + JSON.stringify(res));
     		let as = new AppSettings(this.app, this, container);
     		as.render();
   	}
-
-	async initialize(app) {
-
-		await super.initialize(app);
-
-		let modtools_self = this;
-		modtools_self.load();
-
-
-		this.app.connection.on(
-                        'saito-blacklist',
-                        async (address) => {
-				modtools_self.blacklistAddress(address);
-                        }
-		);
-
-		this.app.connection.on(
-                        'saito-unblacklist',
-                        async (address) => {
-				modtools_self.unblacklistAddress(address);
-                        }
-		);
-
-		this.app.connection.on(
-                        'saito-whitelist',
-                        async (address) => {
-				modtools_self.whitelistAddress(address);
-                        }
-		)
-
-		this.app.connection.on(
-                        'saito-unwhitelist',
-                        async (address) => {
-				modtools_self.unwhitelistAddress(address);
-                        }
-		)
-
-
-		//
-		// parse wallet to add 
-		//
-		this.apps['Chat'] = "*";
-
-	}
-
 
 	/*
 	 * ModTools responds to events that are requested by the default moderation functions 
@@ -270,10 +394,13 @@ console.log("FETCHED BLACKLIST: " + JSON.stringify(res));
 		if (type === 'saito-moderation-core') {
 			return {
                                 filter_func: (tx = null) => {
-                                        if (tx == null || app == null) { return 0; }
+                                        if (tx == null) { return 0; }
+                                        if (!tx.from) { return 0; }
+                                        if (!tx.from[0].publicKey) { return 0; }
+					let add = tx.from[0].publicKey;
 					if (this.whitelisted_publickeys.includes(add)) { return 1; }				
-					if (this.blacklist_publickeys.includes(add)) { return 0; }
-					return 1;
+					if (this.blacklisted_publickeys.includes(add)) { return -1; }
+					return 0;
 				}
 			}
 		}
@@ -317,41 +444,116 @@ console.log("FETCHED BLACKLIST: " + JSON.stringify(res));
                 }
 	}
 
-	blacklistAddress(add, moderator="") {
+	canPeerWhitelist(moderator="") {
+		if (!this.permissions) { return 0; }
+		if (this.permissions.mode == "public") { return 1; }
+		if (this.permissions.mode == "friends") {
+			if (this.app.keychain.hasSharedSecret(moderator)) { return 1; }
+			return 0;
+		}
+		if (this.permissions.mode == "custom") {
+			let key = this.app.keys.returnKey(moderator);
+			if (key.sync_whitelist == true) { return 1; }
+			return 0;
+		}
+		return 0;
+	}
+
+	canPeerBlacklist(moderator="") {
+		if (!this.permissions) { return 0; }
+		if (this.permissions.mode == "public") { return 1; }
+		if (this.permissions.mode == "friends") {
+			if (this.app.keychain.hasSharedSecret(moderator)) { return 1; }
+			return 0;
+		}
+		if (this.permissions.mode == "custom") {
+			let key = this.app.keys.returnKey(moderator);
+			if (key.sync_blacklist == true) { return 1; }
+			return 0;
+		}
+		return 0;
+	}
+
+	addPeerBlacklist(moderator, list=[]) {
+		if (!list) { return; }
+		for (let i = 0; i < list.length; i++) {
+			this.blacklistAddress(list[i].publickey , moderator, list[i].created_at);
+		}
+		this.save();
+	}
+
+	addPeerWhitelist(moderator, list=[]) {
+		if (!list) { return; }
+		for (let i = 0; i < list.length; i++) {
+			this.whitelistAddress(list[i].publickey , moderator, list[i].created_at);
+		}
+		this.save();
+	}
+
+	blacklistAddress(add="", moderator="", created_at=0, duration=0) {
+		// there is an edge-case where the first address will be added address-free, so checking and bailing
+	  	if (add == "") { return; }
+		if (duration == "") { duration = this.prune_after; }
 		if (moderator == "") { moderator = this.publicKey; }
+		if (!this.blacklisted_publickeys) { this.blacklisted_publickeys = []; }
 		if (!this.blacklisted_publickeys.includes(add)) {
                 	this.blacklisted_publickeys.push(add);
-                	this.blacklist.push({ publickey : add , from : [moderator] , created_at : new Date().getTime() });
+                	this.blacklist.push({ publickey : add , from : [moderator] , duration : duration , created_at : new Date().getTime() });
 			this.save();
                 }
 	}
 
-	whitelistAddress(add, moderator="") {
+	whitelistAddress(add="", moderator="", created_at=0, duration=0) {
+		// there is an edge-case where the first address will be added address-free, so checking and bailing
+	  	if (add == "") { return; }
+		if (duration == 0) { duration = this.prune_after; }
 		if (moderator == "") { moderator = this.publicKey; }
+		if (!this.whitelisted_publickeys) { this.whitelisted_publickeys = []; }
 		if (!this.whitelisted_publickeys.includes(add)) {
                 	this.whitelisted_publickeys.push(add);
-                	this.whitelist.push({ publickey : add , from : [moderator] , created_at : new Date().getTime() });
+                	this.whitelist.push({ publickey : add , from : [moderator] , duration : duration , created_at : new Date().getTime() });
 			this.save();
                 }
 	}
 
 	prune() {
+		let current_time = new Date().getTime();
 		for (let i = 0; i < this.whitelist.length; i++) {
 			if (this.whitelist[i].moderator == this.publicKey) {
-				this.whitelist.splice(i, 1);
+				if (this.whitelist[i].duration != -1) {
+					if (this.whitelist[i].duration > 0) {
+						if (this.whitelist[i].duration < (current_time - this.whitelist[i].created_at)) {
+							this.whitelist.splice(i, 1);
+						}
+					} else {
+						if (this.prune_after < (current_time - this.whitelist[i].created_at)) {
+							this.whitelist.splice(i, 1);
+						}
+					}
+				}
 			}
 		}
 		for (let i = 0; i < this.blacklist.length; i++) {
 			if (this.blacklist[i].moderator == this.publicKey) {
-				this.blacklist.splice(i, 1);
+				if (this.prune_after < (current_time - this.blacklist[i].created_at)) {
+					this.blacklist.splice(i, 1);
+				}
 			}
 		}
+	}
+
+	updatePermissions(mode="") {	
+		if (mode == "" && mode != "public" && mode != "custom" && mode != "friends") { return; }
+		if (mode == "") { return; }
+		this.permissions.mode = mode;
+		this.save();
 	}
 
 	save() {
 		if (!this.app.options.modtools) { this.app.options.modtools = {}; }
 	  	this.app.options.modtools.whitelist = this.whitelist;
 	  	this.app.options.modtools.blacklist = this.blacklist;
+	  	this.app.options.modtools.permissions = this.permissions;
 		this.app.storage.saveOptions();
 	}
 
@@ -359,10 +561,23 @@ console.log("FETCHED BLACKLIST: " + JSON.stringify(res));
 		if (!this.app.options.modtools) { this.app.options.modtools = {}; }
 		if (!this.app.options.modtools.whitelist) { this.app.options.modtools.whitelist = []; }
 		if (!this.app.options.modtools.blacklist) { this.app.options.modtools.blacklist = []; }
+		if (!this.app.options.modtools.permissions) { 
+		  this.app.options.modtools.permissions = {
+		    mode : "friends" ,		// friends = anyone in my keylist
+						// public = literally anyone
+						// custom = manually tag keys w/ blacklist/whitelist
+		    mods : [] ,
+		    share_blacklist : true ,
+		    share_whitelist : true ,
+		    sync_blacklist : true ,
+		    sync_whitelist : true ,
+		  };
+		}
 	  	this.whitelist = this.app.options.modtools.whitelist;
 	  	this.blacklist = this.app.options.modtools.blacklist;
+	  	this.permissions = this.app.options.modtools.permissions;
 		for (let i = 0; i < this.whitelist.length; i++) { this.whitelisted_publickeys.push(this.whitelist[i].publickey); }
-		for (let i = 0; i < this.blacklist.length; i++) { this.blacklist_publickeys.push(this.blacklist[i].publickey); }
+		for (let i = 0; i < this.blacklist.length; i++) { this.blacklisted_publickeys.push(this.blacklist[i].publickey); }
 	}
 
 
