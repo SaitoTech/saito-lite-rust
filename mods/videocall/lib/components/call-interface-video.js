@@ -49,7 +49,7 @@ class CallInterfaceVideo {
 			}
 		);
 
-		this.app.connection.on('stun-update-link', ()=> {
+		this.app.connection.on('stun-update-link', () => {
 			this.room_link = this.createRoomLink();
 		});
 
@@ -63,9 +63,9 @@ class CallInterfaceVideo {
 			(peer, remoteStream) => {
 				this.remote_streams.set(peer, remoteStream);
 				this.addRemoteStream(peer, remoteStream);
-			
+
 				this.updateImages();
-				if (remoteStream){
+				if (remoteStream) {
 					this.startTimer();
 				}
 			}
@@ -226,24 +226,53 @@ class CallInterfaceVideo {
 		let index = 0;
 
 		for (const mod of this.app.modules.mods) {
-			let item = mod.respondTo('call-actions', {
-				call_id: this.mod.room_obj.call_id,
-				members: this.mod.room_obj.call_peers
-			});
-			if (item instanceof Array) {
-				item.forEach((j) => {
-					this.createActionItem(j, container, index++);
+
+			{
+				let item = mod.respondTo('call-actions', {
+					call_id: this.mod.room_obj.call_id,
+					members: this.mod.room_obj.call_peers
 				});
-			} else if (item != null) {
-				this.createActionItem(item, container, index++);
+				if (item instanceof Array) {
+					item.forEach((j) => {
+						this.createActionItem(j, container, index++);
+					});
+				} else if (item != null) {
+					this.createActionItem(item, container, index++);
+				}
 			}
+
+			{
+
+				let streams = [this.localStream];
+				this.remote_streams.forEach((stream, key) => {
+					streams.push(stream);
+				});
+
+				let item = mod.respondTo('record-actions', {
+					container: ".video-container-large",
+					streams, 
+					useMicrophone: true, 
+					members: this.mod.room_obj.call_peers,
+					callbackAfterRecord: (data) => {
+						console.log("", data)
+					}
+				});
+				if (item instanceof Array) {
+					item.forEach((j) => {
+						this.createActionItem(j, container, index++);
+					});
+				} else if (item != null) {
+					this.createActionItem(item, container, index++);
+				}
+			}
+
 		}
 
 		/*
-            <span class="record-control icon_click_area" id="record-icon">
-              <label>Record</label>
-              <i class="fa-solid fa-record-vinyl"></i>
-            </span>
+			<span class="record-control icon_click_area" id="record-icon">
+			  <label>Record</label>
+			  <i class="fa-solid fa-record-vinyl"></i>
+			</span>
 		*/
 	}
 
