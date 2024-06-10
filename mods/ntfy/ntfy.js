@@ -14,7 +14,7 @@ class NTFY extends ModTemplate {
     this.class = 'utility';
 
     this.ntfy = {};
-    this.ntfy.server = 'https://ntfy.hda0.net/';
+    this.ntfy.server = process.env.NTFY;
   }
 
   onConfirmation(blk, tx, conf) {
