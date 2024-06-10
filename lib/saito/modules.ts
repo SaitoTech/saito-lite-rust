@@ -166,8 +166,6 @@ class Mods {
 				// callback is defined in apps/lite/index.ts
 				// it runs sendApiSuccess() with the response object
 				//
-
-				//console.log("Execute null callback on " + request);
 				mycallback({});
 			}
 		}
@@ -392,19 +390,27 @@ class Mods {
 
 	}
 
+
+	//
+	// 1 = permit, -1 = do not permit
+	//
 	moderateCore(tx=null) {
 
 		if (tx == null) { return 0; }
 
-		if (!this.app.options.modtools) { this.app.options.modtools = {}; }
-		if (!this.app.options.modtools.whitelist) { this.app.options.modtools.whitelist = []; }
-		if (!this.app.options.modtools.blacklist) { this.app.options.modtools.blacklist = []; }
-                if (this.app.options.modtools.whitelist.includes(tx.from[0].publicKey)) { return 1; }
-                if (this.app.options.modtools.blacklist.includes(tx.from[0].publicKey)) { return -1; }
-
+		for (let z = 0; z < this.core_filter_func.length; z++) {
+			let permit_through = this.core_filter_func[z](tx);
+			if (permit_through == 1) { 
+				return 1;
+			}
+			if (permit_through == -1) { 
+				return -1;
+			}
+		}
 		return 0;
 
 	}
+
 
 
 	moderate(tx=null, app="") {
@@ -427,8 +433,6 @@ class Mods {
 		//
 		permit_through = this.moderateCore(tx);
 
-console.log("core moderation: " + permit_through);
-
 		if (permit_through == -1) { return -1; }
 		if (permit_through == 1) { return 1; }
 		
@@ -441,10 +445,8 @@ console.log("core moderation: " + permit_through);
 
 
 	async render() {
-		console.log('modules.render');
 		for (let icb = 0; icb < this.mods.length; icb++) {
 			if (this.mods[icb].browser_active == 1) {
-				console.log('mod.render : ' + this.mods[icb].name);
 
 				await this.mods[icb].render(this.app, this.mods[icb]);
 			}
@@ -559,9 +561,6 @@ console.log("core moderation: " + permit_through);
 	}
 
 	onNewBlock(blk, i_am_the_longest_chain) {
-		// blk.transactions.forEach(transaction => {
-		//   console.log(transaction.toJson(), "new block")
-		// })
 		console.log('#################');
 		console.log('### New Block ### ' + blk.id);
 		console.log('#################');
