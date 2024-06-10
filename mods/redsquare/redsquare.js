@@ -1299,9 +1299,6 @@ if (this.app.modules.moderate(txs[z], this.name) != -1) {
   //
   addTweet(tx, source) {
 
-console.log("in add tweet");
-console.log(tx.from[0].publicKey + " from " + source);
-
     //
     // if this is a like or flag tx, it isn't anything to add to the feed so stop here
     //

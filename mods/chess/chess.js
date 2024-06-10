@@ -24,6 +24,7 @@ class Chessgame extends GameTemplate {
 		this.minPlayers = 2;
 		this.maxPlayers = 2;
 
+
 		this.title = "Saito Chess";
 		this.styles = ["/chess/chessboard.css"];
 
@@ -372,7 +373,7 @@ class Chessgame extends GameTemplate {
 
 	updateStatusMessage(str = '') {
 
-		if (!str){
+		if (!str) {
 			var moveColor = this.engine.turn() === 'b' ? 'black' : 'white';
 
 			// check?
@@ -388,7 +389,7 @@ class Chessgame extends GameTemplate {
 
 			this.game.status = str;
 			str = `<div class="status">${str}</div>`;
-		
+
 			console.log(this.game.status);
 		}
 
@@ -576,9 +577,8 @@ class Chessgame extends GameTemplate {
 		});
 
 		// legal move - make it
-		this_chess.game.move += `${this_chess.pieces(move.piece)} - ${
-			move.san
-		}`;
+		this_chess.game.move += `${this_chess.pieces(move.piece)} - ${move.san
+			}`;
 
 		var data = {};
 		data.position = this.engine.fen();
@@ -768,10 +768,10 @@ class Chessgame extends GameTemplate {
 
 	colours(x) {
 		switch (x) {
-		case 'w':
-			return 'white';
-		case 'b':
-			return 'black';
+			case 'w':
+				return 'white';
+			case 'b':
+				return 'black';
 		}
 
 		return;
@@ -779,18 +779,18 @@ class Chessgame extends GameTemplate {
 
 	pieces(x) {
 		switch (x) {
-		case 'p':
-			return 'Pawn';
-		case 'r':
-			return 'Rook';
-		case 'n':
-			return 'Knight';
-		case 'b':
-			return 'Bishop';
-		case 'q':
-			return 'Queen';
-		case 'k':
-			return 'King';
+			case 'p':
+				return 'Pawn';
+			case 'r':
+				return 'Rook';
+			case 'n':
+				return 'Knight';
+			case 'b':
+				return 'Bishop';
+			case 'q':
+				return 'Queen';
+			case 'k':
+				return 'King';
 		}
 
 		return;

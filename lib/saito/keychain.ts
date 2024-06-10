@@ -165,40 +165,37 @@ class Keychain {
 		// submit JSON parsed object after unencryption
 		for (let x = 0; x < this.keys.length; x++) {
 			// check for matching public key && see if it has an aes_secret
-			if (
-				this.keys[x].publicKey === publicKey &&
-				this.keys[x].aes_secret
-			) {
-				//console.log(encrypted_msg, "------>");
-				try {
-					const tmpmsg = this.app.crypto.aesDecrypt(
-						encrypted_msg,
-						this.keys[x].aes_secret
-					);
-					if (tmpmsg == null) {
-						console.log('Failed decryption with aes_secret');
-						return encrypted_msg;
-					}
+			if (this.keys[x].publicKey === publicKey && this.keys[x].aes_secret) {
+				const tmpmsg = this.app.crypto.aesDecrypt(
+					encrypted_msg,
+					this.keys[x].aes_secret
+				);
 
+				if (tmpmsg == null) {
+					console.warn('Failed decryption with aes_secret');
+					return null;
+				}
+
+				try {
 					const decrypted_msg = JSON.parse(tmpmsg);
 
 					// Succesful decryption and parsing returns here
 					return decrypted_msg;
-				
 				} catch (err) {
-					console.error('Failed to JSON.parse decrypted message',	err);
+					console.error('Failed to JSON.parse decrypted message', err);
 					this.app.connection.emit('encrypt-decryption-failed', publicKey);
-					return encrypted_msg;
+					return null;
 				}
 			}
 		}
 
 		if (this.app.BROWSER) {
-			console.warn('I don\'t share a decryption key with encrypter, cannot decrypt');
+			console.warn(
+				"I don't share a decryption key with encrypter, cannot decrypt"
+			);
 			this.app.connection.emit('encrypt-decryption-failed', publicKey);
 		}
-
-		return encrypted_msg;
+		return null;
 	}
 
 	hasPublicKey(publicKey = '') {

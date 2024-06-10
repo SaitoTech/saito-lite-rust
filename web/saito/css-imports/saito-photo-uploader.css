@@ -2,20 +2,12 @@
 .uploader-uploaded-photo {
 	height: auto;
 	object-fit: cover;
-	height: 100%;
 	width: 100%;
-	left: 0;
-	bottom: 0;
-	padding: 1rem;
-	/* display: none; */
-	position: absolute;
-	height: 90%;
-	top: 0;
 }
 
 .photo-uploader {
 	background-color: var(--saito-background-color);
-	height: 60rem;
+	height: 33rem;
 	width: 70rem;
 	/* position: absolute; */
 	/* top: 50%;
@@ -50,27 +42,30 @@
 
 .uploader-menu {
     position: absolute;
-    bottom: 8rem;
+    bottom: 0.5rem;
+    left: 0.5rem;
     z-index: 10;
     background-color: #000000b0;
     box-shadow: var(--box-shadow-sidebar-elements);
     border-radius: 1rem; 
-    padding: 0 2rem; 
+    padding: 0 1.5rem; 
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 10rem;
+    height: 5.5rem;
 
 }
 .uploader-content {
     display: none;
     height: 100%;
     width: 100%;
+    padding: 5rem;
     position: absolute;
 }
+
 .uploader-actions {
-    width: 100%; 
+    width: calc(100% - 10rem); 
     position: absolute;
     bottom: 0; 
 

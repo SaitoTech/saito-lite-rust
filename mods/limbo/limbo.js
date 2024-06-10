@@ -126,6 +126,8 @@ class Limbo extends ModTemplate {
 					console.log('Set sender');
 					this.upstream.set(publicKey, peerConnection);
 				}
+
+				this.app.connection.emit('limbo-open-dream', this.dreamer);
 			}
 		);
 	}
@@ -304,13 +306,14 @@ class Limbo extends ModTemplate {
 						} else {
 							salert(`${this.app.keychain.returnUsername(this.dreamer)}'s dream space is no longer available`);
 							window.history.pushState('', '', `/limbo/`);
-							this.dreamer = null;
+							this.exitSpace();
 						}
 					}
 					
 					this.app.connection.emit('limbo-populated', 'service');
 					
-				}
+				},
+				peer.peerIndex
 			);
 		}
 	}
@@ -424,6 +427,7 @@ class Limbo extends ModTemplate {
 			} catch (error) {
 				console.error('Access to screen denied: ', error);
 				screenStream = false;
+				return;
 			}
 		}
 
@@ -476,6 +480,8 @@ class Limbo extends ModTemplate {
 		this.app.connection.emit('limbo-open-dream', dreamer);
 		this.combinedStream = new MediaStream();
 		this.attachMetaEvents();
+
+		console.log("Join dream:", this.dreams);
 	}
 
 	attachMetaEvents(){
@@ -499,7 +505,7 @@ class Limbo extends ModTemplate {
 		}
 	}
 
-	async sendDreamTransaction(keylist) {
+	async sendDreamTransaction(keylist = null) {
 		let newtx =
 			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
 				this.publicKey
@@ -559,6 +565,8 @@ class Limbo extends ModTemplate {
 					this.controls.startTimer();
 				}
 			}
+
+
 		}
 
 	}
@@ -612,6 +620,8 @@ class Limbo extends ModTemplate {
 			console.log('Sender not found...');
 			console.log(sender, this.dreams, tx);
 		}
+
+		console.log(this.dreams, this.dreamer);
 
 		if (tx.isTo(this.publicKey)) {
 			this.toggleNotification(false, sender);
