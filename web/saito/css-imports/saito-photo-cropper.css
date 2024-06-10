@@ -1,22 +1,28 @@
-.photo-cropper {
-	background-color: var(--saito-background-color);
-	height: 80rem;
+.cropper-overlay {
+	height: 70rem;
 	width: 80rem;
-	/* position: absolute; */
-	top: 50%;
-	left: 50%;
-	padding: 2rem;
-	/* transform: translate(-50%, -50%); */
 	text-align: center;
-	align-items: center;
-	justify-content: center;
+	background-color: var(--saito-background-color);
 	border: 1px solid;
+	padding: 2rem;
 	font-size: 2rem;
 	border-radius: 0.5rem;
+	align-items: center;
 	color: var(--saito-font-color);
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-end;
+	display: grid;
+	grid-template-rows: 1fr min-content;
+	gap: 1rem;
+}
+
+.photo-cropper {
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+.photo-cropper img {
+	display: block;
+	max-width: 100%;
 }
 
 .crop-button {
