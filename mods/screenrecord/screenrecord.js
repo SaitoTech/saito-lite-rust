@@ -184,7 +184,8 @@ class Record extends ModTemplate {
 		try {
 			this.screenStream = await navigator.mediaDevices.getDisplayMedia({
 				video: {
-					displaySurface: 'browser'
+					displaySurface: 'browser',
+					mediaSource: "window"
 				},
 				audio: true,
 				preferCurrentTab: true,
@@ -296,12 +297,17 @@ class Record extends ModTemplate {
 
 
 
-		this.mediaRecorder = new MediaRecorder(combinedStream, {
-			mimeType: 'video/webm; codecs=vp9',
-			videoBitsPerSecond: 25 * 1024 * 1024,
-			audioBitsPerSecond: 320 * 1024
-		});
-
+		try {
+			this.mediaRecorder = new MediaRecorder(combinedStream, {
+				mimeType: 'video/webm; codecs=vp8,opus',
+				videoBitsPerSecond: 25 * 1024 * 1024,
+				audioBitsPerSecond: 320 * 1024
+			});
+	
+		} catch (error) {
+			console.log("Error creating media recorder", error)
+		}
+		
 
 		this.mediaRecorder.ondataavailable = event => {
 			if (event.data.size > 0) {
