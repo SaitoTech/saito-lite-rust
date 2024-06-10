@@ -425,7 +425,7 @@ export default class Wallet extends SaitoWallet {
 
 		this.app.options.gameprefs.crypto_transfers_inbound_approved = 1;
 		this.app.options.gameprefs.crypto_transfers_outbound_approved = 1;
-		this.app.options.gameprefs.crypto_transfers_inbound_trusted = 0;
+		this.app.options.gameprefs.crypto_transfers_inbound_trusted = 1;
 		this.app.options.gameprefs.crypto_transfers_outbound_trusted = 1;
 
 
