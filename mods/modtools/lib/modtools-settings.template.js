@@ -22,10 +22,22 @@ module.exports = (app, mod) => {
 						<option value="normal" CHECKED>normal</option>
 						<option value="none">block</option>
 					</select>
-				</div>
 			</fieldset>
 			`;
 ****/
+
+	html += `<fieldset id="moderation-permissions" class="saito-grid settings-link">
+                <i class="fa-solid fa-ban"></i>
+                <label>Who Can Help Moderate?</label>
+                </fieldset>
+		<select class="modtools-settings">
+			<option value="public">anyone</option>
+			<option value="friends" CHECKED>friends</option>
+			<option value="custom">custom</option>
+		</select>
+	`;
+
+	
 
         if (app.options.modtools.whitelist.length > 0){
                 html += `<fieldset id="whitelisted-accounts" class="saito-grid settings-link">
