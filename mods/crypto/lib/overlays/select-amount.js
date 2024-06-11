@@ -61,7 +61,7 @@ class CryptoSelectAmount {
 			}
 
 			let confirm = document.getElementById('crypto-stake-confirm-input').checked;
-			this_self.app.options.gameprefs.crypto_transfers_inbound_trusted = confirm ? 1 : 0;
+			this_self.app.options.gameprefs.crypto_transfers_inbound_approved = confirm ? 1 : 0;
 			await this_self.app.wallet.saveWallet();
  
 			if (callback != null) {

@@ -285,6 +285,7 @@ class Server {
 		publicKey: '',
 		protocol: '',
 		name: '',
+		url: '',
 		block_fetch_url: '',
 		endpoint: {
 			host: '',
@@ -446,6 +447,7 @@ class Server {
 		url += this.server.endpoint.port;
 		// url += "/block/";
 
+		this.server.url = url;
 		this.server.block_fetch_url = url;
 
 		//

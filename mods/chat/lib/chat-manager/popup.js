@@ -823,9 +823,31 @@ class ChatPopup {
 				message,
 				this.input.getMentions()
 			);
+			/*
 			if (newtx) {
 				mod.receiveChatTransaction(newtx);
+				//XXX mod.sendNtfy(newtx);
+				//this_self.group.members
+				//this_self.input.getMentions();
+				if (this_self.group.members.length == 2) {
+					let action = {}
+					action.action = "Reply";
+					action.label = "Reply";
+					action.url = "https:saito.io/chat/?chat_id=" + this_self.id;
+					let ntfy = {}
+					ntfy.message = message.substring(0, 25) + '...';
+					ntfy.title = "Saito Chat Message";
+					ntfy.priority = 3;
+					ntfy.icon = "https://saito.tech/wp-content/uploads/2024/05/Logo_256x256.png";
+					ntfy.actions = [];
+					//ntfy.actions.push(action);
+					window.ntfy(this_self.group.members.filter(function(e) { return e !== this_self.app.wallet.publicKey })[0], ntfy);
+				}
+				if (this_self.input.mentions.length > 0) {
+					console.log(this_self.input.mentions);
+				}
 			}
+			*/
 			this.input.clear();
 			if (document.querySelector(popup_qs + ' .chat-body')) {
 				this.is_scrolling = null;
