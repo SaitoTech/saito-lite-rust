@@ -215,13 +215,12 @@ class Record extends ModTemplate {
 				}
 			});
 
-		const video = document.createElement('video');
-		video.srcObject = this.screenStream;
-		video.style.position = 'absolute';
-		video.style.top = '0';
-		video.style.left = '0';
-		video.style.zIndex = '-300';
-		video.play();
+			const video = document.createElement('video');
+			video.srcObject = this.screenStream;
+			video.style.display = 'none'; // Hide the video element
+			video.play();
+			
+			document.body.appendChild(video);
 
 		document.body.appendChild(video);
 
@@ -360,6 +359,202 @@ class Record extends ModTemplate {
 
 	}
 
+
+	// async startRecording(container, members = [], callbackAfterRecord = null) {
+	// 	this.localStream = null;
+	// 	this.externalMediaControl = false;
+	
+	// 	const otherParties = this.app.modules.getRespondTos('media-request');
+	// 	if (otherParties.length > 0) {
+	// 		this.localStream = otherParties[0].localStream;
+	// 		this.additionalSources = otherParties[0].remoteStreams;
+	// 		this.externalMediaControl = true;
+	// 	} else {
+	// 		let includeCamera = await sconfirm('Add webcam to stream?');
+	
+	// 		try {
+	// 			if (includeCamera) {
+	// 				try {
+	// 					this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+	// 				} catch (error) {
+	// 					console.error("Failed to get user media:", error);
+	// 					alert("Failed to access camera and microphone.");
+	// 					return;
+	// 				}
+	
+	// 				this.videoBox = new VideoBox(this.app, this, 'local');
+	// 				this.videoBox.render(this.localStream);
+	// 				let videoElement = document.querySelector('.video-box-container-large');
+	// 				videoElement.style.position = 'absolute';
+	// 				videoElement.style.top = '100px';
+	// 				videoElement.style.width = '350px';
+	// 				videoElement.style.height = '350px';
+	// 				this.app.browser.makeDraggable('stream_local');
+	// 			} else {
+	// 				this.localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+	// 			}
+	// 		} catch (error) {
+	// 			console.error('Access to user media denied: ', error);
+	// 			salert('Recording will continue without camera and/or microphone input');
+	// 		}
+	// 	}
+	
+	// 	let chunks = [];
+	// 	const targetDiv = document.querySelector(container);
+	// 	console.log(container, targetDiv, "containers");
+	
+	// 	function updateDimensions() {
+	// 		const { top, left, width, height } = targetDiv.getBoundingClientRect();
+	// 		return { top, left, width, height };
+	// 	}
+	
+	// 	let { top, left, width, height } = updateDimensions();
+	// 	console.log(`Div dimensions - Top: ${top}, Left: ${left}, Width: ${width}, Height: ${height}`);
+	// 	this.screenStream = null;
+	// 	try {
+	// 		this.screenStream = await navigator.mediaDevices.getDisplayMedia({
+	// 			video: { displaySurface: 'browser', mediaSource: "window" },
+	// 			audio: true,
+	// 			preferCurrentTab: true,
+	// 			selfBrowserSurface: 'include',
+	// 			monitorTypeSurfaces: 'include'
+	// 		});
+	// 	} catch (error) {
+	// 		console.error('Error fetching display media:', error);
+	// 		this.showAlert("Error fetching display media");
+	// 		return;
+	// 	}
+	
+	// 	this.screenStream.getTracks().forEach((track) => {
+	// 		track.onended = () => {
+	// 			console.log('onended', this);
+	// 			this.stopRecording();
+	// 		};
+	// 	});
+	
+	// 	const video = document.createElement('video');
+	// 	video.srcObject = this.screenStream;
+	// 	video.style.display = 'none'; // Hide the video element
+	// 	video.play();
+	// 	document.body.appendChild(video);
+	
+	// 	const canvas = document.createElement('canvas');
+	// 	const ctx = canvas.getContext('2d');
+	// 	canvas.width = width;
+	// 	canvas.height = height;
+	// 	const self = this;
+	
+	// 	video.onloadedmetadata = () => {
+	// 		function draw() {
+	// 			let { top, left, width, height } = updateDimensions();
+	// 			const titleBarHeight = self.getTitleBarHeight(); 
+	// 			const canvasWidth = width;
+	// 			const canvasHeight = height - titleBarHeight;
+	// 			canvas.width = canvasWidth;
+	// 			canvas.height = canvasHeight;
+	
+	// 			const scaleX = video.videoWidth / window.innerWidth;
+	// 			const scaleY = video.videoHeight / window.innerHeight;
+	
+	// 			const scaledWidth = canvasWidth * scaleX;
+	// 			const scaledHeight = canvasHeight * scaleY;
+	// 			ctx.clearRect(0, 0, canvas.width, canvas.height);
+	
+	// 			const srcX = left * scaleX;
+	// 			const srcY = (top + titleBarHeight) * scaleY;
+	
+	// 			const clipWidth = Math.min(scaledWidth, video.videoWidth - srcX);
+	// 			const clipHeight = Math.min(scaledHeight, video.videoHeight - srcY);
+	
+	// 			ctx.drawImage(video, srcX, srcY, clipWidth, clipHeight, 0, 0, canvas.width, canvas.height);
+	// 			self.animation_id = requestAnimationFrame(draw);
+	// 		}
+	// 		draw();
+	// 	};
+	
+	// 	targetDiv.addEventListener('dragstart', (event) => {
+	// 		event.dataTransfer.setData('text/plain', null);
+	// 	});
+	
+	// 	targetDiv.addEventListener('drag', (event) => {
+	// 		if (event.clientX > 0 && event.clientY > 0) {
+	// 			let { top, left, width, height } = updateDimensions();
+	// 			canvas.width = width;
+	// 			canvas.height = height;
+	// 		}
+	// 	});
+	
+	// 	targetDiv.addEventListener('dragend', (event) => {
+	// 		let { top, left, width, height } = updateDimensions();
+	// 		canvas.width = width;
+	// 		canvas.height = height;
+	// 	});
+	
+	// 	window.addEventListener('resize', updateDimensions);
+	// 	window.addEventListener('orientationchange', updateDimensions);
+	// 	let recordedStream = canvas.captureStream();
+	
+	// 	const combinedStream = new MediaStream([...recordedStream.getTracks()]);
+	
+	// 	if (this.localStream) {
+	// 		let streams = [this.localStream];
+	// 		console.log(this.localStream, this.additionalSources, "local and additional sources");
+	// 		if (this.additionalSources) {
+	// 			this.additionalSources.forEach(stream => streams.push(stream));
+	// 		}
+	// 		const audioTracks = this.getAudioTracksFromStreams(streams);
+	// 		audioTracks.forEach(track => combinedStream.addTrack(track));
+	// 	}
+	
+	// 	try {
+	// 		const mimeType = this.getSupportedMimeType();
+	// 		if (!mimeType) {
+	// 			throw new Error('No supported MIME type found for MediaRecorder');
+	// 		}
+	// 		this.mediaRecorder = new MediaRecorder(combinedStream, {
+	// 			mimeType: mimeType,
+	// 			videoBitsPerSecond: 25 * 1024 * 1024,
+	// 			audioBitsPerSecond: 320 * 1024
+	// 		});
+	// 	} catch (error) {
+	// 		console.log("Error creating media recorder", error);
+	// 	}
+	
+	// 	this.mediaRecorder.ondataavailable = event => {
+	// 		if (event.data.size > 0) {
+	// 			chunks.push(event.data);
+	// 			if (callbackAfterRecord) {
+	// 				callbackAfterRecord(event.data);
+	// 			}
+	// 		}
+	// 	};
+	
+	// 	this.mediaRecorder.onstop = async () => {
+	// 		const blob = new Blob(chunks, { type: 'video/webm' });
+	// 		const url = URL.createObjectURL(blob);
+	// 		const a = document.createElement('a');
+	// 		const defaultFileName = 'saito_video.webm';
+	// 		const fileName = (await sprompt('Please enter a recording name', 'saito_video')) || defaultFileName;
+	// 		a.style.display = 'none';
+	// 		a.href = url;
+	// 		a.download = fileName;
+	// 		document.body.appendChild(a);
+	// 		a.click();
+	// 		URL.revokeObjectURL(url);
+	// 		document.body.removeChild(video);
+	// 		if (members.length > 0) {
+	// 			this.sendStopRecordingTransaction(members);
+	// 		}
+	// 	};
+	
+	// 	this.mediaRecorder.start();
+	// 	this.updateUIForRecordingStart();
+	
+	// 	if (members.length > 0) {
+	// 		this.sendStartRecordingTransaction(members);
+	// 	}
+	// }
+	
 
 	 getSupportedMimeType() {
 		const mimeTypes = [
