@@ -121,6 +121,7 @@ class Record extends ModTemplate {
 				if (includeCamera) {
 
 					try {
+						// document.documentElement.requestFullscreen();
 						this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
 					} catch (error) {
 						console.error("Failed to get user media:", error);
@@ -190,7 +191,7 @@ class Record extends ModTemplate {
 				audio: true,
 				preferCurrentTab: true,
 				selfBrowserSurface: 'include',
-				monitorTypeSurfaces: 'exclude'
+				monitorTypeSurfaces: 'include'
 			});
 		}
 
@@ -234,25 +235,28 @@ class Record extends ModTemplate {
 		video.onloadedmetadata = () => {
 			function draw() {
 				let { top, left, width, height } = updateDimensions();
-				canvas.width = width;
-				canvas.height = height;
-
+				const titleBarHeight = self.getTitleBarHeight(); 
+			
+				const canvasWidth = width;
+				const canvasHeight = height - titleBarHeight;
+				canvas.width = canvasWidth;
+				canvas.height = canvasHeight;
+			
 				const scaleX = video.videoWidth / window.innerWidth;
 				const scaleY = video.videoHeight / window.innerHeight;
-
-				const scaledWidth = Math.min(video.videoWidth, width * scaleX);
-				const scaledHeight = Math.min(video.videoHeight, height * scaleY);
+			
+				const scaledWidth = canvasWidth * scaleX;
+				const scaledHeight = canvasHeight * scaleY;
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-
+			
 				const srcX = left * scaleX;
-				const srcY = top * scaleY;
+				const srcY = (top + titleBarHeight) * scaleY;
+			
 				const clipWidth = Math.min(scaledWidth, video.videoWidth - srcX);
 				const clipHeight = Math.min(scaledHeight, video.videoHeight - srcY);
-
+			
 				ctx.drawImage(video, srcX, srcY, clipWidth, clipHeight, 0, 0, canvas.width, canvas.height);
 				self.animation_id = requestAnimationFrame(draw);
-
 			}
 			draw();
 
@@ -298,16 +302,18 @@ class Record extends ModTemplate {
 
 
 		try {
+			const mimeType = this.getSupportedMimeType();
+			if (!mimeType) {
+				throw new Error('No supported MIME type found for MediaRecorder');
+			}
 			this.mediaRecorder = new MediaRecorder(combinedStream, {
-				mimeType: 'video/webm; codecs=vp8,opus',
+				mimeType: mimeType,
 				videoBitsPerSecond: 25 * 1024 * 1024,
 				audioBitsPerSecond: 320 * 1024
 			});
-	
 		} catch (error) {
-			console.log("Error creating media recorder", error)
+			console.log("Error creating media recorder", error);
 		}
-		
 
 		this.mediaRecorder.ondataavailable = event => {
 			if (event.data.size > 0) {
@@ -354,6 +360,47 @@ class Record extends ModTemplate {
 
 	}
 
+
+	 getSupportedMimeType() {
+		const mimeTypes = [
+			'video/webm; codecs=vp9',
+			'video/webm; codecs=vp8',
+			'video/webm; codecs=vp8,opus',
+			'video/mp4',
+			'video/x-matroska;codecs=avc1'
+		];
+
+		if(navigator.userAgent.includes("Firefox")){
+			return 'video/webm; codecs=vp8,opus'
+		}
+	
+		for (const mimeType of mimeTypes) {
+			if (MediaRecorder.isTypeSupported(mimeType)) {
+				return mimeType;
+			}
+		}
+	
+		return 'video/webm; codecs=vp8,opus'
+	}
+	 getTitleBarHeight() {
+		const userAgent = navigator.userAgent;
+		if (userAgent.includes("Firefox")) {
+			return this.isToolbarVisible() ? 110:  0; 
+		} 
+		if (userAgent.includes("Safari")) {
+			return this.isToolbarVisible() ? 90:  0; 
+		} else {
+			return 0; 
+		}
+	}
+
+	 isToolbarVisible() {
+
+		const toolbarVisible = window.outerHeight - window.innerHeight > 50;
+		console.log(window.outerHeight, window.innerHeight, "Is titlebar")
+		return toolbarVisible;
+	}
+	
 
 
 
