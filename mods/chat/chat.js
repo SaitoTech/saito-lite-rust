@@ -882,10 +882,12 @@ class Chat extends ModTemplate {
   // We have a single admin (who can add additional members or kick people out)
   //
   async sendCreateGroupTransaction(name, invitees = []) {
-    let id = this.generatePublicKey();
+
+    let pk = this.app.crypto.generateKeys();
+    let id = this.app.crypto.generatePublicKey(pk);
 
     this.app.keychain.addWatchedPublicKey(id);
-    this.app.keychain.addKey(id, { identifier: name, group: 1 });
+    this.app.keychain.addKey(id, { identifier: name, group: 1, privateKey: pk });
 
     let newtx = await this.app.wallet.createUnsignedTransaction(
       this.publicKey,
@@ -2476,14 +2478,6 @@ class Chat extends ModTemplate {
     }
   }
 
-  generatePublicKey() {
-    let pk = this.app.crypto.generateKeys();
-    return this.app.crypto.generatePublicKey(pk);
-  }
-
-  generatePublicKeyFromString(string) {
-    return this.app.crypto.generatePublicKey(this.app.crypto.hash(string));
-  }
 }
 
 module.exports = Chat;
