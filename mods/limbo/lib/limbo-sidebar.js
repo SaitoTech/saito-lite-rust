@@ -12,8 +12,8 @@ class LimboSidebar {
     this.profile = new SaitoProfile(app, mod, '.limbo-sidebar');
     this.profile.tab_container = ".limbo-sidebar .saito-modal-content";
 
-    app.connection.on('limbo-open-dream', (dreamer = null) => {
-      console.log('EVENT (Sidebar): limbo-open-dream', dreamer);
+    app.connection.on('limbo-dream-render', (dreamer = null) => {
+      console.log('EVENT (Sidebar): limbo-dream-render', dreamer);
       this.render(dreamer);
     });
 

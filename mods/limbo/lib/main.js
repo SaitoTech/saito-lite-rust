@@ -18,15 +18,14 @@ class LimboMain {
 
 		this.loader = new SaitoLoader(this.app, this.mod, "#limbo-main");
 
-		app.connection.on("limbo-populated", (source) => {
-			console.log("EVENT (main): limbo-populated");
+		app.connection.on("limbo-spaces-update", (source) => {
+			console.log("EVENT (main): limbo-spaces-update");
 			if (!this.mod.dreamer){
 				this.render();
 			}
-		
 		});
 
-		app.connection.on("limbo-open-dream", (dreamer) => {
+		app.connection.on("limbo-dream-render", (dreamer) => {
 			console.log("EVENT (main): limbo-open-dream");
 
 			let container = document.querySelector(".limbo-container");
@@ -36,8 +35,8 @@ class LimboMain {
 
 			if (dreamer){
 				container.classList.add("dreaming");
+				this.loader.remove(10);
 			}else{
-
 				this.render();
 			}
 		});
