@@ -382,17 +382,18 @@ class Record extends ModTemplate {
 	
 		return 'video/webm; codecs=vp8,opus'
 	}
-	 getTitleBarHeight() {
+	getTitleBarHeight() {
 		const userAgent = navigator.userAgent;
 		if (userAgent.includes("Firefox")) {
-			return this.isToolbarVisible() ? 110:  0; 
+			return this.isToolbarVisible() ? 110 : 0; 
 		} 
-		if (userAgent.includes("Safari")) {
-			return this.isToolbarVisible() ? 90:  0; 
+		if (userAgent.includes("Safari") && !userAgent.includes("Chrome") && !userAgent.includes("CriOS")) {
+			return this.isToolbarVisible() ? 90 : 0; 
 		} else {
 			return 0; 
 		}
 	}
+	
 
 	 isToolbarVisible() {
 
