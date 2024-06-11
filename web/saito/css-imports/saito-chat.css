@@ -566,6 +566,7 @@
 
 .saito-user .saito-userline-reply i:hover {
   color: var(--font-color-hover-chat-popup-reply);
+  cursor: pointer;
 }
 
 .chat-footer {
