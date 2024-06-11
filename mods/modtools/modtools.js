@@ -18,6 +18,7 @@ class ModTools extends ModTemplate {
 		this.categories = 'Core Moderation';
 		this.icon = 'fas fa-eye-slash';
 		this.prune_after = 1500000; // ~1 day
+		this.max_hops = 2; // stop blacklisting after N hops
 		this.styles = [
 			'/modtools/style.css',
 		];
@@ -28,6 +29,12 @@ class ModTools extends ModTemplate {
 		this.whitelist = [];
 		this.blacklist = [];
 		this.permissions = {};
+
+		//
+		// searchable publickeys, nothing more
+		//
+		this.whitelisted_publickeys = [];
+		this.blacklisted_publickeys = [];
 
 		//
 		// searchable publickeys, nothing more
@@ -386,6 +393,9 @@ class ModTools extends ModTemplate {
 					if (this.apps[app.name]) {
 						if (this.apps[app.name] == "*") { return 1; }
 					}
+					if (this.apps[app.name]) {
+						if (this.apps[app.name] == "!") { return -1; }
+					}
 
 					return 0;
 				}
@@ -475,22 +485,42 @@ class ModTools extends ModTemplate {
 	}
 
 	addPeerBlacklist(moderator, list=[]) {
+
 		if (!list) { return; }
+
+		//
+		// we do not process a list that blacklists US or anyone that we have
+		// whitelisted.
+		//
 		for (let i = 0; i < list.length; i++) {
-			this.blacklistAddress(list[i].publickey , moderator, list[i].created_at);
+			//
+			// we do not process a list that blacklists addresses we have whitelisted
+			//
+			if (this.isBlacklisted(list[i].publickey)) { return 0; }
+			if (list[i].publickey == this.publicKey) { return 0; }
+		}
+
+		for (let i = 0; i < list.length; i++) {
+			if (list[i].hop <= this.max_hops) {
+				this.blacklistAddress(list[i].publickey , moderator, list[i].created_at);
+			}
 		}
 		this.save();
 	}
 
 	addPeerWhitelist(moderator, list=[]) {
 		if (!list) { return; }
+		let am_i_blacklisted = 0;
+		let is_anyone_whitelisted = 0;
 		for (let i = 0; i < list.length; i++) {
-			this.whitelistAddress(list[i].publickey , moderator, list[i].created_at);
+			if (list[i].hop <= this.max_hops) {
+				this.whitelistAddress(list[i].publickey , moderator, list[i].created_at);
+			}
 		}
 		this.save();
 	}
 
-	blacklistAddress(add="", moderator="", created_at=0, duration=0) {
+	blacklistAddress(add="", moderator="", created_at=0, duration=0, hop=0) {
 		// there is an edge-case where the first address will be added address-free, so checking and bailing
 	  	if (add == "") { return; }
 		if (duration == "") { duration = this.prune_after; }
@@ -498,12 +528,12 @@ class ModTools extends ModTemplate {
 		if (!this.blacklisted_publickeys) { this.blacklisted_publickeys = []; }
 		if (!this.blacklisted_publickeys.includes(add)) {
                 	this.blacklisted_publickeys.push(add);
-                	this.blacklist.push({ publickey : add , from : [moderator] , duration : duration , created_at : new Date().getTime() });
+                	this.blacklist.push({ publickey : add , from : [moderator] , duration : duration , created_at : new Date().getTime() , hop : (hop+1) });
 			this.save();
                 }
 	}
 
-	whitelistAddress(add="", moderator="", created_at=0, duration=0) {
+	whitelistAddress(add="", moderator="", created_at=0, duration=0, hop=0) {
 		// there is an edge-case where the first address will be added address-free, so checking and bailing
 	  	if (add == "") { return; }
 		if (duration == 0) { duration = this.prune_after; }
@@ -511,7 +541,7 @@ class ModTools extends ModTemplate {
 		if (!this.whitelisted_publickeys) { this.whitelisted_publickeys = []; }
 		if (!this.whitelisted_publickeys.includes(add)) {
                 	this.whitelisted_publickeys.push(add);
-                	this.whitelist.push({ publickey : add , from : [moderator] , duration : duration , created_at : new Date().getTime() });
+                	this.whitelist.push({ publickey : add , from : [moderator] , duration : duration , created_at : new Date().getTime() , hop : (hop+1) });
 			this.save();
                 }
 	}
@@ -549,6 +579,16 @@ class ModTools extends ModTemplate {
 		this.save();
 	}
 
+	isBlacklisted() {
+		if (this.blacklisted_publickeys.includes(add)) { return 1; }
+		return 0;
+	}
+
+	isWhitelisted() {
+		if (this.whitelisted_publickeys.includes(add)) { return 1; }
+		return 0;
+	}
+
 	save() {
 		if (!this.app.options.modtools) { this.app.options.modtools = {}; }
 	  	this.app.options.modtools.whitelist = this.whitelist;
@@ -566,6 +606,7 @@ class ModTools extends ModTemplate {
 		    mode : "friends" ,		// friends = anyone in my keylist
 						// public = literally anyone
 						// custom = manually tag keys w/ blacklist/whitelist
+						// none = no moderation
 		    mods : [] ,
 		    share_blacklist : true ,
 		    share_whitelist : true ,
