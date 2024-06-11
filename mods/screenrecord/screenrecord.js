@@ -385,7 +385,7 @@ class Record extends ModTemplate {
 	 getTitleBarHeight() {
 		const userAgent = navigator.userAgent;
 		if (userAgent.includes("Firefox")) {
-			return this.isToolbarVisible() ? 120:  0; 
+			return this.isToolbarVisible() ? 110:  0; 
 		} 
 		if (userAgent.includes("Safari")) {
 			return this.isToolbarVisible() ? 90:  0; 
