@@ -516,18 +516,29 @@
   position: absolute;
   flex-direction: row;
   align-items: center;
-  gap: 1rem;
   right: -5rem;
   bottom: 1; /* bumped it down a notch, and closer to the element */
   z-index: 9;
   background: var(--background-color-hover-chat-popup-message-tag);
-  padding: 5px 7px 2px;
   border-radius: var(--border-radius-chat-popup-message-tag);
   border: var(--border-thickness-chat-popup-message-tag) solid var(--border-color-chat-popup-message-tag);
   font-size: 1.1rem; /* made this way smaller, but this way access immediately below the line works better */
   opacity: 0; /* Initial opacity set to 0 for invisibility */
   transition: opacity 0.3s ease-in-out; /* Transition effect on opacity */
-  
+}
+
+.chat-message-line .saito-userline-reply > div {
+  padding: 4px;
+  cursor: pointer;
+  min-height: 22px;
+  min-width: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-message-line .saito-userline-reply > div.saito-chat-line-timestamp{
+  cursor: revert;
 }
 
 .chat-message-line:hover .saito-userline-reply {
@@ -559,12 +570,12 @@
 
 }
 
-.saito-user-self .chat-message-line .saito-userline-reply .chat-copy, .saito-user-self .chat-message-line .saito-userline-reply .chat-reply, .saito-user-self .chat-message-line .saito-userline-reply .chat-like {
+.saito-user-self .chat-message-line .saito-userline-reply .chat-message-action {
   display: none;
-  cursor: pointer;
 }
 
 .saito-user .saito-userline-reply i:hover {
+  transform: scale(1.2);
   color: var(--font-color-hover-chat-popup-reply);
   cursor: pointer;
 }

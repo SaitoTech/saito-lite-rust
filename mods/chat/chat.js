@@ -1635,13 +1635,11 @@ class Chat extends ModTemplate {
 						 	<div data-id="${block[z].signature}" data-href="${
               sender + ts
             }" class="saito-userline-reply">
-							<div class="chat-like  "><i class="fas fa-thumbs-up  ${liked}"></i> </div> 
-		                  <div class="chat-copy"><i class="fas fa-copy"></i></div>
-		                  <div class="chat-reply"><i class="fas fa-reply"></i></div>
-		                  <div class="saito-chat-line-controls">
-		                    <span class="saito-chat-line-timestamp">${this.app.browser.returnTime(
-                          ts
-                        )}</span>
+							<div class="chat-like chat-message-action"><i class="fas fa-thumbs-up  ${liked}"></i> </div> 
+		                  <div class="chat-copy chat-message-action"><i class="fas fa-copy"></i></div>
+		                  <div class="chat-reply chat-message-action"><i class="fas fa-reply"></i></div>
+		                  <div class="saito-chat-line-timestamp">
+		                    <span>${this.app.browser.returnTime(ts)}</span>
 		                  </div>
 		               </div>`;
 
