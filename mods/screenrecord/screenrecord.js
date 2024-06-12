@@ -419,6 +419,7 @@ class Record extends ModTemplate {
 
 						if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV' && node.id.startsWith('stream_')) {
 
+							
 							const videos = node.querySelectorAll('video');
 							videos.forEach(video => {
 								const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
@@ -472,18 +473,72 @@ class Record extends ModTemplate {
 
 			const drawStreamsToCanvas = () => {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
+			
 				this.streamData.forEach(data => {
-					let parentElement = document.getElementById(data.parentID)
-					const currentRect = parentElement.getBoundingClientRect();
-					if (data.videoElement.readyState >= 2) {
-						ctx.drawImage(data.videoElement, currentRect.left, currentRect.top, currentRect.width, currentRect.height);
+					const parentElement = document.getElementById(data.parentID);
+					if (!parentElement) return;
+			
+					// Get the actual video element dimensions
+					const videoWidth = data.videoElement.videoWidth;
+					const videoHeight = data.videoElement.videoHeight;
+			
+					// Calculate the aspect ratio of the video
+					const videoAspectRatio = videoWidth / videoHeight;
+			
+					// Get the bounding rect of the parent element
+					const rect = parentElement.getBoundingClientRect();
+			
+					// Calculate scaling factors based on canvas size
+					const scaleX = canvas.width / window.innerWidth;
+					const scaleY = canvas.height / window.innerHeight;
+			
+					// Calculate the new dimensions maintaining the video aspect ratio
+					let drawWidth = rect.width * scaleX;
+					let drawHeight = drawWidth / videoAspectRatio;
+			
+					// Adjust dimensions if height exceeds the space
+					if (drawHeight > rect.height * scaleY) {
+						drawHeight = rect.height * scaleY;
+						drawWidth = drawHeight * videoAspectRatio;
 					}
-					data.rect = currentRect;
+			
+					// Calculate position to center the video in its slot
+					const drawX = rect.left * scaleX + (rect.width * scaleX - drawWidth) / 2;
+					const drawY = rect.top * scaleY + (rect.height * scaleY - drawHeight) / 2;
+			
+					if (data.videoElement.readyState >= 2) {
+						ctx.drawImage(data.videoElement, drawX, drawY, drawWidth, drawHeight);
+					}
 				});
-				requestAnimationFrame(drawStreamsToCanvas);
+			
+				this.animation_id=requestAnimationFrame(drawStreamsToCanvas);
 			};
+			
+			
+			
+			const resizeCanvas = () => {
+				canvas.width = window.innerWidth;
+				canvas.height = window.innerHeight
+			
+				// Update the drawing routine to handle the new canvas size
+				drawStreamsToCanvas();
+			};
+			
+			window.addEventListener('resize', resizeCanvas);
+			resizeCanvas(); // Initialize canvas size
 		
+			
+	
 			const videoElements = document.querySelectorAll('div[id^="stream_"] video');
+	
+			
+			videoElements.forEach(video => {
+				// video.style.objectFit = "cover";
+				// video.style.width = "100%";
+				// video.style.height = "100%";
+				// video.style.maxWidth = "100%";
+			});
+			
 			this.streamData = Array.from(videoElements).map(video => {
 				const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
 				const rect = video.getBoundingClientRect();
@@ -492,10 +547,11 @@ class Record extends ModTemplate {
 				videoElement.srcObject = stream;
 				videoElement.play();
 				videoElement.style.display = "none";
-
-				return { stream, rect, parentID, videoElement };
+				videoElement.style.objectFit = "cover";
+				// videoElement.style.backgroundSize= 'cover'
+				// videoElement.style.objectFit = "contain"
+				return { stream, rect, parentID, videoElement};
 			}).filter(data => data.stream !== null);
-
 			let chunks = [];
 			const mimeType = 'video/webm';
 			this.mediaRecorder = new MediaRecorder(canvas.captureStream(25), {
@@ -575,7 +631,8 @@ class Record extends ModTemplate {
 					const videoElement = document.createElement('video');
 					videoElement.srcObject = stream;
 					videoElement.play();
-					videoElement.style.display = "none";
+					console.log(video.clientHeight)
+					// videoElement.style.display = "none";
 
 					return { stream, rect, parentID, videoElement };
 				}).filter(data => data.stream !== null)
