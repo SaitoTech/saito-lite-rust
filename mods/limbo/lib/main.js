@@ -18,15 +18,14 @@ class LimboMain {
 
 		this.loader = new SaitoLoader(this.app, this.mod, "#limbo-main");
 
-		app.connection.on("limbo-populated", (source) => {
-			console.log("EVENT (main): limbo-populated");
+		app.connection.on("limbo-spaces-update", (source) => {
+			console.log("EVENT (main): limbo-spaces-update");
 			if (!this.mod.dreamer){
 				this.render();
 			}
-		
 		});
 
-		app.connection.on("limbo-open-dream", (dreamer) => {
+		app.connection.on("limbo-dream-render", (dreamer) => {
 			console.log("EVENT (main): limbo-open-dream");
 
 			let container = document.querySelector(".limbo-container");
@@ -36,8 +35,8 @@ class LimboMain {
 
 			if (dreamer){
 				container.classList.add("dreaming");
+				this.loader.remove(10);
 			}else{
-
 				this.render();
 			}
 		});
@@ -47,12 +46,12 @@ class LimboMain {
 		console.log("Render limbo main");
 		if (document.querySelector('.saito-container')) {
 			this.app.browser.replaceElementBySelector(
-				LimboMainTemplate(),
+				LimboMainTemplate(this.app, this.mod),
 				'.saito-container'
 			);
 		} else {
 			this.app.browser.addElementToSelector(
-				LimboMainTemplate(),
+				LimboMainTemplate(this.app, this.mod),
 				this.container
 			);
 
@@ -75,6 +74,14 @@ class LimboMain {
 			for (let key in this.mod.dreams){
 				let profileCard = new SaitoProfile(this.app, this.mod, ".spaces-list");
 				profileCard.reset(key, "", ["attendees", "speakers"]);
+
+			    if (this.mod.dreams[key]?.identifier) {
+			      profileCard.name = this.mod.dreams[key].identifier;
+			    }
+
+			    if (this.mod.dreams[key]?.description) {
+			      profileCard.description = this.mod.dreams[key].description;
+			    }
 
 				//We won't process this array other than checking length... i hope!
 				profileCard.menu.attendees = this.mod.dreams[key].members.filter( k => k !== key );
@@ -121,10 +128,12 @@ class LimboMain {
 			}
 		});
 
+//To do : update this!!!!!!!!
 
 		if (document.getElementById("video")){
 			document.getElementById("video").onclick = (e) => {
 				let obj = {
+					keylist: [],
 					includeCamera: true,
 					screenStream: false
 				};
@@ -134,6 +143,7 @@ class LimboMain {
 		if (document.getElementById("audio")){
 			document.getElementById("audio").onclick = (e) => {
 				let obj = {
+					keylist: [],
 					includeCamera: false,
 					screenStream: false
 				};
@@ -144,6 +154,7 @@ class LimboMain {
 		if (document.getElementById("screen")){
 			document.getElementById("screen").onclick = (e) => {
 				let obj = {
+					keylist: [],
 					includeCamera: false,
 					screenStream: true
 				};

@@ -20,7 +20,7 @@ class DreamControls{
 		});
 
 		//Fires every time there is limbo activity (dream starting/ending, people joining/leaving)
-		app.connection.on("limbo-populated", ()=>{
+		app.connection.on("limbo-spaces-update", ()=>{
 			let ct = 0;
 			if (this.mod.dreamer && this.mod.dreams[this.mod.dreamer]){
 				this.mod.dreams[this.mod.dreamer].members.forEach((mem) => {

@@ -12,8 +12,8 @@ class LimboSidebar {
     this.profile = new SaitoProfile(app, mod, '.limbo-sidebar');
     this.profile.tab_container = ".limbo-sidebar .saito-modal-content";
 
-    app.connection.on('limbo-open-dream', (dreamer = null) => {
-      console.log('EVENT (Sidebar): limbo-open-dream', dreamer);
+    app.connection.on('limbo-dream-render', (dreamer = null) => {
+      console.log('EVENT (Sidebar): limbo-dream-render', dreamer);
       this.render(dreamer);
     });
 
@@ -34,6 +34,18 @@ class LimboSidebar {
       //
       
       this.profile.reset(dreamer, "attendees", ["attendees", "speakers", "peers"]);
+
+      if (this.mod.dreams[dreamer]?.alt_id) {
+        this.profile.mask_key = true;
+      }
+
+      if (this.mod.dreams[dreamer]?.identifier){
+        this.profile.name = this.mod.dreams[dreamer].identifier;
+      }
+
+      if (this.mod.dreams[dreamer]?.description){
+        this.profile.description = this.mod.dreams[dreamer].description;
+      }
 
       //
       // Build audience lists
