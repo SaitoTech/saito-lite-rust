@@ -393,10 +393,21 @@ class ModTools extends ModTemplate {
 					if (this.apps[app.name]) {
 						if (this.apps[app.name] == "*") { return 1; }
 					}
+/*
 					if (this.apps[app.name]) {
 						if (this.apps[app.name] == "!") { return -1; }
 					}
-
+					if (this.apps[app.name]) {
+						if (this.apps[app.name] == "$") { 
+							for (let i = 0; i < tx.from.length; i++) {
+								if (tx.from[i].amount > 0) {
+									return 1;
+								}
+							}
+							return -1;
+						}
+					}
+*/
 					return 0;
 				}
 			}
@@ -579,12 +590,12 @@ class ModTools extends ModTemplate {
 		this.save();
 	}
 
-	isBlacklisted() {
+	isBlacklisted(add="") {
 		if (this.blacklisted_publickeys.includes(add)) { return 1; }
 		return 0;
 	}
 
-	isWhitelisted() {
+	isWhitelisted(add="") {
 		if (this.whitelisted_publickeys.includes(add)) { return 1; }
 		return 0;
 	}

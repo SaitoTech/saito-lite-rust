@@ -9964,8 +9964,10 @@ defender_hits - attacker_hits;
 	    }
 	  }
 
-	  his_self.faction_overlay.render("protestant");
-	  his_self.faction_overlay.updateNotice("Protestants advance in Bible Translation");
+	  if (his_self.game.player == his_self.returnPlayerCommandingFaction("protestant")) {
+	    his_self.faction_overlay.render("protestant");
+	    his_self.faction_overlay.updateNotice("Protestants advance in Bible Translation");
+	  }
 
 	  return 1;
         }
@@ -9999,8 +10001,10 @@ defender_hits - attacker_hits;
 	    }
 	  }
 
-	  his_self.faction_overlay.render("papacy");
-	  his_self.faction_overlay.updateNotice("Papacy progresses with Saint Peter's Construction");
+	  if (his_self.game.player == his_self.returnPlayerCommandingFaction("papacy")) {
+	    his_self.faction_overlay.render("papacy");
+	    his_self.faction_overlay.updateNotice("Papacy progresses with Saint Peter's Construction");
+	  }
 
 	  return 1;
 
