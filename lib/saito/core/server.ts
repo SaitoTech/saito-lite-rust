@@ -56,25 +56,18 @@ export class NodeSharedMethods extends CustomSharedMethods {
 		});
 	}
 
-	connectToPeer(peerData: any): void {
-		let protocol = 'ws';
-		if (peerData.protocol === 'https') {
-			protocol = 'wss';
-		}
-		let url =
-			protocol + '://' + peerData.host + ':' + peerData.port + '/wsopen';
-
+	connectToPeer(url: string, peer_index: bigint): void {
 		try {
 			console.log('connecting to ' + url + '....');
 
 			let socket = new ws.WebSocket(url);
-			let index = S.getInstance().addNewSocket(socket);
+			S.getInstance().addNewSocket(socket, peer_index);
 
 			socket.on('message', (buffer: any) => {
 				try {
 					S.getLibInstance().process_msg_buffer_from_peer(
 						buffer,
-						index
+						peer_index
 					);
 				} catch (e) {
 					console.error(e);
@@ -82,17 +75,22 @@ export class NodeSharedMethods extends CustomSharedMethods {
 			});
 			socket.on('close', () => {
 				try {
-					S.getLibInstance().process_peer_disconnection(index);
+					S.getLibInstance().process_peer_disconnection(peer_index);
 				} catch (e) {
 					console.error(e);
 				}
 			});
 			socket.on('error', (error) => {
 				console.error(error);
+				try {
+					S.getLibInstance().process_peer_disconnection(peer_index);
+				} catch (e) {
+					console.error(e);
+				}
 			});
-			S.getLibInstance().process_new_peer(index, peerData);
+			S.getLibInstance().process_new_peer(peer_index);
 			console.log(
-				'connected to : ' + url + ' with peer index : ' + index
+				'connected to : ' + url + ' with peer index : ' + peer_index
 			);
 		} catch (e) {
 			console.error(e);
@@ -115,7 +113,8 @@ export class NodeSharedMethods extends CustomSharedMethods {
 		}
 	}
 
-	flushData(key: string): void { }
+	flushData(key: string): void {
+	}
 
 	readValue(key: string): Uint8Array {
 		try {
@@ -261,7 +260,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 		patch: number,
 		peerIndex: bigint
 	): void {
-		console.error('This is an older version', "current version: ", this.app.wallet.version, " expected version: ", major)
+		console.error('This is an older version', 'current version: ', this.app.wallet.version, ' expected version: ', major);
 	}
 
 	ensureBlockDirExists(path: string): void {
@@ -335,21 +334,27 @@ class Server {
 		wss.on('connection', (socket: any, request: any) => {
 			const { pathname } = parse(request.url);
 			console.log('connection established');
-			let index = S.getInstance().addNewSocket(socket);
+			S.getLibInstance().get_next_peer_index()
+				.then(peer_index => {
+					S.getInstance().addNewSocket(socket, peer_index);
 
-			socket.on('message', (buffer: any) => {
-				S.getLibInstance()
-					.process_msg_buffer_from_peer(new Uint8Array(buffer), index)
-					.then(() => { });
-			});
-			socket.on('close', () => {
-				S.getLibInstance().process_peer_disconnection(index);
-			});
-			socket.on('error', (error) => {
-				console.error('error on socket : ' + index, error);
-			});
+					socket.on('message', (buffer: any) => {
+						S.getLibInstance()
+							.process_msg_buffer_from_peer(new Uint8Array(buffer), peer_index)
+							.then(() => {
+							});
+					});
+					socket.on('close', () => {
+						S.getLibInstance().process_peer_disconnection(peer_index);
+					});
+					socket.on('error', (error) => {
+						console.error('error on socket : ' + peer_index, error);
+						S.getLibInstance().process_peer_disconnection(peer_index);
+					});
 
-			S.getLibInstance().process_new_peer(index, null);
+					S.getLibInstance().process_new_peer(peer_index);
+				});
+
 		});
 		// app.on("upgrade", (request, socket, head) => {
 		//   server.handleUpgrade(request, socket, head, (websocket) => {
