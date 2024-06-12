@@ -75,6 +75,18 @@
 	height: 7rem;
 }
 
+
+/* Join Overlay */
+
+.saito-join-space-overlay {
+	width: min(800px, 90vw);
+	height: min(600px, 90vh);
+	padding: 2rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
 /* Right sidebar */
 .limbo-container .saito-sidebar.right {
 	padding: 0;

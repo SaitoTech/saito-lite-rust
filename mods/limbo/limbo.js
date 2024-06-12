@@ -6,8 +6,10 @@ const LiteDreamControls = require('./lib/lite-dream-controls');
 const DreamSpace = require('./lib/dream-space');
 const DreamWizard = require("./lib/dream-wizard");
 const LimboMain = require('./lib/main');
+const SaitoOverlay = require('./../../lib/saito/ui//saito-overlay/saito-overlay')
 const InvitationLink = require('./../../lib/saito/ui/modals/saito-link/saito-link');
 const SaitoHeader = require('./../../lib/saito/ui/saito-header/saito-header');
+const SaitoProfile = require('./../../lib/saito/ui/saito-profile/saito-profile');
 const HomePage = require("./index");
 
 class Limbo extends ModTemplate {
@@ -295,28 +297,60 @@ class Limbo extends ModTemplate {
 					}
 
 					console.log("Limbo DREAMS:", this.dreams);
-
+					
+					this.main.render();
+					
 					if (this.dreamer){
+
+						let prompt = `${this.app.keychain.returnUsername(this.dreamer)}'s dream space`;
+
 						if (this.dreams[this.dreamer]) {
 
-							let prompt = this.dreams[this.dreamer]?.identifier || `${this.app.keychain.returnUsername(this.dreamer)}'s dream space`;
-							let c = await sconfirm(`Join ${prompt}?`);
-							
-							if (c) {
-								this.joinDream(this.dreamer);
-							} else {
+							const overlay = new SaitoOverlay(this.app, this);
+							overlay.show(`<div class="saito-join-space-overlay"><div id="join-btn" class="button saito-button-primary">Listen Now</div></div>`, ()=>{
 								window.history.pushState('', '', `/limbo/`);
 								this.dreamer = null;
+							});
+
+							overlay.blockClose();
+
+							let profileCard = new SaitoProfile(this.app, this, ".saito-join-space-overlay");
+							profileCard.reset(this.dreamer, "", ["attendees", "speakers"]);
+
+						    if (this.dreams[this.dreamer]?.identifier) {
+						      profileCard.name = this.dreams[this.dreamer].identifier;
+						    }
+
+						    if (this.dreams[this.dreamer]?.description) {
+						      profileCard.description = this.dreams[this.dreamer].description;
+						    }
+
+							//We won't process this array other than checking length... i hope!
+							profileCard.menu.attendees = this.dreams[this.dreamer].members.filter( k => k !== this.dreamer );
+
+							profileCard.menu.speakers.push(0);
+							if (this.dreams[this.dreamer].speakers){
+								for (let i of this.dreams[this.dreamer].speakers){
+									profileCard.menu.speakers.push(0);
+								}
 							}
+
+							profileCard.render();
+
+							let btn = document.getElementById("join-btn");
+							if (btn){
+								btn.onclick = (e) => {
+									this.joinDream(this.dreamer);
+									overlay.remove();
+								}
+							}
+							
 						} else {
 							salert(`${prompt} no longer available`);
 							window.history.pushState('', '', `/limbo/`);
 							this.exitSpace();
 						}
 					}
-					
-					this.app.connection.emit('limbo-spaces-update');
-					
 				},
 				peer.peerIndex
 			);
