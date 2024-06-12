@@ -35,6 +35,18 @@ class LimboSidebar {
       
       this.profile.reset(dreamer, "attendees", ["attendees", "speakers", "peers"]);
 
+      if (this.mod.dreams[dreamer]?.alt_id) {
+        this.profile.mask_key = true;
+      }
+
+      if (this.mod.dreams[dreamer]?.identifier){
+        this.profile.name = this.mod.dreams[dreamer].identifier;
+      }
+
+      if (this.mod.dreams[dreamer]?.description){
+        this.profile.description = this.mod.dreams[dreamer].description;
+      }
+
       //
       // Build audience lists
       //

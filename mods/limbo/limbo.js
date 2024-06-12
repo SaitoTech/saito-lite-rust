@@ -25,6 +25,10 @@ class Limbo extends ModTemplate {
 		this.styles = ['/videocall/style.css', '/limbo/style.css'];
 		this.icon_fa = 'fa-solid fa-satellite';
 
+		this.screen_icon = "fa-desktop";
+		this.camera_icon = "fa-clapperboard";
+		this.audio_icon = "fa-radio";
+
 		this.stun = null;
 		this.rendered = false;
 
@@ -44,7 +48,8 @@ class Limbo extends ModTemplate {
 		contains
 		ts: (int) start time
 		members: (array) people in the dream including dreamer
-
+		alt_id: (optional)
+		dreamer: public key of dreamer
 		identifier: (string)
 		description: (string)
 		*/
@@ -182,10 +187,7 @@ class Limbo extends ModTemplate {
 									//
 								}
 							} else {
-								let c = await sconfirm("Begin peercasting audio from this call?");
-								if (c){
-									mod_self.startDream(obj.members);
-								}
+								mod_self.startDream({ alt_id: obj?.call_id, keylist: obj.members});
 							}
 						}
 					}
@@ -292,13 +294,14 @@ class Limbo extends ModTemplate {
 						});
 					}
 
+					console.log("Limbo DREAMS:", this.dreams);
+
 					if (this.dreamer){
 						if (this.dreams[this.dreamer]) {
-							let c = await sconfirm(
-								`Will join ${this.app.keychain.returnUsername(
-									this.dreamer
-								)}'s dream space`
-							);
+
+							let prompt = this.dreams[this.dreamer]?.identifier || `${this.app.keychain.returnUsername(this.dreamer)}'s dream space`;
+							let c = await sconfirm(`Join ${prompt}?`);
+							
 							if (c) {
 								this.joinDream(this.dreamer);
 							} else {
@@ -306,7 +309,7 @@ class Limbo extends ModTemplate {
 								this.dreamer = null;
 							}
 						} else {
-							salert(`${this.app.keychain.returnUsername(this.dreamer)}'s dream space is no longer available`);
+							salert(`${prompt} no longer available`);
 							window.history.pushState('', '', `/limbo/`);
 							this.exitSpace();
 						}
@@ -321,13 +324,12 @@ class Limbo extends ModTemplate {
 	}
 
 
-	startDream(keylist = []){
+	startDream(options){
 		this.localStream = null;
 		this.externalMediaControl = false;
 
-		if (!this.wizard){
-			this.wizard = new DreamWizard(this.app, this);
-		}
+		//default mode is audio (only)
+		options.mode = "audio";
 
 		//
 		// First check if any other modules are fetching media
@@ -340,19 +342,19 @@ class Limbo extends ModTemplate {
 			this.additionalSources = otherParties[0].remoteStreams;
 			this.externalMediaControl = true;
 
-			//Temporary exclusion of wizard if piggybacking off of streamed media
-			let obj = {
-				keylist,
-				includeCamera: false,
-				screenStream: false
-			};
-			this.broadcastDream(obj);
-			return;
+			options["includeCamera"] = false;
+			options["screenStream"] = false;
+			options["audio"] = true;
 		} 
 
-		this.wizard.render(keylist);
+		if (!this.wizard){
+			this.wizard = new DreamWizard(this.app, this, options);
+		}else{
+			this.wizard.options = options;
+		}
 
-		//Wizard will call broadcastDream with the options
+		this.wizard.render();
+
 	}
 
 	async broadcastDream(options) {
@@ -373,9 +375,12 @@ class Limbo extends ModTemplate {
 		// Attempt to stream of the screen -- user has to select it
 		// this should include any displayed video and audio...
 		//
-		let { keylist, includeCamera, screenStream } = options;
+		let { includeCamera, screenStream } = options;
 
 		if (screenStream) {
+
+			options.mode = "screen";
+
 			try {
 				let constraint = this.browser_active ? 'exclude' : 'include';
 
@@ -410,6 +415,8 @@ class Limbo extends ModTemplate {
 				// Get webcam video
 				//
 				if (includeCamera) {
+
+					options.mode = "camera";
 					this.localStream =
 						await navigator.mediaDevices.getUserMedia({
 							video: true,
@@ -467,7 +474,7 @@ class Limbo extends ModTemplate {
 			return;
 		}
 
-		await this.sendDreamTransaction(keylist);
+		await this.sendDreamTransaction(options);
 
 		if (this.controls) {
 			this.controls.render(this.combinedStream, screenStream);
@@ -519,7 +526,7 @@ class Limbo extends ModTemplate {
 		}
 	}
 
-	async sendDreamTransaction(keylist = null) {
+	async sendDreamTransaction(options = {}) {
 		let newtx =
 			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
 				this.publicKey
@@ -528,11 +535,22 @@ class Limbo extends ModTemplate {
 		newtx.msg = {
 			module: this.name,
 			request: 'start dream',
-			speakers: keylist,
+			speakers: options.keylist,
+			mode: options.mode,
 		};
 
-		if (keylist) {
-			for (let key of keylist) {
+		if (options?.alt_id){
+			newtx.msg.alt_id = options.alt_id;
+		}
+		if (options?.identifier){
+			newtx.msg.identifier = options.identifier;
+		}
+		if (options?.description){
+			newtx.msg.description = options.description;
+		}
+
+		if (options?.keylist) {
+			for (let key of options.keylist) {
 				newtx.addTo(key);
 			}
 		}
@@ -542,7 +560,6 @@ class Limbo extends ModTemplate {
 		this.app.connection.emit('relay-transaction', newtx);
 		this.app.network.propagateTransaction(newtx);
 
-		console.log('sendDreamTransaction');
 		this.receiveDreamTransaction(this.publicKey, newtx);
 		this.app.connection.emit('limbo-dream-render', this.publicKey);
 	}
@@ -557,9 +574,20 @@ class Limbo extends ModTemplate {
 		this.dreams[sender] = {
 			members: [sender],
 			speakers: txmsg.speakers,
-			ts: tx.timestamp
+			ts: tx.timestamp,
+			dreamer: sender,
+			mode: txmsg.mode,
 		};
 
+		if (txmsg?.alt_id){
+			this.dreams[sender].alt_id = txmsg.alt_id;
+		}
+		if (txmsg?.identifier){
+			this.dreams[sender].identifier = txmsg.identifier;
+		}
+		if (txmsg?.description){
+			this.dreams[sender].description = txmsg.description;
+		}
 
 		if (this.app.BROWSER) {
 			if (this.publicKey == sender) {
@@ -1199,7 +1227,26 @@ class Limbo extends ModTemplate {
 				res.setHeader('Content-type', 'text/html');
 				res.charset = 'UTF-8';
 
-				res.send(HomePage(app, mod_self, app.build_number, mod_self.social));
+				let dream = req.query?.dream;
+				let updated_social = mod_self.social;
+				
+				if (dream) {
+
+					let dreamer = mod_self.app.crypto.base64ToString(dream);
+
+					updated_social.title = mod_self.app.keychain.returnUsername(dreamer) + " is live streaming on Saito 🟥"; 
+
+					if (mod_self.dreams[dreamer]) {
+						if (mod_self.dreams[dreamer]?.identifier){
+							updated_social.title = mod_self.dreams[dreamer].identifier;
+						}
+						if (mod_self.dreams[dreamer]?.description){
+							updated_social.description = mod_self.dreams[dreamer].description;
+						}
+					}					
+				}
+
+				res.send(HomePage(app, mod_self, app.build_number, updated_social));
 				return;
 			}
 		);

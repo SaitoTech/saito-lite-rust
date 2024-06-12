@@ -46,12 +46,12 @@ class LimboMain {
 		console.log("Render limbo main");
 		if (document.querySelector('.saito-container')) {
 			this.app.browser.replaceElementBySelector(
-				LimboMainTemplate(),
+				LimboMainTemplate(this.app, this.mod),
 				'.saito-container'
 			);
 		} else {
 			this.app.browser.addElementToSelector(
-				LimboMainTemplate(),
+				LimboMainTemplate(this.app, this.mod),
 				this.container
 			);
 
@@ -74,6 +74,14 @@ class LimboMain {
 			for (let key in this.mod.dreams){
 				let profileCard = new SaitoProfile(this.app, this.mod, ".spaces-list");
 				profileCard.reset(key, "", ["attendees", "speakers"]);
+
+			    if (this.mod.dreams[key]?.identifier) {
+			      profileCard.name = this.mod.dreams[key].identifier;
+			    }
+
+			    if (this.mod.dreams[key]?.description) {
+			      profileCard.description = this.mod.dreams[key].description;
+			    }
 
 				//We won't process this array other than checking length... i hope!
 				profileCard.menu.attendees = this.mod.dreams[key].members.filter( k => k !== key );
@@ -120,10 +128,12 @@ class LimboMain {
 			}
 		});
 
+//To do : update this!!!!!!!!
 
 		if (document.getElementById("video")){
 			document.getElementById("video").onclick = (e) => {
 				let obj = {
+					keylist: [],
 					includeCamera: true,
 					screenStream: false
 				};
@@ -133,6 +143,7 @@ class LimboMain {
 		if (document.getElementById("audio")){
 			document.getElementById("audio").onclick = (e) => {
 				let obj = {
+					keylist: [],
 					includeCamera: false,
 					screenStream: false
 				};
@@ -143,6 +154,7 @@ class LimboMain {
 		if (document.getElementById("screen")){
 			document.getElementById("screen").onclick = (e) => {
 				let obj = {
+					keylist: [],
 					includeCamera: false,
 					screenStream: true
 				};

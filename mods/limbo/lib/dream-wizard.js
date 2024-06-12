@@ -2,70 +2,41 @@ const DreamWizardTemplate = require("./dream-wizard.template");
 const SaitoOverlay = require('./../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 class DreamWizard{
-	constructor(app, mod) {
+	constructor(app, mod, options) {
 		this.app = app;
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(app, mod, false);
+		this.options = options;
 	}
 
-	render(keylist) {
-		this.keylist = keylist;
+	render() {
 
-		this.overlay.show(DreamWizardTemplate(this.app, this.mod));	
+		this.overlay.show(DreamWizardTemplate(this.app, this.mod, this.options));	
 
 		this.attachEvents();
 	}
 
-	updateStatus(video, screen){
-		let noticeEl = document.getElementById("dream-status");
-
-		let notice = " only";
-
-		video = video || this.mod.localStream;
-
-		if (video){
-			if (screen){
-				notice = ", webcam and screen share";
-			}else{
-				notice = " and webcam";
-			}
-		}else if (screen){
-			notice = " and screen share";
-		}
-
-		noticeEl.innerHTML = notice;
-	}
-
 	attachEvents(){
-
-		let video = false;
-		let screen = false;
-
-		this.updateStatus(video, screen);
-
-		if (document.getElementById('enable-screenshare')) {
-			document.getElementById('enable-screenshare').addEventListener('change', (e) => {
-				screen = e.currentTarget?.checked;
-				this.updateStatus(video, screen);
-			});
-		}
-
-		if (document.getElementById('enable-webcam')) {
-			document.getElementById('enable-webcam').addEventListener('change', (e) => {
-				video = e.currentTarget?.checked;
-				this.updateStatus(video, screen);
-			});
-		}
 
 
 		if (document.getElementById("dream-wizard-btn")){
 			document.getElementById("dream-wizard-btn").onclick = (e) => {
-				let obj = {
-					keylist: this.keylist,
-					includeCamera: video,
-					screenStream: screen
-				};
-				this.mod.broadcastDream(obj);
+				//Read the title & description for profile display
+				let title_el = document.getElementById("dream-wizard-identifier");
+				let title = document.getElementById("dream-wizard-identifier")?.value || "";
+
+				let description_el = document.getElementById("dream-wizard-description");
+				let description = description_el?.innerText || description_el?.value || "";
+
+				if (title){
+					this.options.identifier = title;
+				}
+
+				if (description){
+					this.options.description = description;
+				}
+				
+				this.mod.broadcastDream(this.options);
 				this.overlay.close();
 			}
 		}

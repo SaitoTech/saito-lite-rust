@@ -233,13 +233,41 @@ video#local.noflip{
 }
 
 .dream-wizard .button {
-	margin-top: 1rem;
+	margin: 1rem 0;
 }
 
+.dream-wizard .cast-mode {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 6rem;
+	margin-bottom: 1rem;
+}
+
+.dream-wizard input{
+	margin: 1rem 0;
+}
+
+.dream-wizard .post-tweet-textarea {
+	min-height: 10rem;
+}
+
+.dream-wizard .help-hook {
+	display: flex;
+	align-items: center;
+	gap: 2rem;
+	justify-content: flex-end;
+	cursor: pointer;
+}
+
+.dream-wizard .help-hook:hover{
+	color: var(--font-color-primary);
+}
 
 .dream-controls .video-call-info {
 	display: none;
 }
+
 
 
 /* Dynamic Page Layout */
