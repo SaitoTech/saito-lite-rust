@@ -533,8 +533,7 @@ class StreamManager {
 	endPresentation() {
 		if (this.mod.screen_share) {
 			console.log('Screen sharing stopped by user');
-
-			this.app.connection.emit('remove-peer-box', 'presentation');
+			this.app.connection.emit('remove-peer-box', 'presentation'); 
 			this.app.connection.emit('stun-switch-view', 'focus');
 			this.mod.screen_share = false;
 
