@@ -61,15 +61,15 @@ class Profile extends ModTemplate {
 								}
 
 								Object.assign(this.cache[key], data_found);
-								this.updateProfileDom(this.cache[key], key);
+								this.app.connection.emit('profile-update-dom', key, this.cache[key]);
 							},
 						null);
 
 						return;
 					}
 				}
-
-				this.updateProfileDom(this.cache[key], key);
+				
+				this.app.connection.emit('profile-update-dom', key, this.cache[key]);
 
 			}
 		);
@@ -256,7 +256,7 @@ class Profile extends ModTemplate {
 		}
 
 		if (this.app.keychain.isWatched(from)){
-			this.updateProfileDom(this.cache[from], from);
+			this.app.connection.emit('profile-update-dom', from, this.cache[from]);
 		}
 
 	}
@@ -295,34 +295,6 @@ class Profile extends ModTemplate {
 		);
 	}
 
-
-	updateProfileDom(profile, key){
-		//
-		// Plug in any info I found
-		//
-		if (profile?.banner){
-			const element = document.querySelector(`#profile-banner-${key}`);
-			if (element){
-				element.style.backgroundImage = `url('${profile.banner}')`;
-			}
-		}
-
-		if (profile?.description){
-			const element = document.querySelector(`#profile-description-${key}`);
-			if (element){
-				element.textContent = profile.description;
-			}
-		}
-
-		if (profile?.image){
-			const element = document.querySelector(`#profile-image-${key}`);
-			if (element){
-				element.src = profile.image;
-			}
-		}
-
-
-	}
 
 }
 
