@@ -27,13 +27,14 @@ class LimboSidebar {
       this.app.browser.addElementToSelector(LimboSidebarTemplate(this.app, this.mod, dreamer), this.container);
     }
 
-    if (dreamer){
+    if (dreamer) {
 
       //
       // Need a way to override/customize profile of "dreamer" to profile of dream!
       //
-      
-      this.profile.reset(dreamer, "attendees", ["attendees", "speakers", "peers"]);
+      let dreamKey = this.mod.dreams[dreamer]?.alt_id || dreamer;
+
+      this.profile.reset(dreamKey, "attendees", ["attendees", "speakers", "peers"]);
 
       if (this.mod.dreams[dreamer]?.alt_id) {
         this.profile.mask_key = true;

@@ -306,6 +306,8 @@ class Limbo extends ModTemplate {
 
 						if (this.dreams[this.dreamer]) {
 
+							const dream = this.dreams[this.dreamer];
+
 							const overlay = new SaitoOverlay(this.app, this);
 							overlay.show(`<div class="saito-join-space-overlay"><div id="join-btn" class="button saito-button-primary">Listen Now</div></div>`, ()=>{
 								window.history.pushState('', '', `/limbo/`);
@@ -315,22 +317,29 @@ class Limbo extends ModTemplate {
 							overlay.blockClose();
 
 							let profileCard = new SaitoProfile(this.app, this, ".saito-join-space-overlay");
-							profileCard.reset(this.dreamer, "", ["attendees", "speakers"]);
+							
+							let profileKey = dream?.alt_id || this.dreamer;
 
-						    if (this.dreams[this.dreamer]?.identifier) {
-						      profileCard.name = this.dreams[this.dreamer].identifier;
+							profileCard.reset(profileKey, "", ["attendees", "speakers"]);
+
+							if (dream?.alt_id) {
+								profileCard.mask_key = true;
+							}
+							
+						    if (dream?.identifier) {
+						      profileCard.name = dream.identifier;
 						    }
 
-						    if (this.dreams[this.dreamer]?.description) {
-						      profileCard.description = this.dreams[this.dreamer].description;
+						    if (dream?.description) {
+						      profileCard.description = dream.description;
 						    }
 
 							//We won't process this array other than checking length... i hope!
-							profileCard.menu.attendees = this.dreams[this.dreamer].members.filter( k => k !== this.dreamer );
+							profileCard.menu.attendees = dream.members.filter( k => k !== this.dreamer );
 
 							profileCard.menu.speakers.push(0);
-							if (this.dreams[this.dreamer].speakers){
-								for (let i of this.dreams[this.dreamer].speakers){
+							if (dream.speakers){
+								for (let i of dream.speakers){
 									profileCard.menu.speakers.push(0);
 								}
 							}

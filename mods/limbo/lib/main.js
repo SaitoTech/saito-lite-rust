@@ -73,7 +73,10 @@ class LimboMain {
 
 			for (let key in this.mod.dreams){
 				let profileCard = new SaitoProfile(this.app, this.mod, ".spaces-list");
-				profileCard.reset(key, "", ["attendees", "speakers"]);
+				
+				let altKey = this.mod.dreams[key]?.alt_id || key;
+
+				profileCard.reset(altKey, "", ["attendees", "speakers"]);
 
 			    if (this.mod.dreams[key]?.identifier) {
 			      profileCard.name = this.mod.dreams[key].identifier;
@@ -81,6 +84,10 @@ class LimboMain {
 
 			    if (this.mod.dreams[key]?.description) {
 			      profileCard.description = this.mod.dreams[key].description;
+			    }
+
+			    if (this.mod.dreams[key]?.alt_id) {
+			    	profileCard.mask_key = true;
 			    }
 
 				//We won't process this array other than checking length... i hope!
@@ -105,7 +112,24 @@ class LimboMain {
 
 		document.querySelectorAll("#spaces .saito-profile").forEach(element => {
 			element.onclick = async (e) => {
-				let dreamer = e.currentTarget.dataset.id;
+				let id = e.currentTarget.dataset.id;
+				let dreamer;
+
+				if (this.mod.dreams[id]){
+					dreamer = id;
+				}else{
+					for (let d in this.mod.dreams){
+						if (this.mod.dreams[d]?.alt_id == id){
+							dreamer = d;
+							break;
+						}
+					}
+				}
+
+				if (!dreamer){
+					console.warn("Dream not found...");
+					return;
+				}
 
 				if (this.mod.dreamer){
 					if (this.mod.dreamer !== dreamer){
