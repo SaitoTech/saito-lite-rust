@@ -1319,7 +1319,7 @@ class Chat extends ModTemplate {
     // restrict radix-spam
     if (
       wallet_balance == 0 &&
-      this.communityGroup.id == group_id &&
+      this.communityGroup?.id == group_id &&
       this.app.BROWSER == 1 &&
       this.app.browser.stripHtml(msg).length >= 1000
     ) {
