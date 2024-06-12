@@ -72,35 +72,9 @@ class LimboMain {
 			this.app.browser.addElementToSelector(`<h3>Join an ongoing cast</h3>`, ".space-list-header");
 
 			for (let key in this.mod.dreams){
-				let profileCard = new SaitoProfile(this.app, this.mod, ".spaces-list");
 				
-				let altKey = this.mod.dreams[key]?.alt_id || key;
+				this.mod.createProfileCard(key, this.mod.dreams[key], ".spaces-list");
 
-				profileCard.reset(altKey, "", ["attendees", "speakers"]);
-
-			    if (this.mod.dreams[key]?.identifier) {
-			      profileCard.name = this.mod.dreams[key].identifier;
-			    }
-
-			    if (this.mod.dreams[key]?.description) {
-			      profileCard.description = this.mod.dreams[key].description;
-			    }
-
-			    if (this.mod.dreams[key]?.alt_id) {
-			    	profileCard.mask_key = true;
-			    }
-
-				//We won't process this array other than checking length... i hope!
-				profileCard.menu.attendees = this.mod.dreams[key].members.filter( k => k !== key );
-
-				profileCard.menu.speakers.push(0);
-				if (this.mod.dreams[key].speakers){
-					for (let i of this.mod.dreams[key].speakers){
-						profileCard.menu.speakers.push(0);
-					}
-				}
-
-				profileCard.render();
 			}
 		}
 
@@ -159,7 +133,8 @@ class LimboMain {
 				let obj = {
 					keylist: [],
 					includeCamera: true,
-					screenStream: false
+					screenStream: false,
+					mode: "camera"
 				};
 				this.mod.broadcastDream(obj);
 			}
@@ -169,7 +144,9 @@ class LimboMain {
 				let obj = {
 					keylist: [],
 					includeCamera: false,
-					screenStream: false
+					screenStream: false,
+					audio: true,
+					mode: "audio"
 				};
 				this.mod.broadcastDream(obj);
 			}
@@ -180,7 +157,8 @@ class LimboMain {
 				let obj = {
 					keylist: [],
 					includeCamera: false,
-					screenStream: true
+					screenStream: true,
+					mode: "screen"
 				};
 				this.mod.broadcastDream(obj);
 			}

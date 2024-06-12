@@ -309,42 +309,17 @@ class Limbo extends ModTemplate {
 							const dream = this.dreams[this.dreamer];
 
 							const overlay = new SaitoOverlay(this.app, this);
-							overlay.show(`<div class="saito-join-space-overlay"><div id="join-btn" class="button saito-button-primary">Listen Now</div></div>`, ()=>{
+
+							const btn_prompt = (dream.mode == "audio") ? "Listen" : "Watch";
+
+							overlay.show(`<div class="saito-join-space-overlay"><div id="join-btn" class="button saito-button-primary">${btn_prompt} Now</div></div>`, ()=>{
 								window.history.pushState('', '', `/limbo/`);
 								this.dreamer = null;
 							});
 
 							overlay.blockClose();
 
-							let profileCard = new SaitoProfile(this.app, this, ".saito-join-space-overlay");
-							
-							let profileKey = dream?.alt_id || this.dreamer;
-
-							profileCard.reset(profileKey, "", ["attendees", "speakers"]);
-
-							if (dream?.alt_id) {
-								profileCard.mask_key = true;
-							}
-							
-						    if (dream?.identifier) {
-						      profileCard.name = dream.identifier;
-						    }
-
-						    if (dream?.description) {
-						      profileCard.description = dream.description;
-						    }
-
-							//We won't process this array other than checking length... i hope!
-							profileCard.menu.attendees = dream.members.filter( k => k !== this.dreamer );
-
-							profileCard.menu.speakers.push(0);
-							if (dream.speakers){
-								for (let i of dream.speakers){
-									profileCard.menu.speakers.push(0);
-								}
-							}
-
-							profileCard.render();
+							this.createProfileCard(this.dreamer, dream, ".saito-join-space-overlay");
 
 							let btn = document.getElementById("join-btn");
 							if (btn){
@@ -365,6 +340,46 @@ class Limbo extends ModTemplate {
 			);
 		}
 	}
+
+	createProfileCard(key, dream, container){
+		
+		let profileCard = new SaitoProfile(this.app, this, container);
+		
+		let altKey = dream?.alt_id || key;
+
+		profileCard.reset(altKey, "", ["attendees", "speakers"]);
+
+	    if (dream?.identifier) {
+	      profileCard.name = dream.identifier;
+	    }
+
+	    if (dream?.description) {
+	      profileCard.description = dream.description;
+	    }
+
+	    if (dream?.alt_id) {
+	    	profileCard.mask_key = true;
+	    }
+
+	    if (dream?.mode && this[`${dream.mode}_icon`]){
+	    	profileCard.icon = `<i class="saito-overlaid-icon fa-solid ${this[`${dream.mode}_icon`]}"></i>`;	
+	    }
+
+		//We won't process this array other than checking length... i hope!
+		profileCard.menu.attendees = dream.members.filter( k => k !== key );
+
+		profileCard.menu.speakers.push(0);
+		if (dream.speakers){
+			for (let i of dream.speakers){
+				profileCard.menu.speakers.push(0);
+			}
+		}
+
+		profileCard.render();
+
+	}
+
+
 
 
 	startDream(options){

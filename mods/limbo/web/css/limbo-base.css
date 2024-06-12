@@ -70,7 +70,7 @@
 	overflow: hidden;
 }
 
-.spaces-list .saito-profile-identicon{
+.spaces-list .saito-profile-header-row .saito-identicon-box {
 	width: 7rem;
 	height: 7rem;
 }
@@ -347,20 +347,6 @@ video#local.noflip{
 
 	.limbo-sidebar{
 		border-left: unset;
-	}
-
-	.limbo-sidebar .saito-profile-cover {
-		height: 6rem;
-	}
-	.limbo-sidebar .saito-profile-identicon {
-		width: 6rem;
-		height: 6rem;
-	}
-	.limbo-sidebar .saito-profile-options-row{
-		height: 2.5rem;
-	}
-	.limbo-sidebar .saito-profile-info {
-		margin: unset;
 	}
 
 	.video-box-container-large > #connection-message {

@@ -46,7 +46,7 @@
 }
 
 
-.saito-profile-identicon {
+.saito-profile-header-row .saito-identicon-box {
   border: var(--border-thickness-identicon-square-profile) solid var(--border-color-identicon-square-profile);
   width: 10rem;
   height: 10rem;
@@ -55,6 +55,8 @@
   margin-top: -4.5rem;
   z-index: 1;
   margin-left: 1rem;
+  position: relative;
+  cursor: unset;
 }
 
 .saito-banner-edit {
@@ -162,7 +164,7 @@
 }
 
 @media screen and (max-width: 600px){
-.saito-profile-identicon {
+.saito-profile-header-row .saito-identicon-box {
   border-width: 2px;
   width: 8rem;
   height: 8rem;
