@@ -165,7 +165,7 @@ class Record extends ModTemplate {
 		if (type === "videocall") {
 			const canvas = document.createElement('canvas');
 			canvas.width = window.innerWidth;
-			canvas.height = document.querySelector('.video-container-large').clientHeight
+			canvas.height = window.innerWidth
 			const ctx = canvas.getContext('2d');
 			document.body.appendChild(canvas);
 
