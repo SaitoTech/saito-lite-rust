@@ -211,34 +211,26 @@ class Record extends ModTemplate {
 			const resizeCanvas = () => {
 				canvas.width = window.innerWidth;
 				canvas.height = window.innerHeight
-
-
 				const videoElements = document.querySelectorAll('div[id^="stream_"] video');
-
-
 				videoElements.forEach(video => {
-
-
 					video.style.objectFit = "cover";
 					video.style.width = "100%";
 					video.style.height = "100%";
 					video.style.maxWidth = "100%";
 				});
-
-
 				// Update the drawing routine to handle the new canvas size
 				drawStreamsToCanvas();
 			};
 
 			window.addEventListener('resize', resizeCanvas);
-			resizeCanvas(); // Initialize canvas size
+			// resizeCanvas(); 
 
 			const videoElements = document.querySelectorAll('div[id^="stream_"] video');
 			videoElements.forEach(video => {
 				// const stream = video.captureStream ? video.captureStream() : (video.mozCaptureStream ? video.mozCaptureStream() : null);
 				// if (stream) {
 				// 	stream.getAudioTracks().forEach(track => combinedStream.addTrack(track));
-		
+
 				// }
 				video.style.objectFit = "cover";
 				video.style.width = "100%";
@@ -246,23 +238,25 @@ class Record extends ModTemplate {
 				video.style.maxWidth = "100%";
 			});
 
+			let destination;
 			this.streamData = Array.from(videoElements).map(video => {
-		
-				if (video.id.startsWith('local')) {
-					console.log(video, "video localll")
-					video.muted = false;
-					video.volume = 1;
-					console.log(video)
-				}
 
 				const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
-				if (stream && stream.getAudioTracks().length > 0) {
-					stream.getAudioTracks().forEach(track => combinedStream.addTrack(track))
-					// combinedStream.addTrack(stream.getAudioTracks()[0]); // Assuming only one audio track per stream
+
+				if (!video.id.startsWith('local')) {
+					// console.log(video, "video localll")
+					// video.muted = false;
+					// video.volume = 1;
+					// console.log(video)
 				}
-				// if (stream && stream.getVideoTracks().length > 0) {
-				// 	combinedStream.addTrack(stream.getVideoTracks()[0]); // Assuming only one video track per stream
-				// }
+
+				const audioCtx = new AudioContext();
+				 destination = audioCtx.createMediaStreamDestination();
+				if (stream && stream.getAudioTracks().length > 0) {
+					let source  = audioCtx.createMediaStreamSource(stream)
+					source.connect(destination)
+				}
+		
 				const rect = video.getBoundingClientRect();
 				const parentID = video.parentElement.id;
 				const videoElement = document.createElement('video');
@@ -270,26 +264,16 @@ class Record extends ModTemplate {
 				videoElement.play();
 				videoElement.style.display = "none";
 				videoElement.style.objectFit = "cover";
-				// videoElement.style.backgroundSize= 'cover'
-				// videoElement.style.objectFit = "contain"
 				return { stream, rect, parentID, videoElement };
 			}).filter(data => data.stream !== null);
-			
-				try {
-				const micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-				micStream.getAudioTracks().forEach(track => combinedStream.addTrack(track));
-			} catch (err) {
-				console.error("Error accessing microphone: ", err);
-			}
 
 			let chunks = [];
-			const mimeType = 'video/webm';
-
+		
 
 			combinedStream.addTrack(canvas.captureStream(25).getVideoTracks()[0]);
-
+			combinedStream.addTrack(destination.stream.getAudioTracks()[0]);
 			this.mediaRecorder = new MediaRecorder(combinedStream, {
-				mimeType: mimeType,
+				mimeType: 'video/webm; codecs="vp8, opus"',
 				videoBitsPerSecond: 25 * 1024 * 1024,
 				audioBitsPerSecond: 320 * 1024
 			});
@@ -300,6 +284,7 @@ class Record extends ModTemplate {
 			};
 
 			this.mediaRecorder.onstop = async () => {
+				window.removeEventListener('resize', resizeCanvas)
 				const blob = new Blob(chunks, { type: 'video/webm' });
 				const url = URL.createObjectURL(blob);
 				const a = document.createElement('a');
@@ -322,37 +307,50 @@ class Record extends ModTemplate {
 			this.mediaRecorder.start();
 			drawStreamsToCanvas();
 
-		} else {
+		} 
+		else {
+			this.is_recording = true;
 			const canvas = document.createElement('canvas');
 			canvas.width = window.innerWidth;
 			canvas.height = window.innerHeight;
 			const ctx = canvas.getContext('2d');
 			document.body.appendChild(canvas);
-
 			let result = document.querySelector(container);
 
-
+			let combinedStream = new MediaStream()
+		
+			const audioCtx = new AudioContext();
+			let destination = audioCtx.createMediaStreamDestination();
+			
+		   
 			const drawStreamsToCanvas = () => {
-				// Clear the entire canvas
+				if(!this.is_recording) return;
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-				html2canvas(result).then(contentCanvas => {
+				html2canvas(result).then(contentCanvas => {			
 					ctx.drawImage(contentCanvas, 0, 0, canvas.width, canvas.height);
-					this.streamData.forEach(data => {
-						const parentElement = document.getElementById(data.parentID);
-						if (!parentElement) return;
+					// this.streamData.forEach(data => {
+					// 	const parentElement = document.getElementById(data.parentID);
+					// 	if (!parentElement) return;
 
-						const currentRect = data.rect;
+					// 	const currentRect = data.rect;
 
-						if (data.videoElement.readyState >= 2) {
-							ctx.drawImage(data.videoElement, currentRect.left, currentRect.top, currentRect.width, currentRect.height);
-						}
-						data.rect = currentRect;
-					});
-
+					// 	if (data.videoElement.readyState >= 2) {
+					// 		ctx.drawImage(data.videoElement, currentRect.left, currentRect.top, currentRect.width, currentRect.height);
+					// 	}
+					// 	data.rect = currentRect;
+					// });
 					this.animation_id = requestAnimationFrame(drawStreamsToCanvas);
 				});
 			};
+
+			function resizeCanvas() {
+				canvas.width = window.innerWidth;
+				canvas.height = window.innerHeight;
+				drawStreamsToCanvas(); // Redraw content after resize
+			}
+
+			window.addEventListener('resize', resizeCanvas);
+			// resizeCanvas(); // Initial resize and draw
 
 
 			const otherParties = this.app.modules.getRespondTos('media-request');
@@ -360,6 +358,12 @@ class Record extends ModTemplate {
 				const videoElements = document.querySelectorAll('div[id^="stream_"] video');
 				this.streamData = Array.from(videoElements).map(video => {
 					const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
+					if (stream && stream.getAudioTracks().length > 0) {
+						let source  = audioCtx.createMediaStreamSource(stream)
+						source.connect(destination)
+					}
+
+					
 					const rect = video.getBoundingClientRect();
 					const parentID = video.parentElement.id;
 					const videoElement = document.createElement('video');
@@ -367,7 +371,6 @@ class Record extends ModTemplate {
 					videoElement.play();
 					console.log(video.clientHeight)
 					// videoElement.style.display = "none";
-
 					return { stream, rect, parentID, videoElement };
 				}).filter(data => data.stream !== null)
 
@@ -377,9 +380,15 @@ class Record extends ModTemplate {
 					if (includeCamera) {
 						try {
 							this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-							this.localStream.getTracks().forEach(track => {
-								combinedStream.addTrack(track);
-							});
+							// this.localStream.getTracks().forEach(track => {
+							// 	combinedStream.addTrack(track);
+							// });
+
+							if (this.localStream && this.localStream.getAudioTracks().length > 0) {
+								let source  = audioCtx.createMediaStreamSource(this.localStream)
+								source.connect(destination)
+							}
+				 
 						} catch (error) {
 							console.error("Failed to get user media:", error);
 							alert("Failed to access camera and microphone.");
@@ -396,8 +405,6 @@ class Record extends ModTemplate {
 						videoElement.style.height = '350px';
 						this.app.browser.makeDraggable('stream_local');
 						this.app.browser.makeDraggable('stream_local');
-
-
 
 						const videoElements = document.querySelectorAll('div[id^="stream_"] video');
 						this.streamData = Array.from(videoElements).map(video => {
@@ -423,11 +430,16 @@ class Record extends ModTemplate {
 
 
 
+			combinedStream.addTrack(canvas.captureStream(25).getVideoTracks()[0]);
+			if(destination.stream.getAudioTracks().length > 1){
+				combinedStream.addTrack(destination.stream.getAudioTracks()[0]);
+			}
+
 			let chunks = [];
 			const mimeType = 'video/webm';
-			this.mediaRecorder = new MediaRecorder(canvas.captureStream(60), {
+			this.mediaRecorder = new MediaRecorder(combinedStream, {
 				mimeType: mimeType,
-				videoBitsPerSecond: 25 * 1024 * 1024,
+				videoBitsPerSecond: 10 * 1024 * 1024,
 				audioBitsPerSecond: 320 * 1024
 			});
 			this.mediaRecorder.ondataavailable = event => {
@@ -437,6 +449,9 @@ class Record extends ModTemplate {
 			};
 
 			this.mediaRecorder.onstop = async () => {
+				window.removeEventListener('resize', resizeCanvas)
+				cancelAnimationFrame(this.animation_id)
+		    	this.is_recording = false;
 				const blob = new Blob(chunks, { type: 'video/webm' });
 				const url = URL.createObjectURL(blob);
 				const a = document.createElement('a');
