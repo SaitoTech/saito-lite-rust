@@ -589,9 +589,11 @@ if (this.app.modules.moderate(newtx, this.name) != -1) {
       // Add auto-polling for new tweets, on a 5 minute interval
       // 1000 * 60 * 5
       setInterval(() => {
-        this.loadTweets("later", (tx_count) => {
-          this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
-        });
+        if (this.manager?.mode == "tweets"){
+          this.loadTweets("later", (tx_count) => {
+            this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
+          }, peer);
+        }
       }, 300000);
 
  

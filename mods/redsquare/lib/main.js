@@ -151,6 +151,7 @@ class RedSquareMain {
     });
 
     this.app.connection.on("redsquare-remove-loading-message", (message = "") => {
+      //NOTE: --> COMMENT THIS OUT TO KEEP MESSAGE DISPLAYED FOR CSS TWEAKING
       this.loader.finish(`Finished Loading!`);      
     });
 
