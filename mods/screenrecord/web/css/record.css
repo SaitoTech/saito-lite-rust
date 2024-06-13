@@ -9,6 +9,7 @@
 
 .pulsate {
     animation: pulsate 1s infinite;
+    color: red !important;
 }
 
 @keyframes pulsate {
