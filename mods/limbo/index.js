@@ -19,7 +19,7 @@ module.exports = (app, mod, build_number, og_card) => {
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="application-name" content="saito.io ${mod.returnSlug()}" />
-    <meta name="apple-mobile-web-app-title" content="Saito Talk" />
+    <meta name="apple-mobile-web-app-title" content="${mod.returnName()}" />
     <meta name="theme-color" content="#FFFFFF" />
     <meta name="msapplication-navbutton-color" content="#FFFFFF" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -51,7 +51,7 @@ module.exports = (app, mod, build_number, og_card) => {
     <link rel="stylesheet" href="/saito/lib/pace/pace-theme.min.css">
   
   
-    <title>Saito Limbo</title>
+    <title>${mod.returnName()}</title>
   
     <script type="text/javascript" src="/saito/lib/jquery/jquery-3.2.1.min.js"></script>
     

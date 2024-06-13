@@ -16,12 +16,14 @@ class Limbo extends ModTemplate {
 	constructor(app) {
 		super(app);
 		this.app = app;
+		this.slug = "limbo";
 		this.name = 'Limbo';
+		this.appname = "Saito Space";
 		this.localStream = null; // My Video or Audio Feed
 		this.combinedStream = null;
 
 		this.description =
-			'a shared dream space allowing you to "peercast" voice or video with no middleman software';
+			'a shared dream space allowing you to "swarmcast" voice or video with no middleman software';
 		this.categories = 'Utilities Communications';
 
 		this.styles = ['/videocall/style.css', '/limbo/style.css'];
@@ -38,9 +40,9 @@ class Limbo extends ModTemplate {
 
 		this.social = {
 			twitter: '@SaitoOfficial',
-			title: '🟥 Saito Limbo',
+			title: `🟥 ${this.returnName()}`,
 			url: 'https://saito.io/limbo/',
-			description: 'Voice and video "peercasting" with no middleman',
+			description: 'Voice and video "swarmcasting" with no middleman',
 			image: 'https://saito.tech/wp-content/uploads/2023/11/videocall-300x300.png',
 		};
 
@@ -538,7 +540,6 @@ class Limbo extends ModTemplate {
 			this.controls.render(this.combinedStream, screenStream);
 		}
 
-		this.copyInviteLink(screenStream);
 		this.toggleNotification(true, this.publicKey);
 		this.attachMetaEvents();
 
@@ -1204,7 +1205,7 @@ class Limbo extends ModTemplate {
 	copyInviteLink(truthy = false) {
 
 		let data = {
-			name: 'Limbo',
+			name: this.appname,
 			path: '/limbo/',
 			dream: this.app.crypto.stringToBase64(this.dreamer)
 		};
