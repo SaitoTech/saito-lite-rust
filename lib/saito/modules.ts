@@ -415,7 +415,7 @@ class Mods {
 
 	moderateAddress(publickey="") {
 		let newtx = new Transaction();
-		newtx.from[0].publicKey = publickey;
+		newtx.addFrom(publickey);
 		return this.moderate(newtx);
 	}
 
