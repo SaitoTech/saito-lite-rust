@@ -140,8 +140,8 @@ class Record extends ModTemplate {
 		if (offsetX > 1) offsetX = 1;
 		if (offsetY > 1) offsetY = 1;
 
-		let iw = img.videoWidth,
-			ih = img.videoHeight,
+		let iw = img.videoWidth || img.width,
+			ih = img.videoHeight || img.height,
 			r = Math.min(w / iw, h / ih),
 			nw = iw * r,
 			nh = ih * r,
@@ -226,6 +226,9 @@ class Record extends ModTemplate {
 		});
 
 
+		document.querySelectorAll('canvas').forEach(canvas => {
+			canvas.parentElement.removeChild(document.querySelector('canvas'))
+		})
 		let combinedStream = new MediaStream();
 
 
@@ -378,13 +381,12 @@ class Record extends ModTemplate {
 		} 
 		else {
 			this.is_recording = true;
-			const canvas = document.createElement('canvas');
-			canvas.width = window.innerWidth;
-			canvas.height = window.innerHeight;
-			const ctx = canvas.getContext('2d');
-			document.body.appendChild(canvas);
 			let result = document.querySelector(container);
-
+			const canvas = document.createElement('canvas');
+			canvas.width = result.clientWidth;
+			canvas.height = result.clientHeight;
+			const ctx = canvas.getContext('2d');
+			document.body.appendChild(canvas)
 			let combinedStream = new MediaStream()
 		
 			const audioCtx = new AudioContext();
@@ -394,8 +396,10 @@ class Record extends ModTemplate {
 			const drawStreamsToCanvas = () => {
 				if(!this.is_recording) return;
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				html2canvas(result).then(contentCanvas => {			
-					ctx.drawImage(contentCanvas, 0, 0, canvas.width, canvas.height);
+				html2canvas(result).then(contentCanvas => {		
+					this.drawImageProp(ctx, contentCanvas, 0, 0, canvas.width, canvas.height)	
+					// ctx.drawImage(contentCanvas, 0, 0, canvas.width, canvas.height )
+					// this.drawImageProp(contentCanvas, 0, 0, canvas.width, canvas.height);
 					// this.streamData.forEach(data => {
 					// 	const parentElement = document.getElementById(data.parentID);
 					// 	if (!parentElement) return;
@@ -408,17 +412,19 @@ class Record extends ModTemplate {
 					// 	data.rect = currentRect;
 					// });
 					this.animation_id = requestAnimationFrame(drawStreamsToCanvas);
+				
 				});
 			};
 
 			function resizeCanvas() {
-				canvas.width = window.innerWidth;
-				canvas.height = window.innerHeight;
+			let result = document.querySelector(container);
+			canvas.width = result.clientWidth;
+			canvas.height = result.clientHeight;
 				drawStreamsToCanvas(); // Redraw content after resize
 			}
 
 			window.addEventListener('resize', resizeCanvas);
-			// resizeCanvas(); // Initial resize and draw
+			resizeCanvas(); // Initial resize and draw
 
 
 			const otherParties = this.app.modules.getRespondTos('media-request');
@@ -542,7 +548,7 @@ class Record extends ModTemplate {
 			};
 
 			this.mediaRecorder.start();
-			drawStreamsToCanvas();
+			// drawStreamsToCanvas();
 		}
 
 
@@ -622,6 +628,8 @@ class Record extends ModTemplate {
 		if (recordButtonGame) {
 			recordButtonGame.textContent = "record game";
 		}
+
+	
 
 		// window.removeEventListener('resize', updateDimensions);
 		// window.removeEventListener('orientationchange', updateDimensions);
