@@ -1574,8 +1574,10 @@ if (this.game.options.scenario != "is_testing") {
 	    this.game.state.explorations[idx].prize = "St. Lawrence";
 	    let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the St. Lawrence (1VP)";
 	    this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	    this.game.queue.push("display_custom_overlay\tstlawrence\t"+msg);
+}
 	  }
 	  if (bonus === 'greatlakes') {
 	    this.game.state.explorations[idx].resolved = 1;
@@ -1585,8 +1587,10 @@ if (this.game.options.scenario != "is_testing") {
 	    this.game.state.explorations[idx].prize = "Great Lakes";
 	    let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Great Lakes (1VP)";
 	    this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	    this.game.queue.push("display_custom_overlay\tgreatlakes\t"+msg);
+}
 	  }
 	  if (bonus === 'mississippi') {
 	    this.game.state.explorations[idx].resolved = 1;
@@ -1596,8 +1600,10 @@ if (this.game.options.scenario != "is_testing") {
 	    this.game.state.explorations[idx].prize = "Mississippi";
 	    let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Mississippi (1VP)";
 	    this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	    this.game.queue.push("display_custom_overlay\tmississippi\t"+msg);
+}
 	  }
 	  if (bonus === 'pacificstrait') {
 	    this.game.state.explorations[idx].resolved = 1;
@@ -1607,8 +1613,10 @@ if (this.game.options.scenario != "is_testing") {
 	    this.game.state.explorations[idx].prize = "Pacific Strait";
 	    let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Pacific Strait (2VP)";
 	    this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	    this.game.queue.push("display_custom_overlay\tpacificstrait\t"+msg);
+}
 	  }
 	  if (bonus === 'amazon') {
 	    this.game.state.explorations[idx].resolved = 1;
@@ -1618,8 +1626,10 @@ if (this.game.options.scenario != "is_testing") {
 	    this.game.state.explorations[idx].prize = "Amazon";
 	    let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Amazon (2VP)";
 	    this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	    this.game.queue.push("display_custom_overlay\tamazon\t"+msg);
+}
 	  }
 	  if (bonus === 'circumnavigation') {
 
@@ -1703,8 +1713,10 @@ if (this.game.options.scenario != "is_testing") {
 	      this.game.state.explorations[idx].prize = "lost at sea";
 	      let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " lost at sea...";
 	      this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	      this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	      this.game.queue.push("display_custom_overlay\tlost-at-sea\t"+msg);
+}
 	    }
 	  }
 
@@ -2004,8 +2016,10 @@ if (this.game.options.scenario != "is_testing") {
 	        this.game.state.conquests[idx].active = 1;
 	        let msg = this.returnFactionName(faction) + ": " + this.returnConquistadorName(conquistador) + " conquers the Inca (2VP)";
 	        this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	        this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	        this.game.queue.push("display_custom_overlay\tinca\t"+msg);
+}
 	      } else {
 		while (hits > 10) { hits--; }
 	      }
@@ -2018,8 +2032,10 @@ if (this.game.options.scenario != "is_testing") {
 	        this.game.state.conquests[idx].active = 1;
 	        let msg = this.returnFactionName(faction) + ": " + this.returnConquistadorName(conquistador) + " conquers the Aztec (2VP)";
 	        this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	        this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	        this.game.queue.push("display_custom_overlay\taztec\t"+msg);
+}
 	      } else { 
 		while (hits >= 10) { hits--; }
 	      }
@@ -2032,8 +2048,10 @@ if (this.game.options.scenario != "is_testing") {
 	        this.game.state.conquests[idx].active = 1;
 	        let msg = this.returnFactionName(faction) + ": " + this.returnConquistadorName(conquistador) + " conquers the Maya (1VP)";
 	        this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	        this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	        this.game.queue.push("display_custom_overlay\tmaya\t"+msg);
+}
 	      } else {
 		this.game.state.conquests[idx].prize = "-";
 	        this.updateLog(this.returnFactionName(faction) + ": " + this.returnConquistadorName(conquistador) + " makes no conquest");
@@ -2085,8 +2103,10 @@ if (this.game.options.scenario != "is_testing") {
 	        this.game.state.explorations[idx].prize = "Mississippi";
 	        let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Mississippi (1VP)";
 	        this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	        this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	        this.game.queue.push("display_custom_overlay\tmississippi\t"+msg);
+}
 	      } else { 
 		hits--;
 	      }
@@ -2098,8 +2118,10 @@ if (this.game.options.scenario != "is_testing") {
 	        this.game.state.explorations[idx].prize = "Great Lakes";
 	        let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Great Lakes (1VP)";
 	        this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	        this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	        this.game.queue.push("display_custom_overlay\tgreatlakes\t"+msg);
+}
 	      } else { 
 		hits--;
 	      }
@@ -2111,8 +2133,10 @@ if (this.game.options.scenario != "is_testing") {
 	        this.game.state.explorations[idx].prize = "St. Lawrence";
 	        let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the St. Lawrence (1VP)";
 	        this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	        this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	        this.game.queue.push("display_custom_overlay\tstlawrence\t"+msg);
+}
 	      } else {
 	        this.game.state.explorations[idx].prize = "-";
 	        this.updateLog(this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " makes no discovery");
@@ -4798,6 +4822,58 @@ console.log("INTO DIET OF WORMS 3");
 	  this.updateStatusWithOptions(msg, html);
 	  let deck = his_self.returnDeck(true);
 
+	  //
+	  // this removes other options like Foul Weather after N seconds, so that
+	  // the game is not significantly slowed if a player refuses to take action. 
+	  //
+	  if (this.isGameHalted() != 1) {
+	  var true_if_counter_or_acknowledge_cleared = false;
+	  setTimeout(() => {
+
+	    if (true_if_counter_or_acknowledge_cleared) { return; }
+
+	    let my_specific_game_id = his_self.game.id;
+            his_self.is_halted = 1;
+            his_self.halted = 1;
+            his_self.game.queue[his_self.game.queue.length-1] = "HALTED\tWaiting for Game to Continue\t"+his_self.publicKey;
+            his_self.hud.back_button = false;
+                  
+            let html = '<ul><li class="option acknowledge" id="ok">acknowledge</li></ul>';
+            his_self.updateStatusWithOptions(msg, html);
+                    
+	    $('.option').off();
+            $('.option').on('click', function () {
+
+		    $('.option').off();
+
+                    let action = $(this).attr("id");
+                
+                    his_self.game = his_self.loadGame(my_specific_game_id);
+                    
+                    // tell game engine we can move
+                    his_self.is_halted = 0;
+                    his_self.halted = 0;
+                    his_self.gaming_active = 0;
+            
+                    his_self.updateStatus('continuing...');
+          
+                    //
+                    // our own move will have been ticked into the future queue, along with
+                    // anyone else's so we skip restartQueue() which will freeze if it sees
+                    // that we have moves still pending, but should clear if it now finds
+                    // UNHALT is the latest instruction and this resolve is coming from us!
+                    //
+                    his_self.processFutureMoves();
+
+	    });
+
+            his_self.addMove("RESOLVE\t"+his_self.publicKey);
+            his_self.endTurn();
+            return 0;
+
+	  }, 7500);
+	  }
+
 	  $('.option').off();
 	  $('.option').on('mouseover', function() {
             let action2 = $(this).attr("id");
@@ -4828,6 +4904,12 @@ console.log("INTO DIET OF WORMS 3");
             let action2 = $(this).attr("id");
 
 	    //
+	    // mark that we have interacted
+	    //
+	    true_if_counter_or_acknowledge_cleared = true;
+
+
+	    //
 	    // prevent blocking
 	    //
 	    his_self.cardbox.hide();
@@ -4840,9 +4922,7 @@ console.log("INTO DIET OF WORMS 3");
                 if (action2 == menu_triggers[i]) {
                   $(this).remove();
 		  his_self.updateStatus("acknowledged...");
-	          // manually add, to avoid re-processing
 	          if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
-	            //his_self.game.confirms_needed[his_self.game.player-1] = 2;
                     his_self.prependMove("RESOLVE\t"+his_self.publicKey);
 		    z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
                   }
@@ -4852,6 +4932,7 @@ console.log("INTO DIET OF WORMS 3");
             }
 
             if (action2 == "ok") {
+
 	      //
 	      // this ensures we clear regardless of choice
 	      //
@@ -11404,7 +11485,7 @@ alert("TRIGGERING WITH FHAND_IDX of -1...");
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 1;
+cardnum = 8;
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 1; }
 //if (f == "protestant") { cardnum = 0; }

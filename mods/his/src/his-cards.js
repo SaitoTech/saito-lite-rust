@@ -4991,7 +4991,7 @@ console.log("selected: " + spacekey);
               break;
             }
           }
-          return { faction : f , event : '031', html : `<li class="option" id="031">foul weather (${f})</li>` };
+          return { faction : f , event : '031', html : `<li class="option blink" id="031">foul weather (${f})</li>` };
         }
         return {};
       },
@@ -5108,7 +5108,7 @@ console.log("selected: " + spacekey);
 	  }
 
 	  if (includes_army_leader) {
-            return { faction : f , event : '032', html : '<li class="option" id="032">play gout</li>' };
+            return { faction : f , event : '032', html : '<li class="option blink" id="032">play gout</li>' };
 	  } 
        }
         return {};
@@ -5279,7 +5279,7 @@ console.log("selected: " + spacekey);
 	      break;
 	    }
 	  }
-          return { faction : f , event : '033', html : `<li class="option" id="033">landsknechts (${f})</li>` };
+          return { faction : f , event : '033', html : `<li class="option blink" id="033">landsknechts (${f})</li>` };
         }
         return {};
       },
@@ -5383,7 +5383,7 @@ console.log("selected: " + spacekey);
               i = 100;
             }
 	    if (his_self.game.state.naval_battle.attacker_faction != f && his_self.game.state.naval_battle.defender-faction != f) { return {}; }
-            return { faction : f , event : '001', html : `<li class="option" id="001">janissaries (${f})</li>` };
+            return { faction : f , event : '034', html : `<li class="option" id="034">professional rowers (${f})</li>` };
           }
         }
         return {};
@@ -5427,7 +5427,7 @@ console.log("selected: " + spacekey);
             if (his_self.game.deck[0].fhand[i].includes('035')) {
               f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               i = 100;
-              return { faction : f , event : '035', html : `<li class="option" id="035">siege artillery (${f})</li>` };
+              return { faction : f , event : '035', html : `<li class="option blink" id="035">siege artillery (${f})</li>` };
             }
           }
         }   
@@ -5495,7 +5495,7 @@ console.log("selected: " + spacekey);
             }
           }
 	  if (f != "") {
-            return { faction : f , event : '036', html : `<li class="option" id="036">swiss mercenaries (${f})</li>` };
+            return { faction : f , event : '036', html : `<li class="option blink" id="036">swiss mercenaries (${f})</li>` };
           }
         }
         return {};
@@ -5599,7 +5599,7 @@ console.log("selected: " + spacekey);
 	  if (cardobj.type === "mandatory") { return {}; }
 	  if (cardobj.type === "combat") { return {}; }
 
-          return { faction : "protestant" , event : '037', html : `<li class="option" id="037">wartburg (protestant)</li>` };
+          return { faction : "protestant" , event : '037', html : `<li class="option blink" id="037">wartburg (protestant)</li>` };
         }
         return {};
       },
@@ -5681,7 +5681,7 @@ console.log("selected: " + spacekey);
               break;
             }
           }
-          return { faction : f , event : '038', html : `<li class="option" id="038">halley's comet (${f})</li>` };
+          return { faction : f , event : '038', html : `<li class="option blink" id="038">halley's comet (${f})</li>` };
         }
         return {};
       },
@@ -11902,7 +11902,7 @@ console.log("selected: " + spacekey);
               break;
             }
           }
-          return { faction : f , event : '115', html : `<li class="option" id="115">thomas cromwell (${f})</li>` };
+          return { faction : f , event : '115', html : `<li class="option blink" id="115">thomas cromwell (${f})</li>` };
         }
         return {};
       },
