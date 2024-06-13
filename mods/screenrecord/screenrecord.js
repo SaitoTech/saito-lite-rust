@@ -117,7 +117,7 @@ class Record extends ModTemplate {
 
 						if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV' && node.id.startsWith('stream_')) {
 
-							
+
 							const videos = node.querySelectorAll('video');
 							videos.forEach(video => {
 								const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
@@ -171,73 +171,98 @@ class Record extends ModTemplate {
 
 			const drawStreamsToCanvas = () => {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
-			
 				this.streamData.forEach(data => {
 					const parentElement = document.getElementById(data.parentID);
 					if (!parentElement) return;
-			
 
 					const videoWidth = data.videoElement.videoWidth;
 					const videoHeight = data.videoElement.videoHeight;
-			
-
 					const videoAspectRatio = videoWidth / videoHeight;
-			
 
 					const rect = parentElement.getBoundingClientRect();
-			
-
 					const scaleX = canvas.width / window.innerWidth;
 					const scaleY = canvas.height / window.innerHeight;
-			
 
 					let drawWidth = rect.width * scaleX;
 					let drawHeight = drawWidth / videoAspectRatio;
-			
 
+					// Adjust dimensions to fit within parent element's boundaries
 					if (drawHeight > rect.height * scaleY) {
 						drawHeight = rect.height * scaleY;
 						drawWidth = drawHeight * videoAspectRatio;
 					}
-			
+
+					// Calculate centered position on the canvas
 					const drawX = rect.left * scaleX + (rect.width * scaleX - drawWidth) / 2;
 					const drawY = rect.top * scaleY + (rect.height * scaleY - drawHeight) / 2;
-			
+
+					// Draw the video on the canvas
 					if (data.videoElement.readyState >= 2) {
 						ctx.drawImage(data.videoElement, drawX, drawY, drawWidth, drawHeight);
 					}
 				});
-			
-				this.animation_id=requestAnimationFrame(drawStreamsToCanvas);
+
+				requestAnimationFrame(drawStreamsToCanvas);
 			};
-			
-			
-			
+
+
+
+
 			const resizeCanvas = () => {
 				canvas.width = window.innerWidth;
 				canvas.height = window.innerHeight
-			
+
+
+				const videoElements = document.querySelectorAll('div[id^="stream_"] video');
+
+
+				videoElements.forEach(video => {
+
+
+					video.style.objectFit = "cover";
+					video.style.width = "100%";
+					video.style.height = "100%";
+					video.style.maxWidth = "100%";
+				});
+
+
 				// Update the drawing routine to handle the new canvas size
 				drawStreamsToCanvas();
 			};
-			
+
 			window.addEventListener('resize', resizeCanvas);
 			resizeCanvas(); // Initialize canvas size
-		
-			
-	
+
 			const videoElements = document.querySelectorAll('div[id^="stream_"] video');
-	
-			
 			videoElements.forEach(video => {
-				// video.style.objectFit = "cover";
-				// video.style.width = "100%";
-				// video.style.height = "100%";
-				// video.style.maxWidth = "100%";
+				// const stream = video.captureStream ? video.captureStream() : (video.mozCaptureStream ? video.mozCaptureStream() : null);
+				// if (stream) {
+				// 	stream.getAudioTracks().forEach(track => combinedStream.addTrack(track));
+		
+				// }
+				video.style.objectFit = "cover";
+				video.style.width = "100%";
+				video.style.height = "100%";
+				video.style.maxWidth = "100%";
 			});
-			
+
 			this.streamData = Array.from(videoElements).map(video => {
+		
+				if (video.id.startsWith('local')) {
+					console.log(video, "video localll")
+					video.muted = false;
+					video.volume = 1;
+					console.log(video)
+				}
+
 				const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
+				if (stream && stream.getAudioTracks().length > 0) {
+					stream.getAudioTracks().forEach(track => combinedStream.addTrack(track))
+					// combinedStream.addTrack(stream.getAudioTracks()[0]); // Assuming only one audio track per stream
+				}
+				// if (stream && stream.getVideoTracks().length > 0) {
+				// 	combinedStream.addTrack(stream.getVideoTracks()[0]); // Assuming only one video track per stream
+				// }
 				const rect = video.getBoundingClientRect();
 				const parentID = video.parentElement.id;
 				const videoElement = document.createElement('video');
@@ -247,11 +272,23 @@ class Record extends ModTemplate {
 				videoElement.style.objectFit = "cover";
 				// videoElement.style.backgroundSize= 'cover'
 				// videoElement.style.objectFit = "contain"
-				return { stream, rect, parentID, videoElement};
+				return { stream, rect, parentID, videoElement };
 			}).filter(data => data.stream !== null);
+			
+				try {
+				const micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+				micStream.getAudioTracks().forEach(track => combinedStream.addTrack(track));
+			} catch (err) {
+				console.error("Error accessing microphone: ", err);
+			}
+
 			let chunks = [];
 			const mimeType = 'video/webm';
-			this.mediaRecorder = new MediaRecorder(canvas.captureStream(25), {
+
+
+			combinedStream.addTrack(canvas.captureStream(25).getVideoTracks()[0]);
+
+			this.mediaRecorder = new MediaRecorder(combinedStream, {
 				mimeType: mimeType,
 				videoBitsPerSecond: 25 * 1024 * 1024,
 				audioBitsPerSecond: 320 * 1024
@@ -303,11 +340,11 @@ class Record extends ModTemplate {
 					ctx.drawImage(contentCanvas, 0, 0, canvas.width, canvas.height);
 					this.streamData.forEach(data => {
 						const parentElement = document.getElementById(data.parentID);
-						if (!parentElement) return; 
+						if (!parentElement) return;
 
 						const currentRect = data.rect;
-					
-						if (data.videoElement.readyState >= 2) { 
+
+						if (data.videoElement.readyState >= 2) {
 							ctx.drawImage(data.videoElement, currentRect.left, currentRect.top, currentRect.width, currentRect.height);
 						}
 						data.rect = currentRect;
@@ -340,6 +377,9 @@ class Record extends ModTemplate {
 					if (includeCamera) {
 						try {
 							this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+							this.localStream.getTracks().forEach(track => {
+								combinedStream.addTrack(track);
+							});
 						} catch (error) {
 							console.error("Failed to get user media:", error);
 							alert("Failed to access camera and microphone.");
@@ -418,8 +458,9 @@ class Record extends ModTemplate {
 
 			this.mediaRecorder.start();
 			drawStreamsToCanvas();
-
 		}
+
+
 
 		this.localStream = null;
 		this.externalMediaControl = false;
