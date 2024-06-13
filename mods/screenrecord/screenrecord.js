@@ -239,6 +239,7 @@ class Record extends ModTemplate {
 			});
 
 			let destination;
+			const audioCtx = new AudioContext();
 			this.streamData = Array.from(videoElements).map(video => {
 
 				const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
@@ -250,7 +251,7 @@ class Record extends ModTemplate {
 					// console.log(video)
 				}
 
-				const audioCtx = new AudioContext();
+				
 				 destination = audioCtx.createMediaStreamDestination();
 				if (stream && stream.getAudioTracks().length > 0) {
 					let source  = audioCtx.createMediaStreamSource(stream)
@@ -266,6 +267,20 @@ class Record extends ModTemplate {
 				videoElement.style.objectFit = "cover";
 				return { stream, rect, parentID, videoElement };
 			}).filter(data => data.stream !== null);
+
+			try{
+			this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+		
+			if (this.localStream && this.localStream.getAudioTracks().length > 0) {
+				let source  = audioCtx.createMediaStreamSource(this.localStream)
+				source.connect(destination)
+			}
+
+		} catch (error) {
+			console.error("Failed to get user media:", error);
+			alert("Failed to access camera and microphone.");
+			return;
+		}
 
 			let chunks = [];
 		
@@ -518,17 +533,12 @@ class Record extends ModTemplate {
 
 
 	isToolbarVisible() {
-
 		const toolbarVisible = window.outerHeight - window.innerHeight > 50;
 		console.log(window.outerHeight, window.innerHeight, "Is titlebar")
 		return toolbarVisible;
 	}
 
-
-
-
 	async stopRecording() {
-
 		if (this.mediaRecorder) {
 			this.mediaRecorder.stop();
 			this.mediaRecorder = null;
