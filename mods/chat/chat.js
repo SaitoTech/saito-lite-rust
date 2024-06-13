@@ -98,10 +98,15 @@ class Chat extends ModTemplate {
     });
 
     this.app.connection.on('chat-message-user', (pkey, message) => {
-      let group = this.returnOrCreateChatGroupFromMembers([
-        this.publicKey,
-        pkey
-      ]);
+      let group;
+      if (pkey.toLowerCase() == "community"){
+        group = this.returnCommunityChat();
+      }else{
+        group = this.returnOrCreateChatGroupFromMembers([
+          this.publicKey,
+          pkey
+        ]);
+      }
 
       this.createChatTransaction(group.id, message);
     });
