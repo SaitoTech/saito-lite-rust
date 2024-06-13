@@ -177,6 +177,7 @@ class Record extends ModTemplate {
     async startRecording(container, members = [], callbackAfterRecord = null, type = "videocall") {
         let startRecording = await sconfirm('Do you  want to start recording?');
         if (!startRecording) return;
+		this.is_recording = true;
         this.observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.type === 'childList') {
@@ -242,6 +243,7 @@ class Record extends ModTemplate {
             document.body.appendChild(canvas);
 
             const drawStreamsToCanvas = () => {
+				if(!this.is_recording) return;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 this.streamData.forEach(data => {
                     const parentElement = document.getElementById(data.parentID);
@@ -382,7 +384,6 @@ class Record extends ModTemplate {
 
         } 
         else {
-            this.is_recording = true;
             let result = document.querySelector(container);
             const canvas = document.createElement('canvas');
             canvas.width = result.clientWidth;
@@ -554,7 +555,7 @@ class Record extends ModTemplate {
         }
 
 
-
+	
         this.localStream = null;
         this.externalMediaControl = false;
         this.updateUIForRecordingStart()
@@ -633,6 +634,7 @@ class Record extends ModTemplate {
 
     
 
+		this.is_recording = false
         // window.removeEventListener('resize', updateDimensions);
         // window.removeEventListener('orientationchange', updateDimensions);
 
