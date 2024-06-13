@@ -17,7 +17,8 @@ class Record extends ModTemplate {
 
         this.styles = ['/saito/saito.css', '/record/style.css'];
         this.interval = null;
-        this.streamData = []
+        this.streamData = [];
+		
     }
 
     respondTo(type, obj) {
@@ -166,7 +167,14 @@ class Record extends ModTemplate {
         if (ch > ih) ch = ih;
 
         ctx.drawImage(img, cx, cy, cw, ch, x, y, w, h);
-
+		
+	
+			const logoWidth = 100;
+			const logoHeight = 100;
+			const logoX = ctx.canvas.width - logoWidth - 10; // 10 pixels from the right edge
+			const logoY = ctx.canvas.height - logoHeight - 10; // 10 pixels from the bottom edge
+			ctx.drawImage(this.logo, logoX, logoY, logoWidth, logoHeight);
+		
         console.log(img, cx, cy, cw, ch, x, y, w, h)
         console.log('drawing image prop')
     
@@ -177,65 +185,65 @@ class Record extends ModTemplate {
     async startRecording(container, members = [], callbackAfterRecord = null, type = "videocall") {
         let startRecording = await sconfirm('Do you  want to start recording?');
         if (!startRecording) return;
+		this.logo = new Image();
+		this.logo.src = '/saito/img/logo.svg'; 
 		this.is_recording = true;
-        this.observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'childList') {
-                    mutation.addedNodes.forEach(node => {
-
-                        if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV' && node.id.startsWith('stream_')) {
-
-
-                            const videos = node.querySelectorAll('video');
-                            videos.forEach(video => {
-                                const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
-                                const rect = video.getBoundingClientRect();
-                                const parentID = video.parentElement.id;
-                                const videoElement = document.createElement('video');
-                                videoElement.srcObject = stream;
-                                videoElement.muted = true;
-                                videoElement.play();
-
-                                this.streamData.push({ stream, rect, parentID, videoElement });
-                            });
-                        }
-                    });
-                }
-                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                    this.streamData.forEach(data => {
-                        if (data.parentID === mutation.target.id) {
-                            data.rect = mutation.target.getBoundingClientRect();
-                        }
-                    });
-                }
-
-                if (mutation.removedNodes.length > 0) {
-                    mutation.removedNodes.forEach(node => {
-
-                        let index = this.streamData.findIndex(data => data.videoElement === node || data.videoElement.parentElement === node);
-                        if (index !== -1) {
-                            this.streamData.splice(index, 1);
-                        }
-                    });
-                }
-            });
-        });
-
-        this.observer.observe(document.body, {
-            attributes: true,
-            childList: true,
-            subtree: true,
-            attributeFilter: ['style']
-        });
-
-
         document.querySelectorAll('canvas').forEach(canvas => {
             canvas.parentElement.removeChild(document.querySelector('canvas'))
         })
         let combinedStream = new MediaStream();
 
-
         if (type === "videocall") {
+			this.observer = new MutationObserver((mutations) => {
+				mutations.forEach((mutation) => {
+					if (mutation.type === 'childList') {
+						mutation.addedNodes.forEach(node => {
+	
+							if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV' && node.id.startsWith('stream_')) {
+	
+	
+								const videos = node.querySelectorAll('video');
+								videos.forEach(video => {
+									const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
+									const rect = video.getBoundingClientRect();
+									const parentID = video.parentElement.id;
+									const videoElement = document.createElement('video');
+									videoElement.srcObject = stream;
+									videoElement.muted = true;
+									videoElement.play();
+	
+									this.streamData.push({ stream, rect, parentID, videoElement });
+								});
+							}
+						});
+					}
+					if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+						this.streamData.forEach(data => {
+							if (data.parentID === mutation.target.id) {
+								data.rect = mutation.target.getBoundingClientRect();
+							}
+						});
+					}
+	
+					if (mutation.removedNodes.length > 0) {
+						mutation.removedNodes.forEach(node => {
+	
+							let index = this.streamData.findIndex(data => data.videoElement === node || data.videoElement.parentElement === node);
+							if (index !== -1) {
+								this.streamData.splice(index, 1);
+							}
+						});
+					}
+				});
+			});
+	
+			this.observer.observe(document.body, {
+				attributes: true,
+				childList: true,
+				subtree: true,
+				attributeFilter: ['style']
+			});
+	
             const canvas = document.createElement('canvas');
             canvas.width = window.innerWidth;
             canvas.height = window.innerWidth
@@ -260,10 +268,6 @@ class Record extends ModTemplate {
                 this.animation_id = requestAnimationFrame(drawStreamsToCanvas);
             };
 
-
-
-
-
             const resizeCanvas = () => {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight
@@ -277,7 +281,6 @@ class Record extends ModTemplate {
                 // Update the drawing routine to handle the new canvas size
                 drawStreamsToCanvas();
             };
-
             window.addEventListener('resize', resizeCanvas);
             resizeCanvas(); 
 
@@ -390,12 +393,10 @@ class Record extends ModTemplate {
             canvas.height = result.clientHeight;
             const ctx = canvas.getContext('2d');
             document.body.appendChild(canvas)
-            let combinedStream = new MediaStream()
-        
+
             const audioCtx = new AudioContext();
             let destination = audioCtx.createMediaStreamDestination();
-            
-           
+        
             const drawStreamsToCanvas = () => {
                 if(!this.is_recording) return;
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -438,9 +439,7 @@ class Record extends ModTemplate {
                     if (stream && stream.getAudioTracks().length > 0) {
                         let source  = audioCtx.createMediaStreamSource(stream)
                         source.connect(destination)
-                    }
-
-                    
+                    }      
                     const rect = video.getBoundingClientRect();
                     const parentID = video.parentElement.id;
                     const videoElement = document.createElement('video');
@@ -485,21 +484,34 @@ class Record extends ModTemplate {
                         this.app.browser.makeDraggable('stream_local');
                         this.app.browser.makeDraggable('stream_local');
 
-                        const videoElements = document.querySelectorAll('div[id^="stream_"] video');
-                        this.streamData = Array.from(videoElements).map(video => {
-                            const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
-                            const rect = video.getBoundingClientRect();
-                            const parentID = video.parentElement.id;
-                            console.log('stream parent id', parentID)
-                            const videoElement = document.createElement('video');
-                            videoElement.srcObject = stream;
-                            videoElement.play();
-                            videoElement.style.display = "none";
+                        // const videoElements = document.querySelectorAll('div[id^="stream_"] video');
+                        // this.streamData = Array.from(videoElements).map(video => {
+                        //     const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
+                        //     const rect = video.getBoundingClientRect();
+                        //     const parentID = video.parentElement.id;
+                        //     console.log('stream parent id', parentID)
+                        //     const videoElement = document.createElement('video');
+                        //     videoElement.srcObject = stream;
+						// 	videoElement.muted = true;
+                        //     videoElement.play();
+                        //     videoElement.style.display = "none";
 
-                            return { stream, rect, parentID, videoElement };
-                        }).filter(data => data.stream !== null);
+                        //     return { stream, rect, parentID, videoElement };
+                        // }).filter(data => data.stream !== null);
                     } else {
-                        this.localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+						try {
+							this.localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+							if (this.localStream && this.localStream.getAudioTracks().length > 0) {
+								let source  = audioCtx.createMediaStreamSource(this.localStream)
+								source.connect(destination)
+							}
+						} catch (error) {
+							console.error("Failed to get user media:", error);
+                            alert("Failed to access camera and microphone.");
+                            return;
+						}
+                       
+			 
                     }
                 } catch (error) {
                     console.error('Access to user media denied: ', error);
@@ -510,14 +522,14 @@ class Record extends ModTemplate {
 
 
             combinedStream.addTrack(canvas.captureStream(25).getVideoTracks()[0]);
-            if(destination.stream.getAudioTracks().length > 1){
+            if(destination.stream.getAudioTracks().length > 0){
                 combinedStream.addTrack(destination.stream.getAudioTracks()[0]);
             }
 
             let chunks = [];
             const mimeType = 'video/webm';
             this.mediaRecorder = new MediaRecorder(combinedStream, {
-                mimeType: mimeType,
+				mimeType: 'video/webm; codecs="vp8, opus"',
                 videoBitsPerSecond: 10 * 1024 * 1024,
                 audioBitsPerSecond: 320 * 1024
             });
@@ -551,7 +563,7 @@ class Record extends ModTemplate {
             };
 
             this.mediaRecorder.start();
-            // drawStreamsToCanvas();
+            drawStreamsToCanvas();
         }
 
 
