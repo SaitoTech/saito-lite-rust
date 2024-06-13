@@ -88,7 +88,7 @@ class DreamControls{
 		if (document.querySelector(".dream-controls .members-control")){
 			document.querySelector(".dream-controls .members-control").onclick = () => {
 				const contactList = new ContactsList(this.app, this.mod, false);
-				contactList.title = "Peercast Audience";
+				contactList.title = "Attendees";
 				contactList.render(this.mod.dreams[this.mod.dreamer].members.filter((key) => key !== this.mod.dreamer));
 			}
 		}
@@ -195,7 +195,7 @@ class DreamControls{
 
     for (const mod of this.app.modules.mods) {
       let item = mod.respondTo('limbo-actions', {
-        group_name: this.app.keychain.returnUsername(this.mod.dreamer) + "'s dream",
+        group_name: this.mod.dreams[this.mod.dreamer].identifier,
         call_id: this.mod.dreamer + "dream",
       });
 

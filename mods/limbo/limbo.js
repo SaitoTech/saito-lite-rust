@@ -182,10 +182,10 @@ class Limbo extends ModTemplate {
 						hook: "onair",
 						callback: async function (app) {
 							if (mod_self.dreamer) {
-								if (mod_self.dreamer == this.publicKey){
+								if (mod_self.dreamer == mod_self.publicKey){
 									await mod_self.sendKickTransaction(obj.members);
 									mod_self.exitSpace();
-									mod_self.toggleNotification(false, this.publicKey);
+									mod_self.toggleNotification(false, mod_self.publicKey);
 								}else{
 									//need a flow for others in call to seed the swarm...
 									//
@@ -304,7 +304,7 @@ class Limbo extends ModTemplate {
 					
 					if (this.dreamer){
 
-						let prompt = `${this.app.keychain.returnUsername(this.dreamer)}'s dream space`;
+						let prompt = `${this.app.keychain.returnUsername(this.dreamer)}'s Saito Space`;
 
 						if (this.dreams[this.dreamer]) {
 
