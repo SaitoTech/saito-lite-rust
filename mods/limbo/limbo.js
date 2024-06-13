@@ -1202,7 +1202,17 @@ class Limbo extends ModTemplate {
 
 
 	copyInviteLink(truthy = false) {
-		if (truthy) {
+
+		let data = {
+			name: 'Limbo',
+			path: '/limbo/',
+			dream: this.app.crypto.stringToBase64(this.dreamer)
+		};
+
+		let invite = new InvitationLink(this.app, this, data);
+		invite.render();
+
+		/*if (truthy) {
 			if (!this.browser_active){
 				//Since there is a button in the UI now, no need to bother with this...
 				let data = {
@@ -1226,7 +1236,7 @@ class Limbo extends ModTemplate {
 			} catch (err) {
 				console.warn(err);
 			}
-		}
+		}*/
 	}
 
 	toggleNotification(value = true, sender) {

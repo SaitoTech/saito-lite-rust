@@ -46,11 +46,11 @@
 }
 
 .limbo-option i {
-	font-size: max(8vw, 40px);
+	font-size: min(90px, max(7vw, 36px));
 }
 
 .limbo-option label {
-	font-size: max(4vw, 20px);
+	font-size: min(56px, max(4vw, 20px));
 }
 
 .limbo-option:hover{
