@@ -88,10 +88,14 @@ export class NodeSharedMethods extends CustomSharedMethods {
 					console.error(e);
 				}
 			});
-			S.getLibInstance().process_new_peer(peer_index);
-			console.log(
-				'connected to : ' + url + ' with peer index : ' + peer_index
-			);
+			socket.on('open',()=>{
+				S.getLibInstance().process_new_peer(peer_index)
+					.then(() => {
+						console.log(
+							'connected to : ' + url + ' with peer index : ' + peer_index
+						);
+					});
+			});
 		} catch (e) {
 			console.error(e);
 		}
@@ -335,14 +339,12 @@ class Server {
 			const { pathname } = parse(request.url);
 			console.log('connection established');
 			S.getLibInstance().get_next_peer_index()
-				.then(peer_index => {
+				.then((peer_index: bigint) => {
 					S.getInstance().addNewSocket(socket, peer_index);
 
 					socket.on('message', (buffer: any) => {
 						S.getLibInstance()
-							.process_msg_buffer_from_peer(new Uint8Array(buffer), peer_index)
-							.then(() => {
-							});
+							.process_msg_buffer_from_peer(new Uint8Array(buffer), peer_index);
 					});
 					socket.on('close', () => {
 						S.getLibInstance().process_peer_disconnection(peer_index);
@@ -352,23 +354,11 @@ class Server {
 						S.getLibInstance().process_peer_disconnection(peer_index);
 					});
 
-					S.getLibInstance().process_new_peer(peer_index);
+					return S.getLibInstance().process_new_peer(peer_index);
 				});
 
 		});
-		// app.on("upgrade", (request, socket, head) => {
-		//   server.handleUpgrade(request, socket, head, (websocket) => {
-		//     server.emit("connection", websocket, request);
-		//   });
-		// });
-		//
-		// server.on("connection", (wsocket, request) => {
-		//   //console.log("new connection received by server", request);
-		//   this.app.network.addRemotePeer(wsocket).catch((error) => {
-		//     console.log("failed adding remote peer");
-		//     console.error(error);
-		//   });
-		// });
+
 	}
 
 	initialize() {
