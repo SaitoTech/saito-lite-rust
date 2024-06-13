@@ -202,7 +202,7 @@ class Record extends ModTemplate {
 					}
 				});
 
-				requestAnimationFrame(drawStreamsToCanvas);
+				this.animation_id = requestAnimationFrame(drawStreamsToCanvas);
 			};
 
 
@@ -350,7 +350,7 @@ class Record extends ModTemplate {
 						data.rect = currentRect;
 					});
 
-					requestAnimationFrame(drawStreamsToCanvas);
+					this.animation_id = requestAnimationFrame(drawStreamsToCanvas);
 				});
 			};
 
