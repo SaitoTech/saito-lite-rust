@@ -45,6 +45,23 @@ class Record extends ModTemplate {
 				}
 			];
 		}
+
+		if (type === 'limbo-record') {
+			this.attachStyleSheets();
+			super.render(this.app, this);		
+			let is_recording = false;
+			if (this.mediaRecorder) {
+				is_recording = true
+			}
+
+			return [
+				{
+					startRecording: ()=> {
+						this.startRecording(".video-container-large")
+					}
+				}
+			];
+		}
 		if (type === 'game-menu') {
 			if (!obj.recordOptions) return;
 			let menu = {
@@ -105,9 +122,57 @@ class Record extends ModTemplate {
 	}
 
 
+	 drawImageProp(ctx, img, x, y, w, h, offsetX, offsetY) {
+
+		console.log(img.videoWidth)
+
+		if (arguments.length === 2) {
+			x = y = 0;
+			w = ctx.canvas.width;
+			h = ctx.canvas.height;
+		}
+
+		offsetX = typeof offsetX === "number" ? offsetX : 0.5;
+		offsetY = typeof offsetY === "number" ? offsetY : 0.5;
+
+		if (offsetX < 0) offsetX = 0;
+		if (offsetY < 0) offsetY = 0;
+		if (offsetX > 1) offsetX = 1;
+		if (offsetY > 1) offsetY = 1;
+
+		let iw = img.videoWidth,
+			ih = img.videoHeight,
+			r = Math.min(w / iw, h / ih),
+			nw = iw * r,
+			nh = ih * r,
+			cx, cy, cw, ch, ar = 1;
+
+		if (nw < w) ar = w / nw;                             
+		if (Math.abs(ar - 1) < 1e-14 && nh < h) ar = h / nh; 
+		nw *= ar;
+		nh *= ar;
+
+		cw = iw / (nw / w);
+		ch = ih / (nh / h);
+
+		cx = (iw - cw) * offsetX;
+		cy = (ih - ch) * offsetY;
+
+		if (cx < 0) cx = 0;
+		if (cy < 0) cy = 0;
+		if (cw > iw) cw = iw;
+		if (ch > ih) ch = ih;
+
+		ctx.drawImage(img, cx, cy, cw, ch, x, y, w, h);
+
+		console.log(img, cx, cy, cw, ch, x, y, w, h)
+		console.log('drawing image prop')
+	
+	}
 
 
-	async startRecording(container, members = [], callbackAfterRecord = null, type = "game") {
+
+	async startRecording(container, members = [], callbackAfterRecord = null, type = "videocall") {
 		let startRecording = await sconfirm('Do you  want to start recording?');
 		if (!startRecording) return;
 		this.observer = new MutationObserver((mutations) => {
@@ -125,7 +190,9 @@ class Record extends ModTemplate {
 								const parentID = video.parentElement.id;
 								const videoElement = document.createElement('video');
 								videoElement.srcObject = stream;
+								videoElement.muted = true;
 								videoElement.play();
+
 								this.streamData.push({ stream, rect, parentID, videoElement });
 							});
 						}
@@ -174,36 +241,18 @@ class Record extends ModTemplate {
 				this.streamData.forEach(data => {
 					const parentElement = document.getElementById(data.parentID);
 					if (!parentElement) return;
-
-					const videoWidth = data.videoElement.videoWidth;
-					const videoHeight = data.videoElement.videoHeight;
-					const videoAspectRatio = videoWidth / videoHeight;
-
 					const rect = parentElement.getBoundingClientRect();
-					const scaleX = canvas.width / window.innerWidth;
-					const scaleY = canvas.height / window.innerHeight;
-
-					let drawWidth = rect.width * scaleX;
-					let drawHeight = drawWidth / videoAspectRatio;
-
-					// Adjust dimensions to fit within parent element's boundaries
-					if (drawHeight > rect.height * scaleY) {
-						drawHeight = rect.height * scaleY;
-						drawWidth = drawHeight * videoAspectRatio;
-					}
-
-					// Calculate centered position on the canvas
-					const drawX = rect.left * scaleX + (rect.width * scaleX - drawWidth) / 2;
-					const drawY = rect.top * scaleY + (rect.height * scaleY - drawHeight) / 2;
-
 					// Draw the video on the canvas
 					if (data.videoElement.readyState >= 2) {
-						ctx.drawImage(data.videoElement, drawX, drawY, drawWidth, drawHeight);
+						
+						
+						this.drawImageProp(ctx, data.videoElement, rect.left, rect.top, rect.width, rect.height)
 					}
 				});
 
 				this.animation_id = requestAnimationFrame(drawStreamsToCanvas);
 			};
+
 
 
 
@@ -223,22 +272,19 @@ class Record extends ModTemplate {
 			};
 
 			window.addEventListener('resize', resizeCanvas);
-			// resizeCanvas(); 
+			resizeCanvas(); 
 
 			const videoElements = document.querySelectorAll('div[id^="stream_"] video');
 			videoElements.forEach(video => {
-				// const stream = video.captureStream ? video.captureStream() : (video.mozCaptureStream ? video.mozCaptureStream() : null);
-				// if (stream) {
-				// 	stream.getAudioTracks().forEach(track => combinedStream.addTrack(track));
-
-				// }
-				video.style.objectFit = "cover";
-				video.style.width = "100%";
-				video.style.height = "100%";
-				video.style.maxWidth = "100%";
+			
+				// video.style.objectFit = "cover";
+				// video.style.width = "100%";
+				// video.style.height = "100%";
+				// video.style.maxWidth = "100%";
 			});
 
 			let destination;
+			const audioCtx = new AudioContext();
 			this.streamData = Array.from(videoElements).map(video => {
 
 				const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
@@ -250,7 +296,7 @@ class Record extends ModTemplate {
 					// console.log(video)
 				}
 
-				const audioCtx = new AudioContext();
+				
 				 destination = audioCtx.createMediaStreamDestination();
 				if (stream && stream.getAudioTracks().length > 0) {
 					let source  = audioCtx.createMediaStreamSource(stream)
@@ -261,17 +307,39 @@ class Record extends ModTemplate {
 				const parentID = video.parentElement.id;
 				const videoElement = document.createElement('video');
 				videoElement.srcObject = stream;
+				videoElement.muted = true;
+				videoElement.muted
 				videoElement.play();
 				videoElement.style.display = "none";
-				videoElement.style.objectFit = "cover";
+				// videoElement.style.objectFit = "cover";
+				// videoElement.style.width = "100%"
+				// videoElement.style.height = "100%"
+				// videoElement.style.maxWidth = '100%'
+				
 				return { stream, rect, parentID, videoElement };
 			}).filter(data => data.stream !== null);
+
+			try{
+			this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+		
+			if (this.localStream && this.localStream.getAudioTracks().length > 0) {
+				let source  = audioCtx.createMediaStreamSource(this.localStream)
+				source.connect(destination)
+			}
+
+		} catch (error) {
+			console.error("Failed to get user media:", error);
+			alert("Failed to access camera and microphone.");
+			return;
+		}
 
 			let chunks = [];
 		
 
 			combinedStream.addTrack(canvas.captureStream(25).getVideoTracks()[0]);
 			combinedStream.addTrack(destination.stream.getAudioTracks()[0]);
+			this.combinedStream = combinedStream;
+			this.app.connection.emit('screenrecord-combined-stream', this.combinedStream)
 			this.mediaRecorder = new MediaRecorder(combinedStream, {
 				mimeType: 'video/webm; codecs="vp8, opus"',
 				videoBitsPerSecond: 25 * 1024 * 1024,
@@ -368,7 +436,9 @@ class Record extends ModTemplate {
 					const parentID = video.parentElement.id;
 					const videoElement = document.createElement('video');
 					videoElement.srcObject = stream;
+					videoElement.muted= true
 					videoElement.play();
+				
 					console.log(video.clientHeight)
 					// videoElement.style.display = "none";
 					return { stream, rect, parentID, videoElement };
@@ -518,17 +588,12 @@ class Record extends ModTemplate {
 
 
 	isToolbarVisible() {
-
 		const toolbarVisible = window.outerHeight - window.innerHeight > 50;
 		console.log(window.outerHeight, window.innerHeight, "Is titlebar")
 		return toolbarVisible;
 	}
 
-
-
-
 	async stopRecording() {
-
 		if (this.mediaRecorder) {
 			this.mediaRecorder.stop();
 			this.mediaRecorder = null;
