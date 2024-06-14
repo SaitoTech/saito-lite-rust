@@ -169,7 +169,7 @@
 	grid-template-rows: 1fr 7rem;
 	grid-template-columns: minmax(0px, 1fr);
 	border-radius: var(--saito-border-radius);
-	background-color: #0008;
+	background-color: #000D;
 }
 
 .dream-controls.lite {

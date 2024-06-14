@@ -51,6 +51,7 @@ class Limbo extends ModTemplate {
 		Indexed by public key of dreamer
 		contains
 		ts: (int) start time
+		speakers: (optional) array of other voices on the call
 		members: (array) people in the dream including dreamer
 		alt_id: (optional)
 		dreamer: public key of dreamer
@@ -182,10 +183,10 @@ class Limbo extends ModTemplate {
 						hook: "onair",
 						callback: async function (app) {
 							if (mod_self.dreamer) {
-								if (mod_self.dreamer == this.publicKey){
+								if (mod_self.dreamer == mod_self.publicKey){
 									await mod_self.sendKickTransaction(obj.members);
 									mod_self.exitSpace();
-									mod_self.toggleNotification(false, this.publicKey);
+									mod_self.toggleNotification(false, mod_self.publicKey);
 								}else{
 									//need a flow for others in call to seed the swarm...
 									//
@@ -304,7 +305,7 @@ class Limbo extends ModTemplate {
 					
 					if (this.dreamer){
 
-						let prompt = `${this.app.keychain.returnUsername(this.dreamer)}'s dream space`;
+						let prompt = `${this.app.keychain.returnUsername(this.dreamer)}'s Saito Space`;
 
 						if (this.dreams[this.dreamer]) {
 
@@ -666,11 +667,10 @@ class Limbo extends ModTemplate {
 					this.controls.startTimer();
 				}
 			}
-
-
 		}
-
 	}
+
+
 
 	async sendKickTransaction(keylist) {
 		let newtx =
@@ -738,9 +738,112 @@ class Limbo extends ModTemplate {
 		this.exitSpace();
 	}
 
+	async sendAddSpeakerTransaction(speaker){
+		if (!this.dreamer || !this.dreams[this.dreamer]) {
+			console.warn("No dream?");
+			console.log(this.dreamer, this.dreams);
+			return;
+		}
+
+		let newtx =
+			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+				this.publicKey
+			);
+
+		newtx.msg = {
+			module: this.name,
+			request: 'add speaker',
+			dreamer: this.dreamer,
+			speaker,
+			dream: this.dreams[this.dreamer]
+		};
+
+		newtx.addTo(speaker);
+
+		await newtx.sign();
+
+		this.app.connection.emit('relay-transaction', newtx);
+		this.app.network.propagateTransaction(newtx);
+	}
+
+	receiveAddSpeakerTransaction(sender, tx){
+		let txmsg = tx.returnMessage();
+
+		let dreamer = txmsg.dreamer;
+		let speaker = txmsg.speaker;
+
+		if (this.publicKey === speaker){
+			//C'est moi!
+			this.dreams[dreamer] = txmsg.dream;
+			this.dreamer = dreamer;
+			this.toggleNotification(true, sender);
+			this.controls = new LiteDreamControls(this.app, this);
+			this.controls.render();
+			this.controls.startTime = this.dreams[dreamer].ts;
+			this.controls.startTimer();
+		}
+
+		if (!this.dreams[dreamer]) {
+			return;
+		}
+
+		//Add new speaker to everyone's speaker list
+		if (!this.dreams[dreamer].speakers.includes(speaker)) {
+			this.dreams[dreamer].speakers.push(speaker);
+		}
+
+	}
+
+
+	async sendRemoveSpeakerTransaction(speaker){
+		if (!this.dreamer || !this.dreams[this.dreamer]) {
+			return;
+		}
+
+		let newtx =
+			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+				this.publicKey
+			);
+
+		newtx.msg = {
+			module: this.name,
+			request: 'remove speaker',
+			dreamer: this.dreamer,
+			speaker
+		};
+
+		await newtx.sign();
+
+		this.app.connection.emit('relay-transaction', newtx);
+		this.app.network.propagateTransaction(newtx);
+	}
+
+	receiveRemoveSpeakerTransaction(sender, tx){
+		let txmsg = tx.returnMessage();
+
+		let dreamer = txmsg.dreamer;
+		let speaker = txmsg.speaker;
+
+		if (
+			!this.dreams[dreamer] ||
+			!this.dreams[dreamer].speakers.includes(speaker)
+		) {
+			return;
+		}
+
+		let members = this.dreams[dreamer].speakers;
+		for (let i = 0; i < members.length; i++) {
+			if (members[i] == speaker) {
+				members.splice(i, 1);
+				break;
+			}
+		}
+	}
+
 	async sendJoinTransaction() {
 		if (!this.dreamer || !this.dreams[this.dreamer]) {
 			console.error('No dreamer to join');
+			return;
 		}
 
 		let newtx =
@@ -1022,6 +1125,12 @@ class Limbo extends ModTemplate {
 					if (message.request === 'leave dream') {
 						this.receiveLeaveTransaction(sender, tx);
 					}
+					if (message.request === "add speaker"){
+						this.receiveAddSpeakerTransaction(sender, tx);
+					}
+					if (message.request === "remove speaker"){
+						this.receiveRemoveSpeakerTransaction(sender, tx);
+					}
 					if (message.request === 'offer dream') {
 						this.receiveOfferTransaction(sender, tx);
 						//Important, we don't need server rebroadcasting this or standard UI updates
@@ -1093,6 +1202,12 @@ class Limbo extends ModTemplate {
 			}
 			if (txmsg.request === 'leave dream') {
 				this.receiveLeaveTransaction(sender, tx);
+			}
+			if (txmsg.request === "add speaker"){
+				this.receiveAddSpeakerTransaction(sender, tx);
+			}
+			if (txmsg.request === "remove speaker"){
+				this.receiveRemoveSpeakerTransaction(sender, tx);
 			}
 			if (txmsg.request === 'offer dream') {
 				this.receiveOfferTransaction(sender, tx);

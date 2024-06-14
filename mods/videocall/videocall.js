@@ -427,6 +427,9 @@ class Videocall extends ModTemplate {
 							this.app.connection.emit('stun-update-link');
 						}
 
+						//Limbo Hook
+						this.app.connection.emit("videocall-add-party", from);
+
 						this.stun.createPeerConnection(from, false);
 
 						return;
@@ -449,6 +452,9 @@ class Videocall extends ModTemplate {
 							}
 						}
 						this.app.connection.emit('remove-peer-box', from);
+
+						//Limbo Hook
+						this.app.connection.emit("videocall-remove-party", from);
 
 						//See if we need to also hang up on our end
 						this.streams.removePeer(from);
