@@ -420,6 +420,11 @@ class Limbo extends ModTemplate {
 
 	async broadcastDream(options) {
 
+		if (this.dreamer){
+			console.warn("Already participating in a dream");
+			return;
+		}
+
 		//Set up controls for user...
 		if (this.browser_active) {
 			this.controls = new DreamControls(this.app, this, '#limbo-main');
@@ -1066,6 +1071,11 @@ class Limbo extends ModTemplate {
 		if (!dreamer){
 			console.log("No dreamer found... just ignore");
 			return;
+		}
+
+		//Address to fellow speakers...
+		for (let s of this.dreams[dreamer].speakers){
+			newtx.addTo(s);
 		}
 
 		//
