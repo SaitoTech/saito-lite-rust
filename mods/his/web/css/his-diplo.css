@@ -9,6 +9,30 @@
 	display: flex;
 	flex-direction: ros;
 	padding: 2rem;
+	flex-wrap: nowrap;
+    	row-gap: 1rem;
+    	column-gap: 1rem;
+}
+
+.diplomacy-overlay .status {
+    position: relative;
+    height: 4rem;
+    line-height: 4rem;
+    min-height: 0;
+    width: 30rem;
+    max-width: 35rem;
+    background-color: whitesmoke;
+    z-index: 10;
+    border-radius: 1rem;
+    top: 0px;
+    left: 0px;
+    white-space: nowrap;
+    float: left;
+    margin-left: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 .diplomacy-overlay .left {
@@ -18,4 +42,65 @@
 .diplomacy-overlay .right {
 	width: 100%;
 }
+
+.diplomacy-overlay .controls {
+    height: max-content;
+    margin-top: 1rem;
+    width: 30rem;
+    max-width: 35rem;
+    margin-left: 1rem;
+    margin-top: 1rem;
+    border-radius: 1rem;
+}
+.diplomacy-overlay .controls ul {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    overflow-y: auto;
+    font-size: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    border-radius: 1rem;
+    margin-top: 1rem;
+    position: relative;
+}
+
+.diplomacy-overlay .right .help {
+    background: #0009;
+    padding: 1.2rem;
+    color: white;
+    font-size: 1.7rem;
+    margin-top: 1rem;
+    text-transform: capitalize;
+}
+
+.diplomacy-overlay .right .proposals {
+    background: #0009;
+    padding: 1.2rem;
+    color: white;
+    font-size: 1.7rem;
+    margin-top: 1rem;
+    text-transform: capitalize;
+    height: 80%;
+}
+
+.diplomacy-overlay .right .submit {
+    background-color: whitesmoke;
+    height: 5rem;
+    border-top: 1px solid var(--saito-border-color);
+    width: 100%;
+    font-size: 1.8rem;
+    display: list-item;
+    list-style: none;
+    cursor: pointer;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    border-radius: 1rem;
+    border: 1px dashed #C0C0C0;
+}
+
+
 

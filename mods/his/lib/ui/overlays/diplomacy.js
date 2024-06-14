@@ -9,6 +9,7 @@ class DiplomacyOverlay {
 		this.overlay = new SaitoOverlay(this.app, this.mod, false);
 		this.overlay.clickBackdropToClose = false;
 		this.faction = "";
+		this.faction_under_offer = "";
 		this.proposals = [];
 		this.proposal = {};
 		this.proposal.confirms = [];
@@ -16,32 +17,6 @@ class DiplomacyOverlay {
 		this.proposal.parties = [];
 		this.proposal.proposer = "";
 	
-	}
-
-	purgeProposals() {
-		this.proposals = [];
-		this.proposal = {};
-		this.proposal.confirms = [];
-		this.proposal.terms = [];
-		this.proposal.parties = [];
-		this.proposal.proposer = "";
-	}
-
-        updateInstructions(msg="") {
-          try {
-            document.querySelector(".diplomacy-propose-overlay .help").innerHTML = msg;
-          } catch (err) {
-          }
-        }
-        
-	showSubMenu() {
-	  document.querySelectorAll(".mainmenu").forEach((el) => { el.style.display = "none"; });
-	  document.querySelectorAll(".submenu").forEach((el) => { el.style.display = "block"; });
-	}
-
-	showMainMenu() {
-	  document.querySelectorAll(".mainmenu").forEach((el) => { el.style.display = "block"; });
-	  document.querySelectorAll(".submenu").forEach((el) => { el.style.display = "none"; });
 	}
 
         pullHudOverOverlay() {
@@ -60,7 +35,14 @@ class DiplomacyOverlay {
         }
 
 	hide() {
-		this.purgeProposals();
+
+		this.proposals = [];
+		this.proposal = {};
+		this.proposal.confirms = [];
+		this.proposal.terms = [];
+		this.proposal.parties = [];
+		this.proposal.proposer = "";
+
 		this.overlay.hide();
 		return;
 	}
@@ -69,75 +51,99 @@ class DiplomacyOverlay {
 
           let his_self = this.mod;
 	  let num = 0;
-	  if (faction == "") { faction = this.faction; } else { this.faction = faction; }
 
+	  if (faction == "") { faction = this.faction; } else { this.faction = faction; }
 	  if (faction != "" && !this.proposal.parties.includes(faction)) { this.proposal.parties.push(faction); }
 
 	  this.overlay.show(DiplomacyTemplate(this));
 	  this.renderAllProposals(faction);
 
+	  let obj = document.querySelector(".diplomacy-overlay");
+	  if (obj) { obj.style.flexWrap = "nowrap"; }
+
 	  this.pushHudUnderOverlay();
 
 	  this.overlay.show();
-	  //document.querySelector(".diplomacy-propose-overlay").style.visibility = "visible";
-  	  //document.querySelector(".diplomacy-propose-overlay .buttons").style.visibility = "visible";
-  	  //document.querySelector(".diplomacy-propose-overlay").style.display = "block";
-
-	  this.showMainMenu();
 
 	  this.attachEvents(faction);
 
 	}
 
 
-	renderAddProposalMenu(faction) {
+	attachEvents(faction="") {
 
-	  let his_self = this.mod;
-	  let menu = this.mod.returnDiplomacyMenuOptions(this.mod.game.player, faction);
-
-  	  document.querySelector(".diplomacy-propose-overlay").style.backgroundImage = "";
-  	  document.querySelector(".diplomacy-propose-overlay .buttons").style.visibility = "hidden";
-
-          let html = "";
-          for (let i = 0; i < menu.length; i++) {
-            if (menu[i].check(his_self, his_self.game.player, faction)) {
-	      html += this.returnMenuHTML(menu[i].name, menu[i].img, i);
-	    }
-	  }
-
-	  document.querySelector(".diplomacy-propose-overlay .menu").innerHTML = html;
-
-          for (let i = 0; i < menu.length; i++) {
-            let obj = document.querySelector(`.menu-option-container${i}`);
-            if (obj) {
-	      obj.onclick = (e) => {
-
-		// remove click event from all
-		this.overlay.hide();
-
-		this.pullHudOverOverlay();
-
-		let id = e.currentTarget.id;
-		menu[id].fnct(his_self, faction, (terms) => {
-		  for (let z = 0; z < terms.length; z++) {
-		    let io = this.mod.returnDiplomacyImpulseOrder(faction);
-	 	    for (let y = 0; y < io.length; y++) {
-		      if (terms[z].indexOf(io[y]) > -1 && !this.proposal.parties.includes(io[y])) { this.proposal.parties.push(io[y]); }
-		      if (terms[z].indexOf("marital") > -1 && !this.proposal.parties.includes("papacy") && io[y] == "papacy") { this.proposal.parties.push("papacy"); }
-		      if (terms[z].indexOf("marriage") > -1 && !this.proposal.parties.includes("papacy") && io[y] == "papacy") { this.proposal.parties.push("papacy"); }
-		    }
-		    this.proposal.terms.push(terms[z]);
-		  }
-		  this.render(faction);
-		  this.renderCurrentProposal();
-		});
+	  //
+	  // finish diplomacy stage
+	  //
+	  if (document.querySelector(".submit")) {
+	    document.querySelector(".submit").onclick = (e) => {
+	      this.mod.updateLog(this.mod.returnFactionName(faction)+" concludes diplomacy");
+	      for (let z = 0; z < this.proposals.length; z++) {
+	        this.mod.addMove("diplomacy_submit_proposal\t"+JSON.stringify(this.proposals[z]));
 	      }
+	      this.mod.endTurn();
+	      this.hide();
 	    }
 	  }
+
+
+	  if (document.querySelector(".option.hapsburg")) {
+	    document.querySelector(".option.hapsburg").onclick = (e) => {
+	      this.faction_under_offer = "hapsburg";
+	      this.createNewProposal(faction);
+	    }
+	  }
+
+	  if (document.querySelector(".option.protestant")) {
+	    document.querySelector(".option.protestant").onclick = (e) => {
+	      this.faction_under_offer = "protestant";
+	      this.createNewProposal(faction);
+	    }
+	  }
+
+	  if (document.querySelector(".option.papacy")) {
+	    document.querySelector(".option.papacy").onclick = (e) => {
+	      this.faction_under_offer = "papacy";
+	      this.createNewProposal(faction);
+	    }
+	  }
+
+	  if (document.querySelector(".option.england")) {
+	    document.querySelector(".option.england").onclick = (e) => {
+	      this.faction_under_offer = "england";
+	      this.createNewProposal(faction);
+	    }
+	  }
+
+	  if (document.querySelector(".option.france")) {
+	    document.querySelector(".option.france").onclick = (e) => {
+	      this.faction_under_offer = "france";
+	      this.createNewProposal(faction);
+	    }
+	  }
+
+
+	  //
+	  // add condition to proposal
+	  //
+//	  document.querySelector(".also").onclick = (e) => {
+//	    this.renderCurrentProposal();
+//	    this.renderAddProposalMenu(faction);
+//	  }
+
+	  //
+	  // submit
+	  //
+	  document.querySelector(".submit").onclick = (e) => {
+	    this.submitProposals();
+	  }
+
+	  return;
+
 	}
 
-	renderAllProposals(faction="") {
 
+	renderAllProposals(faction="") {
 	  let any_proposals = false;
 	  let proposals_html = "<ol>";
           for (let i = 0; i < this.proposals.length; i++) {
@@ -151,118 +157,85 @@ class DiplomacyOverlay {
 	    proposals_html += '</ul></li>';
           }
 	  proposals_html += '</ol>';
-
 	  if (any_proposals) {
-	    this.updateInstructions(`${this.mod.returnFactionName(faction)} - Diplomacy Stage - All Proposals`);
-	    document.querySelector(".diplomacy-propose-overlay .content").innerHTML = proposals_html;
-	    try {
-	      document.querySelector(".mainmenu.add").innerHTML = "create new proposal";
-	      document.querySelector(".mainmenu.end").innerHTML = "submit and see if they accept";
-	    } catch (err) {
-	      console.log(JSON.stringify(err));
-	    }
-	  } else {
-	    this.updateInstructions(`${this.mod.returnFactionName(faction)} - Diplomacy Stage`);
-	    document.querySelector(".content").innerHTML = "propose a diplomatic agreement?";
+	    document.querySelector(".diplomacy-overlay .right .proposals").innerHTML = proposals_html;
 	  }
-
 	}
 
-	renderCurrentProposal() {
-
-	  let proposals_html = '<ul>';
-	  let t = this.mod.convertTermsToText(this.proposal.terms);
-	  let any_proposals = false;
-	  for (let z = 0; z < t.length; z++) {
-	    any_proposals = true;
-	    proposals_html += '<li>' + t[z] + '</li>';
-	  }
-	  proposals_html += '</ul>';
-	  this.updateInstructions("Creating New Proposal");
-
-	  if (any_proposals) {
-	    document.querySelector(".diplomacy-propose-overlay .help").innerHTML = "your proposal consists of the following:";
-	    document.querySelector(".diplomacy-propose-overlay .content").innerHTML = proposals_html;
-	    document.querySelector(".diplomacy-propose-overlay .content").style.display = "block";
-	  } else {
-	    document.querySelector(".diplomacy-propose-overlay .help").innerHTML = "add term to your new proposal";
-	    document.querySelector(".content").style.display = "none";
-	  }
-
-	  this.showSubMenu();
-	}
-
-
-
-	attachEvents(faction="") {
-
-	  //
-	  // finish diplomacy stage
-	  //
-	  document.querySelector(".end").onclick = (e) => {
-	    this.mod.updateLog(this.mod.returnFactionName(faction)+" concludes diplomacy");
-	    for (let z = 0; z < this.proposals.length; z++) {
-	      this.mod.addMove("diplomacy_submit_proposal\t"+JSON.stringify(this.proposals[z]));
-	    }
-	    this.mod.endTurn();
-	    this.hide();
-	  }
-
-	  //
-	  // start new proposal
-	  //
-	  document.querySelector(".add").onclick = (e) => {
- 	    document.querySelector(".diplomacy-propose-overlay .buttons").style.visibility = "hidden";
-	    document.querySelector(".content").innerHTML = "";
+	createNewProposal(faction="") {
 	    this.terms = [];
 	    this.renderAddProposalMenu(faction);
-	    this.renderCurrentProposal();
-	  };
-
-	  //
-	  // add condition to proposal
-	  //
-	  document.querySelector(".also").onclick = (e) => {
-	    this.renderCurrentProposal();
-	    this.renderAddProposalMenu(faction);
-	  }
-
-	  //
-	  // submit
-	  //
-	  document.querySelector(".finish").onclick = (e) => {
-
-	    this.proposal.proposer = this.faction;
-	    this.proposals.push(this.proposal);
-	    this.proposal = {};
-	    this.proposal.terms = [];
-	    this.proposal.parties = [];
-	    this.proposal.proposer = this.faction;
-
-	    this.render(faction);
-	    this.showMainMenu();
-	    this.renderAllProposals(faction);
-	  }
-
-	  //
-	  // delete
-	  //
-	  document.querySelector(".delete").onclick = (e) => {
-
-	    this.proposal = {};
-	    this.proposal.terms = [];
-	    this.proposal.parties = [];
-	    this.proposal.proposer = this.faction;
-
-	    this.render(faction);
-	    this.showMainMenu();
-	    this.renderAllProposals(faction);
-	  }
-
-	  return;
-
 	}
 
+
+	submitProposals() {
+            this.proposal.proposer = this.faction;
+            this.proposals.push(this.proposal);
+            this.proposal = {};
+            this.proposal.terms = [];
+            this.proposal.parties = [];
+            this.proposal.proposer = this.faction;
+	}
+
+
+	renderAddProposalMenu(faction) {
+
+	  let his_self = this.mod;
+
+	  let obj = document.querySelector(".diplomacy-overlay");
+	  if (obj) { obj.style.flexWrap = "wrap"; }
+
+	  //
+	  // overlay gets menu
+	  //
+	  let menu = this.mod.returnDiplomacyMenuOptions(this.mod.game.player, faction);
+          let html = "";
+          for (let i = 0; i < menu.length; i++) {
+            if (menu[i].check(his_self, his_self.game.player, faction)) {
+	      html += this.returnMenuHTML(menu[i].name, menu[i].img, i);
+	    }
+	  }
+	  document.querySelector(".diplomacy-overlay").innerHTML = html;
+
+	  //
+	  // attach interactivity
+	  //
+          for (let i = 0; i < menu.length; i++) {
+            let obj = document.querySelector(`.menu-option-container${i}`);
+            if (obj) {
+	      obj.onclick = (e) => {
+
+		//
+		// hide in overlay function to avoid purging proposals
+		//
+		this.overlay.hide();
+		this.pullHudOverOverlay();
+
+		//
+		// manipulate proposal list
+		//
+		let id = e.currentTarget.id;
+		menu[id].fnct(his_self, faction, (terms) => {
+		  for (let z = 0; z < terms.length; z++) {
+		    let io = this.mod.returnDiplomacyImpulseOrder(faction);
+	 	    for (let y = 0; y < io.length; y++) {
+		      if (terms[z].indexOf(io[y]) > -1 && !this.proposal.parties.includes(io[y])) { this.proposal.parties.push(io[y]); }
+		      if (terms[z].indexOf("marital") > -1 && !this.proposal.parties.includes("papacy") && io[y] == "papacy") { this.proposal.parties.push("papacy"); }
+		      if (terms[z].indexOf("marriage") > -1 && !this.proposal.parties.includes("papacy") && io[y] == "papacy") { this.proposal.parties.push("papacy"); }
+		    }
+		    this.proposal.terms.push(terms[z]);
+		  }
+
+		  //
+		  // and re-render
+		  //
+		  this.render(faction);
+
+		});
+	      }
+	    }
+	  }
+	}
 
 
         returnMenuHTML(name="", img="", idx, active_option="active card") {
