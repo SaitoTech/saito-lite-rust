@@ -31,6 +31,20 @@ class DreamControls{
 				this.app.browser.addNotificationToId(ct, "dreamspace-member-count");
 			}
 		});
+
+		//Videocall connections
+		app.connection.on("videocall-add-party", publicKey => {
+			if (this.mod.dreamer == this.mod.publicKey){
+				this.mod.sendAddSpeakerTransaction(publicKey);
+			}
+		});
+
+		app.connection.on("videocall-remove-party", publicKey => {
+			if (this.mod.dreamer == this.mod.publicKey){
+				this.mod.sendRemoveSpeakerTransaction(publicKey);
+			}
+		});
+
 	}
 
 	render() {
