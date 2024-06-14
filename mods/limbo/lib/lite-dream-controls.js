@@ -209,7 +209,7 @@ class DreamControls{
 
     for (const mod of this.app.modules.mods) {
       let item = mod.respondTo('limbo-actions', {
-        group_name: this.mod.dreams[this.mod.dreamer].identifier,
+        group_name: this.mod.dreams[this.mod.dreamer].identifier || this.app.keychain.returnUsername(this.mod.dreamer) + "'s Space",
         call_id: this.mod.dreamer + "dream",
       });
 

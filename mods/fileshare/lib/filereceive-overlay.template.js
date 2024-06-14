@@ -5,7 +5,7 @@ module.exports = FileReceiveOverlayTemplate = (app, mod) => {
             <div class="icon-button" id="resize"><i class="fa-solid fa-window-minimize"></i></div>
             <div class="icon-button" id="close"><i class="fas fa-times"></i></div>
         </div>
-		<h1>Saito Teleporter</h1>
+		<h1>Saito Fileshare</h1>
       	<div class="contact"></div>
 		<div class="stun-phone-notice">wants to send you:</div>
 		<div class="teleporter-file-data">
@@ -22,7 +22,7 @@ module.exports = FileReceiveOverlayTemplate = (app, mod) => {
 				<div class="teleporter-status" id="peer-connection-status"><i class="fa-solid fa-ellipsis"></i></div>
 			</div>
 			<div id="transfer-speed-row" class="teleporter-status-item hideme">
-				<div>Transfering File</div>
+				<div>Transferring File</div>
 				<div class="teleporter-status" id="file-transfer-status"><i class="fa-solid fa-ellipsis"></i></div>
 			</div>
 		</div>	

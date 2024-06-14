@@ -61,6 +61,8 @@
 	gap: 2.5rem;
 	display: grid;
 	grid-template-columns: repeat(auto-fit, 35rem);
+	width: 100%;
+	justify-content: center;
 }
 
 .spaces-list .saito-profile {
