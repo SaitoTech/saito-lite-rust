@@ -1,5 +1,8 @@
 
 .blink {
+  animation: blinktext 2.5s linear infinite;
+}
+.blinktext {
   animation: blinker 2s linear infinite;
 }
 
@@ -8,4 +11,11 @@
     opacity: 0;
   }
 }
+@keyframes blinktext {
+  50% {
+    color: whitesmoke;
+  }
+}
+
+
 

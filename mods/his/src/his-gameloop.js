@@ -4826,11 +4826,14 @@ console.log("INTO DIET OF WORMS 3");
 	  // this removes other options like Foul Weather after N seconds, so that
 	  // the game is not significantly slowed if a player refuses to take action. 
 	  //
+	  var counter_or_acknowledge_inactivity_timeout;
+
 	  if (this.isGameHalted() != 1) {
 	  var true_if_counter_or_acknowledge_cleared = false;
-	  setTimeout(() => {
+	  counter_or_acknowledge_inactivity_timeout = setTimeout(() => {
 
 	    if (true_if_counter_or_acknowledge_cleared) { return; }
+	    his_self.cardbox.hide();
 
 	    let my_specific_game_id = his_self.game.id;
             his_self.is_halted = 1;
@@ -4876,6 +4879,14 @@ console.log("INTO DIET OF WORMS 3");
 
 	  $('.option').off();
 	  $('.option').on('mouseover', function() {
+
+	    clearTimeout(counter_or_acknowledge_inactivity_timeout);
+	    true_if_counter_or_acknowledge_cleared = true;
+
+	    document.querySelectorAll(".blink").forEach((el) => {
+	      el.classList.remove("blink");
+	    });
+	
             let action2 = $(this).attr("id");
 	    if (deck[action2]) {
 	      his_self.cardbox.show(his_self.returnCardImage(action2));
@@ -10331,15 +10342,16 @@ defender_hits - attacker_hits;
 
 	  this.game.state.impulse++;
 
-	  let targs = {
-      	    line1 : "new to", 
-    	    line2 : "game",
-    	    fontsize : "2.1rem" ,
-	  }
 
 //
 // Game Help Menu first Turn
 //
+/****
+let targs = {
+      	    line1 : "new to", 
+    	    line2 : "game",
+    	    fontsize : "2.1rem" ,
+}
 if (this.game.state.round == 1 && this.game.state.impulse == 1) {
           if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
 	    targs.line2 = "protestants";
@@ -10372,6 +10384,7 @@ if (this.game.state.round == 1 && this.game.state.impulse == 1) {
             }
           }
 }
+****/
 
 	  //
 	  // check if we are really ready for a new round, or just need another loop
@@ -11485,7 +11498,7 @@ alert("TRIGGERING WITH FHAND_IDX of -1...");
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-cardnum = 8;
+cardnum = 1;
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 1; }
 //if (f == "protestant") { cardnum = 0; }

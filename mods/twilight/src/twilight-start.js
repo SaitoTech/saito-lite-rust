@@ -54,7 +54,7 @@ class Twilight extends GameTemplate {
 
     this.moves           = [];
     this.cards    	 = [];
-    this.is_testing 	 = 1;
+    this.is_testing 	 = 0;
 
     //
     // ui components
@@ -5802,10 +5802,9 @@ this.game_help.render({
       if (this.game.state.limit_region.indexOf(this.countries[i].region) > -1) { restricted_country = 1; }
 
       if (restricted_country == 1) {
-
         $(divname).off();
         $(divname).on('click', function() {
-          twilight_self.displayModal("Invalid Target");
+          twilight_self.displayModal("Invalid Target - restricted region");
         });
 
       } else {
@@ -5820,7 +5819,6 @@ this.game_help.render({
           $(divname).on('mouseup', async function (e) {
             if (Math.abs(xpos-e.clientX) > 4) { return; }
             if (Math.abs(ypos-e.clientY) > 4) { return; }
-            //$(divname).on('click', function() {
 
             let countryname = $(this).attr('id');
 
@@ -5840,6 +5838,7 @@ this.game_help.render({
               if (twilight_self.game.state.events.cubanmissilecrisis == 2) {
                 if (countryname === "turkey" || countryname === "westgermany") {
                   if (twilight_self.countries[countryname].us >= 1) {
+
                     //
                     // allow player to remove CMC
                     //
@@ -5869,6 +5868,7 @@ this.game_help.render({
               return;
             }
           });
+
         } else {
 
           $(divname).off();
@@ -5879,7 +5879,6 @@ this.game_help.render({
           $(divname).on('mouseup', async function (e) {
             if (Math.abs(xpos-e.clientX) > 4) { return; }
             if (Math.abs(ypos-e.clientY) > 4) { return; }
-            //$(divname).on('click', function() {
 
             let countryname = $(this).attr('id');
 

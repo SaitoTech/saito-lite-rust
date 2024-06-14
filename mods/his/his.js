@@ -11,6 +11,8 @@ const FactionBar = require('./lib/ui/factionbar');
 const ReligiousOverlay = require('./lib/ui/overlays/religious');
 const CouncilOfTrentOverlay = require('./lib/ui/overlays/council-of-trent');
 const ReformationOverlay = require('./lib/ui/overlays/reformation');
+// diplomacy overlay is new
+const DiplomacyOverlay = require('./lib/ui/overlays/diplomacy');
 const DiplomacyConfirmOverlay = require('./lib/ui/overlays/diplomacy-confirm');
 const DiplomacyProposeOverlay = require('./lib/ui/overlays/diplomacy-propose');
 const AvailableUnitsOverlay = require('./lib/ui/overlays/available-units');
@@ -77,6 +79,7 @@ class HereIStand extends GameTemplate {
     this.faction_overlay = new FactionOverlay(this.app, this);  // faction sheet
     this.factionbar = new FactionBar(this.app, this); // shows you which factions you are in multiplayer
     this.diet_of_worms_overlay = new DietOfWormsOverlay(this.app, this);  // diet of worms
+    this.diplomacy_overlay = new DiplomacyOverlay(this.app, this);
     this.diplomacy_confirm_overlay = new DiplomacyConfirmOverlay(this.app, this);
     this.diplomacy_propose_overlay = new DiplomacyProposeOverlay(this.app, this);
     this.council_of_trent_overlay = new CouncilOfTrentOverlay(this.app, this);  // council of trent
@@ -3075,17 +3078,15 @@ console.log("\n\n\n\n");
 
     this.menu.addMenuOption("game-game", "Game");
 
-/***
     this.menu.addSubMenuOption("game-game", {
-      text: "Divorce",
+      text: "Diplomacy",
       id: "game-divorce",
       class: "game-divorce",
       callback: function(app, game_mod){
 	game_mod.menu.hideSubMenus();
-        game_mod.marriage_overlay.renderApproveDivorce();
+        game_mod.diplomacy_overlay.render();
       }
     });
-***/
 
     this.menu.addSubMenuOption("game-game", {
       text : "About H.I.S.",
@@ -27152,11 +27153,14 @@ console.log("INTO DIET OF WORMS 3");
 	  // this removes other options like Foul Weather after N seconds, so that
 	  // the game is not significantly slowed if a player refuses to take action. 
 	  //
+	  var counter_or_acknowledge_inactivity_timeout;
+
 	  if (this.isGameHalted() != 1) {
 	  var true_if_counter_or_acknowledge_cleared = false;
-	  setTimeout(() => {
+	  counter_or_acknowledge_inactivity_timeout = setTimeout(() => {
 
 	    if (true_if_counter_or_acknowledge_cleared) { return; }
+	    his_self.cardbox.hide();
 
 	    let my_specific_game_id = his_self.game.id;
             his_self.is_halted = 1;
@@ -27202,6 +27206,14 @@ console.log("INTO DIET OF WORMS 3");
 
 	  $('.option').off();
 	  $('.option').on('mouseover', function() {
+
+	    clearTimeout(counter_or_acknowledge_inactivity_timeout);
+	    true_if_counter_or_acknowledge_cleared = true;
+
+	    document.querySelectorAll(".blink").forEach((el) => {
+	      el.classList.remove("blink");
+	    });
+	
             let action2 = $(this).attr("id");
 	    if (deck[action2]) {
 	      his_self.cardbox.show(his_self.returnCardImage(action2));
@@ -32657,15 +32669,16 @@ defender_hits - attacker_hits;
 
 	  this.game.state.impulse++;
 
-	  let targs = {
-      	    line1 : "new to", 
-    	    line2 : "game",
-    	    fontsize : "2.1rem" ,
-	  }
 
 //
 // Game Help Menu first Turn
 //
+/****
+let targs = {
+      	    line1 : "new to", 
+    	    line2 : "game",
+    	    fontsize : "2.1rem" ,
+}
 if (this.game.state.round == 1 && this.game.state.impulse == 1) {
           if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
 	    targs.line2 = "protestants";
@@ -32698,6 +32711,7 @@ if (this.game.state.round == 1 && this.game.state.impulse == 1) {
             }
           }
 }
+****/
 
 	  //
 	  // check if we are really ready for a new round, or just need another loop
@@ -33811,7 +33825,7 @@ alert("TRIGGERING WITH FHAND_IDX of -1...");
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-cardnum = 8;
+cardnum = 1;
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 1; }
 //if (f == "protestant") { cardnum = 0; }

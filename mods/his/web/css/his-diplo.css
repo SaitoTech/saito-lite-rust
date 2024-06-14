@@ -1,0 +1,21 @@
+.diplomacy-overlay {
+	background-image: url(/his/img/backgrounds/diplomacy/ambassadors.jpeg);
+	background-size: cover;
+	max-height: 90vh;
+	max-width: 90vw;
+	width: 90vw;
+	height: 90vh;
+	min-height: 622px;
+	display: flex;
+	flex-direction: ros;
+	padding: 2rem;
+}
+
+.diplomacy-overlay .left {
+	width: 100%;
+}
+
+.diplomacy-overlay .right {
+	width: 100%;
+}
+
