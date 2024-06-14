@@ -179,8 +179,8 @@ class Limbo extends ModTemplate {
 				return [
 					{
 						text: 'Cast',
-						icon: 'fa-solid fa-tower-broadcast',
-						hook: "onair",
+						icon: 'fa-solid fa-tower-broadcast podcast-icon',
+						hook: "onair limbo",
 						callback: async function (app) {
 							if (mod_self.dreamer) {
 								if (mod_self.dreamer == mod_self.publicKey){
@@ -1366,8 +1366,8 @@ class Limbo extends ModTemplate {
 	}
 
 	toggleNotification(value = true, sender) {
-		let vinyl = document.querySelector('.fa-tower-broadcast');
-			if (vinyl) {
+		let vinyl = document.querySelector('.podcast-icon');
+		if (vinyl) {
 			let full_icon = vinyl.parentElement;
 			if (value) {
 				vinyl.classList.add('recording');

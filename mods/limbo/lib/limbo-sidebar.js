@@ -162,7 +162,7 @@ class LimboSidebar {
     //
     
     let h1 = `<div id="share_link" class="saito-modal-menu-option">
-                <i class="fas fa-link"></i>
+                <i class="fa-solid fa-share-nodes"></i>
                 <div>Share</div>
               </div>`;
 
@@ -180,7 +180,7 @@ class LimboSidebar {
 
     for (const mod of this.app.modules.mods) {
       let item = mod.respondTo('limbo-actions', {
-        group_name: this.mod.dreams[this.mod.dreamer].identifier,
+        group_name: this.mod.dreams[this.mod.dreamer]?.identifier || this.app.keychain.returnUsername(this.mod.dreamer) + "'s Space",
         call_id: this.mod.dreamer + "dream",
       });
       if (item instanceof Array) {
