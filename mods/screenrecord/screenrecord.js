@@ -4,7 +4,8 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
 const VideoBox = require('../../lib/saito/ui/saito-videobox/video-box');
 const html2canvas = require('html2canvas')
-const domtoimage = require('dom-to-image')
+const domtoimage = require('dom-to-image');
+
 
 class Record extends ModTemplate {
 	constructor(app) {
@@ -167,18 +168,28 @@ class Record extends ModTemplate {
 		if (ch > ih) ch = ih;
 
 		ctx.drawImage(img, cx, cy, cw, ch, x, y, w, h);
-
-		const logoWidth = 50;
-		const logoHeight = 50;
-		const logoX = ctx.canvas.width - logoWidth - 10;
-		const logoY = ctx.canvas.height - logoHeight - 10;
-		ctx.drawImage(this.logo, logoX, logoY, logoWidth, logoHeight);
-
-		// console.log(img, cx, cy, cw, ch, x, y, w, h)
-		// console.log('drawing image prop')
-
+		this.drawLogoOnCanvas(ctx)
 	}
 
+
+	drawLogoOnCanvas(ctx) {
+		const maxDimension = 100;
+		const aspectRatio = this.logo.naturalWidth / this.logo.naturalHeight;
+		let logoWidth, logoHeight;
+		if (this.logo.naturalWidth > this.logo.naturalHeight) {
+			logoWidth = maxDimension;
+			logoHeight = maxDimension / aspectRatio;
+		} else {
+			logoHeight = maxDimension;
+			logoWidth = maxDimension * aspectRatio;
+		}
+
+		const logoX = ctx.canvas.width - logoWidth - 50;
+		const logoY = ctx.canvas.height - logoHeight - 50;
+
+		this.logo.style.objectFit = "cover";
+		ctx.drawImage(this.logo, logoX, logoY, logoWidth, logoHeight);
+	}
 
 
 	async startRecording(container, members = [], callbackAfterRecord = null, type = "videocall") {
@@ -191,9 +202,10 @@ class Record extends ModTemplate {
 			canvas.parentElement.removeChild(document.querySelector('canvas'))
 		})
 		let combinedStream = new MediaStream();
+		let animationFrameId; 
 
 		if (type === "videocall") {
-			this.observer = new MutationObserver((mutations) => {
+			let observer = new MutationObserver((mutations) => {
 				mutations.forEach((mutation) => {
 					console.log(mutation.addedNodes, "added nodes")
 					if (mutation.type === 'childList') {
@@ -235,7 +247,7 @@ class Record extends ModTemplate {
 				});
 			});
 
-			this.observer.observe(document.body, {
+			observer.observe(document.body, {
 				attributes: true,
 				childList: true,
 				subtree: true,
@@ -261,7 +273,7 @@ class Record extends ModTemplate {
 					}
 				});
 
-				this.animation_id = requestAnimationFrame(drawStreamsToCanvas);
+				animationFrameId = requestAnimationFrame(drawStreamsToCanvas);
 			};
 
 			const resizeCanvas = () => {
@@ -289,8 +301,9 @@ class Record extends ModTemplate {
 				// video.style.maxWidth = "100%";
 			});
 
-			let destination;
+
 			const audioCtx = new AudioContext();
+			destination = audioCtx.createMediaStreamDestination();
 			this.streamData = Array.from(videoElements).map(video => {
 				const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
 				if (!video.id.startsWith('local')) {
@@ -301,7 +314,7 @@ class Record extends ModTemplate {
 				}
 
 
-				destination = audioCtx.createMediaStreamDestination();
+
 				if (stream && stream.getAudioTracks().length > 0) {
 					let source = audioCtx.createMediaStreamSource(stream)
 					source.connect(destination)
@@ -312,31 +325,18 @@ class Record extends ModTemplate {
 				const videoElement = document.createElement('video');
 				videoElement.srcObject = stream;
 				videoElement.muted = true;
-				videoElement.muted
 				videoElement.play();
 				videoElement.style.display = "none";
-
 				return { stream, rect, parentID, videoElement };
 			}).filter(data => data.stream !== null);
 
-			try {
-				this.localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
 
-				if (this.localStream && this.localStream.getAudioTracks().length > 0) {
-					let source = audioCtx.createMediaStreamSource(this.localStream)
-					source.connect(destination)
-				}
-
-			} catch (error) {
-				console.error("Failed to get user media:", error);
-				alert("Failed to access camera and microphone.");
-				return;
-			}
 
 			let chunks = [];
 
 
 			combinedStream.addTrack(canvas.captureStream(25).getVideoTracks()[0]);
+			console.log(destination.stream.getAudioTracks(), 'destination')
 			combinedStream.addTrack(destination.stream.getAudioTracks()[0]);
 			this.combinedStream = combinedStream;
 			this.app.connection.emit('screenrecord-combined-stream', this.combinedStream)
@@ -352,7 +352,13 @@ class Record extends ModTemplate {
 			};
 
 			this.mediaRecorder.onstop = async () => {
+				// remove listeners
+				cancelAnimationFrame(animationFrameId)
 				window.removeEventListener('resize', resizeCanvas)
+				observer.disconnect()
+				
+
+
 				const blob = new Blob(chunks, { type: 'video/webm' });
 				const url = URL.createObjectURL(blob);
 				const a = document.createElement('a');
@@ -375,6 +381,7 @@ class Record extends ModTemplate {
 			drawStreamsToCanvas();
 		}
 		else {
+			// set up top variablse
 			let lastSnapshotCanvas = null; // Variable to store the last taken snapshot
 			const canvas = document.createElement('canvas');
 			const ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -383,13 +390,30 @@ class Record extends ModTemplate {
 			document.body.appendChild(canvas);
 
 			const offscreenCanvas = document.createElement('canvas');
-			const offscreenCtx = offscreenCanvas.getContext('2d');
+			const offscreenCtx = offscreenCanvas.getContext('2d',  { willReadFrequently: true });
 			offscreenCanvas.width = window.innerWidth;
 			offscreenCanvas.height = window.innerHeight;
 
-			let scheduled = false;
+			// set up this 
+			let self = this
 
 
+			// set up audio
+			const audioCtx = new AudioContext();
+			let destination = audioCtx.createMediaStreamDestination();
+
+			// set up resize event listener
+			const resizeCanvas = () => {
+				canvas.width = window.innerWidth;
+				canvas.height = window.innerHeight;
+				offscreenCanvas.width = window.innerWidth;
+				offscreenCanvas.height = window.innerHeight;
+			};
+			resizeCanvas();
+			window.addEventListener('resize', resizeCanvas);
+
+
+			// set up mutation observer
 			const observer = new MutationObserver(mutations => {
 				let to_return = false;
 				mutations.forEach(mutation => {
@@ -404,7 +428,7 @@ class Record extends ModTemplate {
 							});
 						}
 
-						if(to_return) return;
+						if (to_return) return;
 						const imgBase64 = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 						if (mutation.target.nodeName === 'IMG' && mutation.target.currentSrc === imgBase64) {
@@ -452,34 +476,32 @@ class Record extends ModTemplate {
 						});
 					}
 
-					// console.log(mutation)
 				});
 			});
-
-
 			observer.observe(document.body, {
 				attributes: true,
 				childList: true,
 				subtree: true,
 				attributeFilter: ['style']
 			});
-			// observer.observe(targetNode, config);
+		
 
-			const videoElements = document.querySelectorAll('div[id^="stream_"] video');
-			videoElements.forEach(video => {
+			// get video elements if there is already a call going on
+			const videoElements = document.querySelectorAll('div[id^="stream_"] video'); 
+			// videoElements.forEach(video => {
 
-				// video.style.objectFit = "cover";
-				// video.style.width = "100%";
-				// video.style.height = "100%";
-				// video.style.maxWidth = "100%";
-			});
+			// 	// video.style.objectFit = "cover";
+			// 	// video.style.width = "100%";
+			// 	// video.style.height = "100%";
+			// 	// video.style.maxWidth = "100%";
+			// });
 
 
 			this.streamData = Array.from(videoElements).map(video => {
 				const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
 				if (!video.id.startsWith('local')) {
 				}
-				destination = audioCtx.createMediaStreamDestination();
+			
 				if (stream && stream.getAudioTracks().length > 0) {
 					let source = audioCtx.createMediaStreamSource(stream)
 					source.connect(destination)
@@ -492,23 +514,24 @@ class Record extends ModTemplate {
 				videoElement.muted
 				videoElement.play();
 				videoElement.style.display = "none";
-
 				return { stream, rect, parentID, videoElement };
 			}).filter(data => data.stream !== null);
 
 
 			function takeSnapshot() {
-				html2canvas(document.querySelector(container), {
+				html2canvas(document.body, {
 					logging: false,
+					useCors: true,
+					scale: 1,
+					width: window.innerWidth, 
+					height: window.innerHeight, 
 					ignoreElements: function (element) {
-						// ignore every video element
 						if (element.id === "stream_local") {
-							// console.log('element tag name is video', element)
 							return true
 						}
 
-						if(element.classList.contains("chat-container")){
-							console.log('removing chat')
+						if (element.classList.contains("picker")) {
+							console.log('removing picker')
 							return true;
 						}
 
@@ -521,12 +544,14 @@ class Record extends ModTemplate {
 
 			function renderCanvas() {
 				if (!lastSnapshotCanvas) return;
-				offscreenCtx.clearRect(0, 0, canvas.width, canvas.height);
-				offscreenCtx.drawImage(lastSnapshotCanvas, 0, 0, canvas.width, canvas.height);
+				console.log(lastSnapshotCanvas, 'canvas.widht', canvas.width, 'canvas.height', canvas.height)
+				offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+				offscreenCtx.drawImage(lastSnapshotCanvas, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
 			}
-			takeSnapshot();
 
-			setInterval(() => {
+			takeSnapshot();
+			let drawInterval = setInterval(() => {
+				// we draw from both video streams and page to an offscreen context, then draw onto the main context after
 				renderCanvas();
 				this.streamData.forEach(data => {
 					// console.log(this.streamData, "stream data")
@@ -540,38 +565,8 @@ class Record extends ModTemplate {
 
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 				ctx.drawImage(offscreenCanvas, 0, 0);
-			}, 1000/60);
-
-			// let self = this
-			// function renderLoop() {
-
-			// 	renderCanvas();
-			// 	self.streamData.forEach(data => {
-			// 		// console.log('stream data')
-			// 		const parentElement = document.getElementById(data.parentID);
-			// 		if (!parentElement) return;
-			// 		const rect = parentElement.getBoundingClientRect();
-			// 		if (data.videoElement.readyState >= 2) {
-			// 			self.drawImageProp(ctx, data.videoElement, rect.left, rect.top, rect.width, rect.height);
-			// 		}
-			// 	});
-
-
-
-			// 	requestAnimationFrame(renderLoop); 
-			// // This syncs with the browser's refresh rate
-			// }
-			// renderLoop();
-
-			const audioCtx = new AudioContext();
-			let destination = audioCtx.createMediaStreamDestination();
-
-			const resizeCanvas = () => {
-				canvas.width = window.innerWidth;
-				canvas.height = window.innerHeight;
-			};
-
-			resizeCanvas()
+				// self.drawLogoOnCanvas(ctx)
+			}, 1000 / 60);
 
 
 
@@ -656,8 +651,16 @@ class Record extends ModTemplate {
 			};
 
 			this.mediaRecorder.onstop = async () => {
-				cancelAnimationFrame(this.animation_id);
+	
+				// remove listeners
+				clearInterval(drawInterval)
+				window.removeEventListener('resize', resizeCanvas)	
+				observer.disconnect()		
+
+
 				this.is_recording = false;
+
+
 				const blob = new Blob(chunks, { type: 'video/webm' });
 				const url = URL.createObjectURL(blob);
 				const a = document.createElement('a');
@@ -668,10 +671,13 @@ class Record extends ModTemplate {
 				a.download = fileName;
 				document.body.appendChild(a);
 				a.click();
+
+
 				setTimeout(() => {
 					document.body.removeChild(a);
 					URL.revokeObjectURL(url);
 				}, 100);
+
 				if (callbackAfterRecord) {
 					callbackAfterRecord(blob);
 				}
@@ -738,7 +744,7 @@ class Record extends ModTemplate {
 		if (this.screenStream) {
 			this.screenStream.getTracks().forEach(track => track.stop());
 		}
-		cancelAnimationFrame(this.animation_id);
+
 
 		if (this.localStream && !this.externalMediaControl) {
 			this.localStream.getTracks().forEach((track) => track.stop());
