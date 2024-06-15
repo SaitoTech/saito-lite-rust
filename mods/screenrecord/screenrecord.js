@@ -202,7 +202,7 @@ class Record extends ModTemplate {
 			canvas.parentElement.removeChild(document.querySelector('canvas'))
 		})
 		let combinedStream = new MediaStream();
-		let animationFrameId; 
+		let animationFrameId;
 
 		if (type === "videocall") {
 			let observer = new MutationObserver((mutations) => {
@@ -334,7 +334,6 @@ class Record extends ModTemplate {
 
 			let chunks = [];
 
-
 			combinedStream.addTrack(canvas.captureStream(25).getVideoTracks()[0]);
 			console.log(destination.stream.getAudioTracks(), 'destination')
 			combinedStream.addTrack(destination.stream.getAudioTracks()[0]);
@@ -356,8 +355,6 @@ class Record extends ModTemplate {
 				cancelAnimationFrame(animationFrameId)
 				window.removeEventListener('resize', resizeCanvas)
 				observer.disconnect()
-				
-
 
 				const blob = new Blob(chunks, { type: 'video/webm' });
 				const url = URL.createObjectURL(blob);
@@ -387,10 +384,10 @@ class Record extends ModTemplate {
 			const ctx = canvas.getContext('2d', { willReadFrequently: true });
 			canvas.width = window.innerWidth;
 			canvas.height = window.innerHeight;
-			document.body.appendChild(canvas);
+			// document.body.appendChild(canvas);
 
 			const offscreenCanvas = document.createElement('canvas');
-			const offscreenCtx = offscreenCanvas.getContext('2d',  { willReadFrequently: true });
+			const offscreenCtx = offscreenCanvas.getContext('2d', { willReadFrequently: true });
 			offscreenCanvas.width = window.innerWidth;
 			offscreenCanvas.height = window.innerHeight;
 
@@ -414,6 +411,18 @@ class Record extends ModTemplate {
 
 
 			// set up mutation observer
+			function findClosestVideoChild(node) {
+				if (node.tagName && node.tagName.toLowerCase() === 'video') {
+					return node;
+				}
+				for (let i = 0; i < node.childNodes.length; i++) {
+					const foundNode = findClosestVideoChild(node.childNodes[i]);
+					if (foundNode) {
+						return foundNode;
+					}
+				}
+				return null;
+			}
 			const observer = new MutationObserver(mutations => {
 				let to_return = false;
 				mutations.forEach(mutation => {
@@ -428,6 +437,19 @@ class Record extends ModTemplate {
 							});
 						}
 
+						if (mutation.target.id.startsWith("stun-chatbox")) {
+							this.streamData.forEach(data => {
+								console.log(data);
+								const videoNode = findClosestVideoChild(mutation.target);
+								if (videoNode && videoNode.parentElement && videoNode.parentElement.id === data.parentID) {
+									console.log('moving parent of video', data);
+									data.rect = mutation.target.getBoundingClientRect();
+									to_return = true;
+								}
+							});
+						}
+
+
 						if (to_return) return;
 						const imgBase64 = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
@@ -441,9 +463,13 @@ class Record extends ModTemplate {
 							return;
 						}
 
+
+
+
+						console.log("mutation.target.id", mutation.target.id)
 						// For other style changes that don't match the above conditions, take a snapshot
 						if (mutation.attributeName === 'style') {
-							console.log('taking snap shot')
+			
 							takeSnapshot();
 						}
 					}
@@ -451,7 +477,7 @@ class Record extends ModTemplate {
 					if (mutation.type === 'childList') {
 						mutation.addedNodes.forEach(node => {
 							if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV' && node.id.startsWith('stream_')) {
-								console.log('childlist', mutation.addedNodes);
+								// console.log('childlist', mutation.addedNodes);
 								node.querySelectorAll('video').forEach(video => {
 									const stream = video.captureStream ? video.captureStream() : video.mozCaptureStream ? video.mozCaptureStream() : null;
 									const rect = video.getBoundingClientRect();
@@ -484,10 +510,11 @@ class Record extends ModTemplate {
 				subtree: true,
 				attributeFilter: ['style']
 			});
-		
+
+
 
 			// get video elements if there is already a call going on
-			const videoElements = document.querySelectorAll('div[id^="stream_"] video'); 
+			const videoElements = document.querySelectorAll('div[id^="stream_"] video');
 			// videoElements.forEach(video => {
 
 			// 	// video.style.objectFit = "cover";
@@ -496,12 +523,10 @@ class Record extends ModTemplate {
 			// 	// video.style.maxWidth = "100%";
 			// });
 
-
 			this.streamData = Array.from(videoElements).map(video => {
 				const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
 				if (!video.id.startsWith('local')) {
 				}
-			
 				if (stream && stream.getAudioTracks().length > 0) {
 					let source = audioCtx.createMediaStreamSource(stream)
 					source.connect(destination)
@@ -518,33 +543,42 @@ class Record extends ModTemplate {
 			}).filter(data => data.stream !== null);
 
 
+
+			let lastSnapshotTime = 0;
 			function takeSnapshot() {
-				html2canvas(document.body, {
-					logging: false,
-					useCors: true,
-					scale: 1,
-					width: window.innerWidth, 
-					height: window.innerHeight, 
-					ignoreElements: function (element) {
-						if (element.id === "stream_local") {
-							return true
+				const now = performance.now();
+				const timeSinceLastSnapshot = now - lastSnapshotTime;
+				// Ensure only 4 snapshots per second (1000ms / 60 = ~16.67ms)
+				if (timeSinceLastSnapshot >= 1000 / 5) {
+					lastSnapshotTime = now;
+					console.log('taking snap shot')
+					html2canvas(document.body, {
+						logging: false,
+						useCors: true,
+						scale: 1,
+						width: window.innerWidth,
+						height: window.innerHeight,
+						ignoreElements: function (element) {
+							if (element.id === "stream_local") {
+								return true;
+							}
+							if (element.classList.contains('stun-chatbox')) {
+								return true;
+							}
 						}
-
-						if (element.classList.contains("picker")) {
-							console.log('removing picker')
-							return true;
-						}
-
+					}).then(contentCanvas => {
+						lastSnapshotCanvas = contentCanvas;
+						// renderCanvas();
+					}).catch(error => console.error("Error capturing canvas:", error));
+				} else {
+					if (lastSnapshotCanvas) {
+						// renderCanvas();
 					}
-				}).then(contentCanvas => {
-					lastSnapshotCanvas = contentCanvas;
-					renderCanvas();
-				}).catch(error => console.error("Error capturing canvas:", error));
+				}
 			}
-
 			function renderCanvas() {
 				if (!lastSnapshotCanvas) return;
-				console.log(lastSnapshotCanvas, 'canvas.widht', canvas.width, 'canvas.height', canvas.height)
+				// console.log(lastSnapshotCanvas, 'canvas.widht', canvas.width, 'canvas.height', canvas.height)
 				offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
 				offscreenCtx.drawImage(lastSnapshotCanvas, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
 			}
@@ -566,7 +600,7 @@ class Record extends ModTemplate {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 				ctx.drawImage(offscreenCanvas, 0, 0);
 				// self.drawLogoOnCanvas(ctx)
-			}, 1000 / 60);
+			}, 1000 / 30);
 
 
 
@@ -618,6 +652,7 @@ class Record extends ModTemplate {
 						try {
 							this.localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
 							if (this.localStream && this.localStream.getAudioTracks().length > 0) {
+
 								let source = audioCtx.createMediaStreamSource(this.localStream);
 								source.connect(destination);
 							}
@@ -651,13 +686,13 @@ class Record extends ModTemplate {
 			};
 
 			this.mediaRecorder.onstop = async () => {
-	
+
 				// remove listeners
 				clearInterval(drawInterval)
-				window.removeEventListener('resize', resizeCanvas)	
-				observer.disconnect()		
+				window.removeEventListener('resize', resizeCanvas)
+				observer.disconnect()
 
-
+				// stop local stram
 				this.is_recording = false;
 
 
@@ -687,10 +722,7 @@ class Record extends ModTemplate {
 		}
 
 
-
-
-		this.localStream = null;
-		this.externalMediaControl = false;
+		// this.externalMediaControl = false;
 		this.updateUIForRecordingStart()
 	}
 
@@ -746,7 +778,7 @@ class Record extends ModTemplate {
 		}
 
 
-		if (this.localStream && !this.externalMediaControl) {
+		if (this.localStream) {
 			this.localStream.getTracks().forEach((track) => track.stop());
 			this.localStream = null;
 		}
