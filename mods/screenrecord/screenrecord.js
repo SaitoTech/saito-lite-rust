@@ -391,6 +391,12 @@ class Record extends ModTemplate {
 			offscreenCanvas.width = window.innerWidth;
 			offscreenCanvas.height = window.innerHeight;
 
+			// let lastSnapshotCanvas = document.createElement('canvas');
+			// let lastSnapshotCtx = lastSnapshotCanvas.getContext('2d');
+			// lastSnapshotCanvas.width = window.innerWidth;
+			// lastSnapshotCanvas.height = window.innerHeight;
+
+
 			// set up this 
 			let self = this
 
@@ -405,6 +411,8 @@ class Record extends ModTemplate {
 				canvas.height = window.innerHeight;
 				offscreenCanvas.width = window.innerWidth;
 				offscreenCanvas.height = window.innerHeight;
+				// lastSnapshotCanvas.width = window.innerWidth;
+				// lastSnapshotCanvas.height = window.innerHeight;
 			};
 			resizeCanvas();
 			window.addEventListener('resize', resizeCanvas);
@@ -423,9 +431,40 @@ class Record extends ModTemplate {
 				}
 				return null;
 			}
+
+
+
+			const elementTracker = new WeakMap();
+
+			function shouldThrottle(element) {
+				const now = Date.now();
+
+				if (!elementTracker.has(element)) {
+					elementTracker.set(element, { count: 1, timestamp: now });
+					return false;
+				}
+
+				const elementData = elementTracker.get(element);
+				const elapsedTime = now - elementData.timestamp;
+
+				if (elapsedTime > 1000) {
+					elementTracker.set(element, { count: 1, timestamp: now });
+					return false;
+				}
+
+				if (elementData.count >= 2) {
+					return true;
+				}
+
+				elementData.count += 1;
+				return false;
+			}
 			const observer = new MutationObserver(mutations => {
 				let to_return = false;
+
+
 				mutations.forEach(mutation => {
+
 
 					if (mutation.type === 'attributes') {
 						if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
@@ -448,9 +487,9 @@ class Record extends ModTemplate {
 								}
 							});
 						}
-
-
 						if (to_return) return;
+
+
 						const imgBase64 = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
 						if (mutation.target.nodeName === 'IMG' && mutation.target.currentSrc === imgBase64) {
@@ -462,15 +501,19 @@ class Record extends ModTemplate {
 						if (mutation.target === document.querySelector("i#audio-indicator.fa.fa-microphone")) {
 							return;
 						}
-
-
-
-
-						console.log("mutation.target.id", mutation.target.id)
-						// For other style changes that don't match the above conditions, take a snapshot
 						if (mutation.attributeName === 'style') {
-			
-							takeSnapshot();
+							if (shouldThrottle(mutation.target)) {
+								return;
+							} else {
+								// console.log('should not throttle')
+								const rect = mutation.target.getBoundingClientRect();
+								if (rect.width > 0 && rect.height > 0) {
+									takeSnapshot(document.body.getBoundingClientRect());
+								}
+
+
+							}
+
 						}
 					}
 
@@ -545,19 +588,24 @@ class Record extends ModTemplate {
 
 
 			let lastSnapshotTime = 0;
-			function takeSnapshot() {
+
+			function takeSnapshot(rect) {
+
+				// console.log('rect', rect)
 				const now = performance.now();
 				const timeSinceLastSnapshot = now - lastSnapshotTime;
 				// Ensure only 4 snapshots per second (1000ms / 60 = ~16.67ms)
 				if (timeSinceLastSnapshot >= 1000 / 5) {
 					lastSnapshotTime = now;
-					console.log('taking snap shot')
+					// console.log('taking snap shot')
 					html2canvas(document.body, {
 						logging: false,
-						useCors: true,
-						scale: 1,
-						width: window.innerWidth,
-						height: window.innerHeight,
+						// useCors: true,
+						scale:1,
+						x: rect.left,
+						y: rect.top,
+						width: rect.width,
+						height: rect.height,
 						ignoreElements: function (element) {
 							if (element.id === "stream_local") {
 								return true;
@@ -567,6 +615,10 @@ class Record extends ModTemplate {
 							}
 						}
 					}).then(contentCanvas => {
+
+						ctx.drawImage(contentCanvas, rect.left, rect.top);
+						            // lastSnapshotCtx.drawImage(contentCanvas, rect.left, rect.top);
+
 						lastSnapshotCanvas = contentCanvas;
 						// renderCanvas();
 					}).catch(error => console.error("Error capturing canvas:", error));
@@ -583,7 +635,8 @@ class Record extends ModTemplate {
 				offscreenCtx.drawImage(lastSnapshotCanvas, 0, 0, offscreenCanvas.width, offscreenCanvas.height);
 			}
 
-			takeSnapshot();
+			takeSnapshot(document.body.getBoundingClientRect());
+
 			let drawInterval = setInterval(() => {
 				// we draw from both video streams and page to an offscreen context, then draw onto the main context after
 				renderCanvas();
