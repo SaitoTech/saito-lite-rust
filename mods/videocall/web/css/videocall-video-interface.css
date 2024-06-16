@@ -1004,6 +1004,14 @@
 	animation: pulsate 1s ease-in-out infinite;
 }
 
+.record-actioner.recording {
+	background-color: var(--saito-red);
+}
+.record-actioner i.recording {
+	color: var(--saito-white);
+	animation: pulsate 1s ease-in-out infinite;
+}
+
 /*
   settings overlay
 */

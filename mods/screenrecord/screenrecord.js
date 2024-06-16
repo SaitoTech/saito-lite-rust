@@ -11,13 +11,13 @@ class Record extends ModTemplate {
 	constructor(app) {
 		super(app);
 		this.app = app;
-		this.name = 'Record';
+		this.name = 'screenrecord';
 		this.description = 'Recording Module';
 		this.categories = 'Utilities Communications';
 		this.class = 'utility';
 		this.record_video = false;
 
-		this.styles = ['/saito/saito.css', '/record/style.css'];
+		this.styles = ['/saito/saito.css', '/screenrecord/style.css'];
 		this.interval = null;
 		this.streamData = [];
 
@@ -35,7 +35,8 @@ class Record extends ModTemplate {
 			return [
 				{
 					text: 'Record',
-					icon: `fas fa-record-vinyl record-icon ${this.mediaRecorder ? "pulsate" : ""}`,
+					icon: `fas fa-record-vinyl record-icon ${this.mediaRecorder ? "recording" : ""}`,
+					hook: "record-actioner",
 					callback: async function (app) {
 						let { container, streams, useMicrophone, callbackAfterRecord, members } = obj;
 
@@ -84,10 +85,10 @@ class Record extends ModTemplate {
 					let recordButton = document.getElementById('record-stream');
 					let { container, callbackAfterRecord } = game_mod.recordOptions;
 					if (!this.mediaRecorder) {
-						await this.startRecording(container, [], callbackAfterRecord, "game");
+						await this.startRecording(container, game_mod.players, callbackAfterRecord, "game");
 						recordButton.textContent = "Stop recording";
 					} else {
-						this.mediaRecorder.stop();
+						// this.mediaRecorder.stop();
 						this.stopRecording()
 					}
 				}.bind(this)
@@ -98,27 +99,58 @@ class Record extends ModTemplate {
 
 	}
 
+
+	async handlePeerTransaction(app, tx = null, peer, mycallback) {
+		if (tx == null) {
+			return;
+		}
+		let message = tx.returnMessage();
+
+		if (message.module === 'screenrecord') {
+		if (this.app.BROWSER === 1) {
+			if (this.hasSeenTransaction(tx)) return;
+			if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
+				if (message.request === "start recording") {
+					siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} started recording their screen`, 1500);
+					this.updateUIForRecordingStart()
+				}
+				if (message.request === "stop recording") {
+					siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} stopped recording their screen`, 1500);
+					this.updateUIForRecordingStop()
+				}
+			}
+		}
+	}
+	}
+
+
 	onConfirmation(blk, tx, conf) {
+		
 		if (tx == null) {
 			return;
 		}
 
 		let message = tx.returnMessage();
-
+		console.log(message.module, 'screenrecord')
 		if (conf === 0) {
-			if (message.module === 'record') {
+
+			if (message.module === 'screenrecord') {
+				console.log('received information')
 				if (this.app.BROWSER === 1) {
 					if (this.hasSeenTransaction(tx)) return;
 
 					if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
 						if (message.request === "start recording") {
 							siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} started recording their screen`, 1500);
+							this.updateUIForRecordingStart()
 						}
 						if (message.request === "stop recording") {
 							siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} stopped recording their screen`, 1500);
+							this.updateUIForRecordingStop()
 						}
 
-						this.toggleNotification();
+
+						// this.toggleNotification();
 					}
 
 				}
@@ -194,20 +226,28 @@ class Record extends ModTemplate {
 
 	async startRecording(container, members = [], callbackAfterRecord = null, type = "videocall") {
 		let startRecording = await sconfirm('Do you  want to start recording?');
+
 		if (!startRecording) return;
+
+		// initialize varialble
 		this.logo = new Image();
 		this.logo.src = '/saito/img/logo.svg';
 		this.is_recording = true;
+		let combinedStream = new MediaStream();
+		let animationFrameId;
+		this.members = members
+
+		// console.log('these are the members', members)
+
+		// remove any previous canvas present
 		document.querySelectorAll('canvas').forEach(canvas => {
 			canvas.parentElement.removeChild(document.querySelector('canvas'))
 		})
-		let combinedStream = new MediaStream();
-		let animationFrameId;
+	
 
 		if (type === "videocall") {
 			let observer = new MutationObserver((mutations) => {
 				mutations.forEach((mutation) => {
-					console.log(mutation.addedNodes, "added nodes")
 					if (mutation.type === 'childList') {
 						mutation.addedNodes.forEach(node => {
 							if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV' && node.id.startsWith('stream_')) {
@@ -293,33 +333,29 @@ class Record extends ModTemplate {
 			resizeCanvas();
 
 			const videoElements = document.querySelectorAll('div[id^="stream_"] video');
-			videoElements.forEach(video => {
+			// videoElements.forEach(video => {
 
-				// video.style.objectFit = "cover";
-				// video.style.width = "100%";
-				// video.style.height = "100%";
-				// video.style.maxWidth = "100%";
-			});
-
+			// 	// video.style.objectFit = "cover";
+			// 	// video.style.width = "100%";
+			// 	// video.style.height = "100%";
+			// 	// video.style.maxWidth = "100%";
+			// });
 
 			const audioCtx = new AudioContext();
 			destination = audioCtx.createMediaStreamDestination();
+
 			this.streamData = Array.from(videoElements).map(video => {
 				const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
-				if (!video.id.startsWith('local')) {
-					// console.log(video, "video localll")
-					// video.muted = false;
-					// video.volume = 1;
-					// console.log(video)
-				}
-
-
-
+				// if (!video.id.startsWith('local')) {
+				// 	// console.log(video, "video localll")
+				// 	// video.muted = false;
+				// 	// video.volume = 1;
+				// 	// console.log(video)
+				// }
 				if (stream && stream.getAudioTracks().length > 0) {
 					let source = audioCtx.createMediaStreamSource(stream)
 					source.connect(destination)
 				}
-
 				const rect = video.getBoundingClientRect();
 				const parentID = video.parentElement.id;
 				const videoElement = document.createElement('video');
@@ -331,14 +367,14 @@ class Record extends ModTemplate {
 			}).filter(data => data.stream !== null);
 
 
-
 			let chunks = [];
 
+
 			combinedStream.addTrack(canvas.captureStream(25).getVideoTracks()[0]);
-			console.log(destination.stream.getAudioTracks(), 'destination')
 			combinedStream.addTrack(destination.stream.getAudioTracks()[0]);
 			this.combinedStream = combinedStream;
 			this.app.connection.emit('screenrecord-combined-stream', this.combinedStream)
+
 			this.mediaRecorder = new MediaRecorder(combinedStream, {
 				mimeType: 'video/webm; codecs="vp8, opus"',
 				videoBitsPerSecond: 25 * 1024 * 1024,
@@ -355,7 +391,7 @@ class Record extends ModTemplate {
 				cancelAnimationFrame(animationFrameId)
 				window.removeEventListener('resize', resizeCanvas)
 				observer.disconnect()
-
+				// create compile video
 				const blob = new Blob(chunks, { type: 'video/webm' });
 				const url = URL.createObjectURL(blob);
 				const a = document.createElement('a');
@@ -376,6 +412,9 @@ class Record extends ModTemplate {
 			};
 			this.mediaRecorder.start();
 			drawStreamsToCanvas();
+
+			// console.log('these are the members', members)
+	
 		}
 		else {
 			// set up top variablse
@@ -432,13 +471,9 @@ class Record extends ModTemplate {
 				return null;
 			}
 
-
-
 			const elementTracker = new WeakMap();
-
 			function shouldThrottle(element) {
 				const now = Date.now();
-
 				if (!elementTracker.has(element)) {
 					elementTracker.set(element, { count: 1, timestamp: now });
 					return false;
@@ -461,8 +496,6 @@ class Record extends ModTemplate {
 			}
 			const observer = new MutationObserver(mutations => {
 				let to_return = false;
-
-
 				mutations.forEach(mutation => {
 
 
@@ -505,12 +538,10 @@ class Record extends ModTemplate {
 							if (shouldThrottle(mutation.target)) {
 								return;
 							} else {
-								// console.log('should not throttle')
 								const rect = mutation.target.getBoundingClientRect();
 								if (rect.width > 0 && rect.height > 0) {
 									takeSnapshot(document.body.getBoundingClientRect());
 								}
-
 
 							}
 
@@ -590,14 +621,10 @@ class Record extends ModTemplate {
 			let lastSnapshotTime = 0;
 
 			function takeSnapshot(rect) {
-
-				// console.log('rect', rect)
 				const now = performance.now();
 				const timeSinceLastSnapshot = now - lastSnapshotTime;
-				// Ensure only 4 snapshots per second (1000ms / 60 = ~16.67ms)
 				if (timeSinceLastSnapshot >= 1000 / 5) {
 					lastSnapshotTime = now;
-					// console.log('taking snap shot')
 					html2canvas(document.body, {
 						logging: false,
 						// useCors: true,
@@ -615,10 +642,7 @@ class Record extends ModTemplate {
 							}
 						}
 					}).then(contentCanvas => {
-
 						ctx.drawImage(contentCanvas, rect.left, rect.top);
-						            // lastSnapshotCtx.drawImage(contentCanvas, rect.left, rect.top);
-
 						lastSnapshotCanvas = contentCanvas;
 						// renderCanvas();
 					}).catch(error => console.error("Error capturing canvas:", error));
@@ -739,16 +763,11 @@ class Record extends ModTemplate {
 			};
 
 			this.mediaRecorder.onstop = async () => {
-
-				// remove listeners
 				clearInterval(drawInterval)
 				window.removeEventListener('resize', resizeCanvas)
 				observer.disconnect()
-
 				// stop local stram
 				this.is_recording = false;
-
-
 				const blob = new Blob(chunks, { type: 'video/webm' });
 				const url = URL.createObjectURL(blob);
 				const a = document.createElement('a');
@@ -759,8 +778,7 @@ class Record extends ModTemplate {
 				a.download = fileName;
 				document.body.appendChild(a);
 				a.click();
-
-
+		
 				setTimeout(() => {
 					document.body.removeChild(a);
 					URL.revokeObjectURL(url);
@@ -770,12 +788,13 @@ class Record extends ModTemplate {
 					callbackAfterRecord(blob);
 				}
 			};
-
 			this.mediaRecorder.start();
 		}
 
 
+	
 		// this.externalMediaControl = false;
+		this.sendStartRecordingTransaction(members)
 		this.updateUIForRecordingStart()
 	}
 
@@ -845,14 +864,12 @@ class Record extends ModTemplate {
 
 		this.updateUIForRecordingStop()
 
-		const recordButtonGame = document.getElementById('record-stream');
-		if (recordButtonGame) {
-			recordButtonGame.textContent = "record game";
-		}
+		this.sendStopRecordingTransaction(this.members)
 
-
+	
 
 		this.is_recording = false
+		this.members = []
 		// window.removeEventListener('resize', updateDimensions);
 		// window.removeEventListener('orientationchange', updateDimensions);
 
@@ -877,28 +894,34 @@ class Record extends ModTemplate {
 	async sendStartRecordingTransaction(keys) {
 		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
 
-		newtx.msg = {
-			module: 'Screenrecord',
-			request: 'start recording',
-		};
-
-		for (let peer of keys) {
-			if (peer != this.publicKey) {
-				newtx.addTo(peer);
+		try {
+			newtx.msg = {
+				module: 'screenrecord',
+				request: 'start recording',
+			};
+	
+			for (let peer of keys) {
+				if (peer != this.publicKey) {
+					newtx.addTo(peer);
+				}
 			}
-		}
+	
+			await newtx.sign();
+	
+			this.app.connection.emit('relay-transaction', newtx);
+			this.app.network.propagateTransaction(newtx);
+		} catch (error) {
+			console.log("error sending start recording transaction", error)
+		}	
 
-		await newtx.sign();
-
-		this.app.connection.emit('relay-transaction', newtx);
-		this.app.network.propagateTransaction(newtx);
+		
 	}
 
 	async sendStopRecordingTransaction(keys) {
 		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
 
 		newtx.msg = {
-			module: 'Screenrecord',
+			module: 'screenrecord',
 			request: 'stop recording',
 		};
 
@@ -917,15 +940,24 @@ class Record extends ModTemplate {
 	updateUIForRecordingStart() {
 		const recordIcon = document.querySelector('.fa-record-vinyl');
 		if (recordIcon) {
-			recordIcon.classList.add('pulsate');
+			console.log('updating UI for recording start')
+			recordIcon.classList.add('recording');
+			recordIcon.parentElement.classList.add('recording')
 		}
 	}
 
 	updateUIForRecordingStop() {
 		const recordIcon = document.querySelector('.fa-record-vinyl');
 		if (recordIcon) {
-			recordIcon.classList.remove('pulsate');
+			recordIcon.classList.remove('recording');
+			recordIcon.parentElement.classList.remove('recording')
 		}
+
+		const recordButtonGame = document.getElementById('record-stream');
+		if (recordButtonGame) {
+			recordButtonGame.textContent = "record game";
+		}
+
 	}
 }
 
