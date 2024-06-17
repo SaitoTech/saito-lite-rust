@@ -298,7 +298,7 @@ class Record extends ModTemplate {
 			canvas.width = window.innerWidth;
 			canvas.height = window.innerWidth
 			const ctx = canvas.getContext('2d');
-			document.body.appendChild(canvas);
+			// document.body.appendChild(canvas);
 
 			const drawStreamsToCanvas = () => {
 				if (!this.is_recording) return;
