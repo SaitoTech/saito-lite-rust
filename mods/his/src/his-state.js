@@ -380,25 +380,15 @@
       }
     }
 
-console.log("before factions calculate...");
-
     //
     // let factions calculate their VP
     //
     for (let f in factions) {
-console.log("... " + f);
-console.log(JSON.stringify(factions));
       factions[f].vp_base = this.factions[f].calculateBaseVictoryPoints(this);
-console.log("... " + f + " 1");
       factions[f].vp_bonus = this.factions[f].calculateBonusVictoryPoints(this);
-console.log("... " + f + " 2");
       factions[f].vp_special = this.factions[f].calculateSpecialVictoryPoints(this);
-console.log("... " + f + " 3");
       factions[f].vp = (factions[f].vp_base + factions[f].vp_bonus + factions[f].vp_special);
-console.log("... " + f + " 4");
     }
-
-console.log("calculate keys ctronlled...");
 
     //
     // calculate keys controlled
@@ -409,8 +399,6 @@ console.log("calculate keys ctronlled...");
 	factions[f].religious = this.returnNumberOfProtestantSpacesInLanguageZone();
       }
     }
-
-console.log("calculate military victory..");
 
     //
     // military victory
@@ -446,8 +434,6 @@ console.log("calculate military victory..");
       }
     }
 
-console.log("religious victory...");
-
     //
     // religious victory
     //
@@ -470,8 +456,6 @@ console.log("religious victory...");
       factions[this.game.state.events.copernicus].vp_special += parseInt(this.game.state.events.copernicus_vp);
       factions[this.game.state.events.copernicus].vp += parseInt(this.game.state.events.copernicus_vp);
     }
-
-console.log("war winner VP...");
 
     //
     // War Winner VP
@@ -551,8 +535,6 @@ console.log("war winner VP...");
       }
     }
 
-console.log("final victory VP...");
-
     //
     // final victory if round 9
     //
@@ -578,8 +560,6 @@ if (this.game.state.scenario != "is_testing") {
       }
     }
 }
-
-console.log("25VP tie VP...");
 
     //
     // tied at 25 VP or higher

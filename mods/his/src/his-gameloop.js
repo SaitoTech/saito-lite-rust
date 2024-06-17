@@ -64,8 +64,8 @@ this.updateLog(`###############`);
 	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
 if (this.game.options.scenario != "is_testing") {
-//	  this.game.queue.push("spring_deployment_phase");
-//	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
+	  this.game.queue.push("spring_deployment_phase");
+	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
 }
 
 	  if (this.game.players.length == 2) {
@@ -74,8 +74,7 @@ if (this.game.options.scenario != "is_testing") {
 	    // R1 cards dealt below
 	    if (this.game.state.round > 1) {
 	      this.game.queue.push("card_draw_phase");
-// HACK
-//	      this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
+	      this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
 	    }
 
 	  } else {
@@ -113,14 +112,28 @@ if (this.game.options.scenario != "is_testing") {
 
   	        this.game.queue.push("card_draw_phase");
 
-// HACK
-//		this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
-//		this.game.queue.push("winter_retreat_move_units_to_capital\tfrance");
-//		this.game.queue.push("winter_retreat_move_units_to_capital\tengland");
-//		this.game.queue.push("winter_retreat_move_units_to_capital\thapsburg");
-//		this.game.queue.push("winter_retreat_move_units_to_capital\tottoman");
+	        if (this.game.players.length == 3) {
+                  this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(["france","papacy","protestant"]));
+                  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+                  this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england"]));
+                  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+                }
+          
+            	if (this.game.players.length == 4) {
+            	  this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(["papacy","protestant"]));
+              	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              	  this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france"]));
+              	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              	  return 1;
+                }
+          
+                if (this.game.players.length >= 5) {
+		  this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france","papacy"]));
+	          this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+		}
 
 	        this.game.queue.push("retreat_to_winter_spaces");
+
 	      }
 }
 	    }
@@ -631,34 +644,42 @@ if (this.game.options.scenario != "is_testing") {
 
 
 
-
-	if (mv[0] === "faction_array_reset_winter_retreat_move_units_to_capital") {
-	  this.game.queue.splice(qe, 1);
-	  this.winter_retreat_waiting_for_confs = 0;
-	  return 1;
-	}
-	// please run reset_winter_retreat_move... first
 	if (mv[0] === "winter_retreat_move_units_to_capital_faction_array") {
 
 	  let factions = JSON.parse(mv[1]);
+	  let do_i_get_to_move = false;
 
-          if (this.game.confirms_needed[this.game.player-1] == 0) {
-	    this.updateStatus("waiting for others to complete winter retreat...");
+	  //
+	  // skip if we have already confirmed!
+	  //
+	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+	    this.diplomacy_overlay.hide();
 	    return 0;
 	  }
-	  if (this.winter_retreat_waiting_for_confs == 1) { 
-	    return 0;
-	  }
-	  this.winter_retreat_waiting_for_confs = 1;
+
+	  //
+	  // exit if overlay open and visible
+	  //
+	  if (this.theses_overlay.visible) { return 0; }
+	  if (this.moves.length > 0) { return 0; }
+
+	  this.addMove("RESOLVE\t"+this.publicKey);
 
 	  for (let i = 0; i < factions.length; i++) {
 	    let p = this.returnPlayerCommandingFaction(factions[i]);
 	    if (this.game.player == p) {
-	      // prevent double execution
 	      this.winter_overlay.hide();
 	      this.playerReturnWinterUnits(factions[i]);
-	    }
+	      do_i_get_to_move = true;
+            }
           }
+
+	  //
+	  // hey, it's me, not here...
+	  //
+	  if (do_i_get_to_move == false) {
+	     this.endTurn();
+	  }
 
 	  // no splice either -- cleared by RESETCONFIRMSNEEDED
 	  return 0;
@@ -10480,6 +10501,47 @@ if (this.game.state.round == 1 && this.game.state.impulse == 1) {
           return 1;
         }
 
+	if (mv[0] === "spring_deployment_faction_array") {
+
+	  let factions = JSON.parse(mv[1]);
+	  let do_i_get_to_move = false;
+
+	  //
+	  // skip if we have already confirmed!
+	  //
+	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+	    this.diplomacy_overlay.hide();
+	    return 0;
+	  }
+
+	  //
+	  // exit if diplomacy-overlay open and visible
+	  //
+	  if (this.spring_deployment_overlay.visible) { return 0; }
+	  if (this.moves.length > 0) { return 0; }
+
+	  this.addMove("RESOLVE\t"+this.publicKey);
+
+	  for (let i = 0; i < factions.length; i++) {
+	    let p = this.returnPlayerCommandingFaction(factions[i]);
+	    if (this.game.player == p && factions[i] != "protestant") {
+              this.playerPlaySpringDeployment(factions[i], this.game.player);
+	      do_i_get_to_move = true;
+            }
+          }
+
+	  // hey, it's me, protestants
+	  if (do_i_get_to_move == false) {
+	     this.endTurn();
+	  }
+
+	  return 0;
+
+	}
+
+
+
+
         if (mv[0] === "spring_deployment_phase") {
 
 	  this.game.queue.splice(qe, 1);
@@ -10512,11 +10574,33 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
   });
 }
 
-
 	  if (this.game.players.length === 2) {
 	    // only papacy moves units
 	    this.game.queue.push("spring_deployment\tpapacy");
 	  } else {
+
+	    if (this.game.players.length == 3) {
+              this.game.queue.push("spring_deployment_faction_array\t"+JSON.stringify(["france","papacy","protestant"]));
+              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              this.game.queue.push("spring_deployment_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england"]));
+              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              return 1;
+            }
+          
+            if (this.game.players.length == 4) {
+              this.game.queue.push("spring_deployment_faction_array\t"+JSON.stringify(["papacy","protestant"]));
+              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              this.game.queue.push("spring_deployment_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france"]));
+              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              return 1;
+            }
+          
+            if (this.game.players.length >= 5) {
+              this.game.queue.push("spring_deployment_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france","papacy","protestant"]));
+              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              return 1;
+            } 
+/****
 	    // all players can move units
 	    let io = this.returnImpulseOrder();
 	    for (let i = io.length-1; i >= 0; i--) {
@@ -10524,10 +10608,13 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
 		this.game.queue.push("spring_deployment\t"+io[i]);
 	      }
 	    }
+****/
 	  }
 
           return 1;
+
         }
+
         if (mv[0] === "spring_deployment") {
 
 	  this.game.queue.splice(qe, 1);
@@ -10665,18 +10752,14 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  }
 
 	  if (this.game.players.length >= 5) {
-	    this.game.queue.push("propose_diplomatic_proposals_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france","papacy"]));
+	    this.game.queue.push("propose_diplomatic_proposals_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france","papacy","protestant"]));
   	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    return 1;
 	  }
 
-/***
-	  let io = this.returnImpulseOrder();
-	  for (let i = io.length-1; i>= 0; i--) {
-	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+io[i]);
-	  }
-***/
-
+	  //
+	  // deprecated function, but works for marriage
+	  //
 	  if (this.game.state.henry_viii_marital_status == 1) {
 	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\tmarriage");
 	  }
@@ -10745,9 +10828,6 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
 	}
 
-	//
-	// shows UI for proposing then sweeps down to counter_or_acknowledge
-	//
 	if (mv[0] === "propose_diplomatic_proposals_faction_array") {
 
 	  let factions = JSON.parse(mv[1]);
@@ -10756,13 +10836,15 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  //
 	  // exit if diplomacy-overlay open and visible
 	  //
-	  if (this.diplomacy_overlay.is_visible) { return; }
+	  if (this.diplomacy_overlay.is_visible) { return 0; }
+	  if (this.moves.length > 0) { return 0; }
 
 	  //
 	  // skip if we have already confirmed!
 	  //
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
 	    this.diplomacy_overlay.hide();
+	    this.winter_overlay.render("stage6");
 	    return 0;
 	  }
 
@@ -11620,8 +11702,7 @@ cardnum = 1;
 //if (f == "ottoman") { cardnum = 0; }
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
-// HACK
-//    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
+    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 
 		//
@@ -12811,8 +12892,12 @@ console.log(JSON.stringify(reshuffle_cards));
 	if (mv[0] === "evacuate") {
 
 	  this.game.queue.splice(qe, 1);
-	  let spacekey = mv[1];
+	  let faction = mv[1];
+	  let spacekey = mv[2];
  	  let space = this.game.spaces[spacekey];
+
+console.log("spacekey: " + spacekey);
+console.log("space.units: " + JSON.stringify(space.units));
 
 	  for (let f in space.units) {
 
@@ -12836,7 +12921,7 @@ console.log(JSON.stringify(reshuffle_cards));
 		  }
 		}
 	      }
-	      for (let i = space.units[f].length-1; i >= 0; iii) {
+	      for (let i = space.units[f].length-1; i >= 0; i--) {
 	        if (space.units[f][i].type == "squadron" || space.units[f][i].type == "corsair") {
 		  if (spacekey_for_relocation != "") {
 		    this.game.spaces[spacekey_for_relocation].units[f].push(space.units[f][i]);

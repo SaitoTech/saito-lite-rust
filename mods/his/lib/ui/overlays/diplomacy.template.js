@@ -19,7 +19,7 @@ module.exports = DiplomacyProposeTemplate = (obj, faction) => {
 	    <div class="right">
 	      <div class="help">terms for discussion</div>
 	      <div class="proposals"></div>
-	      <div class="button submit">submit offers</div>
+	      <div class="button submit">or skip diplomacy...</div>
 	    </div>
 	  </div>
 	`;

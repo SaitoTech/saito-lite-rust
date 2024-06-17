@@ -65,8 +65,14 @@ minor changes have been made to hasten gameplay, including:
 browsers will "automatically" respond "no" when asked if they want to play
    event-response cards (like Wartburg) if they do not have those cards. This
    speeds up gameplay at the cost of "leaking" info that some players do not
-   hold those cards. This feature can be disabled by switching to slow gameplay
-   mode.
+   hold those cards. Players who have response cards also only have a limited 
+   amount of time to select those cards.
+</li>
+<li>
+parallel moves are possible for Spring Deployment and Diplomacy and a few other
+   minor retreat options. advanced players who wish to enforce Impulse Order in
+   these cases can do so simply by having factions commit their moves in that 
+   order.
 </li>
 <li>
 winter retreat is heavily automated, with units automatically returned to the

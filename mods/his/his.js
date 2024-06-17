@@ -25,12 +25,12 @@ const FieldBattleOverlay = require('./lib/ui/overlays/field-battle');
 const NavalBattleOverlay = require('./lib/ui/overlays/naval-battle');
 const SchmalkaldicOverlay = require('./lib/ui/overlays/schmalkaldic');
 const AssaultOverlay = require('./lib/ui/overlays/siege');
-const WarOverlay = require('./lib/ui/overlays/war');
 const ThesesOverlay = require('./lib/ui/overlays/theses');
 const DebatersOverlay = require('./lib/ui/overlays/debaters');
 const ExplorersOverlay = require('./lib/ui/overlays/explorers');
 const ConquistadorsOverlay = require('./lib/ui/overlays/conquistadors');
 const UnitsOverlay = require('./lib/ui/overlays/units');
+const WarOverlay = require('./lib/ui/overlays/war');
 const WelcomeOverlay = require('./lib/ui/overlays/welcome');
 const WinterOverlay = require('./lib/ui/overlays/winter');
 const DeckOverlay = require('./lib/ui/overlays/deck');
@@ -81,7 +81,7 @@ class HereIStand extends GameTemplate {
     this.diet_of_worms_overlay = new DietOfWormsOverlay(this.app, this);  // diet of worms
     this.diplomacy_overlay = new DiplomacyOverlay(this.app, this);
     this.diplomacy_confirm_overlay = new DiplomacyConfirmOverlay(this.app, this);
-    this.diplomacy_propose_overlay = new DiplomacyProposeOverlay(this.app, this);
+    //this.diplomacy_propose_overlay = new DiplomacyProposeOverlay(this.app, this);
     this.council_of_trent_overlay = new CouncilOfTrentOverlay(this.app, this);  // council of trent
     this.chateaux_overlay = new ChateauxOverlay(this.app, this);  // build some fucking chateaux
     this.marriage_overlay = new MarriageOverlay(this.app, this);  // marry, divorce, repeat
@@ -96,7 +96,6 @@ class HereIStand extends GameTemplate {
     this.conquistadors_overlay = new ConquistadorsOverlay(this.app, this);
     this.schmalkaldic_overlay = new SchmalkaldicOverlay(this.app, this);  // schmalkaldic league
     this.assault_overlay = new AssaultOverlay(this.app, this);  // siege
-    this.war_overlay = new WarOverlay(this.app, this);  // naval battles
     this.naval_battle_overlay = new NavalBattleOverlay(this.app, this);  // naval battles
     this.field_battle_overlay = new FieldBattleOverlay(this.app, this);  // field battles
     this.spring_deployment_overlay = new SpringDeploymentOverlay(this.app, this);  // spring deployment
@@ -109,6 +108,7 @@ class HereIStand extends GameTemplate {
     this.menu_overlay = new MenuOverlay(this.app, this);  // players doing stuff
     this.winter_overlay = new WinterOverlay(this.app, this);
     this.units_overlay = new UnitsOverlay(this.app, this);
+    this.war_overlay = new WarOverlay(this.app, this);
 
     //
     // triangular help button
@@ -3106,8 +3106,14 @@ minor changes have been made to hasten gameplay, including:
 browsers will "automatically" respond "no" when asked if they want to play
    event-response cards (like Wartburg) if they do not have those cards. This
    speeds up gameplay at the cost of "leaking" info that some players do not
-   hold those cards. This feature can be disabled by switching to slow gameplay
-   mode.
+   hold those cards. Players who have response cards also only have a limited 
+   amount of time to select those cards.
+</li>
+<li>
+parallel moves are possible for Spring Deployment and Diplomacy and a few other
+   minor retreat options. advanced players who wish to enforce Impulse Order in
+   these cases can do so simply by having factions commit their moves in that 
+   order.
 </li>
 <li>
 winter retreat is heavily automated, with units automatically returned to the
@@ -20605,25 +20611,15 @@ try {
       }
     }
 
-console.log("before factions calculate...");
-
     //
     // let factions calculate their VP
     //
     for (let f in factions) {
-console.log("... " + f);
-console.log(JSON.stringify(factions));
       factions[f].vp_base = this.factions[f].calculateBaseVictoryPoints(this);
-console.log("... " + f + " 1");
       factions[f].vp_bonus = this.factions[f].calculateBonusVictoryPoints(this);
-console.log("... " + f + " 2");
       factions[f].vp_special = this.factions[f].calculateSpecialVictoryPoints(this);
-console.log("... " + f + " 3");
       factions[f].vp = (factions[f].vp_base + factions[f].vp_bonus + factions[f].vp_special);
-console.log("... " + f + " 4");
     }
-
-console.log("calculate keys ctronlled...");
 
     //
     // calculate keys controlled
@@ -20634,8 +20630,6 @@ console.log("calculate keys ctronlled...");
 	factions[f].religious = this.returnNumberOfProtestantSpacesInLanguageZone();
       }
     }
-
-console.log("calculate military victory..");
 
     //
     // military victory
@@ -20671,8 +20665,6 @@ console.log("calculate military victory..");
       }
     }
 
-console.log("religious victory...");
-
     //
     // religious victory
     //
@@ -20695,8 +20687,6 @@ console.log("religious victory...");
       factions[this.game.state.events.copernicus].vp_special += parseInt(this.game.state.events.copernicus_vp);
       factions[this.game.state.events.copernicus].vp += parseInt(this.game.state.events.copernicus_vp);
     }
-
-console.log("war winner VP...");
 
     //
     // War Winner VP
@@ -20776,8 +20766,6 @@ console.log("war winner VP...");
       }
     }
 
-console.log("final victory VP...");
-
     //
     // final victory if round 9
     //
@@ -20803,8 +20791,6 @@ if (this.game.state.scenario != "is_testing") {
       }
     }
 }
-
-console.log("25VP tie VP...");
 
     //
     // tied at 25 VP or higher
@@ -22412,8 +22398,8 @@ this.updateLog(`###############`);
 	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
 if (this.game.options.scenario != "is_testing") {
-//	  this.game.queue.push("spring_deployment_phase");
-//	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
+	  this.game.queue.push("spring_deployment_phase");
+	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
 }
 
 	  if (this.game.players.length == 2) {
@@ -22422,8 +22408,7 @@ if (this.game.options.scenario != "is_testing") {
 	    // R1 cards dealt below
 	    if (this.game.state.round > 1) {
 	      this.game.queue.push("card_draw_phase");
-// HACK
-//	      this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
+	      this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
 	    }
 
 	  } else {
@@ -22461,14 +22446,28 @@ if (this.game.options.scenario != "is_testing") {
 
   	        this.game.queue.push("card_draw_phase");
 
-// HACK
-//		this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
-//		this.game.queue.push("winter_retreat_move_units_to_capital\tfrance");
-//		this.game.queue.push("winter_retreat_move_units_to_capital\tengland");
-//		this.game.queue.push("winter_retreat_move_units_to_capital\thapsburg");
-//		this.game.queue.push("winter_retreat_move_units_to_capital\tottoman");
+	        if (this.game.players.length == 3) {
+                  this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(["france","papacy","protestant"]));
+                  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+                  this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england"]));
+                  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+                }
+          
+            	if (this.game.players.length == 4) {
+            	  this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(["papacy","protestant"]));
+              	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              	  this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france"]));
+              	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              	  return 1;
+                }
+          
+                if (this.game.players.length >= 5) {
+		  this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france","papacy"]));
+	          this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+		}
 
 	        this.game.queue.push("retreat_to_winter_spaces");
+
 	      }
 }
 	    }
@@ -22979,34 +22978,42 @@ if (this.game.options.scenario != "is_testing") {
 
 
 
-
-	if (mv[0] === "faction_array_reset_winter_retreat_move_units_to_capital") {
-	  this.game.queue.splice(qe, 1);
-	  this.winter_retreat_waiting_for_confs = 0;
-	  return 1;
-	}
-	// please run reset_winter_retreat_move... first
 	if (mv[0] === "winter_retreat_move_units_to_capital_faction_array") {
 
 	  let factions = JSON.parse(mv[1]);
+	  let do_i_get_to_move = false;
 
-          if (this.game.confirms_needed[this.game.player-1] == 0) {
-	    this.updateStatus("waiting for others to complete winter retreat...");
+	  //
+	  // skip if we have already confirmed!
+	  //
+	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+	    this.diplomacy_overlay.hide();
 	    return 0;
 	  }
-	  if (this.winter_retreat_waiting_for_confs == 1) { 
-	    return 0;
-	  }
-	  this.winter_retreat_waiting_for_confs = 1;
+
+	  //
+	  // exit if overlay open and visible
+	  //
+	  if (this.theses_overlay.visible) { return 0; }
+	  if (this.moves.length > 0) { return 0; }
+
+	  this.addMove("RESOLVE\t"+this.publicKey);
 
 	  for (let i = 0; i < factions.length; i++) {
 	    let p = this.returnPlayerCommandingFaction(factions[i]);
 	    if (this.game.player == p) {
-	      // prevent double execution
 	      this.winter_overlay.hide();
 	      this.playerReturnWinterUnits(factions[i]);
-	    }
+	      do_i_get_to_move = true;
+            }
           }
+
+	  //
+	  // hey, it's me, not here...
+	  //
+	  if (do_i_get_to_move == false) {
+	     this.endTurn();
+	  }
 
 	  // no splice either -- cleared by RESETCONFIRMSNEEDED
 	  return 0;
@@ -32828,6 +32835,47 @@ if (this.game.state.round == 1 && this.game.state.impulse == 1) {
           return 1;
         }
 
+	if (mv[0] === "spring_deployment_faction_array") {
+
+	  let factions = JSON.parse(mv[1]);
+	  let do_i_get_to_move = false;
+
+	  //
+	  // skip if we have already confirmed!
+	  //
+	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+	    this.diplomacy_overlay.hide();
+	    return 0;
+	  }
+
+	  //
+	  // exit if diplomacy-overlay open and visible
+	  //
+	  if (this.spring_deployment_overlay.visible) { return 0; }
+	  if (this.moves.length > 0) { return 0; }
+
+	  this.addMove("RESOLVE\t"+this.publicKey);
+
+	  for (let i = 0; i < factions.length; i++) {
+	    let p = this.returnPlayerCommandingFaction(factions[i]);
+	    if (this.game.player == p && factions[i] != "protestant") {
+              this.playerPlaySpringDeployment(factions[i], this.game.player);
+	      do_i_get_to_move = true;
+            }
+          }
+
+	  // hey, it's me, protestants
+	  if (do_i_get_to_move == false) {
+	     this.endTurn();
+	  }
+
+	  return 0;
+
+	}
+
+
+
+
         if (mv[0] === "spring_deployment_phase") {
 
 	  this.game.queue.splice(qe, 1);
@@ -32860,11 +32908,33 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
   });
 }
 
-
 	  if (this.game.players.length === 2) {
 	    // only papacy moves units
 	    this.game.queue.push("spring_deployment\tpapacy");
 	  } else {
+
+	    if (this.game.players.length == 3) {
+              this.game.queue.push("spring_deployment_faction_array\t"+JSON.stringify(["france","papacy","protestant"]));
+              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              this.game.queue.push("spring_deployment_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england"]));
+              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              return 1;
+            }
+          
+            if (this.game.players.length == 4) {
+              this.game.queue.push("spring_deployment_faction_array\t"+JSON.stringify(["papacy","protestant"]));
+              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              this.game.queue.push("spring_deployment_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france"]));
+              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              return 1;
+            }
+          
+            if (this.game.players.length >= 5) {
+              this.game.queue.push("spring_deployment_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france","papacy","protestant"]));
+              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              return 1;
+            } 
+/****
 	    // all players can move units
 	    let io = this.returnImpulseOrder();
 	    for (let i = io.length-1; i >= 0; i--) {
@@ -32872,10 +32942,13 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
 		this.game.queue.push("spring_deployment\t"+io[i]);
 	      }
 	    }
+****/
 	  }
 
           return 1;
+
         }
+
         if (mv[0] === "spring_deployment") {
 
 	  this.game.queue.splice(qe, 1);
@@ -33013,18 +33086,14 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  }
 
 	  if (this.game.players.length >= 5) {
-	    this.game.queue.push("propose_diplomatic_proposals_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france","papacy"]));
+	    this.game.queue.push("propose_diplomatic_proposals_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france","papacy","protestant"]));
   	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 	    return 1;
 	  }
 
-/***
-	  let io = this.returnImpulseOrder();
-	  for (let i = io.length-1; i>= 0; i--) {
-	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+io[i]);
-	  }
-***/
-
+	  //
+	  // deprecated function, but works for marriage
+	  //
 	  if (this.game.state.henry_viii_marital_status == 1) {
 	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\tmarriage");
 	  }
@@ -33093,9 +33162,6 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
 	}
 
-	//
-	// shows UI for proposing then sweeps down to counter_or_acknowledge
-	//
 	if (mv[0] === "propose_diplomatic_proposals_faction_array") {
 
 	  let factions = JSON.parse(mv[1]);
@@ -33104,13 +33170,15 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  //
 	  // exit if diplomacy-overlay open and visible
 	  //
-	  if (this.diplomacy_overlay.is_visible) { return; }
+	  if (this.diplomacy_overlay.is_visible) { return 0; }
+	  if (this.moves.length > 0) { return 0; }
 
 	  //
 	  // skip if we have already confirmed!
 	  //
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
 	    this.diplomacy_overlay.hide();
+	    this.winter_overlay.render("stage6");
 	    return 0;
 	  }
 
@@ -33968,8 +34036,7 @@ cardnum = 1;
 //if (f == "ottoman") { cardnum = 0; }
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
-// HACK
-//    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
+    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 
 		//
@@ -35159,8 +35226,12 @@ console.log(JSON.stringify(reshuffle_cards));
 	if (mv[0] === "evacuate") {
 
 	  this.game.queue.splice(qe, 1);
-	  let spacekey = mv[1];
+	  let faction = mv[1];
+	  let spacekey = mv[2];
  	  let space = this.game.spaces[spacekey];
+
+console.log("spacekey: " + spacekey);
+console.log("space.units: " + JSON.stringify(space.units));
 
 	  for (let f in space.units) {
 
@@ -35184,7 +35255,7 @@ console.log(JSON.stringify(reshuffle_cards));
 		  }
 		}
 	      }
-	      for (let i = space.units[f].length-1; i >= 0; iii) {
+	      for (let i = space.units[f].length-1; i >= 0; i--) {
 	        if (space.units[f][i].type == "squadron" || space.units[f][i].type == "corsair") {
 		  if (spacekey_for_relocation != "") {
 		    this.game.spaces[spacekey_for_relocation].units[f].push(space.units[f][i]);
@@ -39164,8 +39235,6 @@ return;
 
   playerReturnWinterUnits(faction) {
 
-    //this.addMove("RESOLVE\t"+this.publicKey);
-
     let his_self = this;
     let capitals = this.returnCapitals(faction);
     let viable_capitals = [];
@@ -39559,7 +39628,7 @@ return;
               for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i].idx);
               }
-              his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
+              //his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
               his_self.endTurn();
 	      his_self.available_units_overlay.faded_out = false;
               return;
@@ -44005,6 +44074,8 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
     let selectFactionsInterface = function(selectFactionsInterface, payCostsInterface) {
 
+      his_self.war_overlay.render();
+
       let msg = `${his_self.returnFactionName(faction)} - Declarations of War?`;
       let existing_cost = 0;
       let html = '<ul>';
@@ -44047,6 +44118,8 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       $('.option').on('click', function () {
 
 	let action = $(this).attr("id");
+
+        his_self.war_overlay.hide();
 
         let id = parseInt(action);
 	$('.option').off();

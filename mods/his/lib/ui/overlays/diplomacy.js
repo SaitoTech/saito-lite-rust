@@ -202,7 +202,19 @@ class DiplomacyOverlay {
 	  proposals_html += '</ol>';
 	  if (any_proposals) {
 	    document.querySelector(".diplomacy-overlay .right .proposals").innerHTML = proposals_html;
+
+	    try {
+	      let sobj = document.querySelector(".submit");
+	      if (sobj) { 
+	        sobj.innerHTML = "submit offers";
+	      }
+	    } catch (err) {
+
+	    }
+
 	  }
+
+
 	}
 
 	createNewProposal(faction="", target="") {
