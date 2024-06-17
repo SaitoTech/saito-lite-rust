@@ -1,12 +1,12 @@
-module.exports = DiplomacyProposeTemplate = (obj) => {
+module.exports = DiplomacyProposeTemplate = (obj, faction) => {
 
 	let his_self = obj.mod;
 
 	let html = `
 	  <div class="diplomacy-overlay">
 	    <div class="left">
-	      <div class="status">make offer to whom?</div>
-	      <div class="controls">
+	      <div class="status2">${his_self.returnFactionName(faction)}:  make offer to whom?</div>
+	      <div class="controls2">
 		<ul>
 	          <li class="option hapsburg" id="hapsburg">hapsburg</li>
 	          <li class="option england" id="england">england</li>
@@ -19,7 +19,7 @@ module.exports = DiplomacyProposeTemplate = (obj) => {
 	    <div class="right">
 	      <div class="help">terms for discussion</div>
 	      <div class="proposals"></div>
-	      <div class="button submit">submit</div>
+	      <div class="button submit">submit offers</div>
 	    </div>
 	  </div>
 	`;

@@ -66,9 +66,8 @@ class MarriageOverlay {
                   }
                   if (action === "disapprove") {
 		    his_self.endTurn(); 
+		    his_self.hide();
                   }
-
-		  this.hide();
 
 		});
 	}

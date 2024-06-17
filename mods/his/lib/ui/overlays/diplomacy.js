@@ -10,12 +10,15 @@ class DiplomacyOverlay {
 		this.overlay.clickBackdropToClose = false;
 		this.faction = "";
 		this.faction_under_offer = "";
+		this.active_proposal = -1;
+	        this.is_visible = false;
 		this.proposals = [];
 		this.proposal = {};
 		this.proposal.confirms = [];
 		this.proposal.terms = [];
 		this.proposal.parties = [];
 		this.proposal.proposer = "";
+		this.proposal.target = "";
 	
 	}
 
@@ -34,15 +37,22 @@ class DiplomacyOverlay {
                 }
         }
 
+
+        purgeProposals() {
+                this.proposals = [];
+                this.proposal = {};
+                this.proposal.confirms = [];
+                this.proposal.terms = [];
+                this.proposal.parties = [];
+                this.proposal.proposer = "";
+		this.proposal.target = "";
+        }
+
+	
+
 	hide() {
-
-		this.proposals = [];
-		this.proposal = {};
-		this.proposal.confirms = [];
-		this.proposal.terms = [];
-		this.proposal.parties = [];
-		this.proposal.proposer = "";
-
+		this.purgeProposals();
+	        this.is_visible = false;
 		this.overlay.hide();
 		return;
 	}
@@ -50,16 +60,32 @@ class DiplomacyOverlay {
 	render(faction="") {
 
           let his_self = this.mod;
+	  this.is_visible = true;
 	  let num = 0;
+	  this.active_proposal = -1;
 
 	  if (faction == "") { faction = this.faction; } else { this.faction = faction; }
 	  if (faction != "" && !this.proposal.parties.includes(faction)) { this.proposal.parties.push(faction); }
 
-	  this.overlay.show(DiplomacyTemplate(this));
+	  this.overlay.show(DiplomacyTemplate(this, faction));
 	  this.renderAllProposals(faction);
 
 	  let obj = document.querySelector(".diplomacy-overlay");
 	  if (obj) { obj.style.flexWrap = "nowrap"; }
+	  if (obj) { obj.style.background = ""; }
+
+	  if (faction == "hapsburg" || faction == "england" || faction == "france" || faction == "papacy" || faction == "protestants") {
+	    document.querySelector(".controls2 ul li.hapsburg").remove();
+	  }
+	  if (faction == "england" || faction == "france" || faction == "papacy" || faction == "protestants") {
+	    document.querySelector(".controls2 ul li.england").remove();
+	  }
+	  if (faction == "france" || faction == "papacy" || faction == "protestants") {
+	    document.querySelector(".controls2 ul li.france").remove();
+	  }
+	  if (faction == "papacy" || faction == "protestants") {
+	    document.querySelector(".controls2 ul li.papacy").remove();
+	  }
 
 	  this.pushHudUnderOverlay();
 
@@ -71,6 +97,30 @@ class DiplomacyOverlay {
 
 
 	attachEvents(faction="") {
+
+	  //
+	  // delete proposals
+	  //
+	  document.querySelectorAll(".proposal-close").forEach((el) => {
+	    el.onclick = (e) => {
+	      this.proposals.splice(e.currentTarget.id, 1);
+	      this.render(faction);
+	    }
+	  });
+
+	  //
+
+	  //
+	  // add terms to existing proposal
+	  //
+	  document.querySelectorAll(".proposal-add-term").forEach((el) => {
+	    el.onclick = (e) => {
+	      this.proposal.terms = this.proposals[e.currentTarget.id].terms;
+	      this.proposal.target = this.proposals[e.currentTarget.id].target;
+	      this.proposals.splice(e.currentTarget.id, 1);
+	      this.renderAddProposalMenu(faction, this.proposal.target);
+	    }
+	  });
 
 	  //
 	  // finish diplomacy stage
@@ -86,50 +136,40 @@ class DiplomacyOverlay {
 	    }
 	  }
 
-
 	  if (document.querySelector(".option.hapsburg")) {
 	    document.querySelector(".option.hapsburg").onclick = (e) => {
 	      this.faction_under_offer = "hapsburg";
-	      this.createNewProposal(faction);
+	      this.createNewProposal(faction, "hapsburg");
 	    }
 	  }
 
 	  if (document.querySelector(".option.protestant")) {
 	    document.querySelector(".option.protestant").onclick = (e) => {
 	      this.faction_under_offer = "protestant";
-	      this.createNewProposal(faction);
+	      this.createNewProposal(faction, "protestant");
 	    }
 	  }
 
 	  if (document.querySelector(".option.papacy")) {
 	    document.querySelector(".option.papacy").onclick = (e) => {
 	      this.faction_under_offer = "papacy";
-	      this.createNewProposal(faction);
+	      this.createNewProposal(faction, "papacy");
 	    }
 	  }
 
 	  if (document.querySelector(".option.england")) {
 	    document.querySelector(".option.england").onclick = (e) => {
 	      this.faction_under_offer = "england";
-	      this.createNewProposal(faction);
+	      this.createNewProposal(faction, "england");
 	    }
 	  }
 
 	  if (document.querySelector(".option.france")) {
 	    document.querySelector(".option.france").onclick = (e) => {
 	      this.faction_under_offer = "france";
-	      this.createNewProposal(faction);
+	      this.createNewProposal(faction, "france");
 	    }
 	  }
-
-
-	  //
-	  // add condition to proposal
-	  //
-//	  document.querySelector(".also").onclick = (e) => {
-//	    this.renderCurrentProposal();
-//	    this.renderAddProposalMenu(faction);
-//	  }
 
 	  //
 	  // submit
@@ -144,17 +184,20 @@ class DiplomacyOverlay {
 
 
 	renderAllProposals(faction="") {
+
 	  let any_proposals = false;
 	  let proposals_html = "<ol>";
           for (let i = 0; i < this.proposals.length; i++) {
 	    any_proposals = true;
-	    proposals_html += '<li><ul>';
+	    proposals_html += '<li class="proposal-group-level">';
+	    proposals_html += `<div><div class="proposal-target-faction">Offer to ${this.mod.returnFactionName(this.proposals[i].target)}<div class="proposal-close" id="${i}">X</div></div><ul>`;
 	    let p = this.proposals[i];
 	    let t = this.mod.convertTermsToText(p.terms);
 	    for (let z = 0; z < t.length; z++) {
-	      proposals_html += '<li>' + t[z] + '</li>';
+	      proposals_html += '<li class="proposal-term-level">' + t[z] + '</li>';
 	    }
-	    proposals_html += '</ul></li>';
+	    proposals_html += `<li class="proposal-term-level proposal-add-term" id="${i}">add new term</li>`;
+	    proposals_html += '</ul></div></li>';
           }
 	  proposals_html += '</ol>';
 	  if (any_proposals) {
@@ -162,19 +205,20 @@ class DiplomacyOverlay {
 	  }
 	}
 
-	createNewProposal(faction="") {
+	createNewProposal(faction="", target="") {
 	    this.terms = [];
-	    this.renderAddProposalMenu(faction);
+	    this.proposal.target = target;
+	    this.renderAddProposalMenu(faction, target);
 	}
 
 
 	submitProposals() {
-            this.proposal.proposer = this.faction;
-            this.proposals.push(this.proposal);
-            this.proposal = {};
-            this.proposal.terms = [];
-            this.proposal.parties = [];
-            this.proposal.proposer = this.faction;
+	  this.mod.updateLog(this.mod.returnFactionName(this.faction)+" concludes diplomacy");
+          for (let z = 0; z < this.proposals.length; z++) {
+            this.mod.addMove("diplomacy_submit_proposal\t"+JSON.stringify(this.proposals[z]));
+          }
+          this.mod.endTurn();
+          this.hide();
 	}
 
 
@@ -184,6 +228,7 @@ class DiplomacyOverlay {
 
 	  let obj = document.querySelector(".diplomacy-overlay");
 	  if (obj) { obj.style.flexWrap = "wrap"; }
+	  if (obj) { obj.style.background = "transparent"; }
 
 	  //
 	  // overlay gets menu
@@ -216,6 +261,7 @@ class DiplomacyOverlay {
 		//
 		let id = e.currentTarget.id;
 		menu[id].fnct(his_self, faction, (terms) => {
+console.log("into callback function after menu selection!");
 		  for (let z = 0; z < terms.length; z++) {
 		    let io = this.mod.returnDiplomacyImpulseOrder(faction);
 	 	    for (let y = 0; y < io.length; y++) {
@@ -226,6 +272,17 @@ class DiplomacyOverlay {
 		    this.proposal.terms.push(terms[z]);
 		  }
 
+		  //
+		  // add proposal to stack and reclaim
+		  //
+	    	  this.proposal.proposer = this.faction;
+            	  this.proposals.push(this.proposal);
+            	  this.proposal = {};
+            	  this.proposal.terms = [];
+            	  this.proposal.parties = [];
+                  this.proposal.proposer = this.faction;
+
+console.log("and re-rendering with selected faction!");
 		  //
 		  // and re-render
 		  //

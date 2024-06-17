@@ -64,8 +64,8 @@ this.updateLog(`###############`);
 	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
 if (this.game.options.scenario != "is_testing") {
-	  this.game.queue.push("spring_deployment_phase");
-	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
+//	  this.game.queue.push("spring_deployment_phase");
+//	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
 }
 
 	  if (this.game.players.length == 2) {
@@ -74,7 +74,8 @@ if (this.game.options.scenario != "is_testing") {
 	    // R1 cards dealt below
 	    if (this.game.state.round > 1) {
 	      this.game.queue.push("card_draw_phase");
-	      this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
+// HACK
+//	      this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
 	    }
 
 	  } else {
@@ -112,11 +113,12 @@ if (this.game.options.scenario != "is_testing") {
 
   	        this.game.queue.push("card_draw_phase");
 
-		this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
-		this.game.queue.push("winter_retreat_move_units_to_capital\tfrance");
-		this.game.queue.push("winter_retreat_move_units_to_capital\tengland");
-		this.game.queue.push("winter_retreat_move_units_to_capital\thapsburg");
-		this.game.queue.push("winter_retreat_move_units_to_capital\tottoman");
+// HACK
+//		this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
+//		this.game.queue.push("winter_retreat_move_units_to_capital\tfrance");
+//		this.game.queue.push("winter_retreat_move_units_to_capital\tengland");
+//		this.game.queue.push("winter_retreat_move_units_to_capital\thapsburg");
+//		this.game.queue.push("winter_retreat_move_units_to_capital\tottoman");
 
 	        this.game.queue.push("retreat_to_winter_spaces");
 	      }
@@ -10600,7 +10602,8 @@ this.game_help.renderCustomOverlay("spring_deployment", {
 	      this.game.queue.push(proposal.terms[i]);
 	    }
 	    this.game.state.diplomacy.splice(idx, 1);
-	    this.diplomacy_propose_overlay.purgeProposals();
+	    this.diplomacy_overlay.purgeProposals();
+	    //this.diplomacy_propose_overlay.purgeProposals();
 	  }
 
 	  return 1;
@@ -10642,12 +10645,84 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
 	  let io = this.returnImpulseOrder();
 	  for (let i = io.length-1; i>= 0; i--) {
+	    this.game.queue.push("confirm_diplomatic_proposals\t"+io[i]);
+	  }
+
+	  if (this.game.players.length == 3) {
+	    this.game.queue.push("propose_diplomatic_proposals_faction_array\t"+JSON.stringify(["france","papacy","protestant"]));
+	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("propose_diplomatic_proposals_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england"]));
+  	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    return 1;
+	  }
+
+	  if (this.game.players.length == 4) {
+	    this.game.queue.push("propose_diplomatic_proposals_faction_array\t"+JSON.stringify(["papacy","protestant"]));
+  	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("propose_diplomatic_proposals_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france"]));
+	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    return 1;
+	  }
+
+	  if (this.game.players.length >= 5) {
+	    this.game.queue.push("propose_diplomatic_proposals_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france","papacy"]));
+  	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    return 1;
+	  }
+
+/***
+	  let io = this.returnImpulseOrder();
+	  for (let i = io.length-1; i>= 0; i--) {
 	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+io[i]);
 	  }
+***/
+
 	  if (this.game.state.henry_viii_marital_status == 1) {
 	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\tmarriage");
 	  }
+	  return 1;
 
+	}
+
+	if (mv[0] === "confirm_diplomatic_proposals") {
+
+	  let faction = mv[1];
+
+          //
+          // first, if there are any outstanding proposals that
+          // involve this faction, we need to ask them one-by-one
+          // if they agree or disagree. if they agree and are the
+          // last to agree, it will immediately execute.
+          //
+          let anything_to_review = false;
+          for (let i = 0; i < this.game.state.diplomacy.length; i++) {
+            if (this.game.state.diplomacy[i].parties.includes(faction)) {
+              for (let z = 0; z < this.game.state.diplomacy[i].parties.length; z++) {
+                if (!this.game.state.diplomacy[i].confirms) { this.game.state.diplomacy[i].confirms = []; }
+                while (this.game.state.diplomacy[i].confirms.length < this.game.state.diplomacy[i].parties.length) { this.game.state.diplomacy[i].confirms.push(0); }
+                for (let zz = 0; zz < this.game.state.diplomacy[i].parties.length; zz++) {
+                  if (this.game.state.diplomacy[i].parties[zz] == this.game.state.diplomacy[i].proposer) {
+                    this.game.state.diplomacy[i].confirms[zz] = 1;
+                  }
+                }
+                if (this.game.state.diplomacy[i].parties[z] == faction && this.game.state.diplomacy[i].confirms[z] != 1) {
+                  this.game.queue.push("confirm_diplomatic_proposal\t"+faction+"\t"+i);
+                  anything_to_review = true;
+                }
+              }
+            }
+          }
+
+          if (anything_to_review) {
+            // we have pushed to the queue, so will return and pass-
+            // through when all proposals are fine.
+            return 1;
+          }
+
+	  //
+	  // nothing to review? remove instruction
+	  //
+	  this.game.queue.splice(qe, 1);
 	  return 1;
 
 	}
@@ -10662,7 +10737,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  if (this.game.player == player) {
 	    this.diplomacy_confirm_overlay.render(faction, proposal_idx);
 	  } else {
-	    this.updateStatus(this.returnFactionName(faction) + " conducting diplomacy...");
+	    this.updateStatus(this.returnFactionName(faction) + " reviewing offers...");
 	  }
 
 	  this.game.queue.splice(qe, 1);
@@ -10670,13 +10745,52 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
 	}
 
+	//
+	// shows UI for proposing then sweeps down to counter_or_acknowledge
+	//
+	if (mv[0] === "propose_diplomatic_proposals_faction_array") {
+
+	  let factions = JSON.parse(mv[1]);
+	  let do_i_get_to_move = false;
+
+	  //
+	  // exit if diplomacy-overlay open and visible
+	  //
+	  if (this.diplomacy_overlay.is_visible) { return; }
+
+	  //
+	  // skip if we have already confirmed!
+	  //
+	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+	    this.diplomacy_overlay.hide();
+	    return 0;
+	  }
+
+	  this.addMove("RESOLVE\t"+this.publicKey);
+
+	  for (let i = 0; i < factions.length; i++) {
+	    let p = this.returnPlayerCommandingFaction(factions[i]);
+	    if (this.game.player == p && factions[i] != "protestant") {
+	      this.diplomacy_overlay.render(factions[i]);
+	      do_i_get_to_move = true;
+	    }
+          }
+
+	  if (do_i_get_to_move == false) {
+	     this.endTurn();
+	  }
+
+	  return 0;
+
+	}
+
+
 	if (mv[0] === "confirm_and_propose_diplomatic_proposals") {
 
 	  let faction = mv[1];
 	  let player = this.returnPlayerOfFaction(faction);
 
 	  this.winter_overlay.render("stage6");
-
 
 	  //
 	  // papacy asked for Henry VIII marriage
@@ -10688,8 +10802,6 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	    this.game.queue.splice(qe, 1);
 	    return 0;
 	  }
-
-
 
 	  //
 	  // first, if there are any outstanding proposals that
@@ -10735,8 +10847,10 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  //
 	  if (player === this.game.player) {
 	    // makes sure old data purged from last faction we did
-	    this.diplomacy_propose_overlay.purgeProposals();
-	    this.diplomacy_propose_overlay.render(faction);
+	    //this.diplomacy_propose_overlay.purgeProposals();
+	    //this.diplomacy_propose_overlay.render(faction);
+	    this.diplomacy_overlay.purgeProposals();
+	    this.diplomacy_overlay.render(faction);
 	  } else {
 	    this.updateStatus(this.returnFactionName(faction) + " conducting diplomacy...");
 	  }
@@ -11506,7 +11620,8 @@ cardnum = 1;
 //if (f == "ottoman") { cardnum = 0; }
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
-    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
+// HACK
+//    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 
 		//
