@@ -171,7 +171,7 @@ class Limbo extends ModTemplate {
 		if (type === 'call-actions') {
 			if (obj?.members) {
 
-				if (this.browser_active){
+				if (this.browser_active) {
 					return null;
 				}
 
@@ -183,16 +183,16 @@ class Limbo extends ModTemplate {
 						hook: "onair limbo",
 						callback: async function (app) {
 							if (mod_self.dreamer) {
-								if (mod_self.dreamer == mod_self.publicKey){
+								if (mod_self.dreamer == mod_self.publicKey) {
 									await mod_self.sendKickTransaction(obj.members);
 									mod_self.exitSpace();
 									mod_self.toggleNotification(false, mod_self.publicKey);
-								}else{
+								} else {
 									//need a flow for others in call to seed the swarm...
 									//
 								}
 							} else {
-								mod_self.startDream({ alt_id: obj?.call_id, keylist: obj.members});
+								mod_self.startDream({ alt_id: obj?.call_id, keylist: obj.members });
 							}
 						}
 					}
@@ -254,7 +254,7 @@ class Limbo extends ModTemplate {
 			this.main = new LimboMain(this.app, this);
 			this.header = new SaitoHeader(this.app, this);
 			await this.header.initialize(this.app);
-			this.header.header_class= "wide-screen";
+			this.header.header_class = "wide-screen";
 			this.addComponent(this.header);
 			this.addComponent(this.main);
 		}
@@ -300,10 +300,10 @@ class Limbo extends ModTemplate {
 					}
 
 					console.log("Limbo DREAMS:", this.dreams);
-					
+
 					this.main.render();
-					
-					if (this.dreamer){
+
+					if (this.dreamer) {
 
 						let prompt = `${this.app.keychain.returnUsername(this.dreamer)}'s Saito Space`;
 
@@ -315,7 +315,7 @@ class Limbo extends ModTemplate {
 
 							const btn_prompt = (dream.mode == "audio") ? "Listen" : "Watch";
 
-							overlay.show(`<div class="saito-join-space-overlay"><div id="join-btn" class="button saito-button-primary">${btn_prompt} Now</div></div>`, ()=>{
+							overlay.show(`<div class="saito-join-space-overlay"><div id="join-btn" class="button saito-button-primary">${btn_prompt} Now</div></div>`, () => {
 								window.history.pushState('', '', `/limbo/`);
 								this.dreamer = null;
 							});
@@ -325,13 +325,13 @@ class Limbo extends ModTemplate {
 							this.createProfileCard(this.dreamer, dream, ".saito-join-space-overlay");
 
 							let btn = document.getElementById("join-btn");
-							if (btn){
+							if (btn) {
 								btn.onclick = (e) => {
 									this.joinDream(this.dreamer);
 									overlay.remove();
 								}
 							}
-							
+
 						} else {
 							salert(`${prompt} no longer available`);
 							window.history.pushState('', '', `/limbo/`);
@@ -344,36 +344,36 @@ class Limbo extends ModTemplate {
 		}
 	}
 
-	createProfileCard(key, dream, container){
-		
+	createProfileCard(key, dream, container) {
+
 		let profileCard = new SaitoProfile(this.app, this, container);
-		
+
 		let altKey = dream?.alt_id || key;
 
 		profileCard.reset(altKey, "", ["attendees", "speakers"]);
 
-	    if (dream?.identifier) {
-	      profileCard.name = dream.identifier;
-	    }
+		if (dream?.identifier) {
+			profileCard.name = dream.identifier;
+		}
 
-	    if (dream?.description) {
-	      profileCard.description = dream.description;
-	    }
+		if (dream?.description) {
+			profileCard.description = dream.description;
+		}
 
-	    if (dream?.alt_id) {
-	    	profileCard.mask_key = true;
-	    }
+		if (dream?.alt_id) {
+			profileCard.mask_key = true;
+		}
 
-	    if (dream?.mode && this[`${dream.mode}_icon`]){
-	    	profileCard.icon = `<i class="saito-overlaid-icon fa-solid ${this[`${dream.mode}_icon`]}"></i>`;	
-	    }
+		if (dream?.mode && this[`${dream.mode}_icon`]) {
+			profileCard.icon = `<i class="saito-overlaid-icon fa-solid ${this[`${dream.mode}_icon`]}"></i>`;
+		}
 
 		//We won't process this array other than checking length... i hope!
-		profileCard.menu.attendees = dream.members.filter( k => k !== key );
+		profileCard.menu.attendees = dream.members.filter(k => k !== key);
 
 		profileCard.menu.speakers.push(0);
-		if (dream.speakers){
-			for (let i of dream.speakers){
+		if (dream.speakers) {
+			for (let i of dream.speakers) {
 				profileCard.menu.speakers.push(0);
 			}
 		}
@@ -385,7 +385,7 @@ class Limbo extends ModTemplate {
 
 
 
-	startDream(options){
+	startDream(options) {
 		this.localStream = null;
 		this.externalMediaControl = false;
 
@@ -407,40 +407,37 @@ class Limbo extends ModTemplate {
 			options["includeCamera"] = false;
 			options["screenStream"] = false;
 			options["audio"] = true;
-		} 
-
-		let obj = this.app.modules.getRespondTos('limbo-record')
-		if(obj){
-			console.log(obj, "object")
-			this.videocallStream = obj[0][0].startStreamingVideoCall(false, false);
-			console.log(this.videocallStream, "vidoestram")
-			if(this.videocallStream){
-				options['videocallStream'] = true;
-			}
 		}
 
-		// streamMod.forEach(mod => {
-		// 	console.log(mod, 'mod')
-		// let obj = mod.respondTo('limbo-record')
-		// this.videocallStream = obj.startStreamingVideoCall(false, false);
-		// if(this.videocallStream){
-		// 	options['videocallStream'] = true;
-		// }
-		// })
-      
-		if (!this.wizard){
-			this.wizard = new DreamWizard(this.app, this, options);
-		}else{
-			this.wizard.options = options;
+		let obj = this.app.modules.getRespondTos('screenrecord-limbo')
+		if (obj) {
+			obj[0][0].startStreamingVideoCall(true, true).then(stream => {
+				this.videocallStream = stream
+				console.log(this.videocallStream, "vidoestram")
+				if (this.videocallStream) {
+					options['videocallStream'] = true;
+				}
+
+				if (!this.wizard) {
+					this.wizard = new DreamWizard(this.app, this, options);
+				} else {
+					this.wizard.options = options;
+				}
+		
+				this.wizard.render();
+			})
+
 		}
 
-		this.wizard.render();
+		
+
+	
 
 	}
 
 	async broadcastDream(options) {
 
-		if (this.dreamer){
+		if (this.dreamer) {
 			console.warn("Already participating in a dream");
 			return;
 		}
@@ -463,9 +460,9 @@ class Limbo extends ModTemplate {
 		//
 		let { includeCamera, screenStream, videocallStream } = options;
 
-		if(videocallStream){
+		if (videocallStream) {
 			this.videocallStream.getTracks().forEach((track) => {
-				console.log('video call tracks',track )
+				console.log('video call tracks', track)
 				this.combinedStream.addTrack(track);
 				track.onended = async () => {
 					console.log('Stopping screen share');
@@ -474,101 +471,101 @@ class Limbo extends ModTemplate {
 					this.toggleNotification(false, this.publicKey);
 				};
 			});
-			
+
 		}
 
-		if (screenStream) {
+		// if (screenStream) {
 
-			options.mode = "screen";
+		// 	options.mode = "screen";
 
-			try {
-				let constraint = this.browser_active ? 'exclude' : 'include';
+		// 	try {
+		// 		let constraint = this.browser_active ? 'exclude' : 'include';
 
-				screenStream = await navigator.mediaDevices.getDisplayMedia({
-					video: true,
-					audio: false,
-					selfBrowserSurface: constraint,
-					monitorTypeSurfaces: 'include'
-				});
+		// 		screenStream = await navigator.mediaDevices.getDisplayMedia({
+		// 			video: true,
+		// 			audio: false,
+		// 			selfBrowserSurface: constraint,
+		// 			monitorTypeSurfaces: 'include'
+		// 		});
 
-				// Add the audio tracks from the screen and camera to the combined stream
-				screenStream.getTracks().forEach((track) => {
-					this.combinedStream.addTrack(track);
-					track.onended = async () => {
-						console.log('Stopping screen share');
-						await this.sendKickTransaction();
-						this.exitSpace();
-						this.toggleNotification(false, this.publicKey);
-					};
-				});
-			} catch (error) {
-				console.error('Access to screen denied: ', error);
-				screenStream = false;
-				return;
-			}
-		}
-
-
-		if (!this.localStream){
-			try {
-				//
-				// Get webcam video
-				//
-				if (includeCamera) {
-
-					options.mode = "camera";
-					this.localStream =
-						await navigator.mediaDevices.getUserMedia({
-							video: true,
-							audio: true // Capture microphone audio
-						});
-				} else {
-					//
-					// Get microphone input only
-					//
-					this.localStream =
-						await navigator.mediaDevices.getUserMedia({
-							audio: true // Capture microphone audio
-						});
-				}
-			} catch (error) {
-				console.error('Access to user media denied: ', error);
-			}
-		}
+		// 		// Add the audio tracks from the screen and camera to the combined stream
+		// 		screenStream.getTracks().forEach((track) => {
+		// 			this.combinedStream.addTrack(track);
+		// 			track.onended = async () => {
+		// 				console.log('Stopping screen share');
+		// 				await this.sendKickTransaction();
+		// 				this.exitSpace();
+		// 				this.toggleNotification(false, this.publicKey);
+		// 			};
+		// 		});
+		// 	} catch (error) {
+		// 		console.error('Access to screen denied: ', error);
+		// 		screenStream = false;
+		// 		return;
+		// 	}
+		// }
 
 
-		if (this.localStream) {
-			if (this.localStream.getAudioTracks().length > 0) {
-				console.log("Add my audio:" , this.localStream.getAudioTracks()[0]);
-				this.combinedStream.addTrack(
-					this.localStream.getAudioTracks()[0]
-				);
-			}
+		// if (!this.localStream){
+		// 	try {
+		// 		//
+		// 		// Get webcam video
+		// 		//
+		// 		if (includeCamera) {
 
-			//
-			// Just make sure we don't add video if coming from video call or screen sharing...
-			//
-			if (!screenStream && !this.additionalSources && this.localStream.getVideoTracks().length > 0) {
-				console.log("Add my video");
-				this.combinedStream.addTrack(
-					this.localStream.getVideoTracks()[0]
-				);
-			}
-		}
-
-		if (this.additionalSources) {
-			console.log("Add other sources...");
-			this.additionalSources.forEach((values, keys) => { 
-				console.log(keys, values.remoteStream.getAudioTracks());
-				values.remoteStream.getAudioTracks().forEach(track => {
-					this.combinedStream.addTrack(track);
-				});
-			});
-		}
+		// 			options.mode = "camera";
+		// 			this.localStream =
+		// 				await navigator.mediaDevices.getUserMedia({
+		// 					video: true,
+		// 					audio: true // Capture microphone audio
+		// 				});
+		// 		} else {
+		// 			//
+		// 			// Get microphone input only
+		// 			//
+		// 			this.localStream =
+		// 				await navigator.mediaDevices.getUserMedia({
+		// 					audio: true // Capture microphone audio
+		// 				});
+		// 		}
+		// 	} catch (error) {
+		// 		console.error('Access to user media denied: ', error);
+		// 	}
+		// }
 
 
+		// if (this.localStream) {
+		// 	if (this.localStream.getAudioTracks().length > 0) {
+		// 		console.log("Add my audio:" , this.localStream.getAudioTracks()[0]);
+		// 		this.combinedStream.addTrack(
+		// 			this.localStream.getAudioTracks()[0]
+		// 		);
+		// 	}
 
-		if (!this.combinedStream.getTracks()?.length){
+		// 	//
+		// 	// Just make sure we don't add video if coming from video call or screen sharing...
+		// 	//
+		// 	if (!screenStream && !this.additionalSources && this.localStream.getVideoTracks().length > 0) {
+		// 		console.log("Add my video");
+		// 		this.combinedStream.addTrack(
+		// 			this.localStream.getVideoTracks()[0]
+		// 		);
+		// 	}
+		// }
+
+		// if (this.additionalSources) {
+		// 	console.log("Add other sources...");
+		// 	this.additionalSources.forEach((values, keys) => { 
+		// 		console.log(keys, values.remoteStream.getAudioTracks());
+		// 		values.remoteStream.getAudioTracks().forEach(track => {
+		// 			this.combinedStream.addTrack(track);
+		// 		});
+		// 	});
+		// }
+
+
+
+		if (!this.combinedStream.getTracks()?.length) {
 			console.error("Limbo: No media to share");
 			salert("Please check browser permissions, cannot start a stream without any media");
 			return;
@@ -597,9 +594,9 @@ class Limbo extends ModTemplate {
 		console.log("Join dream:", this.dreams);
 	}
 
-	attachMetaEvents(){
+	attachMetaEvents() {
 
-		if ('onpagehide' in self){
+		if ('onpagehide' in self) {
 			this.terminationEvent = 'pagehide';
 		}
 
@@ -609,19 +606,19 @@ class Limbo extends ModTemplate {
 
 		window.addEventListener(this.terminationEvent, this.saveMe);
 		window.addEventListener("beforeunload", this.beforeUnloadHandler);
-		if (this.app.browser.isMobileBrowser()){
-			document.addEventListener("visibilitychange", this.saveMe);	
+		if (this.app.browser.isMobileBrowser()) {
+			document.addEventListener("visibilitychange", this.saveMe);
 		}
 
 	}
 
-	detachMetaEvents(){
+	detachMetaEvents() {
 		console.log("Safe to navigate!");
 
 		window.removeEventListener("beforeunload", this.beforeUnloadHandler);
 		window.removeEventListener(this.terminationEvent, this.saveMe);
-		if (this.app.browser.isMobileBrowser()){
-			document.removeEventListener("visibilitychange", this.saveMe);	
+		if (this.app.browser.isMobileBrowser()) {
+			document.removeEventListener("visibilitychange", this.saveMe);
 		}
 	}
 
@@ -638,13 +635,13 @@ class Limbo extends ModTemplate {
 			mode: options.mode,
 		};
 
-		if (options?.alt_id){
+		if (options?.alt_id) {
 			newtx.msg.alt_id = options.alt_id;
 		}
-		if (options?.identifier){
+		if (options?.identifier) {
 			newtx.msg.identifier = options.identifier;
 		}
-		if (options?.description){
+		if (options?.description) {
 			newtx.msg.description = options.description;
 		}
 
@@ -678,13 +675,13 @@ class Limbo extends ModTemplate {
 			mode: txmsg.mode,
 		};
 
-		if (txmsg?.alt_id){
+		if (txmsg?.alt_id) {
 			this.dreams[sender].alt_id = txmsg.alt_id;
 		}
-		if (txmsg?.identifier){
+		if (txmsg?.identifier) {
 			this.dreams[sender].identifier = txmsg.identifier;
 		}
-		if (txmsg?.description){
+		if (txmsg?.description) {
 			this.dreams[sender].description = txmsg.description;
 		}
 
@@ -697,8 +694,8 @@ class Limbo extends ModTemplate {
 
 			if (tx.isTo(this.publicKey)) {
 				this.toggleNotification(true, sender);
-				
-				if (sender !== this.publicKey){
+
+				if (sender !== this.publicKey) {
 					this.dreamer = sender;
 					this.controls = new LiteDreamControls(this.app, this);
 					this.controls.render();
@@ -723,17 +720,17 @@ class Limbo extends ModTemplate {
 		};
 
 		console.log(JSON.parse(JSON.stringify(this.dreams)));
-		
-		for (let key of this.dreams[this.publicKey].members){
-			if (key !== this.publicKey){
-				newtx.addTo(key);					
+
+		for (let key of this.dreams[this.publicKey].members) {
+			if (key !== this.publicKey) {
+				newtx.addTo(key);
 			}
 		}
 
 		if (keylist) {
 			for (let key of keylist) {
-				if (!newtx.isTo(key)){
-					newtx.addTo(key);					
+				if (!newtx.isTo(key)) {
+					newtx.addTo(key);
 				}
 			}
 		}
@@ -745,8 +742,8 @@ class Limbo extends ModTemplate {
 	}
 
 	receiveKickTransaction(sender, tx) {
-		
-		if (this.app.BROWSER){
+
+		if (this.app.BROWSER) {
 			if (this.dreamer !== this.publicKey && this.dreams[this.dreamer]?.members.includes(this.publicKey)) {
 				siteMessage(
 					`${this.app.keychain.returnUsername(this.dreamer)} woke up...`
@@ -777,7 +774,7 @@ class Limbo extends ModTemplate {
 		this.exitSpace();
 	}
 
-	async sendAddSpeakerTransaction(speaker){
+	async sendAddSpeakerTransaction(speaker) {
 		if (!this.dreamer || !this.dreams[this.dreamer]) {
 			console.warn("No dream?");
 			console.log(this.dreamer, this.dreams);
@@ -805,13 +802,13 @@ class Limbo extends ModTemplate {
 		this.app.network.propagateTransaction(newtx);
 	}
 
-	receiveAddSpeakerTransaction(sender, tx){
+	receiveAddSpeakerTransaction(sender, tx) {
 		let txmsg = tx.returnMessage();
 
 		let dreamer = txmsg.dreamer;
 		let speaker = txmsg.speaker;
 
-		if (this.publicKey === speaker){
+		if (this.publicKey === speaker) {
 			//C'est moi!
 			this.dreams[dreamer] = txmsg.dream;
 			this.dreamer = dreamer;
@@ -834,7 +831,7 @@ class Limbo extends ModTemplate {
 	}
 
 
-	async sendRemoveSpeakerTransaction(speaker){
+	async sendRemoveSpeakerTransaction(speaker) {
 		if (!this.dreamer || !this.dreams[this.dreamer]) {
 			return;
 		}
@@ -857,7 +854,7 @@ class Limbo extends ModTemplate {
 		this.app.network.propagateTransaction(newtx);
 	}
 
-	receiveRemoveSpeakerTransaction(sender, tx){
+	receiveRemoveSpeakerTransaction(sender, tx) {
 		let txmsg = tx.returnMessage();
 
 		let dreamer = txmsg.dreamer;
@@ -919,10 +916,10 @@ class Limbo extends ModTemplate {
 
 		if (this.app.BROWSER) {
 
-		// So if someone joins, and we have a stream, we send them an offer to share
-		// We impose a hard limit of 10 (to be adjusted downward) stun connections,
-		// and we set a delay proportional to the number of connections so that the 
-		// swarm has balance loading. I.e. no one downstream will biased to add someone
+			// So if someone joins, and we have a stream, we send them an offer to share
+			// We impose a hard limit of 10 (to be adjusted downward) stun connections,
+			// and we set a delay proportional to the number of connections so that the 
+			// swarm has balance loading. I.e. no one downstream will biased to add someone
 
 			let peerCt = this.downstream.size;
 			if (this.publicKey === this.dreamer) {
@@ -934,7 +931,7 @@ class Limbo extends ModTemplate {
 				peerCt < 10
 			) {
 
-				setTimeout(()=> {
+				setTimeout(() => {
 					this.sendOfferTransaction(sender);
 					this.downstream.set(sender, null);
 					setTimeout(() => {
@@ -951,7 +948,7 @@ class Limbo extends ModTemplate {
 						}
 					}, 90000);
 
-				}, 100*peerCt);
+				}, 100 * peerCt);
 			}
 		}
 	}
@@ -1081,16 +1078,16 @@ class Limbo extends ModTemplate {
 		this.stun.createPeerConnection(sender);
 	}
 
-	async sendFailSafe(action, key){
+	async sendFailSafe(action, key) {
 		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
 		let dreamer;
 
-		for (let dream in this.dreams){
+		for (let dream in this.dreams) {
 			dreamer = dream;
 
-			if (dream == key || this.dreams[dream].members.includes[key]){
-				break;	
+			if (dream == key || this.dreams[dream].members.includes[key]) {
+				break;
 			}
 		}
 
@@ -1102,20 +1099,20 @@ class Limbo extends ModTemplate {
 			member: key,
 		};
 
-		if (!dreamer){
+		if (!dreamer) {
 			console.log("No dreamer found... just ignore");
 			return;
 		}
 
 		//Address to fellow speakers...
-		for (let s of this.dreams[dreamer].speakers){
+		for (let s of this.dreams[dreamer].speakers) {
 			newtx.addTo(s);
 		}
 
 		//
 		// Process it for me
 		//
-		if (action == "kick"){
+		if (action == "kick") {
 			delete this.dreams[dreamer];
 		} else {
 			let members = this.dreams[dreamer].members;
@@ -1123,7 +1120,7 @@ class Limbo extends ModTemplate {
 				if (members[i] == key) {
 					members.splice(i, 1);
 					i--;
-				}else{
+				} else {
 					newtx.addTo(members[i]);
 				}
 			}
@@ -1169,10 +1166,10 @@ class Limbo extends ModTemplate {
 					if (message.request === 'leave dream') {
 						this.receiveLeaveTransaction(sender, tx);
 					}
-					if (message.request === "add speaker"){
+					if (message.request === "add speaker") {
 						this.receiveAddSpeakerTransaction(sender, tx);
 					}
-					if (message.request === "remove speaker"){
+					if (message.request === "remove speaker") {
 						this.receiveRemoveSpeakerTransaction(sender, tx);
 					}
 					if (message.request === 'offer dream') {
@@ -1182,7 +1179,7 @@ class Limbo extends ModTemplate {
 					}
 
 					this.app.connection.emit('limbo-spaces-update');
-					
+
 					if (message?.dreamer === this.dreamer) {
 						this.app.connection.emit(
 							'limbo-dream-render',
@@ -1247,10 +1244,10 @@ class Limbo extends ModTemplate {
 			if (txmsg.request === 'leave dream') {
 				this.receiveLeaveTransaction(sender, tx);
 			}
-			if (txmsg.request === "add speaker"){
+			if (txmsg.request === "add speaker") {
 				this.receiveAddSpeakerTransaction(sender, tx);
 			}
-			if (txmsg.request === "remove speaker"){
+			if (txmsg.request === "remove speaker") {
 				this.receiveRemoveSpeakerTransaction(sender, tx);
 			}
 			if (txmsg.request === 'offer dream') {
@@ -1258,10 +1255,10 @@ class Limbo extends ModTemplate {
 				//Important, we don't need server rebroadcasting this or standard UI updates
 				return;
 			}
-			if (txmsg.request === "revoke dream"){
-				if (txmsg.type == "kick"){
+			if (txmsg.request === "revoke dream") {
+				if (txmsg.type == "kick") {
 					this.receiveKickTransaction(txmsg.member, tx);
-				}else{
+				} else {
 					this.receiveLeaveTransaction(txmsg.member, tx);
 				}
 			}
@@ -1358,6 +1355,11 @@ class Limbo extends ModTemplate {
 		this.controls = null;
 		this.detachMetaEvents();
 		console.log("Space exited!");
+
+		let obj = this.app.modules.getRespondTos('screenrecord-limbo')
+		if (obj) {
+			obj[0][0].stopStreamingVideoCall(false)
+		}
 	}
 
 
@@ -1406,9 +1408,9 @@ class Limbo extends ModTemplate {
 			if (value) {
 				vinyl.classList.add('recording');
 				full_icon.classList.add('recording');
-				if (sender != this.publicKey){
+				if (sender != this.publicKey) {
 					full_icon.title = `${this.app.keychain.returnUsername(sender)} is peercasting the call`;
-				}else{
+				} else {
 					full_icon.title = "Stop Limbo Broadcast";
 				}
 
@@ -1425,20 +1427,20 @@ class Limbo extends ModTemplate {
 		event.returnValue = true;
 	}
 
-	visibilityChange(){
+	visibilityChange() {
 		console.log("visibilitychange triggered")
 
-		if (!navigator?.sendBeacon){
+		if (!navigator?.sendBeacon) {
 			return;
 		}
 
-		if (this.dreamer === this.publicKey){
+		if (this.dreamer === this.publicKey) {
 			navigator.sendBeacon(`/limbo?action=kick&key=${this.publicKey}`);
-		}else{
+		} else {
 			navigator.sendBeacon(`/limbo?action=leave&key=${this.publicKey}`);
 		}
-		
-        this.exitSpace();
+
+		this.exitSpace();
 	}
 
 	webServer(app, expressapp, express) {
@@ -1457,21 +1459,21 @@ class Limbo extends ModTemplate {
 
 				let dream = req.query?.dream;
 				let updated_social = mod_self.social;
-				
+
 				if (dream) {
 
 					let dreamer = mod_self.app.crypto.base64ToString(dream);
 
-					updated_social.title = mod_self.app.keychain.returnUsername(dreamer) + " is live streaming on Saito 🟥"; 
+					updated_social.title = mod_self.app.keychain.returnUsername(dreamer) + " is live streaming on Saito 🟥";
 
 					if (mod_self.dreams[dreamer]) {
-						if (mod_self.dreams[dreamer]?.identifier){
+						if (mod_self.dreams[dreamer]?.identifier) {
 							updated_social.title = mod_self.dreams[dreamer].identifier;
 						}
-						if (mod_self.dreams[dreamer]?.description){
+						if (mod_self.dreams[dreamer]?.description) {
 							updated_social.description = mod_self.dreams[dreamer].description;
 						}
-					}					
+					}
 				}
 
 				res.send(HomePage(app, mod_self, app.build_number, updated_social));
@@ -1484,7 +1486,7 @@ class Limbo extends ModTemplate {
 			async function (req, res) {
 				let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
 
-				if (req.query?.action && req.query?.key){
+				if (req.query?.action && req.query?.key) {
 					mod_self.sendFailSafe(req.query.action, req.query.key);
 				}
 			}

@@ -20,6 +20,9 @@ class Record extends ModTemplate {
 		this.styles = ['/saito/saito.css', '/screenrecord/style.css'];
 		this.interval = null;
 		this.streamData = [];
+		this.is_limbo_streaming  = false;
+		this.mediaRecorder = null;
+		this.is_capturing_stream = false;
 
 	}
 
@@ -44,7 +47,7 @@ class Record extends ModTemplate {
 								let startRecording = await sconfirm('Do you  want to start recording?');
 								if (!startRecording) return;
 								let includeCamera = await sconfirm("Do you want to include Camera")
-								console.log(includeCamera)
+
 								let stream = this.captureStreamsForVideoCall(includeCamera)
 								await this.startRecording({ container, members, callbackAfterRecord, type: 'videocall', stream });
 							} else {
@@ -56,7 +59,7 @@ class Record extends ModTemplate {
 			];
 		}
 
-		if (type === 'limbo-record') {
+		if (type === 'screenrecord-limbo') {
 			this.attachStyleSheets();
 			super.render(this.app, this);
 			let is_recording = false;
@@ -66,25 +69,50 @@ class Record extends ModTemplate {
 
 			return [
 				{
-					startStreamingVideoCall: (include_recording, includeCamera) => {
-						let stream = this.captureStreamsForVideoCall(includeCamera)
-						if (include_recording) {
-							let videocallMod = this.app.modules.returnModule('videocall')
-							let members = videocallMod.room_obj.call_peers
-							let options = {
-								container,
-								members,
-								callbackAfterRecord: () => {
-
-								},
-								type,
-								stream,
-							}
-							this.startRecording(options)
+					startStreamingVideoCall: async (include_recording, includeCamera ) => {
+						// if we are already recording, we get the stream
+						let stream;
+						if (this.is_capturing_stream) {
+							console.log('we already have a stream')
+							stream = this.combinedStream;
+						} else {
+							// console.log('there is no stream, beginning capture')
+							stream = this.captureStreamsForVideoCall(includeCamera)
 						}
 
+						if (include_recording && !this.mediaRecorder) {
+							console.log('we start recording because there is none ')
+							let videocallMod = this.app.modules.returnModule('Videocall')
+							// console.log(videocallMod, this.app.modules)
+							if (videocallMod) {
+								let members = videocallMod.room_obj.call_peers
+								let options = {
+									container: "",
+									members,
+									callbackAfterRecord: () => {
+									},
+									type: "videocall",
+									stream,
+								}
+								await this.startRecording(options)
+							}
+						}else {
+							console.log('we dont start because we are already recording')
+						}
+						this.is_limbo_streaming = true;
 						return stream;
+					},
 
+					stopStreamingVideoCall: async (stop_recording = true) => {
+						// if we are recording and want to stop recording
+						if (this.mediaRecorder && stop_recording) {
+							await this.stopRecording()
+							this.stopCaptureStreamForVideoCall()	
+						} else if (!this.mediaRecorder) {
+							this.stopCaptureStreamForVideoCall()
+						}
+						
+						this.is_limbo_streaming = false
 					}
 				}
 			];
@@ -253,11 +281,12 @@ class Record extends ModTemplate {
 	async startRecording(options) {
 		let { container, members, callbackAfterRecord, type, stream } = options
 
+		console.log(stream, "captured stream");
 
 
-		console.log(stream, "captured stream")
 		// initialize variables
-		this.is_recording = true;
+		this.mediaRecorder = true;
+		this.type = type;
 		this.members = members
 
 		if (type === "videocall") {
@@ -647,7 +676,7 @@ class Record extends ModTemplate {
 				window.removeEventListener('resize', resizeCanvas)
 				observer.disconnect()
 				// stop local stram
-				this.is_recording = false;
+				this.mediaRecorder = false;
 				const blob = new Blob(chunks, { type: 'video/webm' });
 				const url = URL.createObjectURL(blob);
 				const a = document.createElement('a');
@@ -677,15 +706,14 @@ class Record extends ModTemplate {
 	}
 
 	async stopRecording() {
+
+		if(!this.is_limbo_streaming){
+			this.stopCaptureStreamForVideoCall();
+		}
 		if (this.mediaRecorder) {
 			this.mediaRecorder.stop();
 			this.mediaRecorder = null;
 		}
-
-		// if (this.screenStream) {
-		// 	this.screenStream.getTracks().forEach(track => track.stop());
-		// }
-
 		if (this.localStream) {
 			this.localStream.getTracks().forEach((track) => track.stop());
 			this.localStream = null;
@@ -699,12 +727,10 @@ class Record extends ModTemplate {
 		this.updateUIForRecordingStop()
 		this.sendStopRecordingTransaction(this.members)
 
-		this.is_recording = false
+		this.mediaRecorder = null
 		this.members = []
 		// window.removeEventListener('resize', updateDimensions);
 		// window.removeEventListener('orientationchange', updateDimensions);
-
-
 
 	}
 
@@ -730,11 +756,10 @@ class Record extends ModTemplate {
 		document.querySelectorAll('canvas').forEach(canvas => {
 			canvas.parentElement.removeChild(document.querySelector('canvas'))
 		})
-
 		const audioCtx = new AudioContext();
 		const destination = audioCtx.createMediaStreamDestination();
 
-		const processVideoElement = (stream) => {
+		const processStream = (stream) => {
 			// const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
 			if (stream && stream.getAudioTracks().length > 0) {
 				const source = audioCtx.createMediaStreamSource(stream);
@@ -743,7 +768,7 @@ class Record extends ModTemplate {
 			return stream;
 		};
 
-		if(includeCamera){
+		if (includeCamera) {
 			let observer = new MutationObserver((mutations) => {
 				mutations.forEach((mutation) => {
 					if (mutation.type === 'childList') {
@@ -769,7 +794,7 @@ class Record extends ModTemplate {
 								data.rect = mutation.target.getBoundingClientRect();
 							}
 						});
-	
+
 					}
 					if (mutation.removedNodes.length > 0) {
 						mutation.removedNodes.forEach(node => {
@@ -803,24 +828,25 @@ class Record extends ModTemplate {
 						this.drawImageProp(ctx, data.videoElement, rect.left, rect.top, rect.width, rect.height)
 					}
 				});
+				// console.log('still drawing streams');
 				this.animationFrameId = requestAnimationFrame(drawStreamsToCanvas);
 			};
-	
-	
+
+
 			window.addEventListener('resize', this.resizeCanvas(canvas, drawStreamsToCanvas));
 			this.resizeCanvas(canvas, drawStreamsToCanvas);
-	
+
 			const videoElements = document.querySelectorAll('div[id^="stream_"] video');
 			this.streamData = Array.from(videoElements).map(video => {
 				let stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
-				processVideoElement(stream)
-			
-	
+				processStream(stream)
+
+
 				// if (!includeCamera) {
 				// 	stream = new MediaStream(stream.getAudioTracks());
 				// }
-	
-	
+
+
 				const rect = video.getBoundingClientRect();
 				const parentID = video.parentElement.id;
 				const videoElement = document.createElement('video');
@@ -843,7 +869,7 @@ class Record extends ModTemplate {
 								const videos = node.querySelectorAll('video');
 								videos.forEach(video => {
 									const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
-									processVideoElement(stream)
+									processStream(stream)
 								});
 							}
 						});
@@ -854,7 +880,7 @@ class Record extends ModTemplate {
 					// 			data.rect = mutation.target.getBoundingClientRect();
 					// 		}
 					// 	});
-	
+
 					// }
 					if (mutation.removedNodes.length > 0) {
 						mutation.removedNodes.forEach(node => {
@@ -874,11 +900,9 @@ class Record extends ModTemplate {
 			});
 			document.querySelectorAll('video').forEach(video => {
 				let stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
-				processVideoElement(stream);
+				processStream(stream);
 			});
 		}
-
-
 		combinedStream.addTrack(destination.stream.getAudioTracks()[0]);
 		this.combinedStream = combinedStream;
 		return this.combinedStream;
@@ -887,7 +911,8 @@ class Record extends ModTemplate {
 	async stopCaptureStreamForVideoCall() {
 		this.is_capturing_stream = false
 		cancelAnimationFrame(this.animationFrameId)
-		this.removeEventListener('resize', this.resizeCanvas)
+		window.removeEventListener('resize', this.resizeCanvas)
+		this.combinedStream = null
 	}
 
 
@@ -932,11 +957,6 @@ class Record extends ModTemplate {
 	// }
 
 
-
-
-	async saveRecording() {
-
-	}
 
 
 
