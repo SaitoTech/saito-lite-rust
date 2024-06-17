@@ -401,6 +401,7 @@ class Limbo extends ModTemplate {
 			// We hope there is only 1!
 			this.localStream = otherParties[0].localStream;
 			this.additionalSources = otherParties[0].remoteStreams;
+			console.log('this.localStream', this.localStream, "this.additional source", this.additionalSources)
 			this.externalMediaControl = true;
 
 			options["includeCamera"] = false;
@@ -408,6 +409,25 @@ class Limbo extends ModTemplate {
 			options["audio"] = true;
 		} 
 
+		let obj = this.app.modules.getRespondTos('limbo-record')
+		if(obj){
+			console.log(obj, "object")
+			this.videocallStream = obj[0][0].startStreamingVideoCall(false, false);
+			console.log(this.videocallStream, "vidoestram")
+			if(this.videocallStream){
+				options['videocallStream'] = true;
+			}
+		}
+
+		// streamMod.forEach(mod => {
+		// 	console.log(mod, 'mod')
+		// let obj = mod.respondTo('limbo-record')
+		// this.videocallStream = obj.startStreamingVideoCall(false, false);
+		// if(this.videocallStream){
+		// 	options['videocallStream'] = true;
+		// }
+		// })
+      
 		if (!this.wizard){
 			this.wizard = new DreamWizard(this.app, this, options);
 		}else{
@@ -441,7 +461,21 @@ class Limbo extends ModTemplate {
 		// Attempt to stream of the screen -- user has to select it
 		// this should include any displayed video and audio...
 		//
-		let { includeCamera, screenStream } = options;
+		let { includeCamera, screenStream, videocallStream } = options;
+
+		if(videocallStream){
+			this.videocallStream.getTracks().forEach((track) => {
+				console.log('video call tracks',track )
+				this.combinedStream.addTrack(track);
+				track.onended = async () => {
+					console.log('Stopping screen share');
+					await this.sendKickTransaction();
+					this.exitSpace();
+					this.toggleNotification(false, this.publicKey);
+				};
+			});
+			
+		}
 
 		if (screenStream) {
 
