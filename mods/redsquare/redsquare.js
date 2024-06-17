@@ -140,6 +140,12 @@ class RedSquare extends ModTemplate {
       this.app.connection.emit("redsquare-update-notifications", this.notifications_number_unviewed);
     });
 
+
+    this.app.connection.on("redsquare-new-post", (msg) => {
+      let post = new Post(this.app, this);
+      post.render();
+    });
+
     return this;
   }
 

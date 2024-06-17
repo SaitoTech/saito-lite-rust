@@ -46,11 +46,11 @@
 }
 
 .limbo-option i {
-	font-size: max(8vw, 40px);
+	font-size: min(90px, max(7vw, 36px));
 }
 
 .limbo-option label {
-	font-size: max(4vw, 20px);
+	font-size: min(56px, max(4vw, 20px));
 }
 
 .limbo-option:hover{
@@ -169,7 +169,7 @@
 	grid-template-rows: 1fr 7rem;
 	grid-template-columns: minmax(0px, 1fr);
 	border-radius: var(--saito-border-radius);
-	background-color: #0008;
+	background-color: #000D;
 }
 
 .dream-controls.lite {

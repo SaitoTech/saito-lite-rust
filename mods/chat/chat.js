@@ -1,4 +1,4 @@
-const SaitoUserTemplate = require('./../../lib/saito/ui/saito-user/saito-user.template.js');
+ SaitoUserTemplate = require('./../../lib/saito/ui/saito-user/saito-user.template.js');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const ChatMain = require('./lib/appspace/main');
@@ -98,10 +98,15 @@ class Chat extends ModTemplate {
     });
 
     this.app.connection.on('chat-message-user', (pkey, message) => {
-      let group = this.returnOrCreateChatGroupFromMembers([
-        this.publicKey,
-        pkey
-      ]);
+      let group;
+      if (pkey.toLowerCase() == "community"){
+        group = this.returnCommunityChat();
+      }else{
+        group = this.returnOrCreateChatGroupFromMembers([
+          this.publicKey,
+          pkey
+        ]);
+      }
 
       this.createChatTransaction(group.id, message);
     });
@@ -729,6 +734,7 @@ class Chat extends ModTemplate {
   // or addressed to me
   //
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
+
     if (tx == null) {
       return 0;
     }
@@ -851,13 +857,14 @@ class Chat extends ModTemplate {
             //
             console.log('Community Chat, relay to all: ', txmsg);
             peers.forEach((p) => {
-              if (p.publicKey !== peer.publicKey) {
+              //This is filtering for not receiving your chat tx back to you... but there are case where we do want that?
+              //if (p.publicKey !== peer.publicKey) {
                 app.network.sendTransactionWithCallback(
                   tx, // the relay wrapped message
                   null,
                   p.peerIndex
                 );
-              }
+              //}
             });
           }
         }
@@ -1452,11 +1459,10 @@ class Chat extends ModTemplate {
       // console.log(JSON.parse(JSON.stringify(txmsg)));
     }
 
-    for (let blocked of this.black_list) {
-      if (tx.isFrom(blocked)) {
-        console.log('Refuse chat message from blocked account');
-        return;
-      }
+
+    if (this.app.modules.moderate(tx) == -1) {
+      console.log('Refuse chat message from blocked account');
+      return;
     }
 
     //
@@ -1528,12 +1534,14 @@ class Chat extends ModTemplate {
     }
 
     if (this.addTransactionToGroup(group, tx)) {
+
       //
       // Just a little warning that it isn't nice to @ people if you blocked them and they cannot reply
       //
       if (tx.isFrom(this.publicKey)) {
-        for (let key of this.black_list) {
-          if (tx.isTo(key)) {
+        for (let i = 0; i < tx.to.length; i++) {
+          let key = tx.to[i].publicKey;
+          if (this.app.modules.moderateAddress(key) == -1) {
             let new_message = `<div class="saito-chat-notice">
 							<span class="saito-mention saito-address" data-id="${key}">${this.app.keychain.returnUsername(
               key

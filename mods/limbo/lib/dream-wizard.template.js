@@ -26,11 +26,7 @@ module.exports = DreamWizardTemplate = (app, mod, options) => {
 				</div>`;
 	}
 
-	let default_title = app.keychain.returnUsername(mod.publicKey) + "'s dream space";
-
-	if (options?.alt_id){
-		default_title = "Saito Talk: " + app.keychain.returnUsername(mod.publicKey);
-	}
+	let default_title = "Saito Space with " + app.keychain.returnUsername(mod.publicKey);
 
 	html += `<label for="dream-wizard-identifier">Title the space</label> 
 	 <input type="text" name="dream-wizard-identifier" id="dream-wizard-identifier" placeholder="${default_title}" value="${default_title}"></input>
@@ -39,7 +35,7 @@ module.exports = DreamWizardTemplate = (app, mod, options) => {
 	`;
 
 
-	html += `<div id="dream-wizard-btn" class="button saito-button-primary">Start Now</div>
+	html += `<div id="dream-wizard-btn" class="button saito-button-primary">Start Casting</div>
 					<div class="help-hook"><span>Learn more</span><i class="fa-solid fa-circle-info"></i></div>
 				</div>
 	`;

@@ -413,6 +413,12 @@ class Mods {
 
 
 
+	moderateAddress(publickey="") {
+		let newtx = new Transaction();
+		newtx.addFrom(publickey);
+		return this.moderate(newtx);
+	}
+
 	moderate(tx=null, app="") {
 
 		let permit_through = 0;

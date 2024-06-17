@@ -26,7 +26,7 @@ module.exports = LiteDreamControlsTemplate = (app, mod, videoEnabled = false) =>
 
   html += `
           <div class="share-control icon_click_area">
-            <i class="fas fa-link"></i>
+            <i class="fa-solid fa-share-nodes"></i>
           </div>`
 
   if (mod.publicKey == mod.dreamer){
