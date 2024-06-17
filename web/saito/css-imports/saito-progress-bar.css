@@ -1,7 +1,7 @@
 .saito-progress-bar-container{
 	background: var(--background-color-button-primary);
-	width: 50%;
-	transform: translateY(63%);
+	width: 75%;
+	transform: translateX(25%);
 	height: 3rem;
 	padding: 0 1rem;
 	display: flex;
@@ -11,6 +11,7 @@
     z-index: 999;
     border-radius: var(--border-radius-progress-bar);
     border: var(--border-thickness-progress-bar) solid var(--border-color-progress-bar);
+	top: 2.5rem;
 }
 
 .saito-progress-bar-container.active{
