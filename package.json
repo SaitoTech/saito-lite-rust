@@ -46,6 +46,7 @@
     "cropperjs": "^1.6.2",
     "crypto": "^1.0.1",
     "curve25519-js": "^0.0.4",
+    "dom-to-image": "^2.6.0",
     "dompurify": "^2.3.5",
     "express": "^4.17.1",
     "fastest-stable-stringify": "^2.0.2",

@@ -1,15 +1,19 @@
-.record-icon {
-    color: grey;
+/* .record-icon {
     transition: color 0.3s ease;
 }
 
 .recording {
-    color: red;
+    color: var(--saito-white);
+    animation: pulsate 1s ease-in-out infinite;
 }
+
+.record-actioner {
+    background-color: red;
+} */
 
 .pulsate {
     animation: pulsate 1s infinite;
-    color: red !important;
+    /* color: red !important; */
 }
 
 @keyframes pulsate {
