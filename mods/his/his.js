@@ -22338,6 +22338,8 @@ if (this.game.state.scenario != "is_testing") {
   //
   async handleGameLoop() {
 
+console.log("INTO handle game loop...");
+
     let his_self = this;
 
     if (this.is_first_loop == undefined) {
