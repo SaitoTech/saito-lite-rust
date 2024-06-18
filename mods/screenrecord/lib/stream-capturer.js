@@ -52,11 +52,6 @@ class StreamCapturer {
 	}
 
 
-    // setLogo(logo){
-    //     this.logo = logo
-    // }
-
-
 	drawLogoOnCanvas(ctx) {
 		const maxDimension = 100;
 		const aspectRatio = this.logo.naturalWidth / this.logo.naturalHeight;
