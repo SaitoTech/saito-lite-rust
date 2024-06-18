@@ -360,6 +360,11 @@
 	height: 100%;
 }
 
+video#presentation {
+    object-fit: contain;
+    padding: 3px;
+}
+
 .video-box-container-large>#connection-message {
 	color: var(--saito-white);
 	width: 50%;
