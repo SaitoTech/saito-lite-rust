@@ -2,9 +2,10 @@ const DreamControlTemplate = require("./lite-dream-controls.template");
 const ContactsList = require('./../../../lib/saito/ui/modals/saito-contacts/saito-contacts');
 
 class DreamControls{
-	constructor(app, mod) {
+	constructor(app, mod, options = {}) {
 		this.app = app;
 		this.mod = mod;
+		this.options = options;
 		this.timer_interval = null;
 		this.startTime = new Date().getTime();
 
@@ -49,7 +50,7 @@ class DreamControls{
 
 	render() {
 		if (!document.getElementById("dream-controls")){
-			this.app.browser.addElementToDom(DreamControlTemplate(this.app, this.mod));
+			this.app.browser.addElementToDom(DreamControlTemplate(this.app, this.mod, this.options?.includeCamera));
 		}
 
 		this.attachEvents();

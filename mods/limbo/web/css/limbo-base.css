@@ -235,7 +235,7 @@ video#local.noflip{
 
 .dream-wizard{
 	width: min(550px, 98vw);
-	padding: 3rem;
+	padding: 2rem 3rem;
 	border-radius: 0.5rem;
 	border: 1px solid;
 	background-color: var(--color-base);
@@ -252,10 +252,25 @@ video#local.noflip{
 
 .dream-wizard .cast-mode {
 	display: flex;
-	justify-content: center;
+	justify-content: space-evenly;
 	align-items: center;
 	font-size: 6rem;
 	margin-bottom: 1rem;
+}
+
+.dream-wizard .cast-mode i {
+	padding: 2rem;
+	border-radius: 2rem;
+	border: 1px solid;
+}
+
+.cast-mode-option {
+	cursor: pointer;
+}
+
+.dream-wizard .cast-mode i.selected{
+	color: var(--saito-font-color);
+	border-width: 2px;
 }
 
 .dream-wizard input{
@@ -272,6 +287,10 @@ video#local.noflip{
 	gap: 2rem;
 	justify-content: flex-end;
 	cursor: pointer;
+}
+
+.dream-wizard fieldset.saito-grid {
+	padding: 0 1rem;
 }
 
 .dream-wizard .help-hook:hover{
