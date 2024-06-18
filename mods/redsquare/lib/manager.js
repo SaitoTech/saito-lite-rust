@@ -93,6 +93,26 @@ class TweetManager {
 		);
 	}
 
+	clearFeed(){
+		//
+		// Stop observering while we rebuild the page
+		//
+		this.intersectionObserver.disconnect();
+		let holder = document.getElementById('tweet-thread-holder');
+		let managerElem = document.querySelector(".tweet-manager");
+
+		if (holder){
+			while (holder.hasChildNodes()){
+				holder.firstChild.remove();
+			}
+		}
+		if (managerElem){
+			while (managerElem.hasChildNodes()) {
+				managerElem.firstChild.remove();
+			}
+		}
+	}
+
 	render(new_mode = this.mode) {
 		this.app.connection.emit('redsquare-clear-menu-highlighting', new_mode);
 
@@ -131,6 +151,9 @@ class TweetManager {
 			console.log("Stash rendered tweets from main feed");
 			let kids = managerElem.children;
 			holder.replaceChildren(...kids);
+			if (document.getElementById("saito-new-tweets")){
+				holder.prepend(document.getElementById("saito-new-tweets"));
+			}
 		} else {
 			console.log("Remove temporary content from page");
 			while (managerElem.hasChildNodes()) {

@@ -168,8 +168,6 @@ html[data-theme="arcade"] {
   --background-color-button-hover-modal: none;
   --background-color-button-hover-modal-oldschool: var(--color-primary);
   --background-color-button-chat-popup-send: var(--background-color-main);
-  /* Progress Bar */
-  --background-color-progress-bar: var(--color-primary);
   /* Sidebar, Headers and Notification Colors */
   --background-color-notification-status: var(--color-primary);
   --background-color-notification-status-after: var(--color-contrast);

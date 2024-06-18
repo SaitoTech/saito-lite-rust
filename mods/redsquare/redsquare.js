@@ -595,9 +595,11 @@ if (this.app.modules.moderate(newtx, this.name) != -1) {
       // Add auto-polling for new tweets, on a 5 minute interval
       // 1000 * 60 * 5
       setInterval(() => {
-        this.loadTweets("later", (tx_count) => {
-          this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
-        });
+        if (this.manager?.mode == "tweets"){
+          this.loadTweets("later", (tx_count) => {
+            this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
+          }, peer);
+        }
       }, 300000);
 
  
@@ -638,16 +640,19 @@ if (this.app.modules.moderate(newtx, this.name) != -1) {
           this.app.connection.emit("redsquare-tweet-render-request", tweet);
         });
 
-        //return;
+        return;
       }
 
  
       //
       // Get tweets from my peers
       console.log("REDSQUARE: query peers on initial load");
-      this.loadTweets("later", (tx_count)=> {
+      let ct = this.loadTweets("later", (tx_count) => {
         this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
       });
+      if (ct){
+        this.app.connection.emit("redsquare-insert-loading-message", `Checking with ${ct} peers for new tweets...`);
+      }
 
     }
 
@@ -954,7 +959,7 @@ if (this.app.modules.moderate(newtx, this.name) != -1) {
                 } else {
                   this.app.connection.emit("redsquare-remove-loading-message");
                 }
-              }, 1500);
+              }, 1000);
             }
 
             if (mycallback) {
