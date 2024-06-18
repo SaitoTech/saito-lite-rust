@@ -69,25 +69,21 @@ class Record extends ModTemplate {
 
 			return {
 					startStreamingVideoCall: async () => {
-						// if we are already capturing a stream, we get the stream
+						// if we are already recording, we just get the stream
 						let stream;
-						if (this.is_capturing_stream) {
+						if (this.mediaRecorder) {
 							console.log('we already have a stream')
 							stream = this.combinedStream;
 						} else {
 							stream = this.captureStreamsForVideoCall(true)
 						}
-
 						this.is_limbo_streaming = true;
 						return stream;
 					},
 
-					stopStreamingVideoCall: async (stopRecording = true) => {
-						// if we are recording and want to stop recording
-						if (this.mediaRecorder && stopRecording) {
-							await this.stopRecording()
-							this.stopCaptureStreamForVideoCall()	
-						} else if (!this.mediaRecorder) {
+					stopStreamingVideoCall: async () => {
+						// only stop capturing if we are not recording. The recorder could be using the combinedStream
+						 if (!this.mediaRecorder) {
 							this.stopCaptureStreamForVideoCall()
 						}
 						this.is_limbo_streaming = false
@@ -262,7 +258,6 @@ class Record extends ModTemplate {
 
 
 		// initialize variables
-		this.mediaRecorder = true;
 		this.type = type;
 		this.members = members
 
@@ -684,9 +679,12 @@ class Record extends ModTemplate {
 
 	async stopRecording() {
 
+		// limbo might be using the stream, so we only stop capturing if it's not
 		if(!this.is_limbo_streaming){
 			this.stopCaptureStreamForVideoCall();
 		}
+
+
 		if (this.mediaRecorder) {
 			this.mediaRecorder.stop();
 			this.mediaRecorder = null;
@@ -706,8 +704,7 @@ class Record extends ModTemplate {
 
 		this.mediaRecorder = null
 		this.members = []
-		// window.removeEventListener('resize', updateDimensions);
-		// window.removeEventListener('orientationchange', updateDimensions);
+
 
 	}
 
