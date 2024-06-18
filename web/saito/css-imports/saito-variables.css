@@ -500,7 +500,6 @@ font imports
   --background-color-identicon: var(--background-color-main);
   --background-color-leaderboard-header: var(--background-color-light);
 /* Progress Bar and Notifications */
-  --background-color-progress-bar: var(--background-saito-effects);
   --background-color-notification-status: var(--background-color-ui-elements);
   --background-color-notification-status-after: var(--color-contrast);
   --background-color-alert-box: var(--background-color-main);

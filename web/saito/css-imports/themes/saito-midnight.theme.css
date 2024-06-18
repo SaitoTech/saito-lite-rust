@@ -168,8 +168,6 @@ html[data-theme="midnight"] {
   --background-color-button-sidebar-chat-active: var(--color-primary);
   --background-color-button-hover-modal-oldschool: var(--color-primary);
   --background-color-button-chat-popup-send: var(--background-color-main);
-  /* Progress Bar */
-  --background-color-progress-bar: var(--color-primary);
   /* Sidebar, Headers and Notification Colors */
   --background-color-button-hover-sidebar: var(--color-primary);
   /* Special UI Components */
