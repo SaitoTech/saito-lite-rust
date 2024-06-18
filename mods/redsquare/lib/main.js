@@ -68,22 +68,24 @@ class RedSquareMain {
         if (this.manager.mode == "tweets") {
           if (this.canRefreshPage()) {
 
-            document.querySelector(".saito-main").innerHTML = "";
+            this.manager.clearFeed();
             this.app.connection.emit("redsquare-home-render-request", true);
 
           } else {
 
-            if (!document.getElementById("saito-new-tweets")) {
-              this.app.browser.prependElementToSelector(
-                `<div class="saito-button-secondary saito-new-tweets" id="saito-new-tweets">load new tweets</div>`,
-                ".saito-main"
-              );
-            }
+            setTimeout(()=> {
+              if (!document.getElementById("saito-new-tweets")) {
+                this.app.browser.prependElementToSelector(
+                  `<div class="saito-button-secondary saito-new-tweets" id="saito-new-tweets">load new tweets</div>`,
+                  ".redsquare-progress-banner"
+                );
+              }
 
-            document.getElementById("saito-new-tweets").onclick = (e) => {
-              document.querySelector(".saito-main").innerHTML = "";
-              this.app.connection.emit("redsquare-home-render-request", true);
-            };
+              document.getElementById("saito-new-tweets").onclick = (e) => {
+                this.manager.clearFeed();
+                this.app.connection.emit("redsquare-home-render-request", true);
+              };
+            }, 1000);
           }
         }
       }
@@ -150,9 +152,9 @@ class RedSquareMain {
       this.loader.render(message);
     });
 
-    this.app.connection.on("redsquare-remove-loading-message", (message = "") => {
+    this.app.connection.on("redsquare-remove-loading-message", (message = `Finished Loading!`) => {
       //NOTE: --> COMMENT THIS OUT TO KEEP MESSAGE DISPLAYED FOR CSS TWEAKING
-      this.loader.finish(`Finished Loading!`);      
+      this.loader.finish(message);
     });
 
     //
@@ -166,12 +168,12 @@ class RedSquareMain {
       if (hash) {
         if (this.components[hash]) {
           this.render_component = hash;
-          document.querySelector(".saito-main").innerHTML = "";
+          this.manager.clearFeed();
           this.components[this.render_component].render();
         } else {
           this.app.modules.returnModulesRenderingInto(".saito-main").forEach((mod) => {
             if (mod.returnSlug() === hash) {
-              document.querySelector(".saito-main").innerHTML = "";
+              this.manager.clearFeed();
               mod.renderInto(".saito-main");
               document
                 .querySelector(".saito-container")
