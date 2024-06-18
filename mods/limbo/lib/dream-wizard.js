@@ -24,6 +24,13 @@ class DreamWizard{
 				//Read the title & description for profile display
 				let title_el = document.getElementById("dream-wizard-identifier");
 				let title = document.getElementById("dream-wizard-identifier")?.value || "";
+				let mode = document.querySelector(".cast-mode-option.selected");
+
+				if (mode){
+					if (mode.getAttribute("id") == "mode-video"){
+						this.options.includeCamera = true;;
+					}
+				}
 
 				let description_el = document.getElementById("dream-wizard-description");
 				let description = description_el?.innerText || description_el?.value || "";
@@ -41,6 +48,14 @@ class DreamWizard{
 			}
 		}
 
+		Array.from(document.querySelectorAll(".cast-mode-option")).forEach(icon => {
+			icon.onclick = (e) => {
+				document.querySelectorAll(".cast-mode-option").forEach(i => {
+					i.classList.remove("selected");
+				})
+				e.currentTarget.classList.add("selected");
+			}
+		})
 	}
 
 

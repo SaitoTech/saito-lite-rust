@@ -398,12 +398,11 @@ class Limbo extends ModTemplate {
 		const otherParties = this.app.modules.getRespondTos('media-request');
 		if (otherParties.length > 0) {
 			console.log('Include other media!');
-			// We hope there is only 1!
+			// We hope there is only 1 respondTo!
 			this.localStream = otherParties[0].localStream;
 			this.additionalSources = otherParties[0].remoteStreams;
 			this.externalMediaControl = true;
 
-			options["includeCamera"] = false;
 			options["screenStream"] = false;
 			options["audio"] = true;
 		} 
@@ -418,20 +417,8 @@ class Limbo extends ModTemplate {
 
 	}
 
-	async broadcastDream(options) {
 
-		if (this.dreamer){
-			console.warn("Already participating in a dream");
-			return;
-		}
-
-		//Set up controls for user...
-		if (this.browser_active) {
-			this.controls = new DreamControls(this.app, this, '#limbo-main');
-		} else {
-			this.controls = new LiteDreamControls(this.app, this);
-		}
-
+	async getStream(options){
 
 		// Set up the media recorder with the canvas stream
 		// Create a new stream for the combined video and audio
@@ -469,10 +456,29 @@ class Limbo extends ModTemplate {
 				});
 			} catch (error) {
 				console.error('Access to screen denied: ', error);
-				screenStream = false;
 				return;
 			}
+		} else {
+
+			if (this.additionalSources || this.localStream){
+				if (includeCamera){
+					//
+					// Another module has gathered some media streams and we want the video
+					//
+
+					const recorders = this.app.modules.getRespondTos('screenrecord-limbo');
+					if (recorders.length > 0) {
+						options.mode = "camera";
+
+						this.externalMediaControl = recorders[0];
+						this.combinedStream = await this.externalMediaControl.startStreamingVideoCall(options?.save_copy, true);
+						return;
+					}
+				}
+			}
 		}
+
+
 
 
 		if (!this.localStream){
@@ -532,9 +538,26 @@ class Limbo extends ModTemplate {
 			});
 		}
 
+	}
 
 
-		if (!this.combinedStream.getTracks()?.length){
+	async broadcastDream(options) {
+
+		if (this.dreamer){
+			console.warn("Already participating in a dream");
+			return;
+		}
+
+		await this.getStream(options);
+
+		//Set up controls for user...
+		if (this.browser_active) {
+			this.controls = new DreamControls(this.app, this, '#limbo-main');
+		} else {
+			this.controls = new LiteDreamControls(this.app, this, options);
+		}
+
+		if (!this.combinedStream?.getTracks()?.length){
 			console.error("Limbo: No media to share");
 			salert("Please check browser permissions, cannot start a stream without any media");
 			return;
@@ -543,7 +566,7 @@ class Limbo extends ModTemplate {
 		await this.sendDreamTransaction(options);
 
 		if (this.controls) {
-			this.controls.render(this.combinedStream, screenStream);
+			this.controls.render(this.combinedStream, options?.screenStream);
 		}
 
 		this.toggleNotification(true, this.publicKey);
@@ -1272,6 +1295,11 @@ class Limbo extends ModTemplate {
 					track.onended = null;
 					track.stop();
 				});
+			}
+		}else{
+			if (this.externalMediaControl?.stopStreamingVideoCall){
+				this.externalMediaControl.stopStreamingVideoCall();
+				this.externalMediaControl = false;
 			}
 		}
 

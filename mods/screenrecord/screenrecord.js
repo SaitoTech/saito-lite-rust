@@ -64,11 +64,10 @@ class Record extends ModTemplate {
 			super.render(this.app, this);
 			let is_recording = false;
 			if (this.mediaRecorder) {
-				is_recording = true
+				is_recording = true;
 			}
 
-			return [
-				{
+			return {
 					startStreamingVideoCall: async (includeRecording, includeCamera ) => {
 						// if we are already capturing a stream, we get the stream
 						let stream;
@@ -109,8 +108,7 @@ class Record extends ModTemplate {
 						}
 						this.is_limbo_streaming = false
 					}
-				}
-			];
+				};
 		}
 		if (type === 'game-menu') {
 			if (!obj.recordOptions) return;
