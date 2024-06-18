@@ -2720,9 +2720,9 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
       //
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["grainsales", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
+          this.game.deck[0].hand = ["redscare", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
-          this.game.deck[0].hand = ["abmtreaty","wargames","romanianab"];
+          this.game.deck[0].hand = ["abmtreaty","vietnamrevolts","wargames","romanianab"];
         }
 
       	//this.game.state.round = 1;
@@ -5679,6 +5679,8 @@ this.game_help.render({
 
   placeInfluence(country, inf, player, mycallback=null) {
 
+    this.game_help.hide();
+
     if (player == "us") {
       this.countries[country].us = parseInt(this.countries[country].us) + parseInt(inf);
     } else {
@@ -5800,10 +5802,9 @@ this.game_help.render({
       if (this.game.state.limit_region.indexOf(this.countries[i].region) > -1) { restricted_country = 1; }
 
       if (restricted_country == 1) {
-
         $(divname).off();
         $(divname).on('click', function() {
-          twilight_self.displayModal("Invalid Target");
+          twilight_self.displayModal("Invalid Target - restricted region");
         });
 
       } else {
@@ -5818,7 +5819,6 @@ this.game_help.render({
           $(divname).on('mouseup', async function (e) {
             if (Math.abs(xpos-e.clientX) > 4) { return; }
             if (Math.abs(ypos-e.clientY) > 4) { return; }
-            //$(divname).on('click', function() {
 
             let countryname = $(this).attr('id');
 
@@ -5838,6 +5838,7 @@ this.game_help.render({
               if (twilight_self.game.state.events.cubanmissilecrisis == 2) {
                 if (countryname === "turkey" || countryname === "westgermany") {
                   if (twilight_self.countries[countryname].us >= 1) {
+
                     //
                     // allow player to remove CMC
                     //
@@ -5867,6 +5868,7 @@ this.game_help.render({
               return;
             }
           });
+
         } else {
 
           $(divname).off();
@@ -5877,7 +5879,6 @@ this.game_help.render({
           $(divname).on('mouseup', async function (e) {
             if (Math.abs(xpos-e.clientX) > 4) { return; }
             if (Math.abs(ypos-e.clientY) > 4) { return; }
-            //$(divname).on('click', function() {
 
             let countryname = $(this).attr('id');
 

@@ -2539,9 +2539,25 @@ try {
 
   displayVictoryTrack() {
 
-    let factions_and_scores = this.calculateVictoryPoints();
+    let factions_and_scores;
+    let x;
 
-    let x = this.returnVictoryPointTrack();
+try {
+    factions_and_scores = this.calculateVictoryPoints();
+} catch (err) {
+    console.log("#");
+    console.log("# error in calculate victory points : " + err);
+    console.log("#");
+}
+
+try {
+    x = this.returnVictoryPointTrack();
+} catch (err) {
+    console.log("#");
+    console.log("# error in return victory point track : " + err);
+    console.log("#");
+}
+
     let tiles = [];
     let zindex = 1;
     for (let i = 0; i < 30; i++) { tiles.push(0); }

@@ -142,35 +142,48 @@ export default class Transaction extends SaitoTransaction {
 		}
 
 		let counter_party_key = '';
-
-		if (this.from[0].publicKey !== myPublicKey) {
-			counter_party_key = this.from[0].publicKey;
-		} else {
-			for (let i = 0; i < this.to.length; i++) {
-				if (this.to[i].publicKey !== myPublicKey) {
-					counter_party_key = this.to[i].publicKey;
-					break;
-				}
+		let addresses = [];
+		for (let i = 0; i < this.from.length; i++){
+			if (!addresses.includes(this.from[i].publicKey)){
+				addresses.push(this.from[i].publicKey);
+			}
+		}
+		for (let i = 0; i < this.to.length; i++){
+			if (!addresses.includes(this.to[i].publicKey)){
+				addresses.push(this.to[i].publicKey);
 			}
 		}
 
-		//console.log("Decrypt message from: " + counter_party_key);
-
-		try {
-			let dmsg = app.keychain.decryptMessage(
-				counter_party_key,
-				parsed_msg
-			);
-			if (dmsg !== parsed_msg) {
-				this.dmsg = dmsg;
-			}
-		} catch (e) {
-			console.error('Decryption error: ', e);
+		// I am not involved in this encrypted transaction!
+		if (!addresses.includes(myPublicKey)){
 			this.dmsg = '';
-			// there was (pre-wasm) code to automatically try to get the keys, but that seems
-			// like a security risk, no???
+			return;
 		}
-		return;
+
+		for (let a of addresses){
+			if (a !== myPublicKey){
+				counter_party_key = a;
+				break;
+			}
+		}
+
+		if (addresses.length !== 2) {
+			console.warn("Attempting to decrypt multiparty message: ", addresses);	
+		}
+
+
+		let dmsg = app.keychain.decryptMessage(
+			counter_party_key,
+			parsed_msg
+		);
+
+		if (dmsg && dmsg !== parsed_msg) {
+			this.dmsg = dmsg;
+		}else{
+			this.dmsg = '';
+		}
+
+
 	}
 
 	async generateRebroadcastTransaction(
@@ -275,8 +288,8 @@ export default class Transaction extends SaitoTransaction {
 	}
 
 	/*
-  Sanka -- maybe these convenience functions should be moved up a level?
-  */
+  	  Sanka -- maybe these convenience functions should be moved up a level?
+  	*/
 	addTo(publicKey: string) {
 		console.assert(!!this.to, 'to field not found : ', this);
 		for (let s of this.to) {

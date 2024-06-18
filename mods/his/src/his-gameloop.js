@@ -4,6 +4,8 @@
   //
   async handleGameLoop() {
 
+console.log("INTO handle game loop...");
+
     let his_self = this;
 
     if (this.is_first_loop == undefined) {
@@ -71,8 +73,9 @@ if (this.game.options.scenario != "is_testing") {
 	  if (this.game.players.length == 2) {
 
 	    this.game.queue.push("diplomacy_phase_2P");
-
+	    // R1 cards dealt below
 	    if (this.game.state.round > 1) {
+	      this.game.queue.push("card_draw_phase");
 	      this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
 	    }
 
@@ -111,18 +114,32 @@ if (this.game.options.scenario != "is_testing") {
 
   	        this.game.queue.push("card_draw_phase");
 
-		this.game.queue.push("winter_retreat_move_units_to_capital\tpapacy");
-		this.game.queue.push("winter_retreat_move_units_to_capital\tfrance");
-		this.game.queue.push("winter_retreat_move_units_to_capital\tengland");
-		this.game.queue.push("winter_retreat_move_units_to_capital\thapsburg");
-		this.game.queue.push("winter_retreat_move_units_to_capital\tottoman");
+	        if (this.game.players.length == 3) {
+                  this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(["france","papacy","protestant"]));
+                  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+                  this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england"]));
+                  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+                }
+          
+            	if (this.game.players.length == 4) {
+            	  this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(["papacy","protestant"]));
+              	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              	  this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france"]));
+              	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              	  return 1;
+                }
+          
+                if (this.game.players.length >= 5) {
+		  this.game.queue.push("winter_retreat_move_units_to_capital_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france","papacy"]));
+	          this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+		}
 
 	        this.game.queue.push("retreat_to_winter_spaces");
+
 	      }
 }
 	    }
 	  }
-
 
 	  //
 	  // 1532 mode and testing need cards too!
@@ -136,27 +153,26 @@ if (this.game.options.scenario != "is_testing") {
 	    //
 	    if (this.game.state.round == 1) {
 
-if (this.game.options.scenario == "is_testing") {
-	      this.game.queue.push("is_testing");
-	      this.game.queue.push("card_draw_phase");
-} else {
-	      if (this.game.players.length == 2) {
-	        this.game.queue.push("show_overlay\tvp");
+	      if (this.game.options.scenario == "is_testing") {
+
+	        this.game.queue.push("is_testing");
+	        this.game.queue.push("card_draw_phase");
+
+	      } else {
+
+	        if (this.game.players.length == 2) {
+	          this.game.queue.push("show_overlay\tvp");
+	        }
+
+	        this.game.queue.push("hide_overlay\tdiet_of_worms");
+	        this.game.queue.push("diet_of_worms");
+	        this.game.queue.push("show_overlay\tdiet_of_worms");
+	        this.game.queue.push("card_draw_phase");
+	        this.game.queue.push("event\tprotestant\t008");
+
 	      }
 
-	      this.game.queue.push("hide_overlay\tdiet_of_worms");
-	      this.game.queue.push("diet_of_worms");
-	      this.game.queue.push("show_overlay\tdiet_of_worms");
-	      this.game.queue.push("card_draw_phase");
-	      this.game.queue.push("event\tprotestant\t008");
-}
-
 	    } else {
-
-
-	      //if (this.game.players.length > 2) {
-	      //  this.game.queue.push("card_draw_phase");
-	      //}
 
 	      //
 	      // round 2 - zwingli in zurich
@@ -630,34 +646,42 @@ if (this.game.options.scenario == "is_testing") {
 
 
 
-
-	if (mv[0] === "faction_array_reset_winter_retreat_move_units_to_capital") {
-	  this.game.queue.splice(qe, 1);
-	  this.winter_retreat_waiting_for_confs = 0;
-	  return 1;
-	}
-	// please run reset_winter_retreat_move... first
 	if (mv[0] === "winter_retreat_move_units_to_capital_faction_array") {
 
 	  let factions = JSON.parse(mv[1]);
+	  let do_i_get_to_move = false;
 
-          if (this.game.confirms_needed[this.game.player-1] == 0) {
-	    this.updateStatus("waiting for others to complete winter retreat...");
+	  //
+	  // skip if we have already confirmed!
+	  //
+	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+	    this.diplomacy_overlay.hide();
 	    return 0;
 	  }
-	  if (this.winter_retreat_waiting_for_confs == 1) { 
-	    return 0;
-	  }
-	  this.winter_retreat_waiting_for_confs = 1;
+
+	  //
+	  // exit if overlay open and visible
+	  //
+	  if (this.theses_overlay.visible) { return 0; }
+	  if (this.moves.length > 0) { return 0; }
+
+	  this.addMove("RESOLVE\t"+this.publicKey);
 
 	  for (let i = 0; i < factions.length; i++) {
 	    let p = this.returnPlayerCommandingFaction(factions[i]);
 	    if (this.game.player == p) {
-	      // prevent double execution
 	      this.winter_overlay.hide();
 	      this.playerReturnWinterUnits(factions[i]);
-	    }
+	      do_i_get_to_move = true;
+            }
           }
+
+	  //
+	  // hey, it's me, not here...
+	  //
+	  if (do_i_get_to_move == false) {
+	     this.endTurn();
+	  }
 
 	  // no splice either -- cleared by RESETCONFIRMSNEEDED
 	  return 0;
@@ -1575,8 +1599,10 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.explorations[idx].prize = "St. Lawrence";
 	    let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the St. Lawrence (1VP)";
 	    this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	    this.game.queue.push("display_custom_overlay\tstlawrence\t"+msg);
+}
 	  }
 	  if (bonus === 'greatlakes') {
 	    this.game.state.explorations[idx].resolved = 1;
@@ -1586,8 +1612,10 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.explorations[idx].prize = "Great Lakes";
 	    let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Great Lakes (1VP)";
 	    this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	    this.game.queue.push("display_custom_overlay\tgreatlakes\t"+msg);
+}
 	  }
 	  if (bonus === 'mississippi') {
 	    this.game.state.explorations[idx].resolved = 1;
@@ -1597,8 +1625,10 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.explorations[idx].prize = "Mississippi";
 	    let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Mississippi (1VP)";
 	    this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	    this.game.queue.push("display_custom_overlay\tmississippi\t"+msg);
+}
 	  }
 	  if (bonus === 'pacificstrait') {
 	    this.game.state.explorations[idx].resolved = 1;
@@ -1608,8 +1638,10 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.explorations[idx].prize = "Pacific Strait";
 	    let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Pacific Strait (2VP)";
 	    this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	    this.game.queue.push("display_custom_overlay\tpacificstrait\t"+msg);
+}
 	  }
 	  if (bonus === 'amazon') {
 	    this.game.state.explorations[idx].resolved = 1;
@@ -1619,8 +1651,10 @@ if (this.game.options.scenario == "is_testing") {
 	    this.game.state.explorations[idx].prize = "Amazon";
 	    let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Amazon (2VP)";
 	    this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	    this.game.queue.push("display_custom_overlay\tamazon\t"+msg);
+}
 	  }
 	  if (bonus === 'circumnavigation') {
 
@@ -1704,8 +1738,10 @@ if (this.game.options.scenario == "is_testing") {
 	      this.game.state.explorations[idx].prize = "lost at sea";
 	      let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " lost at sea...";
 	      this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	      this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	      this.game.queue.push("display_custom_overlay\tlost-at-sea\t"+msg);
+}
 	    }
 	  }
 
@@ -2005,8 +2041,10 @@ if (this.game.options.scenario == "is_testing") {
 	        this.game.state.conquests[idx].active = 1;
 	        let msg = this.returnFactionName(faction) + ": " + this.returnConquistadorName(conquistador) + " conquers the Inca (2VP)";
 	        this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	        this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	        this.game.queue.push("display_custom_overlay\tinca\t"+msg);
+}
 	      } else {
 		while (hits > 10) { hits--; }
 	      }
@@ -2019,8 +2057,10 @@ if (this.game.options.scenario == "is_testing") {
 	        this.game.state.conquests[idx].active = 1;
 	        let msg = this.returnFactionName(faction) + ": " + this.returnConquistadorName(conquistador) + " conquers the Aztec (2VP)";
 	        this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	        this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	        this.game.queue.push("display_custom_overlay\taztec\t"+msg);
+}
 	      } else { 
 		while (hits >= 10) { hits--; }
 	      }
@@ -2033,8 +2073,10 @@ if (this.game.options.scenario == "is_testing") {
 	        this.game.state.conquests[idx].active = 1;
 	        let msg = this.returnFactionName(faction) + ": " + this.returnConquistadorName(conquistador) + " conquers the Maya (1VP)";
 	        this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	        this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	        this.game.queue.push("display_custom_overlay\tmaya\t"+msg);
+}
 	      } else {
 		this.game.state.conquests[idx].prize = "-";
 	        this.updateLog(this.returnFactionName(faction) + ": " + this.returnConquistadorName(conquistador) + " makes no conquest");
@@ -2086,8 +2128,10 @@ if (this.game.options.scenario == "is_testing") {
 	        this.game.state.explorations[idx].prize = "Mississippi";
 	        let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Mississippi (1VP)";
 	        this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	        this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	        this.game.queue.push("display_custom_overlay\tmississippi\t"+msg);
+}
 	      } else { 
 		hits--;
 	      }
@@ -2099,8 +2143,10 @@ if (this.game.options.scenario == "is_testing") {
 	        this.game.state.explorations[idx].prize = "Great Lakes";
 	        let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the Great Lakes (1VP)";
 	        this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	        this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	        this.game.queue.push("display_custom_overlay\tgreatlakes\t"+msg);
+}
 	      } else { 
 		hits--;
 	      }
@@ -2112,8 +2158,10 @@ if (this.game.options.scenario == "is_testing") {
 	        this.game.state.explorations[idx].prize = "St. Lawrence";
 	        let msg = this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " discovers the St. Lawrence (1VP)";
 	        this.updateLog(msg);
+if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	        this.game.queue.push("ACKNOWLEDGE\t"+msg);
 	        this.game.queue.push("display_custom_overlay\tstlawrence\t"+msg);
+}
 	      } else {
 	        this.game.state.explorations[idx].prize = "-";
 	        this.updateLog(this.returnFactionName(faction) + ": " + this.returnExplorerName(explorer) + " makes no discovery");
@@ -4799,8 +4847,71 @@ console.log("INTO DIET OF WORMS 3");
 	  this.updateStatusWithOptions(msg, html);
 	  let deck = his_self.returnDeck(true);
 
+	  //
+	  // this removes other options like Foul Weather after N seconds, so that
+	  // the game is not significantly slowed if a player refuses to take action. 
+	  //
+	  var counter_or_acknowledge_inactivity_timeout;
+
+	  if (this.isGameHalted() != 1) {
+	  var true_if_counter_or_acknowledge_cleared = false;
+	  counter_or_acknowledge_inactivity_timeout = setTimeout(() => {
+
+	    if (true_if_counter_or_acknowledge_cleared) { return; }
+	    his_self.cardbox.hide();
+
+	    let my_specific_game_id = his_self.game.id;
+            his_self.is_halted = 1;
+            his_self.halted = 1;
+            his_self.game.queue[his_self.game.queue.length-1] = "HALTED\tWaiting for Game to Continue\t"+his_self.publicKey;
+            his_self.hud.back_button = false;
+                  
+            let html = '<ul><li class="option acknowledge" id="ok">acknowledge</li></ul>';
+            his_self.updateStatusWithOptions(msg, html);
+                    
+	    $('.option').off();
+            $('.option').on('click', function () {
+
+		    $('.option').off();
+
+                    let action = $(this).attr("id");
+                
+                    his_self.game = his_self.loadGame(my_specific_game_id);
+                    
+                    // tell game engine we can move
+                    his_self.is_halted = 0;
+                    his_self.halted = 0;
+                    his_self.gaming_active = 0;
+            
+                    his_self.updateStatus('continuing...');
+          
+                    //
+                    // our own move will have been ticked into the future queue, along with
+                    // anyone else's so we skip restartQueue() which will freeze if it sees
+                    // that we have moves still pending, but should clear if it now finds
+                    // UNHALT is the latest instruction and this resolve is coming from us!
+                    //
+                    his_self.processFutureMoves();
+
+	    });
+
+            his_self.addMove("RESOLVE\t"+his_self.publicKey);
+            his_self.endTurn();
+            return 0;
+
+	  }, 7500);
+	  }
+
 	  $('.option').off();
 	  $('.option').on('mouseover', function() {
+
+	    clearTimeout(counter_or_acknowledge_inactivity_timeout);
+	    true_if_counter_or_acknowledge_cleared = true;
+
+	    document.querySelectorAll(".blink").forEach((el) => {
+	      el.classList.remove("blink");
+	    });
+	
             let action2 = $(this).attr("id");
 	    if (deck[action2]) {
 	      his_self.cardbox.show(his_self.returnCardImage(action2));
@@ -4829,6 +4940,12 @@ console.log("INTO DIET OF WORMS 3");
             let action2 = $(this).attr("id");
 
 	    //
+	    // mark that we have interacted
+	    //
+	    true_if_counter_or_acknowledge_cleared = true;
+
+
+	    //
 	    // prevent blocking
 	    //
 	    his_self.cardbox.hide();
@@ -4841,9 +4958,7 @@ console.log("INTO DIET OF WORMS 3");
                 if (action2 == menu_triggers[i]) {
                   $(this).remove();
 		  his_self.updateStatus("acknowledged...");
-	          // manually add, to avoid re-processing
 	          if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
-	            //his_self.game.confirms_needed[his_self.game.player-1] = 2;
                     his_self.prependMove("RESOLVE\t"+his_self.publicKey);
 		    z[menu_index[i]].menuOptionActivated(his_self, stage, his_self.game.player, z[menu_index[i]].faction);
                   }
@@ -4853,6 +4968,7 @@ console.log("INTO DIET OF WORMS 3");
             }
 
             if (action2 == "ok") {
+
 	      //
 	      // this ensures we clear regardless of choice
 	      //
@@ -9965,8 +10081,10 @@ defender_hits - attacker_hits;
 	    }
 	  }
 
-	  his_self.faction_overlay.render("protestant");
-	  his_self.faction_overlay.updateNotice("Protestants advance in Bible Translation");
+	  if (his_self.game.player == his_self.returnPlayerCommandingFaction("protestant")) {
+	    his_self.faction_overlay.render("protestant");
+	    his_self.faction_overlay.updateNotice("Protestants advance in Bible Translation");
+	  }
 
 	  return 1;
         }
@@ -10000,8 +10118,10 @@ defender_hits - attacker_hits;
 	    }
 	  }
 
-	  his_self.faction_overlay.render("papacy");
-	  his_self.faction_overlay.updateNotice("Papacy progresses with Saint Peter's Construction");
+	  if (his_self.game.player == his_self.returnPlayerCommandingFaction("papacy")) {
+	    his_self.faction_overlay.render("papacy");
+	    his_self.faction_overlay.updateNotice("Papacy progresses with Saint Peter's Construction");
+	  }
 
 	  return 1;
 
@@ -10247,15 +10367,16 @@ defender_hits - attacker_hits;
 
 	  this.game.state.impulse++;
 
-	  let targs = {
-      	    line1 : "new to", 
-    	    line2 : "game",
-    	    fontsize : "2.1rem" ,
-	  }
 
 //
 // Game Help Menu first Turn
 //
+/****
+let targs = {
+      	    line1 : "new to", 
+    	    line2 : "game",
+    	    fontsize : "2.1rem" ,
+}
 if (this.game.state.round == 1 && this.game.state.impulse == 1) {
           if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
 	    targs.line2 = "protestants";
@@ -10288,6 +10409,7 @@ if (this.game.state.round == 1 && this.game.state.impulse == 1) {
             }
           }
 }
+****/
 
 	  //
 	  // check if we are really ready for a new round, or just need another loop
@@ -10381,6 +10503,47 @@ if (this.game.state.round == 1 && this.game.state.impulse == 1) {
           return 1;
         }
 
+	if (mv[0] === "spring_deployment_faction_array") {
+
+	  let factions = JSON.parse(mv[1]);
+	  let do_i_get_to_move = false;
+
+	  //
+	  // skip if we have already confirmed!
+	  //
+	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+	    this.diplomacy_overlay.hide();
+	    return 0;
+	  }
+
+	  //
+	  // exit if diplomacy-overlay open and visible
+	  //
+	  if (this.spring_deployment_overlay.visible) { return 0; }
+	  if (this.moves.length > 0) { return 0; }
+
+	  this.addMove("RESOLVE\t"+this.publicKey);
+
+	  for (let i = 0; i < factions.length; i++) {
+	    let p = this.returnPlayerCommandingFaction(factions[i]);
+	    if (this.game.player == p && factions[i] != "protestant") {
+              this.playerPlaySpringDeployment(factions[i], this.game.player);
+	      do_i_get_to_move = true;
+            }
+          }
+
+	  // hey, it's me, protestants
+	  if (do_i_get_to_move == false) {
+	     this.endTurn();
+	  }
+
+	  return 0;
+
+	}
+
+
+
+
         if (mv[0] === "spring_deployment_phase") {
 
 	  this.game.queue.splice(qe, 1);
@@ -10413,11 +10576,33 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
   });
 }
 
-
 	  if (this.game.players.length === 2) {
 	    // only papacy moves units
 	    this.game.queue.push("spring_deployment\tpapacy");
 	  } else {
+
+	    if (this.game.players.length == 3) {
+              this.game.queue.push("spring_deployment_faction_array\t"+JSON.stringify(["france","papacy","protestant"]));
+              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              this.game.queue.push("spring_deployment_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england"]));
+              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              return 1;
+            }
+          
+            if (this.game.players.length == 4) {
+              this.game.queue.push("spring_deployment_faction_array\t"+JSON.stringify(["papacy","protestant"]));
+              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              this.game.queue.push("spring_deployment_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france"]));
+              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              return 1;
+            }
+          
+            if (this.game.players.length >= 5) {
+              this.game.queue.push("spring_deployment_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france","papacy","protestant"]));
+              this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+              return 1;
+            } 
+/****
 	    // all players can move units
 	    let io = this.returnImpulseOrder();
 	    for (let i = io.length-1; i >= 0; i--) {
@@ -10425,10 +10610,13 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
 		this.game.queue.push("spring_deployment\t"+io[i]);
 	      }
 	    }
+****/
 	  }
 
           return 1;
+
         }
+
         if (mv[0] === "spring_deployment") {
 
 	  this.game.queue.splice(qe, 1);
@@ -10503,7 +10691,8 @@ this.game_help.renderCustomOverlay("spring_deployment", {
 	      this.game.queue.push(proposal.terms[i]);
 	    }
 	    this.game.state.diplomacy.splice(idx, 1);
-	    this.diplomacy_propose_overlay.purgeProposals();
+	    this.diplomacy_overlay.purgeProposals();
+	    //this.diplomacy_propose_overlay.purgeProposals();
 	  }
 
 	  return 1;
@@ -10545,12 +10734,80 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
 	  let io = this.returnImpulseOrder();
 	  for (let i = io.length-1; i>= 0; i--) {
-	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\t"+io[i]);
+	    this.game.queue.push("confirm_diplomatic_proposals\t"+io[i]);
 	  }
+
+	  if (this.game.players.length == 3) {
+	    this.game.queue.push("propose_diplomatic_proposals_faction_array\t"+JSON.stringify(["france","papacy","protestant"]));
+	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("propose_diplomatic_proposals_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england"]));
+  	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    return 1;
+	  }
+
+	  if (this.game.players.length == 4) {
+	    this.game.queue.push("propose_diplomatic_proposals_faction_array\t"+JSON.stringify(["papacy","protestant"]));
+  	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    this.game.queue.push("propose_diplomatic_proposals_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france"]));
+	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    return 1;
+	  }
+
+	  if (this.game.players.length >= 5) {
+	    this.game.queue.push("propose_diplomatic_proposals_faction_array\t"+JSON.stringify(["ottoman","hapsburg","england","france","papacy","protestant"]));
+  	    this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    return 1;
+	  }
+
+	  //
+	  // deprecated function, but works for marriage
+	  //
 	  if (this.game.state.henry_viii_marital_status == 1) {
 	    this.game.queue.push("confirm_and_propose_diplomatic_proposals\tmarriage");
 	  }
+	  return 1;
 
+	}
+
+	if (mv[0] === "confirm_diplomatic_proposals") {
+
+	  let faction = mv[1];
+
+          //
+          // first, if there are any outstanding proposals that
+          // involve this faction, we need to ask them one-by-one
+          // if they agree or disagree. if they agree and are the
+          // last to agree, it will immediately execute.
+          //
+          let anything_to_review = false;
+          for (let i = 0; i < this.game.state.diplomacy.length; i++) {
+            if (this.game.state.diplomacy[i].parties.includes(faction)) {
+              for (let z = 0; z < this.game.state.diplomacy[i].parties.length; z++) {
+                if (!this.game.state.diplomacy[i].confirms) { this.game.state.diplomacy[i].confirms = []; }
+                while (this.game.state.diplomacy[i].confirms.length < this.game.state.diplomacy[i].parties.length) { this.game.state.diplomacy[i].confirms.push(0); }
+                for (let zz = 0; zz < this.game.state.diplomacy[i].parties.length; zz++) {
+                  if (this.game.state.diplomacy[i].parties[zz] == this.game.state.diplomacy[i].proposer) {
+                    this.game.state.diplomacy[i].confirms[zz] = 1;
+                  }
+                }
+                if (this.game.state.diplomacy[i].parties[z] == faction && this.game.state.diplomacy[i].confirms[z] != 1) {
+                  this.game.queue.push("confirm_diplomatic_proposal\t"+faction+"\t"+i);
+                  anything_to_review = true;
+                }
+              }
+            }
+          }
+
+          if (anything_to_review) {
+            // we have pushed to the queue, so will return and pass-
+            // through when all proposals are fine.
+            return 1;
+          }
+
+	  //
+	  // nothing to review? remove instruction
+	  //
+	  this.game.queue.splice(qe, 1);
 	  return 1;
 
 	}
@@ -10565,13 +10822,52 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  if (this.game.player == player) {
 	    this.diplomacy_confirm_overlay.render(faction, proposal_idx);
 	  } else {
-	    this.updateStatus(this.returnFactionName(faction) + " conducting diplomacy...");
+	    this.updateStatus(this.returnFactionName(faction) + " reviewing offers...");
 	  }
 
 	  this.game.queue.splice(qe, 1);
 	  return 0;
 
 	}
+
+	if (mv[0] === "propose_diplomatic_proposals_faction_array") {
+
+	  let factions = JSON.parse(mv[1]);
+	  let do_i_get_to_move = false;
+
+	  //
+	  // exit if diplomacy-overlay open and visible
+	  //
+	  if (this.diplomacy_overlay.is_visible) { return 0; }
+	  if (this.moves.length > 0) { return 0; }
+
+	  //
+	  // skip if we have already confirmed!
+	  //
+	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+	    this.diplomacy_overlay.hide();
+	    this.winter_overlay.render("stage6");
+	    return 0;
+	  }
+
+	  this.addMove("RESOLVE\t"+this.publicKey);
+
+	  for (let i = 0; i < factions.length; i++) {
+	    let p = this.returnPlayerCommandingFaction(factions[i]);
+	    if (this.game.player == p && factions[i] != "protestant") {
+	      this.diplomacy_overlay.render(factions[i]);
+	      do_i_get_to_move = true;
+	    }
+          }
+
+	  if (do_i_get_to_move == false) {
+	     this.endTurn();
+	  }
+
+	  return 0;
+
+	}
+
 
 	if (mv[0] === "confirm_and_propose_diplomatic_proposals") {
 
@@ -10580,19 +10876,16 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
 	  this.winter_overlay.render("stage6");
 
-
 	  //
 	  // papacy asked for Henry VIII marriage
 	  //
 	  if (faction == "marriage") {
-	    if (player == this.returnPlayerCommandingFaction("papacy")) {
+	    if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
 	      this.marriage_overlay.renderApproveDivorce();
-	      this.game.queue.splice(qe, 1);
-	      return 0;
 	    }
+	    this.game.queue.splice(qe, 1);
+	    return 0;
 	  }
-
-
 
 	  //
 	  // first, if there are any outstanding proposals that
@@ -10638,8 +10931,10 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	  //
 	  if (player === this.game.player) {
 	    // makes sure old data purged from last faction we did
-	    this.diplomacy_propose_overlay.purgeProposals();
-	    this.diplomacy_propose_overlay.render(faction);
+	    //this.diplomacy_propose_overlay.purgeProposals();
+	    //this.diplomacy_propose_overlay.render(faction);
+	    this.diplomacy_overlay.purgeProposals();
+	    this.diplomacy_overlay.render(faction);
 	  } else {
 	    this.updateStatus(this.returnFactionName(faction) + " conducting diplomacy...");
 	  }
@@ -11401,12 +11696,12 @@ alert("TRIGGERING WITH FHAND_IDX of -1...");
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-cardnum = 1;
-if (f == "papacy") { cardnum = 0; }
-if (f == "hapsburg") { cardnum = 1; }
-if (f == "protestant") { cardnum = 0; }
-if (f == "england") { cardnum = 0; }
-if (f == "ottoman") { cardnum = 0; }
+//cardnum = 1;
+//if (f == "papacy") { cardnum = 0; }
+//if (f == "hapsburg") { cardnum = 1; }
+//if (f == "protestant") { cardnum = 0; }
+//if (f == "england") { cardnum = 0; }
+//if (f == "ottoman") { cardnum = 0; }
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
@@ -12599,8 +12894,12 @@ console.log(JSON.stringify(reshuffle_cards));
 	if (mv[0] === "evacuate") {
 
 	  this.game.queue.splice(qe, 1);
-	  let spacekey = mv[1];
+	  let faction = mv[1];
+	  let spacekey = mv[2];
  	  let space = this.game.spaces[spacekey];
+
+console.log("spacekey: " + spacekey);
+console.log("space.units: " + JSON.stringify(space.units));
 
 	  for (let f in space.units) {
 
@@ -12624,7 +12923,7 @@ console.log(JSON.stringify(reshuffle_cards));
 		  }
 		}
 	      }
-	      for (let i = space.units[f].length-1; i >= 0; iii) {
+	      for (let i = space.units[f].length-1; i >= 0; i--) {
 	        if (space.units[f][i].type == "squadron" || space.units[f][i].type == "corsair") {
 		  if (spacekey_for_relocation != "") {
 		    this.game.spaces[spacekey_for_relocation].units[f].push(space.units[f][i]);

@@ -13,11 +13,13 @@ class Mods {
 	public is_initialized: any;
 	public lowest_sync_bid: any;
 	public app_filter_func: any;
+	public core_filter_func: any;
 
 	constructor(app: Saito, config) {
 		this.app = app;
 		this.mods = [];
 		this.app_filter_func = []; // moderation functions -- app-specific
+		this.core_filter_func = []; // core moderation functions (general whitelist / blacklsit)
 		this.uimods = [];
 		this.mods_list = config;
 		this.is_initialized = false;
@@ -164,8 +166,6 @@ class Mods {
 				// callback is defined in apps/lite/index.ts
 				// it runs sendApiSuccess() with the response object
 				//
-
-				//console.log("Execute null callback on " + request);
 				mycallback({});
 			}
 		}
@@ -283,8 +283,11 @@ class Mods {
 		//
 		// ... setup moderation / filter functions
 		//
-		for (let xmod of this.app.modules.respondTo('saito-moderation')) { 
-                  this.app_filter_func.push(xmod.respondTo('saito-moderation').filter_func);
+		for (let xmod of this.app.modules.respondTo('saito-moderation-app')) { 
+                  this.app_filter_func.push(xmod.respondTo('saito-moderation-app').filter_func);
+		}
+		for (let xmod of this.app.modules.respondTo('saito-moderation-core')) { 
+                  this.core_filter_func.push(xmod.respondTo('saito-moderation-core').filter_func);
 		}
 
 		//
@@ -387,20 +390,34 @@ class Mods {
 
 	}
 
+
+	//
+	// 1 = permit, -1 = do not permit
+	//
 	moderateCore(tx=null) {
 
 		if (tx == null) { return 0; }
 
-		if (!this.app.options.modtools) { this.app.options.modtools = {}; }
-		if (!this.app.options.modtools.whitelist) { this.app.options.modtools.whitelist = []; }
-		if (!this.app.options.modtools.blacklist) { this.app.options.modtools.blacklist = []; }
-                if (this.app.options.modtools.whitelist.includes(tx.from[0].publicKey)) { return 1; }
-                if (this.app.options.modtools.blacklist.includes(tx.from[0].publicKey)) { return -1; }
-
+		for (let z = 0; z < this.core_filter_func.length; z++) {
+			let permit_through = this.core_filter_func[z](tx);
+			if (permit_through == 1) { 
+				return 1;
+			}
+			if (permit_through == -1) { 
+				return -1;
+			}
+		}
 		return 0;
 
 	}
 
+
+
+	moderateAddress(publickey="") {
+		let newtx = new Transaction();
+		newtx.addFrom(publickey);
+		return this.moderate(newtx);
+	}
 
 	moderate(tx=null, app="") {
 
@@ -422,12 +439,9 @@ class Mods {
 		//
 		permit_through = this.moderateCore(tx);
 
-console.log("core moderation: " + permit_through);
-
 		if (permit_through == -1) { return -1; }
 		if (permit_through == 1) { return 1; }
 		
-
 		//
 		// seems OK if we made it this far
 		//
@@ -436,10 +450,8 @@ console.log("core moderation: " + permit_through);
 
 
 	async render() {
-		console.log('modules.render');
 		for (let icb = 0; icb < this.mods.length; icb++) {
 			if (this.mods[icb].browser_active == 1) {
-				console.log('mod.render : ' + this.mods[icb].name);
 
 				await this.mods[icb].render(this.app, this.mods[icb]);
 			}
@@ -554,9 +566,6 @@ console.log("core moderation: " + permit_through);
 	}
 
 	onNewBlock(blk, i_am_the_longest_chain) {
-		// blk.transactions.forEach(transaction => {
-		//   console.log(transaction.toJson(), "new block")
-		// })
 		console.log('#################');
 		console.log('### New Block ### ' + blk.id);
 		console.log('#################');

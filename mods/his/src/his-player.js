@@ -2928,8 +2928,6 @@ return;
 
   playerReturnWinterUnits(faction) {
 
-    //this.addMove("RESOLVE\t"+this.publicKey);
-
     let his_self = this;
     let capitals = this.returnCapitals(faction);
     let viable_capitals = [];
@@ -2993,7 +2991,7 @@ return;
         return;
       }
 
-      let msg = his_self.returnFactionName(faction) + " - Return Extra Units to Capital?";
+      let msg = his_self.returnFactionName(faction) + " - Return Units to Capital?";
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
         opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
@@ -3011,6 +3009,7 @@ return;
 
         if (id == "finish") {
           his_self.updateStatus("processing winter relocation...");
+          his_self.theses_overlay.hide();
           his_self.endTurn();
           return;
         }
@@ -3178,7 +3177,7 @@ return;
 
     pick_capital_function = function(his_self, pick_capital_function, select_spacekey_function, select_units_function, finish_selecting_from_space_function) {
 
-      let msg = his_self.returnFactionName(faction) + " - Return Extra Units to Capital?";
+      let msg = his_self.returnFactionName(faction) + " - Return Units to Capital?";
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
         opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
@@ -3206,6 +3205,7 @@ return;
         let id = $(this).attr('id');
 	if (id == "finish") {
 	  his_self.updateStatus("processing winter relocation...");
+	  his_self.theses_overlay.hide();
 	  his_self.endTurn();
 	  return;
 	}
@@ -3321,7 +3321,7 @@ return;
               for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i].idx);
               }
-              his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
+              //his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
               his_self.endTurn();
 	      his_self.available_units_overlay.faded_out = false;
               return;
@@ -7767,6 +7767,8 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
     let selectFactionsInterface = function(selectFactionsInterface, payCostsInterface) {
 
+      his_self.war_overlay.render();
+
       let msg = `${his_self.returnFactionName(faction)} - Declarations of War?`;
       let existing_cost = 0;
       let html = '<ul>';
@@ -7809,6 +7811,8 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       $('.option').on('click', function () {
 
 	let action = $(this).attr("id");
+
+        his_self.war_overlay.hide();
 
         let id = parseInt(action);
 	$('.option').off();

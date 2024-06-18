@@ -10,39 +10,83 @@
 
 
 .limbo-main {
-	padding-bottom: 1rem;
+	padding: 2rem 0;
 }
 
-.limbo-main .saito-menu {
-	max-width: 50rem;
-	margin: auto;
-	margin-top: 8rem;
+.limbo-menu {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	grid-gap: 2rem;
+	gap: 2rem;
 }
 
-.dreaming .limbo-main .saito-menu {
+.dreaming .limbo-main .limbo-menu {
 	display: none;
 }
 
-.spaces-list{
-	gap: 0.5rem;
+.limbo-launch-options {
+	width: 100%;
+	max-width: 100rem;
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	grid-gap: 2rem;
+}
+
+.limbo-option {
 	display: flex;
 	flex-direction: column;
-	min-height: 10rem;
-}
-
-.spaces-list .saito-user{
-	padding: 0.5rem;
+	align-items: center;
+	gap: 1rem;
+	border-radius: 1rem;
+	border: 2px solid;
+	padding: 2rem;
 	cursor: pointer;
-	border-radius: 0.5rem;
+	height: min(25vw, 28rem);
+	justify-content: space-evenly;
 }
 
-.spaces-list .saito-user:hover, .spaces-list .dream.active{
-	background-color: var(--saito-primary);
-	color: var(--saito-background-color);
+.limbo-option i {
+	font-size: min(90px, max(7vw, 36px));
+}
+
+.limbo-option label {
+	font-size: min(56px, max(4vw, 20px));
+}
+
+.limbo-option:hover{
+	transform: scale(1.05);
+}
+
+.spaces-list{
+	gap: 2.5rem;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, 35rem);
+	width: 100%;
+	justify-content: center;
+}
+
+.spaces-list .saito-profile {
+	border-radius: 1rem;
+	border: 2px solid;
+	cursor: pointer;
+	overflow: hidden;
+}
+
+.spaces-list .saito-profile-header-row .saito-identicon-box {
+	width: 7rem;
+	height: 7rem;
+}
+
+
+/* Join Overlay */
+
+.saito-join-space-overlay {
+	width: min(800px, 90vw);
+	height: min(600px, 90vh);
+	padding: 2rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
 }
 
 /* Right sidebar */
@@ -127,7 +171,7 @@
 	grid-template-rows: 1fr 7rem;
 	grid-template-columns: minmax(0px, 1fr);
 	border-radius: var(--saito-border-radius);
-	background-color: #0008;
+	background-color: #000D;
 }
 
 .dream-controls.lite {
@@ -203,13 +247,41 @@ video#local.noflip{
 }
 
 .dream-wizard .button {
-	margin-top: 1rem;
+	margin: 1rem 0;
 }
 
+.dream-wizard .cast-mode {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 6rem;
+	margin-bottom: 1rem;
+}
+
+.dream-wizard input{
+	margin: 1rem 0;
+}
+
+.dream-wizard .post-tweet-textarea {
+	min-height: 10rem;
+}
+
+.dream-wizard .help-hook {
+	display: flex;
+	align-items: center;
+	gap: 2rem;
+	justify-content: flex-end;
+	cursor: pointer;
+}
+
+.dream-wizard .help-hook:hover{
+	color: var(--font-color-primary);
+}
 
 .dream-controls .video-call-info {
 	display: none;
 }
+
 
 
 /* Dynamic Page Layout */
@@ -226,11 +298,6 @@ video#local.noflip{
 	/* But drop left sidebar in a dreamspace */
 	.saito-container.limbo-container.dreaming{
 		grid-template-columns: 1fr min-content;
-	}
-
-	.limbo-container.dreaming .saito-sidebar.left{
-		display: none;
-		visibility: hidden;
 	}
 
 }
@@ -282,20 +349,6 @@ video#local.noflip{
 
 	.limbo-sidebar{
 		border-left: unset;
-	}
-
-	.limbo-sidebar .saito-profile-cover {
-		height: 6rem;
-	}
-	.limbo-sidebar .saito-profile-identicon {
-		width: 6rem;
-		height: 6rem;
-	}
-	.limbo-sidebar .saito-profile-options-row{
-		height: 2.5rem;
-	}
-	.limbo-sidebar .saito-profile-info {
-		margin: unset;
 	}
 
 	.video-box-container-large > #connection-message {

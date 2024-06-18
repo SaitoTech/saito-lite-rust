@@ -18,6 +18,7 @@ class TweetMenu {
 	}
 
 	render() {
+
 		this.overlay.remove();
 		this.overlay.show(TweetMenuTemplate(this), () => {
 			this.close();
@@ -64,7 +65,7 @@ class TweetMenu {
 	}
 
 	blockContact() {
-		this.app.connection.emit('saito-blacklist', this.tweeter);
+		this.app.connection.emit('saito-blacklist', ({ address : this.tweeter, moderator : "", duration : -1 })); // -1 is forever
 		siteMessage('User blocked... reloading feed');
 		setTimeout(() => {
 			setTimeout(() => {

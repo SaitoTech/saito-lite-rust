@@ -51,6 +51,23 @@ class ChatManagerMenu {
 	}
 
 	attachEvents() {
+
+		if (document.getElementById('add-publickey')) {
+			document.getElementById('add-publickey').onclick = async (e) => {
+				let add = await sprompt('Enter Address of Contact to Add:');
+                                if (add != '' && this.app.crypto.isPublicKey(add)) {
+					salert(`Adding ${add} as Contact`);
+					this.app.keychain.addKey(add);
+	                                this.app.connection.emit(
+        	                                'encrypt-key-exchange',
+                	                        add
+                        	        );
+				} else {
+					salert("Not a Network Address / Public Key");
+				}
+			};
+		}
+
 		if (document.getElementById('add-contacts')) {
 			document.getElementById('add-contacts').onclick = (e) => {
 				this.contactList.multi_select = false;

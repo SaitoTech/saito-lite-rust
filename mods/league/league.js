@@ -527,6 +527,11 @@ class League extends ModTemplate {
 		}
 
 		try {
+
+			if (this.app.BROWSER && !tx.isTo(this.publicKey)) {
+				return;
+			}
+
 			let txmsg = tx.returnMessage();
 
 			if (this.debug) {

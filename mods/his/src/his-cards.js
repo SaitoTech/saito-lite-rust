@@ -607,7 +607,12 @@
 	      if (finished == 0) {
 	        let x = action.split("_");
 	        action = x[1];
-	        his_self.addMove("activate_minor_power\t"+faction+"\t"+action);
+		// some cases, same power can be deactivated
+		if (x[0] === "deactivate") {
+	          his_self.addMove("deactivate_minor_power\t"+his_self.returnAllyOfMinorPower(action)+"\t"+action);
+		} else {
+	          his_self.addMove("activate_minor_power\t"+faction+"\t"+action);
+	        }
 	      }
 
 	    } else {
@@ -2546,6 +2551,7 @@ console.log("selected: " + spacekey);
         if (mv[0] === "advance_henry_viii_marital_status") {
 
           his_self.game.queue.splice(qe, 1);
+	  let msg = "Henry VIII is pleased with his marital progress...";
 
 	  //
 	  // Henry VIII already dead, cannot roll
@@ -2581,8 +2587,6 @@ console.log("selected: " + spacekey);
 	    his_self.updateLog("Henry VIII marries Katherine Parr");
 	  }
 
-	  his_self.updateLog("Henry VIII marital status now: " + his_self.game.state.henry_viii_marital_status);
-
 	  if (his_self.game.state.henry_viii_marital_status > 7) { his_self.game.state.henry_viii_marital_status = 7; return 1; }
 	  if (his_self.game.state.henry_viii_marital_status >= 2) {
 
@@ -2600,21 +2604,27 @@ console.log("selected: " + spacekey);
 	      dd++;
 	    }
 
-	    his_self.updateLog("Henry VIII rolls: " + dd);
+	    //his_self.updateLog("Henry VIII rolls: " + dd);
 	    his_self.game.state.henry_viii_rolls.push(dd);
+
+	    msg = "Henry VIII is pleased with his marital progress...";
 
 	    // results of pregnancy chart rolls
 	    if (dd == 1) {
+	      msg = "Marriage Result: Marriage Fails...";
 	      his_self.updateLog("Henry VIII rolls 1: marriage fails");
 	    }
 	    if (dd == 2) {
+	      msg = "Marriage Result: Wife Barren...";
 	      his_self.updateLog("Henry VIII rolls 2: marriage barren");
 	    }
 	    if (dd == 3) {
+	      msg = "Marriage Result: Wife Beheaded for Unbecoming Conduct...";
 	      his_self.updateLog("Henry VIII rolls 3: wife beheaded: will re-roll when England passes");
 	      his_self.game.state.henry_viii_auto_reroll = 1;
 	    }
 	    if (dd == 4) {
+	      msg = "Marriage Result: Elizabeth I born, +2VP for Female Succession...";
 	      his_self.updateLog("Henry VIII rolls 4: Elizabeth I born");
 	      his_self.updateLog("England gains 2 VP for Female Succession");
 	      his_self.game.state.henry_viii_add_elizabeth = 1;
@@ -2622,8 +2632,10 @@ console.log("selected: " + spacekey);
 	    if (dd == 5) {
 	      his_self.updateLog("Henry VIII rolls 5: sickly Edward VI");
 	      if (his_self.game.state.henry_viii_add_elizabeth == 1) {
+	        msg = "Marriage Result: Edward VI born sickly, +3VP for Male Succession...";
 	        his_self.updateLog("England gains additional 3 VP for Male Succession");
 	      } else {
+	        msg = "Marriage Result: Edward VI born sickly, +5VP for Male Succession...";
 	        his_self.updateLog("England gains 5 VP for Male Succession");
 	      }
 	      his_self.game.state.henry_viii_sickly_edward = 1;
@@ -2633,9 +2645,10 @@ console.log("selected: " + spacekey);
 	      his_self.updateLog("Henry VIII rolls 6: healthy Edward VI");
 	      if (his_self.game.state.henry_viii_sickly_edward == 0) {
 		if (his_self.game.state.henry_viii_add_elizabeth == 1) {
+	          msg = "Marriage Result: Edward VI born healthy, +3VP for Male Succession...";
 	          his_self.updateLog("England gains additional 3 VP for Male Succession");
 	        } else {
-	          his_self.updateLog("England gains 5 VP for Male Succession");
+	          msg = "Marriage Result: Edward VI born healthy, +5VP for Male Succession...";
 	        }
 	      }
 	      his_self.game.state.henry_viii_healthy_edward = 1;
@@ -2643,9 +2656,10 @@ console.log("selected: " + spacekey);
 	      his_self.game.state.henry_viii_add_elizabeth = 0;
 	    }
 
+	    his_self.updateStatus(msg);
 	  }
 
-	  his_self.marriage_overlay.render();
+	  his_self.marriage_overlay.render(msg);
 	  his_self.displayVictoryTrack();
 	  his_self.displayPregnancyChart();
 
@@ -4977,7 +4991,7 @@ console.log("selected: " + spacekey);
               break;
             }
           }
-          return { faction : f , event : '031', html : `<li class="option" id="031">foul weather (${f})</li>` };
+          return { faction : f , event : '031', html : `<li class="option blink" id="031">foul weather (${f})</li>` };
         }
         return {};
       },
@@ -5094,7 +5108,7 @@ console.log("selected: " + spacekey);
 	  }
 
 	  if (includes_army_leader) {
-            return { faction : f , event : '032', html : '<li class="option" id="032">play gout</li>' };
+            return { faction : f , event : '032', html : '<li class="option blink" id="032">play gout</li>' };
 	  } 
        }
         return {};
@@ -5265,7 +5279,7 @@ console.log("selected: " + spacekey);
 	      break;
 	    }
 	  }
-          return { faction : f , event : '033', html : `<li class="option" id="033">landsknechts (${f})</li>` };
+          return { faction : f , event : '033', html : `<li class="option blink" id="033">landsknechts (${f})</li>` };
         }
         return {};
       },
@@ -5369,7 +5383,7 @@ console.log("selected: " + spacekey);
               i = 100;
             }
 	    if (his_self.game.state.naval_battle.attacker_faction != f && his_self.game.state.naval_battle.defender-faction != f) { return {}; }
-            return { faction : f , event : '001', html : `<li class="option" id="001">janissaries (${f})</li>` };
+            return { faction : f , event : '034', html : `<li class="option" id="034">professional rowers (${f})</li>` };
           }
         }
         return {};
@@ -5413,7 +5427,7 @@ console.log("selected: " + spacekey);
             if (his_self.game.deck[0].fhand[i].includes('035')) {
               f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               i = 100;
-              return { faction : f , event : '035', html : `<li class="option" id="035">siege artillery (${f})</li>` };
+              return { faction : f , event : '035', html : `<li class="option blink" id="035">siege artillery (${f})</li>` };
             }
           }
         }   
@@ -5481,7 +5495,7 @@ console.log("selected: " + spacekey);
             }
           }
 	  if (f != "") {
-            return { faction : f , event : '036', html : `<li class="option" id="036">swiss mercenaries (${f})</li>` };
+            return { faction : f , event : '036', html : `<li class="option blink" id="036">swiss mercenaries (${f})</li>` };
           }
         }
         return {};
@@ -5585,7 +5599,7 @@ console.log("selected: " + spacekey);
 	  if (cardobj.type === "mandatory") { return {}; }
 	  if (cardobj.type === "combat") { return {}; }
 
-          return { faction : "protestant" , event : '037', html : `<li class="option" id="037">wartburg (protestant)</li>` };
+          return { faction : "protestant" , event : '037', html : `<li class="option blink" id="037">wartburg (protestant)</li>` };
         }
         return {};
       },
@@ -5667,7 +5681,7 @@ console.log("selected: " + spacekey);
               break;
             }
           }
-          return { faction : f , event : '038', html : `<li class="option" id="038">halley's comet (${f})</li>` };
+          return { faction : f , event : '038', html : `<li class="option blink" id="038">halley's comet (${f})</li>` };
         }
         return {};
       },
@@ -11888,7 +11902,7 @@ console.log("selected: " + spacekey);
               break;
             }
           }
-          return { faction : f , event : '115', html : `<li class="option" id="115">thomas cromwell (${f})</li>` };
+          return { faction : f , event : '115', html : `<li class="option blink" id="115">thomas cromwell (${f})</li>` };
         }
         return {};
       },

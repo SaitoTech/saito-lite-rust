@@ -379,6 +379,7 @@
 	};
       }
     }
+
     //
     // let factions calculate their VP
     //
@@ -533,7 +534,6 @@
 	factions[leaders[0]].reason = "Domination Victory";
       }
     }
-
 
     //
     // final victory if round 9

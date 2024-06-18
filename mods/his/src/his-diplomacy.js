@@ -5,10 +5,10 @@
 
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
-      name : "Cancel",
+      name : "Back",
       check : this.canPlayerCancel,
       fnct : this.playerCancel,
-      img : "dove.jpeg" ,
+      img : "ambassadors.jpeg" ,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
@@ -146,7 +146,8 @@
     return 1;
   }
   async playerCancel(his_self, faction, mycallback=null) {
-    his_self.diplomacy_propose_overlay.render(faction);
+    //his_self.diplomacy_propose_overlay.render(faction);
+    his_self.diplomacy_overlay.render(faction);
     return 1;
   }
 
@@ -212,8 +213,10 @@
 
   canPlayerReturnCapturedArmyLeader(his_self, player, faction) {
     let p = his_self.returnPlayerCommandingFaction(faction);
-    for (let z = 0; z  < his_self.game.state.players_info[p-1].captured.length; z++) { 
-      if (faction == his_self.game.state.players_info[p-1].capturing_faction) { return 1; }
+    if (p > 0) {
+      for (let z = 0; z  < his_self.game.state.players_info[p-1].captured.length; z++) { 
+        if (faction == his_self.game.state.players_info[p-1].capturing_faction) { return 1; }
+      }
     }
     return 0;
   }
@@ -251,9 +254,13 @@
 
   canPlayerGiveMercenaries(his_self, player, faction) {
     for (let key in his_self.game.spaces) {
-      if (his_self.game.spaces[key].units[faction].length > 0 && key != "persia" && key != "egypt" && key != "ireland") {
-	for (let i = 0; i < his_self.game.spaces[key].units[faction].length; i++) {
-	  if (his_self.game.spaces[key].units[faction][i].type === "mercenary") { return 1; }
+      if (his_self.game.spaces[key]) {
+        if (his_self.game.spaces[key].units[faction]) {
+          if (his_self.game.spaces[key].units[faction].length > 0 && key != "persia" && key != "egypt" && key != "ireland") {
+  	    for (let i = 0; i < his_self.game.spaces[key].units[faction].length; i++) {
+  	      if (his_self.game.spaces[key].units[faction][i].type === "mercenary") { return 1; }
+            }
+          }
         }
       }
     }
@@ -263,9 +270,13 @@
   canPlayerLoanSquadrons(his_self, player, faction) {
     if (faction != "protestant") {
       for (let key in his_self.game.spaces) {
-	let s = his_self.game.spaces[key];
-	for (let z = 0; z < s.units[faction].length; z++) {
-	  if (s.units[faction][z].type == "squadron") { return 1; }
+	if (his_self.game.spaces[key]) {
+	  let s = his_self.game.spaces[key];
+	  if (s.units[faction]) {
+	    for (let z = 0; z < s.units[faction].length; z++) {
+	      if (s.units[faction][z].type == "squadron") { return 1; }
+	    }
+	  }
 	}
       }
     }
@@ -338,8 +349,7 @@
       if (mycallback == null) { return; }
       his_self.updateStatus("submitted");
 
-      mycallback([`set_allies\t${faction}\t${action2}`]);
-      mycallback([`unset_enemies\t${faction}\t${action2}`]);
+      mycallback([`set_allies\t${faction}\t${action2}`,`unset_enemies\t${faction}\t${action2}`]);
 
     });
 
@@ -457,8 +467,6 @@
 
       let giving_faction = $(this).attr("id");
 
-      his_self.winter_overlay.hide();
-
       his_self.playerSelectSpaceWithFilter(
 
         "Gain which Space?",
@@ -474,7 +482,6 @@
             if (mycallback == null) { return; }
             his_self.updateStatus("submitted");
             mycallback([`evacuate\t${giving_faction}\t${spacekey}`,`control\t${faction}\t${spacekey}\t${giving_faction}`,`NOTIFY\t${his_self.returnFactionName(giving_faction)} yields ${his_self.returnSpaceName(spacekey)} to ${his_self.returnFactionName(faction)}`]);
-            his_self.winter_overlay.render();
           },
           
           null,
@@ -506,8 +513,6 @@
 
       let receiving_faction = $(this).attr("id");
 
-      his_self.winter_overlay.hide();
-
       his_self.playerSelectSpaceWithFilter(
 
         "Yield which Space?",
@@ -526,7 +531,6 @@
             if (mycallback == null) { return; }
             his_self.updateStatus("submitted");
             mycallback([`evacuate\t${faction}\t${spacekey}`,`control\t${receiving_faction}\t${spacekey}\t${faction}`,`NOTIFY\t${his_self.returnFactionName(faction)} yields ${his_self.returnSpaceName(spacekey)} to ${his_self.returnFactionName(receiving_faction)}`]);
-            his_self.winter_overlay.render();
           },
           
           null,

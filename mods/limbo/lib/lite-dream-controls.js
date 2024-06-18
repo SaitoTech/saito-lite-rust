@@ -20,7 +20,7 @@ class DreamControls{
 		});
 
 		//Fires every time there is limbo activity (dream starting/ending, people joining/leaving)
-		app.connection.on("limbo-populated", ()=>{
+		app.connection.on("limbo-spaces-update", ()=>{
 			let ct = 0;
 			if (this.mod.dreamer && this.mod.dreams[this.mod.dreamer]){
 				this.mod.dreams[this.mod.dreamer].members.forEach((mem) => {
@@ -31,6 +31,20 @@ class DreamControls{
 				this.app.browser.addNotificationToId(ct, "dreamspace-member-count");
 			}
 		});
+
+		//Videocall connections
+		app.connection.on("videocall-add-party", publicKey => {
+			if (this.mod.dreamer == this.mod.publicKey){
+				this.mod.sendAddSpeakerTransaction(publicKey);
+			}
+		});
+
+		app.connection.on("videocall-remove-party", publicKey => {
+			if (this.mod.dreamer == this.mod.publicKey){
+				this.mod.sendRemoveSpeakerTransaction(publicKey);
+			}
+		});
+
 	}
 
 	render() {
@@ -88,7 +102,7 @@ class DreamControls{
 		if (document.querySelector(".dream-controls .members-control")){
 			document.querySelector(".dream-controls .members-control").onclick = () => {
 				const contactList = new ContactsList(this.app, this.mod, false);
-				contactList.title = "Peercast Audience";
+				contactList.title = "Attendees";
 				contactList.render(this.mod.dreams[this.mod.dreamer].members.filter((key) => key !== this.mod.dreamer));
 			}
 		}
@@ -195,7 +209,7 @@ class DreamControls{
 
     for (const mod of this.app.modules.mods) {
       let item = mod.respondTo('limbo-actions', {
-        group_name: this.app.keychain.returnUsername(this.mod.dreamer) + "'s dream",
+        group_name: this.mod.dreams[this.mod.dreamer].identifier || this.app.keychain.returnUsername(this.mod.dreamer) + "'s Space",
         call_id: this.mod.dreamer + "dream",
       });
 

@@ -14,6 +14,9 @@ Saito Identicon
 .saito-identicon-box {
   width: 3.5rem;
   height: 3.5rem;
+  border: var(--border-thickness-identicon) solid var(--border-color-identicon);
+  border-radius: var(--border-radius-identicon);
+  padding: var(--border-padding-identicon-style);
   cursor: pointer; /* app.browser tries to turn all .saito-identicon into clickable target */
 }
 
@@ -21,6 +24,9 @@ Saito Identicon
   /* It should grow to fit the box! */
   width: 100%;
   height: 100%;
+  border-radius: unset;
+  padding: unset;
+  border: none;
 }
 
 /* ----------------------------------------------------------------

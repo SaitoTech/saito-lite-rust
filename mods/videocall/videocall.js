@@ -276,6 +276,19 @@ class Videocall extends ModTemplate {
 		if (type === 'call-actions') {
 			return [
 				{
+					text: 'Present',
+					icon: 'fa-solid fa-display',
+					hook: 'screen_share',
+					prepend: true,
+					callback: function (app) {
+						if (call_self.screen_share) {
+							call_self.app.connection.emit('stop-share-screen');
+						} else {
+							call_self.app.connection.emit('begin-share-screen');
+						}
+					}
+				},
+				{
 					text: 'Layout',
 					icon: 'fa-solid fa-table-cells-large',
 					prepend: true,
@@ -295,18 +308,6 @@ class Videocall extends ModTemplate {
 						call_self.loadSettings('.saito-module-settings');
 					}
 				},
-				{
-					text: 'Share',
-					icon: 'fa-solid fa-display',
-					hook: 'screen_share',
-					callback: function (app) {
-						if (call_self.screen_share) {
-							call_self.app.connection.emit('stop-share-screen');
-						} else {
-							call_self.app.connection.emit('begin-share-screen');
-						}
-					}
-				}
 			];
 		}
 
@@ -427,6 +428,9 @@ class Videocall extends ModTemplate {
 							this.app.connection.emit('stun-update-link');
 						}
 
+						//Limbo Hook
+						this.app.connection.emit("videocall-add-party", from);
+
 						this.stun.createPeerConnection(from, false);
 
 						return;
@@ -449,6 +453,9 @@ class Videocall extends ModTemplate {
 							}
 						}
 						this.app.connection.emit('remove-peer-box', from);
+
+						//Limbo Hook
+						this.app.connection.emit("videocall-remove-party", from);
 
 						//See if we need to also hang up on our end
 						this.streams.removePeer(from);

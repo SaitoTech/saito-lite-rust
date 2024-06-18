@@ -140,6 +140,12 @@ class RedSquare extends ModTemplate {
       this.app.connection.emit("redsquare-update-notifications", this.notifications_number_unviewed);
     });
 
+
+    this.app.connection.on("redsquare-new-post", (msg) => {
+      let post = new Post(this.app, this);
+      post.render();
+    });
+
     return this;
   }
 
@@ -1298,9 +1304,6 @@ if (this.app.modules.moderate(txs[z], this.name) != -1) {
   // returns 1 if this is a new tweet that can be displayed
   //
   addTweet(tx, source) {
-
-console.log("in add tweet");
-console.log(tx.from[0].publicKey + " from " + source);
 
     //
     // if this is a like or flag tx, it isn't anything to add to the feed so stop here

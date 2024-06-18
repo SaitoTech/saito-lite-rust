@@ -61,6 +61,21 @@ class Encrypt extends ModTemplate {
     return this;
   }
 
+  async initialize(app) {
+    await super.initialize(app);
+
+    if (app.BROWSER){
+      //Clear mistaken broken encryption notices...
+      let keys = app.keychain.returnKeys();
+
+      for (let key of keys) {
+        delete key.encryption_failure;
+      }
+    }
+
+  }
+
+
   respondTo(type, obj) {
     let encrypt_self = this;
 

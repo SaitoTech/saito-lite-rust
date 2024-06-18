@@ -11,6 +11,8 @@ const FactionBar = require('./lib/ui/factionbar');
 const ReligiousOverlay = require('./lib/ui/overlays/religious');
 const CouncilOfTrentOverlay = require('./lib/ui/overlays/council-of-trent');
 const ReformationOverlay = require('./lib/ui/overlays/reformation');
+// diplomacy overlay is new
+const DiplomacyOverlay = require('./lib/ui/overlays/diplomacy');
 const DiplomacyConfirmOverlay = require('./lib/ui/overlays/diplomacy-confirm');
 const DiplomacyProposeOverlay = require('./lib/ui/overlays/diplomacy-propose');
 const AvailableUnitsOverlay = require('./lib/ui/overlays/available-units');
@@ -23,12 +25,12 @@ const FieldBattleOverlay = require('./lib/ui/overlays/field-battle');
 const NavalBattleOverlay = require('./lib/ui/overlays/naval-battle');
 const SchmalkaldicOverlay = require('./lib/ui/overlays/schmalkaldic');
 const AssaultOverlay = require('./lib/ui/overlays/siege');
-const WarOverlay = require('./lib/ui/overlays/war');
 const ThesesOverlay = require('./lib/ui/overlays/theses');
 const DebatersOverlay = require('./lib/ui/overlays/debaters');
 const ExplorersOverlay = require('./lib/ui/overlays/explorers');
 const ConquistadorsOverlay = require('./lib/ui/overlays/conquistadors');
 const UnitsOverlay = require('./lib/ui/overlays/units');
+const WarOverlay = require('./lib/ui/overlays/war');
 const WelcomeOverlay = require('./lib/ui/overlays/welcome');
 const WinterOverlay = require('./lib/ui/overlays/winter');
 const DeckOverlay = require('./lib/ui/overlays/deck');
@@ -77,8 +79,9 @@ class HereIStand extends GameTemplate {
     this.faction_overlay = new FactionOverlay(this.app, this);  // faction sheet
     this.factionbar = new FactionBar(this.app, this); // shows you which factions you are in multiplayer
     this.diet_of_worms_overlay = new DietOfWormsOverlay(this.app, this);  // diet of worms
+    this.diplomacy_overlay = new DiplomacyOverlay(this.app, this);
     this.diplomacy_confirm_overlay = new DiplomacyConfirmOverlay(this.app, this);
-    this.diplomacy_propose_overlay = new DiplomacyProposeOverlay(this.app, this);
+    //this.diplomacy_propose_overlay = new DiplomacyProposeOverlay(this.app, this);
     this.council_of_trent_overlay = new CouncilOfTrentOverlay(this.app, this);  // council of trent
     this.chateaux_overlay = new ChateauxOverlay(this.app, this);  // build some fucking chateaux
     this.marriage_overlay = new MarriageOverlay(this.app, this);  // marry, divorce, repeat
@@ -93,7 +96,6 @@ class HereIStand extends GameTemplate {
     this.conquistadors_overlay = new ConquistadorsOverlay(this.app, this);
     this.schmalkaldic_overlay = new SchmalkaldicOverlay(this.app, this);  // schmalkaldic league
     this.assault_overlay = new AssaultOverlay(this.app, this);  // siege
-    this.war_overlay = new WarOverlay(this.app, this);  // naval battles
     this.naval_battle_overlay = new NavalBattleOverlay(this.app, this);  // naval battles
     this.field_battle_overlay = new FieldBattleOverlay(this.app, this);  // field battles
     this.spring_deployment_overlay = new SpringDeploymentOverlay(this.app, this);  // spring deployment
@@ -106,6 +108,7 @@ class HereIStand extends GameTemplate {
     this.menu_overlay = new MenuOverlay(this.app, this);  // players doing stuff
     this.winter_overlay = new WinterOverlay(this.app, this);
     this.units_overlay = new UnitsOverlay(this.app, this);
+    this.war_overlay = new WarOverlay(this.app, this);
 
     //
     // triangular help button
