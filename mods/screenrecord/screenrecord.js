@@ -68,32 +68,16 @@ class Record extends ModTemplate {
 			}
 
 			return {
-					startStreamingVideoCall: async (includeRecording, includeCamera ) => {
+					startStreamingVideoCall: async () => {
 						// if we are already capturing a stream, we get the stream
 						let stream;
 						if (this.is_capturing_stream) {
 							console.log('we already have a stream')
 							stream = this.combinedStream;
 						} else {
-							stream = this.captureStreamsForVideoCall(includeCamera)
+							stream = this.captureStreamsForVideoCall(true)
 						}
 
-						if (includeRecording && !this.mediaRecorder) {
-							console.log('we start recording because there is none ')
-							let videocallMod = this.app.modules.returnModule('Videocall')
-							if (videocallMod) {
-								// let members = videocallMod.room_obj.call_peers
-								let options = {
-									container: "",
-									members:[],
-									callbackAfterRecord: () => {
-									},
-									type: "videocall",
-									stream,
-								}
-								await this.startRecording(options)
-							}
-						}
 						this.is_limbo_streaming = true;
 						return stream;
 					},
