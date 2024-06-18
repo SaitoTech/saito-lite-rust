@@ -32,10 +32,6 @@ module.exports = DreamWizardTemplate = (app, mod, options) => {
 	 <input type="text" name="dream-wizard-identifier" id="dream-wizard-identifier" placeholder="${default_title}" value="${default_title}"></input>
 	 <label for="dream-wizard-description">Add a description</label> 
 	 <textarea id="dream-wizard-description" class="post-tweet-textarea text-input" placeholder="What are you talking about?"></textarea>  
-	 <fieldset class="saito-grid">
-	 	<input id="recordme" type="checkbox">
-	 	<label for="recordme">Record Space</label>
-	 </fieldset>
 	`;
 
 

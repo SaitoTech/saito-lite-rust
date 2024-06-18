@@ -289,10 +289,6 @@ video#local.noflip{
 	cursor: pointer;
 }
 
-.dream-wizard fieldset.saito-grid {
-	padding: 0 1rem;
-}
-
 .dream-wizard .help-hook:hover{
 	color: var(--font-color-primary);
 }

@@ -471,7 +471,7 @@ class Limbo extends ModTemplate {
 						options.mode = "camera";
 
 						this.externalMediaControl = recorders[0];
-						this.combinedStream = await this.externalMediaControl.startStreamingVideoCall(options?.save_copy, true);
+						this.combinedStream = await this.externalMediaControl.startStreamingVideoCall(false, true);
 						return;
 					}
 				}
