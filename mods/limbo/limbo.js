@@ -542,12 +542,10 @@ class Limbo extends ModTemplate {
 
 
 	async broadcastDream(options) {
-
 		if (this.dreamer){
 			console.warn("Already participating in a dream");
 			return;
 		}
-
 		await this.getStream(options);
 
 		//Set up controls for user...

@@ -82,10 +82,10 @@ class Record extends ModTemplate {
 							console.log('we start recording because there is none ')
 							let videocallMod = this.app.modules.returnModule('Videocall')
 							if (videocallMod) {
-								let members = videocallMod.room_obj.call_peers
+								// let members = videocallMod.room_obj.call_peers
 								let options = {
 									container: "",
-									members,
+									members:[],
 									callbackAfterRecord: () => {
 									},
 									type: "videocall",
@@ -728,6 +728,7 @@ class Record extends ModTemplate {
 	}
 
 	resizeCanvas(canvas, drawStreamsToCanvas) {
+		// console.log('resizing canvas')
 		canvas.width = window.innerWidth;
 		canvas.height = window.innerHeight
 		const videoElements = document.querySelectorAll('div[id^="stream_"] video');
@@ -824,7 +825,7 @@ class Record extends ModTemplate {
 				this.animationFrameId = requestAnimationFrame(drawStreamsToCanvas);
 			};
 
-			window.addEventListener('resize', this.resizeCanvas(canvas, drawStreamsToCanvas));
+			window.addEventListener('resize', ()=> this.resizeCanvas(canvas, drawStreamsToCanvas));
 			this.resizeCanvas(canvas, drawStreamsToCanvas);
 
 			const videoElements = document.querySelectorAll('div[id^="stream_"] video');
@@ -893,6 +894,7 @@ class Record extends ModTemplate {
 	async stopCaptureStreamForVideoCall() {
 		this.is_capturing_stream = false
 		cancelAnimationFrame(this.animationFrameId)
+		// console.log('removing event listener')
 		window.removeEventListener('resize', this.resizeCanvas)
 		this.combinedStream = null
 	}
