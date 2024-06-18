@@ -5,6 +5,7 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const VideoBox = require('../../lib/saito/ui/saito-videobox/video-box');
 const html2canvas = require('html2canvas')
 const domtoimage = require('dom-to-image');
+const StreamCapturer  = require('./lib/stream-capturer')
 
 
 class Record extends ModTemplate {
@@ -20,7 +21,7 @@ class Record extends ModTemplate {
 		this.styles = ['/saito/saito.css', '/screenrecord/style.css'];
 		this.interval = null;
 		this.streamData = [];
-		this.is_limbo_streaming  = false;
+		// this.is_limbo_streaming  = false;
 		this.mediaRecorder = null;
 		this.is_capturing_stream = false;
 
@@ -47,8 +48,8 @@ class Record extends ModTemplate {
 								let startRecording = await sconfirm('Do you  want to start recording?');
 								if (!startRecording) return;
 								let includeCamera = await sconfirm("Do you want to include Camera")
-
-								let stream = this.captureStreamsForVideoCall(includeCamera)
+								this.recorderStreamCapture = new StreamCapturer(this.logo)
+								let stream = this.recorderStreamCapture.captureVideoCallStreams(includeCamera)
 								await this.startRecording({ container, members, callbackAfterRecord, type: 'videocall', stream });
 							} else {
 								this.stopRecording();
@@ -69,24 +70,23 @@ class Record extends ModTemplate {
 
 			return {
 					startStreamingVideoCall: async () => {
-						// if we are already recording, we just get the stream
-						let stream;
-						if (this.mediaRecorder) {
-							console.log('we already have a stream')
-							stream = this.combinedStream;
-						} else {
-							stream = this.captureStreamsForVideoCall(true)
-						}
-						this.is_limbo_streaming = true;
+						try {
+							this.limboStreamCapture = new StreamCapturer(this.logo)
+						let stream = this.limboStreamCapture.captureVideoCallStreams(true)
 						return stream;
+						} catch (error) {
+							console.log('error streaming video call', error)
+						}
+						
 					},
 
 					stopStreamingVideoCall: async () => {
-						// only stop capturing if we are not recording. The recorder could be using the combinedStream
-						 if (!this.mediaRecorder) {
-							this.stopCaptureStreamForVideoCall()
+						 if (this.limboStreamCapture) {
+							this.limboStreamCapture.stopCaptureVideoCallStreams()
+							this.limboStreamCapture = null
+						}else {
+							console.log('No stream to stop?')
 						}
-						this.is_limbo_streaming = false
 					}
 				};
 		}
@@ -187,68 +187,68 @@ class Record extends ModTemplate {
 	}
 
 
-	drawImageProp(ctx, img, x, y, w, h, offsetX, offsetY) {
+	// drawImageProp(ctx, img, x, y, w, h, offsetX, offsetY) {
 
-		if (arguments.length === 2) {
-			x = y = 0;
-			w = ctx.canvas.width;
-			h = ctx.canvas.height;
-		}
+	// 	if (arguments.length === 2) {
+	// 		x = y = 0;
+	// 		w = ctx.canvas.width;
+	// 		h = ctx.canvas.height;
+	// 	}
 
-		offsetX = typeof offsetX === "number" ? offsetX : 0.5;
-		offsetY = typeof offsetY === "number" ? offsetY : 0.5;
+	// 	offsetX = typeof offsetX === "number" ? offsetX : 0.5;
+	// 	offsetY = typeof offsetY === "number" ? offsetY : 0.5;
 
-		if (offsetX < 0) offsetX = 0;
-		if (offsetY < 0) offsetY = 0;
-		if (offsetX > 1) offsetX = 1;
-		if (offsetY > 1) offsetY = 1;
+	// 	if (offsetX < 0) offsetX = 0;
+	// 	if (offsetY < 0) offsetY = 0;
+	// 	if (offsetX > 1) offsetX = 1;
+	// 	if (offsetY > 1) offsetY = 1;
 
-		let iw = img.videoWidth || img.width,
-			ih = img.videoHeight || img.height,
-			r = Math.min(w / iw, h / ih),
-			nw = iw * r,
-			nh = ih * r,
-			cx, cy, cw, ch, ar = 1;
+	// 	let iw = img.videoWidth || img.width,
+	// 		ih = img.videoHeight || img.height,
+	// 		r = Math.min(w / iw, h / ih),
+	// 		nw = iw * r,
+	// 		nh = ih * r,
+	// 		cx, cy, cw, ch, ar = 1;
 
-		if (nw < w) ar = w / nw;
-		if (Math.abs(ar - 1) < 1e-14 && nh < h) ar = h / nh;
-		nw *= ar;
-		nh *= ar;
+	// 	if (nw < w) ar = w / nw;
+	// 	if (Math.abs(ar - 1) < 1e-14 && nh < h) ar = h / nh;
+	// 	nw *= ar;
+	// 	nh *= ar;
 
-		cw = iw / (nw / w);
-		ch = ih / (nh / h);
+	// 	cw = iw / (nw / w);
+	// 	ch = ih / (nh / h);
 
-		cx = (iw - cw) * offsetX;
-		cy = (ih - ch) * offsetY;
+	// 	cx = (iw - cw) * offsetX;
+	// 	cy = (ih - ch) * offsetY;
 
-		if (cx < 0) cx = 0;
-		if (cy < 0) cy = 0;
-		if (cw > iw) cw = iw;
-		if (ch > ih) ch = ih;
+	// 	if (cx < 0) cx = 0;
+	// 	if (cy < 0) cy = 0;
+	// 	if (cw > iw) cw = iw;
+	// 	if (ch > ih) ch = ih;
 
-		ctx.drawImage(img, cx, cy, cw, ch, x, y, w, h);
-		this.drawLogoOnCanvas(ctx)
-	}
+	// 	ctx.drawImage(img, cx, cy, cw, ch, x, y, w, h);
+	// 	this.drawLogoOnCanvas(ctx)
+	// }
 
 
-	drawLogoOnCanvas(ctx) {
-		const maxDimension = 100;
-		const aspectRatio = this.logo.naturalWidth / this.logo.naturalHeight;
-		let logoWidth, logoHeight;
-		if (this.logo.naturalWidth > this.logo.naturalHeight) {
-			logoWidth = maxDimension;
-			logoHeight = maxDimension / aspectRatio;
-		} else {
-			logoHeight = maxDimension;
-			logoWidth = maxDimension * aspectRatio;
-		}
+	// drawLogoOnCanvas(ctx) {
+	// 	const maxDimension = 100;
+	// 	const aspectRatio = this.logo.naturalWidth / this.logo.naturalHeight;
+	// 	let logoWidth, logoHeight;
+	// 	if (this.logo.naturalWidth > this.logo.naturalHeight) {
+	// 		logoWidth = maxDimension;
+	// 		logoHeight = maxDimension / aspectRatio;
+	// 	} else {
+	// 		logoHeight = maxDimension;
+	// 		logoWidth = maxDimension * aspectRatio;
+	// 	}
 
-		const logoX = ctx.canvas.width - logoWidth - 50;
-		const logoY = ctx.canvas.height - logoHeight - 50;
+	// 	const logoX = ctx.canvas.width - logoWidth - 50;
+	// 	const logoY = ctx.canvas.height - logoHeight - 50;
 
-		this.logo.style.objectFit = "cover";
-		ctx.drawImage(this.logo, logoX, logoY, logoWidth, logoHeight);
-	}
+	// 	this.logo.style.objectFit = "cover";
+	// 	ctx.drawImage(this.logo, logoX, logoY, logoWidth, logoHeight);
+	// }
 
 
 	async startRecording(options) {
@@ -679,12 +679,12 @@ class Record extends ModTemplate {
 
 	async stopRecording() {
 
-		// limbo might be using the stream, so we only stop capturing if it's not
-		if(!this.is_limbo_streaming){
-			this.stopCaptureStreamForVideoCall();
+		if(this.recorderStreamCapture){
+			this.recorderStreamCapture.stopCaptureVideoCallStreams();
+			this.recorderStreamCapture = null
+	
 		}
-
-
+	
 		if (this.mediaRecorder) {
 			this.mediaRecorder.stop();
 			this.mediaRecorder = null;
@@ -708,190 +708,191 @@ class Record extends ModTemplate {
 
 	}
 
-	resizeCanvas(canvas, drawStreamsToCanvas) {
-		// console.log('resizing canvas')
-		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight
-		const videoElements = document.querySelectorAll('div[id^="stream_"] video');
-		videoElements.forEach(video => {
-			video.style.objectFit = "cover";
-			video.style.width = "100%";
-			video.style.height = "100%";
-			video.style.maxWidth = "100%";
-		});
-		// Update the drawing routine to handle the new canvas size
-		drawStreamsToCanvas();
-	};
+	// resizeCanvas(canvas, drawStreamsToCanvas) {
+	// 	// console.log('resizing canvas')
+	// 	console.log('resizing')
+	// 	canvas.width = window.innerWidth;
+	// 	canvas.height = window.innerHeight
+	// 	const videoElements = document.querySelectorAll('div[id^="stream_"] video');
+	// 	videoElements.forEach(video => {
+	// 		video.style.objectFit = "cover";
+	// 		video.style.width = "100%";
+	// 		video.style.height = "100%";
+	// 		video.style.maxWidth = "100%";
+	// 	});
+	// 	// Update the drawing routine to handle the new canvas size
+	// 	drawStreamsToCanvas();
+	// };
 
 
-	captureStreamsForVideoCall(includeCamera = false) {
-		let combinedStream = new MediaStream();
-		this.is_capturing_stream = true
-		// remove any previous canvas present
-		document.querySelectorAll('canvas').forEach(canvas => {
-			canvas.parentElement.removeChild(document.querySelector('canvas'))
-		})
-		const audioCtx = new AudioContext();
-		const destination = audioCtx.createMediaStreamDestination();
+	// captureStreamsForVideoCall(includeCamera = false) {
+	// 	let combinedStream = new MediaStream();
+	// 	this.is_capturing_stream = true
+	// 	// remove any previous canvas present
+	// 	document.querySelectorAll('canvas').forEach(canvas => {
+	// 		canvas.parentElement.removeChild(document.querySelector('canvas'))
+	// 	})
+	// 	const audioCtx = new AudioContext();
+	// 	const destination = audioCtx.createMediaStreamDestination();
 
-		const processStream = (stream) => {
-			if (stream && stream.getAudioTracks().length > 0) {
-				const source = audioCtx.createMediaStreamSource(stream);
-				source.connect(destination);
-			}
-			return stream;
-		};
+	// 	const processStream = (stream) => {
+	// 		if (stream && stream.getAudioTracks().length > 0) {
+	// 			const source = audioCtx.createMediaStreamSource(stream);
+	// 			source.connect(destination);
+	// 		}
+	// 		return stream;
+	// 	};
 
-		if (includeCamera) {
-			let observer = new MutationObserver((mutations) => {
-				mutations.forEach((mutation) => {
-					if (mutation.type === 'childList') {
-						mutation.addedNodes.forEach(node => {
-							if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV' && node.id.startsWith('stream_')) {
-								const videos = node.querySelectorAll('video');
-								videos.forEach(video => {
-									const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
-									const rect = video.getBoundingClientRect();
-									const parentID = video.parentElement.id;
-									const videoElement = document.createElement('video');
-									videoElement.srcObject = stream;
-									videoElement.muted = true;
-									videoElement.play();
-									this.streamData.push({ stream, rect, parentID, videoElement });
-								});
-							}
-						});
-					}
-					if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-						this.streamData.forEach(data => {
-							if (data.parentID === mutation.target.id) {
-								data.rect = mutation.target.getBoundingClientRect();
-							}
-						});
+	// 	if (includeCamera) {
+	// 		let observer = new MutationObserver((mutations) => {
+	// 			mutations.forEach((mutation) => {
+	// 				if (mutation.type === 'childList') {
+	// 					mutation.addedNodes.forEach(node => {
+	// 						if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV' && node.id.startsWith('stream_')) {
+	// 							const videos = node.querySelectorAll('video');
+	// 							videos.forEach(video => {
+	// 								const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
+	// 								const rect = video.getBoundingClientRect();
+	// 								const parentID = video.parentElement.id;
+	// 								const videoElement = document.createElement('video');
+	// 								videoElement.srcObject = stream;
+	// 								videoElement.muted = true;
+	// 								videoElement.play();
+	// 								this.streamData.push({ stream, rect, parentID, videoElement });
+	// 							});
+	// 						}
+	// 					});
+	// 				}
+	// 				if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+	// 					this.streamData.forEach(data => {
+	// 						if (data.parentID === mutation.target.id) {
+	// 							data.rect = mutation.target.getBoundingClientRect();
+	// 						}
+	// 					});
 
-					}
-					if (mutation.removedNodes.length > 0) {
-						mutation.removedNodes.forEach(node => {
-							let index = this.streamData.findIndex(data => data.videoElement === node || data.videoElement.parentElement === node);
-							if (index !== -1) {
-								this.streamData.splice(index, 1);
-							}
-						});
-					}
-				});
-			});
-			observer.observe(document.body, {
-				attributes: true,
-				childList: true,
-				subtree: true,
-				attributeFilter: ['style']
-			});
-			const canvas = document.createElement('canvas');
-			canvas.width = window.innerWidth;
-			canvas.height = window.innerWidth
-			const ctx = canvas.getContext('2d');
-			const drawStreamsToCanvas = () => {
-				if (!this.is_capturing_stream) return;
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				this.streamData.forEach(data => {
-					const parentElement = document.getElementById(data.parentID);
-					if (!parentElement) return;
-					const rect = parentElement.getBoundingClientRect();
-					// Draw the video on the canvas
-					if (data.videoElement.readyState >= 2) {
-						this.drawImageProp(ctx, data.videoElement, rect.left, rect.top, rect.width, rect.height)
-					}
-				});
-				// console.log('still drawing streams');
-				this.animationFrameId = requestAnimationFrame(drawStreamsToCanvas);
-			};
+	// 				}
+	// 				if (mutation.removedNodes.length > 0) {
+	// 					mutation.removedNodes.forEach(node => {
+	// 						let index = this.streamData.findIndex(data => data.videoElement === node || data.videoElement.parentElement === node);
+	// 						if (index !== -1) {
+	// 							this.streamData.splice(index, 1);
+	// 						}
+	// 					});
+	// 				}
+	// 			});
+	// 		});
+	// 		observer.observe(document.body, {
+	// 			attributes: true,
+	// 			childList: true,
+	// 			subtree: true,
+	// 			attributeFilter: ['style']
+	// 		});
+	// 		const canvas = document.createElement('canvas');
+	// 		canvas.width = window.innerWidth;
+	// 		canvas.height = window.innerWidth
+	// 		const ctx = canvas.getContext('2d');
+	// 		const drawStreamsToCanvas = () => {
+	// 			if (!this.is_capturing_stream) return;
+	// 			ctx.clearRect(0, 0, canvas.width, canvas.height);
+	// 			this.streamData.forEach(data => {
+	// 				const parentElement = document.getElementById(data.parentID);
+	// 				if (!parentElement) return;
+	// 				const rect = parentElement.getBoundingClientRect();
+	// 				// Draw the video on the canvas
+	// 				if (data.videoElement.readyState >= 2) {
+	// 					this.drawImageProp(ctx, data.videoElement, rect.left, rect.top, rect.width, rect.height)
+	// 				}
+	// 			});
+	// 			// console.log('still drawing streams');
+	// 			this.animationFrameId = requestAnimationFrame(drawStreamsToCanvas);
+	// 		};
 
-			window.addEventListener('resize', ()=> this.resizeCanvas(canvas, drawStreamsToCanvas));
-			this.resizeCanvas(canvas, drawStreamsToCanvas);
+	// 		window.addEventListener('resize', ()=> this.resizeCanvas(canvas, drawStreamsToCanvas));
+	// 		this.resizeCanvas(canvas, drawStreamsToCanvas);
 
-			const videoElements = document.querySelectorAll('div[id^="stream_"] video');
-			this.streamData = Array.from(videoElements).map(video => {
-				let stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
-				processStream(stream)
-
-
-				// if (!includeCamera) {
-				// 	stream = new MediaStream(stream.getAudioTracks());
-				// }
+	// 		const videoElements = document.querySelectorAll('div[id^="stream_"] video');
+	// 		this.streamData = Array.from(videoElements).map(video => {
+	// 			let stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
+	// 			processStream(stream)
 
 
-				const rect = video.getBoundingClientRect();
-				const parentID = video.parentElement.id;
-				const videoElement = document.createElement('video');
-				videoElement.srcObject = stream;
-				videoElement.muted = true;
-				videoElement.play();
-				videoElement.style.display = "none";
-				return { stream, rect, parentID, videoElement };
-			}).filter(data => data.stream !== null);
-			combinedStream.addTrack(canvas.captureStream(25).getVideoTracks()[0]);
-		}
-
-		else {
-			let observer = new MutationObserver((mutations) => {
-				mutations.forEach((mutation) => {
-					if (mutation.type === 'childList') {
-						mutation.addedNodes.forEach(node => {
-							if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV' && node.id.startsWith('stream_')) {
-								const videos = node.querySelectorAll('video');
-								videos.forEach(video => {
-									const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
-									processStream(stream)
-								});
-							}
-						});
-					}
-					if (mutation.removedNodes.length > 0) {
-						mutation.removedNodes.forEach(node => {
-							let index = this.streamData.findIndex(data => data.videoElement === node || data.videoElement.parentElement === node);
-							if (index !== -1) {
-								this.streamData.splice(index, 1);
-							}
-						});
-					}
-				});
-			});
-			observer.observe(document.body, {
-				attributes: true,
-				childList: true,
-				subtree: true,
-				attributeFilter: ['style']
-			});
-			document.querySelectorAll('video').forEach(video => {
-				let stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
-				processStream(stream);
-			});
-		}
-		combinedStream.addTrack(destination.stream.getAudioTracks()[0]);
-		this.combinedStream = combinedStream;
-		return this.combinedStream;
-	}
-
-	async stopCaptureStreamForVideoCall() {
-		this.is_capturing_stream = false
-		cancelAnimationFrame(this.animationFrameId)
-		// console.log('removing event listener')
-		window.removeEventListener('resize', this.resizeCanvas)
-		this.combinedStream = null
-	}
+	// 			// if (!includeCamera) {
+	// 			// 	stream = new MediaStream(stream.getAudioTracks());
+	// 			// }
 
 
+	// 			const rect = video.getBoundingClientRect();
+	// 			const parentID = video.parentElement.id;
+	// 			const videoElement = document.createElement('video');
+	// 			videoElement.srcObject = stream;
+	// 			videoElement.muted = true;
+	// 			videoElement.play();
+	// 			videoElement.style.display = "none";
+	// 			return { stream, rect, parentID, videoElement };
+	// 		}).filter(data => data.stream !== null);
+	// 		combinedStream.addTrack(canvas.captureStream(25).getVideoTracks()[0]);
+	// 	}
+
+	// 	else {
+	// 		let observer = new MutationObserver((mutations) => {
+	// 			mutations.forEach((mutation) => {
+	// 				if (mutation.type === 'childList') {
+	// 					mutation.addedNodes.forEach(node => {
+	// 						if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV' && node.id.startsWith('stream_')) {
+	// 							const videos = node.querySelectorAll('video');
+	// 							videos.forEach(video => {
+	// 								const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
+	// 								processStream(stream)
+	// 							});
+	// 						}
+	// 					});
+	// 				}
+	// 				if (mutation.removedNodes.length > 0) {
+	// 					mutation.removedNodes.forEach(node => {
+	// 						let index = this.streamData.findIndex(data => data.videoElement === node || data.videoElement.parentElement === node);
+	// 						if (index !== -1) {
+	// 							this.streamData.splice(index, 1);
+	// 						}
+	// 					});
+	// 				}
+	// 			});
+	// 		});
+	// 		observer.observe(document.body, {
+	// 			attributes: true,
+	// 			childList: true,
+	// 			subtree: true,
+	// 			attributeFilter: ['style']
+	// 		});
+	// 		document.querySelectorAll('video').forEach(video => {
+	// 			let stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
+	// 			processStream(stream);
+	// 		});
+	// 	}
+	// 	combinedStream.addTrack(destination.stream.getAudioTracks()[0]);
+	// 	this.combinedStream = combinedStream;
+	// 	return this.combinedStream;
+	// }
+
+	// async stopCaptureStreamForVideoCall() {
+	// 	this.is_capturing_stream = false
+	// 	cancelAnimationFrame(this.animationFrameId)
+	// 	// console.log('removing event listener')
+	// 	window.removeEventListener('resize', this.resizeCanvas)
+	// 	this.combinedStream = null
+	// }
 
 
-	getAudioTracksFromStreams(streams) {
-		const audioTracks = [];
-		streams.forEach(stream => {
-			if (stream instanceof MediaStream) {
-				audioTracks.push(...stream.getAudioTracks());
-			}
-		});
-		return audioTracks;
-	}
+
+
+	// getAudioTracksFromStreams(streams) {
+	// 	const audioTracks = [];
+	// 	streams.forEach(stream => {
+	// 		if (stream instanceof MediaStream) {
+	// 			audioTracks.push(...stream.getAudioTracks());
+	// 		}
+	// 	});
+	// 	return audioTracks;
+	// }
 
 	async sendStartRecordingTransaction(keys) {
 		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
