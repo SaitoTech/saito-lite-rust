@@ -185,6 +185,12 @@ input[type=number] {
   width: 10rem;
 }
 
+
+.game-crypto-transfer-manager-container .game-crypto-icon {
+  font-size: 8rem;
+  display: none;
+}
+
 .transfer-details {
   align-items: center;
   margin-left: auto;
