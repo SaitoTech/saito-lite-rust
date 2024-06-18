@@ -69,21 +69,19 @@ class Record extends ModTemplate {
 
 			return [
 				{
-					startStreamingVideoCall: async (include_recording, includeCamera ) => {
-						// if we are already recording, we get the stream
+					startStreamingVideoCall: async (includeRecording, includeCamera ) => {
+						// if we are already capturing a stream, we get the stream
 						let stream;
 						if (this.is_capturing_stream) {
 							console.log('we already have a stream')
 							stream = this.combinedStream;
 						} else {
-							// console.log('there is no stream, beginning capture')
 							stream = this.captureStreamsForVideoCall(includeCamera)
 						}
 
-						if (include_recording && !this.mediaRecorder) {
+						if (includeRecording && !this.mediaRecorder) {
 							console.log('we start recording because there is none ')
 							let videocallMod = this.app.modules.returnModule('Videocall')
-							// console.log(videocallMod, this.app.modules)
 							if (videocallMod) {
 								let members = videocallMod.room_obj.call_peers
 								let options = {
@@ -96,22 +94,19 @@ class Record extends ModTemplate {
 								}
 								await this.startRecording(options)
 							}
-						}else {
-							console.log('we dont start because we are already recording')
 						}
 						this.is_limbo_streaming = true;
 						return stream;
 					},
 
-					stopStreamingVideoCall: async (stop_recording = true) => {
+					stopStreamingVideoCall: async (stopRecording = true) => {
 						// if we are recording and want to stop recording
-						if (this.mediaRecorder && stop_recording) {
+						if (this.mediaRecorder && stopRecording) {
 							await this.stopRecording()
 							this.stopCaptureStreamForVideoCall()	
 						} else if (!this.mediaRecorder) {
 							this.stopCaptureStreamForVideoCall()
 						}
-						
 						this.is_limbo_streaming = false
 					}
 				}
@@ -760,7 +755,6 @@ class Record extends ModTemplate {
 		const destination = audioCtx.createMediaStreamDestination();
 
 		const processStream = (stream) => {
-			// const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
 			if (stream && stream.getAudioTracks().length > 0) {
 				const source = audioCtx.createMediaStreamSource(stream);
 				source.connect(destination);
@@ -832,7 +826,6 @@ class Record extends ModTemplate {
 				this.animationFrameId = requestAnimationFrame(drawStreamsToCanvas);
 			};
 
-
 			window.addEventListener('resize', this.resizeCanvas(canvas, drawStreamsToCanvas));
 			this.resizeCanvas(canvas, drawStreamsToCanvas);
 
@@ -860,7 +853,6 @@ class Record extends ModTemplate {
 		}
 
 		else {
-
 			let observer = new MutationObserver((mutations) => {
 				mutations.forEach((mutation) => {
 					if (mutation.type === 'childList') {
@@ -874,14 +866,6 @@ class Record extends ModTemplate {
 							}
 						});
 					}
-					// if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-					// 	this.streamData.forEach(data => {
-					// 		if (data.parentID === mutation.target.id) {
-					// 			data.rect = mutation.target.getBoundingClientRect();
-					// 		}
-					// 	});
-
-					// }
 					if (mutation.removedNodes.length > 0) {
 						mutation.removedNodes.forEach(node => {
 							let index = this.streamData.findIndex(data => data.videoElement === node || data.videoElement.parentElement === node);
@@ -916,51 +900,6 @@ class Record extends ModTemplate {
 	}
 
 
-	// getSupportedMimeType() {
-	// 	const mimeTypes = [
-	// 		'video/webm; codecs=vp9',
-	// 		'video/webm; codecs=vp8',
-	// 		'video/webm; codecs=vp8,opus',
-	// 		'video/mp4',
-	// 		'video/x-matroska;codecs=avc1'
-	// 	];
-
-	// 	if (navigator.userAgent.includes("Firefox")) {
-	// 		return 'video/webm; codecs=vp8,opus'
-	// 	}
-
-	// 	for (const mimeType of mimeTypes) {
-	// 		if (MediaRecorder.isTypeSupported(mimeType)) {
-	// 			return mimeType;
-	// 		}
-	// 	}
-
-	// 	return 'video/webm; codecs=vp8,opus'
-	// }
-	// getTitleBarHeight() {
-	// 	const userAgent = navigator.userAgent;
-	// 	if (userAgent.includes("Firefox")) {
-	// 		return this.isToolbarVisible() ? 105 : 0;
-	// 	}
-	// 	if (userAgent.includes("Safari") && !userAgent.includes("Chrome") && !userAgent.includes("CriOS")) {
-	// 		return this.isToolbarVisible() ? 90 : 0;
-	// 	} else {
-	// 		return 0;
-	// 	}
-	// }
-
-
-	// isToolbarVisible() {
-	// 	const toolbarVisible = window.outerHeight - window.innerHeight > 50;
-	// 	console.log(window.outerHeight, window.innerHeight, "Is titlebar")
-	// 	return toolbarVisible;
-	// }
-
-
-
-
-
-
 
 
 	getAudioTracksFromStreams(streams) {
@@ -975,20 +914,18 @@ class Record extends ModTemplate {
 
 	async sendStartRecordingTransaction(keys) {
 		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
-
 		try {
 			newtx.msg = {
 				module: 'screenrecord',
 				request: 'start recording',
 			};
-
 			for (let peer of keys) {
 				if (peer != this.publicKey) {
 					newtx.addTo(peer);
 				}
 			}
 
-			await newtx.sign();
+		await newtx.sign();
 
 			this.app.connection.emit('relay-transaction', newtx);
 			this.app.network.propagateTransaction(newtx);
