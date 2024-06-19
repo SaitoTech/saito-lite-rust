@@ -221,6 +221,10 @@ class LimboSidebar {
         console.warn("Adding an action item with no callback");
       }
 
+      if (item.event) {
+        item.event(id);
+      }
+
     }else{
       console.warn("Item not found");
     }

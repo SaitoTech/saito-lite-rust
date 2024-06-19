@@ -600,6 +600,17 @@ class Chat extends ModTemplate {
                 app.connection.emit('open-chat-with', {
                   id: obj.call_id
                 });
+              },
+              event: function (id) {
+                chat_self.app.connection.on(
+                  'chat-manager-render-request',
+                  () => {
+                    let group = chat_self.returnGroup(obj.call_id);
+                    if (group){
+                      chat_self.app.browser.addNotificationToId(group.unread, id);
+                    }
+                  }
+                );
               }
             }
           ];
@@ -644,12 +655,11 @@ class Chat extends ModTemplate {
     }
   }
 
-  async createFreshGroup(name, id) {
-    let peer = (await this.app.network.getPeers())[0].publicKey;
-
+  createFreshGroup(name, id) {
+    
     let chat_group = {
       id,
-      members: [peer],
+      members: this.communityGroup.members, //general chat services host key
       name,
       txs: [],
       unread: 0

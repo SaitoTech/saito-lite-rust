@@ -168,14 +168,14 @@ class ChatPopup {
 		// exit if group unset
 		//
 		if (this.group == null) {
-			return;
+			return 0;
 		}
 
 		//
 		// exit if manually minimized
 		//
 		if (this.manually_closed) {
-			return;
+			return 0;
 		}
 
 		this.app.connection.emit('chat-manager-opens-group', this.group);
@@ -361,6 +361,7 @@ class ChatPopup {
 		this.attachEvents();
 
 		this.is_rendered = true;
+		return 1;
 	}
 
 	updateNotification(count) {
