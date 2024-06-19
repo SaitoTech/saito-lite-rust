@@ -687,7 +687,7 @@ class Limbo extends ModTemplate {
 				
 				if (sender !== this.publicKey){
 					this.dreamer = sender;
-					this.controls = new LiteDreamControls(this.app, this);
+					this.controls = new LiteDreamControls(this.app, this, txmsg);
 					this.controls.render();
 					this.controls.startTime = tx.timestamp;
 					this.controls.startTimer();
@@ -803,7 +803,7 @@ class Limbo extends ModTemplate {
 			this.dreams[dreamer] = txmsg.dream;
 			this.dreamer = dreamer;
 			this.toggleNotification(true, sender);
-			this.controls = new LiteDreamControls(this.app, this);
+			this.controls = new LiteDreamControls(this.app, this, txmsg.dream);
 			this.controls.render();
 			this.controls.startTime = this.dreams[dreamer].ts;
 			this.controls.startTimer();

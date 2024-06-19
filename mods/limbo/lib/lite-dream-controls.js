@@ -50,7 +50,7 @@ class DreamControls{
 
 	render() {
 		if (!document.getElementById("dream-controls")){
-			this.app.browser.addElementToDom(DreamControlTemplate(this.app, this.mod, this.options?.includeCamera));
+			this.app.browser.addElementToDom(DreamControlTemplate(this.app, this.mod, (this.options.mode !== "audio")));
 		}
 
 		this.attachEvents();
