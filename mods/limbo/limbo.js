@@ -883,6 +883,10 @@ class Limbo extends ModTemplate {
 			dreamer: this.dreamer
 		};
 
+		for (let speaker of this.dreams[this.dreamer].speakers){
+			newtx.addTo(speaker);
+		}
+
 		newtx.addTo(this.dreamer);
 
 		await newtx.sign();
@@ -965,6 +969,10 @@ class Limbo extends ModTemplate {
 		};
 
 		newtx.addTo(this.dreamer);
+
+		for (let speaker of this.dreams[this.dreamer].speakers){
+			newtx.addTo(speaker);
+		}
 
 		this.downstream.forEach((key, pc) => {
 			newtx.addTo(key);
