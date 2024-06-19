@@ -28,8 +28,8 @@
 	width: 100%;
 	max-width: 100rem;
 	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	grid-gap: 2rem;
+	grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+	grid-gap: 5rem;
 }
 
 .limbo-option {
