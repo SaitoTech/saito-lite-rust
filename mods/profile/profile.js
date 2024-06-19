@@ -74,7 +74,7 @@ class Profile extends ModTemplate {
 			}
 		);
 
-		app.connection.on('profile-edit-banner', () => {
+		app.connection.on('profile-edit-banner', (profile_key) => {
 			this.photoUploader = new PhotoUploader(
 				this.app,
 				this.mod,
@@ -82,7 +82,7 @@ class Profile extends ModTemplate {
 			);
 			this.photoUploader.callbackAfterUpload = async (photo) => {
 				let banner = await this.app.browser.resizeImg(photo);
-				this.sendProfileTransaction({ banner });
+				this.sendProfileTransaction({ banner }, profile_key);
 			};
 			this.photoUploader.render(this.photo);
 		});
@@ -90,7 +90,7 @@ class Profile extends ModTemplate {
 		app.connection.on('profile-edit-description', (key) => {
 			const elementId = `profile-description-${key}`;
 			const element = document.querySelector(`#${elementId}`);
-			this.updateDescription = new UpdateDescription(this.app, this);
+			this.updateDescription = new UpdateDescription(this.app, this, key);
 			this.updateDescription.render(element.textContent);
 		});
 
@@ -162,23 +162,39 @@ class Profile extends ModTemplate {
 	 * @param {Object} data { image, banner, description, archive: {publicKey}}
 	 *
 	 **/
-	async sendProfileTransaction(data) {
+	async sendProfileTransaction(data, key = null) {
 
+		if (!key) {
+			key = this.publicKey;
+		}
+		
 		this.app.connection.emit("saito-header-update-message", {msg: "broadcasting profile update"})
 
-		let newtx =
-			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
-				this.publicKey
-			);
+		let newtx =  await this.app.wallet.createUnsignedTransactionWithDefaultFee(key);
 		newtx.msg = {
 			module: this.name,
 			request: 'update profile',
 			data
 		};
 		
-		await newtx.sign();
+		if (key !== this.publicKey){
 
-		this.app.connection.emit('profile-update-dom', this.publicKey, data);
+			newtx.addFrom(key);
+			let profile_key = this.app.keychain.returnKey(key, true);
+			let privateKey = profile_key?.privateKey;
+
+			if (!privateKey){
+				console.error("We don't own the profile we are trying to edit!!!!");
+				return;
+			}
+			await newtx.sign(privateKey);
+		}else{
+			await newtx.sign();	
+		}
+
+		console.log("Profile Update TX (from): ", newtx.from, "Profile Update TX (to): ", newtx.to);
+
+		this.app.connection.emit('profile-update-dom', key, data);
 
 		await this.app.network.propagateTransaction(newtx);
 
@@ -191,10 +207,16 @@ class Profile extends ModTemplate {
 	 **/
 	async receiveProfileTransaction(tx) {
 
-		let from = tx?.from[0]?.publicKey;
+		let from = tx?.to[0]?.publicKey;
 
 		if (!from) {
 			console.error("Profile: Invalid TX");
+			return;
+		}
+
+		if (!tx.isFrom(from)){
+			console.error("Profile Update TX not sent from the right key");
+			console.log(tx.from, tx.to);
 			return;
 		}
 

@@ -60,7 +60,7 @@ class Chat extends ModTemplate {
     this.chat_manager_overlay = null;
 
     this.loading = true;
-
+    this.enable_profile_edits = true;
     this.isRelayConnected = false;
 
     this.audio_notifications = true;

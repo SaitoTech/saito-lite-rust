@@ -120,6 +120,8 @@ class RedSquare extends ModTemplate {
 
     this.styles = ["/saito/saito.css", "/redsquare/style.css"];
 
+    this.enable_profile_edits = true;
+    
     //
     // This is the default Open Graph Card for Redsquare
     // If we have a link to a specific tweet, we will use a different object to populate the
