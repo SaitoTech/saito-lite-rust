@@ -13,7 +13,7 @@ module.exports = (app, mod, chat_group) => {
 	} else {
 		html += `<div id="mute" class="saito-modal-menu-option"><i class="fa-solid fa-volume-xmark"></i><div>Mute</div></div>`;
 	}
-	html += `<div id="delete" class="saito-modal-menu-option"><i class="fas fa-trash-alt"></i><div>Clear History</div></div>
+	html += `<div id="delete" class="saito-modal-menu-option"><i class="fas fa-trash-alt"></i><div>Remove</div></div>
       `;
 
 	if (chat_group.id !== mod.communityGroup.id) {
@@ -30,7 +30,7 @@ module.exports = (app, mod, chat_group) => {
 			if (mod.black_list.includes(other_party)){
 				html += `<div id="unblock" class="saito-modal-menu-option" data-id="${other_party}"><i class="fa-regular fa-circle-check"></i><div>Unblock</div></div>`;	
 			}else{
-				html += `<div id="block" class="saito-modal-menu-option"><i class="fas fa-ban"></i><div>Delete and Block</div></div>`;	
+				html += `<div id="block" class="saito-modal-menu-option"><i class="fas fa-ban"></i><div>Block</div></div>`;	
 			}
 			
 		}

@@ -398,6 +398,22 @@ class Chat extends ModTemplate {
         );
       }
 
+      let now = new Date().getTime();
+      let serverName = JSON.stringify([peer.publicKey]);
+
+      for (let group of this.groups) {
+        if (group.name !== this.communityGroupName) {
+          //
+          // Not the community group but using the chat server, clear these out after 1 day by default
+          //
+          if (JSON.stringify(group.members) === serverName){
+            if (now - group.last_update > (1000 * 60 * 60 * 24)){
+              await this.deleteChatGroup(group);
+            }
+          }
+        }
+      }
+
       // console.log(JSON.parse(JSON.stringify(this.groups)));
     }
   }
