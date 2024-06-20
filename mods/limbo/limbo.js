@@ -182,7 +182,7 @@ class Limbo extends ModTemplate {
 					{
 						text: 'Cast',
 						icon: `fa-solid fa-tower-broadcast podcast-icon ${this.dreamer ? "recording": ""}`,
-						hook: `onair limbo ${this.wizard ? "recording": ""}`,
+						hook: `onair limbo ${this.dreamer ? "recording": ""}`,
 						callback: async function (app) {
 							if (mod_self.dreamer) {
 								if (mod_self.dreamer == mod_self.publicKey){
