@@ -3,6 +3,9 @@ const Transaction = require('../../lib/saito/transaction').default;
 const ModTemplate = require('../../lib/templates/modtemplate');
 const PhotoUploader = require('../../lib/saito/ui/saito-photo-uploader/saito-photo-uploader');
 const UpdateDescription = require('./lib/ui/update-description');
+const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
+const SaitoProfile = require('../../lib/saito/ui/saito-profile/saito-profile');
+const pageHome = require('./index');
 
 class Profile extends ModTemplate {
 	constructor(app) {
@@ -12,6 +15,7 @@ class Profile extends ModTemplate {
 		this.description = 'Profile Module';
 		this.archive_public_key;
 		this.cache = {};
+		this.enable_profile_edits = true;
 
 		app.connection.on('profile-fetch-content-and-update-dom',
 			async (key) => {
@@ -153,8 +157,26 @@ class Profile extends ModTemplate {
 
 			}
 		}
-
 	}
+
+
+	async render() {
+		let app = this.app;
+		let mod = this.mod;
+
+		this.main = new SaitoProfile(app, this);
+		this.header = new SaitoHeader(app, this);
+
+		await this.header.initialize(this.app);
+
+		this.main.reset(this.publicKey);
+
+		this.addComponent(this.main);
+		this.addComponent(this.header);
+
+		await super.render(app, this);
+	}
+
 
 	/**
 	 * Asynchronously sends a transaction to update a user's profile.
@@ -162,39 +184,20 @@ class Profile extends ModTemplate {
 	 * @param {Object} data { image, banner, description, archive: {publicKey}}
 	 *
 	 **/
-	async sendProfileTransaction(data, key = null) {
+	async sendProfileTransaction(data) {
 
-		if (!key) {
-			key = this.publicKey;
-		}
-		
 		this.app.connection.emit("saito-header-update-message", {msg: "broadcasting profile update"})
 
-		let newtx =  await this.app.wallet.createUnsignedTransactionWithDefaultFee(key);
+		let newtx =  await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
 		newtx.msg = {
 			module: this.name,
 			request: 'update profile',
 			data
 		};
-		
-		if (key !== this.publicKey){
 
-			newtx.addFrom(key);
-			let profile_key = this.app.keychain.returnKey(key, true);
-			let privateKey = profile_key?.privateKey;
+		await newtx.sign();	
 
-			if (!privateKey){
-				console.error("We don't own the profile we are trying to edit!!!!");
-				return;
-			}
-			await newtx.sign(privateKey);
-		}else{
-			await newtx.sign();	
-		}
-
-		console.log("Profile Update TX (from): ", newtx.from, "Profile Update TX (to): ", newtx.to);
-
-		this.app.connection.emit('profile-update-dom', key, data);
+		this.app.connection.emit('profile-update-dom', this.publicKey, data);
 
 		await this.app.network.propagateTransaction(newtx);
 
@@ -207,16 +210,10 @@ class Profile extends ModTemplate {
 	 **/
 	async receiveProfileTransaction(tx) {
 
-		let from = tx?.to[0]?.publicKey;
+		let from = tx?.from[0]?.publicKey;
 
 		if (!from) {
 			console.error("Profile: Invalid TX");
-			return;
-		}
-
-		if (!tx.isFrom(from)){
-			console.error("Profile Update TX not sent from the right key");
-			console.log(tx.from, tx.to);
 			return;
 		}
 
@@ -314,6 +311,32 @@ class Profile extends ModTemplate {
 			tx,
 			{ field1: 'Profile', preserve: 1 },
 			'localhost'
+		);
+	}
+
+	webServer(app, expressapp, express) {
+		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
+		let mod_self = this;
+
+		expressapp.get(
+			'/' + encodeURI(this.returnSlug()),
+			async function (req, res) {
+				let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
+
+				let updatedSocial = Object.assign({}, mod_self.social);
+
+				updatedSocial.url = reqBaseURL + encodeURI(mod_self.returnSlug());
+
+				res.setHeader('Content-type', 'text/html');
+				res.charset = 'UTF-8';
+				res.send(pageHome(app, mod_self, app.build_number, updatedSocial));
+				return;
+			}
+		);
+
+		expressapp.use(
+			'/' + encodeURI(this.returnSlug()),
+			express.static(webdir)
 		);
 	}
 

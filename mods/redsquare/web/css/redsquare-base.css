@@ -119,6 +119,7 @@ body {
 }
 
 .saito-profile {
+	margin: unset;
 	margin-bottom: 0.5rem;
 }
 
