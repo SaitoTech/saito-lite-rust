@@ -29,11 +29,6 @@ module.exports = LiteDreamControlsTemplate = (app, mod, videoEnabled = false) =>
     html += `<div class="disconnect-control icon_click_area">
              <i class="fa-solid fa-x"></i>
           </div>`;
-  }else{
-    html += `<div class="icon_click_area">
-            <i class="fas ${videoEnabled ? mod.camera_icon : mod.audio_icon}"> </i>
-          </div>`;
-
   }
 
   html += `</div>

@@ -117,7 +117,7 @@ class DreamControls{
 
 		if (document.querySelector(".dream-controls .members-control")){
 			document.querySelector(".dream-controls .members-control").onclick = () => {
-				this.overlay.show(`<div class="limbo-floating-overlay"></div>`);
+				this.overlay.show(`<div class="limbo-floating-overlay"><div class="saito-modal-content hide-scrollbar"></div></div>`);
 
 				let dreamer = this.mod.dreamer;
 				let dreamKey = this.mod.dreams[dreamer]?.alt_id || dreamer;
@@ -136,6 +136,12 @@ class DreamControls{
 	        this.profile.description = this.mod.dreams[dreamer].description;
 	      }
 
+	      console.log(this.mod.dreams[dreamer]?.mode);
+
+		    if (this.mod.dreams[dreamer]?.mode && this.mod[`${this.mod.dreams[dreamer].mode}_icon`]){
+		    	this.profile.icon = `<i class="saito-overlaid-icon fa-solid ${this.mod[`${this.mod.dreams[dreamer].mode}_icon`]}"></i>`;	
+		    }
+
 	      //
 	      // Build audience lists
 	      //
@@ -147,14 +153,15 @@ class DreamControls{
 	          name = '';
 	        }
 
-	        let user = new SaitoUser(this.app, this.mod, ".limbo-sidebar .saito-modal-content", m, name);
+	        let user = new SaitoUser(this.app, this.mod, this.profile.tab_container, m, name);
 	        user.extra_classes = "saito-add-user-menu saito-contact";
 	        
 	        if (m == dreamer) {
 	          user.icon = `<i class="saito-overlaid-icon fa-solid fa-hat-wizard"></i>`;
-	        } else {
-	          this.profile.menu.attendees.push(user);  
-	        }
+	        } 
+	        
+	        this.profile.menu.attendees.push(user);  
+	        
 	      }
 
 	      this.profile.render();
