@@ -241,17 +241,14 @@ class League extends ModTemplate {
 	// Rendering Components //
 	//////////////////////////
 	async render() {
-		let app = this.app;
-		let mod = this.mod;
-
-		this.main = new LeagueMain(app, this);
-		this.header = new SaitoHeader(app, this);
+		this.main = new LeagueMain(this.app, this);
+		this.header = new SaitoHeader(this.app, this);
 		await this.header.initialize(this.app);
 
 		this.addComponent(this.main);
 		this.addComponent(this.header);
 
-		await super.render(app, this);
+		await super.render(this.app, this);
 	}
 
 	canRenderInto(qs) {
@@ -311,9 +308,12 @@ class League extends ModTemplate {
                WHERE status = 'public'
                  AND deleted = 0`;
 			} else {
-				let league_list = this.app.options.leagues
-					.map((x) => `'${x}'`)
-					.join(', ');
+				let league_list = "";
+				if (this.app.options?.leagues){
+					league_list = this.app.options.leagues
+						.map((x) => `'${x}'`)
+						.join(', ');
+				}
 
 				if (league_id && !league_list.includes(league_id)) {
 					if (league_list) {
@@ -594,7 +594,7 @@ class League extends ModTemplate {
 	async loadLeagues() {
 		let league_self = this;
 		if (this.app.BROWSER) {
-			if (this.app.options.leagues) {
+			if (this.app.options?.leagues) {
 				if (this.debug) {
 					console.log(
 						'Locally stored leagues:',

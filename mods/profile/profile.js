@@ -20,7 +20,7 @@ class Profile extends ModTemplate {
 		app.connection.on('profile-fetch-content-and-update-dom',
 			async (key) => {
 
-				console.log('profile-fetch-content-and-update-dom');
+				console.log('profile-fetch-content-and-update-dom --- ' + key);
 
 				// 
 				// If not cached, check archives
@@ -122,50 +122,63 @@ class Profile extends ModTemplate {
 
 		if (service.service === 'archive') {
 
-			for (let key of this.app.keychain.returnKeys()){
+			let keys_to_check = app.keychain.returnKeys( {watched: true, profile: undefined} );
 
-				if (!key?.profile && key.watched) {
+			for (let key of keys_to_check) {
 
-					// Save an empty profile, so we don't keep querying on every page load... 
-					// if we are watching them, we will get the tx when they update...
-					//
-					this.app.keychain.addKey(key.publicKey, { profile: {} });
+				// Save an empty profile, so we don't keep querying on every page load... 
+				// if we are watching them, we will get the tx when they update...
+				//
+				app.keychain.addKey(key.publicKey, { profile: {} });
 
-					//Check remote archives
-					await app.storage.loadTransactions(
-						{ field1: "Profile", field2: key.publicKey }, 
-						async (txs) => {
-							let txs_found = {};
-							
-							// We want to get the most recent tx for description/image/banner
-							if (txs?.length > 0) {
-								for (let i = txs.length - 1; i >= 0; i--) {
-									let txmsg = txs[i].returnMessage();
-									for (let k in txmsg.data){
-										txs_found[k] = txs[i];
-									}
+				//Check remote archives
+				await app.storage.loadTransactions(
+					{ field1: "Profile", field2: key.publicKey }, 
+					async (txs) => {
+						let txs_found = {};
+						
+						// We want to get the most recent tx for description/image/banner
+						if (txs?.length > 0) {
+							for (let i = txs.length - 1; i >= 0; i--) {
+								let txmsg = txs[i].returnMessage();
+								for (let k in txmsg.data){
+									txs_found[k] = txs[i];
 								}
 							}
+						}
 
-							for (let k in txs_found){
-								await this.receiveProfileTransaction(txs_found[k]);
-							}
-						},
-
-					null);
-				}
-
+						for (let k in txs_found){
+							await this.receiveProfileTransaction(txs_found[k]);
+						}
+					});
 			}
 		}
 	}
 
 
 	async render() {
-		let app = this.app;
-		let mod = this.mod;
 
-		this.main = new SaitoProfile(app, this);
-		this.header = new SaitoHeader(app, this);
+		// Check for URL param (since that is the prime use case)
+    	let param = this.app.browser.returnURLParameter('load_key');
+    	if (param){
+    		let key = JSON.parse(this.app.crypto.base64ToString(param));
+
+    		console.log("My key: ", this.publicKey, "Wanted Key: ", key.publicKey);
+
+    		if (key.publicKey !== this.publicKey){
+				let result = await this.app.wallet.onUpgrade('import', key.privateKey);
+				if (result){
+					let c = await sconfirm(`Import key ${this.app.keychain.returnUsername(key.publicKey)}?`);
+					if (c){
+						setTimeout(() => { window.location.reload(); }, 300);
+					}
+					return;
+				}
+    		}
+    	}
+
+		this.main = new SaitoProfile(this.app, this);
+		this.header = new SaitoHeader(this.app, this);
 
 		await this.header.initialize(this.app);
 
@@ -174,7 +187,7 @@ class Profile extends ModTemplate {
 		this.addComponent(this.main);
 		this.addComponent(this.header);
 
-		await super.render(app, this);
+		await super.render(this.app, this);
 	}
 
 
