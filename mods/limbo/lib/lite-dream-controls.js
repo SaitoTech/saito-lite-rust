@@ -1,5 +1,7 @@
 const DreamControlTemplate = require("./lite-dream-controls.template");
-const ContactsList = require('./../../../lib/saito/ui/modals/saito-contacts/saito-contacts');
+const SaitoOverlay = require('./../../../lib/saito/ui/saito-overlay/saito-overlay');
+const SaitoProfile = require('./../../../lib/saito/ui/saito-profile/saito-profile');
+const SaitoUser = require('./../../../lib/saito/ui/saito-user/saito-user');
 
 class DreamControls{
 	constructor(app, mod, options = {}) {
@@ -7,6 +9,10 @@ class DreamControls{
 		this.mod = mod;
 		this.options = options;
 		this.timer_interval = null;
+		this.overlay = new SaitoOverlay(app, mod);
+    this.profile = new SaitoProfile(app, mod, '.limbo-floating-overlay');
+    this.profile.tab_container = ".limbo-floating-overlay .saito-modal-content";
+
 		this.startTime = new Date().getTime();
 
 		//Oof, I should change the name in video call (this actually refers to the hang up action)
@@ -111,9 +117,47 @@ class DreamControls{
 
 		if (document.querySelector(".dream-controls .members-control")){
 			document.querySelector(".dream-controls .members-control").onclick = () => {
-				const contactList = new ContactsList(this.app, this.mod, false);
-				contactList.title = "Attendees";
-				contactList.render(this.mod.dreams[this.mod.dreamer].members.filter((key) => key !== this.mod.dreamer));
+				this.overlay.show(`<div class="limbo-floating-overlay"></div>`);
+
+				let dreamer = this.mod.dreamer;
+				let dreamKey = this.mod.dreams[dreamer]?.alt_id || dreamer;
+
+	      this.profile.reset(dreamKey, "attendees", ["attendees"]);
+
+	      if (this.mod.dreams[dreamer]?.alt_id) {
+	        this.profile.mask_key = true;
+	      }
+
+	      if (this.mod.dreams[dreamer]?.identifier){
+	        this.profile.name = this.mod.dreams[dreamer].identifier;
+	      }
+
+	      if (this.mod.dreams[dreamer]?.description){
+	        this.profile.description = this.mod.dreams[dreamer].description;
+	      }
+
+	      //
+	      // Build audience lists
+	      //
+
+	      for (let m of this.mod.dreams[dreamer].members) {
+
+	        let name = m;
+	        if (m == this.app.keychain.returnIdentifierByPublicKey(m, true)) {
+	          name = '';
+	        }
+
+	        let user = new SaitoUser(this.app, this.mod, ".limbo-sidebar .saito-modal-content", m, name);
+	        user.extra_classes = "saito-add-user-menu saito-contact";
+	        
+	        if (m == dreamer) {
+	          user.icon = `<i class="saito-overlaid-icon fa-solid fa-hat-wizard"></i>`;
+	        } else {
+	          this.profile.menu.attendees.push(user);  
+	        }
+	      }
+
+	      this.profile.render();
 			}
 		}
 

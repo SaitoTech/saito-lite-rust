@@ -83,6 +83,21 @@
 	animation: pulsate 2s ease-in-out infinite;
 }
 
+
+.limbo-floating-overlay {
+  width: 55rem;
+  max-width: 80vw;
+  height: min-content;
+  max-height: 80vh;
+  padding: 1rem;
+  border: var(--border-thickness-modal-menu) solid var(--border-color-modal-menu);
+  border-radius: var(--border-radius-modal-menu);
+
+  background-color: var(--background-color-modal-contacts);
+  background-image: url(/saito/img/tiled-logo.svg);
+  color: var(--font-color-modal-contacts);
+}
+
 /* Join Overlay */
 
 .saito-join-space-overlay {
