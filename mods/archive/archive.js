@@ -320,6 +320,10 @@ class Archive extends ModTemplate {
 		newObj.tx = tx.serialize_to_web(this.app);
 		newObj.tx_size = newObj.tx.length;
 
+try {
+  alert("saving transaction in archive mod...");
+} catch (err) {}
+
 		if (this.app.BROWSER) {
 			let numRows = await this.localDB.insert({
 				into: 'archives',
@@ -690,7 +694,7 @@ class Archive extends ModTemplate {
 
 		/*
       This is set up as an OR condition, can provide multiple fields to delete any partial match
-    */
+    		*/
 		let sql = `DELETE FROM archives WHERE `;
 		let sql_substring = '';
 		let params = {};

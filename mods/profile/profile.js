@@ -127,7 +127,9 @@ class Profile extends ModTemplate {
 					//
 					this.app.keychain.addKey(key.publicKey, { profile: {} });
 
+					//
 					//Check remote archives
+					//
 					await app.storage.loadTransactions(
 						{ field1: "Profile", field2: key.publicKey }, 
 						async (txs) => {
