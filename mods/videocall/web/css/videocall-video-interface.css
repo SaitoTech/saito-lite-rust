@@ -360,6 +360,11 @@
 	height: 100%;
 }
 
+video#presentation {
+    object-fit: contain;
+    padding: 3px;
+}
+
 .video-box-container-large>#connection-message {
 	color: var(--saito-white);
 	width: 50%;
@@ -1004,10 +1009,10 @@
 	animation: pulsate 1s ease-in-out infinite;
 }
 
-.record-actioner.recording {
+.record-container.recording {
 	background-color: var(--saito-red);
 }
-.record-actioner i.recording {
+.record-container i.recording {
 	color: var(--saito-white);
 	animation: pulsate 1s ease-in-out infinite;
 }

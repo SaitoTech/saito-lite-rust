@@ -59,7 +59,7 @@ class LimboSidebar {
           name = '';
         }
 
-        let user = new SaitoUser(this.app, this.mod, ".limbo-sidebar .saito-modal-content", m, name)
+        let user = new SaitoUser(this.app, this.mod, this.profile.tab_container, m, name)
         user.extra_classes = "saito-add-user-menu saito-contact";
         
         if (m == dreamer) {
@@ -219,6 +219,10 @@ class LimboSidebar {
         };
       }else{
         console.warn("Adding an action item with no callback");
+      }
+
+      if (item.event) {
+        item.event(id);
       }
 
     }else{

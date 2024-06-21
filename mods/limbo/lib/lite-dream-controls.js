@@ -1,11 +1,18 @@
 const DreamControlTemplate = require("./lite-dream-controls.template");
-const ContactsList = require('./../../../lib/saito/ui/modals/saito-contacts/saito-contacts');
+const SaitoOverlay = require('./../../../lib/saito/ui/saito-overlay/saito-overlay');
+const SaitoProfile = require('./../../../lib/saito/ui/saito-profile/saito-profile');
+const SaitoUser = require('./../../../lib/saito/ui/saito-user/saito-user');
 
 class DreamControls{
-	constructor(app, mod) {
+	constructor(app, mod, options = {}) {
 		this.app = app;
 		this.mod = mod;
+		this.options = options;
 		this.timer_interval = null;
+		this.overlay = new SaitoOverlay(app, mod);
+    this.profile = new SaitoProfile(app, mod, '.limbo-floating-overlay');
+    this.profile.tab_container = ".limbo-floating-overlay .saito-modal-content";
+
 		this.startTime = new Date().getTime();
 
 		//Oof, I should change the name in video call (this actually refers to the hang up action)
@@ -49,11 +56,15 @@ class DreamControls{
 
 	render() {
 		if (!document.getElementById("dream-controls")){
-			this.app.browser.addElementToDom(DreamControlTemplate(this.app, this.mod));
+			this.app.browser.addElementToDom(DreamControlTemplate(this.app, this.mod, (this.options.mode !== "audio")));
 		}
 
 		this.attachEvents();
-		this.startTimer();
+
+		//Tell PeerManager to pause streams for green room
+		this.app.connection.emit('limbo-toggle-audio');
+		this.app.connection.emit('limbo-toggle-video');
+
 
 		this.app.browser.makeDraggable("dream-controls");
 	}
@@ -71,15 +82,20 @@ class DreamControls{
 			this.insertActions();
 		}
 
-		if (document.querySelector(".dream-controls .video-control")){
-			document.querySelector(".dream-controls .video-control").onclick = () => {
-				this.toggleVideo();
-			}
-		}
+		if (document.querySelector(".dream-controls .stream-control")){
+			document.querySelector(".dream-controls .stream-control").onclick = (e) => {
+				let icon = e.currentTarget.querySelector("i");
+				if (icon){
+					icon.classList.toggle("fa-play");
+					icon.classList.toggle("fa-pause");
+				}
+				//Tell PeerManager to adjust streams
+				this.app.connection.emit('limbo-toggle-audio');
+				this.app.connection.emit('limbo-toggle-video');
 
-		if (document.querySelector(".dream-controls .audio-control")){
-			document.querySelector(".dream-controls .audio-control").onclick = () => {
-				this.toggleAudio();
+				//Only necessary for first click but doesn't hurt to have
+				this.startTimer(); // Start timer
+				e.currentTarget.classList.remove("click-me");
 			}
 		}
 
@@ -101,57 +117,61 @@ class DreamControls{
 
 		if (document.querySelector(".dream-controls .members-control")){
 			document.querySelector(".dream-controls .members-control").onclick = () => {
-				const contactList = new ContactsList(this.app, this.mod, false);
-				contactList.title = "Attendees";
-				contactList.render(this.mod.dreams[this.mod.dreamer].members.filter((key) => key !== this.mod.dreamer));
+				this.overlay.show(`<div class="limbo-floating-overlay"><div class="saito-modal-content hide-scrollbar"></div></div>`);
+
+				let dreamer = this.mod.dreamer;
+				let dreamKey = this.mod.dreams[dreamer]?.alt_id || dreamer;
+
+	      this.profile.reset(dreamKey, "attendees", ["attendees"]);
+
+	      if (this.mod.dreams[dreamer]?.alt_id) {
+	        this.profile.mask_key = true;
+	      }
+
+	      if (this.mod.dreams[dreamer]?.identifier){
+	        this.profile.name = this.mod.dreams[dreamer].identifier;
+	      }
+
+	      if (this.mod.dreams[dreamer]?.description){
+	        this.profile.description = this.mod.dreams[dreamer].description;
+	      }
+
+	      console.log(this.mod.dreams[dreamer]?.mode);
+
+		    if (this.mod.dreams[dreamer]?.mode && this.mod[`${this.mod.dreams[dreamer].mode}_icon`]){
+		    	this.profile.icon = `<i class="saito-overlaid-icon fa-solid ${this.mod[`${this.mod.dreams[dreamer].mode}_icon`]}"></i>`;	
+		    }
+
+	      //
+	      // Build audience lists
+	      //
+
+	      for (let m of this.mod.dreams[dreamer].members) {
+
+	        let name = m;
+	        if (m == this.app.keychain.returnIdentifierByPublicKey(m, true)) {
+	          name = '';
+	        }
+
+	        let user = new SaitoUser(this.app, this.mod, this.profile.tab_container, m, name);
+	        user.extra_classes = "saito-add-user-menu saito-contact";
+	        
+	        if (m == dreamer) {
+	          user.icon = `<i class="saito-overlaid-icon fa-solid fa-hat-wizard"></i>`;
+	        } 
+	        
+	        this.profile.menu.attendees.push(user);  
+	        
+	      }
+
+	      this.profile.render();
 			}
 		}
 
 	}
 
-	toggleAudio() {
-		//Tell PeerManager to adjust streams
-		this.app.connection.emit('limbo-toggle-audio');
-
-		//Update UI
-		try {
-			document
-				.querySelector('.dream-controls .audio-control')
-				.classList.toggle('disabled');
-			document
-				.querySelector('.dream-controls .audio-control i')
-				.classList.toggle('fa-microphone-slash');
-			document
-				.querySelector('.dream-controls .audio-control i')
-				.classList.toggle('fa-microphone');
-		} catch (err) {
-			console.warn('Stun UI error', err);
-		}
-	}
-
-	toggleVideo() {
-		this.app.connection.emit('limbo-toggle-video');
-
-		//Update UI
-		try {
-			document
-				.querySelector('.dream-controls .video-control')
-				.classList.toggle('disabled');
-			document
-				.querySelector('.dream-controls .video-control i')
-				.classList.toggle('fa-video-slash');
-			document
-				.querySelector('.dream-controls .video-control i')
-				.classList.toggle('fa-video');
-		} catch (err) {
-			console.warn('Stun UI error', err);
-		}
-	}
-
 
 	startTimer() {
-
-		console.log("Start Timer!");
 
 		if (this.timer_interval) {
 			return;
@@ -248,6 +268,10 @@ class DreamControls{
         };
       }else{
         console.warn("Adding an action item with no callback");
+      }
+
+      if (item.event) {
+        item.event(id);
       }
 
     }else{

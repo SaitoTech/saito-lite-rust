@@ -29,9 +29,9 @@ class Limbo extends ModTemplate {
 		this.styles = ['/videocall/style.css', '/limbo/style.css'];
 		this.icon_fa = 'fa-solid fa-satellite';
 
-		this.screen_icon = "fa-desktop";
-		this.camera_icon = "fa-clapperboard";
-		this.audio_icon = "fa-radio";
+		this.screen_icon = "fa-tv";
+		this.camera_icon = "fa-video";
+		this.audio_icon = "fa-microphone-lines";
 
 		this.stun = null;
 		this.rendered = false;
@@ -175,12 +175,14 @@ class Limbo extends ModTemplate {
 					return null;
 				}
 
+
+
 				this.attachStyleSheets();
 				return [
 					{
 						text: 'Cast',
-						icon: 'fa-solid fa-tower-broadcast podcast-icon',
-						hook: "onair limbo",
+						icon: `fa-solid fa-tower-broadcast podcast-icon ${this.dreamer ? "recording": ""}`,
+						hook: `onair limbo ${this.dreamer ? "recording": ""}`,
 						callback: async function (app) {
 							if (mod_self.dreamer) {
 								if (mod_self.dreamer == mod_self.publicKey){
@@ -398,12 +400,11 @@ class Limbo extends ModTemplate {
 		const otherParties = this.app.modules.getRespondTos('media-request');
 		if (otherParties.length > 0) {
 			console.log('Include other media!');
-			// We hope there is only 1!
+			// We hope there is only 1 respondTo!
 			this.localStream = otherParties[0].localStream;
 			this.additionalSources = otherParties[0].remoteStreams;
 			this.externalMediaControl = true;
 
-			options["includeCamera"] = false;
 			options["screenStream"] = false;
 			options["audio"] = true;
 		} 
@@ -418,20 +419,8 @@ class Limbo extends ModTemplate {
 
 	}
 
-	async broadcastDream(options) {
 
-		if (this.dreamer){
-			console.warn("Already participating in a dream");
-			return;
-		}
-
-		//Set up controls for user...
-		if (this.browser_active) {
-			this.controls = new DreamControls(this.app, this, '#limbo-main');
-		} else {
-			this.controls = new LiteDreamControls(this.app, this);
-		}
-
+	async getStream(options){
 
 		// Set up the media recorder with the canvas stream
 		// Create a new stream for the combined video and audio
@@ -469,10 +458,29 @@ class Limbo extends ModTemplate {
 				});
 			} catch (error) {
 				console.error('Access to screen denied: ', error);
-				screenStream = false;
 				return;
 			}
+		} else {
+
+			if (this.additionalSources || this.localStream){
+				if (includeCamera){
+					//
+					// Another module has gathered some media streams and we want the video
+					//
+
+					const recorders = this.app.modules.getRespondTos('screenrecord-limbo');
+					if (recorders.length > 0) {
+						options.mode = "camera";
+
+						this.externalMediaControl = recorders[0];
+						this.combinedStream = await this.externalMediaControl.startStreamingVideoCall();
+						return;
+					}
+				}
+			}
 		}
+
+
 
 
 		if (!this.localStream){
@@ -532,9 +540,24 @@ class Limbo extends ModTemplate {
 			});
 		}
 
+	}
 
 
-		if (!this.combinedStream.getTracks()?.length){
+	async broadcastDream(options) {
+		if (this.dreamer){
+			console.warn("Already participating in a dream");
+			return;
+		}
+		await this.getStream(options);
+
+		//Set up controls for user...
+		if (this.browser_active) {
+			this.controls = new DreamControls(this.app, this, '#limbo-main');
+		} else {
+			this.controls = new LiteDreamControls(this.app, this, options);
+		}
+
+		if (!this.combinedStream?.getTracks()?.length){
 			console.error("Limbo: No media to share");
 			salert("Please check browser permissions, cannot start a stream without any media");
 			return;
@@ -543,7 +566,7 @@ class Limbo extends ModTemplate {
 		await this.sendDreamTransaction(options);
 
 		if (this.controls) {
-			this.controls.render(this.combinedStream, screenStream);
+			this.controls.render(this.combinedStream, options?.screenStream);
 		}
 
 		this.toggleNotification(true, this.publicKey);
@@ -666,7 +689,7 @@ class Limbo extends ModTemplate {
 				
 				if (sender !== this.publicKey){
 					this.dreamer = sender;
-					this.controls = new LiteDreamControls(this.app, this);
+					this.controls = new LiteDreamControls(this.app, this, txmsg);
 					this.controls.render();
 					this.controls.startTime = tx.timestamp;
 					this.controls.startTimer();
@@ -782,7 +805,7 @@ class Limbo extends ModTemplate {
 			this.dreams[dreamer] = txmsg.dream;
 			this.dreamer = dreamer;
 			this.toggleNotification(true, sender);
-			this.controls = new LiteDreamControls(this.app, this);
+			this.controls = new LiteDreamControls(this.app, this, txmsg.dream);
 			this.controls.render();
 			this.controls.startTime = this.dreams[dreamer].ts;
 			this.controls.startTimer();
@@ -861,6 +884,10 @@ class Limbo extends ModTemplate {
 			request: 'join dream',
 			dreamer: this.dreamer
 		};
+
+		for (let speaker of this.dreams[this.dreamer].speakers){
+			newtx.addTo(speaker);
+		}
 
 		newtx.addTo(this.dreamer);
 
@@ -944,6 +971,10 @@ class Limbo extends ModTemplate {
 		};
 
 		newtx.addTo(this.dreamer);
+
+		for (let speaker of this.dreams[this.dreamer].speakers){
+			newtx.addTo(speaker);
+		}
 
 		this.downstream.forEach((key, pc) => {
 			newtx.addTo(key);
@@ -1272,6 +1303,11 @@ class Limbo extends ModTemplate {
 					track.onended = null;
 					track.stop();
 				});
+			}
+		}else{
+			if (this.externalMediaControl?.stopStreamingVideoCall){
+				this.externalMediaControl.stopStreamingVideoCall();
+				this.externalMediaControl = false;
 			}
 		}
 

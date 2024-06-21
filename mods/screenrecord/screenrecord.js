@@ -5,6 +5,7 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const VideoBox = require('../../lib/saito/ui/saito-videobox/video-box');
 const html2canvas = require('html2canvas')
 const domtoimage = require('dom-to-image');
+const StreamCapturer  = require('./lib/stream-capturer')
 
 
 class Record extends ModTemplate {
@@ -20,6 +21,9 @@ class Record extends ModTemplate {
 		this.styles = ['/saito/saito.css', '/screenrecord/style.css'];
 		this.interval = null;
 		this.streamData = [];
+		// this.is_limbo_streaming  = false;
+		this.mediaRecorder = null;
+		this.is_capturing_stream = false;
 
 	}
 
@@ -36,13 +40,17 @@ class Record extends ModTemplate {
 				{
 					text: 'Record',
 					icon: `fas fa-record-vinyl record-icon ${this.mediaRecorder ? "recording" : ""}`,
-					hook: "record-actioner",
+					hook: `record-container ${this.mediaRecorder ? "recording" : ""}`,
 					callback: async function (app) {
 						let { container, streams, useMicrophone, callbackAfterRecord, members } = obj;
-
 						if (container) {
 							if (!this.mediaRecorder) {
-								await this.startRecording(container, members, callbackAfterRecord, 'videocall');
+								let startRecording = await sconfirm('Do you  want to start recording?');
+								if (!startRecording) return;
+								let includeCamera = await sconfirm("Do you want to include Camera")
+								this.recorderStreamCapture = new StreamCapturer(this.logo)
+								let stream = this.recorderStreamCapture.captureVideoCallStreams(includeCamera)
+								await this.startRecording({ container, members, callbackAfterRecord, type: 'videocall', stream });
 							} else {
 								this.stopRecording();
 							}
@@ -52,21 +60,35 @@ class Record extends ModTemplate {
 			];
 		}
 
-		if (type === 'limbo-record') {
+		if (type === 'screenrecord-limbo') {
 			this.attachStyleSheets();
 			super.render(this.app, this);
 			let is_recording = false;
 			if (this.mediaRecorder) {
-				is_recording = true
+				is_recording = true;
 			}
 
-			return [
-				{
-					startRecording: () => {
-						this.startRecording(".video-container-large")
+			return {
+					startStreamingVideoCall: async () => {
+						try {
+							this.limboStreamCapture = new StreamCapturer(this.logo)
+						let stream = this.limboStreamCapture.captureVideoCallStreams(true)
+						return stream;
+						} catch (error) {
+							console.log('error streaming video call', error)
+						}
+						
+					},
+
+					stopStreamingVideoCall: async () => {
+						 if (this.limboStreamCapture) {
+							this.limboStreamCapture.stopCaptureVideoCallStreams()
+							this.limboStreamCapture = null
+						}else {
+							console.log('No stream to stop?')
+						}
 					}
-				}
-			];
+				};
 		}
 		if (type === 'game-menu') {
 			if (!obj.recordOptions) return;
@@ -107,25 +129,25 @@ class Record extends ModTemplate {
 		let message = tx.returnMessage();
 
 		if (message.module === 'screenrecord') {
-		if (this.app.BROWSER === 1) {
-			if (this.hasSeenTransaction(tx)) return;
-			if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
-				if (message.request === "start recording") {
-					siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} started recording their screen`, 1500);
-					this.updateUIForRecordingStart()
-				}
-				if (message.request === "stop recording") {
-					siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} stopped recording their screen`, 1500);
-					this.updateUIForRecordingStop()
+			if (this.app.BROWSER === 1) {
+				if (this.hasSeenTransaction(tx)) return;
+				if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
+					if (message.request === "start recording") {
+						siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} started recording their screen`, 1500);
+						this.updateUIForRecordingStart()
+					}
+					if (message.request === "stop recording") {
+						siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} stopped recording their screen`, 1500);
+						this.updateUIForRecordingStop()
+					}
 				}
 			}
 		}
 	}
-	}
 
 
 	onConfirmation(blk, tx, conf) {
-		
+
 		if (tx == null) {
 			return;
 		}
@@ -133,7 +155,6 @@ class Record extends ModTemplate {
 		let message = tx.returnMessage();
 		console.log(message.module, 'screenrecord')
 		if (conf === 0) {
-
 			if (message.module === 'screenrecord') {
 				console.log('received information')
 				if (this.app.BROWSER === 1) {
@@ -158,224 +179,27 @@ class Record extends ModTemplate {
 		}
 	}
 
-
-	drawImageProp(ctx, img, x, y, w, h, offsetX, offsetY) {
-
-
-		if (arguments.length === 2) {
-			x = y = 0;
-			w = ctx.canvas.width;
-			h = ctx.canvas.height;
+	onPeerHandshakeComplete() {
+		if (this.app.BROWSER === 1) {
+			this.logo = new Image();
+			this.logo.src = '/saito/img/logo.svg';
 		}
-
-		offsetX = typeof offsetX === "number" ? offsetX : 0.5;
-		offsetY = typeof offsetY === "number" ? offsetY : 0.5;
-
-		if (offsetX < 0) offsetX = 0;
-		if (offsetY < 0) offsetY = 0;
-		if (offsetX > 1) offsetX = 1;
-		if (offsetY > 1) offsetY = 1;
-
-		let iw = img.videoWidth || img.width,
-			ih = img.videoHeight || img.height,
-			r = Math.min(w / iw, h / ih),
-			nw = iw * r,
-			nh = ih * r,
-			cx, cy, cw, ch, ar = 1;
-
-		if (nw < w) ar = w / nw;
-		if (Math.abs(ar - 1) < 1e-14 && nh < h) ar = h / nh;
-		nw *= ar;
-		nh *= ar;
-
-		cw = iw / (nw / w);
-		ch = ih / (nh / h);
-
-		cx = (iw - cw) * offsetX;
-		cy = (ih - ch) * offsetY;
-
-		if (cx < 0) cx = 0;
-		if (cy < 0) cy = 0;
-		if (cw > iw) cw = iw;
-		if (ch > ih) ch = ih;
-
-		ctx.drawImage(img, cx, cy, cw, ch, x, y, w, h);
-		this.drawLogoOnCanvas(ctx)
 	}
 
 
-	drawLogoOnCanvas(ctx) {
-		const maxDimension = 100;
-		const aspectRatio = this.logo.naturalWidth / this.logo.naturalHeight;
-		let logoWidth, logoHeight;
-		if (this.logo.naturalWidth > this.logo.naturalHeight) {
-			logoWidth = maxDimension;
-			logoHeight = maxDimension / aspectRatio;
-		} else {
-			logoHeight = maxDimension;
-			logoWidth = maxDimension * aspectRatio;
-		}
+	async startRecording(options) {
+		let { container, members, callbackAfterRecord, type, stream } = options
 
-		const logoX = ctx.canvas.width - logoWidth - 50;
-		const logoY = ctx.canvas.height - logoHeight - 50;
-
-		this.logo.style.objectFit = "cover";
-		ctx.drawImage(this.logo, logoX, logoY, logoWidth, logoHeight);
-	}
+		console.log(stream, "captured stream");
 
 
-	async startRecording(container, members = [], callbackAfterRecord = null, type = "videocall") {
-		let startRecording = await sconfirm('Do you  want to start recording?');
-
-		if (!startRecording) return;
-
-		// initialize varialble
-		this.logo = new Image();
-		this.logo.src = '/saito/img/logo.svg';
-		this.is_recording = true;
-		let combinedStream = new MediaStream();
-		let animationFrameId;
+		// initialize variables
+		this.type = type;
 		this.members = members
 
-		// console.log('these are the members', members)
-
-		// remove any previous canvas present
-		document.querySelectorAll('canvas').forEach(canvas => {
-			canvas.parentElement.removeChild(document.querySelector('canvas'))
-		})
-	
-
 		if (type === "videocall") {
-			let observer = new MutationObserver((mutations) => {
-				mutations.forEach((mutation) => {
-					if (mutation.type === 'childList') {
-						mutation.addedNodes.forEach(node => {
-							if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV' && node.id.startsWith('stream_')) {
-
-								const videos = node.querySelectorAll('video');
-								videos.forEach(video => {
-									const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
-									const rect = video.getBoundingClientRect();
-									const parentID = video.parentElement.id;
-									const videoElement = document.createElement('video');
-									videoElement.srcObject = stream;
-									videoElement.muted = true;
-									videoElement.play();
-
-									this.streamData.push({ stream, rect, parentID, videoElement });
-								});
-							}
-						});
-					}
-					if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-						this.streamData.forEach(data => {
-							if (data.parentID === mutation.target.id) {
-								data.rect = mutation.target.getBoundingClientRect();
-							}
-						});
-					}
-
-					if (mutation.removedNodes.length > 0) {
-						mutation.removedNodes.forEach(node => {
-
-							let index = this.streamData.findIndex(data => data.videoElement === node || data.videoElement.parentElement === node);
-							if (index !== -1) {
-								this.streamData.splice(index, 1);
-							}
-						});
-					}
-				});
-			});
-
-			observer.observe(document.body, {
-				attributes: true,
-				childList: true,
-				subtree: true,
-				attributeFilter: ['style']
-			});
-
-			const canvas = document.createElement('canvas');
-			canvas.width = window.innerWidth;
-			canvas.height = window.innerWidth
-			const ctx = canvas.getContext('2d');
-			// document.body.appendChild(canvas);
-
-			const drawStreamsToCanvas = () => {
-				if (!this.is_recording) return;
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				this.streamData.forEach(data => {
-					const parentElement = document.getElementById(data.parentID);
-					if (!parentElement) return;
-					const rect = parentElement.getBoundingClientRect();
-					// Draw the video on the canvas
-					if (data.videoElement.readyState >= 2) {
-						this.drawImageProp(ctx, data.videoElement, rect.left, rect.top, rect.width, rect.height)
-					}
-				});
-
-				animationFrameId = requestAnimationFrame(drawStreamsToCanvas);
-			};
-
-			const resizeCanvas = () => {
-				canvas.width = window.innerWidth;
-				canvas.height = window.innerHeight
-				const videoElements = document.querySelectorAll('div[id^="stream_"] video');
-				videoElements.forEach(video => {
-					video.style.objectFit = "cover";
-					video.style.width = "100%";
-					video.style.height = "100%";
-					video.style.maxWidth = "100%";
-				});
-				// Update the drawing routine to handle the new canvas size
-				drawStreamsToCanvas();
-			};
-			window.addEventListener('resize', resizeCanvas);
-			resizeCanvas();
-
-			const videoElements = document.querySelectorAll('div[id^="stream_"] video');
-			// videoElements.forEach(video => {
-
-			// 	// video.style.objectFit = "cover";
-			// 	// video.style.width = "100%";
-			// 	// video.style.height = "100%";
-			// 	// video.style.maxWidth = "100%";
-			// });
-
-			const audioCtx = new AudioContext();
-			destination = audioCtx.createMediaStreamDestination();
-
-			this.streamData = Array.from(videoElements).map(video => {
-				const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
-				// if (!video.id.startsWith('local')) {
-				// 	// console.log(video, "video localll")
-				// 	// video.muted = false;
-				// 	// video.volume = 1;
-				// 	// console.log(video)
-				// }
-				if (stream && stream.getAudioTracks().length > 0) {
-					let source = audioCtx.createMediaStreamSource(stream)
-					source.connect(destination)
-				}
-				const rect = video.getBoundingClientRect();
-				const parentID = video.parentElement.id;
-				const videoElement = document.createElement('video');
-				videoElement.srcObject = stream;
-				videoElement.muted = true;
-				videoElement.play();
-				videoElement.style.display = "none";
-				return { stream, rect, parentID, videoElement };
-			}).filter(data => data.stream !== null);
-
-
 			let chunks = [];
-
-
-			combinedStream.addTrack(canvas.captureStream(25).getVideoTracks()[0]);
-			combinedStream.addTrack(destination.stream.getAudioTracks()[0]);
-			this.combinedStream = combinedStream;
-			this.app.connection.emit('screenrecord-combined-stream', this.combinedStream)
-
-			this.mediaRecorder = new MediaRecorder(combinedStream, {
+			this.mediaRecorder = new MediaRecorder(stream, {
 				mimeType: 'video/webm; codecs="vp8, opus"',
 				videoBitsPerSecond: 25 * 1024 * 1024,
 				audioBitsPerSecond: 320 * 1024
@@ -387,10 +211,6 @@ class Record extends ModTemplate {
 			};
 
 			this.mediaRecorder.onstop = async () => {
-				// remove listeners
-				cancelAnimationFrame(animationFrameId)
-				window.removeEventListener('resize', resizeCanvas)
-				observer.disconnect()
 				// create compile video
 				const blob = new Blob(chunks, { type: 'video/webm' });
 				const url = URL.createObjectURL(blob);
@@ -411,10 +231,7 @@ class Record extends ModTemplate {
 				}
 			};
 			this.mediaRecorder.start();
-			drawStreamsToCanvas();
 
-			// console.log('these are the members', members)
-	
 		}
 		else {
 			// set up top variablse
@@ -628,7 +445,7 @@ class Record extends ModTemplate {
 					html2canvas(document.body, {
 						logging: false,
 						// useCors: true,
-						scale:1,
+						scale: 1,
 						x: rect.left,
 						y: rect.top,
 						width: rect.width,
@@ -767,7 +584,7 @@ class Record extends ModTemplate {
 				window.removeEventListener('resize', resizeCanvas)
 				observer.disconnect()
 				// stop local stram
-				this.is_recording = false;
+				this.mediaRecorder = false;
 				const blob = new Blob(chunks, { type: 'video/webm' });
 				const url = URL.createObjectURL(blob);
 				const a = document.createElement('a');
@@ -778,7 +595,7 @@ class Record extends ModTemplate {
 				a.download = fileName;
 				document.body.appendChild(a);
 				a.click();
-		
+
 				setTimeout(() => {
 					document.body.removeChild(a);
 					URL.revokeObjectURL(url);
@@ -792,70 +609,26 @@ class Record extends ModTemplate {
 		}
 
 
-	
-		// this.externalMediaControl = false;
 		this.sendStartRecordingTransaction(members)
 		this.updateUIForRecordingStart()
 	}
 
-
-	getSupportedMimeType() {
-		const mimeTypes = [
-			'video/webm; codecs=vp9',
-			'video/webm; codecs=vp8',
-			'video/webm; codecs=vp8,opus',
-			'video/mp4',
-			'video/x-matroska;codecs=avc1'
-		];
-
-		if (navigator.userAgent.includes("Firefox")) {
-			return 'video/webm; codecs=vp8,opus'
-		}
-
-		for (const mimeType of mimeTypes) {
-			if (MediaRecorder.isTypeSupported(mimeType)) {
-				return mimeType;
-			}
-		}
-
-		return 'video/webm; codecs=vp8,opus'
-	}
-	getTitleBarHeight() {
-		const userAgent = navigator.userAgent;
-		if (userAgent.includes("Firefox")) {
-			return this.isToolbarVisible() ? 105 : 0;
-		}
-		if (userAgent.includes("Safari") && !userAgent.includes("Chrome") && !userAgent.includes("CriOS")) {
-			return this.isToolbarVisible() ? 90 : 0;
-		} else {
-			return 0;
-		}
-	}
-
-
-	isToolbarVisible() {
-		const toolbarVisible = window.outerHeight - window.innerHeight > 50;
-		console.log(window.outerHeight, window.innerHeight, "Is titlebar")
-		return toolbarVisible;
-	}
-
 	async stopRecording() {
+
+		if(this.recorderStreamCapture){
+			this.recorderStreamCapture.stopCaptureVideoCallStreams();
+			this.recorderStreamCapture = null
+	
+		}
+	
 		if (this.mediaRecorder) {
 			this.mediaRecorder.stop();
 			this.mediaRecorder = null;
 		}
-
-		if (this.screenStream) {
-			this.screenStream.getTracks().forEach(track => track.stop());
-		}
-
-
 		if (this.localStream) {
 			this.localStream.getTracks().forEach((track) => track.stop());
 			this.localStream = null;
 		}
-
-
 
 		if (this.videoBox) {
 			this.videoBox.remove();
@@ -863,58 +636,37 @@ class Record extends ModTemplate {
 		}
 
 		this.updateUIForRecordingStop()
-
 		this.sendStopRecordingTransaction(this.members)
 
-	
-
-		this.is_recording = false
+		this.mediaRecorder = null
 		this.members = []
-		// window.removeEventListener('resize', updateDimensions);
-		// window.removeEventListener('orientationchange', updateDimensions);
-
 
 
 	}
 
-
-
-
-
-	getAudioTracksFromStreams(streams) {
-		const audioTracks = [];
-		streams.forEach(stream => {
-			if (stream instanceof MediaStream) {
-				audioTracks.push(...stream.getAudioTracks());
-			}
-		});
-		return audioTracks;
-	}
 
 	async sendStartRecordingTransaction(keys) {
 		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
-
 		try {
 			newtx.msg = {
 				module: 'screenrecord',
 				request: 'start recording',
 			};
-	
 			for (let peer of keys) {
 				if (peer != this.publicKey) {
 					newtx.addTo(peer);
 				}
 			}
-	
-			await newtx.sign();
-	
+
+		await newtx.sign();
+
 			this.app.connection.emit('relay-transaction', newtx);
 			this.app.network.propagateTransaction(newtx);
 		} catch (error) {
 			console.log("error sending start recording transaction", error)
-		}	
+		}
 
-		
+
 	}
 
 	async sendStopRecordingTransaction(keys) {

@@ -60,7 +60,7 @@ class Chat extends ModTemplate {
     this.chat_manager_overlay = null;
 
     this.loading = true;
-
+    this.enable_profile_edits = true;
     this.isRelayConnected = false;
 
     this.audio_notifications = true;
@@ -398,6 +398,22 @@ class Chat extends ModTemplate {
         );
       }
 
+      let now = new Date().getTime();
+      let serverName = JSON.stringify([peer.publicKey]);
+
+      for (let group of this.groups) {
+        if (group.name !== this.communityGroupName) {
+          //
+          // Not the community group but using the chat server, clear these out after 1 day by default
+          //
+          if (JSON.stringify(group.members) === serverName){
+            if (now - group.last_update > (1000 * 60 * 60 * 24)){
+              await this.deleteChatGroup(group);
+            }
+          }
+        }
+      }
+
       // console.log(JSON.parse(JSON.stringify(this.groups)));
     }
   }
@@ -600,6 +616,17 @@ class Chat extends ModTemplate {
                 app.connection.emit('open-chat-with', {
                   id: obj.call_id
                 });
+              },
+              event: function (id) {
+                chat_self.app.connection.on(
+                  'chat-manager-render-request',
+                  () => {
+                    let group = chat_self.returnGroup(obj.call_id);
+                    if (group){
+                      chat_self.app.browser.addNotificationToId(group.unread, id);
+                    }
+                  }
+                );
               }
             }
           ];
@@ -644,12 +671,11 @@ class Chat extends ModTemplate {
     }
   }
 
-  async createFreshGroup(name, id) {
-    let peer = (await this.app.network.getPeers())[0].publicKey;
-
+  createFreshGroup(name, id) {
+    
     let chat_group = {
       id,
-      members: [peer],
+      members: this.communityGroup.members, //general chat services host key
       name,
       txs: [],
       unread: 0

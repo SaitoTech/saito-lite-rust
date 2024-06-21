@@ -142,7 +142,7 @@ class Nwasm extends OnePlayerGameTemplate {
                         let contains_item = false;
                         for (
                                 let i = 0;
-                                i < this.library[this.publicKey].length;
+                                i < this.library[peer].length;
                                 i++
                         ) {
                                 if (
@@ -255,7 +255,7 @@ class Nwasm extends OnePlayerGameTemplate {
 			let is_already_borrowed = 0;
 			let is_already_borrowed_idx = -1;
 			for (let i = 0; i < item.checkout.length; i++) {
-				if (item.checkout[i].publicKey === borrower) {
+				if (item.checkout[i].publickey === borrower) {
 					item.checkout[i].timestamp = new Date().getTime();
 					is_already_borrowed_idx = i;
 				}
@@ -273,7 +273,7 @@ class Nwasm extends OnePlayerGameTemplate {
 			//
 			if (is_already_borrowed) {
 				for (let i = 0; i < item.checkout.length; i++) {
-					if (item.checkout[i].publicKey === borrower) {
+					if (item.checkout[i].publickey === borrower) {
 						item.checkout.splice(i, 1);
 						// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!! //
 						// be careful that item.available //
@@ -378,8 +378,9 @@ class Nwasm extends OnePlayerGameTemplate {
 		//
 		// uncheckout personal items
 		//
+		if (!this.library[this.publicKey]) { this.library[this.publicKey] = []; }
 		for (let i = 0; i < this.library[this.publicKey].length; i++) {
-		  let item = this.library[this,publicKey][i];
+		  let item = this.library[this.publicKey][i];
 		  if (item.checkout.length > 0) {
 		    for (let z = 0; z < item.checkout.length; z++) {
 		      let borrower = item.checkout[z];
@@ -393,7 +394,6 @@ class Nwasm extends OnePlayerGameTemplate {
 		    }
 		  }
 		}
-
 
 		//
 		// monitor log if browser

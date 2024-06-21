@@ -19,9 +19,18 @@ class ChatSidebar {
     });
 
     app.connection.on('chat-popup-remove-request', (group = null) => {
-      this.render();
+      if (group?.id == this?.group?.id) {
+        this.remove();
+      }
     });
   	
+  }
+
+  remove() {
+    if (document.getElementById("chat-sidebar")) {
+      document.getElementById("chat-sidebar").remove();
+    }
+    this.group = null;
   }
 
 	render(chat = null) {
@@ -30,16 +39,17 @@ class ChatSidebar {
       return;
     }
 
+    this.group = chat;
+
     if (document.getElementById("chat-sidebar")) {
-      this.app.browser.replaceElementById(ChatSidebarTemplate(this.app, this.mod, chat), "chat-sidebar");
+      this.app.browser.replaceElementById(ChatSidebarTemplate(this.app, this.mod), "chat-sidebar");
     }else{
-      this.app.browser.addElementToSelector(ChatSidebarTemplate(this.app, this.mod, chat), this.container);
+      this.app.browser.addElementToSelector(ChatSidebarTemplate(this.app, this.mod), this.container);
     }
 
     if (!document.querySelector(".chat-sidebar .saito-modal-content")){
       this.app.browser.addElementToSelector(`<div class="saito-modal-content hide-scrollbar"></div>`, ".chat-sidebar");
     }
-
 
     let groupKey = chat.id;
 
@@ -69,11 +79,12 @@ class ChatSidebar {
         this.profile.menu.members.push(user);
       }
 
-    } else if (chat.id == this.mod.communityGroup?.id || chat.name == this.mod.communityGroupName){
+    } else if (chat.id == this.mod.communityGroup?.id || chat.name == this.mod.communityGroupName || chat.members.length !== 2){
       // Community Chat
       // If the peerservices haven't come up, we won't have a communityGroup obj yet....
       this.profile.reset(groupKey, "active", ["active"]);
       this.profile.name = chat.name;
+      this.profile.mask_key = true;
 
       //Scan stored transactions for list of people active in community
       let active_users = [];
@@ -105,14 +116,9 @@ class ChatSidebar {
         this.profile.menu.active.push(user);
       }
 
-    } else if (chat.members.length !== 2) {
-      groupKey = "";
-
-      this.profile.reset();
     } else {
       // 1-1 chat
       dm = true;
-      this.profile.mask_key = false;
 
       for (let member of chat.members) {
         if (member !== this.mod.publicKey) {

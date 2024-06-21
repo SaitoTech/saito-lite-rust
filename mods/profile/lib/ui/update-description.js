@@ -3,7 +3,7 @@ const SaitoOverlay = require('../../../../lib/saito/ui/saito-overlay/saito-overl
 const SaitoLoader = require('../../../../lib/saito/ui/saito-loader/saito-loader');
 
 class UpdateDescription {
-    constructor(app, mod) {
+    constructor(app, mod, key = null) {
         this.app = app;
         this.mod = mod;
         this.overlay = new SaitoOverlay(this.app, this.mod);
@@ -12,7 +12,7 @@ class UpdateDescription {
             this.mod,
             '.saito-overlay-form'
         );
-        this.callback = null;
+        this.key = key;
     }
 
     render(description) {
@@ -31,8 +31,7 @@ class UpdateDescription {
 
             var description = inputBox.innerText || inputBox.value;
 
-            console.log(description, this.mod)
-            this.mod.sendProfileTransaction({ description })
+            this.mod.sendProfileTransaction({ description }, this.key);
             this.overlay.remove()
 
         };

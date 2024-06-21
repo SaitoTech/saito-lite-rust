@@ -9,13 +9,8 @@ module.exports = LiteDreamControlsTemplate = (app, mod, videoEnabled = false) =>
         </div>  
         <div class="control-list">`;
 
-  if (mod.publicKey !== mod.dreamer){
-    html += `<div class="audio-control icon_click_area">
-            <i class="fas ${videoEnabled ? mod.camera_icon : mod.audio_icon}"> </i>
-          </div>`;
-  }
 
-          `<div id="dreamspace-member-count" class="members-control icon_click_area">
+  html += `<div id="dreamspace-member-count" class="members-control icon_click_area">
             <i class="fa-solid fa-users"></i>
           </div>
           <div class="share-control icon_click_area">
@@ -24,14 +19,9 @@ module.exports = LiteDreamControlsTemplate = (app, mod, videoEnabled = false) =>
           `;
   
   if (mod.publicKey == mod.dreamer){
-    html += `<div class="audio-control icon_click_area">
-            <i class="fas fa-microphone"> </i>
+    html += `<div class="stream-control icon_click_area click-me">
+            <i class="fas fa-play"> </i>
           </div>`;
-    if (videoEnabled){
-      html += `<div class="video-control icon_click_area">
-            <i class="fas fa-video"></i>
-          </div>`;
-    }
   }
 
 

@@ -2,7 +2,7 @@
 module.exports = DreamWizardTemplate = (app, mod, options) => {
 
 	let icon = null;
-	if (options?.audio){
+	/*if (options?.audio){
 		icon = mod.audio_icon;
 	}
 	if (options?.includeCamera){
@@ -10,19 +10,19 @@ module.exports = DreamWizardTemplate = (app, mod, options) => {
 	}
 	if (options?.screenStream){
 		icon = mod.screen_icon;
-	}
+	}*/
 
 	console.log(options);
 
 	let html = `<div id="dream-wizard" class="dream-wizard">`;
 
 	if (icon){
-		html += `<div class="cast-mode"><i class="fa-solid ${icon}"></i></div>`
+		html += `<div class="cast-mode"><i class="selected fa-solid ${icon}"></i></div>`
 	}else{
-		html += `<div class="cast-mode-options">
-					<i class="fa-solid ${mod.audio_icon}"></i>
-					<i class="fa-solid ${mod.camera_icon}"></i>
-					<i class="fa-solid ${mod.screen_icon}"></i>
+		html += `<div class="cast-mode">
+					<i id="mode-audio" class="cast-mode-option fa-solid ${mod.audio_icon}"></i>
+					<i id="mode-video" class="cast-mode-option fa-solid ${mod.screen_icon} selected"></i>
+					<!--i class="fa-solid ${mod.screen_icon}"></i-->
 				</div>`;
 	}
 

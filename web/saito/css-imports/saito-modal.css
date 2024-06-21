@@ -4,7 +4,6 @@ NOTE: the .saito-model class is a grid with two sectiions
 This alows for a header with a header with title to be added without extra CSS
 */
 .saito-modal {
-  font-size: 1.25rem;
   color: var(--font-color-modal-menu-oldschool);
   background: var(--background-color-modal-menu-oldschool); /* this seems to be placed on top of the other modal design?? */
   min-width: 70rem;
@@ -99,6 +98,27 @@ This alows for a header with a header with title to be added without extra CSS
   grid-gap: 1rem;
   grid-template-columns: 4rem 1fr;
   cursor: pointer;
+  position: relative;
+}
+
+.saito-modal-tagline {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.saito-modal-point {
+  font-size: 2rem;
+  padding: 0.5rem;
+  display: grid;
+  align-items: center;
+  grid-gap: 2rem;
+  grid-template-columns: 4rem 1fr;
+}
+
+.saito-modal-point i {
+  font-size: 3rem;
+  justify-self: center;
 }
 
 .saito-modal-menu-option.disabled-option {
