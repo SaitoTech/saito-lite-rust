@@ -20,7 +20,7 @@ class Videocall extends ModTemplate {
 
 		this.description = 'P2P Video & Audio Connection Module';
 		this.categories = 'Utilities Communications';
-		this.icon = 'fas fa-video';
+		this.icon = 'fa-solid fa-mobile-screen-button';  
 		this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
 		this.isRelayConnected = false;
 

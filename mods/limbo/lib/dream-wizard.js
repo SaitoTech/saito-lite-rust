@@ -1,5 +1,6 @@
 const DreamWizardTemplate = require("./dream-wizard.template");
 const SaitoOverlay = require('./../../../lib/saito/ui/saito-overlay/saito-overlay');
+const HelpOverlayTemplate = require('./overlays/limbo-help-overlay');
 
 class DreamWizard{
 	constructor(app, mod, options) {
@@ -17,7 +18,6 @@ class DreamWizard{
 	}
 
 	attachEvents(){
-
 
 		if (document.getElementById("dream-wizard-btn")){
 			document.getElementById("dream-wizard-btn").onclick = (e) => {
@@ -55,7 +55,14 @@ class DreamWizard{
 				})
 				e.currentTarget.classList.add("selected");
 			}
-		})
+		});
+
+		if (document.querySelector(".help-hook")){
+			document.querySelector(".help-hook").onclick = (e) => {
+				let overlay = new SaitoOverlay(this.app, this.mod);
+				overlay.show(HelpOverlayTemplate(this.app, this.mod));
+			}
+		}
 	}
 
 
