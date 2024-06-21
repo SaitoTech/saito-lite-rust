@@ -29,9 +29,9 @@ class Limbo extends ModTemplate {
 		this.styles = ['/videocall/style.css', '/limbo/style.css'];
 		this.icon_fa = 'fa-solid fa-satellite';
 
-		this.screen_icon = "fa-desktop";
-		this.camera_icon = "fa-clapperboard";
-		this.audio_icon = "fa-radio";
+		this.screen_icon = "fa-tv";
+		this.camera_icon = "fa-video";
+		this.audio_icon = "fa-microphone-lines";
 
 		this.stun = null;
 		this.rendered = false;

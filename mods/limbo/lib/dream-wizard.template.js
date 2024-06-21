@@ -20,8 +20,8 @@ module.exports = DreamWizardTemplate = (app, mod, options) => {
 		html += `<div class="cast-mode"><i class="selected fa-solid ${icon}"></i></div>`
 	}else{
 		html += `<div class="cast-mode">
-					<i id="mode-audio" class="cast-mode-option fa-solid ${mod.audio_icon} selected"></i>
-					<i id="mode-video" class="cast-mode-option fa-solid ${mod.camera_icon}"></i>
+					<i id="mode-audio" class="cast-mode-option fa-solid ${mod.audio_icon}"></i>
+					<i id="mode-video" class="cast-mode-option fa-solid ${mod.screen_icon} selected"></i>
 					<!--i class="fa-solid ${mod.screen_icon}"></i-->
 				</div>`;
 	}

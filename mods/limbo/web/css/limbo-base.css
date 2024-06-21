@@ -78,6 +78,11 @@
 }
 
 
+.icon_click_area.click-me i {
+	color: var(--saito-green);
+	animation: pulsate 2s ease-in-out infinite;
+}
+
 /* Join Overlay */
 
 .saito-join-space-overlay {
@@ -262,6 +267,8 @@ video#local.noflip{
 	padding: 2rem;
 	border-radius: 2rem;
 	border: 1px solid;
+	text-align: center;
+	min-width: 12rem;
 }
 
 .cast-mode-option {
@@ -270,7 +277,9 @@ video#local.noflip{
 
 .dream-wizard .cast-mode i.selected{
 	color: var(--saito-font-color);
-	border-width: 2px;
+	border-width: 3px;
+	text-shadow: 1px 1px 5px var(--saito-black);
+	box-shadow: 1px 1px 5px 1px var(--saito-black);
 }
 
 .dream-wizard input{

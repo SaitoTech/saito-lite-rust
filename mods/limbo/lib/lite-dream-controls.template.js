@@ -19,14 +19,9 @@ module.exports = LiteDreamControlsTemplate = (app, mod, videoEnabled = false) =>
           `;
   
   if (mod.publicKey == mod.dreamer){
-    html += `<div class="audio-control icon_click_area">
-            <i class="fas fa-microphone"> </i>
+    html += `<div class="stream-control icon_click_area click-me">
+            <i class="fas fa-play"> </i>
           </div>`;
-    if (videoEnabled){
-      html += `<div class="video-control icon_click_area">
-            <i class="fas fa-video"></i>
-          </div>`;
-    }
   }
 
 
