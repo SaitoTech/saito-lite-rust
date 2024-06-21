@@ -82,6 +82,7 @@ class RedSquareMain {
               }
 
               document.getElementById("saito-new-tweets").onclick = (e) => {
+                e.currentTarget.remove();
                 this.manager.clearFeed();
                 this.app.connection.emit("redsquare-home-render-request", true);
               };
