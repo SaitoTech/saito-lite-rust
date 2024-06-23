@@ -22338,8 +22338,6 @@ if (this.game.state.scenario != "is_testing") {
   //
   async handleGameLoop() {
 
-console.log("INTO handle game loop...");
-
     let his_self = this;
 
     if (this.is_first_loop == undefined) {
@@ -22498,8 +22496,21 @@ if (this.game.options.scenario != "is_testing") {
 	          this.game.queue.push("show_overlay\tvp");
 	        }
 
+		this.game.state.sp = [];
 	        this.game.queue.push("hide_overlay\tdiet_of_worms");
-	        this.game.queue.push("diet_of_worms");
+	        this.game.queue.push("resolve_diet_of_worms");
+		if (this.game.players.length > 2) { 
+	          this.game.queue.push("diet_of_worms_hapsburgs");
+		} else {
+	          //
+        	  // or we flip hapsburg card from deck if 2-player game
+        	  //
+        	  game_self.game.queue.push("POOLDEAL\t1\t1\t1"); // deck 1
+        	  game_self.game.queue.push("POOL\t1"); // deck 1
+		}
+	        this.game.queue.push("diet_of_worms_faction_array");
+	        this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+
 	        this.game.queue.push("show_overlay\tdiet_of_worms");
 	        this.game.queue.push("card_draw_phase");
 	        this.game.queue.push("event\tprotestant\t008");
@@ -25126,12 +25137,6 @@ console.log("----------------------------");
 
 		    let field_battle_triggered = false;
 
-console.log("#");
-console.log("#");
-console.log("# no-one is around to intercept and we need to check for battle...");
-console.log("# skip_avoid_battle: " + skip_avoid_battle);
-console.log("#");
-
 		    //
 		    // relief forces showing up
 		    //
@@ -25139,11 +25144,7 @@ console.log("#");
 
  		      if (!this.areAllies(f, faction, 1) && f !== faction) {
 
-console.log("these factions are not allies: " + f + " - " + faction);
-
 		        if (this.returnFactionLandUnitsInSpace(f, space.key, 1) > 0 && field_battle_triggered == false) {
-
-console.log("these factions are not allies: " + f + " - " + faction);
 
 			  //
 			  // if all the units are besieged we skip field battle because attacker needs to assault
@@ -25167,17 +25168,12 @@ console.log("these factions are not allies: " + f + " - " + faction);
 
 			  if (is_anyone_not_besieged) {
 
-console.log(" # --> is anyone not besieged");
-
 			    field_battle_triggered = true;
 
 			    //
 			    // but maybe no-one is besieged, in which case we want to offer fortification option
 			    // to the defender.
 			    //
-
-console.log(" # --> is the defender the one who is besieged: " + is_defender_the_one_who_is_besieged);
-
 			    if (is_defender_the_one_who_is_besieged != true) {
 
 			      //
@@ -25187,7 +25183,6 @@ console.log(" # --> is the defender the one who is besieged: " + is_defender_the
 			      //
 			      let is_this_a_relief_force = false;
 			      for (let zf in space.units) {
-console.log("check: " + zf);
 				if (space.units[zf].length > 0) {
 				  for (let zzz = 0; zzz < space.units[zf].length; zzz++) {
 				    if (space.units[zf][zzz].besieged) {
@@ -25200,11 +25195,9 @@ console.log("check: " + zf);
 			      }
 
 			      if (is_this_a_relief_force == true) {
-console.log(" # --> this is considered a relief force!");
 	                        this.game.queue.splice(lqe, 0, "relief_forces\t"+faction+"\t"+destination);
 	                        this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
 			      } else {
-console.log(" # --> this is not considered a relief force!");
 	                        this.game.queue.splice(lqe, 0, "fortification_check\t"+faction+"\t"+destination+"\t"+source);
 	                        this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
 			      }
@@ -25214,12 +25207,7 @@ console.log(" # --> this is not considered a relief force!");
 		              //
 		              // someone else is here, so let's trigger a field battle
 		              //
-console.log(" # --> is this an interception: " + is_this_an_interception);
-
 			      if (!is_this_an_interception) {
-
-console.log(" # --> check if this is a relief force!");
-
 	                        this.game.queue.splice(lqe, 0, "relief_forces\t"+faction+"\t"+destination);
 	                        this.game.queue.splice(lqe, 0, "retreat_check\t"+faction+"\t"+destination+"\t"+source);
 		              }
@@ -25431,22 +25419,13 @@ console.log(" # --> check if this is a relief force!");
 	  //
 	  // this was a relief battle, but no formerly-besieged units survived
 	  //
-console.log("@");
-console.log("@");
-console.log("@");
-console.log("@");
-console.log("@");
-console.log("@");
-console.log("IS THIS A RELIEF BATTLE: " + this.game.state.field_battle_relief_battle);
 	  let did_anyone_survive = false;
 	  let did_anyone_allied_with_me_survive = false;
 	  let did_anyone_allied_with_me_who_can_fortify_survive = false;
 
 
 	  if (this.game.state.field_battle_relief_battle) {
-console.log("evaluating...");
 	    for (let key in space.units) {
-console.log("looking at faction: " + key);
 	      for (let z = 0; z < space.units[key].length; z++) {
 		let u = space.units[key][z];
 		if (u.type == "regular" || u.type == "mercenary" || u.type == "cavalry") {
@@ -25469,22 +25448,18 @@ console.log("looking at faction: " + key);
 
 	    if (relief_siege == 1) {
 	      if (!did_anyone_allied_with_me_who_can_fortify_survive) {
-console.log("no-one survived who can fortify...");
 		return 1;
 	      }
 	    }
 
 	    if (!did_anyone_survive) {
-console.log("did anyone survive? " + did_anyone_survive);
 	      return 1;
 	    }
 	    if (!did_anyone_allied_with_me_survive) {
-console.log("did anyone allied with me survive? " + did_anyone_allied_with_me_survive);
 	      return 1;
 	    }
 	  }
 
-console.log("we are player: " + this.game.player + " and seeking " + player);
 	  //
 	  // otherwise, we have to evaluate fortifying
 	  //
@@ -25683,11 +25658,8 @@ console.log("we are player: " + this.game.player + " and seeking " + player);
 	  // mark relief forces - anyone friendly who is still there
 	  //
 	  for (let key in space.units) {
-console.log("relief force? " + key);
 	    if (key == faction || this.areAllies(key, faction)) {
-console.log("allies! " + key);
 	      for (let z = 0; z < space.units[key].length; z++) {
-console.log("setting unit from " + key + " as relief force");
 		space.units[key][z].relief_force = 1;
 	      }
 	    }
@@ -26691,7 +26663,6 @@ return 1; }
               game_self.addMove("discard\thapsburg\t"+card);
               game_self.addMove("diet_of_worms_hapsburg_resolve\t"+card);
               game_self.endTurn();
-
             });
 	  }
 
@@ -26709,43 +26680,58 @@ return 1; }
 
 	}
 
-        if (mv[0] === "diet_of_worms") {
+        if (mv[0] === "diet_of_worms_faction_check") {
 
 	  this.game.queue.splice(qe, 1);
 
+	  let fa_idx = -1;
+	  for (let i = this.game.queue.length-1; i >= 0; i--) {
+	    let lmv  = this.game.queue[i].split("\t");
+	    if (lmv[0] === "diet_of_worms_faction_array") {
+	      fa_idx = i;
+	    }
+	  }
+	  if (fa_idx >= 0) {
+	    for (let i = this.game.queue.length-1; i >= 0; i--) {
+	      if (this.game.queue[i].split("\t")[0] === "SIMULTANEOUS_PICK") {
+	        let x = this.game.queue[i];
+		this.game.queue.splice(i, 1);
+		this.game.queue.splice(fa_idx, 0, x);
+	      }
+	    }
+	  }
+
+	  return 1;
+
+	}
+
+        if (mv[0] === "diet_of_worms_faction_array") {
+
+	  let remove_from_queue = 0;
+	  if (parseInt(mv[1])) { remove_from_queue = 1; }
+
+	  if (remove_from_queue) {
+	    this.game.queue.splice(this.game.queue.length-1, 1);
+	  }
+
 	  this.factionbar.setActive(["protestant","papacy"]);
 
-console.log("INTO DIET OF WORMS");
+	  //
+	  // skip if we have already confirmed!
+	  //
+	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+	    return 0;
+	  }
+
+	  //
+	  // do not splice, we will resolve
+	  //
+	  this.addMove("RESOLVE\t"+this.publicKey);
 
 	  let game_self = this;
 	  let my_faction = "";
 
-  this.game_help.renderCustomOverlay("diet_of_worms", {
-    line1 : "diet",
-    line2 : "of worms?",
-    fontsize : "2.1rem" ,
-  });
-
-	  // first time it happens, lets update menu
 	  this.displayCardsLeft();
-
-          game_self.game.queue.push("resolve_diet_of_worms");
-
-	  //
-	  // papacy controls haps in 3P / 4P
-	  //
-	  if (this.game.players.length > 2) {
-            game_self.game.queue.push("diet_of_worms_hapsburgs");
-	  }
-
-	  //
-	  // or we flip hapsburg card from deck if 2-player game
-	  //
-	  if (game_self.game.players.length == 2) {
-	    // hapsburg card goes to pool
-            game_self.game.queue.push("POOLDEAL\t1\t1\t1"); // deck 1
-            game_self.game.queue.push("POOL\t1"); // deck 1
-	  }
 
           //
           // remove mandatory events from both hands
@@ -26766,8 +26752,6 @@ console.log("INTO DIET OF WORMS");
 
 	  if (this.game.player != this.returnPlayerCommandingFaction("papacy") && this.game.player != this.returnPlayerCommandingFaction("protestant")) {
 
-console.log("INTO DIET OF WORMS 2");
-
             this.updateStatusAndListCards("Protestants and Papacy assemble at the Diet of Worms", x);
 
             let hash1 = game_self.app.crypto.hash("");    // my card
@@ -26782,13 +26766,12 @@ console.log("INTO DIET OF WORMS 2");
 
             game_self.game.spick_card = "";
             game_self.game.spick_hash = hash2;
- 
+
             game_self.addMove("SIMULTANEOUS_PICK\t"+game_self.game.player+"\t"+hash3+"\t"+hash3_sig);
+            game_self.addMove("diet_of_worms_faction_check");
             game_self.endTurn();
 
 	  } else {
-
-console.log("INTO DIET OF WORMS 3");
 
 	    if (game_self.game.spick_card != "") {
 	      for (let i = 0; i < x.length; i++) { if (x[i] == game_self.game.spick_card) { x.splice(i, 1); } }
@@ -26823,6 +26806,7 @@ console.log("INTO DIET OF WORMS 3");
               game_self.game.spick_hash = hash2;
  
               game_self.addMove("SIMULTANEOUS_PICK\t"+game_self.game.player+"\t"+hash3+"\t"+hash3_sig);
+              game_self.addMove("diet_of_worms_faction_check");
               game_self.endTurn();
 
             });
@@ -26830,6 +26814,7 @@ console.log("INTO DIET OF WORMS 3");
 
           return 0;
         }
+
 
 	if (mv[0] === "resolve_diet_of_worms") {
 
@@ -28233,8 +28218,6 @@ try {
 
 	    while (are_hits_all_assigned == 0 && hits_to_assign > 0) {
 
-console.log("testing...");
-
 	      let number_of_targets = 0;
 
 	      //
@@ -29140,8 +29123,6 @@ console.log("testing...");
 		  }
 		}
 	      }
-
-console.log("NAVAL BATTLE DESTROY UNIT - REMOVING UNIT: " + JSON.stringify(space.units[faction][i]));
 
 	      space.units[faction].splice(i, 1);
 	      unit_destroyed = true;
@@ -33884,9 +33865,6 @@ if (this.game.state.round == 2) {
 
 	  if (this.game.player == p) {
 
-
-console.log("TESTING A: " + p);
-
 	    this.updateStatus("checking "+this.returnFactionName(faction)+" has no removed cards...");
 
             let fhand_idx = this.returnFactionHandIdx(p, faction);
@@ -33896,7 +33874,6 @@ console.log("TESTING A: " + p);
 	      //
 	      // TESTING can trigger but we are good - continue!
 	      //
-alert("TRIGGERING WITH FHAND_IDX of -1...");
 	      this.endTurn();
 	      return;
 
@@ -36333,6 +36310,14 @@ console.log("space.units: " + JSON.stringify(space.units));
     }
     return this.game.players;
   }
+
+
+  returnPublicKeyOfFaction(faction="") {
+    let p = this.returnPlayerCommandingFaction(faction);
+    if (p <= 0) { return ""; }
+    return this.game.players[p-1];
+  }
+
 
   returnArrayOfPlayersInSpacekey(spacekey="") {
     let res = [];

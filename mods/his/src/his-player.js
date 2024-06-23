@@ -25,6 +25,14 @@
     return this.game.players;
   }
 
+
+  returnPublicKeyOfFaction(faction="") {
+    let p = this.returnPlayerCommandingFaction(faction);
+    if (p <= 0) { return ""; }
+    return this.game.players[p-1];
+  }
+
+
   returnArrayOfPlayersInSpacekey(spacekey="") {
     let res = [];
     let s = this.game.spaces[spacekey];

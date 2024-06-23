@@ -109,7 +109,6 @@ class Storage {
 			if (peer === 'localhost') {
 				let archive_mod = this.app.modules.returnModule('Archive');
 				if (archive_mod) {
-alert("saving transaction in localhost");
 					return await archive_mod.saveTransaction(tx, data);
 				}
 			}
@@ -121,7 +120,6 @@ alert("saving transaction in localhost");
 					peer.peerIndex
 				);
 			} else {
-alert("general outbound request!");
 				return await this.app.network.sendRequestAsTransaction(
 					message,
 					data
