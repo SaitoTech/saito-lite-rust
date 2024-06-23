@@ -22359,7 +22359,7 @@ if (this.game.state.scenario != "is_testing") {
 
 console.log("QUEUE: " + JSON.stringify(this.game.queue));
 console.log("MOVE: " + mv[0]);
-console.log("FIRST LOOP: " + this.is_first_loop);
+//console.log("FIRST LOOP: " + this.is_first_loop);
 
 	//
 	// entry point for every round in the game
@@ -22505,8 +22505,8 @@ if (this.game.options.scenario != "is_testing") {
 	          //
         	  // or we flip hapsburg card from deck if 2-player game
         	  //
-        	  game_self.game.queue.push("POOLDEAL\t1\t1\t1"); // deck 1
-        	  game_self.game.queue.push("POOL\t1"); // deck 1
+        	  this.game.queue.push("POOLDEAL\t1\t1\t1"); // deck 1
+        	  this.game.queue.push("POOL\t1"); // deck 1
 		}
 	        this.game.queue.push("diet_of_worms_faction_array");
 	        this.game.queue.push("RESETCONFIRMSNEEDED\tall");
