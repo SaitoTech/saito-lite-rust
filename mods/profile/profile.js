@@ -131,7 +131,6 @@ class Profile extends ModTemplate {
 				//
 				app.keychain.addKey(key.publicKey, { profile: {} });
 
-<<<<<<< HEAD
 					//
 					//Check remote archives
 					//
@@ -147,24 +146,8 @@ class Profile extends ModTemplate {
 									for (let k in txmsg.data){
 										txs_found[k] = txs[i];
 									}
-=======
-				//Check remote archives
-				await app.storage.loadTransactions(
-					{ field1: "Profile", field2: key.publicKey }, 
-					async (txs) => {
-						let txs_found = {};
-						
-						// We want to get the most recent tx for description/image/banner
-						if (txs?.length > 0) {
-							for (let i = txs.length - 1; i >= 0; i--) {
-								let txmsg = txs[i].returnMessage();
-								for (let k in txmsg.data){
-									txs_found[k] = txs[i];
->>>>>>> 2a4017ec8e20a78ce693d3afdfafb3f3fad2bc2b
 								}
 							}
-						}
-
 						for (let k in txs_found){
 							await this.receiveProfileTransaction(txs_found[k]);
 						}

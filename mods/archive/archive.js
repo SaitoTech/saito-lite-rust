@@ -321,7 +321,7 @@ class Archive extends ModTemplate {
 		newObj.tx_size = newObj.tx.length;
 
 try {
-  alert("saving transaction in archive mod...");
+  //alert("saving transaction in archive mod...");
 } catch (err) {}
 
 		if (this.app.BROWSER) {
