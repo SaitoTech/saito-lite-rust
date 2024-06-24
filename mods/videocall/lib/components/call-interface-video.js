@@ -2,7 +2,6 @@ const VideoBox = require('../../../../lib/saito/ui/saito-videobox/video-box');
 
 const CallInterfaceVideoTemplate = require('./call-interface-video.template');
 
-const SwitchDisplay = require('../overlays/switch-display');
 const Effects = require('../overlays/effects');
 const VideocallSettings = require('../overlays/videocall-settings');
 
@@ -17,7 +16,6 @@ class CallInterfaceVideo {
 
 		this.local_container = 'expanded-video';
 		this.remote_container = 'side-videos';
-		this.display_mode = 'focus';
 		this.remote_streams = new Map();
 		this.current_speaker = null;
 		this.speaker_candidate = null;
@@ -86,28 +84,27 @@ class CallInterfaceVideo {
 		});
 
 		// Change arrangement of video boxes (emitted from SwitchDisplay overlay)
-		app.connection.on('stun-switch-view', (newView) => {
-			this.display_mode = newView;
-			console.log('Switch view: ' + newView);
+		app.connection.on('stun-switch-view', (newView, save = false) => {
+
+			siteMessage(`Switched to ${newView} display`, 2000);
+
+			if (newView == "presentation"){
+				newView = "focus";
+			}
+
+			this.mod.layout = newView;
+
 			switch (newView) {
 				case 'gallery':
 					this.switchDisplayToGallery();
 					break;
-				case 'focus':
-					this.switchDisplayToExpanded();
-					break;
 				case 'speaker':
 					this.switchDisplayToExpanded();
 					break;
-				case 'presentation':
+				case 'focus':
 					this.switchDisplayToExpanded();
-					break;
-
-				default:
-					break;
 			}
-			// if(newView !== "presentation"){}
-			siteMessage(`Switched to ${newView} display`, 2000);
+
 		});
 
 		app.connection.on('stun-new-speaker', (peer) => {
@@ -124,7 +121,7 @@ class CallInterfaceVideo {
 						}
 
 						if (
-							this.display_mode == 'speaker' &&
+							this.mod.layout == 'speaker' &&
 							!item.parentElement.classList.contains(
 								'expanded-video'
 							)
@@ -145,7 +142,7 @@ class CallInterfaceVideo {
 		});
 
 		app.connection.on('videocall-show-settings', () => {
-			this.videocall_settings.render(this.display_mode);
+			this.videocall_settings.render();
 		});
 
 		app.connection.on('stun-disconnect', () => {
@@ -208,6 +205,8 @@ class CallInterfaceVideo {
 				console.error(err);
 			}
 		}
+
+		this.app.connection.emit("stun-switch-view", this.mod.layout);
 	}
 
 	insertActions() {
@@ -399,7 +398,7 @@ class CallInterfaceVideo {
 					chat_box.classList.toggle('full-screen');
 
 					if (icon.classList.contains('fa-caret-down')) {
-						if (this.display_mode !== 'focus') {
+						if (this.mod.layout !== 'focus') {
 							this.app.connection.emit(
 								'stun-switch-view',
 								'focus'
@@ -442,10 +441,7 @@ class CallInterfaceVideo {
 		document
 			.querySelector('.video-container-large')
 			.addEventListener('click', (e) => {
-				if (
-					this.display_mode == 'gallery' ||
-					this.display_mode == 'presentation'
-				) {
+				if (this.mod.layout == 'gallery') {
 					return;
 				}
 				if (e.target.classList.contains('video-box')) {

@@ -2,7 +2,7 @@ module.exports = (app, mod) => {
 	let privacy = app.options.stun?.settings?.privacy || 'all';
 	return `
 			<fieldset class="saito-grid">
-			<legend class="settings-label">Who can P2P call you with Saito Talk?</legend>
+			<legend class="settings-label">Enable direct calls on Saito Talk from:</legend>
 			<input type="radio" id="all" name="stun-privacy" value="all" ${
 	privacy == 'all' ? 'checked' : ''
 }/>
