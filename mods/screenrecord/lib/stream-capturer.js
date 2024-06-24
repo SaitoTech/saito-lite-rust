@@ -1,93 +1,93 @@
 class StreamCapturer {
-    constructor(logo){
+    constructor(logo) {
         this.combinedStream = null;
         this.streamData = [];
         this.logo = logo
-        this.handleResize =this.handleResize.bind(this);  
+        this.handleResize = this.handleResize.bind(this);
     }
 
 
 
-	drawImageProp(ctx, img, x, y, w, h, offsetX, offsetY) {
+    drawImageProp(ctx, img, x, y, w, h, offsetX, offsetY) {
 
-		if (arguments.length === 2) {
-			x = y = 0;
-			w = ctx.canvas.width;
-			h = ctx.canvas.height;
-		}
+        if (arguments.length === 2) {
+            x = y = 0;
+            w = ctx.canvas.width;
+            h = ctx.canvas.height;
+        }
 
-		offsetX = typeof offsetX === "number" ? offsetX : 0.5;
-		offsetY = typeof offsetY === "number" ? offsetY : 0.5;
+        offsetX = typeof offsetX === "number" ? offsetX : 0.5;
+        offsetY = typeof offsetY === "number" ? offsetY : 0.5;
 
-		if (offsetX < 0) offsetX = 0;
-		if (offsetY < 0) offsetY = 0;
-		if (offsetX > 1) offsetX = 1;
-		if (offsetY > 1) offsetY = 1;
+        if (offsetX < 0) offsetX = 0;
+        if (offsetY < 0) offsetY = 0;
+        if (offsetX > 1) offsetX = 1;
+        if (offsetY > 1) offsetY = 1;
 
-		let iw = img.videoWidth || img.width,
-			ih = img.videoHeight || img.height,
-			r = Math.min(w / iw, h / ih),
-			nw = iw * r,
-			nh = ih * r,
-			cx, cy, cw, ch, ar = 1;
+        let iw = img.videoWidth || img.width,
+            ih = img.videoHeight || img.height,
+            r = Math.min(w / iw, h / ih),
+            nw = iw * r,
+            nh = ih * r,
+            cx, cy, cw, ch, ar = 1;
 
-		if (nw < w) ar = w / nw;
-		if (Math.abs(ar - 1) < 1e-14 && nh < h) ar = h / nh;
-		nw *= ar;
-		nh *= ar;
+        if (nw < w) ar = w / nw;
+        if (Math.abs(ar - 1) < 1e-14 && nh < h) ar = h / nh;
+        nw *= ar;
+        nh *= ar;
 
-		cw = iw / (nw / w);
-		ch = ih / (nh / h);
+        cw = iw / (nw / w);
+        ch = ih / (nh / h);
 
-		cx = (iw - cw) * offsetX;
-		cy = (ih - ch) * offsetY;
+        cx = (iw - cw) * offsetX;
+        cy = (ih - ch) * offsetY;
 
-		if (cx < 0) cx = 0;
-		if (cy < 0) cy = 0;
-		if (cw > iw) cw = iw;
-		if (ch > ih) ch = ih;
+        if (cx < 0) cx = 0;
+        if (cy < 0) cy = 0;
+        if (cw > iw) cw = iw;
+        if (ch > ih) ch = ih;
 
-		ctx.drawImage(img, cx, cy, cw, ch, x, y, w, h);
-		this.drawLogoOnCanvas(ctx)
-	}
-
-
-	drawLogoOnCanvas(ctx) {
-		const maxDimension = 100;
-		const aspectRatio = this.logo.naturalWidth / this.logo.naturalHeight;
-		let logoWidth, logoHeight;
-		if (this.logo.naturalWidth > this.logo.naturalHeight) {
-			logoWidth = maxDimension;
-			logoHeight = maxDimension / aspectRatio;
-		} else {
-			logoHeight = maxDimension;
-			logoWidth = maxDimension * aspectRatio;
-		}
-
-		const logoX = ctx.canvas.width - logoWidth - 50;
-		const logoY = ctx.canvas.height - logoHeight - 50;
-
-		this.logo.style.objectFit = "cover";
-		ctx.drawImage(this.logo, logoX, logoY, logoWidth, logoHeight);
-	}
+        ctx.drawImage(img, cx, cy, cw, ch, x, y, w, h);
+        this.drawLogoOnCanvas(ctx)
+    }
 
 
-    
+    drawLogoOnCanvas(ctx) {
+        const maxDimension = 100;
+        const aspectRatio = this.logo.naturalWidth / this.logo.naturalHeight;
+        let logoWidth, logoHeight;
+        if (this.logo.naturalWidth > this.logo.naturalHeight) {
+            logoWidth = maxDimension;
+            logoHeight = maxDimension / aspectRatio;
+        } else {
+            logoHeight = maxDimension;
+            logoWidth = maxDimension * aspectRatio;
+        }
+
+        const logoX = ctx.canvas.width - logoWidth - 50;
+        const logoY = ctx.canvas.height - logoHeight - 50;
+
+        this.logo.style.objectFit = "cover";
+        ctx.drawImage(this.logo, logoX, logoY, logoWidth, logoHeight);
+    }
+
+
+
     resizeCanvas(canvas, drawStreamsToCanvas, self) {
-		// console.log('resizing canvas')
-		// console.log('resizing', self.name)
-		canvas.width = window.innerWidth;
-		canvas.height = window.innerHeight
-		const videoElements = document.querySelectorAll('div[id^="stream_"] video');
-		videoElements.forEach(video => {
-			video.style.objectFit = "cover";
-			video.style.width = "100%";
-			video.style.height = "100%";
-			video.style.maxWidth = "100%";
-		});
-		// Update the drawing routine to handle the new canvas size
-		drawStreamsToCanvas();
-	};
+        // console.log('resizing canvas')
+        // console.log('resizing', self.name)
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight
+        const videoElements = document.querySelectorAll('div[id^="stream_"] video');
+        videoElements.forEach(video => {
+            video.style.objectFit = "cover";
+            video.style.width = "100%";
+            video.style.height = "100%";
+            video.style.maxWidth = "100%";
+        });
+        // Update the drawing routine to handle the new canvas size
+        drawStreamsToCanvas();
+    };
 
 
     handleResize() {
@@ -95,19 +95,19 @@ class StreamCapturer {
     }
 
 
-    captureVideoCallStreams(includeCamera  = false){
+    captureVideoCallStreams(includeCamera = false) {
 
         try {
             this.combinedStream = new MediaStream();
             this.is_capturing_stream = true
-    
+
             document.querySelectorAll('canvas').forEach(canvas => {
                 canvas.parentElement.removeChild(document.querySelector('canvas'))
             })
-    
+
             const audioCtx = new AudioContext();
             const destination = audioCtx.createMediaStreamDestination();
-    
+
             const processStream = (stream) => {
                 if (stream && stream.getAudioTracks().length > 0) {
                     const source = audioCtx.createMediaStreamSource(stream);
@@ -115,7 +115,7 @@ class StreamCapturer {
                 }
                 return stream;
             };
-    
+
             if (includeCamera) {
                 let observer = new MutationObserver((mutations) => {
                     mutations.forEach((mutation) => {
@@ -142,7 +142,7 @@ class StreamCapturer {
                                     data.rect = mutation.target.getBoundingClientRect();
                                 }
                             });
-    
+
                         }
                         if (mutation.removedNodes.length > 0) {
                             mutation.removedNodes.forEach(node => {
@@ -165,36 +165,95 @@ class StreamCapturer {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerWidth
                 const ctx = canvas.getContext('2d');
+                // const drawStreamsToCanvas = () => {
+                //     if (!this.is_capturing_stream) return;
+                //     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+
+                //     this.streamData.forEach(data => {
+                //         const parentElement = document.getElementById(data.parentID);
+                //         if (!parentElement) return;
+                //         const rect = parentElement.getBoundingClientRect();
+                //         // Draw the video on the canvas
+                //         if (data.videoElement.readyState >= 2) {
+                //             this.drawImageProp(ctx, data.videoElement, rect.left, rect.top, rect.width, rect.height)
+                //         }
+                //     });
+                //     // console.log('still drawing streams');
+
+             
+                //     this.animationFrameId = requestAnimationFrame(drawStreamsToCanvas);
+                // };
+
+
                 const drawStreamsToCanvas = () => {
                     if (!this.is_capturing_stream) return;
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    let minY = Infinity, maxY = -Infinity;
+                    let expandedVideo = null;
+                    this.streamData.forEach(data => {
+                        const parentElement = document.getElementById(data.parentID);
+                        if (parentElement) {
+                            const rect = parentElement.getBoundingClientRect();
+                            minY = Math.min(minY, rect.top);
+                            maxY = Math.max(maxY, rect.bottom);
+                        
+                            if (parentElement.parentElement.classList.contains('expanded-video')) {
+                                expandedVideo = data;
+                                console.log('Expanded video found:', data.parentID);
+                            }
+                        }
+                    });
+                
+                    // console.log('Content bounds:', minY, maxY);
+                
+                    const contentHeight = maxY - minY;
+                    const availableSpace = canvas.height - contentHeight;
+                
+                    // const offsetY = Math.max(0, availableSpace / 2 - minY);
+                    const shouldStretch = window.innerWidth > 768;
+                    // Draw each video stream
                     this.streamData.forEach(data => {
                         const parentElement = document.getElementById(data.parentID);
                         if (!parentElement) return;
-                        const rect = parentElement.getBoundingClientRect();
-                        // Draw the video on the canvas
+                        let rect = parentElement.getBoundingClientRect();
+                        
                         if (data.videoElement.readyState >= 2) {
-                            this.drawImageProp(ctx, data.videoElement, rect.left, rect.top, rect.width, rect.height)
+                            let drawHeight = rect.height;
+                            let drawY = rect.top;
+                
+                            if (data === expandedVideo && shouldStretch) {
+                                const stretchAmount = availableSpace * 0.7; 
+                                drawHeight += stretchAmount;
+                            }
+                
+                            this.drawImageProp(ctx, data.videoElement, 
+                                rect.left, drawY, 
+                                rect.width, drawHeight);
+                
+                            // console.log('Drawing video:', data.parentID, 'at', rect.left, drawY, rect.width, drawHeight);
+                        } else {
+                            // console.log('Video not ready:', data.parentID, 'readyState:', data.videoElement.readyState);
                         }
                     });
-                    // console.log('still drawing streams');
+                
                     this.animationFrameId = requestAnimationFrame(drawStreamsToCanvas);
                 };
-    
                 this.drawStreamsToCanvas = drawStreamsToCanvas
-    
-    
+
+
                 let self = this
                 window.addEventListener('resize', this.handleResize.bind(this));
                 this.resizeCanvas(canvas, drawStreamsToCanvas, self);
-    
-    
-    
+
+
+
                 const videoElements = document.querySelectorAll('div[id^="stream_"] video');
                 this.streamData = Array.from(videoElements).map(video => {
                     let stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
                     processStream(stream)
-    
+
                     const rect = video.getBoundingClientRect();
                     const parentID = video.parentElement.id;
                     const videoElement = document.createElement('video');
@@ -206,7 +265,7 @@ class StreamCapturer {
                 }).filter(data => data.stream !== null);
                 this.combinedStream.addTrack(canvas.captureStream(25).getVideoTracks()[0]);
             }
-    
+
             else {
                 let observer = new MutationObserver((mutations) => {
                     mutations.forEach((mutation) => {
@@ -244,23 +303,23 @@ class StreamCapturer {
             }
             this.combinedStream.addTrack(destination.stream.getAudioTracks()[0]);
             return this.combinedStream;
-    
+
         } catch (error) {
             console.log("Error capturing video streams", error)
             throw error
         }
-   
+
 
     }
 
 
     stopCaptureVideoCallStreams() {
-		this.is_capturing_stream = false
-		cancelAnimationFrame(this.animationFrameId)
-		// console.log('removing event listener')
-		window.removeEventListener('resize', this.handleResize)
-		this.combinedStream = null
-	}
+        this.is_capturing_stream = false
+        cancelAnimationFrame(this.animationFrameId)
+        // console.log('removing event listener')
+        window.removeEventListener('resize', this.handleResize)
+        this.combinedStream = null
+    }
 
 
 }
