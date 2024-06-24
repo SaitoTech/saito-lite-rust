@@ -106,11 +106,7 @@ class Record extends ModTemplate {
 					let recordButton = document.getElementById('record-stream');
 					let { container, callbackAfterRecord } = game_mod.recordOptions;
 					if (!this.mediaRecorder) {
-
-						let screenRecordWizard = new screenrecordWizard(this.app, this, {
-							container, members: game_mod.players, callbackAfterRecord, type: "game"
-						})
-						screenRecordWizard.render()
+						await this.startRecording(container, game_mod.players, callbackAfterRecord, "game");
 						recordButton.textContent = "Stop recording";
 					} else {
 						// this.mediaRecorder.stop();
