@@ -5,7 +5,8 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const VideoBox = require('../../lib/saito/ui/saito-videobox/video-box');
 const html2canvas = require('html2canvas')
 const domtoimage = require('dom-to-image');
-const StreamCapturer  = require('./lib/stream-capturer')
+const StreamCapturer = require('./lib/stream-capturer');
+const screenrecordWizard = require('./lib/screenrecord-wizard');
 
 
 class Record extends ModTemplate {
@@ -45,12 +46,10 @@ class Record extends ModTemplate {
 						let { container, streams, useMicrophone, callbackAfterRecord, members } = obj;
 						if (container) {
 							if (!this.mediaRecorder) {
-								let startRecording = await sconfirm('Do you  want to start recording?');
-								if (!startRecording) return;
-								let includeCamera = await sconfirm("Do you want to include Camera")
-								this.recorderStreamCapture = new StreamCapturer(this.logo)
-								let stream = this.recorderStreamCapture.captureVideoCallStreams(includeCamera)
-								await this.startRecording({ container, members, callbackAfterRecord, type: 'videocall', stream });
+								let screenRecordWizard = new screenrecordWizard(this.app, this, {
+									container, members, callbackAfterRecord, type: "videocall"
+								})
+								screenRecordWizard.render()
 							} else {
 								this.stopRecording();
 							}
@@ -69,26 +68,26 @@ class Record extends ModTemplate {
 			}
 
 			return {
-					startStreamingVideoCall: async () => {
-						try {
-							this.limboStreamCapture = new StreamCapturer(this.logo)
+				startStreamingVideoCall: async () => {
+					try {
+						this.limboStreamCapture = new StreamCapturer(this.logo)
 						let stream = this.limboStreamCapture.captureVideoCallStreams(true)
 						return stream;
-						} catch (error) {
-							console.log('error streaming video call', error)
-						}
-						
-					},
-
-					stopStreamingVideoCall: async () => {
-						 if (this.limboStreamCapture) {
-							this.limboStreamCapture.stopCaptureVideoCallStreams()
-							this.limboStreamCapture = null
-						}else {
-							console.log('No stream to stop?')
-						}
+					} catch (error) {
+						console.log('error streaming video call', error)
 					}
-				};
+
+				},
+
+				stopStreamingVideoCall: async () => {
+					if (this.limboStreamCapture) {
+						this.limboStreamCapture.stopCaptureVideoCallStreams()
+						this.limboStreamCapture = null
+					} else {
+						console.log('No stream to stop?')
+					}
+				}
+			};
 		}
 		if (type === 'game-menu') {
 			if (!obj.recordOptions) return;
@@ -107,7 +106,11 @@ class Record extends ModTemplate {
 					let recordButton = document.getElementById('record-stream');
 					let { container, callbackAfterRecord } = game_mod.recordOptions;
 					if (!this.mediaRecorder) {
-						await this.startRecording(container, game_mod.players, callbackAfterRecord, "game");
+
+						let screenRecordWizard = new screenrecordWizard(this.app, this, {
+							container, members: game_mod.players, callbackAfterRecord, type: "game"
+						})
+						screenRecordWizard.render()
 						recordButton.textContent = "Stop recording";
 					} else {
 						// this.mediaRecorder.stop();
@@ -188,8 +191,9 @@ class Record extends ModTemplate {
 
 
 	async startRecording(options) {
-		let { container, members, callbackAfterRecord, type, stream } = options
-
+		let { container, members, callbackAfterRecord, type, includeCamera } = options
+		this.recorderStreamCapture = new StreamCapturer(this.logo)
+		let stream = this.recorderStreamCapture.captureVideoCallStreams(includeCamera)
 		console.log(stream, "captured stream");
 
 
@@ -615,12 +619,12 @@ class Record extends ModTemplate {
 
 	async stopRecording() {
 
-		if(this.recorderStreamCapture){
+		if (this.recorderStreamCapture) {
 			this.recorderStreamCapture.stopCaptureVideoCallStreams();
 			this.recorderStreamCapture = null
-	
+
 		}
-	
+
 		if (this.mediaRecorder) {
 			this.mediaRecorder.stop();
 			this.mediaRecorder = null;
@@ -658,7 +662,7 @@ class Record extends ModTemplate {
 				}
 			}
 
-		await newtx.sign();
+			await newtx.sign();
 
 			this.app.connection.emit('relay-transaction', newtx);
 			this.app.network.propagateTransaction(newtx);

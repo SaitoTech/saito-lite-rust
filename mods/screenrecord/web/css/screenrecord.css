@@ -11,6 +11,51 @@
     background-color: red;
 } */
 
+.screenrecord-wizard{
+	width: min(550px, 98vw);
+	padding: 2rem 3rem;
+	border-radius: 0.5rem;
+	border: 1px solid;
+	background-color: var(--color-base);
+	color: var(--color-contrast);
+}
+
+.screenrecord-wizard h1{
+	font-size: 4rem;
+}
+
+.screenrecord-wizard .button {
+	margin: 1rem 0;
+}
+
+.screenrecord-wizard .record-mode {
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+	font-size: 6rem;
+	margin-bottom: 1rem;
+}
+
+.screenrecord-wizard .record-mode i {
+	padding: 2rem;
+	border-radius: 2rem;
+	border: 1px solid;
+	text-align: center;
+	min-width: 12rem;
+}
+
+.record-mode-option {
+	cursor: pointer;
+}
+
+.screenrecord-wizard .record-mode i.selected{
+	color: var(--saito-font-color);
+	border-width: 3px;
+	text-shadow: 1px 1px 5px var(--saito-black);
+	box-shadow: 1px 1px 5px 1px var(--saito-black);
+}
+
+
 .pulsate {
     animation: pulsate 1s infinite;
     /* color: red !important; */
