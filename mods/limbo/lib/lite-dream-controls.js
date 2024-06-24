@@ -82,6 +82,8 @@ class DreamControls{
 	render() {
 		if (!document.getElementById("dream-controls")){
 			this.app.browser.addElementToDom(DreamControlTemplate(this.app, this.mod, (this.options.mode !== "audio")));
+			this.app.browser.makeDraggable("dream-controls");
+
 		}
 
 		this.attachEvents();
@@ -90,8 +92,6 @@ class DreamControls{
 		this.app.connection.emit('limbo-toggle-audio');
 		this.app.connection.emit('limbo-toggle-video');
 
-
-		this.app.browser.makeDraggable("dream-controls");
 	}
 
 	remove(){
@@ -117,6 +117,7 @@ class DreamControls{
 				//Tell PeerManager to adjust streams
 				this.app.connection.emit('limbo-toggle-audio');
 				this.app.connection.emit('limbo-toggle-video');
+				this.app.connection.emit('limbo-update-status');
 
 				//Only necessary for first click but doesn't hurt to have
 				this.startTimer(); // Start timer

@@ -10,12 +10,22 @@ class DreamSpace{
 		this.video.display_wave_form = true;
 		this.startTime = new Date().getTime();
 		this.timer_interval = null;
+
+		app.connection.on('limbo-spaces-update', () => {
+			if (mod.dreamer){
+				if (mod.dreams[mod.dreamer]){
+					if (mod.dreams[mod.dreamer].muted){
+						this.video.hide();
+					}else{
+						this.video.show();
+					}
+				}
+			}
+		});
 	}
 
 	render(stream = null) {
 		if (!document.getElementById("dream-controls")){
-
-			console.log("Render Dream space in " + this.container);
 			this.app.browser.addElementToSelectorOrDom(DreamSpaceTemplate(), this.container);
 		}
 
@@ -24,6 +34,10 @@ class DreamSpace{
 		if (stream){
 			console.log("Render with stream", stream);
 			this.startTimer();
+
+			if (this.mod.dreams[this.mod.dreamer]?.muted) {
+				this.video.hide();
+			}
 		}
 
 		this.attachEvents();
