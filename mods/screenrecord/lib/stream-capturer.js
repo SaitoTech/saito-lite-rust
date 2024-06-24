@@ -201,7 +201,7 @@ class StreamCapturer {
                         
                             if (parentElement.parentElement.classList.contains('expanded-video')) {
                                 expandedVideo = data;
-                                console.log('Expanded video found:', data.parentID);
+                                // console.log('Expanded video found:', data.parentID);
                             }
                         }
                     });
