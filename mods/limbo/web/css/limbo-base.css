@@ -214,6 +214,11 @@
 	text-align: right;
 }
 
+.dream-controls .video-box-container-large{
+	background-color: darkslategray;
+}
+
+
 .dream-controls .video-box-container-large video {
 	position: absolute;
 	object-fit: contain;
@@ -235,7 +240,17 @@
 }
 
 .video-preview{
+	position: relative;
 }
+
+.default-limbo-image{
+	position: absolute;
+	width: 95%;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
 
 
 .dream-controls .control-panel{

@@ -57,6 +57,7 @@ class Limbo extends ModTemplate {
 		dreamer: public key of dreamer
 		identifier: (string)
 		description: (string)
+		muted: 
 		*/
 		this.dreams = {};
 
@@ -82,6 +83,16 @@ class Limbo extends ModTemplate {
 			}
 		});
 
+		app.connection.on('limbo-update-status', ()=> {
+			if (!this.dreamer || !this.dreams[this.dreamer]){
+				return;
+			}
+
+			let muted = this.dreams[this.dreamer]?.muted;
+			this.dreams[this.dreamer].muted = !muted;
+			this.sendStatusTransaction();
+		});
+
 		app.connection.on('stun-track-event', (peerId, event) => {
 			if (
 				!this.dreamer ||
@@ -102,7 +113,8 @@ class Limbo extends ModTemplate {
 			}
 
 			//Forward to peers if peers already established!
-			this.downstream.forEach((key, pc) => {
+			this.downstream.forEach((pc, key) => {
+				console.log("Forward downstream to: ", key);
 				if (event.streams.length === 0) {
 					pc.addTrack(event.track);
 				} else {
@@ -535,7 +547,7 @@ class Limbo extends ModTemplate {
 			this.additionalSources.forEach((values, keys) => { 
 				console.log(keys, values.remoteStream.getAudioTracks());
 				values.remoteStream.getAudioTracks().forEach(track => {
-					this.combinedStream.addTrack(track);
+					this.combinedStream.addTrack(track.clone());
 				});
 			});
 		}
@@ -682,6 +694,16 @@ class Limbo extends ModTemplate {
 				this.dreamer = this.publicKey;
 				this.upstream = new Map();
 				this.downstream = new Map();
+
+				let enabled = true;
+				if (this.combinedStream) {
+					this.combinedStream.getTracks().forEach((track) => {
+						enabled = enabled && track.enabled;
+					});
+				}
+				if (!enabled) {
+					this.dreams[sender].muted = true;
+				}
 			}
 
 			if (tx.isTo(this.publicKey)) {
@@ -976,7 +998,7 @@ class Limbo extends ModTemplate {
 			newtx.addTo(speaker);
 		}
 
-		this.downstream.forEach((key, pc) => {
+		this.downstream.forEach((pc, key) => {
 			newtx.addTo(key);
 		});
 
@@ -1048,7 +1070,8 @@ class Limbo extends ModTemplate {
 		newtx.msg = {
 			module: this.name,
 			request: 'offer dream',
-			dreamer: this.dreamer
+			dreamer: this.dreamer,
+			muted: this.dreams[this.dreamer]?.muted,
 		};
 
 		await newtx.sign();
@@ -1057,6 +1080,7 @@ class Limbo extends ModTemplate {
 		this.app.network.propagateTransaction(newtx);
 
 		console.log('Offer stream to ' + target);
+		console.log(this.dreams[this.dreamer]);
 	}
 
 	receiveOfferTransaction(sender, tx) {
@@ -1074,9 +1098,54 @@ class Limbo extends ModTemplate {
 		console.log('Confirm upstream from ' + sender);
 		this.upstream.set(sender, 0);
 
+		let txmsg = tx.returnMessage();
+		this.dreams[this.dreamer].muted = txmsg.muted;
+
 		//Attempt to get connection
 		this.stun.createPeerConnection(sender);
 	}
+
+	async sendStatusTransaction(){
+		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
+		newtx.msg = {
+			module: this.name,
+			request: 'update status',
+			dreamer: this.dreamer,
+			muted: this.dreams[this.dreamer]?.muted,
+		};
+
+		this.downstream.forEach((pc, key) => {
+			console.log("Send to downstream key: ", key);
+			newtx.addTo(key);
+		});
+		
+		await newtx.sign();
+
+		//This should be Stun-channel only...
+		this.app.connection.emit('relay-transaction', newtx);
+	}
+
+	receiveStatusTransaction(sender, tx){
+		if (!this.app.BROWSER) {
+			return;
+		}
+
+		if (this.publicKey == sender){
+			return;
+		}
+
+		if (!this.dreamer || !this.dreams[this.dreamer]){
+			return;
+		}
+
+		let txmsg = tx.returnMessage();
+
+		this.dreams[this.dreamer].muted = txmsg.muted;
+
+		this.sendStatusTransaction(); 
+	}
+
 
 	async sendFailSafe(action, key){
 		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
@@ -1252,9 +1321,12 @@ class Limbo extends ModTemplate {
 			}
 			if (txmsg.request === 'offer dream') {
 				this.receiveOfferTransaction(sender, tx);
-				//Important, we don't need server rebroadcasting this or standard UI updates
 				return;
 			}
+			if (txmsg.request === "update status"){
+				this.receiveStatusTransaction(sender, tx);
+			}
+
 			if (txmsg.request === "revoke dream"){
 				if (txmsg.type == "kick"){
 					this.receiveKickTransaction(txmsg.member, tx);
@@ -1321,7 +1393,7 @@ class Limbo extends ModTemplate {
 		this.dreamer = null;
 
 		this.downstream.forEach((value, key) => {
-			console.log(key, value);
+
 			if (value) {
 				try {
 					value.close();
@@ -1332,7 +1404,7 @@ class Limbo extends ModTemplate {
 		});
 
 		this.upstream.forEach((value, key) => {
-			console.log(key, value);
+
 			if (value) {
 				try {
 					value.close();

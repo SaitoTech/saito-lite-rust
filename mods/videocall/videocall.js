@@ -32,6 +32,8 @@ class Videocall extends ModTemplate {
 		this.streams = null;
 		this.dialer = new DialingInterface(app, this);
 
+		this.layout = "focus";
+
 		this.social = {
 			twitter: '@SaitoOfficial',
 			title: '🟥 Saito Talk',
@@ -98,6 +100,12 @@ class Videocall extends ModTemplate {
 					settings: { privacy: 'all' },
 				};
 			}
+
+			if (this.app.options.stun.settings?.layout) {
+				this.layout = this.app.options.stun.settings?.layout;
+			}
+
+			console.log("************* LAYOUT" , this.layout);
 
 			if (app.browser.returnURLParameter('stun_video_chat')) {
 				this.room_obj = JSON.parse(
@@ -289,23 +297,11 @@ class Videocall extends ModTemplate {
 					}
 				},
 				{
-					text: 'Layout',
-					icon: 'fa-solid fa-table-cells-large',
-					prepend: true,
-					callback: function (app) {
-						app.connection.emit('videocall-show-settings');
-					}
-				},
-				{
 					text: 'Settings',
 					icon: 'fa-solid fa-cog',
 					prepend: true,
 					callback: function (app) {
-						let anotherOverlay = new SaitoOverlay(call_self.app, call_self.mod);
-						anotherOverlay.show(
-							`<div class="videocall-setting-grid-item saito-module-settings"></div>`
-						);
-						call_self.loadSettings('.saito-module-settings');
+						app.connection.emit('videocall-show-settings');
 					}
 				},
 			];
@@ -314,7 +310,7 @@ class Videocall extends ModTemplate {
 		if (type === 'media-request') {
 			if (this?.streams?.active) {
 				return {
-					localStream: this.streams.localStream,
+					localStream: this.streams.localStream.clone(),
 					remoteStreams: this.streams.remoteStreams
 				};
 			} else {
@@ -485,7 +481,7 @@ class Videocall extends ModTemplate {
 							'remove-peer-box',
 							'presentation'
 						);
-						this.app.connection.emit('stun-switch-view', 'focus');
+						this.app.connection.emit('stun-switch-view', this.app.options.stun.settings?.layout || this.layout);
 						this.screen_share = null;
 					}
 					if (txmsg.request === 'broadcast-call-list') {

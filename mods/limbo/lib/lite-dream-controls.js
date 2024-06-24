@@ -52,11 +52,38 @@ class DreamControls{
 			}
 		});
 
+		//
+		// This should add the feeds for new speakers joining a streaming videocall...
+		//
+		app.connection.on('stun-track-event', (peerId, event) => {
+			if (this.mod.publicKey === this.mod.dreamer){
+			 	console.log("I, the dreamer, get a new stun peer");
+			 	if (this.mod.dreams[this.mod.dreamer].speakers.includes(peerId)) {
+			 		console.log("The stun peer is a speaker");
+
+			 		if (this.mod.dreams[this.mod.dreamer].mode == "camera"){
+			 			console.log("I hope the screen recorder figures this out");
+			 		}else{
+			 			console.log("Manually add the (audio) tracks to the combined stream");
+						if (event.streams.length === 0) {
+							this.mod.combinedStream.addTrack(event.track.clone());
+						} else {
+							event.streams[0].getTracks().forEach((track) => {
+								this.mod.combinedStream.addTrack(track.clone());
+							});
+						}
+			 		}
+			 	}
+			}
+		});
+
 	}
 
 	render() {
 		if (!document.getElementById("dream-controls")){
 			this.app.browser.addElementToDom(DreamControlTemplate(this.app, this.mod, (this.options.mode !== "audio")));
+			this.app.browser.makeDraggable("dream-controls");
+
 		}
 
 		this.attachEvents();
@@ -65,8 +92,6 @@ class DreamControls{
 		this.app.connection.emit('limbo-toggle-audio');
 		this.app.connection.emit('limbo-toggle-video');
 
-
-		this.app.browser.makeDraggable("dream-controls");
 	}
 
 	remove(){
@@ -92,6 +117,7 @@ class DreamControls{
 				//Tell PeerManager to adjust streams
 				this.app.connection.emit('limbo-toggle-audio');
 				this.app.connection.emit('limbo-toggle-video');
+				this.app.connection.emit('limbo-update-status');
 
 				//Only necessary for first click but doesn't hurt to have
 				this.startTimer(); // Start timer
