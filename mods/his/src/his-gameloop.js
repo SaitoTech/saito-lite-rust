@@ -4307,21 +4307,39 @@ return 1; }
 
         if (mv[0] === "diet_of_worms_hapsburgs") {
 
+console.log("INTO DOF H");
+
 	  this.factionbar.setActive("hapsburg");
+	  this.game.queue.splice(qe, 1);
 
 	  let game_self = this;
 	  let x = [];
           let fhand_idx = 0;
           if (this.game.player == this.returnPlayerCommandingFaction("hapsburg")) {
 	    fhand_idx = this.returnFactionHandIdx(this.game.player, "hapsburg");
-	  }
-	  for (let i = 0; i < this.game.deck[0].fhand[fhand_idx].length; i++) {
-	    if (this.game.deck[0].cards[this.game.deck[0].fhand[fhand_idx][i]].type === "mandatory") {} else { x.push(this.game.deck[0].fhand[fhand_idx][i]); }
+	  } else {
+console.log("and out -- we are not haps!");
+            this.updateStatusAndListCards("Hapsburgs Selecting Card for the Diet of Worms", this.game.deck[0].fhand[0]);
+            return 0;
 	  }
 
+console.log("midway through execution...");
+
+	  for (let i = 0; i < this.game.deck[0].fhand[fhand_idx].length; i++) {
+console.log("i: " + i);
+	    if (this.game.deck[0].cards[this.game.deck[0].fhand[fhand_idx][i]].type === "mandatory") {
+	    } else {
+	      x.push(this.game.deck[0].fhand[fhand_idx][i]);
+	    }
+	  }
+
+console.log("post loop...");
+
 	  if (this.game.player != this.returnPlayerCommandingFaction("hapsburg")) {
+console.log("no one should get here...");
             this.updateStatusAndListCards("Hapsburgs Selecting Card for the Diet of Worms", x);
 	  } else {
+console.log("haps should see this...");
             this.updateStatusAndListCards("Hapsburgs - Select Card to indicate your Commitment to Debate", x);
             this.attachCardboxEvents(async function(card) {
 	      game_self.game_help.hide();
@@ -4332,8 +4350,7 @@ return 1; }
             });
 	  }
 
-	  this.game.queue.splice(qe, 1);
-          return 0;
+	  return 0;
 
 	}
 
@@ -4358,11 +4375,12 @@ return 1; }
 	    }
 	  }
 	  if (fa_idx >= 0) {
-	    for (let i = this.game.queue.length-1; i >= 0; i--) {
+	    for (let i = this.game.queue.length-1; i > fa_idx && i >= 0; i--) {
 	      if (this.game.queue[i].split("\t")[0] === "SIMULTANEOUS_PICK") {
 	        let x = this.game.queue[i];
 		this.game.queue.splice(i, 1);
 		this.game.queue.splice(fa_idx, 0, x);
+		fa_idx++;
 	      }
 	    }
 	  }
@@ -4372,6 +4390,8 @@ return 1; }
 	}
 
         if (mv[0] === "diet_of_worms_faction_array") {
+
+console.log("at start of dowfa");
 
 	  let remove_from_queue = 0;
 	  if (parseInt(mv[1])) { remove_from_queue = 1; }
@@ -4386,13 +4406,16 @@ return 1; }
 	  // skip if we have already confirmed!
 	  //
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+console.log("we have already confirmed, so exiting!");
 	    return 0;
 	  }
 
 	  //
-	  // do not splice, we will resolve
+	  // if we haven't done this already...
 	  //
-	  this.addMove("RESOLVE\t"+this.publicKey);
+	  if (this.moves.length == 0) {
+	    this.addMove("RESOLVE\t"+this.publicKey);
+	  }
 
 	  let game_self = this;
 	  let my_faction = "";
@@ -4413,10 +4436,16 @@ return 1; }
 	    my_faction = "Protestants";
 	  }
 	  for (let i = 0; i < this.game.deck[0].fhand[fhand_idx].length; i++) {
-	    if (this.game.deck[0].cards[this.game.deck[0].fhand[fhand_idx][i]].type === "mandatory") {} else { x.push(this.game.deck[0].fhand[fhand_idx][i]); }
+console.log("dowfa look: " + i);
+	    if (this.game.deck[0].cards[this.game.deck[0].fhand[fhand_idx][i]].type === "mandatory") {
+	    } else {
+	      x.push(this.game.deck[0].fhand[fhand_idx][i]);
+	    }
 	  }
 
 	  if (this.game.player != this.returnPlayerCommandingFaction("papacy") && this.game.player != this.returnPlayerCommandingFaction("protestant")) {
+
+console.log("not the papacy and not the protestants!");
 
             this.updateStatusAndListCards("Protestants and Papacy assemble at the Diet of Worms", x);
 
@@ -4439,11 +4468,20 @@ return 1; }
 
 	  } else {
 
+console.log("either papacy or protestants!");
+
 	    if (game_self.game.spick_card != "") {
-	      for (let i = 0; i < x.length; i++) { if (x[i] == game_self.game.spick_card) { x.splice(i, 1); } }
+	      for (let i = 0; i < x.length; i++) {
+	        if (x[i] === game_self.game.spick_card) { 
+		  x.splice(i, 1); 
+		}
+	      }
               this.updateStatusAndListCards("Waiting for Opponent(s) to Pick Cards");
 	      return 0;
 	    }
+
+console.log("and displaying cards!!");
+
 
             this.updateStatusAndListCards(my_faction + " - Select Card to indicate your Commitment to Debate", x);
             this.attachCardboxEvents(async function(card) {
@@ -4838,6 +4876,7 @@ return 1; }
 	  //
 	  var counter_or_acknowledge_inactivity_timeout;
 
+/****
 	  if (this.isGameHalted() != 1) {
 	  var true_if_counter_or_acknowledge_cleared = false;
 	  counter_or_acknowledge_inactivity_timeout = setTimeout(() => {
@@ -4853,7 +4892,7 @@ return 1; }
                   
             let html = '<ul><li class="option acknowledge" id="ok">acknowledge</li></ul>';
             his_self.updateStatusWithOptions(msg, html);
-                    
+      
 	    $('.option').off();
             $('.option').on('click', function () {
 
@@ -4886,6 +4925,7 @@ return 1; }
 
 	  }, 7500);
 	  }
+****/
 
 	  $('.option').off();
 	  $('.option').on('mouseover', function() {

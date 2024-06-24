@@ -5237,7 +5237,6 @@ console.log("selected: " + spacekey);
 	  his_self.game.spaces[source].units[faction][unit_idx].gout = true;
 	  his_self.game.spaces[source].units[faction][unit_idx].locked = true;
 	  his_self.updateLog(his_self.game.spaces[source].units[faction][unit_idx].name + " has come down with " + his_self.popup("032"));
-          his_self.game.queue.splice(qe, 1);
 
 	  //
 	  // "lose 1 CP"
