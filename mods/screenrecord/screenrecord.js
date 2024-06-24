@@ -190,7 +190,6 @@ class Record extends ModTemplate {
 		let { container, members, callbackAfterRecord, type, includeCamera } = options
 		this.recorderStreamCapture = new StreamCapturer(this.logo)
 		let stream = this.recorderStreamCapture.captureVideoCallStreams(includeCamera)
-		console.log(stream, "captured stream");
 
 
 		// initialize variables

@@ -20,8 +20,13 @@
 	color: var(--color-contrast);
 }
 
-.screenrecord-wizard h1{
+/* .screenrecord-wizard h1{
 	font-size: 4rem;
+} */
+
+.screenrecord-wizard-title {
+text-align: center;
+margin-bottom: 2rem;
 }
 
 .screenrecord-wizard .button {
@@ -33,7 +38,7 @@
 	justify-content: space-evenly;
 	align-items: center;
 	font-size: 6rem;
-	margin-bottom: 1rem;
+	margin-bottom: 2rem;
 }
 
 .screenrecord-wizard .record-mode i {

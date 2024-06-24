@@ -6,6 +6,8 @@ module.exports = ScreenRecordWizardTemplate = (app, mod, options) => {
 
 	let html = `<div id="screenrecord-wizard" class="screenrecord-wizard">`;
 
+    html += `<h5 class="screenrecord-wizard-title">What do you want to record?</h5>`
+
 
 	if (icon){
 		html += `<div class="record-mode"><i class="selected fa-solid ${icon}"></i></div>`
