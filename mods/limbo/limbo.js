@@ -535,7 +535,7 @@ class Limbo extends ModTemplate {
 			this.additionalSources.forEach((values, keys) => { 
 				console.log(keys, values.remoteStream.getAudioTracks());
 				values.remoteStream.getAudioTracks().forEach(track => {
-					this.combinedStream.addTrack(track);
+					this.combinedStream.addTrack(track.clone());
 				});
 			});
 		}

@@ -314,7 +314,7 @@ class Videocall extends ModTemplate {
 		if (type === 'media-request') {
 			if (this?.streams?.active) {
 				return {
-					localStream: this.streams.localStream,
+					localStream: this.streams.localStream.clone(),
 					remoteStreams: this.streams.remoteStreams
 				};
 			} else {
