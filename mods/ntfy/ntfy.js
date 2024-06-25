@@ -1,5 +1,6 @@
 const ModTemplate = require('../../lib/templates/modtemplate.js');
 const Credential = require('./config/config.js');
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 class ntfy extends ModTemplate {
     constructor(app) {
@@ -17,7 +18,7 @@ class ntfy extends ModTemplate {
     }
 
     async initialize(app) {
-        if ( app.BROWSER ) { return; }
+        if (app.BROWSER) { return; }
         let notification = {
             topic: 'test',
             message: 'Server start up. \n' + Date(),
