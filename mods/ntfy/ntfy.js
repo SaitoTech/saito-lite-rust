@@ -5,7 +5,6 @@ class ntfy extends ModTemplate {
     constructor(app) {
         super(app);
 
-        this.name = 'NTFY';
         this.name = 'ntfy';
         this.description = 'Module to send notifications to ntfy server.';
         this.categories = 'Utilities';
@@ -18,7 +17,7 @@ class ntfy extends ModTemplate {
     }
 
     async initialize(app) {
-        if ( app.BROWSER ) { return }
+        if ( app.BROWSER ) { return; }
         let notification = {
             topic: 'test',
             message: 'Server start up. \n' + Date(),
