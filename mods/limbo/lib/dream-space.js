@@ -18,7 +18,7 @@ class DreamSpace{
 						return;
 					}
 
-					let elem = document.querySelector(".dream-controls .default-limbo-image");
+					let elem = document.querySelector(".dream-controls .default-limbo-image-mask");
 					if (mod.dreams[mod.dreamer].muted){
 						this.video.hide();
 						if (elem){

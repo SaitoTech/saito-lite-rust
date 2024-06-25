@@ -214,10 +214,10 @@
 	text-align: right;
 }
 
-.dream-controls .video-box-container-large{
+/*.dream-controls .video-box-container-large{
 	background-color: darkslategray;
 }
-
+*/
 
 .dream-controls .video-box-container-large video {
 	position: absolute;
@@ -243,9 +243,21 @@
 	position: relative;
 }
 
+.default-limbo-image-mask {
+	position: relative;
+	width: 25rem;
+	height: 25rem;
+	overflow: hidden;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	border-radius: 62%;
+	border: 1px solid var(--color-primary);
+}
+
 .default-limbo-image{
 	position: absolute;
-	width: 95%;
+	width: 200%;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
