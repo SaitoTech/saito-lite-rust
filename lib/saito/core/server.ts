@@ -22,9 +22,12 @@ import { BlockType } from 'saito-js/lib/block';
 
 const JSON = require('json-bigint');
 
-var cors = require('cors');
+//
+// CORS -- uncomment for local CORS Cross-Origin Requests by Default
+//
+//var cors = require('cors');
 const expressApp = express();
-expressApp.use(cors());
+//expressApp.use(cors());
 
 const webserver = new Ser(expressApp);
 

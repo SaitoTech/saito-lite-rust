@@ -12,6 +12,7 @@
       this.is_first_loop = 0;
     }
 
+console.log("INTO HANDLE GAME LOOP!");
 
     ///////////
     // QUEUE //
