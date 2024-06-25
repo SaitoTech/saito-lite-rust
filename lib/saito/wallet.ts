@@ -75,6 +75,7 @@ export default class Wallet extends SaitoWallet {
 		return BigInt(0);
 	}
 
+
 	async initialize() {
 		console.log('wallet.initialize');
 
@@ -381,6 +382,8 @@ export default class Wallet extends SaitoWallet {
 
 		// this.recreate_pending_transactions = 0;
 	}
+
+	
 
 	/**
 	 * Generates a new keypair for the user, resets all stored wallet info, and saves
@@ -1114,6 +1117,22 @@ export default class Wallet extends SaitoWallet {
 			}
 		}
 		return false;
+	}
+
+	addTransactionToPending(tx) {
+		const txjson = JSON.stringify(tx);
+		if (txjson.length > 100000) {
+		  return;
+		}
+
+		if (!("pending" in this.app.options.wallet)) {
+			this.app.options.wallet.pending = [];
+		}
+
+		if (!this.app.options.wallet.pending.includes(txjson)) {
+		  this.app.options.wallet.pending.push(txjson);
+		  this.saveWallet();
+		}
 	}
 
 	/////////////////////
