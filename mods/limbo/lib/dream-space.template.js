@@ -3,7 +3,9 @@ module.exports = DreamSpaceTemplate = (videoEnabled) => {
   let html = `
     <div class="dream-controls" id="dream-controls">
       <div class="video-preview">
-      <img class="default-limbo-image" src="img/inception.gif">
+        <div class="default-limbo-image-mask">
+          <img class="default-limbo-image" src="img/inception.gif">
+        </div>
       </div>
       <div class="control-panel">
         <div class="timer">
