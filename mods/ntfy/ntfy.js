@@ -1,5 +1,4 @@
 const ModTemplate = require('../../lib/templates/modtemplate.js');
-const Credential = require('./config/config.js');
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 class ntfy extends ModTemplate {
@@ -12,9 +11,9 @@ class ntfy extends ModTemplate {
         this.class = 'utility';
 
         this.ntfy = {};
-        this.ntfy.server = Credential.server || '';
-        this.ntfy.user = Credential.user || '';
-        this.ntfy.password = Credential.password || '';
+        this.ntfy.server = process.env.NTFY_SERVER || '';
+        this.ntfy.user = process.env.NTFY_USER || '';
+        this.ntfy.password = process.env.NTFY_PASSWORD || '';
     }
 
     async initialize(app) {
@@ -70,9 +69,9 @@ class ntfy extends ModTemplate {
                 body[key] = value;
             }
             // console.log(JSON.stringify(body));
-            fetch(Credential.server, {
+            fetch(this.ntfy.server, {
                 method: 'POST',
-                headers: { 'Authorization': 'Bearer ' + Credential.password },
+                headers: { 'Authorization': 'Bearer ' + this.ntfy.password },
                 body: JSON.stringify(body)
             })
                 .then(res => res.text())
