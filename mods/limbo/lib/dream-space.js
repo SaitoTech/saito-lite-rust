@@ -14,10 +14,21 @@ class DreamSpace{
 		app.connection.on('limbo-spaces-update', () => {
 			if (mod.dreamer){
 				if (mod.dreams[mod.dreamer]){
+					if (mod.dreams[mod.dreamer]?.muted === undefined){
+						return;
+					}
+
+					let elem = document.querySelector(".dream-controls .default-limbo-image");
 					if (mod.dreams[mod.dreamer].muted){
 						this.video.hide();
+						if (elem){
+							elem.classList.remove("hidden");
+						}
 					}else{
 						this.video.show();
+						if (elem){
+							elem.classList.add("hidden");	
+						}
 					}
 				}
 			}
@@ -35,9 +46,7 @@ class DreamSpace{
 			console.log("Render with stream", stream);
 			this.startTimer();
 
-			if (this.mod.dreams[this.mod.dreamer]?.muted) {
-				this.video.hide();
-			}
+			this.app.connection.emit("limbo-spaces-update");
 		}
 
 		this.attachEvents();

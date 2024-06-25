@@ -40,9 +40,9 @@
 .saito-profile-banner {
   width: 100%;  
   height: 0;    
-  padding-top: 33.33%; 
+  padding-top: min(33.33%, 180px); 
   background-image: url("https://pbs.twimg.com/profile_banners/842988756/1679408451/1080x360");
-  background-size:contain;
+  background-size: cover;
   background-position: center;
   border-radius: var(--border-radius-profile-banner); 
   position: relative;

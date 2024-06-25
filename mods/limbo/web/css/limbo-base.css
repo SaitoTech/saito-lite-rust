@@ -414,6 +414,14 @@ video#local.noflip{
 	.dream-controls .video-box-container-large video {
 		position: relative;
 	}
+
+	.default-limbo-image{
+		position: relative;
+		width: 95%;
+		top: 5%;
+		transform: translateX(-50%);
+	}
+
 }
 
 
@@ -422,6 +430,10 @@ video#local.noflip{
 		padding: unset;
 		margin-bottom: 2rem;
 	}
+
+	.limbo-sidebar .saito-profile-controls{
+		display: flex;
+	}	
 
 }
 

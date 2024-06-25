@@ -128,6 +128,17 @@ class Limbo extends ModTemplate {
 			this.controls.render(this.combinedStream);
 		});
 
+		// Capture after the fact stun connections to the host
+		app.connection.on('add-remote-stream-request', (peerId, remoteStream) => {
+			if (this.dreamer === this.publicKey){
+				if (remoteStream?.getAudioTracks && remoteStream.getAudioTracks()?.length) {
+					remoteStream.getAudioTracks().forEach((track) => {
+						this.combinedStream.addTrack(track);	
+					})
+				}
+			}
+		});
+
 		app.connection.on(
 			'stun-new-peer-connection',
 			async (publicKey, peerConnection) => {
@@ -144,11 +155,11 @@ class Limbo extends ModTemplate {
 					});
 					//Save peerConnection in downstream
 					this.downstream.set(publicKey, peerConnection);
-				}
-
-				if (this.upstream.has(publicKey)) {
+				}else if (this.upstream.has(publicKey)) {
 					console.log('Set sender');
 					this.upstream.set(publicKey, peerConnection);
+				} else {
+					console.warn("Stun connection established in Limbo, but not sure why...", publicKey);
 				}
 
 				this.app.connection.emit('limbo-dream-render', this.dreamer);
@@ -932,6 +943,11 @@ class Limbo extends ModTemplate {
 			this.dreams[dreamer].members.push(sender);
 		}
 
+		if (this.dreams[dreamer].speakers.includes(this.publicKey)){
+			//Secondary speakers opt out of hosting duties...
+			return;
+		}
+
 		if (this.app.BROWSER) {
 
 		// So if someone joins, and we have a stream, we send them an offer to share
@@ -946,7 +962,7 @@ class Limbo extends ModTemplate {
 			if (
 				this.publicKey !== sender &&
 				this.combinedStream &&
-				peerCt < 10
+				peerCt < 5
 			) {
 
 				setTimeout(()=> {
@@ -963,10 +979,12 @@ class Limbo extends ModTemplate {
 							!this.downstream.get(sender)
 						) {
 							this.downstream.delete(sender);
+							//Drop them from peer list
+							this.app.connection.emit("limbo-dream-render", this.dreamer);
 						}
-					}, 90000);
+					}, 30000);
 
-				}, 100*peerCt);
+				}, 200*peerCt);
 			}
 		}
 	}
