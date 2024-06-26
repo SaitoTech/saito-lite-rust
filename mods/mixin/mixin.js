@@ -375,7 +375,7 @@ class Mixin extends ModTemplate {
           if ((utxo.data).length > 0) {
             this.mods[i].destination = address[0].destination;
 	    //  removing save here for debugging purposes -- June 21, '24
-            //this.mods[i].save();
+            this.mods[i].save();
           }
         }
       }
@@ -409,7 +409,7 @@ class Mixin extends ModTemplate {
         if (this.mods[i].asset_id === asset_id) {  
           this.mods[i].balance = utxo;
 	  //  removing save here for debugging purposes -- June 21, '24
-          //this.mods[i].save();
+          this.mods[i].save();
         }
       }
     } catch(err) {

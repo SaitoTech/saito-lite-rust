@@ -94,19 +94,8 @@ class MixinModule extends CryptoModule {
 				await this.mixin.createAccount(async(res) => {
 					if (Object.keys(res).length > 0) {
 						await this.mixin.createDepositAddress(this_self.asset_id);
-						super.activate();
-
-						this_self.app.options.wallet.backup_required = 1;
-						this_self.app.wallet.saveWallet();
-						
-						let msg = `Your wallet has added new crypto keys. 
-						Unless you backup your wallet, you may lose these keys. 
-						Do you want help backing up your wallet?`;
-						this.app.connection.emit(
-							'saito-backup-render-request',
-							{msg: msg, title: 'BACKUP YOUR WALLET'}
-						);
-
+						await super.activate();
+						await this_self.showBackupWallet();
 					} else {
 						salert('Having problem generating key for '+' '+this_self.ticker);
 						await this.app.wallet.setPreferredCrypto('SAITO', 1);
@@ -115,8 +104,27 @@ class MixinModule extends CryptoModule {
 					}
 				});
 		} else {
-			super.activate();
+			if (this.is_initialized == 0 || this.destination == "") {
+				this.app.connection.emit('create-mixin-account');
+				await this.mixin.createDepositAddress(this_self.asset_id);
+				await this.showBackupWallet();
+			}
+
+			await super.activate();
 		}
+	}
+
+	async showBackupWallet(){
+		this.app.options.wallet.backup_required = 1;
+		await this.app.wallet.saveWallet();
+		
+		let msg = `Your wallet has added new crypto keys. 
+		Unless you backup your wallet, you may lose these keys. 
+		Do you want help backing up your wallet?`;
+		this.app.connection.emit(
+			'saito-backup-render-request',
+			{msg: msg, title: 'BACKUP YOUR WALLET'}
+		);
 	}
 
 	hasReceivedPayment(amount, sender, receiver, timestamp, unique_hash) {

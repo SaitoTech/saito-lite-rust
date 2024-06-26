@@ -103,8 +103,8 @@ export default class Wallet extends SaitoWallet {
 				);
 			}
 
-			returnAddress() {
-				return this.publicKey;
+			async returnAddress() {
+				return this.publicKey || await this.app.wallet.getPublicKey();
 			}
 
 			returnPrivateKey() {
