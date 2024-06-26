@@ -249,20 +249,14 @@
 	height: 25rem;
 	overflow: hidden;
 	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
+	margin: 5rem auto;
+	transform: translateY(-60%);
 	border-radius: 62%;
 	border: 1px solid var(--color-primary);
+	background-image: url('/limbo/img/inception.gif');
+	background-position: center;
+	background-size: 200%;
 }
-
-.default-limbo-image{
-	position: absolute;
-	width: 200%;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-}
-
 
 
 .dream-controls .control-panel{
@@ -270,7 +264,6 @@
 	justify-content: space-between;
 	max-width: 100%;
 }
-
 
 
 video#local.noflip{
@@ -425,13 +418,6 @@ video#local.noflip{
 
 	.dream-controls .video-box-container-large video {
 		position: relative;
-	}
-
-	.default-limbo-image{
-		position: relative;
-		width: 95%;
-		top: 5%;
-		transform: translateX(-50%);
 	}
 
 }
