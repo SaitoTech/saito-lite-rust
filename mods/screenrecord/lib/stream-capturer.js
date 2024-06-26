@@ -65,7 +65,7 @@ class StreamCapturer {
         }
 
         const logoX = ctx.canvas.width - logoWidth - 50;
-        const logoY = ctx.canvas.height - logoHeight - 50;
+        const logoY = ctx.canvas.height - logoHeight;
 
         this.logo.style.objectFit = "cover";
         ctx.drawImage(this.logo, logoX, logoY, logoWidth, logoHeight);
@@ -76,8 +76,8 @@ class StreamCapturer {
     resizeCanvas(canvas, drawStreamsToCanvas, self) {
         // console.log('resizing canvas')
         // console.log('resizing', self.name)
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight
+        canvas.width = document.querySelector('.video-container-large').clientWidth;
+        canvas.height = document.querySelector('.video-container-large').clientHeight;
         const videoElements = document.querySelectorAll('div[id^="stream_"] video');
         videoElements.forEach(video => {
             video.style.objectFit = "cover";
@@ -162,84 +162,82 @@ class StreamCapturer {
                 });
                 const canvas = document.createElement('canvas');
                 this.canvas = canvas
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerWidth
+                canvas.width = document.querySelector('.video-container-large').clientWidth;
+                canvas.height = document.querySelector('.video-container-large').clientHeight;
                 const ctx = canvas.getContext('2d');
+                const drawStreamsToCanvas = () => {
+                    if (!this.is_capturing_stream) return;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    this.streamData.forEach(data => {
+                        const parentElement = document.getElementById(data.parentID);
+                        if (!parentElement) return;
+                        const rect = parentElement.getBoundingClientRect();
+                        // Draw the video on the canvas
+                        if (data.videoElement.readyState >= 2) {
+                            this.drawImageProp(ctx, data.videoElement, rect.left, rect.top, rect.width, rect.height)
+                        }
+                    });
+                    // console.log('still drawing streams');
+
+             
+                    this.animationFrameId = requestAnimationFrame(drawStreamsToCanvas);
+                };
+
+
                 // const drawStreamsToCanvas = () => {
                 //     if (!this.is_capturing_stream) return;
                 //     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-
+                //     let minY = Infinity, maxY = -Infinity;
+                //     let expandedVideo = null;
+                //     this.streamData.forEach(data => {
+                //         const parentElement = document.getElementById(data.parentID);
+                //         if (parentElement) {
+                //             const rect = parentElement.getBoundingClientRect();
+                //             minY = Math.min(minY, rect.top);
+                //             maxY = Math.max(maxY, rect.bottom);
+                        
+                //             if (parentElement.parentElement.classList.contains('expanded-video')) {
+                //                 expandedVideo = data;
+                //                 // console.log('Expanded video found:', data.parentID);
+                //             }
+                //         }
+                //     });
+                
+                //     // console.log('Content bounds:', minY, maxY);
+                
+                //     const contentHeight = maxY - minY;
+                //     const availableSpace = canvas.height - contentHeight;
+                
+                //     // const offsetY = Math.max(0, availableSpace / 2 - minY);
+                //     const shouldStretch = window.innerWidth > 768;
+                //     // Draw each video stream
                 //     this.streamData.forEach(data => {
                 //         const parentElement = document.getElementById(data.parentID);
                 //         if (!parentElement) return;
-                //         const rect = parentElement.getBoundingClientRect();
-                //         // Draw the video on the canvas
+                //         let rect = parentElement.getBoundingClientRect();
+                        
                 //         if (data.videoElement.readyState >= 2) {
-                //             this.drawImageProp(ctx, data.videoElement, rect.left, rect.top, rect.width, rect.height)
+                //             let drawHeight = rect.height;
+                //             let drawY = rect.top;
+                
+                //             if (data === expandedVideo && shouldStretch) {
+                //                 const stretchAmount = availableSpace * 0.7; 
+                //                 drawHeight += stretchAmount;
+                //             }
+                
+                //             this.drawImageProp(ctx, data.videoElement, 
+                //                 rect.left, drawY, 
+                //                 rect.width, drawHeight);
+                
+                //             // console.log('Drawing video:', data.parentID, 'at', rect.left, drawY, rect.width, drawHeight);
+                //         } else {
+                //             // console.log('Video not ready:', data.parentID, 'readyState:', data.videoElement.readyState);
                 //         }
                 //     });
-                //     // console.log('still drawing streams');
-
-             
+                
                 //     this.animationFrameId = requestAnimationFrame(drawStreamsToCanvas);
                 // };
-
-
-                const drawStreamsToCanvas = () => {
-                    if (!this.is_capturing_stream) return;
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                    let minY = Infinity, maxY = -Infinity;
-                    let expandedVideo = null;
-                    this.streamData.forEach(data => {
-                        const parentElement = document.getElementById(data.parentID);
-                        if (parentElement) {
-                            const rect = parentElement.getBoundingClientRect();
-                            minY = Math.min(minY, rect.top);
-                            maxY = Math.max(maxY, rect.bottom);
-                        
-                            if (parentElement.parentElement.classList.contains('expanded-video')) {
-                                expandedVideo = data;
-                                // console.log('Expanded video found:', data.parentID);
-                            }
-                        }
-                    });
-                
-                    // console.log('Content bounds:', minY, maxY);
-                
-                    const contentHeight = maxY - minY;
-                    const availableSpace = canvas.height - contentHeight;
-                
-                    // const offsetY = Math.max(0, availableSpace / 2 - minY);
-                    const shouldStretch = window.innerWidth > 768;
-                    // Draw each video stream
-                    this.streamData.forEach(data => {
-                        const parentElement = document.getElementById(data.parentID);
-                        if (!parentElement) return;
-                        let rect = parentElement.getBoundingClientRect();
-                        
-                        if (data.videoElement.readyState >= 2) {
-                            let drawHeight = rect.height;
-                            let drawY = rect.top;
-                
-                            if (data === expandedVideo && shouldStretch) {
-                                const stretchAmount = availableSpace * 0.7; 
-                                drawHeight += stretchAmount;
-                            }
-                
-                            this.drawImageProp(ctx, data.videoElement, 
-                                rect.left, drawY, 
-                                rect.width, drawHeight);
-                
-                            // console.log('Drawing video:', data.parentID, 'at', rect.left, drawY, rect.width, drawHeight);
-                        } else {
-                            // console.log('Video not ready:', data.parentID, 'readyState:', data.videoElement.readyState);
-                        }
-                    });
-                
-                    this.animationFrameId = requestAnimationFrame(drawStreamsToCanvas);
-                };
                 this.drawStreamsToCanvas = drawStreamsToCanvas
 
 
