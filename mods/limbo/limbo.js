@@ -67,6 +67,7 @@ class Limbo extends ModTemplate {
 		this.downstream = new Map();
 		//
 
+
 		app.connection.on('limbo-toggle-video', () => {
 			if (this.combinedStream) {
 				this.combinedStream.getVideoTracks().forEach((track) => {
@@ -102,7 +103,7 @@ class Limbo extends ModTemplate {
 				return;
 			}
 
-			console.log('LIMBO: another remote stream added', event.track);
+			console.log('LIMBO: another remote stream added from my upstream', event.track);
 
 			if (event.streams.length === 0) {
 				this.combinedStream.addTrack(event.track);
@@ -1395,6 +1396,9 @@ class Limbo extends ModTemplate {
 				});
 			}
 		}else{
+			if (this.localStream) {
+				this.localStream.getTracks().forEach((track) => track.stop());
+			}
 			if (this.externalMediaControl?.stopStreamingVideoCall){
 				this.externalMediaControl.stopStreamingVideoCall();
 				this.externalMediaControl = false;
