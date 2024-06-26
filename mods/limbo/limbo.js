@@ -102,7 +102,7 @@ class Limbo extends ModTemplate {
 				return;
 			}
 
-			console.log('LIMBO: another remote stream added', event.track);
+			console.log('LIMBO: another remote stream added from my upstream', event.track);
 
 			if (event.streams.length === 0) {
 				this.combinedStream.addTrack(event.track);
