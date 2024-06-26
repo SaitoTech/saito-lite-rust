@@ -67,6 +67,13 @@ class Limbo extends ModTemplate {
 		this.downstream = new Map();
 		//
 
+
+		app.connection.on('stun-disconnect', ()=> {
+			if(this.dreamer){
+				this.exitSpace()
+			}
+		})
+
 		app.connection.on('limbo-toggle-video', () => {
 			if (this.combinedStream) {
 				this.combinedStream.getVideoTracks().forEach((track) => {
@@ -1384,6 +1391,7 @@ class Limbo extends ModTemplate {
 	stop() {
 		console.log('Stop Dreaming!');
 
+		console.log('is externalMediaStreaming', this.externalMediaControl, this.localStream)
 		if (!this.externalMediaControl) {
 			if (this.localStream) {
 				this.localStream.getTracks().forEach((track) => track.stop());
@@ -1395,6 +1403,9 @@ class Limbo extends ModTemplate {
 				});
 			}
 		}else{
+			if (this.localStream) {
+				this.localStream.getTracks().forEach((track) => track.stop());
+			}
 			if (this.externalMediaControl?.stopStreamingVideoCall){
 				this.externalMediaControl.stopStreamingVideoCall();
 				this.externalMediaControl = false;

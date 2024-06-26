@@ -30,6 +30,17 @@ class Record extends ModTemplate {
 		this.mediaRecorder = null;
 		this.is_capturing_stream = false;
 
+		// this.app.connection.on('stun-redirect-page', async (callback) => {
+		// 	if(this.mediaRecorder){
+		// 		this.callbackAfterStopRecording = callback
+		// 		this.stopRecording()		
+		// 	}else {
+		// 		callback()
+		// 	}
+			
+		// 	// callback()
+		// })
+
 	}
 
 	respondTo(type, obj) {
@@ -92,6 +103,14 @@ class Record extends ModTemplate {
 					}
 				}
 			};
+		}
+
+		if(type === "screenrecord-video-controls") {
+			return {
+				mediaRecorder: this.mediaRecorder,
+				stopRecording: this.stopRecording.bind(this)
+			}
+		
 		}
 		if (type === 'game-menu') {
 			if (!obj.recordOptions) return;
@@ -204,7 +223,7 @@ class Record extends ModTemplate {
 		this.members = members
 
 		if (type === "videocall") {
-			let chunks = [];
+			this.chunks = [];
 
 			let mimeType;
 			let options;
@@ -232,26 +251,27 @@ class Record extends ModTemplate {
 			}
 			this.mediaRecorder.ondataavailable = event => {
 				if (event.data.size > 0) {
-					chunks.push(event.data);
+					this.chunks.push(event.data);
 				}
 			};
-			this.mediaRecorder.onstop = async () => {
-				const blob = new Blob(chunks, { type: 'video/webm' });
-				const hasVideo = chunks.some(chunk =>
-					chunk.type.includes('video') || chunk.type === 'video/webm'
-				);
+			// this.mediaRecorder.onstop = async () => {
+			// 	const blob = new Blob(chunks, { type: 'video/webm' });
+			// 	const hasVideo = chunks.some(chunk =>
+			// 		chunk.type.includes('video') || chunk.type === 'video/webm'
+			// 	);
 
-				if (hasVideo) {
-					console.log('chunk has video', chunks);
-					const url = URL.createObjectURL(blob);
-					await this.downloadMedia(url, "video", callbackAfterRecord)
-				} else {
-				   let url =  await this.processAudio(blob)
+			// 	if (hasVideo) {
+			// 		console.log('chunk has video', chunks);
+			// 		const url = URL.createObjectURL(blob);
+			// 		await this.downloadMedia(url, "video", callbackAfterRecord)
+					
+			// 	} else {
+			// 		let url = await this.processAudio(blob)
 
-					await this.downloadMedia(url, "audio", callbackAfterRecord)
-				}
+			// 		await this.downloadMedia(url, "audio", callbackAfterRecord)
+			// 	}
 
-			};
+			// };
 
 
 			this.mediaRecorder.start();
@@ -625,9 +645,12 @@ class Record extends ModTemplate {
 					URL.revokeObjectURL(url);
 				}, 100);
 
+				
 				if (callbackAfterRecord) {
 					callbackAfterRecord(blob);
 				}
+
+				this.callbackAfterStopRecording()
 			};
 			this.mediaRecorder.start();
 		}
@@ -655,10 +678,11 @@ class Record extends ModTemplate {
 		// if (callbackAfterRecord) {
 		// 	callbackAfterRecord(blob);
 		// }
+		// this.callbackAfterStopRecording()
 	}
 
 
-	async processAudio(blob){
+	async processAudio(blob) {
 		const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 		const arrayBuffer = await blob.arrayBuffer();
 		const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
@@ -690,11 +714,40 @@ class Record extends ModTemplate {
 		if (this.recorderStreamCapture) {
 			this.recorderStreamCapture.stopCaptureVideoCallStreams();
 			this.recorderStreamCapture = null
-
 		}
 
 		if (this.mediaRecorder) {
-			this.mediaRecorder.stop();
+			let fn = ()=> {
+					return new Promise((resolve, reject) => {
+						try {
+							this.mediaRecorder.onstop = async () => {
+								const blob = new Blob(this.chunks, { type: 'video/webm' });
+								const hasVideo = this.chunks.some(chunk =>
+									chunk.type.includes('video') || chunk.type === 'video/webm'
+								);
+
+								if (hasVideo) {
+									console.log('chunk has video', this.chunks);
+									const url = URL.createObjectURL(blob);
+									await this.downloadMedia(url, "video")
+									resolve()
+									
+								} else {
+									let url = await this.processAudio(blob)
+									await this.downloadMedia(url, "audio")
+									resolve()
+								}
+				
+							};
+						} catch (error) {
+								reject()
+						}
+					
+						this.mediaRecorder.stop();
+					})
+			}
+			
+			await fn();
 			this.mediaRecorder = null;
 		}
 		if (this.localStream) {

@@ -65,7 +65,7 @@ class StreamCapturer {
         }
 
         const logoX = ctx.canvas.width - logoWidth - 50;
-        const logoY = ctx.canvas.height - logoHeight;
+        const logoY = ctx.canvas.height - logoHeight -10;
 
         this.logo.style.objectFit = "cover";
         ctx.drawImage(this.logo, logoX, logoY, logoWidth, logoHeight);
@@ -77,8 +77,8 @@ class StreamCapturer {
         // console.log('resizing canvas')
         // console.log('resizing', self.name)
         // canvas.width = document.querySelector('.video-container-large').clientWidth;
-        canvas.width = document.querySelector('.video-container-large').width;
-        canvas.height = document.querySelector('.video-container-large').height;
+        canvas.width = window.innerWidth
+        canvas.height = document.querySelector('.video-container-large').clientHeight;
         const videoElements = document.querySelectorAll('div[id^="stream_"] video');
         // videoElements.forEach(video => {
         //     video.style.objectFit = "cover";
@@ -163,8 +163,8 @@ class StreamCapturer {
                 });
                 const canvas = document.createElement('canvas');
                 this.canvas = canvas
-                canvas.width = document.querySelector('.video-container-large').width;
-                canvas.height = document.querySelector('.video-container-large').height;
+                canvas.width = window.innerWidth
+                canvas.height = document.querySelector('.video-container-large').clientHeight;
                 const ctx = canvas.getContext('2d');
                 const drawStreamsToCanvas = () => {
                     if (!this.is_capturing_stream) return;
@@ -261,7 +261,13 @@ class StreamCapturer {
         cancelAnimationFrame(this.animationFrameId)
         // console.log('removing event listener')
         window.removeEventListener('resize', this.handleResize)
+        this.combinedStream.getTracks().forEach(track => {    
+            track.stop()      
+            console.log(track, "track")
+      
+        })
         this.combinedStream = null
+   
     }
 
 
