@@ -72,29 +72,29 @@ function listTransactions(blk, hash) {
       var tmptx = blk.transactions[mt];
       tmptx.id = mt;
 
-      var tx_fees = 0;
+      var tx_fees = BigInt(0);
       //if (tmptx.fees_total == "") {
 
       //
       // sum inputs
       //
-      let inputs = 0;
+      let inputs = BigInt(0);
       if (tmptx.from != null) {
         for (let v = 0; v < tmptx.from.length; v++) {
-          inputs += parseFloat(tmptx.from[v].amount);
+          inputs += BigInt(tmptx.from[v].amount);
         }
       }
 
       //
       // sum outputs
       //
-      let outputs = 0;
+      let outputs = BigInt(0);
       for (let v = 0; v < tmptx.to.length; v++) {
         //
         // only count non-gt transaction outputs
         //
         if (tmptx.to[v].type != 1 && tmptx.to[v].type != 2) {
-          outputs += parseFloat(tmptx.to[v].amount);
+          outputs += BigInt(tmptx.to[v].amount);
         }
       }
 
@@ -104,11 +104,14 @@ function listTransactions(blk, hash) {
       let tx_from = "fee tx";
       if (tmptx.from.length > 0) {
         tx_from = tmptx.from[0].publicKey;
+      } else if (tmptx.type===6){
+        tx_from = "issuance tx";
+        tx_fees = 0;
       }
 
       html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + mt + `</a></div>`;
       html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + tx_from + `</a></div>`;
-      html += "<div>" + BigInt(tx_fees * nolan_per_saito) + "</div>";
+      html += "<div>" + (BigInt(tx_fees) * BigInt(nolan_per_saito)) + "</div>";
       html += "<div>" + tmptx.type + "</div>";
       if (tmptx.type == 0) {
         if (tmptx.msg.module) {
