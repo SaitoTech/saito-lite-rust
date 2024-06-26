@@ -67,6 +67,7 @@ class Limbo extends ModTemplate {
 		this.downstream = new Map();
 		//
 
+
 		app.connection.on('limbo-toggle-video', () => {
 			if (this.combinedStream) {
 				this.combinedStream.getVideoTracks().forEach((track) => {
@@ -1395,6 +1396,9 @@ class Limbo extends ModTemplate {
 				});
 			}
 		}else{
+			if (this.localStream) {
+				this.localStream.getTracks().forEach((track) => track.stop());
+			}
 			if (this.externalMediaControl?.stopStreamingVideoCall){
 				this.externalMediaControl.stopStreamingVideoCall();
 				this.externalMediaControl = false;
