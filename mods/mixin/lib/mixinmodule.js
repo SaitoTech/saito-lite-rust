@@ -615,18 +615,17 @@ class MixinModule extends CryptoModule {
 
   async formatBalance(precision = 2) {
 		let balance = await this.returnBalance();
+		// previous implmentation was causing rounding off issues
+		// 0.745 was being rounded off to 0.75
+		// find first non zero value's postion after decimal
+  	let pos = (balance > 0) ? Math.abs(Math.floor(Math.log10(Number(balance)))) : 0; 
+		pos += precision;
 
-			// previous implmentation was causing rounding off issues
-			// 0.745 was being rounded off to 0.75
-			// find first non zero value's postion after decimal
-	  	let pos = Math.abs(Math.floor(Math.log10(balance))); 
-			pos += precision;
-
-			let bal = Number(balance);
-	  	bal = bal.toFixed(pos);
-	  	bal = parseFloat(bal);
-	  	return bal.toString();  
-	 }
+		let bal = Number(balance);
+  	bal = bal.toFixed(pos);
+  	bal = parseFloat(bal);
+  	return bal.toString();  
+	}
   
   async validateAddress(address, ticker){
 		// suported cryptos by validator package
