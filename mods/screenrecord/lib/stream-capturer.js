@@ -186,7 +186,7 @@ class StreamCapturer {
     
     
                 let self = this
-                window.addEventListener('resize', this.handleResize.bind(this));
+                window.addEventListener('resize', this.handleResize);
                 this.resizeCanvas(canvas, drawStreamsToCanvas, self);
     
     
