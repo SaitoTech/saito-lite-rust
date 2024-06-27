@@ -54,7 +54,6 @@ class MixinModule extends CryptoModule {
 		this.confirmations = 100;
 		this.capitalization = 0;
 		this.liquidity = '';
-		this.decimals = 4;
 
 		return this;
 	}
@@ -320,9 +319,6 @@ class MixinModule extends CryptoModule {
 		return this.mixin.mixin.privatekey;
 	}
 
-	returnPrivateKey() {
-		return this.mixin.mixin.privatekey;
-	}
 
 	/**
 	 * Searches for a payment which matches the criteria specified in the parameters.
