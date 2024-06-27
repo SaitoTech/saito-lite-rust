@@ -222,6 +222,10 @@ class StreamManager {
         return;
       }
 
+      //
+      // Note: This happens twice because audio and video are added separately as mediaTracks...
+      //
+
       const remoteStream = new MediaStream();
       console.log('STUN: remote stream added for', peerId, event.track);
 

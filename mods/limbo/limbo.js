@@ -117,17 +117,6 @@ class Limbo extends ModTemplate {
 			this.controls.render(this.combinedStream);
 		});
 
-		// Capture after the fact stun connections to the host
-		app.connection.on('add-remote-stream-request', (peerId, remoteStream) => {
-			if (this.dreamer === this.publicKey){
-				if (remoteStream?.getAudioTracks && remoteStream.getAudioTracks()?.length) {
-					remoteStream.getAudioTracks().forEach((track) => {
-						this.combinedStream.addTrack(track);	
-					})
-				}
-			}
-		});
-
 		app.connection.on(
 			'stun-new-peer-connection',
 			async (publicKey, peerConnection) => {
@@ -138,14 +127,15 @@ class Limbo extends ModTemplate {
 				console.log('New Stun/LIMBO peer connection');
 
 				if (this.downstream.has(publicKey)) {
-					console.log('Forward audio/video to receiver!');
+					console.log('Forward audio/video to receiver:' + publicKey);
 					this.combinedStream.getTracks().forEach((track) => {
+						console.log("Track: ", track);
 						peerConnection.addTrack(track, this.combinedStream);
 					});
 					//Save peerConnection in downstream
 					this.downstream.set(publicKey, peerConnection);
 				}else if (this.upstream.has(publicKey)) {
-					console.log('Set sender');
+					console.log('Prepare to receive media from upstream peer: ' + publicKey);
 					this.upstream.set(publicKey, peerConnection);
 				} else {
 					console.warn("Stun connection established in Limbo, but not sure why...", publicKey);

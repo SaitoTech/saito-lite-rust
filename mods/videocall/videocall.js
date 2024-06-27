@@ -412,7 +412,6 @@ class Videocall extends ModTemplate {
 					if (txmsg.request === 'peer-joined') {
 						let from = tx.from[0].publicKey;
 
-						console.log('Peer-joined! (Videocall)');
 						this.app.connection.emit(
 							'add-remote-stream-request',
 							from,
@@ -426,7 +425,7 @@ class Videocall extends ModTemplate {
 
 						//Limbo Hook
 						this.app.connection.emit("videocall-add-party", from);
-
+						console.log("STUN: VIDEOCALL PEER JOINED");
 						this.stun.createPeerConnection(from, false);
 
 						return;
@@ -616,7 +615,7 @@ class Videocall extends ModTemplate {
 					this.room_obj.call_peers.push(peer);
 				}
 
-				console.log("STUN: peer list member, create connection with ", peer);
+				console.log("STUN (VIDEOCALL): peer list member, create connection with ", peer);
 				this.stun.createPeerConnection(peer, (peerId) => {
 					this.sendCallJoinTransaction(peerId);
 				});
@@ -711,7 +710,7 @@ class Videocall extends ModTemplate {
 					if (!this.room_obj.call_peers.includes(peer)) {
 						this.room_obj.call_peers.push(peer);
 
-						console.log("STUN: post hoc peer list member, attempt connection with ", peer);
+						console.log("STUN (VIDEOCALL): post hoc peer list member, attempt connection with ", peer);
 						this.stun.createPeerConnection(peer, (peerId) => {
 							this.sendCallJoinTransaction(peerId);
 						});
