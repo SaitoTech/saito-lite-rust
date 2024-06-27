@@ -66,20 +66,22 @@ class DreamControls{
 			 			console.log("I hope the screen recorder figures this out");
 			 		}else{
 			 			let muted = this.mod.dreams[this.mod.dreamer].muted;
+
 			 			console.log("Manually add the (audio) tracks to the combined stream, muted: ",muted);
-						if (event.streams.length === 0) {
+
+						if (event.streams.length === 0 && event?.track) {
 							let newTrack = event.track.clone();
 							if (muted){
 								newTrack.enabled = false;
 							}
-							this.mod.combinedStream.addTrack(newTrack);
+							this.mod.processTrack(newTrack);
 						} else {
 							event.streams[0].getAudioTracks().forEach((track) => {
 								let newTrack = track.clone();
 								if (muted){
 									newTrack.enabled = false;
 								}
-								this.mod.combinedStream.addTrack(newTrack);
+								this.mod.processTrack(newTrack);
 							});
 						}
 			 		}

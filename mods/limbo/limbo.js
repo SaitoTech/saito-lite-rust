@@ -105,25 +105,13 @@ class Limbo extends ModTemplate {
 
 			console.log('LIMBO: another remote stream added from my upstream', event.track);
 
-			if (event.streams.length === 0) {
-				this.combinedStream.addTrack(event.track);
+			if (event.streams.length === 0 && event?.track) {
+				this.processTrack(event.track)
 			} else {
 				event.streams[0].getTracks().forEach((track) => {
-					this.combinedStream.addTrack(track);
+					this.processTrack(track);
 				});
 			}
-
-			//Forward to peers if peers already established!
-			this.downstream.forEach((pc, key) => {
-				console.log("Forward downstream to: ", key);
-				if (event.streams.length === 0) {
-					pc.addTrack(event.track);
-				} else {
-					event.streams[0].getTracks().forEach((track) => {
-						pc.addTrack(track);
-					});
-				}
-			});
 
 			this.controls.startTime = this.dreams[this.dreamer].ts;
 			this.controls.render(this.combinedStream);
@@ -178,6 +166,17 @@ class Limbo extends ModTemplate {
 				console.warn('No Stun available');
 			}
 		}
+	}
+
+	processTrack(track){
+		//Add to my stream
+		this.combinedStream.addTrack(track);
+
+		//Forward to my peers
+		this.downstream.forEach((pc, key) => {
+			console.log("Forward downstream to: ", key);
+			pc.addTrack(track);
+		});
 	}
 
 	returnServices() {
