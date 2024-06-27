@@ -48,7 +48,6 @@ class Post {
 				this.mod,
 				this.container + '.tweet-overlay-content'
 			);
-			this.input.enable_mentions = false;
 		}
 
 		if (!this.user){
@@ -179,16 +178,7 @@ class Post {
 				}
 
 				if ((e.keyCode == 50 || e.charCode == 64) && e.key == '@') {
-					let keys = post_self.input.findKeyOrIdentifier();
-					for (let key of keys) {
-						let identicon = this_self.app.keychain.returnIdenticon(key.publicKey);
-						key.identicon =  identicon;
-					}
-
-					console.log('keys:', keys);
-
 				   post_self.app.browser.addSaitoMentions(
-				   	keys, 
 				   	document.querySelector(this.container + '#tweet-overlay #post-tweet-textarea'), 
 				   	document.querySelector(this.container + '#tweet-overlay #saito-mentions-list'),
 				   	'input'

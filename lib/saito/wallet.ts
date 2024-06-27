@@ -226,11 +226,7 @@ export default class Wallet extends SaitoWallet {
 			}
 
 			validateAddress(address){
-				let isPublicKey = this.app.crypto.isPublicKey(address);
-				if (isPublicKey) {
-					return true;
-				}
-				return false;
+				return this.app.wallet.isValidPublicKey(address);
 			}
 		}
 
@@ -1290,7 +1286,18 @@ export default class Wallet extends SaitoWallet {
 	}
 
 	public isValidPublicKey(key: string): boolean {
-		return S.getInstance().isValidPublicKey(key);
+		if (this.app.crypto.isBase58(key)){
+			try{
+				console.log(key);
+				console.log(this.app.crypto.fromBase58(key));
+			}catch(err){
+				console.warn(err);
+			}
+
+			return S.getInstance().isValidPublicKey(key);
+		}else{
+			return false;
+		}
 	}
 
 	public async onUpgrade(type = '', privatekey = '', walletfile = null) {

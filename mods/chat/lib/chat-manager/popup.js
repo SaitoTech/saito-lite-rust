@@ -422,16 +422,7 @@ class ChatPopup {
 			.querySelector(`${popup_qs} .saito-input #text-input`)
 			.addEventListener('keydown', (e) => {
 				if ((e.keyCode == 50 || e.charCode == 64) && e.key == '@') {
-					let keys = this_self.input.findKeyOrIdentifier();
-					for (let key of keys) {
-						let identicon = this_self.app.keychain.returnIdenticon(
-							key.publicKey
-						);
-						key.identicon = identicon;
-					}
-
 					this_self.app.browser.addSaitoMentions(
-						keys,
 						document.querySelector(`${popup_qs} #text-input`),
 						document.querySelector(
 							`${popup_qs} #saito-mentions-list`

@@ -344,7 +344,7 @@ class Browser {
 					let publicKey = e.target.getAttribute('data-id');
 					if (
 						!publicKey ||
-						!app.crypto.isPublicKey(publicKey) ||
+						!app.wallet.isValidPublicKey(publicKey) ||
 						disable_click === 'true' ||
 						disable_click == true
 					) {
@@ -414,7 +414,7 @@ class Browser {
 							add = key.publicKey;
 						}
 						if (
-							this.app.crypto.isPublicKey(cleaner) &&
+							this.app.wallet.isValidPublicKey(cleaner) &&
 							(add == '' || add == null)
 						) {
 							add = cleaner;
@@ -432,7 +432,7 @@ class Browser {
 
 		if (adds) {
 			adds.forEach((add) => {
-				if (this.app.crypto.isPublicKey(add) && !keys.includes(add)) {
+				if (this.app.wallet.isValidPublicKey(add) && !keys.includes(add)) {
 					keys.push(add);
 				}
 			});
@@ -442,7 +442,7 @@ class Browser {
 				let key = this.app.keychain.returnKey({ identifier: id });
 				if (key.publicKey) {
 					let add = key.publicKey;
-					if (this.app.crypto.isPublicKey(add)) {
+					if (this.app.wallet.isValidPublicKey(add)) {
 						if (!keys.includes(add)) {
 							keys.push(add);
 						}
@@ -2271,7 +2271,7 @@ class Browser {
 					) {
 						el.classList.add('treated');
 						let key = el.dataset?.id;
-						if (key && saito_app.crypto.isPublicKey(key)) {
+						if (key && saito_app.wallet.isValidPublicKey(key)) {
 							let identifier =
 								saito_app.keychain.returnIdentifierByPublicKey(
 									key,
@@ -2429,19 +2429,30 @@ class Browser {
 		}
 	}
 
-	addSaitoMentions(users, textarea, listDiv, inputType) {
+	addSaitoMentions(textarea, listDiv, inputType) {
+
+		console.log("addSaitoMentions");
+
+		let users = this.app.keychain.returnKeys(null, false);
+		for (let key of users) {
+			let identicon = this.app.keychain.returnIdenticon(key.publicKey);
+			key.identicon =  identicon;
+		}
+
 		const resolveFn = prefix => prefix === ''
 			? users
 			: users.filter(user => {
+				console.log("Prefix: ", prefix);
 				if (typeof user.identifier != 'undefined') {
-					return user.identifier.startsWith(prefix)
+					return user.identifier.toLowerCase().startsWith(prefix.toLowerCase())
 				} else {
-					return user.publicKey.startsWith(prefix)
+					return user.publicKey.toLowerCase().startsWith(prefix.toLowerCase())
 				}
 			})
 
 		const replaceFn = (user, trigger) => {
 			let replace = '';
+			console.log("Replace ", user);
 			if (typeof user.identifier != 'undefined') {
 				replace = `${trigger}${user.identifier} `;
 			} else {
@@ -2454,7 +2465,6 @@ class Browser {
 		const menuItemFn = (user, setItem, selected) => {
 			const parentDiv = document.createElement('div');
 			parentDiv.classList.add('saito-mentions-contact');
-
 
 			// identifier 
 			const identicon = document.createElement('img');
@@ -2472,12 +2482,11 @@ class Browser {
 				div.setAttribute('aria-selected', '')
 			}
 
-			if (typeof user.identifier != 'undefined') {
+			if (user?.identifier) {
 				div.textContent = user.identifier
 			} else {
 				div.textContent = user.publicKey
 			}
-			
 
 			parentDiv.appendChild(div);
 			parentDiv.onclick = setItem;
@@ -2493,6 +2502,40 @@ class Browser {
 			inputType
 		)
 	}
+
+	extractMentions(text){
+        return text.replaceAll(
+          /(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]*)/g,
+          (k) => {
+            let split = k.split('@');
+            let username = '';
+            let key = '';
+
+            if (split.length > 2) {
+              username = split[1] + '@' + split[2];
+              key =
+                this.app.keychain.returnPublicKeyByIdentifier(
+                  username
+                );
+            } else {
+              username = this.app.keychain.returnUsername(split[1]);
+              key = split[1];
+            }
+
+            console.log("Key: ", key);
+            if (this.app.wallet.isValidPublicKey(key)) {
+            	console.log("Is public key");
+            	return 	`<span class="saito-mention saito-address" data-id="${key}">${username}</span>`;
+            }else{
+            	console.log("NOT a public key");
+            	return k;
+            }
+
+          }
+        );
+	}
+
+
 
 	validateAmountLimit(amount, event){
 		// allow only numbers, dot, backspace

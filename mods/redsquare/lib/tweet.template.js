@@ -16,22 +16,7 @@ module.exports = (app, mod, tweet) => {
 	}
 
 	// replace @ key/identifer
-	text = text.replaceAll(/(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]*)/g, function(k){
-		let split = (k.split('@'));
-		let username = '';
-		let key = '';
-
-		if (split.length > 2) {
-			username = split[1]+'@'+split[2];
-			key = app.keychain.returnPublicKeyByIdentifier(username);
-		} else {
-			username = app.keychain.returnUsername(split[1]);
-			key = split[1];
-		}
-		let replaced = `<span class="saito-mention saito-address" data-id="${key}" 
-										data-disable="true" contenteditable="false">${username}</span>`;
-		return replaced;
-	});
+	text = app.browser.extractMentions(text);
 
 	let html_markers = '';
 	if (tweet.data_source) {
