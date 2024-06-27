@@ -2533,6 +2533,14 @@ class Browser {
 	      }
       } 
 	}
+
+	formatDecimals(num, string = false){
+		let pos = Math.abs((Math.log10(num))); 
+		let number = Number(num);
+	  	number = number.toFixed(pos+2);
+	  	number = (number);
+	  	return (string) ? number.toString(): number;  
+	}
 }
 
 export default Browser;

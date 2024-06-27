@@ -104,7 +104,8 @@ class MixinModule extends CryptoModule {
 					}
 				});
 		} else {
-			if (this.is_initialized == 0 || this.destination == "") {
+			
+			if (this.is_initialized == 0 || this.destination == "" || this.destination == null) {
 				this.app.connection.emit('create-mixin-account');
 				await this.mixin.createDepositAddress(this_self.asset_id);
 				await this.showBackupWallet();
@@ -317,6 +318,7 @@ class MixinModule extends CryptoModule {
 	returnPrivateKey() {
 		return this.mixin.mixin.privatekey;
 	}
+
 
 	/**
 	 * Searches for a payment which matches the criteria specified in the parameters.
@@ -614,13 +616,17 @@ class MixinModule extends CryptoModule {
   async formatBalance(precision = 2) {
 		let balance = await this.returnBalance();
 
-		// previous implmentation was causing rounding off issues
-		// 0.745 was being rounded off to 0.75
-  	balance = Number(balance);
-  	balance = balance.toFixed(4);
-  	balance = parseFloat(balance);
-  	return balance.toString();
-  }
+			// previous implmentation was causing rounding off issues
+			// 0.745 was being rounded off to 0.75
+			// find first non zero value's postion after decimal
+	  	let pos = Math.abs(Math.floor(Math.log10(balance))); 
+			pos += precision;
+
+			let bal = Number(balance);
+	  	bal = bal.toFixed(pos);
+	  	bal = parseFloat(bal);
+	  	return bal.toString();  
+	 }
   
   async validateAddress(address, ticker){
 		// suported cryptos by validator package

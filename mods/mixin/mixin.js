@@ -1014,6 +1014,10 @@ class Mixin extends ModTemplate {
         },
       });
 
+      if (destination == "" || destination == null) {
+        return callback([]);
+      }
+
       let params = {
         'asset': asset_id,
         'destination': destination
