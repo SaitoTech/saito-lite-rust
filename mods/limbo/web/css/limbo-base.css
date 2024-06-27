@@ -386,10 +386,6 @@ video#local.noflip{
 		margin: auto;
 	}
 
-	.dream-controls .control-panel .timer {
-		margin-left: 1rem;
-	}
-
 	.dream-controls .control-list {
 		gap: 1rem;
 		margin-right: 1rem;
@@ -435,6 +431,15 @@ video#local.noflip{
 		position: relative;
 	}
 
+	.dream-controls .control-panel {
+		width: fit-content;
+		left: 2rem;
+	}
+
+	.saito-container.limbo-container {
+		padding: none;
+	}
+
 }
 
 
@@ -449,7 +454,7 @@ video#local.noflip{
 	}	
 
 	.dream-controls .control-panel {
-		bottom: 0;
+		bottom: 1rem;
 	}
 }
 
