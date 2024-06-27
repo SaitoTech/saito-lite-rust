@@ -770,10 +770,10 @@ class Limbo extends ModTemplate {
 	receiveKickTransaction(sender, tx) {
 		
 		if (this.app.BROWSER){
-			if (this.dreamer !== this.publicKey && this.dreams[this.dreamer]?.members.includes(this.publicKey)) {
-				siteMessage(
-					`${this.app.keychain.returnUsername(this.dreamer)} woke up...`
-				);
+			if (this.dreamer == sender){
+				if (this.dreamer !== this.publicKey && this.dreams[this.dreamer]?.members.includes(this.publicKey)) {
+					siteMessage(`${this.app.keychain.returnUsername(this.dreamer)} woke up...`, 3000);
+				}
 			}
 		}
 
@@ -797,7 +797,9 @@ class Limbo extends ModTemplate {
 			return;
 		}
 
-		this.exitSpace();
+		if (this.app.BROWSER){
+			this.exitSpace();
+		}
 	}
 
 	async sendAddSpeakerTransaction(speaker){
