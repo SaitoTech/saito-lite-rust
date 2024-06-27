@@ -169,22 +169,6 @@ class Post {
 			document.querySelector(this.container + '.saito-file-uploader').style.display = 'none';
 		}
 
-		document
-			.querySelector(this.container + '.post-tweet-textarea')
-			.addEventListener('keydown', (e) => {
-				if (e.keyCode === 13 && e.ctrlKey) {
-					document.querySelector(this.container + '#post-tweet-button').click();
-					e.preventDefault();
-				}
-
-				if ((e.keyCode == 50 || e.charCode == 64) && e.key == '@') {
-				   post_self.app.browser.addSaitoMentions(
-				   	document.querySelector(this.container + '#tweet-overlay #post-tweet-textarea'), 
-				   	document.querySelector(this.container + '#tweet-overlay #saito-mentions-list'),
-				   	'input'
-				   );
-				}
-			});
 		try {
 			document
 				.querySelector(this.container + '#post-delete-button')

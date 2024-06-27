@@ -418,20 +418,6 @@ class ChatPopup {
 			return;
 		}
 
-		document
-			.querySelector(`${popup_qs} .saito-input #text-input`)
-			.addEventListener('keydown', (e) => {
-				if ((e.keyCode == 50 || e.charCode == 64) && e.key == '@') {
-					this_self.app.browser.addSaitoMentions(
-						document.querySelector(`${popup_qs} #text-input`),
-						document.querySelector(
-							`${popup_qs} #saito-mentions-list`
-						),
-						'div'
-					);
-				}
-			});
-
 		// add reply functionality
 		document
 			.querySelectorAll(`${popup_qs} .saito-userline-reply .chat-reply`)

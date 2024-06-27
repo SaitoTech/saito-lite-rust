@@ -2432,73 +2432,10 @@ class Browser {
 	addSaitoMentions(textarea, listDiv, inputType) {
 
 		console.log("addSaitoMentions");
-
-		let users = this.app.keychain.returnKeys(null, false);
-		for (let key of users) {
-			let identicon = this.app.keychain.returnIdenticon(key.publicKey);
-			key.identicon =  identicon;
-		}
-
-		const resolveFn = prefix => prefix === ''
-			? users
-			: users.filter(user => {
-				console.log("Prefix: ", prefix);
-				if (typeof user.identifier != 'undefined') {
-					return user.identifier.toLowerCase().startsWith(prefix.toLowerCase())
-				} else {
-					return user.publicKey.toLowerCase().startsWith(prefix.toLowerCase())
-				}
-			})
-
-		const replaceFn = (user, trigger) => {
-			let replace = '';
-			console.log("Replace ", user);
-			if (typeof user.identifier != 'undefined') {
-				replace = `${trigger}${user.identifier} `;
-			} else {
-				replace = `${trigger}${user.publicKey} `;
-			}
-
-			return replace;
-		}
-
-		const menuItemFn = (user, setItem, selected) => {
-			const parentDiv = document.createElement('div');
-			parentDiv.classList.add('saito-mentions-contact');
-
-			// identifier 
-			const identicon = document.createElement('img');
-			identicon.classList.add('saito-identicon');
-			identicon.setAttribute('src', user.identicon);
-
-			parentDiv.appendChild(identicon);
-
-			// username div
-			const div = document.createElement('div')
-			div.setAttribute('role', 'option')
-			div.className = 'menu-item'
-			if (selected) {
-				div.classList.add('selected')
-				div.setAttribute('aria-selected', '')
-			}
-
-			if (user?.identifier) {
-				div.textContent = user.identifier
-			} else {
-				div.textContent = user.publicKey
-			}
-
-			parentDiv.appendChild(div);
-			parentDiv.onclick = setItem;
-			return parentDiv;
-		}
-
 		new SaitoMentions(
+			this.app,
 			textarea,
 			listDiv,
-			resolveFn,
-			replaceFn,
-			menuItemFn,
 			inputType
 		)
 	}

@@ -1287,13 +1287,6 @@ export default class Wallet extends SaitoWallet {
 
 	public isValidPublicKey(key: string): boolean {
 		if (this.app.crypto.isBase58(key)){
-			try{
-				console.log(key);
-				console.log(this.app.crypto.fromBase58(key));
-			}catch(err){
-				console.warn(err);
-			}
-
 			return S.getInstance().isValidPublicKey(key);
 		}else{
 			return false;

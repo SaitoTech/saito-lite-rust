@@ -22,7 +22,7 @@ module.exports = (app, mod, post) => {
     `;
 	} else {
 		html += `
-      <div class="saito-button-primary post-tweet-button" id="post-tweet-button">${post.source}</div>
+      <div class="saito-button-primary post-tweet-button" id="post-tweet-button" title="Pro-tip: ctrl+enter to submit">${post.source}</div>
     `;
 	}
 
