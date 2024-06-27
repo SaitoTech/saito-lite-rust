@@ -38,13 +38,15 @@ class DreamSpace{
 	render(stream = null) {
 		if (!document.getElementById("dream-controls")){
 			this.app.browser.addElementToSelectorOrDom(DreamSpaceTemplate(), this.container);
+			this.video.render();
 		}
 
-		this.video.render(stream);
-
 		if (stream){
-			console.log("Render with stream", stream);
+			console.log("Render DreamSpace with tracks", stream.getTracks());
 			this.startTimer();
+
+			this.video.stream = stream;
+			this.video.rerender();
 
 			this.app.connection.emit("limbo-spaces-update");
 		}
