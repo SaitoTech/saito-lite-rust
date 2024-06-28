@@ -1,9 +1,11 @@
 class StreamCapturer {
-    constructor(logo) {
+    constructor(app, logo) {
         this.combinedStream = null;
         this.streamData = [];
+        this.app = app
         this.logo = logo
         this.handleResize = this.handleResize.bind(this);
+        this.hasSeenVideo = {}
     }
 
 
@@ -65,7 +67,7 @@ class StreamCapturer {
         }
 
         const logoX = ctx.canvas.width - logoWidth - 50;
-        const logoY = ctx.canvas.height - logoHeight -10;
+        const logoY = ctx.canvas.height - logoHeight - 10;
 
         this.logo.style.objectFit = "cover";
         ctx.drawImage(this.logo, logoX, logoY, logoWidth, logoHeight);
@@ -96,36 +98,51 @@ class StreamCapturer {
     }
 
 
-    captureVideoCallStreams(includeCamera  = false){
+    captureVideoCallStreams(includeCamera = false) {
 
         try {
             this.combinedStream = new MediaStream();
             this.is_capturing_stream = true
-    
+
             document.querySelectorAll('canvas').forEach(canvas => {
                 canvas.parentElement.removeChild(document.querySelector('canvas'))
             })
-    
+
             const audioCtx = new AudioContext();
-            const destination = audioCtx.createMediaStreamDestination();
-    
-            const processStream = (stream) => {
+            const destination = new MediaStreamAudioDestinationNode(audioCtx)
+
+            const processStream = (stream, type = "1") => {
+                console.log('processing new stream', stream)
                 if (stream && stream.getAudioTracks().length > 0) {
-                    const source = audioCtx.createMediaStreamSource(stream);
+                    const source = new MediaStreamAudioSourceNode(audioCtx, { mediaStream: stream })
                     source.connect(destination);
+                    console.log('processing new stream', stream)
                 }
+
+
                 return stream;
             };
-    
+
+
+            // let self = this
             if (includeCamera) {
                 let observer = new MutationObserver((mutations) => {
+                    let self = this
                     mutations.forEach((mutation) => {
                         if (mutation.type === 'childList') {
                             mutation.addedNodes.forEach(node => {
                                 if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV' && node.id.startsWith('stream_')) {
                                     const videos = node.querySelectorAll('video');
+
                                     videos.forEach(video => {
+                                        console.log(this.hasSeenVideo[video.id])
+                                        if (this.hasSeenVideo[video.id]) return;
+                                        // this.hasSeenVideo[video.id] = true
+                                        console.log('new video element', video)
                                         const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
+                                        processStream(stream, "2")
+                                        // this.combinedStream = new MediaStream([destination.stream.getAudioTracks()[0], this.combinedStream.getVideoTracks()[0]])
+                                        // this.emitUpdatedCombinedStream(this.combinedStream)               
                                         const rect = video.getBoundingClientRect();
                                         const parentID = video.parentElement.id;
                                         const videoElement = document.createElement('video');
@@ -143,7 +160,7 @@ class StreamCapturer {
                                     data.rect = mutation.target.getBoundingClientRect();
                                 }
                             });
-    
+
                         }
                         if (mutation.removedNodes.length > 0) {
                             mutation.removedNodes.forEach(node => {
@@ -181,21 +198,21 @@ class StreamCapturer {
                     // console.log('still drawing streams');
                     this.animationFrameId = requestAnimationFrame(drawStreamsToCanvas);
                 };
-    
+
                 this.drawStreamsToCanvas = drawStreamsToCanvas
-    
-    
+
+
                 let self = this
                 window.addEventListener('resize', this.handleResize);
                 this.resizeCanvas(canvas, drawStreamsToCanvas, self);
-    
-    
-    
+
+
+
                 const videoElements = document.querySelectorAll('div[id^="stream_"] video');
                 this.streamData = Array.from(videoElements).map(video => {
                     let stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
                     processStream(stream)
-    
+                    this.hasSeenVideo[video.id] = true
                     const rect = video.getBoundingClientRect();
                     const parentID = video.parentElement.id;
                     const videoElement = document.createElement('video');
@@ -207,7 +224,7 @@ class StreamCapturer {
                 }).filter(data => data.stream !== null);
                 this.combinedStream.addTrack(canvas.captureStream(25).getVideoTracks()[0]);
             }
-    
+
             else {
                 let observer = new MutationObserver((mutations) => {
                     mutations.forEach((mutation) => {
@@ -243,14 +260,14 @@ class StreamCapturer {
                     processStream(stream);
                 });
             }
-            this.combinedStream.addTrack(destination.stream.getAudioTracks()[0]);
+            this.combinedStream = new MediaStream([destination.stream.getAudioTracks()[0], this.combinedStream.getVideoTracks()[0]])
             return this.combinedStream;
-    
+
         } catch (error) {
             console.log("Error capturing video streams", error)
             throw error
         }
-   
+
 
     }
 
@@ -261,13 +278,17 @@ class StreamCapturer {
         cancelAnimationFrame(this.animationFrameId)
         // console.log('removing event listener')
         window.removeEventListener('resize', this.handleResize)
-        this.combinedStream.getTracks().forEach(track => {    
-            track.stop()      
+        this.combinedStream.getTracks().forEach(track => {
+            track.stop()
             console.log(track, "track")
-      
+
         })
         this.combinedStream = null
-   
+
+    }
+
+    emitUpdatedCombinedStream() {
+        this.app.connection.emit('screenrecord-update-stream', this.combinedStream)
     }
 
 

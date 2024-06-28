@@ -8,6 +8,10 @@ const domtoimage = require('dom-to-image');
 const StreamCapturer = require('./lib/stream-capturer');
 const screenrecordWizard = require('./lib/screenrecord-wizard');
 const lamejs = require('lamejs')
+
+
+// new ffmpeg.
+
 // const MPEGMode = require('lamejs/src/js/MPEGMode')
 // const Lame = require('lamejs/src/js/Lame');
 // const BitStream = require('lamejs/src/js/BitStream');
@@ -26,9 +30,13 @@ class Record extends ModTemplate {
 		this.styles = ['/saito/saito.css', '/screenrecord/style.css'];
 		this.interval = null;
 		this.streamData = [];
+		this.chunks = []
 		// this.is_limbo_streaming  = false;
 		this.mediaRecorder = null;
 		this.is_capturing_stream = false;
+	
+
+
 
 		// this.app.connection.on('stun-redirect-page', async (callback) => {
 		// 	if(this.mediaRecorder){
@@ -37,10 +45,27 @@ class Record extends ModTemplate {
 		// 	}else {
 		// 		callback()
 		// 	}
-			
+
 		// 	// callback()
 		// })
 
+		this.app.connection.on('screenrecord-update-stream', async (combinedStream) => {
+			console.log('combined stream', combinedStream)
+			try {
+				if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
+					this.mediaRecorder.requestData();
+					await new Promise(resolve => {
+						this.mediaRecorder.onstop = resolve;
+						this.mediaRecorder.stop();
+					});
+				}
+
+				// Keep existing chunks, don't reset them
+				await this.initializeMediaRecorder(this.chunks, combinedStream);
+			} catch (error) {
+				console.error("Error updating media recorder:", error);
+			}
+		});
 	}
 
 	respondTo(type, obj) {
@@ -85,7 +110,7 @@ class Record extends ModTemplate {
 			return {
 				startStreamingVideoCall: async () => {
 					try {
-						this.limboStreamCapture = new StreamCapturer(this.logo)
+						this.limboStreamCapture = new StreamCapturer(this.app, this.logo)
 						let stream = this.limboStreamCapture.captureVideoCallStreams(true)
 						return stream;
 					} catch (error) {
@@ -105,12 +130,12 @@ class Record extends ModTemplate {
 			};
 		}
 
-		if(type === "screenrecord-video-controls") {
+		if (type === "screenrecord-video-controls") {
 			return {
 				mediaRecorder: this.mediaRecorder,
 				stopRecording: this.stopRecording.bind(this)
 			}
-		
+
 		}
 		if (type === 'game-menu') {
 			if (!obj.recordOptions) return;
@@ -206,15 +231,60 @@ class Record extends ModTemplate {
 			this.logo = new Image();
 			this.logo.src = '/saito/img/logo.svg';
 
-			// window.MPEGMode = MPEGMode;
-			// window.BitStream = BitStream;
+
 		}
+		
 	}
 
 
+
+
+
+	async initializeMediaRecorder(existingChunks, stream) {
+		// Use existing chunks if available, otherwise initialize
+		// this.chunks =  existingChunks.length > 0 ? existingChunks : [];
+		this.chunks = []
+		// console.log(this.chunks, "this.chunks")
+
+		let mimeType = stream.getVideoTracks().length > 0
+			? 'video/webm; codecs="vp8, opus"'
+			: 'audio/webm; codecs="opus"';
+
+		let options = {
+			mimeType: mimeType,
+			videoBitsPerSecond: stream.getVideoTracks().length > 0 ? 25 * 1024 * 1024 : undefined,
+			audioBitsPerSecond: 320 * 1024
+		};
+
+
+		try {
+			if (MediaRecorder.isTypeSupported(mimeType)) {
+				this.mediaRecorder = new MediaRecorder(stream, options);
+			} else {
+				console.warn(`${mimeType} is not supported, using default codec`);
+				this.mediaRecorder = new MediaRecorder(stream);
+			}
+
+			this.mediaRecorder.onstart = event => {
+				console.log('media recorder started')
+			}
+			this.mediaRecorder.ondataavailable = event => {
+				if (event.data.size > 0) {
+					console.log('new data available', event.data)
+					this.chunks.push(event.data);
+				}
+			};
+
+			this.mediaRecorder.start();
+		} catch (error) {
+			console.error("Error creating MediaRecorder:", error);
+			throw error;
+		}
+	}
+
 	async startRecording(options) {
 		let { container, members, callbackAfterRecord, type, includeCamera } = options
-		this.recorderStreamCapture = new StreamCapturer(this.logo)
+		this.recorderStreamCapture = new StreamCapturer(this.app, this.logo)
 		let stream = this.recorderStreamCapture.captureVideoCallStreams(includeCamera)
 
 
@@ -223,59 +293,7 @@ class Record extends ModTemplate {
 		this.members = members
 
 		if (type === "videocall") {
-			this.chunks = [];
-
-			let mimeType;
-			let options;
-
-			if (stream.getVideoTracks().length > 0) {
-				mimeType = 'video/webm; codecs="vp8, opus"';
-				options = {
-					mimeType: mimeType,
-					videoBitsPerSecond: 25 * 1024 * 1024,
-					audioBitsPerSecond: 320 * 1024
-				};
-			} else {
-				mimeType = 'audio/webm; codecs="opus"';
-				options = {
-					mimeType: mimeType,
-					audioBitsPerSecond: 320 * 1024
-				};
-			}
-			if (MediaRecorder.isTypeSupported(mimeType)) {
-				this.mediaRecorder = new MediaRecorder(stream, options);
-			} else {
-
-				console.warn(`${mimeType} is not supported, using default codec`);
-				this.mediaRecorder = new MediaRecorder(stream);
-			}
-			this.mediaRecorder.ondataavailable = event => {
-				if (event.data.size > 0) {
-					this.chunks.push(event.data);
-				}
-			};
-			// this.mediaRecorder.onstop = async () => {
-			// 	const blob = new Blob(chunks, { type: 'video/webm' });
-			// 	const hasVideo = chunks.some(chunk =>
-			// 		chunk.type.includes('video') || chunk.type === 'video/webm'
-			// 	);
-
-			// 	if (hasVideo) {
-			// 		console.log('chunk has video', chunks);
-			// 		const url = URL.createObjectURL(blob);
-			// 		await this.downloadMedia(url, "video", callbackAfterRecord)
-					
-			// 	} else {
-			// 		let url = await this.processAudio(blob)
-
-			// 		await this.downloadMedia(url, "audio", callbackAfterRecord)
-			// 	}
-
-			// };
-
-
-			this.mediaRecorder.start();
-
+			this.initializeMediaRecorder(this.chunks, stream)
 		}
 		else {
 			// set up top variablse
@@ -645,7 +663,7 @@ class Record extends ModTemplate {
 					URL.revokeObjectURL(url);
 				}, 100);
 
-				
+
 				if (callbackAfterRecord) {
 					callbackAfterRecord(blob);
 				}
@@ -717,36 +735,37 @@ class Record extends ModTemplate {
 		}
 
 		if (this.mediaRecorder) {
-			let fn = ()=> {
-					return new Promise((resolve, reject) => {
-						try {
-							this.mediaRecorder.onstop = async () => {
-								const blob = new Blob(this.chunks, { type: 'video/webm' });
-								const hasVideo = this.chunks.some(chunk =>
-									chunk.type.includes('video') || chunk.type === 'video/webm'
-								);
+			let fn = () => {
+				return new Promise((resolve, reject) => {
+					try {
+						this.mediaRecorder.onstop = async () => {
+							const blob = new Blob(this.chunks, { type: 'video/webm' });
+							const hasVideo = this.chunks.some(chunk =>
+								chunk.type.includes('video') || chunk.type === 'video/webm'
+							);
 
-								if (hasVideo) {
-									console.log('chunk has video', this.chunks);
-									const url = URL.createObjectURL(blob);
-									await this.downloadMedia(url, "video")
-									resolve()
-									
-								} else {
-									let url = await this.processAudio(blob)
-									await this.downloadMedia(url, "audio")
-									resolve()
-								}
-				
-							};
-						} catch (error) {
-								reject()
-						}
-					
-						this.mediaRecorder.stop();
-					})
+							if (hasVideo) {
+								console.log('chunk has video', this.chunks);
+								const url = URL.createObjectURL(blob);
+								// const url = await this.processVideo(this.chunks);
+								await this.downloadMedia(url, "video")
+								resolve()
+
+							} else {
+								let url = await this.processAudio(blob)
+								await this.downloadMedia(url, "audio")
+								resolve()
+							}
+
+						};
+					} catch (error) {
+						reject()
+					}
+
+					this.mediaRecorder.stop();
+				})
 			}
-			
+
 			await fn();
 			this.mediaRecorder = null;
 		}
