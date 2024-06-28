@@ -1107,7 +1107,7 @@ export default class Wallet extends SaitoWallet {
 	}
 
 	private async isSlipInPendingTransactions(input: Slip): Promise<boolean> {
-		let pending = await this.getPendingTxs();
+		let pending = await this.getPendingTransactions();
 		for (let i = 0; i < pending.length; i++) {
 			let ptx = pending[i];
 			for (let ii = 0; ii < ptx.from.length; ii++) {
@@ -1117,6 +1117,10 @@ export default class Wallet extends SaitoWallet {
 			}
 		}
 		return false;
+	}
+
+	async getPendingTransactions() {
+		return this.getPendingTxs();
 	}
 
 	/////////////////////
