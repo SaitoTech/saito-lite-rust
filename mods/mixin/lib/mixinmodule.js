@@ -94,19 +94,8 @@ class MixinModule extends CryptoModule {
 				await this.mixin.createAccount(async(res) => {
 					if (Object.keys(res).length > 0) {
 						await this.mixin.createDepositAddress(this_self.asset_id);
-						super.activate();
-
-						this_self.app.options.wallet.backup_required = 1;
-						this_self.app.wallet.saveWallet();
-						
-						let msg = `Your wallet has added new crypto keys. 
-						Unless you backup your wallet, you may lose these keys. 
-						Do you want help backing up your wallet?`;
-						this.app.connection.emit(
-							'saito-backup-render-request',
-							{msg: msg, title: 'BACKUP YOUR WALLET'}
-						);
-
+						await super.activate();
+						await this_self.showBackupWallet();
 					} else {
 						salert('Having problem generating key for '+' '+this_self.ticker);
 						await this.app.wallet.setPreferredCrypto('SAITO', 1);
@@ -115,8 +104,28 @@ class MixinModule extends CryptoModule {
 					}
 				});
 		} else {
-			super.activate();
+			
+			if (this.is_initialized == 0 || this.destination == "" || this.destination == null) {
+				this.app.connection.emit('create-mixin-account');
+				await this.mixin.createDepositAddress(this_self.asset_id);
+				await this.showBackupWallet();
+			}
+
+			await super.activate();
 		}
+	}
+
+	async showBackupWallet(){
+		this.app.options.wallet.backup_required = 1;
+		await this.app.wallet.saveWallet();
+		
+		let msg = `Your wallet has added new crypto keys. 
+		Unless you backup your wallet, you may lose these keys. 
+		Do you want help backing up your wallet?`;
+		this.app.connection.emit(
+			'saito-backup-render-request',
+			{msg: msg, title: 'BACKUP YOUR WALLET'}
+		);
 	}
 
 	hasReceivedPayment(amount, sender, receiver, timestamp, unique_hash) {
@@ -309,6 +318,7 @@ class MixinModule extends CryptoModule {
 	returnPrivateKey() {
 		return this.mixin.mixin.privatekey;
 	}
+
 
 	/**
 	 * Searches for a payment which matches the criteria specified in the parameters.
@@ -605,14 +615,17 @@ class MixinModule extends CryptoModule {
 
   async formatBalance(precision = 2) {
 		let balance = await this.returnBalance();
-
 		// previous implmentation was causing rounding off issues
 		// 0.745 was being rounded off to 0.75
-  	balance = Number(balance);
-  	balance = balance.toFixed(4);
-  	balance = parseFloat(balance);
-  	return balance.toString();
-  }
+		// find first non zero value's postion after decimal
+  	let pos = (balance > 0) ? Math.abs(Math.floor(Math.log10(Number(balance)))) : 0; 
+		pos += precision;
+
+		let bal = Number(balance);
+  	bal = bal.toFixed(pos);
+  	bal = parseFloat(bal);
+  	return bal.toString();  
+	}
   
   async validateAddress(address, ticker){
 		// suported cryptos by validator package

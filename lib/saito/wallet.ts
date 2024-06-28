@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
 	default_fee = 0;
 
-	version = 5.634;
+	version = 5.635;
 
 	nolan_per_saito = 100000000;
 
@@ -104,8 +104,8 @@ export default class Wallet extends SaitoWallet {
 				);
 			}
 
-			returnAddress() {
-				return this.publicKey;
+			async returnAddress() {
+				return this.publicKey || await this.app.wallet.getPublicKey();
 			}
 
 			returnPrivateKey() {
@@ -1234,6 +1234,8 @@ export default class Wallet extends SaitoWallet {
 	 * @return {Transaction}
 	 */
 	async signAndEncryptTransaction(tx: Transaction, recipient = '') {
+
+		
 		if (tx == null) {
 			return null;
 		}
@@ -1310,6 +1312,10 @@ export default class Wallet extends SaitoWallet {
 
 	public isValidPublicKey(key: string): boolean {
 		return S.getInstance().isValidPublicKey(key);
+	}
+
+	public async addPendingTx(tx: Transaction) {
+		return S.getInstance().addPendingTx(tx);
 	}
 
 	public async onUpgrade(type = '', privatekey = '', walletfile = null) {

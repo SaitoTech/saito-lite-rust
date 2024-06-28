@@ -21,6 +21,7 @@ class CallInterfaceVideo {
 		this.speaker_candidate = null;
 		this.public_key = mod.publicKey;
 		this.full_screen = fullScreen;
+		this.rendered = false;
 
 		this.app.connection.on(
 			'show-call-interface',
@@ -88,7 +89,7 @@ class CallInterfaceVideo {
 
 			siteMessage(`Switched to ${newView} display`, 2000);
 
-			if (newView == "presentation"){
+			if (newView == "presentation") {
 				newView = "focus";
 			}
 
@@ -138,14 +139,16 @@ class CallInterfaceVideo {
 		});
 
 		app.connection.on('stun-data-channel-open', (pkey) => {
-			this.insertActions(this.mod.room_obj.call_peers);
+			if (this.rendered){
+				this.insertActions(this.mod.room_obj.call_peers);	
+			}
 		});
 
 		app.connection.on('videocall-show-settings', () => {
 			this.videocall_settings.render();
 		});
 
-		app.connection.on('stun-disconnect', () => {
+		app.connection.on('stun-disconnect', async () => {
 			for (let peer in this.video_boxes) {
 				this.app.connection.emit('remove-peer-box', peer);
 			}
@@ -156,15 +159,30 @@ class CallInterfaceVideo {
 				let slug = mod?.returnSlug() || 'videocall';
 				let url = '/' + slug;
 
+				const recordControls = this.app.modules.getRespondTos('screenrecord-video-controls');
+				console.log(recordControls, "recordControls")
+				let { mediaRecorder, stopRecording } = recordControls[0]
+				if (mediaRecorder) {
+					await stopRecording()
+				}
 				setTimeout(() => {
 					window.location.href = url;
 				}, 2000);
+
 			} else {
 				//
 				// Hopefully we don't have to reload the page on the end of a stun call
 				// But keep on eye on this for errors and make sure all the components shut themselves down properly
 				//
 				if (document.getElementById('stun-chatbox')) {
+					const recordControls = this.app.modules.getRespondTos('screenrecord-video-controls');
+					let { mediaRecorder, stopRecording } = recordControls[0]
+					console.log(recordControls, "recordControls")
+
+					if (mediaRecorder) {
+						await stopRecording()
+					}
+
 					document.getElementById('stun-chatbox').remove();
 					let am = this.app.modules.returnActiveModule();
 					window.history.pushState(
@@ -173,6 +191,10 @@ class CallInterfaceVideo {
 						window.location.origin + '/' + am.returnSlug()
 					);
 					document.title = this.old_title;
+
+
+
+
 				}
 			}
 		});
@@ -185,6 +207,7 @@ class CallInterfaceVideo {
 		this.app.connection.removeAllListeners('remove-peer-box');
 		this.app.connection.removeAllListeners('stun-new-speaker');
 		this.app.connection.removeAllListeners('stun-switch-view');
+		this.rendered = false;
 	}
 
 	render(videoEnabled, audioEnabled) {
@@ -207,6 +230,7 @@ class CallInterfaceVideo {
 		}
 
 		this.app.connection.emit("stun-switch-view", this.mod.layout);
+		this.rendered = true;
 	}
 
 	insertActions() {
@@ -249,8 +273,8 @@ class CallInterfaceVideo {
 
 				let item = mod.respondTo('record-actions', {
 					container: ".video-container-large",
-					streams, 
-					useMicrophone: true, 
+					streams,
+					useMicrophone: true,
 					members: this.mod.room_obj.call_peers,
 					callbackAfterRecord: (data) => {
 						console.log("", data)

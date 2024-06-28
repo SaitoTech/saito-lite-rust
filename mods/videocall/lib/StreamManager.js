@@ -166,7 +166,7 @@ class StreamManager {
 
       console.log('no more');
       this.endPresentation();
-      this.app.connection.emit('toggle-screen-share-label', 'Screen Share');
+      this.app.connection.emit('toggle-screen-share-label', 'Present');
     });
 
     app.connection.on('toggle-screen-share-label', async (text) => {
@@ -213,7 +213,9 @@ class StreamManager {
     app.connection.on(
       'stun-update-connection-message',
       (peerId, connectionState) => {
-        this.broadcastPeerList();
+        if (this.active) {
+          this.broadcastPeerList();
+        }
       }
     );
 
@@ -221,6 +223,10 @@ class StreamManager {
       if (!this.active) {
         return;
       }
+
+      //
+      // Note: This happens twice because audio and video are added separately as mediaTracks...
+      //
 
       const remoteStream = new MediaStream();
       console.log('STUN: remote stream added for', peerId, event.track);
@@ -296,7 +302,7 @@ class StreamManager {
       // The person who set up the call is the "host", and we have to wait for peopel to join us in order to create
       // peer connections, but if we reconnect, or refresh, we have saved in local storage the people in our call
       //
-      if (this.mod.room_obj.host_public_key === this.mod.publicKey) {
+      if (this.mod.room_obj?.host_public_key === this.mod.publicKey) {
         //
         // Not direct calling!
         //
@@ -547,9 +553,9 @@ class StreamManager {
 
     if (this.presentationStream) {
       this.presentationStream.getTracks().forEach((track) => track.stop());
+      this.presentationStream = null;
     }
 
-    this.presentationStream = null;
   }
 
   broadcastPeerList() {

@@ -57,23 +57,26 @@ class DreamControls{
 		//
 		app.connection.on('stun-track-event', (peerId, event) => {
 			if (this.mod.publicKey === this.mod.dreamer){
-			 	console.log("I, the dreamer, get a new stun peer");
+			 	console.log("I, the dreamer, get a new stun peer -- " + peerId);
+			 					
+			 	console.log(event.track);
+
 			 	if (this.mod.dreams[this.mod.dreamer].speakers.includes(peerId)) {
+			 		
 			 		console.log("The stun peer is a speaker");
 
-			 		if (this.mod.dreams[this.mod.dreamer].mode == "camera"){
-			 			console.log("I hope the screen recorder figures this out");
-			 		}else{
-			 			console.log("Manually add the (audio) tracks to the combined stream");
-						if (event.streams.length === 0) {
-							this.mod.combinedStream.addTrack(event.track.clone());
-						} else {
-							event.streams[0].getTracks().forEach((track) => {
-								this.mod.combinedStream.addTrack(track.clone());
-							});
+					let muted = this.mod.dreams[this.mod.dreamer].muted;
+					
+					if (event.track.kind == "audio") {
+
+			 			console.log("Manually add the (audio) tracks to the combined stream, muted: ",muted);
+						let newTrack = event.track.clone();
+						if (muted){
+							newTrack.enabled = false;
 						}
-			 		}
-			 	}
+						this.mod.processTrack(newTrack);								
+					}			
+		 		}
 			}
 		});
 
