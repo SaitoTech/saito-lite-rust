@@ -213,7 +213,9 @@ class StreamManager {
     app.connection.on(
       'stun-update-connection-message',
       (peerId, connectionState) => {
-        this.broadcastPeerList();
+        if (this.active) {
+          this.broadcastPeerList();
+        }
       }
     );
 
@@ -300,7 +302,7 @@ class StreamManager {
       // The person who set up the call is the "host", and we have to wait for peopel to join us in order to create
       // peer connections, but if we reconnect, or refresh, we have saved in local storage the people in our call
       //
-      if (this.mod.room_obj.host_public_key === this.mod.publicKey) {
+      if (this.mod.room_obj?.host_public_key === this.mod.publicKey) {
         //
         // Not direct calling!
         //

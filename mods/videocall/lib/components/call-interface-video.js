@@ -21,6 +21,7 @@ class CallInterfaceVideo {
 		this.speaker_candidate = null;
 		this.public_key = mod.publicKey;
 		this.full_screen = fullScreen;
+		this.rendered = false;
 
 		this.app.connection.on(
 			'show-call-interface',
@@ -138,7 +139,9 @@ class CallInterfaceVideo {
 		});
 
 		app.connection.on('stun-data-channel-open', (pkey) => {
-			this.insertActions(this.mod.room_obj.call_peers);
+			if (this.rendered){
+				this.insertActions(this.mod.room_obj.call_peers);	
+			}
 		});
 
 		app.connection.on('videocall-show-settings', () => {
@@ -204,6 +207,7 @@ class CallInterfaceVideo {
 		this.app.connection.removeAllListeners('remove-peer-box');
 		this.app.connection.removeAllListeners('stun-new-speaker');
 		this.app.connection.removeAllListeners('stun-switch-view');
+		this.rendered = false;
 	}
 
 	render(videoEnabled, audioEnabled) {
@@ -226,6 +230,7 @@ class CallInterfaceVideo {
 		}
 
 		this.app.connection.emit("stun-switch-view", this.mod.layout);
+		this.rendered = true;
 	}
 
 	insertActions() {

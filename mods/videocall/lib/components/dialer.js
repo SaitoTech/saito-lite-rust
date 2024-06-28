@@ -279,7 +279,8 @@ class Dialer {
 		if (!this.mod.room_obj) {
 			this.mod.room_obj = {
 				call_id: this.mod.createRoomCode(),
-				host_public_key: this.mod.publicKey
+				host_public_key: this.mod.publicKey,
+				call_peers: [],
 			};
 		}
 
@@ -335,6 +336,8 @@ class Dialer {
 					data
 				});
 			}
+
+			console.log(this.mod.room_obj);
 
 			break;
 

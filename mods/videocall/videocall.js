@@ -384,6 +384,7 @@ class Videocall extends ModTemplate {
 				// and not belonging to a module
 				//
 				if (txmsg.request.includes('stun-connection')) {
+					console.log("Stun-connection", txmsg.data);
 					this.dialer.receiveStunCallMessageFromPeers(tx);
 					return;
 				}
@@ -611,8 +612,8 @@ class Videocall extends ModTemplate {
 
 		for (let peer of call_list) {
 			if (peer !== this.publicKey) {
-				if (!this.room_obj.call_peers.includes(peer)) {
-					this.room_obj.call_peers.push(peer);
+				if (!this.room_obj?.call_peers.includes(peer)) {
+					this.room_obj?.call_peers.push(peer);
 				}
 
 				console.log("STUN (VIDEOCALL): peer list member, create connection with ", peer);
