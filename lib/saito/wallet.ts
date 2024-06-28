@@ -1296,7 +1296,6 @@ export default class Wallet extends SaitoWallet {
 	}
 
 	public async addPendingTx(tx: Transaction) {
-		console.log('inside addPendingTx : ',tx.toJson());
 		return S.getInstance().addPendingTx(tx);
 	}
 
