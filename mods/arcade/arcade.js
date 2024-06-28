@@ -850,6 +850,7 @@ class Arcade extends ModTemplate {
 			);
 		}
 
+ 		newtx.packData();
 		await newtx.sign();
 
 		return newtx;
@@ -2040,7 +2041,7 @@ class Arcade extends ModTemplate {
 				return;
 			}
 
-			this.app.network.propagateTransaction(newtx);
+			await this.app.network.propagateTransaction(newtx);
 			this.app.connection.emit('relay-send-message', {
 				recipient: 'PEERS',
 				request: 'arcade spv update',
