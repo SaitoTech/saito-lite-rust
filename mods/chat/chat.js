@@ -1626,7 +1626,7 @@ class Chat extends ModTemplate {
             sender = block[z].from[0];
 
             // replace @mentions with saito treated address
-            block[z].msg = chat_self.app.browser.extractMentions(block[z].msg);
+            block[z].msg = chat_self.app.browser.markupMentions(block[z].msg);
 
             // Get my like status
             let liked = '';

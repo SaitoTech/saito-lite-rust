@@ -4,19 +4,8 @@ module.exports = (app, mod, tweet) => {
 	let notice = tweet?.notice || '';
 	let text = tweet?.text || '';
 
-	if (tweet.mentions && tweet.mentions !== 1) {
-		for (let m of tweet.mentions) {
-			text = text.replace(
-				`[[${app.keychain.returnUsername(m)}]]`,
-				`<span class="saito-mention saito-address" data-id="${m}" data-disable="true" contenteditable="false">${app.keychain.returnUsername(
-					m
-				)}</span>`
-			);
-		}
-	}
-
 	// replace @ key/identifer
-	text = app.browser.extractMentions(text);
+	text = app.browser.markupMentions(text);
 
 	let html_markers = '';
 	if (tweet.data_source) {
