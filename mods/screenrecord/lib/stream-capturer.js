@@ -135,8 +135,8 @@ class StreamCapturer {
                                     const videos = node.querySelectorAll('video');
 
                                     videos.forEach(video => {
-                                        console.log(this.hasSeenVideo[video.id])
-                                        if (this.hasSeenVideo[video.id]) return;
+                                        // console.log(this.hasSeenVideo[video.id])
+                                        // if (this.hasSeenVideo[video.id]) return;
                                         // console.log('new video element', video)
                                         const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
                                         processStream(stream, "2")
