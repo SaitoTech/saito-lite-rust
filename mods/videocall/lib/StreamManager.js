@@ -166,7 +166,7 @@ class StreamManager {
 
       console.log('no more');
       this.endPresentation();
-      this.app.connection.emit('toggle-screen-share-label', 'Screen Share');
+      this.app.connection.emit('toggle-screen-share-label', 'Present');
     });
 
     app.connection.on('toggle-screen-share-label', async (text) => {
@@ -553,9 +553,9 @@ class StreamManager {
 
     if (this.presentationStream) {
       this.presentationStream.getTracks().forEach((track) => track.stop());
+      this.presentationStream = null;
     }
 
-    this.presentationStream = null;
   }
 
   broadcastPeerList() {

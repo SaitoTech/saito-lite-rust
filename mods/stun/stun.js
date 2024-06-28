@@ -462,8 +462,7 @@ class Stun extends ModTemplate {
 		};
 
 		dc.onclose = (event) => {
-			console.log('STUN: Data channel is closed');
-			this.removePeerConnection(peerId);
+			console.log('STUN: Data channel is closed with ' + peerId);
 			this.app.connection.emit('stun-data-channel-close', peerId);
 		};
 

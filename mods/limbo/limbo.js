@@ -164,8 +164,10 @@ class Limbo extends ModTemplate {
 
 		//Forward to my peers
 		this.downstream.forEach((pc, key) => {
-			console.log("Forward downstream to: ", key);
-			pc.addTrack(track);
+			if (pc){
+				console.log("Forward downstream to: ", key);
+				pc.addTrack(track);
+			}
 		});
 	}
 
@@ -940,6 +942,10 @@ class Limbo extends ModTemplate {
 			return;
 		}
 
+		if (tx.isFrom(this.publicKey)){
+			return;
+		}
+
 		if (this.app.BROWSER) {
 
 		// So if someone joins, and we have a stream, we send them an offer to share
@@ -947,14 +953,35 @@ class Limbo extends ModTemplate {
 		// and we set a delay proportional to the number of connections so that the 
 		// swarm has balance loading. I.e. no one downstream will biased to add someone
 
+			if (dreamer !== this.dreamer){
+				return;
+			}
+
+			let source = false;
+
 			let peerCt = this.downstream.size;
 			if (this.publicKey === this.dreamer) {
 				peerCt += this.stun.peers.size;
+				source = true;
+			}else{
+				if (this.upstream.size > 0) {
+					this.upstream.forEach((pc, key) => {
+						if (pc){
+							source = true;
+						}
+					});
+				}
 			}
+
+			if (!source){
+				console.warn("Ignoring Join Transaction because I don't have a stable source yet");
+				return;
+			}
+
 			if (
 				this.publicKey !== sender &&
 				this.combinedStream &&
-				peerCt < 5
+				peerCt < 3
 			) {
 
 				setTimeout(()=> {
@@ -1045,7 +1072,8 @@ class Limbo extends ModTemplate {
 			let pc = this.downstream.get(sender);
 			if (pc) {
 				try {
-					pc.close();
+					console.log(`Close my peerconnection with ${sender} who left`)
+					this.stun.removePeerConnection(sender);
 				} catch (err) {
 					console.error(err);
 				}
@@ -1102,6 +1130,7 @@ class Limbo extends ModTemplate {
 			this.upstream.size > 0 ||
 			sender == this.publicKey
 		) {
+			console.log("ignore offer transaction");
 			return;
 		}
 
@@ -1409,7 +1438,7 @@ class Limbo extends ModTemplate {
 
 			if (value) {
 				try {
-					value.close();
+					this.stun.removePeerConnection(key);
 				} catch (err) {
 					console.error(err);
 				}
@@ -1420,7 +1449,7 @@ class Limbo extends ModTemplate {
 
 			if (value) {
 				try {
-					value.close();
+					this.stun.removePeerConnection(key);
 				} catch (err) {
 					console.error(err);
 				}
