@@ -850,6 +850,7 @@ class Arcade extends ModTemplate {
 			);
 		}
 
+ 		newtx.packData();
 		await newtx.sign();
 
 		return newtx;
@@ -2035,15 +2036,15 @@ class Arcade extends ModTemplate {
 
 			let newtx = await this.createOpenTransaction(gamedata);
 
-			console.log("befpre addPendingTx ");
-			this.app.wallet.addPendingTx(newtx);
+			console.log("befpre addPendingTx : ",newtx.toJson());
+			await this.app.wallet.addPendingTx(newtx);
 
 			if (gameType == 'direct') {
 				this.app.connection.emit('arcade-launch-game-scheduler', newtx);
 				return;
 			}
 
-			this.app.network.propagateTransaction(newtx);
+			await this.app.network.propagateTransaction(newtx);
 			this.app.connection.emit('relay-send-message', {
 				recipient: 'PEERS',
 				request: 'arcade spv update',
