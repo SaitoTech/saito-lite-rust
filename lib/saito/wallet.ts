@@ -1215,6 +1215,8 @@ export default class Wallet extends SaitoWallet {
 	 * @return {Transaction}
 	 */
 	async signAndEncryptTransaction(tx: Transaction, recipient = '') {
+
+		
 		if (tx == null) {
 			return null;
 		}
@@ -1291,6 +1293,10 @@ export default class Wallet extends SaitoWallet {
 
 	public isValidPublicKey(key: string): boolean {
 		return S.getInstance().isValidPublicKey(key);
+	}
+
+	public async addPendingTx(tx: Transaction) {
+		return S.getInstance().addPendingTx(tx);
 	}
 
 	public async onUpgrade(type = '', privatekey = '', walletfile = null) {
