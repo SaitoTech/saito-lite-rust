@@ -1119,22 +1119,6 @@ export default class Wallet extends SaitoWallet {
 		return false;
 	}
 
-	addTransactionToPending(tx) {
-		const txjson = JSON.stringify(tx);
-		if (txjson.length > 100000) {
-		  return;
-		}
-
-		if (!("pending" in this.app.options.wallet)) {
-			this.app.options.wallet.pending = [];
-		}
-
-		if (!this.app.options.wallet.pending.includes(txjson)) {
-		  this.app.options.wallet.pending.push(txjson);
-		  this.saveWallet();
-		}
-	}
-
 	/////////////////////
 	// END WEB3 CRYPTO //
 	/////////////////////
