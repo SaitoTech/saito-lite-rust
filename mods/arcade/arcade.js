@@ -2036,9 +2036,6 @@ class Arcade extends ModTemplate {
 
 			let newtx = await this.createOpenTransaction(gamedata);
 
-			console.log("befpre addPendingTx : ",newtx.toJson());
-			await this.app.wallet.addPendingTx(newtx);
-
 			if (gameType == 'direct') {
 				this.app.connection.emit('arcade-launch-game-scheduler', newtx);
 				return;
