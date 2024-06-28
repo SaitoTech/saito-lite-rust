@@ -75,6 +75,7 @@ export default class Wallet extends SaitoWallet {
 		return BigInt(0);
 	}
 
+
 	async initialize() {
 		console.log('wallet.initialize');
 
@@ -381,6 +382,8 @@ export default class Wallet extends SaitoWallet {
 
 		// this.recreate_pending_transactions = 0;
 	}
+
+	
 
 	/**
 	 * Generates a new keypair for the user, resets all stored wallet info, and saves
