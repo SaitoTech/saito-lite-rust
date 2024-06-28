@@ -367,7 +367,7 @@ class RedSquare extends ModTemplate {
       let user_id = this.app.browser.returnURLParameter("user_id");
       let tweet_id = this.app.browser.returnURLParameter("tweet_id");
       if (!tweet_id || !user_id) {
-        let pending = await app.wallet.getPendingTxs();
+        let pending = await app.wallet.getPendingTransactions();
         for (let i = 0; i < pending.length; i++) {
           let tx = pending[i];
           let txmsg = tx.returnMessage();
