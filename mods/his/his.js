@@ -2204,12 +2204,12 @@ Habsburg conquistadores:
       piracy_rating	:	2,
     });
  
-    this.importNavyLeader('andrea-dorea', {
-      type		:	"andrea-dorea" ,
-      name		: 	"Andrea Dorea",
+    this.importNavyLeader('andrea-doria', {
+      type		:	"andrea-doria" ,
+      name		: 	"Andrea Doria",
       personage		:	true,
       navy_leader	:	true,
-      img		:	"Andrea_Dorea.svg",
+      img		:	"Andrea_Doria.svg",
       battle_rating	:	2,
       piracy_rating	:	0,
     });
@@ -22345,6 +22345,7 @@ if (this.game.state.scenario != "is_testing") {
       this.is_first_loop = 0;
     }
 
+console.log("INTO HANDLE GAME LOOP!");
 
     ///////////
     // QUEUE //
