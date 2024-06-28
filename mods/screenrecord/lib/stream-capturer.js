@@ -137,8 +137,7 @@ class StreamCapturer {
                                     videos.forEach(video => {
                                         console.log(this.hasSeenVideo[video.id])
                                         if (this.hasSeenVideo[video.id]) return;
-                                        // this.hasSeenVideo[video.id] = true
-                                        console.log('new video element', video)
+                                        // console.log('new video element', video)
                                         const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
                                         processStream(stream, "2")
                                         // this.combinedStream = new MediaStream([destination.stream.getAudioTracks()[0], this.combinedStream.getVideoTracks()[0]])
