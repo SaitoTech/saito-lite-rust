@@ -93,11 +93,12 @@ class Stun extends ModTemplate {
 					// send ready message to peer, so if they want to create the channel, we are receptive
 					//
 					if (callback == null){
+						console.log("STUN API: Create dummy callback for joinTransaction");
 						callback = (peerId) => {
 							this.sendJoinTransaction(peerId);
 						}			
 					}else if (!callback){
-						console.log("We are intentionally not setting a callback in the stun connection API");
+						console.log("STUN API: We are intentionally not setting a callback in the stun connection API");
 					}
 
 					if (Array.isArray(peerId)){
@@ -472,7 +473,8 @@ class Stun extends ModTemplate {
 		//
 		peerConnection.onnegotiationneeded = async () => {
 			try {
-				console.log(`STUN: Negotation needed! sending offer to ${peerId} with peer connection`);
+				
+				console.log(`STUN: Negotation needed! sending offer to ${peerId} with peer connection, ` + peerConnection.signalingState);
 
 				peerConnection.makingOffer = true;
 

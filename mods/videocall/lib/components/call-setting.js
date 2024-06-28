@@ -126,12 +126,17 @@ class CallSetting {
 			});
 		}
 
-		this.videoInput.addEventListener('change', () =>
-			this.updateMedia('video', videoElement)
-		);
-		this.audioInput.addEventListener('change', () =>
-			this.updateMedia('audio', videoElement)
-		);
+		if (this.videoInput){
+			this.videoInput.addEventListener('change', () =>
+				this.updateMedia('video', videoElement)
+			);
+		}
+
+		if (this.audioInput){
+			this.audioInput.addEventListener('change', () =>
+				this.updateMedia('audio', videoElement)
+			);
+		}
 
 		if (togglePlayback) {
 			togglePlayback.addEventListener('click', () => {
@@ -200,10 +205,10 @@ class CallSetting {
 			option.value = device.deviceId;
 			option.textContent =
 				device.label || `${device.kind} - ${device.deviceId}`;
-			if (device.kind === 'videoinput') {
+			if (device.kind === 'videoinput' && this.videoInput) {
 				videoCt++;
 				this.videoInput.appendChild(option);
-			} else if (device.kind === 'audioinput') {
+			} else if (device.kind === 'audioinput' && this.audioInput) {
 				audioCt++;
 				this.audioInput.appendChild(option);
 			}

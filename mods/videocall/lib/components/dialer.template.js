@@ -8,6 +8,20 @@ module.exports = DialerTemplate = (app, mod, is_dialing = true) => {
 	is_dialing ? '' : ' is calling you'
 }</div>`;
 
+	/*html +=  `<fieldset class="stun-input-settings">
+                <legend class="stun-input-settings-label">Adjust Inputs</legend>
+                <select style="display:none" class="saito-select" id="video-input"></select>
+                <select style="display:none" class="saito-select" id="audio-input"></select>
+                <button style="display:none"  id="test-mic" class="chat-settings-test-mic">Test Microphone</button>
+                <div style="display:none"  class="chat-settings-audio-controls">
+                <i id="toggle-playback" class="fas fa-play chat-settings-toggle-icon"></i>
+                    <span id="audio-progress">00:00 / 00:00</span>
+                </div>
+                <div style="display:none"  class="chat-settings-audio-progress-bar">
+                  <div id="progress" class="chat-settings-progress"></div>
+                </div>
+              </fieldset>`;*/
+
 	if (is_dialing) {
 		html += `<div class="video_switch">
 	      	<label class="switch_label" for="video_call_switch">Enable Video</label>

@@ -825,13 +825,6 @@ video#presentation {
 	color: var(--saito-secondary);
 }
 
-.stun-appspace select {
-	background-color: var(--saito-background-color);
-	color: var(--saito-font-color);
-	height: 3rem;
-	border-radius: var(--saito-border-radius);
-	padding: 0 0.5rem;
-}
 
 .stun-input-settings {
 	padding: 1rem;
@@ -840,6 +833,15 @@ video#presentation {
 	display: flex;
 	flex-direction: column;
 	gap: 1rem;
+}
+
+
+.stun-input-settings select {
+	background-color: var(--saito-background-color);
+	color: var(--saito-font-color);
+	height: 3rem;
+	border-radius: var(--saito-border-radius);
+	padding: 0 0.5rem;
 }
 
 .stun-input-settings legend {
