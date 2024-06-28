@@ -4,7 +4,6 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
 const VideoBox = require('../../lib/saito/ui/saito-videobox/video-box');
 const html2canvas = require('html2canvas')
-const domtoimage = require('dom-to-image');
 const StreamCapturer = require('./lib/stream-capturer');
 const screenrecordWizard = require('./lib/screenrecord-wizard');
 const lamejs = require('lamejs')
