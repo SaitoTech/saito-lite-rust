@@ -1298,7 +1298,7 @@ export default class Wallet extends SaitoWallet {
 		return S.getInstance().isValidPublicKey(key);
 	}
 
-	public async addPendingTx(tx: Transaction) {
+	public async addTransactionToPending(tx: Transaction) {
 		return S.getInstance().addPendingTx(tx);
 	}
 
