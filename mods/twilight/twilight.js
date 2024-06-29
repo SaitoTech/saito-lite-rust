@@ -3912,7 +3912,7 @@ async playerTurnHeadlineSelected(card, player) {
         //First pick
         twilight_self.addMove("headline\theadline2\t"+twilight_self.game.state.headline_hash+"\t"+twilight_self.game.state.headline_xor+"\t"+twilight_self.game.state.headline_card);
       }
-    }else { // NORMAL HEADLINE ORDER
+    } else { // NORMAL HEADLINE ORDER
 
       let hash1 = twilight_self.app.crypto.hash(card);    // my card
       let hash2 = twilight_self.app.crypto.hash(Math.random().toString());  // my secret
@@ -3922,9 +3922,6 @@ async playerTurnHeadlineSelected(card, player) {
 
       let card_sig = twilight_self.app.crypto.signMessage(card, privateKey);
       let hash2_sig = twilight_self.app.crypto.signMessage(hash2, privateKey);
-console.log("CARD_SIG: " + card_sig);
-console.log("HASH2_SIG: " + hash2_sig);
-console.log("getPrivateKey(): " + privateKey);
       let hash3_sig = twilight_self.app.crypto.signMessage(hash3, privateKey);
 
       twilight_self.game.spick_card = card;
@@ -3934,7 +3931,6 @@ console.log("getPrivateKey(): " + privateKey);
       twilight_self.addMove("SIMULTANEOUS_PICK\t"+twilight_self.game.player+"\t"+hash3+"\t"+hash3_sig);
 
     }
-
 
     twilight_self.game.turn = [];
     $('.card').off();
