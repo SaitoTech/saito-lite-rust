@@ -516,9 +516,15 @@ stats overlay
 .settlers-stats-card, .settlers-stats-vp {
 	display: flex;
 	justify-content: center;
+}
+
+.hist-cards .settlers-stats-card {
+	display: flex;
+	justify-content: center;
 	transform: rotate(7deg);
 	margin: 0 0 0 -1rem;
 }
+
 
 .settlers-stats-card img, .settlers-stats-vp img {
 	height: min(4rem, 10vw);
