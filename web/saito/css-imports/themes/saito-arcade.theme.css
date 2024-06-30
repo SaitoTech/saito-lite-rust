@@ -101,7 +101,7 @@ html[data-theme="arcade"] {
   --font-color-user-address: var(--font-color-heavy);
   --font-color-status-message: var(--font-color-heavy);
   /* tag */
-  --font-color-a-link: var(--font-color-heavy);
+  --font-color-a-link: var(--color-primary);
   /* Exempt as system color */
   --font-color-hover-a-link: var(--font-color-primary);
   /* Exempt as system color */
