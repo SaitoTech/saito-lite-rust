@@ -80,8 +80,8 @@ class TST extends CryptoModule {
 		return 0;
 	}
 
-	renderModalSelectCrypto(app, mod, cryptomod) {
-		return WarningTemplate(this.returnAddress());
+	async renderModalSelectCrypto(app, mod, cryptomod) {
+		return WarningTemplate(await this.returnAddress());
 	}
 
 	attachEventsModalSelectCrypto(app, mod, cryptomod) {
