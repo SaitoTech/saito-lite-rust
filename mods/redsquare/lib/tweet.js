@@ -1324,11 +1324,14 @@ class Tweet {
 			if (!first_link.startsWith('http')) {
 				first_link = 'http://' + first_link;
 			}
+			
 			//console.log(first_link);
 
 			if (typeof first_link == 'undefined') {
 				return this;
 			}
+
+			this.link = first_link;
 
 			let urlParams = null;
 
@@ -1340,6 +1343,8 @@ class Tweet {
 				console.error(err);
 				this.link = first_link;
 			}
+
+			//console.log(this.link);
 
 			//
 			// youtube link
@@ -1386,6 +1391,7 @@ class Tweet {
 				}
 			}
 		}
+		//console.log(this.link);
 
 		return this;
 	}
