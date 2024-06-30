@@ -370,7 +370,7 @@ class Keychain {
 		return return_key;
 	}
 
-	returnKeys(data = null) {
+	returnKeys(data = null, force_local_keychain = true) {
 		const kx = [];
 
 		//
@@ -402,8 +402,48 @@ class Keychain {
 			}
 		}
 
+		if (!force_local_keychain){
+			//
+			//Fallback to cached registry
+			//
+			this.app.modules
+				.getRespondTos('saito-return-key')
+				.forEach((modResponse) => {
+					//
+					// Return keys converts the publickey->identifer object into
+					// an array of {publicKey, identifier} objects
+					//
+					for (let key of modResponse.returnKeys()) {
+						let can_add = true;
+
+						// Don't add myself
+						if (key.publicKey == this.publicKey) {
+							continue;
+						}
+
+						// Make sure not already added from my actual keychain
+						for (let added_keys of kx) {
+							if (added_keys.publicKey == key.publicKey) {
+								can_add = false;
+								break;
+							}
+						}
+
+						if (can_add) {
+							kx.push(key);
+						}
+					}
+				}
+			);
+
+		}
+
 		return kx;
 	}
+
+
+
+
 
 	returnGroups() {
 		return this.groups;
@@ -435,6 +475,7 @@ class Keychain {
 						this.keys[x].identicon != '' &&
 						typeof this.keys[x].identicon !== 'undefined'
 					) {
+						console.log("Saved identicon!");
 						return this.keys[x].identicon;
 					}
 				}

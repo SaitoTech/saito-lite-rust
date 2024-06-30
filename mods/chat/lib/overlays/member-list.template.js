@@ -2,9 +2,7 @@ module.exports = (app, mod, chat_group) => {
 	let html = "";
 
 	const formatUser = (publickey, usericon = "", fourthElement = '<div></div>') => {
-			let imgsrc = app.crypto.isPublicKey(publickey)
-				? app.keychain.returnIdenticon(publickey)
-				: '';
+			let imgsrc = app.keychain.returnIdenticon(publickey);
 			let name = app.keychain.returnIdentifierByPublicKey(publickey, true);
 			if (name == publickey) {
 				name = 'Anonymous User';

@@ -344,7 +344,7 @@ class Browser {
 					let publicKey = e.target.getAttribute('data-id');
 					if (
 						!publicKey ||
-						!app.crypto.isPublicKey(publicKey) ||
+						!app.wallet.isValidPublicKey(publicKey) ||
 						disable_click === 'true' ||
 						disable_click == true
 					) {
@@ -414,7 +414,7 @@ class Browser {
 							add = key.publicKey;
 						}
 						if (
-							this.app.crypto.isPublicKey(cleaner) &&
+							this.app.wallet.isValidPublicKey(cleaner) &&
 							(add == '' || add == null)
 						) {
 							add = cleaner;
@@ -432,7 +432,7 @@ class Browser {
 
 		if (adds) {
 			adds.forEach((add) => {
-				if (this.app.crypto.isPublicKey(add) && !keys.includes(add)) {
+				if (this.app.wallet.isValidPublicKey(add) && !keys.includes(add)) {
 					keys.push(add);
 				}
 			});
@@ -442,7 +442,7 @@ class Browser {
 				let key = this.app.keychain.returnKey({ identifier: id });
 				if (key.publicKey) {
 					let add = key.publicKey;
-					if (this.app.crypto.isPublicKey(add)) {
+					if (this.app.wallet.isValidPublicKey(add)) {
 						if (!keys.includes(add)) {
 							keys.push(add);
 						}
@@ -2271,7 +2271,7 @@ class Browser {
 					) {
 						el.classList.add('treated');
 						let key = el.dataset?.id;
-						if (key && saito_app.crypto.isPublicKey(key)) {
+						if (key && saito_app.wallet.isValidPublicKey(key)) {
 							let identifier =
 								saito_app.keychain.returnIdentifierByPublicKey(
 									key,
@@ -2429,70 +2429,78 @@ class Browser {
 		}
 	}
 
-	addSaitoMentions(users, textarea, listDiv, inputType) {
-		const resolveFn = prefix => prefix === ''
-			? users
-			: users.filter(user => {
-				if (typeof user.identifier != 'undefined') {
-					return user.identifier.startsWith(prefix)
-				} else {
-					return user.publicKey.startsWith(prefix)
-				}
-			})
+	addSaitoMentions(textarea, listDiv, inputType) {
 
-		const replaceFn = (user, trigger) => {
-			let replace = '';
-			if (typeof user.identifier != 'undefined') {
-				replace = `${trigger}${user.identifier} `;
-			} else {
-				replace = `${trigger}${user.publicKey} `;
-			}
-
-			return replace;
-		}
-
-		const menuItemFn = (user, setItem, selected) => {
-			const parentDiv = document.createElement('div');
-			parentDiv.classList.add('saito-mentions-contact');
-
-
-			// identifier 
-			const identicon = document.createElement('img');
-			identicon.classList.add('saito-identicon');
-			identicon.setAttribute('src', user.identicon);
-
-			parentDiv.appendChild(identicon);
-
-			// username div
-			const div = document.createElement('div')
-			div.setAttribute('role', 'option')
-			div.className = 'menu-item'
-			if (selected) {
-				div.classList.add('selected')
-				div.setAttribute('aria-selected', '')
-			}
-
-			if (typeof user.identifier != 'undefined') {
-				div.textContent = user.identifier
-			} else {
-				div.textContent = user.publicKey
-			}
-			
-
-			parentDiv.appendChild(div);
-			parentDiv.onclick = setItem;
-			return parentDiv;
-		}
-
+		console.log("addSaitoMentions");
 		new SaitoMentions(
+			this.app,
 			textarea,
 			listDiv,
-			resolveFn,
-			replaceFn,
-			menuItemFn,
 			inputType
 		)
 	}
+
+	extractMentions(text){
+		let potential_keys = text.matchAll(/(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]*)/g);
+		let keys = [];
+
+        for (let k of potential_keys){
+            let split = k[0].split('@');
+            let username = '';
+            let key = '';
+
+            if (split.length > 2) {
+              username = split[1] + '@' + split[2];
+              key =
+                this.app.keychain.returnPublicKeyByIdentifier(
+                  username
+                );
+            } else {
+              username = this.app.keychain.returnUsername(split[1]);
+              key = split[1];
+            }
+
+            console.log("Key: ", key);
+            if (this.app.wallet.isValidPublicKey(key)) {
+            	if (!keys.includes(key)){
+            		keys.push(key);
+            	}
+            }
+        }
+
+	    return keys;
+	}
+
+	markupMentions(text){
+        return text.replaceAll(
+          /(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]*)/g,
+          (k) => {
+            let split = k.split('@');
+            let username = '';
+            let key = '';
+
+            if (split.length > 2) {
+              username = split[1] + '@' + split[2];
+              key =
+                this.app.keychain.returnPublicKeyByIdentifier(
+                  username
+                );
+            } else {
+              username = this.app.keychain.returnUsername(split[1]);
+              key = split[1];
+            }
+
+            if (this.app.wallet.isValidPublicKey(key)) {
+            	return 	`<span class="saito-mention saito-address" data-id="${key}">${username}</span>`;
+            }else{
+            	return k;
+            }
+
+          }
+        );
+	}
+
+
 
 	validateAmountLimit(amount, event){
 		// allow only numbers, dot, backspace

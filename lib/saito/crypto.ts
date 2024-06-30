@@ -283,26 +283,17 @@ export default class Crypto {
 		return stringx;
 	}
 
-	/**
-	 * Checks if a publickey passed into a function
-	 * fits the criteria for a publickey
-	 * @param {string} publickey
-	 * @returns {boolean} does publickey fit the criteria?
-	 */
-	isPublicKey(publicKey: string) {
-		// if (publicKey.length == 65 || publicKey.length == 66) {
-		//   return 1;
-		if (publicKey){
-			if (publicKey.indexOf('@') <= 0) {
-				if (this.isBase58(publicKey)) {
-					return 1;
-				}
-			}
-		}
 
-		// }
-		return 0;
-	}
+  	isPublicKey(publicKey: string) {
+           if (publicKey){
+                   if (publicKey.indexOf('@') <= 0) {
+                           if (this.isBase58(publicKey)) {
+                                   return 1;
+                           }
+                   }
+           }
+           return 0;
+       }
 
 	isBase58(t: string) {
 		return /^[A-HJ-NP-Za-km-z1-9]*$/.test(t);

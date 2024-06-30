@@ -217,7 +217,7 @@ class Chat extends ModTemplate {
     let chat_id = this.app.browser.returnURLParameter('chat_id');
 
     if (chat_id) {
-      if (this.app.crypto.isPublicKey(chat_id)) {
+      if (this.app.wallet.isValidPublicKey(chat_id)) {
         //data.key = public key(s) of other chat parties
         this.app.connection.emit('open-chat-with', { key: chat_id });
       } else {
@@ -1626,28 +1626,7 @@ class Chat extends ModTemplate {
             sender = block[z].from[0];
 
             // replace @mentions with saito treated address
-            block[z].msg = block[z].msg.replaceAll(
-              /(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]*)/g,
-              function (k) {
-                let split = k.split('@');
-                let username = '';
-                let key = '';
-
-                if (split.length > 2) {
-                  username = split[1] + '@' + split[2];
-                  key =
-                    chat_self.app.keychain.returnPublicKeyByIdentifier(
-                      username
-                    );
-                } else {
-                  username = chat_self.app.keychain.returnUsername(split[1]);
-                  key = split[1];
-                }
-                let replaced = `<span class="saito-mention saito-address" data-id="${key}" 
-															data-disable="true" contenteditable="false">${username}</span>`;
-                return replaced;
-              }
-            );
+            block[z].msg = chat_self.app.browser.markupMentions(block[z].msg);
 
             // Get my like status
             let liked = '';
