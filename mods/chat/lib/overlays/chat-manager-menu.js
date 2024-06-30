@@ -55,7 +55,7 @@ class ChatManagerMenu {
 		if (document.getElementById('add-publickey')) {
 			document.getElementById('add-publickey').onclick = async (e) => {
 				let add = await sprompt('Enter Address of Contact to Add:');
-                                if (add != '' && this.app.crypto.isPublicKey(add)) {
+                                if (add != '' && this.app.wallet.isValidPublicKey(add)) {
 					salert(`Adding ${add} as Contact`);
 					this.app.keychain.addKey(add);
 	                                this.app.connection.emit(
