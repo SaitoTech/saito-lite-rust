@@ -28,6 +28,7 @@
 	position: absolute;
 	height: 46rem;
 	width: 36rem;
+	max-width: 100%;
 	z-index: 150;
 	display: flex;
 	align-items: center;
@@ -280,6 +281,8 @@ emoji-picker {
   font-size: 1.6rem;
   border-radius: 0.5rem;
   padding: 0.5rem 0 0.5rem 0.2rem;
+  max-width: 100%;
+  width: 36rem;
 }
 
 .saito-mentions-list.hidden {
@@ -292,18 +295,15 @@ emoji-picker {
 }
 
 .saito-mentions-list .menu-item {
-	padding: 0.5rem;
+	padding: 0.55rem;
+	width: calc(100% - 4rem);
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .saito-mentions-list .saito-identicon {
 	width: 3rem;
 	height: 3rem;
-}
-
-.menu-item {
-  cursor: default;
-  padding: 1rem;
-  color: var(--saito-font-color);
 }
 
 .menu-item.selected {
@@ -318,11 +318,11 @@ emoji-picker {
 .saito-mentions-contact {
   cursor: pointer;
   display: flex;
-  gap: 0.5rem;
   width: 100%;
   align-items: center;
   height: 4rem;
   padding: 0.75rem 0.5rem;
+  gap: 0.5rem;
 }
 
 .saito-mentions-contact:hover .menu-item {
