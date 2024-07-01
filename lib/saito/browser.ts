@@ -2436,7 +2436,6 @@ class Browser {
 
 	addSaitoMentions(textarea, listDiv, inputType) {
 
-		console.log("addSaitoMentions");
 		new SaitoMentions(
 			this.app,
 			textarea,
@@ -2446,7 +2445,7 @@ class Browser {
 	}
 
 	extractMentions(text){
-		let potential_keys = text.matchAll(/(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]*)/g);
+		let potential_keys = text.matchAll(/(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]+)/g);
 		let keys = [];
 
         for (let k of potential_keys){
@@ -2478,8 +2477,9 @@ class Browser {
 
 	markupMentions(text){
         return text.replaceAll(
-          /(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]*)/g,
+          /(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]+)/g,
           (k) => {
+          	console.log(k);
             let split = k.split('@');
             let username = '';
             let key = '';

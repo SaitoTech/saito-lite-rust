@@ -475,7 +475,6 @@ class Keychain {
 						this.keys[x].identicon != '' &&
 						typeof this.keys[x].identicon !== 'undefined'
 					) {
-						console.log("Saved identicon!");
 						return this.keys[x].identicon;
 					}
 				}
@@ -544,11 +543,10 @@ class Keychain {
 
 	returnPublicKeyByIdentifier(identifier: string) {
 		let key = this.returnKey({ identifier: identifier });
-		if (key) {
-			if (key.publicKey) {
-				return key.publicKey;
-			}
+		if (key?.publicKey) {
+			return key.publicKey;
 		}
+		console.log(identifier + " not found!");
 		return null;
 	}
 
