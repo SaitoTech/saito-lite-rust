@@ -413,10 +413,11 @@ class Chat extends ModTemplate {
           //
           console.log(JSON.stringify(group.members));
 
-          if (JSON.stringify(group.members) === serverName){
+          if (JSON.stringify(group.members) === serverName || group.members.length > 2){
+            let last_update = group?.last_update || 0;
 
-            console.log("Time since last update (s): ", (now - group.last_update)/1000);
-            if (now - group.last_update > (1000 * 60 * 60 * 24)){
+            console.log("Time since last update (s): ", (now - last_update)/1000);
+            if (now - last_update > (1000 * 60 * 60 * 24)){
               console.log("Delete!");
               await this.deleteChatGroup(group);
             }
