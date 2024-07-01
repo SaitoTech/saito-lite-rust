@@ -1707,7 +1707,9 @@ if (this.app.modules.moderate(txs[z], this.name) != -1) {
 
         await this.app.storage.updateTransaction(liked_tweet.tx, {}, "localhost");
 
-        liked_tweet.rerenderControls();
+        if (this.browser_active && liked_tweet.isRendered()){
+          liked_tweet.rerenderControls();
+        }
       }
     } else {
       //
@@ -1748,7 +1750,7 @@ if (this.app.modules.moderate(txs[z], this.name) != -1) {
     //
     // browsers
     //
-    if (app.BROWSER == 1) {
+    if (app.BROWSER) {
       this.addNotification(tx);
     }
 
@@ -2129,7 +2131,9 @@ if (this.app.modules.moderate(txs[z], this.name) != -1) {
             other_tweet.tx.optional.num_retweets++;
             console.log("REDSQUARE: Increment retweets ", other_tweet.tx.optional.num_retweets);
             await this.app.storage.updateTransaction(other_tweet.tx, {}, "localhost");
-            other_tweet.rerenderControls();
+            if (this.browser_active && other_tweet.isRendered()){
+              other_tweet.rerenderControls();
+            }
           } else {
             console.log("Nope out of retweet incrementing");
           }
@@ -2181,8 +2185,9 @@ if (this.app.modules.moderate(txs[z], this.name) != -1) {
           if (tx.timestamp > other_tweet.updated_at) {
             other_tweet.tx.optional.num_replies++;
             console.log("REDSQUARE: Increment replies ", other_tweet.tx.optional.num_replies);
-            other_tweet.rerenderControls();
-
+            if (this.browser_active && other_tweet.isRendered()){
+              other_tweet.rerenderControls();
+            }
             await this.app.storage.updateTransaction(other_tweet.tx, {}, "localhost");
           } else {
             console.log("Nope out of reply count incrementing");

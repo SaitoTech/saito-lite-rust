@@ -507,6 +507,10 @@ class Tweet {
 		this.setKeys(this.tx.optional);
 		//console.log(this.num_replies, this.num_retweets, this.num_likes);
 
+		if (!this.app.BROWSER || !this.browser_active){
+			return;
+		}
+
 		if (complete_rerender) {
 			this.render();
 		} else {
