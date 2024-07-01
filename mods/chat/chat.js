@@ -401,13 +401,23 @@ class Chat extends ModTemplate {
       let now = new Date().getTime();
       let serverName = JSON.stringify([peer.publicKey]);
 
+      console.log("Chat server: ", serverName);
+
       for (let group of this.groups) {
+        
+        console.log(group.name);
+        
         if (group.name !== this.communityGroupName) {
           //
           // Not the community group but using the chat server, clear these out after 1 day by default
           //
+          console.log(JSON.stringify(group.members));
+
           if (JSON.stringify(group.members) === serverName){
+
+            console.log("Time since last update (s): ", (now - group.last_update)/1000);
             if (now - group.last_update > (1000 * 60 * 60 * 24)){
+              console.log("Delete!");
               await this.deleteChatGroup(group);
             }
           }
