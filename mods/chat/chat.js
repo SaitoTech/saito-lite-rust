@@ -94,6 +94,8 @@ class Chat extends ModTemplate {
     this.app.connection.on('chat-ready', () => {
       if (this.auto_open_community) {
         this.app.connection.emit('chat-popup-render-request');
+      }else{
+        this.app.connection.emit('chat-manager-render-request');
       }
     });
 
@@ -375,10 +377,12 @@ class Chat extends ModTemplate {
               for (let i = 0; i < txs.length; i++) {
                 if (txs[i].timestamp > most_recent_ts) {
                   this.communityGroup.txs.push(txs[i]);
+                  this.communityGroup.unread++;
                 }
               }
             } else {
               this.communityGroup.txs = txs;
+              this.communityGroup.unread = txs.length;
             }
 
             if (this.app.BROWSER) {
