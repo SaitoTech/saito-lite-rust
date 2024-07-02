@@ -99,14 +99,14 @@ class MixinModule extends CryptoModule {
 					} else {
 						salert('Having problem generating key for '+' '+this_self.ticker);
 						await this.app.wallet.setPreferredCrypto('SAITO', 1);
-						this.app.connection.emit('header-update-balance');
+						this.app.connection.emit('wallet-updated');
 						this.app.connection.emit('update_identifier', this.publicKey);
 					}
 				});
 		} else {
 			
 			if (this.is_initialized == 0 || this.destination == "" || this.destination == null) {
-				this.app.connection.emit('create-mixin-account');
+				//this.app.connection.emit('create-mixin-account');
 				await this.mixin.createDepositAddress(this_self.asset_id);
 				await this.showBackupWallet();
 			}
@@ -183,7 +183,7 @@ class MixinModule extends CryptoModule {
 			this.balance_timestamp_last_fetched = new Date().getTime();
 			await this.mixin.fetchSafeUtxoBalance(this.asset_id);
 
-			this.app.connection.emit('header-update-balance');
+			this.app.connection.emit('wallet-updated');
 		}
 		return this.balance;
 	}

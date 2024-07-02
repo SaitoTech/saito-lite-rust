@@ -99,7 +99,6 @@ export default class Wallet extends SaitoWallet {
 			}
 
 			async returnBalance() {
-				console.log("returnBalance 1: ", await this.app.wallet.getBalance());
 				return this.app.wallet.convertNolanToSaito(
 					await this.app.wallet.getBalance()
 				);
@@ -211,6 +210,8 @@ export default class Wallet extends SaitoWallet {
 
 			async formatBalance(precision = 2) {
 				let balance = await this.returnBalance();
+
+				console.log(`Balance fetched:  ${balance} SAITO`);
 
 				if (typeof balance == 'undefined') {
 					balance = '0.00';
