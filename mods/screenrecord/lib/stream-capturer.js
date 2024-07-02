@@ -259,7 +259,13 @@ class StreamCapturer {
                     processStream(stream);
                 });
             }
-            this.combinedStream = new MediaStream([destination.stream.getAudioTracks()[0], this.combinedStream.getVideoTracks()[0]])
+
+            if(includeCamera){
+                this.combinedStream = new MediaStream([destination.stream.getAudioTracks()[0], this.combinedStream.getVideoTracks()[0]])
+            }else {
+                this.combinedStream = new MediaStream([destination.stream.getAudioTracks()[0]])
+            }
+      
             return this.combinedStream;
 
         } catch (error) {
