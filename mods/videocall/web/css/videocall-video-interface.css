@@ -222,7 +222,7 @@
 }
 
 .side-videos .video-box-container-large {
-	height: fit-content;
+	/*height: fit-content;*/
 	max-height: 100%;
 	overflow: clip;
 }
