@@ -442,13 +442,11 @@ export default class Wallet extends SaitoWallet {
 		if (!this.app.options.wallet) {
 			this.app.options.wallet = {};
 		}
-
 		this.app.options.wallet.preferred_crypto = this.preferred_crypto;
 		this.app.options.wallet.preferred_txs = this.preferred_txs;
 		this.app.options.wallet.version = this.version;
 		this.app.options.wallet.default_fee = this.default_fee;
 
-		console.log(this.app.options.wallet);
 		let slips = await this.getSlips();
 
 		this.app.options.wallet.slips = slips.map((slip) => slip.toJson());
@@ -464,8 +462,6 @@ export default class Wallet extends SaitoWallet {
 	returnInstalledCryptos() {
 		const cryptoModules =
 			this.app.modules.returnModulesBySubType(CryptoModule);
-
-			console.log("returnInstalledCryptos: //",cryptoModules);
 		if (this.saitoCrypto !== null) {
 			cryptoModules.push(this.saitoCrypto);
 		}
