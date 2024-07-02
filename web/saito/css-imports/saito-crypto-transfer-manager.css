@@ -248,6 +248,15 @@ input[type=number] {
 
 .transfer-address .to-address {
   line-height: 2.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+  width: 86%;
+}
+
+.transfer-address {
+  width: -webkit-fill-available;
 }
 
 .crypto-transfer-fast-mode {

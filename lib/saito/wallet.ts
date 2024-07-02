@@ -446,6 +446,7 @@ export default class Wallet extends SaitoWallet {
 		this.app.options.wallet.preferred_txs = this.preferred_txs;
 		this.app.options.wallet.version = this.version;
 		this.app.options.wallet.default_fee = this.default_fee;
+
 		let slips = await this.getSlips();
 
 		this.app.options.wallet.slips = slips.map((slip) => slip.toJson());
