@@ -241,6 +241,7 @@ class Settlers extends GameTemplate {
 		this.racetrack.win = this.game.options.game_length;
 		this.racetrack.title = 'Victory Points';
 		this.racetrack.icon = `<i class="fa-solid fa-crown"></i>`;
+		this.racetrack.players = [];
 		for (let i = 0; i < this.game.players.length; i++) {
 			let player = {
 				name: app.keychain.returnUsername(this.game.players[i]),
@@ -479,12 +480,14 @@ class Settlers extends GameTemplate {
 		if (this.game.state == undefined) {
 			this.game.state = this.initializeState();
 
-			let colors = [1, 2, 3, 4];
-			this.game.colors = [];
-			for (let i = 0; i < this.game.players.length; i++) {
-				this.game.colors = this.game.colors.concat(
-					colors.splice(this.rollDice(colors.length) - 1, 1)
-				);
+			if (!this.game.colors){
+				let colors = [1, 2, 3, 4];
+				this.game.colors = [];
+				for (let i = 0; i < this.game.players.length; i++) {
+					this.game.colors = this.game.colors.concat(
+						colors.splice(this.rollDice(colors.length) - 1, 1)
+					);
+				}
 			}
 
 			this.game.stats = this.initializeStats();

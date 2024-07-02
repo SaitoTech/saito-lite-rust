@@ -220,6 +220,7 @@ stats overlay
 	filter: brightness(65%) grayscale(30%) opacity(0.50);
 }
 
+
 .settlers-achievements-row .victory_point_cards img {
 	height: 6.5rem;
 	width: auto !important;
@@ -411,6 +412,7 @@ stats overlay
 
 .welcome_overlay {
 	padding: 0 !important;
+	display: flex;
 }
 
 .stats-table {
@@ -525,6 +527,15 @@ stats overlay
 	margin: 0 0 0 -1rem;
 }
 
+.hist-cards .settlers-stats-card.no-vp {
+	filter: brightness(60%) grayscale(15%);
+	transform: rotate(-7deg);
+}
+
+.settlers-hist-row.robber .hist-cards .settlers-stats-card {
+	transform: rotate(90deg);
+}
+
 
 .settlers-stats-card img, .settlers-stats-vp img {
 	height: min(4rem, 10vw);
@@ -584,10 +595,6 @@ stats overlay
 .settlers-hist-row .roll {
 	display: flex;
 	justify-content: space-around;
-}
-
-.settlers-hist-row.robber .settlers-stats-card img {
-	transform: rotate(90deg);
 }
 
 .settlers-timeline-turn-lables {
