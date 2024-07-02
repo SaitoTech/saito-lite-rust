@@ -342,23 +342,15 @@ class RedSquare extends ModTemplate {
     //
     this.loadOptions();
 
-    if (app.BROWSER == 0) {
-      //
-      // We don't need to do anything here ...
-      // We used to update the tweets cache
-      // The service node doesn't keep any tweets in memory,
-      // but it may be a good idea in the future to do a quick load of the 10 most recent tweets here
-      // And have the service node process the addTweet function (with a lot of pruning), to keep the most
-      // recent tweets in memory, ready to serve up on a page load request...
-      //
-    } else {
+    if (!app.BROWSER) {
+      return;
+     //Let's not run the following DOM checking code on the server!
+    } 
 
-      //
-      // add myself as peer...
-      //
-      this.addPeer("localhost");
-
-    }
+    //
+    // add myself as peer...
+    //
+    this.addPeer("localhost");
 
     //
     // check tweets in pending txs
@@ -373,7 +365,6 @@ class RedSquare extends ModTemplate {
           let txmsg = tx.returnMessage();
           if (txmsg && txmsg.module == this.name) {
             if (txmsg.request === "create tweet") {
-              //this.addNotification(tx);
               this.addTweet(tx, "pending_tx");
             }
           }
@@ -439,13 +430,7 @@ class RedSquare extends ModTemplate {
           for (let z = 0; z < window.tweets.length; z++) {
             let newtx = new Transaction();
             newtx.deserialize_from_web(this.app, window.tweets[z]);
-//
-// we want to moderate
-//
-if (this.app.modules.moderate(newtx, this.name) != -1) {
-        console.log("adding tx from: " + newtx.from[0].publicKey);
             this.addTweet(newtx, "server_cache");
-}
           }
         }
       }
@@ -808,21 +793,11 @@ if (this.app.modules.moderate(newtx, this.name) != -1) {
 
       if (txmsg.request === "delete tweet") {
         await this.receiveDeleteTransaction(blk, tx, conf, this.app);
+        return;
       }
       if (txmsg.request === "edit tweet") {
         await this.receiveEditTransaction(blk, tx, conf, this.app);
-      }
-      if (txmsg.request === "create tweet") {
-        await this.receiveTweetTransaction(blk, tx, conf, this.app);
-      }
-      if (txmsg.request === "like tweet") {
-        await this.receiveLikeTransaction(blk, tx, conf, this.app);
-      }
-      if (txmsg.request === "flag tweet") {
-        await this.receiveFlagTransaction(blk, tx, conf, this.app);
-      }
-      if (txmsg.request === "retweet") {
-        await this.receiveRetweetTransaction(blk, tx, conf, this.app);
+        return;
       }
       if (txmsg.request === "follow") {
         if (this.app.BROWSER) {
@@ -837,6 +812,7 @@ if (this.app.modules.moderate(newtx, this.name) != -1) {
             this.app.storage.saveOptions();
           }
         }
+        return;
       }
       if (txmsg.request === "unfollow") {
         if (this.app.BROWSER) {
@@ -853,6 +829,26 @@ if (this.app.modules.moderate(newtx, this.name) != -1) {
             this.app.storage.saveOptions();
           }
         }
+        return;
+      }
+
+      //These are the core RS functions, which should process addTweet / addNotification
+
+      if (txmsg.request === "create tweet") {
+        await this.receiveTweetTransaction(blk, tx, conf, this.app);
+      }
+      if (txmsg.request === "like tweet") {
+        await this.receiveLikeTransaction(blk, tx, conf, this.app);
+      }
+      if (txmsg.request === "flag tweet") {
+        await this.receiveFlagTransaction(blk, tx, conf, this.app);
+      }
+      if (txmsg.request === "retweet") {
+        await this.receiveRetweetTransaction(blk, tx, conf, this.app);
+      }
+
+      if (this.app.BROWSER){
+        this.addTweet(tx, "receiveTweet");
       }
     }
   }
@@ -988,19 +984,12 @@ if (this.app.modules.moderate(newtx, this.name) != -1) {
 
       txs[z].decryptMessage(this.app);
 
-//
-// moderation loop
-//
-if (this.app.modules.moderate(txs[z], this.name) != -1) {
-
       if (txs[z].updated_at < peer.tweets_earliest_ts) {
         peer.tweets_earliest_ts = txs[z].updated_at;
       }
       if (txs[z].updated_at > peer.tweets_latest_ts) {
         peer.tweets_latest_ts = txs[z].updated_at;
       }
-
-      this.addNotification(txs[z]);
 
       // (---------  false  --------- )
       // only add if this is a new tweet, it might be an
@@ -1034,7 +1023,6 @@ if (this.app.modules.moderate(txs[z], this.name) != -1) {
           //}
         }
       }
-} // moderation loop
     }
 
     if (peer.tweets_earliest_ts < this.tweets_earliest_ts){
@@ -1132,6 +1120,9 @@ if (this.app.modules.moderate(txs[z], this.name) != -1) {
     };
 
     if (this.notifications_earliest_ts) {
+
+      console.log(`RS: query notifications before -- ${new Date(this.notifications_earliest_ts)}`);
+
       this.app.storage.loadTransactions(
         {
           field1: "RedSquare",
@@ -1211,7 +1202,6 @@ if (this.app.modules.moderate(txs[z], this.name) != -1) {
           if (txs.length > 0) {
             for (let z = 0; z < txs.length; z++) {
               txs[z].decryptMessage(this.app);
-              this.addNotification(txs[z]);
               this.addTweet(txs[z], "tweet_thread");
             }
           }
@@ -1313,6 +1303,17 @@ if (this.app.modules.moderate(txs[z], this.name) != -1) {
   addTweet(tx, source) {
 
     //
+    // This might be the best place for moderation because it will catch tweets loaded from archive
+    // and received on chain... we just nope out and all the niceties such as infinite scrolling 
+    // should function normally...
+    // 
+    if (this.app.modules.moderate(tx, this.name) == -1) {
+      return 0;
+    }
+
+    this.addNotification(tx);
+
+    //
     // if this is a like or flag tx, it isn't anything to add to the feed so stop here
     //
     let txmsg = tx.returnMessage();
@@ -1321,6 +1322,7 @@ if (this.app.modules.moderate(txs[z], this.name) != -1) {
       txmsg.request === "flag tweet" ||
       txmsg.request === "retweet"
     ) {
+      console.log("Don't process " + txmsg.request);
       return 0;
     }
 
@@ -1480,7 +1482,7 @@ if (this.app.modules.moderate(txs[z], this.name) != -1) {
           }
 
           this.notifications.splice(insertion_index, 0, tweet);
-          this.notifications_sigs_hmap[tweet.tx.signature] = 1;
+          this.notifications_sigs_hmap[tx.signature] = 1;
 
           if (tx.timestamp > this.notifications_last_viewed_ts) {
             this.notifications_number_unviewed = this.notifications_number_unviewed + 1;
@@ -1748,20 +1750,13 @@ if (this.app.modules.moderate(txs[z], this.name) != -1) {
     }
 
     //
-    // browsers
-    //
-    if (app.BROWSER) {
-      this.addNotification(tx);
-    }
-
-    //
     // Save locally -- indexed to myKey so it is accessible as a notification
     //
     // I'm not sure we really want to save these like this... but it may work out for profile views...
     //
     await this.app.storage.saveTransaction(tx, { field1: "RedSquareLike" }, "localhost");
 
-    //console.log(`RS Save like from: ${tx.from[0].publicKey} to ${tx.to[0].publicKey}`);
+    console.log(`RS Save like from: ${tx.from[0].publicKey} to ${tx.to[0].publicKey}`);
 
     return;
   }
@@ -1850,13 +1845,6 @@ if (this.app.modules.moderate(txs[z], this.name) != -1) {
         },
         "localhost"
       );
-    }
-
-    //
-    // browsers
-    //
-    if (app.BROWSER == 1) {
-      this.addNotification(tx);
     }
 
     return;
@@ -2062,14 +2050,6 @@ if (this.app.modules.moderate(txs[z], this.name) != -1) {
       let tweet = new Tweet(app, this, tx, ".tweet-manager");
       let other_tweet = null;
       let txmsg = tx.returnMessage();
-
-      //
-      // browsers keep a list in memory of processed tweets
-      //
-      if (app.BROWSER == 1) {
-        this.addNotification(tx);
-        this.addTweet(tx, "receiveTweet");
-      }
 
       //
       // save this transaction in our archives as a redsquare transaction that is owned by ME (the server), so that I
@@ -2345,7 +2325,6 @@ if (this.app.modules.moderate(txs[z], this.name) != -1) {
         if (txs.length > 0) {
           for (let z = 0; z < txs.length; z++) {
             txs[z].decryptMessage(this.app);
-            this.addNotification(txs[z]);
             this.addTweet(txs[z], "local_cache");
           }
         }

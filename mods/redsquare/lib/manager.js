@@ -212,11 +212,10 @@ class TweetManager {
 					);
 					notification.render('.tweet-manager');
 				}
-				this.attachEvents();
 
-			}else{
-				this.loadNotifications();
 			}
+			
+			this.loadNotifications();
 
 		}
 	}

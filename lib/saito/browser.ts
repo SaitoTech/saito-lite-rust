@@ -2479,7 +2479,6 @@ class Browser {
         return text.replaceAll(
           /(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]+)/g,
           (k) => {
-          	console.log(k);
             let split = k.split('@');
             let username = '';
             let key = '';
