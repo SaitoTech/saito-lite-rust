@@ -301,7 +301,8 @@ class CallInterfaceVideo {
 
 	createActionItem(item, container, index) {
 		let id = 'call_action_item_' + index;
-		let html = `<div id="${id}" class="icon_click_area ${item?.hook}">
+		let hook = item?.hook || "";
+		let html = `<div id="${id}" class="icon_click_area ${hook}">
 						<label>${item.text}</label>
 						<i class="${item.icon}"></i>
 					</div>`;
@@ -327,6 +328,11 @@ class CallInterfaceVideo {
 			} else {
 				console.warn('Adding an action item with no callback');
 			}
+
+		    if (item.event) {
+		       item.event(id);
+		    }
+
 		} else {
 			console.warn('Item not found');
 		}
