@@ -825,7 +825,12 @@ class ChatPopup {
 			} else {
 				throw new Error('Invalid filesrc type');
 			}
-			let resizedImageUrl = await app.browser.resizeImg(imageUrl); // (img, dimensions, quality)
+
+			let resizedImageUrl = imageUrl;
+			if (!imageUrl.includes('giphy.gif')){
+				console.log("************* Resize Image!");
+				resizedImageUrl = await app.browser.resizeImg(imageUrl); // (img, dimensions, quality)
+			}
 
 			let img = document.createElement('img');
 			img.classList.add('img-prev');

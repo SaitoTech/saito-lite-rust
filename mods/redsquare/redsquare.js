@@ -114,7 +114,7 @@ class RedSquare extends ModTemplate {
 
     this.tweets_earliest_ts = new Date().getTime();
 
-    this.allowed_upload_types = ["image/png", "image/jpg", "image/jpeg"];
+    this.allowed_upload_types = ["image/png", "image/jpg", "image/jpeg", "image/gif"];
 
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
 
