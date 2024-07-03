@@ -97,7 +97,7 @@
 /******************************************
  *  OVER WRITE Game Selector Overlay code
  *****************************************/
-.arcade-central-panel .arcade-game-selector-game{
+.arcade-central-panel .arcade-game-selector-game {
 	box-shadow: 0px 2px 4px var(--saito-bubble-shadow);
 	border-radius: 0.5rem;
 }

@@ -125,6 +125,9 @@ class League extends ModTemplate {
 			return {
 				returnLeague: (league_id) => {
 					return this.returnLeague(league_id);
+				},
+				returnLeagues: () => {
+					return this.leagues;
 				}
 			};
 		}

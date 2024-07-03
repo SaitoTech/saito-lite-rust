@@ -27,7 +27,9 @@ module.exports = ArcadeMainTemplate = (app, mod) => {
         games_menu += `<i class="fa-solid fa-coins game-crypto-enabled-icon" title="you can stake web3 crypto on this game"></i>`;  
      }*/
 
-     games_menu +='</div></div>';
+     games_menu +=`</div>
+      <div class="arcade-game-selector-footer"></div>
+      </div>`;
   }
 
 	return `

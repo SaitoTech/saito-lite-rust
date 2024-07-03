@@ -78,7 +78,8 @@
 	right: 0;
 	height: 100%;
 	width: 10rem;
-	padding: 0 1rem 0 3.5rem;
+	max-width: 100%;
+	padding: 0 1rem 0 35%;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
