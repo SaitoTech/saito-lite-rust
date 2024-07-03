@@ -2444,7 +2444,6 @@ class Wordblocks extends GameTemplate {
 			}
 		}
 
-		console.log("After Game Loop!");
 		// Set UI here...
 				if (this.game.player == this.game.target) {
 					this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
@@ -2464,6 +2463,9 @@ class Wordblocks extends GameTemplate {
 					this.playerbox.alertPlayer(this.game.target, 'flash');
 				}
 
+
+		// We add a save point here so closing the tab doesn't break the game
+		this.saveGame(this.game.id);
 
 		return 1;
 	}
