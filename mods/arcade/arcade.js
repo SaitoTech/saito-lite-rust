@@ -222,11 +222,10 @@ class Arcade extends ModTemplate {
 			originator: game.originator,
 			//winner: game.winner,
 			step: game?.step?.game,
-			ts: game?.step?.timestamp
+			timestamp: game?.timestamp
 		};
 
 		game_tx.signature = game.id;
-		game_tx.timestamp = BigInt(game.timestamp || 0);
 		game_tx.msg = msg;
 
 		return game_tx;
@@ -255,6 +254,7 @@ class Arcade extends ModTemplate {
                WHERE created_at > ${cutoff1}
                   OR (created_at > ${cutoff2} AND (status = 'over' OR status = 'active'))
                ORDER BY created_at ASC`;
+
 		this.sendPeerDatabaseRequestWithFilter('Arcade', sql, async (res) => {
 			if (res.rows) {
 				for (let record of res.rows) {
@@ -811,14 +811,6 @@ class Arcade extends ModTemplate {
 		let start_bid = blk != null ? blk.id : BigInt(1);
 
 		let created_at = tx.timestamp;
-		console.log(
-			'game tx timestamp : ' +
-				created_at +
-				' vs now : ' +
-				new Date().getTime() +
-				' vs now local : ' +
-				Date.now()
-		);
 
 		let sql = `INSERT
     OR IGNORE INTO games (
