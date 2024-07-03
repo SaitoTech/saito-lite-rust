@@ -36,6 +36,11 @@
 	width: 5rem;
 }
 
+.arcade-game-selector-footer .angled-notification {
+	width: fit-content;
+	padding: 0 20% 0 33%;
+}
+
 .arcade-game-selector-game:hover {
 	transform: scale(1.03);
 }
