@@ -573,6 +573,11 @@ class ChatPopup {
 			document.querySelector(
 				popup_qs + ' .saito-notification-dot'
 			).onclick = (e) => {
+
+				if (chatPopup.classList.contains('minimized')) {
+					this.restorePopup(chatPopup);
+				}
+				
 				document
 					.querySelector(popup_qs + ' .chat-body')
 					.lastElementChild.scrollIntoView({ behavior: 'smooth' });
