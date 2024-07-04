@@ -26,6 +26,7 @@ class Wordblocks extends GameTemplate {
 		this.tileWidth = 148;
 		this.letters = {};
 		this.grace_window = 10;
+		this.clock.useShotClock = true;
 
 		//All Wordblocks games will be async enabled
 		this.async_dealing = 1; 
@@ -322,6 +323,7 @@ class Wordblocks extends GameTemplate {
 		if (this.game.players.length > 2) {
 			this.grace_window = this.game.players.length * 8;
 		}
+
 	}
 
 	/*
@@ -2294,6 +2296,7 @@ class Wordblocks extends GameTemplate {
 					this.sendGameOverTransaction(winners, 'high score');
 				}
 
+				this.stopClock();
 				return 0;
 			}
 
@@ -2512,39 +2515,31 @@ class Wordblocks extends GameTemplate {
 	}
 
 	startClock() {
-		if (!this.useClock) {
+		if (!this.useClock || this.game.over) {
 			return;
 		}
 
-		clearInterval(this.clock_timer); //Just in case
-		this.time.last_received = new Date().getTime();
-		this.clock.displayTime(this.game.clock_limit);
+		clearTimeout(this.clock_timer); //Just in case
+
+		this.clock.startClock(this.game.clock_limit);
 
 		//Refresh the clock every second
-		this.clock_timer = setInterval(() => {
-			let t = new Date().getTime();
-			let time_on_clock =
-				this.game.clock_limit - (t - this.time.last_received);
-			if (time_on_clock <= 0) {
-				clearInterval(this.clock_timer);
+		this.clock_timer = setTimeout(() => {
 				this.clock.displayTime(0);
 				salert('Turn ended automatically');
 				this.clearBoard();
 				this.removeEvents();
 				this.addMove('discard_tiles\t' + this.game.player + '\t');
 				this.endTurn();
-			}
-			this.clock.displayTime(time_on_clock);
-		}, 1000);
+			}, this.game.clock_limit);
 	}
 
 	stopClock() {
 		if (!this.useClock) {
 			return;
 		}
-		clearInterval(this.clock_timer);
-		this.game.clock_spent = 0;
-		this.clock.hide();
+		clearTimeout(this.clock_timer);
+		this.clock.stopClock();
 	}
 
 	async animatePlay() {
