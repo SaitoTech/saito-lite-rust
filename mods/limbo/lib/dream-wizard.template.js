@@ -21,8 +21,8 @@ module.exports = DreamWizardTemplate = (app, mod, options) => {
 	}else{
 		html += `<div class="cast-mode">
 					<i id="mode-audio" class="cast-mode-option fa-solid ${mod.audio_icon}"></i>
-					<i id="mode-video" class="cast-mode-option fa-solid ${mod.screen_icon} selected"></i>
-					<!--i class="fa-solid ${mod.screen_icon}"></i-->
+					<i id="mode-video" class="cast-mode-option fa-solid ${mod.camera_icon} selected" title="Let Saito stitch the video streams together"></i>
+					<i id="mode-screen" class="cast-mode-option fa-solid ${mod.screen_icon}" title="Use browser screen share to capture this window or another on your computer"></i>
 				</div>`;
 	}
 
