@@ -117,7 +117,6 @@ class StreamManager {
       }
 
       try {
-        console.log('Start');
         this.presentationStream = await navigator.mediaDevices.getDisplayMedia({
           video: {
             displaySurface: 'window'
@@ -153,7 +152,7 @@ class StreamManager {
           }
         });
 
-        this.app.connection.emit('toggle-screen-share-label', 'Stop');
+        this.app.connection.emit('toggle-screen-share-label', true);
       } catch (err) {
         console.error('Error accessing media devices.', err);
       }
@@ -163,14 +162,8 @@ class StreamManager {
       if (!this.active) {
         return;
       }
-
-      console.log('no more');
       this.endPresentation();
-      this.app.connection.emit('toggle-screen-share-label', 'Present');
-    });
-
-    app.connection.on('toggle-screen-share-label', async (text) => {
-      document.querySelector('.screen_share label').innerText = text;
+      this.app.connection.emit('toggle-screen-share-label', false);
     });
 
     app.connection.on('stun-connection-connected', (peerId) => {
