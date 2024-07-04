@@ -543,8 +543,6 @@ class TweetManager {
 				document
 					.querySelector(`.tweet-${tweet.tx.signature}`)
 					.classList.add('highlight-tweet');
-
-				post.render(`.tweet-${tweet.tx.signature}`);			
 			}
 		}
 
@@ -566,7 +564,6 @@ class TweetManager {
 
 				post.render(`.tweet-${tweet.tx.signature}`);
 			}
-
 
 			this.hideLoader();
 		});
