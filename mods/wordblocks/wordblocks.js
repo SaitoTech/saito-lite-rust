@@ -2375,12 +2375,6 @@ class Wordblocks extends GameTemplate {
 				let html = `<div class="lastmove" id="lastmove_${player}"><span>Last:</span><span class="playedword">${expanded}</span> <span class="wordscore">${score}</span></div>`;
 				this.refreshPlayerLog(html, player);
 
-				if (
-					this.game.over == 1 ||
-					this.game.queue.includes('gameover')
-				) {
-					return 1;
-				}
 			}
 
 			if (mv[0] === 'discard_tiles') {
@@ -2438,37 +2432,35 @@ class Wordblocks extends GameTemplate {
 					score: 0
 				});
 
-				if (
-					this.game.over == 1 ||
-					this.game.queue.includes('gameover')
-				) {
-					return 1;
-				}
 			}
 		}
 
 		// Set UI here...
-				if (this.game.player == this.game.target) {
-					this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
-					this.playerTurn();
-					this.enableEvents();
-				} else {
-					this.stopClock(); //Make sure clock didn't start again on browser refresh
-					this.updateStatusWithTiles(
-						`${this.game.playerNames[this.game.target - 1]}'s turn`
-					);
-				}
+		if (this.game.queue.length == 0) {
 
-				this.updateActivePlayerUserline(this.game.target);
-				this.playerbox.setActive(this.game.target);
+			if (this.game.player == this.game.target) {
+				this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
+				this.playerTurn();
+				this.enableEvents();
+			} else {
+				this.stopClock(); //Make sure clock didn't start again on browser refresh
+				this.updateStatusWithTiles(
+					`${this.game.playerNames[this.game.target - 1]}'s turn`
+				);
+			}
 
-				if (this.game.target == this.game.player) {
-					this.playerbox.alertPlayer(this.game.target, 'flash');
-				}
+			this.updateActivePlayerUserline(this.game.target);
+			this.playerbox.setActive(this.game.target);
+
+			if (this.game.target == this.game.player) {
+				this.playerbox.alertPlayer(this.game.target, 'flash');
+			}
 
 
-		// We add a save point here so closing the tab doesn't break the game
-		this.saveGame(this.game.id);
+			// We add a save point here so closing the tab doesn't break the game
+			console.log("Save Wordblocks game");
+			this.saveGame(this.game.id);
+		}
 
 		return 1;
 	}

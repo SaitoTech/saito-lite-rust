@@ -358,6 +358,42 @@ class Arcade extends ModTemplate {
 		});
 	}
 
+	 async onPeerServiceUp(app, peer, service = {}) {
+	 	if (!app.BROWSER){
+	 		return;
+	 	}
+
+		 	if (service.service === "archive") {
+		 		for (let game of this.app.options.games){
+		 			if (game?.over){
+		 				continue;
+		 			}
+
+		 			let query = game.module + "_" + game.id;
+
+		      this.app.storage.loadTransactions(
+		        {
+		          field1: query,
+		        },
+		        (txs) => {
+		          for (let i = txs.length-1; i >= 0; i--) {
+
+						    let wrapped_tx = new Transaction();
+						    wrapped_tx.msg.module = "Relay";
+						    wrapped_tx.msg.request = 'game relay gamemove';
+						    wrapped_tx.msg.data = txs[i].toJson();
+
+		          	this.app.modules.handlePeerTransaction(wrapped_tx);
+		          }
+		        },
+		        peer
+		      );
+		 		} 		
+		 	}
+	 }
+
+
+
 	////////////
 	// RENDER //
 	////////////
