@@ -47,14 +47,14 @@
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
-      name : "Yield Territory",
+      name : "Give Territory",
       check : this.canPlayerYieldTerritory,
       fnct : this.playerYieldTerritory,
       img : "diplomacy.png" ,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
-      name : "Gain Territory",
+      name : "Get Territory",
       check : this.canPlayerGainTerritory,
       fnct : this.playerGainTerritory,
       img : "diplomacy.png" ,
@@ -285,36 +285,82 @@
 
 
 
-
   async playerEndWar(his_self, faction, mycallback=null) {
+
+    let submit_end_war = function(action2) {
+      his_self.updateStatus("submitted");
+      mycallback([`declare_peace\t${faction}\t${action2}`]);      
+    }
+
+    let target_faction = "";
+    if (his_self.diplomacy_overlay.proposal.target) { target_faction = his_self.diplomacy_overlay.proposal.target; }
 
     let terms = [];
     let msg = `${his_self.returnFactionName(faction)} - End War with Whom: `;
     let io = his_self.returnDiplomacyImpulseOrder(faction);
     let html = '<ul>';
+    let auto_select_target = true;
     for (let i = 0; i < io.length; i++) {
       if (his_self.areEnemies(faction, io[i]) && faction != io[i]) {
         html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
+        if (io[i] !== target_faction) {
+	  auto_select_target = false;
+	}
       }
     }
     html += '</ul>';
-    his_self.updateStatusWithOptions(msg, html);
 
-    $('.option').off();
-    $('.option').on('click', function () {
+    if (auto_select_target == false) {
 
-      let action2 = $(this).attr("id");
+      let html2 = '<ul>';
+      html2 += `<li class="option" id="${target_faction}">${his_self.returnFactionName(target_faction)}</li>`;
+      html2 += `<li class="option" id="other">another faction</li>`;
+      html2 += '</ul>';
+
+      his_self.updateStatusWithOptions(msg, html2);     
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let action2 = $(this).attr("id");
+	if (action2 !== target_faction) {
+
+          his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+          $('.option').on('click', function () {
+            let action3 = $(this).attr("id");
+            if (mycallback == null) { return; }
+            submit_end_war(action3);
+          });
+
+	} else {
+          if (mycallback == null) { return; }
+          submit_end_war(target_faction);
+	}
+
+      });
+
+    } else {
+
+      let action2 = target_faction;
       if (mycallback == null) { return; }
+      submit_end_war(action2);
 
-      his_self.updateStatus("submitted");
-      mycallback([`declare_peace\t${faction}\t${action2}`]);
-
-    });
+    }
 
     return 0;
   }
 
   async playerFormAlliance(his_self, faction, mycallback=null) {
+
+    let submit_form_alliance = function(action2) {
+      his_self.updateStatus("submitted");
+      mycallback([`set_allies\t${faction}\t${action2}`,`unset_enemies\t${faction}\t${action2}`]);
+    }
+    let target_faction = "";
+    if (his_self.diplomacy_overlay.proposal.target) { target_faction = his_self.diplomacy_overlay.proposal.target; }
+    let auto_select_target = true;
+
 
     let terms = [];
 
@@ -336,27 +382,64 @@
 	prohibited_alliance = true;
       }
       if (prohibited_alliance == false && !his_self.areAllies(faction, io[i])) {
+        if (io[i] != target_faction) { auto_select_target = false; }
         html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
       }
     }
     html += '</ul>';
-    his_self.updateStatusWithOptions(msg, html);
 
-    $('.option').off();
-    $('.option').on('click', function () {
 
-      let action2 = $(this).attr("id");
+    if (auto_select_target == false) {
+
+      let html2 = '<ul>';
+      html2 += `<li class="option" id="${target_faction}">${his_self.returnFactionName(target_faction)}</li>`;
+      html2 += `<li class="option" id="other">another faction</li>`;
+      html2 += '</ul>';
+
+      his_self.updateStatusWithOptions(msg, html2);     
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let action2 = $(this).attr("id");
+	if (action2 !== target_faction) {
+
+          his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+          $('.option').on('click', function () {
+            let action3 = $(this).attr("id");
+            if (mycallback == null) { return; }
+            submit_form_alliance(action3);
+          });
+
+	} else {
+          if (mycallback == null) { return; }
+          submit_form_alliance(target_faction);
+	}
+
+      });
+
+    } else {
+
+      let action2 = target_faction;
       if (mycallback == null) { return; }
-      his_self.updateStatus("submitted");
+      submit_form_alliance(action2);
 
-      mycallback([`set_allies\t${faction}\t${action2}`,`unset_enemies\t${faction}\t${action2}`]);
-
-    });
+    }
 
     return 0;
   }
 
   async playerIssueCards(his_self, faction, mycallback=null) {
+
+    let submit_issue_cards = function(action2) {
+      his_self.updateStatus("submitted");
+      his_self.game.state.cards_issued[faction] += 1;
+      mycallback([`pull_card\t${action2}\t${faction}`,`NOTIFY\t${his_self.returnFactionName(action2)} pulls card from ${his_self.returnFactionName(faction)}`]);
+    }
+    let target_faction = "";
+    if (his_self.diplomacy_overlay.proposal.target) { target_faction = his_self.diplomacy_overlay.proposal.target; }
+    let auto_select_target = true;
 
     let terms = [];
 
@@ -365,28 +448,43 @@
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
       if (faction != io[i]) {
+	if (io[i] != target_faction) { auto_select_target = false; }
         html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
       }
     }
     html += '</ul>';
-    his_self.updateStatusWithOptions(msg, html);
 
-    $('.option').off();
-    $('.option').on('click', function () {
+    if (auto_select_target == false) {
 
-      let action2 = $(this).attr("id");
-      if (mycallback == null) { return; }
-      his_self.updateStatus("submitted");
+      his_self.updateStatusWithOptions(msg, html);
 
-      his_self.game.state.cards_issued[faction] += 1;
-      mycallback([`pull_card\t${action2}\t${faction}`,`NOTIFY\t${his_self.returnFactionName(action2)} pulls card from ${his_self.returnFactionName(faction)}`]);
+      $('.option').off();
+      $('.option').on('click', function () {
+        let action2 = $(this).attr("id");
+        if (mycallback == null) { return; }
+        submit_issue_cards(action2);
+      });
 
-    });
+    } else {
+        if (mycallback == null) { return; }
+        submit_issue_cards(target_faction);
+    }
 
     return 0;
   }
 
   async playerPullCards(his_self, faction, mycallback=null) {
+
+    let submit_pull_cards = function(action2) {
+      his_self.updateStatus("submitted");
+      his_self.game.state.cards_issued[action2] += 1;
+      mycallback([`pull_card\t${faction}\t${action2}`,`NOTIFY\t${his_self.returnFactionName(faction)} pulls card from ${his_self.returnFactionName(action2)}`]);
+    }
+
+    let target_faction = "";
+    if (his_self.diplomacy_overlay.proposal.target) { target_faction = his_self.diplomacy_overlay.proposal.target; }
+    let auto_select_target = true;
+
 
     let terms = [];
 
@@ -396,23 +494,28 @@
     for (let i = 0; i < io.length; i++) {
       if (faction != io[i]) {
 	if (his_self.game.state.cards_issued[io[i]] < 2) {
+	  if (io[i] != target_faction) { auto_select_target = false; }
           html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
         }
       }
     }
-    his_self.updateStatusWithOptions(msg, html);
+    html += '</ul>';
 
-    $('.option').off();
-    $('.option').on('click', function () {
+    if (auto_select_target == false) {
 
-      let action2 = $(this).attr("id");
-      if (mycallback == null) { return; }
-      his_self.updateStatus("submitted");
+      his_self.updateStatusWithOptions(msg, html);
 
-      his_self.game.state.cards_issued[action2] += 1;
-      mycallback([`pull_card\t${faction}\t${action2}`,`NOTIFY\t${his_self.returnFactionName(faction)} pulls card from ${his_self.returnFactionName(action2)}`]);
+      $('.option').off();
+      $('.option').on('click', function () {
+        let action2 = $(this).attr("id");
+        if (mycallback == null) { return; }
+	submit_pull_cards(action2);
+      });
 
-    });
+    } else {
+        if (mycallback == null) { return; }
+	submit_pull_cards(target_faction);
+    }
 
     return 0;
   }
