@@ -4,7 +4,7 @@
 #advanced-options-overlay-container {
 	color: var(--background-color-mode-arcade);
 	border-radius: 0.5rem;
-	width: min-content;
+	width: min(40rem, 100vw);
 	min-height: 15rem;
 	display: flex;
 	padding: 2.5rem;
@@ -16,7 +16,6 @@
 	overflow-y: auto;
 	overflow-x: hidden;
 	background: var(--saito-arcade-overlay-background);
-	min-width: min(40rem, 100vw);
 }
 
 

@@ -25,7 +25,7 @@
     background-color: var(--background-mask-sidebar-game-module);
     background-blend-mode: soft-light;
     border-radius: var(--border-radius-sidebar-game-module);
-    
+    overflow: hidden;
 }
 
 .saito-module-titlebar {

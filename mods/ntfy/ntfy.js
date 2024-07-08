@@ -14,7 +14,9 @@ class NTFY extends ModTemplate {
     this.class = 'utility';
 
     this.ntfy = {};
-    this.ntfy.server = process.env.NTFY;
+    this.ntfy.server = process.env.NTFY_SERVER || '';
+    this.ntfy.user = process.env.NTFY_USER || '';
+    this.ntfy.password = process.env.NTFY_PASSWORD || '';
   }
 
   onConfirmation(blk, tx, conf) {
@@ -108,6 +110,7 @@ class NTFY extends ModTemplate {
               try {
                 fetch(this.ntfy.server, {
                   method: 'POST',
+                  headers: { 'Authorization': 'Bearer ' + this.ntfy.password },
                   body: JSON.stringify(notification)
                 });
               } catch (err) {

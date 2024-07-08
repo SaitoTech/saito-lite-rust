@@ -26,6 +26,7 @@ class Wordblocks extends GameTemplate {
 		this.tileWidth = 148;
 		this.letters = {};
 		this.grace_window = 10;
+		this.clock.useShotClock = true;
 
 		//All Wordblocks games will be async enabled
 		this.async_dealing = 1; 
@@ -322,6 +323,7 @@ class Wordblocks extends GameTemplate {
 		if (this.game.players.length > 2) {
 			this.grace_window = this.game.players.length * 8;
 		}
+
 	}
 
 	/*
@@ -2294,6 +2296,7 @@ class Wordblocks extends GameTemplate {
 					this.sendGameOverTransaction(winners, 'high score');
 				}
 
+				this.stopClock();
 				return 0;
 			}
 
@@ -2372,12 +2375,6 @@ class Wordblocks extends GameTemplate {
 				let html = `<div class="lastmove" id="lastmove_${player}"><span>Last:</span><span class="playedword">${expanded}</span> <span class="wordscore">${score}</span></div>`;
 				this.refreshPlayerLog(html, player);
 
-				if (
-					this.game.over == 1 ||
-					this.game.queue.includes('gameover')
-				) {
-					return 1;
-				}
 			}
 
 			if (mv[0] === 'discard_tiles') {
@@ -2435,35 +2432,35 @@ class Wordblocks extends GameTemplate {
 					score: 0
 				});
 
-				if (
-					this.game.over == 1 ||
-					this.game.queue.includes('gameover')
-				) {
-					return 1;
-				}
 			}
 		}
 
-		console.log("After Game Loop!");
 		// Set UI here...
-				if (this.game.player == this.game.target) {
-					this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
-					this.playerTurn();
-					this.enableEvents();
-				} else {
-					this.stopClock(); //Make sure clock didn't start again on browser refresh
-					this.updateStatusWithTiles(
-						`${this.game.playerNames[this.game.target - 1]}'s turn`
-					);
-				}
+		if (this.game.queue.length == 0) {
 
-				this.updateActivePlayerUserline(this.game.target);
-				this.playerbox.setActive(this.game.target);
+			if (this.game.player == this.game.target) {
+				this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
+				this.playerTurn();
+				this.enableEvents();
+			} else {
+				this.stopClock(); //Make sure clock didn't start again on browser refresh
+				this.updateStatusWithTiles(
+					`${this.game.playerNames[this.game.target - 1]}'s turn`
+				);
+			}
 
-				if (this.game.target == this.game.player) {
-					this.playerbox.alertPlayer(this.game.target, 'flash');
-				}
+			this.updateActivePlayerUserline(this.game.target);
+			this.playerbox.setActive(this.game.target);
 
+			if (this.game.target == this.game.player) {
+				this.playerbox.alertPlayer(this.game.target, 'flash');
+			}
+
+
+			// We add a save point here so closing the tab doesn't break the game
+			console.log("Save Wordblocks game");
+			this.saveGame(this.game.id);
+		}
 
 		return 1;
 	}
@@ -2510,39 +2507,31 @@ class Wordblocks extends GameTemplate {
 	}
 
 	startClock() {
-		if (!this.useClock) {
+		if (!this.useClock || this.game.over) {
 			return;
 		}
 
-		clearInterval(this.clock_timer); //Just in case
-		this.time.last_received = new Date().getTime();
-		this.clock.displayTime(this.game.clock_limit);
+		clearTimeout(this.clock_timer); //Just in case
+
+		this.clock.startClock(this.game.clock_limit);
 
 		//Refresh the clock every second
-		this.clock_timer = setInterval(() => {
-			let t = new Date().getTime();
-			let time_on_clock =
-				this.game.clock_limit - (t - this.time.last_received);
-			if (time_on_clock <= 0) {
-				clearInterval(this.clock_timer);
+		this.clock_timer = setTimeout(() => {
 				this.clock.displayTime(0);
 				salert('Turn ended automatically');
 				this.clearBoard();
 				this.removeEvents();
 				this.addMove('discard_tiles\t' + this.game.player + '\t');
 				this.endTurn();
-			}
-			this.clock.displayTime(time_on_clock);
-		}, 1000);
+			}, this.game.clock_limit);
 	}
 
 	stopClock() {
 		if (!this.useClock) {
 			return;
 		}
-		clearInterval(this.clock_timer);
-		this.game.clock_spent = 0;
-		this.clock.hide();
+		clearTimeout(this.clock_timer);
+		this.clock.stopClock();
 	}
 
 	async animatePlay() {

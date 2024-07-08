@@ -114,7 +114,7 @@ class RedSquare extends ModTemplate {
 
     this.tweets_earliest_ts = new Date().getTime();
 
-    this.allowed_upload_types = ["image/png", "image/jpg", "image/jpeg"];
+    this.allowed_upload_types = ["image/png", "image/jpg", "image/jpeg", "image/gif"];
 
     this.postScripts = ["/saito/lib/emoji-picker/emoji-picker.js"];
 
@@ -1213,17 +1213,15 @@ class RedSquare extends ModTemplate {
           }
           
           peer_count--;
-          setTimeout(()=>{
-            if (peer_count > 0) {
-             this.app.connection.emit("redsquare-insert-loading-message", `Still waiting on ${peer_count} peer(s)...`);   
-            } else {
-              this.app.connection.emit("redsquare-remove-loading-message");
+          if (peer_count > 0) {
+           this.app.connection.emit("redsquare-insert-loading-message", `Still waiting on ${peer_count} peer(s)...`);   
+          } else {
+            this.app.connection.emit("redsquare-remove-loading-message");
+            if (mycallback) {
+              mycallback(txs);
             }
-          }, 1500);
-
-          if (mycallback) {
-            mycallback(txs);
           }
+
         },
         this.peers[i].peer
       );

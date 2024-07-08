@@ -50,6 +50,7 @@ class League extends ModTemplate {
 		this.auto_open_league_overlay_league_id = null;
 		this.icon_fa = 'fas fa-user-friends';
 		this.debug = false;
+		this.last_prune = 0;
 
 		app.connection.on("league-render-into", (league_id, container)=>{
 			if (!app.BROWSER){
@@ -124,6 +125,9 @@ class League extends ModTemplate {
 			return {
 				returnLeague: (league_id) => {
 					return this.returnLeague(league_id);
+				},
+				returnLeagues: () => {
+					return this.leagues;
 				}
 			};
 		}
@@ -1498,6 +1502,7 @@ class League extends ModTemplate {
 		};
 
 		await this.app.storage.runDatabase(sql, params, 'league');
+		this.entropy();
 		return 1;
 	}
 
@@ -1534,6 +1539,7 @@ class League extends ModTemplate {
 		};
 
 		await this.app.storage.runDatabase(sql, params, 'league');
+		this.entropy();
 		return 1;
 	}
 
@@ -1880,6 +1886,36 @@ class League extends ModTemplate {
                WHERE players.timestamp < ?`;
 		let cutoff = new Date().getTime() - this.inactive_player_cutoff;
 		await this.app.storage.runDatabase(sql, [cutoff], 'league');
+	}
+
+	async entropy(){
+		let now = new Date().getTime();
+		let check_threshold = 1000*60*60*4;  //Check several times a day to catch up...
+		let decay_threshold = 1000*60*60*24; //Decay 1 point per day...
+
+		//Check if we have deployed the decay function in the last day...
+		if (now - this.last_prune > check_threshold){
+			this.last_prune = now;
+			for (let league of this.leagues){
+				// Just the default leaderboards
+				if (league.admin === ""){
+
+					let sql = `UPDATE OR IGNORE players
+			               SET score = (score - 1), ts = (ts + ${decay_threshold})
+			               WHERE ts < ${ now - decay_threshold}
+			                 AND league_id = $league_id AND score > 0`;
+					let params = {
+						$league_id: league.id
+					};
+					let results = await this.app.storage.runDatabase(sql, params, 'league');
+					if (results?.changes){
+						console.log(`Apply Entropy to ${league.name} League: ${results.changes}`);
+					}
+				}
+			}
+
+		}
+
 	}
 }
 

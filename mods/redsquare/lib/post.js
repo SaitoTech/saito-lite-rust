@@ -100,9 +100,7 @@ class Post {
 					let resized_img = await this.app.browser.resizeImg(file);
 					this.addImg(resized_img);
 				} else {
-					salert(`Cannot upload ${type} image, allowed file types: 
-              ${this.mod.allowed_upload_types.join(', ')} 
-              - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading.`);
+					salert(`Cannot upload ${type} image! Allowed file types: ${this.mod.allowed_upload_types.join(', ')}`);
 				}
 			}
 		};
@@ -135,33 +133,10 @@ class Post {
 		if (post_self.file_event_added == false) {
 			post_self.app.browser.addDragAndDropFileUploadToElement(
 				'tweet-overlay',
-				async (file) => {
-					if (post_self.images.length >= 4) {
-						salert('Maximum 4 images allowed per tweet.');
-					} else {
-						let type = file.substring(
-							file.indexOf(':') + 1,
-							file.indexOf(';')
-						);
-						if (post_self.mod.allowed_upload_types.includes(type)) {
-							let resized_img = await this.app.browser.resizeImg(
-								file
-							);
-							this.addImg(resized_img);
-						} else {
-							salert(
-								'allowed file types: ' +
-									post_self.mod.allowed_upload_types.join(
-										', '
-									) +
-									' - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading.'
-							);
-						}
-					}
-					post_self.file_event_added = true;
-				},
+				post_self.input.callbackOnUpload,
 				false
 			);
+			post_self.file_event_added = true;
 		}
 
 		//

@@ -573,6 +573,11 @@ class ChatPopup {
 			document.querySelector(
 				popup_qs + ' .saito-notification-dot'
 			).onclick = (e) => {
+
+				if (chatPopup.classList.contains('minimized')) {
+					this.restorePopup(chatPopup);
+				}
+				
 				document
 					.querySelector(popup_qs + ' .chat-body')
 					.lastElementChild.scrollIntoView({ behavior: 'smooth' });
@@ -825,7 +830,12 @@ class ChatPopup {
 			} else {
 				throw new Error('Invalid filesrc type');
 			}
-			let resizedImageUrl = await app.browser.resizeImg(imageUrl); // (img, dimensions, quality)
+
+			let resizedImageUrl = imageUrl;
+			if (!imageUrl.includes('giphy.gif')){
+				console.log("************* Resize Image!");
+				resizedImageUrl = await app.browser.resizeImg(imageUrl); // (img, dimensions, quality)
+			}
 
 			let img = document.createElement('img');
 			img.classList.add('img-prev');

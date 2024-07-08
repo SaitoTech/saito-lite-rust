@@ -286,14 +286,31 @@ class Videocall extends ModTemplate {
 				{
 					text: 'Present',
 					icon: 'fa-solid fa-display',
-					hook: 'screen_share',
+					hook: 'screen_share onair',
 					prepend: true,
 					callback: function (app) {
+
 						if (call_self.screen_share) {
 							call_self.app.connection.emit('stop-share-screen');
 						} else {
 							call_self.app.connection.emit('begin-share-screen');
 						}
+					},
+					event: function(id){
+					    call_self.app.connection.on('toggle-screen-share-label', (state = false) => {
+					    	let container = document.getElementById(id);
+							if (container){
+								if (state){
+									container.classList.add("recording");
+									container.querySelector("label").innerText = "Stop";
+									container.querySelector("i")?.classList.add("recording");
+								}else{
+									container.classList.remove("recording");
+									container.querySelector("label").innerText = "Present";
+									container.querySelector("i")?.classList.remove("recording");
+								}
+							}
+  					    });
 					}
 				},
 				{
@@ -310,7 +327,7 @@ class Videocall extends ModTemplate {
 		if (type === 'media-request') {
 			if (this?.streams?.active) {
 				return {
-					localStream: this.streams.localStream.clone(),
+					localStream: this.streams.localStream,
 					remoteStreams: this.streams.remoteStreams
 				};
 			} else {

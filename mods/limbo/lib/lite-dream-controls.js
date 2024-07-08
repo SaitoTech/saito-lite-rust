@@ -65,19 +65,57 @@ class DreamControls{
 			 		
 			 		console.log("The stun peer is a speaker");
 
+			 		if (this.mod.externalMediaControl){
+			 			console.log("Ignore track because screenrecorder should get it");
+			 			return;
+			 		}
+
 					let muted = this.mod.dreams[this.mod.dreamer].muted;
 					
 					if (event.track.kind == "audio") {
 
 			 			console.log("Manually add the (audio) tracks to the combined stream, muted: ",muted);
-						let newTrack = event.track.clone();
-						if (muted){
-							newTrack.enabled = false;
-						}
-						this.mod.processTrack(newTrack);								
+						//let newTrack = event.track.clone();
+						//if (muted){
+						//		newTrack.enabled = false;
+						//}
+						//this.mod.processTrack(newTrack);
+
+			 			const incomingStream = new MediaStream();
+			 			incomingStream.addTrack(event.track);
+
+						let otherAudio = this.mod.audioContext.createMediaStreamSource(incomingStream);
+						otherAudio.connect(this.mod.audioStream);
+
+						console.log(this.mod.audioStream, this.mod.combinedStream);
 					}			
 		 		}
 			}
+		});
+
+		app.connection.on('peer-toggle-audio-status', (obj) => {
+			let { public_key, enabled } = obj;
+			
+			/*console.log("Peer Audio Toggled", public_key, enabled);
+			if (this.mod.localStream){
+				console.log("Local Tracks: ");
+				this.mod.localStream.getTracks().forEach(track => console.log(track));
+			}
+
+			if (this.mod.additionalSources){
+				console.log("Remote Tracks: ");
+				this.mod.additionalSources.forEach((values, keys) => { 
+					console.log(keys);
+					values.remoteStream.getTracks().forEach(track => console.log(track));
+				});
+
+			}
+
+			if (this.mod.combinedStream){
+				console.log("Outputted Tracks: ");
+				this.mod.combinedStream.getTracks().forEach(track => console.log(track));
+			}*/
+
 		});
 
 	}

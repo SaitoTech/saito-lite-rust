@@ -21,6 +21,7 @@ class Limbo extends ModTemplate {
 		this.appname = "Saito Space";
 		this.localStream = null; // My Video or Audio Feed
 		this.combinedStream = null;
+		this.screenStream = null;
 
 		this.description =
 			'a shared dream space allowing you to "swarmcast" voice or video with no middleman software';
@@ -439,6 +440,8 @@ class Limbo extends ModTemplate {
 
 		// Set up the media recorder with the canvas stream
 		// Create a new stream for the combined video and audio
+		this.audioContext = new AudioContext();
+		this.audioStream = this.audioContext.createMediaStreamDestination();
 		this.combinedStream = new MediaStream();
 
 		//
@@ -452,17 +455,15 @@ class Limbo extends ModTemplate {
 			options.mode = "screen";
 
 			try {
-				let constraint = this.browser_active ? 'exclude' : 'include';
-
-				screenStream = await navigator.mediaDevices.getDisplayMedia({
+				this.screenStream = await navigator.mediaDevices.getDisplayMedia({
 					video: true,
 					audio: false,
-					selfBrowserSurface: constraint,
+					selfBrowserSurface: 'include',
 					monitorTypeSurfaces: 'include'
 				});
 
 				// Add the audio tracks from the screen and camera to the combined stream
-				screenStream.getTracks().forEach((track) => {
+				this.screenStream.getTracks().forEach((track) => {
 					this.combinedStream.addTrack(track);
 					track.onended = async () => {
 						console.log('Stopping screen share');
@@ -529,9 +530,9 @@ class Limbo extends ModTemplate {
 		if (this.localStream) {
 			if (this.localStream.getAudioTracks().length > 0) {
 				console.log("Add my audio:" , this.localStream.getAudioTracks()[0]);
-				this.combinedStream.addTrack(
-					this.localStream.getAudioTracks()[0]
-				);
+				let localAudio = this.audioContext.createMediaStreamSource(this.localStream);
+				localAudio.connect(this.audioStream);
+				//this.combinedStream.addTrack(this.localStream.getAudioTracks()[0].clone());
 			}
 
 			//
@@ -549,11 +550,19 @@ class Limbo extends ModTemplate {
 			console.log("Add other sources...");
 			this.additionalSources.forEach((values, keys) => { 
 				console.log(keys, values.remoteStream.getAudioTracks());
-				values.remoteStream.getAudioTracks().forEach(track => {
+				let otherAudio = this.audioContext.createMediaStreamSource(values.remoteStream);
+				otherAudio.connect(this.audioStream);
+
+				/*values.remoteStream.getAudioTracks().forEach(track => {
 					this.combinedStream.addTrack(track.clone());
-				});
+				});*/
 			});
 		}
+
+		console.log(this.audioStream.stream);
+		this.audioStream.stream.getTracks().forEach(track => {
+			this.combinedStream.addTrack(track);
+		});
 
 	}
 
@@ -1405,10 +1414,20 @@ class Limbo extends ModTemplate {
 	stop() {
 		console.log('Stop Dreaming!');
 
+		if (this.localStream) {
+			this.localStream.getTracks().forEach((track) => track.stop());
+		}
+
+		if (this.screenStream) {
+			this.screenStream.getTracks().forEach(
+				(track) => {
+					track.onended = null;
+					track.stop();
+				});
+		}
+
+
 		if (!this.externalMediaControl) {
-			if (this.localStream) {
-				this.localStream.getTracks().forEach((track) => track.stop());
-			}
 			if (this.combinedStream) {
 				this.combinedStream.getTracks().forEach((track) => {
 					track.onended = null;
@@ -1416,9 +1435,6 @@ class Limbo extends ModTemplate {
 				});
 			}
 		}else{
-			if (this.localStream) {
-				this.localStream.getTracks().forEach((track) => track.stop());
-			}
 			if (this.externalMediaControl?.stopStreamingVideoCall){
 				this.externalMediaControl.stopStreamingVideoCall();
 				this.externalMediaControl = false;
@@ -1428,6 +1444,7 @@ class Limbo extends ModTemplate {
 		this.localStream = null;
 		this.combinedStream = null;
 		this.additionalSources = null;
+		this.screenStream = null;
 
 	}
 
