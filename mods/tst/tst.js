@@ -90,7 +90,7 @@ class TST extends CryptoModule {
 			if (dotgo) {
 				dotgo.onclick = (e) => {
 					cryptomod.modal_overlay.hide();
-					app.connection.emit('header-update-balance');
+					app.connection.emit('update_balance');
 				};
 			}
 		} catch (err) {
