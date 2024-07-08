@@ -162,14 +162,6 @@ class StreamCapturer {
                   const videos = node.querySelectorAll('video');
                 console.log('video elements', videos)
                   videos.forEach((video) => {
-                    console.log('Video properties:', {
-                        src: video.src,
-                        currentSrc: video.currentSrc,
-                        readyState: video.readyState,
-                        paused: video.paused,
-                        muted: video.muted,
-                        volume: video.volume
-                      });
                     console.log('new video element', video);
                     const stream =
                       'captureStream' in video
