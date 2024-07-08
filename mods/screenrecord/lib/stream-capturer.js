@@ -100,10 +100,16 @@ class StreamCapturer {
 
     captureVideoCallStreams(includeCamera = false) {
 
+        if (this.is_capturing_stream) {
+            console.log("RECORD --- Nope out of resetting captureVideoCallStreams");
+            return this.combinedStream;
+        }
+
         try {
             this.combinedStream = new MediaStream();
             this.is_capturing_stream = true
 
+            // Delete all canvas's on the screen (can break games!)
             document.querySelectorAll('canvas').forEach(canvas => {
                 canvas.parentElement.removeChild(document.querySelector('canvas'))
             })
@@ -111,14 +117,14 @@ class StreamCapturer {
             const audioCtx = new AudioContext();
             const destination = new MediaStreamAudioDestinationNode(audioCtx)
 
-            const processStream = (stream, type = "1") => {
-                console.log('processing new stream', stream)
+            const processStream = (stream) => {
+                console.log('RECORD --- processing new stream', stream)
                 if (stream && stream.getAudioTracks().length > 0) {
                     const source = new MediaStreamAudioSourceNode(audioCtx, { mediaStream: stream })
+                        //let otherAudio = this.mod.audioContext.createMediaStreamSource(incomingStream);
+                        //otherAudio.connect(this.mod.audioStream);
                     source.connect(destination);
-                    console.log('processing new stream', stream)
                 }
-
 
                 return stream;
             };
@@ -139,7 +145,7 @@ class StreamCapturer {
                                         // if (this.hasSeenVideo[video.id]) return;
                                         // console.log('new video element', video)
                                         const stream = 'captureStream' in video ? video.captureStream() : ('mozCaptureStream' in video ? video.mozCaptureStream() : null);
-                                        processStream(stream, "2")
+                                        processStream(stream)
                                         // this.combinedStream = new MediaStream([destination.stream.getAudioTracks()[0], this.combinedStream.getVideoTracks()[0]])
                                         // this.emitUpdatedCombinedStream(this.combinedStream)               
                                         const rect = video.getBoundingClientRect();

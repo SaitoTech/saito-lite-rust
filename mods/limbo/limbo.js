@@ -440,6 +440,8 @@ class Limbo extends ModTemplate {
 
 		// Set up the media recorder with the canvas stream
 		// Create a new stream for the combined video and audio
+		this.audioContext = new AudioContext();
+		this.audioStream = this.audioContext.createMediaStreamDestination();
 		this.combinedStream = new MediaStream();
 
 		//
@@ -528,9 +530,9 @@ class Limbo extends ModTemplate {
 		if (this.localStream) {
 			if (this.localStream.getAudioTracks().length > 0) {
 				console.log("Add my audio:" , this.localStream.getAudioTracks()[0]);
-				this.combinedStream.addTrack(
-					this.localStream.getAudioTracks()[0]
-				);
+				let localAudio = this.audioContext.createMediaStreamSource(this.localStream);
+				localAudio.connect(this.audioStream);
+				//this.combinedStream.addTrack(this.localStream.getAudioTracks()[0].clone());
 			}
 
 			//
@@ -548,11 +550,19 @@ class Limbo extends ModTemplate {
 			console.log("Add other sources...");
 			this.additionalSources.forEach((values, keys) => { 
 				console.log(keys, values.remoteStream.getAudioTracks());
-				values.remoteStream.getAudioTracks().forEach(track => {
+				let otherAudio = this.audioContext.createMediaStreamSource(values.remoteStream);
+				otherAudio.connect(this.audioStream);
+
+				/*values.remoteStream.getAudioTracks().forEach(track => {
 					this.combinedStream.addTrack(track.clone());
-				});
+				});*/
 			});
 		}
+
+		console.log(this.audioStream.stream);
+		this.audioStream.stream.getTracks().forEach(track => {
+			this.combinedStream.addTrack(track);
+		});
 
 	}
 

@@ -27,26 +27,11 @@ class Record extends ModTemplate {
 		this.record_video = false;
 
 		this.styles = ['/saito/saito.css', '/screenrecord/style.css'];
-		this.interval = null;
 		this.streamData = [];
 		this.chunks = []
-		// this.is_limbo_streaming  = false;
 		this.mediaRecorder = null;
 		this.is_capturing_stream = false;
 	
-
-
-
-		// this.app.connection.on('stun-redirect-page', async (callback) => {
-		// 	if(this.mediaRecorder){
-		// 		this.callbackAfterStopRecording = callback
-		// 		this.stopRecording()		
-		// 	}else {
-		// 		callback()
-		// 	}
-
-		// 	// callback()
-		// })
 
 		this.app.connection.on('screenrecord-update-stream', async (combinedStream) => {
 			console.log('combined stream', combinedStream)
