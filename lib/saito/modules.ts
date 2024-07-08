@@ -562,7 +562,7 @@ class Mods {
 				return result;
 			}
 		}
-		throw 'Module responding to ' + request + ' not found';
+		return null;
 	}
 
 	onNewBlock(blk, i_am_the_longest_chain) {

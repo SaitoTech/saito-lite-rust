@@ -5420,7 +5420,7 @@ console.log("selected: " + spacekey);
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player) {
-        if (menu === "pre_assault_rolls") {
+        if (menu === "post_assault_rolls") {
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('035')) {
@@ -5433,7 +5433,7 @@ console.log("selected: " + spacekey);
         return {};
       }, 
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
-        if (menu === "pre_assault_rolls") {
+        if (menu === "post_assault_rolls") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('035')) {
 	      let assault_spacekey = his_self.game.state.assault.spacekey;
@@ -5453,12 +5453,13 @@ console.log("selected: " + spacekey);
         return 0;
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu === "pre_assault_rolls") {
+        if (menu === "post_assault_rolls") {
 	  his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" plays " + his_self.popup("035"));
           his_self.addMove("discard\t"+faction+"\t035");
           his_self.addMove("add_assault_bonus_rolls\t"+faction+"\t2");
           his_self.addMove("SETVAR\tstate\tassault\tsiege_artillery\t1");
 	  his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" triggers " + his_self.popup("035"));
+          his_self.addMove("SETVAR\tstate\tevents\tintervention_post_assault_possible\t0");
 	  his_self.endTurn();
 	  his_self.updateStatus("acknowledge");
         }

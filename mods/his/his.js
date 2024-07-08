@@ -9092,7 +9092,7 @@ console.log("selected: " + spacekey);
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player) {
-        if (menu === "pre_assault_rolls") {
+        if (menu === "post_assault_rolls") {
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('035')) {
@@ -9105,7 +9105,7 @@ console.log("selected: " + spacekey);
         return {};
       }, 
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
-        if (menu === "pre_assault_rolls") {
+        if (menu === "post_assault_rolls") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('035')) {
 	      let assault_spacekey = his_self.game.state.assault.spacekey;
@@ -9125,12 +9125,13 @@ console.log("selected: " + spacekey);
         return 0;
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu === "pre_assault_rolls") {
+        if (menu === "post_assault_rolls") {
 	  his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" plays " + his_self.popup("035"));
           his_self.addMove("discard\t"+faction+"\t035");
           his_self.addMove("add_assault_bonus_rolls\t"+faction+"\t2");
           his_self.addMove("SETVAR\tstate\tassault\tsiege_artillery\t1");
 	  his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" triggers " + his_self.popup("035"));
+          his_self.addMove("SETVAR\tstate\tevents\tintervention_post_assault_possible\t0");
 	  his_self.endTurn();
 	  his_self.updateStatus("acknowledge");
         }
@@ -20304,6 +20305,7 @@ try {
     this.game.state.events.intervention_on_movement_possible = 0;
     this.game.state.events.intervention_on_events_possible = 0;
     this.game.state.events.intervention_on_assault_possible = 0;
+    this.game.state.events.intervention_post_assault_possible = 0;
 
     this.game.state.field_battle_relief_battle = false;
 
@@ -20346,6 +20348,7 @@ try {
     this.game.state.events.intervention_on_movement_possible = 0;
     this.game.state.events.intervention_on_events_possible = 0;
     this.game.state.events.intervention_on_assault_possible = 0;
+    this.game.state.events.intervention_post_assault_possible = 0;
 
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
@@ -30878,6 +30881,8 @@ try {
           if (attacker_player > 0) { ap = this.game.state.players_info[attacker_player-1]; }
           if (defender_player > 0) { dp = this.game.state.players_info[defender_player-1]; }
 
+	  let post_assault_intervention_possible = this.game.state.events.intervention_post_assault_possible;
+
           //
           // we stop here for intercession by cards that need to execute before the die rolls
 	  // are assigned but after they have been rolled.
@@ -30887,20 +30892,26 @@ try {
               his_self.game.state.assault.attacker_hits_first = 1;
               his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.defender_faction);
               his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.attacker_faction);
-	      his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+	      if (0 == post_assault_intervention_possible) {
+	        his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+	      }
 	    }
           } else if (ap.tmp_roll_first != 1 && dp.tmp_roll_first == 1) {
 	    if (attacker_hits > 0 || defender_hits > 0) {
               his_self.game.state.field_battle.defender_hits_first = 1;
               his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.attacker_faction);
               his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.defender_faction);
-	      his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+	      if (0 == post_assault_intervention_possible) {
+	        his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+              }
             }
           } else {
 	    if (attacker_hits > 0 || defender_hits > 0) {
               his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.attacker_faction);
               his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.defender_faction);
-	      his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+	      if (0 == post_assault_intervention_possible) {
+	        his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+              }
             }
           }
 
@@ -30908,6 +30919,10 @@ try {
           // this should stop execution while we are looking at the pre-field battle overlay
           //
 	  let from_whom = his_self.returnArrayOfPlayersInSpacekey(space.key);
+	  if (his_self.game.state.events.intervention_post_assault_possible) {
+            his_self.game.queue.push("counter_or_acknowledge\tProceed to Assign Hits in "+space.name + "\tpost_assault_rolls");
+            his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
+	  }
           his_self.game.queue.push("assault_assign_hits_render");
           his_self.game.queue.push("assault_show_hits_render");
           his_self.game.queue.push("counter_or_acknowledge\tAssault is about to begin in "+space.name + "\tpre_assault_rolls");
@@ -32688,7 +32703,7 @@ defender_hits - attacker_hits;
 	      for (let i = 0; i < this.game.deck[0].fhand[fhand_idx].length; i++) {
 	        if (this.game.deck[0].fhand[fhand_idx][i] == "037") {
                   this.addMove("SETVAR\tstate\tevents\tintervention_on_events_possible\t1");
-		  i == this.game.deck[0].fhand[fhand_idx].length+1;
+		  i = this.game.deck[0].fhand[fhand_idx].length+1;
 	        };
 	      }
 	    }
@@ -32701,8 +32716,11 @@ defender_hits - attacker_hits;
 	        if (this.game.deck[0].fhand[z][i] == "032" || this.game.deck[0].fhand[z][i] == "031") {
                   this.addMove("SETVAR\tstate\tevents\tintervention_on_movement_possible\t1");
                   this.addMove("SETVAR\tstate\tevents\tintervention_on_assault_possible\t1");
-		  i = this.game.deck[0].fhand[z].length+1;
 	        };
+		// siege artillery
+	        if (this.game.deck[0].fhand[z][i] == "035") {
+                  this.addMove("SETVAR\tstate\tevents\tintervention_post_assault_possible\t1");
+	        }
 	      }
 	    }
 
@@ -34047,12 +34065,12 @@ if (this.game.state.round == 2) {
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-cardnum = 1;
-if (f == "papacy") { cardnum = 0; }
-if (f == "hapsburg") { cardnum = 1; }
-if (f == "protestant") { cardnum = 0; }
-if (f == "england") { cardnum = 0; }
-if (f == "ottoman") { cardnum = 0; }
+//cardnum = 1;
+//if (f == "papacy") { cardnum = 0; }
+//if (f == "hapsburg") { cardnum = 1; }
+//if (f == "protestant") { cardnum = 0; }
+//if (f == "england") { cardnum = 0; }
+//if (f == "ottoman") { cardnum = 0; }
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
