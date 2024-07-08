@@ -25,13 +25,10 @@ class DiplomacyConfirmOverlay {
 
 	render(faction, proposal_idx=0) {
 	  let proposal = this.mod.game.state.diplomacy[proposal_idx];
-
-console.log("faction: " + faction);
-console.log("proposal_idx: " + proposal_idx);
-console.log("proposal: " + JSON.stringify(proposal));
-
 	  this.faction = faction;
 	  this.overlay.show(DiplomacyConfirmTemplate(this, proposal, proposal_idx, faction));
+	  // and hide winter
+	  this.mod.winter_overlay.hide();
     	  this.attachEvents(faction, proposal_idx);
 	}
 

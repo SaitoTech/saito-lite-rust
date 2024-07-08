@@ -11924,6 +11924,7 @@ console.log(JSON.stringify(reshuffle_cards));
 		    looped_once = true;
 		    roll = this.game.deck[0].fhand[fhand_idx].length-1;
 		  } else {
+	  	    this.game.queue.splice(qe, 1);
                     this.addMove("NOTIFY\t"+this.returnFactionName(faction)+ " has no non-home cards to pull");
                     this.endTurn();
                     return 0;
@@ -12272,6 +12273,7 @@ console.log(JSON.stringify(reshuffle_cards));
 		  roll--;
 		  if (roll == -1) {
 		    if (is_looped == true) {
+	  	      this.game.queue.splice(qe, 1);
 		      this.addMove("NOTIFY\t"+this.returnFactionName(faction)+ " has no non-home cards to discard");
 		      this.endTurn();
 		      return 0;

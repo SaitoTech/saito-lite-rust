@@ -456,13 +456,32 @@
 
     if (auto_select_target == false) {
 
-      his_self.updateStatusWithOptions(msg, html);
+      let html2 = '<ul>';
+      html2 += `<li class="option" id="${target_faction}">${his_self.returnFactionName(target_faction)}</li>`;
+      html2 += `<li class="option" id="other">another faction</li>`;
+      html2 += '</ul>';
 
+      his_self.updateStatusWithOptions(msg, html2);
       $('.option').off();
       $('.option').on('click', function () {
+
         let action2 = $(this).attr("id");
-        if (mycallback == null) { return; }
-        submit_issue_cards(action2);
+        if (action2 !== target_faction) {
+
+          his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+          $('.option').on('click', function () {
+            let action3 = $(this).attr("id");
+            if (mycallback == null) { return; }
+            submit_issue_cards(action3);
+          });
+
+        } else {
+          if (mycallback == null) { return; }
+          submit_issue_cards(target_faction);
+        }
+
       });
 
     } else {
@@ -503,13 +522,32 @@
 
     if (auto_select_target == false) {
 
-      his_self.updateStatusWithOptions(msg, html);
+      let html2 = '<ul>';
+      html2 += `<li class="option" id="${target_faction}">${his_self.returnFactionName(target_faction)}</li>`;
+      html2 += `<li class="option" id="other">another faction</li>`;
+      html2 += '</ul>';
 
+      his_self.updateStatusWithOptions(msg, html2);
       $('.option').off();
       $('.option').on('click', function () {
+
         let action2 = $(this).attr("id");
-        if (mycallback == null) { return; }
-	submit_pull_cards(action2);
+        if (action2 !== target_faction) {
+
+          his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+          $('.option').on('click', function () {
+            let action3 = $(this).attr("id");
+            if (mycallback == null) { return; }
+            submit_pull_cards(action3);
+          });
+
+        } else {
+          if (mycallback == null) { return; }
+          submit_pull_cards(target_faction);
+        }
+
       });
 
     } else {
@@ -552,6 +590,15 @@
 
   async playerGainTerritory(his_self, faction, mycallback=null) {
 
+    let submit_gain_territory = function(giving_faction, spacekey) {
+      his_self.updateStatus("submitted");
+      mycallback([`evacuate\t${giving_faction}\t${spacekey}`,`control\t${faction}\t${spacekey}\t${giving_faction}`,`NOTIFY\t${his_self.returnFactionName(giving_faction)} yields ${his_self.returnSpaceName(spacekey)} to ${his_self.returnFactionName(faction)}`]);
+    }   
+    let target_faction = "";
+    if (his_self.diplomacy_overlay.proposal.target) { target_faction = his_self.diplomacy_overlay.proposal.target; }
+    let auto_select_target = true;
+
+      
     let terms = [];
 
     let msg = `${his_self.returnFactionName(faction)} - Gain Territory from Whom: `;
@@ -559,44 +606,104 @@
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
       if (faction != io[i]) {
+	if (target_faction != io[i]) { auto_select_target = false; }
         html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
       }
     }
     html += '</ul>';
-    his_self.updateStatusWithOptions(msg, html);
 
-    $('.option').off();
-    $('.option').on('click', function () {
 
-      let giving_faction = $(this).attr("id");
 
+    if (auto_select_target == false) {
+
+      let html2 = '<ul>';
+      html2 += `<li class="option" id="${target_faction}">${his_self.returnFactionName(target_faction)}</li>`;
+      html2 += `<li class="option" id="other">another faction</li>`;
+      html2 += '</ul>';
+
+      his_self.updateStatusWithOptions(msg, html2);
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let action2 = $(this).attr("id");
+        if (action2 !== target_faction) {
+
+          his_self.updateStatusWithOptions(msg, html);
+
+          $('.option').off();
+          $('.option').on('click', function () {
+            let action3 = $(this).attr("id");
+            if (mycallback == null) { return; }
+	    let giving_faction = action3;
+      	    his_self.playerSelectSpaceWithFilter(
+              "Gain which Space?",
+              function(space) {
+                if (space.political === giving_faction || (space.home == giving_faction && space.political == "")) {
+	          return 1;
+	        }
+	        return 0;
+              },
+              function(spacekey) {
+                if (mycallback == null) { return; }
+	        submit_gain_territory(giving_faction, spacekey);
+              },
+              null,
+              true
+            );
+          });
+        } else {
+          if (mycallback == null) { return; }
+          let giving_faction = target_faction;
+      	  his_self.playerSelectSpaceWithFilter(
+              "Gain which Space?",
+              function(space) {
+                if (space.political === giving_faction || (space.home == giving_faction && space.political == "")) {
+	          return 1;
+	        }
+	        return 0;
+              },
+              function(spacekey) {
+                if (mycallback == null) { return; }
+	        submit_gain_territory(giving_faction, spacekey);
+              },
+              null,
+              true
+          );
+        }
+      });
+    } else {
+
+      let giving_faction = target_faction;
       his_self.playerSelectSpaceWithFilter(
-
         "Gain which Space?",
-              
-          function(space) {
+        function(space) {
             if (space.political === giving_faction || (space.home == giving_faction && space.political == "")) {
 	      return 1;
 	    }
 	    return 0;
-          },
-
-          function(spacekey) {
+        },
+        function(spacekey) {
             if (mycallback == null) { return; }
-            his_self.updateStatus("submitted");
-            mycallback([`evacuate\t${giving_faction}\t${spacekey}`,`control\t${faction}\t${spacekey}\t${giving_faction}`,`NOTIFY\t${his_self.returnFactionName(giving_faction)} yields ${his_self.returnSpaceName(spacekey)} to ${his_self.returnFactionName(faction)}`]);
-          },
-          
-          null,
+	    submit_gain_territory(giving_faction, spacekey);
+        },
+        null,
+        true
+      );
 
-          true
+    }
 
-        );
-    });
     return 0;
   }
 
   async playerYieldTerritory(his_self, faction, mycallback=null) {
+
+    let submit_give_territory = function(receiving_faction, spacekey) {
+      his_self.updateStatus("submitted");
+      mycallback([`evacuate\t${faction}\t${spacekey}`,`control\t${receiving_faction}\t${spacekey}\t${faction}`,`NOTIFY\t${his_self.returnFactionName(faction)} yields ${his_self.returnSpaceName(spacekey)} to ${his_self.returnFactionName(receiving_faction)}`]);
+    }   
+    let target_faction = "";
+    if (his_self.diplomacy_overlay.proposal.target) { target_faction = his_self.diplomacy_overlay.proposal.target; }
+    let auto_select_target = true;
 
     let terms = [];
 
@@ -605,43 +712,92 @@
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
       if (faction != io[i] && his_self.returnPlayerCommandingFaction(faction) != his_self.returnPlayerCommandingFaction(io[i])) {
+	if (target_faction != io[i]) { auto_select_target = false; }
         html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
       }
     }
     html += '</ul>';
-    his_self.updateStatusWithOptions(msg, html);
 
-    $('.option').off();
-    $('.option').on('click', function () {
 
-      let receiving_faction = $(this).attr("id");
+    if (auto_select_target == false) {
+    
+      let html2 = '<ul>';
+      html2 += `<li class="option" id="${target_faction}">${his_self.returnFactionName(target_faction)}</li>`;
+      html2 += `<li class="option" id="other">another faction</li>`;
+      html2 += '</ul>';
+        
+      his_self.updateStatusWithOptions(msg, html2);
+      $('.option').off();
+      $('.option').on('click', function () {
 
-      his_self.playerSelectSpaceWithFilter(
-
-        "Yield which Space?",
-              
-          //
-          // catholic spaces adjacent to protestant
-          //
-          function(space) {
-            if (space.political === faction || (space.home == faction && space.political == "")) {
-	      return 1;
-	    }
-	    return 0;
-          },
-
-          function(spacekey) {
+        let action2 = $(this).attr("id");
+        if (action2 !== target_faction) {
+            
+          $('.option').off();
+          $('.option').on('click', function () {
+            let action3 = $(this).attr("id");
             if (mycallback == null) { return; }
-            his_self.updateStatus("submitted");
-            mycallback([`evacuate\t${faction}\t${spacekey}`,`control\t${receiving_faction}\t${spacekey}\t${faction}`,`NOTIFY\t${his_self.returnFactionName(faction)} yields ${his_self.returnSpaceName(spacekey)} to ${his_self.returnFactionName(receiving_faction)}`]);
-          },
-          
-          null,
+            let receiving_faction = action3;
+      	    his_self.playerSelectSpaceWithFilter(
+        	"Yield which Space?",
+         	function(space) {
+         	   if (space.political === faction || (space.home == faction && space.political == "")) {
+	 	     return 1;
+	 	   }
+	 	   return 0;
+         	},
+          	function(spacekey) {
+          	  if (mycallback == null) { return; }
+          	  his_self.updateStatus("submitted");
+          	  submit_give_territory(receiving_faction, spacekey);
+          	},
+          	null,
+          	true
+            );
+          });
 
-          true
+	} else {
+	  let receiving_faction = target_faction;
+          if (mycallback == null) { return; }
+      	  his_self.playerSelectSpaceWithFilter(
+        	"Yield which Space?",
+         	function(space) {
+         	   if (space.political === faction || (space.home == faction && space.political == "")) {
+	 	     return 1;
+	 	   }
+	 	   return 0;
+         	},
+          	function(spacekey) {
+          	  if (mycallback == null) { return; }
+          	  his_self.updateStatus("submitted");
+          	  submit_give_territory(receiving_faction, spacekey);
+          	},
+          	null,
+          	true
+          );
+	}
+      });
 
-        );
-    });
+    } else {
+      let receiving_faction = target_faction;
+      if (mycallback == null) { return; }
+      his_self.playerSelectSpaceWithFilter(
+        	"Yield which Space?",
+         	function(space) {
+         	   if (space.political === faction || (space.home == faction && space.political == "")) {
+	 	     return 1;
+	 	   }
+	 	   return 0;
+         	},
+          	function(spacekey) {
+          	  if (mycallback == null) { return; }
+          	  his_self.updateStatus("submitted");
+          	  submit_give_territory(receiving_faction, spacekey);
+          	},
+          	null,
+          	true
+      );
+    }
     return 0;
   }
 
