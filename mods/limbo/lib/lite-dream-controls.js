@@ -65,10 +65,10 @@ class DreamControls{
 			 		
 			 		console.log("The stun peer is a speaker");
 
-			 		//if (this.mod.externalMediaControl){
-			 		//	console.log("Ignore track because screenrecorder should get it");
-			 		//	return;
-			 		//}
+			 		if (this.mod.externalMediaControl){
+			 			console.log("Ignore track because screenrecorder should get it");
+			 			return;
+			 		}
 
 					let muted = this.mod.dreams[this.mod.dreamer].muted;
 					

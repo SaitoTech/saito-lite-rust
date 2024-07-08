@@ -4,8 +4,8 @@ class StreamCapturer {
     this.streamData = [];
     this.app = app;
     this.logo = logo;
+    this.view_window = '.video-container-large';
     this.handleResize = this.handleResize.bind(this);
-    this.hasSeenVideo = {};
   }
 
   drawImageProp(ctx, img, x, y, w, h, offsetX, offsetY) {
@@ -73,25 +73,18 @@ class StreamCapturer {
     ctx.drawImage(this.logo, logoX, logoY, logoWidth, logoHeight);
   }
 
-  resizeCanvas(canvas, drawStreamsToCanvas, self) {
-    // console.log('resizing canvas')
-    // console.log('resizing', self.name)
-    // canvas.width = document.querySelector('.video-container-large').clientWidth;
+  resizeCanvas(canvas) {
+    console.log('resizing canvas');
+
     canvas.width = window.innerWidth;
-    canvas.height = document.querySelector('.video-container-large').clientHeight;
+    canvas.height = document.querySelector(this.view_window).clientHeight;
     const videoElements = document.querySelectorAll('div[id^="stream_"] video');
-    // videoElements.forEach(video => {
-    //     video.style.objectFit = "cover";
-    //     video.style.width = "100%";
-    //     video.style.height = "100%";
-    //     video.style.maxWidth = "100%";
-    // });
-    // Update the drawing routine to handle the new canvas size
-    drawStreamsToCanvas();
+
+    this.drawStreamsToCanvas();
   }
 
   handleResize() {
-    this.resizeCanvas(this.canvas, this.drawStreamsToCanvas, this);
+    this.resizeCanvas(this.canvas);
   }
 
   captureVideoCallStreams(includeCamera = false) {
@@ -104,6 +97,12 @@ class StreamCapturer {
       this.combinedStream = new MediaStream();
       this.is_capturing_stream = true;
 
+      const view_window = document.querySelector(this.view_window);
+      if (!view_window) {
+        console.warn('No valid screen input');
+        return;
+      }
+
       // Delete all canvas's on the screen (can break games!)
       document.querySelectorAll('canvas').forEach((canvas) => {
         canvas.parentElement.removeChild(document.querySelector('canvas'));
@@ -115,10 +114,10 @@ class StreamCapturer {
       const processStream = (stream) => {
         console.log('RECORD --- processing new stream', stream);
         if (stream && stream.getAudioTracks().length > 0) {
-          const source = new MediaStreamAudioSourceNode(audioCtx, { mediaStream: stream });
-          //let otherAudio = this.mod.audioContext.createMediaStreamSource(incomingStream);
-          //otherAudio.connect(this.mod.audioStream);
+          console.log(stream.getAudioTracks());
+          const source = audioCtx.createMediaStreamSource(stream);
           source.connect(destination);
+          console.log(destination.stream.getAudioTracks());
         }
 
         return stream;
@@ -127,7 +126,6 @@ class StreamCapturer {
       // let self = this
       if (includeCamera) {
         let observer = new MutationObserver((mutations) => {
-          let self = this;
           mutations.forEach((mutation) => {
             if (mutation.type === 'childList') {
               mutation.addedNodes.forEach((node) => {
@@ -139,9 +137,7 @@ class StreamCapturer {
                   const videos = node.querySelectorAll('video');
 
                   videos.forEach((video) => {
-                    // console.log(this.hasSeenVideo[video.id])
-                    // if (this.hasSeenVideo[video.id]) return;
-                    // console.log('new video element', video)
+                    console.log('new video element', video);
                     const stream =
                       'captureStream' in video
                         ? video.captureStream()
@@ -149,18 +145,30 @@ class StreamCapturer {
                         ? video.mozCaptureStream()
                         : null;
                     processStream(stream);
-                    // this.combinedStream = new MediaStream([destination.stream.getAudioTracks()[0], this.combinedStream.getVideoTracks()[0]])
-                    // this.emitUpdatedCombinedStream(this.combinedStream)
                     const rect = video.getBoundingClientRect();
                     const parentID = video.parentElement.id;
-                    const videoElement = document.createElement('video');
+                    /*const videoElement = document.createElement('video');
                     videoElement.srcObject = stream;
                     videoElement.muted = true;
-                    videoElement.play();
-                    this.streamData.push({ stream, rect, parentID, videoElement });
+                    videoElement.play();*/
+                    this.streamData.push({ stream, rect, parentID, video });
                   });
                 }
               });
+
+              if (mutation.removedNodes.length > 0) {
+                mutation.removedNodes.forEach((node) => {
+                  for (let i = 0; i < this.streamData.length; i ++){
+                    if (!this.streamData[i].video.isConnected){
+                        console.log('Mutation observer for removed: ', node);
+                        this.streamData.splice(i, 1);
+                        break;
+                    }
+                  }
+                });
+              }
+
+               console.log('Updated Stream Data: ', JSON.parse(JSON.stringify(this.streamData)));
             }
             if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
               this.streamData.forEach((data) => {
@@ -169,29 +177,23 @@ class StreamCapturer {
                 }
               });
             }
-            if (mutation.removedNodes.length > 0) {
-              mutation.removedNodes.forEach((node) => {
-                let index = this.streamData.findIndex(
-                  (data) => data.videoElement === node || data.videoElement.parentElement === node
-                );
-                if (index !== -1) {
-                  this.streamData.splice(index, 1);
-                }
-              });
-            }
           });
         });
-        observer.observe(document.body, {
+
+        //Start Observer
+        observer.observe(view_window, {
           attributes: true,
           childList: true,
           subtree: true,
           attributeFilter: ['style']
         });
+
         const canvas = document.createElement('canvas');
         this.canvas = canvas;
         canvas.width = window.innerWidth;
-        canvas.height = document.querySelector('.video-container-large').clientHeight;
+        canvas.height = view_window.clientHeight;
         const ctx = canvas.getContext('2d');
+        console.log('Canvas Dimensions: ', canvas.width, canvas.height);
         const drawStreamsToCanvas = () => {
           if (!this.is_capturing_stream) return;
           ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -200,10 +202,10 @@ class StreamCapturer {
             if (!parentElement) return;
             const rect = parentElement.getBoundingClientRect();
             // Draw the video on the canvas
-            if (data.videoElement.readyState >= 2) {
+            if (data.video.readyState >= 2) {
               this.drawImageProp(
                 ctx,
-                data.videoElement,
+                data.video,
                 rect.left,
                 rect.top,
                 rect.width,
@@ -219,9 +221,9 @@ class StreamCapturer {
 
         let self = this;
         window.addEventListener('resize', this.handleResize);
-        this.resizeCanvas(canvas, drawStreamsToCanvas, self);
+        this.resizeCanvas(canvas);
 
-        const videoElements = document.querySelectorAll('div[id^="stream_"] video');
+        const videoElements = document.querySelectorAll(this.view_window + ' div[id^="stream_"] video');
         this.streamData = Array.from(videoElements)
           .map((video) => {
             let stream =
@@ -231,15 +233,14 @@ class StreamCapturer {
                 ? video.mozCaptureStream()
                 : null;
             processStream(stream);
-            this.hasSeenVideo[video.id] = true;
             const rect = video.getBoundingClientRect();
             const parentID = video.parentElement.id;
-            const videoElement = document.createElement('video');
-            videoElement.srcObject = stream;
-            videoElement.muted = true;
-            videoElement.play();
-            videoElement.style.display = 'none';
-            return { stream, rect, parentID, videoElement };
+            //const videoElement = document.createElement('video');
+            //videoElement.srcObject = stream;
+            //videoElement.muted = true;
+            //videoElement.play();
+            //videoElement.style.display = 'none';
+            return { stream, rect, parentID, video };
           })
           .filter((data) => data.stream !== null);
         this.combinedStream.addTrack(canvas.captureStream(25).getVideoTracks()[0]);
@@ -265,20 +266,22 @@ class StreamCapturer {
                   });
                 }
               });
+
+              if (mutation.removedNodes.length > 0) {
+                mutation.removedNodes.forEach((node) => {
+                  for (let i = 0; i < this.streamData.length; i ++){
+                    if (!this.streamData[i].video.isConnected){
+                        this.streamData.splice(i, 1);
+                        break;
+                    }
+                  }
+                });
             }
-            if (mutation.removedNodes.length > 0) {
-              mutation.removedNodes.forEach((node) => {
-                let index = this.streamData.findIndex(
-                  (data) => data.videoElement === node || data.videoElement.parentElement === node
-                );
-                if (index !== -1) {
-                  this.streamData.splice(index, 1);
-                }
-              });
+
             }
           });
         });
-        observer.observe(document.body, {
+        observer.observe(view_window, {
           attributes: true,
           childList: true,
           subtree: true,
@@ -295,16 +298,10 @@ class StreamCapturer {
         });
       }
 
-      if (includeCamera) {
-        this.combinedStream = new MediaStream([
-          destination.stream.getAudioTracks()[0],
-          this.combinedStream.getVideoTracks()[0]
-        ]);
-      } else {
-        this.combinedStream = new MediaStream([destination.stream.getAudioTracks()[0]]);
-      }
 
+      this.combinedStream.addTrack(destination.stream.getAudioTracks()[0]);
       return this.combinedStream;
+
     } catch (error) {
       console.log('Error capturing video streams', error);
       throw error;

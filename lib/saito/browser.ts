@@ -293,7 +293,6 @@ class Browser {
 					'--saito-vh',
 					`${vh}px`
 				);
-				console.log(`Update view height ${vh}px`);
 				//siteMessage(`Update: ${vh}px`);
 			};
 
