@@ -111,7 +111,7 @@ html[data-theme="dark"] {
   /* BORDER COLORS */
   --border-color-general-dividers: var(--saito-border-color);
   --border-color-general-dividers-dark: var(--color-primary);
-  --border-color-button-wallet-control: var(--color-complement);
+  --border-color-button-wallet-control: var(--color-primary);
   --border-color-button-modal: var(--color-complement);
   --border-color-button-module: var(--color-complement);
   --border-color-sidebar-menu: var(--color-tint-dark);
