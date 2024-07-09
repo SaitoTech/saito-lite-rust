@@ -1,5 +1,5 @@
-module.exports = (app, mod, build_number, og_card) => {
-	return `
+module.exports = (app, mod, build_number, og_card, game) => {
+	let html = `
 
   
   <!DOCTYPE html>
@@ -80,12 +80,19 @@ module.exports = (app, mod, build_number, og_card) => {
   </style>
   </head>
   
-  <body>
-  
-  </body>
-  <script type="text/javascript" src="/saito/saito.js?build=${build_number}" >
+  <body></body>`;
+
+  if (game){
+    html += `
+    <script type="text/javascript">
+    var game = ${JSON.stringify(game)};
+    </script>
+    `;
+  }
+
+  html += `<script type="text/javascript" src="/saito/saito.js?build=${build_number}" >
 </script>
-  </html>
-  
-  `;
+  </html>`;
+
+  return html;
 };

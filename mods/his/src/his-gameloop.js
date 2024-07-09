@@ -11714,12 +11714,12 @@ if (this.game.state.round == 2) {
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 1;
-//if (f == "papacy") { cardnum = 0; }
-//if (f == "hapsburg") { cardnum = 1; }
-//if (f == "protestant") { cardnum = 0; }
-//if (f == "england") { cardnum = 0; }
-//if (f == "ottoman") { cardnum = 0; }
+cardnum = 1;
+if (f == "papacy") { cardnum = 0; }
+if (f == "hapsburg") { cardnum = 1; }
+if (f == "protestant") { cardnum = 0; }
+if (f == "england") { cardnum = 0; }
+if (f == "ottoman") { cardnum = 0; }
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
@@ -11924,6 +11924,7 @@ console.log(JSON.stringify(reshuffle_cards));
 		    looped_once = true;
 		    roll = this.game.deck[0].fhand[fhand_idx].length-1;
 		  } else {
+	  	    this.game.queue.splice(qe, 1);
                     this.addMove("NOTIFY\t"+this.returnFactionName(faction)+ " has no non-home cards to pull");
                     this.endTurn();
                     return 0;
@@ -12272,6 +12273,7 @@ console.log(JSON.stringify(reshuffle_cards));
 		  roll--;
 		  if (roll == -1) {
 		    if (is_looped == true) {
+	  	      this.game.queue.splice(qe, 1);
 		      this.addMove("NOTIFY\t"+this.returnFactionName(faction)+ " has no non-home cards to discard");
 		      this.endTurn();
 		      return 0;

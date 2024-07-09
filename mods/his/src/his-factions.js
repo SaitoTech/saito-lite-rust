@@ -25,6 +25,17 @@
   }
  
   returnFactionName(f) {
+    if (f == "france") { return "France"; }
+    if (f == "ottoman") { return "Ottoman"; }
+    if (f == "hapsburg") { return "Hapsburg"; }
+    if (f == "england") { return "England"; }
+    if (f == "papacy") { return "Papacy"; }
+    if (f == "protestant") { return "Protestant"; }
+    if (f == "venice") { return "Venice"; }
+    if (f == "scotland") { return "Scotland"; }
+    if (f == "hungary") { return "Hungary"; }
+    if (f == "genoa") { return "Genoa"; }
+    if (f == "independent") { return "Independent"; }
     if (this.factions[f]) {
       return this.factions[f].name;
     }

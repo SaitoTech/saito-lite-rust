@@ -111,15 +111,40 @@ class StreamCapturer {
       const audioCtx = new AudioContext();
       const destination = new MediaStreamAudioDestinationNode(audioCtx);
 
-      const processStream = (stream) => {
-        console.log('RECORD --- processing new stream', stream);
-        if (stream && stream.getAudioTracks().length > 0) {
-          console.log(stream.getAudioTracks());
-          const source = audioCtx.createMediaStreamSource(stream);
-          source.connect(destination);
-          console.log(destination.stream.getAudioTracks());
-        }
+    //   const processStream = (stream) => {
+    //     console.log('RECORD --- processing new stream', stream);
+    //     if (stream && stream.getAudioTracks().length > 0) {
+    //       console.log(stream.getAudioTracks());
+    //       const source = audioCtx.createMediaStreamSource(stream);
+    //       source.connect(destination);
+    //       console.log(destination.stream.getAudioTracks());
+    //     }else {
+    //         console.log('no audio tracks in stream')
+    //     }
 
+    //     return stream;
+    //   };
+
+    const processStream = (stream, video= null) => {
+        console.log('RECORD --- processing new stream', stream);  
+        if (stream) {
+          if (stream.getAudioTracks().length > 0) {
+            console.log('Audio tracks found:', stream.getAudioTracks());
+            const source = audioCtx.createMediaStreamSource(stream);
+            source.connect(destination);
+            console.log('Destination audio tracks:', destination.stream.getAudioTracks());
+          } else if (video && 'mozCaptureStream' in video) {
+            // Firefox-specific audio capture
+            console.log('Using Firefox-specific audio capture');
+            const source = audioCtx.createMediaElementSource(video);
+            source.connect(destination);
+          } else {
+            console.log('No audio tracks in stream and not Firefox');
+          }
+        } else {
+          console.log('No stream provided');
+        }
+      
         return stream;
       };
 
@@ -135,16 +160,17 @@ class StreamCapturer {
                   node.id.startsWith('stream_')
                 ) {
                   const videos = node.querySelectorAll('video');
-
+                console.log('video elements', videos)
                   videos.forEach((video) => {
                     console.log('new video element', video);
                     const stream =
                       'captureStream' in video
                         ? video.captureStream()
                         : 'mozCaptureStream' in video
-                        ? video.mozCaptureStream()
+                        ? video.mozCaptureStream() && video.mozCaptureStream(0)
                         : null;
-                    processStream(stream);
+                     console.log('captured stream', stream)
+                    processStream(stream, video);
                     const rect = video.getBoundingClientRect();
                     const parentID = video.parentElement.id;
                     /*const videoElement = document.createElement('video');
@@ -224,6 +250,8 @@ class StreamCapturer {
         this.resizeCanvas(canvas);
 
         const videoElements = document.querySelectorAll(this.view_window + ' div[id^="stream_"] video');
+
+        // console.log('video elements', videoElements)
         this.streamData = Array.from(videoElements)
           .map((video) => {
             let stream =
@@ -232,7 +260,8 @@ class StreamCapturer {
                 : 'mozCaptureStream' in video
                 ? video.mozCaptureStream()
                 : null;
-            processStream(stream);
+
+            processStream(stream, video);
             const rect = video.getBoundingClientRect();
             const parentID = video.parentElement.id;
             //const videoElement = document.createElement('video');
@@ -294,7 +323,7 @@ class StreamCapturer {
               : 'mozCaptureStream' in video
               ? video.mozCaptureStream()
               : null;
-          processStream(stream);
+          processStream(stream, video);
         });
       }
 
