@@ -1701,14 +1701,12 @@ class Browser {
 
 	logMatomoEvent(category, action, name, value) {
 		try {
-			this.app.modules
-				.returnFirstRespondTo('matomo_event_push')
-				.push(category, action, name, value);
+			let m = this.app.modules.returnFirstRespondTo('matomo_event_push');
+			if (m) {
+				m.push(category, action, name, value);
+			}
 		} catch (err) {
-			//if (err.startsWith("Module responding to")) {
-			//} else {
 			console.error(err);
-			//}
 		}
 	}
 

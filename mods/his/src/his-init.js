@@ -161,6 +161,7 @@ class HereIStand extends GameTemplate {
   ////////////////
   initializeGame(game_id) {
 
+console.log("WHY RUNNING INITIALIZE GAME?");
 
     //this.realEndTurn = this.endTurn;
     //this.endTurn = () => {
