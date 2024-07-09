@@ -54,6 +54,7 @@ Saito User
   width: 100%;
   position: relative;
   white-space: nowrap; /* don't auto wrap time stamps or stuff */
+  row-gap: 0;
 }
 
 /*  saito-identicon-box  */

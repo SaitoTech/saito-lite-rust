@@ -405,7 +405,6 @@ class Limbo extends ModTemplate {
 
 	startDream(options){
 		this.localStream = null;
-		this.externalMediaControl = false;
 
 		//default mode is audio (only)
 		options.mode = "audio";
@@ -419,7 +418,6 @@ class Limbo extends ModTemplate {
 			// We hope there is only 1 respondTo!
 			this.localStream = otherParties[0].localStream;
 			this.additionalSources = otherParties[0].remoteStreams;
-			this.externalMediaControl = true;
 
 			options["screenStream"] = false;
 			options["audio"] = true;
@@ -1437,7 +1435,7 @@ class Limbo extends ModTemplate {
 		}else{
 			if (this.externalMediaControl?.stopStreamingVideoCall){
 				this.externalMediaControl.stopStreamingVideoCall();
-				this.externalMediaControl = false;
+				this.externalMediaControl = null;
 			}
 		}
 
