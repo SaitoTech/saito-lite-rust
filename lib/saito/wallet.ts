@@ -1149,6 +1149,7 @@ export default class Wallet extends SaitoWallet {
 	async backupWallet() {
 		try {
 			if (this.app.BROWSER == 1) {
+				let publicKey = await this.getPublicKey();
 
 				if (this.app.options.wallet.backup_required_msg) {
 					this.app.options.wallet.backup_required_msg = 0;
@@ -1164,7 +1165,7 @@ export default class Wallet extends SaitoWallet {
 					'data:application/json;utf-8,' +
 						encodeURIComponent(this.exportWallet())
 				);
-				pom.setAttribute('download', 'saito.wallet.json');
+				pom.setAttribute('download', `saito-wallet-${publicKey}.json`);
 				document.body.appendChild(pom);
 				pom.click();
 				pom.remove();
