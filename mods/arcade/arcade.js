@@ -186,6 +186,14 @@ class Arcade extends ModTemplate {
 				}
 			}
 
+			//Check for server delivered data load
+			if (window?.game) {
+				console.log('GAME FROM WEBSERVER!!!!!');
+				console.log(window.game);
+				let tx = this.createGameFromRecord(window.game);
+				this.addGame(tx, window.game?.status);
+			}
+
 			//console.log(JSON.parse(JSON.stringify(this.games)));
 			this.app.connection.emit('arcade-invite-manager-render-request');
 		}
@@ -195,6 +203,59 @@ class Arcade extends ModTemplate {
 		} catch (err) {
 			this.leagueCallback = {};
 		}
+	}
+
+	createGameFromRecord(record) {
+		//This is the save openTX
+		let game_tx = new Transaction(undefined, JSON.parse(record.tx));
+		game_tx.timestamp = record.created_at;
+
+		//But we update the player list
+		let player_info = record.players_array.split('_');
+		for (let pi of player_info) {
+			let pair = pi.split('/');
+			let pkey = pair[0];
+			let sig = pair[1];
+			if (!game_tx.msg.players.includes(pkey)) {
+				game_tx.msg.players.push(pkey);
+				game_tx.msg.players_sigs.push(sig);
+			}
+		}
+
+		//
+		//Game Meta Data stored directly in DB
+		//
+		if (record.winner) {
+			game_tx.msg.winner = [record.winner];
+			try {
+				game_tx.msg.winner = JSON.parse(record.winner);
+			} catch (err) {
+				//console.log("Non-JSON DB entry:", record.winner);
+			}
+		}
+
+		game_tx.msg.method = record.method;
+		game_tx.msg.time_finished = record.time_finished;
+		if (record?.step) {
+			let step = JSON.parse(record.step);
+			game_tx.msg.step = step?.game;
+			game_tx.msg.timestamp = step?.timestamp;
+
+			// Make sure an active game (one that has started, will not be considered an open invite)
+			game_tx.msg.players_needed = game_tx.msg.players.length;
+		}
+
+		if (this.debug) {
+			console.log('Load DB Game: ' + record.status, game_tx.returnMessage());
+		}
+		if (record.time_finished) {
+			if (record.status !== 'over') {
+				console.log('Game status mismatch');
+				record.status = 'close';
+			}
+		}
+
+		return game_tx;
 	}
 
 	async createPseudoTransaction(game) {
@@ -262,56 +323,7 @@ class Arcade extends ModTemplate {
 						console.log(JSON.parse(JSON.stringify(record)));
 					}
 
-					//This is the save openTX
-
-					let game_tx = new Transaction(undefined, JSON.parse(record.tx));
-					game_tx.timestamp = record.created_at;
-
-					//But we update the player list
-					let player_info = record.players_array.split('_');
-					for (let pi of player_info) {
-						let pair = pi.split('/');
-						let pkey = pair[0];
-						let sig = pair[1];
-						if (!game_tx.msg.players.includes(pkey)) {
-							game_tx.msg.players.push(pkey);
-							game_tx.msg.players_sigs.push(sig);
-						}
-					}
-
-					//
-					//Game Meta Data stored directly in DB
-					//
-					if (record.winner) {
-						game_tx.msg.winner = [record.winner];
-						try {
-							game_tx.msg.winner = JSON.parse(record.winner);
-						} catch (err) {
-							//console.log("Non-JSON DB entry:", record.winner);
-						}
-					}
-
-					game_tx.msg.method = record.method;
-					game_tx.msg.time_finished = record.time_finished;
-					if (record?.step) {
-						let step = JSON.parse(record.step);
-						game_tx.msg.step = step?.game;
-						game_tx.msg.timestamp = step?.timestamp;
-
-						// Make sure an active game (one that has started, will not be considered an open invite)
-						game_tx.msg.players_needed = game_tx.msg.players.length;
-					}
-
-					if (arcade_self.debug) {
-						console.log('Load DB Game: ' + record.status, game_tx.returnMessage());
-					}
-					if (record.time_finished) {
-						if (record.status !== 'over') {
-							console.log('Game status mismatch');
-							record.status = 'close';
-						}
-					}
-
+					let game_tx = this.createGameFromRecord(record);
 					//
 					//record.status will overwrite the open/private msg.request from the original game invite creation
 					//
@@ -358,41 +370,38 @@ class Arcade extends ModTemplate {
 		});
 	}
 
-	 async onPeerServiceUp(app, peer, service = {}) {
-	 	if (!app.BROWSER){
-	 		return;
-	 	}
+	async onPeerServiceUp(app, peer, service = {}) {
+		if (!app.BROWSER) {
+			return;
+		}
 
-		 	if (service.service === "archive") {
-		 		for (let game of this.app.options.games){
-		 			if (game?.over){
-		 				continue;
-		 			}
+		if (service.service === 'archive') {
+			for (let game of this.app.options.games) {
+				if (game?.over) {
+					continue;
+				}
 
-		 			let query = game.module + "_" + game.id;
+				let query = game.module + '_' + game.id;
 
-		      this.app.storage.loadTransactions(
-		        {
-		          field1: query,
-		        },
-		        (txs) => {
-		          for (let i = txs.length-1; i >= 0; i--) {
+				this.app.storage.loadTransactions(
+					{
+						field1: query
+					},
+					(txs) => {
+						for (let i = txs.length - 1; i >= 0; i--) {
+							let wrapped_tx = new Transaction();
+							wrapped_tx.msg.module = 'Relay';
+							wrapped_tx.msg.request = 'game relay gamemove';
+							wrapped_tx.msg.data = txs[i].toJson();
 
-						    let wrapped_tx = new Transaction();
-						    wrapped_tx.msg.module = "Relay";
-						    wrapped_tx.msg.request = 'game relay gamemove';
-						    wrapped_tx.msg.data = txs[i].toJson();
-
-		          	this.app.modules.handlePeerTransaction(wrapped_tx);
-		          }
-		        },
-		        peer
-		      );
-		 		} 		
-		 	}
-	 }
-
-
+							this.app.modules.handlePeerTransaction(wrapped_tx);
+						}
+					},
+					peer
+				);
+			}
+		}
+	}
 
 	////////////
 	// RENDER //
@@ -1825,6 +1834,7 @@ class Arcade extends ModTemplate {
 	webServer(app, expressapp, express) {
 		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
 		let arcade_self = this;
+		let game_data = null;
 
 		expressapp.get('/' + encodeURI(this.returnSlug()), async function (req, res) {
 			let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
@@ -1843,16 +1853,33 @@ class Arcade extends ModTemplate {
 						updatedSocial.image = `/${gm.returnSlug()}/img/arcade/arcade.jpg`;
 					}
 				}
+
+				let id = query_params?.game_id;
+				game_data = await arcade_self.findGame(game, id);
 			}
 
 			updatedSocial.url = reqBaseURL + encodeURI(arcade_self.returnSlug());
 			res.setHeader('Content-type', 'text/html');
 			res.charset = 'UTF-8';
-			res.send(arcadeHome(app, arcade_self, app.build_number, updatedSocial));
+			res.send(arcadeHome(app, arcade_self, app.build_number, updatedSocial, game_data));
 			return;
 		});
 
 		expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
+	}
+
+	async findGame(game, short_id) {
+		let sql = `SELECT * FROM games WHERE module = $module ORDER BY created_at DESC LIMIT 50`;
+		let params = { $module: game };
+
+		let sqlResults = await this.app.storage.queryDatabase(sql, params, 'arcade');
+
+		for (let res of sqlResults) {
+			if (this.app.crypto.hash(res.game_id).slice(-6) === short_id) {
+				return res;
+			}
+		}
+		return null;
 	}
 
 	showShareLink(game_sig, show = true) {

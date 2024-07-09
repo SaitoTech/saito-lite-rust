@@ -405,7 +405,6 @@ class Limbo extends ModTemplate {
 
 	startDream(options){
 		this.localStream = null;
-		this.externalMediaControl = false;
 
 		//default mode is audio (only)
 		options.mode = "audio";
@@ -419,7 +418,9 @@ class Limbo extends ModTemplate {
 			// We hope there is only 1 respondTo!
 			this.localStream = otherParties[0].localStream;
 			this.additionalSources = otherParties[0].remoteStreams;
-			this.externalMediaControl = true;
+			
+			// This serves as a flag to prevent you from shutting off the localStream when ending a cast
+			this.externalMediaControl = true; 
 
 			options["screenStream"] = false;
 			options["audio"] = true;
@@ -1414,20 +1415,18 @@ class Limbo extends ModTemplate {
 	stop() {
 		console.log('Stop Dreaming!');
 
-		if (this.localStream) {
-			this.localStream.getTracks().forEach((track) => track.stop());
-		}
-
 		if (this.screenStream) {
-			this.screenStream.getTracks().forEach(
-				(track) => {
-					track.onended = null;
-					track.stop();
-				});
+			this.screenStream.getTracks().forEach((track) => {
+				track.onended = null;
+				track.stop();
+			});
 		}
 
+		if (!this?.externalMediaControl){
+			if (this.localStream) {
+				this.localStream.getTracks().forEach((track) => track.stop());
+			}
 
-		if (!this.externalMediaControl) {
 			if (this.combinedStream) {
 				this.combinedStream.getTracks().forEach((track) => {
 					track.onended = null;
@@ -1435,17 +1434,18 @@ class Limbo extends ModTemplate {
 				});
 			}
 		}else{
-			if (this.externalMediaControl?.stopStreamingVideoCall){
+			if (this.externalMediaControl?.stopStreamingVideoCall) {
 				this.externalMediaControl.stopStreamingVideoCall();
-				this.externalMediaControl = false;
-			}
-		}
+				this.externalMediaControl = null;
+			} 
+		}	
+		
 
 		this.localStream = null;
 		this.combinedStream = null;
 		this.additionalSources = null;
 		this.screenStream = null;
-
+		
 	}
 
 	exitSpace() {

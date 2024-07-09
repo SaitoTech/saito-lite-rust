@@ -96,6 +96,8 @@
   background-color: var(--background-color-modal-contacts);
   background-image: url(/saito/img/tiled-logo.svg);
   color: var(--font-color-modal-contacts);
+  display: flex;
+  flex-direction: column;
 }
 
 /* Join Overlay */
@@ -178,6 +180,10 @@
     width: 3.5rem;
     height: 3.5rem;
 }
+
+ .limbo-floating-overlay .saito-modal-content .saito-user {
+ 	height: 4.5rem;
+ }
 
 /*  Control Window */
 
