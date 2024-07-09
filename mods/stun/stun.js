@@ -324,7 +324,6 @@ class Stun extends ModTemplate {
 				await newtx.sign();
 
 				this.app.connection.emit('relay-transaction', newtx);
-				this.app.network.propagateTransaction(newtx);
 	}
 
 	createPeerConnection(peerId, callback = null) {
@@ -400,7 +399,6 @@ class Stun extends ModTemplate {
 				tx.msg = data;
 				await tx.sign();
 
-				this.app.network.propagateTransaction(tx);
 				this.app.connection.emit('relay-transaction', tx);
 			}
 		};
@@ -473,9 +471,25 @@ class Stun extends ModTemplate {
 		peerConnection.onnegotiationneeded = async () => {
 			try {
 				
+				if (!peerConnection?.negotiation_counter){
+					peerConnection.negotiation_counter = 0;
+				}
+
+				if (peerConnection.negotiation_counter > 10){
+					console.log(`STUN: Negotation needed, but going to cool off instead`);
+					return;
+				}
+
 				console.log(`STUN: Negotation needed! sending offer to ${peerId} with peer connection, ` + peerConnection.signalingState);
 
+				peerConnection.negotiation_counter++;
 				peerConnection.makingOffer = true;
+
+				if (peerConnection?.negotiation_timeout){
+					clearTimeout(peerConnection.negotiation_timeout);
+				}
+
+				peerConnection.negotiation_timeout = setTimeout(()=>{peerConnection.negotiation_counter = 0;}, 12000);
 
 				await peerConnection.setLocalDescription();
 
