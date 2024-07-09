@@ -65,7 +65,7 @@ class DreamControls{
 			 		
 			 		console.log("The stun peer is a speaker");
 
-			 		if (this.mod.externalMediaControl){
+			 		if (this.mod.externalMediaControl?.stopStreamingVideoCall){
 			 			console.log("Ignore track because screenrecorder should get it");
 			 			return;
 			 		}
