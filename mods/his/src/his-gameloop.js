@@ -12337,6 +12337,8 @@ console.log(JSON.stringify(reshuffle_cards));
 
 	  let player = this.returnPlayerOfFaction(faction);
 
+console.log("WHICH PLAYER IS THIS: " + player);
+
 	  // update board display
 	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
           this.displayBoard();

@@ -2263,7 +2263,6 @@ class Chat extends ModTemplate {
     this.app.options.chat.audio_chime = this.audio_chime;
     this.app.options.chat.auto_open_community = this.auto_open_community;
     this.app.options.chat.black_list = this.black_list;
-
     this.app.storage.saveOptions();
   }
 
