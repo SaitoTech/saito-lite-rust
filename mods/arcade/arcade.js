@@ -1834,11 +1834,10 @@ class Arcade extends ModTemplate {
 	webServer(app, expressapp, express) {
 		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
 		let arcade_self = this;
-		let game_data = null;
 
 		expressapp.get('/' + encodeURI(this.returnSlug()), async function (req, res) {
 			let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
-
+			let game_data = null;
 			let updatedSocial = Object.assign({}, arcade_self.social);
 
 			if (Object.keys(req.query).length > 0) {
