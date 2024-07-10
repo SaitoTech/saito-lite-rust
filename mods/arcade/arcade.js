@@ -71,10 +71,14 @@ class Arcade extends ModTemplate {
 				if (game.id == game_id) {
 					// Temporarily update these fields so can render nicely in arcade
 					// without having to save the game
+					let prev_target = game.target;
+
 					game.status = status;
 					game.target = target;
 
-					console.log('Arcade notified', JSON.parse(JSON.stringify(game)));
+					console.log(prev_target, target);
+					console.log(`${this.app.keychain.returnUsername(game.players[prev_target-1])} played a move **********`);
+
 					siteMessage(`It's your turn in ${game.module}`, 5000);
 					app.connection.emit('arcade-invite-manager-render-request');
 				}
