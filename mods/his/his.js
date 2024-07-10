@@ -11178,6 +11178,8 @@ console.log("selected: " + spacekey);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
 
+console.log("in akinji raiders...");
+
 	let enemies = his_self.returnEnemies("ottoman");
 	let neighbours = [];
 	let valid_spaces_with_cavalry = [];
@@ -11200,6 +11202,9 @@ console.log("selected: " + spacekey);
 	//
 	// 
 	//
+
+console.log("spaces length: " + spaces.length);
+
 	for (let i = 0; i < spaces.length; i++) {
 	  valid_spaces_with_cavalry.push(spaces[i]);
 	}
@@ -11211,7 +11216,9 @@ console.log("selected: " + spacekey);
 	  let s = his_self.game.spaces[spaces[i]];
 	  for (let ii = 0; ii < s.neighbours.length; ii++) {
 	    if (his_self.isSpaceControlled(s.neighbours[ii], "ottoman")) {
-	      neighbours.push(s.neighbours[ii]);
+	      if (!neighbours.includes(s.neighbours[ii])) {
+	        neighbours.push(s.neighbours[ii]);
+	      }
 	    } else {
 	      for (let iii = 0; iii < enemies.length; iii++) {
 	        if (his_self.isSpaceControlled(s.neighbours[ii], enemies[iii])) {
@@ -11222,11 +11229,15 @@ console.log("selected: " + spacekey);
 	    }
 	  }
 	}
+console.log("neighbours: " + neighbours.length);
 	for (let i = 0; i < neighbours.length; i++) {
+console.log("neighbours i: " + i);
 	  let s = his_self.game.spaces[neighbours[i]];
 	  for (let ii = 0; ii < s.neighbours.length; ii++) {
 	    if (his_self.isSpaceControlled(s.neighbours[ii], "ottoman")) {
-	      neighbours.push(s.neighbours[ii]);
+	      if (!neighbours.includes(s.neighbours[ii])) {
+		neighbours.push(s.neighbours[ii]);
+	      }
 	    } else {
 	      for (let iii = 0; iii < enemies.length; iii++) {
 	        if (his_self.isSpaceControlled(s.neighbours[ii], enemies[iii])) {
@@ -20614,6 +20625,9 @@ try {
       }
     }
 
+console.log("factions: ");
+console.log(JSON.stringify(factions));
+
     //
     // let factions calculate their VP
     //
@@ -20624,6 +20638,7 @@ try {
       factions[f].vp = (factions[f].vp_base + factions[f].vp_bonus + factions[f].vp_special);
     }
 
+console.log("factions 2");
     //
     // calculate keys controlled
     //
@@ -20634,6 +20649,7 @@ try {
       }
     }
 
+console.log("factions 3");
     //
     // military victory
     //
@@ -20667,6 +20683,7 @@ try {
         factions['papacy'].details = "military victory";
       }
     }
+console.log("factions 4");
 
     //
     // religious victory
@@ -26819,9 +26836,12 @@ console.log("either papacy or protestants!");
 	    }
 
 console.log("and displaying cards!!");
+console.log(JSON.stringify(x));
 
+console.log("About to usalc");
 
             this.updateStatusAndListCards(my_faction + " - Select Card to indicate your Commitment to Debate", x);
+console.log("updated status and listed cards...");
             this.attachCardboxEvents(async function(card) {
 
 	      //for (let i = 0; i < x.length; i++) { if (x[i] == card) { x.splice(i, 1); } }
@@ -26854,6 +26874,7 @@ console.log("and displaying cards!!");
             });
 	  }
 
+console.log("and halt game!");
           return 0;
         }
 
@@ -27219,7 +27240,7 @@ console.log("and displaying cards!!");
 	  var true_if_counter_or_acknowledge_cleared = false;
 	  counter_or_acknowledge_inactivity_timeout = setTimeout(() => {
 
-	    if (true_if_counter_or_acknowledge_cleared) { return; }
+	    if (true_if_counter_or_acknowledge_cleared) { return 0; }
 	    his_self.cardbox.hide();
 
 	    let my_specific_game_id = his_self.game.id;
@@ -33934,7 +33955,7 @@ if (this.game.state.round == 2) {
 	      // TESTING can trigger but we are good - continue!
 	      //
 	      this.endTurn();
-	      return;
+	      return 0;
 
 	    }
 
@@ -33956,6 +33977,7 @@ if (this.game.state.round == 2) {
 	      //
 	      // not good - deal another!
 	      //
+alert("replacement card needed!");
 	      this.addMove("check_replacement_cards\t"+faction);
     	      this.addMove("hand_to_fhand\t1\t"+p+"\t"+faction);
     	      this.addMove("DEAL\t1\t"+p+"\t"+(num));
@@ -33978,6 +34000,8 @@ if (this.game.state.round == 2) {
 	}
 
         if (mv[0] === "card_draw_phase") {
+
+	  this.updateStatus("dealing cards...");
 
 	  if (this.game.state.round > 1) {
 	    this.winter_overlay.render("stage5");
@@ -34204,7 +34228,6 @@ console.log(JSON.stringify(reshuffle_cards));
   	  this.game.state.france_card_bonus = 0;
   	  this.game.state.england_card_bonus = 0;
   	  this.game.state.hapsburg_card_bonus = 0;
-
 
 	  this.game.queue.splice(qe, 1);
           return 1;
@@ -34467,7 +34490,7 @@ console.log(JSON.stringify(reshuffle_cards));
             }
             html += '</ul>';
 
-	    if (any_choice == false) { his_self.endTurn(); return; }
+	    if (any_choice == false) { his_self.endTurn(); return 0; }
 
             his_self.updateStatusWithOptions(msg, html);
 

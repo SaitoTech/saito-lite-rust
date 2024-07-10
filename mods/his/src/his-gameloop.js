@@ -4482,9 +4482,12 @@ console.log("either papacy or protestants!");
 	    }
 
 console.log("and displaying cards!!");
+console.log(JSON.stringify(x));
 
+console.log("About to usalc");
 
             this.updateStatusAndListCards(my_faction + " - Select Card to indicate your Commitment to Debate", x);
+console.log("updated status and listed cards...");
             this.attachCardboxEvents(async function(card) {
 
 	      //for (let i = 0; i < x.length; i++) { if (x[i] == card) { x.splice(i, 1); } }
@@ -4517,6 +4520,7 @@ console.log("and displaying cards!!");
             });
 	  }
 
+console.log("and halt game!");
           return 0;
         }
 
@@ -4882,7 +4886,7 @@ console.log("and displaying cards!!");
 	  var true_if_counter_or_acknowledge_cleared = false;
 	  counter_or_acknowledge_inactivity_timeout = setTimeout(() => {
 
-	    if (true_if_counter_or_acknowledge_cleared) { return; }
+	    if (true_if_counter_or_acknowledge_cleared) { return 0; }
 	    his_self.cardbox.hide();
 
 	    let my_specific_game_id = his_self.game.id;
@@ -11597,7 +11601,7 @@ if (this.game.state.round == 2) {
 	      // TESTING can trigger but we are good - continue!
 	      //
 	      this.endTurn();
-	      return;
+	      return 0;
 
 	    }
 
@@ -11619,6 +11623,7 @@ if (this.game.state.round == 2) {
 	      //
 	      // not good - deal another!
 	      //
+alert("replacement card needed!");
 	      this.addMove("check_replacement_cards\t"+faction);
     	      this.addMove("hand_to_fhand\t1\t"+p+"\t"+faction);
     	      this.addMove("DEAL\t1\t"+p+"\t"+(num));
@@ -11641,6 +11646,8 @@ if (this.game.state.round == 2) {
 	}
 
         if (mv[0] === "card_draw_phase") {
+
+	  this.updateStatus("dealing cards...");
 
 	  if (this.game.state.round > 1) {
 	    this.winter_overlay.render("stage5");
@@ -11867,7 +11874,6 @@ console.log(JSON.stringify(reshuffle_cards));
   	  this.game.state.france_card_bonus = 0;
   	  this.game.state.england_card_bonus = 0;
   	  this.game.state.hapsburg_card_bonus = 0;
-
 
 	  this.game.queue.splice(qe, 1);
           return 1;
@@ -12130,7 +12136,7 @@ console.log(JSON.stringify(reshuffle_cards));
             }
             html += '</ul>';
 
-	    if (any_choice == false) { his_self.endTurn(); return; }
+	    if (any_choice == false) { his_self.endTurn(); return 0; }
 
             his_self.updateStatusWithOptions(msg, html);
 

@@ -382,6 +382,9 @@
       }
     }
 
+console.log("factions: ");
+console.log(JSON.stringify(factions));
+
     //
     // let factions calculate their VP
     //
@@ -392,6 +395,7 @@
       factions[f].vp = (factions[f].vp_base + factions[f].vp_bonus + factions[f].vp_special);
     }
 
+console.log("factions 2");
     //
     // calculate keys controlled
     //
@@ -402,6 +406,7 @@
       }
     }
 
+console.log("factions 3");
     //
     // military victory
     //
@@ -435,6 +440,7 @@
         factions['papacy'].details = "military victory";
       }
     }
+console.log("factions 4");
 
     //
     // religious victory

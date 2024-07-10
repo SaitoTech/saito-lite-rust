@@ -371,6 +371,7 @@ class Arcade extends ModTemplate {
 	}
 
 	async onPeerServiceUp(app, peer, service = {}) {
+
 		if (!app.BROWSER) {
 			return;
 		}
@@ -393,7 +394,6 @@ class Arcade extends ModTemplate {
 							wrapped_tx.msg.module = 'Relay';
 							wrapped_tx.msg.request = 'game relay gamemove';
 							wrapped_tx.msg.data = txs[i].toJson();
-
 							this.app.modules.handlePeerTransaction(wrapped_tx);
 						}
 					},

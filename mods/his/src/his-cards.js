@@ -7505,6 +7505,8 @@ console.log("selected: " + spacekey);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
 
+console.log("in akinji raiders...");
+
 	let enemies = his_self.returnEnemies("ottoman");
 	let neighbours = [];
 	let valid_spaces_with_cavalry = [];
@@ -7527,6 +7529,9 @@ console.log("selected: " + spacekey);
 	//
 	// 
 	//
+
+console.log("spaces length: " + spaces.length);
+
 	for (let i = 0; i < spaces.length; i++) {
 	  valid_spaces_with_cavalry.push(spaces[i]);
 	}
@@ -7538,7 +7543,9 @@ console.log("selected: " + spacekey);
 	  let s = his_self.game.spaces[spaces[i]];
 	  for (let ii = 0; ii < s.neighbours.length; ii++) {
 	    if (his_self.isSpaceControlled(s.neighbours[ii], "ottoman")) {
-	      neighbours.push(s.neighbours[ii]);
+	      if (!neighbours.includes(s.neighbours[ii])) {
+	        neighbours.push(s.neighbours[ii]);
+	      }
 	    } else {
 	      for (let iii = 0; iii < enemies.length; iii++) {
 	        if (his_self.isSpaceControlled(s.neighbours[ii], enemies[iii])) {
@@ -7549,11 +7556,15 @@ console.log("selected: " + spacekey);
 	    }
 	  }
 	}
+console.log("neighbours: " + neighbours.length);
 	for (let i = 0; i < neighbours.length; i++) {
+console.log("neighbours i: " + i);
 	  let s = his_self.game.spaces[neighbours[i]];
 	  for (let ii = 0; ii < s.neighbours.length; ii++) {
 	    if (his_self.isSpaceControlled(s.neighbours[ii], "ottoman")) {
-	      neighbours.push(s.neighbours[ii]);
+	      if (!neighbours.includes(s.neighbours[ii])) {
+		neighbours.push(s.neighbours[ii]);
+	      }
 	    } else {
 	      for (let iii = 0; iii < enemies.length; iii++) {
 	        if (his_self.isSpaceControlled(s.neighbours[ii], enemies[iii])) {
