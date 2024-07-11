@@ -117,8 +117,8 @@ class JoinGameOverlay {
 					'GameInvite',
 					'ContinueGame',
 					this.invite.game_mod.name
-				);
-				window.location = `/${this.invite.game_slug}/#gid=${this.invite.game_id}`;
+				); 
+				window.location = `/${this.invite.game_slug}/#gid=${this.app.crypto.hash(this.invite.game_id).slice(-6)}`;
 			};
 		}
 
