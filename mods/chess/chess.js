@@ -177,14 +177,17 @@ class Chessgame extends GameTemplate {
 			this.confirm_moves = 0;
 		}
 
-		this.board = new chessboard('board', {
-			pieceTheme: '/chess/img/pieces/{piece}.png'
-		});
+		if (!this.board){
+			this.board = new chessboard('board', {
+				pieceTheme: '/chess/img/pieces/{piece}.png'
+			});
+			
+		}
 
 		if (this.game.over) {
-			this.lockBoard(this.engine.fen());
+			this.lockBoard(this.game.position);
 		} else {
-			this.setBoard(this.engine.fen());
+			this.setBoard(this.game.position);
 		}
 
 		//
