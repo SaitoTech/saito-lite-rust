@@ -532,7 +532,8 @@ class Limbo extends ModTemplate {
 			if (this.localStream.getAudioTracks().length > 0) {
 				console.log("Add my audio:" , this.localStream.getAudioTracks()[0]);
 				let localAudio = this.audioContext.createMediaStreamSource(this.localStream);
-				localAudio.connect(this.audioStream);
+				localAudio.connect(this.audioStream); //audioContext.createMediaStreamDestination
+				
 				//this.combinedStream.addTrack(this.localStream.getAudioTracks()[0].clone());
 			}
 
@@ -552,7 +553,7 @@ class Limbo extends ModTemplate {
 			this.additionalSources.forEach((values, keys) => { 
 				console.log(keys, values.remoteStream.getAudioTracks());
 				let otherAudio = this.audioContext.createMediaStreamSource(values.remoteStream);
-				otherAudio.connect(this.audioStream);
+				otherAudio.connect(this.audioStream); //audioContext.createMediaStreamDestination
 
 				/*values.remoteStream.getAudioTracks().forEach(track => {
 					this.combinedStream.addTrack(track.clone());

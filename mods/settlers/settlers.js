@@ -474,8 +474,6 @@ class Settlers extends GameTemplate {
 
 	initializeGame(game_id) {
 
-		console.log('inside initializeGame');
-		console.log(this.game.state);
 
 		if (this.game.state == undefined) {
 			this.game.state = this.initializeState();
