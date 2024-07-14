@@ -33,8 +33,11 @@ class StreamCapturer {
         if (!this.activeStreams.has(trackId)) {
             console.log('processing stream', stream, trackId)
             const source = this.audioCtx.createMediaStreamSource(stream);
-            source.connect(this.mixer)
-            this.activeStreams.set(trackId, { source }); 
+            const gainNode = this.audioCtx.createGain();
+            gainNode.gain.setValueAtTime(0.5, this.audioCtx.currentTime); 
+            source.connect(gainNode);
+            gainNode.connect(this.mixer);
+            this.activeStreams.set(trackId, { source, gainNode });
         }else {
             console.log('track already exists', trackId)
         }
@@ -386,7 +389,7 @@ class StreamCapturer {
         if (this.activeStreams) {
             this.activeStreams.forEach(({ source, gainNode }) => {
                 source.disconnect();
-                // gainNode.disconnect();
+                gainNode.disconnect();
             });
             this.activeStreams.clear();
         }
