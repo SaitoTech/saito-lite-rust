@@ -87,7 +87,7 @@ class StreamCapturer {
         this.resizeCanvas(this.canvas);
     }
 
-    captureVideoCallStreams(includeCamera = true) {
+    captureVideoCallStreams(includeCamera = false) {
         if (this.is_capturing_stream) {
             console.log('RECORD --- Nope out of resetting captureVideoCallStreams');
             return this.combinedStream;
