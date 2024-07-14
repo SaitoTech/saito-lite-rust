@@ -4917,7 +4917,7 @@ console.log("i have resolved 3");
 	  counter_or_acknowledge_inactivity_timeout = setTimeout(() => {
 
 	    if (true_if_counter_or_acknowledge_cleared) { 
-	      alert("in auto-sending timer, but true if counter or acknowledge cleared is true!");
+	      //alert("in auto-sending timer, but true if counter or acknowledge cleared is true!");
 	      clearTimeout(counter_or_acknowledge_inactivity_timeout);
 	      return 0;
 	    }
@@ -4944,8 +4944,6 @@ console.log("i have resolved 3");
                     let action = $(this).attr("id");
                 
   		    setTimeout(() => {
-
-alert("counter-or-acknowledge-post-RESOLVE send, just restart queue!");
 
                 	    if (his_self.game.id != my_specific_game_id) {
                 	      his_self.game = his_self.loadGame(my_specific_game_id);
@@ -11700,7 +11698,6 @@ if (this.game.state.round == 2) {
 	      //
 	      // not good - deal another!
 	      //
-alert("replacement card needed!");
 	      this.addMove("check_replacement_cards\t"+faction);
     	      this.addMove("hand_to_fhand\t1\t"+p+"\t"+faction);
     	      this.addMove("DEAL\t1\t"+p+"\t"+(num));
@@ -12555,7 +12552,7 @@ console.log(JSON.stringify(reshuffle_cards));
 
 	    let mycallback = [];
 
-	    if (player_last_move == "move" && (card != "002" && ops != 5)) { // HRE moves asevent, so disable on first ops played
+	    if (player_last_move == "move" && (card != "002" && ops != 5 && this.game.state.events.foul_weather != 1)) { // HRE moves as event, so disable on first ops played
 	      if (player_last_spacekey != "") {
 		if (this.game.spaces[player_last_spacekey]) {
 		  if (!this.isSpaceBesieged(this.game.spaces[player_last_spacekey])) {

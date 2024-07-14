@@ -5030,32 +5030,21 @@ console.log("selected: " + spacekey);
 	  his_self.updateLog(his_self.returnFactionName(faction) + " triggers " + his_self.popup("031"));
 	  his_self.game.state.events.foul_weather = 1;
 
+	  //
+	  // "lose 1 CP"
+	  //
 	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
-	    if (his_self.game.queue[i].indexOf("play") == -1 && his_self.game.queue[i].indexOf("continue") == -1 && his_self.game.queue[i].indexOf("discard") == -1 && his_self.game.queue[i].indexOf("cards_left") == -1) {
+	    let lqe = his_self.game.queue[i];
+	    if (lqe.indexOf("cards_left") != 0 && lqe.indexOf("continue") != 0 && lqe.indexOf("play") != 0 && lqe.indexOf("counter_or_acknowledge") != 0 && lqe.indexOf("RESOLVE") != 0 && lqe.indexOf("HALTED") != 0) {
 	      his_self.game.queue.splice(i, 1);
 	    } else {
-	      break;
+	      // only stop if at "continue" or "play"
+	      if (lqe.indexOf("cards_left") == 0 || lqe.indexOf("counter_or_acknowledge") == 0 || lqe.indexOf("RESOLVE") == 0 || lqe.indexOf("HALTED") == 0)  {
+	      } else {
+	        i = -1;
+	      }
 	    }
 	  }
-/***** This is how GOUT works
-          //
-          // "lose 1 CP"
-          //
-          for (let i = his_self.game.queue.length-1; i > 0; i--) {
-            let lqe = his_self.game.queue[i];
-            if (lqe.indexOf("continue") != 0 && lqe.indexOf("play") != 0 && lqe.indexOf("counter_or_acknowledge") != 0 && lqe.indexOf("RESOLVE") != 0 && lqe.indexOf("HALTED") != 0) {
-              his_self.game.queue.splice(i, 1);
-            } else {
-              // only stop if at "continue" or "play"
-              if (lqe.indexOf("counter_or_acknowledge") == 0 || lqe.indexOf("RESOLVE") == 0 || lqe.indexOf("HALTED") == 0)  {
-              } else {
-                i = -1;
-              }
-            }
-          }
-***/
-
-
 
 	  return 1;
 
@@ -5262,11 +5251,11 @@ console.log("selected: " + spacekey);
 	  //
 	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
 	    let lqe = his_self.game.queue[i];
-	    if (lqe.indexOf("continue") != 0 && lqe.indexOf("play") != 0 && lqe.indexOf("counter_or_acknowledge") != 0 && lqe.indexOf("RESOLVE") != 0 && lqe.indexOf("HALTED") != 0) {
+	    if (lqe.indexOf("cards_left") != 0 && lqe.indexOf("continue") != 0 && lqe.indexOf("play") != 0 && lqe.indexOf("counter_or_acknowledge") != 0 && lqe.indexOf("RESOLVE") != 0 && lqe.indexOf("HALTED") != 0) {
 	      his_self.game.queue.splice(i, 1);
 	    } else {
 	      // only stop if at "continue" or "play"
-	      if (lqe.indexOf("counter_or_acknowledge") == 0 || lqe.indexOf("RESOLVE") == 0 || lqe.indexOf("HALTED") == 0)  {
+	      if (lqe.indexOf("cards_left") == 0 || lqe.indexOf("counter_or_acknowledge") == 0 || lqe.indexOf("RESOLVE") == 0 || lqe.indexOf("HALTED") == 0)  {
 	      } else {
 	        i = -1;
 	      }
