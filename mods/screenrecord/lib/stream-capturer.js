@@ -123,10 +123,13 @@ class StreamCapturer {
             mixer.connect(destination);
 
             const updateGains = () => {
-                // const gain = 1 / Math.max(1, this.activeStreams.size);
-                // this.activeStreams.forEach(({ gainNode }) => {
-                //     gainNode.gain.setValueAtTime(gain, audioCtx.currentTime);
-                // });
+                const streamCount = this.activeStreams.size;
+                const maxReduction = 0.5; // Maximum 50% reduction
+                const gain = Math.max(1 - (streamCount - 1) * 0.1, maxReduction);
+                
+                this.activeStreams.forEach(({ gainNode }) => {
+                    gainNode.gain.setValueAtTime(gain, audioCtx.currentTime);
+                });
             };
 
             const processStream = (stream, video = null) => {
