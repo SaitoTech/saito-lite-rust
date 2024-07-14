@@ -22525,21 +22525,21 @@ if (this.game.options.scenario != "is_testing") {
 	        }
 
 		this.game.state.sp = [];
-//	        this.game.queue.push("hide_overlay\tdiet_of_worms");
-//	        this.game.queue.push("resolve_diet_of_worms");
+	        this.game.queue.push("hide_overlay\tdiet_of_worms");
+	        this.game.queue.push("resolve_diet_of_worms");
 		if (this.game.players.length > 2) { 
-//	          this.game.queue.push("diet_of_worms_hapsburgs");
+	          this.game.queue.push("diet_of_worms_hapsburgs");
 		} else {
 	          //
         	  // or we flip hapsburg card from deck if 2-player game
         	  //
-//        	  this.game.queue.push("POOLDEAL\t1\t1\t1"); // deck 1
-//        	  this.game.queue.push("POOL\t1"); // deck 1
+        	  this.game.queue.push("POOLDEAL\t1\t1\t1"); // deck 1
+        	  this.game.queue.push("POOL\t1"); // deck 1
 		}
-//	        this.game.queue.push("diet_of_worms_faction_array");
-//	        this.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	        this.game.queue.push("diet_of_worms_faction_array");
+	        this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
-//	        this.game.queue.push("show_overlay\tdiet_of_worms");
+	        this.game.queue.push("show_overlay\tdiet_of_worms");
 	        this.game.queue.push("card_draw_phase");
 	        this.game.queue.push("event\tprotestant\t008");
 
@@ -27056,7 +27056,7 @@ console.log("and halt game!");
         }
 
 	//
-	// exists to be removed by counter_or_acknowledge
+	// exists to be removed by counter_or_acknowledge -- TODO check if still needed
 	//
 	if (mv[0] === "halted") {
 	  // in order to avoid hangs, we auto-broadcast our RESOLVE again
@@ -27068,6 +27068,7 @@ console.log("and halt game!");
 	  this.updateStatus("acknowledged...");
 	  return 0;
 	}
+
 	if (mv[0] === "counter_or_acknowledge") {
 
           let my_specific_game_id = this.game.id;
@@ -27077,8 +27078,6 @@ console.log("and halt game!");
 	  //
 	  this.cardbox.hide();
 
-console.log("into counter_or_acknowledge, confirms needed: " + JSON.stringify(this.game.confirms_needed));
-
 	  //
 	  // if i have already confirmed, we only splice and pass-through if everyone else has confirmed
 	  // otherwise we will set ack to 0 and return 0 which halts execution. so we should never clear 
@@ -27086,15 +27085,12 @@ console.log("into counter_or_acknowledge, confirms needed: " + JSON.stringify(th
 	  //
 	  let have_i_resolved = false;
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
-console.log("i have resolved 1");
 	    have_i_resolved = true;
 	  } else {
 	    if (this.game.tmp_confirm_sent == 1) { 
-console.log("i have resolved 2");
 	      have_i_resolved = true;
 	    } else {
 	      if (await this.hasMyResolvePending()) {
-console.log("i have resolved 3");
 	        have_i_resolved = true;
 	      }
 	    }
@@ -27206,7 +27202,6 @@ console.log("i have resolved 3");
 	  // likely means an automatic response, which likely means no cards permitting
 	  // intervention are in-hand.
 	  //
-/****
 	  if (this.faster_play == 1 && menu_index.length == 0 && attach_menu_events != 1 && this.isGameHalted() != 1) {
 
 	    //
@@ -27215,7 +27210,7 @@ console.log("i have resolved 3");
 	    //
 	    his_self.is_halted = 1;
 	    his_self.halted = 1;
-//            his_self.game.queue[his_self.game.queue.length-1] = "HALTED\tWaiting for Game to Continue\t"+his_self.publicKey;
+            his_self.game.queue[his_self.game.queue.length-1] = "HALTED\tWaiting for Game to Continue\t"+his_self.publicKey;
             his_self.hud.back_button = false;
 
       	    let html = '<ul><li class="option" id="ok">acknowledge</li></ul>';
@@ -27244,20 +27239,19 @@ console.log("i have resolved 3");
 	      // that we have moves still pending, but should clear if it now finds 
 	      // UNHALT is the latest instruction and this resolve is coming from us!
               //
-	      his_self.processFutureMoves();
+	      setTimeout(() => { his_self.processFutureMoves(); }, 5);
 
 	    });
 
-//	    if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
-	      his_self.game.tmp_confirm_sent = 1;
-              his_self.addMove("RESOLVE\t"+his_self.publicKey);
-              his_self.endTurn();
-//	    }
+	    his_self.game.tmp_confirm_sent = 1;
+            his_self.addMove("RESOLVE\t"+his_self.publicKey);
+            his_self.endTurn();
 
             return 0;
 
 	  }
-****/
+
+
 
 	  this.updateStatusWithOptions(msg, html);
 	  let deck = his_self.returnDeck(true);
@@ -28206,10 +28200,10 @@ try {
 	  }
 
 	  for (let i = 0; i < attacker_modified_rolls; i++) {
-	    if (attacker_modified_rolls[i] >= 5) { attacker_hits++; }
+	    if (attacker_modified_rolls[i] >= 5 && attacker_results[i] < 5) { attacker_hits++; }
 	  }
 	  for (let i = 0; i < defender_modified_rolls; i++) {
-	    if (defender_modified_rolls[i] >= 5) { defender_hits++; }
+	    if (defender_modified_rolls[i] >= 5 && defender_results[i] < 5) { defender_hits++; }
 	  }
 
 	  //
