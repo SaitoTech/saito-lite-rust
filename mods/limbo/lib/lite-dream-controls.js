@@ -85,9 +85,8 @@ class DreamControls{
 			 			incomingStream.addTrack(event.track);
 
 						let otherAudio = this.mod.audioContext.createMediaStreamSource(incomingStream);
-						otherAudio.connect(this.mod.audioStream);
+						otherAudio.connect(this.mod.audioMixer);
 
-						console.log(this.mod.audioStream, this.mod.combinedStream);
 					}			
 		 		}
 			}

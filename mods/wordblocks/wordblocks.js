@@ -221,12 +221,13 @@ class Wordblocks extends GameTemplate {
 		//
 		// stop here if initializing
 		//
-		if (/*this.game.initializing == 1 ||*/ !this.browser_active) {
+		if (/*this.game.initializing == 1 ||*/ !this.gameBrowserActive()) {
 			return;
 		}
 
 		console.log('InitializeGame Checkpoint');
 
+		// To do... if playing Worblocks in Spanish and SOWPODS, need to be able to swap...
 		if (this.wordlist == '') {
 			//TODO -- Dynamically read letter tiles so wordblocks can more easily add new languages
 			try {
@@ -380,7 +381,7 @@ class Wordblocks extends GameTemplate {
 				);
 			}
 
-			if (!this.browser_active){
+			if (!this.gameBrowserActive()){
 				this.updateStatus(status + tile_html);
 				return;
 			}
@@ -439,7 +440,7 @@ class Wordblocks extends GameTemplate {
 	limitedEvents() {
 		let wordblocks_self = this;
 
-		if (this.browser_active == 1) {
+		if (this.gameBrowserActive()) {
 			$('.gameboard').removeClass('active_board');
 			$('.slot').off();
 			$('#rack .tile').off();
@@ -490,7 +491,7 @@ class Wordblocks extends GameTemplate {
 	}
 
 	removeEvents() {
-		if (this.browser_active == 1) {
+		if (this.gameBrowserActive()) {
 			$('#skipturn').off();
 			$('#shuffle').off(); //Don't want to shuffle when manually placing tiles or deleting
 			$('.slot').off(); //Reset clicking on board
@@ -506,7 +507,7 @@ class Wordblocks extends GameTemplate {
 	}
 
 	enableEvents() {
-		if (this.browser_active == 1) {
+		if (this.gameBrowserActive()) {
 			this.addEventsToBoard();
 			$('.gameboard').addClass('active_board');
 		}
@@ -518,7 +519,7 @@ class Wordblocks extends GameTemplate {
     hud-status-update-message
   */
 	async addEventsToBoard() {
-		if (this.browser_active == 0) {
+		if (!this.gameBrowserActive()) {
 			return;
 		}
 
@@ -2306,7 +2307,7 @@ class Wordblocks extends GameTemplate {
 				this.game.queue.splice(this.game.queue.length - 1, 1);
 				console.log(player, tileCt);
 
-				if (this.browser_active) {
+				if (this.gameBrowserActive()) {
 					let html = this.game.state.players[player - 1].log;
 					this.refreshPlayerLog(
 						`${html}<div class="lastmove"><span>Tiles:</span><span class="playerscore">${tileCt}</span></div>`,
@@ -2339,7 +2340,7 @@ class Wordblocks extends GameTemplate {
 				console.log("Update target: ", this.game.target);
 
 				//Don't process placement until user is in game
-				if (!this.browser_active) {
+				if (!this.gameBrowserActive()) {
 					if (this.game.player == this.game.target) {
 						this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
 						this.playerTurn();
@@ -2385,7 +2386,7 @@ class Wordblocks extends GameTemplate {
 				this.game.target = this.returnNextPlayer(player);
 				console.log("Update target: ", this.game.target);
 				
-				if (!this.browser_active) {
+				if (!this.gameBrowserActive()) {
 					if (this.game.player == this.game.target) {
 						this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
 						this.playerTurn();
@@ -2476,7 +2477,7 @@ class Wordblocks extends GameTemplate {
 	}
 
 	addScoreToPlayer(player, score) {
-		if (this.browser_active == 0) {
+		if (!this.gameBrowserActive()) {
 			return;
 		}
 

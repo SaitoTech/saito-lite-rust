@@ -107,6 +107,8 @@ function listTransactions(blk, hash) {
       } else if (tmptx.type===6){
         tx_from = "issuance tx";
         tx_fees = 0;
+      } else if (tmptx.type===7){
+        tx_from = "block stake tx";
       }
 
       html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + mt + `</a></div>`;

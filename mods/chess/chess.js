@@ -17,7 +17,7 @@ class Chessgame extends GameTemplate {
 
 		this.name = 'Chess';
 		this.board = null;
-		this.engine = null;
+		this.engine = new chess.Chess();
 		this_chess = this;
 		this.icon = 'fa-sharp fa-solid fa-chess';
 
@@ -26,7 +26,8 @@ class Chessgame extends GameTemplate {
 
 
 		this.title = "Saito Chess";
-		this.styles = ["/chess/chessboard.css"];
+		
+		this.styles.push("/chess/chessboard.css");
 
 		this.description =
 			'"Minutes to learn, a lifetime to master" <br><br> Chess is the king of games and original application on the Saito Network. ';
@@ -149,14 +150,9 @@ class Chessgame extends GameTemplate {
 	}
 
 	async initializeGame(game_id) {
-		console.log('######################################################');
-		console.log('######################################################');
 		console.log('######################         #######################');
-		console.log('######################  CHESS  #######################');
+		console.log('##### INITIALIZE #####  CHESS  #######################');
 		console.log('######################         #######################');
-		console.log('######################################################');
-		console.log('######################################################');
-		console.log(game_id);
 
 		//
 		// There is no initializing in Chess -- finish initializing
@@ -167,15 +163,13 @@ class Chessgame extends GameTemplate {
 			this.switchColors();
 		}
 
-		this.engine = new chess.Chess();
-
 		if (this.game.position != undefined) {
 			this.engine.load(this.game.position);
 		} else {
 			this.game.position = this.engine.fen();
 		}
 
-		if (!this.browser_active) {
+		if (!this.gameBrowserActive()) {
 			return;
 		}
 
@@ -183,19 +177,23 @@ class Chessgame extends GameTemplate {
 			this.confirm_moves = 0;
 		}
 
-		this.board = new chessboard('board', {
-			pieceTheme: '/chess/img/pieces/{piece}.png'
-		});
+		if (!this.board){
+			this.board = new chessboard('board', {
+				pieceTheme: '/chess/img/pieces/{piece}.png'
+			});
+			
+		}
 
 		if (this.game.over) {
-			this.lockBoard(this.engine.fen());
+			this.lockBoard(this.game.position);
 		} else {
-			this.setBoard(this.engine.fen());
+			this.setBoard(this.game.position);
 		}
 
 		//
 		//game.target is initialized to 1, which is white (switched above if "player 1" wanted to be black)
 		//
+		console.log("Target/Player", this.game.target, this.game.player);
 		if (this.game.target == this.game.player) {
 			this.playerTurn();
 		}
@@ -213,21 +211,30 @@ class Chessgame extends GameTemplate {
 	////////////////
 	// handleGame //
 	////////////////
-	async handleGameLoop(msg = {}) {
-		msg = {};
+	async handleGameLoop() {
+
+		console.log("######## HANDLE GAME LOOP CHESS ###########");
+		console.log('QUEUE IN CHESS: ' + JSON.stringify(this.game.queue));
+
+		let msg = {};
 		if (this.game.queue.length > 0) {
 			msg.extra = JSON.parse(
 				this.app.crypto.base64ToString(
 					this.game.queue[this.game.queue.length - 1]
 				)
 			);
+			this.game.queue.splice(this.game.queue.length - 1, 1);
 		} else {
 			msg.extra = {};
 		}
-		this.game.queue.splice(this.game.queue.length - 1, 1);
+		
 
-		console.log('QUEUE IN CHESS: ' + JSON.stringify(this.game.queue));
-		console.log(JSON.parse(JSON.stringify(msg.extra)));
+
+		if (this.game?.position) {
+			console.log(this.game.position);
+			this.engine.load(this.game.position);
+		}
+
 
 		if (msg.extra == undefined) {
 			console.log('NO MESSAGE DEFINED!');
@@ -278,19 +285,17 @@ class Chessgame extends GameTemplate {
 
 		this.game.last_position = this.game.position;
 		this.game.position = data.position;
-
 		this.updateLog(data.move);
-
-		this.updateBoard(this.game.position);
 		this.updateOpponent(msg.extra.target, data.move);
+		this.game.target = msg.extra.target;
+
+		this.updateBoard(data.position);
 
 		//Check for draw according to game engine
 		if (this.engine.in_draw() === true) {
 			this.sendGameOverTransaction(this.game.players, 'draw');
 			return 0;
 		}
-
-		this.game.target = msg.extra.target;
 
 		this.updateStatusMessage();
 
@@ -390,10 +395,9 @@ class Chessgame extends GameTemplate {
 			this.game.status = str;
 			str = `<div class="status">${str}</div>`;
 
-			console.log(this.game.status);
 		}
 
-		if (!this.browser_active) {
+		if (!this.gameBrowserActive()) {
 			return;
 		}
 
@@ -419,7 +423,7 @@ class Chessgame extends GameTemplate {
 	}
 
 	updateOpponent(target, move) {
-		if (this.game.player == 0 || !this.browser_active) {
+		if (this.game.player == 0 || !this.gameBrowserActive()) {
 			return;
 		}
 
@@ -449,9 +453,9 @@ class Chessgame extends GameTemplate {
 	updateBoard(position) {
 		this.engine.load(position);
 
-		if (!this.browser_active) { return; }
-		console.log('MOVING OPPONENT\'s PIECE');
-		this.board.position(position, true);
+		if (this.gameBrowserActive()) { 
+			this.board.position(position, true);
+		}
 	}
 
 	setBoard(position) {
@@ -478,7 +482,7 @@ class Chessgame extends GameTemplate {
 			moveSpeed: 400
 		};
 
-		if (this.browser_active == 1) {
+		if (this.gameBrowserActive()) {
 			this.board = new chessboard('board', cfg);
 
 			if (this.game.player == 2) {
@@ -698,7 +702,6 @@ class Chessgame extends GameTemplate {
 			return;
 		}
 
-		console.log(oldPos, newPos);
 	}
 
 	confirmPlacement(callback) {
@@ -847,8 +850,6 @@ class Chessgame extends GameTemplate {
 	returnCapturedHTML(acapt, player) {
 		let captHTML = '';
 
-		console.log('CHESS:', acapt, player);
-
 		if (player == 2) {
 			for (var i = 0; i < acapt[0].length; i++) {
 				captHTML += this.piecehtml(acapt[0][i], 'w');
@@ -858,8 +859,6 @@ class Chessgame extends GameTemplate {
 				captHTML += this.piecehtml(acapt[1][i], 'b');
 			}
 		}
-
-		console.log(captHTML);
 
 		if (captHTML) {
 			return `<div class="trophies">${captHTML}</div>`;
