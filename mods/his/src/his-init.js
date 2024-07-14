@@ -48,6 +48,12 @@ const htmlTemplate = require('./lib/core/game-html.template');
 
 const JSON = require('json-bigint');
 
+  //
+  // used in counter_or_acknowledge
+  //
+  var counter_or_acknowledge_inactivity_timeout = null;
+  var true_if_counter_or_acknowledge_cleared = false;
+
 
 
 //////////////////

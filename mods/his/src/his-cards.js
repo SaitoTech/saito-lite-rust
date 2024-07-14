@@ -5037,6 +5037,25 @@ console.log("selected: " + spacekey);
 	      break;
 	    }
 	  }
+/***** This is how GOUT works
+          //
+          // "lose 1 CP"
+          //
+          for (let i = his_self.game.queue.length-1; i > 0; i--) {
+            let lqe = his_self.game.queue[i];
+            if (lqe.indexOf("continue") != 0 && lqe.indexOf("play") != 0 && lqe.indexOf("counter_or_acknowledge") != 0 && lqe.indexOf("RESOLVE") != 0 && lqe.indexOf("HALTED") != 0) {
+              his_self.game.queue.splice(i, 1);
+            } else {
+              // only stop if at "continue" or "play"
+              if (lqe.indexOf("counter_or_acknowledge") == 0 || lqe.indexOf("RESOLVE") == 0 || lqe.indexOf("HALTED") == 0)  {
+              } else {
+                i = -1;
+              }
+            }
+          }
+***/
+
+
 
 	  return 1;
 
@@ -5243,12 +5262,18 @@ console.log("selected: " + spacekey);
 	  //
 	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
 	    let lqe = his_self.game.queue[i];
-	    if (lqe.indexOf("continue") != 0 && lqe.indexOf("play") != 0) {
+	    if (lqe.indexOf("continue") != 0 && lqe.indexOf("play") != 0 && lqe.indexOf("counter_or_acknowledge") != 0 && lqe.indexOf("RESOLVE") != 0 && lqe.indexOf("HALTED") != 0) {
 	      his_self.game.queue.splice(i, 1);
 	    } else {
-	      i = -1;
+	      // only stop if at "continue" or "play"
+	      if (lqe.indexOf("counter_or_acknowledge") == 0 || lqe.indexOf("RESOLVE") == 0 || lqe.indexOf("HALTED") == 0)  {
+	      } else {
+	        i = -1;
+	      }
 	    }
 	  }
+
+console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 
 	  return 1;
 
@@ -7505,8 +7530,6 @@ console.log("selected: " + spacekey);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
 
-console.log("in akinji raiders...");
-
 	let enemies = his_self.returnEnemies("ottoman");
 	let neighbours = [];
 	let valid_spaces_with_cavalry = [];
@@ -7529,9 +7552,6 @@ console.log("in akinji raiders...");
 	//
 	// 
 	//
-
-console.log("spaces length: " + spaces.length);
-
 	for (let i = 0; i < spaces.length; i++) {
 	  valid_spaces_with_cavalry.push(spaces[i]);
 	}
@@ -7556,9 +7576,7 @@ console.log("spaces length: " + spaces.length);
 	    }
 	  }
 	}
-console.log("neighbours: " + neighbours.length);
 	for (let i = 0; i < neighbours.length; i++) {
-console.log("neighbours i: " + i);
 	  let s = his_self.game.spaces[neighbours[i]];
 	  for (let ii = 0; ii < s.neighbours.length; ii++) {
 	    if (his_self.isSpaceControlled(s.neighbours[ii], "ottoman")) {
