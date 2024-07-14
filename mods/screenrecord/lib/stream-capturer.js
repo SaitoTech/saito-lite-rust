@@ -322,72 +322,72 @@ class StreamCapturer {
                     .filter((data) => data.stream !== null);
                 this.combinedStream.addTrack(canvas.captureStream(25).getVideoTracks()[0]);
             }
-            //  else {
-            //     this.observer = new MutationObserver((mutations) => {
-            //         mutations.forEach((mutation) => {
-            //             if (mutation.type === 'childList') {
-            //                 mutation.addedNodes.forEach((node) => {
-            //                     if (
-            //                         node.nodeType === Node.ELEMENT_NODE &&
-            //                         node.tagName === 'DIV' &&
-            //                         node.id.startsWith('stream_')
-            //                     ) {
-            //                         const videos = node.querySelectorAll('video');
-            //                         videos.forEach((video) => {
-            //                             const stream =
-            //                                 'captureStream' in video
-            //                                     ? video.captureStream()
-            //                                     : 'mozCaptureStream' in video
-            //                                         ? video.mozCaptureStream()
-            //                                         : null;
-            //                             processStream(stream, video);
-            //                             let existingVideoIndex = this.streamData.findIndex(data => data.video.id === video.id)
-            //                             if(existingVideoIndex !== -1){
-            //                                 console.log("Video exists")       
-            //                                 this.streamData[existingVideoIndex] = { stream, video}                  
-            //                                 return;
-            //                             }
-            //                             this.streamData.push({ stream, video });
-            //                         });
-            //                     }
-            //                 });
+             else {
+                this.observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (mutation.type === 'childList') {
+                            mutation.addedNodes.forEach((node) => {
+                                if (
+                                    node.nodeType === Node.ELEMENT_NODE &&
+                                    node.tagName === 'DIV' &&
+                                    node.id.startsWith('stream_')
+                                ) {
+                                    const videos = node.querySelectorAll('video');
+                                    videos.forEach((video) => {
+                                        const stream =
+                                            'captureStream' in video
+                                                ? video.captureStream()
+                                                : 'mozCaptureStream' in video
+                                                    ? video.mozCaptureStream()
+                                                    : null;
+                                        processStream(stream, video);
+                                        let existingVideoIndex = this.streamData.findIndex(data => data.video.id === video.id)
+                                        if(existingVideoIndex !== -1){
+                                            console.log("Video exists")       
+                                            this.streamData[existingVideoIndex] = { stream, video}                  
+                                            return;
+                                        }
+                                        this.streamData.push({ stream, video });
+                                    });
+                                }
+                            });
 
 
-            //                 if (mutation.removedNodes.length > 0) {
-            //                     mutation.removedNodes.forEach((node) => {
-            //                         if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV' && node.id.startsWith('stream_')) {
-            //                             const videos = node.querySelectorAll('video');
-            //                             videos.forEach((video) => { 
-            //                                 const streamData = this.streamData.find(data => data.video.id === video.id);
-            //                                 if (streamData) {
-            //                                     console.log('removed stream from source', streamData.stream.id)
-            //                                     removeStream(streamData.stream.id);
-            //                                     this.streamData = this.streamData.filter(data => data.video.id !== video.id);
-            //                                 }
-            //                             });
-            //                         }
-            //                     });
-            //                 }
+                            if (mutation.removedNodes.length > 0) {
+                                mutation.removedNodes.forEach((node) => {
+                                    if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV' && node.id.startsWith('stream_')) {
+                                        const videos = node.querySelectorAll('video');
+                                        videos.forEach((video) => { 
+                                            const streamData = this.streamData.find(data => data.video.id === video.id);
+                                            if (streamData) {
+                                                console.log('removed stream from source', streamData.stream.id)
+                                                removeStream(streamData.stream.id);
+                                                this.streamData = this.streamData.filter(data => data.video.id !== video.id);
+                                            }
+                                        });
+                                    }
+                                });
+                            }
 
-            //             }
-            //         });
-            //     });
-            //     this.observer.observe(view_window, {
-            //         attributes: true,
-            //         childList: true,
-            //         subtree: true,
-            //         attributeFilter: ['style']
-            //     });
-            //     document.querySelectorAll('video').forEach((video) => {
-            //         let stream =
-            //             'captureStream' in video
-            //                 ? video.captureStream()
-            //                 : 'mozCaptureStream' in video
-            //                     ? video.mozCaptureStream()
-            //                     : null;
-            //         processStream(stream, video);
-            //     });
-            // }
+                        }
+                    });
+                });
+                this.observer.observe(view_window, {
+                    attributes: true,
+                    childList: true,
+                    subtree: true,
+                    attributeFilter: ['style']
+                });
+                document.querySelectorAll('video').forEach((video) => {
+                    let stream =
+                        'captureStream' in video
+                            ? video.captureStream()
+                            : 'mozCaptureStream' in video
+                                ? video.mozCaptureStream()
+                                : null;
+                    processStream(stream, video);
+                });
+            }
 
 
             this.combinedStream.addTrack(destination.stream.getAudioTracks()[0]);
