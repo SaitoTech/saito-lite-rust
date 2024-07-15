@@ -187,6 +187,55 @@ class Wordblocks extends GameTemplate {
 		return html;
 	}
 
+	respondTo(type, obj = null) {
+		let chat_self = this;
+		let force = false;
+	
+		switch (type) {
+			case 'ntfy-notification':
+
+     			if(obj.tx?.msg?.module != 'Wordblocks') {
+			        return null;
+		        }
+
+				//console.log(JSON.stringify(obj));
+		
+				let tx = obj.tx;
+				let notification = obj.notification;
+		
+				//Add from.
+				let from = this.app.keychain.returnIdentifierByPublicKey(
+				  tx.from[0].publicKey,
+				  true
+				);
+		
+				notification.title = 'Saito Wordblocks';
+		
+				notification.tags = ['bangbang'];
+
+                switch (tx.msg.request) {
+					case 'join':
+						notification.message = from + ' has joined your Wordblocks Game.\n';
+						break;
+
+				    case 'game': 
+      					notification.message = from + ' has played.\n';
+						break;
+				}
+
+			notification.actions = [
+				//need to add game-id
+				  { action: 'play', label: 'Play', url: this.app.server.server.url + '/wordblocks/' }
+				];
+	        return notification;
+		  
+		    default:
+			    return super.respondTo(type);
+		}
+	}		
+
+
+
 	initializeGame(game_id) {
 		this.game.playerNames = [];
 		for (let i = 0; i < this.game.players.length; i++) {
