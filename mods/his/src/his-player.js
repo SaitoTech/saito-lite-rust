@@ -68,6 +68,23 @@
     return this.game.players;
   }
 
+  returnArrayOfPlayersInNavalSpacekey(spacekey="") {
+    let res = [];
+    let s = this.game.navalspaces[spacekey];
+    if (s) {
+      for (let key in s.units) {
+        if (s.units[key].length > 0) {
+          let p = this.returnPlayerCommandingFaction(key);
+          if (p > 0 && !res.includes(this.game.players[p-1])) {
+            res.push(this.game.players[p-1]);
+          }
+        }
+      }
+    }
+    if (res.length > 0) { return res; }
+    return this.game.players;
+  }
+
   returnPlayers(num = 0) {
 
     var players = [];

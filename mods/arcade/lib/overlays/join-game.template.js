@@ -135,7 +135,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 				if (invite.players.length > 1) {
 					html += `<div id="arcade-game-controls-forfeit-game" class="saito-button saito-button-secondary">forfeit game</div>`;
 				}
-				html += `<div id="arcade-game-controls-close-game" class="saito-button saito-button-secondary">close game</div>`;
+				html += `<div id="arcade-game-controls-close-game" class="saito-button saito-button-secondary">cancel game</div>`;
 			} else if (invite.game_mod.enable_observer) {
 				//Observer mode -- ongoing
 				html += `<div id="arcade-game-controls-watch-game" class="saito-button saito-button-primary">watch game</div>`;

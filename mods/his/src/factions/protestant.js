@@ -24,7 +24,6 @@
 
       calculateBaseVictoryPoints  : function(game_mod) {
 	// 2 VP for every electorate that is under Protesant religious + political control
-console.log("CALC base victory points!");
         let base = 0;
         base += (2 * game_mod.returnNumberOfProtestantElectorates());        
         return base;

@@ -396,17 +396,24 @@ class Arcade extends ModTemplate {
 
 				let query = game.module + '_' + game.id;
 
+				console.log("Arcade check for missed game events: ", query);
+
+				let game_mod = this.app.modules.returnModule(game.module);
+
+				if (!game_mod){
+					continue;
+				}
+
 				this.app.storage.loadTransactions(
 					{
 						field1: query
 					},
-					(txs) => {
+					async (txs) => {
 						for (let i = txs.length - 1; i >= 0; i--) {
-							let wrapped_tx = new Transaction();
-							wrapped_tx.msg.module = 'Relay';
-							wrapped_tx.msg.request = 'game relay gamemove';
-							wrapped_tx.msg.data = txs[i].toJson();
-							this.app.modules.handlePeerTransaction(wrapped_tx);
+							//Process in Arcade
+							await this.onConfirmation(-1, txs[i], 0);
+							//Process in game mod
+							await game_mod.onConfirmation(-1, txs[i], 0);
 						}
 					},
 					peer
@@ -449,8 +456,6 @@ class Arcade extends ModTemplate {
 			cm.render_manager_to_screen = 1;
 			this.addComponent(cm);
 		}
-
-		console.log('rendering', this.main, this.header);
 
 		await super.render();
 	}
@@ -649,6 +654,17 @@ class Arcade extends ModTemplate {
 					if (txmsg.request === 'game') {
 						await arcade_self.receiveGameStepTransaction(tx);
 					}
+
+					//
+					// Archive game overs for async to work
+					//
+					if (!this.app.BROWSER) {
+						await this.app.storage.saveTransaction(
+							tx,
+							{ field1: txmsg.module + '_' + txmsg.game_id },
+							'localhost'
+						);
+					}
 				}
 			}
 		} catch (err) {
@@ -687,15 +703,6 @@ class Arcade extends ModTemplate {
 				if (txmsg.request === 'open' || txmsg.request === 'private') {
 					await this.receiveOpenTransaction(tx);
 				}
-
-				//
-				// Allow the game originator to change mind about game being open or private
-				//
-				/*
-        if (txmsg.request.includes("change")) {
-          this.receiveChangeTransaction(tx);
-        }
-        */
 
 				//
 				// Add a player to the game invite
@@ -976,7 +983,6 @@ class Arcade extends ModTemplate {
 			await this.changeGameStatus(txmsg.game_id, 'close');
 		}
 
-		console.log('Cancel game transaction');
 		this.app.connection.emit('arcade-close-game', txmsg.game_id);
 		this.app.connection.emit('arcade-invite-manager-render-request');
 	}
@@ -1005,27 +1011,28 @@ class Arcade extends ModTemplate {
 	}
 
 	async changeGameStatus(game_id, newStatus) {
+
 		let game = this.returnGame(game_id);
 
-		if (!game) {
+		if (game?.msg?.request == 'over') {
 			return;
 		}
-		if (game.msg.request == 'over') {
-			return;
-		}
-
-		//Move game to different list
-		this.removeGame(game_id);
-		this.addGame(game, newStatus);
-
-		this.app.connection.emit('arcade-invite-manager-render-request');
 
 		//Update top level sql table
 		let sql = `UPDATE games
                SET status = $status
-               WHERE game_id = $game_id`;
+               WHERE game_id = $game_id AND status != 'over'`;
+
 		let params = { $status: newStatus, $game_id: game_id };
 		await this.app.storage.runDatabase(sql, params, 'arcade');
+
+		//Move game to different list
+		if (game) {
+			this.removeGame(game_id);
+			this.addGame(game, newStatus);
+		}
+
+		this.app.connection.emit('arcade-invite-manager-render-request');
 	}
 
 	//////////////
@@ -1074,7 +1081,6 @@ class Arcade extends ModTemplate {
 
 	async receiveCloseTransaction(tx) {
 		let txmsg = tx.returnMessage();
-		console.log('Close transaction');
 		this.app.connection.emit('arcade-close-game', txmsg.game_id);
 		await this.changeGameStatus(txmsg.game_id, 'close');
 	}
@@ -1096,12 +1102,6 @@ class Arcade extends ModTemplate {
 				$game_id: txmsg.game_id
 			};
 			await this.app.storage.runDatabase(sql, params, 'arcade');
-
-			await this.app.storage.saveTransaction(
-				tx,
-				{ field1: txmsg.module + '_' + txmsg.game_id },
-				'localhost'
-			);
 		}
 	}
 
@@ -1151,7 +1151,7 @@ class Arcade extends ModTemplate {
 	// the game.
 	//
 	async createJoinTransaction(orig_tx) {
-		console.log('createJoinTransaction', orig_tx);
+
 		if (!orig_tx || !orig_tx.signature) {
 			console.error('Invalid Game Invite TX, cannot Join');
 			return;
@@ -1286,7 +1286,7 @@ class Arcade extends ModTemplate {
 	}
 
 	async receiveAcceptTransaction(tx) {
-		// console.log("receiveAcceptTransaction", tx);
+
 		//Must be valid tx
 		if (!tx || !tx.signature) {
 			return;
@@ -1296,7 +1296,6 @@ class Arcade extends ModTemplate {
 		// Must have game module installed
 		// We call the game-initialization function directly on gamemod further down
 		let gamemod = this.app.modules.returnModule(txmsg.game);
-		console.log('arcade.receiveAcceptTransaction');
 
 		// I guess this safety catch should be further up the processing chain, like we shouldn't even display an invite/join a game we don't have installed
 		if (!gamemod) {
@@ -1616,6 +1615,8 @@ class Arcade extends ModTemplate {
 			//
 			if (this.isMyGame(tx)) {
 				list = 'mine';
+			}else if (tx.msg.players_needed <= tx.msg.players.length){
+				list = 'active';
 			}
 		}
 
@@ -1651,7 +1652,7 @@ class Arcade extends ModTemplate {
 		let now = new Date().getTime();
 		for (let key in this.games) {
 			let cutoff = now - this.invite_cutoff;
-			if (key == 'active' || key == 'over') {
+			if (key == 'active' || key == 'over' || key == 'mine') {
 				cutoff = now - this.game_cutoff;
 			}
 

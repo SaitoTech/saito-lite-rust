@@ -2,12 +2,46 @@ class StreamCapturer {
     constructor(app, logo) {
         this.combinedStream = null;
         this.streamData = [];
+        this.activeStreams = new Map();
         this.app = app;
         this.logo = logo;
         this.view_window = '.video-container-large';
         this.handleResize = this.handleResize.bind(this);
+
+        app.connection.on('stun-track-event', (peerId, event) => {
+            console.log('stun-track-event', peerId)
+            if (event.streams.length === 0 && event?.track) {
+                this.processTrack(event.track)
+            } else {
+                event.streams[0].getTracks().forEach((track) => {
+                    this.processTrack(track);
+                });
+            }
+        });
     }
 
+
+    processTrack(track) {
+        if (track.kind === 'audio') {
+            this.processAudioTrack(track);
+        }
+    }
+    
+    processAudioTrack(track) {
+        const stream = new MediaStream([track]);
+        const trackId = track.id;
+        if (!this.activeStreams.has(trackId)) {
+            console.log('processing stream', stream, trackId)
+            const source = this.audioCtx.createMediaStreamSource(stream);
+            const gainNode = this.audioCtx.createGain();
+            gainNode.gain.setValueAtTime(0.5, this.audioCtx.currentTime); 
+            source.connect(gainNode);
+            gainNode.connect(this.mixer);
+            this.activeStreams.set(trackId, { source, gainNode });
+        }else {
+            console.log('track already exists', trackId)
+        }
+    }
     drawImageProp(ctx, img, x, y, w, h, offsetX, offsetY) {
         if (arguments.length === 2) {
             x = y = 0;
@@ -75,7 +109,6 @@ class StreamCapturer {
 
     resizeCanvas(canvas) {
         console.log('resizing canvas');
-
         canvas.width = window.innerWidth;
         canvas.height = document.querySelector(this.view_window).clientHeight;
         const videoElements = document.querySelectorAll('div[id^="stream_"] video');
@@ -108,139 +141,14 @@ class StreamCapturer {
                 canvas.parentElement.removeChild(document.querySelector('canvas'));
             });
 
-            const audioCtx = new AudioContext();
-            const destination = new MediaStreamAudioDestinationNode(audioCtx);
+            this.audioCtx = new AudioContext();
+            this.destination = new MediaStreamAudioDestinationNode(this.audioCtx);
 
-            // Create a Set to keep track of active streams
-            // const activeStreams = new Set();
+            this.mixer = this.audioCtx.createGain();
+            this.mixer.connect(this.destination);
 
-
-            const activeStreams = new Map();
-
-
-            // Create a mixer (gain node) that all sources will connect to
-            const mixer = audioCtx.createGain();
-            mixer.connect(destination);
-
-            const updateGains = () => {
-                const gain = 1 / Math.max(1, activeStreams.size);
-                activeStreams.forEach(({ gainNode }) => {
-                    gainNode.gain.setValueAtTime(gain, audioCtx.currentTime);
-                });
-            };
-
-            // const processStream = (stream, video = null) => {
-            //     console.log('RECORD --- processing new stream', stream);
-            //     if (stream) {
-            //         if (stream.getAudioTracks().length > 0) {
-            //             console.log('Audio tracks found:', stream.id);
-            //             if (!activeStreams.has(stream.id)) {
-            //                 const source = audioCtx.createMediaStreamSource(stream);
-            //                 const gainNode = audioCtx.createGain();
-            //                 // activeStreams.add(stream);
-            //                 console.log('added stream to source', stream.id)
-            //                 activeStreams.set(stream.id, { source, gainNode, video });
-            //                 updateGains();
-            //                 source.connect(gainNode);
-            //                 gainNode.connect(mixer);
-            //                 console.log('Destination audio tracks:', destination.stream.getAudioTracks());
-            //             }
-
-            //         } else if (video && 'mozCaptureStream' in video) {
-            //             console.log('Using Firefox-specific audio capture');
-            //             if (!activeStreams.has(stream.id)) {
-            //                 const source = audioCtx.createMediaElementSource(video);
-            //                 const gainNode = audioCtx.createGain();
-            //                 console.log('added stream to source', stream.id)
-            //                 activeStreams.set(stream.id, { source, gainNode, video });
-            //                 updateGains();
-            //                 source.connect(gainNode);
-            //                 gainNode.connect(mixer);
-            //             }
-                       
-            //         } else {
-            //             console.log('No audio tracks in stream and not Firefox');
-            //         }
-            //     } else {
-            //         console.log('No stream provided');
-            //     }
-
-
-            //     console.log('active streams', activeStreams)
-            //     return stream;
-
-
-            // };
-
-            const processStream = (stream, video = null) => {
-                console.log('RECORD --- processing new stream', stream);
-                if (stream) {
-                    const streamId = stream.id;
-                    const videoId = video ? video.id : null;
-            
-                    // Check for an existing stream with the same video ID and remove it
-                    if (videoId) {
-                        for (const [key, value] of activeStreams) {
-                            if (value.video && value.video.id === videoId) {
-                                console.log('Removing existing stream with video ID:', videoId);
-                                removeStream(key)
-                                break;
-                            }
-                        }
-                    }
-                    // Add new stream only if it's not already present by its stream ID
-                    if (!activeStreams.has(streamId)) {
-                        if (stream.getAudioTracks().length > 0) {
-                            console.log('Audio tracks found:', streamId);
-                            const source = audioCtx.createMediaStreamSource(stream);
-                            const gainNode = audioCtx.createGain();
-                            activeStreams.set(streamId, { source, gainNode, video });
-                            console.log('Added stream to source', streamId);
-                            updateGains();
-                            source.connect(gainNode);
-                            gainNode.connect(mixer);
-                            console.log('Destination audio tracks:', destination.stream.getAudioTracks());
-                        } else if (video && 'mozCaptureStream' in video) {
-                            console.log('Using Firefox-specific audio capture');
-                            const source = audioCtx.createMediaElementSource(video);
-                            const gainNode = audioCtx.createGain();
-                            activeStreams.set(streamId, { source, gainNode, video });
-                            console.log('Added stream to source', streamId);
-                            updateGains();
-                            source.connect(gainNode);
-                            gainNode.connect(mixer);
-                        } else {
-                            console.log('No audio tracks in stream and not Firefox');
-                        }
-                    } else {
-                        console.log('Stream with the same ID already active:', streamId);
-                    }
-                } else {
-                    console.log('No stream provided');
-                }
-            
-                console.log('Active streams', activeStreams);
-                return stream;
-            };
-
-            const removeStream = (streamId) => {
-                if (activeStreams.has(streamId)) {
-                    const { source, gainNode } = activeStreams.get(streamId);
-                    console.log('disconnecting from source', source, streamId)
-                    source.disconnect();
-                    gainNode.disconnect();
-                    activeStreams.delete(streamId);
-                    updateGains();
-                    console.log('Removed stream:' , streamId);
-                }
-            };
-
-
-         
-
-            // let self = this
             if (includeCamera) {
-                let observer = new MutationObserver((mutations) => {
+                this.observer = new MutationObserver((mutations) => {
                     mutations.forEach((mutation) => {
                         if (mutation.type === 'childList') {
                             mutation.addedNodes.forEach((node) => {
@@ -251,7 +159,7 @@ class StreamCapturer {
                                 ) {
                                     const videos = node.querySelectorAll('video');
                                     console.log('video elements', videos)
-                                    videos.forEach((video) => {       
+                                    videos.forEach((video) => {
                                         console.log('new video element', video);
                                         const stream =
                                             'captureStream' in video
@@ -259,14 +167,14 @@ class StreamCapturer {
                                                 : 'mozCaptureStream' in video
                                                     ? video.mozCaptureStream() && video.mozCaptureStream(0)
                                                     : null;
-                                        console.log('captured stream', stream)
-                                        processStream(stream, video);
+                                        // console.log('captured stream', stream)
+                                        // processStream(stream, video);
                                         const rect = video.getBoundingClientRect();
-                                        const parentID = video.parentElement.id;                                     
+                                        const parentID = video.parentElement.id;
                                         let existingVideoIndex = this.streamData.findIndex(data => data.video.id === video.id)
-                                        if(existingVideoIndex !== -1){
-                                            console.log("Video exists")       
-                                            this.streamData[existingVideoIndex] = { stream, rect, parentID, video}                  
+                                        if (existingVideoIndex !== -1) {
+                                            console.log("Video exists")
+                                            this.streamData[existingVideoIndex] = { stream, rect, parentID, video }
                                             return;
                                         }
                                         this.streamData.push({ stream, rect, parentID, video });
@@ -278,11 +186,11 @@ class StreamCapturer {
                                 mutation.removedNodes.forEach((node) => {
                                     if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV' && node.id.startsWith('stream_')) {
                                         const videos = node.querySelectorAll('video');
-                                        videos.forEach((video) => { 
+                                        videos.forEach((video) => {
                                             const streamData = this.streamData.find(data => data.video.id === video.id);
                                             if (streamData) {
-                                                console.log('removed stream from source', streamData.stream.id)
-                                                removeStream(streamData.stream.id);
+                                                // console.log('removed stream from source', streamData.stream.id)
+                                                // removeStream(streamData.stream.id);
                                                 this.streamData = this.streamData.filter(data => data.video.id !== video.id);
                                             }
                                         });
@@ -290,7 +198,7 @@ class StreamCapturer {
                                 });
                             }
 
-                            console.log('Updated Stream Data: ', this.streamData);
+                            // console.log('Updated Stream Data: ', this.streamData);
                         }
                         if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
                             this.streamData.forEach((data) => {
@@ -303,7 +211,7 @@ class StreamCapturer {
                 });
 
                 //Start Observer
-                observer.observe(view_window, {
+                this.observer.observe(view_window, {
                     attributes: true,
                     childList: true,
                     subtree: true,
@@ -356,15 +264,31 @@ class StreamCapturer {
                                     ? video.mozCaptureStream()
                                     : null;
 
-                        processStream(stream, video);
+                        // processStream(stream, video);
                         const rect = video.getBoundingClientRect();
                         const parentID = video.parentElement.id;
                         return { stream, rect, parentID, video };
                     })
                     .filter((data) => data.stream !== null);
+
+                    const streams = this.app.modules.getRespondTos('media-request');
+                    if (streams.length > 0) {
+                        this.localStream = streams[0].localStream;
+                        this.additionalSources = streams[0].remoteStreams;
+                        if (this.localStream.getAudioTracks().length > 0) {
+                            let localAudio = this.audioCtx.createMediaStreamSource(this.localStream);
+                            localAudio.connect(this.mixer); 
+                        }
+                            this.additionalSources.forEach((values, keys) => { 
+                                console.log(keys, values.remoteStream.getAudioTracks());
+                                let otherAudio = this.audioCtx.createMediaStreamSource(values.remoteStream);
+                                otherAudio.connect(this.mixer); 
+                            });                      
+                    }
                 this.combinedStream.addTrack(canvas.captureStream(25).getVideoTracks()[0]);
-            } else {
-                let observer = new MutationObserver((mutations) => {
+            }
+            else {
+                this.observer = new MutationObserver((mutations) => {
                     mutations.forEach((mutation) => {
                         if (mutation.type === 'childList') {
                             mutation.addedNodes.forEach((node) => {
@@ -381,11 +305,11 @@ class StreamCapturer {
                                                 : 'mozCaptureStream' in video
                                                     ? video.mozCaptureStream()
                                                     : null;
-                                        processStream(stream, video);
+                                        // processStream(stream, video);
                                         let existingVideoIndex = this.streamData.findIndex(data => data.video.id === video.id)
-                                        if(existingVideoIndex !== -1){
-                                            console.log("Video exists")       
-                                            this.streamData[existingVideoIndex] = { stream, video}                  
+                                        if (existingVideoIndex !== -1) {
+                                            console.log("Video exists")
+                                            this.streamData[existingVideoIndex] = { stream, video }
                                             return;
                                         }
                                         this.streamData.push({ stream, video });
@@ -398,7 +322,7 @@ class StreamCapturer {
                                 mutation.removedNodes.forEach((node) => {
                                     if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV' && node.id.startsWith('stream_')) {
                                         const videos = node.querySelectorAll('video');
-                                        videos.forEach((video) => { 
+                                        videos.forEach((video) => {
                                             const streamData = this.streamData.find(data => data.video.id === video.id);
                                             if (streamData) {
                                                 console.log('removed stream from source', streamData.stream.id)
@@ -413,25 +337,32 @@ class StreamCapturer {
                         }
                     });
                 });
-                observer.observe(view_window, {
+                this.observer.observe(view_window, {
                     attributes: true,
                     childList: true,
                     subtree: true,
                     attributeFilter: ['style']
                 });
-                document.querySelectorAll('video').forEach((video) => {
-                    let stream =
-                        'captureStream' in video
-                            ? video.captureStream()
-                            : 'mozCaptureStream' in video
-                                ? video.mozCaptureStream()
-                                : null;
-                    processStream(stream, video);
-                });
+                const streams = this.app.modules.getRespondTos('media-request');
+                if (streams.length > 0) {
+                    this.localStream = streams[0].localStream;
+                    this.additionalSources = streams[0].remoteStreams;
+
+                    if (this.localStream.getAudioTracks().length > 0) {
+                        let localAudio = this.audioCtx.createMediaStreamSource(this.localStream);
+                        localAudio.connect(this.mixer); 
+                    }
+                        this.additionalSources.forEach((values, keys) => { 
+                            console.log(keys, values.remoteStream.getAudioTracks());
+                            let otherAudio = this.audioCtx.createMediaStreamSource(values.remoteStream);
+                            otherAudio.connect(this.mixer); 
+                        });
+
+                    
+                }
             }
 
-
-            this.combinedStream.addTrack(destination.stream.getAudioTracks()[0]);
+            this.combinedStream.addTrack(this.destination.stream.getAudioTracks()[0]);
             return this.combinedStream;
 
         } catch (error) {
@@ -441,15 +372,35 @@ class StreamCapturer {
     }
 
     stopCaptureVideoCallStreams() {
+
+        console.log('initiate cleanup')
         this.is_capturing_stream = false;
         cancelAnimationFrame(this.animationFrameId);
-        // console.log('removing event listener')
         window.removeEventListener('resize', this.handleResize);
         this.combinedStream.getTracks().forEach((track) => {
             track.stop();
             console.log(track, 'track');
         });
         this.combinedStream = null;
+
+        this.observer.disconnect()
+        this.streamData = [];
+
+        if (this.activeStreams) {
+            this.activeStreams.forEach(({ source, gainNode }) => {
+                source.disconnect();
+                gainNode.disconnect();
+            });
+            this.activeStreams.clear();
+        }
+
+        if (this.canvas && this.canvas.parentNode) {
+            this.canvas.parentNode.removeChild(this.canvas);
+        }
+
+
+
+
     }
 
     emitUpdatedCombinedStream() {

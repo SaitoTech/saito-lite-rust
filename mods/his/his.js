@@ -48,6 +48,12 @@ const htmlTemplate = require('./lib/core/game-html.template');
 
 const JSON = require('json-bigint');
 
+  //
+  // used in counter_or_acknowledge
+  //
+  var counter_or_acknowledge_inactivity_timeout = null;
+  var true_if_counter_or_acknowledge_cleared = false;
+
 
 
 //////////////////
@@ -720,7 +726,6 @@ console.log("WHY RUNNING INITIALIZE GAME?");
 
       calculateBaseVictoryPoints  : function(game_mod) {
 	// 2 VP for every electorate that is under Protesant religious + political control
-console.log("CALC base victory points!");
         let base = 0;
         base += (2 * game_mod.returnNumberOfProtestantElectorates());        
         return base;
@@ -8703,11 +8708,19 @@ console.log("selected: " + spacekey);
 	  his_self.updateLog(his_self.returnFactionName(faction) + " triggers " + his_self.popup("031"));
 	  his_self.game.state.events.foul_weather = 1;
 
+	  //
+	  // "lose 1 CP"
+	  //
 	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
-	    if (his_self.game.queue[i].indexOf("play") == -1 && his_self.game.queue[i].indexOf("continue") == -1 && his_self.game.queue[i].indexOf("discard") == -1 && his_self.game.queue[i].indexOf("cards_left") == -1) {
+	    let lqe = his_self.game.queue[i];
+	    if (lqe.indexOf("cards_left") != 0 && lqe.indexOf("continue") != 0 && lqe.indexOf("play") != 0 && lqe.indexOf("counter_or_acknowledge") != 0 && lqe.indexOf("RESOLVE") != 0 && lqe.indexOf("HALTED") != 0) {
 	      his_self.game.queue.splice(i, 1);
 	    } else {
-	      break;
+	      // only stop if at "continue" or "play"
+	      if (lqe.indexOf("cards_left") == 0 || lqe.indexOf("counter_or_acknowledge") == 0 || lqe.indexOf("RESOLVE") == 0 || lqe.indexOf("HALTED") == 0)  {
+	      } else {
+	        i = -1;
+	      }
 	    }
 	  }
 
@@ -8916,12 +8929,18 @@ console.log("selected: " + spacekey);
 	  //
 	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
 	    let lqe = his_self.game.queue[i];
-	    if (lqe.indexOf("continue") != 0 && lqe.indexOf("play") != 0) {
+	    if (lqe.indexOf("cards_left") != 0 && lqe.indexOf("continue") != 0 && lqe.indexOf("play") != 0 && lqe.indexOf("counter_or_acknowledge") != 0 && lqe.indexOf("RESOLVE") != 0 && lqe.indexOf("HALTED") != 0) {
 	      his_self.game.queue.splice(i, 1);
 	    } else {
-	      i = -1;
+	      // only stop if at "continue" or "play"
+	      if (lqe.indexOf("cards_left") == 0 || lqe.indexOf("counter_or_acknowledge") == 0 || lqe.indexOf("RESOLVE") == 0 || lqe.indexOf("HALTED") == 0)  {
+	      } else {
+	        i = -1;
+	      }
 	    }
 	  }
+
+console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 
 	  return 1;
 
@@ -11178,8 +11197,6 @@ console.log("selected: " + spacekey);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
 
-console.log("in akinji raiders...");
-
 	let enemies = his_self.returnEnemies("ottoman");
 	let neighbours = [];
 	let valid_spaces_with_cavalry = [];
@@ -11202,9 +11219,6 @@ console.log("in akinji raiders...");
 	//
 	// 
 	//
-
-console.log("spaces length: " + spaces.length);
-
 	for (let i = 0; i < spaces.length; i++) {
 	  valid_spaces_with_cavalry.push(spaces[i]);
 	}
@@ -11229,9 +11243,7 @@ console.log("spaces length: " + spaces.length);
 	    }
 	  }
 	}
-console.log("neighbours: " + neighbours.length);
 	for (let i = 0; i < neighbours.length; i++) {
-console.log("neighbours i: " + i);
 	  let s = his_self.game.spaces[neighbours[i]];
 	  for (let ii = 0; ii < s.neighbours.length; ii++) {
 	    if (his_self.isSpaceControlled(s.neighbours[ii], "ottoman")) {
@@ -20625,9 +20637,6 @@ try {
       }
     }
 
-console.log("factions: ");
-console.log(JSON.stringify(factions));
-
     //
     // let factions calculate their VP
     //
@@ -20638,7 +20647,6 @@ console.log(JSON.stringify(factions));
       factions[f].vp = (factions[f].vp_base + factions[f].vp_bonus + factions[f].vp_special);
     }
 
-console.log("factions 2");
     //
     // calculate keys controlled
     //
@@ -20649,7 +20657,6 @@ console.log("factions 2");
       }
     }
 
-console.log("factions 3");
     //
     // military victory
     //
@@ -20683,7 +20690,6 @@ console.log("factions 3");
         factions['papacy'].details = "military victory";
       }
     }
-console.log("factions 4");
 
     //
     // religious victory
@@ -22353,6 +22359,7 @@ if (this.game.state.scenario != "is_testing") {
 
 
 
+
   //
   // Core Game Logic
   //
@@ -22419,8 +22426,8 @@ this.updateLog(`###############`);
 	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
 if (this.game.options.scenario != "is_testing") {
-	  this.game.queue.push("spring_deployment_phase");
-	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
+//	  this.game.queue.push("spring_deployment_phase");
+//	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
 }
 
 	  if (this.game.players.length == 2) {
@@ -27049,19 +27056,22 @@ console.log("and halt game!");
         }
 
 	//
-	// exists to be removed by counter_or_acknowledge
+	// exists to be removed by counter_or_acknowledge -- TODO check if still needed
 	//
 	if (mv[0] === "halted") {
 	  // in order to avoid hangs, we auto-broadcast our RESOLVE again
 	  // if we reach this...
 	  if (this.is_first_loop == 1) {
-//alert("workaround bug-fix: if you see this error the game is attempting to unlock a potentially frozen situation. this may cause issues, please flag for dev team if game does not recover");
 	    this.addMove("RESOLVE\t"+this.publicKey);
 	    this.endTurn();
 	  }
+	  this.updateStatus("acknowledged...");
 	  return 0;
 	}
+
 	if (mv[0] === "counter_or_acknowledge") {
+
+          let my_specific_game_id = this.game.id;
 
 	  //
 	  // hide any cardbox
@@ -27073,7 +27083,20 @@ console.log("and halt game!");
 	  // otherwise we will set ack to 0 and return 0 which halts execution. so we should never clear 
 	  // splice anything out except here...
 	  //
+	  let have_i_resolved = false;
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+	    have_i_resolved = true;
+	  } else {
+	    if (this.game.tmp_confirm_sent == 1) { 
+	      have_i_resolved = true;
+	    } else {
+	      if (await this.hasMyResolvePending()) {
+	        have_i_resolved = true;
+	      }
+	    }
+	  }
+
+	  if (have_i_resolved == true) {
 
 	    let ack = 1;
 
@@ -27157,8 +27180,9 @@ console.log("and halt game!");
 	      //
 	      // replaces so we do not sent 2x
 	      //
-	      his_self.game.queue[his_self.game.queue.length-1] = "halted";
+//	      his_self.game.queue[his_self.game.queue.length-1] = "halted";
 //if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
+	      his_self.game.tmp_confirm_sent = 1;
 	      his_self.game.confirms_needed[his_self.game.player-1] = 1;
               his_self.addMove("RESOLVE\t"+his_self.publicKey);
 //}
@@ -27184,7 +27208,6 @@ console.log("and halt game!");
 	    // we don't need to HALT the game because the game will not progress
 	    // until all players have hit RESOLVE anyway. 
 	    //
-            let my_specific_game_id = his_self.game.id;
 	    his_self.is_halted = 1;
 	    his_self.halted = 1;
             his_self.game.queue[his_self.game.queue.length-1] = "HALTED\tWaiting for Game to Continue\t"+his_self.publicKey;
@@ -27199,7 +27222,9 @@ console.log("and halt game!");
               $('.option').off();
               let action = $(this).attr("id");
 
-              his_self.game = his_self.loadGame(my_specific_game_id);
+              if (his_self.game.id != my_specific_game_id) {
+                his_self.game = his_self.loadGame(my_specific_game_id);
+              }
 
 	      // tell game engine we can move
 	      his_self.is_halted = 0;
@@ -27214,17 +27239,19 @@ console.log("and halt game!");
 	      // that we have moves still pending, but should clear if it now finds 
 	      // UNHALT is the latest instruction and this resolve is coming from us!
               //
-	      his_self.processFutureMoves();
+	      setTimeout(() => { his_self.processFutureMoves(); }, 5);
 
 	    });
 
-//if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
+	    his_self.game.tmp_confirm_sent = 1;
             his_self.addMove("RESOLVE\t"+his_self.publicKey);
             his_self.endTurn();
-//}
+
             return 0;
 
 	  }
+
+
 
 	  this.updateStatusWithOptions(msg, html);
 	  let deck = his_self.returnDeck(true);
@@ -27233,20 +27260,27 @@ console.log("and halt game!");
 	  // this removes other options like Foul Weather after N seconds, so that
 	  // the game is not significantly slowed if a player refuses to take action. 
 	  //
-	  var counter_or_acknowledge_inactivity_timeout;
 
-/****
 	  if (this.isGameHalted() != 1) {
-	  var true_if_counter_or_acknowledge_cleared = false;
+
+	  //
+	  // prevent double broadcast if we run a second time and reach here
+	  //
+	  clearTimeout(counter_or_acknowledge_inactivity_timeout);
+	  true_if_counter_or_acknowledge_cleared = false;
 	  counter_or_acknowledge_inactivity_timeout = setTimeout(() => {
 
-	    if (true_if_counter_or_acknowledge_cleared) { return 0; }
+	    if (true_if_counter_or_acknowledge_cleared) { 
+	      //alert("in auto-sending timer, but true if counter or acknowledge cleared is true!");
+	      clearTimeout(counter_or_acknowledge_inactivity_timeout);
+	      return 0;
+	    }
+
 	    his_self.cardbox.hide();
 
-	    let my_specific_game_id = his_self.game.id;
             his_self.is_halted = 1;
             his_self.halted = 1;
-            his_self.game.queue[his_self.game.queue.length-1] = "HALTED\tWaiting for Game to Continue\t"+his_self.publicKey;
+//            his_self.game.queue[his_self.game.queue.length-1] = "HALTED\tWaiting for Game to Continue\t"+his_self.publicKey;
             his_self.hud.back_button = false;
                   
             let html = '<ul><li class="option acknowledge" id="ok">acknowledge</li></ul>';
@@ -27255,42 +27289,53 @@ console.log("and halt game!");
 	    $('.option').off();
             $('.option').on('click', function () {
 
+	            true_if_counter_or_acknowledge_cleared = true;
+
 		    $('.option').off();
+
+                    his_self.updateStatus("continuing...");
 
                     let action = $(this).attr("id");
                 
-                    his_self.game = his_self.loadGame(my_specific_game_id);
-                    
-                    // tell game engine we can move
-                    his_self.is_halted = 0;
-                    his_self.halted = 0;
-                    his_self.gaming_active = 0;
-            
-                    his_self.updateStatus('continuing...');
-          
-                    //
-                    // our own move will have been ticked into the future queue, along with
-                    // anyone else's so we skip restartQueue() which will freeze if it sees
-                    // that we have moves still pending, but should clear if it now finds
-                    // UNHALT is the latest instruction and this resolve is coming from us!
-                    //
-                    his_self.processFutureMoves();
+  		    setTimeout(() => {
 
+                	    if (his_self.game.id != my_specific_game_id) {
+                	      his_self.game = his_self.loadGame(my_specific_game_id);
+                	    }
+
+                	    // tell game engine we can move
+                	    his_self.is_halted = 0;
+                	    his_self.halted = 0;
+                	    his_self.gaming_active = 0;
+            
+                	    //
+                	    // our own move will have been ticked into the future queue, along with
+                	    // anyone else's so we skip restartQueue() which will freeze if it sees
+                	    // that we have moves still pending, but should clear if it now finds
+                	    // UNHALT is the latest instruction and this resolve is coming from us!
+                	    //
+                	    his_self.processFutureMoves();
+
+		    }, 5);
 	    });
 
+	    his_self.game.tmp_confirm_sent = 1;
             his_self.addMove("RESOLVE\t"+his_self.publicKey);
             his_self.endTurn();
             return 0;
 
 	  }, 7500);
 	  }
-****/
+
 
 	  $('.option').off();
 	  $('.option').on('mouseover', function() {
 
-	    clearTimeout(counter_or_acknowledge_inactivity_timeout);
+	    //
+	    // mark that we have interacted
+	    //
 	    true_if_counter_or_acknowledge_cleared = true;
+	    clearTimeout(counter_or_acknowledge_inactivity_timeout);
 
 	    document.querySelectorAll(".blink").forEach((el) => {
 	      el.classList.remove("blink");
@@ -27308,6 +27353,13 @@ console.log("and halt game!");
 	    }
           });
 	  $('.option').on('mouseout', function() {
+
+	    //
+	    // mark that we have interacted
+	    //
+	    true_if_counter_or_acknowledge_cleared = true;
+	    clearTimeout(counter_or_acknowledge_inactivity_timeout);
+
             let action2 = $(this).attr("id");
 	    if (deck[action2]) {
 	      his_self.cardbox.hide(action2);
@@ -27321,13 +27373,13 @@ console.log("and halt game!");
 	  });
           $('.option').on('click', async function () {
 
-            let action2 = $(this).attr("id");
-
 	    //
 	    // mark that we have interacted
 	    //
 	    true_if_counter_or_acknowledge_cleared = true;
+	    clearTimeout(counter_or_acknowledge_inactivity_timeout);
 
+            let action2 = $(this).attr("id");
 
 	    //
 	    // prevent blocking
@@ -27721,25 +27773,33 @@ try {
 	  //
 	  his_self.game.queue.push(`naval_battle_continue\t${mv[1]}`);
 
+	  let from_whom = his_self.returnArrayOfPlayersInNavalSpacekey(mv[1]);
+
 	  if (ap.tmp_roll_first == 1 && dp.tmp_roll_first != 1) {
 	    his_self.game.state.naval_battle.attacker_hits_first = 1;
 	    if (attacker_hits > 0 || defender_hits > 0) {
 	      his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.defender_faction);
 	      his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.attacker_faction);
-	      his_self.game.queue.push("ACKNOWLEDGE\tProceed to Hits Assignment");
+	      if (from_whom.includes(this.game.players[this.game.player-1])) {
+	        his_self.game.queue.push("ACKNOWLEDGE\tProceed to Hits Assignment");
+	      }
 	    }
 	  } else if (ap.tmp_roll_first != 1 && dp.tmp_roll_first == 1) {
 	    if (attacker_hits > 0 || defender_hits > 0) {
 	      his_self.game.state.naval_battle.defender_hits_first = 1;
 	      his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.attacker_faction);
 	      his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.defender_faction);
-	      his_self.game.queue.push("ACKNOWLEDGE\tProceed to Hits Assignment");
+	      if (from_whom.includes(this.game.players[this.game.player-1])) {
+	        his_self.game.queue.push("ACKNOWLEDGE\tProceed to Hits Assignment");
+	      }
 	    }
 	  } else {
 	    if (attacker_hits > 0 || defender_hits > 0) {
 	      his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.attacker_faction);
 	      his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.defender_faction);
-	      his_self.game.queue.push("ACKNOWLEDGE\tProceed to Hits Assignment");
+	      if (from_whom.includes(this.game.players[this.game.player-1])) {
+	        his_self.game.queue.push("ACKNOWLEDGE\tProceed to Hits Assignment");
+	      }
 	    }
 	  }
 
@@ -28140,10 +28200,10 @@ try {
 	  }
 
 	  for (let i = 0; i < attacker_modified_rolls; i++) {
-	    if (attacker_modified_rolls[i] >= 5) { attacker_hits++; }
+	    if (attacker_modified_rolls[i] >= 5 && attacker_results[i] < 5) { attacker_hits++; }
 	  }
 	  for (let i = 0; i < defender_modified_rolls; i++) {
-	    if (defender_modified_rolls[i] >= 5) { defender_hits++; }
+	    if (defender_modified_rolls[i] >= 5 && defender_results[i] < 5) { defender_hits++; }
 	  }
 
 	  //
@@ -30594,13 +30654,21 @@ try {
 	    //
             if (winner == defender_faction) {
 	      if (attacker_sea_units_remaining > 0) {
-                this.game.queue.push("purge_naval_units_and_capture_leaders\t"+f+"\t"+attacker_faction+"\t"+space.key);
-                this.game.queue.push("player_evaluate_post_naval_battle_retreat\t"+attacker_faction+"\t"+space.key);
+                for (let f in his_self.game.state.naval_battle.faction_map) {
+                  if (his_self.game.state.naval_battle.faction_map[f] == his_self.game.state.naval_battle.attacker_faction) {
+                    this.game.queue.push("purge_naval_units_and_capture_leaders\t"+defender_faction+"\t"+f+"\t"+space.key);
+                    this.game.queue.push("player_evaluate_post_naval_battle_retreat\t"+f+"\t"+space.key);
+	          }
+	        }
 	      }
 	    } else {
 	      if (defender_sea_units_remaining > 0) {
-                this.game.queue.push("purge_naval_units_and_capture_leaders\t"+f+"\t"+defender_faction+"\t"+space.key);
-                this.game.queue.push("player_evaluate_post_naval_battle_retreat\t"+defender_faction+"\t"+space.key);
+                for (let f in his_self.game.state.naval_battle.faction_map) {
+                  if (his_self.game.state.naval_battle.faction_map[f] == his_self.game.state.naval_battle.defender_faction) {
+                    this.game.queue.push("purge_naval_units_and_capture_leaders\t"+attacker_faction+"\t"+f+"\t"+space.key);
+                    this.game.queue.push("player_evaluate_post_naval_battle_retreat\t"+f+"\t"+space.key);
+	          }
+	        }
 	      }
 	    }
 
@@ -30905,6 +30973,8 @@ try {
 
 	  let post_assault_intervention_possible = this.game.state.events.intervention_post_assault_possible;
 
+	  let from_whom = his_self.returnArrayOfPlayersInSpacekey(space.key);
+
           //
           // we stop here for intercession by cards that need to execute before the die rolls
 	  // are assigned but after they have been rolled.
@@ -30915,7 +30985,9 @@ try {
               his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.defender_faction);
               his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.attacker_faction);
 	      if (0 == post_assault_intervention_possible) {
-	        his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+	        if (from_whom.includes(this.game.players[this.game.player-1])) {
+	          his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+	        }
 	      }
 	    }
           } else if (ap.tmp_roll_first != 1 && dp.tmp_roll_first == 1) {
@@ -30924,7 +30996,9 @@ try {
               his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.attacker_faction);
               his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.defender_faction);
 	      if (0 == post_assault_intervention_possible) {
-	        his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+	        if (from_whom.includes(this.game.players[this.game.player-1])) {
+	          his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+                }
               }
             }
           } else {
@@ -30932,7 +31006,9 @@ try {
               his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.attacker_faction);
               his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.defender_faction);
 	      if (0 == post_assault_intervention_possible) {
-	        his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+	        if (from_whom.includes(this.game.players[this.game.player-1])) {
+	          his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+                }
               }
             }
           }
@@ -30940,7 +31016,6 @@ try {
           //
           // this should stop execution while we are looking at the pre-field battle overlay
           //
-	  let from_whom = his_self.returnArrayOfPlayersInSpacekey(space.key);
 	  if (his_self.game.state.events.intervention_post_assault_possible) {
             his_self.game.queue.push("counter_or_acknowledge\tProceed to Assign Hits in "+space.name + "\tpost_assault_rolls");
             his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
@@ -33977,7 +34052,6 @@ if (this.game.state.round == 2) {
 	      //
 	      // not good - deal another!
 	      //
-alert("replacement card needed!");
 	      this.addMove("check_replacement_cards\t"+faction);
     	      this.addMove("hand_to_fhand\t1\t"+p+"\t"+faction);
     	      this.addMove("DEAL\t1\t"+p+"\t"+(num));
@@ -34697,8 +34771,6 @@ console.log(JSON.stringify(reshuffle_cards));
 
 	  let player = this.returnPlayerOfFaction(faction);
 
-console.log("WHICH PLAYER IS THIS: " + player);
-
 	  // update board display
 	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
           this.displayBoard();
@@ -34834,7 +34906,7 @@ console.log("WHICH PLAYER IS THIS: " + player);
 
 	    let mycallback = [];
 
-	    if (player_last_move == "move" && (card != "002" && ops != 5)) { // HRE moves asevent, so disable on first ops played
+	    if (player_last_move == "move" && (card != "002" && ops != 5 && this.game.state.events.foul_weather != 1)) { // HRE moves as event, so disable on first ops played
 	      if (player_last_spacekey != "") {
 		if (this.game.spaces[player_last_spacekey]) {
 		  if (!this.isSpaceBesieged(this.game.spaces[player_last_spacekey])) {
@@ -36426,6 +36498,23 @@ console.log("space.units: " + JSON.stringify(space.units));
   returnArrayOfPlayersInSpacekey(spacekey="") {
     let res = [];
     let s = this.game.spaces[spacekey];
+    if (s) {
+      for (let key in s.units) {
+        if (s.units[key].length > 0) {
+          let p = this.returnPlayerCommandingFaction(key);
+          if (p > 0 && !res.includes(this.game.players[p-1])) {
+            res.push(this.game.players[p-1]);
+          }
+        }
+      }
+    }
+    if (res.length > 0) { return res; }
+    return this.game.players;
+  }
+
+  returnArrayOfPlayersInNavalSpacekey(spacekey="") {
+    let res = [];
+    let s = this.game.navalspaces[spacekey];
     if (s) {
       for (let key in s.units) {
         if (s.units[key].length > 0) {

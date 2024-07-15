@@ -239,7 +239,7 @@ class Record extends ModTemplate {
 
 		let options = {
 			mimeType: mimeType,
-			videoBitsPerSecond: stream.getVideoTracks().length > 0 ? 25 * 1024 * 1024 : undefined,
+			videoBitsPerSecond: stream.getVideoTracks().length > 0 ? 1778000 : undefined,
 			audioBitsPerSecond: 320 * 1024
 		};
 

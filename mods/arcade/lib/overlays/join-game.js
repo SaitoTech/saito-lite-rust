@@ -124,15 +124,21 @@ class JoinGameOverlay {
 
 		if (document.getElementById('arcade-game-controls-close-game')) {
 			document.getElementById('arcade-game-controls-close-game').onclick =
-				(e) => {
+				async (e) => {
 					this.overlay.remove();
+
 					this.app.browser.logMatomoEvent(
 						'GameInvite',
 						'CloseActiveGame',
 						this.invite.game_mod.name
 					);
 
-					this.app.connection.emit("stop-game", this.invite.game_mod.name, this.invite.game_id, "cancellation");
+					let c = await sconfirm("Are you sure you want to end the game?");
+					
+					if (c) {
+						this.app.connection.emit("stop-game", this.invite.game_mod.name, this.invite.game_id, "cancellation");	
+					}
+					
 				};
 		}
 
@@ -148,7 +154,7 @@ class JoinGameOverlay {
 		if (document.getElementById('arcade-game-controls-forfeit-game')) {
 			document.getElementById(
 				'arcade-game-controls-forfeit-game'
-			).onclick = (e) => {
+			).onclick = async (e) => {
 				this.overlay.remove();
 				this.app.browser.logMatomoEvent(
 					'GameInvite',
@@ -156,7 +162,11 @@ class JoinGameOverlay {
 					this.invite.game_mod.name
 				);
 
-				this.app.connection.emit("stop-game", this.invite.game_mod.name, this.invite.game_id, "forfeit");
+				let c = await sconfirm("Are you sure you want to end the game and take a loss?");
+				
+				if (c) {
+					this.app.connection.emit("stop-game", this.invite.game_mod.name, this.invite.game_id, "forfeit");	
+				}
 
 			};
 		}

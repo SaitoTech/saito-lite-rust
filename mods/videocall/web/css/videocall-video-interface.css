@@ -1003,6 +1003,10 @@ video#presentation {
 	}
 }
 
+.icon_click_area.not-clickable {
+	cursor: default;
+}
+
 .onair.recording {
 	background-color: var(--saito-red);
 }

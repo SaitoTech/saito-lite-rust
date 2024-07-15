@@ -361,7 +361,7 @@ class Storage {
 		saveOptionsForReal();
 
 //		clearTimeout(this.timeout);
-//		this.timeout = setTimeout(saveOptionsForReal, 1);
+//		this.timeout = setTimeout(saveOptionsForReal, 50);
 	}
 
 	getModuleOptionsByName(modname) {

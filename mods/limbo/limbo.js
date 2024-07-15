@@ -192,13 +192,12 @@ class Limbo extends ModTemplate {
 				}
 
 
-
 				this.attachStyleSheets();
 				return [
 					{
 						text: 'Cast',
-						icon: `fa-solid fa-tower-broadcast podcast-icon ${this.dreamer ? "recording": ""}`,
-						hook: `onair limbo ${this.dreamer ? "recording": ""}`,
+						icon: `fa-solid fa-tower-broadcast podcast-icon`,
+						hook: `onair limbo`,
 						callback: async function (app) {
 							if (mod_self.dreamer) {
 								if (mod_self.dreamer == mod_self.publicKey){
@@ -208,11 +207,15 @@ class Limbo extends ModTemplate {
 								}else{
 									//need a flow for others in call to seed the swarm...
 									//
+									salert("Only the host can end the Saito Space");
 								}
 							} else {
 								mod_self.startDream({ alt_id: obj?.call_id, keylist: obj.members});
 							}
-						}
+						}, 
+						event: function(id) {
+							mod_self.toggleNotification(mod_self?.dreamer, mod_self?.dreamer);
+						},
 					}
 				];
 			}
@@ -984,13 +987,13 @@ class Limbo extends ModTemplate {
 			}else{
 				if (this.upstream.size > 0) {
 					this.upstream.forEach((pc, key) => {
-						if (pc){
+						if (pc.connectionState == 'connected'){
 							source = true;
 						}
 					});
 				}
 			}
-
+			
 			if (!source){
 				console.warn("Ignoring Join Transaction because I don't have a stable source yet");
 				return;
@@ -1540,23 +1543,31 @@ class Limbo extends ModTemplate {
 		}*/
 	}
 
+//									container.querySelector("label").innerText = "Stop";
+
 	toggleNotification(value = true, sender) {
 		let vinyl = document.querySelector('.podcast-icon');
 		if (vinyl) {
 			let full_icon = vinyl.parentElement;
+
 			if (value) {
 				vinyl.classList.add('recording');
 				full_icon.classList.add('recording');
 				if (sender != this.publicKey){
+					full_icon.classList.add("not-clickable");
 					full_icon.title = `${this.app.keychain.returnUsername(sender)} is peercasting the call`;
+					full_icon.querySelector("label").innerText = "Casting";
 				}else{
 					full_icon.title = "Stop Limbo Broadcast";
+					full_icon.querySelector("label").innerText = "Stop";
 				}
 
 			} else {
+				full_icon.classList.remove("not-clickable");
 				vinyl.classList.remove('recording');
 				full_icon.classList.remove('recording');
 				full_icon.title = "Start a Limbo Broadcast";
+				full_icon.querySelector("label").innerText = "Cast";
 			}
 		}
 	}

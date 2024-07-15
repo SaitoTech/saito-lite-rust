@@ -593,7 +593,7 @@ class Chat extends ModTemplate {
             this.chat_manager = new ChatManager(this.app, this);
           }
 
-          this.createFreshGroup('Video Call', obj.call_id);
+          this.createFreshGroup('Saito Talk', obj.call_id);
 
           return [
             {
