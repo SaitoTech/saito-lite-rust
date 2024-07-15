@@ -94,6 +94,8 @@ class Chat extends ModTemplate {
     this.app.connection.on('chat-ready', () => {
       if (this.auto_open_community) {
         this.app.connection.emit('chat-popup-render-request');
+      }else{
+        this.app.connection.emit('chat-manager-render-request');
       }
     });
 
@@ -217,7 +219,7 @@ class Chat extends ModTemplate {
     let chat_id = this.app.browser.returnURLParameter('chat_id');
 
     if (chat_id) {
-      if (this.app.crypto.isPublicKey(chat_id)) {
+      if (this.app.wallet.isValidPublicKey(chat_id)) {
         //data.key = public key(s) of other chat parties
         this.app.connection.emit('open-chat-with', { key: chat_id });
       } else {
@@ -375,10 +377,12 @@ class Chat extends ModTemplate {
               for (let i = 0; i < txs.length; i++) {
                 if (txs[i].timestamp > most_recent_ts) {
                   this.communityGroup.txs.push(txs[i]);
+                  this.communityGroup.unread++;
                 }
               }
             } else {
               this.communityGroup.txs = txs;
+              this.communityGroup.unread = txs.length;
             }
 
             if (this.app.BROWSER) {
@@ -399,15 +403,21 @@ class Chat extends ModTemplate {
       }
 
       let now = new Date().getTime();
-      let serverName = JSON.stringify([peer.publicKey]);
 
       for (let group of this.groups) {
+        
         if (group.name !== this.communityGroupName) {
           //
           // Not the community group but using the chat server, clear these out after 1 day by default
           //
-          if (JSON.stringify(group.members) === serverName){
-            if (now - group.last_update > (1000 * 60 * 60 * 24)){
+          if (group.members.includes(peer.publicKey)){
+
+            let last_update = group?.last_update || 0;
+
+            if (now - last_update > (1000 * 60 * 60 * 24)){
+              console.log(group.name, JSON.stringify(group.members));
+              console.log("Time since last update (s): ", (now - last_update)/1000);
+              console.log("Delete Chat group!");
               await this.deleteChatGroup(group);
             }
           }
@@ -593,6 +603,17 @@ class Chat extends ModTemplate {
                 app.connection.emit('open-chat-with', {
                   id: obj.call_id
                 });
+              },
+              event: function (id) {
+                chat_self.app.connection.on(
+                  'chat-manager-render-request',
+                  () => {
+                    let group = chat_self.returnGroup(obj.call_id);
+                    if (group){
+                      chat_self.app.browser.addNotificationToId(group.unread, id);
+                    }
+                  }
+                );
               }
             }
           ];
@@ -656,7 +677,8 @@ class Chat extends ModTemplate {
 
         notification.message = 'From: ' + from + '\n';
 
-        if (typeof JSON.parse(tx.msg).ct == 'string') {
+        if (typeof tx.msg == 'string') {
+          //was checking if JSON.parse(tx.msg).ct was a string but this was breaking on parsing bigint...
           notification.message += 'Message Encyrypted';
         } else {
           notification.message += tx.msg.message?.substring(0, 50);
@@ -1626,28 +1648,7 @@ class Chat extends ModTemplate {
             sender = block[z].from[0];
 
             // replace @mentions with saito treated address
-            block[z].msg = block[z].msg.replaceAll(
-              /(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]*)/g,
-              function (k) {
-                let split = k.split('@');
-                let username = '';
-                let key = '';
-
-                if (split.length > 2) {
-                  username = split[1] + '@' + split[2];
-                  key =
-                    chat_self.app.keychain.returnPublicKeyByIdentifier(
-                      username
-                    );
-                } else {
-                  username = chat_self.app.keychain.returnUsername(split[1]);
-                  key = split[1];
-                }
-                let replaced = `<span class="saito-mention saito-address" data-id="${key}" 
-															data-disable="true" contenteditable="false">${username}</span>`;
-                return replaced;
-              }
-            );
+            block[z].msg = chat_self.app.browser.markupMentions(block[z].msg);
 
             // Get my like status
             let liked = '';
@@ -2263,7 +2264,6 @@ class Chat extends ModTemplate {
     this.app.options.chat.audio_chime = this.audio_chime;
     this.app.options.chat.auto_open_community = this.auto_open_community;
     this.app.options.chat.black_list = this.black_list;
-
     this.app.storage.saveOptions();
   }
 

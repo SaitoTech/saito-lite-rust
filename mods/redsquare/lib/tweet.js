@@ -507,6 +507,10 @@ class Tweet {
 		this.setKeys(this.tx.optional);
 		//console.log(this.num_replies, this.num_retweets, this.num_likes);
 
+		if (!this.app.BROWSER || !this.browser_active){
+			return;
+		}
+
 		if (complete_rerender) {
 			this.render();
 		} else {
@@ -1324,11 +1328,14 @@ class Tweet {
 			if (!first_link.startsWith('http')) {
 				first_link = 'http://' + first_link;
 			}
+			
 			//console.log(first_link);
 
 			if (typeof first_link == 'undefined') {
 				return this;
 			}
+
+			this.link = first_link;
 
 			let urlParams = null;
 
@@ -1340,6 +1347,8 @@ class Tweet {
 				console.error(err);
 				this.link = first_link;
 			}
+
+			//console.log(this.link);
 
 			//
 			// youtube link
@@ -1386,6 +1395,7 @@ class Tweet {
 				}
 			}
 		}
+		//console.log(this.link);
 
 		return this;
 	}

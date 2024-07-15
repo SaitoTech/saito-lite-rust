@@ -74,6 +74,7 @@
     this.game.state.events.intervention_on_movement_possible = 0;
     this.game.state.events.intervention_on_events_possible = 0;
     this.game.state.events.intervention_on_assault_possible = 0;
+    this.game.state.events.intervention_post_assault_possible = 0;
 
     this.game.state.field_battle_relief_battle = false;
 
@@ -116,6 +117,7 @@
     this.game.state.events.intervention_on_movement_possible = 0;
     this.game.state.events.intervention_on_events_possible = 0;
     this.game.state.events.intervention_on_assault_possible = 0;
+    this.game.state.events.intervention_post_assault_possible = 0;
 
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
@@ -380,6 +382,9 @@
       }
     }
 
+console.log("factions: ");
+console.log(JSON.stringify(factions));
+
     //
     // let factions calculate their VP
     //
@@ -390,6 +395,7 @@
       factions[f].vp = (factions[f].vp_base + factions[f].vp_bonus + factions[f].vp_special);
     }
 
+console.log("factions 2");
     //
     // calculate keys controlled
     //
@@ -400,6 +406,7 @@
       }
     }
 
+console.log("factions 3");
     //
     // military victory
     //
@@ -433,6 +440,7 @@
         factions['papacy'].details = "military victory";
       }
     }
+console.log("factions 4");
 
     //
     // religious victory

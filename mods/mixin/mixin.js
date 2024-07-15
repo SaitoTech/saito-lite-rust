@@ -118,23 +118,21 @@ class Mixin extends ModTemplate {
 
   async loadCryptos() {
     let mixin_self = this;
+    let rtModules = this.app.modules.respondTo("mixin-crypto");
 
-    let respondTo = this.app.modules.respondTo("mixin-crypto");
-
-    for (const rtModule of respondTo) {
-      let crypto_module = new MixinModule(this.app, rtModule.ticker, mixin_self, rtModule.asset_id);
+    for (let i=0; i<rtModules.length; i++) {
+      let crypto_module = new MixinModule(this.app, rtModules[i].ticker, mixin_self, rtModules[i].asset_id);
       //
       //Use the module's returnBalance function if provided
       //
-      if (rtModule.returnBalance) {
-        crypto_module.returnBalance = rtModule.returnBalance;
+      if (rtModules[i].returnBalance) {
+        crypto_module.returnBalance = rtModules[i].returnBalance;
       }
 
       await crypto_module.installModule(mixin_self.app);
       this.mods.push(crypto_module);
       this.app.modules.mods.push(crypto_module);
-      let pc = await this.app.wallet.returnPreferredCryptoTicker();
-      if (mixin_self.account_created !== 0 || (pc !== "SAITO" && pc !== "")) {
+      if (mixin_self.account_created !== 0) {
         if (crypto_module.returnIsActivated()) {
           await this.fetchSafeUtxoBalance();
         }
@@ -375,7 +373,7 @@ class Mixin extends ModTemplate {
           if ((utxo.data).length > 0) {
             this.mods[i].destination = address[0].destination;
 	    //  removing save here for debugging purposes -- June 21, '24
-            //this.mods[i].save();
+            this.mods[i].save();
           }
         }
       }
@@ -1013,6 +1011,10 @@ class Mixin extends ModTemplate {
           session_private_key: this.mixin.session_seed
         },
       });
+
+      if (destination == "" || destination == null) {
+        return callback([]);
+      }
 
       let params = {
         'asset': asset_id,

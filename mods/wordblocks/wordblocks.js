@@ -26,6 +26,7 @@ class Wordblocks extends GameTemplate {
 		this.tileWidth = 148;
 		this.letters = {};
 		this.grace_window = 10;
+		this.clock.useShotClock = true;
 
 		//All Wordblocks games will be async enabled
 		this.async_dealing = 1; 
@@ -220,12 +221,13 @@ class Wordblocks extends GameTemplate {
 		//
 		// stop here if initializing
 		//
-		if (/*this.game.initializing == 1 ||*/ !this.browser_active) {
+		if (/*this.game.initializing == 1 ||*/ !this.gameBrowserActive()) {
 			return;
 		}
 
 		console.log('InitializeGame Checkpoint');
 
+		// To do... if playing Worblocks in Spanish and SOWPODS, need to be able to swap...
 		if (this.wordlist == '') {
 			//TODO -- Dynamically read letter tiles so wordblocks can more easily add new languages
 			try {
@@ -322,6 +324,7 @@ class Wordblocks extends GameTemplate {
 		if (this.game.players.length > 2) {
 			this.grace_window = this.game.players.length * 8;
 		}
+
 	}
 
 	/*
@@ -378,7 +381,7 @@ class Wordblocks extends GameTemplate {
 				);
 			}
 
-			if (!this.browser_active){
+			if (!this.gameBrowserActive()){
 				this.updateStatus(status + tile_html);
 				return;
 			}
@@ -437,7 +440,7 @@ class Wordblocks extends GameTemplate {
 	limitedEvents() {
 		let wordblocks_self = this;
 
-		if (this.browser_active == 1) {
+		if (this.gameBrowserActive()) {
 			$('.gameboard').removeClass('active_board');
 			$('.slot').off();
 			$('#rack .tile').off();
@@ -488,7 +491,7 @@ class Wordblocks extends GameTemplate {
 	}
 
 	removeEvents() {
-		if (this.browser_active == 1) {
+		if (this.gameBrowserActive()) {
 			$('#skipturn').off();
 			$('#shuffle').off(); //Don't want to shuffle when manually placing tiles or deleting
 			$('.slot').off(); //Reset clicking on board
@@ -504,7 +507,7 @@ class Wordblocks extends GameTemplate {
 	}
 
 	enableEvents() {
-		if (this.browser_active == 1) {
+		if (this.gameBrowserActive()) {
 			this.addEventsToBoard();
 			$('.gameboard').addClass('active_board');
 		}
@@ -516,7 +519,7 @@ class Wordblocks extends GameTemplate {
     hud-status-update-message
   */
 	async addEventsToBoard() {
-		if (this.browser_active == 0) {
+		if (!this.gameBrowserActive()) {
 			return;
 		}
 
@@ -2294,6 +2297,7 @@ class Wordblocks extends GameTemplate {
 					this.sendGameOverTransaction(winners, 'high score');
 				}
 
+				this.stopClock();
 				return 0;
 			}
 
@@ -2303,7 +2307,7 @@ class Wordblocks extends GameTemplate {
 				this.game.queue.splice(this.game.queue.length - 1, 1);
 				console.log(player, tileCt);
 
-				if (this.browser_active) {
+				if (this.gameBrowserActive()) {
 					let html = this.game.state.players[player - 1].log;
 					this.refreshPlayerLog(
 						`${html}<div class="lastmove"><span>Tiles:</span><span class="playerscore">${tileCt}</span></div>`,
@@ -2336,7 +2340,7 @@ class Wordblocks extends GameTemplate {
 				console.log("Update target: ", this.game.target);
 
 				//Don't process placement until user is in game
-				if (!this.browser_active) {
+				if (!this.gameBrowserActive()) {
 					if (this.game.player == this.game.target) {
 						this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
 						this.playerTurn();
@@ -2372,12 +2376,6 @@ class Wordblocks extends GameTemplate {
 				let html = `<div class="lastmove" id="lastmove_${player}"><span>Last:</span><span class="playedword">${expanded}</span> <span class="wordscore">${score}</span></div>`;
 				this.refreshPlayerLog(html, player);
 
-				if (
-					this.game.over == 1 ||
-					this.game.queue.includes('gameover')
-				) {
-					return 1;
-				}
 			}
 
 			if (mv[0] === 'discard_tiles') {
@@ -2388,7 +2386,7 @@ class Wordblocks extends GameTemplate {
 				this.game.target = this.returnNextPlayer(player);
 				console.log("Update target: ", this.game.target);
 				
-				if (!this.browser_active) {
+				if (!this.gameBrowserActive()) {
 					if (this.game.player == this.game.target) {
 						this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
 						this.playerTurn();
@@ -2435,35 +2433,35 @@ class Wordblocks extends GameTemplate {
 					score: 0
 				});
 
-				if (
-					this.game.over == 1 ||
-					this.game.queue.includes('gameover')
-				) {
-					return 1;
-				}
 			}
 		}
 
-		console.log("After Game Loop!");
 		// Set UI here...
-				if (this.game.player == this.game.target) {
-					this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
-					this.playerTurn();
-					this.enableEvents();
-				} else {
-					this.stopClock(); //Make sure clock didn't start again on browser refresh
-					this.updateStatusWithTiles(
-						`${this.game.playerNames[this.game.target - 1]}'s turn`
-					);
-				}
+		if (this.game.queue.length == 0) {
 
-				this.updateActivePlayerUserline(this.game.target);
-				this.playerbox.setActive(this.game.target);
+			if (this.game.player == this.game.target) {
+				this.updateStatusWithTiles(`YOUR GO: ${this.defaultMsg}`);
+				this.playerTurn();
+				this.enableEvents();
+			} else {
+				this.stopClock(); //Make sure clock didn't start again on browser refresh
+				this.updateStatusWithTiles(
+					`${this.game.playerNames[this.game.target - 1]}'s turn`
+				);
+			}
 
-				if (this.game.target == this.game.player) {
-					this.playerbox.alertPlayer(this.game.target, 'flash');
-				}
+			this.updateActivePlayerUserline(this.game.target);
+			this.playerbox.setActive(this.game.target);
 
+			if (this.game.target == this.game.player) {
+				this.playerbox.alertPlayer(this.game.target, 'flash');
+			}
+
+
+			// We add a save point here so closing the tab doesn't break the game
+			console.log("Save Wordblocks game");
+			this.saveGame(this.game.id);
+		}
 
 		return 1;
 	}
@@ -2479,7 +2477,7 @@ class Wordblocks extends GameTemplate {
 	}
 
 	addScoreToPlayer(player, score) {
-		if (this.browser_active == 0) {
+		if (!this.gameBrowserActive()) {
 			return;
 		}
 
@@ -2510,39 +2508,31 @@ class Wordblocks extends GameTemplate {
 	}
 
 	startClock() {
-		if (!this.useClock) {
+		if (!this.useClock || this.game.over) {
 			return;
 		}
 
-		clearInterval(this.clock_timer); //Just in case
-		this.time.last_received = new Date().getTime();
-		this.clock.displayTime(this.game.clock_limit);
+		clearTimeout(this.clock_timer); //Just in case
+
+		this.clock.startClock(this.game.clock_limit);
 
 		//Refresh the clock every second
-		this.clock_timer = setInterval(() => {
-			let t = new Date().getTime();
-			let time_on_clock =
-				this.game.clock_limit - (t - this.time.last_received);
-			if (time_on_clock <= 0) {
-				clearInterval(this.clock_timer);
+		this.clock_timer = setTimeout(() => {
 				this.clock.displayTime(0);
 				salert('Turn ended automatically');
 				this.clearBoard();
 				this.removeEvents();
 				this.addMove('discard_tiles\t' + this.game.player + '\t');
 				this.endTurn();
-			}
-			this.clock.displayTime(time_on_clock);
-		}, 1000);
+			}, this.game.clock_limit);
 	}
 
 	stopClock() {
 		if (!this.useClock) {
 			return;
 		}
-		clearInterval(this.clock_timer);
-		this.game.clock_spent = 0;
-		this.clock.hide();
+		clearTimeout(this.clock_timer);
+		this.clock.stopClock();
 	}
 
 	async animatePlay() {

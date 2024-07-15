@@ -48,7 +48,6 @@ class Post {
 				this.mod,
 				this.container + '.tweet-overlay-content'
 			);
-			this.input.enable_mentions = false;
 		}
 
 		if (!this.user){
@@ -101,9 +100,7 @@ class Post {
 					let resized_img = await this.app.browser.resizeImg(file);
 					this.addImg(resized_img);
 				} else {
-					salert(`Cannot upload ${type} image, allowed file types: 
-              ${this.mod.allowed_upload_types.join(', ')} 
-              - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading.`);
+					salert(`Cannot upload ${type} image! Allowed file types: ${this.mod.allowed_upload_types.join(', ')}`);
 				}
 			}
 		};
@@ -136,33 +133,10 @@ class Post {
 		if (post_self.file_event_added == false) {
 			post_self.app.browser.addDragAndDropFileUploadToElement(
 				'tweet-overlay',
-				async (file) => {
-					if (post_self.images.length >= 4) {
-						salert('Maximum 4 images allowed per tweet.');
-					} else {
-						let type = file.substring(
-							file.indexOf(':') + 1,
-							file.indexOf(';')
-						);
-						if (post_self.mod.allowed_upload_types.includes(type)) {
-							let resized_img = await this.app.browser.resizeImg(
-								file
-							);
-							this.addImg(resized_img);
-						} else {
-							salert(
-								'allowed file types: ' +
-									post_self.mod.allowed_upload_types.join(
-										', '
-									) +
-									' - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading.'
-							);
-						}
-					}
-					post_self.file_event_added = true;
-				},
+				post_self.input.callbackOnUpload,
 				false
 			);
+			post_self.file_event_added = true;
 		}
 
 		//
@@ -170,31 +144,6 @@ class Post {
 			document.querySelector(this.container + '.saito-file-uploader').style.display = 'none';
 		}
 
-		document
-			.querySelector(this.container + '.post-tweet-textarea')
-			.addEventListener('keydown', (e) => {
-				if (e.keyCode === 13 && e.ctrlKey) {
-					document.querySelector(this.container + '#post-tweet-button').click();
-					e.preventDefault();
-				}
-
-				if ((e.keyCode == 50 || e.charCode == 64) && e.key == '@') {
-					let keys = post_self.input.findKeyOrIdentifier();
-					for (let key of keys) {
-						let identicon = this_self.app.keychain.returnIdenticon(key.publicKey);
-						key.identicon =  identicon;
-					}
-
-					console.log('keys:', keys);
-
-				   post_self.app.browser.addSaitoMentions(
-				   	keys, 
-				   	document.querySelector(this.container + '#tweet-overlay #post-tweet-textarea'), 
-				   	document.querySelector(this.container + '#tweet-overlay #saito-mentions-list'),
-				   	'input'
-				   );
-				}
-			});
 		try {
 			document
 				.querySelector(this.container + '#post-delete-button')

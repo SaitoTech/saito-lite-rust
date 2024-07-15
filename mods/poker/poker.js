@@ -1135,80 +1135,50 @@ class Poker extends GameTableTemplate {
 
 				this.displayBoard(); //Clean HTML
 
-				let bbpi = this.game.state.big_blind_player - 1;
-				//
-				// Big Blind
-				//
-				if (
-					this.game.state.player_credit[bbpi] <=
-					this.game.state.big_blind
-				) {
-					this.updateLog(
-						this.game.state.player_names[bbpi] +
-							` posts remaining ${this.game.state.player_credit[bbpi]} chips for big blind and is removed from game`
-					);
-					//Put all the player tokens in the pot and have them pass / remove
-					this.game.state.player_pot[bbpi] +=
-						this.game.state.player_credit[bbpi];
-					//this.game.state.pot += this.game.state.player_credit[bbpi];
-					//this.game.state.player_credit[bbpi] = 0;
-					this.animateBet(this.game.state.player_credit[bbpi], bbpi);
-					this.game.state.passed[bbpi] = 1;
-				} else {
-					this.updateLog(
-						`${
-							this.game.state.player_names[bbpi]
-						} posts big blind: ${this.formatWager(
-							this.game.state.big_blind
-						)}`
-					);
-					this.game.state.player_pot[bbpi] +=
-						this.game.state.big_blind;
-					//this.game.state.pot += this.game.state.big_blind;
-					//this.game.state.player_credit[bbpi] -=
-					//	this.game.state.big_blind;
-					this.animateBet(this.game.state.big_blind, bbpi);
-				}
-
-				//this.refreshPlayerLog(`<div class="plog-update">committed: ${this.formatWager(this.game.state.big_blind)}</div>`,this.game.state.big_blind_player);
-
 				//
 				// Small Blind
 				//
 				let sbpi = this.game.state.small_blind_player - 1;
-				if (
-					this.game.state.player_credit[sbpi] <=
-					this.game.state.small_blind
-				) {
-					this.updateLog(
-						this.game.state.player_names[sbpi] +
-							` posts remaining ${this.game.state.player_credit[sbpi]} chips as small blind and is removed from the game`
-					);
-					this.game.state.player_pot[sbpi] +=
-						this.game.state.player_credit[sbpi];
-					//this.game.state.pot += this.game.state.player_credit[sbpi];
-					//this.game.state.player_credit[sbpi] = 0;
-					this.animateBet(this.game.state.player_credit[sbpi], sbpi);
+				let small_blind = Math.min(this.game.state.player_credit[sbpi], this.game.state.small_blind);
+
+				if (small_blind == this.game.state.player_credit[sbpi]) {
+					this.updateLog(`${this.game.state.player_names[sbpi]} posts remaining ${small_blind} chips as small blind and is removed from the game`);
 					this.game.state.passed[sbpi] = 1;
 				} else {
 					this.updateLog(
-						`${
-							this.game.state.player_names[sbpi]
-						} posts small blind: ${this.formatWager(
-							this.game.state.small_blind
-						)}`
+						`${this.game.state.player_names[sbpi]}
+						 posts small blind: 
+						 ${this.formatWager(this.game.state.small_blind)}`
 					);
-					this.game.state.player_pot[sbpi] +=
-						this.game.state.small_blind;
-					//this.game.state.pot += this.game.state.small_blind;
-					//this.game.state.player_credit[sbpi] -=
-					//	this.game.state.small_blind;
-					this.animateBet(this.game.state.small_blind, sbpi);
 				}
+
+				this.game.state.player_pot[sbpi] += small_blind;
+				this.animateBet(small_blind, sbpi);
+
+				let bbpi = this.game.state.big_blind_player - 1;
+				//
+				// Big Blind
+				//
+				let big_blind = Math.min(this.game.state.player_credit[bbpi], this.game.state.big_blind);
+				if (big_blind == this.game.state.player_credit[bbpi]){
+					 
+					this.updateLog(
+						this.game.state.player_names[bbpi] +
+							` posts remaining ${big_blind} chips for big blind and is removed from game`
+					);
+					this.game.state.passed[bbpi] = 1;
+
+				} else {
+					this.updateLog(`${this.game.state.player_names[bbpi]} posts big blind: ${this.formatWager(this.game.state.big_blind)}`);
+				}
+					
+				this.game.state.player_pot[bbpi] += big_blind;
+				this.animateBet(big_blind, bbpi, true);
 
 				this.displayPlayers(true); //Update Chip stacks after betting
 				this.game.queue.push('round'); //Start
 				this.game.queue.push('announce'); //Print Hole cards to Log
+				return 0;
 			}
 
 			/* Set up a round
@@ -1500,9 +1470,11 @@ class Poker extends GameTableTemplate {
 
 		poker_self.game.state.player_credit.forEach((stack, index) => {
 			if (poker_self.game.state.passed[index] == 0) {
+				console.log(index, stack, this.game.state.player_pot[index], this.game.state.required_pot);
 				stack += this.game.state.player_pot[index];
 				stack -= this.game.state.required_pot;
 				if (stack < smallest_stack) {
+					console.log("Smallest stack: ", stack);
 					smallest_stack = stack;
 					smallest_stack_player = index;
 				}
@@ -1957,6 +1929,7 @@ class Poker extends GameTableTemplate {
 						this.game.state.player_credit[player_index]--;
 						this.updatePot();
 						this.refreshPlayerStack(player_index+1);
+						console.log(player_index, this.game.state.player_credit[player_index], this.game.state.pot);
 					},
 					run_all_callbacks: !restartQueue
 				},

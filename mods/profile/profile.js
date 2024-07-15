@@ -131,27 +131,27 @@ class Profile extends ModTemplate {
 				//
 				app.keychain.addKey(key.publicKey, { profile: {} });
 
-					//
-					//Check remote archives
-					//
-					await app.storage.loadTransactions(
-						{ field1: "Profile", field2: key.publicKey }, 
-						async (txs) => {
-							let txs_found = {};
-							
-							// We want to get the most recent tx for description/image/banner
-							if (txs?.length > 0) {
-								for (let i = txs.length - 1; i >= 0; i--) {
-									let txmsg = txs[i].returnMessage();
-									for (let k in txmsg.data){
-										txs_found[k] = txs[i];
-									}
+				//
+				//Check remote archives
+				//
+				await app.storage.loadTransactions(
+					{ field1: "Profile", field2: key.publicKey }, 
+					async (txs) => {
+						let txs_found = {};
+						// We want to get the most recent tx for description/image/banner
+						if (txs?.length > 0) {
+							for (let i = txs.length - 1; i >= 0; i--) {
+								let txmsg = txs[i].returnMessage();
+								for (let k in txmsg.data){
+									txs_found[k] = txs[i];
 								}
 							}
+						}
 						for (let k in txs_found){
 							await this.receiveProfileTransaction(txs_found[k]);
 						}
-					});
+					}
+				);
 			}
 		}
 	}

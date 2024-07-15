@@ -5,16 +5,12 @@ class SettlersState {
     Every player should have in deck[2] and deck[3] the board tiles and tokens in the same order
     */
   generateMap() {
-    console.log("GENERATING MAP");
-    console.log(JSON.stringify(this.game.deck));
     let tileCt = 0;
     let tokenCt = 0;
     let tile, resourceName, token;
-    console.log("POOL 1");
     for (let hex of this.hexgrid.hexes) {
       tile = this.game.pool[0].hand[tileCt++];
       resourceName = this.game.deck[1].cards[tile].resource;
-      console.log("res: " + resourceName);
       if (resourceName != this.returnNullResource()) {
         let temp = this.game.pool[1].hand[tokenCt++];
         token = this.game.deck[2].cards[temp].value;
@@ -31,7 +27,6 @@ class SettlersState {
       if (resourceName == this.returnNullResource()) this.game.state.hexes[hex].robber = true;
       if (token) this.addSectorValueToGameboard(hex, token);
     }
-    console.log("DONE GENERATING MAP");
   }
 
 

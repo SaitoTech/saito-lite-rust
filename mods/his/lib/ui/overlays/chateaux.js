@@ -110,6 +110,15 @@ class ChateauxOverlay {
 			this.roll
 		} (modified: ${modified_roll})`;
 
+		// remove cards_left update from France
+		for (let z = 0; z < this.mod.game.queue.length; z++) {
+			let lqe = this.mod.game.queue[z];
+			let lmv = lqe.split("\t");
+			if (lmv[0] == "cards_left" && lmv[1] == "france") {
+				this.mod.game.queue.splice(z, 1);
+			}
+		}
+
 		if (modified_roll >= 8) {
 			this.mod.updateLog("Patron of the Arts: +1 VP, draw 2 discard 1");
 			document.querySelectorAll(".outcome1").forEach((el) => {
@@ -120,7 +129,7 @@ class ChateauxOverlay {
 			this.mod.game.queue.push('select_and_discard\t' + faction);
 			this.mod.game.queue.push('hide_overlay\tchateaux');
 			this.mod.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction + "\t1");
-			this.mod.game.state.cards_left["france"]++;
+			this.mod.game.state.cards_left["france"]+=2;
 			this.mod.game.queue.push('DEAL\t1\t' + p + '\t' + 2);
 			this.mod.game.queue.push(
 				`ACKNOWLEDGE\t${this.mod.returnFactionName(
@@ -155,6 +164,7 @@ class ChateauxOverlay {
 			this.mod.game.queue.push('select_and_discard\t' + faction);
 			this.mod.game.queue.push('hide_overlay\tchateaux');
 			this.mod.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction + "\t1");
+			this.mod.game.state.cards_left["france"]++;
 			this.mod.game.queue.push('DEAL\t1\t' + p + '\t' + 1);
 			this.mod.game.queue.push(
 				`ACKNOWLEDGE\t${this.mod.returnFactionName(
@@ -170,7 +180,7 @@ class ChateauxOverlay {
 			});
 			this.mod.game.queue.push('select_and_discard\t' + faction);
 			this.mod.game.queue.push('hide_overlay\tchateaux');
-			this.mod.game.state.cards_left["france"]++;
+			this.mod.game.state.cards_left["france"]+=2;
 			this.mod.game.queue.push('hand_to_fhand\t1\t' + p + '\t' + faction + "\t1");
 			this.mod.game.queue.push('DEAL\t1\t' + p + '\t' + 2);
 			this.mod.game.queue.push(
@@ -181,7 +191,6 @@ class ChateauxOverlay {
 		}
 
 		this.pushHudUnderOverlay();
-
 		this.attachEvents();
 	}
 

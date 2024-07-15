@@ -1,10 +1,6 @@
 module.exports = (app, tx = {}) => {
-	let publickey = tx.msg.options.desired_opponent_publickey;
-	let imgsrc = '';
-
-	if (app.crypto.isPublicKey(publickey)) {
-		imgsrc = app.keychain.returnIdenticon(publickey);
-	}
+	let publickey = tx.msg.options?.desired_opponent_publickey;
+	let imgsrc = app.keychain.returnIdenticon(publickey);
 
 	let user = `<div class="saito-user saito-user-${publickey}" data-id="${publickey}" data-disable="true">
     <div class="saito-identicon-box"><img class="saito-identicon" src="${imgsrc}" data-id="${publickey}"></div>

@@ -1,16 +1,12 @@
-.settlers-stats-overlay,
-.trade-overlay,
+.settlers-stats-overlay, .trade-overlay,
 /*.rules-overlay,*/
-.settlers-selection-overlay,
-.bank-overlay,
-.dev-card-overlay,
-.build-overlay {
+
+.settlers-selection-overlay, .bank-overlay, .dev-card-overlay, .build-overlay {
 	display: flex;
 	flex-direction: column;
 	gap: 2rem;
-	width: min(600px, 99vw);
+	width: min(650px, 99vw);
 	max-height: 90vh;
-
 	overflow-x: hidden;
 	overflow-y: auto;
 	padding: min(4rem, 3vw, 5vh);
@@ -34,21 +30,25 @@
 	background-size: contain;
 	background-repeat: no-repeat;
 }
+
 .wool {
 	background-image: url(/settlers/img/cards/wool.png);
 	background-size: contain;
 	background-repeat: no-repeat;
 }
+
 .wheat {
 	background-image: url(/settlers/img/cards/wheat.png);
 	background-size: contain;
 	background-repeat: no-repeat;
 }
+
 .ore {
 	background-image: url(/settlers/img/cards/ore.png);
 	background-size: contain;
 	background-repeat: no-repeat;
 }
+
 .wood {
 	background-image: url(/settlers/img/cards/wood.png);
 	background-size: contain;
@@ -134,8 +134,7 @@ stats overlay
 	justify-content: space-between;
 }
 
-.settlers-achievements-row .achievements .army,
-.settlers-achievements-row .achievements .victory_point_cards {
+.settlers-achievements-row .achievements .army, .settlers-achievements-row .achievements .victory_point_cards {
 	padding: 0 0 0 1rem;
 	margin: 0 -1rem 0 0;
 }
@@ -158,8 +157,6 @@ stats overlay
 	height: 4rem;
 }
 
-
-
 .settlers-stats-resource-count {
 	position: absolute;
 	top: 50%;
@@ -168,7 +165,6 @@ stats overlay
 	color: var(--saito-white);
 	text-shadow: 1px 1px 3px var(--saito-black);
 	background: rgba(0, 0, 0, 0.4);
-
 	font-size: 2.4rem;
 	line-height: 3.1rem;
 	width: 3.2rem;
@@ -216,13 +212,14 @@ stats overlay
 	border-bottom: 5px solid var(--p4-color);
 }
 
-.settlers-stats-player + .settlers-stats-row {
+.settlers-stats-player+.settlers-stats-row {
 	margin-top: 0.75rem;
 }
 
 .no-vp {
 	filter: brightness(65%) grayscale(30%) opacity(0.50);
 }
+
 
 .settlers-achievements-row .victory_point_cards img {
 	height: 6.5rem;
@@ -238,32 +235,31 @@ stats overlay
 }
 
 .stats-header .overlay-tab {
-    padding: 0.5rem 2rem;
-    cursor: pointer;
-    position: relative;
-    text-shadow: 1px 1px 1px #62616388;
-    max-width: 30%;
-    overflow: hidden;
-    text-overflow: ellipsis;
+	padding: 0.5rem 2rem;
+	cursor: pointer;
+	position: relative;
+	text-shadow: 1px 1px 1px #62616388;
+	max-width: 30%;
+	text-overflow: ellipsis;
 }
 
-.stats-header .overlay-tab.active-tab{
+.stats-header .overlay-tab.active-tab {
 	text-shadow: 1px 1px 1px #626163;
-    border-bottom: 2px solid #424143;
-    min-width: fit-content;
+	border-bottom: 2px solid #424143;
+	min-width: fit-content;
 }
 
 .stats-header .overlay-tab.active-tab::after {
-    content: "";
-    position: absolute;
-    top: 31px;
-    font-size: 48px;
-    left: 50%;
-    transform: translateX(-50%);
-    text-shadow: 1px 1px 1px #626163;
-    width: 25%;
-    border: 4px solid #424143;
-    border-radius: 5px;
+	content: "";
+	position: absolute;
+	top: 31px;
+	font-size: 48px;
+	left: 50%;
+	transform: translateX(-50%);
+	text-shadow: 1px 1px 1px #626163;
+	width: 25%;
+	border: 4px solid #424143;
+	border-radius: 5px;
 }
 
 .overlay-page {
@@ -271,12 +267,11 @@ stats overlay
 	padding: min(1rem, 1vw, 1.5vh);
 }
 
-.overlay-page.active-page{
+.overlay-page.active-page {
 	display: flex;
 	flex-direction: column;
 	gap: 1.5rem;
 }
-
 
 /*********
  * 
@@ -316,7 +311,7 @@ stats overlay
 	color: white;
 	font-size: 9rem;
 	max-width: 15rem;
-	max-height: 20rem;	
+	max-height: 20rem;
 }
 
 .invalid_offer {
@@ -389,6 +384,7 @@ stats overlay
 }
 
 /* Disable trade submit button in overlays */
+
 .trade_overlay_button.noselect {
 	opacity: 50%;
 	pointer-events: none;
@@ -410,13 +406,13 @@ stats overlay
 	cursor: pointer;
 }
 
-
 .vp-table img {
 	max-height: 4rem;
 }
 
 .welcome_overlay {
 	padding: 0 !important;
+	display: flex;
 }
 
 .stats-table {
@@ -430,8 +426,7 @@ stats overlay
 	font-size: 1.5em;
 }
 
-.stats-table td,
-.stats-table th {
+.stats-table td, .stats-table th {
 	width: 2em;
 	padding: 3px;
 }
@@ -441,8 +436,7 @@ stats overlay
 	text-align: left;
 }
 
-.stats-table .icon,
-.stats-table .token {
+.stats-table .icon, .stats-table .token {
 	width: 50px;
 	margin: 0 auto;
 	display: flex;
@@ -455,18 +449,9 @@ stats overlay
 	gap: 0rem;
 }
 
-.settlers-state-container > *,
-.settlers-achievements-row > *,
-.settlers-achievements-row .achievements > * {
-}
+.settlers-state-container>*, .settlers-achievements-row>*, .settlers-achievements-row .achievements>* {}
 
-.settlers-state-container .settlers-achievements-row .achievements .army,
-.settlers-state-container
-	.settlers-achievements-row
-	.achievements
-	.victory_point_cards,
-.settlers-state-container .settlers-achievements-row .army,
-.settlers-state-container .settlers-achievements-row .victory_point_cards {
+.settlers-state-container .settlers-achievements-row .achievements .army, .settlers-state-container .settlers-achievements-row .achievements .victory_point_cards, .settlers-state-container .settlers-achievements-row .army, .settlers-state-container .settlers-achievements-row .victory_point_cards {
 	margin: 0rem;
 	padding: 0rem;
 }
@@ -515,13 +500,13 @@ stats overlay
 	align-items: center;
 }
 
-.settlers-stat-num-alt{
+.settlers-stat-num-alt {
 	font-size: 2rem;
 	justify-self: center;
 	opacity: 70%;
 }
 
-.settlers-stat-num{
+.settlers-stat-num {
 	font-size: 3rem;
 	justify-self: center;
 }
@@ -531,15 +516,30 @@ stats overlay
 }
 
 .settlers-stats-card, .settlers-stats-vp {
-	width: 5rem;
-	justify-self: center;
 	display: flex;
 	justify-content: center;
 }
 
+.hist-cards .settlers-stats-card {
+	display: flex;
+	justify-content: center;
+	transform: rotate(7deg);
+	margin: 0 0 0 -1rem;
+}
+
+.hist-cards .settlers-stats-card.no-vp {
+	filter: brightness(60%) grayscale(15%);
+	transform: rotate(-7deg);
+}
+
+.settlers-hist-row.robber .hist-cards .settlers-stats-card {
+	transform: rotate(90deg);
+}
+
+
 .settlers-stats-card img, .settlers-stats-vp img {
-	 height: min(5rem, 10vw);
-	 width: auto;
+	height: min(4rem, 10vw);
+	width: auto;
 }
 
 .settlers-stats-vp-count {
@@ -565,20 +565,17 @@ stats overlay
 	width: 2.7rem;
 	height: 2.7rem;
 	text-align: center;
-	text-shadow: 1px 1px 1px var(--saito-font-color-heavy),
-		-1px -1px 1px var(--saito-font-color-heavy),
-		-1px 1px 1px var(--saito-font-color-heavy),
-		1px -1px 1px var(--saito-font-color-heavy);
+	text-shadow: 1px 1px 1px var(--saito-font-color-heavy), -1px -1px 1px var(--saito-font-color-heavy), -1px 1px 1px var(--saito-font-color-heavy), 1px -1px 1px var(--saito-font-color-heavy);
 	font-size: 2.8rem;
 }
 
-/* Make the numbers more number-y */ 
-.settlers-stats-vp-count, .settlers-stats-multiplier, .settlers-stats-resource-count{
+/* Make the numbers more number-y */
+
+.settlers-stats-vp-count, .settlers-stats-multiplier, .settlers-stats-resource-count {
 	font-family: sans-serif;
 }
 
-.settlers-stats-largest-road .settlers-stats-vp-count,
-.settlers-stats-largest-army .settlers-stats-vp-count {
+.settlers-stats-largest-road .settlers-stats-vp-count, .settlers-stats-largest-army .settlers-stats-vp-count {
 	right: -0.5rem;
 }
 
@@ -588,34 +585,35 @@ stats overlay
 
 .settlers-hist-row {
 	display: grid;
-	grid-template-columns: 5rem repeat(auto-fit, minmax(8rem, 1fr));
+	grid-template-columns: 8rem repeat(auto-fit, minmax(8rem, 1fr));
 	grid-gap: 2rem;
 	font-size: 1.8rem;
 	align-items: center;
+	padding: 1rem;
 }
 
-.settlers-hist-row .roll{
+.settlers-hist-row .roll {
+	display: flex;
+	justify-content: space-around;
+}
+
+.settlers-timeline-turn-lables {
 	display: flex;
 	justify-content: space-between;
 }
 
-.settlers-hist-row.robber .settlers-stats-card img {
-	transform: rotate(90deg);
-}
-
-.hist-cards{
-	display: grid;
+.hist-cards {
+	display: flex;
 	max-width: 100%;
-	grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr));
+	justify-content: center;
 }
-
 
 .notice_overlay {
 	padding: 3rem;
 	font-size: 1.8rem;
 }
 
-.notice_overlay > div {
+.notice_overlay>div {
 	margin: 1rem;
 }
 
@@ -633,64 +631,48 @@ stats overlay
 		display: flex;
 		flex-direction: column;
 	}
-
 	.vp-3p .settlers-stats-row img {
 		height: min(6.5rem, 13vw);
 	}
-
 	.splash_overlay h2 {
 		font-size: 3rem;
 	}
-
 	.notice_overlay {
 		padding: 1.5rem;
 	}
 	.notice_overlay ul {
 		margin: 0 2rem 0 3rem;
 	}
-
 	.notice_overlay ul li {
 		font-size: inherit;
 	}
-
 	.stats-header .overlay-tab {
-    	padding: 0.5rem;
+		padding: 0.5rem;
 	}
-
 	.settlers-stats-row {
 		grid-template-columns: 7rem repeat(auto-fit, minmax(4rem, 1fr));
 	}
-
 	.settlers-stats-card, .settlers-stats-vp {
 		width: 100%;
 	}
-
 	.settlers-stats-card img, .settlers-stats-vp img {
 		height: min(4rem, 9vw);
 	}
-
-	.settlers-stats-multiplier, .settlers-stats-vp-count{
+	.settlers-stats-multiplier, .settlers-stats-vp-count {
 		width: 2.2rem;
 		height: 2.2rem;
 		font-size: 2.2rem;
 	}
-	.settlers-stats-vp-count{
+	.settlers-stats-vp-count {
 		line-height: 2.2rem;
 	}
 }
 
 @media screen and (orientation: landscape) and (max-height: 600px) {
-	.settlers-stats-overlay,
-	.trade-overlay,
-	.rules-overlay,
-	.settlers-selection-overlay,
-	.bank-overlay,
-	.dev-card-overlay,
-	.build-overlay {
+	.settlers-stats-overlay, .trade-overlay, .rules-overlay, .settlers-selection-overlay, .bank-overlay, .dev-card-overlay, .build-overlay {
 		max-height: 98vh;
 		gap: 0.5rem;
 	}
-
 	.trade-overlay {
 		display: grid;
 		grid-template-columns: 15rem 1fr;
@@ -699,4 +681,3 @@ stats overlay
 		grid-column: 1 / span 2;
 	}
 }
-

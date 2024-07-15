@@ -293,7 +293,6 @@ class Browser {
 					'--saito-vh',
 					`${vh}px`
 				);
-				console.log(`Update view height ${vh}px`);
 				//siteMessage(`Update: ${vh}px`);
 			};
 
@@ -344,7 +343,7 @@ class Browser {
 					let publicKey = e.target.getAttribute('data-id');
 					if (
 						!publicKey ||
-						!app.crypto.isPublicKey(publicKey) ||
+						!app.wallet.isValidPublicKey(publicKey) ||
 						disable_click === 'true' ||
 						disable_click == true
 					) {
@@ -414,7 +413,7 @@ class Browser {
 							add = key.publicKey;
 						}
 						if (
-							this.app.crypto.isPublicKey(cleaner) &&
+							this.app.wallet.isValidPublicKey(cleaner) &&
 							(add == '' || add == null)
 						) {
 							add = cleaner;
@@ -432,7 +431,7 @@ class Browser {
 
 		if (adds) {
 			adds.forEach((add) => {
-				if (this.app.crypto.isPublicKey(add) && !keys.includes(add)) {
+				if (this.app.wallet.isValidPublicKey(add) && !keys.includes(add)) {
 					keys.push(add);
 				}
 			});
@@ -442,7 +441,7 @@ class Browser {
 				let key = this.app.keychain.returnKey({ identifier: id });
 				if (key.publicKey) {
 					let add = key.publicKey;
-					if (this.app.crypto.isPublicKey(add)) {
+					if (this.app.wallet.isValidPublicKey(add)) {
 						if (!keys.includes(add)) {
 							keys.push(add);
 						}
@@ -1702,14 +1701,12 @@ class Browser {
 
 	logMatomoEvent(category, action, name, value) {
 		try {
-			this.app.modules
-				.returnFirstRespondTo('matomo_event_push')
-				.push(category, action, name, value);
+			let m = this.app.modules.returnFirstRespondTo('matomo_event_push');
+			if (m) {
+				m.push(category, action, name, value);
+			}
 		} catch (err) {
-			//if (err.startsWith("Module responding to")) {
-			//} else {
 			console.error(err);
-			//}
 		}
 	}
 
@@ -1806,13 +1803,18 @@ class Browser {
 	// neither of these is quite right and the internet is full of wrong answers
 	//
 	urlRegexp() {
-		// from tweet.js let expression = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{1,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
-		// from sanitize let urlPattern = /\b(?:https?:\/\/)?[\w]+(\.[\w]+)+\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+        // from tweet.js 
+		// let expression = /\b(?:https?:\/\/)?[\w.]{2,}\.[a-zA-Z]{1,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
 
-		// The sanitizeHtml converts & into `&amp;` so we should match on ;
-		let daniels_regex = /(?<!>)\b(?:https?:\/\/|www\.|https?:\/\/www\.)?(?:\w{2,}\.)+\w{2,}(?:\/[a-zA-Z0-9_\?=#&;@\-\.]*)*\b(?!<\/)/gi;
+        // from sanitize let urlPattern = /\b(?:https?:\/\/)?[\w]+(\.[\w]+)+\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+        // The sanitizeHtml converts & into `&amp;` so we should match on ;
+        // let daniels_regex = /(?<!>)\b(?:https?:\/\/|www\.|https?:\/\/www\.)?(?:\w{2,}\.)+\w{2,}(?:\/[a-zA-Z0-9_\?=#&;@\-\.]*)*\b(?!<\/)/gi;
+        // this pointlessly looks for www, but does not identify the majority of valid urls or any url without http/https in front of it.
 
-		return daniels_regex;
+        //this should identify patterns like x.com and staging.saito.io which the others do not.
+		let expression = /\b(?:https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+
+        return expression;
 	}
 
 	sanitize(text, createLinks = false) {
@@ -2271,7 +2273,7 @@ class Browser {
 					) {
 						el.classList.add('treated');
 						let key = el.dataset?.id;
-						if (key && saito_app.crypto.isPublicKey(key)) {
+						if (key && saito_app.wallet.isValidPublicKey(key)) {
 							let identifier =
 								saito_app.keychain.returnIdentifierByPublicKey(
 									key,
@@ -2429,70 +2431,77 @@ class Browser {
 		}
 	}
 
-	addSaitoMentions(users, textarea, listDiv, inputType) {
-		const resolveFn = prefix => prefix === ''
-			? users
-			: users.filter(user => {
-				if (typeof user.identifier != 'undefined') {
-					return user.identifier.startsWith(prefix)
-				} else {
-					return user.publicKey.startsWith(prefix)
-				}
-			})
-
-		const replaceFn = (user, trigger) => {
-			let replace = '';
-			if (typeof user.identifier != 'undefined') {
-				replace = `${trigger}${user.identifier} `;
-			} else {
-				replace = `${trigger}${user.publicKey} `;
-			}
-
-			return replace;
-		}
-
-		const menuItemFn = (user, setItem, selected) => {
-			const parentDiv = document.createElement('div');
-			parentDiv.classList.add('saito-mentions-contact');
-
-
-			// identifier 
-			const identicon = document.createElement('img');
-			identicon.classList.add('saito-identicon');
-			identicon.setAttribute('src', user.identicon);
-
-			parentDiv.appendChild(identicon);
-
-			// username div
-			const div = document.createElement('div')
-			div.setAttribute('role', 'option')
-			div.className = 'menu-item'
-			if (selected) {
-				div.classList.add('selected')
-				div.setAttribute('aria-selected', '')
-			}
-
-			if (typeof user.identifier != 'undefined') {
-				div.textContent = user.identifier
-			} else {
-				div.textContent = user.publicKey
-			}
-			
-
-			parentDiv.appendChild(div);
-			parentDiv.onclick = setItem;
-			return parentDiv;
-		}
+	addSaitoMentions(textarea, listDiv, inputType) {
 
 		new SaitoMentions(
+			this.app,
 			textarea,
 			listDiv,
-			resolveFn,
-			replaceFn,
-			menuItemFn,
 			inputType
 		)
 	}
+
+	extractMentions(text){
+		let potential_keys = text.matchAll(/(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]+)/g);
+		let keys = [];
+
+        for (let k of potential_keys){
+            let split = k[0].split('@');
+            let username = '';
+            let key = '';
+
+            if (split.length > 2) {
+              username = split[1] + '@' + split[2];
+              key =
+                this.app.keychain.returnPublicKeyByIdentifier(
+                  username
+                );
+            } else {
+              username = this.app.keychain.returnUsername(split[1]);
+              key = split[1];
+            }
+
+            console.log("Key: ", key);
+            if (this.app.wallet.isValidPublicKey(key)) {
+            	if (!keys.includes(key)){
+            		keys.push(key);
+            	}
+            }
+        }
+
+	    return keys;
+	}
+
+	markupMentions(text){
+        return text.replaceAll(
+          /(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]+)/g,
+          (k) => {
+            let split = k.split('@');
+            let username = '';
+            let key = '';
+
+            if (split.length > 2) {
+              username = split[1] + '@' + split[2];
+              key =
+                this.app.keychain.returnPublicKeyByIdentifier(
+                  username
+                );
+            } else {
+              username = this.app.keychain.returnUsername(split[1]);
+              key = split[1];
+            }
+
+            if (this.app.wallet.isValidPublicKey(key)) {
+            	return 	`<span class="saito-mention saito-address" data-id="${key}">${username}</span>`;
+            }else{
+            	return k;
+            }
+
+          }
+        );
+	}
+
+
 
 	validateAmountLimit(amount, event){
 		// allow only numbers, dot, backspace
@@ -2532,6 +2541,14 @@ class Browser {
 	       }
 	      }
       } 
+	}
+
+	formatDecimals(num, string = false){
+		let pos = Math.abs((Math.log10(num))); 
+		let number = Number(num);
+	  	number = number.toFixed(pos+2);
+	  	number = (number);
+	  	return (string) ? number.toString(): number;  
 	}
 }
 

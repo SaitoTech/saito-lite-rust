@@ -32,6 +32,8 @@ class Videocall extends ModTemplate {
 		this.streams = null;
 		this.dialer = new DialingInterface(app, this);
 
+		this.layout = "focus";
+
 		this.social = {
 			twitter: '@SaitoOfficial',
 			title: '🟥 Saito Talk',
@@ -98,6 +100,12 @@ class Videocall extends ModTemplate {
 					settings: { privacy: 'all' },
 				};
 			}
+
+			if (this.app.options.stun.settings?.layout) {
+				this.layout = this.app.options.stun.settings?.layout;
+			}
+
+			console.log("************* LAYOUT" , this.layout);
 
 			if (app.browser.returnURLParameter('stun_video_chat')) {
 				this.room_obj = JSON.parse(
@@ -278,22 +286,31 @@ class Videocall extends ModTemplate {
 				{
 					text: 'Present',
 					icon: 'fa-solid fa-display',
-					hook: 'screen_share',
+					hook: 'screen_share onair',
 					prepend: true,
 					callback: function (app) {
+
 						if (call_self.screen_share) {
 							call_self.app.connection.emit('stop-share-screen');
 						} else {
 							call_self.app.connection.emit('begin-share-screen');
 						}
-					}
-				},
-				{
-					text: 'Layout',
-					icon: 'fa-solid fa-table-cells-large',
-					prepend: true,
-					callback: function (app) {
-						app.connection.emit('videocall-show-settings');
+					},
+					event: function(id){
+					    call_self.app.connection.on('toggle-screen-share-label', (state = false) => {
+					    	let container = document.getElementById(id);
+							if (container){
+								if (state){
+									container.classList.add("recording");
+									container.querySelector("label").innerText = "Stop";
+									container.querySelector("i")?.classList.add("recording");
+								}else{
+									container.classList.remove("recording");
+									container.querySelector("label").innerText = "Present";
+									container.querySelector("i")?.classList.remove("recording");
+								}
+							}
+  					    });
 					}
 				},
 				{
@@ -301,11 +318,7 @@ class Videocall extends ModTemplate {
 					icon: 'fa-solid fa-cog',
 					prepend: true,
 					callback: function (app) {
-						let anotherOverlay = new SaitoOverlay(call_self.app, call_self.mod);
-						anotherOverlay.show(
-							`<div class="videocall-setting-grid-item saito-module-settings"></div>`
-						);
-						call_self.loadSettings('.saito-module-settings');
+						app.connection.emit('videocall-show-settings');
 					}
 				},
 			];
@@ -388,6 +401,7 @@ class Videocall extends ModTemplate {
 				// and not belonging to a module
 				//
 				if (txmsg.request.includes('stun-connection')) {
+					console.log("Stun-connection", txmsg.data);
 					this.dialer.receiveStunCallMessageFromPeers(tx);
 					return;
 				}
@@ -416,7 +430,6 @@ class Videocall extends ModTemplate {
 					if (txmsg.request === 'peer-joined') {
 						let from = tx.from[0].publicKey;
 
-						console.log('Peer-joined! (Videocall)');
 						this.app.connection.emit(
 							'add-remote-stream-request',
 							from,
@@ -430,7 +443,7 @@ class Videocall extends ModTemplate {
 
 						//Limbo Hook
 						this.app.connection.emit("videocall-add-party", from);
-
+						console.log("STUN: VIDEOCALL PEER JOINED");
 						this.stun.createPeerConnection(from, false);
 
 						return;
@@ -485,7 +498,7 @@ class Videocall extends ModTemplate {
 							'remove-peer-box',
 							'presentation'
 						);
-						this.app.connection.emit('stun-switch-view', 'focus');
+						this.app.connection.emit('stun-switch-view', this.app.options.stun.settings?.layout || this.layout);
 						this.screen_share = null;
 					}
 					if (txmsg.request === 'broadcast-call-list') {
@@ -616,11 +629,11 @@ class Videocall extends ModTemplate {
 
 		for (let peer of call_list) {
 			if (peer !== this.publicKey) {
-				if (!this.room_obj.call_peers.includes(peer)) {
-					this.room_obj.call_peers.push(peer);
+				if (!this.room_obj?.call_peers.includes(peer)) {
+					this.room_obj?.call_peers.push(peer);
 				}
 
-				console.log("STUN: peer list member, create connection with ", peer);
+				console.log("STUN (VIDEOCALL): peer list member, create connection with ", peer);
 				this.stun.createPeerConnection(peer, (peerId) => {
 					this.sendCallJoinTransaction(peerId);
 				});
@@ -715,7 +728,7 @@ class Videocall extends ModTemplate {
 					if (!this.room_obj.call_peers.includes(peer)) {
 						this.room_obj.call_peers.push(peer);
 
-						console.log("STUN: post hoc peer list member, attempt connection with ", peer);
+						console.log("STUN (VIDEOCALL): post hoc peer list member, attempt connection with ", peer);
 						this.stun.createPeerConnection(peer, (peerId) => {
 							this.sendCallJoinTransaction(peerId);
 						});

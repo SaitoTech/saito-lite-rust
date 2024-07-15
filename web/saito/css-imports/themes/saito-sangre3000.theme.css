@@ -96,7 +96,7 @@ html[data-theme="sangre3000"] {
   --font-color-progress-bar: var(--font-color-primary);
   --font-color-user-address: var(--font-color-heavy);
   --font-color-status-message: var(--font-color-heavy);
-  --font-color-a-link: var(--font-color-heavy);
+  --font-color-a-link: var(--color-primary);
   --font-color-hover-a-link: var(--font-color-primary);
   --font-color-mention: var(--font-color-primary);
   /* Module and Overlay Font Colors */

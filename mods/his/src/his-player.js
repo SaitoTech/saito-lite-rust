@@ -25,6 +25,24 @@
     return this.game.players;
   }
 
+  returnUsername(publickey) {
+    let f = this.returnFactionOfPublickey(publickey);
+    if (f != "") { return this.returnFactionName(f); }
+    return this.app.keychain.returnUsername(publickey);
+  }
+
+  returnFactionOfPublickey(publickey) {
+    for (let i = 0; i < this.game.players.length; i++) {
+      if (this.game.players[i] == publickey) {
+	if (!this.game.state) { return ""; }
+	if (!this.game.state.players_info) { return ""; }
+	if (!this.game.state.players_info[i]) { return ""; }
+	if (!this.game.state.players_info[i].factions) { return ""; }
+ 	return this.game.state.players_info[i].factions[0];
+      }
+    }
+    return "";
+  }
 
   returnPublicKeyOfFaction(faction="") {
     let p = this.returnPlayerCommandingFaction(faction);

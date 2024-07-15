@@ -5237,7 +5237,6 @@ console.log("selected: " + spacekey);
 	  his_self.game.spaces[source].units[faction][unit_idx].gout = true;
 	  his_self.game.spaces[source].units[faction][unit_idx].locked = true;
 	  his_self.updateLog(his_self.game.spaces[source].units[faction][unit_idx].name + " has come down with " + his_self.popup("032"));
-          his_self.game.queue.splice(qe, 1);
 
 	  //
 	  // "lose 1 CP"
@@ -5421,7 +5420,7 @@ console.log("selected: " + spacekey);
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player) {
-        if (menu === "pre_assault_rolls") {
+        if (menu === "post_assault_rolls") {
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('035')) {
@@ -5434,7 +5433,7 @@ console.log("selected: " + spacekey);
         return {};
       }, 
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
-        if (menu === "pre_assault_rolls") {
+        if (menu === "post_assault_rolls") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('035')) {
 	      let assault_spacekey = his_self.game.state.assault.spacekey;
@@ -5454,12 +5453,13 @@ console.log("selected: " + spacekey);
         return 0;
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
-        if (menu === "pre_assault_rolls") {
+        if (menu === "post_assault_rolls") {
 	  his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" plays " + his_self.popup("035"));
           his_self.addMove("discard\t"+faction+"\t035");
           his_self.addMove("add_assault_bonus_rolls\t"+faction+"\t2");
           his_self.addMove("SETVAR\tstate\tassault\tsiege_artillery\t1");
 	  his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" triggers " + his_self.popup("035"));
+          his_self.addMove("SETVAR\tstate\tevents\tintervention_post_assault_possible\t0");
 	  his_self.endTurn();
 	  his_self.updateStatus("acknowledge");
         }
@@ -7505,6 +7505,8 @@ console.log("selected: " + spacekey);
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
 
+console.log("in akinji raiders...");
+
 	let enemies = his_self.returnEnemies("ottoman");
 	let neighbours = [];
 	let valid_spaces_with_cavalry = [];
@@ -7527,6 +7529,9 @@ console.log("selected: " + spacekey);
 	//
 	// 
 	//
+
+console.log("spaces length: " + spaces.length);
+
 	for (let i = 0; i < spaces.length; i++) {
 	  valid_spaces_with_cavalry.push(spaces[i]);
 	}
@@ -7538,7 +7543,9 @@ console.log("selected: " + spacekey);
 	  let s = his_self.game.spaces[spaces[i]];
 	  for (let ii = 0; ii < s.neighbours.length; ii++) {
 	    if (his_self.isSpaceControlled(s.neighbours[ii], "ottoman")) {
-	      neighbours.push(s.neighbours[ii]);
+	      if (!neighbours.includes(s.neighbours[ii])) {
+	        neighbours.push(s.neighbours[ii]);
+	      }
 	    } else {
 	      for (let iii = 0; iii < enemies.length; iii++) {
 	        if (his_self.isSpaceControlled(s.neighbours[ii], enemies[iii])) {
@@ -7549,11 +7556,15 @@ console.log("selected: " + spacekey);
 	    }
 	  }
 	}
+console.log("neighbours: " + neighbours.length);
 	for (let i = 0; i < neighbours.length; i++) {
+console.log("neighbours i: " + i);
 	  let s = his_self.game.spaces[neighbours[i]];
 	  for (let ii = 0; ii < s.neighbours.length; ii++) {
 	    if (his_self.isSpaceControlled(s.neighbours[ii], "ottoman")) {
-	      neighbours.push(s.neighbours[ii]);
+	      if (!neighbours.includes(s.neighbours[ii])) {
+		neighbours.push(s.neighbours[ii]);
+	      }
 	    } else {
 	      for (let iii = 0; iii < enemies.length; iii++) {
 	        if (his_self.isSpaceControlled(s.neighbours[ii], enemies[iii])) {

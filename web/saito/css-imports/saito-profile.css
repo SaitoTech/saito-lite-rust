@@ -2,7 +2,6 @@
   min-width: 0;
   width: 100%;
   padding: 0;
-
   max-width: 1000px;
   margin: auto;
 }
@@ -15,13 +14,13 @@
   justify-content: flex-start;
 }
 
-.saito-profile-menu > div {
+.saito-profile-menu>div {
   cursor: pointer;
   padding: 1rem;
   text-transform: capitalize;
 }
 
-.saito-profile-menu > div:hover {
+.saito-profile-menu>div:hover {
   color: var(--font-color-button-hover-profile);
   background-color: var(--background-color-button-hover-profile);
   border: var(--border-thickness-button-hover-profile) solid var(--border-color-button-hover-profile);
@@ -34,26 +33,22 @@
   /*border-bottom: 1px dashed var(--saito-font-color);*/
 }
 
-
-
-
 .saito-profile-banner {
-  width: 100%;  
-  height: 0;    
-  padding-top: 33.33%; 
-  background-image: url("https://pbs.twimg.com/profile_banners/842988756/1679408451/1080x360");
-  background-size:contain;
+  width: 100%;
+  height: 0;
+  padding-top: min(33.33%, 180px);
+  background-image: url(/saito/img/profile-banner.jpg);
+  background-size: cover;
   background-position: center;
-  border-radius: var(--border-radius-profile-banner); 
+  border-radius: var(--border-radius-profile-banner);
   position: relative;
 }
-
 
 .saito-profile-header-row .saito-identicon-box {
   border: var(--border-thickness-identicon-square-profile) solid var(--border-color-identicon-square-profile);
   width: 10rem;
   height: 10rem;
-  background-size:  cover;
+  background-size: cover;
   border-radius: 5%;
   margin-top: -4.5rem;
   z-index: 1;
@@ -97,7 +92,6 @@
   font-size: 1.5rem;
 }
 
-
 .saito-profile-description.can-edit .saito-description-edit {
   display: flex;
 }
@@ -111,15 +105,13 @@
   cursor: pointer;
 }
 
-.saito-follow-count{
+.saito-follow-count {
   color: var(--saito-font-color-heavy);
   font-weight: bold;
 }
 
-
-
 .saito-profile-header-row {
-  display: grid; 
+  display: grid;
   grid-template-columns: min-content 1fr;
   align-items: center;
   height: 5rem;
@@ -128,8 +120,8 @@
   margin-right: 0.5rem;
 }
 
-.saito-profile-header { 
-  display: flex; 
+.saito-profile-header {
+  display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-evenly;
@@ -152,18 +144,18 @@
 }
 
 .saito-profile .saito-modal-menu-option {
-    font-size: 2rem;
-    height: unset;
-    width: 100%;
-    padding: 1rem;
-    margin: 0;
+  font-size: 2rem;
+  height: unset;
+  width: 100%;
+  padding: 1rem;
+  margin: 0;
 }
 
-.saito-profile .saito-modal-menu-option > div {
+.saito-profile .saito-modal-menu-option>div {
   font-size: 1.8rem;
 }
 
-.saito-profile .saito-modal-menu-option > i {
+.saito-profile .saito-modal-menu-option>i {
   justify-self: center;
   margin: 0;
 }
@@ -172,7 +164,7 @@
   margin-top: 0.5rem;
 }
 
-@media screen and (max-width: 600px){
+@media screen and (max-width: 600px) {
   .saito-profile-header-row .saito-identicon-box {
     border-width: 2px;
     width: 8rem;
@@ -180,13 +172,10 @@
     margin-top: -4rem;
     margin-left: 0.5rem;
   }
-
   .saito-profile-menu {
     justify-content: space-between;
   }
-
-  .saito-profile-menu > div {
+  .saito-profile-menu>div {
     margin-right: unset;
   }
-
 }

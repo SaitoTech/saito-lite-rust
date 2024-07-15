@@ -87,7 +87,7 @@ html[data-theme="dark"] {
   --font-color-user-address: var(--font-color-heavy);
   --font-color-status-message: var(--font-color-heavy);
   /* tag */
-  --font-color-a-link: var(--font-color-heavy);
+  --font-color-a-link: var(--color-primary);
   /* Exempt as system color */
   --font-color-hover-a-link: var(--font-color-primary);
   /* Exempt as system color */
@@ -111,7 +111,7 @@ html[data-theme="dark"] {
   /* BORDER COLORS */
   --border-color-general-dividers: var(--saito-border-color);
   --border-color-general-dividers-dark: var(--color-primary);
-  --border-color-button-wallet-control: var(--color-complement);
+  --border-color-button-wallet-control: var(--color-primary);
   --border-color-button-modal: var(--color-complement);
   --border-color-button-module: var(--color-complement);
   --border-color-sidebar-menu: var(--color-tint-dark);

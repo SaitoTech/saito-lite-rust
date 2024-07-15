@@ -233,6 +233,8 @@ class Registry extends ModTemplate {
 	}
 
 	respondTo(type = '') {
+		let registry_self = this;
+
 		if (type == 'saito-return-key') {
 			return {
 				returnKey: (data = null) => {
@@ -250,31 +252,37 @@ class Registry extends ModTemplate {
 					//
 					// if keys exist
 					//
-					for (let key in this.cached_keys) {
-						if (key === data.publicKey) {
+					for (let key in registry_self.cached_keys) {
+						if (key === data?.publicKey) {
 							if (
-								this.cached_keys[key] &&
-								key !== this.cached_keys[key]
+								registry_self.cached_keys[key] &&
+								key !== registry_self.cached_keys[key]
 							) {
 								return {
 									publicKey: key,
-									identifier: this.cached_keys[key]
+									identifier: registry_self.cached_keys[key]
 								};
 							} else {
 								return { publicKey: key };
 							}
+						}else if (registry_self.cached_keys[key] === data?.identifier){
+							return {
+									publicKey: key,
+									identifier: registry_self.cached_keys[key]
+								};
 						}
 					}
 
 					return null;
 				},
+
 				returnKeys: () => {
 					keyList = [];
 
-					for (let key in this.cached_keys) {
+					for (let key in registry_self.cached_keys) {
 						keyList.push({
 							publicKey: key,
-							identifier: this.cached_keys[key]
+							identifier: registry_self.cached_keys[key]
 						});
 					}
 

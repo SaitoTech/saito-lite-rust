@@ -2,7 +2,6 @@ const VideoBox = require('../../../../lib/saito/ui/saito-videobox/video-box');
 
 const CallInterfaceVideoTemplate = require('./call-interface-video.template');
 
-const SwitchDisplay = require('../overlays/switch-display');
 const Effects = require('../overlays/effects');
 const VideocallSettings = require('../overlays/videocall-settings');
 
@@ -17,12 +16,12 @@ class CallInterfaceVideo {
 
 		this.local_container = 'expanded-video';
 		this.remote_container = 'side-videos';
-		this.display_mode = 'focus';
 		this.remote_streams = new Map();
 		this.current_speaker = null;
 		this.speaker_candidate = null;
 		this.public_key = mod.publicKey;
 		this.full_screen = fullScreen;
+		this.rendered = false;
 
 		this.app.connection.on(
 			'show-call-interface',
@@ -86,28 +85,27 @@ class CallInterfaceVideo {
 		});
 
 		// Change arrangement of video boxes (emitted from SwitchDisplay overlay)
-		app.connection.on('stun-switch-view', (newView) => {
-			this.display_mode = newView;
-			console.log('Switch view: ' + newView);
+		app.connection.on('stun-switch-view', (newView, save = false) => {
+
+			siteMessage(`Switched to ${newView} display`, 2000);
+
+			if (newView == "presentation") {
+				newView = "focus";
+			}
+
+			this.mod.layout = newView;
+
 			switch (newView) {
 				case 'gallery':
 					this.switchDisplayToGallery();
 					break;
-				case 'focus':
-					this.switchDisplayToExpanded();
-					break;
 				case 'speaker':
 					this.switchDisplayToExpanded();
 					break;
-				case 'presentation':
+				case 'focus':
 					this.switchDisplayToExpanded();
-					break;
-
-				default:
-					break;
 			}
-			// if(newView !== "presentation"){}
-			siteMessage(`Switched to ${newView} display`, 2000);
+
 		});
 
 		app.connection.on('stun-new-speaker', (peer) => {
@@ -124,7 +122,7 @@ class CallInterfaceVideo {
 						}
 
 						if (
-							this.display_mode == 'speaker' &&
+							this.mod.layout == 'speaker' &&
 							!item.parentElement.classList.contains(
 								'expanded-video'
 							)
@@ -141,14 +139,16 @@ class CallInterfaceVideo {
 		});
 
 		app.connection.on('stun-data-channel-open', (pkey) => {
-			this.insertActions(this.mod.room_obj.call_peers);
+			if (this.rendered){
+				this.insertActions(this.mod.room_obj.call_peers);	
+			}
 		});
 
 		app.connection.on('videocall-show-settings', () => {
-			this.videocall_settings.render(this.display_mode);
+			this.videocall_settings.render();
 		});
 
-		app.connection.on('stun-disconnect', () => {
+		app.connection.on('stun-disconnect', async () => {
 			for (let peer in this.video_boxes) {
 				this.app.connection.emit('remove-peer-box', peer);
 			}
@@ -159,15 +159,30 @@ class CallInterfaceVideo {
 				let slug = mod?.returnSlug() || 'videocall';
 				let url = '/' + slug;
 
+				const recordControls = this.app.modules.getRespondTos('screenrecord-video-controls');
+				console.log(recordControls, "recordControls")
+				let { mediaRecorder, stopRecording } = recordControls[0]
+				if (mediaRecorder) {
+					await stopRecording()
+				}
 				setTimeout(() => {
 					window.location.href = url;
 				}, 2000);
+
 			} else {
 				//
 				// Hopefully we don't have to reload the page on the end of a stun call
 				// But keep on eye on this for errors and make sure all the components shut themselves down properly
 				//
 				if (document.getElementById('stun-chatbox')) {
+					const recordControls = this.app.modules.getRespondTos('screenrecord-video-controls');
+					let { mediaRecorder, stopRecording } = recordControls[0]
+					console.log(recordControls, "recordControls")
+
+					if (mediaRecorder) {
+						await stopRecording()
+					}
+
 					document.getElementById('stun-chatbox').remove();
 					let am = this.app.modules.returnActiveModule();
 					window.history.pushState(
@@ -176,6 +191,10 @@ class CallInterfaceVideo {
 						window.location.origin + '/' + am.returnSlug()
 					);
 					document.title = this.old_title;
+
+
+
+
 				}
 			}
 		});
@@ -188,6 +207,7 @@ class CallInterfaceVideo {
 		this.app.connection.removeAllListeners('remove-peer-box');
 		this.app.connection.removeAllListeners('stun-new-speaker');
 		this.app.connection.removeAllListeners('stun-switch-view');
+		this.rendered = false;
 	}
 
 	render(videoEnabled, audioEnabled) {
@@ -208,6 +228,9 @@ class CallInterfaceVideo {
 				console.error(err);
 			}
 		}
+
+		this.app.connection.emit("stun-switch-view", this.mod.layout);
+		this.rendered = true;
 	}
 
 	insertActions() {
@@ -250,8 +273,8 @@ class CallInterfaceVideo {
 
 				let item = mod.respondTo('record-actions', {
 					container: ".video-container-large",
-					streams, 
-					useMicrophone: true, 
+					streams,
+					useMicrophone: true,
 					members: this.mod.room_obj.call_peers,
 					callbackAfterRecord: (data) => {
 						console.log("", data)
@@ -278,7 +301,8 @@ class CallInterfaceVideo {
 
 	createActionItem(item, container, index) {
 		let id = 'call_action_item_' + index;
-		let html = `<div id="${id}" class="icon_click_area ${item?.hook}">
+		let hook = item?.hook || "";
+		let html = `<div id="${id}" class="icon_click_area ${hook}">
 						<label>${item.text}</label>
 						<i class="${item.icon}"></i>
 					</div>`;
@@ -304,6 +328,11 @@ class CallInterfaceVideo {
 			} else {
 				console.warn('Adding an action item with no callback');
 			}
+
+		    if (item.event) {
+		       item.event(id);
+		    }
+
 		} else {
 			console.warn('Item not found');
 		}
@@ -399,7 +428,7 @@ class CallInterfaceVideo {
 					chat_box.classList.toggle('full-screen');
 
 					if (icon.classList.contains('fa-caret-down')) {
-						if (this.display_mode !== 'focus') {
+						if (this.mod.layout !== 'focus') {
 							this.app.connection.emit(
 								'stun-switch-view',
 								'focus'
@@ -442,10 +471,7 @@ class CallInterfaceVideo {
 		document
 			.querySelector('.video-container-large')
 			.addEventListener('click', (e) => {
-				if (
-					this.display_mode == 'gallery' ||
-					this.display_mode == 'presentation'
-				) {
+				if (this.mod.layout == 'gallery') {
 					return;
 				}
 				if (e.target.classList.contains('video-box')) {

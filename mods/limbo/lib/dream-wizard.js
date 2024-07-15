@@ -30,6 +30,9 @@ class DreamWizard{
 					if (mode.getAttribute("id") == "mode-video"){
 						this.options.includeCamera = true;;
 					}
+					if (mode.getAttribute("id") == "mode-screen"){
+						this.options.screenStream = true;
+					}
 				}
 
 				let description_el = document.getElementById("dream-wizard-description");

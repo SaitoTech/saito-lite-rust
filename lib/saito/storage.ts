@@ -325,7 +325,7 @@ class Storage {
 		}
 
 		const saveOptionsForReal = async () => {
-			clearTimeout(this.timeout);
+//			clearTimeout(this.timeout);
 			//console.log("Actually saving options");
 			try {
 				localStorage.setItem(
@@ -355,8 +355,13 @@ class Storage {
 			}
 		};
 
-		clearTimeout(this.timeout);
-		this.timeout = setTimeout(saveOptionsForReal, 250);
+//
+// HACK -- debugging game-save issues, try reducing delay to nothing -- JULY 10, 2023
+//
+		saveOptionsForReal();
+
+//		clearTimeout(this.timeout);
+//		this.timeout = setTimeout(saveOptionsForReal, 1);
 	}
 
 	getModuleOptionsByName(modname) {

@@ -155,6 +155,10 @@ class Wuziqi extends GameTemplate {
         but data structures for player properties are typically 0-indexed arrays
     */
 	updateScore() {
+		if (!this.gameBrowserActive()){
+			return;
+		}
+
 		let roundsToWin = Math.ceil(this.game.options.best_of / 2);
 		for (let i = 0; i < this.game.players.length; i++) {
 			let scoreHTML = `<div>Score: </div><div class="tokens">`;
@@ -179,7 +183,7 @@ class Wuziqi extends GameTemplate {
 
 		this.game.status = str;
 
-		if (this.browser_active == 1) {
+		if (this.gameBrowserActive()) {
 			let status_obj = document.querySelector('.status');
 			if (status_obj) {
 				status_obj.innerHTML = str;
@@ -198,6 +202,10 @@ class Wuziqi extends GameTemplate {
 
 	// Iterate through the board object to draw each cell in the DOM
 	drawBoard(board) {
+		if (!this.gameBrowserActive()){
+			return;
+		}
+
 		//console.log("DRAWING BOARD!");
 		//console.log(board);
 		boardElement = document.querySelector('.board');
@@ -237,6 +245,10 @@ class Wuziqi extends GameTemplate {
 	// This is the functional playerTurn() function of Wuziqi
 	addEvents(board) {
 		this.playerTurn();
+
+		if (!this.gameBrowserActive()){
+			return;
+		}
 
 		board.forEach((cell) => {
 			el = document.getElementById('tile_' + cell.id);
@@ -326,6 +338,9 @@ class Wuziqi extends GameTemplate {
 				// Remove this item from the queue.
 				this.game.queue.splice(this.game.queue.length - 1, 1);
 
+				this.game.target = first_player;
+				console.log("Update target: ", this.game.target);
+
 				if (this.game.player == first_player) {
 					this.addEvents(this.game.board);
 					this.updateStatus('You go first');
@@ -358,6 +373,14 @@ class Wuziqi extends GameTemplate {
 			// Round over
 			if (mv[0] == 'roundover') {
 				let winner = parseInt(mv[1]);
+
+				this.game.target = this.returnNextPlayer(winner);
+
+				if (!this.gameBrowserActive() && this.game.player === this.game.target){
+					this.updateStatus("You lost the round");
+					this.playerTurn();
+					return 0;
+				}
 
 				// Remove this item from the queue.
 				this.game.queue.splice(this.game.queue.length - 1, 1);
@@ -410,15 +433,20 @@ class Wuziqi extends GameTemplate {
 					this.animatePlay(cell);
 				}
 
+				this.game.target = this.returnNextPlayer(player);
+
 				if (this.game.player !== player && this.game.player !== 0) {
 					//Let player make their move
 					this.addEvents(this.game.board);
-					this.updateStatus(
-						`Your move <span class="replay">Replay Last</span>`
-					);
-					document.querySelector('.replay').onclick = (e) => {
-						this.animatePlay(cell);
-					};
+
+					if (this.gameBrowserActive()){
+						this.updateStatus(`Your move <span class="replay">Replay Last</span>`);
+						document.querySelector('.replay').onclick = (e) => {
+							this.animatePlay(cell);
+						};
+					}else{
+						this.updateStatus("Your move");
+					}
 				} else {
 					this.updateStatus(
 						`Waiting on <span class='playertitle'>${this.roles[3 - player]}</span> (${this.app.keychain.returnUsername(this.game.players[2-player])})` 

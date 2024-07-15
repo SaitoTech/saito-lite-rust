@@ -12,6 +12,7 @@
       this.is_first_loop = 0;
     }
 
+console.log("INTO HANDLE GAME LOOP!");
 
     ///////////
     // QUEUE //
@@ -25,7 +26,7 @@
 
 console.log("QUEUE: " + JSON.stringify(this.game.queue));
 console.log("MOVE: " + mv[0]);
-console.log("FIRST LOOP: " + this.is_first_loop);
+//console.log("FIRST LOOP: " + this.is_first_loop);
 
 	//
 	// entry point for every round in the game
@@ -171,8 +172,8 @@ if (this.game.options.scenario != "is_testing") {
 	          //
         	  // or we flip hapsburg card from deck if 2-player game
         	  //
-        	  game_self.game.queue.push("POOLDEAL\t1\t1\t1"); // deck 1
-        	  game_self.game.queue.push("POOL\t1"); // deck 1
+        	  this.game.queue.push("POOLDEAL\t1\t1\t1"); // deck 1
+        	  this.game.queue.push("POOL\t1"); // deck 1
 		}
 	        this.game.queue.push("diet_of_worms_faction_array");
 	        this.game.queue.push("RESETCONFIRMSNEEDED\tall");
@@ -4307,21 +4308,39 @@ return 1; }
 
         if (mv[0] === "diet_of_worms_hapsburgs") {
 
+console.log("INTO DOF H");
+
 	  this.factionbar.setActive("hapsburg");
+	  this.game.queue.splice(qe, 1);
 
 	  let game_self = this;
 	  let x = [];
           let fhand_idx = 0;
           if (this.game.player == this.returnPlayerCommandingFaction("hapsburg")) {
 	    fhand_idx = this.returnFactionHandIdx(this.game.player, "hapsburg");
-	  }
-	  for (let i = 0; i < this.game.deck[0].fhand[fhand_idx].length; i++) {
-	    if (this.game.deck[0].cards[this.game.deck[0].fhand[fhand_idx][i]].type === "mandatory") {} else { x.push(this.game.deck[0].fhand[fhand_idx][i]); }
+	  } else {
+console.log("and out -- we are not haps!");
+            this.updateStatusAndListCards("Hapsburgs Selecting Card for the Diet of Worms", this.game.deck[0].fhand[0]);
+            return 0;
 	  }
 
+console.log("midway through execution...");
+
+	  for (let i = 0; i < this.game.deck[0].fhand[fhand_idx].length; i++) {
+console.log("i: " + i);
+	    if (this.game.deck[0].cards[this.game.deck[0].fhand[fhand_idx][i]].type === "mandatory") {
+	    } else {
+	      x.push(this.game.deck[0].fhand[fhand_idx][i]);
+	    }
+	  }
+
+console.log("post loop...");
+
 	  if (this.game.player != this.returnPlayerCommandingFaction("hapsburg")) {
+console.log("no one should get here...");
             this.updateStatusAndListCards("Hapsburgs Selecting Card for the Diet of Worms", x);
 	  } else {
+console.log("haps should see this...");
             this.updateStatusAndListCards("Hapsburgs - Select Card to indicate your Commitment to Debate", x);
             this.attachCardboxEvents(async function(card) {
 	      game_self.game_help.hide();
@@ -4332,8 +4351,7 @@ return 1; }
             });
 	  }
 
-	  this.game.queue.splice(qe, 1);
-          return 0;
+	  return 0;
 
 	}
 
@@ -4358,11 +4376,12 @@ return 1; }
 	    }
 	  }
 	  if (fa_idx >= 0) {
-	    for (let i = this.game.queue.length-1; i >= 0; i--) {
+	    for (let i = this.game.queue.length-1; i > fa_idx && i >= 0; i--) {
 	      if (this.game.queue[i].split("\t")[0] === "SIMULTANEOUS_PICK") {
 	        let x = this.game.queue[i];
 		this.game.queue.splice(i, 1);
 		this.game.queue.splice(fa_idx, 0, x);
+		fa_idx++;
 	      }
 	    }
 	  }
@@ -4372,6 +4391,8 @@ return 1; }
 	}
 
         if (mv[0] === "diet_of_worms_faction_array") {
+
+console.log("at start of dowfa");
 
 	  let remove_from_queue = 0;
 	  if (parseInt(mv[1])) { remove_from_queue = 1; }
@@ -4386,13 +4407,16 @@ return 1; }
 	  // skip if we have already confirmed!
 	  //
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+console.log("we have already confirmed, so exiting!");
 	    return 0;
 	  }
 
 	  //
-	  // do not splice, we will resolve
+	  // if we haven't done this already...
 	  //
-	  this.addMove("RESOLVE\t"+this.publicKey);
+	  if (this.moves.length == 0) {
+	    this.addMove("RESOLVE\t"+this.publicKey);
+	  }
 
 	  let game_self = this;
 	  let my_faction = "";
@@ -4413,10 +4437,16 @@ return 1; }
 	    my_faction = "Protestants";
 	  }
 	  for (let i = 0; i < this.game.deck[0].fhand[fhand_idx].length; i++) {
-	    if (this.game.deck[0].cards[this.game.deck[0].fhand[fhand_idx][i]].type === "mandatory") {} else { x.push(this.game.deck[0].fhand[fhand_idx][i]); }
+console.log("dowfa look: " + i);
+	    if (this.game.deck[0].cards[this.game.deck[0].fhand[fhand_idx][i]].type === "mandatory") {
+	    } else {
+	      x.push(this.game.deck[0].fhand[fhand_idx][i]);
+	    }
 	  }
 
 	  if (this.game.player != this.returnPlayerCommandingFaction("papacy") && this.game.player != this.returnPlayerCommandingFaction("protestant")) {
+
+console.log("not the papacy and not the protestants!");
 
             this.updateStatusAndListCards("Protestants and Papacy assemble at the Diet of Worms", x);
 
@@ -4439,13 +4469,25 @@ return 1; }
 
 	  } else {
 
+console.log("either papacy or protestants!");
+
 	    if (game_self.game.spick_card != "") {
-	      for (let i = 0; i < x.length; i++) { if (x[i] == game_self.game.spick_card) { x.splice(i, 1); } }
+	      for (let i = 0; i < x.length; i++) {
+	        if (x[i] === game_self.game.spick_card) { 
+		  x.splice(i, 1); 
+		}
+	      }
               this.updateStatusAndListCards("Waiting for Opponent(s) to Pick Cards");
 	      return 0;
 	    }
 
+console.log("and displaying cards!!");
+console.log(JSON.stringify(x));
+
+console.log("About to usalc");
+
             this.updateStatusAndListCards(my_faction + " - Select Card to indicate your Commitment to Debate", x);
+console.log("updated status and listed cards...");
             this.attachCardboxEvents(async function(card) {
 
 	      //for (let i = 0; i < x.length; i++) { if (x[i] == card) { x.splice(i, 1); } }
@@ -4478,6 +4520,7 @@ return 1; }
             });
 	  }
 
+console.log("and halt game!");
           return 0;
         }
 
@@ -4838,11 +4881,12 @@ return 1; }
 	  //
 	  var counter_or_acknowledge_inactivity_timeout;
 
+/****
 	  if (this.isGameHalted() != 1) {
 	  var true_if_counter_or_acknowledge_cleared = false;
 	  counter_or_acknowledge_inactivity_timeout = setTimeout(() => {
 
-	    if (true_if_counter_or_acknowledge_cleared) { return; }
+	    if (true_if_counter_or_acknowledge_cleared) { return 0; }
 	    his_self.cardbox.hide();
 
 	    let my_specific_game_id = his_self.game.id;
@@ -4853,7 +4897,7 @@ return 1; }
                   
             let html = '<ul><li class="option acknowledge" id="ok">acknowledge</li></ul>';
             his_self.updateStatusWithOptions(msg, html);
-                    
+      
 	    $('.option').off();
             $('.option').on('click', function () {
 
@@ -4886,6 +4930,7 @@ return 1; }
 
 	  }, 7500);
 	  }
+****/
 
 	  $('.option').off();
 	  $('.option').on('mouseover', function() {
@@ -8504,6 +8549,8 @@ try {
           if (attacker_player > 0) { ap = this.game.state.players_info[attacker_player-1]; }
           if (defender_player > 0) { dp = this.game.state.players_info[defender_player-1]; }
 
+	  let post_assault_intervention_possible = this.game.state.events.intervention_post_assault_possible;
+
           //
           // we stop here for intercession by cards that need to execute before the die rolls
 	  // are assigned but after they have been rolled.
@@ -8513,20 +8560,26 @@ try {
               his_self.game.state.assault.attacker_hits_first = 1;
               his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.defender_faction);
               his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.attacker_faction);
-	      his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+	      if (0 == post_assault_intervention_possible) {
+	        his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+	      }
 	    }
           } else if (ap.tmp_roll_first != 1 && dp.tmp_roll_first == 1) {
 	    if (attacker_hits > 0 || defender_hits > 0) {
               his_self.game.state.field_battle.defender_hits_first = 1;
               his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.attacker_faction);
               his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.defender_faction);
-	      his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+	      if (0 == post_assault_intervention_possible) {
+	        his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+              }
             }
           } else {
 	    if (attacker_hits > 0 || defender_hits > 0) {
               his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.attacker_faction);
               his_self.game.queue.push("assault_assign_hits\t"+his_self.game.state.assault.defender_faction);
-	      his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+	      if (0 == post_assault_intervention_possible) {
+	        his_self.game.queue.push("ACKNOWLEDGE\tProceed to Assign Hits");
+              }
             }
           }
 
@@ -8534,6 +8587,10 @@ try {
           // this should stop execution while we are looking at the pre-field battle overlay
           //
 	  let from_whom = his_self.returnArrayOfPlayersInSpacekey(space.key);
+	  if (his_self.game.state.events.intervention_post_assault_possible) {
+            his_self.game.queue.push("counter_or_acknowledge\tProceed to Assign Hits in "+space.name + "\tpost_assault_rolls");
+            his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
+	  }
           his_self.game.queue.push("assault_assign_hits_render");
           his_self.game.queue.push("assault_show_hits_render");
           his_self.game.queue.push("counter_or_acknowledge\tAssault is about to begin in "+space.name + "\tpre_assault_rolls");
@@ -10314,7 +10371,7 @@ defender_hits - attacker_hits;
 	      for (let i = 0; i < this.game.deck[0].fhand[fhand_idx].length; i++) {
 	        if (this.game.deck[0].fhand[fhand_idx][i] == "037") {
                   this.addMove("SETVAR\tstate\tevents\tintervention_on_events_possible\t1");
-		  i == this.game.deck[0].fhand[fhand_idx].length+1;
+		  i = this.game.deck[0].fhand[fhand_idx].length+1;
 	        };
 	      }
 	    }
@@ -10327,8 +10384,11 @@ defender_hits - attacker_hits;
 	        if (this.game.deck[0].fhand[z][i] == "032" || this.game.deck[0].fhand[z][i] == "031") {
                   this.addMove("SETVAR\tstate\tevents\tintervention_on_movement_possible\t1");
                   this.addMove("SETVAR\tstate\tevents\tintervention_on_assault_possible\t1");
-		  i = this.game.deck[0].fhand[z].length+1;
 	        };
+		// siege artillery
+	        if (this.game.deck[0].fhand[z][i] == "035") {
+                  this.addMove("SETVAR\tstate\tevents\tintervention_post_assault_possible\t1");
+	        }
 	      }
 	    }
 
@@ -11541,7 +11601,7 @@ if (this.game.state.round == 2) {
 	      // TESTING can trigger but we are good - continue!
 	      //
 	      this.endTurn();
-	      return;
+	      return 0;
 
 	    }
 
@@ -11563,6 +11623,7 @@ if (this.game.state.round == 2) {
 	      //
 	      // not good - deal another!
 	      //
+alert("replacement card needed!");
 	      this.addMove("check_replacement_cards\t"+faction);
     	      this.addMove("hand_to_fhand\t1\t"+p+"\t"+faction);
     	      this.addMove("DEAL\t1\t"+p+"\t"+(num));
@@ -11585,6 +11646,8 @@ if (this.game.state.round == 2) {
 	}
 
         if (mv[0] === "card_draw_phase") {
+
+	  this.updateStatus("dealing cards...");
 
 	  if (this.game.state.round > 1) {
 	    this.winter_overlay.render("stage5");
@@ -11812,7 +11875,6 @@ console.log(JSON.stringify(reshuffle_cards));
   	  this.game.state.england_card_bonus = 0;
   	  this.game.state.hapsburg_card_bonus = 0;
 
-
 	  this.game.queue.splice(qe, 1);
           return 1;
 
@@ -11883,6 +11945,7 @@ console.log(JSON.stringify(reshuffle_cards));
 		    looped_once = true;
 		    roll = this.game.deck[0].fhand[fhand_idx].length-1;
 		  } else {
+	  	    this.game.queue.splice(qe, 1);
                     this.addMove("NOTIFY\t"+this.returnFactionName(faction)+ " has no non-home cards to pull");
                     this.endTurn();
                     return 0;
@@ -12073,7 +12136,7 @@ console.log(JSON.stringify(reshuffle_cards));
             }
             html += '</ul>';
 
-	    if (any_choice == false) { his_self.endTurn(); return; }
+	    if (any_choice == false) { his_self.endTurn(); return 0; }
 
             his_self.updateStatusWithOptions(msg, html);
 
@@ -12231,6 +12294,7 @@ console.log(JSON.stringify(reshuffle_cards));
 		  roll--;
 		  if (roll == -1) {
 		    if (is_looped == true) {
+	  	      this.game.queue.splice(qe, 1);
 		      this.addMove("NOTIFY\t"+this.returnFactionName(faction)+ " has no non-home cards to discard");
 		      this.endTurn();
 		      return 0;
@@ -12278,6 +12342,8 @@ console.log(JSON.stringify(reshuffle_cards));
 	  this.unbindBackButtonFunction();
 
 	  let player = this.returnPlayerOfFaction(faction);
+
+console.log("WHICH PLAYER IS THIS: " + player);
 
 	  // update board display
 	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);

@@ -15,8 +15,10 @@ class SettlersGameloop {
       //
       // catch win condition
       //
-      this.displayPlayers(); //Is it enough to update the player huds each iteration, board doesn't get redrawn at all?
-
+      if (this.browser_active){
+        this.displayPlayers(); //Is it enough to update the player huds each iteration, board doesn't get redrawn at all?  
+      }
+      
       let qe = this.game.queue.length - 1;
       let mv = this.game.queue[qe].split("\t");
 

@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
 	default_fee = 0;
 
-	version = 5.634;
+	version = 5.636;
 
 	nolan_per_saito = 100000000;
 
@@ -75,6 +75,7 @@ export default class Wallet extends SaitoWallet {
 		return BigInt(0);
 	}
 
+
 	async initialize() {
 		console.log('wallet.initialize');
 
@@ -98,13 +99,13 @@ export default class Wallet extends SaitoWallet {
 			}
 
 			async returnBalance() {
-				return this.app.wallet.convertNolanToSaito(
-					await this.app.wallet.getBalance()
-				);
+				console.log("returnBalance 1: ", await this.app.wallet.getBalance());
+				let x = await this.app.wallet.getBalance()
+				return this.app.wallet.convertNolanToSaito(x);
 			}
 
-			returnAddress() {
-				return this.publicKey;
+			async returnAddress() {
+				return this.publicKey || await this.app.wallet.getPublicKey();
 			}
 
 			returnPrivateKey() {
@@ -132,6 +133,7 @@ export default class Wallet extends SaitoWallet {
 					);
 				await this.app.wallet.signAndEncryptTransaction(newtx);
 				await this.app.network.propagateTransaction(newtx);
+
 				return newtx.signature;
 			}
 
@@ -226,11 +228,7 @@ export default class Wallet extends SaitoWallet {
 			}
 
 			validateAddress(address){
-				let isPublicKey = this.app.crypto.isPublicKey(address);
-				if (isPublicKey) {
-					return true;
-				}
-				return false;
+				return this.app.wallet.isValidPublicKey(address);
 			}
 		}
 
@@ -382,6 +380,8 @@ export default class Wallet extends SaitoWallet {
 		// this.recreate_pending_transactions = 0;
 	}
 
+	
+
 	/**
 	 * Generates a new keypair for the user, resets all stored wallet info, and saves
 	 * the new wallet to local storage.
@@ -445,6 +445,7 @@ export default class Wallet extends SaitoWallet {
 		this.app.options.wallet.preferred_txs = this.preferred_txs;
 		this.app.options.wallet.version = this.version;
 		this.app.options.wallet.default_fee = this.default_fee;
+
 		let slips = await this.getSlips();
 
 		this.app.options.wallet.slips = slips.map((slip) => slip.toJson());
@@ -539,14 +540,14 @@ export default class Wallet extends SaitoWallet {
 		}
 	}
 
-	returnCryptoAddressByTicker(ticker = 'SAITO') {
+	async returnCryptoAddressByTicker(ticker = 'SAITO') {
 		try {
 			if (ticker === 'SAITO') {
 				return this.publicKey;
 			} else {
 				const cmod = this.returnCryptoModuleByTicker(ticker);
 				if (cmod) {
-					return cmod.returnAddress();
+					return await cmod.returnAddress();
 				}
 				console.log(`Crypto Module (${ticker}) not found`);
 			}
@@ -564,7 +565,7 @@ export default class Wallet extends SaitoWallet {
 			let mods = this.returnActivatedCryptos();
 			for (let i = 0; i < mods.length; i++) {
 				ticker = mods[i].ticker;
-				let address = mods[i].returnAddress();
+				let address = await mods[i].returnAddress();
 				let balance = await mods[i].returnBalance();
 				if (!cryptos[ticker]) {
 					cryptos[ticker] = { address, balance };
@@ -605,12 +606,12 @@ export default class Wallet extends SaitoWallet {
 		return returnObj;
 	}
 
-	savePreferredCryptoBalance(ticker, address, balance) {
+	async savePreferredCryptoBalance(ticker, address, balance) {
 		// if this is my address...
 		let cryptomods = this.returnInstalledCryptos();
 		for (let i = 0; i < cryptomods.length; i++) {
 			if (cryptomods[i].ticker === ticker) {
-				if (cryptomods[i].returnAddress() === address) {
+				if (await cryptomods[i].returnAddress() === address) {
 					// cache the results, so i know if payments are new
 					cryptomods[i].balance = balance;
 					this.app.wallet.cryptos[ticker] = {
@@ -641,7 +642,7 @@ export default class Wallet extends SaitoWallet {
 	async returnPreferredCryptoBalance() {
 		const cryptomod = await this.returnPreferredCrypto();
 		return await this.checkBalance(
-			cryptomod.returnAddress(),
+			await cryptomod.returnAddress(),
 			cryptomod.ticker
 		);
 	}
@@ -699,7 +700,8 @@ export default class Wallet extends SaitoWallet {
 				// DEBUGGING - sender is address to which we send the crypto
 				//       - not our own publickey
 				//
-				if (senders[i] === cryptomod.returnAddress()) {
+
+				if (senders[i] === await cryptomod.returnAddress()) {
 					// Need to save before we await, otherwise there is a race condition
 					await this.savePreferredCryptoTransaction(
 						senders,
@@ -762,7 +764,7 @@ export default class Wallet extends SaitoWallet {
 						'Cannot send payment from wrong crypto address'
 					);
 					console.log(cryptomod.name);
-					console.log(senders[i], cryptomod.returnAddress());
+					console.log(senders[i], await cryptomod.returnAddress());
 				}
 			}
 		} else {
@@ -1104,7 +1106,7 @@ export default class Wallet extends SaitoWallet {
 	}
 
 	private async isSlipInPendingTransactions(input: Slip): Promise<boolean> {
-		let pending = await this.getPendingTxs();
+		let pending = await this.getPendingTransactions();
 		for (let i = 0; i < pending.length; i++) {
 			let ptx = pending[i];
 			for (let ii = 0; ii < ptx.from.length; ii++) {
@@ -1114,6 +1116,10 @@ export default class Wallet extends SaitoWallet {
 			}
 		}
 		return false;
+	}
+
+	async getPendingTransactions() {
+		return this.getPendingTxs();
 	}
 
 	/////////////////////
@@ -1142,6 +1148,7 @@ export default class Wallet extends SaitoWallet {
 	async backupWallet() {
 		try {
 			if (this.app.BROWSER == 1) {
+				let publicKey = await this.getPublicKey();
 
 				if (this.app.options.wallet.backup_required_msg) {
 					this.app.options.wallet.backup_required_msg = 0;
@@ -1157,7 +1164,7 @@ export default class Wallet extends SaitoWallet {
 					'data:application/json;utf-8,' +
 						encodeURIComponent(this.exportWallet())
 				);
-				pom.setAttribute('download', 'saito.wallet.json');
+				pom.setAttribute('download', `saito-wallet-${publicKey}.json`);
 				document.body.appendChild(pom);
 				pom.click();
 				pom.remove();
@@ -1215,6 +1222,8 @@ export default class Wallet extends SaitoWallet {
 	 * @return {Transaction}
 	 */
 	async signAndEncryptTransaction(tx: Transaction, recipient = '') {
+
+		
 		if (tx == null) {
 			return null;
 		}
@@ -1290,7 +1299,15 @@ export default class Wallet extends SaitoWallet {
 	}
 
 	public isValidPublicKey(key: string): boolean {
-		return S.getInstance().isValidPublicKey(key);
+		if (this.app.crypto.isBase58(key)){
+			return S.getInstance().isValidPublicKey(key);
+		}else{
+			return false;
+		}
+	}
+
+	public async addTransactionToPending(tx: Transaction) {
+		return S.getInstance().addPendingTx(tx);
 	}
 
 	public async onUpgrade(type = '', privatekey = '', walletfile = null) {

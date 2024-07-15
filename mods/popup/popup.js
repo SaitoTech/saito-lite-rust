@@ -100,6 +100,7 @@ class Popup extends ModTemplate {
 	// render //
 	////////////
 	async render() {
+
 		//
 		// create and render components
 		//

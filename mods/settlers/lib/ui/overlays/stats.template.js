@@ -211,7 +211,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 	// Losses
 	//
 	html += `<div class="settlers-state-container">`;
-	html += ` <div class="settlers-stats-row"><div class="settlers-stats-player hover-hint" title="Cards discarded or stolen by robber">Losses</div>`;
+	html += ` <div class="settlers-stats-row"><div class="settlers-stats-player hover-hint" title="Cards discarded or stolen by robber">Stolen</div>`;
 	for (let r in stats.mod.game.stats.production) {
 		html += `	<div class="settlers-stats-card">
 								<img src="/settlers/img/cards/${r}.png">
@@ -244,7 +244,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 	// Non-production
 	//
 	html += `<div class="settlers-state-container">`;
-	html += ` <div class="settlers-stats-row"><div class="settlers-stats-player hover-hint" title="Resources blocked by presence of bandit">Unrealized</div>`;
+	html += ` <div class="settlers-stats-row"><div class="settlers-stats-player hover-hint" title="Resources blocked by presence of bandit">Blocked</div>`;
 	for (let r in stats.mod.game.stats.production) {
 		html += `	<div class="settlers-stats-card no-vp">
 								<img src="/settlers/img/cards/${r}.png">
@@ -278,7 +278,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 
     html += `<div class="settlers-hist-container hide-scrollbar">
     	<div class="settlers-hist-row">
-    		<div></div>`;
+    		<div class="settlers-timeline-turn-lables"><div>Turn</div><div>Roll</div></div>`;
 
    	for (let i = 0; i < stats.mod.game.players.length; i++) {
     	html += `<div class="settlers-stats-player p${stats.mod.game.colors[i]}">${stats.mod.game.playerNames[i]}</div>`;

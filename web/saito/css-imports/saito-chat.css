@@ -84,11 +84,31 @@
   cursor: pointer;
 }
 
+.chat-popup.minimized .saito-notification-dot {
+  min-height: unset;
+  height: 100%;
+  left: 0;
+  bottom: 0;
+  border-radius: 0;
+  z-index: inherit;
+}
+
+
+/* Swap between new messages display and arrow */
 .chat-popup .saito-notification-dot i, .chat-popup .saito-notification-dot:hover .new-message-count {
   display: none;
 }
 
 .chat-popup .saito-notification-dot:hover i {
+  display: block;
+}
+
+/* Don't Swap between new messages display and arrow when minimized */
+.chat-popup.minimized .saito-notification-dot:hover i {
+  display: none;
+} 
+
+.chat-popup.minimized .saito-notification-dot .new-message-count{
   display: block;
 }
 

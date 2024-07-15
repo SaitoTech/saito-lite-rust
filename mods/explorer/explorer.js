@@ -199,6 +199,9 @@ class ExplorerCore extends ModTemplate {
 	async returnIndexMain() {
 		let txs = await S.getInstance().getMempoolTxs();
 		console.log(await this.listBlocks);
+		let balance = await this.app.wallet.getBalance();
+		let balanceSaito = balance/BigInt(100000000);
+		let nolansRemainder = balance - (balanceSaito * BigInt(100000000));
 		return (
 			'<div class="explorer-main"> \
         <div class="block-table"> \
@@ -206,7 +209,7 @@ class ExplorerCore extends ModTemplate {
 			(await this.app.wallet.getPublicKey()) +
 			'</div> \
           <div class="explorer-data"><h4>Balance:</h4> </div><div>' +
-			(await this.app.wallet.getBalance()) +
+			(balanceSaito+"."+nolansRemainder) +
 			'</div> \
           <div class="explorer-data"><h4>Mempool:</h4></div> <div><a href="/explorer/mempool">' +
 			txs.length +
