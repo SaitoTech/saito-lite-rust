@@ -410,6 +410,9 @@ class Arcade extends ModTemplate {
 					},
 					async (txs) => {
 						for (let i = txs.length - 1; i >= 0; i--) {
+							//Process in Arcade
+							await this.onConfirmation(-1, txs[i], 0);
+							//Process in game mod
 							await game_mod.onConfirmation(-1, txs[i], 0);
 						}
 					},
