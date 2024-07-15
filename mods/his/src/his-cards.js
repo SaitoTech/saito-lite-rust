@@ -10404,9 +10404,9 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
                 let options_idx = $(this).attr("id");
 		his_self.updateStatus("acknowledge");
 
-                his_self.addMove("SETVAR\tstate\events\tscots_raid\t0");
+                his_self.addMove("SETVAR\tstate\tevents\tscots_raid\t0");
                 his_self.addMove("ops\tfrance\t097\t3");
-                his_self.addMove("SETVAR\tstate\events\tscots_raid\t1");
+                his_self.addMove("SETVAR\tstate\tevents\tscots_raid\t1");
                 his_self.addMove("move\tfrance\tland\t"+options[options_idx].spacekey+"\tstirling\t"+options[options_idx].idx);
                 his_self.endTurn();
 
@@ -10414,9 +10414,9 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	    }
 
 	    if (action === "no") {
-              his_self.addMove("SETVAR\tstate\events\tscots_raid\t0");
+              his_self.addMove("SETVAR\tstate\tevents\tscots_raid\t0");
               his_self.addMove("ops\tfrance\t097\t6");
-              his_self.addMove("SETVAR\tstate\events\tscots_raid\t1");
+              his_self.addMove("SETVAR\tstate\tevents\tscots_raid\t1");
 	      his_self.endTurn();
 	    }
 
