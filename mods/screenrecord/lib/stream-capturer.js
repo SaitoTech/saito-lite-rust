@@ -389,7 +389,7 @@ class StreamCapturer {
         if (this.activeStreams) {
             this.activeStreams.forEach(({ source, gainNode }) => {
                 source.disconnect();
-                gainNode.disconnect();
+                // gainNode.disconnect();
             });
             this.activeStreams.clear();
         }
