@@ -984,13 +984,13 @@ class Limbo extends ModTemplate {
 			}else{
 				if (this.upstream.size > 0) {
 					this.upstream.forEach((pc, key) => {
-						if (pc){
+						if (pc.connectionState == 'connected'){
 							source = true;
 						}
 					});
 				}
 			}
-
+			
 			if (!source){
 				console.warn("Ignoring Join Transaction because I don't have a stable source yet");
 				return;
