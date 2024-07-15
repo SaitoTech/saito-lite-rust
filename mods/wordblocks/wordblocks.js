@@ -86,7 +86,11 @@ class Wordblocks extends GameTemplate {
 		this.hud.render();
 		this.log.render();
 
+		//Remove hide-scrollbar class from hud
+		$("#hud").removeClass("hide-scrollbar");
+
 		try {
+
 			this.playerbox.render();
 
 			let compact_html = '';
@@ -118,8 +122,8 @@ class Wordblocks extends GameTemplate {
 		}
 
 		try {
-			if (app.browser.isMobileBrowser(navigator.userAgent)) {
-				this.hammer.render();
+			if (app.browser.isMobileBrowser(navigator.userAgent) || window.innerWidth < 600 || window.innerHeight < 600) {
+				this.hammer.render("#gameboard", 600);
 			} else {
 				this.sizer.render();
 				this.sizer.attachEvents('.gameboard');
