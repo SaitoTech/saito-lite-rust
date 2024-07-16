@@ -35,4 +35,15 @@
 }
 
 
-
+#game_board_size_toggle {
+  position: absolute;
+  height: 4rem;
+  width: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--saito-white);
+  font-size: 3rem;
+  text-shadow: 1px 1px 3px var(--saito-black);
+  right: 4rem;
+}

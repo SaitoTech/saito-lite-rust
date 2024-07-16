@@ -37,7 +37,7 @@
 	flex-direction: column;
 	align-items: center;
 	gap: 1rem;
-	border-radius: 1rem;
+	border-radius: 15%;
 	border: 2px solid;
 	padding: 2rem;
 	cursor: pointer;
@@ -75,6 +75,7 @@
 .spaces-list .saito-profile-header-row .saito-identicon-box {
 	width: 7rem;
 	height: 7rem;
+	font-size: 3.5rem;
 }
 
 
@@ -315,23 +316,28 @@ video#local.noflip{
 	display: flex;
 	justify-content: space-evenly;
 	align-items: center;
-	font-size: 6rem;
 	margin-bottom: 1rem;
+	font-size: 3rem;
 }
 
 .dream-wizard .cast-mode i {
-	padding: 2rem;
-	border-radius: 2rem;
-	border: 1px solid;
 	text-align: center;
-	min-width: 12rem;
+	min-width: 10.5rem;
+	font-size: 6rem;	
 }
 
 .cast-mode-option {
 	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+	padding: 1rem;
+	border-radius: 2rem;
+	border: 1px solid;
 }
 
-.dream-wizard .cast-mode i.selected{
+.dream-wizard .cast-mode .selected{
 	color: var(--saito-font-color);
 	border-width: 3px;
 	text-shadow: 1px 1px 5px var(--saito-black);

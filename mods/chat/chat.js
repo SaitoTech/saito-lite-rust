@@ -658,6 +658,11 @@ class Chat extends ModTemplate {
       case 'ntfy-notification':
         console.log(JSON.stringify(obj));
 
+        if(obj.tx?.msg?.module != 'Chat') {
+          return null;
+        }
+
+
         let tx = obj.tx;
         let notification = obj.notification;
 
@@ -681,6 +686,10 @@ class Chat extends ModTemplate {
           //was checking if JSON.parse(tx.msg).ct was a string but this was breaking on parsing bigint...
           notification.message += 'Message Encyrypted';
         } else {
+          // Make sure this is a Chat Notification!!!!
+          if (tx?.msg?.module !== 'Chat') {
+            return null;
+          }
           notification.message += tx.msg.message?.substring(0, 50);
         }
         notification.actions = [

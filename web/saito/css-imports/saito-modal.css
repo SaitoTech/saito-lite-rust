@@ -373,8 +373,8 @@ This alows for a header with a header with title to be added without extra CSS
   left: 34%;
   top: 34%;
   background: #000a;
-  width: 3rem;
-  height: 3rem;
+  width: min(90%, 5rem);
+  height: min(90%, 5rem);
   display: flex;
   justify-content: center;
   align-items: center;
