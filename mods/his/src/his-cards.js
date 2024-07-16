@@ -8412,6 +8412,10 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 
 	if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 
+
+	  //
+	  //
+	  //
   	  if (his_self.game.state.activated_powers[faction].length > 0) {
 
 	    let msg = "Which Faction gets Recruits?";
@@ -8430,6 +8434,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	    $('.option').on('click', function () {
 	      his_self.updateStatus("acknowledge");
 	      let action = $(this).attr("id");
+	      his_self.game.state.events.foreign_recruits = action;
   	      his_self.playerPlayOps("", action, 4, "build");
 	    });
 
@@ -8689,7 +8694,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	      space1 = spacekey;
 
               his_self.playerSelectSpaceWithFilter(
-	        "Select 1st Unoccupied French Home Space: ",
+	        "Select 2nd Unoccupied French Home Space: ",
 	        function(space) {
 	          if (
 	  	    space.home === "france" &&

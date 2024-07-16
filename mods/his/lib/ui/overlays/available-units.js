@@ -306,11 +306,13 @@ if (us['mercenary']) {
 
 	renderBuild(faction, unit, ops, cost, mycallback) {
 		let his_self = this.mod;
+
 	 	if (!document.querySelector(".available-units-overlay")) {
 		  his_self.app.browser.addElementToDom(AvailableUnitsTemplate());
 		} else {
-		  document.querySelector(".available-units-overlay").innerHTML = "";
+		  document.querySelector(".available-units-overlay").innerHTML = ``;
 		}
+
 		this.max_units = his_self.returnNumberOfUnitsAvailableForConstruction(faction, unit);
 		this.addUnitsAvailableToPage(faction, unit, (ops / cost));
 		document.querySelectorAll(".available-units-overlay .army_tile").forEach((el) => { el.onclick = (e) => {

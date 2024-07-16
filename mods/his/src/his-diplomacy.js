@@ -388,7 +388,6 @@
     }
     html += '</ul>';
 
-
     if (auto_select_target == false) {
 
       let html2 = '<ul>';

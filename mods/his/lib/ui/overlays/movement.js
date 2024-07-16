@@ -142,6 +142,7 @@ class MovementOverlay {
 		};
 
 		this.overlay.show(MovementOverlayTemplate(obj, this.mod));
+                this.mod.available_units_overlay.hide();
 		this.mod.available_units_overlay.renderMove(mobj, faction, space.key);
 		if (this.fade_out_available_units) { this.mod.available_units_overlay.fadeOut(); }
 

@@ -1377,8 +1377,6 @@ if (this.game.state.events.cramner_active == 1) {
     //
     this.unbindBackButtonFunction();
 
-
-
     this.startClock();
 
     let his_self = this;
@@ -3596,6 +3594,9 @@ does_units_to_move_have_unit = true; }
 //
   async playerContinueToMoveFormationInClear(his_self, player, faction, spacekey, ops_to_spend, ops_remaining=0) {
 
+    // BACK moves us to OPS menu
+    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayOps("", faction, ops_remaining, ""); });
+
     //
     // we add this before broadcasting, or the turn ends 
     //
@@ -3608,10 +3609,6 @@ does_units_to_move_have_unit = true; }
     let space = this.game.spaces[spacekey];
     let protestant_player = his_self.returnPlayerOfFaction("protestant");
     let parent_player = his_self.returnPlayerCommandingFaction(faction);
-
-console.log("continue to move formation in clear: ");
-console.log("ops to spend: " + ops_to_spend);
-console.log("ops remaining: " + ops_remaining);
 
 	//
 	// first define the functions that will be used internally
@@ -5994,8 +5991,14 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	  let impeding_units = true;
 
 	  for (let z = 0; z < neighbours.length; z++) {
+
 	    let number_of_hostiles = his_self.returnHostileLandUnitsInSpace(faction, neighbours[z]);
 	    if (number_of_hostiles > 0) {
+	      if (pass.includes(neighbours[z])) {
+		impeding_units = false;
+	      } else {
+		return true; // at least one target
+	      }
 	    } else {
 	      impeding_units = false;
 	    }
@@ -6129,11 +6132,14 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	} else {
 	  if (adjacent_influence.includes(spaces_in_unrest[i])) {
 	    let neighbours = his_self.game.spaces[spaces_in_unrest[i]].neighbours;
+	    let pass = his_self.game.spaces[spaces_in_unrest[i]].pass;
 	    let any_violent_neighbours = false;
 	    for (let z = 0; z < neighbours.length; z++) {
 	      let number_of_hostiles = his_self.returnHostileLandUnitsInSpace(faction, neighbours[z]);
 	      if (number_of_hostiles > 0) {
-		any_violent_neighbours = true;
+		if (!pass.includes(neighbours[z])) {
+		  any_violent_neighbours = true;
+		}
 	      } else {
 		if (his_self.game.spaces[neighbours[z]].unrest == true) {
 		  any_violent_neighbours = true;

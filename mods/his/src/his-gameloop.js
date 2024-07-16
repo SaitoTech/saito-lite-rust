@@ -66,8 +66,8 @@ this.updateLog(`###############`);
 	  this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 
 if (this.game.options.scenario != "is_testing") {
-//	  this.game.queue.push("spring_deployment_phase");
-//	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
+	  this.game.queue.push("spring_deployment_phase");
+	  this.game.queue.push("NOTIFY\tSpring Deployment is about to start...");
 }
 
 	  if (this.game.players.length == 2) {
@@ -4309,8 +4309,6 @@ return 1; }
 
         if (mv[0] === "diet_of_worms_hapsburgs") {
 
-console.log("INTO DOF H");
-
 	  this.factionbar.setActive("hapsburg");
 	  this.game.queue.splice(qe, 1);
 
@@ -4320,28 +4318,20 @@ console.log("INTO DOF H");
           if (this.game.player == this.returnPlayerCommandingFaction("hapsburg")) {
 	    fhand_idx = this.returnFactionHandIdx(this.game.player, "hapsburg");
 	  } else {
-console.log("and out -- we are not haps!");
             this.updateStatusAndListCards("Hapsburgs Selecting Card for the Diet of Worms", this.game.deck[0].fhand[0]);
             return 0;
 	  }
 
-console.log("midway through execution...");
-
 	  for (let i = 0; i < this.game.deck[0].fhand[fhand_idx].length; i++) {
-console.log("i: " + i);
 	    if (this.game.deck[0].cards[this.game.deck[0].fhand[fhand_idx][i]].type === "mandatory") {
 	    } else {
 	      x.push(this.game.deck[0].fhand[fhand_idx][i]);
 	    }
 	  }
 
-console.log("post loop...");
-
 	  if (this.game.player != this.returnPlayerCommandingFaction("hapsburg")) {
-console.log("no one should get here...");
             this.updateStatusAndListCards("Hapsburgs Selecting Card for the Diet of Worms", x);
 	  } else {
-console.log("haps should see this...");
             this.updateStatusAndListCards("Hapsburgs - Select Card to indicate your Commitment to Debate", x);
             this.attachCardboxEvents(async function(card) {
 	      game_self.game_help.hide();
@@ -4393,8 +4383,6 @@ console.log("haps should see this...");
 
         if (mv[0] === "diet_of_worms_faction_array") {
 
-console.log("at start of dowfa");
-
 	  let remove_from_queue = 0;
 	  if (parseInt(mv[1])) { remove_from_queue = 1; }
 
@@ -4408,7 +4396,6 @@ console.log("at start of dowfa");
 	  // skip if we have already confirmed!
 	  //
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
-console.log("we have already confirmed, so exiting!");
 	    return 0;
 	  }
 
@@ -4438,7 +4425,6 @@ console.log("we have already confirmed, so exiting!");
 	    my_faction = "Protestants";
 	  }
 	  for (let i = 0; i < this.game.deck[0].fhand[fhand_idx].length; i++) {
-console.log("dowfa look: " + i);
 	    if (this.game.deck[0].cards[this.game.deck[0].fhand[fhand_idx][i]].type === "mandatory") {
 	    } else {
 	      x.push(this.game.deck[0].fhand[fhand_idx][i]);
@@ -4446,8 +4432,6 @@ console.log("dowfa look: " + i);
 	  }
 
 	  if (this.game.player != this.returnPlayerCommandingFaction("papacy") && this.game.player != this.returnPlayerCommandingFaction("protestant")) {
-
-console.log("not the papacy and not the protestants!");
 
             this.updateStatusAndListCards("Protestants and Papacy assemble at the Diet of Worms", x);
 
@@ -4470,8 +4454,6 @@ console.log("not the papacy and not the protestants!");
 
 	  } else {
 
-console.log("either papacy or protestants!");
-
 	    if (game_self.game.spick_card != "") {
 	      for (let i = 0; i < x.length; i++) {
 	        if (x[i] === game_self.game.spick_card) { 
@@ -4482,13 +4464,7 @@ console.log("either papacy or protestants!");
 	      return 0;
 	    }
 
-console.log("and displaying cards!!");
-console.log(JSON.stringify(x));
-
-console.log("About to usalc");
-
             this.updateStatusAndListCards(my_faction + " - Select Card to indicate your Commitment to Debate", x);
-console.log("updated status and listed cards...");
             this.attachCardboxEvents(async function(card) {
 
 	      //for (let i = 0; i < x.length; i++) { if (x[i] == card) { x.splice(i, 1); } }
@@ -4521,7 +4497,6 @@ console.log("updated status and listed cards...");
             });
 	  }
 
-console.log("and halt game!");
           return 0;
         }
 
@@ -7392,7 +7367,6 @@ try {
 	  let target_port = mv[3];
 	  let target_faction = "";
 
-
 	  let anti_piracy_rolls = [];
 	  let anti_piracy_faction = [];
 	  let anti_piracy_unittype = [];
@@ -7432,6 +7406,10 @@ try {
           let opponent_dice = 0;
 
 
+	  let squadron_in_sea_zone = 0;				// 2 dice
+	  let enemy_squadron_in_port_or_sea_zone = 0;		// 1 dice
+	  let fortress_adjacent = 0;				// 1 dice
+
           //
           // targetted player dice
           // 2 dice per naval squadron in sea zone
@@ -7439,6 +7417,7 @@ try {
           for (let z = 0; z < target_space.units[target_faction].length; z++) {
             if (target_space.units[target_faction][z].type == "squadron") {
 	      opponent_dice += 2;
+	      squadron_in_sea_zone += 2;
 	      anti_piracy_faction.push(target_faction);
 	      anti_piracy_unittype.push("squadron");
 	      anti_piracy_faction.push(target_faction);
@@ -7455,6 +7434,7 @@ try {
                 let u = adjacent_spaces[i].units[factions_at_war_with_ottoman[k]][z];
                 if (u.type == "squadron") {
                   opponent_dice++;
+	          enemy_squadron_in_port_or_sea_zone++;
 	          anti_piracy_faction.push(factions_at_war_with_ottoman[k]);
 	          anti_piracy_unittype.push("squadron");
                 }
@@ -7470,6 +7450,7 @@ try {
             if (factions_at_war_with_ottoman.includes(x)) { 
 	      anti_piracy_faction.push("gibraltar");
 	      anti_piracy_unittype.push("fortress");
+	      fortress_adjacent++;
 	      opponent_dice++;
 	    }
           }
@@ -7478,6 +7459,7 @@ try {
             if (factions_at_war_with_ottoman.includes(x)) {
 	      anti_piracy_faction.push("malta");
 	      anti_piracy_unittype.push("fortress");
+	      fortress_adjacent++;
 	      opponent_dice++;
             }
           }
@@ -7486,6 +7468,7 @@ try {
             if (factions_at_war_with_ottoman.includes(x)) {
 	      anti_piracy_faction.push("corfu");
 	      anti_piracy_unittype.push("fortress");
+	      fortress_adjacent++;
 	      opponent_dice++;
 	    }
           }
@@ -7494,6 +7477,7 @@ try {
             if (factions_at_war_with_ottoman.includes(x)) {
 	      anti_piracy_faction.push("candia");
 	      anti_piracy_unittype.push("fortress");
+	      fortress_adjacent++;
 	      opponent_dice++;
 	    }
           }
@@ -7504,12 +7488,22 @@ try {
                 if (indspace.ports[b] == target_space.key) {
 	          anti_piracy_faction.push(indspace.ports[b]);
 	          anti_piracy_unittype.push("fortress");
+	          fortress_adjacent++;
                   opponent_dice++;
                 }
               }
             }
           }
 
+	  if (squadron_in_sea_zone > 0) {
+	    his_self.updateLog(` ${squadron_in_sea_zone} dice from local squadrons`);
+	  }
+	  if (enemy_squadron_in_port_or_sea_zone > 0) {
+	    his_self.updateLog(` ${enemy_squadron_in_port_or_sea_zone} dice from adjacent/port squadrons`);
+	  }
+	  if (fortress_adjacent > 0) {
+	    his_self.updateLog(` ${fortress_adjacent} dice from fortresses`);
+	  }
 	  his_self.updateLog("Anti-Piracy Dice: " + opponent_dice);
 
           //
@@ -11804,12 +11798,12 @@ if (this.game.state.round == 2) {
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 1;
-//if (f == "papacy") { cardnum = 0; }
-//if (f == "hapsburg") { cardnum = 1; }
-//if (f == "protestant") { cardnum = 0; }
-//if (f == "england") { cardnum = 0; }
-//if (f == "ottoman") { cardnum = 0; }
+cardnum = 1;
+if (f == "papacy") { cardnum = 0; }
+if (f == "hapsburg") { cardnum = 1; }
+if (f == "protestant") { cardnum = 0; }
+if (f == "england") { cardnum = 0; }
+if (f == "ottoman") { cardnum = 0; }
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
