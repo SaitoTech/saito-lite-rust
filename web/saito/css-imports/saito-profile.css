@@ -55,6 +55,17 @@
   margin-left: 1rem;
   position: relative;
   cursor: unset;
+  font-size: 4rem;
+}
+
+.saito-profile-header-row .saito-identicon-box .saito-overlaid-icon {
+  top: 50%;
+}
+
+.limbo-floating-overlay .saito-profile-header-row .saito-identicon-box .saito-overlaid-icon {
+  left: 50%;
+  width: 6rem;
+  height: 6rem;  
 }
 
 .saito-banner-edit {
