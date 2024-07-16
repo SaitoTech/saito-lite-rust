@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="description" content="Saito Network" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+	<meta name="author" content="David Lancashire" />
+
+	<link rel="stylesheet" href="/saito/lib/font-awesome-6/css/fontawesome.min.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen" />
+
+	<meta name="mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="application-name" content="Saito Chat" />
+	<meta name="apple-mobile-web-app-title" content="Saito Chat" />
+	<meta name="theme-color" content="#FFFFFF" />
+	<meta name="msapplication-navbutton-color" content="#FFFFFF" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<meta name="msapplication-starturl" content="/index.html" />
+
+	<link rel="icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
+	<link rel="apple-touch-icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
+	<link rel="icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
+	<link rel="apple-touch-icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
+
+	
+	<title>Saito Stream: Youtube</title>
+	<link rel="stylesheet" href="/saito/saito.css" />
+	<link rel="stylesheet" href="/youtube/style.css" />
+
+	<script src="https://apis.google.com/js/api.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.1/axios.min.js"></script>
+
+
+	<style>
+		.spam-tool-container {
+			max-width: 40%;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="spam-tool-container">
+		<h1>Youtube stream</h1>
+
+		<button id="start">Start Stream</button>
+
+		<div id="access_token"></div>
+
+		<video style="height: 400; width: 400px;" id="localVideo" autoplay muted></video>
+
+	</div>
+
+			<script>
+		const SCOPE = 'https://www.googleapis.com/auth/youtube.force-ssl';
+		const DISCOVERY =
+  'https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest';
+
+  		var url = window.location.href;
+  		let query = new URL(`https://1.com?${url.split("&")[1]}`);
+  		let access_token = query.searchParams.get("access_token");
+	
+		console.log('access_token: ', access_token);
+
+		if (access_token != null) {
+			// user logged in
+			document.querySelector('#access_token').innerHTML = `<b>Access Token:</b> ${access_token}`;
+
+
+			// create broadcast using access token
+			
+			// let broadcastId = '';
+			// let streamId = '';
+
+			setTimeout(async function(){
+				const broadcastId = await axios.post(
+				  'https://youtube.googleapis.com/youtube/v3/liveBroadcasts?part=id&part=snippet&part=contentDetails&part=status',
+				  {
+				    'snippet': {
+				      'title': 'Saito live',
+				      'scheduledStartTime': '2024-07-16T22:50:30Z',
+				      'description': 'random desc'
+				    },
+				    'contentDetails': {
+				      'recordFromStart': true,
+				      'enableAutoStart': false,
+				      'monitorStream': {
+				        'enableMonitorStream': false
+				      }
+				    },
+				    'status': {
+				      'privacyStatus': 'public',
+				      'selfDeclaredMadeForKids': true
+				    }
+				  },
+				  {
+				    headers: {
+				      'Authorization': `Bearer ${access_token}`,
+				      'Accept': 'application/json',
+				      'Content-Type': 'application/json'
+				    }
+				  }
+				).then(async function(response){
+		               console.log('broadcast axios response: ', response);
+
+		               
+		               let broadcastId = response.data.id;
+
+		               document.querySelector('#access_token').innerHTML += `<br ><br ><b>Broadcast ID:</b> ${broadcastId}`;
+
+
+		               // create stream
+
+		               const stream = await axios.post(
+					  'https://youtube.googleapis.com/youtube/v3/liveStreams?part=snippet&part=cdn&part=contentDetails&part=status',
+					  {
+						  "snippet": {
+						    "title": "API Stream title",
+						    "description": "API stream desc"
+						  },
+						  "cdn": {
+						    "frameRate": "variable",
+						    "ingestionType": "rtmp",
+						    "resolution": "variable",
+						    "format": ""
+						  },
+						  "contentDetails": {
+						    "isReusable": true
+						  }
+						},
+					  {
+					    headers: {
+					      'Authorization': `Bearer ${access_token}`,
+					      'Accept': 'application/json',
+					      'Content-Type': 'application/json'
+					    }
+					  }
+					).then(function(response){
+			               console.log('stream axios response: ', response);
+
+
+			               let streamId = response.data.id;
+
+							document.querySelector('#access_token').innerHTML += `<br ><br ><b>Stream ID:</b> ${streamId}`;
+
+
+
+							document.querySelector('#access_token').innerHTML += `<br ><br ><b>Starting stream:</b>`;
+				               const localVideo = document.getElementById("localVideo");
+								navigator.mediaDevices.getUserMedia({
+								    video: true
+								}).then(stream => {
+								    localVideo.srcObject = stream;
+								   
+							   
+							   
+							    // const videoStream = localVideo.captureStream(30);
+							    // const videoTrack = videoStream.getVideoTracks()[0];
+							   
+
+							   // TESTING STREAM KEYS TO BE ADDED TO ENV FILE LATER ON
+
+							   // console.log('stream:',videoTrack);
+							   console.log('url:', ( window.location.protocol.replace('http', 'ws') + '//' + // http: -> ws:, https: -> wss:
+							        'localhost:3000' +
+							        '/rtmp/' +
+							        encodeURIComponent("rtmp://b.rtmp.youtube.com/live2/uv22-wy61-ujj1-uuag-6j70")));
+
+
+							   		// TESTING STREAM KEYS TO BE ADDED TO ENV FILE LATER ON
+							       const ws = new WebSocket(
+							        window.location.protocol.replace('http', 'ws') + '//' + // http: -> ws:, https: -> wss:
+							        'localhost:3000' +
+							        '/rtmp/' +
+							        encodeURIComponent("rtmp://b.rtmp.youtube.com/live2/uv22-wy61-ujj1-uuag-6j70")
+							      );
+
+							    let mediaStream;
+								let mediaRecorder;
+
+							      ws.addEventListener('open', (e) => {
+							        console.log('WebSocket Open', e);
+							        mediaStream = document.getElementById("localVideo").captureStream(30); // 30 FPS
+							        mediaRecorder = new MediaRecorder(mediaStream, {
+							          mimeType: 'video/webm;codecs=h264',
+							          videoBitsPerSecond : 3 * 1024 * 1024
+							        });
+
+							        mediaRecorder.addEventListener('dataavailable', (e) => {
+							        	console.log('dataavailable',e.data);
+							          ws.send(e.data);
+							        });
+
+							        mediaRecorder.addEventListener('stop', ws.close.bind(ws));
+
+							        mediaRecorder.start(1000); // Start recording, and dump data every second
+							      });
+
+							      ws.addEventListener('close', (e) => {
+							        console.log('WebSocket Close', e);
+							        mediaRecorder.stop();
+							      });
+
+							   
+							}).catch(error => {
+							    console.error("Failed to get user media", error);
+							});
+
+
+
+
+
+
+
+
+
+			        })
+			        .catch(function(error){
+			               console.log(error);
+
+		        })
+		        .catch(function(error){
+		               console.log(error);
+		        });
+         });
+
+			},1);
+			
+		} else {
+
+			// user not logged in
+	  		document.querySelector('#start').onclick = function(e){
+	  			// Google's OAuth 2.0 endpoint for requesting an access token
+			  var oauth2Endpoint = 'https://accounts.google.com/o/oauth2/v2/auth';
+
+			  // Create <form> element to submit parameters to OAuth 2.0 endpoint.
+			  var form = document.createElement('form');
+			  form.setAttribute('method', 'GET'); // Send as a GET request.
+			  form.setAttribute('action', oauth2Endpoint);
+
+
+			  // TESTING CLIENT_ID TO BE ADDED TO ENV FILE LATER ON
+
+			  // Parameters to pass to OAuth 2.0 endpoint.
+			  var params = {'client_id': '729857356986-06fnoi0a7m0v1jr4i1lkribpod1kdis1.apps.googleusercontent.com',
+			                'redirect_uri': 'http://localhost:12101/youtube',
+			                'response_type': 'token',
+			                'scope': 'https://www.googleapis.com/auth/youtube.force-ssl',
+			                'include_granted_scopes': 'true',
+			                'state': 'pass-through value'};
+
+			  // Add form parameters as hidden input values.
+			  for (var p in params) {
+			    var input = document.createElement('input');
+			    input.setAttribute('type', 'hidden');
+			    input.setAttribute('name', p);
+			    input.setAttribute('value', params[p]);
+			    form.appendChild(input);
+			  }
+
+			  // Add form to page and submit it to open the OAuth 2.0 endpoint.
+			  document.body.appendChild(form);
+			  form.submit();
+	  		}		
+  		}  
+
+	</script>
+
+	<script type="text/javascript" src="/saito/saito.js" id="saito"></script>
+</body>
+
+</html>

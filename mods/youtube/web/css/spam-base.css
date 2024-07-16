@@ -1,0 +1,32 @@
+.spam-controls {
+	display: grid;
+	gap: 2rem 1rem;
+	grid-template-columns: 12rem auto;
+}
+
+.spam-controls div {
+	display: flex;
+	align-items: center;
+}
+
+.spam-buttons {
+	display: flex;
+	gap: 2rem;
+}
+
+.spam-tool-container {
+	width: fit-content;
+	margin: auto;
+	margin-top: 10rem;
+	display: flex;
+	gap: 3rem;
+	flex-direction: column;
+}
+
+.spam-loop-dot {
+	height: 2rem;
+	width: 2rem;
+	background-color: red;
+	border-radius: 50%;
+	display: inline-block;
+}

@@ -31,6 +31,7 @@
     "@elrondnetwork/erdjs-web-wallet-provider": "^2.1.1",
     "@giphy/js-components": "^5.8.2",
     "@giphy/js-fetch-api": "^4.4.0",
+    "@google-cloud/local-auth": "^3.0.1",
     "@mixin.dev/mixin-node-sdk": "^7.0.8",
     "@types/uuid": "^9.0.8",
     "archiver": "^3.1.1",
@@ -51,6 +52,7 @@
     "express": "^4.17.1",
     "fastest-stable-stringify": "^2.0.2",
     "fs-extra": "^8.1.0",
+    "googleapis": "^140.0.1",
     "html-prettify": "^1.0.7",
     "html2canvas": "^1.4.1",
     "identicon.js": "^2.3.3",
@@ -97,7 +99,9 @@
     "vanilla-toast": "^0.5.0",
     "webrtc-adapter": "^8.2.0",
     "websocket": "^1.0.34",
-    "ws": "^8.13.0"
+    "ws": "^8.13.0",
+    "googleapis": "^140.0.0",
+    "@google-cloud/local-auth": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.16.5",
