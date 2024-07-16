@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
 	default_fee = 0;
 
-	version = 5.636;
+	version = 5.637;
 
 	nolan_per_saito = 100000000;
 
