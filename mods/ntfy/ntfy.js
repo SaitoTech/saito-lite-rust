@@ -102,13 +102,12 @@ class NTFY extends ModTemplate {
           let reply_message = mod.respondTo('ntfy-notification', payload);
 
           if (reply_message != null) {
-            console.log(reply_message);
             notification = reply_message;
 
             to.forEach((key) => {
-              console.log(to.toString());
               notification.topic = key;
               try {
+                console.log(notification);
                 fetch(this.ntfy.server, {
                   method: 'POST',
                   body: JSON.stringify(notification)

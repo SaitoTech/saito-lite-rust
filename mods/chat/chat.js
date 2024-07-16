@@ -656,7 +656,7 @@ class Chat extends ModTemplate {
         break;
 
       case 'ntfy-notification':
-        //console.log(JSON.stringify(obj));
+        console.log(JSON.stringify(obj));
 
         if(obj.tx?.msg?.module != 'Chat') {
           return null;

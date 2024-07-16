@@ -207,7 +207,7 @@ class Wordblocks extends GameTemplate {
 
 				notification.title = 'Saito Wordblocks';
 
-				notification.tags = ['bangbang'];
+				notification.tags = ['game', 'turn'];
 
 				switch (tx.msg.request) {
 					case 'join':
@@ -224,7 +224,7 @@ class Wordblocks extends GameTemplate {
 
 				notification.actions = [
 					//need to add game-id
-					{ action: 'play', label: 'Play', url }
+					{ action: 'view', label: 'Play', url }
 				];
 				return notification;
 
