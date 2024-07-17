@@ -16,19 +16,19 @@ class Limbo extends ModTemplate {
 	constructor(app) {
 		super(app);
 		this.app = app;
-		this.slug = "limbo";
-		this.name = 'Limbo';
-		this.appname = "Saito Space";
+		this.name = 'Swarmcast';
 		this.localStream = null; // My Video or Audio Feed
 		this.combinedStream = null;
 		this.screenStream = null;
 
 		this.description =
 			'a shared dream space allowing you to "swarmcast" voice or video with no middleman software';
-		this.categories = 'Utilities Communications';
 
-		this.styles = ['/videocall/style.css', '/limbo/style.css'];
-		this.icon_fa = 'fa-solid fa-satellite';
+		this.categories = 'Utilities Communications Broadcast';
+
+		this.styles = ['/videocall/style.css'];
+
+		this.icon_fa = "fa-solid fa-tower-broadcast";
 
 		this.screen_icon = "fa-tv";
 		this.camera_icon = "fa-video";
@@ -42,7 +42,7 @@ class Limbo extends ModTemplate {
 		this.social = {
 			twitter: '@SaitoOfficial',
 			title: `🟥 ${this.returnName()}`,
-			url: 'https://saito.io/limbo/',
+			url: `https://saito.io/${this.returnSlug()}/`,
 			description: 'Voice and video "swarmcasting" with no middleman',
 			image: 'https://saito.tech/wp-content/uploads/2023/11/videocall-300x300.png',
 		};
@@ -147,6 +147,13 @@ class Limbo extends ModTemplate {
 		);
 	}
 
+	isSlug(slug){
+		if (slug == this.returnSlug() || slug == "limbo"){
+			return true;
+		}
+		return false;
+	}
+
 	async initialize(app) {
 		await super.initialize(app);
 
@@ -156,6 +163,8 @@ class Limbo extends ModTemplate {
 			} catch (err) {
 				console.warn('No Stun available');
 			}
+
+			this.styles.push(`/${this.returnSlug()}/style.css`);
 		}
 	}
 
@@ -184,6 +193,21 @@ class Limbo extends ModTemplate {
 	respondTo(type, obj) {
 		let mod_self = this;
 
+	    if (type === "saito-header") {
+	      let x = [];
+	      if (!this.browser_active) {
+	        x.push({
+	          text: "Swarmcast",
+	          icon: this.icon_fa,
+	          callback: function (app, id) {
+	            window.location = "/" + mod_self.returnSlug();
+	          },
+	        });
+      
+	      	return x;
+	      }
+	  	}
+
 		if (type === 'call-actions') {
 			if (obj?.members) {
 
@@ -196,7 +220,7 @@ class Limbo extends ModTemplate {
 				return [
 					{
 						text: 'Cast',
-						icon: `fa-solid fa-tower-broadcast podcast-icon`,
+						icon: this.icon_fa + ' podcast-icon',
 						hook: `onair limbo`,
 						callback: async function (app) {
 							if (mod_self.dreamer) {
@@ -207,7 +231,7 @@ class Limbo extends ModTemplate {
 								}else{
 									//need a flow for others in call to seed the swarm...
 									//
-									salert("Only the host can end the Saito Space");
+									salert("Only the host can end the Swarmcast");
 								}
 							} else {
 								mod_self.startDream({ alt_id: obj?.call_id, keylist: obj.members});
@@ -310,23 +334,18 @@ class Limbo extends ModTemplate {
 				'dream list',
 				{},
 				async (oldMap) => {
-					console.log('********************');
-					console.log(oldMap);
-					console.log('********************');
 					if (oldMap) {
 						this.dreams = {};
 						Object.keys(oldMap).forEach((key) => {
 							this.dreams[key] = oldMap[key];
 						});
 					}
-
-					console.log("Limbo DREAMS:", this.dreams);
 					
 					this.main.render();
 					
 					if (this.dreamer){
 
-						let prompt = `${this.app.keychain.returnUsername(this.dreamer)}'s Saito Space`;
+						let prompt = `${this.app.keychain.returnUsername(this.dreamer)}'s Swarmcast`;
 
 						if (this.dreams[this.dreamer]) {
 
@@ -337,7 +356,7 @@ class Limbo extends ModTemplate {
 							const btn_prompt = (dream.mode == "audio") ? "Listen" : "Watch";
 
 							overlay.show(`<div class="saito-join-space-overlay"><div id="join-btn" class="button saito-button-primary">${btn_prompt} Now</div></div>`, ()=>{
-								window.history.pushState('', '', `/limbo/`);
+								window.history.pushState('', '', `/${this.returnSlug()}/`);
 								this.dreamer = null;
 							});
 
@@ -355,7 +374,7 @@ class Limbo extends ModTemplate {
 							
 						} else {
 							salert(`${prompt} no longer available`);
-							window.history.pushState('', '', `/limbo/`);
+							window.history.pushState('', '', `/${this.returnSlug()}/`);
 							this.exitSpace();
 						}
 					}
@@ -1271,7 +1290,7 @@ class Limbo extends ModTemplate {
 		let message = tx.returnMessage();
 
 		if (conf === 0) {
-			if (message.module === 'Limbo') {
+			if (message.module === this.name) {
 				if (this.hasSeenTransaction(tx)) return;
 
 				console.log('ON CONFIRMATION: ', message);
@@ -1512,7 +1531,7 @@ class Limbo extends ModTemplate {
 		}
 
 		if (this.browser_active) {
-			window.history.pushState('', '', `/limbo/`);
+			window.history.pushState('', '', `/${this.returnSlug()}/`);
 		}
 
 		this.app.connection.emit('limbo-dream-render');
@@ -1525,8 +1544,8 @@ class Limbo extends ModTemplate {
 	copyInviteLink(truthy = false) {
 
 		let data = {
-			name: this.appname,
-			path: '/limbo/',
+			name: this.returnName(),
+			path: `/${this.returnSlug()}/`,
 			dream: this.app.crypto.stringToBase64(this.dreamer)
 		};
 
@@ -1572,10 +1591,10 @@ class Limbo extends ModTemplate {
 				full_icon.classList.add('recording');
 				if (sender != this.publicKey){
 					full_icon.classList.add("not-clickable");
-					full_icon.title = `${this.app.keychain.returnUsername(sender)} is peercasting the call`;
+					full_icon.title = `${this.app.keychain.returnUsername(sender)} is swarmcasting the call`;
 					full_icon.querySelector("label").innerText = "Casting";
 				}else{
-					full_icon.title = "Stop Limbo Broadcast";
+					full_icon.title = "Stop Swarmcast";
 					full_icon.querySelector("label").innerText = "Stop";
 				}
 
@@ -1614,9 +1633,7 @@ class Limbo extends ModTemplate {
 		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
 		let mod_self = this;
 
-		expressapp.get(
-			'/' + encodeURI(this.returnSlug()),
-			async function (req, res) {
+		const serverFn = async (req, res) => {
 				let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
 
 				mod_self.social.url = reqBaseURL + encodeURI(mod_self.returnSlug());
@@ -1631,7 +1648,7 @@ class Limbo extends ModTemplate {
 
 					let dreamer = mod_self.app.crypto.base64ToString(dream);
 
-					updated_social.title = mod_self.app.keychain.returnUsername(dreamer) + " is live streaming on Saito 🟥"; 
+					updated_social.title = mod_self.app.keychain.returnUsername(dreamer) + " is swarmcasting on Saito 🟥"; 
 
 					if (mod_self.dreams[dreamer]) {
 						if (mod_self.dreams[dreamer]?.identifier){
@@ -1645,8 +1662,10 @@ class Limbo extends ModTemplate {
 
 				res.send(HomePage(app, mod_self, app.build_number, updated_social));
 				return;
-			}
-		);
+			};
+
+		expressapp.get('/' + encodeURI(this.returnSlug()), serverFn);
+		expressapp.get('/' + encodeURI("limbo"), serverFn);
 
 		expressapp.post(
 			'/' + encodeURI(this.returnSlug()),
