@@ -1335,6 +1335,23 @@ class Limbo extends ModTemplate {
 		let txmsg = tx.returnMessage();
 
 		if (txmsg.request === 'dream list') {
+				
+			// Add a safety check to filter bad dreams
+			if (!this.app.BROWSER) {
+			    let peerkeys = [];
+			    let peers = await this.app.network.getPeers();
+			    peers.forEach((p) => {
+			      peerkeys.push(p.publicKey);
+			    });
+
+				let dreamer_list = Object.keys(this.dreams);
+				for (let d of dreamer_list){
+					if (!peerkeys.includes(d)){
+						delete this.dreams[d];
+					}
+				}
+			}
+
 			if (mycallback) {
 				mycallback(this.dreams);
 				return 1;
