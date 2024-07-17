@@ -153,12 +153,19 @@ class NTFY extends ModTemplate {
       call: '' // phone number or 'yes': Phone number to use for voice call
     };
 
+    let url = 'unkown';
+    try {
+      url = this.app.options.server.url;
+    } catch (err) {
+      console.error(err);
+    }
+
     notification.topic = 'basic';
     notification.title = 'Notification Service Activated';
-    notification.message = 'The notification module has been activated';
+    notification.message = 'The notification module at ' + url + ' has been activated';
     notification.tags = ['exclamation'];
     notification.actions = [
-      { action: 'view', label: 'Saito', url: 'localhost:12101' }
+      { action: 'view', label: 'Saito', url: url }
     ];
 
     try {
