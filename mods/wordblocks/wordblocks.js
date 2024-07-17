@@ -190,8 +190,6 @@ class Wordblocks extends GameTemplate {
 	}
 
 	respondTo(type, obj = null) {
-		let chat_self = this;
-		let force = false;
 
 		switch (type) {
 			case 'ntfy-notification':
@@ -223,7 +221,6 @@ class Wordblocks extends GameTemplate {
 				url += `#gid=${this.app.crypto.hash(tx.msg.game_id).slice(-6)}`;
 
 				notification.actions = [
-					//need to add game-id
 					{ action: 'view', label: 'Play', url }
 				];
 				return notification;
