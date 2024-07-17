@@ -192,18 +192,38 @@
 	.arcade-game-overlay {
 		width: 95vw;
 		min-width: unset;
+		display: grid;
+		grid-template-rows: min-content 1fr min-content;
+		grid-template-columns: minmax(100px, 1fr);
 	}
+
+	.arcade-game-overlay-body {
+		min-height: 0;
+		max-height: 100%;
+	}
+
 	.arcade-game-controls {
-		display: flex;
-		flex-direction: column;
-		row-gap: 1rem;
+		display: grid;
+		grid-gap: 1rem;
+		grid-template-areas: "a a" "b c";
+		width: 100%;
 	}
 	.arcade-game-controls .saito-button {
 		width: 100%;
 		height: 5rem;
 		font-size: 2rem;
 		line-height: 3rem;
+		min-width: unset;
 	}
+
+	.arcade-game-controls .saito-button:first-child {
+		grid-column: span 2;
+	}
+
+	.arcade-game-options{
+		padding: unset;
+	}
+	
 	.arcade-game-players {
 		display: flex;
 		flex-direction: column;

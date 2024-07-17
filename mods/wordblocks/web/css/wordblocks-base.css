@@ -121,17 +121,28 @@ tfoot {
 .tile-submit-controls {
 	position: absolute;
 	bottom: 100%;
-	left: 50%;
-	transform: translateX(-50%);
 	text-align: center;
-	width: 150px;
 	display: flex;
-	flex-direction: column;
 	align-items: center;
 }
 
+.tile-placement-controls{
+	flex-direction: column;
+	width: 150px;
+	/*left: 50%;
+	transform: translateX(-50%);*/
+}
+
+.tile-submit-controls{
+	left: 50%;
+	transform: translateX(-50%);
+	max-width: 100%;	
+	justify-content: space-between;
+	gap: 1rem;
+}
+
 .tile-submit-controls .playable {
-	font-size: 3em;
+	font-size: 2.8rem;
 	color: #fff;
 	text-shadow: 1px 1px #555;
 	background: rgb(43, 29, 14);
@@ -149,7 +160,7 @@ tfoot {
 .action {
 	color: #fff;
 	border: 4px solid #cccccc;
-	padding: 5px;
+	padding: 7px;
 	border-radius: 10px;
 	margin: 5px 0;
 	background-color: #777;
@@ -158,12 +169,14 @@ tfoot {
 	font-size: 16px;
 }
 
-/*.action {
-  justify-self: center;
-  align-self: center;
-  padding: 1.5vh 0px;
-  width: 100%;
-}*/
+.tile-submit-controls .action {
+	width: 120px;
+}
+
+.action:hover{
+	border-color: var(--saito-white);
+	text-shadow: 1px 1px 3px black;
+}
 
 #lastmove {
 	cursor: pointer;
@@ -370,7 +383,9 @@ div.tile {
 
 .shuffle,
 #skipturn,
-#deletectrl {
+#deletectrl,
+#canceldelete
+ {
 	cursor: pointer;
 }
 
@@ -469,9 +484,17 @@ Resize board on smaller screens
 	#game-scoreboard {
 		display: flex;
 		cursor: pointer;
-		width: 40%;
+		max-width: calc(100% - 12rem);
 		font-size: 24px;
-		justify-content: space-between;
+		gap: 1rem;
+		padding: 2px 5px;
+		color: rgb(250, 244, 239);
+		background: rgb(43, 29, 14);
+		box-shadow: unset;
+	}
+
+	#game-scoreboard .score{
+		gap: 0.5rem;
 	}
 
 	#opponentbox {
@@ -488,7 +511,7 @@ Resize board on smaller screens
 	}
 
 	.tile-submit-controls .playable {
-		font-size: 2em;
+		font-size: 2rem;
 	}
 
 	.hud {

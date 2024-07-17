@@ -40,7 +40,7 @@
 .game-playerbox {
 	position: unset;
 	height: fit-content;
-	background-color: rgba(43, 29, 14, 0.5);
+	background-color: rgba(43, 29, 14, 0.75);
 	margin: 0.5em;
 	border: 2px solid transparent;
 	border-radius: 18px;
