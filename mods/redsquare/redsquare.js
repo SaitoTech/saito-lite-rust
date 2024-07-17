@@ -85,6 +85,11 @@ class RedSquare extends ModTemplate {
     //
     this.following = [];
 
+    //
+    // cached recent tweets
+    //
+    this.cached_recent_tweets = [];
+
     this.tweet_count = 0;
     this.liked_tweets = [];
     this.retweeted_tweets = [];
@@ -344,7 +349,6 @@ class RedSquare extends ModTemplate {
 
     if (!app.BROWSER) {
       return;
-     //Let's not run the following DOM checking code on the server!
     } 
 
     //
@@ -390,6 +394,11 @@ class RedSquare extends ModTemplate {
       }
     }
   
+
+    if (!this.app.BROWSER) {
+      this.cacheRecentTweets();
+    }
+
   }
 
   isFollowing(key){
@@ -425,16 +434,17 @@ class RedSquare extends ModTemplate {
     }
     new Date().getTime();
 
-      if (this.browser_active) {
-        if (!this.ignoreCentralServer && window?.tweets?.length){
-          for (let z = 0; z < window.tweets.length; z++) {
-            let newtx = new Transaction();
-            newtx.deserialize_from_web(this.app, window.tweets[z]);
+    if (this.browser_active) {
+      if (!this.ignoreCentralServer && window?.tweets?.length){
+        for (let z = 0; z < window.tweets.length; z++) {
+          let newtx = new Transaction();
+          newtx.deserialize_from_web(this.app, window.tweets[z]);
+	  if (this.app.modules.moderate(newtx, this.name) != -1) {
             this.addTweet(newtx, "server_cache");
-          }
+	  }
         }
       }
-
+    }
 
 
     //
@@ -483,7 +493,7 @@ class RedSquare extends ModTemplate {
       this.addComponent(this.sidebar);
 
       //
-      // chat manager can insert itself into left-sidebar if exists
+      // chat manager goes in left-sidebar
       //
       for (const mod of this.app.modules.returnModulesRespondingTo("chat-manager")) {
         let cm = mod.respondTo("chat-manager");
@@ -632,8 +642,8 @@ class RedSquare extends ModTemplate {
 
  
       //
-      // Get tweets from my peers
-      console.log("REDSQUARE: query peers on initial load");
+      // get tweets from peers
+      //
       let ct = this.loadTweets("later", (tx_count) => {
         this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
       });
@@ -675,11 +685,6 @@ class RedSquare extends ModTemplate {
         let txmsg = tx.returnMessage();
 
         if (txmsg.module == this.name){
-
-//          if (this.black_list.includes(tx.from[0].publicKey)){
-//            console.log("Don't process transactions from blacklisted keys");
-//            return;
-//          }
 
           if (txmsg.request == "loadTweets"){
 
@@ -786,17 +791,13 @@ class RedSquare extends ModTemplate {
         }
       }
 
-      //if (this.black_list.includes(tx.from[0].publicKey)){
-      //  console.log("Don't process transactions from blacklisted keys");
-      //  return;
-      //}
-
       if (txmsg.request === "delete tweet") {
         await this.receiveDeleteTransaction(blk, tx, conf, this.app);
         return;
       }
       if (txmsg.request === "edit tweet") {
         await this.receiveEditTransaction(blk, tx, conf, this.app);
+        this.cacheRecentTweets();
         return;
       }
       if (txmsg.request === "follow") {
@@ -836,12 +837,14 @@ class RedSquare extends ModTemplate {
 
       if (txmsg.request === "create tweet") {
         await this.receiveTweetTransaction(blk, tx, conf, this.app);
+        redsquare_self.cacheRecentTweets();
       }
       if (txmsg.request === "like tweet") {
         await this.receiveLikeTransaction(blk, tx, conf, this.app);
       }
       if (txmsg.request === "flag tweet") {
         await this.receiveFlagTransaction(blk, tx, conf, this.app);
+        redsquare_self.cacheRecentTweets();
       }
       if (txmsg.request === "retweet") {
         await this.receiveRetweetTransaction(blk, tx, conf, this.app);
@@ -869,7 +872,6 @@ class RedSquare extends ModTemplate {
   // form of transactions that can be fed to addTweets() or displayed
   // via the manager.
   //
-
   loadTweets(created_at = "earlier", mycallback, peer = null) {
     //
     // Instead of just passing the txs to the callback, we count how many of these txs
@@ -2493,14 +2495,17 @@ class RedSquare extends ModTemplate {
   //
   // This may be (even) faster if we ditch the general storage/archive logic and just directly use SQL
   //
-  async fetchRecentTweets() {
+  async cacheRecentTweets() {
+
+    let redsquare_self = this;
+    let hex_values = [];
+
+
     if (this.app.BROWSER) {
       return;
     }
 
-    let hex_values = [];
-
-    return this.app.storage.loadTransactions(
+    this.cached_recent_tweets = this.app.storage.loadTransactions(
       {
         field1: "RedSquare",
         flagged: 0,
@@ -2514,8 +2519,10 @@ class RedSquare extends ModTemplate {
             if (txs[i].optional.parent_id){
               //console.log("Tweet is a reply to " + txs[i].optional.parent_id);
             }else{
-              hex_values.push(txs[i].serialize_to_web(this.app));
-              cnt++;
+	      if (redsquare_self.app.modules.moderate(txs[i], redsquare_self.name) != -1) {
+                hex_values.push(txs[i].serialize_to_web(this.app));
+                cnt++;
+	      }
             }
           } catch (err) {
             console.log(err);
@@ -2627,13 +2634,10 @@ class RedSquare extends ModTemplate {
         console.log("Loading OG data failed with error: " + err);
       }
 
-      //Insert recent tweets into the index template directly
-      let recent_tweets = await redsquare_self.fetchRecentTweets();
-
       // fallback for default
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
-      res.send(redsquareHome(app, redsquare_self, app.build_number, redsquare_self.social, recent_tweets));
+      res.send(redsquareHome(app, redsquare_self, app.build_number, redsquare_self.social, redsquare_self.cached_recent_tweets));
       return;
     });
 

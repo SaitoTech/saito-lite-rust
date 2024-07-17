@@ -21,12 +21,14 @@ class ModtoolsSettings {
 
   attachEvents() {
 
+alert("PERMISSIONS: " + this.mod.permissions.mode);
+
     let settings_self = this;
 
-    if (document.getElementById("blocked-accounts")){
-      document.getElementById("blocked-accounts").onclick = (e) => {
-        this.contacts.title = "Blocked Accounts";
-        this.contacts.multi_button = "Unblock Selected Accounts";
+    if (document.getElementById("blacklisted-accounts")){
+      document.getElementById("blacklisted-accounts").onclick = (e) => {
+        this.contacts.title = "Blacklisted Accounts";
+        this.contacts.multi_button = "Remove from Blacklist";
         this.contacts.callback = (keys) => {
           for (let key of keys){
             for (let i = this.app.options.modtools.blacklist.length; i >= 0; i--){
@@ -63,7 +65,28 @@ class ModtoolsSettings {
       }
     }
 
-  
+
+    if (document.getElementById("public_mod")) {
+      document.getElementById("public_mod").onclick = (e) => {
+        this.mod.permissions.mode = "public";
+	this.mod.save();
+      }
+    }
+
+    if (document.getElementById("friends_mod")) {
+      document.getElementById("friends_mod").onclick = (e) => {
+        this.mod.permissions.mode = "friends";
+	this.mod.save();
+      }
+    }
+
+    if (document.getElementById("custom_mod")) {
+      document.getElementById("custom_mod").onclick = (e) => {
+        this.mod.permissions.mode = "custom";
+	this.mod.save();
+      }
+    }
+
   }
 
 }

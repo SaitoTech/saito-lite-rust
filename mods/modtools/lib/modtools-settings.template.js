@@ -5,7 +5,10 @@ module.exports = (app, mod) => {
 			<fieldset class="saito-grid">
 			<legend class="settings-label">Moderation Controls</legend>
 	`;
-/*****
+
+
+/***** let people customize module settings ? ****
+
 				<div class="modtools-application-overrides">
 					<select class="modtools-application">
 	`;
@@ -26,32 +29,45 @@ module.exports = (app, mod) => {
 			`;
 ****/
 
-	html += `<fieldset id="moderation-permissions" class="saito-grid settings-link">
-                <i class="fa-solid fa-ban"></i>
-                <label>Who Can Help Moderate?</label>
-                </fieldset>
-		<select class="modtools-settings">
-			<option value="public">anyone</option>
-			<option value="friends" CHECKED>friends</option>
-			<option value="custom">custom</option>
-		</select>
+	let public_c = "";
+	let friends_c = "";
+	let custom_c = "";
+
+	if (mod.permissions.mode == "public") { public_c = "checked"; }
+	if (mod.permissions.mode == "friends") { friends_c = "checked"; }
+	if (mod.permissions.mode == "custom") { custom_c = "checked"; }
+
+	html += `
+
+            <fieldset class="saito-grid">
+            	<legend class="settings-label">Who Moderates:</legend>
+
+            	<input type="radio" id="public_mod" name="who_moderates" value="public_mod" ${public_c}>
+            	<label for="public">Public <span class="note">- anyone on the network</span></label>
+
+            	<input type="radio" id="friends_mod" name="who_moderates" value="friends_mod" ${friends_c}>
+            	<label for="public">Friends <span class="note">- my friends and contacts</span></label>
+
+            	<input type="radio" id="custom_mod" name="who_moderates" value="custom_mod" ${custom_c}>
+            	<label for="public">Custom <span class="note">- manually control by publickey/account</span></label>
+
+            </fieldset>
+
 	`;
 
-	
-
-        if (app.options.modtools.whitelist.length > 0){
+//        if (app.options.modtools.whitelist.length > 0){
                 html += `<fieldset id="whitelisted-accounts" class="saito-grid settings-link">
                 <i class="fa-solid fa-ban"></i>
                 <label>Manage Whitelisted Accounts</label>
                 </fieldset>`;
-        }
+//        }
 
-        if (app.options.modtools.blacklist.length > 0){
-                html += `<fieldset id="blocked-accounts" class="saito-grid settings-link">
+//        if (app.options.modtools.blacklist.length > 0){
+                html += `<fieldset id="blacklisted-accounts" class="saito-grid settings-link">
                 <i class="fa-solid fa-ban"></i>
                 <label>Manage Blocked Accounts</label>
                 </fieldset>`;
-        }
+//        }
 
 	html += `
 			</div>

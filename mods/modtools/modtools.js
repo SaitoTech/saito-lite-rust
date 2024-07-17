@@ -6,6 +6,21 @@ var AppSettings = require('./lib/modtools-settings');
 
 class ModTools extends ModTemplate {
 
+//
+// blacklist and whitelist format
+//
+// { 
+//	publickey : add , 
+//	from : [moderator] , 
+//	duration : duration , 
+//	created_at : new Date().getTime() , 
+//	hop : (hop+1)
+// }
+//
+// duration = -1 is forever, otherwise length in ms
+//
+
+
 	constructor(app) {
 
 		super(app);
@@ -17,7 +32,8 @@ class ModTools extends ModTemplate {
 		this.class = 'modtools';
 		this.categories = 'Core Moderation';
 		this.icon = 'fas fa-eye-slash';
-		this.prune_after = 1500000; // ~1 day
+		//this.prune_after = 1500000; // ~1 day
+		this.prune_after = 60000; // ~1 minute
 		this.max_hops = 2; // stop blacklisting after N hops
 		this.styles = [
 			'/modtools/style.css',
@@ -391,13 +407,16 @@ class ModTools extends ModTemplate {
 					// any app-specific moderation settings?
 					//
 					if (this.apps[app.name]) {
+						// permit everything
 						if (this.apps[app.name] == "*") { return 1; }
 					}
 /*
 					if (this.apps[app.name]) {
+						// permit nothing
 						if (this.apps[app.name] == "!") { return -1; }
 					}
 					if (this.apps[app.name]) {
+						// permit fee-bearing txs
 						if (this.apps[app.name] == "$") { 
 							for (let i = 0; i < tx.from.length; i++) {
 								if (tx.from[i].amount > 0) {
