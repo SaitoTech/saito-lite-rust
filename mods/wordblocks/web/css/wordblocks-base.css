@@ -120,7 +120,7 @@ tfoot {
 .tile-placement-controls,
 .tile-submit-controls {
 	position: absolute;
-	top: 100%;
+	bottom: 100%;
 	left: 50%;
 	transform: translateX(-50%);
 	text-align: center;
@@ -131,7 +131,7 @@ tfoot {
 }
 
 .tile-submit-controls .playable {
-	font-size: 1.5em;
+	font-size: 3em;
 	color: #fff;
 	text-shadow: 1px 1px #555;
 	background: rgb(43, 29, 14);
@@ -388,75 +388,6 @@ div.tile {
 	}
 }
 
-/*
-Resize board on smaller screens
-*/
-
-@media only screen and (max-width: 600px) {
-	#game-scoreboard {
-		display: flex;
-		cursor: pointer;
-		width: 40%;
-		font-size: 24px;
-		justify-content: space-between;
-	}
-
-	#opponentbox {
-		display: none;
-	}
-
-	.visible#opponentbox {
-		display: flex;
-	}
-
-	.hud-status-update-message,
-	.subrack {
-		font-size: 0.8em;
-	}
-
-	.hud {
-		font-size: 22px;
-		width: 100vw;
-		position: fixed;
-		top: unset !important;
-		bottom: 0 !important;
-		left: 0 !important;
-		height: unset;
-		height: -moz-fit-content;
-		min-height: unset;
-		min-width: 100vw;
-		transform: none;
-		display: block;
-		z-index: 100;
-	}
-	.hud-header,
-	.hud-menu {
-		display: none;
-	}
-	.hud-body {
-		height: unset;
-		max-height: unset;
-		height: fit-content;
-		height: -moz-fit-content;
-	}
-
-	.tiles {
-		width: auto;
-		/*height: 72px;*/
-	}
-	.tiles div.tile {
-		margin: 1vw;
-		font-size: min(7vw, 36px);
-		/*width: 72px;
-    height: 72px;*/
-		max-width: 11vw;
-		max-height: 11vw;
-	}
-
-	.rack-controls i {
-		padding: 8px;
-	}
-}
 
 .game-scoreboard .player-identicon {
 	width: 30px;
@@ -528,4 +459,82 @@ Resize board on smaller screens
 
 .status_container {
 	width: 100%;
+}
+
+/*
+Resize board on smaller screens
+*/
+
+@media only screen and (max-width: 600px) {
+	#game-scoreboard {
+		display: flex;
+		cursor: pointer;
+		width: 40%;
+		font-size: 24px;
+		justify-content: space-between;
+	}
+
+	#opponentbox {
+		display: none;
+	}
+
+	.visible#opponentbox {
+		display: flex;
+	}
+
+	.hud-status-update-message,
+	.subrack {
+		font-size: 0.8em;
+	}
+
+	.tile-submit-controls .playable {
+		font-size: 2em;
+	}
+
+	.hud {
+		font-size: 22px;
+		width: 100vw;
+		position: fixed;
+		top: unset !important;
+		bottom: 0 !important;
+		left: 0 !important;
+		height: unset;
+		height: -moz-fit-content;
+		min-height: unset;
+		min-width: 100vw;
+		transform: none;
+		display: block;
+		z-index: 100;
+	}
+	.hud-header,
+	.hud-menu {
+		display: none;
+	}
+	.hud-body {
+		height: unset;
+		max-height: unset;
+		height: fit-content;
+		height: -moz-fit-content;
+	}
+
+	.tiles {
+		width: auto;
+		/*height: 72px;*/
+	}
+	.tiles div.tile, #helper {
+		margin: 1vw;
+		font-size: min(7vw, 36px);
+		/*width: 72px;
+    height: 72px;*/
+		max-width: 11vw;
+		max-height: 11vw;
+	}
+
+	.tiles .tile.highlighttile {
+		visibility: hidden;
+	}
+
+	.rack-controls i {
+		padding: 8px;
+	}
 }

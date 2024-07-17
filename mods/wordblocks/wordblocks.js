@@ -634,7 +634,7 @@ class Wordblocks extends GameTemplate {
             </div>`;
 
 					//Change this because stupid game-playerbox-manager not opponent box
-					$('.game-playerbox-manager').append(html);
+					$('.hud').append(html);
 
 					$('.action').off();
 					$('.action').on('click', function () {
