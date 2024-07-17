@@ -23,7 +23,6 @@ class Browser {
 	public active_tab: any;
 	public files: any;
 	public returnIdentifier: any;
-	public active_module: any;
 	public host: any;
 	public port: any;
 	public protocol: any;
@@ -35,7 +34,6 @@ class Browser {
 		this.browser_active = 0;
 		this.drag_callback = null;
 		this.urlParams = {};
-		this.active_module = '';
 		this.host = '';
 		this.port = '';
 		this.protocol = '';
@@ -200,7 +198,6 @@ class Browser {
 			if (active_module == '') {
 				active_module = 'website';
 			}
-			this.active_module = active_module;
 
 			//
 			// query strings
@@ -243,7 +240,7 @@ class Browser {
 			// tell that module it is active
 			//
 			for (let i = 0; i < this.app.modules.mods.length; i++) {
-				if (this.app.modules.mods[i].returnSlug() == active_module) {
+				if (this.app.modules.mods[i].isSlug(active_module)) {
 					this.app.modules.mods[i].browser_active = 1;
 					this.app.modules.mods[i].alerts = 0;
 
@@ -253,6 +250,7 @@ class Browser {
 					const urlParams = new URLSearchParams(location.search);
 
 					this.app.modules.mods[i].handleUrlParams(urlParams);
+					break;
 				}
 			}
 

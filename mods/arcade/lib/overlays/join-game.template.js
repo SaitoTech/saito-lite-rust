@@ -34,7 +34,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	  </div>
   </div>
   <div class="arcade-game-overlay-body">
-	  <div class="arcade-game-options">
+	  <div class="arcade-game-options hide-scrollbar">
 	    <div class="arcade-game-players">
 	`;
 

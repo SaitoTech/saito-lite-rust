@@ -103,7 +103,7 @@ class Wordblocks extends GameTemplate {
 
 				compact_html += `<div class="score"><img class="player-identicon" src="${this.app.keychain.returnIdenticon(
 					this.game.players[i - 1]
-				)}"/> : ${score} </div>`;
+				)}"/><span>:</span><span>${score}</span></div>`;
 
 				let lastMove = this.getLastMove(i);
 				let html = `<div class="lastmove" id="lastmove_${i}"><span>Last:</span><span class="playedword" style="text-decoration:none">${lastMove.word}</span> <span class="wordscore">${lastMove.score}</span></div>`;
@@ -190,8 +190,6 @@ class Wordblocks extends GameTemplate {
 	}
 
 	respondTo(type, obj = null) {
-		let chat_self = this;
-		let force = false;
 
 		switch (type) {
 			case 'ntfy-notification':
@@ -223,7 +221,6 @@ class Wordblocks extends GameTemplate {
 				url += `#gid=${this.app.crypto.hash(tx.msg.game_id).slice(-6)}`;
 
 				notification.actions = [
-					//need to add game-id
 					{ action: 'view', label: 'Play', url }
 				];
 				return notification;
@@ -430,7 +427,8 @@ class Wordblocks extends GameTemplate {
         <div class="subrack" id="subrack">
           <div class="rack-controls">
             <div id="shuffle" class="shuffle">Shuffle: <i class="fa fa-random"></i></div>
-            <div id="deletectrl" class="hidden deletectrl">Discard: <i class="fa fa-trash" id="delete"></i><i id="canceldelete" class="hidden far fa-window-close"></i></div>
+            <div id="canceldelete" class="hidden">Cancel: <i id="canceldelete" class="far fa-window-close"></i></div>
+            <div id="deletectrl" class="deletectrl hidden">Discard: <i class="fa fa-trash" id="delete"></i></div>
             <div>Tiles: ${this.game.deck[0].crypt.length}</div>
             <div id="skipturn" class="hidden">Skip: <i class="fas fa-fast-forward"></i></div>
           </div>
@@ -526,7 +524,7 @@ class Wordblocks extends GameTemplate {
 			$('.slot').off(); //Reset clicking on board
 			$('.tosstiles').off();
 			$('#rack .tile').off();
-			$('#delete').off();
+			$('#deletectrl').off();
 			$('#status').off();
 			$('#canceldelete').off();
 			$('.tile').off();
@@ -574,9 +572,10 @@ class Wordblocks extends GameTemplate {
 			const revertToPlay = function () {
 				//Unselect all double-clicked tiles
 				$('.tiles .tile').removeClass('todelete');
+				$('#shuffle').removeClass('hidden');
 				$('#tiles').sortable('enable');
 				$('#canceldelete').addClass('hidden');
-				$('#delete').off();
+				$('#deletectrl').off();
 				$('#canceldelete').off();
 				wordblocks_self.addEventsToBoard();
 			};
@@ -629,12 +628,12 @@ class Wordblocks extends GameTemplate {
               <div class="playable ${
 								wordblocks_self.checkWord(word) ? 'valid_word' : 'invalid_word'
 							}">${word}</div>
-              <div class="action" id="submit"><i class="fa fa-paper-plane"></i> Submit</div>
               <div class="action" id="cancel"><i class="far fa-window-close"></i> Cancel</div>
+              <div class="action" id="submit"><i class="fa fa-paper-plane"></i> Submit</div>
             </div>`;
 
 					//Change this because stupid game-playerbox-manager not opponent box
-					$('.game-playerbox-manager').append(html);
+					$('.hud').append(html);
 
 					$('.action').off();
 					$('.action').on('click', function () {
@@ -696,8 +695,8 @@ class Wordblocks extends GameTemplate {
 			});
 
 			//Discard Tiles -- Method 2
-			$('#delete').off();
-			$('#delete').on('click', function () {
+			$('#deletectrl').off();
+			$('#deletectrl').on('click', function () {
 				wordblocks_self.clearBoard();
 				//Enter interactive discard mode.
 				$('.hud-status-update-message').text(
@@ -706,6 +705,7 @@ class Wordblocks extends GameTemplate {
 
 				$('#tiles').sortable('disable');
 				$('.tile').off('click'); //block clicking
+				$('#shuffle').addClass('hidden');
 				$('#canceldelete').removeClass('hidden');
 				//Single click to select for deletion
 				$('#rack .tile').on('click', function (e) {
@@ -715,8 +715,8 @@ class Wordblocks extends GameTemplate {
 				$('#canceldelete').off();
 				$('#canceldelete').on('click', revertToPlay);
 
-				$('#delete').off();
-				$('#delete').on('click', function () {
+				$('#deletectrl').off();
+				$('#deletectrl').on('click', function () {
 					let deletedTiles = '';
 					let tileRack = document.querySelectorAll('.tiles .tile');
 					for (let i = 0; i < tileRack.length; i++) {
@@ -725,7 +725,7 @@ class Wordblocks extends GameTemplate {
 					if (deletedTiles && deletedTiles.length <= wordblocks_self.game.deck[0].crypt.length) {
 						wordblocks_self.discardAndDrawTiles(deletedTiles);
 					} else {
-						salert('You must discard at least one tile and no more than are available to draw!');
+						//salert('You must discard at least one tile and no more than are available to draw!');
 						revertToPlay();
 					}
 				});

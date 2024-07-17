@@ -70,6 +70,10 @@
 	border: 2px solid;
 	cursor: pointer;
 	overflow: hidden;
+	height: 300px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
 }
 
 .spaces-list .saito-profile-header-row .saito-identicon-box {

@@ -28,7 +28,7 @@ module.exports = DreamWizardTemplate = (app, mod, options) => {
 				</div>`;
 	}
 
-	let default_title = "Saito Space with " + app.keychain.returnUsername(mod.publicKey);
+	let default_title = "Swarmcast: " + app.keychain.returnUsername(mod.publicKey);
 
 	html += `<label for="dream-wizard-identifier">Title the space</label> 
 	 <input type="text" name="dream-wizard-identifier" id="dream-wizard-identifier" placeholder="${default_title}" value="${default_title}"></input>
