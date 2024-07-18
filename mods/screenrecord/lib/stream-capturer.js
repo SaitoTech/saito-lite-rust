@@ -1,3 +1,5 @@
+const VideoBox = require('../../../lib/saito/ui/saito-videobox/video-box');
+const html2canvas = require('html2canvas');
 class StreamCapturer {
     constructor(app, logo) {
         this.combinedStream = null;
@@ -26,7 +28,7 @@ class StreamCapturer {
             this.processAudioTrack(track);
         }
     }
-    
+
     processAudioTrack(track) {
         const stream = new MediaStream([track]);
         const trackId = track.id;
@@ -34,11 +36,11 @@ class StreamCapturer {
             console.log('processing stream', stream, trackId)
             const source = this.audioCtx.createMediaStreamSource(stream);
             const gainNode = this.audioCtx.createGain();
-            gainNode.gain.setValueAtTime(0.5, this.audioCtx.currentTime); 
+            gainNode.gain.setValueAtTime(0.5, this.audioCtx.currentTime);
             source.connect(gainNode);
             gainNode.connect(this.mixer);
             this.activeStreams.set(trackId, { source, gainNode });
-        }else {
+        } else {
             console.log('track already exists', trackId)
         }
     }
@@ -271,20 +273,20 @@ class StreamCapturer {
                     })
                     .filter((data) => data.stream !== null);
 
-                    const streams = this.app.modules.getRespondTos('media-request');
-                    if (streams.length > 0) {
-                        this.localStream = streams[0].localStream;
-                        this.additionalSources = streams[0].remoteStreams;
-                        if (this.localStream.getAudioTracks().length > 0) {
-                            let localAudio = this.audioCtx.createMediaStreamSource(this.localStream);
-                            localAudio.connect(this.mixer); 
-                        }
-                            this.additionalSources.forEach((values, keys) => { 
-                                console.log(keys, values.remoteStream.getAudioTracks());
-                                let otherAudio = this.audioCtx.createMediaStreamSource(values.remoteStream);
-                                otherAudio.connect(this.mixer); 
-                            });                      
+                const streams = this.app.modules.getRespondTos('media-request');
+                if (streams.length > 0) {
+                    this.localStream = streams[0].localStream;
+                    this.additionalSources = streams[0].remoteStreams;
+                    if (this.localStream.getAudioTracks().length > 0) {
+                        let localAudio = this.audioCtx.createMediaStreamSource(this.localStream);
+                        localAudio.connect(this.mixer);
                     }
+                    this.additionalSources.forEach((values, keys) => {
+                        console.log(keys, values.remoteStream.getAudioTracks());
+                        let otherAudio = this.audioCtx.createMediaStreamSource(values.remoteStream);
+                        otherAudio.connect(this.mixer);
+                    });
+                }
                 this.combinedStream.addTrack(canvas.captureStream(25).getVideoTracks()[0]);
             }
             else {
@@ -350,15 +352,15 @@ class StreamCapturer {
 
                     if (this.localStream.getAudioTracks().length > 0) {
                         let localAudio = this.audioCtx.createMediaStreamSource(this.localStream);
-                        localAudio.connect(this.mixer); 
+                        localAudio.connect(this.mixer);
                     }
-                        this.additionalSources.forEach((values, keys) => { 
-                            console.log(keys, values.remoteStream.getAudioTracks());
-                            let otherAudio = this.audioCtx.createMediaStreamSource(values.remoteStream);
-                            otherAudio.connect(this.mixer); 
-                        });
+                    this.additionalSources.forEach((values, keys) => {
+                        console.log(keys, values.remoteStream.getAudioTracks());
+                        let otherAudio = this.audioCtx.createMediaStreamSource(values.remoteStream);
+                        otherAudio.connect(this.mixer);
+                    });
 
-                    
+
                 }
             }
 
@@ -400,6 +402,143 @@ class StreamCapturer {
 
 
 
+
+    }
+
+    async captureGameStream() {
+        if (this.is_capturing_stream) {
+            console.log('RECORD --- Nope out of resetting captureGameStreams');
+            return this.combinedStream;
+        }
+
+        this.combinedStream = new MediaStream();
+        this.is_capturing_stream = true;
+        const view_window = document.querySelector(this.view_window);
+        if (!view_window) {
+            console.warn('No valid screen input');
+            return;
+        }
+
+        // clear previous canvas
+
+
+        // create audio context and mixer
+        this.audioCtx = new AudioContext();
+        this.destination = new MediaStreamAudioDestinationNode(this.audioCtx);
+        this.mixer = this.audioCtx.createGain();
+        this.mixer.connect(this.destination);
+
+
+        // create canvas
+        const canvas = document.createElement('canvas');
+        this.canvas = canvas;
+        canvas.width = window.innerWidth;
+        canvas.height = view_window.clientHeight;
+        const ctx = canvas.getContext('2d')
+
+
+        // get snapshot of with html2canvas
+        let lastCaptureTime = 0;
+        const captureInterval = 1000 / 30; // Aim for 30 fps
+
+        const captureAndDraw = async (timestamp) => {
+            if (!this.is_capturing_stream) return;
+            if (timestamp - lastCaptureTime >= captureInterval) {
+                lastCaptureTime = timestamp;
+
+                try {
+                    const screenshot = await html2canvas(view_window, {
+                        scale: 1,
+                        useCORS: true,
+                        allowTaint: true,
+                        logging: false,
+                    });
+
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(screenshot, 0, 0, canvas.width, canvas.height);
+                    this.drawLogoOnCanvas(ctx);
+                } catch (error) {
+                    console.error('Error capturing view_window:', error);
+                }
+            }
+
+            requestAnimationFrame(captureAndDraw);
+        };
+
+        // Start the capture loop
+        requestAnimationFrame(captureAndDraw);
+        this.combinedStream.addTrack(canvas.captureStream(20).getVideoTracks()[0]);
+
+
+
+
+        // get existing streams
+        const streams = this.app.modules.getRespondTos('media-request');
+        if (streams.length > 0) {
+            this.localStream = streams[0].localStream;
+            this.additionalSources = streams[0].remoteStreams;
+            if (this.localStream.getAudioTracks().length > 0) {
+                let localAudio = this.audioCtx.createMediaStreamSource(this.localStream);
+                localAudio.connect(this.mixer);
+            }
+            this.additionalSources.forEach((values, keys) => {
+                console.log(keys, values.remoteStream.getAudioTracks());
+                let otherAudio = this.audioCtx.createMediaStreamSource(values.remoteStream);
+                otherAudio.connect(this.mixer);
+            });
+        } else {
+            let includeCamera = await sconfirm('Add webcam to stream?');
+            try {
+                if (includeCamera) {
+                    try {
+                        this.localStream = await navigator.mediaDevices.getUserMedia({
+                            video: true,
+                            audio: true
+                        });
+                        if (this.localStream && this.localStream.getAudioTracks().length > 0) {
+                            let localAudio = this.audioCtx.createMediaStreamSource(this.localStream);
+                            localAudio.connect(this.mixer);
+                        }
+                    } catch (error) {
+                        console.error('Failed to get user media:', error);
+                        alert('Failed to access camera and microphone.');
+                        return;
+                    }
+                    this.videoBox = new VideoBox(this.app, this, 'local');
+                    this.videoBox.render(this.localStream);
+                    let videoElement = document.querySelector('.video-box-container-large');
+                    videoElement.style.position = 'absolute';
+                    videoElement.style.top = '100px';
+                    videoElement.style.width = '350px';
+                    videoElement.style.height = '350px';
+                    this.app.browser.makeDraggable('stream_local');
+                } else {
+                    try {
+                        this.localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                        if (this.localStream && this.localStream.getAudioTracks().length > 0) {
+                            let audio = this.audioCtx.createMediaStreamSource(this.localStream);
+                            audio.connect(this.mixer);
+                        }
+                    } catch (error) {
+                        console.error('Failed to get user media:', error);
+                        alert('Failed to access camera and microphone.');
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('Access to user media denied: ', error);
+                salert('Recording will continue without camera and/or microphone input');
+            }
+        }
+
+
+        this.combinedStream.addTrack(this.destination.stream.getAudioTracks()[0]);
+        return this.combinedStream
+
+
+    }
+
+    async stopCaptureGameStream() {
 
     }
 
