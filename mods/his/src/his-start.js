@@ -39,16 +39,6 @@
     this.menu.addMenuOption("game-game", "Game");
 
     this.menu.addSubMenuOption("game-game", {
-      text: "Diplomacy",
-      id: "game-divorce",
-      class: "game-divorce",
-      callback: function(app, game_mod){
-	game_mod.menu.hideSubMenus();
-        game_mod.diplomacy_overlay.render();
-      }
-    });
-
-    this.menu.addSubMenuOption("game-game", {
       text : "About H.I.S.",
       id : "game-about",
       class : "game-about",
@@ -66,25 +56,33 @@ browsers will "automatically" respond "no" when asked if they want to play
    event-response cards (like Wartburg) if they do not have those cards. This
    speeds up gameplay at the cost of "leaking" info that some players do not
    hold those cards. Players who have response cards also only have a limited 
-   amount of time to select those cards.
+   amount of time to select those cards. You can turn this feature off by 
+   switching to "slow mode".
 </li>
 <li>
-parallel moves are possible for Spring Deployment and Diplomacy and a few other
+players have a limited amount of time to trigger response cards in response to
+   opponent moves. this is designed to prevent slow players unnecessarily slowing
+   gameplay and preventing opponents from moving.
+</li>
+<li>
+impulse order is not enforced in Spring Deployment and Diplomacy and a few other
    minor retreat options. advanced players who wish to enforce Impulse Order in
    these cases can do so simply by having factions commit their moves in that 
    order.
 </li>
 <li>
-winter retreat is heavily automated, with units automatically returned to the
-   nearest fortified space, or returned to a random capital (with attrition if
-   needed) if no such space exists. attrition costs are automatically assigned 
-   to the lowest-cost units being moved.
+winter retreat to fortified spaces is automated. all units are automatically 
+   returned to the nearest fortified space with space. If no such space exists
+   attrition costs are automatically assigned to the lowest-cost units being 
+   moved. this removes some granularity in controlling which exact units winter
+   in which exact spaces. players can take this into account when maneuvering 
+   units out of fortified spaces.
 </li>
 <li>
 the game engine automatically handles token denomination, merging smaller
    units into larger ones as possible. if factions hit their limits units are
-   not destroyed however - the faction is registered as being in "over-capacity" 
-   and blocked from constructing new units until back under their token limit.
+   not destroyed - the faction is registered as being in "over-capacity" and 
+   blocked from constructing new units until back under their token limit.
 </li>
 </ul>
 `;

@@ -127,7 +127,6 @@ class DiplomacyOverlay {
 	  //
 	  if (document.querySelector(".submit")) {
 	    document.querySelector(".submit").onclick = (e) => {
-	      this.mod.updateLog(this.mod.returnFactionName(faction)+" concludes diplomacy");
 	      for (let z = 0; z < this.proposals.length; z++) {
 	        this.mod.addMove("diplomacy_submit_proposal\t"+JSON.stringify(this.proposals[z]));
 	      }
@@ -225,7 +224,6 @@ class DiplomacyOverlay {
 
 
 	submitProposals() {
-	  this.mod.updateLog(this.mod.returnFactionName(this.faction)+" concludes diplomacy");
           for (let z = 0; z < this.proposals.length; z++) {
             this.mod.addMove("diplomacy_submit_proposal\t"+JSON.stringify(this.proposals[z]));
           }

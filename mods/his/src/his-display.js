@@ -704,7 +704,7 @@
       //
       // Galleons Colony #1
       //
-      if (this.game.state.galleons['french'] == 1) {
+      if (this.game.state.galleons['france'] == 1) {
 	document.querySelector(".france_colony1_bonus").innerHTML = `<img class="army_tile" src="/his/img/Galleons.svg" />`;
       }
       if (this.game.state.galleons['england'] == 1) {

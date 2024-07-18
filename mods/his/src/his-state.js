@@ -529,6 +529,10 @@
 	leaders = [];
         leaders.push(key);
       }
+      if (factions[key].vp < max_vp && factions[key].vp > runner_up_vp) {
+	runner_up_vp = factions[key].vp;
+      }
+
     }
     if (max_vp >= (runner_up_vp+lead_required) && this.game.state.round >= domination_round && this.game.players.length > 2) {
       if (leaders.length == 1) {
@@ -926,7 +930,7 @@ if (this.game.state.scenario != "is_testing") {
     state.brandenburg_electoral_bonus = 0;
 
     state.galleons = {};
-    state.galleons['french'] = 0;
+    state.galleons['france'] = 0;
     state.galleons['hapsburg'] = 0;
     state.galleons['england'] = 0;
 

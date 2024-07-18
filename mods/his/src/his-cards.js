@@ -2593,18 +2593,17 @@ console.log("selected: " + spacekey);
 	    his_self.updateStatus("Henry VIII makes a roll on the pregnancy chart");
 	    let dd = his_self.rollDice(6);
 
+	    if (his_self.game.state.henry_viii_marital_status == 3) { 
+	      his_self.updateLog("Henry VIII receives +1 bonus for Jane Seymour");
+	      dd++;
+	    }
+
 	    if (his_self.game.state.henry_viii_rolls.includes(dd)) {
 	      while (his_self.game.state.henry_viii_rolls.includes(dd) && dd < 6) {
 	        dd++;
 	      }
 	    }
 
-	    if (his_self.game.state.henry_viii_marital_status == 3) { 
-	      his_self.updateLog("Henry VIII receives +1 bonus for Jane Seymour");
-	      dd++;
-	    }
-
-	    //his_self.updateLog("Henry VIII rolls: " + dd);
 	    his_self.game.state.henry_viii_rolls.push(dd);
 
 	    msg = "Henry VIII is pleased with his marital progress...";
@@ -3496,211 +3495,6 @@ console.log("selected: " + spacekey);
 
 	return 1;
       },
-      handleGameLoop : function(his_self, qe, mv) {
-
-        if (mv[0] == "catholic_counter_reformation") {
-
-	  his_self.updateStatus("Catholic Counter-Reformation...");
-
-          let player = parseInt(mv[1]);
-          if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
-          let language_zone = "german";
-	  if (mv[2]) { language_zone = mv[2]; }
-	  let spillover = 0;
-	  if (mv[3]) { spillover = parseInt(mv[3]); } // allow reformation outside target area
-
-	  his_self.game.queue.splice(qe, 1);
-
-	  let target_spaces = his_self.countSpacesWithFilter(
-	    function(space) {
-	      if (
-	        space.religion === "protestant" &&
-	        ((spillover == 1 || space.language === language_zone) || language_zone == "all") &&
-	        !his_self.game.state.tmp_counter_reformations_this_turn.includes(space.key) &&
-	        ( 
-		  his_self.isSpaceAdjacentToReligion(space, "catholic")
-		  ||
-		  space.university == 1
-	        )
-	      ) {
-	        return 1;
-	      }
-	      return 0;
-	    }
-	  );
-
-	  //
-	  // no valid reformation targets
-	  //
-	  if (target_spaces == 0) {
-	    his_self.updateStatus("No valid counter-reformation targets"); 
-	    his_self.updateLog("No valid counter-reformation targets"); 
-	    his_self.game.queue.splice(qe, 1);
-	    return 1;
-	  }
-
-
-	  if (his_self.game.player == player) {
-	    if (target_spaces > 0) {
-
-	    if (language_zone != "all" && language_zone != "") {
-	      his_self.theses_overlay.render(language_zone);
-	    } else {
-	      his_self.theses_overlay.render();
-	    }
-
-            his_self.playerSelectSpaceWithFilter(
-
-	      "Select Counter-Reformation Attempt",
-
-	      //
-	      // protestant spaces adjacent to catholic 
-	      //
-	      function(space) {
-		if (
-		  space.religion === "protestant" &&
-		  ((spillover == 1 || space.language === language_zone) || language_zone == "all") &&
-		  !his_self.game.state.tmp_counter_reformations_this_turn.includes(space.key) &&
-		  his_self.isSpaceAdjacentToReligion(space, "catholic")
-	        ) {
-		  return 1;
-	        }
-		return 0;
-	      },
-
-	      //
-	      // launch counter_reformation
-	      //
-	      function(spacekey) {
-	  	his_self.updateStatus("Counter-Reformation attempt: "+his_self.returnSpaceName(spacekey));
-		his_self.addMove("counter_reformation\t"+spacekey+"\t"+language_zone);
-		let name = his_self.game.spaces[spacekey].name;
-		his_self.addMove("counter_or_acknowledge\tCounter-Reformation Attempt: "+his_self.returnSpaceName(spacekey)+"\tcatholic_counter_reformation\t"+name);
-                his_self.addMove("RESETCONFIRMSNEEDED\tall");
-		his_self.endTurn();
-	      },
-
-	      null, // cancel func
-
-	      1     // permit board clicks
-
-	    );
-	    } else {
-	      his_self.addMove("counter_or_acknowledge\tCatholic Counter-Reformation - no valid targets");
-              his_self.addMove("RESETCONFIRMSNEEDED\tall");
-	      his_self.endTurn();
-	    }
-	  } else {
-	    his_self.updateStatus("Catholic Counter-Reformation in Process");
-	  }
-
-          return 0;
-
-        }
-
-        if (mv[0] == "protestant_reformation") {
-
-	  his_self.updateStatus("Protestant Reformation...");
-
-          let player = parseInt(mv[1]);
-          if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
-          let language_zone = "german";
-	  if (mv[2]) { language_zone = mv[2]; }
-	  let spillover = 0;
-	  if (mv[3]) { spillover = parseInt(mv[3]); } // allow reformation outside target area
-
-	  his_self.game.queue.splice(qe, 1);
-
-	  let target_spaces = his_self.countSpacesWithFilter(
-	    function(space) {
-	      if (
-		space.religion == "catholic" &&
-		!his_self.game.state.tmp_reformations_this_turn.includes(space.key) &&
-		((spillover == 1 || space.language == language_zone) || language_zone == "all") &&
-		(
-			his_self.isSpaceAdjacentToProtestantReformer(space, "protestant")
-			||
-			his_self.isSpaceAdjacentToReligion(space, "protestant")
-			||
-			his_self.doesSpaceContainProtestantReformer(space)
-			||
-			his_self.isSpaceAPortInTheSameSeaZoneAsAProtestantPort(space)
-		)
-	      ) {
-	        return 1;
-	      }
-	      return 0;
-	    }
-	  );
-
-	  if (target_spaces == 0) {
-	    his_self.updateStatus("No valid reformation targets"); 
-	    his_self.updateLog("No valid reformation targets"); 
-	    return 1;
-	  }
-
-	  if (his_self.game.player == player) {
-	    if (target_spaces > 0) {
-
-	      if (language_zone != "all" && language_zone != "") {
-	        his_self.theses_overlay.render(language_zone);
-	      } else {
-	        his_self.theses_overlay.render();
-	      }
-
-              his_self.playerSelectSpaceWithFilter(
-
-	        "Select Reformation Target",
-
-	        //
-	        // catholic spaces adjacent to protestant 
-	        //
-	        function(space) {
-	  	  if (
-		    space.religion === "catholic" &&
-		    !his_self.game.state.tmp_reformations_this_turn.includes(space.key) &&
-		    ((spillover == 1 || space.language === language_zone) || language_zone == "all") &&
-		    (
-			his_self.isSpaceAdjacentToProtestantReformer(space, "protestant")
-			||
-			his_self.isSpaceAdjacentToReligion(space, "protestant")
-			||
-			his_self.doesSpaceContainProtestantReformer(space)
-			||
-			his_self.isSpaceAPortInTheSameSeaZoneAsAProtestantPort(space)
-		    )
-	          ) {
-		    return 1;
-	          }
-		  return 0;
-	        },
-
-	        //
-	        // launch reformation
-	        //
-	        function(spacekey) {
-	  	  his_self.addMove("reformation\t"+spacekey+"\t"+language_zone);
-		  his_self.addMove("counter_or_acknowledge\tProtestant Reformation Attempt in "+his_self.returnSpaceName(spacekey)+"\tprotestant_reformation\t"+spacekey);
-        	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
-	  	  his_self.updateStatus("Reformation attempt in "+his_self.returnSpaceName(spacekey));
-		  his_self.endTurn();
-	        },
-	        null ,
-	        1     // permit board clicks
-	      );
-	    } else {
-	      his_self.addMove("counter_or_acknowledge\tProtestant Reformation - no valid targets");
-              his_self.addMove("RESETCONFIRMSNEEDED\tall");
-	      his_self.updateStatus("No Valid Targets");
-	      his_self.endTurn();
-	    }
-	  } else {
-	    his_self.updateStatus("Protestant Reformation...");
-	  }
-          return 0;
-        }
-	return 1;
-      }
     }
     deck['009'] = { 
       img : "cards/HIS-009.svg" , 
@@ -6313,7 +6107,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	    if (his_self.game.state.galleons['england'] == 0) {
                 html += '<li class="option" id="england">England</li>';
  	    }  
-	    if (his_self.game.state.galleons['england'] == 0) {
+	    if (his_self.game.state.galleons['hapsburg'] == 0) {
                 html += '<li class="option" id="hapsburg">Hapsburgs</li>';
  	    }  
  		html += '</ul>';
@@ -7345,6 +7139,8 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
       onEvent : function(his_self, faction) {
 
 	let d = his_self.rollDice(6);
+
+	his_self.game.queue.push("NOTIFY\t"+his_self.popup("062")+" rolls "+d);
 
         if (d == 3 || d == 4) {
 	  his_self.game.queue.push("player_add_unrest\t"+faction+"\tenglish\tcatholic");

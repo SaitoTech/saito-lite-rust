@@ -4689,6 +4689,11 @@ return 1; }
           let my_specific_game_id = this.game.id;
 
 	  //
+	  //
+	  //
+	  this.unbindBackButtonFunction();
+
+	  //
 	  // hide any cardbox
 	  //
 	  this.cardbox.hide();
@@ -11798,12 +11803,12 @@ if (this.game.state.round == 2) {
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-cardnum = 1;
-if (f == "papacy") { cardnum = 0; }
-if (f == "hapsburg") { cardnum = 1; }
-if (f == "protestant") { cardnum = 0; }
-if (f == "england") { cardnum = 0; }
-if (f == "ottoman") { cardnum = 0; }
+//cardnum = 1;
+//if (f == "papacy") { cardnum = 0; }
+//if (f == "hapsburg") { cardnum = 1; }
+//if (f == "protestant") { cardnum = 0; }
+//if (f == "england") { cardnum = 0; }
+//if (f == "ottoman") { cardnum = 0; }
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
@@ -12440,7 +12445,9 @@ console.log(JSON.stringify(reshuffle_cards));
 	  this.game.state.active_player = player;
 	  this.game.state.active_faction = faction;
 
+	  //
 	  // skip factions not-in-play
+	  //
 	  if (player == -1) {
 	    this.game.queue.splice(qe, 1);
 	    return 1;
@@ -12577,78 +12584,78 @@ console.log(JSON.stringify(reshuffle_cards));
 	    if (this.game.players == 3) {
 	      if (faction == "ottoman") {
 		if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
-                  this.game.state.players_indxo[this.game.player-1].active_faction = "england";
-                  this.game.state.players_indxo[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "england");
+                  this.game.state.players_info[this.game.player-1].active_faction = "england";
+                  this.game.state.players_info[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "england");
 		}
 	      }
 	      if (faction == "hapsburg") {
 		if (this.game.player == this.returnPlayerCommandingFaction("france")) {
-                  this.game.state.players_indxo[this.game.player-1].active_faction = "france";
-                  this.game.state.players_indxo[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "france");
+                  this.game.state.players_info[this.game.player-1].active_faction = "france";
+                  this.game.state.players_info[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "france");
 		}
 	      }
 	      if (faction == "england") {
 		if (this.game.player == this.returnPlayerCommandingFaction("hapsburg")) {
-                  this.game.state.players_indxo[this.game.player-1].active_faction = "papacy";
-                  this.game.state.players_indxo[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "papacy");
+                  this.game.state.players_info[this.game.player-1].active_faction = "papacy";
+                  this.game.state.players_info[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "papacy");
 		}
 	      }
 	      if (faction == "france") {
 		if (this.game.player == this.returnPlayerCommandingFaction("england")) {
-                  this.game.state.players_indxo[this.game.player-1].active_faction = "protestant";
-                  this.game.state.players_indxo[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "protestant");
+                  this.game.state.players_info[this.game.player-1].active_faction = "protestant";
+                  this.game.state.players_info[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "protestant");
 		}
 	      }
 	      if (faction == "papacy") {
 		if (this.game.player == this.returnPlayerCommandingFaction("france")) {
-                  this.game.state.players_indxo[this.game.player-1].active_faction = "ottoman";
-                  this.game.state.players_indxo[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "ottoman");
+                  this.game.state.players_info[this.game.player-1].active_faction = "ottoman";
+                  this.game.state.players_info[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "ottoman");
 		}
 	      }
 	      if (faction == "protestant") {
 		if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
-                  this.game.state.players_indxo[this.game.player-1].active_faction = "hapsburg";
-                  this.game.state.players_indxo[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "hapsburg");
+                  this.game.state.players_info[this.game.player-1].active_faction = "hapsburg";
+                  this.game.state.players_info[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "hapsburg");
 		}
 	      }
 	    }
 	    if (this.game.players == 4) {
 	      if (faction == "ottoman") {
 		if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
-                  this.game.state.players_indxo[this.game.player-1].active_faction = "england";
-                  this.game.state.players_indxo[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "england");
+                  this.game.state.players_info[this.game.player-1].active_faction = "england";
+                  this.game.state.players_info[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "england");
 		}
 	      }
 	      if (faction == "england") {
 		if (this.game.player == this.returnPlayerCommandingFaction("hapsburg")) {
-                  this.game.state.players_indxo[this.game.player-1].active_faction = "papacy";
-                  this.game.state.players_indxo[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "papacy");
+                  this.game.state.players_info[this.game.player-1].active_faction = "papacy";
+                  this.game.state.players_info[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "papacy");
 		}
 	      }
 	      if (faction == "france") {
 		if (this.game.player == this.returnPlayerCommandingFaction("england")) {
-                  this.game.state.players_indxo[this.game.player-1].active_faction = "protestant";
-                  this.game.state.players_indxo[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "protestant");
+                  this.game.state.players_info[this.game.player-1].active_faction = "protestant";
+                  this.game.state.players_info[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "protestant");
 		}
 	      }
 	      if (faction == "protestant") {
 		if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
-                  this.game.state.players_indxo[this.game.player-1].active_faction = "hapsburg";
-                  this.game.state.players_indxo[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "hapsburg");
+                  this.game.state.players_info[this.game.player-1].active_faction = "hapsburg";
+                  this.game.state.players_info[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "hapsburg");
 		}
 	      }
 	    }
 	    if (this.game.players == 5) {
 	      if (faction == "ottoman") {
 		if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
-                  this.game.state.players_indxo[this.game.player-1].active_faction = "england";
-                  this.game.state.players_indxo[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "england");
+                  this.game.state.players_info[this.game.player-1].active_faction = "england";
+                  this.game.state.players_info[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "england");
 		}
 	      }
 	      if (faction == "france") {
 		if (this.game.player == this.returnPlayerCommandingFaction("england")) {
-                  this.game.state.players_indxo[this.game.player-1].active_faction = "protestant";
-                  this.game.state.players_indxo[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "protestant");
+                  this.game.state.players_info[this.game.player-1].active_faction = "protestant";
+                  this.game.state.players_info[this.game.player-1].active_faction_idx = this.returnFactionHandIdx(this.game.player, "protestant");
 		}
 	      }
 	    }
@@ -12865,7 +12872,7 @@ console.log(JSON.stringify(reshuffle_cards));
 	  }
 
 	  this.game.queue.splice(qe, 1);
-	  return 1;
+	  return 0;
 
 	}
 
@@ -13614,6 +13621,229 @@ console.log("space.units: " + JSON.stringify(space.units));
 	  this.game.state.tmp_protestant_translation_bonus = 0;
 	  return 1;
 	}
+
+
+
+
+
+
+
+
+
+        if (mv[0] == "protestant_reformation") {
+
+          let his_self = this;
+
+          his_self.updateStatus("Protestant Reformation...");
+
+          let player = parseInt(mv[1]);
+          if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
+          let language_zone = "german";
+          if (mv[2]) { language_zone = mv[2]; }
+          let spillover = 0;
+          if (mv[3]) { spillover = parseInt(mv[3]); } // allow reformation outside target area
+
+          his_self.game.queue.splice(qe, 1);
+
+          let target_spaces = his_self.countSpacesWithFilter(
+            function(space) {
+              if (
+                space.religion == "catholic" &&
+                !his_self.game.state.tmp_reformations_this_turn.includes(space.key) &&
+                ((spillover == 1 || space.language == language_zone) || language_zone == "all") &&
+                (
+                        his_self.isSpaceAdjacentToProtestantReformer(space, "protestant")
+                        ||
+                        his_self.isSpaceAdjacentToReligion(space, "protestant")
+                        ||
+                        his_self.doesSpaceContainProtestantReformer(space)
+                        ||
+                        his_self.isSpaceAPortInTheSameSeaZoneAsAProtestantPort(space)
+                )
+              ) {
+                return 1;
+              }
+              return 0;
+            }
+          );
+
+          if (target_spaces == 0) {
+            his_self.updateStatus("No valid reformation targets");
+            his_self.updateLog("No valid reformation targets");
+            return 1;
+          }
+
+          if (his_self.game.player == player) {
+            if (target_spaces > 0) {
+
+              if (language_zone != "all" && language_zone != "") {
+                his_self.theses_overlay.render(language_zone);
+              } else {
+                his_self.theses_overlay.render();
+              }
+
+              his_self.playerSelectSpaceWithFilter(
+
+                "Select Reformation Target",
+
+
+                //
+                // catholic spaces adjacent to protestant
+                //
+                function(space) {
+                  if (
+                    space.religion === "catholic" &&
+                    !his_self.game.state.tmp_reformations_this_turn.includes(space.key) &&
+                    ((spillover == 1 || space.language === language_zone) || language_zone == "all") &&
+                    (
+                        his_self.isSpaceAdjacentToProtestantReformer(space, "protestant")
+                        ||
+                        his_self.isSpaceAdjacentToReligion(space, "protestant")
+                        ||
+                        his_self.doesSpaceContainProtestantReformer(space)
+                        ||
+                        his_self.isSpaceAPortInTheSameSeaZoneAsAProtestantPort(space)
+                    )
+                  ) {
+                    return 1;
+                  }
+                  return 0;
+                },
+
+                //
+                // launch reformation
+                //
+                function(spacekey) {
+                  his_self.addMove("reformation\t"+spacekey+"\t"+language_zone);
+                  his_self.addMove("counter_or_acknowledge\tProtestant Reformation Attempt in "+his_self.returnSpaceName(spacekey)+"\tprotestant_reformation\t"+spacekey);
+                  his_self.addMove("RESETCONFIRMSNEEDED\tall");
+                  his_self.updateStatus("Reformation attempt in "+his_self.returnSpaceName(spacekey));
+                  his_self.endTurn();
+                },
+                null ,
+                1     // permit board clicks
+              );
+            } else {
+              his_self.addMove("counter_or_acknowledge\tProtestant Reformation - no valid targets");
+              his_self.addMove("RESETCONFIRMSNEEDED\tall");
+              his_self.updateStatus("No Valid Targets");
+              his_self.endTurn();
+            }
+          } else {
+            his_self.updateStatus("Protestant Reformation...");
+          }
+          return 0;
+        }
+
+
+
+        if (mv[0] == "catholic_counter_reformation") {
+
+          let his_self = this;
+
+          his_self.updateStatus("Catholic Counter-Reformation...");
+
+          let player = parseInt(mv[1]);
+          if (his_self.returnPlayerOfFaction(mv[1])) { player = his_self.returnPlayerOfFaction(mv[1]); }
+          let language_zone = "german";
+          if (mv[2]) { language_zone = mv[2]; }
+          let spillover = 0;
+          if (mv[3]) { spillover = parseInt(mv[3]); } // allow reformation outside target area
+
+          his_self.game.queue.splice(qe, 1);
+
+          let target_spaces = his_self.countSpacesWithFilter(
+            function(space) {
+              if (
+                space.religion === "protestant" &&
+                ((spillover == 1 || space.language === language_zone) || language_zone == "all") &&
+                !his_self.game.state.tmp_counter_reformations_this_turn.includes(space.key) &&
+                (
+                  his_self.isSpaceAdjacentToReligion(space, "catholic")
+                  ||
+                  space.university == 1
+                )
+              ) {
+                return 1;
+              }
+              return 0;
+            }
+          );
+
+          //
+          // no valid reformation targets
+          //
+          if (target_spaces == 0) {
+            his_self.updateStatus("No valid counter-reformation targets");
+            his_self.updateLog("No valid counter-reformation targets");
+            his_self.game.queue.splice(qe, 1);
+            return 1;
+          }
+
+
+          if (his_self.game.player == player) {
+            if (target_spaces > 0) {
+
+            if (language_zone != "all" && language_zone != "") {
+              his_self.theses_overlay.render(language_zone);
+            } else {
+              his_self.theses_overlay.render();
+            }
+
+            his_self.playerSelectSpaceWithFilter(
+
+              "Select Counter-Reformation Attempt",
+
+              //
+              // protestant spaces adjacent to catholic
+              //
+              function(space) {
+                if (
+                  space.religion === "protestant" &&
+                  ((spillover == 1 || space.language === language_zone) || language_zone == "all") &&
+                  !his_self.game.state.tmp_counter_reformations_this_turn.includes(space.key) &&
+                  his_self.isSpaceAdjacentToReligion(space, "catholic")
+                ) {
+                  return 1;
+                }
+                return 0;
+              },
+
+              //
+              // launch counter_reformation
+              //
+              function(spacekey) {
+                his_self.updateStatus("Counter-Reformation attempt: "+his_self.returnSpaceName(spacekey));
+                his_self.addMove("counter_reformation\t"+spacekey+"\t"+language_zone);
+                let name = his_self.game.spaces[spacekey].name;
+                his_self.addMove("counter_or_acknowledge\tCounter-Reformation Attempt: "+his_self.returnSpaceName(spacekey)+"\tcatholic_counter_reformation\t"+name);
+                his_self.addMove("RESETCONFIRMSNEEDED\tall");
+                his_self.endTurn();
+              },
+
+              null, // cancel func
+
+              1     // permit board clicks
+
+            );
+            } else {
+              his_self.addMove("counter_or_acknowledge\tCatholic Counter-Reformation - no valid targets");
+              his_self.addMove("RESETCONFIRMSNEEDED\tall");
+              his_self.endTurn();
+            }
+          } else {
+            his_self.updateStatus("Catholic Counter-Reformation in Process");
+          }
+
+
+          return 0;
+
+        }
+
+
+
+
+
 
 	if (mv[0] === "reformation") {
 
