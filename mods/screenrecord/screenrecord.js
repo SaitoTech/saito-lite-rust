@@ -270,17 +270,19 @@ class Record extends ModTemplate {
 
 	async startRecording(options) {
 		let { container, members, callbackAfterRecord, type, includeCamera } = options;
-		this.recorderStreamCapture = new StreamCapturer(this.app, this.logo);
-		let stream = this.recorderStreamCapture.captureVideoCallStreams(includeCamera);
+
+		console.log(options, "options")
 
 		// initialize variables
 		this.type = type;
 		this.members = members;
 
 		if (type === 'videocall') {
+			this.recorderStreamCapture = new StreamCapturer(this.app, this.logo);
+			let stream = this.recorderStreamCapture.captureVideoCallStreams(includeCamera);
 			this.initializeMediaRecorder(this.chunks, stream);
 		} else {
-			// set up top variablse
+			// set up top variable
 			let lastSnapshotCanvas = null; // Variable to store the last taken snapshot
 			const canvas = document.createElement('canvas');
 			const ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -318,144 +320,144 @@ class Record extends ModTemplate {
 			window.addEventListener('resize', resizeCanvas);
 
 			// set up mutation observer
-			function findClosestVideoChild(node) {
-				if (node.tagName && node.tagName.toLowerCase() === 'video') {
-					return node;
-				}
-				for (let i = 0; i < node.childNodes.length; i++) {
-					const foundNode = findClosestVideoChild(node.childNodes[i]);
-					if (foundNode) {
-						return foundNode;
-					}
-				}
-				return null;
-			}
+			// function findClosestVideoChild(node) {
+			// 	if (node.tagName && node.tagName.toLowerCase() === 'video') {
+			// 		return node;
+			// 	}
+			// 	for (let i = 0; i < node.childNodes.length; i++) {
+			// 		const foundNode = findClosestVideoChild(node.childNodes[i]);
+			// 		if (foundNode) {
+			// 			return foundNode;
+			// 		}
+			// 	}
+			// 	return null;
+			// }
 
-			const elementTracker = new WeakMap();
-			function shouldThrottle(element) {
-				const now = Date.now();
-				if (!elementTracker.has(element)) {
-					elementTracker.set(element, { count: 1, timestamp: now });
-					return false;
-				}
+			// const elementTracker = new WeakMap();
+			// function shouldThrottle(element) {
+			// 	const now = Date.now();
+			// 	if (!elementTracker.has(element)) {
+			// 		elementTracker.set(element, { count: 1, timestamp: now });
+			// 		return false;
+			// 	}
 
-				const elementData = elementTracker.get(element);
-				const elapsedTime = now - elementData.timestamp;
+			// 	const elementData = elementTracker.get(element);
+			// 	const elapsedTime = now - elementData.timestamp;
 
-				if (elapsedTime > 1000) {
-					elementTracker.set(element, { count: 1, timestamp: now });
-					return false;
-				}
+			// 	if (elapsedTime > 1000) {
+			// 		elementTracker.set(element, { count: 1, timestamp: now });
+			// 		return false;
+			// 	}
 
-				if (elementData.count >= 2) {
-					return true;
-				}
+			// 	if (elementData.count >= 2) {
+			// 		return true;
+			// 	}
 
-				elementData.count += 1;
-				return false;
-			}
-			const observer = new MutationObserver((mutations) => {
-				let to_return = false;
-				mutations.forEach((mutation) => {
-					if (mutation.type === 'attributes') {
-						if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-							this.streamData.forEach((data) => {
-								if (data.parentID === mutation.target.id) {
-									to_return = true;
-									data.rect = mutation.target.getBoundingClientRect();
-								}
-							});
-						}
+			// 	elementData.count += 1;
+			// 	return false;
+			// }
+			// const observer = new MutationObserver((mutations) => {
+			// 	let to_return = false;
+			// 	mutations.forEach((mutation) => {
+			// 		if (mutation.type === 'attributes') {
+			// 			if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+			// 				this.streamData.forEach((data) => {
+			// 					if (data.parentID === mutation.target.id) {
+			// 						to_return = true;
+			// 						data.rect = mutation.target.getBoundingClientRect();
+			// 					}
+			// 				});
+			// 			}
 
-						if (mutation.target.id.startsWith('stun-chatbox')) {
-							this.streamData.forEach((data) => {
-								console.log(data);
-								const videoNode = findClosestVideoChild(mutation.target);
-								if (
-									videoNode &&
-									videoNode.parentElement &&
-									videoNode.parentElement.id === data.parentID
-								) {
-									console.log('moving parent of video', data);
-									data.rect = mutation.target.getBoundingClientRect();
-									to_return = true;
-								}
-							});
-						}
-						if (to_return) return;
+			// 			if (mutation.target.id.startsWith('stun-chatbox')) {
+			// 				this.streamData.forEach((data) => {
+			// 					console.log(data);
+			// 					const videoNode = findClosestVideoChild(mutation.target);
+			// 					if (
+			// 						videoNode &&
+			// 						videoNode.parentElement &&
+			// 						videoNode.parentElement.id === data.parentID
+			// 					) {
+			// 						console.log('moving parent of video', data);
+			// 						data.rect = mutation.target.getBoundingClientRect();
+			// 						to_return = true;
+			// 					}
+			// 				});
+			// 			}
+			// 			if (to_return) return;
 
-						const imgBase64 =
-							'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+			// 			const imgBase64 =
+			// 				'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
-						if (mutation.target.nodeName === 'IMG' && mutation.target.currentSrc === imgBase64) {
-							return;
-						}
-						if (
-							mutation.target.nodeName === 'DIV' &&
-							mutation.target.innerHTML ===
-								`<img src="${imgBase64}" width="1" height="1" style="margin: 0px; padding: 0px; vertical-align: super;">Hidden Text`
-						) {
-							return;
-						}
-						if (mutation.target === document.querySelector('i#audio-indicator.fa.fa-microphone')) {
-							return;
-						}
-						if (mutation.attributeName === 'style') {
-							if (shouldThrottle(mutation.target)) {
-								return;
-							} else {
-								const rect = mutation.target.getBoundingClientRect();
-								if (rect.width > 0 && rect.height > 0) {
-									takeSnapshot(document.body.getBoundingClientRect());
-								}
-							}
-						}
-					}
+			// 			if (mutation.target.nodeName === 'IMG' && mutation.target.currentSrc === imgBase64) {
+			// 				return;
+			// 			}
+			// 			if (
+			// 				mutation.target.nodeName === 'DIV' &&
+			// 				mutation.target.innerHTML ===
+			// 					`<img src="${imgBase64}" width="1" height="1" style="margin: 0px; padding: 0px; vertical-align: super;">Hidden Text`
+			// 			) {
+			// 				return;
+			// 			}
+			// 			if (mutation.target === document.querySelector('i#audio-indicator.fa.fa-microphone')) {
+			// 				return;
+			// 			}
+			// 			if (mutation.attributeName === 'style') {
+			// 				if (shouldThrottle(mutation.target)) {
+			// 					return;
+			// 				} else {
+			// 					const rect = mutation.target.getBoundingClientRect();
+			// 					if (rect.width > 0 && rect.height > 0) {
+			// 						takeSnapshot(document.body.getBoundingClientRect());
+			// 					}
+			// 				}
+			// 			}
+			// 		}
 
-					if (mutation.type === 'childList') {
-						mutation.addedNodes.forEach((node) => {
-							if (
-								node.nodeType === Node.ELEMENT_NODE &&
-								node.tagName === 'DIV' &&
-								node.id.startsWith('stream_')
-							) {
-								// console.log('childlist', mutation.addedNodes);
-								node.querySelectorAll('video').forEach((video) => {
-									const stream = video.captureStream
-										? video.captureStream()
-										: video.mozCaptureStream
-										? video.mozCaptureStream()
-										: null;
-									const rect = video.getBoundingClientRect();
-									const parentID = video.parentElement.id;
-									const videoElement = document.createElement('video');
-									videoElement.srcObject = stream;
-									videoElement.muted = true;
-									videoElement.play();
-									this.streamData.push({ stream, rect, parentID, videoElement });
-								});
-							}
-						});
-					}
+			// 		if (mutation.type === 'childList') {
+			// 			mutation.addedNodes.forEach((node) => {
+			// 				if (
+			// 					node.nodeType === Node.ELEMENT_NODE &&
+			// 					node.tagName === 'DIV' &&
+			// 					node.id.startsWith('stream_')
+			// 				) {
+			// 					// console.log('childlist', mutation.addedNodes);
+			// 					node.querySelectorAll('video').forEach((video) => {
+			// 						const stream = video.captureStream
+			// 							? video.captureStream()
+			// 							: video.mozCaptureStream
+			// 							? video.mozCaptureStream()
+			// 							: null;
+			// 						const rect = video.getBoundingClientRect();
+			// 						const parentID = video.parentElement.id;
+			// 						const videoElement = document.createElement('video');
+			// 						videoElement.srcObject = stream;
+			// 						videoElement.muted = true;
+			// 						videoElement.play();
+			// 						this.streamData.push({ stream, rect, parentID, videoElement });
+			// 					});
+			// 				}
+			// 			});
+			// 		}
 
-					if (mutation.removedNodes.length > 0) {
-						mutation.removedNodes.forEach((node) => {
-							let index = this.streamData.findIndex(
-								(data) => data.videoElement === node || data.videoElement.parentElement === node
-							);
-							if (index !== -1) {
-								this.streamData.splice(index, 1);
-							}
-						});
-					}
-				});
-			});
-			observer.observe(document.body, {
-				attributes: true,
-				childList: true,
-				subtree: true,
-				attributeFilter: ['style']
-			});
+			// 		if (mutation.removedNodes.length > 0) {
+			// 			mutation.removedNodes.forEach((node) => {
+			// 				let index = this.streamData.findIndex(
+			// 					(data) => data.videoElement === node || data.videoElement.parentElement === node
+			// 				);
+			// 				if (index !== -1) {
+			// 					this.streamData.splice(index, 1);
+			// 				}
+			// 			});
+			// 		}
+			// 	});
+			// });
+			// observer.observe(document.body, {
+			// 	attributes: true,
+			// 	childList: true,
+			// 	subtree: true,
+			// 	attributeFilter: ['style']
+			// });
 
 			// get video elements if there is already a call going on
 			const videoElements = document.querySelectorAll('div[id^="stream_"] video');
