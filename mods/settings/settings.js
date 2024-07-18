@@ -96,7 +96,7 @@ class Settings extends ModTemplate {
 			return [
 				{
 					text: 'Theme',
-					icon: 'fa-solid fa-moon',
+					icon: "saito-theme-icon fa-solid fa-moon",
 					rank: 120,
 					callback: function (app, id) {
 						settings_self.renderInto('.theme-selector');
