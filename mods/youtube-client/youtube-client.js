@@ -75,7 +75,7 @@ class YoutubeClient extends ModTemplate {
 		navigator.mediaDevices.getUserMedia({video: true}).then(stream => {
 		
 			localVideo.srcObject = stream;
-			const ws_url = window.location.protocol.replace(/https|http/g, 'ws') + '//' + // http: -> ws:, https: -> wss:
+			const ws_url = window.location.protocol.replace('http', 'ws') + '//' + // http: -> ws:, https: -> wss:
 		        (window.location.hostname+':3000') +
 		        '/rtmp/' +
 		        encodeURIComponent(`rtmp://b.rtmp.youtube.com/live2/${this_self.stream_key}`);
