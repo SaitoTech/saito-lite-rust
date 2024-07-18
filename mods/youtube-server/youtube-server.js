@@ -52,8 +52,8 @@ class YoutubeServer extends ModTemplate {
 	    }
 
 		const options = {
-		  key: fs.readFileSync(`${path}/test-privkey.pem`),
-		  cert: fs.readFileSync(`${path}/test-cert.pem`)
+		  key: fs.readFileSync(`${path}/privkey.pem`),
+		  cert: fs.readFileSync(`${path}/cert.pem`)
 		};
 
 		console.log("SSL options: ", options);
