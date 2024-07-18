@@ -202,7 +202,7 @@ class Relay extends ModTemplate {
             up by the gametemplate so we can get away with this...
           */
 
-          app.connection.emit("relay-notification", message.data.module, message.data.notification);
+          app.connection.emit("relay-notification", message.data);
 
           //return app.modules.handlePeerTransaction(relayed_tx, peer, mycallback);
         }

@@ -174,14 +174,6 @@ class Chat extends ModTemplate {
       return;
     }
 
-    if (this.app.options.theme) {
-      let theme = this.app.options.theme[this.slug];
-
-      if (theme != null) {
-        this.app.browser.switchTheme(theme);
-      }
-    }
-
     if (this.main == null) {
       this.header = new SaitoHeader(this.app, this);
       await this.header.initialize(this.app);

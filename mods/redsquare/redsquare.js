@@ -446,17 +446,6 @@ class RedSquare extends ModTemplate {
       }
     }
 
-
-    //
-    // default to dark mode
-    //
-    if (this.app.options.theme) {
-      let theme = this.app.options.theme[this.slug];
-      if (theme != null) {
-        this.app.browser.switchTheme(theme);
-      }
-    }
-
     //
     // check url hash so we don't render conflicting things...
     //

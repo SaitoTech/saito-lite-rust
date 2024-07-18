@@ -285,6 +285,16 @@ class Browser {
 
 			this.browser_active = 1;
 
+			let theme = document.documentElement.getAttribute('data-theme');
+			console.log(theme);
+		    if (this.app.options?.theme) {
+		      if (this.app.options.theme[active_module]){
+		      	theme = this.app.options.theme[active_module];
+		      }
+		    }
+		    console.log(theme);
+		    this.switchTheme(theme);
+
 			const updateViewHeight = () => {
 				let vh = window.innerHeight * 0.01;
 				document.documentElement.style.setProperty(
@@ -306,27 +316,25 @@ class Browser {
 			}
 		}
 
-		if (this.app.BROWSER == 1) {
-			//
-			// Add Connection Monitors
-			//
-			this.app.connection.on(
-				'peer_connect',
-				function (peerIndex: bigint) {
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					siteMessage('Websocket Connection Established', 1000);
-				}
-			);
-			this.app.connection.on(
-				'peer_disconnect',
-				function (peerIndex: bigint) {
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					siteMessage('Websocket Connection Lost');
-				}
-			);
-		}
+		//
+		// Add Connection Monitors
+		//
+		this.app.connection.on(
+			'peer_connect',
+			function (peerIndex: bigint) {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				siteMessage('Websocket Connection Established', 1000);
+			}
+		);
+		this.app.connection.on(
+			'peer_disconnect',
+			function (peerIndex: bigint) {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				siteMessage('Websocket Connection Lost');
+			}
+		);
 
 		// attach listening events
 		document.querySelector('body').addEventListener(
@@ -2348,7 +2356,26 @@ class Browser {
 				this.app.options.theme[mod_obj.slug] = theme;
 				this.app.storage.saveOptions();
 			}
-			console.debug(this.app.options);
+
+
+			//Update header
+			setTimeout(()=> {
+				let theme_icon_obj = document.querySelector(".saito-theme-icon");
+				if (theme_icon_obj){
+					let classes = theme_icon_obj.classList;
+					for (let c of classes){
+						theme_icon_obj.classList.remove(c);
+					}
+
+					theme_icon_obj.classList.add("saito-theme-icon");
+					console.log(mod_obj.theme_options[theme]);
+					let theme_classes = mod_obj.theme_options[theme].split(" ");
+					for (let t of theme_classes){
+						theme_icon_obj.classList.add(t);
+					}
+				}
+			}, 500);
+
 		}
 	}
 

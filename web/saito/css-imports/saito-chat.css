@@ -781,6 +781,13 @@
 }
 
 
+.chat-popup.maximized .chat-maximizer-icon,
+.chat-popup.minimized .chat-minimizer-icon {
+  background-color: var(--background-color-button-hover-chat-popup-header);
+  color: var(--font-color-button-hover-chat-popup-header);
+}
+
+
 @media screen and (max-width: 720px) {
   .chat-manager-overlay .chat-manager-title {
     display: none;
