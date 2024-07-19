@@ -1660,7 +1660,7 @@ class Limbo extends ModTemplate {
 		expressapp.get('/' + encodeURI("limbo"), serverFn);
 
 		expressapp.post(
-			'/' + encodeURI(this.returnSlug()),
+			'/' + encodeURI("limbo"),
 			async function (req, res) {
 				let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
 
