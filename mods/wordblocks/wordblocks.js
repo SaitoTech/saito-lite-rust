@@ -30,6 +30,7 @@ class Wordblocks extends GameTemplate {
 
 		//All Wordblocks games will be async enabled
 		this.async_dealing = 1;
+		this.can_play_async = 1;
 
 		this.tilesToHighlight = [];
 		this.moves = [];

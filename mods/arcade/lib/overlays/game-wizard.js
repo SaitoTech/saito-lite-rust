@@ -193,6 +193,18 @@ class GameWizard {
 							'CreateDirectInvite',
 							options.game
 						);
+					}else if (gameType == 'async'){
+						if (options['game-wizard-players-select'] > 2) {
+							salert("Asynchronous game creation is experimental and assumes there are only two players!");
+							return;
+						}
+						this.app.browser.logMatomoEvent(
+							'GameWizard',
+							'CreateAsyncInvite',
+							options.game
+						);
+						options.async_dealing = 1;
+						gameType = 'private';
 					} else {
 						this.app.browser.logMatomoEvent(
 							'GameWizard',

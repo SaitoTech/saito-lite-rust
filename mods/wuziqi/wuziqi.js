@@ -27,8 +27,9 @@ class Wuziqi extends GameTemplate {
 		this.social.creator = "Richard M Parris";
 		this.title = '五子棋 - Five-in-a-Row';
 
-		this.seats = [2, 5];
 		this.app = app;
+
+		this.can_play_async = 1;
 
 		this.roles = ['observer', 'black', 'white'];
 		this.acknowledge_text = 'next round...'; // not "i understand..."

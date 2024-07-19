@@ -35,6 +35,8 @@ class Chessgame extends GameTemplate {
 
 		this.confirm_moves = 1;
 
+		this.can_play_async = 1;
+		
 		this.roles = ['observer', 'white', 'black'];
 		this.app = app;
 	}

@@ -339,7 +339,13 @@ class Arcade extends ModTemplate {
 					//
 					//record.status will overwrite the open/private msg.request from the original game invite creation
 					//
-					arcade_self.addGame(game_tx, record.status);
+					let game_added = arcade_self.addGame(game_tx, record.status);
+
+					//Game is marked as "active" but we didn't already add it from our app.options file...
+					if (record.status == "active" && game_added && arcade_self.isMyGame(game_tx)){
+						game_tx.msg.game_id = game_tx.signature;
+						arcade_self.receiveAcceptTransaction(game_tx);
+					}
 				}
 			}
 
@@ -379,6 +385,7 @@ class Arcade extends ModTemplate {
 			}
 
 			app.connection.emit('arcade-invite-manager-render-request');
+
 		});
 	}
 
@@ -1228,7 +1235,7 @@ class Arcade extends ModTemplate {
 			//
 			// First player (originator) sends the accept message
 			//
-			if (game.msg.originator == this.publicKey) {
+			if (game.msg.originator == this.publicKey || tx.isFrom(this.publicKey) && game.msg.options?.async_dealing) {
 				let newtx = await this.createAcceptTransaction(game);
 				this.app.network.propagateTransaction(newtx);
 				this.app.connection.emit('relay-send-message', {
@@ -1275,10 +1282,12 @@ class Arcade extends ModTemplate {
 		return newtx;
 	}
 
+
 	async receiveAcceptTransaction(tx) {
 
 		//Must be valid tx
-		if (!tx || !tx.signature) {
+		if (!tx) {
+			console.warn("Invalid tx");
 			return;
 		}
 		let txmsg = tx.returnMessage();
@@ -1296,7 +1305,9 @@ class Arcade extends ModTemplate {
 		let game = this.returnGame(txmsg.game_id);
 
 		// Must be an available invite
-		if (!game || !this.isAvailableGame(game, 'accepted')) {
+		if (!game || (!this.isAvailableGame(game, 'accepted') && !txmsg.options?.async_dealing)) {
+			console.log(game);
+			console.log(txmsg);
 			return;
 		}
 
@@ -1315,6 +1326,7 @@ class Arcade extends ModTemplate {
 		//
 		// If I am a player in the game, let's start it initializing
 		//
+
 		if (txmsg.players.includes(this.publicKey)) {
 			if (!this.app.options.arcade[txmsg.game]) {
 				this.app.options.arcade[txmsg.game] = 0;
@@ -1587,7 +1599,7 @@ class Arcade extends ModTemplate {
 					if (this.debug) {
 						console.log('TX is already in Arcade list');
 					}
-					return;
+					return false;
 				}
 			}
 		}
@@ -1624,6 +1636,8 @@ class Arcade extends ModTemplate {
 				JSON.parse(JSON.stringify(this.games))
 			);
 		}
+
+		return true;
 	}
 
 	removeGame(game_id) {
