@@ -120,7 +120,6 @@
 	max-height: 95vh;
 	height: min-content;
 	width: min(900px, 90vw);
-	overflow-y: auto;
 	grid-template-rows: min-content auto;
 	background: var(--saito-arcade-overlay-background);
 	padding: 2rem;
@@ -179,7 +178,6 @@
 }
 
 .saito-select::after {
-	background: var(--background-color-button-mod-arcade);
 	border-left: 3px solid var(--color-primary);
 }
 
@@ -192,7 +190,6 @@
 	background-color: transparent;
 	overflow: hidden;
 	width: 100%;
-	border-radius: 0 1rem 1rem 0;
 	outline: none;
 	background-color: none;
 }
@@ -264,13 +261,6 @@
 	background: none;
 }
 
-.saito-multi-select_btn_options button {
-	border-radius: 0;
-	min-height: 4.8rem;
-	margin-bottom: 0.2rem;
-	font-size: 2rem;
-}
-
 .saito-multi-select_btn.showAll {
 	overflow: visible;
 }
@@ -280,11 +270,14 @@
 }
 
 .saito-multi-select_btn_options button {
-	background: var(--background-color-button-mod-arcade);
+	background: var(--saito-arcade-overlay-background);
 	margin: 0rem;
 	padding: 0rem;
 	width: 100%;
 	display: block;
+	border-radius: 0;
+	min-height: 4.8rem;
+	font-size: 2rem;
 	margin-bottom: 0.2rem;
 	border: 1px solid var(--color-primary);
 }
@@ -302,7 +295,7 @@
 }
 
 .saito-multi-btn:hover {
-	background: transparent;
+	background: var(--background-color-button-primary);
 }
 
 .game-wizard-form {
