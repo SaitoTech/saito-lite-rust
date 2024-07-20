@@ -22176,8 +22176,6 @@ if (this.game.state.scenario != "is_testing") {
       this.is_first_loop = 0;
     }
 
-console.log("INTO HANDLE GAME LOOP!");
-
     ///////////
     // QUEUE //
     ///////////
@@ -26558,9 +26556,19 @@ return 1; }
 	  //
 	  // skip if we have already confirmed!
 	  //
+          let have_i_resolved = false;
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
-	    return 0;
+	    have_i_resolved = true;
+	  } else {
+            if (this.game.tmp_confirm_sent == 1) {
+              have_i_resolved = true;
+            } else {
+              if (await this.hasMyResolvePending()) {
+                have_i_resolved = true;
+              }
+            }
 	  }
+	  if (have_i_resolved == true) { return 0; }
 
 	  //
 	  // if we haven't done this already...
@@ -34061,12 +34069,6 @@ if (this.game.state.round == 2) {
 	      this.game.state.round++;
 	      let deck_to_deal = this.returnNewCardsForThisTurn(this.game.state.round);
 
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("return new cards for this turn: " + this.game.state.round);
-
 	      for (let key in deck_to_deal) { 
 	        if (key !== "001" && key !== "002" && key !== "003" && key !== "004" && key !== "005" && key !== "006" && key !== "007" && key !== "008") {
 	          reshuffle_cards[key] = deck_to_deal[key]; 
@@ -34086,7 +34088,6 @@ console.log("return new cards for this turn: " + this.game.state.round);
 console.log("----------------------------");
 console.log("---SHUFFLING IN DISCARDS ---");
 console.log("----------------------------");
-console.log(JSON.stringify(reshuffle_cards));
 
     	  this.game.queue.push("restore_home_cards_to_deck");
     	  this.game.queue.push("DECK\t1\t"+JSON.stringify(reshuffle_cards));
@@ -35170,9 +35171,6 @@ console.log(JSON.stringify(reshuffle_cards));
 	  let faction = mv[1];
 	  let spacekey = mv[2];
  	  let space = this.game.spaces[spacekey];
-
-console.log("spacekey: " + spacekey);
-console.log("space.units: " + JSON.stringify(space.units));
 
 	  for (let f in space.units) {
 
