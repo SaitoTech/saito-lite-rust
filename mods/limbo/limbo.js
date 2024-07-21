@@ -234,7 +234,7 @@ class Limbo extends ModTemplate {
 									salert("Only the host can end the Swarmcast");
 								}
 							} else {
-								mod_self.startDream({ alt_id: obj?.call_id, keylist: obj.members, type: 'videocall' });
+								mod_self.startDream({ alt_id: obj?.call_id, keylist: obj.members, externalMediaType: 'videocall' });
 							}
 						},
 						event: function (id) {
@@ -276,18 +276,11 @@ class Limbo extends ModTemplate {
 						if (mod_self.dreamer == mod_self.publicKey) {
 							await mod_self.sendKickTransaction(obj.members);
 							mod_self.exitSpace();
-							mod_self.toggleNotification(false, mod_self.publicKey);
 						} else {
 							salert("Only the host can end the Swarmcast");
 						}
-
-						const castButtonGame = document.getElementById('cast-stream');
-						if (castButtonGame) {
-							castButtonGame.textContent = 'Cast game';
-						}
 					} else {
-						recordButton.textContent = 'Stop Casting';
-						mod_self.startDream({  type: "game", container, keylist: [] });
+						mod_self.startDream({ externalMediaType: "game", container, keylist: [] });
 					}
 					// if (!this.mediaRecorder) {
 					// 	await this.startRecording(container, game_mod.players, callbackAfterRecord, 'game');
@@ -445,22 +438,27 @@ class Limbo extends ModTemplate {
 		//default mode is audio (only)
 		options.mode = "audio";
 
-		//
-		// First check if any other modules are fetching media
-		//
-		const otherParties = this.app.modules.getRespondTos('media-request');
-		if (otherParties.length > 0) {
-			console.log('Include other media!');
-			// We hope there is only 1 respondTo!
-			this.localStream = otherParties[0].localStream;
-			this.additionalSources = otherParties[0].remoteStreams;
 
-			// This serves as a flag to prevent you from shutting off the localStream when ending a cast
-			this.externalMediaControl = true;
 
-			options["screenStream"] = false;
-			options["audio"] = true;
+		if (options.externalMediaType === "videocall") {
+			//
+			// First check if any other modules are fetching media
+			//
+			const otherParties = this.app.modules.getRespondTos('media-request');
+			if (otherParties.length > 0) {
+				console.log('Include other media!');
+				// We hope there is only 1 respondTo!
+				this.localStream = otherParties[0].localStream;
+				this.additionalSources = otherParties[0].remoteStreams;
+
+				// This serves as a flag to prevent you from shutting off the localStream when ending a cast
+				this.externalMediaControl = true;
+
+				options["screenStream"] = false;
+				options["audio"] = true;
+			}
 		}
+
 
 		if (!this.wizard) {
 			this.wizard = new DreamWizard(this.app, this, options);
@@ -518,7 +516,7 @@ class Limbo extends ModTemplate {
 				return;
 			}
 		} else {
-			if (options.type === "videocall") {
+			if (options.externalMediaType === "videocall") {
 				if (this.additionalSources || this.localStream) {
 					if (includeCamera) {
 						//
@@ -536,12 +534,13 @@ class Limbo extends ModTemplate {
 				}
 			}
 
-			if (options.type === "game") {
+			if (options.externalMediaType === "game") {
 				const recorders = this.app.modules.getRespondTos('screenrecord-game-limbo');
 				if (recorders.length > 0) {
 					options.mode = "camera";
 					this.externalMediaControl = recorders[0];
 					this.combinedStream = await this.externalMediaControl.startStreamingGame(options);
+					// this.toggleNotification(false, this.publicKey);
 					console.log('this.combinedStream', this.combinedStream)
 					return;
 				}
@@ -630,7 +629,6 @@ class Limbo extends ModTemplate {
 			return;
 		}
 		await this.getStream(options);
-
 		//Set up controls for user...
 		if (this.browser_active) {
 			this.controls = new DreamControls(this.app, this, '#limbo-main');
@@ -1637,6 +1635,22 @@ class Limbo extends ModTemplate {
 				full_icon.querySelector("label").innerText = "Cast";
 			}
 		}
+
+		const castButtonGame = document.getElementById('cast-stream');
+
+		if (!castButtonGame) {
+			console.warn('Cast button not found in the DOM');
+			return;
+		}
+
+		const isCasting = castButtonGame.textContent.trim().toLowerCase() === 'stop cast';
+
+		console.log('isCasting', isCasting)
+		castButtonGame.textContent = isCasting ? 'Cast game' : 'Stop cast';
+
+
+
+
 	}
 
 	beforeUnloadHandler(event) {

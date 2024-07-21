@@ -20,9 +20,9 @@ module.exports = DreamWizardTemplate = (app, mod, options) => {
 		html += `<div class="cast-mode"><i class="selected fa-solid ${icon}"></i></div>`
 	} else {
 		html += `<div class="cast-mode">
-		            ${options.type === "videocall" ? `<div class="cast-mode-option" id="mode-audio"><i class="fa-solid ${mod.audio_icon}" title="ignore the camera feeds and cast only the call audio"></i><label>voice</label></div>`: ""}
+		            ${options.externalMediaType === "videocall" ? `<div class="cast-mode-option" id="mode-audio"><i class="fa-solid ${mod.audio_icon}" title="ignore the camera feeds and cast only the call audio"></i><label>voice</label></div>`: ""}
 					
-					<div class="cast-mode-option ${options.type==="videocall" && "selected"}" id="mode-video"><i class="fa-solid ${mod.screen_icon}" title="Let Saito stitch the video streams together"></i><label>${options.type === "videocall" ? "video" : "include video"}</label></div>
+					<div class="cast-mode-option ${options.externalMediaType==="videocall" && "selected"}" id="mode-video"><i class="fa-solid ${mod.screen_icon}" title="Let Saito stitch the video streams together"></i><label>${options.externalMediaType === "videocall" ? "video" : "include video?"}</label></div>
 					<!--i id="mode-audio" class="cast-mode-option fa-solid ${mod.audio_icon}"></i>
 					<i id="mode-video" class="cast-mode-option fa-solid ${mod.screen_icon} " title="Let Saito stitch the video streams together"></i-->
 					<!--i id="mode-screen" class="cast-mode-option fa-solid ${mod.screen_icon}" title="Use browser screen share to capture this window or another on your computer"></i-->
