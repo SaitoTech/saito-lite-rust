@@ -90,6 +90,39 @@ class StreamCapturer {
         this.drawLogoOnCanvas(ctx);
     }
 
+    serializeNode(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            return { type: 'text', content: node.textContent };
+        }
+        if (node.nodeType === Node.ELEMENT_NODE) {
+            const serialized = {
+                type: 'element',
+                tagName: node.tagName,
+                attributes: {},
+                children: [],
+                styles: {}
+            };
+
+            // Serialize attributes
+            for (let attr of node.attributes) {
+                serialized.attributes[attr.name] = attr.value;
+            }
+
+            // Serialize computed styles
+            const styles = window.getComputedStyle(node);
+            for (let style of styles) {
+                serialized.styles[style] = styles.getPropertyValue(style);
+            }
+
+            // Serialize children
+            for (let child of node.childNodes) {
+                serialized.children.push(this.serializeNode(child));
+            }
+
+            return serialized;
+        }
+        return null;
+    }
     drawLogoOnCanvas(ctx) {
         const maxDimension = 100;
         const aspectRatio = this.logo.naturalWidth / this.logo.naturalHeight;
@@ -405,7 +438,7 @@ class StreamCapturer {
 
     }
 
-    async captureGameStream() {
+    async captureGameStream(includeCamera = false) {
         if (this.is_capturing_stream) {
             console.log('RECORD --- Nope out of resetting captureGameStreams');
             return this.combinedStream;
@@ -419,8 +452,13 @@ class StreamCapturer {
             return;
         }
 
-        // clear previous canvas
 
+        // clear previous canvas
+        if(document.querySelector("#gameCanvasID")){
+            console.log('existing canvas')
+            document.querySelector("#gameCanvasID").parentElement.removeChild(document.querySelector("#gameCanvasID"))
+        }
+    
 
         // create audio context and mixer
         this.audioCtx = new AudioContext();
@@ -428,49 +466,167 @@ class StreamCapturer {
         this.mixer = this.audioCtx.createGain();
         this.mixer.connect(this.destination);
 
+        this.observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'childList') {
+                    mutation.addedNodes.forEach((node) => {
+                        if (
+                            node.nodeType === Node.ELEMENT_NODE &&
+                            node.tagName === 'DIV' &&
+                            node.id.startsWith('stream_')
+                        ) {
+                            const videos = node.querySelectorAll('video');
+                            console.log('video elements', videos)
+                            videos.forEach((video) => {
+                                console.log('new video element', video);
+                                const stream =
+                                    'captureStream' in video
+                                        ? video.captureStream()
+                                        : 'mozCaptureStream' in video
+                                            ? video.mozCaptureStream() && video.mozCaptureStream(0)
+                                            : null;
+                                // console.log('captured stream', stream)
+                                // processStream(stream, video);
+                                const rect = video.getBoundingClientRect();
+                                const parentID = video.parentElement.id;
+                                let existingVideoIndex = this.streamData.findIndex(data => data.video.id === video.id)
+                                if (existingVideoIndex !== -1) {
+                                    console.log("Video exists")
+                                    this.streamData[existingVideoIndex] = { stream, rect, parentID, video }
+                                    return;
+                                }
+                                this.streamData.push({ stream, rect, parentID, video });
+                            });
+                        }
+                    });
 
-        // create canvas
+                    if (mutation.removedNodes.length > 0) {
+                        mutation.removedNodes.forEach((node) => {
+                            if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'DIV' && node.id.startsWith('stream_')) {
+                                const videos = node.querySelectorAll('video');
+                                videos.forEach((video) => {
+                                    const streamData = this.streamData.find(data => data.video.id === video.id);
+                                    if (streamData) {
+                                        // console.log('removed stream from source', streamData.stream.id)
+                                        // removeStream(streamData.stream.id);
+                                        this.streamData = this.streamData.filter(data => data.video.id !== video.id);
+                                    }
+                                });
+                            }
+                        });
+                    }
+
+                    // console.log('Updated Stream Data: ', this.streamData);
+                }
+                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                    this.streamData.forEach((data) => {
+                        if (data.parentID === mutation.target.id) {
+                            data.rect = mutation.target.getBoundingClientRect();
+                        }
+                    });
+                }
+            });
+        });
+
+        //Start Observer
+        this.observer.observe(view_window, {
+            attributes: true,
+            childList: true,
+            subtree: true,
+            attributeFilter: ['style']
+        });
+
         const canvas = document.createElement('canvas');
+        canvas.setAttribute("id","gameCanvasID" )
         this.canvas = canvas;
         canvas.width = window.innerWidth;
         canvas.height = view_window.clientHeight;
-        const ctx = canvas.getContext('2d')
+        const ctx = canvas.getContext('2d');
+        console.log('Canvas Dimensions: ', canvas.width, canvas.height);
+        let lastScreenshot = null;
 
+        const drawStreamsToCanvas = () => {
+            if (!this.is_capturing_stream) return;
+            // Clear the canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Draw the last captured screenshot if available
+            if (lastScreenshot) {
+                ctx.drawImage(lastScreenshot, 0, 0, canvas.width, canvas.height);
+            }
+            // Draw video streams
+            this.streamData.forEach((data) => {
+                const parentElement = document.getElementById(data.parentID);
+                console.log('data', data)
+                if (!parentElement) return;
+                const rect = parentElement.getBoundingClientRect();
+                // Draw the video on the canvas
+                if (data.video.readyState >= 2) {
+                    this.drawImageProp(
+                        ctx,
+                        data.video,
+                        rect.left,
+                        rect.top,
+                        rect.width,
+                        rect.height
+                    );
+                }
+            });
+            this.drawLogoOnCanvas(ctx);
+           this.drawStreamsAnimationFrameId = requestAnimationFrame(drawStreamsToCanvas);
+        };
 
-        // get snapshot of with html2canvas
         let lastCaptureTime = 0;
-        const captureInterval = 1000 / 30; // Aim for 30 fps
+  
+        const captureInterval = 1000 / 2; 
 
         const captureAndDraw = async (timestamp) => {
             if (!this.is_capturing_stream) return;
             if (timestamp - lastCaptureTime >= captureInterval) {
                 lastCaptureTime = timestamp;
-
+                let rect = view_window.getBoundingClientRect()
                 try {
                     const screenshot = await html2canvas(view_window, {
-                        scale: 1,
-                        useCORS: true,
-                        allowTaint: true,
+                        scale: 0.9,
+                        useCORS: false,
+                        allowTaint: false,
                         logging: false,
+                        x: rect.left,
+						y: rect.top,
+						width: rect.width,
+						height: rect.height,
+                        ignoreElements: function (element) {
+							if (element.id === 'stream_local') {
+								return true;
+							}
+							if (element.classList.contains('stun-chatbox')) {
+								return true;
+							}
+							if (element.classList.contains('chat-container')) {
+								return true;
+							}
+							if (element.classList.contains('game-menu')) {
+								return true;
+							}
+						}
                     });
 
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(screenshot, 0, 0, canvas.width, canvas.height);
-                    this.drawLogoOnCanvas(ctx);
+                    lastScreenshot = screenshot;
                 } catch (error) {
                     console.error('Error capturing view_window:', error);
                 }
             }
-
-            requestAnimationFrame(captureAndDraw);
+           this.captureAnimationFrameId = requestAnimationFrame(captureAndDraw);
         };
 
-        // Start the capture loop
-        requestAnimationFrame(captureAndDraw);
-        this.combinedStream.addTrack(canvas.captureStream(20).getVideoTracks()[0]);
+        this.drawStreamsToCanvas = drawStreamsToCanvas
 
+        // Start both loops
+        window.addEventListener('resize', this.handleResize);
+        this.resizeCanvas(canvas);
 
+        captureAndDraw()
 
+        this.combinedStream.addTrack(canvas.captureStream(30).getVideoTracks()[0]);
 
         // get existing streams
         const streams = this.app.modules.getRespondTos('media-request');
@@ -487,7 +643,6 @@ class StreamCapturer {
                 otherAudio.connect(this.mixer);
             });
         } else {
-            let includeCamera = await sconfirm('Add webcam to stream?');
             try {
                 if (includeCamera) {
                     try {
@@ -534,11 +689,46 @@ class StreamCapturer {
 
         this.combinedStream.addTrack(this.destination.stream.getAudioTracks()[0]);
         return this.combinedStream
-
-
     }
 
     async stopCaptureGameStream() {
+        console.log('initiate cleanup')
+        this.is_capturing_stream = false;
+        cancelAnimationFrame(this.drawStreamsAnimationFrameId);
+        cancelAnimationFrame(this.captureAnimationFrameId);
+        window.removeEventListener('resize', this.handleResize);
+     
+
+        if(this.localStream){
+            this.localStream.getTracks().forEach(track => {
+                track.stop()
+            })
+        }
+        if(this.videoBox){
+            this.videoBox.remove()
+        }
+
+        this.combinedStream.getTracks().forEach((track) => {
+            track.stop();
+            console.log(track, 'track');
+        });
+
+        this.combinedStream = null;
+        this.observer.disconnect()
+
+        this.streamData = [];
+        if (this.activeStreams) {
+            this.activeStreams.forEach(({ source, gainNode }) => {
+                source.disconnect();
+                // gainNode.disconnect();
+            });
+            this.activeStreams.clear();
+        }
+
+        if (this.canvas && this.canvas.parentNode) {
+            this.canvas.parentNode.removeChild(this.canvas);
+        }
+
 
     }
 

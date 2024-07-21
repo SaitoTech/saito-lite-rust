@@ -28,7 +28,7 @@ class DreamWizard{
 
 				if (mode){
 					if (mode.getAttribute("id") == "mode-video"){
-						this.options.includeCamera = true;;
+						this.options.includeCamera = true;
 					}
 					if (mode.getAttribute("id") == "mode-screen"){
 						this.options.screenStream = true;

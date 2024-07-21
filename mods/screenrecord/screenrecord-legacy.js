@@ -80,7 +80,7 @@ class Record extends ModTemplate {
 			];
 		}
 
-		if (type === 'screenrecord-limbo') {
+		if (type === 'screenrecord-videocall-limbo') {
 			this.attachStyleSheets();
 			super.render(this.app, this);
 			let is_recording = false;

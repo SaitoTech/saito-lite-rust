@@ -78,7 +78,7 @@ class Record extends ModTemplate {
 			];
 		}
 
-		if (type === 'screenrecord-limbo') {
+		if (type === 'screenrecord-videocall-limbo') {
 			this.attachStyleSheets();
 			super.render(this.app, this);
 			let is_recording = false;
@@ -100,6 +100,38 @@ class Record extends ModTemplate {
 				stopStreamingVideoCall: async () => {
 					if (this.limboStreamCapture) {
 						this.limboStreamCapture.stopCaptureVideoCallStreams();
+						this.limboStreamCapture = null;
+					} else {
+						console.log('No stream to stop?');
+					}
+				}
+			};
+		}
+		if (type === 'screenrecord-game-limbo') {
+			this.attachStyleSheets();
+			super.render(this.app, this);
+			let is_recording = false;
+			if (this.mediaRecorder) {
+				is_recording = true;
+			}
+
+			return {
+				startStreamingGame: async (options) => {
+					
+					try {
+						let {includeCamera, container} =options
+						this.limboStreamCapture = new StreamCapturer(this.app, this.logo);
+						this.limboStreamCapture.view_window = container
+						let stream = await this.limboStreamCapture.captureGameStream(includeCamera);
+						return stream;
+					} catch (error) {
+						console.log('error streaming video call', error);
+					}
+				},
+
+				stopStreamingGame: async () => {
+					if (this.limboStreamCapture) {
+						this.limboStreamCapture.stopCaptureGameStream();
 						this.limboStreamCapture = null;
 					} else {
 						console.log('No stream to stop?');
@@ -131,10 +163,9 @@ class Record extends ModTemplate {
 					let recordButton = document.getElementById('record-stream');
 					let { container, callbackAfterRecord } = game_mod.recordOptions;
 					if (!this.mediaRecorder) {
-						await this.startRecording(container, game_mod.players, callbackAfterRecord, 'game');
+						await this.startRecording(container, game_mod.game.players, callbackAfterRecord, 'game');
 						recordButton.textContent = 'Stop recording';
 					} else {
-						// this.mediaRecorder.stop();
 						this.stopRecording();
 					}
 				}.bind(this)
