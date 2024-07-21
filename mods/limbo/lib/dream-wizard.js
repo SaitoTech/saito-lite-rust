@@ -11,24 +11,20 @@ class DreamWizard{
 	}
 
 	render() {
-
 		this.overlay.show(DreamWizardTemplate(this.app, this.mod, this.options));	
-
 		this.attachEvents();
 	}
 
 	attachEvents(){
-
 		if (document.getElementById("dream-wizard-btn")){
 			document.getElementById("dream-wizard-btn").onclick = (e) => {
 				//Read the title & description for profile display
 				let title_el = document.getElementById("dream-wizard-identifier");
 				let title = document.getElementById("dream-wizard-identifier")?.value || "";
 				let mode = document.querySelector(".cast-mode-option.selected");
-
 				if (mode){
 					if (mode.getAttribute("id") == "mode-video"){
-						this.options.includeCamera = true;;
+						this.options.includeCamera = true;
 					}
 					if (mode.getAttribute("id") == "mode-screen"){
 						this.options.screenStream = true;

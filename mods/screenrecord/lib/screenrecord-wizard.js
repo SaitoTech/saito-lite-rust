@@ -12,7 +12,7 @@ class ScreenRecordWizard{
 
 	render() {
 
-		this.overlay.show(ScreenRecordWizardTemplate(this.app, this.mod));	
+		this.overlay.show(ScreenRecordWizardTemplate(this.app, this.mod, this.options));	
 
 		this.attachEvents();
 	}
