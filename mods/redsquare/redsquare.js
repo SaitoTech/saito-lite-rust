@@ -826,14 +826,14 @@ class RedSquare extends ModTemplate {
 
       if (txmsg.request === "create tweet") {
         await this.receiveTweetTransaction(blk, tx, conf, this.app);
-        redsquare_self.cacheRecentTweets();
+        this.cacheRecentTweets();
       }
       if (txmsg.request === "like tweet") {
         await this.receiveLikeTransaction(blk, tx, conf, this.app);
       }
       if (txmsg.request === "flag tweet") {
         await this.receiveFlagTransaction(blk, tx, conf, this.app);
-        redsquare_self.cacheRecentTweets();
+        this.cacheRecentTweets();
       }
       if (txmsg.request === "retweet") {
         await this.receiveRetweetTransaction(blk, tx, conf, this.app);
