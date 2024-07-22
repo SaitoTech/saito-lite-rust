@@ -156,6 +156,8 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 								<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-secondary">decline invite</div>`;
 			}
 		}
+	} else if (invite.game_mod.doesGameExistLocally(invite.game_id)) {
+		html += `<div id="arcade-game-controls-continue-game" class="saito-button saito-button-primary">view game</div>`;
 	} else if (invite.game_mod.enable_observer && invite?.step > 0) {
 		//Observer mode -- finished
 		html += `<div id="arcade-game-controls-review-game" class="saito-button saito-button-primary">review game</div>`;

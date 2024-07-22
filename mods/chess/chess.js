@@ -51,7 +51,7 @@ class Chessgame extends GameTemplate {
 
 		await this.injectGameHTML(htmlTemplate());
 
-		super.render(app);
+		await super.render(app);
 
 		//
 		// ADD MENU
@@ -148,6 +148,8 @@ class Chessgame extends GameTemplate {
 			$('.game-playerbox-manager').addClass('reverse');
 		}
 
+		this.updateStatusMessage();
+
 		window.onresize = () => this.board.resize();
 	}
 
@@ -205,7 +207,6 @@ class Chessgame extends GameTemplate {
 			this.confirm_moves = 0;
 		}
 
-		this.updateStatusMessage();
 		this.game.draw_offered = this.game.draw_offered || 0;
 		//this.attachGameEvents();
 	}
@@ -220,12 +221,20 @@ class Chessgame extends GameTemplate {
 
 		let msg = {};
 		if (this.game.queue.length > 0) {
-			msg.extra = JSON.parse(
-				this.app.crypto.base64ToString(
-					this.game.queue[this.game.queue.length - 1]
-				)
-			);
-			this.game.queue.splice(this.game.queue.length - 1, 1);
+			let mv = this.game.queue.pop();
+
+			if (mv == "checkmate"){
+				var winnerColor = this.engine.turn() === 'b' ? 'white' : 'black';
+				let winner = this.roles.indexOf(winnerColor);
+				this.sendGameOverTransaction(this.game.players[winner-1], "checkmate");
+				return 0;
+			}
+
+			if (mv == "resignation"){
+
+			}
+
+			msg.extra = JSON.parse(this.app.crypto.base64ToString(mv));
 		} else {
 			msg.extra = {};
 		}
@@ -302,13 +311,18 @@ class Chessgame extends GameTemplate {
 		this.updateStatusMessage();
 
 		if (msg.extra.target == this.game.player) {
+			this.playerTurn();
+		}else{
 			//I announce that I am in checkmate to end the game
 			if (this.engine.in_checkmate() === true) {
-				this.sendStopGameTransaction('checkmate');
+				this.game.turn = ["checkmate"];
+
+				this.sendGameMoveTransaction("game", {});
+
+				//this.sendStopGameTransaction('checkmate');
 				return 0;
 			}
 
-			this.playerTurn();
 		}
 
 		this.saveGame(this.game.id);

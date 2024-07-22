@@ -1056,16 +1056,16 @@ class Arcade extends ModTemplate {
 			console.warn("Game not found, arcade can't process gameover tx");
 		}
 
-		await this.changeGameStatus(txmsg.game_id, 'over');
-
 		let sql = `UPDATE games
                SET winner        = $winner,
                    method        = $method,
+                   status  	   = $status,
                    time_finished = $timestamp
                WHERE game_id = $game_id`;
 		let params = {
 			$winner: JSON.stringify(winner),
 			$method: txmsg.reason,
+			$status: "over",
 			$timestamp: txmsg.timestamp,
 			$game_id: txmsg.game_id
 		};

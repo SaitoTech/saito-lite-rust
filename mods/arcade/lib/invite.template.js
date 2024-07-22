@@ -51,9 +51,19 @@ module.exports = (app, mod, invite) => {
           </div>
         </div>`;
   
-  if (invite_class){
+  console.log(invite);
+
+  if (invite_class) {
     html += `<div class="angled-notification">your turn</div>`;
-  }      
+  } 
+  // Overwrite "your turn" as necessary
+  if (invite.winner) {
+    if (invite.winner.includes(mod.publicKey)) {
+      html += `<div class="angled-notification">you won</div>`;
+    } else {
+      html += `<div class="angled-notification">you lost</div>`;
+    } 
+  }    
   
   html += `</div>`;
 
