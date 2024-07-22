@@ -348,8 +348,13 @@ class RedSquare extends ModTemplate {
     this.loadOptions();
 
     if (!app.BROWSER) {
+      this.cached_recent_tweets = await this.cacheRecentTweets();
       return;
     } 
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// ONLY BROWSER CODE
+    //////////////////////////////////////////////////////////////////////////
 
     //
     // add myself as peer...
@@ -394,11 +399,6 @@ class RedSquare extends ModTemplate {
       }
     }
   
-
-    if (!this.app.BROWSER) {
-      this.cacheRecentTweets();
-    }
-
   }
 
   isFollowing(key){
@@ -786,7 +786,6 @@ class RedSquare extends ModTemplate {
       }
       if (txmsg.request === "edit tweet") {
         await this.receiveEditTransaction(blk, tx, conf, this.app);
-        this.cacheRecentTweets();
         return;
       }
       if (txmsg.request === "follow") {
@@ -826,14 +825,12 @@ class RedSquare extends ModTemplate {
 
       if (txmsg.request === "create tweet") {
         await this.receiveTweetTransaction(blk, tx, conf, this.app);
-        this.cacheRecentTweets();
       }
       if (txmsg.request === "like tweet") {
         await this.receiveLikeTransaction(blk, tx, conf, this.app);
       }
       if (txmsg.request === "flag tweet") {
         await this.receiveFlagTransaction(blk, tx, conf, this.app);
-        this.cacheRecentTweets();
       }
       if (txmsg.request === "retweet") {
         await this.receiveRetweetTransaction(blk, tx, conf, this.app);
@@ -2183,6 +2180,13 @@ class RedSquare extends ModTemplate {
             "localhost"
           );
         }
+      } else {
+        if (this.app.modules.moderate(tx, this.name) != -1) {
+            this.cached_recent_tweets.push(tx.serialize_to_web(this.app));
+        }
+        if (this.cached_recent_tweets.length > 10) {
+          this.cached_recent_tweets.shift();
+        }
       }
     } catch (err) {
       console.log("ERROR in receiveTweetsTransaction() in RedSquare: " + err);
@@ -2489,12 +2493,11 @@ class RedSquare extends ModTemplate {
     let redsquare_self = this;
     let hex_values = [];
 
-
     if (this.app.BROWSER) {
       return;
     }
 
-    this.cached_recent_tweets = this.app.storage.loadTransactions(
+    return this.app.storage.loadTransactions(
       {
         field1: "RedSquare",
         flagged: 0,
@@ -2503,14 +2506,14 @@ class RedSquare extends ModTemplate {
       },
       (txs) => {
         let cnt = 0;
-        for (let i = 0; i < txs.length && cnt < 8; i++) {
+        for (let i = 0; i < txs.length && cnt < 9; i++) {
           try {
             if (txs[i].optional.parent_id){
               //console.log("Tweet is a reply to " + txs[i].optional.parent_id);
             }else{
 	      if (redsquare_self.app.modules.moderate(txs[i], redsquare_self.name) != -1) {
-                hex_values.push(txs[i].serialize_to_web(this.app));
-                cnt++;
+            cnt++;
+            hex_values.push(txs[i].serialize_to_web(this.app));
 	      }
             }
           } catch (err) {
@@ -2626,6 +2629,11 @@ class RedSquare extends ModTemplate {
       // fallback for default
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
+
+      if (redsquare_self.cached_recent_tweets.length > 10) {
+        redsquare_self.cached_recent_tweets.shift();
+      }
+
       res.send(redsquareHome(app, redsquare_self, app.build_number, redsquare_self.social, redsquare_self.cached_recent_tweets));
       return;
     });
