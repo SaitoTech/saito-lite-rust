@@ -12261,6 +12261,8 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  }
 	}
 
+	his_self.game.state.janissaries_spaces = [];
+
 	let spaces_to_select = 4;
 	if (at_war) { spaces_to_select = 2; }
 
@@ -12298,12 +12300,14 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	      `Select Space to Add Unrest / #${num}`,
 
 	      (space) => {
+		if (his_self.game.state.janissaries_spaces.includes(space.key)) { return 0; }
 	        if (his_self.isOccupied(space.key)) { return 0; }
 	        if (his_self.game.spaces[space.key].home == "ottoman") { return 1; }
 	        return 0;
 	      },
 
 	      (spacekey) => {
+		his_self.game.state.janissaries_spaces.push(spacekey);
       		his_self.addMove("unrest\t"+spacekey);
 		his_self.endTurn();
 	      },
@@ -12580,8 +12584,8 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	    let valid_options = 0;
 	    let invalid_options = 0;
 	    for (let i = 0; i < his_self.game.deck[0].fhand[fhand_idx].length; i++) {
-	      let card = his_self.game.deck[0].fhand[i];
-	      if (his_self.game.deck[0].cards[cards].type != "mandatory" && parseInt(card) > 8) { valid_options++; } else {
+	      let card = his_self.game.deck[0].fhand[fhand_idx][i];
+	      if (his_self.game.deck[0].cards[card].type != "mandatory" && parseInt(card) > 8) { valid_options++; } else {
 		invalid_options++;
 	      }
 	    }
@@ -14152,7 +14156,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) { return 1; },
-      menuOption  :       function(his_self, menu, player) {
+      menuOption  :  function(his_self, menu, player) {
         if (menu == "pre_spring_deployment") {
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
@@ -14228,16 +14232,16 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  let msg = "Target Which Minor Army Leader?";
           let html = '<ul>';
 	  if (his_self.returnSpaceOfPersonage("england", "charles-brandon") != "") {
-            html += '<li class="option" id="brandon">Charles Brandon (England)</li>';
+            html += '<li class="option" id="charles-brandon">Charles Brandon (England)</li>';
 	  }
 	  if (his_self.returnSpaceOfPersonage("hapsburg", "duke-of-alva") != "") {
-            html += '<li class="option" id="duke">Duke of Alva (Hapsburgs)</li>';
+            html += '<li class="option" id="duke-of-alva">Duke of Alva (Hapsburgs)</li>';
           }
 	  if (his_self.returnSpaceOfPersonage("france", "montmorency") != "") {
             html += '<li class="option" id="montmorency">Montmorency (France)</li>';
           }
 	  if (his_self.returnSpaceOfPersonage("ottoman", "ibrahim-pasha") != "") {
-            html += '<li class="option" id="pasha">Ibrahim Pasha (Ottomans)</li>';
+            html += '<li class="option" id="ibrahim-pasha">Ibrahim Pasha (Ottomans)</li>';
           }
 	  html += '</ul>';
 
@@ -14266,10 +14270,10 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  let faction = "";
 	  let leader_found = false;
 
-	  if (leader == "brandon") 	{ leader = "charles-brandon"; faction = "england"; }
-	  if (leader == "duke") 	{ leader = "duke-of-alva"; faction = "hapsburg"; }
-	  if (leader == "montmorency") { leader = "montmorency"; faction = "france"; }
-	  if (leader == "pasha") 	{ leader = "ibrahim-pasha"; faction = "ottoman"; }
+	  if (leader == "charles-brandon") 	{ leader = "charles-brandon"; faction = "england"; }
+	  if (leader == "duke-of-alva") 	{ leader = "duke-of-alva"; faction = "hapsburg"; }
+	  if (leader == "montmorency") 		{ leader = "montmorency"; faction = "france"; }
+	  if (leader == "ibrahim-pasha") 	{ leader = "ibrahim-pasha"; faction = "ottoman"; }
 
 	  let r = his_self.rollDice(6);
 
@@ -14308,15 +14312,15 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
             let obj = {};
             obj.space = s;
             obj.faction = faction;
-            obj.leader = his_self.game.spaces[s].units[faction][idx];
+	    if (his_self.game.spaces[s]) {
+              obj.leader = his_self.game.spaces[s].units[faction][idx];
+              if (idx != -1) {
+                his_self.game.spaces[s].units[faction].splice(idx, 1);
+              }
+              his_self.game.state.military_leaders_removed_until_next_round.push(obj);
+	    }
 
-            if (idx != -1) {
-              his_self.game.spaces[s].units[faction].splice(idx, 1);
-            }
-
-            his_self.game.state.military_leaders_removed_until_next_round.push(obj);
-
-	    his_self.displaySpace(s.key);
+	    his_self.displaySpace(s);
 
             his_self.game.queue.splice(qe, 1);
             return 1;
@@ -22598,6 +22602,7 @@ if (this.game.options.scenario != "is_testing") {
 	  if (mv[1] === "council_of_trent") { this.council_of_trent_overlay.hide(); }
 	  if (mv[1] === "vp") { this.vp_overlay.hide(); }
 	  if (mv[1] === "theological_debate") { this.debate_overlay.pushHudUnderOverlay(); this.debate_overlay.hide(); }
+	  if (mv[1] === "spring_deployment") { this.spring_deployment_overlay.hide(); }
 	  if (mv[1] === "field_battle") { this.field_battle_overlay.hide(); }
 	  if (mv[1] === "siege") { this.assault_overlay.hide(); }
 	  if (mv[1] === "assault") { this.assault_overlay.hide(); }
@@ -37112,12 +37117,14 @@ console.log("----------------------------");
 
         let id = $(this).attr("id");
 
+	his_self.updateStatus("acknowledge...");
+
         if (id === "end") {
 
 	  //
 	  // moves prepended to last removed first
 	  //
-	  for (let i = units_available.length; i >= 0; i--) {
+	  for (let i = units_available.length-1; i >= 0; i--) {
 	    if (!units_to_retain.includes(i)) {
 	      his_self.prependMove("destroy_unit_by_index\t"+faction+"\t"+units_available[i].spacekey+"\t"+units_available[i].idx);
 	    }
@@ -38409,6 +38416,7 @@ if (relief_siege == 1) {
       try {
         if (deck[card].canEvent(this, faction) && !this.game.state.cards_evented.includes(card)) {
   	  can_event_this = true;
+	  if (card === "102") { can_event_this = false; }
         }
       } catch (err) {}
       if (can_event_this) {
@@ -38602,6 +38610,7 @@ try {
         his_self.updateStatusWithOptions(`${his_self.returnFactionName(selected_faction)}: ${ops} ops remaining`, html);
         this.attachCardboxEvents(async (user_choice) => {      
 
+	  his_self.unbindBackButtonFunction();
 	  his_self.updateStatus("acknowledge");
 	  his_self.menu_overlay.hide();
 
@@ -38863,17 +38872,20 @@ try {
     // this prevents things like DEFENDER OF THE FAITH or CLEMENT VII from halting 
     // gameplay mid-turn and slowing everything down.
     //
-    if (deck[card].type == "mandatory" || !deck[card].canEvent(this, faction)) {
-      this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
-    } else {
-      //
-      // otherwise, we skip if the Protestants cannot interfere
-      //
-      if ((faction == "england" && this.returnPlayerCommandingFaction("protestant") == this.returnPlayerCommandingFaction("england")) || faction == "protestant" || this.game.deck[0].discards["037"] || this.game.state.events.intervention_on_events_possible == false) {
+    // some cards skip this acknowledge -- such as Patron of the Arts 004
+    if (card !== "004") {
+      if (deck[card].type == "mandatory" || !deck[card].canEvent(this, faction)) {
         this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
       } else {
-        this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
-        this.addMove("RESETCONFIRMSNEEDED\tall");
+        //
+        // otherwise, we skip if the Protestants cannot interfere
+        //
+        if ((faction == "england" && this.returnPlayerCommandingFaction("protestant") == this.returnPlayerCommandingFaction("england")) || faction == "protestant" || this.game.deck[0].discards["037"] || this.game.state.events.intervention_on_events_possible == false) {
+          this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
+        } else {
+          this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
+          this.addMove("RESETCONFIRMSNEEDED\tall");
+        }
       }
     }
 
@@ -39741,6 +39753,22 @@ return;
     let units_to_move = [];
     let cancel_func = null;
     let source_spacekey;
+    let does_faction_have_spring_preparations = false;
+
+    // Spring Preparations 102
+    let fhand_idx = his_self.returnFactionHandIdx(his_self.game.player, faction);
+    for (let z = 0; z < his_self.game.deck[0].fhand[fhand_idx].length; z++) {
+      if (his_self.game.deck[0].fhand[fhand_idx][z] === "102") {
+	does_faction_have_spring_preparations = true;
+	let controls_capital = false;
+        for (let i = 0; i < capitals.length; i++) {
+          if (his_self.isSpaceControlled(capitals[i], faction)) {
+	    controls_capital = true;
+	  }
+        }
+	if (!controls_capital) { does_faction_have_spring_preparations = false; }
+      }
+    }
 
     for (let i = 0; i < capitals.length; i++) {
       let c = capitals[i];
@@ -39762,7 +39790,9 @@ return;
       for (let i = 0; i < viable_capitals.length; i++) {
 	opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
       }
-      //opt += `<li class="option" id="cards">( see my cards )</li>`;
+      if (does_faction_have_spring_preparations == true) {
+	opt += `<li class="option showcard" id="102">Spring Preparations</li>`;
+      }
       opt += `<li class="option" id="pass">skip</li>`;
       opt += '</ul>';
 
@@ -39777,12 +39807,16 @@ return;
 
         let id = $(this).attr('id');
 
-	//if (id === "cards") {
-        //  let fhand_idx = his_self.returnFactionHandIdx(his_self.game.player, faction);
-        //  let c = his_self.game.deck[0].fhand[fhand_idx];
-        //  his_self.deck_overlay.render("hand", c);
-	//  return;
-        //}
+	if (id == "102") {
+	  // remove RESOLVE, we want to play and re-trigger, including adding extra
+	  his_self.moves = [];	  
+	  his_self.addMove("discard\t"+faction+"\t"+"102");
+	  his_self.addMove("spring_preparations\t"+faction);
+	  his_self.addMove("hide_overlay\tspring_deployment");
+	  his_self.cardbox.hide();
+	  his_self.endTurn();
+	  return;
+	}
 
 	source_spacekey = id;
         $(".option").off();

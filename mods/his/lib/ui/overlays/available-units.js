@@ -14,7 +14,8 @@ class AvailableUnitsOverlay {
 	}
 
 	hide() {
-		document.querySelector(".available-units-overlay").remove();
+		let obj = document.querySelector(".available-units-overlay");
+		if (obj) { obj.remove(); }
 		this.faded_out = false;
 	}
 
@@ -61,6 +62,7 @@ class AvailableUnitsOverlay {
 		} else {
 		  document.querySelector(".available-units-overlay").innerHTML = ``;
 		}
+
 	  	let p = this.mod.returnPlayerCommandingFaction(faction);
 	  	let io = this.mod.game.spaces[spacekey].units;
 		this.added = 0;

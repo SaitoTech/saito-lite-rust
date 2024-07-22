@@ -643,12 +643,14 @@
 
         let id = $(this).attr("id");
 
+	his_self.updateStatus("acknowledge...");
+
         if (id === "end") {
 
 	  //
 	  // moves prepended to last removed first
 	  //
-	  for (let i = units_available.length; i >= 0; i--) {
+	  for (let i = units_available.length-1; i >= 0; i--) {
 	    if (!units_to_retain.includes(i)) {
 	      his_self.prependMove("destroy_unit_by_index\t"+faction+"\t"+units_available[i].spacekey+"\t"+units_available[i].idx);
 	    }
@@ -1940,6 +1942,7 @@ if (relief_siege == 1) {
       try {
         if (deck[card].canEvent(this, faction) && !this.game.state.cards_evented.includes(card)) {
   	  can_event_this = true;
+	  if (card === "102") { can_event_this = false; }
         }
       } catch (err) {}
       if (can_event_this) {
@@ -2133,6 +2136,7 @@ try {
         his_self.updateStatusWithOptions(`${his_self.returnFactionName(selected_faction)}: ${ops} ops remaining`, html);
         this.attachCardboxEvents(async (user_choice) => {      
 
+	  his_self.unbindBackButtonFunction();
 	  his_self.updateStatus("acknowledge");
 	  his_self.menu_overlay.hide();
 
@@ -2394,17 +2398,20 @@ try {
     // this prevents things like DEFENDER OF THE FAITH or CLEMENT VII from halting 
     // gameplay mid-turn and slowing everything down.
     //
-    if (deck[card].type == "mandatory" || !deck[card].canEvent(this, faction)) {
-      this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
-    } else {
-      //
-      // otherwise, we skip if the Protestants cannot interfere
-      //
-      if ((faction == "england" && this.returnPlayerCommandingFaction("protestant") == this.returnPlayerCommandingFaction("england")) || faction == "protestant" || this.game.deck[0].discards["037"] || this.game.state.events.intervention_on_events_possible == false) {
+    // some cards skip this acknowledge -- such as Patron of the Arts 004
+    if (card !== "004") {
+      if (deck[card].type == "mandatory" || !deck[card].canEvent(this, faction)) {
         this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
       } else {
-        this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
-        this.addMove("RESETCONFIRMSNEEDED\tall");
+        //
+        // otherwise, we skip if the Protestants cannot interfere
+        //
+        if ((faction == "england" && this.returnPlayerCommandingFaction("protestant") == this.returnPlayerCommandingFaction("england")) || faction == "protestant" || this.game.deck[0].discards["037"] || this.game.state.events.intervention_on_events_possible == false) {
+          this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
+        } else {
+          this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
+          this.addMove("RESETCONFIRMSNEEDED\tall");
+        }
       }
     }
 
@@ -3272,6 +3279,22 @@ return;
     let units_to_move = [];
     let cancel_func = null;
     let source_spacekey;
+    let does_faction_have_spring_preparations = false;
+
+    // Spring Preparations 102
+    let fhand_idx = his_self.returnFactionHandIdx(his_self.game.player, faction);
+    for (let z = 0; z < his_self.game.deck[0].fhand[fhand_idx].length; z++) {
+      if (his_self.game.deck[0].fhand[fhand_idx][z] === "102") {
+	does_faction_have_spring_preparations = true;
+	let controls_capital = false;
+        for (let i = 0; i < capitals.length; i++) {
+          if (his_self.isSpaceControlled(capitals[i], faction)) {
+	    controls_capital = true;
+	  }
+        }
+	if (!controls_capital) { does_faction_have_spring_preparations = false; }
+      }
+    }
 
     for (let i = 0; i < capitals.length; i++) {
       let c = capitals[i];
@@ -3293,7 +3316,9 @@ return;
       for (let i = 0; i < viable_capitals.length; i++) {
 	opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
       }
-      //opt += `<li class="option" id="cards">( see my cards )</li>`;
+      if (does_faction_have_spring_preparations == true) {
+	opt += `<li class="option showcard" id="102">Spring Preparations</li>`;
+      }
       opt += `<li class="option" id="pass">skip</li>`;
       opt += '</ul>';
 
@@ -3308,12 +3333,16 @@ return;
 
         let id = $(this).attr('id');
 
-	//if (id === "cards") {
-        //  let fhand_idx = his_self.returnFactionHandIdx(his_self.game.player, faction);
-        //  let c = his_self.game.deck[0].fhand[fhand_idx];
-        //  his_self.deck_overlay.render("hand", c);
-	//  return;
-        //}
+	if (id == "102") {
+	  // remove RESOLVE, we want to play and re-trigger, including adding extra
+	  his_self.moves = [];	  
+	  his_self.addMove("discard\t"+faction+"\t"+"102");
+	  his_self.addMove("spring_preparations\t"+faction);
+	  his_self.addMove("hide_overlay\tspring_deployment");
+	  his_self.cardbox.hide();
+	  his_self.endTurn();
+	  return;
+	}
 
 	source_spacekey = id;
         $(".option").off();

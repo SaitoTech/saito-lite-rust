@@ -8585,6 +8585,8 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  }
 	}
 
+	his_self.game.state.janissaries_spaces = [];
+
 	let spaces_to_select = 4;
 	if (at_war) { spaces_to_select = 2; }
 
@@ -8622,12 +8624,14 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	      `Select Space to Add Unrest / #${num}`,
 
 	      (space) => {
+		if (his_self.game.state.janissaries_spaces.includes(space.key)) { return 0; }
 	        if (his_self.isOccupied(space.key)) { return 0; }
 	        if (his_self.game.spaces[space.key].home == "ottoman") { return 1; }
 	        return 0;
 	      },
 
 	      (spacekey) => {
+		his_self.game.state.janissaries_spaces.push(spacekey);
       		his_self.addMove("unrest\t"+spacekey);
 		his_self.endTurn();
 	      },
@@ -8904,8 +8908,8 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	    let valid_options = 0;
 	    let invalid_options = 0;
 	    for (let i = 0; i < his_self.game.deck[0].fhand[fhand_idx].length; i++) {
-	      let card = his_self.game.deck[0].fhand[i];
-	      if (his_self.game.deck[0].cards[cards].type != "mandatory" && parseInt(card) > 8) { valid_options++; } else {
+	      let card = his_self.game.deck[0].fhand[fhand_idx][i];
+	      if (his_self.game.deck[0].cards[card].type != "mandatory" && parseInt(card) > 8) { valid_options++; } else {
 		invalid_options++;
 	      }
 	    }
@@ -10476,7 +10480,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) { return 1; },
-      menuOption  :       function(his_self, menu, player) {
+      menuOption  :  function(his_self, menu, player) {
         if (menu == "pre_spring_deployment") {
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
@@ -10552,16 +10556,16 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  let msg = "Target Which Minor Army Leader?";
           let html = '<ul>';
 	  if (his_self.returnSpaceOfPersonage("england", "charles-brandon") != "") {
-            html += '<li class="option" id="brandon">Charles Brandon (England)</li>';
+            html += '<li class="option" id="charles-brandon">Charles Brandon (England)</li>';
 	  }
 	  if (his_self.returnSpaceOfPersonage("hapsburg", "duke-of-alva") != "") {
-            html += '<li class="option" id="duke">Duke of Alva (Hapsburgs)</li>';
+            html += '<li class="option" id="duke-of-alva">Duke of Alva (Hapsburgs)</li>';
           }
 	  if (his_self.returnSpaceOfPersonage("france", "montmorency") != "") {
             html += '<li class="option" id="montmorency">Montmorency (France)</li>';
           }
 	  if (his_self.returnSpaceOfPersonage("ottoman", "ibrahim-pasha") != "") {
-            html += '<li class="option" id="pasha">Ibrahim Pasha (Ottomans)</li>';
+            html += '<li class="option" id="ibrahim-pasha">Ibrahim Pasha (Ottomans)</li>';
           }
 	  html += '</ul>';
 
@@ -10590,10 +10594,10 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  let faction = "";
 	  let leader_found = false;
 
-	  if (leader == "brandon") 	{ leader = "charles-brandon"; faction = "england"; }
-	  if (leader == "duke") 	{ leader = "duke-of-alva"; faction = "hapsburg"; }
-	  if (leader == "montmorency") { leader = "montmorency"; faction = "france"; }
-	  if (leader == "pasha") 	{ leader = "ibrahim-pasha"; faction = "ottoman"; }
+	  if (leader == "charles-brandon") 	{ leader = "charles-brandon"; faction = "england"; }
+	  if (leader == "duke-of-alva") 	{ leader = "duke-of-alva"; faction = "hapsburg"; }
+	  if (leader == "montmorency") 		{ leader = "montmorency"; faction = "france"; }
+	  if (leader == "ibrahim-pasha") 	{ leader = "ibrahim-pasha"; faction = "ottoman"; }
 
 	  let r = his_self.rollDice(6);
 
@@ -10632,15 +10636,15 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
             let obj = {};
             obj.space = s;
             obj.faction = faction;
-            obj.leader = his_self.game.spaces[s].units[faction][idx];
+	    if (his_self.game.spaces[s]) {
+              obj.leader = his_self.game.spaces[s].units[faction][idx];
+              if (idx != -1) {
+                his_self.game.spaces[s].units[faction].splice(idx, 1);
+              }
+              his_self.game.state.military_leaders_removed_until_next_round.push(obj);
+	    }
 
-            if (idx != -1) {
-              his_self.game.spaces[s].units[faction].splice(idx, 1);
-            }
-
-            his_self.game.state.military_leaders_removed_until_next_round.push(obj);
-
-	    his_self.displaySpace(s.key);
+	    his_self.displaySpace(s);
 
             his_self.game.queue.splice(qe, 1);
             return 1;
