@@ -440,23 +440,39 @@ class Arcade extends ModTemplate {
 	// while the application is loaded.
 	//
 	async render() {
-		if (this.main == null) {
-			this.main = new ArcadeMain(this.app, this);
-			this.header = new SaitoHeader(this.app, this);
-			await this.header.initialize(this.app);
-			this.header.header_class = 'arcade';
-			this.addComponent(this.header);
-			this.addComponent(this.main);
+		if (window.location.pathname.includes(this.returnSlug())){
+
+			if (this.main == null) {
+				this.main = new ArcadeMain(this.app, this);
+				this.header = new SaitoHeader(this.app, this);
+				await this.header.initialize(this.app);
+				this.header.header_class = 'arcade';
+				this.addComponent(this.header);
+				this.addComponent(this.main);
+			}
+
+			for (const mod of this.app.modules.returnModulesRespondingTo('chat-manager')) {
+				let cm = mod.respondTo('chat-manager');
+				cm.container = '.saito-sidebar.right';
+				cm.render_manager_to_screen = 1;
+				this.addComponent(cm);
+			}
+
+			await super.render();
+
+		}else{
+
+			let path = window.location.pathname.split("/");
+			let game_name = path.pop();
+			console.log(game_name);
+			let game_mod = this.app.modules.returnModuleBySlug(game_name);
+			console.log(game_mod);
+			if (game_mod){
+				game_mod.game = null;
+				game_mod.attachEvents();
+			}
 		}
 
-		for (const mod of this.app.modules.returnModulesRespondingTo('chat-manager')) {
-			let cm = mod.respondTo('chat-manager');
-			cm.container = '.saito-sidebar.right';
-			cm.render_manager_to_screen = 1;
-			this.addComponent(cm);
-		}
-
-		await super.render();
 	}
 
 	//
@@ -1850,6 +1866,14 @@ class Arcade extends ModTemplate {
 		return true;
 	}
 
+	isSlug(slug){
+		if (slug == this.returnSlug() || slug == "game"){
+			return true;
+		}
+		return false;
+	}
+
+
 	webServer(app, expressapp, express) {
 		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
 		let arcade_self = this;
@@ -1881,6 +1905,26 @@ class Arcade extends ModTemplate {
 			res.charset = 'UTF-8';
 			res.send(arcadeHome(app, arcade_self, app.build_number, updatedSocial, game_data));
 			return;
+		});
+
+
+		expressapp.get('/game/:game', async function (req, res){
+			console.log("**************");
+			console.log(req.params);
+
+			let game = req.params.game;
+
+			let game_mod = arcade_self.app.modules.returnModuleBySlug(game);
+
+			res.setHeader('Content-type', 'text/html');
+			res.charset = 'UTF-8';
+
+			if (game_mod){
+				res.send(game_mod.returnHomePage());
+			}else{
+				res.send(arcadeHome(app, arcade_self, app.build_number, arcade_self.social, null));
+			}
+
 		});
 
 		expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
