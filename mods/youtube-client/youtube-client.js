@@ -76,12 +76,12 @@ class YoutubeClient extends ModTemplate {
 		
 			localVideo.srcObject = stream;
 			const ws_url = window.location.protocol.replace('http', 'ws') + '//' + // http: -> ws:, https: -> wss:
-		        (window.location.hostname+':3000') +
+		        (window.location.hostname+'/encoder') +
 		        '/rtmp/' +
 		        encodeURIComponent(`rtmp://b.rtmp.youtube.com/live2/${this_self.stream_key}`);
 			 console.log('url:', ws_url);
 
-		    this_self.ws = new WebSocket(ws_url);
+		    this_self.ws = new WebSocket(ws_url,"echo-protocol");
 
 		    let mediaStream;
 			this_self.ws.addEventListener('open', (e) => {
