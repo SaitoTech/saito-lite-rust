@@ -154,6 +154,7 @@ class TweetManager {
 			if (document.getElementById("saito-new-tweets")){
 				holder.prepend(document.getElementById("saito-new-tweets"));
 			}
+			this.thread_id = null;
 		} else {
 			console.log("Remove temporary content from page");
 			while (managerElem.hasChildNodes()) {
@@ -171,8 +172,6 @@ class TweetManager {
 		}
 
 		console.log("Redsquare manager rendering: ", this.mode);
-
-		this.showLoader();
 
 		////////////
 		// tweets //
@@ -526,47 +525,79 @@ class TweetManager {
 	//
 	renderTweet(tweet) {
 		this.render('tweet');
-		console.log("Render Tweet");
-		this.showLoader();
-
-		let post = new Post(this.app, this.mod, tweet);
-		post.parent_id = tweet.tx.signature;
-		post.thread_id = tweet.thread_id;
-
-		post.source = 'Reply';
-
-		// show the basic tweet first
-		if (!tweet.parent_id) {
-			tweet.renderWithChildren();
-
-			if (document.querySelector(`.tweet-${tweet.tx.signature}`)) {
-				document
-					.querySelector(`.tweet-${tweet.tx.signature}`)
-					.classList.add('highlight-tweet');
-			}
-		}
 
 		// query the whole thread
 		let thread_id =
 			tweet.thread_id || tweet.parent_id || tweet.tx.signature;
 
-		this.mod.loadTweetThread(thread_id, () => {
-			let root_tweet = this.mod.returnTweet(thread_id);
+		console.log("Render Tweet Thread: ", thread_id);
 
+		// show the basic tweet first
+		if (!tweet.parent_id) {
+			tweet.renderWithChildren();
+		}else{
+			let root_tweet = this.mod.returnTweet(thread_id);
+			
 			if (root_tweet) {
 				root_tweet.renderWithChildrenWithTweet(tweet);
 			}
+		}
 
+		if (document.querySelector(`.tweet-${tweet.tx.signature}`)) {
+			document
+				.querySelector(`.tweet-${tweet.tx.signature}`)
+				.classList.add('highlight-tweet');
+		}
+
+
+		if (thread_id !== this?.thread_id){
+			this.thread_id = thread_id;
+			this.showLoader();
+
+			this.mod.loadTweetThread(thread_id, () => {
+				//
+				// This will catch you navigating back to the main feed before the callback completes
+				//
+				if (this.mode === "tweet" && this.thread_id === thread_id) {
+
+					let root_tweet = this.mod.returnTweet(thread_id);
+
+					if (root_tweet) {
+						root_tweet.renderWithChildrenWithTweet(tweet);
+					}
+
+					if (document.querySelector(`.tweet-${tweet.tx.signature}`)) {
+						document
+							.querySelector(`.tweet-${tweet.tx.signature}`)
+							.classList.add('highlight-tweet');
+
+						let post = new Post(this.app, this.mod, tweet);
+						post.parent_id = tweet.tx.signature;
+						post.thread_id = tweet.thread_id;
+
+						post.source = 'Reply';
+
+						post.render(`.tweet-${tweet.tx.signature}`);
+					}
+				}
+
+				this.hideLoader();
+			});
+		}else{
 			if (document.querySelector(`.tweet-${tweet.tx.signature}`)) {
 				document
 					.querySelector(`.tweet-${tweet.tx.signature}`)
 					.classList.add('highlight-tweet');
 
-				post.render(`.tweet-${tweet.tx.signature}`);
-			}
+				let post = new Post(this.app, this.mod, tweet);
+				post.parent_id = tweet.tx.signature;
+				post.thread_id = tweet.thread_id;
 
-			this.hideLoader();
-		});
+				post.source = 'Reply';
+
+				post.render(`.tweet-${tweet.tx.signature}`);
+			}		
+		}
 		
 	}
 
