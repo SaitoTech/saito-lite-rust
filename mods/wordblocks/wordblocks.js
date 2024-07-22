@@ -654,10 +654,13 @@ class Wordblocks extends GameTemplate {
 			};
 
 			$('#skipturn').off();
-			$('#skipturn').on('click', function () {
-				wordblocks_self.clearBoard();
-				wordblocks_self.addMove('discard_tiles\t' + wordblocks_self.game.player + '\t');
-				wordblocks_self.endTurn();
+			$('#skipturn').on('click', async function () {
+				let c = await sconfirm("Are you sure you want to end your turn without playing?");
+				if (c){
+					wordblocks_self.clearBoard();
+					wordblocks_self.addMove('discard_tiles\t' + wordblocks_self.game.player + '\t');
+					wordblocks_self.endTurn();
+				}
 			});
 
 			//Float helper tile with mouse over board
