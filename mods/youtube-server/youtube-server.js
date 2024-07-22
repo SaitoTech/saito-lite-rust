@@ -37,29 +37,16 @@ class YoutubeServer extends ModTemplate {
 
 
 	webServer(app, expressapp, express) {
-	    console.log("inside youtube-server");
+ 		console.log("inside youtube-server");
    		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
 
 	    const child_process = require('child_process'); // To be used later for running FFmpeg
 		//const express = require('express');
-		const https = require('https');
+		const http = require('http');
 		const WebSocketServer = require('ws').Server;
-		const fs = require('fs');
 
-		let path = '';
-		if (typeof process.env.SSL_PATH != "undefined") {
-	      path = process.env.SSL_PATH;
-	    }
-
-		const options = {
-		  key: fs.readFileSync(`${path}/privkey.pem`),
-		  cert: fs.readFileSync(`${path}/cert.pem`)
-		};
-
-		console.log("SSL options: ", options);
-
-		const server = https.createServer(options).listen(3000, () => {
-		  console.log('Listening on port 3000');
+		const server = http.createServer(expressapp).listen(3000, () => {
+		  console.log('Listening...');
 		});
 
 		const wss = new WebSocketServer({
