@@ -143,7 +143,11 @@ class DreamControls{
 
 
 	addDreamControls() {
-		console.log('adding dream controls /////');
+		
+		if (document.querySelector('.fa-youtube') != null) {
+			return;
+		}
+
 
 		let this_self = this;
 		let mods = this.app.modules.respondTo('dream-controls');
