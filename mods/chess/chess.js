@@ -110,7 +110,9 @@ class Chessgame extends GameTemplate {
 				callback: async function (app, game_mod) {
 					let c = await sconfirm('Do you really want to resign?');
 					if (c) {
-						await game_mod.sendStopGameTransaction('resignation');
+						game_mod.game.turn = [`resignation\t${game_mod.game.player}`];
+						game_mod.sendGameMoveTransaction("game", {});
+						//await game_mod.sendStopGameTransaction('resignation');
 						return;
 					}
 				}
@@ -230,8 +232,12 @@ class Chessgame extends GameTemplate {
 				return 0;
 			}
 
-			if (mv == "resignation"){
-
+			if (mv.includes("resignation")){
+				let cmd = mv.split("\t");
+				let loser = cmd.pop();
+				let winner = 2-loser;
+				this.sendGameOverTransaction(this.game.players[winner], "resignation");
+				return 0;
 			}
 
 			msg.extra = JSON.parse(this.app.crypto.base64ToString(mv));
