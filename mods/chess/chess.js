@@ -201,7 +201,7 @@ class Chessgame extends GameTemplate {
 		//
 		console.log("Target/Player", this.game.target, this.game.player);
 		if (this.game.target == this.game.player) {
-			this.playerTurn();
+			this.setPlayerActive();
 		}
 
 		// If we have a fast-ish timed game turn off move confirmations initially
@@ -317,7 +317,7 @@ class Chessgame extends GameTemplate {
 		this.updateStatusMessage();
 
 		if (msg.extra.target == this.game.player) {
-			this.playerTurn();
+			this.setPlayerActive();
 		}else{
 			//I announce that I am in checkmate to end the game
 			if (this.engine.in_checkmate() === true) {

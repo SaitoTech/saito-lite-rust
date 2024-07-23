@@ -243,9 +243,9 @@ class Wuziqi extends GameTemplate {
 	}
 
 	// Add click events to the board
-	// This is the functional playerTurn() function of Wuziqi
+	// This is the functional function of Wuziqi
 	addEvents(board) {
-		this.playerTurn();
+		this.setPlayerActive();
 
 		if (!this.gameBrowserActive()){
 			return;
@@ -379,7 +379,7 @@ class Wuziqi extends GameTemplate {
 
 				if (!this.gameBrowserActive() && this.game.player === this.game.target){
 					this.updateStatus("You lost the round");
-					this.playerTurn();
+					this.setPlayerActive();
 					return 0;
 				}
 
