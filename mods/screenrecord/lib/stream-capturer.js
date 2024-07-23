@@ -1,3 +1,5 @@
+
+
 const VideoBox = require('../../../lib/saito/ui/saito-videobox/video-box');
 const html2canvas = require('html2canvas');
 class StreamCapturer {
@@ -477,12 +479,14 @@ class StreamCapturer {
 
     }
 
+
+
     async captureGameStream(includeCamera = false) {
         console.log(this.is_capturing_stream, includeCamera, "details")
         if (this.is_capturing_stream) {
             console.log('RECORD --- Nope out of resetting captureGameStreams');
-             await this.getVideoBox(includeCamera)
-            
+            await this.getVideoBox(includeCamera)
+
             return this.combinedStream;
         }
 
@@ -617,11 +621,23 @@ class StreamCapturer {
 
         const captureInterval = 1000 / 1;
 
+
+        const originalCreatePattern = CanvasRenderingContext2D.prototype.createPattern;
+        CanvasRenderingContext2D.prototype.createPattern = function (image, repetition) {
+            if (image instanceof HTMLCanvasElement && (image.width === 0 || image.height <= 1)) {
+                console.warn('Attempted to create pattern with problematic canvas:', image.width, image.height);
+                image.width = image.width || 2;
+                image.height = Math.max(image.height, 2);
+            }
+            return originalCreatePattern.call(this, image, repetition);
+        };
+
         const captureAndDraw = async (timestamp) => {
             if (!this.is_capturing_stream) return;
             if (timestamp - lastCaptureTime >= captureInterval) {
                 lastCaptureTime = timestamp;
-                let rect = view_window.getBoundingClientRect()
+                let rect = view_window.getBoundingClientRect();
+    
                 try {
                     const screenshot = await html2canvas(view_window, {
                         scale: 0.9,
@@ -647,15 +663,15 @@ class StreamCapturer {
                             }
                         }
                     });
-
+        
                     lastScreenshot = screenshot;
                 } catch (error) {
                     console.error('Error capturing view_window:', error);
+                } finally {
                 }
             }
             this.captureAnimationFrameId = requestAnimationFrame(captureAndDraw);
         };
-
         this.drawStreamsToCanvas = drawStreamsToCanvas
 
         // Start both loops
@@ -782,7 +798,7 @@ class StreamCapturer {
                     this.app.browser.makeDraggable('stream_local');
                 }
 
-            }else {
+            } else {
                 this.videoBox.remove()
                 this.videoBox = null
             }
@@ -852,7 +868,7 @@ class StreamCapturer {
             console.error('Error in getExistingStreams:', error);
             throw error;
         }
-       
+
     }
 
     emitUpdatedCombinedStream() {
@@ -861,3 +877,4 @@ class StreamCapturer {
 }
 
 module.exports = StreamCapturer;
+
