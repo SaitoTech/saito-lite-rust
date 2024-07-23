@@ -210,7 +210,7 @@ class DreamControls{
 
 				menu.onclick = (e) => {
 					e.preventDefault();
-					callback(this_self.app, data_id);
+					callback(this_self.app, data_id, this.mod.combinedStream);
 				};
 			});
 		}
