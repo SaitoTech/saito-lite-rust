@@ -298,6 +298,11 @@ class Chat extends ModTemplate {
         console.log('Chat: onPeerServiceUp', service.service);
       }
 
+      if (this?.communityGroup?.members?.includes(peer.publicKey)){
+        console.log("Reconnect to chat service peer");
+        return;
+      }
+
       this.communityGroup = this.returnOrCreateChatGroupFromMembers(
         [peer.publicKey],
         this.communityGroupName
