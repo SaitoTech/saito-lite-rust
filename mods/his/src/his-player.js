@@ -643,6 +643,7 @@
 
         let id = $(this).attr("id");
 
+        his_self.unbindBackButtonFunction();
 	his_self.updateStatus("acknowledge...");
 
         if (id === "end") {
@@ -2297,6 +2298,7 @@ try {
       this.updateStatusWithOptions(`${this.returnFactionName(faction)}: ${ops} ops remaining`, html);
       this.attachCardboxEvents(async (user_choice) => {      
 
+        his_self.unbindBackButtonFunction();
 	his_self.updateStatus("acknowledge");
 	his_self.menu_overlay.hide();
 
@@ -2452,6 +2454,7 @@ return;
     $(".option").off();
     $(".option").on('click', function () {
 
+      his_self.unbindBackButtonFunction();
       his_self.updateStatus("acknowledge...");
 
       $(".option").off();
@@ -4368,7 +4371,7 @@ does_units_to_move_have_unit = true; }
 
     let surviving_units = 0;
     for (let f in space.units) {
-      let cf = this.returnCommandingFaction(f);
+      let cf = this.returnControllingPower(f);
       if (cf == faction || f == faction || this.areAllies(f, faction)) {
         for (let i = 0; i < space.units[f].length; i++) {
 	  let u = space.units[f][i];
@@ -4394,7 +4397,7 @@ does_units_to_move_have_unit = true; }
 
     let onFinishSelect = function(his_self, destination_spacekey) {
       for (let f in space.units) {
-        let cf = this.returnCommandingFaction(f);
+        let cf = his_self.returnControllingPower(f);
         if (cf == faction || f == faction) {
           his_self.addMove("naval_retreat"+"\t"+f+"\t"+spacekey+"\t"+destination_spacekey);
 	}
@@ -4691,6 +4694,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
     this.updateStatusWithOptions(`Withdraw Units into Fortification?`, html);
     this.attachCardboxEvents(function(user_choice) {
+      this.unbindBackButtonFunction();
       this.updateStatus("acknowledge...");
       if (user_choice === "fortify") {
 	his_self.addMove("fortification\t"+attacker+"\t"+faction+"\t"+spacekey+"\t"+post_battle+"\t"+relief_siege);
@@ -4881,6 +4885,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
     this.updateStatusWithOptions(`Intercept from ${this.returnSpaceName(defender_spacekey)}?`, html);
     this.attachCardboxEvents(function(user_choice) {
+      his_self.unbindBackButtonFunction();
       his_self.updateStatus("acknowledge");
       if (user_choice === "intercept") {
 	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
@@ -5549,6 +5554,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
         },
 
         function(destination_spacekey) {
+          his_self.unbindBackButtonFunction();
   	  his_self.updateStatus("acknowledge...");
           for (let i = 0; i < num; i++) {
 	    his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+destination_spacekey);
@@ -5589,6 +5595,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       },
 
       function(destination_spacekey) {
+        his_self.unbindBackButtonFunction();
 	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tland\t"+faction+"\t"+"mercenary"+"\t"+destination_spacekey);
 	his_self.endTurn();
@@ -5680,6 +5687,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
         },
 
         function(destination_spacekey) {
+          his_self.unbindBackButtonFunction();
 	  his_self.updateStatus("acknowledge...");
 	  for (let z = 0; z < num; z++) {
 	    his_self.addMove("build\tland\t"+faction+"\t"+"regular"+"\t"+destination_spacekey);
@@ -5738,6 +5746,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       },
 
       function(destination_spacekey) {
+        his_self.unbindBackButtonFunction();
 	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tland\t"+faction+"\t"+"regular"+"\t"+destination_spacekey);
 	his_self.endTurn();
@@ -5779,6 +5788,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       },
 
       function(destination_spacekey) {
+        his_self.unbindBackButtonFunction();
 	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tland\t"+faction+"\t"+"squadron"+"\t"+destination_spacekey);
 	his_self.endTurn();
@@ -5818,6 +5828,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
     $('.option').off();
     $('.option').on('click', function () {
+      his_self.unbindBackButtonFunction();
       his_self.updateStatus("acknowledge");
       let key = $(this).attr("id");
       if (key == "persia") {
@@ -6438,6 +6449,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     $('.option').off();
     $('.option').on('click', function () {
  
+      his_self.unbindBackButtonFunction();
       his_self.updateStatus("acknowledge");
       let key = $(this).attr("id");
       let ports = [];
@@ -6480,6 +6492,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       $('.option').on('click', function () {
  
         let target_port = $(this).attr("id");
+        his_self.unbindBackButtonFunction();
         his_self.updateStatus("acknowledge");
 	his_self.addMove("piracy\t"+faction+"\t"+key+"\t"+target_port);
 	his_self.endTurn();
@@ -6558,6 +6571,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
         },
 
         function(destination_spacekey) {
+          his_self.unbindBackButtonFunction();
 	  his_self.updateStatus("acknowledge...");
 	  for (let z = 0; z < num; z++) {
 	    his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+destination_spacekey);
@@ -6602,6 +6616,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       },
 
       function(destination_spacekey) {
+        his_self.unbindBackButtonFunction();
 	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tland\t"+faction+"\t"+"cavalry"+"\t"+destination_spacekey);
 	his_self.endTurn();
@@ -6630,6 +6645,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       },
 
       function(destination_spacekey) {
+        his_self.unbindBackButtonFunction();
 	his_self.updateStatus("acknowledge...");
 	his_self.addMove("build\tland\t"+faction+"\t"+"corsair"+"\t"+destination_spacekey);
 	his_self.endTurn();
@@ -7417,6 +7433,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
       function(spacekey) {
         
+        his_self.unbindBackButtonFunction();
 	his_self.updateStatus("acknowledge...");
 	his_self.addUnit(faction, spacekey, unittype);
 	his_self.displaySpace(spacekey);
