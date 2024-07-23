@@ -328,7 +328,9 @@ class Arcade extends ModTemplate {
                   OR (created_at > ${cutoff2} AND (status = 'over' OR status = 'active'))
                ORDER BY created_at ASC`;
 
-		this.sendPeerDatabaseRequestWithFilter('Arcade', sql, async (res) => {
+		this.sendPeerDatabaseRequestWithFilter('Arcade', sql, (res) => {
+			console.log(sql);
+			console.log(res);
 			if (res.rows) {
 				for (let record of res.rows) {
 					if (this.debug) {
@@ -380,7 +382,7 @@ class Arcade extends ModTemplate {
 
 				let invite = new Invite(app, this, null, null, game, this.publicKey);
 				let join_overlay = new JoinGameOverlay(app, this, invite.invite_data);
-				await join_overlay.render();
+				join_overlay.render();
 				window.history.pushState('', '', `/arcade/`);
 			}
 
