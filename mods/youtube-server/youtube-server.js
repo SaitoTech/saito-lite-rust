@@ -49,12 +49,12 @@ class YoutubeServer extends ModTemplate {
 		  console.log('Listening...');
 		});
 
-		const wss = new WebSocketServer({
+		const ws = new WebSocketServer({
 		  server: server
 		});
 
 
-		wss.on('connection', (ws, req) => {
+		ws.on('connection', (ws, req) => {
 
 		  // Ensure that the URL starts with '/rtmp/', and extract the target RTMP URL.
 		  let match;
