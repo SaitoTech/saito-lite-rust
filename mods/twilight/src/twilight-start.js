@@ -1207,6 +1207,21 @@ console.log("LATEST MOVE: " + mv);
       this.game.queue.splice(qe, 1);
     }
 
+    if (mv[0] === "fyp_discard") {
+
+      let card = mv[1];
+
+      for (var i in this.game.deck[0].cards) {
+        if (card == i) {
+          if (this.game.deck[0].cards[card] != undefined) {
+            this.game.deck[0].discards[i] = this.game.deck[0].cards[i];
+          }
+        }
+      }
+
+      this.game.queue.splice(qe, 1);
+    }
+
     //
     // remove from discards (will still be in cards)
     //

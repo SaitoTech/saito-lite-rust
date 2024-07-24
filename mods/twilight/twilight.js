@@ -1207,6 +1207,21 @@ console.log("LATEST MOVE: " + mv);
       this.game.queue.splice(qe, 1);
     }
 
+    if (mv[0] === "fyp_discard") {
+
+      let card = mv[1];
+
+      for (var i in this.game.deck[0].cards) {
+        if (card == i) {
+          if (this.game.deck[0].cards[card] != undefined) {
+            this.game.deck[0].discards[i] = this.game.deck[0].cards[i];
+          }
+        }
+      }
+
+      this.game.queue.splice(qe, 1);
+    }
+
     //
     // remove from discards (will still be in cards)
     //
@@ -11536,11 +11551,13 @@ if (card == "defectors") {
             twilight_self.removeCardFromHand(card);
             if (ac[card].player == "us") {
               twilight_self.addMove("event\tus\t"+card);
+              twilight_self.addMove("fyp_discard\t"+card);
               twilight_self.addMove("modal\tFive Year Plan\tUSSR triggers "+twilight_self.cardToText(card));
               twilight_self.addMove("NOTIFY\tFive Year Plan triggers US event: "+twilight_self.cardToText(card));
               twilight_self.endTurn();
             } else {
               twilight_self.addMove("modal\tFive Year Plan\tUSSR discards "+twilight_self.cardToText(card));
+              twilight_self.addMove("fyp_discard\t"+card);
               twilight_self.addMove("NOTIFY\tUSSR discarded "+twilight_self.cardToText(card));
               twilight_self.endTurn();
             }
