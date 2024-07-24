@@ -322,6 +322,7 @@ class Server {
 	}
 
 	initializeWebSocketServer() {
+		//return;
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const ws = require('ws');
 
@@ -329,6 +330,7 @@ class Server {
 			noServer: true,
 			path: '/wsopen'
 		});
+	
 		webserver.on('upgrade', (request: any, socket: any, head: any) => {
 			// console.debug("connection upgrade ----> " + request.url);
 			const { pathname } = parse(request.url);
