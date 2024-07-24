@@ -86,8 +86,8 @@ class YoutubeClient extends ModTemplate {
 		}
 
 		const ws_url = window.location.protocol.replace('http', 'ws') + '//' + // http: -> ws:, https: -> wss:
-	        (window.location.hostname) +
-	        '/encoder/rtmp/' +
+	        (window.location.hostname) + this.getPort() +
+	        '/rtmp/' +
 	        encodeURIComponent(`rtmp://b.rtmp.youtube.com/live2/${this_self.stream_key}`);
 		 console.log('url:', ws_url);
 
@@ -100,18 +100,20 @@ class YoutubeClient extends ModTemplate {
 			});
 
 			this_self.mediaRecorder.addEventListener('dataavailable', (e) => {
-				console.log('dataavailable',e.data);
+				//console.log('dataavailable',e.data);
 				this_self.ws.send(e.data);
 			});
 
-			this_self.mediaRecorder.addEventListener('stop', this_self.ws.close.bind(this_self.ws));
+			this_self.mediaRecorder.addEventListener('stop', (e) => {
+				this_self.ws.close(1000);
+			});
 
 			this_self.mediaRecorder.start(1000); // Start recording, and dump data every second
 		});
 
 		this_self.ws.addEventListener('close', (e) => {
 			console.log('WebSocket Close', e);
-			this_self.mediaRecorder.stop();
+			this_self.mediaRecorder.stop(1000);
 		});
 	}
 
@@ -150,6 +152,17 @@ class YoutubeClient extends ModTemplate {
 		}
 
 		return false;
+	}
+
+	getPort() {
+		// 44344 - test, prod
+		// 3000 - local dev
+		let port = ':44344';
+		let host = this.app.browser.host;
+		if (host.includes('127.0.0.1') || host.includes('localhost')) {
+			port = ':3000';
+		}
+		return port;
 	}
 
 }
