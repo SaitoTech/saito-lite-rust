@@ -15,6 +15,8 @@ class DreamControls{
 
 		this.startTime = new Date().getTime();
 
+		this.callbacks = {};
+
 		//Oof, I should change the name in video call (this actually refers to the hang up action)
 		app.connection.on('stun-disconnect', async ()=> {
 			if (this.mod?.dreamer == this.mod.publicKey){
@@ -117,6 +119,11 @@ class DreamControls{
 
 		});
 
+
+		this.app.connection.on('saito-limbo-add-yt-icon', (obj = {}) => {
+			this.addDreamControls();
+		});
+
 	}
 
 	render() {
@@ -131,8 +138,104 @@ class DreamControls{
 		//Tell PeerManager to pause streams for green room
 		this.app.connection.emit('limbo-toggle-audio');
 		this.app.connection.emit('limbo-toggle-video');
-
 	}
+
+
+	addDreamControls() {
+		console.log('adding dream controls /////');
+
+		let this_self = this;
+		let mods = this.app.modules.respondTo('dream-controls');
+
+		let index = 0;
+		let menu_entries = [];
+		for (const mod of mods) {
+			let item = mod.respondTo('dream-controls');
+
+			console.log('item: ', item);
+			console.log('item instanceof Array', item instanceof Array);
+
+			if (item instanceof Array) {
+				item.forEach((j) => {
+					if (!j.rank) {
+						j.rank = 100;
+					}
+					menu_entries.push(j);
+				});
+			}
+		}
+		let menu_sort = function (a, b) {
+			if (a.rank < b.rank) {
+				return -1;
+			}
+			if (a.rank > b.rank) {
+				return 1;
+			}
+			return 0;
+		};
+		menu_entries = menu_entries.sort(menu_sort);
+
+		for (let i = 0; i < menu_entries.length; i++) {
+			let j = menu_entries[i];
+			let show_me = true;
+			let active_mod = this.app.modules.returnActiveModule();
+			if (typeof j.disallowed_mods != 'undefined') {
+				if (j.disallowed_mods.includes(active_mod.slug)) {
+					show_me = false;
+				}
+			}
+			if (typeof j.allowed_mods != 'undefined') {
+				show_me = false;
+				if (j.allowed_mods.includes(active_mod.slug)) {
+					show_me = true;
+				}
+			}
+			if (show_me) {
+				let id = `dream_controls_menu_item_${index}`;
+				this_self.callbacks[index] = j.callback;
+				this_self.addDreamControlsItem(j, id, index);
+				index++;
+			}
+		}
+
+		if (document.querySelectorAll('.dream-controls-menu-item')) {
+			document.querySelectorAll('.dream-controls-menu-item').forEach((menu) => {
+
+				let id = menu.getAttribute('id');
+				let data_id = menu.getAttribute('data-id');
+				let callback = this_self.callbacks[data_id];
+
+				console.log("data_id //////////", data_id);
+
+				menu.onclick = (e) => {
+					e.preventDefault();
+					callback(this_self.app, data_id);
+				};
+			});
+		}
+	}
+
+	addDreamControlsItem(item, id, index) {
+
+		console.log('inside addDreamControlsItem');
+		let html = `
+      <div id="${id}" data-id="${index}" class="dream-controls-menu-item icon_click_area">
+        <i class="${item.icon}"></i>
+      </div>
+    `;
+
+    document.querySelector(`#dream-controls .control-panel .control-list`).innerHTML += html;
+
+    // append as second last child
+    // keeping close (X) icon as last
+    // let list = document.querySelector('#dream-controls .control-panel .control-list');
+    // let c = list.children;
+
+    // c[c.length - 2].after(html);
+
+//    document.querySelector(`#dream-controls .control-panel .control-list:nth-child(${c.length-1})`).after(html);
+	}
+
 
 	remove(){
 		this.stopTimer();
@@ -142,7 +245,7 @@ class DreamControls{
 	}
 
 	attachEvents(){
-
+		let this_self = this;
 		if (this.mod.dreamer){
 			this.insertActions();
 		}
@@ -162,6 +265,10 @@ class DreamControls{
 				//Only necessary for first click but doesn't hurt to have
 				this.startTimer(); // Start timer
 				e.currentTarget.classList.remove("click-me");
+
+				if (!document.querySelector('.dream-controls-menu-item')) {
+					this.app.connection.emit('saito-limbo-add-yt-icon');
+				}
 			}
 		}
 
