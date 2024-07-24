@@ -331,7 +331,7 @@ class Arcade extends ModTemplate {
 		this.sendPeerDatabaseRequestWithFilter('Arcade', sql, (res) => {
 			console.log(sql);
 			console.log(res);
-			if (res.rows) {
+			if (res?.rows) {
 				for (let record of res.rows) {
 					if (this.debug) {
 						console.log(JSON.parse(JSON.stringify(record)));
@@ -387,6 +387,7 @@ class Arcade extends ModTemplate {
 			}
 
 			app.connection.emit('arcade-invite-manager-render-request');
+			app.connection.emit('arcade-data-loaded');
 
 		});
 	}
@@ -471,6 +472,8 @@ class Arcade extends ModTemplate {
 				game_mod.game = null;
 				game_mod.attachEvents();
 			}
+
+			this.browser_active = 0;
 		}
 
 	}
@@ -558,6 +561,13 @@ class Arcade extends ModTemplate {
 				};
 			}
 		}
+
+		if (type === 'game-manager') {
+			let container = obj?.container || "";
+			let gm = new GameManager(this.app, this, container);
+			return { gm };
+		}
+
 		if (type === 'saito-header') {
 			let x = [];
 			if (!this.browser_active) {
