@@ -126,7 +126,7 @@ dt {
 
 /* !-- background moved to body so board is resizable */
 /* gameboard == ocean, the "board" that gets resized is #hexgrid */
-.gameboard {
+.gameboard, .scrollable-page {
 	position: absolute;
     width: 100%;
     height: 100%;

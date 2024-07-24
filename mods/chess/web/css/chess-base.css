@@ -60,6 +60,11 @@ input[type='checkbox']:checked {
 	background-size: cover;
 }
 
+.scrollable-page {
+	background: url('/chess/img/background.jpg');
+	background-size: cover;	
+}
+
 #board {
 	width: 100%;
 }
