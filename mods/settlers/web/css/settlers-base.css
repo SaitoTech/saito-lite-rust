@@ -9,6 +9,8 @@
 	--p2-color-lite: #004193e9; /* bluish */
 	--p3-color-lite: #adce14e9; /* yellowish */
 	--p4-color-lite: #644700e9; /* brown */
+
+	--theme-font: bagnard-sans;
 }
 
 @font-face {
