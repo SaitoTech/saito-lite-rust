@@ -158,7 +158,7 @@ div.h3{
   position: relative;
   min-height: min(150px, 25%);
   width: min(800px, 90vw);
-  border-radius: 1rem;
+  border-radius: 1rem 1rem 0 0;
   margin: auto;
 }
 
@@ -190,8 +190,9 @@ div.h3{
   padding: min(5rem, 5vh) min(8rem, 5vw);
   min-height: min(300px, 30%);
   max-width: min(800px, 90vw);
-  margin: 3rem auto;
-  border-radius: 1rem;
+  margin: auto;
+  margin-bottom: 4rem;
+  border-radius: 0 0 1rem 1rem;
 }
 
 .splash-page-game-description {
@@ -200,8 +201,8 @@ div.h3{
   line-height: 24px;
 }
 
-.splash-page-leaderboard {
-  max-height: calc(100vh - var(--saito-header-height) - 2rem);
+.splash-page-leaderboard, .league-overlay-games-list {
+  max-height: min(600px, 80vh);
   max-width: 80rem;
   margin: auto;
   overflow: auto;
