@@ -96,7 +96,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 					console.error(e);
 				}
 			});
-			socket.on('open',()=>{
+			socket.on('open', () => {
 				S.getLibInstance().process_new_peer(peer_index)
 					.then(() => {
 						console.log(
@@ -322,7 +322,6 @@ class Server {
 	}
 
 	initializeWebSocketServer() {
-		//return;
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const ws = require('ws');
 
@@ -330,13 +329,39 @@ class Server {
 			noServer: true,
 			path: '/wsopen'
 		});
-	
+
+		const encoderWss = new ws.Server({
+			noServer: true,
+			path: '/encoder'
+		});
+
+		// TODO : this solution is a hack. need to refactor the design
+		// @ts-ignore
+		this.app.encoderWss = encoderWss;
+		// @ts-ignore
+		this.app.encoderWss.on('connection', (socket, request) => {
+			console.log('Received an encoder connection');
+			socket.on('message', (msg) => {
+				console.log('Received encoder message', msg.byteLength);
+			});
+			socket.on('disconnect', (socket) => {
+				console.log('Received disconnect connection');
+			});
+			socket.on('close', (socket) => {
+				console.log('socket closed');
+			});
+		});
+
 		webserver.on('upgrade', (request: any, socket: any, head: any) => {
 			// console.debug("connection upgrade ----> " + request.url);
 			const { pathname } = parse(request.url);
 			if (pathname === '/wsopen') {
 				wss.handleUpgrade(request, socket, head, (websocket: any) => {
 					wss.emit('connection', websocket, request);
+				});
+			} else if (pathname === '/encoder') {
+				encoderWss.handleUpgrade(request, socket, head, (websocket: any) => {
+					encoderWss.emit('connection', websocket, request);
 				});
 			} else {
 				socket.destroy();
