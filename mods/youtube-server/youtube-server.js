@@ -37,7 +37,6 @@ class YoutubeServer extends ModTemplate {
 
 	initializeWebSocketServer() {
 		const child_process = require('child_process');
-		const http = require('http');
 		const WebSocketServer = require('ws').Server;
 
 		const wss = new WebSocketServer({ port: 3000 });
@@ -57,17 +56,8 @@ class YoutubeServer extends ModTemplate {
 		  // Launch FFmpeg to handle all appropriate transcoding, muxing, and RTMP.
 		  // If 'ffmpeg' isn't in your path, specify the full path to the ffmpeg binary.
 		  const ffmpeg = child_process.spawn('ffmpeg', [
-		    // Facebook requires an audio track, so we create a silent one here.
-		    // Remove this line, as well as `-shortest`, if you send audio from the browser.
-		    '-f', 'lavfi', '-i', 'anullsrc',
-
 		    // FFmpeg will read input video from STDIN
 		    '-i', '-',
-
-		    // Because we're using a generated audio source which never ends,
-		    // specify that we'll stop at end of other input.  Remove this line if you
-		    // send audio from the browser.
-		    '-shortest',
 
 		    // If we're encoding H.264 in-browser, we can set the video codec to 'copy'
 		    // so that we don't waste any CPU and quality with unnecessary transcoding.
@@ -75,7 +65,7 @@ class YoutubeServer extends ModTemplate {
 		    // or similar to transcode it to H.264 here on the server.
 		    '-vcodec', 'copy',
 
-		    // AAC audio is required for Facebook Live.  No browser currently supports
+		    // AAC audio is required for Live.  No browser currently supports
 		    // encoding AAC, so we must transcode the audio to AAC here on the server.
 		    '-acodec', 'aac',
 
