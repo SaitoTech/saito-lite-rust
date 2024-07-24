@@ -22,10 +22,11 @@ body {
   max-width: -webkit-fill-available;
 }
 
-body.scrollable-page {
+.scrollable-page {
   overflow: auto;
   position: relative;
   height: 100vh;
+  font-family: var(--theme-font);
 }
 
 .main {
@@ -166,7 +167,7 @@ div.h3{
   background-attachment: fixed;
   background-size: cover;
   position: relative;
-  min-height: min(400px, 50%);
+  min-height: min(150px, 25%);
 }
 
 .saito-splash-image.full{
@@ -181,7 +182,11 @@ div.h3{
   text-align: center;
   transform: translateY(-50%);
   color: var(--saito-white);
-  text-shadow: 2px 4px 2px black;
+  text-shadow: 1px 3px 4px var(--saito-black);
+}
+
+.saito-splash-section-title h3 {
+  font-size: 24px;
 }
 
 .saito-splash-info {
@@ -189,6 +194,7 @@ div.h3{
   background-color: var(--saito-background-color);
   color: var(--saito-font-color);
   padding: min(5rem, 5vh) min(8rem, 5vw);
+  min-height: min(300px, 30%);
 }
 
 .saito-splash-info p {

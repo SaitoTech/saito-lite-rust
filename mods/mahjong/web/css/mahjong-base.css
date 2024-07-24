@@ -1,3 +1,7 @@
+:root {
+	--theme-font: papyrus;
+}
+
 .logobox .status-header,
 .logobox .status-text-menu {
 	background-color: #fffe;
