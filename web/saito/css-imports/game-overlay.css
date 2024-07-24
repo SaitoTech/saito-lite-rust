@@ -96,8 +96,8 @@
 
 .rules-overlay {
   background-color: var(--saito-arcade-background);
-  min-width: 800px;
-  max-width: 90vw;
+  width: min(800px, 90vw);
+  max-width: 100%;
   padding: 4rem;
   
   /* No scrollbars */
