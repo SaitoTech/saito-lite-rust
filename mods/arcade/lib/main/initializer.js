@@ -70,7 +70,7 @@ class Initializer {
 				'.arcade-game-initializer-success-button'
 			).onclick = (e) => {
 				//Remember where we enter the game from
-				let am = this.app.modules.returnActiveModule().returnName();
+				let am = this.app.modules.returnActiveModule()?.returnName() || "Arcade";
 				this.app.options.homeModule = am;
 				this.app.storage.saveOptions();
 
