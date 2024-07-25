@@ -1905,7 +1905,7 @@ class Arcade extends ModTemplate {
 		return true;
 	}
 
-	isSlug(slug){
+	isSlug(slug){	
 		if (slug == this.returnSlug() || slug == "game"){
 			return true;
 		}
@@ -1931,7 +1931,7 @@ class Arcade extends ModTemplate {
 					let gm = app.modules.returnModuleBySlug(game.toLowerCase());
 					if (gm) {
 						updatedSocial.title = `Play ${gm.returnName()} on 🟥 Saito`;
-						updatedSocial.image = `/${gm.returnSlug()}/img/arcade/arcade.jpg`;
+						updatedSocial.image = `${reqBaseURL + gm.returnSlug()}/img/arcade/arcade.jpg`;
 					}
 				}
 
@@ -1948,8 +1948,7 @@ class Arcade extends ModTemplate {
 
 
 		expressapp.get('/game/:game', async function (req, res){
-			console.log("**************");
-			console.log(req.params);
+			let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
 
 			let game = req.params.game;
 
@@ -1959,7 +1958,7 @@ class Arcade extends ModTemplate {
 			res.charset = 'UTF-8';
 
 			if (game_mod){
-				res.send(game_mod.returnHomePage());
+				res.send(game_mod.returnHomePage(reqBaseURL));
 			}else{
 				res.send(arcadeHome(app, arcade_self, app.build_number, arcade_self.social, null));
 			}
