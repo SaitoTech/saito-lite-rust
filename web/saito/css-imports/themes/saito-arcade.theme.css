@@ -199,9 +199,8 @@ html[data-theme="arcade"] {
   --saito-arcade-header-background: transparent;
 }
 
-/*html[data-theme="game"] {
-  --saito-arcade-header-background: none;
-  --saito-background-color: rgba(224, 242, 255, 0.35);
-}*/
+html[data-theme="game"] {
+  --saito-arcade-header-background: none; 
+}
 
 

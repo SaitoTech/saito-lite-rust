@@ -547,7 +547,7 @@ stats overlay
 	top: 0rem;
 	right: -1rem;
 	background: #72634bed;
-	color: var(--saito-profile-background);
+	color: var(--saito-white);
 	width: 2.7rem;
 	text-align: center;
 	border-radius: 50%;
@@ -561,7 +561,7 @@ stats overlay
 	bottom: 0.25rem;
 	left: 50%;
 	transform: translateX(-50%);
-	color: var(--saito-profile-background);
+	color: var(--saito-white);
 	width: 2.7rem;
 	height: 2.7rem;
 	text-align: center;
