@@ -131,6 +131,10 @@ class LimboSidebar {
     let alt_button = document.getElementById("exit_space");
     if (alt_button){
       alt_button.onclick = async () => {
+        let c = await sconfirm("Are you sure you want to leave?");
+
+        if (!c) { return; }
+
         if (this.mod.dreamer == this.mod.publicKey){
           await this.mod.sendKickTransaction(); 
         }else{
@@ -142,7 +146,6 @@ class LimboSidebar {
     }
 
 
-    //<div id="dream-space-chat" class="saito-modal-menu-option"><i class="fa-solid "></i><div>Space Chat</div></div>
 
   }
 

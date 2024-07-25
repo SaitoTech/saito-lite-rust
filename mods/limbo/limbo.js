@@ -380,7 +380,10 @@ class Limbo extends ModTemplate {
 							}
 
 						} else {
-							salert(`${prompt} no longer available`);
+
+							if (this.dreamer !== this.publicKey){
+								salert(`${prompt} no longer available`);	
+							}
 							window.history.pushState('', '', `/${this.returnSlug()}/`);
 							this.exitSpace();
 						}
