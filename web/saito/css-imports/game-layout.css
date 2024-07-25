@@ -20,6 +20,7 @@ body {
   position: relative;
   height: 100vh;
   font-family: var(--theme-font);
+  scroll-behavior: smooth;
 }
 
 .main {
