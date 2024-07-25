@@ -82,7 +82,7 @@ class YoutubeClient extends ModTemplate {
 		console.log("mediaStream:", mediaStream);
 
 		if (mediaStream == false) {
-			salert("Error while fetching mediaStream");
+			siteMessage("Error while fetching mediaStream", 2000);
 		}
 
 		const ws_url = window.location.protocol.replace('http', 'ws') + '//' + // http: -> ws:, https: -> wss:
@@ -143,7 +143,7 @@ class YoutubeClient extends ModTemplate {
 		for (let i = 0; i < mods.length; i++) {
 			console.log("mod:", mods[i]);
 			if (typeof mods[i].slug != "undefined") {
-				if (mods[i].slug == "limbo") {
+				if (mods[i].slug == "swarmcast") {
 					let limbo = mods[i];
 					console.log('limbo mod: ', limbo);
 					return limbo.combinedStream;
