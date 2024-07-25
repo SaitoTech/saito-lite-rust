@@ -30,10 +30,6 @@
 	position: relative;
 }
 
-.rules-overlay {
-	background: whitesmoke;
-	padding: 0.5em 2.5em;
-}
 
 .transparent-card-overlay {
 	max-width: 85vw;

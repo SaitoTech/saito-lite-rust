@@ -1,12 +1,9 @@
+:root {
+	--theme-font: cursive;
+}
+
 body {
-	font-family: cursive;
-	font-size: 13px;
-	padding: 0px;
-	margin: 0px;
-	overflow: hidden;
-	position: fixed;
-	width: 100vw;
-	height: 100vh;
+	font-family: var(--theme-font);
 }
 
 .poker-seat-4 {
