@@ -218,9 +218,40 @@ div.h3{
   overflow: auto;
 }
 
+
 @media screen and (max-width: 600px) {
   .saito-splash-image{
     background-attachment: scroll;
     min-height: min(200px, 25%);
   }
+}
+
+
+/**********************************************
+* Side navigation for Standardized Landing Pages
+***********************************************/
+.saito-splash-nav {
+  position: fixed;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 1rem;
+}
+
+.saito-splash-nav ul {
+  list-style: none;
+  font-size: 2.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.saito-splash-nav a {
+  color: var(--saito-font-color);
+  text-shadow: 1px 2px 4px var(--saito-black);
+}
+
+.saito-splash-nav button {
+  min-width: unset;
+  max-width: 20rem;
 }
