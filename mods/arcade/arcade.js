@@ -518,6 +518,17 @@ class Arcade extends ModTemplate {
 			}
 		}
 
+		if (qs == '.game-page-invites') {
+			if (!this.renderIntos[qs]) {
+				this.styles = ['/arcade/style.css'];
+				this.renderIntos[qs] = [];
+				let obj = new InviteManager(this.app, this, '.arcade-invites-box');
+				obj.type = 'long';
+				this.renderIntos[qs].push(obj);
+				this.attachStyleSheets();
+			}
+		}
+
 		if (qs == '.league-overlay-games-list') {
 			if (!this.renderIntos[qs]) {
 				this.styles = ['/arcade/style.css'];
@@ -566,6 +577,24 @@ class Arcade extends ModTemplate {
 			let container = obj?.container || "";
 			let gm = new GameManager(this.app, this, container);
 			return { gm };
+		}
+
+		if (type === 'invite-manager'){
+			let game_filter = obj?.filter || null;
+
+			if (!this.renderIntos) {
+				this.renderIntos = [];
+			}
+			
+			if (!this.renderIntos['.game-page-invites']) {
+				this.renderIntos['.game-page-invites'] = [];
+				let obj = new InviteManager(this.app, this, '.game-page-invites');
+				obj.type = 'long';
+				obj.game_filter = game_filter;
+				this.renderIntos['.game-page-invites'].push(obj);
+			}
+
+			this.renderInto('.game-page-invites');
 		}
 
 		if (type === 'saito-header') {
