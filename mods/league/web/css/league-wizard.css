@@ -167,10 +167,10 @@ textarea {
 	outline: none;
 }
 
-.saito-select::after {
+/*.saito-select::after {
 	background: var(--background-color-button-mod-arcade);
 	border-left: 1px solid var(--border-color-league-primary);
-}
+}*/
 
 .league-wizard-game-controls .settings > div:first-of-type {
 	position: relative;

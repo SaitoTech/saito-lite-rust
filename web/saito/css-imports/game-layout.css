@@ -8,7 +8,10 @@
 
 
 body {
-  background-color: #4e4e4e !important;
+  position: relative;
+  background-color: #4e4e4e;
+  background-image: url(/saito/img/tiled-logo.svg);
+
   /*font-family: arial, helvetica, sans-serif;*/
 }
 
