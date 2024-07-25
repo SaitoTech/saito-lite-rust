@@ -331,7 +331,7 @@ class Arcade extends ModTemplate {
 		this.sendPeerDatabaseRequestWithFilter('Arcade', sql, (res) => {
 			console.log(sql);
 			console.log(res);
-			if (res.rows) {
+			if (res?.rows) {
 				for (let record of res.rows) {
 					if (this.debug) {
 						console.log(JSON.parse(JSON.stringify(record)));
@@ -387,6 +387,7 @@ class Arcade extends ModTemplate {
 			}
 
 			app.connection.emit('arcade-invite-manager-render-request');
+			app.connection.emit('arcade-data-loaded');
 
 		});
 	}
@@ -440,23 +441,41 @@ class Arcade extends ModTemplate {
 	// while the application is loaded.
 	//
 	async render() {
-		if (this.main == null) {
-			this.main = new ArcadeMain(this.app, this);
-			this.header = new SaitoHeader(this.app, this);
-			await this.header.initialize(this.app);
-			this.header.header_class = 'arcade';
-			this.addComponent(this.header);
-			this.addComponent(this.main);
+		if (window.location.pathname.includes(this.returnSlug())){
+
+			if (this.main == null) {
+				this.main = new ArcadeMain(this.app, this);
+				this.header = new SaitoHeader(this.app, this);
+				await this.header.initialize(this.app);
+				this.header.header_class = 'arcade';
+				this.addComponent(this.header);
+				this.addComponent(this.main);
+			}
+
+			for (const mod of this.app.modules.returnModulesRespondingTo('chat-manager')) {
+				let cm = mod.respondTo('chat-manager');
+				cm.container = '.saito-sidebar.right';
+				cm.render_manager_to_screen = 1;
+				this.addComponent(cm);
+			}
+
+			await super.render();
+
+		}else{
+
+			let path = window.location.pathname.split("/");
+			let game_name = path.pop();
+			console.log(game_name);
+			let game_mod = this.app.modules.returnModuleBySlug(game_name);
+			console.log(game_mod);
+			if (game_mod){
+				game_mod.game = null;
+				game_mod.attachEvents();
+			}
+
+			this.browser_active = 0;
 		}
 
-		for (const mod of this.app.modules.returnModulesRespondingTo('chat-manager')) {
-			let cm = mod.respondTo('chat-manager');
-			cm.container = '.saito-sidebar.right';
-			cm.render_manager_to_screen = 1;
-			this.addComponent(cm);
-		}
-
-		await super.render();
 	}
 
 	//
@@ -489,6 +508,17 @@ class Arcade extends ModTemplate {
 		}
 
 		if (qs == '.arcade-invites-box') {
+			if (!this.renderIntos[qs]) {
+				this.styles = ['/arcade/style.css'];
+				this.renderIntos[qs] = [];
+				let obj = new InviteManager(this.app, this, '.arcade-invites-box');
+				obj.type = 'long';
+				this.renderIntos[qs].push(obj);
+				this.attachStyleSheets();
+			}
+		}
+
+		if (qs == '.game-page-invites') {
 			if (!this.renderIntos[qs]) {
 				this.styles = ['/arcade/style.css'];
 				this.renderIntos[qs] = [];
@@ -542,6 +572,31 @@ class Arcade extends ModTemplate {
 				};
 			}
 		}
+
+		if (type === 'game-manager') {
+			let container = obj?.container || "";
+			let gm = new GameManager(this.app, this, container);
+			return { gm };
+		}
+
+		if (type === 'invite-manager'){
+			let game_filter = obj?.filter || null;
+
+			if (!this.renderIntos) {
+				this.renderIntos = [];
+			}
+			
+			if (!this.renderIntos['.game-page-invites']) {
+				this.renderIntos['.game-page-invites'] = [];
+				let obj = new InviteManager(this.app, this, '.game-page-invites');
+				obj.type = 'long';
+				obj.game_filter = game_filter;
+				this.renderIntos['.game-page-invites'].push(obj);
+			}
+
+			this.renderInto('.game-page-invites');
+		}
+
 		if (type === 'saito-header') {
 			let x = [];
 			if (!this.browser_active) {
@@ -1850,6 +1905,14 @@ class Arcade extends ModTemplate {
 		return true;
 	}
 
+	isSlug(slug){	
+		if (slug == this.returnSlug() || slug == "game"){
+			return true;
+		}
+		return false;
+	}
+
+
 	webServer(app, expressapp, express) {
 		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
 		let arcade_self = this;
@@ -1868,7 +1931,7 @@ class Arcade extends ModTemplate {
 					let gm = app.modules.returnModuleBySlug(game.toLowerCase());
 					if (gm) {
 						updatedSocial.title = `Play ${gm.returnName()} on 🟥 Saito`;
-						updatedSocial.image = `/${gm.returnSlug()}/img/arcade/arcade.jpg`;
+						updatedSocial.image = `${reqBaseURL + gm.returnSlug()}/img/arcade/arcade.jpg`;
 					}
 				}
 
@@ -1881,6 +1944,25 @@ class Arcade extends ModTemplate {
 			res.charset = 'UTF-8';
 			res.send(arcadeHome(app, arcade_self, app.build_number, updatedSocial, game_data));
 			return;
+		});
+
+
+		expressapp.get('/game/:game', async function (req, res){
+			let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
+
+			let game = req.params.game;
+
+			let game_mod = arcade_self.app.modules.returnModuleBySlug(game);
+
+			res.setHeader('Content-type', 'text/html');
+			res.charset = 'UTF-8';
+
+			if (game_mod){
+				res.send(game_mod.returnHomePage(reqBaseURL));
+			}else{
+				res.send(arcadeHome(app, arcade_self, app.build_number, arcade_self.social, null));
+			}
+
 		});
 
 		expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));

@@ -9,6 +9,7 @@ class DreamControls{
 		this.video = new VideoBox(app, mod, "local", "video-preview");
 		this.video.display_wave_form = true;
 		this.timer_interval = null;
+		this.callbacks = {};
 	}
 
 	render(stream, is_presentation = false) {
@@ -36,6 +37,7 @@ class DreamControls{
 
 		this.attachEvents();
 	}
+
 
 	remove(){
 		this.stopTimer();

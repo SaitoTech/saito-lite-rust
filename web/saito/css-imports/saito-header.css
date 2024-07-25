@@ -3,7 +3,7 @@
   display: flex;
   width: 100vw;
   background: var(--saito-arcade-header-background);
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(1px);
   margin: 0;
   align-items: center;
   padding: 1rem max(2rem, calc((100vw - var(--saito-width)) / 2 + 0.5rem));
@@ -42,6 +42,7 @@
   color: var(--font-color-menu-hamburger);
   display: flex;
   justify-content: center;
+  filter: var(--header-readability-drop-shadow);
 }
 
 #saito-header-menu-toggle i {
@@ -306,6 +307,7 @@
   max-width: 20rem;
   overflow: hidden;
   text-overflow: ellipsis;
+  filter: var(--header-readability-drop-shadow);
 }
 
 #header-msg.flash {
@@ -426,6 +428,7 @@
 .saito-header-logo-wrapper{
   position: relative;
   height: 100%;
+  filter: var(--header-readability-drop-shadow);
 }
 
 .saito-back-button {

@@ -1,0 +1,8 @@
+.container {
+	width: fit-content;
+	margin: auto;
+	margin-top: 10rem;
+	display: flex;
+	gap: 3rem;
+	flex-direction: column;
+}

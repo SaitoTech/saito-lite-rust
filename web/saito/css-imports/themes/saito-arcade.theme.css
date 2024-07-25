@@ -26,7 +26,6 @@ html[data-theme="arcade"] {
   --saito-button-background: linear-gradient(45deg, #540e81, #b539e8);
   --saito-bubble-shadow: #000c;
   --saito-bubble-background: #213;
-  --saito-arcade-header-background: transparent;
   --saito-modal-background: var(--saito-background-light);
   --saito-font-color-dark-modal: #efefef;
   --saito-heart-animation: url('/redsquare/images/heart-orange.png');
@@ -199,3 +198,9 @@ html[data-theme="arcade"] {
   /* Theme Specific */
   --saito-arcade-header-background: transparent;
 }
+
+html[data-theme="game"] {
+  --saito-arcade-header-background: none; 
+}
+
+

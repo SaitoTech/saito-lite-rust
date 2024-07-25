@@ -474,3 +474,35 @@ video#local.noflip{
 	}
 }
 
+.yt-stream {
+	width: min(550px, 98vw);
+    padding: 3rem;
+    border-radius: 0.5rem;
+    border: 1px solid;
+    background-color: var(--color-base);
+    color: var(--color-contrast);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.yt-stream-title {
+	font-size: 3rem
+}
+
+.yt-stream-title .fa-youtube {
+	color: #f70004;
+}
+
+#yt-stream-btn  {
+	width: fit-content;
+    align-self: flex-end;
+}
+
+.yt-active {
+	background-color: var(--saito-red) !important;
+}
+
+.yt-active > i {
+	animation: pulsate 2s ease-in-out infinite !important;
+}

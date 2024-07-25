@@ -9,6 +9,8 @@
 	--p2-color-lite: #004193e9; /* bluish */
 	--p3-color-lite: #adce14e9; /* yellowish */
 	--p4-color-lite: #644700e9; /* brown */
+
+	--theme-font: bagnard-sans;
 }
 
 @font-face {
@@ -124,7 +126,7 @@ dt {
 
 /* !-- background moved to body so board is resizable */
 /* gameboard == ocean, the "board" that gets resized is #hexgrid */
-.gameboard {
+.gameboard, .scrollable-page {
 	position: absolute;
     width: 100%;
     height: 100%;
