@@ -156,16 +156,18 @@ div.h3{
   background-position: center;
   background-size: cover;
   position: relative;
-  min-height: min(150px, 25%);
+  min-height: min(150px, 25vh);
   width: min(800px, 90vw);
   border-radius: 1rem 1rem 0 0;
   margin: auto;
+  margin-top: 2rem;
 }
 
 .saito-splash-image.full{
   height: 100%;
   width: 100%;
   background-attachment: fixed;
+  margin: 0;
 }
 
 
@@ -188,11 +190,19 @@ div.h3{
   background-color: var(--saito-profile-background);
   color: var(--saito-font-color);
   padding: min(5rem, 5vh) min(8rem, 5vw);
-  min-height: min(300px, 30%);
+  min-height: min(300px, 30vh);
   max-width: min(800px, 90vw);
   margin: auto;
   margin-bottom: 4rem;
   border-radius: 0 0 1rem 1rem;
+}
+
+.saito-splash-section-title .saito-splash-info{
+  margin-bottom: unset;
+  border-radius: 1rem;
+  max-width: min(650px, 75vw);
+  min-height: min(200px, 20vh);
+  padding: min(4rem, 4vh) min(6rem, 4vw);
 }
 
 .splash-page-game-description {
