@@ -285,15 +285,16 @@ class Browser {
 
 			this.browser_active = 1;
 
-			let theme = document.documentElement.getAttribute('data-theme');
-			console.log(theme);
+			let theme = document.documentElement.getAttribute('data-theme') || "lite";
+			console.log("HTML provided theme: " + theme);
 		    if (this.app.options?.theme) {
 		      if (this.app.options.theme[active_module]){
 		      	theme = this.app.options.theme[active_module];
+		      	this.switchTheme(theme);
 		      }
 		    }
-		    console.log(theme);
-		    this.switchTheme(theme);
+		    console.log("New theme: " + theme);
+		    this.updateThemeInHeader(theme);
 
 			const updateViewHeight = () => {
 				let vh = window.innerHeight * 0.01;
@@ -2357,26 +2358,30 @@ class Browser {
 				this.app.storage.saveOptions();
 			}
 
-
-			//Update header
-			setTimeout(()=> {
-				let theme_icon_obj = document.querySelector(".saito-theme-icon");
-				if (theme_icon_obj){
-					let classes = theme_icon_obj.classList;
-					for (let c of classes){
-						theme_icon_obj.classList.remove(c);
-					}
-
-					theme_icon_obj.classList.add("saito-theme-icon");
-					console.log(mod_obj.theme_options[theme]);
-					let theme_classes = mod_obj.theme_options[theme].split(" ");
-					for (let t of theme_classes){
-						theme_icon_obj.classList.add(t);
-					}
-				}
-			}, 500);
-
+			this.updateThemeInHeader(theme);
 		}
+	}
+
+	updateThemeInHeader(theme){
+		//Update header
+		setTimeout(()=> {
+			let theme_icon_obj = document.querySelector(".saito-theme-icon");
+			let am = this.app.modules.returnActiveModule();
+
+			if (theme_icon_obj && am){
+				let classes = theme_icon_obj.classList;
+				for (let c of classes){
+					theme_icon_obj.classList.remove(c);
+				}
+
+				theme_icon_obj.classList.add("saito-theme-icon");
+
+				let theme_classes = am.theme_options[theme].split(" ");
+				for (let t of theme_classes){
+					theme_icon_obj.classList.add(t);
+				}
+			}
+		}, 500);
 	}
 
 	isValidUrl(urlString) {
