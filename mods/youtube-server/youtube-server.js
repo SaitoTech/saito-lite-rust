@@ -50,6 +50,8 @@ class YoutubeServer extends ModTemplate {
 		    return;
 		  }
 
+		  //-vcodec libx264 -ab 128k -ac 2 -ar 44100 -r 25 -s 720x420 -vb 660k
+
 		  const rtmpUrl = decodeURIComponent(match[1]);
 		  console.log('Target RTMP URL:', rtmpUrl);
 
@@ -63,11 +65,22 @@ class YoutubeServer extends ModTemplate {
 		    // so that we don't waste any CPU and quality with unnecessary transcoding.
 		    // If the browser doesn't support H.264, set the video codec to 'libx264'
 		    // or similar to transcode it to H.264 here on the server.
-		    '-vcodec', 'copy',
+		    '-vcodec', 'libx264',
 
 		    // AAC audio is required for Live.  No browser currently supports
 		    // encoding AAC, so we must transcode the audio to AAC here on the server.
-		    '-acodec', 'aac',
+		    
+		    '-ab', '128k',
+
+		    '-ac', '2',
+
+		    '-ar', '44100',
+
+		    '-r', '25',
+
+		    '-s', '720x420',
+
+		    '-vb', '660k',
 
 		    // FLV is the container format used in conjunction with RTMP
 		    '-f', 'flv',

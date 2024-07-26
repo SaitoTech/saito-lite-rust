@@ -95,7 +95,7 @@ class YoutubeClient extends ModTemplate {
 		this_self.ws.addEventListener('open', (e) => {
 			console.log('WebSocket Open', e);
 			this_self.mediaRecorder = new MediaRecorder(mediaStream, {
-			  mimeType: 'video/webm;codecs=h264',
+			  mimeType: this_self.getMIME(),
 			  videoBitsPerSecond : 3 * 1024 * 1024
 			});
 
@@ -158,13 +158,68 @@ class YoutubeClient extends ModTemplate {
 		// 44344 - test, prod
 		// 3000 - local dev
 		let port = ':44344';
-		let host = this.app.browser.host;
-		if (host.includes('127.0.0.1') || host.includes('localhost')) {
+		let protocol = this.app.browser.protocol;
+		
+		console.log('protocol:', protocol);
+		if (protocol == 'http:') {
 			port = ':3000';
 		}
+
+		console.log('port:', port);
 		return port;
 	}
 
+	getMIME() {
+		let mime = 'video/webm;codecs=h264';
+		const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+
+		if (isFirefox) {
+			let supported = this.getAllSupportedMimeTypes();
+			console.log('supported mimes: ', supported);
+			for (let i=0; i<supported.length; i++) {
+				if (supported[i] == 'video/webm;codecs="vp8.0, opus"') {
+					mime = supported[i];
+					break;
+				}
+			}
+		}
+	
+		console.log('mime:', mime);
+		return mime;
+	}
+
+	getAllSupportedMimeTypes(...mediaTypes) {
+	  if (!mediaTypes.length) mediaTypes.push('video', 'audio')
+	  const CONTAINERS = ['webm', 'ogg', 'mp3', 'mp4', 'x-matroska', '3gpp', '3gpp2', '3gp2', 'quicktime', 'mpeg', 'aac', 'flac', 'x-flac', 'wave', 'wav', 'x-wav', 'x-pn-wav', 'not-supported']
+	  const CODECS = ['vp9', 'vp9.0', 'vp8', 'vp8.0', 'avc1', 'av1', 'h265', 'h.265', 'h264', 'h.264', 'opus', 'vorbis', 'pcm', 'aac', 'mpeg', 'mp4a', 'rtx', 'red', 'ulpfec', 'g722', 'pcmu', 'pcma', 'cn', 'telephone-event', 'not-supported']
+	  
+	  return [...new Set(
+	    CONTAINERS.flatMap(ext =>
+	        mediaTypes.flatMap(mediaType => [
+	          `${mediaType}/${ext}`,
+	        ]),
+	    ),
+	  ), ...new Set(
+	    CONTAINERS.flatMap(ext =>
+	      CODECS.flatMap(codec =>
+	        mediaTypes.flatMap(mediaType => [
+	          // NOTE: 'codecs:' will always be true (false positive)
+	          `${mediaType}/${ext};codecs=${codec}`,
+	        ]),
+	      ),
+	    ),
+	  ), ...new Set(
+	    CONTAINERS.flatMap(ext =>
+	      CODECS.flatMap(codec1 =>
+	      CODECS.flatMap(codec2 =>
+	        mediaTypes.flatMap(mediaType => [
+	          `${mediaType}/${ext};codecs="${codec1}, ${codec2}"`,
+	        ]),
+	      ),
+	      ),
+	    ),
+	  )].filter(variation => MediaRecorder.isTypeSupported(variation))
+	}
 }
 
 module.exports = YoutubeClient;
