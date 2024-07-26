@@ -15,14 +15,6 @@ body {
   /*font-family: arial, helvetica, sans-serif;*/
 }
 
-.scrollable-page {
-  overflow: auto;
-  position: relative;
-  height: 100vh;
-  font-family: var(--theme-font);
-  scroll-behavior: smooth;
-}
-
 .main {
   margin-top: unset;
   padding: unset;
@@ -156,22 +148,56 @@ div.h3{
 /***************************
 * Standardized Landing Pages
 ****************************/
+.scrollable-page {
+  overflow: auto;
+  position: relative;
+  height: 100vh;
+  font-family: var(--theme-font);
+  scroll-behavior: smooth;
+  padding-left: min(16rem, calc(25rem - 9vw));
+}
+
+
+.saito-splash-image, .saito-splash-info {
+  width: 800px;
+  max-width: calc(100vw - 18rem);
+  margin: auto;
+}
+
+.scrollable-page > .saito-splash-image, .scrollable-page > .saito-splash-info, .saito-splash-image.full .saito-splash-section-title{
+  /*left: min(16rem, max(0px, calc(25rem - 15vw)));*/
+}
+
 .saito-splash-image {
   background-position: center;
   background-size: cover;
   position: relative;
   min-height: min(150px, 25vh);
-  width: min(800px, 90vw);
   border-radius: 1rem 1rem 0 0;
-  margin: auto;
   margin-top: 2rem;
 }
 
+.saito-splash-info {
+  position: relative;
+  background-color: var(--saito-profile-background);
+  color: var(--saito-font-color);
+  padding: min(5rem, 5vh) min(8rem, 5vw);
+  min-height: min(300px, 30vh);
+  margin-bottom: 4rem;
+  border-radius: 0 0 1rem 1rem;
+}
+
 .saito-splash-image.full{
-  height: 100%;
-  width: 100%;
+  height: 100vh;
+  width: 100vw;
+  max-width: unset;
   background-attachment: fixed;
-  margin: 0;
+  margin: 0 !important;
+  left: max(-16rem, calc(9vw - 25rem));
+}
+
+.saito-splash-image.full .saito-splash-section-title{
+  padding-left: min(16rem, calc(25rem - 9vw));
 }
 
 
@@ -189,17 +215,6 @@ div.h3{
   font-size: 24px;
 }
 
-.saito-splash-info {
-  position: relative;
-  background-color: var(--saito-profile-background);
-  color: var(--saito-font-color);
-  padding: min(5rem, 5vh) min(8rem, 5vw);
-  min-height: min(300px, 30vh);
-  max-width: min(800px, 90vw);
-  margin: auto;
-  margin-bottom: 4rem;
-  border-radius: 0 0 1rem 1rem;
-}
 
 .saito-splash-section-title .saito-splash-info{
   margin-bottom: unset;
@@ -224,10 +239,6 @@ div.h3{
 
 
 @media screen and (max-width: 600px) {
-  .saito-splash-image{
-    background-attachment: scroll;
-    min-height: min(200px, 25%);
-  }
 }
 
 
@@ -236,10 +247,13 @@ div.h3{
 ***********************************************/
 .saito-splash-nav {
   position: fixed;
-  left: 1rem;
   top: 50%;
+  left: 0;
   transform: translateY(-50%);
-  padding: 1rem;
+  padding: 2rem;
+
+  background-size: cover;
+  background-position: right;
 }
 
 .saito-splash-nav ul {
@@ -252,7 +266,8 @@ div.h3{
 
 .saito-splash-nav a {
   color: var(--saito-font-color);
-  text-shadow: 1px 2px 4px var(--saito-black);
+  text-shadow: 1px 1px 2px var(--saito-black);
+  filter: drop-shadow(1px 1px 1px var(--saito-black));
 }
 
 .saito-splash-nav button {
