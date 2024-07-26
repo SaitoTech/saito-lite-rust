@@ -25,7 +25,13 @@ class YoutubeClient extends ModTemplate {
 		this.app.connection.on('saito-yt-start-stream', (obj = {}) => {
 			this.stream_key = obj.stream_key;
 			this.startStream();
-			this.toggleStreamStatus();
+			this.startStreamStatus();
+		});
+
+		this.app.connection.on('saito-yt-stop-stream', (obj = {}) => {
+			if (this.stream_status == true) {
+				this.stopStreamStatus();
+			}
 		});
 
 		return this;
@@ -45,24 +51,19 @@ class YoutubeClient extends ModTemplate {
 	    let this_self = this;
 	    if (type === "dream-controls") {
 	    	let x = [];
-	    	console.log('inside youtube-client respondTo ////');
 			x.push({
 				text: `Youtube Stream`,
 				icon: "fa-brands fa-youtube", 
 				callback: function (app, id, combined_stream) {
 					this_self.icon_id = `dream_controls_menu_item_${id}`;
-					console.log("icon id //////////////", this_self.icon_id);
-
 					this_self.combined_stream = combined_stream;
 
 					console.log('combined_stream ///', combined_stream)
-
-
 					if (this_self.stream_status == false) {
 						let init = new YoutubeInitStream(this_self.app, this_self.mod);
 						init.render();
 					} else {
-						this_self.toggleStreamStatus();
+						this_self.stopStreamStatus();
 					}
 
 					 
@@ -117,16 +118,21 @@ class YoutubeClient extends ModTemplate {
 		});
 	}
 
-	toggleStreamStatus() {
-		let this_self = this;
-		this.stream_status = !this.stream_status;
-		document.getElementById(this_self.icon_id).classList.toggle('yt-active');
-
-		if (this.stream_status == false) {
-			console.log('stopping stream');
-			siteMessage("Youtube live stream stopped", 2000);
-			this.mediaRecorder.stop(1000);
+	startStreamStatus(){
+		if (document.getElementById(this.icon_id)) {
+			document.getElementById(this.icon_id).classList.add('yt-active');
 		}
+		siteMessage("Youtube live stream started", 2000);
+		this.stream_status = true;
+	}
+
+	stopStreamStatus(){
+		if (document.getElementById(this.icon_id)) {
+			document.getElementById(this.icon_id).classList.remove('yt-active');
+		}
+		this.stream_status = false;
+		siteMessage("Youtube live stream stopped", 2000);
+		this.mediaRecorder.stop(1000);
 	}
 
 	async render() {
@@ -136,12 +142,9 @@ class YoutubeClient extends ModTemplate {
 		let this_mod = this;
 	}
 
-
 	getStreamData() {
 		let mods = this.app.modules.mods;
-		console.log("mods:", mods);
 		for (let i = 0; i < mods.length; i++) {
-			console.log("mod:", mods[i]);
 			if (typeof mods[i].slug != "undefined") {
 				if (mods[i].slug == "swarmcast") {
 					let limbo = mods[i];
@@ -150,7 +153,6 @@ class YoutubeClient extends ModTemplate {
 				}
 			}
 		}
-
 		return false;
 	}
 
