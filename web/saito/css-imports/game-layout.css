@@ -231,14 +231,55 @@ div.h3{
 }
 
 .splash-page-leaderboard, .league-overlay-games-list {
-  max-height: min(600px, 80vh);
+  max-height: min(600px, 70vh);
   max-width: 80rem;
   margin: auto;
   overflow: auto;
 }
 
+#mobile-anchor{
+  display: none;
+}
 
 @media screen and (max-width: 600px) {
+  .saito-splash-image, .saito-splash-info {
+    max-width: 90vw;
+  }
+
+  .saito-splash-nav {
+    display: none;
+  }
+  .saito-splash-image.full{
+    left: unset;
+  }
+  .scrollable-page, .saito-splash-image.full .saito-splash-section-title{
+    padding: 0;
+  }
+
+  #mobile-anchor {
+    position: fixed;
+    display: flex;
+    right: 1rem;
+    bottom: 2rem; 
+  }
+
+  #create-game-button-mobile{
+    min-width: 5rem;
+    height: 5rem;
+    padding: unset;
+    border-radius: 5rem;
+    justify-content: center;
+    align-items: center;
+    font-size: 3rem;
+  }
+
+  .saito-splash-image{
+    min-height: min(100px, 20vh);
+  }
+
+  .splash-page-leaderboard, .league-overlay-games-list {
+    max-height: min(400px, 60vh);
+  }
 }
 
 
@@ -273,4 +314,13 @@ div.h3{
 .saito-splash-nav button {
   min-width: unset;
   max-width: 20rem;
+}
+
+
+@media screen and (max-width: 900px){
+  .saito-splash-nav {
+    bottom: 0;
+    top: unset;
+    transform: unset;
+  }
 }
