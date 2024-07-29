@@ -282,12 +282,6 @@ class Limbo extends ModTemplate {
 					} else {
 						mod_self.startDream({ externalMediaType: "game", container, keylist: [] });
 					}
-					// if (!this.mediaRecorder) {
-					// 	await this.startRecording(container, game_mod.players, callbackAfterRecord, 'game');
-
-					// } else {
-					// 	this.stopRecording();
-					// }
 				}.bind(this)
 			});
 
