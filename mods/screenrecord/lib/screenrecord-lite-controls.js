@@ -34,7 +34,6 @@ class ScreenRecordControls {
     attachEvents(){
         if (document.querySelector(".screenrecord-controls .disconnect-control")){
 			document.querySelector(".screenrecord-controls .disconnect-control").onclick = async () => {	
-                this.remove()	
 				this.mod.stopRecording()
 			}
 		}

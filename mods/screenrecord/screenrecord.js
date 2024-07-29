@@ -333,8 +333,7 @@ class Record extends ModTemplate {
 			this.recorderVideoCallStreamCapture.view_window = '.video-container-large';
 			let stream = this.recorderVideoCallStreamCapture.captureVideoCallStreams(includeCamera);
 			this.initializeMediaRecorder(this.chunks, stream);
-		} else if (type === "game") {
-			
+		} else if (type === "game") {		
 			let stream;
 			if (this.gameStreamCapturer) {
 				stream = await this.gameStreamCapturer.captureGameStream(includeCamera);
