@@ -1,7 +1,7 @@
 
 module.exports = DreamWizardTemplate = (app, mod, options) => {
 
-	let icon = null;
+	// let icon = null;
 	/*if (options?.audio){
 		icon = mod.audio_icon;
 	}
@@ -18,9 +18,6 @@ module.exports = DreamWizardTemplate = (app, mod, options) => {
 	if(options.externalMediaType === "videocall"){
 		html = `<div id="dream-wizard" class="dream-wizard">`;
 
-		if (icon) {
-			html += `<div class="cast-mode"><i class="selected fa-solid ${icon}"></i></div>`
-		} else {
 			html += `<div class="cast-mode">
 						<div class="cast-mode-option" id="mode-audio"><i class="fa-solid ${mod.audio_icon}" title="ignore the camera feeds and cast only the call audio"></i><label>voice</label></div>
 						<div class="cast-mode-option selected" id="mode-video"><i class="fa-solid ${mod.screen_icon}" title="Let Saito stitch the video streams together"></i><label>video</label></div>
@@ -28,7 +25,7 @@ module.exports = DreamWizardTemplate = (app, mod, options) => {
 						<i id="mode-video" class="cast-mode-option fa-solid ${mod.screen_icon} " title="Let Saito stitch the video streams together"></i-->
 						<!--i id="mode-screen" class="cast-mode-option fa-solid ${mod.screen_icon}" title="Use browser screen share to capture this window or another on your computer"></i-->
 					</div>`;
-		}
+		
 	
 		let default_title = "Swarmcast: " + app.keychain.returnUsername(mod.publicKey);
 	
@@ -48,14 +45,12 @@ module.exports = DreamWizardTemplate = (app, mod, options) => {
 	else if(options.externalMediaType === "game"){
 		html = `<div id="dream-wizard" class="dream-wizard">`;
 
-		if (icon) {
-			html += `<div class="cast-mode"><i class="selected fa-solid ${icon}"></i></div>`
-		} else {
+	
 			html += `<div class="cast-mode">
-						<div class="cast-mode-option" id="mode-game-screen"><i class="fa-solid ${mod.audio_icon}" title="game screen only"></i><label>Screen only</label></div>
-						<div class="cast-mode-option selected" id="mode-video"><i class="fa-solid ${mod.screen_icon}" title="Let Saito stitch the game screen and camera feed"></i><label>screen + camera</label></div>
+						<div class="cast-mode-option" id="mode-game-screen"><i class="fa-solid fa-tv" title="Game screen only"></i><label>Screen only</label></div>
+						<div class="cast-mode-option selected" id="mode-video"><i class="fa-solid fa-camera" title="Let Saito stitch the game screen and camera feed"></i><label>Screen + camera</label></div>
 					</div>`;
-		}
+		
 	
 		let default_title = "Swarmcast: " + app.keychain.returnUsername(mod.publicKey);
 	
