@@ -456,11 +456,25 @@ class ExplorerCore extends ModTemplate {
 
 		html += `
 		<div class="explorer-main">
+		
 			<div class="explorer-balance-row">
 				<a href="/explorer">
 					<button class="balance-button"><i class="fas fa-cubes"></i> Back to explorer</button>
 				</a>
 			</div>
+			<h2>Holders</h2>
+			<h3>Total Supply</h3>
+			<div class="block-table">
+				<div class="explorer-data">
+					<h4>Saito:</h4>
+				</div>
+				<div class="balance-saito">-</div>
+				<div class="explorer-data">
+					<h4>Nolan:</h4>
+				</div>
+				<div class="balance-nolan">-</div>
+			</div>
+
 			<div class="explorer-balance-row">
 				<div class="explorer-balance-table">
 					<div class="explorer-balance-header">Wallet</div>

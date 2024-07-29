@@ -20,6 +20,10 @@
 	gap: 2rem;
 }
 
+.limbo-menu h1 {
+	text-align: center;
+}
+
 .dreaming .limbo-main .limbo-menu {
 	display: none;
 }
@@ -29,7 +33,7 @@
 	max-width: 100rem;
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-	grid-gap: 5rem;
+	grid-gap: min(5rem, 5vw);
 }
 
 .limbo-option {
@@ -41,8 +45,10 @@
 	border: 2px solid;
 	padding: 2rem;
 	cursor: pointer;
-	height: min(25vw, 28rem);
+	height: min(30vw, 28rem);
+	width: min(30vw, 28rem);
 	justify-content: space-evenly;
+	justify-self: center;
 }
 
 .limbo-option i {
@@ -244,7 +250,7 @@
 	position: absolute;
 	bottom: 4rem;
 	border: 1px solid var(--saito-border-color);
-	padding: 1rem;
+	padding: 0.5rem;
 	border-radius: var(--saito-border-radius);
 	background-color: #0004;
 	z-index: 9;
@@ -261,6 +267,12 @@
 .dream-controls .saito-notification-dot{
 	bottom: 2.8rem;
 	left: 2.8rem;
+}
+
+.limbo-sidebar .saito-modal-menu-option .saito-notification-dot{
+	min-width: 2.4rem;
+	height: 2.6rem;
+	left: 2.5rem;
 }
 
 .video-preview{
@@ -403,8 +415,7 @@ video#local.noflip{
 	}
 
 	.dream-controls .control-list {
-		gap: 1rem;
-		margin-right: 1rem;
+		gap: 0.5rem;
 	}
 
 	.dream-controls.lite .control-list{
@@ -456,6 +467,31 @@ video#local.noflip{
 		padding: none;
 	}
 
+	/**********************************
+	 * Do weird things with profile
+	**********************************/
+
+	.limbo-sidebar .saito-profile {
+		display: grid;
+		grid-template-columns: 1fr min-content;
+	}
+
+	.limbo-sidebar .saito-profile-controls{
+		grid-column: 2;
+		grid-row: 1 / span 2;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-evenly;
+	}
+
+	.limbo-sidebar .saito-profile-description, 
+	.limbo-sidebar .saito-profile-menu {
+		grid-column: 1 / span 2;
+	}
+
+	.limbo-sidebar .saito-profile-controls .saito-modal-menu-option{
+		flex-grow: 1;
+	}
 }
 
 
@@ -465,9 +501,6 @@ video#local.noflip{
 		margin-bottom: 2rem;
 	}
 
-	.limbo-sidebar .saito-profile-controls{
-		display: flex;
-	}	
 
 	.dream-controls .control-panel {
 		bottom: 1rem;

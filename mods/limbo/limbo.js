@@ -380,7 +380,10 @@ class Limbo extends ModTemplate {
 							}
 
 						} else {
-							salert(`${prompt} no longer available`);
+
+							if (this.dreamer !== this.publicKey){
+								salert(`${prompt} no longer available`);	
+							}
 							window.history.pushState('', '', `/${this.returnSlug()}/`);
 							this.exitSpace();
 						}
@@ -1564,6 +1567,7 @@ class Limbo extends ModTemplate {
 		}
 
 		this.app.connection.emit('limbo-dream-render');
+		this.app.connection.emit('saito-yt-stop-stream');
 		this.controls = null;
 		this.detachMetaEvents();
 		console.log("Space exited!");

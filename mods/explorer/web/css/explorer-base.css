@@ -2,14 +2,11 @@
 	padding: 0.75em 1em;
 }
 
-h1,
-h2,
-h3 {
+h1, h2, h3 {
 	font-size: 2rem;
 }
 
-h4,
-h5 {
+h4, h5 {
 	font-size: 1.5rem;
 }
 
@@ -20,7 +17,7 @@ h5 {
 	font-family: 'visuelt-light', 'Microsoft Yahei', 'Hiragino Sans GB';
 	height: 91vh;
 	overflow: auto;
-	padding: 2em;
+	padding: 5px 2em;
 }
 
 .explorer-main table {
@@ -60,9 +57,7 @@ h5 {
 	list-style: none;
 }
 
-.json,
-#block-list,
-.block-transactions-table {
+.json, #block-list, .block-transactions-table {
 	font-family: monospace;
 	border: 1px solid #ccc;
 	background: #eee;
@@ -71,8 +66,7 @@ h5 {
 	width: 99%;
 }
 
-input[type='text'],
-input[type='number'] {
+input[type='text'], input[type='number'] {
 	height: 3em;
 	margin-top: 1px;
 }
@@ -133,15 +127,24 @@ a.button {
 	grid-gap: 10px;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5 {
+h1, h2, h3, h4, h5 {
 	display: inline-block;
 	min-width: 200px;
 	width: 100%;
 	overflow: hidden;
+}
+
+h2 {
+	font-size: 3rem;
+	margin: 2.3rem 0 1rem;
+}
+
+h3 {
+	margin: 1rem 0;
+}
+
+h4 {
+	margin: 1rem 5px;
 }
 
 a {
@@ -162,51 +165,62 @@ a {
 
 .balance-button {
 	background: var(--saito-primary-background);
-    transition: 0.5s;
-    background-size: 400% auto;
-    padding: 1rem 1.5rem;
-    text-align: center;
-    letter-spacing: 1px;
-    min-width: 13rem;
-    font-size: 1.8rem;
-    color: var(--saito-white);
-    font-weight: 500;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    border: 1px solid transparent;
-    background-position: 1% 1%;
+	transition: 0.5s;
+	background-size: 400% auto;
+	padding: 1rem 1.5rem;
+	text-align: center;
+	letter-spacing: 1px;
+	min-width: 13rem;
+	font-size: 1.8rem;
+	color: var(--saito-white);
+	font-weight: 500;
+	border-radius: 0.5rem;
+	cursor: pointer;
+	background-position: 1% 1%;
+	border-radius: 0.5rem;
+}
+
+.balance-button:hover {
+	color: #fff;
 }
 
 .explorer-balance-row {
 	padding: 1rem 0rem;
 }
 
-.explorer-balance-table {  
+.explorer-balance-table {
 	display: grid;
-	grid-template-columns: minmax(28rem, auto) auto auto;
-	gap: 0px 0px;
-	background-color: lightgray;
+	grid-template-columns: minmax(28rem, 48rem) minmax(auto, 24rem) auto;
+	gap: 1px;
+	background: var(--dreamscape);
 	border-radius: 5px;
 	overflow: hidden;
+	padding: 1px 2px 1rem;
+	width: fit-content;
 }
-  
-.explorer-balance-header{
-	padding: 1rem 1.5rem;
-	font-weight: bold;
+
+.explorer-balance-header {
+	padding: 1.2rem 1.5rem 0.7rem;
+	font-size: larger;
+	color: #fff;
 }
-.explorer-balance-data{
+
+.explorer-balance-data {
 	font-family: 'Courier New', Courier, monospace;
-	padding: 1rem 1.5rem;
+	padding: 1rem 1.5rem 0.5rem;
 	text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
+	white-space: nowrap;
+	overflow: hidden;
+	background: #fff;
 }
+
 .explorer-balance-row-button {
 	display: grid;
 	grid-template-columns: 1fr 7.5em;
 	max-width: 850px;
 }
 
-input.button{
+input.button {
 	width: 10rem;
+	border-radius: 0.5rem;
 }

@@ -143,7 +143,7 @@ class InviteManager {
 					this.mod.games[list] = [];
 				}
 
-				if (this.mod.games[list].length > 0) {
+				if (this.mod.games[list].length > 0 && !this.game_filter) {
 					if (list === 'mine') {
 						this.app.browser.addElementToSelector(
 							`<h5 class="sidebar-header">My Games</h5>`,

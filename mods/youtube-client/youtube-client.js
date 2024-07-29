@@ -25,7 +25,13 @@ class YoutubeClient extends ModTemplate {
 		this.app.connection.on('saito-yt-start-stream', (obj = {}) => {
 			this.stream_key = obj.stream_key;
 			this.startStream();
-			this.toggleStreamStatus();
+			this.startStreamStatus();
+		});
+
+		this.app.connection.on('saito-yt-stop-stream', (obj = {}) => {
+			if (this.stream_status == true) {
+				this.stopStreamStatus();
+			}
 		});
 
 		return this;
@@ -45,24 +51,19 @@ class YoutubeClient extends ModTemplate {
 	    let this_self = this;
 	    if (type === "dream-controls") {
 	    	let x = [];
-	    	console.log('inside youtube-client respondTo ////');
 			x.push({
 				text: `Youtube Stream`,
 				icon: "fa-brands fa-youtube", 
 				callback: function (app, id, combined_stream) {
 					this_self.icon_id = `dream_controls_menu_item_${id}`;
-					console.log("icon id //////////////", this_self.icon_id);
-
 					this_self.combined_stream = combined_stream;
 
 					console.log('combined_stream ///', combined_stream)
-
-
 					if (this_self.stream_status == false) {
 						let init = new YoutubeInitStream(this_self.app, this_self.mod);
 						init.render();
 					} else {
-						this_self.toggleStreamStatus();
+						this_self.stopStreamStatus();
 					}
 
 					 
@@ -95,7 +96,7 @@ class YoutubeClient extends ModTemplate {
 		this_self.ws.addEventListener('open', (e) => {
 			console.log('WebSocket Open', e);
 			this_self.mediaRecorder = new MediaRecorder(mediaStream, {
-			  mimeType: 'video/webm;codecs=h264',
+			  mimeType: this_self.getMIME(),
 			  videoBitsPerSecond : 3 * 1024 * 1024
 			});
 
@@ -117,16 +118,21 @@ class YoutubeClient extends ModTemplate {
 		});
 	}
 
-	toggleStreamStatus() {
-		let this_self = this;
-		this.stream_status = !this.stream_status;
-		document.getElementById(this_self.icon_id).classList.toggle('yt-active');
-
-		if (this.stream_status == false) {
-			console.log('stopping stream');
-			siteMessage("Youtube live stream stopped", 2000);
-			this.mediaRecorder.stop(1000);
+	startStreamStatus(){
+		if (document.getElementById(this.icon_id)) {
+			document.getElementById(this.icon_id).classList.add('yt-active');
 		}
+		siteMessage("Youtube live stream started", 2000);
+		this.stream_status = true;
+	}
+
+	stopStreamStatus(){
+		if (document.getElementById(this.icon_id)) {
+			document.getElementById(this.icon_id).classList.remove('yt-active');
+		}
+		this.stream_status = false;
+		siteMessage("Youtube live stream stopped", 2000);
+		this.mediaRecorder.stop(1000);
 	}
 
 	async render() {
@@ -136,12 +142,9 @@ class YoutubeClient extends ModTemplate {
 		let this_mod = this;
 	}
 
-
 	getStreamData() {
 		let mods = this.app.modules.mods;
-		console.log("mods:", mods);
 		for (let i = 0; i < mods.length; i++) {
-			console.log("mod:", mods[i]);
 			if (typeof mods[i].slug != "undefined") {
 				if (mods[i].slug == "swarmcast") {
 					let limbo = mods[i];
@@ -150,7 +153,6 @@ class YoutubeClient extends ModTemplate {
 				}
 			}
 		}
-
 		return false;
 	}
 
@@ -158,13 +160,68 @@ class YoutubeClient extends ModTemplate {
 		// 44344 - test, prod
 		// 3000 - local dev
 		let port = ':44344';
-		let host = this.app.browser.host;
-		if (host.includes('127.0.0.1') || host.includes('localhost')) {
+		let protocol = this.app.browser.protocol;
+		
+		console.log('protocol:', protocol);
+		if (protocol == 'http:') {
 			port = ':3000';
 		}
+
+		console.log('port:', port);
 		return port;
 	}
 
+	getMIME() {
+		let mime = 'video/webm;codecs=h264';
+		const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+
+		if (isFirefox) {
+			let supported = this.getAllSupportedMimeTypes();
+			console.log('supported mimes: ', supported);
+			for (let i=0; i<supported.length; i++) {
+				if (supported[i] == 'video/webm;codecs="vp8.0, opus"') {
+					mime = supported[i];
+					break;
+				}
+			}
+		}
+	
+		console.log('mime:', mime);
+		return mime;
+	}
+
+	getAllSupportedMimeTypes(...mediaTypes) {
+	  if (!mediaTypes.length) mediaTypes.push('video', 'audio')
+	  const CONTAINERS = ['webm', 'ogg', 'mp3', 'mp4', 'x-matroska', '3gpp', '3gpp2', '3gp2', 'quicktime', 'mpeg', 'aac', 'flac', 'x-flac', 'wave', 'wav', 'x-wav', 'x-pn-wav', 'not-supported']
+	  const CODECS = ['vp9', 'vp9.0', 'vp8', 'vp8.0', 'avc1', 'av1', 'h265', 'h.265', 'h264', 'h.264', 'opus', 'vorbis', 'pcm', 'aac', 'mpeg', 'mp4a', 'rtx', 'red', 'ulpfec', 'g722', 'pcmu', 'pcma', 'cn', 'telephone-event', 'not-supported']
+	  
+	  return [...new Set(
+	    CONTAINERS.flatMap(ext =>
+	        mediaTypes.flatMap(mediaType => [
+	          `${mediaType}/${ext}`,
+	        ]),
+	    ),
+	  ), ...new Set(
+	    CONTAINERS.flatMap(ext =>
+	      CODECS.flatMap(codec =>
+	        mediaTypes.flatMap(mediaType => [
+	          // NOTE: 'codecs:' will always be true (false positive)
+	          `${mediaType}/${ext};codecs=${codec}`,
+	        ]),
+	      ),
+	    ),
+	  ), ...new Set(
+	    CONTAINERS.flatMap(ext =>
+	      CODECS.flatMap(codec1 =>
+	      CODECS.flatMap(codec2 =>
+	        mediaTypes.flatMap(mediaType => [
+	          `${mediaType}/${ext};codecs="${codec1}, ${codec2}"`,
+	        ]),
+	      ),
+	      ),
+	    ),
+	  )].filter(variation => MediaRecorder.isTypeSupported(variation))
+	}
 }
 
 module.exports = YoutubeClient;

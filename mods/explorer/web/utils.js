@@ -186,6 +186,7 @@ async function checkBalance(pubkey = "") {
   if (pubkey) {
     // API
     let balance = await balanceAPI();
+    let supply = 0.0
     if (balance.hasOwnProperty(pubkey)) {
       document.querySelector('.balance-search-input').placeholder = pubkey;
       let balance_nolan = balance[pubkey] || 0;
@@ -198,13 +199,19 @@ async function checkBalance(pubkey = "") {
   }
 }
 
+
+
 async function checkAllBalance() {
   // API
   let balance = await balanceAPI();
 
+  let supply = BigInt(0);
+
   // draw
   let node = document.querySelector(".explorer-balance-table");
   for (row in balance) {
+    supply = supply + BigInt(balance[row]);
+
     let wallet = document.createElement("div");
     wallet.setAttribute("class", "explorer-balance-data");
     wallet.innerHTML = row;
@@ -221,6 +228,8 @@ async function checkAllBalance() {
     balance_nolan.innerHTML = balance[row];
     node.appendChild(balance_nolan);
   }
+  document.querySelector('.balance-saito').innerHTML = formatNumberLocale(parseFloat(supply) / 100000000);
+  document.querySelector('.balance-nolan').innerHTML = formatNumberLocale(supply);
 }
 
 async function balanceAPI(pubkey = "") {

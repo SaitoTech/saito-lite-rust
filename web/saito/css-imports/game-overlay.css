@@ -250,6 +250,10 @@
     max-height: 90vh;
     max-width: 95vw;
   }
+
+  .rules-overlay {
+    padding: 1rem;
+  }
 }
 
 @media screen and (max-width: 800px) and (orientation: landscape) {
