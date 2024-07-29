@@ -252,8 +252,8 @@ class Limbo extends ModTemplate {
 		if (type === 'game-menu') {
 			if (!obj.recordOptions) return;
 			let menu = {
-				id: 'game-game',
-				text: 'Game',
+				//id: 'game-share',
+				//text: 'Share',
 				submenus: []
 			};
 
@@ -264,7 +264,7 @@ class Limbo extends ModTemplate {
 			this.attachStyleSheets();
 
 			menu.submenus.push({
-				parent: 'game-game',
+				parent: 'game-share',
 				text: 'Cast game',
 				id: 'cast-stream',
 				class: 'cast-stream',

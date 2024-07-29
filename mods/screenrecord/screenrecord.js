@@ -167,13 +167,13 @@ class Record extends ModTemplate {
 			this.attachStyleSheets();
 			if (!obj.recordOptions) return;
 			let menu = {
-				id: 'game-game',
-				text: 'Game',
+				//id: 'game-share',
+				//text: 'Share',
 				submenus: []
 			};
 
 			menu.submenus.push({
-				parent: 'game-game',
+				parent: 'game-share',
 				text: 'Record game',
 				id: 'record-stream',
 				class: 'record-stream',

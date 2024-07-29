@@ -304,11 +304,11 @@ class RedSquare extends ModTemplate {
       this.attachStyleSheets();
       super.render(this.app, this);
       return {
-        id: 'game-game',
-        text: 'Game',
+        //id: 'game-share',
+        //text: 'Share',
         submenus: [
           {
-            parent: 'game-game',
+            parent: 'game-share',
             text: 'Tweet',
             id: 'game-tweet',
             class: 'game-tweet',
