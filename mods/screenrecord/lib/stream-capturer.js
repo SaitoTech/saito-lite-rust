@@ -486,7 +486,6 @@ class StreamCapturer {
         if (this.is_capturing_stream) {
             console.log('RECORD --- Nope out of resetting captureGameStreams');
             await this.getVideoBox(includeCamera)
-
             return this.combinedStream;
         }
 
@@ -497,6 +496,7 @@ class StreamCapturer {
             console.warn('No valid screen input');
             return;
         }
+
 
 
         // clear previous canvas
@@ -799,8 +799,11 @@ class StreamCapturer {
                 }
 
             } else {
-                this.videoBox.remove()
-                this.videoBox = null
+                if(this.videoBox){
+                    this.videoBox.remove()
+                    this.videoBox = null
+                }
+               
             }
         }
     }
