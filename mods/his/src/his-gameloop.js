@@ -3838,6 +3838,14 @@ console.log("----------------------------");
 	  let already_asked = [];
 
 	  //
+	  // faction is set to skip in move if no-one should be able to intercept
+	  // such as if I am moving into a space in which I already have units.
+	  //
+	  if (faction == "skip") {
+	    return 1;  
+	  }
+
+	  //
 	  // players cannot be intercepted moving into friendly, fortified spaces
 	  //
 	  if (this.isSpaceFriendly(spacekey, faction) && this.isSpaceFortified(spacekey)) {

@@ -1207,6 +1207,21 @@ console.log("LATEST MOVE: " + mv);
       this.game.queue.splice(qe, 1);
     }
 
+    if (mv[0] === "fyp_discard") {
+
+      let card = mv[1];
+
+      for (var i in this.game.deck[0].cards) {
+        if (card == i) {
+          if (this.game.deck[0].cards[card] != undefined) {
+            this.game.deck[0].discards[i] = this.game.deck[0].cards[i];
+          }
+        }
+      }
+
+      this.game.queue.splice(qe, 1);
+    }
+
     //
     // remove from discards (will still be in cards)
     //
@@ -4549,6 +4564,15 @@ async playerTurnHeadlineSelected(card, player) {
         // cannot play event of opponent card (usability fix)
         //
         if (ac[card].player == opponent) { can_play_event = 0; }
+
+
+	//
+	// cancel some events that cannot be played
+	//
+        if (this.game.state.events.cancelled[card] == 1) {
+	  can_play_event = 0;
+	  if (card == "defectors") { can_play_event = 0; }
+        }
 
 
         if (can_play_event == 1) { announcement += '<li class="option" id="event">play event</li>'; }

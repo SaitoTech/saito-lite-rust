@@ -22,6 +22,10 @@
 	cursor: grab;
 }
 
+#game_board_size_toggle {
+	display: none;
+}
+
 .mahjong-backdrop {
 	position: absolute;
 	width: 100%;
@@ -265,7 +269,7 @@ div[id^='row21'] {
 	}
 
 	.mahj-rowbox {
-		margin: 40px 60px 40px 180px;
+		margin: 0; /*40px 60px 40px 180px;*/
 	}
 
 	.tiles {

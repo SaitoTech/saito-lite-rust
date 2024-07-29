@@ -3700,7 +3700,15 @@ does_units_to_move_have_unit = true; }
 	        }
 	      }
 
-	      his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	      //
+	      // "skip" interception check if we already have units in this space
+	      //
+	      if (his_self.returnFactionLandUnitsInSpace(faction, destination_spacekey) > 0) {
+	        his_self.addMove("interception_check\t"+"skip"+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	      } else {
+	        his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	      } 
+
               units_to_move.sort(function(a, b){return parseInt(a.idx)-parseInt(b.idx)});
 
 	      for (let i = 0; i < units_to_move.length; i++) {
@@ -3936,6 +3944,9 @@ does_units_to_move_have_unit = true; }
 
   async playerMoveFormationInClear(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
+    // BACK moves us to OPS menu
+    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayOps("", faction, ops_remaining, ""); });
+
     let parent_faction = faction;
     let units_to_move = [];
     let cancel_func = null;
@@ -4011,7 +4022,15 @@ does_units_to_move_have_unit = true; }
 	        }
 	      }
 
-	      his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	      //
+	      // "skip" interception check if we already have units in this space
+	      //
+	      if (his_self.returnFactionLandUnitsInSpace(faction, destination_spacekey) > 0) {
+	        his_self.addMove("interception_check\t"+"skip"+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	      } else {
+	        his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	      } 
+
               units_to_move.sort(function(a, b){return parseInt(a.idx)-parseInt(b.idx)});
 
 	      for (let i = 0; i < units_to_move.length; i++) {
@@ -5037,6 +5056,9 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   }
   async playerNavalTransport(his_self, player, faction, ops_to_spend, ops_remaining) {
 
+    // BACK moves us to OPS menu
+    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayOps("", faction, ops_remaining, ""); });
+
     let spacekey = "";
     let units_to_move = [];
     let cancel_func = null;
@@ -5057,7 +5079,15 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
                 }
               }
 
-              his_self.addMove("interception_check\t"+faction+"\t"+destination+"\t"+does_movement_include_cavalry);
+	      //
+	      // "skip" interception check if we already have units in this space
+	      //
+	      if (his_self.returnFactionLandUnitsInSpace(faction, destination_spacekey) > 0) {
+	        his_self.addMove("interception_check\t"+"skip"+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	      } else {
+	        his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	      }
+ 
               for (let i = 0; i < units_to_move.length; i++) {
                 his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+spacekey+"\t"+destination+"\t"+units_to_move[i].idx);
               }
@@ -5304,6 +5334,9 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
   }
   async playerNavalMove(his_self, player, faction) {
+
+    // BACK moves us to OPS menu
+    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayOps("", faction, ops_remaining, ""); });
 
     let units_to_move = [];
     let units_available = his_self.returnFactionNavalUnitsToMove(faction);

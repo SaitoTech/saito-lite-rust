@@ -11084,9 +11084,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  }
         );
 
-	//
-	// 
-	//
+
 	for (let i = 0; i < spaces.length; i++) {
 	  valid_spaces_with_cavalry.push(spaces[i]);
 	}
@@ -11098,7 +11096,9 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  let s = his_self.game.spaces[spaces[i]];
 	  for (let ii = 0; ii < s.neighbours.length; ii++) {
 	    if (his_self.isSpaceControlled(s.neighbours[ii], "ottoman")) {
-	      neighbours.push(s.neighbours[ii]);
+	      if (!neighbours.includes(s.neighbours[ii])) {
+	        neighbours.push(s.neighbours[ii]);
+	      }
 	    } else {
 	      for (let iii = 0; iii < enemies.length; iii++) {
 	        if (his_self.isSpaceControlled(s.neighbours[ii], enemies[iii])) {
@@ -11113,7 +11113,9 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  let s = his_self.game.spaces[neighbours[i]];
 	  for (let ii = 0; ii < s.neighbours.length; ii++) {
 	    if (his_self.isSpaceControlled(s.neighbours[ii], "ottoman")) {
-	      neighbours.push(s.neighbours[ii]);
+	      if (!neighbours.includes(s.neighbours[ii])) {
+		neighbours.push(s.neighbours[ii]);
+	      }
 	    } else {
 	      for (let iii = 0; iii < enemies.length; iii++) {
 	        if (his_self.isSpaceControlled(s.neighbours[ii], enemies[iii])) {
@@ -12165,6 +12167,9 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 
 	      space1 = spacekey;
 
+	      his_self.addUnrest(space1);
+	      his_self.displaySpace(space1);
+
               his_self.playerSelectSpaceWithFilter(
 	        "Select 2nd Unoccupied French Home Space: ",
 	        function(space) {
@@ -12180,6 +12185,10 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 		function(spacekey2) {
 		  his_self.updateStatus("adding unrest...");
 		  space2 = spacekey2;
+
+	          his_self.addUnrest(space2);
+	          his_self.displaySpace(space2);
+
 		  his_self.addMove("unrest\t"+space1);
 		  his_self.addMove("unrest\t"+space2);
 		  his_self.endTurn();
@@ -14269,11 +14278,12 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  let leader = mv[1];
 	  let faction = "";
 	  let leader_found = false;
+	  let leader_name = "";
 
-	  if (leader == "charles-brandon") 	{ leader = "charles-brandon"; faction = "england"; }
-	  if (leader == "duke-of-alva") 	{ leader = "duke-of-alva"; faction = "hapsburg"; }
-	  if (leader == "montmorency") 		{ leader = "montmorency"; faction = "france"; }
-	  if (leader == "ibrahim-pasha") 	{ leader = "ibrahim-pasha"; faction = "ottoman"; }
+	  if (leader == "charles-brandon") 	{ leader = "charles-brandon"; leader_name = "Charles Brandon"; faction = "england"; }
+	  if (leader == "duke-of-alva") 	{ leader = "duke-of-alva"; leader_name = "Duke of Alva"; faction = "hapsburg"; }
+	  if (leader == "montmorency") 		{ leader = "montmorency"; leader_name = "Montmorency"; faction = "france"; }
+	  if (leader == "ibrahim-pasha") 	{ leader = "ibrahim-pasha"; leader_name = "Ibrahim Pasha"; faction = "ottoman"; }
 
 	  let r = his_self.rollDice(6);
 
@@ -14291,7 +14301,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  //
 	  if (r >= 4) {
 
-	    his_self.updateLog(leader + " removed from game");
+	    his_self.updateLog(leader_name + " removed from game");
 
 	    if (leader_found) {
 	      his_self.game.spaces[s].units[faction].splice(idx, 1);
@@ -14303,7 +14313,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  //
 	  } else {
 
-	    his_self.updateLog(leader + " removed from game until next turn");
+	    his_self.updateLog(leader_name + " removed from game until next turn");
 
             if (s !== "") {
               idx = his_self.returnIndexOfPersonageInSpace(faction, leader, s);
@@ -26003,6 +26013,14 @@ console.log("----------------------------");
 	  let attacking_player = this.returnPlayerCommandingFaction(faction);
 
 	  let already_asked = [];
+
+	  //
+	  // faction is set to skip in move if no-one should be able to intercept
+	  // such as if I am moving into a space in which I already have units.
+	  //
+	  if (faction == "skip") {
+	    return 1;  
+	  }
 
 	  //
 	  // players cannot be intercepted moving into friendly, fortified spaces
@@ -40174,7 +40192,15 @@ does_units_to_move_have_unit = true; }
 	        }
 	      }
 
-	      his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	      //
+	      // "skip" interception check if we already have units in this space
+	      //
+	      if (his_self.returnFactionLandUnitsInSpace(faction, destination_spacekey) > 0) {
+	        his_self.addMove("interception_check\t"+"skip"+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	      } else {
+	        his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	      } 
+
               units_to_move.sort(function(a, b){return parseInt(a.idx)-parseInt(b.idx)});
 
 	      for (let i = 0; i < units_to_move.length; i++) {
@@ -40410,6 +40436,9 @@ does_units_to_move_have_unit = true; }
 
   async playerMoveFormationInClear(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
+    // BACK moves us to OPS menu
+    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayOps("", faction, ops_remaining, ""); });
+
     let parent_faction = faction;
     let units_to_move = [];
     let cancel_func = null;
@@ -40485,7 +40514,15 @@ does_units_to_move_have_unit = true; }
 	        }
 	      }
 
-	      his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	      //
+	      // "skip" interception check if we already have units in this space
+	      //
+	      if (his_self.returnFactionLandUnitsInSpace(faction, destination_spacekey) > 0) {
+	        his_self.addMove("interception_check\t"+"skip"+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	      } else {
+	        his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	      } 
+
               units_to_move.sort(function(a, b){return parseInt(a.idx)-parseInt(b.idx)});
 
 	      for (let i = 0; i < units_to_move.length; i++) {
@@ -41511,6 +41548,9 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   }
   async playerNavalTransport(his_self, player, faction, ops_to_spend, ops_remaining) {
 
+    // BACK moves us to OPS menu
+    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayOps("", faction, ops_remaining, ""); });
+
     let spacekey = "";
     let units_to_move = [];
     let cancel_func = null;
@@ -41531,7 +41571,15 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
                 }
               }
 
-              his_self.addMove("interception_check\t"+faction+"\t"+destination+"\t"+does_movement_include_cavalry);
+	      //
+	      // "skip" interception check if we already have units in this space
+	      //
+	      if (his_self.returnFactionLandUnitsInSpace(faction, destination_spacekey) > 0) {
+	        his_self.addMove("interception_check\t"+"skip"+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	      } else {
+	        his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	      }
+ 
               for (let i = 0; i < units_to_move.length; i++) {
                 his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+spacekey+"\t"+destination+"\t"+units_to_move[i].idx);
               }
@@ -41778,6 +41826,9 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
   }
   async playerNavalMove(his_self, player, faction) {
+
+    // BACK moves us to OPS menu
+    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayOps("", faction, ops_remaining, ""); });
 
     let units_to_move = [];
     let units_available = his_self.returnFactionNavalUnitsToMove(faction);

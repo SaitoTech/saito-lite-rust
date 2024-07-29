@@ -100,13 +100,16 @@ class Leaderboard {
 			);
 		}
 
-		let myListing = document.querySelector('.my-leaderboard-position');
-		if (myListing) {
-			myListing.scrollIntoView();
-			myListing.parentElement.parentElement.parentElement.parentElement.scrollBy(
-				0,
-				-84
-			);
+		let container = document.querySelector(this.container);
+
+		if (container.getBoundingClientRect().bottom < window.innerHeight){
+			let myListing = document.querySelector('.my-leaderboard-position');
+			if (myListing) {
+				myListing.scrollIntoView(false);
+				
+				//Old way: scroll to top then shift down
+				//myListing.parentElement.parentElement.parentElement.parentElement.scrollBy(0,	-84);
+			}
 		}
 	}
 }

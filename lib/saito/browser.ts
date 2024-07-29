@@ -1818,10 +1818,12 @@ class Browser {
         // let daniels_regex = /(?<!>)\b(?:https?:\/\/|www\.|https?:\/\/www\.)?(?:\w{2,}\.)+\w{2,}(?:\/[a-zA-Z0-9_\?=#&;@\-\.]*)*\b(?!<\/)/gi;
         // this pointlessly looks for www, but does not identify the majority of valid urls or any url without http/https in front of it.
 
-        //this should identify patterns like x.com and staging.saito.io which the others do not.
-		let expression = /\b(?:https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+// HACK
+return "";
 
-        return expression;
+        //this should identify patterns like x.com and staging.saito.io which the others do not.
+//		let expression = /\b(?:https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+//        return expression;
 	}
 
 	sanitize(text, createLinks = false) {

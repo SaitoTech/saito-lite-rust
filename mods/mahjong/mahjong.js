@@ -108,7 +108,8 @@ class Mahjong extends OnePlayerGameTemplate {
 		}
 
 		if (app.browser.isMobileBrowser(navigator.userAgent)) {
-			this.hammer.render('#mahj-rowbox');
+			this.hammer.render('#mahj-rowbox', 900);
+			document.getElementById('game_board_size_toggle').click();
 		} else {
 			this.sizer.render();
 			this.sizer.attachEvents('#mahj-rowbox');
