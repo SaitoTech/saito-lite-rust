@@ -280,7 +280,7 @@ class Limbo extends ModTemplate {
 							salert("Only the host can end the Swarmcast");
 						}
 					} else {
-						mod_self.startDream({ externalMediaType: "game", container, keylist: [] });
+						mod_self.startDream({ externalMediaType: "game", container, keylist: [], game_name: game_mod.name, players: game_mod.game.players });
 					}
 				}.bind(this)
 			});
