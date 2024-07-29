@@ -4566,6 +4566,15 @@ async playerTurnHeadlineSelected(card, player) {
         if (ac[card].player == opponent) { can_play_event = 0; }
 
 
+	//
+	// cancel some events that cannot be played
+	//
+        if (this.game.state.events.cancelled[card] == 1) {
+	  can_play_event = 0;
+	  if (card == "defectors") { can_play_event = 0; }
+        }
+
+
         if (can_play_event == 1) { announcement += '<li class="option" id="event">play event</li>'; }
 
         announcement += '<li class="option" id="ops">play for ops</li>';
@@ -11888,10 +11897,34 @@ if (card == "defectors") {
 
         this.addMove("resolve\tindreds");
         if (hungary_us >= hungary_ussr && yugo_us >= yugo_ussr && romania_us >= romania_ussr && bulgaria_us >= bulgaria_ussr && czechoslovakia_us >= czechoslovakia_ussr) {
+
           this.endTurn();
           return 0;
+
         } else {
 
+	  let total_countries = 0;
+	  let only_country = "";
+
+          if (hungary_us        < hungary_ussr) 	{ total_countries++; only_country = "hungary"; }
+          if (yugo_us           < yugo_ussr)    	{ total_countries++; only_country = "yugoslavia"; }
+          if (romania_us        < romania_ussr) 	{ total_countries++; only_country = "romania"; }
+          if (bulgaria_us       < bulgaria_ussr) 	{ total_countries++; only_country = "bulgaria"; }
+          if (czechoslovakia_us < czechoslovakia_ussr)  { total_countries++; only_country = "czechoslovakia"; }
+
+	  if (total_countries == 1) {
+	    let diff = 0;
+
+	    if (only_country == "hungary") { diff = hungary_diff; }
+	    if (only_country == "yugoslavia") { diff = yugo_diff; }
+	    if (only_country == "romania") { diff = romania_diff; }
+	    if (only_country == "bulgaria") { diff = bulgaria_diff; }
+	    if (only_country == "czechoslovakia") { diff = czechoslovakia_diff; }
+            twilight_self.placeInfluence(only_country, diff, "us");
+            twilight_self.addMove("place\tus\tus\t"+only_country+"\t"+diff);
+            twilight_self.endTurn();
+	    return 0;
+	  }
 
           let userhtml = "<ul>";
 

@@ -7408,9 +7408,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  }
         );
 
-	//
-	// 
-	//
+
 	for (let i = 0; i < spaces.length; i++) {
 	  valid_spaces_with_cavalry.push(spaces[i]);
 	}
@@ -7422,7 +7420,9 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  let s = his_self.game.spaces[spaces[i]];
 	  for (let ii = 0; ii < s.neighbours.length; ii++) {
 	    if (his_self.isSpaceControlled(s.neighbours[ii], "ottoman")) {
-	      neighbours.push(s.neighbours[ii]);
+	      if (!neighbours.includes(s.neighbours[ii])) {
+	        neighbours.push(s.neighbours[ii]);
+	      }
 	    } else {
 	      for (let iii = 0; iii < enemies.length; iii++) {
 	        if (his_self.isSpaceControlled(s.neighbours[ii], enemies[iii])) {
@@ -7437,7 +7437,9 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  let s = his_self.game.spaces[neighbours[i]];
 	  for (let ii = 0; ii < s.neighbours.length; ii++) {
 	    if (his_self.isSpaceControlled(s.neighbours[ii], "ottoman")) {
-	      neighbours.push(s.neighbours[ii]);
+	      if (!neighbours.includes(s.neighbours[ii])) {
+		neighbours.push(s.neighbours[ii]);
+	      }
 	    } else {
 	      for (let iii = 0; iii < enemies.length; iii++) {
 	        if (his_self.isSpaceControlled(s.neighbours[ii], enemies[iii])) {

@@ -4566,6 +4566,15 @@ async playerTurnHeadlineSelected(card, player) {
         if (ac[card].player == opponent) { can_play_event = 0; }
 
 
+	//
+	// cancel some events that cannot be played
+	//
+        if (this.game.state.events.cancelled[card] == 1) {
+	  can_play_event = 0;
+	  if (card == "defectors") { can_play_event = 0; }
+        }
+
+
         if (can_play_event == 1) { announcement += '<li class="option" id="event">play event</li>'; }
 
         announcement += '<li class="option" id="ops">play for ops</li>';
