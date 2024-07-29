@@ -15,7 +15,7 @@ h4, h5 {
 	/* padding: 0 10px; */
 	line-height: 1.6em;
 	font-family: 'visuelt-light', 'Microsoft Yahei', 'Hiragino Sans GB';
-	height: 91vh;
+	height: calc(100vh - 9rem);
 	overflow: auto;
 	padding: 5px 2em;
 }
@@ -64,6 +64,8 @@ h4, h5 {
 	padding: 10px;
 	overflow: auto;
 	width: 99%;
+	height: calc(100vh - 50rem);
+	box-shadow: var(--box-shadow-sidebar-elements);
 }
 
 input[type='text'], input[type='number'] {
@@ -114,6 +116,9 @@ a.button {
 	grid-gap: 10px;
 	max-width: 850px;
 	margin-bottom: 2em;
+	box-shadow: var(--box-shadow-sidebar-elements);
+	padding: 1rem;
+    border-radius: 0.5rem;
 }
 
 .block-table div {
@@ -191,18 +196,19 @@ a {
 .explorer-balance-table {
 	display: grid;
 	grid-template-columns: minmax(28rem, 48rem) minmax(auto, 24rem) auto;
-	gap: 1px;
-	background: var(--dreamscape);
+	gap: 1px 0;
+	background-color: #eee;
 	border-radius: 5px;
 	overflow: hidden;
 	padding: 1px 2px 1rem;
 	width: fit-content;
+	box-shadow: var(--box-shadow-sidebar-elements);
 }
 
 .explorer-balance-header {
 	padding: 1.2rem 1.5rem 0.7rem;
-	font-size: larger;
-	color: #fff;
+    font-family: 'Courier New', Courier, monospace;
+	font-weight: bold; 
 }
 
 .explorer-balance-data {
@@ -211,7 +217,6 @@ a {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	overflow: hidden;
-	background: #fff;
 }
 
 .explorer-balance-row-button {
