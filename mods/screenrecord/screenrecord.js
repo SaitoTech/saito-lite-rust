@@ -90,7 +90,7 @@ class Record extends ModTemplate {
 			return {
 				startStreamingVideoCall: async () => {
 					try {
-						this.videoCallStreamCapturer = new StreamCapturer(this.app, this.logo);
+						this.videoCallStreamCapturer = new StreamCapturer(this.app, this, this.logo);
 						let stream = this.videoCallStreamCapturer.captureVideoCallStreams(true);
 						return stream;
 					} catch (error) {
@@ -124,7 +124,7 @@ class Record extends ModTemplate {
 						if (this.gameStreamCapturer) {
 							stream = await this.gameStreamCapturer.captureGameStream(includeCamera)
 						} else {
-							this.gameStreamCapturer = new StreamCapturer(this.app, this.logo);
+							this.gameStreamCapturer = new StreamCapturer(this.app,this, this.logo);
 							this.gameStreamCapturer.view_window = container
 							stream = await this.gameStreamCapturer.captureGameStream(includeCamera);
 							stream;
@@ -329,7 +329,7 @@ class Record extends ModTemplate {
 		this.members = members;
 
 		if (type === 'videocall') {
-			this.recorderVideoCallStreamCapture = new StreamCapturer(this.app, this.logo);
+			this.recorderVideoCallStreamCapture = new StreamCapturer(this.app, this, this.logo);
 			this.recorderVideoCallStreamCapture.view_window = '.video-container-large';
 			let stream = this.recorderVideoCallStreamCapture.captureVideoCallStreams(includeCamera);
 			this.initializeMediaRecorder(this.chunks, stream);
@@ -338,7 +338,7 @@ class Record extends ModTemplate {
 			if (this.gameStreamCapturer) {
 				stream = await this.gameStreamCapturer.captureGameStream(includeCamera);
 			} else {
-				this.gameStreamCapturer = new StreamCapturer(this.app, this.logo);
+				this.gameStreamCapturer = new StreamCapturer(this.app, this, this.logo);
 				this.gameStreamCapturer.view_window = container;
 				stream = await this.gameStreamCapturer.captureGameStream(includeCamera);
 			}
