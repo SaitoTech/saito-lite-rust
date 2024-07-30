@@ -188,6 +188,7 @@ class Record extends ModTemplate {
 							type: 'game'
 						});
 						screenRecordWizard.render();
+						game_mod.menu.hideSubMenus();
 					} else {
 						this.stopRecording();
 					}

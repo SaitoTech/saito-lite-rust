@@ -282,6 +282,7 @@ class Limbo extends ModTemplate {
 					} else {
 						mod_self.startDream({ externalMediaType: "game", container, keylist: [], game_name: game_mod.name, players: game_mod.game.players });
 					}
+					game_mod.menu.hideSubMenus();
 				}.bind(this)
 			});
 
