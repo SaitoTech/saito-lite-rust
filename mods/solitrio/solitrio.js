@@ -94,15 +94,18 @@ class Solitrio extends OnePlayerGameTemplate {
 		await super.render(app);
 
 		if (app.browser.isMobileBrowser(navigator.userAgent)) {
-			this.app.connection.on('browser-fullscreen-toggle', async (value) => {
-				try {
-					if (value) {
-						await screen.orientation.lock('landscape');
-					} else {
-						await screen.orientation.unlock();
-					}
-				} catch (err) {
-					alert(err);
+			this.app.connection.on('browser-fullscreen-toggle', (value) => {
+				if (value) {
+					setTimeout(()=> {
+					    screen.orientation.lock('landscape')
+					    .then(()=> {
+					    	console.log("Lock success");
+					    }).catch((error) => {
+					    	alert(error);
+					    });
+					}, 25);
+				}else{
+					screen.orientation.unlock();
 				}
 			});
 		}
