@@ -665,6 +665,9 @@ class StreamCapturer {
                             if(element.classList.contains('control-list')){
                                 return true;
                             }
+                            if(element.classList.contains('yt-stream')){
+                                return true;
+                            }
                         }
                     });
         

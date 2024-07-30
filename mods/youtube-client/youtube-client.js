@@ -57,7 +57,6 @@ class YoutubeClient extends ModTemplate {
 				callback: function (app, id, combined_stream) {
 					this_self.icon_id = `dream_controls_menu_item_${id}`;
 					this_self.combined_stream = combined_stream;
-
 					console.log('combined_stream ///', combined_stream)
 					if (this_self.stream_status == false) {
 						let init = new YoutubeInitStream(this_self.app, this_self.mod);
