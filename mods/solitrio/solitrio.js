@@ -93,6 +93,20 @@ class Solitrio extends OnePlayerGameTemplate {
 
 		await super.render(app);
 
+		if (app.browser.isMobileBrowser(navigator.userAgent)) {
+			this.app.connection.on('browser-fullscreen-toggle', async (value) => {
+				try {
+					if (value) {
+						await screen.orientation.lock('landscape');
+					} else {
+						await screen.orientation.unlock();
+					}
+				} catch (err) {
+					alert(err);
+				}
+			});
+		}
+
 		//
 		// ADD MENU
 		//
@@ -145,6 +159,7 @@ class Solitrio extends OnePlayerGameTemplate {
 		this.app.connection.on("solitrio-update-settings", ()=> {
 			this.attachEventsToBoard();
 		});
+
 	}
 
 	returnState() {

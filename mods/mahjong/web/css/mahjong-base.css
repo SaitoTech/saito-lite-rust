@@ -30,7 +30,8 @@
 	position: absolute;
 	width: 100%;
 	height: 100%;
-	border-radius: 25%;
+	border-radius: 5%;
+	backdrop-filter: brightness(1.25);
 }
 
 .mahjong-backdrop:hover {
@@ -288,7 +289,7 @@ div[id^='row21'] {
 	}
 
 	.mahj-rowbox {
-		margin: 200px 10px 0 10px;
+		margin: 0; /*200px 10px 0 10px;*/
 	}
 
 	.tiles {
