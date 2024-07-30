@@ -493,7 +493,7 @@ class Limbo extends ModTemplate {
 			try {
 				this.screenStream = await navigator.mediaDevices.getDisplayMedia({
 					video: true,
-					audio: false,
+					audio: true,
 					selfBrowserSurface: 'include',
 					monitorTypeSurfaces: 'include'
 				});

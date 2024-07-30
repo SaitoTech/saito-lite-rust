@@ -121,6 +121,7 @@ class StreamManager {
           video: {
             displaySurface: 'window'
           },
+          audio: true,
           preferCurrentTab: false,
           selfBrowserSurface: 'exclude',
           surfaceSwitching: 'include',
