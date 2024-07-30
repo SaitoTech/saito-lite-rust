@@ -11,7 +11,7 @@
 
       if (player == opponent) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         let twilight_self = this;
 

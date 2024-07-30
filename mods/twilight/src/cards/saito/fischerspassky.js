@@ -6,7 +6,7 @@
         return 0;
       }
 
-      this.startClock();
+      this.startClockAndSetActivePlayer();
 
       let html = `<ul>
                   <li class="option" id="asia">Asia</li>

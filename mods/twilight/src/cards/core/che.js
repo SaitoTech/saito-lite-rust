@@ -39,7 +39,7 @@
         
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
           
         let user_message = `${this.cardToText(card)} takes effect. Pick first target for coup:`;
         let html = '<ul><li class="option" id="skipche">or skip coup</li></ul>';

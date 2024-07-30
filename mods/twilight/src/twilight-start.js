@@ -110,6 +110,16 @@ class Twilight extends GameTemplate {
   }
 
 
+  //
+  // async
+  //
+  startClockAndSetActivePlayer() {
+    if (this.async_dealing == 1) {
+      this.setPlayerActive();
+    } else {
+      this.startClock();
+    }
+  }
 
   showScoreOverlay(card, point_obj){
     this.scoring_overlay.render(card, point_obj);
@@ -1359,7 +1369,7 @@ console.log("restoring B");
 
         if (this.game.player == 2) {
           //If the event card has a UI component, run the clock for the player we are waiting on
-          this.startClock();
+          this.startClockAndSetActivePlayer();
 
           let user_message  = `${this.cardToText(mv[0])} pulls ${this.cardToText(mv[2])} from USSR. Do you want to play this card?`;
           let html = "<ul>";
@@ -1456,7 +1466,7 @@ console.log("restoring B");
             if (twilight_self.game.player == 1) {
 
               //If the event card has a UI component, run the clock for the player we are waiting on
-              twilight_self.startClock();
+              twilight_self.startClockAndSetActivePlayer();
 
               let user_message = "Pick second target for coup:";
               let html =  '<ul><li class="option" id="skipche">or skip coup</li></ul>';
@@ -1597,7 +1607,7 @@ console.log("restoring B");
         } else {
 
           //If the event card has a UI component, run the clock for the player we are waiting on
-          this.startClock();
+          this.startClockAndSetActivePlayer();
 
           //
           // us decrypts and decides what to toss
@@ -1719,7 +1729,7 @@ console.log("restoring B");
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         let potCountries = [];
         for (var i in this.countries) {
@@ -1778,7 +1788,7 @@ console.log("restoring B");
 
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         let user_message  = "Do you wish to take an extra turn?";
         let html = `<ul>
@@ -1865,7 +1875,7 @@ console.log("restoring B");
 
       if (this.game.player == 1) {
 
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         this.playerFinishedPlacingInfluence();
 
@@ -2027,7 +2037,7 @@ console.log("restoring B");
 
         if (this.game.player == 1) {
           //If the event card has a UI component, run the clock for the player we are waiting on
-          this.startClock();
+          this.startClockAndSetActivePlayer();
           this.updateStatusAndListCards(user_message, uscards, function(action2) {
             twilight_self.addMove("discard\tus\t"+action2);
             twilight_self.addMove("aldrich\tussr\t"+action2);
@@ -2057,7 +2067,7 @@ console.log("restoring B");
     if (mv[0] === "cambridge") {
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         let placetxt = `${this.cardToText("cambridge")}: ${player.toUpperCase()} place 1 OP in`;
         for (let i = 1; i < mv.length; i++) {
@@ -2092,7 +2102,7 @@ console.log("restoring B");
       if (this.game.player == 2){
 
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         let user_message = "Tear Down this Wall is played -- US may make 3 OP free Coup Attempt or Realignments in Europe.";
         let html = `<ul>
@@ -2842,6 +2852,11 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
       // add Xs to cards - update cancelled events array
       //
       this.cancelEventsDynamically();
+
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("play headline post modern...");
 
       let x = this.playHeadlinePostModern(stage, hash, xor, card);
       //
@@ -3662,8 +3677,10 @@ this.game_help.render({
   /************** END OF GAME LOOP **************/
 
   playHeadlinePostModern(stage, hash="", xor="", card="") {
+
      if (this.game.player === 0) {
       this.updateLog("Processing Headline Cards...");
+console.log("processing headline cards - TEST");
       return;
     }
 
@@ -3872,7 +3889,9 @@ console.log("THESE ARE OUR HEADLINES: " + uscard + " -- " + ussrcard);
 
   playerPickHeadlineCard() {
 
-    this.startClock();
+alert("player pick headline card!");
+
+    this.startClockAndSetActivePlayer();
 
     let twilight_self = this;
     if (this.browser_active == 0) { return; }
@@ -4134,7 +4153,7 @@ async playerTurnHeadlineSelected(card, player) {
 
     if (this.browser_active == 0) { return; }
 
-    this.startClock();
+    this.startClockAndSetActivePlayer();
 
     let twilight_self = this;
 
@@ -4429,7 +4448,7 @@ async playerTurnHeadlineSelected(card, player) {
 
   async playerTurnCardSelected(card, player) {
 
-    this.startClock();
+    this.startClockAndSetActivePlayer();
 
     let ac = this.returnAllCards(true);
     let twilight_self = this;
@@ -4795,7 +4814,7 @@ async playerTurnHeadlineSelected(card, player) {
 
     if (player === me) {
 
-      this.startClock();
+      this.startClockAndSetActivePlayer();
       let bind_back_button_state = true;
 
       if (card === "missileenvy") { bind_back_button_state = false; }
@@ -5516,7 +5535,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     let twilight_self = this;
 
     try {
-      this.startClock();
+
+      this.startClockAndSetActivePlayer();
       twilight_self.addMove("resolve\tplacement");
 
       if (this.game.player == 1) { //USSR
@@ -5618,7 +5638,7 @@ this.game_help.render({
 
   playerPlaceBonusInfluence(bonus) {
 
-    this.startClock();
+    this.startClockAndSetActivePlayer();
 
     let twilight_self = this;
 

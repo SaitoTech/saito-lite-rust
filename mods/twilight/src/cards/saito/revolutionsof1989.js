@@ -7,7 +7,7 @@
 
       if (this.game.player == 2) {
 
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         let choicehtml = '<ul><li class="option" id="endgame">end the game</li><li class="option" id="cont">continue playing</li></ul>';
 

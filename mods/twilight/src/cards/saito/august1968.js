@@ -15,7 +15,7 @@
 
       if (i_played_the_card) {
 
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         // pick optional card
         var twilight_self = this;

@@ -6,7 +6,7 @@
 
       if (this.roles[this.game.player] == player) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
 

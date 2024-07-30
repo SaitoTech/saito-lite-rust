@@ -5,7 +5,7 @@
 
         if (this.game.player == 2) {
 
-          this.startClock();
+          this.startClockAndSetActivePlayer();
           
           let twilight_self = this;
           let ops_to_place = 1;

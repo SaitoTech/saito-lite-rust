@@ -7,7 +7,7 @@
 
       if (this.game.player == 1) {
 
-        this.startClock();
+        this.startClockAndSetActivePlayer();
         this.addMove("resolve\tbayofpigs");
         let twilight_self = this;
 

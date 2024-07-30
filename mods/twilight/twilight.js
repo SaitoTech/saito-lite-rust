@@ -110,6 +110,16 @@ class Twilight extends GameTemplate {
   }
 
 
+  //
+  // async
+  //
+  startClockAndSetActivePlayer() {
+    if (this.async_dealing == 1) {
+      this.setPlayerActive();
+    } else {
+      this.startClock();
+    }
+  }
 
   showScoreOverlay(card, point_obj){
     this.scoring_overlay.render(card, point_obj);
@@ -1359,7 +1369,7 @@ console.log("restoring B");
 
         if (this.game.player == 2) {
           //If the event card has a UI component, run the clock for the player we are waiting on
-          this.startClock();
+          this.startClockAndSetActivePlayer();
 
           let user_message  = `${this.cardToText(mv[0])} pulls ${this.cardToText(mv[2])} from USSR. Do you want to play this card?`;
           let html = "<ul>";
@@ -1456,7 +1466,7 @@ console.log("restoring B");
             if (twilight_self.game.player == 1) {
 
               //If the event card has a UI component, run the clock for the player we are waiting on
-              twilight_self.startClock();
+              twilight_self.startClockAndSetActivePlayer();
 
               let user_message = "Pick second target for coup:";
               let html =  '<ul><li class="option" id="skipche">or skip coup</li></ul>';
@@ -1597,7 +1607,7 @@ console.log("restoring B");
         } else {
 
           //If the event card has a UI component, run the clock for the player we are waiting on
-          this.startClock();
+          this.startClockAndSetActivePlayer();
 
           //
           // us decrypts and decides what to toss
@@ -1719,7 +1729,7 @@ console.log("restoring B");
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         let potCountries = [];
         for (var i in this.countries) {
@@ -1778,7 +1788,7 @@ console.log("restoring B");
 
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         let user_message  = "Do you wish to take an extra turn?";
         let html = `<ul>
@@ -1865,7 +1875,7 @@ console.log("restoring B");
 
       if (this.game.player == 1) {
 
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         this.playerFinishedPlacingInfluence();
 
@@ -2027,7 +2037,7 @@ console.log("restoring B");
 
         if (this.game.player == 1) {
           //If the event card has a UI component, run the clock for the player we are waiting on
-          this.startClock();
+          this.startClockAndSetActivePlayer();
           this.updateStatusAndListCards(user_message, uscards, function(action2) {
             twilight_self.addMove("discard\tus\t"+action2);
             twilight_self.addMove("aldrich\tussr\t"+action2);
@@ -2057,7 +2067,7 @@ console.log("restoring B");
     if (mv[0] === "cambridge") {
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         let placetxt = `${this.cardToText("cambridge")}: ${player.toUpperCase()} place 1 OP in`;
         for (let i = 1; i < mv.length; i++) {
@@ -2092,7 +2102,7 @@ console.log("restoring B");
       if (this.game.player == 2){
 
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         let user_message = "Tear Down this Wall is played -- US may make 3 OP free Coup Attempt or Realignments in Europe.";
         let html = `<ul>
@@ -2842,6 +2852,11 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
       // add Xs to cards - update cancelled events array
       //
       this.cancelEventsDynamically();
+
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("play headline post modern...");
 
       let x = this.playHeadlinePostModern(stage, hash, xor, card);
       //
@@ -3662,8 +3677,10 @@ this.game_help.render({
   /************** END OF GAME LOOP **************/
 
   playHeadlinePostModern(stage, hash="", xor="", card="") {
+
      if (this.game.player === 0) {
       this.updateLog("Processing Headline Cards...");
+console.log("processing headline cards - TEST");
       return;
     }
 
@@ -3872,7 +3889,9 @@ console.log("THESE ARE OUR HEADLINES: " + uscard + " -- " + ussrcard);
 
   playerPickHeadlineCard() {
 
-    this.startClock();
+alert("player pick headline card!");
+
+    this.startClockAndSetActivePlayer();
 
     let twilight_self = this;
     if (this.browser_active == 0) { return; }
@@ -4134,7 +4153,7 @@ async playerTurnHeadlineSelected(card, player) {
 
     if (this.browser_active == 0) { return; }
 
-    this.startClock();
+    this.startClockAndSetActivePlayer();
 
     let twilight_self = this;
 
@@ -4429,7 +4448,7 @@ async playerTurnHeadlineSelected(card, player) {
 
   async playerTurnCardSelected(card, player) {
 
-    this.startClock();
+    this.startClockAndSetActivePlayer();
 
     let ac = this.returnAllCards(true);
     let twilight_self = this;
@@ -4795,7 +4814,7 @@ async playerTurnHeadlineSelected(card, player) {
 
     if (player === me) {
 
-      this.startClock();
+      this.startClockAndSetActivePlayer();
       let bind_back_button_state = true;
 
       if (card === "missileenvy") { bind_back_button_state = false; }
@@ -5516,7 +5535,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     let twilight_self = this;
 
     try {
-      this.startClock();
+
+      this.startClockAndSetActivePlayer();
       twilight_self.addMove("resolve\tplacement");
 
       if (this.game.player == 1) { //USSR
@@ -5618,7 +5638,7 @@ this.game_help.render({
 
   playerPlaceBonusInfluence(bonus) {
 
-    this.startClock();
+    this.startClockAndSetActivePlayer();
 
     let twilight_self = this;
 
@@ -10199,7 +10219,7 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         let cards_discarded = 0;
@@ -10366,7 +10386,7 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         this.addMove("resolve\tblockade");
 
@@ -10457,7 +10477,7 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
       }
       if (me == player) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -10713,7 +10733,7 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
         
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
           
         let user_message = `${this.cardToText(card)} takes effect. Pick first target for coup:`;
         let html = '<ul><li class="option" id="skipche">or skip coup</li></ul>';
@@ -10749,7 +10769,7 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
       if (this.game.player == 1) {
         return 0;
       }
-      this.startClock();
+      this.startClockAndSetActivePlayer();
 
       let html = `<ul>
                   <li class="option" id="asia">Asia</li>
@@ -10852,7 +10872,7 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
       
@@ -10902,7 +10922,7 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -11113,7 +11133,7 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
       let twilight_self = this;
       if (this.game.player == 2) { 
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         let user_message = "Choose a card to discard or USSR doubles influence in two countries in South America:";
         
@@ -11170,7 +11190,7 @@ for (let key in shuffle_in_these_cards) { console.log(key); }
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -11271,7 +11291,7 @@ if (card == "defectors") {
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -11378,7 +11398,7 @@ if (card == "defectors") {
 
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
 
@@ -11759,7 +11779,7 @@ if (card == "defectors") {
 
       if (i_played_the_card) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
       	//
       	// make DEFCON boxes clickable
@@ -11820,7 +11840,7 @@ if (card == "defectors") {
 
       if (this.roles[this.game.player] == player) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -11884,7 +11904,7 @@ if (card == "defectors") {
 
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         let yugo_ussr = this.countries['yugoslavia'].ussr;
         let romania_ussr = this.countries['romania'].ussr;
@@ -12045,7 +12065,7 @@ if (card == "defectors") {
 
       if (this.roles[this.game.player] == player) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
 
@@ -12178,7 +12198,7 @@ if (card == "defectors") {
 
       if (i_played_the_card) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
         
         let className = (player == "us")? "westerneurope" : "easterneurope";
         var twilight_self = this;
@@ -12427,7 +12447,7 @@ if (card == "defectors") {
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -12553,7 +12573,7 @@ if (card == "defectors") {
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         this.addMove("resolve\tmarine");
 
@@ -12617,7 +12637,7 @@ if (card == "defectors") {
 
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var countries_where_i_can_place = 0;
         for (var i in this.countries) {
@@ -12825,7 +12845,7 @@ if (card == "defectors") {
       //
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         this.updateStatus("Remove All US influence from 2 countries among: Sudan, Egypt, Iran, Iraq, Libya, Saudi Arabia, Syria, Jordan.");
 
@@ -13106,7 +13126,7 @@ if (card == "defectors") {
 
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -13161,7 +13181,7 @@ if (card == "defectors") {
 
       if (player == opponent) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         let twilight_self = this;
 
@@ -13307,7 +13327,7 @@ if (card == "defectors") {
 
       if (this.game.player == 1){
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         let twilight_self = this;
         let neighbors = ["costarica","cuba","honduras"];      
@@ -13378,7 +13398,7 @@ if (card == "defectors") {
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         this.updateStatus(`<div class='status-message' id='status-message'>${this.cardToText(card)}: Remove 3 US influence from Western Europe (max 1 per country)</div>`);
@@ -13470,7 +13490,7 @@ if (card == "defectors") {
 
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -13608,7 +13628,7 @@ if (card == "defectors") {
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -13725,7 +13745,7 @@ if (card == "defectors") {
 
       if (i_played_the_card) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         // pick discarded card
         var twilight_self = this;
@@ -13818,7 +13838,7 @@ if (card == "defectors") {
       if (this.game.player == 1) {
 
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
         var twilight_self = this;
         //twilight_self.playerFinishedPlacingInfluence();
 
@@ -13902,7 +13922,7 @@ if (card == "defectors") {
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -13975,7 +13995,7 @@ if (card == "defectors") {
 
         if (this.game.player == 2) {
 
-          this.startClock();
+          this.startClockAndSetActivePlayer();
           
           let twilight_self = this;
           let ops_to_place = 1;
@@ -14081,7 +14101,7 @@ if (card == "defectors") {
       if (this.game.player == 2) {
     
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         twilight_self.updateStatusAndListCards(`${this.cardToText(card)}: Choose card to play immediately:`, discard_deck, false);
         twilight_self.hud.attachControlCallback(function(action2) {
@@ -14103,7 +14123,7 @@ if (card == "defectors") {
 
       if (this.game.player == 1) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
 
@@ -14274,7 +14294,7 @@ if (card == "defectors") {
 
         if (this.game.player === winner) {
 
-          this.startClock();
+          this.startClockAndSetActivePlayer();
 
           let twilight_self = this;
 
@@ -14487,7 +14507,7 @@ if (card == "defectors") {
 
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         for (let i of options_purge) {
           $(`#${i}`).addClass("westerneurope");
@@ -14648,7 +14668,7 @@ if (card == "defectors") {
         //
         if (this.game.player == 2) {
           //If the event card has a UI component, run the clock for the player we are waiting on
-          this.startClock();
+          this.startClockAndSetActivePlayer();
 
           var twilight_self = this;
           twilight_self.playerFinishedPlacingInfluence();
@@ -14759,7 +14779,7 @@ if (card == "defectors") {
 
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         this.hud.back_button = false;
         this.hud.back_button_callback = null;
@@ -14823,7 +14843,7 @@ if (card == "defectors") {
       let twilight_self = this;
       if (i_played_the_card){
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         let choicehtml = '<ul><li class="option" id="endgame">end the game</li><li class="option" id="cont">continue playing</li></ul>';
 
@@ -14864,7 +14884,7 @@ if (card == "defectors") {
       if (this.game.player == 1) {
 
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -15074,7 +15094,7 @@ if (card == "defectors") {
 
       if (twilight_self.game.player == 1) {
 
-        twilight_self.startClock();
+        twilight_self.startClockAndSetActivePlayer();
         twilight_self.addMove("resolve\tantiapartheid");
 
         twilight_self.updateStatusWithOptions(`${twilight_self.cardToText(card)}: `,'<ul><li class="option" id="anywhere">2 Influence in Non-Battlegrounds</li><li class="option" id="african">2 Influence in African Battlegrounds</li></ul>', function(action2) {
@@ -15176,7 +15196,7 @@ if (card == "defectors") {
 
       if (i_played_the_card) {
 
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         // pick optional card
         var twilight_self = this;
@@ -15217,7 +15237,7 @@ if (card == "defectors") {
 
       if (this.game.player == 1) {
 
-        this.startClock();
+        this.startClockAndSetActivePlayer();
         this.addMove("resolve\tbayofpigs");
         let twilight_self = this;
 
@@ -15345,7 +15365,7 @@ if (card == "defectors") {
 
       if (this.game.player == 2) {
 
-        twilight_self.startClock();
+        twilight_self.startClockAndSetActivePlayer();
         twilight_self.addMove("resolve\tenergycrisis");
 
 	let has_ops_to_discard = false;
@@ -15416,7 +15436,7 @@ if (card == "defectors") {
 
       if (me == player) {
 
-        this.startClock();
+        this.startClockAndSetActivePlayer();
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
         twilight_self.addMove("resolve\tfallofsaigon");
@@ -15502,7 +15522,7 @@ if (card == "defectors") {
         return 0;
       }
 
-      this.startClock();
+      this.startClockAndSetActivePlayer();
 
       let html = `<ul>
                   <li class="option" id="asia">Asia</li>
@@ -15578,7 +15598,7 @@ if (card == "defectors") {
 
       if (this.game.player == 2) {
 
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         this.addMove("resolve\tiranianultimatum");
 
@@ -15636,7 +15656,7 @@ if (card == "defectors") {
 
       if (this.game.player == 2) {
 
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
 
@@ -15742,7 +15762,7 @@ if (card == "defectors") {
 
       if (twilight_self.game.player == 2) {
 
-        twilight_self.startClock();
+        twilight_self.startClockAndSetActivePlayer();
         twilight_self.addMove("resolve\tnixonshock");
 
         twilight_self.updateStatusWithOptions(`${twilight_self.cardToText(card)}: `,'<ul><li class="option" id="draw">Drawl Additional Card from Deck</li><li class="option" id="skip">Skip</li></ul>', function(action2) {
@@ -15814,7 +15834,7 @@ if (card == "defectors") {
 
       if (this.game.player == 2) {
 
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
@@ -15858,7 +15878,7 @@ if (card == "defectors") {
 
       if (this.game.player == 2) {
 
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         let choicehtml = '<ul><li class="option" id="endgame">end the game</li><li class="option" id="cont">continue playing</li></ul>';
 
@@ -15900,7 +15920,7 @@ if (card == "defectors") {
 
       if (this.game.player == 1) {
 
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         let cards_discarded = 0;
@@ -16097,7 +16117,7 @@ if (card == "defectors") {
 
       if (this.game.player == 2) {
 
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         this.addMove("resolve\tunitedfruit");
 

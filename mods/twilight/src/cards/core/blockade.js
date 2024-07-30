@@ -19,7 +19,7 @@
 
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         this.addMove("resolve\tblockade");
 

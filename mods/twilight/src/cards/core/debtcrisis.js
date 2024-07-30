@@ -6,7 +6,7 @@
       let twilight_self = this;
       if (this.game.player == 2) { 
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         let user_message = "Choose a card to discard or USSR doubles influence in two countries in South America:";
         

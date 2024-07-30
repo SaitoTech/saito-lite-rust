@@ -8,7 +8,7 @@
 
       if (me == player) {
 
-        this.startClock();
+        this.startClockAndSetActivePlayer();
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
         twilight_self.addMove("resolve\tfallofsaigon");

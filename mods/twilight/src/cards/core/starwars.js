@@ -41,7 +41,7 @@
       if (this.game.player == 2) {
     
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         twilight_self.updateStatusAndListCards(`${this.cardToText(card)}: Choose card to play immediately:`, discard_deck, false);
         twilight_self.hud.attachControlCallback(function(action2) {

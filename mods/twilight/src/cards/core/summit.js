@@ -83,7 +83,7 @@
 
         if (this.game.player === winner) {
 
-          this.startClock();
+          this.startClockAndSetActivePlayer();
 
           let twilight_self = this;
 

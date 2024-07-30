@@ -8,7 +8,7 @@
 
       if (i_played_the_card) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
         
         let className = (player == "us")? "westerneurope" : "easterneurope";
         var twilight_self = this;

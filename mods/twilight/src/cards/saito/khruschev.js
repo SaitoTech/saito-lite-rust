@@ -10,7 +10,7 @@
 
       if (this.game.player == 2) {
 
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
 

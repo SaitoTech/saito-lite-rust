@@ -13,7 +13,7 @@
 
       if (this.game.player == 2) {
         //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         this.hud.back_button = false;
         this.hud.back_button_callback = null;

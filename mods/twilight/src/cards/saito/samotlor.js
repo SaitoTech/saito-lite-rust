@@ -7,7 +7,7 @@
 
       if (this.game.player == 1) {
 
-        this.startClock();
+        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         let cards_discarded = 0;
