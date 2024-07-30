@@ -297,6 +297,8 @@ class Settlers extends GameTemplate {
 			if (app.browser.isMobileBrowser(navigator.userAgent)) {
 				console.log('mobile environment');
 				this.hammer.render('#game-hexgrid');
+				//Prevent hud dragging in mobile
+				this.hud.draggable_whole = false;
 			} else {
 				this.sizer.render();
 				this.sizer.attachEvents('#game-hexgrid');
