@@ -82,6 +82,12 @@ class Browser {
 
 		try {
 
+			if (screenfull.isEnabled){
+				screenfull.on('change', () => {
+					this.app.connection.emit("browser-fullscreen-toggle", screenfull.isFullscreen);
+				});
+			}
+
 			if (typeof document.hidden === 'undefined') {
 				//
 				// Polyfill for other browsers...

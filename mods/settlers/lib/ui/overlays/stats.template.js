@@ -61,7 +61,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 		for (let i = 2; i <= 12; i++) {
 			html += `<div class="settlers-dice-number">${i}</div>`;
 		}
-		html += `</div></div>`;
+		html += `</div><hr></div>`;
 
 
 
@@ -167,7 +167,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 	  	<div class="settlers-stats-vp-count">%</div>
   	</div>`;
   for (let i of player_array){
-  	html += `<div class="settlers-stat-num">${Math.round(1000*i/stats.mod.game.stats.history.length)/10}</div>`;
+  	html += `<div class="settlers-stat-num">${Math.round(1000*i/stats.mod.game.stats.history.length)/10 || ""}</div>`;
   }
 
   html += `</div></div></div>`;

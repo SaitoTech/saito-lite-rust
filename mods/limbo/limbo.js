@@ -280,14 +280,8 @@ class Limbo extends ModTemplate {
 							salert("Only the host can end the Swarmcast");
 						}
 					} else {
-						mod_self.startDream({ externalMediaType: "game", container, keylist: [] });
+						mod_self.startDream({ externalMediaType: "game", container, keylist: [], game_name: game_mod.name, players: game_mod.game.players });
 					}
-					// if (!this.mediaRecorder) {
-					// 	await this.startRecording(container, game_mod.players, callbackAfterRecord, 'game');
-
-					// } else {
-					// 	this.stopRecording();
-					// }
 				}.bind(this)
 			});
 
@@ -499,7 +493,7 @@ class Limbo extends ModTemplate {
 			try {
 				this.screenStream = await navigator.mediaDevices.getDisplayMedia({
 					video: true,
-					audio: false,
+					audio: true,
 					selfBrowserSurface: 'include',
 					monitorTypeSurfaces: 'include'
 				});

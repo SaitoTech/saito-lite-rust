@@ -1,6 +1,7 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
 const StreamCapturer = require('./lib/stream-capturer');
 const screenrecordWizard = require('./lib/screenrecord-wizard');
+const ScreenRecordControls = require('./lib/screenrecord-lite-controls')
 const lamejs = require('lamejs');
 
 // new ffmpeg.
@@ -332,8 +333,7 @@ class Record extends ModTemplate {
 			this.recorderVideoCallStreamCapture.view_window = '.video-container-large';
 			let stream = this.recorderVideoCallStreamCapture.captureVideoCallStreams(includeCamera);
 			this.initializeMediaRecorder(this.chunks, stream);
-		} else if (type === "game") {
-
+		} else if (type === "game") {		
 			let stream;
 			if (this.gameStreamCapturer) {
 				stream = await this.gameStreamCapturer.captureGameStream(includeCamera);
@@ -344,9 +344,11 @@ class Record extends ModTemplate {
 			}
 
 			this.is_recording_game = true;
-
-
 			this.initializeMediaRecorder(this.chunks, stream);
+
+			// show controls
+			this.screenrecordControls = new ScreenRecordControls(this.app, this)
+			this.screenrecordControls.render()
 			let recordButton = document.getElementById('record-stream');
 			if (recordButton) {
 				recordButton.textContent = 'Stop recording';
@@ -421,6 +423,11 @@ class Record extends ModTemplate {
 
 		}
 
+		if(this.screenrecordControls){
+			this.screenrecordControls.remove();
+			this.screenrecordControls = null;
+		}
+
 		if (this.mediaRecorder) {
 			let fn = () => {
 				return new Promise((resolve, reject) => {
@@ -469,6 +476,8 @@ class Record extends ModTemplate {
 
 		this.mediaRecorder = null;
 		this.members = [];
+
+		
 	}
 
 	async sendStartRecordingTransaction(keys) {

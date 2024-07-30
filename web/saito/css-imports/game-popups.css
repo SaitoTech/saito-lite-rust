@@ -79,3 +79,16 @@
   background-color: lightgrey;
   font-weight: bold;
 }
+
+@media only screen and (max-width: 600px) and (orientation: portrait) {
+  .popup-confirm-menu {
+    padding: 6px;
+    width: 16rem;
+    border-radius: 6px;
+  }  
+
+  .popup-confirm-menu .action {
+    padding: 1rem;
+  }
+
+}

@@ -579,11 +579,20 @@ class SettlersActions {
 
     $(".popup-confirm-menu").remove();
     $("body").append(html);
-    $(".popup-confirm-menu").css({
-      position: "absolute",
-      top: top,
-      left: left,
-    });
+
+    if (left + 200 < window.innerWidth){
+      $(".popup-confirm-menu").css({
+        position: "absolute",
+        top: top,
+        left: left,
+      });
+    }else{
+      $(".popup-confirm-menu").css({
+        position: "absolute",
+        top: top,
+        right: 0,
+      });
+    }
 
     $(".action").off();
     $(".action").on("click", function () {

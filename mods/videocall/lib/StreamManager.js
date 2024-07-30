@@ -121,15 +121,16 @@ class StreamManager {
           video: {
             displaySurface: 'window'
           },
+          audio: true,
           preferCurrentTab: false,
           selfBrowserSurface: 'exclude',
           surfaceSwitching: 'include',
           monitorTypeSurfaces: 'exclude'
         });
-        let videoTrack = this.presentationStream.getVideoTracks()[0];
-        videoTrack.onended = this.endPresentation.bind(this);
+        this.presentationStream.getVideoTracks()[0].onended = this.endPresentation.bind(this);
 
         this.mod.screen_share = true;
+
         await this.mod.sendOffChainMessage('screen-share-start', {});
 
         /// emit event to make presentation be the large screen and make presentation mode on
@@ -148,7 +149,9 @@ class StreamManager {
           console.log(key);
           if (this.mod.room_obj.call_peers.includes(key)) {
             console.log('Add Track');
-            pc.addTrack(videoTrack);
+            for (let track of this.presentationStream.getTracks()){
+              pc.addTrack(track);  
+            }
           }
         });
 
