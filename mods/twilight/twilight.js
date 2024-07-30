@@ -87,6 +87,8 @@ class Twilight extends GameTemplate {
 
     this.sort_priority = 1;
 
+    this.can_play_async = 1;
+
   }
 
   showCardOverlay(cards, title = ""){
@@ -473,12 +475,13 @@ initializeGame(game_id) {
   //
   if (this.app?.options?.gameprefs) {
     this.interface = this.app.options.gameprefs.interface || this.interface;
-
-    /*if (this.app.options.gameprefs.twilight_expert_mode == 1) {
+/*
+    if (this.app.options.gameprefs.twilight_expert_mode == 1) {
       this.confirm_moves = 0;
     } else {
       this.confirm_moves = 1;
-    }*/
+    }
+*/
   }
 
   //
@@ -762,6 +765,13 @@ initializeGame(game_id) {
     // old location for data structure so code uses this.countries
     // moved to this.game so is saved properly
     this.countries = this.game.countries;
+  }
+
+  //
+  // re-enable async dealing
+  //
+  if (this.game.options.async_dealing == 1) {
+    this.async_dealing = 1;
   }
 
 
