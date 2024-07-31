@@ -536,6 +536,7 @@ initializeGame(game_id) {
     this.game.queue.push("READY");
     this.game.queue.push("DEAL\t1\t2\t8");
     this.game.queue.push("DEAL\t1\t1\t8");
+    this.game.queue.push("SHUFFLE\t1");
     this.game.queue.push("DECKENCRYPT\t1\t2");
     this.game.queue.push("DECKENCRYPT\t1\t1");
     this.game.queue.push("DECKXOR\t1\t2");
@@ -5408,6 +5409,7 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
           //
           // shuffle in discarded cards -- eliminate SHUFFLE here as unnecessary
           //
+          twilight_self.addMove("SHUFFLE\t1");
           twilight_self.addMove("DECKRESTORE\t1");
           twilight_self.addMove("DECKENCRYPT\t1\t2");
           twilight_self.addMove("DECKENCRYPT\t1\t1");
