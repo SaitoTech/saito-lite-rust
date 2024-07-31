@@ -217,9 +217,7 @@ class StreamManager {
     );
 
     app.connection.on('remove-remote-stream', peerId => {
-      console.log(this.remoteStreams, "before removing");
       this.removePeer(peerId, "was kicked out")
-      console.log(this.remoteStreams, "after removing");
     })
 
     app.connection.on('stun-track-event', (peerId, event) => {
