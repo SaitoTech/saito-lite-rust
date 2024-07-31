@@ -123,7 +123,9 @@ console.log("setting player active with no arguments...");
   }
 
   showScoreOverlay(card, point_obj){
-    this.scoring_overlay.render(card, point_obj);
+    if (this.browser_active) {
+      this.scoring_overlay.render(card, point_obj);
+    }
   }
 
   handleExportMenu() {
@@ -159,7 +161,9 @@ console.log("setting player active with no arguments...");
 
 
   handleStatsMenu() {
-    this.stats_overlay.render(this.game.state.stats);
+    if (this.browser_active) {
+      this.stats_overlay.render(this.game.state.stats);
+    }
   }
 
 
@@ -3652,7 +3656,9 @@ console.log("moving into playMove...");
       let player 	= mv[5] || "";
       let success 	= mv[6] || -1;
 
-      this.war_overlay.render(card, { winner : winner , die : die , modifications : modifications , player : player , success : success });
+      if (this.browser_active) {
+        this.war_overlay.render(card, { winner : winner , die : die , modifications : modifications , player : player , success : success });
+      }
 
       this.game.queue.splice(qe, 1);
       return 1;
@@ -3771,9 +3777,9 @@ console.log("processing headline cards - TEST");
 
     if (stage == "headline6") {
 
-console.log("THESE ARE OUR HEADLINES: " + uscard + " -- " + ussrcard);
-
-      this.headline_overlay.render(uscard, ussrcard);
+      if (this.browser_active) {
+        this.headline_overlay.render(uscard, ussrcard);
+      }
 
       this.updateLog("Moving into first headline card event");
 

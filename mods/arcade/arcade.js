@@ -75,6 +75,9 @@ class Arcade extends ModTemplate {
 					game.status = status;
 					game.target = target;
 
+					// save with turn updated, so reload works
+					app.storage.saveOptions();
+
 					//if (prev_target == target){
 					//	prev_target--;
 					//	if (prev_target < 1){
