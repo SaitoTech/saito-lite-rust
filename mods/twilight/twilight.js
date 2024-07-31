@@ -3889,8 +3889,6 @@ console.log("THESE ARE OUR HEADLINES: " + uscard + " -- " + ussrcard);
 
   playerPickHeadlineCard() {
 
-alert("player pick headline card!");
-
     this.startClockAndSetActivePlayer();
 
     let twilight_self = this;
