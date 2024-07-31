@@ -115,6 +115,7 @@ class Twilight extends GameTemplate {
   //
   startClockAndSetActivePlayer() {
     if (this.async_dealing == 1) {
+console.log("setting player active with no arguments...");
       this.setPlayerActive();
     } else {
       this.startClock();
@@ -995,6 +996,11 @@ console.log("error 2 in initializeGame: " + err);
 
     let twilight_self = this;
     let player = (this.game.player === 1) ? "ussr" : "us";
+
+    //
+    // not our turn!
+    //
+    this.game.target = 0;
 
     //
     // support observer mode
@@ -3490,17 +3496,7 @@ try {
 
     if (mv[0] === "play") {
 
-/***
-this.game_help.render({
-    title : "Standard USSR Placement" ,
-    text : "A strong opening protects your critical battleground countries (East Germany and Poland) and uses your final OP to secure access to Italy and Greece",
-    img : "/twilight/img/backgrounds/ussr_placement.png" ,
-    color: "#d2242a" ,
-    line1 : "where",
-    line2 : "to place?",
-    fontsize : "2.1rem" ,
-});
-***/
+console.log("EXECUTING PLAY!");
 
       //if (this.game.player == 0) {
       //  this.game.queue.push("OBSERVER_CHECKPOINT");
@@ -3532,6 +3528,8 @@ this.game_help.render({
       //keep track of phasing player
       this.game.state.turn = parseInt(mv[1]);
 
+console.log("TURN IS: " + this.game.state.turn);
+
       //
       // deactivate cards
       this.game.state.events.china_card_eligible = 0;
@@ -3553,10 +3551,10 @@ this.game_help.render({
           let twilight_self = this;
 
           this.updateLog("NORAD triggers: US places 1 influence in country with US influence");
-          /*
-          This is the block of code that gets called for NORAD
-          */
+
           if (this.game.player == 2) {
+
+	    twilight_self.setPlayerActive();
 
             for (var i in this.countries) {
               if (this.countries[i].us > 0) {
@@ -3578,7 +3576,7 @@ this.game_help.render({
               twilight_self.endTurn();
               });
             });
-          }else{
+          } else {
             this.updateStatus("NORAD triggers: US places 1 influence in country with US influence");
           }
           return 0;
@@ -3587,6 +3585,7 @@ this.game_help.render({
 
       this.displayBoard();
 
+console.log("moving into playMove...");
       this.playMove();
       return 0;
     }
@@ -3995,6 +3994,8 @@ async playerTurnHeadlineSelected(card, player) {
 
   playMove() {
 
+console.log("in play move!");
+
     //
     // this is never run in headline - we set the headline to 0 here automatically
     // to avoid DEFCON error that can happen with NORAD if this is not done.
@@ -4149,9 +4150,9 @@ async playerTurnHeadlineSelected(card, player) {
 
   playerTurn(selected_card=null) {
 
-    if (this.browser_active == 0) { return; }
-
     this.startClockAndSetActivePlayer();
+
+    if (this.browser_active == 0) { return; }
 
     let twilight_self = this;
 
@@ -6495,6 +6496,8 @@ this.game_help.render({
 
   displayBoard() {
 
+    try {
+
     for (let i in this.countries) {
       this.showInfluence(i);
     }
@@ -6505,6 +6508,9 @@ this.game_help.render({
     this.updateVictoryPoints();
     this.updateMilitaryOperations();
     this.updateRound();
+
+    } catch (err) {}
+
   }
 
   playerHoldsCard(card){

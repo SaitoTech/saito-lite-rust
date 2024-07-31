@@ -69,25 +69,23 @@ class Arcade extends ModTemplate {
 		app.connection.on('arcade-notify-player-turn', (game_id, target, status) => {
 			for (let game of app.options.games) {
 				if (game.id == game_id) {
-					console.log(JSON.parse(JSON.stringify(game)));
-					// Temporarily update these fields so can render nicely in arcade
-					// without having to save the game
-					let prev_target = game.target;
+
+					//let prev_target = game.target;
 
 					game.status = status;
 					game.target = target;
 
-					if (prev_target == target){
-						prev_target--;
-						if (prev_target < 1){
-							prev_target = game.players.length;
-						}
-						console.log("Adjust prev target");
-					}
-					console.log("Last: ", prev_target, "Me:", target);
-					console.log(`${this.app.keychain.returnUsername(game.players[prev_target-1])} played a move **********`);
+					//if (prev_target == target){
+					//	prev_target--;
+					//	if (prev_target < 1){
+					//		prev_target = game.players.length;
+					//	}
+					//	console.log("Adjust prev target");
+					//}
+					//console.log("Last: ", prev_target, "Me:", target);
+					//console.log(`${this.app.keychain.returnUsername(game.players[prev_target-1])} played a move **********`);
 
-					siteMessage(`${this.app.keychain.returnUsername(game.players[prev_target-1])} played in ${game.module}`, 5000);
+					siteMessage(`It is now your turn in ${game.module}`, 5000);
 					app.connection.emit('arcade-invite-manager-render-request');
 				}
 			}
