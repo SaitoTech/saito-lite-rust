@@ -57,6 +57,11 @@
 	color: var(--saito-red);
 }
 
+.saito-overlay{
+	background-color: transparent;
+	box-shadow: none;
+}
+
 .score-overlay,
 .stats-overlay {
 	width: min(500px, 90vw);
@@ -269,8 +274,19 @@ tfoot {
 	cursor: pointer;
 }
 
-.active_board.slot:hover {
-	filter: brightness(0.5);
+.slot.set.new .tile {
+	filter: brightness(1.10), opacity(0.9);
+}
+.slot .tile {
+	filter: brightness(1.20);	
+}
+
+.slot.set .tile{
+	filter: unset;
+}
+
+.active_board .slot:hover {
+	filter: brightness(0.8);
 }
 
 .slot {
@@ -476,6 +492,38 @@ div.tile {
 	width: 100%;
 }
 
+#remainingctrl{
+	cursor: pointer;
+}
+
+.remaining_tiles{
+	width: 500px;
+	max-width: 90vw;
+	max-height: min(600px, 90vh);
+
+	font-size: 28px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem;
+	padding: 1rem;
+	background: rgb(43, 29, 14);
+	border-radius: 1rem;
+	border: 1px solid rgb(230, 206, 180);
+}
+
+.remaining_tiles .tile{
+	background-image: url(/wordblocks/img/empty_tile.png);
+	background-size: cover;
+	color: rgb(43, 29, 14);
+	border-radius: 5px;
+}
+
+.remaining_tiles .tile, .remaining_tiles .gap {
+	width: 4.5rem;
+	height: 4.5rem;
+}
+
+
 /*
 Resize board on smaller screens
 */
@@ -503,6 +551,14 @@ Resize board on smaller screens
 
 	.visible#opponentbox {
 		display: flex;
+	}
+
+	.remaining_tiles{
+		font-size: 20px;
+	}
+	.remaining_tiles .tile, .remaining_tiles .gap {
+		width: 3rem;
+		height: 3rem;
 	}
 
 	.hud-status-update-message,

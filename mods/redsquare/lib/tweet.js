@@ -1345,6 +1345,7 @@ class Tweet {
 				this.link = link.toString();
 			} catch (err) {
 				console.error(err);
+				console.log("Invalid URL: " + first_link);
 				this.link = first_link;
 			}
 
