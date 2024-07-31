@@ -179,6 +179,9 @@
   margin: 0rem!important;
 }
 
+.tweet-text .saito-mention.saito-address.treated:hover {
+  color: var(--font-color-hover-mention);
+}
 
 /* For overly long tweets, we crop and show that it can be expanded */
 
