@@ -228,6 +228,10 @@ class Stun extends ModTemplate {
 			this.removePeerConnection(sender);
 			return;
 		}
+		if (request == 'peer-kicked') {
+			this.removePeerConnection(sender);
+			return;
+		}
 
 		let peerConnection = this.peers.get(sender);
 

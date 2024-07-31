@@ -161,12 +161,12 @@ class Videocall extends ModTemplate {
 	respondTo(type, obj) {
 		let call_self = this;
 
-		if (type === 'user-menu') {
+		if (type === 'user-menu', obj) {
 			//Don't provide a calling hook if in the video call app!
-			if (call_self.browser_active) {
-				return null;
-			}
-			if (obj?.publicKey) {
+			// if (call_self.browser_active) {
+			// 	return null;
+			// }
+			if (obj?.publicKey && !call_self.browser_active) {
 				if (obj.publicKey !== this.app.wallet.publicKey) {
 					this.attachStyleSheets();
 					super.render(this.app, this);
@@ -187,6 +187,19 @@ class Videocall extends ModTemplate {
 						}
 					];
 				}
+			}else if (call_self.browser_active & obj?.publicKey !== this.publicKey){
+				return [
+					{
+						text: 'Kick User From Call',
+						icon: 'fas fa-video',
+						callback: async  (app, public_key) => {
+							console.log('kicking user: ', public_key);
+							app.connection.emit('remove-peer-box', public_key)
+							this.streams.removePeer(public_key, "was kicked out")
+							await this.sendKickTransaction(public_key)
+						}
+					}
+				];
 			}
 		}
 
@@ -334,6 +347,7 @@ class Videocall extends ModTemplate {
 				return null;
 			}
 		}
+		
 
 		return super.respondTo(type, obj);
 	}
@@ -469,9 +483,40 @@ class Videocall extends ModTemplate {
 
 						//Limbo Hook
 						this.app.connection.emit("videocall-remove-party", from);
-
 						//See if we need to also hang up on our end
 						this.streams.removePeer(from);
+					}
+
+					if (txmsg.request === 'peer-kicked') {
+						let from = tx.from[0].publicKey;
+
+						for (
+							let i = 0;
+							i < this.room_obj.call_peers.length;
+							i++
+						) {
+							if (this.room_obj.call_peers[i] == from) {
+								this.room_obj.call_peers.splice(i, 1);
+								if (from !== this.publicKey){
+									this.app.connection.emit('stun-update-link');			
+								}
+								break;
+							}
+						}
+
+						this.app.connection.emit('remove-peer-box', from);
+						//Limbo Hook
+						this.app.connection.emit("videocall-remove-party", from);
+
+						//See if we need to also hang up on our end
+						this.streams.removePeer(from, "kicked you out");
+					}
+
+
+					if (txmsg.request === 'peer-kick-broadcast') {
+						let from = tx.from[0].publicKey;
+						siteMessage(`${this.app.keychain.returnUsername(from)} kicked ${this.app.keychain.returnUsername(tx.msg.data.kicked_peer)} out of the call`)
+					
 					}
 
 					if (
@@ -710,6 +755,75 @@ class Videocall extends ModTemplate {
 				this.stun.removePeerConnection(peer);
 			}
 		}
+	}
+	async sendKickTransaction(peer) {
+		if (!this?.room_obj) {
+			console.log('No room object!');
+			return;
+		}
+
+		console.log(
+			'STUN: Send kick message:',
+			this.room_obj,
+		);
+
+		let newtx =
+			await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+			newtx.addTo(peer);
+
+
+		newtx.msg = {
+			module: 'Stun',
+			request: 'peer-kicked',
+			call_id: this.room_obj.call_id
+		};
+
+		await newtx.sign();
+
+		this.app.connection.emit('relay-transaction', newtx);
+		this.app.network.propagateTransaction(newtx);
+
+		//
+		// Allow us to use stun connection to send tx before disconnecting!
+		//
+		this.stun.removePeerConnection(peer);
+		this.sendKickBroadcastMessageTransaction(peer)
+	}
+
+
+	async sendKickBroadcastMessageTransaction(peer_id) {
+		if (!this?.room_obj) {
+			console.log('No room object!');
+			return;
+		}
+
+		console.log(
+			'Videocall: Send kick broadcast message:',
+			this.room_obj,
+		);
+
+		let newtx =
+			await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
+		for (let peer of this.room_obj.call_peers) {
+			if (peer != this.publicKey && peer !== peer_id) {
+				newtx.addTo(peer);
+			}
+		}
+
+		newtx.msg = {
+			module: 'Stun',
+			request: 'peer-kick-broadcast',
+			data: {
+				kicked_peer: peer_id
+			},
+			call_id: this.room_obj.call_id
+		};
+
+		await newtx.sign();
+
+		this.app.connection.emit('relay-transaction', newtx);
+		this.app.network.propagateTransaction(newtx);
 	}
 
 	async receiveBroadcastListTransaction(app, tx) {
