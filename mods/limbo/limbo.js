@@ -496,7 +496,8 @@ class Limbo extends ModTemplate {
 					video: true,
 					audio: true,
 					selfBrowserSurface: 'include',
-					monitorTypeSurfaces: 'include'
+					monitorTypeSurfaces: 'include',
+					systemAudio: 'include'
 				});
 
 				// Add the audio tracks from the screen and camera to the combined stream

@@ -125,7 +125,8 @@ class StreamManager {
           preferCurrentTab: false,
           selfBrowserSurface: 'exclude',
           surfaceSwitching: 'include',
-          monitorTypeSurfaces: 'exclude'
+          monitorTypeSurfaces: 'exclude',
+          systemAudio: 'include',
         });
         this.presentationStream.getVideoTracks()[0].onended = this.endPresentation.bind(this);
 
