@@ -359,12 +359,7 @@ class Wordblocks extends GameTemplate {
 			}
 		}
 
-		this.updateActivePlayerUserline(this.game.target);
 		this.playerbox.setActive(this.game.target);
-
-		if (this.game.target == this.game.player) {
-			this.playerbox.alertPlayer(this.game.target, 'flash');
-		}
 
 		if (this.game.players.length > 2) {
 			this.grace_window = this.game.players.length * 8;
@@ -2386,12 +2381,7 @@ class Wordblocks extends GameTemplate {
 				this.updateStatusWithTiles(`${this.game.playerNames[this.game.target - 1]}'s turn`);
 			}
 
-			this.updateActivePlayerUserline(this.game.target);
 			this.playerbox.setActive(this.game.target);
-
-			if (this.game.target == this.game.player) {
-				this.playerbox.alertPlayer(this.game.target, 'flash');
-			}
 
 			// We add a save point here so closing the tab doesn't break the game
 			console.log('Save Wordblocks game');
@@ -2481,17 +2471,14 @@ class Wordblocks extends GameTemplate {
 		}
 	}
 
-	updateActivePlayerUserline(active_player) {
-		let np = 'now playing';
-		if (this.app.browser.isMobileBrowser()) {
-			np = 'playing';
-		}
-		for (let i = 1; i <= this.game.players.length; i++) {
-			if (i == active_player) {
-				this.playerbox.updateUserline(np, i);
-			} else {
-				this.playerbox.updateUserline('Player ' + i, i);
-			}
+	insertLeagueRankings() {
+
+		for (let i = 0; i < this.game.playerRanks.length; i++) {
+			
+			let np = this.game.playerRanks[i].rank ? 
+								`#${this.game.playerRanks[i].rank} / ${this.game.playerRanks[i].score}` :
+								`Unranked / ${this.game.playerRanks[i].score}`;
+			this.playerbox.updateUserline(np, i+1);
 		}
 	}
 
