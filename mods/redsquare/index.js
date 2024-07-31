@@ -10,7 +10,7 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
   
   <meta name="description" content="${app.browser.escapeHTML(mod.description)}" />
   <meta name="keywords" content="${mod.categories}"/>
-  <meta name="author" content="Saito Team"/>
+  <meta name="author" content="Saito 🟥"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes" />
 
   <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen" />
