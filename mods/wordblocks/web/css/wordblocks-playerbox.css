@@ -34,6 +34,7 @@
 	position: absolute;
 	right: 40px;
 	top: 50px;
+	gap: 1rem;
 	cursor: default;
 }
 
@@ -41,15 +42,15 @@
 	position: unset;
 	height: fit-content;
 	background-color: rgba(43, 29, 14, 0.75);
-	margin: 0.5em;
 	border: 2px solid transparent;
-	border-radius: 18px;
-	box-shadow: -5px 3px 4px black;
+	border-radius: 1rem;
+	box-shadow: 5px 3px 4px black;
 	max-width: 27.5rem;
 }
 
 .game-playerbox.active {
-	border-color: silver;
+	border: 2px solid silver;
+	background-color: rgba(13, 79, 14, 0.8);
 }
 
 @media (orientation: portrait) {
@@ -84,6 +85,7 @@
 	.game-playerbox {
 		max-width: unset;
 		width: 100%;
+		border-radius: 8px;
 	}
 
 	.game-playerbox-manager.visible {

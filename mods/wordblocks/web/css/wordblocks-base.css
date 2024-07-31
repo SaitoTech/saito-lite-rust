@@ -509,6 +509,7 @@ div.tile {
 	background: rgb(43, 29, 14);
 	border-radius: 1rem;
 	border: 1px solid rgb(230, 206, 180);
+	justify-content: space-evenly;
 }
 
 .remaining_tiles .tile{

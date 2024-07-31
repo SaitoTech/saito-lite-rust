@@ -312,6 +312,20 @@ class League extends ModTemplate {
                WHERE status = 'public'
                  AND deleted = 0`;
 			} else {
+
+				// If in a game module, just get the most up-to-date rankings
+				let am_name = this.app.modules.returnActiveModule()?.name;
+				if (am_name){
+					for (let i = 0; i < this.leagues.length; i++) {
+						if (this.leagues[i].game == am_name){
+							this.fetchLeagueLeaderboard(this.leagues[i].id, ()=> {
+								this.app.connection.emit("league-leaderboard-loaded", this.leagues[i].game, this.leagues[i].players);
+							});
+							return;
+						}
+					}
+				}
+
 				let league_list = "";
 				if (this.app.options?.leagues){
 					league_list = this.app.options.leagues
@@ -364,15 +378,6 @@ class League extends ModTemplate {
 								await league_self.removeLeague(league.id);
 							} else {
 								await league_self.updateLeague(league);
-								if (
-									league.game ===
-									this.app.modules.returnActiveModule()?.name
-								) {
-									console.log(
-										'Updated info on this game\'s league: ',
-										JSON.parse(JSON.stringify(league))
-									);
-								}
 							}
 						}
 					}
