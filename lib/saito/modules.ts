@@ -3,6 +3,8 @@ import Peer from './peer';
 import Transaction from './transaction';
 import path from 'path';
 import fs from 'fs';
+import ws from 'ws';
+import { parse } from 'url';
 
 class Mods {
 
@@ -126,8 +128,8 @@ class Mods {
 				}
 			}
 
-		} catch (err) { }
-
+		} catch (err) {
+		}
 
 
 		for (let iii = 0; iii < this.mods.length; iii++) {
@@ -283,11 +285,11 @@ class Mods {
 		//
 		// ... setup moderation / filter functions
 		//
-		for (let xmod of this.app.modules.respondTo('saito-moderation-app')) { 
-                  this.app_filter_func.push(xmod.respondTo('saito-moderation-app').filter_func);
+		for (let xmod of this.app.modules.respondTo('saito-moderation-app')) {
+			this.app_filter_func.push(xmod.respondTo('saito-moderation-app').filter_func);
 		}
-		for (let xmod of this.app.modules.respondTo('saito-moderation-core')) { 
-                  this.core_filter_func.push(xmod.respondTo('saito-moderation-core').filter_func);
+		for (let xmod of this.app.modules.respondTo('saito-moderation-core')) {
+			this.core_filter_func.push(xmod.respondTo('saito-moderation-core').filter_func);
 		}
 
 		//
@@ -311,7 +313,7 @@ class Mods {
 			'handshake_complete',
 			async (peerIndex: bigint) => {
 
-				if (this.app.BROWSER){
+				if (this.app.BROWSER) {
 					// broadcasts my keylist to other peers
 					await this.app.wallet.setKeyList(this.app.keychain.returnWatchedPublicKeys());
 				}
@@ -372,16 +374,18 @@ class Mods {
 	//
 	// 1 = permit, -1 = do not permit
 	//
-	moderateModule(tx=null, mod=null) {
+	moderateModule(tx = null, mod = null) {
 
-		if (mod == null || tx == null) { return 0; }
+		if (mod == null || tx == null) {
+			return 0;
+		}
 
 		for (let z = 0; z < this.app_filter_func.length; z++) {
 			let permit_through = this.app_filter_func[z](mod, tx);
-			if (permit_through == 1) { 
+			if (permit_through == 1) {
 				return 1;
 			}
-			if (permit_through == -1) { 
+			if (permit_through == -1) {
 				return -1;
 			}
 		}
@@ -394,16 +398,18 @@ class Mods {
 	//
 	// 1 = permit, -1 = do not permit
 	//
-	moderateCore(tx=null) {
+	moderateCore(tx = null) {
 
-		if (tx == null) { return 0; }
+		if (tx == null) {
+			return 0;
+		}
 
 		for (let z = 0; z < this.core_filter_func.length; z++) {
 			let permit_through = this.core_filter_func[z](tx);
-			if (permit_through == 1) { 
+			if (permit_through == 1) {
 				return 1;
 			}
-			if (permit_through == -1) { 
+			if (permit_through == -1) {
 				return -1;
 			}
 		}
@@ -412,14 +418,13 @@ class Mods {
 	}
 
 
-
-	moderateAddress(publickey="") {
+	moderateAddress(publickey = '') {
 		let newtx = new Transaction();
 		newtx.addFrom(publickey);
 		return this.moderate(newtx);
 	}
 
-	moderate(tx=null, app="") {
+	moderate(tx = null, app = '') {
 
 		let permit_through = 0;
 
@@ -427,10 +432,14 @@ class Mods {
 		// if there is a relevant app-filter-function, respect it
 		//
 		for (let i = 0; i < this.mods.length; i++) {
-			if (this.mods[i].name == app || app == "*") {
+			if (this.mods[i].name == app || app == '*') {
 				permit_through = this.moderateModule(tx, this.mods[i]);
-				if (permit_through == -1) { return -1; }
-				if (permit_through == 1) { return 1; }
+				if (permit_through == -1) {
+					return -1;
+				}
+				if (permit_through == 1) {
+					return 1;
+				}
 			}
 		}
 
@@ -439,9 +448,13 @@ class Mods {
 		//
 		permit_through = this.moderateCore(tx);
 
-		if (permit_through == -1) { return -1; }
-		if (permit_through == 1) { return 1; }
-		
+		if (permit_through == -1) {
+			return -1;
+		}
+		if (permit_through == 1) {
+			return 1;
+		}
+
 		//
 		// seems OK if we made it this far
 		//
@@ -456,7 +469,7 @@ class Mods {
 				await this.mods[icb].render(this.app, this.mods[icb]);
 			}
 		}
-		this.app.connection.emit("saito-render-complete");
+		this.app.connection.emit('saito-render-complete');
 		return null;
 	}
 
@@ -694,6 +707,32 @@ class Mods {
 	async onUpgrade(type, privatekey, walletfile) {
 		for (let i = 0; i < this.mods.length; i++) {
 			await this.mods[i].onUpgrade(type, privatekey, walletfile);
+		}
+	}
+
+	onWebSocketServer(webserver) {
+		for (let i = 0; i < this.mods.length; i++) {
+			let mod = this.mods[i];
+			let path = mod.getWebsocketPath();
+			if (!path) {
+				continue;
+			}
+			console.log('creating websocket server for module :' + mod.name);
+			let wss = new ws.Server({
+				noServer: true,
+				// todo : check if the path is already being used or reserved?
+				path: path
+			});
+			webserver.on('upgrade', (request: any, socket: any, head: any) => {
+				console.debug("connection on module : "+mod.name+" upgrade ----> " + request.url);
+				const { pathname } = parse(request.url);
+				if (pathname === path) {
+					wss.handleUpgrade(request, socket, head, (websocket: any) => {
+						wss.emit('connection', websocket, request);
+					});
+				}
+			});
+			mod.onWebSocketServer(wss);
 		}
 	}
 

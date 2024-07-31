@@ -330,14 +330,12 @@ class Server {
 			path: '/wsopen'
 		});
 		webserver.on('upgrade', (request: any, socket: any, head: any) => {
-			// console.debug("connection upgrade ----> " + request.url);
+			console.debug("connection upgrade ----> " + request.url);
 			const { pathname } = parse(request.url);
 			if (pathname === '/wsopen') {
 				wss.handleUpgrade(request, socket, head, (websocket: any) => {
 					wss.emit('connection', websocket, request);
 				});
-			} else {
-				socket.destroy();
 			}
 		});
 		webserver.on('error', (error) => {
@@ -367,6 +365,7 @@ class Server {
 
 		});
 
+		this.app.modules.onWebSocketServer(webserver);
 	}
 
 	initialize() {
