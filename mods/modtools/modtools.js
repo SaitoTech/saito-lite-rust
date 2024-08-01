@@ -158,10 +158,17 @@ class ModTools extends ModTemplate {
 		//
 		// parse wallet to add 
 		//
-		this.apps['chat'] = "*";
-		this.save();
+		//this.apps['chat'] = "*";
+		//this.save();
 	}
 
+	installModule() {
+
+		this.load();
+		this.apps['chat'] = "*";
+		this.save();
+
+	}
 
 	returnServices() {
                 let services = [];

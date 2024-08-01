@@ -115,7 +115,6 @@ class Twilight extends GameTemplate {
   //
   startClockAndSetActivePlayer() {
     if (this.async_dealing == 1) {
-console.log("setting player active with no arguments...");
       this.setPlayerActive();
     } else {
       this.startClock();
@@ -1798,6 +1797,7 @@ console.log("restoring B");
     if (mv[0] == "northsea") {
 
       if (this.game.player == 2) {
+
         //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClockAndSetActivePlayer();
 
