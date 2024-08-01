@@ -72,7 +72,7 @@
  div.overlay-input {
 	position: relative;
     display: flex;
-    min-width: 16.5rem;
+    min-width: 16rem;
     height: 2.5em;
     line-height: 2.5;
     background-color: transparent;
