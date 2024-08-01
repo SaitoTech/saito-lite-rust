@@ -725,8 +725,12 @@ class Mods {
 			});
 			webserver.on('upgrade', (request: any, socket: any, head: any) => {
 				console.debug("connection on module : "+mod.name+" upgrade ----> " + request.url);
-				const { pathname } = parse(request.url);
-				if (pathname === path) {
+				const parsedUrl = parse(request.url);
+                const pathname = parsedUrl.pathname;
+                const pathParts = pathname.split('/').filter(Boolean);
+                const subdirectory = pathParts.length > 0 ? pathParts[0] : null;
+				console.log(subdirectory + " - " + path);
+				if ("/"+subdirectory === path) {
 					wss.handleUpgrade(request, socket, head, (websocket: any) => {
 						wss.emit('connection', websocket, request);
 					});
