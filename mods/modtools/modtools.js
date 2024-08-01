@@ -158,8 +158,8 @@ class ModTools extends ModTemplate {
 		//
 		// parse wallet to add 
 		//
-		this.apps['Chat'] = "*";
-
+		this.apps['chat'] = "*";
+		this.save();
 	}
 
 
@@ -624,6 +624,7 @@ class ModTools extends ModTemplate {
 	  	this.app.options.modtools.whitelist = this.whitelist;
 	  	this.app.options.modtools.blacklist = this.blacklist;
 	  	this.app.options.modtools.permissions = this.permissions;
+	  	this.app.options.modtools.apps = this.apps;
 		this.app.storage.saveOptions();
 	}
 
@@ -644,9 +645,11 @@ class ModTools extends ModTemplate {
 		    sync_whitelist : true ,
 		  };
 		}
+		if (!this.app.options.modtools.apps) { this.app.options.modtools.apps = {}; }
 	  	this.whitelist = this.app.options.modtools.whitelist;
 	  	this.blacklist = this.app.options.modtools.blacklist;
 	  	this.permissions = this.app.options.modtools.permissions;
+	  	this.apps = this.app.options.modtools.apps;
 		for (let i = 0; i < this.whitelist.length; i++) { this.whitelisted_publickeys.push(this.whitelist[i].publickey); }
 		for (let i = 0; i < this.blacklist.length; i++) { this.blacklisted_publickeys.push(this.blacklist[i].publickey); }
 	}

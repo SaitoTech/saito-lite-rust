@@ -216,6 +216,10 @@ class StreamManager {
       }
     );
 
+    app.connection.on('remove-remote-stream', peerId => {
+      this.removePeer(peerId, "was kicked out")
+    })
+
     app.connection.on('stun-track-event', (peerId, event) => {
       if (!this.active) {
         return;
@@ -437,7 +441,7 @@ class StreamManager {
     this.app.connection.emit('add-local-stream-request', this.localStream);
   }
 
-  removePeer(peer) {
+  removePeer(peer, message = "left the meeting") {
     this.remoteStreams.delete(peer);
 
     if (this.auto_disconnect) {
@@ -445,7 +449,7 @@ class StreamManager {
       this.app.connection.emit('stun-disconnect');
     } else {
       siteMessage(
-        `${this.app.keychain.returnUsername(peer)} left the meeting`,
+        `${this.app.keychain.returnUsername(peer)} ${message}`,
         2500
       );
     }
