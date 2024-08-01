@@ -3627,7 +3627,7 @@ does_units_to_move_have_unit = true; }
   async playerContinueToMoveFormationInClear(his_self, player, faction, spacekey, ops_to_spend, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayOps("", faction, ops_remaining, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
 
     //
     // we add this before broadcasting, or the turn ends 
@@ -3945,7 +3945,7 @@ does_units_to_move_have_unit = true; }
   async playerMoveFormationInClear(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayOps("", faction, ops_remaining, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
 
     let parent_faction = faction;
     let units_to_move = [];
@@ -5057,7 +5057,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   async playerNavalTransport(his_self, player, faction, ops_to_spend, ops_remaining) {
 
     // BACK moves us to OPS menu
-    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayOps("", faction, ops_remaining, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
 
     let spacekey = "";
     let units_to_move = [];
@@ -5336,7 +5336,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   async playerNavalMove(his_self, player, faction) {
 
     // BACK moves us to OPS menu
-    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayOps("", faction, ops_remaining, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
 
     let units_to_move = [];
     let units_available = his_self.returnFactionNavalUnitsToMove(faction);
