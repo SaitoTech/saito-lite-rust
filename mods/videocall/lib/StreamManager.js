@@ -207,14 +207,15 @@ class StreamManager {
       });
     });
 
-    app.connection.on(
-      'stun-update-connection-message',
-      (peerId, connectionState) => {
-        if (this.active) {
-          this.broadcastPeerList();
-        }
-      }
-    );
+
+    // app.connection.on(
+    //   'stun-update-connection-message',
+    //   (peerId, connectionState) => {
+    //     if (this.active) {
+    //       this.broadcastPeerList();
+    //     }
+    //   }
+    // );
 
     app.connection.on('remove-remote-stream', peerId => {
       this.removePeer(peerId, "was kicked out")
@@ -329,6 +330,7 @@ class StreamManager {
         // this.mod.stun.createPeerConnection(call_id, (call_id) => {
         //   this.mod.sendCallJoinTransaction(call_id)
         // })
+        this.mod.sendBroadcastPresenceTransaction(call_id)
       }
 
 
@@ -341,6 +343,7 @@ class StreamManager {
     app.connection.on(
       'stun-new-peer-connection',
       async (publicKey, peerConnection) => {
+        console.log
         if (!this.active) {
           return;
         }
