@@ -67,6 +67,17 @@ module.exports = (app, mod) => {
                 <i class="fa-solid fa-ban"></i>
                 <label>Manage Blocked Accounts</label>
                 </fieldset>`;
+
+
+                html += `
+                <fieldset id="modtools-apps" class="saito-grid">
+	            	<legend class="settings-label">App Permissions:</legend>
+	            	<div class="modtools-app-permissions" id="modtools-app-permissions">
+					</div>
+
+					<div class="add-new-permission-box" id="add-new-permission-box"></div>
+					<div class="saito-button-primary small" id="modtools-apps-add-new">+</div>
+                </fieldset>`;
 //        }
 
 	html += `
