@@ -161,6 +161,7 @@ class Videocall extends ModTemplate {
 	respondTo(type, obj) {
 		let call_self = this;
 
+		console.log('respond to', type, obj)
 		if (type === 'user-menu', obj) {
 			//Don't provide a calling hook if in the video call app!
 			// if (call_self.browser_active) {
@@ -187,7 +188,9 @@ class Videocall extends ModTemplate {
 						}
 					];
 				}
-			}else if (call_self.browser_active & obj?.publicKey !== this.publicKey){
+			}
+			if (call_self.browser_active & obj?.publicKey !== this.publicKey){
+				if(type !== 'user-menu') return;
 				return [
 					{
 						text: 'Kick User From Call',
