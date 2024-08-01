@@ -53,6 +53,10 @@
 	background-color: rgba(13, 79, 14, 0.8);
 }
 
+.game-scoreboard .active {
+	background-color: rgba(13, 79, 14, 0.8);	
+}
+
 @media (orientation: portrait) {
 	.game-playerbox-manager {
 		top: 45px;

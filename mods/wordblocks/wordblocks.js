@@ -96,19 +96,20 @@ class Wordblocks extends GameTemplate {
 			let compact_html = '';
 
 			for (let i = 1; i <= this.game.players.length; i++) {
-				let score = this.getPlayerScore(i);
-				this.refreshPlayerInfo(
-					`<span>Score:</span> <span class="playerscore" id="score_${i}">${score}</span>`,
-					i
-				);
 
-				compact_html += `<div class="score"><img class="player-identicon" src="${this.app.keychain.returnIdenticon(
+				let score = this.getPlayerScore(i);
+				
+				let newhtml = `<div class="playerscore" id="score_${i}">${score}</div>`;
+				if (this.useClock){
+					newhtml += `<div class="player_clock" id="clock_${i}"></div>`;
+				}
+
+				this.playerbox.updateBody(newhtml, i);
+
+				compact_html += `<div class="score" id="mobile_score_${i}"><img class="player-identicon" src="${this.app.keychain.returnIdenticon(
 					this.game.players[i - 1]
 				)}"/><span>:</span><span>${score}</span></div>`;
 
-				let lastMove = this.getLastMove(i);
-				let html = `<div class="lastmove" id="lastmove_${i}"><span>Last:</span><span class="playedword" style="text-decoration:none">${lastMove.word}</span> <span class="wordscore">${lastMove.score}</span></div>`;
-				this.refreshPlayerLog(html, i);
 			}
 
 			this.scoreboard.update(compact_html);
@@ -116,6 +117,11 @@ class Wordblocks extends GameTemplate {
 			$('#game-scoreboard').off();
 			$('#game-scoreboard').on('click', function () {
 				$('.game-playerbox-manager').toggleClass('visible');
+			});
+
+			let wordblocks_self = this;
+			$(".playerscore").on('click', function(){
+				wordblocks_self.overlay.show(wordblocks_self.returnStatsOverlay());
 			});
 		} catch (err) {
 			console.error(err);
@@ -360,6 +366,7 @@ class Wordblocks extends GameTemplate {
 		}
 
 		this.playerbox.setActive(this.game.target);
+		$(`#mobile_score_${this.game.target}`).addClass("active");
 
 		if (this.game.players.length > 2) {
 			this.grace_window = this.game.players.length * 8;
@@ -2255,14 +2262,6 @@ class Wordblocks extends GameTemplate {
 				this.game.queue.splice(this.game.queue.length - 1, 1);
 				console.log(player, tileCt);
 
-				if (this.gameBrowserActive()) {
-					let html = this.game.state.players[player - 1].log;
-					this.refreshPlayerLog(
-						`${html}<div class="lastmove"><span>Tiles:</span><span class="playerscore">${tileCt}</span></div>`,
-						player
-					);
-				}
-
 				let name =
 					player === this.game.player ? 'You are' : `${this.game.playerNames[player - 1]} is`;
 				this.updateLog(`${name} down to ${tileCt} tiles`);
@@ -2315,9 +2314,6 @@ class Wordblocks extends GameTemplate {
 				}
 				this.animatePlay();
 
-				//Update Specific Playerbox
-				let html = `<div class="lastmove" id="lastmove_${player}"><span>Last:</span><span class="playedword">${expanded}</span> <span class="wordscore">${score}</span></div>`;
-				this.refreshPlayerLog(html, player);
 			}
 
 			if (mv[0] === 'discard_tiles') {
@@ -2344,20 +2340,6 @@ class Wordblocks extends GameTemplate {
 					this.updateLog(`You ${msg}.`);
 				}
 
-				//Update Specific Playerbox
-				let html = `<div class="lastmove" id="lastmove_${player}">`;
-
-				if (discardedTiles.length > 0) {
-					html += `<span>Discarded:</span><span class="discardedtiles">[${discardedTiles
-						.split('')
-						.join()}]</span>`;
-				} else {
-					html += `<span>Passed without playing</span>`;
-				}
-				html += `<span class="wordscore">0</span></div>`;
-
-				this.refreshPlayerLog(html, player);
-
 				//Code to keep the discard and redraws in the game log history
 				wordblocks_self.last_played_word[player - 1] = {
 					word: discardedTiles,
@@ -2382,6 +2364,7 @@ class Wordblocks extends GameTemplate {
 			}
 
 			this.playerbox.setActive(this.game.target);
+			$(`#mobile_score_${this.game.target}`).addClass("active");
 
 			// We add a save point here so closing the tab doesn't break the game
 			console.log('Save Wordblocks game');
@@ -2404,20 +2387,8 @@ class Wordblocks extends GameTemplate {
 		}
 
 		this.game.score[player - 1] = this.getPlayerScore(player) + score;
-		this.refreshPlayerInfo(
-			`<span>Score:</span> <span class="playerscore" id="score_${player}">${
-				this.game.score[player - 1]
-			}</span>`,
-			player
-		);
+		this.refreshPlayerScore(player);
 
-		let compact_html = '';
-		for (let i = 0; i < this.game.score.length; i++) {
-			compact_html += `<div class="score"><img class="player-identicon" src="${this.app.keychain.returnIdenticon(
-				this.game.players[i]
-			)}"> : ${this.game.score[i]} </div>`;
-		}
-		this.scoreboard.update(compact_html);
 	}
 
 	endTurn() {
@@ -2482,49 +2453,23 @@ class Wordblocks extends GameTemplate {
 		}
 	}
 
-	refreshPlayerLog(html, player) {
-		if (!this.game.state) {
-			this.game.state = {};
-			this.game.state.players = [];
-			for (let i = 0; i < this.game.players.length; i++) {
-				this.game.state.players.push({ info: '', log: '' });
-			}
+
+	refreshPlayerScore(player) {
+
+		let score = this.getPlayerScore(player);
+
+		if (document.getElementById(`score_${player}`)){
+			document.getElementById(`score_${player}`).innerHTML = score;
 		}
 
-		this.game.state.players[player - 1].log = html;
-
-		let newhtml = `
-      <div class="pboxinfo">
-  ${this.game.state.players[player - 1].info}
-      </div>
-      <div class="pboxlog">
-  ${this.game.state.players[player - 1].log}
-      </div>
-    `;
-
-		this.playerbox.updateBody(newhtml, player);
-	}
-	refreshPlayerInfo(html, player) {
-		if (!this.game.state) {
-			this.game.state = {};
-			this.game.state.players = [];
-			for (let i = 0; i < this.game.players.length; i++) {
-				this.game.state.players.push({ info: '', log: '' });
-			}
+		let compact_html = '';
+		for (let i = 0; i < this.game.score.length; i++) {
+			compact_html += `<div class="score" id="mobile_score_${player}"><img class="player-identicon" src="${this.app.keychain.returnIdenticon(
+				this.game.players[player-1]
+			)}"> : ${score} </div>`;
 		}
-
-		this.game.state.players[player - 1].info = html;
-
-		let newhtml = `
-      <div class="pboxinfo">
-  ${this.game.state.players[player - 1].info}
-      </div>
-      <div class="pboxlog">
-  ${this.game.state.players[player - 1].log}
-      </div>
-    `;
-
-		this.playerbox.updateBody(newhtml, player);
+		
+		this.scoreboard.update(compact_html);
 	}
 
 	displayRemainingTiles(){

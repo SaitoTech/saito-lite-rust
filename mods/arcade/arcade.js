@@ -562,15 +562,18 @@ class Arcade extends ModTemplate {
 		}
 		if (type === 'user-menu') {
 			if (obj?.publicKey && obj.publicKey !== this.publicKey) {
-				return {
-					text: 'Challenge to Game',
-					icon: 'fas fa-gamepad',
-					callback: function (app, publicKey) {
-						app.connection.emit('arcade-launch-game-selector', {
-							publicKey
-						});
-					}
-				};
+				let am = this.app.modules.returnActiveModule();
+				if (!am || !this.shouldAffixCallbackToModule(am.name) || this.name == am.name){
+					return {
+						text: 'Challenge to Game',
+						icon: 'fas fa-gamepad',
+						callback: function (app, publicKey) {
+							app.connection.emit('arcade-launch-game-selector', {
+								publicKey
+							});
+						}
+					};
+				}
 			}
 		}
 
