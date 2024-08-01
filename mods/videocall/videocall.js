@@ -386,22 +386,48 @@ class Videocall extends ModTemplate {
 						return;
 					}
 
-					if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
-						console.log('OnConfirmation: ' + message.request);
-
-						if (message.request === 'call-list-request') {
-							this.receiveCallListRequestTransaction(
-								this.app,
-								tx
-							);
+					if(this.room_obj.scheduled === true){
+						if (tx.isTo(this.room_obj.call_id)  && !tx.isFrom(this.publicKey)) {
+							console.log('OnConfirmation: ' + message.request);
+	
+							// if (message.request === 'call-list-request') {
+							// 	this.receiveCallListRequestTransaction(
+							// 		this.app,
+							// 		tx
+							// 	);
+							// }
+							// if (message.request === 'call-list-response') {
+							// 	this.receiveCallListResponseTransaction(
+							// 		this.app,
+							// 		tx
+							// 	);
+							// }
+							if(message.request === "broadcast-presence"){
+								this.receiveBroadcastPresenceTransaction(this.app, tx)
+							}
 						}
-						if (message.request === 'call-list-response') {
-							this.receiveCallListResponseTransaction(
-								this.app,
-								tx
-							);
+					}else {
+						if (tx.isTo(this.publicKey)  && !tx.isFrom(this.publicKey)) {
+							console.log('OnConfirmation: ' + message.request);
+	
+							if (message.request === 'call-list-request') {
+								this.receiveCallListRequestTransaction(
+									this.app,
+									tx
+								);
+							}
+							if (message.request === 'call-list-response') {
+								this.receiveCallListResponseTransaction(
+									this.app,
+									tx
+								);
+							}
+							if(message.request === "broadcast-presence"){
+								this.receiveBroadcastPresenceTransaction(this.app, tx)
+							}
 						}
 					}
+				
 				}
 			}
 		}
@@ -448,6 +474,7 @@ class Videocall extends ModTemplate {
 
 					if (txmsg.request === 'peer-joined') {
 						let from = tx.from[0].publicKey;
+						console.log(txmsg, from, "peer-joined" )
 						this.app.connection.emit(
 							'add-remote-stream-request',
 							from,
@@ -859,6 +886,71 @@ class Videocall extends ModTemplate {
 		this.app.connection.emit('peer-list', sender, txmsg.data);
 	}
 
+	async sendBroadcastPresenceTransaction(call_id){
+		if (!this?.room_obj) {
+			console.log('No room object!');
+			return;
+		}
+
+		console.log(
+			'Videocall: Send broadcast presence:',
+			this.room_obj,
+		);
+
+		let newtx =
+			await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+
+		newtx.addTo(call_id)
+	
+		newtx.msg = {
+			module: 'Videocall',
+			request: 'broadcast-presence',
+			// data: {
+			// 	kicked_peer: peer_id
+			// },
+			call_id: this.room_obj.call_id
+		};
+
+		await newtx.sign();
+
+		this.app.connection.emit('relay-transaction', newtx);
+		this.app.network.propagateTransaction(newtx);
+	}
+
+
+	async receiveBroadcastPresenceTransaction(app, tx) {
+		const txmsg = tx.returnMessage();
+		let sender = tx.from[0].publicKey;
+
+		if (!this.room_obj?.call_peers.includes(sender)) {
+			this.room_obj?.call_peers.push(sender);
+		}
+		this.stun.createPeerConnection(sender, (sender)=> {
+			this.sendCallJoinTransaction(sender)
+		})
+
+
+		// let call_list = [];
+
+		// for (let peer in txmsg.data){
+		// 	console.log(peer, txmsg.data[peer]);
+		// 	if (txmsg.data[peer] == "connected"){
+		// 		if (peer !== this.publicKey) {
+		// 			if (!this.room_obj.call_peers.includes(peer)) {
+		// 				this.room_obj.call_peers.push(peer);
+
+		// 				console.log("STUN (VIDEOCALL): post hoc peer list member, attempt connection with ", peer);
+		// 				this.stun.createPeerConnection(peer, (peerId) => {
+		// 					this.sendCallJoinTransaction(peerId);
+		// 				});
+		// 			}
+		// 		}
+		// 	}
+		// }
+
+		// //Update display of videoboxes
+		// this.app.connection.emit('peer-list', sender, txmsg.data);
+	}
 	async generateRoomId(){
 		let pk = this.app.crypto.generateKeys();
 		let id = this.app.crypto.generatePublicKey(pk);
