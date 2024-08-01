@@ -162,7 +162,7 @@ class Videocall extends ModTemplate {
 		let call_self = this;
 
 		console.log('respond to', type, obj)
-		if (type === 'user-menu', obj) {
+		if (type === 'user-menu') {
 			//Don't provide a calling hook if in the video call app!
 			// if (call_self.browser_active) {
 			// 	return null;
