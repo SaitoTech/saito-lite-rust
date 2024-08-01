@@ -374,6 +374,8 @@ class Videocall extends ModTemplate {
 		if (conf === 0) {
 			if (message.module === 'Videocall') {
 				if (this.app.BROWSER === 1) {
+					let from = tx.from[0].publicKey;
+					console.log('onConfirmation', tx, from)		
 					if (this.hasSeenTransaction(tx)) return;
 
 					if (
@@ -446,7 +448,6 @@ class Videocall extends ModTemplate {
 
 					if (txmsg.request === 'peer-joined') {
 						let from = tx.from[0].publicKey;
-
 						this.app.connection.emit(
 							'add-remote-stream-request',
 							from,
@@ -856,6 +857,14 @@ class Videocall extends ModTemplate {
 
 		//Update display of videoboxes
 		this.app.connection.emit('peer-list', sender, txmsg.data);
+	}
+
+	async generateRoomId(){
+		let pk = this.app.crypto.generateKeys();
+		let id = this.app.crypto.generatePublicKey(pk);
+		this.app.keychain.addWatchedPublicKey(id);
+		this.app.keychain.addKey(id, { identifier: name, group: 1, privateKey: pk });
+		return id
 	}
 
 	webServer(app, expressapp, express) {
