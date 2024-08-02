@@ -64,9 +64,19 @@ class YoutubeServer extends ModTemplate {
 		    // AAC audio is required for Live.  No browser currently supports
 		    // encoding AAC, so we must transcode the audio to AAC here on the server.
 		    
+		    '-b:a', '160k',
+
 		    '-ab', '128k',
 
 		    '-ac', '2',
+
+		    '-af', "adelay=1|1",
+
+		    '-async', '1',
+
+//		    '-acodec', 'copy',
+
+		    '-c:a', 'aac',
 
 		    '-ar', '44100',
 

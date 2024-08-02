@@ -257,6 +257,10 @@
 	border: 2px solid var(--saito-border-color-dark);
 }
 
+.side-videos .video-box-container-large {
+    max-height: 50%;
+}
+
 .stun-chatbox .video-box-container-large {
 	border-radius: 0.5rem;
 	position: relative;

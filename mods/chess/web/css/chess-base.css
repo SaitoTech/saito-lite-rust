@@ -1,5 +1,6 @@
 :root {
 	--game-menu-background: #f9efdf;
+	--font-color-primary: #000;
 }
 
 .log-lock .mobile-log-tab {
@@ -108,9 +109,11 @@ input[type='checkbox']:checked {
 }
 
 .last_move {
-	margin: auto;
 	padding: 0.5rem;
 	cursor: pointer;
+	justify-self: center;
+	align-self: center;
+	white-space: nowrap;
 }
 
 .last_move:hover {
@@ -129,8 +132,12 @@ input[type='checkbox']:checked {
 	color: var(--saito-color-primary);
 }
 
-#status {
-	max-width: 72%;
+#controls{
+	font-size: 1.8rem;
+}
+
+.status{
+	margin-top: 0.5rem;
 }
 
 .turn-shape {
@@ -152,6 +159,7 @@ input[type='checkbox']:checked {
 
 .promotion-choices img.captured {
 	width: 50px;
+	height: 50px;
 	border: 2px solid #999;
 	border-radius: 10px;
 	padding: 2px;
@@ -190,6 +198,7 @@ input[type='checkbox']:checked {
 
 img.captured {
 	width: 25px;
+	height: 25px;
 }
 
 .hidden {
@@ -275,6 +284,7 @@ img.captured {
 
 	img.captured {
 		width: 6vw;
+		height: 6vw;
 	}
 }
 
