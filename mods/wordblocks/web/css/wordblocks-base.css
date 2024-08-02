@@ -276,11 +276,11 @@ tfoot {
 }
 
 .slot.set .tile{
-	filter: unset;
+	filter: revert;
 }
 
 .slot.set.new .tile {
-	filter: brightness(1.10), opacity(0.9);
+	filter: brightness(1.10) opacity(0.9);
 }
 
 .active_board .slot:hover {
