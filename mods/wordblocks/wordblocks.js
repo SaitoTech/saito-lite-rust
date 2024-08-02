@@ -181,7 +181,7 @@ class Wordblocks extends GameTemplate {
 		totals.fill(0);
 		//console.log(this.game.opponents);
 		for (let z = 0; z < this.game.words_played[0].length; z++) {
-			html += `</tr><tr><td>${z + 1}</td>`;
+			html += `</tr><tr><td class="center_align">${z + 1}</td>`;
 			for (let i = 0; i < this.game.opponents.length + 1; i++) {
 				//totals.push(0); //Initialize
 				//let words_scored_html = '<table>';
@@ -189,7 +189,7 @@ class Wordblocks extends GameTemplate {
 					html +=
 						'<td>' +
 						this.game.words_played[i][z].word +
-						'</td><td>' +
+						'</td><td class="right_align">' +
 						this.game.words_played[i][z].score +
 						'</td>';
 					totals[i] += this.game.words_played[i][z].score;
@@ -201,7 +201,7 @@ class Wordblocks extends GameTemplate {
 		//console.log(totals);
 		html += '</tr><tr><td colspan="10"><hr></td></tr><tfoot><tr><td>Totals</td>';
 		for (let total of totals) {
-			html += `<td colspan="2">${total}</td>`;
+			html += `<td colspan="2" class="right_align">${total}</td>`;
 		}
 		html += '</tr></tfoot></table></div>';
 		return html;

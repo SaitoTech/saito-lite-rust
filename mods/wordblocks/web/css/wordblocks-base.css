@@ -82,10 +82,17 @@
 	color: rgb(250, 244, 239);
 }
 
-.score-overlay td,
-.stats-overlay td {
+.score-overlay td.center_align,
+.stats-overlay td.center_align {
 	text-align: center;
 }
+
+.score-overlay td.right_align,
+.stats-overlay td.right_align {
+	text-align: right;
+	padding-right: 2.5rem;
+}
+
 
 thead,
 tfoot {
