@@ -546,7 +546,11 @@ initializeGame(game_id) {
     //
     if (this.is_testing == 1) {
 
+      let is_async = false;
+      if (parseInt(this.game.options.async_dealing) == 1) { is_async = true; }
+
       this.game.options = {};
+      if (is_async) { this.game.options.async_dealing = 1; }
       this.game.options.culturaldiplomacy = 1;
       this.game.options.gouzenkoaffair = 1;
       this.game.options.poliovaccine = 1;
@@ -785,10 +789,9 @@ initializeGame(game_id) {
   //
   // re-enable async dealing
   //
-  if (this.game.options.async_dealing == 1) {
+  if (parseInt(this.game.options.async_dealing) == 1) {
     this.async_dealing = 1;
   }
-
 
   if (this.game.state.headline == 1 && this.game.state.headline_card == ""){
     this.playerPickHeadlineCard(); //In case reloading during the headline selection...
@@ -1601,7 +1604,7 @@ console.log("restoring B");
     if (mv[0] == "tehran") {
 
       let sender  = mv[1];
-      let keysnum = mv[2];
+      let keysnum = parseInt(mv[2]);
       this.game.queue.splice(qe, 1);
 
       if (sender == "ussr") {
@@ -1625,14 +1628,20 @@ console.log("restoring B");
           var cardoptions = [];
           var pos_to_discard = [];
 
-          for (let i = 0; i < keysnum; i++) {
-            cardoptions[i] = this.game.deck[0].crypt[i];
-            cardoptions[i] = this.app.crypto.decodeXOR(cardoptions[i], this.game.deck[0].keys[i]);
-          }
-          for (let i = 0; i < keysnum; i++) {
-            cardoptions[i] = this.app.crypto.decodeXOR(cardoptions[i], this.game.queue[this.game.queue.length-keysnum+i]);
-            cardoptions[i] = this.app.crypto.hexToString(cardoptions[i]);
-          }
+	  if (this.async_dealing) {
+            for (let i = 0; i < keysnum; i++) {
+              cardoptions[i] = this.app.crypto.hexToString(this.game.deck[0].crypt[i]);
+	    }
+	  } else {
+            for (let i = 0; i < keysnum; i++) {
+              cardoptions[i] = this.game.deck[0].crypt[i];
+              cardoptions[i] = this.app.crypto.decodeXOR(cardoptions[i], this.game.deck[0].keys[i]);
+            }
+            for (let i = 0; i < keysnum; i++) {
+              cardoptions[i] = this.app.crypto.decodeXOR(cardoptions[i], this.game.queue[this.game.queue.length-keysnum+i]);
+              cardoptions[i] = this.app.crypto.hexToString(cardoptions[i]);
+            }
+	  }
           for (let i = 0; i < keysnum; i++) {
             this.game.queue.splice(this.game.queue.length-1, 1);
           }
@@ -2766,7 +2775,7 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
       //
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["redscare", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
+          this.game.deck[0].hand = ["tehran", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
           this.game.deck[0].hand = ["abmtreaty","vietnamrevolts","wargames","romanianab"];
         }
@@ -5402,7 +5411,6 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
         }
 
         let discarded_cards = twilight_self.returnDiscardedCards();
-
 
         if (Object.keys(discarded_cards).length > 0) {
 
@@ -14420,9 +14428,17 @@ if (card == "defectors") {
       if (this.game.player == 1) {
         this.addMove("resolve\ttehran");
         let keys_given = 0;
-        for (let i = 0; i < this.game.deck[0].crypt.length && i < 5; i++) {
-          this.addMove(this.game.deck[0].keys[i]);
-          keys_given++;
+
+	if (this.async_dealing == 1) {
+          for (let i = 0; i < this.game.deck[0].crypt.length && i < 5; i++) {
+            this.addMove(this.game.deck[0].crypt[i]);
+	    keys_given++;
+	  }
+	} else {
+          for (let i = 0; i < this.game.deck[0].crypt.length && i < 5; i++) {
+            this.addMove(this.game.deck[0].keys[i]);
+            keys_given++;
+          }
         }
         this.addMove("tehran\tussr\t"+keys_given);
         this.endTurn();
