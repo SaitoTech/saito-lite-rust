@@ -11962,6 +11962,8 @@ if (card == "defectors") {
           if (bulgaria_us       < bulgaria_ussr) 	{ total_countries++; only_country = "bulgaria"; }
           if (czechoslovakia_us < czechoslovakia_ussr)  { total_countries++; only_country = "czechoslovakia"; }
 
+console.log("total countries: " + total_countries);
+
 	  if (total_countries == 1) {
 	    let diff = 0;
 
@@ -11970,9 +11972,9 @@ if (card == "defectors") {
 	    if (only_country == "romania") { diff = romania_diff; }
 	    if (only_country == "bulgaria") { diff = bulgaria_diff; }
 	    if (only_country == "czechoslovakia") { diff = czechoslovakia_diff; }
-            twilight_self.placeInfluence(only_country, diff, "us");
-            twilight_self.addMove("place\tus\tus\t"+only_country+"\t"+diff);
-            twilight_self.endTurn();
+            this.placeInfluence(only_country, diff, "us");
+            this.addMove("place\tus\tus\t"+only_country+"\t"+diff);
+            this.endTurn();
 	    return 0;
 	  }
 
