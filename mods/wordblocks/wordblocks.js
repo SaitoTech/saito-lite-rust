@@ -26,7 +26,7 @@ class Wordblocks extends GameTemplate {
 		this.tileWidth = 148;
 		this.letters = {};
 		this.grace_window = 10;
-		this.clock.useShotClock = true;
+		/*this.clock.useShotClock = true;*/
 
 		//All Wordblocks games will be async enabled
 		this.async_dealing = 1;
@@ -39,6 +39,8 @@ class Wordblocks extends GameTemplate {
 		this.loadingDictionary = null; //a flag that we are loading the dictionary in the background
 
 		this.defaultMsg = `Click on the board to enter a word from that square, click a tile to select it for play, or <span class="link tosstiles" title="Double click tiles to select them for deletion">discard tiles</span> if you cannot move.`;
+
+		this.clock.container = "#clock_";
 
 		return this;
 	}
@@ -126,6 +128,15 @@ class Wordblocks extends GameTemplate {
 		} catch (err) {
 			console.error(err);
 		}
+
+		if (this.useClock == 1) {
+			this.clock.render();
+			for (let i = 0; i < this.game.clock.length; i++){
+				this.clock.displayTime(this.game.clock[i].limit - this.game.clock[i].spent, i+1);
+			}
+		}
+
+
 
 		try {
 			if (
@@ -360,7 +371,6 @@ class Wordblocks extends GameTemplate {
 				this.setPlayerActive();
 				this.enableEvents();
 			} else {
-				this.stopClock();
 				this.updateStatusWithTiles(`Waiting on ${this.game.playerNames[this.game.target - 1]}`);
 			}
 		}
@@ -2252,7 +2262,6 @@ class Wordblocks extends GameTemplate {
 					this.sendGameOverTransaction(winners, 'high score');
 				}
 
-				this.stopClock();
 				return 0;
 			}
 
@@ -2359,8 +2368,8 @@ class Wordblocks extends GameTemplate {
 				this.setPlayerActive();
 				this.enableEvents();
 			} else {
-				this.stopClock(); //Make sure clock didn't start again on browser refresh
 				this.updateStatusWithTiles(`${this.game.playerNames[this.game.target - 1]}'s turn`);
+				this.startClock();
 			}
 
 			this.playerbox.setActive(this.game.target);
@@ -2400,7 +2409,7 @@ class Wordblocks extends GameTemplate {
 		return WordblocksGameOptionsTemplate(this.app, this);
 	}
 
-	startClock() {
+	/*startClock() {
 		if (!this.useClock || this.game.over) {
 			return;
 		}
@@ -2426,7 +2435,7 @@ class Wordblocks extends GameTemplate {
 		}
 		clearTimeout(this.clock_timer);
 		this.clock.stopClock();
-	}
+	}*/
 
 	async animatePlay() {
 		for (let tile of this.tilesToHighlight) {

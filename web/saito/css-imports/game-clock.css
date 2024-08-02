@@ -25,3 +25,6 @@
   font-size: 2.8rem;
 }
 
+.game-playerbox .game-clock {
+  position: static;
+}

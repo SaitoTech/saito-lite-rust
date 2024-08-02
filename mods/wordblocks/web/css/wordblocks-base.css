@@ -271,15 +271,16 @@ tfoot {
 	cursor: pointer;
 }
 
-.slot.set.new .tile {
-	filter: brightness(1.10), opacity(0.9);
-}
 .slot .tile {
 	filter: brightness(1.20);	
 }
 
 .slot.set .tile{
 	filter: unset;
+}
+
+.slot.set.new .tile {
+	filter: brightness(1.10), opacity(0.9);
 }
 
 .active_board .slot:hover {
