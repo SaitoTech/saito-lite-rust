@@ -2,6 +2,10 @@
 	margin: 0;
 }
 
+.hud-controls {
+	display: none;
+}
+
 .hud-header.black {
 	background-color: black;
 	color: white;
@@ -16,8 +20,13 @@
 	height: unset;
 }
 
+.controls {
+	margin-top: unset;
+}
+
 .controls ul li {
 	height: 50px;
+	margin-top: 1rem;
 	line-height: unset;
 	display: flex;
 	align-items: center;

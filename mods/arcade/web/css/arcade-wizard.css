@@ -2,16 +2,16 @@
 /* Game Advanced Options Styling*/
 
 #advanced-options-overlay-container {
-	color: var(--background-color-mode-arcade);
+	color: var(--saito-font-color-dark-modal);
 	border-radius: 0.5rem;
-	width: min(40rem, 100vw);
+	min-width: min(40rem, 90vw);
 	min-height: 15rem;
 	display: flex;
 	padding: 2.5rem;
 	flex-direction: column;
 	border: 1px solid var(--color-primary);
 	gap: 2rem;
-	max-width: 90vw;
+	max-width: 95vw;
 	max-height: 95vh;
 	overflow-y: auto;
 	overflow-x: hidden;
@@ -84,11 +84,6 @@
 	margin: 0;
 }
 
-#advanced-options-overlay-container
-	.button.game-wizard-advanced-return-btn:hover {
-	color: black;
-	background-color: white;
-}
 
 /* Game Advanced Options Styling*/
 
@@ -317,8 +312,12 @@
 
 .arcade-advance-opt-text {
 	cursor: pointer;
-	border-bottom: 2px dotted var(--border-thickness-general-dividers);
+	border-bottom: 1px dashed;
 	font-size: 2rem;
+}
+
+.arcade-advance-opt-text:hover{
+	color: var(--hover-text-color);
 }
 
 .arcade-wizard-game-invite {

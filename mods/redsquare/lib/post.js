@@ -150,12 +150,14 @@ class Post {
 				.addEventListener('click', (e) => {
 					this.deleteTweet();
 				});
-		} catch (err) {}
-		document
-			.querySelector(this.container + '#post-tweet-button')
-			.addEventListener('click', (e) => {
-				this.postTweet();
+
+			document
+				.querySelector(this.container + '#post-tweet-button')
+				.addEventListener('click', (e) => {
+					this.postTweet();
 			});
+
+		} catch (err) {}
 	}
 
 	async deleteTweet() {
