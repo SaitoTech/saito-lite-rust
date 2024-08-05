@@ -327,9 +327,6 @@ class StreamManager {
         this.app.keychain.addWatchedPublicKey(call_id);
         this.app.keychain.addKey(call_id, { identifier: call_id });
         console.log('watched public key', this.mod.room_obj)
-        // this.mod.stun.createPeerConnection(call_id, (call_id) => {
-        //   this.mod.sendCallJoinTransaction(call_id)
-        // })
         this.mod.sendBroadcastPresenceTransaction(call_id)
       }
 

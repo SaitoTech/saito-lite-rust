@@ -892,6 +892,8 @@ class Videocall extends ModTemplate {
 			return;
 		}
 
+		siteMessage("")
+
 		console.log(
 			'Videocall: Send broadcast presence:',
 			this.room_obj,
@@ -905,9 +907,6 @@ class Videocall extends ModTemplate {
 		newtx.msg = {
 			module: 'Videocall',
 			request: 'broadcast-presence',
-			// data: {
-			// 	kicked_peer: peer_id
-			// },
 			call_id: this.room_obj.call_id
 		};
 
