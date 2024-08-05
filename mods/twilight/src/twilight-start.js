@@ -975,13 +975,9 @@ console.log("error here 222");
       let scoring = twilight_self.calculateScoring(region, 1);
       twilight_self.scoring_overlay.render(region, scoring);
     });
-
   } catch (err) {
-
-console.log("error 2 in initializeGame: " + err);
-
+    console.log("error 2 in initializeGame: " + err);
   }
-
 
   //
   // preload images
@@ -1111,6 +1107,12 @@ console.log("LATEST MOVE: " + mv);
 
       this.game.queue.splice(qe, 1);
 
+      for (let i = 0; i < this.game.players.length; i++){
+        if (this.game.players[i] === this.publicKey){
+          this.game.player = i+1;
+        }
+      }
+
       // observer skips
       if (this.game.player === 0 || !this.game.players.includes(this.publicKey)) {
         return 1;
@@ -1132,7 +1134,7 @@ console.log("LATEST MOVE: " + mv);
           this.game.players.push(p);
         }
       }
-      //Fix game.player so that it corresponds to the indices of game.players[]
+      // sanity check
       for (let i = 0; i < this.game.players.length; i++){
         if (this.game.players[i] === this.publicKey){
           this.game.player = i+1;
@@ -1253,6 +1255,8 @@ console.log("LATEST MOVE: " + mv);
       }
 
       this.game.queue.splice(qe, 1);
+      return 1;
+
     }
 
     //
@@ -1278,6 +1282,7 @@ console.log("restoring B");
       }
 
       this.game.queue.splice(qe, 1);
+      return 1;
     }
 
     //

@@ -43,14 +43,14 @@
 
             twilight_self.removeCardFromHand(card);
             if (ac[card].player == "us") {
-              twilight_self.addMove("event\tus\t"+card);
               twilight_self.addMove("fyp_discard\t"+card);
+              twilight_self.addMove("event\tus\t"+card);
               twilight_self.addMove("modal\tFive Year Plan\tUSSR triggers "+twilight_self.cardToText(card));
               twilight_self.addMove("NOTIFY\tFive Year Plan triggers US event: "+twilight_self.cardToText(card));
               twilight_self.endTurn();
             } else {
-              twilight_self.addMove("modal\tFive Year Plan\tUSSR discards "+twilight_self.cardToText(card));
               twilight_self.addMove("fyp_discard\t"+card);
+              twilight_self.addMove("modal\tFive Year Plan\tUSSR discards "+twilight_self.cardToText(card));
               twilight_self.addMove("NOTIFY\tUSSR discarded "+twilight_self.cardToText(card));
               twilight_self.endTurn();
             }

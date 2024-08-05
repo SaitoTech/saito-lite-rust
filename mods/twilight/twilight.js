@@ -975,13 +975,9 @@ console.log("error here 222");
       let scoring = twilight_self.calculateScoring(region, 1);
       twilight_self.scoring_overlay.render(region, scoring);
     });
-
   } catch (err) {
-
-console.log("error 2 in initializeGame: " + err);
-
+    console.log("error 2 in initializeGame: " + err);
   }
-
 
   //
   // preload images
@@ -1111,6 +1107,12 @@ console.log("LATEST MOVE: " + mv);
 
       this.game.queue.splice(qe, 1);
 
+      for (let i = 0; i < this.game.players.length; i++){
+        if (this.game.players[i] === this.publicKey){
+          this.game.player = i+1;
+        }
+      }
+
       // observer skips
       if (this.game.player === 0 || !this.game.players.includes(this.publicKey)) {
         return 1;
@@ -1132,7 +1134,7 @@ console.log("LATEST MOVE: " + mv);
           this.game.players.push(p);
         }
       }
-      //Fix game.player so that it corresponds to the indices of game.players[]
+      // sanity check
       for (let i = 0; i < this.game.players.length; i++){
         if (this.game.players[i] === this.publicKey){
           this.game.player = i+1;
@@ -1253,6 +1255,8 @@ console.log("LATEST MOVE: " + mv);
       }
 
       this.game.queue.splice(qe, 1);
+      return 1;
+
     }
 
     //
@@ -1278,6 +1282,7 @@ console.log("restoring B");
       }
 
       this.game.queue.splice(qe, 1);
+      return 1;
     }
 
     //
@@ -11609,14 +11614,14 @@ if (card == "defectors") {
 
             twilight_self.removeCardFromHand(card);
             if (ac[card].player == "us") {
-              twilight_self.addMove("event\tus\t"+card);
               twilight_self.addMove("fyp_discard\t"+card);
+              twilight_self.addMove("event\tus\t"+card);
               twilight_self.addMove("modal\tFive Year Plan\tUSSR triggers "+twilight_self.cardToText(card));
               twilight_self.addMove("NOTIFY\tFive Year Plan triggers US event: "+twilight_self.cardToText(card));
               twilight_self.endTurn();
             } else {
-              twilight_self.addMove("modal\tFive Year Plan\tUSSR discards "+twilight_self.cardToText(card));
               twilight_self.addMove("fyp_discard\t"+card);
+              twilight_self.addMove("modal\tFive Year Plan\tUSSR discards "+twilight_self.cardToText(card));
               twilight_self.addMove("NOTIFY\tUSSR discarded "+twilight_self.cardToText(card));
               twilight_self.endTurn();
             }

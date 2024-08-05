@@ -11905,6 +11905,7 @@ console.log("----------------------------");
   	  this.game.state.england_card_bonus = 0;
   	  this.game.state.hapsburg_card_bonus = 0;
 
+
 	  this.game.queue.splice(qe, 1);
           return 1;
 
