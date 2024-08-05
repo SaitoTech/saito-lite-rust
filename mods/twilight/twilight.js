@@ -546,7 +546,11 @@ initializeGame(game_id) {
     //
     if (this.is_testing == 1) {
 
+      let is_async = false;
+      if (parseInt(this.game.options.async_dealing) == 1) { is_async = true; }
+
       this.game.options = {};
+      if (is_async) { this.game.options.async_dealing = 1; }
       this.game.options.culturaldiplomacy = 1;
       this.game.options.gouzenkoaffair = 1;
       this.game.options.poliovaccine = 1;
@@ -785,10 +789,9 @@ initializeGame(game_id) {
   //
   // re-enable async dealing
   //
-  if (this.game.options.async_dealing == 1) {
+  if (parseInt(this.game.options.async_dealing) == 1) {
     this.async_dealing = 1;
   }
-
 
   if (this.game.state.headline == 1 && this.game.state.headline_card == ""){
     this.playerPickHeadlineCard(); //In case reloading during the headline selection...
@@ -972,13 +975,9 @@ console.log("error here 222");
       let scoring = twilight_self.calculateScoring(region, 1);
       twilight_self.scoring_overlay.render(region, scoring);
     });
-
   } catch (err) {
-
-console.log("error 2 in initializeGame: " + err);
-
+    console.log("error 2 in initializeGame: " + err);
   }
-
 
   //
   // preload images
@@ -1108,6 +1107,12 @@ console.log("LATEST MOVE: " + mv);
 
       this.game.queue.splice(qe, 1);
 
+      for (let i = 0; i < this.game.players.length; i++){
+        if (this.game.players[i] === this.publicKey){
+          this.game.player = i+1;
+        }
+      }
+
       // observer skips
       if (this.game.player === 0 || !this.game.players.includes(this.publicKey)) {
         return 1;
@@ -1129,7 +1134,7 @@ console.log("LATEST MOVE: " + mv);
           this.game.players.push(p);
         }
       }
-      //Fix game.player so that it corresponds to the indices of game.players[]
+      // sanity check
       for (let i = 0; i < this.game.players.length; i++){
         if (this.game.players[i] === this.publicKey){
           this.game.player = i+1;
@@ -1250,6 +1255,8 @@ console.log("LATEST MOVE: " + mv);
       }
 
       this.game.queue.splice(qe, 1);
+      return 1;
+
     }
 
     //
@@ -1275,6 +1282,7 @@ console.log("restoring B");
       }
 
       this.game.queue.splice(qe, 1);
+      return 1;
     }
 
     //
@@ -1601,7 +1609,7 @@ console.log("restoring B");
     if (mv[0] == "tehran") {
 
       let sender  = mv[1];
-      let keysnum = mv[2];
+      let keysnum = parseInt(mv[2]);
       this.game.queue.splice(qe, 1);
 
       if (sender == "ussr") {
@@ -1625,14 +1633,20 @@ console.log("restoring B");
           var cardoptions = [];
           var pos_to_discard = [];
 
-          for (let i = 0; i < keysnum; i++) {
-            cardoptions[i] = this.game.deck[0].crypt[i];
-            cardoptions[i] = this.app.crypto.decodeXOR(cardoptions[i], this.game.deck[0].keys[i]);
-          }
-          for (let i = 0; i < keysnum; i++) {
-            cardoptions[i] = this.app.crypto.decodeXOR(cardoptions[i], this.game.queue[this.game.queue.length-keysnum+i]);
-            cardoptions[i] = this.app.crypto.hexToString(cardoptions[i]);
-          }
+	  if (this.async_dealing) {
+            for (let i = 0; i < keysnum; i++) {
+              cardoptions[i] = this.app.crypto.hexToString(this.game.deck[0].crypt[i]);
+	    }
+	  } else {
+            for (let i = 0; i < keysnum; i++) {
+              cardoptions[i] = this.game.deck[0].crypt[i];
+              cardoptions[i] = this.app.crypto.decodeXOR(cardoptions[i], this.game.deck[0].keys[i]);
+            }
+            for (let i = 0; i < keysnum; i++) {
+              cardoptions[i] = this.app.crypto.decodeXOR(cardoptions[i], this.game.queue[this.game.queue.length-keysnum+i]);
+              cardoptions[i] = this.app.crypto.hexToString(cardoptions[i]);
+            }
+	  }
           for (let i = 0; i < keysnum; i++) {
             this.game.queue.splice(this.game.queue.length-1, 1);
           }
@@ -2766,7 +2780,7 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
       //
       if (this.is_testing == 1) {
         if (this.game.player == 2) {
-          this.game.deck[0].hand = ["redscare", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
+          this.game.deck[0].hand = ["tehran", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
           this.game.deck[0].hand = ["abmtreaty","vietnamrevolts","wargames","romanianab"];
         }
@@ -5402,7 +5416,6 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
         }
 
         let discarded_cards = twilight_self.returnDiscardedCards();
-
 
         if (Object.keys(discarded_cards).length > 0) {
 
@@ -11601,14 +11614,14 @@ if (card == "defectors") {
 
             twilight_self.removeCardFromHand(card);
             if (ac[card].player == "us") {
-              twilight_self.addMove("event\tus\t"+card);
               twilight_self.addMove("fyp_discard\t"+card);
+              twilight_self.addMove("event\tus\t"+card);
               twilight_self.addMove("modal\tFive Year Plan\tUSSR triggers "+twilight_self.cardToText(card));
               twilight_self.addMove("NOTIFY\tFive Year Plan triggers US event: "+twilight_self.cardToText(card));
               twilight_self.endTurn();
             } else {
-              twilight_self.addMove("modal\tFive Year Plan\tUSSR discards "+twilight_self.cardToText(card));
               twilight_self.addMove("fyp_discard\t"+card);
+              twilight_self.addMove("modal\tFive Year Plan\tUSSR discards "+twilight_self.cardToText(card));
               twilight_self.addMove("NOTIFY\tUSSR discarded "+twilight_self.cardToText(card));
               twilight_self.endTurn();
             }
@@ -11954,6 +11967,8 @@ if (card == "defectors") {
           if (bulgaria_us       < bulgaria_ussr) 	{ total_countries++; only_country = "bulgaria"; }
           if (czechoslovakia_us < czechoslovakia_ussr)  { total_countries++; only_country = "czechoslovakia"; }
 
+console.log("total countries: " + total_countries);
+
 	  if (total_countries == 1) {
 	    let diff = 0;
 
@@ -11962,9 +11977,9 @@ if (card == "defectors") {
 	    if (only_country == "romania") { diff = romania_diff; }
 	    if (only_country == "bulgaria") { diff = bulgaria_diff; }
 	    if (only_country == "czechoslovakia") { diff = czechoslovakia_diff; }
-            twilight_self.placeInfluence(only_country, diff, "us");
-            twilight_self.addMove("place\tus\tus\t"+only_country+"\t"+diff);
-            twilight_self.endTurn();
+            this.placeInfluence(only_country, diff, "us");
+            this.addMove("place\tus\tus\t"+only_country+"\t"+diff);
+            this.endTurn();
 	    return 0;
 	  }
 
@@ -14420,9 +14435,17 @@ if (card == "defectors") {
       if (this.game.player == 1) {
         this.addMove("resolve\ttehran");
         let keys_given = 0;
-        for (let i = 0; i < this.game.deck[0].crypt.length && i < 5; i++) {
-          this.addMove(this.game.deck[0].keys[i]);
-          keys_given++;
+
+	if (this.async_dealing == 1) {
+          for (let i = 0; i < this.game.deck[0].crypt.length && i < 5; i++) {
+            this.addMove(this.game.deck[0].crypt[i]);
+	    keys_given++;
+	  }
+	} else {
+          for (let i = 0; i < this.game.deck[0].crypt.length && i < 5; i++) {
+            this.addMove(this.game.deck[0].keys[i]);
+            keys_given++;
+          }
         }
         this.addMove("tehran\tussr\t"+keys_given);
         this.endTurn();

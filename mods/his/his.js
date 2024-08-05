@@ -6728,7 +6728,9 @@ console.log("selected: " + spacekey);
               let is_committed = $(this).attr("id");
 	      if (is_committed == "uncommitted") { is_committed = 0; } else { is_committed = 1; }
 
-              let msg = "Leigzip Debate Format?";
+alert("is committed: " + is_committed + " --- " + his_self.returnDebatersInLanguageZone(language_zone, "protestant", is_committed));
+
+              let msg = "Leipzig Debate Format?";
               let html = '<ul>';
               html += '<li class="option" id="select">Pick My Debater</li>';
 	      // or prohibit uncommitted debaters
@@ -31930,7 +31932,6 @@ try {
 	    }
 	  }
 
-
 	  let attacker_debater_power = 1;
 	  let attacker_debater_bonus = 3;
 
@@ -32021,7 +32022,7 @@ try {
 	  this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) + " vs " + this.popup(this.game.state.theological_debate.defender_debater) + ` [${attacker_hits}/${defender_hits}]`);
 
 	  //
-	  //
+	  // set theological debate object
 	  //
 	  this.game.state.theological_debate.attacker_rolls = attacker_rolls;
 	  this.game.state.theological_debate.defender_rolls = defender_rolls;
@@ -32670,50 +32671,6 @@ defender_hits - attacker_hits;
 
 	  this.game.state.impulse++;
 
-
-//
-// Game Help Menu first Turn
-//
-/****
-let targs = {
-      	    line1 : "new to", 
-    	    line2 : "game",
-    	    fontsize : "2.1rem" ,
-}
-if (this.game.state.round == 1 && this.game.state.impulse == 1) {
-          if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
-	    targs.line2 = "protestants";
-            this.game_help.renderCustomOverlay("protestant", targs);
-          } else {
-            if (this.game.player == this.returnPlayerCommandingFaction("ottoman")) {
-	      targs.line2 = "ottomans";
-              this.game_help.renderCustomOverlay("ottoman", targs);
-            } else {
-              if (this.game.player == this.returnPlayerCommandingFaction("hapsburg")) {
-	        targs.line2 = "hapsburgs";
-                this.game_help.renderCustomOverlay("hapsburg", targs);
-              } else {
-                if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
-	          targs.line2 = "papacy";
-                  this.game_help.renderCustomOverlay("papacy", targs);
-                } else {
-                  if (this.game.player == this.returnPlayerCommandingFaction("england")) {
-	            targs.line2 = "england";
-                    this.game_help.renderCustomOverlay("england", targs);
-                  } else {
-                    if (this.game.player == this.returnPlayerCommandingFaction("france")) {
-	              targs.line2 = "france";
-                      this.game_help.renderCustomOverlay("france", targs);
-                    } else {
-                    }
-                  }
-                }
-              }
-            }
-          }
-}
-****/
-
 	  //
 	  // check if we are really ready for a new round, or just need another loop
 	  // until all of the players have passed. note that players who have passed 
@@ -32722,7 +32679,6 @@ if (this.game.state.round == 1 && this.game.state.impulse == 1) {
 	  //
 	  let factions_in_play = [];
 	  let factions_force_pass = [];
-
 
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
 	    for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
@@ -32769,7 +32725,6 @@ if (this.game.state.round == 1 && this.game.state.impulse == 1) {
 	      }
 	    }
 	  }
-
 
 	  //
 	  // players still to go...
@@ -34129,6 +34084,7 @@ console.log("----------------------------");
   	  this.game.state.england_card_bonus = 0;
   	  this.game.state.hapsburg_card_bonus = 0;
 
+
 	  this.game.queue.splice(qe, 1);
           return 1;
 
@@ -34458,11 +34414,7 @@ console.log("----------------------------");
 
 	// skip next impulse
 	if (mv[0] === "skip_next_impulse") {
-
-	  let target_faction = mv[1];
-
-	  this.game.state.skip_next_impulse.push(target_faction);
-
+	  this.game.state.skip_next_impulse.push(mv[1]);
 	  this.game.queue.splice(qe, 1);
           return 1;
         }
@@ -34647,8 +34599,11 @@ console.log("----------------------------");
 	    for (let i = 0; i < this.game.state.skip_next_impulse.length; i++) {
 	      if (this.game.state.skip_next_impulse[i] == faction) {
 		this.game.state.skip_next_impulse.splice(i, 1);
+	    	this.game.queue.splice(qe, 1);
+	    	return 1;
 	      }
 	    }
+
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }
@@ -42531,49 +42486,47 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
         if (his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant" && faction == "protestant") { return 1; }
         if (his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" && faction == "papacy") { return 1; }
       }
+    }
+
     //
-    // 6P requires adjacent or direct military presence
+    // otherwise, requires adjacent or direct military presence
     //
-    } else {
+    let adjacent_influence = his_self.returnSpacesWithAdjacentFactionInfantry(faction);
+    let direct_influence = his_self.returnSpacesWithFactionInfantry(faction);
 
-      let adjacent_influence = his_self.returnSpacesWithAdjacentFactionInfantry(faction);
-      let direct_influence = his_self.returnSpacesWithFactionInfantry(faction);
+    for (let i = 0; i < spaces_in_unrest.length; i++) {
 
-      for (let i = 0; i < spaces_in_unrest.length; i++) {
+      //
+      // i have regulars / infantry in this space
+      //
+      if (direct_influence.includes(spaces_in_unrest[i])) { return true; }
 
-        //
-        // i have regulars / infantry in this space
-        //
-	if (direct_influence.includes(spaces_in_unrest[i])) { return true; }
+      //
+      // i have adjacent regulars / infantry, and no enemies do
+      //
+      if (adjacent_influence.includes(spaces_in_unrest[i])) {
 
-        //
-        // i have adjacent regulars / infantry, and no enemies do
-        //
-	if (adjacent_influence.includes(spaces_in_unrest[i])) {
+	let neighbours = his_self.game.spaces[spaces_in_unrest[i]].neighbours;
+	let pass = his_self.game.spaces[spaces_in_unrest[i]].pass;
+	let impeding_units = true;
 
-	  let neighbours = his_self.game.spaces[spaces_in_unrest[i]].neighbours;
-	  let pass = his_self.game.spaces[spaces_in_unrest[i]].pass;
-	  let impeding_units = true;
+	for (let z = 0; z < neighbours.length; z++) {
 
-	  for (let z = 0; z < neighbours.length; z++) {
-
-	    let number_of_hostiles = his_self.returnHostileLandUnitsInSpace(faction, neighbours[z]);
-	    if (number_of_hostiles > 0) {
-	      if (pass.includes(neighbours[z])) {
-		impeding_units = false;
-	      } else {
-		return true; // at least one target
-	      }
-	    } else {
+	  let number_of_hostiles = his_self.returnHostileLandUnitsInSpace(faction, neighbours[z]);
+	  if (number_of_hostiles > 0) {
+	    if (pass.includes(neighbours[z])) {
 	      impeding_units = false;
+	    } else {
+	      return true; // at least one target
 	    }
+	  } else {
+	    impeding_units = false;
 	  }
-
-	  if (impeding_units == false) { return 1; }
-
 	}
-      }
 
+	if (impeding_units == false) { return 1; }
+
+      }
     }
 
     return 0;

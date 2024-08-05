@@ -29,9 +29,17 @@
       if (this.game.player == 1) {
         this.addMove("resolve\ttehran");
         let keys_given = 0;
-        for (let i = 0; i < this.game.deck[0].crypt.length && i < 5; i++) {
-          this.addMove(this.game.deck[0].keys[i]);
-          keys_given++;
+
+	if (this.async_dealing == 1) {
+          for (let i = 0; i < this.game.deck[0].crypt.length && i < 5; i++) {
+            this.addMove(this.game.deck[0].crypt[i]);
+	    keys_given++;
+	  }
+	} else {
+          for (let i = 0; i < this.game.deck[0].crypt.length && i < 5; i++) {
+            this.addMove(this.game.deck[0].keys[i]);
+            keys_given++;
+          }
         }
         this.addMove("tehran\tussr\t"+keys_given);
         this.endTurn();

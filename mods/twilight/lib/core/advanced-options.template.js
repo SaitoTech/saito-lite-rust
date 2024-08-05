@@ -12,7 +12,7 @@ module.exports = () => {
               <option value="us">play as US</option>
             </select>
 
-            <label for="usbonus">US bonus: </label>
+            <label for="usbonus">US bonus influence: </label>
             <select class="usbonus" name="usbonus">
               <option value="0">0</option>
               <option value="1">1</option>
@@ -38,11 +38,6 @@ module.exports = () => {
               <option value="120">120 minutes</option>
             </select>
 
-            <label for="observer_mode">Observer Mode:</label>
-            <select name="observer">
-              <option value="enable" >enable</option>
-              <option value="disable" selected>disable</option>
-            </select>
             <div id="game-wizard-advanced-return-btn" class="game-wizard-advanced-return-btn button saito-button-primary">Accept</div>
   </div>
 

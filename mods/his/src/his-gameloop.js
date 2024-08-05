@@ -9753,7 +9753,6 @@ try {
 	    }
 	  }
 
-
 	  let attacker_debater_power = 1;
 	  let attacker_debater_bonus = 3;
 
@@ -9844,7 +9843,7 @@ try {
 	  this.updateLog(this.popup(this.game.state.theological_debate.attacker_debater) + " vs " + this.popup(this.game.state.theological_debate.defender_debater) + ` [${attacker_hits}/${defender_hits}]`);
 
 	  //
-	  //
+	  // set theological debate object
 	  //
 	  this.game.state.theological_debate.attacker_rolls = attacker_rolls;
 	  this.game.state.theological_debate.defender_rolls = defender_rolls;
@@ -10493,50 +10492,6 @@ defender_hits - attacker_hits;
 
 	  this.game.state.impulse++;
 
-
-//
-// Game Help Menu first Turn
-//
-/****
-let targs = {
-      	    line1 : "new to", 
-    	    line2 : "game",
-    	    fontsize : "2.1rem" ,
-}
-if (this.game.state.round == 1 && this.game.state.impulse == 1) {
-          if (this.game.player == this.returnPlayerCommandingFaction("protestant")) {
-	    targs.line2 = "protestants";
-            this.game_help.renderCustomOverlay("protestant", targs);
-          } else {
-            if (this.game.player == this.returnPlayerCommandingFaction("ottoman")) {
-	      targs.line2 = "ottomans";
-              this.game_help.renderCustomOverlay("ottoman", targs);
-            } else {
-              if (this.game.player == this.returnPlayerCommandingFaction("hapsburg")) {
-	        targs.line2 = "hapsburgs";
-                this.game_help.renderCustomOverlay("hapsburg", targs);
-              } else {
-                if (this.game.player == this.returnPlayerCommandingFaction("papacy")) {
-	          targs.line2 = "papacy";
-                  this.game_help.renderCustomOverlay("papacy", targs);
-                } else {
-                  if (this.game.player == this.returnPlayerCommandingFaction("england")) {
-	            targs.line2 = "england";
-                    this.game_help.renderCustomOverlay("england", targs);
-                  } else {
-                    if (this.game.player == this.returnPlayerCommandingFaction("france")) {
-	              targs.line2 = "france";
-                      this.game_help.renderCustomOverlay("france", targs);
-                    } else {
-                    }
-                  }
-                }
-              }
-            }
-          }
-}
-****/
-
 	  //
 	  // check if we are really ready for a new round, or just need another loop
 	  // until all of the players have passed. note that players who have passed 
@@ -10545,7 +10500,6 @@ if (this.game.state.round == 1 && this.game.state.impulse == 1) {
 	  //
 	  let factions_in_play = [];
 	  let factions_force_pass = [];
-
 
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
 	    for (let z = 0; z < this.game.state.players_info[i].factions.length; z++) {
@@ -10592,7 +10546,6 @@ if (this.game.state.round == 1 && this.game.state.impulse == 1) {
 	      }
 	    }
 	  }
-
 
 	  //
 	  // players still to go...
@@ -11952,6 +11905,7 @@ console.log("----------------------------");
   	  this.game.state.england_card_bonus = 0;
   	  this.game.state.hapsburg_card_bonus = 0;
 
+
 	  this.game.queue.splice(qe, 1);
           return 1;
 
@@ -12281,11 +12235,7 @@ console.log("----------------------------");
 
 	// skip next impulse
 	if (mv[0] === "skip_next_impulse") {
-
-	  let target_faction = mv[1];
-
-	  this.game.state.skip_next_impulse.push(target_faction);
-
+	  this.game.state.skip_next_impulse.push(mv[1]);
 	  this.game.queue.splice(qe, 1);
           return 1;
         }
@@ -12470,8 +12420,11 @@ console.log("----------------------------");
 	    for (let i = 0; i < this.game.state.skip_next_impulse.length; i++) {
 	      if (this.game.state.skip_next_impulse[i] == faction) {
 		this.game.state.skip_next_impulse.splice(i, 1);
+	    	this.game.queue.splice(qe, 1);
+	    	return 1;
 	      }
 	    }
+
 	    this.game.queue.splice(qe, 1);
 	    return 1;
 	  }

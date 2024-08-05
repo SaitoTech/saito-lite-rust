@@ -3052,7 +3052,9 @@ console.log("selected: " + spacekey);
               let is_committed = $(this).attr("id");
 	      if (is_committed == "uncommitted") { is_committed = 0; } else { is_committed = 1; }
 
-              let msg = "Leigzip Debate Format?";
+alert("is committed: " + is_committed + " --- " + his_self.returnDebatersInLanguageZone(language_zone, "protestant", is_committed));
+
+              let msg = "Leipzig Debate Format?";
               let html = '<ul>';
               html += '<li class="option" id="select">Pick My Debater</li>';
 	      // or prohibit uncommitted debaters
