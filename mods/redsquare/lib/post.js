@@ -144,20 +144,21 @@ class Post {
 			document.querySelector(this.container + '.saito-file-uploader').style.display = 'none';
 		}
 
-		try {
+		if (document.querySelector(this.container + '#post-delete-button')){
 			document
 				.querySelector(this.container + '#post-delete-button')
 				.addEventListener('click', (e) => {
 					this.deleteTweet();
 				});
 
-			document
-				.querySelector(this.container + '#post-tweet-button')
-				.addEventListener('click', (e) => {
-					this.postTweet();
-			});
+		}
 
-		} catch (err) {}
+		if (document.querySelector(this.container + '#post-tweet-button')){
+			document.querySelector(this.container + '#post-tweet-button')
+				.addEventListener('click', (e) => {
+					this.postTweet();});
+		}
+
 	}
 
 	async deleteTweet() {
