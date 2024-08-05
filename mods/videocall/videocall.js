@@ -189,12 +189,12 @@ class Videocall extends ModTemplate {
 					];
 				}
 			}
-			if (call_self.browser_active & obj?.publicKey !== this.publicKey){
+			if ( this.streams?.active == true & obj?.publicKey !== this.publicKey){
 				if(type !== 'user-menu') return;
 				return [
 					{
 						text: 'Kick User From Call',
-						icon: 'fas fa-video',
+						icon: "fa-solid fa-user-slash",
 						callback: async  (app, public_key) => {
 							console.log('kicking user: ', public_key);
 							app.connection.emit('remove-peer-box', public_key)
