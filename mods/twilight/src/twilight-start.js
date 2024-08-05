@@ -52,6 +52,7 @@ class Twilight extends GameTemplate {
     this.boardWidth  = 5100; //Pieces originally scaled to 5100px wide board
     this.card_height_ratio = 1.39; // height is 1.39x width
 
+    this.clock.container = "#clock_";
     this.moves           = [];
     this.cards    	 = [];
     this.is_testing 	 = 0;
@@ -113,8 +114,13 @@ class Twilight extends GameTemplate {
   //
   // async
   //
-  startClockAndSetActivePlayer() {
-    if (this.async_dealing == 1) {
+  startClockAndSetActivePlayer(target = this.game.player) {
+    //Update target
+    this.game.target = target;
+
+    this.playerbox.setActive(target);
+
+    if (target == this.game.player) {
       this.setPlayerActive();
     } else {
       this.startClock();
@@ -463,6 +469,30 @@ class Twilight extends GameTemplate {
     } catch (err) {}
 
     if (this.game.player > 0){
+      if (this.useClock){
+        this.playerbox.render();
+
+        for (let i = 1; i <= this.game.players.length; i++) {
+          this.playerbox.updateIcons(
+            `<div class="tool-item item-detail turn-shape ${this.roles[
+              i
+            ].toLowerCase()}"></div>`,
+            i
+          );
+
+          this.playerbox.updateBody(`<div class="player_clock" id="clock_${i}"></div>`, i);
+        }
+
+        if (this.game.player == 1) {
+          $('.game-playerbox-manager').addClass('reverse');
+        }
+
+        this.clock.render();
+        for (let i = 0; i < this.game.clock.length; i++){
+          this.clock.displayTime(this.game.clock[i].limit - this.game.clock[i].spent, i+1);
+        }
+      }
+
       this.hud.render();
 
       /* Attach classes to hud to visualize player roles */
@@ -1385,9 +1415,10 @@ console.log("restoring B");
         // remove the command triggering this
         this.game.queue.splice(qe, 1);
 
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClockAndSetActivePlayer(2);
+
         if (this.game.player == 2) {
-          //If the event card has a UI component, run the clock for the player we are waiting on
-          this.startClockAndSetActivePlayer();
 
           let user_message  = `${this.cardToText(mv[0])} pulls ${this.cardToText(mv[2])} from USSR. Do you want to play this card?`;
           let html = "<ul>";
@@ -1481,10 +1512,10 @@ console.log("restoring B");
 
           } else {
 
-            if (twilight_self.game.player == 1) {
+            //If the event card has a UI component, run the clock for the player we are waiting on
+            twilight_self.startClockAndSetActivePlayer(1);
 
-              //If the event card has a UI component, run the clock for the player we are waiting on
-              twilight_self.startClockAndSetActivePlayer();
+            if (twilight_self.game.player == 1) {
 
               let user_message = "Pick second target for coup:";
               let html =  '<ul><li class="option" id="skipche">or skip coup</li></ul>';
@@ -1504,7 +1535,7 @@ console.log("restoring B");
                 twilight_self.endTurn();
               });
             }else{
-	      twilight_self.cancelBackButtonFunction();
+      	      twilight_self.cancelBackButtonFunction();
               twilight_self.updateStatus(`Waiting for USSR to play second ${twilight_self.cardToText("che")} coup`);
               return 0;
             }
@@ -1617,15 +1648,14 @@ console.log("restoring B");
         //
         // ussr has sent keys to decrypt
         //
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClockAndSetActivePlayer(2);
+
         if (this.game.player == 1) {
 
           for (let i = 0; i < keysnum; i++) { this.game.queue.splice(this.game.queue.length-1, 1); }
-          shd_continue = 0;
 
         } else {
-
-          //If the event card has a UI component, run the clock for the player we are waiting on
-          this.startClockAndSetActivePlayer();
 
           //
           // us decrypts and decides what to toss
@@ -1633,11 +1663,11 @@ console.log("restoring B");
           var cardoptions = [];
           var pos_to_discard = [];
 
-	  if (this.async_dealing) {
-            for (let i = 0; i < keysnum; i++) {
-              cardoptions[i] = this.app.crypto.hexToString(this.game.deck[0].crypt[i]);
-	    }
-	  } else {
+      	  if (this.async_dealing) {
+                  for (let i = 0; i < keysnum; i++) {
+                    cardoptions[i] = this.app.crypto.hexToString(this.game.deck[0].crypt[i]);
+      	    }
+      	  } else {
             for (let i = 0; i < keysnum; i++) {
               cardoptions[i] = this.game.deck[0].crypt[i];
               cardoptions[i] = this.app.crypto.decodeXOR(cardoptions[i], this.game.deck[0].keys[i]);
@@ -1646,7 +1676,7 @@ console.log("restoring B");
               cardoptions[i] = this.app.crypto.decodeXOR(cardoptions[i], this.game.queue[this.game.queue.length-keysnum+i]);
               cardoptions[i] = this.app.crypto.hexToString(cardoptions[i]);
             }
-	  }
+      	  }
           for (let i = 0; i < keysnum; i++) {
             this.game.queue.splice(this.game.queue.length-1, 1);
           }
@@ -1751,9 +1781,10 @@ console.log("restoring B");
 
       this.game.queue.splice(qe, 1);
 
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClockAndSetActivePlayer(1);
+
       if (this.game.player == 1) {
-        //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClockAndSetActivePlayer();
 
         let potCountries = [];
         for (var i in this.countries) {
@@ -1810,10 +1841,10 @@ console.log("restoring B");
 
     if (mv[0] == "northsea") {
 
-      if (this.game.player == 2) {
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClockAndSetActivePlayer(2);
 
-        //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClockAndSetActivePlayer();
+      if (this.game.player == 2) {
 
         let user_message  = "Do you wish to take an extra turn?";
         let html = `<ul>
@@ -1898,9 +1929,9 @@ console.log("restoring B");
 
       this.game.queue.splice(qe, 1);
 
-      if (this.game.player == 1) {
+      this.startClockAndSetActivePlayer(1);
 
-        this.startClockAndSetActivePlayer();
+      if (this.game.player == 1) {
 
         this.playerFinishedPlacingInfluence();
 
@@ -1908,7 +1939,7 @@ console.log("restoring B");
         for (var i in this.countries) {
           if (this.countries[i].region == "camerica" || this.countries[i].region == "samerica") {
             if (this.countries[i].us > 0) {
-	      ops_available++;
+	            ops_available++;
               $("#"+i).addClass("easterneurope");
               this.countries[i].place = 1;
             }
@@ -1916,7 +1947,7 @@ console.log("restoring B");
         }
 
         if (ops_available == 0) {
-	  return 1;
+	         return 1;
         }
 
         let ops_to_purge = 1;
@@ -2060,9 +2091,9 @@ console.log("restoring B");
           uscards.push(this.game.queue.pop());
         }
 
+        //If the event card has a UI component, run the clock for the player we are waiting on
+        this.startClockAndSetActivePlayer(1);
         if (this.game.player == 1) {
-          //If the event card has a UI component, run the clock for the player we are waiting on
-          this.startClockAndSetActivePlayer();
           this.updateStatusAndListCards(user_message, uscards, function(action2) {
             twilight_self.addMove("discard\tus\t"+action2);
             twilight_self.addMove("aldrich\tussr\t"+action2);
@@ -2090,9 +2121,9 @@ console.log("restoring B");
     }
 
     if (mv[0] === "cambridge") {
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClockAndSetActivePlayer(1);
       if (this.game.player == 1) {
-        //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClockAndSetActivePlayer();
 
         let placetxt = `${this.cardToText("cambridge")}: ${player.toUpperCase()} place 1 OP in`;
         for (let i = 1; i < mv.length; i++) {
@@ -2124,10 +2155,10 @@ console.log("restoring B");
 
     if (mv[0] === "teardownthiswall") {
 
-      if (this.game.player == 2){
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClockAndSetActivePlayer(2);
 
-        //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClockAndSetActivePlayer();
+      if (this.game.player == 2){
 
         let user_message = "Tear Down this Wall is played -- US may make 3 OP free Coup Attempt or Realignments in Europe.";
         let html = `<ul>
@@ -2832,11 +2863,11 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
         return 0;
       }
 
-
+      this.startClockAndSetActivePlayer(parseInt(mv[1]));
       if (this.game.player == mv[1]) {
         this.playerPlaceInitialInfluence();
       } else {
-	this.game_help.hide();
+	      this.game_help.hide();
         this.updateStatusAndListCards(`${(mv[1] == 1)?"USSR":"US"} is making its initial placement of influence:`);
       }
 
@@ -3571,9 +3602,9 @@ console.log("TURN IS: " + this.game.state.turn);
 
           this.updateLog("NORAD triggers: US places 1 influence in country with US influence");
 
-          if (this.game.player == 2) {
+          twilight_self.startClockAndSetActivePlayer(2);
 
-	    twilight_self.setPlayerActive();
+          if (this.game.player == 2) {
 
             for (var i in this.countries) {
               if (this.countries[i].us > 0) {
@@ -3711,6 +3742,9 @@ console.log("processing headline cards - TEST");
         this.game.queue.push("resolve\theadline");
         this.game.queue.push("headline\theadline4");
 
+        this.startClock(3-this.game.player); //Run opponent's clock
+        this.startClockAndSetActivePlayer(); //And my own
+
         this.playerPickHeadlineCard();  //Players simultaneously pick their headlines
         return 0;
 
@@ -3733,6 +3767,8 @@ console.log("processing headline cards - TEST");
       if (stage == "headline1") {
         this.updateLog(playerside + " selecting headline card first");
 
+        this.startClockAndSetActivePlayer(first_picker);
+
         if (this.game.player == first_picker) {
           this.addMove("resolve\theadline");
           this.playerPickHeadlineCard();
@@ -3745,6 +3781,8 @@ console.log("processing headline cards - TEST");
       // second player receives first card and sends card
       if (stage == "headline2") {
         this.updateLog(this.game.state.man_in_earth_orbit.toUpperCase() + " selecting headline card second");
+
+        this.startClockAndSetActivePlayer(second_picker);
 
         if (this.game.player == second_picker) {
           this.game.state.headline_opponent_hash = hash;
@@ -3909,8 +3947,6 @@ console.log("processing headline cards - TEST");
 
   playerPickHeadlineCard() {
 
-    this.startClockAndSetActivePlayer();
-
     let twilight_self = this;
     if (this.browser_active == 0) { return; }
 
@@ -4067,7 +4103,7 @@ console.log("in play move!");
           this.playerTurn();
         }
       } else {
-	this.cancelBackButtonFunction();
+	      this.cancelBackButtonFunction();
         this.updateStatusAndListCards(`Waiting for USSR to move`);
       }
       return;
@@ -4137,6 +4173,7 @@ console.log("in play move!");
         }
       }
 
+
       if (this.game.player == 2) {
 
         if (this.game.state.events.missile_envy == 2) {
@@ -4159,7 +4196,7 @@ console.log("in play move!");
           this.playerTurn();
         }
       } else {
-	this.cancelBackButtonFunction();
+	      this.cancelBackButtonFunction();
         this.updateStatusAndListCards(`Waiting for US to move`);
       }
       return;
@@ -5556,7 +5593,6 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
     try {
 
-      this.startClockAndSetActivePlayer();
       twilight_self.addMove("resolve\tplacement");
 
       if (this.game.player == 1) { //USSR

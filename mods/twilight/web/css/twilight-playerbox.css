@@ -1,0 +1,116 @@
+
+.game-playerbox-head .saito-user .saito-address {
+	color: white;
+}
+
+.game-playerbox-head .saito-user > .saito-address,
+.game-playerbox-head .saito-user > .saito-userline {
+	color: white;
+}
+
+.status-header,
+.status-message,
+.status-text-menu,
+.status-text-menu ul,
+.status-text-menu ul li,
+.textchoice {
+	background: unset;
+}
+
+.textchoice:hover {
+	color: black;
+}
+
+.game-playerbox-manager {
+	position: absolute;
+	right: 20px;
+	top: 45px;
+	gap: 0.5rem;
+	cursor: default;
+	z-index: 46; /* Sit above sizer */
+}
+
+.game-playerbox {
+	position: unset;
+	height: fit-content;
+	background-color: rgba(43, 29, 14, 0.75);
+	border: 2px solid transparent;
+	border-radius: 1rem;
+	box-shadow: 5px 3px 4px black;
+	width: 22rem;
+}
+
+.game-playerbox.active {
+	border: 2px solid silver;
+	background-color: rgba(13, 79, 14, 0.8);
+}
+
+.game-scoreboard .active {
+	background-color: rgba(13, 79, 14, 0.8);	
+}
+
+.game-playerbox-body {
+	display: flex;
+	justify-content: center;
+}
+
+.turn-shape {
+	box-sizing: border-box;
+	width: 35px;
+	height: 35px;
+	border-radius: 25px;
+	border: 2px solid;
+	grid-row: span 2;
+}
+
+.turn-shape.us {
+	background-color: blue;
+	background-image: url(/twilight/img/AmericanTimer.png);
+	background-size: contain;
+}
+
+.turn-shape.ussr {
+	background-color: red;
+	background-image: url(/twilight/img/TSHammerAndSickle.png);
+	background-size: contain;
+}
+
+
+@media (max-aspect-ratio: 8/7) {
+	.game-playerbox-manager {
+		margin: 0.25rem;
+		flex-direction: row;
+		top: 5px;
+	}
+
+	.game-playerbox {
+		min-height: unset;
+		width: 20rem;
+		max-width: 100%;
+		padding: 0.5rem;
+		margin: 0;
+		border-radius: 12px;
+		box-shadow: -4px 2px 3px black;
+		font-size: 15px;
+	}
+}
+
+@media (orientation: portrait) {
+	.game-playerbox-manager {
+		top: 45px;
+	}
+}
+
+@media only screen and (max-width: 600px) {
+	.game-playerbox-manager {
+		display: flex !important;
+		flex-wrap: wrap;
+		right: unset;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+
+	.game-playerbox {
+		border-radius: 8px;
+	}
+}

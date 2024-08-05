@@ -9,6 +9,8 @@
 
 console.log("communistrevolution ! " + me + " -- " + player);
 
+      this.startClockAndSetActivePlayer(2);
+
       if (me == "us") {
         let burned = this.rollDice(6);
 	return 0;

@@ -6,13 +6,14 @@
       let opponent = "us";
       if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
 
+      //If the event card has a UI component, run the clock for the player we are waiting on
+      this.startClockAndSetActivePlayer(this.roles.indexOf(player));
+
       if (me != player) {
         let burned = this.rollDice(6);
         return 0;
       }
       if (me == player) {
-        //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
