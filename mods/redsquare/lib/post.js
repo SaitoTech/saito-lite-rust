@@ -145,14 +145,15 @@ class Post {
 		}
 
 		try {
-			document
-				.querySelector(this.container + '#post-delete-button')
-				.addEventListener('click', (e) => {
-					this.deleteTweet();
-				});
+			if (document.querySelector(this.container + '#post-delete-button')){
+				document
+					.querySelector(this.container + '#post-delete-button')
+					.addEventListener('click', (e) => {
+						this.deleteTweet();
+					});
+			}
 		} catch (err) {}
 		try {
-
 			document
 				.querySelector(this.container + '#post-tweet-button')
 				.addEventListener('click', (e) => {
