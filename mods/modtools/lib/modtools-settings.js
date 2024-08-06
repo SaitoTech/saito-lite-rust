@@ -45,7 +45,13 @@ class ModtoolsSettings {
           }
           this.render();
         }
-        this.contacts.render(this.app.options.modtools.blacklist);
+
+        let keylist = [];
+        for (let i = 0;  i < this.app.options.modtools.blacklist.length; i++){
+          keylist.push(this.app.options.modtools.blacklist[i].publickey);
+        }
+
+        this.contacts.render(keylist);
       }
     }
 
