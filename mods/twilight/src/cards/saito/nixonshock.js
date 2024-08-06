@@ -11,9 +11,10 @@
       twilight_self.game.state.events.nixonshock = 1;
       twilight_self.cancelEvent("energycrisis");
 
+      twilight_self.startClockAndSetActivePlayer(2);
+
       if (twilight_self.game.player == 2) {
 
-        twilight_self.startClockAndSetActivePlayer();
         twilight_self.addMove("resolve\tnixonshock");
 
         twilight_self.updateStatusWithOptions(`${twilight_self.cardToText(card)}: `,'<ul><li class="option" id="draw">Drawl Additional Card from Deck</li><li class="option" id="skip">Skip</li></ul>', function(action2) {

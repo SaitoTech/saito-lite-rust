@@ -1,10 +1,10 @@
 
     if (card == "indreds") {
 
-      if (this.game.player == 2) {
-        //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClockAndSetActivePlayer();
+      this.startClockAndSetActivePlayer(2);
 
+      if (this.game.player == 2) {
+        
         let yugo_ussr = this.countries['yugoslavia'].ussr;
         let romania_ussr = this.countries['romania'].ussr;
         let bulgaria_ussr = this.countries['bulgaria'].ussr;

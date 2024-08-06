@@ -1,8 +1,4 @@
 
-.game-playerbox-head .saito-user .saito-address {
-	color: white;
-}
-
 .game-playerbox-head .saito-user > .saito-address,
 .game-playerbox-head .saito-user > .saito-userline {
 	color: white;
@@ -54,22 +50,25 @@
 	justify-content: center;
 }
 
-.turn-shape {
+.player-icon-us {
 	box-sizing: border-box;
 	width: 35px;
 	height: 35px;
 	border-radius: 25px;
 	border: 2px solid;
 	grid-row: span 2;
-}
-
-.turn-shape.us {
 	background-color: blue;
 	background-image: url(/twilight/img/AmericanTimer.png);
 	background-size: contain;
 }
 
-.turn-shape.ussr {
+.player-icon-ussr {
+	box-sizing: border-box;
+	width: 35px;
+	height: 35px;
+	border-radius: 25px;
+	border: 2px solid;
+	grid-row: span 2;
 	background-color: red;
 	background-image: url(/twilight/img/TSHammerAndSickle.png);
 	background-size: contain;

@@ -1,12 +1,12 @@
 
     if (card == "fischerspassky") {
 
+      this.startClockAndSetActivePlayer(this.roles.indexOf(player));
+
       if (!i_played_the_card) {
         this.updateStatus("Opponent playing Fischer-Spassky");
         return 0;
       }
-
-      this.startClockAndSetActivePlayer();
 
       let html = `<ul>
                   <li class="option" id="asia">Asia</li>

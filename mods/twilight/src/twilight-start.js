@@ -474,7 +474,7 @@ class Twilight extends GameTemplate {
 
         for (let i = 1; i <= this.game.players.length; i++) {
           this.playerbox.updateIcons(
-            `<div class="tool-item item-detail turn-shape ${this.roles[
+            `<div class="tool-item item-detail player-icon-${this.roles[
               i
             ].toLowerCase()}"></div>`,
             i
@@ -1415,7 +1415,6 @@ console.log("restoring B");
         // remove the command triggering this
         this.game.queue.splice(qe, 1);
 
-        //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClockAndSetActivePlayer(2);
 
         if (this.game.player == 2) {
@@ -1512,7 +1511,6 @@ console.log("restoring B");
 
           } else {
 
-            //If the event card has a UI component, run the clock for the player we are waiting on
             twilight_self.startClockAndSetActivePlayer(1);
 
             if (twilight_self.game.player == 1) {
@@ -1648,7 +1646,6 @@ console.log("restoring B");
         //
         // ussr has sent keys to decrypt
         //
-        //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClockAndSetActivePlayer(2);
 
         if (this.game.player == 1) {
@@ -1781,7 +1778,6 @@ console.log("restoring B");
 
       this.game.queue.splice(qe, 1);
 
-      //If the event card has a UI component, run the clock for the player we are waiting on
       this.startClockAndSetActivePlayer(1);
 
       if (this.game.player == 1) {
@@ -1841,7 +1837,6 @@ console.log("restoring B");
 
     if (mv[0] == "northsea") {
 
-      //If the event card has a UI component, run the clock for the player we are waiting on
       this.startClockAndSetActivePlayer(2);
 
       if (this.game.player == 2) {
@@ -1984,6 +1979,8 @@ console.log("restoring B");
       let opponent = 1;
       if (player == 1) { opponent = 2; }
 
+      this.startClockAndSetActivePlayer(player);
+
       if (this.game.player == player) {
 
 	let card = this.game.deck[0].hand[this.game.deck[0].hand.length-1];
@@ -2091,7 +2088,6 @@ console.log("restoring B");
           uscards.push(this.game.queue.pop());
         }
 
-        //If the event card has a UI component, run the clock for the player we are waiting on
         this.startClockAndSetActivePlayer(1);
         if (this.game.player == 1) {
           this.updateStatusAndListCards(user_message, uscards, function(action2) {
@@ -2121,7 +2117,7 @@ console.log("restoring B");
     }
 
     if (mv[0] === "cambridge") {
-      //If the event card has a UI component, run the clock for the player we are waiting on
+
       this.startClockAndSetActivePlayer(1);
       if (this.game.player == 1) {
 
@@ -2155,7 +2151,6 @@ console.log("restoring B");
 
     if (mv[0] === "teardownthiswall") {
 
-      //If the event card has a UI component, run the clock for the player we are waiting on
       this.startClockAndSetActivePlayer(2);
 
       if (this.game.player == 2){
@@ -2880,6 +2875,8 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
       //
       // only the US gets a placement_bonus
       //
+      this.startClockAndSetActivePlayer(parseInt(mv[1]));
+
       if (this.game.player == mv[1]) {
         this.playerPlaceBonusInfluence(mv[2]);
       } else {
@@ -3635,7 +3632,6 @@ console.log("TURN IS: " + this.game.state.turn);
 
       this.displayBoard();
 
-console.log("moving into playMove...");
       this.playMove();
       return 0;
     }
@@ -4051,7 +4047,9 @@ async playerTurnHeadlineSelected(card, player) {
 
   playMove() {
 
-console.log("in play move!");
+    console.log("in play move!");
+
+    this.startClockAndSetActivePlayer(this.game.state.turn);
 
     //
     // this is never run in headline - we set the headline to 0 here automatically
@@ -4207,8 +4205,6 @@ console.log("in play move!");
 
 
   playerTurn(selected_card=null) {
-
-    this.startClockAndSetActivePlayer();
 
     if (this.browser_active == 0) { return; }
 
@@ -4504,8 +4500,6 @@ console.log("in play move!");
 
 
   async playerTurnCardSelected(card, player) {
-
-    this.startClockAndSetActivePlayer();
 
     let ac = this.returnAllCards(true);
     let twilight_self = this;
@@ -4869,9 +4863,10 @@ console.log("in play move!");
     // reset events / DOM
     twilight_self.playerFinishedPlacingInfluence();
 
+    this.startClockAndSetActivePlayer(this.roles.indexOf(player));
+
     if (player === me) {
 
-      this.startClockAndSetActivePlayer();
       let bind_back_button_state = true;
 
       if (card === "missileenvy") { bind_back_button_state = false; }
@@ -5693,8 +5688,6 @@ this.game_help.render({
 
 
   playerPlaceBonusInfluence(bonus) {
-
-    this.startClockAndSetActivePlayer();
 
     let twilight_self = this;
 

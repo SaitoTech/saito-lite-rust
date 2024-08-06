@@ -70,6 +70,10 @@
     grid-column: 3;
 }
 
+.game-playerbox-head .saito-user .saito-address {
+  max-width: calc(100% + 1rem);
+}
+
 .game-playerbox-head .saito-user>.saito-userline {
     display: flex;
     flex-direction: row;
