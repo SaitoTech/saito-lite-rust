@@ -81,9 +81,9 @@
           winner = 2;
         }
 
-        if (this.game.player === winner) {
+        this.startClockAndSetActivePlayer(winner);
 
-          this.startClockAndSetActivePlayer();
+        if (this.game.player === winner) {
 
           let twilight_self = this;
 

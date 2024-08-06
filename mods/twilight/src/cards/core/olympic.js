@@ -9,9 +9,9 @@
       let opponent = "us";
       if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
 
+      this.startClockAndSetActivePlayer(this.roles.indexOf(opponent));
+
       if (player == opponent) {
-        //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClockAndSetActivePlayer();
 
         let twilight_self = this;
 

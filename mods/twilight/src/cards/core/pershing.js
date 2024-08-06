@@ -4,9 +4,9 @@
     //
     if (card == "pershing") {
 
+      this.startClockAndSetActivePlayer(1);
+      
       if (this.game.player == 1) {
-        //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         this.updateStatus(`<div class='status-message' id='status-message'>${this.cardToText(card)}: Remove 3 US influence from Western Europe (max 1 per country)</div>`);

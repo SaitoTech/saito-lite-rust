@@ -51,8 +51,6 @@ module.exports = (app, mod, invite) => {
           </div>
         </div>`;
   
-  console.log(invite);
-
   if (invite_class) {
     html += `<div class="angled-notification">your turn</div>`;
   } 

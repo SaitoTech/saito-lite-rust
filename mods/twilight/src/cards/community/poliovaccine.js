@@ -5,6 +5,8 @@
       if (player == "ussr" && this.game.player == 1) { my_go = 1; }
       if (player == "us" && this.game.player == 2) { my_go = 1; }
 
+      this.startClockAndSetActivePlayer(this.roles.indexOf(player));
+
       if (my_go == 0) {
         this.updateStatus("Waiting for Opponent to play Polio Vaccine");
         return 0;

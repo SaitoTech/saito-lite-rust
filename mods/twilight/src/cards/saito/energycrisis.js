@@ -11,9 +11,9 @@
       twilight_self.game.state.events.energycrisis = 1;
       twilight_self.cancelEvent("nixonshock");
 
+      twilight_self.startClockAndSetActivePlayer(2);
       if (this.game.player == 2) {
 
-        twilight_self.startClockAndSetActivePlayer();
         twilight_self.addMove("resolve\tenergycrisis");
 
 	let has_ops_to_discard = false;
