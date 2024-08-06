@@ -330,8 +330,7 @@ class Arcade extends ModTemplate {
                ORDER BY created_at ASC`;
 
 		this.sendPeerDatabaseRequestWithFilter('Arcade', sql, (res) => {
-			console.log(sql);
-			console.log(res);
+
 			if (res?.rows) {
 				for (let record of res.rows) {
 					if (this.debug) {
@@ -346,6 +345,7 @@ class Arcade extends ModTemplate {
 
 					//Game is marked as "active" but we didn't already add it from our app.options file...
 					if (record.status == "active" && game_added && arcade_self.isMyGame(game_tx)){
+						console.log("ARCADE: Asynchronous game creation!")
 						game_tx.msg.game_id = game_tx.signature;
 						arcade_self.receiveAcceptTransaction(game_tx);
 					}

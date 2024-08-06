@@ -70,11 +70,13 @@ class CallLaunch {
 				//
 				// I am initializing the call
 				//
+				console.log(this.mod.room_obj, "room object joining")
 				if (!this.mod.room_obj) {
 					this.mod.room_obj = {
 						call_id: this.mod.createRoomCode(),
 						host_public_key: this.mod.publicKey,
 						call_peers: [],
+						scheduled: false
 					};
 				}
 
@@ -93,6 +95,53 @@ class CallLaunch {
 				this.app.connection.emit('start-stun-call');
 			};
 		}
+		if (document.getElementById('createScheduleRoom')) {
+			document.getElementById('createScheduleRoom').onclick =async  (e) => {
+
+				if (!this.mod.isRelayConnected) {
+					siteMessage('Wait for peer connection');
+					return;
+				}
+
+				let call_id = await this.mod.generateRoomId()
+				let link = this.createRoomLink({call_id, scheduled: true, call_peers: []})
+				navigator.clipboard.writeText(link);
+				siteMessage('Invite link copied to clipboard', 1500);
+
+
+				// create a public 
+				// if (!this.mod.room_obj) {
+				// 	this.mod.room_obj = {
+				// 		call_id: this.mod.createRoomCode(),
+				// 		host_public_key: this.mod.publicKey,
+				// 		call_peers: [],
+				// 	};
+				// }
+
+				// //
+				// // Set big screen video as desired call interface
+				// //
+				// this.app.connection.emit('stun-init-call-interface', this.callSetting.returnSettings());
+
+				// //
+				// //Close this component
+				// //
+				// this.app.connection.emit('close-preview-window');
+				// //
+				// // Start the stun call
+				// //
+				// this.app.connection.emit('start-stun-call');
+			};
+		}
+	}
+
+	createRoomLink(room_obj){
+		let base64obj = this.app.crypto.stringToBase64(
+			JSON.stringify(room_obj)
+		);
+		let url1 = window.location.origin + '/videocall/';
+		this.old_title = document.title;
+		return `${url1}?stun_video_chat=${base64obj}`;
 	}
 }
 

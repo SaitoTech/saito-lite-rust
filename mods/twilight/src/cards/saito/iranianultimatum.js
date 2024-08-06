@@ -21,9 +21,9 @@
       }
 
 
-      if (this.game.player == 2) {
+      this.startClockAndSetActivePlayer(2);
 
-        this.startClockAndSetActivePlayer();
+      if (this.game.player == 2) {
 
         this.addMove("resolve\tiranianultimatum");
 

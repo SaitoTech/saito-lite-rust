@@ -357,7 +357,7 @@ class Wuziqi extends GameTemplate {
 			if (mv[0] === 'gameover') {
 				// Remove this item from the queue.
 				this.game.queue = [];
-
+				this.stopClock();
 				await this.sendGameOverTransaction(
 					this.game.players[parseInt(mv[1]) - 1],
 					`best of ${this.game.options.best_of}`

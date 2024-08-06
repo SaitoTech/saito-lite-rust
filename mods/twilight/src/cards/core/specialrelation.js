@@ -3,9 +3,9 @@
 
       if (this.isControlled("us", "uk") == 1) {
 
-        if (this.game.player == 2) {
+        this.startClockAndSetActivePlayer(2);
 
-          this.startClockAndSetActivePlayer();
+        if (this.game.player == 2) {
           
           let twilight_self = this;
           let ops_to_place = 1;
