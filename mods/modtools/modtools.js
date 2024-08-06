@@ -685,7 +685,6 @@ class ModTools extends ModTemplate {
 	}
 
 	webServer(app, expressapp, express) {
-		console.log("this is my home");
 		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
 		let modtools_self = this;
 
