@@ -55,12 +55,6 @@ class ModTools extends ModTemplate {
 		this.whitelisted_publickeys = [];
 		this.blacklisted_publickeys = [];
 
-		//
-		// searchable publickeys, nothing more
-		//
-		this.whitelisted_publickeys = [];
-		this.blacklisted_publickeys = [];
-
 		this.apps = {};
 
 		return this;
@@ -157,12 +151,6 @@ class ModTools extends ModTemplate {
                         }
 		)
 
-
-		//
-		// parse wallet to add 
-		//
-		//this.apps['chat'] = "*";
-		//this.save();
 	}
 
 
@@ -175,12 +163,10 @@ class ModTools extends ModTemplate {
 	      return;
 	    }
 	
-
-		this.header = new SaitoHeader(this.app, this);
-		await this.header.initialize(this.app);
+	    this.header = new SaitoHeader(this.app, this);
+	    await this.header.initialize(this.app);
 	
-
-	      this.addComponent(this.header);
+	    this.addComponent(this.header);
 
 	    await super.render();
 	 }
