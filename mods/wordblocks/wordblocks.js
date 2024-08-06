@@ -2409,34 +2409,6 @@ class Wordblocks extends GameTemplate {
 		return WordblocksGameOptionsTemplate(this.app, this);
 	}
 
-	/*startClock() {
-		if (!this.useClock || this.game.over) {
-			return;
-		}
-
-		clearTimeout(this.clock_timer); //Just in case
-
-		this.clock.startClock(this.game.clock_limit);
-
-		//Refresh the clock every second
-		this.clock_timer = setTimeout(() => {
-			this.clock.displayTime(0);
-			salert('Turn ended automatically');
-			this.clearBoard();
-			this.removeEvents();
-			this.addMove('discard_tiles\t' + this.game.player + '\t');
-			this.endTurn();
-		}, this.game.clock_limit);
-	}
-
-	stopClock() {
-		if (!this.useClock) {
-			return;
-		}
-		clearTimeout(this.clock_timer);
-		this.clock.stopClock();
-	}*/
-
 	async animatePlay() {
 		for (let tile of this.tilesToHighlight) {
 			$(tile)
