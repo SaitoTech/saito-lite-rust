@@ -32,8 +32,8 @@ class ModTools extends ModTemplate {
 		this.class = 'modtools';
 		this.categories = 'Core Moderation';
 		this.icon = 'fas fa-eye-slash';
-		//this.prune_after = 1500000; // ~1 day
-		this.prune_after = 60000; // ~1 minute
+		this.prune_after = 1500000; // ~1 day
+		//this.prune_after = 60000; // ~1 minute
 		this.max_hops = 2; // stop blacklisting after N hops
 		this.styles = [
 			'/modtools/style.css',
