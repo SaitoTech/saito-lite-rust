@@ -892,7 +892,7 @@ class Videocall extends ModTemplate {
 			return;
 		}
 
-		siteMessage("")
+		siteMessage("Waiting for connection", 4000)
 
 		console.log(
 			'Videocall: Send broadcast presence:',
