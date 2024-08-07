@@ -51,7 +51,6 @@ html[data-theme="sangre3000"] {
   --shadow-overlay: 0 0 150px -60px var(--color-primary);
   /* gives it that famous sangre glow */
   /* Spacing and padding adjustments */
-  --border-padding-identicon-style: var(--border-padding-identicon-thin);
   --border-padding-style: var(--border-padding-wide);
   --border-padding-style-leaderboard-ranking: var(--border-padding-small);
   --border-padding-overlay-post: var(--border-padding-huge);
