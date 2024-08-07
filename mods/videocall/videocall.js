@@ -383,6 +383,13 @@ class Videocall extends ModTemplate {
 						this.room_obj.call_id !== message.call_id
 					) {
 						console.log('OC: Tab is not active');
+						if(message.request === "broadcast-presence" && !tx.isFrom(this.publicKey)) {
+							console.log(message, "message from joinig")
+							// salert(`${message.call_link}`)
+							sconfirm(`${from} joined the call, do you want to join call?`).then(()=> {
+								window.location.href = message.call_link
+							})
+						}
 						return;
 					}
 
@@ -475,6 +482,7 @@ class Videocall extends ModTemplate {
 					if (txmsg.request === 'peer-joined') {
 						let from = tx.from[0].publicKey;
 						console.log(txmsg, from, "peer-joined" )
+						this.app.connection.emit('remove-waiting-video-box');
 						this.app.connection.emit(
 							'add-remote-stream-request',
 							from,
@@ -742,6 +750,7 @@ class Videocall extends ModTemplate {
 
 		this.app.network.propagateTransaction(newtx);
 
+		this.app.connection.emit('remove-waiting-video-box');
 		this.app.connection.emit('add-remote-stream-request', publicKey, null);
 	}
 
@@ -886,13 +895,17 @@ class Videocall extends ModTemplate {
 		this.app.connection.emit('peer-list', sender, txmsg.data);
 	}
 
-	async sendBroadcastPresenceTransaction(call_id){
+	async sendBroadcastPresenceTransaction(call_id, call_link){
 		if (!this?.room_obj) {
 			console.log('No room object!');
 			return;
 		}
 
-		siteMessage("Waiting for connection", 4000)
+		this.app.connection.emit('add-waiting-video-box');
+		setTimeout(()=> {
+			this.app.connection.emit('remove-waiting-video-box');
+		}, 20000);
+
 
 		console.log(
 			'Videocall: Send broadcast presence:',
@@ -907,7 +920,8 @@ class Videocall extends ModTemplate {
 		newtx.msg = {
 			module: 'Videocall',
 			request: 'broadcast-presence',
-			call_id: this.room_obj.call_id
+			call_id: this.room_obj.call_id,
+			call_link
 		};
 
 		await newtx.sign();
