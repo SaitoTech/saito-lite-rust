@@ -27,10 +27,11 @@ class Wuziqi extends GameTemplate {
 		this.social.creator = "Richard M Parris";
 		this.title = '五子棋 - Five-in-a-Row';
 
-		this.app = app;
+		this.hud.is_draggable = 0;
 
 		this.can_play_async = 1;
 
+		this.clock.container = "#clock_";
 		this.roles = ['observer', 'black', 'white'];
 		this.acknowledge_text = 'next round...'; // not "i understand..."
 
@@ -92,6 +93,31 @@ class Wuziqi extends GameTemplate {
 			this.racetrack.players.push(player);
 		}
 		this.racetrack.render();
+
+		this.playerbox.render();
+
+		for (let i = 1; i <= this.game.players.length; i++) {
+			this.playerbox.updateIcons(
+				`<div class="tool-item item-detail turn-shape ${this.roles[
+					i
+				].toLowerCase()}"></div>`,
+				i
+			);
+
+			this.playerbox.updateBody(`<div class="player_clock" id="clock_${i}"></div>`, i);
+		}
+
+		if (this.game.player == 1) {
+			$('.game-playerbox-manager').addClass('reverse');
+		}
+
+		if (this.useClock == 1) {
+			this.clock.render();
+			for (let i = 0; i < this.game.clock.length; i++){
+				this.clock.displayTime(this.game.clock[i].limit - this.game.clock[i].spent, i+1);
+			}
+		}
+
 	}
 
 	//html for game intro/rules
@@ -301,6 +327,13 @@ class Wuziqi extends GameTemplate {
 
 	removeEvents() {
 		this.drawBoard(this.game.board);
+		this.playerbox.setInactive();
+	}
+
+	onTimeOver(){
+		this.removeEvents();
+		this.moves = [`roundover\t${3-this.game.player}`];
+		this.endTurn();
 	}
 
 	//
@@ -324,7 +357,7 @@ class Wuziqi extends GameTemplate {
 			if (mv[0] === 'gameover') {
 				// Remove this item from the queue.
 				this.game.queue = [];
-
+				this.stopClock();
 				await this.sendGameOverTransaction(
 					this.game.players[parseInt(mv[1]) - 1],
 					`best of ${this.game.options.best_of}`
@@ -342,10 +375,21 @@ class Wuziqi extends GameTemplate {
 				this.game.target = first_player;
 				console.log("Update target: ", this.game.target);
 
+				this.playerbox.setActive(first_player);
+
+				if (this.useClock == 1) {
+					this.game.time.last_received = new Date().getTime();
+					for (let i = 0; i < this.game.clock.length; i++){
+						this.game.clock[i].spent = 0;
+						this.clock.displayTime(this.game.clock[i].limit - this.game.clock[i].spent, i+1);
+					}
+				}
+
 				if (this.game.player == first_player) {
 					this.addEvents(this.game.board);
 					this.updateStatus('You go first');
 				} else {
+					this.startClock();
 					this.updateStatus(
 						`Waiting for <span class="playertitle">${this.roles[first_player]} (${this.app.keychain.returnUsername(this.game.players[first_player - 1])})</span> to start`
 					);
@@ -401,6 +445,7 @@ class Wuziqi extends GameTemplate {
 					// Add a game over message to the stack.
 					this.game.queue.push('gameover\t' + winner);
 				} else {
+					this.stopClock();
 					// Initiate next round.
 					// Add a continue button if player did not play the winning token, just draw the board (and remove events if they did not);
 					if (winner != this.game.player) {
@@ -436,6 +481,8 @@ class Wuziqi extends GameTemplate {
 
 				this.game.target = this.returnNextPlayer(player);
 
+				this.playerbox.setActive(this.game.target);
+
 				if (this.game.player !== player && this.game.player !== 0) {
 					//Let player make their move
 					this.addEvents(this.game.board);
@@ -449,6 +496,8 @@ class Wuziqi extends GameTemplate {
 						this.updateStatus("Your move");
 					}
 				} else {
+
+					this.startClock();
 					this.updateStatus(
 						`Waiting on <span class='playertitle'>${this.roles[3 - player]}</span> (${this.app.keychain.returnUsername(this.game.players[2-player])})` 
 					);
@@ -613,6 +662,17 @@ class Wuziqi extends GameTemplate {
 			break;
 		}
 	}
+
+	insertLeagueRankings() {
+		for (let i = 0; i < this.game.playerRanks.length; i++) {
+			
+			let np = this.game.playerRanks[i].rank ? 
+								`#${this.game.playerRanks[i].rank} / ${this.game.playerRanks[i].score}` :
+								`Unranked / ${this.game.playerRanks[i].score}`;
+			this.playerbox.updateUserline(np, i+1);
+		}
+	}
+
 
 	returnSingularGameOption() {
 		return WuziqiSingularGameOptionsTemplate(this.app, this);

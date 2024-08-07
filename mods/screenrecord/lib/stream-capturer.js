@@ -3,11 +3,12 @@
 const VideoBox = require('../../../lib/saito/ui/saito-videobox/video-box');
 const html2canvas = require('html2canvas');
 class StreamCapturer {
-    constructor(app, logo) {
+    constructor(app, mod, logo) {
         this.combinedStream = null;
         this.streamData = [];
         this.activeStreams = new Map();
         this.app = app;
+        this.mod = mod
         this.logo = logo;
         this.view_window = '.video-container-large';
         this.handleResize = this.handleResize.bind(this);
@@ -486,7 +487,6 @@ class StreamCapturer {
         if (this.is_capturing_stream) {
             console.log('RECORD --- Nope out of resetting captureGameStreams');
             await this.getVideoBox(includeCamera)
-
             return this.combinedStream;
         }
 
@@ -497,6 +497,7 @@ class StreamCapturer {
             console.warn('No valid screen input');
             return;
         }
+
 
 
         // clear previous canvas
@@ -661,6 +662,12 @@ class StreamCapturer {
                             if (element.classList.contains('game-menu')) {
                                 return true;
                             }
+                            if(element.classList.contains('control-list')){
+                                return true;
+                            }
+                            if(element.classList.contains('yt-stream')){
+                                return true;
+                            }
                         }
                     });
         
@@ -788,7 +795,7 @@ class StreamCapturer {
                         alert('Failed to access camera and microphone.');
                         return;
                     }
-                    this.videoBox = new VideoBox(this.app, this, 'local');
+                    this.videoBox = new VideoBox(this.app, this.mod, 'local');
                     this.videoBox.render(this.localStream);
                     let videoElement = document.querySelector('.video-box-container-large');
                     videoElement.style.position = 'absolute';
@@ -799,8 +806,11 @@ class StreamCapturer {
                 }
 
             } else {
-                this.videoBox.remove()
-                this.videoBox = null
+                if(this.videoBox){
+                    this.videoBox.remove()
+                    this.videoBox = null
+                }
+               
             }
         }
     }
@@ -838,7 +848,7 @@ class StreamCapturer {
                             alert('Failed to access camera and microphone.');
                             return;
                         }
-                        this.videoBox = new VideoBox(this.app, this, 'local');
+                        this.videoBox = new VideoBox(this.app, this.mod, 'local');
                         this.videoBox.render(this.localStream);
                         let videoElement = document.querySelector('.video-box-container-large');
                         videoElement.style.position = 'absolute';

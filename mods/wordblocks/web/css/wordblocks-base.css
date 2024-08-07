@@ -6,20 +6,6 @@
 	background-size: cover;
 }
 
-.pboxlog {
-	margin-top: 1rem;
-	color: white;
-}
-.pboxinfo {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
-	margin: 1px 0;
-	margin-top: 1rem;
-	color: white;
-}
-
 .textchoice:hover {
 	color: black;
 }
@@ -48,13 +34,29 @@
 }
 
 .playerscore {
-	font-weight: bolder;
-	text-shadow: -2px 3px 2px black;
+	text-shadow: -1px 1px 1px red;
+	color: black;
+	background-image: url('/wordblocks/img/slot2.png');
+	background-size: contain;
+	border-radius: 0.5rem;
+	border: 1px solid;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 6rem;
+	height: 3.5rem;
+	font-size: 2rem;
+	cursor: pointer;
 }
 
 .discardedtiles {
 	text-transform: uppercase;
 	color: var(--saito-red);
+}
+
+.saito-overlay{
+	background-color: transparent;
+	box-shadow: none;
 }
 
 .score-overlay,
@@ -80,10 +82,17 @@
 	color: rgb(250, 244, 239);
 }
 
-.score-overlay td,
-.stats-overlay td {
+.score-overlay td.center_align,
+.stats-overlay td.center_align {
 	text-align: center;
 }
+
+.score-overlay td.right_align,
+.stats-overlay td.right_align {
+	text-align: right;
+	padding-right: 2.5rem;
+}
+
 
 thead,
 tfoot {
@@ -269,8 +278,20 @@ tfoot {
 	cursor: pointer;
 }
 
-.active_board.slot:hover {
-	filter: brightness(0.5);
+.slot .tile {
+	filter: brightness(1.15);	
+}
+
+.slot.set .tile{
+	filter: revert;
+}
+
+.slot.set.new .tile {
+	filter: brightness(0.85) opacity(0.9);
+}
+
+.active_board .slot:hover {
+	filter: brightness(0.8);
 }
 
 .slot {
@@ -389,6 +410,8 @@ div.tile {
 	cursor: pointer;
 }
 
+
+
 /*Rearrange HUD/Playerbox elements for portrait layout  */
 @media (orientation: portrait) {
 	.player-box-head-name {
@@ -476,6 +499,39 @@ div.tile {
 	width: 100%;
 }
 
+#remainingctrl{
+	cursor: pointer;
+}
+
+.remaining_tiles{
+	width: 500px;
+	max-width: 90vw;
+	max-height: min(600px, 90vh);
+
+	font-size: 28px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem;
+	padding: 1rem;
+	background: rgb(43, 29, 14);
+	border-radius: 1rem;
+	border: 1px solid rgb(230, 206, 180);
+	justify-content: space-evenly;
+}
+
+.remaining_tiles .tile{
+	background-image: url(/wordblocks/img/empty_tile.png);
+	background-size: cover;
+	color: rgb(43, 29, 14);
+	border-radius: 5px;
+}
+
+.remaining_tiles .tile, .remaining_tiles .gap {
+	width: 4.5rem;
+	height: 4.5rem;
+}
+
+
 /*
 Resize board on smaller screens
 */
@@ -486,15 +542,15 @@ Resize board on smaller screens
 		cursor: pointer;
 		max-width: calc(100% - 12rem);
 		font-size: 24px;
-		gap: 1rem;
-		padding: 2px 5px;
 		color: rgb(250, 244, 239);
 		background: rgb(43, 29, 14);
-		box-shadow: unset;
+		height: 4rem;
+		padding: 0;
 	}
 
 	#game-scoreboard .score{
 		gap: 0.5rem;
+		padding: 0.5rem;
 	}
 
 	#opponentbox {
@@ -503,6 +559,14 @@ Resize board on smaller screens
 
 	.visible#opponentbox {
 		display: flex;
+	}
+
+	.remaining_tiles{
+		font-size: 20px;
+	}
+	.remaining_tiles .tile, .remaining_tiles .gap {
+		width: 3rem;
+		height: 3rem;
 	}
 
 	.hud-status-update-message,

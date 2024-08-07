@@ -261,9 +261,9 @@ font imports
   --font-color-chat-container-user-address: var(--font-color-primary); /* ALSO SHOWS UP IN POSTS! WHEREVER THE USER ADDRESS SHOWS*/
   --font-color-status-message: var(--background-color-main); 
   --font-color-a-link: var(--color-primary); 
-  --font-color-hover-a-link: var(--color-primary); 
+  --font-color-hover-a-link: var(--font-color-primary); 
   --font-color-mention: var(--color-primary);
-  --font-color-hover-mention: var(--font-color-heavy);
+  --font-color-hover-mention: var(--font-color-primary);
   --font-color-post-link-description: var(--font-color-secondary);
   --font-color-post-link-title: var(--font-color-primary);
   --font-color-post-link-url: var(--font-color-primary);

@@ -5,9 +5,9 @@
 
       let twilight_self = this;
 
-      if (this.game.player == 2) {
+      this.startClockAndSetActivePlayer(2);
 
-        this.startClock();
+      if (this.game.player == 2) {
 
         let choicehtml = '<ul><li class="option" id="endgame">end the game</li><li class="option" id="cont">continue playing</li></ul>';
 

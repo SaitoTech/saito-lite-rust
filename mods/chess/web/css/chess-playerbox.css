@@ -4,21 +4,53 @@
 	box-shadow: 0 2px 3px 2px #644b37;
 	color: black;
 	min-height: 10rem;
+	border: 2px solid transparent;
+	width: 25rem;
+}
+
+.game-playerbox.active{
+	border: 2px solid black;
+	background: #85f87cfa;	
+}	
+
+.game-playerbox.in_check{
+	background: #ff5846e5;
+	border: 2px solid gold;
 }
 
 .game-playerbox-body {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-evenly;
-	flex: 1; /* Make sure body fills up available space in player-box*/
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: auto;
+	grid-template-areas: "a b" "c c" "d d";
+	justify-items: flex-end;
+	row-gap: 0.5rem;
 }
 
-.status ul li {
+.game-playerbox-body div:nth-child(3){
+	grid-area: c;
+}
+.game-playerbox-body div:nth-child(4){
+	grid-area: d;
+}
+
+.game-playerbox-body > div {
+	width: 100%;
+}
+
+.trophies {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.status ul li.textchoice {
 	border-top: 1px solid;
 	cursor: pointer;
+	padding: 0.5rem;
 }
 
-.status ul li:hover {
+.status ul li.textchoice:hover {
 	background-color: #b58863;
 }
 
@@ -42,7 +74,7 @@
 	}
 
 	.game-playerbox {
-		max-width: max(30vw, 25rem);
+		max-width: min(40vw, 25rem);
 		min-width: unset;
 	}
 }

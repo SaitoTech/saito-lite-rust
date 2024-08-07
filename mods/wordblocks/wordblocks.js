@@ -26,7 +26,7 @@ class Wordblocks extends GameTemplate {
 		this.tileWidth = 148;
 		this.letters = {};
 		this.grace_window = 10;
-		this.clock.useShotClock = true;
+		/*this.clock.useShotClock = true;*/
 
 		//All Wordblocks games will be async enabled
 		this.async_dealing = 1;
@@ -39,6 +39,8 @@ class Wordblocks extends GameTemplate {
 		this.loadingDictionary = null; //a flag that we are loading the dictionary in the background
 
 		this.defaultMsg = `Click on the board to enter a word from that square, click a tile to select it for play, or <span class="link tosstiles" title="Double click tiles to select them for deletion">discard tiles</span> if you cannot move.`;
+
+		this.clock.container = "#clock_";
 
 		return this;
 	}
@@ -96,19 +98,20 @@ class Wordblocks extends GameTemplate {
 			let compact_html = '';
 
 			for (let i = 1; i <= this.game.players.length; i++) {
-				let score = this.getPlayerScore(i);
-				this.refreshPlayerInfo(
-					`<span>Score:</span> <span class="playerscore" id="score_${i}">${score}</span>`,
-					i
-				);
 
-				compact_html += `<div class="score"><img class="player-identicon" src="${this.app.keychain.returnIdenticon(
+				let score = this.getPlayerScore(i);
+				
+				let newhtml = `<div class="playerscore" id="score_${i}">${score}</div>`;
+				if (this.useClock){
+					newhtml += `<div class="player_clock" id="clock_${i}"></div>`;
+				}
+
+				this.playerbox.updateBody(newhtml, i);
+
+				compact_html += `<div class="score" id="mobile_score_${i}"><img class="player-identicon" src="${this.app.keychain.returnIdenticon(
 					this.game.players[i - 1]
 				)}"/><span>:</span><span>${score}</span></div>`;
 
-				let lastMove = this.getLastMove(i);
-				let html = `<div class="lastmove" id="lastmove_${i}"><span>Last:</span><span class="playedword" style="text-decoration:none">${lastMove.word}</span> <span class="wordscore">${lastMove.score}</span></div>`;
-				this.refreshPlayerLog(html, i);
 			}
 
 			this.scoreboard.update(compact_html);
@@ -117,9 +120,23 @@ class Wordblocks extends GameTemplate {
 			$('#game-scoreboard').on('click', function () {
 				$('.game-playerbox-manager').toggleClass('visible');
 			});
+
+			let wordblocks_self = this;
+			$(".playerscore").on('click', function(){
+				wordblocks_self.overlay.show(wordblocks_self.returnStatsOverlay());
+			});
 		} catch (err) {
 			console.error(err);
 		}
+
+		if (this.useClock == 1) {
+			this.clock.render();
+			for (let i = 0; i < this.game.clock.length; i++){
+				this.clock.displayTime(this.game.clock[i].limit - this.game.clock[i].spent, i+1);
+			}
+		}
+
+
 
 		try {
 			if (
@@ -164,7 +181,7 @@ class Wordblocks extends GameTemplate {
 		totals.fill(0);
 		//console.log(this.game.opponents);
 		for (let z = 0; z < this.game.words_played[0].length; z++) {
-			html += `</tr><tr><td>${z + 1}</td>`;
+			html += `</tr><tr><td class="center_align">${z + 1}</td>`;
 			for (let i = 0; i < this.game.opponents.length + 1; i++) {
 				//totals.push(0); //Initialize
 				//let words_scored_html = '<table>';
@@ -172,7 +189,7 @@ class Wordblocks extends GameTemplate {
 					html +=
 						'<td>' +
 						this.game.words_played[i][z].word +
-						'</td><td>' +
+						'</td><td class="right_align">' +
 						this.game.words_played[i][z].score +
 						'</td>';
 					totals[i] += this.game.words_played[i][z].score;
@@ -184,7 +201,7 @@ class Wordblocks extends GameTemplate {
 		//console.log(totals);
 		html += '</tr><tr><td colspan="10"><hr></td></tr><tfoot><tr><td>Totals</td>';
 		for (let total of totals) {
-			html += `<td colspan="2">${total}</td>`;
+			html += `<td colspan="2" class="right_align">${total}</td>`;
 		}
 		html += '</tr></tfoot></table></div>';
 		return html;
@@ -300,6 +317,11 @@ class Wordblocks extends GameTemplate {
 			}
 		}
 
+		if (!this.game.state) {
+			this.game.state = {};
+			this.game.state.newLetters = [];
+		}
+
 		//
 		// load any existing tiles
 		//
@@ -319,7 +341,11 @@ class Wordblocks extends GameTemplate {
 			this.addTile($(divname), letter);
 			if (!(letter == '_') && !(letter == '')) {
 				try {
+					if (this.game.state.newLetters.includes(i)){
+						$(divname).addClass('new');	
+					}
 					$(divname).addClass('set');
+					this.letters[letter].count--;
 				} catch (err) {}
 			}
 		}
@@ -345,17 +371,12 @@ class Wordblocks extends GameTemplate {
 				this.setPlayerActive();
 				this.enableEvents();
 			} else {
-				this.stopClock();
 				this.updateStatusWithTiles(`Waiting on ${this.game.playerNames[this.game.target - 1]}`);
 			}
 		}
 
-		this.updateActivePlayerUserline(this.game.target);
 		this.playerbox.setActive(this.game.target);
-
-		if (this.game.target == this.game.player) {
-			this.playerbox.alertPlayer(this.game.target, 'flash');
-		}
+		$(`#mobile_score_${this.game.target}`).addClass("active");
 
 		if (this.game.players.length > 2) {
 			this.grace_window = this.game.players.length * 8;
@@ -430,7 +451,7 @@ class Wordblocks extends GameTemplate {
             <div id="shuffle" class="shuffle">Shuffle: <i class="fa fa-random"></i></div>
             <div id="canceldelete" class="hidden">Cancel: <i id="canceldelete" class="far fa-window-close"></i></div>
             <div id="deletectrl" class="deletectrl hidden">Discard: <i class="fa fa-trash" id="delete"></i></div>
-            <div>Tiles: ${this.game.deck[0].crypt.length}</div>
+            <div id="remainingctrl" >Tiles: ${this.game.deck[0].crypt.length}</div>
             <div id="skipturn" class="hidden">Skip: <i class="fas fa-fast-forward"></i></div>
           </div>
         </div>
@@ -500,6 +521,11 @@ class Wordblocks extends GameTemplate {
 					$('#tiles')[0].appendChild($('#tiles')[0].childNodes[(Math.random() * i) | 0]);
 				}
 			});
+
+			$("#remainingctrl").on('click', function(){
+				wordblocks_self.displayRemainingTiles();
+			})
+
 			/* Click to popup more information on what the last move just was */
 			for (let i = 1; i <= this.game.players.length; i++) {
 				let handle = '#lastmove_' + i;
@@ -558,6 +584,10 @@ class Wordblocks extends GameTemplate {
 		let interactiveMode =
 			document.querySelector('.slot .tempplacement') ||
 			document.querySelector('#tiles .highlighttile');
+
+		$("#remainingctrl").on('click', function(){
+			wordblocks_self.displayRemainingTiles();
+		})
 
 		try {
 			//Show delete and skip controls
@@ -1378,6 +1408,9 @@ class Wordblocks extends GameTemplate {
 		x = parseInt(x);
 		y = parseInt(y);
 
+		$(".new").removeClass("new");
+
+		this.game.state.newLetters = [];
 		for (let i = 0; i < word.length; i++) {
 			let boardslot = '';
 			let divname = '';
@@ -1391,10 +1424,16 @@ class Wordblocks extends GameTemplate {
 				boardslot = y + i + '_' + x;
 			}
 
+			divname = '#' + boardslot;
+
 			if (this.game.board[boardslot] && this.game.board[boardslot].fresh == 1) {
 				this.game.board[boardslot].fresh = 0;
+				$(divname).addClass('new');
+				this.game.state.newLetters.push(boardslot);
+
+				this.letters[letter].count--;
 			}
-			divname = '#' + boardslot;
+
 			$(divname).addClass('set');
 		}
 	}
@@ -1762,66 +1801,66 @@ class Wordblocks extends GameTemplate {
 
 		if (dictionary === 'twl' || dictionary === 'sowpods') {
 			return {
-				A: { score: 1 },
-				B: { score: 3 },
-				C: { score: 2 },
-				D: { score: 2 },
-				E: { score: 1 },
-				F: { score: 2 },
-				G: { score: 2 },
-				H: { score: 1 },
-				I: { score: 1 },
-				J: { score: 8 },
-				K: { score: 4 },
-				L: { score: 2 },
-				M: { score: 2 },
-				N: { score: 1 },
-				O: { score: 1 },
-				P: { score: 2 },
-				Q: { score: 10 },
-				R: { score: 1 },
-				S: { score: 1 },
-				T: { score: 1 },
-				U: { score: 2 },
-				V: { score: 3 },
-				W: { score: 2 },
-				X: { score: 8 },
-				Y: { score: 2 },
-				Z: { score: 10 }
+				A: { score: 1, count: 9 },
+				B: { score: 3, count: 2 },
+				C: { score: 2, count: 2 },
+				D: { score: 2, count: 4 },
+				E: { score: 1, count: 12 },
+				F: { score: 2, count: 2 },
+				G: { score: 2, count: 3 },
+				H: { score: 1, count: 2 },
+				I: { score: 1, count: 9 },
+				J: { score: 8, count: 1 },
+				K: { score: 4, count: 1 },
+				L: { score: 2, count: 4 },
+				M: { score: 2, count: 2 },
+				N: { score: 1, count: 6 },
+				O: { score: 1, count: 8 },
+				P: { score: 2, count: 2 },
+				Q: { score: 10, count: 1 },
+				R: { score: 1, count: 6 },
+				S: { score: 1, count: 4 },
+				T: { score: 1, count: 6 },
+				U: { score: 2, count: 5 },
+				V: { score: 3, count: 2 },
+				W: { score: 2, count: 2 },
+				X: { score: 8, count: 1 },
+				Y: { score: 2, count: 2 },
+				Z: { score: 10, count: 1 }
 			};
 		}
 		if (dictionary === 'fise' || dictionary === 'tagalog') {
 			return {
-				A: { score: 1 },
-				B: { score: 2 },
-				C: { score: 3 },
-				D: { score: 2 },
-				E: { score: 1 },
-				F: { score: 4 },
-				G: { score: 2 },
-				H: { score: 4 },
-				I: { score: 1 },
-				J: { score: 8 },
-				L: { score: 1 },
-				M: { score: 3 },
-				N: { score: 1 },
-				Ñ: { score: 8 },
-				O: { score: 1 },
-				P: { score: 3 },
-				Q: { score: 6 },
-				R: { score: 2 },
-				S: { score: 1 },
-				T: { score: 1 },
-				U: { score: 1 },
-				V: { score: 4 },
-				X: { score: 8 },
-				Y: { score: 4 },
-				Z: { score: 10 }
+				A: { score: 1, count: 12 },
+				B: { score: 2, count: 2 },
+				C: { score: 3, count: 5 },
+				D: { score: 2, count: 5 },
+				E: { score: 1, count: 13 },
+				F: { score: 4, count: 1 },
+				G: { score: 2, count: 2 },
+				H: { score: 4, count: 3 },
+				I: { score: 1, count: 6 },
+				J: { score: 8, count: 1 },
+				L: { score: 1, count: 6 },
+				M: { score: 3, count: 2 },
+				N: { score: 1, count: 5 },
+				Ñ: { score: 8, count: 2 },
+				O: { score: 1, count: 10 },
+				P: { score: 3, count: 2 },
+				Q: { score: 6, count: 1 },
+				R: { score: 2, count: 7 },
+				S: { score: 1, count: 7 },
+				T: { score: 1, count: 4 },
+				U: { score: 1, count: 5 },
+				V: { score: 4, count: 1 },
+				X: { score: 8, count: 1 },
+				Y: { score: 4, count: 1 },
+				Z: { score: 10, count: 1 }
 			};
 		}
 
 		if (dictionary === 'test') {
-			return { A: { score: 1 }, C: { score: 3 }, T: { score: 2 } };
+			return { A: { score: 1, count: 9 }, C: { score: 3, count: 4 }, T: { score: 2, count: 7 } };
 		}
 		console.log('Error: No defined letter values');
 		return {};
@@ -2223,7 +2262,6 @@ class Wordblocks extends GameTemplate {
 					this.sendGameOverTransaction(winners, 'high score');
 				}
 
-				this.stopClock();
 				return 0;
 			}
 
@@ -2232,14 +2270,6 @@ class Wordblocks extends GameTemplate {
 				let tileCt = parseInt(mv[2]);
 				this.game.queue.splice(this.game.queue.length - 1, 1);
 				console.log(player, tileCt);
-
-				if (this.gameBrowserActive()) {
-					let html = this.game.state.players[player - 1].log;
-					this.refreshPlayerLog(
-						`${html}<div class="lastmove"><span>Tiles:</span><span class="playerscore">${tileCt}</span></div>`,
-						player
-					);
-				}
 
 				let name =
 					player === this.game.player ? 'You are' : `${this.game.playerNames[player - 1]} is`;
@@ -2293,9 +2323,6 @@ class Wordblocks extends GameTemplate {
 				}
 				this.animatePlay();
 
-				//Update Specific Playerbox
-				let html = `<div class="lastmove" id="lastmove_${player}"><span>Last:</span><span class="playedword">${expanded}</span> <span class="wordscore">${score}</span></div>`;
-				this.refreshPlayerLog(html, player);
 			}
 
 			if (mv[0] === 'discard_tiles') {
@@ -2322,20 +2349,6 @@ class Wordblocks extends GameTemplate {
 					this.updateLog(`You ${msg}.`);
 				}
 
-				//Update Specific Playerbox
-				let html = `<div class="lastmove" id="lastmove_${player}">`;
-
-				if (discardedTiles.length > 0) {
-					html += `<span>Discarded:</span><span class="discardedtiles">[${discardedTiles
-						.split('')
-						.join()}]</span>`;
-				} else {
-					html += `<span>Passed without playing</span>`;
-				}
-				html += `<span class="wordscore">0</span></div>`;
-
-				this.refreshPlayerLog(html, player);
-
 				//Code to keep the discard and redraws in the game log history
 				wordblocks_self.last_played_word[player - 1] = {
 					word: discardedTiles,
@@ -2355,16 +2368,12 @@ class Wordblocks extends GameTemplate {
 				this.setPlayerActive();
 				this.enableEvents();
 			} else {
-				this.stopClock(); //Make sure clock didn't start again on browser refresh
 				this.updateStatusWithTiles(`${this.game.playerNames[this.game.target - 1]}'s turn`);
+				this.startClock();
 			}
 
-			this.updateActivePlayerUserline(this.game.target);
 			this.playerbox.setActive(this.game.target);
-
-			if (this.game.target == this.game.player) {
-				this.playerbox.alertPlayer(this.game.target, 'flash');
-			}
+			$(`#mobile_score_${this.game.target}`).addClass("active");
 
 			// We add a save point here so closing the tab doesn't break the game
 			console.log('Save Wordblocks game');
@@ -2387,20 +2396,8 @@ class Wordblocks extends GameTemplate {
 		}
 
 		this.game.score[player - 1] = this.getPlayerScore(player) + score;
-		this.refreshPlayerInfo(
-			`<span>Score:</span> <span class="playerscore" id="score_${player}">${
-				this.game.score[player - 1]
-			}</span>`,
-			player
-		);
+		this.refreshPlayerScore(player);
 
-		let compact_html = '';
-		for (let i = 0; i < this.game.score.length; i++) {
-			compact_html += `<div class="score"><img class="player-identicon" src="${this.app.keychain.returnIdenticon(
-				this.game.players[i]
-			)}"> : ${this.game.score[i]} </div>`;
-		}
-		this.scoreboard.update(compact_html);
 	}
 
 	endTurn() {
@@ -2410,34 +2407,6 @@ class Wordblocks extends GameTemplate {
 
 	returnAdvancedOptions() {
 		return WordblocksGameOptionsTemplate(this.app, this);
-	}
-
-	startClock() {
-		if (!this.useClock || this.game.over) {
-			return;
-		}
-
-		clearTimeout(this.clock_timer); //Just in case
-
-		this.clock.startClock(this.game.clock_limit);
-
-		//Refresh the clock every second
-		this.clock_timer = setTimeout(() => {
-			this.clock.displayTime(0);
-			salert('Turn ended automatically');
-			this.clearBoard();
-			this.removeEvents();
-			this.addMove('discard_tiles\t' + this.game.player + '\t');
-			this.endTurn();
-		}, this.game.clock_limit);
-	}
-
-	stopClock() {
-		if (!this.useClock) {
-			return;
-		}
-		clearTimeout(this.clock_timer);
-		this.clock.stopClock();
 	}
 
 	async animatePlay() {
@@ -2454,64 +2423,54 @@ class Wordblocks extends GameTemplate {
 		}
 	}
 
-	updateActivePlayerUserline(active_player) {
-		let np = 'now playing';
-		if (this.app.browser.isMobileBrowser()) {
-			np = 'playing';
-		}
-		for (let i = 1; i <= this.game.players.length; i++) {
-			if (i == active_player) {
-				this.playerbox.updateUserline(np, i);
-			} else {
-				this.playerbox.updateUserline('Player ' + i, i);
-			}
+	insertLeagueRankings() {
+
+		for (let i = 0; i < this.game.playerRanks.length; i++) {
+			
+			let np = this.game.playerRanks[i].rank ? 
+								`#${this.game.playerRanks[i].rank} / ${this.game.playerRanks[i].score}` :
+								`Unranked / ${this.game.playerRanks[i].score}`;
+			this.playerbox.updateUserline(np, i+1);
 		}
 	}
 
-	refreshPlayerLog(html, player) {
-		if (!this.game.state) {
-			this.game.state = {};
-			this.game.state.players = [];
-			for (let i = 0; i < this.game.players.length; i++) {
-				this.game.state.players.push({ info: '', log: '' });
-			}
+
+	refreshPlayerScore(player) {
+
+		let score = this.getPlayerScore(player);
+
+		if (document.getElementById(`score_${player}`)){
+			document.getElementById(`score_${player}`).innerHTML = score;
 		}
 
-		this.game.state.players[player - 1].log = html;
-
-		let newhtml = `
-      <div class="pboxinfo">
-  ${this.game.state.players[player - 1].info}
-      </div>
-      <div class="pboxlog">
-  ${this.game.state.players[player - 1].log}
-      </div>
-    `;
-
-		this.playerbox.updateBody(newhtml, player);
+		let compact_html = '';
+		for (let i = 0; i < this.game.score.length; i++) {
+			compact_html += `<div class="score" id="mobile_score_${player}"><img class="player-identicon" src="${this.app.keychain.returnIdenticon(
+				this.game.players[player-1]
+			)}"> : ${score} </div>`;
+		}
+		
+		this.scoreboard.update(compact_html);
 	}
-	refreshPlayerInfo(html, player) {
-		if (!this.game.state) {
-			this.game.state = {};
-			this.game.state.players = [];
-			for (let i = 0; i < this.game.players.length; i++) {
-				this.game.state.players.push({ info: '', log: '' });
+
+	displayRemainingTiles(){
+		let html = `<div class="remaining_tiles">`;
+
+		for (let letter in this.letters){
+			let printed = false;
+			for (let j = 0; j < this.letters[letter].count; j++){
+				printed = true;
+				html += this.returnTileHTML(letter);
+			}
+			if (printed){
+				html += `<div class="gap"></div>`;
 			}
 		}
+		html += "</div>";
 
-		this.game.state.players[player - 1].info = html;
-
-		let newhtml = `
-      <div class="pboxinfo">
-  ${this.game.state.players[player - 1].info}
-      </div>
-      <div class="pboxlog">
-  ${this.game.state.players[player - 1].log}
-      </div>
-    `;
-
-		this.playerbox.updateBody(newhtml, player);
+		this.overlay.show(html);
 	}
+
 }
 
 module.exports = Wordblocks;

@@ -3627,7 +3627,7 @@ does_units_to_move_have_unit = true; }
   async playerContinueToMoveFormationInClear(his_self, player, faction, spacekey, ops_to_spend, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayOps("", faction, ops_remaining, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
 
     //
     // we add this before broadcasting, or the turn ends 
@@ -3945,7 +3945,7 @@ does_units_to_move_have_unit = true; }
   async playerMoveFormationInClear(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayOps("", faction, ops_remaining, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
 
     let parent_faction = faction;
     let units_to_move = [];
@@ -5057,7 +5057,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   async playerNavalTransport(his_self, player, faction, ops_to_spend, ops_remaining) {
 
     // BACK moves us to OPS menu
-    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayOps("", faction, ops_remaining, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
 
     let spacekey = "";
     let units_to_move = [];
@@ -5336,7 +5336,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   async playerNavalMove(his_self, player, faction) {
 
     // BACK moves us to OPS menu
-    this.bindBackButtonFunction(() => { this.moves = []; this.playerPlayOps("", faction, ops_remaining, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
 
     let units_to_move = [];
     let units_available = his_self.returnFactionNavalUnitsToMove(faction);
@@ -6039,49 +6039,47 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
         if (his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant" && faction == "protestant") { return 1; }
         if (his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" && faction == "papacy") { return 1; }
       }
+    }
+
     //
-    // 6P requires adjacent or direct military presence
+    // otherwise, requires adjacent or direct military presence
     //
-    } else {
+    let adjacent_influence = his_self.returnSpacesWithAdjacentFactionInfantry(faction);
+    let direct_influence = his_self.returnSpacesWithFactionInfantry(faction);
 
-      let adjacent_influence = his_self.returnSpacesWithAdjacentFactionInfantry(faction);
-      let direct_influence = his_self.returnSpacesWithFactionInfantry(faction);
+    for (let i = 0; i < spaces_in_unrest.length; i++) {
 
-      for (let i = 0; i < spaces_in_unrest.length; i++) {
+      //
+      // i have regulars / infantry in this space
+      //
+      if (direct_influence.includes(spaces_in_unrest[i])) { return true; }
 
-        //
-        // i have regulars / infantry in this space
-        //
-	if (direct_influence.includes(spaces_in_unrest[i])) { return true; }
+      //
+      // i have adjacent regulars / infantry, and no enemies do
+      //
+      if (adjacent_influence.includes(spaces_in_unrest[i])) {
 
-        //
-        // i have adjacent regulars / infantry, and no enemies do
-        //
-	if (adjacent_influence.includes(spaces_in_unrest[i])) {
+	let neighbours = his_self.game.spaces[spaces_in_unrest[i]].neighbours;
+	let pass = his_self.game.spaces[spaces_in_unrest[i]].pass;
+	let impeding_units = true;
 
-	  let neighbours = his_self.game.spaces[spaces_in_unrest[i]].neighbours;
-	  let pass = his_self.game.spaces[spaces_in_unrest[i]].pass;
-	  let impeding_units = true;
+	for (let z = 0; z < neighbours.length; z++) {
 
-	  for (let z = 0; z < neighbours.length; z++) {
-
-	    let number_of_hostiles = his_self.returnHostileLandUnitsInSpace(faction, neighbours[z]);
-	    if (number_of_hostiles > 0) {
-	      if (pass.includes(neighbours[z])) {
-		impeding_units = false;
-	      } else {
-		return true; // at least one target
-	      }
-	    } else {
+	  let number_of_hostiles = his_self.returnHostileLandUnitsInSpace(faction, neighbours[z]);
+	  if (number_of_hostiles > 0) {
+	    if (pass.includes(neighbours[z])) {
 	      impeding_units = false;
+	    } else {
+	      return true; // at least one target
 	    }
+	  } else {
+	    impeding_units = false;
 	  }
-
-	  if (impeding_units == false) { return 1; }
-
 	}
-      }
 
+	if (impeding_units == false) { return 1; }
+
+      }
     }
 
     return 0;

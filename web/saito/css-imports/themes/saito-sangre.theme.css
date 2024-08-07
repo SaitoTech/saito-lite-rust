@@ -78,12 +78,6 @@ html[data-theme="sangre"] {
   --font-color-progress-bar: var(--font-color-primary);
   --font-color-user-address: var(--font-color-heavy);
   --font-color-status-message: var(--font-color-heavy);
-  /* tag */
-  --font-color-a-link: var(--color-primary);
-  /* Exempt as system color */
-  --font-color-hover-a-link: var(--font-color-primary);
-  /* Exempt as system color */
-  --font-color-mention: var(--font-color-primary);
   /* Exempt as system color */
   /* Module and Overlay Font Colors */
   --font-color-title-game-details: var(--font-color-primary);

@@ -1,5 +1,6 @@
 const SettingsTemplate = require("./modtools-settings.template");
 const SaitoContacts = require('../../../lib/saito/ui/modals/saito-contacts/saito-contacts');
+const ModtoolsAppPermissions = require("./modtools-app-permissions");
 
 class ModtoolsSettings {
   constructor(app, mod, container) {
@@ -7,6 +8,7 @@ class ModtoolsSettings {
     this.mod = mod;
     this.container = container;
     this.contacts = new SaitoContacts(app, mod, true);
+    this.app_permissions = new ModtoolsAppPermissions(app, mod, "#modtools-apps");
   }
 
   render() {
@@ -15,13 +17,15 @@ class ModtoolsSettings {
     }else{
       this.app.browser.addElementToSelector(SettingsTemplate(this.app, this.mod), this.container);  
     }
+
+    if (document.querySelector('#modtools-apps')) {
+      this.app_permissions.render();
+    }
     
     this.attachEvents();
   }
 
   attachEvents() {
-
-alert("PERMISSIONS: " + this.mod.permissions.mode);
 
     let settings_self = this;
 
@@ -41,7 +45,13 @@ alert("PERMISSIONS: " + this.mod.permissions.mode);
           }
           this.render();
         }
-        this.contacts.render(this.app.options.modtools.blacklist);
+
+        let keylist = [];
+        for (let i = 0;  i < this.app.options.modtools.blacklist.length; i++){
+          keylist.push(this.app.options.modtools.blacklist[i].publickey);
+        }
+
+        this.contacts.render(keylist);
       }
     }
 

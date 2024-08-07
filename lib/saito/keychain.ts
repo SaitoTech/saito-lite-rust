@@ -565,12 +565,12 @@ class Keychain {
 		}
 	}
 
-	returnUsername(publicKey: string, max = 12): string {
+	returnUsername(publicKey: string = "", max = 12): string {
 		const name = this.returnIdentifierByPublicKey(publicKey, true);
 		if (name != publicKey && name != '') {
 			return name;
 		}
-		if (name == publicKey) {
+		if (name === publicKey) {
 			if (name.length > max) {
 				return name.substring(0, max) + '...';
 			}

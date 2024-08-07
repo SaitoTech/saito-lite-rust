@@ -156,7 +156,7 @@
     sectors['sector14']        = { img : "/imperium/img/sectors/sector14.png" , name : "Quandam / Quandor" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['quandam','quandor'] }
     sectors['sector15']        = { img : "/imperium/img/sectors/sector15.png" , name : "Virgil" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['virgil'] }
     sectors['sector16']        = { img : "/imperium/img/sectors/sector16.png" , name : "Contouri" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['contouri-i'] }
-    sectors['sector17']        = { img : "/imperium/img/sectors/sector1.png" , name : "Shriva / Vigor" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['shriva','vigor'] }
+    sectors['sector17']        = { img : "/imperium/img/sectors/sector17.png" , name : "Shriva / Vigor" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['shriva','vigor'] }
     sectors['sector18']        = { img : "/imperium/img/sectors/sector18.png" , name : "Xerxes" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['xerxes'] }
     sectors['sector19']        = { img : "/imperium/img/sectors/sector19.png" , name : "Unsulla" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['unsulla'] }
     sectors['sector20']        = { img : "/imperium/img/sectors/sector20.png" , name : "Panther" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['panther'] }

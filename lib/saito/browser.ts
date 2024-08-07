@@ -82,6 +82,12 @@ class Browser {
 
 		try {
 
+			if (screenfull.isEnabled){
+				screenfull.on('change', () => {
+					this.app.connection.emit("browser-fullscreen-toggle", screenfull.isFullscreen);
+				});
+			}
+
 			if (typeof document.hidden === 'undefined') {
 				//
 				// Polyfill for other browsers...
@@ -287,6 +293,7 @@ class Browser {
 
 			let theme = document.documentElement.getAttribute('data-theme') || "lite";
 			console.log("HTML provided theme: " + theme);
+
 		    if (this.app.options?.theme) {
 		      if (this.app.options.theme[active_module]){
 		      	theme = this.app.options.theme[active_module];
@@ -1818,12 +1825,11 @@ class Browser {
         // let daniels_regex = /(?<!>)\b(?:https?:\/\/|www\.|https?:\/\/www\.)?(?:\w{2,}\.)+\w{2,}(?:\/[a-zA-Z0-9_\?=#&;@\-\.]*)*\b(?!<\/)/gi;
         // this pointlessly looks for www, but does not identify the majority of valid urls or any url without http/https in front of it.
 
-// HACK
-return "";
+		// Re-added this code as urls don't work without it. Did chance the var names for safety.
 
         //this should identify patterns like x.com and staging.saito.io which the others do not.
-//		let expression = /\b(?:https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
-//        return expression;
+		let urlIndentifierRegexp = /\b(?:https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+        return urlIndentifierRegexp;
 	}
 
 	sanitize(text, createLinks = false) {
@@ -2349,15 +2355,18 @@ return "";
 		document.documentElement.setAttribute('data-theme', theme);
 
 		if (this.app.BROWSER == 1) {
+
 			let mod_obj = this.app.modules.returnActiveModule();
 
 			if (!this.app.options.theme) {
 				this.app.options.theme = {};
 			}
 
-			if (mod_obj.slug != null) {
-				this.app.options.theme[mod_obj.slug] = theme;
-				this.app.storage.saveOptions();
+			if (mod_obj != null) {
+				if (mod_obj.slug != null) {
+					this.app.options.theme[mod_obj.slug] = theme;
+					this.app.storage.saveOptions();
+				}
 			}
 
 			this.updateThemeInHeader(theme);

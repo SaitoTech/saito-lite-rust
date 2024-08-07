@@ -99,14 +99,6 @@ html[data-theme="arcade"] {
   --font-color-alert-box: var(--font-color-primary);
   --font-color-user-address: var(--font-color-heavy);
   --font-color-status-message: var(--font-color-heavy);
-  /* tag */
-  --font-color-a-link: var(--color-primary);
-  /* Exempt as system color */
-  --font-color-hover-a-link: var(--font-color-primary);
-  /* Exempt as system color */
-  --font-color-mention: var(--font-color-primary);
-  /* Exempt as system color */
-  --font-color-hover-mention: var(--font-color-heavy);
   /* Module and Overlay Font Colors */
   --font-color-title-game: var(--font-color-primary);
   --font-color-title-game-details: var(--font-color-primary);

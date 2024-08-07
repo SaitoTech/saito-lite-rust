@@ -1,6 +1,7 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
 const StreamCapturer = require('./lib/stream-capturer');
 const screenrecordWizard = require('./lib/screenrecord-wizard');
+const ScreenRecordControls = require('./lib/screenrecord-lite-controls')
 const lamejs = require('lamejs');
 
 // new ffmpeg.
@@ -89,7 +90,7 @@ class Record extends ModTemplate {
 			return {
 				startStreamingVideoCall: async () => {
 					try {
-						this.videoCallStreamCapturer = new StreamCapturer(this.app, this.logo);
+						this.videoCallStreamCapturer = new StreamCapturer(this.app, this, this.logo);
 						let stream = this.videoCallStreamCapturer.captureVideoCallStreams(true);
 						return stream;
 					} catch (error) {
@@ -123,7 +124,7 @@ class Record extends ModTemplate {
 						if (this.gameStreamCapturer) {
 							stream = await this.gameStreamCapturer.captureGameStream(includeCamera)
 						} else {
-							this.gameStreamCapturer = new StreamCapturer(this.app, this.logo);
+							this.gameStreamCapturer = new StreamCapturer(this.app,this, this.logo);
 							this.gameStreamCapturer.view_window = container
 							stream = await this.gameStreamCapturer.captureGameStream(includeCamera);
 							stream;
@@ -187,6 +188,7 @@ class Record extends ModTemplate {
 							type: 'game'
 						});
 						screenRecordWizard.render();
+						game_mod.menu.hideSubMenus();
 					} else {
 						this.stopRecording();
 					}
@@ -328,25 +330,26 @@ class Record extends ModTemplate {
 		this.members = members;
 
 		if (type === 'videocall') {
-			this.recorderVideoCallStreamCapture = new StreamCapturer(this.app, this.logo);
+			this.recorderVideoCallStreamCapture = new StreamCapturer(this.app, this, this.logo);
 			this.recorderVideoCallStreamCapture.view_window = '.video-container-large';
 			let stream = this.recorderVideoCallStreamCapture.captureVideoCallStreams(includeCamera);
 			this.initializeMediaRecorder(this.chunks, stream);
-		} else if (type === "game") {
-
+		} else if (type === "game") {		
 			let stream;
 			if (this.gameStreamCapturer) {
 				stream = await this.gameStreamCapturer.captureGameStream(includeCamera);
 			} else {
-				this.gameStreamCapturer = new StreamCapturer(this.app, this.logo);
+				this.gameStreamCapturer = new StreamCapturer(this.app, this, this.logo);
 				this.gameStreamCapturer.view_window = container;
 				stream = await this.gameStreamCapturer.captureGameStream(includeCamera);
 			}
 
 			this.is_recording_game = true;
-
-
 			this.initializeMediaRecorder(this.chunks, stream);
+
+			// show controls
+			this.screenrecordControls = new ScreenRecordControls(this.app, this)
+			this.screenrecordControls.render()
 			let recordButton = document.getElementById('record-stream');
 			if (recordButton) {
 				recordButton.textContent = 'Stop recording';
@@ -421,6 +424,11 @@ class Record extends ModTemplate {
 
 		}
 
+		if(this.screenrecordControls){
+			this.screenrecordControls.remove();
+			this.screenrecordControls = null;
+		}
+
 		if (this.mediaRecorder) {
 			let fn = () => {
 				return new Promise((resolve, reject) => {
@@ -469,6 +477,8 @@ class Record extends ModTemplate {
 
 		this.mediaRecorder = null;
 		this.members = [];
+
+		
 	}
 
 	async sendStartRecordingTransaction(keys) {

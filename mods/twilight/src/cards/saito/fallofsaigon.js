@@ -6,9 +6,10 @@
       let opponent = "us";
       if (this.game.player == 2) { opponent = "ussr"; me = "us"; }
 
+			this.startClockAndSetActivePlayer(this.roles.indexOf(player));
+      
       if (me == player) {
-
-        this.startClock();
+        
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();
         twilight_self.addMove("resolve\tfallofsaigon");

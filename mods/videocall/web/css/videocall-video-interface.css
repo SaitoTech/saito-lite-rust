@@ -257,6 +257,10 @@
 	border: 2px solid var(--saito-border-color-dark);
 }
 
+.side-videos .video-box-container-large {
+    max-height: 50%;
+}
+
 .stun-chatbox .video-box-container-large {
 	border-radius: 0.5rem;
 	position: relative;
@@ -873,6 +877,10 @@ video#presentation {
 	background-color: #4a4a4a;
 	border-radius: 50%;
 	padding: 0.5rem;
+}
+
+.stunx-appspace-launch-call-btn {
+	margin-bottom:1rem;
 }
 /*
 .chat-settings-audio-progress-bar {

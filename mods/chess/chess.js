@@ -36,6 +36,8 @@ class Chessgame extends GameTemplate {
 		this.confirm_moves = 1;
 
 		this.can_play_async = 1;
+
+		this.clock.container = "#clock_";
 		
 		this.roles = ['observer', 'white', 'black'];
 		this.app = app;
@@ -69,9 +71,6 @@ class Chessgame extends GameTemplate {
 							'Offer to end the game in a draw?'
 						);
 						if (c) {
-							game_mod.updateStatusMessage(
-								'Draw offer sent; ' + game_mod.status
-							);
 							game_mod.game.draw_offered = -1; //Offer already sent
 							var data = { draw: 'offer' };
 							game_mod.endTurn(data);
@@ -91,9 +90,6 @@ class Chessgame extends GameTemplate {
 							'Accept offer to end the game in a draw?'
 						);
 						if (c) {
-							game_mod.updateStatusMessage(
-								'Draw offer accepted!'
-							);
 							game_mod.game.draw_offered = -1; //Offer already sent
 							var data = { draw: 'accept' };
 							game_mod.endTurn(data);
@@ -137,20 +133,44 @@ class Chessgame extends GameTemplate {
 		this.playerbox.render();
 
 		for (let i = 1; i <= 2; i++) {
-			this.playerbox.updateUserline(this.roles[i], i);
+			
 			this.playerbox.updateIcons(
 				`<div class="tool-item item-detail turn-shape ${this.roles[
 					i
 				].toLowerCase()}"></div>`,
 				i
 			);
+
+			let newhtml = "";
+			if (this.game.player == i){
+				newhtml += `<div></div>`;
+			}else{
+				newhtml += `<div class="last_move" id="last_${i}"></div>`;;
+			}
+
+			if (this.useClock){
+				newhtml += `<div class="player_clock" id="clock_${i}"></div>`;
+			}
+			newhtml += `<div class="trophies" id="trophies_${i}"></div>`;
+			if (this.game.player == i){
+				newhtml += `<div class="status" id="status"></div>`;
+			}
+			this.playerbox.updateBody(newhtml, i);
+
 		}
 
 		if (this.game.player == 1) {
 			$('.game-playerbox-manager').addClass('reverse');
 		}
 
-		this.updateStatusMessage();
+		if (this.useClock == 1) {
+			this.clock.render();
+			for (let i = 0; i < this.game.clock.length; i++){
+				this.clock.displayTime(this.game.clock[i].limit - this.game.clock[i].spent, i+1);
+			}
+		}
+
+		this.playerbox.setActive(this.game.target);	
 
 		window.onresize = () => this.board.resize();
 	}
@@ -173,6 +193,10 @@ class Chessgame extends GameTemplate {
 			this.engine.load(this.game.position);
 		} else {
 			this.game.position = this.engine.fen();
+		}
+
+		if (!this.game.state){
+			this.game.state = { last: "" };
 		}
 
 		if (!this.gameBrowserActive()) {
@@ -203,6 +227,7 @@ class Chessgame extends GameTemplate {
 		if (this.game.target == this.game.player) {
 			this.setPlayerActive();
 		}
+		this.updatePlayers();
 
 		// If we have a fast-ish timed game turn off move confirmations initially
 		if (this.useClock && parseInt(this.game.options.clock) < 15) {
@@ -243,6 +268,8 @@ class Chessgame extends GameTemplate {
 			msg.extra = JSON.parse(this.app.crypto.base64ToString(mv));
 		} else {
 			msg.extra = {};
+			this.startClock();
+			return;
 		}
 		
 
@@ -250,6 +277,11 @@ class Chessgame extends GameTemplate {
 		if (this.game?.position) {
 			console.log(this.game.position);
 			this.engine.load(this.game.position);
+
+			if (this.engine.in_check()){
+				this.playerbox.setInactive();
+				this.playerbox.addClass("in_check", this.game.target);
+			}
 		}
 
 
@@ -279,9 +311,9 @@ class Chessgame extends GameTemplate {
 				//(data.draw == "offer")
 				this.game.draw_offered = msg.extra.target; //I am receving offer
 				if (this.game.player === msg.extra.target) {
-					this.updateStatusMessage(
+					/*this.updateStatusMessage(
 						'Opponent offers a draw; ' + this.game.status
-					);
+					);*/
 				}
 				this.initialize_game_run = 0;
 				this.render(this.app);
@@ -303,10 +335,10 @@ class Chessgame extends GameTemplate {
 		this.game.last_position = this.game.position;
 		this.game.position = data.position;
 		this.updateLog(data.move);
-		this.updateOpponent(msg.extra.target, data.move);
 		this.game.target = msg.extra.target;
 
 		this.updateBoard(data.position);
+		this.updatePlayers(msg.extra.target, data.move.substring(data.move.indexOf(':') + 2));
 
 		//Check for draw according to game engine
 		if (this.engine.in_draw() === true) {
@@ -314,8 +346,14 @@ class Chessgame extends GameTemplate {
 			return 0;
 		}
 
-		this.updateStatusMessage();
-
+		if (this.engine.in_check()){
+			this.playerbox.setInactive();
+			this.playerbox.addClass("in_check", this.game.target);
+		}else{
+			this.playerbox.setActive(this.game.target);	
+			$(".in_check").removeClass("in_check");
+		}
+		
 		if (msg.extra.target == this.game.player) {
 			this.setPlayerActive();
 		}else{
@@ -327,6 +365,8 @@ class Chessgame extends GameTemplate {
 
 				//this.sendStopGameTransaction('checkmate');
 				return 0;
+			}else{
+				this.startClock();
 			}
 
 		}
@@ -377,6 +417,7 @@ class Chessgame extends GameTemplate {
 		this.lockBoard(this.game.position);
 
 		if (this.game.over) {
+			this.playerbox.setInactive();
 			let cont = document.getElementById('commands-cont');
 			if (cont) {
 				cont.style.display = 'none';
@@ -398,69 +439,25 @@ class Chessgame extends GameTemplate {
 		this.sendGameMoveTransaction('game', extra);
 	}
 
-	updateStatusMessage(str = '') {
 
-		if (!str) {
-			var moveColor = this.engine.turn() === 'b' ? 'black' : 'white';
-
-			// check?
-			if (this.engine.in_check() === true) {
-				str = moveColor + ' is in check';
-			} else {
-				if (this.roles[this.game.player] == moveColor) {
-					str = 'your move';
-				} else {
-					str = 'waiting for ' + moveColor;
-				}
-			}
-
-			this.game.status = str;
-			str = `<div class="status">${str}</div>`;
-
-		}
-
-		if (!this.gameBrowserActive()) {
-			return;
-		}
-
-		if (this.game.player > 0) {
-			let captHTML = this.returnCapturedHTML(
-				this.returnCaptured(this.engine.fen()),
-				this.game.player
-			);
-
-			this.playerbox.updateBody(captHTML + str, this.game.player);
-		} else {
-
-			for (let i = 1; i < 3; i++) {
-				let captHTML = this.returnCapturedHTML(
-					this.returnCaptured(this.engine.fen()),
-					i
-				);
-				this.playerbox.updateBody(captHTML, i);
-				this.updateStatus(status);
-			}
-		}
-
-	}
-
-	updateOpponent(target, move) {
+	updatePlayers(target = this.game.target, move = this.game.state.last) {
 		if (this.game.player == 0 || !this.gameBrowserActive()) {
 			return;
 		}
 
-		let status = this.returnCapturedHTML(
-			this.returnCaptured(this.engine.fen()),
-			3 - this.game.player
-		);
-
-		if (target == this.game.player) {
-			status += `<div class="last_move">${move.substring(
-				move.indexOf(':') + 2
-			)}</div>`;
+		for (let i = 1; i < 3; i++){
+			let captured = this.returnCapturedHTML(this.returnCaptured(this.engine.fen()), i);
+			if (document.querySelector(`#trophies_${i}`)){
+				document.querySelector(`#trophies_${i}`).innerHTML = captured;
+			}
 		}
-
-		this.playerbox.updateBody(status, 3 - this.game.player);
+		
+		this.game.state.last = move;
+		if (target == this.game.player) {
+			if (document.querySelector(".last_move")){
+				document.querySelector(".last_move").innerHTML = this.game.state.last;
+			}
+		}
 
 		if (document.querySelector('.last_move')) {
 			document.querySelector('.last_move').onclick = () => {
@@ -610,9 +607,7 @@ class Chessgame extends GameTemplate {
 		data.position = this.engine.fen();
 		data.move = this.game.move;
 		this.endTurn(data);
-		this_chess.updateStatusMessage(
-			'Pawn promoted to ' + this_chess.pieces(piece) + '.'
-		);
+		this.updateLog('Pawn promoted to ' + this_chess.pieces(piece) + '.');
 	}
 
 	checkPromotion(source, target, color) {
@@ -882,11 +877,7 @@ class Chessgame extends GameTemplate {
 			}
 		}
 
-		if (captHTML) {
-			return `<div class="trophies">${captHTML}</div>`;
-		} else {
-			return '';
-		}
+		return captHTML;
 	}
 
 	piecehtml(p, c) {
@@ -915,6 +906,18 @@ class Chessgame extends GameTemplate {
 		}
 		return ngoa;
 	}
+
+	insertLeagueRankings() {
+
+		for (let i = 0; i < this.game.playerRanks.length; i++) {
+			
+			let np = this.game.playerRanks[i].rank ? 
+								`#${this.game.playerRanks[i].rank} / ${this.game.playerRanks[i].score}` :
+								`Unranked / ${this.game.playerRanks[i].score}`;
+			this.playerbox.updateUserline(np, i+1);
+		}
+	}
+
 }
 
 module.exports = Chessgame;

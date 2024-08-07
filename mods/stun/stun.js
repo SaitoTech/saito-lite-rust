@@ -228,6 +228,10 @@ class Stun extends ModTemplate {
 			this.removePeerConnection(sender);
 			return;
 		}
+		if (request == 'peer-kicked') {
+			this.removePeerConnection(sender);
+			return;
+		}
 
 		let peerConnection = this.peers.get(sender);
 
@@ -385,6 +389,7 @@ class Stun extends ModTemplate {
 		
 		// Handle ICE candidates
 		peerConnection.onicecandidate = async (event) => {
+			console.log('receiving ice candidate for ', peerId, event.candidate)
 			if (event.candidate) {
 				let data = {
 					module: 'Stun',
@@ -405,6 +410,7 @@ class Stun extends ModTemplate {
 
 		//Receive Remote media
 		peerConnection.addEventListener('track', (event) => {
+			console.log('new track', peerId, event)
 			this.app.connection.emit("stun-track-event", peerId, event);
 		});
 

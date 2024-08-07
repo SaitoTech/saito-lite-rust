@@ -25,9 +25,10 @@ module.exports = BuildOverlayTemplate = (app, mod, build) => {
 	mod.canPlayerBuildTown(mod.game.player)
 		? ``
 		: `settlers-row-disabled`
-}" id="1">
+}" id="1" title="Settlements must be two segments away from any other settlement and city. You can only have up to 5 settlements on the board.">
             <div class="settlers-item-column">
                 <img class="settlers-item-img" src="/settlers/img/icons/village.png">
+                <div class="settlers-stats-vp-count">${mod.game.state.players[mod.game.player - 1].towns}</div>
                 <div>Village</div>
             </div>
 
@@ -43,9 +44,10 @@ module.exports = BuildOverlayTemplate = (app, mod, build) => {
 	mod.canPlayerBuildCity(mod.game.player)
 		? ``
 		: `settlers-row-disabled`
-}" id="2">
+}" id="2" title="Cities are an upgrade of an existing settlement. You can only have 4 cities on the board.">
             <div class="settlers-item-column">
                 <img class="settlers-item-img settlers-item-img-disabled" src="/settlers/img/icons/city.png">
+                <div class="settlers-stats-vp-count">${mod.game.state.players[mod.game.player - 1].cities}</div>
                 <div>City</div>
             </div>
 
@@ -60,9 +62,10 @@ module.exports = BuildOverlayTemplate = (app, mod, build) => {
 	mod.canPlayerBuyCard(mod.game.player)
 		? ``
 		: `settlers-row-disabled`
-}" id="3">
+}" id="3" title="Development cards are most likely to be a knight, which allows you to move the bandit. Other cards give you victory points or allow you to gain resources.">
             <div class="settlers-item-column">
                 <img class="settlers-item-img" src="/settlers/img/cards/knight.png">
+                <div class="settlers-stats-vp-count">${mod.game.deck[0].crypt.length}</div>
               <div>Card</div>
               </div>
 

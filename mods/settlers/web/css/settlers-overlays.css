@@ -61,7 +61,7 @@ stats overlay
 
 .settlers-stats-overlay {
 	padding: min(2rem, 1.5vw, 2.5vh);
-	min-height: 650px;
+	min-height: min(650px, 90vh);
 }
 
 .settlers-dice-histogram {
@@ -71,6 +71,7 @@ stats overlay
 	align-content: flex-end;
 	flex-wrap: wrap-reverse;
 	margin-top: 1.5rem;
+	min-height: 8rem;
 }
 
 .hover-hint {
@@ -240,6 +241,7 @@ stats overlay
 	position: relative;
 	text-shadow: 1px 1px 1px #62616388;
 	max-width: 30%;
+	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
@@ -631,6 +633,11 @@ stats overlay
 		display: flex;
 		flex-direction: column;
 	}
+	.settlers-stats-overlay{
+		min-height: min(550px, 90vh);
+		padding: 2rem 2vw;
+		gap: 1rem;
+	}
 	.vp-3p .settlers-stats-row img {
 		height: min(6.5rem, 13vw);
 	}
@@ -659,12 +666,15 @@ stats overlay
 		height: min(4rem, 9vw);
 	}
 	.settlers-stats-multiplier, .settlers-stats-vp-count {
-		width: 2.2rem;
-		height: 2.2rem;
-		font-size: 2.2rem;
+		width: 2rem;
+		height: 2rem;
+		font-size: 2rem;
 	}
 	.settlers-stats-vp-count {
-		line-height: 2.2rem;
+		line-height: 2rem;
+	}
+	hr {
+		margin: 1.5rem;
 	}
 }
 

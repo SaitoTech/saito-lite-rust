@@ -1,10 +1,10 @@
 
     if (card == "indreds") {
 
-      if (this.game.player == 2) {
-        //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
+      this.startClockAndSetActivePlayer(2);
 
+      if (this.game.player == 2) {
+        
         let yugo_ussr = this.countries['yugoslavia'].ussr;
         let romania_ussr = this.countries['romania'].ussr;
         let bulgaria_ussr = this.countries['bulgaria'].ussr;
@@ -41,6 +41,8 @@
           if (bulgaria_us       < bulgaria_ussr) 	{ total_countries++; only_country = "bulgaria"; }
           if (czechoslovakia_us < czechoslovakia_ussr)  { total_countries++; only_country = "czechoslovakia"; }
 
+console.log("total countries: " + total_countries);
+
 	  if (total_countries == 1) {
 	    let diff = 0;
 
@@ -49,9 +51,9 @@
 	    if (only_country == "romania") { diff = romania_diff; }
 	    if (only_country == "bulgaria") { diff = bulgaria_diff; }
 	    if (only_country == "czechoslovakia") { diff = czechoslovakia_diff; }
-            twilight_self.placeInfluence(only_country, diff, "us");
-            twilight_self.addMove("place\tus\tus\t"+only_country+"\t"+diff);
-            twilight_self.endTurn();
+            this.placeInfluence(only_country, diff, "us");
+            this.addMove("place\tus\tus\t"+only_country+"\t"+diff);
+            this.endTurn();
 	    return 0;
 	  }
 

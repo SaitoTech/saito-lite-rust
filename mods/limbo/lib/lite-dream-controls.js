@@ -147,7 +147,6 @@ class DreamControls{
 			return;
 		}
 
-
 		let this_self = this;
 		let mods = this.app.modules.respondTo('dream-controls');
 
@@ -217,6 +216,8 @@ class DreamControls{
 				};
 			});
 		}
+
+		// this.attachEvents()
 	}
 
 	addDreamControlsItem(item, id, index) {
@@ -228,7 +229,7 @@ class DreamControls{
       </div>
     `;
 
-    document.querySelector(`#dream-controls .control-panel .control-list`).innerHTML += html;
+    document.querySelector(`#dream-controls .control-panel .control-list`).insertAdjacentHTML('beforeend', html);
 
     // append as second last child
     // keeping close (X) icon as last
