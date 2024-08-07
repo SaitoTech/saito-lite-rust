@@ -901,7 +901,7 @@ class Videocall extends ModTemplate {
 			return;
 		}
 
-		this.app.connection.emit('add-waiting-video-box');
+		// this.app.connection.emit('add-waiting-video-box');
 		setTimeout(()=> {
 			this.app.connection.emit('remove-waiting-video-box');
 		}, 20000);
