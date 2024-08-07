@@ -15,11 +15,9 @@ class DreamControls{
 	render(stream, is_presentation = false) {
 		if (!document.getElementById("dream-controls")){
 
-			let withVideo = stream.getVideoTracks()?.length > 0;
-
 			console.log("Render Dream controls in " + this.container);
 
-			this.app.browser.addElementToSelectorOrDom(DreamControlTemplate(withVideo), this.container);
+			this.app.browser.addElementToSelectorOrDom(DreamControlTemplate(this.mod), this.container);
 
 			if (!document.querySelector(this.container)){
 				this.app.browser.makeDraggable('dream-controls');
@@ -52,12 +50,20 @@ class DreamControls{
 		if (document.querySelector(".dream-controls .video-control")){
 			document.querySelector(".dream-controls .video-control").onclick = () => {
 				this.toggleVideo();
+				this.app.connection.emit('limbo-update-status');
 			}
 		}
 
 		if (document.querySelector(".dream-controls .audio-control")){
 			document.querySelector(".dream-controls .audio-control").onclick = () => {
 				this.toggleAudio();
+			}
+		}
+
+		if (document.querySelector(".dream-controls .screen-control")){
+			document.querySelector(".dream-controls .screen-control").onclick = () => {
+				this.toggleScreen();
+				this.app.connection.emit('limbo-update-status');
 			}
 		}
 
@@ -107,6 +113,26 @@ class DreamControls{
 			console.warn('Stun UI error', err);
 		}
 	}
+
+	toggleScreen() {
+		this.app.connection.emit('limbo-toggle-screen');
+
+		//Update UI
+		try {
+			document
+				.querySelector('.screen-control')
+				.classList.toggle('disabled');
+			document
+				.querySelector('.screen-control i')
+				.classList.toggle('fa-tablet-screen-button');
+			document
+				.querySelector('.screen-control i')
+				.classList.toggle('fa-tablet-button');
+		} catch (err) {
+			console.warn('Stun UI error', err);
+		}
+	}
+
 
 
 	startTimer() {
