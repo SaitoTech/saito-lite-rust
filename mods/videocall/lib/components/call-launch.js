@@ -106,7 +106,7 @@ class CallLaunch {
 				let call_id = await this.mod.generateRoomId()
 				let link = this.createRoomLink({call_id, scheduled: true, call_peers: []})
 				navigator.clipboard.writeText(link);
-				siteMessage('Invite link copied to clipboard', 1500);
+				siteMessage('New room link created and copied to clip board', 1500);
 
 
 				// create a public 

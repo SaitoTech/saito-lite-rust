@@ -78,13 +78,13 @@ class CallInterfaceVideo {
 		);
 
 		this.app.connection.on('remove-waiting-video-box', ()=> {
-			// let peer_id = "connecting"
-			// if (this.video_boxes[peer_id]?.video_box) {
-			// 	if (this.video_boxes[peer_id].video_box?.remove) {
-			// 		this.video_boxes[peer_id].video_box.remove(true);
-			// 	}
-			// 	delete this.video_boxes[peer_id];
-			// }
+			let peer_id = "connecting"
+			if (this.video_boxes[peer_id]?.video_box) {
+				if (this.video_boxes[peer_id].video_box?.remove) {
+					this.video_boxes[peer_id].video_box.remove(true);
+				}
+				delete this.video_boxes[peer_id];
+			}
 		})
 
 		this.app.connection.on('remove-peer-box', (peer_id) => {

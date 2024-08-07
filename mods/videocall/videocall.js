@@ -384,10 +384,12 @@ class Videocall extends ModTemplate {
 					) {
 						console.log('OC: Tab is not active');
 						if(message.request === "broadcast-presence" && !tx.isFrom(this.publicKey)) {
-							console.log(message, "message from joinig")
-							// salert(`${message.call_link}`)
-							sconfirm(`${from} joined the call, do you want to join call?`).then(()=> {
-								window.location.href = message.call_link
+							sconfirm(`${this.app.keychain.returnUsername(from)} joined the call with id ${message.call_id}, do you want to join call?`).then((result)=> {
+								console.log('result', result)
+								if(result){
+									window.location.href = message.call_link
+
+								}
 							})
 						}
 						return;
@@ -481,7 +483,6 @@ class Videocall extends ModTemplate {
 
 					if (txmsg.request === 'peer-joined') {
 						let from = tx.from[0].publicKey;
-						console.log(txmsg, from, "peer-joined" )
 						this.app.connection.emit('remove-waiting-video-box');
 						this.app.connection.emit(
 							'add-remote-stream-request',
@@ -901,7 +902,7 @@ class Videocall extends ModTemplate {
 			return;
 		}
 
-		// this.app.connection.emit('add-waiting-video-box');
+		this.app.connection.emit('add-waiting-video-box');
 		setTimeout(()=> {
 			this.app.connection.emit('remove-waiting-video-box');
 		}, 20000);
