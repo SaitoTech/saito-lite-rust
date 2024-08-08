@@ -120,29 +120,6 @@ stats overlay
 	margin-bottom: 1rem;
 }
 
-.settlers-achievements-container {
-	width: fit-content;
-	margin: auto;
-	flex-direction: column;
-	gap: 2rem;
-	display: flex;
-	width: 100%;
-}
-
-.settlers-achievements-row {
-	display: flex;
-	gap: 5rem;
-	justify-content: space-between;
-}
-
-.settlers-achievements-row .achievements .army, .settlers-achievements-row .achievements .victory_point_cards {
-	padding: 0 0 0 1rem;
-	margin: 0 -1rem 0 0;
-}
-
-.settlers-achievements-row .achievements .victory_point_cards {
-	/*min-width: 8rem;*/
-}
 
 .settlers-stats-total {
 	position: relative;
@@ -222,10 +199,6 @@ stats overlay
 }
 
 
-.settlers-achievements-row .victory_point_cards img {
-	height: 6.5rem;
-	width: auto !important;
-}
 
 .stats-header {
 	display: flex;
@@ -443,41 +416,6 @@ stats overlay
 	margin: 0 auto;
 	display: flex;
 	flex-direction: column;
-}
-
-.settlers-state-container .settlers-achievements-row .achievements {
-	margin: 0rem;
-	padding: 0rem;
-	gap: 0rem;
-}
-
-.settlers-state-container>*, .settlers-achievements-row>*, .settlers-achievements-row .achievements>* {}
-
-.settlers-state-container .settlers-achievements-row .achievements .army, .settlers-state-container .settlers-achievements-row .achievements .victory_point_cards, .settlers-state-container .settlers-achievements-row .army, .settlers-state-container .settlers-achievements-row .victory_point_cards {
-	margin: 0rem;
-	padding: 0rem;
-}
-
-.settlers-state-container .achievements .army {
-	padding: 0rem;
-	margin-right: -4rem;
-}
-
-.settlers-state-container .achievements .army img {
-	margin: 0rem;
-	min-width: 6.5rem;
-}
-
-.settlers-state-container .achievements .army img:not(:last-child) {
-	margin-right: -3rem;
-}
-
-.settlers-state-container .achievements .token.army.largest {
-	margin-right: 3rem;
-}
-
-.settlers-state-container .achievements .longest-road img {
-	min-width: 6.5rem;
 }
 
 .settlers-state-container .vproundel {

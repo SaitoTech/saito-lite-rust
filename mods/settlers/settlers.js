@@ -397,15 +397,6 @@ class Settlers extends GameTemplate {
 					).style.display = 'flex';
 					try {
 						//
-						// load trade overlay on playerbox click
-						//
-						//for (let i = 0; i < this.game.players.length; i++) {
-						//  this.playerbox.onclick(() => {
-						//    this.trade_overlay.render();
-						//  }, i + 1);
-						//}
-
-						//
 						// close playerboxen on back-click
 						//
 						$('.game-playerbox-manager').off();
