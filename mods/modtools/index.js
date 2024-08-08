@@ -122,7 +122,7 @@ module.exports = (app, mod) => {
           let dateString = newDate.toUTCString();
 
           let duration = app.browser.formatTime(blacklist[i].duration);
-          let publicKey = blacklist[i].publickey;
+          let publicKey = blacklist[i].publicKey;
           let identicon = app.keychain.returnIdenticon(publicKey);
 
           html += `
@@ -162,7 +162,7 @@ module.exports = (app, mod) => {
           let dateString = newDate.toUTCString();
 
           let duration = app.browser.formatTime(whitelist[i].duration);
-          let publicKey = whitelist[i].publickey;
+          let publicKey = whitelist[i].publicKey;
           let identicon = app.keychain.returnIdenticon(publicKey);
 
           html += `
