@@ -127,7 +127,7 @@ class Settlers extends GameTemplate {
 				ict: 3,
 				icon: '/settlers/img/icons/ore-icon.png'
 			},
-			{ name: 'desert', count: 1, ict: 1 }
+			{ name: 'desert', count: 1, ict: 1, null: true}
 		];
 		this.priceList = [
 			['brick', 'wood'],

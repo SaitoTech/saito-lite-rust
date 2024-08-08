@@ -51,7 +51,8 @@ class SettlersState {
     returnResources() {
         let newArray = [];
         for (let i of this.resources){
-            if (i.count>1)
+            //Filter desert
+            if (!i?.null)
                 newArray.push(i.name);
         }
         return newArray;
@@ -84,14 +85,25 @@ class SettlersState {
 
     returnHexes() {
         let hexes = [];
+        
+        //Alter the island composition
+        if (this.game.players.length == 2){
             for (let i of this.resources){
-                for (let j = 0; j < i.count; j++){
-                    if (i.tile) hexes.push({resource:i.name,img: i.tile});
-                    else hexes.push({resource:i.name, img: this.randomizeTileImage(i)});
+                if (i.name == "wood" || i.name == "wheat" || i.name == "desert"){
+                    i.count = 3;
                 }
-
             }
-            return hexes;
+        }
+
+        for (let i of this.resources){
+            for (let j = 0; j < i.count; j++){
+                if (i.tile) hexes.push({resource:i.name,img: i.tile});
+                else hexes.push({resource:i.name, img: this.randomizeTileImage(i)});
+            }
+
+        }
+
+        return hexes;
     }
 
     returnDevelopmentCards(option){
@@ -122,7 +134,7 @@ class SettlersState {
 
     returnNullResource(){
         for (let i of this.resources) {
-            if (i.count==1) {
+            if (i.null) {
                 return i.name;
             }
         }
@@ -149,14 +161,22 @@ class SettlersState {
 
     returnDiceTokens() {
             let dice = [];
-            dice.push({ value: 2 });
-            dice.push({ value: 12 });
-            for (let i = 3; i < 7; i++) {
-                dice.push({ value: i });
-                dice.push({ value: i });
-                dice.push({ value: i + 5 });
-                dice.push({ value: i + 5 });
+            for (let i = 2; i <= 12; i++) {
+                if (i !== 7){
+                    dice.push({ value: i });                    
+                }
             }
+            let start = (this.game.players.length > 2) ? 3 : 4;
+            let stop = (this.game.players.length > 2) ? 11 : 10;
+
+            for (let i = start; i <= stop; i++) {
+                if (i !== 7){
+                    dice.push({ value: i });                    
+                }
+            }
+
+            console.log(dice);
+
             return dice;
     }
 
