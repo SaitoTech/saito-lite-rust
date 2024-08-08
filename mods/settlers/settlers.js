@@ -316,7 +316,7 @@ class Settlers extends GameTemplate {
 				$('.dark').css('backgroundColor', 'unset');
 			}
 		} catch (err) {
-			console.log('Intialize HTML: ' + err);
+			console.error('Intialize HTML: ' + err);
 		}
 
 		//
@@ -416,7 +416,7 @@ class Settlers extends GameTemplate {
 							).style.display = 'none';
 						});
 					} catch (err) {
-						console.log('ERROR 485023: ' + err);
+						console.error('ERROR 485023: ' + err);
 					}
 				}
 			} else {

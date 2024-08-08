@@ -118,7 +118,7 @@ class SettlersState {
 
 
     returnPortIcon(res){
-        if (res === "any"){
+        if (res == "any"){
             return `<img class="icon" src="/settlers/img/icons/any-port.png">`;
         }
         for (let i of this.resources){
@@ -174,8 +174,6 @@ class SettlersState {
                     dice.push({ value: i });                    
                 }
             }
-
-            console.log(dice);
 
             return dice;
     }
@@ -256,7 +254,7 @@ class SettlersState {
         return svid;
     }
 
-    /*
+   /*
       Hardcode the position of resource ports
       Use road id + adjacent vertices for internal logic
     */
@@ -270,34 +268,18 @@ class SettlersState {
                 this.addPortToGameboard(hex, this.game.state.ports[p], dir);
             }
         } else {
-            //Define the ports
+            //Define the ports -- randomly!!!!
             let resources = this.returnResources();
-            let randomRoll = this.rollDice(2);
-            let hexes, angles;
-            if (randomRoll == 1) {
-                hexes = ["1_1", "3_5", "5_4", "4_2"];
-                angles = [6, 3, 3, 5];
-            } else {
-                hexes = ["1_2", "2_1", "5_3", "5_5"];
-                angles = [1, 5, 4, 2];
-            }
+            resources.push("any", "any", "any", "any");
 
-            for (let i = 0; i < hexes.length; i++) {
-                this.addPortToGameboard(hexes[i], "any", angles[i]);
-            }
+            console.log(resources);
 
-            //Now do resource ports
-            if (randomRoll == 1) {
-                hexes = ["1_2", "2_1", "5_3", "5_5", "2_4"];
-                angles = [1, 5, 4, 2, 1];
-            } else {
-                hexes = ["1_1", "3_5", "5_4", "4_2", "2_4"];
-                angles = [6, 3, 3, 5, 1];
-            }
+            let hexes = ["1_1", "3_5", "5_4", "4_2", "1_2", "2_1", "5_3", "5_5", "2_4"];
+            let angles = [6, 3, 3, 5, 1, 5, 4, 2, 1];
 
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 9; i++) {
                 let r = resources.splice(this.rollDice(resources.length) - 1, 1);
-                this.addPortToGameboard(hexes[i], r, angles[i]);
+                this.addPortToGameboard(hexes[i], r[0], angles[i]);
             }
         }
 

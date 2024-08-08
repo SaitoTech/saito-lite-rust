@@ -97,7 +97,9 @@ try {
         let d = "#" + ad[i];
         try {
           $(d).remove();
-        } catch (err) {}
+        } catch (err) {
+          console.error(err);
+        }
       }
     }
 
@@ -108,7 +110,7 @@ try {
 
     this.displayPlayers();
 } catch (err) {
-  console.log(err);
+  console.error(err);
 }
   }
 
@@ -162,7 +164,7 @@ try {
     }
    
 } catch (err) {
-  console.log(err);
+  console.error(err);
 }     
   }
 
@@ -188,7 +190,7 @@ try {
       //console.log(err);
     }
 } catch (err) {
-  console.log(err);
+  console.error(err);
 }
   }
 
@@ -209,7 +211,7 @@ try {
       this.playerbox.appendGraphic(hand, i + 1);
     }
 } catch (err) {
-  console.log(err);
+  console.error(err);
 }
 
   }
@@ -223,7 +225,7 @@ try {
   }
 
   displayPlayers() {
-    try {
+
       this.displayScore();
 
       if (!this.browser_active) {
@@ -366,13 +368,13 @@ try {
         }
       }
 
-
-      if (this.game.deck[0].hand.length == 0 && this.game.state.players[this.game.player-1].devcards.length == 0) {
-        document.querySelector('.hud-body .mobile .cards').classList.add('hidden');
-      }else{
-        document.querySelector('.hud-body .mobile .cards').classList.remove('hidden');
+      if (document.querySelector('.hud-body .mobile .cards')){
+        if (this.game.deck[0].hand.length == 0 && this.game.state.players[this.game.player-1].devcards.length == 0) {
+          document.querySelector('.hud-body .mobile .cards').classList.add('hidden');
+        }else{
+          document.querySelector('.hud-body .mobile .cards').classList.remove('hidden');
+        }
       }
-
 
       if (this.game.player == 0) {
         this.showPlayerResources();
@@ -381,9 +383,6 @@ try {
 
       //Show player cards and add events (Doesn't need to be in for loop!)
       this.displayCardfan();
-    } catch (e) {
-      console.log("error in displayPlayers(): " + e);
-    }
   }
 
   /*<><><><><><><>
