@@ -128,11 +128,13 @@ webpack(
         // All files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'.
         {
           test: /\.tsx?$/,
-          loader: "ts-loader",
           exclude: /(node_modules)/,
-          options: {   
-            // configFile: path.resolve(__dirname, './build/tsconfig.json')
-          }
+          use: [{
+            loader: 'ts-loader',
+            options: {
+                configFile:path.resolve(__dirname, "../build/tsconfig.json")
+            }
+        }],
           // exclude: [
           //   {
           //     and: [path.resolve(__dirname,"node_modules")],
@@ -155,7 +157,6 @@ webpack(
             {
               loader: "babel-loader",
               options: {
-                // configFile: path.resolve(__dirname, './build/babel.config.js'),           
                 root: path.resolve(__dirname, './build'),
                 rootMode: "upward",
                 presets: ["@babel/preset-env"],
