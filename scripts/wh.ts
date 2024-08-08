@@ -1,15 +1,15 @@
-import StorageCore from './lib/saito/core/storage-core';
-import { Saito } from './apps/core';
+import StorageCore from '../lib/saito/core/storage-core';
+import { Saito } from '../apps/core';
 import fs from 'fs-extra';
 
-import mods_config from './config/modules.config';
+import mods_config from '../config/modules.config';
 import * as blake3 from 'blake3';
 import S, { initialize as initS } from 'saito-js/index.node';
-import { NodeSharedMethods } from './lib/saito/core/server';
-import Factory from './lib/saito/factory';
+import { NodeSharedMethods } from '../lib/saito/core/server';
+import Factory from '../lib/saito/factory';
 import { LogLevel } from 'saito-js/saito';
-import Wallet from './lib/saito/wallet';
-import Blockchain from './lib/saito/blockchain';
+import Wallet from '../lib/saito/wallet';
+import Blockchain from '../lib/saito/blockchain';
 
 let processing_started = false;
 let work_queue: any[] = [];

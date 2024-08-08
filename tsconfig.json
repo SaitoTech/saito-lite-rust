@@ -27,5 +27,5 @@
 		"bundler",
 		"./lib/saito/ui/**/*"
 	],
-	"include": ["./lib/**/*.ts", "start.ts"]
+	"include": ["./lib/**/*.ts", "./scripts/start.ts"]
 }
