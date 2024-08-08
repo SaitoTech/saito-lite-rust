@@ -157,6 +157,7 @@ webpack(
               options: {
                 // configFile: path.resolve(__dirname, './build/babel.config.js'),           
                 root: path.resolve(__dirname, './build'),
+                rootMode: "upward",
                 presets: ["@babel/preset-env"],
                 sourceMaps: false,
                 cacheCompression: false,

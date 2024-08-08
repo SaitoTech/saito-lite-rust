@@ -5,6 +5,8 @@ const webpack = require('webpack');
 const { spawnSync } = require('child_process');
 const sqlite3 = require('sqlite3');
 
+
+
 /* -------------------------------------------------- */
 // START COMPILE
 /* -------------------------------------------------- */
@@ -38,7 +40,7 @@ userInput(
 /* -------------------------------------------------- */
 
 function init() {
-	if (fs.existsSync('config/modules.config.js') == true) {
+	if (fs.existsSync('../config/modules.config.js') == true) {
 		console.clear();
 		console.log(
 			'\u001b[1;36m' + '** 1. INITIAL SAITO COMPILE **' + '\x1b[0m'
@@ -49,7 +51,7 @@ function init() {
 		console.log('trying to change the modules that are installed on your ');
 		console.log('machine you can edit the file: ');
 		console.log('');
-		console.log('  config/modules.config.js');
+		console.log('  ../config/modules.config.js');
 		console.log('');
 		console.log('and then re-run this compiler [node compile-node]');
 		console.log('selecting option 3. Recompile ');
@@ -65,8 +67,8 @@ function init() {
 		userInput('Do you wish to continue? (yes/no)').then(function (res) {
 			if (res.toUpperCase() == 'Y' || res.toUpperCase() == 'YES') {
 				fs.copyFileSync(
-					'config/modules.default.js',
-					'config/modules.config.js'
+					'../config/modules.default.js',
+					'../config/modules.config.js'
 				);
 			}
 
@@ -86,7 +88,7 @@ function init() {
 }
 
 function init2() {
-	if (fs.existsSync('config/saito.io.conf') == true) {
+	if (fs.existsSync('../config/saito.io.conf') == true) {
 		console.log('');
 		console.log(
 			'You can join the Saito Network and participate in development'
@@ -102,7 +104,7 @@ function init2() {
 			'\n1. Join Saito.io (saito)\n2. Local Install (Local)\n'
 		).then(function (res) {
 			if (res == '1') {
-				fs.copyFileSync('config/saito.io.conf', 'config/options');
+				fs.copyFileSync('../config/saito.io.conf', '../config/options');
 			}
 			nuke();
 		});
@@ -178,8 +180,8 @@ function recompile() {
 	console.log('');
 	console.log('');
 
-	if (!fs.existsSync('config/modules.config.js')) {
-		copyDir('config/modules.default.js', 'config/modules.config.js');
+	if (!fs.existsSync('./config/modules.config.js')) {
+		copyDir('./config/modules.default.js', './config/modules.config.js');
 	}
 
 	reset_bundler();
@@ -191,16 +193,16 @@ function recompile() {
 // POST COMPILE
 /* -------------------------------------------------- */
 function post_compile() {
-	fs.copyFileSync('lib/saito/boot.js', 'web/saito/saito2.js');
+	fs.copyFileSync('../lib/saito/boot.js', '../web/saito/saito2.js');
 
-	var s1 = fs.readFileSync('web/saito/saito.js');
-	var s2 = fs.readFileSync('web/saito/saito2.js');
-	fs.writeFile('web/saito/saito.js', s2 + s1, function (err) {
+	var s1 = fs.readFileSync('../web/saito/saito.js');
+	var s2 = fs.readFileSync('../web/saito/saito2.js');
+	fs.writeFile('../web/saito/saito.js', s2 + s1, function (err) {
 		if (err) {
 			console.log('Concat failed: ' + err);
 			return;
 		}
-		removeDir('web/saito/saito2.js');
+		removeDir('../web/saito/saito2.js');
 
 		console.log('Finished');
 		console.log('');
@@ -216,7 +218,7 @@ function post_compile() {
 // -------------------------------------------------- //
 
 function webPack() {
-	var entrypoint = '../bundler/default/apps/lite/index.timestamp';
+	var entrypoint = './bundler/default/apps/lite/index.timestamp';
 	var outputfile = 'saito.js';
 
 	console.log(__dirname);
@@ -253,7 +255,7 @@ function webPack() {
 			// Path to your entry point. From this file Webpack will begin his work
 			entry: ['babel-polyfill', path.resolve(__dirname, entrypoint)],
 			output: {
-				path: path.resolve(__dirname, '../web/saito'),
+				path: path.resolve(__dirname, './web/saito'),
 				filename: outputfile
 			},
 			resolve: {
@@ -291,9 +293,14 @@ function webPack() {
 							{
 								loader: 'babel-loader',
 								options: {
-									presets: ['@babel/preset-env'],
-									sourceMaps: true
-								}
+									// configFile: path.resolve(__dirname, './build/babel.config.js'),           
+									root: path.resolve(__dirname, './build'),
+									rootMode: "upward",
+									presets: ["@babel/preset-env"],
+									sourceMaps: false,
+									cacheCompression: false,
+									cacheDirectory: true,
+								  },
 							}
 						],
 						exclude: /(node_modules)/
@@ -328,8 +335,8 @@ function webPack() {
 					{
 						test: /\.zip$/,
 						exclude: [
-							path.resolve(__dirname, '../mods/appstore/bundler'),
-							path.resolve(__dirname, '../mods/appstore/mods')
+							path.resolve(__dirname, './mods/appstore/bundler'),
+							path.resolve(__dirname, './mods/appstore/mods')
 						]
 					}
 				]
@@ -375,23 +382,23 @@ function webPack() {
 /* -------------------------------------------------- */
 
 function reset_nonpersistent() {
-	createDir('data/blocks');
+	createDir('../data/blocks');
 
-	removeDir('web/saito/saito.js');
-	removeDir('data/appstore.sq3');
-	removeDir('data/hospital.sq3');
-	removeDir('data/records.sq3');
-	removeDir('data/archive.sq3');
-	removeDir('data/explorer.sq3');
-	removeDir('data/timeclock.sq3');
-	removeDir('data/earlybirds.sq3');
-	removeDir('data/arcade.sq3');
-	removeDir('data/chat.sq3');
-	removeDir('data/database.sq3');
-	removeDir('data/bank.sq3');
-	removeDir('data/escrow.sq3');
+	removeDir('../web/saito/saito.js');
+	removeDir('../data/appstore.sq3');
+	removeDir('../data/hospital.sq3');
+	removeDir('../data/records.sq3');
+	removeDir('../data/archive.sq3');
+	removeDir('../data/explorer.sq3');
+	removeDir('../data/timeclock.sq3');
+	removeDir('../data/earlybirds.sq3');
+	removeDir('../data/arcade.sq3');
+	removeDir('../data/chat.sq3');
+	removeDir('../data/database.sq3');
+	removeDir('../data/bank.sq3');
+	removeDir('../data/escrow.sq3');
 
-	removeDir('data/log.txt');
+	removeDir('../data/log.txt');
 
 	//removeDir('data/*.sq3-journal');
 	//find ./data/blocks/ -name '*.sai' | xargs rm -r
@@ -401,7 +408,7 @@ function reset_nonpersistent() {
 	//removeDir('data/tmp/*.sai
 	//removeDir('data/tmp/*.zip
 
-	removeDir('config/options');
+	removeDir('../config/options');
 
 	removeDir('mods/appstore/mods');
 	createDir('mods/appstore/mods');
@@ -422,53 +429,53 @@ function reset_nonpersistent() {
 		db.run('update users set latest_tx = -1;');
 	}
 
-	if (!fs.existsSync('config/modules.config.js')) {
-		copyDir('config/modules.default.js', 'config/modules.config.js');
+	if (!fs.existsSync('../config/modules.config.js')) {
+		copyDir('../config/modules.default.js', '../config/modules.config.js');
 	}
 
-	if (fs.existsSync('config/options.conf')) {
-		copyDir('config/options.conf', 'config/options');
+	if (fs.existsSync('../config/options.conf')) {
+		copyDir('../config/options.conf', '../config/options');
 	}
 }
 
 function reset_persistent() {
-	removeDir('data/forum.sq3');
-	removeDir('data/post.sq3');
-	removeDir('data/registry.sq3');
-	removeDir('data/rewards.sq3');
-	removeDir('data/forum.sq3');
-	removeDir('data/tutorial.sq3');
-	removeDir('web/client.options');
-	createDir('data/blocks');
+	removeDir('../data/forum.sq3');
+	removeDir('../data/post.sq3');
+	removeDir('../data/registry.sq3');
+	removeDir('../data/rewards.sq3');
+	removeDir('../data/forum.sq3');
+	removeDir('../data/tutorial.sq3');
+	removeDir('../web/client.options');
+	createDir('../data/blocks');
 }
 
 function reset_bundler() {
 	console.log('Resetting Saito to Default Modules!');
 	console.log('');
 
-	removeDir('bundler');
+	removeDir('./bundler');
 
-	createDir('bundler');
-	createDir('bundler/default');
-	createDir('bundler/default/mods');
-	createDir('bundler/default/lib');
-	createDir('bundler/default/config');
-	createDir('bundler/default/apps');
-	createDir('data/blocks');
+	createDir('./bundler');
+	createDir('./bundler/default');
+	createDir('./bundler/default/mods');
+	createDir('./bundler/default/lib');
+	createDir('./bundler/default/config');
+	createDir('./bundler/default/apps');
+	createDir('./data/blocks');
 
-	copyDir('lib', 'bundler/default/lib');
+	copyDir('lib', './bundler/default/lib');
 
-	copyDir('config', 'bundler/default/config');
-	copyDir('apps', 'bundler/default/apps');
+	copyDir('config', './bundler/default/config');
+	copyDir('apps', './bundler/default/apps');
 
 	copy_lite_mods_to_bundler_directory();
 
 	console.log('');
 	console.log('Compiling Lite-Client JS...');
 
-	removeDir('bundler/default/mods/appstore/bundler/dist');
+	removeDir('../bundler/default/mods/appstore/bundler/dist');
 
-	var dirRm = getDirectories('bundler/default/mods');
+	var dirRm = getDirectories('../bundler/default/mods');
 	var rmDirArr = ['web', 'sql', 'www', 'src', 'docs', 'compile'];
 	var rmFileArr = [
 		'DESCRIPTION.txt',
@@ -480,10 +487,10 @@ function reset_bundler() {
 	];
 	for (let i = 0; i < dirRm.length; i++) {
 		for (let n = 0; n < rmDirArr.length; n++) {
-			removeDir('bundler/default/mods/' + dirRm[i] + '/' + rmDirArr[n]);
+			removeDir('../bundler/default/mods/' + dirRm[i] + '/' + rmDirArr[n]);
 		}
 		for (let n = 0; n < rmFileArr.length; n++) {
-			removeDir('bundler/default/mods/' + dirRm[i] + '/' + rmFileArr[n]);
+			removeDir('../bundler/default/mods/' + dirRm[i] + '/' + rmFileArr[n]);
 		}
 	}
 }
@@ -496,7 +503,7 @@ function copy_lite_mods_to_bundler_directory() {
 		var modDir = liteMods.lite[i].split('/');
 
 		console.log('installing mod for lite-client bundling: ' + modDir[0]);
-		copyDir('mods/' + modDir[0], 'bundler/default/mods/' + modDir[0]);
+		copyDir('./mods/' + modDir[0], './bundler/default/mods/' + modDir[0]);
 	}
 }
 
