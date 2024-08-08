@@ -1102,6 +1102,8 @@ if (this.game.state.scenario != "is_testing") {
     //
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key === debater) {
+        // and commit the debater too !
+        this.game.state.debaters[i].committed = 1;
         obj.debater = this.game.state.debaters[i];
         this.game.state.debaters.splice(i, 1);
       }
