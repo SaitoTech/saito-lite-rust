@@ -10,20 +10,17 @@ let outputfile = "dyn.module.js";
 
 webpack(
   {
-    cache: {
-      type: "filesystem",
-    },
-    optimization: {
-      //set the appropriate value for minimisation
-      // dev => false, prod => true
-      minimize: minimize,
-      minimizer: [
-        new TerserPlugin({
-          parallel: true,
-        }),
-      ],
-
-    },
+    // optimization: {
+    //   //set the appropriate value for minimisation
+    //   // dev => false, prod => true
+    //   minimize: minimize,
+    //   minimizer: [
+    //     new TerserPlugin({
+    //       parallel: true,
+    //     }),
+    //   ],
+    //
+    // },
     target: "web",
     // node: {
     //     fs: "empty",
@@ -71,13 +68,13 @@ webpack(
       /\/www\//,
     ],
     // Path to your entry point. From this file Webpack will begin his work
-    entry: ["babel-polyfill", path.resolve(__dirname, entrypoint)],
+    entry: [path.resolve(__dirname, entrypoint)],
     output: {
       path: path.resolve(__dirname, "./../web/saito/dyn"),
       filename: outputfile,
       library:{
         name:'Dyn',
-        type:'this'
+        type:'window'
       }
     },
     resolve: {
