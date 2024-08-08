@@ -187,7 +187,8 @@ class Mods {
 			// @ts-ignore
 			console.log("aaa : ", window.Dyn);
 			// @ts-ignore
-			let m = new window.Dyn();
+			let m = new window.Dyn(this.app);
+			this.mods.push(m);
 
 			console.log("m : ",m);
 			// @ts-ignore
