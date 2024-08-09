@@ -42747,7 +42747,11 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     ) { return 0; }
     return 1;
   }
-  async playerControlUnfortifiedSpace(his_self, player, faction) {
+  async playerControlUnfortifiedSpace(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
+
+    // BACK moves us to OPS menu
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
+
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let pacifiable_spaces_in_unrest = [];
     for (let i = 0; i < spaces_in_unrest.length; i++) {
