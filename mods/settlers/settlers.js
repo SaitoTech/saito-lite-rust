@@ -127,7 +127,7 @@ class Settlers extends GameTemplate {
 				ict: 3,
 				icon: '/settlers/img/icons/ore-icon.png'
 			},
-			{ name: 'desert', count: 1, ict: 1 }
+			{ name: 'desert', count: 1, ict: 1, null: true}
 		];
 		this.priceList = [
 			['brick', 'wood'],
@@ -316,7 +316,7 @@ class Settlers extends GameTemplate {
 				$('.dark').css('backgroundColor', 'unset');
 			}
 		} catch (err) {
-			console.log('Intialize HTML: ' + err);
+			console.error('Intialize HTML: ' + err);
 		}
 
 		//
@@ -354,6 +354,10 @@ class Settlers extends GameTemplate {
 			);
 		}
 
+		if (this.game.state.placedCity == null) {
+			$(".hud-body .mobile").css("visibility", "visible");
+		}
+		
 		//
 		// hook up interactivity
 		//
@@ -397,15 +401,6 @@ class Settlers extends GameTemplate {
 					).style.display = 'flex';
 					try {
 						//
-						// load trade overlay on playerbox click
-						//
-						//for (let i = 0; i < this.game.players.length; i++) {
-						//  this.playerbox.onclick(() => {
-						//    this.trade_overlay.render();
-						//  }, i + 1);
-						//}
-
-						//
 						// close playerboxen on back-click
 						//
 						$('.game-playerbox-manager').off();
@@ -416,7 +411,7 @@ class Settlers extends GameTemplate {
 							).style.display = 'none';
 						});
 					} catch (err) {
-						console.log('ERROR 485023: ' + err);
+						console.error('ERROR 485023: ' + err);
 					}
 				}
 			} else {

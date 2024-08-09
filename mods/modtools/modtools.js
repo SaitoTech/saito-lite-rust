@@ -140,7 +140,7 @@ class ModTools extends ModTemplate {
 		this.app.connection.on(
                         'saito-unblacklist',
                         async (address) => {
-				modtools_self.unblacklistAddress(address, moderator);
+				modtools_self.unblacklistAddress(address);
                         }
 		);
 
