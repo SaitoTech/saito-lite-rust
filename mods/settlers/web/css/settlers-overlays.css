@@ -282,7 +282,7 @@ stats overlay
 .trade_area {
 	position: relative;
 	height: min(22vh, 20vw);
-	width: calc(min(22vh, 20vw) * 0.72);
+	width: calc(min(22vh, 20vw) * 0.7);
 	color: white;
 	font-size: 9rem;
 	max-width: 15rem;
@@ -301,6 +301,7 @@ stats overlay
 	transform: translate(-50%, -50%);
 	transition: all 0.2s ease-in-out;
 	z-index: 2;
+	filter: drop-shadow(1px 1px 2px black);
 }
 
 .trade_count_arrow {
@@ -346,7 +347,7 @@ stats overlay
 	color: #fff !important;
 	position: absolute;
 	left: 50%;
-	top: 20%;
+	top: 10%;
 	transform: translate(-50%, -50%);
 	z-index: 3;
 	-webkit-text-stroke: #fff;

@@ -169,7 +169,7 @@ class SettlersDisplay {
   }
 
   displayCardfan(deck = '') {
-    if (!this.gameBrowserActive()){
+    if (!this.gameBrowserActive()) {
       return;
     }
     try {
@@ -275,19 +275,19 @@ class SettlersDisplay {
       }
       let icons = '';
 
-      if (num_resources){
+      if (num_resources) {
         icons += `<div class="cardct resource-cards">
                     <img src="/settlers/img/cards/wheat_old.png"/>
                     <div>${num_resources}</div>
-                  </div>`
+                  </div>`;
       }
-      if (num_cards){
+      if (num_cards) {
         icons += `<div class="cardct dev-cards">
                     <img src="/settlers/img/cards/red_back.png"/>
                     <div>${num_cards}</div>
                   </div>`;
       }
-      
+
       //this.playerbox.updateAddress(this.game.playerNames[i - 1], i);
       //this.playerbox.updateUserline(userline, i);
       this.playerbox.updateIcons(icons, i);
@@ -297,74 +297,41 @@ class SettlersDisplay {
       //
       this.playerbox.updateBody(statshtml, i);
 
-      /*if (!this.game.over) {
-        if (this.game.player != i) {
-          if (this.game.state.ads[i - 1].offer || this.game.state.ads[i - 1].ask) {
-            if (this.game.state.ads[i - 1].ad) {
-              let offer = this.wishListToImage(this.game.state.ads[i - 1].offer);
-              let ask = this.wishListToImage(this.game.state.ads[i - 1].ask);
-              let id = `trade_${i}`;
-              let html = `<div class="trade flexline" id="${id}">`;
-              if (ask) {
-                html += `<span>Wants:</span><span>${ask}</span>`;
-              } else {
-                html += `<span></span><span></span>`;
-              }
-              if (offer) {
-                html += `<span>Has:</span><span>${offer}</span></div>`;
-              } else {
-                html += `<span></span><span></span></div>`;
-              }
-              this.playerbox.updateBody(html, i);
-              id = '#' + id;
-              let settlers_self = this;
-              $(id).off();
-              $(id).on('click', function () {
-                //  Launch overlay window for private trade
-                settlers_self.showTradeOverlay(
-                  i,
-                  settlers_self.game.state.ads[i - 1].ask,
-                  settlers_self.game.state.ads[i - 1].offer
-                );
-              });
-            } else {
-              this.renderTradeOfferInPlayerBox(
-                i,
-                this.game.state.ads[i - 1].offer,
-                this.game.state.ads[i - 1].ask
-              );
-            }
-          }
-        } else {
-          let reshtml = '';
-          reshtml += `<div class="flexline">`;
-          if (this.game.state.ads[i - 1].offer || this.game.state.ads[i - 1].ask) {
-            reshtml += '<span>';
-            if (this.game.state.ads[i - 1].offer) {
-              reshtml += this.wishListToImage(this.game.state.ads[i - 1].offer);
-            }
-            reshtml += `<i class="fas fa-long-arrow-alt-right"></i>`;
-            if (this.game.state.ads[i - 1].ask) {
-              reshtml += this.wishListToImage(this.game.state.ads[i - 1].ask);
-            }
-            reshtml += `</span><i id="cleartrade" class="fas fa-ban"></i>`;
-            reshtml += `</div>`;
-            this.playerbox.updateBody(reshtml, i);
+      if (!this.game.over) {
+        if (this.game.state.ads[i - 1].offer || this.game.state.ads[i - 1].ask) {
+          if (this.game.state.ads[i - 1].ad) {
+            let offer = this.wishListToImage(this.game.state.ads[i - 1].offer);
+            let ask = this.wishListToImage(this.game.state.ads[i - 1].ask);
+            let id = `trade_${i}`;
+            let html = `<div class="trade" id="${id}">
+            <img src="/settlers/img/cards/desert.png"/>
+            <i class="fa-solid fa-right-left"></i>
+            </div>
+            `;
 
-            let advert = document.getElementById('cleartrade');
-            if (advert) {
-              advert.onclick = (e) => {
-                e.stopPropagation();
-                this.clearAdvert();
-              };
-            }
+            this.playerbox.updateGraphics(html, i);
+            id = '#' + id;
+            let settlers_self = this;
+            $(id).off();
+            $(id).on('click', function () {
+              //  Launch overlay window for private trade
+              settlers_self.showTradeOverlay(
+                i,
+                settlers_self.game.state.ads[i - 1].ask,
+                settlers_self.game.state.ads[i - 1].offer
+              );
+            });
           } else {
-            this.playerbox.onclick(() => {
-              this.showTradeOverlay();
-            }, i);
+            this.renderTradeOfferInPlayerBox(
+              i,
+              this.game.state.ads[i - 1].offer,
+              this.game.state.ads[i - 1].ask
+            );
           }
+        }else{
+          this.playerbox.updateGraphics('', i);
         }
-      }*/
+      }
     }
 
     if (document.querySelector('.hud-body .mobile .cards')) {
@@ -394,20 +361,28 @@ class SettlersDisplay {
   @param tradeType (integer) the player number of the targeted player, 0 for all players, -1 for advertisement
   */
   showTradeOverlay(offering_player = -1, i_should_give = null, i_should_accept = null) {
-    if (i_should_accept) {
-      this.trade_overlay.get = i_should_accept;
-    }
-    if (i_should_give) {
-      this.trade_overlay.give = i_should_give;
-    }
+
     if (offering_player) {
       this.trade_overlay.offering_player = offering_player;
     }
 
     if (i_should_give || i_should_accept) {
+
+      i_should_give = i_should_give || {};
+      i_should_accept = i_should_accept || {};
+
+      if (this.game.player === offering_player){
+        this.trade_overlay.get = i_should_give;
+        this.trade_overlay.give = i_should_accept;
+        this.trade_overlay.accepting_trade = 0;
+      }else{
+        this.trade_overlay.get = i_should_accept;
+        this.trade_overlay.give = i_should_give;
+        this.trade_overlay.accepting_trade = 1;
+      }
+
       console.log('Consider trade offer');
       console.log(i_should_give, i_should_accept);
-      this.trade_overlay.accepting_trade = 1;
       this.trade_overlay.render(false); // don't reset, we want to start with this trade
     } else {
       this.trade_overlay.render();
@@ -604,14 +579,12 @@ class SettlersDisplay {
 
   insertLeagueRankings() {
     for (let i = 0; i < this.game.playerRanks.length; i++) {
-      
-      let np = this.game.playerRanks[i].rank ? 
-                `#${this.game.playerRanks[i].rank} / ${this.game.playerRanks[i].score}` :
-                `Unranked / ${this.game.playerRanks[i].score}`;
-      this.playerbox.updateUserline(np, i+1);
+      let np = this.game.playerRanks[i].rank
+        ? `#${this.game.playerRanks[i].rank} / ${this.game.playerRanks[i].score}`
+        : `Unranked / ${this.game.playerRanks[i].score}`;
+      this.playerbox.updateUserline(np, i + 1);
     }
   }
-
 }
 
 module.exports = SettlersDisplay;

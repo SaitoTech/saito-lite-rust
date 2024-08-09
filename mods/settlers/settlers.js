@@ -354,6 +354,10 @@ class Settlers extends GameTemplate {
 			);
 		}
 
+		if (this.game.state.placedCity == null) {
+			$(".hud-body .mobile").css("visibility", "visible");
+		}
+		
 		//
 		// hook up interactivity
 		//
