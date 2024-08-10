@@ -11918,7 +11918,6 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 
 	if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 
-
 	  //
 	  //
 	  //
@@ -38536,8 +38535,12 @@ try {
     //
     // cards left
     //
+    // you can play for minor allies that do not have cards in your hand, so in that case do not report...
+    //
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
-    this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length-1); // -1 because we playing this card
+    if (this.game.deck[0].fhand[faction_hand_idx]) {
+      this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length-1); // -1 because we playing this card
+    }
 
     //
     // discard the card
@@ -41533,7 +41536,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     return 0;
 
   }
-  async playerNavalTransport(his_self, player, faction, ops_to_spend, ops_remaining) {
+  async playerNavalTransport(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // BACK moves us to OPS menu
     his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
@@ -41812,7 +41815,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     return 0;
 
   }
-  async playerNavalMove(his_self, player, faction) {
+  async playerNavalMove(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // BACK moves us to OPS menu
     his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
@@ -43786,7 +43789,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (faction === "papacy") { return 1; }
     return 0;
   }
-  async playerBurnBooksMaryI(his_self, player, faction, ops_to_spend, ops_remaining, mary_i=1) {
+  async playerBurnBooksMaryI(his_self, player, faction, ops_to_spend=0, ops_remaining=0, mary_i=1) {
     return this.playerBurnBooks(his_self, player, faction, ops_to_spend, ops_remaining, 1);
     return 0;
   }
