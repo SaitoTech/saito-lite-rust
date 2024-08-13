@@ -163,7 +163,7 @@ class YoutubeClient extends ModTemplate {
 		
 		console.log('protocol:', protocol);
 		if (protocol == 'http:') {
-			port = ':3000';
+			port = `:${this.app.browser.port}`;
 		}
 
 		console.log('port:', port);

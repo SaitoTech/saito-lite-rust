@@ -1,5 +1,5 @@
 const ModTemplate = require('./../../lib/templates/modtemplate');
-const child_process = require('child_process');
+//const child_process = require('child_process');
 const PeerService = require('saito-js/lib/peer_service').default;
 
 class YoutubeServer extends ModTemplate {
@@ -139,12 +139,16 @@ class YoutubeServer extends ModTemplate {
   }
 
   onWebSocketServer(wss) {
+  	const child_process = require('child_process');
     console.log('youtube on websocket server');
     super.onWebSocketServer(wss);
     wss.on('connection', (ws, req) => {
       console.log('youtube server got connection');
       // Ensure that the URL starts with '/rtmp/', and extract the target RTMP URL.
       let match;
+
+      console.log("rq.url:". req.url);
+
       if (!(match = req.url.match(/^\/rtmp\/(.*)$/))) {
         console.log('terminating youtube connection');
         ws.terminate(); // No match, reject the connection.
