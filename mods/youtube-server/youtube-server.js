@@ -18,8 +18,8 @@ class YoutubeServer extends ModTemplate {
     return this;
   }
 
-  initialize(app) {
-    super.initialize(app);
+  async initialize(app) {
+    await super.initialize(app);
     if (this.browser_active) {
       this.styles = ['/youtube-server/style.css', '/saito/saito.css'];
     }
@@ -44,6 +44,7 @@ class YoutubeServer extends ModTemplate {
       // Ensure that the URL starts with '/rtmp/', and extract the target RTMP URL.
       let match;
       if (!(match = req.url.match(/^\/rtmp\/(.*)$/))) {
+        console.log("aaa terminating...");
         ws.terminate(); // No match, reject the connection.
         return;
       }
@@ -230,6 +231,7 @@ class YoutubeServer extends ModTemplate {
 
       // If the client disconnects, stop FFmpeg.
       ws.on('close', (e) => {
+        console.log("youtube server socket closed");
         ffmpeg.kill('SIGINT');
       });
     });
@@ -242,6 +244,9 @@ class YoutubeServer extends ModTemplate {
     wss.on('disconnect', (code, signal) => {
       console.log('youtube connection disconnected');
     });
+    wss.on('terminate', (code, signal) => {
+      console.log('terminating youtube connection');
+    })
   }
 }
 

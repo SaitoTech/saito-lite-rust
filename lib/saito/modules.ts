@@ -717,11 +717,11 @@ class Mods {
 			if (!path) {
 				continue;
 			}
-			console.log('creating websocket server for module :' + mod.name);
-			let wss = new ws.Server({
+			console.log('creating websocket server for module :' + mod.name + " on path : "+path);
+			let wss = new ws.WebSocketServer({
 				noServer: true,
 				// todo : check if the path is already being used or reserved?
-				path: path
+				path: "/"+path
 			});
 			webserver.on('upgrade', (request: any, socket: any, head: any) => {
 				console.debug("connection on module : "+mod.name+" upgrade ----> " + request.url);
@@ -729,8 +729,8 @@ class Mods {
                 const pathname = parsedUrl.pathname;
                 const pathParts = pathname.split('/').filter(Boolean);
                 const subdirectory = pathParts.length > 0 ? pathParts[0] : null;
-				console.log(subdirectory + " - " + path);
-				if (subdirectory == path) {
+				console.log("/"+subdirectory + " - " + path);
+				if (subdirectory === path) {
 					console.log('inside handleUpgrade');
 					wss.handleUpgrade(request, socket, head, (websocket: any) => {
 						console.log("handling upgrade ///");

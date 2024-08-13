@@ -325,7 +325,7 @@ class Server {
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const ws = require('ws');
 
-		const wss = new ws.Server({
+		const wss = new ws.WebSocketServer({
 			noServer: true,
 			path: '/wsopen'
 		});
