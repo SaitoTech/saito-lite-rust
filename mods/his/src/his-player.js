@@ -2060,8 +2060,10 @@ try {
     // you can play for minor allies that do not have cards in your hand, so in that case do not report...
     //
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
-    if (this.game.deck[0].fhand[faction_hand_idx]) {
-      this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length-1); // -1 because we playing this card
+    if (-1 < faction_hand_idx) {
+      if (this.game.deck[0].fhand[faction_hand_idx]) {
+        this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length-1); // -1 because we playing this card
+      }
     }
 
     //
