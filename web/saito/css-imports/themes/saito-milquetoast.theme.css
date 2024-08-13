@@ -19,7 +19,6 @@ html[data-theme="milquetoast"] {
     /*Border padding*/ 
       --border-padding-style-leaderboard-ranking: var(--border-padding-small);  
       --border-padding-style: var(--border-padding-wide);
-      --border-padding-identicon-style: var(--border-padding-identicon-thin);
        
     /* FONTS */
     /* Text decoration */

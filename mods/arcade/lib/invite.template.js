@@ -19,7 +19,7 @@ module.exports = (app, mod, invite) => {
 	for (let i = 0; i < invite.players.length; i++) {
 		//invite_class = (invite.target && invite.target == i + 1) ? " player-turn" : ""; 
 		html += `
-          <div>
+          <div class="saito-identicon-box">
             <img class="saito-module-identicon saito-identicon" id-${invite.players[i]}" 
             				src="${app.keychain.returnIdenticon(invite.players[i])}">`;
 //    if (invite_class){

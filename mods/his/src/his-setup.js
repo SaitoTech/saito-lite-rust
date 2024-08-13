@@ -85,12 +85,17 @@ console.log("\n\n\n\n");
 	  this.addRegular("ottoman", "buda", 1);
 	  this.addRegular("ottoman", "belgrade", 1);
 
+	  this.controlSpace("ottoman", "pressburg");
+	  this.controlSpace("ottoman", "agram");
+	  this.controlSpace("ottoman", "mohacs");
+	  this.controlSpace("ottoman", "szegedin");
+
 	  // HAPSBURG
           this.addRegular("hapsburg", "seville", 1);
           this.addRegular("hapsburg", "barcelona", 1);
           this.addRegular("hapsburg", "navarre", 1);
           this.addRegular("hapsburg", "tunis", 1);
-          this.controlSpace("hapsburg", "tunis", 1);
+          this.controlSpace("hapsburg", "tunis");
           this.addRegular("hapsburg", "naples", 2);
           this.addNavalSquadron("hapsburg", "naples", 2);
           this.addRegular("hapsburg", "besancon", 1);
@@ -138,9 +143,7 @@ console.log("\n\n\n\n");
 	
 	  // INDEPENDENT
           this.addRegular("independent", "rhodes", 1);
-          //this.addRegular("independent", "metz", 1);
-// debug break siege
-          this.addRegular("independent", "metz", 2);
+          this.addRegular("independent", "metz", 1);
           this.addRegular("independent", "florence", 1);	
 
 	  //this.addRegular("papacy", "florence", 3);
@@ -194,12 +197,12 @@ console.log("\n\n\n\n");
           this.addRegular("hapsburg", "tunis", 1);
           this.controlSpace("hapsburg", "tunis");
           this.addRegular("hapsburg", "naples", 2);
-          this.addNavalSquadron("hapsburg", "naples", 2);
+          this.addNavalSquadron("hapsburg", "naples", 1);
           this.addRegular("hapsburg", "besancon", 1);
           this.addRegular("hapsburg", "brussels", 1);
 	  this.addArmyLeader("hapsburg", "vienna", "ferdinand");
           this.addRegular("hapsburg", "vienna", 4);
-          this.addRegular("hapsburg", "antwerp", 3);
+          this.addRegular("hapsburg", "antwerp", 1);
 
 	  // ENGLAND
           this.addArmyLeader("england", "london", "henry-viii");

@@ -71,7 +71,14 @@ class ModtoolsSettings {
           }
           this.render();
         }
-        this.contacts.render(this.app.options.modtools.whitelist);
+
+        let keylist = [];
+        for (let i = 0;  i < this.app.options.modtools.whitelist.length; i++){
+          keylist.push(this.app.options.modtools.whitelist[i].publickey);
+        }
+
+        console.log("whitelist: ", keylist);
+        this.contacts.render(keylist);
       }
     }
 

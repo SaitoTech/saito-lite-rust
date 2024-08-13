@@ -409,6 +409,11 @@ class Encrypt extends ModTemplate {
 
     siteMessage(`Successfully added ${this.app.keychain.returnUsername(sender, 8)} as a friend`, 5000);
 
+    this.app.connection.emit('saito-whitelist', {
+      address: sender,
+      duration: 0
+    });
+
     let alice_publicKey = Buffer.from(senderkeydata.aes_publicKey, "hex");
     let alice_privatekey = Buffer.from(senderkeydata.aes_privatekey, "hex");
     let alice = this.app.crypto.createDiffieHellman(alice_publicKey, alice_privatekey);

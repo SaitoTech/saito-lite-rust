@@ -35,8 +35,8 @@ class ModTools extends ModTemplate {
 		this.class = 'modtools';
 		this.categories = 'Core Moderation';
 		this.icon = 'fas fa-eye-slash';
-		//this.prune_after = 1500000; // ~1 day
-		this.prune_after = 60000; // ~1 minute
+		this.prune_after = 1500000; // ~1 day
+		//this.prune_after = 60000; // ~1 minute
 		this.max_hops = 2; // stop blacklisting after N hops
 		this.styles = [
 			"/saito/saito.css", '/modtools/style.css',
@@ -48,12 +48,6 @@ class ModTools extends ModTemplate {
 		this.whitelist = [];
 		this.blacklist = [];
 		this.permissions = {};
-
-		//
-		// searchable publickeys, nothing more
-		//
-		this.whitelisted_publickeys = [];
-		this.blacklisted_publickeys = [];
 
 		//
 		// searchable publickeys, nothing more
@@ -157,12 +151,6 @@ class ModTools extends ModTemplate {
                         }
 		)
 
-
-		//
-		// parse wallet to add 
-		//
-		//this.apps['chat'] = "*";
-		//this.save();
 	}
 
 
@@ -175,12 +163,10 @@ class ModTools extends ModTemplate {
 	      return;
 	    }
 	
-
-		this.header = new SaitoHeader(this.app, this);
-		await this.header.initialize(this.app);
+	    this.header = new SaitoHeader(this.app, this);
+	    await this.header.initialize(this.app);
 	
-
-	      this.addComponent(this.header);
+	    this.addComponent(this.header);
 
 	    await super.render();
 	 }
