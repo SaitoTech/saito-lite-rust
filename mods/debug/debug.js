@@ -1,6 +1,9 @@
-var saito = require('../../lib/saito/saito');
+/*
+ var saito = require('../../lib/saito/saito');
+*/
 var ModTemplate = require('../../lib/templates/modtemplate');
 const DebugAppspaceMain = require('./lib/appspace/main');
+
 
 class Debug extends ModTemplate {
 	constructor(app) {
