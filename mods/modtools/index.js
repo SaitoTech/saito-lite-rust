@@ -15,8 +15,6 @@ module.exports = (app, mod) => {
       <meta name="description" content="">
       <meta name="author" content="">
       <title>Saito Modtools</title>
-      <link rel="stylesheet" type="text/css" href="/saito/saito.css" />
-      <link rel="stylesheet" type="text/css" href="/modtools/style.css" />
       <link rel="stylesheet" type="text/css" href="/saito/lib/jsonTree/jsonTree.css" />
       <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen">
       <script src="/saito/lib/jsonTree/jsonTree.js"></script>
