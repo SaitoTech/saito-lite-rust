@@ -1513,7 +1513,7 @@ console.log("LATEST MOVE: " + mv);
 
       this.game.queue.splice(qe, 1);
 
-      if (player == parseInt(mv[1])) {
+      if (this.game.player == parseInt(mv[1])) {
 	if (!this.game.deck[0].hand.includes(mv[2])) {
  	  this.game.deck[0].hand.push(mv[2]);
 	}
@@ -7562,7 +7562,7 @@ this.game_help.render({
       deck['sudan']       		= { img : "TNRnTS-219png" ,name : "Sudanese Civil War", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 };
       deck['fallofsaigon']      	= { img : "TNRnTS-225png" ,name : "Fall of Saigon", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 };
       deck['bayofpigs']       		= { img : "TNRnTS-222png" ,name : "Bay of Pigs", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 2 };
-      deck['august1968']       		= { img : "TNRnTS-220png" ,name : "August Protests", scoring : 0 , player : "both"   , recurring : 0 , ops : 3 };
+      deck['august1968']       		= { img : "TNRnTS-220png" ,name : "August Protests", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 3 };
       deck['khruschevthaw']    		= { img : "TNRnTS-230png" ,name : "Khruschev Thaw", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 3 };
 
       // END OF HISTORY
@@ -7596,7 +7596,7 @@ this.game_help.render({
           if (key === "sudan") { deck['sudan']       		= { img : "TNRnTS-219png" ,name : "Sudanese Civil War", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 }; }
           if (key === "fallofsaigon") { deck['fallofsaigon']      = { img : "TNRnTS-225png" ,name : "Fall of Saigon", scoring : 0 , player : "both"   , recurring : 0 , ops : 2 }; }
           if (key === "bayofpigs") { deck['bayofpigs']       	= { img : "TNRnTS-222png" ,name : "Bay of Pigs", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 2 }; }
-          if (key === "august1968") { deck['august1968']       	= { img : "TNRnTS-220png" ,name : "August Protests", scoring : 0 , player : "both"   , recurring : 0 , ops : 3 }; }
+          if (key === "august1968") { deck['august1968']       	= { img : "TNRnTS-220png" ,name : "August Protests", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 3 }; }
 
 	  // END OF HISTORY
           if (key === "manwhosavedtheworld") { deck['manwhosavedtheworld']       = { img : "TNRnTS-301png" ,name : "The Man Who Saved the World", scoring : 0 , player : "both"   , recurring : 0 , ops : 4 }; }
