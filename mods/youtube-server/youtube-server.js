@@ -135,7 +135,7 @@ class YoutubeServer extends ModTemplate {
   }
 
   getWebsocketPath() {
-    return '/rtmp';
+    return 'rtmp';
   }
 
   onWebSocketServer(wss) {
