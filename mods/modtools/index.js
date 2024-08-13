@@ -185,7 +185,9 @@ module.exports = (app, mod) => {
         `;
       }
 
+
     html +=`
+        <div class="saito-button-primary" id="whitelist">Add</div>
         </div>    
     `;
 

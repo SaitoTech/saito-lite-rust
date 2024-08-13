@@ -65,7 +65,7 @@ class TweetMenu {
 	}
 
 	blockContact() {
-		this.app.connection.emit('saito-blacklist', ({ publicKey : this.tweeter, moderator : this.publicKey, duration : -1 })); // -1 is forever
+		this.app.connection.emit('saito-blacklist', ({ publicKey : this.tweeter, duration : -1 })); // -1 is forever
 		siteMessage('User blocked... reloading feed');
 		setTimeout(() => {
 			setTimeout(() => {

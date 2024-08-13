@@ -43,7 +43,7 @@ module.exports = (app, mod) => {
             	<legend class="settings-label">Who Moderates:</legend>
 
             	<input type="radio" id="public_mod" name="who_moderates" value="public_mod" ${public_c}>
-            	<label for="public">Public <span class="note">- anyone on the network</span></label>
+            	<label for="public">Saito <span class="note">- get blacklists from a Saito run node</span></label>
 
             	<input type="radio" id="friends_mod" name="who_moderates" value="friends_mod" ${friends_c}>
             	<label for="public">Friends <span class="note">- my friends and contacts</span></label>
