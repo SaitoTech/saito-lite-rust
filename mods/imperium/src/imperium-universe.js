@@ -9,88 +9,88 @@
     //  
     // regular planets
     //  
-    planets['crystalis']  	= { type : "hazardous" , img : "/imperium/img/planets/CRYSTALIS.png" , name : "Crystalis" , resources : 3 , influence : 0 , bonus : ""  }
-    planets['troth']  		= { type : "hazardous" , img : "/imperium/img/planets/TROTH.png" , name : "Troth" , resources : 2 , influence : 0 , bonus : ""  }
+    planets['crystalis']  	= { type : "hazardous" , img : "/imperium/img/planets/crystalis.png" , name : "Crystalis" , resources : 3 , influence : 0 , bonus : ""  }
+    planets['troth']  		= { type : "hazardous" , img : "/imperium/img/planets/troth.png" , name : "Troth" , resources : 2 , influence : 0 , bonus : ""  }
 
-    planets['londrak']  	= { type : "industrial" , img : "/imperium/img/planets/LONDRAK.png" , name : "Londrak" , resources : 1 , influence : 2 , bonus : ""  }
-    planets['citadel']  	= { type : "hazardous" , img : "/imperium/img/planets/CITADEL.png" , name : "Citadel" , resources : 0 , influence : 4 , bonus : "red"  }
+    planets['londrak']  	= { type : "industrial" , img : "/imperium/img/planets/londrak.png" , name : "Londrak" , resources : 1 , influence : 2 , bonus : ""  }
+    planets['citadel']  	= { type : "hazardous" , img : "/imperium/img/planets/citadel.png" , name : "Citadel" , resources : 0 , influence : 4 , bonus : "red"  }
 
-    planets['calthrex']  	= { type : "industrial" , img : "/imperium/img/planets/CALTHREX.png" , name : "Calthrex" , resources : 2 , influence : 1 , bonus : ""  }
-    planets['soundra-iv']  	= { type : "industrial" , img : "/imperium/img/planets/SOUNDRA_IV.png" , name : "Soundra IV" , resources : 1 , influence : 2 , bonus : ""  }
+    planets['calthrex']  	= { type : "industrial" , img : "/imperium/img/planets/calthrex.png" , name : "Calthrex" , resources : 2 , influence : 1 , bonus : ""  }
+    planets['soundra-iv']  	= { type : "industrial" , img : "/imperium/img/planets/soundra_iv.png" , name : "Soundra IV" , resources : 1 , influence : 2 , bonus : ""  }
 
-    planets['udon-i']  		= { type : "hazardous" , img : "/imperium/img/planets/UDON-I.png" , name : "Udon-I" , resources : 3 , influence : 1 , bonus : ""  }
-    planets['udon-ii']  	= { type : "hazardous" , img : "/imperium/img/planets/UDON-II.png" , name : "Udon-II" , resources : 2 , influence : 3 , bonus : ""  }
+    planets['udon-i']  		= { type : "hazardous" , img : "/imperium/img/planets/udon_i.png" , name : "Udon-I" , resources : 3 , influence : 1 , bonus : ""  }
+    planets['udon-ii']  	= { type : "hazardous" , img : "/imperium/img/planets/udon_ii.png" , name : "Udon-II" , resources : 2 , influence : 3 , bonus : ""  }
 
-    planets['olympia']  	= { type : "cultural" , img : "/imperium/img/planets/OLYMPIA.png" , name : "Olympia" , resources : 1 , influence : 3 , bonus : ""  }
-    planets['granton-mex'] 	= { type : "industrial" , img : "/imperium/img/planets/GRANTON-MEX.png" , name : "Granton Mex" , resources : 1 , influence : 1 , bonus : "blue"  }
+    planets['olympia']  	= { type : "cultural" , img : "/imperium/img/planets/olympia.png" , name : "Olympia" , resources : 1 , influence : 3 , bonus : ""  }
+    planets['granton-mex'] 	= { type : "industrial" , img : "/imperium/img/planets/granton_mex.png" , name : "Granton Mex" , resources : 1 , influence : 1 , bonus : "blue"  }
 
-    planets['new-illia'] 	= { type : "cultural" , img : "/imperium/img/planets/NEW-ILLIA.png" , name : "New Illia" , resources : 1 , influence : 2 , bonus : ""  }
-    planets['sirens-end'] 	= { type : "cultural" , img : "/imperium/img/planets/SIRENS-END.png" , name : "Siren's End" , resources : 2 , influence : 0 , bonus : ""  }
+    planets['new-illia'] 	= { type : "cultural" , img : "/imperium/img/planets/new_illia.png" , name : "New Illia" , resources : 1 , influence : 2 , bonus : ""  }
+    planets['sirens-end'] 	= { type : "cultural" , img : "/imperium/img/planets/sirens_end.png" , name : "Siren's End" , resources : 2 , influence : 0 , bonus : ""  }
 
-    planets['lazaks-curse'] 	= { type : "cultural" , img : "/imperium/img/planets/LAZAKS-CURSE.png" , name : "Lazak's Curse" , resources : 0 , influence : 2 , bonus : ""  }
-    planets['riftview'] 	= { type : "cultural" , img : "/imperium/img/planets/RIFTVIEW.png" , name : "Riftview" , resources : 1 , influence : 1 , bonus : ""  }
+    planets['lazaks-curse'] 	= { type : "cultural" , img : "/imperium/img/planets/lazaks_curse.png" , name : "Lazak's Curse" , resources : 0 , influence : 2 , bonus : ""  }
+    planets['riftview'] 	= { type : "cultural" , img : "/imperium/img/planets/riftview.png" , name : "Riftview" , resources : 1 , influence : 1 , bonus : ""  }
 
-    planets['broughton'] 	= { type : "industrial" , img : "/imperium/img/planets/BROUGHTON.png" , name : "Broughton" , resources : 1 , influence : 0 , bonus : "yellow"  }
-    planets['singharta'] 	= { type : "hazardous" , img : "/imperium/img/planets/SINGHARTA.png" , name : "Singharta" , resources : 2 , influence : 1 , bonus : ""  }
+    planets['broughton'] 	= { type : "industrial" , img : "/imperium/img/planets/broughton.png" , name : "Broughton" , resources : 1 , influence : 0 , bonus : "yellow"  }
+    planets['singharta'] 	= { type : "hazardous" , img : "/imperium/img/planets/singharta.png" , name : "Singharta" , resources : 2 , influence : 1 , bonus : ""  }
 
-    planets['nova-klondike'] 	= { type : "cultural" , img : "/imperium/img/planets/NOVA-KLONDIKE.png" , name : "Nova Klondike" , resources : 2 , influence : 1 , bonus : ""  }
+    planets['nova-klondike'] 	= { type : "cultural" , img : "/imperium/img/planets/nova_klondike.png" , name : "Nova Klondike" , resources : 2 , influence : 1 , bonus : ""  }
 
-    planets['grox-towers'] 	= { type : "hazardous" , img : "/imperium/img/planets/GROX-TOWERS.png" , name : "Grox Towers", resources : 1 , influence : 3 , bonus : "red"  }
+    planets['grox-towers'] 	= { type : "hazardous" , img : "/imperium/img/planets/grox_towers.png" , name : "Grox Towers", resources : 1 , influence : 3 , bonus : "red"  }
 
-    planets['gravitys-edge'] 	= { type : "cultural" , img : "/imperium/img/planets/GRAVITYS-EDGE.png" , name : "Gravity's Edge" , resources : 0 , influence : 2 , bonus : ""  }
-    planets['vespar'] 		= { type : "hazardous" , img : "/imperium/img/planets/VESPAR.png" , name : "Vespar" , resources : 3 , influence : 1 , bonus : ""  }
+    planets['gravitys-edge'] 	= { type : "cultural" , img : "/imperium/img/planets/gravitys_edge.png" , name : "Gravity's Edge" , resources : 0 , influence : 2 , bonus : ""  }
+    planets['vespar'] 		= { type : "hazardous" , img : "/imperium/img/planets/vespar.png" , name : "Vespar" , resources : 3 , influence : 1 , bonus : ""  }
 
-    planets['craw-populi'] 	= { type : "industrial" , img : "/imperium/img/planets/CRAW-POPULI.png" , name : "Craw Populi" , resources : 1 , influence : 1 , bonus : "green"  }
-    planets['hopes-lure'] 	= { type : "hazardous" , img : "/imperium/img/planets/HOPES-LURE.png" , name : "Hope's Lure" , resources : 3 , influence : 1 , bonus : ""  }
+    planets['craw-populi'] 	= { type : "industrial" , img : "/imperium/img/planets/craw_populi.png" , name : "Craw Populi" , resources : 1 , influence : 1 , bonus : "green"  }
+    planets['hopes-lure'] 	= { type : "hazardous" , img : "/imperium/img/planets/hopes_lure.png" , name : "Hope's Lure" , resources : 3 , influence : 1 , bonus : ""  }
 
-    planets['incarth'] 		= { type : "cultural" , img : "/imperium/img/planets/INCARTH.png" , name : "Incarth" , resources : 2 , influence : 1 , bonus : ""  }
+    planets['incarth'] 		= { type : "cultural" , img : "/imperium/img/planets/incarth.png" , name : "Incarth" , resources : 2 , influence : 1 , bonus : ""  }
 
-    planets['quandor'] 		= { type : "industrial" , img : "/imperium/img/planets/QUANDOR.png" , name : "Quandor" , resources : 1 , influence : 2 , bonus : ""  }
-    planets['quandam'] 		= { type : "cultural" , img : "/imperium/img/planets/QUANDAM.png" , name : "Quandam" , resources : 0 , influence : 3 , bonus : ""  }
+    planets['quandor'] 		= { type : "industrial" , img : "/imperium/img/planets/quandor.png" , name : "Quandor" , resources : 1 , influence : 2 , bonus : ""  }
+    planets['quandam'] 		= { type : "cultural" , img : "/imperium/img/planets/quandam.png" , name : "Quandam" , resources : 0 , influence : 3 , bonus : ""  }
 
-    planets['virgil'] 		= { type : "industrial" , img : "/imperium/img/planets/VIRGIL.png" , name : "Virgil" , resources : 2 , influence : 2 , bonus : ""  }
+    planets['virgil'] 		= { type : "industrial" , img : "/imperium/img/planets/virgil.png" , name : "Virgil" , resources : 2 , influence : 2 , bonus : ""  }
 
-    planets['contouri-i']	= { type : "industrial" , img : "/imperium/img/planets/CONTOURI-I.png" , name : "Contouri I" , resources : 1 , influence : 1 , bonus : "green"  }
+    planets['contouri-i']	= { type : "industrial" , img : "/imperium/img/planets/contouri_i.png" , name : "Contouri I" , resources : 1 , influence : 1 , bonus : "green"  }
 
-    planets['shriva'] 		= { type : "hazardous" , img : "/imperium/img/planets/SHRIVA.png" , name : "Shriva" , resources : 2 , influence : 0 , bonus : ""  }
-    planets['vigor'] 		= { type : "cultural" , img : "/imperium/img/planets/VIGOR.png" , name : "Vigor" , resources : 0 , influence : 3 , bonus : ""  }
+    planets['shriva'] 		= { type : "hazardous" , img : "/imperium/img/planets/shriva.png" , name : "Shriva" , resources : 2 , influence : 0 , bonus : ""  }
+    planets['vigor'] 		= { type : "cultural" , img : "/imperium/img/planets/vigor.png" , name : "Vigor" , resources : 0 , influence : 3 , bonus : ""  }
 
-    planets['xerxes'] 		= { type : "industrial" , img : "/imperium/img/planets/XERXES.png" , name : "Xerxes" , resources : 1 , influence : 1 , bonus : "blue"  }
+    planets['xerxes'] 		= { type : "industrial" , img : "/imperium/img/planets/xerxes.png" , name : "Xerxes" , resources : 1 , influence : 1 , bonus : "blue"  }
 
-    planets['unsulla'] 		= { type : "hazardous" , img : "/imperium/img/planets/UNSULLA.png" , name : "Unsulla" , resources : 2 , influence : 2 , bonus : ""  }
+    planets['unsulla'] 		= { type : "hazardous" , img : "/imperium/img/planets/unsulla.png" , name : "Unsulla" , resources : 2 , influence : 2 , bonus : ""  }
 
-    planets['panther']		= { type : "industrial" , img : "/imperium/img/planets/PANTHER.png" , name : "Panther" , resources : 1 , influence : 2 , bonus : "yellow"  }
+    planets['panther']		= { type : "industrial" , img : "/imperium/img/planets/panther.png" , name : "Panther" , resources : 1 , influence : 2 , bonus : "yellow"  }
 
 
     //
     // homeworlds & diplomatic
     //
     //
-    planets['new-byzantium']	= { type : "diplomatic" , img : "/imperium/img/planets/NEW-BYZANTIUM.png" , name : "New Byzantium" , resources : 1 , influence : 6 , bonus : ""  }
+    planets['new-byzantium']	= { type : "diplomatic" , img : "/imperium/img/planets/new_byzantium.png" , name : "New Byzantium" , resources : 1 , influence : 6 , bonus : ""  }
     // sol
-    planets['terra']		= { type : "diplomatic" , img : "/imperium/img/planets/TERRA.png" , name : "Terra" , resources : 4 , influence : 2 , bonus : ""  }
+    planets['terra']		= { type : "diplomatic" , img : "/imperium/img/planets/terra.png" , name : "Terra" , resources : 4 , influence : 2 , bonus : ""  }
     // yin
-    planets['sigurds-cradle']	= { type : "diplomatic" , img : "/imperium/img/planets/SIGURDS-CRADLE.png" , name : "Sigurd's Cradle" , resources : 4 , influence : 4 , bonus : ""  }
+    planets['sigurds-cradle']	= { type : "diplomatic" , img : "/imperium/img/planets/sigurds_cradle.png" , name : "Sigurd's Cradle" , resources : 4 , influence : 4 , bonus : ""  }
     // muaat
-    planets['kroeber']		= { type : "diplomatic" , img : "/imperium/img/planets/KROEBER.png" , name : "Kroeber" , resources : 4 , influence : 1 , bonus : ""  }
+    planets['kroeber']		= { type : "diplomatic" , img : "/imperium/img/planets/kroeber.png" , name : "Kroeber" , resources : 4 , influence : 1 , bonus : ""  }
     // yssaril
-    planets['miranda']		= { type : "diplomatic" , img : "/imperium/img/planets/MIRANDA.png" , name : "Miranda" , resources : 2 , influence : 3 , bonus : ""  }
-    planets['fischer']		= { type : "diplomatic" , img : "/imperium/img/planets/FISCHER.png" , name : "Fischer" , resources : 1 , influence : 2 , bonus : ""  }
+    planets['miranda']		= { type : "diplomatic" , img : "/imperium/img/planets/miranda.png" , name : "Miranda" , resources : 2 , influence : 3 , bonus : ""  }
+    planets['fischer']		= { type : "diplomatic" , img : "/imperium/img/planets/fischer.png" , name : "Fischer" , resources : 1 , influence : 2 , bonus : ""  }
     // arborec
-    planets['som']		= { type : "diplomatic" , img : "/imperium/img/planets/SOM.png" , name : "Som" , resources : 3 , influence : 2 , bonus : ""  }
+    planets['som']		= { type : "diplomatic" , img : "/imperium/img/planets/som.png" , name : "Som" , resources : 3 , influence : 2 , bonus : ""  }
     // jolnar
-    planets['startide']		= { type : "diplomatic" , img : "/imperium/img/planets/STARTIDE.png" , name : "Startide" , resources : 1 , influence : 2 , bonus : ""  }
-    planets['evenflow']		= { type : "diplomatic" , img : "/imperium/img/planets/EVENFLOW.png" , name : "Evenflow" , resources : 2 , influence : 3 , bonus : ""  }
+    planets['startide']		= { type : "diplomatic" , img : "/imperium/img/planets/startide.png" , name : "Startide" , resources : 1 , influence : 2 , bonus : ""  }
+    planets['evenflow']		= { type : "diplomatic" , img : "/imperium/img/planets/evenflow.png" , name : "Evenflow" , resources : 2 , influence : 3 , bonus : ""  }
     // sardakk
-    planets['aandor']		= { type : "diplomatic" , img : "/imperium/img/planets/AANDOR.png" , name : "Aandor" , resources : 1 , influence : 0 , bonus : ""  }
-    planets['brest']		= { type : "diplomatic" , img : "/imperium/img/planets/BREST.png" , name : "Brest" , resources : 3 , influence : 1 , bonus : ""  }
+    planets['aandor']		= { type : "diplomatic" , img : "/imperium/img/planets/aandor.png" , name : "Aandor" , resources : 1 , influence : 0 , bonus : ""  }
+    planets['brest']		= { type : "diplomatic" , img : "/imperium/img/planets/brest.png" , name : "Brest" , resources : 3 , influence : 1 , bonus : ""  }
     // xxcha
-    planets['giants-drink']	= { type : "diplomatic" , img : "/imperium/img/planets/GIANTS-DRINK.png" , name : "Giant's Drink" , resources : 2 , influence : 3 , bonus : ""  }
-    planets['otho']		= { type : "diplomatic" , img : "/imperium/img/planets/OTHO.png" , name : "Otho" , resources : 1 , influence : 1 , bonus : ""  }
+    planets['giants-drink']	= { type : "diplomatic" , img : "/imperium/img/planets/giants_drink.png" , name : "Giant's Drink" , resources : 2 , influence : 3 , bonus : ""  }
+    planets['otho']		= { type : "diplomatic" , img : "/imperium/img/planets/otho.png" , name : "Otho" , resources : 1 , influence : 1 , bonus : ""  }
     // hacan
-    planets['hiraeth']		= { type : "diplomatic" , img : "/imperium/img/planets/HIRAETH.png" , name : "Hiraeth" , resources : 1 , influence : 1 , bonus : ""  }
-    planets['quartil']		= { type : "diplomatic" , img : "/imperium/img/planets/QUARTIL.png" , name : "Quartil" , resources : 2 , influence : 0 , bonus : ""  }
-    planets['surriel']		= { type : "diplomatic" , img : "/imperium/img/planets/SURRIEL.png" , name : "Surriel" , resources : 0 , influence : 1 , bonus : ""  }
+    planets['hiraeth']		= { type : "diplomatic" , img : "/imperium/img/planets/hiraeth.png" , name : "Hiraeth" , resources : 1 , influence : 1 , bonus : ""  }
+    planets['quartil']		= { type : "diplomatic" , img : "/imperium/img/planets/quartil.png" , name : "Quartil" , resources : 2 , influence : 0 , bonus : ""  }
+    planets['surriel']		= { type : "diplomatic" , img : "/imperium/img/planets/surriel.png" , name : "Surriel" , resources : 0 , influence : 1 , bonus : ""  }
 
 
     for (var i in planets) {
@@ -140,50 +140,50 @@
 
     var sectors = {};
 
-    sectors['sector1']         = { img : "/imperium/img/sectors/full/sector1.png" ,  name : "Crystalis / Troth" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['crystalis','troth'] }
-    sectors['sector2']         = { img : "/imperium/img/sectors/full/sector2.png" ,  name : "Londrak / Citadel" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['londrak','citadel'] }
-    sectors['sector3']         = { img : "/imperium/img/sectors/full/sector3.png" ,  name : "Calthrex / Soundra IV" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['calthrex','soundra-iv'] }
-    sectors['sector4']         = { img : "/imperium/img/sectors/full/sector4.png" ,  name : "Udon" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['udon-i','udon-ii'] }
-    sectors['sector5']         = { img : "/imperium/img/sectors/full/sector5.png" ,  name : "Olympia / Granton Mex" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['olympia','granton-mex'] }
-    sectors['sector6']         = { img : "/imperium/img/sectors/full/sector6.png" ,  name : "New Illia / Siren's End" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['new-illia','sirens-end'] }
-    sectors['sector7']         = { img : "/imperium/img/sectors/full/sector7.png" ,  name : "Lazak's Curse / Riftview" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['lazaks-curse','riftview'] }
-    sectors['sector8']         = { img : "/imperium/img/sectors/full/sector8.png" ,  name : "Broughton / Singharta" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['broughton','singharta'] }
-    sectors['sector9']         = { img : "/imperium/img/sectors/full/sector9.png" ,  name : "Nova Klondike" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['nova-klondike'] }
-    sectors['sector10']        = { img : "/imperium/img/sectors/full/sector10.png" , name : "Grox Towers" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['grox-towers'] }
-    sectors['sector11']        = { img : "/imperium/img/sectors/full/sector11.png" , name : "Gravity's Edge / Vespar" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['gravitys-edge','vespar'] }
-    sectors['sector12']        = { img : "/imperium/img/sectors/full/sector12.png" , name : "Craw Populi / Hope's Lure" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['craw-populi','hopes-lure'] }
-    sectors['sector13']        = { img : "/imperium/img/sectors/full/sector13.png" , name : "Incarth" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['incarth'] }
-    sectors['sector14']        = { img : "/imperium/img/sectors/full/sector14.png" , name : "Quandam / Quandor" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['quandam','quandor'] }
-    sectors['sector15']        = { img : "/imperium/img/sectors/full/sector15.png" , name : "Virgil" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['virgil'] }
-    sectors['sector16']        = { img : "/imperium/img/sectors/full/sector16.png" , name : "Contouri" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['contouri-i'] }
-    sectors['sector17']        = { img : "/imperium/img/sectors/full/sector17.png" , name : "Shriva / Vigor" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['shriva','vigor'] }
-    sectors['sector18']        = { img : "/imperium/img/sectors/full/sector18.png" , name : "Xerxes" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['xerxes'] }
-    sectors['sector19']        = { img : "/imperium/img/sectors/full/sector19.png" , name : "Unsulla" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['unsulla'] }
-    sectors['sector20']        = { img : "/imperium/img/sectors/full/sector20.png" , name : "Panther" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['panther'] }
+    sectors['sector1']         = { img : "/imperium/img/sectors/sector1.png" ,  name : "Crystalis / Troth" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['crystalis','troth'] }
+    sectors['sector2']         = { img : "/imperium/img/sectors/sector2.png" ,  name : "Londrak / Citadel" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['londrak','citadel'] }
+    sectors['sector3']         = { img : "/imperium/img/sectors/sector3.png" ,  name : "Calthrex / Soundra IV" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['calthrex','soundra-iv'] }
+    sectors['sector4']         = { img : "/imperium/img/sectors/sector4.png" ,  name : "Udon" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['udon-i','udon-ii'] }
+    sectors['sector5']         = { img : "/imperium/img/sectors/sector5.png" ,  name : "Olympia / Granton Mex" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['olympia','granton-mex'] }
+    sectors['sector6']         = { img : "/imperium/img/sectors/sector6.png" ,  name : "New Illia / Siren's End" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['new-illia','sirens-end'] }
+    sectors['sector7']         = { img : "/imperium/img/sectors/sector7.png" ,  name : "Lazak's Curse / Riftview" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['lazaks-curse','riftview'] }
+    sectors['sector8']         = { img : "/imperium/img/sectors/sector8.png" ,  name : "Broughton / Singharta" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['broughton','singharta'] }
+    sectors['sector9']         = { img : "/imperium/img/sectors/sector9.png" ,  name : "Nova Klondike" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['nova-klondike'] }
+    sectors['sector10']        = { img : "/imperium/img/sectors/sector10.png" , name : "Grox Towers" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['grox-towers'] }
+    sectors['sector11']        = { img : "/imperium/img/sectors/sector11.png" , name : "Gravity's Edge / Vespar" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['gravitys-edge','vespar'] }
+    sectors['sector12']        = { img : "/imperium/img/sectors/sector12.png" , name : "Craw Populi / Hope's Lure" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['craw-populi','hopes-lure'] }
+    sectors['sector13']        = { img : "/imperium/img/sectors/sector13.png" , name : "Incarth" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['incarth'] }
+    sectors['sector14']        = { img : "/imperium/img/sectors/sector14.png" , name : "Quandam / Quandor" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['quandam','quandor'] }
+    sectors['sector15']        = { img : "/imperium/img/sectors/sector15.png" , name : "Virgil" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['virgil'] }
+    sectors['sector16']        = { img : "/imperium/img/sectors/sector16.png" , name : "Contouri" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['contouri-i'] }
+    sectors['sector17']        = { img : "/imperium/img/sectors/sector17.png" , name : "Shriva / Vigor" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['shriva','vigor'] }
+    sectors['sector18']        = { img : "/imperium/img/sectors/sector18.png" , name : "Xerxes" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['xerxes'] }
+    sectors['sector19']        = { img : "/imperium/img/sectors/sector19.png" , name : "Unsulla" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['unsulla'] }
+    sectors['sector20']        = { img : "/imperium/img/sectors/sector20.png" , name : "Panther" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : ['panther'] }
 
-    sectors['new-byzantium']   = { img : "/imperium/img/sectors/full/sector21.png" , name : "New Byzantium" , type : 0 , hw : 0 , wormhole : 0, mr : 1 , planets : ['new-byzantium'] }
-    sectors['sector22']        = { img : "/imperium/img/sectors/full/sector22.png" , name : "Sol Homeworld" , type : 0 , hw : 1 , wormhole : 0 , mr : 0 , planets : ['terra'] }
-    sectors['sector23']        = { img : "/imperium/img/sectors/full/sector23.png" , name : "Yin Homeworld" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['sigurds-cradle'] }
-    sectors['sector24']        = { img : "/imperium/img/sectors/full/sector24.png" , name : "Muaat Homeworld" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['kroeber'] }
-    sectors['sector25']        = { img : "/imperium/img/sectors/full/sector25.png" , name : "Ysarril Homeworld" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['miranda','fischer'] }
-    sectors['sector26']        = { img : "/imperium/img/sectors/full/sector26.png" , name : "Arborec" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['som'] }
-    sectors['sector27']        = { img : "/imperium/img/sectors/full/sector27.png" , name : "Jol Nar Homeworld" , type : 0 , hw : 1 , wormhole : 0 , mr : 0 , planets : ['startide','evenflow'] }
-    sectors['sector28']        = { img : "/imperium/img/sectors/full/sector28.png" , name : "Sardaak Homeworld" , type : 0 , hw : 1 , wormhole: 0 , mr : 0 , planets : ['aandor','brest'] } 
-    sectors['sector29']        = { img : "/imperium/img/sectors/full/sector29.png" , name : "XXCha Homeworld" , type : 0 , hw : 1 , wormhole : 0 , mr : 0 , planets : ['giants-drink','otho'] }
-    sectors['sector30']        = { img : "/imperium/img/sectors/full/sector30.png" , name : "Hacan Homeworld" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['hiraeth','quartil','surriel'] }
+    sectors['new-byzantium']   = { img : "/imperium/img/sectors/sector21.png" , name : "New Byzantium" , type : 0 , hw : 0 , wormhole : 0, mr : 1 , planets : ['new-byzantium'] }
+    sectors['sector22']        = { img : "/imperium/img/sectors/sector22.png" , name : "Sol Homeworld" , type : 0 , hw : 1 , wormhole : 0 , mr : 0 , planets : ['terra'] }
+    sectors['sector23']        = { img : "/imperium/img/sectors/sector23.png" , name : "Yin Homeworld" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['sigurds-cradle'] }
+    sectors['sector24']        = { img : "/imperium/img/sectors/sector24.png" , name : "Muaat Homeworld" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['kroeber'] }
+    sectors['sector25']        = { img : "/imperium/img/sectors/sector25.png" , name : "Ysarril Homeworld" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['miranda','fischer'] }
+    sectors['sector26']        = { img : "/imperium/img/sectors/sector26.png" , name : "Arborec" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['som'] }
+    sectors['sector27']        = { img : "/imperium/img/sectors/sector27.png" , name : "Jol Nar Homeworld" , type : 0 , hw : 1 , wormhole : 0 , mr : 0 , planets : ['startide','evenflow'] }
+    sectors['sector28']        = { img : "/imperium/img/sectors/sector28.png" , name : "Sardaak Homeworld" , type : 0 , hw : 1 , wormhole: 0 , mr : 0 , planets : ['aandor','brest'] } 
+    sectors['sector29']        = { img : "/imperium/img/sectors/sector29.png" , name : "XXCha Homeworld" , type : 0 , hw : 1 , wormhole : 0 , mr : 0 , planets : ['giants-drink','otho'] }
+    sectors['sector30']        = { img : "/imperium/img/sectors/sector30.png" , name : "Hacan Homeworld" , type : 0 , hw : 1 , wormhole : 0, mr : 0 , planets : ['hiraeth','quartil','surriel'] }
 
-    sectors['sector31']        = { img : "/imperium/img/sectors/full/sector31.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector32']        = { img : "/imperium/img/sectors/full/sector32.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } 
-    sectors['sector33']        = { img : "/imperium/img/sectors/full/sector33.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector34']        = { img : "/imperium/img/sectors/full/sector34.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector35']        = { img : "/imperium/img/sectors/full/sector35.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector36']        = { img : "/imperium/img/sectors/full/sector36.png" ,	name : "Wormhole A" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector37']        = { img : "/imperium/img/sectors/full/sector37.png" ,	name : "Wormhole B" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } // black hole or rift
-    sectors['sector38']        = { img : "/imperium/img/sectors/full/sector38.png" ,	name : "Gravity Rift" , type : 1 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector39']        = { img : "/imperium/img/sectors/full/sector39.png" ,	name : "Nebula" , type : 2 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector40']        = { img : "/imperium/img/sectors/full/sector40.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector41']        = { img : "/imperium/img/sectors/full/sector41.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
-    sectors['sector42']        = { img : "/imperium/img/sectors/full/sector42.png" , name : "Supernova" , type : 4 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector31']        = { img : "/imperium/img/sectors/sector31.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector32']        = { img : "/imperium/img/sectors/sector32.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } 
+    sectors['sector33']        = { img : "/imperium/img/sectors/sector33.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector34']        = { img : "/imperium/img/sectors/sector34.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector35']        = { img : "/imperium/img/sectors/sector35.png" ,	name : "Empty Space" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector36']        = { img : "/imperium/img/sectors/sector36.png" ,	name : "Wormhole A" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector37']        = { img : "/imperium/img/sectors/sector37.png" ,	name : "Wormhole B" , type : 0 , hw : 0 , wormhole : 0, mr : 0 , planets : [] } // black hole or rift
+    sectors['sector38']        = { img : "/imperium/img/sectors/sector38.png" ,	name : "Gravity Rift" , type : 1 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector39']        = { img : "/imperium/img/sectors/sector39.png" ,	name : "Nebula" , type : 2 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector40']        = { img : "/imperium/img/sectors/sector40.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector41']        = { img : "/imperium/img/sectors/sector41.png" , name : "Asteroid Field" , type : 3 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
+    sectors['sector42']        = { img : "/imperium/img/sectors/sector42.png" , name : "Supernova" , type : 4 , hw : 0 , wormhole : 0, mr : 0 , planets : [] }
 
     for (var i in sectors) {
 
