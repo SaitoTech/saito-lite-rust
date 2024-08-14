@@ -539,3 +539,9 @@ video#local.noflip{
 .yt-active > i {
 	animation: pulsate 2s ease-in-out infinite !important;
 }
+
+.yt-stream-type {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
