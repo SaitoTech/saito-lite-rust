@@ -13,9 +13,10 @@
         return 1;
       }
 
+      this.startClockAndSetActivePlayer(this.roles.indexOf(player));
+
       if (i_played_the_card) {
 
-        this.startClockAndSetActivePlayer();
 
         // pick optional card
         var twilight_self = this;

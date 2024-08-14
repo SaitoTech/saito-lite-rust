@@ -3052,7 +3052,9 @@ console.log("selected: " + spacekey);
               let is_committed = $(this).attr("id");
 	      if (is_committed == "uncommitted") { is_committed = 0; } else { is_committed = 1; }
 
-              let msg = "Leigzip Debate Format?";
+alert("is committed: " + is_committed + " --- " + his_self.returnDebatersInLanguageZone(language_zone, "protestant", is_committed));
+
+              let msg = "Leipzig Debate Format?";
               let html = '<ul>';
               html += '<li class="option" id="select">Pick My Debater</li>';
 	      // or prohibit uncommitted debaters
@@ -3299,6 +3301,9 @@ console.log("selected: " + spacekey);
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu === "debate") {
+	  let p = his_self.returnPlayerOfFaction("protestant");
+          his_self.addMove('hand_to_fhand\t1\t' + p + '\t' + "protestant" + "\t1");
+	  his_self.addMove("DEAL\t1\t"+p+"\t1");
 	  his_self.addMove("discard\tprotestant\t007");
 	  his_self.addMove("NOTIFY\t"+his_self.popup("007") + ": Luther enters Theological Debate");
 	  his_self.addMove("here_i_stand_response");
@@ -3344,6 +3349,7 @@ console.log("selected: " + spacekey);
           his_self.game.queue.splice(qe, 1);
 
 	  his_self.updateLog("Protestants trigger " + his_self.popup("007"));
+	  // protestants get extra card
 	  his_self.game.queue.push("ACKNOWLEDGE\tProtestants swap Martin Luther into debate");
 
 	  //
@@ -3384,18 +3390,37 @@ console.log("selected: " + spacekey);
 	    }
 
 	    let is_luther_committed = 0;
+console.log("is luther committed?");
+console.log(JSON.stringify(his_self.game.state.excommunicated));
 	    for (let i = 0; i < his_self.game.state.debaters.length; i++) {
 	      if (his_self.game.state.debaters[i].key === "luther-debater") {
-		if (his_self.game.state.debaters[i].committed == 1) { is_luther_committed = 1; }
+		if (his_self.game.state.debaters[i].committed == 1) { 
+		  // remove +1 bonus if luther is committed
+		  if (his_self.game.state.theological_debate.defender_debater_entered_uncommitted == 1) {
+		    his_self.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
+                    his_self.game.state.theological_debate.defender_debater_bonus--;
+		  }
+		  is_luther_committed = 1;
+		}
 	      }
 	    }
 	    for (let i = 0; i < his_self.game.state.excommunicated.length; i++) {
 	      if (his_self.game.state.excommunicated[i].debater) {
 	        if (his_self.game.state.excommunicated[i].debater.type === "luther-debater") {
-		  if (his_self.game.state.excommunicated[i].committed == 1) { is_luther_committed = 1; }
+console.log("FOUND LUTHER");
+		  if (his_self.game.state.excommunicated[i].debater.committed == 1) {
+console.log("LUTHER IS COMMITTED!");
+		    // remove +1 bonus if luther is committed
+		    if (his_self.game.state.theological_debate.defender_debater_entered_uncommitted == 1) {
+		      his_self.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
+                      his_self.game.state.theological_debate.defender_debater_bonus--;
+		    }
+		    is_luther_committed = 1;
+		  }
 	        }
 	      }
 	    }
+
 
 	    if (his_self.game.state.theological_debate.attacker === "papacy") {
 	      if (his_self.game.state.theological_debate.round == 1) {
@@ -3428,9 +3453,13 @@ console.log("selected: " + spacekey);
                 his_self.game.state.theological_debate.attacker_debater_bonus = 3;
 	      }
 	    }
+
+
 	  }
 
 	  // re-render debate overlay with luther there
+console.log("rendering with luther here: ");
+console.log(JSON.stringify(his_self.game.state.theological_debate));
           his_self.debate_overlay.render(his_self.game.state.theological_debate);
           his_self.displayTheologicalDebater(his_self.game.state.theological_debate.attacker_debater, true);
           his_self.displayTheologicalDebater(his_self.game.state.theological_debate.defender_debater, false);
@@ -8209,7 +8238,6 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
       onEvent : function(his_self, faction) {
 
 	if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
-
 
 	  //
 	  //

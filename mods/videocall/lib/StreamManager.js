@@ -150,8 +150,8 @@ class StreamManager {
           console.log(key);
           if (this.mod.room_obj.call_peers.includes(key)) {
             console.log('Add Track');
-            for (let track of this.presentationStream.getTracks()){
-              pc.addTrack(track);  
+            for (let track of this.presentationStream.getTracks()) {
+              pc.addTrack(track);
             }
           }
         });
@@ -207,14 +207,19 @@ class StreamManager {
       });
     });
 
-    app.connection.on(
-      'stun-update-connection-message',
-      (peerId, connectionState) => {
-        if (this.active) {
-          this.broadcastPeerList();
-        }
-      }
-    );
+
+    // app.connection.on(
+    //   'stun-update-connection-message',
+    //   (peerId, connectionState) => {
+    //     if (this.active) {
+    //       this.broadcastPeerList();
+    //     }
+    //   }
+    // );
+
+    app.connection.on('remove-remote-stream', peerId => {
+      this.removePeer(peerId, "was kicked out")
+    })
 
     app.connection.on('stun-track-event', (peerId, event) => {
       if (!this.active) {
@@ -299,23 +304,38 @@ class StreamManager {
       // The person who set up the call is the "host", and we have to wait for peopel to join us in order to create
       // peer connections, but if we reconnect, or refresh, we have saved in local storage the people in our call
       //
-      if (this.mod.room_obj?.host_public_key === this.mod.publicKey) {
-        //
-        // Not direct calling!
-        //
-        if (!this.mod.room_obj?.ui) {
-          console.log('STUN HOST: my peers, ', this.mod.room_obj.call_peers);
-          for (peer of this.mod.room_obj.call_peers) {
-            if (peer !== this.mod.publicKey) {
-              this.mod.sendCallEntryTransaction(peer);
-              break;
+      if (this.mod.room_obj?.scheduled === false) {
+        if (this.mod.room_obj?.host_public_key === this.mod.publicKey) {
+          //
+          // Not direct calling!
+          //
+          if (!this.mod.room_obj?.ui) {
+            console.log('STUN HOST: my peers, ', this.mod.room_obj.call_peers);
+            for (peer of this.mod.room_obj.call_peers) {
+              if (peer !== this.mod.publicKey) {
+                this.mod.sendCallEntryTransaction(peer);
+                break;
+              }
             }
           }
+        } else {
+          // send ping transaction
+          this.mod.sendCallEntryTransaction();
         }
       } else {
-        // send ping transaction
-        this.mod.sendCallEntryTransaction();
+        let call_id = this.mod.room_obj.call_id
+        this.app.keychain.addWatchedPublicKey(call_id);
+        this.app.keychain.addKey(call_id, { identifier: call_id });
+        console.log('watched public key', this.mod.room_obj)
+        let base64obj = this.app.crypto.stringToBase64(
+          JSON.stringify(this.mod.room_obj)
+        );
+    
+        let call_link = window.location.origin + '/videocall/';
+        call_link = `${call_link}?stun_video_chat=${base64obj}`;
+        this.mod.sendBroadcastPresenceTransaction(call_id, call_link)
       }
+
 
       let sound = new Audio('/saito/sound/Calm.mp3');
       sound.play();
@@ -326,6 +346,7 @@ class StreamManager {
     app.connection.on(
       'stun-new-peer-connection',
       async (publicKey, peerConnection) => {
+        console.log
         if (!this.active) {
           return;
         }
@@ -437,7 +458,7 @@ class StreamManager {
     this.app.connection.emit('add-local-stream-request', this.localStream);
   }
 
-  removePeer(peer) {
+  removePeer(peer, message = "left the meeting") {
     this.remoteStreams.delete(peer);
 
     if (this.auto_disconnect) {
@@ -445,7 +466,7 @@ class StreamManager {
       this.app.connection.emit('stun-disconnect');
     } else {
       siteMessage(
-        `${this.app.keychain.returnUsername(peer)} left the meeting`,
+        `${this.app.keychain.returnUsername(peer)} ${message}`,
         2500
       );
     }

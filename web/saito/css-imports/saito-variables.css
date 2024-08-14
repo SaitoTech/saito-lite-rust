@@ -160,9 +160,6 @@ font imports
   --border-padding-wide: 0.8rem;
   --border-padding-ultra-wide: 1rem;
   --border-padding-huge: 2rem;
-  --border-padding-identicon-none: 0px;
-  --border-padding-identicon-thin: 1px;
-  --border-padding-identicon-thick: 2px;
       
 /*BORDER THICKNESS SELECTION*/
   --border-thickness-thin: 1px;
@@ -311,7 +308,6 @@ font imports
   /*Border padding*/ 
   --border-padding-sidebar-style: var(--border-padding-normal);
   --border-padding-style-leaderboard-ranking:; /* no override from arcade on main theme */
-  --border-padding-identicon-style: var(--border-padding-identicon-none);
   --border-padding-overlay-post: var(--border-padding-ultra-wide);
   /*thickness*/
   --border-thickness-general-dividers: var(--border-thickness-thin);

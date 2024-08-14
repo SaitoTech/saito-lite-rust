@@ -69,25 +69,26 @@ class Arcade extends ModTemplate {
 		app.connection.on('arcade-notify-player-turn', (game_id, target, status) => {
 			for (let game of app.options.games) {
 				if (game.id == game_id) {
-					console.log(JSON.parse(JSON.stringify(game)));
-					// Temporarily update these fields so can render nicely in arcade
-					// without having to save the game
-					let prev_target = game.target;
+
+					//let prev_target = game.target;
 
 					game.status = status;
 					game.target = target;
 
-					if (prev_target == target){
-						prev_target--;
-						if (prev_target < 1){
-							prev_target = game.players.length;
-						}
-						console.log("Adjust prev target");
-					}
-					console.log("Last: ", prev_target, "Me:", target);
-					console.log(`${this.app.keychain.returnUsername(game.players[prev_target-1])} played a move **********`);
+					// save with turn updated, so reload works
+					app.storage.saveOptions();
 
-					siteMessage(`${this.app.keychain.returnUsername(game.players[prev_target-1])} played in ${game.module}`, 5000);
+					//if (prev_target == target){
+					//	prev_target--;
+					//	if (prev_target < 1){
+					//		prev_target = game.players.length;
+					//	}
+					//	console.log("Adjust prev target");
+					//}
+					//console.log("Last: ", prev_target, "Me:", target);
+					//console.log(`${this.app.keychain.returnUsername(game.players[prev_target-1])} played a move **********`);
+
+					siteMessage(`It is now your turn in ${game.module}`, 5000);
 					app.connection.emit('arcade-invite-manager-render-request');
 				}
 			}
@@ -329,8 +330,7 @@ class Arcade extends ModTemplate {
                ORDER BY created_at ASC`;
 
 		this.sendPeerDatabaseRequestWithFilter('Arcade', sql, (res) => {
-			console.log(sql);
-			console.log(res);
+
 			if (res?.rows) {
 				for (let record of res.rows) {
 					if (this.debug) {
@@ -345,6 +345,7 @@ class Arcade extends ModTemplate {
 
 					//Game is marked as "active" but we didn't already add it from our app.options file...
 					if (record.status == "active" && game_added && arcade_self.isMyGame(game_tx)){
+						console.log("ARCADE: Asynchronous game creation!")
 						game_tx.msg.game_id = game_tx.signature;
 						arcade_self.receiveAcceptTransaction(game_tx);
 					}
@@ -561,15 +562,18 @@ class Arcade extends ModTemplate {
 		}
 		if (type === 'user-menu') {
 			if (obj?.publicKey && obj.publicKey !== this.publicKey) {
-				return {
-					text: 'Challenge to Game',
-					icon: 'fas fa-gamepad',
-					callback: function (app, publicKey) {
-						app.connection.emit('arcade-launch-game-selector', {
-							publicKey
-						});
-					}
-				};
+				let am = this.app.modules.returnActiveModule();
+				if (!am || !this.shouldAffixCallbackToModule(am.name) || this.name == am.name){
+					return {
+						text: 'Challenge to Game',
+						icon: 'fas fa-gamepad',
+						callback: function (app, publicKey) {
+							app.connection.emit('arcade-launch-game-selector', {
+								publicKey
+							});
+						}
+					};
+				}
 			}
 		}
 

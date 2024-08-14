@@ -190,8 +190,8 @@
 }
 
 .stun-chatbox .side-videos {
-	display: grid;
-	grid-template-rows: repeat(auto-fit, minmax(20vh, auto));
+    display: flex;
+	flex-direction: column;
 	gap: 1rem;
 	max-height: calc(100vh - 13rem);
 	overflow: auto;
@@ -255,6 +255,10 @@
 .presentation-side-videos .video-box-container-large {
 	height: fit-content;
 	border: 2px solid var(--saito-border-color-dark);
+}
+
+.side-videos .video-box-container-large {
+    max-height: 50%;
 }
 
 .stun-chatbox .video-box-container-large {
@@ -873,6 +877,10 @@ video#presentation {
 	background-color: #4a4a4a;
 	border-radius: 50%;
 	padding: 0.5rem;
+}
+
+.stunx-appspace-launch-call-btn {
+	margin-bottom:1rem;
 }
 /*
 .chat-settings-audio-progress-bar {

@@ -5,9 +5,9 @@
     /////////////////
     if (card == "bayofpigs") {
 
+      this.startClockAndSetActivePlayer(1);
       if (this.game.player == 1) {
 
-        this.startClockAndSetActivePlayer();
         this.addMove("resolve\tbayofpigs");
         let twilight_self = this;
 

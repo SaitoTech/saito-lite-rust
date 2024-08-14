@@ -8,9 +8,9 @@
       this.game.state.vp -= 1;
       this.updateVictoryPoints();
 
-      if (this.game.player == 2) {
+      this.startClockAndSetActivePlayer(2);
 
-        this.startClockAndSetActivePlayer();
+      if (this.game.player == 2) {
 
         var twilight_self = this;
 

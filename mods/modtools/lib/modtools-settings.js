@@ -1,5 +1,6 @@
 const SettingsTemplate = require("./modtools-settings.template");
 const SaitoContacts = require('../../../lib/saito/ui/modals/saito-contacts/saito-contacts');
+const ModtoolsAppPermissions = require("./modtools-app-permissions");
 
 class ModtoolsSettings {
   constructor(app, mod, container) {
@@ -7,6 +8,7 @@ class ModtoolsSettings {
     this.mod = mod;
     this.container = container;
     this.contacts = new SaitoContacts(app, mod, true);
+    this.app_permissions = new ModtoolsAppPermissions(app, mod, "#modtools-apps");
   }
 
   render() {
@@ -15,13 +17,15 @@ class ModtoolsSettings {
     }else{
       this.app.browser.addElementToSelector(SettingsTemplate(this.app, this.mod), this.container);  
     }
+
+    if (document.querySelector('#modtools-apps')) {
+      this.app_permissions.render();
+    }
     
     this.attachEvents();
   }
 
   attachEvents() {
-
-alert("PERMISSIONS: " + this.mod.permissions.mode);
 
     let settings_self = this;
 
@@ -32,16 +36,24 @@ alert("PERMISSIONS: " + this.mod.permissions.mode);
         this.contacts.callback = (keys) => {
           for (let key of keys){
             for (let i = this.app.options.modtools.blacklist.length; i >= 0; i--){
-              if (this.app.options.modtools.blacklist[i] == key){
-                this.app.connection.emit("saito-unblacklist", key);
-                this.app.options.modtools.blacklist[i].splice(i, 1);
-                break;
+              if (typeof this.app.options.modtools.blacklist[i] !='undefined') {
+                if (this.app.options.modtools.blacklist[i].publickey == key){
+                  this.app.connection.emit("saito-unblacklist", key);
+                  this.app.options.modtools.blacklist.splice(i, 1);
+                  break;
+                }
               }
             }
           }
           this.render();
         }
-        this.contacts.render(this.app.options.modtools.blacklist);
+
+        let keylist = [];
+        for (let i = 0;  i < this.app.options.modtools.blacklist.length; i++){
+          keylist.push(this.app.options.modtools.blacklist[i].publickey);
+        }
+
+        this.contacts.render(keylist);
       }
     }
 
@@ -51,17 +63,26 @@ alert("PERMISSIONS: " + this.mod.permissions.mode);
         this.contacts.multi_button = "Remove from Whitelist";
         this.contacts.callback = (keys) => {
           for (let key of keys){
-            for (let i = this.app.options.modtools.blacklist.length; i >= 0; i--){
-              if (this.app.options.modtools.blacklist[i] == key){
-                this.app.connection.emit("saito-unwhitelist", key);
-                this.app.options.modtools.whitelist[i].splice(i, 1);
-                break;
+            for (let i = this.app.options.modtools.whitelist.length; i >= 0; i--){
+              if (typeof this.app.options.modtools.whitelist[i] !='undefined') {
+                if (this.app.options.modtools.whitelist[i].publickey == key){
+                  this.app.connection.emit("saito-unwhitelist", key);
+                  this.app.options.modtools.whitelist.splice(i, 1);
+                  break;
+                }
               }
             }
           }
           this.render();
         }
-        this.contacts.render(this.app.options.modtools.whitelist);
+
+        let keylist = [];
+        for (let i = 0;  i < this.app.options.modtools.whitelist.length; i++){
+          keylist.push(this.app.options.modtools.whitelist[i].publickey);
+        }
+
+        console.log("whitelist: ", keylist);
+        this.contacts.render(keylist);
       }
     }
 

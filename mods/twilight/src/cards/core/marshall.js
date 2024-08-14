@@ -10,9 +10,9 @@
       this.game.state.events.marshall = 1;
       var twilight_self = this;
 
+      this.startClockAndSetActivePlayer(2);
+
       if (this.game.player == 2) {
-        //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClockAndSetActivePlayer();
 
         var countries_where_i_can_place = 0;
         for (var i in this.countries) {

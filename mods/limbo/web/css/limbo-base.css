@@ -291,7 +291,7 @@
 	transform: translateY(-55%);
 	border-radius: 62%;
 	border: 1px solid var(--color-primary);
-	background-image: url('/limbo/img/inception.gif');
+	background-image: url('/swarmcast/img/inception.gif');
 	background-position: center;
 	background-size: 200%;
 }

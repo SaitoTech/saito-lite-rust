@@ -13,10 +13,9 @@
         this.cancelEvent("unitedfruit");
       }
 
+      this.startClockAndSetActivePlayer(1);
 
       if (this.game.player == 1) {
-        //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClockAndSetActivePlayer();
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();

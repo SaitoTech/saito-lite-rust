@@ -3,6 +3,9 @@ var ModTemplate = require('../../lib/templates/modtemplate');
 const PeerService = require('saito-js/lib/peer_service').default;
 var SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
 var AppSettings = require('./lib/modtools-settings');
+const modtoolsIndex = require('./index');
+
+const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 
 class ModTools extends ModTemplate {
 
@@ -32,11 +35,11 @@ class ModTools extends ModTemplate {
 		this.class = 'modtools';
 		this.categories = 'Core Moderation';
 		this.icon = 'fas fa-eye-slash';
-		//this.prune_after = 1500000; // ~1 day
-		this.prune_after = 60000; // ~1 minute
+		this.prune_after = 1500000; // ~1 day
+		//this.prune_after = 60000; // ~1 minute
 		this.max_hops = 2; // stop blacklisting after N hops
 		this.styles = [
-			'/modtools/style.css',
+			"/saito/saito.css", '/modtools/style.css',
 		];
 
 		//
@@ -45,12 +48,6 @@ class ModTools extends ModTemplate {
 		this.whitelist = [];
 		this.blacklist = [];
 		this.permissions = {};
-
-		//
-		// searchable publickeys, nothing more
-		//
-		this.whitelisted_publickeys = [];
-		this.blacklisted_publickeys = [];
 
 		//
 		// searchable publickeys, nothing more
@@ -143,7 +140,7 @@ class ModTools extends ModTemplate {
 		this.app.connection.on(
                         'saito-unblacklist',
                         async (address) => {
-				modtools_self.unblacklistAddress(address, moderator);
+				modtools_self.unblacklistAddress(address);
                         }
 		);
 
@@ -154,14 +151,33 @@ class ModTools extends ModTemplate {
                         }
 		)
 
-
-		//
-		// parse wallet to add 
-		//
-		this.apps['Chat'] = "*";
-
 	}
 
+
+	async render() {
+
+	    //
+	    // browsers only!
+	    //
+	    if (!this.app.BROWSER) {
+	      return;
+	    }
+	
+	    this.header = new SaitoHeader(this.app, this);
+	    await this.header.initialize(this.app);
+	
+	    this.addComponent(this.header);
+
+	    await super.render();
+	 }
+
+	installModule() {
+
+		this.load();
+		this.apps['chat'] = "*";
+		this.save();
+
+	}
 
 	returnServices() {
                 let services = [];
@@ -624,6 +640,7 @@ class ModTools extends ModTemplate {
 	  	this.app.options.modtools.whitelist = this.whitelist;
 	  	this.app.options.modtools.blacklist = this.blacklist;
 	  	this.app.options.modtools.permissions = this.permissions;
+	  	this.app.options.modtools.apps = this.apps;
 		this.app.storage.saveOptions();
 	}
 
@@ -644,14 +661,26 @@ class ModTools extends ModTemplate {
 		    sync_whitelist : true ,
 		  };
 		}
+		if (!this.app.options.modtools.apps) { this.app.options.modtools.apps = {}; }
 	  	this.whitelist = this.app.options.modtools.whitelist;
 	  	this.blacklist = this.app.options.modtools.blacklist;
 	  	this.permissions = this.app.options.modtools.permissions;
+	  	this.apps = this.app.options.modtools.apps;
 		for (let i = 0; i < this.whitelist.length; i++) { this.whitelisted_publickeys.push(this.whitelist[i].publickey); }
 		for (let i = 0; i < this.blacklist.length; i++) { this.blacklisted_publickeys.push(this.blacklist[i].publickey); }
 	}
 
+	webServer(app, expressapp, express) {
+		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
+		let modtools_self = this;
 
+		expressapp.get("/" + encodeURI(this.returnSlug()), async function (req, res) {
+		res.set('Content-type', 'text/html');
+		res.charset = 'UTF-8';
+		res.send(modtoolsIndex(app, modtools_self));
+		});
+		
+	}
 }
 
 module.exports = ModTools;

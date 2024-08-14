@@ -1343,10 +1343,8 @@ class Tweet {
 				let link = new URL(first_link);
 				urlParams = new URLSearchParams(link.search);
 				this.link = link.toString();
-			} catch (err) {
-				console.error(err);
-				console.log("Invalid URL: " + first_link);
-				this.link = first_link;
+			} catch (err) { 
+				console.info(first_link + ' is not a valid url');
 			}
 
 			//console.log(this.link);

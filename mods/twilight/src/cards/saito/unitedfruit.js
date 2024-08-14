@@ -17,10 +17,9 @@
         return 1;
       }
 
+      this.startClockAndSetActivePlayer(2);
 
       if (this.game.player == 2) {
-
-        this.startClockAndSetActivePlayer();
 
         this.addMove("resolve\tunitedfruit");
 
