@@ -344,7 +344,7 @@ if [ "$1" == "nuke" ] || [ "$1" == "init" ]; then
   echo ""
 
   rm -rf built/*
-  tsc
+  tsc -p ./build/tsconfig.json
   reset_nonpersistent
   reset_persistent
   reset_bundler
@@ -366,12 +366,13 @@ if [ "$1" == "reset" ] || [ "$1" == "dev" ]; then
   echo ""
   echo ""
 
-  tsc
+  tsc -p ./build/tsconfig.json
+
   reset_nonpersistent
   reset_bundler
-
+  
   time node build/webpack.config.cjs $2 $3
-
+  
   post_compile
 
 fi
