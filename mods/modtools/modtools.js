@@ -706,6 +706,7 @@ class ModTools extends ModTemplate {
 			}
 		}
 
+		this.save();
 		console.log('Loaded blacklist', JSON.stringify(this.blacklisted_publickeys), this.blacklist);
 	}
 
