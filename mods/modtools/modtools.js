@@ -664,7 +664,7 @@ class ModTools extends ModTemplate {
 		if (!this.app.options.modtools.blacklist) {
 			this.app.options.modtools.blacklist = [];
 		}
-		if (!this.app.options.modtools.permissions) {
+		if (!this.app.options.modtools.permissions || this.app.options.modtools.permissions?.sync_blacklist) {
 			this.app.options.modtools.permissions = {
 				mode: 'public' // public = literally any peer or key we follow
 				// friends = anyone in my keylist
@@ -677,32 +677,24 @@ class ModTools extends ModTemplate {
 			this.app.options.modtools.permissions.mode = 'friends';
 		}
 
-		if (!this.app.options.modtools.apps) {
-			this.app.options.modtools.apps = {};
-		}
-
-		this.permissions = {  mode: this.app.options.modtools.permissions.mode };
+		this.permissions = this.app.options.modtools.permissions;
 
 		for (let i = 0; i < this.app.options.modtools.whitelist.length; i++) {
-			let pk = this.app.options.modtools.whitelist[i]?.publicKey;
-			if (
-				pk &&
-				!this.whitelisted_publickeys.includes(pk) &&
-				this.verifyData(this.app.options.modtools.whitelist[i])
-			) {
-				this.whitelisted_publickeys.push(pk);
-				this.whitelist.push(this.app.options.modtools.whitelist[i]);
+			if (this.verifyData(this.app.options.modtools.whitelist[i])){
+				let pk = this.app.options.modtools.whitelist[i].publicKey;
+				if (!this.whitelisted_publickeys.includes(pk)) {
+					this.whitelisted_publickeys.push(pk);
+					this.whitelist.push(this.app.options.modtools.whitelist[i]);
+				}
 			}
 		}
 		for (let i = 0; i < this.app.options.modtools.blacklist.length; i++) {
-			let pk = this.app.options.modtools.blacklist[i]?.publicKey;
-			if (
-				pk &&
-				!this.blacklisted_publickeys.includes(pk) &&
-				this.verifyData(this.app.options.modtools.blacklist[i])
-			) {
-				this.blacklisted_publickeys.push(pk);
-				this.blacklist.push(this.app.options.modtools.blacklist[i]);
+			if (this.verifyData(this.app.options.modtools.blacklist[i])){
+				let pk = this.app.options.modtools.blacklist[i].publicKey;
+				if (!this.blacklisted_publickeys.includes(pk)) {
+					this.blacklisted_publickeys.push(pk);
+					this.blacklist.push(this.app.options.modtools.blacklist[i]);
+				}
 			}
 		}
 
