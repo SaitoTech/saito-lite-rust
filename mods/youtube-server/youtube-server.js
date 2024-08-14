@@ -136,27 +136,28 @@ class YoutubeServer extends ModTemplate {
   }
 
   getWebsocketPath() {
-    return 'rtmp';
+    return 'encoder';
   }
 
-  onWebSocketServer(wss) {
+  async onWebSocketServer(wss) {
   	const child_process = require('child_process');
     console.log('youtube on websocket server');
-    super.onWebSocketServer(wss);
+    await super.onWebSocketServer(wss);
     wss.on('connection', (ws, req) => {
       console.log('youtube server got connection');
       // Ensure that the URL starts with '/rtmp/', and extract the target RTMP URL.
       let match;
 
-      console.log("rq.url:". req.url);
+      let rtmp_url = (req.url).split("url=")[1];
+      console.log("wss request url:", rtmp_url);
 
-      if (!(match = req.url.match(/^\/rtmp\/(.*)$/))) {
+      if (rtmp_url == null) {
         console.log('terminating youtube connection');
         ws.terminate(); // No match, reject the connection.
         return;
       }
 
-      const rtmpUrl = decodeURIComponent(match[1]);
+      const rtmpUrl = decodeURIComponent(rtmp_url);
       console.log('Target RTMP URL:', rtmpUrl);
 
       // Launch FFmpeg to handle all appropriate transcoding, muxing, and RTMP.

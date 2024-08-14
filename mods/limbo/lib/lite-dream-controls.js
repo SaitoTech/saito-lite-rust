@@ -138,6 +138,10 @@ class DreamControls{
 		//Tell PeerManager to pause streams for green room
 		this.app.connection.emit('limbo-toggle-audio');
 		this.app.connection.emit('limbo-toggle-video');
+
+		if (!document.querySelector('.dream-controls-menu-item')) {
+			this.app.connection.emit('saito-limbo-add-yt-icon');
+		}
 	}
 
 
@@ -270,10 +274,6 @@ class DreamControls{
 				//Only necessary for first click but doesn't hurt to have
 				this.startTimer(); // Start timer
 				e.currentTarget.classList.remove("click-me");
-
-				if (!document.querySelector('.dream-controls-menu-item')) {
-					this.app.connection.emit('saito-limbo-add-yt-icon');
-				}
 			}
 		}
 

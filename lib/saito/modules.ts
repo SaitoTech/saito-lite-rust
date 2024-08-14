@@ -710,7 +710,7 @@ class Mods {
 		}
 	}
 
-	onWebSocketServer(webserver) {
+	async onWebSocketServer(webserver) {
 		for (let i = 0; i < this.mods.length; i++) {
 			let mod = this.mods[i];
 			let path = mod.getWebsocketPath();
@@ -739,7 +739,6 @@ class Mods {
 				}
 			});
 
-			console.log('before onWebSocketServer ////');
 			mod.onWebSocketServer(wss);
 		}
 	}
