@@ -113,26 +113,28 @@ module.exports = (app, mod) => {
 
       if (blacklist.length > 0) {
         for(let i=0; i<blacklist.length; i++) {
-          let timestamp = blacklist[i].created_at;
-          var newDate = new Date();
-          newDate.setTime(timestamp);
-          let dateString = newDate.toUTCString();
+          if (mod.verifyData(blacklist[i])){
+            let timestamp = blacklist[i].created_at;
+            var newDate = new Date();
+            newDate.setTime(timestamp);
+            let dateString = newDate.toUTCString();
 
-          let duration = app.browser.formatTime(blacklist[i].duration);
-          let publicKey = blacklist[i].publicKey;
-          let identicon = app.keychain.returnIdenticon(publicKey);
+            let duration = app.browser.formatTime(blacklist[i].duration);
+            let publicKey = blacklist[i].publicKey;
+            let identicon = app.keychain.returnIdenticon(publicKey);
 
-          html += `
-              <div class="modtools-entry modtools-contact">
-                  <div class="modtools-contact-date">${dateString}</div>
-                  <div class="modtools-contact-date">${duration.hours}H : ${duration.minutes}M : ${duration.seconds}S</div>
-                  <div class="modtools-contact-details">
-                  <div class="saito-identicon-box">
-                    <img class="saito-identicon" src="${identicon}"></div>
-                    <div class="saito-address treated" data-id="${publicKey}">${publicKey}</div>
-                  </div>
-              </div>
-             `; 
+            html += `
+                <div class="modtools-entry modtools-contact">
+                    <div class="modtools-contact-date">${dateString}</div>
+                    <div class="modtools-contact-date">${duration.hours}H : ${duration.minutes}M : ${duration.seconds}S</div>
+                    <div class="modtools-contact-details">
+                    <div class="saito-identicon-box">
+                      <img class="saito-identicon" src="${identicon}"></div>
+                      <div class="saito-address treated" data-id="${publicKey}">${publicKey}</div>
+                    </div>
+                </div>
+               `; 
+          }
         }
       } else {
         html += `
@@ -152,28 +154,30 @@ module.exports = (app, mod) => {
 
       if (whitelist.length > 0) {
         for(let i=0; i<whitelist.length; i++) {
+          if (mod.verifyData(whitelist[i])){
+            let timestamp = whitelist[i].created_at;
+            var newDate = new Date();
+            newDate.setTime(timestamp);
+            let dateString = newDate.toUTCString();
 
-          let timestamp = whitelist[i].created_at;
-          var newDate = new Date();
-          newDate.setTime(timestamp);
-          let dateString = newDate.toUTCString();
+            let duration = app.browser.formatTime(whitelist[i].duration);
+            let publicKey = whitelist[i].publicKey;
+            let identicon = app.keychain.returnIdenticon(publicKey);
 
-          let duration = app.browser.formatTime(whitelist[i].duration);
-          let publicKey = whitelist[i].publicKey;
-          let identicon = app.keychain.returnIdenticon(publicKey);
+            html += `
 
-          html += `
-
-              <div class="modtools-entry modtools-contact">
-                  <div class="modtools-contact-date">${dateString}</div>
-                  <div class="modtools-contact-date">${duration.hours}H : ${duration.minutes}M : ${duration.seconds}S</div>
-                  <div class="modtools-contact-details">
-                    <div class="saito-identicon-box">
-                      <img class="saito-identicon" src="${identicon}"></div>
-                      <div class="saito-address treated" data-id="${publicKey}">${publicKey}</div>
-                    </div>
-                </div>
-             `; 
+                <div class="modtools-entry modtools-contact">
+                    <div class="modtools-contact-date">${dateString}</div>
+                    <div class="modtools-contact-date">${duration.hours}H : ${duration.minutes}M : ${duration.seconds}S</div>
+                    <div class="modtools-contact-details">
+                      <div class="saito-identicon-box">
+                        <img class="saito-identicon" src="${identicon}"></div>
+                        <div class="saito-address treated" data-id="${publicKey}">${publicKey}</div>
+                      </div>
+                  </div>
+               `; 
+              
+          }
 
         }
       } else {

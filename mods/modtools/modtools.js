@@ -681,7 +681,7 @@ class ModTools extends ModTemplate {
 			this.app.options.modtools.apps = {};
 		}
 
-		this.permissions = this.app.options.modtools.permissions;
+		this.permissions = {  mode: this.app.options.modtools.permissions };
 
 		for (let i = 0; i < this.app.options.modtools.whitelist.length; i++) {
 			let pk = this.app.options.modtools.whitelist[i]?.publicKey;
