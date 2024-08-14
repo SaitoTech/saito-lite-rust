@@ -1,7 +1,7 @@
 /*
  var saito = require('../../lib/saito/saito');
 */
-var ModTemplate = require('../../lib/templates/modtemplate');
+const ModTemplate = require('../../lib/templates/modtemplate');
 const DebugAppspaceMain = require('./lib/appspace/main');
 
 
@@ -23,6 +23,7 @@ class Debug extends ModTemplate {
 	}
 
 	respondTo(type) {
+		console.log("debug.respondTo : "+type);
 		if (type === 'appspace') {
 			this.styles = [
 				'/saito/lib/jsonTree/jsonTree.css',

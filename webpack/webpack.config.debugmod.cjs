@@ -5,7 +5,7 @@ const webpack = require("webpack");
 
 let minimize = false;
 let devtool = undefined;
-//let entrypoint = "./../bundler/default/mods/debug/debug.js";
+// let entrypoint = "./../bundler/default/mods/debug/debug.js";
 let entrypoint = "./../mods/debug/debug.js";
 let outputfile = "dyn.module.js";
 
@@ -81,7 +81,7 @@ webpack(
     resolve: {
       // Add '.ts' and '.tsx' as resolvable extensions.
       //extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
-      extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
+      extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js",".template.js"],
       fallback: {
         fs: false,
         tls: false,
