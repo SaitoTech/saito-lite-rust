@@ -1,9 +1,9 @@
-import { NodeSharedMethods } from './lib/saito/core/server';
-import StorageCore from './lib/saito/core/storage-core';
-import { Saito, parseLogLevel } from './apps/core';
+import { NodeSharedMethods } from '../lib/saito/core/server';
+import StorageCore from '../lib/saito/core/storage-core';
+import { Saito, parseLogLevel } from '../apps/core';
 import S, { initialize as initS } from 'saito-js/index.node';
-import mods_config from './config/modules.config.js';
-import Factory from './lib/saito/factory';
+import mods_config from '../config/modules.config.js';
+import Factory from '../lib/saito/factory';
 import process from 'process';
 
 function getCommandLineArg(key) {

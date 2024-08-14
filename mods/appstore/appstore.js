@@ -1094,7 +1094,7 @@ class AppStore extends ModTemplate {
 
 			bash_script_content += 'cd ' + __dirname + '\n';
 			bash_script_content += 'cd ../../' + '\n';
-			bash_script_content += `sh bundle.sh ${entry} ${output_path} ${bundle_filename}`;
+			bash_script_content += `sh ./scripts/bundle.sh ${entry} ${output_path} ${bundle_filename}`;
 
 			////console.log("COMPILING: " + `sh bundle.sh ${entry} ${output_path} ${bundle_filename}`);
 

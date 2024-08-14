@@ -5,7 +5,7 @@ const webpack = require("webpack");
 
 let minimize = true;
 let devtool = undefined;
-let entrypoint = "./../bundler/default/apps/lite/index.ts";
+let entrypoint = "../bundler/default/apps/lite/index.ts";
 let outputfile = "saito.js";
 if (process.argv.includes("dev")) {
   console.log("dev mode source not minified");
@@ -14,7 +14,7 @@ if (process.argv.includes("dev")) {
 }
 if (process.argv.includes("web3")) {
   //TODO: build a separate saito.js for web3
-  entrypoint = "./../bundler/default/apps/lite/web3index.ts";
+  entrypoint = "../bundler/default/apps/lite/web3index.ts";
   outputfile = "web3saito.js";
 }
 webpack(
@@ -128,8 +128,13 @@ webpack(
         // All files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'.
         {
           test: /\.tsx?$/,
-          loader: "ts-loader",
           exclude: /(node_modules)/,
+          use: [{
+            loader: 'ts-loader',
+            options: {
+                configFile:path.resolve(__dirname, "../build/tsconfig.json")
+            }
+        }],
           // exclude: [
           //   {
           //     and: [path.resolve(__dirname,"node_modules")],
@@ -152,6 +157,8 @@ webpack(
             {
               loader: "babel-loader",
               options: {
+                root: path.resolve(__dirname, './build'),
+                rootMode: "upward",
                 presets: ["@babel/preset-env"],
                 sourceMaps: false,
                 cacheCompression: false,
