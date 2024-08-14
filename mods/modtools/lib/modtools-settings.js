@@ -38,23 +38,23 @@ class ModtoolsSettings {
         this.contacts.callback = (keys) => {
           for (let key of keys) {
             this.app.connection.emit('saito-unblacklist', key);
-            this.render();
           }
+          this.render();
         };
 
         this.contacts.render(this.mod.blacklisted_publickeys);
       };
     }
 
-    if (document.getElementById('whitelisted-accounts')) {
-      document.getElementById('whitelisted-accounts').onclick = (e) => {
+    if (document.getElementById('whitelisd-accounts')) {
+      document.getElementById('whiteliste-accounts').onclick = (e) => {
         this.contacts.title = 'Whitelisted Accounts';
         this.contacts.multi_button = 'Remove from Whitelist';
         this.contacts.callback = (keys) => {
           for (let key of keys) {
             this.app.connection.emit('saito-unwhitelist', key);
-            this.render();
           }
+          this.render();
         };
         this.contacts.render(this.mod.whitelisted_publickeys);
       };

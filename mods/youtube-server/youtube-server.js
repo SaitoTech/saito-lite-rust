@@ -82,7 +82,7 @@ class YoutubeServer extends ModTemplate {
 
 		    '-r', '25',
 
-		    '-s', '720x420',
+		    '-s', '1920x1080',
 
 		    '-vb', '660k',
 

@@ -35,6 +35,7 @@ class SettlersGameloop {
         // initX()
         //
         $(".dark").css("background-color", "unset");
+        $(".hud-body .mobile").css("visibility", "visible");
         return 1;
       }
 

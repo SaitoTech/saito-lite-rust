@@ -2428,12 +2428,17 @@ console.log("\n\n\n\n");
 	  this.addRegular("ottoman", "buda", 1);
 	  this.addRegular("ottoman", "belgrade", 1);
 
+	  this.controlSpace("ottoman", "pressburg");
+	  this.controlSpace("ottoman", "agram");
+	  this.controlSpace("ottoman", "mohacs");
+	  this.controlSpace("ottoman", "szegedin");
+
 	  // HAPSBURG
           this.addRegular("hapsburg", "seville", 1);
           this.addRegular("hapsburg", "barcelona", 1);
           this.addRegular("hapsburg", "navarre", 1);
           this.addRegular("hapsburg", "tunis", 1);
-          this.controlSpace("hapsburg", "tunis", 1);
+          this.controlSpace("hapsburg", "tunis");
           this.addRegular("hapsburg", "naples", 2);
           this.addNavalSquadron("hapsburg", "naples", 2);
           this.addRegular("hapsburg", "besancon", 1);
@@ -2481,9 +2486,7 @@ console.log("\n\n\n\n");
 	
 	  // INDEPENDENT
           this.addRegular("independent", "rhodes", 1);
-          //this.addRegular("independent", "metz", 1);
-// debug break siege
-          this.addRegular("independent", "metz", 2);
+          this.addRegular("independent", "metz", 1);
           this.addRegular("independent", "florence", 1);	
 
 	  //this.addRegular("papacy", "florence", 3);
@@ -2537,12 +2540,12 @@ console.log("\n\n\n\n");
           this.addRegular("hapsburg", "tunis", 1);
           this.controlSpace("hapsburg", "tunis");
           this.addRegular("hapsburg", "naples", 2);
-          this.addNavalSquadron("hapsburg", "naples", 2);
+          this.addNavalSquadron("hapsburg", "naples", 1);
           this.addRegular("hapsburg", "besancon", 1);
           this.addRegular("hapsburg", "brussels", 1);
 	  this.addArmyLeader("hapsburg", "vienna", "ferdinand");
           this.addRegular("hapsburg", "vienna", 4);
-          this.addRegular("hapsburg", "antwerp", 3);
+          this.addRegular("hapsburg", "antwerp", 1);
 
 	  // ENGLAND
           this.addArmyLeader("england", "london", "henry-viii");
@@ -6977,6 +6980,9 @@ alert("is committed: " + is_committed + " --- " + his_self.returnDebatersInLangu
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu === "debate") {
+	  let p = his_self.returnPlayerOfFaction("protestant");
+          his_self.addMove('hand_to_fhand\t1\t' + p + '\t' + "protestant" + "\t1");
+	  his_self.addMove("DEAL\t1\t"+p+"\t1");
 	  his_self.addMove("discard\tprotestant\t007");
 	  his_self.addMove("NOTIFY\t"+his_self.popup("007") + ": Luther enters Theological Debate");
 	  his_self.addMove("here_i_stand_response");
@@ -7022,6 +7028,7 @@ alert("is committed: " + is_committed + " --- " + his_self.returnDebatersInLangu
           his_self.game.queue.splice(qe, 1);
 
 	  his_self.updateLog("Protestants trigger " + his_self.popup("007"));
+	  // protestants get extra card
 	  his_self.game.queue.push("ACKNOWLEDGE\tProtestants swap Martin Luther into debate");
 
 	  //
@@ -7062,18 +7069,37 @@ alert("is committed: " + is_committed + " --- " + his_self.returnDebatersInLangu
 	    }
 
 	    let is_luther_committed = 0;
+console.log("is luther committed?");
+console.log(JSON.stringify(his_self.game.state.excommunicated));
 	    for (let i = 0; i < his_self.game.state.debaters.length; i++) {
 	      if (his_self.game.state.debaters[i].key === "luther-debater") {
-		if (his_self.game.state.debaters[i].committed == 1) { is_luther_committed = 1; }
+		if (his_self.game.state.debaters[i].committed == 1) { 
+		  // remove +1 bonus if luther is committed
+		  if (his_self.game.state.theological_debate.defender_debater_entered_uncommitted == 1) {
+		    his_self.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
+                    his_self.game.state.theological_debate.defender_debater_bonus--;
+		  }
+		  is_luther_committed = 1;
+		}
 	      }
 	    }
 	    for (let i = 0; i < his_self.game.state.excommunicated.length; i++) {
 	      if (his_self.game.state.excommunicated[i].debater) {
 	        if (his_self.game.state.excommunicated[i].debater.type === "luther-debater") {
-		  if (his_self.game.state.excommunicated[i].committed == 1) { is_luther_committed = 1; }
+console.log("FOUND LUTHER");
+		  if (his_self.game.state.excommunicated[i].debater.committed == 1) {
+console.log("LUTHER IS COMMITTED!");
+		    // remove +1 bonus if luther is committed
+		    if (his_self.game.state.theological_debate.defender_debater_entered_uncommitted == 1) {
+		      his_self.game.state.theological_debate.defender_debater_entered_uncommitted = 0;
+                      his_self.game.state.theological_debate.defender_debater_bonus--;
+		    }
+		    is_luther_committed = 1;
+		  }
 	        }
 	      }
 	    }
+
 
 	    if (his_self.game.state.theological_debate.attacker === "papacy") {
 	      if (his_self.game.state.theological_debate.round == 1) {
@@ -7106,9 +7132,13 @@ alert("is committed: " + is_committed + " --- " + his_self.returnDebatersInLangu
                 his_self.game.state.theological_debate.attacker_debater_bonus = 3;
 	      }
 	    }
+
+
 	  }
 
 	  // re-render debate overlay with luther there
+console.log("rendering with luther here: ");
+console.log(JSON.stringify(his_self.game.state.theological_debate));
           his_self.debate_overlay.render(his_self.game.state.theological_debate);
           his_self.displayTheologicalDebater(his_self.game.state.theological_debate.attacker_debater, true);
           his_self.displayTheologicalDebater(his_self.game.state.theological_debate.defender_debater, false);
@@ -11887,7 +11917,6 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
       onEvent : function(his_self, faction) {
 
 	if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
-
 
 	  //
 	  //
@@ -21172,6 +21201,8 @@ if (this.game.state.scenario != "is_testing") {
     //
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key === debater) {
+        // and commit the debater too !
+        this.game.state.debaters[i].committed = 1;
         obj.debater = this.game.state.debaters[i];
         this.game.state.debaters.splice(i, 1);
       }
@@ -38504,8 +38535,14 @@ try {
     //
     // cards left
     //
+    // you can play for minor allies that do not have cards in your hand, so in that case do not report...
+    //
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
-    this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length-1); // -1 because we playing this card
+    if (-1 < faction_hand_idx) {
+      if (this.game.deck[0].fhand[faction_hand_idx]) {
+        this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length-1); // -1 because we playing this card
+      }
+    }
 
     //
     // discard the card
@@ -41501,7 +41538,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     return 0;
 
   }
-  async playerNavalTransport(his_self, player, faction, ops_to_spend, ops_remaining) {
+  async playerNavalTransport(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // BACK moves us to OPS menu
     his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
@@ -41780,7 +41817,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     return 0;
 
   }
-  async playerNavalMove(his_self, player, faction) {
+  async playerNavalMove(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // BACK moves us to OPS menu
     his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
@@ -42715,7 +42752,11 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     ) { return 0; }
     return 1;
   }
-  async playerControlUnfortifiedSpace(his_self, player, faction) {
+  async playerControlUnfortifiedSpace(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
+
+    // BACK moves us to OPS menu
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
+
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let pacifiable_spaces_in_unrest = [];
     for (let i = 0; i < spaces_in_unrest.length; i++) {
@@ -43750,7 +43791,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (faction === "papacy") { return 1; }
     return 0;
   }
-  async playerBurnBooksMaryI(his_self, player, faction, ops_to_spend, ops_remaining, mary_i=1) {
+  async playerBurnBooksMaryI(his_self, player, faction, ops_to_spend=0, ops_remaining=0, mary_i=1) {
     return this.playerBurnBooks(his_self, player, faction, ops_to_spend, ops_remaining, 1);
     return 0;
   }
