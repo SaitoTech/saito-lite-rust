@@ -190,8 +190,8 @@
 }
 
 .stun-chatbox .side-videos {
-	display: grid;
-	grid-template-rows: repeat(auto-fit, minmax(20vh, auto));
+    display: flex;
+	flex-direction: column;
 	gap: 1rem;
 	max-height: calc(100vh - 13rem);
 	overflow: auto;
