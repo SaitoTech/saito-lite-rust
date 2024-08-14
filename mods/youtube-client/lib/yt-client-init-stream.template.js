@@ -12,7 +12,7 @@ module.exports = YoutubeInitStreamTemplate = (app,mod) => {
 			placeholder="Enter youtube stream key">
 
 			<div class="yt-stream-type">
-				<input type="radio" name="stream_type" value="main" selected>
+				<input type="radio" name="stream_type" value="main" checked>
 				<div class="yt-stream-type-name">Main stream</div>
 				<input type="radio" name="stream_type" value="backup">
 				<div class="yt-stream-type-name">Backup stream</div>
