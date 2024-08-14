@@ -93,6 +93,7 @@ class RedSquare extends ModTemplate {
     this.liked_tweets = [];
     this.retweeted_tweets = [];
     this.replied_tweets = [];
+    this.hidden_tweets = [];
 
     this.notifications = [];
     this.notifications_sigs_hmap = {};
@@ -325,6 +326,19 @@ class RedSquare extends ModTemplate {
     }
 
     if (type === 'saito-moderation-app') {
+      return {
+        filter_func: (app = null, tx = null) => {
+          if (tx == null || app == null) {
+            return 0;
+          }
+
+          if (this.hidden_tweets.includes(tx.signature)){
+            return -1;
+          }
+
+          return 0;
+        }
+      };
     }
 
     return null;
@@ -429,21 +443,8 @@ class RedSquare extends ModTemplate {
     //
     // browsers only!
     //
-    if (!this.app.BROWSER) {
+    if (!this.app.BROWSER || !this.browser_active) {
       return;
-    }
-    new Date().getTime();
-
-    if (this.browser_active) {
-      if (!this.ignoreCentralServer && window?.tweets?.length) {
-        for (let z = 0; z < window.tweets.length; z++) {
-          let newtx = new Transaction();
-          newtx.deserialize_from_web(this.app, window.tweets[z]);
-          if (this.app.modules.moderate(newtx, this.name) != -1) {
-            this.addTweet(newtx, 'server_cache');
-          }
-        }
-      }
     }
 
     //
@@ -460,8 +461,20 @@ class RedSquare extends ModTemplate {
         case '#profile':
           firstRender = 'profile';
           break;
+        case "#bizarro":
+          this.bizarro = true;
       }
     }
+
+
+    if (!this.ignoreCentralServer && window?.tweets?.length) {
+      for (let z = 0; z < window.tweets.length; z++) {
+        let newtx = new Transaction();
+        newtx.deserialize_from_web(this.app, window.tweets[z]);
+        this.addTweet(newtx, 'server_cache');
+      }
+    }
+    
 
     //
     // create and render components
@@ -676,6 +689,8 @@ class RedSquare extends ModTemplate {
   // network functions //
   ///////////////////////
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
+    if (this?.bizarro) { return; }
+
     if (tx) {
       if (tx.isTo(this.publicKey)) {
         let txmsg = tx.returnMessage();
@@ -776,6 +791,10 @@ class RedSquare extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     if (conf == 0) {
+      if (this?.bizarro){
+        return;
+      }
+
       if (this.debug) {
         console.log('%%');
         console.log('NEW TRANSACTION RECEIVED!');
@@ -1323,8 +1342,15 @@ class RedSquare extends ModTemplate {
     // and received on chain... we just nope out and all the niceties such as infinite scrolling
     // should function normally...
     //
-    if (this.app.modules.moderate(tx, this.name) == -1) {
-      return 0;
+    if (this?.bizarro){
+      if (this.app.modules.moderate(tx, this.name) != -1) {
+        console.log("Bizarro -- Skip normal tweet");
+        return 0;
+      }
+    }else{
+      if (this.app.modules.moderate(tx, this.name) == -1) {
+        return 0;
+      }
     }
 
     this.addNotification(tx);
@@ -2384,6 +2410,10 @@ class RedSquare extends ModTemplate {
       if (this.app.options.redsquare.replied_tweets) {
         this.replied_tweets = this.app.options.redsquare.replied_tweets;
       }
+      if (this.app.options.redsquare.hidden_tweets) {
+        this.hidden_tweets = this.app.options.redsquare.hidden_tweets;
+      }
+
       if (this.app.options.redsquare.following) {
         this.app.options.redsquare.following.forEach((key) => this.addPseudoPeer(key));
       }
@@ -2420,6 +2450,7 @@ class RedSquare extends ModTemplate {
     this.app.options.redsquare.liked_tweets = this.liked_tweets;
     this.app.options.redsquare.retweeted_tweets = this.retweeted_tweets;
     this.app.options.redsquare.replied_tweets = this.replied_tweets;
+    this.app.options.redsquare.hidden_tweets = this.hidden_tweets;
 
     let keys_to_follow = [];
     this.following.forEach((peer) => keys_to_follow.push(peer.publicKey));

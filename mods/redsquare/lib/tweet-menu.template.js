@@ -27,6 +27,10 @@ module.exports = (menu, tweet) => {
             <i class="fa-solid fa-ban"></i>
             <div>block ${shortName}</div>
           </li>
+           <li id="hide_tweet" class="tweet-menu-list-item">
+            <i class="fa-solid fa-eye-slash"></i>
+            <div>hide this tweet</div>
+          </li>
           <li id="report_tweet" class="tweet-menu-list-item">
             <i class="fa fa-flag"></i>
             <div>report tweet</div>

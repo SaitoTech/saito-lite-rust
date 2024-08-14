@@ -38,6 +38,7 @@ class ModtoolsSettings {
         this.contacts.callback = (keys) => {
           for (let key of keys) {
             this.app.connection.emit('saito-unblacklist', key);
+            this.render();
           }
         };
 
@@ -52,9 +53,17 @@ class ModtoolsSettings {
         this.contacts.callback = (keys) => {
           for (let key of keys) {
             this.app.connection.emit('saito-unwhitelist', key);
+            this.render();
           }
         };
         this.contacts.render(this.mod.whitelisted_publickeys);
+      };
+    }
+
+    if (document.getElementById('none_mod')) {
+      document.getElementById('none_mod').onclick = (e) => {
+        this.mod.permissions.mode = 'none';
+        this.mod.save();
       };
     }
 

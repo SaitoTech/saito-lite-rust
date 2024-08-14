@@ -2,7 +2,6 @@ module.exports = (app, mod) => {
 
   let blacklist = app.options.modtools.blacklist;
   let whitelist = app.options.modtools.whitelist;
-  let apps = app.options.modtools.apps;
   let node_publicKey = mod.publicKey;
 
 	let html = `
@@ -189,7 +188,7 @@ module.exports = (app, mod) => {
         </div>    
     `;
 
-
+/*
     html +=  `
         <div class="modtools-container">
           <div class="modtools-container-title">App Permissions</div>
@@ -219,11 +218,11 @@ module.exports = (app, mod) => {
 
         </div>    
     
-    </div>
-
-</body>`;
-
+    </div>`;
+*/
+    
 html += `
+</body>
 <script type="text/javascript" src="/saito/saito.js?build=${app.build_number}"></script>
 </html>`;
 
