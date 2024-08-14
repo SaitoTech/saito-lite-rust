@@ -179,13 +179,13 @@ class YoutubeClient extends ModTemplate {
 	getPort() {
 		// 44344 - test, prod
 		// 3000 - local dev
-		let port = ':12101';
-		// let protocol = this.app.browser.protocol;
+		let port = '';
+		let protocol = this.app.browser.protocol;
 		
-		// console.log('protocol:', protocol);
-		// if (protocol == 'http:') {
-		// 	port = `:${this.app.browser.port}`;
-		// }
+		console.log('protocol:', protocol);
+		if (protocol == 'http:') {
+			port = `:${this.app.browser.port}`;
+		}
 
 		console.log('port:', port);
 		return port;
