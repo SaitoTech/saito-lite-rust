@@ -729,7 +729,7 @@ class Mods {
                 const pathname = parsedUrl.pathname;
                 const pathParts = pathname.split('/').filter(Boolean);
                 const subdirectory = pathParts.length > 0 ? pathParts[0] : null;
-				console.log("/"+subdirectory + " - " + path);
+				console.log(subdirectory + " - " + path);
 				if (subdirectory === path) {
 					console.log('inside handleUpgrade');
 					wss.handleUpgrade(request, socket, head, (websocket: any) => {

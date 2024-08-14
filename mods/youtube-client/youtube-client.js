@@ -16,6 +16,11 @@ class YoutubeClient extends ModTemplate {
 		this.styles = ['/youtube-client/style.css', '/saito/saito.css'];
 
 		this.stream_key = '';
+		this.stream_type = 'main';
+		this.stream_url = {
+			'main': "rtmp://a.rtmp.youtube.com/live2",
+			'backup': "rtmp://b.rtmp.youtube.com/live2?backup=1"
+		};
 		this.stream_status = false;
 		this.ws = null;
 		this.mediaRecorder = null;
@@ -24,6 +29,7 @@ class YoutubeClient extends ModTemplate {
 
 		this.app.connection.on('saito-yt-start-stream', (obj = {}) => {
 			this.stream_key = obj.stream_key;
+			this.stream_type = obj.stream_type;
 			this.startStream();
 			this.startStreamStatus();
 		});
@@ -88,7 +94,7 @@ class YoutubeClient extends ModTemplate {
 		const ws_url = window.location.protocol.replace('http', 'ws') + '//' + // http: -> ws:, https: -> wss:
 	        (window.location.hostname) + this.getPort() +
 	        '/rtmp/' +
-	        encodeURIComponent(`rtmp://b.rtmp.youtube.com/live2/${this_self.stream_key}`);
+	        encodeURIComponent(`${this.stream_url[this.stream_type]}/${this_self.stream_key}`);
 		 console.log('url:', ws_url);
 
 	    this_self.ws = new WebSocket(ws_url,"echo-protocol");
