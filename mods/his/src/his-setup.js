@@ -77,6 +77,8 @@ console.log("\n\n\n\n");
         //
         if (this.game.players.length == 2) {
 
+	  this.unsetEnemies("papacy", "france");
+
 	  // OTTOMAN
           this.addRegular("ottoman", "istanbul", 1);
           this.addRegular("ottoman", "edirne");
