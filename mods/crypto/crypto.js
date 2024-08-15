@@ -4,21 +4,23 @@ const CryptoSelectAmount = require('./lib/overlays/select-amount');
 const CryptoInadequate = require('./lib/overlays/inadequate');
 
 class Crypto extends ModTemplate {
-	constructor(app, mod) {
+	constructor(app) {
 		super(app);
 
 		this.app = app;
-		this.mod = mod;
-		this.ticker = '';
 
-		this.styles = ['/crypto/css/crypto-base.css'];
+		this.styles = ['/crypto/style.css'];
 
-		this.appname = 'Crypto';
 		this.name = 'Crypto';
+
 		this.description = 'Enable crypto gaming';
 		this.categories = 'Utility Entertainment';
+
 		this.class = 'utility';
+
 		this.min_balance = 0.0;
+		this.balances = {};
+
 		this.overlay = new CryptoSelectAmount(app, this);
 		this.overlay_inadequate = new CryptoInadequate(app, this);
 	}
@@ -27,6 +29,10 @@ class Crypto extends ModTemplate {
 
 	async initialize(app){
 		await super.initialize(app);
+
+		this.balances = await this.app.wallet.returnAvailableCryptosAssociativeArray();
+
+		console.log(this.balances);
 
 		//
 		// Turn on crypto for all games that don't explicity opt out
@@ -72,7 +78,6 @@ class Crypto extends ModTemplate {
 					class: 'game-crypto-ticker',
 					callback: async (app, game_mod) => {
 						this.attachStyleSheets();
-						this.ticker = ticker;
 
 						this.min_balance = 0.0;
 						this.max_balance = ac[ticker];
@@ -88,7 +93,9 @@ class Crypto extends ModTemplate {
 							return;
 						}
 
-						this.overlay.render((amount) => {
+						this.overlay.ticker = ticker;
+
+						this.overlay.render((ticker, amount) => {
 							game_mod.menu.hideSubMenus();
 							game_mod.proposeGameStake(ticker, amount);
 						});
@@ -117,6 +124,29 @@ class Crypto extends ModTemplate {
 
 		return super.respondTo(type);
 	}
+
+	async renderInto(qs) {
+		if (qs == "#arcade-advance-opt"){
+			this.attachStyleSheets();
+			this.overlay = new CryptoSelectAmount(this.app, this);
+			this.overlay.fixed = false;
+			this.app.browser.addElementToSelector(`<div class="game-wizard-crypto-hook"><i class="fa-solid fa-coins"></i></div>`, qs);
+
+			let hook = document.querySelector(".game-wizard-crypto-hook");
+			hook.onclick = (e) => {
+
+				if (hook.dataset?.amount){
+					this.overlay.stake = hook.dataset.amount;
+				}
+				this.overlay.render((ticker, amount) => {
+					console.log("SELECTED CRYPTO: ", ticker, amount);
+					hook.dataset["ticker"] = ticker;
+					hook.dataset["amount"] = amount;
+				});
+			}
+		}
+	}
+
 
 	/**
 	 * We have a list of each players available cryptos and balances, so

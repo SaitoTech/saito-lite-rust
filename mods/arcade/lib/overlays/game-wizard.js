@@ -71,8 +71,8 @@ class GameWizard {
 		//Test if we should include Advanced Options
 		let advancedOptions = this.game_mod.returnAdvancedOptions();
 		if (!advancedOptions) {
-			if (document.getElementById('arcade-advance-opt')) {
-				document.getElementById('arcade-advance-opt').style.visibility =
+			if (document.getElementById('arcade-advance-opt-text')) {
+				document.getElementById('arcade-advance-opt-text').style.visibility =
 					'hidden';
 			}
 		} else {
@@ -99,6 +99,8 @@ class GameWizard {
 				}
 			} 
 		}
+
+		this.app.modules.renderInto("#arcade-advance-opt");
 	}
 
 	//
@@ -117,7 +119,7 @@ class GameWizard {
 		// Display Advanced Options Overlay
 		//
 		const advancedOptionsToggle =
-			document.getElementById('arcade-advance-opt');
+			document.querySelector('.arcade-advance-opt-text');
 		if (advancedOptionsToggle) {
 			advancedOptionsToggle.onclick = (e) => {
 				//Requery advancedOptions on the click so it can dynamically update based on # of players
@@ -241,6 +243,15 @@ class GameWizard {
 				}
 			});
 
+		if (document.querySelector(".game-wizard-crypto-hook")){
+			let hook = document.querySelector(".game-wizard-crypto-hook");
+			if (hook.dataset?.ticker && hook.dataset?.amount){
+				options["crypto"] = hook.dataset.ticker;
+				options["stake"] = hook.dataset.amount;
+			}
+		}
+
+
 		if (this.mod.debug) {
 			console.log(
 				'GAMEWIZARD -- reading options from HTML: ',
@@ -251,6 +262,7 @@ class GameWizard {
 		if (this.meta_overlay) {
 			this.meta_overlay.remove();
 		}
+
 
 		return options;
 	}

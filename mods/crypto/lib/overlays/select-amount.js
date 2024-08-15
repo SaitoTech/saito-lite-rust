@@ -7,6 +7,9 @@ class CryptoSelectAmount {
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(app, mod);
 		this.callback = mycallback;
+		this.fixed = true;
+		this.ticker = "";
+		this.stake = 0;
 		this.errors = {
 			'amount': false,
 			'checkbox': false
@@ -17,7 +20,7 @@ class CryptoSelectAmount {
 		if (mycallback != null) {
 			this.callback = mycallback;
 		}
-		this.overlay.show(CryptoSelectAmountTemplate(this.app, this.mod));
+		this.overlay.show(CryptoSelectAmountTemplate(this.app, this.mod, this));
 		this.attachEvents(this.callback);
 	}
 
@@ -66,10 +69,19 @@ class CryptoSelectAmount {
  
 			if (callback != null) {
 				let amount = stake_input.value;
-				this.overlay.hide();
-				callback(amount);
+				this.overlay.close();
+				callback(this.ticker, amount);
 			}
 		};
+
+		if (document.querySelector('#stake-select-crypto')){
+			document.querySelector('#stake-select-crypto').onchange = async (e) => {
+				this.ticker = e.target.value;
+				this.mod.max_balance = parseFloat(this.mod.balances[this.ticker].balance);
+				stake_input.value = "";
+				max_button.innerText = `Max: ${this.mod.max_balance}`;
+			};
+		}
 	}
 
 	validateAmount(){
