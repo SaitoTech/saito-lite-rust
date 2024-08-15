@@ -6,22 +6,21 @@ const webpack = require("webpack");
 let minimize = false;
 let devtool = undefined;
 // let entrypoint = "./../bundler/default/mods/debug/debug.js";
-let entrypoint = "./../mods/debug/debug.js";
+let entrypoint = "./../mods/twilight/twilight.js";
 let outputfile = "dyn.module.js";
 
 webpack(
   {
-    // optimization: {
-    //   //set the appropriate value for minimisation
-    //   // dev => false, prod => true
-    //   minimize: minimize,
-    //   minimizer: [
-    //     new TerserPlugin({
-    //       parallel: true,
-    //     }),
-    //   ],
-    //
-    // },
+    optimization: {
+      //set the appropriate value for minimisation
+      // dev => false, prod => true
+      minimize: false,
+      // minimizer: [
+      //   new TerserPlugin({
+      //     parallel: true,
+      //   }),
+      // ],
+    },
     target: "web",
     // node: {
     //     fs: "empty",
@@ -103,19 +102,6 @@ webpack(
           test: /\.tsx?$/,
           loader: "ts-loader",
           exclude: /(node_modules)/,
-          // exclude: [
-          //   {
-          //     and: [path.resolve(__dirname,"node_modules")],
-          //     // TODO : remove ts loadup entirely
-          //     // not: [path.resolve(__dirname,"node_modules/saito-js")]
-          //   }
-          // ],
-          // resolve: {
-          //   fullySpecified:false
-          // }
-          // options:{
-          //   allowTsInNodeModules: true
-          // }
         },
         // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
         {
@@ -132,18 +118,11 @@ webpack(
               },
             },
           ],
-          // exclude: /(node_modules)/,
-          // resolve: {
-          //   fullySpecified:false
-          // }
         },
         {
           test: /\.mjs$/,
           exclude: /(node_modules)/,
           type: "javascript/auto",
-          // resolve: {
-          //   fullySpecified:false
-          // }
         },
         {
           test: /html$/,
@@ -162,6 +141,14 @@ webpack(
           options: {
             publicPath: "dist/",
           },
+        },
+        {
+          test: /\.(png|jpg|gif)$/,
+          // use: [{
+          //   loader: 'file-loader',
+          //   options: {}
+          // }]
+          type: "asset/resource"
         },
         // {
         //   test: /\.wasm$/,

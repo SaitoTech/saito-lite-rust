@@ -1,4 +1,4 @@
-module.exports = (region, sobj) => {
+const ScoringTemplate = (region, sobj) => {
 	let results_text = 'Region Tied';
 	let bonus_events = '';
 	let winner_css = 'winner-tied';
@@ -71,3 +71,4 @@ module.exports = (region, sobj) => {
 
 	return html;
 };
+module.exports = ScoringTemplate;
