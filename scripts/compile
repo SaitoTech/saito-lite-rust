@@ -11,6 +11,7 @@ echo "  Current Timestamp: $currentTime"
 buildJsonFile="./config/build.json"
 
 
+echo $buildJsonFile
 
 
 
@@ -343,12 +344,12 @@ if [ "$1" == "nuke" ] || [ "$1" == "init" ]; then
   echo ""
 
   rm -rf built/*
-  tsc
+  tsc -p ./build/tsconfig.json
   reset_nonpersistent
   reset_persistent
   reset_bundler
 
-  time node webpack/webpack.config.cjs $2 $3
+  time node build/webpack.config.cjs $2 $3
 
   post_compile
 
@@ -365,12 +366,13 @@ if [ "$1" == "reset" ] || [ "$1" == "dev" ]; then
   echo ""
   echo ""
 
-  tsc
+  tsc -p ./build/tsconfig.json
+
   reset_nonpersistent
   reset_bundler
-
-  time node webpack/webpack.config.cjs $2 $3
-
+  
+  time node build/webpack.config.cjs $2 $3
+  
   post_compile
 
 fi
@@ -397,7 +399,7 @@ if [ "$1" == "recompile" ]; then
 
   reset_bundler
 
-  time node webpack/webpack.config.cjs $2 $3
+  time node build/webpack.config.cjs $2 $3
 
   post_compile
 

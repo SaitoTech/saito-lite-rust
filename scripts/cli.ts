@@ -1,18 +1,18 @@
 // import "source-map-support/register";
-import Server from './lib/saito/core/server';
-import StorageCore from './lib/saito/core/storage-core';
-import { Saito } from './apps/core';
+import Server from '../lib/saito/core/server';
+import StorageCore from '../lib/saito/core/storage-core';
+import { Saito } from '../apps/core';
 import fs from 'fs-extra';
 import * as JSON from 'json-bigint';
-import hashLoader from './apps/core/hash-loader';
+import hashLoader from '../apps/core/hash-loader';
 
-import mods_config from './config/modules.config';
+import mods_config from '../config/modules.config';
 import S, { initialize as initS } from 'saito-js/index.node';
-import { NodeSharedMethods } from './lib/saito/core/server';
-import Factory from './lib/saito/factory';
+import { NodeSharedMethods } from '../lib/saito/core/server';
+import Factory from '../lib/saito/factory';
 import { LogLevel } from 'saito-js/saito';
-import Wallet from './lib/saito/wallet';
-import Blockchain from './lib/saito/blockchain';
+import Wallet from '../lib/saito/wallet';
+import Blockchain from '../lib/saito/blockchain';
 
 async function initCLI() {
 	const app = new Saito({

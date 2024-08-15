@@ -419,9 +419,18 @@ class StreamManager {
   }
 
   async getLocalMedia() {
+
     if (this.localStream) {
-      return;
+      let shouldReturn = true;
+      this.localStream.getTracks().forEach((track) => {
+        if (track.readyState === 'ended') {
+          console.log("Track ready state is ended, reacquiring media...");
+          shouldReturn = false;
+        }
+      });
+      if (shouldReturn) return; // If none of the tracks have ended, return early
     }
+  
 
     console.log(this.videoSource, this.audioSource);
 
@@ -430,6 +439,7 @@ class StreamManager {
     //Get my local media
     try {
       this.localStream = await navigator.mediaDevices.getUserMedia(c);
+  
     } catch (err) {
       console.warn('Problem attempting to get User Media', err);
       console.log('Trying without video');

@@ -6,7 +6,7 @@
 		"sourceMap": true,
 		//    "skipLibCheck": true,
 		"esModuleInterop": true,
-		"outDir": "./built",
+		"outDir": "../built",
 		"allowJs": true,
 		//    "declaration": true,
 		//    "declarationMap": true,
@@ -22,10 +22,10 @@
 		]
 	},
 	"exclude": [
-		"node_modules",
-		"./lib/templates",
-		"bundler",
-		"./lib/saito/ui/**/*"
+		"../node_modules",
+		"../lib/templates",
+		"../bundler",
+		"../lib/saito/ui/**/*"
 	],
-	"include": ["./lib/**/*.ts", "start.ts"]
+	"include": ["../lib/**/*.ts", "../scripts/start.ts"]
 }

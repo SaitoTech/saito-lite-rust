@@ -142,7 +142,7 @@
     margin-top: 1.25rem;
 }
 
-.saito-overlay-form>input[type="text"], .saito-overlay-form-input[type="text"] {
+.saito-overlay-form>input[type="text"], .saito-overlay-form-input[type="text"], .saito-overlay-form>input[type="password"] {
     height: 6rem;
     font-size: 2.3rem;
 }
