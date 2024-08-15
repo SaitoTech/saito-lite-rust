@@ -330,7 +330,7 @@ class StreamManager {
         let base64obj = this.app.crypto.stringToBase64(
           JSON.stringify(this.mod.room_obj)
         );
-
+    
         let call_link = window.location.origin + '/videocall/';
         call_link = `${call_link}?stun_video_chat=${base64obj}`;
         this.mod.sendBroadcastPresenceTransaction(call_id, call_link)
@@ -419,63 +419,41 @@ class StreamManager {
   }
 
   async getLocalMedia() {
-    this.stopLocalStream();
+
+    if (this.localStream) {
+      let shouldReturn = true;
+      this.localStream.getTracks().forEach((track) => {
+        if (track.readyState === 'ended') {
+          console.log("Track ready state is ended, reacquiring media...");
+          shouldReturn = false;
+        }
+      });
+      if (shouldReturn) return; // If none of the tracks have ended, return early
+    }
+  
 
     console.log(this.videoSource, this.audioSource);
 
-    let constraints = this.returnConstraints();
+    let c = this.returnConstraints();
 
+    //Get my local media
     try {
-      this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
-      this.setupStreamChecks();
+      this.localStream = await navigator.mediaDevices.getUserMedia(c);
+  
     } catch (err) {
       console.warn('Problem attempting to get User Media', err);
       console.log('Trying without video');
 
       this.videoEnabled = false;
-      constraints.video = false;
+      c.video = false;
 
-      try {
-        this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
-      } catch (audioErr) {
-        console.error('Failed to get audio-only stream', audioErr);
-        return;
-      }
+      this.localStream = await navigator.mediaDevices.getUserMedia(c);
     }
 
-    this.applyStreamSettings();
-    this.emitLocalStream();
-  }
-
-  stopLocalStream() {
-    if (this.localStream) {
-      this.localStream.getTracks().forEach(track => track.stop());
-      this.localStream = null;
-    }
-  }
-
-  setupStreamChecks() {
-    // Clear any existing interval
-    if (this.streamCheckInterval) {
-      clearInterval(this.streamCheckInterval);
-    }
-    this.streamCheckInterval = setInterval(() => { 
-      if(this.mod.browser_active){
-        this.checkAndReinitializeStream(), 60 * 1000    
-      }else {
-        clearInterval(this.streamCheckInterval)
-        console.log('clearing stream check interval')
-      }
-
-
-    });
-  }
-
-  applyStreamSettings() {
-    if (this.videoEnabled && this.localStream.getVideoTracks().length > 0) {
+    if (this.videoEnabled) {
       this.localStream.getVideoTracks().forEach((track) => {
         track.applyConstraints({
-          width: { min: 640, max: 1280 },
+          width: { min: 640, /*ideal: 900,*/ max: 1280 },
           height: { min: 400, max: 720 },
           aspectRatio: { ideal: 1.333333 }
         });
@@ -485,47 +463,10 @@ class StreamManager {
     this.localStream.getAudioTracks().forEach((track) => {
       track.enabled = this.audioEnabled;
     });
-  }
 
-  emitLocalStream() {
+    //Plug local stream into UI component
     this.app.connection.emit('add-local-stream-request', this.localStream);
   }
-
-  async checkAndReinitializeStream() {
-    const videoTrack = this.localStream.getVideoTracks()[0];
-    if (!videoTrack || videoTrack.readyState === 'ended') {
-      console.log("Reinitializing stream");
-      await this.getLocalMedia();
-    } else {
-      // console.log("Video stream is active");
-    }
-  }
-
-  returnConstraints() {
-    // Implement your constraints logic here
-    return {
-      video: this.videoEnabled ? { deviceId: this.videoSource ? { exact: this.videoSource } : undefined } : false,
-      audio: this.audioEnabled ? { deviceId: this.audioSource ? { exact: this.audioSource } : undefined } : false
-    };
-  }
-
-
-  keepStreamAlive(stream) {
-    const videoTrack = stream.getVideoTracks()[0];
-    const audioTrack = stream.getAudioTracks()[0];
-
-    setInterval(() => {
-      if (videoTrack.enabled) {
-        videoTrack.enabled = false;
-        videoTrack.enabled = true;
-      }
-      if (audioTrack.enabled) {
-        audioTrack.enabled = false;
-        audioTrack.enabled = true;
-      }
-    }, 60000); // Every minute
-  }
-
 
   removePeer(peer, message = "left the meeting") {
     this.remoteStreams.delete(peer);
