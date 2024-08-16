@@ -7543,6 +7543,10 @@ this.game_help.render({
       deck['tehran']            = { img : "TNRnTS-108" , name : "Our Man in Tehran", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
     }
 
+    if (this.game.options.deck === "saito") {
+      deck['che'] 	   		= { img : "TNRnTS-241png" ,name : "Che", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 3 };
+    }
+
     if (inc_optional == true) {
 
       //
