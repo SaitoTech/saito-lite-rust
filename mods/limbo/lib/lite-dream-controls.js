@@ -244,7 +244,7 @@ class DreamControls{
     let c = list.children;
 
     if (document.querySelector(`#disconnect-control`) != null) {
-			document.querySelector(`#dream-controls .control-panel .control-list > div:nth-child(${c.length-1})`).after(newDiv);
+			document.querySelector(`#dream-controls .control-panel .control-list > div:nth-child(${c.length-2})`).after(newDiv);
 		}
 	}
 
