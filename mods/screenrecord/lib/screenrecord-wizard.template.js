@@ -40,9 +40,11 @@ module.exports = function ScreenRecordWizardTemplate(app, mod, options) {
 `;
 
 
+   let video = document.querySelector('.video-box-container-large');
+
 		html += `
 	<div class="record-mode">
-	<div class="record-mode-option" id="mode-audio"><i  class=" fa-solid fa-tv"></i> <label>Screen only</label></div>
+	${!video ? '<div class="record-mode-option" id="mode-audio"><i  class=" fa-solid fa-tv"></i> <label>Screen only</label></div>': ""}
 	<div class="record-mode-option selected" id="mode-video" >  <i  class="fa-solid fa-camera "></i><label>Screen + camera</label> </div>
 	</div>
   `;

@@ -161,7 +161,8 @@ class Record extends ModTemplate {
 		if (type === 'screenrecord-video-controls') {
 			return {
 				mediaRecorder: this.mediaRecorder,
-				stopRecording: this.stopRecording.bind(this)
+				stopRecording: this.stopRecording.bind(this),
+				type: this.type
 			};
 		}
 		if (type === 'game-menu') {
@@ -541,7 +542,7 @@ class Record extends ModTemplate {
 
 		const recordButtonGame = document.getElementById('record-stream');
 		if (recordButtonGame) {
-			recordButtonGame.textContent = 'record game';
+			recordButtonGame.textContent = 'Record game';
 		}
 	}
 }

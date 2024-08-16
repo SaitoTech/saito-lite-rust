@@ -67,8 +67,11 @@ module.exports = DreamWizardTemplate = (app, mod, options) => {
 		// 	}
 		// }
 
+		let video = document.querySelector('.video-box-container-large');
+
 		html += `<div class="cast-mode">
-						<div class="cast-mode-option" id="mode-game-screen"><i class="fa-solid fa-tv" title="Game screen only"></i><label>Screen only</label></div>
+						${!video ? '<div class="cast-mode-option" id="mode-game-screen"><i class="fa-solid fa-tv" title="Game screen only"></i><label>Screen only</label></div>': "" 
+						}
 						<div class="cast-mode-option selected" id="mode-video"><i class="fa-solid fa-camera" title="Let Saito stitch the game screen and camera feed"></i><label>Screen + camera</label></div>
 					</div>`;
 
