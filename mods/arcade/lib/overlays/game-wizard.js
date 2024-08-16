@@ -167,11 +167,11 @@ class GameWizard {
 					let options = this.getOptions();
 					let gameType = e.currentTarget.getAttribute('data-type');
 
-					let c = await this.mod.verifyOptions(gameType, options);
-					if (!c) {
+					//let c = await this.mod.verifyOptions(gameType, options);
+					/*if (!c) {
 						this.overlay.remove();
 						return;
-					}
+					}*/
 
 					this.overlay.remove();
 

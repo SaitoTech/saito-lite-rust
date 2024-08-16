@@ -78,6 +78,12 @@ class JoinGameOverlay {
 						}
 					}
 
+				 let c = await this.mod.verifyOptions("", this.invite.options);
+				 if (!c){
+				 	this.overlay.remove();
+				 	return;
+				 }
+
 					//
 					// Create Transaction
 					//
