@@ -233,16 +233,19 @@ class DreamControls{
       </div>
     `;
 
-    document.querySelector(`#dream-controls .control-panel .control-list`).insertAdjacentHTML('beforeend', html);
+     const newDiv = document.createElement("div");
+     newDiv.innerHTML = html;
+
+    //document.querySelector(`#dream-controls .control-panel .control-list`).insertAdjacentHTML('beforeend', html);
 
     // append as second last child
     // keeping close (X) icon as last
-    // let list = document.querySelector('#dream-controls .control-panel .control-list');
-    // let c = list.children;
+    let list = document.querySelector('#dream-controls .control-panel .control-list');
+    let c = list.children;
 
-    // c[c.length - 2].after(html);
-
-//    document.querySelector(`#dream-controls .control-panel .control-list:nth-child(${c.length-1})`).after(html);
+    if (document.querySelector(`#disconnect-control`) != null) {
+			document.querySelector(`#dream-controls .control-panel .control-list > div:nth-child(${c.length-2})`).after(newDiv);
+		}
 	}
 
 
