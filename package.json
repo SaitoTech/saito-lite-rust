@@ -60,6 +60,7 @@
     "js-chess-engine": "^1.0.2",
     "json-bigint": "^1.0.0",
     "json-tree-viewer": "0.0.2",
+    "jsoneditor": "^10.1.0",
     "jsstore": "4.0.0",
     "jszip": "^3.5.0",
     "lamejs": "^1.2.0",
@@ -135,4 +136,3 @@
     "worker-plugin": "^5.0.1"
   }
 }
-

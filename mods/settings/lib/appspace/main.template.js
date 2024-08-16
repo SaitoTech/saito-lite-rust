@@ -99,7 +99,7 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 
       <div class="settings-appspace-debug">
         <h6>Debug Info</h6>
-        <div class="settings-appspace-debug-content"></div>
+        <div class="settings-appspace-debug-content" id="settings-appspace-debug-content"></div>
       </div>
 
       <div class="settings-storage-info">
