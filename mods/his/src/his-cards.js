@@ -7909,7 +7909,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
     }
     deck['072'] = { 
       img : "cards/HIS-072.svg" , 
-      name : "Cloth Price Fluctuate" ,
+      name : "Cloth Prices Fluctuate" ,
       ops : 3 ,
       turn : 1 ,
       type : "normal" ,
@@ -7951,6 +7951,9 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  let p = his_self.returnPlayerOfFaction(faction);
 
 	  if (p == his_self.game.player) {
+	    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league != 1) {
+	      return 0;
+	    }
 	    if (faction === "ottoman") {
 
 	      //
@@ -7984,7 +7987,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	        function(space) {
 	          if (space.besieged) { return 0; }
 	          if (space.type == "electorate" && his_self.game.state.events.schmalkaldic_league != 1) { return 0; }
-	          if (his_self.isSpaceControlled(space, faction)) { return 1; }
+		  if (his_self.isSpaceControlled(space, faction)) { return 1; }
 	          return 0;
 	        },
 	        function(spacekey) {

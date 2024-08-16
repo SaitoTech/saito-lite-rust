@@ -1154,6 +1154,9 @@ console.log("LATEST MOVE: " + mv);
 	    this.game.queue.push("DECK\t1\t"+JSON.stringify(x));
             this.game.queue.push("DECKBACKUP\t1");
 
+	this.game.saito_cards_added.push(mv[1]);
+	this.game.saito_cards_added_reason.push("Player Choice");
+
 	return 1;
 
     }
@@ -1189,7 +1192,7 @@ console.log("LATEST MOVE: " + mv);
         this.addMove("RESOLVE\t"+this.publicKey);
 	
 	if (this.game.player == 1) {
-          this.choosecard_overlay.render(cardchosen[0], cardchosen[1], "midwar");
+          this.choosecard_overlay.render(cardchosen[0], cardchosen[1], "latewar");
 	} else {
           this.choosecard_overlay.render(cardchosen[2], cardchosen[3], "latewar");
 	}
@@ -1213,6 +1216,9 @@ console.log("LATEST MOVE: " + mv);
             this.game.queue.push("DECKXOR\t1\t1");
 	    this.game.queue.push("DECK\t1\t"+JSON.stringify(x));
             this.game.queue.push("DECKBACKUP\t1");
+
+	this.game.saito_cards_added.push(mv[1]);
+	this.game.saito_cards_added_reason.push("Player Choice");
 
 	return 1;
 
