@@ -26,7 +26,7 @@ module.exports = LiteDreamControlsTemplate = (app, mod, videoEnabled = false) =>
 
 
   if (mod.publicKey == mod.dreamer){
-    html += `<div class="disconnect-control icon_click_area">
+    html += `<div id="disconnect-control" class="disconnect-control icon_click_area">
              <i class="fa-solid fa-x"></i>
           </div>`;
   }
