@@ -248,7 +248,7 @@ class DreamControls{
     let list = document.querySelector('#dream-controls .control-panel .control-list');
     let c = list.children;
 
-    if (document.querySelector(`#disconnect-control`) != null) {
+    if (document.querySelector(`#limbo-disconnect-control`) != null) {
 			document.querySelector(`#dream-controls .control-panel .control-list > div:nth-child(${c.length-2})`).after(newDiv);
 		}
 	}
@@ -292,8 +292,8 @@ class DreamControls{
 	    }
 
 
-		if (document.querySelector(".dream-controls .disconnect-control")){
-			document.querySelector(".dream-controls .disconnect-control").onclick = async () => {
+		if (document.querySelector(".dream-controls .limbo-disconnect-control")){
+			document.querySelector(".dream-controls .limbo-disconnect-control").onclick = async () => {
 				console.log("Quit Dream: ", this.mod.dreams[this.mod.publicKey]);
 				this.remove();
 				await this.mod.sendKickTransaction(this.mod.dreams[this.mod.publicKey].speakers);
