@@ -20,7 +20,7 @@ class Videocall extends ModTemplate {
 
 		this.description = 'P2P Video & Audio Connection Module';
 		this.categories = 'Utilities Communications';
-		this.icon = 'fa-solid fa-mobile-screen-button';  
+		this.icon = 'fa-solid fa-mobile-screen-button';
 		this.request_no_interrupts = true; // Don't let chat popup inset into /videocall
 		this.isRelayConnected = false;
 
@@ -105,7 +105,7 @@ class Videocall extends ModTemplate {
 				this.layout = this.app.options.stun.settings?.layout;
 			}
 
-			console.log("************* LAYOUT" , this.layout);
+			console.log("************* LAYOUT", this.layout);
 
 			if (app.browser.returnURLParameter('stun_video_chat')) {
 				this.room_obj = JSON.parse(
@@ -118,7 +118,7 @@ class Videocall extends ModTemplate {
 				if (!this.browser_active) {
 					this.renderInto('.saito-overlay');
 				}
-			} 
+			}
 
 			try {
 				this.stun = app.modules.returnFirstRespondTo('peer-manager');
@@ -188,13 +188,13 @@ class Videocall extends ModTemplate {
 					];
 				}
 			}
-			if ( this.streams?.active == true & obj?.publicKey !== this.publicKey){
-				if(type !== 'user-menu') return;
+			if (this.streams?.active == true & obj?.publicKey !== this.publicKey) {
+				if (type !== 'user-menu') return;
 				return [
 					{
 						text: 'Kick User From Call',
 						icon: "fa-solid fa-user-slash",
-						callback: async  (app, public_key) => {
+						callback: async (app, public_key) => {
 							console.log('kicking user: ', public_key);
 							app.connection.emit('remove-peer-box', public_key)
 							this.streams.removePeer(public_key, "was kicked out")
@@ -311,21 +311,21 @@ class Videocall extends ModTemplate {
 							call_self.app.connection.emit('begin-share-screen');
 						}
 					},
-					event: function(id){
-					    call_self.app.connection.on('toggle-screen-share-label', (state = false) => {
-					    	let container = document.getElementById(id);
-							if (container){
-								if (state){
+					event: function (id) {
+						call_self.app.connection.on('toggle-screen-share-label', (state = false) => {
+							let container = document.getElementById(id);
+							if (container) {
+								if (state) {
 									container.classList.add("recording");
 									container.querySelector("label").innerText = "Stop";
 									container.querySelector("i")?.classList.add("recording");
-								}else{
+								} else {
 									container.classList.remove("recording");
 									container.querySelector("label").innerText = "Present";
 									container.querySelector("i")?.classList.remove("recording");
 								}
 							}
-  					    });
+						});
 					}
 				},
 				{
@@ -349,7 +349,7 @@ class Videocall extends ModTemplate {
 				return null;
 			}
 		}
-		
+
 
 		return super.respondTo(type, obj);
 	}
@@ -374,7 +374,7 @@ class Videocall extends ModTemplate {
 			if (message.module === 'Videocall') {
 				if (this.app.BROWSER === 1) {
 					let from = tx.from[0].publicKey;
-					console.log('onConfirmation', tx, from)		
+					console.log('onConfirmation', tx, from)
 					if (this.hasSeenTransaction(tx)) return;
 
 					if (
@@ -382,10 +382,10 @@ class Videocall extends ModTemplate {
 						this.room_obj.call_id !== message.call_id
 					) {
 						console.log('OC: Tab is not active');
-						if(message.request === "broadcast-presence" && !tx.isFrom(this.publicKey)) {
-							sconfirm(`${this.app.keychain.returnUsername(from)} joined the call with id ${message.call_id}, do you want to join call?`).then((result)=> {
+						if (message.request === "broadcast-presence" && !tx.isFrom(this.publicKey)) {
+							sconfirm(`${this.app.keychain.returnUsername(from)} joined the call with id ${message.call_id}, do you want to join call?`).then((result) => {
 								console.log('result', result)
-								if(result){
+								if (result) {
 									window.location.href = message.call_link
 
 								}
@@ -394,10 +394,10 @@ class Videocall extends ModTemplate {
 						return;
 					}
 
-					if(this.room_obj.scheduled === true){
-						if (tx.isTo(this.room_obj.call_id)  && !tx.isFrom(this.publicKey)) {
+					if (this.room_obj.scheduled === true) {
+						if (tx.isTo(this.room_obj.call_id) && !tx.isFrom(this.publicKey)) {
 							console.log('OnConfirmation: ' + message.request);
-	
+
 							// if (message.request === 'call-list-request') {
 							// 	this.receiveCallListRequestTransaction(
 							// 		this.app,
@@ -410,14 +410,14 @@ class Videocall extends ModTemplate {
 							// 		tx
 							// 	);
 							// }
-							if(message.request === "broadcast-presence"){
+							if (message.request === "broadcast-presence") {
 								this.receiveBroadcastPresenceTransaction(this.app, tx)
 							}
 						}
-					}else {
-						if (tx.isTo(this.publicKey)  && !tx.isFrom(this.publicKey)) {
+					} else {
+						if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
 							console.log('OnConfirmation: ' + message.request);
-	
+
 							if (message.request === 'call-list-request') {
 								this.receiveCallListRequestTransaction(
 									this.app,
@@ -430,12 +430,12 @@ class Videocall extends ModTemplate {
 									tx
 								);
 							}
-							if(message.request === "broadcast-presence"){
+							if (message.request === "broadcast-presence") {
 								this.receiveBroadcastPresenceTransaction(this.app, tx)
 							}
 						}
 					}
-				
+
 				}
 			}
 		}
@@ -512,8 +512,8 @@ class Videocall extends ModTemplate {
 						) {
 							if (this.room_obj.call_peers[i] == from) {
 								this.room_obj.call_peers.splice(i, 1);
-								if (from !== this.publicKey){
-									this.app.connection.emit('stun-update-link');			
+								if (from !== this.publicKey) {
+									this.app.connection.emit('stun-update-link');
 								}
 								break;
 							}
@@ -536,8 +536,8 @@ class Videocall extends ModTemplate {
 						) {
 							if (this.room_obj.call_peers[i] == from) {
 								this.room_obj.call_peers.splice(i, 1);
-								if (from !== this.publicKey){
-									this.app.connection.emit('stun-update-link');			
+								if (from !== this.publicKey) {
+									this.app.connection.emit('stun-update-link');
 								}
 								break;
 							}
@@ -555,7 +555,7 @@ class Videocall extends ModTemplate {
 					if (txmsg.request === 'peer-kick-broadcast') {
 						let from = tx.from[0].publicKey;
 						siteMessage(`${this.app.keychain.returnUsername(from)} kicked ${this.app.keychain.returnUsername(tx.msg.data.kicked_peer)} out of the call`)
-					
+
 					}
 
 					if (
@@ -656,7 +656,7 @@ class Videocall extends ModTemplate {
 
 		let call_list = [];
 
-		if (this.room_obj.call_peers){
+		if (this.room_obj.call_peers) {
 			this.room_obj.call_peers.forEach((key) => {
 				if (!call_list.includes(key)) {
 					call_list.push(key);
@@ -809,7 +809,7 @@ class Videocall extends ModTemplate {
 
 		let newtx =
 			await this.app.wallet.createUnsignedTransactionWithDefaultFee();
-			newtx.addTo(peer);
+		newtx.addTo(peer);
 
 
 		newtx.msg = {
@@ -875,9 +875,9 @@ class Videocall extends ModTemplate {
 
 		let call_list = [];
 
-		for (let peer in txmsg.data){
+		for (let peer in txmsg.data) {
 			console.log(peer, txmsg.data[peer]);
-			if (txmsg.data[peer] == "connected"){
+			if (txmsg.data[peer] == "connected") {
 				if (peer !== this.publicKey) {
 					if (!this.room_obj.call_peers.includes(peer)) {
 						this.room_obj.call_peers.push(peer);
@@ -895,14 +895,14 @@ class Videocall extends ModTemplate {
 		this.app.connection.emit('peer-list', sender, txmsg.data);
 	}
 
-	async sendBroadcastPresenceTransaction(call_id, call_link){
+	async sendBroadcastPresenceTransaction(call_id, call_link) {
 		if (!this?.room_obj) {
 			console.log('No room object!');
 			return;
 		}
 
 		this.app.connection.emit('add-waiting-video-box');
-		setTimeout(()=> {
+		setTimeout(() => {
 			this.app.connection.emit('remove-waiting-video-box');
 		}, 20000);
 
@@ -916,7 +916,7 @@ class Videocall extends ModTemplate {
 			await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
 		newtx.addTo(call_id)
-	
+
 		newtx.msg = {
 			module: 'Videocall',
 			request: 'broadcast-presence',
@@ -938,7 +938,7 @@ class Videocall extends ModTemplate {
 		if (!this.room_obj?.call_peers.includes(sender)) {
 			this.room_obj?.call_peers.push(sender);
 		}
-		this.stun.createPeerConnection(sender, (sender)=> {
+		this.stun.createPeerConnection(sender, (sender) => {
 			this.sendCallJoinTransaction(sender)
 		})
 
@@ -964,7 +964,7 @@ class Videocall extends ModTemplate {
 		// //Update display of videoboxes
 		// this.app.connection.emit('peer-list', sender, txmsg.data);
 	}
-	async generateRoomId(){
+	async generateRoomId() {
 		let pk = this.app.crypto.generateKeys();
 		let id = this.app.crypto.generatePublicKey(pk);
 		this.app.keychain.addWatchedPublicKey(id);

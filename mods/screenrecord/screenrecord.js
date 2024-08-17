@@ -277,7 +277,7 @@ class Record extends ModTemplate {
 		}
 	}
 
-async 	getOrCreateVideoBox(includeCamera, stream) {		
+	async getOrCreateVideoBox(includeCamera, stream) {
 		if (!this.videoBox && includeCamera) {
 			this.localStream = await navigator.mediaDevices.getUserMedia({
 				video: true
@@ -299,9 +299,9 @@ async 	getOrCreateVideoBox(includeCamera, stream) {
 	removeVideoBox(forceRemove = false) {
 		// console.log(this.is_recording_game, this.is_streaming_game, forceRemove, "what are we doing?")
 
-		if(!forceRemove){
-			if(this.is_recording_game || this.is_streaming_game){
-				return 
+		if (!forceRemove) {
+			if (this.is_recording_game || this.is_streaming_game) {
+				return
 			}
 			if (this.videoBox) {
 				this.localStream.getTracks().forEach(track => {
@@ -311,7 +311,7 @@ async 	getOrCreateVideoBox(includeCamera, stream) {
 				this.videoBox.remove();
 				this.videoBox = null;
 			}
-		}else {
+		} else {
 			if (this.videoBox) {
 				this.localStream.getTracks().forEach(track => {
 					track.stop()
@@ -320,10 +320,10 @@ async 	getOrCreateVideoBox(includeCamera, stream) {
 				this.videoBox.remove();
 				this.videoBox = null;
 			}
-			
+
 		}
 
-	
+
 	}
 
 	async initializeMediaRecorder(existingChunks, stream) {
@@ -460,7 +460,7 @@ async 	getOrCreateVideoBox(includeCamera, stream) {
 		if (this.gameRecordCapturer) {
 			this.is_recording_game = false
 			this.gameRecordCapturer.stopCaptureGameStream()
-			this.gameRecordCapturer = null	
+			this.gameRecordCapturer = null
 		}
 
 		if (this.screenrecordControls) {
@@ -507,7 +507,7 @@ async 	getOrCreateVideoBox(includeCamera, stream) {
 		// }
 
 		// this.removeVideoBox()
-		
+
 		this.updateUIForRecordingStop();
 		this.sendStopRecordingTransaction(this.members);
 
