@@ -297,7 +297,7 @@ async 	getOrCreateVideoBox(includeCamera, stream) {
 	}
 
 	removeVideoBox(forceRemove = false) {
-		console.log(this.is_recording_game, this.is_streaming_game, forceRemove, "what are we doing?")
+		// console.log(this.is_recording_game, this.is_streaming_game, forceRemove, "what are we doing?")
 
 		if(!forceRemove){
 			if(this.is_recording_game || this.is_streaming_game){

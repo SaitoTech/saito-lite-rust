@@ -26,14 +26,10 @@ class StreamCapturer {
         });
 
         app.connection.on('start-stun-call', (event) => {
-            console.log("starting stun call");
             // end the current local stream
             if (this.localStream) {
-                console.log('this.localstream', this.localStream)
                 this.localStream.getTracks().forEach(track => {
-                    console.log(this.activeStreams, "active streams before")
                     this.removeAudioTrack(track.id)
-                    console.log(this.activeStreams, "active streams after")
                     track.stop()
                 })
                 this.localStream = null
@@ -74,7 +70,6 @@ class StreamCapturer {
         const stream = new MediaStream([track]);
         const trackId = track.id;
         if (!this.activeStreams.has(trackId)) {
-            console.log('processing stream', stream, trackId)
             const source = this.audioCtx.createMediaStreamSource(stream);
             const gainNode = this.audioCtx.createGain();
             gainNode.gain.setValueAtTime(0.5, this.audioCtx.currentTime);
@@ -257,7 +252,6 @@ class StreamCapturer {
                                     node.id.startsWith('stream_')
                                 ) {
                                     const videos = node.querySelectorAll('video');
-                                    // console.log('video elements', videos)
                                     videos.forEach((video) => {
                                         console.log('new video element', video);
                                         const stream =
@@ -266,8 +260,6 @@ class StreamCapturer {
                                                 : 'mozCaptureStream' in video
                                                     ? video.mozCaptureStream() && video.mozCaptureStream(0)
                                                     : null;
-                                        // console.log('captured stream', stream)
-                                        // processStream(stream, video);
                                         const rect = video.getBoundingClientRect();
                                         const parentID = video.parentElement.id;
                                         let existingVideoIndex = this.streamData.findIndex(data => data.video.id === video.id)
@@ -374,21 +366,21 @@ class StreamCapturer {
                 if (streams.length > 0) {
                     this.localStream = streams[0].localStream;
                     this.additionalSources = streams[0].remoteStreams;
-                    // if (this.localStream.getAudioTracks().length > 0) {
-                    //     let localAudio = this.audioCtx.createMediaStreamSource(this.localStream);
-                    //     localAudio.connect(this.mixer);
-                    // }
-                    this.localStream.getAudioTracks().forEach(track => {
-                        this.processAudioTrack(track)
-                    })
+                    if (this.localStream.getAudioTracks().length > 0) {
+                        let localAudio = this.audioCtx.createMediaStreamSource(this.localStream);
+                        localAudio.connect(this.mixer);
+                    }
+                    // this.localStream.getAudioTracks().forEach(track => {
+                    //     this.processAudioTrack(track)
+                    // })
 
                     this.additionalSources.forEach((values, keys) => {
-                        console.log(keys, values.remoteStream.getAudioTracks());
-                        values.remoteStream.getAudioTracks().forEach(track => {
-                            this.processAudioTrack(track);
-                        })
-                        // let otherAudio = this.audioCtx.createMediaStreamSource(values.remoteStream);
-                        // otherAudio.connect(this.mixer);
+                        // console.log(keys, values.remoteStream.getAudioTracks());
+                        // values.remoteStream.getAudioTracks().forEach(track => {
+                        //     this.processAudioTrack(track);
+                        // })
+                        let otherAudio = this.audioCtx.createMediaStreamSource(values.remoteStream);
+                        otherAudio.connect(this.mixer);
                     });
                 }
                 this.combinedStream.addTrack(canvas.captureStream(25).getVideoTracks()[0]);
@@ -670,7 +662,7 @@ class StreamCapturer {
 
                 try {
                     const screenshot = await html2canvas(view_window, {
-                        scale: 0.9,
+                        scale: 0.4,
                         useCORS: false,
                         allowTaint: false,
                         logging: false,
@@ -826,33 +818,6 @@ class StreamCapturer {
 
 
 
-    // async getVideoBox(includeCamera) {
-    //     const streams = this.app.modules.getRespondTos('media-request');
-    //     if (streams.length === 0) {
-    //         if (includeCamera) {
-    //             if (!this.mod.videoBox) {
-    //                 try {
-    //                     this.localStream = await navigator.mediaDevices.getUserMedia({
-    //                         video: true,
-    //                         audio: true
-    //                     });
-    //                     this.localStream.getAudioTracks().forEach(track => {
-    //                         this.processAudioTrack(track);
-    //                     })
-    //                 } catch (error) {
-    //                     console.error('Failed to get user media:', error);
-    //                     alert('Failed to access camera and microphone.');
-    //                     return;
-    //                 }
-    //                 this.mod.getOrCreateVideoBox(true, this.localStream);
-    //                 //   this.mod.videoBox.render(this.localStream);
-    //                 //   this.app.browser.makeDraggable('stream_local');
-    //             }
-    //         } else {
-    //             this.mod.removeVideoBox();
-    //         }
-    //     }
-    // }
 
     async getExistingStreams(includeCamera) {
         try {
