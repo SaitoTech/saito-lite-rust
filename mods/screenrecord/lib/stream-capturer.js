@@ -662,7 +662,7 @@ class StreamCapturer {
 
                 try {
                     const screenshot = await html2canvas(view_window, {
-                        scale: 0.4,
+                        scale: 0.6,
                         useCORS: false,
                         allowTaint: false,
                         logging: false,
