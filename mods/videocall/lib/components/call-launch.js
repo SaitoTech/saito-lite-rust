@@ -2,6 +2,7 @@ const SaitoOverlay = require('../../../../lib/saito/ui/saito-overlay/saito-overl
 const StunLaunchTemplate = require('./call-launch.template.js');
 const CallSetting = require('../components/call-setting.js');
 const SaitoLoader = require('../../../../lib/saito/ui/saito-loader/saito-loader.js');
+const CallScheduleWizard = require('./call-schedule-wizard.js');
 
 /**
  *
@@ -98,39 +99,9 @@ class CallLaunch {
 		if (document.getElementById('createScheduleRoom')) {
 			document.getElementById('createScheduleRoom').onclick =async  (e) => {
 
-				if (!this.mod.isRelayConnected) {
-					siteMessage('Wait for peer connection');
-					return;
-				}
-
-				let call_id = await this.mod.generateRoomId()
-				let link = this.createRoomLink({call_id, scheduled: true, call_peers: []})
-				navigator.clipboard.writeText(link);
-				siteMessage('New room link created and copied to clip board', 1500);
-
-
-				// create a public 
-				// if (!this.mod.room_obj) {
-				// 	this.mod.room_obj = {
-				// 		call_id: this.mod.createRoomCode(),
-				// 		host_public_key: this.mod.publicKey,
-				// 		call_peers: [],
-				// 	};
-				// }
-
-				// //
-				// // Set big screen video as desired call interface
-				// //
-				// this.app.connection.emit('stun-init-call-interface', this.callSetting.returnSettings());
-
-				// //
-				// //Close this component
-				// //
-				// this.app.connection.emit('close-preview-window');
-				// //
-				// // Start the stun call
-				// //
-				// this.app.connection.emit('start-stun-call');
+				// show splash screen 
+				this.callScheduleWizard = new CallScheduleWizard(app, mod)
+				this.callScheduleWizard.render()
 			};
 		}
 	}
