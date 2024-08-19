@@ -23,6 +23,55 @@ label {
     color: var(--color-contrast);
 }
 
-#generatedLink {
+/* #generatedLink {
     word-break: break-all;
+} */
+
+
+
+
+/* Call schedule launcher */
+
+.call-schedule-launch {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.call-schedule-launch-container {
+    padding: 3rem;
+    border-radius: 8px;
+   border:  1px solid var(--saito-border-color);
+   width: min(550px, 98vw);
+}
+
+.call-schedule-launch-container h4 {
+    margin-bottom: 2rem;
+}
+
+.call-details {
+    padding: 1.5rem;
+    border-radius: .5rem;
+    margin-bottom: 2rem;
+}
+
+.call-details p {
+    margin: 10px 0;
+}
+
+.enter-call-button {
+    width: 100%;
+}
+
+
+
+.enter-call-button:hover:not(.disabled) {
+    background-color: #45a049;
+}
+
+.enter-call-button.disabled {
+    background-color: #cccccc;
+    color: #666666;
+    cursor: not-allowed;
+    opacity: 0.7;
 }

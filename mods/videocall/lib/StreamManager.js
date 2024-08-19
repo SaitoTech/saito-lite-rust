@@ -324,9 +324,9 @@ class StreamManager {
         }
       } else {
         let call_id = this.mod.room_obj.call_id
-        this.app.keychain.addWatchedPublicKey(call_id);
-        this.app.keychain.addKey(call_id, { identifier: call_id });
-        console.log('watched public key', this.mod.room_obj)
+        // this.app.keychain.addWatchedPublicKey(call_id);
+        // this.app.keychain.addKey(call_id, { identifier: call_id });
+        // console.log('watched public key', this.mod.room_obj)
         let base64obj = this.app.crypto.stringToBase64(
           JSON.stringify(this.mod.room_obj)
         );

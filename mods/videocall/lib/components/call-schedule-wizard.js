@@ -13,7 +13,6 @@ class CallScheduleWizard {
     render() {
         if (!document.querySelector('.call-schedule-container')) {
             this.overlay.show(callScheduleWizardTemplate(this.app, this.mod));
-			this.initializeForm();
             this.attachEvents(this.app, this.mod);
         }
     }
@@ -21,12 +20,8 @@ class CallScheduleWizard {
     attachEvents(app, mod) {
         const form = document.getElementById('scheduleForm');
         const startTimeInput = document.getElementById('startTime');
-
-        // Set min datetime when the page loads
-        this.setMinDateTime();
-
-        // Update min datetime every minute
-        setInterval(() => this.setMinDateTime(), 60000);
+        this.initializeForm();
+        setInterval(() => this.updateMinDateTime(), 60000);
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -36,17 +31,21 @@ class CallScheduleWizard {
                 return;
             }
 
-            const startTime = startTimeInput.value;
+            let localStartTime = startTimeInput.value; // Get the local time
             const duration = document.getElementById('duration').value;
             const description = document.getElementById('description').value;
 
-			console.log(startTime, duration, description, "details")
+            // Convert local start time to UTC
+            const utcStartTime = this.convertToUTC(localStartTime);
+
+            console.log('UTC start time', utcStartTime);
+
             const call_id = await this.mod.generateRoomId();
             const room_obj = {
                 call_id,
                 scheduled: true,
                 call_peers: [],
-                startTime,
+                startTime: utcStartTime,  // Now in UTC
                 duration,
                 description
             };
@@ -56,15 +55,28 @@ class CallScheduleWizard {
             siteMessage('New room link created and copied to clipboard', 1500);
 
             // Close the overlay after successful submission
-            this.overlay.remove()
+            this.overlay.remove();
         });
     }
 
-    setMinDateTime() {
+    initializeForm() {
+        const startTimeInput = document.getElementById('startTime');
         const now = new Date();
-        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-        const minDateTime = now.toISOString().slice(0, 16);
-        document.getElementById('startTime').min = minDateTime;
+        const localDateTime = now.toLocaleString('sv-SE', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(' ', 'T');
+        startTimeInput.value = localDateTime;
+        startTimeInput.min = localDateTime;
+    }
+
+    updateMinDateTime() {
+        const startTimeInput = document.getElementById('startTime');
+        const now = new Date();
+        const localDateTime = now.toLocaleString('sv-SE', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).replace(' ', 'T');
+        startTimeInput.min = localDateTime;
+    }
+
+    convertToUTC(localDateTime) {
+        const date = new Date(localDateTime);
+        return date.toISOString().slice(0, 16);
     }
 
     createRoomLink(room_obj) {
@@ -72,15 +84,6 @@ class CallScheduleWizard {
         const url1 = window.location.origin + '/videocall/';
         return `${url1}?stun_video_chat=${base64obj}`;
     }
-
-	initializeForm() {
-		const startTimeInput = document.getElementById('startTime');
-		const now = new Date();
-		now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-		const currentDateTime = now.toISOString().slice(0, 16);
-		startTimeInput.value = currentDateTime;
-		startTimeInput.min = currentDateTime;
-	}
 }
 
 module.exports = CallScheduleWizard;

@@ -93,6 +93,7 @@ class CallLaunch {
 				//
 				// Start the stun call
 				//
+				console.log('this.mod.room_obj', this.mod.room_obj)
 				this.app.connection.emit('start-stun-call');
 			};
 		}

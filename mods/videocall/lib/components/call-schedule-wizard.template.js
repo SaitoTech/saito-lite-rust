@@ -1,5 +1,5 @@
 
-module.exports = CallScheduleTemplate = (app, mod) => {
+module.exports = CallScheduleWizardTemplate = (app, mod) => {
 
     return `
     <div class="call-schedule-container">

@@ -9,6 +9,7 @@ const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
 const StreamManager = require('./lib/StreamManager');
 const AppSettings = require('./lib/stun-settings');
 const HomePage = require("./index");
+const CallScheduleLaunch = require('./lib/components/call-schedule-launch');
 
 class Videocall extends ModTemplate {
 	constructor(app) {
@@ -145,17 +146,48 @@ class Videocall extends ModTemplate {
 	}
 
 	renderInto(qs) {
-		if (qs == '.saito-overlay' || qs == 'body') {
-			if (!this.renderIntos[qs]) {
-				this.renderIntos[qs] = [];
-				this.renderIntos[qs].push(new CallLauncher(this.app, this, qs));
+		if (this.room_obj) {
+			if (this.room_obj.scheduled === false) {
+				if (qs == '.saito-overlay' || qs == 'body') {
+					if (!this.renderIntos[qs]) {
+						this.renderIntos[qs] = [];
+						this.renderIntos[qs].push(new CallLauncher(this.app, this, qs));
+					}
+					this.attachStyleSheets();
+					this.renderIntos[qs].forEach((comp) => {
+						comp.render();
+					});
+					this.renderedInto = qs;
+				}
+			} else if (this.room_obj.scheduled === true) {
+				// console.log("Should render call scheduler")
+				if (!this.renderIntos[qs]) {
+					this.renderIntos[qs] = [];
+					this.renderIntos[qs].push(new CallScheduleLaunch(this.app, this, qs));
+				}
+				this.attachStyleSheets();
+				this.renderIntos[qs].forEach((comp) => {
+					comp.render();
+				});
+				this.renderedInto = qs;
+			} else {
+				console.error("Videocall: schedule property not found in room object")
 			}
-			this.attachStyleSheets();
-			this.renderIntos[qs].forEach((comp) => {
-				comp.render();
-			});
-			this.renderedInto = qs;
+		} else {
+			if (qs == '.saito-overlay' || qs == 'body') {
+				if (!this.renderIntos[qs]) {
+					this.renderIntos[qs] = [];
+					this.renderIntos[qs].push(new CallLauncher(this.app, this, qs));
+				}
+				this.attachStyleSheets();
+				this.renderIntos[qs].forEach((comp) => {
+					comp.render();
+				});
+				this.renderedInto = qs;
+			}
 		}
+
+
 	}
 
 	respondTo(type, obj) {
@@ -381,17 +413,17 @@ class Videocall extends ModTemplate {
 						!this?.room_obj?.call_id ||
 						this.room_obj.call_id !== message.call_id
 					) {
-						console.log('OC: Tab is not active');
-						if (message.request === "broadcast-presence" && !tx.isFrom(this.publicKey)) {
-							sconfirm(`${this.app.keychain.returnUsername(from)} joined the call with id ${message.call_id}, do you want to join call?`).then((result) => {
-								console.log('result', result)
-								if (result) {
-									window.location.href = message.call_link
+						// console.log('OC: Tab is not active');
+						// if (message.request === "broadcast-presence" && !tx.isFrom(this.publicKey)) {
+						// 	sconfirm(`${this.app.keychain.returnUsername(from)} joined the call with id ${message.call_id}, do you want to join call?`).then((result) => {
+						// 		console.log('result', result)
+						// 		if (result) {
+						// 			window.location.href = message.call_link
 
-								}
-							})
-						}
-						return;
+						// 		}
+						// 	})
+						// }
+						// return;
 					}
 
 					if (this.room_obj.scheduled === true) {
@@ -968,7 +1000,7 @@ class Videocall extends ModTemplate {
 		let pk = this.app.crypto.generateKeys();
 		let id = this.app.crypto.generatePublicKey(pk);
 		this.app.keychain.addWatchedPublicKey(id);
-		this.app.keychain.addKey(id, { identifier: name, group: 1, privateKey: pk });
+		this.app.keychain.addKey(id, { identifier: id, privateKey: pk, type: "scheduled_call" });
 		return id
 	}
 
