@@ -1,7 +1,7 @@
 module.exports = CallScheduleLaunchTemplate = (app, callDetails) => {
     const { startTime, duration, description } = callDetails;
     
-    // Check if startTime is already a formatted string
+
     const formattedStartTime = typeof startTime === 'string' ? startTime : new Date(startTime).toLocaleString();
     
     return `

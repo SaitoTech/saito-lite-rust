@@ -3,6 +3,7 @@ const StunLaunchTemplate = require('./call-launch.template.js');
 const CallSetting = require('../components/call-setting.js');
 const SaitoLoader = require('../../../../lib/saito/ui/saito-loader/saito-loader.js');
 const CallScheduleWizard = require('./call-schedule-wizard.js');
+const CallScheduleJoin = require('./call-schedule-join.js');
 
 /**
  *
@@ -103,6 +104,15 @@ class CallLaunch {
 				// show splash screen 
 				this.callScheduleWizard = new CallScheduleWizard(app, mod)
 				this.callScheduleWizard.render()
+			};
+		}
+
+		if (document.getElementById('joinScheduleRoom')) {
+			document.getElementById('joinScheduleRoom').onclick =async  (e) => {
+
+				// show splash screen 
+				this.callScheduleJoin = new CallScheduleJoin(app, mod)
+				this.callScheduleJoin.render()
 			};
 		}
 	}

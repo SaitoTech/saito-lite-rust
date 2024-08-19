@@ -14,12 +14,13 @@ class CallScheduleLaunch {
     render() {
         let { startTime, duration, description, call_id } = this.mod.room_obj;
         this.app.keychain.addWatchedPublicKey(call_id);
-        this.app.keychain.addKey(call_id, { identifier: call_id, type: "scheduled_call" });
+
         console.log('watched public key', this.mod.room_obj);
 
-        // Store UTC startTime and calculate local startTime
         const utcStartTime = new Date(startTime);
         const localStartTime = new Date(utcStartTime.getTime() - utcStartTime.getTimezoneOffset() * 60000);
+
+        this.app.keychain.addKey(call_id, { identifier: call_id, type: "scheduled_call", startTime:localStartTime, duration, description });
 
         this.callDetails = { 
             utcStartTime, 
@@ -27,6 +28,8 @@ class CallScheduleLaunch {
             duration, 
             description 
         };
+
+        console.log('this.callDetails', this.callDetails)
 
         if (!document.querySelector('.call-schedule-launch')) {
             document.body.innerHTML += CallScheduleLaunchTemplate(this.app, { 

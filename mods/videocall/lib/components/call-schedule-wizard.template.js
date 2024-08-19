@@ -2,7 +2,7 @@
 module.exports = CallScheduleWizardTemplate = (app, mod) => {
 
     return `
-    <div class="call-schedule-container">
+    <div class="call-schedule-wizard-container">
                 <h4>Schedule a Call</h4>
                 <form id="scheduleForm">
                     <label for="startTime">Start Time:</label>

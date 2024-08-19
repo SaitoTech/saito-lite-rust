@@ -25,17 +25,14 @@ class CallScheduleWizard {
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-
             if (!this.mod.isRelayConnected) {
                 siteMessage('Wait for peer connection');
                 return;
             }
-
-            let localStartTime = startTimeInput.value; // Get the local time
+            let localStartTime = startTimeInput.value;
             const duration = document.getElementById('duration').value;
             const description = document.getElementById('description').value;
 
-            // Convert local start time to UTC
             const utcStartTime = this.convertToUTC(localStartTime);
 
             console.log('UTC start time', utcStartTime);
@@ -45,7 +42,7 @@ class CallScheduleWizard {
                 call_id,
                 scheduled: true,
                 call_peers: [],
-                startTime: utcStartTime,  // Now in UTC
+                startTime: utcStartTime, 
                 duration,
                 description
             };
@@ -54,7 +51,7 @@ class CallScheduleWizard {
             await navigator.clipboard.writeText(link);
             siteMessage('New room link created and copied to clipboard', 1500);
 
-            // Close the overlay after successful submission
+
             this.overlay.remove();
         });
     }

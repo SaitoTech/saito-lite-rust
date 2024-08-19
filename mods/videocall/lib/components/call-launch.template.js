@@ -32,6 +32,7 @@ module.exports = StunLaunchTemplate = (app, mod) => {
           } else {
             html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom">Start Meeting</div>`;
             html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createScheduleRoom">Schedule Meeting</div>`;
+            html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="joinScheduleRoom">Join Meeting</div>`;
           }                       
           html += `</div>
 

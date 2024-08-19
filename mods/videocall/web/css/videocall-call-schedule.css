@@ -2,19 +2,19 @@
 label {
     display: block;
 }
-.call-schedule-container input, .call-schedule-container textarea, .call-schedule-container select {
+.call-schedule-wizard-container input, .call-schedule-wizard-container textarea, .call-schedule-wizard-container select {
     width: 100%;
     padding: 1.2rem 2.0rem;
     margin: .8rem 0;
     border-radius: .5rem;
 }
 
-.call-schedule-container select {
+.call-schedule-wizard-container select {
     color: var(--saito-font-color);
 }
 
 
-.call-schedule-container {
+.call-schedule-wizard-container {
     width: min(550px, 98vw);
     padding: 2rem 3rem;
     border-radius: 0.5rem;
@@ -75,3 +75,73 @@ label {
     cursor: not-allowed;
     opacity: 0.7;
 }
+
+
+/*  call schedule join */
+.call-schedule-join-container {
+    width: min(900px, 98vw);
+    padding: 2rem 3rem;
+    border-radius: 0.5rem;
+    /* border: 1px solid; */
+    background-color: var(--color-base);
+    color: var(--color-contrast);
+}
+
+
+
+
+/* Call schedule card */
+
+.call-schedule-card-container {
+    border-radius: .8rem;
+    padding: 2rem;
+    margin:2rem 0;
+    border: 1px solid;
+    padding: 1.5rem;
+    border-radius: .5rem;
+}
+
+/* .call-schedule-card-title {
+    font-size: 1.4em;
+    margin: 0 0 10px 0;
+} */
+
+.call-schedule-card-description {
+    font-size: 0.9em;
+    margin-bottom: 1.5rem;
+}
+
+.call-schedule-card-item {
+    font-size: 0.9em;
+    margin-bottom: .5rem;
+}
+
+.card-value {
+    font-weight: bold;
+    color: var(--saito-font-color);
+}
+
+.call-schedule-card .time-left {
+    margin-bottom: 1.5rem;
+}
+
+/* .join-button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    width: 100%;
+}
+
+.join-button:hover:not(:disabled) {
+    background-color: #2980b9;
+}
+
+.join-button:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+} */
