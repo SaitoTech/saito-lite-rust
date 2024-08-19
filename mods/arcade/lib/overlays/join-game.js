@@ -1,6 +1,5 @@
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
 const JoinGameOverlayTemplate = require('./join-game.template');
-const GameCryptoTransferManager = require('./../../../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager');
 
 /*
   General Interface for the Overlay that comes up when you click on a (game) "invite".

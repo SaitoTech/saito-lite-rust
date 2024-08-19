@@ -1,5 +1,5 @@
 module.exports = (app, mod, form) => {
-
+  console.log("Select amount", form?.ticker);
 	let html = `
 
     <div class="game-crypto-transfer-manager-container" id="stake-crypto-request-container">
@@ -17,19 +17,36 @@ module.exports = (app, mod, form) => {
         html +=  `
                  <div class="token-dropdown"><select class="withdraw-select-crypto" id="stake-select-crypto">`;
         for (let ticker in mod.balances){
-          html += `<option value="${ticker}" ${form.ticker ? "" : "selected"}>${ticker}</option>`;
           if (!form?.ticker){
+            console.log("Set initial ticker");
             form.ticker = ticker;
             mod.max_balance = parseFloat(mod.balances[ticker].balance);
           }
+          html += `<option value="${ticker}" ${form.ticker == ticker ? "selected" : ""}>${ticker}</option>`;
         }
         html +=  `</select>
           <div class="crypto_msg select_max">Max: ${mod.max_balance}</div>
         </div>`;
       }
 
-  html +=  `</div>
-      <div class="stake-input-error" id="stake-amount-error"></div>
+  html +=  `</div>`;
+
+  if (mod.min_balance >= 0){
+
+    html += `
+        <div class="crypto-stake-confirm-container">
+          <input type="checkbox" name="crypto-stake-odds" id="crypto-stake-odds">
+          <label for="crypto-stake-odds" class="commentary">allow lower stake for opponent (give odds)</label>
+        </div>
+
+        <div id="opponent-minimum-stake" class="stake-input-container hidden">
+          <input autocomplete="off" id="minimum_accepted_stake" class="stake" 
+          type="number" min="0" max="${mod.max_balance}" step="0.00000001" value="0" >
+          <div class="crypto-ticker">${form.ticker}</div>
+        </div>`;
+  }
+
+  html +=  `<div class="stake-input-error" id="stake-amount-error"></div>
 
       <div class="crypto-stake-confirm-container">
         <input type="checkbox" checked name="crypto-stake-confirm-input" id="crypto-stake-confirm-input">

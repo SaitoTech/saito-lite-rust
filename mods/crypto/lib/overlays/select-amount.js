@@ -69,18 +69,55 @@ class CryptoSelectAmount {
  
 			if (callback != null) {
 				let amount = stake_input.value;
+				let alt_amount = document.getElementById('minimum_accepted_stake')?.value || null;
+				if (document.getElementById('crypto-stake-odds')?.checked == false){
+					console.log("Not checked!!!")
+					alt_amount = null;
+				}
+				if (alt_amount == amount){
+					alt_amount = null;
+				}
+
 				this.overlay.close();
-				callback(this.ticker, amount);
+				callback(this.ticker, amount, alt_amount);
 			}
 		};
 
 		if (document.querySelector('#stake-select-crypto')){
-			document.querySelector('#stake-select-crypto').onchange = async (e) => {
+			document.querySelector('#stake-select-crypto').onchange = (e) => {
 				this.ticker = e.target.value;
 				this.mod.max_balance = parseFloat(this.mod.balances[this.ticker].balance);
-				stake_input.value = "";
-				max_button.innerText = `Max: ${this.mod.max_balance}`;
+
+				this.app.browser.replaceElementById(CryptoSelectAmountTemplate(this.app, this.mod, this), "stake-crypto-request-container");
+				this.attachEvents();
+
+				//stake_input.value = "";
+				//max_button.innerText = `Max: ${this.mod.max_balance}`;
 			};
+		}
+
+		if (document.getElementById('crypto-stake-odds')){
+			document.getElementById('crypto-stake-odds').onchange = (e) => {
+				if (document.getElementById('crypto-stake-odds').checked){
+					document.getElementById('opponent-minimum-stake').classList.remove("hidden");
+				}else{
+					document.getElementById('opponent-minimum-stake').classList.add("hidden");
+				}
+			}
+
+			let opponent_stake = document.getElementById('minimum_accepted_stake');
+			opponent_stake.onkeydown = async(e) => {
+				this_self.app.browser.validateAmountLimit(opponent_stake.value, e);
+			}
+
+			opponent_stake.oninput = async (e) => {
+	      		this_self.validateAmount();
+	  		};
+
+			opponent_stake.onclick = (e) => {
+				opponent_stake.select();
+			};
+
 		}
 	}
 
@@ -89,25 +126,43 @@ class CryptoSelectAmount {
   		let input_err = document.querySelector('#stake-amount-error');
 		let errorMsg = '';
 
-		console.log('errors: ', this.errors);
+
+		let opponent_amount = document.getElementById('minimum_accepted_stake')?.value || amount;
+
+		amount = parseFloat(amount);
+		opponent_amount = parseFloat(opponent_amount);
+
 		this.errors.amount = false;
 
 		input_err.innerText = '';
 		input_err.style.display = 'none';
 
-  		if (parseFloat(amount) <= 0) {
-			errorMsg = 'You need to select a positive value';
-			this.errors.amount = true;
-		} else if (parseFloat(amount) > this.mod.max_balance) {
-			errorMsg = 'Not all the players have that much to stake';
-			this.errors.amount = true;
+		//advanced input
+		if (opponent_amount < 0) {
+			errorMsg = 'Must be non-negative';
+		}
+		if (opponent_amount > amount) {
+			errorMsg = `Opponent's minimum stake cannot be greater than yours`;
 		}
 
-		if (this.errors.amount) {
+		// Basic input
+  		if (amount <= 0) {
+			errorMsg = 'You need to select a positive value';
+		} else if (amount > this.mod.max_balance) {
+			if (this.fixed){
+				errorMsg = 'Not all the players have that much to stake';
+			}else{
+				errorMsg = `You don't have that much to stake`;
+			}
+		}
+
+		if (errorMsg) {
 			input_err.innerText = errorMsg;	
 			input_err.style.display = 'block';	
+			this.errors.amount = true;
 		}
 	}
+
 
 	validateCheckbox(){
 		let confirm = document.getElementById('crypto-stake-confirm-input').checked;

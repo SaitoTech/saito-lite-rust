@@ -241,6 +241,13 @@ class GameWizard {
 			if (hook.dataset?.ticker && hook.dataset?.amount){
 				options["crypto"] = hook.dataset.ticker;
 				options["stake"] = hook.dataset.amount;
+
+				if (hook.dataset.match != undefined) {
+					options["stake"] = { 
+									"min": parseFloat(hook.dataset.match) 
+								};
+					options["stake"][this.mod.publicKey] = parseFloat(hook.dataset.amount);
+				}
 			}
 		}
 

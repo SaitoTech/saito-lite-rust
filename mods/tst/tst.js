@@ -11,6 +11,7 @@ class TST extends CryptoModule {
 		this.information =
 			'This is some important information you may care to read about when enabling the TST crypto module';
 		this.warning = 'The TST crypto module wishes you to read this warning';
+		this.balance = (100*Math.random()).toFixed(8);
 	}
 
 	//
@@ -42,7 +43,8 @@ class TST extends CryptoModule {
 	// @return {Array} Array of {address: {String}, balance: {Int}}
 	//
 	async returnBalance(address = '') {
-		return '100.00000000';
+		return this.balance;
+		//return '100.00000000';
 	}
 
 	//
