@@ -13,14 +13,13 @@ class CallScheduleLaunch {
 
     render() {
         let { startTime, duration, description, call_id } = this.mod.room_obj;
-        this.app.keychain.addWatchedPublicKey(call_id);
-
         console.log('watched public key', this.mod.room_obj);
 
         const utcStartTime = new Date(startTime);
         const localStartTime = new Date(utcStartTime.getTime() - utcStartTime.getTimezoneOffset() * 60000);
-
-        this.app.keychain.addKey(call_id, { identifier: call_id, type: "scheduled_call", startTime:localStartTime, duration, description });
+        let link = JSON.stringify(this.mod.room_obj);
+        this.app.keychain.addKey(call_id, { identifier: call_id, type: "scheduled_call", startTime:utcStartTime, duration, description, link  });
+        this.app.keychain.addWatchedPublicKey(call_id);
 
         this.callDetails = { 
             utcStartTime, 
@@ -29,7 +28,6 @@ class CallScheduleLaunch {
             description 
         };
 
-        console.log('this.callDetails', this.callDetails)
 
         if (!document.querySelector('.call-schedule-launch')) {
             document.body.innerHTML += CallScheduleLaunchTemplate(this.app, { 
@@ -58,8 +56,8 @@ class CallScheduleLaunch {
             joinButton.addEventListener('click', () => {
                 if (!joinButton.classList.contains('disabled')) {
                     let callLaunch = new CallLaunch(this.app, this.mod, this.container);
-                    this.remove();
                     callLaunch.render();
+                    this.remove();
                     console.log("Joining call...");
                 }
             });

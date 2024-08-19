@@ -79,7 +79,7 @@ label {
 
 /*  call schedule join */
 .call-schedule-join-container {
-    width: min(900px, 98vw);
+    width: min(550px, 98vw);
     padding: 2rem 3rem;
     border-radius: 0.5rem;
     /* border: 1px solid; */

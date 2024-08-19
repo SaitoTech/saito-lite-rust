@@ -426,6 +426,8 @@ class Videocall extends ModTemplate {
 						// return;
 					}
 
+					if(!this.room_obj) return;
+
 					if (this.room_obj.scheduled === true) {
 						if (tx.isTo(this.room_obj.call_id) && !tx.isFrom(this.publicKey)) {
 							console.log('OnConfirmation: ' + message.request);
@@ -462,9 +464,9 @@ class Videocall extends ModTemplate {
 									tx
 								);
 							}
-							if (message.request === "broadcast-presence") {
-								this.receiveBroadcastPresenceTransaction(this.app, tx)
-							}
+							// if (message.request === "broadcast-presence") {
+							// 	this.receiveBroadcastPresenceTransaction(this.app, tx)
+							// }
 						}
 					}
 
@@ -1002,6 +1004,10 @@ class Videocall extends ModTemplate {
 		this.app.keychain.addWatchedPublicKey(id);
 		this.app.keychain.addKey(id, { identifier: id, privateKey: pk, type: "scheduled_call" });
 		return id
+	}
+
+	async watchRoomKey(obj) {
+
 	}
 
 	webServer(app, expressapp, express) {

@@ -22,7 +22,6 @@ class CallScheduleWizard {
         const startTimeInput = document.getElementById('startTime');
         this.initializeForm();
         setInterval(() => this.updateMinDateTime(), 60000);
-
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!this.mod.isRelayConnected) {
@@ -36,7 +35,6 @@ class CallScheduleWizard {
             const utcStartTime = this.convertToUTC(localStartTime);
 
             console.log('UTC start time', utcStartTime);
-
             const call_id = await this.mod.generateRoomId();
             const room_obj = {
                 call_id,
@@ -46,8 +44,8 @@ class CallScheduleWizard {
                 duration,
                 description
             };
-
-            const link = this.createRoomLink(room_obj);
+            const link = JSON.stringify(room_obj);
+            this.app.keychain.addKey(call_id, { identifier: call_id, type: "scheduled_call", startTime:utcStartTime, duration, description, link  });
             await navigator.clipboard.writeText(link);
             siteMessage('New room link created and copied to clipboard', 1500);
 
