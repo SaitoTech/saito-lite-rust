@@ -2,6 +2,7 @@ const saito = require('./../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const CryptoSelectAmount = require('./lib/overlays/select-amount');
 const CryptoInadequate = require('./lib/overlays/inadequate');
+const AcceptStake = require('./lib/overlays/accept-stake');
 
 class Crypto extends ModTemplate {
 	constructor(app) {
@@ -23,16 +24,11 @@ class Crypto extends ModTemplate {
 
 		this.overlay = new CryptoSelectAmount(app, this);
 		this.overlay_inadequate = new CryptoInadequate(app, this);
+		this.approve_overlay = new AcceptStake(app, this);
 	}
 
-
-
-	async initialize(app){
+	async initialize(app) {
 		await super.initialize(app);
-
-		this.balances = await this.app.wallet.returnAvailableCryptosAssociativeArray();
-
-		console.log(this.balances);
 
 		//
 		// Turn on crypto for all games that don't explicity opt out
@@ -43,6 +39,11 @@ class Crypto extends ModTemplate {
 				m.can_bet = 1;
 			}
 		}
+
+		app.connection.on('accept-game-stake', (sobj) => {
+			this.approve_overlay.render(sobj);
+		});
+
 	}
 
 	respondTo(type = '') {
@@ -127,6 +128,10 @@ class Crypto extends ModTemplate {
 
 	async renderInto(qs) {
 		if (qs == "#arcade-advance-opt"){
+
+			this.balances = await this.app.wallet.returnAvailableCryptosAssociativeArray();
+			console.log("Available Balances: ", this.balances);
+			
 			this.attachStyleSheets();
 			this.overlay = new CryptoSelectAmount(this.app, this);
 			this.overlay.fixed = false;
@@ -188,6 +193,11 @@ class Crypto extends ModTemplate {
 
 		return intersection;
 	}
+
+
+
+
+
 
 	returnCryptoOptionsHTML(values = null) {
 		values = values || [0.001, 0.01, 0.1, 1, 5, 10, 50, 100, 500, 1000];

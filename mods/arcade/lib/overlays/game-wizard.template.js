@@ -9,9 +9,7 @@ module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
 		publicKey = invite_obj.publicKey;
 	}
 
-	let img = game_mod.respondTo('arcade-games').image;
-
-	console.log(img);
+	let img = game_mod.respondTo('arcade-games')?.image || '';
 
 	html += `
     <form>

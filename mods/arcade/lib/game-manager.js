@@ -19,7 +19,6 @@ class GameManager {
           }
     */
 		app.connection.on('league-overlay-games-list', (filter) => {
-			console.log('Show recent games in overlay');
 			this.filter = filter;
 			this.render();
 		});

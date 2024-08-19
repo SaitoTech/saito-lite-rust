@@ -17,7 +17,6 @@ class GameWizard {
 		this.obj = obj;
 
 		app.connection.on('arcade-launch-game-wizard', async (obj) => {
-			console.log('event : arcade-launch-game-wizard', obj);
 			if (obj?.game) {
 				let game_mod = this.app.modules.returnModuleByName(obj.game);
 
@@ -166,12 +165,6 @@ class GameWizard {
 
 					let options = this.getOptions();
 					let gameType = e.currentTarget.getAttribute('data-type');
-
-					//let c = await this.mod.verifyOptions(gameType, options);
-					/*if (!c) {
-						this.overlay.remove();
-						return;
-					}*/
 
 					this.overlay.remove();
 

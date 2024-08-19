@@ -12,7 +12,6 @@ const GameScheduler = require('./lib/overlays/game-scheduler');
 const GameInvitationLink = require('./../../lib/saito/ui/modals/saito-link/saito-link');
 const Invite = require('./lib/invite');
 const JoinGameOverlay = require('./lib/overlays/join-game');
-const GameCryptoTransferManager = require('./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager');
 const arcadeHome = require('./index');
 
 class Arcade extends ModTemplate {
@@ -162,9 +161,6 @@ class Arcade extends ModTemplate {
 			this.game_selector = new GameSelector(app, this, {});
 			//We create this here so it can respond to events
 			this.game_scheduler = new GameScheduler(app, this, {});
-
-			// Necessary?
-			this.game_crypto_transfer_manager = new GameCryptoTransferManager(app, this);
 
 			//
 			// my games stored in local wallet
@@ -1238,6 +1234,28 @@ class Arcade extends ModTemplate {
 		return newtx;
 	}
 
+	async sendJoinTransaction(invite){
+		//
+		// Create Transaction
+		//
+		let newtx = await this.createJoinTransaction(invite.tx);
+
+		//
+		// send it on-chain and off-chain
+		//
+		this.app.network.propagateTransaction(newtx);
+
+		this.app.connection.emit('relay-send-message', {
+			recipient: 'PEERS',
+			request: 'arcade spv update',
+			data: newtx.toJson()
+		});
+
+		this.app.browser.logMatomoEvent('GameInvite', 'JoinGame', invite.game_mod.name);
+		this.app.connection.emit('arcade-invite-manager-render-request');
+
+	}
+
 	async receiveJoinTransaction(tx) {
 		// console.log("receiveJoinTransaction", tx);
 		if (!tx || !tx.signature) {
@@ -1866,48 +1884,6 @@ class Arcade extends ModTemplate {
 		return 0;
 	}
 
-	async verifyOptions(gameType, options) {
-		/*if (gameType !== "single") {
-      for (let key of ["mine", "open"]) {
-        for (let game of this.games[key]) {
-          if (this.isMyGame(game) && game.msg.players_needed > 1) {
-            let c = await sconfirm(
-              `You already have a ${game.msg.game} game open, are you sure you want to create a new game invite?`
-            );
-            return !!c;
-          }
-          if (game.msg.game === options.game) {
-            let c = await sconfirm(
-              `There is an open invite for ${game.msg.game}, are you sure you want to create a new invite?`
-            );
-            return !!c;
-          }
-        }
-      }
-    }*/
-
-		//
-		// if crypto and stake selected, make sure creator has it
-		//
-		try {
-			if (options.crypto && parseFloat(options.stake) > 0) {
-				let success = await this.game_crypto_transfer_manager.confirmBalance(
-					this.app,
-					this,
-					options.crypto,
-					options.stake
-				);
-				if (!success) {
-					return false;
-				}
-			}
-		} catch (err) {
-			console.log('ERROR checking crypto: ' + err);
-			return false;
-		}
-
-		return true;
-	}
 
 	isSlug(slug){	
 		if (slug == this.returnSlug() || slug == "game"){
