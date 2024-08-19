@@ -327,12 +327,8 @@ class StreamManager {
         // this.app.keychain.addWatchedPublicKey(call_id);
         // this.app.keychain.addKey(call_id, { identifier: call_id });
         // console.log('watched public key', this.mod.room_obj)
-        let base64obj = this.app.crypto.stringToBase64(
-          JSON.stringify(this.mod.room_obj)
-        );
-    
-        let call_link = window.location.origin + '/videocall/';
-        call_link = `${call_link}?stun_video_chat=${base64obj}`;
+       
+        let call_link = this.mod.generateCallLink(this.mod.room_obj)
         this.mod.sendBroadcastPresenceTransaction(call_id, call_link)
       }
 

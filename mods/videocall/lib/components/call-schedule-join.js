@@ -26,15 +26,15 @@ class CallScheduleJoin {
     }
 
     attachEvents(app, mod) {
-        // Add any necessary event listeners
     }
+
 
     renderCallSchedules() {
         let keys = this.app.keychain.returnKeys({type: "scheduled_call"});
         keys.forEach((key, index) => {
-            let {startTime, description, duration, link} = key;
+            let {startTime, description, duration, room_obj} = key;
             let cardId = `call-schedule-${index}`;
-            let card = new CallScheduleCard(this.app, this.mod, ".scheduled-calls", {startTime, description, duration, link, cardId});
+            let card = new CallScheduleCard(this.app, this.mod, ".scheduled-calls", {startTime, description, duration, room_obj, cardId});
             card.render();
             this.cardInstances.push(card);
         });
@@ -44,7 +44,6 @@ class CallScheduleJoin {
         this.cardInstances.forEach(card => card.remove());
         this.cardInstances = [];
         this.overlay.remove()
-        // Remove the overlay or container as needed
     }
 }
 

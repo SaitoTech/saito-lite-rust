@@ -5,7 +5,7 @@ class CallScheduleCard {
         this.app = app;
         this.mod = mod;
         this.obj = obj;
-        this.link = obj.link
+        this.room_obj = obj.room_obj
         this.container = container;
         this.interval = null;
     }
@@ -28,13 +28,11 @@ class CallScheduleCard {
             joinButton.addEventListener('click', () => {
                 if (!joinButton.classList.contains('disabled')) {
                     console.log("Joining call...");
-                    console.log(this.link, "link")
-                    this.mod.room_obj = JSON.parse(this.link)
+                    console.log(this.room_obj, "room_obj")
+                    this.mod.room_obj = JSON.parse(this.room_obj)
                     this.app.connection.emit('remove-call-schedule-join')
                     this.app.connection.emit("call-launch-enter-call")
-                    // this.remove()
-                
-                    
+                          
                 }
             });
         }

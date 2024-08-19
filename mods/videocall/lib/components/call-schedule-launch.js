@@ -17,9 +17,9 @@ class CallScheduleLaunch {
 
         const utcStartTime = new Date(startTime);
         const localStartTime = new Date(utcStartTime.getTime() - utcStartTime.getTimezoneOffset() * 60000);
-        let link = JSON.stringify(this.mod.room_obj);
-        this.app.keychain.addKey(call_id, { identifier: call_id, type: "scheduled_call", startTime:utcStartTime, duration, description, link  });
+        this.app.keychain.addKey(call_id, { identifier: call_id, type: "scheduled_call", startTime:utcStartTime, duration, description, room_obj: JSON.stringify(this.mod.room_obj)  });
         this.app.keychain.addWatchedPublicKey(call_id);
+
 
         this.callDetails = { 
             utcStartTime, 
@@ -27,7 +27,6 @@ class CallScheduleLaunch {
             duration, 
             description 
         };
-
 
         if (!document.querySelector('.call-schedule-launch')) {
             document.body.innerHTML += CallScheduleLaunchTemplate(this.app, { 

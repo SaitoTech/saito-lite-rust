@@ -31,11 +31,10 @@ class CallScheduleWizard {
             let localStartTime = startTimeInput.value;
             const duration = document.getElementById('duration').value;
             const description = document.getElementById('description').value;
-
             const utcStartTime = this.convertToUTC(localStartTime);
-
-            console.log('UTC start time', utcStartTime);
             const call_id = await this.mod.generateRoomId();
+
+
             const room_obj = {
                 call_id,
                 scheduled: true,
@@ -44,9 +43,12 @@ class CallScheduleWizard {
                 duration,
                 description
             };
-            const link = JSON.stringify(room_obj);
-            this.app.keychain.addKey(call_id, { identifier: call_id, type: "scheduled_call", startTime:utcStartTime, duration, description, link  });
-            await navigator.clipboard.writeText(link);
+            const room_obj_stringified = JSON.stringify(room_obj);
+             let call_link =  this.mod.generateCallLink(room_obj)
+              this.app.keychain.addKey(call_id, { identifier: call_id, type: "scheduled_call", startTime:utcStartTime, duration, description, room_obj:room_obj_stringified, link:call_link  });
+            await navigator.clipboard.writeText(call_link);
+
+
             siteMessage('New room link created and copied to clipboard', 1500);
 
 

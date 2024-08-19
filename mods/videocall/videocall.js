@@ -657,6 +657,18 @@ class Videocall extends ModTemplate {
 		return this.app.crypto.generateRandomNumber().substring(0, 12);
 	}
 
+
+	generateCallLink(room_obj) {
+		let base64obj = this.app.crypto.stringToBase64(
+			JSON.stringify(room_obj)
+		  );
+	  
+		  let call_link = window.location.origin + '/videocall/';
+		  call_link = `${call_link}?stun_video_chat=${base64obj}`;
+
+		  return call_link;
+	}
+
 	async sendCallEntryTransaction(public_key = '') {
 		if (!this.room_obj) {
 			console.error('No room object');

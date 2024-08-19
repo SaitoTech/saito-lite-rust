@@ -10,7 +10,7 @@ module.exports = CallScheduleLaunchTemplate = (app, callDetails) => {
             <h4>Scheduled Call Details</h4>
             <div class="call-details">
                 <p><strong>Start Time:</strong> ${formattedStartTime}</p>
-                <p><strong>Duration:</strong> ${duration} minutes</p>
+                <p><strong>Duration:</strong> ${duration}</p>
                 <p><strong>Description:</strong> ${description}</p>
             </div>
             <button class="enter-call-button">Enter Call</button>

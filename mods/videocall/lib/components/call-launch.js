@@ -76,7 +76,7 @@ class CallLaunch {
 				//
 				// I am initializing the call
 				//
-				console.log(this.mod.room_obj, "room object joining")
+				console.log(this.mod.room_obj, "room object joining");
 				if (!this.mod.room_obj) {
 					this.mod.room_obj = {
 						call_id: this.mod.createRoomCode(),
@@ -91,7 +91,6 @@ class CallLaunch {
 		}
 		if (document.getElementById('createScheduleRoom')) {
 			document.getElementById('createScheduleRoom').onclick = async (e) => {
-
 				// show splash screen 
 				this.callScheduleWizard = new CallScheduleWizard(app, mod)
 				this.callScheduleWizard.render()
