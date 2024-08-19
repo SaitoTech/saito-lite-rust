@@ -18,6 +18,11 @@ class CallScheduleJoin {
     }
 
     render() {
+        this.keys = this.app.keychain.returnKeys({type: "scheduled_call"});
+        if(this.keys.length === 0) {
+            siteMessage("You don't have any saved meetings!")
+            return;
+        }
         if (!document.querySelector('.call-schedule-join-container')) {
             this.overlay.show(callScheduleJoinTemplate(this.app, this.mod));
             this.renderCallSchedules();
@@ -30,8 +35,8 @@ class CallScheduleJoin {
 
 
     renderCallSchedules() {
-        let keys = this.app.keychain.returnKeys({type: "scheduled_call"});
-        keys.forEach((key, index) => {
+    
+        this.keys.forEach((key, index) => {
             let {startTime, description, duration, room_obj} = key;
             let cardId = `call-schedule-${index}`;
             let card = new CallScheduleCard(this.app, this.mod, ".scheduled-calls", {startTime, description, duration, room_obj, cardId});

@@ -7,7 +7,7 @@ module.exports = CallScheduleJoinTemplate = (app, mod,  callDetails) => {
         <p class="call-schedule-card-item">Duration: <span class="card-value">${duration}</span></p>
     <p class="call-schedule-card-item">Description: <span class="card-value">${description}</span></p>
 
-    <button class="enter-call-button" {{buttonDisabled}}>Enter Call</button>
+    <button class="enter-call-button">Enter Call</button>
         </div>
     `;
 }
