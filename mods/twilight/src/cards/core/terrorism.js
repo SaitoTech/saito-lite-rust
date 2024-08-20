@@ -22,6 +22,7 @@
       if (target == this.roles[this.game.player]) {
 
         let available_cards = this.game.deck[0].hand.length;
+	let discarded_cards = [];
         let cards_for_select = [];
         for (let z = 0; z < this.game.deck[0].hand.length; z++) {
           if (this.game.deck[0].hand[z] === "china" || this.game.deck[0].hand[z] == this.game.state.headline_opponent_card || this.game.deck[0].hand[z] == this.game.state.headline_card) {} else {
@@ -37,14 +38,22 @@
             this.rollDice(cards_for_select.length, function(roll) {
               roll = parseInt(roll)-1;
               let victim = cards_for_select[roll];
+	      discarded_card.push(victim);
               twilight_self.removeCardFromHand(victim);
               twilight_self.addMove("dice\tburn\t"+player);
               twilight_self.addMove(`discard\t${target}\t${victim}`);
-              twilight_self.addMove(`modal\t${twilight_self.cardToText(card)}\t${target.toUpperCase()} discarded ${twilight_self.cardToText(victim)}`);
               cards_for_select.splice(roll, 1);
             });
           }
         }
+
+	let discard_text = "";
+	for (let i = 0; i < discarded_cards.length; i++) {
+	  if (i > 0) { discard_text += ", "; }
+	  discard_text += twilight_self.cardToText(discarded_cards[i]);
+	}
+
+        twilight_self.addMove(`modal\t${twilight_self.cardToText(card)}\t${target.toUpperCase()} discarded ${discard_text}`);
         this.endTurn();
       }
       
