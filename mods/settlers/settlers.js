@@ -422,8 +422,8 @@ class Settlers extends GameTemplate {
 	}
 
 
-	initializeGameStake(crypto, stake){
-		super.initializeGameStake(crypto, stake);
+	async initializeGameStake(crypto, stake){
+		await super.initializeGameStake(crypto, stake);
 
 		//Reset Game
 		this.game.state = this.initializeState();
