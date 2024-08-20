@@ -178,7 +178,8 @@ class CallInterfaceVideo {
 
 				const recordControls = this.app.modules.getRespondTos('screenrecord-video-controls');
 				console.log(recordControls, "recordControls")
-				let { mediaRecorder, stopRecording } = recordControls[0]
+				let { mediaRecorder, stopRecording,type } = recordControls[0]
+		
 				if (mediaRecorder) {
 					await stopRecording()
 				}
@@ -193,14 +194,13 @@ class CallInterfaceVideo {
 				//
 				if (document.getElementById('stun-chatbox')) {
 					const recordControls = this.app.modules.getRespondTos('screenrecord-video-controls');
-					let { mediaRecorder, stopRecording } = recordControls[0]
+					let { mediaRecorder, stopRecording, type } = recordControls[0]
 					console.log(recordControls, "recordControls")
-
+					document.getElementById('stun-chatbox').remove();
+					if(type === "game") return;
 					if (mediaRecorder) {
 						await stopRecording()
 					}
-
-					document.getElementById('stun-chatbox').remove();
 					let am = this.app.modules.returnActiveModule();
 					window.history.pushState(
 						{},
@@ -208,9 +208,6 @@ class CallInterfaceVideo {
 						window.location.origin + '/' + am.returnSlug()
 					);
 					document.title = this.old_title;
-
-
-
 
 				}
 			}

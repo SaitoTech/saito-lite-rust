@@ -540,6 +540,7 @@ class Limbo extends ModTemplate {
 				if (recorders.length > 0) {
 					options.mode = 'camera';
 					this.externalMediaControl = recorders[0];
+					this.externalMediaControl.type = "game"
 					this.combinedStream = await this.externalMediaControl.startStreamingGame(options);
 					// this.toggleNotification(false, this.publicKey);
 					console.log('this.combinedStream', this.combinedStream);

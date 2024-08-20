@@ -19,6 +19,11 @@ class DreamControls{
 
 		//Oof, I should change the name in video call (this actually refers to the hang up action)
 		app.connection.on('stun-disconnect', async ()=> {
+			console.log(this.mod.externalMediaControl, "mod external media control")
+			if(this.mod.externalMediaControl.type === "game") {
+				// we don't want to exit the space when inside a game call
+				return;
+			}
 			if (this.mod?.dreamer == this.mod.publicKey){
 				console.log("Quit Dream by hanging up: ", this.mod.dreams[this.mod.publicKey]);
 				this.remove();
@@ -243,7 +248,7 @@ class DreamControls{
     let list = document.querySelector('#dream-controls .control-panel .control-list');
     let c = list.children;
 
-    if (document.querySelector(`#disconnect-control`) != null) {
+    if (document.querySelector(`#limbo-disconnect-control`) != null) {
 			document.querySelector(`#dream-controls .control-panel .control-list > div:nth-child(${c.length-2})`).after(newDiv);
 		}
 	}
@@ -287,8 +292,8 @@ class DreamControls{
 	    }
 
 
-		if (document.querySelector(".dream-controls .disconnect-control")){
-			document.querySelector(".dream-controls .disconnect-control").onclick = async () => {
+		if (document.querySelector(".dream-controls .limbo-disconnect-control")){
+			document.querySelector(".dream-controls .limbo-disconnect-control").onclick = async () => {
 				console.log("Quit Dream: ", this.mod.dreams[this.mod.publicKey]);
 				this.remove();
 				await this.mod.sendKickTransaction(this.mod.dreams[this.mod.publicKey].speakers);
