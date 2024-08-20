@@ -3,6 +3,7 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const CryptoSelectAmount = require('./lib/overlays/select-amount');
 const CryptoInadequate = require('./lib/overlays/inadequate');
 const AcceptStake = require('./lib/overlays/accept-stake');
+const AdjustStake = require('./lib/overlays/adjust-stake');
 
 class Crypto extends ModTemplate {
 	constructor(app) {
@@ -24,6 +25,8 @@ class Crypto extends ModTemplate {
 		this.overlay = new CryptoSelectAmount(app, this);
 		this.overlay_inadequate = new CryptoInadequate(app, this);
 		this.approve_overlay = new AcceptStake(app, this);
+		this.adjust_overlay = new AdjustStake(app, this);
+		
 	}
 
 	async initialize(app) {
@@ -40,7 +43,11 @@ class Crypto extends ModTemplate {
 		}
 
 		app.connection.on('accept-game-stake', (sobj) => {
-			this.approve_overlay.render(sobj);
+			if (isNaN(sobj.stake)){
+				this.adjust_overlay.render(sobj);
+			}else{
+				this.approve_overlay.render(sobj);	
+			}
 		});
 
 	}
@@ -82,15 +89,25 @@ class Crypto extends ModTemplate {
 						this.max_balance = ac[ticker];
 						this.min_balance = game_mod?.opengame ? this.max_balance : -1;
 
-						console.log(game_mod.game.crypto);
 						if (
 							game_mod.game.crypto &&
 							game_mod.game.crypto != 'CHIPS'
 						) {
 
-							salert(
-								`${game_mod.game.stake} ${game_mod.game.crypto} staked on this game!`
-							);
+							if (typeof game_mod.game.stake === "object"){
+								let str = "";
+								for (let i in game_mod.game.stake){
+									if (i !== 'min'){
+										str += `${game_mod.app.keychain.returnUsername(i)}: ${game_mod.game.stake[i]}${game_mod.game.crypto} / `
+									}
+								}
+								str = str.substring(0, str.length - 3);
+								salert(`${str} staked on this game`);
+							}else{
+								salert(
+									`${game_mod.game.stake} ${game_mod.game.crypto} staked on this game!`
+								);
+							}
 							return;
 						}
 

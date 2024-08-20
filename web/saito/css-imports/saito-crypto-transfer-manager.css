@@ -82,6 +82,11 @@ input[type=number] {
   white-space: nowrap;
 }
 
+.stake-input-container .crypto_msg.select_min {
+  right: unset;
+  left: 0;
+}
+
 .stake-input-container .crypto-ticker {
   position: absolute;
   right: 0;
@@ -168,9 +173,8 @@ input[type=number] {
   font-size: 1.6rem;
 }
 
-.select_max:hover {
+.select_max, .select_min, .select_match {
   cursor: pointer;
-  font-weight: bold;
 }
 
 .amount {

@@ -1204,7 +1204,7 @@ class Arcade extends ModTemplate {
 	// as part of a valid game, will trigger your browser to start initializing
 	// the game.
 	//
-	async createJoinTransaction(orig_tx) {
+	async createJoinTransaction(orig_tx, options = null) {
 
 		if (!orig_tx || !orig_tx.signature) {
 			console.error('Invalid Game Invite TX, cannot Join');
@@ -1223,6 +1223,10 @@ class Arcade extends ModTemplate {
 		newtx.msg.module = 'Arcade';
 		newtx.msg.request = 'join';
 		newtx.msg.game_id = orig_tx.signature;
+		if (options) {
+			newtx.msg.options = options;
+			newtx.msg.update_options = true;
+		}
 
 		newtx.msg.invite_sig = await this.app.crypto.signMessage(
 			'invite_game_' + orig_tx.msg.timestamp,
@@ -1234,11 +1238,12 @@ class Arcade extends ModTemplate {
 		return newtx;
 	}
 
-	async sendJoinTransaction(invite){
+	async sendJoinTransaction(invite, update_options = false){
 		//
 		// Create Transaction
 		//
-		let newtx = await this.createJoinTransaction(invite.tx);
+		let options = update_options ? invite.options : null;
+		let newtx = await this.createJoinTransaction(invite.tx, options);
 
 		//
 		// send it on-chain and off-chain
@@ -1284,6 +1289,13 @@ class Arcade extends ModTemplate {
 		// Don't add the same player twice!
 		//
 		if (!game.msg.players.includes(tx.from[0].publicKey)) {
+			
+			if (txmsg.update_options) {
+				console.log("Join TX updates the invite options!");
+				game.msg.options = txmsg.options;
+				//await this.updateGameOptionSQL(txmsg);
+			}
+
 			if (this.debug) {
 				console.log(
 					`Adding Player (${tx.from[0].publicKey}) to Game: `,

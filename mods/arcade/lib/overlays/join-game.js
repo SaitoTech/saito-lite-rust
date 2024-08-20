@@ -69,7 +69,7 @@ class JoinGameOverlay {
 
 				this.overlay.remove();
 
-				if (this.invite.options.crypto && parseFloat(this.invite.options.stake) > 0) {
+				if (this.invite.options.crypto && (parseFloat(this.invite.options.stake) > 0 || parseFloat(this.invite.options.stake?.min) >= 0)) {
 					try {
 						let game_mod = this.app.modules.returnModuleBySlug(this.invite.game_slug);
 
@@ -77,7 +77,13 @@ class JoinGameOverlay {
 							game_mod, 
 							ticker: this.invite.options.crypto, 
 							stake: this.invite.options.stake, 
-							accept_callback: ()=> { this.mod.sendJoinTransaction(this.invite); }
+							accept_callback: (input = null) => { 
+								let update_options = input && isNaN(this.invite.options.stake);
+								if (update_options) {
+									this.invite.options.stake[this.mod.publicKey] = input;
+								}
+								this.mod.sendJoinTransaction(this.invite, update_options); 
+							}
 						});
 
 					} catch (err) {
