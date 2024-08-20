@@ -43,7 +43,7 @@ class Crypto extends ModTemplate {
 		}
 
 		app.connection.on('accept-game-stake', (sobj) => {
-			if (isNaN(sobj.stake)){
+			if (typeof sobj.stake == "object"){
 				this.adjust_overlay.render(sobj);
 			}else{
 				this.approve_overlay.render(sobj);	

@@ -78,7 +78,7 @@ class JoinGameOverlay {
 							ticker: this.invite.options.crypto, 
 							stake: this.invite.options.stake, 
 							accept_callback: (input = null) => { 
-								let update_options = input && isNaN(this.invite.options.stake);
+								let update_options = input && typeof this.invite.options.stake == "object";
 								if (update_options) {
 									this.invite.options.stake[this.mod.publicKey] = input;
 								}
