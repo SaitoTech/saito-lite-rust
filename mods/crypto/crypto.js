@@ -98,7 +98,7 @@ class Crypto extends ModTemplate {
 								let str = "";
 								for (let i in game_mod.game.stake){
 									if (i !== 'min'){
-										str += `${game_mod.app.keychain.returnUsername(i)}: ${game_mod.game.stake[i]}${game_mod.game.crypto} / `
+										str += `${game_mod.app.keychain.returnUsername(i)}: ${game_mod.game.stake[i]} ${game_mod.game.crypto} / `
 									}
 								}
 								str = str.substring(0, str.length - 3);

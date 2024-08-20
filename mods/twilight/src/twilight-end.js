@@ -66,15 +66,6 @@
 
   }
 
-  insertLeagueRankings() {
-    for (let i = 0; i < this.game.playerRanks.length; i++) {
-      
-      let np = this.game.playerRanks[i].rank ? 
-                `#${this.game.playerRanks[i].rank} / ${this.game.playerRanks[i].score}` :
-                `Unranked / ${this.game.playerRanks[i].score}`;
-      this.playerbox.updateUserline(np, i+1);
-    }
-  }
 
 
 

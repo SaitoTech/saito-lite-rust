@@ -57,6 +57,7 @@ class Twilight extends GameTemplate {
     this.moves           = [];
     this.cards    	 = [];
     this.is_testing 	 = 0;
+    this.insert_rankings = true;
 
     //
     // ui components
@@ -17483,15 +17484,6 @@ console.log("ROUND: " + this.game.state.round);
 
   }
 
-  insertLeagueRankings() {
-    for (let i = 0; i < this.game.playerRanks.length; i++) {
-      
-      let np = this.game.playerRanks[i].rank ? 
-                `#${this.game.playerRanks[i].rank} / ${this.game.playerRanks[i].score}` :
-                `Unranked / ${this.game.playerRanks[i].score}`;
-      this.playerbox.updateUserline(np, i+1);
-    }
-  }
 
 
 
