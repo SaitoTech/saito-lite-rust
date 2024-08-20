@@ -150,8 +150,6 @@ class Crypto extends ModTemplate {
 			console.log("Available Balances: ", this.balances);
 			
 			this.attachStyleSheets();
-			this.overlay = new CryptoSelectAmount(this.app, this);
-			this.overlay.fixed = false;
 			this.app.browser.addElementToSelector(`<div class="game-wizard-crypto-hook"><i class="fa-solid fa-coins"></i></div>`, qs);
 
 			let hook = document.querySelector(".game-wizard-crypto-hook");
@@ -165,6 +163,9 @@ class Crypto extends ModTemplate {
 				}
 			}
 			hook.onclick = (e) => {
+
+				this.overlay = new CryptoSelectAmount(this.app, this);
+				this.overlay.fixed = false;
 
 				if (hook.dataset?.amount){
 					this.overlay.stake = hook.dataset.amount;

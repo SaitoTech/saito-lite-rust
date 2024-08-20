@@ -21,10 +21,10 @@ class CryptoSelectAmount {
 			this.callback = mycallback;
 		}
 		this.overlay.show(CryptoSelectAmountTemplate(this.app, this.mod, this));
-		this.attachEvents(this.callback);
+		this.attachEvents();
 	}
 
-	attachEvents(callback = null) {
+	attachEvents() {
 		let this_self = this;
 		let stake_input = document.getElementById('amount_to_stake_input');
 		if (!stake_input) {
@@ -60,6 +60,7 @@ class CryptoSelectAmount {
 
 			if (this_self.errors.amount == true || 
 				this_self.errors.checkbox) {
+				console.warn(this_self.errors);
 				return;
 			}
 
@@ -67,7 +68,7 @@ class CryptoSelectAmount {
 			this_self.app.options.gameprefs.crypto_transfers_inbound_approved = confirm ? 1 : 0;
 			await this_self.app.wallet.saveWallet();
  
-			if (callback != null) {
+			if (this.callback != null) {
 				let amount = stake_input.value;
 				let alt_amount = document.getElementById('minimum_accepted_stake')?.value || null;
 				if (document.getElementById('crypto-stake-odds')?.checked == false){
@@ -78,14 +79,18 @@ class CryptoSelectAmount {
 					alt_amount = null;
 				}
 
-				this.overlay.close();
-				callback(this.ticker, amount, alt_amount);
+				this.callback(this.ticker, amount, alt_amount);
+			}else{
+				console.warn("No callback");
 			}
+			this.overlay.close();
+
 		};
 
 		if (document.querySelector('#stake-select-crypto')){
 			document.querySelector('#stake-select-crypto').onchange = (e) => {
 				this.ticker = e.target.value;
+				this.stake = 0;
 				this.mod.max_balance = parseFloat(this.mod.balances[this.ticker].balance);
 
 				this.app.browser.replaceElementById(CryptoSelectAmountTemplate(this.app, this.mod, this), "stake-crypto-request-container");
