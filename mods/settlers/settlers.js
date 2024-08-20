@@ -278,7 +278,7 @@ class Settlers extends GameTemplate {
 
 		this.menu.render();
 		this.log.render();
-		this.hexgrid.render('.gameboard');
+		this.hexgrid.render('.main');
 
 		try {
 			this.playerbox.render();
@@ -446,9 +446,9 @@ class Settlers extends GameTemplate {
 		this.game.queue.push('READY');
 		this.saveGame(this.game.id);
 
-		$(".gameboard").html("");
+		$(".main").html("");
 
-		this.hexgrid.render('.gameboard');
+		this.hexgrid.render('.main');
 
 		if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
 			this.hammer.render('#game-hexgrid');
@@ -461,7 +461,7 @@ class Settlers extends GameTemplate {
 		// Preliminary DOM set up, adding elements to display
 		//
 		this.generateMap();
-		this.addCitiesToGameboard();
+		this.addCitiesToAdjust();
 		this.addPortsToGameboard();
 
 		this.displayBoard();

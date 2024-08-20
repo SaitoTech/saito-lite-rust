@@ -100,6 +100,17 @@ class TST extends CryptoModule {
 		}
 		return;
 	}
+
+	respondTo(type = '', obj) {
+		if (type == 'crypto-logo') {
+			if (obj?.ticker == this.ticker) {
+				return null;
+			}
+		}
+
+		return null;
+	}
+
 }
 
 module.exports = TST;
