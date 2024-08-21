@@ -26,6 +26,8 @@ class Wordblocks extends GameTemplate {
 		this.tileWidth = 148;
 		this.letters = {};
 		this.grace_window = 10;
+		this.insert_rankings = true;
+
 		/*this.clock.useShotClock = true;*/
 
 		//All Wordblocks games will be async enabled
@@ -2420,17 +2422,6 @@ class Wordblocks extends GameTemplate {
 				});
 
 			await new Promise((resolve) => setTimeout(resolve, 250));
-		}
-	}
-
-	insertLeagueRankings() {
-
-		for (let i = 0; i < this.game.playerRanks.length; i++) {
-			
-			let np = this.game.playerRanks[i].rank ? 
-								`#${this.game.playerRanks[i].rank} / ${this.game.playerRanks[i].score}` :
-								`Unranked / ${this.game.playerRanks[i].score}`;
-			this.playerbox.updateUserline(np, i+1);
 		}
 	}
 

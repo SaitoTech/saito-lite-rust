@@ -39,6 +39,7 @@ class Settlers extends GameTemplate {
 		this.confirm_moves = true;
 		this.animationSpeed = 1200;
 		this.sleep_timer = null;
+		this.insert_rankings = true;
 
 		//
 		// UI components
@@ -277,7 +278,7 @@ class Settlers extends GameTemplate {
 
 		this.menu.render();
 		this.log.render();
-		this.hexgrid.render('.gameboard');
+		this.hexgrid.render('.main');
 
 		try {
 			this.playerbox.render();
@@ -421,8 +422,8 @@ class Settlers extends GameTemplate {
 	}
 
 
-	initializeGameStake(crypto, stake){
-		super.initializeGameStake(crypto, stake);
+	async initializeGameStake(crypto, stake){
+		await super.initializeGameStake(crypto, stake);
 
 		//Reset Game
 		this.game.state = this.initializeState();
@@ -445,9 +446,9 @@ class Settlers extends GameTemplate {
 		this.game.queue.push('READY');
 		this.saveGame(this.game.id);
 
-		$(".gameboard").html("");
+		$(".main").html("");
 
-		this.hexgrid.render('.gameboard');
+		this.hexgrid.render('.main');
 
 		if (this.app.browser.isMobileBrowser(navigator.userAgent)) {
 			this.hammer.render('#game-hexgrid');
@@ -460,7 +461,7 @@ class Settlers extends GameTemplate {
 		// Preliminary DOM set up, adding elements to display
 		//
 		this.generateMap();
-		this.addCitiesToGameboard();
+		this.addCitiesToAdjust();
 		this.addPortsToGameboard();
 
 		this.displayBoard();

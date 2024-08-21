@@ -158,9 +158,9 @@ class SettlersDisplay {
       if (this.game.players.length == 2) {
         if (Math.abs(this.game.state.players[0].vp - this.game.state.players[1].vp) > 1) {
           console.log('Robin hood');
-          $('.gameboard').addClass('robinhood');
+          $('.main').addClass('robinhood');
         } else {
-          $('.gameboard').removeClass('robinhood');
+          $('.main').removeClass('robinhood');
         }
       }
     } catch (err) {
@@ -577,14 +577,6 @@ class SettlersDisplay {
     }
   }
 
-  insertLeagueRankings() {
-    for (let i = 0; i < this.game.playerRanks.length; i++) {
-      let np = this.game.playerRanks[i].rank
-        ? `#${this.game.playerRanks[i].rank} / ${this.game.playerRanks[i].score}`
-        : `Unranked / ${this.game.playerRanks[i].score}`;
-      this.playerbox.updateUserline(np, i + 1);
-    }
-  }
 }
 
 module.exports = SettlersDisplay;
