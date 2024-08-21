@@ -189,7 +189,7 @@ label.treated {
 }
 
 
-.jsoneditor,
+/*.jsoneditor,
 .jsoneditor-modal {
   -webkit-text-size-adjust: none;
   text-size-adjust: none;
@@ -2225,4 +2225,4 @@ div.jsoneditor-statusbar > .jsoneditor-size-info {
 .selectr-container ::placeholder {
   color: #6c7a86;
   opacity: 1;
-}
+}*/

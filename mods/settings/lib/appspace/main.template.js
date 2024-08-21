@@ -49,7 +49,32 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 	}
 
 	let html = `
+
+  <link rel="stylesheet" href="/saito/lib/jsoneditor/jsoneditor.min.css" type="text/css" media="screen" />
+ <!--
+  <script src="/saito/lib/jsoneditor/jsoneditor.min.js"></script>
   
+  <script>
+    const container = document.getElementById("settings-appspace-debug-content");
+        const options = {}
+        const editor = new JSONEditor(container, options)
+
+        // set json
+        const initialJson = {
+            "Array": [1, 2, 3],
+            "Boolean": true,
+            "Null": null,
+            "Number": 123,
+            "Object": {"a": "b", "c": "d"},
+            "String": "Hello World"
+        }
+        editor.set(initialJson)
+
+        // get json
+        const updatedJson = editor.get();
+  </script>
+
+  -->
   <div class="settings-appspace">
 
     <div class="settings-appspace-header">
