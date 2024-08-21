@@ -149,6 +149,10 @@ class RedSquareNavigation {
 
     document.querySelector(".redsquare-menu-settings").onclick = (e) => {
       this.mod.loadSettings();
+      let ms = this.app.modules.returnModulesRespondingTo("saito-moderation-core");
+      if (ms?.length){
+        ms[0].loadSettings(".module-settings-overlay");
+      }
     }
 
     //

@@ -1,7 +1,7 @@
 module.exports = (app, mod) => {
 
 	let html = `
-			<div class="saito-module-settings">
+			<div id="modtools-settings" class="saito-module-settings">
 			<fieldset class="saito-grid">
 			<legend class="settings-label">Moderation Controls</legend>
 	`;
@@ -62,8 +62,9 @@ module.exports = (app, mod) => {
 
 //        if (app.options.modtools.whitelist.length > 0){
                 html += `<fieldset id="whitelisted-accounts" class="saito-grid settings-link">
-                <i class="fa-solid fa-ban"></i>
+                <i class="fa-regular fa-face-smile-beam"></i>
                 <label>Manage Whitelisted Accounts (${app.options.modtools.whitelist.length})</label>
+                <div id="add-whitelist" class="saito-grid-extra-button saito-button-secondary">Add</div>
                 </fieldset>`;
 //        }
 

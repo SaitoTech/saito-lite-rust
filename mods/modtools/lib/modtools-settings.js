@@ -12,10 +12,10 @@ class ModtoolsSettings {
   }
 
   render() {
-    if (document.querySelector('.saito-module-settings')) {
-      this.app.browser.replaceElementBySelector(
+    if (document.getElementById('modtools-settings')) {
+      this.app.browser.replaceElementById(
         SettingsTemplate(this.app, this.mod),
-        '.saito-module-settings'
+        'modtools-settings'
       );
     } else {
       this.app.browser.addElementToSelector(SettingsTemplate(this.app, this.mod), this.container);
@@ -32,32 +32,49 @@ class ModtoolsSettings {
     let settings_self = this;
 
     if (document.getElementById('blacklisted-accounts')) {
-      document.getElementById('blacklisted-accounts').onclick = (e) => {
-        this.contacts.title = 'Blacklisted Accounts';
-        this.contacts.multi_button = 'Remove from Blacklist';
-        this.contacts.callback = (keys) => {
-          for (let key of keys) {
-            this.app.connection.emit('saito-unblacklist', key);
-          }
-          this.render();
-        };
+      if (this.mod.blacklisted_publickeys?.length){
+        document.getElementById('blacklisted-accounts').onclick = (e) => {
+          this.contacts.title = 'Blacklisted Accounts';
+          this.contacts.multi_button = 'Remove from Blacklist';
+          this.contacts.callback = (keys) => {
+            for (let key of keys) {
+              this.app.connection.emit('saito-unblacklist', key);
+            }
+            this.render();
+          };
 
-        this.contacts.render(this.mod.blacklisted_publickeys);
-      };
+          this.contacts.render(this.mod.blacklisted_publickeys);
+        };
+      }
     }
 
-    if (document.getElementById('whitelisd-accounts')) {
-      document.getElementById('whiteliste-accounts').onclick = (e) => {
-        this.contacts.title = 'Whitelisted Accounts';
-        this.contacts.multi_button = 'Remove from Whitelist';
-        this.contacts.callback = (keys) => {
-          for (let key of keys) {
-            this.app.connection.emit('saito-unwhitelist', key);
-          }
-          this.render();
+    if (document.getElementById('whitelisted-accounts')) {
+      if (this.mod.whitelisted_publickeys?.length){
+        document.getElementById('whitelisted-accounts').onclick = (e) => {
+          this.contacts.title = 'Whitelisted Accounts';
+          this.contacts.multi_button = 'Remove from Whitelist';
+          this.contacts.callback = (keys) => {
+            for (let key of keys) {
+              this.app.connection.emit('saito-unwhitelist', key);
+            }
+            this.render();
+          };
+          this.contacts.render(this.mod.whitelisted_publickeys);
         };
-        this.contacts.render(this.mod.whitelisted_publickeys);
-      };
+      }
+    }
+
+    if (document.getElementById('add-whitelist')){
+      document.getElementById('add-whitelist').onclick = (e) => {
+          this.contacts.multi_button = 'Add to Whitelist';
+          this.contacts.callback = (keys) => {
+            for (let key of keys) {
+              this.app.connection.emit('saito-whitelist', {publicKey: key});
+            }
+            this.render();
+          };
+          this.contacts.render();
+        };
     }
 
     if (document.getElementById('none_mod')) {
