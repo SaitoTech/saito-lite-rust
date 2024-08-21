@@ -146,22 +146,27 @@ class Crypto extends ModTemplate {
 	async renderInto(qs) {
 		if (qs == "#arcade-advance-opt"){
 
-			this.balances = await this.app.wallet.returnAvailableCryptosAssociativeArray();
-			console.log("Available Balances: ", this.balances);
-			
-			this.attachStyleSheets();
-			this.app.browser.addElementToSelector(`<div class="game-wizard-crypto-hook"><i class="fa-solid fa-coins"></i></div>`, qs);
-
-			let hook = document.querySelector(".game-wizard-crypto-hook");
-			let game_name = document.querySelector("input[name='game']")?.value;
 			this.min_balance = 0;
 
+			let game_name = document.querySelector("input[name='game']")?.value;
 			if (game_name){
 				let gm = this.app.modules.returnModuleByName(game_name);
 				if (gm?.opengame){
 					this.min_balance = -1;
 				}
+				if (!gm?.can_bet){
+					return;
+				}
 			}
+
+			this.attachStyleSheets();
+
+			this.balances = await this.app.wallet.returnAvailableCryptosAssociativeArray();
+
+			this.app.browser.addElementToSelector(`<div class="game-wizard-crypto-hook"><i class="fa-solid fa-coins"></i></div>`, qs);
+
+			let hook = document.querySelector(".game-wizard-crypto-hook");
+
 			hook.onclick = (e) => {
 
 				this.overlay = new CryptoSelectAmount(this.app, this);
