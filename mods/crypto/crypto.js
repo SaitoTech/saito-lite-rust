@@ -131,6 +131,7 @@ class Crypto extends ModTemplate {
 						this.overlay.render((ticker, amount) => {
 							game_mod.menu.hideSubMenus();
 							game_mod.proposeGameStake(ticker, amount);
+							app.browser.logMatomoEvent('StakeCrypto', 'viaGameMenu', ticker);
 						});
 					}
 				});

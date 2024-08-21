@@ -238,7 +238,7 @@ class GameWizard {
 
 		if (document.querySelector(".game-wizard-crypto-hook")){
 			let hook = document.querySelector(".game-wizard-crypto-hook");
-			if (hook.dataset?.ticker && hook.dataset?.amount){
+			if (hook.dataset?.ticker && hook.dataset?.amount) {
 				options["crypto"] = hook.dataset.ticker;
 				options["stake"] = hook.dataset.amount;
 
@@ -248,6 +248,8 @@ class GameWizard {
 								};
 					options["stake"][this.mod.publicKey] = parseFloat(hook.dataset.amount);
 				}
+
+				this.app.browser.logMatomoEvent('StakeCrypto', 'viaGameWizard', hook.dataset.ticker);
 			}
 		}
 
