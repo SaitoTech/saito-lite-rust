@@ -42,9 +42,24 @@ class Crypto extends ModTemplate {
 			}
 		}
 
-		app.connection.on('accept-game-stake', (sobj) => {
+		app.connection.on('accept-game-stake', async (sobj) => {
+			
+			await this.app.wallet.setPreferredCrypto(sobj.ticker);
+
+			let cryptomod = this.app.wallet.returnCryptoModuleByTicker(sobj.ticker);
+			let current_balance = await cryptomod.returnBalance();
+			let needed_balance = (typeof sobj.stake == "object") ? parseFloat(sobj.stake.min) : parseFloat(sobj.stake);
+
+			if (needed_balance > current_balance){
+				this.app.connection.emit('saito-crypto-deposit-render-request', {
+					ticker: sobj.ticker,
+					amount: needed_balance,
+				});
+				return;
+			}
+
 			if (typeof sobj.stake == "object"){
-				this.adjust_overlay.render(sobj);
+				this.adjust_overlay.render(sobj, current_balance);
 			}else{
 				this.approve_overlay.render(sobj);	
 			}

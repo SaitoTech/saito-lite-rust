@@ -17,23 +17,9 @@ class AcceptStake {
 			this.reject_callback = obj.reject_callback;
 		}
 
-		let cryptomod = this.app.wallet.returnCryptoModuleByTicker(obj.ticker);
-		let current_balance = await cryptomod.returnBalance();
-
-		if (parseFloat(current_balance) >= parseFloat(obj.stake)) {
-			this.overlay.show(AcceptStakeTemplate(this.app, obj.game_mod, obj), this.reject_callback);
-			this.overlay.blockClose();
-			this.attachEvents();
-		} else {
-			//
-			// take the user to the crypto deposit page
-			//
-			this.app.connection.emit('saito-crypto-deposit-render-request', {
-				ticker: obj.ticker,
-				amount: obj.stake
-			});
-			return;
-		}
+		this.overlay.show(AcceptStakeTemplate(this.app, obj.game_mod, obj), this.reject_callback);
+		this.overlay.blockClose();
+		this.attachEvents();
 
 	}
 
