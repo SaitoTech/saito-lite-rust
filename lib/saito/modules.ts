@@ -6,6 +6,7 @@ import fs from 'fs';
 import { fromBase58 } from 'saito-js/lib/util';
 import { DYN_MOD } from '../dyn_mod';
 
+
 class Mods {
 
 	public app: Saito;
@@ -26,6 +27,10 @@ class Mods {
 		this.mods_list = config;
 		this.is_initialized = false;
 		this.lowest_sync_bid = -1;
+
+		if (typeof window !== 'undefined') {
+			// window.saitoJs = require('saito-js');
+		}
 	}
 
 	isModuleActive(modname = '') {
@@ -128,8 +133,8 @@ class Mods {
 				}
 			}
 
-		} catch (err) { }
-
+		} catch (err) {
+		}
 
 
 		for (let iii = 0; iii < this.mods.length; iii++) {
@@ -175,35 +180,47 @@ class Mods {
 
 	async initialize() {
 
-		if (this.app.BROWSER ===1 ){
-			console.log("loading dyn module...");
-			let moduleCode = this.app.crypto.base64ToString(DYN_MOD);
-			console.log("module Code : ",moduleCode.length);
-console.log(moduleCode);
-			// let mod = new Function(moduleCode);
-			let mod = eval(moduleCode);
-			console.log("mod : ",typeof mod);
-			// let m = mod();
-			// @ts-ignore
-			console.log("aaa : ", window.Dyn);
-			// @ts-ignore
-			let m = new window.Dyn(this.app);
-			this.mods.push(m);
+		try {
+			if (this.app.BROWSER === 1) {
+				console.log('loading dyn module...');
+				let moduleCode = this.app.crypto.base64ToString(DYN_MOD);
 
-			console.log("m : ",m);
-			// @ts-ignore
-			console.log("111 : ",mod)
-		}else{
-			// console.log("loading dyn module...");
-			// let moduleCode = this.app.crypto.base64ToString(DYN_MOD);
-			// console.log("module Code : ",moduleCode.length);
-			// let mod = new Function(moduleCode);
-			// // let mod = eval(moduleCode);
-			// console.log("mod : ",typeof mod);
-			// let m = mod();
-			// console.log("m : ",m);
-			// // @ts-ignore
-			// console.log("111 : ",mod)
+				self["saito-js"] = require('saito-js').default;
+				self["saito-js/lib/slip"] = require("saito-js/lib/slip").default;
+				self["saito-js/lib/transaction"] = require("saito-js/lib/transaction").default;
+				// console.log("module Code : ",moduleCode.length);
+// console.log(moduleCode);
+				// let mod = new Function(moduleCode);
+				let mod = eval(moduleCode);
+				console.log("mod : ",typeof mod);
+				// @ts-ignore
+				// const x = await import("Dyn");
+				// console.log("x : ",x);
+				// let m = mod();
+				// @ts-ignore
+				// console.log("aaa : ", window.Dyn);
+				// @ts-ignore
+				let m = new window.Dyn(this.app);
+				this.mods.push(m);
+
+				// console.log("m : ",m);
+				// @ts-ignore
+				// console.log("111 : ",mod)
+			} else {
+				// console.log("loading dyn module...");
+				// let moduleCode = this.app.crypto.base64ToString(DYN_MOD);
+				// console.log("module Code : ",moduleCode.length);
+				// let mod = new Function(moduleCode);
+				// // let mod = eval(moduleCode);
+				// console.log("mod : ",typeof mod);
+				// let m = mod();
+				// console.log("m : ",m);
+				// // @ts-ignore
+				// console.log("111 : ",mod)
+			}
+		} catch (error) {
+			console.error('failed loading dynamic mod');
+			console.error(error);
 		}
 
 
@@ -317,11 +334,11 @@ console.log(moduleCode);
 		//
 		// ... setup moderation / filter functions
 		//
-		for (let xmod of this.app.modules.respondTo('saito-moderation-app')) { 
-                  this.app_filter_func.push(xmod.respondTo('saito-moderation-app').filter_func);
+		for (let xmod of this.app.modules.respondTo('saito-moderation-app')) {
+			this.app_filter_func.push(xmod.respondTo('saito-moderation-app').filter_func);
 		}
-		for (let xmod of this.app.modules.respondTo('saito-moderation-core')) { 
-                  this.core_filter_func.push(xmod.respondTo('saito-moderation-core').filter_func);
+		for (let xmod of this.app.modules.respondTo('saito-moderation-core')) {
+			this.core_filter_func.push(xmod.respondTo('saito-moderation-core').filter_func);
 		}
 
 		//
@@ -345,7 +362,7 @@ console.log(moduleCode);
 			'handshake_complete',
 			async (peerIndex: bigint) => {
 
-				if (this.app.BROWSER){
+				if (this.app.BROWSER) {
 					// broadcasts my keylist to other peers
 					await this.app.wallet.setKeyList(this.app.keychain.returnWatchedPublicKeys());
 				}
@@ -406,16 +423,18 @@ console.log(moduleCode);
 	//
 	// 1 = permit, -1 = do not permit
 	//
-	moderateModule(tx=null, mod=null) {
+	moderateModule(tx = null, mod = null) {
 
-		if (mod == null || tx == null) { return 0; }
+		if (mod == null || tx == null) {
+			return 0;
+		}
 
 		for (let z = 0; z < this.app_filter_func.length; z++) {
 			let permit_through = this.app_filter_func[z](mod, tx);
-			if (permit_through == 1) { 
+			if (permit_through == 1) {
 				return 1;
 			}
-			if (permit_through == -1) { 
+			if (permit_through == -1) {
 				return -1;
 			}
 		}
@@ -428,16 +447,18 @@ console.log(moduleCode);
 	//
 	// 1 = permit, -1 = do not permit
 	//
-	moderateCore(tx=null) {
+	moderateCore(tx = null) {
 
-		if (tx == null) { return 0; }
+		if (tx == null) {
+			return 0;
+		}
 
 		for (let z = 0; z < this.core_filter_func.length; z++) {
 			let permit_through = this.core_filter_func[z](tx);
-			if (permit_through == 1) { 
+			if (permit_through == 1) {
 				return 1;
 			}
-			if (permit_through == -1) { 
+			if (permit_through == -1) {
 				return -1;
 			}
 		}
@@ -446,14 +467,13 @@ console.log(moduleCode);
 	}
 
 
-
-	moderateAddress(publickey="") {
+	moderateAddress(publickey = '') {
 		let newtx = new Transaction();
 		newtx.addFrom(publickey);
 		return this.moderate(newtx);
 	}
 
-	moderate(tx=null, app="") {
+	moderate(tx = null, app = '') {
 
 		let permit_through = 0;
 
@@ -461,10 +481,14 @@ console.log(moduleCode);
 		// if there is a relevant app-filter-function, respect it
 		//
 		for (let i = 0; i < this.mods.length; i++) {
-			if (this.mods[i].name == app || app == "*") {
+			if (this.mods[i].name == app || app == '*') {
 				permit_through = this.moderateModule(tx, this.mods[i]);
-				if (permit_through == -1) { return -1; }
-				if (permit_through == 1) { return 1; }
+				if (permit_through == -1) {
+					return -1;
+				}
+				if (permit_through == 1) {
+					return 1;
+				}
 			}
 		}
 
@@ -473,9 +497,13 @@ console.log(moduleCode);
 		//
 		permit_through = this.moderateCore(tx);
 
-		if (permit_through == -1) { return -1; }
-		if (permit_through == 1) { return 1; }
-		
+		if (permit_through == -1) {
+			return -1;
+		}
+		if (permit_through == 1) {
+			return 1;
+		}
+
 		//
 		// seems OK if we made it this far
 		//
@@ -490,7 +518,7 @@ console.log(moduleCode);
 				await this.mods[icb].render(this.app, this.mods[icb]);
 			}
 		}
-		this.app.connection.emit("saito-render-complete");
+		this.app.connection.emit('saito-render-complete');
 		return null;
 	}
 

@@ -1,13 +1,16 @@
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
+// const saitoJs = require('saito-js');
 
 const webpack = require("webpack");
 
 let minimize = false;
 let devtool = undefined;
 // let entrypoint = "./../bundler/default/mods/debug/debug.js";
-let entrypoint = "./../mods/twilight/twilight.js";
+// let entrypoint = "./../mods/twilight/twilight.js";
+let entrypoint = "./../mods/debug/debug.js";
 let outputfile = "dyn.module.js";
+
 
 webpack(
   {
@@ -25,48 +28,18 @@ webpack(
     // node: {
     //     fs: "empty",
     // },
-    externals: [
-      {
-        archiver: "archiver",
-      },
-      {
-        child_process: "child_process",
-      },
-      {
-        nodemailer: "nodemailer",
-      },
-      {
-        jimp: "jimp",
-      },
-      {
-        "image-resolve": "image-resolver",
-      },
-      {
-        sqlite: "sqlite",
-      },
-      {
-        unzipper: "unzipper",
-      },
-      {
-        webpack: "webpack",
-      },
-      {
-        "node-turn": "node-turn",
-      },
-      // /^(image-resolver|\$)$/i,
-      /\.txt /,
-      /\.png$/,
-      /\.jpg$/,
-      /\.html$/,
-      /\.css$/,
-      /\.sql$/,
-      /\.md$/,
-      /\.pdf$/,
-      /\.sh$/,
-      /\.zip$/,
-      /\/web\//,
-      /\/www\//,
-    ],
+    externalsType:'global',
+    // externalsPresets:{
+    //   web:true
+    // },
+    externals:{
+      "saito-js":"saito-js",
+      // "saito-wasm":"saito-wasm",
+      "saito-js/lib/transaction":"saito-js/lib/transaction",
+      "saito-js/lib":"saito-js/lib",
+      "saito-js/lib/slip":"saito-js/lib/slip",
+      "saito-js/lib/block":"saito-js/lib/block",
+    },
     // Path to your entry point. From this file Webpack will begin his work
     entry: [path.resolve(__dirname, entrypoint)],
     output: {
@@ -93,6 +66,8 @@ webpack(
         buffer: require.resolve("buffer"),
         crypto: require.resolve("crypto-browserify"),
         "crypto-browserify": require.resolve("crypto-browserify"),
+        // "saito-js":false,
+        // "saito-wasm":require.resolve("saito-wasm"),
       },
     },
     module: {
@@ -118,36 +93,34 @@ webpack(
               },
             },
           ],
+          exclude: /(node_modules)/,
         },
         {
           test: /\.mjs$/,
           exclude: /(node_modules)/,
-          type: "javascript/auto",
+          // type: "javascript/auto",
+          use: [
+            {
+              loader: "babel-loader",
+              options: {
+                presets: ["@babel/preset-env"],
+                sourceMaps: false,
+                cacheCompression: false,
+                cacheDirectory: true,
+              },
+            },
+          ],
         },
         {
           test: /html$/,
           exclude: [/(mods)/, /(email)/],
         },
         {
-          test: /quirc\.js$/,
-          loader: "exports-loader",
-        },
-        // wasm files should not be processed but just be emitted and we want
-        // to have their public URL.
-        {
-          test: /quirc\.wasm$/,
-          type: "javascript/auto",
-          loader: "file-loader",
-          options: {
-            publicPath: "dist/",
-          },
-        },
-        {
-          test: /\.(png|jpg|gif)$/,
+          test: /\.(png|svg|jpg|jpeg|gif)$/i,
           // use: [{
           //   loader: 'file-loader',
           //   options: {}
-          // }]
+          // }],
           type: "asset/resource"
         },
         // {
@@ -176,7 +149,8 @@ webpack(
     ],
     experiments: {
       asyncWebAssembly: true,
-      // syncWebAssembly: true
+      // syncWebAssembly: true,
+      outputModule:true,
     },
     mode: "production",
     devtool: devtool,
