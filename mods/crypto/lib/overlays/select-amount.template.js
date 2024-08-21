@@ -11,8 +11,7 @@ module.exports = (app, mod, form) => {
         type="number" min="0" max="9999999999.99999999" step="0.00000001" value="${form?.stake || '0.0'}" >`;
 
       if (form.fixed){
-        html += `<div class="crypto_msg select_max">Max: ${mod.max_balance}</div>
-                 <div class="crypto-ticker">${form.ticker}</div>`;
+        html += `<div class="crypto-ticker">${form.ticker}</div>`;
       } else {
         html +=  `
                  <div class="token-dropdown"><select class="withdraw-select-crypto" id="stake-select-crypto">`;
@@ -25,11 +24,10 @@ module.exports = (app, mod, form) => {
           html += `<option value="${ticker}" ${form.ticker == ticker ? "selected" : ""}>${ticker}</option>`;
         }
         html +=  `</select>
-          <div class="crypto_msg select_max">Max: ${mod.max_balance}</div>
-        </div>`;
+          </div>`;
       }
 
-  html +=  `</div>`;
+  html +=  `<div class="crypto_msg"><div></div><div class="select_max">Max: ${mod.max_balance}</div></div></div>`;
 
   if (mod.min_balance >= 0){
 
