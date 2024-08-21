@@ -73,19 +73,16 @@ input[type=number] {
 
 .stake-input-container .crypto_msg {
   display: flex;
-  flex-direction: row-reverse;
+  justify-content: space-between;
   margin-top: 0.5rem;
   font-style: italic;
   position: absolute;
   top: 100%;
+  width: 100%;
   right: 0;
   white-space: nowrap;
 }
 
-.stake-input-container .crypto_msg.select_min {
-  right: unset;
-  left: 0;
-}
 
 .stake-input-container .crypto-ticker {
   position: absolute;

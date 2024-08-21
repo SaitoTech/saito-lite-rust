@@ -73,6 +73,13 @@ class AdjustStake {
 			};
 		}
 
+		let max_button = document.querySelector('.select_max');
+		if (max_button) {
+			max_button.onclick = (e) => {
+				stake_input.value = this.my_balance;
+			};
+		}
+
 		stake_input.onkeydown = async(e) => {
 			let amount = stake_input.value;
 			this.app.browser.validateAmountLimit(amount, e);
