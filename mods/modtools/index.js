@@ -16,6 +16,7 @@ module.exports = (app, mod) => {
       <title>Saito Modtools</title>
       <link rel="stylesheet" type="text/css" href="/saito/lib/jsonTree/jsonTree.css" />
       <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen">
+      <link rel="stylesheet" href="/saito/saito.css?v=${app.build_number}" type="text/css" media="screen">
       <script src="/saito/lib/jsonTree/jsonTree.js"></script>
       <link rel="icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png">
       <link rel="apple-touch-icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png">
