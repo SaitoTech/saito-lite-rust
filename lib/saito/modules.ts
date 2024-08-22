@@ -4,7 +4,7 @@ import Transaction from './transaction';
 import path from 'path';
 import fs from 'fs';
 import { fromBase58 } from 'saito-js/lib/util';
-import { DYN_MOD } from '../dyn_mod';
+import { DYN_MOD_WEB,DYN_MOD_NODE } from '../dyn_mod';
 
 
 class Mods {
@@ -183,40 +183,33 @@ class Mods {
 		try {
 			if (this.app.BROWSER === 1) {
 				console.log('loading dyn module...');
-				let moduleCode = this.app.crypto.base64ToString(DYN_MOD);
+				let moduleCode = this.app.crypto.base64ToString(DYN_MOD_WEB);
 
 				self["saito-js"] = require('saito-js').default;
 				self["saito-js/lib/slip"] = require("saito-js/lib/slip").default;
 				self["saito-js/lib/transaction"] = require("saito-js/lib/transaction").default;
-				// console.log("module Code : ",moduleCode.length);
-// console.log(moduleCode);
-				// let mod = new Function(moduleCode);
+				self["saito-js/lib/block"]=require("saito-js/lib/block").default;
+
 				let mod = eval(moduleCode);
 				console.log("mod : ",typeof mod);
-				// @ts-ignore
-				// const x = await import("Dyn");
-				// console.log("x : ",x);
-				// let m = mod();
-				// @ts-ignore
-				// console.log("aaa : ", window.Dyn);
 				// @ts-ignore
 				let m = new window.Dyn(this.app);
 				this.mods.push(m);
 
-				// console.log("m : ",m);
-				// @ts-ignore
-				// console.log("111 : ",mod)
 			} else {
-				// console.log("loading dyn module...");
-				// let moduleCode = this.app.crypto.base64ToString(DYN_MOD);
-				// console.log("module Code : ",moduleCode.length);
-				// let mod = new Function(moduleCode);
-				// // let mod = eval(moduleCode);
-				// console.log("mod : ",typeof mod);
-				// let m = mod();
-				// console.log("m : ",m);
-				// // @ts-ignore
-				// console.log("111 : ",mod)
+				console.log('loading dyn module...');
+				let moduleCode = this.app.crypto.base64ToString(DYN_MOD_NODE);
+
+				global["saito-js"] = require('saito-js').default;
+				global["saito-js/lib/slip"] = require("saito-js/lib/slip").default;
+				global["saito-js/lib/transaction"] = require("saito-js/lib/transaction").default;
+				global["saito-js/lib/block"]=require("saito-js/lib/block").default;
+
+				let mod = eval(moduleCode);
+				console.log("mod : ",typeof mod);
+				// @ts-ignore
+				let m = new global.Dyn(this.app);
+				this.mods.push(m);
 			}
 		} catch (error) {
 			console.error('failed loading dynamic mod');

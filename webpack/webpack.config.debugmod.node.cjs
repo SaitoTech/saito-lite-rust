@@ -24,7 +24,7 @@ webpack(
       //   }),
       // ],
     },
-    target: "web",
+    target: "node",
     // node: {
     //     fs: "empty",
     // },
@@ -42,32 +42,32 @@ webpack(
     // Path to your entry point. From this file Webpack will begin his work
     entry: [path.resolve(__dirname, entrypoint)],
     output: {
-      path: path.resolve(__dirname, "./../web/saito/dyn/web"),
+      path: path.resolve(__dirname, "./../web/saito/dyn/node"),
       filename: outputfile,
       library:{
         name:'Dyn',
-        type:'window'
+        type:'global'
       }
     },
     resolve: {
       // Add '.ts' and '.tsx' as resolvable extensions.
       //extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
       extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js",".template.js"],
-      fallback: {
-        fs: false,
-        tls: false,
-        net: false,
-        path: require.resolve("path-browserify"),
-        zlib: false,
-        http: false,
-        https: false,
-        stream: require.resolve("stream-browserify"),
-        buffer: require.resolve("buffer"),
-        crypto: require.resolve("crypto-browserify"),
-        "crypto-browserify": require.resolve("crypto-browserify"),
-        // "saito-js":false,
-        // "saito-wasm":require.resolve("saito-wasm"),
-      },
+      // fallback: {
+      //   fs: false,
+      //   tls: false,
+      //   net: false,
+      //   path: require.resolve("path-browserify"),
+      //   zlib: false,
+      //   http: false,
+      //   https: false,
+      //   stream: require.resolve("stream-browserify"),
+      //   buffer: require.resolve("buffer"),
+      //   crypto: require.resolve("crypto-browserify"),
+      //   "crypto-browserify": require.resolve("crypto-browserify"),
+      //   // "saito-js":false,
+      //   // "saito-wasm":require.resolve("saito-wasm"),
+      // },
     },
     module: {
       rules: [
@@ -139,17 +139,17 @@ webpack(
     plugins: [
       // Work around for Buffer is undefined:
       // https://github.com/webpack/changelog-v5/issues/10
-      new webpack.ProvidePlugin({
-        Buffer: ["buffer", "Buffer"],
-      }),
-      new webpack.ProvidePlugin({
-        process: "process/browser",
-      }),
+      // new webpack.ProvidePlugin({
+      //   Buffer: ["buffer", "Buffer"],
+      // }),
+      // new webpack.ProvidePlugin({
+      //   process: "process/browser",
+      // }),
     ],
     experiments: {
       asyncWebAssembly: true,
       // syncWebAssembly: true,
-      outputModule:true,
+      // outputModule:true,
     },
     mode: "production",
     devtool: devtool,
