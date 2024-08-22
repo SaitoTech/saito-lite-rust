@@ -16,15 +16,21 @@ class YoutubeClient extends ModTemplate {
 		this.styles = ['/youtube-client/style.css', '/saito/saito.css'];
 
 		this.stream_key = '';
+		this.stream_type = 'main';
+		this.stream_url = {
+			'main': "rtmp://a.rtmp.youtube.com/live2",
+			'backup': "rtmp://b.rtmp.youtube.com/live2?backup=1"
+		};
 		this.stream_status = false;
 		this.ws = null;
 		this.mediaRecorder = null;
 		this.icon_id = '';
 		this.combined_stream = null;
 
-		this.app.connection.on('saito-yt-start-stream', (obj = {}) => {
+		this.app.connection.on('saito-yt-start-stream', async (obj = {}) => {
 			this.stream_key = obj.stream_key;
-			this.startStream();
+			this.stream_type = obj.stream_type;
+			await this.startStream();
 			this.startStreamStatus();
 		});
 
@@ -75,10 +81,10 @@ class YoutubeClient extends ModTemplate {
 	} // respondTo
 
 
-	startStream(){
+	async startStream(){
 		let this_self = this;
 		
-		let mediaStream = this.getStreamData();
+		let mediaStream = await this.getStreamData();
 		console.log("mediaStream:", mediaStream);
 
 		if (mediaStream == false) {
@@ -87,8 +93,8 @@ class YoutubeClient extends ModTemplate {
 
 		const ws_url = window.location.protocol.replace('http', 'ws') + '//' + // http: -> ws:, https: -> wss:
 	        (window.location.hostname) + this.getPort() +
-	        '/rtmp/' +
-	        encodeURIComponent(`rtmp://b.rtmp.youtube.com/live2/${this_self.stream_key}`);
+	        '/encoder?url=' +
+	        encodeURIComponent(`${this.stream_url[this.stream_type]}/${this_self.stream_key}`);
 		 console.log('url:', ws_url);
 
 	    this_self.ws = new WebSocket(ws_url,"echo-protocol");
@@ -141,29 +147,44 @@ class YoutubeClient extends ModTemplate {
 		let this_mod = this;
 	}
 
-	getStreamData() {
+	async getStreamData() {
 		let mods = this.app.modules.mods;
 		for (let i = 0; i < mods.length; i++) {
 			if (typeof mods[i].slug != "undefined") {
 				if (mods[i].slug == "swarmcast") {
 					let limbo = mods[i];
 					console.log('limbo mod: ', limbo);
+
+					if (limbo.combinedStream == null) {
+						let options = {
+							identifier: "Swarmcast",
+							description: limbo.description
+						}
+						console.log("options:",options);
+						await limbo.getStream(options);
+						
+						console.log('limbo mod after: ', limbo);
+					}
+
 					return limbo.combinedStream;
 				}
 			}
 		}
+
+
+
 		return false;
 	}
 
 	getPort() {
 		// 44344 - test, prod
 		// 3000 - local dev
-		let port = ':44344';
+		let port = '';
 		let protocol = this.app.browser.protocol;
 		
 		console.log('protocol:', protocol);
 		if (protocol == 'http:') {
-			port = ':3000';
+			port = `:${this.app.browser.port}`;
 		}
 
 		console.log('port:', port);

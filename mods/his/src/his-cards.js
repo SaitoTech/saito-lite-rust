@@ -8239,7 +8239,6 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 
 	if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 
-
 	  //
 	  //
 	  //
