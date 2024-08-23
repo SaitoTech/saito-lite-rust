@@ -5088,10 +5088,10 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	      //
 	      // "skip" interception check if we already have units in this space
 	      //
-	      if (his_self.returnFactionLandUnitsInSpace(faction, destination_spacekey) > 0) {
-	        his_self.addMove("interception_check\t"+"skip"+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	      if (his_self.returnFactionLandUnitsInSpace(faction, destination) > 0) {
+	        his_self.addMove("interception_check\t"+"skip"+"\t"+destination+"\t"+does_movement_include_cavalry);
 	      } else {
-	        his_self.addMove("interception_check\t"+faction+"\t"+destination_spacekey+"\t"+does_movement_include_cavalry);
+	        his_self.addMove("interception_check\t"+faction+"\t"+destination+"\t"+does_movement_include_cavalry);
 	      }
  
               for (let i = 0; i < units_to_move.length; i++) {
@@ -5207,8 +5207,6 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     //
     // end select units
     //
-
-
     let spaces_with_infantry = his_self.returnSpacesWithFactionInfantry(faction);
     for (let i = 0; i < spaces_with_infantry.length; i++) {
       if (his_self.game.spaces[spaces_with_infantry[i]].ports.length == 0) {
