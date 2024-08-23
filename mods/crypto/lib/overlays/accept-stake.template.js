@@ -1,11 +1,11 @@
-module.exports = GameCryptoTransferManagerStakeTemplate = (app, sobj) => {
+module.exports = (app, mod, sobj) => {
 	return `  
   <div class="game-crypto-transfer-manager-container" id="approve-crypto-request-container">
     
     <h2 class="auth_title">Enable In-Game Crypto</h2>
     <div class="stake-input-container">
       <div class="stake">${sobj.stake} ${sobj.ticker}</div>
-      <div class="crypto_msg">${sobj.crypto_msg}</div>
+      <div class="crypto_msg">${mod.crypto_msg}</div>
     </div>
     <div class="crypto-stake-confirm-container">
       <input type="checkbox" checked name="crypto-stake-confirm-input" id="approve-crypto-stake-confirm-input">

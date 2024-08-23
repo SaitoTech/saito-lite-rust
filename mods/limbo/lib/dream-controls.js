@@ -14,21 +14,16 @@ class DreamControls{
 
 	render(stream, is_presentation = false) {
 		if (!document.getElementById("dream-controls")){
-
 			console.log("Render Dream controls in " + this.container);
-
 			this.app.browser.addElementToSelectorOrDom(DreamControlTemplate(this.mod), this.container);
-
 			if (!document.querySelector(this.container)){
 				this.app.browser.makeDraggable('dream-controls');
 			}
 		}
-
 		if (stream){
 			if (is_presentation){
 				this.video.video_class = "noflip";
 			}
-
 			this.video.render(stream);
 			this.startTimer();
 		}

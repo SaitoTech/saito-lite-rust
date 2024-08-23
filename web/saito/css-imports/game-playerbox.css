@@ -81,6 +81,10 @@
     align-items: center;
     width: 100%;
 }
+
+.game-playerbox-head .saito-user>.saito-userline .player-stake {
+  text-transform: uppercase;
+}
   
 .game-playerbox-seat-8 {
   position: absolute;

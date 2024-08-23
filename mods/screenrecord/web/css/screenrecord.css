@@ -124,3 +124,8 @@ margin-bottom: 2rem;
 .screenrecord-controls .timer{
 	text-align: right;
 }
+
+
+.hidden-control {
+	display: none !important;
+}

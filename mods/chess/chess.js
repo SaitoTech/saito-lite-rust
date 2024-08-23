@@ -37,6 +37,8 @@ class Chessgame extends GameTemplate {
 
 		this.can_play_async = 1;
 
+		this.insert_rankings = true;
+
 		this.clock.container = "#clock_";
 		
 		this.roles = ['observer', 'white', 'black'];
@@ -905,17 +907,6 @@ class Chessgame extends GameTemplate {
 			}
 		}
 		return ngoa;
-	}
-
-	insertLeagueRankings() {
-
-		for (let i = 0; i < this.game.playerRanks.length; i++) {
-			
-			let np = this.game.playerRanks[i].rank ? 
-								`#${this.game.playerRanks[i].rank} / ${this.game.playerRanks[i].score}` :
-								`Unranked / ${this.game.playerRanks[i].score}`;
-			this.playerbox.updateUserline(np, i+1);
-		}
 	}
 
 }

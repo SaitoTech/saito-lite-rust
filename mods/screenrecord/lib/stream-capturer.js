@@ -26,21 +26,39 @@ class StreamCapturer {
         });
 
         app.connection.on('start-stun-call', (event) => {
-            // end the current local stream
             if (this.localStream) {
-                this.localStream.getTracks().forEach(track => {
-                    this.removeAudioTrack(track.id)
+                this.localStream.getAudioTracks().forEach(track => {
+                    this.removeAudioTrack(track.id);
                     track.stop()
                 })
                 this.localStream = null
             }
+
+            // remove existing video box, this will now be handled by the videocall module
             this.mod.removeVideoBox(true)
+
+            // remove video and audio controls in lite dream controls, this is now handled by videocall module
+            const controlList = document.querySelector('#dream-controls .control-panel .control-list');
+            if (controlList) {
+                const videoControl = controlList.querySelector('i.fas.fa-video, i.fas.fa-video-slash');
+                const audioControl = controlList.querySelector('i.fas.fa-microphone, i.fas.fa-microphone-slash');
+        
+                if (videoControl) {
+                    videoControl.closest('.dream-controls-menu-item').classList.add('hidden-control')
+                }
+                if (audioControl) {
+                    audioControl.closest('.dream-controls-menu-item').classList.add('hidden-control')
+                }
+            }
+
+            
+
             // get stream from media-request
             const checkForStream = () => {
                 const streams = this.app.modules.getRespondTos('media-request');
                 if (streams.length > 0 && streams[0].localStream) {
-                    this.localStream = streams[0].localStream;
-                    this.localStream.getAudioTracks().forEach(track => {
+                    this.mediaRequestLocalStream = streams[0].localStream
+                    this.mediaRequestLocalStream.getAudioTracks().forEach(track => {
                         this.processAudioTrack(track)
                     })
                     return true;
@@ -57,6 +75,33 @@ class StreamCapturer {
                 }
             }, 100); // Check every 100ms
         })
+
+        app.connection.on('stun-disconnect', () => {
+            const controlList = document.querySelector('#dream-controls .control-panel .control-list');
+            if (controlList) {
+                const videoControl = controlList.querySelector('.dream-controls-menu-item i.fas.fa-video, .dream-controls-menu-item i.fas.fa-video-slash');
+                const audioControl = controlList.querySelector('.dream-controls-menu-item i.fas.fa-microphone, .dream-controls-menu-item i.fas.fa-microphone-slash');
+        
+                if (videoControl) {
+                    videoControl.closest('.dream-controls-menu-item').classList.remove('hidden-control')
+                    videoControl.classList.replace('fa-video', 'fa-video-slash');
+                }
+                if (audioControl) {
+                    audioControl.closest('.dream-controls-menu-item').classList.remove('hidden-control')            
+                    audioControl.classList.replace('fa-microphone', 'fa-microphone-slash')
+                }
+            }
+
+            if(this.mediaRequestLocalStream){
+                this.mediaRequestLocalStream.getAudioTracks().forEach(track => {
+                    console.log('removing audio track ', track);
+                    this.removeAudioTrack(track.id)
+                    track.stop()
+                })
+            }
+        })
+
+
     }
 
 
@@ -671,7 +716,7 @@ class StreamCapturer {
                         width: rect.width,
                         height: rect.height,
                         ignoreElements: function (element) {
-                            if (element.id === 'stream_local') {
+                            if (element.id === 'stream_game') {
                                 return true;
                             }
                             if (element.classList.contains('stun-chatbox')) {
@@ -794,7 +839,6 @@ class StreamCapturer {
                 this.removeAudioTrack(track.id)
             }
             track.stop();
-            console.log(track, 'track');
         });
 
         this.combinedStream = null;
@@ -819,13 +863,35 @@ class StreamCapturer {
 
 
 
+    async getLocalAudio() {
+        this.localStream = await navigator.mediaDevices.getUserMedia({
+            audio: true
+        });
+        this.localStream.getAudioTracks().forEach(track => {
+            console.log('processing audio track ', track);
+            this.processAudioTrack(track)
+        })
+    }
+
+    stopLocalAudio() {
+        if(this.localStream){
+            this.localStream.getAudioTracks().forEach(track => {
+                this.removeAudioTrack(track.id)
+                track.stop()
+
+            })
+            this.localStream = null
+        }
+    }
+
+
     async getExistingStreams(includeCamera) {
         try {
             const streams = this.app.modules.getRespondTos('media-request');
             if (streams.length > 0) {
-                this.localStream = streams[0].localStream;
+                this.mediaRequestLocalStream = streams[0].localStream;
                 this.additionalSources = streams[0].remoteStreams;
-                this.localStream.getAudioTracks().forEach(track => {
+                this.mediaRequestLocalStream.getAudioTracks().forEach(track => {
                     console.log('processing audio track ', track);
                     this.processAudioTrack(track)
                 })
@@ -839,26 +905,17 @@ class StreamCapturer {
                 try {
                     if (includeCamera) {
                         try {
-                            this.localStream = await navigator.mediaDevices.getUserMedia({
-                                audio: true
-                            });
-                            this.localStream.getAudioTracks().forEach(track => {
-                                console.log('processing audio track ', track);
-                                this.processAudioTrack(track)
-                            })
+                           this.getLocalAudio()
                         } catch (error) {
                             console.error('Failed to get user media:', error);
                             alert('Failed to access camera and microphone.');
                             return;
                         }
-                       await this.mod.getOrCreateVideoBox(true);
+                       await this.mod.getOrCreateVideoBox();
                         // this.mod.videoBox.render(this.localStream);
                     } else {
                         try {
-                            this.localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                            this.localStream.getAudioTracks().forEach(track => {
-                                this.processAudioTrack(track)
-                            })
+                            this.getLocalAudio();
                         } catch (error) {
                             console.error('Failed to get user media:', error);
                             alert('Failed to access camera and microphone.');

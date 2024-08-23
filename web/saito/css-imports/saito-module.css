@@ -156,6 +156,7 @@ fieldset.saito-grid {
     margin: 1rem 0;
     border: var(--border-thickness-button-modal) solid var(--border-color-button-modal);
     border-radius: 0.5rem;
+    position: relative;
 }
 
 fieldset.saito-grid > fieldset.saito-grid{
@@ -170,7 +171,12 @@ fieldset.saito-grid > fieldset.saito-grid{
 .saito-grid input, .saito-grid label {
     cursor: pointer;
     color: var(--font-color-module-menu);
-    
+}
+
+.saito-grid-extra-button {
+    position: absolute;
+    right: 0;
+    height: min(70%, 40px);
 }
 
 .saito-grid i {

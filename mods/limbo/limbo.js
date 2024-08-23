@@ -528,6 +528,7 @@ class Limbo extends ModTemplate {
 						if (recorders.length > 0) {
 							options.mode = 'camera';
 							this.externalMediaControl = recorders[0];
+							this.externalMediaControl.type = "videocall"
 							this.combinedStream = await this.externalMediaControl.startStreamingVideoCall();
 							return;
 						}
@@ -540,6 +541,7 @@ class Limbo extends ModTemplate {
 				if (recorders.length > 0) {
 					options.mode = 'camera';
 					this.externalMediaControl = recorders[0];
+					console.log('external media control', this.externalMediaControl)
 					this.externalMediaControl.type = "game"
 					this.combinedStream = await this.externalMediaControl.startStreamingGame(options);
 					// this.toggleNotification(false, this.publicKey);
@@ -1563,15 +1565,24 @@ class Limbo extends ModTemplate {
 
 		const castButtonGame = document.getElementById('cast-stream');
 
-		if (!castButtonGame) {
-			console.warn('Cast button not found in the DOM');
-			return;
+		if(castButtonGame){
+
+			if(value){
+				castButtonGame.textContent =  'Stop cast';
+			}else {
+				castButtonGame.textContent =  'Cast game';
+			}
 		}
 
-		const isCasting = castButtonGame.textContent.trim().toLowerCase() === 'stop cast';
+		// if (!castButtonGame) {
+		// 	console.warn('Cast button not found in the DOM');
+		// 	return;
+		// }
 
-		console.log('isCasting', isCasting);
-		castButtonGame.textContent = isCasting ? 'Cast game' : 'Stop cast';
+		// const isCasting = castButtonGame.textContent.trim().toLowerCase() === 'stop cast';
+
+		// console.log('isCasting', isCasting);
+		
 	}
 
 	beforeUnloadHandler(event) {

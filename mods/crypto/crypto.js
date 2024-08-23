@@ -2,30 +2,34 @@ const saito = require('./../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const CryptoSelectAmount = require('./lib/overlays/select-amount');
 const CryptoInadequate = require('./lib/overlays/inadequate');
+const AcceptStake = require('./lib/overlays/accept-stake');
+const AdjustStake = require('./lib/overlays/adjust-stake');
 
 class Crypto extends ModTemplate {
-	constructor(app, mod) {
+	constructor(app) {
 		super(app);
 
 		this.app = app;
-		this.mod = mod;
-		this.ticker = '';
 
-		this.styles = ['/crypto/css/crypto-base.css'];
+		this.styles = ['/crypto/style.css'];
 
-		this.appname = 'Crypto';
 		this.name = 'Crypto';
+
 		this.description = 'Enable crypto gaming';
 		this.categories = 'Utility Entertainment';
+
 		this.class = 'utility';
-		this.min_balance = 0.0;
+
+		this.balances = {};
+
 		this.overlay = new CryptoSelectAmount(app, this);
 		this.overlay_inadequate = new CryptoInadequate(app, this);
+		this.approve_overlay = new AcceptStake(app, this);
+		this.adjust_overlay = new AdjustStake(app, this);
+		
 	}
 
-
-
-	async initialize(app){
+	async initialize(app) {
 		await super.initialize(app);
 
 		//
@@ -37,6 +41,30 @@ class Crypto extends ModTemplate {
 				m.can_bet = 1;
 			}
 		}
+
+		app.connection.on('accept-game-stake', async (sobj) => {
+			
+			await this.app.wallet.setPreferredCrypto(sobj.ticker);
+
+			let cryptomod = this.app.wallet.returnCryptoModuleByTicker(sobj.ticker);
+			let current_balance = await cryptomod.returnBalance();
+			let needed_balance = (typeof sobj.stake == "object") ? parseFloat(sobj.stake.min) : parseFloat(sobj.stake);
+
+			if (needed_balance > current_balance){
+				this.app.connection.emit('saito-crypto-deposit-render-request', {
+					ticker: sobj.ticker,
+					amount: needed_balance,
+				});
+				return;
+			}
+
+			if (typeof sobj.stake == "object"){
+				this.adjust_overlay.render(sobj, current_balance);
+			}else{
+				this.approve_overlay.render(sobj);	
+			}
+		});
+
 	}
 
 	respondTo(type = '') {
@@ -72,25 +100,38 @@ class Crypto extends ModTemplate {
 					class: 'game-crypto-ticker',
 					callback: async (app, game_mod) => {
 						this.attachStyleSheets();
-						this.ticker = ticker;
 
-						this.min_balance = 0.0;
 						this.max_balance = ac[ticker];
+						this.min_balance = game_mod?.opengame ? this.max_balance : -1;
 
-						console.log(game_mod.game.crypto);
 						if (
 							game_mod.game.crypto &&
 							game_mod.game.crypto != 'CHIPS'
 						) {
-							salert(
-								`${game_mod.game.stake} ${game_mod.game.crypto} staked on this game!`
-							);
+
+							if (typeof game_mod.game.stake === "object"){
+								let str = "";
+								for (let i in game_mod.game.stake){
+									if (i !== 'min'){
+										str += `${game_mod.app.keychain.returnUsername(i)}: ${game_mod.game.stake[i]} ${game_mod.game.crypto} / `
+									}
+								}
+								str = str.substring(0, str.length - 3);
+								salert(`${str} staked on this game`);
+							}else{
+								salert(
+									`${game_mod.game.stake} ${game_mod.game.crypto} staked on this game!`
+								);
+							}
 							return;
 						}
 
-						this.overlay.render((amount) => {
+						this.overlay.ticker = ticker;
+
+						this.overlay.render((ticker, amount) => {
 							game_mod.menu.hideSubMenus();
 							game_mod.proposeGameStake(ticker, amount);
+							app.browser.logMatomoEvent('StakeCrypto', 'viaGameMenu', ticker);
 						});
 					}
 				});
@@ -117,6 +158,52 @@ class Crypto extends ModTemplate {
 
 		return super.respondTo(type);
 	}
+
+	async renderInto(qs) {
+		if (qs == "#arcade-advance-opt"){
+
+			this.min_balance = 0;
+
+			let game_name = document.querySelector("input[name='game']")?.value;
+			if (game_name){
+				let gm = this.app.modules.returnModuleByName(game_name);
+				if (gm?.opengame){
+					this.min_balance = -1;
+				}
+				if (!gm?.can_bet){
+					return;
+				}
+			}
+
+			this.attachStyleSheets();
+
+			this.balances = await this.app.wallet.returnAvailableCryptosAssociativeArray();
+
+			this.app.browser.addElementToSelector(`<div class="game-wizard-crypto-hook"><i class="fa-solid fa-coins"></i></div>`, qs);
+
+			let hook = document.querySelector(".game-wizard-crypto-hook");
+
+			hook.onclick = (e) => {
+
+				this.overlay = new CryptoSelectAmount(this.app, this);
+				this.overlay.fixed = false;
+
+				if (hook.dataset?.amount){
+					this.overlay.stake = hook.dataset.amount;
+				}
+
+				this.overlay.render((ticker, amount, match_amount = null) => {
+					console.log("SELECTED CRYPTO: ", ticker, amount, match_amount);
+					hook.dataset["ticker"] = ticker;
+					hook.dataset["amount"] = amount;
+					if (match_amount !== null){
+						hook.dataset["match"] = match_amount;	
+					}
+				});
+			}
+		}
+	}
+
 
 	/**
 	 * We have a list of each players available cryptos and balances, so
@@ -158,6 +245,11 @@ class Crypto extends ModTemplate {
 
 		return intersection;
 	}
+
+
+
+
+
 
 	returnCryptoOptionsHTML(values = null) {
 		values = values || [0.001, 0.01, 0.1, 1, 5, 10, 50, 100, 500, 1000];

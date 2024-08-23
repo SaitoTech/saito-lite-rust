@@ -20,7 +20,7 @@ class DreamControls{
 		//Oof, I should change the name in video call (this actually refers to the hang up action)
 		app.connection.on('stun-disconnect', async ()=> {
 			console.log(this.mod.externalMediaControl, "mod external media control")
-			if(this.mod.externalMediaControl.type === "game") {
+			if( this.mod.externalMediaControl && this.mod.externalMediaControl.type === "game") {
 				// we don't want to exit the space when inside a game call
 				return;
 			}
@@ -230,26 +230,44 @@ class DreamControls{
 	}
 
 	addDreamControlsItem(item, id, index) {
-
 		console.log('inside addDreamControlsItem');
+	
+		const iconClass = item.icon.split(' ').pop();
+	
+		const existingIcon = document.querySelector(`#dream-controls .control-panel .control-list i.${iconClass}`);
+		if (existingIcon) {
+			console.log(`Icon with class ${iconClass} already exists. Skipping addition.`);
+			return;
+		}
+	
+		
 		let html = `
-      <div id="${id}" data-id="${index}" class="dream-controls-menu-item icon_click_area">
-        <i class="${item.icon}"></i>
-      </div>
-    `;
-
-     const newDiv = document.createElement("div");
-     newDiv.innerHTML = html;
-
-    //document.querySelector(`#dream-controls .control-panel .control-list`).insertAdjacentHTML('beforeend', html);
-
-    // append as second last child
-    // keeping close (X) icon as last
-    let list = document.querySelector('#dream-controls .control-panel .control-list');
-    let c = list.children;
-
-    if (document.querySelector(`#limbo-disconnect-control`) != null) {
-			document.querySelector(`#dream-controls .control-panel .control-list > div:nth-child(${c.length-2})`).after(newDiv);
+		  <div id="${id}" data-id="${index}" class="dream-controls-menu-item icon_click_area ${item.style ? item.style : '' }">
+			<i class="${item.icon}"></i>
+		  </div>
+		`;
+	
+		const newDiv = document.createElement("div");
+		newDiv.innerHTML = html;
+	
+		let list = document.querySelector('#dream-controls .control-panel .control-list');
+		
+		if (!list) {
+			console.error('Control list not found');
+			return;
+		}
+	
+		let c = list.children;
+	
+		if (document.querySelector(`#limbo-disconnect-control`) != null) {
+			let insertBeforeElement = list.children[c.length - 2];
+			if (insertBeforeElement) {
+				list.insertBefore(newDiv.firstElementChild, insertBeforeElement.nextSibling);
+			} else {
+				console.error('Could not find the correct position to insert the new control');
+			}
+		} else {
+			list.appendChild(newDiv.firstElementChild);
 		}
 	}
 

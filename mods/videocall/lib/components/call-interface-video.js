@@ -192,11 +192,11 @@ class CallInterfaceVideo {
 				// Hopefully we don't have to reload the page on the end of a stun call
 				// But keep on eye on this for errors and make sure all the components shut themselves down properly
 				//
-				if (document.getElementById('stun-chatbox')) {
+				if (document.querySelector('.stun-overlay-container')) {
 					const recordControls = this.app.modules.getRespondTos('screenrecord-video-controls');
 					let { mediaRecorder, stopRecording, type } = recordControls[0]
 					console.log(recordControls, "recordControls")
-					document.getElementById('stun-chatbox').remove();
+					document.querySelector('.stun-overlay-container').remove();
 					if(type === "game") return;
 					if (mediaRecorder) {
 						await stopRecording()

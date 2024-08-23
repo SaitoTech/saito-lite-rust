@@ -822,9 +822,13 @@ class ChatPopup {
 			let imageUrl;
 
 			if (typeof result === 'string') {
-				let response = await fetch(result);
-				let blob = await response.blob();
-				imageUrl = URL.createObjectURL(blob);
+				if (!result.includes('giphy.gif')){
+					let response = await fetch(result);
+					let blob = await response.blob();
+					imageUrl = URL.createObjectURL(blob);
+				} else {
+					imageUrl = result;
+				}
 			} else if (result instanceof File) {
 				imageUrl = URL.createObjectURL(result);
 			} else {

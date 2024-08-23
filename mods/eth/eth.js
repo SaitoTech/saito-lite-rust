@@ -17,7 +17,7 @@ class ETH extends ModTemplate {
 		this.chain_id = '43d61dcd-e413-450d-80b8-101d5e903357';
 	}
 
-	respondTo(type = '') {
+	respondTo(type = '', obj) {
 		if (type == 'mixin-crypto') {
 			return {
 				name: this.name,
@@ -26,6 +26,14 @@ class ETH extends ModTemplate {
 				asset_id: this.asset_id
 			};
 		}
+		if (type == 'crypto-logo') {
+			if (obj?.ticker == this.ticker) {
+				return {
+					img: `/eth/img/logo.png`,
+				}
+			}
+		}
+
 		return null;
 	}
 }

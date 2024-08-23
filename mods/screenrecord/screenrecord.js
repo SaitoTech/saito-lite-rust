@@ -195,6 +195,62 @@ class Record extends ModTemplate {
 
 			return menu;
 		}
+
+		if (type === "dream-controls") {
+			let audioEnabled = true;
+			let videoIcon = this.videoBox ? "fas fa-video" : "fas fa-video-slash";
+			let audioIcon =  audioEnabled ? "fas fa-microphone" : 'fas fa-microphone-slash';
+		
+			const streams = this.app.modules.getRespondTos('media-request');
+		
+			let x = [
+				{
+					text: `Video control`,
+					icon: videoIcon,
+					callback: (app, id, combined_stream) => {
+						const iconElement = document.querySelector(`#dream_controls_menu_item_${id} i`);
+						if (this.videoBox) {
+							this.removeVideoBox(true);
+							iconElement.classList.replace('fa-video', 'fa-video-slash');
+						} else {
+							this.getOrCreateVideoBox();
+							iconElement.classList.replace('fa-video-slash', 'fa-video');
+						}
+					},
+					style: ""
+				},
+				{
+					text: `Audio control`,
+					icon: audioIcon,
+					callback: (app, id, combined_stream) => {
+						const iconElement = document.querySelector(`#dream_controls_menu_item_${id} i`);
+						let audioEnabled;	
+						if(this.gameStreamCapturer.localStream){
+							audioEnabled = true
+						}else {
+							audioEnabled = false
+						}		
+						if (audioEnabled) {
+							iconElement.classList.replace('fa-microphone', 'fa-microphone-slash');
+							this.gameStreamCapturer.stopLocalAudio()
+						} else {
+							iconElement.classList.replace('fa-microphone-slash', 'fa-microphone');
+							this.gameStreamCapturer.getLocalAudio()
+						}
+					},
+					style: ""
+				}
+			];
+		
+			// Hide icons if videocall streams exist
+			if (streams.length > 0) {
+				x.forEach(control => {
+					control.style = 'hidden-control';
+				});
+			}
+		
+			return x;
+		}
 	}
 
 	async handlePeerTransaction(app, tx = null, peer, mycallback) {
@@ -277,12 +333,15 @@ class Record extends ModTemplate {
 		}
 	}
 
-	async getOrCreateVideoBox(includeCamera, stream) {
-		if (!this.videoBox && includeCamera) {
+	async getOrCreateVideoBox(stream) {
+		if (!this.videoBox) {
+			const streams = this.app.modules.getRespondTos('media-request');
+			if(streams.length > 0) return;
+			
 			this.localStream = await navigator.mediaDevices.getUserMedia({
 				video: true
 			});
-			this.videoBox = new VideoBox(this.app, this, 'local');
+			this.videoBox = new VideoBox(this.app, this, 'game');
 			this.videoBox.render(this.localStream)
 			let videoElement = document.querySelector('.video-box-container-large');
 			if (videoElement) {
@@ -290,7 +349,7 @@ class Record extends ModTemplate {
 				videoElement.style.top = '100px';
 				videoElement.style.width = '350px';
 				videoElement.style.height = '350px';
-				this.app.browser.makeDraggable('stream_local');
+				this.app.browser.makeDraggable('stream_game');
 			}
 		}
 		return this.videoBox;
