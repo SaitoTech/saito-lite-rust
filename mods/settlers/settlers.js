@@ -18,6 +18,7 @@ const DevCardOverlay = require('./lib/ui/overlays/dev-card');
 const YearOfPlentyOverlay = require('./lib/ui/overlays/year-of-plenty');
 const DiscardOverlay = require('./lib/ui/overlays/discard');
 const MonopolyOverlay = require('./lib/ui/overlays/monopoly');
+const CardOverlay = require('./lib/ui/overlays/card');
 
 //////////////////
 // CONSTRUCTOR  //
@@ -48,6 +49,7 @@ class Settlers extends GameTemplate {
 		this.welcome_overlay = new SettlersWelcome(this.app, this);
 		this.stats_overlay = new SettlersStats(this.app, this);
 		this.trade_overlay = new TradeOverlay(this.app, this);
+		this.card_overlay = new CardOverlay(this.app, this);
 
 		this.build = new BuildOverlay(this.app, this);
 		this.bank = new BankOverlay(this.app, this);
