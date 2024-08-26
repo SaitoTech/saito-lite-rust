@@ -518,6 +518,8 @@
     let tile_f = "/his/img/tiles/debaters/" + this.debaters[debater].img;
     let tile_b = tile_f.replace('.svg', '_back.svg');
 
+    if (this.isDebaterCommitted(debater)) { let x = tile_f; tile_f = tile_b; tile_b = x; } // reverse default sides if committed
+
     if (attacker) {
       $('.attacker_debater').css('background-image', `url('${tile_f}')`);
       $('.attacker_debater').mouseover(function() { 

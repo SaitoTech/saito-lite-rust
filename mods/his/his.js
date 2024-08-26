@@ -2421,6 +2421,8 @@ console.log("\n\n\n\n");
         if (this.game.players.length == 2) {
 
 	  this.unsetEnemies("papacy", "france");
+	  this.unsetEnemies("hapsburg", "france");
+	  this.unsetEnemies("ottoman", "hungary");
 
 	  // OTTOMAN
           this.addRegular("ottoman", "istanbul", 1);
@@ -2442,11 +2444,11 @@ console.log("\n\n\n\n");
           this.addRegular("hapsburg", "tunis", 1);
           this.controlSpace("hapsburg", "tunis");
           this.addRegular("hapsburg", "naples", 2);
-          this.addNavalSquadron("hapsburg", "naples", 2);
+          this.addNavalSquadron("hapsburg", "naples", 1);
           this.addRegular("hapsburg", "besancon", 1);
           this.addRegular("hapsburg", "brussels", 1);
           this.addRegular("hapsburg", "vienna", 4);
-          this.addRegular("hapsburg", "antwerp", 3);
+          this.addRegular("hapsburg", "antwerp", 1);
 	  this.addRegular("hapsburg", "valladolid", 1);
 
 
@@ -2960,7 +2962,7 @@ console.log("\n\n\n\n");
           this.addArmyLeader("hapsburg", "gibraltar", "duke-of-alva");
           this.addArmyLeader("hapsburg", "naples", "charles-v");
           this.addRegular("hapsburg", "naples", 4);
-          this.addNavalSquadron("hapsburg", "naples", 2);
+          this.addNavalSquadron("hapsburg", "naples", 1);
           this.addRegular("hapsburg", "nuremberg", 1);
           this.addRegular("hapsburg", "worms", 1);
           this.addRegular("hapsburg", "kassel", 1);
@@ -7347,9 +7349,11 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 	    his_self.game.queue.push("SETVAR\tstate\tmaster_of_italy\t"+faction+"\t"+parseInt(his_self.game.state.master_of_italy[faction])+1);
           }
           if (f[key] == 2) {
-	    let player = his_self.returnPlayerOfFaction(key);
- 	    his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+key+"\t1");
-	    his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
+	    if (his_self.game.players.length > 2) {
+	      let player = his_self.returnPlayerOfFaction(key);
+ 	      his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+key+"\t1");
+	      his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
+            }
           }
         }
 
@@ -47634,6 +47638,8 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
     let tile_f = "/his/img/tiles/debaters/" + this.debaters[debater].img;
     let tile_b = tile_f.replace('.svg', '_back.svg');
+
+    if (this.isDebaterCommitted(debater)) { let x = tile_f; tile_f = tile_b; tile_b = x; } // reverse default sides if committed
 
     if (attacker) {
       $('.attacker_debater').css('background-image', `url('${tile_f}')`);

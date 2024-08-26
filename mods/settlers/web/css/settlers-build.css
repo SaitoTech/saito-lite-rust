@@ -126,7 +126,7 @@
 }
 
 .settlers-card-disabled {
-	filter: grayscale(90%) brightness(60%);
+	filter: grayscale(70%) brightness(80%);
 }
 
 .settlers-cards-container img {
@@ -202,19 +202,19 @@
 /* discard overlay */
 
 .dev-card-overlay .settlers-cards-container {
-	min-height: 21rem;
+	min-height: 35rem;
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 }
 
 .dev-card-overlay .settlers-items-container .settlers-cards-container img {
-	height: 20rem;
+	height: 35rem;
 }
 
 .settlers-dev-card {
 	position: relative;
-	width: 14.5rem;
-	height: 20rem;
+	width: 25rem;
+	height: 35rem;
 	margin: auto;
 }
 

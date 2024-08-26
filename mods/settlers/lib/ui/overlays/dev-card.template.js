@@ -3,9 +3,9 @@ module.exports = DevCardOverlayTemplate = (app, mod, dev_card) => {
     <div class="saitoa dev-card-overlay">
       <div class="settlers-items-container">`;
 	if (mod.canPlayerPlayCard()) {
-		html += `<div class="settlers-item-info-text">Select a card to play:</div>`;
+		html += `<div class="settlers-item-info-text">Select Card to Play:</div>`;
 	} else {
-		html += `<div class="settlers-item-info-text">My dev cards:</div>`;
+		html += `<div class="settlers-item-info-text">Development Cards:</div>`;
 	}
 
 	html += `<div class="settlers-item-row settlers-cards-container settlers-desired-resources">`;
@@ -26,8 +26,6 @@ module.exports = DevCardOverlayTemplate = (app, mod, dev_card) => {
 		cards += `
             <div class="settlers-dev-card ${card_disable ? 'settlers-card-disabled' : ''}" id="${x}">
               <img src="${card.img}">
-              <div class="settlers-dev-card-title">${card.card}</div>
-              <div class="settlers-dev-card-text">${mod.rules[card.action]}</div>
             </div>
           `;
 	}
@@ -38,8 +36,6 @@ module.exports = DevCardOverlayTemplate = (app, mod, dev_card) => {
 		cards += `
             <div class="settlers-dev-card settlers-card-disabled">
               <img src="${card.img}">
-              <div class="settlers-dev-card-title">${card.card}</div>
-              <div class="settlers-dev-card-text">${mod.rules[card.action]}</div>
             </div>
           `;
 

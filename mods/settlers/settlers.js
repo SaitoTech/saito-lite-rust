@@ -148,49 +148,55 @@ class Settlers extends GameTemplate {
 			{
 				card: 'Knight',
 				count: 14,
-				img: '/settlers/img/cards/knight.png',
+				img: '/settlers/img/cards/devcards/knight.png',
 				action: 1
 			},
 			{
 				card: 'Unexpected Bounty',
 				count: 2,
-				img: '/settlers/img/cards/treasure.png',
+				img: '/settlers/img/cards/devcards/unexpected_bounty.png',
 				action: 2
 			},
 			{
 				card: 'Legal Monopoly',
 				count: 2,
-				img: '/settlers/img/cards/scroll.png',
+				img: '/settlers/img/cards/devcards/monopoly.png',
 				action: 3
 			},
 			{
-				card: 'Caravan',
+				card: 'Governor\'s Statue',
 				count: 2,
-				img: '/settlers/img/cards/wagon.png',
+				img: '/settlers/img/cards/devcards/governors_statue.png',
 				action: 4
 			},
 			{
 				card: 'Brewery',
 				count: 1,
-				img: '/settlers/img/cards/drinking.png',
+				img: '/settlers/img/cards/devcards/brewhouse.png',
 				action: 0
 			},
 			{
 				card: 'Bazaar',
 				count: 1,
-				img: '/settlers/img/cards/shop.png',
+				img: '/settlers/img/cards/devcards/bazaar.png',
 				action: 0
 			},
 			{
-				card: 'Advanced Industry',
+				card: 'University',
 				count: 1,
-				img: '/settlers/img/cards/windmill.png',
+				img: '/settlers/img/cards/devcards/university.png',
 				action: 0
 			},
 			{
 				card: 'Cathedral',
 				count: 1,
-				img: '/settlers/img/cards/church.png',
+				img: '/settlers/img/cards/devcards/cathedral.png',
+				action: 0
+			},
+			{
+				card: 'Industrial Port',
+				count: 1,
+				img: '/settlers/img/cards/devcards/industrial_port.png',
 				action: 0
 			},
 			{
