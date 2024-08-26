@@ -597,6 +597,7 @@ class RedSquare extends ModTemplate {
       // 1000 * 60 * 5
       setInterval(() => {
         if (this.manager?.mode == 'tweets') {
+          console.log("Automatically checking for new content on RS...");
           this.loadTweets(
             'later',
             (tx_count) => {
@@ -650,7 +651,7 @@ class RedSquare extends ModTemplate {
       //
       // get tweets from peers
       //
-      let ct = this.loadTweets('later', (tx_count) => {
+      /*let ct = this.loadTweets('later', (tx_count) => {
         this.app.connection.emit('redsquare-home-postcache-render-request', tx_count);
       });
       if (ct) {
@@ -658,7 +659,12 @@ class RedSquare extends ModTemplate {
           'redsquare-insert-loading-message',
           `Checking with ${ct} peers for new tweets...`
         );
+      }*/
+
+      if (this.manager) {
+        this.loadTweets('earlier', this.manager.insertOlderTweets.bind(this.manager));
       }
+
     }
 
     //
@@ -708,7 +714,7 @@ class RedSquare extends ModTemplate {
             // Maybe add a check for approved list of colleagues
             // this.app.options.redsquare.followers
 
-            console.log(txmsg.data);
+            //console.log(txmsg.data);
 
             this.app.storage.loadTransactions(
               txmsg.data,
@@ -892,7 +898,7 @@ class RedSquare extends ModTemplate {
     //
     let peer_count = 0;
 
-    console.log(new Date(this.tweets_earliest_ts));
+    console.log(`RS timestamp: ${new Date(this.tweets_earliest_ts)}`);
 
     for (let i = 0; i < this.peers.length; i++) {
       //
@@ -1032,7 +1038,7 @@ class RedSquare extends ModTemplate {
       // Trust me, this won't accidentally trigger the "load new tweets"
       // button!!!
       //
-      count += this.addTweet(txs[z], `${peer.publicKey}`);
+      let added = this.addTweet(txs[z], `${peer.publicKey}`);
 
       let tweet = this.returnTweet(txs[z].signature);
 
@@ -1046,7 +1052,11 @@ class RedSquare extends ModTemplate {
           this.saveTweet(txs[z].signature, 0);
           //}
         }
+
+        count += added;
+
       }
+
     }
 
     if (peer.tweets_earliest_ts < this.tweets_earliest_ts) {
@@ -1399,7 +1409,12 @@ class RedSquare extends ModTemplate {
 
       t.data_renewal = source;
 
+
       if (tweet.tx.optional) {
+        if (JSON.stringify(t.tx.optional) !== JSON.stringify(tweet.tx.optional)){
+          console.log("Orig: ", t.tx.optional, "New: ", tweet.tx.optional);  
+        }
+
         let should_rerender = false;
 
         if (tweet.tx.optional.num_replies > t.tx.optional.num_replies) {

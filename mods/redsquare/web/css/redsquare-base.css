@@ -20,7 +20,7 @@ body {
 .liked,
 .replied,
 .retweeted {
-	color: var(--font-color-reacted);
+	color: var(--font-color-redsquare-interaction);
 }
 
 .post-delete-button {

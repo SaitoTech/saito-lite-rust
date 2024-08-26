@@ -1397,8 +1397,8 @@ class Arcade extends ModTemplate {
 
 		// Must be an available invite
 		if (!game || (!this.isAvailableGame(game, 'accepted') && !txmsg.options?.async_dealing)) {
-			console.log(game);
-			console.log(txmsg);
+			//console.log(game);
+			//console.log(txmsg);
 			return;
 		}
 

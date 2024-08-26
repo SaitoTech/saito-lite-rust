@@ -1824,8 +1824,8 @@ class Chat extends ModTemplate {
     let mentions = txmsg?.mentioned || tx?.mentioned || [];
 
     if (!content || typeof content !== 'string') {
-      console.warn('Not a chat message?');
-      console.log(tx);
+      //console.warn('Not a chat message?');
+      //console.log(tx);
       return 0;
     }
     let new_message = {
