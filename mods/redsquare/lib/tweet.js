@@ -295,7 +295,6 @@ class Tweet {
 		// already exists. if it does we will only render 1.
 		//
 		let myqs = this.container + `> .tweet-${this.tx.signature}`;
-		let replace_existing_element = true;
 
 		let has_reply = false;
 		let has_reply_disconnected = false;
@@ -471,13 +470,13 @@ class Tweet {
 		//console.log(JSON.parse(JSON.stringify(this.tx.optional)));
 
 		this.setKeys(this.tx.optional);
-		//console.log(this.num_replies, this.num_retweets, this.num_likes);
 
-		if (!this.app.BROWSER || !this.browser_active) {
+		if (!this.app.BROWSER || !this.mod.browser_active) {
 			return;
 		}
 
 		if (complete_rerender) {
+			console.log("complete rerender");
 			this.render();
 		} else {
 			// like, retweet, comment

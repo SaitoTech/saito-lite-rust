@@ -252,6 +252,7 @@ font imports
   --font-color-post-downward-arrow: var(--font-color-secondary);
   --font-color-modal-arcade-body: var(--font-color-inverse);
   --font-color-main-body: var(--font-color-primary); /* MAIN system color */
+  --font-color-redsquare-interaction: var(--color-primary);
 /* Alerts and Status Font Colors */
   --font-color-progress-bar: var(--font-color-inverse);
   --font-color-alert-box: var(--font-color-primary);
