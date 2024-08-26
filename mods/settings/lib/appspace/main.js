@@ -91,14 +91,11 @@ class SettingsAppspace {
         editor.set(optjson)
 
         // get json
-        const updatedJson = editor.get()
 
-
-        function getJSON() {
-	        var json = editor.get();
-	        alert(JSON.stringify(json, null, 2));
-	    }
-        
+		document.querySelector("#settings-save-json").onclick = () => {
+			var json = editor.get();
+			console.log("Updated json: ", JSON.stringify(json, null, 2));
+		}        
 
 		} catch (err) {
 			console.log('error creating jsonTree: ' + err);

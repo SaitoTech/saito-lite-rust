@@ -124,6 +124,8 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 
       <div class="settings-appspace-debug">
         <h6>Debug Info</h6>
+
+        <button id="settings-save-json">Save</div>
         <div class="settings-appspace-debug-content" id="settings-appspace-debug-content"></div>
       </div>
 
