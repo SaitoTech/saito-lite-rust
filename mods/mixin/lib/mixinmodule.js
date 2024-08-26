@@ -492,8 +492,8 @@ class MixinModule extends CryptoModule {
 	 * @abstract
 	 * @return {Function} Callback function
 	 */
-	returnHistory(asset_id = '', records = 20, callback = null) {
-		return this.mixin.fetchSafeSnapshots(asset_id, records, callback);
+	async returnHistory(asset_id = '', records = 20, callback = null) {
+		return await this.mixin.fetchSafeSnapshots(asset_id, records, callback);
 	}
 
 	async returnUtxo(state = 'unspent', limit = 500, order = 'DESC', callback = null) {
