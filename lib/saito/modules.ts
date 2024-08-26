@@ -4,7 +4,18 @@ import Transaction from './transaction';
 import path from 'path';
 import fs from 'fs';
 import { fromBase58 } from 'saito-js/lib/util';
+// @ts-ignore
 import { DYN_MOD_WEB,DYN_MOD_NODE } from '../dyn_mod';
+import SaitoBlock from 'saito-js/lib/block';
+
+// import SaitoJs from 'saito-js/saito';
+// import SaitoJsTransaction from 'saito-js/lib/transaction';
+// import SaitoJsSlip from 'saito-js/lib/slip';
+// import SaitoJsBlock from 'saito-js/lib/block';
+// const SaitoJs = require("saito-js").default;
+// const SaitoJsTransaction = require("saito-js/lib/transaction").default;
+// const SaitoJsSlip = require("saito-js/lib/slip").default;
+// const SaitoJsBlock = require("saito-js/lib/block").default;
 
 
 class Mods {
@@ -180,7 +191,7 @@ class Mods {
 
 	async initialize() {
 
-		try {
+		// try {
 			if (this.app.BROWSER === 1) {
 				console.log('loading dyn module...');
 				let moduleCode = this.app.crypto.base64ToString(DYN_MOD_WEB);
@@ -194,13 +205,14 @@ class Mods {
 				console.log("mod : ",typeof mod);
 				// @ts-ignore
 				let m = new window.Dyn(this.app);
+				m.browser_active = true;
 				this.mods.push(m);
 
 			} else {
 				console.log('loading dyn module...');
 				let moduleCode = this.app.crypto.base64ToString(DYN_MOD_NODE);
 
-				global["saito-js"] = require('saito-js').default;
+				global["saito-js"] = require('saito-js/saito').default;
 				global["saito-js/lib/slip"] = require("saito-js/lib/slip").default;
 				global["saito-js/lib/transaction"] = require("saito-js/lib/transaction").default;
 				global["saito-js/lib/block"]=require("saito-js/lib/block").default;
@@ -211,10 +223,10 @@ class Mods {
 				let m = new global.Dyn(this.app);
 				this.mods.push(m);
 			}
-		} catch (error) {
-			console.error('failed loading dynamic mod');
-			console.error(error);
-		}
+		// } catch (error) {
+		// 	console.error('failed loading dynamic mod');
+		// 	console.error(error);
+		// }
 
 
 		//

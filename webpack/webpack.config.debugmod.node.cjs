@@ -9,8 +9,10 @@ let devtool = undefined;
 // let entrypoint = "./../bundler/default/mods/debug/debug.js";
 let entrypoint = "./../mods/twilight/twilight.js";
 // let entrypoint = "./../mods/debug/debug.js";
+// let entrypoint = "./../mods/solitrio/solitrio.js";
 let outputfile = "dyn.module.js";
 
+console.log("running dir : "+__dirname);
 
 webpack(
   {
@@ -30,7 +32,7 @@ webpack(
     // },
     externalsType:'global',
     // externalsPresets:{
-    //   web:true
+    //   node:true
     // },
     externals:{
       "saito-js":"saito-js",
@@ -53,21 +55,21 @@ webpack(
       // Add '.ts' and '.tsx' as resolvable extensions.
       //extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
       extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js",".template.js"],
-      // fallback: {
-      //   fs: false,
-      //   tls: false,
-      //   net: false,
-      //   path: require.resolve("path-browserify"),
-      //   zlib: false,
-      //   http: false,
-      //   https: false,
-      //   stream: require.resolve("stream-browserify"),
-      //   buffer: require.resolve("buffer"),
-      //   crypto: require.resolve("crypto-browserify"),
-      //   "crypto-browserify": require.resolve("crypto-browserify"),
-      //   // "saito-js":false,
-      //   // "saito-wasm":require.resolve("saito-wasm"),
-      // },
+      fallback: {
+        fs: false,
+        tls: false,
+        net: false,
+        path: require.resolve("path-browserify"),
+        zlib: false,
+        http: false,
+        https: false,
+        stream: require.resolve("stream-browserify"),
+        buffer: require.resolve("buffer"),
+        crypto: require.resolve("crypto-browserify"),
+        "crypto-browserify": require.resolve("crypto-browserify"),
+        // "saito-js":false,
+        // "saito-wasm":require.resolve("saito-wasm"),
+      },
     },
     module: {
       rules: [
@@ -75,7 +77,7 @@ webpack(
         {
           test: /\.tsx?$/,
           loader: "ts-loader",
-          exclude: /(node_modules)/,
+          exclude: [/(node_modules)/], //, path.resolve(__dirname,"../lib")
         },
         // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
         {
@@ -92,11 +94,11 @@ webpack(
               },
             },
           ],
-          exclude: /(node_modules)/,
+          exclude: [/(node_modules)/],
         },
         {
           test: /\.mjs$/,
-          exclude: /(node_modules)/,
+          exclude: [/(node_modules)/],
           // type: "javascript/auto",
           use: [
             {
