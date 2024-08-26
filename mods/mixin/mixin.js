@@ -739,7 +739,7 @@ class Mixin extends ModTemplate {
 
         const txId = v4();
         const feeId = v4();
-        console.log(txId, feeId);
+        //console.log(txId, feeId);
         let txs = await user.utxo.verifyTransaction([
           {
             raw,

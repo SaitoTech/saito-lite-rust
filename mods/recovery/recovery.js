@@ -381,7 +381,7 @@ class Recovery extends ModTemplate {
 
 						let txmsg = newtx.returnMessage();
 
-						console.log(txmsg);
+						//console.log(txmsg);
 
 						let encrypted_wallet = txmsg.wallet;
 						let decrypted_wallet = this.app.crypto.aesDecrypt(

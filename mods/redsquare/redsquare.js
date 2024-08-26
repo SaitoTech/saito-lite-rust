@@ -708,7 +708,7 @@ class RedSquare extends ModTemplate {
             // Maybe add a check for approved list of colleagues
             // this.app.options.redsquare.followers
 
-            console.log(txmsg.data);
+            //console.log(txmsg.data);
 
             this.app.storage.loadTransactions(
               txmsg.data,

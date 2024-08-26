@@ -796,7 +796,7 @@ class Nwasm extends OnePlayerGameTemplate {
 
 		alert('in load ROM file... 2');
 
-		console.log(txmsg.data);
+		//console.log(txmsg.data);
 
 		let ab = this.convertBase64ToByteArray(this.xorBase64(txmsg.data, secret_key));
 
