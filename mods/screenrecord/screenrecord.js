@@ -5,11 +5,6 @@ const ScreenRecordControls = require('./lib/screenrecord-lite-controls')
 const lamejs = require('lamejs');
 const VideoBox = require('../../lib/saito/ui/saito-videobox/video-box');
 
-// new ffmpeg.
-
-// const MPEGMode = require('lamejs/src/js/MPEGMode')
-// const Lame = require('lamejs/src/js/Lame');
-// const BitStream = require('lamejs/src/js/BitStream');
 
 class Record extends ModTemplate {
 	constructor(app) {
@@ -356,7 +351,6 @@ class Record extends ModTemplate {
 	}
 
 	removeVideoBox(forceRemove = false) {
-		// console.log(this.is_recording_game, this.is_streaming_game, forceRemove, "what are we doing?")
 
 		if (!forceRemove) {
 			if (this.is_recording_game || this.is_streaming_game) {
@@ -386,11 +380,7 @@ class Record extends ModTemplate {
 	}
 
 	async initializeMediaRecorder(existingChunks, stream) {
-		// Use existing chunks if available, otherwise initialize
-		// this.chunks =  existingChunks.length > 0 ? existingChunks : [];
 		this.chunks = [];
-		// console.log(this.chunks, "this.chunks")
-
 		let mimeType =
 			stream.getVideoTracks().length > 0
 				? 'video/webm; codecs="vp8, opus"'
