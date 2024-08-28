@@ -473,7 +473,12 @@ class Registry extends ModTemplate {
 	async onConfirmation(blk, tx, conf) {
 		let txmsg = tx.returnMessage();
 
+console.log("into Registry onConfirmation!");
+
 		if (conf == 0) {
+
+console.log("first Registry onConfirmation!");
+
 			if (!!txmsg && txmsg.module === 'Registry') {
 				console.log(`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`);
 
@@ -566,9 +571,10 @@ console.log("REGISTRY done propagating transaction...");
 			// OTHER SERVERS - mirror central DNS //
 			////////////////////////////////////////
 			if (!!txmsg && txmsg.module == 'Email') {
-				console.log('REGISTRY: ' + txmsg.title);
+console.log('REGISTRY EMAIL: ' + txmsg.title);
 
 				if (tx.from[0].publicKey == this.registry_publickey) {
+console.log("FROM THE REGISTRAR!");
 					try {
 						//
 						// am email? for us? from the DNS registrar?
