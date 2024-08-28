@@ -536,6 +536,25 @@ class StreamCapturer {
 
 
     async captureGameStream(includeCamera = false) {
+
+        function shortenAddress(address, maxLength = 20) {
+            if (address.length <= maxLength) return address;
+            const start = address.slice(0, Math.floor(maxLength / 2) - 1);
+            const end = address.slice(-Math.floor(maxLength / 2) + 1);
+            return `${start}...${end}`;
+        }
+
+        function getComputedFontStyle(element) {
+            const computedStyle = window.getComputedStyle(element);
+            return {
+                font: `${computedStyle.fontStyle} ${computedStyle.fontWeight} ${computedStyle.fontSize}/${computedStyle.lineHeight} ${computedStyle.fontFamily}`,
+                color: computedStyle.color,
+                textAlign: computedStyle.textAlign,
+                textBaseline: computedStyle.verticalAlign === 'middle' ? 'middle' : 'alphabetic'
+            };
+        }
+
+
         console.log(this.is_capturing_stream, includeCamera, "details")
         this.combinedStream = new MediaStream();
         this.is_capturing_stream = true;
@@ -582,7 +601,9 @@ class StreamCapturer {
                                 const parentID = video.parentElement.id;
                                 
                                 const saitoAddressElement = video.closest('div[id^="stream_"]').querySelector('.saito-address');
-                                const saitoAddress = saitoAddressElement ? saitoAddressElement.textContent : null;
+                                const saitoAddress = saitoAddressElement ? shortenAddress(saitoAddressElement.textContent) : null;
+                                const fontStyle = saitoAddressElement ? getComputedFontStyle(saitoAddressElement) : null;
+
 
                                 console.log('saito address', saitoAddress)
                                 let existingVideoIndex = this.streamData.findIndex(data => data.video.id === video.id)
@@ -635,7 +656,8 @@ class StreamCapturer {
                                 const rect = video.getBoundingClientRect();
                                 streamData.rect = rect;   
                                 if (saitoAddressElement) {
-                                    streamData.saitoAddress = saitoAddressElement.textContent;
+                                    streamData.saitoAddress = shortenAddress(saitoAddressElement.textContent);
+                                    streamData.fontStyle = getComputedFontStyle(saitoAddressElement);
                                     const saitoRect = saitoAddressElement.getBoundingClientRect();
                                     streamData.saitoAddressPosition = {
                                         x: saitoRect.left - rect.left,
@@ -644,6 +666,7 @@ class StreamCapturer {
                                 } else {
                                     streamData.saitoAddress = null;
                                     streamData.saitoAddressPosition = null;
+                                    streamData.fontStyle = null;
                                 }
                             }
                         }
@@ -693,16 +716,31 @@ class StreamCapturer {
                         rect.height
                     );
 
-                    if (data.saitoAddress && data.saitoAddressPosition) {
-                        ctx.font = '14px Arial';
-                        ctx.fillStyle = 'white';
-                        ctx.strokeStyle = 'black';
-                        ctx.lineWidth = 3;
-                        const x = data.rect.left + data.saitoAddressPosition.x;
-                        const y = data.rect.top + data.saitoAddressPosition.y;
-                        ctx.strokeText(data.saitoAddress, x, y);
-                        ctx.fillText(data.saitoAddress, x, y);
-                    }
+                    // Draw saito address if available
+                if (data.saitoAddress && data.saitoAddressPosition && data.fontStyle) {
+                    const x = data.rect.left + data.saitoAddressPosition.x;
+                    const y = data.rect.top + data.saitoAddressPosition.y;
+                    
+                    ctx.font = data.fontStyle.font;
+                    ctx.fillStyle = data.fontStyle.color;
+                    ctx.textAlign = data.fontStyle.textAlign;
+                    ctx.textBaseline = data.fontStyle.textBaseline;
+
+                    // Adding a subtle text shadow for better visibility
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                    ctx.shadowBlur = 2;
+                    ctx.shadowOffsetX = 1;
+                    ctx.shadowOffsetY = 1;
+
+                    ctx.fillText(data.saitoAddress, x, y);
+
+                    // Reset shadow
+                    ctx.shadowColor = 'transparent';
+                    ctx.shadowBlur = 0;
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 0;
+                }
+
                 }
             });
             this.drawLogoOnCanvas(ctx);
