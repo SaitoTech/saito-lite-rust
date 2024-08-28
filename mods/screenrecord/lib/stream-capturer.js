@@ -598,18 +598,13 @@ class StreamCapturer {
                                             ? video.mozCaptureStream() && video.mozCaptureStream(0)
                                             : null;
                                 const rect = video.getBoundingClientRect();
-                                const parentID = video.parentElement.id;
-                                
+                                const parentID = video.parentElement.id;                          
                                 const saitoAddressElement = video.closest('div[id^="stream_"]').querySelector('.saito-address');
                                 const saitoAddress = saitoAddressElement ? shortenAddress(saitoAddressElement.textContent) : null;
                                 const fontStyle = saitoAddressElement ? getComputedFontStyle(saitoAddressElement) : null;
-
-
-                                console.log('saito address', saitoAddress)
                                 let existingVideoIndex = this.streamData.findIndex(data => data.video.id === video.id)
                                 if (existingVideoIndex !== -1) {
-                                    // console.log("Video exists")
-                                    this.streamData[existingVideoIndex] = { stream, rect, parentID, video, saitoAddress }
+                                    this.streamData[existingVideoIndex] = { stream, rect, parentID, video, saitoAddress, fontStyle }
                                     return;
                                 }
                                 this.streamData.push({ stream, rect, parentID, video, saitoAddress });
@@ -624,8 +619,6 @@ class StreamCapturer {
                                 videos.forEach((video) => {
                                     const streamData = this.streamData.find(data => data.video.id === video.id);
                                     if (streamData) {
-                                        // console.log('removed stream from source', streamData.stream.id)
-                                        // removeStream(streamData.stream.id);
                                         this.streamData = this.streamData.filter(data => data.video.id !== video.id);
                                     }
                                 });
@@ -636,16 +629,6 @@ class StreamCapturer {
                     // console.log('Updated Stream Data: ', this.streamData);
                 }
                 if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                    // this.streamData.forEach((data) => {
-                    //     if (data.parentID === mutation.target.id) {
-                    //         // data.rect = mutation.target.getBoundingClientRect();
-                    //         // console.log(data.rect, mutation.target)
-
-                          
-                    //     }
-
-                    // });
-
                     const videoContainer = mutation.target.closest('div[id^="stream_"]');
                     if (videoContainer) {
                         const video = videoContainer.querySelector('video');
