@@ -168,6 +168,9 @@ class MailRelay extends ModTemplate {
 
 		let peers = await mailrelay_self.app.network.getPeers();
 		let sent_email = false;
+
+console.log("trying to send email to mail relay...");
+
 		peers.forEach((p) => {
 			if (sent_email == false) {
 				if (p.hasService('mailrelay')) {
@@ -177,6 +180,7 @@ class MailRelay extends ModTemplate {
 						p.peerIndex
 					);
 					sent_email = true;
+console.log("sent mail request to peer!");
 				}
 			}
 		});

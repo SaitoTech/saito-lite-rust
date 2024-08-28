@@ -484,7 +484,9 @@ class Registry extends ModTemplate {
 					tx.isTo(this.publicKey) &&
 					this.publicKey === this.registry_publickey
 				) {
-				console.log(`I AM REGISTERING!")
+
+
+				console.log("I AM THE REGISTERING MACHINE!")
 					let identifier = txmsg.identifier;
 					let publickey = tx.from[0].publicKey;
 					let unixtime = new Date().getTime();
@@ -661,7 +663,7 @@ console.log("REGISTRY done propagating transaction...");
 				keys.splice(i, 1);
 				continue;
 			}
-			/*if (this.cached_keys[keys[i]] && this.cached_keys[keys[i]] !== keys[i]) {
+      /*if (this.cached_keys[keys[i]] && this.cached_keys[keys[i]] !== keys[i]) {
         found_keys[keys[i]] = this.cached_keys[keys[i]];
         keys.splice(i, 1);
       }*/
@@ -671,7 +673,6 @@ console.log("REGISTRY done propagating transaction...");
 		// check database if needed
 		//
 		if (keys.length > 0) {
-			//console.log("REGISTRY: DB lookup");
 			const where_statement = `publickey in ("${keys.join('","')}")`;
 			const sql = `SELECT * 
                    FROM records
