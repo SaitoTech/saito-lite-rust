@@ -42,7 +42,7 @@ class StreamCapturer {
             if (controlList) {
                 const videoControl = controlList.querySelector('i.fas.fa-video, i.fas.fa-video-slash');
                 const audioControl = controlList.querySelector('i.fas.fa-microphone, i.fas.fa-microphone-slash');
-        
+
                 if (videoControl) {
                     videoControl.closest('.dream-controls-menu-item').classList.add('hidden-control')
                 }
@@ -51,7 +51,7 @@ class StreamCapturer {
                 }
             }
 
-            
+
 
             // get stream from media-request
             const checkForStream = () => {
@@ -81,18 +81,18 @@ class StreamCapturer {
             if (controlList) {
                 const videoControl = controlList.querySelector('.dream-controls-menu-item i.fas.fa-video, .dream-controls-menu-item i.fas.fa-video-slash');
                 const audioControl = controlList.querySelector('.dream-controls-menu-item i.fas.fa-microphone, .dream-controls-menu-item i.fas.fa-microphone-slash');
-        
+
                 if (videoControl) {
                     videoControl.closest('.dream-controls-menu-item').classList.remove('hidden-control')
                     videoControl.classList.replace('fa-video', 'fa-video-slash');
                 }
                 if (audioControl) {
-                    audioControl.closest('.dream-controls-menu-item').classList.remove('hidden-control')            
+                    audioControl.closest('.dream-controls-menu-item').classList.remove('hidden-control')
                     audioControl.classList.replace('fa-microphone', 'fa-microphone-slash')
                 }
             }
 
-            if(this.mediaRequestLocalStream){
+            if (this.mediaRequestLocalStream) {
                 this.mediaRequestLocalStream.getAudioTracks().forEach(track => {
                     console.log('removing audio track ', track);
                     this.removeAudioTrack(track.id)
@@ -550,12 +550,6 @@ class StreamCapturer {
 
     async captureGameStream(includeCamera = false) {
         console.log(this.is_capturing_stream, includeCamera, "details")
-        // if (this.is_capturing_stream) {
-        //     console.log('RECORD --- Nope out of resetting captureGameStreams');
-        //     await this.getVideoBox(includeCamera)
-        //     return this.combinedStream;
-        // }
-        // this.getVideoBox(includeCamera)
         this.combinedStream = new MediaStream();
         this.is_capturing_stream = true;
         const view_window = document.querySelector(this.view_window);
@@ -813,14 +807,14 @@ class StreamCapturer {
                 this.mod.removeVideoBox();
             }
         }
-         else {
+        else {
             if (this.localStream) {
                 for (const track of this.localStream.getTracks()) {
                     if (track.kind === "audio") {
                         await this.removeAudioTrack(track.id);
                         track.stop();
                     }
-                  
+
                 }
             }
             if (this.additionalSources) {
@@ -874,7 +868,7 @@ class StreamCapturer {
     }
 
     stopLocalAudio() {
-        if(this.localStream){
+        if (this.localStream) {
             this.localStream.getAudioTracks().forEach(track => {
                 this.removeAudioTrack(track.id)
                 track.stop()
@@ -905,13 +899,13 @@ class StreamCapturer {
                 try {
                     if (includeCamera) {
                         try {
-                           this.getLocalAudio()
+                            this.getLocalAudio()
                         } catch (error) {
                             console.error('Failed to get user media:', error);
                             alert('Failed to access camera and microphone.');
                             return;
                         }
-                       await this.mod.getOrCreateVideoBox();
+                        await this.mod.getOrCreateVideoBox();
                         // this.mod.videoBox.render(this.localStream);
                     } else {
                         try {
