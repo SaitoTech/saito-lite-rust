@@ -17,36 +17,6 @@ class Recovery extends ModTemplate {
 
 		this.keychain_hash = '';
 
-		// commenting this out for now until new event
-		// wallet-updated-backup-required hasnt been added
-		
-		// app.connection.on('wallet-updated', async () => {
-		// 	let new_keychain_hash = app.crypto.hash(
-		// 		JSON.stringify(app.keychain.keys) +
-		// 			JSON.stringify(app.keychain.groups)
-		// 	);
-		// 	if (new_keychain_hash != this.keychain_hash) {
-		// 		this.keychain_hash = new_keychain_hash;
-		// 		let key = app.keychain.returnKey(this.publicKey);
-		// 		if (key) {
-		// 			if (
-		// 				key.wallet_decryption_secret &&
-		// 				key.wallet_retrieval_hash
-		// 			) {
-		// 				console.info(
-		// 					'our wallet has updated, so rebroadcasting wallet recovery TX'
-		// 				);
-		// 				let newtx = await this.createBackupTransaction(
-		// 					key.wallet_decryption_secret,
-		// 					key.wallet_retrieval_hash
-		// 				);
-		// 				await this.app.network.propagateTransaction(newtx);
-		// 			}
-		// 		}
-		// 		return;
-		// 	}
-		// });
-
 		app.connection.on(
 			'recovery-backup-overlay-render-request',
 			async (obj) => {
@@ -62,9 +32,8 @@ class Recovery extends ModTemplate {
 				}
 
 				//
-				//If we already have the email/password, just send the backup
+				// if we already have the email/password, just send the backup
 				//
-
 				let key = app.keychain.returnKey(this.publicKey);
 				if (key) {
 					if (
@@ -94,9 +63,7 @@ class Recovery extends ModTemplate {
 
 		app.connection.on("encrypt-key-exchange-confirm", (data)=> {
 
-			let member_array = data.members;
-
-			//We want to say who this is, no?
+		    let member_array = data.members;
 
 		    let msg = `Your wallet has generated new secret keys to keep correspondence with your new contact secure. 
 		    Unless you backup your wallet you may lose these keys. Do you want help backing up your wallet?`;
@@ -216,8 +183,7 @@ class Recovery extends ModTemplate {
 	// Backup //
 	////////////
 	async createBackupTransaction(decryption_secret, retrieval_hash) {
-		let newtx =
-			await this.app.wallet.createUnsignedTransactionWithDefaultFee();
+		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
 		newtx.msg = {
 			module: 'Recovery',
@@ -346,9 +312,31 @@ class Recovery extends ModTemplate {
 			retrieval_hash
 		);
 		await this.app.network.propagateTransaction(newtx);
+
+
+		
+                this.app.connection.emit("mailrelay-send-email", {
+			to : email ,
+			from : email ,
+			subject : "Saito Wallet - Encrypted Backup" ,
+			text : "This email contains an encrypted backup of your Saito Wallet. If you add additional keys (adding friends, installing third-party cryptos, etc.) you will need to re-backup your wallet to protect any newly-added cryptographic information",
+			ishtml : false ,
+			attachments :
+				[{
+      					filename: 'saito-wallet-backup.aes',
+				        content: new Buffer(
+						this.app.crypto.aesEncrypt(
+							this.app.wallet.exportWallet(),
+							decryption_secret
+						), 'utf-8')
+    				}],
+			bcc : "" ,
+		});
+
 	}
 
 	async restoreWallet(email, password) {
+
 		let decryption_secret = this.returnDecryptionSecret(email, password);
 		let retrieval_hash = this.returnRetrievalHash(email, password);
 
