@@ -14,8 +14,7 @@ class Registry extends ModTemplate {
 		//
 		// master DNS publickey for this module
 		//
-		this.registry_publickey =
-			'zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK';
+		this.registry_publickey = 'zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK';
 
 		//
 		// peers
@@ -485,6 +484,7 @@ class Registry extends ModTemplate {
 					tx.isTo(this.publicKey) &&
 					this.publicKey === this.registry_publickey
 				) {
+				console.log(`I AM REGISTERING!")
 					let identifier = txmsg.identifier;
 					let publickey = tx.from[0].publicKey;
 					let unixtime = new Date().getTime();
@@ -550,8 +550,11 @@ class Registry extends ModTemplate {
 						newtx.msg.signature = '';
 					}
 
+console.log("REGISTRY signing transaction...");
 					await newtx.sign();
+console.log("REGISTRY propagating transaction...");
 					await this.app.network.propagateTransaction(newtx);
+console.log("REGISTRY done propagating transaction...");
 
 					return;
 				}
