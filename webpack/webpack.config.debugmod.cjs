@@ -18,12 +18,12 @@ webpack(
     optimization: {
       //set the appropriate value for minimisation
       // dev => false, prod => true
-      minimize: false,
-      // minimizer: [
-      //   new TerserPlugin({
-      //     parallel: true,
-      //   }),
-      // ],
+      minimize: minimize,
+      minimizer: [
+        new TerserPlugin({
+          parallel: true,
+        }),
+      ],
     },
     target: "web",
     // node: {
@@ -121,7 +121,7 @@ webpack(
           //   loader: 'file-loader',
           //   options: {}
           // }],
-          type: "asset/resource"
+          type: "asset/inline"
         },
         // {
         //   test: /\.wasm$/,

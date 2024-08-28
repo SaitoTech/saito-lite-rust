@@ -19,12 +19,12 @@ webpack(
     optimization: {
       //set the appropriate value for minimisation
       // dev => false, prod => true
-      minimize: false,
-      // minimizer: [
-      //   new TerserPlugin({
-      //     parallel: true,
-      //   }),
-      // ],
+      minimize: minimize,
+      minimizer: [
+        new TerserPlugin({
+          parallel: true,
+        }),
+      ],
     },
     target: "node",
     // node: {
@@ -54,7 +54,7 @@ webpack(
     resolve: {
       // Add '.ts' and '.tsx' as resolvable extensions.
       //extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
-      extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js",".template.js"],
+      extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js",".template.js",".png"],
       fallback: {
         fs: false,
         tls: false,
@@ -122,7 +122,7 @@ webpack(
           //   loader: 'file-loader',
           //   options: {}
           // }],
-          type: "asset/resource"
+          type: "asset/inline"
         },
         // {
         //   test: /\.wasm$/,

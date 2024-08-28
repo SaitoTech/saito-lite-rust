@@ -205,7 +205,20 @@ class Mods {
 				console.log("mod : ",typeof mod);
 				// @ts-ignore
 				let m = new window.Dyn(this.app);
-				m.browser_active = true;
+				const current_url = window.location.toString();
+				const myurl = new URL(current_url);
+				const myurlpath = myurl.pathname.split('/');
+				let active_module = myurlpath[1] ? myurlpath[1].toLowerCase() : '';
+				if (active_module == '') {
+					active_module = 'website';
+				}
+				if (m.isSlug(active_module)){
+					m.browser_active = true;
+					m.alerts = 0;
+					const urlParams = new URLSearchParams(location.search);
+
+					m.handleUrlParams(urlParams);
+				}
 				this.mods.push(m);
 
 			} else {

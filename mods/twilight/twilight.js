@@ -7,7 +7,7 @@ const WarOverlay = require('./lib/overlays/war');
 const StatsOverlay = require('./lib/overlays/stats');
 const DeckOverlay = require('./lib/overlays/deck');
 const HeadlineOverlay = require('./lib/overlays/headline');
-const htmlTemplate = require('./lib/core/game-html.template');
+const htmlTemplate = require('./lib/core/game-html.template').default;
 const GameHelp = require('./lib/overlays/game-help');
 
 
@@ -468,7 +468,7 @@ class Twilight extends GameTemplate {
       /* Attach classes to hud to visualize player roles */
       //this.game.player == 1 --> ussr, == 2 --> usa
       let hh = document.querySelector(".hud-header");
-      if (hh){
+      if (hh) {
         switch(this.game.player){
           case 1: hh.classList.add("soviet"); break;
           case 2: hh.classList.add("american"); break;
