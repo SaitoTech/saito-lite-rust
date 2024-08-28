@@ -325,16 +325,12 @@ class StreamCapturer {
                                         videos.forEach((video) => {
                                             const streamData = this.streamData.find(data => data.video.id === video.id);
                                             if (streamData) {
-                                                // console.log('removed stream from source', streamData.stream.id)
-                                                // removeStream(streamData.stream.id);
                                                 this.streamData = this.streamData.filter(data => data.video.id !== video.id);
                                             }
                                         });
                                     }
                                 });
                             }
-
-                            // console.log('Updated Stream Data: ', this.streamData);
                         }
                         if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
                             this.streamData.forEach((data) => {
@@ -415,15 +411,7 @@ class StreamCapturer {
                         let localAudio = this.audioCtx.createMediaStreamSource(this.localStream);
                         localAudio.connect(this.mixer);
                     }
-                    // this.localStream.getAudioTracks().forEach(track => {
-                    //     this.processAudioTrack(track)
-                    // })
-
                     this.additionalSources.forEach((values, keys) => {
-                        // console.log(keys, values.remoteStream.getAudioTracks());
-                        // values.remoteStream.getAudioTracks().forEach(track => {
-                        //     this.processAudioTrack(track);
-                        // })
                         let otherAudio = this.audioCtx.createMediaStreamSource(values.remoteStream);
                         otherAudio.connect(this.mixer);
                     });
@@ -532,7 +520,6 @@ class StreamCapturer {
         if (this.activeStreams) {
             this.activeStreams.forEach(({ source, gainNode }) => {
                 source.disconnect();
-                // gainNode.disconnect();
             });
             this.activeStreams.clear();
         }
@@ -593,13 +580,18 @@ class StreamCapturer {
                                             : null;
                                 const rect = video.getBoundingClientRect();
                                 const parentID = video.parentElement.id;
+                                
+                                const saitoAddressElement = video.closest('div[id^="stream_"]').querySelector('.saito-address');
+                                const saitoAddress = saitoAddressElement ? saitoAddressElement.textContent : null;
+
+                                console.log('saito address', saitoAddress)
                                 let existingVideoIndex = this.streamData.findIndex(data => data.video.id === video.id)
                                 if (existingVideoIndex !== -1) {
                                     // console.log("Video exists")
-                                    this.streamData[existingVideoIndex] = { stream, rect, parentID, video }
+                                    this.streamData[existingVideoIndex] = { stream, rect, parentID, video, saitoAddress }
                                     return;
                                 }
-                                this.streamData.push({ stream, rect, parentID, video });
+                                this.streamData.push({ stream, rect, parentID, video, saitoAddress });
                             });
                         }
                     });
@@ -623,11 +615,39 @@ class StreamCapturer {
                     // console.log('Updated Stream Data: ', this.streamData);
                 }
                 if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                    this.streamData.forEach((data) => {
-                        if (data.parentID === mutation.target.id) {
-                            data.rect = mutation.target.getBoundingClientRect();
+                    // this.streamData.forEach((data) => {
+                    //     if (data.parentID === mutation.target.id) {
+                    //         // data.rect = mutation.target.getBoundingClientRect();
+                    //         // console.log(data.rect, mutation.target)
+
+                          
+                    //     }
+
+                    // });
+
+                    const videoContainer = mutation.target.closest('div[id^="stream_"]');
+                    if (videoContainer) {
+                        const video = videoContainer.querySelector('video');
+                        const saitoAddressElement = videoContainer.querySelector('.saito-address');
+                        if (video) {
+                            const streamData = this.streamData.find(data => data.video === video);
+                            if (streamData) {
+                                const rect = video.getBoundingClientRect();
+                                streamData.rect = rect;   
+                                if (saitoAddressElement) {
+                                    streamData.saitoAddress = saitoAddressElement.textContent;
+                                    const saitoRect = saitoAddressElement.getBoundingClientRect();
+                                    streamData.saitoAddressPosition = {
+                                        x: saitoRect.left - rect.left,
+                                        y: saitoRect.top - rect.top
+                                    };
+                                } else {
+                                    streamData.saitoAddress = null;
+                                    streamData.saitoAddressPosition = null;
+                                }
+                            }
                         }
-                    });
+                    }
                 }
             });
         });
@@ -672,6 +692,17 @@ class StreamCapturer {
                         rect.width,
                         rect.height
                     );
+
+                    if (data.saitoAddress && data.saitoAddressPosition) {
+                        ctx.font = '14px Arial';
+                        ctx.fillStyle = 'white';
+                        ctx.strokeStyle = 'black';
+                        ctx.lineWidth = 3;
+                        const x = data.rect.left + data.saitoAddressPosition.x;
+                        const y = data.rect.top + data.saitoAddressPosition.y;
+                        ctx.strokeText(data.saitoAddress, x, y);
+                        ctx.fillText(data.saitoAddress, x, y);
+                    }
                 }
             });
             this.drawLogoOnCanvas(ctx);
