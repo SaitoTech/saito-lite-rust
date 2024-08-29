@@ -574,6 +574,7 @@ class CallInterfaceVideo {
 		this.localStream = localStream;
 		this.updateImages();
 
+		
 		// segmentBackground(document.querySelector('#stream_local video'), document.querySelector('#stream_local canvas'), 1);
 		// applyBlur(7);
 	}

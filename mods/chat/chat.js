@@ -727,6 +727,7 @@ class Chat extends ModTemplate {
   // it is mostly just a legacy safety catch for direct messaging
   //
   async onConfirmation(blk, tx, conf) {
+
     if (conf == 0) {
       //Does this break chat or fix the encryption bugs...?
       if (this.app.BROWSER && !tx.isTo(this.publicKey)) {
@@ -791,6 +792,9 @@ class Chat extends ModTemplate {
   // or addressed to me
   //
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
+
+// kill offchain
+return 0;
 
     if (tx == null) {
       return 0;

@@ -325,16 +325,12 @@ class StreamCapturer {
                                         videos.forEach((video) => {
                                             const streamData = this.streamData.find(data => data.video.id === video.id);
                                             if (streamData) {
-                                                // console.log('removed stream from source', streamData.stream.id)
-                                                // removeStream(streamData.stream.id);
                                                 this.streamData = this.streamData.filter(data => data.video.id !== video.id);
                                             }
                                         });
                                     }
                                 });
                             }
-
-                            // console.log('Updated Stream Data: ', this.streamData);
                         }
                         if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
                             this.streamData.forEach((data) => {
@@ -415,15 +411,7 @@ class StreamCapturer {
                         let localAudio = this.audioCtx.createMediaStreamSource(this.localStream);
                         localAudio.connect(this.mixer);
                     }
-                    // this.localStream.getAudioTracks().forEach(track => {
-                    //     this.processAudioTrack(track)
-                    // })
-
                     this.additionalSources.forEach((values, keys) => {
-                        // console.log(keys, values.remoteStream.getAudioTracks());
-                        // values.remoteStream.getAudioTracks().forEach(track => {
-                        //     this.processAudioTrack(track);
-                        // })
                         let otherAudio = this.audioCtx.createMediaStreamSource(values.remoteStream);
                         otherAudio.connect(this.mixer);
                     });
@@ -532,7 +520,6 @@ class StreamCapturer {
         if (this.activeStreams) {
             this.activeStreams.forEach(({ source, gainNode }) => {
                 source.disconnect();
-                // gainNode.disconnect();
             });
             this.activeStreams.clear();
         }
@@ -549,6 +536,25 @@ class StreamCapturer {
 
 
     async captureGameStream(includeCamera = false) {
+
+        function shortenAddress(address, maxLength = 20) {
+            if (address.length <= maxLength) return address;
+            const start = address.slice(0, Math.floor(maxLength / 2) - 1);
+            // const end = address.slice(-Math.floor(maxLength / 2) + 1);
+            return `${start}...`;
+        }
+
+        function getComputedFontStyle(element) {
+            const computedStyle = window.getComputedStyle(element);
+            return {
+                font: `${computedStyle.fontStyle} ${computedStyle.fontWeight} ${computedStyle.fontSize}/${computedStyle.lineHeight} ${computedStyle.fontFamily}`,
+                color: computedStyle.color,
+                textAlign: computedStyle.textAlign,
+                textBaseline: computedStyle.verticalAlign === 'middle' ? 'middle' : 'alphabetic'
+            };
+        }
+
+
         console.log(this.is_capturing_stream, includeCamera, "details")
         this.combinedStream = new MediaStream();
         this.is_capturing_stream = true;
@@ -592,14 +598,16 @@ class StreamCapturer {
                                             ? video.mozCaptureStream() && video.mozCaptureStream(0)
                                             : null;
                                 const rect = video.getBoundingClientRect();
-                                const parentID = video.parentElement.id;
+                                const parentID = video.parentElement.id;                          
+                                const saitoAddressElement = video.closest('div[id^="stream_"]').querySelector('.saito-address');
+                                const saitoAddress = saitoAddressElement ? shortenAddress(saitoAddressElement.textContent) : null;
+                                const fontStyle = saitoAddressElement ? getComputedFontStyle(saitoAddressElement) : null;
                                 let existingVideoIndex = this.streamData.findIndex(data => data.video.id === video.id)
                                 if (existingVideoIndex !== -1) {
-                                    // console.log("Video exists")
-                                    this.streamData[existingVideoIndex] = { stream, rect, parentID, video }
+                                    this.streamData[existingVideoIndex] = { stream, rect, parentID, video, saitoAddress, fontStyle }
                                     return;
                                 }
-                                this.streamData.push({ stream, rect, parentID, video });
+                                this.streamData.push({ stream, rect, parentID, video, saitoAddress });
                             });
                         }
                     });
@@ -611,8 +619,6 @@ class StreamCapturer {
                                 videos.forEach((video) => {
                                     const streamData = this.streamData.find(data => data.video.id === video.id);
                                     if (streamData) {
-                                        // console.log('removed stream from source', streamData.stream.id)
-                                        // removeStream(streamData.stream.id);
                                         this.streamData = this.streamData.filter(data => data.video.id !== video.id);
                                     }
                                 });
@@ -623,11 +629,31 @@ class StreamCapturer {
                     // console.log('Updated Stream Data: ', this.streamData);
                 }
                 if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                    this.streamData.forEach((data) => {
-                        if (data.parentID === mutation.target.id) {
-                            data.rect = mutation.target.getBoundingClientRect();
+                    const videoContainer = mutation.target.closest('div[id^="stream_"]');
+                    if (videoContainer) {
+                        const video = videoContainer.querySelector('video');
+                        const saitoAddressElement = videoContainer.querySelector('.saito-address');
+                        if (video) {
+                            const streamData = this.streamData.find(data => data.video === video);
+                            if (streamData) {
+                                const rect = video.getBoundingClientRect();
+                                streamData.rect = rect;   
+                                if (saitoAddressElement) {
+                                    streamData.saitoAddress = shortenAddress(saitoAddressElement.textContent);
+                                    streamData.fontStyle = getComputedFontStyle(saitoAddressElement);
+                                    const saitoRect = saitoAddressElement.getBoundingClientRect();
+                                    streamData.saitoAddressPosition = {
+                                        x: saitoRect.left - rect.left,
+                                        y: saitoRect.top - rect.top
+                                    };
+                                } else {
+                                    streamData.saitoAddress = null;
+                                    streamData.saitoAddressPosition = null;
+                                    streamData.fontStyle = null;
+                                }
+                            }
                         }
-                    });
+                    }
                 }
             });
         });
@@ -672,6 +698,32 @@ class StreamCapturer {
                         rect.width,
                         rect.height
                     );
+
+                    // Draw saito address if available
+                if (data.saitoAddress && data.saitoAddressPosition && data.fontStyle) {
+                    const x = data.rect.left + data.saitoAddressPosition.x;
+                    const y = data.rect.top + data.saitoAddressPosition.y;
+                    
+                    ctx.font = data.fontStyle.font;
+                    ctx.fillStyle = data.fontStyle.color;
+                    ctx.textAlign = data.fontStyle.textAlign;
+                    ctx.textBaseline = data.fontStyle.textBaseline;
+
+                    // Adding a subtle text shadow for better visibility
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                    ctx.shadowBlur = 2;
+                    ctx.shadowOffsetX = 1;
+                    ctx.shadowOffsetY = 1;
+
+                    ctx.fillText(data.saitoAddress, x, y);
+
+                    // Reset shadow
+                    ctx.shadowColor = 'transparent';
+                    ctx.shadowBlur = 0;
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 0;
+                }
+
                 }
             });
             this.drawLogoOnCanvas(ctx);

@@ -398,6 +398,10 @@ class Fileshare extends ModTemplate {
 		this.timestampPrev = 0;
 		this.byteRateMax = 0;
 
+		//clear the memory as soon as possible
+		delete this.incoming;
+		this.incoming = {};
+
 		this.sending = false;
 
 		window.removeEventListener("beforeunload", this.beforeUnloadHandler);
