@@ -540,8 +540,8 @@ class StreamCapturer {
         function shortenAddress(address, maxLength = 20) {
             if (address.length <= maxLength) return address;
             const start = address.slice(0, Math.floor(maxLength / 2) - 1);
-            const end = address.slice(-Math.floor(maxLength / 2) + 1);
-            return `${start}...${end}`;
+            // const end = address.slice(-Math.floor(maxLength / 2) + 1);
+            return `${start}...`;
         }
 
         function getComputedFontStyle(element) {
