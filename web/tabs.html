@@ -20,8 +20,12 @@
       background-repeat: no-repeat;
       background-size: cover;
       color: #fefefe;
-      font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB";
+      font-family: "visuelt-light", "Microsoft Yahei", "Hiragino Sans GB", sans-serif;
       text-align: center;
+    }
+
+    h1, h2, h3, h4 {
+      font-weight: 500;
     }
 
     .logo {
@@ -39,13 +43,24 @@
       color: #fefefe;
       text-decoration: none;
     }
+
+    .button {
+      border: 1px solid #fff;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      font-size: 1.2rem;
+    }
   </style>
   <div style="display: grid">
     <a href="/" style="margin: auto">
       <img class="logo" src="/saito/img/logo.svg">
 
       <h1>Saito Network</h1>
-      <h2>Saito should not be run in multiple tabs simultaneously in standard browsers... so we sent you here.</h2>
+      <h2>Your Saito wallet can only be connected to a single tab at once.</h2>
+      <div class="button" onclick="window.history.back();return false;">Reconnect Wallet</div>
+      <h3>This will reconnect your wallet here and disconnect any other tabs.</h3>
+
+
     </a>
   </div>
 </body>

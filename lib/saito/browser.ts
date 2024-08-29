@@ -127,19 +127,13 @@ class Browser {
 						if (e.data.msg == 'new_tab') {
 							window.focus();
 							//alert("moving to: " + e.data.location);
-							/*
-							let c = await sconfirm(
-								'You have followed a Saito link, do you want to open it here?'
-							);
-							if (!c) {
-								return;
-							} else {
-  							    window.location = e.data.location;
-							}
-							*/
-							if (window.confirm('You have followed a Saito link, do you want to open it here?')) {
-								window.location = e.data.location;
-							}	
+//							if (window.confirm('You have followed a Saito link, do you want to open it here?')) {
+//								window.location = e.data.location;
+//							}
+  	
+                            setTimeout(() => {
+                            	window.location = '/tabs.html';
+                            }, 300)
 						}
 					}
 				};
@@ -639,7 +633,7 @@ class Browser {
 		//Add a check to local storage that we are open in a tab.
 		localStorage.openpages = Date.now();
 
-		const onLocalStorageEvent = (e) => {
+		const onLocalStorageEvent = async (e) => {
 			if (e.key == 'openpages') {
 				// Listen if anybody else opening the same page!
 				localStorage.page_available = Date.now();
@@ -653,14 +647,19 @@ class Browser {
 				//alert("Saito already open in another tab!");
 
 				//alert("i am the new tab");
-				this.channel.postMessage({msg: 'new_tab', location: window.location.href});
 				//alert("message sent");
+				let c = await sconfirm(
+					'Your wallet appears to be connected in another Saito tab.\n\nWould you like to connect it here and close the other tab?'
+				);
+				if (c) {
+					this.channel.postMessage({msg: 'new_tab', location: window.location.href});
+					return;
+				} else {
+					  setTimeout(() => {
+						window.location = '/tabs.html';
+					}, 300)
+				}
 
-                window.close();
-
-				setTimeout(() => {
-					window.location.href = '/tabs.html';
-				}, 300)
 			}
 		};
 		window.addEventListener('storage', onLocalStorageEvent, false);
