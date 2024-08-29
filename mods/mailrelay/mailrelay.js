@@ -19,6 +19,7 @@ class MailRelay extends ModTemplate {
 	onConfirmation(blk, tx, conf) {}
 
 	async initialize(app) {
+
 		// browsers will not have server endpoint coded
 		if (app.BROWSER) {
 			return;
@@ -27,6 +28,31 @@ class MailRelay extends ModTemplate {
 		//For testing only, no need to initialize module
 		await super.initialize(app);
 
+
+                app.connection.on("mailrelay-send-email", async (data) => {
+
+	                let to = '';
+        	        let from = '';
+        	        let subject = '';
+        	        let text = '';
+        	        let ishtml = false;
+        	        let attachments = '';
+        	        let bcc = '';
+
+			if (data.to) 		{ to = data.to; }
+			if (data.from) 		{ from = data.from; }
+			if (data.subject) 	{ subject = data.subject; }
+			if (data.text) 		{ text = data.text; }
+			if (data.ishtml) 	{ ishtml = data.ishtml; }
+			if (data.attachments) 	{ attachments = data.attachments; }
+			if (data.bcc) 		{ bcc = data.bcc; }
+
+			this.sendMailRelayTransaction(to, from, subject, text, ishtml, attachments, bcc);
+
+                });
+
+
+/***
 		// add an email
 		let email = {
 			to: '',
@@ -56,6 +82,7 @@ class MailRelay extends ModTemplate {
 		} catch (err) {
 			console.log(err);
 		}
+***/
 	}
 
 	async handlePeerTransaction(app, tx, peer, callback) {
@@ -141,6 +168,9 @@ class MailRelay extends ModTemplate {
 
 		let peers = await mailrelay_self.app.network.getPeers();
 		let sent_email = false;
+
+console.log("trying to send email to mail relay...");
+
 		peers.forEach((p) => {
 			if (sent_email == false) {
 				if (p.hasService('mailrelay')) {
@@ -150,6 +180,7 @@ class MailRelay extends ModTemplate {
 						p.peerIndex
 					);
 					sent_email = true;
+console.log("sent mail request to peer!");
 				}
 			}
 		});
