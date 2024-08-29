@@ -117,10 +117,33 @@ class Browser {
 			try {
 				this.attachWindowFunctions();
 
-				const channel = new BroadcastChannel('saito');
+				this.channel = new BroadcastChannel('saito');
 				if (!document[this.hidden_tab_property]) {
-					channel.postMessage({ active: 1, publicKey: publicKey });
+					//channel.postMessage({ active: 1, publicKey: publicKey });
 				}
+
+				this.channel.onmessage = async (e) => {
+					if (e.data.msg) {
+						if (e.data.msg == 'new_tab') {
+							window.focus();
+							//alert("moving to: " + e.data.location);
+							/*
+							let c = await sconfirm(
+								'You have followed a Saito link, do you want to open it here?'
+							);
+							if (!c) {
+								return;
+							} else {
+  							    window.location = e.data.location;
+							}
+							*/
+							if (window.confirm('You have followed a Saito link, do you want to open it here?')) {
+								window.location = e.data.location;
+							}	
+						}
+					}
+				};
+
 
 /* channel.onmessage = async (e) => {
 				  console.log("document onmessage change");
@@ -148,13 +171,13 @@ class Browser {
 					() => {
 						if (document[this.hidden_tab_property]) {
 							this.setActiveTab(0);
-							channel.postMessage({
+							this.channel.postMessage({
 								active: 0,
 								publicKey: publicKey
 							});
 						} else {
 							this.setActiveTab(1);
-							channel.postMessage({
+							this.channel.postMessage({
 								active: 1,
 								publicKey: publicKey
 							});
@@ -629,10 +652,15 @@ class Browser {
 				console.log(navigator.userAgent);
 				//alert("Saito already open in another tab!");
 
+				//alert("i am the new tab");
+				this.channel.postMessage({msg: 'new_tab', location: window.location.href});
+				//alert("message sent");
+
+                window.close();
+
 				setTimeout(() => {
 					window.location.href = '/tabs.html';
 				}, 300)
-
 			}
 		};
 		window.addEventListener('storage', onLocalStorageEvent, false);
