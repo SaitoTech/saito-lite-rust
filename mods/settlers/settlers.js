@@ -42,6 +42,12 @@ class Settlers extends GameTemplate {
 		this.sleep_timer = null;
 		this.insert_rankings = true;
 
+		this.recordOptions = {
+			container: 'body',
+			callbackAfterRecord: null,
+			active: false
+		};
+
 		//
 		// UI components
 		//

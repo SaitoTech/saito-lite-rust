@@ -160,6 +160,9 @@ class Record extends ModTemplate {
 		if (type === 'game-menu') {
 			this.attachStyleSheets();
 			if (!obj.recordOptions) return;
+			if(obj.recordOptions.active === false){
+				return;
+			}
 			let menu = {
 				//id: 'game-share',
 				//text: 'Share',

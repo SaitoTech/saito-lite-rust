@@ -96,6 +96,7 @@ class FileReceiveOverlay {
 			download_btn.classList.remove("hideme");
 			download_btn.onclick = () => {
 				document.querySelector(".saito-file-transfer-overlay a").click();
+				document.querySelector(".saito-file-transfer-overlay a").remove();
 				this.mod.reset();
 				this.remove();
 			}
