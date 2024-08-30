@@ -1,4 +1,4 @@
-const CardTemplate = require('./welcome.template');
+const CardTemplate = require('./card.template');
 const SaitoOverlay = require('./../../../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 class CardOverlay {
@@ -36,57 +36,52 @@ class CardOverlay {
 
 	render(obj={}) {
 
-		let his_self = this.mod;
+		let settlers_self = this.mod;
 
-	    	if (document.querySelector(".winter")) {
-        	  this.overlay.zIndex = his_self.winter_overlay.overlay.zIndex + 2;
-    		}
+		let player = obj.player;
+		let cardname = obj.card;
+		let cardimg = "";
+		let cardtitle = new String("");
+		let cardtext = new String("");
+
+		for (let i = 0; i < this.mod.game.deck[0].cards.length; i++) {
+			if (this.mod.game.deck[0].cards[i].card === cardname) {
+				cardimg = this.mod.game.deck[0].cards[i].img;
+				if (this.mod.game.deck[0].cards[i].title) { cardtitle = this.mod.game.deck[0].cards[i].title; }
+				if (this.mod.game.deck[0].cards[i].text) { cardtext = this.mod.game.deck[0].cards[i].text; }
+
+			}
+		}
+
+		cardtitle = cardtitle.replace("Player ", `Player ${player} `);
+		cardtext = cardtext.replace("Player ", `Player ${player} `);
 
 		this.overlay.show(CardTemplate(""));
 		this.pushHudUnderOverlay();
 		this.overlay.pullOverlayToFront();
 
-		if (obj.title) { document.querySelector('.welcome-title').innerHTML = obj.title; }
-		if (obj.text)  { document.querySelector('.welcome-text').innerHTML  = obj.text; }
-		if (obj.img)   { document.querySelector('.welcome').style.backgroundImage = `url(${obj.img})`; }
-		if (obj.card)  { his_self.app.browser.addElementToSelector(`<div class="welcome-card">${his_self.returnCardImage(obj.card)}<div>`, '.welcome'); }
+		if (cardtitle) { document.querySelector('.cardover-title').innerHTML = cardtitle; }
+		if (cardtext)  { document.querySelector('.cardover-text').innerHTML  = cardtext; }
+		if (cardimg)   { document.querySelector('.cardover').style.setProperty('--settlers-cardimg', `url(${cardimg})`); }
+		if (obj.img)   { document.querySelector('.cardover').style.backgroundImage = `url(${obj.img})`; }
+		if (obj.card)  { settlers_self.app.browser.addElementToSelector(`<div class="cardover-cardover"><img src="${cardimg}" /><div>`, '.cardover'); }
 		if (obj.styles){ 
 		  for (let z = 0; z < obj.styles.length; z++) { 
 		    let s = obj.styles[z];
-		    document.querySelector('.welcome').style[s.key] = s.val; 
+		    document.querySelector('.cardover').style[s.key] = s.val; 
 		  }
 		}
 		let overlay_zindex = parseInt(this.overlay.zIndex);
-		document.querySelector('.welcome').style["zIndex"] = overlay_zindex;
-		document.querySelector('.welcome').style["display"] = "block";
+		document.querySelector('.cardover').style["zIndex"] = overlay_zindex;
+		document.querySelector('.cardover').style["display"] = "block";
 
 		// this will clear any ACKNOWLEDGE
 		this.attachEvents();
 
 	}
 
-	attachEvents() {
+	attachEvents() {}
 
-		let his_self = this.mod;
-
-// this clears acknowledge if exists
-/****
-		$('.welcome').on('click', () => {
-			// don't hide() AND removeOnClose
-			//this.hide();
-			  	if (document.querySelector('.option.acknowledge')) {
-					document.querySelector('.option.acknowledge').click();
-			  	}
-		});
-		$('.saito-overlay:has(> .welcome) + .saito-overlay-backdrop').on('click', () => {
-			//this.hide();
-				if (document.querySelector('.option.acknowledge')) {
-					document.querySelector('.option.acknowledge').click();
-				}
-		});
-****/
-
-	}
 }
 
 module.exports = CardOverlay;

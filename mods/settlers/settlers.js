@@ -149,60 +149,88 @@ class Settlers extends GameTemplate {
 				card: 'Knight',
 				count: 14,
 				img: '/settlers/img/cards/devcards/knight.png',
+				title: "Knight Played",
+				text: "Player mave move the Knight", 
 				action: 1
 			},
 			{
 				card: 'Unexpected Bounty',
 				count: 2,
 				img: '/settlers/img/cards/devcards/unexpected_bounty.png',
+				title: "Unexpected Bounty",
+				text: "Player may collect any two resources",
 				action: 2
 			},
 			{
 				card: 'Legal Monopoly',
 				count: 2,
 				img: '/settlers/img/cards/devcards/monopoly.png',
+				title: "Legal Monopoly",
+				text: "Player collects all available of any resource type", 
 				action: 3
+			},
+			{
+				card: 'Road Construction',
+				count: 2,
+				img: '/settlers/img/cards/devcards/road_construction.png',
+				title: "Road Construction",
+				text: "Player builds two roads", 
+				action: 4
 			},
 			{
 				card: 'Governor\'s Statue',
 				count: 2,
 				img: '/settlers/img/cards/devcards/governors_statue.png',
-				action: 4
+				title: "Achievement - Governor's Statue",
+				text: "Player earns one Victory Point", 
+				action: 0
 			},
 			{
 				card: 'Brewery',
 				count: 1,
 				img: '/settlers/img/cards/devcards/brewhouse.png',
+				title: "Achievement - Brewery",
+				text: "Player earns one Victory Point", 
 				action: 0
 			},
 			{
 				card: 'Bazaar',
 				count: 1,
 				img: '/settlers/img/cards/devcards/bazaar.png',
+				title: "Achievement - Bazaar",
+				text: "Player earns one Victory Point", 
 				action: 0
 			},
 			{
 				card: 'University',
 				count: 1,
 				img: '/settlers/img/cards/devcards/university.png',
+				title: "Achievement - University",
+				text: "Player earns one Victory Point", 
 				action: 0
 			},
 			{
 				card: 'Cathedral',
 				count: 1,
 				img: '/settlers/img/cards/devcards/cathedral.png',
+				title: "Achievement - Cathedral",
+				text: "Player earns one Victory Point", 
 				action: 0
 			},
 			{
 				card: 'Industrial Port',
 				count: 1,
 				img: '/settlers/img/cards/devcards/industrial_port.png',
+				title: "Achievement - Industrial Port",
+				text: "Player earns one Victory Point", 
 				action: 0
 			},
 			{
 				card: 'Chemistry',
 				count: 1,
-				img: '/settlers/img/cards/potion.png',
+				img: '/settlers/img/cards/devcards/chemistry.png',
+				title: "Achievement - Chemistry Lab",
+				text: "Player earns one Victory Point", 
 				action: 0
 			}
 		];
