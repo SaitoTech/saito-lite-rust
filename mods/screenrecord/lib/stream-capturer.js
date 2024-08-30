@@ -746,6 +746,7 @@ class StreamCapturer {
         };
 
         const captureAndDraw = async (timestamp) => {
+            let public_key = this.mod.publicKey
             if (!this.is_capturing_stream) return;
             if (timestamp - lastCaptureTime >= captureInterval) {
                 lastCaptureTime = timestamp;
@@ -762,7 +763,8 @@ class StreamCapturer {
                         width: rect.width,
                         height: rect.height,
                         ignoreElements: function (element) {
-                            if (element.id === 'stream_game') {
+                            let stream_id = `stream_${public_key}`
+                            if (element.id === stream_id) {
                                 return true;
                             }
                             if (element.classList.contains('stun-chatbox')) {
