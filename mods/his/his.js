@@ -281,10 +281,10 @@ console.log("WHY RUNNING INITIALIZE GAME?");
 	//
 	// 5 VP if Edward is born 
 	//
-	if (game_mod.game.state.events.henry_viii_sickly_edward == 1 || game_mod.game.state.events.henry_viii_edward_added == 1 || game_mod.game.state.events.henry_viii_healthy_edward == 1) { 
-	  base += 5;
+	if (game_mod.game.state.henry_viii_sickly_edward == 1 || game_mod.game.state.henry_viii_edward_added == 1 || game_mod.game.state.henry_viii_healthy_edward == 1) {
+ 	  base += 5;
         } else {
-	  if (game_mod.game.state.events.henry_viii_elizabeth_added == 1) {
+	  if (game_mod.game.state.henry_viii_elizabeth_added == 1) {
 	    base += 2;
 	  }
 	}
@@ -3000,7 +3000,7 @@ console.log("\n\n\n\n");
 
           // ENGLAND
           this.addRegular("england", "stirling", 4);
-          this.game.state.events.henry_viii_healthy_edward = 1;
+          this.game.state.henry_viii_healthy_edward = 1;
 
 	  // GENOA
 	  this.addRegular("genoa", "genoa", 2);
@@ -9864,17 +9864,28 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	let p = his_self.returnPlayerOfFaction(faction);
 	if (his_self.game.player === p) {
 
+	  let valid_for_protestant = false;
+	  let valid_for_england    = false;
+	  let valid_for_france     = false;
+
+	  for (let key in his_self.game.spaces) {
+	    let space = his_self.game.spaces[key];
+	    if (space.home == "protestant") { if (his_self.game.state.raiders['protestant'] == 0 && space.ports.length > 0) { if (space.religion == "protestant") { valid_for_protestant = true; } } }
+	    if (space.home == "england") { if (his_self.game.state.raiders['england'] == 0 && space.ports.length > 0) { if (space.religion == "protestant") { valid_for_england = true; } } }
+	    if (space.home == "france") { if (his_self.game.state.raiders['france'] == 0 && space.ports.length > 0) { if (space.religion == "protestant") { valid_for_france = true; } } }
+	  }
+
  	  let msg = "Choose Faction for Huguenot Raiders?";
           let html = '<ul>';
-	  if (space.home == "protestant") { if (his_self.game.state.raiders['protestant'] == 0 && space.ports.length > 0) { if (space.religion == "protestant") {
+	  if (valid_for_protestant) {
 	    html += '<li class="option" id="protestant">Protestant</li>';
-	  } } }
-	  if (space.home == "england") { if (his_self.game.state.raiders['england'] == 0 && space.ports.length > 0) { if (space.religion == "protestant") {
+	  }
+	  if (valid_for_england) {
 	    html += '<li class="option" id="england">England</li>';
-	  } } }
-	  if (space.home == "france") { if (his_self.game.state.raiders['france'] == 0 && space.ports.length > 0) { if (space.religion == "protestant") {
+	  }
+	  if (valid_for_france) {
 	    html += '<li class="option" id="france">France</li>';
-	  } } }
+	  }
     	  html += '</ul>';
 
           his_self.updateStatusWithOptions(msg, html);
@@ -15504,7 +15515,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
-	if (his_self.game.state.events.henry_viii_healthy_edward == 1 || his_self.game.state.henry_viii_sickly_edward == 1) {
+	if (his_self.game.state.henry_viii_healthy_edward == 1 || his_self.game.state.henry_viii_sickly_edward == 1) {
 	  if (his_self.areAllies("france", "scotland")) {
 	    return 1;
 	  }
@@ -15516,7 +15527,6 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	let england_roll = his_self.rollDice(6);
 	let france_roll = his_self.rollDice(6);
 	let spaces = ["stirling","glasgow","edinburgh"];
-
 
 	let english_units = 0;
 	let french_units = 0;
@@ -30889,6 +30899,9 @@ try {
           //
           // this should stop execution while we are looking at the pre-field battle overlay
           //
+	  if (attacker_hits == 0 && defender_hits == 0) {
+	    his_self.game.queue.push("ACKNOWLEDGE\tEntirely Futile Assault");
+	  }
 	  if (his_self.game.state.events.intervention_post_assault_possible) {
             his_self.game.queue.push("counter_or_acknowledge\tProceed to Assign Hits in "+space.name + "\tpost_assault_rolls");
             his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
@@ -40121,7 +40134,7 @@ does_units_to_move_have_unit = true; }
   async playerContinueToMoveFormationInClear(his_self, player, faction, spacekey, ops_to_spend, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining+ops_to_spend, ""); });
 
     //
     // we add this before broadcasting, or the turn ends 
@@ -40439,7 +40452,7 @@ does_units_to_move_have_unit = true; }
   async playerMoveFormationInClear(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining+ops_to_spend, ""); });
 
     let parent_faction = faction;
     let units_to_move = [];
@@ -41551,7 +41564,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   async playerNavalTransport(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining+ops_to_spend, ""); });
 
     let spacekey = "";
     let units_to_move = [];
@@ -41828,7 +41841,8 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   async playerNavalMove(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining+ops_to_spend, ""); });
+
 
     let units_to_move = [];
     let units_available = his_self.returnFactionNavalUnitsToMove(faction);
@@ -42763,7 +42777,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   async playerControlUnfortifiedSpace(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerPlayOps("", faction, ops_remaining+ops_to_spend, ""); });
 
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let pacifiable_spaces_in_unrest = [];

@@ -8672,6 +8672,9 @@ try {
           //
           // this should stop execution while we are looking at the pre-field battle overlay
           //
+	  if (attacker_hits == 0 && defender_hits == 0) {
+	    his_self.game.queue.push("ACKNOWLEDGE\tEntirely Futile Assault");
+	  }
 	  if (his_self.game.state.events.intervention_post_assault_possible) {
             his_self.game.queue.push("counter_or_acknowledge\tProceed to Assign Hits in "+space.name + "\tpost_assault_rolls");
             his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));

@@ -657,7 +657,7 @@ console.log("\n\n\n\n");
 
           // ENGLAND
           this.addRegular("england", "stirling", 4);
-          this.game.state.events.henry_viii_healthy_edward = 1;
+          this.game.state.henry_viii_healthy_edward = 1;
 
 	  // GENOA
 	  this.addRegular("genoa", "genoa", 2);
