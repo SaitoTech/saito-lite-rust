@@ -339,7 +339,8 @@ class Record extends ModTemplate {
 			this.localStream = await navigator.mediaDevices.getUserMedia({
 				video: true
 			});
-			this.videoBox = new VideoBox(this.app, this, 'game');
+			let stream_id = `stream_${this.publicKey}`
+			this.videoBox = new VideoBox(this.app, this, this.publicKey);
 			this.videoBox.render(this.localStream)
 			let videoElement = document.querySelector('.video-box-container-large');
 			if (videoElement) {
@@ -347,7 +348,7 @@ class Record extends ModTemplate {
 				videoElement.style.top = '100px';
 				videoElement.style.width = '350px';
 				videoElement.style.height = '350px';
-				this.app.browser.makeDraggable('stream_game');
+				this.app.browser.makeDraggable(stream_id);
 			}
 		}
 		return this.videoBox;

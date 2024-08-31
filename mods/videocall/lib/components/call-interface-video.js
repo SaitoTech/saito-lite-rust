@@ -243,7 +243,12 @@ class CallInterfaceVideo {
 			}
 		}
 
-		this.app.connection.emit("stun-switch-view", this.mod.layout);
+		if(!this.mod.browser_active){
+			this.app.connection.emit("stun-switch-view", "gallery");
+		}else {
+			this.app.connection.emit("stun-switch-view", this.mod.layout);
+		}
+		
 		this.rendered = true;
 	}
 
