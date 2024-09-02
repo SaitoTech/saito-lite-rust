@@ -793,9 +793,6 @@ class Chat extends ModTemplate {
   //
   async handlePeerTransaction(app, tx = null, peer, mycallback) {
 
-// kill offchain
-return 0;
-
     if (tx == null) {
       return 0;
     }
