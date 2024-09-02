@@ -3,6 +3,8 @@
 	overflow-y: hidden;
 	grid-template-columns: min-content auto;
 	column-gap: unset;
+	margin: 0 max(0rem, calc(50vw - 65rem));
+    max-width: 130rem;
 }
 
 #chat-main {
