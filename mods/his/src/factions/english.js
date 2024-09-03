@@ -65,10 +65,10 @@
 	//
 	// 5 VP if Edward is born 
 	//
-	if (game_mod.game.state.events.henry_viii_sickly_edward == 1 || game_mod.game.state.events.henry_viii_edward_added == 1 || game_mod.game.state.events.henry_viii_healthy_edward == 1) { 
-	  base += 5;
+	if (game_mod.game.state.henry_viii_sickly_edward == 1 || game_mod.game.state.henry_viii_edward_added == 1 || game_mod.game.state.henry_viii_healthy_edward == 1) {
+ 	  base += 5;
         } else {
-	  if (game_mod.game.state.events.henry_viii_elizabeth_added == 1) {
+	  if (game_mod.game.state.henry_viii_elizabeth_added == 1) {
 	    base += 2;
 	  }
 	}

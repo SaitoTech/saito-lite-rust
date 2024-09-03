@@ -340,7 +340,7 @@ class SettlersActions {
 
     if (vpChange){
       this.updateLog(`${this.formatPlayer(player)} claims the LARGEST ARMY`);
-      this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player-1]} forms the largest army ${this.largest.svg}`);
+      this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player-1]} forms the largest army`);
     }
   }
 

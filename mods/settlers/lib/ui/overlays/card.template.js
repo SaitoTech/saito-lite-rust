@@ -1,8 +1,8 @@
 module.exports = (f) => {
 	let html = `
-    <div class="welcome welcome-${f}">
-      <div class="welcome-title"></div>
-      <div class="welcome-text"></div>
+    <div class="cardover cardover-${f}">
+      <div class="cardover-title"></div>
+      <div class="cardover-text"></div>
     </div>
   `;
 	return html;

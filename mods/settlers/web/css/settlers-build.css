@@ -1,3 +1,22 @@
+.saito-overlay:has(> .dev-card-overlay) + .saito-overlay-backdrop {
+	background: #000A;
+}
+.saito-overlay:has(> .dev-card-overlay) {
+	width: 90vw;
+	height: 90vh;
+	background-color:transparent;
+	box-shadow: none;
+}
+.dev-card-overlay {
+	background-color:transparent !important;
+	display: flex;
+	flex-wrap: auto;
+	width: 100% !important;
+}
+.settlers-dev-card img {
+	width: 100%;
+}
+
 .build-overlay {
 	min-width: min(750px, 97vw);
 }
@@ -213,8 +232,8 @@
 
 .settlers-dev-card {
 	position: relative;
-	width: 25rem;
-	height: 35rem;
+	width: 32rem;
+	height: 45rem;
 	margin: auto;
 }
 

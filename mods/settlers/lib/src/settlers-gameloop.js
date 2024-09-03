@@ -119,8 +119,11 @@ class SettlersGameloop {
       //Declare Victory point card
       if (mv[0] == "vp") {
         let player = parseInt(mv[1]);
-        let cardname = mv[2]; //Maybe we want custom icons for each VPC?
+        let cardname = mv[2];
         this.game.queue.splice(qe, 1);
+
+	// show overlay
+	this.card_overlay.render({ player : player , card : cardname});
 
         //Score gets recounted a lot, so we save the number of VP cards
         this.game.state.players[player - 1].vpc++; //Number of victory point cards for the player
@@ -145,6 +148,8 @@ class SettlersGameloop {
         let cardname = mv[2];
         this.game.queue.splice(qe, 1);
 
+	this.card_overlay.render({ player : player , card : cardname});
+
         if (player != this.game.player){
           this.game.state.players[player - 1].devcards.pop(); //Remove card (for display)  
         }
@@ -157,6 +162,8 @@ class SettlersGameloop {
         let player = parseInt(mv[1]);
         let cardname = mv[2];
         this.game.queue.splice(qe, 1);
+
+	this.card_overlay.render({ player : player , card : cardname});
 
         this.updateLog(`${this.formatPlayer(player)} played a ${cardname}!`);
         if (player != this.game.player){
@@ -184,6 +191,8 @@ class SettlersGameloop {
         let cardname = mv[2];
         let resources = JSON.parse(mv[3]); //The two resources the player picked
 
+	this.card_overlay.render({ player : player , card : cardname});
+
         this.game.queue.splice(qe, 1);
 
         for (let j of resources) {
@@ -202,6 +211,9 @@ class SettlersGameloop {
         let player = parseInt(mv[1]);
         let cardname = mv[2];
         let resource = mv[3];
+
+	this.card_overlay.render({ player : player , card : cardname});
+
         this.game.queue.splice(qe, 1);
         let lootCt = 0;
         //Collect all instances of the resource
@@ -1034,10 +1046,10 @@ class SettlersGameloop {
       if (mv[0] == "end_turn") {
         this.game.state.canPlayCard = null;
 
-        /*
-        We put a lag in passing the length of the hand to the state.devcards
-        so that we can know that the last card in the hand is "new" and unable to be played until their next turn 
-        */
+        //
+        //We put a lag in passing the length of the hand to the state.devcards
+        //so that we can know that the last card in the hand is "new" and unable to be played until their next turn 
+        //
         while (this.game.deck[0].hand.length > 0){
           this.game.state.players[this.game.player - 1].devcards.push(this.game.deck[0].hand.pop());  
         }

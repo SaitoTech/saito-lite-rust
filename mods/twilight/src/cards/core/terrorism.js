@@ -38,7 +38,7 @@
             this.rollDice(cards_for_select.length, function(roll) {
               roll = parseInt(roll)-1;
               let victim = cards_for_select[roll];
-	      discarded_card.push(victim);
+	      discarded_cards.push(victim);
               twilight_self.removeCardFromHand(victim);
               twilight_self.addMove("dice\tburn\t"+player);
               twilight_self.addMove(`discard\t${target}\t${victim}`);
