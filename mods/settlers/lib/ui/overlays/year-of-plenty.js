@@ -43,7 +43,7 @@ class YearOfPlentyOverlay {
 							}\t${JSON.stringify(this_self.cardsToGain)}`
 						);
 						this_self.mod.endTurn();
-						this_self.overlay.hide();
+						this_self.overlay.close();
 						return 0;
 					} else {
 						this_self.updateCards();

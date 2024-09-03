@@ -57,7 +57,7 @@ class BuildOverlay {
 				);
 
 				if (!disabled) {
-					this_self.overlay.hide();
+					this_self.overlay.close();
 
 					document
 						.querySelectorAll('.settlers-item-row')

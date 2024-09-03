@@ -515,7 +515,7 @@ class SettlersActions {
       if (this.game.confirms_needed[i]) {
         this.game.confirms_needed[i] = 0;
         if (this.game.player == i + 1) {
-          this.overlay.hide();
+          this.overlay.close();
         }
       }
     }

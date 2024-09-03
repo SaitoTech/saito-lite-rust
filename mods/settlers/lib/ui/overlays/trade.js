@@ -125,7 +125,7 @@ class TradeOverlay {
 						)}\t${JSON.stringify(trade_overlay.get)}`
 					);
 					settlers_self.endTurn();
-					trade_overlay.overlay.hide();
+					trade_overlay.overlay.close();
 				} else {
 					settlers_self.addMove(
 						`accept_offer\t${trade_overlay.offering_player}\t${
@@ -135,7 +135,7 @@ class TradeOverlay {
 						)}\t${JSON.stringify(trade_overlay.get)}`
 					);
 					settlers_self.endTurn();
-					trade_overlay.overlay.hide();
+					trade_overlay.overlay.close();
 				}
 			}
 		);

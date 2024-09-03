@@ -10,7 +10,7 @@ class CardOverlay {
 	}
 
 	hide() {
-		this.overlay.hide();
+		this.overlay.close();
 	}
 
 	pullHudOverOverlay() {

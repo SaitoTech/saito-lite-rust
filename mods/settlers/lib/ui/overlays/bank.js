@@ -51,7 +51,7 @@ class BankOverlay {
 							}\t1\t${desired_resource}`
 						);
 						this_bank.mod.endTurn();
-						this_bank.overlay.hide();
+						this_bank.overlay.close();
 						this_bank.selected_resource = null;
 						return;
 					};
