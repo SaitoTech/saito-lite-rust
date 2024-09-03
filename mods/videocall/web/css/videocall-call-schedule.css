@@ -37,6 +37,9 @@ label {
     box-sizing: border-box;
 }
 
+.call-schedule-launch-main-container {
+    padding: 1.5rem;
+}
 .call-schedule-launch-container {
     padding: 3rem;
     border-radius: 8px;

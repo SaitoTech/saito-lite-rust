@@ -10,6 +10,7 @@ const StreamManager = require('./lib/StreamManager');
 const AppSettings = require('./lib/stun-settings');
 const HomePage = require("./index");
 const CallScheduleLaunch = require('./lib/components/call-schedule-launch');
+const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 
 class Videocall extends ModTemplate {
 	constructor(app) {
@@ -141,7 +142,7 @@ class Videocall extends ModTemplate {
 		}
 	}
 
-	render() {
+	 render() {
 		this.renderInto('body');
 	}
 

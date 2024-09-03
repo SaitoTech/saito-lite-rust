@@ -5,6 +5,10 @@ module.exports = CallScheduleLaunchTemplate = (app, callDetails) => {
     const formattedStartTime = typeof startTime === 'string' ? startTime : new Date(startTime).toLocaleString();
     
     return `
+    <div class="call-schedule-launch-main-container">
+     <div class="saito-header-logo-wrapper" id="redsquare-link">
+            <img class="saito-header-logo" alt="Logo" src="/saito/img/logo.svg" />
+        </div>
     <div class="call-schedule-launch">
         <div class="call-schedule-launch-container">
             <h4>Scheduled Call Details</h4>
@@ -16,5 +20,6 @@ module.exports = CallScheduleLaunchTemplate = (app, callDetails) => {
             <div class="enter-call-button">Enter Call</div>
         </div>
     </div>
+    <div>
     `;
 }

@@ -61,6 +61,13 @@ class CallScheduleLaunch {
                 }
             });
         }
+
+        const redsquareLink = document.querySelector("#redsquare-link");
+        if(redsquareLink){
+            redsquareLink.addEventListener('click', ()=> {
+                window.location.href = "/" + "redsquare"
+            })
+        }
     }
 
     updateButtonState() {
