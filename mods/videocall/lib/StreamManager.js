@@ -117,17 +117,25 @@ class StreamManager {
       }
 
       try {
-        this.presentationStream = await navigator.mediaDevices.getDisplayMedia({
-          video: {
-            displaySurface: 'window'
-          },
-          audio: true,
-          preferCurrentTab: false,
-          selfBrowserSurface: 'exclude',
-          surfaceSwitching: 'include',
-          monitorTypeSurfaces: 'exclude',
-          systemAudio: 'include',
-        });
+        // this.presentationStream = await navigator.mediaDevices.getDisplayMedia({
+        //   video: {
+        //     displaySurface: 'window'
+        //   },
+        //   audio: true,
+        //   preferCurrentTab: false,
+        //   selfBrowserSurface: 'exclude',
+        //   surfaceSwitching: 'include',
+        //   monitorTypeSurfaces: 'exclude',
+        //   systemAudio: 'include',
+        // });
+
+        this.presentationStream = await  navigator.mediaDevices.getDisplayMedia({
+					video: true,
+					audio: true,
+					selfBrowserSurface: 'include',
+					monitorTypeSurfaces: 'include',
+					systemAudio: 'include'
+				});
         this.presentationStream.getVideoTracks()[0].onended = this.endPresentation.bind(this);
 
         this.mod.screen_share = true;
@@ -150,9 +158,15 @@ class StreamManager {
           console.log(key);
           if (this.mod.room_obj.call_peers.includes(key)) {
             console.log('Add Track');
-            for (let track of this.presentationStream.getTracks()) {
-              pc.addTrack(track);
-            }
+
+            this.presentationStream.getTracks().forEach((track) => {
+              pc.addTrack(track, this.presentationStream);
+              
+            });
+            // for (let track of this.presentationStream.getTracks()) {
+            //   console.log('tracks added', track)
+            //   pc.addTrack(track);
+            // }
           }
         });
 
@@ -231,11 +245,22 @@ class StreamManager {
       //
 
       const remoteStream = new MediaStream();
+
+     
       console.log('STUN: remote stream added for', peerId, event.track);
 
       if (peerId == this.mod.screen_share) {
         console.log('Expecting presentation stream');
-        remoteStream.addTrack(event.track);
+
+        if (event.streams.length === 0) {
+          remoteStream.addTrack(event.track);
+        } else {
+          event.streams[0].getTracks().forEach((track) => {
+            remoteStream.addTrack(track);
+          });
+        }
+
+       
         this.app.connection.emit(
           'add-remote-stream-request',
           'presentation',

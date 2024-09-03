@@ -372,6 +372,7 @@ class Stun extends ModTemplate {
 				iceServers: this.servers
 			})
 
+
 			// use string compare of public keys rather than presence or absence of callback
 			// to determine who will be impolite in any pairing because we may be simultnaeously attempting
 			// to create connections with callbacks for whatever reason 
@@ -408,6 +409,7 @@ class Stun extends ModTemplate {
 			}
 		};
 
+		
 		//Receive Remote media
 		peerConnection.addEventListener('track', (event) => {
 			console.log('new track', peerId, event)
