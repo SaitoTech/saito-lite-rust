@@ -1,4 +1,3 @@
-
 .saito-overlay:has(> .cardover) {
 	overflow: hidden;
 	border-radius: 2rem;
@@ -9,83 +8,89 @@
 }
 
 .cardover {
-	min-width: 80vw;
-	min-height: 60vh;
-	max-width: 80vw;
-	max-height: 80vh;
+	font-family: bagnard-sans;
+	color: black;
+	width: min(1000px, 80vw);
+	height: min(550px, 60vh);
 	border-radius: 2rem;
+	padding: 2rem;
 	overflow: hidden;
-	background-size: cover;
-        -webkit-user-select: none; /* Safari */
-    	-moz-user-select: none; /* Firefox */
-    	-ms-user-select: none; /* Internet Explorer/Edge */
-    	user-select: none; /* Standard syntax */
-        --settlers-cardimg: url(/settlers/img/cards/devcards/university.png);
+	-webkit-user-select: none; /* Safari */
+	-moz-user-select: none; /* Firefox */
+	-ms-user-select: none; /* Internet Explorer/Edge */
+	user-select: none; /* Standard syntax */
+	--settlers-cardimg: url(/settlers/img/cards/devcards/university.png);
 }
 
 .cardover::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image:var(--settlers-cardimg);
-    background-size: cover;
-    background-position: center;
-    filter: blur(3px); /* Apply blur effect */
-    z-index: -1; /* Place it behind the content */
-    transform: scale(2);
-    overflow: hidden;
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-image: var(--settlers-cardimg);
+	background-size: contain;
+	background-position: center;
+	filter: blur(3px); /* Apply blur effect */
+	z-index: -1; /* Place it behind the content */
+	transform: scale(2);
+	overflow: hidden;
 }
 
 .cardover img {
-	width: 30vw;
+	width: 100%;
 }
 
 .cardover-cardover {
-    	position: relative;
-    	display: block;
-    	right: 2rem;
-    	width: 30vw;
-    	transform: rotate(5deg);
-    	top: 0px;
-    	float: right;
-    	margin-top: 8vh;
+	position: relative;
+	display: block;
+	width: 33%;
+	top: 50%;
+	right: 2rem;
+	transform: rotate(5deg) translateY(-50%);
+	float: right;
+	margin: 2rem 3rem;
 }
 
 .cardover-title {
-	top: 0px;
-        max-width:50%;
-	color: white;
-	line-height: 5rem;
 	font-size: 3.5rem;
 	position: absolute;
-	background: #0009;
-	margin-top: 5rem;
-	margin-left: 5rem;
-	padding: 1rem;
+	border-radius: 2rem;
+	backdrop-filter: blur(10px);
+	background: #d3c38d88;
+	margin: 2rem;
+	padding: 2rem;
 	letter-spacing: 0.2rem;
 	font-weight: bold;
 }
 
 .cardover-text {
-	bottom: 0px;
-	color: white;
-        max-width:50%;
-	line-height: 5rem;
-	font-size: 2.7rem;
+	bottom: 1rem;
+	max-width: 45%;
+	font-size: 2.6rem;
+	border-radius: 2rem;
+	backdrop-filter: blur(10px);
 	position: absolute;
-	margin-left: 5rem;
-	margin-bottom: 5rem;
-	padding: 1rem;
-	background: #0009;
+	margin: 2rem;
+	padding: 2rem;
+	background: #d3c38d88;
 }
 
 
 @media screen and (max-width: 900px) {
-  .cardover-cardover { 
-    display:none;
-  }
-}
 
+	.cardover {
+		padding: 1rem;
+	}
+
+	.cardover-title, .cardover-text {
+		margin: 1rem;
+		padding: 1.5rem;
+	}	
+
+
+	.cardover-cardover {
+		width: 40%;
+	}
+}
