@@ -1,5 +1,5 @@
 module.exports = StunLaunchTemplate = (app, mod) => {
-	let html = `
+  let html = `
       <div class="stun-appspace"> 
         <div class="stun-appspace-content">
           <div class="staun-appspace-cards">
@@ -27,13 +27,18 @@ module.exports = StunLaunchTemplate = (app, mod) => {
           </div>  
           <div class="stunx-appspace-actions">`;
 
-          if (mod.room_obj) {
-            html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom" data-id="${mod.room_obj?.call_id}">Join Meeting</div>`;
-          } else {
-            html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom">Start Meeting</div>`;
-            html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createScheduleRoom">Schedule Meeting</div>`;
-          }                       
-          html += `</div>
+  if (mod.room_obj) {
+    html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom" data-id="${mod.room_obj?.call_id}">Join Meeting</div>`;
+  } else {
+    html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom">Start Meeting</div>`;
+    html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createScheduleRoom">Schedule Meeting</div>`;
+
+    let keys = app.keychain.returnKeys({ type: "scheduled_call" });
+    if (keys.length > 0) {
+      html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="joinScheduleRoom">Join Meeting</div>`;
+    }
+  }
+  html += `</div>
 
         </div>
       
@@ -41,5 +46,5 @@ module.exports = StunLaunchTemplate = (app, mod) => {
 
     `;
 
-	return html;
+  return html;
 };

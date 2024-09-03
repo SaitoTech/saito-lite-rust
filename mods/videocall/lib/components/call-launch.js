@@ -3,6 +3,7 @@ const StunLaunchTemplate = require('./call-launch.template.js');
 const CallSetting = require('../components/call-setting.js');
 const SaitoLoader = require('../../../../lib/saito/ui/saito-loader/saito-loader.js');
 const CallScheduleWizard = require('./call-schedule-wizard.js');
+const CallScheduleJoin = require('./call-schedule-join.js');
 
 /**
  *
@@ -32,6 +33,10 @@ class CallLaunch {
 				document.querySelector('.stun-appspace').remove();
 			}
 		});
+
+		app.connection.on('call-launch-enter-call', () => {
+			this.enterCall()
+		})
 	}
 
 	render() {
@@ -71,7 +76,7 @@ class CallLaunch {
 				//
 				// I am initializing the call
 				//
-				console.log(this.mod.room_obj, "room object joining")
+				console.log(this.mod.room_obj, "room object joining");
 				if (!this.mod.room_obj) {
 					this.mod.room_obj = {
 						call_id: this.mod.createRoomCode(),
@@ -81,38 +86,49 @@ class CallLaunch {
 					};
 				}
 
-				//
-				// Set big screen video as desired call interface
-				//
-				this.app.connection.emit('stun-init-call-interface', this.callSetting.returnSettings());
-
-				//
-				//Close this component
-				//
-				this.app.connection.emit('close-preview-window');
-				//
-				// Start the stun call
-				//
-				this.app.connection.emit('start-stun-call');
+				this.enterCall()
 			};
 		}
 		if (document.getElementById('createScheduleRoom')) {
-			document.getElementById('createScheduleRoom').onclick =async  (e) => {
-
+			document.getElementById('createScheduleRoom').onclick = async (e) => {
 				// show splash screen 
 				this.callScheduleWizard = new CallScheduleWizard(app, mod)
 				this.callScheduleWizard.render()
 			};
 		}
+
+		if (document.getElementById('joinScheduleRoom')) {
+			document.getElementById('joinScheduleRoom').onclick = async (e) => {
+				// show splash screen 
+				this.callScheduleJoin = new CallScheduleJoin(app, mod)
+				this.callScheduleJoin.render()
+			};
+		}
 	}
 
-	createRoomLink(room_obj){
+	createRoomLink(room_obj) {
 		let base64obj = this.app.crypto.stringToBase64(
 			JSON.stringify(room_obj)
 		);
 		let url1 = window.location.origin + '/videocall/';
 		this.old_title = document.title;
 		return `${url1}?stun_video_chat=${base64obj}`;
+	}
+
+	enterCall() {
+		//
+		// Set big screen video as desired call interface
+		//
+		this.app.connection.emit('stun-init-call-interface', this.callSetting.returnSettings());
+
+		//
+		//Close this component
+		//
+		this.app.connection.emit('close-preview-window');
+		//
+		// Start the stun call
+		//
+		this.app.connection.emit('start-stun-call');
 	}
 }
 

@@ -9,6 +9,7 @@ const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
 const StreamManager = require('./lib/StreamManager');
 const AppSettings = require('./lib/stun-settings');
 const HomePage = require("./index");
+const CallScheduleLaunch = require('./lib/components/call-schedule-launch');
 
 class Videocall extends ModTemplate {
 	constructor(app) {
@@ -144,18 +145,63 @@ class Videocall extends ModTemplate {
 		this.renderInto('body');
 	}
 
+	// renderInto(qs) {
+	// 	if (qs == '.saito-overlay' || qs == 'body') {
+	// 		if (!this.renderIntos[qs]) {
+	// 			this.renderIntos[qs] = [];
+	// 			this.renderIntos[qs].push(new CallLauncher(this.app, this, qs));
+	// 		}
+	// 		this.attachStyleSheets();
+	// 		this.renderIntos[qs].forEach((comp) => {
+	// 			comp.render();
+	// 		});
+	// 		this.renderedInto = qs;
+	// 	}
+	// }
+
 	renderInto(qs) {
-		if (qs == '.saito-overlay' || qs == 'body') {
-			if (!this.renderIntos[qs]) {
-				this.renderIntos[qs] = [];
-				this.renderIntos[qs].push(new CallLauncher(this.app, this, qs));
+		if (this.room_obj) {
+			if (this.room_obj.scheduled === false) {
+				if (qs == '.saito-overlay' || qs == 'body') {
+					if (!this.renderIntos[qs]) {
+						this.renderIntos[qs] = [];
+						this.renderIntos[qs].push(new CallLauncher(this.app, this, qs));
+					}
+					this.attachStyleSheets();
+					this.renderIntos[qs].forEach((comp) => {
+						comp.render();
+					});
+					this.renderedInto = qs;
+				}
+			} else if (this.room_obj.scheduled === true) {
+				// console.log("Should render call scheduler")
+				if (!this.renderIntos[qs]) {
+					this.renderIntos[qs] = [];
+					this.renderIntos[qs].push(new CallScheduleLaunch(this.app, this, qs));
+				}
+				this.attachStyleSheets();
+				this.renderIntos[qs].forEach((comp) => {
+					comp.render();
+				});
+				this.renderedInto = qs;
+			} else {
+				console.error("Videocall: schedule property not found in room object")
 			}
-			this.attachStyleSheets();
-			this.renderIntos[qs].forEach((comp) => {
-				comp.render();
-			});
-			this.renderedInto = qs;
+		} else {
+			if (qs == '.saito-overlay' || qs == 'body') {
+				if (!this.renderIntos[qs]) {
+					this.renderIntos[qs] = [];
+					this.renderIntos[qs].push(new CallLauncher(this.app, this, qs));
+				}
+				this.attachStyleSheets();
+				this.renderIntos[qs].forEach((comp) => {
+					comp.render();
+				});
+				this.renderedInto = qs;
+			}
 		}
+
+
 	}
 
 	respondTo(type, obj) {
@@ -964,12 +1010,24 @@ class Videocall extends ModTemplate {
 		// //Update display of videoboxes
 		// this.app.connection.emit('peer-list', sender, txmsg.data);
 	}
+
 	async generateRoomId() {
 		let pk = this.app.crypto.generateKeys();
 		let id = this.app.crypto.generatePublicKey(pk);
 		this.app.keychain.addWatchedPublicKey(id);
-		this.app.keychain.addKey(id, { identifier: name, group: 1, privateKey: pk });
+		this.app.keychain.addKey(id, { identifier: id, privateKey: pk, type: "scheduled_call" });
 		return id
+	}
+
+	generateCallLink(room_obj) {
+		let base64obj = this.app.crypto.stringToBase64(
+			JSON.stringify(room_obj)
+		  );
+	  
+		  let call_link = window.location.origin + '/videocall/';
+		  call_link = `${call_link}?stun_video_chat=${base64obj}`;
+
+		  return call_link;
 	}
 
 	webServer(app, expressapp, express) {
