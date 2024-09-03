@@ -1,17 +1,11 @@
 .saito-overlay:has(> .dev-card-overlay) + .saito-overlay-backdrop {
 	background: #000A;
 }
-.saito-overlay:has(> .dev-card-overlay) {
-	width: 90vw;
-	height: 90vh;
-	background-color:transparent;
-	box-shadow: none;
-}
+
 .dev-card-overlay {
-	background-color:transparent !important;
 	display: flex;
 	flex-wrap: auto;
-	width: 100% !important;
+	/*width: 100% !important;*/
 }
 .settlers-dev-card img {
 	width: 100%;
@@ -223,11 +217,12 @@
 .dev-card-overlay .settlers-cards-container {
 	min-height: 35rem;
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	min-width: 750px;
 }
 
 .dev-card-overlay .settlers-items-container .settlers-cards-container img {
-	height: 35rem;
+	height: auto;
 }
 
 .settlers-dev-card {
@@ -269,6 +264,10 @@
 	top: 0rem;
 	left: 0rem;
 	z-index: 0;
+}
+
+.settlers-item-info-text {
+	font-size: 3rem;
 }
 
 @media screen and (orientation: landscape) and (max-height: 600px) {

@@ -5,7 +5,8 @@
 	display: flex;
 	flex-direction: column;
 	gap: 2rem;
-	width: min(650px, 99vw);
+	min-width: 650px;
+	max-width: 99vw;
 	max-height: 90vh;
 	overflow-x: hidden;
 	overflow-y: auto;

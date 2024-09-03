@@ -155,8 +155,8 @@ class Settlers extends GameTemplate {
 				card: 'Knight',
 				count: 14,
 				img: '/settlers/img/cards/devcards/knight.png',
-				title: "Knight Played",
-				text: "Player mave move the Knight", 
+				title: "Knight",
+				text: " may move the bandit", 
 				action: 1
 			},
 			{
@@ -164,7 +164,7 @@ class Settlers extends GameTemplate {
 				count: 2,
 				img: '/settlers/img/cards/devcards/unexpected_bounty.png',
 				title: "Unexpected Bounty",
-				text: "Player may collect any two resources",
+				text: " may collect any two resources",
 				action: 2
 			},
 			{
@@ -172,7 +172,7 @@ class Settlers extends GameTemplate {
 				count: 2,
 				img: '/settlers/img/cards/devcards/monopoly.png',
 				title: "Legal Monopoly",
-				text: "Player collects all available of any resource type", 
+				text: " collects all available of any resource type", 
 				action: 3
 			},
 			{
@@ -180,15 +180,15 @@ class Settlers extends GameTemplate {
 				count: 2,
 				img: '/settlers/img/cards/devcards/road_construction.png',
 				title: "Road Construction",
-				text: "Player builds two roads", 
+				text: " builds two roads", 
 				action: 4
 			},
 			{
 				card: 'Governor\'s Statue',
-				count: 2,
+				count: 1,
 				img: '/settlers/img/cards/devcards/governors_statue.png',
 				title: "Achievement - Governor's Statue",
-				text: "Player earns one Victory Point", 
+				text: " earns one Victory Point", 
 				action: 0
 			},
 			{
@@ -196,15 +196,7 @@ class Settlers extends GameTemplate {
 				count: 1,
 				img: '/settlers/img/cards/devcards/brewhouse.png',
 				title: "Achievement - Brewery",
-				text: "Player earns one Victory Point", 
-				action: 0
-			},
-			{
-				card: 'Bazaar',
-				count: 1,
-				img: '/settlers/img/cards/devcards/bazaar.png',
-				title: "Achievement - Bazaar",
-				text: "Player earns one Victory Point", 
+				text: " earns one Victory Point", 
 				action: 0
 			},
 			{
@@ -212,7 +204,7 @@ class Settlers extends GameTemplate {
 				count: 1,
 				img: '/settlers/img/cards/devcards/university.png',
 				title: "Achievement - University",
-				text: "Player earns one Victory Point", 
+				text: " earns one Victory Point", 
 				action: 0
 			},
 			{
@@ -220,7 +212,7 @@ class Settlers extends GameTemplate {
 				count: 1,
 				img: '/settlers/img/cards/devcards/cathedral.png',
 				title: "Achievement - Cathedral",
-				text: "Player earns one Victory Point", 
+				text: " earns one Victory Point", 
 				action: 0
 			},
 			{
@@ -228,7 +220,7 @@ class Settlers extends GameTemplate {
 				count: 1,
 				img: '/settlers/img/cards/devcards/industrial_port.png',
 				title: "Achievement - Industrial Port",
-				text: "Player earns one Victory Point", 
+				text: " earns one Victory Point", 
 				action: 0
 			},
 			{
@@ -236,7 +228,7 @@ class Settlers extends GameTemplate {
 				count: 1,
 				img: '/settlers/img/cards/devcards/chemistry.png',
 				title: "Achievement - Chemistry Lab",
-				text: "Player earns one Victory Point", 
+				text: " earns one Victory Point", 
 				action: 0
 			}
 		];

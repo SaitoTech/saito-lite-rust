@@ -912,6 +912,7 @@ ul.horizontal_list li.iconoption {
 	align-items: center;
 	flex-wrap: wrap;
 	width: max-content;
+	max-width: 100%;
 	font-size: 20px;
 	padding: 8px;
 	gap: 1rem;

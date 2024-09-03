@@ -148,9 +148,8 @@ class SettlersGameloop {
         let cardname = mv[2];
         this.game.queue.splice(qe, 1);
 
-	this.card_overlay.render({ player : player , card : cardname});
-
         if (player != this.game.player){
+          this.card_overlay.render({ player : player , card : cardname});
           this.game.state.players[player - 1].devcards.pop(); //Remove card (for display)  
         }
         this.updateLog(`${this.formatPlayer(player)} played ${cardname}`);
@@ -163,10 +162,9 @@ class SettlersGameloop {
         let cardname = mv[2];
         this.game.queue.splice(qe, 1);
 
-	this.card_overlay.render({ player : player , card : cardname});
-
         this.updateLog(`${this.formatPlayer(player)} played a ${cardname}!`);
         if (player != this.game.player){
+          this.card_overlay.render({ player : player , card : cardname});
           this.game.state.players[player - 1].devcards.pop(); //Remove card (for display)  
         }
         //Update Army!
@@ -191,19 +189,22 @@ class SettlersGameloop {
         let cardname = mv[2];
         let resources = JSON.parse(mv[3]); //The two resources the player picked
 
-	this.card_overlay.render({ player : player , card : cardname});
+	      this.game.queue.splice(qe, 1);
 
-        this.game.queue.splice(qe, 1);
-
+        let msg = `${this.formatPlayer(player)} played ${cardname} for `
         for (let j of resources) {
           //Should always be 2
           this.game.state.players[player - 1].resources.push(j);
+          msg += j + " and ";
         }
 
         if (player != this.game.player){
+          this.card_overlay.render({ player : player , card : cardname});
           this.game.state.players[player - 1].devcards.pop(); //Remove card (for display)  
         }
-        this.updateLog(`${this.formatPlayer(player)} played ${cardname}.`);
+
+        msg = msg.substring(0, msg.length - 5) + ".";
+        this.updateLog(msg);
         return 1;
       }
 
@@ -211,8 +212,6 @@ class SettlersGameloop {
         let player = parseInt(mv[1]);
         let cardname = mv[2];
         let resource = mv[3];
-
-	this.card_overlay.render({ player : player , card : cardname});
 
         this.game.queue.splice(qe, 1);
         let lootCt = 0;
@@ -242,6 +241,7 @@ class SettlersGameloop {
         if (this.game.player == player){
           this.updateStatus(`<div class="persistent player-notice">You collected ${lootCt} ${this.formatResource(resource)}</div>`);  
         }else{
+          this.card_overlay.render({ player : player , card : cardname});
           this.game.state.players[player - 1].devcards.pop(); //Remove card (for display)  
         }
         

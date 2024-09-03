@@ -53,8 +53,11 @@ class CardOverlay {
 			}
 		}
 
-		cardtitle = cardtitle.replace("Player ", `Player ${player} `);
-		cardtext = cardtext.replace("Player ", `Player ${player} `);
+		if (player == this.mod.game.player){
+			cardtext = "You" + cardtext;
+		}else{
+			cardtext = this.mod.game.playerNames[player - 1] + cardtext;
+		}
 
 		this.overlay.show(CardTemplate(""));
 		this.pushHudUnderOverlay();
