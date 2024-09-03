@@ -105,6 +105,17 @@
   gap: 1rem;
 }
 
+
+.saito-link {
+  font-style: italic;
+  color: var(--font-color-mention);
+  cursor: pointer;
+}
+
+.saito-link:hover{
+  color: var(--font-color-hover-mention);
+}
+
 /**** Temporary for developing file transfer in chat ***/
 .saito-file-transfer{
   border-radius: var(--border-radius-file-transfer);

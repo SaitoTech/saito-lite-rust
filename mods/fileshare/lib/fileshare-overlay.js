@@ -4,17 +4,45 @@ class FileShareOverlay {
 	constructor(app, mod) {
 		this.app = app;
 		this.mod = mod;
+		this.fileId = mod?.fileId || "generic";
+		this.recipient = mod?.recipient || "generic";
 		this.throttle_me = false;
+		this.qs = `#file-transfer-${this.fileId}-${this.recipient}`;
+
+
+		app.connection.on('stun-data-channel-open', (peerId) => {
+			if (peerId == this.recipient) {
+				this.onConnectionSuccess();
+			}
+		});
+
+		app.connection.on('stun-connection-timeout', (peerId) => {
+			if (peerId == this.recipient) {
+				this.onConnectionFailure();
+			}
+		});
+
+		app.connection.on('stun-data-channel-close', (peerId) => {
+			if (peerId == this.recipient) {
+				this.onConnectionFailure();
+			}
+		});
+		app.connection.on('stun-connection-failed', (peerId) => {
+			if (peerId == this.recipient) {
+				this.onConnectionFailure();
+			}
+		});
+
 	}
 
 	render(){
-		this.app.browser.addElementToDom(FileShareOverlayTemplate(this.app, this.mod));
+		this.app.browser.addElementToDom(FileShareOverlayTemplate(this));
 		this.attachEvents();
 	}
 
 	remove(){
-		if (document.querySelector('.saito-file-transfer-overlay')){
-			document.querySelector('.saito-file-transfer-overlay').remove();
+		if (document.querySelector(this.qs)){
+			document.querySelector(this.qs).remove();
 		}
 	}
 
@@ -27,18 +55,18 @@ class FileShareOverlay {
 					<div class="file-size fixed-width">${this.mod.calcSize(this.mod.file.size)}</div>
 					</div>`;
 
-		this.app.browser.addElementToSelector(html, ".teleporter-file-data");
+
+		this.app.browser.addElementToSelector(html, `${this.qs} .teleporter-file-data`);
 	}
 
 	beginTransfer(){
-		console.log("H1");
 
-		let field = document.getElementById('transfer-speed-row');
+		let field = document.querySelector(this.qs + ' #transfer-speed-row');
 		if (field){
 			field.classList.remove("hideme");
 		}	
 
-		let field2 = document.getElementById("file-transfer-buttons");
+		let field2 = document.querySelector(this.qs + " #file-transfer-buttons");
 		if (field2){
 			field2.classList.remove('hideme');
 		}
@@ -46,7 +74,7 @@ class FileShareOverlay {
 
 	renderStats(stats){
 		if (!this.throttle_me){
-			let field = document.getElementById("file-transfer-status");
+			let field = document.querySelector(this.qs + " #file-transfer-status");
 			if (field){
 				field.innerHTML = `<span class="fixed-width">${stats.speed}</span>`;
 			}
@@ -56,25 +84,24 @@ class FileShareOverlay {
 			}, 500);			
 		}
 
-		let progress_bar = document.querySelector(".file-transfer-progress");
+		let progress_bar = document.querySelector(this.qs + " .file-transfer-progress");
 		if (progress_bar){
 			progress_bar.style.width = `${stats.percentage}%`;
 		}
 	}
 
 	finishTransfer(){
-		let field = document.getElementById("file-transfer-status");
+		let field = document.querySelector(this.qs + " #file-transfer-status");
 		if (field){
-			console.log(1);
 			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
 		}
 
-		let progress_bar = document.querySelector(".file-transfer-progress");
+		let progress_bar = document.querySelector(this.qs + " .file-transfer-progress");
 		if (progress_bar){
 			progress_bar.style.width = `100%`;
 		}
 
-		let field2 = document.getElementById("file-transfer-buttons");
+		let field2 = document.querySelector(this.qs + " #file-transfer-buttons");
 		if (field2){
 			field2.remove();
 		}
@@ -84,7 +111,7 @@ class FileShareOverlay {
 
 
 	onPeerAccept(){
-		let field = document.getElementById("peer-accept-status");
+		let field = document.querySelector(this.qs + " #peer-accept-status");
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
 		}
@@ -92,7 +119,7 @@ class FileShareOverlay {
 	}
 
 	onPeerReject(){
-		let field = document.getElementById("peer-accept-status");
+		let field = document.querySelector(this.qs + " #peer-accept-status");
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
 		}
@@ -100,21 +127,44 @@ class FileShareOverlay {
 
 
 	onConnectionSuccess(){
-		let field = document.getElementById("peer-connection-status");
+		let field = document.querySelector(this.qs + " #peer-connection-status");
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
 		}
+
+		let message_field = document.querySelector(this.qs + " .teleporter-transfer-field");
+		if (message_field){
+			message_field.innerHTML = '';
+			message_field.onclick = null;
+		}
+
 	}
 
 	onConnectionFailure(){
-		let field = document.getElementById("peer-connection-status");
+		let field = document.querySelector(this.qs + " #peer-connection-status");
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
 		}
+
+		// If this is a failure to connection rather than dropped connection after starting to send
+		//
+		if (!this.mod.sending) {
+			this.mod.recipient = null;
+			let message_field = document.querySelector(this.qs + " .teleporter-transfer-field");
+			if (message_field){
+				message_field.innerHTML = `Peer appears to be offline. <span class="saito-link">Send them a link?</span> `;
+
+				message_field.onclick = (e) => {
+					this.mod.copyShareLink();
+				}
+			}
+		}
+
 	}
 
+
 	onFile(file = null){
-		let field = document.getElementById("file-selection-status");
+		let field = document.querySelector(this.qs + " #file-selection-status");
 		if (!field){
 			return;
 		}
@@ -123,7 +173,7 @@ class FileShareOverlay {
 
 		}else{
 			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
-			let hidden_form = document.querySelector(".saito-file-uploader.needs-file");
+			let hidden_form = document.querySelector(this.qs + " .saito-file-uploader.needs-file");
 			if (hidden_form){
 				hidden_form.onclick = null;
 				hidden_form.classList.remove("needs-file");
@@ -132,21 +182,21 @@ class FileShareOverlay {
 	}
 
 	onCancel(){
-		let field2 = document.getElementById("file-transfer-buttons");
+		let field2 = document.querySelector(this.qs + " #file-transfer-buttons");
 		if (field2){
 			field2.classList.add('hideme');
 		}
 
-		let field = document.getElementById("file-transfer-status");
+		let field = document.querySelector(this.qs + " #file-transfer-status");
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
 		}
 	}
 
 	attachEvents(){
-		this.app.browser.makeDraggable('file-transfer');
+		this.app.browser.makeDraggable(`file-transfer-${this.fileId}-${this.recipient}`);
 
-		let input = document.getElementById(`hidden_file_element_uploader_overlay`);
+		let input = document.querySelector(this.qs + ` #hidden_file_element_uploader_overlay`);
 		if (input) {
 			input.addEventListener('change', (e) => {
 				this.mod.addFileUploader(input.files[0]);
@@ -155,7 +205,7 @@ class FileShareOverlay {
 			
 			input.click();
 
-			let hidden_form = document.querySelector(".saito-file-uploader.needs-file");
+			let hidden_form = document.querySelector(this.qs + " .saito-file-uploader.needs-file");
 			if (hidden_form){
 				hidden_form.onclick = () => {
 					input.click();
@@ -164,7 +214,7 @@ class FileShareOverlay {
 
 		}
 
-		let cancel = document.getElementById('cancel-transfer');
+		let cancel = document.querySelector(this.qs + ' #cancel-transfer');
 		if (cancel){
 			cancel.onclick = () => {
 				this.mod.interrupt(true);
@@ -172,7 +222,7 @@ class FileShareOverlay {
 		}
 
 
-		let close = document.querySelector(".icon-button#close");
+		let close = document.querySelector(this.qs + " .icon-button#close");
 		if (close){
 			close.onclick = (e) => {
 				this.mod.interrupt(true);
@@ -181,10 +231,10 @@ class FileShareOverlay {
 			}
 		}
 
-		let resize = document.querySelector(".icon-button#resize");
+		let resize = document.querySelector(this.qs + " .icon-button#resize");
 		if (resize){
 			resize.onclick = (e) => {
-				let overlay = document.getElementById("file-transfer");
+				let overlay = document.querySelector(this.qs);
 				overlay.classList.toggle("minimize");
 				overlay.removeAttribute("style");
 			}

@@ -1,6 +1,6 @@
-module.exports = FileShareOverlayTemplate = (app, mod) => {
+module.exports = FileShareOverlayTemplate = (fso) => {
 	let html = `
-	<div id='file-transfer' class='saito-file-transfer-overlay'>
+	<div id='file-transfer-${fso.fileId}-${fso.recipient}' class='saito-file-transfer-overlay'>
 		<div class="pseudo-overlay-controls">
             <div class="icon-button" id="resize"><i class="fa-solid fa-window-minimize"></i></div>
             <div class="icon-button" id="close"><i class="fas fa-times"></i></div>
