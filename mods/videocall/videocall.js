@@ -142,7 +142,7 @@ class Videocall extends ModTemplate {
 		}
 	}
 
-	 render() {
+	render() {
 		this.renderInto('body');
 	}
 
@@ -213,8 +213,21 @@ class Videocall extends ModTemplate {
 			// if (call_self.browser_active) {
 			// 	return null;
 			// }
-			if (obj?.publicKey && !call_self.browser_active) {
-				if (obj.publicKey !== this.app.wallet.publicKey) {
+			if (obj?.publicKey !== this.publicKey && this.streams?.active === true) {
+				return [
+					{
+						text: 'Kick User From Call',
+						icon: "fa-solid fa-user-slash",
+						callback: async (app, public_key) => {
+							console.log('kicking user: ', public_key);
+							app.connection.emit('remove-peer-box', public_key)
+							this.streams.removePeer(public_key, "was kicked out")
+							await this.sendKickTransaction(public_key)
+						}
+					}
+				];
+			} else {
+				if (obj?.publicKey !== this.publicKey) {
 					this.attachStyleSheets();
 					super.render(this.app, this);
 					return [
@@ -235,21 +248,7 @@ class Videocall extends ModTemplate {
 					];
 				}
 			}
-			if (this.streams?.active == true & obj?.publicKey !== this.publicKey) {
-				if (type !== 'user-menu') return;
-				return [
-					{
-						text: 'Kick User From Call',
-						icon: "fa-solid fa-user-slash",
-						callback: async (app, public_key) => {
-							console.log('kicking user: ', public_key);
-							app.connection.emit('remove-peer-box', public_key)
-							this.streams.removePeer(public_key, "was kicked out")
-							await this.sendKickTransaction(public_key)
-						}
-					}
-				];
-			}
+
 		}
 
 		if (type === 'saito-header') {
@@ -1023,12 +1022,12 @@ class Videocall extends ModTemplate {
 	generateCallLink(room_obj) {
 		let base64obj = this.app.crypto.stringToBase64(
 			JSON.stringify(room_obj)
-		  );
-	  
-		  let call_link = window.location.origin + '/videocall/';
-		  call_link = `${call_link}?stun_video_chat=${base64obj}`;
+		);
 
-		  return call_link;
+		let call_link = window.location.origin + '/videocall/';
+		call_link = `${call_link}?stun_video_chat=${base64obj}`;
+
+		return call_link;
 	}
 
 	webServer(app, expressapp, express) {

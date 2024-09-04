@@ -16,7 +16,7 @@ module.exports = CallScheduleWizardTemplate = (app, mod) => {
                     </select>
                     
                     <label for="description">Description:</label>
-                    <textarea id="description" rows="4" required></textarea>
+                    <textarea id="description" rows="4" ></textarea>
                     
                     <button type="submit">Create Link</button>
                 </form>
