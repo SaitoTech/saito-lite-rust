@@ -1,34 +1,34 @@
 const FileShareOverlayTemplate = require('./fileshare-overlay.template');
 
 class FileShareOverlay {
-	constructor(app, mod) {
+	constructor(app, mod, fileId, recipient = "") {
 		this.app = app;
 		this.mod = mod;
-		this.fileId = mod?.fileId || "generic";
-		this.recipient = mod?.recipient || "generic";
+		this.fileId = fileId;
+		this.recipient = recipient;
+		this.active = true;
 		this.throttle_me = false;
 		this.qs = `#file-transfer-${this.fileId}-${this.recipient}`;
 
-
 		app.connection.on('stun-data-channel-open', (peerId) => {
-			if (peerId == this.recipient) {
+			if (peerId == this.recipient && this.active) {
 				this.onConnectionSuccess();
 			}
 		});
 
 		app.connection.on('stun-connection-timeout', (peerId) => {
-			if (peerId == this.recipient) {
+			if (peerId == this.recipient && this.active) {
 				this.onConnectionFailure();
 			}
 		});
 
 		app.connection.on('stun-data-channel-close', (peerId) => {
-			if (peerId == this.recipient) {
+			if (peerId == this.recipient && this.active) {
 				this.onConnectionFailure();
 			}
 		});
 		app.connection.on('stun-connection-failed', (peerId) => {
-			if (peerId == this.recipient) {
+			if (peerId == this.recipient && this.active) {
 				this.onConnectionFailure();
 			}
 		});
@@ -47,12 +47,12 @@ class FileShareOverlay {
 	}
 
 
-	updateFileData(){
-		let html = `<div class="saito-file-transfer" id="saito-file-transfer-${this.mod.fileId}">
+	updateFileData(file){
+		let html = `<div class="saito-file-transfer" id="saito-file-transfer-${this.fileId}">
 					<div class="file-transfer-progress"></div>
 					<i class="fa-solid fa-file-export"></i>
-					<div class="file-name">${this.mod.file.name}</div>
-					<div class="file-size fixed-width">${this.mod.calcSize(this.mod.file.size)}</div>
+					<div class="file-name">${file.name}</div>
+					<div class="file-size fixed-width">${this.mod.calcSize(file.size)}</div>
 					</div>`;
 
 
@@ -91,6 +91,9 @@ class FileShareOverlay {
 	}
 
 	finishTransfer(){
+
+		this.active = false;
+
 		let field = document.querySelector(this.qs + " #file-transfer-status");
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
@@ -123,6 +126,8 @@ class FileShareOverlay {
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
 		}
+
+		this.active = false;
 	}
 
 
@@ -148,8 +153,7 @@ class FileShareOverlay {
 
 		// If this is a failure to connection rather than dropped connection after starting to send
 		//
-		if (!this.mod.sending) {
-			this.mod.recipient = null;
+		if (!this.mod.outgoing_files[this.fileId].sending) {
 			let message_field = document.querySelector(this.qs + " .teleporter-transfer-field");
 			if (message_field){
 				message_field.innerHTML = `Peer appears to be offline. <span class="saito-link">Send them a link?</span> `;
@@ -191,6 +195,8 @@ class FileShareOverlay {
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
 		}
+
+		this.active = false;
 	}
 
 	attachEvents(){
@@ -199,7 +205,7 @@ class FileShareOverlay {
 		let input = document.querySelector(this.qs + ` #hidden_file_element_uploader_overlay`);
 		if (input) {
 			input.addEventListener('change', (e) => {
-				this.mod.addFileUploader(input.files[0]);
+				this.mod.addFileUploader(input.files[0], this.fileId);
 				this.onFile(input.files[0]);
 			});
 			
@@ -217,7 +223,7 @@ class FileShareOverlay {
 		let cancel = document.querySelector(this.qs + ' #cancel-transfer');
 		if (cancel){
 			cancel.onclick = () => {
-				this.mod.interrupt(true);
+				this.mod.interrupt(this.fileId, this.recipient);
 			}
 		}
 
@@ -225,8 +231,7 @@ class FileShareOverlay {
 		let close = document.querySelector(this.qs + " .icon-button#close");
 		if (close){
 			close.onclick = (e) => {
-				this.mod.interrupt(true);
-				this.mod.reset();
+				this.mod.interrupt(this.fileId, this.recipient);
 				this.remove();
 			}
 		}

@@ -15,39 +15,42 @@ class Fileshare extends ModTemplate {
 		this.chunkSize = 16348;
 
 		this.stun = null;
-		/*
-		For the sender, this is the uploaded file
-		For the recipient, this is an object with file metadata
-		*/
-		this.file = null;
-		this.fileId = null;
-		this.incoming = {};
-		this.offset = 0;
 
-		this.sending = false;
-
-		this.bytesPrev = 0;
-		this.timestampPrev = 0;
-		this.byteRateMax = 0;
-
-		this.files = {};
+		this.outgoing_files = {};
 		/***********
 		fileId (randomly generated code) -> { obj } mapping
 		obj : {
-			recipient
-			name: file name
-			size: file size,
-			type: file type,
+			file: {
+				name: file name
+				size: file size,
+				type: file type
+			}
 
+			recipient
+			overlay
+			sending: 
+			offset: 0
 			bytesPrev:
 			timestampPrev:
 			byteRateMax:
-
-
-
+			
 		}
-
 		************/
+		this.incoming = {};
+		/***********
+		fileId (randomly generated code) -> { obj } mapping
+		obj : {
+			name: file name
+			size: file size,
+			type: file type,
+			sender: publickey
+			overlay
+			bytesPrev:
+			timestampPrev:
+			byteRateMax:
+		}		
+		************/
+
 		this.terminationEvent = 'unload';
 
 		this.social = {
@@ -95,19 +98,26 @@ class Fileshare extends ModTemplate {
 				this.app.crypto.base64ToString(this.app.browser.returnURLParameter('file'))
 			);
 
-			this.recipient = data.publicKey;
-			this.fileId = data.id;
-			this.file = {
+			const fileId = data.id;
+
+			const file = {
 				name: data.name,
 				size: data.size,
-				type: data.type
-			};
+				type: data.type,
+				sender: data.publicKey,
+				bytesPrev: 0,
+				timestampPrev: 0,
+				byteRateMax: 0,
+				receiveBuffer: [],
+				receivedSize: 0,
+				overlay: new FileReceiveOverlay(this.app, this, fileId, data.publicKey)
+			}
 
-			this.overlay = new FileReceiveOverlay(this.app, this);
-			this.overlay.render(data.publicKey);
+			this.incoming[fileId] = file;
+			file.overlay.render(file);
 
 		} else {
-			this.sendFile();
+			//this.sendFile();
 		}
 	}
 
@@ -133,24 +143,26 @@ class Fileshare extends ModTemplate {
 						text: 'Send File',
 						icon,
 						callback: function (app, public_key, id = '') {
-							if (fss.fileId || fss.sending) {
-								salert('Currently sending a file!');
-								return;
-							}
 
-							fss.fileId = fss.app.crypto.generateRandomNumber().substring(0, 12);
+							const fileId = fss.app.crypto.generateRandomNumber().substring(0, 12);
 
-							fss.recipient = recipient;
+							fss.outgoing_files[fileId] = {
+								recipient,
+								overlay: new FileShareOverlay(app, fss, fileId, recipient),
+								bytesPrev: 0,
+								timestampPrev: 0,
+								byteRateMax: 0,
+								offset: 0
+							};
 
-							fss.overlay = new FileShareOverlay(app, fss);
-							fss.overlay.render();
+							fss.outgoing_files[fileId].overlay.render();
 
 							//
-							if (!fss.stun.hasConnection(fss.recipient)) {
-								fss.stun.createPeerConnection(fss.recipient);
+							if (!fss.stun.hasConnection(recipient)) {
+								fss.stun.createPeerConnection(recipient);
 
 							} else {
-								fss.app.connection.emit('stun-data-channel-open', fss.recipient);
+								fss.app.connection.emit('stun-data-channel-open', recipient);
 							}
 
 						}
@@ -252,47 +264,53 @@ class Fileshare extends ModTemplate {
 
 			if (tx.isTo(this.publicKey)) {
 				if (txmsg.request == 'query file permission') {
-					if (this.sending || this.fileId) {
-						this.app.connection.emit('relay-send-message', {
-							recipient: tx.from[0].publicKey,
-							request: 'deny file permission',
-							data: {}
-						});
 
-						return;
-					}
-
-					this.recipient = tx.from[0].publicKey;
-					this.fileId = txmsg.data.id;
-					this.file = {
+					const file = {
 						name: txmsg.data.name,
 						size: txmsg.data.size,
-						type: txmsg.data.type
-					};
+						type: txmsg.data.type,
+						sender: tx.from[0].publicKey,
+						bytesPrev: 0,
+						timestampPrev: 0,
+						byteRateMax: 0,
+						receiveBuffer: [],
+						receivedSize: 0,
+					}
+					const fileId = txmsg.data.id;
 
-					this.overlay = new FileReceiveOverlay(this.app, this);
-					this.overlay.render(tx.from[0].publicKey);
+					this.incoming[fileId] = file;
+
+					file.overlay = new FileReceiveOverlay(this.app, this, fileId, tx.from[0].publicKey);
+					file.overlay.render(file);
 
 					return;
 				}
 
 				if (txmsg.request == 'grant file permission') {
-					console.log("Start sending file!");
-					this.startTransfer();
-					this.overlay.onPeerAccept();
-					this.overlay.beginTransfer();
-					this.chunkFile(this.file, 0);
+					console.log("Start sending file !" + txmsg.data.id);
+					this.addNavigationProtections();
+					const fs = this.outgoing_files[txmsg.data.id];
+					fs.sending = true;
+					fs.overlay.onPeerAccept();
+					fs.overlay.beginTransfer();
+
+					const slice = fs.file.slice(0, this.chunkSize);
+					fs.reader.readAsArrayBuffer(slice);
+
 					return;
 				}
 
 				if (txmsg.request == 'deny file permission') {
-					this.overlay.onPeerReject();
+					if (this.outgoing_files[txmsg.data.id]){
+						this.outgoing_files[txmsg.data.id].overlay.onPeerReject();
+					}
 					siteMessage('File transfer declined', 5000);
 					return;
 				}
 
 				if (txmsg.request == 'stop file transfer') {
-					this.interrupt();
+					this.interrupt(txmsg.data.id);
+					this.reset(txmsg.data.id);
 					return;
 				}
 
@@ -305,37 +323,24 @@ class Fileshare extends ModTemplate {
 
 				if (txmsg.module == this.name) {
 					if (txmsg.request == 'share file') {
-						if (!this.stun || !this.sending) {
-							console.warn("No stun / not ready to send!");
+
+						const blob = this.incoming[txmsg.data.meta.id];
+
+						if (!this.stun || !blob?.sending) {
+							console.warn("No stun / not ready to receive!");
 							return;
 						}
-
-						if (!this.incoming[txmsg.data.meta.id]) {
-							this.incoming[txmsg.data.meta.id] = {
-								receiveBuffer: [],
-								receivedSize: 0,
-								fileSize: txmsg.data.meta.size,
-								name: txmsg.data.meta.name
-							};
-						}
-
-						let blob = this.incoming[txmsg.data.meta.id];
 
 						let restoredBinary = this.convertBase64ToByteArray(txmsg.data.raw);
 						blob.receivedSize += restoredBinary.byteLength;
 						blob.receiveBuffer.push(restoredBinary);
 
-						/*console.log(
-							restoredBinary.byteLength,
-							blob.receivedSize,
-							blob.fileSize
-						);*/
 
 						// calculate file transfer speed
-						this.transferStats(blob.receivedSize);
+						this.transferStats(blob, blob.receivedSize);
 
-						if (blob.receivedSize === blob.fileSize) {
-							this.overlay.finishTransfer(blob);
+						if (blob.receivedSize === blob.size) {
+							blob.overlay.finishTransfer(blob);
 						}
 					}
 				}
@@ -345,32 +350,31 @@ class Fileshare extends ModTemplate {
 		return super.handlePeerTransaction(app, tx, peer, mycallback);
 	}
 
-	transferStats(bytesNow) {
+	transferStats(file, bytesNow) {
 		let currentTimestamp = new Date().getTime();
 
 		const byteRate = Math.round(
-			(bytesNow - this.bytesPrev) / (currentTimestamp - this.timestampPrev)
+			(bytesNow - file.bytesPrev) / (currentTimestamp - file.timestampPrev)
 		);
 
-		this.timestampPrev = new Date().getTime();
+		file.timestampPrev = currentTimestamp;
 
-		if (byteRate > this.byteRateMax) {
-			this.byteRateMax = byteRate;
+		if (byteRate > file.byteRateMax) {
+			file.byteRateMax = byteRate;
 		}
 
 		let stats = {
-			percentage: ((100 * bytesNow) / this.file.size).toFixed(1),
+			percentage: ((100 * bytesNow) / file.size).toFixed(1),
 			amount: this.calcSize(bytesNow),
 			speed: `${this.calcSize(byteRate * 1000, 2)}/s`,
-			max: this.byteRateMax
+			max: file.byteRateMax
 		};
 
-		this.bytesPrev = bytesNow;
-		this.overlay.renderStats(stats);
+		file.bytesPrev = bytesNow;
+		file.overlay.renderStats(stats);
 	}
 
-	addFileUploader(file) {
-		const fss = this; //file share self
+	addFileUploader(file, fileId) {
 
 		if (!file) {
 			console.warn('No file chosen');
@@ -381,153 +385,166 @@ class Fileshare extends ModTemplate {
 			return;
 		}
 
-		console.log(`File is ${[file.name, file.size, file.type, file.lastModified].join(' ')}`);
+		this.outgoing_files[fileId].file = file;
+		this.outgoing_files[fileId].size = file.size;
 
-		this.reader = new FileReader();
+		console.log(`File is ${[file.name, file.size, file.type].join(' ')}`);
 
-		this.reader.addEventListener('error', (error) => console.error('Error reading file:', error));
-		this.reader.addEventListener('abort', (event) => console.log('File reading aborted:', event));
+		this.outgoing_files[fileId].reader = new FileReader();
 
-		this.reader.addEventListener('load', async (event) => {
-			console.log('File Share: onload ', event);
+		this.outgoing_files[fileId].reader.addEventListener('error', (error) => console.error('Error reading file:', error));
+		this.outgoing_files[fileId].reader.addEventListener('abort', (event) => console.log('File reading aborted:', event));
 
-			if (!this.sending) {
+		this.outgoing_files[fileId].reader.addEventListener('load', async (event) => {
+
+			if (!this.outgoing_files[fileId]?.sending) {
 				console.warn("Not in sending state!");
 				return;
 			}
 
-			await this.createFileChunkTransaction(file, event.target.result);
+			await this.createFileChunkTransaction(fileId, event.target.result);
 
-			this.offset += event.target.result.byteLength;
+			this.outgoing_files[fileId].offset += event.target.result.byteLength;
 
-			this.transferStats(this.offset);
+			this.transferStats(this.outgoing_files[fileId], this.outgoing_files[fileId].offset);
 
 			// calculate file transfer speed
 
-			if (this.offset < file.size) {
-				this.chunkFile(file, this.offset);
+			if (this.outgoing_files[fileId].offset < file.size) {				
+				let offset = this.outgoing_files[fileId].offset;
+				const slice = this.outgoing_files[fileId].file.slice(offset, offset + this.chunkSize);
+				this.outgoing_files[fileId].reader.readAsArrayBuffer(slice);
 			} else {
 				console.log('Finished!');
-				this.overlay.finishTransfer();
-				this.reset();
+				this.outgoing_files[fileId].overlay.finishTransfer();
+				this.reset(fileId);
 			}
 		});
 
-		this.file = file;
+		this.outgoing_files[fileId].overlay.updateFileData(file);
 
-		this.overlay.updateFileData();
-
-		if (this.recipient) {
-			this.sendFileTransferRequest();
+		if (this.outgoing_files[fileId].recipient) {
+			this.sendFileTransferRequest(fileId, file);
 		} else {
 			this.copyShareLink();
 		}
 	}
 
-	startTransfer() {
-		//Flag so we know if sending/receiving a file
-		this.sending = true;
 
-		//navigation away checks...
-		window.addEventListener(this.terminationEvent, this.visibilityChange.bind(this));
-		window.addEventListener('beforeunload', this.beforeUnloadHandler);
-		if (this.app.browser.isMobileBrowser()) {
-			document.addEventListener('visibilitychange', this.visibilityChange.bind(this));
+	addNavigationProtections(){
+		if (Object.keys(this.outgoing_files).length + Object.keys(this.incoming).length <= 1){
+			//navigation away checks...
+			window.addEventListener(this.terminationEvent, this.visibilityChange.bind(this));
+			window.addEventListener('beforeunload', this.beforeUnloadHandler);
+			if (this.app.browser.isMobileBrowser()) {
+				document.addEventListener('visibilitychange', this.visibilityChange.bind(this));
+			}
+
 		}
 	}
 
-	prepareToReceive() {
-		this.startTransfer();
+	prepareToReceive(fileId) {
+
+		this.incoming[fileId].sending = true;
+		const sender = this.incoming[fileId].sender;
+
+		this.addNavigationProtections();
 
 		// Send confirmation message to sender
 		this.app.connection.emit('relay-send-message', {
-			recipient: this.recipient,
+			recipient: sender,
 			request: 'grant file permission',
-			data: {}
+			data: { id: fileId }
 		});
 
 		//set up stun listeners for interruptions
 		this.app.connection.on('stun-data-channel-close', (peerId) => {
-			if (peerId == this.recipient) {
-				this.overlay?.onConnectionFailure();
+			if (peerId == sender) {
+				this.incoming[fileId].overlay?.onConnectionFailure();
 			}
 		});
 		this.app.connection.on('stun-connection-failed', (peerId) => {
-			if (peerId == this.recipient) {
-				this.overlay?.onConnectionFailure();
+			if (peerId == sender) {
+				this.incoming[fileId].overlay?.onConnectionFailure();
 			}
 		});
 	}
 
-	interrupt(send_message = false) {
-		if (this.sending) {
-			if (send_message) {
+	interrupt(fileId, send_to = "") {
+		let file = this.outgoing_files[fileId] || this.incoming[fileId];
+
+		if (!file){
+			return;
+		}
+
+		file.overlay.onCancel();
+		
+		if (file.sending) {
+			if (send_to) {
 				this.app.connection.emit('relay-send-message', {
-					recipient: this.recipient,
+					recipient: send_to,
 					request: 'stop file transfer',
-					data: {}
+					data: { id: fileId}
 				});
 			} else {
 				siteMessage('File transfer cancelled', 5000);
 			}
-			this.sending = false;
+		
+			file.sending = false;
 		}
-
-		this.overlay.onCancel();
+	
 	}
 
-	reset() {
-		this.fileId = null;
-		this.file = null;
-		this.recipient = null;
+	reset(fileId) {
 
-		this.bytesPrev = 0;
-		this.timestampPrev = 0;
-		this.byteRateMax = 0;
+		delete this.outgoing_files[fileId];
+		delete this.incoming[fileId];
 
-		this.offset = 0;
-
-		//clear the memory as soon as possible
-		delete this.incoming;
-		this.incoming = {};
-
-		this.sending = false;
-
-		window.removeEventListener('beforeunload', this.beforeUnloadHandler);
-		window.removeEventListener(this.terminationEvent, this.visibilityChange.bind(this));
-		if (this.app.browser.isMobileBrowser()) {
-			document.removeEventListener('visibilitychange', this.visibilityChange.bind(this));
+		if (Object.keys(this.outgoing_files).length == 0 && Object.keys(this.incoming).length == 0){
+			window.removeEventListener('beforeunload', this.beforeUnloadHandler);
+			window.removeEventListener(this.terminationEvent, this.visibilityChange.bind(this));
+			if (this.app.browser.isMobileBrowser()) {
+				document.removeEventListener('visibilitychange', this.visibilityChange.bind(this));
+			}
 		}
 	}
 
-	chunkFile(file, o) {
-		const slice = file.slice(this.offset, o + this.chunkSize);
-		this.reader.readAsArrayBuffer(slice);
-	}
-
-	sendFileTransferRequest() {
-		if (!this.file) {
+	sendFileTransferRequest(fileId, file) {
+		if (!file) {
 			console.warn('No file selected!');
 			return;
 		}
 
 		let data = {
 			publicKey: this.publicKey,
-			id: this.fileId,
-			name: this.file.name.replace(/\s+/g, ''),
-			size: this.file.size,
-			type: this.file.type
+			id: fileId,
+			name: file.name.replace(/\s+/g, ''),
+			size: file.size,
+			type: file.type
 		};
 
 		this.app.connection.emit('relay-send-message', {
-			recipient: this.recipient,
+			recipient: this.outgoing_files[fileId].recipient,
 			request: 'query file permission',
 			data
 		});
 	}
 
-	async createFileChunkTransaction(file, rawData) {
-		let tx = await this.app.wallet.createUnsignedTransaction(this.recipient);
+	sendRejectTransferTransaction(fileId, sender){
+		this.app.connection.emit('relay-send-message', {
+			recipient: sender,
+			request: 'deny file permission',
+			data: {
+				id: fileId,
+				from: this.publicKey
+			}
+		});
+	}
+
+	async createFileChunkTransaction(fileId, rawData) {
+		let obj = this.outgoing_files[fileId];
+
+		let tx = await this.app.wallet.createUnsignedTransaction(obj.recipient);
 
 		//let base64data = this.xorBase64(this.convertByteArrayToBase64(data));
 
@@ -536,11 +553,11 @@ class Fileshare extends ModTemplate {
 			request: 'share file',
 			data: {
 				meta: {
-					id: this.fileId,
-					name: file.name.replace(/\s+/g, ''),
-					size: file.size,
-					type: file.type,
-					offset: this.offset,
+					id: fileId,
+					name: obj.file.name.replace(/\s+/g, ''),
+					size: obj.file.size,
+					type: obj.file.type,
+					offset: obj.offset,
 					chunk: rawData.byteLength
 				},
 				raw: this.convertByteArrayToBase64(rawData)
@@ -552,8 +569,8 @@ class Fileshare extends ModTemplate {
 		//
 		// No fallback to onchain or relay (on purpose!)
 		//
-		if (this?.stun && this.stun.hasConnection(this.recipient)) {
-			this.stun.sendTransaction(this.recipient, tx);
+		if (this?.stun && this.stun.hasConnection(obj.recipient)) {
+			this.stun.sendTransaction(obj.recipient, tx);
 		}else{
 			console.warn("No stun connection to transfer file!");
 		}
@@ -579,7 +596,13 @@ class Fileshare extends ModTemplate {
 
 	visibilityChange() {
 		console.log('visibilitychange triggered');
-		this.interrupt(true);
+		for (let id in this.outgoing_files){
+			this.interrupt(id, this.outgoing_files[id].recipient);	
+		}
+		for (let id in this.incoming){
+			this.interrupt(id, this.incoming[id].sender);		
+		}
+		
 	}
 
 	webServer(app, expressapp, express) {
