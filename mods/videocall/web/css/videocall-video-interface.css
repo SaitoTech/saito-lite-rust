@@ -578,8 +578,7 @@
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	/* background-color: var(--saito-primary);
-	box-shadow: 0 0 8px 4px var(--saito-primary); */
+	cursor: pointer;
 }
 .expanded-video .video-box-container-large {
 	width: 100%;
