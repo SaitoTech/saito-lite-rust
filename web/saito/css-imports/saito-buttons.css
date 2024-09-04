@@ -46,7 +46,7 @@ button:hover, .saito-button-primary:hover{
   text-decoration: none;
 }
 
-.saito-button-primary.disabled {
+.saito-button-primary.disabled, .saito-button-primary[disabled] {
   background: var(---background-color-main); 
   color: var(--color-primary);
   border: 1px solid var(--color-primary);

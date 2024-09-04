@@ -6,6 +6,7 @@ module.exports = FileShareOverlayTemplate = (fso) => {
             <div class="icon-button" id="close"><i class="fas fa-times"></i></div>
         </div>
 		<h1>Saito Fileshare</h1>
+		<div class="contact"></div>
 		<div class="teleporter-status-list">
 			<form id="uploader_overlay" class="saito-file-uploader needs-file teleporter-status-item">
 				<div>Selecting File</div>

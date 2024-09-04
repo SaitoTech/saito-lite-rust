@@ -29,7 +29,7 @@ module.exports = FileReceiveOverlayTemplate = (mod, fro, file) => {
 		<div class="teleporter-transfer-field"></div>
 		<div id="peer-permission-buttons" class="file-button-row">
 			<div class="saito-button-primary" id="reject-file">Reject</div>
-			<div class="saito-button-primary" id="accept-file">Accept</div>
+			<button type="button" class="saito-button-primary" id="accept-file" disabled>Accept</button>
 		</div>
 		<div id="file-transfer-buttons" class="file-button-row hideme">
 			<div class="saito-button-primary" id="cancel-transfer">Cancel</div>

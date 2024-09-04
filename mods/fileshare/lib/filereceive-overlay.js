@@ -10,6 +10,7 @@ class FileReceiveOverlay {
 		this.throttle_me = false;
 		this.ready = false;
 		this.divId = `file-transfer-${fileId}-${sender}`;
+		this.active = true;
 	}
 
 	render(file) {
@@ -23,7 +24,7 @@ class FileReceiveOverlay {
 
 		if (!this.mod.stun.hasConnection(file.sender)) {
 			this.app.connection.on("stun-data-channel-open", peerId => {
-				if (peerId == file.sender){
+				if (peerId == file.sender && this.active){
 					this.onConnectionSuccess();
 				}
 			})
@@ -37,10 +38,14 @@ class FileReceiveOverlay {
 			document.getElementById(this.divId).remove();
 		}
 		this.ready = false;
+		this.active = false;
 	}
 
 	beginTransfer() {
+
 		let div = document.getElementById(this.divId);
+
+		console.log("Begin transfer", div);
 
 		let field = div?.querySelector('#transfer-speed-row');
 		if (field){
@@ -142,6 +147,11 @@ class FileReceiveOverlay {
 		let field = div.querySelector("#peer-connection-status");
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
+		}
+
+		let field2 = div.querySelector("#accept-file");
+		if (field2){
+			field2.removeAttribute("disabled");
 		}
 	}
 

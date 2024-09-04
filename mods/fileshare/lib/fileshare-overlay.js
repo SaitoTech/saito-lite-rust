@@ -1,4 +1,5 @@
 const FileShareOverlayTemplate = require('./fileshare-overlay.template');
+const SaitoUser = require('./../../../lib/saito/ui/saito-user/saito-user');
 
 class FileShareOverlay {
 	constructor(app, mod, fileId, recipient = "") {
@@ -11,6 +12,7 @@ class FileShareOverlay {
 		this.qs = `#file-transfer-${this.fileId}-${this.recipient}`;
 
 		app.connection.on('stun-data-channel-open', (peerId) => {
+			console.log("open");
 			if (peerId == this.recipient && this.active) {
 				this.onConnectionSuccess();
 			}
@@ -35,9 +37,16 @@ class FileShareOverlay {
 
 	}
 
-	render(){
+	render(needs_file = true){
+
 		this.app.browser.addElementToDom(FileShareOverlayTemplate(this));
-		this.attachEvents();
+
+		if (this.recipient){
+			this.senderUI = new SaitoUser(this.app, this.mod, `${this.qs} .contact`, this.recipient);
+			this.senderUI.render();
+		}
+
+		this.attachEvents(needs_file);
 	}
 
 	remove(){
@@ -46,6 +55,11 @@ class FileShareOverlay {
 		}
 	}
 
+	addRecipient(recipient){
+		this.recipient = recipient;
+		this.senderUI = new SaitoUser(this.app, this.mod, `${this.qs} .contact`, this.recipient);
+		this.senderUI.render();
+	}
 
 	updateFileData(file){
 		let html = `<div class="saito-file-transfer" id="saito-file-transfer-${this.fileId}">
@@ -133,6 +147,9 @@ class FileShareOverlay {
 
 	onConnectionSuccess(){
 		let field = document.querySelector(this.qs + " #peer-connection-status");
+		
+		console.log(field);
+
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
 		}
@@ -159,7 +176,7 @@ class FileShareOverlay {
 				message_field.innerHTML = `Peer appears to be offline. <span class="saito-link">Send them a link?</span> `;
 
 				message_field.onclick = (e) => {
-					this.mod.copyShareLink();
+					this.mod.copyShareLink(this.fileId);
 				}
 			}
 		}
@@ -199,25 +216,27 @@ class FileShareOverlay {
 		this.active = false;
 	}
 
-	attachEvents(){
+	attachEvents(needs_file){
 		this.app.browser.makeDraggable(`file-transfer-${this.fileId}-${this.recipient}`);
 
-		let input = document.querySelector(this.qs + ` #hidden_file_element_uploader_overlay`);
-		if (input) {
-			input.addEventListener('change', (e) => {
-				this.mod.addFileUploader(input.files[0], this.fileId);
-				this.onFile(input.files[0]);
-			});
-			
-			input.click();
+		if (needs_file){
+			let input = document.querySelector(this.qs + ` #hidden_file_element_uploader_overlay`);
+			if (input) {
+				input.addEventListener('change', (e) => {
+					this.mod.addFileUploader(input.files[0], this.fileId);
+					this.onFile(input.files[0]);
+				});
+				
+				input.click();
 
-			let hidden_form = document.querySelector(this.qs + " .saito-file-uploader.needs-file");
-			if (hidden_form){
-				hidden_form.onclick = () => {
-					input.click();
+				let hidden_form = document.querySelector(this.qs + " .saito-file-uploader.needs-file");
+				if (hidden_form){
+					hidden_form.onclick = () => {
+						input.click();
+					}
 				}
-			}
 
+			}
 		}
 
 		let cancel = document.querySelector(this.qs + ' #cancel-transfer');

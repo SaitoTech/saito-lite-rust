@@ -208,9 +208,18 @@ class Fileshare extends ModTemplate {
 	}
 
 	sendFile() {
-		this.fileId = this.app.crypto.generateRandomNumber().substring(0, 12);
-		this.overlay = new FileShareOverlay(this.app, this);
-		this.overlay.render();
+		let fileId = this.app.crypto.generateRandomNumber().substring(0, 12);
+
+		this.outgoing_files[fileId] = {
+			overlay: new FileShareOverlay(this.app, this, fileId),
+			bytesPrev: 0,
+			timestampPrev: 0,
+			byteRateMax: 0,
+			offset: 0
+		};
+
+		this.outgoing_files[fileId].overlay.render();
+
 	}
 
 	calcSize(bytes, digits = 0) {
@@ -245,15 +254,24 @@ class Fileshare extends ModTemplate {
 
 			if (this.app.browser.returnURLParameter('file')) {
 
-				console.log("File Share: message friend that ready to connect");
+				const data = JSON.parse(
+					this.app.crypto.base64ToString(this.app.browser.returnURLParameter('file'))
+				);
 
-				this.stun.createPeerConnection(this.recipient);
+				const pkey = data.publicKey;
+
+				console.log("File Share: message friend that ready to connect -- ", pkey);
 
 				this.app.connection.emit('relay-send-message', {
-					recipient: this.recipient,
+					recipient: pkey,
 					request: 'request file transfer',
-					data: {recipient: this.publicKey}
+					data: {
+						recipient: this.publicKey,
+						id: data.id
+					}
 				});
+
+				this.app.connection.emit("open-chat-with", {key: pkey});
 			}
 		}
 	}
@@ -304,6 +322,10 @@ class Fileshare extends ModTemplate {
 					if (this.outgoing_files[txmsg.data.id]){
 						this.outgoing_files[txmsg.data.id].overlay.onPeerReject();
 					}
+					if (this.incoming[txmsg.data.id]){
+						this.incoming[txmsg.data.id].overlay.onCancel();
+						this.reset(txmsg.data.id);
+					}
 					siteMessage('File transfer declined', 5000);
 					return;
 				}
@@ -315,9 +337,54 @@ class Fileshare extends ModTemplate {
 				}
 
 				if (txmsg.request == 'request file transfer') {
-					this.recipient = tx.from[0].publicKey;
-					console.log("FileShare: party followed link to receive!", this.recipient);
-					this.overlay.recipient = this.recipient;
+					let recipient = tx.from[0].publicKey;
+					let fileId = txmsg.data.id;
+					console.log("FileShare: party followed link to receive!", recipient);
+
+					if (this.outgoing_files[fileId]) {
+
+						const file = this.outgoing_files[fileId].file;
+						//Hide the original overlay
+						this.outgoing_files[fileId].overlay.remove();
+
+						//create a new item
+						let newfileid = this.app.crypto.generateRandomNumber().substring(0, 12);
+
+						this.app.connection.emit('relay-send-message', {
+							recipient,
+							request: 'update file transfer',
+							data: { old_id: fileId, new_id: newfileid }
+						});
+
+						this.outgoing_files[newfileid] = {
+							recipient,
+							overlay: new FileShareOverlay(this.app, this, newfileid, recipient),
+							bytesPrev: 0,
+							timestampPrev: 0,
+							byteRateMax: 0,
+							offset: 0
+						};
+
+						this.outgoing_files[newfileid].overlay.render(false);
+						this.outgoing_files[newfileid].overlay.onFile(file);
+						this.addFileUploader(file, newfileid);
+
+						console.log("Send updated file code and wait for their confirmation");
+					}
+
+					return;
+				}
+
+				if (txmsg.request == 'update file transfer') {
+
+					console.log(txmsg.request, txmsg.data);
+
+					if (this.incoming[txmsg.data.old_id]){
+						this.incoming[txmsg.data.old_id].overlay.remove();
+						this.reset(txmsg.data.old_id);
+						this.stun.createPeerConnection(tx.from[0].publicKey);
+					}
+
 					return;
 				}
 
@@ -426,7 +493,7 @@ class Fileshare extends ModTemplate {
 		if (this.outgoing_files[fileId].recipient) {
 			this.sendFileTransferRequest(fileId, file);
 		} else {
-			this.copyShareLink();
+			this.copyShareLink(fileId);
 		}
 	}
 
@@ -500,8 +567,11 @@ class Fileshare extends ModTemplate {
 		delete this.outgoing_files[fileId];
 		delete this.incoming[fileId];
 
-		if (Object.keys(this.outgoing_files).length == 0 && Object.keys(this.incoming).length == 0){
-			window.removeEventListener('beforeunload', this.beforeUnloadHandler);
+		console.log(this.outgoing_files);
+
+		if (Object.keys(this.outgoing_files).length + Object.keys(this.incoming).length == 0){
+			console.log('unwind events');
+ 			window.removeEventListener('beforeunload', this.beforeUnloadHandler);
 			window.removeEventListener(this.terminationEvent, this.visibilityChange.bind(this));
 			if (this.app.browser.isMobileBrowser()) {
 				document.removeEventListener('visibilitychange', this.visibilityChange.bind(this));
@@ -623,17 +693,19 @@ class Fileshare extends ModTemplate {
 		expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
 	}
 
-	copyShareLink() {
-		if (!this?.file) {
+	copyShareLink(fileId) {
+		if (!this.outgoing_files[fileId]) {
 			return;
 		}
 
+		this.addNavigationProtections();
+
 		let data = {
 			publicKey: this.publicKey,
-			id: this.fileId,
-			name: this.file.name.replace(/\s+/g, ''),
-			size: this.file.size,
-			type: this.file.type
+			id: fileId,
+			name: this.outgoing_files[fileId].file.name.replace(/\s+/g, ''),
+			size: this.outgoing_files[fileId].file.size,
+			type: this.outgoing_files[fileId].file.type
 		};
 
 		let base64obj = this.app.crypto.stringToBase64(JSON.stringify(data));
