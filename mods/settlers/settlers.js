@@ -172,7 +172,7 @@ class Settlers extends GameTemplate {
 				count: 2,
 				img: '/settlers/img/cards/devcards/monopoly.png',
 				title: "Legal Monopoly",
-				text: " collects all available of any resource type", 
+				text: " may collect all available of any resource", 
 				action: 3
 			},
 			{
@@ -180,7 +180,7 @@ class Settlers extends GameTemplate {
 				count: 2,
 				img: '/settlers/img/cards/devcards/road_construction.png',
 				title: "Road Construction",
-				text: " builds two roads", 
+				text: " may build two roads at no cost", 
 				action: 4
 			},
 			{

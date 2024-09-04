@@ -37,7 +37,7 @@ class MonopolyOverlay {
 						`monopoly\t${this_self.player}\t${this_self.cardname}\t${card}`
 					);
 					this_self.mod.endTurn();
-					this_self.overlay.close();
+					this_self.overlay.remove();
 					return 0;
 				};
 			});

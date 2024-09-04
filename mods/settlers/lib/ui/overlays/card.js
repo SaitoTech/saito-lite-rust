@@ -54,7 +54,7 @@ class CardOverlay {
 		}
 
 		if (player == this.mod.game.player){
-			cardtext = "You" + cardtext;
+			cardtext = "You" + cardtext.replace("earns", "earn");
 		}else{
 			cardtext = this.mod.game.playerNames[player - 1] + cardtext;
 		}
