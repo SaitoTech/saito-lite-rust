@@ -56,46 +56,47 @@ class YoutubeServer extends ModTemplate {
       // If 'ffmpeg' isn't in your path, specify the full path to the ffmpeg binary.
       const ffmpeg = child_process.spawn('ffmpeg', [
         // FFmpeg will read input video from STDIN
-        '-i',
-        '-',
+        '-i', '-',
 
         // If we're encoding H.264 in-browser, we can set the video codec to 'copy'
         // so that we don't waste any CPU and quality with unnecessary transcoding.
         // If the browser doesn't support H.264, set the video codec to 'libx264'
         // or similar to transcode it to H.264 here on the server.
-        '-vcodec',
-        'libx264',
+        '-vcodec', 'libx264',
 
         // AAC audio is required for Live.  No browser currently supports
         // encoding AAC, so we must transcode the audio to AAC here on the server.
+        
+        '-b:a', '160k',
 
-        '-ab',
-        '128k',
+        '-ab', '128k',
 
-        '-ac',
-        '2',
+        '-ac', '2',
 
-        '-ar',
-        '44100',
+        '-af', "adelay=1|1",
 
-        '-r',
-        '25',
+        '-async', '1',
 
-        '-s',
-        '720x420',
+//        '-acodec', 'copy',
 
-        '-vb',
-        '660k',
+        '-c:a', 'aac',
+
+        '-ar', '44100',
+
+        '-r', '25',
+
+        '-s', '1920x1080',
+
+        '-vb', '660k',
 
         // FLV is the container format used in conjunction with RTMP
-        '-f',
-        'flv',
+        '-f', 'flv',
 
         // The output RTMP URL.
         // For debugging, you could set this to a filename like 'test.flv', and play
         // the resulting file with VLC.  Please also read the security considerations
         // later on in this tutorial.
-        rtmpUrl
+        rtmpUrl 
       ]);
 
       // If FFmpeg stops for any reason, close the WebSocket connection.
@@ -164,46 +165,47 @@ class YoutubeServer extends ModTemplate {
       // If 'ffmpeg' isn't in your path, specify the full path to the ffmpeg binary.
       const ffmpeg = child_process.spawn('ffmpeg', [
         // FFmpeg will read input video from STDIN
-        '-i',
-        '-',
+        '-i', '-',
 
         // If we're encoding H.264 in-browser, we can set the video codec to 'copy'
         // so that we don't waste any CPU and quality with unnecessary transcoding.
         // If the browser doesn't support H.264, set the video codec to 'libx264'
         // or similar to transcode it to H.264 here on the server.
-        '-vcodec',
-        'libx264',
+        '-vcodec', 'libx264',
 
         // AAC audio is required for Live.  No browser currently supports
         // encoding AAC, so we must transcode the audio to AAC here on the server.
+        
+        '-b:a', '160k',
 
-        '-ab',
-        '128k',
+        '-ab', '128k',
 
-        '-ac',
-        '2',
+        '-ac', '2',
 
-        '-ar',
-        '44100',
+        '-af', "adelay=1|1",
 
-        '-r',
-        '25',
+        '-async', '1',
 
-        '-s',
-        '720x420',
+//        '-acodec', 'copy',
 
-        '-vb',
-        '660k',
+        '-c:a', 'aac',
+
+        '-ar', '44100',
+
+        '-r', '25',
+
+        '-s', '1920x1080',
+
+        '-vb', '660k',
 
         // FLV is the container format used in conjunction with RTMP
-        '-f',
-        'flv',
+        '-f', 'flv',
 
         // The output RTMP URL.
         // For debugging, you could set this to a filename like 'test.flv', and play
         // the resulting file with VLC.  Please also read the security considerations
         // later on in this tutorial.
-        rtmpUrl
+        rtmpUrl 
       ]);
 
       // If FFmpeg stops for any reason, close the WebSocket connection.
