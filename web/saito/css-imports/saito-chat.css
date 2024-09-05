@@ -147,7 +147,7 @@
   height: 50rem;
   width: 36rem;
   border-radius: var(--border-radius-chat-popup);
-  z-index: 103;
+  z-index: 20;
   /* making z-index greater than overlay so that users
      can chat or send each other their crypto address without
      closing the withdraw overlay
@@ -188,11 +188,11 @@
 }
 
 .chat-container.active {
-  z-index: 104;
+  z-index: 21;
 }
 
 .chat-container.dragging {
-  z-index: 105;
+  z-index: 22;
 }
 
 .chat-container.minimized {

@@ -100,7 +100,7 @@
   border-left: 1px solid var(--border-color-general-dividers);
   transition: all 0.2s;
   opacity: 0;
-  z-index: 20;
+  z-index: 21;
   width: 20rem;
   height: calc(100 * var(--saito-vh) - var(--saito-header-height) + 3px);
   overflow: hidden auto;
@@ -141,9 +141,9 @@
   left: 0;
   width: 100vw;
   height: calc(100vh - var(--saito-header-height));
-  opacity: 0;
   overflow: hidden;
   z-index: 19;
+  background: #11111169;
 }
 
 .saito-header-backdrop.menu-visible {
