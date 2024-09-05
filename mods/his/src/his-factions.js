@@ -1,10 +1,13 @@
 
+  returnArrayOfFactionsInSpace(spacekey="") {
+    return this.returnArrayOfFactionsInSpacekey(spacekey);
+  }
   returnArrayOfFactionsInSpacekey(spacekey="") {
     let res = [];
     let s = this.game.spaces[spacekey];
     if (s) {
       for (let f in s.units) {
-	if (s.units[key].length > 0) { res.push(f); }
+	if (s.units[f].length > 0) { res.push(f); }
       }
     };
     return res;

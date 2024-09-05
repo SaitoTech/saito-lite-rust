@@ -5,7 +5,7 @@ class DevCardOverlay {
 	constructor(app, mod) {
 		this.app = app;
 		this.mod = mod;
-		this.overlay = new SaitoOverlay(this.app, this.mod, false, true, true);
+		this.overlay = new SaitoOverlay(this.app, this.mod, true, true, true);
 	}
 
 	render() {
