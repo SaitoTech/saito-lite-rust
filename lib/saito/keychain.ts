@@ -486,8 +486,8 @@ class Keychain {
 		//
 		const options = {
 			//foreground: [247, 31, 61, 255],           // saito red
-			background: [64, 64, 64, 0],
-			saturation: 0.5,
+			//background: [64, 64, 64, 0],
+			saturation: 0.6,
             brightness: 0.4,
 			margin: 0.0, // 0% margin
 			size: 420, // 420px square
@@ -504,8 +504,8 @@ class Keychain {
 		const hue =
 			parseInt(this.app.crypto.hash(publicKey).substr(-7), 16) /
 			0xfffffff;
-		const saturation = 0.4;
-		const brightness = 0.2;
+		const saturation = 0.6;
+		const brightness = 0.4;
 		const values = this.hsl2rgb(hue, saturation, brightness).map(
 			Math.round
 		);
@@ -516,8 +516,8 @@ class Keychain {
 		const hue =
 			parseInt(this.app.crypto.hash(publicKey).substr(-7), 16) /
 			0xfffffff;
-		const saturation = 0.4;
-		const brightness = 0.2;
+		const saturation = 0.6;
+		const brightness = 0.4;
 		const values = this.hsl2rgb(hue, saturation, brightness).map(
 			Math.round
 		);
