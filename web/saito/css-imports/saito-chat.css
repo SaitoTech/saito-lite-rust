@@ -422,7 +422,9 @@
 
 .chat-body .saito-user > .saito-address {
   margin-bottom: 0.5rem;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
+  font-family: var(--saito-font-medium);
+  color: var(--saito-font-color-light);
 }
 
 .chat-body .saito-user-self.saito-user {

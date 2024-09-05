@@ -28,8 +28,6 @@ html[data-theme="arcade"] {
   --saito-bubble-background: #213;
   --saito-modal-background: var(--saito-background-light);
   --saito-font-color-dark-modal: #efefef;
-  --saito-heart-animation: url('/redsquare/images/heart-orange.png');
-  --saito-heart-animation-clicked: url('/redsquare/images/heart-all-orange.png');
   /* ================= NEW UPDATED THEME ================== */
   /*BASE COLOR SECTION*/
   --color-primary: #639;

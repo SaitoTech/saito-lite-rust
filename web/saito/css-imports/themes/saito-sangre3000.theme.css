@@ -88,6 +88,7 @@ html[data-theme="sangre3000"] {
   --font-color-button-chat-container: var(--font-color-primary);
   --font-color-calendar-today: var(--font-color-primary);
   --font-color-calendar-hover: var(--font-color-primary);
+  --font-color-mention: #f71f3d;
   /* Menu and Header Font Colors */
   --font-color-menu-hamburger: var(--font-color-heavy);
   --font-color-header-username: var(--font-color-heavy);
@@ -193,8 +194,8 @@ html[data-theme="sangre3000"] {
   /* solves the dark theme hover gradient problem*/
   /* Chat Related Colors */
   --background-color-chat-popup-main: var(--background-color-main);
-  --background-color-chat-popup-message-self: var(--color-tint-dark);
-  --background-color-chat-popup-message: var(--color-highlight);
+  --background-color-chat-popup-message-self: var(--color-highlight); /*var(--color-tint-dark);*/
+  --background-color-chat-popup-message: var(--color-base); /*var(--color-highlight);*/
   --background-color-chat-popup-subheader: var(--color-base);
   /* Theme Specific */
   --saito-arcade-header-background: var(--background-color-main);
