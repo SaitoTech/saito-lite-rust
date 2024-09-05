@@ -13,7 +13,7 @@ module.exports = FileReceiveOverlayTemplate = (mod, fro, file) => {
 				<div class="file-transfer-progress"></div>
 				<i class="fa-solid fa-file-import"></i>
 				<div class="file-name">${file.name}</div>
-				<div class="fixed-width">${mod.calcSize(file.size)}</div>
+				<div class="file-size fixed-width">${mod.calcSize(file.size)}</div>
 			</div>
 		</div>
 		<div class="teleporter-status-list">
@@ -22,17 +22,17 @@ module.exports = FileReceiveOverlayTemplate = (mod, fro, file) => {
 				<div class="teleporter-status" id="peer-connection-status"><i class="fa-solid fa-ellipsis"></i></div>
 			</div>
 			<div id="transfer-speed-row" class="teleporter-status-item hideme">
-				<div>Transferring File</div>
+				<div>Receiving File</div>
 				<div class="teleporter-status" id="file-transfer-status"><i class="fa-solid fa-ellipsis"></i></div>
 			</div>
 		</div>	
 		<div class="teleporter-transfer-field"></div>
 		<div id="peer-permission-buttons" class="file-button-row">
-			<div class="saito-button-primary" id="reject-file">Reject</div>
+			<button type="button" class="saito-button-secondary" id="reject-file">Reject</button>
 			<button type="button" class="saito-button-primary" id="accept-file" disabled>Accept</button>
 		</div>
 		<div id="file-transfer-buttons" class="file-button-row hideme">
-			<div class="saito-button-primary" id="cancel-transfer">Cancel</div>
+			<button type="button" class="saito-button-secondary" id="cancel-transfer">Cancel</button>
 			<div class="saito-button-primary hideme" id="download-transfer"><i class="fa-solid fa-download"></i>Save</div>
 		</div>
 

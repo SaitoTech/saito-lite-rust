@@ -98,6 +98,11 @@ class FileReceiveOverlay {
 			progress_bar.style.width = `100%`;
 		}
 
+		let field2 = div?.querySelector(".saito-file-transfer");
+		if (field2){
+			field2.classList.add("complete");
+		}
+
 		const received = new Blob(blob.receiveBuffer);
 
 		let html = `<a href="${URL.createObjectURL(received)}" download="${blob.name}"></a>`
@@ -113,11 +118,6 @@ class FileReceiveOverlay {
 				this.mod.reset(this.fileId);
 				this.remove();
 			}
-		}
-
-		let cancel_btn = div.querySelector("#cancel-transfer");
-		if (cancel_btn){
-			cancel_btn.style.visibility = "hidden";
 		}
 
 		this.ready = true;
@@ -136,6 +136,11 @@ class FileReceiveOverlay {
 		let field = div.querySelector("#file-transfer-status");
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
+		}
+
+		let field3 = div.querySelector("#peer-permission-buttons");
+		if (field3){
+			field3.classList.add('hideme');
 		}
 
 	}

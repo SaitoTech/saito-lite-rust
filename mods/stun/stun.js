@@ -340,7 +340,7 @@ class Stun extends ModTemplate {
 
 		if (this.peers.get(peerId)) {
 			let pc = this.peers.get(peerId);
-			console.log('STUN: already connected to ' + peerId, "Status: " + pc.connectionState);
+			console.log(`STUN: ${peerId} already in stun peer list`, "Status: " + pc.connectionState);
 			
 			if (callback){
 				callback(peerId);

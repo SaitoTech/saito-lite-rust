@@ -1,7 +1,8 @@
 
 .saito-file-transfer-overlay {
 	width: min(45rem, 90vw);
-	height: min(45rem, 90vh);
+	min-height: 45rem;
+  max-height: 90vh;
 	padding: 3rem;
   display: flex;
   flex-direction: column;
@@ -20,7 +21,9 @@
   z-index: 500;
 }
 
-
+#cancel-transfer{
+  visibility: hidden;
+}
 
 .pseudo-overlay-controls {
   position: absolute;
@@ -52,6 +55,7 @@
   left: 0;
   top: unset;
   height: fit-content;
+  min-height: unset;
   transform: unset;
 }
 
@@ -64,11 +68,15 @@
   display: flex;
 }
 
-.saito-file-transfer-overlay.minimize .teleporter-file-data {
-  display: block;
+.teleporter-file-data {
+  margin: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.saito-file-transfer-overlay.minimize .saito-file-transfer {
+.saito-file-transfer-overlay.minimize .teleporter-file-data {
+  display: block;
   margin-bottom: 0;
 }
 
@@ -123,30 +131,48 @@
   border: 1px dashed;
   display: grid;
   align-items: center;
-  margin: 1rem 0;
   padding: 1rem;
   grid-template-columns: min-content 1fr;
   grid-template-rows: 1fr 1fr;
   row-gap: 1rem;
   column-gap: 2rem;
   justify-items: flex-end;
+  overflow: hidden;
+  background-color: var(--saito-gray-mid);
+  color: var(--saito-white);
+}
+
+.saito-file-transfer.complete {
+  border: 1px solid;
+}
+
+.saito-file-transfer.received {
+  grid-template-rows: unset;
 }
 
 .file-transfer-progress{
   position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
+  left: 1px;
+  top: 1px;
+  height: calc(100% - 2px);
   width: 0%;
   background-color: var(--saito-primary);
-  z-index: -1;
+  /*z-index: -1;*/
+}
+
+.saito-file-transfer.received .file-transfer-progress{
+  background-color: var(--saito-secondary);
 }
 
 .saito-file-transfer i {
   font-size: 4rem;
   grid-row: 1 / span 2;
+  filter: var(--header-readability-drop-shadow);
 }
 
+.saito-file-transfer .file-name, .saito-file-transfer .file-size {
+ filter: var(--header-readability-drop-shadow); 
+}
 
 .saito-file-uploader.needs-file {
   text-decoration: underline;

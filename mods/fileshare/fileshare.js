@@ -160,8 +160,8 @@ class Fileshare extends ModTemplate {
 							//
 							if (!fss.stun.hasConnection(recipient)) {
 								fss.stun.createPeerConnection(recipient);
-
 							} else {
+								console.log("emit dummy event")
 								fss.app.connection.emit('stun-data-channel-open', recipient);
 							}
 
@@ -321,17 +321,24 @@ class Fileshare extends ModTemplate {
 				if (txmsg.request == 'deny file permission') {
 					if (this.outgoing_files[txmsg.data.id]){
 						this.outgoing_files[txmsg.data.id].overlay.onPeerReject();
+						siteMessage('File transfer declined', 5000);
 					}
 					if (this.incoming[txmsg.data.id]){
 						this.incoming[txmsg.data.id].overlay.onCancel();
 						this.reset(txmsg.data.id);
+						siteMessage('File transfer declined', 5000);
 					}
-					siteMessage('File transfer declined', 5000);
 					return;
 				}
 
 				if (txmsg.request == 'stop file transfer') {
 					this.interrupt(txmsg.data.id);
+
+					let file = this.outgoing_files[txmsg.data.id] || this.incoming[txmsg.data.id];
+					if (file){
+						file.overlay.onCancel();
+					}
+
 					this.reset(txmsg.data.id);
 					return;
 				}
@@ -402,12 +409,23 @@ class Fileshare extends ModTemplate {
 						blob.receivedSize += restoredBinary.byteLength;
 						blob.receiveBuffer.push(restoredBinary);
 
+						this.sendReadReceipt(txmsg.data.meta);
 
 						// calculate file transfer speed
 						this.transferStats(blob, blob.receivedSize);
 
 						if (blob.receivedSize === blob.size) {
 							blob.overlay.finishTransfer(blob);
+						}
+					}
+
+					if (txmsg.request == 'read receipt') {
+						//data: { id, chunk_id }
+						const fileId = txmsg.data.id;
+						if (this.outgoing_files[fileId]){
+							let received_bytes = txmsg.data.chunk_id * this.chunkSize;
+							let percentage = (100 * received_bytes / this.outgoing_files[fileId].file.size).toFixed(2);
+							this.outgoing_files[fileId].overlay.updateRStats(percentage);
 						}
 					}
 				}
@@ -454,6 +472,7 @@ class Fileshare extends ModTemplate {
 
 		this.outgoing_files[fileId].file = file;
 		this.outgoing_files[fileId].size = file.size;
+		this.outgoing_files[fileId].iterator = 1;
 
 		console.log(`File is ${[file.name, file.size, file.type].join(' ')}`);
 
@@ -473,6 +492,8 @@ class Fileshare extends ModTemplate {
 
 			this.outgoing_files[fileId].offset += event.target.result.byteLength;
 
+			this.outgoing_files[fileId].iterator++;
+			
 			this.transferStats(this.outgoing_files[fileId], this.outgoing_files[fileId].offset);
 
 			// calculate file transfer speed
@@ -484,7 +505,6 @@ class Fileshare extends ModTemplate {
 			} else {
 				console.log('Finished!');
 				this.outgoing_files[fileId].overlay.finishTransfer();
-				this.reset(fileId);
 			}
 		});
 
@@ -541,24 +561,23 @@ class Fileshare extends ModTemplate {
 		let file = this.outgoing_files[fileId] || this.incoming[fileId];
 
 		if (!file){
+			console.log("No file selected, don't bother");
 			return;
 		}
 
 		file.overlay.onCancel();
 		
-		if (file.sending) {
-			if (send_to) {
-				this.app.connection.emit('relay-send-message', {
-					recipient: send_to,
-					request: 'stop file transfer',
-					data: { id: fileId}
-				});
-			} else {
-				siteMessage('File transfer cancelled', 5000);
-			}
-		
-			file.sending = false;
+		if (send_to) {
+			this.app.connection.emit('relay-send-message', {
+				recipient: send_to,
+				request: 'stop file transfer',
+				data: { id: fileId}
+			});
+		} else {
+			siteMessage('File transfer cancelled', 5000);
 		}
+	
+		file.sending = false;
 	
 	}
 
@@ -567,10 +586,7 @@ class Fileshare extends ModTemplate {
 		delete this.outgoing_files[fileId];
 		delete this.incoming[fileId];
 
-		console.log(this.outgoing_files);
-
 		if (Object.keys(this.outgoing_files).length + Object.keys(this.incoming).length == 0){
-			console.log('unwind events');
  			window.removeEventListener('beforeunload', this.beforeUnloadHandler);
 			window.removeEventListener(this.terminationEvent, this.visibilityChange.bind(this));
 			if (this.app.browser.isMobileBrowser()) {
@@ -628,6 +644,7 @@ class Fileshare extends ModTemplate {
 					size: obj.file.size,
 					type: obj.file.type,
 					offset: obj.offset,
+					chunk_id: obj.iterator,
 					chunk: rawData.byteLength
 				},
 				raw: this.convertByteArrayToBase64(rawData)
@@ -641,6 +658,30 @@ class Fileshare extends ModTemplate {
 		//
 		if (this?.stun && this.stun.hasConnection(obj.recipient)) {
 			this.stun.sendTransaction(obj.recipient, tx);
+		}else{
+			console.warn("No stun connection to transfer file!");
+		}
+	}
+
+	async sendReadReceipt(data) {
+		let id = data.id;
+		let obj = this.incoming[id];
+
+		let tx = await this.app.wallet.createUnsignedTransaction(obj.sender);
+
+		tx.msg = {
+			module: this.name,
+			request: 'read receipt',
+			data: {
+				id,
+				chunk_id: data.chunk_id,
+			}
+		};
+
+		await tx.sign();
+
+		if (this?.stun && this.stun.hasConnection(obj.sender)) {
+			this.stun.sendTransaction(obj.sender, tx);
 		}else{
 			console.warn("No stun connection to transfer file!");
 		}

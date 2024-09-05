@@ -28,9 +28,6 @@ module.exports = FileShareOverlayTemplate = (fso) => {
 		</div>
 		<div class="teleporter-file-data"></div>
 		<div class="teleporter-transfer-field"></div>
-		<div id="file-transfer-buttons" class="file-button-row hideme">
-			<div class="saito-button-primary" id="cancel-transfer">Cancel</div>
-		</div>
 
 	</div>`;
 

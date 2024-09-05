@@ -7,30 +7,29 @@ class FileShareOverlay {
 		this.mod = mod;
 		this.fileId = fileId;
 		this.recipient = recipient;
-		this.active = true;
 		this.throttle_me = false;
 		this.qs = `#file-transfer-${this.fileId}-${this.recipient}`;
 
 		app.connection.on('stun-data-channel-open', (peerId) => {
 			console.log("open");
-			if (peerId == this.recipient && this.active) {
+			if (peerId == this.recipient && this?.active !== false) {
 				this.onConnectionSuccess();
 			}
 		});
 
 		app.connection.on('stun-connection-timeout', (peerId) => {
-			if (peerId == this.recipient && this.active) {
+			if (peerId == this.recipient && this?.active !== false) {
 				this.onConnectionFailure();
 			}
 		});
 
 		app.connection.on('stun-data-channel-close', (peerId) => {
-			if (peerId == this.recipient && this.active) {
+			if (peerId == this.recipient && this?.active !== false) {
 				this.onConnectionFailure();
 			}
 		});
 		app.connection.on('stun-connection-failed', (peerId) => {
-			if (peerId == this.recipient && this.active) {
+			if (peerId == this.recipient && this?.active !== false) {
 				this.onConnectionFailure();
 			}
 		});
@@ -80,10 +79,14 @@ class FileShareOverlay {
 			field.classList.remove("hideme");
 		}	
 
-		let field2 = document.querySelector(this.qs + " #file-transfer-buttons");
-		if (field2){
-			field2.classList.remove('hideme');
-		}
+		/*let html = `<div class="saito-file-transfer received">
+					<div class="file-transfer-progress"></div>
+					<div class="file-name">Confirmed</div>
+					<div class="file-size fixed-width">0.00%</div>
+					</div>`;
+		this.app.browser.addElementToSelector(html, `${this.qs} .teleporter-file-data`);
+		*/
+
 	}
 
 	renderStats(stats){
@@ -97,11 +100,32 @@ class FileShareOverlay {
 				this.throttle_me = false;
 			}, 500);			
 		}
+	}
+
+	updateRStats(percentage){
+		
+		if (percentage >= 100){
+			percentage = 100;
+
+			let wrapper = document.querySelector(this.qs + " .saito-file-transfer");
+			if (wrapper) {
+				wrapper.classList.add("complete");
+			}
+
+			console.log("Done for real!");
+			this.mod.reset(this.fileId);
+		}
 
 		let progress_bar = document.querySelector(this.qs + " .file-transfer-progress");
 		if (progress_bar){
-			progress_bar.style.width = `${stats.percentage}%`;
+			progress_bar.style.width = `${percentage}%`;
 		}
+
+		/*let field = document.querySelector(this.qs + " .received .file-size");
+		if (field){
+			field.innerHTML = `${percentage}%`;
+		}*/
+	
 	}
 
 	finishTransfer(){
@@ -113,15 +137,6 @@ class FileShareOverlay {
 			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
 		}
 
-		let progress_bar = document.querySelector(this.qs + " .file-transfer-progress");
-		if (progress_bar){
-			progress_bar.style.width = `100%`;
-		}
-
-		let field2 = document.querySelector(this.qs + " #file-transfer-buttons");
-		if (field2){
-			field2.remove();
-		}
 
 	}
 
@@ -181,6 +196,7 @@ class FileShareOverlay {
 			}
 		}
 
+		this.active = false;
 	}
 
 
@@ -199,15 +215,12 @@ class FileShareOverlay {
 				hidden_form.onclick = null;
 				hidden_form.classList.remove("needs-file");
 			}
+
+			this.active = true;
 		}
 	}
 
 	onCancel(){
-		let field2 = document.querySelector(this.qs + " #file-transfer-buttons");
-		if (field2){
-			field2.classList.add('hideme');
-		}
-
 		let field = document.querySelector(this.qs + " #file-transfer-status");
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
@@ -239,18 +252,18 @@ class FileShareOverlay {
 			}
 		}
 
-		let cancel = document.querySelector(this.qs + ' #cancel-transfer');
-		if (cancel){
-			cancel.onclick = () => {
-				this.mod.interrupt(this.fileId, this.recipient);
-			}
-		}
-
-
 		let close = document.querySelector(this.qs + " .icon-button#close");
 		if (close){
-			close.onclick = (e) => {
-				this.mod.interrupt(this.fileId, this.recipient);
+			close.onclick = async (e) => {
+
+				if (this.active) {
+					let c = await sconfirm("Are you sure you want to cancel?");
+					if (!c) {
+						return;
+					}
+					this.mod.interrupt(this.fileId, this.recipient);
+				}
+				this.mod.reset(this.fileId, this.recipient);
 				this.remove();
 			}
 		}
