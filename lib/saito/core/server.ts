@@ -26,7 +26,7 @@ const JSON = require('json-bigint');
 // CORS -- uncomment for local CORS Cross-Origin Requests by Default
 //
 //var cors = require('cors');
-//const expressApp = express();
+const expressApp = express();
 //expressApp.use(cors());
 
 
