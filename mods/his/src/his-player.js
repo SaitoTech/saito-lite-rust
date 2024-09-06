@@ -1819,6 +1819,9 @@ if (relief_siege == 1) {
       }
     }
 
+console.log("available units: " + JSON.stringify(available_units));
+console.log("can we quick fortify: " + can_we_quick_fortify);
+
     if (can_we_quick_fortify == true) {
 
       //
@@ -4708,7 +4711,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   }
 
 
-  playerEvaluateFortification(attacker, faction, spacekey, post_battle=0, relief_siege = 0) {
+  playerEvaluateFortification(attacker, faction, spacekey, post_battle=0, relief_siege=0) {
 
     let his_self = this;
 

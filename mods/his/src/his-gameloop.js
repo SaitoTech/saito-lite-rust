@@ -3107,14 +3107,14 @@ console.log("----------------------------");
 	  let did_anyone_survive = false;
 	  let did_anyone_allied_with_me_survive = false;
 	  let did_anyone_allied_with_me_who_can_fortify_survive = false;
-
-
+	  let is_relief_siege = 0;
 	  if (this.game.state.field_battle_relief_battle) {
 	    for (let key in space.units) {
 	      for (let z = 0; z < space.units[key].length; z++) {
 		let u = space.units[key][z];
 		if (u.type == "regular" || u.type == "mercenary" || u.type == "cavalry") {
 		  if (this.areAllies(key, faction, 1)) { did_anyone_allied_with_me_survive = true; }
+	          is_relief_siege = 1;
 		  if (relief_siege == 0) {
 		    did_anyone_allied_with_me_who_can_fortify_survive = 1;
 		  } else {
@@ -3150,7 +3150,7 @@ console.log("----------------------------");
 	  //
 	  if (this.game.player == player) {
 	    this.field_battle_overlay.renderFortification(this.game.state.field_battle);
-	    this.playerEvaluateFortification(attacker, faction, spacekey, 1, 1); // 1 = post battle , 1 = relief_siege
+	    this.playerEvaluateFortification(attacker, faction, spacekey, 1, is_relief_siege); // 1 = post battle , 1/0 = relief_siege
 	  } else {
 	    if (this.isPlayerControlledFaction(faction)) {
 	      this.field_battle_overlay.renderFortification(this.game.state.field_battle);
@@ -4723,8 +4723,6 @@ return 1; }
 
           let my_specific_game_id = this.game.id;
 
-console.log("into counter_or_acknowledge...");
-
 	  //
 	  //
 	  //
@@ -4742,21 +4740,16 @@ console.log("into counter_or_acknowledge...");
 	  //
 	  let have_i_resolved = false;
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
-console.log("my confirm is not needed...");
 	    have_i_resolved = true;
 	  } else {
 	    if (this.game.tmp_confirm_sent == 1) { 
-console.log("my confirm is not needed... tmp_confirm_sent ");
 	      have_i_resolved = true;
 	    } else {
 	      if (await this.hasMyResolvePending()) {
-console.log("my confirm is not needed... resolve pending ");
 	        have_i_resolved = true;
 	      }
 	    }
 	  }
-
-console.log("into counter_or_acknowledge... 2: " + have_i_resolved);
 
 	  //
 	  //
@@ -4779,8 +4772,6 @@ console.log("into counter_or_acknowledge... 2: " + have_i_resolved);
 	    this.updateStatus("acknowledged");
 	    return ack;
 	  }
-
-console.log("into counter_or_acknowledge... 3");
 
 	  //
 	  // if we get this far i have not confirmed and others may or may
@@ -4821,15 +4812,10 @@ console.log("into counter_or_acknowledge... 3");
 	    //
 	    try {
 
-console.log("key: " + z[i].key);
 	    if (z[i].key !== this.game.state.active_card) {
-console.log("extra: " + extra);
               if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
-console.log("this triggers maybe: " + z[i].key + " -- " + extra);
                 let x = z[i].menuOption(this, stage, this.game.player, extra);
-console.log("x is now: " + JSON.stringify(x));
 		if (x.html) {
-console.log("and there is html here...");
                   html += x.html;
 	          z[i].faction = x.faction; // add faction
 	          menu_index.push(i);
@@ -4850,7 +4836,6 @@ console.log("caught error looking for event: " + JSON.stringify(err));
 	  // skipping, and no options for active player -- skip completely
 	  //
 	  if (this.game.state.skip_counter_or_acknowledge == 1) {
-console.log("skip c or a");
 	    if (attach_menu_events == 0) {
 	      //
 	      // replaces so we do not sent 2x
@@ -4879,8 +4864,6 @@ console.log("skip c or a");
 	  //
 	  if (this.faster_play == 1 && menu_index.length == 0 && attach_menu_events != 1 && this.isGameHalted() != 1) {
 
-console.log("faster play.... ");
-
 	    //
 	    // we don't need to HALT the game because the game will not progress
 	    // until all players have hit RESOLVE anyway. 
@@ -4889,8 +4872,6 @@ console.log("faster play.... ");
 	    his_self.halted = 1;
             his_self.game.queue[his_self.game.queue.length-1] = "HALTED\tWaiting for Game to Continue\t"+his_self.publicKey;
             his_self.hud.back_button = false;
-
-console.log("not showing combat options: " + html);
 
       	    let html = '<ul><li class="option" id="ok">acknowledge</li></ul>';
             his_self.updateStatusWithOptions(msg, html);
@@ -5018,19 +4999,15 @@ console.log("not showing combat options: " + html);
 	    });
 	
             let action2 = $(this).attr("id");
-console.log("checking which action? " + action2);
 	    if (deck[action2]) {
-console.log("checking which action 1: " + action2);
 	      his_self.cardbox.show(action2);
 	      return;
 	    }
 	    if (his_self.debaters[action2]) {
-console.log("checking which action 2: " + action2);
 	      his_self.cardbox.show(action2);
 	      return;
 	    }
 	    if (his_self.game.deck[0].cards[action2]) {
-console.log("checking which action 3: " + action2);
 	      his_self.cardbox.show(action2);
 	      return;
 	    }
@@ -7174,6 +7151,13 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 	    }
 	  }
 
+	  // 
+	  // we are pushing things onto the queue in reverse order so that when the queue 
+	  // is "unwound" in reverse the purging and capturing of leaders happens at the
+	  // end. this is probably the most counterintuitive part of the code that follows
+	  // -- to understand process in reverse.
+	  //
+
 
 	  //
 	  // purge units and capture leaders
@@ -7196,7 +7180,7 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 	  }
 
 	  //
-	  //
+	  // depending on who wins, we handle retreats
 	  //
           if (winner === his_self.game.state.field_battle.defender_faction) {
 
@@ -7323,7 +7307,7 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 	    // if the space does not belong to the attacker and is a key, we put it under seige
 	    //
 	    if (!this.isSpaceFriendly(his_self.game.state.field_battle.spacekey, his_self.game.state.field_battle.attacker_faction) && space.besieged == 0 && (space.type == "key" || space.type == "electorate" || space.type == "fortress")) {
-	      this.game.queue.push("besiege_space\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
+	      this.game.queue.push("besiege_space\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key+"\t1"); // 1 = do not force besiege units
 	    }
 
 	  }
@@ -7353,15 +7337,19 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 
 	  let attacker = mv[1];
 	  let spacekey = mv[2];
+	  let skip_besiege_units_inside = false;
+	  if (parseInt(mv[3]) == 1) { skip_besiege_units_inside = true; }
 	  let space = this.game.spaces[spacekey];
 
 	  if (space) {
 	    if (space.besieged == 0) {
               space.besieged = 2;
-              for (let key in space.units) {
-	        if (!this.areAllies(key, attacker)) {
-                  for (let ii = 0; ii < space.units[key].length; ii++) {
-                    space.units[key][ii].besieged = 1;
+	      if (!skip_besiege_units_inside) {
+                for (let key in space.units) {
+	          if (!this.areAllies(key, attacker)) {
+                    for (let ii = 0; ii < space.units[key].length; ii++) {
+                      space.units[key][ii].besieged = 1;
+                    }
                   }
                 }
               }
@@ -8142,7 +8130,6 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 	      hits_to_assign = max_possible_hits_assignable;
 	    }
 
-
 	    while (are_hits_all_assigned == 0 && hits_to_assign > 1) {
 
 	      //
@@ -8408,7 +8395,7 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 	      if (attacker_sea_units_remaining > 0) {
                 for (let f in his_self.game.state.naval_battle.faction_map) {
                   if (his_self.game.state.naval_battle.faction_map[f] == his_self.game.state.naval_battle.attacker_faction) {
-                    this.game.queue.push("purge_naval_units_and_capture_leaders\t"+defender_faction+"\t"+f+"\t"+space.key);
+                    this.game.queue.push("purge_naval_units_and_capture_leaders\t"+f+"\t"+defender_faction+"\t"+space.key);
                     this.game.queue.push("player_evaluate_post_naval_battle_retreat\t"+f+"\t"+space.key);
 	          }
 	        }
@@ -8417,7 +8404,7 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 	      if (defender_sea_units_remaining > 0) {
                 for (let f in his_self.game.state.naval_battle.faction_map) {
                   if (his_self.game.state.naval_battle.faction_map[f] == his_self.game.state.naval_battle.defender_faction) {
-                    this.game.queue.push("purge_naval_units_and_capture_leaders\t"+attacker_faction+"\t"+f+"\t"+space.key);
+                    this.game.queue.push("purge_naval_units_and_capture_leaders\t"+f+"\t"+attacker_faction+"\t"+space.key);
                     this.game.queue.push("player_evaluate_post_naval_battle_retreat\t"+f+"\t"+space.key);
 	          }
 	        }
@@ -9321,9 +9308,11 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 	      unfortified_units++;
 	    }
 	  }
+
+console.log("in post_field_battle_evaluate_retreat: " + spacekey);
+console.log("how many unfortified units? " + unfortified_units);
+
 	  if (unfortified_units == 0) {
-	    // disabled MAR 26 -- splicing is above
-	    //this.game.queue.splice(qe, 1);
 	    return 1;
 	  }
 
@@ -12172,6 +12161,7 @@ console.log("----------------------------");
 
 	  if (card == "undefined") { 
 	    this.game.queue.splice(qe, 1);
+	    this.game.state.last_pulled_card = "";
 	    return 1;
 	  }
 
@@ -13505,6 +13495,21 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 	  let faction = mv[1];
 	  let unittype = mv[2];
 	  let num = parseInt(mv[3]);
+	  let spacekey = "";
+	  if (mv[4]) { spacekey = mv[4]; }
+
+	  if (spacekey != "") {
+	    for (let i = 0; i < num; i++) {
+	      let u = this.newUnit(faction, unittype);
+	      if (this.game.spaces[spacekey]) {
+	        if (this.game.spaces[spacekey].units[faction]) {
+	  	  this.game.spaces[spacekey].units[faction].push(u);
+	        }
+	      }
+	      this.game.queue.splice(qe, 1);
+	      return 1;
+	    }
+	  }
 
 	  if (his_self.game.player === his_self.returnPlayerCommandingFaction(faction)) {
             his_self.playerPlaceUnitsInSpaceWithFilter(unittype, num, faction,
