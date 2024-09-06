@@ -71,6 +71,7 @@
 	justify-content: center;
 }
 
+
 .spaces-list .saito-profile {
 	border-radius: 1rem;
 	border: 2px solid;
@@ -86,6 +87,17 @@
 	width: 7rem;
 	height: 7rem;
 	font-size: 3.5rem;
+}
+
+
+.redsquare-sidebar .spaces-list {
+	display: flex;
+	flex-direction: column;
+	gap: unset;
+}
+
+.redsquare-sidebar .spaces-list .saito-profile {
+	height: unset;
 }
 
 
