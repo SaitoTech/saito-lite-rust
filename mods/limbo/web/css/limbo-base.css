@@ -128,6 +128,7 @@
 	display: none;
 	grid-column-start: unset;
 	grid-row: unset;
+	margin-left: unset;
 }
 
 .limbo-container.dreaming .saito-sidebar.right{

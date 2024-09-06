@@ -174,7 +174,7 @@ font imports
 
 /*SHADOW SELECTION*/
 --shadow-primary-button: var(--shadow-standard);
---shadow-chat-popup: none;
+--shadow-chat-popup: var(--box-shadow-sidebar-elements);
 --shadow-overlay: var(--shadow-standard);
 /*FONTS SECTION*/
 /* Quick Settings - Basic Font Colors */

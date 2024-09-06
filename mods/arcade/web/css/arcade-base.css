@@ -3,7 +3,7 @@
 }
 
 .arcade-container.saito-container{
-	grid-template-columns: auto 30rem;
+	grid-template-columns: auto 33rem;
 	grid-template-rows: minmax(5px, 1fr);
 	padding: 0 calc((100vw - var(--saito-arcade-width)) / 2);
 	padding-left: calc((100vw - var(--saito-arcade-width)) / 4);
