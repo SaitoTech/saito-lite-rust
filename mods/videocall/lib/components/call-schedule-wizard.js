@@ -76,11 +76,6 @@ class CallScheduleWizard {
         return date.toISOString().slice(0, 16);
     }
 
-    createRoomLink(room_obj) {
-        const base64obj = this.app.crypto.stringToBase64(JSON.stringify(room_obj));
-        const url1 = window.location.origin + '/videocall/';
-        return `${url1}?stun_video_chat=${base64obj}`;
-    }
 }
 
 module.exports = CallScheduleWizard;

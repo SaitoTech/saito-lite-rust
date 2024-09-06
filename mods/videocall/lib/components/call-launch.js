@@ -106,15 +106,6 @@ class CallLaunch {
 		}
 	}
 
-	createRoomLink(room_obj) {
-		let base64obj = this.app.crypto.stringToBase64(
-			JSON.stringify(room_obj)
-		);
-		let url1 = window.location.origin + '/videocall/';
-		this.old_title = document.title;
-		return `${url1}?stun_video_chat=${base64obj}`;
-	}
-
 	enterCall() {
 		//
 		// Set big screen video as desired call interface
