@@ -1164,10 +1164,20 @@ if (this.game.state.scenario != "is_testing") {
     }
 
   }
+
   restoreMilitaryLeaders() {
 
+console.log("into restore military leaders!");
+
     for (let i = 0; i < this.game.state.military_leaders_removed_until_next_round.length; i++) {
+
+      let obj = this.game.state.military_leaders_removed_until_next_round[i];
+
+console.log("found leader to restore: " + JSON.stringify(obj));
+
       if (obj.leader) {
+
+console.log("leader exists...");
 
         let leader = obj.leader;
 	let s = obj.space;
@@ -1175,8 +1185,11 @@ if (this.game.state.scenario != "is_testing") {
 
 	if (leader) {
 	  if (s) {
+console.log("space exists");
 	    if (faction) {
+console.log("faction exists");
 	      this.game.spaces[s].units[faction].push(leader);
+	      this.displaySpace(s);
 	    }
 	  }
 	}

@@ -5933,7 +5933,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	        }
 	      }
 
-	      if (attacker_squadrons_adjacent < squadrons_protecting_space) {
+	      if (attacker_squadrons_adjacent <= squadrons_protecting_space) {
 	        if (999 < squadrons_protecting_space) {
 		  alert("Space cannot be assaulted if protected by fleet in adjacent sea");
 		  player_warned = 1;
@@ -6041,10 +6041,12 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
     //
     // 2P requires only that it is in protestant or catholic religious influence
+    // protestants can remove unrest even in catholic spaces before the League
     //
-    if (his_self.game.player.length == 2) {
+    if (his_self.game.players.length == 2) {
       for (let i = 0; i < spaces_in_unrest.length; i++) {
         if (his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant" && faction == "protestant") { return 1; }
+        if (faction == "protestant" && his_self.game.spaces[spaces_in_unrest[i]].home == "" && his_self.game.spaces[spaces_in_unrest[i]].language == "german" && his_self.game.state.events.schmalkaldic_league == 0) { return 1; }
         if (his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" && faction == "papacy") { return 1; }
       }
     }
@@ -6192,6 +6194,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (his_self.game.players.length == 2) {
       for (let i = 0; i < spaces_in_unrest.length; i++) {
         if (faction == "protestant" && his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant"){spaces_to_fix.push(spaces_in_unrest[i]);}
+        if (faction == "protestant" && his_self.game.spaces[spaces_in_unrest[i]].home == "" && his_self.game.spaces[spaces_in_unrest[i]].language == "german" && his_self.game.state.events.schmalkaldic_league == 0) {spaces_to_fix.push(spaces_in_unrest[i]);}
         if (faction == "papacy" && his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic"){spaces_to_fix.push(spaces_in_unrest[i]);}
       }
     } else {

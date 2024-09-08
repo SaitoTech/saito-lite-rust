@@ -48,7 +48,13 @@ this.updateLog(`###############`);
 
 	  this.onNewRound();
 	  this.restoreReformers();
+console.log("RESTORE MILITARY LEADERS1");
+console.log("RESTORE MILITARY LEADERS1");
+console.log("RESTORE MILITARY LEADERS1");
 	  this.restoreMilitaryLeaders();
+console.log("RESTORE MILITARY LEADERS2");
+console.log("RESTORE MILITARY LEADERS2");
+console.log("RESTORE MILITARY LEADERS2");
 
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
 	    this.resetPlayerRound((i+1));
@@ -2287,6 +2293,8 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	  if (this.game.players.length > 2) {
 	    this.addCard("ottoman", "033");
 	  }
+          this.addCard("ottoman", "103");
+/**
           this.addCard("france", "024");
           this.addCard("france", "025");
           this.addCard("hapsburg", "026");
@@ -2309,7 +2317,7 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	  this.addMercenary("hapsburg", "besancon", 2);
 	  this.controlSpace("hapsburg", "belgrade");
 	  this.addMercenary("hapsburg", "belgrade", 2);
-
+**/
 	  this.addNavalSquadron("england", "portsmouth", 2);
 	  this.addNavalSquadron("france", "rouen", 2);
 
@@ -13256,6 +13264,10 @@ console.log("----------------------------");
             }
           }
 
+
+          if (space.besieged != 0) {
+            space.besieged = 0;
+          }
 
 
 	  this.displaySpace(space);

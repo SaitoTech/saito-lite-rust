@@ -3300,6 +3300,7 @@ console.log("selected: " + spacekey);
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu === "debate") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
+    	  his_self.addMove("cards_left\tprotestant\t"+(parseInt(his_self.game.state.cards_left["protestant"])+1));
           his_self.addMove('hand_to_fhand\t1\t' + p + '\t' + "protestant" + "\t1");
 	  his_self.addMove("DEAL\t1\t"+p+"\t1");
 	  his_self.addMove("discard\tprotestant\t007");
@@ -7981,7 +7982,17 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
               space.units[f].splice(i, 1);
               i--;
             }
+
 	    let who_gets_control = his_self.returnAllyOfMinorPower(space.home);
+
+	    // 2P includes electorates
+	    if (spacekey == "mainz") { space.home == "protestant"; who_gets_control = "protestant"; }
+	    if (spacekey == "cologne") { space.home == "protestant"; who_gets_control = "protestant"; }
+	    if (spacekey == "trier") { space.home == "protestant"; who_gets_control = "protestant"; }
+	    if (spacekey == "augsburg") { space.home == "protestant"; who_gets_control = "protestant"; }
+	    if (spacekey == "wittenberg") { space.home == "protestant"; who_gets_control = "protestant"; }
+	    if (spacekey == "brandenburg") { space.home == "protestant"; who_gets_control = "protestant"; }
+
 	    space.political = who_gets_control;
             his_self.addRegular(space.home, space.key, 1);
           }
@@ -10149,7 +10160,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
           let spacekey = mv[2];
 
  	  his_self.game.spaces[spacekey].units[faction] = his_self.game.spaces["rome"].units[faction];
- 	  his_self.game.spaces["rome"].units[faction] = [];
+ 	  if (spacekey != "rome") { his_self.game.spaces["rome"].units[faction] = []; }
 	 
 	  //
 	  // 2P game give cards to Protestants

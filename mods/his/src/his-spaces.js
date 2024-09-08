@@ -2110,6 +2110,7 @@ if (x) {
         if (owner == "") { owner = this.game.spaces[key].home; }
         owner = this.returnControllingPower(owner);
         if (owner == faction) {
+console.log("faction controls: " + key);
           controlled_keys++;
         }
       }

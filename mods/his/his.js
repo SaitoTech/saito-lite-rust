@@ -631,7 +631,7 @@ console.log("WHY RUNNING INITIALIZE GAME?");
       },
       returnCardsDealt  :       function(game_mod) {
         
-        let kc = game_mod.returnNumberOfKeysControlledByFaction("england");
+        let kc = game_mod.returnNumberOfKeysControlledByFaction("papacy");
         let base = 0;
         
         switch (kc) {
@@ -6984,6 +6984,7 @@ console.log("selected: " + spacekey);
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu === "debate") {
 	  let p = his_self.returnPlayerOfFaction("protestant");
+    	  his_self.addMove("cards_left\tprotestant\t"+(parseInt(his_self.game.state.cards_left["protestant"])+1));
           his_self.addMove('hand_to_fhand\t1\t' + p + '\t' + "protestant" + "\t1");
 	  his_self.addMove("DEAL\t1\t"+p+"\t1");
 	  his_self.addMove("discard\tprotestant\t007");
@@ -11665,7 +11666,17 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
               space.units[f].splice(i, 1);
               i--;
             }
+
 	    let who_gets_control = his_self.returnAllyOfMinorPower(space.home);
+
+	    // 2P includes electorates
+	    if (spacekey == "mainz") { space.home == "protestant"; who_gets_control = "protestant"; }
+	    if (spacekey == "cologne") { space.home == "protestant"; who_gets_control = "protestant"; }
+	    if (spacekey == "trier") { space.home == "protestant"; who_gets_control = "protestant"; }
+	    if (spacekey == "augsburg") { space.home == "protestant"; who_gets_control = "protestant"; }
+	    if (spacekey == "wittenberg") { space.home == "protestant"; who_gets_control = "protestant"; }
+	    if (spacekey == "brandenburg") { space.home == "protestant"; who_gets_control = "protestant"; }
+
 	    space.political = who_gets_control;
             his_self.addRegular(space.home, space.key, 1);
           }
@@ -13833,7 +13844,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
           let spacekey = mv[2];
 
  	  his_self.game.spaces[spacekey].units[faction] = his_self.game.spaces["rome"].units[faction];
- 	  his_self.game.spaces["rome"].units[faction] = [];
+ 	  if (spacekey != "rome") { his_self.game.spaces["rome"].units[faction] = []; }
 	 
 	  //
 	  // 2P game give cards to Protestants
@@ -17864,6 +17875,7 @@ if (x) {
         if (owner == "") { owner = this.game.spaces[key].home; }
         owner = this.returnControllingPower(owner);
         if (owner == faction) {
+console.log("faction controls: " + key);
           controlled_keys++;
         }
       }
@@ -21447,10 +21459,20 @@ if (this.game.state.scenario != "is_testing") {
     }
 
   }
+
   restoreMilitaryLeaders() {
 
+console.log("into restore military leaders!");
+
     for (let i = 0; i < this.game.state.military_leaders_removed_until_next_round.length; i++) {
+
+      let obj = this.game.state.military_leaders_removed_until_next_round[i];
+
+console.log("found leader to restore: " + JSON.stringify(obj));
+
       if (obj.leader) {
+
+console.log("leader exists...");
 
         let leader = obj.leader;
 	let s = obj.space;
@@ -21458,8 +21480,11 @@ if (this.game.state.scenario != "is_testing") {
 
 	if (leader) {
 	  if (s) {
+console.log("space exists");
 	    if (faction) {
+console.log("faction exists");
 	      this.game.spaces[s].units[faction].push(leader);
+	      this.displaySpace(s);
 	    }
 	  }
 	}
@@ -22445,7 +22470,13 @@ this.updateLog(`###############`);
 
 	  this.onNewRound();
 	  this.restoreReformers();
+console.log("RESTORE MILITARY LEADERS1");
+console.log("RESTORE MILITARY LEADERS1");
+console.log("RESTORE MILITARY LEADERS1");
 	  this.restoreMilitaryLeaders();
+console.log("RESTORE MILITARY LEADERS2");
+console.log("RESTORE MILITARY LEADERS2");
+console.log("RESTORE MILITARY LEADERS2");
 
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
 	    this.resetPlayerRound((i+1));
@@ -24684,6 +24715,8 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	  if (this.game.players.length > 2) {
 	    this.addCard("ottoman", "033");
 	  }
+          this.addCard("ottoman", "103");
+/**
           this.addCard("france", "024");
           this.addCard("france", "025");
           this.addCard("hapsburg", "026");
@@ -24706,7 +24739,7 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	  this.addMercenary("hapsburg", "besancon", 2);
 	  this.controlSpace("hapsburg", "belgrade");
 	  this.addMercenary("hapsburg", "belgrade", 2);
-
+**/
 	  this.addNavalSquadron("england", "portsmouth", 2);
 	  this.addNavalSquadron("france", "rouen", 2);
 
@@ -35654,6 +35687,10 @@ console.log("----------------------------");
           }
 
 
+          if (space.besieged != 0) {
+            space.besieged = 0;
+          }
+
 
 	  this.displaySpace(space);
 	  this.displayVictoryTrack();
@@ -42733,7 +42770,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	        }
 	      }
 
-	      if (attacker_squadrons_adjacent < squadrons_protecting_space) {
+	      if (attacker_squadrons_adjacent <= squadrons_protecting_space) {
 	        if (999 < squadrons_protecting_space) {
 		  alert("Space cannot be assaulted if protected by fleet in adjacent sea");
 		  player_warned = 1;
@@ -42841,10 +42878,12 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
     //
     // 2P requires only that it is in protestant or catholic religious influence
+    // protestants can remove unrest even in catholic spaces before the League
     //
-    if (his_self.game.player.length == 2) {
+    if (his_self.game.players.length == 2) {
       for (let i = 0; i < spaces_in_unrest.length; i++) {
         if (his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant" && faction == "protestant") { return 1; }
+        if (faction == "protestant" && his_self.game.spaces[spaces_in_unrest[i]].home == "" && his_self.game.spaces[spaces_in_unrest[i]].language == "german" && his_self.game.state.events.schmalkaldic_league == 0) { return 1; }
         if (his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" && faction == "papacy") { return 1; }
       }
     }
@@ -42992,6 +43031,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (his_self.game.players.length == 2) {
       for (let i = 0; i < spaces_in_unrest.length; i++) {
         if (faction == "protestant" && his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant"){spaces_to_fix.push(spaces_in_unrest[i]);}
+        if (faction == "protestant" && his_self.game.spaces[spaces_in_unrest[i]].home == "" && his_self.game.spaces[spaces_in_unrest[i]].language == "german" && his_self.game.state.events.schmalkaldic_league == 0) {spaces_to_fix.push(spaces_in_unrest[i]);}
         if (faction == "papacy" && his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic"){spaces_to_fix.push(spaces_in_unrest[i]);}
       }
     } else {
