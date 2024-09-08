@@ -81,6 +81,9 @@ console.log("\n\n\n\n");
 	  this.unsetEnemies("hapsburg", "france");
 	  this.unsetEnemies("ottoman", "hungary");
 
+	  this.setAllies("france", "scotland");
+
+
 	  // OTTOMAN
           this.addRegular("ottoman", "istanbul", 1);
           this.addRegular("ottoman", "edirne");

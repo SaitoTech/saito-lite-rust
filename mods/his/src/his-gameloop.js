@@ -48,13 +48,7 @@ this.updateLog(`###############`);
 
 	  this.onNewRound();
 	  this.restoreReformers();
-console.log("RESTORE MILITARY LEADERS1");
-console.log("RESTORE MILITARY LEADERS1");
-console.log("RESTORE MILITARY LEADERS1");
 	  this.restoreMilitaryLeaders();
-console.log("RESTORE MILITARY LEADERS2");
-console.log("RESTORE MILITARY LEADERS2");
-console.log("RESTORE MILITARY LEADERS2");
 
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
 	    this.resetPlayerRound((i+1));

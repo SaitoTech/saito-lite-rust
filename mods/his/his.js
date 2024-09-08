@@ -2424,6 +2424,9 @@ console.log("\n\n\n\n");
 	  this.unsetEnemies("hapsburg", "france");
 	  this.unsetEnemies("ottoman", "hungary");
 
+	  this.setAllies("france", "scotland");
+
+
 	  // OTTOMAN
           this.addRegular("ottoman", "istanbul", 1);
           this.addRegular("ottoman", "edirne");
@@ -22470,13 +22473,7 @@ this.updateLog(`###############`);
 
 	  this.onNewRound();
 	  this.restoreReformers();
-console.log("RESTORE MILITARY LEADERS1");
-console.log("RESTORE MILITARY LEADERS1");
-console.log("RESTORE MILITARY LEADERS1");
 	  this.restoreMilitaryLeaders();
-console.log("RESTORE MILITARY LEADERS2");
-console.log("RESTORE MILITARY LEADERS2");
-console.log("RESTORE MILITARY LEADERS2");
 
 	  for (let i = 0; i < this.game.state.players_info.length; i++) {
 	    this.resetPlayerRound((i+1));
@@ -48529,6 +48526,16 @@ try {
     if (space.type == "key") { stype = "key"; owner = this.returnControllingPower(owner); }
     if (owner == "protestant") { stype = "hex"; owner = this.returnControllingPower(owner); }
 
+
+    //
+    //
+    //
+    if (space.home === space.political || (space.home !== "" && space.political == "")) {
+      if (space.home !== this.returnControllingPower(space.home)) {
+	owner = this.returnControllingPower(space.home);
+      }
+    }
+
     if (owner != "") {
       if (owner === "hungary") {
         if (owner === "hungary") {
@@ -49776,6 +49783,7 @@ try {
 
     let stype = "hex";
 
+    if (space.type == "fortress") { stype = "hex"; }
     if (space.type == "town") { stype = "hex"; }
     if (space.type == "key") { stype = "key"; }
 
@@ -49806,11 +49814,20 @@ try {
         if (this.areAllies(space.home, "ottoman", 0)) { allied_to_major_power = true; }
         if (this.areAllies(space.home, "hapsburg", 0)) { allied_to_major_power = true; }
       }
+      if (space.type === "town" || stype == "hex") {
+        if (this.areAllies(space.home, "protestant", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "papacy", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "france", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "england", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "ottoman", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "hapsburg", 0)) { allied_to_major_power = true; }
+      }
       if (allied_to_major_power == false) {
         no_keytiles_in_keys.push(space.key);
         show_tile = 0;
       }
     }
+
     if (space.language == "german" && space.units["protestant"].length > 0) { show_tile = 1; }
 
     //
@@ -49819,6 +49836,16 @@ try {
     if (space.home === "" && space.political !== "") { show_tile = 1; }
     if (space.type === "key") { show_tile = 1; }
     if (space.type === "electorate") { show_tile = 1; }
+
+    //
+    // and force for minor
+    //
+    if (space.home === space.political || (space.home !== "" && space.political == "")) {
+      if (stype === "hex" && space.home !== this.returnControllingPower(space.home)) {
+        show_tile = 1;
+      }   
+    }   
+
 
     //
     // and force if has units
