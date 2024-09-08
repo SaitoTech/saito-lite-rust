@@ -163,14 +163,20 @@ body {
 	margin-top: 3rem;
 }
 
+
+/*.saito-main {
+	border-left: var(--border-thickness-post-divider) solid var(--border-color-post-divider);
+	border-right: var(--border-thickness-post-divider) solid var(--border-color-post-divider);
+}*/
+
 @media screen and (max-width: 1200px) {
 
 	:root {
-		--saito-width: 940px;
+		--saito-width: 990px;
 	}
 
 	.saito-container { 
-		grid-template-columns: minmax(7rem, auto) 54rem 30rem;
+		grid-template-columns: minmax(7rem, auto) 58rem 33rem;
 	 }
 
 	 .saito-sidebar.left{
@@ -182,14 +188,14 @@ body {
 
 }
 
-@media screen and (max-width: 940px) {
+@media screen and (max-width: 990px) {
 
 	:root {
-		--saito-width: 640px;
+		--saito-width: 660px;
 	}
 
 	.saito-container { 
-		grid-template-columns: minmax(7rem, auto) 54rem;
+		grid-template-columns: minmax(7rem, auto) 58rem;
 		padding: 0 calc((100vw - var(--saito-width)) / 2);
 		column-gap: 1rem;
 	 }
@@ -243,24 +249,16 @@ body {
 	z-index: 5;
 }
 
-@media screen and (max-width: 768px){
-	.saito-container{
-		column-gap: 0;
-	}
-}
 .saito-main {
 	padding-top: 1.5rem;
 }
 
-@media screen and (max-width: 900px) {
-	.saito-main{
-		padding: 0;
-		padding-top: 1.5rem;
+
+@media screen and (max-width: 660px) {
+	:root {
+		--saito-width: 580px;
 	}
-}
 
-
-@media screen and (max-width: 640px) {
 	.saito-container {
 		grid-template-columns: minmax(20rem, 1fr);
 		justify-content: center;

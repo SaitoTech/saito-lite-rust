@@ -64,6 +64,7 @@ html[data-theme="midnight"] {
   --font-color-button-chat-container: var(--font-color-primary);
   --font-color-calendar-today: var(--font-color-primary);
   --font-color-calendar-hover: var(--font-color-primary);
+  --font-color-mention: var(--color-highlight);
   /* Menu and Header Font Colors */
   --font-color-menu-hamburger: var(--font-color-primary);
   --font-color-header-msg: var(--font-color-primary);
@@ -167,8 +168,8 @@ html[data-theme="midnight"] {
   --background-color-icon-close: var(--color-complement);
   /* Chat Related Colors */
   --background-color-chat-popup-main: var(--background-color-main);
-  --background-color-chat-popup-message-self: var(--color-tint-dark);
-  --background-color-chat-popup-message: var(--color-primary);
+  --background-color-chat-popup-message-self: var(--color-primary);
+  --background-color-chat-popup-message: var(--color-base);
   --background-color-chat-popup-subheader: var(--color-base);
   /* Theme Specific */
   --saito-arcade-header-background: #000;

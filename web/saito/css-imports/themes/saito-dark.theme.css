@@ -141,8 +141,12 @@ html[data-theme="dark"] {
   --background-color-chat-container-open: none;
   --background-color-chat-popup-main: var(--color-tint-dark);
   --background-color-chat-popup-header: var(--color-tint-dark);
+  --background-color-chat-popup-message-self: var(--color-tint-dark);
+  --background-color-chat-popup-message: var(--color-base); /*var(--color-highlight);*/
+
   /* Theme Specific */
   --saito-arcade-header-background: var(--background-color-main);
   --saito-heart-animation: url('/redsquare/images/heart-orange.png');
   --saito-heart-animation-clicked: url('/redsquare/images/heart-all-orange.png');
+  --font-color-redsquare-interaction: #e05b08; /* match the orange heart animation */
 }

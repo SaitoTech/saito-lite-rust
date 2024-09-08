@@ -327,6 +327,8 @@ class Limbo extends ModTemplate {
 
 		this.app.modules.returnModulesRespondingTo('chat-manager');
 
+		this.is_rendered = true;
+
 		await super.render();
 
 		if (this.app.browser.returnURLParameter('dream')) {
@@ -337,12 +339,46 @@ class Limbo extends ModTemplate {
 		this.rendered = true;
 	}
 
+
+	canRenderInto(qs) {
+		if (qs == '.redsquare-sidebar') {
+			return true;
+		}
+		return false;
+	}
+
+	renderInto(qs) {
+		if (qs == '.redsquare-sidebar') {
+			this.app.browser.prependElementToSelector(`<div id="spaces" class="spaces-list"></div>`, '.redsquare-sidebar');
+			this.attachStyleSheets();
+			this.is_rendered = true;
+
+			this.app.connection.on("limbo-spaces-update", ()=> {
+
+				document.querySelector(".spaces-list").innerHTML = "";
+								
+				for (let key in this.dreams){
+					
+					this.createProfileCard(key, this.dreams[key], ".spaces-list");
+
+				}
+
+			});
+
+			document.querySelector(".spaces-list").onclick = (e) => {
+				window.location = '/' + this.returnSlug();
+			}
+
+		}
+	}
+
+
 	async onPeerServiceUp(app, peer, service = {}) {
 		//
 		// For now, we will only check if moving into the space
 		// maybe in the future, will announce if followed keys are hosting
 		//
-		if (!app.BROWSER || !this.browser_active) {
+		if (!app.BROWSER || !this.is_rendered) {
 			return;
 		}
 
@@ -360,7 +396,7 @@ class Limbo extends ModTemplate {
 						});
 					}
 
-					this.main.render();
+					this.app.connection.emit("limbo-spaces-update");
 
 					if (this.dreamer) {
 						let prompt = `${this.app.keychain.returnUsername(this.dreamer)}'s Swarmcast`;
@@ -1269,7 +1305,7 @@ class Limbo extends ModTemplate {
 
 				console.log('ON CONFIRMATION: ', message);
 
-				if (tx.isTo(this.publicKey) || this.browser_active || this.app.BROWSER == 0) {
+				if (tx.isTo(this.publicKey) || this.is_rendered || this.app.BROWSER == 0) {
 					let sender = tx.from[0].publicKey;
 
 					if (message.request === 'start dream') {
@@ -1354,7 +1390,7 @@ class Limbo extends ModTemplate {
 			return;
 		}
 
-		if (tx.isTo(this.publicKey) || this.browser_active || this.app.BROWSER == 0) {
+		if (tx.isTo(this.publicKey) || this.is_rendered || this.app.BROWSER == 0) {
 			let sender = tx.from[0].publicKey;
 
 			console.log('HANDLE PEER TRANSACTION: ', txmsg);

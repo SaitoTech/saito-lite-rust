@@ -90,6 +90,5 @@ html[data-theme="milquetoast"] {
       --background-color-calendar-hover: var(--color-highlight);
       --background-color-chat-popup-main: var(--background-color-main);
       --background-color-chat-popup-subheader: var(--color-base);
-      --background-color-chat-popup-message-self: var(--color-base);
       
     }
