@@ -86,6 +86,8 @@ class GameWizard {
 			this.meta_overlay.hide();
 		}
 
+		this.app.modules.renderInto("#arcade-advance-opt");
+
 		this.attachEvents();
 
 		if (this.obj?.skip){
@@ -99,7 +101,6 @@ class GameWizard {
 			} 
 		}
 
-		this.app.modules.renderInto("#arcade-advance-opt");
 	}
 
 	//
