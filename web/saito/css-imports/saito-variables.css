@@ -231,8 +231,7 @@ font imports
   --font-color-hover-post-icons: var(--color-secondarys); /* tag */
   --font-color-hover-post-controls: var(--font-color-heavy);
 /* Module and Overlay Font Colors */
-  --font-color-title-game: var(--font-color-inverse);
-  --font-color-title-game-details: var(--font-color-inverse);
+  --font-color-invite-stub: var(--font-color-inverse);
   --font-color-module-menu: var(--font-color-primary);
   --font-color-modal-menu-oldschool: var(--font-color-inverse);
   --font-color-module-menu-header: var(--font-color-inverse);

@@ -24,7 +24,7 @@ button,
 .saito-button-secondary { /* found in the settings, top wallet control buttons --AND also for loading new posts  */
   /*padding: 1rem 1.5rem;
   text-align: center;*/
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   letter-spacing: 1px;

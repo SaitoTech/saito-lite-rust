@@ -40,22 +40,7 @@
 }
 
 
-.uploader-menu {
-    position: absolute;
-    bottom: 0.5rem;
-    left: 0.5rem;
-    z-index: 10;
-    background-color: #000000b0;
-    box-shadow: var(--box-shadow-sidebar-elements);
-    border-radius: 1rem; 
-    padding: 0 1.5rem; 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 5.5rem;
 
-}
 .uploader-content {
     display: none;
     height: 100%;
@@ -93,30 +78,4 @@
 }
 
 
- .uploader-change-photo, .uploader-remove-photo {
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer; 
-    font-size: 4rem;
-   
-
-}
-
-.uploader-change-photo i, .uploader-remove-photo i {
-    color:var(--saito-red) ;
-    font-size: 2.6rem;
-    cursor: pointer;
-}
-
-
-
-.uploader-remove-photo {
-
-
-}
-
-.uploader-change-photo {
-margin-top: 2rem;
-}
+ 

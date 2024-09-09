@@ -43,7 +43,7 @@ class Arcade extends ModTemplate {
 
 		this.is_game_initializing = false;
 
-		this.icon_fa = 'fas fa-gamepad';
+		this.icon = 'fas fa-gamepad';
 
 		this.styles = ['/arcade/style.css'];
 
@@ -548,14 +548,6 @@ class Arcade extends ModTemplate {
 	//
 
 	respondTo(type = '', obj) {
-		if (type == 'header-dropdown') {
-			return {
-				name: this.appname ? this.appname : this.name,
-				icon_fa: this.icon_fa,
-				browser_active: this.browser_active,
-				slug: this.returnSlug()
-			};
-		}
 		if (type === 'user-menu') {
 			if (obj?.publicKey && obj.publicKey !== this.publicKey) {
 				let am = this.app.modules.returnActiveModule();
@@ -626,14 +618,12 @@ class Arcade extends ModTemplate {
 			x.push({
 				text: 'Games',
 				icon: this.icon || 'fas fa-gamepad',
-				disallowed_mods: ['redsquare'],
-				rank: 10,
+            is_active: this.browser_active,
+				rank: 25,
 				callback: function (app, id) {
 					app.connection.emit('arcade-launch-game-selector', {});
 				}
 			});
-			return x;
-
 			return x;
 		}
 

@@ -74,7 +74,7 @@
 
 .spaces-list .saito-profile {
 	border-radius: 1rem;
-	border: 2px solid;
+	border: 1px solid var(--saito-border-color);
 	cursor: pointer;
 	overflow: hidden;
 	height: 300px;
