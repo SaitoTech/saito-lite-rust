@@ -196,6 +196,8 @@ class Mods {
 				console.log('loading dyn module...');
 				let moduleCode = this.app.crypto.base64ToString(DYN_MOD_WEB);
 
+				console.log('module code: ', moduleCode);
+
 				self["saito-js"] = require('saito-js').default;
 				self["saito-js/lib/slip"] = require("saito-js/lib/slip").default;
 				self["saito-js/lib/transaction"] = require("saito-js/lib/transaction").default;
@@ -225,15 +227,21 @@ class Mods {
 				console.log('loading dyn module...');
 				let moduleCode = this.app.crypto.base64ToString(DYN_MOD_NODE);
 
+				//console.log("module code: ", moduleCode);
+
 				global["saito-js"] = require('saito-js/saito').default;
 				global["saito-js/lib/slip"] = require("saito-js/lib/slip").default;
 				global["saito-js/lib/transaction"] = require("saito-js/lib/transaction").default;
 				global["saito-js/lib/block"]=require("saito-js/lib/block").default;
 
 				let mod = eval(moduleCode);
-				console.log("mod : ",typeof mod);
+				//console.log("mod eval: ", mod);
+				//console.log("mod : ",typeof mod);
 				// @ts-ignore
 				let m = new global.Dyn(this.app);
+
+				console.log("m: ", m);
+
 				this.mods.push(m);
 			}
 		// } catch (error) {

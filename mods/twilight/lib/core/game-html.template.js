@@ -1,5 +1,5 @@
-import E73 from "../../web/img/Event73.png";
-import E16 from "../../web/img/Event16.svg";
+//import E73 from "../../web/img/Event73.png";
+//import E16 from "../../web/img/Event16.svg";
 export default (app, mod) => {
 	return `<div id="main" class="main" style="display: all">
 			<div class="gameboard" id="gameboard">
@@ -7,7 +7,7 @@ export default (app, mod) => {
 
 				<div class="active_events" style="float: right">
 					<img
-						src=${E16}
+						src=""
 						id="eventtile_warsaw"
 						class="event_tile"
 					/>
@@ -62,7 +62,7 @@ export default (app, mod) => {
 						class="event_tile"
 					/>
 					<img
-						src=${E73}
+						src=""
 						id="eventtile_shuttlediplomacy"
 						class="event_tile"
 					/>

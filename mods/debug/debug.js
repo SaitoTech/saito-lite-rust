@@ -32,7 +32,7 @@ class Debug extends ModTemplate {
 		let tx = await this.app.wallet.createUnsignedTransaction();
 		console.log('transaction created');
 
-		tx = new Transaction();
+		//tx = new Transaction();
 		console.log('tx created from constructor');
 	}
 

@@ -7,8 +7,8 @@ const webpack = require("webpack");
 let minimize = false;
 let devtool = undefined;
 // let entrypoint = "./../bundler/default/mods/debug/debug.js";
-let entrypoint = "./../mods/twilight/twilight.js";
-// let entrypoint = "./../mods/debug/debug.js";
+//let entrypoint = "./../mods/twilight/twilight.js";
+ let entrypoint = "./../mods/explorer/explorer.js";
 // let entrypoint = "./../mods/solitrio/solitrio.js";
 let outputfile = "dyn.module.js";
 
@@ -35,11 +35,11 @@ webpack(
     //   node:true
     // },
     externals:{
-      "saito-js":"saito-js",
-      "saito-js/lib/transaction":"saito-js/lib/transaction",
-      "saito-js/lib":"saito-js/lib",
-      "saito-js/lib/slip":"saito-js/lib/slip",
-      "saito-js/lib/block":"saito-js/lib/block",
+      // "saito-js":"saito-js",
+      // "saito-js/lib/transaction":"saito-js/lib/transaction",
+      // "saito-js/lib":"saito-js/lib",
+      // "saito-js/lib/slip":"saito-js/lib/slip",
+      // "saito-js/lib/block":"saito-js/lib/block",
     },
     // Path to your entry point. From this file Webpack will begin his work
     entry: [path.resolve(__dirname, entrypoint)],
