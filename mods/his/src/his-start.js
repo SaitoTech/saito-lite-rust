@@ -496,19 +496,19 @@ if (this.game.players.length > 2) {
       }
     });
     this.menu.addSubMenuOption("game-factions", {
-      text : "Protestants",
-      id : "game-protestants",
-      class : "game-protestants",
-      callback : function(app, game_mod) {
-        game_mod.faction_overlay.render("protestant");
-      }
-    });
-    this.menu.addSubMenuOption("game-factions", {
       text : "Papacy",
       id : "game-papacy",
       class : "game-papacy",
       callback : function(app, game_mod) {
         game_mod.faction_overlay.render("papacy");
+      }
+    });
+    this.menu.addSubMenuOption("game-factions", {
+      text : "Protestants",
+      id : "game-protestants",
+      class : "game-protestants",
+      callback : function(app, game_mod) {
+        game_mod.faction_overlay.render("protestant");
       }
     });
 

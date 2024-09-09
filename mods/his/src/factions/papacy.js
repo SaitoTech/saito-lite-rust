@@ -23,7 +23,7 @@
       },
       returnCardsDealt  :       function(game_mod) {
         
-        let kc = game_mod.returnNumberOfKeysControlledByFaction("england");
+        let kc = game_mod.returnNumberOfKeysControlledByFaction("papacy");
         let base = 0;
         
         switch (kc) {

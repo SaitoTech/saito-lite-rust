@@ -81,6 +81,9 @@ console.log("\n\n\n\n");
 	  this.unsetEnemies("hapsburg", "france");
 	  this.unsetEnemies("ottoman", "hungary");
 
+	  this.setAllies("france", "scotland");
+
+
 	  // OTTOMAN
           this.addRegular("ottoman", "istanbul", 1);
           this.addRegular("ottoman", "edirne");
@@ -322,6 +325,7 @@ console.log("\n\n\n\n");
 
 	  this.game.state.ottoman_war_winner_vp = 2;
 	  this.game.spaces["algiers"].pirate_haven = 1;
+	  this.game.spaces["algiers"].home = "ottoman";
 
 
 	  // HAPSBURG

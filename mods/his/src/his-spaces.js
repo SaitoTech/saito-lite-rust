@@ -203,6 +203,32 @@
     return 1;
   }
 
+  doesNavalSpaceHaveFriendlyShip(space, faction) {
+
+    // if a port, must be controlled by faction
+    try {
+      if (this.game.spaces[space]) { 
+	space = this.game.spaces[space];  
+        if (space.language != undefined) { return this.isSpaceFriendly(space, faction); }
+      }
+    } catch (err) {}
+
+    // if naval space, must have friendly ship
+    try { 
+      if (this.game.navalspaces[space]) {
+	space = this.game.navalspaces[space]; 
+        for (let f in space.units) {
+          if (space.units[f].length > 0) {
+	    if (this.areAllies(f, faction, 1)) { return 1; }
+          }	
+        }
+      } 
+    } catch (err) {}
+
+    return 0;
+
+  }
+
   isNavalSpaceFriendly(space, faction) {
    
     // if a port, must be controlled by faction
@@ -383,6 +409,7 @@
   doesSpaceHaveLineOfControl(space, faction) { return this.isSpaceInLineOfControl(space, faction); }
   isSpaceInLineOfControl(space, faction, transit_passes=1, transit_seas=1) {
 
+
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
     let his_self = this;
@@ -403,7 +430,7 @@
 
       space.key ,
 
-      // capitals are good destinations
+      // fortified home spaces are good destinations
       function(spacekey) {
         let invalid_choice = false;
         if (his_self.isSpaceFortified(spacekey) && his_self.isSpaceHomeSpace(spacekey, faction)) { 
@@ -422,6 +449,9 @@
 	}
 	return 0;
       },
+
+      // include source?
+      0,
 
       // transit passes? 0
       transit_passes,
@@ -1889,6 +1919,49 @@ try {
     //
     let n = this.returnNeighbours(sourcekey, transit_passes, transit_seas, faction, is_spring_deployment);
 
+    //
+    // add any spaces with naval connection
+    //
+    let s = this.game.spaces[sourcekey];
+    let vns = [];
+    let pending_vns = [];
+    if (s) {
+      if (s.ports.length > 0) {
+	if (transit_seas) {
+	  for (let i = 0; i < s.ports.length; i++) {
+	    if (this.doesNavalSpaceHaveFriendlyShip(s.ports[i], faction)) {
+	      vns.push(s.ports[i]);
+	    }
+	  }
+	  let vnslen = vns.length;
+	  for (let i = 0; i < vnslen; i++) {
+	    let x = this.game.navalspaces[vns[i]];
+if (x) {
+	    for (let ii = 0; ii < x.neighbours.length; ii++) {
+	      if (this.doesNavalSpaceHaveFriendlyShip(x.neighbours[ii], faction)) {        
+		if (!vns.includes(x.neighbours[ii])) {
+		  vns.push(x.neighbours[ii]);
+		  vnslen++;
+		}
+	      }
+	    }
+	  }
+}
+
+	  //
+	  // any space in port on vns is a starting point too!
+	  //
+	  for (let i = 0; i < vns.length; i++) {
+	    let ns = this.game.navalspaces[vns[i]];
+	    for (let i = 0; i < ns.ports.length; i++) {
+	      n.push({"neighbour": ns.ports[i],"overseas":true});
+	    }
+	  }
+
+        }
+      }
+    }
+
     for (let i = 0; i < n.length; i++) {
       pending_spaces[n[i].neighbour] = { hops : 0 , key : n[i] , overseas : n[i].overseas };
     }
@@ -2037,6 +2110,7 @@ try {
         if (owner == "") { owner = this.game.spaces[key].home; }
         owner = this.returnControllingPower(owner);
         if (owner == faction) {
+console.log("faction controls: " + key);
           controlled_keys++;
         }
       }
@@ -3377,16 +3451,6 @@ try {
       religion: "catholic",
       neighbours: ["buda","graz","agram","belgrade"],
       language: "other",
-      type: "town"
-    }
-    spaces['graz'] = {
-      top: 1208,
-      left: 3374,
-      home: "hungary",
-      political: "",
-      religion: "catholic",
-      neighbours: ["vienna","mohacs","agram","trieste"],
-      language: "german",
       type: "town"
     }
     spaces['agram'] = {

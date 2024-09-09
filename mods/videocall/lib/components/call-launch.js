@@ -86,6 +86,7 @@ class CallLaunch {
 					};
 				}
 
+
 				this.enterCall()
 			};
 		}
@@ -110,6 +111,10 @@ class CallLaunch {
 		//
 		// Set big screen video as desired call interface
 		//
+		if(!this.callSetting.videoInput){
+			siteMessage("Waiting for media feed")
+			return 
+		}
 		this.app.connection.emit('stun-init-call-interface', this.callSetting.returnSettings());
 
 		//
