@@ -339,14 +339,16 @@
   transition: transform 200ms ease-out;
   background-color: var(--saito-primary); /* testing */
   border-radius: 50%;
-  z-index: 6;
+  position: relative;
+  z-index: 2;
   cursor: pointer;
   display: none;
   justify-content: center;
   align-items: center;
+  filter: drop-shadow(1px 1px 2px var(--color-contrast));
 }
 
-.saito-floating-plus-btn.activated {
+.activated .saito-floating-plus-btn {
   transform: rotate(45deg);
 }
 
@@ -363,7 +365,6 @@
   width: 5rem;
   height: 5rem;
   border-radius: 50%;
-  z-index: 5;
   background-color: var(--background-color-main); /* testing */
   transition: box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: 1px 1px 1px var(--border-color-general-dividers-dark), -1px -1px 1px var(--border-color-general-dividers-dark), -1px 1px 1px var(--border-color-general-dividers-dark), 1px -1px 1px var(--border-color-general-dividers-dark);
@@ -384,16 +385,16 @@
   height: 100%;
   background: var(--background-color-main); /* testing */
   position: absolute;
-  top: 0rem;
-  left: 0rem;
-  z-index: -1;
   opacity: 0;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.3s linear;
 }
 
-.saito-floating-menu-mask.show {
-  z-index: 2;
-  opacity: 0.9;
+.activated .saito-floating-menu-mask {
+  width: 100vw;
+  height: 100vh;
+  opacity: 0.8;
+  bottom: -2.5rem;
+  right: -2.5rem;
 }
 
 .saito-floating-container {
@@ -406,23 +407,42 @@
   z-index: 3;
 }
 
-.saito-floating-item-container {
-  display: none;
-  transition: opacity 200ms ease-out;
-  position: absolute;
-  z-index: -1;
-  opacity: 0;
-}
 
-.saito-floating-item-container.show {
+.saito-floating-item-container {
   display: flex;
-  flex-direction: column;
+  pointer-events: none;
+  transition: all 500ms linear;
+  position: absolute;
+  height: fit-content;
+  width: fit-content;
+  bottom: 0;
+  right: 0;
+  opacity: 0;
   gap: 2rem;
   align-items: center;
-  margin-bottom: 2rem;
   z-index: 2;
+}
+
+.saito-floating-item-container.main {
+  flex-direction: column;
+  /*height: 0;*/
+  bottom: 8rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.saito-floating-item-container.alt {
+  flex-direction: row;
+  /*width: 0;*/
+  right: 8rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+
+.activated .saito-floating-item-container {
   opacity: 1;
-  position: relative;
+  pointer-events: auto;
 }
 
 .saito-header-logo-wrapper{

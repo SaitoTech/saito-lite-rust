@@ -263,7 +263,7 @@ class RedSquare extends ModTemplate {
       x.push({
         text: 'Tweet',
         icon: 'fa-solid fa-pen',
-        allowed_mods: ['redsquare'],
+        is_active: this.browser_active,
         disallowed_mods: ['arcade'],
         rank: 10,
         callback: function (app, id) {
@@ -275,9 +275,9 @@ class RedSquare extends ModTemplate {
       x.push({
         text: 'Tweet Camera',
         icon: 'fas fa-camera',
-        allowed_mods: ['redsquare'],
+        is_active: this.browser_active,
         disallowed_mods: ['arcade'],
-        rank: 20,
+        rank: 30,
         callback: function (app, id) {
           let post = new Post(app, this_mod);
           let camera = new SaitoCamera(app, this_mod, (img) => {
@@ -291,9 +291,9 @@ class RedSquare extends ModTemplate {
       x.push({
         text: 'Tweet Image',
         icon: 'fas fa-image',
-        allowed_mods: ['redsquare'],
+        is_active: this.browser_active,
         disallowed_mods: ['arcade'],
-        rank: 30,
+        rank: 20,
         callback: function (app, id) {
           let post = new Post(app, this_mod);
           post.render();

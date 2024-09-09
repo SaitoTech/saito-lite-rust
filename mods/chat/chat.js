@@ -467,6 +467,7 @@ class Chat extends ModTemplate {
                 // console.log('Render Chat manager overlay');
                 chat_self.chat_manager_overlay.render();
               },
+              rank: 15,
               is_active: this.browser_active,
               event: function (id) {
                 chat_self.app.connection.on(
