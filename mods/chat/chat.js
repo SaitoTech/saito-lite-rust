@@ -1734,14 +1734,19 @@ class Chat extends ModTemplate {
             }
             msg += `">`;
             if (block[z].msg.indexOf('<img') != 0) {
-              msg += this.app.browser.sanitize(block[z].msg, true);
+              let saniText = this.app.browser.sanitize(block[z].msg, true);
+              if (saniText.includes("\n")){
+                msg += saniText.split("\n").join("<br>");
+              }else{
+                msg += saniText;  
+              }
             } else {
               msg += block[z].msg.substring(0, block[z].msg.indexOf('>') + 1);
             }
             msg +=
               like_number > 0
                 ? `<div class="chat-likes"> <i class="fas fa-thumbs-up"></i><div class="chat-like-number">${like_number}</div> </div>`
-                : `<div> </div>`;
+                : `<div></div>`;
             msg += `${replyButton}</div>`;
 
             if (
