@@ -74,8 +74,7 @@ html[data-theme="midnight"] {
   --font-color-status-message: var(--font-color-heavy);
   /* Exempt as system color */
   /* Module and Overlay Font Colors */
-  --font-color-title-game: var(--font-color-primary);
-  --font-color-title-game-details: var(--font-color-primary);
+  --font-color-invite-stub: var(--font-color-primary);
   --font-color-hover-module-menu: var(--font-color-heavy);
   --font-color-modal-menu-oldschool: var(--font-color-primary);
   --font-color-module-menu-header: var(--font-color-primary);

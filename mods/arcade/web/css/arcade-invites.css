@@ -89,6 +89,8 @@
 	font-weight: bold;
 	text-transform: uppercase;
 	white-space: break-spaces;
+	color: var(--font-color-header-msg);
+	text-shadow: 1px 1px 2px var(--saito-black);
 	background-color: var(--background-color-notification-status);
 	clip-path: polygon(25% 0, 100% 0, 100% 100%, 0 100%);
 }
