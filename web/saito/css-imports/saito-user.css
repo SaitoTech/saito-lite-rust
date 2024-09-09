@@ -87,7 +87,6 @@ Saito User
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: wrap; /* allow the userline to wrap intuitively (for chat messages) */
 }
 
 .saito-user .saito-datetime {
