@@ -13,6 +13,9 @@ class ChatManagerOverlay {
 					'.chat-manager-overlay'
 				).style.visibility = 'hidden';
 			}
+
+			this.mod.chat_manager.container = this.old_container;
+			this.app.connection.emit('chat-manager-render-request');
 		});
 	}
 
@@ -34,6 +37,7 @@ class ChatManagerOverlay {
 		// Make sure we can render chat manager within the overlay
 		this.mod.chat_manager.render_manager_to_screen = 1;
 
+		this.old_container = this.mod.chat_manager.container;
 		this.mod.chat_manager.container = '.chat-manager-overlay';
 
 		this.app.connection.emit('chat-manager-render-request');

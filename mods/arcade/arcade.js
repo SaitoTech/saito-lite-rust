@@ -633,8 +633,6 @@ class Arcade extends ModTemplate {
 				}
 			});
 			return x;
-
-			return x;
 		}
 
 		return super.respondTo(type, obj);

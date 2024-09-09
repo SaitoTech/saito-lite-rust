@@ -446,16 +446,54 @@ class Chat extends ModTemplate {
         return this.chat_manager;
 
       case 'saito-game-menu':
-        // Need to make sure this is created so we can listen for requests to open chat popups
-        if (this.chat_manager == null) {
-          this.chat_manager = new ChatManager(this.app, this);
-        }
-        // Toggle this so that we can have the in-game menu launch a floating overlay for the chat manager
-        force = true;
+      case 'saito-chat-popup':
+      case 'saito-floating-menu':
+
+          // Need to make sure this is created so we can listen for requests to open chat popups
+          if (this.chat_manager == null) {
+            this.chat_manager = new ChatManager(this.app, this);
+          }
+          //Don't want mobile chat auto popping up
+          this.chat_manager.render_popups_to_screen = 0;
+
+          if (this.chat_manager_overlay == null) {
+            this.chat_manager_overlay = new ChatManagerOverlay(this.app, this);
+          }
+          return [
+            {
+              text: 'Chat',
+              icon: 'fas fa-comments',
+              callback: function (app, id) {
+                // console.log('Render Chat manager overlay');
+                chat_self.chat_manager_overlay.render();
+              },
+              is_active: this.browser_active,
+              event: function (id) {
+                chat_self.app.connection.on(
+                  'chat-manager-render-request',
+                  () => {
+                    let unread = 0;
+                    for (let group of chat_self.groups) {
+                      unread += group.unread;
+                    }
+                    chat_self.app.browser.addNotificationToId(unread, id);
+                    chat_self.app.connection.emit(
+                      'saito-header-notification',
+                      'chat',
+                      unread
+                    );
+                  }
+                );
+
+                //Trigger my initial display
+                chat_self.app.connection.emit('chat-manager-render-request');
+              }
+            }
+          ];
+
+      break;
 
       case 'saito-header':
-
-      case 'saito-floating-menu':
         if (chat_self.browser_active) {
           return null;
         }
@@ -465,9 +503,7 @@ class Chat extends ModTemplate {
         //
         if (
           this.app.browser.isMobileBrowser() ||
-          (this.app.BROWSER && window.innerWidth < 600) ||
-          force
-        ) {
+          (this.app.BROWSER && window.innerWidth < 600)) {
           if (this.chat_manger) {
             //Don't want mobile chat auto popping up
             this.chat_manager.render_popups_to_screen = 0;

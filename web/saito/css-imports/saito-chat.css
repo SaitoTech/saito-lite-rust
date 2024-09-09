@@ -753,6 +753,9 @@
   top: var(--saito-header-height);
   z-index: 15;
   width: 300px;
+  border: var(--border-thickness-chat-popup) solid var(--border-color-chat-popup);
+  box-shadow: var(--box-shadow-sidebar-elements);
+  border-radius: var(--border-radius-sidebar-menu);
   height: fit-content;
 }
 
@@ -762,6 +765,10 @@
 
 .alternate-close-button, .floating-cm-overlay .chat-manager-options, .chat-manager-overlay.floating-cm-overlay .close-chat-manager {
   display: none;
+}
+
+.chat-manager-overlay .saito-sidebar-element {
+  box-shadow: unset;
 }
 
 .floating-cm-overlay .alternate-close-button {

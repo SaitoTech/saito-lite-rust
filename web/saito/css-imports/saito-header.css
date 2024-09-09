@@ -506,21 +506,6 @@
 }
 
 
-@media screen and (max-width: 1200px) {
-  .saito-floating-plus-btn {
-    display: flex;
-  }
-  .saito-floating-container {
-    right: 35.5rem;
-  }
-}
-
-@media screen and (max-width: 900px) {
-  .saito-floating-container {
-    right: 2.5rem;
-  }
-}
-
 @media screen and (max-width: 768px) {
   .saito-header-hamburger-contents {
     width: 80vw;
