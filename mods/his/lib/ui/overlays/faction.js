@@ -293,16 +293,19 @@ console.log(remaining_keys + " = " + total_keys + " - " + controlled_keys);
 		if (p > 0) {
 		  for (let z = 0; z < his_self.game.state.players_info[p-1].captured.length; z++) {
 		    let c = his_self.game.state.players_info[p-1].captured[z];
+
+console.log("CAPTURED: " + JSON.stringify(c));
+
 		    if (c.capturing_faction == faction) {
-		      if (his_self.army[c.type]) {
+		      if (c.army_leader) {
 			this.app.browser.addElementToSelector(
-				'<div class="army_tile" style="background-image: url(/his/img/tiles/army/${obj.img})"></div>',
+				`<div class="army_tile" style="background-image: url(/his/img/tiles/army/${c.img})"></div>`,
 				'.faction_sheet_vp'
 			);
 		      }
-		      if (his_self.navy[c.type]) {
+		      if (c.navy_leader) {
 			this.app.browser.addElementToSelector(
-				'<div class="army_tile" style="background-image: url(/his/img/tiles/navy/${obj.img})"></div>',
+				`<div class="army_tile" style="background-image: url(/his/img/tiles/navy/${c.img})"></div>`,
 				'.faction_sheet_vp'
 			);
 		      }

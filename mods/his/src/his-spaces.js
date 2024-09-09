@@ -2110,7 +2110,6 @@ if (x) {
         if (owner == "") { owner = this.game.spaces[key].home; }
         owner = this.returnControllingPower(owner);
         if (owner == faction) {
-console.log("faction controls: " + key);
           controlled_keys++;
         }
       }
@@ -2980,7 +2979,7 @@ console.log("faction controls: " + key);
       political: "",
       ports: ["gulflyon","barbary"],
       neighbours: ["cartagena","cagliari"],
-      language: "other",
+      language: "spanish",
       religion: "catholic",
       type: "town"
     }

@@ -1564,13 +1564,7 @@ t
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) { 
-	if (faction == "ottoman" && his_self.returnControllingPower("venice") != "venice") {
-	  return 1;
-	}
-	if (faction == "papacy") {
-	  return 1;
-	}
-	return 0;
+	return 1;
       },
       onEvent : function(his_self, faction) {
 

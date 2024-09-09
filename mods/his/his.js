@@ -5251,13 +5251,7 @@ t
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) { 
-	if (faction == "ottoman" && his_self.returnControllingPower("venice") != "venice") {
-	  return 1;
-	}
-	if (faction == "papacy") {
-	  return 1;
-	}
-	return 0;
+	return 1;
       },
       onEvent : function(his_self, faction) {
 
@@ -17878,7 +17872,6 @@ if (x) {
         if (owner == "") { owner = this.game.spaces[key].home; }
         owner = this.returnControllingPower(owner);
         if (owner == faction) {
-console.log("faction controls: " + key);
           controlled_keys++;
         }
       }
@@ -18748,7 +18741,7 @@ console.log("faction controls: " + key);
       political: "",
       ports: ["gulflyon","barbary"],
       neighbours: ["cartagena","cagliari"],
-      language: "other",
+      language: "spanish",
       religion: "catholic",
       type: "town"
     }
@@ -21463,19 +21456,16 @@ if (this.game.state.scenario != "is_testing") {
 
   }
 
+  //
+  // military leader returned to original space or capital (if controlled)
+  //
   restoreMilitaryLeaders() {
-
-console.log("into restore military leaders!");
 
     for (let i = 0; i < this.game.state.military_leaders_removed_until_next_round.length; i++) {
 
       let obj = this.game.state.military_leaders_removed_until_next_round[i];
 
-console.log("found leader to restore: " + JSON.stringify(obj));
-
       if (obj.leader) {
-
-console.log("leader exists...");
 
         let leader = obj.leader;
 	let s = obj.space;
@@ -21483,11 +21473,20 @@ console.log("leader exists...");
 
 	if (leader) {
 	  if (s) {
-console.log("space exists");
 	    if (faction) {
-console.log("faction exists");
-	      this.game.spaces[s].units[faction].push(leader);
-	      this.displaySpace(s);
+	      if (this.isSpaceControlled(s, faction)) {
+	        this.game.spaces[s].units[faction].push(leader);
+	        this.displaySpace(s);
+	      } else {
+		let capitals = this.returnCapitals(faction);
+                for (let z = 0; z < capitals.length; z++) {
+                  if (this.isSpaceControlled(capitals[z], faction)) {
+	            this.game.spaces[s].units[faction].push(leader);
+	            this.displaySpace(s);
+		    z = capitals.length += 2;
+                  }     
+	        }
+	      }
 	    }
 	  }
 	}
@@ -31612,13 +31611,15 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 
 	  if (space.units[loser].length > 0) {
 	    for (let z = 0; z < space.units[loser].length; z++) {
-	      if (space.units[loser][z].army_leader == 1) {
-	        this.captureLeader(loser, winner, spacekey, space.units[loser][z]);
-	      } else {
-	        if (space.units[loser][z].besieged == 0) { space.units[loser].splice(z, 1); z--; }
+	      if (space.units[loser][z].army_leader || space.units[loser][z].navy_leader) {
+console.log("capturing leader: " + JSON.stringify(space.units[loser][z]));
+	        if (space.units[loser][z].besieged == 0) { this.captureLeader(winner, loser, spacekey, space.units[loser][z]); }
 	      }
+	      if (space.units[loser][z].besieged == 0) { space.units[loser].splice(z, 1); z--; }
 	    }
 	  }
+
+	  this.displaySpace(spacekey);
 
 	  return 1;
 
@@ -31643,7 +31644,7 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 	    let cf = this.returnControllingPower(f);
 	    if (f == loser || cf == loser) {
 	      for (let i = 0; i < space.units[f].length; i++) {
-	        this.captureLeader(f, winner, spacekey, space.units[f][i]);
+	        this.captureLeader(winner, f, spacekey, space.units[f][i]);
 	      }
 	      for (let i = 0; i < space.units[f].length; i++) {
 		if (space.units[f][i].reformer != true) {
@@ -44980,6 +44981,20 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
+      name : "Give Captured Leader",
+      check : this.canPlayerGiveCapturedLeader,
+      fnct : this.playerGiveCapturedLeader,
+      img : "the-card-players.jpg" ,
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
+      name : "Get Captured Leader",
+      check : this.canPlayerGetCapturedLeader,
+      fnct : this.playerGetCapturedLeader,
+      img : "the-card-players.jpg" ,
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       name : "Give Random Card",
       check : this.canPlayerIssueCards,
       fnct : this.playerIssueCards,
@@ -45185,6 +45200,34 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     return 0;
   }
 
+  canPlayerGiveCapturedLeader(his_self, player, faction) {
+    for (let i = 0; i < his_self.game.state.players_info.length; i++) {
+      let c = his_self.game.state.players_info[i].captured;
+      for (let z = 0; z < c.length; z++) {
+	if (c[z].capturing_faction === faction) {
+	  return 1;
+	}
+      }
+    }
+    return 0;
+  }
+
+  canPlayerGetCapturedLeader(his_self, player, faction) {
+    for (let i = 0; i < his_self.game.state.players_info.length; i++) {
+      let c = his_self.game.state.players_info[i].captured;
+      for (let z = 0; z < c.length; z++) {
+	if (c[z].faction === faction) {
+	  return 1;
+	}
+      }
+    }
+    return 0;
+  }
+
+  canPlayerGainTerritory(his_self, player, faction) {
+    return 1;
+  }
+
   canPlayerGainTerritory(his_self, player, faction) {
     return 1;
   }
@@ -45234,6 +45277,66 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	}
       }
     }
+    return 0;
+  }
+
+
+
+  async playerGetCapturedLeader(his_self, faction, mycallback=null) {
+    return 0;
+  }
+
+  async playerGiveCapturedLeader(his_self, faction, mycallback=null) {
+    return 0;
+    let submit_choose_leader = function(action2) {
+    }
+
+    let submit_end_war = function(action2) {
+      his_self.updateStatus("submitted...");
+      mycallback([`give_captured_leader\t${faction}\t${action2}`]);      
+    }
+
+    let target_faction = "";
+    if (his_self.diplomacy_overlay.proposal.target) { target_faction = his_self.diplomacy_overlay.proposal.target; }
+
+    let terms = [];
+    let msg = `${his_self.returnFactionName(faction)} - Give to Whom?`;
+    let io = his_self.returnDiplomacyImpulseOrder(faction);
+    let html = '<ul>';
+    let auto_select_target = true;
+    for (let i = 0; i < io.length; i++) {
+      html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
+    }
+    html += '</ul>';
+
+    let html2 = '<ul>';
+    html2 += `<li class="option" id="${target_faction}">${his_self.returnFactionName(target_faction)}</li>`;
+    html2 += `<li class="option" id="other">another faction</li>`;
+    html2 += '</ul>';
+
+    his_self.updateStatusWithOptions(msg, html2);     
+    $('.option').off();
+    $('.option').on('click', function () {
+
+      let action2 = $(this).attr("id");
+      if (action2 !== target_faction) {
+
+        his_self.updateStatusWithOptions(msg, html);
+
+        $('.option').off();
+        $('.option').on('click', function () {
+          let action3 = $(this).attr("id");
+          if (mycallback == null) { return; }
+          submit_choose_leader(action3);
+        });
+
+      } else {
+        if (mycallback == null) { return; }
+        submit_choose_leader(target_faction);
+      }
+
+    });
+
     return 0;
   }
 

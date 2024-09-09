@@ -9187,13 +9187,15 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 
 	  if (space.units[loser].length > 0) {
 	    for (let z = 0; z < space.units[loser].length; z++) {
-	      if (space.units[loser][z].army_leader == 1) {
-	        this.captureLeader(loser, winner, spacekey, space.units[loser][z]);
-	      } else {
-	        if (space.units[loser][z].besieged == 0) { space.units[loser].splice(z, 1); z--; }
+	      if (space.units[loser][z].army_leader || space.units[loser][z].navy_leader) {
+console.log("capturing leader: " + JSON.stringify(space.units[loser][z]));
+	        if (space.units[loser][z].besieged == 0) { this.captureLeader(winner, loser, spacekey, space.units[loser][z]); }
 	      }
+	      if (space.units[loser][z].besieged == 0) { space.units[loser].splice(z, 1); z--; }
 	    }
 	  }
+
+	  this.displaySpace(spacekey);
 
 	  return 1;
 
@@ -9218,7 +9220,7 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 	    let cf = this.returnControllingPower(f);
 	    if (f == loser || cf == loser) {
 	      for (let i = 0; i < space.units[f].length; i++) {
-	        this.captureLeader(f, winner, spacekey, space.units[f][i]);
+	        this.captureLeader(winner, f, spacekey, space.units[f][i]);
 	      }
 	      for (let i = 0; i < space.units[f].length; i++) {
 		if (space.units[f][i].reformer != true) {
