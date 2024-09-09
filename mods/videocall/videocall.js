@@ -11,6 +11,7 @@ const AppSettings = require('./lib/stun-settings');
 const HomePage = require("./index");
 const CallScheduleLaunch = require('./lib/components/call-schedule-launch');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
+const CallScheduleWizard = require('./lib/components/call-schedule-wizard');
 
 class Videocall extends ModTemplate {
 	constructor(app) {
@@ -175,7 +176,6 @@ class Videocall extends ModTemplate {
 					this.renderedInto = qs;
 				}
 			} else if (this.room_obj.scheduled === true) {
-				// console.log("Should render call scheduler")
 				if (!this.renderIntos[qs]) {
 					this.renderIntos[qs] = [];
 					this.renderIntos[qs].push(new CallScheduleLaunch(this.app, this, qs));
@@ -208,6 +208,7 @@ class Videocall extends ModTemplate {
 	respondTo(type, obj) {
 		let call_self = this;
 
+		let app = this.app
 		if (type === 'user-menu') {
 			//Don't provide a calling hook if in the video call app!
 			// if (call_self.browser_active) {
@@ -267,6 +268,23 @@ class Videocall extends ModTemplate {
 					}
 				];
 			}
+		}
+
+		if(type === "saito-scheduler"){
+			this.attachStyleSheets()
+			super.render(this.app, this);
+			return [
+				{
+					text: 'Schedule a call',
+					icon: this.icon,
+					callback: function (app, id) {
+						console.log('this is the callback')
+						let schedule_wizard = new CallScheduleWizard(app, call_self)
+						schedule_wizard.render();
+
+					}
+				}
+			];
 		}
 		//
 		//Game-Menu passes the game_mod as the obj, so we can test if we even want to add the option

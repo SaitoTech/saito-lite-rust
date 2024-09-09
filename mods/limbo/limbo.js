@@ -215,6 +215,23 @@ class Limbo extends ModTemplate {
 			}
 		}
 
+		if(type === "saito-scheduler"){
+			this.attachStyleSheets()
+			super.render(this.app, this);
+			return [
+				{
+					text: 'Schedule a swarmcast',
+					icon: this.icon_fa,
+					callback: function (app, id) {
+						console.log('schedule a swarm cast')
+					
+
+					}
+				}
+			];
+		}
+	
+
 		if (type === 'call-actions') {
 			if (obj?.members) {
 				if (this.browser_active) {
@@ -504,7 +521,7 @@ class Limbo extends ModTemplate {
 			}
 		}
 
-		if (!this.wizard) {
+	if (!this.wizard) {
 			this.wizard = new DreamWizard(this.app, this, options);
 		} else {
 			this.wizard.options = options;
@@ -1654,7 +1671,6 @@ class Limbo extends ModTemplate {
 			let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
 
 			mod_self.social.url = reqBaseURL + encodeURI(mod_self.returnSlug());
-
 			res.setHeader('Content-type', 'text/html');
 			res.charset = 'UTF-8';
 
