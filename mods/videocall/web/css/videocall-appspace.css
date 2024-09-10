@@ -218,6 +218,7 @@ input:checked+.slider:before {
 @media screen and (max-width: 900px) {
 	.staun-appspace-cards {
 		flex-direction: column;
+		width: 100%;
 	}
 	.chat-settings-preview-section {
 		width: unset;
@@ -238,9 +239,14 @@ input:checked+.slider:before {
 		flex-direction: column;
 		width: 95%;
 	}
+	.stun-input-settings {
+		padding: 0;
+	}
+	/*
 	.stunx-appspace-splash {
 		padding: 0 5rem;
 	}
+	*/
 }
 
 @media (max-width: 600px) {
