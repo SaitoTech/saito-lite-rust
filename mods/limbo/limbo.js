@@ -227,15 +227,12 @@ class Limbo extends ModTemplate {
 						let defaultDate = { day, month, year }
 						let schedule_wizard = new SaitoScheduleWizard(app, mod_self, '', defaultDate, "swarmcast")
 						schedule_wizard.callbackAfterSubmit = async function (app, mod, duration, description, utcStartTime) {
-							// const call_id = await mod.generateRoomId();
 							const cast_obj = {
 								startTime: utcStartTime,
 								duration,
 								description
 							};
-
 							const cast_obj_stringified = JSON.stringify(cast_obj);
-							//  let call_link =  mod.generateCallLink(room_obj)
 							let data = {
 								name: mod_self.returnName(),
 								path: `/${mod_self.returnSlug()}/`,
@@ -244,13 +241,8 @@ class Limbo extends ModTemplate {
 							let link_obj = new InvitationLink(app, mod_self, data);
 							link_obj.buildLink()
 							let cast_link = link_obj.invite_link;
-
-							console.log
-
 							let cast_id = app.crypto.generateRandomNumber().substring(0, 12);
-
 							app.keychain.addKey(cast_id, { type: "scheduled_cast", startTime: utcStartTime, duration, description, room_obj: cast_obj_stringified, link: " " });
-
 							let event = {
 								"datetime": new Date(utcStartTime),
 								"duration": duration,
@@ -260,9 +252,8 @@ class Limbo extends ModTemplate {
 								"id": cast_id
 							};
 							app.connection.emit('calendar-render-request', event)
-
-							// await navigator.clipboard.writeText(call_link);
-							// siteMessage('New room link created and copied to clipboard', 1500);
+							
+							siteMessage('Swarmcast event scheduled successfully', 1500);
 						}
 						schedule_wizard.render();
 

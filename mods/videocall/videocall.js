@@ -279,7 +279,6 @@ class Videocall extends ModTemplate {
 					icon: this.icon,
 					callback: function (app, day, month, year) {
 						let defaultDate = {day, month, year}
-						console.log('this is the callback')
 						let schedule_wizard = new CallScheduleWizard(app, call_self, '', defaultDate, "call")
 						schedule_wizard.callbackAfterSubmit =async function (app, mod, duration, description, utcStartTime) {
 							const call_id = await mod.generateRoomId();
@@ -291,11 +290,9 @@ class Videocall extends ModTemplate {
 								duration,
 								description
 							};
-				
 							const room_obj_stringified = JSON.stringify(room_obj);
 							 let call_link =  mod.generateCallLink(room_obj)
-							  app.keychain.addKey(call_id, { identifier: call_id, type: "scheduled_call", startTime:utcStartTime, duration, description, room_obj:room_obj_stringified, link:call_link  });
-				
+							  app.keychain.addKey(call_id, { identifier: call_id, type: "scheduled_call", startTime:utcStartTime, duration, description, room_obj:room_obj_stringified, link:call_link });
 							  let event = {
 								"datetime": new Date(utcStartTime),
 								"duration": duration,
@@ -305,9 +302,8 @@ class Videocall extends ModTemplate {
 								"id": call_id
 							  };  
 							 app.connection.emit('calendar-render-request', event)
-				
 							await navigator.clipboard.writeText(call_link);
-							siteMessage('New room link created and copied to clipboard', 1500);
+							siteMessage('Videocall event scheduled successfully', 1500);
 						}
 						schedule_wizard.render();
 
