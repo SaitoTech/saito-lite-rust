@@ -1471,6 +1471,35 @@
     }
     return 0;
   }
+  doesFactionHaveFriendlyNavalUnitsInSpace(faction, key) {
+    if (this.game.spaces[key]) {
+      for (let f in this.game.spaces[key].units) {
+	if (this.areAllies(f, faction)) {
+          if (this.game.spaces[key].units[f]) {
+            for (let i = 0; i < this.game.spaces[key].units[f].length; i++) {
+              if (this.game.spaces[key].units[f][i].type === "squadron" || this.game.spaces[key].units[f][i].type === "corsair") {
+  	        return 1;
+              }
+            }
+          }
+        }
+      }
+    }
+    if (this.game.navalspaces[key]) {
+      if (this.game.navalspaces[key].units[faction]) {
+        for (let f in this.game.navalspaces[key].units) {
+	  if (this.returnControllingPower(f) == faction || f == faction) {
+            for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
+              if (this.game.navalspaces[key].units[faction][i].type === "squadron" || this.game.navalspaces[key].units[faction][i].type === "corsair") {
+  	        return 1;
+              }
+            }
+          }
+        }
+      }
+    }
+    return 0;
+  }
   doesFactionHaveNavalUnitsInSpace(faction, key) {
     if (this.game.spaces[key]) {
       if (this.game.spaces[key].units[faction]) {

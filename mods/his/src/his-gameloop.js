@@ -663,6 +663,9 @@ if (this.game.options.scenario != "is_testing") {
 	  let factions = JSON.parse(mv[1]);
 	  let do_i_get_to_move = false;
 
+
+console.log("winter_retreat_move_units_to_capital_faction_array 1...");
+
 	  //
 	  // skip if we have already confirmed!
 	  //
@@ -671,11 +674,15 @@ if (this.game.options.scenario != "is_testing") {
 	    return 0;
 	  }
 
+console.log("winter_retreat_move_units_to_capital_faction_array 2...");
+
 	  //
 	  // exit if overlay open and visible
 	  //
 	  if (this.theses_overlay.visible) { return 0; }
+console.log("winter_retreat_move_units_to_capital_faction_array 3...");
 	  if (this.moves.length > 0) { return 0; }
+console.log("winter_retreat_move_units_to_capital_faction_array 4...");
 
 	  this.addMove("RESOLVE\t"+this.publicKey);
 
@@ -2287,7 +2294,7 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	  if (this.game.players.length > 2) {
 	    this.addCard("ottoman", "033");
 	  }
-          this.addCard("ottoman", "103");
+          this.addCard("papacy", "056");
 /**
           this.addCard("france", "024");
           this.addCard("france", "025");
@@ -11165,11 +11172,10 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
 	  if (can_faction_sue_for_peace.length == 0) { return 1; }
 
-
 	  if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
 	    this.playerSueForPeace(this, faction);
 	  } else {
-	    this.updateStatus(this.returnFactionName(faction) + " considering Peace Suit");
+	    this.updateStatus(this.returnFactionName(faction) + " considering Suing for Peace");
 	  }
 
 	  return 0;
@@ -12085,7 +12091,7 @@ console.log("----------------------------");
 		    roll = this.game.deck[0].fhand[fhand_idx].length-1;
 		  } else {
 	  	    this.game.queue.splice(qe, 1);
-                    this.addMove("NOTIFY\t"+this.returnFactionName(faction)+ " has no non-home cards to pull");
+                    this.addMove("NOTIFY\t"+this.returnFactionName(faction_giving)+ " has no non-home cards to pull");
                     this.endTurn();
                     return 0;
 	          }

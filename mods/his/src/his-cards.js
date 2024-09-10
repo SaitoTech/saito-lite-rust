@@ -6570,12 +6570,16 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 
 	if (his_self.isCommitted("caraffe-debater")) { return 1; }
 
-	his_self.commitDebater("papacy", "caraffe-debater", 0); // no bonus
-	his_self.addMove("papal_inquisition_target_player");
-	his_self.addMove("papal_inquisition_convert_spaces");
-	his_self.endTurn();
+	if (his_self.game.player == his_self.returnPlayerOfFaction("papacy")) {
 
-	return 1;
+	  his_self.commitDebater("papacy", "caraffe-debater", 0); // no bonus
+	  his_self.addMove("papal_inquisition_target_player");
+	  his_self.addMove("papal_inquisition_convert_spaces");
+	  his_self.endTurn();
+
+	}
+
+	return 0;
       },
       handleGameLoop : function(his_self, qe, mv) {
 
@@ -7071,13 +7075,15 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 
 	let p1 = his_self.returnPlayerOfFaction(faction);
 
-        his_self.addMove("lady_jane_grey_papacy_discard\t"+faction);
-        his_self.addMove("hand_to_fhand\t1\t"+p1+"\t"+faction+"\t1");
-        his_self.addMove("DEAL\t1\t"+p1+"\t"+1);
-        his_self.addMove("pull_card\t"+faction+"\tengland");
-        his_self.endTurn();
+	if (his_self.game.player == p1) {
+          his_self.addMove("lady_jane_grey_papacy_discard\t"+faction);
+          his_self.addMove("hand_to_fhand\t1\t"+p1+"\t"+faction+"\t1");
+          his_self.addMove("DEAL\t1\t"+p1+"\t"+1);
+          his_self.addMove("pull_card\t"+faction+"\tengland");
+          his_self.endTurn();
+	}
 
-	return 1;
+	return 0;
       },
       handleGameLoop : function(his_self, qe, mv) {
 
@@ -10742,6 +10748,8 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 
         if (mv[0] == "threat_to_power") {
 
+          his_self.game.queue.splice(qe, 1);
+
 	  let leader = mv[1];
 	  let faction = "";
 	  let leader_found = false;
@@ -10764,7 +10772,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  }
 
 	  //
-	  // removed from game
+	  // permanently removed from game
 	  //
 	  if (r >= 4) {
 
@@ -10798,9 +10806,6 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	    }
 
 	    his_self.displaySpace(s);
-
-            his_self.game.queue.splice(qe, 1);
-            return 1;
 
 	  }
         }

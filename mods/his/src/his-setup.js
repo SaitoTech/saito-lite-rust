@@ -372,6 +372,21 @@ console.log("\n\n\n\n");
           this.game.state.newworld['hapsburg_colony2'].faction = "hapsburg";
           this.game.state.newworld['hapsburg_colony2'].claimed = 1;
 
+          this.game.state.colonies.push({
+            faction : "hapsburg" ,
+            resolved : 1 ,
+	    colony : "hapsburg_colony1" ,
+            round : 1 ,
+	    name : "Puerto Rico",
+          });
+	  this.game.state.colonies.push({
+            faction : "hapsburg" ,
+            resolved : 1 ,
+	    colony : "hapsburg_colony2" ,
+            round : 1 ,
+	    name : "Cuba",
+          });
+
 	  this.removeExplorer("hapsburg", "magellan");
 	  this.removeExplorer("hapsburg", "leon");
 	  this.removeExplorer("hapsburg", "narvaez");
@@ -542,7 +557,7 @@ console.log("\n\n\n\n");
 
       if (this.game.options.scenario === "is_testing") {
 
-	  this.game.state.starting_round = 2;
+	  this.game.state.starting_round = 5;
 	  this.game.state.henry_viii_marital_status = 1;
 
 	  this.setAllies("france", "genoa");
