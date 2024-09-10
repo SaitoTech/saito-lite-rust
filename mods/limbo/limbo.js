@@ -11,6 +11,7 @@ const InvitationLink = require('./../../lib/saito/ui/modals/saito-link/saito-lin
 const SaitoHeader = require('./../../lib/saito/ui/saito-header/saito-header');
 const SaitoProfile = require('./../../lib/saito/ui/saito-profile/saito-profile');
 const HomePage = require('./index');
+const SaitoScheduleWizard = require('../../lib/saito/ui/saito-calendar/saito-schedule-wizard');
 
 class Limbo extends ModTemplate {
 	constructor(app) {
@@ -215,22 +216,62 @@ class Limbo extends ModTemplate {
 			}
 		}
 
-		if(type === "saito-scheduler"){
+		if (type === "saito-scheduler") {
 			this.attachStyleSheets()
 			super.render(this.app, this);
 			return [
 				{
 					text: 'Schedule a swarmcast',
 					icon: this.icon_fa,
-					callback: function (app, id) {
-						console.log('schedule a swarm cast')
-					
+					callback: function (app, day, month, year) {
+						let defaultDate = { day, month, year }
+						let schedule_wizard = new SaitoScheduleWizard(app, mod_self, '', defaultDate, "swarmcast")
+						schedule_wizard.callbackAfterSubmit = async function (app, mod, duration, description, utcStartTime) {
+							// const call_id = await mod.generateRoomId();
+							const cast_obj = {
+								startTime: utcStartTime,
+								duration,
+								description
+							};
+
+							const cast_obj_stringified = JSON.stringify(cast_obj);
+							//  let call_link =  mod.generateCallLink(room_obj)
+							let data = {
+								name: mod_self.returnName(),
+								path: `/${mod_self.returnSlug()}/`,
+								dream: app.crypto.stringToBase64(mod_self.publicKey)
+							};
+							let link_obj = new InvitationLink(app, mod_self, data);
+							link_obj.buildLink()
+							let cast_link = link_obj.invite_link;
+
+							console.log
+
+							let cast_id = app.crypto.generateRandomNumber().substring(0, 12);
+
+							app.keychain.addKey(cast_id, { type: "scheduled_cast", startTime: utcStartTime, duration, description, room_obj: cast_obj_stringified, link: " " });
+
+							let event = {
+								"datetime": new Date(utcStartTime),
+								"duration": duration,
+								"description": description || "Scheduled Cast",
+								"link": cast_link,
+								"type": "Scheduled cast",
+								"id": cast_id
+							};
+							app.connection.emit('calendar-render-request', event)
+
+							// await navigator.clipboard.writeText(call_link);
+							// siteMessage('New room link created and copied to clipboard', 1500);
+						}
+						schedule_wizard.render();
+
 
 					}
 				}
 			];
 		}
-	
+
 
 		if (type === 'call-actions') {
 			if (obj?.members) {
@@ -278,7 +319,7 @@ class Limbo extends ModTemplate {
 		if (type === 'game-menu') {
 			if (!obj.recordOptions) return;
 
-			if(obj.recordOptions.active === false){
+			if (obj.recordOptions.active === false) {
 				return;
 			}
 			let menu = {
@@ -478,9 +519,8 @@ class Limbo extends ModTemplate {
 		}
 
 		if (dream?.mode && this[`${dream.mode}_icon`]) {
-			profileCard.icon = `<i class="saito-overlaid-icon fa-solid ${
-				this[`${dream.mode}_icon`]
-			}"></i>`;
+			profileCard.icon = `<i class="saito-overlaid-icon fa-solid ${this[`${dream.mode}_icon`]
+				}"></i>`;
 		}
 
 		//We won't process this array other than checking length... i hope!
@@ -521,7 +561,7 @@ class Limbo extends ModTemplate {
 			}
 		}
 
-	if (!this.wizard) {
+		if (!this.wizard) {
 			this.wizard = new DreamWizard(this.app, this, options);
 		} else {
 			this.wizard.options = options;
@@ -1622,12 +1662,12 @@ class Limbo extends ModTemplate {
 
 		const castButtonGame = document.getElementById('cast-stream');
 
-		if(castButtonGame){
+		if (castButtonGame) {
 
-			if(value){
-				castButtonGame.textContent =  'Stop cast';
-			}else {
-				castButtonGame.textContent =  'Cast game';
+			if (value) {
+				castButtonGame.textContent = 'Stop cast';
+			} else {
+				castButtonGame.textContent = 'Cast game';
 			}
 		}
 
@@ -1639,7 +1679,7 @@ class Limbo extends ModTemplate {
 		// const isCasting = castButtonGame.textContent.trim().toLowerCase() === 'stop cast';
 
 		// console.log('isCasting', isCasting);
-		
+
 	}
 
 	beforeUnloadHandler(event) {

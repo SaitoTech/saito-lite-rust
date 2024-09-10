@@ -11,7 +11,7 @@ const AppSettings = require('./lib/stun-settings');
 const HomePage = require("./index");
 const CallScheduleLaunch = require('./lib/components/call-schedule-launch');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
-const CallScheduleWizard = require('./lib/components/call-schedule-wizard');
+const CallScheduleWizard = require('../../lib/saito/ui/saito-calendar/saito-schedule-wizard');
 
 class Videocall extends ModTemplate {
 	constructor(app) {
@@ -277,9 +277,38 @@ class Videocall extends ModTemplate {
 				{
 					text: 'Schedule a call',
 					icon: this.icon,
-					callback: function (app, id) {
+					callback: function (app, day, month, year) {
+						let defaultDate = {day, month, year}
 						console.log('this is the callback')
-						let schedule_wizard = new CallScheduleWizard(app, call_self)
+						let schedule_wizard = new CallScheduleWizard(app, call_self, '', defaultDate, "call")
+						schedule_wizard.callbackAfterSubmit =async function (app, mod, duration, description, utcStartTime) {
+							const call_id = await mod.generateRoomId();
+							const room_obj = {
+								call_id,
+								scheduled: true,
+								call_peers: [],
+								startTime: utcStartTime, 
+								duration,
+								description
+							};
+				
+							const room_obj_stringified = JSON.stringify(room_obj);
+							 let call_link =  mod.generateCallLink(room_obj)
+							  app.keychain.addKey(call_id, { identifier: call_id, type: "scheduled_call", startTime:utcStartTime, duration, description, room_obj:room_obj_stringified, link:call_link  });
+				
+							  let event = {
+								"datetime": new Date(utcStartTime),
+								"duration": duration,
+								"description": description || "Scheduled Call",
+								"link": call_link,
+								"type": "Scheduled call",
+								"id": call_id
+							  };  
+							 app.connection.emit('calendar-render-request', event)
+				
+							await navigator.clipboard.writeText(call_link);
+							siteMessage('New room link created and copied to clipboard', 1500);
+						}
 						schedule_wizard.render();
 
 					}
