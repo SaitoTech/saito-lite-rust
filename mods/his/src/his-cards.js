@@ -5184,6 +5184,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 
 	  } else {
 
+            his_self.addMove("discard\t"+faction+"\t033");
   	    his_self.addMove("landsknechts\t"+faction);
 	    his_self.endTurn();            
 
@@ -5765,7 +5766,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
     }
     deck['040'] = { 
       img : "cards/HIS-040.svg" , 
-      name : "MachiaveIIi: The Prince" ,
+      name : "Machiavelli: The Prince" ,
       ops : 3 ,
       turn : 3 ,
       type : "normal" ,
@@ -5783,8 +5784,15 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
           let html = '<ul>';
 	  for (let i = 0; i < powers.length; i++) {
 	    if (powers[i] !== faction) {
-              html += `<li class="option" id="${powers[i]}">${powers[i]}</li>`;
+	      if (!(powers[i] == "protestant" && his_self.game.state.events.schmalkaldic_league == 1)) {
+		if (!his_self.areEnemies(powers[i], faction)) {
+                  html += `<li class="option" id="${powers[i]}">${powers[i]}</li>`;
+	        }
+	      }
 	    }
+	  }
+	  if (html === "") {
+            html += `<li class="option" id="skip">skip declaration</li>`;
 	  }
           html += '</ul>';
 
@@ -5796,13 +5804,18 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	    $('.option').off();
 	    let action = $(this).attr("id");
 
+	    if (action === "skip") { 
+              his_self.addMove("ops\t"+faction+"\t"+"040"+"\t"+2);
+	      his_self.endTurn();
+	      return 0;	
+	    }
+
             his_self.addMove("ops\t"+faction+"\t"+"040"+"\t"+2);
 	    his_self.addMove("unexpected_war\t"+faction+"\t"+action);
             his_self.addMove("declare_war\t"+faction+"\t"+action);
 	    his_self.endTurn();
 
 	  });
-
 
         }
 

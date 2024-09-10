@@ -6392,9 +6392,10 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (his_self.game.state.may_colonize[faction] == 0) { return 0; }
 
     // no for protestants early-game
-    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+    if (faction === "protestant") { return false; }
     if (faction === "ottoman") { return false; }
     if (faction === "papacy") { return false; }
+
     for (let i = 0; i < his_self.game.state.colonies.length; i++) {
       if (his_self.game.state.colonies[i].faction == faction) {
         if (his_self.game.state.colonies[i].round >= his_self.game.state.round) { return 0; }

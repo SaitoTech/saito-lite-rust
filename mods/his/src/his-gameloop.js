@@ -271,7 +271,7 @@ if (this.game.options.scenario != "is_testing") {
 	      //
 	      // this logic is implemented in newCards
 	      //
-	      if (this.game.players.length == 2) {
+	      if (this.game.players.length <= 2) {
 	        if (this.game.state.round >= 6 ) {
                   this.game.state.henry_viii_healthy_edward = 1;
                   this.game.state.henry_viii_sickly_edward = 0;
@@ -11881,12 +11881,12 @@ if (this.game.state.round == 2) {
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 1;
-//if (f == "papacy") { cardnum = 0; }
-//if (f == "hapsburg") { cardnum = 1; }
-//if (f == "protestant") { cardnum = 0; }
-//if (f == "england") { cardnum = 0; }
-//if (f == "ottoman") { cardnum = 0; }
+cardnum = 1;
+if (f == "papacy") { cardnum = 0; }
+if (f == "hapsburg") { cardnum = 1; }
+if (f == "protestant") { cardnum = 0; }
+if (f == "england") { cardnum = 0; }
+if (f == "ottoman") { cardnum = 0; }
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);

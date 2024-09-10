@@ -3004,7 +3004,6 @@ console.log("\n\n\n\n");
 
           // ENGLAND
           this.addRegular("england", "stirling", 4);
-          this.game.state.henry_viii_healthy_edward = 1;
 
 	  // GENOA
 	  this.addRegular("genoa", "genoa", 2);
@@ -8871,6 +8870,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 
 	  } else {
 
+            his_self.addMove("discard\t"+faction+"\t033");
   	    his_self.addMove("landsknechts\t"+faction);
 	    his_self.endTurn();            
 
@@ -9452,7 +9452,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
     }
     deck['040'] = { 
       img : "cards/HIS-040.svg" , 
-      name : "MachiaveIIi: The Prince" ,
+      name : "Machiavelli: The Prince" ,
       ops : 3 ,
       turn : 3 ,
       type : "normal" ,
@@ -9470,8 +9470,15 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
           let html = '<ul>';
 	  for (let i = 0; i < powers.length; i++) {
 	    if (powers[i] !== faction) {
-              html += `<li class="option" id="${powers[i]}">${powers[i]}</li>`;
+	      if (!(powers[i] == "protestant" && his_self.game.state.events.schmalkaldic_league == 1)) {
+		if (!his_self.areEnemies(powers[i], faction)) {
+                  html += `<li class="option" id="${powers[i]}">${powers[i]}</li>`;
+	        }
+	      }
 	    }
+	  }
+	  if (html === "") {
+            html += `<li class="option" id="skip">skip declaration</li>`;
 	  }
           html += '</ul>';
 
@@ -9483,13 +9490,18 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	    $('.option').off();
 	    let action = $(this).attr("id");
 
+	    if (action === "skip") { 
+              his_self.addMove("ops\t"+faction+"\t"+"040"+"\t"+2);
+	      his_self.endTurn();
+	      return 0;	
+	    }
+
             his_self.addMove("ops\t"+faction+"\t"+"040"+"\t"+2);
 	    his_self.addMove("unexpected_war\t"+faction+"\t"+action);
             his_self.addMove("declare_war\t"+faction+"\t"+action);
 	    his_self.endTurn();
 
 	  });
-
 
         }
 
@@ -22695,7 +22707,7 @@ if (this.game.options.scenario != "is_testing") {
 	      //
 	      // this logic is implemented in newCards
 	      //
-	      if (this.game.players.length == 2) {
+	      if (this.game.players.length <= 2) {
 	        if (this.game.state.round >= 6 ) {
                   this.game.state.henry_viii_healthy_edward = 1;
                   this.game.state.henry_viii_sickly_edward = 0;
@@ -34305,12 +34317,12 @@ if (this.game.state.round == 2) {
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 1;
-//if (f == "papacy") { cardnum = 0; }
-//if (f == "hapsburg") { cardnum = 1; }
-//if (f == "protestant") { cardnum = 0; }
-//if (f == "england") { cardnum = 0; }
-//if (f == "ottoman") { cardnum = 0; }
+cardnum = 1;
+if (f == "papacy") { cardnum = 0; }
+if (f == "hapsburg") { cardnum = 1; }
+if (f == "protestant") { cardnum = 0; }
+if (f == "england") { cardnum = 0; }
+if (f == "ottoman") { cardnum = 0; }
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
@@ -43227,9 +43239,10 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (his_self.game.state.may_colonize[faction] == 0) { return 0; }
 
     // no for protestants early-game
-    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+    if (faction === "protestant") { return false; }
     if (faction === "ottoman") { return false; }
     if (faction === "papacy") { return false; }
+
     for (let i = 0; i < his_self.game.state.colonies.length; i++) {
       if (his_self.game.state.colonies[i].faction == faction) {
         if (his_self.game.state.colonies[i].round >= his_self.game.state.round) { return 0; }
