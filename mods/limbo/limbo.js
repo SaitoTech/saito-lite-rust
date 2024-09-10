@@ -492,6 +492,28 @@ class Limbo extends ModTemplate {
 		}
 	}
 
+	onConnectionUnstable(app, peer){
+		if (!app.BROWSER){
+			let pk = peer.publicKey;
+			for (let key in this.dreams){
+				if (pk == key){
+					setTimeout(async () => {
+						let back_online = false;
+						let currentPeers = await app.network.getPeers();
+						for (let p of currentPeers){
+							if (p.publicKey == pk){
+								back_online = true;
+							}
+						}
+						if (!back_online){
+							delete this.dreams[pk];
+						}
+					}, 2000);
+				}
+			}
+		}
+	}
+
 	createProfileCard(key, dream, container) {
 		let profileCard = new SaitoProfile(this.app, this, container);
 
