@@ -290,15 +290,17 @@ class Videocall extends ModTemplate {
 								duration,
 								description
 							};
+							let name = "scheduled_event"
 							const room_obj_stringified = JSON.stringify(room_obj);
 							 let call_link =  mod.generateCallLink(room_obj)
-							  app.keychain.addKey(call_id, { identifier: call_id, type: "scheduled_call", startTime:utcStartTime, duration, description, room_obj:room_obj_stringified, link:call_link });
+							  app.keychain.addKey(call_id, { identifier: call_id, type: "scheduled_call", startTime:utcStartTime, duration, description, room_obj:room_obj_stringified, link:call_link, name });
 							  let event = {
 								"datetime": new Date(utcStartTime),
 								"duration": duration,
 								"description": description || "Scheduled Call",
 								"link": call_link,
 								"type": "Scheduled call",
+								"name": name,
 								"id": call_id
 							  };  
 							 app.connection.emit('calendar-render-request', event)

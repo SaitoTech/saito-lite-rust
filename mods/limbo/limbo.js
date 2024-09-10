@@ -242,13 +242,15 @@ class Limbo extends ModTemplate {
 							link_obj.buildLink()
 							let cast_link = link_obj.invite_link;
 							let cast_id = app.crypto.generateRandomNumber().substring(0, 12);
-							app.keychain.addKey(cast_id, { type: "scheduled_cast", startTime: utcStartTime, duration, description, room_obj: cast_obj_stringified, link: " " });
+						let name = "scheduled_event"
+							app.keychain.addKey(cast_id, { type: "scheduled_cast", startTime: utcStartTime, duration, description, room_obj: cast_obj_stringified, link: " " , name});
 							let event = {
 								"datetime": new Date(utcStartTime),
 								"duration": duration,
 								"description": description || "Scheduled Cast",
 								"link": cast_link,
 								"type": "Scheduled cast",
+								"name": name,
 								"id": cast_id
 							};
 							app.connection.emit('calendar-render-request', event)

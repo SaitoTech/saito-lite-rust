@@ -155,6 +155,11 @@
     cursor: pointer;
     width: 100%;
     text-align: center;
+    display: flex;
+}
+
+.saito-calendar-day-date {
+margin-right:  .2rem;
 }
 
 .saito-calendar-day-icon {
