@@ -40,7 +40,7 @@ html[data-theme="midnight"] {
   /* bit faded */
   --font-color-heavy: var(--color-white);
   /* Bright! */
-  --font-color-inverse: var(--color-primary);
+  --font-color-inverse: var(--font-color-primary);
   /* opposite tone of font-primary */
   /*Font Selection*/
   --font-color-paper-airplane: var(--font-color-secondary);
