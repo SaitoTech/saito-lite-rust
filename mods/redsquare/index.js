@@ -73,10 +73,67 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
       background-color: #211f25; 
       background-image: url('/saito/img/tiled-logo.svg');
     }
+
+
+    .saito-welcome-overlay {
+      width: 800px;
+      max-width: 90vw;
+      height: 600px;
+      max-height: 90vh;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      background-image: url('/saito/img/backgrounds/red_cube_dark.jpg');
+      background-size: cover;
+      background-position: center;
+      z-index: 10000;
+      filter: drop-shadow(15px 15px 10px black);
+      color: white;
+      font-family: initial !important;
+      font-weight: 400;
+      line-height: 1.2;
+    }
+
+    .saito-welcome-overlay-backdrop {
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      z-index: 10000;
+    }
+
+    .saito-welcome-header {
+      font-size: 60px;
+      color: white;
+      text-align: center;
+      margin: 30px auto;
+    }
+
+    .saito-welcome-footer {
+      font-size: 30px;
+      position: absolute;
+      bottom: 10px;
+      padding: 10px;
+      text-align: right;
+      width: 100%;
+    }
+
+    .saito-welcome-overlay ~ .saito-container {
+      filter: blur(5px);
+    }
+
   </style>
 </head>
 
 <body>
+
+  <div class="saito-welcome-overlay-backdrop"></div>
+  <div class='saito-welcome-overlay'>
+   <div class='saito-welcome-header'>Installing Saito Wallet...</div>
+   <div class='saito-welcome-footer'></div>
+  </div>
+
+
 </body>`;
 
 	html += `<script type="text/javascript">
