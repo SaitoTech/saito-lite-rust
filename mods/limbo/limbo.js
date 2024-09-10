@@ -354,11 +354,11 @@ class Limbo extends ModTemplate {
 			this.is_rendered = true;
 
 			this.app.connection.on("limbo-spaces-update", ()=> {
-
+				
 				document.querySelector(".spaces-list").innerHTML = "";
 								
 				for (let key in this.dreams){
-					
+					document.querySelector(".spaces-list").style.display = "flex";	
 					this.createProfileCard(key, this.dreams[key], ".spaces-list");
 
 				}

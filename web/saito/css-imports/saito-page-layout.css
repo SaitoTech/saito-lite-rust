@@ -2,7 +2,7 @@
   width: 100vw;
   height: calc(100% - var(--saito-header-height));
   display: grid;
-  grid-template-columns: 28rem 58rem 33rem;
+  grid-template-columns: 25rem 63rem 30rem;
   padding: 0 calc((100vw - var(--saito-width)) / 2);
   column-gap: 0.5rem;
   z-index: 0;
@@ -39,7 +39,7 @@
   top: 0;
   min-width: 30rem;
   height: max-content;
-  margin-left: 3rem;
+  margin-left: 1rem;
 }
 
 .saito-sidebar h5 {

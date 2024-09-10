@@ -48,9 +48,11 @@
   border-radius: var(--border-radius-identicon-needed);
 }
 
+/*
 .my-turn {
 	border: solid 2px;
 }
+*/
 
 .player-turn {
 	position: relative;
