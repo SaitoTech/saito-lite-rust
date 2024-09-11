@@ -65,7 +65,7 @@
 
 .spaces-list{
 	gap: 2.5rem;
-	display: none;
+	display: grid;
 	grid-template-columns: repeat(auto-fit, 35rem);
 	width: 100%;
 	justify-content: center;
@@ -114,6 +114,7 @@
 .redsquare-sidebar .spaces-list {
 	flex-direction: column;
 	gap: unset;
+	display: none;
 }
 
 /*
