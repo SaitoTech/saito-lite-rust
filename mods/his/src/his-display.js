@@ -2253,7 +2253,7 @@ try {
 	  // faction capital the next turn.
 	  //
 	  if (is_naval_space) {
-	    if (!this.doesFactionHaveFriendlyNavalUnitsInSpace()) {
+	    if (!this.doesFactionHaveFriendlyNavalUnitsInSpace(z)) {
               let obj = {};
               obj.faction = "";
               obj.leader = space.units[z][zz];
@@ -2261,7 +2261,7 @@ try {
               if (obj.leader) { if (obj.leader.type == "dragut") { obj.space = "istanbul"; obj.faction = "ottoman"; } }
               if (obj.leader) { if (obj.leader.type == "andrea-doria") { obj.space = "genoa"; obj.faction = "genoa"; } }
 	      space.units[z].splice(zz, 1);
-              his_self.game.state.military_leaders_removed_until_next_round.push(obj);
+              this.game.state.military_leaders_removed_until_next_round.push(obj);
 	    }
 	  }
 
