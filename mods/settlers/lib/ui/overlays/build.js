@@ -44,7 +44,7 @@ class BuildOverlay {
 	}
 
 	attachEvents() {
-		this_self = this;
+		let this_self = this;
 
 		document.querySelectorAll('.settlers-item-row').forEach((item) => {
 			item.onclick = (e) => {

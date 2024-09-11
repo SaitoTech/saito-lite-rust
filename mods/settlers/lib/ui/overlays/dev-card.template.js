@@ -1,4 +1,4 @@
-module.exports = DevCardOverlayTemplate = (app, mod, dev_card) => {
+module.exports = (app, mod, dev_card) => {
 	let html = `
     <div class="saitoa dev-card-overlay">
       <div class="settlers-items-container">`;

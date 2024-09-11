@@ -1,4 +1,4 @@
-module.exports = BuildOverlayTemplate = (app, mod, build) => {
+module.exports = (app, mod, build) => {
 	return `
     <div class="saitoa build-overlay">
 

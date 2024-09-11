@@ -1,4 +1,4 @@
-module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
+module.exports = (stats, winner) => {
 	let players_count = stats.mod.game.state.players.length;
 
 	let highest_count = stats.mod.game.stats.dice[2];

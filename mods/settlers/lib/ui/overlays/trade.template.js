@@ -1,4 +1,4 @@
-module.exports = TradeOverlayTemplate = (tobj) => {
+module.exports = (tobj) => {
 	let html = `
     <div class="saitoa trade-overlay">
       <div class="h2">You ${tobj.accepting_trade ? 'Accept' : 'Want'}:</div>

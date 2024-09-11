@@ -184,7 +184,7 @@ class SettlersState {
             }
         }
         //console.log(existing_adjacent);
-        adjacent = existing_adjacent;
+        let adjacent = existing_adjacent;
         return adjacent;
     }
 

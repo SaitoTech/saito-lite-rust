@@ -1,4 +1,4 @@
-module.exports = BankOverlayTemplate = (app, mod, bank) => {
+module.exports = (app, mod, bank) => {
 	console.log(bank?.selected_resource);
 	let prompt = (bank?.selected_resource) ? "R" : "Select r";
 	let html = `

@@ -31,7 +31,7 @@ class BankOverlay {
 	}
 
 	attachEvents() {
-		this_bank = this;
+		let this_bank = this;
 
 		if (this_bank.selected_resource) {
 			document
