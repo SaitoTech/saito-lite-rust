@@ -142,14 +142,23 @@ async function init() {
 		console.error(e);
 	}
 
+	// saito.modules.handlePeerTransaction()
+
 	S.getInstance().start();
+
+return saito;
+	
+
 }
 
 // init();
 window.onload = async function () {
 	// console.log(args, "args")
 	try {
-		await init();
+		let saito = await init();
+		// saito.modules.affixCallbacks(tx)
+		// @ts-ignore
+		window.saito = saito
 	} catch (error) {
 		console.error(error);
 	}
