@@ -11,10 +11,59 @@
     flex-direction: column;
 }
 
+.saito-modal-calendar-tabs {
+	display: flex;
+	margin-bottom: 1rem;
+}
+
+.saito-tab-button {
+	border: none;
+	padding: 1rem;
+	font-size: 1.6rem;
+	cursor: pointer;
+	flex: 1;
+	text-align: center;
+    margin-right: 1rem;
+    border-radius: var(--saito-border-radius);
+    border: 1px solid var(--saito-primary);
+}
+
+.saito-tab-button.active {
+    color: var(--saito-white);
+    background-color: var(--saito-primary);
+}
+
+.saito-tab-button:hover {
+	background-color: var(--saito-primary);
+	color: var(--saito-white);
+}
+
+.saito-calendar-events-details {
+	clear: both;
+	font-size: 1.5rem;
+	color: var(--saito-font-color);
+	font-weight: bold;
+    max-height: 25rem;
+	overflow-y: auto;
+}
+
+.saito-calendar-events-details#tab2 {
+	display: none;
+}
+
+.saito-calendar-event-actions {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.saito-calendar-event-actions button {
+    margin-bottom: 1rem;
+}
 
 .saito-modal.saito-modal-calendar {
     display: grid;
-    grid-template-columns: 30rem 1fr;
+    /* grid-template-columns: 30rem 1fr; */
     width: 100%;
     padding: 4rem;
     grid-gap: 0;
@@ -22,7 +71,7 @@
 }
 
 .saito-modal-calendar-content {
-    padding-right: 3rem;
+/*    padding-right: 3rem; */
 }
 
 .saito-modal-calendar-title {
@@ -30,14 +79,13 @@
     margin-bottom: 1rem;
 }
 .saito-modal-calendar-note {
-    font-size: 2rem;
-    line-height: 2.8rem;
+    font-size: 1.5rem;
     display: block;
 }
 
 .saito-calendar-events {
-    width: 40rem;
-    height: 35rem;
+    /* width: 40rem; */
+    /* height: 35rem; */
     padding: 0px;
     margin: 0px;
     border: var(--border-thickness-calendar-event-inner) solid var(--border-color-calendar-event-inner);
@@ -53,15 +101,7 @@
 
 
 
-.saito-calendar-events-details {
-    clear: both;
-    font-size: 1.5rem;
-    color: var(--saito-font-color);
-    font-weight: bold;
-    padding-left: 2rem;
-    max-height: 25rem; 
-    overflow-y: auto; 
-}
+
 
 .saito-calendar-event {
     margin-bottom: 1.5rem; 
@@ -114,6 +154,11 @@
     cursor: pointer;
     width: 100%;
     text-align: center;
+    display: flex;
+}
+
+.saito-calendar-day-date {
+margin-right:  .2rem;
 }
 
 .saito-calendar-day-icon {
@@ -140,3 +185,5 @@
     color: var(--font-color-calendar-today);
     border-radius: var(--border-radius-calendar-hover-today);
 }
+
+

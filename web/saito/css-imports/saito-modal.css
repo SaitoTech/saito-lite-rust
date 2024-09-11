@@ -1,11 +1,14 @@
 /* generic modal look and feel */
+
 /*
 NOTE: the .saito-model class is a grid with two sectiions
 This alows for a header with a header with title to be added without extra CSS
 */
+
 .saito-modal {
   color: var(--font-color-modal-menu-oldschool);
-  background: var(--background-color-modal-menu-oldschool); /* this seems to be placed on top of the other modal design?? */
+  background: var(--background-color-modal-menu-oldschool);
+  /* this seems to be placed on top of the other modal design?? */
   min-width: 70rem;
   height: min-content;
   max-width: 80vw;
@@ -15,9 +18,7 @@ This alows for a header with a header with title to be added without extra CSS
   max-height: 95vh;
   border: var(--border-thickness-modal-menu) solid var(--border-color-modal-menu);
   border-radius: var(--border-radius-modal-menu);
-  
 }
-
 
 .saito-modal-title {
   font-size: 3rem;
@@ -25,7 +26,6 @@ This alows for a header with a header with title to be added without extra CSS
   padding-bottom: 0.5rem;
   border-bottom: 1px solid;
 }
-
 
 .saito-contact {
   display: flex;
@@ -36,6 +36,7 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 /* We want to trigger the click event on the container */
+
 .saito-contact .saito-user .saito-identicon-box, .saito-contact .saito-user .saito-userline, .saito-contact .saito-user .saito-address {
   pointer-events: none;
 }
@@ -45,16 +46,16 @@ This alows for a header with a header with title to be added without extra CSS
   left: 3rem;
   top: 0;
   z-index: 2;
-  color: var(--saito-font-color-light); /* testing */
+  color: var(--saito-font-color-light);
+  /* testing */
   text-shadow: 2px 2px 2px var(--saito-black);
-
 }
 
 .saito-contact.unconfirmed {
   filter: brightness(0.7) grayscale(1);
 }
 
-.saito-modal .saito-modal-content{
+.saito-modal .saito-modal-content {
   border-top: 1px solid var(--saito-border-color);
   padding: 0.5rem 0;
 }
@@ -69,7 +70,6 @@ This alows for a header with a header with title to be added without extra CSS
   width: 4.5rem;
   height: 4.5rem;
 }
-
 
 .saito-modal-menu .saito-modal-title .saito-user {
   height: 6rem;
@@ -88,6 +88,7 @@ This alows for a header with a header with title to be added without extra CSS
 
 /* saito-modal-menu
 /* theming for a simple menu with font-awesome icon and text in a two col grid */
+
 .saito-modal-menu-option {
   font-size: 3rem;
   height: 6rem;
@@ -161,7 +162,8 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .saito-modal-button {
-  background-color: var(--color-white); /* testing */
+  background-color: var(--color-white);
+  /* testing */
   margin-top: 3rem;
   margin-left: 3rem;
   max-width: min-content;
@@ -170,11 +172,12 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .saito-modal-button:hover {
-  border: 1px solid var(--color-white); /* testing */
+  border: 1px solid var(--color-white);
+  /* testing */
 }
 
 #saito-confirm-add-publickey {
-  background-color:  var(--color-white);
+  background-color: var(--color-white);
   height: auto;
   width: 30vh;
   border-radius: 1.5rem;
@@ -187,9 +190,7 @@ This alows for a header with a header with title to be added without extra CSS
   transform: translateX(-50%);
   width: 8rem;
   height: 8rem;
-
 }
-
 
 #saito-confirm-add-publickey>.saito-address {
   width: 100%;
@@ -209,7 +210,6 @@ This alows for a header with a header with title to be added without extra CSS
   text-align: center;
 }
 
-
 .saito-modal-title .saito-user .saito-address {
   font-size: 4rem;
 }
@@ -217,7 +217,6 @@ This alows for a header with a header with title to be added without extra CSS
 .share-link {
   color: var(--saito-font-color);
 }
-
 
 /* Exclusively for modal-add-user-confirm.template */
 
@@ -237,15 +236,15 @@ This alows for a header with a header with title to be added without extra CSS
   display: flex;
   align-items: center;
   font-size: 25px;
-  border: 1px solid;
+  border: 1px solid var(--saito-border-color);
   margin: 1em;
 }
-
 
 /* LIST SELECTION MODAL */
 
 .game-selection-list-overlay {
-  background-color: black; /* testing, i have it as white locally. */
+  background-color: black;
+  /* testing, i have it as white locally. */
   max-height: 90vh;
   overflow-y: scroll;
   font-size: 2rem;
@@ -260,7 +259,8 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 .selection-list li:hover {
-  background-color: #33669999; /* testing */
+  background-color: #33669999;
+  /* testing */
 }
 
 .selection-list li .tiptext {
@@ -275,13 +275,7 @@ This alows for a header with a header with title to be added without extra CSS
   right: 0;
 }
 
-
-
-
-
 /* Welcome modal */
-
-
 
 .welcome-modal-wrapper {
   max-width: 80vw;
@@ -327,9 +321,7 @@ This alows for a header with a header with title to be added without extra CSS
   clear: both;
 }
 
-.welcome-modal-action {
-  
-}
+.welcome-modal-action {}
 
 .welcome-modal-left {
   display: flex;
@@ -356,6 +348,7 @@ This alows for a header with a header with title to be added without extra CSS
   justify-content: space-between;
   align-items: center;
 }
+
 #signup {
   margin: 0;
   width: 15px;
@@ -365,7 +358,6 @@ This alows for a header with a header with title to be added without extra CSS
 .welcome-modal-action button:hover {
   border-color: var(--border-thickness-general-dividers);
 }
-
 
 .saito-overlaid-icon {
   color: var(--saito-white);
@@ -383,11 +375,10 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 /* Identicons aren't clickable in modals menus */
+
 .saito-modal-menu .saito-identicon-box {
   cursor: default;
 }
-
-
 
 /* mobile modals */
 
@@ -399,11 +390,9 @@ This alows for a header with a header with title to be added without extra CSS
     width: 90vw;
     grid-template-columns: 100%;
   }
-
-  .saito-modal > * {
+  .saito-modal>* {
     max-width: 100%;
   }
-
   .welcome-modal-wrapper {
     /*grid-template-columns: 1fr;*/
     width: 90vw;
@@ -419,12 +408,10 @@ This alows for a header with a header with title to be added without extra CSS
   }
 }
 
-
 @media only screen and (max-width: 768px) {
   .saito-modal-menu-option>i {
     font-size: 2rem;
   }
-
   .saito-modal-menu-option>div {
     font-size: 1.5rem;
   }
@@ -434,12 +421,9 @@ This alows for a header with a header with title to be added without extra CSS
   .saito-modal-menu .saito-modal-title .saito-user {
     margin: 0;
   }
-
   .saito-modal-menu-option {
     margin: 0 1rem;
   }
-
-
 }
 
 /* not sure where this should be */
@@ -450,7 +434,7 @@ This alows for a header with a header with title to be added without extra CSS
   color: var(--font-color-modal-contacts);
   grid-template-rows: min-content 1fr min-content;
   border-radius: var(--border-radius-modal-menu);
- }
+}
 
 .saito-contacts-list {
   display: flex;

@@ -31,7 +31,7 @@ module.exports = StunLaunchTemplate = (app, mod) => {
     html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom" data-id="${mod.room_obj?.call_id}">Join Meeting</div>`;
   } else {
     html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom">Start Meeting</div>`;
-    html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createScheduleRoom">Schedule Meeting</div>`;
+    // html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createScheduleRoom">Schedule Meeting</div>`;
 
     let keys = app.keychain.returnKeys({ type: "scheduled_call" });
     if (keys.length > 0) {

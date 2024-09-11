@@ -65,7 +65,7 @@
 
 .spaces-list{
 	gap: 2.5rem;
-	display: none;
+	display: grid;
 	grid-template-columns: repeat(auto-fit, 35rem);
 	width: 100%;
 	justify-content: center;
@@ -77,50 +77,70 @@
 	border: 1px solid var(--saito-border-color);
 	cursor: pointer;
 	overflow: hidden;
-	height: 120px;
+	height: 300px;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
 }
 
 .spaces-list .saito-profile-header-row .saito-identicon-box {
+	width: 7rem;
+	height: 7rem;
+	font-size: 3.5rem;
+}
+
+.spaces-list .saito-profile-key {
+	display: none;
+}
+
+
+/********  For tighter display in the Redsquare Sidebar   *********/
+
+.redsquare-sidebar .spaces-list {
+	display: flex;
+	flex-direction: column;
+	gap: unset;
+	display: none;
+	max-height: 30vh;
+}
+
+.redsquare-sidebar .spaces-list .saito-profile {
+	height: unset;
+}
+
+.redsquare-sidebar .spaces-list .saito-profile-header-row .saito-identicon-box {
 	width: 3.5rem;
 	height: 3.5rem;
 	font-size: 1.5rem;
 }
 
-.spaces-list .saito-profile-username {
+.redsquare-sidebar .spaces-list .saito-profile-username {
 	font-size: 1.5rem;
 }
 
-.spaces-list .saito-profile-key {
+.redsquare-sidebar .spaces-list .saito-profile-key {
 	font-size: 1.2rem;
 }
 
-.spaces-list .saito-profile-description {
+.redsquare-sidebar .spaces-list .saito-profile-description {
 	font-size: 1.2rem;
 	padding: 0;
 }
 
-.spaces-list .saito-profile-tab {
-	font-size: 1.5rem;
-	padding: 0 1rem;
+.redsquare-sidebar .spaces-list .saito-profile-menu {
+	min-height: unset;
 }
 
-.spaces-list .saito-profile-banner {
+.redsquare-sidebar .spaces-list .saito-profile-tab {
+	font-size: 1.5rem;
+	padding: 0.2rem 1rem;
+}
+
+.redsquare-sidebar .spaces-list .saito-profile-banner {
 	padding-top: 50px;
 }
 
-.redsquare-sidebar .spaces-list {
-	flex-direction: column;
-	gap: unset;
-}
 
-/*
-.redsquare-sidebar .spaces-list .saito-profile {
-	height: 116px;
-}
-*/
 
 .icon_click_area.click-me i {
 	color: var(--saito-green);
@@ -360,6 +380,7 @@ video#local.noflip{
 
 .dream-wizard .button {
 	margin: 1rem 0;
+	flex: 1;
 }
 
 .dream-wizard .cast-mode {
@@ -376,8 +397,7 @@ video#local.noflip{
 	font-size: 6rem;	
 }
 
-.cast-mode-option {
-	cursor: pointer;
+.dream-wizard .cast-mode > div {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -387,11 +407,15 @@ video#local.noflip{
 	border: 1px solid;
 }
 
+.cast-mode-option {
+	cursor: pointer;
+}
+
 .dream-wizard .cast-mode .selected{
 	color: var(--saito-font-color);
-	border-width: 3px;
-	text-shadow: 1px 1px 5px var(--saito-black);
-	box-shadow: 1px 1px 5px 1px var(--saito-black);
+	border-width: 2px;
+	/*text-shadow: 1px 1px 5px var(--saito-black);*/
+	box-shadow: 1px 1px 4px 1px var(--saito-black);
 }
 
 .dream-wizard input{

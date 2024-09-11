@@ -339,14 +339,12 @@ console.log("IN MODULE.TS AFFIX CALLBACKS: ");
 
 
 		const onConnectionUnstable = this.onConnectionUnstable.bind(this);
-		this.app.connection.on('peer_disconnect', async (peerIndex: bigint) => {
+		this.app.connection.on('peer_disconnect', async (peerIndex: bigint, public_key:string) => {
 			console.log(
 				'connection dropped -- triggering on connection unstable : ' +
-				peerIndex
+				peerIndex, " key : ", public_key
 			);
-			// // todo : clone peer before disconnection and send with event
-			// let peer = await this.app.network.getPeer(BigInt(peerIndex));
-			// onConnectionUnstable(peer);
+			this.onConnectionUnstable(public_key);
 		});
 
 		this.app.connection.on('peer_connect', async (peerIndex: bigint) => {
@@ -624,9 +622,9 @@ console.log("IN MODULE.TS AFFIX CALLBACKS: ");
 		}
 	}
 
-	onConnectionUnstable(peer) {
+	onConnectionUnstable(public_key) {
 		for (let i = 0; i < this.mods.length; i++) {
-			this.mods[i].onConnectionUnstable(this.app, peer);
+			this.mods[i].onConnectionUnstable(this.app, public_key);
 		}
 	}
 

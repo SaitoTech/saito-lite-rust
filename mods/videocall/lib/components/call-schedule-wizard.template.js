@@ -1,9 +1,9 @@
 
-module.exports = CallScheduleWizardTemplate = (app, mod) => {
+module.exports = CallScheduleWizardTemplate = (app, mod, name) => {
 
     return `
     <div class="call-schedule-wizard-container">
-                <h4>Schedule a Call</h4>
+                <h4>Schedule a ${name}</h4>
                 <form id="scheduleForm">
                     <label for="startTime">Start Time:</label>
                     <input type="datetime-local" id="startTime" required>         
@@ -18,7 +18,7 @@ module.exports = CallScheduleWizardTemplate = (app, mod) => {
                     <label for="description">Description:</label>
                     <textarea id="description" rows="4" ></textarea>
                     
-                    <button type="submit">Create Link</button>
+                    <button type="submit">Create Schedule</button>
                 </form>
             <div>
     `

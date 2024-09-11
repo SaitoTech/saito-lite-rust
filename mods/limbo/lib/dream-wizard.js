@@ -15,35 +15,46 @@ class DreamWizard{
 		this.attachEvents();
 	}
 
+	readOptions(){
+		//Read the title & description for profile display
+		let title_el = document.getElementById("dream-wizard-identifier");
+		let title = document.getElementById("dream-wizard-identifier")?.value || "";
+		let mode = document.querySelector(".cast-mode-option.selected");
+		if (mode){
+			if (mode.getAttribute("id") == "mode-video"){
+				this.options.includeCamera = true;
+			}
+			if (mode.getAttribute("id") == "mode-screen"){
+				this.options.screenStream = true;
+			}
+		}
+
+		let description_el = document.getElementById("dream-wizard-description");
+		let description = description_el?.innerText || description_el?.value || "";
+
+		if (title){
+			this.options.identifier = title;
+		}
+
+		if (description){
+			this.options.description = description;
+		}
+	}
+
 	attachEvents(){
 		if (document.getElementById("dream-wizard-btn")){
 			document.getElementById("dream-wizard-btn").onclick = (e) => {
-				//Read the title & description for profile display
-				let title_el = document.getElementById("dream-wizard-identifier");
-				let title = document.getElementById("dream-wizard-identifier")?.value || "";
-				let mode = document.querySelector(".cast-mode-option.selected");
-				if (mode){
-					if (mode.getAttribute("id") == "mode-video"){
-						this.options.includeCamera = true;
-					}
-					if (mode.getAttribute("id") == "mode-screen"){
-						this.options.screenStream = true;
-					}
-				}
-
-				let description_el = document.getElementById("dream-wizard-description");
-				let description = description_el?.innerText || description_el?.value || "";
-
-				if (title){
-					this.options.identifier = title;
-				}
-
-				if (description){
-					this.options.description = description;
-				}
 				
 				this.mod.broadcastDream(this.options);
 				this.overlay.close();
+			}
+		}
+
+		if (document.getElementById('dream-schedule-btn')){
+			document.getElementById('dream-schedule-btn').onclick = (e) => {
+				this.readOptions();
+				this.overlay.close();
+				this.mod.scheduleCast(this.options);
 			}
 		}
 

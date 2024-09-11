@@ -11,6 +11,7 @@ const AppSettings = require('./lib/stun-settings');
 const HomePage = require("./index");
 const CallScheduleLaunch = require('./lib/components/call-schedule-launch');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
+const SaitoScheduleWizard = require('../../lib/saito/ui/saito-calendar/saito-schedule-wizard');
 
 class Videocall extends ModTemplate {
 	constructor(app) {
@@ -175,7 +176,6 @@ class Videocall extends ModTemplate {
 					this.renderedInto = qs;
 				}
 			} else if (this.room_obj.scheduled === true) {
-				// console.log("Should render call scheduler")
 				if (!this.renderIntos[qs]) {
 					this.renderIntos[qs] = [];
 					this.renderIntos[qs].push(new CallScheduleLaunch(this.app, this, qs));
@@ -208,6 +208,7 @@ class Videocall extends ModTemplate {
 	respondTo(type, obj) {
 		let call_self = this;
 
+		let app = this.app
 		if (type === 'user-menu') {
 			//Don't provide a calling hook if in the video call app!
 			// if (call_self.browser_active) {
@@ -267,6 +268,51 @@ class Videocall extends ModTemplate {
 					}
 				];
 			}
+		}
+
+		if(type === "saito-scheduler"){
+			this.attachStyleSheets()
+			super.render(this.app, this);
+			return [
+				{
+					text: 'Schedule a call',
+					icon: this.icon,
+					callback: function (app, day, month, year) {
+						let defaultDate = {day, month, year}
+						let schedule_wizard = new SaitoScheduleWizard(app, call_self, '', defaultDate, "call")
+						schedule_wizard.callbackAfterSubmit =async function (app, mod, duration, description, utcStartTime) {
+							const call_id = await mod.generateRoomId();
+							const room_obj = {
+								call_id,
+								scheduled: true,
+								call_peers: [],
+								startTime: utcStartTime, 
+								duration,
+								description
+							};
+							let name = "scheduled_event"
+							let type = "Scheduled call";
+							const room_obj_stringified = JSON.stringify(room_obj);
+							 let call_link =  mod.generateCallLink(room_obj)
+							  app.keychain.addKey(call_id, { identifier: call_id, type, startTime:utcStartTime, duration, description, room_obj:room_obj_stringified, link:call_link, name });
+							  let event = {
+								"datetime": new Date(utcStartTime),
+								"duration": duration,
+								"description": description || "Scheduled Call",
+								"link": call_link,
+								"type": type,
+								"name": name,
+								"id": call_id
+							  };  
+							 app.connection.emit('calendar-render-request', event)
+							await navigator.clipboard.writeText(call_link);
+							siteMessage('Videocall event scheduled successfully', 1500);
+						}
+						schedule_wizard.render();
+
+					}
+				}
+			];
 		}
 		//
 		//Game-Menu passes the game_mod as the obj, so we can test if we even want to add the option
