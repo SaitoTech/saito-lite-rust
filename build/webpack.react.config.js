@@ -1,5 +1,17 @@
 const path = require('path');
 const webpack = require('webpack');
+const glob = require('glob')
+
+const entries = glob.sync('./mods/**/react-components/index.js').reduce((acc, file) => {
+  const modName = file.split(path.sep)[1]; 
+
+
+  // Assign the entry
+  acc[modName] = `./${file}`
+  return acc;
+}, {});
+
+console.log(entries);
 
 
 module.exports = {
@@ -30,11 +42,11 @@ module.exports = {
     /\/web\//,
     /\/www\//
   ],
-  // Path to your entry point. From this file Webpack will begin his work
-  entry: './mods/react/ReactHome.js',  // Your React entry point
+
+  entry: entries,
   output: {
-    filename: 'react-bundle.js',  // The bundled output file
-    path: path.resolve(__dirname, './mods/react/web/react-bundle'),
+    filename: '[name]/web/react-bundle/react-bundle.js', 
+    path: path.resolve(__dirname, '../mods'), 
   },
   resolve: {
     // Add '.ts' and '.tsx' as resolvable extensions.
@@ -63,11 +75,10 @@ module.exports = {
         loader: 'ts-loader',
         exclude: /(node_modules)/,
         options: {
-          configFile: path.resolve(__dirname, './build/tsconfig.json'),  // Path to your custom tsconfig.json
+          configFile: path.resolve(__dirname, './tsconfig.json'), 
         }
       },
       
-      // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
       {
         test: /\.js$/,
         use: [
@@ -95,8 +106,6 @@ module.exports = {
         test: /quirc\.js$/,
         loader: 'exports-loader'
       },
-      // wasm files should not be processed but just be emitted and we want
-      // to have their public URL.
       {
         test: /quirc\.wasm$/,
         type: 'javascript/auto',
