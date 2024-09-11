@@ -242,8 +242,8 @@ class Limbo extends ModTemplate {
 							link_obj.buildLink()
 							let cast_link = link_obj.invite_link;
 							let cast_id = app.crypto.generateRandomNumber().substring(0, 12);
-						let name = "scheduled_event"
-							app.keychain.addKey(cast_id, { type: "scheduled_cast", startTime: utcStartTime, duration, description, room_obj: cast_obj_stringified, link: " " , name});
+							let name = "scheduled_event"
+							app.keychain.addKey(cast_id, { type: "scheduled_cast", startTime: utcStartTime, duration, description, room_obj: cast_obj_stringified, link: " ", name });
 							let event = {
 								"datetime": new Date(utcStartTime),
 								"duration": duration,
@@ -254,7 +254,6 @@ class Limbo extends ModTemplate {
 								"id": cast_id
 							};
 							app.connection.emit('calendar-render-request', event)
-							
 							siteMessage('Swarmcast event scheduled successfully', 1500);
 						}
 						schedule_wizard.render();
@@ -404,12 +403,12 @@ class Limbo extends ModTemplate {
 			this.attachStyleSheets();
 			this.is_rendered = true;
 
-			this.app.connection.on("limbo-spaces-update", ()=> {
-				
+			this.app.connection.on("limbo-spaces-update", () => {
+
 				document.querySelector(".spaces-list").innerHTML = "";
-								
-				for (let key in this.dreams){
-					document.querySelector(".spaces-list").style.display = "flex";	
+
+				for (let key in this.dreams) {
+					document.querySelector(".spaces-list").style.display = "flex";
 					this.createProfileCard(key, this.dreams[key], ".spaces-list");
 
 				}
