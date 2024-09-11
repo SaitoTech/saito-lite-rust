@@ -26,12 +26,10 @@ class ReactMod extends ModTemplate {
 
 
     render(){
-  
         var script = document.createElement("script");
         script.src = "react/react-bundle/react-bundle.js"
         script.type = "text/javascript";
         document.body.appendChild(script);
-
     }
 
 
