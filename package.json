@@ -20,7 +20,7 @@
     "jsdoc": "jsdoc --destination saitolitedocs lib/templates/abstractcryptomodule.js lib/templates/substratebasedcrypto.js lib/saito/wallet.js README.md",
     "pretty": "npx prettier --write .",
     "go": "npm run compile dev $@ && npm run start --",
-    "build-react": "webpack --config webpack.react.config.js"
+    "build-react": "webpack --config ./build/webpack.react.config.js"
   },
   "author": "Team Saito",
   "license": "SAITO",
@@ -53,6 +53,7 @@
     "express": "^4.17.1",
     "fastest-stable-stringify": "^2.0.2",
     "fs-extra": "^8.1.0",
+    "glob": "^11.0.0",
     "html-prettify": "^1.0.7",
     "html-webpack-plugin": "^5.6.0",
     "html2canvas": "^1.4.1",
