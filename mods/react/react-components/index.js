@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import ReactMod from './react.js';
 
 
 
 function App() {
   let react = window.saito.modules.returnModule('React')
-  console.log(react, 'react mod')
+  console.log(react, 'react mod');
+
+
   useEffect(() => {
+    react.app.connection.on('tun-init-call-interface', (settings) => {
+      console.log(settings, 'init peer interface');
+    })
     react.onConfirmation = function(blk, tx) {
       console.log('confirmation, react mod')
     }
     react.handlePeerTransaction = function(blk, tx) {
       console.log('peer transaction,', blk, tx)
     }
-
   }, []);
 
   return (

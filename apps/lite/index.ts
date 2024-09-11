@@ -49,7 +49,7 @@ class WebMethods extends WebSharedMethods {
 		await this.app.modules.handlePeerTransaction(newtx, peer, mycallback);
 	}
 
-	sendInterfaceEvent(event: string, peerIndex: bigint, public_key:string) {
+	sendInterfaceEvent(event: string, peerIndex: bigint, public_key: string) {
 		this.app.connection.emit(event, peerIndex, public_key);
 	}
 
@@ -101,7 +101,7 @@ class WebMethods extends WebSharedMethods {
 		return list;
 	}
 
-	ensureBlockDirExists(path: string): void {}
+	ensureBlockDirExists(path: string): void { }
 }
 
 async function init() {
@@ -142,16 +142,13 @@ async function init() {
 		console.error(e);
 	}
 
-	// saito.modules.handlePeerTransaction()
-
 	S.getInstance().start();
+	return saito;
 
-return saito;
-	
 
 }
 
-// init();
+
 window.onload = async function () {
 	// console.log(args, "args")
 	try {
