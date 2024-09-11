@@ -80,7 +80,7 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
       max-width: 90vw;
       height: 600px;
       max-height: 90vh;
-      position: absolute;
+      position: relative;
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
@@ -107,6 +107,10 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
       color: white;
       text-align: center;
       margin: 30px auto;
+    }
+
+    .pace-running .saito-welcome-footer {
+      visibility: hidden;
     }
 
     .saito-welcome-footer {
