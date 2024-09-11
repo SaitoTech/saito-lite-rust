@@ -3,7 +3,7 @@
 	width: 80rem;
 	text-align: center;
 	background-color: var(--saito-background-color);
-	border: 1px solid;
+	border: 1px solid var(--saito-border-color);
 	padding: 2rem;
 	font-size: 2rem;
 	border-radius: 0.5rem;
@@ -35,24 +35,30 @@
 	height: 100% !important;
 }
 
-
 /* Media Queries for different screen sizes */
+
 @media (max-width: 768px) {
-    .photo-cropper {
-        height: 60vh; /* Increase height on smaller screens */
-        width: 95vw; /* Increase width on smaller screens */
-        font-size: calc(12px + 2vw); /* Slightly larger font on smaller screens */
-        padding: 1rem;
-    }
+	.photo-cropper {
+		height: 60vh;
+		/* Increase height on smaller screens */
+		width: 95vw;
+		/* Increase width on smaller screens */
+		font-size: calc(12px + 2vw);
+		/* Slightly larger font on smaller screens */
+		padding: 1rem;
+	}
 }
 
 @media (max-width: 480px) {
-    .photo-cropper {
-        height: 70vh; /* Further increase height on very small screens */
-        width: 98vw; /* Almost full width on very small screens */
-        font-size: calc(14px + 2vw); /* Even larger font on very small screens */
-        padding: 0.5rem;
-    }
+	.photo-cropper {
+		height: 70vh;
+		/* Further increase height on very small screens */
+		width: 98vw;
+		/* Almost full width on very small screens */
+		font-size: calc(14px + 2vw);
+		/* Even larger font on very small screens */
+		padding: 0.5rem;
+	}
 }
 
 /*!
@@ -65,7 +71,7 @@
  * Date: 2023-09-17T03:44:17.565Z
  */
 
- .cropper-container {
+.cropper-container {
 	direction: ltr;
 	font-size: 0;
 	line-height: 0;
@@ -90,11 +96,7 @@
 	width: 100%;
 }
 
-.cropper-wrap-box,
-.cropper-canvas,
-.cropper-drag-box,
-.cropper-crop-box,
-.cropper-modal {
+.cropper-wrap-box, .cropper-canvas, .cropper-drag-box, .cropper-crop-box, .cropper-modal {
 	bottom: 0;
 	left: 0;
 	position: absolute;
@@ -102,8 +104,7 @@
 	top: 0;
 }
 
-.cropper-wrap-box,
-.cropper-canvas {
+.cropper-wrap-box, .cropper-canvas {
 	overflow: hidden;
 }
 
@@ -161,8 +162,7 @@
 	width: 0;
 }
 
-.cropper-center::before,
-.cropper-center::after {
+.cropper-center::before, .cropper-center::after {
 	background-color: #eee;
 	content: ' ';
 	display: block;
@@ -183,9 +183,7 @@
 	width: 1px;
 }
 
-.cropper-face,
-.cropper-line,
-.cropper-point {
+.cropper-face, .cropper-line, .cropper-point {
 	display: block;
 	height: 100%;
 	opacity: 0.1;
@@ -354,9 +352,6 @@
 	cursor: crosshair;
 }
 
-.cropper-disabled .cropper-drag-box,
-.cropper-disabled .cropper-face,
-.cropper-disabled .cropper-line,
-.cropper-disabled .cropper-point {
+.cropper-disabled .cropper-drag-box, .cropper-disabled .cropper-face, .cropper-disabled .cropper-line, .cropper-disabled .cropper-point {
 	cursor: not-allowed;
 }
