@@ -25,7 +25,7 @@
 	text-align: center;
     margin-right: 1rem;
     border-radius: var(--saito-border-radius);
-    border: 1px solid;
+    border: 1px solid var(--saito-primary);
 }
 
 .saito-tab-button.active {
@@ -43,8 +43,7 @@
 	font-size: 1.5rem;
 	color: var(--saito-font-color);
 	font-weight: bold;
-	padding-left: 2rem;
-	max-height: 25rem;
+    max-height: 25rem;
 	overflow-y: auto;
 }
 
@@ -72,7 +71,7 @@
 }
 
 .saito-modal-calendar-content {
-    padding-right: 3rem;
+/*    padding-right: 3rem; */
 }
 
 .saito-modal-calendar-title {
