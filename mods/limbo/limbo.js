@@ -492,21 +492,24 @@ class Limbo extends ModTemplate {
 		}
 	}
 
-	onConnectionUnstable(app, peer){
+	onConnectionUnstable(app, publicKey){
 		if (!app.BROWSER){
-			let pk = peer.publicKey;
 			for (let key in this.dreams){
-				if (pk == key){
+				if (publicKey == key){
+
+					console.log("We lost a dreamer!!!!");
+
 					setTimeout(async () => {
 						let back_online = false;
 						let currentPeers = await app.network.getPeers();
 						for (let p of currentPeers){
-							if (p.publicKey == pk){
+							if (p.publicKey == publicKey){
 								back_online = true;
 							}
 						}
 						if (!back_online){
-							delete this.dreams[pk];
+							delete this.dreams[publicKey];
+							console.log("Deleting dream");
 						}
 					}, 2000);
 				}
