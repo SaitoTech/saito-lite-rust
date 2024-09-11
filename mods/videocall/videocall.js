@@ -11,7 +11,7 @@ const AppSettings = require('./lib/stun-settings');
 const HomePage = require("./index");
 const CallScheduleLaunch = require('./lib/components/call-schedule-launch');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
-const CallScheduleWizard = require('../../lib/saito/ui/saito-calendar/saito-schedule-wizard');
+const SaitoScheduleWizard = require('../../lib/saito/ui/saito-calendar/saito-schedule-wizard');
 
 class Videocall extends ModTemplate {
 	constructor(app) {
@@ -279,7 +279,7 @@ class Videocall extends ModTemplate {
 					icon: this.icon,
 					callback: function (app, day, month, year) {
 						let defaultDate = {day, month, year}
-						let schedule_wizard = new CallScheduleWizard(app, call_self, '', defaultDate, "call")
+						let schedule_wizard = new SaitoScheduleWizard(app, call_self, '', defaultDate, "call")
 						schedule_wizard.callbackAfterSubmit =async function (app, mod, duration, description, utcStartTime) {
 							const call_id = await mod.generateRoomId();
 							const room_obj = {
@@ -291,15 +291,16 @@ class Videocall extends ModTemplate {
 								description
 							};
 							let name = "scheduled_event"
+							let type = "Scheduled call";
 							const room_obj_stringified = JSON.stringify(room_obj);
 							 let call_link =  mod.generateCallLink(room_obj)
-							  app.keychain.addKey(call_id, { identifier: call_id, type: "scheduled_call", startTime:utcStartTime, duration, description, room_obj:room_obj_stringified, link:call_link, name });
+							  app.keychain.addKey(call_id, { identifier: call_id, type, startTime:utcStartTime, duration, description, room_obj:room_obj_stringified, link:call_link, name });
 							  let event = {
 								"datetime": new Date(utcStartTime),
 								"duration": duration,
 								"description": description || "Scheduled Call",
 								"link": call_link,
-								"type": "Scheduled call",
+								"type": type,
 								"name": name,
 								"id": call_id
 							  };  
