@@ -49,8 +49,8 @@ class WebMethods extends WebSharedMethods {
 		await this.app.modules.handlePeerTransaction(newtx, peer, mycallback);
 	}
 
-	sendInterfaceEvent(event: string, peerIndex: bigint) {
-		this.app.connection.emit(event, peerIndex);
+	sendInterfaceEvent(event: string, peerIndex: bigint, public_key:string) {
+		this.app.connection.emit(event, peerIndex, public_key);
 	}
 
 	sendBlockSuccess(hash: string, blockId: bigint) {
