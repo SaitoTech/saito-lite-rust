@@ -9,9 +9,6 @@ function App() {
 
 
   useEffect(() => {
-    react.app.connection.on('tun-init-call-interface', (settings) => {
-      console.log(settings, 'init peer interface');
-    })
     react.onConfirmation = function(blk, tx) {
       console.log('confirmation, react mod')
     }

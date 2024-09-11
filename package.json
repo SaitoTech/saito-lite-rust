@@ -20,7 +20,8 @@
     "jsdoc": "jsdoc --destination saitolitedocs lib/templates/abstractcryptomodule.js lib/templates/substratebasedcrypto.js lib/saito/wallet.js README.md",
     "pretty": "npx prettier --write .",
     "go": "npm run compile dev $@ && npm run start --",
-    "build-react": "webpack --config ./build/webpack.react.config.js"
+    "build-react": "webpack --config ./build/webpack.react.config.js",
+    "go-react": "npm run build-react && npm run compile dev $@ && npm run start --" 
   },
   "author": "Team Saito",
   "license": "SAITO",
