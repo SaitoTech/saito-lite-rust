@@ -31,9 +31,10 @@ class Limbo extends ModTemplate {
 
 		this.icon_fa = 'fa-solid fa-tower-broadcast';
 
-		this.screen_icon = 'fa-tv';
-		this.camera_icon = 'fa-video';
-		this.audio_icon = 'fa-microphone-lines';
+		this.icons = { screen: 'fa-tv',
+					   audio: 'fa-microphone-lines',
+					   camera: 'fa-video'
+					};
 
 		this.stun = null;
 		this.rendered = false;
@@ -557,9 +558,6 @@ class Limbo extends ModTemplate {
 	startDream(options) {
 		this.localStream = null;
 
-		//default mode is audio (only)
-		options.mode = 'audio';
-
 		if (options.externalMediaType === 'videocall') {
 			//
 			// First check if any other modules are fetching media
@@ -604,6 +602,11 @@ class Limbo extends ModTemplate {
 		// this should include any displayed video and audio...
 		//
 		let { includeCamera, screenStream } = options;
+
+		if (!options?.mode){
+			//default mode is audio (only)
+			options.mode = 'audio';
+		}
 
 		if (screenStream) {
 			options.mode = 'screen';
@@ -1637,6 +1640,12 @@ class Limbo extends ModTemplate {
 		this.controls = null;
 		this.detachMetaEvents();
 		console.log('Space exited!');
+	}
+
+
+	// 
+	scheduleCast(options){
+
 	}
 
 	copyInviteLink(truthy = false) {

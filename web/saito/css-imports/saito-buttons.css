@@ -33,7 +33,6 @@ button,
   min-width: 18rem;
   border-radius: var(--border-radius-button-wallet-control);
   cursor: pointer;
-  margin: 0.5rem;
   border: var(--border-thickness-button-wallet-control) solid var(--border-color-button-wallet-control);
   color: var(--font-color-button-wallet-control);
   background: var(--background-color-button-wallet-control);
@@ -75,3 +74,12 @@ button.fat, saito-button-primary.fat, .saito-button-secondary.fat, saito-button-
     text-align: center;
 }
 
+
+.saito-button-row {
+  display: flex;
+  max-width: 100%;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 1rem;
+  margin: 0 1rem;
+}

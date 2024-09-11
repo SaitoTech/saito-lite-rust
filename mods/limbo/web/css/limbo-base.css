@@ -89,6 +89,10 @@
 	font-size: 3.5rem;
 }
 
+.spaces-list .saito-profile-key {
+	display: none;
+}
+
 
 /********  For tighter display in the Redsquare Sidebar   *********/
 
@@ -101,7 +105,7 @@
 }
 
 .redsquare-sidebar .spaces-list .saito-profile {
-	height: 120px;
+	height: unset;
 }
 
 .redsquare-sidebar .spaces-list .saito-profile-header-row .saito-identicon-box {
@@ -376,6 +380,7 @@ video#local.noflip{
 
 .dream-wizard .button {
 	margin: 1rem 0;
+	flex: 1;
 }
 
 .dream-wizard .cast-mode {
@@ -392,8 +397,7 @@ video#local.noflip{
 	font-size: 6rem;	
 }
 
-.cast-mode-option {
-	cursor: pointer;
+.dream-wizard .cast-mode > div {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -403,11 +407,15 @@ video#local.noflip{
 	border: 1px solid;
 }
 
+.cast-mode-option {
+	cursor: pointer;
+}
+
 .dream-wizard .cast-mode .selected{
 	color: var(--saito-font-color);
-	border-width: 3px;
-	text-shadow: 1px 1px 5px var(--saito-black);
-	box-shadow: 1px 1px 5px 1px var(--saito-black);
+	border-width: 2px;
+	/*text-shadow: 1px 1px 5px var(--saito-black);*/
+	box-shadow: 1px 1px 4px 1px var(--saito-black);
 }
 
 .dream-wizard input{
