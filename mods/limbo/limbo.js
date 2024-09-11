@@ -244,7 +244,7 @@ class Limbo extends ModTemplate {
 							let cast_id = app.crypto.generateRandomNumber().substring(0, 12);
 							let name = "scheduled_event"
 							let type = "Scheduled cast";
-							app.keychain.addKey(cast_id, { type,startTime: utcStartTime, duration, description, room_obj: cast_obj_stringified, link: " ", name });
+							app.keychain.addKey(cast_id, { type,startTime: utcStartTime, duration, description, room_obj: cast_obj_stringified, link: cast_link, name });
 							let event = {
 								"datetime": new Date(utcStartTime),
 								"duration": duration,
