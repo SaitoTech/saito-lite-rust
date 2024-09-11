@@ -116,7 +116,6 @@ class CallLaunch {
 						"type": "scheduled_call",
 						"id": call_id
 					  };  
-					 app.connection.emit('calendar-render-request', event)
 		
 					await navigator.clipboard.writeText(call_link);
 					siteMessage('New room link created and copied to clipboard', 1500);
