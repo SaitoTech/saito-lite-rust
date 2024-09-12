@@ -44,7 +44,7 @@ class DreamWizard{
 	attachEvents(){
 		if (document.getElementById("dream-wizard-btn")){
 			document.getElementById("dream-wizard-btn").onclick = (e) => {
-				
+				this.readOptions();		
 				this.mod.broadcastDream(this.options);
 				this.overlay.close();
 			}
