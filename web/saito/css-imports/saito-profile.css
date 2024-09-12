@@ -84,6 +84,7 @@
   margin-right: 0.5rem;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex: 1;
 }
 
 .saito-profile-description.can-edit {

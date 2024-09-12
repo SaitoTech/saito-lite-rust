@@ -20,7 +20,11 @@ class MailRelay extends ModTemplate {
 
 	async initialize(app) {
 
-                app.connection.on("mailrelay-send-email", async (data) => {
+		//For testing only, no need to initialize module
+		await super.initialize(app);
+
+
+        app.connection.on("mailrelay-send-email", async (data) => {
 
 	                let to = '';
         	        let from = '';
@@ -40,9 +44,42 @@ class MailRelay extends ModTemplate {
 
 			this.sendMailRelayTransaction(to, from, subject, text, ishtml, attachments, bcc);
 
-                });
+        });
 
-		await super.initialize(app);
+		// browsers will not have server endpoint coded
+		if (app.BROWSER) {
+			return;
+		}
+
+		// add an email
+		let email = {
+			to: '',
+			from: '',
+			bcc: '',
+			subject: '',
+			text: '',
+			html: '',
+			ishtml: true,
+			attachments: ''
+		};
+
+		email.to = 'richard@saito.tech';
+		email.from = 'network@saito.tech';
+		email.bcc = '';
+		email.subject = 'Saito Network Initialised';
+		if (app.options.server.endpoint != null) {
+			email.text = app.options.server.endpoint.host + ' has spun up.';
+		} else {
+			email.text =
+				'Just a quick note to let you know that test net just spun up.';
+		}
+		email.ishtml = false;
+		email.attachments = '';
+		try {
+			this.sendMail(email);
+		} catch (err) {
+			console.log(err);
+		}
 
 	}
 
