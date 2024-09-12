@@ -775,7 +775,7 @@ class Limbo extends ModTemplate {
 		this.combinedStream = new MediaStream();
 		this.attachMetaEvents();
 
-		console.log('Join dream:', this.dreams);
+		console.log('Join dream:', this.dreamer, this.dreams);
 	}
 
 	attachMetaEvents() {
@@ -1274,14 +1274,14 @@ class Limbo extends ModTemplate {
 		}
 
 		if (dreamer !== this.dreamer || this.upstream.size > 0 || sender == this.publicKey) {
-			console.log('ignore offer transaction');
+			console.log('ignore offer transaction: ', dreamer, this.dreamer, this.upstream, sender);
 			return;
 		}
 
 		if (tx.isTo(this.publicKey)) {
 			clearTimeout(this.retryTimer);
 			this.retryTimer = null;
-			siteMessage("Found peer to share, initiating stun connection...", 1000);
+			siteMessage("Found peer to share, initiating stun connection...", 1500);
 
 			console.log('Confirm upstream from ' + sender);
 
@@ -1600,6 +1600,9 @@ class Limbo extends ModTemplate {
 
 	exitSpace() {
 		this.dreamer = null;
+
+		clearTimeout(this.retryTimer);
+		this.retryTimer = null;
 
 		this.downstream.forEach((value, key) => {
 			if (value) {

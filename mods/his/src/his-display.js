@@ -2246,25 +2246,6 @@ try {
 	}
         if (space.units[z][zz].navy_leader && added == 0) {
 	  html += `<img src="/his/img/tiles/navy/${space.units[z][zz].img}" />`;
-
-	  //
-	  // piracy can sink an entire fleed leaving the naval leader stranded, in this
-	  // case we noticed the abandoned leader, and remove them for return in their 
-	  // faction capital the next turn.
-	  //
-	  if (is_naval_space) {
-	    if (!this.doesFactionHaveFriendlyNavalUnitsInSpace(z)) {
-              let obj = {};
-              obj.faction = "";
-              obj.leader = space.units[z][zz];
-              if (obj.leader) { if (obj.leader.type == "barbarossa") { obj.space = "istanbul"; obj.faction = "ottoman"; } }
-              if (obj.leader) { if (obj.leader.type == "dragut") { obj.space = "istanbul"; obj.faction = "ottoman"; } }
-              if (obj.leader) { if (obj.leader.type == "andrea-doria") { obj.space = "genoa"; obj.faction = "genoa"; } }
-	      space.units[z].splice(zz, 1);
-              this.game.state.military_leaders_removed_until_next_round.push(obj);
-	    }
-	  }
-
 	  added = 1;
 	} 
         if (space.units[z][zz].reformer && added == 0) {

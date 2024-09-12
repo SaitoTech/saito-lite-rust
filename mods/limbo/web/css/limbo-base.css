@@ -80,7 +80,7 @@
 	height: 300px;
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
+	/*justify-content: space-between;*/
 }
 
 .spaces-list .saito-profile-header-row .saito-identicon-box {
@@ -108,10 +108,16 @@
 	height: unset;
 }
 
+.redsquare-sidebar .spaces-list .saito-profile-header-row {
+	height: 2.5rem;
+	margin-bottom: 0.5rem;
+}
+
 .redsquare-sidebar .spaces-list .saito-profile-header-row .saito-identicon-box {
 	width: 3.5rem;
 	height: 3.5rem;
 	font-size: 1.5rem;
+	margin-top: -2rem;
 }
 
 .redsquare-sidebar .spaces-list .saito-profile-username {
@@ -129,6 +135,7 @@
 
 .redsquare-sidebar .spaces-list .saito-profile-menu {
 	min-height: unset;
+	margin-top: 0.3rem;
 }
 
 .redsquare-sidebar .spaces-list .saito-profile-tab {

@@ -146,6 +146,8 @@ class MailRelay extends ModTemplate {
 	) {
 		let mailrelay_self = this;
 
+console.log("into the function sendMailRelayTransaction in MailRelay...");
+
 		let obj = {
 			module: mailrelay_self.name,
 			request: 'send email',
