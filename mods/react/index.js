@@ -81,8 +81,7 @@ module.exports = (app, mod, build_number, og_card) => {
   
   <body>
     <div id="root"></div>
-<script src="https://unpkg.com/react@17/umd/react.development.js"></script>
-<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+
      <script type="text/javascript" src="/saito/saito.js?build=${build_number}"></script>
     
   
