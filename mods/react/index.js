@@ -57,25 +57,25 @@ module.exports = (app, mod, build_number, og_card) => {
     
     <style type="text/css">
       /* CSS for fade-out bg effect while content is loading */
-      body {
-        width: 100vw;
-        height: 100vh;
-        overflow: hidden;
-      }
+      // body {
+      //   width: 100vw;
+      //   height: 100vh;
+      //   overflow: hidden;
+      // }
 
-      body::before {
-        content: "";
-        opacity: 1;
-        z-index: 160;
-        position: absolute;
-        top: 0;
-        left: 0;
-        display: block;
-        height: 100vh;
-        width: 100vw;
-        background-color: #222;
-        background-image: url('/saito/img/tiled-logo.svg');
-      }
+      // body::before {
+      //   content: "";
+      //   opacity: 1;
+      //   z-index: 160;
+      //   position: absolute;
+      //   top: 0;
+      //   left: 0;
+      //   display: block;
+      //   height: 100vh;
+      //   width: 100vw;
+      //   background-color: #222;
+      //   background-image: url('/saito/img/tiled-logo.svg');
+      // }
     </style>
   </head>
   

@@ -9,6 +9,8 @@ import Wallet from '../lib/saito/wallet';
 import Blockchain from '../lib/saito/blockchain';
 import { LogLevel } from 'saito-js/saito';
 
+
+
 function getCommandLineArg(key) {
 	const prefix = key + '=';
 	const arg = process.argv.find((arg) => arg.startsWith(prefix));
