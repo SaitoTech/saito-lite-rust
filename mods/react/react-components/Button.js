@@ -1,9 +1,9 @@
 import React from "react";
 
-const  Button = ({text}) =>{
+const  Button = ({text, onClick}) =>{
 
   return (
-    <button onClick={()=> salert("Button clicked")}>{text}</button>
+    <button onClick={onClick}>{text}</button>
   );
 }
 
