@@ -104,9 +104,13 @@ class Post {
 		};
 
 		this.user.render();
-
+		
 		this.input.render();
-		this.input.focus(true);
+		
+		if (!this.app.browser.isMobileBrowser() || this.container == '.saito-overlay ') {
+			console.log("Focus on post");
+			this.input.focus(true);
+		}
 
 		if (this.source == 'Edit') {
 			document.querySelector(this.container + '.post-tweet-textarea').innerHTML = this.tweet.text;
