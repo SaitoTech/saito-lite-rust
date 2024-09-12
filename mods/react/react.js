@@ -33,7 +33,7 @@ class ReactMod extends ModTemplate {
     render() {
         const rootElement = document.getElementById('root');
         const root = createRoot(rootElement);
-        root.render(<App app={this.app} />);
+        root.render(<App app={this.app} mod={this} />);
     }
 
 
@@ -51,7 +51,6 @@ class ReactMod extends ModTemplate {
             res.send(HomePage(app, mod_self, app.build_number, mod_self.social));
         });
 
-        // Serve static assets
         expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
     }
 
