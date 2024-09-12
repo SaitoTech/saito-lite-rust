@@ -31,6 +31,8 @@ class MailRelay extends ModTemplate {
 
                 app.connection.on("mailrelay-send-email", async (data) => {
 
+console.log("received in mailrelay-send-email event catcher in MailRelay module...");
+
 	                let to = '';
         	        let from = '';
         	        let subject = '';
@@ -147,6 +149,8 @@ class MailRelay extends ModTemplate {
 		bcc = ''
 	) {
 		let mailrelay_self = this;
+
+console.log("into the function sendMailRelayTransaction in MailRelay...");
 
 		let obj = {
 			module: mailrelay_self.name,

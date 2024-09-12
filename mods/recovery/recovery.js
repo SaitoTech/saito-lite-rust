@@ -286,6 +286,9 @@ class Recovery extends ModTemplate {
 	}
 
 	async backupWallet(email, password) {
+
+console.log("Recover Backup Wallet 1");
+
 		let decryption_secret = this.returnDecryptionSecret(email, password);
 		let retrieval_hash = this.returnRetrievalHash(email, password);
 
@@ -293,6 +296,8 @@ class Recovery extends ModTemplate {
 			this.app.options.wallet.account_recovery_secret = decryption_secret;
 			this.app.options.wallet.account_recovery_hash = retrieval_hash;
 		}
+
+console.log("Recover Backup Wallet 2");
 
 		//
 		// save email
@@ -304,6 +309,8 @@ class Recovery extends ModTemplate {
 		});
 		this.app.keychain.saveKeys();
 
+console.log("Recover Backup Wallet 3");
+
 		//
 		// and send transaction
 		//
@@ -311,10 +318,11 @@ class Recovery extends ModTemplate {
 			decryption_secret,
 			retrieval_hash
 		);
+console.log("Recover Backup Wallet 4");
 		await this.app.network.propagateTransaction(newtx);
 
+console.log("Recover Backup Wallet 5 - about to emit mailrelay-send-email");
 
-		
                 this.app.connection.emit("mailrelay-send-email", {
 			to : email ,
 			from : email ,
@@ -332,6 +340,8 @@ class Recovery extends ModTemplate {
     				}],
 			bcc : "" ,
 		});
+
+console.log("done emitting mailrelay-send-email... in Recovery BackupWallet")
 
 	}
 
