@@ -341,6 +341,13 @@ class Stun extends ModTemplate {
 		if (this.peers.get(peerId)) {
 			let pc = this.peers.get(peerId);
 			console.log(`STUN: ${peerId} already in stun peer list`, "Status: " + pc.connectionState);
+
+			//If not a solid connection state..., delete and try again
+			if (pc.connectionState == "failed" || pc.connectionState == "disconnected"){
+				this.removePeerConnection(peerId);
+				this.createPeerConnection(peerId, callback);
+				return;
+			}
 			
 			if (callback){
 				callback(peerId);
@@ -447,6 +454,7 @@ class Stun extends ModTemplate {
 							'stun-connection-failed',
 							peerId
 						);
+						this.removePeerConnection(peerId);
 					}
 				}, 3000);
 			}
