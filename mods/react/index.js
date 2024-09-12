@@ -51,9 +51,7 @@ module.exports = (app, mod, build_number, og_card) => {
   
     <title>${mod.returnName()}</title>
   
-    <script type="text/javascript" src="/saito/lib/jquery/jquery-3.2.1.min.js"></script>
-
-
+    
     
     <style type="text/css">
       /* CSS for fade-out bg effect while content is loading */
