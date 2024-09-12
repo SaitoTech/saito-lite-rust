@@ -13,6 +13,10 @@ import Blockchain from '../../lib/saito/blockchain';
 import PeerServiceList from 'saito-js/lib/peer_service_list';
 import { LogLevel } from 'saito-js/saito';
 
+
+
+
+
 class WebMethods extends WebSharedMethods {
 	app: Saito;
 
@@ -105,6 +109,7 @@ class WebMethods extends WebSharedMethods {
 }
 
 async function init() {
+
 	console.log('lite init...');
 
 	const saito = new Saito({ mod_paths: mods_config.lite });
@@ -143,7 +148,6 @@ async function init() {
 	}
 
 	S.getInstance().start();
-	return saito;
 
 
 }
@@ -152,10 +156,8 @@ async function init() {
 window.onload = async function () {
 	// console.log(args, "args")
 	try {
-		let saito = await init();
-		// saito.modules.affixCallbacks(tx)
-		// @ts-ignore
-		window.saito = saito
+ await init();
+		
 	} catch (error) {
 		console.error(error);
 	}
