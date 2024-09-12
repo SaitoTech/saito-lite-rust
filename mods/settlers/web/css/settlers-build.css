@@ -218,7 +218,7 @@
 	min-height: 35rem;
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-	min-width: 750px;
+	min-width: min(750px, 95vw);
 }
 
 .dev-card-overlay .settlers-items-container .settlers-cards-container img {
@@ -227,8 +227,8 @@
 
 .settlers-dev-card {
 	position: relative;
-	width: 32rem;
-	height: 45rem;
+	width: min(32rem, 40vw);
+	height: calc(min(32rem, 40vw) * 1.4);
 	margin: auto;
 }
 
@@ -392,6 +392,6 @@
 
 	.dev-card-overlay .settlers-cards-container {
 		min-height: 18rem;
-		grid-template-columns: repeat(2, 1fr);
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 	}
 }
