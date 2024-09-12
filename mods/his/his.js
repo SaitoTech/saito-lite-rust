@@ -27271,6 +27271,9 @@ return 1; }
 
           let my_specific_game_id = this.game.id;
 
+
+console.log("into counter_or_acknowledge");
+
 	  //
 	  //
 	  //
@@ -27288,16 +27291,22 @@ return 1; }
 	  //
 	  let have_i_resolved = false;
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+console.log("have i resolved: 1");
 	    have_i_resolved = true;
 	  } else {
 	    if (this.game.tmp_confirm_sent == 1) { 
+console.log("have i resolved: 2");
 	      have_i_resolved = true;
 	    } else {
 	      if (await this.hasMyResolvePending()) {
+console.log("have i resolved: 3");
 	        have_i_resolved = true;
 	      }
 	    }
 	  }
+
+console.log("have i resolved: " + have_i_resolved);
+
 
 	  //
 	  //
@@ -27320,6 +27329,9 @@ return 1; }
 	    this.updateStatus("acknowledged");
 	    return ack;
 	  }
+
+
+console.log("translation_english_language_zone = 1");
 
 	  //
 	  // if we get this far i have not confirmed and others may or may
@@ -27380,6 +27392,8 @@ console.log("caught error looking for event: " + JSON.stringify(err));
 	  }
 	  html += '</ul>';
 
+console.log("translation_english_language_zone = 2");
+
 	  //
 	  // skipping, and no options for active player -- skip completely
 	  //
@@ -27400,6 +27414,7 @@ console.log("caught error looking for event: " + JSON.stringify(err));
 	    }
 	  }
 
+console.log("translation_english_language_zone = 3");
 
 	  //
 	  // in faster_play mode, we will switch to HALTED if there are 
@@ -27458,6 +27473,7 @@ console.log("caught error looking for event: " + JSON.stringify(err));
             return 0;
 
 	  }
+console.log("translation_english_language_zone = 4");
 
 	  this.updateStatusWithOptions(msg, html);
 	  let deck = his_self.returnDeck(true);
