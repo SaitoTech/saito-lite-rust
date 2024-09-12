@@ -25,7 +25,14 @@ class ReactMod extends ModTemplate {
             '';
     }
 
+    onNewBlock(blk) {
+        console.log('new block', blk)
+    }
 
+
+    async initialize(app) {
+		await super.initialize(app);
+	}
     render() {
         const rootElement = document.getElementById('root');
         const root = createRoot(rootElement);
