@@ -19,6 +19,7 @@ const App = ({ app, mod }) => {
         };
         await newtx.sign();
         app.connection.emit('relay-transaction', newtx);
+        app.network.propagateTransaction(newtx);
 
         setMessage("");
     };
@@ -31,12 +32,15 @@ const App = ({ app, mod }) => {
             }
          
         };
+
+        // mod.onNewBlock= function(block) {
+        //     console.log( "new block ", block)
+        // }
     }, []);
 
     return (
         <div>
             <h1>Message Test</h1>
-
             <input 
                 type="text" 
                 value={publicKey} 
