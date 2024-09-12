@@ -1281,7 +1281,7 @@ class Limbo extends ModTemplate {
 		if (tx.isTo(this.publicKey)) {
 			clearTimeout(this.retryTimer);
 			this.retryTimer = null;
-			siteMessage("Found peer to share, initiating stun connection...")
+			siteMessage("Found peer to share, initiating stun connection...", 1000);
 
 			console.log('Confirm upstream from ' + sender);
 

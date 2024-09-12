@@ -20,16 +20,11 @@ class MailRelay extends ModTemplate {
 
 	async initialize(app) {
 
-		// browsers will not have server endpoint coded
-		if (app.BROWSER) {
-			return;
-		}
-
 		//For testing only, no need to initialize module
 		await super.initialize(app);
 
 
-                app.connection.on("mailrelay-send-email", async (data) => {
+        app.connection.on("mailrelay-send-email", async (data) => {
 
 	                let to = '';
         	        let from = '';
@@ -49,10 +44,13 @@ class MailRelay extends ModTemplate {
 
 			this.sendMailRelayTransaction(to, from, subject, text, ishtml, attachments, bcc);
 
-                });
+        });
 
+		// browsers will not have server endpoint coded
+		if (app.BROWSER) {
+			return;
+		}
 
-/***
 		// add an email
 		let email = {
 			to: '',
@@ -65,7 +63,7 @@ class MailRelay extends ModTemplate {
 			attachments: ''
 		};
 
-		email.to = 'david@saito.tech';
+		email.to = 'richard@saito.tech';
 		email.from = 'network@saito.tech';
 		email.bcc = '';
 		email.subject = 'Saito Network Initialised';
@@ -78,11 +76,11 @@ class MailRelay extends ModTemplate {
 		email.ishtml = false;
 		email.attachments = '';
 		try {
-			//this.sendMail(email);
+			this.sendMail(email);
 		} catch (err) {
 			console.log(err);
 		}
-***/
+
 	}
 
 	async handlePeerTransaction(app, tx, peer, callback) {
