@@ -143,19 +143,12 @@ async function init() {
 	}
 
 	S.getInstance().start();
-	return saito;
-
-
 }
 
 
 window.onload = async function () {
-	// console.log(args, "args")
 	try {
-		let saito = await init();
-		// saito.modules.affixCallbacks(tx)
-		// @ts-ignore
-		window.saito = saito
+      await init();
 	} catch (error) {
 		console.error(error);
 	}

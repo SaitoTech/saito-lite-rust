@@ -19,7 +19,7 @@ const App = ({ app, mod }) => {
         };
         await newtx.sign();
         app.connection.emit('relay-transaction', newtx);
-
+        siteMessage("Message sent")
         setMessage("");
     };
 
@@ -28,6 +28,7 @@ const App = ({ app, mod }) => {
             if(tx.msg.request === "message-request" && tx.isTo(mod.publicKey) && !tx.isFrom(mod.publicKey)){
                 const newMessage = tx.msg.content;
                 setReceivedMessages(prev => [...prev, newMessage]);  
+                siteMessage("Message received")
             }
          
         };
