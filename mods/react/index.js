@@ -52,6 +52,8 @@ module.exports = (app, mod, build_number, og_card) => {
     <title>${mod.returnName()}</title>
   
     <script type="text/javascript" src="/saito/lib/jquery/jquery-3.2.1.min.js"></script>
+
+
     
     <style type="text/css">
       /* CSS for fade-out bg effect while content is loading */
@@ -79,7 +81,8 @@ module.exports = (app, mod, build_number, og_card) => {
   
   <body>
     <div id="root"></div>
-    <!-- Use the passed React bundle URL -->
+<script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
      <script type="text/javascript" src="/saito/saito.js?build=${build_number}"></script>
     
   

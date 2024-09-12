@@ -2,34 +2,38 @@ const Transaction = require('../../lib/saito/transaction').default;
 const PeerService = require('saito-js/lib/peer_service').default;
 const ModTemplate = require('../../lib/templates/modtemplate');
 const HomePage = require('./index');
-const path = require('path');
+const React  = require('react');
+const { createRoot } = require('react-dom/client');
+const App = require('./react-components/App').default;
+
+
+require('@babel/register')({
+    presets: ['@babel/preset-env', '@babel/preset-react']
+});
 
 
 
 class ReactMod extends ModTemplate {
-
     constructor(app) {
-        
-		super(app);
-		this.app = app;
-		this.name = 'React';
+        super(app);
+        this.app = app;
+        this.name = 'React';
         this.social = {
-			twitter: '@SaitoOfficial',
-			title: `🟥 ${this.returnName()}`,
-			url: `https://saito.io/${this.returnSlug()}/`,
-			description: '',
-			image: 'https://saito.tech/wp-content/uploads/2023/11/videocall-300x300.png'
-		};
-		this.description =
-			'';	
-	}
+            twitter: '@SaitoOfficial',
+            title: `🟥 ${this.returnName()}`,
+            url: `https://saito.io/${this.returnSlug()}/`,
+            description: '',
+            image: 'https://saito.tech/wp-content/uploads/2023/11/videocall-300x300.png'
+        };
+        this.description =
+            '';
+    }
 
 
-    render(){
-        var script = document.createElement("script");
-        script.src = "react/react-bundle/react-bundle.js"
-        script.type = "text/javascript";
-        document.body.appendChild(script);
+    render() {
+        const rootElement = document.getElementById('root');
+        const root = createRoot(rootElement);
+        root.render(<App app={this.app} />);
     }
 
 
@@ -37,23 +41,22 @@ class ReactMod extends ModTemplate {
     webServer(app, expressapp, express) {
         let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
         let mod_self = this;
-        // expressapp.use('/react-bundle/react-bundle.js', express.static(path.join(__dirname, 'react-bundle/react-bundle.js')));
         expressapp.get('/' + encodeURI(this.returnSlug()), async function (req, res) {
             let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
             mod_self.social.url = reqBaseURL + encodeURI(mod_self.returnSlug());
-    
+
             res.setHeader('Content-type', 'text/html');
             res.charset = 'UTF-8';
 
             res.send(HomePage(app, mod_self, app.build_number, mod_self.social));
         });
-    
+
         // Serve static assets
         expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
     }
-    
-    
-	
+
+
+
 }
 
 module.exports = ReactMod;
