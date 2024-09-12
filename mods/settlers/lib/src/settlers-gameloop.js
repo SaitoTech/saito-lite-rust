@@ -779,9 +779,19 @@ class SettlersGameloop {
         // everyone rolls the dice
         let d1 = this.rollDice(6);
         let d2 = this.rollDice(6);
+        let roll = d1 + d2;
+
+        // Less bandit in early game
+        if (roll == 7 && this.game.stats.history.length < 6) {
+          console.log("Re-roll the 7 (you're welcome)!");
+          d1 = this.rollDice(6);
+          d2 = this.rollDice(6);
+          roll = d1 + d2;
+        }
+
         this.game.state.lastroll = [d1, d2];
         this.game.state.lastroll.sort();
-        let roll = d1 + d2;
+
         this.updateLog(`${this.formatPlayer(player)} rolled: ${this.returnDiceImage(this.game.state.lastroll[1])}${this.returnDiceImage(this.game.state.lastroll[0])}`);
         this.game.stats.dice[roll]++; //Keep count of the rolls
         this.game.stats.dicePlayer[roll][player-1]++;
