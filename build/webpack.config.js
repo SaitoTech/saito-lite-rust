@@ -75,7 +75,14 @@ module.exports = {
             presets: ["@babel/preset-env", '@babel/preset-react'],
           },
         },
+        
       },
+      {
+        test: /\.jsx?$/,  // Transpile JS/JSX
+        exclude: /node_modules/,
+        use: 'babel-loader',
+      },
+    
       // Emscripten JS files define a global. With `exports-loader` we can
       // load these files correctly (provided the global’s name is the same
       // as the file name).
@@ -101,6 +108,11 @@ module.exports = {
         ],
       },
     ],
+    resolve: {
+      fallback: {
+        "path": require.resolve("path-browserify"),  // Polyfill for `path`
+      },
+    },
   },
 
   resolve: {
