@@ -20,18 +20,7 @@ class MailRelay extends ModTemplate {
 
 	async initialize(app) {
 
-		// browsers will not have server endpoint coded
-		if (app.BROWSER) {
-			return;
-		}
-
-		//For testing only, no need to initialize module
-		await super.initialize(app);
-
-
                 app.connection.on("mailrelay-send-email", async (data) => {
-
-console.log("received in mailrelay-send-email event catcher in MailRelay module...");
 
 	                let to = '';
         	        let from = '';
@@ -53,38 +42,8 @@ console.log("received in mailrelay-send-email event catcher in MailRelay module.
 
                 });
 
+		await super.initialize(app);
 
-/***
-		// add an email
-		let email = {
-			to: '',
-			from: '',
-			bcc: '',
-			subject: '',
-			text: '',
-			html: '',
-			ishtml: true,
-			attachments: ''
-		};
-
-		email.to = 'david@saito.tech';
-		email.from = 'network@saito.tech';
-		email.bcc = '';
-		email.subject = 'Saito Network Initialised';
-		if (app.options.server.endpoint != null) {
-			email.text = app.options.server.endpoint.host + ' has spun up.';
-		} else {
-			email.text =
-				'Just a quick note to let you know that test net just spun up.';
-		}
-		email.ishtml = false;
-		email.attachments = '';
-		try {
-			//this.sendMail(email);
-		} catch (err) {
-			console.log(err);
-		}
-***/
 	}
 
 	async handlePeerTransaction(app, tx, peer, callback) {
