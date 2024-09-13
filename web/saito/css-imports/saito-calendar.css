@@ -120,9 +120,9 @@
 }
 
 .saito-calendar-month i {
-    font-size: 2rem;
+    font-size: 1.5rem;
     cursor: pointer;
-    padding: 2px 1rem;
+    padding: 1px 1rem 3px;
 }
 
 .saito-calendar-date {

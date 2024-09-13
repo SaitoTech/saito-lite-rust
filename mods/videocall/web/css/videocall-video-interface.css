@@ -1362,9 +1362,6 @@ video#presentation {
 	display: none;
 }
 */
-.fa-record-vinyl.recording {
-	color: red;
-}
 
 @keyframes pulsate {
 	0% {
@@ -1386,7 +1383,7 @@ video#presentation {
 	background-color: var(--saito-red);
 }
 
-.onair.recording i.recording {
+.onair.recording i {
 	color: var(--saito-white);
 	animation: pulsate 1s ease-in-out infinite;
 }
@@ -1394,7 +1391,7 @@ video#presentation {
 .record-container.recording {
 	background-color: var(--saito-red);
 }
-.record-container i.recording {
+.record-container.recording i {
 	color: var(--saito-white);
 	animation: pulsate 1s ease-in-out infinite;
 }

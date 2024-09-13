@@ -431,13 +431,14 @@ class League extends ModTemplate {
 
 				let league = null;
 				let rank, myPlayerStats;
-				let cutoff = new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
+				let cutoff = new Date().getTime() - 3 * 24 * 60 * 60 * 1000;
 				//console.log("Sending SQL query to update");
 				this.sendPeerDatabaseRequestWithFilter(
 					'League',
 					`SELECT *
            FROM players
            WHERE deleted = 0
+             AND games_finished > 0
              AND league_id IN (${league_list})
            ORDER BY league_id, score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
 					async (res) => {
@@ -469,8 +470,8 @@ class League extends ModTemplate {
 								}
 
 								if (
-									p.games_finished == 0 &&
-									p.timestamp < cutoff &&
+									((p.games_finished == 0 && p.score !== league.default_score) 
+										|| p.timestamp < cutoff) &&
 									p.publickey !== this.publicKey &&
 									!league.admin
 								) {
@@ -1759,23 +1760,28 @@ class League extends ModTemplate {
 		league.players = [];
 		league.rank = -1;
 
-		let cutoff = new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
-
-		//We do this here to avoid a SQL union statement
-		let cond = league.admin
-			? ``
-			: ` AND (ts > ${cutoff} OR games_finished > 0 OR publickey = '${this.publicKey}')`;
+		let cutoff = new Date().getTime() - 3 * 24 * 60 * 60 * 1000;
 
 		this.sendPeerDatabaseRequestWithFilter(
 			'League',
 			`SELECT *
        FROM players
        WHERE league_id = '${league_id}'
-         AND deleted = 0${cond}
+         AND deleted = 0
        ORDER BY score DESC, games_won DESC, games_tied DESC, games_finished DESC`,
 			async (res) => {
 				if (res?.rows) {
 					for (let p of res.rows) {
+
+						if (
+							((p.games_finished == 0 && p.score !== league.default_score) 
+								|| p.timestamp < cutoff) &&
+							p.publickey !== this.publicKey &&
+							!league.admin
+						) {
+							continue;
+						}
+
 						//
 						// Count how many people are ranked above me in the leaderboard
 						//
