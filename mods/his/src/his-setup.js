@@ -378,6 +378,7 @@ console.log("\n\n\n\n");
 	    colony : "hapsburg_colony1" ,
             round : 1 ,
 	    name : "Puerto Rico",
+	    img : "/his/img/tiles/colonies/PuertoRico.svg",
           });
 	  this.game.state.colonies.push({
             faction : "hapsburg" ,
@@ -385,6 +386,7 @@ console.log("\n\n\n\n");
 	    colony : "hapsburg_colony2" ,
             round : 1 ,
 	    name : "Cuba",
+	    img : "/his/img/tiles/colonies/Cuba.svg",
           });
 
 	  this.removeExplorer("hapsburg", "magellan");
@@ -681,6 +683,12 @@ console.log("\n\n\n\n");
 	  this.addRegular("genoa", "genoa", 2);
 
 	  // TESTING
+          this.addRegular("papacy", "turin", 4);
+          this.addRegular("hungary", "belgrade", 2);
+	  this.controlSpace("hungary", "belgrade");
+	  this.setAllies("hapsburg","hungary");
+          this.addRegular("hapsburg", "belgrade", 2);
+
           this.addRegular("papacy", "turin", 4);
 
           this.setEnemies("papacy", "france");

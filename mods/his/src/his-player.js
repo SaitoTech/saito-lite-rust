@@ -1513,7 +1513,8 @@ if (this.game.state.events.cramner_active == 1) {
       //
       // set back button to move us back here
       //
-      this.bindBackButtonFunction(() => { this.moves = []; this.addMove("discard\t"+faction+"\t"+this.game.player_last_card); this.playerTurn(faction, selected_card); });
+      let his_self = this;
+      his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
       this.playerPlayCard(card, this.game.player, faction);
     });  
 
@@ -2039,6 +2040,11 @@ console.log("can we quick fortify: " + can_we_quick_fortify);
   }
 
   async playerPlayOps(card="", faction, ops=null, limit="") {
+
+    //
+    // make sure this is whoever is in control
+    //
+    faction = this.returnControllingPower(faction);
 
     this.game.player_last_card = "";
     if (card != "") { this.game.player_last_card = card; }
@@ -2856,7 +2862,7 @@ return;
       return;
     }
 
-    let msg = "Do you wish to Regain Home Keys for 1 VP: ";
+    let msg = "Do you wish to Regain Home Keys for 1 VP Each: ";
     let opt = "<ul>";
     opt += `<li class="option" id="regain">regain and give VP</li>`;
     opt += `<li class="option" id="skip">skip</li>`;
@@ -2992,6 +2998,9 @@ return;
   playerReturnWinterUnits(faction) {
 
     let his_self = this;
+
+    his_self.game.state.returning_winter_units = true;
+
     let capitals = this.returnCapitals(faction);
     let viable_capitals = [];
     let units_to_move = [];
@@ -3285,7 +3294,7 @@ return;
 
   }
 
-  playerPlaySpringDeployment(faction, player) {
+  playerPlaySpringDeployment(faction, player, removed_queue_instruction="") {
 
     let his_self = this;
     let capitals = this.factions[faction].capitals;
@@ -3348,9 +3357,12 @@ return;
 
         let id = $(this).attr('id');
 
+	his_self.cardbox.hide();
+
 	if (id == "102") {
 	  // remove RESOLVE, we want to play and re-trigger, including adding extra
 	  his_self.moves = [];	  
+	  if (removed_queue_instruction != "") { his_self.addMove(removed_queue_instruction); }
 	  his_self.addMove("discard\t"+faction+"\t"+"102");
 	  his_self.addMove("spring_preparations\t"+faction);
 	  his_self.addMove("hide_overlay\tspring_deployment");
@@ -3639,7 +3651,7 @@ does_units_to_move_have_unit = true; }
   async playerContinueToMoveFormationInClear(his_self, player, faction, spacekey, ops_to_spend, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.addMove("discard\t"+faction+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", faction, ops_remaining+ops_to_spend, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
 
     //
     // we add this before broadcasting, or the turn ends 
@@ -3957,7 +3969,7 @@ does_units_to_move_have_unit = true; }
   async playerMoveFormationInClear(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.addMove("discard\t"+faction+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", faction, ops_remaining+ops_to_spend, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
 
     let parent_faction = faction;
     let units_to_move = [];
@@ -5069,7 +5081,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   async playerNavalTransport(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.addMove("discard\t"+faction+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", faction, ops_remaining+ops_to_spend, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
 
     let spacekey = "";
     let units_to_move = [];
@@ -5346,7 +5358,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   async playerNavalMove(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.addMove("discard\t"+faction+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", faction, ops_remaining+ops_to_spend, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
 
 
     let units_to_move = [];
@@ -6285,7 +6297,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   async playerControlUnfortifiedSpace(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.addMove("discard\t"+faction+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", faction, ops_remaining+ops_to_spend, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
 
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let pacifiable_spaces_in_unrest = [];
