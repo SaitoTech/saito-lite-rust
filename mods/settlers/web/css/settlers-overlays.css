@@ -22,6 +22,10 @@
 	align-items: center;
 }
 
+.dev-card-overlay {
+	width: unset;
+}
+
 .mobile-trading-container .player-box {
 	max-width: 80vw;
 }
