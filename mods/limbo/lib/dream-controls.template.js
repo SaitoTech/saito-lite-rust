@@ -22,7 +22,7 @@ module.exports = DreamControlsTemplate = (mod) => {
 
   if (mod?.screenStream){
     html += `<div class="screen-control icon_click_area">
-            <i class="fa-solid fa-tablet-screen-button"></i>
+            <i class="fa-solid fa-display"></i>
           </div>`;
   }
 
