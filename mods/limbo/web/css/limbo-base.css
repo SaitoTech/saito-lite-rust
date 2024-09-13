@@ -30,33 +30,34 @@
 
 .limbo-launch-options {
 	width: 100%;
-	max-width: 100rem;
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-	grid-gap: min(5rem, 5vw);
+    max-width: 100rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 6rem;
 }
 
 .limbo-option {
 	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 1rem;
-	border-radius: 15%;
-	border: 2px solid;
-	padding: 2rem;
-	cursor: pointer;
-	height: min(30vw, 28rem);
-	width: min(30vw, 28rem);
-	justify-content: space-evenly;
-	justify-self: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 0rem;
+    border-radius: 1rem;
+    border: 1px solid var(--saito-font-color);
+    padding: 2.5rem 2rem 1.5rem;
+    cursor: pointer;
+    height: 20rem;
+    width: 20rem;
+    justify-content: space-evenly;
+    justify-self: center;
 }
 
 .limbo-option i {
-	font-size: min(90px, max(7vw, 36px));
+	font-size: 5rem;
 }
 
 .limbo-option label {
-	font-size: min(56px, max(4vw, 20px));
+	font-size: 3rem;
 }
 
 .limbo-option:hover{
@@ -532,6 +533,20 @@ video#local.noflip{
 		padding: none;
 	}
 
+	.limbo-launch-options {
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.limbo-option {
+		width: 70%;
+		flex-direction: row;
+		justify-content: center;
+		gap: 4rem;
+		height: 9rem;
+	}
+
 	/**********************************
 	 * Do weird things with profile
 	**********************************/
@@ -570,6 +585,10 @@ video#local.noflip{
 	.dream-controls .control-panel {
 		bottom: 1rem;
 	}
+	.limbo-option {
+		width: 90%;
+	}
+
 }
 
 .yt-stream {
