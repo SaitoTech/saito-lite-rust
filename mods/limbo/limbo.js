@@ -330,7 +330,7 @@ class Limbo extends ModTemplate {
 
 			menu.submenus.push({
 				parent: 'game-share',
-				text: 'Cast game',
+				text: 'Swarmcast',
 				id: 'cast-stream',
 				class: 'cast-stream',
 				callback: async function (app, game_mod) {
@@ -1718,11 +1718,10 @@ class Limbo extends ModTemplate {
 		const castButtonGame = document.getElementById('cast-stream');
 
 		if (castButtonGame) {
-
 			if (value) {
 				castButtonGame.textContent = 'Stop cast';
 			} else {
-				castButtonGame.textContent = 'Cast game';
+				castButtonGame.textContent = 'Start cast';
 			}
 		}
 
