@@ -299,7 +299,8 @@ class DreamControls{
 
 				//Only necessary for first click but doesn't hurt to have
 				this.startTimer(); // Start timer
-				e.currentTarget.classList.remove("click-me");
+				e.currentTarget.classList.toggle("click-me");
+				e.currentTarget.classList.toggle("recording");
 			}
 		}
 

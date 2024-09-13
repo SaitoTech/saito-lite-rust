@@ -679,7 +679,18 @@ console.log("winter_retreat_move_units_to_capital_faction_array 2...");
 	  //
 	  // exit if overlay open and visible
 	  //
-	  if (this.theses_overlay.visible) { return 0; }
+	  if (this.theses_overlay.visible) {
+
+	    //
+	    // periodically this will trigger when the overlay is NOT visible
+	    //
+console.log("winter_retreat_move_units_to_capital_faction_array 2 2...");
+	    let obj = document.querySelector(".theses_overlay");
+console.log("winter_retreat_move_units_to_capital_faction_array 2 3...");
+	    if (obj.style) { 
+	      if (obj.style.display != "none") { return 0; }
+	    }
+	  }
 console.log("winter_retreat_move_units_to_capital_faction_array 3...");
 	  if (this.moves.length > 0) { return 0; }
 console.log("winter_retreat_move_units_to_capital_faction_array 4...");
@@ -2339,7 +2350,7 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	  if (this.game.players.length > 2) {
 	    this.addCard("ottoman", "033");
 	  }
-          this.addCard("papacy", "056");
+          this.addCard("papacy", "057");
 /**
           this.addCard("france", "024");
           this.addCard("france", "025");
@@ -4782,6 +4793,9 @@ return 1; }
 
           let my_specific_game_id = this.game.id;
 
+
+console.log("into counter_or_acknowledge");
+
 	  //
 	  //
 	  //
@@ -4799,16 +4813,22 @@ return 1; }
 	  //
 	  let have_i_resolved = false;
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+console.log("have i resolved: 1");
 	    have_i_resolved = true;
 	  } else {
 	    if (this.game.tmp_confirm_sent == 1) { 
+console.log("have i resolved: 2");
 	      have_i_resolved = true;
 	    } else {
 	      if (await this.hasMyResolvePending()) {
+console.log("have i resolved: 3");
 	        have_i_resolved = true;
 	      }
 	    }
 	  }
+
+console.log("have i resolved: " + have_i_resolved);
+
 
 	  //
 	  //
@@ -4831,6 +4851,9 @@ return 1; }
 	    this.updateStatus("acknowledged");
 	    return ack;
 	  }
+
+
+console.log("translation_english_language_zone = 1");
 
 	  //
 	  // if we get this far i have not confirmed and others may or may
@@ -4891,6 +4914,8 @@ console.log("caught error looking for event: " + JSON.stringify(err));
 	  }
 	  html += '</ul>';
 
+console.log("translation_english_language_zone = 2");
+
 	  //
 	  // skipping, and no options for active player -- skip completely
 	  //
@@ -4911,6 +4936,7 @@ console.log("caught error looking for event: " + JSON.stringify(err));
 	    }
 	  }
 
+console.log("translation_english_language_zone = 3");
 
 	  //
 	  // in faster_play mode, we will switch to HALTED if there are 
@@ -4969,6 +4995,7 @@ console.log("caught error looking for event: " + JSON.stringify(err));
             return 0;
 
 	  }
+console.log("translation_english_language_zone = 4");
 
 	  this.updateStatusWithOptions(msg, html);
 	  let deck = his_self.returnDeck(true);
@@ -10771,7 +10798,7 @@ defender_hits - attacker_hits;
 	  for (let i = 0; i < factions.length; i++) {
 	    let p = this.returnPlayerCommandingFaction(factions[i]);
 	    if (this.game.player == p && factions[i] != "protestant") {
-              this.playerPlaySpringDeployment(factions[i], this.game.player);
+              this.playerPlaySpringDeployment(factions[i], this.game.player, ""); // we have not removed, just avoid resolve
 	      do_i_get_to_move = true;
             }
           }
@@ -10863,6 +10890,7 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
 
         if (mv[0] === "spring_deployment") {
 
+	  let instruction = this.game.queue[this.game.queue.length-1];;
 	  this.game.queue.splice(qe, 1);
 
 	  let faction = mv[1];
@@ -10877,7 +10905,7 @@ this.game_help.renderCustomOverlay("spring_deployment", {
   line2 : "deployment?",
   fontsize : "2.1rem" ,
 });
-	    this.playerPlaySpringDeployment(faction, player);
+	    this.playerPlaySpringDeployment(faction, player, instruction);
 	  } else {
 	    this.game_help.hide();
 	    this.updateStatus(this.returnFactionName(faction) + " Spring Deployment");
@@ -11937,7 +11965,7 @@ if (this.game.state.round == 2) {
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 1;
+cardnum = 1;
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 1; }
 //if (f == "protestant") { cardnum = 0; }
@@ -12068,7 +12096,6 @@ console.log("----------------------------");
   	  this.game.state.france_card_bonus = 0;
   	  this.game.state.england_card_bonus = 0;
   	  this.game.state.hapsburg_card_bonus = 0;
-
 
 	  this.game.queue.splice(qe, 1);
           return 1;
@@ -13284,6 +13311,7 @@ console.log("----------------------------");
 	  // post schmalkaldic_league
 	  //
 	  if (faction === "protestant") {
+	    if (space.home === "" && space.language == "german") { space.home = "protestant"; }
             if (space === "augsburg" && religion === "protestant" && this.game.state.augsburg_electoral_bonus == 0 && this.game.state.events.schmalkaldic_league == 1) {
               this.game.spaces['augsburg'].units['protestant'].push();
               this.addRegular("protestant", "augsburg", 2);

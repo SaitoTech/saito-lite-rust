@@ -46,7 +46,7 @@ module.exports = DreamWizardTemplate = (app, mod, options) => {
 		if (options?.mode){
 			html +=  `<div class="selected"><i class="fa-solid ${mod.icons[options.mode]}"></i><label>${options.mode}</label></div>`;
 		}else{
-			html += 	`<div class="cast-mode-option" id="mode-audio"><i class="fa-solid ${mod.icons.audio}" title="ignore the camera feeds and cast only the call audio"></i><label>voice</label></div>
+			html += 	`<!--div class="cast-mode-option" id="mode-audio"><i class="fa-solid ${mod.icons.audio}" title="ignore the camera feeds and cast only the call audio"></i><label>voice</label></div-->
 						<div class="cast-mode-option selected" id="mode-video"><i class="fa-solid ${mod.icons.screen}" title="Let Saito stitch the video streams together"></i><label>video</label></div>`;
 		}
 
