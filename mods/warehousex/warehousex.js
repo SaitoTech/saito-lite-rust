@@ -8,6 +8,33 @@ class Warehousex extends ModTemplate {
 		this.description =
 			'Block data warehouse for the Saito blockchain. Not suitable for lite-clients';
 		this.categories = 'Utilities Dev';
+
+		this.tx_cts = [];
+		this.key_cts = [];
+	}
+
+	async initialize(app) {
+		await super.initialize(app);
+		this.publicKey = await app.wallet.getPublicKey();
+
+		// When we spin up, query stats for yesterday and save them (for comparing later)
+		//
+
+		let today = new Date(Date.now() - 24*60*60*1000);
+		await this.calculateStats(new Date(today.getFullYear(), today.getMonth(), today.getDate()), false);
+		//
+		// When we cross into a new day, generate the report
+		//
+		setInterval(() => {
+			let now = new Date(Date.now());
+			let tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+			if (tomorrow.getDate() != today.getDate()) {
+				this.calculateStats(tomorrow);
+				today = tomorrow;
+			}
+		}, 1000 * 60 * 60 * 5);
+
 	}
 
 	onNewBlock(blk, lc) {
@@ -28,9 +55,7 @@ class Warehousex extends ModTemplate {
 
 	async addTransactionsToDatabase(blk) {
 		try {
-			console.log(
-				Date() + '[ INFO |  WAREHOUSEX ] - block added : ' + blk.hash
-			);
+			console.log(Date() + '[ INFO |  WAREHOUSEX ] - block added : ' + blk.hash);
 			blk.transactions.forEach(async (transaction) => {
 				let sql = `INSERT OR IGNORE INTO transactions (
                                 block_time,
@@ -105,14 +130,85 @@ class Warehousex extends ModTemplate {
 			return;
 		} catch (err) {
 			console.error(
-				'[ ERROR | WAREHOUSEX ] *** ERROR ***\n' +
-					err +
-					'\n[ WAREHOUSEX ] *** END OF ERROR ***'
+				'[ ERROR | WAREHOUSEX ] *** ERROR ***\n' + err + '\n[ WAREHOUSEX ] *** END OF ERROR ***'
 			);
 		}
 	}
 	shouldAffixCallbackToModule() {
 		return 1;
+	}
+
+	async calculateStats(today, tweet = true) {
+		let midnight = today.getTime();
+		let yesterday = midnight - 24 * 60 * 60 * 1000;
+
+		let mods = {};
+		let ranked = [];
+		let tx_ct = 0;
+		let unique_user_count = 0;
+
+		try{
+
+			let sql1 = `SELECT COUNT(DISTINCT tx_from) AS ct FROM transactions WHERE (tx_module != '' AND tx_time < $t1 AND tx_time >= $t2)`;
+			let params1 = {
+				$t1: midnight,
+				$t2: yesterday
+			};
+
+			let uu = await this.app.storage.queryDatabase(sql1, params1, 'warehousex');
+
+			let sql2 = `SELECT tx_module, COUNT(*) AS ct FROM transactions WHERE (tx_module != '' AND tx_time < $t1 AND tx_time >= $t2) GROUP BY tx_module ORDER BY 2 DESC`;
+			let params2 = {
+				$t1: midnight,
+				$t2: yesterday
+			};
+
+			let tt = await this.app.storage.queryDatabase(sql2, params2, 'warehousex');
+
+			// Get and minimally process data
+
+			unique_user_count = uu[0]?.ct;
+			tt.forEach((res) => {
+				mods[res.tx_module] = res.ct;
+				ranked.push(`${res.tx_module} (${res.ct})`);
+				tx_ct += res.ct;
+			});
+
+		}catch(err){
+			console.error("WarehouseX: SQL error -- ", err);
+			return;
+		}
+
+		try {
+
+			let last_tx = this.tx_cts.slice(-1)[0];
+			let last_key = this.key_cts.slice(-1)[0];
+
+			this.tx_cts.push(tx_ct);
+			this.key_cts.push(unique_user_count);
+
+			let percent_user_change = 1000 * (unique_user_count - last_key) / last_key;
+			percent_user_change = Math.round(percent_user_change)/10;
+
+			let percent_tx_change = 1000 * (tx_ct - last_tx) / last_tx;
+			percent_tx_change = Math.round(percent_tx_change)/10;
+
+			let report = `*Today in Numbers:*\n------------------------\n`;
+			report += `Unique Keys: ${unique_user_count} ${last_key ? `(${percent_user_change}%)` :''}\n`;
+			report += `Total Transactions: ${tx_ct} ${last_tx ? `(${percent_tx_change}%)` : ''}\n`;
+			report += `Top Module: ${ranked[0]}`;
+
+			let data = {
+				text: report
+			};
+
+			if (tweet && ranked.length > 0 ){
+				this.app.connection.emit('redsquare-post-tweet', data);	
+			}
+			
+		}catch(err){
+			console.error("WarehouseX: tweet report error -- ", err);
+		}
 	}
 }
 
