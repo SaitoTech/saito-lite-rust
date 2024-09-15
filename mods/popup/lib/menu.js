@@ -21,19 +21,19 @@ class PopupMenu {
 
 	attachEvents() {
 		document.querySelector('.popup-lessons').onclick = (e) => {
-			window.history.pushState({}, document.title, '/lessons');
+			window.history.pushState({}, document.title, '/popup/lessons');
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit('popup-lessons-render-request', 'all');
 		};
 
 		document.querySelector('.popup-vocab').onclick = (e) => {
-			window.history.pushState({}, document.title, '/vocab');
+			window.history.pushState({}, document.title, '/popup/vocab');
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit('popup-vocab-render-request', '');
 		};
 
 		document.querySelector('.popup-review').onclick = (e) => {
-			window.history.pushState({}, document.title, '/review');
+			window.history.pushState({}, document.title, '/popup/review');
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit('popup-review-render-request', '');
 		};
@@ -42,7 +42,7 @@ class PopupMenu {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/absolute-beginners'
+				'/popup/lessons/absolute-beginners'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
@@ -52,7 +52,7 @@ class PopupMenu {
 		};
 
 		document.querySelector('.elementary').onclick = (e) => {
-			window.history.pushState({}, document.title, '/lessons/elementary');
+			window.history.pushState({}, document.title, '/popup/lessons/elementary');
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
 				'popup-lessons-render-request',
@@ -64,7 +64,7 @@ class PopupMenu {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/intermediate'
+				'/popup/lessons/intermediate'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
@@ -74,7 +74,7 @@ class PopupMenu {
 		};
 
 		document.querySelector('.advanced').onclick = (e) => {
-			window.history.pushState({}, document.title, '/lessons/advanced');
+			window.history.pushState({}, document.title, '/popup/lessons/advanced');
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
 				'popup-lessons-render-request',
@@ -86,7 +86,7 @@ class PopupMenu {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/short-stories'
+				'/popup/lessons/short-stories'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(

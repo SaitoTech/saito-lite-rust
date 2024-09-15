@@ -2,6 +2,7 @@ const PopupMainTemplate = require('./main.template');
 const TestimonialsTemplate = require('./testimonials.template');
 
 class PopupMain {
+
 	constructor(app, mod, container = '') {
 		this.app = app;
 		this.mod = mod;
@@ -41,16 +42,17 @@ class PopupMain {
 	}
 
 	render() {
-		if (!document.querySelector('.popup-container')) {
+
+		if (!document.querySelector('.saito-container')) {
 			this.app.browser.addElementToDom(PopupMainTemplate());
 			this.app.browser.addElementToSelector(
 				TestimonialsTemplate(),
-				'.popup-content'
+				'.saito-main'
 			);
 		} else {
 			this.app.browser.replaceElementBySelector(
 				PopupMainTemplate(),
-				'.popup-container'
+				'.saito-container'
 			);
 		}
 

@@ -1,6 +1,6 @@
 module.exports = () => {
 	return `
-<div style="color:#666666;font-size:1.6em">
+<div style="color:#666666;font-size:1.6rem">
 
 <div class="rotate_right">
 <div class="testimonial" style="width:580px;margin-left:10px;margin-top:2px;">
@@ -104,7 +104,7 @@ module.exports = () => {
   <div style="font-style:normal">
 I've learned more Chinese, learned faster, and had way more fun learning than I ever thought possible.... I listen so much so often that I can recite some episodes by heart and mimic the voice actor/actress by now (I'm still at the Elementary but these days I can somewhat follow along TV shows and radio, which before only sounded like an incomprehensible jumble of sound).
   </div>
-  <div style="font-size:1.2em" class="testimonial_author">-- user na.1788</div>
+  <div style="font-size:1.2rem" class="testimonial_author">-- user na.1788</div>
 </div>
 
 <div style="clear:both"></div>
@@ -121,7 +121,7 @@ I've learned more Chinese, learned faster, and had way more fun learning than I 
   <div>
 I've learned more Chinese in this one month spent on this site than the 10 months I spent "learning mandarin" in Shanghai 5 years back.
   </div>
-  <div style="font-size:1em" class="testimonial_author">-- user the.koko</div>
+  <div style="font-size:1rem" class="testimonial_author">-- user the.koko</div>
 </div>
 </div>
 
@@ -132,7 +132,7 @@ I've learned more Chinese in this one month spent on this site than the 10 month
   <div>
 Your site is wonderful! I find your dialogs to be practical, inventive, and interesting. Furthermore, they present natural language, and are well-structured for teaching, with impressive execution (i.e. various voices, and necessary repetition for early learners). I can't say enough good things about your site. :)
   </div>
-  <div style="font-size:1em" class="testimonial_author">-- Yanni (雅匿)</div>
+  <div style="font-size:1rem" class="testimonial_author">-- Yanni (雅匿)</div>
 </div>
 </div>
 
@@ -146,7 +146,7 @@ I'm writing to thank you for the one year scholarship to China that I've just re
 I'm a self-learner and have been studying with Popup Chinese as the main curriculum for about a year and a half.
 When I passed the HSK (level 3) or speak Chinese or write or read (or do anything with the Chinese language), my friends and family are always impressed, and especially by the fact that I don't go to any class and spent almost nothing learning Chinese.
   </div>
-  <div style="font-size:1em" class="testimonial_author">-- Anna V.</div>
+  <div style="font-size:1rem" class="testimonial_author">-- Anna V.</div>
 </div>
 </div>
 
@@ -161,7 +161,7 @@ I've listened to your podcasts way too much the past four months, and I've gone 
 <p></p>
 I have learned almost exclusively from Popup and Anki flashcards.  I took no formal Chinese courses and until today, I had paid no money.  But I'm subscribing today not because I need the extra features but because I am very grateful for your service.  Sometimes my Chinese friends laugh at the strange podcasts, then they give it a listen, then they are envious and want a Popup English to help them learn English. :D
   </div>
-  <div style="font-size:1em" class="testimonial_author">-- Joshua</div>
+  <div style="font-size:1rem" class="testimonial_author">-- Joshua</div>
 </div>
 </div>
 

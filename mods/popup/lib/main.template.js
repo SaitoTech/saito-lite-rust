@@ -1,13 +1,50 @@
 module.exports = () => {
 	return `
-    <div id="popup-container" class="popup-container">
 
-      <div class="popup-menu">
+    <div id="saito-container" class="saito-container">
+      <div class="saito-sidebar left">
+
+	<div class="menu">
+	  <div class="saito-menu">
+            <ul class="saito-menu-list saito-sidebar-element">
+
+              <li class="redsquare-menu-home redsquare-page-active">
+                <i class="fa-solid fa-house"></i>
+                <span>Home</span>
+              </li>
+
+              <li class="redsquare-menu-lessons redsquare-page-active">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>Lessons</span>
+              </li>
+
+              <li class="redsquare-menu-notifications">
+                <i class="fas fa-bell"></i>
+                <span>Notifications</span>
+                <div class="saito-notification-dot" style="display: none;">0</div>
+              </li>
+
+              <li class="redsquare-menu-profile">
+                <i class="fas fa-user"></i>
+                <span>Tools</span>
+              </li>
+
+            </ul>
+          </div>
+        </div>
+
       </div>
-      
-      <div class="popup-content">
+
+
+      <div class="saito-main">
       </div>
-     
+
+
+      <div class="saito-sidebar right">
+      </div>
+
+
+
     </div>
   `;
 };

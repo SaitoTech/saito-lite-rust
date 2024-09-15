@@ -31,8 +31,9 @@ class LessonManager {
 	}
 
 	render(level = 'all') {
+
 		//
-		// Stop observering while we rebuild the page
+		// stop observering while we rebuild the page
 		//
 		this.intersectionObserver.disconnect();
 
@@ -41,6 +42,8 @@ class LessonManager {
 			this.container
 		);
 		this.showLoader();
+
+console.log("how many lessons: " + this.mod.lessons.length);
 
 		for (let i = 0; i < this.mod.lessons.length; i++) {
 			if (level === 'all' || this.mod.lessons[i].userslug === level) {
@@ -62,11 +65,12 @@ class LessonManager {
 	}
 
 	attachEvents() {
+
 		document.querySelector('.absolute-beginners').onclick = (e) => {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/absolute-beginners'
+				'/popup/lessons/absolute-beginners'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
@@ -76,7 +80,7 @@ class LessonManager {
 		};
 
 		document.querySelector('.elementary').onclick = (e) => {
-			window.history.pushState({}, document.title, '/lessons/elementary');
+			window.history.pushState({}, document.title, '/popup/lessons/elementary');
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
 				'popup-lessons-render-request',
@@ -88,7 +92,7 @@ class LessonManager {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/intermediate'
+				'/popup/lessons/intermediate'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
@@ -98,7 +102,7 @@ class LessonManager {
 		};
 
 		document.querySelector('.advanced').onclick = (e) => {
-			window.history.pushState({}, document.title, '/lessons/advanced');
+			window.history.pushState({}, document.title, '/popup/lessons/advanced');
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
 				'popup-lessons-render-request',
@@ -110,7 +114,7 @@ class LessonManager {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/film-friday'
+				'/popup/lessons/film-friday'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
@@ -120,7 +124,7 @@ class LessonManager {
 		};
 
 		document.querySelector('.quiz-night').onclick = (e) => {
-			window.history.pushState({}, document.title, '/lessons/quiz-night');
+			window.history.pushState({}, document.title, '/popup/lessons/quiz-night');
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
 				'popup-lessons-render-request',
@@ -132,7 +136,7 @@ class LessonManager {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/short-stories'
+				'/popup/lessons/short-stories'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
@@ -145,7 +149,7 @@ class LessonManager {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/ktv-wednesday'
+				'/popup/lessons/ktv-wednesday'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
@@ -179,7 +183,7 @@ class LessonManager {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/absolute-beginners'
+				'/popup/lessons/absolute-beginners'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
@@ -189,7 +193,7 @@ class LessonManager {
 		};
 
 		document.querySelector('.elementary').onclick = (e) => {
-			window.history.pushState({}, document.title, '/lessons/elementary');
+			window.history.pushState({}, document.title, '/popup/lessons/elementary');
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
 				'popup-lessons-render-request',
@@ -201,7 +205,7 @@ class LessonManager {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/intermediate'
+				'/popup/lessons/intermediate'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
@@ -211,7 +215,7 @@ class LessonManager {
 		};
 
 		document.querySelector('.advanced').onclick = (e) => {
-			window.history.pushState({}, document.title, '/lessons/advanced');
+			window.history.pushState({}, document.title, '/popup/lessons/advanced');
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
 				'popup-lessons-render-request',
@@ -223,7 +227,7 @@ class LessonManager {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/film-friday'
+				'/popup/lessons/film-friday'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
@@ -233,7 +237,7 @@ class LessonManager {
 		};
 
 		document.querySelector('.quiz-night').onclick = (e) => {
-			window.history.pushState({}, document.title, '/lessons/quiz-night');
+			window.history.pushState({}, document.title, '/popup/lessons/quiz-night');
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
 				'popup-lessons-render-request',

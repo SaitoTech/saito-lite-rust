@@ -1,6 +1,5 @@
 module.exports = (app, mod) => {
 	return `
-    <div class="manager">
       <div class="menu">
         <ul>
           <li class="manager-menu absolute-beginners">Absolute Beginners</li>
@@ -16,6 +15,5 @@ module.exports = (app, mod) => {
       <div class="lessons">
         <div class="popup-intersection" id="popup-intersection"></div>
       </div>
-    </div>
   `;
 };
