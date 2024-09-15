@@ -21,6 +21,10 @@ button,
   box-shadow: var(--shadow-primary-button);
 }
 
+button:focus {
+  outline: none;
+}
+
 .saito-button-secondary { /* found in the settings, top wallet control buttons --AND also for loading new posts  */
   /*padding: 1rem 1.5rem;
   text-align: center;*/
