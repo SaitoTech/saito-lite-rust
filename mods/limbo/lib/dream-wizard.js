@@ -29,6 +29,10 @@ class DreamWizard{
 			}
 		}
 
+		if(this.options.externalMediaType === "game"){
+			this.options.includeCamera = true;
+		}
+
 		let description_el = document.getElementById("dream-wizard-description");
 		let description = description_el?.innerText || description_el?.value || "";
 
