@@ -1205,7 +1205,7 @@ class Browser {
 							drag_and_drop = true;
 							const reader = new FileReader();
 							reader.addEventListener('load', (event) => {
-								handleFileDrop(event.target.result);
+								handleFileDrop(event.target.result, true);
 							});
 							if (read_as_array_buffer) {
 								reader.readAsArrayBuffer(file);

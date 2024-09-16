@@ -818,7 +818,7 @@ class ChatPopup {
 			}
 		};
 
-		this.input.callbackOnUpload = async (result) => {
+		this.input.callbackOnUpload = async (result, confirm = false) => {
 			let imageUrl;
 
 			if (typeof result === 'string') {
@@ -845,12 +845,18 @@ class ChatPopup {
 			img.classList.add('img-prev');
 			img.src = resizedImageUrl;
 
-			let msg = img.outerHTML;
-			this.input.callbackOnReturn(msg);
+			this.overlay.show(
+				`<img class="chat-popup-img-enhanced" src="${resizedImageUrl}" >
+				<div id="photo-preview-upload" class="saito-button-primary">Upload</div>`
+			);
 
-			document.querySelector(
-				`${popup_qs} .saito-input .text-input`
-			).value = '';
+			document.getElementById("photo-preview-upload").onclick = (e) => {
+
+				this.overlay.close();
+				let msg = img.outerHTML;
+				this.input.callbackOnReturn(msg);
+			}
+
 		};
 
 		//
@@ -860,9 +866,6 @@ class ChatPopup {
 			`${popup_qs} .chat-footer .chat-input-submit`
 		).onclick = (e) => {
 			this.input.callbackOnReturn(this.input.getInput(false));
-			document.querySelector(
-				`${popup_qs} .saito-input .text-input`
-			).value = '';
 		};
 
 		//
