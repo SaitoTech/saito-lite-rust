@@ -8072,7 +8072,7 @@ this.game_help.render({
       case "seasia":
         let seasia_countries = ["burma","laos", "vietnam", "malaysia", "philippines", "indonesia"];
 
-        for (country of seasia_countries) {
+        for (let country of seasia_countries) {
           for (var [player, side] of Object.entries(scoring)) {
             if (this.isControlled(player, country) == 1) { side.total++; }
           }

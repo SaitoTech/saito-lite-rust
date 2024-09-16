@@ -2764,49 +2764,76 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
       // them manually here. Be sure that all of the cards have been
       // dealt ento the DECK during the setup phase though.
       //
+
+      console.log("placement 1 //////");
+      console.log("this.game: ", this.game);
+
       if (this.is_testing == 1) {
+        console.log("placement 2 //////");
         if (this.game.player == 2) {
+          console.log("placement 3 //////");
           this.game.deck[0].hand = ["redscare", "saltnegotiations","argo","voiceofamerica", "asia", "mideast", "europe", "opec", "awacs"];
         } else {
+          console.log("placement 4 //////");
           this.game.deck[0].hand = ["abmtreaty","vietnamrevolts","wargames","romanianab"];
         }
 
+        console.log("placement 5 //////");
       	//this.game.state.round = 1;
        	this.displayBoard();
       }
 
+
+      console.log("placement 6 //////");
       //
       // add china card to deck and make sure it is in USSR's hand
       //
       this.game.deck[0].cards["china"] = this.returnChinaCard();
+      console.log("placement 7 //////");
       if (this.game.player == 1) {
+        console.log("placement 8 //////");
         let hand_contains_china = 0;
         for (let x = 0; x < this.game.deck[0].hand.length; x++) {
-          if (this.game.deck[0].hand[x] == "china") { hand_contains_china = 1; }
+          if (this.game.deck[0].hand[x] == "china") { 
+            console.log("placement 9 //////");
+            hand_contains_china = 1; 
+          }
         }
+
+        console.log("placement 10 //////");
         if (hand_contains_china == 0) {
+          console.log("placement 11 //////");
           if (!this.game.deck[0].hand.includes("china")) {
+            console.log("placement 12 //////");
             this.game.deck[0].hand.push("china");
           }
         }
       }
 
+
+      console.log("placement 13 //////");
       //
       // Late-War scenario skips
       //
       if (this.game.options.deck === "late-war") {
-	this.game.queue.splice(qe, 1);
-	return 1;
+    	 console.log("placement 14 //////");
+       this.game.queue.splice(qe, 1);
+  	   return 1;
       }
 
+
+      console.log("placement 15 //////");
       if (this.is_testing && this.game.player == mv[1]){
+        console.log("placement 16 //////");
         this.addMove("resolve\tplacement");
         if (this.game.player == 1){
+          console.log("placement 17 //////");
           this.addMove("place\tussr\tussr\tpoland\t3");
           this.addMove("place\tussr\tussr\tfinland\t3");
           this.placeInfluence("poland", 3, "ussr");
           this.placeInfluence("finland", 3, "ussr");
         }else{
+          console.log("placement 18 //////");
           this.addMove("place\tus\tus\twestgermany\t3");
           this.addMove("place\tus\tus\tfrance\t3");
           this.addMove("place\tus\tus\titaly\t1");
@@ -2814,18 +2841,25 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
           this.placeInfluence("france", 3, "us");
           this.placeInfluence("italy", 1, "us");
         }
+        console.log("placement 19 //////");
         this.endTurn();
         return 0;
       }
 
 
+      console.log("placement 20 //////");
+
+
       if (this.game.player == mv[1]) {
+        console.log("placement 21 //////");
         this.playerPlaceInitialInfluence();
       } else {
+        console.log("placement 22 //////");
 	this.game_help.hide();
         this.updateStatusAndListCards(`${(mv[1] == 1)?"USSR":"US"} is making its initial placement of influence:`);
       }
 
+      console.log("placement 23 //////");
       // do not remove from queue -- handle RESOLVE on endTurn submission
       return 0;
     }
@@ -4016,7 +4050,7 @@ console.log("in play move!");
 
     //
     let scoring_cards_available = 0;
-    for (i = 0; i < this.game.deck[0].hand.length; i++) {
+    for (let i = 0; i < this.game.deck[0].hand.length; i++) {
       if (this.game.deck[0].cards[this.game.deck[0].hand[i]]?.scoring == 1) {
           scoring_cards_available++;
       }
@@ -4274,7 +4308,7 @@ console.log("in play move!");
     /* Open play, choose a card from card list*/
     if (selected_card == null) {
       user_message = player.toUpperCase() + " pick a card: ";
-      for (i = 0; i < this.game.deck[0].hand.length; i++) {
+      for (let i = 0; i < this.game.deck[0].hand.length; i++) {
 
         // when UN Intervention is eventing, we can only select opponent cards
         if (this.game.state.events.unintervention == 1) {
@@ -4290,7 +4324,7 @@ console.log("in play move!");
       /*Function called with a particular card in mind*/
       if (selected_card === "scoringcard") {
         user_message = 'Scoring card must be played: <ul>';
-        for (i = 0; i < this.game.deck[0].hand.length; i++) {
+        for (let i = 0; i < this.game.deck[0].hand.length; i++) {
           if (this.game.deck[0].cards[this.game.deck[0].hand[i]]?.scoring == 1) {
             selected_card = this.game.deck[0].hand[i];
             playable_cards.push(this.game.deck[0].hand[i]);
@@ -4333,7 +4367,7 @@ console.log("in play move!");
 
       user_message = `Select a card for ${(this.game.player == 1)? this.cardToText("beartrap"): this.cardToText("quagmire")}: `;
 
-      for (i = 0; i < this.game.deck[0].hand.length; i++) {
+      for (let i = 0; i < this.game.deck[0].hand.length; i++) {
         if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], player, 0) >= 2 && this.game.deck[0].hand[i] != "china") {
           playable_cards.push(this.game.deck[0].hand[i]);
           cards_available++;
@@ -4374,7 +4408,7 @@ console.log("in play move!");
         //
         if (cards_available > 0 && scoring_cards_available <= moves_remaining) {
           playable_cards = [];
-          for (i = 0; i < this.game.deck[0].hand.length; i++) {
+          for (let i = 0; i < this.game.deck[0].hand.length; i++) {
             if (this.game.deck[0].cards[this.game.deck[0].hand[i]] != undefined) {
               if (this.modifyOps(this.game.deck[0].cards[this.game.deck[0].hand[i]].ops, this.game.deck[0].hand[i], player, 0) >= 2 && this.game.deck[0].hand[i] != "china") {
                 playable_cards.push(this.game.deck[0].hand[i]);
@@ -4389,7 +4423,7 @@ console.log("in play move!");
               user_message = "Quagmire restricts you to Scoring Cards: ";
             }
             playable_cards = [];
-            for (i = 0; i < this.game.deck[0].hand.length; i++) {
+            for (let i = 0; i < this.game.deck[0].hand.length; i++) {
               if (this.game.deck[0].cards[this.game.deck[0].hand[i]]?.scoring == 1) {
                 playable_cards.push(this.game.deck[0].hand[i]);
               }
@@ -4481,7 +4515,7 @@ console.log("in play move!");
       if (twilight_self.game.state.round > 3) { rounds_in_turn = 7; }
       let moves_remaining = rounds_in_turn - twilight_self.game.state.turn_in_round;
 
-      for (i = 0; i < twilight_self.game.deck[0].hand.length; i++) {
+      for (let i = 0; i < twilight_self.game.deck[0].hand.length; i++) {
         if (ac[twilight_self.game.deck[0].hand[i]]?.scoring == 1) { 
           scoring_cards_available++; 
         }
@@ -5541,13 +5575,22 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
     let twilight_self = this;
 
+
+    console.log("playerPlaceInitialInfluence 1 ////");
+
     try {
 
+      console.log("playerPlaceInitialInfluence 2 ////");
       this.startClockAndSetActivePlayer();
       twilight_self.addMove("resolve\tplacement");
 
+      console.log("playerPlaceInitialInfluence 3 ////");
+
       if (this.game.player == 1) { //USSR
    
+
+        console.log("playerPlaceInitialInfluence 4 ////");
+
 this.game_help.render({
     title : "Standard USSR Placement" ,
     text : "A strong opening protects your critical battleground countries (East Germany and Poland) and uses your final OP to secure access to Italy and Greece",
@@ -5558,7 +5601,11 @@ this.game_help.render({
     fontsize : "2.1rem" ,
 }); 
 
+      console.log("playerPlaceInitialInfluence 5 ////");
+
         this.updateStatusAndListCards(`You are the USSR. Place six additional influence in Eastern Europe.`);
+
+        console.log("playerPlaceInitialInfluence 6 ////");
 
         var placeable = ["finland", "eastgermany", "poland", "austria", "czechoslovakia", "hungary", "romania", "yugoslavia", "bulgaria"];
         let ops_to_place = 6;
@@ -5569,30 +5616,48 @@ this.game_help.render({
           $(divname).addClass("easterneurope");
         }
 
+
+        console.log("playerPlaceInitialInfluence 7 ////");
+
         $(".easterneurope").off();
         $(".easterneurope").on('click', function() {
+
+
+          console.log("playerPlaceInitialInfluence 8 ////");
 
           let countryname = $(this).attr('id');
 
           if (twilight_self.countries[countryname].place == 1) {
+
+            console.log("playerPlaceInitialInfluence 9 ////");
             twilight_self.addMove("place\tussr\tussr\t"+countryname+"\t1");
             twilight_self.placeInfluence(countryname, 1, "ussr");
             ops_to_place--;
 
+            console.log("playerPlaceInitialInfluence 10 ////");
+
             if (ops_to_place == 0) {
+              console.log("playerPlaceInitialInfluence 11 ////");
               twilight_self.playerFinishedPlacingInfluence();
+
+              console.log("playerPlaceInitialInfluence 12 ////");
               twilight_self.game.state.placement = 1;
               twilight_self.endTurn();
             }else{
+              console.log("playerPlaceInitialInfluence 13 ////");
               twilight_self.updateStatusAndListCards(`You are the USSR. Place ${ops_to_place} additional influence in Eastern Europe.`);
             }
           } else { //Should be impossible to hit here
+            console.log("playerPlaceInitialInfluence 14 ////");
             twilight_self.displayModal("Invalid Influence Placement", `You cannot place there...: ${ops_to_place} influence left`);
           }
         });
 
+        console.log("playerPlaceInitialInfluence 15 ////");
         return;
       }else{ //US
+
+        console.log("playerPlaceInitialInfluence 16 ////");
 
 this.game_help.render({
     title : "Standard US Placement" ,
@@ -5604,39 +5669,60 @@ this.game_help.render({
     fontsize : "2.1rem" ,
 }); 
 
+        console.log("playerPlaceInitialInfluence 17 ////");
 
         this.updateStatusAndListCards(`You are the US. Place seven additional influence in Western Europe.`)
+
+        console.log("playerPlaceInitialInfluence 18 ////");
 
         var placeable = ["canada", "uk", "benelux", "france", "italy", "westgermany", "greece", "spain", "turkey", "austria", "norway", "denmark", "sweden", "finland"];
         var ops_to_place = 7;
 
         for (let p of placeable) {
+          console.log("playerPlaceInitialInfluence 19 ////");
           this.game.countries[p].place = 1;
           let divname = "#"+p;
           $(divname).addClass("westerneurope");
         }
 
+        console.log("playerPlaceInitialInfluence 20 ////");
+
         $(".westerneurope").off();
+
+        console.log("playerPlaceInitialInfluence 21 ////");
         $(".westerneurope").on('click', function() {
+
+          console.log("playerPlaceInitialInfluence 22 ////");
 
           let countryname = $(this).attr('id');
 
           if (twilight_self.countries[countryname].place == 1) {
+
+            console.log("playerPlaceInitialInfluence 23 ////");
             twilight_self.addMove("place\tus\tus\t"+countryname+"\t1");
             twilight_self.placeInfluence(countryname, 1, "us");
             ops_to_place--;
 
+            console.log("playerPlaceInitialInfluence 24 ////");
+
             if (ops_to_place == 0) {
+              console.log("playerPlaceInitialInfluence 25 ////");
               twilight_self.playerFinishedPlacingInfluence();
+              
+              console.log("playerPlaceInitialInfluence 26 ////");
               twilight_self.game.state.placement = 1;
               twilight_self.endTurn();
+
             }else{
+              console.log("playerPlaceInitialInfluence 27 ////");
               twilight_self.updateStatusAndListCards(`You are the US. Place ${ops_to_place} additional influence in Western Europe.`)
             }
           } else { //Should be impossible to hit here
+            console.log("playerPlaceInitialInfluence 28 ////");
             twilight_self.displayModal("Invalid Influence Placement", `You cannot place there...: ${ops_to_place} influence left`);
           }
         });
+        console.log("playerPlaceInitialInfluence 29 ////");
       }
     } catch (err) { console.log("Error in playerPlaceInitialInfluence: "+err);}
   }
@@ -6732,7 +6818,7 @@ this.game_help.render({
   }
   removeCardFromHand(card) {
     if (this.game.player == 0) { return; }
-    for (i = 0; i < this.game.deck[0].hand.length; i++) {
+    for (let i = 0; i < this.game.deck[0].hand.length; i++) {
       if (this.game.deck[0].hand[i] == card) {
         this.game.deck[0].hand.splice(i, 1);
       }
@@ -8072,7 +8158,7 @@ this.game_help.render({
       case "seasia":
         let seasia_countries = ["burma","laos", "vietnam", "malaysia", "philippines", "indonesia"];
 
-        for (country of seasia_countries) {
+        for (let country of seasia_countries) {
           for (var [player, side] of Object.entries(scoring)) {
             if (this.isControlled(player, country) == 1) { side.total++; }
           }

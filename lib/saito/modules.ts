@@ -194,9 +194,10 @@ class Mods {
 		// try {
 			if (this.app.BROWSER === 1) {
 				console.log('loading dyn module...');
+				console.log("DYN_MOD_WEB: ", DYN_MOD_WEB);
 				let moduleCode = this.app.crypto.base64ToString(DYN_MOD_WEB);
 
-				//console.log('module web code: ', moduleCode);
+				console.log('module web code: ', moduleCode);
 
 				self["saito-js"] = require('saito-js').default;
 				self["saito-js/lib/slip"] = require("saito-js/lib/slip").default;

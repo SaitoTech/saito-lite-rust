@@ -90,7 +90,7 @@ class RedSquareNavigation {
   }
 
   attachEvents() {
-    this_self = this;
+    let this_self = this;
 
     document.getElementById("new-tweet").onclick = (e) => {
       let post = new Post(this.app, this.mod);
