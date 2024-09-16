@@ -24,10 +24,7 @@ class PopupVocab {
 		//
 		// get our content
 		//
-console.log("about to get vocab...");
-console.log("lid: " + lesson_id);
 		this.vocab = await this.mod.returnVocab(lesson_id);
-console.log("done...");
 
 		let html = '<table>';
 		for (let i = 0; i < this.vocab.length; i++) {

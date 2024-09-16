@@ -1,4 +1,4 @@
-module.exports = (word) => {
+module.exports = (lesson, word) => {
 	return `
     <tr class="word">
       <td class="player"><img src="/img/buttons/play_button.gif" onclick="playWordAudio('${word.audio_source}',this);"></td>

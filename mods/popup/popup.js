@@ -127,18 +127,7 @@ class Popup extends ModTemplate {
 			}
 		}
 
-
-console.log("before AWAIT");
-
 		await super.render();
-
-
-		let x = this.app.browser.returnHashAndParameters();
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("$");
-console.log(JSON.stringify(x));
 
 		this.app.connection.emit('popup-home-render-request');
 	}
@@ -186,7 +175,7 @@ console.log(JSON.stringify(x));
 		if (service.service === 'popup') {
 
 			if (!this.peers.includes(peer.publicKey)) {
-				this.peers.push(peer.publicKey);
+				this.peers.push(peer);
 			}
 
 			//
@@ -242,7 +231,7 @@ console.log(JSON.stringify(x));
 	loadLessonSentences(lesson, mycallback) {
 
 		if (!lesson) { return; }
-		if (!this.peers.length == 0) { return; }
+		if (this.peers.length == 0) { return; }
 		let peer = this.peers[0];
 
 		//
@@ -269,7 +258,7 @@ console.log(JSON.stringify(x));
 	loadLessonWords(lesson, mycallback) {
 
 		if (!lesson) { return; }
-		if (!this.peers.length == 0) { return; }
+		if (this.peers.length == 0) { return; }
 		let peer = this.peers[0];
 
 		//
@@ -295,7 +284,7 @@ console.log(JSON.stringify(x));
 	loadLessonQuestions(lesson, mycallback) {
 
 		if (!lesson) { return; }
-		if (!this.peers.length == 0) { return; }
+		if (this.peers.length == 0) { return; }
 		let peer = this.peers[0];
 
 		//
@@ -319,76 +308,9 @@ console.log(JSON.stringify(x));
 		);
 	}
 
-	loadLesson(lesson) {
-
-		if (!lesson) { return; }
-		if (!this.peers.length == 0) { return; }
-		let peer = this.peers[0];
-
-		//
-		// sentences
-		//
-		this.sendPeerDatabaseRequestWithFilter(
-			'Popup',
-			`SELECT * FROM sentences WHERE lesson_id = ${lesson.id} ORDER BY display_order ASC`,
-			async (res) => {
-				if (res.rows) {
-					lesson.sentences = res.rows;
-					return;
-				}
-			},
-			(p) => {
-				if (p.publicKey == peer.publicKey) {
-					return 1;
-				}
-				return 0;
-			}
-		);
-		//
-		// words
-		//
-		this.sendPeerDatabaseRequestWithFilter(
-			'Popup',
-			`SELECT * FROM words WHERE lesson_id = ${lesson.id} ORDER BY display_order ASC`,
-			async (res) => {
-				if (res.rows) {
-					lesson.words = res.rows;
-					return;
-				}
-			},
-			(p) => {
-				if (p.publicKey == peer.publicKey) {
-					return 1;
-				}
-				return 0;
-			}
-		);
-
-		//
-		// questions
-		//
-		this.sendPeerDatabaseRequestWithFilter(
-			'Popup',
-			`SELECT * FROM questions WHERE lesson_id = ${lesson.id} ORDER BY display_order ASC`,
-			async (res) => {
-				if (res.rows) {
-					lesson.questions = res.rows;
-					return;
-				}
-			},
-			(p) => {
-				if (p.publicKey == peer.publicKey) {
-					return 1;
-				}
-				return 0;
-			}
-		);
-	}
-
 	returnLesson(lesson_id = null) {
 		for (let i = 0; i < this.lessons.length; i++) {
 			if (this.lessons[i].id == lesson_id) {
-				this.loadLesson(this.lessons[i]);				
 				return this.lessons[i];
 			}
 		}
