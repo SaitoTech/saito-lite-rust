@@ -25,22 +25,6 @@ class Popup extends ModTemplate {
 
 		// in browser db
 		this.localDB = null;
-		this.schema = [
-			'id',
-			'user_id',
-			'publickey',
-			'owner',
-			'sig',
-			'field1',
-			'field2',
-			'field3',
-			'block_id',
-			'block_hash',
-			'created_at',
-			'updated_at',
-			'tx',
-			'preserve'
-		];
 
 		this.social = {
 			twitter_card: 'summary',
@@ -86,6 +70,7 @@ class Popup extends ModTemplate {
 		//
 		// create in-browser DB
 		//
+		await this.deleteDatabase();
 		await this.initializeDatabase();
 
 		//
@@ -134,7 +119,6 @@ class Popup extends ModTemplate {
 		let x = path.split("/");
 		if (path.length > 1) {
 			if (path[1] == "lessons") {
-alert("lessons");
 				if (path.length > 2) {
 					if (path[2] == "absolute-beginners") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
 					if (path[2] == "elementary") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
@@ -164,6 +148,88 @@ alert("lessons");
 		// override functions called by non-Saito JS
 		//
 		if (this.app.BROWSER == 1) {
+
+			switch_display_mode = function (
+				mode = ""
+			) {
+				if (mode === "simplified") {
+					if (popup_self.app.options.popup.display.simplified == 1) {
+						popup_self.app.options.popup.display.simplified = 0;
+						popup_self.app.options.popup.display.traditional = 1;
+					} else {
+						popup_self.app.options.popup.display.simplified = 1;
+						popup_self.app.options.popup.display.traditional = 0;
+					}
+				}
+				if (mode === "traditional") {
+					if (popup_self.app.options.popup.display.traditional == 1) {
+						popup_self.app.options.popup.display.traditional = 0;
+						popup_self.app.options.popup.display.simplified = 1;
+					} else {
+						popup_self.app.options.popup.display.traditional = 1;
+						popup_self.app.options.popup.display.simplified = 0;
+					}
+				}
+				if (mode === "pinyin") {
+					if (popup_self.app.options.popup.display.pinyin == 1) {
+						popup_self.app.options.popup.display.pinyin = 0;
+					} else {
+						popup_self.app.options.popup.display.pinyin = 1;
+					}
+				}
+				if (mode === "english") {
+					if (popup_self.app.options.popup.display.english == 1) {
+						popup_self.app.options.popup.display.english = 0;
+					} else {
+						popup_self.app.options.popup.display.english = 1;
+					}
+				}
+
+				popup_self.save();
+			};
+
+
+			enable_display_mode = function (
+				mode = ""
+			) {
+				if (mode === "field1") {
+					if (popup_self.app.options.popup.vocab.field1 == 1) {
+						popup_self.app.options.popup.vocab.field1 = 0;
+					} else {
+						popup_self.app.options.popup.vocab.field1 = 1;
+					}
+				}
+				if (mode === "field2") {
+					if (popup_self.app.options.popup.vocab.field2 == 1) {
+						popup_self.app.options.popup.vocab.field2 = 0;
+					} else {
+						popup_self.app.options.popup.vocab.field2 = 1;
+					}
+				}
+				if (mode === "field3") {
+					if (popup_self.app.options.popup.vocab.field3 == 1) {
+						popup_self.app.options.popup.vocab.field3 = 0;
+					} else {
+						popup_self.app.options.popup.vocab.field3 = 1;
+					}
+				}
+				if (mode === "field4") {
+					if (popup_self.app.options.popup.vocab.field4 == 1) {
+						popup_self.app.options.popup.vocab.field4 = 0;
+					} else {
+						popup_self.app.options.popup.vocab.field4 = 1;
+					}
+				}
+				if (mode === "field5") {
+					if (popup_self.app.options.popup.vocab.field5 == 1) {
+						popup_self.app.options.popup.vocab.field5 = 0;
+					} else {
+						popup_self.app.options.popup.vocab.field5 = 1;
+					}
+				}
+				popup_self.save();
+			};
+
 			add_to_vocab = function (
 				field1 = '',
 				field2 = '',
@@ -172,6 +238,13 @@ alert("lessons");
 				field5 = '',
 				label = ''
 			) {
+
+				if (field1 === "unknown") { field1 = ""; }	
+				if (field2 === "unknown") { field2 = ""; }	
+				if (field3 === "unknown") { field3 = ""; }	
+				if (field4 === "unknown") { field4 = ""; }	
+				if (field5 === "unknown") { field5 = ""; }	
+
 				popup_self.addVocab(
 					field1,
 					field2,
@@ -255,8 +328,6 @@ alert("lessons");
 		if (this.peers.length == 0) { return; }
 		let peer = this.peers[0];
 
-
-console.log("trying to load the sentence data...");
 		//
 		// sentences
 		//
@@ -304,6 +375,7 @@ console.log("trying to load the sentence data...");
 			}
 		);
 	}
+
 	loadLessonQuestions(lesson, mycallback) {
 
 		if (!lesson) { return; }
@@ -374,6 +446,14 @@ console.log("trying to load the sentence data...");
 		if (!this.app.options.popup) {
 			this.app.options.popup = {};
 		}
+		if (!this.app.options.popup.vocab) {
+			this.app.options.popup.vocab = {};
+			this.app.options.popup.vocab.field1 = 1;
+			this.app.options.popup.vocab.field2 = 1;
+			this.app.options.popup.vocab.field3 = 1;
+			this.app.options.popup.vocab.field4 = 1;
+			this.app.options.popup.vocab.field5 = 0;
+		}
 		if (!this.app.options.popup.display) {
 			this.app.options.popup.display = {};
 			this.app.options.popup.display.simplified = 1;
@@ -415,8 +495,28 @@ console.log("trying to load the sentence data...");
 		this.saveOptions();
 	}
 
+
+	async deleteDatabase() {
+
+		if (!this.localDB) {
+			this.localDB = new JsStore.Connection(
+                                new Worker('/saito/lib/jsstore/jsstore.worker.js')
+                        );
+		}
+
+		this.localDB.dropDb("popup").then(function() {
+			console.log('Popup Database deleted successfully');
+		}).catch(function(error) {
+			console.error('Error deleting the database:', error);
+		});
+
+		return;
+	}
+
+
 	async initializeDatabase() {
 		if (this.app.BROWSER) {
+
 			this.localDB = new JsStore.Connection(
 				new Worker('/saito/lib/jsstore/jsstore.worker.js')
 			);
@@ -442,7 +542,7 @@ console.log("trying to load the sentence data...");
 			};
 
 			let db = {
-				name: 'vocabulary_db',
+				name: 'popup',
 				tables: [vocabulary]
 			};
 
@@ -474,6 +574,9 @@ console.log("trying to load the sentence data...");
 		obj.field5 = field5;
 		obj.lesson_id = lesson_id;
 		obj.label = label;
+		obj.audio_source = "";
+		obj.audio_translation = "";
+		obj.display_order = 0;
 		obj.created_at = new Date().getTime();
 		obj.updated_at = new Date().getTime();
 

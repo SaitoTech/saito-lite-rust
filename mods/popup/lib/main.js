@@ -28,9 +28,10 @@ class PopupMain {
 			this.mod.lesson.render(lesson_id);
 		});
 
-		this.app.connection.on('popup-vocab-render-request', (review_id) => {
-			document.querySelector('.popup-content').innerHTML = '';
-			this.mod.vocab.render(review_id);
+		this.app.connection.on('popup-vocab-render-request', (review_id=0, offset=0) => {
+			document.querySelector('.saito-main').innerHTML = '';
+			document.querySelector('.saito-sidebar.right').innerHTML = '';
+			this.mod.vocab.render(review_id, offset);
 		});
 
 		this.app.connection.on('popup-review-render-request', (review_id) => {
@@ -76,7 +77,8 @@ class PopupMain {
                 document.querySelector('.popup-notifications').onclick = (e) => {
                         window.history.pushState({}, document.title, '/popup/review');
                         history.replaceState(null, null, ' ');
-                        this.app.connection.emit('popup-notifications-render-request', 'all');
+                        //this.app.connection.emit('popup-vocabulary-render-request', 'all');
+                        this.app.connection.emit('popup-vocab-render-request', ("", 0));
                 };
 
 	}
