@@ -129,6 +129,27 @@ class Popup extends ModTemplate {
 
 		await super.render();
 
+	
+		let path = window.location.pathname;
+		let x = path.split("/");
+		if (path.length > 1) {
+			if (path[1] == "lessons") {
+alert("lessons");
+				if (path.length > 2) {
+					if (path[2] == "absolute-beginners") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+					if (path[2] == "elementary") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+					if (path[2] == "intermediate") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+					if (path[2] == "advanced") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+					if (path[2] == "film-friday") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+					if (path[2] == "quiz-night") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+				} else {
+					this.app.connection.emit('popup-lessons-render-request', ("all"));
+				}
+				return;
+			}
+		}
+
+
 		this.app.connection.emit('popup-home-render-request');
 	}
 
@@ -234,6 +255,8 @@ class Popup extends ModTemplate {
 		if (this.peers.length == 0) { return; }
 		let peer = this.peers[0];
 
+
+console.log("trying to load the sentence data...");
 		//
 		// sentences
 		//
@@ -478,8 +501,6 @@ class Popup extends ModTemplate {
 
 		return rows;
 	}
-
-
 
 }
 

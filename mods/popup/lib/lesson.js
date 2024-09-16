@@ -32,13 +32,12 @@ class PopupLesson {
 		  this.app.browser.replaceElementBySelector(PopupLessonMainTemplate(this.lesson), '.lesson-container');
 		}
 
-
 		//
 		// sentences
 		//
 		this.mod.loadLessonSentences(this.lesson, () => {
-		  let html = '<h2>Transcript</h2>';
-		  html = '<table>';
+		  let html = '<div class="lesson-section header">transcript</div>';
+		  html += '<table>';
 		  if (this.lesson.sentences) {
 		    for (let i = 0; i < this.lesson.sentences.length; i++) {
 		      html += SentenceTemplate(this.lesson, this.lesson.sentences[i]);
@@ -53,8 +52,8 @@ class PopupLesson {
 		// words
 		//
 		this.mod.loadLessonWords(this.lesson, () => {
-		  let html = '<h2>Vocabulary</h2>';
-		  html = '<table>';
+		  let html = '<div class="lesson-section header">vocabulary</div>';
+		  html += '<table>';
 		  if (this.lesson.words) {
 		  for (let i = 0; i < this.lesson.words.length; i++) {
 		    html += WordTemplate(this.lesson, this.lesson.words[i]);
@@ -68,9 +67,10 @@ class PopupLesson {
 		//
 		// questions
 		//
+/***
 		this.mod.loadLessonQuestions(this.lesson, () => {
-		  let html = '<h2>Review:</h2>';
-		  html = '<table>';
+		  let html = '<div class="lesson-section header">comprehension:</div>';
+		  html += '<table>';
 		  if (this.lesson.questions) {
 		    for (let i = 0; i < this.lesson.questions.length; i++) {
 		      html += QuestionTemplate(this.lesson, this.lesson.questions[i]);
@@ -79,7 +79,7 @@ class PopupLesson {
 	 	  html += '</table>';
 		  this.app.browser.addElementToSelector(html, '.lesson-section.questions');
 		});
-	
+***/	
 
 		this.attachEvents();
 
