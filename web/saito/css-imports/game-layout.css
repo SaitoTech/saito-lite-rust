@@ -7,6 +7,10 @@
 ::-webkit-resizer { background-color: #ddd;}
 
 
+:root {
+  --background-color-shim-normal: var(--background-color-shim-dark);
+}
+
 body {
   position: relative;
   background-color: #4e4e4e;
