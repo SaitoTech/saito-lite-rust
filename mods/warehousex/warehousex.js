@@ -203,7 +203,20 @@ class Warehousex extends ModTemplate {
 			};
 
 			if (tweet && ranked.length > 0 ){
-				this.app.connection.emit('redsquare-post-tweet', data);	
+				// Won't do anything if redsquare not installed ! 
+				//this.app.connection.emit('redsquare-post-tweet', data);	
+
+			    let obj = {
+			      module: 'RedSquare',
+			      request: 'create tweet',
+			      data
+			    };
+
+			    let newtx = await this.app.wallet.createUnsignedTransaction();
+			    newtx.msg = obj;
+
+			    await newtx.sign();
+			    await this.app.network.propagateTransaction(newtx);
 			}
 			
 		}catch(err){
