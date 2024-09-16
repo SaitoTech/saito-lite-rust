@@ -1,4 +1,5 @@
-const PopupLessonTemplate = require('./lesson.template');
+const PopupLessonMainTemplate = require('./lesson-main.template');
+const PopupLessonRightTemplate = require('./lesson-right.template');
 const WordTemplate = require('./word.template');
 const QuestionTemplate = require('./question.template');
 const SentenceTemplate = require('./sentence.template');
@@ -15,6 +16,7 @@ class PopupLesson {
 	}
 
 	render(lesson_id = '') {
+
 		//
 		// get our content
 		//
@@ -23,106 +25,61 @@ class PopupLesson {
 		//
 		// lesson content
 		//
-		this.app.browser.replaceElementContentBySelector(
-			PopupLessonTemplate(this.lesson),
-			'.popup-content'
-		);
-		this.attachEvents();
-
-		//
-		// lesson title
-		//
-		let obj = document.querySelector('.popup-menu .header');
-		if (obj) {
-			obj.innerHTML = `<div class="level">${this.lesson.username}: </div><div class="title">${this.lesson.title}</div>`;
+		if (!document.querySelector(".lesson-container")) {
+		  this.app.browser.addElementToSelector(PopupLessonMainTemplate(this.lesson), '.saito-main');
+		  this.app.browser.addElementToSelector(PopupLessonRightTemplate(this.lesson), '.saito-sidebar.right');
+		} else {
+		  this.app.browser.replaceElementBySelector(PopupLessonMainTemplate(this.lesson), '.lesson-container');
 		}
 
+
 		//
-		// lesson menu
+		// sentences
 		//
-		document.querySelectorAll('.option.non-lesson').forEach((el) => {
-			el.style.display = 'none';
+		this.mod.loadLessonSentences(this.lesson, () => {
+		  let html = '<table>';
+		  if (this.lesson.sentences) {
+		    for (let i = 0; i < this.lesson.sentences.length; i++) {
+		      html += SentenceTemplate(this.lesson, this.lesson.sentences[i]);
+		    }
+		  }
+		  html += '</table>';
+		  this.app.browser.addElementToSelector(html, '.lesson-section.transcript');
 		});
-		document.querySelectorAll('.option.lesson').forEach((el) => {
-			el.style.display = 'block';
-		});
+
+
+		//
+		// words
+		//
+		html = '<table>';
+		if (this.lesson.words) {
+		for (let i = 0; i < this.lesson.words.length; i++) {
+		  html += WordTemplate(this.lesson, this.lesson.words[i]);
+		}
+		}
+		html += '</table>';
+		this.app.browser.addElementToSelector(html, '.lesson-section.vocabulary');
+			
+
+		//
+		// questions
+		//
+		html = '<table>';
+		if (this.lesson.questions) {
+		for (let i = 0; i < this.lesson.questions.length; i++) {
+		  html += QuestionTemplate(this.lesson, this.lesson.questions[i]);
+		}
+		}
+		html += '</table>';
+		this.app.browser.addElementToSelector(html, '.lesson-section.questions');
+			
+
+		this.attachEvents();
+
 	}
 
 	attachEvents() {
-		document.querySelector('.discussion').onclick = (e) => {
-			document.querySelectorAll('.lesson-section').forEach((el) => {
-				el.style.display = 'none';
-			});
-			document
-				.querySelectorAll('.lesson-section.discussion')
-				.forEach((el) => {
-					el.style.display = 'block';
-				});
-		};
 
-		document.querySelector('.transcript').onclick = (e) => {
-			document.querySelectorAll('.lesson-section').forEach((el) => {
-				el.style.display = 'none';
-			});
-			this.loader.show();
-			this.mod.fetchLessonSentences(this.lesson, (res) => {
-				let html = '<table>';
-				for (let i = 0; i < this.lesson.sentences.length; i++) {
-					html += SentenceTemplate(
-						this.lesson,
-						this.lesson.sentences[i]
-					);
-				}
-				html += '</table>';
-
-				let obj = document.querySelector('.lesson-section.transcript');
-				obj.innerHTML = html;
-				obj.style.display = 'block';
-				this.loader.hide();
-			});
-		};
-
-		document.querySelector('.vocabulary').onclick = (e) => {
-			document.querySelectorAll('.lesson-section').forEach((el) => {
-				el.style.display = 'none';
-			});
-			this.loader.show();
-			this.mod.fetchLessonVocabulary(this.lesson, (res) => {
-				console.log('RESULTS: ' + JSON.stringify(res));
-
-				let html = '<table>';
-				for (let i = 0; i < this.lesson.words.length; i++) {
-					html += WordTemplate(this.lesson.words[i]);
-				}
-				html += '</table>';
-
-				let obj = document.querySelector('.lesson-section.vocabulary');
-				obj.innerHTML = html;
-				obj.style.display = 'block';
-				this.loader.hide();
-			});
-		};
-
-		document.querySelector('.writing').onclick = (e) => {};
-
-		document.querySelector('.test').onclick = (e) => {
-			document.querySelectorAll('.lesson-section').forEach((el) => {
-				el.style.display = 'none';
-			});
-			this.loader.show();
-			this.mod.fetchLessonQuestions(this.lesson, (res) => {
-				let html = '<table>';
-				for (let i = 0; i < this.lesson.questions.length; i++) {
-					html += QuestionTemplate(this.lesson.questions[i]);
-				}
-				html += '</table>';
-
-				let obj = document.querySelector('.lesson-section.questions');
-				obj.innerHTML = html;
-				obj.style.display = 'block';
-				this.loader.hide();
-			});
-		};
 	}
 }
 

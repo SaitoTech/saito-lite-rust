@@ -2,7 +2,6 @@ const saito = require('./../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const PopupLesson = require('./lib/lesson');
-const PopupMenu = require('./lib/menu');
 const PopupVocab = require('./lib/vocab');
 const PopupReview = require('./lib/review');
 const PopupMain = require('./lib/main');
@@ -93,6 +92,7 @@ class Popup extends ModTemplate {
 		// load local data
 		//
 		this.load();
+
 	}
 
 	////////////
@@ -107,7 +107,6 @@ class Popup extends ModTemplate {
 			// initialize components
 			this.header = new SaitoHeader(this.app, this);
 			await this.header.initialize(this.app);
-			this.menu = new PopupMenu(this.app, this);
 			this.main = new PopupMain(this.app, this);
 			this.manager = new PopupLessonManager(this.app, this);
 			this.lesson = new PopupLesson(this.app, this);
@@ -116,7 +115,6 @@ class Popup extends ModTemplate {
 
 			this.addComponent(this.header);
 			this.addComponent(this.main);
-			this.addComponent(this.menu);
 
 			//
 			// chat manager can insert itself into left-sidebar if exists
@@ -129,7 +127,18 @@ class Popup extends ModTemplate {
 			}
 		}
 
+
+console.log("before AWAIT");
+
 		await super.render();
+
+
+		let x = this.app.browser.returnHashAndParameters();
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log(JSON.stringify(x));
 
 		this.app.connection.emit('popup-home-render-request');
 	}
@@ -184,12 +193,11 @@ class Popup extends ModTemplate {
 			// fetch all available lessons on load
 			//
 			let sql = `
-				SELECT lessons.id, lessons.title, lessons.content, lessons.slug, lessons.photo, lessons.username, words.*
-				FROM lessons JOIN words WHERE lessons.id = 25 AND words.lesson_id = lessons.id
+				SELECT lessons.id, lessons.title, lessons.content, lessons.slug, lessons.photo, lessons.username, lessons.userslug 
+				FROM lessons 
                    		ORDER BY lessons.created_at DESC
 			`;
 
-/***
 			this.sendPeerDatabaseRequestWithFilter(
 				'Popup',
 				sql,
@@ -209,7 +217,6 @@ class Popup extends ModTemplate {
 					return 0;
 				}
 			);
-***/
 
 		}
 	}
@@ -232,9 +239,11 @@ class Popup extends ModTemplate {
 		this.lessons.push(lesson);
 	}
 
-	loadLesson(lesson) {
+	loadLessonSentences(lesson, mycallback) {
 
 		if (!lesson) { return; }
+		if (!this.peers.length == 0) { return; }
+		let peer = this.peers[0];
 
 		//
 		// sentences
@@ -242,7 +251,86 @@ class Popup extends ModTemplate {
 		this.sendPeerDatabaseRequestWithFilter(
 			'Popup',
 			`SELECT * FROM sentences WHERE lesson_id = ${lesson.id} ORDER BY display_order ASC`,
-			sql,
+			async (res) => {
+				if (res.rows) {
+					lesson.sentences = res.rows;
+					mycallback(lesson);
+				}
+			},
+			(p) => {
+				if (p.publicKey == peer.publicKey) {
+					return 1;
+				}
+				return 0;
+			}
+		);
+
+	}
+	loadLessonWords(lesson, mycallback) {
+
+		if (!lesson) { return; }
+		if (!this.peers.length == 0) { return; }
+		let peer = this.peers[0];
+
+		//
+		// words
+		//
+		this.sendPeerDatabaseRequestWithFilter(
+			'Popup',
+			`SELECT * FROM words WHERE lesson_id = ${lesson.id} ORDER BY display_order ASC`,
+			async (res) => {
+				if (res.rows) {
+					lesson.words = res.rows;
+					mycallback(lesson);
+				}
+			},
+			(p) => {
+				if (p.publicKey == peer.publicKey) {
+					return 1;
+				}
+				return 0;
+			}
+		);
+	}
+	loadLessonQuestions(lesson, mycallback) {
+
+		if (!lesson) { return; }
+		if (!this.peers.length == 0) { return; }
+		let peer = this.peers[0];
+
+		//
+		// questions
+		//
+		this.sendPeerDatabaseRequestWithFilter(
+			'Popup',
+			`SELECT * FROM questions WHERE lesson_id = ${lesson.id} ORDER BY display_order ASC`,
+			async (res) => {
+				if (res.rows) {
+					lesson.questions = res.rows;
+					mycallback(lesson);
+				}
+			},
+			(p) => {
+				if (p.publicKey == peer.publicKey) {
+					return 1;
+				}
+				return 0;
+			}
+		);
+	}
+
+	loadLesson(lesson) {
+
+		if (!lesson) { return; }
+		if (!this.peers.length == 0) { return; }
+		let peer = this.peers[0];
+
+		//
+		// sentences
+		//
+		this.sendPeerDatabaseRequestWithFilter(
+			'Popup',
+			`SELECT * FROM sentences WHERE lesson_id = ${lesson.id} ORDER BY display_order ASC`,
 			async (res) => {
 				if (res.rows) {
 					lesson.sentences = res.rows;
@@ -262,7 +350,6 @@ class Popup extends ModTemplate {
 		this.sendPeerDatabaseRequestWithFilter(
 			'Popup',
 			`SELECT * FROM words WHERE lesson_id = ${lesson.id} ORDER BY display_order ASC`,
-			sql,
 			async (res) => {
 				if (res.rows) {
 					lesson.words = res.rows;
@@ -283,7 +370,6 @@ class Popup extends ModTemplate {
 		this.sendPeerDatabaseRequestWithFilter(
 			'Popup',
 			`SELECT * FROM questions WHERE lesson_id = ${lesson.id} ORDER BY display_order ASC`,
-			sql,
 			async (res) => {
 				if (res.rows) {
 					lesson.questions = res.rows;
@@ -302,6 +388,7 @@ class Popup extends ModTemplate {
 	returnLesson(lesson_id = null) {
 		for (let i = 0; i < this.lessons.length; i++) {
 			if (this.lessons[i].id == lesson_id) {
+				this.loadLesson(this.lessons[i]);				
 				return this.lessons[i];
 			}
 		}
@@ -469,6 +556,9 @@ class Popup extends ModTemplate {
 
 		return rows;
 	}
+
+
+
 }
 
 module.exports = Popup;

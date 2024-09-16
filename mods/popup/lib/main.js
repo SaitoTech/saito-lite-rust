@@ -10,23 +10,21 @@ class PopupMain {
 		this.name = 'PopupMain';
 
 		this.app.connection.on('popup-home-render-request', () => {
-			document.querySelector('.popup-content').innerHTML = '';
-			this.app.browser.addElementToSelector(
-				TestimonialsTemplate(),
-				'.popup-content'
-			);
+			this.render();
 		});
 
 		this.app.connection.on(
 			'popup-lessons-render-request',
 			(level = 'all') => {
-				document.querySelector('.popup-content').innerHTML = '';
+				document.querySelector('.saito-main').innerHTML = '';
+				document.querySelector('.saito-sidebar.right').innerHTML = '';
 				this.mod.manager.render(level);
 			}
 		);
 
 		this.app.connection.on('popup-lesson-render-request', (lesson_id) => {
-			document.querySelector('.popup-content').innerHTML = '';
+			document.querySelector('.saito-main').innerHTML = '';
+			document.querySelector('.saito-sidebar.right').innerHTML = '';
 			this.mod.lesson.render(lesson_id);
 		});
 
@@ -45,31 +43,43 @@ class PopupMain {
 
 		if (!document.querySelector('.saito-container')) {
 			this.app.browser.addElementToDom(PopupMainTemplate());
-			this.app.browser.addElementToSelector(
-				TestimonialsTemplate(),
-				'.saito-main'
-			);
+			this.app.browser.addElementToSelector(TestimonialsTemplate(), '.saito-main');
 		} else {
-			this.app.browser.replaceElementBySelector(
-				PopupMainTemplate(),
-				'.saito-container'
-			);
+			this.app.browser.replaceElementBySelector(PopupMainTemplate(), '.saito-container');
+			document.querySelector(".saito-main").innerHTML = "";
+			this.app.browser.addElementToSelector(TestimonialsTemplate(), '.saito-main');
 		}
-
-		//
-		// lesson menu
-		//
-		document.querySelectorAll('.option.lesson').forEach((el) => {
-			el.style.display = 'none';
-		});
-		document.querySelectorAll('.option.non-lesson').forEach((el) => {
-			el.style.display = 'block';
-		});
 
 		this.attachEvents();
 	}
 
-	attachEvents() {}
+	attachEvents() {
+
+                document.querySelector('.popup-home').onclick = (e) => {
+                        window.history.pushState({}, document.title, '/popup/lessons');
+                        history.replaceState(null, null, ' ');
+                        this.app.connection.emit('popup-home-render-request', 'all');
+                };
+
+                document.querySelector('.popup-lessons').onclick = (e) => {
+                        window.history.pushState({}, document.title, '/popup/lessons');
+                        history.replaceState(null, null, ' ');
+                        this.app.connection.emit('popup-lessons-render-request', 'all');
+                };
+
+                document.querySelector('.popup-tools').onclick = (e) => {
+                        window.history.pushState({}, document.title, '/popup/lessons');
+                        history.replaceState(null, null, ' ');
+                        this.app.connection.emit('popup-tools-render-request', 'all');
+                };
+
+                document.querySelector('.popup-notifications').onclick = (e) => {
+                        window.history.pushState({}, document.title, '/popup/review');
+                        history.replaceState(null, null, ' ');
+                        this.app.connection.emit('popup-notifications-render-request', 'all');
+                };
+
+	}
 }
 
 module.exports = PopupMain;

@@ -8,23 +8,23 @@ module.exports = () => {
 	  <div class="saito-menu">
             <ul class="saito-menu-list saito-sidebar-element">
 
-              <li class="redsquare-menu-home redsquare-page-active">
+              <li class="popup-home redsquare-menu-home redsquare-page-active">
                 <i class="fa-solid fa-house"></i>
                 <span>Home</span>
               </li>
 
-              <li class="redsquare-menu-lessons redsquare-page-active">
+              <li class="popup-lessons redsquare-menu-lessons redsquare-page-active">
                 <i class="fa-solid fa-graduation-cap"></i>
                 <span>Lessons</span>
               </li>
 
-              <li class="redsquare-menu-notifications">
+              <li class="popup-notifications redsquare-menu-notifications">
                 <i class="fas fa-bell"></i>
                 <span>Notifications</span>
                 <div class="saito-notification-dot" style="display: none;">0</div>
               </li>
 
-              <li class="redsquare-menu-profile">
+              <li class="popup-tools redsquare-menu-profile">
                 <i class="fas fa-user"></i>
                 <span>Tools</span>
               </li>

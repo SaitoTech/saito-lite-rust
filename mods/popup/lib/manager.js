@@ -1,14 +1,14 @@
-const LessonManagerTemplate = require('./manager.template');
+const LessonListTemplate = require('./manager-main.template');
+const LessonMenuTemplate = require('./manager-right.template');
 const TeaserTemplate = require('./teaser.template');
 const SaitoLoader = require('./../../../lib/saito/ui/saito-loader/saito-loader');
 
 class LessonManager {
-	constructor(app, mod, container = '.popup-content') {
+	constructor(app, mod, container = '.saito-main') {
 		this.app = app;
 		this.mod = mod;
 		this.container = container;
 
-		//This is an in-place loader... not super useful when content is overflowing off the bottom of the screen
 		this.loader = new SaitoLoader(app, mod, '#popup-intersection');
 
 		//////////////////////////////
@@ -37,13 +37,17 @@ class LessonManager {
 		//
 		this.intersectionObserver.disconnect();
 
-		this.app.browser.addElementToSelector(
-			LessonManagerTemplate(),
-			this.container
-		);
+		//
+		// insert list of lessons into .saito-main
+		//
+		document.querySelector(".saito-main").innerHTML = "";
+		document.querySelector(".saito-sidebar.right").innerHTML = "";
+		this.app.browser.addElementToSelector(LessonListTemplate(), ".saito-main");
+		this.app.browser.addElementToSelector(LessonMenuTemplate(), ".saito-sidebar.right");
+
 		this.showLoader();
 
-console.log("how many lessons: " + this.mod.lessons.length);
+console.log("HOW MANY LESSONS: " + this.mod.lessons.length);
 
 		for (let i = 0; i < this.mod.lessons.length; i++) {
 			if (level === 'all' || this.mod.lessons[i].userslug === level) {
@@ -54,9 +58,7 @@ console.log("how many lessons: " + this.mod.lessons.length);
 			}
 		}
 
-		setTimeout(() => {
-			this.hideLoader();
-		}, 50);
+		setTimeout(() => { this.hideLoader(); }, 50);
 
 		//
 		// enable intersection observer
@@ -65,6 +67,8 @@ console.log("how many lessons: " + this.mod.lessons.length);
 	}
 
 	attachEvents() {
+
+try {
 
 		document.querySelector('.absolute-beginners').onclick = (e) => {
 			window.history.pushState(
@@ -244,6 +248,11 @@ console.log("how many lessons: " + this.mod.lessons.length);
 				'quiz-night'
 			);
 		};
+
+} catch (err) {
+
+}
+
 	}
 
 	showLoader() {
