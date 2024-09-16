@@ -534,8 +534,8 @@
 }
 
 .presentation, .expanded-video {
-	resize: horizontal;
-	overflow: auto;
+	/* resize: horizontal;
+	overflow: auto; */
 	max-height: calc(100vh - 13rem);
 	min-width: 50vw;
 	max-width: 85vw;
@@ -587,6 +587,8 @@
 	opacity: 0;
 	animation: fade-in 0.5s ease-in;
 	animation-fill-mode: forwards;
+	overflow: auto;
+	resize: horizontal;
 }
 
 .side-videos .video-box-container-large {
