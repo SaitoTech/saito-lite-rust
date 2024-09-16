@@ -2077,14 +2077,8 @@ class Arcade extends ModTemplate {
 			this.app.connection.emit('arcade-invite-manager-render-request');
 
 			if (gameType == 'open') {
-				if (
-					this.app.browser.isMobileBrowser(navigator.userAgent) &&
-					this.app.modules.returnActiveModule().returnName() == 'Red Square'
-				) {
-					salert('Game invite created. Redirecting to arcade...');
-					setTimeout(function () {
-						window.location.href = '/arcade';
-					}, 2000);
+				if (this.app.browser.isMobileBrowser(navigator.userAgent) && !this.browser_active) {
+					siteMessage("Game invite created. Visit the Arcade to manage");
 				}
 				return;
 			}
