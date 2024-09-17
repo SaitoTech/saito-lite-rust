@@ -2,7 +2,7 @@
 	background: var(--background-saito-effects);
 	width: 75%;
 	/* true horizontal centering */
-	left: 50%;
+	left: 62%;
 	transform: translateX(-50%);
 	height: 3rem;
 	padding: 0 1rem;
@@ -37,3 +37,15 @@
 	}
 }
 
+
+@media screen and (max-width: 1200px) {
+	.saito-progress-bar-container{
+		left: 57%;
+	}
+}
+
+@media screen and (max-width: 720px) {
+	.saito-progress-bar-container{
+		left: 50%;
+	}
+}
