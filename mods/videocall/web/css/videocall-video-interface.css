@@ -534,8 +534,8 @@
 }
 
 .presentation, .expanded-video {
-	/* resize: horizontal;
-	overflow: auto; */
+	resize: horizontal;
+	overflow: auto;
 	max-height: calc(100vh - 13rem);
 	min-width: 50vw;
 	max-width: 85vw;
@@ -547,8 +547,6 @@
 	flex-direction: column;
 	gap: 1rem;
 	max-height: calc(100vh - 13rem);
-	/* overflow: auto;
-	resize: horizontal; */
 }
 
 .stun-chatbox .peer-call-list {
@@ -587,8 +585,6 @@
 	opacity: 0;
 	animation: fade-in 0.5s ease-in;
 	animation-fill-mode: forwards;
-	overflow: auto;
-	resize: horizontal;
 }
 
 .side-videos .video-box-container-large {
@@ -600,8 +596,6 @@
 	border: 2px solid var(--saito-border-color-dark);
 	border-radius: 0.5rem;
 	cursor: pointer;
-	/* resize: horizontal; */
-	/* overflow: auto; */
 }
 
 .presentation {
@@ -727,7 +721,6 @@
 	object-fit: cover;
 	border: none;
 	overflow: clip;
-	resize: horizontal;
 }
 
 .video-box-container-large.portrait video {
