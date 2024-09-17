@@ -1,6 +1,6 @@
 const SaitoOverlay = require('../../../../lib/saito/ui/saito-overlay/saito-overlay.js');
 const SaitoLoader = require('../../../../lib/saito/ui/saito-loader/saito-loader.js');
-const callScheduleJoinTemplate = require('./call-schedule-join.template.js');
+const CallScheduleJoinTemplate = require('./call-schedule-join.template.js');
 const CallScheduleCard = require('./call-schedule-card.js');
 
 class CallScheduleJoin {
@@ -18,13 +18,13 @@ class CallScheduleJoin {
     }
 
     render() {
-        this.keys = this.app.keychain.returnKeys({type: "scheduled_call"});
+        this.keys = this.app.keychain.returnKeys({type: "event", mod: "videocall"});
         if(this.keys.length === 0) {
             siteMessage("You don't have any saved meetings!")
             return;
         }
         if (!document.querySelector('.call-schedule-join-container')) {
-            this.overlay.show(callScheduleJoinTemplate(this.app, this.mod));
+            this.overlay.show(CallScheduleJoinTemplate(this.app, this.mod));
             this.renderCallSchedules();
             this.attachEvents(this.app, this.mod);
         }

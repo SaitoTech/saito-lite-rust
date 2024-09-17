@@ -5,12 +5,11 @@ const CallInterfaceVideo = require('./lib/components/call-interface-video');
 const CallInterfaceFloat = require('./lib/components/call-interface-float');
 const DialingInterface = require('./lib/components/dialer');
 const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
-
+const CallPreLauncher = require('./lib/components/call-interstitial');
 const StreamManager = require('./lib/StreamManager');
 const AppSettings = require('./lib/stun-settings');
 const HomePage = require("./index");
 const CallScheduleLaunch = require('./lib/components/call-schedule-launch');
-const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoScheduleWizard = require('../../lib/saito/ui/saito-calendar/saito-schedule-wizard');
 
 class Videocall extends ModTemplate {
@@ -261,9 +260,9 @@ class Videocall extends ModTemplate {
 					{
 						text: 'Saito Talk',
 						icon: this.icon,
-
 						callback: function (app, id) {
-							call_self.renderInto('.saito-overlay');
+							let preCheck = new CallPreLauncher(app, call_self);
+							preCheck.render();
 						}
 					}
 				];
@@ -281,32 +280,25 @@ class Videocall extends ModTemplate {
 						let defaultDate = {day, month, year}
 						let schedule_wizard = new SaitoScheduleWizard(app, call_self, '', defaultDate, "call")
 						schedule_wizard.callbackAfterSubmit =async function (app, mod, duration, description, utcStartTime) {
-							const call_id = await mod.generateRoomId();
-							const room_obj = {
-								call_id,
-								scheduled: true,
-								call_peers: [],
-								startTime: utcStartTime, 
-								duration,
-								description
-							};
-							let name = "scheduled_event"
-							let type = "Scheduled call";
-							const room_obj_stringified = JSON.stringify(room_obj);
-							 let call_link =  mod.generateCallLink(room_obj)
-							  app.keychain.addKey(call_id, { identifier: call_id, type, startTime:utcStartTime, duration, description, room_obj:room_obj_stringified, link:call_link, name });
-							  let event = {
-								"datetime": new Date(utcStartTime),
-								"duration": duration,
-								"description": description || "Scheduled Call",
-								"link": call_link,
-								"type": type,
-								"name": name,
-								"id": call_id
-							  };  
-							 app.connection.emit('calendar-render-request', event)
-							await navigator.clipboard.writeText(call_link);
-							siteMessage('Videocall event scheduled successfully', 1500);
+		                    //Creates public key for clal
+		                    const call_id = await mod.generateRoomId();
+
+		                    const room_obj = {
+		                        call_id,
+		                        scheduled: true,
+		                        call_peers: [],
+		                        startTime: utcStartTime, 
+		                        duration,
+		                        description
+		                    };
+		        
+		                    const room_obj_stringified = JSON.stringify(room_obj);
+		                    let call_link =  mod.generateCallLink(room_obj)
+		                    app.keychain.addKey(call_id, { identifier: "Video Call", startTime:utcStartTime, duration, description });
+		        
+		                    app.connection.emit('calendar-refresh-request');
+		                    await navigator.clipboard.writeText(call_link);
+		                    siteMessage('Invitation link copied to clipboard', 3500);
 						}
 						schedule_wizard.render();
 
@@ -1061,8 +1053,8 @@ class Videocall extends ModTemplate {
 		let pk = this.app.crypto.generateKeys();
 		let id = this.app.crypto.generatePublicKey(pk);
 		this.app.keychain.addWatchedPublicKey(id);
-		this.app.keychain.addKey(id, { identifier: id, privateKey: pk, type: "scheduled_call" });
-		return id
+		this.app.keychain.addKey(id, { identifier: id, privateKey: pk, type: "event", mod: "videocall" });
+		return id;
 	}
 
 	generateCallLink(room_obj) {

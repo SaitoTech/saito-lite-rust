@@ -246,16 +246,7 @@ class Limbo extends ModTemplate {
 							let name = "scheduled_event"
 							let type = "Scheduled cast";
 							app.keychain.addKey(cast_id, { type,startTime: utcStartTime, duration, description, room_obj: cast_obj_stringified, link: cast_link, name });
-							let event = {
-								"datetime": new Date(utcStartTime),
-								"duration": duration,
-								"description": description || "Scheduled Cast",
-								"link": cast_link,
-								"type": type,
-								"name": name,
-								"id": cast_id
-							};
-							app.connection.emit('calendar-render-request', event)
+							app.connection.emit('calendar-refresh-request');
 							siteMessage('Swarmcast event scheduled successfully', 1500);
 						}
 						schedule_wizard.render();

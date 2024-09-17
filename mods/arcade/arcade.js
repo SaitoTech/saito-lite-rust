@@ -8,7 +8,7 @@ const InviteManager = require('./lib/invite-manager');
 const GameManager = require('./lib/game-manager');
 const GameWizard = require('./lib/overlays/game-wizard');
 const GameSelector = require('./lib/overlays/game-selector');
-const GameScheduler = require('./lib/overlays/game-scheduler');
+//const GameScheduler = require('./lib/overlays/game-scheduler');
 const GameInvitationLink = require('./../../lib/saito/ui/modals/saito-link/saito-link');
 const Invite = require('./lib/invite');
 const JoinGameOverlay = require('./lib/overlays/join-game');
@@ -160,7 +160,7 @@ class Arcade extends ModTemplate {
 			this.wizard = new GameWizard(app, this, null, {});
 			this.game_selector = new GameSelector(app, this, {});
 			//We create this here so it can respond to events
-			this.game_scheduler = new GameScheduler(app, this, {});
+			//this.game_scheduler = new GameScheduler(app, this, {});
 
 			//
 			// my games stored in local wallet
