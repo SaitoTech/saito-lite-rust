@@ -225,32 +225,9 @@ class Limbo extends ModTemplate {
 					text: 'Schedule a swarmcast',
 					icon: this.icon_fa,
 					callback: function (app, day, month, year) {
-						let defaultDate = { day, month, year }
-						let schedule_wizard = new SaitoScheduleWizard(app, mod_self, '', defaultDate, "swarmcast")
-						schedule_wizard.callbackAfterSubmit = async function (app, mod, duration, description, utcStartTime) {
-							const cast_obj = {
-								startTime: utcStartTime,
-								duration,
-								description
-							};
-							const cast_obj_stringified = JSON.stringify(cast_obj);
-							let data = {
-								name: mod_self.returnName(),
-								path: `/${mod_self.returnSlug()}/`,
-								dream: app.crypto.stringToBase64(mod_self.publicKey)
-							};
-							let link_obj = new InvitationLink(app, mod_self, data);
-							link_obj.buildLink()
-							let cast_link = link_obj.invite_link;
-							let cast_id = app.crypto.generateRandomNumber().substring(0, 12);
-							let name = "scheduled_event"
-							let type = "Scheduled cast";
-							app.keychain.addKey(cast_id, { type,startTime: utcStartTime, duration, description, room_obj: cast_obj_stringified, link: cast_link, name });
-							app.connection.emit('calendar-refresh-request');
-							siteMessage('Swarmcast event scheduled successfully', 1500);
-						}
-						schedule_wizard.render();
-
+						//>>>>>>>>>>>>>>>>>>>>
+						const wizard = new DreamWizard(app, mod_self, {defaultDate: {day, month, year}});
+						wizard.render();
 
 					}
 				}
@@ -1639,6 +1616,43 @@ class Limbo extends ModTemplate {
 
 	// 
 	scheduleCast(options){
+
+		const schedule_wizard = new SaitoScheduleWizard(this.app, this);
+
+		schedule_wizard.title = options.identifier;
+		schedule_wizard.description = options.description;
+		if (options?.defaultDate){
+			schedule_wizard.defaultDate = options.defaultDate;
+		}
+
+		schedule_wizard.callbackAfterSubmit = async (utcStartTime, duration, description = "", title = "") => {
+			const cast_obj = {
+				startTime: utcStartTime,
+				duration,
+				description
+			};
+
+			let pk = this.app.crypto.generateKeys();
+			let id = this.app.crypto.generatePublicKey(pk);
+			this.app.keychain.addWatchedPublicKey(id);
+			this.app.keychain.addKey(id, { identifier: title || "Swarmcast", privateKey: pk, type: "event", mod: "swarmcast", startTime: utcStartTime, duration, description });
+
+			const cast_obj_stringified = JSON.stringify(cast_obj);
+			let data = {
+				name: this.returnName(),
+				path: `/${this.returnSlug()}/`,
+				dream: this.app.crypto.stringToBase64(this.publicKey)
+			};
+			let link_obj = new InvitationLink(this.app, this, data);
+			link_obj.buildLink()
+			let cast_link = link_obj.invite_link;
+
+			this.app.connection.emit('calendar-refresh-request');
+            await navigator.clipboard.writeText(cast_link);
+            siteMessage('Invitation link copied to clipboard', 3500);
+
+		}
+		schedule_wizard.render();
 
 	}
 

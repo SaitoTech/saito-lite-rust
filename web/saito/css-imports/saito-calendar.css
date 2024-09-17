@@ -43,8 +43,12 @@
 	font-size: 1.5rem;
 	color: var(--saito-font-color);
 	font-weight: bold;
-    max-height: 25rem;
+    max-height: 50vh;
 	overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
 }
 
 .saito-calendar-events-details#tab2 {
@@ -83,14 +87,6 @@
     display: block;
 }
 
-.saito-calendar-events {
-    /* width: 40rem; */
-    /* height: 35rem; */
-    padding: 0px;
-    margin: 0px;
-    border: var(--border-thickness-calendar-event-inner) solid var(--border-color-calendar-event-inner);
-}
-
 .saito-calendar-events-date {
   float: right;
   padding: 0.5rem;
@@ -104,10 +100,10 @@
 
 
 .saito-calendar-event {
-    margin-bottom: 1.5rem; 
     padding: 1rem;
     border-radius: 0.5rem; 
     border: 1px solid #ccc; 
+    width: 95%;
 }
 
 .saito-calendar-month {

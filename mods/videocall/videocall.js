@@ -277,11 +277,17 @@ class Videocall extends ModTemplate {
 					text: 'Schedule a call',
 					icon: this.icon,
 					callback: function (app, day, month, year) {
-						let defaultDate = {day, month, year}
-						let schedule_wizard = new SaitoScheduleWizard(app, call_self, '', defaultDate, "call")
-						schedule_wizard.callbackAfterSubmit =async function (app, mod, duration, description, utcStartTime) {
+
+						let schedule_wizard = new SaitoScheduleWizard(app, call_self);
+
+						schedule_wizard.defaultDate = {day, month, year}
+
+						schedule_wizard.callbackAfterSubmit =async function (utcStartTime, duration, description = "", title = "") {
 		                    //Creates public key for clal
-		                    const call_id = await mod.generateRoomId();
+		                    const call_id = await call_self.generateRoomId();
+
+		                    call_self.app.keychain.addKey(call_id, { identifier: title || "Video Call", startTime: utcStartTime, duration, description });
+		                    call_self.app.connection.emit('calendar-refresh-request');
 
 		                    const room_obj = {
 		                        call_id,
@@ -292,11 +298,7 @@ class Videocall extends ModTemplate {
 		                        description
 		                    };
 		        
-		                    const room_obj_stringified = JSON.stringify(room_obj);
-		                    let call_link =  mod.generateCallLink(room_obj)
-		                    app.keychain.addKey(call_id, { identifier: "Video Call", startTime:utcStartTime, duration, description });
-		        
-		                    app.connection.emit('calendar-refresh-request');
+		                    let call_link =  call_self.generateCallLink(room_obj)
 		                    await navigator.clipboard.writeText(call_link);
 		                    siteMessage('Invitation link copied to clipboard', 3500);
 						}

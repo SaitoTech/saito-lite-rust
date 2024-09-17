@@ -31,10 +31,10 @@ class CallPreLauncher {
                 this.overlay.close();
 
                 const callScheduleWizard = new CallScheduleWizard(this.app, this.mod)
-                callScheduleWizard.callbackAfterSubmit = async function (app, mod, duration, description, utcStartTime) {
+                callScheduleWizard.callbackAfterSubmit = async (utcStartTime, duration, description = "", title = "") => {
 
                     //Creates public key for clal
-                    const call_id = await mod.generateRoomId();
+                    const call_id = await this.mod.generateRoomId();
 
                     const room_obj = {
                         call_id,
@@ -46,10 +46,10 @@ class CallPreLauncher {
                     };
         
                     const room_obj_stringified = JSON.stringify(room_obj);
-                    let call_link =  mod.generateCallLink(room_obj)
-                    app.keychain.addKey(call_id, { identifier: "Video Call", startTime:utcStartTime, duration, description });
+                    let call_link =  this.mod.generateCallLink(room_obj)
+                    this.app.keychain.addKey(call_id, { identifier: title || "Video Call", startTime:utcStartTime, duration, description });
         
-                    app.connection.emit('calendar-refresh-request');
+                    this.app.connection.emit('calendar-refresh-request');
                     await navigator.clipboard.writeText(call_link);
                     siteMessage('Invitation link copied to clipboard', 3500);
                 }
