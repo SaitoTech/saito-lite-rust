@@ -222,14 +222,14 @@ class StreamManager {
     });
 
 
-    // app.connection.on(
-    //   'stun-update-connection-message',
-    //   (peerId, connectionState) => {
-    //     if (this.active) {
-    //       this.broadcastPeerList();
-    //     }
-    //   }
-    // );
+    app.connection.on(
+      'stun-update-connection-message',
+      (peerId, connectionState) => {
+        if (this.active) {
+          this.broadcastPeerList();
+        }
+      }
+    );
 
     app.connection.on('remove-remote-stream', peerId => {
       this.removePeer(peerId, "was kicked out")
