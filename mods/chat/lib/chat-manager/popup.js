@@ -846,8 +846,10 @@ class ChatPopup {
 			img.src = resizedImageUrl;
 
 			this.overlay.show(
-				`<img class="chat-popup-img-enhanced" src="${resizedImageUrl}" >
-				<div id="photo-preview-upload" class="saito-button-primary">Upload</div>`
+				`<div class="chat-popup-img-overlay-box">
+				   <img class="chat-popup-img-enhanced" src="${resizedImageUrl}" >
+				   <div id="photo-preview-upload" class="saito-button-primary">Upload</div>
+				</div>`
 			);
 
 			document.getElementById("photo-preview-upload").onclick = (e) => {
