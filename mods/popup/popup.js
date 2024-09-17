@@ -149,7 +149,7 @@ class Popup extends ModTemplate {
 		//
 		if (this.app.BROWSER == 1) {
 
-			switch_display_mode = function (
+			save_display_mode = function (
 				mode = ""
 			) {
 				if (mode === "simplified") {
@@ -479,6 +479,19 @@ class Popup extends ModTemplate {
 		});
 	}
 
+	updatePreference(field1, value1) {
+
+		if (field1 == "display") {
+			if (value1 == "simplified") { this.app.options.popup.display.simplified = 1; }
+			if (value1 == "traditional") { this.app.options.popup.display.traditional = 1; }
+			if (value1 == "pinyin") { this.app.options.popup.display.pinyin = 1; }
+			if (value1 == "english") { this.app.options.popup.display.english = 1; }
+			if (value1 == "part-of-speech") { this.app.options.popup.display.part_of_speech = 1; }
+		}
+
+		return 1;
+	}
+
 	save() {
 		if (!this.app.options?.popup) {
 			this.app.options.popup = {};
@@ -492,24 +505,32 @@ class Popup extends ModTemplate {
 			this.app.options.popup.review.enable = 1;
 		}
 
-		this.saveOptions();
+		this.app.storage.saveOptions();
 	}
 
 
+
+	/////////////////////////
+	// in-browser database //
+	/////////////////////////
 	async deleteDatabase() {
 
-		if (!this.localDB) {
-			this.localDB = new JsStore.Connection(
-                                new Worker('/saito/lib/jsstore/jsstore.worker.js')
-                        );
+		if (this.app.BROWSER) {
+
+			if (!this.localDB) {
+				this.localDB = new JsStore.Connection(
+                	                new Worker('/saito/lib/jsstore/jsstore.worker.js')
+                	        );
+			}
+
+			this.localDB.dropDb("popup").then(function() {
+				console.log('Popup Database deleted successfully');
+			}).catch(function(error) {
+				console.error('Error deleting the database:', error);
+			});
+
+
 		}
-
-		this.localDB.dropDb("popup").then(function() {
-			console.log('Popup Database deleted successfully');
-		}).catch(function(error) {
-			console.error('Error deleting the database:', error);
-		});
-
 		return;
 	}
 
@@ -604,6 +625,8 @@ class Popup extends ModTemplate {
 
 		return rows;
 	}
+
+	
 
 }
 

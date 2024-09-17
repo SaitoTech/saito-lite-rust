@@ -37,14 +37,14 @@ class PopupLesson {
 		//
 		this.mod.loadLessonSentences(this.lesson, () => {
 		  let html = '<div class="lesson-section header">transcript</div>';
-		  html += '<table>';
 		  if (this.lesson.sentences) {
+		    html += '<table style="width:100%;max-width:1400px;">';
 		    for (let i = 0; i < this.lesson.sentences.length; i++) {
 		      html += SentenceTemplate(this.lesson, this.lesson.sentences[i]);
 		    }
+		    html += '</table>';
+		    this.app.browser.addElementToSelector(html, '.lesson-section.transcript');
 		  }
-		  html += '</table>';
-		  this.app.browser.addElementToSelector(html, '.lesson-section.transcript');
 		});
 
 
@@ -52,15 +52,15 @@ class PopupLesson {
 		// words
 		//
 		this.mod.loadLessonWords(this.lesson, () => {
-		  let html = '<div class="lesson-section header">vocabulary</div>';
-		  html += '<table>';
 		  if (this.lesson.words) {
-		  for (let i = 0; i < this.lesson.words.length; i++) {
-		    html += WordTemplate(this.lesson, this.lesson.words[i]);
+		    let html = '<div class="lesson-section header">vocabulary</div>';
+		    html += '<table style="width:100%;max-width:1400px;">';
+		    for (let i = 0; i < this.lesson.words.length; i++) {
+		      html += WordTemplate(this.lesson, this.lesson.words[i]);
+		    }
+		    html += '</table>';
+		    this.app.browser.addElementToSelector(html, '.lesson-section.vocabulary');
 		  }
-		  }
-		  html += '</table>';
-		  this.app.browser.addElementToSelector(html, '.lesson-section.vocabulary');
 		});
 	
 
@@ -69,14 +69,14 @@ class PopupLesson {
 		//
 /***
 		this.mod.loadLessonQuestions(this.lesson, () => {
-		  let html = '<div class="lesson-section header">comprehension:</div>';
-		  html += '<table>';
 		  if (this.lesson.questions) {
+		    let html = '<div class="lesson-section header">comprehension:</div>';
+		    html += '<table style="width:100%;max-width:1400px;">';
 		    for (let i = 0; i < this.lesson.questions.length; i++) {
 		      html += QuestionTemplate(this.lesson, this.lesson.questions[i]);
 		    }
+	 	    html += '</table>';
 		  }
-	 	  html += '</table>';
 		  this.app.browser.addElementToSelector(html, '.lesson-section.questions');
 		});
 ***/	

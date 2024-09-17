@@ -1,6 +1,13 @@
 module.exports = (lesson, sentence) => {
+
 	let s = sentence.sentence_text.replaceAll('\\', '');
 	let p = sentence.speaker_text.replaceAll('\\', '');
+
+	try {
+		s = switch_display_mode_in_string(s, "traditional", "simplified");
+		p = switch_display_mode_in_string(p, "traditional", "simplified");
+	} catch (err) {
+	}
 
 	return `
     <tr class="sentence">
@@ -13,4 +20,4 @@ module.exports = (lesson, sentence) => {
       </td>
     </tr>
   `;
-};
+}; 

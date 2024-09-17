@@ -10,6 +10,7 @@ audio {
 }
 
 .lesson-header {
+	margin-left: 2rem;
 	font-size: 2.4rem;
 	cursor: pointer;
 }

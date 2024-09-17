@@ -1,26 +1,8 @@
-function switch_display_mode(dmode, elementID) {
-	if (dmode == 'simplified' && existing_preference == 'simplified') {
-		return;
-	}
-	if (dmode == 'traditional' && existing_preference == 'traditional') {
-		return;
-	}
-	if (dmode == 'pinyin' && existing_preference == 'pinyin') {
-		return;
-	}
 
-	if (dmode == 'pinyin') {
-		if (document.getElementById('display_pinyin').checked == true) {
-			document.getElementById('display_pinyin').checked = false;
-			toggle_pinyin();
-		}
-	}
 
-	// Switch Everything into Pinyin
-	var fulltext = document.getElementById(elementID).innerHTML;
-	if (document.all) {
-		fulltext = fulltext.replace(/SPAN/g, 'span');
-	}
+
+function switch_display_mode_in_string(fulltext="", dmode="simplified", existing_preference="simplified") {
+
 	fulltext = fulltext.replace(/> </g, '><');
 	var new_fulltext = '';
 
@@ -33,8 +15,13 @@ function switch_display_mode(dmode, elementID) {
 		new_fulltext += entries[0];
 	}
 
+	if (entries.length > starting_position) {
+		while (entries[starting_position] === "") {
+			starting_position++;
+		}
+	}
+
 	for (var i = starting_position; i < entries.length; i++) {
-		// adso_ for our markup, event for non-blank popups
 		if (entries[i].indexOf('event') != -1) {
 			var post = '';
 			try {
@@ -53,7 +40,7 @@ function switch_display_mode(dmode, elementID) {
 			var visible_field = tfld3;
 
 			// Update to avoid breaking non-converting entries
-			if (tfld3 == null && tfld4 == null && tfld6 == null) {
+			if (tfld3 === null && tfld4 === null && tfld6 === null) {
 				new_fulltext += '<span' + entries[i] + post;
 			} else {
 				if (dmode == 'simplified') {
@@ -221,7 +208,24 @@ function switch_display_mode(dmode, elementID) {
 		}
 	}
 
-	// rewrite the whole page
-	existing_preference = dmode;
-	document.getElementById(elementID).innerHTML = new_fulltext;
+	return new_fulltext;
+
 }
+
+function switch_display_mode(dmode="simplified") {
+
+	document.querySelectorAll(':has(> span)').forEach((el) => {
+	  let x = el.innerHTML.replace(/SPAN/g, 'span');
+	  el.innerHTML = switch_display_mode_in_string(x, dmode);
+	});
+
+	save_display_mode(dmode);
+
+	return true;
+
+}
+
+// overrideen in popup.js
+function save_display_mode(dmode="") {
+}
+

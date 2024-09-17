@@ -13,24 +13,26 @@ module.exports = (lesson) => {
      </div>
 
 
-	<form name="text_controls">	
-	<br>
-	<input type="radio" name="display_select" onclick="switch_display_mode('simplified')" value="simplified" checked=""> simplified <span class="red">漢字</span>
-	<br>
-	<input type="radio" name="display_select" onclick="switch_display_mode('traditional)" value="traditional"> traditional <span class="red">漢字</span>
-	</form>
+     <form class="text_controls">	
 
-	<p> </p>
+	<br />
+	<input type="radio" name="display_select" onclick="switch_display_mode('simplified')" value="simplified" checked=""> simplified <div style="display:inline" class="red">漢字</div>
 
-	<div style="margin-top:15px;margin-bottom:15px;margin-left:30px;clear:both;">
+	<br />
+	<input type="radio" name="display_select" onclick="switch_display_mode('traditional')" value="traditional"> traditional <div style="display:inline" class="red">漢字</div>
+      </form>
+
+      <form class="vocab_controls">
+
+	<br />
 	<input type="checkbox" id="display_english" onclick="switch_display_mode('english')" checked=""> display translation
-	<br>
+
+	<br />
 	<input type="checkbox" id="display_pinyin" onclick="switch_display_mode('pinyin')" checked=""> display pinyin
-	
-	</div>
+
+      </div>
 
 
-	</div>
 
    `;
 };
