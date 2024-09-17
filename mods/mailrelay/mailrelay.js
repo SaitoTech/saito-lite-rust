@@ -1,6 +1,6 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
 const PeerService = require('saito-js/lib/peer_service').default;
-const os = require('os');
+//const os = require('os');
 
 class MailRelay extends ModTemplate {
 	constructor(app) {
@@ -69,10 +69,11 @@ class MailRelay extends ModTemplate {
 		email.bcc = '';
 		email.subject = 'Saito Network Initialised';
 		if (app.options.server.endpoint != null) {
-			email.text = app.options.server.endpoint.host + ' has spun up on ' + os.hostname + '.';
+			//email.text = app.options.server.endpoint.host + ' has spun up on ' + os.hostname + '.';
+			email.text = app.options.server.endpoint.host + ' has spun up';
 		} else {
-			email.text =
-				'Just a quick note to let you know that test net just spun up on ' + os.hostname + '.';
+			//email.text = 'Just a quick note to let you know that test net just spun up on ' + os.hostname + '.';
+			email.text = 'Just a quick note to let you know that test net just spun up.';
 		}
 		email.ishtml = false;
 		email.attachments = '';
