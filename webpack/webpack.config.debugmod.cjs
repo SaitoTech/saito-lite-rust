@@ -8,7 +8,11 @@ let minimize = false;
 let devtool = undefined;
 // let entrypoint = "./../bundler/default/mods/debug/debug.js";
 //let entrypoint = "./../mods/poker/poker.js";
-let entrypoint = "./../mods/settlers/settlers.js";
+//let entrypoint = "./../mods/solitrio/solitrio.js";
+//let entrypoint = "./../mods/settlers/settlers.js";
+//let entrypoint = "./../mods/twilight/twilight.js";
+let entrypoint = "./../mods/arcade/arcade.js";
+//let entrypoint = "./../mods/redsquare/redsquare.js";
 //let entrypoint = "./../mods/beleaguered/beleaguered.js";
 let outputfile = "dyn.module.js";
 

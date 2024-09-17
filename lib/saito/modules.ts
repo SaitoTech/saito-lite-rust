@@ -5,7 +5,8 @@ import path from 'path';
 import fs from 'fs';
 import { fromBase58 } from 'saito-js/lib/util';
 // @ts-ignore
-import { DYN_MOD_WEB,DYN_MOD_NODE } from '../dyn_mod';
+import { DYN_MOD_WEB_1,DYN_MOD_NODE_1 } from '../dyn_mod_1';
+import { DYN_MOD_WEB_2,DYN_MOD_NODE_2 } from '../dyn_mod_2';
 import SaitoBlock from 'saito-js/lib/block';
 
 // import SaitoJs from 'saito-js/saito';
@@ -194,8 +195,9 @@ class Mods {
 		// try {
 			if (this.app.BROWSER === 1) {
 				console.log('loading dyn module...');
-				console.log("DYN_MOD_WEB: ", DYN_MOD_WEB);
-				let moduleCode = this.app.crypto.base64ToString(DYN_MOD_WEB);
+				console.log("DYN_MOD_WEB_2: ", DYN_MOD_WEB_2);
+				let moduleCode = this.app.crypto.base64ToString(DYN_MOD_WEB_2);
+				let moduleCode_2 = this.app.crypto.base64ToString(DYN_MOD_WEB_1);
 
 				console.log('module web code: ', moduleCode);
 
@@ -205,9 +207,9 @@ class Mods {
 				self["saito-js/lib/block"]=require("saito-js/lib/block").default;
 
 				let mod = eval(moduleCode);
-				console.log("mod : ",typeof mod);
-				// @ts-ignore
+				let mod_2 = eval(moduleCode_2);
 				let m = new window.Dyn(this.app);
+
 				const current_url = window.location.toString();
 				const myurl = new URL(current_url);
 				const myurlpath = myurl.pathname.split('/');
@@ -224,9 +226,14 @@ class Mods {
 				}
 				this.mods.push(m);
 
+
+				
+				let m_2 = new window.Dyn(this.app);
+				this.mods.push(m_2);
+
 			} else {
 				// console.log('loading dyn module...');
-				// let moduleCode = this.app.crypto.base64ToString(DYN_MOD_NODE);
+				// let moduleCode = this.app.crypto.base64ToString(DYN_MOD_NODE_1);
 
 				// console.log("module node code: ", moduleCode);
 

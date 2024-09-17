@@ -91,10 +91,6 @@ export default class Network {
 		for (let i = 0; i < this.app.modules.mods.length; i++) {
 			let module = this.app.modules.mods[i];
 			let modservices: PeerService[] = module.returnServices();
-
-
-			console.log('modservices: ', modservices);
-
 			for (let k = 0; k < modservices.length; k++) {
 				my_services.push(modservices[k]);
 			}
