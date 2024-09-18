@@ -52,7 +52,9 @@ class Relay extends ModTemplate {
       if (this.stun?.hasConnection(publicKey)){
         app.connection.emit("relay-is-online", publicKey, true);
       }else{
-        this.sendRelayMessage([publicKey], "ping", {}); 
+        this.sendRelayMessage([publicKey], "ping", {
+          status: this.busy
+        }); 
       }
     });
 
@@ -178,18 +180,18 @@ class Relay extends ModTemplate {
 
     try {
       if (tx.isTo(this.publicKey)) {
-        if (message.request === "ping") {
-          await this.sendRelayMessage(tx.from[0].publicKey, "echo", {
-            status: this.busy,
-          });
-          return 0;
-        }
 
-        if (message.request === "echo") {
+        if (message.request === "echo" || message.request === "ping") {
           if (message.data.status) {
             app.connection.emit("relay-is-busy", tx.from[0].publicKey);
           } else {
             app.connection.emit("relay-is-online", tx.from[0].publicKey);
+          }
+
+          if (message.request === "ping"){
+            await this.sendRelayMessage(tx.from[0].publicKey, "echo", {
+              status: this.busy,
+            });
           }
           return 0;
         }
