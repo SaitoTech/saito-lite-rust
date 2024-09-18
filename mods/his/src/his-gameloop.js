@@ -687,8 +687,10 @@ console.log("winter_retreat_move_units_to_capital_faction_array 2...");
 console.log("winter_retreat_move_units_to_capital_faction_array 2 2...");
 	    let obj = document.querySelector(".theses_overlay");
 console.log("winter_retreat_move_units_to_capital_faction_array 2 3...");
-	    if (obj.style) { 
-	      if (obj.style.display != "none") { return 0; }
+	    if (obj) { 
+	      if (obj.style) { 
+	        if (obj.style.display != "none") { return 0; }
+	      }
 	    }
 	  }
 console.log("winter_retreat_move_units_to_capital_faction_array 3...");

@@ -12907,7 +12907,10 @@ console.log("we have removed philip and redisplayed the space...");
 	  let faction = mv[1];
 	  let num = mv[2];
 
-	  if (parseInt(num) == 5) {
+	  if (!his_self.game.state.peasants_war) {
+	    his_self.game.state.peasants_war = [];
+	  }
+	  if (parseInt(num) == 1) {
 	    his_self.game.state.peasants_war = [];
 	  }
 
@@ -23191,8 +23194,10 @@ console.log("winter_retreat_move_units_to_capital_faction_array 2...");
 console.log("winter_retreat_move_units_to_capital_faction_array 2 2...");
 	    let obj = document.querySelector(".theses_overlay");
 console.log("winter_retreat_move_units_to_capital_faction_array 2 3...");
-	    if (obj.style) { 
-	      if (obj.style.display != "none") { return 0; }
+	    if (obj) { 
+	      if (obj.style) { 
+	        if (obj.style.display != "none") { return 0; }
+	      }
 	    }
 	  }
 console.log("winter_retreat_move_units_to_capital_faction_array 3...");
