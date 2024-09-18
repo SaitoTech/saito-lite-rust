@@ -1,4 +1,8 @@
 
+.saito-main {
+	margin-top:1.5rem;
+}
+
 .popup-container {
 	position: relative;
 	top: var(--saito-header-height);

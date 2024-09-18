@@ -21,11 +21,11 @@
 	width: 100%;
 }
 
-.manager .menu ul {
+.saito-sidebar.right ul {
 	padding-left: 2rem;
 }
 
-.manager .menu ul li {
+.manager-menu {
 	cursor: pointer;
 }
 

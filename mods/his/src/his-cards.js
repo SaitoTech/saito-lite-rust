@@ -9198,7 +9198,10 @@ console.log("we have removed philip and redisplayed the space...");
 	  let faction = mv[1];
 	  let num = mv[2];
 
-	  if (parseInt(num) == 5) {
+	  if (!his_self.game.state.peasants_war) {
+	    his_self.game.state.peasants_war = [];
+	  }
+	  if (parseInt(num) == 1) {
 	    his_self.game.state.peasants_war = [];
 	  }
 

@@ -70,11 +70,12 @@ class GameWizard {
 		//Test if we should include Advanced Options
 		let advancedOptions = this.game_mod.returnAdvancedOptions();
 		if (!advancedOptions) {
-			if (document.getElementById('arcade-advance-opt-text')) {
-				document.getElementById('arcade-advance-opt-text').style.visibility =
+			if (document.querySelector('.arcade-advance-opt-text')) {
+				document.querySelector('.arcade-advance-opt-text').style.visibility =
 					'hidden';
 			}
 		} else {
+			console.log("Advanced Options!: ", advancedOptions);
 			advancedOptions = `<div id="advanced-options-overlay-container">${advancedOptions}</div>`;
 			this.meta_overlay = new SaitoOverlay(
 				this.app,

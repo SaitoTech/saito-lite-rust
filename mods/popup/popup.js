@@ -25,22 +25,6 @@ class Popup extends ModTemplate {
 
 		// in browser db
 		this.localDB = null;
-		this.schema = [
-			'id',
-			'user_id',
-			'publickey',
-			'owner',
-			'sig',
-			'field1',
-			'field2',
-			'field3',
-			'block_id',
-			'block_hash',
-			'created_at',
-			'updated_at',
-			'tx',
-			'preserve'
-		];
 
 		this.social = {
 			twitter_card: 'summary',
@@ -86,6 +70,7 @@ class Popup extends ModTemplate {
 		//
 		// create in-browser DB
 		//
+		await this.deleteDatabase();
 		await this.initializeDatabase();
 
 		//
@@ -129,6 +114,26 @@ class Popup extends ModTemplate {
 
 		await super.render();
 
+	
+		let path = window.location.pathname;
+		let x = path.split("/");
+		if (path.length > 1) {
+			if (path[1] == "lessons") {
+				if (path.length > 2) {
+					if (path[2] == "absolute-beginners") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+					if (path[2] == "elementary") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+					if (path[2] == "intermediate") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+					if (path[2] == "advanced") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+					if (path[2] == "film-friday") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+					if (path[2] == "quiz-night") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+				} else {
+					this.app.connection.emit('popup-lessons-render-request', ("all"));
+				}
+				return;
+			}
+		}
+
+
 		this.app.connection.emit('popup-home-render-request');
 	}
 
@@ -143,6 +148,88 @@ class Popup extends ModTemplate {
 		// override functions called by non-Saito JS
 		//
 		if (this.app.BROWSER == 1) {
+
+			save_display_mode = function (
+				mode = ""
+			) {
+				if (mode === "simplified") {
+					if (popup_self.app.options.popup.display.simplified == 1) {
+						popup_self.app.options.popup.display.simplified = 0;
+						popup_self.app.options.popup.display.traditional = 1;
+					} else {
+						popup_self.app.options.popup.display.simplified = 1;
+						popup_self.app.options.popup.display.traditional = 0;
+					}
+				}
+				if (mode === "traditional") {
+					if (popup_self.app.options.popup.display.traditional == 1) {
+						popup_self.app.options.popup.display.traditional = 0;
+						popup_self.app.options.popup.display.simplified = 1;
+					} else {
+						popup_self.app.options.popup.display.traditional = 1;
+						popup_self.app.options.popup.display.simplified = 0;
+					}
+				}
+				if (mode === "pinyin") {
+					if (popup_self.app.options.popup.display.pinyin == 1) {
+						popup_self.app.options.popup.display.pinyin = 0;
+					} else {
+						popup_self.app.options.popup.display.pinyin = 1;
+					}
+				}
+				if (mode === "english") {
+					if (popup_self.app.options.popup.display.english == 1) {
+						popup_self.app.options.popup.display.english = 0;
+					} else {
+						popup_self.app.options.popup.display.english = 1;
+					}
+				}
+
+				popup_self.save();
+			};
+
+
+			enable_display_mode = function (
+				mode = ""
+			) {
+				if (mode === "field1") {
+					if (popup_self.app.options.popup.vocab.field1 == 1) {
+						popup_self.app.options.popup.vocab.field1 = 0;
+					} else {
+						popup_self.app.options.popup.vocab.field1 = 1;
+					}
+				}
+				if (mode === "field2") {
+					if (popup_self.app.options.popup.vocab.field2 == 1) {
+						popup_self.app.options.popup.vocab.field2 = 0;
+					} else {
+						popup_self.app.options.popup.vocab.field2 = 1;
+					}
+				}
+				if (mode === "field3") {
+					if (popup_self.app.options.popup.vocab.field3 == 1) {
+						popup_self.app.options.popup.vocab.field3 = 0;
+					} else {
+						popup_self.app.options.popup.vocab.field3 = 1;
+					}
+				}
+				if (mode === "field4") {
+					if (popup_self.app.options.popup.vocab.field4 == 1) {
+						popup_self.app.options.popup.vocab.field4 = 0;
+					} else {
+						popup_self.app.options.popup.vocab.field4 = 1;
+					}
+				}
+				if (mode === "field5") {
+					if (popup_self.app.options.popup.vocab.field5 == 1) {
+						popup_self.app.options.popup.vocab.field5 = 0;
+					} else {
+						popup_self.app.options.popup.vocab.field5 = 1;
+					}
+				}
+				popup_self.save();
+			};
+
 			add_to_vocab = function (
 				field1 = '',
 				field2 = '',
@@ -151,6 +238,13 @@ class Popup extends ModTemplate {
 				field5 = '',
 				label = ''
 			) {
+
+				if (field1 === "unknown") { field1 = ""; }	
+				if (field2 === "unknown") { field2 = ""; }	
+				if (field3 === "unknown") { field3 = ""; }	
+				if (field4 === "unknown") { field4 = ""; }	
+				if (field5 === "unknown") { field5 = ""; }	
+
 				popup_self.addVocab(
 					field1,
 					field2,
@@ -281,6 +375,7 @@ class Popup extends ModTemplate {
 			}
 		);
 	}
+
 	loadLessonQuestions(lesson, mycallback) {
 
 		if (!lesson) { return; }
@@ -351,6 +446,14 @@ class Popup extends ModTemplate {
 		if (!this.app.options.popup) {
 			this.app.options.popup = {};
 		}
+		if (!this.app.options.popup.vocab) {
+			this.app.options.popup.vocab = {};
+			this.app.options.popup.vocab.field1 = 1;
+			this.app.options.popup.vocab.field2 = 1;
+			this.app.options.popup.vocab.field3 = 1;
+			this.app.options.popup.vocab.field4 = 1;
+			this.app.options.popup.vocab.field5 = 0;
+		}
 		if (!this.app.options.popup.display) {
 			this.app.options.popup.display = {};
 			this.app.options.popup.display.simplified = 1;
@@ -376,6 +479,19 @@ class Popup extends ModTemplate {
 		});
 	}
 
+	updatePreference(field1, value1) {
+
+		if (field1 == "display") {
+			if (value1 == "simplified") { this.app.options.popup.display.simplified = 1; }
+			if (value1 == "traditional") { this.app.options.popup.display.traditional = 1; }
+			if (value1 == "pinyin") { this.app.options.popup.display.pinyin = 1; }
+			if (value1 == "english") { this.app.options.popup.display.english = 1; }
+			if (value1 == "part-of-speech") { this.app.options.popup.display.part_of_speech = 1; }
+		}
+
+		return 1;
+	}
+
 	save() {
 		if (!this.app.options?.popup) {
 			this.app.options.popup = {};
@@ -389,11 +505,39 @@ class Popup extends ModTemplate {
 			this.app.options.popup.review.enable = 1;
 		}
 
-		this.saveOptions();
+		this.app.storage.saveOptions();
 	}
+
+
+
+	/////////////////////////
+	// in-browser database //
+	/////////////////////////
+	async deleteDatabase() {
+
+		if (this.app.BROWSER) {
+
+			if (!this.localDB) {
+				this.localDB = new JsStore.Connection(
+                	                new Worker('/saito/lib/jsstore/jsstore.worker.js')
+                	        );
+			}
+
+			this.localDB.dropDb("popup").then(function() {
+				console.log('Popup Database deleted successfully');
+			}).catch(function(error) {
+				console.error('Error deleting the database:', error);
+			});
+
+
+		}
+		return;
+	}
+
 
 	async initializeDatabase() {
 		if (this.app.BROWSER) {
+
 			this.localDB = new JsStore.Connection(
 				new Worker('/saito/lib/jsstore/jsstore.worker.js')
 			);
@@ -419,7 +563,7 @@ class Popup extends ModTemplate {
 			};
 
 			let db = {
-				name: 'vocabulary_db',
+				name: 'popup',
 				tables: [vocabulary]
 			};
 
@@ -451,6 +595,9 @@ class Popup extends ModTemplate {
 		obj.field5 = field5;
 		obj.lesson_id = lesson_id;
 		obj.label = label;
+		obj.audio_source = "";
+		obj.audio_translation = "";
+		obj.display_order = 0;
 		obj.created_at = new Date().getTime();
 		obj.updated_at = new Date().getTime();
 
@@ -479,7 +626,7 @@ class Popup extends ModTemplate {
 		return rows;
 	}
 
-
+	
 
 }
 

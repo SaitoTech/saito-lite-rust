@@ -1,7 +1,11 @@
 module.exports = (lesson, word) => {
-	return `
+
+    let as = "";
+    if (word.audio_source) { as = word.audio_source; }
+
+    return `
     <tr class="word">
-      <td class="player"><img src="/img/buttons/play_button.gif" onclick="playWordAudio('${word.audio_source}',this);"></td>
+      <td class="player"><img src="/popup/img/buttons/play_button.gif" onclick="playWordAudio('${as}',this);"></td>
       <td class="lesson_word_field1">${word.field1}</td>
       <td class="lesson_word_field2">${word.field2}</td>
       <td class="lesson_word_field3">${word.field3}</td>

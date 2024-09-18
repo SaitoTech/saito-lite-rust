@@ -237,6 +237,7 @@ function webPack() {
 				{ jimp: 'jimp' },
 				{ 'image-resolve': 'image-resolver' },
 				{ sqlite: 'sqlite' },
+				{ os: 'os' },
 				{ unzipper: 'unzipper' },
 				{ webpack: 'webpack' },
 				/\.txt/,
