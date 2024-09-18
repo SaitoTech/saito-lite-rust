@@ -84,7 +84,7 @@
     width: 60rem;
     min-width: 300px;
     max-width: 90vw;
-    padding: 2rem;
+    padding: 5rem;
     background-color: var(--background-color-overlay-menu);
     display: flex;
     flex-direction: column;

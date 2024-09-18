@@ -1,0 +1,96 @@
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content="" />
+		<meta name="author" content="David Lancashire" />
+
+		<title>Saito AppStore: Manage Applications</title>
+
+		<link
+			rel="stylesheet"
+			href="/saito/lib/font-awesome-6/css/fontawesome.min.css"
+			type="text/css"
+			media="screen"
+		/>
+		<link
+			rel="stylesheet"
+			href="/saito/lib/font-awesome-6/css/all.css"
+			type="text/css"
+			media="screen"
+		/>
+
+		<script
+			type="text/javascript"
+			src="/saito/lib/jquery/jquery-3.2.1.min.js"
+		></script>
+		<script
+			type="text/javascript"
+			src="/saito/lib/jquery/jquery-ui.min.js"
+		></script>
+		<link
+			rel="stylesheet"
+			href="/saito/lib/jquery/jquery-ui.min.css"
+			type="text/css"
+			media="screen"
+		/>
+		<link rel="stylesheet" type="text/css" href="/saito/style.css" />
+
+		<style>
+			.main-container {
+				width: 65vw;
+				margin: auto;
+				display: flex;
+				flex-direction: column;
+				gap: 3rem;
+				margin-top: calc(var(--saito-header-height) + 3rem);
+			}
+
+			.sub-container {
+				display: flex;
+				flex-direction: column;
+				gap: 2rem;
+			}
+
+			.container-title {
+				font-size: 1.8rem;
+				font-weight: bold;
+			}
+
+			#generate-tx {
+			 	width: fit-content;
+			 }
+
+			 textarea {
+			 	resize: vertical;
+			 }
+
+			 #file {
+			 	border: none;
+			 }
+		</style>
+
+	</head>
+
+	<body>
+
+		<div class="main-container">
+			<div class="sub-container">
+			    <div class="container-title">Generate application TX</div>
+			      	<input type="text" name="title" id="title" placeholder="Title">
+			      	<input type="text" name="description" id="description" placeholder="Description">
+			      	<input type="file" name="img" placeholder="Image" id="img">
+			        <textarea id="binary" rows="30" cols="80" placeholder="Paste base64 code"></textarea>
+			        <div class="saito-button-primary" id="generate-tx">Generate</div>
+		      	</div>
+			</div>
+		</div>
+		
+		<script
+			id="saito"
+			type="text/javascript"
+			src="/saito/saito.js"
+		></script>
+	</body>
+</html>
