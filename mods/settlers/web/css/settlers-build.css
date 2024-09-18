@@ -221,8 +221,7 @@
 	overflow: visible;
 	min-width: min(750px, 95vw);
 	max-width: 85vw;
-	padding-right: 15rem;
-
+    justify-content: center;
 }
 
 .dev-card-overlay .settlers-items-container .settlers-cards-container img {
@@ -234,7 +233,7 @@
 .settlers-dev-card {
 	position: relative;
 	width: min(26rem, 40vw);
-	height: calc(min(32rem, 40vw) * 1.4);
+	height: calc(min(27rem, 40vw) * 1.4);
 	z-index: 1;
 }
 
