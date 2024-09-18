@@ -189,7 +189,7 @@ class Popup extends ModTemplate {
 			};
 
 
-			enable_display_mode = function (
+			save_vocab_mode = function (
 				mode = ""
 			) {
 				if (mode === "field1") {

@@ -1,6 +1,6 @@
 module.exports = () => {
 	return `
-<div style="color:#666666;font-size:1.6rem">
+<div style="color:#666666;font-size:1.75rem">
 
 <div class="rotate_right">
 <div class="testimonial" style="width:580px;margin-left:10px;margin-top:2px;">

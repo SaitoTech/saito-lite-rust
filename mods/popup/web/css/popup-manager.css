@@ -16,6 +16,14 @@
 	line-height: 3rem;
 }
 
+.manager-menu {
+	font-size: 2rem;
+	line-height: 2.5rem;
+}
+.manager-menu:hover {
+	color: #9C1010;
+}
+
 .lessons {
 	max-width: 100%;
 	width: 100%;

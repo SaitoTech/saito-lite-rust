@@ -155,6 +155,8 @@ function loadQuestionLoop() {
 function loadQuestion() {
 	retry_load_state++;
 
+alert("in load question!");
+
 	// forced delay so the animation is smooth
 	//$('#answer_space').fadeOut(400);
 	//$('#question_space').fadeOut(400).delay(400);
@@ -199,6 +201,8 @@ function loadQuestion() {
 
 	requested_wid = return_requested_wid();
 
+alert("source is: " + source);
+
 	if (source == 'lesson' || source == 'wordlist') {
 		ajaxurl = '/api/loadWordQuestion?nocache=' + new Date().getTime();
 	} else {
@@ -226,6 +230,8 @@ function loadQuestion() {
 		}
 	}
 
+alert("next question JSON: " + JSON .stringify(nextQuestionJSON));
+
 	// try preloaded Question if exists
 	if (nextQuestionJSON != '') {
 		tempJSON = nextQuestionJSON;
@@ -234,6 +240,9 @@ function loadQuestion() {
 		preloadNextQuestion();
 		// or fetch a fresh one
 	} else {
+
+alert("loading next question!");
+
 		$.post(
 			ajaxurl,
 			{
@@ -246,6 +255,9 @@ function loadQuestion() {
 				correct: answered_correctly
 			},
 			function (txt) {
+
+alert("response: " + JSON.stringify(txt));
+
 				process_json_text(txt);
 				preloadNextQuestion();
 			}
@@ -850,6 +862,8 @@ function return_word_question_html() {
 }
 
 function setup_reinforcement_lightbox() {
+alert("setup reinforcement lightbox...");
+
 	var html2insert =
 		'\
         <div id="lightbox_header" class="lightbox_header"> \
