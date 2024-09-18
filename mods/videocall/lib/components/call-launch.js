@@ -2,7 +2,6 @@ const SaitoOverlay = require('../../../../lib/saito/ui/saito-overlay/saito-overl
 const StunLaunchTemplate = require('./call-launch.template.js');
 const CallSetting = require('../components/call-setting.js');
 const SaitoLoader = require('../../../../lib/saito/ui/saito-loader/saito-loader.js');
-const CallScheduleWizard = require('../../../../lib/saito/ui/saito-calendar/saito-schedule-wizard.js');
 const CallScheduleJoin = require('./call-schedule-join.js');
 
 /**
@@ -66,7 +65,7 @@ class CallLaunch {
 
 	attachEvents(app, mod) {
 		if (document.getElementById('createRoom')) {
-			document.getElementById('createRoom').onclick = (e) => {
+			document.getElementById('createRoom').onclick = async (e) => {
 
 				if (!this.mod.isRelayConnected) {
 					siteMessage('Wait for peer connection');
@@ -76,10 +75,11 @@ class CallLaunch {
 				//
 				// I am initializing the call
 				//
+				let call_id = await this.mod.generateRoomId();
 				console.log(this.mod.room_obj, "room object joining");
 				if (!this.mod.room_obj) {
 					this.mod.room_obj = {
-						call_id: this.mod.createRoomCode(),
+						call_id,
 						host_public_key: this.mod.publicKey,
 						call_peers: [],
 						scheduled: false
@@ -92,37 +92,6 @@ class CallLaunch {
 		}
 		if (document.getElementById('createScheduleRoom')) {
 			document.getElementById('createScheduleRoom').onclick = async (e) => {
-				this.callScheduleWizard = new CallScheduleWizard(app, mod)
-				this.callScheduleWizard.callbackAfterSubmit =async function (app, mod, duration, description, utcStartTime) {
-					const call_id = await mod.generateRoomId();
-					const room_obj = {
-						call_id,
-						scheduled: true,
-						call_peers: [],
-						startTime: utcStartTime, 
-						duration,
-						description
-					};
-		
-					const room_obj_stringified = JSON.stringify(room_obj);
-					 let call_link =  mod.generateCallLink(room_obj)
-					  app.keychain.addKey(call_id, { identifier: call_id, type: "scheduled_call", startTime:utcStartTime, duration, description, room_obj:room_obj_stringified, link:call_link  });
-		
-					  let event = {
-						"datetime": new Date(utcStartTime),
-						"duration": duration,
-						"description": description || "Scheduled Call",
-						"link": call_link,
-						"type": "scheduled_call",
-						"id": call_id
-					  };  
-		
-					await navigator.clipboard.writeText(call_link);
-					siteMessage('New room link created and copied to clipboard', 1500);
-				}
-
-
-				this.callScheduleWizard.render()
 			};
 		}
 

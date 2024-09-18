@@ -84,7 +84,7 @@ class Stun extends ModTemplate {
 
 			  // For the API, it isn't enough for one party to create a peer connection, so if you don't 
 			  // provide a callback, it uses the sendJoinTransaction to message your peer and have them 
-			  // create a peer connection on their end, it is again to texting your friend to say call me.
+			  // create a peer connection on their end, it is akin to texting your friend to say call me.
 			  // This is good for most data channel set ups, but if you need more control over who messages 
 			  // who when you can get around this by setting the callback deliberately to false. (i.e. my friend
 			  // has texted me and it is on me to call them)
@@ -394,12 +394,13 @@ class Stun extends ModTemplate {
 		}
 
 		const peerConnection = this.peers.get(peerId);
-		
+
 		peerConnection.timer = setTimeout(()=>{ 
 				console.log("STUN Connection timeout...");
 				this.app.connection.emit('stun-connection-timeout', peerId);
 				this.removePeerConnection(peerId);
 		}, 4000);
+		
 
 		// Handle ICE candidates
 		peerConnection.onicecandidate = async (event) => {
@@ -439,7 +440,6 @@ class Stun extends ModTemplate {
 				clearTimeout(peerConnection.timer);
 				delete peerConnection.timer;
 			}
-
 
 			if (
 				peerConnection.connectionState === 'failed' ||

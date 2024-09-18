@@ -73,6 +73,24 @@ class Keychain {
 		}
 
 
+		// automatically remove old event keys & outdated modes
+		let events = this.returnKeys({type: "scheduled_call"});	
+		for (let e of events){
+			this.removeKey(e.publicKey);
+		}	
+
+		events = this.returnKeys({type: "event"});
+		let now = Date.now();
+		for (let e of events){
+			let scheduledTime = new Date(e.startTime).getTime();
+			if (scheduledTime + 24*60*60*1000 < now){
+				console.log("Event Over:", e);
+				this.removeKey(e.publicKey);
+			}
+		}	
+
+		this.saveKeys();
+
 
 		//
 		// creates hash of important info so we know if values change
@@ -309,9 +327,9 @@ class Keychain {
 			return;
 		}
 		for (let x = this.keys.length - 1; x >= 0; x--) {
-			let match = true;
 			if (this.keys[x].publicKey == publicKey) {
 				this.keys.splice(x, 1);
+				return;
 			}
 		}
 	}

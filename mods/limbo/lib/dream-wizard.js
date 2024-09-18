@@ -77,6 +77,15 @@ class DreamWizard{
 				overlay.show(HelpOverlayTemplate(this.app, this.mod));
 			}
 		}
+
+		if (document.querySelector(".advanced-options")){
+			document.querySelector(".advanced-options").onclick = (e) => {
+				this.mod.loadSettings(null, ()=> {
+					console.log("3!");
+					this.render();
+				});
+			}
+		}
 	}
 
 

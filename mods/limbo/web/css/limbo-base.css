@@ -434,15 +434,20 @@ video#local.noflip{
 	min-height: 10rem;
 }
 
-.dream-wizard .help-hook {
+.dream-wizard .wizard-footer {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 1rem;
+}
+
+.dream-wizard .wizard-footer > div  {
 	display: flex;
 	align-items: center;
 	gap: 2rem;
-	justify-content: flex-end;
 	cursor: pointer;
 }
 
-.dream-wizard .help-hook:hover{
+.dream-wizard .wizard-footer > div:hover{
 	color: var(--font-color-primary);
 }
 
