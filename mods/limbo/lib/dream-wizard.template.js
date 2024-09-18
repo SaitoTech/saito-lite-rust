@@ -33,6 +33,16 @@ module.exports = DreamWizardTemplate = (app, mod, options) => {
 
 	html = `<div id="dream-wizard" class="dream-wizard">`;
 
+	if (options?.mode) {
+		html += `<div class="cast-mode">
+					<div class="selected"><i class="fa-solid ${mod.icons[options.mode]}"></i><label>${options.mode}</label></div>
+				 </div>`;
+	}
+
+	// Please don't delete
+	//	`<div class="cast-mode-option" id="mode-audio"><i class="fa-solid ${mod.icons.audio}" title="ignore the camera feeds and cast only the call audio"></i><label>voice</label></div>
+	//	<div class="cast-mode-option selected" id="mode-video"><i class="fa-solid ${mod.icons.screen}" title="Let Saito stitch the video streams together"></i><label>video</label></div>`;
+
 	html += `<label for="dream-wizard-identifier">Title the space</label> 
 	 <input type="text" name="dream-wizard-identifier" id="dream-wizard-identifier" placeholder="${default_title}" value="${default_title}"></input>
 	 <label for="dream-wizard-description">Add a description</label> 
@@ -40,15 +50,16 @@ module.exports = DreamWizardTemplate = (app, mod, options) => {
 	<div class="saito-button-row">
 	`;
 
-
-	if (options?.mode){
-		html += `<button id="dream-schedule-btn" class="button saito-button-secondary">Schedule for Later</button>`;	
+	if (options?.mode || options?.defaultDate){
+		html += `<button id="dream-schedule-btn" class="button ${options?.defaultDate ? 'saito-button-primary' : 'saito-button-secondary'}">Schedule for Later</button>`;	
 	}
 
-	html += `<div id="dream-wizard-btn" class="button saito-button-primary">Start Casting Now</div></div>
-					<div class="help-hook"><span>Learn more</span><i class="fa-solid fa-circle-info"></i></div>
-				</div>
-	`;
+	if (!options?.defaultDate){
+		html += `<div id="dream-wizard-btn" class="button saito-button-primary">Start Casting Now</div></div>`;	
+	}
+	
+	html += `<div class="help-hook"><span>Learn more</span><i class="fa-solid fa-circle-info"></i></div>
+			</div>`;
 
 	return html;
 };

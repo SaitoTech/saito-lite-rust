@@ -493,6 +493,20 @@ class Browser {
 		return `${protocol}://${host}:${port}/r?i=${url_payload}`;
 	}
 
+	createEventInviteLink(event){
+
+		let obj = Object.assign({}, event);
+		delete obj.privateKey;
+
+		let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
+
+		let call_link = window.location.origin + '/redsquare/';
+		call_link = `${call_link}?event=${base64obj}`;
+
+		return call_link;
+
+	}
+
 	returnHashAndParameters() {
 		let hash = new URL(document.URL).hash.split('#')[1];
 		let component = '';
