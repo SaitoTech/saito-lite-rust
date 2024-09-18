@@ -7,15 +7,12 @@ const webpack = require("webpack");
 let minimize = false;
 let devtool = undefined;
 // let entrypoint = "./../bundler/default/mods/debug/debug.js";
-//let entrypoint = "./../mods/poker/poker.js";
-let entrypoint = "./../mods/solitrio/solitrio.js";
-//let entrypoint = "./../mods/settlers/settlers.js";
 //let entrypoint = "./../mods/twilight/twilight.js";
-//let entrypoint = "./../mods/arcade/arcade.js";
-//let entrypoint = "./../mods/redsquare/redsquare.js";
-//let entrypoint = "./../mods/beleaguered/beleaguered.js";
-let outputfile = "dyn.module.js";
+ let entrypoint = "./../mods/explorer/explorer.js";
+// let entrypoint = "./../mods/solitrio/solitrio.js";
+let outputfile = "dyn.module_2.js";
 
+console.log("running dir : "+__dirname);
 
 webpack(
   {
@@ -29,35 +26,35 @@ webpack(
         }),
       ],
     },
-    target: "web",
+    target: "node",
     // node: {
     //     fs: "empty",
     // },
     externalsType:'global',
     // externalsPresets:{
-    //   web:true
+    //   node:true
     // },
     externals:{
-      "saito-js":"saito-js",
-      "saito-js/lib/transaction":"saito-js/lib/transaction",
-      "saito-js/lib":"saito-js/lib",
-      "saito-js/lib/slip":"saito-js/lib/slip",
-      "saito-js/lib/block":"saito-js/lib/block",
+      // "saito-js":"saito-js",
+      // "saito-js/lib/transaction":"saito-js/lib/transaction",
+      // "saito-js/lib":"saito-js/lib",
+      // "saito-js/lib/slip":"saito-js/lib/slip",
+      // "saito-js/lib/block":"saito-js/lib/block",
     },
     // Path to your entry point. From this file Webpack will begin his work
     entry: [path.resolve(__dirname, entrypoint)],
     output: {
-      path: path.resolve(__dirname, "./../web/saito/dyn/web"),
+      path: path.resolve(__dirname, "./../web/saito/dyn/node"),
       filename: outputfile,
       library:{
-        name:'Dyn',
-        type:'window'
+        name:'Dyn2',
+        type:'global'
       }
     },
     resolve: {
       // Add '.ts' and '.tsx' as resolvable extensions.
       //extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
-      extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js",".template.js"],
+      extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js",".template.js",".png"],
       fallback: {
         fs: false,
         tls: false,
@@ -80,7 +77,7 @@ webpack(
         {
           test: /\.tsx?$/,
           loader: "ts-loader",
-          exclude: /(node_modules)/,
+          exclude: [/(node_modules)/], //, path.resolve(__dirname,"../lib")
         },
         // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
         {
@@ -97,11 +94,11 @@ webpack(
               },
             },
           ],
-          exclude: /(node_modules)/,
+          exclude: [/(node_modules)/],
         },
         {
           test: /\.mjs$/,
-          exclude: /(node_modules)/,
+          exclude: [/(node_modules)/],
           // type: "javascript/auto",
           use: [
             {
@@ -144,17 +141,17 @@ webpack(
     plugins: [
       // Work around for Buffer is undefined:
       // https://github.com/webpack/changelog-v5/issues/10
-      new webpack.ProvidePlugin({
-        Buffer: ["buffer", "Buffer"],
-      }),
-      new webpack.ProvidePlugin({
-        process: "process/browser",
-      }),
+      // new webpack.ProvidePlugin({
+      //   Buffer: ["buffer", "Buffer"],
+      // }),
+      // new webpack.ProvidePlugin({
+      //   process: "process/browser",
+      // }),
     ],
     experiments: {
       asyncWebAssembly: true,
       // syncWebAssembly: true,
-      outputModule:true,
+      // outputModule:true,
     },
     mode: "production",
     devtool: devtool,
