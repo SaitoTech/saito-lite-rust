@@ -64,7 +64,7 @@ const App = ({ app, mod }) => {
 
         return (
             <div className="block-container">
-                <h3>New Block</h3>
+                <h4>New Block</h4>
                 <p><strong>Block Hash:</strong> {block.hash}</p>
                 <p><strong>Previous Block Hash:</strong> {block.previousBlockHash}</p>
                 <p><strong>Block Type</strong> {block.block_type}</p>
@@ -93,7 +93,7 @@ const App = ({ app, mod }) => {
 
 
             <div className="message-send-container">
-                <h3>Send a message</h3>
+                <h4>Send a message</h4>
                 <input
                     type="text"
                     value={publicKey}
@@ -115,7 +115,7 @@ const App = ({ app, mod }) => {
 
 
             <div className="received-messages-container">
-                <h3>Received Messages</h3>
+                <h4>Received Messages</h4>
                 {receivedMessages.length > 0 ? (
                     receivedMessages.map((msg, index) => (
                         <p key={index}>{msg}</p>
