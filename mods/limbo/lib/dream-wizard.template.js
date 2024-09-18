@@ -37,11 +37,16 @@ module.exports = DreamWizardTemplate = (app, mod, options) => {
 		html += `<div class="cast-mode">
 					<div class="selected"><i class="fa-solid ${mod.icons[options.mode]}"></i><label>${options.mode}</label></div>
 				 </div>`;
+	}else{
+		if (app.options?.limbo?.advanced){
+			if (options.externalMediaType === "videocall"){
+				html += `<div class="cast-mode">
+					<div class="cast-mode-option" id="mode-audio"><i class="fa-solid ${mod.icons.audio}" title="ignore the camera feeds and cast only the call audio"></i><label>voice</label></div>
+					<div class="cast-mode-option selected" id="mode-video"><i class="fa-solid ${mod.icons.screen}" title="Let Saito stitch the video streams together"></i><label>video</label></div>
+				</div>`;
+			}
+		}
 	}
-
-	// Please don't delete
-	//	`<div class="cast-mode-option" id="mode-audio"><i class="fa-solid ${mod.icons.audio}" title="ignore the camera feeds and cast only the call audio"></i><label>voice</label></div>
-	//	<div class="cast-mode-option selected" id="mode-video"><i class="fa-solid ${mod.icons.screen}" title="Let Saito stitch the video streams together"></i><label>video</label></div>`;
 
 	html += `<label for="dream-wizard-identifier">Title the space</label> 
 	 <input type="text" name="dream-wizard-identifier" id="dream-wizard-identifier" placeholder="${default_title}" value="${default_title}"></input>
@@ -58,7 +63,11 @@ module.exports = DreamWizardTemplate = (app, mod, options) => {
 		html += `<div id="dream-wizard-btn" class="button saito-button-primary">Start Casting Now</div></div>`;	
 	}
 	
-	html += `<div class="help-hook"><span>Learn more</span><i class="fa-solid fa-circle-info"></i></div>
+
+	html += `<div class="wizard-footer">
+				<div class="advanced-options"><span>Advanced</span><i class="fa-solid fa-gear"></i></div>
+				<div class="help-hook"><span>Learn more</span><i class="fa-solid fa-circle-info"></i></div>
+			 </div>
 			</div>`;
 
 	return html;
