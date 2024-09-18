@@ -1047,6 +1047,16 @@ try {
     if (space.type == "key") { stype = "key"; owner = this.returnControllingPower(owner); }
     if (owner == "protestant") { stype = "hex"; owner = this.returnControllingPower(owner); }
 
+
+    //
+    //
+    //
+    if (space.home === space.political || (space.home !== "" && space.political == "")) {
+      if (space.home !== this.returnControllingPower(space.home)) {
+	owner = this.returnControllingPower(space.home);
+      }
+    }
+
     if (owner != "") {
       if (owner === "hungary") {
         if (owner === "hungary") {
@@ -1268,6 +1278,7 @@ try {
   }
 
   returnArmyTiles(faction, spacekey) {
+
     let z = faction;
     let space = this.game.spaces[spacekey];
     let html = "";
@@ -1441,6 +1452,8 @@ try {
 	  }
 
       }
+
+
       //
       // surplus units that should not technically be available according to
       // tile limitations will be in the "missing" section. we do not want
@@ -1589,7 +1602,9 @@ try {
       // etc. see his-units for the returnOnBoardUnits() function that organizes
       // this data object.
       //
-      if (this.game.state.board[z]) {
+      // independent spaces may not be pre-calculated, so we handle them manually
+      //
+      if (this.game.state.board[z] && (space.political != "independent" || space.home != "independent")) {
 	// mercenary also handles cavalry
         html += this.returnMercenaryTiles(z, spacekey);
         html += this.returnArmyTiles(z, spacekey);
@@ -1786,9 +1801,6 @@ try {
             html += `<img class="army_tile" src="${tile}" />`;
 	  }
         }
-
-
-
 
         new_units = false;
 
@@ -2215,7 +2227,9 @@ try {
 
     let z = faction;
     let space = this.game.spaces[spacekey];
-    if (!space || space == undefined) { space = this.game.navalspaces[spacekey]; }
+    let is_naval_space = false;
+
+    if (!space || space == undefined) { space = this.game.navalspaces[spacekey]; is_naval_space = true; }
 
     let html = "";
 
@@ -2294,6 +2308,7 @@ try {
 
     let stype = "hex";
 
+    if (space.type == "fortress") { stype = "hex"; }
     if (space.type == "town") { stype = "hex"; }
     if (space.type == "key") { stype = "key"; }
 
@@ -2324,11 +2339,20 @@ try {
         if (this.areAllies(space.home, "ottoman", 0)) { allied_to_major_power = true; }
         if (this.areAllies(space.home, "hapsburg", 0)) { allied_to_major_power = true; }
       }
+      if (space.type === "town" || stype == "hex") {
+        if (this.areAllies(space.home, "protestant", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "papacy", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "france", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "england", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "ottoman", 0)) { allied_to_major_power = true; }
+        if (this.areAllies(space.home, "hapsburg", 0)) { allied_to_major_power = true; }
+      }
       if (allied_to_major_power == false) {
         no_keytiles_in_keys.push(space.key);
         show_tile = 0;
       }
     }
+
     if (space.language == "german" && space.units["protestant"].length > 0) { show_tile = 1; }
 
     //
@@ -2337,6 +2361,15 @@ try {
     if (space.home === "" && space.political !== "") { show_tile = 1; }
     if (space.type === "key") { show_tile = 1; }
     if (space.type === "electorate") { show_tile = 1; }
+
+    //
+    // and force for minor
+    //
+    if (space.home === space.political || (space.home !== "" && space.political == "")) {
+      if (stype === "hex" && space.home !== this.returnControllingPower(space.home)) {
+        show_tile = 1;
+      }   
+    }   
 
     //
     // and force if has units

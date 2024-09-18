@@ -321,11 +321,15 @@ class TweetManager {
 
 		this.profile.render();
 
+		this.loader.render();
+
 		this.loadProfile((txs) => {
 			if (this.mode !== 'profile') {
 				return;
 			}
 
+			this.loader.remove();
+			
 			// Sort txs into posts/replies/retweets...
 			this.filterAndRenderProfile(txs);
 

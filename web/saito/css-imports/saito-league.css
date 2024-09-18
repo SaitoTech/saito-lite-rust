@@ -1,5 +1,5 @@
 .league-overlay {
-	background: var(--saito-arcade-background); 
+	background: var(--saito-arcade-background);
 	width: 90vw;
 	padding: 2rem 1rem;
 	display: flex;
@@ -9,7 +9,7 @@
 	max-width: 95rem;
 }
 
-.league-overlay > div {
+.league-overlay>div {
 	margin: 0 1rem;
 }
 
@@ -84,9 +84,7 @@
 	background: unset;
 }
 
-.menu-icon:hover i,
-.menu-icon.active-tab i,
-.league-overlay-controls .menu-icon.active-tab:hover i {
+.menu-icon:hover i, .menu-icon.active-tab i, .league-overlay-controls .menu-icon.active-tab:hover i {
 	border-color: var(--color-primary);
 	color: var(--color-primary);
 }
@@ -159,8 +157,7 @@
 	line-height: 2.3rem;
 }
 
-.league-overlay-description i,
-#admin_contact i {
+.league-overlay-description i, #admin_contact i {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -190,9 +187,7 @@ span.attention {
 	flex-grow: 1;
 }
 
-.league_recent_game,
-.game-manager .saito-table-header, 
-.game-manager .saito-table-row {
+.league_recent_game, .game-manager .saito-table-header, .game-manager .saito-table-row {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
 	grid-gap: 1rem;
@@ -243,7 +238,8 @@ span.attention {
 	font-size: 30px;
 	font-weight: 900;
 	color: var(--saito-red);
-	text-shadow: var(--shadow-shape-flat) var(--color-white); /* testing */
+	text-shadow: var(--shadow-shape-flat) var(--color-white);
+	/* testing */
 }
 
 .league_recent_game div {
@@ -255,21 +251,18 @@ span.attention {
 	padding: 0px; // keeps scrolled content from showing above sticky header
 }
 
-.alert_email,
-.alert_identifier {
+.alert_email, .alert_identifier {
 	position: relative;
 	box-shadow: 0px 0px 10px var(--color-contrast) !important;
 	cursor: pointer;
 }
 
-.alert_email .league-leaderboard,
-.alert_identifier .league-leaderboard {
+.alert_email .league-leaderboard, .alert_identifier .league-leaderboard {
 	filter: blur(2px);
 	pointer-events: none;
 }
 
-.alert_email i,
-.alert_identifier i {
+.alert_email i, .alert_identifier i {
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -278,20 +271,19 @@ span.attention {
 	font-size: 6.4rem;
 }
 
-.admin-widget .saito-table-header,
-.admin-widget .saito-table-row {
+.admin-widget .saito-table-header, .admin-widget .saito-table-row {
 	grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
 	justify-items: center;
 	align-items: center;
 }
 
-.admin-widget .saito-table-row > div {
+.admin-widget .saito-table-row>div {
 	width: 100%;
 	text-align: center;
 }
 
 .editable_field {
-	border: 1px solid;
+	border: 1px solid var(--saito-border-color);
 	cursor: text;
 }
 
@@ -305,11 +297,11 @@ span.attention {
 	flex: 4;
 }
 
-.contactAdminWarning > * {
+.contactAdminWarning>* {
 	margin: 1rem;
 }
 
-.contactAdminWarning > div:first-child {
+.contactAdminWarning>div:first-child {
 	font-size: 5rem;
 	justify-content: center;
 }
@@ -327,11 +319,9 @@ span.attention {
 	.league-overlay-header {
 		height: unset;
 	}
-
 	.oversize-load {
 		font-size: clamp(3rem, 5vw, 4rem);
 	}
-
 	.league-overlay-body {
 		display: flex;
 		flex-direction: column;
@@ -341,7 +331,7 @@ span.attention {
 		padding: 1px 1rem;
 		height: calc(90vh - 12rem);
 	}
-	.league-overlay-body > div {
+	.league-overlay-body>div {
 		/*  overflow-y: unset;*/
 	}
 	.league-overlay-body .league-overlay-controls {
@@ -353,22 +343,18 @@ span.attention {
 	.oversize-load {
 		font-size: clamp(3rem, 10vw, 4rem);
 	}
-
 	.menu-icon.mobile-only {
 		display: flex;
 	}
 	.mobile-hide {
 		display: none;
 	}
-
 	.mobile-hide.hidden {
 		display: unset;
 	}
-
-	.league-overlay > div {
+	.league-overlay>div {
 		margin: 0;
 	}
-
 	.league-overlay {
 		width: 100vw;
 		max-height: calc(95 * var(--saito-vh));
@@ -376,49 +362,39 @@ span.attention {
 	.contactAdminWarning {
 		min-height: 0;
 	}
-
 	.league-overlay-body {
 		height: calc(90vh - 20rem);
 		flex-direction: column-reverse;
 		row-gap: 1rem;
 	}
-
 	.league-overlay-controls {
 		justify-content: center;
 		max-width: 100%;
 	}
-
 	.league-overlay-leaderboard {
 		min-height: calc(100% - 8rem);
 	}
-
 	.league-overlay-controls button {
 		flex: 1;
 	}
-
 	.league-overlay-header {
 		flex-direction: column;
 		position: relative;
 	}
-
 	.league-overlay-body-content {
 		flex: 1;
 	}
-
 	.league-overlay-header-image {
 		margin: 0;
 		width: 100%;
 		background-position: center center;
 		height: 10rem;
 	}
-
 	.league-overlay-header-title-box {
 		position: absolute;
 		left: 1rem;
 		top: 1.4rem;
-		text-shadow: 1px 1px 2px var(--saito-background-color), 
-			-1px -1px 2px var(--saito-background-color),
-			1px -1px 2px var(--saito-background-color),
-			-1px 1px 2px var(--saito-background-color); /* testing, haven t seen any of this */
+		text-shadow: 1px 1px 2px var(--saito-background-color), -1px -1px 2px var(--saito-background-color), 1px -1px 2px var(--saito-background-color), -1px 1px 2px var(--saito-background-color);
+		/* testing, haven t seen any of this */
 	}
 }

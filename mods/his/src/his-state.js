@@ -75,6 +75,7 @@
     this.game.state.events.intervention_on_events_possible = 0;
     this.game.state.events.intervention_on_assault_possible = 0;
     this.game.state.events.intervention_post_assault_possible = 0;
+    this.game.state.events.intervention_post_naval_battle_possible = 0;
 
     this.game.state.field_battle_relief_battle = false;
 
@@ -118,6 +119,7 @@
     this.game.state.events.intervention_on_events_possible = 0;
     this.game.state.events.intervention_on_assault_possible = 0;
     this.game.state.events.intervention_post_assault_possible = 0;
+    this.game.state.events.intervention_post_naval_battle_possible = 0;
 
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
@@ -1105,6 +1107,7 @@ if (this.game.state.scenario != "is_testing") {
         // and commit the debater too !
         this.game.state.debaters[i].committed = 1;
         obj.debater = this.game.state.debaters[i];
+        obj.debater.committed = 1;
         this.game.state.debaters.splice(i, 1);
       }
     }
@@ -1161,9 +1164,16 @@ if (this.game.state.scenario != "is_testing") {
     }
 
   }
+
+  //
+  // military leader returned to original space or capital (if controlled)
+  //
   restoreMilitaryLeaders() {
 
     for (let i = 0; i < this.game.state.military_leaders_removed_until_next_round.length; i++) {
+
+      let obj = this.game.state.military_leaders_removed_until_next_round[i];
+
       if (obj.leader) {
 
         let leader = obj.leader;
@@ -1173,7 +1183,19 @@ if (this.game.state.scenario != "is_testing") {
 	if (leader) {
 	  if (s) {
 	    if (faction) {
-	      this.game.spaces[s].units[faction].push(leader);
+	      if (this.isSpaceControlled(s, faction)) {
+	        this.game.spaces[s].units[faction].push(leader);
+	        this.displaySpace(s);
+	      } else {
+		let capitals = this.returnCapitals(faction);
+                for (let z = 0; z < capitals.length; z++) {
+                  if (this.isSpaceControlled(capitals[z], faction)) {
+	            this.game.spaces[s].units[faction].push(leader);
+	            this.displaySpace(s);
+		    z = capitals.length += 2;
+                  }     
+	        }
+	      }
 	    }
 	  }
 	}

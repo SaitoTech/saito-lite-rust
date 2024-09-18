@@ -1,6 +1,6 @@
 const InvitesAppspaceTemplate = require('./main.template.js');
 const InviteTemplate = require('./invite.template.js');
-const SaitoScheduler = require('./../../../../lib/saito/ui/saito-scheduler/saito-scheduler');
+//const SaitoScheduler = require('./../../../../lib/saito/ui/saito-scheduler/saito-scheduler');
 
 class InvitesAppspace {
 	constructor(app, mod, container = '') {
@@ -8,7 +8,7 @@ class InvitesAppspace {
 		this.mod = mod;
 		this.container = container;
 
-		app.connection.on('event-render-request', (invite_obj) => {
+		app.connection.on('calendar-add-event-from-transaction', (invite_obj) => {
 			if (!document.querySelector('.invite-email-appspace')) {
 				app.browser.replaceElementBySelector(
 					InvitesAppspaceTemplate(app, mod),

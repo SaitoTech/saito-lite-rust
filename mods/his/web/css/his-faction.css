@@ -112,6 +112,12 @@
     padding: 0.75rem;
 }
 
+.papacy_vp_tile {
+	background-image: url('/his/img/vp/VP_Papacy.svg');
+	background-size: cover;
+	width: 50px;
+	height: 50px;
+}
 .saint_peters_tile {
 	background-image: url('/his/img/tiles/papacy/StPetersCP.svg');
 	background-size: cover;
@@ -227,6 +233,16 @@
 #papacy_vp_tile {
 	background-image: url('/his/img/vp/VP_Papacy.svg');
 	background-size: cover;
+}
+
+
+.faction_sheet_vp .navy_tile , .faction_sheet_vp .army_tile {
+	background-size: contain;
+    	width: 50px;
+    	height: 50px;
+    	position: relative;
+    	margin-left: 0px;
+    	margin-top: 0px;
 }
 
 .war_winner_vp.vp1 {

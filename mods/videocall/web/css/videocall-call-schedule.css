@@ -1,11 +1,14 @@
 /* Base styles */
+
 label {
     display: block;
 }
 
-.call-schedule-wizard-container input,
-.call-schedule-wizard-container textarea,
-.call-schedule-wizard-container select {
+input[type="datetime-local"] {
+    color-scheme: dark;
+}
+
+.call-schedule-wizard-container input, .call-schedule-wizard-container textarea, .call-schedule-wizard-container select {
     width: 100%;
     padding: 1.2rem 2.0rem;
     margin: .8rem 0;
@@ -21,18 +24,18 @@ label {
     width: min(550px, 98vw);
     padding: 2rem 3rem;
     border-radius: 0.5rem;
-    border: 1px solid;
+    border: 1px solid var(--saito-border-color);
     background-color: var(--color-base);
     color: var(--color-contrast);
     box-sizing: border-box;
 }
 
 /* Call schedule launcher */
+
 .call-schedule-launch {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
     padding: 1rem;
     box-sizing: border-box;
 }
@@ -40,6 +43,7 @@ label {
 .call-schedule-launch-main-container {
     padding: 1.5rem;
 }
+
 .call-schedule-launch-container {
     padding: 3rem;
     border-radius: 8px;
@@ -61,19 +65,9 @@ label {
     margin: 10px 0;
 }
 
-.enter-call-button {
-    width: 100%;
-}
-
-
-.enter-call-button.disabled {
-    background-color: #cccccc;
-    color: #666666;
-    cursor: not-allowed;
-    opacity: 0.7;
-}
 
 /* Call schedule join */
+
 .call-schedule-join-container {
     width: min(550px, 98vw);
     padding: 2rem 3rem;
@@ -84,11 +78,12 @@ label {
 }
 
 /* Call schedule card */
+
 .call-schedule-card-container {
     border-radius: .8rem;
     padding: 1.5rem;
     margin: 2rem 0;
-    border: 1px solid;
+    border: 1px solid var(--saito-border-color);
     box-sizing: border-box;
 }
 
@@ -112,41 +107,28 @@ label {
 }
 
 /* Media Queries for Responsiveness */
+
 @media screen and (max-width: 600px) {
-    .call-schedule-wizard-container,
-    .call-schedule-launch-container,
-    .call-schedule-join-container,
-    .call-schedule-card-container {
+    .call-schedule-wizard-container, .call-schedule-launch-container, .call-schedule-join-container, .call-schedule-card-container {
         width: 100%;
         padding: 1.5rem;
     }
-
-    .call-schedule-wizard-container input,
-    .call-schedule-wizard-container textarea,
-    .call-schedule-wizard-container select {
+    .call-schedule-wizard-container input, .call-schedule-wizard-container textarea, .call-schedule-wizard-container select {
         padding: 1rem 1.5rem;
     }
-
     .call-schedule-launch {
         padding: 0.5rem;
     }
-
     .call-schedule-launch-container {
         padding: 2rem;
     }
 }
 
 @media screen and (max-width: 400px) {
-    .call-schedule-wizard-container,
-    .call-schedule-launch-container,
-    .call-schedule-join-container,
-    .call-schedule-card-container {
+    .call-schedule-wizard-container, .call-schedule-launch-container, .call-schedule-join-container, .call-schedule-card-container {
         padding: 1rem;
     }
-
-    .call-schedule-wizard-container input,
-    .call-schedule-wizard-container textarea,
-    .call-schedule-wizard-container select {
+    .call-schedule-wizard-container input, .call-schedule-wizard-container textarea, .call-schedule-wizard-container select {
         padding: 0.8rem 1.2rem;
     }
 }

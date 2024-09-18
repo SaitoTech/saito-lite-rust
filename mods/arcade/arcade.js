@@ -8,7 +8,7 @@ const InviteManager = require('./lib/invite-manager');
 const GameManager = require('./lib/game-manager');
 const GameWizard = require('./lib/overlays/game-wizard');
 const GameSelector = require('./lib/overlays/game-selector');
-const GameScheduler = require('./lib/overlays/game-scheduler');
+//const GameScheduler = require('./lib/overlays/game-scheduler');
 const GameInvitationLink = require('./../../lib/saito/ui/modals/saito-link/saito-link');
 const Invite = require('./lib/invite');
 const JoinGameOverlay = require('./lib/overlays/join-game');
@@ -43,7 +43,7 @@ class Arcade extends ModTemplate {
 
 		this.is_game_initializing = false;
 
-		this.icon_fa = 'fas fa-gamepad';
+		this.icon = 'fas fa-gamepad';
 
 		this.styles = ['/arcade/style.css'];
 
@@ -160,7 +160,7 @@ class Arcade extends ModTemplate {
 			this.wizard = new GameWizard(app, this, null, {});
 			this.game_selector = new GameSelector(app, this, {});
 			//We create this here so it can respond to events
-			this.game_scheduler = new GameScheduler(app, this, {});
+			//this.game_scheduler = new GameScheduler(app, this, {});
 
 			//
 			// my games stored in local wallet
@@ -548,14 +548,6 @@ class Arcade extends ModTemplate {
 	//
 
 	respondTo(type = '', obj) {
-		if (type == 'header-dropdown') {
-			return {
-				name: this.appname ? this.appname : this.name,
-				icon_fa: this.icon_fa,
-				browser_active: this.browser_active,
-				slug: this.returnSlug()
-			};
-		}
 		if (type === 'user-menu') {
 			if (obj?.publicKey && obj.publicKey !== this.publicKey) {
 				let am = this.app.modules.returnActiveModule();
@@ -626,14 +618,12 @@ class Arcade extends ModTemplate {
 			x.push({
 				text: 'Games',
 				icon: this.icon || 'fas fa-gamepad',
-				disallowed_mods: ['redsquare'],
-				rank: 10,
+            is_active: this.browser_active,
+				rank: 25,
 				callback: function (app, id) {
 					app.connection.emit('arcade-launch-game-selector', {});
 				}
 			});
-			return x;
-
 			return x;
 		}
 
@@ -2087,14 +2077,8 @@ class Arcade extends ModTemplate {
 			this.app.connection.emit('arcade-invite-manager-render-request');
 
 			if (gameType == 'open') {
-				if (
-					this.app.browser.isMobileBrowser(navigator.userAgent) &&
-					this.app.modules.returnActiveModule().returnName() == 'Red Square'
-				) {
-					salert('Game invite created. Redirecting to arcade...');
-					setTimeout(function () {
-						window.location.href = '/arcade';
-					}, 2000);
+				if (this.app.browser.isMobileBrowser(navigator.userAgent) && !this.browser_active) {
+					siteMessage("Game invite created. Visit the Arcade to manage");
 				}
 				return;
 			}

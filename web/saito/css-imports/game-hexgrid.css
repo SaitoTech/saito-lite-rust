@@ -27,6 +27,11 @@
   /* fix for jagged edges in FF on hover transition */
   width: 12.5%;
 }
+
+.hex.dummy {
+  z-index: -1;
+}
+
 .hex::after {
   content: '';
   display: block;

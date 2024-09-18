@@ -25,9 +25,9 @@ const JSON = require('json-bigint');
 //
 // CORS -- uncomment for local CORS Cross-Origin Requests by Default
 //
-var cors = require('cors');
+//var cors = require('cors');
 const expressApp = express();
-expressApp.use(cors());
+//expressApp.use(cors());
 
 
 const webserver = new Ser(expressApp);
@@ -224,8 +224,8 @@ export class NodeSharedMethods extends CustomSharedMethods {
 		await this.app.modules.handlePeerTransaction(newtx, peer, mycallback);
 	}
 
-	sendInterfaceEvent(event: string, peerIndex: bigint) {
-		this.app.connection.emit(event, peerIndex);
+	sendInterfaceEvent(event: string, peerIndex: bigint, public_key: string) {
+		this.app.connection.emit(event, peerIndex, public_key);
 	}
 
 	sendBlockSuccess(hash: string, blockId: bigint) {

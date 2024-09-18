@@ -348,6 +348,9 @@ class Record extends ModTemplate {
 				videoElement.style.top = '100px';
 				videoElement.style.width = '350px';
 				videoElement.style.height = '350px';
+				videoElement.style.resize = "both"
+				videoElement.style.overflow= "auto";
+				videoElement.classList.add('game-video-box')
 				this.app.browser.makeDraggable(stream_id);
 			}
 		}

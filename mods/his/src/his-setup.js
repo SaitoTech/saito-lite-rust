@@ -81,6 +81,9 @@ console.log("\n\n\n\n");
 	  this.unsetEnemies("hapsburg", "france");
 	  this.unsetEnemies("ottoman", "hungary");
 
+	  this.setAllies("france", "scotland");
+
+
 	  // OTTOMAN
           this.addRegular("ottoman", "istanbul", 1);
           this.addRegular("ottoman", "edirne");
@@ -322,6 +325,7 @@ console.log("\n\n\n\n");
 
 	  this.game.state.ottoman_war_winner_vp = 2;
 	  this.game.spaces["algiers"].pirate_haven = 1;
+	  this.game.spaces["algiers"].home = "ottoman";
 
 
 	  // HAPSBURG
@@ -367,6 +371,23 @@ console.log("\n\n\n\n");
           this.game.state.newworld['hapsburg_colony1'].claimed = 1;
           this.game.state.newworld['hapsburg_colony2'].faction = "hapsburg";
           this.game.state.newworld['hapsburg_colony2'].claimed = 1;
+
+          this.game.state.colonies.push({
+            faction : "hapsburg" ,
+            resolved : 1 ,
+	    colony : "hapsburg_colony1" ,
+            round : 1 ,
+	    name : "Puerto Rico",
+	    img : "/his/img/tiles/colonies/PuertoRico.svg",
+          });
+	  this.game.state.colonies.push({
+            faction : "hapsburg" ,
+            resolved : 1 ,
+	    colony : "hapsburg_colony2" ,
+            round : 1 ,
+	    name : "Cuba",
+	    img : "/his/img/tiles/colonies/Cuba.svg",
+          });
 
 	  this.removeExplorer("hapsburg", "magellan");
 	  this.removeExplorer("hapsburg", "leon");
@@ -538,7 +559,7 @@ console.log("\n\n\n\n");
 
       if (this.game.options.scenario === "is_testing") {
 
-	  this.game.state.starting_round = 2;
+	  this.game.state.starting_round = 5;
 	  this.game.state.henry_viii_marital_status = 1;
 
 	  this.setAllies("france", "genoa");
@@ -657,12 +678,17 @@ console.log("\n\n\n\n");
 
           // ENGLAND
           this.addRegular("england", "stirling", 4);
-          this.game.state.henry_viii_healthy_edward = 1;
 
 	  // GENOA
 	  this.addRegular("genoa", "genoa", 2);
 
 	  // TESTING
+          this.addRegular("papacy", "turin", 4);
+          this.addRegular("hungary", "belgrade", 2);
+	  this.controlSpace("hungary", "belgrade");
+	  this.setAllies("hapsburg","hungary");
+          this.addRegular("hapsburg", "belgrade", 2);
+
           this.addRegular("papacy", "turin", 4);
 
           this.setEnemies("papacy", "france");

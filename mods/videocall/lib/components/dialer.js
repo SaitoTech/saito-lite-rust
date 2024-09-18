@@ -272,13 +272,14 @@ class Dialer {
 		video_switch.onchange = null;
 	}
 
-	establishStunCallWithPeers(recipients) {
+	async establishStunCallWithPeers(recipients) {
 		// salert("Establishing a connection with your peers...");
 
 		// create a room
+		let call_id = await this.mod.generateRoomId();
 		if (!this.mod.room_obj) {
 			this.mod.room_obj = {
-				call_id: this.mod.createRoomCode(),
+				call_id,
 				host_public_key: this.mod.publicKey,
 				call_peers: [],
 				scheduled: false

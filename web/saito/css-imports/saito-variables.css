@@ -174,7 +174,7 @@ font imports
 
 /*SHADOW SELECTION*/
 --shadow-primary-button: var(--shadow-standard);
---shadow-chat-popup: none;
+--shadow-chat-popup: var(--box-shadow-sidebar-elements);
 --shadow-overlay: var(--shadow-standard);
 /*FONTS SECTION*/
 /* Quick Settings - Basic Font Colors */
@@ -231,8 +231,7 @@ font imports
   --font-color-hover-post-icons: var(--color-secondarys); /* tag */
   --font-color-hover-post-controls: var(--font-color-heavy);
 /* Module and Overlay Font Colors */
-  --font-color-title-game: var(--font-color-inverse);
-  --font-color-title-game-details: var(--font-color-inverse);
+  --font-color-invite-stub: var(--font-color-inverse);
   --font-color-module-menu: var(--font-color-primary);
   --font-color-modal-menu-oldschool: var(--font-color-inverse);
   --font-color-module-menu-header: var(--font-color-inverse);
@@ -252,11 +251,10 @@ font imports
   --font-color-post-downward-arrow: var(--font-color-secondary);
   --font-color-modal-arcade-body: var(--font-color-inverse);
   --font-color-main-body: var(--font-color-primary); /* MAIN system color */
-  --font-color-redsquare-interaction: var(--color-primary);
+  --font-color-redsquare-interaction: #e2264d; /* match the red heart animation */
 /* Alerts and Status Font Colors */
   --font-color-progress-bar: var(--font-color-inverse);
   --font-color-alert-box: var(--font-color-primary);
-  --font-color-chat-container-user-address: var(--font-color-primary); /* ALSO SHOWS UP IN POSTS! WHEREVER THE USER ADDRESS SHOWS*/
   --font-color-status-message: var(--background-color-main); 
   --font-color-a-link: var(--color-primary); 
   --font-color-hover-a-link: var(--font-color-primary); 
@@ -451,7 +449,7 @@ font imports
   --background-color-chat-module-main: var(--background-color-main);
   --background-color-chat-popup-main: var(--color-base);
   --background-color-chat-popup-message: var(--background-color-main);
-  --background-color-chat-popup-message-self: var(--background-color-main);
+  --background-color-chat-popup-message-self: var(--color-base);
   --background-color-chat-popup-subheader: var(--background-color-main);
   --background-color-chat-popup-header: var(--color-base);
   --background-color-chat-popup-input: var(--background-color-main);

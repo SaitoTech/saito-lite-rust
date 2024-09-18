@@ -510,6 +510,8 @@
       if (this.game.state.excommunicated[i].debater) {
 	if (this.game.state.excommunicated[i].debater.type == debater) {
 	  if (this.game.state.debaters[i].committed == 1) { return 1; }
+	  // sorry, you're committed !
+	  return 1;
         }
       }
     }

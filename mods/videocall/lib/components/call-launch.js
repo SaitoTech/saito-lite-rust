@@ -2,7 +2,6 @@ const SaitoOverlay = require('../../../../lib/saito/ui/saito-overlay/saito-overl
 const StunLaunchTemplate = require('./call-launch.template.js');
 const CallSetting = require('../components/call-setting.js');
 const SaitoLoader = require('../../../../lib/saito/ui/saito-loader/saito-loader.js');
-const CallScheduleWizard = require('./call-schedule-wizard.js');
 const CallScheduleJoin = require('./call-schedule-join.js');
 
 /**
@@ -66,7 +65,7 @@ class CallLaunch {
 
 	attachEvents(app, mod) {
 		if (document.getElementById('createRoom')) {
-			document.getElementById('createRoom').onclick = (e) => {
+			document.getElementById('createRoom').onclick = async (e) => {
 
 				if (!this.mod.isRelayConnected) {
 					siteMessage('Wait for peer connection');
@@ -76,24 +75,23 @@ class CallLaunch {
 				//
 				// I am initializing the call
 				//
+				let call_id = await this.mod.generateRoomId();
 				console.log(this.mod.room_obj, "room object joining");
 				if (!this.mod.room_obj) {
 					this.mod.room_obj = {
-						call_id: this.mod.createRoomCode(),
+						call_id,
 						host_public_key: this.mod.publicKey,
 						call_peers: [],
 						scheduled: false
 					};
 				}
 
+
 				this.enterCall()
 			};
 		}
 		if (document.getElementById('createScheduleRoom')) {
 			document.getElementById('createScheduleRoom').onclick = async (e) => {
-				// show splash screen 
-				this.callScheduleWizard = new CallScheduleWizard(app, mod)
-				this.callScheduleWizard.render()
 			};
 		}
 
@@ -106,19 +104,14 @@ class CallLaunch {
 		}
 	}
 
-	createRoomLink(room_obj) {
-		let base64obj = this.app.crypto.stringToBase64(
-			JSON.stringify(room_obj)
-		);
-		let url1 = window.location.origin + '/videocall/';
-		this.old_title = document.title;
-		return `${url1}?stun_video_chat=${base64obj}`;
-	}
-
 	enterCall() {
 		//
 		// Set big screen video as desired call interface
 		//
+		if(!this.callSetting.videoInput){
+			siteMessage("Waiting for media feed")
+			return 
+		}
 		this.app.connection.emit('stun-init-call-interface', this.callSetting.returnSettings());
 
 		//

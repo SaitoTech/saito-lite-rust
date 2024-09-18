@@ -5,12 +5,12 @@ const CallInterfaceVideo = require('./lib/components/call-interface-video');
 const CallInterfaceFloat = require('./lib/components/call-interface-float');
 const DialingInterface = require('./lib/components/dialer');
 const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
-
+const CallPreLauncher = require('./lib/components/call-interstitial');
 const StreamManager = require('./lib/StreamManager');
 const AppSettings = require('./lib/stun-settings');
 const HomePage = require("./index");
-const CallScheduleLaunch = require('./lib/components/call-schedule-launch');
-const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
+const SaitoHeader = require('./../../lib/saito/ui/saito-header/saito-header');
+const SaitoScheduleWizard = require('../../lib/saito/ui/saito-calendar/saito-schedule-wizard');
 
 class Videocall extends ModTemplate {
 	constructor(app) {
@@ -130,6 +130,7 @@ class Videocall extends ModTemplate {
 				);
 			}
 		}
+
 	}
 
 	async onPeerServiceUp(app, peer, service) {
@@ -142,8 +143,16 @@ class Videocall extends ModTemplate {
 		}
 	}
 
-	 render() {
-		this.renderInto('body');
+	async render() {
+
+		if (this.browser_active){
+			this.header = new SaitoHeader(this.app, this);
+			await this.header.initialize(this.app);
+			this.addComponent(this.header);
+			this.addComponent(new CallLauncher(this.app, this, "body"));
+			await super.render();
+		}
+
 	}
 
 	// renderInto(qs) {
@@ -160,63 +169,46 @@ class Videocall extends ModTemplate {
 	// 	}
 	// }
 
-	renderInto(qs) {
-		if (this.room_obj) {
-			if (this.room_obj.scheduled === false) {
-				if (qs == '.saito-overlay' || qs == 'body') {
-					if (!this.renderIntos[qs]) {
-						this.renderIntos[qs] = [];
-						this.renderIntos[qs].push(new CallLauncher(this.app, this, qs));
-					}
-					this.attachStyleSheets();
-					this.renderIntos[qs].forEach((comp) => {
-						comp.render();
-					});
-					this.renderedInto = qs;
-				}
-			} else if (this.room_obj.scheduled === true) {
-				// console.log("Should render call scheduler")
-				if (!this.renderIntos[qs]) {
-					this.renderIntos[qs] = [];
-					this.renderIntos[qs].push(new CallScheduleLaunch(this.app, this, qs));
-				}
-				this.attachStyleSheets();
-				this.renderIntos[qs].forEach((comp) => {
-					comp.render();
-				});
-				this.renderedInto = qs;
-			} else {
-				console.error("Videocall: schedule property not found in room object")
+	async renderInto(qs) {
+		if (qs == '.saito-overlay') {
+			if (!this.renderIntos[qs]) {
+				this.renderIntos[qs] = [];
+				this.renderIntos[qs].push(new CallLauncher(this.app, this, qs));
 			}
-		} else {
-			if (qs == '.saito-overlay' || qs == 'body') {
-				if (!this.renderIntos[qs]) {
-					this.renderIntos[qs] = [];
-					this.renderIntos[qs].push(new CallLauncher(this.app, this, qs));
-				}
-				this.attachStyleSheets();
-				this.renderIntos[qs].forEach((comp) => {
-					comp.render();
-				});
-				this.renderedInto = qs;
-			}
+			this.attachStyleSheets();
+			this.renderIntos[qs].forEach((comp) => {
+				comp.render();
+			});
+			this.renderedInto = qs;
 		}
-
-
 	}
 
 	respondTo(type, obj) {
 		let call_self = this;
 
+		let app = this.app
 		if (type === 'user-menu') {
 			//Don't provide a calling hook if in the video call app!
 			// if (call_self.browser_active) {
 			// 	return null;
 			// }
-			if (obj?.publicKey && !call_self.browser_active) {
-				if (obj.publicKey !== this.app.wallet.publicKey) {
+			if (obj?.publicKey !== this.publicKey && this.streams?.active === true) {
+				return [
+					{
+						text: 'Kick User From Call',
+						icon: "fa-solid fa-user-slash",
+						callback: async (app, public_key) => {
+							console.log('kicking user: ', public_key);
+							app.connection.emit('remove-peer-box', public_key)
+							this.streams.removePeer(public_key, "was kicked out")
+							await this.sendKickTransaction(public_key)
+						}
+					}
+				];
+			} else {
+				if (obj?.publicKey !== this.publicKey) {
 					this.attachStyleSheets();
-					super.render(this.app, this);
+					//super.render(this.app, this);
 					return [
 						{
 							text: 'Video/Audio Call',
@@ -235,39 +227,68 @@ class Videocall extends ModTemplate {
 					];
 				}
 			}
-			if (this.streams?.active == true & obj?.publicKey !== this.publicKey) {
-				if (type !== 'user-menu') return;
+
+		}
+
+		if (type === 'saito-header') {
+			if (!this.browser_active) {
+				this.attachStyleSheets();
+				//super.render(this.app, this);
+
 				return [
 					{
-						text: 'Kick User From Call',
-						icon: "fa-solid fa-user-slash",
-						callback: async (app, public_key) => {
-							console.log('kicking user: ', public_key);
-							app.connection.emit('remove-peer-box', public_key)
-							this.streams.removePeer(public_key, "was kicked out")
-							await this.sendKickTransaction(public_key)
+						text: 'Saito Talk',
+						icon: this.icon,
+						callback: function (app, id) {
+							let preCheck = new CallPreLauncher(app, call_self);
+							preCheck.render();
 						}
 					}
 				];
 			}
 		}
 
-		if (type === 'saito-header') {
-			if (!this.browser_active) {
-				this.attachStyleSheets();
-				super.render(this.app, this);
+		if(type === "saito-scheduler"){
+			this.attachStyleSheets();
+			//super.render(this.app, this);
+			return [
+				{
+					text: 'Schedule a call',
+					icon: this.icon,
+					callback: function (app, day, month, year) {
 
-				return [
-					{
-						text: 'Saito Talk',
-						icon: this.icon,
+						let schedule_wizard = new SaitoScheduleWizard(app, call_self);
 
-						callback: function (app, id) {
-							call_self.renderInto('.saito-overlay');
+						schedule_wizard.defaultDate = {day, month, year}
+
+						schedule_wizard.callbackAfterSubmit = async function (utcStartTime, duration, description = "", title = "") {
+		                    //Creates public key for clal
+		                    const call_id = await call_self.generateRoomId();
+
+		                    const room_obj = {
+		                        call_id,
+		                        scheduled: true,
+		                        call_peers: [],
+		                        startTime: utcStartTime, 
+		                        duration,
+		                        description
+		                    };
+		        
+		                    let call_link =  this.mod.generateCallLink(room_obj)
+
+		                    app.keychain.addKey(call_id, { identifier: title || "Video Call", startTime: utcStartTime, duration, description, link: call_link });
+		                    app.connection.emit('calendar-refresh-request');
+
+		                    let event_link =  app.browser.createEventInviteLink(app.keychain.returnKey(call_id));
+
+		                    await navigator.clipboard.writeText(event_link);
+		                    siteMessage('Invitation link copied to clipboard', 3500);
 						}
+						schedule_wizard.render();
+
 					}
-				];
-			}
+				}
+			];
 		}
 		//
 		//Game-Menu passes the game_mod as the obj, so we can test if we even want to add the option
@@ -666,10 +687,6 @@ class Videocall extends ModTemplate {
 		this.app.connection.emit('relay-transaction', newtx);
 	}
 
-	createRoomCode() {
-		return this.app.crypto.generateRandomNumber().substring(0, 12);
-	}
-
 	async sendCallEntryTransaction(public_key = '') {
 		if (!this.room_obj) {
 			console.error('No room object');
@@ -1016,19 +1033,20 @@ class Videocall extends ModTemplate {
 		let pk = this.app.crypto.generateKeys();
 		let id = this.app.crypto.generatePublicKey(pk);
 		this.app.keychain.addWatchedPublicKey(id);
-		this.app.keychain.addKey(id, { identifier: id, privateKey: pk, type: "scheduled_call" });
-		return id
+		let startTime = new Date().toISOString().slice(0, 16);
+		this.app.keychain.addKey(id, { identifier: id, privateKey: pk, type: "event", mod: "videocall", startTime });
+		return id;
 	}
 
 	generateCallLink(room_obj) {
 		let base64obj = this.app.crypto.stringToBase64(
 			JSON.stringify(room_obj)
-		  );
-	  
-		  let call_link = window.location.origin + '/videocall/';
-		  call_link = `${call_link}?stun_video_chat=${base64obj}`;
+		);
 
-		  return call_link;
+		let call_link = window.location.origin + '/videocall/';
+		call_link = `${call_link}?stun_video_chat=${base64obj}`;
+
+		return call_link;
 	}
 
 	webServer(app, expressapp, express) {

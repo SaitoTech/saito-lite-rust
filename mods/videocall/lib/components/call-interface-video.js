@@ -170,6 +170,11 @@ class CallInterfaceVideo {
 				this.app.connection.emit('remove-peer-box', peer);
 			}
 
+			if (this.old_title){
+				document.title = this.old_title;
+				delete this.old_title;
+			}
+
 			if (this.mod.browser_active) {
 				let homeModule = this.app.options?.homeModule || this.name;
 				let mod = this.app.modules.returnModuleByName(homeModule);
@@ -207,7 +212,6 @@ class CallInterfaceVideo {
 						'',
 						window.location.origin + '/' + am.returnSlug()
 					);
-					document.title = this.old_title;
 
 				}
 			}
@@ -532,7 +536,9 @@ class CallInterfaceVideo {
 
 		let url1 = window.location.origin + '/videocall/';
 
-		this.old_title = document.title;
+		if (!this.old_title){
+			this.old_title = document.title;
+		}
 
 		if (this.full_screen) {
 			window.history.pushState(

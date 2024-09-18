@@ -341,6 +341,13 @@ class Stun extends ModTemplate {
 		if (this.peers.get(peerId)) {
 			let pc = this.peers.get(peerId);
 			console.log(`STUN: ${peerId} already in stun peer list`, "Status: " + pc.connectionState);
+
+			//If not a solid connection state..., delete and try again
+			if (pc.connectionState == "failed" || pc.connectionState == "disconnected"){
+				this.removePeerConnection(peerId);
+				this.createPeerConnection(peerId, callback);
+				return;
+			}
 			
 			if (callback){
 				callback(peerId);
@@ -394,6 +401,12 @@ class Stun extends ModTemplate {
 				this.removePeerConnection(peerId);
 		}, 4000);
 		
+		peerConnection.timer = setTimeout(()=>{ 
+				console.log("STUN Connection timeout...");
+				this.app.connection.emit('stun-connection-timeout', peerId);
+				this.removePeerConnection(peerId);
+		}, 4000);
+
 		// Handle ICE candidates
 		peerConnection.onicecandidate = async (event) => {
 			console.log('receiving ice candidate for ', peerId, event.candidate)
@@ -432,7 +445,7 @@ class Stun extends ModTemplate {
 				clearTimeout(peerConnection.timer);
 				delete peerConnection.timer;
 			}
-			
+
 			if (
 				peerConnection.connectionState === 'failed' ||
 				peerConnection.connectionState === 'disconnected'
@@ -446,6 +459,7 @@ class Stun extends ModTemplate {
 							'stun-connection-failed',
 							peerId
 						);
+						this.removePeerConnection(peerId);
 					}
 				}, 3000);
 			}

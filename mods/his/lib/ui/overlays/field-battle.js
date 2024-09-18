@@ -103,8 +103,6 @@ class FieldBattleOverlay {
 			el.remove();
 		});
 		document.querySelectorAll('.hits-assignable').forEach((el) => {
-console.log("EL INNERHTML in ASSIGN HITS MANUALLY: ");
-console.log(el.innerHTML);
 try {
 			let obj = el.querySelector('.field-battle-unit .field-battle-desc');
 			let factionspace = obj.innerHTML;
@@ -117,16 +115,15 @@ try {
 			) {
 				can_i_kill_this_guy = true;
 			}
-			console.log('can I kill this guy? : ' + can_i_kill_this_guy);
 
 			if (can_i_kill_this_guy) {
-				if (factionspace) {
-					factionspace.innerHTML += ' (click to assign hit)';
-				}
-				el.classList.add('hits-assignable-hover-effect');
 
+				if (factionspace) { factionspace.innerHTML += ' (click to assign hit)'; }
+				el.classList.add('hits-assignable-hover-effect');
 				hits_assignable++;
+
 				el.onclick = (e) => {
+
 					hits_assigned++;
 					let hits_left = hits_to_assign - hits_assigned;
 

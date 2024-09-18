@@ -155,6 +155,11 @@ class RedSquare extends ModTemplate {
       post.render();
     });
 
+    this.app.connection.on('redsquare-post-tweet', (data, keys) => {
+      console.log("Tweeting through event interface!");
+      this.sendTweetTransaction(this.app, this, data, keys);
+    });
+
     return this;
   }
 
@@ -263,7 +268,7 @@ class RedSquare extends ModTemplate {
       x.push({
         text: 'Tweet',
         icon: 'fa-solid fa-pen',
-        allowed_mods: ['redsquare'],
+        is_active: this.browser_active,
         disallowed_mods: ['arcade'],
         rank: 10,
         callback: function (app, id) {
@@ -275,9 +280,9 @@ class RedSquare extends ModTemplate {
       x.push({
         text: 'Tweet Camera',
         icon: 'fas fa-camera',
-        allowed_mods: ['redsquare'],
+        is_active: this.browser_active,
         disallowed_mods: ['arcade'],
-        rank: 20,
+        rank: 30,
         callback: function (app, id) {
           let post = new Post(app, this_mod);
           let camera = new SaitoCamera(app, this_mod, (img) => {
@@ -291,9 +296,9 @@ class RedSquare extends ModTemplate {
       x.push({
         text: 'Tweet Image',
         icon: 'fas fa-image',
-        allowed_mods: ['redsquare'],
+        is_active: this.browser_active,
         disallowed_mods: ['arcade'],
-        rank: 30,
+        rank: 20,
         callback: function (app, id) {
           let post = new Post(app, this_mod);
           post.render();
@@ -366,14 +371,27 @@ class RedSquare extends ModTemplate {
     this.loadOptions();
 
     if (!app.BROWSER) {
+
       this.cached_recent_tweets = await this.cacheRecentTweets();
+
+      //
+      // refresh cached tweets when an address is blacklisted
+      //
+      this.app.connection.on('saito-blacklist', async (obj) => {
+	setTimeout(async () => {
+          this.cached_recent_tweets = await this.cacheRecentTweets();
+	}, 4000);
+      });
+
       return;
     }
+
+
+
 
     ///////////////////////////////////////////////////////////////////////////
     /// ONLY BROWSER CODE
     //////////////////////////////////////////////////////////////////////////
-
     //
     // add myself as peer...
     //
@@ -2561,6 +2579,7 @@ class RedSquare extends ModTemplate {
   // This may be (even) faster if we ditch the general storage/archive logic and just directly use SQL
   //
   async cacheRecentTweets() {
+
     let redsquare_self = this;
     let hex_values = [];
 

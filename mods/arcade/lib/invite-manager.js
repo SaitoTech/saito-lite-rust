@@ -54,7 +54,9 @@ class InviteManager {
 
 				let target = '.arcade_game_overlay_loader';
 
-				if (document.querySelector(".invite-manager")){
+				let im = document.querySelector(".invite-manager");
+				//If we have an invite manager AND it is visible
+				if (im && im.getBoundingClientRect().width){
 					document.querySelector(".invite-manager").innerHTML = "";	
 					target = ".invite-manager";
 				}else{

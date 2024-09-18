@@ -1,6 +1,5 @@
 module.exports = (app, mod, build_number, og_card, game) => {
 	let html = `
-
   
   <!DOCTYPE html>
   <html lang="en" data-theme="arcade">

@@ -183,23 +183,25 @@ class Crypto extends ModTemplate {
 
 			let hook = document.querySelector(".game-wizard-crypto-hook");
 
-			hook.onclick = (e) => {
+			if (hook){
+				hook.onclick = (e) => {
 
-				this.overlay = new CryptoSelectAmount(this.app, this);
-				this.overlay.fixed = false;
+					this.overlay = new CryptoSelectAmount(this.app, this);
+					this.overlay.fixed = false;
 
-				if (hook.dataset?.amount){
-					this.overlay.stake = hook.dataset.amount;
-				}
-
-				this.overlay.render((ticker, amount, match_amount = null) => {
-					console.log("SELECTED CRYPTO: ", ticker, amount, match_amount);
-					hook.dataset["ticker"] = ticker;
-					hook.dataset["amount"] = amount;
-					if (match_amount !== null){
-						hook.dataset["match"] = match_amount;	
+					if (hook.dataset?.amount){
+						this.overlay.stake = hook.dataset.amount;
 					}
-				});
+
+					this.overlay.render((ticker, amount, match_amount = null) => {
+						console.log("SELECTED CRYPTO: ", ticker, amount, match_amount);
+						hook.dataset["ticker"] = ticker;
+						hook.dataset["amount"] = amount;
+						if (match_amount !== null){
+							hook.dataset["match"] = match_amount;	
+						}
+					});
+				}
 			}
 		}
 	}

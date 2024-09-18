@@ -136,7 +136,8 @@ class LimboMain {
 					screenStream: false,
 					mode: "camera"
 				};
-				this.mod.broadcastDream(obj);
+				this.mod.startDream(obj);
+				//this.mod.broadcastDream(obj);
 			}
 		}
 		if (document.getElementById("audio")){
@@ -148,7 +149,8 @@ class LimboMain {
 					audio: true,
 					mode: "audio"
 				};
-				this.mod.broadcastDream(obj);
+				this.mod.startDream(obj);
+				//this.mod.broadcastDream(obj);
 			}
 		}
 
@@ -160,7 +162,8 @@ class LimboMain {
 					screenStream: true,
 					mode: "screen"
 				};
-				this.mod.broadcastDream(obj);
+				this.mod.startDream(obj);
+				//this.mod.broadcastDream(obj);
 			}
 		}
 
