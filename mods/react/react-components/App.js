@@ -1,3 +1,18 @@
+/**
+ * App Component for integrating React within the Saito.
+ * 
+ * This component demonstrates how React can be used with Saito to create dynamic,
+ * real-time user interfaces that interact with the blockchain.
+ * 
+ * General functionality includes:
+ * - Sending transactions and messages through the Saito network.
+ * - Listening for and displaying blockchain events such as new blocks and transactions.
+ * - Listening for new blocks and rendering them
+ * 
+ * This component highlights how React can be used to build interactive, blockchain-connected UIs within Saito's ecosystem.
+ */
+
+
 import React, { useState, useEffect } from "react";
 const Button = require('./Button').default;
 
@@ -8,7 +23,6 @@ const App = ({ app, mod }) => {
     const [newBlock, setNewBlock] = useState(null); 
 
     const createMessageTransaction = async (type) => {
-
         if (message.trim() === "") {
             siteMessage("Message field is empty!")
             return;
@@ -30,14 +44,12 @@ const App = ({ app, mod }) => {
         } else {
             app.connection.emit('relay-transaction', newtx);
             app.network.propagateTransaction(newtx);
-        }
-
-        console.log(type)
-
-        
+        }   
         siteMessage(`Message Sent via ${type} `)
         setMessage("");
     };
+
+
 
     useEffect(() => {
         mod.handlePeerTransaction = function (blk, tx) {
@@ -58,6 +70,8 @@ const App = ({ app, mod }) => {
             siteMessage(`Received new block`)
         };
     }, []);
+
+
 
     const renderBlockInfo = (block) => {
         if (!block) return <p>No block data available</p>;
@@ -83,6 +97,8 @@ const App = ({ app, mod }) => {
             </div>
         );
     };
+
+
 
     return (
         <div className="app-container">

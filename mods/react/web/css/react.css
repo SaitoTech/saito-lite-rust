@@ -99,3 +99,47 @@ button {
     height: 50px;
 }
 
+
+
+@media (max-width: 768px) {
+    .app-container {
+        padding: 1rem;
+    }
+
+    .message-send-container input, .message-send-container button {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    button {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .received-messages-container, .block-container {
+        max-height: 10rem;
+    }
+
+    .identicon > img {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .app-container {
+        padding: 1rem;
+    }
+
+    .user-box {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .identicon {
+        margin-bottom: 1rem;
+        margin-right: 0;
+    }
+
+
+}

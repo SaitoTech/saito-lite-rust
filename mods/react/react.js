@@ -1,5 +1,8 @@
-const Transaction = require('../../lib/saito/transaction').default;
-const PeerService = require('saito-js/lib/peer_service').default;
+/**
+ * ReactMod: A Saito Module that integrates React Libary as it's UI framework
+ * 
+ **/
+
 const ModTemplate = require('../../lib/templates/modtemplate');
 const HomePage = require('./index');
 const React = require('react');
