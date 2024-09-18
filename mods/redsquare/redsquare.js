@@ -155,6 +155,11 @@ class RedSquare extends ModTemplate {
       post.render();
     });
 
+    this.app.connection.on('redsquare-post-tweet', (data, keys) => {
+      console.log("Tweeting through event interface!");
+      this.sendTweetTransaction(this.app, this, data, keys);
+    });
+
     return this;
   }
 
