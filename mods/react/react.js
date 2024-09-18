@@ -20,7 +20,7 @@ class ReactMod extends ModTemplate {
     };
     this.description = 'A placeholder react app';
 
-    this.styles = ['/saito/saito.css'];
+    this.styles = ['/saito/saito.css', '/react/style.css'];
   }
 
   onNewBlock(blk) {
@@ -30,11 +30,14 @@ class ReactMod extends ModTemplate {
   async initialize(app) {
     await super.initialize(app);
   }
+
+
+
+
   async render() {
     const rootElement = document.getElementById('root');
     const root = createRoot(rootElement);
     root.render(<App app={this.app} mod={this} />);
-
     await super.render();
     this.rendered = true;
   }
