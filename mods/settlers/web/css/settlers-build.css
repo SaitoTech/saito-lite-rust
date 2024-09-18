@@ -160,6 +160,7 @@
 .settlers-desired-resources img:hover {
 	cursor: pointer;
 	filter: brightness(1.15) drop-shadow(5px 5px 3px black);
+	scale: 1.1;
 }
 
 .settlers-icons-container {
@@ -215,21 +216,26 @@
 /* discard overlay */
 
 .dev-card-overlay .settlers-cards-container {
-	min-height: 35rem;
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	display: flex;
+	flex-wrap: nowrap;
+	overflow: visible;
 	min-width: min(750px, 95vw);
+	max-width: 85vw;
+	padding-right: 15rem;
+
 }
 
 .dev-card-overlay .settlers-items-container .settlers-cards-container img {
 	height: auto;
+	max-width: min(50vw, 33vh);
+	min-width: 25rem;
 }
 
 .settlers-dev-card {
 	position: relative;
-	width: min(32rem, 40vw);
+	width: min(26rem, 40vw);
 	height: calc(min(32rem, 40vw) * 1.4);
-	margin: auto;
+	z-index: 1;
 }
 
 .settlers-dev-card .settlers-dev-card-title {

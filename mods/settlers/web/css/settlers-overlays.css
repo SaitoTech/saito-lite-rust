@@ -24,6 +24,7 @@
 
 .dev-card-overlay {
 	width: unset;
+	max-width: 85vw;
 }
 
 .mobile-trading-container .player-box {
