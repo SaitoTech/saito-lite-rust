@@ -1632,12 +1632,6 @@ class Limbo extends ModTemplate {
 				description
 			};
 
-			let pk = this.app.crypto.generateKeys();
-			let id = this.app.crypto.generatePublicKey(pk);
-			this.app.keychain.addWatchedPublicKey(id);
-			this.app.keychain.addKey(id, { identifier: title || "Swarmcast", privateKey: pk, type: "event", mod: "swarmcast", startTime: utcStartTime, duration, description });
-
-			const cast_obj_stringified = JSON.stringify(cast_obj);
 			let data = {
 				name: this.returnName(),
 				path: `/${this.returnSlug()}/`,
@@ -1647,8 +1641,15 @@ class Limbo extends ModTemplate {
 			link_obj.buildLink()
 			let cast_link = link_obj.invite_link;
 
+			let pk = this.app.crypto.generateKeys();
+			let id = this.app.crypto.generatePublicKey(pk);
+			this.app.keychain.addWatchedPublicKey(id);
+			this.app.keychain.addKey(id, { identifier: title || "Swarmcast", privateKey: pk, type: "event", mod: "swarmcast", startTime: utcStartTime, duration, description, link: cast_link });
+
+			let event_link = this.app.browser.createEventInviteLink(this.app.keychain.returnKey(id));
+
 			this.app.connection.emit('calendar-refresh-request');
-            await navigator.clipboard.writeText(cast_link);
+            await navigator.clipboard.writeText(event_link);
             siteMessage('Invitation link copied to clipboard', 3500);
 
 		}

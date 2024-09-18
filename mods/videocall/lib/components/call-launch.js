@@ -65,7 +65,7 @@ class CallLaunch {
 
 	attachEvents(app, mod) {
 		if (document.getElementById('createRoom')) {
-			document.getElementById('createRoom').onclick = (e) => {
+			document.getElementById('createRoom').onclick = async (e) => {
 
 				if (!this.mod.isRelayConnected) {
 					siteMessage('Wait for peer connection');
@@ -75,10 +75,11 @@ class CallLaunch {
 				//
 				// I am initializing the call
 				//
+				let call_id = await this.mod.generateRoomId();
 				console.log(this.mod.room_obj, "room object joining");
 				if (!this.mod.room_obj) {
 					this.mod.room_obj = {
-						call_id: this.mod.createRoomCode(),
+						call_id,
 						host_public_key: this.mod.publicKey,
 						call_peers: [],
 						scheduled: false

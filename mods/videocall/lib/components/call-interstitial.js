@@ -45,12 +45,14 @@ class CallPreLauncher {
                         description
                     };
         
-                    const room_obj_stringified = JSON.stringify(room_obj);
                     let call_link =  this.mod.generateCallLink(room_obj)
-                    this.app.keychain.addKey(call_id, { identifier: title || "Video Call", startTime:utcStartTime, duration, description });
+
+                    this.app.keychain.addKey(call_id, { identifier: title || "Video Call", startTime:utcStartTime, duration, description, link: call_link });
         
                     this.app.connection.emit('calendar-refresh-request');
-                    await navigator.clipboard.writeText(call_link);
+                    let event_link =  this.app.browser.createEventInviteLink(this.app.keychain.returnKey(call_id));
+
+                    await navigator.clipboard.writeText(event_link);
                     siteMessage('Invitation link copied to clipboard', 3500);
                 }
 
