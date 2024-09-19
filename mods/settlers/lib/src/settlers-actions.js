@@ -3,23 +3,19 @@ class SettlersActions {
   // OVERRIDE THIS FUNCTION FROM THE PARENT GAME LIBRARY TO CHANGE THE ACKNOWLEDGE TEXT TO CONTINUE
   //
   playerAcknowledgeNotice(msg, mycallback) {
-    let html = `<ul><li class="textchoice acknowledge" id="confirmit">continue</li></ul>`;
+    let html = `<ul><li class="textchoice acknowledge enabled" id="confirmit"><i class="fa-solid fa-forward"></i></li></ul>`;
     try {
+
+
       this.updateStatusWithOptions(`${this.getLastNotice()}<div class="player-notice"><span class="acknowledge-message">${msg}</span></div>`, html);
 
-      document.querySelectorAll(".acknowledge").forEach((el) => {
-        el.onclick = async (e) => {
+      $("#rolldice").html(`<i class="fa-solid fa-forward"></i>`);
+      $("#rolldice").addClass("enabled");
 
-          // if player clicks multiple times, don't want callback executed multiple times
-          document.querySelectorAll(".acknowledge").forEach((el) => {
-            el.onclick = null;
-          });
-          //Clear click options
-          this.updateControls('');
-
-          await mycallback();
-        };
-      });
+      document.querySelector("#rolldice").onclick = async (e) => {
+        e.currentTarget.onclick = null;
+        await mycallback();
+      }
     } catch (err) {
       console.error("Error with ACKWNOLEDGE notice!: " + err);
     }
@@ -267,50 +263,7 @@ class SettlersActions {
 
   }
 
-  /*
-    Recursively let player select two resources, then push them to game queue to share selection
-  */
-  playYearOfPlenty(player, cardname) {
-    if (this.game.player != player) return;
-    //Pick something to get
-    let settlers_self = this;
-    let remaining = 2;
-    let resourceList = this.returnResources();
-    let cardsToGain = [];
-
-    //Player recursively selects all the resources they want to get rid of
-    let gainResource = function (settlers_self) {
-      let html = `<div class='player-notice'>Select Resources (Can get ${remaining}): <ul class="horizontal_list">`;
-      for (let i of resourceList) {
-        html += `<li id="${i}" class="iconoption option"><div class="tip"><img class="icon" src="${this.returnCardImage(
-          i
-        )}" /></div></li>`;
-      }
-      html += "</ul>";
-      html += "</div>";
-      settlers_self.displayCardfan();
-      settlers_self.updateStatus(html, 1);
-
-      $(".option").off();
-      $(".option").on("click", function () {
-        console.log("clicked on option 8");
-        let res = $(this).attr("id");
-        cardsToGain.push(res);
-        remaining--;
-        if (remaining <= 0) {
-          settlers_self.addMove(
-            `year_of_plenty\t${player}\t${cardname}\t${JSON.stringify(cardsToGain)}`
-          );
-          settlers_self.endTurn();
-          return 0;
-        } else {
-          gainResource(settlers_self);
-        }
-      });
-    };
-    gainResource(settlers_self);
-  }
-
+  
   /*
     Every time a knight played, need to check if this makes a new largest army
   */

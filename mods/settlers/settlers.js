@@ -364,47 +364,54 @@ class Settlers extends GameTemplate {
 		//
 		//Maybe we should standardize addClass() or classlist = [], for our UI components
 		//
-		document.querySelector('#hud')?.classList.add('saitoa');
+		document.querySelector('#hud-body')?.classList.add('saitoa');
+		$(".hud-body .controls").appendTo("#hud");
 
-		//
-		//
-		//
-		//
-		// add extra controls to HUD
-		//
-		let has_cards = false;
-		if (this.game.deck[0]?.hand?.length > 0){
-			has_cards = true;
-		}
-		if (this.game.state.players[this.game.player-1].devcards.length > 0){
-			has_cards = true;
-		}
+		let html = `<ul><li class="option enabled" id="score"><i class="fa-solid fa-ranking-star"></i></li>
+	    	<li class="option enabled" id="trade"><i class="fa-solid fa-money-bill-transfer"></i></li>
+	    	<li class="option" id="playcard"><i class="fa-solid fa-people-robbery"></i></li>
+	    	<li class="option" id="bank"><i class="fa-solid fa-building-columns"></i></li>
+	    	<li class="option" id="spend"><i class="fa-solid fa-screwdriver-wrench"></i></li>
+	    	<li class="option enabled" id="rolldice"><i class="fa-solid fa-forward"></i></li></ul>
+	    	`;
 
-		if (!document.querySelector(".mobile")) {
-			this.app.browser.prependElementToSelector(
-				`<div class="mobile"><div class="trade">trade</div><div class="cards ${
-					has_cards ? '' : 'hidden'
-				}">cards</div><div class="score">score</div></div>`,
-				'.hud-body'
-			);
-		}
+	    this.hud.updateControls(html);
+	    this.updateControls();
 
-		if (this.game.state.placedCity == null) {
-			$(".hud-body .mobile").css("visibility", "visible");
-		}
-		
+	    if (this.game.state.placedCity){
+	    	$(".option").css("visibility", "hidden");
+	    }
+
 		//
 		// hook up interactivity
 		//
-		document.querySelector('.hud-body .mobile .score').onclick = (e) => {
+		if (document.querySelector('.controls #score')){
+			document.querySelector('.controls #score').onclick = (e) => {
 			this.stats_overlay.render();
 		};
 
-		document.querySelector('.hud-body .mobile .cards').onclick = (e) => {
-			this.dev_card.render();
-		};
 
-		let trade_btn = document.querySelector('.hud-body .mobile .trade');
+		if (document.querySelector('.controls #playcard')){
+			document.querySelector('.controls #playcard').onclick = (e) => {
+				this.dev_card.render();
+			};
+		}
+
+		if (document.querySelector('.controls #bank')){
+			document.querySelector('.controls #bank').onclick = (e) => {
+				this.bank.render();
+			};
+		}
+
+
+		if (document.querySelector('.controls #spend')){
+			document.querySelector('.controls #spend').onclick = (e) => {
+				this.build.render();
+			};
+		}
+
+
+		let trade_btn = document.querySelector('.controls #trade');
 
 		if (!trade_btn || this.game.over) {
 			return;
@@ -414,7 +421,7 @@ class Settlers extends GameTemplate {
 			this.app.browser.isMobileBrowser() &&
 			window.innerHeight > window.innerWidth
 		) {
-			trade_btn.innerHTML = 'players';
+			trade_btn.innerHTML = `<i class="fa-solid fa-users"></i>`;
 		}
 
 		trade_btn.onclick = (e) => {
@@ -453,6 +460,10 @@ class Settlers extends GameTemplate {
 				this.trade_overlay.render();
 			}
 		};
+
+	  }
+
+
 	}
 
 
@@ -676,6 +687,19 @@ class Settlers extends GameTemplate {
 		super.endTurn();
 	}
 
+	updateControls(str){
+		console.log("!!!!!!!!!!!!!!!!!", str);
+		console.log("My turn? ", this.game.state.playerTurn, this.game.player);
+		if (this.game.state.playerTurn !== this.game.player){
+	      $("#rolldice").html(`<i class="fa-solid fa-pause"></i>`);
+	      $("#rolldice").removeClass("enabled");
+	      $("#rolldice").off();
+
+	      $("#bank").removeClass("enabled");
+	      $("#spend").removeClass("enabled");
+		}
+	}
+
 }
 
 Settlers.importFunctions(
@@ -687,3 +711,12 @@ Settlers.importFunctions(
 );
 
 module.exports = Settlers;
+
+
+//<i class="fa-solid fa-hammer"></i>   //<i class="fa-solid fa-screwdriver-wrench"></i>
+//<i class="fa-solid fa-dice"></i>
+//<i class="fa-solid fa-forward"></i>
+//<i class="fa-solid fa-building-columns"></i>
+
+//<i class="fa-solid fa-money-bill-transfer"></i>
+//<i class="fa-solid fa-ranking-star"></i>

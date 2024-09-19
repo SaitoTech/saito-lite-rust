@@ -88,6 +88,27 @@
 	cursor: not-allowed;
 }
 
+.bank-overlay .settlers-trade-resources.settlers-row-disabled::after {
+	content: 'cannot trade now' !important;
+	cursor: not-allowed;
+	transition: all 0.2s ease-in-out;
+	width: calc(50% + 2rem);
+	min-width: 25rem;
+	height: 3rem;
+	position: absolute;
+	top: calc(50%);
+	left: calc(50%);
+	transform: translate(-50%, -50%);
+	font-size: 2.3rem;
+	z-index: 2;
+	white-space: pre;
+	word-wrap: break-word;
+	background-color: #d3c38dc1;
+	line-height: 3rem;
+	border-radius: 1rem;
+	filter: drop-shadow(2px 4px 6px black);
+}
+
 .build-overlay .settlers-item-row:hover::after {
 	opacity: 1;
 }
@@ -96,12 +117,12 @@
 	filter: grayscale(1);
 	opacity: 0.5;
 }
-
+ 
 .settlers-item-row.settlers-row-disabled:hover {
 	cursor: not-allowed !important;
 }
 
-.settlers-item-row.settlers-row-disabled .settlers-item-img:hover {
+.settlers-row-disabled .settlers-item-img:hover {
 	cursor: not-allowed !important;
 }
 
@@ -120,6 +141,7 @@
 	flex-direction: row;
 	gap: 1rem;
 	padding: 0.5rem;
+	position: relative;
 }
 
 .bank-overlay .settlers-items-container .settlers-cards-container img {
@@ -160,6 +182,7 @@
 .settlers-desired-resources img:hover {
 	cursor: pointer;
 	filter: brightness(1.15) drop-shadow(5px 5px 3px black);
+	scale: 1.1;
 }
 
 .settlers-icons-container {
@@ -188,7 +211,6 @@
 }
 
 .settlers-items-container .settlers-cards-container img {
-	cursor: pointer;
 	height: 13rem;
 }
 
@@ -215,21 +237,25 @@
 /* discard overlay */
 
 .dev-card-overlay .settlers-cards-container {
-	min-height: 35rem;
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	display: flex;
+	flex-wrap: nowrap;
+	overflow: visible;
 	min-width: min(750px, 95vw);
+	max-width: 85vw;
+    justify-content: center;
 }
 
 .dev-card-overlay .settlers-items-container .settlers-cards-container img {
 	height: auto;
+	max-width: min(50vw, 33vh);
+	min-width: 25rem;
 }
 
 .settlers-dev-card {
 	position: relative;
-	width: min(32rem, 40vw);
-	height: calc(min(32rem, 40vw) * 1.4);
-	margin: auto;
+	width: min(26rem, 40vw);
+	height: calc(min(27rem, 40vw) * 1.4);
+	z-index: 1;
 }
 
 .settlers-dev-card .settlers-dev-card-title {

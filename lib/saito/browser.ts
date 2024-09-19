@@ -2338,6 +2338,7 @@ class Browser {
 							if (identifier !== key) {
 								el.innerText = identifier;
 							} else {
+								el.innerText = 'Anon-' + identifier.substr(0,6);
 								if (!unknown_keys.includes(key)) {
 									unknown_keys.push(key);
 								}

@@ -6,7 +6,7 @@ let html = `
 	if (mod.canPlayerPlayCard()) {
 		html += `<div class="settlers-item-info-text">Select Card to Play:</div>`;
 	} else {
-		html += `<div class="settlers-item-info-text">Development Cards:</div>`;
+		html += `<div class="settlers-item-info-text">Action Cards:</div>`;
 	}
 
 	html += `<div class="settlers-item-row settlers-cards-container settlers-desired-resources">`;
