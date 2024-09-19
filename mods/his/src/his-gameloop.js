@@ -6985,6 +6985,8 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 	  let space = this.game.spaces[spacekey];
 	  let unit_destroyed = false;
 
+// known error where assault with some response cards triggers this
+try {
 	  for (let i = 0; i < space.units[faction].length && unit_destroyed == false; i++) {
 	    if (space.units[faction][i].type == unit_type) {
 	      if (this.game.state.field_battle.faction_map[faction] == this.game.state.field_battle.attacker_faction) {
@@ -7010,6 +7012,7 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 	      unit_destroyed = true;
 	    }
 	  }
+} catch (err) {}
 
 	  return 1;
 
