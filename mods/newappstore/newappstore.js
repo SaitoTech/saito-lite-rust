@@ -85,6 +85,7 @@ class AppStore extends ModTemplate {
 
 		if (document.getElementById('generate-tx')) {
 			document.getElementById('generate-tx').onclick = async (e) => {
+				alert('clicked');
 				let binary = document.getElementById('binary').value;
 				let title = document.getElementById('title').value;
 				let description = document.getElementById('description').value;

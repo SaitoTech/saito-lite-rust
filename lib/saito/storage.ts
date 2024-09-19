@@ -364,6 +364,18 @@ class Storage {
 //		this.timeout = setTimeout(saveOptionsForReal, 50);
 	}
 
+	saveLocalApplication(tx, mod) {
+		if (!this.app.options.dyn_mods) { this.app.options.dyn_mods = {}; }
+		this.app.options.dyn_mods[mod] = tx;
+
+		this.saveOptions();
+	}
+
+	loadLocalApplications() {
+		if (!this.app.options.dyn_mods) { this.app.options.dyn_mods = {}; }
+		return this.app.options.dyn_mods;
+	}
+
 	getModuleOptionsByName(modname) {
 		for (let i = 0; i < this.app.options.modules.length; i++) {
 			if (this.app.options.modules[i].name === modname) {

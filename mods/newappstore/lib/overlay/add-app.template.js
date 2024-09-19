@@ -4,11 +4,11 @@ module.exports = AddAppOverlayTemplate = (app, mod) => {
   <style>
     .saito-app-overlay .saito-app-body .saito-app-upload {
       border: 3px dotted;
-      width: 70%;
+      width: 100%;
       margin: auto;
       text-align: center;
       font-size: 2.2rem;
-      padding: 10rem 0rem;
+      padding: 15rem 0rem;
     }
   </style>
 

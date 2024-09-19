@@ -194,6 +194,47 @@ class Mods {
 
 		// try {
 			if (this.app.BROWSER === 1) {
+
+				self["saito-js"] = require('saito-js').default;
+				self["saito-js/lib/slip"] = require("saito-js/lib/slip").default;
+				self["saito-js/lib/transaction"] = require("saito-js/lib/transaction").default;
+				self["saito-js/lib/block"]=require("saito-js/lib/block").default;
+
+				let mods = this.app.storage.loadLocalApplications();
+
+				console.log("module.ts mods: ", mods);
+
+				for (const mod in mods) {
+					console.log(`${mod}: ${mods[mod]}`);
+
+					let newtx = new Transaction();
+					newtx.deserialize_from_web(this.app, mods[mod]);
+					let msg = newtx.returnMessage();
+
+					let mod_binary = msg.bin;
+					let moduleCode = this.app.crypto.base64ToString(mod_binary);
+
+					let module_eval = eval(moduleCode);
+					// let m = new window.Dyn(this.app);
+
+					// const current_url = window.location.toString();
+					// const myurl = new URL(current_url);
+					// const myurlpath = myurl.pathname.split('/');
+					// let active_module = myurlpath[1] ? myurlpath[1].toLowerCase() : '';
+					// if (active_module == '') {
+					// 	active_module = 'website';
+					// }
+					// if (m.isSlug(active_module)){
+					// 	m.browser_active = true;
+					// 	m.alerts = 0;
+					// 	const urlParams = new URLSearchParams(location.search);
+
+					// 	m.handleUrlParams(urlParams);
+					// }
+
+					// this.mods.push(m);
+				}
+
 				// console.log('loading dyn module...');
 				// //console.log("DYN_MOD_WEB_2: ", DYN_MOD_WEB_2);
 				// let moduleCode = this.app.crypto.base64ToString(DYN_MOD_WEB_1);

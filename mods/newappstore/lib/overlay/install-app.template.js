@@ -1,4 +1,6 @@
-module.exports = InstallAppOverlayTemplate = (app, mod) => {
+module.exports = InstallAppOverlayTemplate = (app, mod, this_self) => {
+
+  let identicon = app.keychain.returnIdenticon(this_self.publisher);
 
 	return `
   <style>
@@ -19,25 +21,34 @@ module.exports = InstallAppOverlayTemplate = (app, mod) => {
       margin-right: 1rem;
       margin-bottom: 1rem;
     }
+
+    #publisher {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
   </style>
 
   <div class="saito-module-overlay saito-app-install-overlay">
-    <div class="saito-module-header" style="background-image: url(https://images.nintendolife.com/5c5f499d4a78d/mk7-banner.large.jpg);">
-      <h1 class="saito-module-titlebar">Mario Kart</h1>
+    <div class="saito-module-header">
+      <h1 class="saito-module-titlebar">${this_self.title}</h1>
     </div>
 
       <div class="saito-module-details">
         <div class="detail-key">Version</div>
-        <div class="detail-value">1.00</div>
+        <div class="detail-value">${this_self.version}</div>
 
         <div class="detail-key">Publisher</div>
-        <div class="detail-value">Saito</div>
+        <div class="detail-value" id="publisher">
+          <img class="saito-identicon" src="${identicon}"> 
+          <div>${this_self.publisher}</div>
+        </div>
 
         <div class="detail-key">Categories</div>
-        <div class="detail-value">Entertainment</div>
+        <div class="detail-value">${this_self.category}</div>
 
         <div class="detail-key">Description</div>
-        <div class="detail-value">Mario kart game on saito blockchain</div>
+        <div class="detail-value">${this_self.description}</div>
       </div>
 
       <button type="submit" class="withdraw-submit saito-button-primary fat saito-overlay-form-submit" id="saito-app-install-btn">Install</button>
