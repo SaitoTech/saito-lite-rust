@@ -78,19 +78,19 @@ const App = ({ app, mod }) => {
 
         return (
             <div className="block-container">
-                <h4>New Block</h4>
-                <p><strong>Block Hash:</strong> {block.hash}</p>
-                <p><strong>Previous Block Hash:</strong> {block.previousBlockHash}</p>
-                <p><strong>Block Type</strong> {block.block_type}</p>
-                <p><strong>Number of Transactions:</strong> {block.transactions.length}</p>
+                <h4>New Block</h4><div></div>
+                <p><strong>Block Hash:</strong> <span>{block.hash}</span></p>
+                <p><strong>Previous Block Hash:</strong> <span>{block.previousBlockHash}</span></p>
+                <p><strong>Block Type</strong> <span>{block.block_type}</span></p>
+                <p><strong>Number of Transactions:</strong> <span>{block.transactions.length}</span></p>
                 <ul>
                     {block.transactions.map((tx, index) => (
                         <li key={index}>
-                            <p><strong>Transaction {index + 1}:</strong></p>
-                            <p><strong>Hash:</strong> {tx.signature}</p>
-                            <p><strong>Timestamp:</strong> {tx.timestamp}</p>
-                            <p><strong>From:</strong> {tx.from.map(slip => slip.publicKey).join(", ")}</p>
-                            <p><strong>To:</strong> {tx.to.map(slip => slip.publicKey).join(", ")}</p>
+                            <p><strong>Transaction {index + 1}:</strong><span></span></p>
+                            <p><strong>Hash:</strong> {tx.signature}<span></span></p>
+                            <p><strong>Timestamp:</strong> {tx.timestamp}<span></span></p>
+                            <p><strong>From:</strong> <span>{tx.from.map(slip => slip.publicKey).join(", ")}</span></p>
+                            <p><strong>To:</strong> <span>{tx.to.map(slip => slip.publicKey).join(", ")}</span></p>
                         </li>
                     ))}
                 </ul>
