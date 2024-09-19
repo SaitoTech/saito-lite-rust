@@ -366,6 +366,7 @@ class SettlersGameloop {
         let player = parseInt(mv[1]);
 
         this.currently_active_player = player;
+        this.playerbox.setActive(this.currently_active_player);
 
         this.game.queue.splice(qe, 1);
         this.game.state.canTrade = false;
@@ -721,6 +722,7 @@ class SettlersGameloop {
         let player = parseInt(mv[1]);
 
         this.game.state.playerTurn = player;
+        this.playerbox.setActive(player);
 
         if (this.game.player == player) {
           //Messaging to User

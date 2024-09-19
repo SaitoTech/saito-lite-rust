@@ -687,3 +687,12 @@ Settlers.importFunctions(
 );
 
 module.exports = Settlers;
+
+
+//<i class="fa-solid fa-hammer"></i>   //<i class="fa-solid fa-screwdriver-wrench"></i>
+//<i class="fa-solid fa-dice"></i>
+//<i class="fa-solid fa-forward"></i>
+//<i class="fa-solid fa-building-columns"></i>
+
+//<i class="fa-solid fa-money-bill-transfer"></i>
+//<i class="fa-solid fa-ranking-star"></i>
