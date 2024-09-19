@@ -688,8 +688,11 @@ console.log("winter_retreat_move_units_to_capital_faction_array 2 2...");
 	    let obj = document.querySelector(".theses_overlay");
 console.log("winter_retreat_move_units_to_capital_faction_array 2 3...");
 	    if (obj) { 
+console.log("winter_retreat_move_units_to_capital_faction_array 2 4...");
 	      if (obj.style) { 
+console.log("winter_retreat_move_units_to_capital_faction_array 2 5...");
 	        if (obj.style.display != "none") { return 0; }
+console.log("winter_retreat_move_units_to_capital_faction_array 2 6...");
 	      }
 	    }
 	  }
@@ -708,6 +711,7 @@ console.log("winter_retreat_move_units_to_capital_faction_array 4...");
             }
           }
 
+console.log("winter_retreat_move_units_to_capital_faction_array 5... " + do_i_get_to_move);
 	  //
 	  // hey, it's me, not here...
 	  //
@@ -715,6 +719,7 @@ console.log("winter_retreat_move_units_to_capital_faction_array 4...");
 	     this.endTurn();
 	  }
 
+console.log("winter_retreat_move_units_to_capital_faction_array 6...");
 	  // no splice either -- cleared by RESETCONFIRMSNEEDED
 	  return 0;
 

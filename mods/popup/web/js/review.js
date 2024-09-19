@@ -144,22 +144,14 @@ function updateTotalRemaining(x) {
 	$('.total_remaining').html(x);
 }
 
-function loadQuestionLoop() {
-	setTimeout(function () {
-		if (retry_load_state > 0) {
-			loadQuestion();
-			loadQuestionLoop();
-		}
-	}, retry_load_delay);
-}
+
 function loadQuestion() {
+
 	retry_load_state++;
 
 alert("in load question!");
 
 	// forced delay so the animation is smooth
-	//$('#answer_space').fadeOut(400);
-	//$('#question_space').fadeOut(400).delay(400);
 	$('#test_container').hide();
 
 	$('#question_text').html('<img src="/img/loader-big-circle.gif" />');
@@ -203,156 +195,30 @@ alert("in load question!");
 
 alert("source is: " + source);
 
-	if (source == 'lesson' || source == 'wordlist') {
-		ajaxurl = '/api/loadWordQuestion?nocache=' + new Date().getTime();
-	} else {
-		ajaxurl_set = 0;
-		if (source == 'hsk-beginner') {
-			ajaxurl =
-				'/api/loadTestQuestion?type=hsk-beginner&nocache=' +
-				new Date().getTime();
-			ajaxurl_set = 1;
-		}
-		if (source == 'hsk-intermediate') {
-			ajaxurl =
-				'/api/loadTestQuestion?type=hsk-intermediate&nocache=' +
-				new Date().getTime();
-			ajaxurl_set = 1;
-		}
-		if (source == 'hsk-advanced') {
-			ajaxurl =
-				'/api/loadTestQuestion?type=hsk-advanced&nocache=' +
-				new Date().getTime();
-			ajaxurl_set = 1;
-		}
-		if (ajaxurl_set == 0) {
-			ajaxurl = '/api/loadTestQuestion?nocache=' + new Date().getTime();
-		}
-	}
+	// 
+	// get JSON text
+	//
+        let lesson_id = 1;
+        let word_id = 1;
+        let question_type = "vocab";
+        let question = "Question";
+        let english = "English";
+        let pinyin = "Pinyin";
+        let language = "chinese";
+        let option1 = "option1";
+        let option2 = "option2";
+        let option3 = "option3";
+        let option4 = "option4";
+        let correct = "option1";
+        let answer = "option1";
+        let hint = "hint";
+        let source_audio_url = 'http://popupchinese.com/data/';
 
-alert("next question JSON: " + JSON .stringify(nextQuestionJSON));
-
-	// try preloaded Question if exists
-	if (nextQuestionJSON != '') {
-		tempJSON = nextQuestionJSON;
-		nextQuestionJSON = '';
-		process_json_text(tempJSON);
-		preloadNextQuestion();
-		// or fetch a fresh one
-	} else {
-
-alert("loading next question!");
-
-		$.post(
-			ajaxurl,
-			{
-				last_question_data: last_question_data,
-				wid: wid,
-				qid: qid,
-				requested_wid: requested_wid,
-				source: source,
-				lid: lid,
-				correct: answered_correctly
-			},
-			function (txt) {
-
-alert("response: " + JSON.stringify(txt));
-
-				process_json_text(txt);
-				preloadNextQuestion();
-			}
-		);
-	}
-}
-function preloadNextQuestion() {
-	$.post(
-		ajaxurl,
-		{
-			last_question_data: last_question_data,
-			wid: wid,
-			qid: qid,
-			requested_wid: requested_wid,
-			source: source,
-			lid: lid,
-			correct: answered_correctly
-		},
-		function (txt) {
-			nextQuestionJSON = txt;
-		}
-	);
-}
-function process_json_text(txt) {
-	if (retry_load_state == 0) {
-		return;
-	} else {
-		retry_load_state = 0;
-	}
-
-	var jsonobj = eval('(' + txt + ')');
-
-	lid = jsonobj.Question.lid;
-	wid = jsonobj.Question.wid;
-	question_type = jsonobj.Question.question_type;
-	question = jsonobj.Question.question;
-	english = jsonobj.Question.english;
-	pinyin = jsonobj.Question.pinyin;
-	language = jsonobj.Question.language;
-	option1 = jsonobj.Question.option1;
-	option2 = jsonobj.Question.option2;
-	option3 = jsonobj.Question.option3;
-	option4 = jsonobj.Question.option4;
-	correct = jsonobj.Question.correct;
-	answer = jsonobj.Question.answer;
-	hint = jsonobj.Question.hint;
-	next_wid = jsonobj.Question.next_requested_wid;
-	source_audio_url =
-		'http://popupchinese.com/data' +
-		jsonobj.Question.this_requested_audio_source;
-	next_audio_url =
-		'http://popupchinese.com/data' +
-		jsonobj.Question.next_requested_audio_source;
-	// disabling because of preloading -- just directly show
-	//last_question_data = jsonobj.Question.last_question_data;
-
-	try {
-		// fill_in_the_blanks has no english
-		answer = answer.replace(/;;/g, ';');
-		english = english.replace(/;;/g, ';');
-		pinyin = pinyin.replace(/;;/g, ';');
-	} catch (err) {}
-
-	// catch errors
-	if (
-		(option1 == '' ||
-			option2 == '' ||
-			option3 == '' ||
-			question == '' ||
-			option4 == '') &&
-		mode == 'multiple'
-	) {
-		document.getElementById('lightbox_content').innerHTML =
-			return_error_finished_html();
-		return;
-	}
-	if (mode == 'pinyin' && pinyin == '') {
-		document.getElementById('lightbox_content').innerHTML =
-			return_error_finished_html();
-		return;
-	}
-
-	// insert audio player into question title if needed
-	if (
-		source_audio_url != '' &&
-		(source == 'hsk-beginner' ||
-			source == 'hsk-intermediate' ||
-			source == 'hsk-advanced')
-	) {
-		question =
-			'<div style="float:left;width:50px;height:50px;margin-right:20px;"><img src="/img/buttons/play_button_medium.png" onclick="playTestAudio(\'' +
-			source_audio_url +
-			'\',this);" /></div>' +
-			question;
-	}
+        try {
+                answer = answer.replace(/;;/g, ';');
+                english = english.replace(/;;/g, ';');
+                pinyin = pinyin.replace(/;;/g, ';');
+        } catch (err) {}
 
 	document.getElementById('question_text').innerHTML = question;
 	document.getElementById('question_hint').innerHTML = hint;
@@ -363,24 +229,13 @@ function process_json_text(txt) {
 
 	resetCss();
 
-	if (last_question_data != '') {
-		tempLastQuestionData = last_question_data;
-		document.getElementById('feedback').innerHTML =
-			'<span onclick="addDefinition();return false;" class="editable">Are we wrong? Click to add ' +
-			last_question_data.split('_M_')[1] +
-			' to system</span>';
-		last_question_data = '';
-	} else {
-		document.getElementById('feedback').innerHTML = '';
-	}
-
 	$('#answer_space').fadeIn(5);
 	$('#question_space').fadeIn(5);
 	$('#test_container').fadeIn(400);
-	try {
-		$('#user_answer').focus();
-	} catch (err) {}
+	try { $('#user_answer').focus(); } catch (err) {}
+
 }
+
 
 function format_as_vertical_question() {
 	$('#question_text').css('padding-top', '15px');
@@ -404,6 +259,7 @@ function format_as_horizontal_question() {
 	$('#answer_space').css('width', '400px');
 	$('#lightbox_header').css('display', 'all');
 }
+
 function resetCss() {
 	// hovering effect
 	$('.option').removeClass('option_hover');
@@ -416,7 +272,7 @@ function resetCss() {
 	$('#question_text').css('padding-left', '10px');
 	$('#question_text').css('padding-right', '10px');
 	$('#question_text').css('padding-top', '40px');
-	$('#question_text').css('font-size', '10em');
+	$('#question_text').css('font-size', '10rem');
 	$('#question_text').css('line-height', '1em');
 	$('#instructions').css('background-color', '#F7F7F7');
 
@@ -862,7 +718,6 @@ function return_word_question_html() {
 }
 
 function setup_reinforcement_lightbox() {
-alert("setup reinforcement lightbox...");
 
 	var html2insert =
 		'\
@@ -1024,27 +879,3 @@ function addDefinition() {
 	);
 }
 
-// keyboard shortcuts
-$('html').keydown(function (event) {
-	if (enableNumberShortcuts == 1) {
-		if (
-			question_type == 'generative_pinyin' ||
-			question_type == 'generative_english'
-		) {
-			return;
-		}
-		var keycode = event.keyCode ? event.keyCode : event.which;
-		if (keycode == 49) {
-			check_answer_review(1);
-		}
-		if (keycode == 50) {
-			check_answer_review(2);
-		}
-		if (keycode == 51) {
-			check_answer_review(3);
-		}
-		if (keycode == 52) {
-			check_answer_review(4);
-		}
-	}
-});

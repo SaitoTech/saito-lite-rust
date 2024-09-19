@@ -160,8 +160,8 @@ class Profile extends ModTemplate {
 	async render() {
 
 		// Check for URL param (since that is the prime use case)
-    	let param = this.app.browser.returnURLParameter('load_key');
-    	if (param){
+ 	   	let param = this.app.browser.returnURLParameter('load_key');
+    		if (param){
     		let key = JSON.parse(this.app.crypto.base64ToString(param));
 
     		console.log("My key: ", this.publicKey, "Wanted Key: ", key.publicKey);
