@@ -54,8 +54,11 @@ button {
 }
 
 .block-container p {
-    margin-bottom: .5rem;
+    display: grid;
+    grid-template-columns: 20rem auto;
+    gap: 1rem;
 }
+
 .block-info {
     padding: 1rem;
     border: 1px solid var(--saito-border-color);
