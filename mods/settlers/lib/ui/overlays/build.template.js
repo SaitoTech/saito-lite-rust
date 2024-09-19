@@ -62,7 +62,7 @@ module.exports = BuildOverlayTemplate = (app, mod, build) => {
 	mod.canPlayerBuyCard(mod.game.player)
 		? ``
 		: `settlers-row-disabled`
-}" id="3" title="Development cards are most likely to be a knight, which allows you to move the bandit. Other cards give you victory points or allow you to gain resources.">
+}" id="3" title="Action cards are most likely to be a soldier, which allows you to move the bandit. Other cards give you victory points or allow you to gain resources.">
             <div class="settlers-item-column">
                 <img class="settlers-item-img" src="/settlers/img/cards/red_back.png">
                 <div class="settlers-stats-vp-count">${mod.game.deck[0].crypt.length}</div>

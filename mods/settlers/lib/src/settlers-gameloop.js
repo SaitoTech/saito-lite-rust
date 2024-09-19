@@ -35,7 +35,7 @@ class SettlersGameloop {
         // initX()
         //
         $(".dark").css("background-color", "unset");
-        $(".hud-body .mobile").css("visibility", "visible");
+        $(".controls .option").css("visibility", "visible");
         return 1;
       }
 
@@ -724,16 +724,16 @@ class SettlersGameloop {
         this.game.state.playerTurn = player;
         this.playerbox.setActive(player);
 
+        this.updateControls('');
+
         if (this.game.player == player) {
           //Messaging to User
           let statushtml = `<div class="player-notice">YOUR TURN:</div>`;
-          let controlshtml = `<ul>`;
-          
-          controlshtml += `<li class="option" id="rolldice">roll dice</li>`;
-          controlshtml += `</ul>`;
 
           this.updateStatus(statushtml);
-          this.updateControls(controlshtml);
+
+          $("#rolldice").html(`<i class="fa-solid fa-dice"></i>`);
+          $("#rolldice").addClass("enabled");
 
           if (this.turn_limit){
             this.clock.startClock(this.turn_limit);
@@ -747,26 +747,16 @@ class SettlersGameloop {
           // **********************************************************
           
           //Or, choose menu option
-          $(".option").off();
-          $(".option").on("click", function () {
-            $(this).addClass("disabled");
-
-            let choice = $(this).attr("id");
-            if (choice === "rolldice") {
+          document.getElementById("rolldice").onclick = (e) => {
               settlers_self.updateStatus('rolling...');
-              settlers_self.updateControls('');
               settlers_self.addMove("roll\t" + player);
               settlers_self.endTurn();
-            }
-            //if (choice === "playcard") {
-            //  settlers_self.dev_card.render();
-            // }
-          });
+              e.currentTarget.onclick = null;
+          }
         } else {
           this.updateStatus(
             `<div class="player-notice">${this.game.playerNames[player - 1]} rolling dice...</div>`
           );
-          this.updateControls("");
         }
         //this.game.queue.splice(qe, 1);
         return 0;

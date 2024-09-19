@@ -88,6 +88,27 @@
 	cursor: not-allowed;
 }
 
+.bank-overlay .settlers-trade-resources.settlers-row-disabled::after {
+	content: 'cannot trade now' !important;
+	cursor: not-allowed;
+	transition: all 0.2s ease-in-out;
+	width: calc(50% + 2rem);
+	min-width: 25rem;
+	height: 3rem;
+	position: absolute;
+	top: calc(50%);
+	left: calc(50%);
+	transform: translate(-50%, -50%);
+	font-size: 2.3rem;
+	z-index: 2;
+	white-space: pre;
+	word-wrap: break-word;
+	background-color: #d3c38dc1;
+	line-height: 3rem;
+	border-radius: 1rem;
+	filter: drop-shadow(2px 4px 6px black);
+}
+
 .build-overlay .settlers-item-row:hover::after {
 	opacity: 1;
 }
@@ -96,12 +117,12 @@
 	filter: grayscale(1);
 	opacity: 0.5;
 }
-
+ 
 .settlers-item-row.settlers-row-disabled:hover {
 	cursor: not-allowed !important;
 }
 
-.settlers-item-row.settlers-row-disabled .settlers-item-img:hover {
+.settlers-row-disabled .settlers-item-img:hover {
 	cursor: not-allowed !important;
 }
 
@@ -120,6 +141,7 @@
 	flex-direction: row;
 	gap: 1rem;
 	padding: 0.5rem;
+	position: relative;
 }
 
 .bank-overlay .settlers-items-container .settlers-cards-container img {
@@ -189,7 +211,6 @@
 }
 
 .settlers-items-container .settlers-cards-container img {
-	cursor: pointer;
 	height: 13rem;
 }
 
