@@ -1,6 +1,4 @@
 
-
-
 function switch_display_mode_in_string(fulltext="", dmode="simplified", existing_preference="simplified") {
 
 	fulltext = fulltext.replace(/> </g, '><');
@@ -22,6 +20,7 @@ function switch_display_mode_in_string(fulltext="", dmode="simplified", existing
 	}
 
 	for (var i = starting_position; i < entries.length; i++) {
+		let replacement_html = "";
 		if (entries[i].indexOf('event') != -1) {
 			var post = '';
 			try {
@@ -214,9 +213,28 @@ function switch_display_mode_in_string(fulltext="", dmode="simplified", existing
 
 function switch_display_mode(dmode="simplified") {
 
+	if (dmode == "pinyin") {
+	  document.querySelectorAll('.lesson_sentence_pinyin').forEach((el) => {
+	    if (el.style.display == "none") { el.style.display = "block"; } else { el.style.display = "none"; }
+	  });
+	  save_display_mode(dmode);
+	  return true;
+	}
+	if (dmode == "english") {
+	  document.querySelectorAll('.lesson_sentence_translation').forEach((el) => {
+	    if (el.style.display == "none") { el.style.display = "block"; } else { el.style.display = "none"; }
+	  });
+	  save_display_mode(dmode);
+	  return true;
+	}
+
+	let existing_preference = "simplified";
+	if (dmode == "simplified") { existing_preference = "traditional"; }
+
 	document.querySelectorAll(':has(> span)').forEach((el) => {
+	  if (el.classList.contains("lesson_sentence_pinyin")) { return; }
 	  let x = el.innerHTML.replace(/SPAN/g, 'span');
-	  el.innerHTML = switch_display_mode_in_string(x, dmode);
+	  el.innerHTML = switch_display_mode_in_string(x, dmode, existing_preference);
 	});
 
 	save_display_mode(dmode);
@@ -225,7 +243,36 @@ function switch_display_mode(dmode="simplified") {
 
 }
 
+function toggle_vocab_mode(dmode="") {
+	if (dmode == "field1") {
+	  document.querySelectorAll('.field1').forEach((el) => { if (el.style.display == "none") { el.style.display = ""; } else { el.style.display = "none"; } });
+	  save_vocab_mode(dmode);
+	  return true;
+	}
+	if (dmode == "field2") {
+	  document.querySelectorAll('.field2').forEach((el) => { if (el.style.display == "none") { el.style.display = ""; } else { el.style.display = "none"; } });
+	  save_vocab_mode(dmode);
+	  return true;
+	}
+	if (dmode == "field3") {
+	  document.querySelectorAll('.field3').forEach((el) => { if (el.style.display == "none") { el.style.display = ""; } else { el.style.display = "none"; } });
+	  save_vocab_mode(dmode);
+	  return true;
+	}
+	if (dmode == "field4") {
+	  document.querySelectorAll('.field4').forEach((el) => { if (el.style.display == "none") { el.style.display = ""; } else { el.style.display = "none"; } });
+	  save_vocab_mode(dmode);
+	  return true;
+	}
+	if (dmode == "field5") {
+	  document.querySelectorAll('.field5').forEach((el) => { if (el.style.display == "none") { el.style.display = ""; } else { el.style.display = "none"; } });
+	  save_vocab_mode(dmode);
+	  return true;
+	}
+}
+
 // overrideen in popup.js
 function save_display_mode(dmode="") {
 }
+
 

@@ -334,16 +334,12 @@ class SettlersDisplay {
       }
     }
 
-    if (document.querySelector('.hud-body .mobile .cards')) {
-      if (
-        this.game.deck[0].hand.length == 0 &&
-        this.game.state.players[this.game.player - 1].devcards.length == 0
-      ) {
-        document.querySelector('.hud-body .mobile .cards').classList.add('hidden');
-      } else {
-        document.querySelector('.hud-body .mobile .cards').classList.remove('hidden');
-      }
-    }
+    if (
+      this.game.deck[0].hand.length == 0 &&
+      this.game.state.players[this.game.player - 1].devcards.length == 0
+    ) {
+      $(".controls #playcard").removeClass('enabled');
+    } 
 
     if (this.game.player == 0) {
       this.showPlayerResources();

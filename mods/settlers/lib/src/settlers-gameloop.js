@@ -35,7 +35,7 @@ class SettlersGameloop {
         // initX()
         //
         $(".dark").css("background-color", "unset");
-        $(".hud-body .mobile").css("visibility", "visible");
+        $(".controls .option").css("visibility", "visible");
         return 1;
       }
 
@@ -97,7 +97,7 @@ class SettlersGameloop {
           this.updateStatus(`<div class="persistent player-notice">${this.game.playerNames[player - 1]} bought a ${this.card.name} card</div>`);
         } else {
 
-          document.querySelector(".hud-body .mobile .cards").classList.remove("hidden");
+          $(".controls #playcard").addClass('enabled');
 
           let lastcard = this.game.deck[0].cards[this.game.deck[0].hand[this.game.deck[0].hand.length - 1]];
 
@@ -366,6 +366,7 @@ class SettlersGameloop {
         let player = parseInt(mv[1]);
 
         this.currently_active_player = player;
+        this.playerbox.setActive(this.currently_active_player);
 
         this.game.queue.splice(qe, 1);
         this.game.state.canTrade = false;
@@ -721,17 +722,18 @@ class SettlersGameloop {
         let player = parseInt(mv[1]);
 
         this.game.state.playerTurn = player;
+        this.playerbox.setActive(player);
+
+        this.updateControls('');
 
         if (this.game.player == player) {
           //Messaging to User
           let statushtml = `<div class="player-notice">YOUR TURN:</div>`;
-          let controlshtml = `<ul>`;
-          
-          controlshtml += `<li class="option" id="rolldice">roll dice</li>`;
-          controlshtml += `</ul>`;
 
           this.updateStatus(statushtml);
-          this.updateControls(controlshtml);
+
+          $("#rolldice").html(`<i class="fa-solid fa-dice"></i>`);
+          $("#rolldice").addClass("enabled");
 
           if (this.turn_limit){
             this.clock.startClock(this.turn_limit);
@@ -745,26 +747,18 @@ class SettlersGameloop {
           // **********************************************************
           
           //Or, choose menu option
-          $(".option").off();
-          $(".option").on("click", function () {
-            $(this).addClass("disabled");
-
-            let choice = $(this).attr("id");
-            if (choice === "rolldice") {
-              settlers_self.updateStatus('rolling...');
-              settlers_self.updateControls('');
-              settlers_self.addMove("roll\t" + player);
-              settlers_self.endTurn();
+          if (document.getElementById("rolldice")){
+            document.getElementById("rolldice").onclick = (e) => {
+                settlers_self.updateStatus('rolling...');
+                settlers_self.addMove("roll\t" + player);
+                settlers_self.endTurn();
+                e.currentTarget.onclick = null;
             }
-            //if (choice === "playcard") {
-            //  settlers_self.dev_card.render();
-            // }
-          });
+          }
         } else {
           this.updateStatus(
             `<div class="player-notice">${this.game.playerNames[player - 1]} rolling dice...</div>`
           );
-          this.updateControls("");
         }
         //this.game.queue.splice(qe, 1);
         return 0;

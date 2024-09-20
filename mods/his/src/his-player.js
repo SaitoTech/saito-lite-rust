@@ -1514,7 +1514,7 @@ if (this.game.state.events.cramner_active == 1) {
       // set back button to move us back here
       //
       let his_self = this;
-      his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
+      his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerTurn(faction, selected_card); });
       this.playerPlayCard(card, this.game.player, faction);
     });  
 

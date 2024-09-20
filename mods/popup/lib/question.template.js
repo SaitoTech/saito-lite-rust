@@ -1,4 +1,4 @@
-module.exports = (question) => {
+module.exports = (question, popup_self) => {
 	return `
     <div id="lesson_question_6047" class="lesson_question">
       <table>

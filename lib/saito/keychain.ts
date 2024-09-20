@@ -592,7 +592,8 @@ class Keychain {
 		}
 		if (name === publicKey) {
 			if (name.length > max) {
-				return name.substring(0, max) + '...';
+				//return name.substring(0, max) + '...';
+				return 'Anon-' + name.substring(0, 6);
 			}
 		}
 		return publicKey;

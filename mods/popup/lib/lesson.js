@@ -26,8 +26,8 @@ class PopupLesson {
 		// lesson content
 		//
 		if (!document.querySelector(".lesson-container")) {
-		  this.app.browser.addElementToSelector(PopupLessonMainTemplate(this.lesson), '.saito-main');
-		  this.app.browser.addElementToSelector(PopupLessonRightTemplate(this.lesson), '.saito-sidebar.right');
+		  this.app.browser.addElementToSelector(PopupLessonMainTemplate(this.lesson, this.mod), '.saito-main');
+		  this.app.browser.addElementToSelector(PopupLessonRightTemplate(this.lesson, this.mod), '.saito-sidebar.right');
 		} else {
 		  this.app.browser.replaceElementBySelector(PopupLessonMainTemplate(this.lesson), '.lesson-container');
 		}
@@ -40,7 +40,7 @@ class PopupLesson {
 		  if (this.lesson.sentences) {
 		    html += '<table style="width:100%;max-width:1400px;">';
 		    for (let i = 0; i < this.lesson.sentences.length; i++) {
-		      html += SentenceTemplate(this.lesson, this.lesson.sentences[i]);
+		      html += SentenceTemplate(this.lesson, this.lesson.sentences[i], this.mod);
 		    }
 		    html += '</table>';
 		    this.app.browser.addElementToSelector(html, '.lesson-section.transcript');
@@ -56,7 +56,7 @@ class PopupLesson {
 		    let html = '<div class="lesson-section header">vocabulary</div>';
 		    html += '<table style="width:100%;max-width:1400px;">';
 		    for (let i = 0; i < this.lesson.words.length; i++) {
-		      html += WordTemplate(this.lesson, this.lesson.words[i]);
+		      html += WordTemplate(this.lesson, this.lesson.words[i], this.mod);
 		    }
 		    html += '</table>';
 		    this.app.browser.addElementToSelector(html, '.lesson-section.vocabulary');

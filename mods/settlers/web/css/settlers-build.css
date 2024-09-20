@@ -19,9 +19,9 @@
 /* development overlay */
 .settlers-items-container {
 	text-align: center;
-	display: flex;
+	display: flex;	
 	flex-direction: column;
-	gap: 2rem;
+	gap: 1rem;
 	font-size: 2rem;
 	overflow: hidden auto;
 	posiiton: relative;
@@ -88,6 +88,27 @@
 	cursor: not-allowed;
 }
 
+.bank-overlay .settlers-trade-resources.settlers-row-disabled::after {
+	content: 'cannot trade now' !important;
+	cursor: not-allowed;
+	transition: all 0.2s ease-in-out;
+	width: calc(50% + 2rem);
+	min-width: 25rem;
+	height: 3rem;
+	position: absolute;
+	top: calc(50%);
+	left: calc(50%);
+	transform: translate(-50%, -50%);
+	font-size: 2.3rem;
+	z-index: 2;
+	white-space: pre;
+	word-wrap: break-word;
+	background-color: #d3c38dc1;
+	line-height: 3rem;
+	border-radius: 1rem;
+	filter: drop-shadow(2px 4px 6px black);
+}
+
 .build-overlay .settlers-item-row:hover::after {
 	opacity: 1;
 }
@@ -96,12 +117,12 @@
 	filter: grayscale(1);
 	opacity: 0.5;
 }
-
+ 
 .settlers-item-row.settlers-row-disabled:hover {
 	cursor: not-allowed !important;
 }
 
-.settlers-item-row.settlers-row-disabled .settlers-item-img:hover {
+.settlers-row-disabled .settlers-item-img:hover {
 	cursor: not-allowed !important;
 }
 
@@ -119,7 +140,8 @@
 	display: flex;
 	flex-direction: row;
 	gap: 1rem;
-	padding: 0.5rem;
+	padding: 1.5rem;
+	position: relative;
 }
 
 .bank-overlay .settlers-items-container .settlers-cards-container img {
@@ -160,7 +182,7 @@
 .settlers-desired-resources img:hover {
 	cursor: pointer;
 	filter: brightness(1.15) drop-shadow(5px 5px 3px black);
-	scale: 1.1;
+	scale: 1.05;
 }
 
 .settlers-icons-container {
@@ -189,9 +211,13 @@
 }
 
 .settlers-items-container .settlers-cards-container img {
-	cursor: pointer;
 	height: 13rem;
 }
+
+.settlers-items-container .settlers-cards-container .tiny img {
+	height: unset;
+}
+
 
 .settlers-items-container-4 .settlers-cards-container img {
 	height: 7rem;
@@ -224,7 +250,7 @@
     justify-content: center;
 }
 
-.dev-card-overlay .settlers-items-container .settlers-cards-container img {
+.dev-card-overlay .settlers-items-container .settlers-cards-container .settlers-dev-card img {
 	height: auto;
 	max-width: min(50vw, 33vh);
 	min-width: 25rem;

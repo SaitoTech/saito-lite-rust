@@ -2285,8 +2285,10 @@ console.log("selected: " + spacekey);
             "Add 4 regulars in Ottoman Home Space or Foreign War",
                 
             function(space) {
-              if (space.home == "ottoman") { return 1; }
+              if (space.key === "oran") { return 0; }
               if (space.key === "algiers") { return 0; }
+              if (space.pirate_haven === 1) { return 0; }
+              if (space.home == "ottoman") { return 1; }
               if ((space.key == "persia" && his_self.game.state.events.war_in_persia == 1) || (space.key == "egypt" && his_self.game.state.events.revolt_in_egypt == 1)) { return 1; }
 	      return 0;
             },
@@ -3268,19 +3270,25 @@ console.log("selected: " + spacekey);
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "debate") {
+console.log("extra: " + extra);
 	  if (extra === "german") {
+	    //
 	    // Wartburg stops Luther
+	    //
 	    if (his_self.game.state.events.wartburg == 1) { 
 	      return 0;
 	    }
 	    if (his_self.game.state.leaders.luther == 1) {
 	      if (his_self.game.state.theological_debate) {
+console.log("testing A");
 		if (his_self.game.state.theological_debate.round1_attacker_debater == "luther-debater") { return 0; }
 	        if (his_self.game.state.theological_debate.round1_defender_debater == "luther-debater") { return 0; }
 	        if (his_self.game.state.theological_debate.round2_attacker_debater == "luther-debater") { return 0; }
 	        if (his_self.game.state.theological_debate.round2_defender_debater == "luther-debater") { return 0; }
 	        if (player === his_self.returnPlayerOfFaction("protestant")) {
+console.log("testing B");
 	          if (his_self.canPlayerPlayCard("protestant", "007")) {
+console.log("testing C");
 		    return 1;
 		  } else {
 		  }

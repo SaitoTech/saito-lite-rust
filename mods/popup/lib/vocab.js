@@ -24,18 +24,28 @@ class PopupVocab {
 		// offset = 0
 		this.vocab = await this.mod.returnVocab(offset);
 
-console.log("VOCAB: " + JSON.stringify(this.vocab));
-
 		let html = '<table>';
 		for (let i = 0; i < this.vocab.length; i++) {
-			html += WordTemplate(0, this.vocab[i]);
+			html += WordTemplate(0, this.vocab[i], this.mod);
 		}
 		html += '</table>';
 
 		document.querySelector('.vocabulary').innerHTML = html;
+
+		this.attachEvents();
+
 	}
 
-	attachEvents() {}
+	attachEvents() {
+
+		document.querySelector('.start_popup_review').onclick = (e) => {
+alert("TESTING");
+			this.mod.review.render();
+		};
+
+
+
+	}
 }
 
 module.exports = PopupVocab;

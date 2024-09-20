@@ -237,6 +237,15 @@ class FileShareOverlay {
 			if (input) {
 				input.addEventListener('change', (e) => {
 					this.mod.addFileUploader(input.files[0], this.fileId);
+					if (!this.recipient){
+						let handle = document.querySelector(this.qs + ' .contact');
+						if (handle){
+							handle.innerHTML = `<span class="saito-link">Copy file share link</span>`;
+							handle.onclick = (e) => {
+								this.mod.copyShareLink(this.fileId);
+							}
+						}
+					}
 					this.onFile(input.files[0]);
 				});
 				

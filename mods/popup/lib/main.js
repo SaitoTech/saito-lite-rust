@@ -13,9 +13,7 @@ class PopupMain {
 			this.render();
 		});
 
-		this.app.connection.on(
-			'popup-lessons-render-request',
-			(level = 'all') => {
+		this.app.connection.on('popup-lessons-render-request', (level = 'all') => {
 				document.querySelector('.saito-main').innerHTML = '';
 				document.querySelector('.saito-sidebar.right').innerHTML = '';
 				this.mod.manager.render(level);

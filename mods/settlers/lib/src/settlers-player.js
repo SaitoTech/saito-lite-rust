@@ -64,7 +64,7 @@ class SettlersPlayer {
     let ypos = 0;
 
     this.updateStatus(`<div class="player-notice"><span>Move the ${this.b.name}</span></div>`);
-    this.updateControls("");
+    $(".option").css("visibility", "hidden");
     let settlers_self = this;
     $(".sector-container").addClass("rhover");
     $(".sector-container").off();
@@ -86,6 +86,7 @@ class SettlersPlayer {
   }
 
   canPlayerBuildTown(player) {
+    if (!this.game.state.hasRolled || this.game.state.playerTurn !== this.game.player) return false;
     if (this.game.state.players[player - 1].towns == 0) return false;
     if (this.returnCitySlotsAdjacentToPlayerRoads(this.game.player).length == 0) return false;
     return this.doesPlayerHaveResources(player, this.priceList[1]);
@@ -152,17 +153,17 @@ class SettlersPlayer {
       /* During game, must build roads to open up board for new settlements*/
       this.updateStatus(`<div class="player-notice">You may build a ${this.c1.name}</div>`);
       if (canBackUp) {
-        this.updateControls(`<ul><li class="undo">cancel</li></ul>`);
-        $(".undo").on("click", function () {
-          //Make sure the confirm popup goes away
-          $(".action").off();
-          $(".popup-confirm-menu").remove();
-          $(".rhover").off();
-          $(".rhover").removeClass("rhover");
+        this.updateControls(`<i class="fa-solid fa-xmark"></i>`);
+          document.getElementById("rolldice").onclick = (e) => {
+            //Make sure the confirm popup goes away
+            $(".action").off();
+            $(".popup-confirm-menu").remove();
+            $(".rhover").off();
+            $(".rhover").removeClass("rhover");
 
-          settlers_self.addMove(`undo_build\t${settlers_self.game.player}\t1`);
-          settlers_self.endTurn();
-        });
+            settlers_self.addMove(`undo_build\t${settlers_self.game.player}\t1`);
+            settlers_self.endTurn();
+          }
       }
 
       let building_options = this.returnCitySlotsAdjacentToPlayerRoads(this.game.player);
@@ -201,6 +202,7 @@ class SettlersPlayer {
   }
 
   canPlayerBuildRoad(player) {
+    if (!this.game.state.hasRolled || this.game.state.playerTurn !== this.game.player) return false;
     return this.doesPlayerHaveResources(player, this.priceList[0]);
   }
 
@@ -239,11 +241,10 @@ class SettlersPlayer {
     } else {
       this.updateStatus(`<div class="player-notice">You may build a ${this.r.name}...</div>`);
       if (canBackUp) {
-        this.updateControls(`<ul><li class="undo">cancel</li></ul>`);
-        $(".undo").on("click", function () {
+        this.updateControls(`<i class="fa-solid fa-xmark"></i>`);
+        document.getElementById("rolldice").onclick = (e) => {
           //Make sure the confirm popup goes away
           $(".action").off();
-          $(".undo").off();
           $(".popup-confirm-menu").remove();
           $(".road.empty").off();
           $(".rhover").removeClass("rhover");
@@ -251,7 +252,7 @@ class SettlersPlayer {
 
           settlers_self.addMove(`undo_build\t${settlers_self.game.player}\t0`);
           settlers_self.endTurn();
-        });
+        }
       }
 
       /*Normal game play, can play road anywhere empty connected to my possessions*/
@@ -273,6 +274,7 @@ class SettlersPlayer {
   }
 
   canPlayerBuildCity(player) {
+    if (!this.game.state.hasRolled || this.game.state.playerTurn !== this.game.player) return false;
     let availableSlot = false;
     for (let i of this.game.state.cities) {
       if (i.player == player && i.level == 1) availableSlot = true;
@@ -287,8 +289,8 @@ class SettlersPlayer {
       `<div class="player-notice">Click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...</div>`
     );
     if (canBackUp) {
-      this.updateControls(`<ul><li class="undo">cancel</li></ul>`);
-      $(".undo").on("click", function () {
+      this.updateControls(`<i class="fa-solid fa-xmark"></i>`);
+      document.getElementById("rolldice").onclick = (e) => {
         //Make sure the confirm popup goes away
         $(".action").off();
         $(".popup-confirm-menu").remove();
@@ -298,7 +300,7 @@ class SettlersPlayer {
 
         settlers_self.addMove(`undo_build\t${settlers_self.game.player}\t2`);
         settlers_self.endTurn();
-      });
+      }
     }
 
     let settlers_self = this;
@@ -344,39 +346,44 @@ class SettlersPlayer {
     Main function to let player carry out their turn...
     */
   playerPlayMove() {
-    let settlers_self = this;
     let can_do_something = false;
 
-    let html = "<ul class='hide-scrollbar'>";
-
-    if (settlers_self.canPlayerTradeWithBank()) {
-      html += '<li class="option" id="bank">bank</li>';
+    if (this.canPlayerTradeWithBank()){
       can_do_something = true;
+      $("#bank").addClass("enabled");
+    }else{
+      $("#bank").removeClass("enabled");
+    }
+    
+    if (this.canPlayerPlayCard()) {
+      can_do_something = true;
+      $("#playcard").addClass("enabled");
+    }else{
+      $("#playcard").removeClass("enabled");
+    }
+    
+    
+    if (this.canPlayerBuildRoad(this.game.player) ||
+      this.canPlayerBuildTown(this.game.player) ||
+      this.canPlayerBuildCity(this.game.player) ||
+      this.canPlayerBuyCard(this.game.player)){
+      can_do_something = true;
+      $("#spend").addClass("enabled");
+    }else{
+      $("#spend").removeClass("enabled");
     }
 
-    if (settlers_self.canPlayerPlayCard()) {
-        can_do_something = true;
-    }
+    $(".controls .option").css("visibility", "visible");
 
-    if (
-      settlers_self.canPlayerBuildRoad(settlers_self.game.player) ||
-      settlers_self.canPlayerBuildTown(settlers_self.game.player) ||
-      settlers_self.canPlayerBuildCity(settlers_self.game.player) ||
-      settlers_self.canPlayerBuyCard(settlers_self.game.player)
-    ) {
-      html += `<li class="option" id="spend">spend</li>`;
-      can_do_something = true;
-    } 
-
-    html += `<li class="option" id="pass">pass dice</li>`;
-    html += "</ul>";
+    $("#rolldice").html(`<i class="fa-solid fa-forward"></i>`);
+    $("#rolldice").addClass("enabled");
 
     //
     // auto-end my turn if I cannot do anything
     //
     if (can_do_something != true) {
-      this.addMove("end_turn\t" + settlers_self.game.player); //End turn deletes the previous move (player_actions)
-      this.addMove("ACKNOWLEDGE\tYou cannot buy anything - end turn\t" + settlers_self.game.player);
+      this.addMove("end_turn\t" + this.game.player); //End turn deletes the previous move (player_actions)
+      this.addMove("ACKNOWLEDGE\tYou cannot do anything - end turn\t" + this.game.player);
       this.endTurn();
       return;
     }
@@ -387,51 +394,17 @@ class SettlersPlayer {
     if (this.turn_limit){
       this.clock.startClock(this.turn_limit);
       this.sleep_timer = setTimeout(()=> {
-        $("#pass").click();
+        $("#rolldice").click();
       }, this.turn_limit);
     }
 
+    let statushtml = this.getLastNotice() || `<div class="player-notice">YOUR TURN:</div>`;
+    this.updateStatus(statushtml);
 
-    let statushtml = settlers_self.getLastNotice() || `<div class="player-notice">YOUR TURN:</div>`;
-    settlers_self.updateStatus(statushtml);
-    settlers_self.updateControls(html);
-
-    $(".option").off();
-    $(".option").on("click", function () {
-      let id = $(this).attr("id");
-      if (id === "pass") {
-        settlers_self.addMove("end_turn\t" + settlers_self.game.player);
-        settlers_self.endTurn();
-        return;
-      }
-      if (id === "bank") {
-        settlers_self.bank.render();
-        //settlers_self.playerTradeWithBank();
-        return;
-      }
-      //if (id === "playcard") {
-      //  settlers_self.dev_card.render();
-      //  return;
-      //}
-      if (id == "spend") {
-        settlers_self.build.render();
-        return;
-      }
-      if (id == "nospend") {
-        //Show a tool tip to remind players of what resources they need to build what
-      }
-    });
-
-    if (
-      settlers_self.canPlayerBuildRoad(settlers_self.game.player) ||
-      settlers_self.canPlayerBuildTown(settlers_self.game.player) ||
-      settlers_self.canPlayerBuildCity(settlers_self.game.player) ||
-      settlers_self.canPlayerBuyCard(settlers_self.game.player)
-    ) {
-      html += `<li class="option" id="spend">spend</li>`;
-      can_do_something = true;
-    } else {
-      //html += `<li class="option noselect" id="nospend">spend</li>`;
+    document.querySelector(".controls #rolldice").onclick = (e) => {
+        e.currentTarget.onclick = null;
+        this.addMove("end_turn\t" + this.game.player);
+        this.endTurn();
     }
   }
 
@@ -443,112 +416,18 @@ class SettlersPlayer {
       return false;
     }
 
+    if (!this.game.state.hasRolled || this.game.state.playerTurn !== this.game.player) return false;
+
     for (let resource of this.returnResources()) {
       if (this.countResource(this.game.player, resource) >= minForTrade[resource]) return true;
     }
     return false;
   }
 
-  playerTradeWithBank() {
-    let settlers_self = this;
-    let my_resources = {};
-    let minForTrade = this.analyzePorts(); //4;  //1) Fix to have 3:1 port, 2) Fix for resource specific 2:1 ports
-
-    for (let resource of this.returnResources()) {
-      let temp = settlers_self.countResource(settlers_self.game.player, resource);
-      if (temp >= minForTrade[resource]) my_resources[resource] = temp;
-    }
-
-    if (Object.keys(my_resources).length > 0) {
-      let html = "<div class='player-notice'>Select Resource to Trade: <ul class='bank'>";
-      for (let i in my_resources) {
-        html += `<li id="${i}" class="option">`;
-        for (let j = 0; j < minForTrade[i]; j++) {
-          html += `<img class="icon" src="${settlers_self.returnCardImage(i)}"/>`;
-        }
-        //`${i} (${minForTrade[i]}/${my_resources[i]})</li>`;
-      }
-      html += '<li id="cancel" class="option">cancel trade</li>';
-      html += "</ul>";
-      html += "</div>";
-
-      settlers_self.updateStatus(html, 1);
-
-      $(".option").off();
-      $(".option").on("click", function () {
-        let res = $(this).attr("id");
-        if (res == "cancel") {
-          settlers_self.endTurn();
-          return;
-        }
-
-        //Picked something to give, now pick something to get
-        html = "<div class='player-notice'>Select Desired Resource: <ul class='bank horizontal_list'>";
-        for (let i of settlers_self.returnResources()) {
-          html += `<li id="${i}" class="iconoption option tip"><img class="icon" src="${settlers_self.returnCardImage(
-            i
-          )}">
-              <div class="tiptext">${i}</div></li>`;
-        }
-        html += '<li id="cancel" class="option">cancel trade</li>';
-        html += "</ul>";
-        html += "</div>";
-        settlers_self.updateStatus(html, 1);
-
-        $(".option").off();
-        $(".option").on("click", function () {
-          let newRes = $(this).attr("id");
-          if (newRes == "cancel") {
-            settlers_self.endTurn();
-            return;
-          }
-
-          if (newRes == res) {
-            html = `<div class="player-notice">Are you sure you want to discard ${
-              minForTrade[res] - 1
-            } ${res}s??
-                            <ul><li id="yes" class="option">Yes, Do it!</li>
-                            <li id="no" class="option">No way!</li></ul></div>`;
-            settlers_self.updateStatus(html, 1);
-            $(".option").off();
-            $(".option").on("click", function () {
-              let choice = $(this).attr("id");
-              if (choice == "yes") {
-                settlers_self.addMove(
-                  `bank\t${settlers_self.game.player}\t${minForTrade[res]}\t${res}\t1\t${newRes}`
-                );
-                settlers_self.endTurn();
-                return;
-              } else {
-                settlers_self.endTurn();
-                return;
-              }
-            });
-            return;
-          }
-
-          //Set up Trade
-          settlers_self.addMove(
-            `bank\t${settlers_self.game.player}\t${minForTrade[res]}\t${res}\t1\t${newRes}`
-          );
-          settlers_self.endTurn();
-          return;
-        });
-      });
-    } else {
-      let ackhtml = `<div class='player-notice'>You don't have enough resources to trade with the bank</div>
-                      <ul><li class="option" id="okay">okay</li></ul>`;
-      settlers_self.updateStatus(ackhtml, 1);
-      $(".option").off();
-      $(".option").on("click", function () {
-        settlers_self.playerPlayMove();
-        return;
-      });
-    }
-  }
 
   canPlayerBuyCard(player) {
     //No more cards in deck (No reshuffling in this game)
+    if (!this.game.state.hasRolled || this.game.state.playerTurn !== this.game.player) return false;
     if (this.game.deck[0].crypt.length === 0) return false;
     return this.doesPlayerHaveResources(player, this.priceList[3]);
   }
