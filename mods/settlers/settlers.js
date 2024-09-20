@@ -367,11 +367,11 @@ class Settlers extends GameTemplate {
 		document.querySelector('#hud-body')?.classList.add('saitoa');
 		$(".hud-body .controls").appendTo("#hud");
 
-		let html = `<ul><li class="option enabled" id="score"><i class="fa-solid fa-ranking-star"></i></li>
-	    	<li class="option enabled" id="trade"><i class="fa-solid fa-money-bill-transfer"></i></li>
-	    	<li class="option" id="playcard"><i class="fa-solid fa-people-robbery"></i></li>
-	    	<li class="option" id="bank"><i class="fa-solid fa-building-columns"></i></li>
-	    	<li class="option" id="spend"><i class="fa-solid fa-screwdriver-wrench"></i></li>
+		let html = `<ul><li class="option enabled" id="score" title="view game statistics"><i class="fa-solid fa-ranking-star"></i></li>
+	    	<li class="option enabled" id="trade" title="trade with other players"><i class="fa-solid fa-money-bill-transfer"></i></li>
+	    	<li class="option" id="bank" title="trade with the bank"><i class="fa-solid fa-building-columns"></i></li>
+	    	<li class="option" id="playcard" title="play an action card"><i class="fa-solid fa-people-robbery"></i></li>
+	    	<li class="option" id="spend" title="build or buy"><i class="fa-solid fa-screwdriver-wrench"></i></li>
 	    	<li class="option enabled" id="rolldice"><i class="fa-solid fa-forward"></i></li></ul>
 	    	`;
 
@@ -689,15 +689,16 @@ class Settlers extends GameTemplate {
 
 	updateControls(str){
 
-		if (str){
+		if (str && str.includes("<i")){
 			$(".controls .option").css("visibility", "hidden");
-		    $("#rolldice").html(str);
 	        $("#rolldice").addClass("enabled");
 	        $("#rolldice").css("visibility", "visible");
-			return;
+		    $("#rolldice").html(str);
+		    return;
 		}
 
 		$(".controls .option").css("visibility", "visible");
+		
 		if (this.game.state.playerTurn !== this.game.player){
 	      $("#rolldice").html(`<i class="fa-solid fa-pause"></i>`);
 	      $("#rolldice").removeClass("enabled");

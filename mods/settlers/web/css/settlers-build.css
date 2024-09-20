@@ -19,9 +19,9 @@
 /* development overlay */
 .settlers-items-container {
 	text-align: center;
-	display: flex;
+	display: flex;	
 	flex-direction: column;
-	gap: 2rem;
+	gap: 1rem;
 	font-size: 2rem;
 	overflow: hidden auto;
 	posiiton: relative;
@@ -140,7 +140,7 @@
 	display: flex;
 	flex-direction: row;
 	gap: 1rem;
-	padding: 0.5rem;
+	padding: 1.5rem;
 	position: relative;
 }
 
@@ -182,7 +182,7 @@
 .settlers-desired-resources img:hover {
 	cursor: pointer;
 	filter: brightness(1.15) drop-shadow(5px 5px 3px black);
-	scale: 1.1;
+	scale: 1.05;
 }
 
 .settlers-icons-container {
