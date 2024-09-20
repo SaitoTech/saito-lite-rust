@@ -214,6 +214,11 @@
 	height: 13rem;
 }
 
+.settlers-items-container .settlers-cards-container .tiny img {
+	height: unset;
+}
+
+
 .settlers-items-container-4 .settlers-cards-container img {
 	height: 7rem;
 }
@@ -245,7 +250,7 @@
     justify-content: center;
 }
 
-.dev-card-overlay .settlers-items-container .settlers-cards-container img {
+.dev-card-overlay .settlers-items-container .settlers-cards-container .settlers-dev-card img {
 	height: auto;
 	max-width: min(50vw, 33vh);
 	min-width: 25rem;

@@ -12,8 +12,8 @@ let html = `
 	html += `<div class="settlers-item-row settlers-cards-container settlers-desired-resources">`;
 
 	let cards = '';
-	let disable = !mod.canPlayerPlayCard();
 
+	let disable = !mod.canPlayerPlayCard();
 
 	for (let x = 0; x < mod.game.state.players[mod.game.player-1].devcards.length; x++) {
 		let card = mod.game.deck[0].cards[mod.game.state.players[mod.game.player-1].devcards[x]];
@@ -38,7 +38,17 @@ let html = `
               <img src="${card.img}">
             </div>
           `;
+	}
 
+	if (!cards){
+		cards = `
+            <div class='player-notice'>
+							You don't have any cards, but can buy one with             
+              ${mod.formatResource('ore')}
+              ${mod.formatResource('wheat')}
+              ${mod.formatResource('wool')}
+            </div>
+            `;
 	}
 
 	html += cards;

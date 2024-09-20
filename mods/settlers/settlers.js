@@ -688,8 +688,16 @@ class Settlers extends GameTemplate {
 	}
 
 	updateControls(str){
-		console.log("!!!!!!!!!!!!!!!!!", str);
-		console.log("My turn? ", this.game.state.playerTurn, this.game.player);
+
+		if (str){
+			$(".controls .option").css("visibility", "hidden");
+		    $("#rolldice").html(str);
+	        $("#rolldice").addClass("enabled");
+	        $("#rolldice").css("visibility", "visible");
+			return;
+		}
+
+		$(".controls .option").css("visibility", "visible");
 		if (this.game.state.playerTurn !== this.game.player){
 	      $("#rolldice").html(`<i class="fa-solid fa-pause"></i>`);
 	      $("#rolldice").removeClass("enabled");

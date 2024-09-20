@@ -3,14 +3,10 @@ class SettlersActions {
   // OVERRIDE THIS FUNCTION FROM THE PARENT GAME LIBRARY TO CHANGE THE ACKNOWLEDGE TEXT TO CONTINUE
   //
   playerAcknowledgeNotice(msg, mycallback) {
-    let html = `<ul><li class="textchoice acknowledge enabled" id="confirmit"><i class="fa-solid fa-forward"></i></li></ul>`;
+    let html = `<i class="fa-solid fa-forward"></i>`;
     try {
 
-
       this.updateStatusWithOptions(`${this.getLastNotice()}<div class="player-notice"><span class="acknowledge-message">${msg}</span></div>`, html);
-
-      $("#rolldice").html(`<i class="fa-solid fa-forward"></i>`);
-      $("#rolldice").addClass("enabled");
 
       document.querySelector("#rolldice").onclick = async (e) => {
         e.currentTarget.onclick = null;
@@ -22,7 +18,7 @@ class SettlersActions {
 
     if (this.turn_limit){
       this.sleep_timer = setTimeout(()=> {
-        $(".acknowledge").click();
+        $("#rolldice").click();
         clearTimeout(this.sleep_timer);
       }, this.turn_limit);
     }

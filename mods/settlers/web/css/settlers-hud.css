@@ -3,7 +3,7 @@
 	max-width: 100vw;
 	z-index: 50 !important;
 	padding-top: 3px !important;
-	margin-bottom: 2rem;
+	margin-bottom: 1rem;
 	height: auto;
 }
 
@@ -14,7 +14,7 @@
 }
 
 .hud-body {
-	min-height: 10rem;
+	min-height: 12rem;
 	width: calc(100% - 5rem);
 	display: flex;
 	flex-direction: column;
@@ -115,9 +115,6 @@
 	.hud-body {
 		width: calc(100% - 2rem);
 	}
-	.hud-body .mobile {
-		height: 2.2rem;
-	}
 
 	body .player-box {
 		height: auto !important;
@@ -129,21 +126,6 @@
 		margin-left: 5vw;
 		margin-right: 5vw;
 		margin-top: 5vw;
-	}
-
-	.mobile-trading-container {
-		display: none;
-		position: absolute;
-		background-color: black;
-		height: 100%;
-		width: 100%;
-		z-index: 10;
-		top: 0;
-		left: 0;
-		padding-top: 6vh;
-		overflow-y: scroll;
-		max-height: 120vh;
-		padding-bottom: 40vh;
 	}
 
 	.hud-body .controls ul {

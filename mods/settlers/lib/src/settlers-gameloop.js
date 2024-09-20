@@ -97,7 +97,7 @@ class SettlersGameloop {
           this.updateStatus(`<div class="persistent player-notice">${this.game.playerNames[player - 1]} bought a ${this.card.name} card</div>`);
         } else {
 
-          document.querySelector(".hud-body .mobile .cards").classList.remove("hidden");
+          $(".controls #playcard").addClass('enabled');
 
           let lastcard = this.game.deck[0].cards[this.game.deck[0].hand[this.game.deck[0].hand.length - 1]];
 
@@ -747,11 +747,13 @@ class SettlersGameloop {
           // **********************************************************
           
           //Or, choose menu option
-          document.getElementById("rolldice").onclick = (e) => {
-              settlers_self.updateStatus('rolling...');
-              settlers_self.addMove("roll\t" + player);
-              settlers_self.endTurn();
-              e.currentTarget.onclick = null;
+          if (document.getElementById("rolldice")){
+            document.getElementById("rolldice").onclick = (e) => {
+                settlers_self.updateStatus('rolling...');
+                settlers_self.addMove("roll\t" + player);
+                settlers_self.endTurn();
+                e.currentTarget.onclick = null;
+            }
           }
         } else {
           this.updateStatus(
