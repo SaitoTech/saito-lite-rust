@@ -193,22 +193,16 @@ class Mods {
 
 		// try {
 			if (this.app.BROWSER === 1) {
-				console.log('loading dyn module...');
-				//let moduleCode = this.app.crypto.base64ToString(DYN_MOD_WEB);
-				//console.log('module code: ', moduleCode);
-
-				self["saito-js"] = require('saito-js').default;
-				self["saito-js/lib/slip"] = require("saito-js/lib/slip").default;
-				self["saito-js/lib/transaction"] = require("saito-js/lib/transaction").default;
-				self["saito-js/lib/block"]=require("saito-js/lib/block").default;
-
 				let mods = await this.app.storage.loadLocalApplications();
-
 				console.log('loaded mods:', mods);
 
 				if (mods.length > 0) {
+					self["saito-js"] = require('saito-js').default;
+					self["saito-js/lib/slip"] = require("saito-js/lib/slip").default;
+					self["saito-js/lib/transaction"] = require("saito-js/lib/transaction").default;
+					self["saito-js/lib/block"]=require("saito-js/lib/block").default;
+
 					for (let i=0; i<mods.length; i++) {
-						//console.log(`${mods[i].mod}: ${mods[i]}`);
 						let mod_binary = mods[i]['binary'];
 						let moduleCode = this.app.crypto.base64ToString(mod_binary);
 
