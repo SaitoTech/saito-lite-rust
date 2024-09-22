@@ -28,13 +28,13 @@ class AddAppOverlay {
 	attachEvents() {
 		let this_self = this;
 
-		document.querySelector('#saito-app-install-btn').onclick = (e) => {
+		document.querySelector('#saito-app-install-btn').onclick = async (e) => {
 			console.log('saving json to archive');
 
 
-			console.log('tx json:', this_self.tx_json);
-			this_self.app.storage.saveLocalApplication(this_self.tx_json, (this_self.title).toLowerCase());
-
+			await this_self.app.storage.saveLocalApplication((this_self.title).toLowerCase(), this_self.bin);
+			
+			//console.log(JSON.stringify(await this_self.app.storage.loadLocalApplications()));
 			salert("Module saved. Reloading page...");
 		}
 

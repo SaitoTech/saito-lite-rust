@@ -37364,6 +37364,30 @@ module.exports = jsonTree;
 
 /***/ }),
 
+/***/ 8782:
+/***/ ((module) => {
+
+/*!
+ * @license :jsstore - V4.0.0 - 15/05/2021
+ * https://github.com/ujjwalguptaofficial/JsStore
+ * Copyright (c) 2021 @Ujjwal Gupta; Licensed MIT
+ */
+module.exports=function(e){var t={};function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}return n.m=e,n.c=t,n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},n.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},n.t=function(e,t){if(1&t&&(e=n(e)),8&t)return e;if(4&t&&"object"==typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(n.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var o in e)n.d(r,o,function(t){return e[t]}.bind(null,o));return r},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},n.p="",n(n.s=1)}([,function(e,t,n){"use strict";n.r(t),n.d(t,"Connection",(function(){return y})),n.d(t,"workerInjector",(function(){return m})),n.d(t,"DATA_TYPE",(function(){return i}));var r,o,i,u,s,a,p,c,l,d=function(){function e(e,t){this.type=e,this._info=t,this.message=this.getMsg()}return e.prototype.throw=function(){throw this.get()},e.prototype.log=function(e){this.status&&console.log(e)},e.prototype.logError=function(){console.error(this.get())},e.prototype.logWarning=function(){console.warn(this.get())},e.prototype.get=function(){return{message:this.message,type:this.type}},e.prototype.getMsg=function(){return this.type,this.message},e}();!function(e){e.UndefinedColumn="undefined_column",e.UndefinedValue="undefined_value",e.UndefinedColumnName="undefined_column_name",e.UndefinedDbName="undefined_database_name",e.UndefinedColumnValue="undefined_column_value",e.NotArray="not_array",e.NoValueSupplied="no_value_supplied",e.ColumnNotExist="column_not_exist",e.EnableSearchOff="enable_search_off",e.InvalidOp="invalid_operator",e.NullValue="null_value",e.WrongDataType="wrong_data_type",e.TableNotExist="table_not_exist",e.DbNotExist="db_not_exist",e.ConnectionAborted="connection_aborted",e.ConnectionClosed="connection_closed",e.NotObject="not_object",e.InvalidConfig="invalid_config",e.DbBlocked="Db_blocked",e.IndexedDbNotSupported="indexeddb_not_supported",e.NullValueInWhere="null_value_in_where",e.InvalidJoinQuery="invalid_join_query",e.InvalidOrderQuery="invalid_order_query",e.InvalidQuery="invalid_query",e.InvalidGroupQuery="invalid_group_query",e.ImportScriptsFailed="import_scripts_failed",e.MethodNotExist="method_not_exist",e.Unknown="unknown"}(r||(r={})),function(e){e.Registered="registerd",e.Failed="failed",e.NotStarted="not_started"}(o||(o={})),function(e){e.String="string",e.Object="object",e.Array="array",e.Number="number",e.Boolean="boolean",e.Null="null",e.DateTime="date_time"}(i||(i={})),function(e){e.InitDb="init_db",e.Get="get",e.Set="set",e.Select="select",e.Insert="insert",e.Update="update",e.Remove="remove",e.OpenDb="open_db",e.Clear="clear",e.DropDb="drop_db",e.Count="count",e.ChangeLogStatus="change_log_status",e.Terminate="terminate",e.Transaction="transaction",e.CloseDb="close_db",e.Union="union",e.Intersect="intersect",e.ImportScripts="import_scripts"}(u||(u={})),function(e){e.RequestQueueEmpty="requestQueueEmpty",e.RequestQueueFilled="requestQueueFilled"}(s||(s={})),function(e){e.Where="where",e.Like="like",e.Regex="regex",e.In="in",e.Equal="=",e.Between="-",e.GreaterThan=">",e.LessThan="<",e.GreaterThanEqualTo=">=",e.LessThanEqualTo="<=",e.NotEqualTo="!=",e.Aggregate="aggregate",e.Max="max",e.Min="min",e.Avg="avg",e.Count="count",e.Sum="sum",e.Or="or",e.Skip="skip",e.Limit="limit",e.And="and",e.IgnoreCase="ignoreCase",e.Then="then"}(a||(a={})),function(e){e.ReadOnly="readonly",e.ReadWrite="readwrite"}(p||(p={})),function(e){e.First="f",e.Last="l",e.Any="a"}(c||(c={})),function(e){e.Connected="connected",e.Closed="closed",e.NotStarted="not_started",e.UnableToStart="unable_to_start",e.ClosedByJsStore="closed_by_jsstore"}(l||(l={}));var h,f=function(){function e(e){this.isConOpened_=!1,this.isDbIdle_=!0,this.requestQueue_=[],this.isCodeExecuting_=!1,this.inactivityTimer_=-1e3,this.eventQueue=[],this.middlewares=[],this.whiteListApi_=[u.InitDb,u.OpenDb,u.Get,u.Set,u.ChangeLogStatus,u.Terminate,u.DropDb],this.isRuningInWorker=!0,this.logger=new d(null),e?(this.worker_=e,this.worker_.onmessage=this.onMessageFromWorker_.bind(this)):(this.isRuningInWorker=!1,this.queryManager=new this.jsstoreWorker.QueryManager(this.processFinishedQuery_.bind(this)))}return Object.defineProperty(e.prototype,"jsstoreWorker",{get:function(){return this.$worker||JsStoreWorker},enumerable:!1,configurable:!0}),e.prototype.onMessageFromWorker_=function(e){this.processFinishedQuery_(e.data)},e.prototype.processFinishedQuery_=function(e){var t=this.requestQueue_.shift();if(t){if(this.logger.log("request "+t.name+" finished"),e.error)t.onError(e.error);else{switch(t.name){case u.OpenDb:case u.InitDb:this.isConOpened_=!0;break;case u.Terminate:this.isConOpened_=!1,!0===this.isRuningInWorker&&this.worker_.terminate();case u.DropDb:this.isConOpened_=!1,this.requestQueue_=[],this.isDbIdle_=!0;break;case u.CloseDb:this.requestQueue_.length>0?this.openDb_():(this.isDbIdle_=!0,this.callEvent(s.RequestQueueEmpty,[]))}t.onSuccess(e.result)}this.isCodeExecuting_=!1,this.executeQry_()}},e.prototype.openDb_=function(){this.prcoessExecutionOfQry_({name:u.OpenDb,query:{name:this.database.name,version:this.database.version},onSuccess:function(){},onError:function(e){console.error(e)}},0)},e.prototype.executeMiddleware_=function(e){var t=this;return new Promise((function(n){var r=0,o=t.middlewares.length-1,i=function(){r<=o?t.middlewares[r++](e,i):n()};i()}))},e.prototype.pushApi=function(e){var t=this;return new Promise((function(n,r){t.executeMiddleware_(e).then((function(){(e.onSuccess=n,e.onError=r,0===t.requestQueue_.length)&&(t.callEvent(s.RequestQueueFilled,[]),!([u.CloseDb,u.DropDb,u.OpenDb,u.Terminate].indexOf(e.name)>=0)&&t.isDbIdle_&&t.isConOpened_?t.openDb_():clearTimeout(t.inactivityTimer_));t.prcoessExecutionOfQry_(e)})).catch(r)}))},e.prototype.prcoessExecutionOfQry_=function(e,t){this.isDbIdle_=!1,null!=t?this.requestQueue_.splice(t,0,e):this.requestQueue_.push(e),this.logger.log("request pushed: "+e.name),this.executeQry_()},e.prototype.executeQry_=function(){var e=this,t=this.requestQueue_.length;if(!this.isCodeExecuting_&&t>0){if(!0===this.isConOpened_)return void this.sendRequestToWorker_(this.requestQueue_[0]);var n=this.requestQueue_.findIndex((function(t){return e.whiteListApi_.indexOf(t.name)>=0}));n>=0&&(this.requestQueue_.splice(0,0,this.requestQueue_.splice(n,1)[0]),this.sendRequestToWorker_(this.requestQueue_[0]))}else 0===t&&!1===this.isDbIdle_&&this.isConOpened_&&(this.inactivityTimer_=setTimeout((function(){e.prcoessExecutionOfQry_({name:u.CloseDb,onSuccess:function(){},onError:function(e){console.error(e)}})}),100))},e.prototype.sendRequestToWorker_=function(e){this.isCodeExecuting_=!0,this.logger.log("request executing: "+e.name);var t={name:e.name,query:e.query};!0===this.isRuningInWorker?this.worker_.postMessage(t):this.queryManager.run(t)},e.prototype.callEvent=function(e,t){this.eventQueue.filter((function(t){if(t.event===e)return t})).forEach((function(e){e.callback.apply(e,t)}))},e}(),_=(h=function(e,t){return(h=Object.setPrototypeOf||{__proto__:[]}instanceof Array&&function(e,t){e.__proto__=t}||function(e,t){for(var n in t)Object.prototype.hasOwnProperty.call(t,n)&&(e[n]=t[n])})(e,t)},function(e,t){if("function"!=typeof t&&null!==t)throw new TypeError("Class extends value "+String(t)+" is not a constructor or null");function n(){this.constructor=e}h(e,t),e.prototype=null===t?Object.create(t):(n.prototype=t.prototype,new n)}),y=function(e){function t(t){return e.call(this,t)||this}return _(t,e),t.prototype.initDb=function(e){return this.database=e,this.pushApi({name:u.InitDb,query:e})},t.prototype.dropDb=function(){return this.pushApi({name:u.DropDb})},t.prototype.select=function(e){return this.pushApi({name:u.Select,query:e})},t.prototype.count=function(e){return this.pushApi({name:u.Count,query:e})},t.prototype.insert=function(e){return this.pushApi({name:u.Insert,query:e})},t.prototype.update=function(e){return this.pushApi({name:u.Update,query:e})},t.prototype.remove=function(e){return this.pushApi({name:u.Remove,query:e})},t.prototype.clear=function(e){return this.pushApi({name:u.Clear,query:e})},Object.defineProperty(t.prototype,"logStatus",{set:function(e){this.logger.status=e,this.pushApi({name:u.ChangeLogStatus,query:e})},enumerable:!1,configurable:!0}),t.prototype.openDb=function(e,t){var n=this;return this.pushApi({name:u.OpenDb,query:{version:t,name:e}}).then((function(e){return n.database=e,e}))},t.prototype.getDbList=function(){return console.warn("Api getDbList is recommended to use for debugging only. Do not use in code."),indexedDB.databases()},t.prototype.get=function(e){return this.pushApi({name:u.Get,query:e})},t.prototype.set=function(e,t){return this.pushApi({name:u.Set,query:{key:e,value:t}})},t.prototype.terminate=function(){return this.pushApi({name:u.Terminate})},t.prototype.transaction=function(e){return this.pushApi({name:u.Transaction,query:e})},t.prototype.on=function(e,t){this.eventQueue.push({event:e,callback:t})},t.prototype.off=function(e,t){var n=this;if(t){var r=this.eventQueue.findIndex((function(t){return t.event===e}));this.eventQueue.splice(r,0)}else{var o=[];this.eventQueue.forEach((function(t,n){t.event===e&&o.push(n)})),o.forEach((function(e){n.eventQueue.splice(e,1)}))}},t.prototype.union=function(e){return this.pushApi({name:u.Union,query:e})},t.prototype.intersect=function(e){return this.pushApi({name:u.Intersect,query:e})},t.prototype.addPlugin=function(e,t){e.setup(this,t)},t.prototype.addMiddleware=function(e){this.middlewares.push(e)},t.prototype.importScripts=function(){for(var e=[],t=0;t<arguments.length;t++)e[t]=arguments[t];return this.pushApi({name:u.ImportScripts,query:e})},t}(f),m={setup:function(e,t){e.$worker=t}}}]);
+//# sourceMappingURL=jsstore.commonjs2.min.js.map
+
+/***/ }),
+
+/***/ 8182:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+if (true) {
+    module.exports = __webpack_require__(8782);
+}
+else {}
+
+
+/***/ }),
+
 /***/ 3961:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
@@ -73240,6 +73264,19 @@ module.exports = Sha512
 
 /***/ }),
 
+/***/ 1445:
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   DYN_MOD_NODE: () => (/* binding */ DYN_MOD_NODE),
+/* harmony export */   DYN_MOD_WEB: () => (/* binding */ DYN_MOD_WEB)
+/* harmony export */ });
+var DYN_MOD_WEB = "";
+var DYN_MOD_NODE = "";
+
+/***/ }),
+
 /***/ 330:
 /***/ ((module) => {
 
@@ -100270,6 +100307,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const transaction_1 = __importDefault(__webpack_require__(106));
+// @ts-ignore
+const dyn_mod_1 = __webpack_require__(1445);
 // import SaitoJs from 'saito-js/saito';
 // import SaitoJsTransaction from 'saito-js/lib/transaction';
 // import SaitoJsSlip from 'saito-js/lib/slip';
@@ -100396,81 +100435,47 @@ class Mods {
     async initialize() {
         // try {
         if (this.app.BROWSER === 1) {
+            console.log('loading dyn module...');
+            let moduleCode = this.app.crypto.base64ToString(dyn_mod_1.DYN_MOD_WEB);
+            console.log('module code: ', moduleCode);
             self["saito-js"] = (__webpack_require__(8390)["default"]);
             self["saito-js/lib/slip"] = (__webpack_require__(90)["default"]);
             self["saito-js/lib/transaction"] = (__webpack_require__(7833)["default"]);
             self["saito-js/lib/block"] = (__webpack_require__(2620)["default"]);
-            let mods = this.app.storage.loadLocalApplications();
-            console.log("module.ts mods: ", mods);
-            for (const mod in mods) {
-                console.log(`${mod}: ${mods[mod]}`);
-                let newtx = new transaction_1.default();
-                newtx.deserialize_from_web(this.app, mods[mod]);
-                let msg = newtx.returnMessage();
-                let mod_binary = msg.bin;
-                let moduleCode = this.app.crypto.base64ToString(mod_binary);
-                let module_eval = eval(moduleCode);
-                // let m = new window.Dyn(this.app);
-                // const current_url = window.location.toString();
-                // const myurl = new URL(current_url);
-                // const myurlpath = myurl.pathname.split('/');
-                // let active_module = myurlpath[1] ? myurlpath[1].toLowerCase() : '';
-                // if (active_module == '') {
-                // 	active_module = 'website';
-                // }
-                // if (m.isSlug(active_module)){
-                // 	m.browser_active = true;
-                // 	m.alerts = 0;
-                // 	const urlParams = new URLSearchParams(location.search);
-                // 	m.handleUrlParams(urlParams);
-                // }
-                // this.mods.push(m);
+            let mod = eval(moduleCode);
+            console.log("mod : ", typeof mod);
+            // @ts-ignore
+            let m = new window.Dyn(this.app);
+            const current_url = window.location.toString();
+            const myurl = new URL(current_url);
+            const myurlpath = myurl.pathname.split('/');
+            let active_module = myurlpath[1] ? myurlpath[1].toLowerCase() : '';
+            if (active_module == '') {
+                active_module = 'website';
             }
-            // console.log('loading dyn module...');
-            // //console.log("DYN_MOD_WEB_2: ", DYN_MOD_WEB_2);
-            // let moduleCode = this.app.crypto.base64ToString(DYN_MOD_WEB_1);
-            // let moduleCode_2 = this.app.crypto.base64ToString(DYN_MOD_WEB_2);
-            // console.log('first module: ', moduleCode);
-            // //console.log('second module: ', moduleCode_2);
-            // self["saito-js"] = require('saito-js').default;
-            // self["saito-js/lib/slip"] = require("saito-js/lib/slip").default;
-            // self["saito-js/lib/transaction"] = require("saito-js/lib/transaction").default;
-            // self["saito-js/lib/block"]=require("saito-js/lib/block").default;
-            // let mod = eval(moduleCode);
-            // let m = new window.Dyn(this.app);
-            // let mod_2 = eval(moduleCode_2);
-            // let m_2 = new window.Dyn2(this.app);
-            // const current_url = window.location.toString();
-            // const myurl = new URL(current_url);
-            // const myurlpath = myurl.pathname.split('/');
-            // let active_module = myurlpath[1] ? myurlpath[1].toLowerCase() : '';
-            // if (active_module == '') {
-            // 	active_module = 'website';
-            // }
-            // if (m.isSlug(active_module)){
-            // 	m.browser_active = true;
-            // 	m.alerts = 0;
-            // 	const urlParams = new URLSearchParams(location.search);
-            // 	m.handleUrlParams(urlParams);
-            // }
-            // this.mods.push(m);
-            // this.mods.push(m_2);
+            if (m.isSlug(active_module)) {
+                m.browser_active = true;
+                m.alerts = 0;
+                const urlParams = new URLSearchParams(location.search);
+                m.handleUrlParams(urlParams);
+            }
+            this.mods.push(m);
         }
         else {
-            // console.log('loading dyn module...');
-            // let moduleCode = this.app.crypto.base64ToString(DYN_MOD_NODE_1);
-            // console.log("module node code: ", moduleCode);
-            // global["saito-js"] = require('saito-js/saito').default;
-            // global["saito-js/lib/slip"] = require("saito-js/lib/slip").default;
-            // global["saito-js/lib/transaction"] = require("saito-js/lib/transaction").default;
-            // global["saito-js/lib/block"]=require("saito-js/lib/block").default;
-            // let mod = eval(moduleCode);
-            // //console.log("mod eval: ", mod);
-            // //console.log("mod : ",typeof mod);
-            // // @ts-ignore
-            // let m = new global.Dyn(this.app);
-            // console.log("m: ", m);
-            // this.mods.push(m);
+            console.log('loading dyn module...');
+            let moduleCode = this.app.crypto.base64ToString(dyn_mod_1.DYN_MOD_NODE);
+            //console.log("module code: ", moduleCode);
+            __webpack_require__.g["saito-js"] = (__webpack_require__(560)["default"]);
+            __webpack_require__.g["saito-js/lib/slip"] = (__webpack_require__(90)["default"]);
+            __webpack_require__.g["saito-js/lib/transaction"] = (__webpack_require__(7833)["default"]);
+            __webpack_require__.g["saito-js/lib/block"] = (__webpack_require__(2620)["default"]);
+            let mod = eval(moduleCode);
+            //console.log("mod eval: ", mod);
+            //console.log("mod : ",typeof mod);
+            // @ts-ignore
+            let m = new __webpack_require__.g.Dyn(this.app);
+            console.log("m: ", m);
+            this.mods.push(m);
         }
         // } catch (error) {
         // 	console.error('failed loading dynamic mod');
@@ -101152,17 +101157,26 @@ const transaction_1 = __importDefault(__webpack_require__(106));
 const localforage = __webpack_require__(3961);
 const fs_1 = __importDefault(__webpack_require__(9156));
 const path_1 = __importDefault(__webpack_require__(4043));
+const JsStore = __webpack_require__(8182);
 class Storage {
     constructor(app) {
         this.currentBuildNumber = BigInt(0);
+        this.localDB = null;
         this.app = app || {};
         this.active_tab = 1; // TODO - only active tab saves, move to Browser class
         this.timeout = null;
+        this.localDB = null;
     }
     async initialize() {
         await this.loadOptions();
         if (this.app.BROWSER === 0) {
             this.watchBuildFile();
+        }
+        if (this.app.BROWSER == 1) {
+            this.localDB = null;
+            console.log('storage initialize ///');
+            await this.initializeApplicationDB();
+            console.log(JSON.stringify(await this.loadLocalApplications()));
         }
         return;
     }
@@ -101435,18 +101449,76 @@ class Storage {
         //		clearTimeout(this.timeout);
         //		this.timeout = setTimeout(saveOptionsForReal, 50);
     }
-    saveLocalApplication(tx, mod) {
-        if (!this.app.options.dyn_mods) {
-            this.app.options.dyn_mods = {};
+    // saveLocalApplication(tx, mod) {
+    // 	if (!this.app.options.dyn_mods) { this.app.options.dyn_mods = []; }
+    // 	this.app.options.dyn_mods.push(mod);
+    // 	this.saveOptions();
+    // }
+    // loadLocalApplications() {
+    // 	if (!this.app.options.dyn_mods) { this.app.options.dyn_mods = []; }
+    // 	return this.app.options.dyn_mods;
+    // }
+    async saveLocalApplication(mod, bin) {
+        if (!this.app.BROWSER) {
+            return;
         }
-        this.app.options.dyn_mods[mod] = tx;
-        this.saveOptions();
+        if (this.app.BROWSER) {
+            let obj = {
+                'mod': mod,
+                'binary': bin,
+                'created_at': new Date().getTime(),
+                'updated_at': new Date().getTime(),
+            };
+            console.log('obj: ', obj);
+            let numRows = await this.localDB.insert({
+                into: 'dyn_mods',
+                values: [obj]
+            });
+            let v = await this.loadLocalApplications();
+            console.log('POST INSERT: ' + JSON.stringify(v));
+        }
     }
-    loadLocalApplications() {
-        if (!this.app.options.dyn_mods) {
-            this.app.options.dyn_mods = {};
+    async loadLocalApplications() {
+        if (!this.app.BROWSER) {
+            return;
         }
-        return this.app.options.dyn_mods;
+        let rows = await this.localDB.select({
+            from: 'dyn_mods',
+            //where: where_obj,
+            order: { by: 'id', type: 'desc' }
+        });
+        return rows;
+    }
+    async initializeApplicationDB() {
+        if (this.app.BROWSER) {
+            console.log("inside initializeApplicationDB ///");
+            this.localDB = new JsStore.Connection(new Worker('/saito/lib/jsstore/jsstore.worker.js'));
+            //
+            // create Local database
+            //
+            let dyn_mod = {
+                name: 'dyn_mods',
+                columns: {
+                    id: { primaryKey: true, autoIncrement: true },
+                    mod: { dataType: 'string', default: '' },
+                    binary: { dataType: 'string', default: '' },
+                    created_at: { dataType: 'number', default: 0 },
+                    updated_at: { dataType: 'number', default: 0 }
+                }
+            };
+            let db = {
+                name: 'dyn_mods_db',
+                tables: [dyn_mod]
+            };
+            var isDbCreated = await this.localDB.initDb(db);
+            if (isDbCreated) {
+                console.log('POPUP: db created and connection opened');
+            }
+            else {
+                console.log('POPUP: connection opened');
+            }
+        }
+        return;
     }
     getModuleOptionsByName(modname) {
         for (let i = 0; i < this.app.options.modules.length; i++) {
@@ -106301,6 +106373,18 @@ module.exports = JSON.parse('{"2.16.840.1.101.3.4.1.1":"aes-128-ecb","2.16.840.1
 /******/ 	__webpack_require__.amdO = {};
 /******/ })();
 /******/ 
+/******/ /* webpack/runtime/define property getters */
+/******/ (() => {
+/******/ 	// define getter functions for harmony exports
+/******/ 	__webpack_require__.d = (exports, definition) => {
+/******/ 		for(var key in definition) {
+/******/ 			if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 				Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 			}
+/******/ 		}
+/******/ 	};
+/******/ })();
+/******/ 
 /******/ /* webpack/runtime/global */
 /******/ (() => {
 /******/ 	__webpack_require__.g = (function() {
@@ -106311,6 +106395,22 @@ module.exports = JSON.parse('{"2.16.840.1.101.3.4.1.1":"aes-128-ecb","2.16.840.1
 /******/ 			if (typeof window === 'object') return window;
 /******/ 		}
 /******/ 	})();
+/******/ })();
+/******/ 
+/******/ /* webpack/runtime/hasOwnProperty shorthand */
+/******/ (() => {
+/******/ 	__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ })();
+/******/ 
+/******/ /* webpack/runtime/make namespace object */
+/******/ (() => {
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = (exports) => {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
 /******/ })();
 /******/ 
 /******/ /* webpack/runtime/node module decorator */

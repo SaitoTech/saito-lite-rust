@@ -3,6 +3,7 @@ const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const Transaction = require('../../lib/saito/transaction').default;
 const AddAppOverlay = require('./lib/overlay/add-app');
+const JsStore = require('jsstore');
 
 class AppStore extends ModTemplate {
 	constructor(app) {
@@ -26,6 +27,7 @@ class AppStore extends ModTemplate {
 		this.styles = ['/saito/saito.css', '/newappstore/style.css'];
 
 		this.addAppOverlay = null;
+		this.localDb = null;
 	}
 
 	async initialize(app) {
@@ -79,6 +81,51 @@ class AppStore extends ModTemplate {
 		}
 		return null;
 	}
+
+	async initializeDatabase() {
+		if (this.app.BROWSER) {
+			this.localDB = new JsStore.Connection(
+				new Worker('/saito/lib/jsstore/jsstore.worker.js')
+			);
+
+			//
+			// create Local database
+			//
+			let vocabulary = {
+				name: 'vocabulary',
+				columns: {
+					id: { primaryKey: true, autoIncrement: true },
+					field1: { dataType: 'string', default: '' },
+					field2: { dataType: 'string', default: '' },
+					field3: { dataType: 'string', default: '' },
+					field4: { dataType: 'string', default: '' },
+					field5: { dataType: 'string', default: '' },
+					label: { dataType: 'string', default: '' },
+					lesson_id: { dataType: 'number', default: 0 },
+					created_at: { dataType: 'number', default: 0 },
+					updated_at: { dataType: 'number', default: 0 }
+				}
+			};
+
+			let db = {
+				name: 'vocabulary_db',
+				tables: [vocabulary]
+			};
+
+			var isDbCreated = await this.localDB.initDb(db);
+			if (isDbCreated) {
+				console.log('POPUP: db created and connection opened');
+			} else {
+				console.log('POPUP: connection opened');
+			}
+		}
+
+		return;
+	}
+
+
+	
+
 
 	attachEvents() {
 		let this_self = this;
