@@ -255,6 +255,14 @@ class Settlers extends GameTemplate {
 				text: ` moves the ${this.b.name}`,
 				action: -1
 			},
+			{
+				card: `Governor`,
+				count: 0,
+				img: '/settlers/img/cards/governors_statue.png',
+				title: `Governor's Statue`,
+				text: ` is elected governor of Saitoa`,
+				action: -1,
+			}
 
 		];
 		this.gametitle = 'Settlers of Saitoa';

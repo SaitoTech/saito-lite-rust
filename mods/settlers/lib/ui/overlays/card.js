@@ -58,7 +58,7 @@ class CardOverlay {
 		if (!obj?.cardtext){
 			let cardtext = card.text.toLowerCase();
 			if (player == this.mod.game.player){
-				cardtext = "You" + cardtext.replace("earns", "earn").replace("moves", "move");
+				cardtext = "You" + cardtext.replace("earns", "earn").replace("moves", "move").replace("is", "are");
 			}else{
 				cardtext = this.mod.game.playerNames[player - 1] + cardtext;
 			}
