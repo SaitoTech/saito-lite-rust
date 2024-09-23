@@ -73,11 +73,11 @@ class CallInterfaceVideo {
 		this.app.connection.on(
 			'add-waiting-video-box',
 			() => {
-				this.addRemoteStream('connecting', null);		
+				this.addRemoteStream('connecting', null);
 			}
 		);
 
-		this.app.connection.on('remove-waiting-video-box', ()=> {
+		this.app.connection.on('remove-waiting-video-box', () => {
 			let peer_id = "connecting"
 			if (this.video_boxes[peer_id]?.video_box) {
 				if (this.video_boxes[peer_id].video_box?.remove) {
@@ -156,8 +156,8 @@ class CallInterfaceVideo {
 		});
 
 		app.connection.on('stun-data-channel-open', (pkey) => {
-			if (this.rendered){
-				this.insertActions(this.mod.room_obj.call_peers);	
+			if (this.rendered) {
+				this.insertActions(this.mod.room_obj.call_peers);
 			}
 		});
 
@@ -170,7 +170,7 @@ class CallInterfaceVideo {
 				this.app.connection.emit('remove-peer-box', peer);
 			}
 
-			if (this.old_title){
+			if (this.old_title) {
 				document.title = this.old_title;
 				delete this.old_title;
 			}
@@ -183,8 +183,8 @@ class CallInterfaceVideo {
 
 				const recordControls = this.app.modules.getRespondTos('screenrecord-video-controls');
 				console.log(recordControls, "recordControls")
-				let { mediaRecorder, stopRecording,type } = recordControls[0]
-		
+				let { mediaRecorder, stopRecording, type } = recordControls[0]
+
 				if (mediaRecorder) {
 					await stopRecording()
 				}
@@ -202,7 +202,7 @@ class CallInterfaceVideo {
 					let { mediaRecorder, stopRecording, type } = recordControls[0]
 					console.log(recordControls, "recordControls")
 					document.querySelector('.stun-overlay-container').remove();
-					if(type === "game") return;
+					if (type === "game") return;
 					if (mediaRecorder) {
 						await stopRecording()
 					}
@@ -247,12 +247,12 @@ class CallInterfaceVideo {
 			}
 		}
 
-		if(!this.mod.browser_active){
+		if (!this.mod.browser_active) {
 			this.app.connection.emit("stun-switch-view", "gallery");
-		}else {
+		} else {
 			this.app.connection.emit("stun-switch-view", this.mod.layout);
 		}
-		
+
 		this.rendered = true;
 	}
 
@@ -352,9 +352,9 @@ class CallInterfaceVideo {
 				console.warn('Adding an action item with no callback');
 			}
 
-		    if (item.event) {
-		       item.event(id);
-		    }
+			if (item.event) {
+				item.event(id);
+			}
 
 		} else {
 			console.warn('Item not found');
@@ -383,6 +383,68 @@ class CallInterfaceVideo {
 				siteMessage('You have been disconnected', 3000);
 			});
 		});
+
+		function adjustClassesAndCount(element) {
+			const observer = new ResizeObserver(entries => {
+				for (let entry of entries) {
+					const width = entry.contentRect.width;
+					const height = entry.contentRect.height;
+					const aspectRatio = width / height;
+
+					element.classList.remove('wide', 'tall', 'square');
+
+					if (aspectRatio > 5 / 3) {
+						element.classList.add('wide');
+					} else if (aspectRatio < 3 / 5) {
+						element.classList.add('tall');
+					} else {
+						element.classList.add('square');
+					}
+
+					const childCount = element.children.length;
+					Array.from(element.classList).forEach(className => {
+						if (className.startsWith('count-')) {
+							element.classList.remove(className);
+						}
+					});
+					element.classList.add(`count-${childCount}`);
+				}
+			});
+
+			observer.observe(element);
+		}
+
+		function resizeBackground(element) {
+			const bg_observer = new ResizeObserver(entries => {
+				for (let entry of entries) {
+					const width = entry.contentRect.width;
+					const height = entry.contentRect.height;
+					const aspectRatio = width / height;
+
+					element.classList.remove('fit', 'cover');
+
+
+					if (aspectRatio > 6 / 3) {
+						element.classList.add('fit');
+					} else if (aspectRatio < 3 / 9) {
+						element.classList.add('fit');
+					} else {
+						element.classList.add('cover');
+					}
+				}
+			});
+
+			bg_observer.observe(element);
+		}
+
+		document.querySelectorAll('.gallery, .side-videos').forEach(container => {
+			adjustClassesAndCount(container);
+		});
+
+		document.querySelectorAll('.video-box-container-large').forEach(item => {
+			resizeBackground(item);
+		});
+
 
 		/*document.getElementById('record-icon').onclick = async () => {
 			const recordIcon = document.querySelector('#record-icon i');
@@ -536,7 +598,7 @@ class CallInterfaceVideo {
 
 		let url1 = window.location.origin + '/videocall/';
 
-		if (!this.old_title){
+		if (!this.old_title) {
 			this.old_title = document.title;
 		}
 
@@ -585,7 +647,7 @@ class CallInterfaceVideo {
 		this.localStream = localStream;
 		this.updateImages();
 
-		
+
 		// segmentBackground(document.querySelector('#stream_local video'), document.querySelector('#stream_local canvas'), 1);
 		// applyBlur(7);
 	}
