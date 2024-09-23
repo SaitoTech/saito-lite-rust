@@ -240,10 +240,11 @@
 .dev-card-overlay .settlers-cards-container {
 	display: flex;
 	flex-wrap: nowrap;
-	overflow: visible;
+	overflow: auto;
 	width: min(750px, 95vw);
 	max-width: 100%;
 	justify-content: center;
+	scrollbar-width: none;
 }
 
 .settlers-dev-card {
