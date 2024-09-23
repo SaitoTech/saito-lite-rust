@@ -325,7 +325,7 @@ class SettlersDisplay {
             );
           }
         }else{
-          this.playerbox.updateGraphics('', i);
+          //this.playerbox.updateGraphics('', i);
         }
       }
     }

@@ -801,6 +801,8 @@ class SettlersGameloop {
         this.game.state.lastroll.sort();
 
         this.updateLog(`${this.formatPlayer(player)} rolled: ${this.returnDiceImage(this.game.state.lastroll[1])}${this.returnDiceImage(this.game.state.lastroll[0])}`);
+        this.playerbox.updateGraphics(`<div class="last-roll">${this.returnDiceImage(d1)}${this.returnDiceImage(d2)}</div>`, player);
+
         this.game.stats.dice[roll]++; //Keep count of the rolls
         this.game.stats.dicePlayer[roll][player-1]++;
 
@@ -1073,6 +1075,10 @@ class SettlersGameloop {
         //
         while (this.game.deck[0].hand.length > 0){
           this.game.state.players[this.game.player - 1].devcards.push(this.game.deck[0].hand.pop());  
+        }
+
+        for (let i = 1; i<= this.game.players.length; i++){
+          this.playerbox.updateGraphics("", i);  
         }
 
         // Only set initial flag to true at end of opponents turn, because we loop back to "play"

@@ -352,6 +352,13 @@ class Settlers extends GameTemplate {
 			if (this.game.state.placedCity == null) {
 				$('.dark').css('backgroundColor', 'unset');
 			}
+
+			///
+			if (this.game.state.lastroll.length){
+				this.playerbox.updateGraphics(`<div class="last-roll">${this.returnDiceImage(this.game.state.lastroll[0])}${this.returnDiceImage(this.game.state.lastroll[1])}</div>`, this.game.state.playerTurn);
+			}
+
+
 		} catch (err) {
 			console.error('Intialize HTML: ' + err);
 		}
