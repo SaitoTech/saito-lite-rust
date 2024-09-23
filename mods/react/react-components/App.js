@@ -20,11 +20,12 @@ const App = ({ app, mod }) => {
     const [publicKey, setPublicKey] = useState("");
     const [message, setMessage] = useState("");
     const [receivedMessages, setReceivedMessages] = useState([]);
-    const [newBlock, setNewBlock] = useState(null); 
+    const [newBlock, setNewBlock] = useState(null);
 
     const createMessageTransaction = async (type) => {
         if (message.trim() === "") {
-            siteMessage("Message field is empty!")
+             // this is declared in app.browser inside the browser.ts file
+            siteMessage("Message field is empty!", 2500)
             return;
         }
         let newtx = await app.wallet.createUnsignedTransactionWithDefaultFee();
@@ -44,8 +45,9 @@ const App = ({ app, mod }) => {
         } else {
             app.connection.emit('relay-transaction', newtx);
             app.network.propagateTransaction(newtx);
-        }   
-        siteMessage(`Message Sent via ${type} `)
+        }
+          // this is declared in app.browser inside the browser.ts file
+        siteMessage(`Message Sent via ${type} `, 2500)
         setMessage("");
     };
 
@@ -56,7 +58,8 @@ const App = ({ app, mod }) => {
             if (tx.msg.request === "message-request" && tx.isTo(mod.publicKey) && !tx.isFrom(mod.publicKey)) {
                 const newMessage = tx.msg.content;
                 setReceivedMessages(prev => [...prev, newMessage]);
-                siteMessage("Received a new message");
+                // this is declared in app.browser inside the browser.ts file
+                siteMessage("Received a new message", 2500);
             }
         };
 
@@ -67,19 +70,31 @@ const App = ({ app, mod }) => {
         mod.onNewBlock = function (blk) {
             console.log("new block:", blk);
             setNewBlock(blk);
-            siteMessage(`Received new block`)
+              // this is declared in app.browser inside the browser.ts file
+            siteMessage(`Received new block`, 2500)
         };
     }, []);
 
 
 
     const renderBlockInfo = (block) => {
+
         if (!block) return <p>No block data available</p>;
+        const baseURL = `${window.location.protocol}//${window.location.hostname}:${window.location.port}`;
 
         return (
             <div className="block-container">
                 <h4>New Block</h4><div></div>
-                <p><strong>Block Hash:</strong> <span>{block.hash}</span></p>
+                <p>
+                    <strong>Block Hash:</strong>
+                    <a
+                        href={`${baseURL}/explorer/block?hash=${block.hash}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {block.hash}
+                    </a>
+                </p>
                 <p><strong>Previous Block Hash:</strong> <span>{block.previousBlockHash}</span></p>
                 <p><strong>Block Type</strong> <span>{block.block_type}</span></p>
                 <p><strong>Number of Transactions:</strong> <span>{block.transactions.length}</span></p>
@@ -91,11 +106,38 @@ const App = ({ app, mod }) => {
                             <p><strong>Timestamp:</strong> {tx.timestamp}<span></span></p>
                             <p><strong>From:</strong> <span>{tx.from.map(slip => slip.publicKey).join(", ")}</span></p>
                             <p><strong>To:</strong> <span>{tx.to.map(slip => slip.publicKey).join(", ")}</span></p>
+                            <p><strong>Content:</strong> <span>{tx.content}</span></p>
+                            <p><strong>Module:</strong> <span>{tx.module}</span></p>
+                            <p><strong>Request:</strong> <span>{tx.request}</span></p>
                         </li>
                     ))}
                 </ul>
+
+
             </div>
         );
+    };
+
+    const toggleSaitoCss = () => {
+        const saitoCssHref = '/saito/saito.css'; 
+        const linkElements = document.querySelectorAll('link[rel="stylesheet"]');
+        let saitoCssLink = null;
+
+        linkElements.forEach(link => {
+            if (link.href.includes(saitoCssHref)) {
+                saitoCssLink = link;
+            }
+        });
+
+        if (saitoCssLink) {
+            saitoCssLink.remove();
+        } else {
+
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = saitoCssHref;
+            document.head.appendChild(link);
+        }
     };
 
 
@@ -103,6 +145,7 @@ const App = ({ app, mod }) => {
     return (
         <div className="app-container">
             <div className="user-box">
+                {/* keychain is declared in the keychain.ts file */}
                 <div className="identicon"><img src={app.keychain.returnIdenticon(mod.publicKey)} /></div>
                 <div className="public-key">{mod.publicKey || "No public "}</div>
             </div>
@@ -124,9 +167,9 @@ const App = ({ app, mod }) => {
                     placeholder="Type your message"
                 />
 
-                <Button  app={app} onClick={() => createMessageTransaction('relay')} text="Send via relay" />
+                <Button app={app} onClick={() => createMessageTransaction('relay')} text="Send via relay" />
 
-                <Button app={app} onClick={() => createMessageTransaction('transaction')} text="Send via transaction" />
+                <Button app={app} onClick={() => createMessageTransaction('transaction')} text="Send transaction onchain" />
             </div>
 
 
@@ -142,6 +185,11 @@ const App = ({ app, mod }) => {
             </div>
 
             {renderBlockInfo(newBlock)}
+
+            <div style={{marginTop: '2.5rem'}}>
+                
+                <Button onClick={toggleSaitoCss} text="Toggle Saito Css"/>
+            </div>
         </div>
 
     )
