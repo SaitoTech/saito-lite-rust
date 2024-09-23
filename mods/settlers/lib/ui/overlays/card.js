@@ -55,12 +55,17 @@ class CardOverlay {
 			return;
 		}
 
-		let cardtext = card.text;
+		if (!obj?.cardtext){
+			let cardtext = card.text.toLowerCase();
+			if (player == this.mod.game.player){
+				cardtext = "You" + cardtext.replace("earns", "earn").replace("moves", "move");
+			}else{
+				cardtext = this.mod.game.playerNames[player - 1] + cardtext;
+			}
 
-		if (player == this.mod.game.player){
-			cardtext = "You" + cardtext.replace("earns", "earn");
+			card.cardtext = cardtext;
 		}else{
-			cardtext = this.mod.game.playerNames[player - 1] + cardtext;
+			card.cardtext = obj.cardtext;
 		}
 
 		this.overlay.show(CardTemplate(card));

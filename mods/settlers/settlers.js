@@ -235,7 +235,27 @@ class Settlers extends GameTemplate {
 				subtitle: 'gain one victory point',
 				text: ' earns one Victory Point',
 				action: 0
-			}
+			},
+
+			//Pseudo-dev cards
+
+			{
+				card: 'Bandit',
+				count: 0,
+				img: '/settlers/img/cards/bandit.png',
+				title: `Event - ${this.b.name}`,
+				text: ` moves the ${this.b.name}`,
+				action: -1
+			},
+			{
+				card: 'Robin Hood',
+				count: 0,
+				img: '/settlers/img/cards/robin_hood.png',
+				title: `Event - Robin Hood`,
+				text: ` moves the ${this.b.name}`,
+				action: -1
+			},
+
 		];
 		this.gametitle = 'Settlers of Saitoa';
 		this.winState = {
@@ -256,9 +276,6 @@ class Settlers extends GameTemplate {
 		//
 		//
 		this.grace_window = 24;
-
-		// temp var to help w/ post-splash flash
-		this.currently_active_player = 0;
 
 		this.enable_observer = false;
 
@@ -358,6 +375,9 @@ class Settlers extends GameTemplate {
 				this.playerbox.updateGraphics(`<div class="last-roll">${this.returnDiceImage(this.game.state.lastroll[0])}${this.returnDiceImage(this.game.state.lastroll[1])}</div>`, this.game.state.playerTurn);
 			}
 
+			if (this.game.state.playerTurn){
+				this.playerbox.setActive(this.game.state.playerTurn);
+			}
 
 		} catch (err) {
 			console.error('Intialize HTML: ' + err);
@@ -685,6 +705,7 @@ class Settlers extends GameTemplate {
 
 			$('#bank').removeClass('enabled');
 			$('#spend').removeClass('enabled');
+			$('#playcard').removeClass('enabled');
 		}
 	}
 }

@@ -367,8 +367,8 @@ class SettlersGameloop {
       if (mv[0] == "player_build_city") {
         let player = parseInt(mv[1]);
 
-        this.currently_active_player = player;
-        this.playerbox.setActive(this.currently_active_player);
+        this.game.state.playerTurn = player;
+        this.playerbox.setActive(player);
 
         this.game.queue.splice(qe, 1);
         this.game.state.canTrade = false;
@@ -841,6 +841,17 @@ class SettlersGameloop {
             this.game.queue.push("NOTIFY\tAll players have finished discarding");
             this.game.queue.push("discard\t" + JSON.stringify(playersToDiscard)); //One queue move all the players
           }
+
+          if (this.game.players.length == 2 && Math.abs(this.game.state.players[0].vp - this.game.state.players[1].vp) > 1){
+            if (this.game.state.players[0].vp < this.game.state.players[1].vp){
+              this.card_overlay.render({ player : 1 , card : "Robin Hood"});
+            }else{
+              this.card_overlay.render({ player : 2 , card : "Robin Hood"});
+            }
+          }else{
+            this.card_overlay.render({ player : player , card : "Bandit"});
+          }
+
           return 1;
 
         } else {
