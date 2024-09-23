@@ -756,7 +756,7 @@ class Fileshare extends ModTemplate {
 		let link = `${url1}?file=${base64obj}`;
 
 		navigator.clipboard.writeText(link);
-		siteMessage('Invite link copied to clipboard', 1500);
+		siteMessage('Invite link copied to clipboard', 2500);
 	}
 }
 

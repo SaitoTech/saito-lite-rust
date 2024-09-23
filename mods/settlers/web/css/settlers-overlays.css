@@ -27,10 +27,6 @@
 	max-width: 85vw;
 }
 
-.mobile-trading-container .player-box {
-	max-width: 80vw;
-}
-
 .brick {
 	background-image: url(/settlers/img/cards/brick.png);
 	background-size: contain;

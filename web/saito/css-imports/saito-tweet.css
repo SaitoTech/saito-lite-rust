@@ -229,6 +229,17 @@
   display: inherit;
 }
 
+/* handling for embedded tweets */
+
+.tweet .tweet {
+  padding: 0;
+}
+
+.tweet .tweet .tweet-body {
+  grid-template-columns: 0 auto;
+  padding: 1rem 0 0;
+}
+
 
 .tweet-main iframe {
   max-width: 100% !important;

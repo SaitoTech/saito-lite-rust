@@ -163,6 +163,15 @@
 	right: 0;
 }
 
+.league-overlay-description img {
+	max-width: 100%;
+	margin: 1rem auto;
+	position: relative;
+	left: 50%;
+	transform: translateX(-50%);
+	border-radius: var(--border-radius-soft);
+}
+
 #admin_details {
 	flex: unset;
 	min-height: 7.5rem;

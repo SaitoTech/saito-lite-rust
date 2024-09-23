@@ -16,11 +16,8 @@ body {
 }
 
 .saito-new-tweets {
-	position: sticky;
-	top: 5px;
-	margin: auto;
+	margin: 0 12.5%;
 	width: 75%;
-	align-self: center;
 	z-index: 5;
 	min-height: 4rem;
 }
@@ -258,7 +255,7 @@ body {
 }
 
 .saito-main {
-	padding-top: 1.5rem;
+	padding-top: 0.6rem;
 }
 
 

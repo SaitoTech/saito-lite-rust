@@ -1,9 +1,7 @@
 .saito-progress-bar-container{
 	background: var(--background-saito-effects);
 	width: 75%;
-	/* true horizontal centering */
-	left: 62%;
-	transform: translateX(-50%);
+	margin: 0 12.5%;
 	height: 3rem;
 	padding: 0 1rem;
 	display: flex;
@@ -37,15 +35,3 @@
 	}
 }
 
-
-@media screen and (max-width: 1200px) {
-	.saito-progress-bar-container{
-		left: 57%;
-	}
-}
-
-@media screen and (max-width: 720px) {
-	.saito-progress-bar-container{
-		left: 50%;
-	}
-}

@@ -3,14 +3,10 @@ class SettlersActions {
   // OVERRIDE THIS FUNCTION FROM THE PARENT GAME LIBRARY TO CHANGE THE ACKNOWLEDGE TEXT TO CONTINUE
   //
   playerAcknowledgeNotice(msg, mycallback) {
-    let html = `<ul><li class="textchoice acknowledge enabled" id="confirmit"><i class="fa-solid fa-forward"></i></li></ul>`;
+    let html = `<i class="fa-solid fa-forward"></i>`;
     try {
 
-
       this.updateStatusWithOptions(`${this.getLastNotice()}<div class="player-notice"><span class="acknowledge-message">${msg}</span></div>`, html);
-
-      $("#rolldice").html(`<i class="fa-solid fa-forward"></i>`);
-      $("#rolldice").addClass("enabled");
 
       document.querySelector("#rolldice").onclick = async (e) => {
         e.currentTarget.onclick = null;
@@ -22,7 +18,7 @@ class SettlersActions {
 
     if (this.turn_limit){
       this.sleep_timer = setTimeout(()=> {
-        $(".acknowledge").click();
+        $("#rolldice").click();
         clearTimeout(this.sleep_timer);
       }, this.turn_limit);
     }
@@ -386,7 +382,7 @@ class SettlersActions {
             this.game.state.longestRoad.player = player;
             this.game.state.longestRoad.size = longest.length;
             this.game.state.longestRoad.path = longest;
-            this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player - 1]} claimed the longest road ${this.longest.svg}`);
+            this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player - 1]} claimed the longest road ${this.longest.icon}`);
           } else {
             //Increase size
             this.game.state.longestRoad.size = longest.length;
@@ -407,7 +403,7 @@ class SettlersActions {
           `claimed the ${this.longest.name} with ${longest.length} segments.`
         );
 
-        this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player - 1]} claimed the longest road ${this.longest.svg}`);
+        this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player - 1]} claimed the longest road ${this.longest.icon}`);
         this.game.state.longestRoad.player = player;
         this.game.state.longestRoad.size = longest.length;
         this.game.state.longestRoad.path = longest;

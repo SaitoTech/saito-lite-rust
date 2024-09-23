@@ -124,6 +124,10 @@
   color: var(--font-color-hover-mention);
 }
 
+.contact .saito-link{
+  float: right;
+}
+
 /**** Temporary for developing file transfer in chat ***/
 .saito-file-transfer{
   border-radius: var(--border-radius-file-transfer);

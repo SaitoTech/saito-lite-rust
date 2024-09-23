@@ -69,8 +69,10 @@ class SettlersGameloop {
         this.game.queue = [];
         this.game.canProcess = true;
 
-        this.updateLog(`${this.formatPlayer(winner+1)} is ${this.winState} and wins the game!`);
+        this.updateLog(`${this.formatPlayer(winner+1)} is ${this.winState.name} and wins the game!`);
         this.stats_overlay.render(this.game.playerNames[winner]);
+
+        this.card_overlay.render({player: winner+1, card: "Governor"});
 
         if (this.gameOverCallback){
           this.gameOverCallback();  
@@ -97,16 +99,16 @@ class SettlersGameloop {
           this.updateStatus(`<div class="persistent player-notice">${this.game.playerNames[player - 1]} bought a ${this.card.name} card</div>`);
         } else {
 
-          document.querySelector(".hud-body .mobile .cards").classList.remove("hidden");
+          $(".controls #playcard").addClass('enabled');
 
           let lastcard = this.game.deck[0].cards[this.game.deck[0].hand[this.game.deck[0].hand.length - 1]];
 
-          let html = `<span class="tip">${lastcard.card}
+          let html = `<span class="tip">${lastcard.title}
                         <div class="tiptext">${this.rules[lastcard.action]}</div>
                       </span>`;
 
           console.log("Current status: " + this.game.state.canPlayCard);
-          if (lastcard.action == 0 && this.game.state.canPlayCard == null){
+          if (lastcard.action == 0 && this.game.state.canPlayCard !== false){
             this.game.state.players[player-1].devcards.push(this.game.deck[0].hand.pop());
             this.game.state.canPlayCard = true;
           }
@@ -170,6 +172,8 @@ class SettlersGameloop {
         //Update Army!
         this.game.state.players[player - 1].knights++;
         this.checkLargestArmy(player);
+
+        this.game.stats.move_bandit[player-1]++;
 
         //Move Bandit
         if (this.game.player == player) {
@@ -365,8 +369,8 @@ class SettlersGameloop {
       if (mv[0] == "player_build_city") {
         let player = parseInt(mv[1]);
 
-        this.currently_active_player = player;
-        this.playerbox.setActive(this.currently_active_player);
+        this.game.state.playerTurn = player;
+        this.playerbox.setActive(player);
 
         this.game.queue.splice(qe, 1);
         this.game.state.canTrade = false;
@@ -721,6 +725,14 @@ class SettlersGameloop {
       if (mv[0] == "play") {
         let player = parseInt(mv[1]);
 
+        //Check for winner
+        for (let i = 0; i < this.game.players.length; i++){
+          if (this.game.state.players[i].vp >= this.game.options.game_length) {
+            this.game.queue.push(`winner\t${i}`);
+            return 1;
+          }
+        }
+  
         this.game.state.playerTurn = player;
         this.playerbox.setActive(player);
 
@@ -735,6 +747,10 @@ class SettlersGameloop {
           $("#rolldice").html(`<i class="fa-solid fa-dice"></i>`);
           $("#rolldice").addClass("enabled");
 
+          if (this.canPlayerPlayCard(true)) {
+            $("#playcard").addClass("enabled");
+          }
+
           if (this.turn_limit){
             this.clock.startClock(this.turn_limit);
             this.sleep_timer = setTimeout(()=> {
@@ -747,11 +763,13 @@ class SettlersGameloop {
           // **********************************************************
           
           //Or, choose menu option
-          document.getElementById("rolldice").onclick = (e) => {
-              settlers_self.updateStatus('rolling...');
-              settlers_self.addMove("roll\t" + player);
-              settlers_self.endTurn();
-              e.currentTarget.onclick = null;
+          if (document.getElementById("rolldice")){
+            document.getElementById("rolldice").onclick = (e) => {
+                settlers_self.updateStatus('rolling...');
+                settlers_self.addMove("roll\t" + player);
+                settlers_self.endTurn();
+                e.currentTarget.onclick = null;
+            }
           }
         } else {
           this.updateStatus(
@@ -785,6 +803,8 @@ class SettlersGameloop {
         this.game.state.lastroll.sort();
 
         this.updateLog(`${this.formatPlayer(player)} rolled: ${this.returnDiceImage(this.game.state.lastroll[1])}${this.returnDiceImage(this.game.state.lastroll[0])}`);
+        this.playerbox.updateGraphics(`<div class="last-roll">${this.returnDiceImage(d1)}${this.returnDiceImage(d2)}</div>`, player);
+
         this.game.stats.dice[roll]++; //Keep count of the rolls
         this.game.stats.dicePlayer[roll][player-1]++;
 
@@ -823,6 +843,17 @@ class SettlersGameloop {
             this.game.queue.push("NOTIFY\tAll players have finished discarding");
             this.game.queue.push("discard\t" + JSON.stringify(playersToDiscard)); //One queue move all the players
           }
+
+          if (this.game.players.length == 2 && Math.abs(this.game.state.players[0].vp - this.game.state.players[1].vp) > 1){
+            if (this.game.state.players[0].vp < this.game.state.players[1].vp){
+              this.card_overlay.render({ player : 1 , card : "Robin Hood"});
+            }else{
+              this.card_overlay.render({ player : 2 , card : "Robin Hood"});
+            }
+          }else{
+            this.card_overlay.render({ player : player , card : "Bandit"});
+          }
+
           return 1;
 
         } else {
@@ -900,6 +931,8 @@ class SettlersGameloop {
           }
         }
 
+        this.game.stats.move_bandit[player-1]++;
+
         //Move Bandit
         if (this.game.player == player) {
           this.playerPlayBandit();
@@ -914,6 +947,7 @@ class SettlersGameloop {
             this.updateStatus(
               `<div class="player-notice">Robin Hood is on the loose, ${this.game.playerNames[player - 1]} is moving him...</div>`
             );
+            $(".controls .option").css("visibility", "hidden");
           }
         }
         return 0;
@@ -1054,6 +1088,10 @@ class SettlersGameloop {
         //
         while (this.game.deck[0].hand.length > 0){
           this.game.state.players[this.game.player - 1].devcards.push(this.game.deck[0].hand.pop());  
+        }
+
+        for (let i = 1; i<= this.game.players.length; i++){
+          this.playerbox.updateGraphics("", i);  
         }
 
         // Only set initial flag to true at end of opponents turn, because we loop back to "play"

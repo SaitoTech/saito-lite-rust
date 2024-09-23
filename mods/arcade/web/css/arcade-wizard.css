@@ -166,6 +166,7 @@
 	font-size: 2rem;
 	appearance: none;
 	padding: 0 1rem;
+	border-radius: 0 1rem 1rem 0;
 }
 
 .arcade-wizard-overlay select:focus {

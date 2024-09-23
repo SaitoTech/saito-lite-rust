@@ -433,10 +433,6 @@ dt {
 	width: unset;
 }
 
-.mobile-trading-container .flexline {
-	min-width: 16rem;
-}
-
 /* p1-4 is legacy code for ownership of cities/roads, not playerboxes  */
 
 .p1 {
@@ -945,35 +941,10 @@ ul.horizontal_list li.iconoption {
 	bottom: 1px;
 }
 
-.mobile-trading-container {
-	position: absolute;
-	top: 70px;
-	display: flex;
-	flex-direction: column;
-	gaps: 2.5rem;
-}
-
 .player-box {
 	display: relative;
 }
 
-/*****
-.mobile-trading-container .player-box.notme:nth-child(0) {
-  top: 76px;
-  right: 40px;
-}
-.mobile-trading-container .player-box.notme:nth-child(1) {
-  top: auto;
-  bottom: 76px;
-  left: 40px;
-  right: auto;
-}
-.mobile-trading-container .player-box.notme:nth-child(2) {
-  top: auto;
-  bottom: 76px;
-  right: 40px;
-}
-*****/
 
 .flash {
 	animation-name: flash;

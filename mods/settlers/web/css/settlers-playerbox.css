@@ -10,7 +10,7 @@
 .game-playerbox {
 	z-index: 3;
 	max-width: 50vw;
-	width: 30rem;
+	width: 26rem;
 	position: relative;
 	/* Manually add saito properties */
 	border: 3px solid #424143;
@@ -69,6 +69,10 @@
 	justify-content: flex-end;
 	gap: 0.5rem;
 	height: 100%;
+}
+
+.last-roll {
+	width: 4rem;
 }
 
 .cardct {
