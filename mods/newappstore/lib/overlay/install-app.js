@@ -33,9 +33,13 @@ class AddAppOverlay {
 
 
 			await this_self.app.storage.saveLocalApplication((this_self.title).toLowerCase(), this_self.bin);
-			
+
 			//console.log(JSON.stringify(await this_self.app.storage.loadLocalApplications()));
 			salert("Module saved. Reloading page...");
+
+			setTimeout(function(){
+				window.location.reload();
+			}, 1500);
 		}
 
 	}

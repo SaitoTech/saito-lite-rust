@@ -40,7 +40,6 @@ module.exports = InstallAppOverlayTemplate = (app, mod, this_self) => {
 
         <div class="detail-key">Publisher</div>
         <div class="detail-value" id="publisher">
-          <img class="saito-identicon" src="${identicon}"> 
           <div>${this_self.publisher}</div>
         </div>
 
