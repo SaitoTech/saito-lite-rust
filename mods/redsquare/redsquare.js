@@ -61,6 +61,7 @@ const SaitoOverlay = require('./../../lib/saito/ui/saito-overlay/saito-overlay')
 */
 
 class RedSquare extends ModTemplate {
+
   constructor(app) {
     super(app);
     this.appname = 'Red Square';
@@ -2161,7 +2162,7 @@ class RedSquare extends ModTemplate {
       // servers -- get open graph properties
       //
 
-      tweet = await tweet.generateTweetProperties(app, this, 1);
+      tweet = await tweet.analyseTweetLinks(app, this, 1);
 
       //
       // Save the modified tx so we have open graph properties available

@@ -26,11 +26,9 @@ class RedSquareMain {
     ////////////////////
 
     //
-    // HOME-RENDER-REQUEST render the main thread from scratch
+    // HOME-RENDER-REQUEST -- render the main thread
     //
     this.app.connection.on("redsquare-home-render-request", (scroll_to_top = false) => {
-
-      console.log("redsquare-home-render-request");
 
       if (document.querySelector(".saito-back-button")) {
         document.querySelector(".saito-back-button").remove();
@@ -55,7 +53,6 @@ class RedSquareMain {
     // page we show a button that can be clicked to do so.
     //
     this.app.connection.on("redsquare-home-postcache-render-request", (num_tweets = 0) => {
-      console.log(`postcache, pulled ${num_tweets} new tweets`);
 
       //
       // check if we can refresh page (show tweets immediately) or show prompt / button

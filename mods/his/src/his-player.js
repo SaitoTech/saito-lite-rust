@@ -1514,7 +1514,7 @@ if (this.game.state.events.cramner_active == 1) {
       // set back button to move us back here
       //
       let his_self = this;
-      his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerTurn(faction, selected_card); });
+      his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.playerTurn(faction, selected_card); });
       this.playerPlayCard(card, this.game.player, faction);
     });  
 
@@ -3651,7 +3651,7 @@ does_units_to_move_have_unit = true; }
   async playerContinueToMoveFormationInClear(his_self, player, faction, spacekey, ops_to_spend, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
 
     //
     // we add this before broadcasting, or the turn ends 
@@ -3969,7 +3969,7 @@ does_units_to_move_have_unit = true; }
   async playerMoveFormationInClear(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
 
     let parent_faction = faction;
     let units_to_move = [];
@@ -3983,6 +3983,7 @@ does_units_to_move_have_unit = true; }
 	// first define the functions that will be used internally
 	//
 	let selectDestinationInterface = function(his_self, units_to_move) {  
+
     	  his_self.playerSelectSpaceWithFilter(
 
             "Select Destination for these Units",
@@ -3992,6 +3993,9 @@ does_units_to_move_have_unit = true; }
               if (his_self.game.player != protestant_player && his_self.game.state.events.schmalkaldic_league == 0) {
 		if (space.type == "electorate") { return 0; }
 	      }
+	      // cannot move into the space you are leaving
+	      if (space.key === spacekey) { return 0; }
+
 	      // you cannot move into spaces that are not allied or enemies
               if (!his_self.canFactionMoveIntoSpace(faction, space.key)) { return 0; }
 	      if (space.neighbours.includes(spacekey)) {
@@ -5081,7 +5085,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   async playerNavalTransport(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
 
     let spacekey = "";
     let units_to_move = [];
@@ -5358,7 +5362,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   async playerNavalMove(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
 
 
     let units_to_move = [];
@@ -6297,7 +6301,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   async playerControlUnfortifiedSpace(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
 
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let pacifiable_spaces_in_unrest = [];

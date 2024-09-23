@@ -192,6 +192,7 @@ if (this.game.options.scenario != "is_testing") {
 	        this.addDebater("protestant", "oekolampadius-debater");
 	        this.addDebater("protestant", "zwingli-debater");
 	        this.addReformer("protestant", "zurich", "zwingli-reformer");
+	        this.convertSpace("protestant", "zurich");
 	        this.addDebater("papacy", "contarini-debater");
 	      }
 
@@ -211,6 +212,7 @@ if (this.game.options.scenario != "is_testing") {
 	        this.addDebater("protestant", "latimer-debater");
 	        this.addDebater("protestant", "coverdale-debater");
 	        this.addReformer("protestant", "london", "cranmer-reformer");
+	        this.convertSpace("protestant", "london");
 	        this.updateLog("Henry VIII's marriage to Anne Boleyn triggers the start of the British Reformation");
 	      }
 
@@ -231,6 +233,7 @@ if (this.game.options.scenario != "is_testing") {
 	        this.addDebater("protestant", "olivetan-debater");
 	        this.addDebater("protestant", "calvin-debater");
 	        this.addReformer("protestant", "geneva", "calvin-reformer");
+	        this.convertSpace("protestant", "geneva");
 
 	        if (this.game.players.length == 2) {
 	          //
@@ -663,9 +666,6 @@ if (this.game.options.scenario != "is_testing") {
 	  let factions = JSON.parse(mv[1]);
 	  let do_i_get_to_move = false;
 
-
-console.log("winter_retreat_move_units_to_capital_faction_array 1...");
-
 	  //
 	  // skip if we have already confirmed!
 	  //
@@ -673,8 +673,6 @@ console.log("winter_retreat_move_units_to_capital_faction_array 1...");
 	    this.diplomacy_overlay.hide();
 	    return 0;
 	  }
-
-console.log("winter_retreat_move_units_to_capital_faction_array 2...");
 
 	  //
 	  // exit if overlay open and visible
@@ -684,21 +682,14 @@ console.log("winter_retreat_move_units_to_capital_faction_array 2...");
 	    //
 	    // periodically this will trigger when the overlay is NOT visible
 	    //
-console.log("winter_retreat_move_units_to_capital_faction_array 2 2...");
 	    let obj = document.querySelector(".theses_overlay");
-console.log("winter_retreat_move_units_to_capital_faction_array 2 3...");
 	    if (obj) { 
-console.log("winter_retreat_move_units_to_capital_faction_array 2 4...");
 	      if (obj.style) { 
-console.log("winter_retreat_move_units_to_capital_faction_array 2 5...");
 	        if (obj.style.display != "none") { return 0; }
-console.log("winter_retreat_move_units_to_capital_faction_array 2 6...");
 	      }
 	    }
 	  }
-console.log("winter_retreat_move_units_to_capital_faction_array 3...");
 	  if (this.moves.length > 0) { return 0; }
-console.log("winter_retreat_move_units_to_capital_faction_array 4...");
 
 	  this.addMove("RESOLVE\t"+this.publicKey);
 
@@ -711,7 +702,6 @@ console.log("winter_retreat_move_units_to_capital_faction_array 4...");
             }
           }
 
-console.log("winter_retreat_move_units_to_capital_faction_array 5... " + do_i_get_to_move);
 	  //
 	  // hey, it's me, not here...
 	  //
@@ -719,7 +709,6 @@ console.log("winter_retreat_move_units_to_capital_faction_array 5... " + do_i_ge
 	     this.endTurn();
 	  }
 
-console.log("winter_retreat_move_units_to_capital_faction_array 6...");
 	  // no splice either -- cleared by RESETCONFIRMSNEEDED
 	  return 0;
 
@@ -2357,6 +2346,9 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	  if (this.game.players.length > 2) {
 	    this.addCard("ottoman", "033");
 	  }
+          this.addRegular("england", "calais", 4);
+          this.addCard("france", "106");
+          this.addCard("england", "026");
           this.addCard("papacy", "057");
 /**
           this.addCard("france", "024");
@@ -3493,6 +3485,36 @@ console.log("----------------------------");
 	  this.displaySpace(spacekey);
 
           return 0;
+
+	}
+
+	if (mv[0] === "unbesiege_if_empty") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let spacekey = mv[1];
+	  let faction = mv[2];
+
+	  let space = this.game.spaces[spacekey];
+	  let anyone_left = false;
+	  let cf = this.returnControllingPower(faction);
+
+	  for (let f in space.units) {
+	    if (this.returnControllingPower(f) == cf) {
+	      for (let i = 0; i< space.units[f].length; i++) {
+		let t = space.units[f][i].type;
+		if (t == "mercenary" || t == "cavalry" || t == "regular") {
+		  anyone_left = true;
+		} 
+	      }
+	    }
+	  }
+
+	  if (anyone_left == false && space.besieged != 0) {
+	    this.game.queue.push("remove_siege\t"+spacekey);
+	  }
+
+	  return 1;
 
 	}
 
@@ -6985,8 +7007,6 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 	  let space = this.game.spaces[spacekey];
 	  let unit_destroyed = false;
 
-// known error where assault with some response cards triggers this
-try {
 	  for (let i = 0; i < space.units[faction].length && unit_destroyed == false; i++) {
 	    if (space.units[faction][i].type == unit_type) {
 	      if (this.game.state.field_battle.faction_map[faction] == this.game.state.field_battle.attacker_faction) {
@@ -7012,7 +7032,6 @@ try {
 	      unit_destroyed = true;
 	    }
 	  }
-} catch (err) {}
 
 	  return 1;
 

@@ -4385,8 +4385,10 @@ console.log("ERR: " + JSON.stringify(err));
             }
           }
 	  if (f === "ottoman") { return {}; }
-	  if (his_self.doesFactionHaveLandUnitsInSpace(f, his_self.game.state.field_battle.spacekey)) {
-            return { faction : f , event : '026', html : `<li class="option" id="026">mercenaries bribed (${f})</li>` };
+	  if (f != "") { 
+	    if (his_self.doesFactionHaveLandUnitsInSpace(f, his_self.game.state.field_battle.spacekey)) {
+              return { faction : f , event : '026', html : `<li class="option" id="026">mercenaries bribed (${f})</li>` };
+            }
           }
         }
         return {};
@@ -4411,7 +4413,7 @@ console.log("ERR: " + JSON.stringify(err));
         if (menu == "pre_field_battle_rolls") {
 	  his_self.addMove("mercenaries_bribed\t"+faction);
 	  his_self.addMove("discard\t"+faction+"\t026");
-	  his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction) + " triggers " + his_self.popup("025"));
+	  his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction) + " triggers " + his_self.popup("026"));
 	  his_self.endTurn();
         }
         return 1;
@@ -4483,7 +4485,9 @@ console.log("ERR: " + JSON.stringify(err));
 	      if (lmv[0].indexOf("RESOLVE") == 0 || lmv[0].indexOf("HALTED") == 0 || lmv[0].indexOf("counter_or_ac") == 0) {
 	      } else {
 	        his_self.game.queue.splice(i+1, 0, cmd);
-	        i = 0;
+	        if (lmv[0].indexOf("ACKNOWLEDGE") == 0) {} else {
+	          i = 0;
+	        }
 	      }
 	    }
 	  }
@@ -11079,6 +11083,7 @@ console.log("we have removed philip and redisplayed the space...");
  		  $('.option').off();
 	    	  let action = $(this).attr("id");
 
+		  his_self.addMove(`unbesiege_if_empty\t${spacekey}\t${action}`);
 		  for (let z = 0; z < his_self.game.spaces[spacekey].units[action].length; z++) {
 		    if (his_self.game.spaces[spacekey].units[action][z].type === "mercenary") {
 		      his_self.addMove(`destroy_unit_by_index\t${action}\t${spacekey}\t${z}`);
@@ -11089,8 +11094,11 @@ console.log("we have removed philip and redisplayed the space...");
 		});
 
 	      } else {
+		his_self.addMove(`unbesiege_if_empty\t${spacekey}\t${factions[0]}`);
 		for (let z = 0; z < his_self.game.spaces[spacekey].units[factions[0]].length; z++) {
-		  his_self.addMove(`destroy_unit_by_index\t${factions[0]}\t${spacekey}\t${z}`);
+		  if (his_self.game.spaces[spacekey].units[factions[0]][z].type === "mercenary") {
+		    his_self.addMove(`destroy_unit_by_index\t${factions[0]}\t${spacekey}\t${z}`);
+		  }
 		}
 		his_self.endTurn();
 	      }

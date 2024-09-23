@@ -2,6 +2,7 @@ const TweetMenuTemplate = require('./tweet-menu.template');
 const SaitoOverlay = require('./../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 class TweetMenu {
+
 	constructor(app, mod) {
 		this.app = app;
 		this.mod = mod;

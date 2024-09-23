@@ -6,6 +6,7 @@ const SaitoProfile = require('./../../../lib/saito/ui/saito-profile/saito-profil
 const SaitoLoader = require('./../../../lib/saito/ui/saito-loader/saito-loader');
 
 class TweetManager {
+
 	constructor(app, mod, container = '.saito-main') {
 		this.app = app;
 		this.mod = mod;

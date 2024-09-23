@@ -615,7 +615,10 @@ console.log("\n\n\n\n");
 	  // REFORMERS
           this.addReformer("protestant", "wittenberg", "luther-reformer");
           this.addReformer("protestant", "zurich", "zwingli-reformer");
+	  this.convertSpace("protestant", "zurich");
           this.addReformer("protestant", "geneva", "calvin-reformer");
+	  this.convertSpace("protestant", "geneva");
+
 
 	  // PROTESTANTS   
           //this.addReformer("protestant", "london", "cranmer-reformer");
@@ -637,14 +640,14 @@ console.log("\n\n\n\n");
           this.addNavalSquadron("france", "ragusa", 4);
 
           // HAPSBURG
-          this.addArmyLeader("hapsburg", "gibraltar", "duke-of-alva");
-          this.addArmyLeader("hapsburg", "naples", "charles-v");
+          this.addArmyLeader("hapsburg", "brussels", "duke-of-alva");
+          this.addArmyLeader("hapsburg", "brussels", "charles-v");
           this.addRegular("hapsburg", "naples", 4);
           this.addNavalSquadron("hapsburg", "naples", 1);
           this.addRegular("hapsburg", "nuremberg", 1);
           this.addRegular("hapsburg", "worms", 1);
           this.addRegular("hapsburg", "kassel", 1);
-          this.addRegular("hapsburg", "antwerp", 4);
+          this.addRegular("hapsburg", "antwerp", 2);
 
           // OTTOMAN
           this.addArmyLeader("ottoman", "sofia", "ibrahim-pasha");
@@ -678,6 +681,8 @@ console.log("\n\n\n\n");
 
           // ENGLAND
           this.addRegular("england", "stirling", 4);
+          this.addArmyLeader("england", "calais", "henry-viii");
+          this.addArmyLeader("england", "calais", "charles-brandon");
 
 	  // GENOA
 	  this.addRegular("genoa", "genoa", 2);

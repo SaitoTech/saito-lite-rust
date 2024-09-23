@@ -7,6 +7,14 @@ body {
 	display: inline;
 }
 
+.tweet-overlay-content {
+	margin-left: 1.5rem;
+	margin-right: 1.5rem;
+}
+.tweet-overlay-header .post-tweet-button {
+	margin-right: 1.5rem;
+}
+
 .saito-new-tweets {
 	position: sticky;
 	top: 5px;

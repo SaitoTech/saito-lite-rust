@@ -6,6 +6,7 @@ const JSON = require('json-bigint');
 
 class Post {
 	constructor(app, mod, tweet = null) {
+
 		this.app = app;
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(this.app, this.mod, true, true);
@@ -20,6 +21,7 @@ class Post {
 	}
 
 	render(container = '') {
+
 		this.container = container ? '.tweet-manager ' : '.saito-overlay ';
 
 		console.log('Post render: ' + this.container);
