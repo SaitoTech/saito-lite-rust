@@ -132,13 +132,13 @@ class AppStore extends ModTemplate {
 
 		if (document.getElementById('generate-tx')) {
 			document.getElementById('generate-tx').onclick = async (e) => {
-				alert('clicked');
 				let binary = document.getElementById('binary').value;
 				let title = document.getElementById('title').value;
 				let description = document.getElementById('description').value;
 				let img = document.getElementById('img').value;
 
 				console.log("binary: ", binary);
+				
 
 				let newtx = await this_self.app.wallet.createUnsignedTransaction(this_self.publicKey, BigInt(0), BigInt(0));
 			    newtx.msg = {
@@ -153,7 +153,7 @@ class AppStore extends ModTemplate {
 			    };
 
 			    let jsonData = newtx.serialize_to_web(this_self.app);
-			    console.log('newtx:', );
+			    
 				
 				this_self.download(JSON.stringify(jsonData), `${title}.json`, "text/plain");
 			};
