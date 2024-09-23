@@ -141,10 +141,6 @@ class SettlersDisplay {
         //Save Score
         this.game.state.players[i].vp = score;
 
-        //Check for winner
-        if (score >= this.game.options.game_length) {
-          this.game.queue.push(`winner\t${i}`);
-        }
       }
 
       for (let i = 0; i < this.game.state.players.length; i++) {
@@ -259,7 +255,7 @@ class SettlersDisplay {
 
       if (this.game.state.longestRoad.player == i) {
         statshtml += `  <div class="gap-token"></div>
-                        ${this.longest.svg}
+                        ${this.longest.icon}
                         <div class="vproundel" title="${this.longest.name}">${this.longest.value}</div>`;
       }
 

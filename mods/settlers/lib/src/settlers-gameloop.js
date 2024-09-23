@@ -69,7 +69,7 @@ class SettlersGameloop {
         this.game.queue = [];
         this.game.canProcess = true;
 
-        this.updateLog(`${this.formatPlayer(winner+1)} is ${this.winState} and wins the game!`);
+        this.updateLog(`${this.formatPlayer(winner+1)} is ${this.winState.name} and wins the game!`);
         this.stats_overlay.render(this.game.playerNames[winner]);
 
         if (this.gameOverCallback){
@@ -101,12 +101,12 @@ class SettlersGameloop {
 
           let lastcard = this.game.deck[0].cards[this.game.deck[0].hand[this.game.deck[0].hand.length - 1]];
 
-          let html = `<span class="tip">${lastcard.card}
+          let html = `<span class="tip">${lastcard.title}
                         <div class="tiptext">${this.rules[lastcard.action]}</div>
                       </span>`;
 
           console.log("Current status: " + this.game.state.canPlayCard);
-          if (lastcard.action == 0 && this.game.state.canPlayCard == null){
+          if (lastcard.action == 0 && this.game.state.canPlayCard !== false){
             this.game.state.players[player-1].devcards.push(this.game.deck[0].hand.pop());
             this.game.state.canPlayCard = true;
           }
@@ -170,6 +170,8 @@ class SettlersGameloop {
         //Update Army!
         this.game.state.players[player - 1].knights++;
         this.checkLargestArmy(player);
+
+        this.game.stats.move_bandit[player-1]++;
 
         //Move Bandit
         if (this.game.player == player) {
@@ -721,6 +723,14 @@ class SettlersGameloop {
       if (mv[0] == "play") {
         let player = parseInt(mv[1]);
 
+        //Check for winner
+        for (let i = 0; i < this.game.players.length; i++){
+          if (this.game.state.players[i].vp >= this.game.options.game_length) {
+            this.game.queue.push(`winner\t${i}`);
+            return 1;
+          }
+        }
+  
         this.game.state.playerTurn = player;
         this.playerbox.setActive(player);
 
@@ -734,6 +744,10 @@ class SettlersGameloop {
 
           $("#rolldice").html(`<i class="fa-solid fa-dice"></i>`);
           $("#rolldice").addClass("enabled");
+
+          if (this.canPlayerPlayCard(true)) {
+            $("#playcard").addClass("enabled");
+          }
 
           if (this.turn_limit){
             this.clock.startClock(this.turn_limit);
@@ -902,6 +916,8 @@ class SettlersGameloop {
           }
         }
 
+        this.game.stats.move_bandit[player-1]++;
+
         //Move Bandit
         if (this.game.player == player) {
           this.playerPlayBandit();
@@ -916,6 +932,7 @@ class SettlersGameloop {
             this.updateStatus(
               `<div class="player-notice">Robin Hood is on the loose, ${this.game.playerNames[player - 1]} is moving him...</div>`
             );
+            $(".controls .option").css("visibility", "hidden");
           }
         }
         return 0;

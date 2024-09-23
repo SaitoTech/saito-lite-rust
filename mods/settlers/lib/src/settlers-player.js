@@ -447,7 +447,7 @@ class SettlersPlayer {
       for (let c of this.game.state.players[this.game.player-1].devcards){
         let card = this.game.deck[0].cards[c];
         console.log(card);
-        if (card.card == "Knight"){
+        if (card.action == 1){
           return true;
         }
       }

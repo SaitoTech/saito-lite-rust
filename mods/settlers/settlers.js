@@ -82,11 +82,13 @@ class Settlers extends GameTemplate {
 		};
 		this.b = {
 			name: 'bandit',
-			svg: `<img src="/settlers/img/icons/bandit.png"/>`,
-			alt: `<img src="/settlers/img/icons/robinhood.png"/>`
+			icon: `<img src="/settlers/img/icons/bandit.png"/>`,
+			alt: `<img src="/settlers/img/icons/robinhood.png"/>`,
+			card: `<img src="/settlers/img/cards/devcards/bandit.png"/>`,
+			alt_card: `<img src="/settlers/img/cards/devcards/robin_hood.png"/>`
 		};
 		this.s = {
-			name: 'knight',
+			name: 'soldier',
 			img: `<img src="/settlers/img/icons/knight.png"/>`
 		};
 		this.t = { name: 'bank' };
@@ -96,14 +98,15 @@ class Settlers extends GameTemplate {
 		};
 		this.longest = {
 			name: 'Longest Road',
-			svg: `<img src="/settlers/img/icons/road.png"/>`,
+			icon: `<img src="/settlers/img/icons/road.png"/>`,
+			card: `<img src="/settlers/img/cards/longest_road.png"/>`,
 			value: 2,
-			min: 5,
+			min: 5
 		};
 		this.largest = {
 			name: 'Largest Army',
-			img: `<img src="/settlers/img/icons/knight.png"/>`,
-			value: 2,
+			card: `<img src="/settlers/img/cards/largest_army.png"/>`,
+			value: 2
 		};
 		this.resources = [
 			{
@@ -136,7 +139,7 @@ class Settlers extends GameTemplate {
 				ict: 3,
 				icon: '/settlers/img/icons/ore-icon.png'
 			},
-			{ name: 'desert', count: 1, ict: 1, null: true}
+			{ name: 'desert', count: 1, ict: 1, null: true }
 		];
 		this.priceList = [
 			['brick', 'wood'],
@@ -150,90 +153,95 @@ class Settlers extends GameTemplate {
 			name: 'development',
 			back: '/settlers/img/cards/red_back.png'
 		};
+
 		this.deck = [
 			{
-				card: 'Knight',
+				card: 'Soldier',
 				count: 14,
 				img: '/settlers/img/cards/devcards/knight.png',
-				title: "Knight",
-				text: " may move the bandit", 
+				title: 'Soldier',
+				subtitle: `move the ${this.b.name}`,
+				text: ` may move the ${this.b.name}`,
 				action: 1
 			},
 			{
-				card: 'Unexpected Bounty',
+				card: 'Windfall',
 				count: 2,
 				img: '/settlers/img/cards/devcards/unexpected_bounty.png',
-				title: "Unexpected Bounty",
-				text: " may collect any two resources",
+				title: 'Windfall',
+				subtitle: 'receive any two resources',
+				text: ' may collect any two resources',
 				action: 2
 			},
 			{
 				card: 'Legal Monopoly',
 				count: 2,
 				img: '/settlers/img/cards/devcards/monopoly.png',
-				title: "Legal Monopoly",
-				text: " may collect all available of any resource", 
+				title: 'Legal Monopoly',
+				subtitle: 'get resource from opponents',
+				text: ' may collect all available of any resource',
 				action: 3
 			},
 			{
-				card: 'Road Construction',
+				card: 'Construction',
 				count: 2,
 				img: '/settlers/img/cards/devcards/road_construction.png',
-				title: "Road Construction",
-				text: " may build two roads at no cost", 
+				title: 'Road Construction',
+				subtitle: 'build two roads',
+				text: ' may build two roads at no cost',
 				action: 4
 			},
 			{
-				card: 'Governor\'s Statue',
+				card: 'Market',
 				count: 1,
-				img: '/settlers/img/cards/devcards/governors_statue.png',
-				title: "Achievement - Governor's Statue",
-				text: " earns one Victory Point", 
-				action: 0
-			},
-			{
-				card: 'Brewery',
-				count: 1,
-				img: '/settlers/img/cards/devcards/brewhouse.png',
-				title: "Achievement - Brewery",
-				text: " earns one Victory Point", 
+				img: '/settlers/img/cards/devcards/market.png',
+				title: 'Achievement - Market',
+				subtitle: 'gain one victory point',
+				text: ' earns one Victory Point',
 				action: 0
 			},
 			{
 				card: 'University',
 				count: 1,
 				img: '/settlers/img/cards/devcards/university.png',
-				title: "Achievement - University",
-				text: " earns one Victory Point", 
+				title: 'Achievement - University',
+				subtitle: 'gain one victory point',
+				text: ' earns one Victory Point',
 				action: 0
 			},
 			{
 				card: 'Cathedral',
 				count: 1,
 				img: '/settlers/img/cards/devcards/cathedral.png',
-				title: "Achievement - Cathedral",
-				text: " earns one Victory Point", 
+				title: 'Achievement - Cathedral',
+				subtitle: 'gain one victory point',
+				text: ' earns one Victory Point',
 				action: 0
 			},
 			{
-				card: 'Industrial Port',
+				card: 'Lighthouse',
 				count: 1,
-				img: '/settlers/img/cards/devcards/industrial_port.png',
-				title: "Achievement - Industrial Port",
-				text: " earns one Victory Point", 
+				img: '/settlers/img/cards/devcards/lighthouse.png',
+				title: 'Achievement - Lighthouse',
+				subtitle: 'gain one victory point',
+				text: ' earns one Victory Point',
 				action: 0
 			},
 			{
-				card: 'Chemistry',
+				card: 'Laboratory',
 				count: 1,
 				img: '/settlers/img/cards/devcards/chemistry.png',
-				title: "Achievement - Chemistry Lab",
-				text: " earns one Victory Point", 
+				title: 'Achievement - Chemistry Lab',
+				subtitle: 'gain one victory point',
+				text: ' earns one Victory Point',
 				action: 0
 			}
 		];
 		this.gametitle = 'Settlers of Saitoa';
-		this.winState = 'elected governor';
+		this.winState = {
+			name: 'elected governor',
+			img: '/settlers/img/cards/governors_statue.png'
+		};
 
 		this.rules = [
 			`Gain 1 ${this.vp.name}.`,
@@ -254,12 +262,10 @@ class Settlers extends GameTemplate {
 
 		this.enable_observer = false;
 
-	    this.sort_priority = 1;
-
+		this.sort_priority = 1;
 	}
 
 	async render(app) {
-
 		if (!this.browser_active) {
 			return;
 		}
@@ -322,11 +328,7 @@ class Settlers extends GameTemplate {
 			//
 
 			for (let i = 1; i <= this.game.players.length; i++) {
-				this.playerbox.addClass(
-					`p${this.game.colors[i - 1]}-lite`,
-					i,
-					'game-playerbox-head'
-				);
+				this.playerbox.addClass(`p${this.game.colors[i - 1]}-lite`, i, 'game-playerbox-head');
 			}
 
 			if (app.browser.isMobileBrowser(navigator.userAgent)) {
@@ -365,7 +367,7 @@ class Settlers extends GameTemplate {
 		//Maybe we should standardize addClass() or classlist = [], for our UI components
 		//
 		document.querySelector('#hud-body')?.classList.add('saitoa');
-		$(".hud-body .controls").appendTo("#hud");
+		$('.hud-body .controls').appendTo('#hud');
 
 		let html = `<ul><li class="option enabled" id="score" title="view game statistics"><i class="fa-solid fa-ranking-star"></i></li>
 	    	<li class="option enabled" id="trade" title="trade with other players"><i class="fa-solid fa-money-bill-transfer"></i></li>
@@ -375,99 +377,77 @@ class Settlers extends GameTemplate {
 	    	<li class="option enabled" id="rolldice"><i class="fa-solid fa-forward"></i></li></ul>
 	    	`;
 
-	    this.hud.updateControls(html);
-	    this.updateControls();
+		this.hud.updateControls(html);
+		this.updateControls();
 
-	    if (this.game.state.placedCity){
-	    	$(".option").css("visibility", "hidden");
-	    }
+		if (this.game.state.placedCity) {
+			$('.option').css('visibility', 'hidden');
+		}
 
 		//
 		// hook up interactivity
 		//
-		if (document.querySelector('.controls #score')){
+		if (document.querySelector('.controls #score')) {
 			document.querySelector('.controls #score').onclick = (e) => {
-			this.stats_overlay.render();
-		};
-
-
-		if (document.querySelector('.controls #playcard')){
-			document.querySelector('.controls #playcard').onclick = (e) => {
-				this.dev_card.render();
+				this.stats_overlay.render();
 			};
-		}
 
-		if (document.querySelector('.controls #bank')){
-			document.querySelector('.controls #bank').onclick = (e) => {
-				this.bank.render();
-			};
-		}
-
-
-		if (document.querySelector('.controls #spend')){
-			document.querySelector('.controls #spend').onclick = (e) => {
-				this.build.render();
-			};
-		}
-
-
-		let trade_btn = document.querySelector('.controls #trade');
-
-		if (!trade_btn || this.game.over) {
-			return;
-		}
-
-		if (
-			this.app.browser.isMobileBrowser() &&
-			window.innerHeight > window.innerWidth
-		) {
-			trade_btn.innerHTML = `<i class="fa-solid fa-users"></i>`;
-		}
-
-		trade_btn.onclick = (e) => {
-			if (
-				this.app.browser.isMobileBrowser() &&
-				window.innerHeight > window.innerWidth
-			) {
-				if (
-					document.querySelector('.game-playerbox-manager').style
-						.display == 'flex'
-				) {
-					document.querySelector(
-						'.game-playerbox-manager'
-					).style.display = 'none';
-					return;
-				} else {
-					document.querySelector(
-						'.game-playerbox-manager'
-					).style.display = 'flex';
-					try {
-						//
-						// close playerboxen on back-click
-						//
-						$('.game-playerbox-manager').off();
-						$('.game-playerbox-manager').on('click', () => {
-							console.log('Hide playerboxes in mobile');
-							document.querySelector(
-								'.game-playerbox-manager'
-							).style.display = 'none';
-						});
-					} catch (err) {
-						console.error('ERROR 485023: ' + err);
-					}
-				}
-			} else {
-				this.trade_overlay.render();
+			if (document.querySelector('.controls #playcard')) {
+				document.querySelector('.controls #playcard').onclick = (e) => {
+					this.dev_card.render();
+				};
 			}
-		};
 
-	  }
+			if (document.querySelector('.controls #bank')) {
+				document.querySelector('.controls #bank').onclick = (e) => {
+					this.bank.render();
+				};
+			}
 
+			if (document.querySelector('.controls #spend')) {
+				document.querySelector('.controls #spend').onclick = (e) => {
+					this.build.render();
+				};
+			}
 
+			let trade_btn = document.querySelector('.controls #trade');
+
+			if (!trade_btn || this.game.over) {
+				return;
+			}
+
+			if (this.app.browser.isMobileBrowser() && window.innerHeight > window.innerWidth) {
+				trade_btn.innerHTML = `<i class="fa-solid fa-users"></i>`;
+			}
+
+			trade_btn.onclick = (e) => {
+				if (this.app.browser.isMobileBrowser() && window.innerHeight > window.innerWidth) {
+					if (document.querySelector('.game-playerbox-manager').style.display == 'flex') {
+						document.querySelector('.game-playerbox-manager').style.display = 'none';
+						return;
+					} else {
+						document.querySelector('.game-playerbox-manager').style.display = 'flex';
+						try {
+							//
+							// close playerboxen on back-click
+							//
+							$('.game-playerbox-manager').off();
+							$('.game-playerbox-manager').on('click', () => {
+								console.log('Hide playerboxes in mobile');
+								document.querySelector('.game-playerbox-manager').style.display = 'none';
+							});
+						} catch (err) {
+							console.error('ERROR 485023: ' + err);
+						}
+					}
+				} else {
+					this.trade_overlay.render();
+				}
+			};
+		}
 	}
 
-
-	async initializeGameStake(crypto, stake){
+	async initializeGameStake(crypto, stake) {
 		await super.initializeGameStake(crypto, stake);
 
 		//Reset Game
@@ -491,7 +471,7 @@ class Settlers extends GameTemplate {
 		this.game.queue.push('READY');
 		this.saveGame(this.game.id);
 
-		$(".main").html("");
+		$('.main').html('');
 
 		this.hexgrid.render('.main');
 
@@ -512,16 +492,13 @@ class Settlers extends GameTemplate {
 		this.displayBoard();
 
 		this.initializeGameQueue(this.game.id);
-		
 	}
 
 	initializeGame(game_id) {
-
-
 		if (this.game.state == undefined) {
 			this.game.state = this.initializeState();
 
-			if (!this.game.colors){
+			if (!this.game.colors) {
 				let colors = [1, 2, 3, 4];
 				this.game.colors = [];
 				for (let i = 0; i < this.game.players.length; i++) {
@@ -559,20 +536,12 @@ class Settlers extends GameTemplate {
 			this.game.queue.push(`POOLDEAL\t2\t19\t1`);
 
 			this.game.queue.push(
-				`DECKANDENCRYPT\t3\t${numPlay}\t${JSON.stringify(
-					this.returnDiceTokens()
-				)}`
+				`DECKANDENCRYPT\t3\t${numPlay}\t${JSON.stringify(this.returnDiceTokens())}`
 			);
-			this.game.queue.push(
-				`DECKANDENCRYPT\t2\t${numPlay}\t${JSON.stringify(
-					this.returnHexes()
-				)}`
-			);
+			this.game.queue.push(`DECKANDENCRYPT\t2\t${numPlay}\t${JSON.stringify(this.returnHexes())}`);
 
 			this.game.queue.push(
-				`DECKANDENCRYPT\t1\t${numPlay}\t${JSON.stringify(
-					this.returnDevelopmentCards()
-				)}`
+				`DECKANDENCRYPT\t1\t${numPlay}\t${JSON.stringify(this.returnDevelopmentCards())}`
 			);
 		}
 
@@ -588,14 +557,12 @@ class Settlers extends GameTemplate {
 
 		this.game.playerNames = [];
 		for (let i = 0; i < this.game.players.length; i++) {
-			this.game.playerNames.push(
-				this.app.keychain.returnUsername(this.game.players[i])
-			);
+			this.game.playerNames.push(this.app.keychain.returnUsername(this.game.players[i]));
 		}
 
 		this.game.options.game_length = parseInt(this.game.options.game_length);
 		this.turn_limit = parseInt(this.game.options.turn_limit) * 1000;
-		if (this.turn_limit){
+		if (this.turn_limit) {
 			this.clock.useShotClock = true;
 		}
 	}
@@ -643,6 +610,8 @@ class Settlers extends GameTemplate {
 		stats.discarded = {};
 		stats.robbed = {};
 		stats.blocked = {};
+		stats.move_bandit = new Array(this.game.players.length);
+		stats.move_bandit.fill(0);
 
 		for (let i = 2; i <= 12; i++) {
 			stats.dice[i] = 0;
@@ -662,7 +631,7 @@ class Settlers extends GameTemplate {
 			stats.robbed[r] = array.slice();
 			stats.blocked[r] = array.slice();
 		}
-		
+
 		stats.history = [];
 
 		return stats;
@@ -672,13 +641,12 @@ class Settlers extends GameTemplate {
 		return this.rules_overlay.returnRules();
 	}
 
-
 	returnAdvancedOptions() {
 		return SettlersGameOptionsTemplate(this.app, this);
 	}
 
-	endTurn(){
-		if (this.sleep_timer){
+	endTurn() {
+		if (this.sleep_timer) {
 			clearTimeout(this.sleep_timer);
 			this.sleep_timer = null;
 		}
@@ -687,28 +655,31 @@ class Settlers extends GameTemplate {
 		super.endTurn();
 	}
 
-	updateControls(str){
-
-		if (str && str.includes("<i")){
-			$(".controls .option").css("visibility", "hidden");
-	        $("#rolldice").addClass("enabled");
-	        $("#rolldice").css("visibility", "visible");
-		    $("#rolldice").html(str);
-		    return;
+	updateControls(str) {
+		if (str) {
+			if (str.includes('<i')) {
+				$('.controls .option').css('visibility', 'hidden');
+				$('#rolldice').addClass('enabled');
+				$('#rolldice').css('visibility', 'visible');
+				$('#rolldice').html(str);
+				return;
+			} else {
+				console.log('UPDATE CONTROLS:', str);
+				//super.updateControls(str);
+			}
 		}
 
-		$(".controls .option").css("visibility", "visible");
-		
-		if (this.game.state.playerTurn !== this.game.player){
-	      $("#rolldice").html(`<i class="fa-solid fa-pause"></i>`);
-	      $("#rolldice").removeClass("enabled");
-	      $("#rolldice").off();
+		$('.controls .option').css('visibility', 'visible');
 
-	      $("#bank").removeClass("enabled");
-	      $("#spend").removeClass("enabled");
+		if (this.game.state.playerTurn !== this.game.player) {
+			$('#rolldice').html(`<i class="fa-solid fa-pause"></i>`);
+			$('#rolldice').removeClass('enabled');
+			$('#rolldice').off();
+
+			$('#bank').removeClass('enabled');
+			$('#spend').removeClass('enabled');
 		}
 	}
-
 }
 
 Settlers.importFunctions(
@@ -720,7 +691,6 @@ Settlers.importFunctions(
 );
 
 module.exports = Settlers;
-
 
 //<i class="fa-solid fa-hammer"></i>   //<i class="fa-solid fa-screwdriver-wrench"></i>
 //<i class="fa-solid fa-dice"></i>
