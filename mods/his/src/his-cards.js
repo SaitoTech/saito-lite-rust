@@ -12087,7 +12087,7 @@ if (this.game.options.scenario === "1532" && include_removed == false) {
     delete deck["010"];
     delete deck["011"];
     // deleted on creation
-    //delete deck["013"];
+    delete deck["013"];
     delete deck["038"];
     delete deck["039"];
     delete deck["041"];

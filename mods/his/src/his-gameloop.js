@@ -2482,13 +2482,18 @@ console.log("----------------------------");
 
 	  let faction = mv[1];
 	  let card = mv[2];
+	  let deck = his_self.returnDeck(true);
 
 	  this.game.queue.splice(qe, 1);
           this.game.state.cards_evented.push(card);
 
           this.updateLog(this.returnFactionName(faction) + " triggers " + this.popup(card));
 
-	  if (!this.deck[card].onEvent(this, faction)) { return 0; }
+	  let c = deck[card];
+          if (!c.onEvent(this, faction)) {
+            return 0;
+          }
+
 
 	  return 1;
 	}

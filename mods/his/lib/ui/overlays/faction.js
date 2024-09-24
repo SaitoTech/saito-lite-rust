@@ -62,7 +62,7 @@ class FactionOverlay {
 			  keyboxen += `<div class="${hcss} faction_sheet_keytile henry_viii_marital_status henry_viii_marital_status${i + 1}" id="henry_viii_marital_status${i + 1}"></div>`;
 			}
 			for (let i = 1; i <= 9; i++) {
-				if (i >= controlled_keys) {
+				if (i > controlled_keys) {
 					keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i} england_keytile" id="faction_sheet_keytile${i}"></div>`;
 				}
 			}

@@ -15801,7 +15801,7 @@ if (this.game.options.scenario === "1532" && include_removed == false) {
     delete deck["010"];
     delete deck["011"];
     // deleted on creation
-    //delete deck["013"];
+    delete deck["013"];
     delete deck["038"];
     delete deck["039"];
     delete deck["041"];
@@ -25010,13 +25010,18 @@ console.log("----------------------------");
 
 	  let faction = mv[1];
 	  let card = mv[2];
+	  let deck = his_self.returnDeck(true);
 
 	  this.game.queue.splice(qe, 1);
           this.game.state.cards_evented.push(card);
 
           this.updateLog(this.returnFactionName(faction) + " triggers " + this.popup(card));
 
-	  if (!this.deck[card].onEvent(this, faction)) { return 0; }
+	  let c = deck[card];
+          if (!c.onEvent(this, faction)) {
+            return 0;
+          }
+
 
 	  return 1;
 	}
