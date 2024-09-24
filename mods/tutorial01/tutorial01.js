@@ -22,7 +22,6 @@ class Tutorial01 extends ModTemplate {
   async render() { 
     if (document.querySelector('body')) {
        document.querySelector('body').innerHTML = "Hello World";  
-       alert("Hello World!");
     }
   }
 

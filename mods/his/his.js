@@ -34909,10 +34909,13 @@ console.log("----------------------------");
             let html = '<ul>';
 	    let any_choice = false;
 	    for (let i = 0; i < cards.length; i++) {
-              if (his_self.game.deck[0].cards[cards[i]].type != "mandatory" && parseInt(cards[i]) > 7) {
-		any_choice = true;
-                html += `<li class="option showcard" id="${cards[i]}">${his_self.game.deck[0].cards[cards[i]].name}</li>`;
-              }
+	      // avoids removed cards crashing game if they sneak through
+	      try {
+                if (his_self.game.deck[0].cards[cards[i]].type != "mandatory" && parseInt(cards[i]) > 7) {
+	  	  any_choice = true;
+                  html += `<li class="option showcard" id="${cards[i]}">${his_self.game.deck[0].cards[cards[i]].name}</li>`;
+                }
+	      } catch (err) {}
             }
             html += '</ul>';
 

@@ -309,6 +309,7 @@ console.log("IN MODULE.TS AFFIX CALLBACKS: ");
 			throw new Error(err);
 		}
 
+
 		const onPeerHandshakeComplete = this.onPeerHandshakeComplete.bind(this);
 		// include events here
 		this.app.connection.on(
@@ -363,7 +364,7 @@ console.log("IN MODULE.TS AFFIX CALLBACKS: ");
 		//
 		// .. and setup active module
 		//
-		if (this.app.BROWSER) {
+		if (this.app.BROWSER && this.app.browser.multiple_windows_active == 0) {
 			await this.app.modules.render();
 			await this.app.modules.attachEvents();
 		}
@@ -465,7 +466,6 @@ console.log("IN MODULE.TS AFFIX CALLBACKS: ");
 	async render() {
 		for (let icb = 0; icb < this.mods.length; icb++) {
 			if (this.mods[icb].browser_active == 1) {
-
 				await this.mods[icb].render(this.app, this.mods[icb]);
 			}
 		}

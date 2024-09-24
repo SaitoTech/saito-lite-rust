@@ -18,6 +18,7 @@ const SaitoMentions = require('./ui/saito-mentions/saito-mentions');
 class Browser {
 	public app: any;
 	public browser_active: any;
+	public multiple_windows_active: any;
 	public drag_callback: any;
 	public urlParams: any;
 	public active_tab: any;
@@ -32,6 +33,7 @@ class Browser {
 		this.app = app || {};
 
 		this.browser_active = 0;
+		this.multiple_windows_active = 0;
 		this.drag_callback = null;
 		this.urlParams = {};
 		this.host = '';
@@ -126,20 +128,20 @@ class Browser {
 					if (e.data.msg) {
 						if (e.data.msg == 'new_tab') {
 							window.focus();
-							//alert("moving to: " + e.data.location);
+
 //							if (window.confirm('You have followed a Saito link, do you want to open it here?')) {
 //								window.location = e.data.location;
 //							}
   	
-                            setTimeout(() => {
-                            	window.location = '/tabs.html';
-                            }, 300)
+                            				setTimeout(() => {
+                            					window.location = '/tabs.html';
+                            				}, 300)
 						}
 					}
 				};
 
 
-/* channel.onmessage = async (e) => {
+/***** channel.onmessage = async (e) => {
 				  console.log("document onmessage change");
 				  if (!document[this.hidden_tab_property]) {
 					channel.postMessage({active: 1, publicKey: publicKey});
@@ -158,7 +160,7 @@ class Browser {
 					}
 				  }
 				};
-*/
+*****/
 
 				document.addEventListener(
 					this.tab_event_name,
@@ -644,6 +646,7 @@ class Browser {
 	}
 
 	checkForMultipleWindows() {
+
 		//Add a check to local storage that we are open in a tab.
 		localStorage.openpages = Date.now();
 
@@ -656,17 +659,17 @@ class Browser {
 				e.key == 'page_available' &&
 				!this.isMobileBrowser(navigator.userAgent)
 			) {
-				console.log(e.key);
-				console.log(navigator.userAgent);
-				//alert("Saito already open in another tab!");
 
-				//alert("i am the new tab");
-				//alert("message sent");
+				this.multiple_windows_active = 1;
+
 				let c = await sconfirm(
 					'Your wallet appears to be connected in another Saito tab.\n\nWould you like to connect it here and close the other tab?'
 				);
 				if (c) {
+					this.multiple_windows_active = 0;
 					this.channel.postMessage({msg: 'new_tab', location: window.location.href});
+		                        await this.app.modules.render();
+                		        await this.app.modules.attachEvents();
 					return;
 				} else {
 					  setTimeout(() => {
