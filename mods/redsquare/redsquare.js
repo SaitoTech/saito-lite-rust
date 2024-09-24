@@ -826,9 +826,9 @@ class RedSquare extends ModTemplate {
         if (txmsg.data.images) {
           let new_obj = JSON.parse(JSON.stringify(txmsg));
           new_obj.data.images = '[image tweet]';
-          console.log('txmsg: ' + JSON.stringify(new_obj));
+          //console.log('txmsg: ' + JSON.stringify(new_obj));
         } else {
-          console.log('txmsg: ' + JSON.stringify(txmsg));
+          //console.log('txmsg: ' + JSON.stringify(txmsg));
         }
       }
 
@@ -1422,7 +1422,7 @@ class RedSquare extends ModTemplate {
       let t = this.returnTweet(tweet.tx.signature);
       if (!t) {
         console.warn('REDSQUARE: Tweet indexed in hash, but not in memory');
-        console.log(tweet);
+        //console.log(tweet);
         return 0;
       }
 
