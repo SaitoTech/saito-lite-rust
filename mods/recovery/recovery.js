@@ -398,7 +398,7 @@ console.log("done emitting mailrelay-send-email... in Recovery BackupWallet")
 
 						this.app.options = JSON.parse(decrypted_wallet);
 
-						console.log(this.app.options);
+						//console.log(this.app.options);
 
 						this.app.storage.saveOptions();
 

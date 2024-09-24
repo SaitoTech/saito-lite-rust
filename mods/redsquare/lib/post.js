@@ -38,7 +38,7 @@ class Post {
 				this.app.browser.addElementAfterSelector(PostTemplate(this.app, this.mod, this), container);
 			}
 		} else {
-			console.log('overlay');
+			//console.log('overlay');
 			this.overlay.show(PostTemplate(this.app, this.mod, this));
 			this.overlay.blockClose();
 		}

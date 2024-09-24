@@ -950,7 +950,7 @@ class Chat extends ModTemplate {
             //
             // Addressed to chat server, so forward to all
             //
-            console.log('Community Chat, relay to all: ', txmsg);
+            //console.log('Community Chat, relay to all: ', txmsg);
             peers.forEach((p) => {
               //This is filtering for not receiving your chat tx back to you... but there are case where we do want that?
               //if (p.publicKey !== peer.publicKey) {
