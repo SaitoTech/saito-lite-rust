@@ -384,66 +384,9 @@ class CallInterfaceVideo {
 			});
 		});
 
-		function adjustClassesAndCount(element) {
-			const observer = new ResizeObserver(entries => {
-				for (let entry of entries) {
-					const width = entry.contentRect.width;
-					const height = entry.contentRect.height;
-					const aspectRatio = width / height;
+		
 
-					element.classList.remove('wide', 'tall', 'square');
-
-					if (aspectRatio > 5 / 3) {
-						element.classList.add('wide');
-					} else if (aspectRatio < 3 / 5) {
-						element.classList.add('tall');
-					} else {
-						element.classList.add('square');
-					}
-
-					const childCount = element.children.length;
-					Array.from(element.classList).forEach(className => {
-						if (className.startsWith('count-')) {
-							element.classList.remove(className);
-						}
-					});
-					element.classList.add(`count-${childCount}`);
-				}
-			});
-
-			observer.observe(element);
-		}
-
-		function resizeBackground(element) {
-			const bg_observer = new ResizeObserver(entries => {
-				for (let entry of entries) {
-					const width = entry.contentRect.width;
-					const height = entry.contentRect.height;
-					const aspectRatio = width / height;
-
-					element.classList.remove('fit', 'cover');
-
-
-					if (aspectRatio > 6 / 3) {
-						element.classList.add('fit');
-					} else if (aspectRatio < 3 / 9) {
-						element.classList.add('fit');
-					} else {
-						element.classList.add('cover');
-					}
-				}
-			});
-
-			bg_observer.observe(element);
-		}
-
-		document.querySelectorAll('.gallery, .side-videos').forEach(container => {
-			adjustClassesAndCount(container);
-		});
-
-		document.querySelectorAll('.video-box-container-large').forEach(item => {
-			resizeBackground(item);
-		});
+		
 
 
 		/*document.getElementById('record-icon').onclick = async () => {
@@ -826,6 +769,69 @@ class CallInterfaceVideo {
 				);
 			}
 		}
+
+		document.querySelectorAll('.gallery, .side-videos').forEach(container => {
+			this.adjustClassesAndCount(container);
+			Array.from(container.children).forEach(child => {
+				child.classList.add('flex-item');
+			});
+		});
+
+		document.querySelectorAll('.video-box-container-large').forEach(item => {
+			this.resizeBackground(item);
+		});
+	}
+	 adjustClassesAndCount(element) {
+		const observer = new ResizeObserver(entries => {
+			for (let entry of entries) {
+				const width = entry.contentRect.width;
+				const height = entry.contentRect.height;
+				const aspectRatio = width / height;
+
+				element.classList.remove('wide', 'tall', 'square');
+
+				if (aspectRatio > 5 / 3) {
+					element.classList.add('wide');
+				} else if (aspectRatio < 3 / 5) {
+					element.classList.add('tall');
+				} else {
+					element.classList.add('square');
+				}
+
+				const childCount = element.children.length;
+				Array.from(element.classList).forEach(className => {
+					if (className.startsWith('count-')) {
+						element.classList.remove(className);
+					}
+				});
+				element.classList.add(`count-${childCount}`);
+			}
+		});
+
+		observer.observe(element);
+	}
+
+	 resizeBackground(element) {
+		const bg_observer = new ResizeObserver(entries => {
+			for (let entry of entries) {
+				const width = entry.contentRect.width;
+				const height = entry.contentRect.height;
+				const aspectRatio = width / height;
+
+				element.classList.remove('fit', 'cover');
+
+
+				if (aspectRatio > 6 / 3) {
+					element.classList.add('fit');
+				} else if (aspectRatio < 3 / 9) {
+					element.classList.add('fit');
+				} else {
+					element.classList.add('cover');
+				}
+			}
+		});
+
+		bg_observer.observe(element);
 	}
 }
 
