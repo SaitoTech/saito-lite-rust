@@ -713,7 +713,7 @@
 	transform: rotateY(180deg);
 }
 
-.default-video-image-mask {
+.default-video-mask {
 	position: absolute;
 	width: 20rem;
 	height: 20rem;
@@ -1102,7 +1102,7 @@ video#presentation {
 		height: 10rem;
 	}
 
-	.default-video-image-mask {
+	.default-video-mask {
 		width: 10rem;
 		height: 10rem;
 	}
