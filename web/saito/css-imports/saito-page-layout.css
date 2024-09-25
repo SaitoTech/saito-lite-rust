@@ -49,8 +49,10 @@
 .saito-sidebar-element { /* side bar controls*/
   padding: var(--border-padding-sidebar-style);
   border-radius: var(--border-radius-sidebar-menu);
+  /*
   box-shadow: var(--box-shadow-sidebar-elements);
   background-color: var(--background-color-sidebar-left);
+  */
 }
 
 .sidebar-header {
