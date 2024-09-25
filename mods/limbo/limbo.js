@@ -1224,8 +1224,10 @@ class Limbo extends ModTemplate {
 
 		let target = tx.to[0].publicKey;
 
-		if (!this.dreams[dreamer].members.includes(target)) {
-			this.dreams[dreamer].members.push(target);
+		if (this.dreams[dreamer]){
+			if (!this.dreams[dreamer].members.includes(target)) {
+				this.dreams[dreamer].members.push(target);
+			}
 		}
 
 		if (!this.app.BROWSER || !this.dreamer) {
@@ -1722,9 +1724,9 @@ class Limbo extends ModTemplate {
 
 		if (castButtonGame) {
 			if (value) {
-				castButtonGame.textContent = 'Stop cast';
+				castButtonGame.textContent = 'Casting •';
 			} else {
-				castButtonGame.textContent = 'Start cast';
+				castButtonGame.textContent = 'Swarmcast';
 			}
 		}
 
