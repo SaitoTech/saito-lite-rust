@@ -368,7 +368,7 @@
 	left: 0;
 	width: 100vw;
 	height: 100vh;
-	height: calc(100 * var(--saito-vh));
+	height: calc(100 * var(--saito-vh) - var(--saito-header-height));
 	position: fixed;
 	background-color: var(--saito-background-color);
 	transition: all 0.2s;

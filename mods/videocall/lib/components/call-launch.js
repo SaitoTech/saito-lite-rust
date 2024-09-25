@@ -75,18 +75,23 @@ class CallLaunch {
 				//
 				// I am initializing the call
 				//
-				let call_id = await this.mod.generateRoomId();
-				console.log(this.mod.room_obj, "room object joining");
 				if (!this.mod.room_obj) {
+
+					let call_id = await this.mod.generateRoomId();
 					this.mod.room_obj = {
 						call_id,
 						host_public_key: this.mod.publicKey,
 						call_peers: [],
-						scheduled: false
 					};
+
+	                let link =  this.mod.generateCallLink(this.mod.room_obj);
+					this.app.keychain.addKey(call_id, {
+						identifier: `my video call`,
+						link,
+					});
 				}
 
-
+				console.log(this.mod.room_obj, "room object joining");
 				this.enterCall()
 			};
 		}
