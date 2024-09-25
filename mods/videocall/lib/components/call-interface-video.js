@@ -622,6 +622,7 @@ class CallInterfaceVideo {
 
 		//Update UI
 		try {
+			this.video_boxes['local'].video_box.toggleMask()
 			document
 				.querySelector('.video-control')
 				.classList.toggle('disabled');

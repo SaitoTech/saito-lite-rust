@@ -631,6 +631,8 @@
 	position: relative;
 }
 
+
+
 @keyframes fade-in {
 	from {
 		opacity: 0;
@@ -709,6 +711,22 @@
 
 .chat-settings-preview video, video#local {
 	transform: rotateY(180deg);
+}
+
+.default-video-mask {
+	position: absolute;
+	width: 20rem;
+	height: 20rem;
+	overflow: hidden;
+	top: 50%;
+	z-index: 10;
+	margin: 1rem auto;
+	transform: translateY(-55%);
+	border-radius: 62%;
+	border: 1px solid var(--color-primary);
+	background-image: url('/swarmcast/img/inception.gif');
+	background-position: center;
+	background-size: 200%;
 }
 
 .video-box-container-large video {
@@ -1080,6 +1098,11 @@ video#presentation {
 	}
 
 	.video-box-container-large canvas#oscilloscope {
+		width: 10rem;
+		height: 10rem;
+	}
+
+	.default-video-mask {
 		width: 10rem;
 		height: 10rem;
 	}
