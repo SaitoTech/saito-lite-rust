@@ -1,7 +1,5 @@
-
-
-const VideoBox = require('../../../lib/saito/ui/saito-videobox/video-box');
 const html2canvas = require('html2canvas');
+
 class StreamCapturer {
     constructor(app, mod, logo) {
         this.combinedStream = null;
