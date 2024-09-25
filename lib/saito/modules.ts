@@ -3,6 +3,8 @@ import Peer from './peer';
 import Transaction from './transaction';
 import path from 'path';
 import fs from 'fs';
+import ws from 'ws';
+import { parse } from 'url';
 import { fromBase58 } from 'saito-js/lib/util';
 // @ts-ignore
 //import { DYN_MOD_WEB,DYN_MOD_NODE } from '../dyn_mod';
