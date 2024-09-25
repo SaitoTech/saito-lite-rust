@@ -83,8 +83,13 @@ webpack(
         // All files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'.
         {
           test: /\.tsx?$/,
-          loader: "ts-loader",
           exclude: /(node_modules)/,
+          use: [{
+            loader: 'ts-loader',
+            options: {
+                configFile:path.resolve(__dirname, "../build/tsconfig.json")
+            }
+          }]
         },
         // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
         {
