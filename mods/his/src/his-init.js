@@ -167,27 +167,23 @@ class HereIStand extends GameTemplate {
   ////////////////
   initializeGame(game_id) {
 
-console.log("WHY RUNNING INITIALIZE GAME?");
-
-    //this.realEndTurn = this.endTurn;
-    //this.endTurn = () => {
-    //  console.log("TESTING REAL END TURN");
-    //  this.realEndTurn();
-    //}
-
     //
     // check user preferences to update interface, if text
     //
     if (this.app?.options?.gameprefs) {
-      if (this.app.options.gameprefs.his_expert_mode == 1) {
-        this.confirm_moves = 0;
-      } else {
-        this.confirm_moves = 1;
+      if (this.app.options.gameprefs.his_expert_mode) {
+        if (this.app.options.gameprefs.his_expert_mode == 1) {
+          this.confirm_moves = 0;
+        } else {
+          this.confirm_moves = 1;
+        }
       }
-      if (this.app.options.gameprefs.his_faster_play == 1) {
-        this.faster_play = 1;
-      } else {
-        this.faster_play = 0;
+      if (this.app.options.gameprefs.his_faster_play) {
+	if (this.app.options.gameprefs.his_faster_play !== 1) {
+          this.faster_play = 0;
+        } else {
+          this.faster_play = 1;
+        }
       }
     }
 

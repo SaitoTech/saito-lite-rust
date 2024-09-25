@@ -406,8 +406,17 @@
       // capitals are good destinations
       function(spacekey) {
         let invalid_choice = false;
-        if (his_self.isSpaceFortified(spacekey) && his_self.isSpaceHomeSpace(spacekey, faction)) { 
-	  invalid_choice = true;
+        if (his_self.isSpaceFortified(spacekey)) {
+	  if (his_self.isSpaceHomeSpace(spacekey, faction)) { 
+	    invalid_choice = true;
+	  } else {
+	    let x = his_self.returnFactionControllingSpace(spacekey);
+	    if (his_self.isSpaceHomeSpace(spacekey, x)) { 
+	      if (faction == his_self.returnControllingPower(x)) {
+		invalid_choice = true;
+	      }	
+	    }
+	  }
 	}
         if (!his_self.isSpaceFriendly(spacekey, faction)) { invalid_choice = false; }
         return invalid_choice;
@@ -569,6 +578,7 @@
       // route through this?
       function(spacekey) {
 	if (already_routed_through[spacekey] == 1) { return 0; }
+	if (his_self.isSpaceInUnrest(spacekey)) { return 0; }
         already_routed_through[spacekey] = 1;
 	if (his_self.isSpaceFriendly(spacekey, faction)) { return 1; }
 	return 0;

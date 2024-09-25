@@ -88,13 +88,8 @@ class FactionOverlay {
 				);
 			}
 
-
-              his_self.game.state.henry_viii_healthy_edward = 1;
-              his_self.game.state.henry_viii_sickly_edward = 0;
-              his_self.game.state.henry_viii_add_elizabeth = 0;
-
-
 		}
+
 		// FRANCE
 		if (his_self.factions[faction].key === 'france') {
 			war_winner_vp = his_self.game.state.france_war_winner_vp;
