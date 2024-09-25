@@ -218,7 +218,7 @@ class AppStore extends ModTemplate {
 			if (document.getElementById('generate-tx')) {
 				document.getElementById('generate-tx').onclick = async (e) => {
 
-					salert("Generating app file for download, please wait...");
+					
 
 					this_self.title = document.getElementById('title').value;
 					this_self.description = document.getElementById('description').value;
@@ -228,13 +228,15 @@ class AppStore extends ModTemplate {
 					this_self.category = document.getElementById('category').value;
 					this_self.img = '';//document.getElementById('img').value;
 				    console.log('zip_file: ', this_self.zip_file);
+				    
+			    if (this_self.title == '' || this_self.description == '' ||  
+			    	this_self.app_slug == '' || this_self.version == '' || 
+			    	this_self.publisher == '' || this_self.category == '' ) {
+			    	salert("Please provide needed information");
+			    	return;
+			    }
 
-				    if (this_self.title == '' || this_self.description == '' ||  
-				    	this_self.app_slug == '' || this_self.version == '' || 
-				    	this_self.publisher == '' || this_self.category == '' ) {
-				    	salert("Please provide needed information");
-				    	return;
-				    }
+			    salert("Generating app file for download, please wait...");
 
 				    await this_self.sendSubmitModuleTransaction(this_self.zip_file, this_self.app_slug, async function(mod_binary){
 
@@ -309,10 +311,6 @@ class AppStore extends ModTemplate {
 				let DYN_MOD_WEB = fs.readFileSync('./lib/dyn_mod.js', {
 					encoding: 'binary'
 				});
-
-//				let { DYN_MOD_WEB } = require('../../lib/dyn_mod');
-
-				console.log('DYN_MOD_WEB:', DYN_MOD_WEB);
 
 				execSync(`rm -rf  ./mods/tmp_mod/ ./lib/dyn_mod.js`,
 		        (error, stdout, stderr) => {
