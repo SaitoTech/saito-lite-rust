@@ -13,7 +13,7 @@ class AppStore extends ModTemplate {
 
 		this.name = 'AppStore';
 		this.appname = 'AppStore';
-		this.appname = 'AppStore';
+		this.sluf = 'appStore';
 		this.description =
 			'Application manages installing, indexing, compiling and serving Saito modules.';
 		this.categories = 'Utilities Dev';
@@ -76,18 +76,18 @@ class AppStore extends ModTemplate {
 	respondTo(type) {
 		let this_self = this;
 		if (type === 'saito-header') {
-			let x = [];
-			if (!this.browser_active) {
-				x.push({
-					text: 'Add app',
-					icon: 'fa-solid fa-plus',
-					callback: function (app, id) {
-						this_self.addAppOverlay.render();
-					}
-				});
+			// let x = [];
+			// if (!this.browser_active) {
+			// 	x.push({
+			// 		text: 'Add app',
+			// 		icon: 'fa-solid fa-plus',
+			// 		callback: function (app, id) {
+			// 			this_self.addAppOverlay.render();
+			// 		}
+			// 	});
 
-				return x;
-			}
+			// 	return x;
+			// }
 		}
 		return null;
 	}

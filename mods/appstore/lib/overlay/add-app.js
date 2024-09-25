@@ -9,6 +9,13 @@ class AddAppOverlay {
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(app, mod);
 		this.installOverlay = new InstallOverlay(app, mod);
+
+		this.app.connection.on(
+			'saito-app-app-render-request',
+			(obj) => {
+				this.render();
+			}
+		);
 	}
 
 	render() {
@@ -33,6 +40,7 @@ class AddAppOverlay {
           	console.log("uploaded tx msg: ", msg);
 
 			this_self.installOverlay.bin = msg.bin;
+			this_self.installOverlay.category = msg.category;
 			this_self.installOverlay.description = msg.description;
 			this_self.installOverlay.img = msg.img;
 			this_self.installOverlay.module = msg.module;
