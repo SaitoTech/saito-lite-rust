@@ -30,7 +30,6 @@ class AppStore extends ModTemplate {
 		this.addAppOverlay = null;
 		this.localDb = null;
 		this.zip_file = null;
-
 		this.title = null;
 		this.description = null;
 		this.app_slug = null;
@@ -148,6 +147,8 @@ class AppStore extends ModTemplate {
 			slug: slug
 		};
 
+		console.log('tx msg: ', msg);
+
         this.app.network.sendRequestAsTransaction(
           'submit module',
           msg,
@@ -180,6 +181,17 @@ class AppStore extends ModTemplate {
 	    return super.handlePeerTransaction(app, tx, peer, mycallback);
 	}
 	
+	clear(){
+		this.zip_file = null;
+		this.title = null;
+		this.description = null;
+		this.app_slug = null;
+		this.version = null;
+		this.publisher = null;
+		this.category = null;
+		this.img = null;
+	}
+
 	attachEvents() {
 		if (this.app.BROWSER){
 			let this_self = this;
@@ -243,7 +255,9 @@ class AppStore extends ModTemplate {
 					    newtx.msg = obj;
 
 					    let jsonData = newtx.serialize_to_web(this_self.app);
-						this_self.download(JSON.stringify(jsonData), `${this_self.app_slug}.json`, "text/plain");
+							this_self.download(JSON.stringify(jsonData), `${this_self.app_slug}.json`, "text/plain");
+
+							this_self.clear();
 				    });
 					
 				};
@@ -275,8 +289,8 @@ class AppStore extends ModTemplate {
  	 			await directory.extract({ path: './mods/tmp_mod/' })
 				
 
-				const { exec } = require('child_process');
-				exec(`sh  ./web/saito/dyn/conv.sh ${slug}`,
+				const { execSync } = require('child_process');
+				execSync(`sh  ./web/saito/dyn/conv.sh ${slug}`,
 		        (error, stdout, stderr) => {
 		            console.log(stdout);
 		            console.log(stderr);
@@ -292,18 +306,20 @@ class AppStore extends ModTemplate {
 					console.error(error);
 				}
 
-				
-				let end = Date.now() + 10000
-				while (Date.now() < end) ;
+				let DYN_MOD_WEB = fs.readFileSync('./lib/dyn_mod.js', {
+					encoding: 'binary'
+				});
 
-				const { DYN_MOD_WEB } = require('../../lib/dyn_mod');
+//				let { DYN_MOD_WEB } = require('../../lib/dyn_mod');
 
-				exec(`rm -rf  ./mods/tmp_mod/`,
+				console.log('DYN_MOD_WEB:', DYN_MOD_WEB);
+
+				execSync(`rm -rf  ./mods/tmp_mod/ ./lib/dyn_mod.js`,
 		        (error, stdout, stderr) => {
 		            console.log(stdout);
 		            console.log(stderr);
 		            if (error !== null) {
-		                console.log(`exec error: ${error}`);
+		                console.log(`execSync error: ${error}`);
 		            }
 		        });
 
