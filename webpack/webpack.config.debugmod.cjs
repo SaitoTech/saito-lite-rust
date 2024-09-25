@@ -8,10 +8,18 @@ let minimize = false;
 let devtool = undefined;
 // let entrypoint = "./../bundler/default/mods/debug/debug.js";
 //let entrypoint = "./../mods/twilight/twilight.js";
-//let entrypoint = "./../mods/explorer/explorer.js";
-let entrypoint = "./../mods/solitrio/solitrio.js";
+let entrypoint = "./../mods/settlers/settlers.js";
+//let entrypoint = "./../mods/tmp_mod/solitrio.js";
 let outputfile = "dyn.module.js";
 
+
+if (process.argv.indexOf("entrypoint")) {
+  let slug = ((process.argv[2]).split("--entrypoint="))[1];
+  console.log('slug:',slug);
+  entrypoint = `./../mods/tmp_mod/${slug}.js`;
+}
+
+console.log('entrypoint:',entrypoint);
 
 webpack(
   {

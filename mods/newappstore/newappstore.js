@@ -13,6 +13,7 @@ class AppStore extends ModTemplate {
 
 		this.name = 'AppStore';
 		this.appname = 'AppStore';
+		this.appname = 'AppStore';
 		this.description =
 			'Application manages installing, indexing, compiling and serving Saito modules.';
 		this.categories = 'Utilities Dev';
@@ -28,6 +29,15 @@ class AppStore extends ModTemplate {
 
 		this.addAppOverlay = null;
 		this.localDb = null;
+		this.zip_file = null;
+
+		this.title = null;
+		this.description = null;
+		this.app_slug = null;
+		this.version = null;
+		this.publisher = null;
+		this.category = null;
+		this.img = null;
 	}
 
 	async initialize(app) {
@@ -124,39 +134,190 @@ class AppStore extends ModTemplate {
 	}
 
 
-	
+	async sendSubmitModuleTransaction(zip, slug, callback) {
+		let peers = await this.app.network.getPeers();
+	    if (peers.length == 0) {
+	      console.warn("No peers");
+	      return;
+	    }
 
+		let msg = {
+			module: 'AppStore',
+			request: 'submit module',
+			module_zip: zip,
+			slug: slug
+		};
 
-	attachEvents() {
+        this.app.network.sendRequestAsTransaction(
+          'submit module',
+          msg,
+          (res) => {
+
+        	console.log('appstore callback: ' + res);
+          	return callback(res);
+          },
+          peers[0].peerIndex
+        );
+	}
+
+	async handlePeerTransaction(app, tx = null, peer, mycallback) {
 		let this_self = this;
+	    if (tx == null) {
+	      return 0;
+	    }
 
-		if (document.getElementById('generate-tx')) {
-			document.getElementById('generate-tx').onclick = async (e) => {
-				let binary = document.getElementById('binary').value;
-				let title = document.getElementById('title').value;
-				let description = document.getElementById('description').value;
-				let img = document.getElementById('img').value;
+	    let txmsg = tx.returnMessage();
 
-				console.log("binary: ", binary);
+	    if (!txmsg.request) {
+	      return 0;
+	    }
+
+	    if (txmsg.request === 'submit module') {
+	    	let { module_zip, slug } = txmsg.data;
+	 		await this_self.createAppBinary(module_zip, slug, mycallback);
+	    }
+
+	    return super.handlePeerTransaction(app, tx, peer, mycallback);
+	}
+	
+	attachEvents() {
+		if (this.app.BROWSER){
+			let this_self = this;
+			document.querySelector('#appstore-zip-upload').style.display = 'block';
+			document.querySelector('#uploaded-file').style.display = 'none';
+
+			this.app.browser.addDragAndDropFileUploadToElement(`appstore-zip-upload`, async (filesrc) => {
+				console.log('data:', filesrc);
+				this_self.zip_file = filesrc.substring(28);;
+				console.log('uploaded zip:', this_self.zip_file);
+				document.querySelector('#appstore-zip-upload').style.display = 'none';
+				document.querySelector('#uploaded-file').style.display = 'block';
+			}, true, false, false);
+
+
+			if (document.getElementById('cancel-file')) {
+				document.getElementById('cancel-file').onclick = async (e) => {
+					document.querySelector('#appstore-zip-upload').style.display = 'block';
+					document.querySelector('#uploaded-file').style.display = 'none';
+					this_self.zip_file = null;
+				}
+			}
+
+			if (document.getElementById('generate-tx')) {
+				document.getElementById('generate-tx').onclick = async (e) => {
+
+					salert("Generating app file for download, please wait...");
+
+					this_self.title = document.getElementById('title').value;
+					this_self.description = document.getElementById('description').value;
+					this_self.app_slug = document.getElementById('slug').value;
+					this_self.version = document.getElementById('version').value;
+					this_self.publisher = document.getElementById('publisher').value;
+					this_self.category = document.getElementById('category').value;
+					this_self.img = '';//document.getElementById('img').value;
+				    console.log('zip_file: ', this_self.zip_file);
+
+				    if (this_self.title == '' || this_self.description == '' ||  
+				    	this_self.app_slug == '' || this_self.version == '' || 
+				    	this_self.publisher == '' || this_self.category == '' ) {
+				    	salert("Please provide needed information");
+				    	return;
+				    }
+
+				    await this_self.sendSubmitModuleTransaction(this_self.zip_file, this_self.app_slug, async function(mod_binary){
+
+				    	let obj = {
+					      module: "Appstore",
+					      request: "submit application",
+					      bin: mod_binary,
+					      title: this_self.title,
+					      description: this_self.description,
+					      slug: this_self.app_slug,
+					      img: this_self.img,
+					      version: this_self.version,
+					      publisher: this_self.publisher,
+					      category: this_self.category
+					    };
+
+					    let newtx = await this_self.app.wallet.createUnsignedTransaction(this_self.publicKey, BigInt(0), BigInt(0));
+					    newtx.msg = obj;
+
+					    let jsonData = newtx.serialize_to_web(this_self.app);
+						this_self.download(JSON.stringify(jsonData), `${this_self.app_slug}.json`, "text/plain");
+				    });
+					
+				};
+			}
+		}
+	}
+
+	async createAppBinary(zip_bin, slug, mycallback) {
+		let this_self = this;
+		try {
+			const path = require('path');
+			const unzipper = require('unzipper');
+			const fs = this_self.app.storage.returnFileSystem();
+			let zip_path = `app.zip`;
+			
+			//
+			// convert base64 to vinary
+			//
+			let zip_bin2 = Buffer.from(zip_bin, 'base64').toString('binary');
+
+			fs.writeFileSync(path.resolve(__dirname, zip_path), zip_bin2, {
+				encoding: 'binary'
+			});
+
+			console.log('zip_file created: ', zip_path);
+
+			try {
+				const directory = await unzipper.Open.file(path.resolve(__dirname, zip_path));
+ 	 			await directory.extract({ path: './mods/tmp_mod/' })
 				
 
-				let newtx = await this_self.app.wallet.createUnsignedTransaction(this_self.publicKey, BigInt(0), BigInt(0));
-			    newtx.msg = {
-			      module: "Appstore",
-			      request: "submit application",
-			      bin: binary,
-			      title: title,
-			      description: description,
-			      img: img,
-			      version: '1.0.0',
-			      publisher: this_self.publicKey
-			    };
+				const { exec } = require('child_process');
+				exec(`sh  ./web/saito/dyn/conv.sh ${slug}`,
+		        (error, stdout, stderr) => {
+		            console.log(stdout);
+		            console.log(stderr);
+		            if (error !== null) {
+		                console.log(`exec error: ${error}`);
+		            }
+		        });
 
-			    let jsonData = newtx.serialize_to_web(this_self.app);
-			    
+		        //delete unziped module
+				try {
+					await fs.unlink(path.resolve(__dirname, zip_path));
+				} catch (error) {
+					console.error(error);
+				}
+
 				
-				this_self.download(JSON.stringify(jsonData), `${title}.json`, "text/plain");
-			};
+				let end = Date.now() + 10000
+				while (Date.now() < end) ;
+
+				const { DYN_MOD_WEB } = require('../../lib/dyn_mod');
+
+				exec(`rm -rf  ./mods/tmp_mod/`,
+		        (error, stdout, stderr) => {
+		            console.log(stdout);
+		            console.log(stderr);
+		            if (error !== null) {
+		                console.log(`exec error: ${error}`);
+		            }
+		        });
+
+		        if (mycallback) {
+		        	return mycallback(DYN_MOD_WEB);
+		        }
+
+			} catch (err) {
+				console.log("ERROR UNZIPPING: " + err);
+			}
+			
+			//return { name, image, description, categories };
+		} catch (err) {
+			console.log('Error in Appstore', err);
 		}
 	}
 
