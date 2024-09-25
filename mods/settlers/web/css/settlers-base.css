@@ -971,7 +971,7 @@ ul.horizontal_list li.iconoption {
 	border-image-width: 21px;
 	border-image-repeat: stretch;
 	border-style: solid;
-	border-image-outset: 7px;
+	border-image-outset: 4px;
 	color: var(--text-color);
 }
 
