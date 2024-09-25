@@ -83,8 +83,7 @@ class RedSquareNavigation {
   }
 
   attachEvents() {
-
-    this_self = this;
+    let this_self = this;
 
     //
     // new tweet

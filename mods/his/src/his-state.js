@@ -24,6 +24,8 @@
     this.game.state.events.more_bonus = 0;
     this.game.state.events.sack_of_rome = 0;
 
+    this.game.state.loyola_bonus_active = 0;
+
     //
     // reset impulse commits
     //

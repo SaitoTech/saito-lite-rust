@@ -1,4 +1,4 @@
-module.exports = (uscardimg, ussrcardimg) => {
+const HeadlineTemplate = (uscardimg, ussrcardimg) => {
 	let html = `<div class="headline-overlay">
     <div class="title">Soviet / American Headlines</div>
     <div class="cards">
@@ -9,3 +9,5 @@ module.exports = (uscardimg, ussrcardimg) => {
   `;
 	return html;
 };
+
+module.exports = HeadlineTemplate;

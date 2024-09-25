@@ -1,11 +1,13 @@
-module.exports = (app, mod) => {
+//import E73 from "../../web/img/Event73.png";
+//import E16 from "../../web/img/Event16.svg";
+export default (app, mod) => {
 	return `<div id="main" class="main" style="display: all">
 			<div class="gameboard" id="gameboard">
 				<div class="china_card_status" id="china_card_status"></div>
 
 				<div class="active_events" style="float: right">
 					<img
-						src="/twilight/img/Event16.png"
+						src=""
 						id="eventtile_warsaw"
 						class="event_tile"
 					/>
@@ -60,7 +62,7 @@ module.exports = (app, mod) => {
 						class="event_tile"
 					/>
 					<img
-						src="/twilight/img/Event73.png"
+						src=""
 						id="eventtile_shuttlediplomacy"
 						class="event_tile"
 					/>

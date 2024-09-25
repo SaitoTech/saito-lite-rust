@@ -387,6 +387,12 @@ class SettingsAppspace {
 		} catch (err) {
 			console.log('Error in Settings Appspace: ', err);
 		}
+
+		if(document.querySelector('#settings-add-app')) {
+			document.querySelector('#settings-add-app').onclick = () => {
+				app.connection.emit('saito-app-app-render-request');
+			}
+		}
 	}
 }
 

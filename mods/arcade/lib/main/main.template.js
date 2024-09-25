@@ -1,4 +1,4 @@
-module.exports = ArcadeMainTemplate = (app, mod) => {
+module.exports = (app, mod) => {
 
   let games_menu = '';
   

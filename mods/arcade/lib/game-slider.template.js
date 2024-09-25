@@ -1,4 +1,4 @@
-module.exports = GameSliderTemplate = (html) => {
+module.exports = (html) => {
 	return `
     <div class="game-slider">
       <section class="carousel">

@@ -1,4 +1,4 @@
-module.exports = WelcomeTemplate = () => {
+const WelcomeTemplate = () => {
 	return `
     		<div class="welcome welcome-overlay">
    		   	<div class="welcome-title"></div>
@@ -7,3 +7,5 @@ module.exports = WelcomeTemplate = () => {
        `;
 
 };
+
+module.exports = WelcomeTemplate;
