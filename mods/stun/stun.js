@@ -398,8 +398,8 @@ class Stun extends ModTemplate {
 		peerConnection.timer = setTimeout(()=>{ 
 				console.log("STUN Connection timeout...");
 				this.app.connection.emit('stun-connection-timeout', peerId);
-				this.removePeerConnection(peerId);
-		}, 4000);
+				//this.removePeerConnection(peerId);
+		}, 8000);
 		
 
 		// Handle ICE candidates
