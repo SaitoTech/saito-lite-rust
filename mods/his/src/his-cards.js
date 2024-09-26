@@ -4059,6 +4059,15 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 
 	his_self.game.state.events.england_changed_rulers_this_turn = 1;
 
+        //
+        // removes captured leaders
+        //
+        for (let ii = 0; ii < his_self.game.state.players_info[i].captured.length; ii++) {
+          if (his_self.game.state.players_info[i].captured[ii].type == "henry-viii") { his_self.game.state.players_info[i].captured.splice(ii, 1); ii--; } else {
+            if (his_self.game.state.players_info[i].captured[ii].type == "charles-brandon") { his_self.game.state.players_info[i].captured.splice(ii, 1); ii--; }
+	  }
+	}
+
 	his_self.game.state.leaders.edward_vi = 1;
 	his_self.game.state.leaders.henry_viii = 0;
 	his_self.game.state.leaders.mary_i = 0;
@@ -4132,6 +4141,15 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
       onEvent : function(his_self, faction) {
 
 	his_self.game.state.events.england_changed_rulers_this_turn = 1;
+
+        //
+        // removes captured leaders
+        //
+        for (let ii = 0; ii < his_self.game.state.players_info[i].captured.length; ii++) {
+          if (his_self.game.state.players_info[i].captured[ii].type == "henry-viii") { his_self.game.state.players_info[i].captured.splice(ii, 1); ii--; } else {
+            if (his_self.game.state.players_info[i].captured[ii].type == "charles-brandon") { his_self.game.state.players_info[i].captured.splice(ii, 1); ii--; }
+	  }
+	}
 
 	his_self.game.state.leaders.edward_vi = 0;
 	his_self.game.state.leaders.mary_i = 1;
@@ -4233,6 +4251,15 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
       onEvent : function(his_self, faction) {
 
 	his_self.game.state.events.england_changed_rulers_this_turn = 1;
+
+        //
+        // removes captured leaders
+        //
+        for (let ii = 0; ii < his_self.game.state.players_info[i].captured.length; ii++) {
+          if (his_self.game.state.players_info[i].captured[ii].type == "henry-viii") { his_self.game.state.players_info[i].captured.splice(ii, 1); ii--; } else {
+            if (his_self.game.state.players_info[i].captured[ii].type == "charles-brandon") { his_self.game.state.players_info[i].captured.splice(ii, 1); ii--; }
+	  }
+	}
 
 	his_self.game.state.leaders.henry_viii = 0;
 	his_self.game.state.leaders.edward_vi = 0;
@@ -5138,13 +5165,20 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
         his_self.game.queue.push("landsknechts\t"+faction);
 	return 1;
       },
-      menuOption  :       function(his_self, menu, player) {
+      menuOption  :       function(his_self, menu, player, spacekey="") {
         if (menu == "pre_field_battle_rolls" || menu === "move" || menu === "assault") {
 	  let f = "";
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('033')) {
-	      f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
-	      break;
+	      if (spacekey != "") {
+                if (his_self.returnFriendlyLandUnitsInSpace(his_self.game.state.players_info[his_self.game.player-1].factions[i], spacekey)) {
+                  f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	          break;
+	        }
+	      } else {
+	        f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	        break;
+	      }
 	    }
 	  }
 	  // removal is very messy if done when units are moving pre-field battle due to RESOLVES flying around
@@ -5185,14 +5219,13 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
         }
         return 0;
       },
-      menuOptionActivated:  function(his_self, menu, player, faction) {
+      menuOptionActivated:  function(his_self, menu, player, faction, spacekey="") {
         if (menu === "pre_field_battle_rolls" || menu === "assault" || menu === "move") {
 
 	  if (menu == "pre_field_battle_rolls") {
 	    let spacekey = his_self.game.state.player_last_spacekey;
 	    let num = 2;
 	    if (faction === "hapsburg") { num = 4; }
-
 	    his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" plays " + his_self.popup("033"));
             his_self.addMove("add_units_before_field_battle\t"+faction+"\t"+"mercenary"+"\t"+num+"\t"+spacekey);
             his_self.addMove("discard\t"+faction+"\t033");
@@ -5389,13 +5422,21 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	return 1;
 
       },
-      menuOption  :       function(his_self, menu, player) {
+      menuOption  :       function(his_self, menu, player, spacekey="") {
         if (menu == "pre_field_battle_rolls" || menu === "assault" || menu === "move") {
           let f = "";
+console.log("Swiss Mercs: " + spacekey);
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('036')) {
-              f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
-              break;
+	      if (spacekey != "") {
+                if (his_self.returnFriendlyLandUnitsInSpace(his_self.game.state.players_info[his_self.game.player-1].factions[i], spacekey)) {
+                  f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+	          break;
+	        }
+	      } else {
+                f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
+                break;
+              }
             }
           }
 	  if (f != "") {
@@ -5444,7 +5485,9 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" plays " + his_self.popup("036"));
 	  if (spacekey != "") {
 	    his_self.addMove("add_units_before_field_battle\t"+target_faction+"\t"+"mercenary"+"\t"+target_number+"\t"+spacekey);
-          }
+          } else {
+	    his_self.addMove("swiss_mercenaries_place\t"+target_faction+"\t"+target_number);
+	  }
           his_self.addMove("discard\t"+faction+"\t036");
 	  his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" triggers " + his_self.popup("036"));
 	  his_self.endTurn();
@@ -10747,7 +10790,7 @@ console.log("we have removed philip and redisplayed the space...");
 
 	  let msg = "Target Which Minor Army Leader?";
           let html = '<ul>';
-	  if (his_self.returnSpaceOfPersonage("england", "charles-brandon") != "") {
+	  if (his_self.returnSpaceOfPersonage("england", "charles-brandon") != "" && his_self.game.state.leaders.henry_viii == 1) {
             html += '<li class="option" id="charles-brandon">Charles Brandon (England)</li>';
 	  }
 	  if (his_self.returnSpaceOfPersonage("hapsburg", "duke-of-alva") != "") {

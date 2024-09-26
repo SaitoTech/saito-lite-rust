@@ -2314,6 +2314,18 @@ try {
     if (space.type == "key") { stype = "key"; }
 
     //
+    // sanity check on removing siege
+    //
+    if (space.besieged == true) {
+      let f = this.returnFactionControllingSpace(space.key);
+      if (!this.doesSpaceHaveEnemyUnits(space.key, f)) {
+        console.log("removing siege in displaySpace(), since no more enemy units left!");
+        this.removeSiege(space.key);
+      } 
+    }
+
+
+    //
     // should we show the tile?
     //
     let show_tile = 1;

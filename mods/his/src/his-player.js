@@ -7,6 +7,8 @@
     this.cancelBackButtonFunction();
   } 
   bindBackButtonFunction(mycallback) {
+    // we bind before we update UI, so this should remove any outstanding options
+    this.removeSelectable();
     this.hud.back_button = true;
     this.hud.back_button_callback = mycallback;
   }   
@@ -1097,8 +1099,10 @@ if (this.game.state.events.cramner_active == 1) {
     //
     if (this.game.players.length == 2 && (faction === "hapsburg" || faction === "england" || faction === "france" || faction == "ottoman")) {
       for (let i = menu.length-1; i >= 0; i--) {
-	if (menu[i].category == "build") { menu.splice(i, 1); } else {
-	  if (menu[i].category == "special") { menu.splice(i, 1); } else {
+	if (menu[i].category == "build") {
+	  if (faction != this.game.state.events.foreign_recruits && this.game.player_last_card != "076") { menu.splice(i, 1); }
+	} else {
+	    if (menu[i].category == "special") { menu.splice(i, 1); } else {
   	    if (menu[i].name === "Move across Sea") { menu.splice(i, 1); }
           }
         }
@@ -1499,25 +1503,58 @@ if (this.game.state.events.cramner_active == 1) {
 	return 1;
       }
 
-      //
-      // if faction is England and Mary I is ruler, we have 50% 
-      //
-      if (this.game.players.length > 2 && faction == "england" && this.game.state.leaders.mary_i == 1 && this.game.deck[0].cards[card].ops >= 2) {
-	this.addMove("decide_if_mary_i_subverts_protestantism_in_6P\t"+card);
-      }
-
-      if (this.game.players.length == 2 && faction == "protestant" && this.game.state.leaders.mary_i) {
-	this.addMove("decide_if_mary_i_subverts_protestantism_in_2P");
-      }
 
       //
-      // set back button to move us back here
+      // sanity check mandatory cards if we need confirm
       //
-      let his_self = this;
-      his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.playerTurn(faction, selected_card); });
-      this.playerPlayCard(card, this.game.player, faction);
+      if (this.confirm_moves && this.game.deck[0].cards[card].type == "mandatory") {
+
+	let c = confirm("Play Mandatory Card?");
+	if (c) {
+          //
+          // if faction is England and Mary I is ruler, we have 50% 
+          //
+          if (this.game.players.length > 2 && faction == "england" && this.game.state.leaders.mary_i == 1 && this.game.deck[0].cards[card].ops >= 2) {
+  	    this.addMove("decide_if_mary_i_subverts_protestantism_in_6P\t"+card);
+          }
+
+          if (this.game.players.length == 2 && faction == "protestant" && this.game.state.leaders.mary_i) {
+	    this.addMove("decide_if_mary_i_subverts_protestantism_in_2P");
+          }
+
+          //
+          // set back button to move us back here
+          //
+          let his_self = this;
+          his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.playerTurn(faction, selected_card); });
+          this.playerPlayCard(card, this.game.player, faction);
+	} else {
+          his_self.displayBoard(); 
+          his_self.moves = [];
+          his_self.playerTurn(faction, selected_card);
+	}
+
+      } else {
+
+        //
+        // if faction is England and Mary I is ruler, we have 50% 
+        //
+        if (this.game.players.length > 2 && faction == "england" && this.game.state.leaders.mary_i == 1 && this.game.deck[0].cards[card].ops >= 2) {
+  	  this.addMove("decide_if_mary_i_subverts_protestantism_in_6P\t"+card);
+        }
+
+        if (this.game.players.length == 2 && faction == "protestant" && this.game.state.leaders.mary_i) {
+	  this.addMove("decide_if_mary_i_subverts_protestantism_in_2P");
+        }
+
+        //
+        // set back button to move us back here
+        //
+        let his_self = this;
+        his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.playerTurn(faction, selected_card); });
+        this.playerPlayCard(card, this.game.player, faction);
+      }  
     });  
-
   }
 
 
@@ -1820,9 +1857,6 @@ if (relief_siege == 1) {
       }
     }
 
-console.log("available units: " + JSON.stringify(available_units));
-console.log("can we quick fortify: " + can_we_quick_fortify);
-
     if (can_we_quick_fortify == true) {
 
       //
@@ -2046,6 +2080,10 @@ console.log("can we quick fortify: " + can_we_quick_fortify);
     //
     faction = this.returnControllingPower(faction);
 
+    //
+    // back button loses track of which card was played, but foreign
+    // recruits submits with card=""
+    //
     this.game.player_last_card = "";
     if (card != "") { this.game.player_last_card = card; }
 
@@ -6409,8 +6447,6 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   }
   canPlayerColonize(his_self, player, faction) {
 
-console.log("can we colonize?");
-
     if (his_self.game.state.may_colonize[faction] == 0) { return 0; }
 
     // no for protestants early-game
@@ -6418,25 +6454,20 @@ console.log("can we colonize?");
     if (faction === "ottoman") { return false; }
     if (faction === "papacy") { return false; }
 
-console.log("can we colonize 1");
-
     for (let i = 0; i < his_self.game.state.colonies.length; i++) {
       if (his_self.game.state.colonies[i].faction == faction) {
         if (his_self.game.state.colonies[i].round >= his_self.game.state.round) { return 0; }
       }
     }
-console.log("can we colonize 2?");
     if (faction === "england") {
       if (his_self.game.state.newworld['england_colony1'].claimed == 1 && his_self.game.state.newworld['england_colony2'].claimed == 1){ return 0; }
     }
     if (faction === "france") {
       if (his_self.game.state.newworld['france_colony1'].claimed == 1 && his_self.game.state.newworld['france_colony2'].claimed == 1){ return 0; }
     }
-console.log("can we colonize 3?");
     if (faction === "hapsburg") {
       if (his_self.game.state.newworld['hapsburg_colony1'].claimed == 1 && his_self.game.state.newworld['hapsburg_colony2'].claimed == 1 && his_self.game.state.newworld['hapsburg_colony3'].claimed == 1){ return 0; }
     }
-console.log("returning 1 to yes we can colonize!");
     return 1;
   }
   async playerExplore(his_self, player, faction) {

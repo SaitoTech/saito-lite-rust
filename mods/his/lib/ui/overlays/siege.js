@@ -75,6 +75,7 @@ class AssaultOverlay {
 	}
 
 	assignHitsManually(res = {}, faction = '', hits_to_assign = 1) {
+
 		let am_i_attacker = false;
 		let am_i_defender = false;
 
@@ -94,7 +95,7 @@ class AssaultOverlay {
 		this.pushHudUnderOverlay();
 
 		let side = '.attacker';
-		if (faction != res.attacker_faction) {
+		if (this.mod.returnPlayerCommandingFaction(faction) != this.mod.returnPlayerCommandingFaction(res.attacker_faction)) {
 			side = '.defender';
 		}
 

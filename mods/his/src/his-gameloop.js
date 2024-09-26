@@ -6814,7 +6814,7 @@ try {
 	  let his_self = this;
 	  let faction = mv[1];
 	  let hits = parseInt(mv[2]);
-	  let player = this.returnPlayerOfFaction(faction);
+	  let player = this.returnPlayerCommandingFaction(faction);
 	  let space = this.game.spaces[this.game.state.field_battle.spacekey];
 
           this.game.queue.splice(qe, 1);
@@ -6841,7 +6841,7 @@ try {
 	  let his_self = this;
 	  let faction = mv[1];
 	  let hits = parseInt(mv[2]);
-	  let player = this.returnPlayerOfFaction(faction);
+	  let player = this.returnPlayerCommandingFaction(faction);
 	  let space = this.game.spaces[this.game.state.assault.spacekey];
 
           this.game.queue.splice(qe, 1);
@@ -6881,11 +6881,9 @@ try {
 	}
 
 	if (mv[0] === "field_battle_assign_hits_render") {
-console.log("removing from queue...");
           this.game.queue.splice(qe, 1);
           this.field_battle_overlay.render(his_self.game.state.field_battle);
           this.field_battle_overlay.pullHudOverOverlay();
-console.log("new queue: " + JSON.stringify(this.game.queue));
 	  return 1;
 	}
 
@@ -12257,14 +12255,14 @@ console.log("----------------------------");
 	  if (this.game.player == p1) {
 	    for (let i = 0; i < cards.length; i++) {
 	      this.updateLog(" * " + this.popup(cards[i]));
+	      //
+	      // does this show our cards
+	      //
+	      this.deck_overlay.render("hand", cards);
 	    }
 	    this.updateLog(this.returnFactionName(faction_giving) + " Hand: ");
 	  }
 
-	  //
-	  // does this show our cards
-	  //
-	  this.deck_overlay.render("hand", cards);
 
 	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -13291,7 +13289,6 @@ console.log("----------------------------");
 	    }
 	  }
 
-
 	  this.displaySpace(spacekey);
 
 	  return 1;
@@ -13625,16 +13622,40 @@ console.log("new queue: " + JSON.stringify(this.game.queue));
 	  if (mv[4]) { spacekey = mv[4]; }
 
 	  if (spacekey != "") {
+
 	    for (let i = 0; i < num; i++) {
 	      let u = this.newUnit(faction, unittype);
 	      if (this.game.spaces[spacekey]) {
 	        if (this.game.spaces[spacekey].units[faction]) {
 	  	  this.game.spaces[spacekey].units[faction].push(u);
+
+		  if (his_self.returnPlayerCommandingFaction(faction) == his_self.returnPlayerCommandingFaction(his_self.game.state.field_battle.attacker_faction)) {
+          	    his_self.game.state.field_battle.attacker_units.push(unittype);
+          	    his_self.game.state.field_battle.attacker_units_faction.push(faction);
+          	    his_self.game.state.field_battle.attacker_rolls++;
+          	    his_self.game.state.field_battle.attacker_modified_rolls++;
+		    let r = his_self.rollDice(6);
+          	    his_self.game.state.field_battle.attacker_results.push(r);
+		    if (r > 4) { his_self.game.state.field_battle.attacker_hits++; }
+		  }
+		  if (his_self.returnPlayerCommandingFaction(faction) == his_self.returnPlayerCommandingFaction(his_self.game.state.field_battle.defender_faction)) {
+          	    his_self.game.state.field_battle.defender_units.push(unittype);
+          	    his_self.game.state.field_battle.defender_units_faction.push(faction);
+          	    his_self.game.state.field_battle.defender_rolls++;
+          	    his_self.game.state.field_battle.defender_modified_rolls++;
+		    let r = his_self.rollDice(6);
+          	    his_self.game.state.field_battle.defender_results.push(r);
+		    if (r > 4) { his_self.game.state.field_battle.defender_hits++; }
+		  }
+
 	        }
 	      }
-	      this.game.queue.splice(qe, 1);
-	      return 1;
 	    }
+
+	    his_self.field_battle_overlay.renderPreFieldBattle(his_self.game.state.field_battle);
+
+	    this.game.queue.splice(qe, 1);
+	    return 1;
 	  }
 
 	  if (his_self.game.player === his_self.returnPlayerCommandingFaction(faction)) {
