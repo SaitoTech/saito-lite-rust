@@ -39,8 +39,6 @@ html[data-theme="midnight"] {
   --font-color-secondary: var(--color-secondary);
   /* bit faded */
   --font-color-heavy: var(--color-white);
-  /* Bright! */
-  --font-color-inverse: var(--font-color-primary);
   /* opposite tone of font-primary */
   /*Font Selection*/
   --font-color-paper-airplane: var(--font-color-secondary);
