@@ -122,7 +122,11 @@ body {
 
 .saito-main {
 	transition: opacity 0.8s;
+	padding-top: 0.6rem;
+	border-left: 1px solid var(--saito-border-color);
+	border-right: 1px solid var(--saito-border-color);
 }
+
 
 .saito-profile {
 	margin: unset;
@@ -252,10 +256,6 @@ body {
 .redsquare-home .saito-user > .saito-identicon-box {
 	position: relative;
 	z-index: 5;
-}
-
-.saito-main {
-	padding-top: 0.6rem;
 }
 
 

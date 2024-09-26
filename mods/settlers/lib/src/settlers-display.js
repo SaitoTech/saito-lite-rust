@@ -141,6 +141,10 @@ class SettlersDisplay {
         //Save Score
         this.game.state.players[i].vp = score;
 
+        //Check for winner
+        if (this.game.state.players[i].vp >= this.game.options.game_length) {
+          this.game.queue.push(`winner\t${i}`);
+        }
       }
 
       for (let i = 0; i < this.game.state.players.length; i++) {

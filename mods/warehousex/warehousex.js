@@ -35,6 +35,10 @@ class Warehousex extends ModTemplate {
 			}
 		}, 1000 * 60 * 60 * 5);
 
+		//For local testing of tweet format
+		//this.generateReport(Math.round(5000*Math.random()), Math.round(100*Math.random()), Math.round(9000*Math.random()), Math.round(100*Math.random()), "TEST");	
+		
+
 	}
 
 	onNewBlock(blk, lc) {
@@ -187,6 +191,16 @@ class Warehousex extends ModTemplate {
 			this.tx_cts.push(tx_ct);
 			this.key_cts.push(unique_user_count);
 
+			if (tweet && ranked.length > 0){
+				this.generateReport(last_tx, last_key, tx_ct, unique_user_count, ranked[0]);
+			}
+			
+		}catch(err){
+			console.error("WarehouseX: tweet report error -- ", err);
+		}
+	}
+
+	async generateReport(last_tx, last_key, tx_ct, unique_user_count, top){
 			let percent_user_change = 1000 * (unique_user_count - last_key) / last_key;
 			percent_user_change = Math.round(percent_user_change)/10;
 
@@ -194,34 +208,45 @@ class Warehousex extends ModTemplate {
 			percent_tx_change = Math.round(percent_tx_change)/10;
 
 			let report = `*Today in Numbers:*\n------------------------\n`;
-			report += `Unique Keys: ${unique_user_count} ${last_key ? `(${percent_user_change}%)` :''}\n`;
-			report += `Total Transactions: ${tx_ct} ${last_tx ? `(${percent_tx_change}%)` : ''}\n`;
-			report += `Top Module: ${ranked[0]}`;
+			report += `Unique Keys: ${unique_user_count}`; 
+			if (last_key){
+				report += ` (${percent_user_change}%)`;
+				if (percent_user_change > 0){
+					report += '⬆️';
+				}
+			}
+			report += "\n";
+
+			report += `Total Transactions: ${tx_ct}`; 
+			if (last_tx){
+				report += ` (${percent_tx_change}%)`;
+				if (percent_tx_change > 0){
+					report += '⬆️';
+				}
+			}
+			report += "\n";
+
+			report += `Top Module: ${top}`;
 
 			let data = {
 				text: report
 			};
 
-			if (tweet && ranked.length > 0 ){
-				// Won't do anything if redsquare not installed ! 
-				//this.app.connection.emit('redsquare-post-tweet', data);	
+			// Won't do anything if redsquare not installed ! 
+			//this.app.connection.emit('redsquare-post-tweet', data);	
 
-			    let obj = {
-			      module: 'RedSquare',
-			      request: 'create tweet',
-			      data
-			    };
+		    let obj = {
+		      module: 'RedSquare',
+		      request: 'create tweet',
+		      data
+		    };
 
-			    let newtx = await this.app.wallet.createUnsignedTransaction();
-			    newtx.msg = obj;
+		    let newtx = await this.app.wallet.createUnsignedTransaction();
+		    newtx.msg = obj;
 
-			    await newtx.sign();
-			    await this.app.network.propagateTransaction(newtx);
-			}
-			
-		}catch(err){
-			console.error("WarehouseX: tweet report error -- ", err);
-		}
+		    await newtx.sign();
+		    await this.app.network.propagateTransaction(newtx);
+
 	}
 }
 

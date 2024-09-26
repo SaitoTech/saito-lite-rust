@@ -290,7 +290,7 @@ class Videocall extends ModTemplate {
 								identifier: title || 'Video Call',
 								startTime: utcStartTime,
 								duration,
-								description,
+								profile: {description},
 								link: call_link
 							});
 							app.connection.emit('calendar-refresh-request');

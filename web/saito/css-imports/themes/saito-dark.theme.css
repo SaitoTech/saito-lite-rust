@@ -111,7 +111,7 @@ html[data-theme="dark"] {
   --border-color-module-menu: none;
   --border-color-overlay-subform: var(--color-tint-dark);
   --border-color-chat-menu: ;
-  --border-color-identicon: var(--color-contrast);
+  --border-color-identicon: transparent;
   --border-color-identicon-square: ;
   --border-color-identicon-square-profile: var(--border-color-general-dividers);
   --border-color-chat-popup-docked: var(--color-primary);

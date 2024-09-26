@@ -114,6 +114,11 @@ class FileShareOverlay {
 
 			console.log("Done for real!");
 			this.mod.reset(this.fileId);
+			let btn = document.querySelector(this.qs + " #file-transfer-buttons");
+			if (btn){
+				btn.classList.remove("hideme");
+			}
+
 		}
 
 		let progress_bar = document.querySelector(this.qs + " .file-transfer-progress");
@@ -131,12 +136,10 @@ class FileShareOverlay {
 	finishTransfer(){
 
 		this.active = false;
-
 		let field = document.querySelector(this.qs + " #file-transfer-status");
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
 		}
-
 
 	}
 
@@ -283,6 +286,14 @@ class FileShareOverlay {
 				let overlay = document.querySelector(this.qs);
 				overlay.classList.toggle("minimize");
 				overlay.removeAttribute("style");
+			}
+		}
+
+		let alt_close = document.querySelector(this.qs + " #download-transfer");
+		if (alt_close){
+			alt_close.onclick = (e) => {
+				this.mod.reset(this.fileId, this.recipient);
+				this.remove();
 			}
 		}
 

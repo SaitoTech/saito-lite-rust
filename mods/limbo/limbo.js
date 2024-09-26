@@ -311,6 +311,7 @@ class Limbo extends ModTemplate {
 					} else {
 						mod_self.startDream({
 							externalMediaType: 'game',
+							alt_id: game_mod.game.id,
 							container,
 							keylist: [],
 							game_name: game_mod.name,
@@ -1635,7 +1636,7 @@ class Limbo extends ModTemplate {
 
 			let pk = this.app.crypto.generateKeys();
 			let id = this.app.crypto.generatePublicKey(pk);
-			this.app.keychain.addWatchedPublicKey(id);
+
 			this.app.keychain.addKey(id, {
 				identifier: title || 'Swarmcast',
 				privateKey: pk,
@@ -1643,8 +1644,9 @@ class Limbo extends ModTemplate {
 				mod: 'swarmcast',
 				startTime: utcStartTime,
 				duration,
-				description,
-				link: cast_link
+				profile: {description},
+				link: cast_link,
+				watched: true,
 			});
 
 			let event_link = this.app.browser.createEventInviteLink(this.app.keychain.returnKey(id));

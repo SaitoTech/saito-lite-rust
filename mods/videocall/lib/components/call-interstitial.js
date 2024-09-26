@@ -42,7 +42,7 @@ class CallPreLauncher {
                         call_peers: [],
                         startTime: utcStartTime, 
                         duration,
-                        description
+                        profile: {description}
                     };
         
                     let call_link =  this.mod.generateCallLink(room_obj)
