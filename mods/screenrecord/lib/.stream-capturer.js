@@ -957,7 +957,7 @@ class StreamCapturer {
                             alert('Failed to access camera and microphone.');
                             return;
                         }
-                        await this.mod.getOrCreateVideoBox();
+                        await this.getOrCreateVideoBox(this.mod.publicKey);
                         // this.mod.videoBox.render(this.localStream);
                     } else {
                         try {
@@ -983,6 +983,32 @@ class StreamCapturer {
     emitUpdatedCombinedStream() {
         this.app.connection.emit('screenrecord-update-stream', this.combinedStream);
     }
+
+    async getOrCreateVideoBox(publicKey) {
+		if (!this.videoBox) {
+			const streams = this.app.modules.getRespondTos('media-request');
+			if(streams.length > 0) return;
+			
+			this.localStream = await navigator.mediaDevices.getUserMedia({
+				video: true
+			});
+			let stream_id = `stream_${publicKey}`
+			this.videoBox = new VideoBox(this.app, this, publicKey);
+			this.videoBox.render(this.localStream)
+			let videoElement = document.querySelector('.video-box-container-large');
+			if (videoElement) {
+				videoElement.style.position = 'absolute';
+				videoElement.style.top = '100px';
+				videoElement.style.width = '350px';
+				videoElement.style.height = '350px';
+				videoElement.style.resize = "both"
+				videoElement.style.overflow= "auto";
+				videoElement.classList.add('game-video-box')
+				this.app.browser.makeDraggable(stream_id);
+			}
+		}
+		return this.videoBox;
+	}
 }
 
 module.exports = StreamCapturer;

@@ -30,7 +30,7 @@ class DreamWizard{
 		}
 
 		if(this.options.externalMediaType === "game"){
-			this.options.includeCamera = true;
+			this.options.includeCamera = false;
 		}
 
 		let description_el = document.getElementById("dream-wizard-description");
