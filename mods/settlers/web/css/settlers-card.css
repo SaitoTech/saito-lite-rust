@@ -10,8 +10,8 @@
 .cardover {
 	font-family: bagnard-sans;
 	color: black;
-	width: min(1000px, 80vw);
-	height: min(550px, 60vh);
+	width: min(1200px, 80vw);
+	height: min(750px, 70vh);
 	border-radius: 2rem;
 	padding: 2rem;
 	overflow: hidden;
@@ -32,7 +32,7 @@
 	background-image: var(--settlers-cardimg);
 	background-size: cover;
 	background-position: top;
-	filter: blur(3px); /* Apply blur effect */
+	filter: blur(3px) brightness(70%) grayscale(10%); /* Apply blur effect */
 	z-index: -1; /* Place it behind the content */
 	transform: scale(1.5);
 	overflow: hidden;
