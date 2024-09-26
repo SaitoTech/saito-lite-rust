@@ -61,6 +61,7 @@ Saito User
   grid-column-end: span 1;
   grid-row: span 2;
   position: relative;
+  opacity: 0.75; /* make identicons less harsh */
 }
 
 .saito-user>.saito-address {
