@@ -256,7 +256,7 @@ class Settlers extends GameTemplate {
 				action: -1
 			},
 			{
-				card: `Governor`,
+				card: `Winner`,
 				count: 0,
 				img: '/settlers/img/cards/governors_statue.png',
 				title: `Governor's Statue`,

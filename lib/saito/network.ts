@@ -81,6 +81,11 @@ export default class Network {
 	returnPeersWithService() { }
 
 
+	createPeerService(data, service, name, domain) {
+		let ps = new PeerService(data, service, name, domain);
+  		return ps;
+	}
+
 	public getServices(): PeerService[] {
 		let my_services = [];
 		for (let i = 0; i < this.app.modules.mods.length; i++) {

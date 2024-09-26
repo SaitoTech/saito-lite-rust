@@ -37,15 +37,99 @@
 		/>
 		<link rel="stylesheet" type="text/css" href="/saito/style.css" />
 
-		<script
-			type="text/javascript"
-			src="/saito/lib/fitty/fitty.min.js"
-		></script>
+		<style>
+			html,body {
+			    overflow-y: scroll!important;
+			}
+
+			.main-container {
+				width: 50vw;
+				margin: auto;
+				display: flex;
+				flex-direction: column;
+				gap: 3rem;
+				margin-top: calc(var(--saito-header-height) + 3rem);
+			}
+
+			.sub-container {
+				display: flex;
+				flex-direction: column;
+				gap: 2rem;
+			}
+
+			.container-title {
+				font-size: 2rem;
+				font-weight: bold;
+			}
+
+			#generate-tx {
+			 	width: fit-content;
+			 }
+
+			 textarea {
+			 	resize: vertical;
+			 }
+
+			 #file {
+			 	border: none;
+			 }
+
+			 #appstore-zip-upload {
+		 	    border: 2px dotted;
+			    height: 15rem;
+			    text-align: center;
+			    line-height: 15rem;
+			 }
+
+			 #binary {
+			 	display: none;
+			 }
+
+			 #cancel-file {
+			 	position: absolute;
+			    background: var(--saito-primary);
+			    color: var(--font-color-button-primary);
+			    padding: 0.2rem 0.5rem;
+			    border-radius: 50%;
+			    cursor: pointer;
+			 }
+
+			 #file-icon {
+			 	font-size: 5rem;
+			 }
+
+			 #uploaded-file {
+			 	display: none;
+			 }
+		</style>
+
 	</head>
 
 	<body>
-		Saito Appstore.
 
+		<div class="main-container">
+			<div class="sub-container">
+			    <div class="container-title">Generate application file</div>
+			      	<input type="text" name="title" id="title" placeholder="Title">
+			      	<input type="text" name="description" id="description" placeholder="Description">
+			      	<input type="text" name="version" id="version" placeholder="Version (1.0.0)">
+			      	<input type="text" name="publisher" id="publisher" placeholder="Publisher/Creator">
+			      	<input type="text" name="category" id="category" placeholder="Category">
+			      	<input type="text" name="slug" id="slug" placeholder="Slug">
+			      	<!--<input type="file" name="img" placeholder="Image" id="img">-->
+			      	<div class="saito-app-upload active-tab paste_event" id="appstore-zip-upload">
+			            drag-and-drop module zip file
+			        </div>
+			        <div id="uploaded-file">
+			        	<i id="file-icon" class="fa-solid fa-file"></i>
+			        	<i id="cancel-file" class="fa-solid fa-xmark"></i>
+			        </div>
+			        <textarea id="binary" rows="30" cols="80" placeholder="Paste base64 code"></textarea>
+			        <button class="saito-button-primary" id="generate-tx">Generate</button>
+		      	</div>
+			</div>
+		</div>
+		
 		<script
 			id="saito"
 			type="text/javascript"

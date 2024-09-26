@@ -1,6 +1,11 @@
-var saito = require('../../lib/saito/saito');
-var ModTemplate = require('../../lib/templates/modtemplate');
+/*
+ var saito = require('../../lib/saito/saito');
+*/
+const ModTemplate = require('../../lib/templates/modtemplate');
 const DebugAppspaceMain = require('./lib/appspace/main');
+const Transaction = require('../../lib/saito/transaction').default;
+const SaitoJs = require('saito-js').default;
+
 
 class Debug extends ModTemplate {
 	constructor(app) {
@@ -19,7 +24,20 @@ class Debug extends ModTemplate {
 		return this;
 	}
 
+	async initialize(app) {
+		console.log('111');
+		await super.initialize(app);
+
+		console.log('333');
+		let tx = await this.app.wallet.createUnsignedTransaction();
+		console.log('transaction created');
+
+		//tx = new Transaction();
+		console.log('tx created from constructor');
+	}
+
 	respondTo(type) {
+		console.log('debug.respondTo : ' + type);
 		if (type === 'appspace') {
 			this.styles = [
 				'/saito/lib/jsonTree/jsonTree.css',
@@ -32,7 +50,8 @@ class Debug extends ModTemplate {
 		return null;
 	}
 
-	attachEventsEmail(app, mod) {}
+	attachEventsEmail(app, mod) {
+	}
 }
 
 module.exports = Debug;

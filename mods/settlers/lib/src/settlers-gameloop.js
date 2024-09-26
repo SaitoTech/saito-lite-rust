@@ -71,8 +71,7 @@ class SettlersGameloop {
 
         this.updateLog(`${this.formatPlayer(winner+1)} is ${this.winState.name} and wins the game!`);
         this.stats_overlay.render(this.game.playerNames[winner]);
-
-        this.card_overlay.render({player: winner+1, card: "Governor"});
+        this.card_overlay.render({player: winner+1, card: "Winner"});
 
         if (this.gameOverCallback){
           this.gameOverCallback();  
@@ -725,14 +724,6 @@ class SettlersGameloop {
       if (mv[0] == "play") {
         let player = parseInt(mv[1]);
 
-        //Check for winner
-        for (let i = 0; i < this.game.players.length; i++){
-          if (this.game.state.players[i].vp >= this.game.options.game_length) {
-            this.game.queue.push(`winner\t${i}`);
-            return 1;
-          }
-        }
-  
         this.game.state.playerTurn = player;
         this.playerbox.setActive(player);
 

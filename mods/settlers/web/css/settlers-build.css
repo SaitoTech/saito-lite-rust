@@ -277,7 +277,8 @@
 }
 
 .cardover-cardover .settlers-dev-card-title{
-	bottom: 10%
+	bottom: 0;
+	height: 26%;
 }
 
 .settlers-dev-card-text {

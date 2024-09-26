@@ -6,7 +6,7 @@ class CardOverlay {
 		this.app = app;
 		this.mod = mod;
 		this.visible = false;
-		this.overlay = new SaitoOverlay(app, mod, false, false, true);
+		this.overlay = new SaitoOverlay(app, mod, false, true, true);
 	}
 
 	hide() {

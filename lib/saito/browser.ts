@@ -1159,7 +1159,8 @@ class Browser {
 		id,
 		handleFileDrop = null,
 		click_to_upload = true,
-		read_as_array_buffer = false
+		read_as_array_buffer = false,
+		read_as_text = false
 	) {
 		const hidden_upload_form = `
       <form id="uploader_${id}" class="saito-file-uploader" style="display:none">
@@ -1199,10 +1200,14 @@ class Browser {
 					[...files].forEach(function (file) {
 						const reader = new FileReader();
 						reader.addEventListener('load', (event) => {
+							console.log('handleFileDrop ////');
 							handleFileDrop(event.target.result);
 						});
 						if (read_as_array_buffer) {
 							reader.readAsArrayBuffer(file);
+						} else if(read_as_text) {
+							console.log('readAsText ////');
+							reader.readAsText(file);
 						} else {
 							reader.readAsDataURL(file);
 						}

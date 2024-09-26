@@ -5,6 +5,10 @@ import path from 'path';
 import fs from 'fs';
 import ws from 'ws';
 import { parse } from 'url';
+import { fromBase58 } from 'saito-js/lib/util';
+// @ts-ignore
+//import { DYN_MOD_WEB,DYN_MOD_NODE } from '../dyn_mod';
+import SaitoBlock from 'saito-js/lib/block';
 
 class Mods {
 
@@ -26,6 +30,10 @@ class Mods {
 		this.mods_list = config;
 		this.is_initialized = false;
 		this.lowest_sync_bid = -1;
+
+		if (typeof window !== 'undefined') {
+			// window.saitoJs = require('saito-js');
+		}
 	}
 
 	isModuleActive(modname = '') {
@@ -176,6 +184,72 @@ console.log("IN MODULE.TS AFFIX CALLBACKS: ");
 	}
 
 	async initialize() {
+
+		// try {
+			if (this.app.BROWSER === 1) {
+				let mods = await this.app.storage.loadLocalApplications();
+				console.log('loaded mods:', mods);
+
+				if (mods.length > 0) {
+					self["saito-js"] = require('saito-js').default;
+					self["saito-js/lib/slip"] = require("saito-js/lib/slip").default;
+					self["saito-js/lib/transaction"] = require("saito-js/lib/transaction").default;
+					self["saito-js/lib/block"]=require("saito-js/lib/block").default;
+
+					for (let i=0; i<mods.length; i++) {
+						let mod_binary = mods[i]['binary'];
+						let moduleCode = this.app.crypto.base64ToString(mod_binary);
+
+						console.log('moduleCode:', moduleCode);
+
+						let mod = eval(moduleCode);
+						console.log("mod : ",typeof mod);
+						// @ts-ignore
+						let m = new window.Dyn(this.app);
+						const current_url = window.location.toString();
+						const myurl = new URL(current_url);
+						const myurlpath = myurl.pathname.split('/');
+						let active_module = myurlpath[1] ? myurlpath[1].toLowerCase() : '';
+						if (active_module == '') {
+							active_module = 'website';
+						}
+						if (m.isSlug(active_module)){
+							m.browser_active = true;
+							m.alerts = 0;
+							const urlParams = new URLSearchParams(location.search);
+
+							m.handleUrlParams(urlParams);
+						}
+						this.mods.push(m);
+					}
+				}
+
+			} else {
+				// console.log('loading dyn module...');
+				// let moduleCode = this.app.crypto.base64ToString(DYN_MOD_NODE);
+
+				// //console.log("module code: ", moduleCode);
+
+				// global["saito-js"] = require('saito-js/saito').default;
+				// global["saito-js/lib/slip"] = require("saito-js/lib/slip").default;
+				// global["saito-js/lib/transaction"] = require("saito-js/lib/transaction").default;
+				// global["saito-js/lib/block"]=require("saito-js/lib/block").default;
+
+				// let mod = eval(moduleCode);
+				// //console.log("mod eval: ", mod);
+				// //console.log("mod : ",typeof mod);
+				// // @ts-ignore
+				// let m = new global.Dyn(this.app);
+
+				// console.log("m: ", m);
+
+				// this.mods.push(m);
+			}
+		// } catch (error) {
+		// 	console.error('failed loading dynamic mod');
+		// 	console.error(error);
+		// }
+
 
 		//
 		// remove any disabled / inactive modules

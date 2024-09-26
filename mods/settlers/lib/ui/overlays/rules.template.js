@@ -1,4 +1,4 @@
-module.exports = SettlersRulesOverlayTemplate = (rules, theme="") => {
+module.exports  = (rules, theme="") => {
 	return `
   <div class="rules-overlay ${theme}">
   <h4>Overview<h4>

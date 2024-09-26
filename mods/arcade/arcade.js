@@ -48,7 +48,15 @@ class Arcade extends ModTemplate {
 		this.styles = ['/arcade/style.css'];
 
 		this.affix_callbacks_to = [];
-		this.services = [new PeerService(null, 'arcade', '', 'saito')];
+		console.log("before PeerService ////");
+
+
+		this.services = [this.app.network.createPeerService(null, 'arcade', '', 'saito')];
+		
+
+		console.log('this.services: ', this.services);
+
+		console.log("after PeerService ////");
 
 		this.invite_cutoff = 3500000;
 		this.game_cutoff = 600000000;
