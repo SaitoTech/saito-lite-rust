@@ -8115,7 +8115,7 @@ console.log("ERR: " + JSON.stringify(err));
 	  } else {
 	    his_self.addMove("insert_before_counter_or_acknowledge\tadd_field_battle_bonus_rolls\t"+faction+"\t2");
 	  }
-	  his_self.addMove("discard\t"+faction+"\t024");
+	  his_self.addMove("discard\t"+faction+"\t025");
 	  his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction) + " triggers " + his_self.popup("025"));
 	  his_self.endTurn();
         }
@@ -16289,6 +16289,22 @@ console.log("DELETING Z: " + z);
 	    if (u.army_leader || u.navy_leader) { return true; }
 	    if (u.type == "regular" || u.type == "mercenary" || u.type == "cavalry" || u.type == "squadron" || u.type == "corsair") { return true; }
           }
+        }
+      }
+    }
+    return false;
+  }
+
+  // works both if faction is "hassburg" or "genoa"/"independent"
+  doesSpaceHaveNonAlliedIndependentUnits(space, faction) {
+    let am_i_independent = false;
+    if (["independent","genoa","scotland","hungary","venice"].includes(faction)) { am_i_independent = true; }
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let f in space.units) {
+      if (space.units[f].length > 0) {
+        if (!this.areAllies(faction, f)) {
+          if (am_i_independent) { return true; }
+          if (["independent","genoa","scotland","hungary","venice"].includes(f)) { return true; }
         }
       }
     }
@@ -50285,7 +50301,7 @@ try {
     //
     if (space.besieged == true) {
       let f = this.returnFactionControllingSpace(space.key);
-      if (!this.doesSpaceHaveEnemyUnits(space.key, f)) {
+      if (!this.doesSpaceHaveNonAlliedIndependentUnits(space.key, f)) {
         console.log("removing siege in displaySpace(), since no more enemy units left!");
         this.removeSiege(space.key);
       } 

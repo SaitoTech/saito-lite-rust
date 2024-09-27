@@ -237,29 +237,6 @@ alert("source is: " + source);
 }
 
 
-function format_as_vertical_question() {
-	$('#question_text').css('padding-top', '15px');
-	$('#question_space').css('border', 'none');
-	$('#question_space').css('width', '100%');
-	$('#question_space').css('min-height', '80px');
-	$('.option').css('line-height', '30px');
-	$('.option').css('width', '700px');
-	$('.option').css('margin-left', '75px');
-	$('#answer_space').css('width', '700px');
-	$('#lightbox_header').css('display', 'none');
-}
-function format_as_horizontal_question() {
-	$('#question_text').css('padding-top', '120px');
-	$('#question_space').css('border-left', '1px dashed #D7D7D7');
-	$('#question_space').css('width', '435px');
-	$('#question_space').css('min-height', '300px');
-	$('.option').css('line-height', '36px');
-	$('.option').css('width', '340px');
-	$('.option').css('margin-left', '9px');
-	$('#answer_space').css('width', '400px');
-	$('#lightbox_header').css('display', 'all');
-}
-
 function resetCss() {
 	// hovering effect
 	$('.option').removeClass('option_hover');
@@ -317,7 +294,20 @@ function resetCss() {
 	}
 
 	if (question_type == 'test') {
-		format_as_vertical_question();
+
+		//
+		// format vertical question
+		//
+		$('#question_text').css('padding-top', '15px');
+		$('#question_space').css('border', 'none');
+		$('#question_space').css('width', '100%');
+		$('#question_space').css('min-height', '80px');
+		$('.option').css('line-height', '30px');
+		$('.option').css('width', '700px');
+		$('.option').css('margin-left', '75px');
+		$('#answer_space').css('width', '700px');
+		$('#lightbox_header').css('display', 'none');
+
 		if (option1 == '') {
 			$('#option1').hide();
 		}
@@ -331,7 +321,18 @@ function resetCss() {
 			$('#option4').hide();
 		}
 	} else {
-		format_as_horizontal_question();
+		//
+		// format horizontal question
+		//
+		$('#question_text').css('padding-top', '120px');
+		$('#question_space').css('border-left', '1px dashed #D7D7D7');
+		$('#question_space').css('width', '435px');
+		$('#question_space').css('min-height', '300px');
+		$('.option').css('line-height', '36px');
+		$('.option').css('width', '340px');
+		$('.option').css('margin-left', '9px');
+		$('#answer_space').css('width', '400px');
+		$('#lightbox_header').css('display', 'all');
 	}
 
 	if (

@@ -398,6 +398,22 @@
     return false;
   }
 
+  // works both if faction is "hassburg" or "genoa"/"independent"
+  doesSpaceHaveNonAlliedIndependentUnits(space, faction) {
+    let am_i_independent = false;
+    if (["independent","genoa","scotland","hungary","venice"].includes(faction)) { am_i_independent = true; }
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let f in space.units) {
+      if (space.units[f].length > 0) {
+        if (!this.areAllies(faction, f)) {
+          if (am_i_independent) { return true; }
+          if (["independent","genoa","scotland","hungary","venice"].includes(f)) { return true; }
+        }
+      }
+    }
+    return false;
+  }
+
   isSpaceHostile(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     let cf = this.returnFactionControllingSpace(space);

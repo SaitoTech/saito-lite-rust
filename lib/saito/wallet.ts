@@ -104,6 +104,10 @@ export default class Wallet extends SaitoWallet {
 				return this.app.wallet.convertNolanToSaito(x);
 			}
 
+			async returnPublicKey() {
+				return this.publicKey || await this.app.wallet.getPublicKey();
+			}
+
 			async returnAddress() {
 				return this.publicKey || await this.app.wallet.getPublicKey();
 			}

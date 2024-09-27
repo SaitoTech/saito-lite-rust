@@ -4392,7 +4392,7 @@ console.log("ERR: " + JSON.stringify(err));
 	  } else {
 	    his_self.addMove("insert_before_counter_or_acknowledge\tadd_field_battle_bonus_rolls\t"+faction+"\t2");
 	  }
-	  his_self.addMove("discard\t"+faction+"\t024");
+	  his_self.addMove("discard\t"+faction+"\t025");
 	  his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction) + " triggers " + his_self.popup("025"));
 	  his_self.endTurn();
         }

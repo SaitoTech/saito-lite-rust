@@ -2318,7 +2318,7 @@ try {
     //
     if (space.besieged == true) {
       let f = this.returnFactionControllingSpace(space.key);
-      if (!this.doesSpaceHaveEnemyUnits(space.key, f)) {
+      if (!this.doesSpaceHaveNonAlliedIndependentUnits(space.key, f)) {
         console.log("removing siege in displaySpace(), since no more enemy units left!");
         this.removeSiege(space.key);
       } 
