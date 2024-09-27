@@ -61,7 +61,15 @@ Saito User
   grid-column-end: span 1;
   grid-row: span 2;
   position: relative;
+}
+
+.saito-user > .saito-identicon-box .saito-identicon{
   opacity: 0.75; /* make identicons less harsh */
+}
+
+
+.saito-user > .saito-identicon-box .saito-identicon[data-id]:hover{
+  opacity: 1;
 }
 
 .saito-user>.saito-address {
