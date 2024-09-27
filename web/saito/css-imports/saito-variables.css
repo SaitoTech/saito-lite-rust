@@ -228,7 +228,7 @@ font imports
   --font-color-post-info: var(--font-color-secondary);
   --font-color-post-icons: var(--color-primary); /* Exempt as system color */
   --font-color-post-controls: var(--font-color-secondary);
-  --font-color-hover-post-icons: var(--color-secondarys); /* tag */
+  --font-color-hover-post-icons: var(--font-color-heavy); /* tag */
   --font-color-hover-post-controls: var(--font-color-heavy);
 /* Module and Overlay Font Colors */
   --font-color-invite-stub: var(--font-color-inverse);

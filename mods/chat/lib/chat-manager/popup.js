@@ -192,7 +192,8 @@ class ChatPopup {
 			this.input = new SaitoInput(
 				this.app,
 				this.mod,
-				`#chat-popup-${this.group.id} .chat-footer`
+				`#chat-popup-${this.group.id} .chat-footer`,
+				popup_id
 			);
 
 			if (

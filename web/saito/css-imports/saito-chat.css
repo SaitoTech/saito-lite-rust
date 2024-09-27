@@ -791,9 +791,12 @@
   display: none;
 }
 
-.chat-manager-overlay .saito-sidebar-element {
+.chat-manager-overlay .chat-manager-list.saito-sidebar-element {
   box-shadow: unset;
+  padding: unset;
+  border: unset;
 }
+
 
 .floating-cm-overlay .alternate-close-button {
   display: flex;

@@ -48,7 +48,7 @@ class Post {
 		//
 
 		if (!this.input) {
-			this.input = new SaitoInput(this.app, this.mod, this.container + '.tweet-overlay-content');
+			this.input = new SaitoInput(this.app, this.mod, this.container + '.tweet-overlay-content', "tweet-overlay");
 		}
 
 		if (!this.user) {
