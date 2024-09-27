@@ -3,6 +3,10 @@ body {
 	overscroll-behavior: none;
 }
 
+.saito-container, .saito-sidebar.left {
+	max-height: 100vh;
+}
+
 .tweet-text a {
 	display: inline;
 }
