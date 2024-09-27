@@ -40,13 +40,12 @@ class AddAppOverlay {
           	console.log("uploaded tx msg: ", msg);
 
 			this_self.installOverlay.bin = msg.bin;
-			this_self.installOverlay.category = msg.category;
+			this_self.installOverlay.categories = msg.categories;
 			this_self.installOverlay.description = msg.description;
-			this_self.installOverlay.img = msg.img;
-			this_self.installOverlay.module = msg.module;
+			this_self.installOverlay.image = msg.image;
 			this_self.installOverlay.publisher = msg.publisher;
 			this_self.installOverlay.request = msg.request;
-			this_self.installOverlay.title = msg.title;
+			this_self.installOverlay.name = msg.name;
 			this_self.installOverlay.version = msg.version;
 			this_self.installOverlay.tx = newtx;
 			this_self.installOverlay.tx_json = data;
