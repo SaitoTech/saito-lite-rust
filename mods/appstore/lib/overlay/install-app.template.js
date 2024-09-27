@@ -1,7 +1,5 @@
 module.exports = InstallAppOverlayTemplate = (app, mod, this_self) => {
 
-  let identicon = app.keychain.returnIdenticon(this_self.publisher);
-
 	return `
   <style>
     .saito-app-install-overlay .saito-module-header {
@@ -30,8 +28,8 @@ module.exports = InstallAppOverlayTemplate = (app, mod, this_self) => {
   </style>
 
   <div class="saito-module-overlay saito-app-install-overlay">
-    <div class="saito-module-header">
-      <h1 class="saito-module-titlebar">${this_self.title}</h1>
+    <div class="saito-module-header" style="background-image: url(${this_self.image});">
+      <h1 class="saito-module-titlebar">${this_self.name}</h1>
     </div>
 
       <div class="saito-module-details">
@@ -44,7 +42,7 @@ module.exports = InstallAppOverlayTemplate = (app, mod, this_self) => {
         </div>
 
         <div class="detail-key">Categories</div>
-        <div class="detail-value">${this_self.category}</div>
+        <div class="detail-value">${this_self.categories}</div>
 
         <div class="detail-key">Description</div>
         <div class="detail-value">${this_self.description}</div>

@@ -9,13 +9,13 @@ class AddAppOverlay {
 
 		this.bin = '';
 		this.description = '';
-		this.img = '';
+		this.image = '';
 		this.module = '';
 		this.publisher = '';
 		this.request = '';
-		this.title = '';
+		this.name = '';
 		this.version = '';
-		this.category = 'Utility';
+		this.categories = 'Utility';
 		this.tx = null;
 		this.tx_json = null;
 	}
@@ -32,7 +32,7 @@ class AddAppOverlay {
 			console.log('saving json to archive');
 
 
-			await this_self.app.storage.saveLocalApplication((this_self.title).toLowerCase(), this_self.bin);
+			await this_self.app.storage.saveLocalApplication((this_self.name).toLowerCase(), this_self.bin);
 
 			//console.log(JSON.stringify(await this_self.app.storage.loadLocalApplications()));
 			salert("Module saved. Reloading page...");
