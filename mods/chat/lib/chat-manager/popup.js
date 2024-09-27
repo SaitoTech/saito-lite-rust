@@ -26,6 +26,8 @@ class ChatPopup {
 
 		this.callbacks = {};
 
+		this.closeFn = null;
+
 		app.connection.on('chat-remove-fetch-button-request', (group_id) => {
 			if (this.group?.id === group_id) {
 				this.no_older_messages = true;
@@ -661,6 +663,15 @@ class ChatPopup {
 			return;
 		}
 
+
+		if (this.app.browser.isMobileBrowser()){
+			window.history.pushState("chat", "");
+			this.closeFn = window.onpopstate;
+			window.onpopstate = (e) => {
+				this.close();
+			}
+		}
+
 		if (this.group.name != this.mod.communityGroupName) {
 			document.querySelectorAll('.chat-action-item').forEach((menu) => {
 				let id = menu.getAttribute('id');
@@ -780,10 +791,15 @@ class ChatPopup {
 		document.querySelector(
 			`${popup_qs} .chat-header .chat-container-close`
 		).onclick = (e) => {
-			this.manually_closed = true;
-			this.remove();
-			app.storage.saveOptions();
+			this.close();
 		};
+
+		document.querySelector(
+			`${popup_qs} .chat-header .chat-mobile-back`
+		).onclick = (e) => {
+			this.close();
+		};
+
 
 		//
 		// submit
@@ -940,6 +956,13 @@ class ChatPopup {
 			chatPopup.style.bottom = this.dimensions.bottom + 'px';
 			chatPopup.style.right = this.dimensions.right + 'px';
 		}
+	}
+
+	close(){
+		this.manually_closed = true;
+		this.remove();
+		this.app.storage.saveOptions();
+		window.onpopstate = this.closeFn;
 	}
 }
 
