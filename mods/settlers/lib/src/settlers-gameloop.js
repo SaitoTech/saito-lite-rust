@@ -306,7 +306,6 @@ class SettlersGameloop {
         let player = parseInt(mv[1]);
 
         this.game.queue.splice(qe, 1);
-        this.game.state.canTrade = false;
         if (this.game.player == player) {
           if (mv[2] == 1) {
             console.log("Last Placed City: " + this.game.state.last_city);
@@ -338,6 +337,7 @@ class SettlersGameloop {
         this.game.queue.splice(qe, 1);
 
         console.log("Receive build road");
+        this.game.state.canTrade = false;
 
         this.game.state.roads.push({ player: player, slot: slot });
 
@@ -372,7 +372,6 @@ class SettlersGameloop {
         this.playerbox.setActive(player);
 
         this.game.queue.splice(qe, 1);
-        this.game.state.canTrade = false;
 
         //For the beginning of the game only...
         if (this.game.state.welcome == 0 && this.browser_active) {
@@ -428,6 +427,7 @@ class SettlersGameloop {
           this.buildCity(player, slot);
         }
 
+        this.game.state.canTrade = false;
         this.updateLog(`${this.formatPlayer(player)} built a ${this.c1.name}`);
 
         //Check for edge case where the new city splits a (longest) road
@@ -483,7 +483,6 @@ class SettlersGameloop {
       if (mv[0] == "player_upgrade_city") {
         let player = parseInt(mv[1]);
         this.game.queue.splice(qe, 1);
-        this.game.state.canTrade = false;
         if (this.game.player == player) {
           this.playerBuildCity(player, 1);
         } else {
@@ -508,6 +507,7 @@ class SettlersGameloop {
         this.updateLog(
           `${this.formatPlayer(player)} upgraded a ${this.c1.name} to a ${this.c2.name}`
         );
+        this.game.state.canTrade = false;
         for (let i = 0; i < this.game.state.cities.length; i++) {
           if (this.game.state.cities[i].slot === slot) {
             this.game.state.cities[i].level = 2;

@@ -377,6 +377,7 @@ class Wordblocks extends GameTemplate {
 			}
 		}
 
+		$(".score.active").removeClass("active");
 		this.playerbox.setActive(this.game.target);
 		$(`#mobile_score_${this.game.target}`).addClass("active");
 
@@ -2374,6 +2375,7 @@ class Wordblocks extends GameTemplate {
 				this.startClock();
 			}
 
+			$(".score.active").removeClass("active");
 			this.playerbox.setActive(this.game.target);
 			$(`#mobile_score_${this.game.target}`).addClass("active");
 
@@ -2434,14 +2436,11 @@ class Wordblocks extends GameTemplate {
 			document.getElementById(`score_${player}`).innerHTML = score;
 		}
 
-		let compact_html = '';
-		for (let i = 0; i < this.game.score.length; i++) {
-			compact_html += `<div class="score" id="mobile_score_${player}"><img class="player-identicon" src="${this.app.keychain.returnIdenticon(
-				this.game.players[player-1]
-			)}"> : ${score} </div>`;
+		if (document.getElementById(`mobile_score_${player}`)){
+			document.getElementById(`mobile_score_${player}`).innerHTML = `<img class="player-identicon" src="${this.app.keychain.returnIdenticon(
+				this.game.players[player-1])}"> : ${score}`;
 		}
-		
-		this.scoreboard.update(compact_html);
+
 	}
 
 	displayRemainingTiles(){
