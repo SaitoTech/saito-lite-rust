@@ -19,7 +19,6 @@ class Tutorial03Main {
     let btn = document.querySelector('.tutorial03-button');
     if (btn) { 
       btn.onclick = (e) => { 
-	alert("sending a transaction!");
         this.mod.sendTutorial03Transaction(); 
       }
     }
@@ -28,7 +27,7 @@ class Tutorial03Main {
 
   receiveTransaction(tx) {
     let txmsg = tx.returnMessage();
-    this.app.browser.addElementToSelector(`TX ${tx.id} - random: ${txmsg.data.random}`, `.tutorial03-received-transactions`);
+    this.app.browser.addElementToSelector(`TX received - random: ${txmsg.data.random} <br />`, `.tutorial03-received-transactions`);
   }
 
 }

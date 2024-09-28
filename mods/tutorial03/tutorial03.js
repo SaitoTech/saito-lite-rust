@@ -37,7 +37,7 @@ class Tutorial03 extends ModTemplate {
   }
 
   receiveTutorial03Transaction(tx) {
-    this.ui.addTransaction(tx);
+    this.ui.receiveTransaction(tx);
   }
 
 

@@ -6275,7 +6275,7 @@ console.log("selected: " + spacekey);
 	  //
 	  // Henry VIII already dead, cannot roll
 	  //
-	  if (his_self.game.state.leaders.mary_i == 1 || his_self.game.state.leaders.edward_vi == 1 || his_self.game.state.leaders_elizabeth_i) {
+	  if (his_self.game.state.leaders.mary_i == 1 || his_self.game.state.leaders.edward_vi == 1 || his_self.game.state.leaders.elizabeth_i == 1) {
 	    return 1;
 	  }
 
@@ -50299,11 +50299,22 @@ try {
     //
     // sanity check on removing siege
     //
-    if (space.besieged == true) {
+    if (space.besieged > 0) {
       let f = this.returnFactionControllingSpace(space.key);
       if (!this.doesSpaceHaveNonAlliedIndependentUnits(space.key, f)) {
-        console.log("removing siege in displaySpace(), since no more enemy units left!");
-        this.removeSiege(space.key);
+        let anyone_at_war = false;
+	for (let f in space.units) {
+	  for (let ff in space.units) {
+	    if (space.units[f].length > 0 && space.units[ff].length > 0) {
+	      if (f != ff) {
+		if (this.areEnemies(f, ff)) { anyone_at_war = true; }
+	      }
+	    }
+	  }
+	}
+	if (anyone_at_war == false) {
+          this.removeSiege(space.key);
+	}
       } 
     }
 
