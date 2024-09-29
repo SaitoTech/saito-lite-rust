@@ -149,6 +149,12 @@ class Popup extends ModTemplate {
 		//
 		if (this.app.BROWSER == 1) {
 
+			//
+			// browser should be able to access Saito
+			//
+			saito_app = app;
+			saito_mod = this;
+
 			save_display_mode = function (
 				mode = ""
 			) {
@@ -626,7 +632,11 @@ class Popup extends ModTemplate {
 		return rows;
 	}
 
-	
+
+	async loadQuestion() {
+
+	}
+
 
 }
 
