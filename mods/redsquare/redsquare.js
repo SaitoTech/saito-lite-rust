@@ -337,11 +337,9 @@ class RedSquare extends ModTemplate {
           if (tx == null || app == null) {
             return 0;
           }
-
           if (this.hidden_tweets.includes(tx.signature)){
             return -1;
           }
-
           return 0;
         }
       };
