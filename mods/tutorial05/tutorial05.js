@@ -11,7 +11,7 @@ class Tutorial05 extends ModTemplate {
     this.name            = "Tutorial05";
     this.slug            = "tutorial05";
     this.description     = "CSS Injection";
-
+    this.categories       = 'Dev educational';
     return this;
 
   }

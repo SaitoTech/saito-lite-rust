@@ -11,7 +11,7 @@ class Tutorial03 extends ModTemplate {
     this.name            = "Tutorial03";
     this.slug            = "tutorial03";
     this.description     = "Receiving Transactions";
-
+    this.categories       = 'Dev educational';
     this.ui		 = new MainUI(this.app, this);
 
     return this;
