@@ -865,7 +865,7 @@ class ChatPopup {
 			this.overlay.show(
 				`<div class="chat-popup-img-overlay-box">
 				   <img class="chat-popup-img-enhanced" src="${resizedImageUrl}" >
-				   <div id="photo-preview-upload" class="saito-button-primary">Upload</div>
+				   <button id="photo-preview-upload" class="saito-button-primary">Upload</button>
 				</div>`
 			);
 
@@ -875,6 +875,8 @@ class ChatPopup {
 				let msg = img.outerHTML;
 				this.input.callbackOnReturn(msg);
 			}
+
+			document.getElementById("photo-preview-upload").focus();			
 
 		};
 
