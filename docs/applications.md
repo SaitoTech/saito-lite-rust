@@ -17,7 +17,7 @@ blockchain, as well as handle common user-interface requirements such as distrib
 
 Applications exist in standalone directories in the /mods directory. The name of this directory should be the lowercase,
 alphanumeric version of the application name. The "arcade" module is located at /mods/arcade. The AppStore module is
-located at /mods/appstore. All applications share the same basic directory structure:
+located at /mods/devtools. All applications share the same basic directory structure:
 
 ```
 appname.js

@@ -11,7 +11,7 @@ class Tutorial04 extends ModTemplate {
     this.name            = "Tutorial04";
     this.slug            = "tutorial04";
     this.description     = "Building a Simple Chatbox";
-
+    this.categories       = 'Dev educational';
     return this;
 
   }
