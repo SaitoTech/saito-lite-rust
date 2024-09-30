@@ -113,8 +113,10 @@ class GameSlider {
 						? 0
 						: newIndex;
 			slides.children[newIndex].dataset.activeSlide = true;
-			if (typeof activeSlide.dataset != 'undefined')
+			if (typeof activeSlide.dataset != 'undefined' &&
+				activeSlide != null) {
 				delete activeSlide.dataset.activeSlide;
+			}
 			/*
         const circles = document.querySelector(".slides-circles");
         const activeCircle = circles.querySelector("[data-active-slide]");
