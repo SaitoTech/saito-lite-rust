@@ -2318,21 +2318,26 @@ try {
     //
     if (space.besieged > 0) {
       let f = this.returnFactionControllingSpace(space.key);
+      let anyone_at_war = false;
+      let anyone_here = true;
       if (!this.doesSpaceHaveNonAlliedIndependentUnits(space.key, f)) {
-        let anyone_at_war = false;
 	for (let f in space.units) {
 	  for (let ff in space.units) {
 	    if (space.units[f].length > 0 && space.units[ff].length > 0) {
 	      if (f != ff) {
+		anyone_here = true;
 		if (this.areEnemies(f, ff)) { anyone_at_war = true; }
 	      }
 	    }
 	  }
 	}
+
 	if (anyone_at_war == false) {
-          this.removeSiege(space.key);
+	  if (anyone_here == true && his_self.returnFactionLandUnitsInSpace(f, space.key, 1) == 0) {} else {
+     	    this.removeSiege(space.key);
+	  }
 	}
-      } 
+      }
     }
 
 

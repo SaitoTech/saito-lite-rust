@@ -179,6 +179,7 @@ class HereIStand extends GameTemplate {
           this.confirm_moves = 1;
         }
       }
+/****
       if (this.app.options.gameprefs.his_faster_play) {
 	if (this.app.options.gameprefs.his_faster_play !== 1) {
           this.faster_play = 0;
@@ -186,6 +187,7 @@ class HereIStand extends GameTemplate {
           this.faster_play = 1;
         }
       }
+****/
     }
 
     //
@@ -27495,47 +27497,20 @@ console.log("still unresolved: " + this.game.players[i]);
 	      }
 	    }
 
-	    // what if future move has resolve?
-            let future_resolve_needed = 0;
-console.log("checking future moves... " + this.game.future.length);
-            for (let zz = 0; zz < this.game.future.length; zz++) {
-              let ftx = await this.app.wallet.createUnsignedTransaction();
-              ftx.deserialize_from_web(this.app, this.game.future[zz]);
-              if (unresolved_players.includes(ftx.from[0].publicKey)) {
-console.log("we have a tx from an unresolved player...");
-                let ftxmsg = ftx.returnMessage();
-		if (ftxmsg.turn) {
-                  for (let i = 0; i < ftxmsg.turn.length; i++) {
-                    if (ftxmsg.turn[i].indexOf("RESOLVE") >= 0) {
-                      future_resolve_needed = 1;
-                    }
-                  }
-                }
-              }
-            }
-
-console.log("future resolve needed: " + future_resolve_needed);
-
 	    //
 	    // if everyone has returned, splice out counter_or_acknowledge
  	    // and continue to the next move on the game queue
 	    //
 	    if (ack == 1) { 
 	      this.game.queue.splice(qe, 1);
-	    } else {
-	      if (future_resolve_needed == 1) {
-		this.processFutureMoves();
-		return 0;
-	      }
 	    }
 
 	    this.updateStatus("acknowledged");
+console.log("UNRESOLVED PLAYERS: " + JSON.stringify(unresolved_players));
+console.log("returning " + ack);
 	    return ack;
 	  }
 
-
-
-console.log("UNRESOLVED PLAYERS: " + JSON.stringify(unresolved_players));
 
 console.log("translation_english_language_zone = 1");
 
@@ -27678,15 +27653,7 @@ console.log("translation_english_language_zone = 3");
 		//
 		// debugging -- maybe my move has arrived 
 		//
-	      setTimeout(() => { 
-		if (his_self.halted == 1 || his_self.is_halted == 1) {
-console.log("HALTED IS HALTED == " + his_self.halted + " -- " + his_self.is_halted);
-			his_self.halted = 0;
-			his_self.is_halted = 0;
-			his_self.gaming_active = 0;
-		}
-		his_self.processFutureMoves(); 
-	      }, 1);
+	      setTimeout(() => { his_self.processFutureMoves(); }, 5);
 
 	    });
 
@@ -50359,21 +50326,26 @@ try {
     //
     if (space.besieged > 0) {
       let f = this.returnFactionControllingSpace(space.key);
+      let anyone_at_war = false;
+      let anyone_here = true;
       if (!this.doesSpaceHaveNonAlliedIndependentUnits(space.key, f)) {
-        let anyone_at_war = false;
 	for (let f in space.units) {
 	  for (let ff in space.units) {
 	    if (space.units[f].length > 0 && space.units[ff].length > 0) {
 	      if (f != ff) {
+		anyone_here = true;
 		if (this.areEnemies(f, ff)) { anyone_at_war = true; }
 	      }
 	    }
 	  }
 	}
+
 	if (anyone_at_war == false) {
-          this.removeSiege(space.key);
+	  if (anyone_here == true && his_self.returnFactionLandUnitsInSpace(f, space.key, 1) == 0) {} else {
+     	    this.removeSiege(space.key);
+	  }
 	}
-      } 
+      }
     }
 
 
