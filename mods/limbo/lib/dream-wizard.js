@@ -27,6 +27,10 @@ class DreamWizard{
 			if (mode.getAttribute("id") == "mode-screen"){
 				this.options.screenStream = true;
 			}
+
+			if (mode.getAttribute("id") == "mode-game"){
+				this.options.canvasStream = true;
+			}
 		}
 
 		if(this.options.externalMediaType === "game"){
