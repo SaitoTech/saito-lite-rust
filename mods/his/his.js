@@ -27446,10 +27446,14 @@ console.log("into counter_or_acknowledge");
 	  //
 	  this.unbindBackButtonFunction();
 
+console.log("unbind back button function...");
+
 	  //
 	  // hide any cardbox
 	  //
 	  this.cardbox.hide();
+
+console.log("before have i resolved checks...");
 
 	  //
 	  // if i have already confirmed, we only splice and pass-through if everyone else has confirmed
@@ -27569,6 +27573,13 @@ console.log("translation_english_language_zone = 1");
           let z = this.returnEventObjects();
 	  for (let i = 0; i < z.length; i++) {
 
+try {
+  console.log("checking events: " + z[i].name);
+} catch (err) {
+  console.log("error: " +JSON.stringify(err) + " -- " + i);
+}
+
+
 	    //
 	    // maybe event has been removed, will fail
 	    //
@@ -27664,7 +27675,18 @@ console.log("translation_english_language_zone = 3");
 	      // that we have moves still pending, but should clear if it now finds 
 	      // UNHALT is the latest instruction and this resolve is coming from us!
               //
-	      setTimeout(() => { his_self.processFutureMoves(); }, 5);
+		//
+		// debugging -- maybe my move has arrived 
+		//
+	      setTimeout(() => { 
+		if (his_self.halted == 1 || his_self.is_halted == 1) {
+console.log("HALTED IS HALTED == " + his_self.halted + " -- " + his_self.is_halted);
+			his_self.halted = 0;
+			his_self.is_halted = 0;
+			his_self.gaming_active = 0;
+		}
+		his_self.processFutureMoves(); 
+	      }, 1);
 
 	    });
 
