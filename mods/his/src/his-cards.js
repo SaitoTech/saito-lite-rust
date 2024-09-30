@@ -9634,6 +9634,7 @@ console.log("we have removed philip and redisplayed the space...");
 	    $('.option').on('click', function () {
 
    	      $('.option').off();
+	      his_self.updateStatus("moving...");
 	      let options_idx = $(this).attr("id");
 
 	      if (options_idx === "skip") {

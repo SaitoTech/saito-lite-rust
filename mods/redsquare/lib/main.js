@@ -98,16 +98,10 @@ class RedSquareMain {
     //
     this.app.connection.on("redsquare-tweet-render-request", (tweet) => {
 
-      window.history.pushState({}, "", `/redsquare?tweet_id=${tweet.tx.signature}`);
+      window.history.pushState({view: "tweet"}, "", `/redsquare?tweet_id=${tweet.tx.signature}`);
  
       this.scrollFeed(0);
       this.manager.renderTweet(tweet);
-
-      this.app.connection.emit("saito-header-replace-logo", (e) => {
-        this.app.connection.emit("redsquare-home-render-request");
-        window.history.pushState({}, document.title, "/" + this.mod.slug);
-
-      });
 
     });
 
@@ -115,12 +109,6 @@ class RedSquareMain {
       this.scrollFeed(0);
       this.mod.resetNotifications();
       this.manager.render("notifications");
-
-      this.app.connection.emit("saito-header-replace-logo", (e) => {
-        this.app.connection.emit("redsquare-home-render-request");
-        window.history.pushState({}, document.title, "/" + this.mod.slug);
-
-      });
 
 
     });
@@ -137,12 +125,6 @@ class RedSquareMain {
       }
 
       this.manager.renderProfile(publicKey);
-
-      this.app.connection.emit("saito-header-replace-logo", (e) => {
-        this.app.connection.emit("redsquare-home-render-request");
-        window.history.pushState({}, document.title, "/" + this.mod.slug);
-
-      });
 
     });
 

@@ -199,8 +199,8 @@ class RedSquare extends ModTemplate {
           if (app.modules.returnActiveModule().returnName() == 'Red Square') {
             app.connection.emit('redsquare-profile-render-request', publicKey);
             window.history.pushState(
-              {},
-              document.title,
+              {view: "profile"},
+              '',
               '/' + this_mod.slug + `/?user_id=${publicKey}`
             );
           } else {

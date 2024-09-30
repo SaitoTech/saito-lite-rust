@@ -134,6 +134,7 @@ class HereIStand extends GameTemplate {
     this.faster_play = 1; // this speeds-up some responses at the cost of potentially
 			  // leaking information on what response cards users have or
 			  // do not have.
+    this.faster_play = 0; // for debugging purposes
 
     //
     // "showcard" popups
@@ -178,6 +179,7 @@ class HereIStand extends GameTemplate {
           this.confirm_moves = 1;
         }
       }
+/****
       if (this.app.options.gameprefs.his_faster_play) {
 	if (this.app.options.gameprefs.his_faster_play !== 1) {
           this.faster_play = 0;
@@ -185,6 +187,7 @@ class HereIStand extends GameTemplate {
           this.faster_play = 1;
         }
       }
+****/
     }
 
     //
@@ -13357,6 +13360,7 @@ console.log("we have removed philip and redisplayed the space...");
 	    $('.option').on('click', function () {
 
    	      $('.option').off();
+	      his_self.updateStatus("moving...");
 	      let options_idx = $(this).attr("id");
 
 	      if (options_idx === "skip") {
@@ -27437,7 +27441,6 @@ return 1; }
 
           let my_specific_game_id = this.game.id;
 
-
 console.log("into counter_or_acknowledge");
 
 	  //
@@ -27445,10 +27448,14 @@ console.log("into counter_or_acknowledge");
 	  //
 	  this.unbindBackButtonFunction();
 
+console.log("unbind back button function...");
+
 	  //
 	  // hide any cardbox
 	  //
 	  this.cardbox.hide();
+
+console.log("before have i resolved checks...");
 
 	  //
 	  // if i have already confirmed, we only splice and pass-through if everyone else has confirmed
@@ -27477,13 +27484,19 @@ console.log("have i resolved: " + have_i_resolved);
 	  //
 	  //
 	  //
+	  let unresolved_players = [];
 	  if (have_i_resolved == true) {
 
 	    let ack = 1;
 
 	    for (let i = 0; i < this.game.confirms_needed.length; i++) {
-	      if (this.game.confirms_needed[i] >= 1) { ack = 0; }
+	      if (this.game.confirms_needed[i] >= 1) { 
+console.log("still unresolved: " + this.game.players[i]);
+		unresolved_players.push(this.game.players[i]);
+		ack = 0;
+	      }
 	    }
+
 	    //
 	    // if everyone has returned, splice out counter_or_acknowledge
  	    // and continue to the next move on the game queue
@@ -27493,6 +27506,8 @@ console.log("have i resolved: " + have_i_resolved);
 	    }
 
 	    this.updateStatus("acknowledged");
+console.log("UNRESOLVED PLAYERS: " + JSON.stringify(unresolved_players));
+console.log("returning " + ack);
 	    return ack;
 	  }
 
@@ -27532,6 +27547,13 @@ console.log("translation_english_language_zone = 1");
 
           let z = this.returnEventObjects();
 	  for (let i = 0; i < z.length; i++) {
+
+try {
+  console.log("checking events: " + z[i].name);
+} catch (err) {
+  console.log("error: " +JSON.stringify(err) + " -- " + i);
+}
+
 
 	    //
 	    // maybe event has been removed, will fail
@@ -27628,6 +27650,9 @@ console.log("translation_english_language_zone = 3");
 	      // that we have moves still pending, but should clear if it now finds 
 	      // UNHALT is the latest instruction and this resolve is coming from us!
               //
+		//
+		// debugging -- maybe my move has arrived 
+		//
 	      setTimeout(() => { his_self.processFutureMoves(); }, 5);
 
 	    });
@@ -50301,21 +50326,26 @@ try {
     //
     if (space.besieged > 0) {
       let f = this.returnFactionControllingSpace(space.key);
+      let anyone_at_war = false;
+      let anyone_here = true;
       if (!this.doesSpaceHaveNonAlliedIndependentUnits(space.key, f)) {
-        let anyone_at_war = false;
 	for (let f in space.units) {
 	  for (let ff in space.units) {
 	    if (space.units[f].length > 0 && space.units[ff].length > 0) {
 	      if (f != ff) {
+		anyone_here = true;
 		if (this.areEnemies(f, ff)) { anyone_at_war = true; }
 	      }
 	    }
 	  }
 	}
+
 	if (anyone_at_war == false) {
-          this.removeSiege(space.key);
+	  if (anyone_here == true && his_self.returnFactionLandUnitsInSpace(f, space.key, 1) == 0) {} else {
+     	    this.removeSiege(space.key);
+	  }
 	}
-      } 
+      }
     }
 
 

@@ -329,6 +329,10 @@ class Limbo extends ModTemplate {
 		}
 
 		if (type === "dream-controls") {
+			// console.log(mod_self.wizard.options, "this.options")
+			if( mod_self.wizard.options.screenStream){
+				return;
+			}
 			let audioEnabled = true;
 			let videoIcon = this.videoBox ? "fas fa-video" : "fas fa-video-slash";
 			let audioIcon =  audioEnabled ? "fas fa-microphone" : 'fas fa-microphone-slash';
