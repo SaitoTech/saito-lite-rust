@@ -6,17 +6,16 @@ const AddAppOverlay = require('./lib/overlay/add-app');
 const GenerateAppOverlay = require('./lib/overlay/generate-app');
 const JsStore = require('jsstore');
 
-class AppStore extends ModTemplate {
+class DevTools extends ModTemplate {
 	constructor(app) {
 		super(app);
 
 		this.app = app;
 
-		this.name = 'AppStore';
-		this.appname = 'AppStore';
-		this.sluf = 'appStore';
-		this.description =
-			'Application manages installing, indexing, compiling and serving Saito modules.';
+		this.name = 'DevTools';
+		this.appname = 'DevTools';
+		this.sluf = 'devtools';
+		this.description = 'Application manages installing, indexing, compiling and serving Saito modules.';
 		this.categories = 'Utilities Dev';
 		this.featured_apps = [];
 		this.header = null;
@@ -26,7 +25,7 @@ class AppStore extends ModTemplate {
 		this.renderMode = 'none';
 		this.search_options = {};
 
-		this.styles = ['/saito/saito.css', '/newappstore/style.css'];
+		this.styles = ['/saito/saito.css'];
 
 		this.addAppOverlay = null;
 		this.localDb = null;
@@ -93,48 +92,6 @@ class AppStore extends ModTemplate {
 		}
 		return null;
 	}
-
-	async initializeDatabase() {
-		if (this.app.BROWSER) {
-			this.localDB = new JsStore.Connection(
-				new Worker('/saito/lib/jsstore/jsstore.worker.js')
-			);
-
-			//
-			// create Local database
-			//
-			let vocabulary = {
-				name: 'vocabulary',
-				columns: {
-					id: { primaryKey: true, autoIncrement: true },
-					field1: { dataType: 'string', default: '' },
-					field2: { dataType: 'string', default: '' },
-					field3: { dataType: 'string', default: '' },
-					field4: { dataType: 'string', default: '' },
-					field5: { dataType: 'string', default: '' },
-					label: { dataType: 'string', default: '' },
-					lesson_id: { dataType: 'number', default: 0 },
-					created_at: { dataType: 'number', default: 0 },
-					updated_at: { dataType: 'number', default: 0 }
-				}
-			};
-
-			let db = {
-				name: 'vocabulary_db',
-				tables: [vocabulary]
-			};
-
-			var isDbCreated = await this.localDB.initDb(db);
-			if (isDbCreated) {
-				console.log('POPUP: db created and connection opened');
-			} else {
-				console.log('POPUP: connection opened');
-			}
-		}
-
-		return;
-	}
-
 
 	async sendSubmitModuleTransaction(zip, slug, callback) {
 		let peers = await this.app.network.getPeers();
@@ -565,4 +522,4 @@ class AppStore extends ModTemplate {
 	}
 }
 
-module.exports = AppStore;
+module.exports = DevTools;
