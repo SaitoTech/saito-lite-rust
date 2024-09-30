@@ -112,7 +112,7 @@ class Wordblocks extends GameTemplate {
 
 				compact_html += `<div class="score" id="mobile_score_${i}"><img class="player-identicon" src="${this.app.keychain.returnIdenticon(
 					this.game.players[i - 1]
-				)}"/><span>:</span><span>${score}</span></div>`;
+				)}"/><span>: ${score}</span></div>`;
 
 			}
 
@@ -2438,7 +2438,7 @@ class Wordblocks extends GameTemplate {
 
 		if (document.getElementById(`mobile_score_${player}`)){
 			document.getElementById(`mobile_score_${player}`).innerHTML = `<img class="player-identicon" src="${this.app.keychain.returnIdenticon(
-				this.game.players[player-1])}"> : ${score}`;
+				this.game.players[player-1])}"><span>: ${score}</span>`;
 		}
 
 	}

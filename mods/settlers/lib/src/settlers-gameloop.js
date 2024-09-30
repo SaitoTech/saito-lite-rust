@@ -835,14 +835,17 @@ class SettlersGameloop {
             this.game.queue.push("discard\t" + JSON.stringify(playersToDiscard)); //One queue move all the players
           }
 
-          if (this.game.players.length == 2 && Math.abs(this.game.state.players[0].vp - this.game.state.players[1].vp) > 1){
-            if (this.game.state.players[0].vp < this.game.state.players[1].vp){
-              this.card_overlay.render({ player : 1 , card : "Robin Hood"});
+          let eo = this.loadGamePreference('settlers_overlays');
+          if (eo == null || eo) {
+            if (this.game.players.length == 2 && Math.abs(this.game.state.players[0].vp - this.game.state.players[1].vp) > 1){
+              if (this.game.state.players[0].vp < this.game.state.players[1].vp){
+                this.card_overlay.render({ player : 1 , card : "Robin Hood"});
+              }else{
+                this.card_overlay.render({ player : 2 , card : "Robin Hood"});
+              }
             }else{
-              this.card_overlay.render({ player : 2 , card : "Robin Hood"});
+              this.card_overlay.render({ player : player , card : "Bandit"});
             }
-          }else{
-            this.card_overlay.render({ player : player , card : "Bandit"});
           }
 
           return 1;

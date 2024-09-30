@@ -560,15 +560,6 @@ class SettlersActions {
       }
     });
 
-    $("input:checkbox").change(function () {
-      if ($(this).is(":checked")) {
-        settlers_self.confirm_moves = 0;
-        settlers_self.saveGamePreference("settlers_confirm_moves", 0);
-      } else {
-        settlers_self.confirm_moves = 1;
-        settlers_self.saveGamePreference("settlers_confirm_moves", 1);
-      }
-    });
   }
 }
 

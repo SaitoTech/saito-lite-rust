@@ -4,6 +4,8 @@ const SettlersWelcome = require('./lib/ui/overlays/welcome');
 const SettlersStats = require('./lib/ui/overlays/stats');
 const SettlersGameOptionsTemplate = require('./lib/ui/settlers-game-options.template');
 const htmlTemplate = require('./lib/ui/game-html.template');
+const AppSettings = require('./lib/ui/settlers-settings');
+
 
 const SettlersGameLoop = require('./lib/src/settlers-gameloop.js');
 const SettlersPlayer = require('./lib/src/settlers-player');
@@ -261,7 +263,7 @@ class Settlers extends GameTemplate {
 				img: '/settlers/img/cards/governors_statue.png',
 				title: `Governor's Statue`,
 				text: ` is elected governor of Saitoa`,
-				action: -1,
+				action: -2,
 			}
 
 		];
@@ -289,6 +291,21 @@ class Settlers extends GameTemplate {
 
 		this.sort_priority = 1;
 	}
+
+    hasSettings() {
+	    return true;
+    }
+
+	loadSettings(container = null) {
+	    if (!container){
+	      this.overlay.show(`<div class="module-settings-overlay"><h2>${this.gamename} Settings</h2></div>`);
+	      container = ".module-settings-overlay";
+	    }
+
+		let as = new AppSettings(this.app, this, container);
+		as.render();
+	}
+
 
 	async render(app) {
 		if (!this.browser_active) {
@@ -329,6 +346,16 @@ class Settlers extends GameTemplate {
 				game_mod.rules_overlay.render();
 			}
 		});
+
+		this.menu.addSubMenuOption('game-game', {
+			text: 'Settings',
+			id: 'game-settings',
+			class: 'game-settings',
+			callback: function(app, game_mod){
+				game_mod.loadSettings();
+			}
+		});
+
 		this.menu.addSubMenuOption('game-game', {
 			text: 'Stats',
 			id: 'game-stats',

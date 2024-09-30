@@ -77,7 +77,15 @@ class CardOverlay {
 
 	}
 
-	attachEvents() {}
+	attachEvents() {
+
+		let settlers_self = this.mod;
+	    $(".cardover-optout").on('click', function () {
+	    	console.log("!!!!!");
+          	settlers_self.saveGamePreference("settlers_overlays", 0);
+	    });
+
+	}
 
 }
 

@@ -42,7 +42,7 @@ class GenerateAppOverlay {
 				newtx.msg = obj;
 
 				let jsonData = newtx.serialize_to_web(this_self.app);
-				this_self.mod.download(JSON.stringify(jsonData), `${this_self.mod_details.slug}.json`, "text/plain", function(){
+				this_self.mod.download(JSON.stringify(jsonData), `${this_self.mod_details.slug}.saito`, "text/plain", function(){
 					this_self.overlay.close();
 				});   
 
