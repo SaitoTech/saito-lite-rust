@@ -107,6 +107,14 @@ class TweetManager {
 			document.querySelector('.highlight-tweet').classList.remove('highlight-tweet');
 		}
 
+		if (this.mode === "tweets" && new_mode !== "tweets"){
+	      this.app.connection.emit("saito-header-replace-logo", (e) => {
+	        this.app.connection.emit("redsquare-home-render-request");
+	        window.history.pushState({view: "home"}, "", "/" + this.mod.slug);
+	      });
+
+		}
+
 		//
 		// remove notification at end
 		//
