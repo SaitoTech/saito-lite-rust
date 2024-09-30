@@ -4821,7 +4821,6 @@ return 1; }
 
           let my_specific_game_id = this.game.id;
 
-
 console.log("into counter_or_acknowledge");
 
 	  //
@@ -4861,25 +4860,60 @@ console.log("have i resolved: " + have_i_resolved);
 	  //
 	  //
 	  //
+	  let unresolved_players = [];
 	  if (have_i_resolved == true) {
 
 	    let ack = 1;
 
 	    for (let i = 0; i < this.game.confirms_needed.length; i++) {
-	      if (this.game.confirms_needed[i] >= 1) { ack = 0; }
+	      if (this.game.confirms_needed[i] >= 1) { 
+console.log("still unresolved: " + this.game.players[i]);
+		unresolved_players.push(this.game.players[i]);
+		ack = 0;
+	      }
 	    }
+
+	    // what if future move has resolve?
+            let future_resolve_needed = 0;
+console.log("checking future moves... " + this.game.future.length);
+            for (let zz = 0; zz < this.game.future.length; zz++) {
+              let ftx = await this.app.wallet.createUnsignedTransaction();
+              ftx.deserialize_from_web(this.app, this.game.future[zz]);
+              if (unresolved_players.includes(ftx.from[0].publicKey)) {
+console.log("we have a tx from an unresolved player...");
+                let ftxmsg = ftx.returnMessage();
+		if (ftxmsg.turn) {
+                  for (let i = 0; i < ftxmsg.turn.length; i++) {
+                    if (ftxmsg.turn[i].indexOf("RESOLVE") >= 0) {
+                      future_resolve_needed = 1;
+                    }
+                  }
+                }
+              }
+            }
+
+console.log("future resolve needed: " + future_resolve_needed);
+
 	    //
 	    // if everyone has returned, splice out counter_or_acknowledge
  	    // and continue to the next move on the game queue
 	    //
 	    if (ack == 1) { 
 	      this.game.queue.splice(qe, 1);
+	    } else {
+	      if (future_resolve_needed == 1) {
+		this.processFutureMoves();
+		return 0;
+	      }
 	    }
 
 	    this.updateStatus("acknowledged");
 	    return ack;
 	  }
 
+
+
+console.log("UNRESOLVED PLAYERS: " + JSON.stringify(unresolved_players));
 
 console.log("translation_english_language_zone = 1");
 
@@ -5012,7 +5046,7 @@ console.log("translation_english_language_zone = 3");
 	      // that we have moves still pending, but should clear if it now finds 
 	      // UNHALT is the latest instruction and this resolve is coming from us!
               //
-	      setTimeout(() => { his_self.processFutureMoves(); }, 5);
+	      setTimeout(() => { his_self.processFutureMoves(); }, 1);
 
 	    });
 

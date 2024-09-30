@@ -134,6 +134,7 @@ class HereIStand extends GameTemplate {
     this.faster_play = 1; // this speeds-up some responses at the cost of potentially
 			  // leaking information on what response cards users have or
 			  // do not have.
+    //this.faster_play = 0; // for debugging purposes
 
     //
     // "showcard" popups
@@ -13357,6 +13358,7 @@ console.log("we have removed philip and redisplayed the space...");
 	    $('.option').on('click', function () {
 
    	      $('.option').off();
+	      his_self.updateStatus("moving...");
 	      let options_idx = $(this).attr("id");
 
 	      if (options_idx === "skip") {
@@ -27437,7 +27439,6 @@ return 1; }
 
           let my_specific_game_id = this.game.id;
 
-
 console.log("into counter_or_acknowledge");
 
 	  //
@@ -27477,25 +27478,60 @@ console.log("have i resolved: " + have_i_resolved);
 	  //
 	  //
 	  //
+	  let unresolved_players = [];
 	  if (have_i_resolved == true) {
 
 	    let ack = 1;
 
 	    for (let i = 0; i < this.game.confirms_needed.length; i++) {
-	      if (this.game.confirms_needed[i] >= 1) { ack = 0; }
+	      if (this.game.confirms_needed[i] >= 1) { 
+console.log("still unresolved: " + this.game.players[i]);
+		unresolved_players.push(this.game.players[i]);
+		ack = 0;
+	      }
 	    }
+
+	    // what if future move has resolve?
+            let future_resolve_needed = 0;
+console.log("checking future moves... " + this.game.future.length);
+            for (let zz = 0; zz < this.game.future.length; zz++) {
+              let ftx = await this.app.wallet.createUnsignedTransaction();
+              ftx.deserialize_from_web(this.app, this.game.future[zz]);
+              if (unresolved_players.includes(ftx.from[0].publicKey)) {
+console.log("we have a tx from an unresolved player...");
+                let ftxmsg = ftx.returnMessage();
+		if (ftxmsg.turn) {
+                  for (let i = 0; i < ftxmsg.turn.length; i++) {
+                    if (ftxmsg.turn[i].indexOf("RESOLVE") >= 0) {
+                      future_resolve_needed = 1;
+                    }
+                  }
+                }
+              }
+            }
+
+console.log("future resolve needed: " + future_resolve_needed);
+
 	    //
 	    // if everyone has returned, splice out counter_or_acknowledge
  	    // and continue to the next move on the game queue
 	    //
 	    if (ack == 1) { 
 	      this.game.queue.splice(qe, 1);
+	    } else {
+	      if (future_resolve_needed == 1) {
+		this.processFutureMoves();
+		return 0;
+	      }
 	    }
 
 	    this.updateStatus("acknowledged");
 	    return ack;
 	  }
 
+
+
+console.log("UNRESOLVED PLAYERS: " + JSON.stringify(unresolved_players));
 
 console.log("translation_english_language_zone = 1");
 
