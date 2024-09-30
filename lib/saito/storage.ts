@@ -30,10 +30,13 @@ class Storage {
 		}
 
 		if (this.app.BROWSER == 1) {
-			this.localDB = null;
-			console.log('storage initialize ///');
-			await this.initializeApplicationDB();
-			console.log(JSON.stringify(await this.loadLocalApplications()));
+			try{
+				this.localDB = null;
+				await this.initializeApplicationDB();
+				console.log(JSON.stringify(await this.loadLocalApplications()));
+			} catch(err){
+				console.log("Error initializeApplicationDB:", err);
+			}
 		}
 
 		return;
