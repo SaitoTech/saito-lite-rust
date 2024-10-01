@@ -98,7 +98,7 @@ class CallInterfaceVideo {
 				this.updateImages();
 			}
 
-			this.insertActions(this.mod.room_obj.call_peers);
+			//this.insertActions(this.mod.room_obj.call_peers);
 		});
 
 		// Change arrangement of video boxes (emitted from SwitchDisplay overlay)
@@ -157,7 +157,7 @@ class CallInterfaceVideo {
 
 		app.connection.on('stun-data-channel-open', (pkey) => {
 			if (this.rendered){
-				this.insertActions(this.mod.room_obj.call_peers);	
+				//this.insertActions(this.mod.room_obj.call_peers);	
 			}
 		});
 
@@ -202,7 +202,10 @@ class CallInterfaceVideo {
 					let { mediaRecorder, stopRecording, type } = recordControls[0]
 					console.log(recordControls, "recordControls")
 					document.querySelector('.stun-overlay-container').remove();
+
+					// Don't stop until the game ends...
 					if(type === "game") return;
+
 					if (mediaRecorder) {
 						await stopRecording()
 					}
@@ -271,13 +274,15 @@ class CallInterfaceVideo {
 
 		let index = 0;
 
+		let streams = [this.localStream];
+		this.remote_streams.forEach((stream, key) => {
+			streams.push(stream);
+		});
+
+
 		for (const mod of this.app.modules.mods) {
 
-			{
-				let item = mod.respondTo('call-actions', {
-					call_id: this.mod.room_obj.call_id,
-					members: this.mod.room_obj.call_peers
-				});
+				let item = mod.respondTo('call-actions', { call_id: this.mod.room_obj.call_id });
 				if (item instanceof Array) {
 					item.forEach((j) => {
 						this.createActionItem(j, container, index++);
@@ -285,14 +290,8 @@ class CallInterfaceVideo {
 				} else if (item != null) {
 					this.createActionItem(item, container, index++);
 				}
-			}
 
-			{
-
-				let streams = [this.localStream];
-				this.remote_streams.forEach((stream, key) => {
-					streams.push(stream);
-				});
+				// This should confirm to the standard API!
 
 				let item = mod.respondTo('record-actions', {
 					container: ".video-container-large",
@@ -310,7 +309,6 @@ class CallInterfaceVideo {
 				} else if (item != null) {
 					this.createActionItem(item, container, index++);
 				}
-			}
 
 		}
 
@@ -343,10 +341,8 @@ class CallInterfaceVideo {
 		let div = document.getElementById(id);
 		if (div) {
 			if (item?.callback) {
-				console.log('Add event listener!');
 				div.onclick = () => {
-					console.log('click');
-					item.callback(this.app);
+					item.callback(this.app, this.mod.room_obj);
 				};
 			} else {
 				console.warn('Adding an action item with no callback');
@@ -421,13 +417,13 @@ class CallInterfaceVideo {
 			}
 		};*/
 
-		document.querySelectorAll('.video-control').forEach((item) => {
+		document.querySelectorAll('.call-control .video-control').forEach((item) => {
 			item.onclick = () => {
 				this.toggleVideo();
 			};
 		});
 
-		document.querySelectorAll('.audio-control').forEach((item) => {
+		document.querySelectorAll('.call-control .audio-control').forEach((item) => {
 			item.onclick = () => {
 				this.toggleAudio();
 			};

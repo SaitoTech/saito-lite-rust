@@ -14,7 +14,6 @@
 	height: 100vh;
 	height: calc(100 * var(--saito-vh) - var(--saito-header-height));
 	position: absolute;	
-	padding: 0 calc((100vw - var(--saito-width)) / 2);
 	top: var(--saito-header-height);
 	overflow: hidden;
 }
