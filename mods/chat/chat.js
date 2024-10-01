@@ -470,9 +470,11 @@ class Chat extends ModTemplate {
               rank: 15,
               is_active: this.browser_active,
               event: function (id) {
+                console.log(`${type}--attach Chat listener!!!!!!!!!!!`);
                 chat_self.app.connection.on(
                   'chat-manager-render-request',
                   () => {
+                    console.log(`event -- ${type}`);
                     let unread = 0;
                     for (let group of chat_self.groups) {
                       unread += group.unread;
@@ -639,15 +641,18 @@ class Chat extends ModTemplate {
                 });
               },
               event: function (id) {
-                chat_self.app.connection.on(
-                  'chat-manager-render-request',
-                  () => {
-                    let group = chat_self.returnGroup(obj.call_id);
-                    if (group){
+                let group = chat_self.returnGroup(obj.call_id);
+                if (group){
+                  console.log("TALK--attach Chat listener!!!!!!!!!!!");
+                  chat_self.app.browser.addNotificationToId(group.unread, id);
+                  chat_self.app.connection.on(
+                    'chat-manager-render-request',
+                    () => {
+                      console.log(`event -- ${type}`);
                       chat_self.app.browser.addNotificationToId(group.unread, id);
                     }
-                  }
-                );
+                  );
+                }
               }
             }
           ];
@@ -673,13 +678,14 @@ class Chat extends ModTemplate {
                 });
               },
               event: function (id) {
-
                 let group = chat_self.returnGroup(obj.call_id);
                 if (group){
+                   console.log("LIMBO--attach Chat listener!!!!!!!!!!!");
                    chat_self.app.browser.addNotificationToId(group.unread, id);
                    chat_self.app.connection.on(
                     'chat-manager-render-request',
                     () => {
+                        console.log(`event -- ${type}`);
                         chat_self.app.browser.addNotificationToId(group.unread, id);
                     }
                   );

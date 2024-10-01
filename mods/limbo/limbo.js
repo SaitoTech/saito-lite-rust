@@ -1311,18 +1311,19 @@ class Limbo extends ModTemplate {
 			}
 		}
 
-		if (!this.app.BROWSER || !this.dreamer) {
+		if (!this.app.BROWSER || !this.dreamer || dreamer !== this.dreamer) {
 			return;
 		}
 
-		if (dreamer !== this.dreamer || this.upstream.size > 0 || sender == this.publicKey) {
-			console.log('ignore offer transaction: ', dreamer, this.dreamer, this.upstream, sender);
-			return;
-		}
-
-		if (tx.isTo(this.publicKey)) {
+		if (tx.isTo(this.publicKey) && sender !== this.publicKey) {
 			clearTimeout(this.retryTimer);
 			this.retryTimer = null;
+
+			if (this.upstream.size > 0) {
+				console.log('ignore offer transaction: ', dreamer, this.upstream, sender);
+				return;
+			}
+
 			siteMessage('Found peer to share, initiating stun connection...', 1500);
 
 			console.log('Confirm upstream from ' + sender);
