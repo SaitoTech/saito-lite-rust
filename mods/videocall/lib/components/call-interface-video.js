@@ -293,7 +293,7 @@ class CallInterfaceVideo {
 
 				// This should confirm to the standard API!
 
-				let item = mod.respondTo('record-actions', {
+				item = mod.respondTo('record-actions', {
 					container: ".video-container-large",
 					streams,
 					useMicrophone: true,
