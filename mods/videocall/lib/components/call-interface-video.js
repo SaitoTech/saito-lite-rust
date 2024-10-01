@@ -446,7 +446,7 @@ class CallInterfaceVideo {
 					let icon = document.querySelector(
 						'.stun-chatbox .minimizer i'
 					);
-					let chat_box = document.querySelector('.stun-chatbox');
+					let chat_box = document.querySelector('.stun-overlay-container');
 
 					chat_box.classList.toggle('full-screen');
 

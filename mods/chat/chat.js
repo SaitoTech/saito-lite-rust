@@ -470,11 +470,9 @@ class Chat extends ModTemplate {
               rank: 15,
               is_active: this.browser_active,
               event: function (id) {
-                console.log(`${type}--attach Chat listener!!!!!!!!!!!`);
                 chat_self.app.connection.on(
                   'chat-manager-render-request',
                   () => {
-                    console.log(`event -- ${type}`);
                     let unread = 0;
                     for (let group of chat_self.groups) {
                       unread += group.unread;
