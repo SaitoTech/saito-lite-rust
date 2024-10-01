@@ -254,6 +254,8 @@ class CallInterfaceVideo {
 		}
 
 		this.rendered = true;
+
+
 	}
 
 	insertActions() {
@@ -384,9 +386,9 @@ class CallInterfaceVideo {
 			});
 		});
 
-		
 
-		
+
+
 
 
 		/*document.getElementById('record-icon').onclick = async () => {
@@ -580,6 +582,10 @@ class CallInterfaceVideo {
 			this.app.connection.emit('stun-switch-view', 'presentation');
 			this.flipDisplay('presentation');
 		}
+
+		this.setDisplayContainers();
+
+
 	}
 
 	addLocalStream(localStream) {
@@ -720,10 +726,9 @@ class CallInterfaceVideo {
 
 		let container = document.querySelector('.video-container-large');
 
-		container.innerHTML = ``;
-		container.classList.remove('split-view');
-		container.classList.add('gallery');
-
+		container.innerHTML = `<div class="gallery"></div>`;
+		container.classList.remove('split-view', 'expanded', 'presentation');
+		container.classList.add('gallery-view');
 		this.setDisplayContainers();
 	}
 
@@ -734,23 +739,23 @@ class CallInterfaceVideo {
 		let container = document.querySelector('.video-container-large');
 
 		container.innerHTML = `<div class="expanded-video"></div>
-    <div class="side-videos"></div>`;
-		container.classList.add('split-view');
-		container.classList.remove('gallery');
+		<div class="side-videos"></div>`;
+		container.classList.remove('gallery-view', 'presentation');
+		container.classList.add('split-view', 'expanded');
 
 		this.setDisplayContainers();
 	}
 
-	swicthDisplayToPresentation() {
+	switchDisplayToPresentation() {
 		this.local_container = 'presentation';
 		this.remote_container = 'presentation-side-videos';
 
 		let container = document.querySelector('.video-container-large');
 
 		container.innerHTML = `<div class="presentation"></div>
-    <div class="presentation-side-videos"></div>`;
-		container.classList.add('split-view');
-		container.classList.remove('gallery');
+		<div class="presentation-side-videos"></div>`;
+		container.classList.remove('gallery-view', 'expanded');
+		container.classList.add('split-view', 'presentation');
 
 		this.setDisplayContainers();
 	}
@@ -758,30 +763,39 @@ class CallInterfaceVideo {
 	setDisplayContainers() {
 		for (let i in this.video_boxes) {
 			if (i === 'local') {
-				this.video_boxes[i].video_box.containerClass =
-					this.local_container;
+				this.video_boxes[i].video_box.containerClass = this.local_container;
 				this.video_boxes[i].video_box.render(this.localStream);
 			} else {
-				this.video_boxes[i].video_box.containerClass =
-					this.remote_container;
-				this.video_boxes[i].video_box.render(
-					this.remote_streams.get(i)
-				);
+				this.video_boxes[i].video_box.containerClass = this.remote_container;
+				this.video_boxes[i].video_box.render(this.remote_streams.get(i));
 			}
 		}
 
-		document.querySelectorAll('.gallery, .side-videos').forEach(container => {
-			this.adjustClassesAndCount(container);
-			Array.from(container.children).forEach(child => {
-				child.classList.add('flex-item');
-			});
-		});
+		const galleryContainer = document.querySelector('.gallery');
+		const sideVideosContainer = document.querySelector('.side-videos, .presentation-side-videos');
+
+		if (galleryContainer) {
+			this.setupContainer(galleryContainer);
+		}
+
+		if (sideVideosContainer) {
+			this.setupContainer(sideVideosContainer);
+		}
 
 		document.querySelectorAll('.video-box-container-large').forEach(item => {
 			this.resizeBackground(item);
 		});
 	}
-	 adjustClassesAndCount(element) {
+
+	setupContainer(container) {
+		Array.from(container.children).forEach(child => {
+			child.classList.add('flex-item');
+		});
+		console.log(container, "container");
+		this.adjustClassesAndCount(container);
+	}
+
+	adjustClassesAndCount(element) {
 		const observer = new ResizeObserver(entries => {
 			for (let entry of entries) {
 				const width = entry.contentRect.width;
@@ -807,29 +821,29 @@ class CallInterfaceVideo {
 				element.classList.add(`count-${childCount}`);
 			}
 		});
-
 		observer.observe(element);
+
 	}
 
-	 resizeBackground(element) {
+	resizeBackground(element) {
 		const bg_observer = new ResizeObserver(entries => {
 			for (let entry of entries) {
-				const width = entry.contentRect.width;
-				const height = entry.contentRect.height;
-				const aspectRatio = width / height;
-
-				element.classList.remove('fit', 'cover');
-
-
-				if (aspectRatio > 6 / 3) {
-					element.classList.add('fit');
-				} else if (aspectRatio < 3 / 9) {
-					element.classList.add('fit');
-				} else {
-					element.classList.add('cover');
-				}
+			  const element = entry.target;
+			  const width = entry.contentRect.width;
+			  const height = entry.contentRect.height;
+			  const aspectRatio = width / height;
+	  
+			  element.classList.remove('video-fill', 'video-contain', 'video-cover');
+	  
+			  if (aspectRatio > 16/9) {
+				element.classList.add('video-fill');
+			  } else if (aspectRatio < 9/16) {
+				element.classList.add('video-contain');
+			  } else {
+				element.classList.add('video-cover');
+			  }
 			}
-		});
+		  });
 
 		bg_observer.observe(element);
 	}

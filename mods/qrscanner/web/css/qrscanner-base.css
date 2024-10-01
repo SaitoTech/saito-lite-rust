@@ -40,7 +40,7 @@
 }
 
 video {
-	object-fit: cover;
+	/* object-fit: cover; */
 }
 
 .scanline {
