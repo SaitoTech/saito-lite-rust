@@ -680,12 +680,10 @@ class Chat extends ModTemplate {
               event: function (id) {
                 let group = chat_self.returnGroup(obj.call_id);
                 if (group){
-                   console.log("LIMBO--attach Chat listener!!!!!!!!!!!");
                    chat_self.app.browser.addNotificationToId(group.unread, id);
                    chat_self.app.connection.on(
                     'chat-manager-render-request',
                     () => {
-                        console.log(`event -- ${type}`);
                         chat_self.app.browser.addNotificationToId(group.unread, id);
                     }
                   );
