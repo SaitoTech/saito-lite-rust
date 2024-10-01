@@ -1,0 +1,21 @@
+/* ==========================================================================
+	# Animation Utility Classes
+========================================================================== */
+.bounce-up {
+	opacity: 0;
+	transform: translateY(100px);
+}
+
+.slide-left {
+	opacity: 0;
+	transform: translateX(100px);
+}
+.slide-right {
+	opacity: 0;
+	transform: translateX(-360px);
+}
+
+.bounce-scale {
+	transform: scale(0);
+	opacity: 0;
+}

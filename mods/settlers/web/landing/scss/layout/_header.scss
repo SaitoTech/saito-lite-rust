@@ -1,0 +1,59 @@
+/* ==========================================================================
+	# Site Header
+========================================================================== */
+.site-header {
+	padding-block: 32px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: 44;
+	overflow: hidden;
+	@include breakpoint(small){
+		padding-block: 16px;
+	}
+
+	.inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	&__logo {
+		width: 145px;
+		will-change: transform;
+		@include breakpoint(small) {
+			width: 100px;
+		}
+		img{
+			vertical-align: top;
+		}
+	}
+
+	&__right-meta {
+		display: flex;
+		align-items: center;
+		gap: 32px;
+		color: var(--color__text-light);
+		transform: translateX(400px);
+		will-change: transform;
+		@include breakpoint(small) {
+			font-size: 13px;
+			line-height: 1.2;
+			gap: 16px;
+			@include flex-width(42%);
+		}
+
+		.hamnburger {
+			@include flex-width(42px);
+			cursor: pointer;
+			@include breakpoint(small) {
+				@include flex-width(30px);
+			}
+		}
+
+		img {
+			vertical-align: middle;
+		}
+	}
+}
