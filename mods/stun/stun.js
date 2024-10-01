@@ -225,10 +225,12 @@ class Stun extends ModTemplate {
 		}
 
 		if (request == 'peer-left') {
+			console.log("Stun: Peer left (close the connection)");
 			this.removePeerConnection(sender);
 			return;
 		}
 		if (request == 'peer-kicked') {
+			console.log("Stun: Peer kicked out (close the connection)");
 			this.removePeerConnection(sender);
 			return;
 		}
@@ -344,6 +346,7 @@ class Stun extends ModTemplate {
 
 			//If not a solid connection state..., delete and try again
 			if (pc.connectionState == "failed" || pc.connectionState == "disconnected"){
+				console.log("STUN: remove old connection to reconnect...");
 				this.removePeerConnection(peerId);
 				this.createPeerConnection(peerId, callback);
 				return;
@@ -445,7 +448,7 @@ class Stun extends ModTemplate {
 				peerConnection.connectionState === 'failed' ||
 				peerConnection.connectionState === 'disconnected'
 			) {
-				setTimeout(() => {
+				peerConnection.timer = setTimeout(() => {
 					if (
 						peerConnection.connectionState === 'failed' ||
 						peerConnection.connectionState === 'disconnected'
@@ -454,6 +457,7 @@ class Stun extends ModTemplate {
 							'stun-connection-failed',
 							peerId
 						);
+						console.log("STUN: connection not restored after 3 seconds...");
 						this.removePeerConnection(peerId);
 					}
 				}, 3000);

@@ -20,6 +20,7 @@ class DreamWizard{
 		let title_el = document.getElementById("dream-wizard-identifier");
 		let title = document.getElementById("dream-wizard-identifier")?.value || "";
 		let mode = document.querySelector(".cast-mode-option.selected");
+
 		if (mode){
 			if (mode.getAttribute("id") == "mode-video"){
 				this.options.includeCamera = true;
@@ -27,10 +28,8 @@ class DreamWizard{
 			if (mode.getAttribute("id") == "mode-screen"){
 				this.options.screenStream = true;
 			}
-
-			if (mode.getAttribute("id") == "mode-game"){
-				this.options.canvasStream = true;
-			}
+		}else{
+			this.options.includeCamera = true;
 		}
 
 		if(this.options.externalMediaType === "game"){

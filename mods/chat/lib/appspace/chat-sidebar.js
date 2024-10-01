@@ -13,7 +13,7 @@ class ChatSidebar {
     this.profile.tab_container = '.saito-modal-content';
 
     app.connection.on('chat-manager-opens-group', (group = null) => {
-      if (group) {
+      if (group && group.id !== this?.group?.id) {
         this.render(group);
       }
     });

@@ -639,15 +639,16 @@ class Chat extends ModTemplate {
                 });
               },
               event: function (id) {
-                chat_self.app.connection.on(
-                  'chat-manager-render-request',
-                  () => {
-                    let group = chat_self.returnGroup(obj.call_id);
-                    if (group){
+                let group = chat_self.returnGroup(obj.call_id);
+                if (group){
+                  chat_self.app.browser.addNotificationToId(group.unread, id);
+                  chat_self.app.connection.on(
+                    'chat-manager-render-request',
+                    () => {
                       chat_self.app.browser.addNotificationToId(group.unread, id);
                     }
-                  }
-                );
+                  );
+                }
               }
             }
           ];
@@ -673,7 +674,6 @@ class Chat extends ModTemplate {
                 });
               },
               event: function (id) {
-
                 let group = chat_self.returnGroup(obj.call_id);
                 if (group){
                    chat_self.app.browser.addNotificationToId(group.unread, id);

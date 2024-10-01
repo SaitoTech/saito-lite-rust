@@ -235,7 +235,6 @@ class Limbo extends ModTemplate {
 		}
 
 		if (type === 'call-actions') {
-			if (obj?.members) {
 				if (this.browser_active) {
 					return null;
 				}
@@ -246,10 +245,10 @@ class Limbo extends ModTemplate {
 						text: 'Cast',
 						icon: this.icon_fa + ' podcast-icon',
 						hook: `onair limbo`,
-						callback: async function (app) {
+						callback: async function (app, room_obj) {
 							if (mod_self.dreamer) {
 								if (mod_self.dreamer == mod_self.publicKey) {
-									await mod_self.sendKickTransaction(obj.members);
+									await mod_self.sendKickTransaction(room_obj.call_peers);
 									mod_self.exitSpace();
 									mod_self.toggleNotification(false, mod_self.publicKey);
 								} else {
@@ -260,7 +259,7 @@ class Limbo extends ModTemplate {
 							} else {
 								mod_self.startDream({
 									alt_id: obj?.call_id,
-									keylist: obj.members,
+									keylist: room_obj.call_peers,
 									externalMediaType: 'videocall'
 								});
 							}
@@ -270,7 +269,6 @@ class Limbo extends ModTemplate {
 						}
 					}
 				];
-			}
 			return null;
 		}
 
@@ -1311,18 +1309,19 @@ class Limbo extends ModTemplate {
 			}
 		}
 
-		if (!this.app.BROWSER || !this.dreamer) {
+		if (!this.app.BROWSER || !this.dreamer || dreamer !== this.dreamer) {
 			return;
 		}
 
-		if (dreamer !== this.dreamer || this.upstream.size > 0 || sender == this.publicKey) {
-			console.log('ignore offer transaction: ', dreamer, this.dreamer, this.upstream, sender);
-			return;
-		}
-
-		if (tx.isTo(this.publicKey)) {
+		if (tx.isTo(this.publicKey) && sender !== this.publicKey) {
 			clearTimeout(this.retryTimer);
 			this.retryTimer = null;
+
+			if (this.upstream.size > 0) {
+				console.log('ignore offer transaction: ', dreamer, this.upstream, sender);
+				return;
+			}
+
 			siteMessage('Found peer to share, initiating stun connection...', 1500);
 
 			console.log('Confirm upstream from ' + sender);
