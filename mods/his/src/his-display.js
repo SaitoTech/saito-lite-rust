@@ -2333,7 +2333,7 @@ try {
 	}
 
 	if (anyone_at_war == false) {
-	  if (anyone_here == true && his_self.returnFactionLandUnitsInSpace(f, space.key, 1) == 0) {} else {
+	  if (anyone_here == true && this.returnFactionLandUnitsInSpace(f, space.key, 1) == 0) {} else {
      	    this.removeSiege(space.key);
 	  }
 	}
