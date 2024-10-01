@@ -218,10 +218,6 @@ class StreamManager {
       }
     });
 
-    app.connection.on('remove-remote-stream', (peerId) => {
-      this.removePeer(peerId, 'was kicked out');
-    });
-
     app.connection.on('stun-track-event', (peerId, event) => {
       if (!this.active) {
         return;
@@ -340,7 +336,7 @@ class StreamManager {
       if (!this.active) {
         return;
       }
-
+      console.log("Disconnecting video call...");
       this.leaveCall();
     });
   }
@@ -566,7 +562,7 @@ class StreamManager {
 
   visibilityChange() {
     console.log('visibilitychange triggered');
-    this.leaveCall();
+    //this.leaveCall();
   }
 }
 

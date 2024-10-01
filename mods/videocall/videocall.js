@@ -532,6 +532,7 @@ class Videocall extends ModTemplate {
 					}
 
 					if (txmsg.request === 'peer-kicked') {
+						console.log("kicked out of video call...");
 						this.streams.leaveCall();
 						siteMessage(`${this.app.keychain.returnUsername(from)} kicked you out of the call`);
 					}
@@ -696,7 +697,6 @@ class Videocall extends ModTemplate {
 
 		this.app.connection.emit('relay-transaction', newtx);
 
-		this.app.network.propagateTransaction(newtx);
 	}
 
 	receiveCallListResponseTransaction(app, tx) {
@@ -745,8 +745,6 @@ class Videocall extends ModTemplate {
 
 		this.app.connection.emit('relay-transaction', newtx);
 
-		this.app.network.propagateTransaction(newtx);
-
 		this.app.connection.emit('add-remote-stream-request', publicKey, null);
 	}
 
@@ -756,7 +754,7 @@ class Videocall extends ModTemplate {
 			return;
 		}
 
-		console.log('STUN: Send disconnect message:', this.room_obj);
+		console.log('STUN: Send disconnect message (hang up):', this.room_obj);
 
 		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
@@ -775,7 +773,6 @@ class Videocall extends ModTemplate {
 		await newtx.sign();
 
 		this.app.connection.emit('relay-transaction', newtx);
-		this.app.network.propagateTransaction(newtx);
 
 		//
 		// Allow us to use stun connection to send tx before disconnecting!
