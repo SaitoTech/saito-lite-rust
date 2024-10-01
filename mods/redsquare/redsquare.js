@@ -2583,7 +2583,7 @@ class RedSquare extends ModTemplate {
     let hex_values = [];
 
     if (this.app.BROWSER) {
-      return;
+      return [];
     }
 
     return this.app.storage.loadTransactions(
@@ -2619,6 +2619,7 @@ class RedSquare extends ModTemplate {
   ///////////////
   // webserver //
   ///////////////
+
   webServer(app, expressapp, express) {
     console.log('this is my home');
     let webdir = `${__dirname}/../../mods/${this.dirname}/web`;

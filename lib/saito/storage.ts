@@ -18,7 +18,6 @@ class Storage {
 		this.app = app || {};
 		this.active_tab = 1; // TODO - only active tab saves, move to Browser class
 		this.timeout = null;
-
 		this.localDB = null;
 	}
 
@@ -182,6 +181,7 @@ class Storage {
 	}
 
 	async loadTransactions(obj = {}, mycallback, peer = null) {
+
 		let storage_self = this;
 
 		const message = 'archive';
@@ -227,7 +227,7 @@ class Storage {
 				},
 				peer.peerIndex
 			);
-			return;
+			return [];
 		} else {
 			this.app.network.sendRequestAsTransaction(
 				message,
@@ -236,8 +236,10 @@ class Storage {
 					internal_callback(res);
 				}
 			);
-			return;
+			return [];
 		}
+
+		return [];
 	}
 
 	async deleteTransaction(tx = null, mycallback = null, peer = null) {
