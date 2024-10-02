@@ -5430,6 +5430,8 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
         let id = $(this).attr("id");
 
+	his_self.updateStatus("moving...");
+
         if (id === "end") {
 	  let destinations = {};
 
@@ -6585,7 +6587,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       for (let z = 0; z < ports.length; z++) {
 	let controller = his_self.game.spaces[ports[z]].political;
 	if (his_self.game.spaces[ports[z]].political == "") { controller = his_self.game.spaces[ports[z]].home; }
-        if (io.includes(controller)) {
+        if (io.includes(controller) && controller != "ottoman") {
           html += '<li class="option" id="'+ports[z]+'">'+his_self.returnSpaceName(ports[z])+'</li>';
         }
       }

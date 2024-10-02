@@ -1292,7 +1292,7 @@ t
               //
               his_self.playerSelectSpaceWithFilter(
 
-                "Select Space to add 2 Squadrons" ,
+                "Select Space to add 1st Squadron" ,
 
                   (space) => {
                     if (his_self.isSpaceControlled(space.key, "papacy")) {
@@ -1304,11 +1304,40 @@ t
 		  },
 
                   (spacekey) => {
-                    let space = his_self.game.spaces[spacekey];
-                    his_self.addMove("build\tland\tpapacy\t"+"squadron"+"\t"+spacekey);
-                    his_self.addMove("build\tland\tpapacy\t"+"squadron"+"\t"+spacekey);
-		    his_self.endTurn();
-		  },
+
+		    let firstspace = spacekey;
+
+              	    //
+              	    // pick port under Papal control
+              	    //
+              	    his_self.playerSelectSpaceWithFilter(
+
+                      "Select Space to add 2nd Squadron" ,
+
+   	              (space) => {
+                        if (his_self.isSpaceControlled(space.key, "papacy")) {
+		          if (space.ports.length > 0) {
+			    return 1;
+		          }
+		        }
+		        return 0;
+		      },
+
+                      (spacekey) => {
+
+                        let secondspace = spacekey;
+                        his_self.addMove("build\tland\tpapacy\t"+"squadron"+"\t"+firstspace);
+                        his_self.addMove("build\tland\tpapacy\t"+"squadron"+"\t"+secondspace);
+		        his_self.endTurn();
+		      },
+
+		      null ,
+
+		      true
+    
+		    );
+
+	          },
 
 		  null ,
 
@@ -2285,6 +2314,7 @@ console.log("selected: " + spacekey);
             "Add 4 regulars in Ottoman Home Space or Foreign War",
                 
             function(space) {
+              if (space.political != "" && space.political != "ottoman") { return 0; }
               if (space.key === "oran") { return 0; }
               if (space.key === "algiers") { return 0; }
               if (space.pirate_haven === 1) { return 0; }
@@ -2527,7 +2557,7 @@ console.log("selected: " + spacekey);
 	      his_self.updateStatus("acknowledge");
 
 	      his_self.addMove("ops\tengland\t003\t5");
-	      if (action2 === "scotland" && !his_self.areEnemies("england","france")) {
+	      if (action2 === "scotland" && (!his_self.areAllies("england", "scotland") || !his_self.areEnemies("england","france"))) {
 	        his_self.addMove("natural_ally_intervention\tfrance\tscotland\tengland\t0\tEngland declares war on Scotland");
 	      }	
 	      his_self.addMove("unexpected_war\tengland\t"+action2);
@@ -5508,7 +5538,9 @@ console.log("Swiss Mercs: " + spacekey);
 	      function(space) {
 		for (let f in space.units) {
 		  for (let z = 0; z < space.units[f].length; z++) { 
-		    if (space.units[f][z].besieged > 0) { return 0; }
+		    if (space.units[f][z].besieged > 0) {
+		      if (his_self.returnPlayerCommandingFaction(f) == player) { return 0; }
+		    }
 	          }
 	        }
 		if (his_self.returnFactionLandUnitsInSpace(faction, space.key)) { return 1; }
@@ -6411,6 +6443,7 @@ console.log("Swiss Mercs: " + spacekey);
 
             his_self.addMove("explore\t"+action);
 	    his_self.addMove("display_new_world");
+            his_self.addMove("SETVAR\tstate\tmay_explore\t"+action+"\t1");
             his_self.addMove("SETVAR\tstate\tevents\tmercators_map\t"+action);
             his_self.endTurn();
 
@@ -10695,11 +10728,17 @@ console.log("we have removed philip and redisplayed the space...");
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
-	if (faction == "england" || faction == "hapsburg" || faction == "france") { return 1; }
+	if (
+		(faction == "england" && his_self.game.state.may_conquer["england"] == 1) ||
+		(faction == "france" && his_self.game.state.may_conquer["france"] == 1) ||
+		(faction == "hapsburg" && his_self.game.state.may_conquer["hapsburg"] == 1) 
+	) {	
+		return 1; 
+	}
 	return 0;
       },
       onEvent(his_self, faction) {
-        his_self.game.queue.push("conquer\t"+faction);
+	his_self.game.state.may_conquer[faction] = 0;
 	his_self.game.state.events.smallpox = faction;
 	his_self.displayConquest();
         return 1;
