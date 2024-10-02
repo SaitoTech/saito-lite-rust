@@ -733,7 +733,6 @@ class SettlersGameloop {
           //Or, choose menu option
           if (document.getElementById("rolldice")){
             document.getElementById("rolldice").onclick = (e) => {
-                settlers_self.updateStatus('rolling...');
                 settlers_self.addMove("roll\t" + player);
                 settlers_self.endTurn();
                 e.currentTarget.onclick = null;
@@ -781,7 +780,7 @@ class SettlersGameloop {
 
         //Regardless of outcome, player gets a turn
         this.game.queue.push(`player_actions\t${player}`);
-        this.game.queue.push("enable_trading"); //Enable trading after resolving bandit
+        this.game.queue.push(`enable_trading\t${player}`); //Enable trading after resolving bandit
 
         //Next Step depends on Dice outcome
         if (roll == 7) {
@@ -796,6 +795,10 @@ class SettlersGameloop {
           }
           this.game.stats.history.push(record);
           
+          let firstMsg = (this.game.player == player)  ? "You" : this.game.playerNames[player - 1];
+          firstMsg += ` rolled <span class='die_value'>${roll}</span>`;
+          this.updateStatus(firstMsg);
+
           //Manage discarding before bandit comes into play
           let playersToDiscard = [];
           for (let i = 0; i < this.game.state.players.length; i++) {
@@ -838,6 +841,12 @@ class SettlersGameloop {
         this.game.state.bandit = false;
         this.game.state.canTrade = true; //Toggles false when the player builds or buys
         this.game.state.hasRolled = true;
+
+        let player = parseInt(mv[1]);
+        if (player != this.game.player) {
+          this.updateStatus(`${this.game.playerNames[player - 1]} is taking their turn`);
+        }
+
         return 1;
       }
 
@@ -1012,9 +1021,8 @@ class SettlersGameloop {
 
         if (player == this.game.player) {
           this.playerPlayMove();
-        } else {
-          this.updateStatus(`${this.game.playerNames[player - 1]} is taking their turn`);
-        }
+        } 
+
         return 0;
       }
 

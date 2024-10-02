@@ -63,7 +63,7 @@ class SettlersPlayer {
     let xpos = 0;
     let ypos = 0;
 
-    this.updateStatus(`Move the ${this.b.name}`);
+    this.updateStatus(`MOVE the ${this.b.name}`);
     $(".option").css("visibility", "hidden");
     let settlers_self = this;
     $(".sector-container").addClass("rhover");
