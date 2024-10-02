@@ -5,7 +5,6 @@ const CallInterfaceVideo = require('./lib/components/call-interface-video');
 const CallInterfaceFloat = require('./lib/components/call-interface-float');
 const DialingInterface = require('./lib/components/dialer');
 const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
-const CallPreLauncher = require('./lib/components/call-interstitial');
 const StreamManager = require('./lib/StreamManager');
 const AppSettings = require('./lib/stun-settings');
 const HomePage = require('./index');
@@ -246,8 +245,7 @@ class Videocall extends ModTemplate {
 						text: 'Saito Talk',
 						icon: this.icon,
 						callback: function (app, id) {
-							let preCheck = new CallPreLauncher(app, call_self);
-							preCheck.render();
+							call_self.renderInto('.saito-overlay');
 						}
 					}
 				];
@@ -284,7 +282,7 @@ class Videocall extends ModTemplate {
 								description
 							};
 
-							let call_link = this.mod.generateCallLink(room_obj);
+							let call_link = this.generateCallLink(room_obj);
 
 							app.keychain.addKey(call_id, {
 								identifier: title || 'Video Call',
@@ -874,6 +872,21 @@ class Videocall extends ModTemplate {
 		this.app.connection.emit('peer-list', sender, txmsg.data);
 	}
 
+
+	async createRoom(){
+		let call_id = await this.generateRoomId();
+		this.room_obj = {
+			call_id,
+			host_public_key: this.publicKey,
+			call_peers: [],
+		};
+
+        let link =  this.generateCallLink(this.room_obj);
+		this.app.keychain.addKey(call_id, {
+			identifier: `my video call`,
+			link,
+		});
+	}
 
 	async generateRoomId() {
 		let pk = this.app.crypto.generateKeys();

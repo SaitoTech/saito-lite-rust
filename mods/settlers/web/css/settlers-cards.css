@@ -1,5 +1,5 @@
-.card {
-	width: min(17.5vh, 20vw);
+.card, .cardfan .card {
+	width: min(15vh, 15vw);
 	height: auto;
 }
 

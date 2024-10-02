@@ -108,9 +108,6 @@ class BuildOverlay {
 						//console.log("Unexpected selection for player move:",id);
 					}
 
-					this_self.mod.updateStatus(
-						`<div class="player-notice">purchasing...</div>`
-					);
 				}
 			};
 		});

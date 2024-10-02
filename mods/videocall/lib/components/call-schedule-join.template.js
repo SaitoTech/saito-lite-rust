@@ -16,6 +16,8 @@ module.exports = CallScheduleJoinTemplate = (app, mod, events) => {
     }
 
     html += `</div>
+            <h4>New Call</h4>
+            <div class="enter-call-button saito-button-primary" id="create-new-room">Create Call</div>
         </div>
     `;
 

@@ -281,6 +281,10 @@ class Fileshare extends ModTemplate {
 			let txmsg = tx.returnMessage();
 
 			if (tx.isTo(this.publicKey)) {
+				//if (txmsg.request.includes("file")){
+				//	console.log(txmsg);
+				//}
+
 				if (txmsg.request == 'query file permission') {
 
 					const file = {
@@ -308,12 +312,15 @@ class Fileshare extends ModTemplate {
 					console.log("Start sending file !" + txmsg.data.id);
 					this.addNavigationProtections();
 					const fs = this.outgoing_files[txmsg.data.id];
-					fs.sending = true;
-					fs.overlay.onPeerAccept();
-					fs.overlay.beginTransfer();
 
-					const slice = fs.file.slice(0, this.chunkSize);
-					fs.reader.readAsArrayBuffer(slice);
+					if (!fs.sending){
+						fs.sending = true;
+						fs.overlay.onPeerAccept();
+						fs.overlay.beginTransfer();
+
+						const slice = fs.file.slice(0, this.chunkSize);
+						fs.reader.readAsArrayBuffer(slice);
+					}
 
 					return;
 				}
@@ -384,7 +391,7 @@ class Fileshare extends ModTemplate {
 
 				if (txmsg.request == 'update file transfer') {
 
-					console.log(txmsg.request, txmsg.data);
+					console.log("FILE SHARE UPDATE: ", txmsg.request, txmsg.data);
 
 					if (this.incoming[txmsg.data.old_id]){
 						this.incoming[txmsg.data.old_id].overlay.remove();
@@ -484,7 +491,7 @@ class Fileshare extends ModTemplate {
 		this.outgoing_files[fileId].reader.addEventListener('load', async (event) => {
 
 			if (!this.outgoing_files[fileId]?.sending) {
-				console.warn("Not in sending state!");
+				console.warn("Not in sending state! Stop reading file!");
 				return;
 			}
 
@@ -544,17 +551,6 @@ class Fileshare extends ModTemplate {
 			data: { id: fileId }
 		});
 
-		//set up stun listeners for interruptions
-		this.app.connection.on('stun-data-channel-close', (peerId) => {
-			if (peerId == sender) {
-				this.incoming[fileId].overlay?.onConnectionFailure();
-			}
-		});
-		this.app.connection.on('stun-connection-failed', (peerId) => {
-			if (peerId == sender) {
-				this.incoming[fileId].overlay?.onConnectionFailure();
-			}
-		});
 	}
 
 	interrupt(fileId, send_to = "") {

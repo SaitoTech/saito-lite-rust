@@ -10,11 +10,30 @@ class FileReceiveOverlay {
 		this.throttle_me = false;
 		this.ready = false;
 		this.divId = `file-transfer-${fileId}-${sender}`;
-		this.active = true;
+
+		//set up stun listeners for interruptions
+		app.connection.on('stun-data-channel-close', (peerId) => {
+			if (peerId == this.sender && this?.active) {
+				this.onConnectionFailure();
+			}
+		});
+		app.connection.on('stun-connection-failed', (peerId) => {
+			if (peerId == this.sender & this?.active) {
+				this.onConnectionFailure();
+			}
+		});
+
+		app.connection.on("stun-data-channel-open", (peerId) => {
+			if (peerId == this.sender && this?.active){
+				this.onConnectionSuccess();
+			}
+		});
+
 	}
 
 	render(file) {
 
+		this.active = true;
 		this.senderUI = new SaitoUser(this.app, this.mod, `#${this.divId} .contact`, this.sender);
 
 		this.app.browser.addElementToDom(FileReceiveOverlayTemplate(this.mod, this, file));
@@ -22,21 +41,17 @@ class FileReceiveOverlay {
 		this.senderUI.render();
 		this.attachEvents();
 
-		if (!this.mod.stun.hasConnection(file.sender)) {
-			this.app.connection.on("stun-data-channel-open", peerId => {
-				if (peerId == file.sender && this.active){
-					this.onConnectionSuccess();
-				}
-			})
-		}else{
+		if (this.mod.stun.hasConnection(file.sender)) {
 			this.onConnectionSuccess();
 		}
+
 	}
 
 	remove(){
 		if (document.getElementById(this.divId)){
 			document.getElementById(this.divId).remove();
 		}
+		this.mod.reset(this.fileId);
 		this.ready = false;
 		this.active = false;
 	}
@@ -115,7 +130,6 @@ class FileReceiveOverlay {
 			download_btn.onclick = () => {
 				document.querySelector(`#${this.divId} a`).click();
 				document.querySelector(`#${this.divId} a`).remove();
-				this.mod.reset(this.fileId);
 				this.remove();
 			}
 		}
@@ -193,7 +207,6 @@ class FileReceiveOverlay {
 			reject_btn.onclick = () => {
 
 				this.mod.sendRejectTransferTransaction(this.fileId, this.sender);
-				this.mod.reset(this.fileId);
 				this.remove();
 			}
 		}
@@ -203,7 +216,6 @@ class FileReceiveOverlay {
 			cancel.onclick = () => {
 				this.mod.interrupt(this.fileId, this.sender);
 				this.mod.sendRejectTransferTransaction(this.fileId, this.sender);
-				this.mod.reset(this.fileId);
 			}
 		}
 
@@ -222,7 +234,6 @@ class FileReceiveOverlay {
 					this.mod.sendRejectTransferTransaction(this.fileId, this.sender);
 				}
 				
-				this.mod.reset(this.fileId);
 				this.remove();
 			}
 		}

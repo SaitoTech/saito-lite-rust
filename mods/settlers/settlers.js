@@ -424,6 +424,7 @@ class Settlers extends GameTemplate {
 		this.hud.minWidth = 600;
 		this.hud.maxWidth = 1;
 		this.hud.render();
+		this.status = [];
 
 		//
 		//Maybe we should standardize addClass() or classlist = [], for our UI components
@@ -739,10 +740,66 @@ class Settlers extends GameTemplate {
 			$('#rolldice').off();
 
 			$('#bank').removeClass('enabled');
-			$('#spend').removeClass('enabled');
 			$('#playcard').removeClass('enabled');
+			$('#spend').removeClass('enabled');
 		}
 	}
+
+
+	// Overwrite inherited function so we can play nice with the specialty HUD controls
+	updateStatusForGameOver(status, allowRematch) {
+		let target = this.app.options.homeModule || 'Arcade';
+		allowRematch = allowRematch && this.game.player !== 0;
+
+		let options = `<ul>
+                      <li class="textchoice" id="confirmit">Return to ${target}</li>
+                      ${
+							allowRematch
+								? '<!--li class="textchoice" id="rematch">Rematch</li-->'
+								: ''
+						}
+                   </ul>`;
+
+		this.hud.back_button = false;
+
+		this.updateStatus(status);
+
+		let settlers_self = this;
+
+		$('.controls .option').css('visibility', 'hidden');
+		$('.controls .option').removeClass('enabled');
+
+		$('#score').addClass('enabled');
+		$('#score').css('visibility', 'visible');
+
+		/* --> rematch -- need to fix arcade-issue-challenge...
+		$('#spend').addClass('enabled');
+		$('#spend').html(`<i class="fa-solid fa-rotate-left"></i>`);
+		$('#spend').css('visibility', 'visible');
+
+		if (document.querySelector('.controls #spend')) {
+			document.querySelector('.controls #spend').onclick = (e) => {
+				e.currentTarget.onclick = null;
+				this.app.connection.emit('arcade-issue-challenge', {
+					game: this.name,
+					players: this.game.players,
+					options: this.game.options
+				});	
+			};
+		}*/
+
+		// --> return
+		$('#rolldice').addClass('enabled');
+		$('#rolldice').html(`<i class="fa-solid fa-door-open"></i>`);
+		$('#rolldice').css('visibility', 'visible');
+
+		document.getElementById('rolldice').onclick = (e) => {
+			e.currentTarget.onclick = null;
+			this.exitGame();
+		}
+
+	}
+
 }
 
 Settlers.importFunctions(

@@ -837,9 +837,16 @@ video#presentation {
 	position: relative;
 	border: 1px solid #e5e5e59d;
 	border-radius: var(--saito-border-radius);
-	width: 100%;
-	max-width: 90vh;
+	width: min(640px, 90vw);
+	min-height: min(480px, 70vh);
 	display: flex;
+}
+
+.chat-settings-preview span {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
 }
 
 .chat-settings video {
