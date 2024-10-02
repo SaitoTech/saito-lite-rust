@@ -407,8 +407,9 @@ class Stun extends ModTemplate {
 
 		// Handle ICE candidates
 		peerConnection.onicecandidate = async (event) => {
-			console.log('receiving ice candidate for ', peerId, event.candidate)
 			if (event.candidate) {
+				console.log('receiving ice candidate for ', peerId, event.candidate)
+	
 				let data = {
 					module: 'Stun',
 					request: 'peer-candidate',
