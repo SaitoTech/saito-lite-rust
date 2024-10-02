@@ -6,7 +6,7 @@ class SettlersActions {
     let html = `<i class="fa-solid fa-forward"></i>`;
     try {
 
-      this.updateStatusWithOptions(`${this.getLastNotice()}<div class="player-notice"><span class="acknowledge-message">${msg}</span></div>`, html);
+      this.updateStatusWithOptions(`<div class="player-notice"><span class="acknowledge-message">${msg}</span></div>`, html);
 
       document.querySelector("#rolldice").onclick = async (e) => {
         e.currentTarget.onclick = null;
@@ -117,10 +117,10 @@ class SettlersActions {
     }
 
     if (poor_harvest) {
-      this.updateStatus(`<div class="persistent player-notice"><span>${firstMsg}: ${this.randomMsg()}</span></div>`);
+      this.updateStatus(`${firstMsg}: ${this.randomMsg()}`);
     } else {
       this.updateStatus(
-        `<div class="persistent player-notice"><span>${firstMsg}! You acquired: </span><div class="hud-status-card-list">${notice}</div></div>`
+        `<div class="player-notice"><span>${firstMsg}! You acquired: </span><div class="hud-status-card-list">${notice}</div></div>`
       );
     }
 

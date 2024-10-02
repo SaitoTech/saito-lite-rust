@@ -513,38 +513,36 @@ class SettlersDisplay {
       });*/
   }
 
-  /*
-  So we sometimes want a status update message to persist through the next update status 
-  (so player has a chance to read it if we are rapidly knocking moves of the queue)
-  Important messages are marked with "persistent"
-  */
-  getLastNotice(preserveLonger = false) {
-    if (document.querySelector('.status .persistent')) {
-      let nodes = document.querySelectorAll('.status .persistent');
-      return `<div class="${preserveLonger ? 'persistent' : 'player-notice'}">${
-        nodes[nodes.length - 1].innerHTML
-      }</div>`;
-    }
-    return '';
-  }
 
   updateStatus(str, hide_info = 0) {
     try {
       if (this.lock_interface == 1) {
-        this.setHudHeight();
         return;
       }
 
       this.game.status = str;
+      this.status.push(str);
 
-      if (this.browser_active == 1) {
-        let status_obj = document.querySelector('.hud-body .status');
-        if (this.game.players.includes(this.publicKey)) {
-          if (!str.includes('<')) {
-            console.log('Settlers: Wrap status message --', str);
-            str = `<div class="player-notice">${str}</div>`;
+      //Keep last three
+      while (this.status.length > 3) {
+        this.status.shift();
+      }
+
+      if (this.game.players.includes(this.publicKey)) {
+
+        if (this.gameBrowserActive()) {
+    
+          let status_obj = document.querySelector('.hud-body .status');
+    
+          let complex_str = '';
+          for (let st of this.status){
+            if (!st.includes('<div')) {
+              st = `<div class="player-notice">${st}</div>`;
+            }
+            complex_str += st;
           }
-          status_obj.innerHTML = str;
+
+          status_obj.innerHTML = complex_str;
           $('.status').disableSelection();
         }
       }

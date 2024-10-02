@@ -29,10 +29,12 @@
 	box-shadow: none;
 	padding: 0;
 	width: 100%;
-	min-height: 4.5rem;
+	min-height: 15rem;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	padding: 0.75rem 0;
+	gap: 0.75rem;
 }
 
 .hud-status-card-list{
@@ -89,12 +91,6 @@
 	/*Trying a darker shade #cbaf83*/
 }
 
-
-.status .player-notice span.acknowledge-message {
-	display: flex;
-	align-items: center;
-	gap: 1rem;
-}
 
 .player-notice span img {
 	width: 60px;
