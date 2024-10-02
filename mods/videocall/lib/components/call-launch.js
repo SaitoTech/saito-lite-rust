@@ -3,6 +3,8 @@ const StunLaunchTemplate = require('./call-launch.template.js');
 const CallSetting = require('../components/call-setting.js');
 const SaitoLoader = require('../../../../lib/saito/ui/saito-loader/saito-loader.js');
 const CallScheduleJoin = require('./call-schedule-join.js');
+const CallScheduleWizard = require('../../../../lib/saito/ui/saito-calendar/saito-schedule-wizard.js');
+
 
 /**
  *
@@ -60,7 +62,6 @@ class CallLaunch {
 
 		this.attachEvents(this.app, this.mod);
 
-		this.callSetting.render();
 	}
 
 	attachEvents(app, mod) {
@@ -76,27 +77,51 @@ class CallLaunch {
 				// I am initializing the call
 				//
 				if (!this.mod.room_obj) {
-
-					let call_id = await this.mod.generateRoomId();
-					this.mod.room_obj = {
-						call_id,
-						host_public_key: this.mod.publicKey,
-						call_peers: [],
-					};
-
-	                let link =  this.mod.generateCallLink(this.mod.room_obj);
-					this.app.keychain.addKey(call_id, {
-						identifier: `my video call`,
-						link,
-					});
+					await this.mod.createRoom();
 				}
 
 				console.log(this.mod.room_obj, "room object joining");
 				this.enterCall()
 			};
 		}
+
+		if (document.getElementById('stunx-call-settings')){
+			document.getElementById('stunx-call-settings').onclick = (e) => {
+				this.callSetting.render();	
+			}
+		}
+
+
 		if (document.getElementById('createScheduleRoom')) {
 			document.getElementById('createScheduleRoom').onclick = async (e) => {
+                const callScheduleWizard = new CallScheduleWizard(this.app, this.mod)
+                callScheduleWizard.callbackAfterSubmit = async (utcStartTime, duration, description = "", title = "") => {
+
+                    //Creates public key for clal
+                    const call_id = await this.mod.generateRoomId();
+
+                    const room_obj = {
+                        call_id,
+                        scheduled: true,
+                        call_peers: [],
+                        startTime: utcStartTime, 
+                        duration,
+                        profile: {description}
+                    };
+        
+                    let call_link =  this.mod.generateCallLink(room_obj)
+
+                    this.app.keychain.addKey(call_id, { identifier: title || "Video Call", startTime:utcStartTime, duration, description, link: call_link });
+        
+                    this.app.connection.emit('calendar-refresh-request');
+                    let event_link =  this.app.browser.createEventInviteLink(this.app.keychain.returnKey(call_id));
+
+                    await navigator.clipboard.writeText(event_link);
+                    siteMessage('Invitation link copied to clipboard', 3500);
+                }
+
+                callScheduleWizard.render()
+
 			};
 		}
 
@@ -113,10 +138,7 @@ class CallLaunch {
 		//
 		// Set big screen video as desired call interface
 		//
-		if(!this.callSetting.videoInput){
-			siteMessage("Waiting for media feed")
-			return 
-		}
+
 		this.app.connection.emit('stun-init-call-interface', this.callSetting.returnSettings());
 
 		//

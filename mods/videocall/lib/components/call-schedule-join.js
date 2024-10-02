@@ -47,6 +47,14 @@ class CallScheduleJoin {
         }
     });
 
+    if (document.getElementById("create-new-room")){
+      document.getElementById("create-new-room").onclick = async (e) => {
+        this.remove();
+        await this.mod.createRoom();
+        app.connection.emit("call-launch-enter-call");
+      }
+    }
+
   }
 
 
