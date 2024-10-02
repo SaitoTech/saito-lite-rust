@@ -683,7 +683,7 @@ class HereIStand extends GameTemplate {
         for (let i = 0; i < game_mod.game.state.burned.length; i++) {
           let bd = game_mod.game.state.burned[i];
           if (game_mod.debaters[bd]) {
-            if (game_mod.debaters[bd].faction == "papacy") {
+            if (game_mod.debaters[bd].faction == "protestant") {
               base += game_mod.debaters[bd].power;
             }
           }
@@ -50341,7 +50341,7 @@ try {
 	}
 
 	if (anyone_at_war == false) {
-	  if (anyone_here == true && his_self.returnFactionLandUnitsInSpace(f, space.key, 1) == 0) {} else {
+	  if (anyone_here == true && this.returnFactionLandUnitsInSpace(f, space.key, 1) == 0) {} else {
      	    this.removeSiege(space.key);
 	  }
 	}
