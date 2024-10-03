@@ -81,9 +81,6 @@ console.log("\n\n\n\n");
 	  this.unsetEnemies("hapsburg", "france");
 	  this.unsetEnemies("ottoman", "hungary");
 
-	  this.setAllies("france", "scotland");
-
-
 	  // OTTOMAN
           this.addRegular("ottoman", "istanbul", 1);
           this.addRegular("ottoman", "edirne");
@@ -140,6 +137,9 @@ console.log("\n\n\n\n");
           this.addRegular("venice", "corfu", 1);
           this.addRegular("venice", "candia", 1);
 	
+	  // HUNGARY
+	  this.addRegular("prague", "hungary", 1);
+
 	  // GENOA
           this.addNavyLeader("genoa", "genoa", "andrea-doria");
           this.addNavalSquadron("genoa", "genoa", 1);
@@ -152,9 +152,6 @@ console.log("\n\n\n\n");
           this.addRegular("independent", "rhodes", 1);
           this.addRegular("independent", "metz", 1);
           this.addRegular("independent", "florence", 1);	
-
-	  //this.addRegular("papacy", "florence", 3);
-	  //this.controlSpace("papacy", "florence");
 
 	  // DEBATERS
 	  this.addDebater("papacy", "eck-debater");
@@ -375,23 +372,6 @@ console.log("\n\n\n\n");
           //this.game.state.newworld['hapsburg_colony2'].round = 3;
 
           this.game.state.colonies.push({
-            faction : "hapsburg",
-            resolved :  1 ,
-            round :   3 ,
-	    name : "Puerto Rico" ,
-            colony : "hapsburg_colony1" ,
-	    img : "/his/img/tiles/colonies/PuertoRico.svg"
-          });
-          this.game.state.colonies.push({
-            faction : "hapsburg",
-            resolved :  1 ,
-            round :   3 ,
-	    name : "Cuba" ,
-            colony : "hapsburg_colony2" ,
-	    img : "/his/img/tiles/colonies/Cuba.svg"
-          });
-
-          this.game.state.colonies.push({
             faction : "hapsburg" ,
             resolved : 1 ,
 	    colony : "hapsburg_colony1" ,
@@ -403,7 +383,7 @@ console.log("\n\n\n\n");
             faction : "hapsburg" ,
             resolved : 1 ,
 	    colony : "hapsburg_colony2" ,
-            round : 1 ,
+            round : 2 ,
 	    name : "Cuba",
 	    img : "/his/img/tiles/colonies/Cuba.svg",
           });
