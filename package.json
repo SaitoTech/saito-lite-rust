@@ -15,6 +15,7 @@
     "reset": " ./scripts/compile reset",
     "compile": " ./scripts/compile recompile",
     "modules": " ./scripts/modules",
+    "mods": " ./scripts/modules",
     "old": " webpack --config ./webpack/old/.config.js",
     "test": "jest",
     "analyze": "webpack --config ./build/webpack.analyze.js",
