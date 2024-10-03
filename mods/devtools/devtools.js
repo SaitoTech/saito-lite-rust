@@ -228,7 +228,7 @@ class DevTools extends ModTemplate {
 				
 
 				const { execSync } = require('child_process');
-				execSync(`sh  ./web/saito/dyn/conv.sh ${slug}`,
+				execSync(`sh  ./scripts/dyn-mod-compile.sh ${slug}`,
 		        (error, stdout, stderr) => {
 		            console.log(stdout);
 		            console.log(stderr);
@@ -244,12 +244,12 @@ class DevTools extends ModTemplate {
 					console.error(error);
 				}
 
-				let DYN_MOD_WEB = fs.readFileSync('./lib/dyn_mod.js', {
+				let DYN_MOD_WEB = fs.readFileSync('./build/dyn_mod.js', {
 					encoding: 'binary'
 				});
 
 
-				execSync(`rm -rf  ./mods/tmp_mod/ ./lib/dyn_mod.js`,
+				execSync(`rm -rf  ./mods/tmp_mod/ ./build/dyn_mod.js ./build/dyn/`,
         (error, stdout, stderr) => {
             console.log(stdout);
             console.log(stderr);
