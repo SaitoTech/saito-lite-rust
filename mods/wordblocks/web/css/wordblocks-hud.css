@@ -50,3 +50,11 @@
 .hud-body .status {
 	background-color: transparent;
 }
+
+.controls {
+	margin-top: 0;
+}
+
+.controls ul li {
+	background-color: transparent;
+}

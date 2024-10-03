@@ -561,6 +561,8 @@ class Settlers extends GameTemplate {
 		if (this.game.state == undefined) {
 			this.game.state = this.initializeState();
 
+			this.game.canProcess = false; // For end game... 
+
 			if (!this.game.colors) {
 				let colors = [1, 2, 3, 4];
 				this.game.colors = [];
