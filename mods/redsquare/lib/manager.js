@@ -349,7 +349,10 @@ class TweetManager {
 		this.attachEvents();
 	}
 
-	loadProfile(mycallback) {
+
+	// When we render the profile, we have a synchronous fetch on local archive for banner/description
+	// by making this async the storage loading here should get pushed back
+	async loadProfile(mycallback) {
 		if (this.mod.publicKey == this.profile.publicKey) {
 			// Find likes...
 			// I already have a list of tweets I liked available
