@@ -1,6 +1,7 @@
 class SettlersActions {
   //
   // OVERRIDE THIS FUNCTION FROM THE PARENT GAME LIBRARY TO CHANGE THE ACKNOWLEDGE TEXT TO CONTINUE
+  // and override the callback
   //
   playerAcknowledgeNotice(msg, mycallback) {
     let html = `<i class="fa-solid fa-forward"></i>`;
@@ -8,9 +9,12 @@ class SettlersActions {
 
       this.updateStatusWithOptions(`<div class="player-notice"><span class="acknowledge-message">${msg}</span></div>`, html);
 
-      document.querySelector("#rolldice").onclick = async (e) => {
+      document.getElementById("rolldice").onclick = async (e) => {
         e.currentTarget.onclick = null;
-        await mycallback();
+        console.log("Click ACKNOWLEDGE");
+        this.updateControls();
+        this.game.queue.splice(this.game.queue.length - 1, 1);
+        this.restartQueue();
       }
     } catch (err) {
       console.error("Error with ACKWNOLEDGE notice!: " + err);
