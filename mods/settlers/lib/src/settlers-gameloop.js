@@ -96,8 +96,10 @@ class SettlersGameloop {
 
         //the player will update their devcard count on next turn
         if (player != this.game.player) {
+          this.animateDevCard(player);
           this.game.state.players[player - 1].devcards.push("x"); //Add card for display
           this.updateStatus(`${this.game.playerNames[player - 1]} bought a ${this.card.name} card`);
+          return 0;
         } else {
 
           $(".controls #playcard").addClass('enabled');
