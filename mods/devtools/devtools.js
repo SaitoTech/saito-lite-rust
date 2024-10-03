@@ -248,7 +248,7 @@ class DevTools extends ModTemplate {
 					encoding: 'binary'
 				});
 
-/*
+
 				execSync(`rm -rf  ./mods/tmp_mod/ ./lib/dyn_mod.js`,
         (error, stdout, stderr) => {
             console.log(stdout);
@@ -257,7 +257,7 @@ class DevTools extends ModTemplate {
                 console.log(`execSync error: ${error}`);
             }
         });
-*/
+
 
         if (mycallback) {
         	return mycallback({DYN_MOD_WEB});
