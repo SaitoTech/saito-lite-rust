@@ -55,6 +55,8 @@ class Profile extends ModTemplate {
 							if (returned_key.profile?.image){
 								this.cache[key].image = await this.fetchProfileFromArchive("image", returned_key.profile.image);
 							}
+
+							console.log("PROFILE: async fetches for watched key finished");
 						
 						}
 
@@ -315,7 +317,7 @@ class Profile extends ModTemplate {
 					for (let tx of txs){
 						let txmsg = tx.returnMessage();
 						if (txmsg.data[field]){
-							console.log("PROFILE: local archive returned!");
+							console.log("PROFILE: local archive returned txs (inside)!");
 							return txmsg.data[field];
 						}
 					}

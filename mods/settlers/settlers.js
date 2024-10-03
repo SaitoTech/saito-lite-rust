@@ -561,6 +561,8 @@ class Settlers extends GameTemplate {
 		if (this.game.state == undefined) {
 			this.game.state = this.initializeState();
 
+			this.game.canProcess = false; // For end game... 
+
 			if (!this.game.colors) {
 				let colors = [1, 2, 3, 4];
 				this.game.colors = [];
@@ -726,6 +728,12 @@ class Settlers extends GameTemplate {
 				$('#rolldice').css('visibility', 'visible');
 				$('#rolldice').html(str);
 				return;
+			} else if (str === "WAIT") {
+				$('.controls .option').css('visibility', 'hidden');
+				$('#rolldice').css('visibility', 'visible');
+				$('#rolldice').html(`<i class="fa-solid fa-pause"></i>`);
+				$('#rolldice').removeClass('enabled');
+				document.getElementById("rolldice").onclick = null;
 			} else {
 				console.log('UPDATE CONTROLS:', str);
 				//super.updateControls(str);
@@ -737,7 +745,7 @@ class Settlers extends GameTemplate {
 		if (this.game.state.playerTurn !== this.game.player) {
 			$('#rolldice').html(`<i class="fa-solid fa-pause"></i>`);
 			$('#rolldice').removeClass('enabled');
-			$('#rolldice').off();
+			document.getElementById("rolldice").onclick = null;
 
 			$('#bank').removeClass('enabled');
 			$('#playcard').removeClass('enabled');

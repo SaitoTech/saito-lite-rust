@@ -96,11 +96,13 @@ class SettlersGameloop {
 
         //the player will update their devcard count on next turn
         if (player != this.game.player) {
+          this.animateDevCard(player);
           this.game.state.players[player - 1].devcards.push("x"); //Add card for display
           this.updateStatus(`${this.game.playerNames[player - 1]} bought a ${this.card.name} card`);
+          return 0;
         } else {
 
-          $(".controls #playcard").addClass('enabled');
+          $(".controls #playcard").addClass('enabled').addClass("flashme");
 
           let lastcard = this.game.deck[0].cards[this.game.deck[0].hand[this.game.deck[0].hand.length - 1]];
 
@@ -882,16 +884,17 @@ class SettlersGameloop {
           }
         }
 
+        if (confirmsNeeded == 0) {
+          this.game.queue.splice(qe, 1);
+          return 1;
+        }
+
         this.game.queue.push(`NOTIFY\t${discardString} must discard half their hand.`);
 
         if (!amIPlaying) {
          this.updateStatus(`waiting for ${discardString} to discard`);
         }
 
-        if (confirmsNeeded == 0) {
-          this.game.queue.splice(qe, 1);
-          return 1;
-        }
         return 0;
       }
 

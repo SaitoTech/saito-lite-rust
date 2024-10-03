@@ -158,7 +158,7 @@
 }
 
 .settlers-card-disabled {
-	filter: grayscale(70%) brightness(80%);
+	filter: grayscale(20%) brightness(65%);
 }
 
 .settlers-cards-container img {

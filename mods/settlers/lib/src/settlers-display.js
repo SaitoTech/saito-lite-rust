@@ -425,6 +425,43 @@ class SettlersDisplay {
     });
   }
 
+
+  animateDevCard(player){
+    let destination = '#game-playerbox-' + player;
+
+    if (player == this.game.player){
+
+      let elm = this.createGameElement(
+          `<div class="card_holder"><img src="${this.card.back}"/></div>`,
+          "#game-hexgrid",
+          ".hex.dummy"
+        );
+
+      this.moveGameElement(elm, destination);
+    }else{
+      this.animationSequence.push({
+        callback: this.moveGameElement,
+        params: [
+          this.createGameElement(
+            `<div class="card_holder"><img src="${this.card.back}"/></div>`,
+            "#game-hexgrid",
+            ".hex.dummy"
+          ),
+          destination,
+          null,
+          () => {
+            $('.animated_elem').remove();
+            this.restartQueue();
+
+          }
+        ]
+      });
+      this.runAnimationQueue(250);
+    }
+
+  }
+
+
   /*
   Briefly animate the longest road and update log if there is a change in ownership
   */
