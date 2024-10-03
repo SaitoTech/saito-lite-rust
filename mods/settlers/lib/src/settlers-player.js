@@ -395,7 +395,7 @@ class SettlersPlayer {
 
     this.updateStatus("YOUR TURN:");
 
-    document.querySelector(".controls #rolldice").onclick = (e) => {
+    document.getElementById("rolldice").onclick = (e) => {
         e.currentTarget.onclick = null;
         this.addMove("end_turn\t" + this.game.player);
         this.endTurn();

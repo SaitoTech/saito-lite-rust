@@ -923,6 +923,15 @@ ul.horizontal_list li.iconoption {
 	gap: 1rem;
 }
 
+.status .player-notice {
+	opacity: 0.8;
+}
+
+.status .player-notice:last-child{
+	opacity: 1;
+}
+
+
 .player-notice ul {
 	margin-top: 0.5em;
 }
