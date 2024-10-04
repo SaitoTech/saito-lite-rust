@@ -132,6 +132,26 @@ class CallLaunch {
 				this.callScheduleJoin.render()
 			};
 		}
+
+
+		if (document.querySelector(".stunx-precall-link")) {
+			document.querySelector(".stunx-precall-link").onclick = async (e) => {
+				let mode = e.currentTarget.dataset.id;
+				console.log(mode);
+				let call_link = "";
+				if (mode == "join"){
+					call_link =  this.mod.generateCallLink(this.mod.room_obj);
+				}else if (mode == "create"){
+					call_link = this.mod.createRoom();
+				}else{
+					document.getElementById('joinScheduleRoom').click();
+					return;
+				}
+
+				await navigator.clipboard.writeText(call_link);
+				siteMessage("Call link copied");
+			}
+		}
 	}
 
 	enterCall() {
