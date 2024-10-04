@@ -102,9 +102,20 @@
 
 .stunx-appspace-actions {
 	display: flex;
-	flex-direction: column;
 	align-items: center;
 	width: 100%;
+	gap: 2rem;
+	margin-bottom:1rem;
+}
+
+.stunx-precall-link {
+	font-size: 2rem;
+	cursor: pointer;
+	color: var(--color-contrast);
+}
+
+.stunx-precall-link:hover {
+color: var(--font-color-main-body);	
 }
 
 .stunx-appspace-launch-call-btn {
