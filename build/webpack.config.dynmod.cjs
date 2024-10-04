@@ -14,9 +14,9 @@ let outputfile = "dyn.module.js";
 
 
 if (process.argv.indexOf("entrypoint")) {
-  let slug = ((process.argv[2]).split("--entrypoint="))[1];
-  console.log('slug:',slug);
-  entrypoint = `./../mods/tmp_mod/${slug}.js`;
+  let app_path = ((process.argv[2]).split("--entrypoint="))[1];
+  console.log('app_path:', app_path);
+  entrypoint = `./../mods/tmp_mod/${app_path}`;
 }
 
 console.log('entrypoint:',entrypoint);
