@@ -10749,9 +10749,8 @@ console.log("we have removed philip and redisplayed the space...");
 	return 0;
       },
       onEvent(his_self, faction) {
-	his_self.game.state.may_conquer[faction] = 0;
+	his_self.game.queue.push("conquer\t"+faction);
 	his_self.game.state.events.smallpox = faction;
-	his_self.displayConquest();
         return 1;
       },
     }
