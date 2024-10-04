@@ -222,13 +222,15 @@ class DevTools extends ModTemplate {
 				});
 
 				console.log('zip_file created: ', zip_path);
-
 				const directory = await unzipper.Open.file(path.resolve(__dirname, zip_path));
+
+				let app_path = await this_self.getAppPath(directory, slug);
  	 			await directory.extract({ path: './mods/tmp_mod/' })
 				
+ 	 			console.log("app_path: ", app_path);
 
 				const { execSync } = require('child_process');
-				execSync(`sh  ./scripts/dyn-mod-compile.sh ${slug}`,
+				execSync(`sh  ./scripts/dyn-mod-compile.sh ${app_path}`,
 		        (error, stdout, stderr) => {
 		            console.log(stdout);
 		            console.log(stderr);
@@ -248,8 +250,7 @@ class DevTools extends ModTemplate {
 					encoding: 'binary'
 				});
 
-
-				execSync(`rm -rf  ./mods/tmp_mod/ ./build/dyn_mod.js ./build/dyn/`,
+				execSync(`rm -rf  ./mods/tmp_mod/ ./build/dyn_mod.js`,
         (error, stdout, stderr) => {
             console.log(stdout);
             console.log(stderr);
@@ -257,7 +258,6 @@ class DevTools extends ModTemplate {
                 console.log(`execSync error: ${error}`);
             }
         });
-
 
         if (mycallback) {
         	return mycallback({DYN_MOD_WEB});
@@ -269,6 +269,29 @@ class DevTools extends ModTemplate {
 			
 		} catch (err) {
 			console.log('Error in Appstore createAppBinary:', err);
+		}
+	}
+
+	async getAppPath(directory, slug){
+		//console.log("getAppPath ////", directory);
+		try {
+			let app_path = `${slug}.js`;
+			let promises = directory.files.map(async (file) => {
+				let file_path = file.path;
+				if (file_path == `${slug}/${slug}/`) {
+					app_path = `${slug}/${slug}/${slug}.js`;
+					return;
+				} else if (file_path == `${slug}/`) {
+					app_path = `${slug}/${slug}.js`;
+					return;
+				}
+			});
+
+			await Promise.all(promises);
+
+			return app_path;
+		} catch (err) {
+			console.log("ERROR getAppPath: " + err);
 		}
 	}
 
