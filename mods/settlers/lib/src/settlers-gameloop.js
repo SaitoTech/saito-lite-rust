@@ -551,6 +551,8 @@ class SettlersGameloop {
 
         this.game.state.ads[player - 1].offer = null;
         this.game.state.ads[player - 1].ask = null;
+
+        this.playerbox.updateGraphics('', player);
         this.displayPlayers();
       }
       //
@@ -719,8 +721,10 @@ class SettlersGameloop {
             statushtml = "YOUR TURN:";
           }
 
-          this.updateStatus(`${statushtml}`);
-
+          if (this.status.length == 0 || this.status[this.status.length-1] !== statushtml) {
+            this.updateStatus(`${statushtml}`);
+          }
+          
           if (this.turn_limit){
             this.clock.startClock(this.turn_limit);
             this.sleep_timer = setTimeout(()=> {
@@ -741,7 +745,10 @@ class SettlersGameloop {
             }
           }
         } else {
-          this.updateStatus(`${this.game.playerNames[player - 1]} rolling dice...`);
+          let statushtml = `${this.game.playerNames[player - 1]} rolling dice...`;
+          if (this.status.length == 0 || this.status[this.status.length-1] !== statushtml) {
+            this.updateStatus(`${statushtml}`);
+          }
         }
         //this.game.queue.splice(qe, 1);
         return 0;

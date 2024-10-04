@@ -393,7 +393,10 @@ class SettlersPlayer {
       }, this.turn_limit);
     }
 
-    this.updateStatus("YOUR TURN:");
+    let statushtml = "YOUR TURN:";
+    if (this.status.length == 0 || this.status[this.status.length-1] !== statushtml) {
+      this.updateStatus(`${statushtml}`);
+    }
 
     document.getElementById("rolldice").onclick = (e) => {
         e.currentTarget.onclick = null;

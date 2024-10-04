@@ -504,7 +504,15 @@ class Settlers extends GameTemplate {
 						}
 					}
 				} else {
-					this.trade_overlay.render();
+
+					if (this.game.state.ads[this.game.player - 1].offer || this.game.state.ads[this.game.player - 1].ask) {
+              			this.showTradeOverlay(this.game.player,  
+              			 this.game.state.ads[this.game.player - 1].ask,
+                		 this.game.state.ads[this.game.player - 1].offer
+              			);
+					}else{
+						this.trade_overlay.render();	
+					}
 				}
 			};
 		}
