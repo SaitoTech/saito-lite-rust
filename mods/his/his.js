@@ -3706,7 +3706,7 @@ if (this.game.players.length > 2) {
 
 
 
-t
+
   popup(card) {
 
     let c = null;
@@ -11876,9 +11876,13 @@ console.log("we have removed philip and redisplayed the space...");
 	  let p = his_self.returnPlayerOfFaction(faction);
 
 	  if (p == his_self.game.player) {
+
 	    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league != 1) {
+	      his_self.addMove("NOTIFY\tProtestants cannot place mercenaries yet...");
+	      his_self.endTurn();
 	      return 0;
 	    }
+
 	    if (faction === "ottoman") {
 
 	      //
