@@ -27505,7 +27505,7 @@ console.log("have i resolved: 2");
 	      have_i_resolved = true;
 	    } else {
 	      if (await this.hasMyResolvePending()) {
-console.log("have i resolved: 3");
+console.log("have i resolved: 3 -- pending");
 	        have_i_resolved = true;
 	      }
 	    }
