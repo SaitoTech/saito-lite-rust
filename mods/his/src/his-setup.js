@@ -138,7 +138,7 @@ console.log("\n\n\n\n");
           this.addRegular("venice", "candia", 1);
 	
 	  // HUNGARY
-	  this.addRegular("prague", "hungary", 1);
+	  this.addRegular("hungary", "prague", 1);
 
 	  // GENOA
           this.addNavyLeader("genoa", "genoa", "andrea-doria");
