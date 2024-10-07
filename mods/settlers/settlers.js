@@ -742,6 +742,7 @@ class Settlers extends GameTemplate {
 				$('#rolldice').html(`<i class="fa-solid fa-pause"></i>`);
 				$('#rolldice').removeClass('enabled');
 				document.getElementById("rolldice").onclick = null;
+				return;
 			} else {
 				console.log('UPDATE CONTROLS:', str);
 				//super.updateControls(str);
