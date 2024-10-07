@@ -20,6 +20,7 @@
 	position: fixed;
 	background-color: var(--saito-background-color);
 	transition: all 0.2s;
+	z-index: 20;
 }
 
 .stun-chatbox .minimizer,
@@ -799,6 +800,19 @@ video#presentation {
 	.video-box-container-large canvas#oscilloscope {
 		width: 10rem;
 		height: 10rem;
+	}
+
+	.stun-chatbox .video-container-large {
+		width: 100%;
+	}
+
+	.video-container-large.gallery-view {
+		overflow-y: auto;
+	}
+
+	.video-box-container-large video {
+		width: unset;
+		height: unset;
 	}
 }
 
