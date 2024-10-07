@@ -106,6 +106,23 @@ input[type="datetime-local"] {
     margin-bottom: 1.5rem;
 }
 
+
+.call-schedule-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.call-schedule-buttons .saito-button-secondary {
+    flex: 1;
+    height: 100%;
+}
+
+.call-schedule-buttons .saito-button-primary {
+    flex: 3;
+}
+
 /* Media Queries for Responsiveness */
 
 @media screen and (max-width: 600px) {
