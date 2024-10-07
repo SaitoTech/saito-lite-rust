@@ -22,12 +22,17 @@ module.exports = FileShareOverlayTemplate = (fso) => {
 				<div class="teleporter-status" id="peer-accept-status"><i class="fa-solid fa-ellipsis"></i></div>
 			</div>
 			<div id="transfer-speed-row" class="teleporter-status-item hideme">
-				<div>Transferring File</div>
+				<div>Uploading File</div>
 				<div class="teleporter-status" id="file-transfer-status"><i class="fa-solid fa-ellipsis"></i></div>
 			</div>
 		</div>
 		<div class="teleporter-file-data"></div>
 		<div class="teleporter-transfer-field"></div>
+		<div id="file-transfer-buttons" class="file-button-row hideme">
+			<button type="button" class="saito-button-secondary" id="cancel-transfer">Cancel</button>
+			<div class="saito-button-primary" id="download-transfer"><i class="fa-solid fa-check-to-slot"></i>Close</div>
+		</div>
+
 
 	</div>`;
 

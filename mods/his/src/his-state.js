@@ -23,6 +23,9 @@
     this.game.state.events.more_executed_limits_debates = 0;
     this.game.state.events.more_bonus = 0;
     this.game.state.events.sack_of_rome = 0;
+    this.game.state.events.roxelana = 0;
+
+    this.game.state.loyola_bonus_active = 0;
 
     //
     // reset impulse commits
@@ -89,6 +92,7 @@
     this.game.state.events.julia_gonzaga_activated = 0;
     this.game.state.events.england_changed_rulers_this_turn = 0;
     this.game.state.events.smallpox = "";
+    this.game.state.protestant_cards_evented = [];
     this.game.state.cards_evented = [];
     this.game.state.foreign_wars_fought_this_impulse = [];
     this.game.state.henry_viii_pope_approves_divorce = 0;
@@ -749,6 +753,7 @@ if (this.game.state.scenario != "is_testing") {
     state.spaces_assaulted_this_turn = [];
     state.board_updated = new Date().getTime();
     state.board = {}; // units on board
+    state.protestant_cards_evented = [];
     state.cards_evented = [];
 
     state.foreign_wars_fought_this_impulse = [];

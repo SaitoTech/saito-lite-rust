@@ -776,6 +776,7 @@
 
 
     for (let i = 0; i < this.game.state.colonies.length; i++) {
+
       let c = this.game.state.colonies[i];
 
       if (c.resolved != 1) {
@@ -783,13 +784,13 @@
       }
 
       if (c.resolved == 1 && c.destroyed != 1) {
-        if (c.colony == "england_colony1")  { document.querySelector('.england_colony1').innerHTML  = `<img class="nw_tile" src="${c.img}" />`; }
-        if (c.colony == "england_colony2")  { document.querySelector('.england_colony2').innerHTML  = `<img class="nw_tile" src="${c.img}" />`; }
-        if (c.colony == "france_colony1")   { document.querySelector('.france_colony1').innerHTML   = `<img class="nw_tile" src="${c.img}" />`; }
-        if (c.colony == "france_colony2")   { document.querySelector('.france_colony2').innerHTML   = `<img class="nw_tile" src="${c.img}" />`; }
-        if (c.colony == "hapsburg_colony1") { document.querySelector('.hapsburg_colony1').innerHTML = `<img class="nw_tile" src="${c.img}" />`; }
-        if (c.colony == "hapsburg_colony2") { document.querySelector('.hapsburg_colony2').innerHTML = `<img class="nw_tile" src="${c.img}" />`; }
-        if (c.colony == "hapsburg_colony3") { document.querySelector('.hapsburg_colony3').innerHTML = `<img class="nw_tile" src="${c.img}" />`; }
+        if (c.colony === "england_colony1")  { document.querySelector('.england_colony1').innerHTML  = `<img class="nw_tile" src="${c.img}" />`; }
+        if (c.colony === "england_colony2")  { document.querySelector('.england_colony2').innerHTML  = `<img class="nw_tile" src="${c.img}" />`; }
+        if (c.colony === "france_colony1")   { document.querySelector('.france_colony1').innerHTML   = `<img class="nw_tile" src="${c.img}" />`; }
+        if (c.colony === "france_colony2")   { document.querySelector('.france_colony2').innerHTML   = `<img class="nw_tile" src="${c.img}" />`; }
+        if (c.colony === "hapsburg_colony1") { document.querySelector('.hapsburg_colony1').innerHTML = `<img class="nw_tile" src="${c.img}" />`; }
+        if (c.colony === "hapsburg_colony2") { document.querySelector('.hapsburg_colony2').innerHTML = `<img class="nw_tile" src="${c.img}" />`; }
+        if (c.colony === "hapsburg_colony3") { document.querySelector('.hapsburg_colony3').innerHTML = `<img class="nw_tile" src="${c.img}" />`; }
       }
     }
 
@@ -1043,7 +1044,7 @@ try {
     let tile = "";
     let stype = "hex";
 
-    if (space.type == "town") { stype = "hex"; }
+    if (space.type == "town") { stype = "hex"; owner = this.returnControllingPower(owner); }
     if (space.type == "key") { stype = "key"; owner = this.returnControllingPower(owner); }
     if (owner == "protestant") { stype = "hex"; owner = this.returnControllingPower(owner); }
 
@@ -2311,6 +2312,34 @@ try {
     if (space.type == "fortress") { stype = "hex"; }
     if (space.type == "town") { stype = "hex"; }
     if (space.type == "key") { stype = "key"; }
+
+    //
+    // sanity check on removing siege
+    //
+    if (space.besieged > 0) {
+      let f = this.returnFactionControllingSpace(space.key);
+      let anyone_at_war = false;
+      let anyone_here = true;
+      if (!this.doesSpaceHaveNonAlliedIndependentUnits(space.key, f)) {
+	for (let f in space.units) {
+	  for (let ff in space.units) {
+	    if (space.units[f].length > 0 && space.units[ff].length > 0) {
+	      if (f != ff) {
+		anyone_here = true;
+		if (this.areEnemies(f, ff)) { anyone_at_war = true; }
+	      }
+	    }
+	  }
+	}
+
+	if (anyone_at_war == false) {
+	  if (anyone_here == true && this.returnFactionLandUnitsInSpace(f, space.key, 1) == 0) {} else {
+     	    this.removeSiege(space.key);
+	  }
+	}
+      }
+    }
+
 
     //
     // should we show the tile?

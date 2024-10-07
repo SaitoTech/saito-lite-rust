@@ -26,6 +26,8 @@ class ChatPopup {
 
 		this.callbacks = {};
 
+		this.closeFn = null;
+
 		app.connection.on('chat-remove-fetch-button-request', (group_id) => {
 			if (this.group?.id === group_id) {
 				this.no_older_messages = true;
@@ -190,7 +192,8 @@ class ChatPopup {
 			this.input = new SaitoInput(
 				this.app,
 				this.mod,
-				`#chat-popup-${this.group.id} .chat-footer`
+				`#chat-popup-${this.group.id} .chat-footer`,
+				popup_id
 			);
 
 			if (
@@ -661,6 +664,15 @@ class ChatPopup {
 			return;
 		}
 
+
+		if (this.app.browser.isMobileBrowser()){
+			window.history.pushState("chat", "");
+			this.closeFn = window.onpopstate;
+			window.onpopstate = (e) => {
+				this.close();
+			}
+		}
+
 		if (this.group.name != this.mod.communityGroupName) {
 			document.querySelectorAll('.chat-action-item').forEach((menu) => {
 				let id = menu.getAttribute('id');
@@ -780,10 +792,15 @@ class ChatPopup {
 		document.querySelector(
 			`${popup_qs} .chat-header .chat-container-close`
 		).onclick = (e) => {
-			this.manually_closed = true;
-			this.remove();
-			app.storage.saveOptions();
+			this.close();
 		};
+
+		document.querySelector(
+			`${popup_qs} .chat-header .chat-mobile-back`
+		).onclick = (e) => {
+			this.close();
+		};
+
 
 		//
 		// submit
@@ -848,7 +865,7 @@ class ChatPopup {
 			this.overlay.show(
 				`<div class="chat-popup-img-overlay-box">
 				   <img class="chat-popup-img-enhanced" src="${resizedImageUrl}" >
-				   <div id="photo-preview-upload" class="saito-button-primary">Upload</div>
+				   <button id="photo-preview-upload" class="saito-button-primary">Upload</button>
 				</div>`
 			);
 
@@ -858,6 +875,8 @@ class ChatPopup {
 				let msg = img.outerHTML;
 				this.input.callbackOnReturn(msg);
 			}
+
+			document.getElementById("photo-preview-upload").focus();			
 
 		};
 
@@ -940,6 +959,13 @@ class ChatPopup {
 			chatPopup.style.bottom = this.dimensions.bottom + 'px';
 			chatPopup.style.right = this.dimensions.right + 'px';
 		}
+	}
+
+	close(){
+		this.manually_closed = true;
+		this.remove();
+		this.app.storage.saveOptions();
+		window.onpopstate = this.closeFn;
 	}
 }
 

@@ -7,12 +7,17 @@ body {
 	display: inline;
 }
 
+.tweet-overlay-content {
+	margin-left: 1.5rem;
+	margin-right: 1.5rem;
+}
+.post-tweet-button {
+	margin-right: 1.5rem;
+}
+
 .saito-new-tweets {
-	position: sticky;
-	top: 5px;
-	margin: auto;
+	margin: 0 12.5%;
 	width: 75%;
-	align-self: center;
 	z-index: 5;
 	min-height: 4rem;
 }
@@ -117,7 +122,11 @@ body {
 
 .saito-main {
 	transition: opacity 0.8s;
+	padding-top: 0.6rem;
+	border-left: 1px solid var(--saito-border-color);
+	border-right: 1px solid var(--saito-border-color);
 }
+
 
 .saito-profile {
 	margin: unset;
@@ -247,10 +256,6 @@ body {
 .redsquare-home .saito-user > .saito-identicon-box {
 	position: relative;
 	z-index: 5;
-}
-
-.saito-main {
-	padding-top: 1.5rem;
 }
 
 

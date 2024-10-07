@@ -17,6 +17,14 @@ class Profile extends ModTemplate {
 		this.cache = {};
 		this.enable_profile_edits = true;
 
+	    this.social = {
+	      twitter: '@SaitoOfficial',
+	      title: '🟥 Saito User - Web3 Social Media',
+	      url: 'https://saito.io/redsquare#profile',
+	      description: 'Peer to peer Web3 social media platform',
+	      image: 'https://saito.tech/wp-content/uploads/2022/04/saito_card.png' //square image with "Saito" below logo
+	    };
+
 		app.connection.on('profile-fetch-content-and-update-dom',
 			async (key) => {
 
@@ -28,6 +36,8 @@ class Profile extends ModTemplate {
 				if (!this.cache[key]) {
 					this.cache[key] = {};
 					
+					console.log("PROFILE: Need to cache -- ",key);
+
 					if (this.app.keychain.isWatched(key)) {
 
 						let returned_key = this.app.keychain.returnKey(key);
@@ -45,6 +55,8 @@ class Profile extends ModTemplate {
 							if (returned_key.profile?.image){
 								this.cache[key].image = await this.fetchProfileFromArchive("image", returned_key.profile.image);
 							}
+
+							console.log("PROFILE: async fetches for watched key finished");
 						
 						}
 
@@ -295,16 +307,17 @@ class Profile extends ModTemplate {
 	}
 
 	//
-	//
 	//  LOAD PROFILE VALUES FUNCTIONS
 	//
  	async fetchProfileFromArchive(field, sig) {
+ 		console.log("PROFILE: Fetching local profile: ", field);
  		return this.app.storage.loadTransactions({ sig, field1: 'Profile' },
 			(txs) => {
 				if (txs?.length > 0) {
 					for (let tx of txs){
 						let txmsg = tx.returnMessage();
 						if (txmsg.data[field]){
+							console.log("PROFILE: local archive returned txs (inside)!");
 							return txmsg.data[field];
 						}
 					}
@@ -340,6 +353,8 @@ class Profile extends ModTemplate {
 				let updatedSocial = Object.assign({}, mod_self.social);
 
 				updatedSocial.url = reqBaseURL + encodeURI(mod_self.returnSlug());
+
+				// Need to insert profile stuff!
 
 				res.setHeader('Content-type', 'text/html');
 				res.charset = 'UTF-8';

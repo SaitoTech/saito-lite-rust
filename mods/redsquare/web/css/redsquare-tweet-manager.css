@@ -45,9 +45,9 @@
 	margin-left: 0.5rem;
 }
 
-
-.redsquare-progress-banner{
-	height: fit-content;
+.redsquare-progress-banner {
+	height: 0;
 	position: sticky;
 	z-index: 55;
+	top: 1.6rem;
 }

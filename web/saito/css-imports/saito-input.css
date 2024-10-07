@@ -117,6 +117,7 @@
 
 .saito-box-tab:hover {
 	color: var(--font-color-hover-post-icons);
+	transform: scale(1.05);
 }
 
 

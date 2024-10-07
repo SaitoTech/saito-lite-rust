@@ -6,6 +6,7 @@ const JSON = require('json-bigint');
 
 class Post {
 	constructor(app, mod, tweet = null) {
+
 		this.app = app;
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(this.app, this.mod, true, true);
@@ -20,6 +21,7 @@ class Post {
 	}
 
 	render(container = '') {
+
 		this.container = container ? '.tweet-manager ' : '.saito-overlay ';
 
 		console.log('Post render: ' + this.container);
@@ -36,7 +38,7 @@ class Post {
 				this.app.browser.addElementAfterSelector(PostTemplate(this.app, this.mod, this), container);
 			}
 		} else {
-			console.log('overlay');
+			//console.log('overlay');
 			this.overlay.show(PostTemplate(this.app, this.mod, this));
 			this.overlay.blockClose();
 		}
@@ -46,7 +48,7 @@ class Post {
 		//
 
 		if (!this.input) {
-			this.input = new SaitoInput(this.app, this.mod, this.container + '.tweet-overlay-content');
+			this.input = new SaitoInput(this.app, this.mod, this.container + '.tweet-overlay-content', "tweet-overlay");
 		}
 
 		if (!this.user) {
@@ -387,7 +389,7 @@ class Post {
 	}
 
 	addImg(img) {
-		post_self = this;
+		let post_self = this;
 		this.app.browser.addElementToDom(
 			`<div class="post-tweet-img-preview">
         <img src="${img}"/>

@@ -63,6 +63,15 @@ Saito User
   position: relative;
 }
 
+.saito-user > .saito-identicon-box .saito-identicon{
+  opacity: 0.75; /* make identicons less harsh */
+}
+
+
+.saito-user > .saito-identicon-box .saito-identicon[data-id]:hover{
+  opacity: 1;
+}
+
 .saito-user>.saito-address {
   color: var(--font-color-primary);
 

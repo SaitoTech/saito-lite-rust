@@ -25,7 +25,7 @@ class Settings {
 					e.currentTarget.value !==
 					this.mod.loadGamePreference('spider-difficulty')
 				) {
-					if (mod.browser_active){
+					if (this.mod.browser_active){
 						this.mod.changeDifficulty(e.currentTarget.value);	
 					}else{
 						this.mod.saveGamePreference('spider-difficulty', e.currentTarget.value);

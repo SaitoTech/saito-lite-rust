@@ -25,9 +25,9 @@ const JSON = require('json-bigint');
 //
 // CORS -- uncomment for local CORS Cross-Origin Requests by Default
 //
-//var cors = require('cors');
+var cors = require('cors');
 const expressApp = express();
-//expressApp.use(cors());
+expressApp.use(cors());
 
 
 const webserver = new Ser(expressApp);
@@ -833,15 +833,16 @@ class Server {
 			//
 			// caching in prod
 			//
-			/* Not needed as handled by nginx.
-	const caching =
-	process.env.NODE_ENV === "prod"
-	  ? "private max-age=31536000"
-	  : "private, no-cache, no-store, must-revalidate";
-	res.setHeader("Cache-Control", caching);
-	res.setHeader("expires", "-1");
-	res.setHeader("pragma", "no-cache");
-	*/
+			/*** No longer needed as handled by nginx.
+			const caching =
+			process.env.NODE_ENV === "prod"
+			  ? "private max-age=31536000"
+			  : "private, no-cache, no-store, must-revalidate";
+			res.setHeader("Cache-Control", caching);
+			res.setHeader("expires", "-1");
+			res.setHeader("pragma", "no-cache");
+			****/
+
 			res.sendFile(this.web_dir + '/saito/saito.js');
 			return;
 		});
@@ -862,8 +863,12 @@ class Server {
 		this.app.modules.webServer(expressApp, express);
 
 		expressApp.get('*', (req, res) => {
-			res.status(404).sendFile(`${this.web_dir}404.html`);
-			res.status(404).sendFile(`${this.web_dir}tabs.html`);
+
+//res.sendFile(`${this.web_dir}404.html`);
+			res.sendFile(`${this.web_dir}tabs.html`);
+//
+//			res.status(404).sendFile(`${this.web_dir}404.html`);
+//			res.status(404).sendFile(`${this.web_dir}tabs.html`);
 		});
 
 		//     io.on('connection', (socket) => {

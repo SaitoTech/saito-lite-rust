@@ -57,7 +57,7 @@ class Initializer {
 		//Play chime no matter what
 		try{
 			let chime = new Audio("/saito/sound/Jinja.mp3");
-			chime.play();
+			try { chime.play(); } catch (err) {}
 		}catch(err){
 			console.error(err);
 		}

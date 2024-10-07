@@ -149,6 +149,12 @@ class Popup extends ModTemplate {
 		//
 		if (this.app.BROWSER == 1) {
 
+			//
+			// browser should be able to access Saito
+			//
+			saito_app = app;
+			saito_mod = this;
+
 			save_display_mode = function (
 				mode = ""
 			) {
@@ -557,8 +563,13 @@ class Popup extends ModTemplate {
 					label: { dataType: 'string', default: '' },
 					lesson_id: { dataType: 'number', default: 0 },
 					created_at: { dataType: 'number', default: 0 },
-					created_at: { dataType: 'number', default: 0 },
-					updated_at: { dataType: 'number', default: 0 }
+					updated_at: { dataType: 'number', default: 0 },
+					last_studied: { dataType: 'number', default: 0 },
+					last_correct: { dataType: 'number', default: 0 },
+					times_studied: { dataType: 'number', default: 0 },
+					times_correct: { dataType: 'number', default: 0 },
+					times_incorrect: { dataType: 'number', default: 0 },
+					srs_rank: { dataType: 'number', default: 1 },
 				}
 			};
 
@@ -600,6 +611,10 @@ class Popup extends ModTemplate {
 		obj.display_order = 0;
 		obj.created_at = new Date().getTime();
 		obj.updated_at = new Date().getTime();
+		obj.last_correct = 0;
+		obj.times_studied = 0;
+		obj.times_correct = 0;
+		obj.times_incorrect = 0;
 
 		if (this.app.BROWSER) {
 			let numRows = await this.localDB.insert({
@@ -626,7 +641,135 @@ class Popup extends ModTemplate {
 		return rows;
 	}
 
-	
+
+	async loadQuestion() {
+
+	  //let rows = await this.localDB.select({
+	  //	from: 'vocabulary',
+	  //});
+	  //let idx = Math.floor(Math.random() * rows.length);
+	  //let word = rows[idx];
+
+	  let question_types = [
+		"multiple_choice_english", 
+		"multiple_choice_pinyin", 
+		"generative_english", 
+		"generative_pinyin", 
+//		"fill_in_the_blanks"
+	  ];
+	  let question_type = question_types[Math.floor(Math.randon() * question_types.length)];
+
+	  let tdate1 = new Date().getTime();
+	  let tdate2 = new Date().getTime() - (172800 * 1000);	
+	  let tdate3 = new Date().getTime() - (518400 * 1000);	
+	  let tdate4 = new Date().getTime() - (1123200 * 1000);	
+	  let tdate5 = new Date().getTime() - (2419200 * 1000);	
+	  let tdate6 = new Date().getTime() - (4924800 * 1000);
+	  let tdate7 = new Date().getTime() - (14774400 * 1000);	
+
+	  let rows = await this.localDB.select({
+	    from: 'vocabulary',
+	    where: [
+		{
+			srs_rank: 1 ,
+            		last_studied: { '<': tdate1 }
+		},
+		{
+			srs_rank: { '<' : 2 } ,
+            		last_studied: { '<': tdate2 }
+		},
+		{
+			srs_rank: { '<' : 3 } ,
+            		last_studied: { '<': tdate3 }
+		},
+		{
+			srs_rank: { '<' : 4 } ,
+            		last_studied: { '<': tdate4 }
+		},
+		{
+			srs_rank: { '<' : 5 } ,
+            		last_studied: { '<': tdate5 }
+		},
+		{
+			srs_rank: { '<' : 6 } ,
+            		last_studied: { '<': tdate6 }
+		},
+		{
+			srs_rank: { '<' : 7 } ,
+            		last_studied: { '<': tdate7 }
+		}
+	      ],
+	    or: true
+	  });
+	  let idx = Math.floor(Math.random() * rows.length);
+	  let word = rows[idx];
+
+ 	  obj = {
+	    lesson_id : word.lesson_id ,
+	    word_id : word.id ,
+	    question_type : "vocab" ,
+	    question : "Question" ,
+	    english : "English" ,
+	    pinyin : "pinyin" ,
+	    language : "chinese" ,
+	    option1 : "option1" ,
+	    option2 : "option2" ,
+	    option3 : "option3" ,
+	    option4 : "option4" ,
+	    correct : "option1" ,
+	    answer : "option1" ,
+	    hint : "hint" ,
+            source_audio_url : 'http://popupchinese.com/data/'
+	  }
+
+	  return obj;
+
+	}
+
+	async saveAnswer(obj) {
+        
+                //	{
+                //                wid: wid,
+                //                lid: lid,
+                //                last_question_data: last_question_data,
+                //                requested_wid: requested_wid,
+                //                source: source,
+                //                correct: answered_correctly
+                //	}
+		let rows = await this.localDB.select({
+			from: 'vocabulary',
+			where: { id : obj.wid }
+		});
+
+		for (let i = 0; i < rows.length; i++) {
+
+			let dset = {};
+			let dwhere = {};
+			dwhere.id = rows[i].id;
+
+			if (obj.correct) {
+			  dset.last_studied = new Date().getTime();
+			  dset.last_correct= dset.last_studied;
+			  dset.times_studied = rows[i].last_studied++;
+			  dset.times_correct = rows[i].times_correct++;
+			} else {
+			  dset.last_studied = new Date().getTime();
+			  dset.times_studied = rows[i].last_studied++;
+			  dset.times_incorrect = rows[i].times_incorrect++;
+			}
+
+			try {
+			  let rowsUpdated = await this.localDB.update({
+				in : 'vocabulary' ,
+				set : dset ,
+				where : dwhere 
+			  });
+			} catch (err) {
+			  console.log("ERROR: " + JSON.stringify(err));
+			}
+		}
+	}
+
 
 }
 

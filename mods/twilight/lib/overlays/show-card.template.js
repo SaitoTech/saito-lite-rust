@@ -1,4 +1,4 @@
-module.exports = (app, mod, this_obj) => {
+const ShowCardTemplate = (app, mod, this_obj) => {
 	let html = `
   <div class="ts-overlay">
   <h1>${this_obj.title}</h1>
@@ -14,3 +14,4 @@ module.exports = (app, mod, this_obj) => {
 
 	return html;
 };
+module.exports = ShowCardTemplate;

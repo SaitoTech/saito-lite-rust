@@ -225,10 +225,12 @@ class Stun extends ModTemplate {
 		}
 
 		if (request == 'peer-left') {
+			console.log("Stun: Peer left (close the connection)");
 			this.removePeerConnection(sender);
 			return;
 		}
 		if (request == 'peer-kicked') {
+			console.log("Stun: Peer kicked out (close the connection)");
 			this.removePeerConnection(sender);
 			return;
 		}
@@ -344,6 +346,7 @@ class Stun extends ModTemplate {
 
 			//If not a solid connection state..., delete and try again
 			if (pc.connectionState == "failed" || pc.connectionState == "disconnected"){
+				console.log("STUN: remove old connection to reconnect...");
 				this.removePeerConnection(peerId);
 				this.createPeerConnection(peerId, callback);
 				return;
@@ -398,14 +401,15 @@ class Stun extends ModTemplate {
 		peerConnection.timer = setTimeout(()=>{ 
 				console.log("STUN Connection timeout...");
 				this.app.connection.emit('stun-connection-timeout', peerId);
-				this.removePeerConnection(peerId);
-		}, 4000);
+				//this.removePeerConnection(peerId);
+		}, 8000);
 		
 
 		// Handle ICE candidates
 		peerConnection.onicecandidate = async (event) => {
-			console.log('receiving ice candidate for ', peerId, event.candidate)
 			if (event.candidate) {
+				console.log('receiving ice candidate for ', peerId, event.candidate)
+	
 				let data = {
 					module: 'Stun',
 					request: 'peer-candidate',
@@ -445,7 +449,7 @@ class Stun extends ModTemplate {
 				peerConnection.connectionState === 'failed' ||
 				peerConnection.connectionState === 'disconnected'
 			) {
-				setTimeout(() => {
+				peerConnection.timer = setTimeout(() => {
 					if (
 						peerConnection.connectionState === 'failed' ||
 						peerConnection.connectionState === 'disconnected'
@@ -454,6 +458,7 @@ class Stun extends ModTemplate {
 							'stun-connection-failed',
 							peerId
 						);
+						console.log("STUN: connection not restored after 3 seconds...");
 						this.removePeerConnection(peerId);
 					}
 				}, 3000);

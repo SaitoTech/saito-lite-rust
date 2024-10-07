@@ -222,7 +222,6 @@ class DiplomacyOverlay {
 	    this.renderAddProposalMenu(faction, target);
 	}
 
-
 	submitProposals() {
           for (let z = 0; z < this.proposals.length; z++) {
             this.mod.addMove("diplomacy_submit_proposal\t"+JSON.stringify(this.proposals[z]));
@@ -231,8 +230,7 @@ class DiplomacyOverlay {
           this.hide();
 	}
 
-
-	renderAddProposalMenu(faction) {
+	renderAddProposalMenu(faction, target="") {
 
 	  let his_self = this.mod;
 
@@ -246,7 +244,7 @@ class DiplomacyOverlay {
 	  let menu = this.mod.returnDiplomacyMenuOptions(this.mod.game.player, faction);
           let html = "";
           for (let i = 0; i < menu.length; i++) {
-            if (menu[i].check(his_self, his_self.game.player, faction)) {
+            if (menu[i].check(his_self, his_self.game.player, faction, target)) {
 	      html += this.returnMenuHTML(menu[i].name, menu[i].img, i);
 	    }
 	  }
@@ -271,7 +269,6 @@ class DiplomacyOverlay {
 		//
 		let id = e.currentTarget.id;
 		menu[id].fnct(his_self, faction, (terms) => {
-console.log("into callback function after menu selection!");
 		  for (let z = 0; z < terms.length; z++) {
 		    let io = this.mod.returnDiplomacyImpulseOrder(faction);
 	 	    for (let y = 0; y < io.length; y++) {
@@ -292,7 +289,6 @@ console.log("into callback function after menu selection!");
             	  this.proposal.parties = [];
                   this.proposal.proposer = this.faction;
 
-console.log("and re-rendering with selected faction!");
 		  //
 		  // and re-render
 		  //
@@ -304,7 +300,6 @@ console.log("and re-rendering with selected faction!");
 	  }
 	}
 
-
         returnMenuHTML(name="", img="", idx, active_option="active card") {
           return `
               <div id="${idx}" class="menu-option-container${idx} menu-option-container ${active_option}">
@@ -315,7 +310,6 @@ console.log("and re-rendering with selected faction!");
               </div>
           `;
         }
-
 
 }
 

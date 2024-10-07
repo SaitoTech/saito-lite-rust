@@ -166,6 +166,10 @@ class ExplorerCore extends ModTemplate {
 		});
 	}
 
+	async initialize(app) {
+		console.log("inside initialize of explorer.js");
+	}
+
 	returnHead() {
 		return '<html> \
   <head> \

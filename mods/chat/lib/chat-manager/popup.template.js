@@ -40,6 +40,7 @@ module.exports = (app, mod, group, isStatic = false) => {
 				            <i id="chat-container-close" class="chat-container-close fas fa-times"></i>
 			            </div>
 			            <div class="chat-header-info">
+			            	<div class="chat-mobile-back"><i class="fa-solid fa-arrow-left"></i></div>
               			<div class="chat-details">
               				${is_encrypted}
               				<div id="chat-group-${group.id}" class="chat-group${dm?" saito-address":""}" data-id="${dm ? dm_counterparty: group.name}">${group.name}</div>

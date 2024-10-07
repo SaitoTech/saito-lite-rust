@@ -222,7 +222,7 @@ class Spider extends OnePlayerGameTemplate {
 
 		$('.draw-pile').on('click', async function () {
 			if (spider_self.moves.length == 0 && spider_self.hints.length > 0) {
-				let c = await sconfirm('Are you sure you want to do that?');
+				let c = await sconfirm('Deal without making any moves?');
 				if (!c) {
 					return;
 				}

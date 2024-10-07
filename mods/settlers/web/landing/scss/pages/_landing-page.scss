@@ -1,0 +1,372 @@
+/* ==========================================================================
+	# Site
+========================================================================== */
+.site {
+	position: relative;
+	z-index: 2;
+	padding-bottom: 0;
+}
+
+.img-content,
+.zigzac {
+	.container {
+		max-width: 70%;
+		margin-left: 24%;
+		@include breakpoint(medium) {
+			max-width: 100%;
+			margin-left: 0;
+		}
+	}
+}
+
+/* ==========================================================================
+	# Fix Background
+========================================================================== */
+.fix-bg-img {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+
+	img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+}
+
+/* ==========================================================================
+	# Banner
+========================================================================== */
+.hero-banner {
+	padding-block: 40px;
+	height: 100vh;
+	@include breakpoint(wide) {
+		height: initial;
+		padding-block: 196px;
+	}
+
+	.container {
+		height: 100%;
+	}
+	.inner {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
+		flex-direction: column;
+		gap: 32px;
+		@include breakpoint(small) {
+			gap: 16px;
+		}
+	}
+
+	.abs-bg-img {
+		img {
+			object-fit: contain;
+		}
+	}
+
+	&__text {
+		text-align: center;
+		background-position: center center;
+		background-size: contain;
+		background-repeat: no-repeat;
+		padding: 9%;
+		transform: translateY(250px) scale(0.6);
+		opacity: 0;
+		transform-origin: center center;
+		will-change: transform;
+		@include breakpoint(laptop) {
+			padding: 10%;
+			margin-top: 20px;
+		}
+		@include breakpoint(wide) {
+			padding: 14%;
+			margin: 0;
+		}
+		@include breakpoint(medium) {
+			padding: 22%;
+		}
+		@include breakpoint(smaller) {
+			padding: 30%;
+		}
+	}
+
+	&__title {
+		color: var(--color__text-light);
+		@include breakpoint(small) {
+			font-size: 34px;
+		}
+		@include breakpoint(smaller) {
+			font-size: 22px;
+		}
+
+		span {
+			display: block;
+		}
+
+		.title-one {
+			opacity: 0;
+		}
+
+		.sm {
+			opacity: 0;
+		}
+
+		.title-two {
+			opacity: 0;
+			transform: translateY(-200px);
+		}
+
+		.sm {
+			font-size: 32px;
+			line-height: 1.18;
+			display: block;
+			margin-block: 14px;
+		}
+	}
+
+	.btn-wrap {
+		margin-top: 40px;
+		@include breakpoint(small) {
+			margin-top: 24px;
+		}
+
+		.random-texts__center {
+			display: inline-block;
+			font-size: 19px;
+			line-height: 1;
+			border: 7px solid #424243;
+			background-color: #ffffffa8;
+			border-radius: 0;
+			color: #424243;
+			font-weight: 700;
+			padding: 16px 16px;
+			transition: color 0.28s;
+			@include breakpoint(small) {
+				font-size: 15px;
+				padding: 13px 8px;
+				border-width: 6px;
+			}
+
+			&:hover {
+				color: #be6545;
+			}
+		}
+	}
+}
+
+.img-gallery-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 30px;
+	@include breakpoint(small) {
+		gap: 24px;
+	}
+	.img-list {
+		@include flex-grid-width(5, 30px);
+		@include breakpoint(medium) {
+			@include flex-grid-width(4, 30px);
+		}
+		@include breakpoint(small) {
+			@include flex-grid-width(3, 24px);
+		}
+	}
+}
+
+/* ==========================================================================
+	# Text Slider
+========================================================================== */
+.slider-holder {
+	max-width: 800px;
+	margin-inline: auto;
+	text-align: center;
+	@include breakpoint(laptop) {
+		max-width: 720px;
+	}
+	@include breakpoint(medium) {
+		max-width: 100%;
+	}
+}
+.text-slider {
+	&__title {
+		color: var(--color__white);
+
+		a {
+			color: var(--color__white);
+			text-decoration: none;
+			transition: color 0.28s;
+			&:hover {
+				color: var(--color__secondary);
+			}
+		}
+	}
+
+	.swiper-pagination {
+		position: static;
+		display: flex;
+		justify-content: center;
+		gap: 8px;
+		margin-top: 16px;
+	}
+	.swiper-pagination-bullet {
+		--bullet-size: 16px;
+		width: var(--bullet-size);
+		height: var(--bullet-size);
+		margin: 0 !important;
+		border: 1px solid var(--color__black);
+		background-color: var(--color__white);
+		opacity: 1;
+
+		&.swiper-pagination-bullet-active {
+			opacity: 1;
+			background-color: #666666;
+		}
+	}
+}
+
+/* ==========================================================================
+	# Img Content
+========================================================================== */
+.img-content {
+	padding-block: 40px;
+	overflow: hidden;
+
+	.info-card {
+		max-width: 100%;
+		// margin-right: auto;
+		// margin-left: 20%;
+		// max-width: 66%;
+		// @include breakpoint(smaller) {
+		// 	margin-left: 0;
+		// }
+	}
+
+	.row {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.content-col {
+		@include flex-width(40%);
+	}
+
+	.img-col {
+		@include flex-width(20%);
+		text-align: right;
+		align-self: center;
+	}
+}
+
+/* ==========================================================================
+	# Zigzac
+========================================================================== */
+.zigzac {
+	overflow: hidden;
+
+	.block {
+		// @include flex-width(71%);
+		// margin-left: auto;
+		display: flex;
+		flex-direction: column;
+		gap: 32px;
+		padding: 40px 0 104px;
+		// margin-right: auto;
+		// margin-left: 20%;
+		// @include flex-width(66%);
+		@include breakpoint(medium) {
+			@include flex-width(100%);
+		}
+
+		&:last-child {
+			padding-bottom: 0;
+		}
+
+		.info-card {
+			max-width: 500px;
+			@include breakpoint(medium) {
+				max-width: 100%
+			}
+		}
+
+		&__top-img {
+			@include flex-width(25%);
+			margin-left: auto;
+			@include breakpoint(laptop) {
+				@include flex-width(35%);
+			}
+			@include breakpoint(small) {
+				@include flex-width(80%);
+			}
+		}
+
+		&__bottom-content {
+			display: flex;
+			justify-content: center;
+			background-color: #e0f2ff42;
+			padding: 50px 25px;
+			border-radius: 20px 0 0 0;
+			gap: 32px;
+			@include breakpoint(medium) {
+				flex-wrap: wrap;
+			}
+		}
+
+		.btn-img {
+			@include flex-width(30%);
+			text-align: center;
+			@include breakpoint(laptop) {
+				@include flex-width(25%);
+			}
+			@include breakpoint(ipadPro) {
+				@include flex-width(50%);
+			}
+			@include breakpoint(small) {
+				@include flex-width(100%);
+			}
+
+			.img-holder {
+				@include flex-width(45%);
+				margin-inline: auto;
+				@include breakpoint(ipadPro) {
+					@include flex-width(50%);
+				}
+				@include breakpoint(small) {
+					@include flex-width(100%);
+				}
+			}
+		}
+
+		.info-card-holder {
+			@include flex-width(42%);
+			@include breakpoint(laptop) {
+				@include flex-width(58%);
+			}
+			@include breakpoint(medium) {
+				@include flex-width(50%);
+			}
+			@include breakpoint(small) {
+				@include flex-width(100%);
+			}
+		}
+		&.left {
+			margin-left: -15px;
+			border-radius: 0;
+			@include breakpoint(wide) {
+				margin: 0;
+			}
+			.block__top-img {
+				@include breakpoint(wide) {
+					margin-right: auto;
+					margin-left: 0;
+				}
+			}
+
+			.block__bottom-content {
+				border-radius: 0 20px 0 0;
+			}
+		}
+	} //block
+}

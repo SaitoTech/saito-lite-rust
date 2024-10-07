@@ -71,6 +71,10 @@
 	height: 100%;
 }
 
+.last-roll {
+	width: 4rem;
+}
+
 .cardct {
 	width: 3rem;
 	position: relative;

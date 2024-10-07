@@ -11,25 +11,27 @@ class FileShareOverlay {
 		this.qs = `#file-transfer-${this.fileId}-${this.recipient}`;
 
 		app.connection.on('stun-data-channel-open', (peerId) => {
-			console.log("open");
-			if (peerId == this.recipient && this?.active !== false) {
+			console.log('stun-data-channel-open');
+			if (peerId == this.recipient && this?.active) {
 				this.onConnectionSuccess();
+			}else{
+				console.log("not for fileshare!");
 			}
 		});
 
 		app.connection.on('stun-connection-timeout', (peerId) => {
-			if (peerId == this.recipient && this?.active !== false) {
+			if (peerId == this.recipient && this?.active) {
 				this.onConnectionFailure();
 			}
 		});
 
 		app.connection.on('stun-data-channel-close', (peerId) => {
-			if (peerId == this.recipient && this?.active !== false) {
+			if (peerId == this.recipient && this?.active) {
 				this.onConnectionFailure();
 			}
 		});
 		app.connection.on('stun-connection-failed', (peerId) => {
-			if (peerId == this.recipient && this?.active !== false) {
+			if (peerId == this.recipient && this?.active) {
 				this.onConnectionFailure();
 			}
 		});
@@ -38,6 +40,7 @@ class FileShareOverlay {
 
 	render(needs_file = true){
 
+		this.active = true;
 		this.app.browser.addElementToDom(FileShareOverlayTemplate(this));
 
 		if (this.recipient){
@@ -52,6 +55,8 @@ class FileShareOverlay {
 		if (document.querySelector(this.qs)){
 			document.querySelector(this.qs).remove();
 		}
+		this.active = false;
+		this.mod.reset(this.fileId, this.recipient);
 	}
 
 	addRecipient(recipient){
@@ -113,7 +118,11 @@ class FileShareOverlay {
 			}
 
 			console.log("Done for real!");
-			this.mod.reset(this.fileId);
+			let btn = document.querySelector(this.qs + " #file-transfer-buttons");
+			if (btn){
+				btn.classList.remove("hideme");
+			}
+
 		}
 
 		let progress_bar = document.querySelector(this.qs + " .file-transfer-progress");
@@ -131,12 +140,10 @@ class FileShareOverlay {
 	finishTransfer(){
 
 		this.active = false;
-
 		let field = document.querySelector(this.qs + " #file-transfer-status");
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
 		}
-
 
 	}
 
@@ -185,7 +192,7 @@ class FileShareOverlay {
 
 		// If this is a failure to connection rather than dropped connection after starting to send
 		//
-		if (!this.mod.outgoing_files[this.fileId].sending) {
+		if (this.mod.outgoing_files[this.fileId] && !this.mod.outgoing_files[this.fileId]?.sending) {
 			let message_field = document.querySelector(this.qs + " .teleporter-transfer-field");
 			if (message_field){
 				message_field.innerHTML = `Peer appears to be offline. <span class="saito-link">Send them a link?</span> `;
@@ -215,8 +222,6 @@ class FileShareOverlay {
 				hidden_form.onclick = null;
 				hidden_form.classList.remove("needs-file");
 			}
-
-			this.active = true;
 		}
 	}
 
@@ -272,7 +277,6 @@ class FileShareOverlay {
 					}
 					this.mod.interrupt(this.fileId, this.recipient);
 				}
-				this.mod.reset(this.fileId, this.recipient);
 				this.remove();
 			}
 		}
@@ -283,6 +287,13 @@ class FileShareOverlay {
 				let overlay = document.querySelector(this.qs);
 				overlay.classList.toggle("minimize");
 				overlay.removeAttribute("style");
+			}
+		}
+
+		let alt_close = document.querySelector(this.qs + " #download-transfer");
+		if (alt_close){
+			alt_close.onclick = (e) => {
+				this.remove();
 			}
 		}
 

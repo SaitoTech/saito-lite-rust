@@ -26,11 +26,9 @@ class RedSquareMain {
     ////////////////////
 
     //
-    // HOME-RENDER-REQUEST render the main thread from scratch
+    // HOME-RENDER-REQUEST -- render the main thread
     //
     this.app.connection.on("redsquare-home-render-request", (scroll_to_top = false) => {
-
-      console.log("redsquare-home-render-request");
 
       if (document.querySelector(".saito-back-button")) {
         document.querySelector(".saito-back-button").remove();
@@ -55,7 +53,6 @@ class RedSquareMain {
     // page we show a button that can be clicked to do so.
     //
     this.app.connection.on("redsquare-home-postcache-render-request", (num_tweets = 0) => {
-      console.log(`postcache, pulled ${num_tweets} new tweets`);
 
       //
       // check if we can refresh page (show tweets immediately) or show prompt / button
@@ -101,16 +98,10 @@ class RedSquareMain {
     //
     this.app.connection.on("redsquare-tweet-render-request", (tweet) => {
 
-      window.history.pushState({}, "", `/redsquare?tweet_id=${tweet.tx.signature}`);
+      window.history.pushState({view: "tweet"}, "", `/redsquare?tweet_id=${tweet.tx.signature}`);
  
       this.scrollFeed(0);
       this.manager.renderTweet(tweet);
-
-      this.app.connection.emit("saito-header-replace-logo", (e) => {
-        this.app.connection.emit("redsquare-home-render-request");
-        window.history.pushState({}, document.title, "/" + this.mod.slug);
-
-      });
 
     });
 
@@ -118,12 +109,6 @@ class RedSquareMain {
       this.scrollFeed(0);
       this.mod.resetNotifications();
       this.manager.render("notifications");
-
-      this.app.connection.emit("saito-header-replace-logo", (e) => {
-        this.app.connection.emit("redsquare-home-render-request");
-        window.history.pushState({}, document.title, "/" + this.mod.slug);
-
-      });
 
 
     });
@@ -140,12 +125,6 @@ class RedSquareMain {
       }
 
       this.manager.renderProfile(publicKey);
-
-      this.app.connection.emit("saito-header-replace-logo", (e) => {
-        this.app.connection.emit("redsquare-home-render-request");
-        window.history.pushState({}, document.title, "/" + this.mod.slug);
-
-      });
 
     });
 

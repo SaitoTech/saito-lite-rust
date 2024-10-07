@@ -44,6 +44,11 @@ module.exports = DreamWizardTemplate = (app, mod, options) => {
 					<div class="cast-mode-option" id="mode-audio"><i class="fa-solid ${mod.icons.audio}" title="ignore the camera feeds and cast only the call audio"></i><label>voice</label></div>
 					<div class="cast-mode-option selected" id="mode-video"><i class="fa-solid ${mod.icons.screen}" title="Let Saito stitch the video streams together"></i><label>video</label></div>
 				</div>`;
+			}else if (options.externalMediaType === "game"){
+				html += `<div class="cast-mode">
+					<div class="cast-mode-option selected" id="mode-game"><i class="fa-solid fa-palette" title="Saito stitches together game elements and video into a stream"></i><label>Canvas</label></div>
+					<div class="cast-mode-option" id="mode-screen"><i class="fa-solid ${mod.icons.screen}" title="Use browser tab selection"></i><label>Tab</label></div>
+				</div>`;
 			}
 		}
 	}

@@ -6,7 +6,7 @@ class CardOverlay {
 		this.app = app;
 		this.mod = mod;
 		this.visible = false;
-		this.overlay = new SaitoOverlay(app, mod, false, false, true);
+		this.overlay = new SaitoOverlay(app, mod, false, true, true);
 	}
 
 	hide() {
@@ -34,56 +34,58 @@ class CardOverlay {
 		}
 	}
 
+	//obj = {player, card: cardname}
 	render(obj={}) {
 
 		let settlers_self = this.mod;
 
 		let player = obj.player;
 		let cardname = obj.card;
-		let cardimg = "";
-		let cardtitle = new String("");
-		let cardtext = new String("");
+		let card;
 
-		for (let i = 0; i < this.mod.game.deck[0].cards.length; i++) {
-			if (this.mod.game.deck[0].cards[i].card === cardname) {
-				cardimg = this.mod.game.deck[0].cards[i].img;
-				if (this.mod.game.deck[0].cards[i].title) { cardtitle = this.mod.game.deck[0].cards[i].title; }
-				if (this.mod.game.deck[0].cards[i].text) { cardtext = this.mod.game.deck[0].cards[i].text; }
-
+		for (let i = 0; i < this.mod.deck.length; i++) {
+			if (this.mod.deck[i].card === cardname) {
+				card = this.mod.deck[i];
+				break;
 			}
 		}
 
-		if (player == this.mod.game.player){
-			cardtext = "You" + cardtext.replace("earns", "earn");
+		if (!card){
+			console.error("Card not found", cardname);
+			return;
+		}
+
+		if (!obj?.cardtext){
+			let cardtext = card.text.toLowerCase();
+			if (player == this.mod.game.player){
+				cardtext = "You" + cardtext.replace("earns", "earn").replace("moves", "move").replace("is", "are");
+			}else{
+				cardtext = this.mod.game.playerNames[player - 1] + cardtext;
+			}
+
+			card.cardtext = cardtext;
 		}else{
-			cardtext = this.mod.game.playerNames[player - 1] + cardtext;
+			card.cardtext = obj.cardtext;
 		}
 
-		this.overlay.show(CardTemplate(""));
-		this.pushHudUnderOverlay();
-		this.overlay.pullOverlayToFront();
+		this.overlay.show(CardTemplate(card));
 
-		if (cardtitle) { document.querySelector('.cardover-title').innerHTML = cardtitle; }
-		if (cardtext)  { document.querySelector('.cardover-text').innerHTML  = cardtext; }
-		if (cardimg)   { document.querySelector('.cardover').style.setProperty('--settlers-cardimg', `url(${cardimg})`); }
-		if (obj.img)   { document.querySelector('.cardover').style.backgroundImage = `url(${obj.img})`; }
-		if (obj.card)  { settlers_self.app.browser.addElementToSelector(`<div class="cardover-cardover"><img src="${cardimg}" /><div>`, '.cardover'); }
-		if (obj.styles){ 
-		  for (let z = 0; z < obj.styles.length; z++) { 
-		    let s = obj.styles[z];
-		    document.querySelector('.cardover').style[s.key] = s.val; 
-		  }
-		}
-		let overlay_zindex = parseInt(this.overlay.zIndex);
-		document.querySelector('.cardover').style["zIndex"] = overlay_zindex;
-		document.querySelector('.cardover').style["display"] = "block";
+		document.querySelector('.cardover').style.setProperty('--settlers-cardimg', `url(${card.img})`);
 
 		// this will clear any ACKNOWLEDGE
 		this.attachEvents();
 
 	}
 
-	attachEvents() {}
+	attachEvents() {
+
+		let settlers_self = this.mod;
+	    $(".cardover-optout").on('click', function () {
+	    	console.log("!!!!!");
+          	settlers_self.saveGamePreference("settlers_overlays", 0);
+	    });
+
+	}
 
 }
 

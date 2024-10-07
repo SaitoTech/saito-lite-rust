@@ -61,6 +61,7 @@ const SaitoOverlay = require('./../../lib/saito/ui/saito-overlay/saito-overlay')
 */
 
 class RedSquare extends ModTemplate {
+
   constructor(app) {
     super(app);
     this.appname = 'Red Square';
@@ -165,7 +166,7 @@ class RedSquare extends ModTemplate {
 
   returnServices() {
     let services = [];
-    services.push(new PeerService(null, 'redsquare', 'RedSquare Tweet Archive'));
+    services.push(this.app.network.createPeerService(null, "redsquare", "RedSquare Tweet Archive"));
     return services;
   }
 
@@ -198,8 +199,8 @@ class RedSquare extends ModTemplate {
           if (app.modules.returnActiveModule().returnName() == 'Red Square') {
             app.connection.emit('redsquare-profile-render-request', publicKey);
             window.history.pushState(
-              {},
-              document.title,
+              {view: "profile"},
+              '',
               '/' + this_mod.slug + `/?user_id=${publicKey}`
             );
           } else {
@@ -336,11 +337,9 @@ class RedSquare extends ModTemplate {
           if (tx == null || app == null) {
             return 0;
           }
-
           if (this.hidden_tweets.includes(tx.signature)){
             return -1;
           }
-
           return 0;
         }
       };
@@ -825,9 +824,9 @@ class RedSquare extends ModTemplate {
         if (txmsg.data.images) {
           let new_obj = JSON.parse(JSON.stringify(txmsg));
           new_obj.data.images = '[image tweet]';
-          console.log('txmsg: ' + JSON.stringify(new_obj));
+          //console.log('txmsg: ' + JSON.stringify(new_obj));
         } else {
-          console.log('txmsg: ' + JSON.stringify(txmsg));
+          //console.log('txmsg: ' + JSON.stringify(txmsg));
         }
       }
 
@@ -1421,7 +1420,7 @@ class RedSquare extends ModTemplate {
       let t = this.returnTweet(tweet.tx.signature);
       if (!t) {
         console.warn('REDSQUARE: Tweet indexed in hash, but not in memory');
-        console.log(tweet);
+        //console.log(tweet);
         return 0;
       }
 
@@ -2161,7 +2160,7 @@ class RedSquare extends ModTemplate {
       // servers -- get open graph properties
       //
 
-      tweet = await tweet.generateTweetProperties(app, this, 1);
+      tweet = await tweet.analyseTweetLinks(app, this, 1);
 
       //
       // Save the modified tx so we have open graph properties available
@@ -2584,7 +2583,7 @@ class RedSquare extends ModTemplate {
     let hex_values = [];
 
     if (this.app.BROWSER) {
-      return;
+      return [];
     }
 
     return this.app.storage.loadTransactions(
@@ -2620,6 +2619,7 @@ class RedSquare extends ModTemplate {
   ///////////////
   // webserver //
   ///////////////
+
   webServer(app, expressapp, express) {
     console.log('this is my home');
     let webdir = `${__dirname}/../../mods/${this.dirname}/web`;

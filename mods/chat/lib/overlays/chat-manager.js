@@ -14,6 +14,11 @@ class ChatManagerOverlay {
 				).style.visibility = 'hidden';
 			}
 
+			if (this.backFn){
+				window.onpopstate = this.backFn;
+				delete this.backFnl
+			}
+
 			this.mod.chat_manager.container = this.old_container;
 			this.app.connection.emit('chat-manager-render-request');
 		});
@@ -57,7 +62,14 @@ class ChatManagerOverlay {
 			}
 		};
 
-		if (document.querySelector('.floating-cm-overlay')) {
+		if (this.app.browser.isMobileBrowser() || window.innerWidth < 600) {
+			window.history.pushState("chat-manager-overlay", "");
+			this.backFn = window.onpopstate;
+			window.onpopstate = (e) => {
+				this.app.connection.emit('close-chat-manager-overlay');
+			}
+
+		} else {
 			this.app.browser.makeDraggable(
 				'chat-manager-overlay',
 				'chat-manager-header'

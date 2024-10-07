@@ -85,7 +85,10 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
       </div>
       
       <div class="settings-appspace-modules-container">
-          <h6> Installed Modules </h6>
+          <div class="settings-installed-mod-header">
+            <h6> Installed Modules </h6>
+            <i id="settings-add-app" class="fa-solid fa-plus"></i>
+          </div>
           <div class="settings-appspace-modules">
               ${modules_html}
           </div>

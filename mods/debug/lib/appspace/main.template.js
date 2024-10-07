@@ -1,4 +1,4 @@
-module.exports = DebugAppspaceMainTemplate = () => {
+const DebugAppspaceMainTemplate = () => {
 	return `
   
     <div class="saito-page-header">
@@ -9,3 +9,4 @@ module.exports = DebugAppspaceMainTemplate = () => {
 
   `;
 };
+module.exports = DebugAppspaceMainTemplate;

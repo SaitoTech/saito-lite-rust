@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv = "Content-Type" content = "text/html; charset = utf-8" />
+<meta name="author" content="Khan" />
+<title> Saito Appstore - Nuke </title>
+</head>
+<body>
+<h2>Remove dynamic applications</h2>
+<button id="nuke" class="saito-button-primary">
+      Nuke 
+</button>
+<p id="value1"></p>
+</body>
+<script>
+	try {
+		const request = indexedDB.open('dyn_mods_db', 1);
+		function deleteApplicationData(db_variable) {
+			const txn_variable = db_variable.transaction('dyn_mods', 'readwrite');
+			const store_variable = txn_variable.objectStore('dyn_mods');
+			let query_variable = store_variable.clear();
+			query_variable.onsuccess = (event) => {
+				console.log("onsuccess:", event);	
+				if (!event.target.result) {
+					document.getElementById("value1").innerHTML = "Deleted all data successfully";
+				} else {
+					console.log("IndexedDb Error");
+					console.log(event);
+				}
+			};
+			query_variable.onerror = (event) => {
+				console.log(event.target.errorCode);
+			}
+			txn_variable.oncomplete = function () {
+				db_variable.close();
+			};
+		};
+		request.onsuccess = (event) => {
+
+			const db_variable= event.target.result;
+			document.querySelector('#nuke').onclick = () => {
+				console.log("db_variable:", db_variable);
+				deleteApplicationData(db_variable);
+			} 
+			
+		};
+	} catch(err){
+		console.log("Error devtools nuke.html :", err);
+	}
+</script>
+</html>

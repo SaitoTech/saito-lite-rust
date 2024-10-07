@@ -20,7 +20,7 @@ class DreamControls {
 		//Oof, I should change the name in video call (this actually refers to the hang up action)
 		app.connection.on('stun-disconnect', async () => {
 			console.log(this.mod.externalMediaControl, "mod external media control")
-			if (this.mod.externalMediaControl && this.mod.externalMediaControl.type === "game") {
+			if (this.mod.externalMediaControl && this.mod.gameStreamCapturer) {
 				// we don't want to exit the space when inside a game call
 				return;
 			}
@@ -145,7 +145,8 @@ class DreamControls {
 			//Tell PeerManager to pause streams for green room 
 			this.app.connection.emit('limbo-toggle-audio');
 			this.app.connection.emit('limbo-toggle-video');
-
+		}else{
+			this.startTimer();
 		}
 
 		if (!document.querySelector('.dream-controls-menu-item')) {

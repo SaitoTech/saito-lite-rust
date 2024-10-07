@@ -35,7 +35,7 @@ class SettlersPlayer {
           }
         }
         html += "</ul></div>";
-        this.updateStatus(html, 1);
+        this.hud.updateStatus(html, 1);
 
         //Select a player to steal from
         $(".textchoice").off();
@@ -63,7 +63,7 @@ class SettlersPlayer {
     let xpos = 0;
     let ypos = 0;
 
-    this.updateStatus(`<div class="player-notice"><span>Move the ${this.b.name}</span></div>`);
+    this.updateStatus(`MOVE the ${this.b.name}`);
     $(".option").css("visibility", "hidden");
     let settlers_self = this;
     $(".sector-container").addClass("rhover");
@@ -108,14 +108,13 @@ class SettlersPlayer {
     if (existing_cities < 2) {
       if (existing_cities == 1) {
         this.hud.updateStatus(
-          `<div class="flashme player-notice"><span>YOUR TURN: place your second ${this.c1.name}</span></div>`
+          `<div class="player-notice">YOUR TURN: place your second ${this.c1.name}</div>`
         );
       } else {
         this.hud.updateStatus(
-          `<div class="flashme player-notice"><span>YOUR TURN: place your first ${this.c1.name}</span></div>`
+          `<div class="player-notice">YOUR TURN: place your first ${this.c1.name}</div>`
         );
       }
-      $(".flashme").addClass("flash");
 
       $(".city.empty").addClass("chover");
       //$('.city').css('z-index', 9999999);
@@ -151,7 +150,7 @@ class SettlersPlayer {
       });
     } else {
       /* During game, must build roads to open up board for new settlements*/
-      this.updateStatus(`<div class="player-notice">You may build a ${this.c1.name}</div>`);
+      this.updateStatus(`You may build a ${this.c1.name}`);
       if (canBackUp) {
         this.updateControls(`<i class="fa-solid fa-xmark"></i>`);
           document.getElementById("rolldice").onclick = (e) => {
@@ -210,9 +209,7 @@ class SettlersPlayer {
     let settlers_self = this;
 
     if (this.game.state.placedCity) {
-      this.updateStatus(
-        `<div class="player-notice"><span>YOUR TURN: place a ${this.r.name}</span></div>`
-      );
+      this.hud.updateStatus(`YOUR TURN: place a connecting ${this.r.name}`);
 
       /*Initial placing of settlements and roads, road must connect to settlement just placed
           Use a "new" class tag to restrict scope
@@ -239,7 +236,7 @@ class SettlersPlayer {
         });
       });
     } else {
-      this.updateStatus(`<div class="player-notice">You may build a ${this.r.name}...</div>`);
+      this.updateStatus(`You may build a ${this.r.name}...`);
       if (canBackUp) {
         this.updateControls(`<i class="fa-solid fa-xmark"></i>`);
         document.getElementById("rolldice").onclick = (e) => {
@@ -285,9 +282,7 @@ class SettlersPlayer {
   }
 
   playerBuildCity(player, canBackUp = 0) {
-    this.updateStatus(
-      `<div class="player-notice">Click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...</div>`
-    );
+    this.updateStatus(`Click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...`);
     if (canBackUp) {
       this.updateControls(`<i class="fa-solid fa-xmark"></i>`);
       document.getElementById("rolldice").onclick = (e) => {
@@ -398,10 +393,12 @@ class SettlersPlayer {
       }, this.turn_limit);
     }
 
-    let statushtml = this.getLastNotice() || `<div class="player-notice">YOUR TURN:</div>`;
-    this.updateStatus(statushtml);
+    let statushtml = "YOUR TURN:";
+    if (this.status.length == 0 || this.status[this.status.length-1] !== statushtml) {
+      this.updateStatus(`${statushtml}`);
+    }
 
-    document.querySelector(".controls #rolldice").onclick = (e) => {
+    document.getElementById("rolldice").onclick = (e) => {
         e.currentTarget.onclick = null;
         this.addMove("end_turn\t" + this.game.player);
         this.endTurn();
@@ -447,7 +444,7 @@ class SettlersPlayer {
       for (let c of this.game.state.players[this.game.player-1].devcards){
         let card = this.game.deck[0].cards[c];
         console.log(card);
-        if (card.card == "Knight"){
+        if (card.action == 1){
           return true;
         }
       }

@@ -1,4 +1,4 @@
-module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
+module.exports = (app, mod, invite) => {
 	if (mod.debug) {
 		//console.log("INVITATION DETAILS: ", invite);
 	}
