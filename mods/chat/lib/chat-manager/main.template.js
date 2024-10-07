@@ -1,4 +1,4 @@
-module.exports = ChatManagerTemplate = (manager_self) => {
+module.exports  = (manager_self) => {
 	return `
   <div class="chat-manager">
     <div id="chat-manager-header" class="sidebar-header chat-manager-header">

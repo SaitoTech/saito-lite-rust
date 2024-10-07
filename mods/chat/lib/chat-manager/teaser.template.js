@@ -1,4 +1,4 @@
-module.exports = ChatTeaser = (app, mod, group, chat_open) => {
+module.exports  = (app, mod, group, chat_open) => {
 	let id = group.id;
 
 	let last_msg = '<em>new chat</em>';

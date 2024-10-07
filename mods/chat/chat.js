@@ -18,7 +18,7 @@ class Chat extends ModTemplate {
     super(app);
 
     this.name = 'Chat';
-
+    this.slug = 'chat';
     this.description = 'Saito instant-messaging client';
     this.categories = 'Messaging Chat';
     this.groups = [];

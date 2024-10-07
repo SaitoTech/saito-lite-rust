@@ -14,7 +14,7 @@ class DevTools extends ModTemplate {
 
 		this.name = 'DevTools';
 		this.appname = 'DevTools';
-		this.sluf = 'devtools';
+		this.slug = 'devtools';
 		this.description = 'Application manages installing, indexing, compiling and serving Saito modules.';
 		this.categories = 'Utilities Dev';
 		this.featured_apps = [];
@@ -273,7 +273,7 @@ class DevTools extends ModTemplate {
 	}
 
 	async getAppPath(directory, slug){
-		//console.log("getAppPath ////", directory);
+		//console.log("getAppPath ////", directory, slug);
 		try {
 			let app_path = `${slug}.js`;
 			let promises = directory.files.map(async (file) => {
