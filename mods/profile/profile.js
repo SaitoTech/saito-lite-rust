@@ -62,7 +62,6 @@ class Profile extends ModTemplate {
 
 					} else {
 
-						//Check remote archives
 						this.app.storage.loadTransactions(
 							{ field1: "Profile", field2: key }, 
 							async (txs) => {
