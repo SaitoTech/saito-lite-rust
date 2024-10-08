@@ -128,6 +128,7 @@ class Profile extends ModTemplate {
 	}
 
 	onPeerHandshakeComplete(app){
+		// For testing
 		let {protocol, host, port} = this.app.browser
 		app.connection.emit('profile-update-archive-node', {protocol, host, port, publicKey: this.publicKey} )
 	}
@@ -324,7 +325,10 @@ class Profile extends ModTemplate {
 		if (tx.isFrom(this.publicKey)) {
 			// Clear the saito-header notification from sendProfileTransaction
 			this.app.connection.emit("saito-header-update-message", { msg: "" })
-			siteMessage('Profile updated', 2000);
+			if(this.app.BROWSER){
+				siteMessage('Profile updated', 2000);
+			}
+		
 		}
 
 		if (this.app.keychain.isWatched(from)) {
