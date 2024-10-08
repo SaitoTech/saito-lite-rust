@@ -20514,7 +20514,7 @@ console.log("HGL 1: " + z[i].name);
 returnPlayers(num = 0) {
 
   var players = [];
-
+  let col = '';
   let factions = JSON.parse(JSON.stringify(this.returnFactions()));
 
   for (let i = 0; i < num; i++) {
