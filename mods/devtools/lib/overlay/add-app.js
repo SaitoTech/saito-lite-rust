@@ -49,6 +49,7 @@ class AddAppOverlay {
 			this_self.installOverlay.version = msg.version;
 			this_self.installOverlay.tx = newtx;
 			this_self.installOverlay.tx_json = data;
+			this_self.installOverlay.slug = msg.slug;
 
 			this_self.installOverlay.render();
 			this_self.overlay.close();
