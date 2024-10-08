@@ -55,6 +55,9 @@ class Profile extends ModTemplate {
 							if (returned_key.profile?.image) {
 								this.cache[key].image = await this.fetchProfileFromArchive("image", returned_key.profile.image);
 							}
+							if (returned_key.profile?.archive_nodes) {
+								this.cache[key].archive_nodes = await this.fetchProfileFromArchive("archive_nodes", returned_key.publicKey);
+							}
 
 							console.log("PROFILE: async fetches for watched key finished");
 
@@ -82,7 +85,12 @@ class Profile extends ModTemplate {
 
 						return;
 					}
+
+
+
+				console.log(this.cache, "my cache right now")
 				}
+
 
 				this.app.connection.emit('profile-update-dom', key, this.cache[key]);
 
@@ -109,8 +117,11 @@ class Profile extends ModTemplate {
 			this.updateDescription.render(element.textContent);
 		});
 
-
-
+		app.connection.on('profile-update-archive-node', (archiveNode) => {
+			const stringifiedArchiveNode = JSON.stringify(archiveNode);
+		// Update the profile object with the stringified archive node
+			this.sendProfileTransaction({ archive_nodes: stringifiedArchiveNode });
+		});
 
 	}
 
@@ -189,11 +200,13 @@ class Profile extends ModTemplate {
 			let { protocol, host, port } = this.app.browser;
 			// Check if the key doesn't have an archiveNodes property
 			const key = this.app.keychain.returnKey(this.publicKey);
-			if (!key.archive_nodes) {
-				// If archiveNodes doesn't exist, add the archive node
-				this.app.keychain.addArchiveNode(this.publicKey, { protocol, host, port, publicKey: this.publicKey });
-			}
+			// if (!key.archive_nodes) {
+			// 	// If archiveNodes doesn't exist, add the archive node
+			// 	this.app.keychain.addArchiveNode(this.publicKey, { protocol, host, port, publicKey: this.publicKey });
+			// }
+		this.app.connection.emit('profile-update-archive-node', { protocol, host, port, publicKey: this.publicKey } )
 		}
+		
 	}
 
 

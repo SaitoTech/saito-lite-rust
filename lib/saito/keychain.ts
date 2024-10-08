@@ -682,66 +682,6 @@ class Keychain {
 		return true;
 	}
 
-	/**
- * Updates or adds one or more archive nodes for a given public key.
- * @param publicKey - The public key associated with the archive node(s).
- * @param archiveNodeData - The archive node object or array of objects to update or add.
- */
-	async addArchiveNode(publicKey: string, archiveNodeData: any | any[]) {
-		let key = this.returnKey(publicKey);
-		if (!key) {
-			console.warn(`No key found for public key: ${publicKey}`);
-			return;
-		}
-
-		let archive_nodes = key.archive_nodes || [];
-
-		// Convert single object to array for consistent processing
-		const archiveNodesToAdd = Array.isArray(archiveNodeData) ? archiveNodeData : [archiveNodeData];
-
-		archiveNodesToAdd.forEach(archiveNode => {
-			const index = archive_nodes.findIndex(
-				(node) => node.publickey === archiveNode.publickey
-			);
-
-			if (index !== -1) {
-				archive_nodes[index] = { ...archive_nodes[index], ...archiveNode };
-			} else {
-				archive_nodes.push(archiveNode);
-			}
-		});
-
-		// Update the key with the new archive_nodes array
-		this.addKey(publicKey, { archive_nodes: archive_nodes });
-	}
-	/**
-	 * Deletes an archive node for a given public key.
-	 * @param publicKey - The public key associated with the archive node.
-	 * @param archiveNodePublicKey - The public key of the archive node to delete.
-	 */
-	async deleteArchiveNode(publicKey, archiveNodePublicKey) {
-		// Retrieve the key object for the given public key
-		let key = this.returnKey(publicKey);
-		if (!key || !key.archive_nodes) {
-			return;
-		}
-
-		let archive_nodes = key.archive_nodes.filter(
-			(node) => node.publicKey !== archiveNodePublicKey
-		);
-
-		this.addKey(publicKey, { archive_nodes: archive_nodes });
-	}
-
-	/**
-	 * Retrieves all archive nodes for a given public key.
-	 * @param publicKey - The public key to get archive nodes for.
-	 * @returns An array of archive nodes associated with the public key, or an empty array if none exist.
-	 */
-	getArchiveNodes(publicKey) {
-		let key = this.returnKey(publicKey);
-		return key?.archive_nodes || [];
-	}
 }
 
 export default Keychain;
