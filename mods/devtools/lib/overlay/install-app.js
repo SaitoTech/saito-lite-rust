@@ -18,6 +18,7 @@ class AddAppOverlay {
 		this.categories = 'Utility';
 		this.tx = null;
 		this.tx_json = null;
+		this.slug = null;
 	}
 
 	render() {
@@ -29,19 +30,42 @@ class AddAppOverlay {
 		let this_self = this;
 
 		document.querySelector('#saito-app-install-btn').onclick = async (e) => {
-			console.log('saving json to archive');
 
+			let mod_data = await this_self.app.storage.loadLocalApplications(this_self.slug);
 
-			await this_self.app.storage.saveLocalApplication((this_self.name).toLowerCase(), this_self.bin);
+			console.log('mod_data:',mod_data);
+			console.log('mod_data length:',mod_data.length);
 
-			//console.log(JSON.stringify(await this_self.app.storage.loadLocalApplications()));
-			salert("Module saved. Reloading page...");
-
-			setTimeout(function(){
-				window.location.reload();
-			}, 1500);
+			// check if dynamic application already installed
+			if (mod_data.length > 0) {
+				let c = await sconfirm(`Application '${this_self.slug}' already exist. Do you want to overwrite it?`);
+			
+				// prompt user if they want to overwrite or cancel install
+				if (c) {
+					// remove old application 
+					await this_self.app.storage.removeLocalApplication(this_self.slug);
+					await this_self.installApp();
+				} else {
+					this_self.overlay.close();
+				}
+			} else {
+				await this_self.installApp();
+			}
+			
 		}
 
+	}
+
+	async installApp() {
+		let this_self = this;
+		await this_self.app.storage.saveLocalApplication((this_self.name).toLowerCase(), this_self.bin);
+
+		salert("Applicaton saved. Reloading page...");
+		this_self.overlay.close();
+
+		setTimeout(function(){
+			window.location.reload();
+		}, 1500);
 	}
 }
 

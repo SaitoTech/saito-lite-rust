@@ -418,18 +418,48 @@ class Storage {
 		}		
 	}
 
-	async loadLocalApplications() {
-		if (!this.app.BROWSER) {
-			return;
+	async loadLocalApplications(mod_slug = null) {
+		try {
+			if (!this.app.BROWSER) {
+				return;
+			}
+
+			let obj = {
+				from: 'dyn_mods',
+				order: { by: 'id', type: 'desc' }
+			}
+
+			if (mod_slug != null) {
+				obj['where'] = {
+			        mod: mod_slug
+			    };
+			}
+
+			let rows = await this.localDB.select(obj);
+
+			return rows;
+		} catch (err) {
+			console.log("Error loadLocalApplications: ", err);
 		}
+	}
 
-		let rows = await this.localDB.select({
-			from: 'dyn_mods',
-			//where: where_obj,
-			order: { by: 'id', type: 'desc' }
-		});
+	async removeLocalApplication(mod_slug = null) {
+		try {
+			if (!this.app.BROWSER) {
+				return;
+			}
 
-		return rows;
+			let rowsDeleted = await this.localDB.remove({
+			    from: "dyn_mods",
+			    where: {
+			        mod: mod_slug
+			    }
+			});
+
+			return rowsDeleted;
+		} catch (err) {
+			console.log("Error removeLocalApplication: ", err);
+		}
 	}
 
 	async initializeApplicationDB() {
