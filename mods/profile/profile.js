@@ -184,9 +184,20 @@ class Profile extends ModTemplate {
 		}
 	}
 
+	async onPeerHandshakeComplete(app) {
+		if (this.app.BROWSER) {
+			let { protocol, host, port } = this.app.browser;
+			// Check if the key doesn't have an archiveNodes property
+			const key = this.app.keychain.returnKey(this.publicKey);
+			if (!key.archive_nodes) {
+				// If archiveNodes doesn't exist, add the archive node
+				this.app.keychain.addArchiveNode(this.publicKey, { protocol, host, port, publicKey: this.publicKey });
+			}
+		}
+	}
+
 
 	async render() {
-
 		// Check for URL param (since that is the prime use case)
 		let param = this.app.browser.returnURLParameter('load_key');
 		if (param) {
@@ -384,16 +395,12 @@ class Profile extends ModTemplate {
 			return;
 		}
 		const tx = await this.createArchiveNodeEntryTransaction(archiveNode);
+		// await this.app.connection.emit('relay-transaction', tx)
 		await this.app.network.propagateTransaction(tx);
-		await this.app.keychain.updateArchiveNode(this.publicKey, archiveNode);
+		await this.app.keychain.addArchiveNode(this.publicKey, archiveNode);
 	}
 
 
-	/**
-	 * Processes a received transaction that adds a new archive node entry.
-	 * @param {Transaction} tx - The received transaction containing archive node information.
-	 * @returns {Promise<void>}
-	 */
 	async receiveArchiveNodeEntryTransaction(tx) {
 		if (!tx.msg || !tx.msg.module || tx.msg.module !== "Profile" || !tx.msg.request) {
 			console.log("Invalid archive node entry transaction");
@@ -407,7 +414,7 @@ class Profile extends ModTemplate {
 			publickey: tx.msg.data.publicKey
 		};
 		console.log('receiving archive node', archiveNode)
-		await this.app.keychain.updateArchiveNode(sender, archiveNode);
+		await this.app.keychain.addArchiveNode(sender, archiveNode);
 		console.log(`Added archive node for ${sender}: ${JSON.stringify(archiveNode)}`);
 
 	}
