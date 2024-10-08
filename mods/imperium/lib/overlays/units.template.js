@@ -1,4 +1,4 @@
-module.exports = ImperiumUnitsOverlayTemplate = (imperium_self, units) => {
+module.exports  = (imperium_self, units) => {
 	let html = `
     <div class="units-overlay hide-scrollbar">
   `;

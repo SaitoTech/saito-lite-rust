@@ -9,6 +9,7 @@ class Recovery extends ModTemplate {
 	constructor(app) {
 		super(app);
 		this.name = 'Recovery';
+		this.slug = 'recovery';
 		this.description = 'Secure wallet backup and recovery';
 		this.categories = 'Utilities Core';
 		this.class = 'utility';

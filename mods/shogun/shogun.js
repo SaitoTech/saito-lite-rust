@@ -26,7 +26,7 @@ constructor(app) {
     this.app             = app;
 
     this.name  		       = "Shogun";
-
+    this.slug            = "shogun";
     this.description     = `Strategy deck-building game: acquire money and land to assert <em>dominion</em> over the realm.`;
     this.status          = "Alpha";
     this.card_height_ratio = 1.6; // height is 1.6x width

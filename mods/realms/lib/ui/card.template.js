@@ -1,4 +1,4 @@
-module.exports = CardTemplate = (card) => {
+module.exports  = (card) => {
 	return `
     <div class="cardstack">
     </div>

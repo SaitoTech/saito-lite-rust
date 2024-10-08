@@ -1,4 +1,4 @@
-module.exports = EmailAppspaceTemplate = () => {
+module.exports  = () => {
 	return `
 <div class="email-appspace-encrypt">
   <h3>Encrypt transations and messages:</h3>

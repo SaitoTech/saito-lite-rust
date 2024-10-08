@@ -26,7 +26,7 @@ class Stun extends ModTemplate {
 		super(app);
 		this.app = app;
 		this.name = 'Stun';
-
+		this.slug = 'stun';
 		this.description = 'P2P Connection Module';
 		this.categories = 'Utilities Communications';
 		this.class = 'utility';

@@ -7,6 +7,7 @@ class Migration extends ModTemplate {
 
 		this.app = app;
 		this.name = 'Migration';
+		this.slug = 'migration';
 		this.description = 'Migrate ERC20 or BEP20 tokens to Saito Native Tokens';
 		this.categories = 'Core Utilities Messaging';
 		this.publickey = '';

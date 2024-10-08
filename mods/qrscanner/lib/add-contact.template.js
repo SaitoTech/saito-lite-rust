@@ -1,4 +1,4 @@
-module.exports = AddContactTemplate = ({ publickey }) => {
+module.exports  = ({ publickey }) => {
 	return `
     <div class="header"></div>
     <div

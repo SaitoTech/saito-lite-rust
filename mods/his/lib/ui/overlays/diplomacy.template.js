@@ -1,4 +1,4 @@
-module.exports = DiplomacyProposeTemplate = (obj, faction) => {
+module.exports  = (obj, faction) => {
 
 	let his_self = obj.mod;
 

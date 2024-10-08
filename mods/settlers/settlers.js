@@ -32,6 +32,7 @@ class Settlers extends GameTemplate {
 		this.app = app;
 
 		this.name = 'Settlers';
+		this.slug = 'settlers';
 		this.gamename = 'Settlers of Saitoa';
 		this.description = `Saitoa is an island rich in natural resources that are produced with every roll of the die. Collect, trade, and spend resources to grow your colony faster than your opponents to win the game!`;
 		this.categories = 'Games Boardgame Strategy';

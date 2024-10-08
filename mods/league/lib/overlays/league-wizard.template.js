@@ -1,4 +1,4 @@
-module.exports = LeagueWizardTemplate = (app, mod, game_mod) => {
+module.exports  = (app, mod, game_mod) => {
 	let html = `
 
     <div class="league-wizard-overlay">

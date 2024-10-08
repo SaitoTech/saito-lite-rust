@@ -1,4 +1,4 @@
-module.exports = ImperiumRulesOverlayTemplate = () => {
+module.exports  = () => {
 	return `
         <div class="game-overlay-menu" id="game-overlay-menu">
           <div>Game Rules:</div>

@@ -1,4 +1,4 @@
-module.exports = ImperiumTokenBarTemplate = (
+module.exports  = (
 	command_tokens,
 	strategy_tokens,
 	fleet_supply

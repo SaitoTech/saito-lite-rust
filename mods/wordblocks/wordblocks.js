@@ -13,6 +13,7 @@ class Wordblocks extends GameTemplate {
 		this.icon = 'fa-solid fa-braille';
 
 		this.name = 'Wordblocks';
+		this.slug = 'wordblocks';
 		this.description = `A crossword puzzle game with customizable dictionary (language) options. Players take turns moving tiles from their rack to the board to spell out words. `;
 		this.categories = 'Games Boardgame Classic';
 		//

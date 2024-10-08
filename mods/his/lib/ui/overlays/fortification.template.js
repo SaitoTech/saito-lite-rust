@@ -1,4 +1,4 @@
-module.exports = FortificationOverlayTemplate = (obj, his_self) => {
+module.exports  = (obj, his_self) => {
 
 	//    let obj = {
 	//      spacekey : spacekey ,

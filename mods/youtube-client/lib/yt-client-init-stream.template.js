@@ -1,4 +1,4 @@
-module.exports = YoutubeInitStreamTemplate = (app,mod) => {
+module.exports  = (app,mod) => {
 
 	if (app.options?.youtube?.stream_key != null) {
 		console.log("previous stream key:", app.options.youtube.stream_key);

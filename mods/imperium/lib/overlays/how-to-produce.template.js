@@ -1,4 +1,4 @@
-module.exports = ImperiumHowToProduceOverlayTemplate = (
+module.exports  = (
 	imperium_self,
 	units
 ) => {

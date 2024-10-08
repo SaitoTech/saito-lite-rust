@@ -1,15 +1,15 @@
 const saito = require('./../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 
-class BTC extends ModTemplate {
+class AVAX extends ModTemplate {
 	constructor(app) {
 		super(app);
 
 		this.appname = 'AVAX';
 		this.name = 'AVAX';
 		this.ticker = 'AVAX';
-		this.description =
-			'Adds support for Mixin-powered AVAX transfers on the Saito Network';
+		this.slug = 'avax';
+		this.description = 'Adds support for Mixin-powered AVAX transfers on the Saito Network';
 		this.categories = 'Utility Cryptocurrency Finance';
 
 		// MIXIN STUFF
