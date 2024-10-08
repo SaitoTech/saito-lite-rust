@@ -4,7 +4,8 @@ const JsStore = require('jsstore');
 const JSON = require('json-bigint');
 const Transaction = require('../../lib/saito/transaction').default;
 const PeerService = require('saito-js/lib/peer_service').default;
-const ArchiveTemplate = require('./lib/archive.template.js');
+const ArchiveTemplate = require('./lib/archive.template');
+const ArchiveSummary = require('./lib/archive-summary.template');
 const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
 const jsonTree = require('json-tree-viewer');
 
@@ -150,10 +151,12 @@ class Archive extends ModTemplate {
 	}
 
 	async render() {
-		let rows = await this.localDB.select({
-			from: 'archives',
-			order: { by: 'id', type: 'desc' }
-		});
+
+		let ct = 0;
+		let mem = 0;
+		let ts = Date.now();
+
+		this.app.browser.prependElementToDom(ArchiveSummary(this.app));
 
 		this.app.browser.replaceElementBySelector(
 			`<div class="local-archive-table"></div>`,
@@ -164,13 +167,39 @@ class Archive extends ModTemplate {
 			'.local-archive-table'
 		);
 
-		for (let row of rows) {
-			this.app.browser.addElementToSelector(
-				ArchiveTemplate(this.app, row),
-				'.local-archive-table'
-			);
+		const cHook = document.getElementById("tx-ct");
+		const sHook = document.getElementById("db-size");
+
+		let cont = true;
+		while (cont){
+
+			let rows = await this.loadTransactions({ updated_earlier_than: ts});
+
+			/*let rows = await this.localDB.select({
+				from: 'archives',
+				order: { by: 'id', type: 'desc' }
+			});*/
+
+			for (let row of rows) {
+				this.app.browser.addElementToSelector(
+					ArchiveTemplate(this.app, row),
+					'.local-archive-table'
+				);
+				mem += row.tx_size;
+				ts = Math.min(ts, row.updated_at);
+			}
+
+			ct += rows.length;
+
+			cHook.innerHTML = ct;
+			sHook.innerHTML = mem;
+
+			//0 rows returned ==> done!
+			cont = rows.length;
+			
 		}
 
+		siteMessage("Achive fully loaded!");
 		this.attachEvents();
 	}
 
@@ -201,6 +230,22 @@ class Archive extends ModTemplate {
 				}
 			};
 		});
+
+		document.querySelectorAll(".delete-me").forEach(btn => {
+			btn.onclick = async (e) => {
+				let sig = e.currentTarget.dataset.id;
+
+				let row = e.currentTarget.parentElement;
+
+				e.currentTarget.onclick = null;
+
+				let res = await this.deleteTransaction(sig);
+
+				if (res){
+					row.remove();
+				}
+			}
+		})
 	}
 
 	returnServices() {
@@ -614,15 +659,25 @@ try {
 		let timestamp_limiting_clause = '';
 		let where_obj = {};
 
+		let sig;
+		if (tx?.signature){
+			sig = tx.signature;
+		}else if (typeof tx === "string"){
+			sig = tx;
+		}else{
+			console.error("Not a valid tx/signature");
+			return false;
+		}
+
 		//
 		// SEARCH BASED ON CRITERIA PROVIDED
 		//
 		//newObj.signature = obj?.signature || obj?.sig || tx?.signature || "";
 
 		sql = `DELETE FROM archives WHERE archives.sig = $sig`;
-		params = { $sig: tx.signature };
+		params = { $sig: sig };
 		await this.app.storage.runDatabase(sql, params, 'archive');
-		where_obj['sig'] = tx.signature;
+		where_obj['sig'] = sig;
 
 		//
 		// browsers handle with localDB search
@@ -635,7 +690,7 @@ try {
 			console.log('DELETED FROM localDB! ');
 		}
 
-		return;
+		return true;
 	}
 
 	////////////
