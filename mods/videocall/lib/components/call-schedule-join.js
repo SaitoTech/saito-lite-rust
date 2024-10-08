@@ -8,7 +8,7 @@ class CallScheduleJoin {
     this.container = container;
     this.overlay = new SaitoOverlay(app, mod);
 
-    this.app.connection.on('remove-call-schedule-join', () => {
+    app.connection.on('remove-call-schedule-join', () => {
       this.remove();
     });
   }
@@ -120,7 +120,7 @@ class CallScheduleJoin {
       .padStart(2, '0')}`;
   }
 
-  remove(auto_join) {
+  remove(auto_join = true) {
     this.overlay.remove();
     this.app.connection.emit('close-preview-window', !auto_join);
   }
