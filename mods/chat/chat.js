@@ -1,4 +1,4 @@
- SaitoUserTemplate = require('./../../lib/saito/ui/saito-user/saito-user.template.js');
+const SaitoUserTemplate = require('./../../lib/saito/ui/saito-user/saito-user.template.js');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const ChatMain = require('./lib/appspace/main');
