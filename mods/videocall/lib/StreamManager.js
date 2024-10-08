@@ -229,7 +229,7 @@ class StreamManager {
 
       const remoteStream = new MediaStream();
 
-      console.log('STUN: remote stream added for', peerId, event.track);
+      console.log('STUN: remote stream added for', peerId, event.track, event.streams);
 
       if (peerId == this.mod.screen_share) {
         console.log('Expecting presentation stream');
