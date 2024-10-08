@@ -1176,9 +1176,7 @@ if (this.game.state.scenario != "is_testing") {
   restoreMilitaryLeaders() {
 
     for (let i = 0; i < this.game.state.military_leaders_removed_until_next_round.length; i++) {
-
       let obj = this.game.state.military_leaders_removed_until_next_round[i];
-
       if (obj.leader) {
 
         let leader = obj.leader;
@@ -1206,6 +1204,8 @@ if (this.game.state.scenario != "is_testing") {
 	}
       }
     }
+
+    this.game.state.military_leaders_removed_until_next_round = [];
 
   }
 

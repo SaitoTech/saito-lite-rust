@@ -774,7 +774,6 @@
 
     let obj = document.querySelector(".crossing_atlantic");
 
-
     for (let i = 0; i < this.game.state.colonies.length; i++) {
 
       let c = this.game.state.colonies[i];
