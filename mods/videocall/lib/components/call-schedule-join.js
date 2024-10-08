@@ -16,8 +16,13 @@ class CallScheduleJoin {
   render(auto_join = true) {
     this.keys = this.app.keychain.returnKeys({ type: 'event', mod: 'videocall' });
 
+    if (this.keys.length == 0){
+      this.remove(false);
+      return;
+    }
+
     if (!document.querySelector('.call-schedule-join-container')) {
-      this.overlay.show(CallScheduleJoinTemplate(this, auto_join));
+      this.overlay.show(CallScheduleJoinTemplate(this, auto_join), ()=> { this.remove(false); });
       this.attachEvents(auto_join);
     }
 
@@ -40,6 +45,8 @@ class CallScheduleJoin {
                     let rCode = parsedLink.pop();
                     this.mod.room_obj = JSON.parse(this.app.crypto.base64ToString(rCode));
 
+                    this.remove(auto_join);
+
                     if (auto_join){
                       this.app.connection.emit('call-launch-enter-call');  
                     }else{
@@ -47,7 +54,6 @@ class CallScheduleJoin {
                       siteMessage("Call link copied");
                     }
                     
-                    this.remove();
                 }
             }
         }
@@ -66,7 +72,7 @@ class CallScheduleJoin {
 
     if (document.getElementById("create-new-room")){
       document.getElementById("create-new-room").onclick = async (e) => {
-        this.remove();
+        this.remove(auto_join);
         this.link = await this.mod.createRoom();
         if (auto_join){
           this.app.connection.emit('call-launch-enter-call');  
@@ -114,9 +120,9 @@ class CallScheduleJoin {
       .padStart(2, '0')}`;
   }
 
-  remove() {
+  remove(auto_join) {
     this.overlay.remove();
-    this.app.connection.emit('close-preview-window', true);
+    this.app.connection.emit('close-preview-window', !auto_join);
   }
 }
 
