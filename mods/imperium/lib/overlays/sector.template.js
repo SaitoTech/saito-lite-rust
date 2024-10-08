@@ -1,4 +1,4 @@
-module.exports = SectorOverlayTemplate = (sys, fleet) => {
+module.exports  = (sys, fleet) => {
 	let cols = '1fr';
 	if (sys.p.length == 2) {
 		cols = '1fr 1fr';

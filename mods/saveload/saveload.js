@@ -7,6 +7,7 @@ class Saveload extends ModTemplate {
 
 		this.appname = 'Save and Load';
 		this.name = 'Saveload';
+		this.slug = 'saveload';
 		this.description = 'Save and load games - useful for bughunting';
 		this.categories = 'Utility Entertainment';
 	}

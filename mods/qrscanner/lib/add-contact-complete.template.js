@@ -1,4 +1,4 @@
-module.exports = AddContactCompleteTemplate = () => {
+module.exports  = () => {
 	// height: calc(100vh-5em);
 	return `
     <div class="header"></div>

@@ -10,6 +10,7 @@ class Fileshare extends ModTemplate {
 
 		this.appname = 'FileShare';
 		this.name = 'Fileshare';
+		this.slug = 'fileshare';
 		this.description = 'Send files P2P over STUN';
 		this.categories = 'Utility Entertainment';
 		this.chunkSize = 16348;

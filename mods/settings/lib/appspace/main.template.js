@@ -1,4 +1,4 @@
-module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
+module.exports  = (app, mod, main) => {
 
 	let publicKey = mod.publicKey;
 	let key = app.keychain.returnKey({ publicKey: publicKey });

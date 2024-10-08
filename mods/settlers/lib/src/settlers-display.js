@@ -211,13 +211,13 @@ class SettlersDisplay {
 
       if (num_resources) {
         icons += `<div class="cardct resource-cards">
-                    <img src="/settlers/img/cards/wheat_old.png"/>
+                    <img src="${this.back}"/>
                     <div>${num_resources}</div>
                   </div>`;
       }
       if (num_cards) {
         icons += `<div class="cardct dev-cards">
-                    <img src="/settlers/img/cards/red_back.png"/>
+                    ${this.vp.img}
                     <div>${num_cards}</div>
                   </div>`;
       }
@@ -237,8 +237,8 @@ class SettlersDisplay {
             let ask = this.wishListToImage(this.game.state.ads[i - 1].ask);
             let id = `trade_${i}`;
             let html = `<div class="trade" id="${id}">
-            <img src="/settlers/img/cards/desert.png"/>
-            <i class="fa-solid fa-right-left"></i>
+            <img src="${this.back}"/>
+            <i class="fa-solid fa-money-bill-transfer"></i>
             </div>
             `;
 

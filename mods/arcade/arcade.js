@@ -24,7 +24,7 @@ class Arcade extends ModTemplate {
 		this.debug = false;
 
 		this.name = 'Arcade';
-
+		this.slug = 'arcade';
 		this.description =
 			'Interface for creating and joining games coded for the Saito Open Source Game Engine.';
 		this.categories = 'Games Entertainment Appspace';

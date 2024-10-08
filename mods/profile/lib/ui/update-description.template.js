@@ -1,4 +1,4 @@
-module.exports = UpdateDescriptionTemplate = (description) => {
+module.exports  = (description) => {
 
     return `
 		<form > 

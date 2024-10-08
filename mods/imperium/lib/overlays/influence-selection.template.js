@@ -1,4 +1,4 @@
-module.exports = ImperiumInfluenceSelectionOverlayTemplate = (
+module.exports  = (
 	influence_needed,
 	planet_cards,
 	trade_goods

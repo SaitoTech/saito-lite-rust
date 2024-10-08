@@ -1,4 +1,4 @@
-module.exports = ImperiumResourceSelectionOverlayTemplate = (
+module.exports  = (
 	resources_needed,
 	planet_cards,
 	trade_goods

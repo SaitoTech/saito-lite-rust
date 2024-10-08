@@ -1,4 +1,4 @@
-module.exports = MovementOverlayTemplate = (obj, his_self) => {
+module.exports  = (obj, his_self) => {
 	//    let obj = {
 	//      faction : faction ,
 	//      moved_units : moved_units ,

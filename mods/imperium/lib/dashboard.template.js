@@ -1,4 +1,4 @@
-module.exports = ImperiumDashboardTemplate = (
+module.exports  = (
 	imperium_self,
 	i = 0,
 	agenda_phase = 0

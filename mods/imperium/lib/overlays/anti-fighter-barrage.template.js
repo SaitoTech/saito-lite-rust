@@ -1,4 +1,4 @@
-module.exports = ImperiumAntiFighterBarrageOverlayTemplate = (
+module.exports  = (
 	imperium_self,
 	attacker,
 	defender,

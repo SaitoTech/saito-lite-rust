@@ -1,4 +1,4 @@
-module.exports = ImperiumNewActionCardsTemplate = (cards) => {
+module.exports  = (cards) => {
 	return `
     <div class="new-action-cards-overlay hide-scrollbar">
       <div class="title">New Action Cards</div>

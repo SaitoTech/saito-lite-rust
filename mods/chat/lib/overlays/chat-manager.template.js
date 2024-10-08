@@ -1,4 +1,4 @@
-module.exports = ChatManagerOverlayTemplate = (app, mod) => {
+module.exports  = (app, mod) => {
 	let mobile = app.browser.isMobileBrowser() || window.innerWidth < 600;
 
 	return `<div id="chat-manager-overlay" class="chat-manager-overlay ${

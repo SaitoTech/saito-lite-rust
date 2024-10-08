@@ -1,4 +1,4 @@
-module.exports = LeaderboardTemplate = (title = 'Games') => {
+module.exports  = (title = 'Games') => {
 	return `
       <div class="league-leaderboard">
         <div class="saito-table">

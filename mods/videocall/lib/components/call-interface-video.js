@@ -424,13 +424,13 @@ class CallInterfaceVideo {
 			}
 		};*/
 
-		document.querySelectorAll('.call-control .video-control').forEach((item) => {
+		document.querySelectorAll('.call-controls .video-control').forEach((item) => {
 			item.onclick = () => {
 				this.toggleVideo();
 			};
 		});
 
-		document.querySelectorAll('.call-control .audio-control').forEach((item) => {
+		document.querySelectorAll('.call-controls .audio-control').forEach((item) => {
 			item.onclick = () => {
 				this.toggleAudio();
 			};
@@ -611,13 +611,13 @@ class CallInterfaceVideo {
 		//Update UI
 		try {
 			document
-				.querySelector('.audio-control')
+				.querySelector('.call-controls .audio-control')
 				.classList.toggle('disabled');
 			document
-				.querySelector('.audio-control i')
+				.querySelector('.call-controls .audio-control i')
 				.classList.toggle('fa-microphone-slash');
 			document
-				.querySelector('.audio-control i')
+				.querySelector('.call-controls .audio-control i')
 				.classList.toggle('fa-microphone');
 		} catch (err) {
 			console.warn('Stun UI error', err);
@@ -629,15 +629,14 @@ class CallInterfaceVideo {
 
 		//Update UI
 		try {
-			this.video_boxes['local'].video_box.toggleMask()
 			document
-				.querySelector('.video-control')
+				.querySelector('.call-controls .video-control')
 				.classList.toggle('disabled');
 			document
-				.querySelector('.video-control i')
+				.querySelector('.call-controls .video-control i')
 				.classList.toggle('fa-video-slash');
 			document
-				.querySelector('.video-control i')
+				.querySelector('.call-controls .video-control i')
 				.classList.toggle('fa-video');
 		} catch (err) {
 			console.warn('Stun UI error', err);

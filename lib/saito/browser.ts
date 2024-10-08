@@ -1109,7 +1109,7 @@ class Browser {
 		return timeString;
 	}
 
-	saneDateFromTimestamp(timestamp) {
+	saneDateFromTimestamp(timestamp, with_year = true) {
 		var date = new Date(timestamp);
 		var year = date.getFullYear();
 		var month = date.getMonth() + 1; // getMonth() returns month from 0-11
@@ -1119,10 +1119,16 @@ class Browser {
 		month = month < 10 ? '0' + month : month;
 		day = day < 10 ? '0' + day : day;
 
-		return year + '-' + month + '-' + day;
+		let return_str =  month + '-' + day;
+		if (with_year){
+			return year + '-' + return_str	
+		}else{
+			return return_str
+		}
+		
 	}
 
-	saneTimeFromTimestamp(timestamp) {
+	saneTimeFromTimestamp(timestamp, with_seconds = true) {
 		var date = new Date(timestamp);
 		var hours = date.getHours();
 		var minutes = date.getMinutes();
@@ -1133,14 +1139,18 @@ class Browser {
 		minutes = minutes < 10 ? '0' + minutes : minutes;
 		seconds = seconds < 10 ? '0' + seconds : seconds;
 
-		return hours + ':' + minutes + ':' + seconds;
+		let return_str = hours + ':' + minutes;
+		if (with_seconds){
+			return_str += ':' + seconds;
+		}
+		return return_str;
 	}
 
-	saneDateTimeFromTimestamp(timestamp) {
+	saneDateTimeFromTimestamp(timestamp, detailed = true) {
 		return (
-			this.saneDateFromTimestamp(timestamp) +
-			':' +
-			this.saneTimeFromTimestamp(timestamp)
+			this.saneDateFromTimestamp(timestamp, detailed) +
+			'/' +
+			this.saneTimeFromTimestamp(timestamp, detailed)
 		);
 	}
 

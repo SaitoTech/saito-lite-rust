@@ -1,4 +1,4 @@
-module.exports = ImperiumProductionOverlayTemplate = (
+module.exports  = (
 	imperium_self,
 	resources_available,
 	production_limit,

@@ -1,4 +1,4 @@
-module.exports = function ScreenRecordWizardTemplate(app, mod, options) {
+module.exports = (app, mod, options) => {
 
 
 

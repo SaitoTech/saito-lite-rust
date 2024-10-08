@@ -1,4 +1,4 @@
-module.exports = RegisterUsernameTemplate = (msg) => {
+module.exports  = (msg) => {
 	if (!msg) {
 		msg =
 			'Registering a username is free and makes it easier for others to find you on the network';

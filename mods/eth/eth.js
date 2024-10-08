@@ -7,9 +7,9 @@ class ETH extends ModTemplate {
 
 		this.appname = 'ETH';
 		this.name = 'ETH';
+		this.slug = 'eth';
 		this.ticker = 'ETH';
-		this.description =
-			'Adds support for Mixin-powered Ethereum transfers on the Saito Network';
+		this.description = 'Adds support for Mixin-powered Ethereum transfers on the Saito Network';
 		this.categories = 'Utility Cryptocurrency Finance';
 
 		// MIXIN STUFF

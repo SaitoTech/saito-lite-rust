@@ -1,4 +1,4 @@
-module.exports = ImperiumGroundCombatOverlayTemplate = (
+module.exports = (
 	imperium_self,
 	attacker,
 	defender,
