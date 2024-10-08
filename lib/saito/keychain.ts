@@ -30,7 +30,6 @@ class Keychain {
 
 
 	async initialize() {
-
 		if (this.app.options.keys == null) {
 			this.app.options.keys = [];
 		}
@@ -684,19 +683,11 @@ class Keychain {
 	}
 
 	/**
-  * Updates or adds an archive node for a given public key.
-  * @param publicKey - The public key associated with the archive node.
-  * @param archiveNode - The archive node object to update or add.
-  */
-	async updateArchiveNode(publicKey: string, archiveNode: any) {
-		const requiredProperties = ['publickey', 'host', 'port', 'protocol'];
-		const missingProperties = requiredProperties.filter(prop => !archiveNode.hasOwnProperty(prop));
-
-		if (missingProperties.length > 0) {
-			console.warn(`Invalid archive node object. Missing properties: ${missingProperties.join(', ')}`);
-			return;
-		}
-
+ * Updates or adds one or more archive nodes for a given public key.
+ * @param publicKey - The public key associated with the archive node(s).
+ * @param archiveNodeData - The archive node object or array of objects to update or add.
+ */
+	async addArchiveNode(publicKey: string, archiveNodeData: any | any[]) {
 		let key = this.returnKey(publicKey);
 		if (!key) {
 			console.warn(`No key found for public key: ${publicKey}`);
@@ -705,20 +696,24 @@ class Keychain {
 
 		let archive_nodes = key.archive_nodes || [];
 
-		const index = archive_nodes.findIndex(
-			(node) => node.publickey === archiveNode.publickey
-		);
+		// Convert single object to array for consistent processing
+		const archiveNodesToAdd = Array.isArray(archiveNodeData) ? archiveNodeData : [archiveNodeData];
 
-		if (index !== -1) {
-			archive_nodes[index] = { ...archive_nodes[index], ...archiveNode };
-		} else {
-			archive_nodes.push(archiveNode);
-		}
+		archiveNodesToAdd.forEach(archiveNode => {
+			const index = archive_nodes.findIndex(
+				(node) => node.publickey === archiveNode.publickey
+			);
+
+			if (index !== -1) {
+				archive_nodes[index] = { ...archive_nodes[index], ...archiveNode };
+			} else {
+				archive_nodes.push(archiveNode);
+			}
+		});
 
 		// Update the key with the new archive_nodes array
 		this.addKey(publicKey, { archive_nodes: archive_nodes });
 	}
-
 	/**
 	 * Deletes an archive node for a given public key.
 	 * @param publicKey - The public key associated with the archive node.
