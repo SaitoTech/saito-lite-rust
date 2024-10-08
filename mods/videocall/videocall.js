@@ -873,8 +873,8 @@ class Videocall extends ModTemplate {
 	}
 
 
-	async createRoom(){
-		let call_id = await this.generateRoomId();
+	createRoom(){
+		let call_id = this.generateRoomId();
 		this.room_obj = {
 			call_id,
 			host_public_key: this.publicKey,
@@ -886,9 +886,11 @@ class Videocall extends ModTemplate {
 			identifier: `my video call`,
 			link,
 		});
+
+		return link;
 	}
 
-	async generateRoomId() {
+	generateRoomId() {
 		let pk = this.app.crypto.generateKeys();
 		let id = this.app.crypto.generatePublicKey(pk);
 		this.app.keychain.addKey(id, {

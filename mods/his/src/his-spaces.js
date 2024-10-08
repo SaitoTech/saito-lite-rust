@@ -79,6 +79,13 @@
         }
       }
     }
+    for (let space in this.game.navalspaces) {
+      for (let f in this.game.navalspaces[space].units) {
+        for (let z = 0; z < this.game.navalspaces[space].units[f].length; z++) {
+          this.game.navalspaces[space].units[f][z].locked = false;
+        }
+      }
+    }
   }
 
   addUnrest(space) {
@@ -515,7 +522,7 @@
     if (space.home == faction && space.political == faction) { return true; }
 
     // home spaces of allied minor powers. 
-    if (space.political == "" && space.home != faction && this.isAlliedMinorPower(space.home, faction)) { return true; }
+    if ((space.political == "" || space.political == faction || space.political == space.home) && space.home != faction && this.isAlliedMinorPower(space.home, faction)) { return true; }
 
     return false;
   }
@@ -523,6 +530,7 @@
   isSpaceFortified(space) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (space.type == "electorate" || space.type == "key" || space.type == "fortress") { return true; }
+    if (space.fortified == 1 || space.fortified == true) { return true; }
     return false;
   }
 
@@ -593,7 +601,7 @@
   //
   // similar to above, except it can cross a sea-zone
   //
-  isSpaceConnectedToCapitalSpringDeployment(space, faction, transit_seas=1) {
+  isSpaceConnectedToCapitalSpringDeployment(space, faction, transit_seas=1, specific_capital="") {
 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
@@ -602,6 +610,7 @@
     let already_routed_through = {};
     let transit_passes = 0;
     let hostile_sea_passes = 0;
+    if (specific_capital != "") { capitals = [ specific_capital ]; }
 
     if (this.game.state.spring_deploy_across_seas.includes(faction)) {
       hostile_sea_passes = 1;

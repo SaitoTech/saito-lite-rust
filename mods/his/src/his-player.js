@@ -3420,13 +3420,15 @@ return;
 	  return;
         }
 
-       his_self.playerSelectSpaceWithFilter(
+        his_self.playerSelectSpaceWithFilter(
 
           "Select Destination for Units from Capital: ",
 
           function(space) {
             if (his_self.isSpaceFriendly(space, faction)) {
-              if (his_self.isSpaceConnectedToCapitalSpringDeployment(space, faction)) {
+	      // 1 = transit seas
+	      // source_spacekey => connect to this capital
+              if (his_self.isSpaceConnectedToCapitalSpringDeployment(space, faction, 1, source_spacekey)) {
                 if (!his_self.isSpaceFactionCapital(space, faction)) {
 		  if (his_self.game.state.events.schmalkaldic_league == 0) {
 		    if (his_self.isSpaceElectorate(space.key)) { return 0; }
@@ -4485,7 +4487,12 @@ does_units_to_move_have_unit = true; }
       for (let f in space.units) {
         let cf = his_self.returnControllingPower(f);
         if (cf == faction || f == faction) {
-          his_self.addMove("naval_retreat"+"\t"+f+"\t"+spacekey+"\t"+destination_spacekey);
+	  if (post_battle) { 
+	    // 1 at the end = lock the retreating units
+            his_self.addMove("naval_retreat"+"\t"+f+"\t"+spacekey+"\t"+destination_spacekey+"\t1");
+	  } else {
+            his_self.addMove("naval_retreat"+"\t"+f+"\t"+spacekey+"\t"+destination_spacekey);
+	  }
 	}
       }
       his_self.endTurn();
@@ -5406,6 +5413,9 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
     let units_to_move = [];
     let units_available = his_self.returnFactionNavalUnitsToMove(faction);
+    for (let z = 0; z < units_available.length; z++) {
+      if (units_available[z].locked == 1) { units_available.splice(z, 1); z--; }
+    }
 
     let selectUnitsInterface = function(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface) {
 
@@ -5429,6 +5439,8 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       $('.option').on('click', function () {
 
         let id = $(this).attr("id");
+
+	his_self.updateStatus("moving...");
 
         if (id === "end") {
 	  let destinations = {};
@@ -5637,7 +5649,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
         function(space) {
 	  if (faction === "england" && his_self.game.state.events.revolt_in_ireland == 1) {
-	    if (his_self.returnFactionLandUnitsInSpace("england", "ireland") < 5) {
+	    if (his_self.returnFactionLandUnitsInSpace("england", "ireland") < 4) {
 	      if (space.key == "ireland") { return 1; }
 	      else { return 0; }
 	    } else {
@@ -6020,7 +6032,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (conquerable_spaces[i] !== "egypt" && conquerable_spaces[i] !== "persia" && conquerable_spaces[i] !== "ireland") {
         if (!his_self.isSpaceControlled(conquerable_spaces[i], faction) && his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction)) {
-          if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1) {
+          if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1 || (faction == "ottoman" && his_self.game.state.events.roxelana == 1)) {
 	    if (!his_self.game.state.spaces_assaulted_this_turn.includes(conquerable_spaces[i])) {
 	      //
 	      // now check if there are squadrons in the port or sea protecting the town
@@ -6055,9 +6067,9 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
       function(space) {
 	if (his_self.game.state.spaces_assaulted_this_turn.includes(space.key)) { return 0; }
-	if (faction == "ottoman" && space.key == "persia" && his_self.game.state.events.war_in_persia == 1) { return 1; }
-	if (faction == "ottoman" && space.key == "egypt" && his_self.game.state.events.revolt_in_egypt == 1) { return 1; }
-	if (faction == "england" && space.key == "ireland" && his_self.game.state.events.revolt_in_ireland == 1) { return 1; }
+	if (faction == "ottoman" && space.key == "persia" && his_self.game.state.events.war_in_persia == 1) { return 0; }
+	if (faction == "ottoman" && space.key == "egypt" && his_self.game.state.events.revolt_in_egypt == 1) { return 0; }
+	if (faction == "england" && space.key == "ireland" && his_self.game.state.events.revolt_in_ireland == 1) { return 0; }
         if (his_self.isSpaceInLineOfControl(space, faction) && !his_self.isSpaceControlled(space, faction) && his_self.returnFactionLandUnitsInSpace(faction, space) > 0 && space.besieged == 1) {
           if (his_self.game.spaces[space.key].type === "fortress") {
   	    return 1;
@@ -6585,7 +6597,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       for (let z = 0; z < ports.length; z++) {
 	let controller = his_self.game.spaces[ports[z]].political;
 	if (his_self.game.spaces[ports[z]].political == "") { controller = his_self.game.spaces[ports[z]].home; }
-        if (io.includes(controller)) {
+        if (io.includes(controller) && controller != "ottoman") {
           html += '<li class="option" id="'+ports[z]+'">'+his_self.returnSpaceName(ports[z])+'</li>';
         }
       }
@@ -6745,6 +6757,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       "Select Port for Corsair",
 
       function(space) {
+        if (space.besieged != 0) { return 0; }
         if (space.pirate_haven == 1 && his_self.isSpaceControlled(space.key, "ottoman")) { return 1; }
 	return 0;
       },

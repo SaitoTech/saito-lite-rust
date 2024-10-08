@@ -1,9 +1,8 @@
-.hud {
-	width: 60rem;
+.hud, .hud-long {
+	width: 55rem;
 	max-width: 100vw;
 	z-index: 50 !important;
-	padding-top: 3px !important;
-	margin-bottom: 1rem;
+	padding: 3px 0 0 0;
 	height: auto;
 }
 
@@ -15,7 +14,7 @@
 
 .hud-body {
 	min-height: 12rem;
-	width: calc(100% - 5rem);
+	width: 100%;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-around;
@@ -33,7 +32,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 0.75rem 0;
+	padding: 0.5rem 0;
 	gap: 0.75rem;
 }
 
@@ -50,16 +49,19 @@
 	overflow-y: auto;
 	overflow-x: auto;
 	/*min-height: 4.5rem;*/
+	margin: 0.5rem 0;
 }
 
 .hud .controls ul {
 	min-height: 7.5rem;
 	display: flex;
 	flex-direction: row;
-	justify-content: space-evenly;
+	justify-content: space-between;
+	gap: 1rem;
 	width: 100%;
 	align-items: center;
 }
+
 
 .hud .controls ul li {
 	background-color: lightgray;
@@ -73,6 +75,12 @@
 	color: darkgray;
 	cursor: default;
 }
+
+.hud .controls ul li#rolldice {
+	margin-left: 2rem;
+	width: 9rem;
+}
+
 
 .hud .controls ul > div {
 	width: 7rem;

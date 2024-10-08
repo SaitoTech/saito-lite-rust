@@ -13,49 +13,72 @@ class CallScheduleJoin {
     });
   }
 
-  render() {
+  render(auto_join = true) {
     this.keys = this.app.keychain.returnKeys({ type: 'event', mod: 'videocall' });
-    if (this.keys.length === 0) {
-      siteMessage("You don't have any saved meetings!");
-      return;
-    }
+
     if (!document.querySelector('.call-schedule-join-container')) {
-      this.overlay.show(CallScheduleJoinTemplate(this.app, this.mod, this.keys));
-      this.attachEvents();
+      this.overlay.show(CallScheduleJoinTemplate(this, auto_join));
+      this.attachEvents(auto_join);
     }
+
+    return true;
   }
 
-  attachEvents() {
+  attachEvents(auto_join) {
     const now = new Date().getTime();
     for (let event of this.keys) {
         this.updateButtonState(event, now);
     }
 
     document.querySelectorAll(".enter-call-button").forEach(c => {
-        c.onclick = (e) => {
+        c.onclick = async (e) => {
             let id = e.currentTarget.dataset.id;
             for (let k of this.keys){
                 if (k.publicKey == id){
-                    let link = k.link;
-                    let parsedLink = link.split("stun_video_chat=");
+                    this.link = k.link;
+                    let parsedLink = this.link.split("stun_video_chat=");
                     let rCode = parsedLink.pop();
                     this.mod.room_obj = JSON.parse(this.app.crypto.base64ToString(rCode));
-                    this.app.connection.emit('call-launch-enter-call');
+
+                    if (auto_join){
+                      this.app.connection.emit('call-launch-enter-call');  
+                    }else{
+                      await navigator.clipboard.writeText(this.link);
+                      siteMessage("Call link copied");
+                    }
+                    
                     this.remove();
                 }
             }
         }
     });
 
+
+    document.querySelectorAll(".delete-call-button").forEach(c => {
+        c.onclick = (e) => {
+            let id = e.currentTarget.dataset.id;
+            this.app.keychain.removeKey(id);
+            // maybe send a cancel transaction?
+            this.overlay.remove();
+            this.render();
+        }
+    });
+
     if (document.getElementById("create-new-room")){
       document.getElementById("create-new-room").onclick = async (e) => {
         this.remove();
-        await this.mod.createRoom();
-        app.connection.emit("call-launch-enter-call");
+        this.link = await this.mod.createRoom();
+        if (auto_join){
+          this.app.connection.emit('call-launch-enter-call');  
+        }else{
+          await navigator.clipboard.writeText(this.link);
+          siteMessage("Call link copied");
+        }
       }
     }
 
   }
+
 
 
   updateButtonState(event, now = Date.now()) {
@@ -93,6 +116,7 @@ class CallScheduleJoin {
 
   remove() {
     this.overlay.remove();
+    this.app.connection.emit('close-preview-window', true);
   }
 }
 

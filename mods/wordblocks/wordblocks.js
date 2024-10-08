@@ -261,6 +261,9 @@ class Wordblocks extends GameTemplate {
 		// deal cards
 		//
 		if (this.game.deck.length == 0 && this.game.step.game == 0) {
+			//Set a flag to keep processing moves until ready for gameover state
+			this.game.canProcess = false;
+
 			this.updateStatus('Generating the Game');
 			this.game.queue = [];
 			this.game.queue.push('READY');
@@ -2217,7 +2220,7 @@ class Wordblocks extends GameTemplate {
 	//
 	// Core Game Logic
 	//
-	handleGameLoop(msg = null) {
+	async handleGameLoop(msg = null) {
 		let wordblocks_self = this;
 
 		if (this.loadingDictionary) {
@@ -2248,23 +2251,42 @@ class Wordblocks extends GameTemplate {
 						idx = i;
 					}
 				}
+
+        this.game.canProcess = true;
+
+        if (this.gameOverCallback){
+        	console.log("Run game over callback!!!");
+          this.gameOverCallback();  
+          return 0;
+        }
+
+   			let txSent = null;
+
 				if (idx < 0) {
-					this.sendGameOverTransaction([], 'no winners');
-				}
-				let winners = [this.game.players[idx]];
+					txSent = await this.sendGameOverTransaction([], 'no winners');
+				}else{
+					let winners = [this.game.players[idx]];
 
-				//Check for ties -- will need to improve the logic for multi winners
-				for (let i = 0; i < this.game.score.length; i++) {
-					if (i != idx && this.game.score[i] == this.game.score[idx]) {
-						winners.push(this.game.players[i]);
+					//Check for ties -- will need to improve the logic for multi winners
+					for (let i = 0; i < this.game.score.length; i++) {
+						if (i != idx && this.game.score[i] == this.game.score[idx]) {
+							winners.push(this.game.players[i]);
+						}
 					}
+
+					if (winners.length == this.game.players.length) {
+						txSent = await this.sendGameOverTransaction(this.game.players, 'tie');
+					} else {
+						txSent = await this.sendGameOverTransaction(winners, 'high score');
+					}
+
 				}
 
-				if (winners.length == this.game.players.length) {
-					this.sendGameOverTransaction(this.game.players, 'tie');
-				} else {
-					this.sendGameOverTransaction(winners, 'high score');
-				}
+				// If async and I finish, but lose... won't get the official game over tx
+				// until my friend reconnects..., so simulate!
+				if (txSent) {
+					this.receiveGameoverTransaction(0, txSent, 0, this.app);
+				}	
 
 				return 0;
 			}

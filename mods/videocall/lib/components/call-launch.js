@@ -18,8 +18,8 @@ class CallLaunch {
 		this.mod = mod;
 		this.container = container;
 		this.overlay = new SaitoOverlay(app, mod);
-		this.callSetting = new CallSetting(app, this);
-
+		this.callSetting = new CallSetting(app, mod);
+		this.callScheduleJoin = new CallScheduleJoin(app, mod);
 		//
 		//this looks a lot better if it is in the dom structure
 		//
@@ -28,10 +28,13 @@ class CallLaunch {
 		//
 		// close-preview-window *also* shuts down the streams in call-settings
 		//
-		app.connection.on('close-preview-window', () => {
+		app.connection.on('close-preview-window', (rerender = false) => {
 			this.overlay.remove();
 			if (document.querySelector('.stun-appspace')) {
 				document.querySelector('.stun-appspace').remove();
+			}
+			if (rerender) {
+				this.render();
 			}
 		});
 
@@ -127,10 +130,33 @@ class CallLaunch {
 
 		if (document.getElementById('joinScheduleRoom')) {
 			document.getElementById('joinScheduleRoom').onclick = async (e) => {
-				// show splash screen 
-				this.callScheduleJoin = new CallScheduleJoin(app, mod)
-				this.callScheduleJoin.render()
+				
+				let s = this.callScheduleJoin.render()
+
+				if (!s){
+					document.getElementById('createRoom').click();	
+				}
 			};
+		}
+
+
+		if (document.querySelector(".stunx-precall-link")) {
+			document.querySelector(".stunx-precall-link").onclick = async (e) => {
+				let mode = e.currentTarget.dataset.id;
+				console.log(mode);
+				let call_link = "";
+				if (mode == "join"){
+					call_link =  this.mod.generateCallLink(this.mod.room_obj);
+				}else if (mode == "create"){
+					call_link = this.mod.createRoom();
+				}else{
+					this.callScheduleJoin.render(false);
+					return;
+				}
+
+				await navigator.clipboard.writeText(call_link);
+				siteMessage("Call link copied");
+			}
 		}
 	}
 

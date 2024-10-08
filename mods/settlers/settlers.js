@@ -505,7 +505,15 @@ class Settlers extends GameTemplate {
 						}
 					}
 				} else {
-					this.trade_overlay.render();
+
+					if (this.game.state.ads[this.game.player - 1].offer || this.game.state.ads[this.game.player - 1].ask) {
+              			this.showTradeOverlay(this.game.player,  
+              			 this.game.state.ads[this.game.player - 1].ask,
+                		 this.game.state.ads[this.game.player - 1].offer
+              			);
+					}else{
+						this.trade_overlay.render();	
+					}
 				}
 			};
 		}
@@ -561,6 +569,8 @@ class Settlers extends GameTemplate {
 	initializeGame(game_id) {
 		if (this.game.state == undefined) {
 			this.game.state = this.initializeState();
+
+			this.game.canProcess = false; // For end game... 
 
 			if (!this.game.colors) {
 				let colors = [1, 2, 3, 4];
@@ -727,6 +737,13 @@ class Settlers extends GameTemplate {
 				$('#rolldice').css('visibility', 'visible');
 				$('#rolldice').html(str);
 				return;
+			} else if (str === "WAIT") {
+				$('.controls .option').css('visibility', 'hidden');
+				$('#rolldice').css('visibility', 'visible');
+				$('#rolldice').html(`<i class="fa-solid fa-pause"></i>`);
+				$('#rolldice').removeClass('enabled');
+				document.getElementById("rolldice").onclick = null;
+				return;
 			} else {
 				console.log('UPDATE CONTROLS:', str);
 				//super.updateControls(str);
@@ -738,7 +755,7 @@ class Settlers extends GameTemplate {
 		if (this.game.state.playerTurn !== this.game.player) {
 			$('#rolldice').html(`<i class="fa-solid fa-pause"></i>`);
 			$('#rolldice').removeClass('enabled');
-			$('#rolldice').off();
+			document.getElementById("rolldice").onclick = null;
 
 			$('#bank').removeClass('enabled');
 			$('#playcard').removeClass('enabled');

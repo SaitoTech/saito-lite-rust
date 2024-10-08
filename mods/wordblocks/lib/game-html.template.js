@@ -346,6 +346,7 @@ return `		<div id="main" class="main">
 			<div id="hud-header" class="hud-header"></div>
 			<div id="hud-body" class="hud-body">
 				<div id="status" class="status"></div>
+				<div id="controls" class="controls"></div>
 			</div>
 		</div>`;
 }

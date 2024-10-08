@@ -96,11 +96,13 @@ class SettlersGameloop {
 
         //the player will update their devcard count on next turn
         if (player != this.game.player) {
+          this.animateDevCard(player);
           this.game.state.players[player - 1].devcards.push("x"); //Add card for display
           this.updateStatus(`${this.game.playerNames[player - 1]} bought a ${this.card.name} card`);
+          return 0;
         } else {
 
-          $(".controls #playcard").addClass('enabled');
+          $(".controls #playcard").addClass('enabled').addClass("flashme");
 
           let lastcard = this.game.deck[0].cards[this.game.deck[0].hand[this.game.deck[0].hand.length - 1]];
 
@@ -549,6 +551,8 @@ class SettlersGameloop {
 
         this.game.state.ads[player - 1].offer = null;
         this.game.state.ads[player - 1].ask = null;
+
+        this.playerbox.updateGraphics('', player);
         this.displayPlayers();
       }
       //
@@ -717,8 +721,10 @@ class SettlersGameloop {
             statushtml = "YOUR TURN:";
           }
 
-          this.updateStatus(`${statushtml}`);
-
+          if (this.status.length == 0 || this.status[this.status.length-1] !== statushtml) {
+            this.updateStatus(`${statushtml}`);
+          }
+          
           if (this.turn_limit){
             this.clock.startClock(this.turn_limit);
             this.sleep_timer = setTimeout(()=> {
@@ -733,14 +739,16 @@ class SettlersGameloop {
           //Or, choose menu option
           if (document.getElementById("rolldice")){
             document.getElementById("rolldice").onclick = (e) => {
-                settlers_self.updateStatus('rolling...');
                 settlers_self.addMove("roll\t" + player);
                 settlers_self.endTurn();
                 e.currentTarget.onclick = null;
             }
           }
         } else {
-          this.updateStatus(`${this.game.playerNames[player - 1]} rolling dice...`);
+          let statushtml = `${this.game.playerNames[player - 1]} rolling dice...`;
+          if (this.status.length == 0 || this.status[this.status.length-1] !== statushtml) {
+            this.updateStatus(`${statushtml}`);
+          }
         }
         //this.game.queue.splice(qe, 1);
         return 0;
@@ -781,7 +789,7 @@ class SettlersGameloop {
 
         //Regardless of outcome, player gets a turn
         this.game.queue.push(`player_actions\t${player}`);
-        this.game.queue.push("enable_trading"); //Enable trading after resolving bandit
+        this.game.queue.push(`enable_trading\t${player}`); //Enable trading after resolving bandit
 
         //Next Step depends on Dice outcome
         if (roll == 7) {
@@ -796,6 +804,10 @@ class SettlersGameloop {
           }
           this.game.stats.history.push(record);
           
+          let firstMsg = (this.game.player == player)  ? "You" : this.game.playerNames[player - 1];
+          firstMsg += ` rolled <span class='die_value'>${roll}</span>`;
+          this.updateStatus(firstMsg);
+
           //Manage discarding before bandit comes into play
           let playersToDiscard = [];
           for (let i = 0; i < this.game.state.players.length; i++) {
@@ -838,6 +850,12 @@ class SettlersGameloop {
         this.game.state.bandit = false;
         this.game.state.canTrade = true; //Toggles false when the player builds or buys
         this.game.state.hasRolled = true;
+
+        let player = parseInt(mv[1]);
+        if (player != this.game.player) {
+          this.updateStatus(`${this.game.playerNames[player - 1]} is taking their turn`);
+        }
+
         return 1;
       }
 
@@ -873,16 +891,17 @@ class SettlersGameloop {
           }
         }
 
+        if (confirmsNeeded == 0) {
+          this.game.queue.splice(qe, 1);
+          return 1;
+        }
+
         this.game.queue.push(`NOTIFY\t${discardString} must discard half their hand.`);
 
         if (!amIPlaying) {
          this.updateStatus(`waiting for ${discardString} to discard`);
         }
 
-        if (confirmsNeeded == 0) {
-          this.game.queue.splice(qe, 1);
-          return 1;
-        }
         return 0;
       }
 
@@ -1012,9 +1031,8 @@ class SettlersGameloop {
 
         if (player == this.game.player) {
           this.playerPlayMove();
-        } else {
-          this.updateStatus(`${this.game.playerNames[player - 1]} is taking their turn`);
-        }
+        } 
+
         return 0;
       }
 

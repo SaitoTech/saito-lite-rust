@@ -12,14 +12,19 @@ module.exports  = (app, mod) => {
 
 
   let keys = app.keychain.returnKeys({type: "event", mod: "videocall" });
+  let mode = null;
   if (mod.room_obj) {
     html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom" data-id="${mod.room_obj?.call_id}">Join Meeting</div>`;
+    mode = "join";
   } else if (keys.length > 0) {
       html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="joinScheduleRoom">Join / Start Meeting</div>`;
+      mode = "select";
   }else{
       html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom">Start Meeting</div>`;
+      mode = "create";
   }
-  
+  html += `<div class="stunx-precall-link" data-id="${mode}"><i class="fas fa-link"></i></div>`;
+
   html += `</div>
         
           <div class="stun-appspace-footer">

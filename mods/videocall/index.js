@@ -81,7 +81,7 @@ module.exports = (app, mod, build_number, og_card) => {
   </style>
   </head>
   
-  <body>
+  <body class="videocall">
   
   </body>
   <script type="text/javascript" src="/saito/saito.js?build=${build_number}" >

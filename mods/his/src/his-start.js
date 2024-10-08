@@ -157,12 +157,14 @@ the game engine automatically handles token denomination, merging smaller
       callback : null
     });
 
-    this.faster_play = 1;
-    if (this.app.options.gameprefs) {
-      if (this.app.options.gameprefs.his_faster_play) {
-	this.faster_play = parseInt(this.app.options.gameprefs.his_faster_play);
-      }
-    }
+//    if (this.faster_play !== 0 && this.faster_player !== 1) {
+//      this.faster_play = 1;
+//    }
+//    if (this.app.options.gameprefs) {
+//      if (this.app.options.gameprefs.his_faster_play) {
+//	this.faster_play = parseInt(this.app.options.gameprefs.his_faster_play);
+//      }
+//    }
     this.menu.addSubMenuOption("game-gameplay",{
       text: `Faster ${(this.faster_play==1)?"✔":""}`,
       id:"game-gameplay-faster",
@@ -464,6 +466,14 @@ if (this.game.players.length > 2) {
 
     this.menu.addMenuOption("game-factions", "Factions");
     this.menu.addSubMenuOption("game-factions", {
+      text : "Ottomans",
+      id : "game-ottoman",
+      class : "game-ottoman",
+      callback : function(app, game_mod) {
+        game_mod.faction_overlay.render("ottoman");
+      }
+    });
+    this.menu.addSubMenuOption("game-factions", {
       text : "Hapsburgs",
       id : "game-hapsburg",
       class : "game-hapsburg",
@@ -485,14 +495,6 @@ if (this.game.players.length > 2) {
       class : "game-france",
       callback : function(app, game_mod) {
         game_mod.faction_overlay.render("france");
-      }
-    });
-    this.menu.addSubMenuOption("game-factions", {
-      text : "Ottomans",
-      id : "game-ottoman",
-      class : "game-ottoman",
-      callback : function(app, game_mod) {
-        game_mod.faction_overlay.render("ottoman");
       }
     });
     this.menu.addSubMenuOption("game-factions", {

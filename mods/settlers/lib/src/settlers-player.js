@@ -63,7 +63,7 @@ class SettlersPlayer {
     let xpos = 0;
     let ypos = 0;
 
-    this.updateStatus(`Move the ${this.b.name}`);
+    this.updateStatus(`MOVE the ${this.b.name}`);
     $(".option").css("visibility", "hidden");
     let settlers_self = this;
     $(".sector-container").addClass("rhover");
@@ -393,9 +393,12 @@ class SettlersPlayer {
       }, this.turn_limit);
     }
 
-    this.updateStatus("YOUR TURN:");
+    let statushtml = "YOUR TURN:";
+    if (this.status.length == 0 || this.status[this.status.length-1] !== statushtml) {
+      this.updateStatus(`${statushtml}`);
+    }
 
-    document.querySelector(".controls #rolldice").onclick = (e) => {
+    document.getElementById("rolldice").onclick = (e) => {
         e.currentTarget.onclick = null;
         this.addMove("end_turn\t" + this.game.player);
         this.endTurn();
