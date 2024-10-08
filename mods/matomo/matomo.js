@@ -5,6 +5,7 @@ class Matomo extends ModTemplate {
 	constructor(app) {
 		super(app);
 		this.name = 'Matomo';
+		this.slug = 'matomo';
 		this.description = 'Saito tracking tag';
 		this.categories = 'Marketing';
 		this.class = 'utility';

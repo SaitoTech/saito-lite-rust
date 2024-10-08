@@ -1,4 +1,4 @@
-module.exports = DialerTemplate = (app, mod, is_dialing = true) => {
+module.exports  = (app, mod, is_dialing = true) => {
 	let html = `
       <div class="stun-minimal-appspace"> 
       	<h2>Saito Talk</h2>

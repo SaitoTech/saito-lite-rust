@@ -13,6 +13,7 @@ class Wuziqi extends GameTemplate {
 		// Define static game parameters and add global variables.
 
 		this.name = 'Wuziqi';
+		this.slug = 'wuziqi';
 		this.game_length = 10; //Estimated number of minutes to complete a game
 		this.description =
 			'Take turns placing black or white tiles on a Go board of various sizes to make a line of five in a row to win the round. Also known as 五子棋, Gokomu, or Gobang.';

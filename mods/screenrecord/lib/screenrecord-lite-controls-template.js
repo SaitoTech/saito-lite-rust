@@ -1,4 +1,4 @@
-module.exports = LiteDreamControlsTemplate = (app, mod) => {
+module.exports  = (app, mod) => {
 
     let html = `
       <div class="screenrecord-controls" id="screenrecord-controls">

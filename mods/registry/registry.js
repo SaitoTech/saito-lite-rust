@@ -8,6 +8,7 @@ class Registry extends ModTemplate {
 
 		this.app = app;
 		this.name = 'Registry';
+		this.slug = 'registry';
 		this.description = 'Saito DNS support';
 		this.categories = 'Core Utilities Messaging';
 		this.class = 'utility';

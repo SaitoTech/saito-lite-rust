@@ -12,6 +12,7 @@ class Profile extends ModTemplate {
 		super(app);
 		this.app = app;
 		this.name = 'Profile';
+		this.slug = 'profile';
 		this.description = 'Profile Module';
 		this.archive_public_key;
 		this.cache = {};

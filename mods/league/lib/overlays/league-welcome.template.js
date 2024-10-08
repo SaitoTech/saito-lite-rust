@@ -1,4 +1,4 @@
-module.exports = LeagueWelcomeTemplate = (app, league) => {
+module.exports  = (app, league) => {
 	let html = `
 	   <div class="league-join-overlay-box email-box">
         <div class="title-box">

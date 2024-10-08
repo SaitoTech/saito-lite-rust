@@ -1,7 +1,7 @@
 /*controll changes*/
 /*updated for git*/
 
-module.exports = CallInterfaceVideoTemplate = (mod, videoEnabled = true, audioEnabled = true) => {
+module.exports  = (mod, videoEnabled = true, audioEnabled = true) => {
   let html = `
     <div class="stun-chatbox hide-scrollbar" id="stun-chatbox">
       <main>

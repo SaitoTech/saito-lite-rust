@@ -1,4 +1,4 @@
-module.exports = AddWhitelistTemplate = (mod) => {
+module.exports = (mod) => {
 	return `
 		<form id="register-whitelist-key-template"> 
       <div class="saito-overlay-form">

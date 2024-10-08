@@ -7,9 +7,9 @@ class BTC extends ModTemplate {
 
 		this.appname = 'BTC';
 		this.name = 'BTC';
+		this.slug = 'btc';
 		this.ticker = 'BTC';
-		this.description =
-			'Adds support for Mixin-powered BTC transfers on the Saito Network';
+		this.description = 'Adds support for Mixin-powered BTC transfers on the Saito Network';
 		this.categories = 'Utility Cryptocurrency Finance';
 
 		// MIXIN STUFF

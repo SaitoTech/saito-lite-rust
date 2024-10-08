@@ -1,4 +1,4 @@
-module.exports = ControlsTemplate = (app, mod) => {
+module.exports  = (app, mod) => {
 	return `
 
     <div  style="" class="modal fade" id="buttonsModal" tabindex="-1" role="dialog" aria-hidden="true">

@@ -1,4 +1,4 @@
-module.exports = StunLaunchTemplate = (app, mod) => {
+module.exports  = (app, mod) => {
   let html = `
       <div class="stun-appspace"> 
         <div class="stun-appspace-content">

@@ -13,6 +13,7 @@ class Spider extends OnePlayerGameTemplate {
 
 		this.app = app;
 		this.name = 'Spider';
+		this.slug = 'spider';
 		this.gamename = 'Spider Solitaire';
 		this.game_length = 10; //Estimated number of minutes to complete a game
 		this.description =
