@@ -1,4 +1,4 @@
-module.exports  = (app, mod, events) => {    
+module.exports  = (app, mod, events) => {
     let html = `
         <div class="call-schedule-join-container">
             <h4>Scheduled Calls</h4>
