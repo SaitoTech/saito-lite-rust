@@ -64,7 +64,8 @@ module.exports = (app, mod, build) => {
 		: `settlers-row-disabled`
 }" id="3" title="Action cards are most likely to be a soldier, which allows you to move the bandit. Other cards give you victory points or allow you to gain resources.">
             <div class="settlers-item-column">
-                <img class="settlers-item-img" src="/settlers/img/cards/red_back.png">
+                <img class="settlers-item-img" src="${mod.card.back}">
+                <i class="fa-solid fa-person-running"></i>
                 <div class="settlers-stats-vp-count">${mod.game.deck[0].crypt.length}</div>
               <div>Card</div>
               </div>

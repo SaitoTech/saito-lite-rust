@@ -100,11 +100,8 @@
 }
 
 
-.player-notice span img {
-	width: 60px;
-	background-color: #456;
-	border-radius: 25%;
-	border: 1px solid #fff8;
+.player-notice img {
+	max-width: 45px;
 }
 
 @media only screen and (max-width: 600px) and (orientation: portrait) {

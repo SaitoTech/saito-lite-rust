@@ -7,7 +7,7 @@ class SettlersActions {
     let html = `<i class="fa-solid fa-forward"></i>`;
     try {
 
-      this.updateStatusWithOptions(`<div class="player-notice"><span class="acknowledge-message">${msg}</span></div>`, html);
+      this.updateStatusWithOptions(`<div class="player-notice">${msg}</div>`, html);
 
       document.getElementById("rolldice").onclick = async (e) => {
         e.currentTarget.onclick = null;

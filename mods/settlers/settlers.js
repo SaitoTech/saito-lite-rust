@@ -92,16 +92,16 @@ class Settlers extends GameTemplate {
 		};
 		this.s = {
 			name: 'soldier',
-			img: `<img src="/settlers/img/icons/knight.png"/>`
+			img: `<img class="image-as-token" src="/settlers/img/icons/knight.png"/>`
 		};
 		this.t = { name: 'bank' };
 		this.vp = {
 			name: 'VP',
-			img: `<img src="/settlers/img/icons/point_card.png"/>`
+			img: `<img src="/settlers/img/cards/devcard.png"/>`
 		};
 		this.longest = {
 			name: 'Longest Road',
-			icon: `<img src="/settlers/img/icons/road.png"/>`,
+			icon: `<img class="image-as-token" src="/settlers/img/icons/road.png"/>`,
 			card: `<img src="/settlers/img/cards/longest_road.png"/>`,
 			value: 2,
 			min: 5
@@ -151,10 +151,10 @@ class Settlers extends GameTemplate {
 			['ore', 'wool', 'wheat']
 		];
 		this.cardDir = '/settlers/img/cards/';
-		this.back = '/settlers/img/cards/red_back.png'; //Hidden Resource cards
+		this.back = '/settlers/img/cards/desert.png'; //Hidden Resource cards
 		this.card = {
 			name: 'development',
-			back: '/settlers/img/cards/red_back.png'
+			back: '/settlers/img/cards/devcard.png',
 		};
 
 		this.deck = [
@@ -436,7 +436,7 @@ class Settlers extends GameTemplate {
 		let html = `<ul><li class="option enabled" id="score" title="view game statistics"><i class="fa-solid fa-ranking-star"></i></li>
 	    	<li class="option enabled" id="trade" title="trade with other players"><i class="fa-solid fa-money-bill-transfer"></i></li>
 	    	<li class="option" id="bank" title="trade with the bank"><i class="fa-solid fa-building-columns"></i></li>
-	    	<li class="option" id="playcard" title="play an action card"><i class="fa-solid fa-people-robbery"></i></li>
+	    	<li class="option" id="playcard" title="play an action card"><i class="fa-solid fa-person-running"></i></li>
 	    	<li class="option" id="spend" title="build or buy"><i class="fa-solid fa-screwdriver-wrench"></i></li>
 	    	<li class="option enabled" id="rolldice"><i class="fa-solid fa-forward"></i></li></ul>
 	    	`;

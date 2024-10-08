@@ -67,6 +67,12 @@ p {
 	width: unset;
 }
 
+.image-as-token {
+	border-radius: 50%;
+	border: 2px solid #fff8;
+	background-color: #456;
+}
+
 span.tip {
 	border-bottom: 1px dotted;
 	font-weight: bold;
@@ -637,8 +643,6 @@ input[type='checkbox'] {
 
 .robinhood .bandit {
 	background-image: url(/settlers/img/icons/robinhood.png);
-	width: 45%;
-	height: 48%;
 }
 
 .bandit .hexTileCenter {

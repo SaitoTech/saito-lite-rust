@@ -149,6 +149,12 @@
 	height: 9rem;
 }
 
+.settlers-item-column i {
+	font-size: 3rem;
+	position: absolute;
+	top: 23.5%;
+}
+
 .settlers-item-img {
 	height: 7rem;
 	max-height: 100%;

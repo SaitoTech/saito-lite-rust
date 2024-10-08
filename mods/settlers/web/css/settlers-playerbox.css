@@ -88,9 +88,9 @@
 
 .cardct>div {
 	position: absolute;
-	color: whitesmoke;
+	color: black;
 	font-size: 3rem;
-	text-shadow: 1px 1px 1px black;
+	text-shadow: 1px 1px 1px whitesmoke;
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);
