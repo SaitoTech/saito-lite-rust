@@ -74,20 +74,20 @@ class Keychain {
 
 
 		// automatically remove old event keys & outdated modes
-		let events = this.returnKeys({type: "scheduled_call"});	
-		for (let e of events){
+		let events = this.returnKeys({ type: "scheduled_call" });
+		for (let e of events) {
 			this.removeKey(e.publicKey);
-		}	
+		}
 
-		events = this.returnKeys({type: "event"});
+		events = this.returnKeys({ type: "event" });
 		let now = Date.now();
-		for (let e of events){
+		for (let e of events) {
 			let scheduledTime = new Date(e.startTime).getTime();
-			if (scheduledTime + 24*60*60*1000 < now){
+			if (scheduledTime + 24 * 60 * 60 * 1000 < now) {
 				console.log("Event Over:", e);
 				this.removeKey(e.publicKey);
 			}
-		}	
+		}
 
 		this.saveKeys();
 
@@ -422,7 +422,7 @@ class Keychain {
 			}
 		}
 
-		if (!force_local_keychain){
+		if (!force_local_keychain) {
 			//
 			//Fallback to cached registry
 			//
@@ -454,7 +454,7 @@ class Keychain {
 						}
 					}
 				}
-			);
+				);
 
 		}
 
@@ -508,7 +508,7 @@ class Keychain {
 			//foreground: [247, 31, 61, 255],           // saito red
 			//background: [64, 64, 64, 0],
 			saturation: 0.6,
-            brightness: 0.4,
+			brightness: 0.4,
 			margin: 0.0, // 0% margin
 			size: 420, // 420px square
 			format: img_format // use SVG instead of PNG
@@ -621,8 +621,8 @@ class Keychain {
  * @param {string} publicKey The public key to add to the watch list. Defaults to an empty string.
  */
 	addWatchedPublicKey(publicKey = '') {
-		if (publicKey){
-			this.addKey(publicKey, { watched: true });			
+		if (publicKey) {
+			this.addKey(publicKey, { watched: true });
 		}
 	}
 
@@ -682,7 +682,73 @@ class Keychain {
 
 		return true;
 	}
+
+	/**
+  * Updates or adds an archive node for a given public key.
+  * @param publicKey - The public key associated with the archive node.
+  * @param archiveNode - The archive node object to update or add.
+  */
+	async updateArchiveNode(publicKey: string, archiveNode: any) {
+		const requiredProperties = ['publickey', 'host', 'port', 'protocol'];
+		const missingProperties = requiredProperties.filter(prop => !archiveNode.hasOwnProperty(prop));
+
+		if (missingProperties.length > 0) {
+			console.warn(`Invalid archive node object. Missing properties: ${missingProperties.join(', ')}`);
+			return;
+		}
+
+		let key = this.returnKey(publicKey);
+		if (!key) {
+			console.warn(`No key found for public key: ${publicKey}`);
+			return;
+		}
+
+		let archive_nodes = key.archive_nodes || [];
+
+		const index = archive_nodes.findIndex(
+			(node) => node.publickey === archiveNode.publickey
+		);
+
+		if (index !== -1) {
+			archive_nodes[index] = { ...archive_nodes[index], ...archiveNode };
+		} else {
+			archive_nodes.push(archiveNode);
+		}
+
+		// Update the key with the new archive_nodes array
+		this.addKey(publicKey, { archive_nodes: archive_nodes });
+	}
+
+	/**
+	 * Deletes an archive node for a given public key.
+	 * @param publicKey - The public key associated with the archive node.
+	 * @param archiveNodePublicKey - The public key of the archive node to delete.
+	 */
+	async deleteArchiveNode(publicKey, archiveNodePublicKey) {
+		// Retrieve the key object for the given public key
+		let key = this.returnKey(publicKey);
+		if (!key || !key.archive_nodes) {
+			return;
+		}
+
+		let archive_nodes = key.archive_nodes.filter(
+			(node) => node.publicKey !== archiveNodePublicKey
+		);
+
+		this.addKey(publicKey, { archive_nodes: archive_nodes });
+	}
+
+	/**
+	 * Retrieves all archive nodes for a given public key.
+	 * @param publicKey - The public key to get archive nodes for.
+	 * @returns An array of archive nodes associated with the public key, or an empty array if none exist.
+	 */
+	getArchiveNodes(publicKey) {
+		let key = this.returnKey(publicKey);
+		return key?.archive_nodes || [];
+	}
 }
 
 export default Keychain;
+
 
