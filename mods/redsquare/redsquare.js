@@ -124,7 +124,7 @@ class RedSquare extends ModTemplate {
 
     this.postScripts = ['/saito/lib/emoji-picker/emoji-picker.js'];
 
-    this.styles = ['/saito/saito.css', '/redsquare/style.css'];
+    this.styles = ['/redsquare/style.css'];
 
     this.enable_profile_edits = true;
 

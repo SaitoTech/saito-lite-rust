@@ -45,17 +45,7 @@ class Profile extends ModTemplate {
 
 						if (returned_key?.profile) {
 
-							if (returned_key.profile?.banner){
-								this.cache[key].banner = await this.fetchProfileFromArchive("banner", returned_key.profile.banner);
-							}
-
-							if (returned_key.profile?.description){
-								this.cache[key].description = await this.fetchProfileFromArchive("description", returned_key.profile.description);
-							}
-
-							if (returned_key.profile?.image){
-								this.cache[key].image = await this.fetchProfileFromArchive("image", returned_key.profile.image);
-							}
+							this.cache[key] = await this.fetchProfileFromArchive(returned_key);
 
 							console.log("PROFILE: async fetches for watched key finished");
 						
@@ -245,8 +235,6 @@ class Profile extends ModTemplate {
 
 		let txmsg = tx.returnMessage();
 
-		console.log("PROFILE UPDATE: ", txmsg.data);
-
 		//
 		// Update (server) cache with profile data
 		//
@@ -260,7 +248,9 @@ class Profile extends ModTemplate {
 		// If we follow the key, save the indices (tx sig) in our keychain
 		// and archive the transactions
  		//
-		if (this.app.keychain.isWatched(from)) {
+		if (this.app.BROWSER && this.app.keychain.isWatched(from)) {
+
+			console.log(`PROFILE UPDATE for ${this.app.keychain.returnUsername(from)}: `, txmsg.data);
 
 			let data = {};
 
@@ -275,10 +265,17 @@ class Profile extends ModTemplate {
 			let returned_key = this.app.keychain.returnKey(from);
 
 			let profile = Object.assign({}, returned_key?.profile);
+
+			// Clear out old profile transactions...
+			for (let field in txmsg.data){
+				if (profile[field]){
+					await this.app.storage.deleteTransaction(profile[field], "", "localhost");
+				}
+			}
 			
 			profile = Object.assign(profile, data);
 
-			console.log(profile);
+			console.log("New profile: ", profile);
 
 			this.app.keychain.addKey(from, { profile } );
 
@@ -309,18 +306,26 @@ class Profile extends ModTemplate {
 	//
 	//  LOAD PROFILE VALUES FUNCTIONS
 	//
- 	async fetchProfileFromArchive(field, sig) {
- 		console.log("PROFILE: Fetching local profile: ", field);
- 		return this.app.storage.loadTransactions({ sig, field1: 'Profile' },
+ 	async fetchProfileFromArchive(key) {
+ 		console.log("PROFILE: Fetching local profile for: ", key);
+ 		return this.app.storage.loadTransactions({ field2: key.publicKey, field1: 'Profile' },
 			(txs) => {
+
 				if (txs?.length > 0) {
+					let obj = {};
 					for (let tx of txs){
+						console.log("PROFILE: local archive returned txs (inside)!");
 						let txmsg = tx.returnMessage();
-						if (txmsg.data[field]){
-							console.log("PROFILE: local archive returned txs (inside)!");
-							return txmsg.data[field];
+
+						for (let field in key.profile){
+							if (key.profile[field] === tx.signature){
+								if (txmsg.data[field]){
+									obj[field] = txmsg.data[field];
+								}
+							}
 						}
 					}
+					return obj;
 				}
 				return null;
 			},

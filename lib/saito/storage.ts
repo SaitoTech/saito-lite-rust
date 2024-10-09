@@ -148,7 +148,6 @@ class Storage {
 	}
 
 	async updateTransaction(tx: Transaction, obj = {}, peer = null) {
-		const txmsg = tx.returnMessage();
 		const message = 'archive';
 		let data: any = {};
 		data.request = 'update';
