@@ -134,7 +134,7 @@ class Browser {
 //							}
   	
                             				setTimeout(() => {
-                            					window.location = '/tabs.html';
+                            					window.location = '/tabs/';
                             				}, 300)
 						}
 					}

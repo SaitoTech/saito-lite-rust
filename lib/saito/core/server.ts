@@ -864,8 +864,8 @@ class Server {
 
 		expressApp.get('*', (req, res) => {
 
-//res.sendFile(`${this.web_dir}404.html`);
-			res.sendFile(`${this.web_dir}tabs.html`);
+            res.sendFile(`${this.web_dir}404.html`);
+			//res.sendFile(`${this.web_dir}tabs.html`);
 //
 //			res.status(404).sendFile(`${this.web_dir}404.html`);
 //			res.status(404).sendFile(`${this.web_dir}tabs.html`);
