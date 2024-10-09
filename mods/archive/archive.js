@@ -677,17 +677,22 @@ try {
 		sql = `DELETE FROM archives WHERE archives.sig = $sig`;
 		params = { $sig: sig };
 		await this.app.storage.runDatabase(sql, params, 'archive');
-		where_obj['sig'] = sig;
 
 		//
 		// browsers handle with localDB search
 		//
+		where_obj['sig'] = sig;
 		if (this.app.BROWSER) {
+
 			rows = await this.localDB.remove({
 				from: 'archives',
 				where: where_obj
 			});
-			console.log('DELETED FROM localDB! ');
+			if (rows) {
+				console.log('DELETED FROM localDB! ');
+			}else{
+				console.log("Record not found in localDB to delete");
+			}
 		}
 
 		return true;
