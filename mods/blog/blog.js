@@ -38,11 +38,23 @@ class Blog extends ModTemplate {
 
 
     async initialize(app) {
+        if (app.BROWSER === 0) {
+            await this.loadBlogTransactions(this.publicKey)
+        }
+
     }
 
-    async onPeerHandshakeComplete(app){
-        if (this.app.BROWSER) {
-            await this.loadBlogTransactions(this.publicKey)
+    async onPeerServiceUp(app, peer, service) {
+        if(service.service === "archive"){
+            await this.createBlogTransaction("content", "title");
+        }
+    }
+
+    async onPeerHandshakeComplete(app) {
+        if (this.app.BROWSER === 0) {
+            setInterval(async () => {
+                await this.loadBlogTransactions(this.publicKey)
+            }, 3000);
         }
     }
 
@@ -72,13 +84,14 @@ class Blog extends ModTemplate {
         }
         // this.cache[this.publicKey].blogPosts.push(data);
 
+
         this.app.connection.emit('blog-update-dom', this.publicKey, this.cache[this.publicKey].blogPosts);
+
 
 
 
         // Propagate the transaction
         await this.app.network.propagateTransaction(newtx);
-
         return newtx;
     }
 
@@ -86,7 +99,7 @@ class Blog extends ModTemplate {
     async loadBlogTransactions(key, limit = 30) {
         let loadedPosts = 0;
         await this.app.storage.loadTransactions(
-            { field1: "Blog", field2: key },
+            { field1: "Blog" },
             async (txs) => {
                 console.log(txs, "transactions found");
                 let txs_found = [];
@@ -108,16 +121,15 @@ class Blog extends ModTemplate {
                 }
 
             },
-            "localhost", true
+            "localhost"
         );
 
-        console.log(this.cache, 'this.cached')
+        // console.log(this.cache, 'this.cached')
     }
 
     async saveBlogTransaction(tx, key) {
-        await this.app.storage.saveTransaction(
-            tx,
-            { field1: 'Blog' },
+        await this.app.storage.saveTransaction(tx,
+            { field1: 'Blog', field3: key },
             'localhost'
         );
     }
@@ -144,8 +156,9 @@ class Blog extends ModTemplate {
             this.app.connection.emit("saito-header-update-message", { msg: "" });
             siteMessage('Blog post published', 2000);
         }
-
         await this.saveBlogTransaction(tx, from);
+
+
 
     }
 
@@ -176,7 +189,7 @@ class Blog extends ModTemplate {
     }
 
     async render() {
-    
+
         // // Check for URL param (since that is the prime use case)  
         // this.main = new SaitoProfile(this.app, this);
         // this.header = new SaitoHeader(this.app, this);
