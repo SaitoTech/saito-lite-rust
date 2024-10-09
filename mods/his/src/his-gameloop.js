@@ -739,12 +739,12 @@ if (this.game.options.scenario != "is_testing") {
                     if (obj.leader) { if (obj.leader.type == "andrea-doria") { obj.space = "genoa"; obj.faction = "genoa"; } }
 
 		    //
-		    // ottomans prefer angiers if available
+		    // ottomans prefer algiers if available
 		    //
 		    if (obj.faction === "ottoman") {
-		      if (this.isSpaceControlled("ottoman", "angiers")) { obj.space = "angiers"; } else {
-		        if (this.isSpaceControlled("ottoman", "oran")) { obj.space = "oran"; } else {
-		          if (this.isSpaceControlled("ottoman", "tripoli")) { obj.space = "tripoli"; };
+		      if (this.isSpaceControlled("algiers", "ottoman")) { obj.space = "algiers"; } else {
+		        if (this.isSpaceControlled("oran", "ottoman")) { obj.space = "oran"; } else {
+		          if (this.isSpaceControlled("oran", "ottoman")) { obj.space = "tripoli"; };
 		        }
 		      }
 		    }
@@ -2337,13 +2337,11 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 //	  let deck = this.returnDeck(true);
 //	  deck['013'].onEvent(this, "protestant");
 
-//
-// this should be handled in setup now
-//
 
+          this.addCard("ottoman", "009");
+          this.addCard("hapsburg", "104");
+          this.addCard("france", "086");
 /**
-          this.addCard("france", "024");
-          this.addCard("france", "025");
           this.addCard("hapsburg", "026");
           this.addCard("hapsburg", "027");
           this.addCard("hapsburg", "028");
@@ -7718,7 +7716,7 @@ console.log("removing roll from attacker...");
           //
           if (target_space.key == "atlantic" || target_space.key == "barbary") {
             let x = his_self.returnFactionControllingSpace("gibraltar");
-            if (factions_at_war_with_ottoman.includes(x)) { 
+            if (target_faction == x || factions_at_war_with_ottoman.includes(x)) { 
 	      anti_piracy_faction.push("gibraltar");
 	      anti_piracy_unittype.push("fortress");
 	      fortress_adjacent++;
@@ -7727,7 +7725,7 @@ console.log("removing roll from attacker...");
           }
           if (target_space.key == "africa" || target_space.key == "ionian") {
             let x = his_self.returnFactionControllingSpace("malta");
-            if (factions_at_war_with_ottoman.includes(x)) {
+            if (target_faction == x || factions_at_war_with_ottoman.includes(x)) {
 	      anti_piracy_faction.push("malta");
 	      anti_piracy_unittype.push("fortress");
 	      fortress_adjacent++;
@@ -7736,7 +7734,7 @@ console.log("removing roll from attacker...");
           }
           if (target_space.key == "africa" || target_space.key == "aegean") {
             let x = his_self.returnFactionControllingSpace("corfu");
-            if (factions_at_war_with_ottoman.includes(x)) {
+            if (target_faction == x || factions_at_war_with_ottoman.includes(x)) {
 	      anti_piracy_faction.push("corfu");
 	      anti_piracy_unittype.push("fortress");
 	      fortress_adjacent++;
@@ -7745,7 +7743,7 @@ console.log("removing roll from attacker...");
           }
           if (target_space.key == "adriatic" || target_space.key == "ionian") {
             let x = his_self.returnFactionControllingSpace("candia");
-            if (factions_at_war_with_ottoman.includes(x)) {
+            if (target_faction == x || factions_at_war_with_ottoman.includes(x)) {
 	      anti_piracy_faction.push("candia");
 	      anti_piracy_unittype.push("fortress");
 	      fortress_adjacent++;
@@ -7754,7 +7752,7 @@ console.log("removing roll from attacker...");
           }
           if (his_self.game.state.knights_of_st_john != "") {
             let indspace = his_self.game.spaces[his_self.game.state.knights_of_st_john];
-            if (indspace.unrest == 0 && indspace.besieged == 0) {
+            if (indspace.unrest != 1 && indspace.besieged <= 0) {
               for (let b = 0; b < indspace.ports.length; b++) {
                 if (indspace.ports[b] == target_space.key) {
 	          anti_piracy_faction.push(indspace.ports[b]);
@@ -7765,6 +7763,28 @@ console.log("removing roll from attacker...");
               }
             }
           }
+
+	  //
+	  // look for any trace italliances
+	  //
+	  for (let z = 0; z < target_space.ports.length; z++) {
+	    let ap = target_space.ports[z];
+	    let already_counted = ["gibraltar","malta","corfu","candia"];
+	    if (his_self.game.state.knights_of_st_john != "") { already_counted.push(his_self.game.state.knights_of_st_john); }
+	    if (!already_counted.includes(ap)) {
+	      if (his_self.game.spaces[ap]) {
+	        let x = his_self.returnFactionControllingSpace(ap);
+	        if (x == target_faction || factions_at_war_with_ottoman.includes(x)) {
+		  if (his_self.isSpaceFortified(ap) && !his_self.isSpaceInUnrest(ap) && !his_self.isSpaceBesieged(ap)) {
+	            anti_piracy_faction.push(ap);
+	            anti_piracy_unittype.push("fortress");
+	            fortress_adjacent++;
+	            opponent_dice++;
+	          }
+	        }
+	      }
+	    }
+	  }
 
 	  if (squadron_in_sea_zone > 0) {
 	    his_self.updateLog(` ${squadron_in_sea_zone} dice from local squadrons`);
@@ -11990,12 +12010,15 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
 	      if (f === "protestant" || f === "hapsburg" || f === "papacy" || f === "england" || f === "ottoman" || f === "france") {
 
-                let cardnum = this.factions[this.game.state.players_info[i].factions[z]].returnCardsDealt(this);
+                let cardnum = this.factions[f].returnCardsDealt(this);
+
+console.log("FACTION: " + f);
+console.log("returnCardsDealt: " + cardnum);
 
 		//
 		// is_testing
 		//
-		if (this.game.options.scenario == "is_testing") { cardnum = 5; }
+		//if (this.game.options.scenario == "is_testing") { cardnum = 5; }
 
 	        //
 	        // fuggers card -1

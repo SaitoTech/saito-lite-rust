@@ -123,7 +123,6 @@ class NavalBattleOverlay {
 		// count undestroyed corsairs
 		//
 		document.querySelectorAll(qs2).forEach((el) => {
-			let factionspace = el.querySelector('.naval-battle-desc').innerHTML;
 			let unit_type = el.getAttribute('data-unit-type');
 			if (unit_type == "corsair") { undestroyed_corsairs++; }
 		});

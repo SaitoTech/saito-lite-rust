@@ -103,9 +103,23 @@
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
+      name : "Get Mercenaries",
+      check : this.canPlayerGetMercenaries,
+      fnct : this.playerGetMercenaries,
+      img : "mercenary.jpg" ,
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       name : "Loan Squadrons",
       check : this.canPlayerLoanSquadrons,
       fnct : this.playerLoanSquadrons,
+      img : "squadron.jpg" ,
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
+      name : "Borrow Squadrons",
+      check : this.canPlayerBorrowSquadrons,
+      fnct : this.playerBorrowSquadrons,
       img : "squadron.jpg" ,
     });
 
@@ -362,6 +376,11 @@
     return 0;
   }
 
+  canPlayerGetMercenaries(his_self, player, faction, target="") {
+    if (faction == "ottoman" || target == "ottoman") { return 0; }
+    return 0;
+  }
+
   canPlayerLoanSquadrons(his_self, player, faction, target="") {
     if (target == "protestant") { return 0; }
     if (faction != "protestant") {
@@ -377,6 +396,13 @@
       }
     }
     return 0;
+  }
+
+
+
+  canPlayerBorrowSquadrons(his_self, player, faction, target="") {
+    if (target == "protestant") { return 0; }
+    return 1;
   }
 
 
@@ -1003,7 +1029,7 @@
     let io = his_self.returnDiplomacyImpulseOrder(faction);
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
-      if (!his_self.areAllies(faction, io[i]) && faction != io[i] && io[i] != "ottoman") {
+      if (faction != io[i] && io[i] != "ottoman") {
         html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
       }
     }
@@ -1049,6 +1075,62 @@
     return 0;
   }
 
+
+  async playerGetMercenaries(his_self, faction, mycallback=null) {
+
+    let terms = [];
+
+    let msg = `${his_self.returnFactionName(faction)} - Get Mercenaries from Whom: `;
+    let io = his_self.returnDiplomacyImpulseOrder(faction);
+    let html = '<ul>';
+    for (let i = 0; i < io.length; i++) {
+      if (faction != io[i] && io[i] != "ottoman") {
+        html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
+      }
+    }
+    html += '</ul>';
+    his_self.updateStatusWithOptions(msg, html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+
+      let target_faction = $(this).attr("id");
+      $('.option').off();
+      his_self.updateStatus("submitted");
+      let num = 0;
+      for (let key in his_self.game.spaces) {
+	let s = his_self.game.spaces[key];
+	for (let i = 0; i < s.units[target_faction].length; i++) {
+	  let u = s.units[target_faction][i];
+	  if (u.type == "mercenary") { num++; }
+	}
+      }
+      if (mycallback == null) { return; }
+
+      msg = `${his_self.returnFactionName(faction)} - How Many Mercenaries? `;
+      html = '<ul>';
+      for (let i = 1; i <= num && i <= 4; i++) {
+        html += `<li class="option" id="${i}">${i}</li>`;
+      }
+      html += '</ul>';
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let target_number = parseInt($(this).attr("id"));
+        $('.option').off();
+
+        his_self.updateStatus("submitted");
+        mycallback([`place_mercenaries\t${target_faction}\t${faction}\t${target_number}`,`give_mercenaries\t${target_faction}\t${faction}\t${target_number}`]);
+
+      });
+    });
+
+    return 0;
+  }
+
+
   async playerLoanSquadrons(his_self, faction, mycallback) {
 
     let terms = [];
@@ -1057,7 +1139,7 @@
     let io = his_self.returnDiplomacyImpulseOrder(faction);
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
-      if (!his_self.areAllies(faction, io[i]) && faction != io[i] && io[i] != "protestant") {
+      if (faction != io[i] && io[i] != "protestant") {
         html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
       }
     }
@@ -1099,6 +1181,66 @@
 
 	for (let z = 0; z < target_number; z++) {
 	  instructions.push(`give_squadron\t${faction}\t${target_faction}\t${target_number}`);
+	}
+        mycallback(instructions);
+      });
+    });
+
+    return 0;
+  }
+
+
+
+  async playerBorrowSquadrons(his_self, faction, mycallback) {
+
+    let terms = [];
+
+    let msg = `${his_self.returnFactionName(faction)} - Get Squadrons from Whom: `;
+    let io = his_self.returnDiplomacyImpulseOrder(faction);
+    let html = '<ul>';
+    for (let i = 0; i < io.length; i++) {
+      if (faction != io[i] && io[i] != "protestant") {
+        html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
+      }
+    }
+    html += '</ul>';
+    his_self.updateStatusWithOptions(msg, html);
+
+    $('.option').off();
+    $('.option').on('click', function () {
+
+      let target_faction = $(this).attr("id");
+      his_self.updateStatus("submitted");
+      $('.option').off();
+      let num = 0;
+      for (let key in his_self.game.spaces) {
+	let s = his_self.game.spaces[key];
+	for (let i = 0; i < s.units[target_faction].length; i++) {
+	  let u = s.units[target_faction][i];
+	  if (u.type == "squadron") { num++; }
+	}
+      }
+      if (mycallback == null) { return; }
+
+      msg = `${his_self.returnFactionName(faction)} - How Many Squadrons? `;
+      html = '<ul>';
+      for (let i = 1; i <= num && i <= 4; i++) {
+        html += `<li class="option" id="${i}">${i}</li>`;
+      }
+      html += '</ul>';
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+
+        let target_number = parseInt($(this).attr("id"));
+        $('.option').off();
+
+	let instructions = [];
+        his_self.updateStatus("submitted");
+
+	for (let z = 0; z < target_number; z++) {
+	  instructions.push(`give_squadron\t${target_faction}\t${faction}\t${target_number}`);
 	}
         mycallback(instructions);
       });

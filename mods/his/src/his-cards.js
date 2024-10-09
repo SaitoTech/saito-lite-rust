@@ -4107,9 +4107,11 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
         //
         // removes captured leaders
         //
-        for (let ii = 0; ii < his_self.game.state.players_info[i].captured.length; ii++) {
-          if (his_self.game.state.players_info[i].captured[ii].type == "henry-viii") { his_self.game.state.players_info[i].captured.splice(ii, 1); ii--; } else {
-            if (his_self.game.state.players_info[i].captured[ii].type == "charles-brandon") { his_self.game.state.players_info[i].captured.splice(ii, 1); ii--; }
+        for (let i = 0; i < his_self.game.state.players_info.length; i++) {
+          for (let ii = 0; ii < his_self.game.state.players_info[i].captured.length; ii++) {
+            if (his_self.game.state.players_info[i].captured[ii].type == "henry-viii") { his_self.game.state.players_info[i].captured.splice(ii, 1); ii--; } else {
+              if (his_self.game.state.players_info[i].captured[ii].type == "charles-brandon") { his_self.game.state.players_info[i].captured.splice(ii, 1); ii--; }
+	    }
 	  }
 	}
 
@@ -4156,18 +4158,18 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 	let placed = 0;
 
         // francis_i dies replaced by henry_ii
-        let s = his_self.returnSpaceOfPersonage("france", "francis_i");
+        let s = his_self.returnSpaceOfPersonage("france", "francis-i");
         if (s != "") {
-          let idx = his_self.returnIndexOfPersonageInSpace("france", "francis_i", s);
+          let idx = his_self.returnIndexOfPersonageInSpace("france", "francis-i", s);
           if (idx > -1) {
             his_self.game.spaces[s].units["france"].splice(idx, 1);
-            his_self.addArmyLeader("france", s, "henry_ii");
+            his_self.addArmyLeader("france", s, "henry-ii");
 	    placed = 1;
           } 
         }
         
 	if (placed == 0) {
-          his_self.addArmyLeader("france", "paris", "henry_ii");
+          his_self.addArmyLeader("france", "paris", "henry-ii");
 	}
 
 	return 1;
@@ -4304,9 +4306,11 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
         //
         // removes captured leaders
         //
-        for (let ii = 0; ii < his_self.game.state.players_info[i].captured.length; ii++) {
-          if (his_self.game.state.players_info[i].captured[ii].type == "henry-viii") { his_self.game.state.players_info[i].captured.splice(ii, 1); ii--; } else {
-            if (his_self.game.state.players_info[i].captured[ii].type == "charles-brandon") { his_self.game.state.players_info[i].captured.splice(ii, 1); ii--; }
+        for (let i = 0; i < his_self.game.state.players_info.length; i++) {
+          for (let ii = 0; ii < his_self.game.state.players_info[i].captured.length; ii++) {
+            if (his_self.game.state.players_info[i].captured[ii].type == "henry-viii") { his_self.game.state.players_info[i].captured.splice(ii, 1); ii--; } else {
+              if (his_self.game.state.players_info[i].captured[ii].type == "charles-brandon") { his_self.game.state.players_info[i].captured.splice(ii, 1); ii--; }
+  	    }
 	  }
 	}
 
@@ -7931,6 +7935,7 @@ console.log("we have removed philip and redisplayed the space...");
 	    "Select Unbesieged Space You Control",
 
 	    function(space) {
+	      if (his_self.game.state.events.schmalkaldic_league == 0) { if (space.type == "electorate") { return 0; } } 
 	      // 2P must be German or Iralian space
 	      if (his_self.game.players.length == 2) { if (space.language != "italian" && space.language != "german") { return 0; } }
 	      if (space.besieged) { return 0; }
@@ -9114,6 +9119,7 @@ console.log("we have removed philip and redisplayed the space...");
 
 	  space.home = "independent";
 	  space.political = "independent";
+	  his_self.game.state.knights_of_st_john = spacekey;
 	  his_self.game.queue.push("fortify\t"+spacekey);
 
 	  return 1;

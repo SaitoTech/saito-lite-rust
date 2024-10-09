@@ -3103,12 +3103,17 @@ return;
         return;
       }
 
-      let msg = his_self.returnFactionName(faction) + " - Return Units to Capital?";
+      let msg = his_self.returnFactionName(faction) + " - Winter Return to Capital?";
+      if (viable_capitals.length == 1) { msg = his_self.returnFactionName(faction) + " - Winter Recall to " + his_self.returnSpaceName(viable_capitals[0]) + "?"; }
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
-        opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
+	if (viable_capitals.length == 1) {
+          opt += `<li class="option" id="${viable_capitals[i]}">yes</li>`;
+	} else {
+          opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
+        }
       }
-      opt += `<li class="option" id="finish">no thanks</li>`;
+      opt += `<li class="option" id="finish">skip</li>`;
       opt += '</ul>';
 
       his_self.updateStatusWithOptions(msg, opt);
@@ -3289,12 +3294,17 @@ return;
 
     pick_capital_function = function(his_self, pick_capital_function, select_spacekey_function, select_units_function, finish_selecting_from_space_function) {
 
-      let msg = his_self.returnFactionName(faction) + " - Return Units to Capital?";
+      let msg = his_self.returnFactionName(faction) + " - Winter Recall to Capital?";
+      if (viable_capitals.length == 1) { msg = his_self.returnFactionName(faction) + " - Winter Recall to " + his_self.returnSpaceName(viable_capitals[0]) + "?"; }
       let opt = "<ul>";
       for (let i = 0; i < viable_capitals.length; i++) {
-        opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
+	if (viable_capitals.length == 1) {
+          opt += `<li class="option" id="${viable_capitals[i]}">yes</li>`;
+	} else {
+          opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
+        }
       }
-      opt += `<li class="option" id="finish">no thanks</li>`;
+      opt += `<li class="option" id="finish">skip</li>`;
       opt += '</ul>';
 
       if (viable_capitals.length == 0) {
@@ -7823,6 +7833,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
       if (target_faction == "skip") {
 	his_self.endTurn();
+	return;
       }
 
       //

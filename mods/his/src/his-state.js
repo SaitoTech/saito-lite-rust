@@ -1182,23 +1182,41 @@ if (this.game.state.scenario != "is_testing") {
         let leader = obj.leader;
 	let s = obj.space;
         let faction = obj.faction;
+	let navalspace = false;
+
+console.log("RESTORING MILITARY LEADERS: " + faction + " -- " + s);
+
+        if (faction == "ottoman") {
+          if (this.isSpaceControlled("algiers", "ottoman")) { s = obj.space = "algiers"; } else {
+            if (this.isSpaceControlled("oran", "ottoman")) { s = obj.space = "oran"; } else {
+              if (this.isSpaceControlled("oran", "ottoman")) { s = obj.space = "tripoli"; };
+            }
+          }
+        }
+
+console.log("space is now: " + s);
 
 	if (leader) {
-	  if (s) {
-	    if (faction) {
-	      if (this.isSpaceControlled(s, faction)) {
-	        this.game.spaces[s].units[faction].push(leader);
-	        this.displaySpace(s);
-	      } else {
-		let capitals = this.returnCapitals(faction);
-                for (let z = 0; z < capitals.length; z++) {
-                  if (this.isSpaceControlled(capitals[z], faction)) {
-	            this.game.spaces[s].units[faction].push(leader);
-	            this.displaySpace(s);
-		    z = capitals.length += 2;
-                  }     
+	  if (faction) {
+
+	    if (s == "") {
+	      let capitals = this.returnCapitals(faction);
+              for (let z = 0; z < capitals.length; z++) {
+                if (this.isSpaceControlled(capitals[z], faction)) {
+	          s = capitals[z];
+	          z = capitals.length += 2;
 	        }
 	      }
+	    }
+
+console.log("space is now2: " + s);
+
+	    if (s != "") {
+
+console.log(s + " -- " + faction);
+	      leader.spacekey = s;
+	      this.game.spaces[s].units[faction].push(leader);
+	      this.displaySpace(s);
 	    }
 	  }
 	}

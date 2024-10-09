@@ -550,6 +550,10 @@ console.log("\n\n\n\n");
           this.game.state.events.ottoman_piracy_enabled = 1;
           this.game.state.events.ottoman_corsairs_enabled = 1;
 
+
+	  // TESTING
+	  this.controlSpace("ottoman", "naples");
+
       }
 
       if (this.game.options.scenario === "is_testing") {
