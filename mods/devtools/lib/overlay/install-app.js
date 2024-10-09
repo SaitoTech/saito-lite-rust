@@ -27,31 +27,36 @@ class AddAppOverlay {
 	}
 
 	attachEvents() {
-		let this_self = this;
+		try {
+			let this_self = this;
 
-		document.querySelector('#saito-app-install-btn').onclick = async (e) => {
+			document.querySelector('#saito-app-install-btn').onclick = async (e) => {
 
-			let mod_data = await this_self.app.storage.loadLocalApplications(this_self.slug);
+				let mod_data = await this_self.app.storage.loadLocalApplications(this_self.slug);
 
-			console.log('mod_data:',mod_data);
-			console.log('mod_data length:',mod_data.length);
+				console.log('mod_data:',mod_data);
+				console.log('mod_data length:',mod_data.length);
 
-			// check if dynamic application already installed
-			if (mod_data.length > 0) {
-				let c = await sconfirm(`Application '${this_self.slug}' already exist. Do you want to overwrite it?`);
-			
-				// prompt user if they want to overwrite or cancel install
-				if (c) {
-					// remove old application 
-					await this_self.app.storage.removeLocalApplication(this_self.slug);
-					await this_self.installApp();
+				// check if dynamic application already installed
+				if (mod_data.length > 0) {
+					let c = await sconfirm(`Application '${this_self.slug}' already exist. Do you want to overwrite it?`);
+				
+					// prompt user if they want to overwrite or cancel install
+					if (c) {
+						// remove old application 
+						await this_self.app.storage.removeLocalApplication(this_self.slug);
+						await this_self.installApp();
+					} else {
+						this_self.overlay.close();
+					}
 				} else {
-					this_self.overlay.close();
+					await this_self.installApp();
 				}
-			} else {
-				await this_self.installApp();
+				
 			}
-			
+		} catch(err) {
+			console.error("Error: ", err);
+			salert("An error occurred while installing application. Check console for details.");
 		}
 
 	}
