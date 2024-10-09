@@ -176,7 +176,6 @@ class Profile extends ModTemplate {
 				// if we are watching them, we will get the tx when they update...
 				//
 				app.keychain.addKey(key.publicKey, { profile: {} });
-
 				//
 				//Check remote archives
 				//
