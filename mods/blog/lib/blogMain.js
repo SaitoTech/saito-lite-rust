@@ -19,16 +19,12 @@ class BlogMain {
 
     attachEvents(app, mod) {
         document.querySelector('.load').addEventListener('click', async (e) => {
-            // let peers = await app.network.getPeers();
-           await this.mod.loadBlogTransactions(this.mod.publicKey);
-            // console.log(app.options, "options");
+           await this.mod.loadOlderBlogTransactions(this.mod.publicKey);
         })
         
         document.querySelector('.save').addEventListener('click', async (e) => {
             let peers = await app.network.getPeers();
            await this.mod.createBlogTransaction('content', 'title');
-        //    await this.mod.loadBlogTransactions(this.mod.publicKey);
-            // console.log(app.options, "options");
         })
     }
 
