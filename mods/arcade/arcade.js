@@ -113,10 +113,6 @@ class Arcade extends ModTemplate {
 	async initialize(app) {
 		await super.initialize(app);
 
-		if (this.browser_active) {
-			this.styles = ['/saito/saito.css', '/arcade/style.css'];
-		}
-
 		//
 		// compile list of arcade games
 		//

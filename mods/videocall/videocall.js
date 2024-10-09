@@ -27,7 +27,7 @@ class Videocall extends ModTemplate {
 
 		this.screen_share = false;
 
-		this.styles = ['/saito/saito.css', '/videocall/style.css'];
+		this.styles = ['/videocall/style.css'];
 
 		this.stun = null; //The stun API
 		this.streams = null;

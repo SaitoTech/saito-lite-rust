@@ -138,10 +138,6 @@ class League extends ModTemplate {
 	async initialize(app) {
 		await super.initialize(app);
 
-		if (this.browser_active) {
-			this.styles.unshift('/saito/saito.css');
-		}
-
 		//Trial -- So that we can display league results in game page
 		this.overlay = new LeagueOverlay(app, this);
 
