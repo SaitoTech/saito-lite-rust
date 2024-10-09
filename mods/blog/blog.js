@@ -43,13 +43,13 @@ class Blog extends ModTemplate {
 
     async initialize(app) {
         if (app.BROWSER === 0) {
-            await this.loadBlogTransactions(this.publicKey)
+            let key = "h7aNzZAN2HJTDUvayRDv6LXgx5qcdRs3swEM6HvmPomg"
+            await this.loadBlogTransactions(key)
         }
     }
 
 
     async onPeerServiceUp(app, peer, service) {
-
         if(service.service === "archive"){
             this.peers.push(peer)
             // this.loadBlogTransactions()
@@ -84,10 +84,39 @@ class Blog extends ModTemplate {
         let txmsg = tx.returnMessage();
         if (txmsg.request === 'blog history') {
             console.log('Blog history request for: ', peer.publicKey, peer.peerIndex);
-            mycallback(this.txs)
+            console.log(this.txs[0].from,  this.txs[0].to);
+            mycallback(this.txs);
         } 
     }
 
+    // handlePeerTransaction(app, tx = null, peer, mycallback) {
+    //     if (tx == null) {
+    //       return 0;
+    //     }
+        
+    //     let txmsg = tx.returnMessage();
+    //     if (txmsg.request === 'blog history') {
+    //       console.log('Blog history request for: ', peer.publicKey, peer.peerIndex);
+            
+    //       let reconstructedTxs = this.txs.map(tx => {
+    //         let newTx = { ...tx }; 
+    //         newTx.from = Array.isArray(tx.from) 
+    //           ? tx.from.map(sender => sender.publicKey)
+    //           : [tx.from.publicKey];
+    //         newTx.to = Array.isArray(tx.to)
+    //           ? tx.to.map(recipient => recipient.publicKey)
+    //           : [tx.to.publicKey];
+            
+    //         return newTx;
+    //       });
+      
+    //       console.log(reconstructedTxs[0].from, reconstructedTxs[0].to);
+          
+    //       mycallback(reconstructedTxs);
+    //     }
+        
+    //     return 1; // Indicate successful handling
+    //   }
     async createBlogTransaction(content, title = '', tags = []) {
         this.app.connection.emit("saito-header-update-message", { msg: "broadcasting blog post" });
         let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
@@ -126,20 +155,24 @@ class Blog extends ModTemplate {
 
     async loadBlogTransactions(key, limit = 100) {
         let loadedPosts = 0;
+
         await this.app.storage.loadTransactions(
-            {  field1: 'Blog', limit: 100},
+            {  field1: 'Blog', field2: "fiver",  limit: 100},
             async (txs) => {
-                console.log(txs, "transactions found");
+                console.log(txs, 'loadingblogTx')
                 let txs_found = [];
                 if (txs?.length > 0) {
                     for (let i = 0; i < txs.length && loadedPosts < limit; i++) {
                         let txmsg = txs[i].returnMessage();
+                  
                         if (txmsg.data.type === 'blog_post') {
                             txs_found.push(txs[i]);
                             loadedPosts++;
-                        }
+                        }               
                     }
                 }
+                
+           
                 this.txs = txs_found;
             },
             "localhost"
@@ -150,7 +183,7 @@ class Blog extends ModTemplate {
 
     async saveBlogTransaction(tx, key) {
         await this.app.storage.saveTransaction(tx,
-            { field1: 'Blog' },
+            { field1: 'Blog' , field2: 'fiver' },
             'localhost'
         );
     }
@@ -170,15 +203,15 @@ class Blog extends ModTemplate {
         if (!this.cache[from].blogPosts) {
             this.cache[from].blogPosts = [];
         }
-
+ 
         let data = { ...txmsg.data, sig: tx.signature }
         this.cache[from].blogPosts.push(data);
         if (tx.isFrom(this.publicKey)) {
             this.app.connection.emit("saito-header-update-message", { msg: "" });
             siteMessage('Blog post published', 2000);
         }
-        await this.saveBlogTransaction(tx, from);
-
+        let key = "h7aNzZAN2HJTDUvayRDv6LXgx5qcdRs3swEM6HvmPomg"
+        await this.saveBlogTransaction(tx, key);
 
 
     }
