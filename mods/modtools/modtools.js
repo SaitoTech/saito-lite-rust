@@ -352,6 +352,7 @@ class ModTools extends ModTemplate {
 		// -1 = definitely filter
 		// 0 = no preference
 		//
+/****
 		if (type === 'saito-moderation-app') {
 			return {
 				filter_func: (app = null, tx = null) => {
@@ -389,7 +390,7 @@ class ModTools extends ModTemplate {
 				}
 			};
 		}
-
+****/
 		if (type === 'saito-moderation-core') {
 			return {
 				filter_func: (tx = null) => {
