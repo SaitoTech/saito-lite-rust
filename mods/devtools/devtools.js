@@ -183,24 +183,35 @@ class DevTools extends ModTemplate {
 	}
 
 	attachEvents() {
-		if (this.app.BROWSER){
-			let this_self = this;
+		try {
+			if (this.app.BROWSER){
+				let this_self = this;
 
-			this.app.browser.addDragAndDropFileUploadToElement(`appstore-zip-upload`, async (filesrc) => {
-				this_self.clear();
+				this.app.browser.addDragAndDropFileUploadToElement(`appstore-zip-upload`, async (filesrc) => {
+					this_self.clear();
 
-				this_self.zip_file = filesrc.substring(28);;
-		    console.log('zip_file: ', this_self.zip_file);
+					this_self.zip_file = filesrc.substring(28);;
+			    console.log('zip_file: ', this_self.zip_file);
 
-		    await this_self.sendModuleDetailsTransaction(this_self.zip_file, async function(res){
-		    	console.log('mod details: ', res);
-		    	this_self.generateAppOverlay.mod_details = res;
-		    	this_self.generateAppOverlay.mod_details.publisher = this_self.publicKey;
-		    	this_self.generateAppOverlay.zip_file = this_self.zip_file;
-			    this_self.generateAppOverlay.render();
-		    });
+			    await this_self.sendModuleDetailsTransaction(this_self.zip_file, async function(res){
+			    	console.log('mod details: ', res);
 
-			}, true, false, false);
+			    	if (res.slug == '') {
+			    		salert("Error: Application missing slug");
+			    		return;
+			    	}
+
+			    	this_self.generateAppOverlay.mod_details = res;
+			    	this_self.generateAppOverlay.mod_details.publisher = this_self.publicKey;
+			    	this_self.generateAppOverlay.zip_file = this_self.zip_file;
+				    this_self.generateAppOverlay.render();
+			    });
+
+				}, true, false, false);
+			}
+		} catch(err) {
+			console.error("Error: ", err);
+			salert("An error occurred while compiling application. Check console for details.");
 		}
 	}
 

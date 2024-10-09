@@ -24,37 +24,43 @@ class AddAppOverlay {
 	}
 
 	attachEvents() {
-		let this_self = this;
-		this.app.browser.addDragAndDropFileUploadToElement(`saito-app-upload`, async (filesrc) => {
-			document.querySelector('.saito-app-upload').innerHTML = 'Uploading file...';
-			
-			let data = JSON.parse(filesrc);
+		try {
+			let this_self = this;
+			this.app.browser.addDragAndDropFileUploadToElement(`saito-app-upload`, async (filesrc) => {
+				document.querySelector('.saito-app-upload').innerHTML = 'Uploading file...';
+				
+				let data = JSON.parse(filesrc);
 
-			console.log('data:', data);
+				console.log('data:', data);
 
-			let newtx = new Transaction();
-          	newtx.deserialize_from_web(this_self.app, data);
+				let newtx = new Transaction();
+	          	newtx.deserialize_from_web(this_self.app, data);
 
-          	let msg = newtx.returnMessage();
+	          	let msg = newtx.returnMessage();
 
-          	console.log("uploaded tx msg: ", msg);
+	          	console.log("uploaded tx msg: ", msg);
 
-			this_self.installOverlay.bin = msg.bin;
-			this_self.installOverlay.categories = msg.categories;
-			this_self.installOverlay.description = msg.description;
-			this_self.installOverlay.image = msg.image;
-			this_self.installOverlay.publisher = msg.publisher;
-			this_self.installOverlay.request = msg.request;
-			this_self.installOverlay.name = msg.name;
-			this_self.installOverlay.version = msg.version;
-			this_self.installOverlay.tx = newtx;
-			this_self.installOverlay.tx_json = data;
-			this_self.installOverlay.slug = msg.slug;
+				this_self.installOverlay.bin = msg.bin;
+				this_self.installOverlay.categories = msg.categories;
+				this_self.installOverlay.description = msg.description;
+				this_self.installOverlay.image = msg.image;
+				this_self.installOverlay.publisher = msg.publisher;
+				this_self.installOverlay.request = msg.request;
+				this_self.installOverlay.name = msg.name;
+				this_self.installOverlay.version = msg.version;
+				this_self.installOverlay.tx = newtx;
+				this_self.installOverlay.tx_json = data;
+				this_self.installOverlay.slug = msg.slug;
 
-			this_self.installOverlay.render();
-			this_self.overlay.close();
+				this_self.installOverlay.render();
+				this_self.overlay.close();
 
-		}, true, false, true);
+			}, true, false, true);
+
+		} catch(err) {
+			console.error("Error: ", err);
+			salert("An error occurred while getting application details. Check console for details.");
+		}
 
 	}
 }
