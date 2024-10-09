@@ -165,9 +165,8 @@ class Storage {
 		return { err: 'Save Transaction failed' };
 	}
 
-	async loadTransactions(obj = {}, mycallback, peer = null) {
+	async loadTransactions(obj = {}, mycallback, peer = null, is_public_key) {
 		let storage_self = this;
-
 		const message = 'archive';
 		let data: any = {};
 		data.request = 'load';
@@ -192,7 +191,13 @@ class Storage {
 			return mycallback(txs);
 		};
 
-		if (peer === 'localhost') {
+		if(is_public_key){
+			let peers =await this.app.network.getPeers();
+			console.log(peers, "peer found")
+		}
+
+		console.log(typeof peer, "typeof peer");
+		if (typeof peer === "string" &&  this.app.crypto.isPublicKey(peer)) {
 			let archive_mod = this.app.modules.returnModule('Archive');
 			if (archive_mod) {
 				return archive_mod.loadTransactionsWithCallback(obj, (res) => {

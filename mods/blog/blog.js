@@ -31,18 +31,19 @@ class Blog extends ModTemplate {
             if (txmsg.request === 'create blog post request') {
                 console.log("Blog onConfirmation");
                 await this.receiveBlogTransaction(tx);
-     
+
             }
         }
     }
 
 
     async initialize(app) {
-        await super.initialize(app);
-        if (app.BROWSER) {
+    }
+
+    async onPeerHandshakeComplete(app){
+        if (this.app.BROWSER) {
             await this.loadBlogTransactions(this.publicKey)
         }
-
     }
 
     async createBlogTransaction(content, title = '', tags = []) {
@@ -84,7 +85,6 @@ class Blog extends ModTemplate {
 
     async loadBlogTransactions(key, limit = 30) {
         let loadedPosts = 0;
-
         await this.app.storage.loadTransactions(
             { field1: "Blog", field2: key },
             async (txs) => {
@@ -108,7 +108,7 @@ class Blog extends ModTemplate {
                 }
 
             },
-            "localhost"
+            "localhost", true
         );
 
         console.log(this.cache, 'this.cached')
@@ -131,22 +131,22 @@ class Blog extends ModTemplate {
 
         let txmsg = tx.returnMessage();
         console.log("BLOG UPDATE: ", txmsg.data);
-            if (!this.cache[from]) {
-                this.cache[from] = {};
-            }
-            if (!this.cache[from].blogPosts) {
-                this.cache[from].blogPosts = [];
-            }
+        if (!this.cache[from]) {
+            this.cache[from] = {};
+        }
+        if (!this.cache[from].blogPosts) {
+            this.cache[from].blogPosts = [];
+        }
 
-            let data = {...txmsg.data, sig:tx.signature}
-            this.cache[from].blogPosts.push(data);
-            if (tx.isFrom(this.publicKey)) {
-                this.app.connection.emit("saito-header-update-message", { msg: "" });
-                siteMessage('Blog post published', 2000);
-            }
+        let data = { ...txmsg.data, sig: tx.signature }
+        this.cache[from].blogPosts.push(data);
+        if (tx.isFrom(this.publicKey)) {
+            this.app.connection.emit("saito-header-update-message", { msg: "" });
+            siteMessage('Blog post published', 2000);
+        }
 
         await this.saveBlogTransaction(tx, from);
-  
+
     }
 
     webServer(app, expressapp, express) {
@@ -176,6 +176,7 @@ class Blog extends ModTemplate {
     }
 
     async render() {
+    
         // // Check for URL param (since that is the prime use case)  
         // this.main = new SaitoProfile(this.app, this);
         // this.header = new SaitoHeader(this.app, this);
