@@ -1,6 +1,7 @@
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const pageHome = require('./index');
+const BlogMain = require("./lib/blogMain");
 
 class Blog extends ModTemplate {
     constructor(app) {
@@ -11,7 +12,8 @@ class Blog extends ModTemplate {
         this.description = 'Blod Module';
         this.archive_public_key;
         this.cache = {};
-
+        this.txs = []
+        this.peers = []
         this.social = {
             twitter: '@SaitoOfficial',
             title: '🟥 Saito User - Web3 Social Media',
@@ -20,9 +22,11 @@ class Blog extends ModTemplate {
             image: 'https://saito.tech/wp-content/uploads/2022/04/saito_card.png' //square image with "Saito" below logo
         };
 
+
+        this.styles = ['/saito/saito.css', '/blog/style.css'];
+
+
     }
-
-
 
 
     async onConfirmation(blk, tx, conf) {
@@ -31,31 +35,57 @@ class Blog extends ModTemplate {
             if (txmsg.request === 'create blog post request') {
                 console.log("Blog onConfirmation");
                 await this.receiveBlogTransaction(tx);
-
             }
         }
     }
+
 
 
     async initialize(app) {
         if (app.BROWSER === 0) {
             await this.loadBlogTransactions(this.publicKey)
         }
-
     }
+
 
     async onPeerServiceUp(app, peer, service) {
+
         if(service.service === "archive"){
-            await this.createBlogTransaction("content", "title");
-        }
+            this.peers.push(peer)
+            // this.loadBlogTransactions()
+        }     
     }
 
+
+
     async onPeerHandshakeComplete(app) {
-        if (this.app.BROWSER === 0) {
-            setInterval(async () => {
-                await this.loadBlogTransactions(this.publicKey)
-            }, 3000);
-        }
+    }
+
+    async loadOlderBlogTransactions (){
+        let peer = this.peers[0]
+        console.log(peer.peerIndex);
+        let msg = {
+            request: 'blog history',
+          };
+        this.app.network.sendRequestAsTransaction(
+            'blog history',
+            msg,
+            (txs) => {
+                console.log(txs, 'found transactions')
+            },
+           peer.peerIndex
+          );
+    }
+
+    handlePeerTransaction(app, tx = null, peer, mycallback){
+        if (tx == null) {
+            return 0;
+          }
+        let txmsg = tx.returnMessage();
+        if (txmsg.request === 'blog history') {
+            console.log('Blog history request for: ', peer.publicKey, peer.peerIndex);
+            mycallback(this.txs)
+        } 
     }
 
     async createBlogTransaction(content, title = '', tags = []) {
@@ -82,13 +112,10 @@ class Blog extends ModTemplate {
         if (!this.cache[this.publicKey].blogPosts) {
             this.cache[this.publicKey].blogPosts = [];
         }
-        // this.cache[this.publicKey].blogPosts.push(data);
 
+        this.cache[this.publicKey].blogPosts.push(data);
 
         this.app.connection.emit('blog-update-dom', this.publicKey, this.cache[this.publicKey].blogPosts);
-
-
-
 
         // Propagate the transaction
         await this.app.network.propagateTransaction(newtx);
@@ -96,17 +123,15 @@ class Blog extends ModTemplate {
     }
 
 
-    async loadBlogTransactions(key, limit = 30) {
+
+    async loadBlogTransactions(key, limit = 100) {
         let loadedPosts = 0;
         await this.app.storage.loadTransactions(
-            { field1: "Blog" },
+            {  field1: 'Blog', limit: 100},
             async (txs) => {
                 console.log(txs, "transactions found");
                 let txs_found = [];
-
                 if (txs?.length > 0) {
-                    txs.sort((a, b) => b.timestamp - a.timestamp);
-
                     for (let i = 0; i < txs.length && loadedPosts < limit; i++) {
                         let txmsg = txs[i].returnMessage();
                         if (txmsg.data.type === 'blog_post') {
@@ -115,11 +140,7 @@ class Blog extends ModTemplate {
                         }
                     }
                 }
-
-                for (let tx of txs_found) {
-                    await this.receiveBlogTransaction(tx);
-                }
-
+                this.txs = txs_found;
             },
             "localhost"
         );
@@ -129,7 +150,7 @@ class Blog extends ModTemplate {
 
     async saveBlogTransaction(tx, key) {
         await this.app.storage.saveTransaction(tx,
-            { field1: 'Blog', field3: key },
+            { field1: 'Blog' },
             'localhost'
         );
     }
@@ -191,15 +212,14 @@ class Blog extends ModTemplate {
     async render() {
 
         // // Check for URL param (since that is the prime use case)  
-        // this.main = new SaitoProfile(this.app, this);
-        // this.header = new SaitoHeader(this.app, this);
-        // await this.header.initialize(this.app);
 
-        // this.main.reset(this.publicKey);
-        // this.addComponent(this.main);
-        // this.addComponent(this.header);
+        this.header = new SaitoHeader(this.app, this);
+        await this.header.initialize(this.app);
+        this.main = new BlogMain(this.app, this)
+        this.addComponent(this.main);
+        this.addComponent(this.header);
 
-        // await super.render(this.app, this);
+        await super.render(this.app, this);
     }
 
 
