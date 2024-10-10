@@ -1,3 +1,4 @@
+const { default: Transaction } = require("saito-js/lib/transaction");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const pageHome = require('./index');
@@ -50,10 +51,10 @@ class Blog extends ModTemplate {
 
 
     async onPeerServiceUp(app, peer, service) {
-        if(service.service === "archive"){
+        if (service.service === "archive") {
             this.peers.push(peer)
             // this.loadBlogTransactions()
-        }     
+        }
     }
 
 
@@ -61,62 +62,196 @@ class Blog extends ModTemplate {
     async onPeerHandshakeComplete(app) {
     }
 
-    async loadOlderBlogTransactions (){
+    async loadOlderBlogTransactions() {
         let peer = this.peers[0]
-        console.log(peer.peerIndex);
+        // console.log(peer.peerIndex,  await this.app.wallet.getPublicKey());
+        // let publicKey = await this.app.wallet.getPublicKey()
+        let publicKey = "tW6qFqg66MekMWQpiCZJBK7VVevy4aYum6W2Lu4euXKw"
+        let publicKeyToFetchFrom = "tW6qFqg66MekMWQpiCZJBK7VVevy4aYum6W2Lu4euXKw"
+        this.fetchTransactionsFromPeer(peer, publicKey, publicKeyToFetchFrom, true)
+    }
+
+
+    fetchTransactionsFromPeer(peer, publicKey, publicKeyToFetchFrom, fetchFromPublicKey = false, mycallback) {
+        console.log('loading public key', publicKey)
         let msg = {
             request: 'blog history',
-          };
+            publicKey,
+            publicKeyToFetchFrom,
+        };
         this.app.network.sendRequestAsTransaction(
             'blog history',
             msg,
             (txs) => {
                 console.log(txs, 'found transactions')
+                if(mycallback){
+                    mycallback(txs);
+                }
+           
             },
-           peer.peerIndex
-          );
+            peer.peerIndex
+        );
     }
 
-    handlePeerTransaction(app, tx = null, peer, mycallback){
+    async handlePeerTransaction(app, tx = null, peer, mycallback) {
         if (tx == null) {
             return 0;
-          }
+        }
+        console.log(tx)
         let txmsg = tx.returnMessage();
         if (txmsg.request === 'blog history') {
-            console.log('Blog history request for: ', peer.publicKey, peer.peerIndex);
-            console.log(this.txs[0].from,  this.txs[0].to);
-            mycallback(this.txs);
-        } 
+            let publicKey = txmsg.data.publicKey;
+            let publicKeyToFetchFrom = txmsg.data.publicKeyToFetchFrom;
+
+            console.log('Blog history request for: ', peer.publicKey, peer.peerIndex, txmsg);
+            let peers = await this.app.network.getPeers();
+            let peer_value;
+            let myPublicKey = await this.app.wallet.getPublicKey();
+            console.log(myPublicKey, "my public key");
+            let from = tx.from[0];
+
+            console.log('transaction from ', from);
+
+            // 
+            if (publicKeyToFetchFrom === myPublicKey) {
+                // local fetching 
+                peer_value = "localhost"
+                await this.app.storage.loadTransactions(
+                    { field1: 'Blog', field2: publicKey, limit: 100 },
+                    async (txs) => {
+                        console.log(txs, 'loadingblogTx')
+                        let loadedPosts = 0;
+                        let limit = 100;
+                        let txs_found = [];
+                        if (txs?.length > 0) {
+                            for (let i = 0; i < txs.length && loadedPosts < limit; i++) {
+                                let txmsg = txs[i].returnMessage();
+                                if (txmsg.data.type === 'blog_post') {
+                                    txs_found.push(txs[i]);
+                                    loadedPosts++;
+                                }
+                            }
+                        }
+                        this.txs = txs_found;
+                        mycallback(this.txs);
+                    },
+                    peer_value
+                );
+
+
+            }
+            else if (publicKeyToFetchFrom !== myPublicKey) {
+                // remote fetch
+                peers.forEach(peer => {
+                    if (peer.publicKey === publicKey) {
+                        peer_value = peer;
+                    }
+                })
+                console.log(peer_value, "peer value");
+                let msg = {
+                    request: "blog history fetch",
+                    publicKey: txmsg.data.publicKey,
+                    from,
+                }
+                const callbackWrapper = (txs) => {
+                    console.log("Received blog history:", txs);
+                    mycallback(txs);
+                };
+                this.app.network.sendRequestAsTransaction('blog history fetch', msg, callbackWrapper, peer_value.peerIndex);
+
+            } else {
+                await this.app.storage.loadTransactions(
+                    { field1: 'Blog', field2: publicKey, limit: 100 },
+                    async (txs) => {
+                        console.log(txs, 'loadingblogTx')
+                        let loadedPosts = 0;
+                        let limit = 100;
+                        let txs_found = [];
+                        if (txs?.length > 0) {
+                            for (let i = 0; i < txs.length && loadedPosts < limit; i++) {
+                                let txmsg = txs[i].returnMessage();
+                                if (txmsg.data.type === 'blog_post') {
+                                    txs_found.push(txs[i]);
+                                    loadedPosts++;
+                                }
+                            }
+                        }
+
+                        this.txs = txs_found;
+                        mycallback(this.txs);
+                    },
+                    "localhost"
+                );
+
+            }
+
+
+
+        }
+        if (txmsg.request === 'blog history fetch') {
+            if (app.BROWSER === 0) {
+                let publicKey = txmsg.data.publicKey;
+                // let public = this.publicKey
+                console.log('current public key', publicKey);
+                // let msg = {
+                //     publicKey: txmsg.data.publicKey,
+                //     fetchFromPublicKey: false
+                // }
+                await this.app.storage.loadTransactions(
+                    { field1: 'Blog', field2: publicKey, limit: 100 },
+                    async (txs) => {
+                        console.log(txs, 'blockhistoryfetch: ', txs);
+                        let loadedPosts = 0;
+                        let limit = 100;
+                        let txs_found = [];
+                        if (txs?.length > 0) {
+                            for (let i = 0; i < txs.length && loadedPosts < limit; i++) {
+                                let txmsg = txs[i].returnMessage();
+                                if (txmsg.data.type === 'blog_post') {
+                                    txs_found.push(txs[i]);
+                                    loadedPosts++;
+                                }
+                            }
+                        }
+
+                        this.txs = txs_found;
+                        mycallback(this.txs);
+                    },
+                    "localhost"
+                );
+
+            }
+
+            if (app.BROWSER === 1) {
+                let peer = this.peers[0]
+                let from = txmsg.data.from
+                // console.log(peer.peerIndex,  await this.app.wallet.getPublicKey());
+                // let publicKey = await this.app.wallet.getPublicKey()
+                let publicKey = "tW6qFqg66MekMWQpiCZJBK7VVevy4aYum6W2Lu4euXKw"
+                // let publicKeyToFetchFrom = "tW6qFqg66MekMWQpiCZJBK7VVevy4aYum6W2Lu4euXKw"
+                let mycallback = (txs)=> {
+                    console.log('send response transaction', txs)
+
+                }
+
+                this.fetchTransactionsFromPeer(peer, publicKey, null, false, mycallback)
+            }
+
+
+            // mycallback(['daviks'])
+            // this.app.network.sendRequestAsTransaction(
+            //     'blog history',
+            //     msg,
+            //     (txs) => {
+            //      console.log("Fetched blog history:", txs);
+
+            //     },
+            //     peer.peerIndex
+            // );
+        }
     }
 
-    // handlePeerTransaction(app, tx = null, peer, mycallback) {
-    //     if (tx == null) {
-    //       return 0;
-    //     }
-        
-    //     let txmsg = tx.returnMessage();
-    //     if (txmsg.request === 'blog history') {
-    //       console.log('Blog history request for: ', peer.publicKey, peer.peerIndex);
-            
-    //       let reconstructedTxs = this.txs.map(tx => {
-    //         let newTx = { ...tx }; 
-    //         newTx.from = Array.isArray(tx.from) 
-    //           ? tx.from.map(sender => sender.publicKey)
-    //           : [tx.from.publicKey];
-    //         newTx.to = Array.isArray(tx.to)
-    //           ? tx.to.map(recipient => recipient.publicKey)
-    //           : [tx.to.publicKey];
-            
-    //         return newTx;
-    //       });
-      
-    //       console.log(reconstructedTxs[0].from, reconstructedTxs[0].to);
-          
-    //       mycallback(reconstructedTxs);
-    //     }
-        
-    //     return 1; // Indicate successful handling
-    //   }
+
     async createBlogTransaction(content, title = '', tags = []) {
         this.app.connection.emit("saito-header-update-message", { msg: "broadcasting blog post" });
         let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
@@ -155,35 +290,30 @@ class Blog extends ModTemplate {
 
     async loadBlogTransactions(key, limit = 100) {
         let loadedPosts = 0;
-
         await this.app.storage.loadTransactions(
-            {  field1: 'Blog', field2: "fiver",  limit: 100},
+            { field1: 'Blog', field2: key, limit: 100 },
             async (txs) => {
-                console.log(txs, 'loadingblogTx')
                 let txs_found = [];
                 if (txs?.length > 0) {
                     for (let i = 0; i < txs.length && loadedPosts < limit; i++) {
                         let txmsg = txs[i].returnMessage();
-                  
                         if (txmsg.data.type === 'blog_post') {
                             txs_found.push(txs[i]);
                             loadedPosts++;
-                        }               
+                        }
                     }
                 }
-                
-           
+
                 this.txs = txs_found;
             },
             "localhost"
         );
 
-        // console.log(this.cache, 'this.cached')
     }
 
     async saveBlogTransaction(tx, key) {
         await this.app.storage.saveTransaction(tx,
-            { field1: 'Blog' , field2: 'fiver' },
+            { field1: 'Blog', field2: key },
             'localhost'
         );
     }
@@ -203,15 +333,14 @@ class Blog extends ModTemplate {
         if (!this.cache[from].blogPosts) {
             this.cache[from].blogPosts = [];
         }
- 
+
         let data = { ...txmsg.data, sig: tx.signature }
         this.cache[from].blogPosts.push(data);
         if (tx.isFrom(this.publicKey)) {
             this.app.connection.emit("saito-header-update-message", { msg: "" });
             siteMessage('Blog post published', 2000);
         }
-        let key = "h7aNzZAN2HJTDUvayRDv6LXgx5qcdRs3swEM6HvmPomg"
-        await this.saveBlogTransaction(tx, key);
+        await this.saveBlogTransaction(tx, from);
 
 
     }

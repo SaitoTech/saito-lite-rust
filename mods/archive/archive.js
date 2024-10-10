@@ -505,7 +505,6 @@ try {
 	//////////
 	async loadTransactionsWithCallback(obj = {}, callback = null) {
 		let txs = await this.loadTransactions(obj);
-		console.log(txs, "loaded transactions")
 		if (callback) {
 			return callback(txs);
 		} else {
