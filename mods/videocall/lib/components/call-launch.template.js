@@ -1,4 +1,4 @@
-module.exports  = (app, mod) => {
+module.exports  = (app, mod, keys) => {
   let html = `
       <div class="stun-appspace"> 
         <div class="stun-appspace-content">
@@ -11,7 +11,6 @@ module.exports  = (app, mod) => {
           <div class="stunx-appspace-actions">`;
 
 
-  let keys = app.keychain.returnKeys({type: "event", mod: "videocall" });
   let mode = null;
   if (mod.room_obj) {
     html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom" data-id="${mod.room_obj?.call_id}">Join Meeting</div>`;

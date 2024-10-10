@@ -282,7 +282,7 @@ class Videocall extends ModTemplate {
 								description
 							};
 
-							let call_link = this.generateCallLink(room_obj);
+							let call_link = call_self.generateCallLink(room_obj);
 
 							app.keychain.addKey(call_id, {
 								identifier: title || 'Video Call',
@@ -628,12 +628,15 @@ class Videocall extends ModTemplate {
 
 		this.app.connection.emit('relay-transaction', newtx);
 		this.app.network.propagateTransaction(newtx);
+		this.addCallParticipant(this.room_obj.call_id, this.publicKey);
 	}
 
 	async receiveCallListRequestTransaction(app, tx) {
 		let txmsg = tx.returnMessage();
 
 		let from = tx.from[0].publicKey;
+
+		this.addCallParticipant(txmsg.call_id, from);
 
 		//We are getting a tx for the call we are in
 		if (this?.room_obj?.call_id === txmsg.call_id) {
@@ -652,15 +655,17 @@ class Videocall extends ModTemplate {
 				call_list.push(this.publicKey);
 			}
 
-			console.log('STUN: peer list request from ', from, call_list);
 
-			await this.sendCallListResponseTransaction(from, call_list);
+			if (!tx.isFrom(this.publicKey)){
+				console.log('STUN: peer list request from ', from, call_list);
+				await this.sendCallListResponseTransaction(from, call_list);
+			}
 
 			return;
 		}
 
-		let event = this.app.keychain.returnKey(txmsg.call_id, true);
-		//I have bookmarked this call id!
+		// Process if we saved event but are not in the call!
+
 		if (event){
 			// I am in a different call
 			if (this.room_obj?.call_id){
@@ -872,6 +877,24 @@ class Videocall extends ModTemplate {
 		this.app.connection.emit('peer-list', sender, txmsg.data);
 	}
 
+	addCallParticipant(call_id, publicKey){
+		let event = this.app.keychain.returnKey(call_id, true);
+		
+		// We will add this key as a call participant...
+		if (event){
+			if (!event?.profile){
+				event.profile = {};
+			}
+			if (!event.profile?.participants){
+				event.profile.participants = [];
+			}
+
+			if (!event.profile.participants.includes(publicKey)){
+				event.profile.participants.push(publicKey);	
+			}
+			this.app.keychain.saveKeys();
+		}
+	}
 
 	createRoom(){
 		let call_id = this.generateRoomId();

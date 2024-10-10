@@ -2,10 +2,10 @@ const SaitoOverlay = require('../../../../lib/saito/ui/saito-overlay/saito-overl
 const CallScheduleJoinTemplate = require('./call-schedule-join.template.js');
 
 class CallScheduleJoin {
-  constructor(app, mod, container = '') {
+  constructor(app, mod, keys) {
     this.app = app;
     this.mod = mod;
-    this.container = container;
+    this.keys = keys;
     this.overlay = new SaitoOverlay(app, mod);
 
     app.connection.on('remove-call-schedule-join', () => {
@@ -14,7 +14,6 @@ class CallScheduleJoin {
   }
 
   render(auto_join = true) {
-    this.keys = this.app.keychain.returnKeys({ type: 'event', mod: 'videocall' });
 
     if (this.keys.length == 0){
       this.remove(false);
@@ -63,6 +62,11 @@ class CallScheduleJoin {
     document.querySelectorAll(".delete-call-button").forEach(c => {
         c.onclick = (e) => {
             let id = e.currentTarget.dataset.id;
+            for (let i = this.keys.length-1; i >=0; i--){
+              if (this.keys[i].publicKey == id){
+                this.keys.splice(i, 1);
+              }
+            }
             this.app.keychain.removeKey(id);
             // maybe send a cancel transaction?
             this.overlay.remove();
@@ -106,7 +110,6 @@ class CallScheduleJoin {
         card.querySelector(".call-countdown").textContent = `Call has begun!`;
       }
 
-      console.log(event);
   }
 
   getTimeLeft(now, startTime) {
