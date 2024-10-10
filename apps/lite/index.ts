@@ -56,9 +56,7 @@ class WebMethods extends WebSharedMethods {
 	sendBlockSuccess(hash: string, blockId: bigint) {
 		this.app.connection.emit('add-block-success', { hash, blockId });
 	}
-	connectToPeer(url: string, peer_index: bigint): void {
-		
-	}
+	
 
 	sendNewVersionAlert(
 		major: number,
