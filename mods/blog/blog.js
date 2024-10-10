@@ -66,14 +66,122 @@ class Blog extends ModTemplate {
         let peer = this.peers[0]
         // console.log(peer.peerIndex,  await this.app.wallet.getPublicKey());
         // let publicKey = await this.app.wallet.getPublicKey()
-        let publicKey = "tW6qFqg66MekMWQpiCZJBK7VVevy4aYum6W2Lu4euXKw"
-        let publicKeyToFetchFrom = "tW6qFqg66MekMWQpiCZJBK7VVevy4aYum6W2Lu4euXKw"
-        this.fetchTransactionsFromPeer(peer, publicKey, publicKeyToFetchFrom, true)
+        let publicKey = "mynWa9dNFxomcWyQg2vCdnC86TEausDJRcwJx4s81cb7"
+        // let publicKeyToFetchFrom = peer.publicKey;
+        let publicKeyToFetchFrom = "pLHgNKt9UHq4JhbtwQhQbPJY9A12648UYgRQb5htuNGp"
+        this.fetchTransactionsFromPeer(peer, publicKey, publicKeyToFetchFrom, true);
     }
 
+    
+    async handlePeerTransaction(app, tx = null, peer, mycallback) {
+        if (tx == null) return 0;
+
+        const txmsg = tx.returnMessage();
+        const { request, data } = txmsg;
+
+        switch (request) {
+            case 'blog history':
+                await this.handleBlogHistoryRequest(data, peer, mycallback, tx);
+                break;
+            // case 'blog history fetch':
+            //     await this.handleBlogHistoryFetch(data, app, peer, mycallback);
+            //     break;
+            default:
+                console.log('Unknown request type:', request);
+        }
+    }
+
+    async handleBlogHistoryRequest(data, peer, mycallback, tx) {
+        const { publicKey, publicKeyToFetchFrom } = data;
+        const myPublicKey = await this.app.wallet.getPublicKey();
+        console.log(data, 'data')
+        
+        if(tx.from[0].publicKey === myPublicKey) return;
+        if (publicKeyToFetchFrom === myPublicKey) {
+            if(this.app.BROWSER === 1){
+                const peers = await this.app.network.getPeers();
+                const targetPeer = peers[0];
+                let internalCallBack = (txs) => {
+                    console.log('internal callback', txs)
+            }
+                this.fetchTransactionsFromPeer(targetPeer, publicKey, targetPeer.publicKey, false, internalCallBack);
+            }else {
+                await this.fetchLocalBlogHistory(publicKey, mycallback);
+            }
+        } else {
+            if(this.app.BROWSER === 1){
+                // this is a browser node
+                const peers = await this.app.network.getPeers();
+                const targetPeer = peers[0];
+                let internalCallBack = (txs) => {
+                    console.log('internal callback', txs)
+            }
+                this.fetchTransactionsFromPeer(targetPeer, publicKey, targetPeer.publicKey, false, internalCallBack);
+            }else {
+                // this is the server node and needs to search for all peers
+                const peers = await this.app.network.getPeers();
+                const targetPeer = peers.find(p => p.publicKey === publicKeyToFetchFrom) || peer;
+                this.fetchTransactionsFromPeer(targetPeer, publicKey, targetPeer.publicKey, false);
+
+
+                // await this.fetchLocalBlogHistory(publicKey, mycallback);
+                // const peers = await this.app.network.getPeers();
+            }
+   
+            // const targetPeer = peers.find(p => p.publicKey === publicKeyToFetchFrom) || peer;
+
+            
+           
+            // this.fetchTransactionsFromS(publicKey, mycallback);
+        }
+    }
+
+    async fetchLocalBlogHistory(publicKey, mycallback) {
+        await this.app.storage.loadTransactions(
+            { field1: 'Blog', field2: publicKey, limit: 100 },
+            (txs) => {
+                const filteredTxs = this.filterBlogPosts(txs);
+                this.txs = filteredTxs;
+                mycallback(this.txs);
+            },
+            "localhost"
+        );
+    }
+
+    // async handleBlogHistoryFetch(data, app, peer, mycallback) {
+    //     if (app.BROWSER === 0) {
+    //         await this.fetchLocalBlogHistory(data.publicKey, mycallback);
+    //     } else if (app.BROWSER === 1) {
+    //         // For browser, we directly fetch from the server
+    //         this.fetchTransactionsFromServer(data.publicKey, mycallback);
+    //     }
+    // }
+
+    async fetchTransactionsFromServer(publicKey, mycallback) {
+        // Assuming the first peer is always the server
+        let peers = await this.app.network.getPeers();
+        const serverPeer = peers[0];
+        console.log(serverPeer.publicKey, 'serverpublickey' )
+        let msg = {
+            request: 'blog history',
+            publicKey,
+            publicKeyToFetchFrom: serverPeer.publicKey, // We're fetching from the server
+        };
+        this.app.network.sendRequestAsTransaction(
+            'blog history',
+            msg,
+            (txs) => {
+                console.log(txs, 'found transactions from server');
+                if(mycallback){
+                    mycallback(txs);
+                }
+            },
+            serverPeer.peerIndex
+        );
+    }
 
     fetchTransactionsFromPeer(peer, publicKey, publicKeyToFetchFrom, fetchFromPublicKey = false, mycallback) {
-        console.log('loading public key', publicKey)
+        console.log('loading public key', publicKey);
         let msg = {
             request: 'blog history',
             publicKey,
@@ -83,174 +191,18 @@ class Blog extends ModTemplate {
             'blog history',
             msg,
             (txs) => {
-                console.log(txs, 'found transactions')
+                console.log(txs, 'found transactions');
                 if(mycallback){
                     mycallback(txs);
                 }
-           
             },
             peer.peerIndex
         );
     }
 
-    async handlePeerTransaction(app, tx = null, peer, mycallback) {
-        if (tx == null) {
-            return 0;
-        }
-        console.log(tx)
-        let txmsg = tx.returnMessage();
-        if (txmsg.request === 'blog history') {
-            let publicKey = txmsg.data.publicKey;
-            let publicKeyToFetchFrom = txmsg.data.publicKeyToFetchFrom;
-
-            console.log('Blog history request for: ', peer.publicKey, peer.peerIndex, txmsg);
-            let peers = await this.app.network.getPeers();
-            let peer_value;
-            let myPublicKey = await this.app.wallet.getPublicKey();
-            console.log(myPublicKey, "my public key");
-            let from = tx.from[0];
-
-            console.log('transaction from ', from);
-
-            // 
-            if (publicKeyToFetchFrom === myPublicKey) {
-                // local fetching 
-                peer_value = "localhost"
-                await this.app.storage.loadTransactions(
-                    { field1: 'Blog', field2: publicKey, limit: 100 },
-                    async (txs) => {
-                        console.log(txs, 'loadingblogTx')
-                        let loadedPosts = 0;
-                        let limit = 100;
-                        let txs_found = [];
-                        if (txs?.length > 0) {
-                            for (let i = 0; i < txs.length && loadedPosts < limit; i++) {
-                                let txmsg = txs[i].returnMessage();
-                                if (txmsg.data.type === 'blog_post') {
-                                    txs_found.push(txs[i]);
-                                    loadedPosts++;
-                                }
-                            }
-                        }
-                        this.txs = txs_found;
-                        mycallback(this.txs);
-                    },
-                    peer_value
-                );
-
-
-            }
-            else if (publicKeyToFetchFrom !== myPublicKey) {
-                // remote fetch
-                peers.forEach(peer => {
-                    if (peer.publicKey === publicKey) {
-                        peer_value = peer;
-                    }
-                })
-                console.log(peer_value, "peer value");
-                let msg = {
-                    request: "blog history fetch",
-                    publicKey: txmsg.data.publicKey,
-                    from,
-                }
-                const callbackWrapper = (txs) => {
-                    console.log("Received blog history:", txs);
-                    mycallback(txs);
-                };
-                this.app.network.sendRequestAsTransaction('blog history fetch', msg, callbackWrapper, peer_value.peerIndex);
-
-            } else {
-                await this.app.storage.loadTransactions(
-                    { field1: 'Blog', field2: publicKey, limit: 100 },
-                    async (txs) => {
-                        console.log(txs, 'loadingblogTx')
-                        let loadedPosts = 0;
-                        let limit = 100;
-                        let txs_found = [];
-                        if (txs?.length > 0) {
-                            for (let i = 0; i < txs.length && loadedPosts < limit; i++) {
-                                let txmsg = txs[i].returnMessage();
-                                if (txmsg.data.type === 'blog_post') {
-                                    txs_found.push(txs[i]);
-                                    loadedPosts++;
-                                }
-                            }
-                        }
-
-                        this.txs = txs_found;
-                        mycallback(this.txs);
-                    },
-                    "localhost"
-                );
-
-            }
-
-
-
-        }
-        if (txmsg.request === 'blog history fetch') {
-            if (app.BROWSER === 0) {
-                let publicKey = txmsg.data.publicKey;
-                // let public = this.publicKey
-                console.log('current public key', publicKey);
-                // let msg = {
-                //     publicKey: txmsg.data.publicKey,
-                //     fetchFromPublicKey: false
-                // }
-                await this.app.storage.loadTransactions(
-                    { field1: 'Blog', field2: publicKey, limit: 100 },
-                    async (txs) => {
-                        console.log(txs, 'blockhistoryfetch: ', txs);
-                        let loadedPosts = 0;
-                        let limit = 100;
-                        let txs_found = [];
-                        if (txs?.length > 0) {
-                            for (let i = 0; i < txs.length && loadedPosts < limit; i++) {
-                                let txmsg = txs[i].returnMessage();
-                                if (txmsg.data.type === 'blog_post') {
-                                    txs_found.push(txs[i]);
-                                    loadedPosts++;
-                                }
-                            }
-                        }
-
-                        this.txs = txs_found;
-                        mycallback(this.txs);
-                    },
-                    "localhost"
-                );
-
-            }
-
-            if (app.BROWSER === 1) {
-                let peer = this.peers[0]
-                let from = txmsg.data.from
-                // console.log(peer.peerIndex,  await this.app.wallet.getPublicKey());
-                // let publicKey = await this.app.wallet.getPublicKey()
-                let publicKey = "tW6qFqg66MekMWQpiCZJBK7VVevy4aYum6W2Lu4euXKw"
-                // let publicKeyToFetchFrom = "tW6qFqg66MekMWQpiCZJBK7VVevy4aYum6W2Lu4euXKw"
-                let mycallback = (txs)=> {
-                    console.log('send response transaction', txs)
-
-                }
-
-                this.fetchTransactionsFromPeer(peer, publicKey, null, false, mycallback)
-            }
-
-
-            // mycallback(['daviks'])
-            // this.app.network.sendRequestAsTransaction(
-            //     'blog history',
-            //     msg,
-            //     (txs) => {
-            //      console.log("Fetched blog history:", txs);
-
-            //     },
-            //     peer.peerIndex
-            // );
-        }
+    filterBlogPosts(txs) {
+        return txs.filter(tx => tx.returnMessage().data.type === 'blog_post').slice(0, 100);
     }
-
 
     async createBlogTransaction(content, title = '', tags = []) {
         this.app.connection.emit("saito-header-update-message", { msg: "broadcasting blog post" });
