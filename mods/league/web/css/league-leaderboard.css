@@ -30,11 +30,16 @@
 	border: var(--border-thickness-leaderboard-position) solid var(--border-color-leaderboard-position);
 }
 
-.my-leaderboard-position > div:first-child {
+.my-leaderboard-position>div:first-child {
 	font-size: 0;
 }
 
-.my-leaderboard-position > div:first-child::before {
+.my-leaderboard-position>div:first-child::before {
 	content: '\22B3';
 	font-size: 1.5rem;
+}
+
+.league-rankings .saito-table {
+	padding: 1rem;
+	border: 1px solid var(--saito-border-color);
 }

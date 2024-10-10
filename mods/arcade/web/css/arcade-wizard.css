@@ -166,6 +166,7 @@
 	font-size: 2rem;
 	appearance: none;
 	padding: 0 1rem;
+	border-radius: 0 1rem 1rem 0;
 }
 
 .arcade-wizard-overlay select:focus {
@@ -308,6 +309,9 @@
 #arcade-advance-opt {
 	margin: 1rem 0;
 	text-transform: lowercase;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .arcade-advance-opt-text {
@@ -315,6 +319,7 @@
 	border-bottom: 1px dashed;
 	font-size: 2rem;
 }
+
 
 .arcade-advance-opt-text:hover{
 	color: var(--hover-text-color);

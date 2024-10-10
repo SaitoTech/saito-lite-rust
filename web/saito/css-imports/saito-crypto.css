@@ -2,6 +2,7 @@
 	padding: 3rem;
     background: var(--background-color-main);
     color: var(--font-color-primary);
+    width: min(40rem, 95vw);
 }
 
 .saito-crypto-deposit-container {
@@ -10,6 +11,11 @@
     gap: 2rem;
     text-align: center;
     align-items: center;
+}
+
+.saito-crypto-header {
+    font-size: 4.5rem;
+    text-transform: uppercase;
 }
 
 .saito-crypto-deposit-container .profile-public-key {

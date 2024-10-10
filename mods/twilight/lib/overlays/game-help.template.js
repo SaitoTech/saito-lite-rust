@@ -1,4 +1,4 @@
-module.exports = GameHelpTemplate = (targs) => {
+const GameHelpTemplate = (targs) => {
 
   let line1 = "";
   let line2 = "";
@@ -17,3 +17,5 @@ module.exports = GameHelpTemplate = (targs) => {
         return html;
 
 };
+
+module.exports = GameHelpTemplate;

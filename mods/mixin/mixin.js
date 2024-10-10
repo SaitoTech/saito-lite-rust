@@ -24,7 +24,7 @@ class Mixin extends ModTemplate {
     super(app);
 
     this.name = "Mixin";
-    this.slug = "Mixin";
+    this.slug = "mixin";
     this.appname = "Mixin";
     this.description = "Adding support for Web3 Crypto transfers on Saito";
     this.categories = "Finance Utilities";
@@ -739,7 +739,7 @@ class Mixin extends ModTemplate {
 
         const txId = v4();
         const feeId = v4();
-        console.log(txId, feeId);
+        //console.log(txId, feeId);
         let txs = await user.utxo.verifyTransaction([
           {
             raw,

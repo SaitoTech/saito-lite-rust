@@ -7,6 +7,7 @@ class Event extends InviteTemplate {
 
 		this.app = app;
 		this.name = 'Event';
+		this.slug = 'event';
 		this.appname = 'Event';
 		this.description = 'Module for generic scheduling functionality';
 		this.categories = 'Utilities Scheduling Office';

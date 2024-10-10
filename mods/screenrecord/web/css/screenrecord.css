@@ -11,11 +11,11 @@
     background-color: red;
 } */
 
-.screenrecord-wizard{
+.screenrecord-wizard {
 	width: min(550px, 98vw);
 	padding: 2rem 3rem;
 	border-radius: 0.5rem;
-	border: 1px solid;
+	border: 1px solid var(--saito-border-color);
 	background-color: var(--color-base);
 	color: var(--color-contrast);
 }
@@ -25,8 +25,8 @@
 } */
 
 .screenrecord-wizard-title {
-text-align: center;
-margin-bottom: 2rem;
+	text-align: center;
+	margin-bottom: 2rem;
 }
 
 .screenrecord-wizard .button {
@@ -44,7 +44,7 @@ margin-bottom: 2rem;
 .screenrecord-wizard .record-mode i {
 	padding: 2rem;
 	border-radius: 2rem;
-	/* border: 1px solid; */
+	/* border: 1px solid var(--saito-border-color); */
 	text-align: center;
 	min-width: 12rem;
 }
@@ -57,11 +57,11 @@ margin-bottom: 2rem;
 	gap: 1rem;
 	padding: 1rem;
 	border-radius: 2rem;
-	border: 1px solid;
+	border: 1px solid var(--saito-border-color);
 	margin: 1rem;
 }
 
-.screenrecord-wizard .record-mode .selected{
+.screenrecord-wizard .record-mode .selected {
 	color: var(--saito-font-color);
 	border-width: 3px;
 	text-shadow: 1px 1px 5px var(--saito-black);
@@ -72,29 +72,22 @@ margin-bottom: 2rem;
 	font-size: 3rem;
 }
 
-
-
 .pulsate {
-    animation: pulsate 1s infinite;
-    /* color: red !important; */
+	animation: pulsate 1s infinite;
+	/* color: red !important; */
 }
 
 @keyframes pulsate {
-    0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.2);
-    }
-    100% {
-        transform: scale(1);
-    }
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.2);
+	}
+	100% {
+		transform: scale(1);
+	}
 }
-
-
-
-
-
 
 /* floating Control panel  */
 
@@ -113,14 +106,16 @@ margin-bottom: 2rem;
 	cursor: grab;
 }
 
-
-
-.screenrecord-controls .control-panel{
+.screenrecord-controls .control-panel {
 	padding: 2px;
 	gap: 2rem;
 	align-items: center;
 }
 
-.screenrecord-controls .timer{
+.screenrecord-controls .timer {
 	text-align: right;
+}
+
+.hidden-control {
+	display: none !important;
 }

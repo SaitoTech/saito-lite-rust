@@ -7,6 +7,7 @@ class Saveload extends ModTemplate {
 
 		this.appname = 'Save and Load';
 		this.name = 'Saveload';
+		this.slug = 'saveload';
 		this.description = 'Save and load games - useful for bughunting';
 		this.categories = 'Utility Entertainment';
 	}
@@ -45,9 +46,7 @@ class Saveload extends ModTemplate {
 
 	initialize(app) {
 		if (this.app.browser.active_module === 'load') {
-alert("LOADING");
 			let game_id = this.app.browser.returnURLParameter('game_id');
-
 			if (game_id != '') {
 				let c = confirm(
 					'Are you sure you wish to load this game? Clicking YES will redirect you into the game.'

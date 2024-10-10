@@ -21,31 +21,32 @@ class LimboSidebar {
 
 	render(dreamer = null) {
 
-    if (document.getElementById("limbo-sidebar")){
-      this.app.browser.replaceElementById(LimboSidebarTemplate(this.app, this.mod, dreamer), "limbo-sidebar");
-    }else{
-      this.app.browser.addElementToSelector(LimboSidebarTemplate(this.app, this.mod, dreamer), this.container);
-    }
-
     if (dreamer) {
+      if (!document.getElementById("limbo-sidebar")){
+        this.app.browser.addElementToSelector(LimboSidebarTemplate(this.app, this.mod, dreamer), this.container);
+      }
 
       //
       // Need a way to override/customize profile of "dreamer" to profile of dream!
       //
       let dreamKey = this.mod.dreams[dreamer]?.alt_id || dreamer;
 
-      this.profile.reset(dreamKey, "attendees", ["attendees", "speakers", "peers"]);
+      if (dreamKey !== this.dreamer){
+        this.profile.reset(dreamKey, "attendees", ["attendees", "speakers", "peers"]);
 
-      if (this.mod.dreams[dreamer]?.alt_id) {
-        this.profile.mask_key = true;
-      }
+        if (this.mod.dreams[dreamer]?.alt_id) {
+          this.profile.mask_key = true;
+        }
 
-      if (this.mod.dreams[dreamer]?.identifier){
-        this.profile.name = this.mod.dreams[dreamer].identifier;
-      }
+        if (this.mod.dreams[dreamer]?.identifier){
+          this.profile.name = this.mod.dreams[dreamer].identifier;
+        }
 
-      if (this.mod.dreams[dreamer]?.description){
-        this.profile.description = this.mod.dreams[dreamer].description;
+        if (this.mod.dreams[dreamer]?.description){
+          this.profile.description = this.mod.dreams[dreamer].description;
+        }
+      }else{
+        this.profile.resetMenuTabs(["attendees", "speakers", "peers"]);
       }
 
       //
@@ -107,12 +108,23 @@ class LimboSidebar {
         this.profile.menu.peers.push(user);
       });
 
+      if (dreamKey !== this.dreamer){
+        this.profile.render();      
+        this.dreamer = dreamKey;
+        this.attachEvents();      
+      }else{
+        this.profile.renderMenuTabs();
+      }
 
-      this.profile.render();
-
-      this.attachEvents();      
     } else {
+      if (document.getElementById("limbo-sidebar")){
+        this.app.browser.replaceElementById(LimboSidebarTemplate(this.app, this.mod, dreamer), "limbo-sidebar");
+      }else{
+        this.app.browser.addElementToSelector(LimboSidebarTemplate(this.app, this.mod, dreamer), this.container);
+      }
       this.profile.reset();
+      this.actions_added = false;
+      delete this.dreamer;
     }
   }
 
@@ -120,7 +132,11 @@ class LimboSidebar {
   attachEvents() { 
     //Dynamically add buttons to .saito-profile-menu
 
-    this.insertActions();
+    if (!this?.actions_added){
+      this.insertActions();
+      this.actions_added = true;      
+    }
+
 
     if (document.getElementById('share_link')){
       document.getElementById('share_link').onclick = (e) => {

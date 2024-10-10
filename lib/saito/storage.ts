@@ -5,16 +5,20 @@ import Block from './block';
 const localforage = require('localforage');
 import fs from 'fs';
 import path from 'path';
+const JsStore = require('jsstore');
+
 class Storage {
 	public app: Saito;
 	public active_tab: any;
 	public timeout: any;
 	currentBuildNumber: bigint = BigInt(0);
+	public localDB: any = null;
 
 	constructor(app) {
 		this.app = app || {};
 		this.active_tab = 1; // TODO - only active tab saves, move to Browser class
 		this.timeout = null;
+		this.localDB = null;
 	}
 
 	async initialize() {
@@ -22,6 +26,16 @@ class Storage {
 
 		if (this.app.BROWSER === 0) {
 			this.watchBuildFile();
+		}
+
+		if (this.app.BROWSER == 1) {
+			try{
+				this.localDB = null;
+				await this.initializeApplicationDB();
+				console.log(JSON.stringify(await this.loadLocalApplications()));
+			} catch(err){
+				console.log("Error initializeApplicationDB:", err);
+			}
 		}
 
 		return;
@@ -134,7 +148,6 @@ class Storage {
 	}
 
 	async updateTransaction(tx: Transaction, obj = {}, peer = null) {
-		const txmsg = tx.returnMessage();
 		const message = 'archive';
 		let data: any = {};
 		data.request = 'update';
@@ -167,6 +180,7 @@ class Storage {
 	}
 
 	async loadTransactions(obj = {}, mycallback, peer = null) {
+
 		let storage_self = this;
 
 		const message = 'archive';
@@ -212,7 +226,7 @@ class Storage {
 				},
 				peer.peerIndex
 			);
-			return;
+			return [];
 		} else {
 			this.app.network.sendRequestAsTransaction(
 				message,
@@ -221,8 +235,10 @@ class Storage {
 					internal_callback(res);
 				}
 			);
-			return;
+			return [];
 		}
+
+		return [];
 	}
 
 	async deleteTransaction(tx = null, mycallback = null, peer = null) {
@@ -366,6 +382,126 @@ class Storage {
 //		clearTimeout(this.timeout);
 //		this.timeout = setTimeout(saveOptionsForReal, 50);
 	}
+
+	// saveLocalApplication(tx, mod) {
+	// 	if (!this.app.options.dyn_mods) { this.app.options.dyn_mods = []; }
+	// 	this.app.options.dyn_mods.push(mod);
+
+	// 	this.saveOptions();
+	// }
+
+	// loadLocalApplications() {
+	// 	if (!this.app.options.dyn_mods) { this.app.options.dyn_mods = []; }
+	// 	return this.app.options.dyn_mods;
+	// }
+
+	async saveLocalApplication(mod, bin) {
+		if (!this.app.BROWSER) {
+			return;
+		}
+		
+		if (this.app.BROWSER) {
+			let obj = {
+				'mod': mod,
+				'binary': bin,
+				'created_at': new Date().getTime(),
+				'updated_at': new Date().getTime(), 
+			};
+
+			console.log('obj: ', obj);
+
+			let numRows = await this.localDB.insert({
+				into: 'dyn_mods',
+				values: [obj]
+			});
+	
+			let v = await this.loadLocalApplications();
+			console.log('POST INSERT: ' + JSON.stringify(v));
+		}		
+	}
+
+	async loadLocalApplications(mod_slug = null) {
+		try {
+			if (!this.app.BROWSER) {
+				return;
+			}
+
+			let obj = {
+				from: 'dyn_mods',
+				order: { by: 'id', type: 'desc' }
+			}
+
+			if (mod_slug != null) {
+				obj['where'] = {
+			        mod: mod_slug
+			    };
+			}
+
+			let rows = await this.localDB.select(obj);
+
+			return rows;
+		} catch (err) {
+			console.log("Error loadLocalApplications: ", err);
+		}
+	}
+
+	async removeLocalApplication(mod_slug = null) {
+		try {
+			if (!this.app.BROWSER) {
+				return;
+			}
+
+			let rowsDeleted = await this.localDB.remove({
+			    from: "dyn_mods",
+			    where: {
+			        mod: mod_slug
+			    }
+			});
+
+			return rowsDeleted;
+		} catch (err) {
+			console.log("Error removeLocalApplication: ", err);
+		}
+	}
+
+	async initializeApplicationDB() {
+		if (this.app.BROWSER) {
+
+			console.log("inside initializeApplicationDB ///");
+			this.localDB = new JsStore.Connection(
+				new Worker('/saito/lib/jsstore/jsstore.worker.js')
+			);
+
+			//
+			// create Local database
+			//
+			let dyn_mod = {
+				name: 'dyn_mods',
+				columns: {
+					id: { primaryKey: true, autoIncrement: true },
+					mod: { dataType: 'string', default: '' },
+					binary: { dataType: 'string', default: '' },
+					created_at: { dataType: 'number', default: 0 },
+					updated_at: { dataType: 'number', default: 0 }
+				}
+			};
+
+			let db = {
+				name: 'dyn_mods_db',
+				tables: [dyn_mod]
+			};
+
+			var isDbCreated = await this.localDB.initDb(db);
+			if (isDbCreated) {
+				console.log('POPUP: db created and connection opened');
+			} else {
+				console.log('POPUP: connection opened');
+			}
+		}
+
+		return;
+	}
+
 
 	getModuleOptionsByName(modname) {
 		for (let i = 0; i < this.app.options.modules.length; i++) {

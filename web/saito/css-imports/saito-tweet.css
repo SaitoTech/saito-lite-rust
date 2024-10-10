@@ -7,8 +7,8 @@
 }
 
 .tweet .saito-address, .tweet .saito-userline {
-  font-size: 1.3rem;
-  margin: 0.175rem;
+  font-size: 1.2rem;
+  margin: 0;
   color: var(--font-color-post-info);
 }
 
@@ -229,6 +229,17 @@
   display: inherit;
 }
 
+/* handling for embedded tweets */
+
+.tweet .tweet {
+  padding: 0;
+}
+
+.tweet .tweet .tweet-body {
+  grid-template-columns: 0 auto;
+  padding: 1rem 0 0;
+}
+
 
 .tweet-main iframe {
   max-width: 100% !important;
@@ -276,7 +287,8 @@
 .tweet-controls>div.tweet-tool.tweet-tool-more{
   transition: transform 0.3s;
 }
-.tweet-controls>div.tweet-tool.tweet-tool-more:hover{
+.tweet-controls>div.tweet-tool.tweet-tool-more:hover, 
+.tweet-controls>div.tweet-tool.tweet-tool-more.activated-dot-menu {
   transform: rotate(90deg);
 }
 
@@ -302,7 +314,6 @@
     bottom: -2rem;
   */
   width: 28rem;
-  height: 26rem;
   padding: 1rem;
   border: 1px solid var(--saito-border-color); /* testing, not sure where */
   background: var(--saito-background-color);
@@ -320,9 +331,9 @@
 
 .tweet-menu-list-item {
   display: grid;
-  grid-template-columns: 2rem 1fr;
+  grid-template-columns: 2.4rem 1fr;
   grid-gap: 1.5rem;
-  padding: 0.75rem;
+  padding: 1rem 0.5rem;
   align-items: center;
   cursor: pointer;
 }
@@ -333,6 +344,7 @@
 
 .tweet-menu-list-item i {
   justify-self: center;
+  min-width: 2.4rem;
 }
 
 .tweet-picture {

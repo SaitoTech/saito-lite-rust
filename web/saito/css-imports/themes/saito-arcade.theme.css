@@ -28,8 +28,6 @@ html[data-theme="arcade"] {
   --saito-bubble-background: #213;
   --saito-modal-background: var(--saito-background-light);
   --saito-font-color-dark-modal: #efefef;
-  --saito-heart-animation: url('/redsquare/images/heart-orange.png');
-  --saito-heart-animation-clicked: url('/redsquare/images/heart-all-orange.png');
   /* ================= NEW UPDATED THEME ================== */
   /*BASE COLOR SECTION*/
   --color-primary: #639;
@@ -100,8 +98,7 @@ html[data-theme="arcade"] {
   --font-color-user-address: var(--font-color-heavy);
   --font-color-status-message: var(--font-color-heavy);
   /* Module and Overlay Font Colors */
-  --font-color-title-game: var(--font-color-primary);
-  --font-color-title-game-details: var(--font-color-primary);
+  --font-color-invite-stub: var(--font-color-primary);
   --font-color-module-menu: var(--font-color-primary);
   --font-color-modal-menu-oldschool: var(--font-color-primary);
   --font-color-module-menu-header: var(--font-color-primary);

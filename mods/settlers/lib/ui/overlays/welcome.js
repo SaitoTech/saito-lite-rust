@@ -22,7 +22,7 @@ class WelcomeOverlay {
 	attachEvents() {
 		try {
 			document.querySelector('.welcome_overlay').onclick = () => {
-				this.overlay.hide();
+				this.overlay.close();
 				if (this.mod.game.players.length == 2){
 					//this.secondWelcome.render();
 				}

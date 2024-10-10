@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
 	default_fee = 0;
 
-	version = 5.640;
+	version = 5.641;
 
 	nolan_per_saito = 100000000;
 
@@ -104,6 +104,10 @@ export default class Wallet extends SaitoWallet {
 				return this.app.wallet.convertNolanToSaito(x);
 			}
 
+			async returnPublicKey() {
+				return this.publicKey || await this.app.wallet.getPublicKey();
+			}
+
 			async returnAddress() {
 				return this.publicKey || await this.app.wallet.getPublicKey();
 			}
@@ -118,9 +122,10 @@ export default class Wallet extends SaitoWallet {
 				}
 			}
 
-			returnHistory(asset_id = '', records = 20, callback = null) {
+			async returnHistory(asset_id = '', records = 20, callback = null) {
 				// to be implemented in future
 				// redirecting users to block explorer for now
+				return callback(false);
 			}
 
 			async sendPayment(amount, to_address, unique_hash = '') {
@@ -489,31 +494,20 @@ export default class Wallet extends SaitoWallet {
 		throw 'Module Not Found: ' + ticker;
 	}
 
-	async setPreferredCrypto(ticker, show_overlay = 0) {
-		let can_we_do_this = 0;
+	async setPreferredCrypto(ticker) {
+
 		const mods = this.returnInstalledCryptos();
-		let cryptomod = null;
 
 		for (let i = 0; i < mods.length; i++) {
 			if (mods[i].ticker === ticker) {
-				cryptomod = mods[i];
-				can_we_do_this = 1;
-
-				if (mods[i].options.isActivated == true) {
-					show_overlay = 0;
-				}
+				this.preferred_crypto = ticker;
+				console.log('Activating cryptomod: ' + ticker);
+				await mods[i].activate();
+				await this.saveWallet();
+				return;
 			}
 		}
 
-		if (can_we_do_this == 1) {
-			this.preferred_crypto = ticker;
-			console.log('Activating cryptomod: ' + cryptomod.ticker);
-			await cryptomod.activate();
-			//cryptomod.returnBalance();
-			await this.saveWallet();
-		}
-
-		return;
 	}
 
 	async returnPreferredCrypto() {

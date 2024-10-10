@@ -73,11 +73,11 @@ class CallInterfaceVideo {
 		this.app.connection.on(
 			'add-waiting-video-box',
 			() => {
-				this.addRemoteStream('connecting', null);		
+				this.addRemoteStream('connecting', null);
 			}
 		);
 
-		this.app.connection.on('remove-waiting-video-box', ()=> {
+		this.app.connection.on('remove-waiting-video-box', () => {
 			let peer_id = "connecting"
 			if (this.video_boxes[peer_id]?.video_box) {
 				if (this.video_boxes[peer_id].video_box?.remove) {
@@ -98,7 +98,7 @@ class CallInterfaceVideo {
 				this.updateImages();
 			}
 
-			this.insertActions(this.mod.room_obj.call_peers);
+			//this.insertActions(this.mod.room_obj.call_peers);
 		});
 
 		// Change arrangement of video boxes (emitted from SwitchDisplay overlay)
@@ -157,7 +157,7 @@ class CallInterfaceVideo {
 
 		app.connection.on('stun-data-channel-open', (pkey) => {
 			if (this.rendered){
-				this.insertActions(this.mod.room_obj.call_peers);	
+				//this.insertActions(this.mod.room_obj.call_peers);	
 			}
 		});
 
@@ -170,6 +170,11 @@ class CallInterfaceVideo {
 				this.app.connection.emit('remove-peer-box', peer);
 			}
 
+			if (this.old_title) {
+				document.title = this.old_title;
+				delete this.old_title;
+			}
+
 			if (this.mod.browser_active) {
 				let homeModule = this.app.options?.homeModule || this.name;
 				let mod = this.app.modules.returnModuleByName(homeModule);
@@ -178,7 +183,8 @@ class CallInterfaceVideo {
 
 				const recordControls = this.app.modules.getRespondTos('screenrecord-video-controls');
 				console.log(recordControls, "recordControls")
-				let { mediaRecorder, stopRecording } = recordControls[0]
+				let { mediaRecorder, stopRecording, type } = recordControls[0]
+
 				if (mediaRecorder) {
 					await stopRecording()
 				}
@@ -191,26 +197,24 @@ class CallInterfaceVideo {
 				// Hopefully we don't have to reload the page on the end of a stun call
 				// But keep on eye on this for errors and make sure all the components shut themselves down properly
 				//
-				if (document.getElementById('stun-chatbox')) {
+				if (document.querySelector('.stun-overlay-container')) {
 					const recordControls = this.app.modules.getRespondTos('screenrecord-video-controls');
-					let { mediaRecorder, stopRecording } = recordControls[0]
+					let { mediaRecorder, stopRecording, type } = recordControls[0]
 					console.log(recordControls, "recordControls")
+					document.querySelector('.stun-overlay-container').remove();
+
+					// Don't stop until the game ends...
+					if(type === "game") return;
 
 					if (mediaRecorder) {
 						await stopRecording()
 					}
-
-					document.getElementById('stun-chatbox').remove();
 					let am = this.app.modules.returnActiveModule();
 					window.history.pushState(
 						{},
 						'',
 						window.location.origin + '/' + am.returnSlug()
 					);
-					document.title = this.old_title;
-
-
-
 
 				}
 			}
@@ -246,8 +250,15 @@ class CallInterfaceVideo {
 			}
 		}
 
-		this.app.connection.emit("stun-switch-view", this.mod.layout);
+		if (!this.mod.browser_active) {
+			this.app.connection.emit("stun-switch-view", "gallery");
+		} else {
+			this.app.connection.emit("stun-switch-view", this.mod.layout);
+		}
+
 		this.rendered = true;
+
+
 	}
 
 	insertActions() {
@@ -265,13 +276,15 @@ class CallInterfaceVideo {
 
 		let index = 0;
 
+		let streams = [this.localStream];
+		this.remote_streams.forEach((stream, key) => {
+			streams.push(stream);
+		});
+
+
 		for (const mod of this.app.modules.mods) {
 
-			{
-				let item = mod.respondTo('call-actions', {
-					call_id: this.mod.room_obj.call_id,
-					members: this.mod.room_obj.call_peers
-				});
+				let item = mod.respondTo('call-actions', { call_id: this.mod.room_obj.call_id });
 				if (item instanceof Array) {
 					item.forEach((j) => {
 						this.createActionItem(j, container, index++);
@@ -279,16 +292,10 @@ class CallInterfaceVideo {
 				} else if (item != null) {
 					this.createActionItem(item, container, index++);
 				}
-			}
 
-			{
+				// This should confirm to the standard API!
 
-				let streams = [this.localStream];
-				this.remote_streams.forEach((stream, key) => {
-					streams.push(stream);
-				});
-
-				let item = mod.respondTo('record-actions', {
+				item = mod.respondTo('record-actions', {
 					container: ".video-container-large",
 					streams,
 					useMicrophone: true,
@@ -304,7 +311,6 @@ class CallInterfaceVideo {
 				} else if (item != null) {
 					this.createActionItem(item, container, index++);
 				}
-			}
 
 		}
 
@@ -337,18 +343,16 @@ class CallInterfaceVideo {
 		let div = document.getElementById(id);
 		if (div) {
 			if (item?.callback) {
-				console.log('Add event listener!');
 				div.onclick = () => {
-					console.log('click');
-					item.callback(this.app);
+					item.callback(this.app, this.mod.room_obj);
 				};
 			} else {
 				console.warn('Adding an action item with no callback');
 			}
 
-		    if (item.event) {
-		       item.event(id);
-		    }
+			if (item.event) {
+				item.event(id);
+			}
 
 		} else {
 			console.warn('Item not found');
@@ -377,6 +381,11 @@ class CallInterfaceVideo {
 				siteMessage('You have been disconnected', 3000);
 			});
 		});
+
+
+
+
+
 
 		/*document.getElementById('record-icon').onclick = async () => {
 			const recordIcon = document.querySelector('#record-icon i');
@@ -415,13 +424,13 @@ class CallInterfaceVideo {
 			}
 		};*/
 
-		document.querySelectorAll('.video-control').forEach((item) => {
+		document.querySelectorAll('.call-controls .video-control').forEach((item) => {
 			item.onclick = () => {
 				this.toggleVideo();
 			};
 		});
 
-		document.querySelectorAll('.audio-control').forEach((item) => {
+		document.querySelectorAll('.call-controls .audio-control').forEach((item) => {
 			item.onclick = () => {
 				this.toggleAudio();
 			};
@@ -440,7 +449,7 @@ class CallInterfaceVideo {
 					let icon = document.querySelector(
 						'.stun-chatbox .minimizer i'
 					);
-					let chat_box = document.querySelector('.stun-chatbox');
+					let chat_box = document.querySelector('.stun-overlay-container');
 
 					chat_box.classList.toggle('full-screen');
 
@@ -530,7 +539,9 @@ class CallInterfaceVideo {
 
 		let url1 = window.location.origin + '/videocall/';
 
-		this.old_title = document.title;
+		if (!this.old_title) {
+			this.old_title = document.title;
+		}
 
 		if (this.full_screen) {
 			window.history.pushState(
@@ -567,6 +578,10 @@ class CallInterfaceVideo {
 			this.app.connection.emit('stun-switch-view', 'presentation');
 			this.flipDisplay('presentation');
 		}
+
+		this.setDisplayContainers();
+
+
 	}
 
 	addLocalStream(localStream) {
@@ -576,6 +591,7 @@ class CallInterfaceVideo {
 		this.video_boxes['local'].video_box.render(localStream);
 		this.localStream = localStream;
 		this.updateImages();
+
 
 		// segmentBackground(document.querySelector('#stream_local video'), document.querySelector('#stream_local canvas'), 1);
 		// applyBlur(7);
@@ -595,13 +611,13 @@ class CallInterfaceVideo {
 		//Update UI
 		try {
 			document
-				.querySelector('.audio-control')
+				.querySelector('.call-controls .audio-control')
 				.classList.toggle('disabled');
 			document
-				.querySelector('.audio-control i')
+				.querySelector('.call-controls .audio-control i')
 				.classList.toggle('fa-microphone-slash');
 			document
-				.querySelector('.audio-control i')
+				.querySelector('.call-controls .audio-control i')
 				.classList.toggle('fa-microphone');
 		} catch (err) {
 			console.warn('Stun UI error', err);
@@ -614,13 +630,13 @@ class CallInterfaceVideo {
 		//Update UI
 		try {
 			document
-				.querySelector('.video-control')
+				.querySelector('.call-controls .video-control')
 				.classList.toggle('disabled');
 			document
-				.querySelector('.video-control i')
+				.querySelector('.call-controls .video-control i')
 				.classList.toggle('fa-video-slash');
 			document
-				.querySelector('.video-control i')
+				.querySelector('.call-controls .video-control i')
 				.classList.toggle('fa-video');
 		} catch (err) {
 			console.warn('Stun UI error', err);
@@ -706,10 +722,9 @@ class CallInterfaceVideo {
 
 		let container = document.querySelector('.video-container-large');
 
-		container.innerHTML = ``;
-		container.classList.remove('split-view');
-		container.classList.add('gallery');
-
+		container.innerHTML = `<div class="gallery"></div>`;
+		container.classList.remove('split-view', 'expanded', 'presentation');
+		container.classList.add('gallery-view');
 		this.setDisplayContainers();
 	}
 
@@ -720,23 +735,23 @@ class CallInterfaceVideo {
 		let container = document.querySelector('.video-container-large');
 
 		container.innerHTML = `<div class="expanded-video"></div>
-    <div class="side-videos"></div>`;
-		container.classList.add('split-view');
-		container.classList.remove('gallery');
+		<div class="side-videos"></div>`;
+		container.classList.remove('gallery-view', 'presentation');
+		container.classList.add('split-view', 'expanded');
 
 		this.setDisplayContainers();
 	}
 
-	swicthDisplayToPresentation() {
+	switchDisplayToPresentation() {
 		this.local_container = 'presentation';
 		this.remote_container = 'presentation-side-videos';
 
 		let container = document.querySelector('.video-container-large');
 
 		container.innerHTML = `<div class="presentation"></div>
-    <div class="presentation-side-videos"></div>`;
-		container.classList.add('split-view');
-		container.classList.remove('gallery');
+		<div class="presentation-side-videos"></div>`;
+		container.classList.remove('gallery-view', 'expanded');
+		container.classList.add('split-view', 'presentation');
 
 		this.setDisplayContainers();
 	}
@@ -744,17 +759,89 @@ class CallInterfaceVideo {
 	setDisplayContainers() {
 		for (let i in this.video_boxes) {
 			if (i === 'local') {
-				this.video_boxes[i].video_box.containerClass =
-					this.local_container;
+				this.video_boxes[i].video_box.containerClass = this.local_container;
 				this.video_boxes[i].video_box.render(this.localStream);
 			} else {
-				this.video_boxes[i].video_box.containerClass =
-					this.remote_container;
-				this.video_boxes[i].video_box.render(
-					this.remote_streams.get(i)
-				);
+				this.video_boxes[i].video_box.containerClass = this.remote_container;
+				this.video_boxes[i].video_box.render(this.remote_streams.get(i));
 			}
 		}
+
+		const galleryContainer = document.querySelector('.gallery');
+		const sideVideosContainer = document.querySelector('.side-videos, .presentation-side-videos');
+
+		if (galleryContainer) {
+			this.setupContainer(galleryContainer);
+		}
+
+		if (sideVideosContainer) {
+			this.setupContainer(sideVideosContainer);
+		}
+
+		document.querySelectorAll('.video-box-container-large').forEach(item => {
+			this.resizeBackground(item);
+		});
+	}
+
+	setupContainer(container) {
+		Array.from(container.children).forEach(child => {
+			child.classList.add('flex-item');
+		});
+		console.log(container, "container");
+		this.adjustClassesAndCount(container);
+	}
+
+	adjustClassesAndCount(element) {
+		const observer = new ResizeObserver(entries => {
+			for (let entry of entries) {
+				const width = entry.contentRect.width;
+				const height = entry.contentRect.height;
+				const aspectRatio = width / height;
+
+				element.classList.remove('wide', 'tall', 'square');
+
+				if (aspectRatio > 5 / 3) {
+					element.classList.add('wide');
+				} else if (aspectRatio < 3 / 5) {
+					element.classList.add('tall');
+				} else {
+					element.classList.add('square');
+				}
+
+				const childCount = element.children.length;
+				Array.from(element.classList).forEach(className => {
+					if (className.startsWith('count-')) {
+						element.classList.remove(className);
+					}
+				});
+				element.classList.add(`count-${childCount}`);
+			}
+		});
+		observer.observe(element);
+
+	}
+
+	resizeBackground(element) {
+		const bg_observer = new ResizeObserver(entries => {
+			for (let entry of entries) {
+			  const element = entry.target;
+			  const width = entry.contentRect.width;
+			  const height = entry.contentRect.height;
+			  const aspectRatio = width / height;
+	  
+			  element.classList.remove('video-fill', 'video-contain', 'video-cover');
+	  
+			  if (aspectRatio > 16/9) {
+				element.classList.add('video-fill');
+			  } else if (aspectRatio < 9/16) {
+				element.classList.add('video-contain');
+			  } else {
+				element.classList.add('video-cover');
+			  }
+			}
+		  });
+
+		bg_observer.observe(element);
 	}
 }
 

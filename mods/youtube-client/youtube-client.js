@@ -29,7 +29,7 @@ class YoutubeClient extends ModTemplate {
 
 		this.app.connection.on('saito-yt-start-stream', async (obj = {}) => {
 			this.stream_key = obj.stream_key;
-			this.stream_type = obj.stream_type;
+			//this.stream_type = obj.stream_type;
 			await this.startStream();
 			this.startStreamStatus();
 		});

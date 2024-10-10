@@ -33,6 +33,12 @@ input[type="checkbox"].ignore_checkbox {
 .game-crypto-transfer-manager-container .stake-input-container{
   margin: auto;
   position: relative;
+  margin-bottom: 2.5rem;
+  display: flex;
+}
+
+.game-crypto-transfer-manager-container .stake-input-container.hidden{
+  display: none;
 }
 
 .stake-input-error {
@@ -67,14 +73,21 @@ input[type=number] {
 
 .stake-input-container .crypto_msg {
   display: flex;
-  flex-direction: row-reverse;
+  justify-content: space-between;
   margin-top: 0.5rem;
   font-style: italic;
+  position: absolute;
+  top: 100%;
+  width: 100%;
+  right: 0;
+  white-space: nowrap;
 }
+
+
 .stake-input-container .crypto-ticker {
   position: absolute;
   right: 0;
-  bottom: 2.5rem;
+  bottom: 0;
 }
 
 .auth_title {
@@ -157,9 +170,8 @@ input[type=number] {
   font-size: 1.6rem;
 }
 
-.select_max:hover {
+.select_max, .select_min, .select_match {
   cursor: pointer;
-  font-weight: bold;
 }
 
 .amount {

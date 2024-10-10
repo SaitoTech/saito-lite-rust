@@ -1,9 +1,8 @@
-.hud {
-	width: 60rem;
+.hud, .hud-long {
+	width: 55rem;
 	max-width: 100vw;
 	z-index: 50 !important;
-	padding-top: 3px !important;
-	margin-bottom: 2rem;
+	padding: 3px 0 0 0;
 	height: auto;
 }
 
@@ -14,11 +13,11 @@
 }
 
 .hud-body {
-	min-height: 17rem;
-	width: calc(100% - 5rem);
+	min-height: 12rem;
+	width: 100%;
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
+	justify-content: space-around;
 	padding: 0 0 1rem;
 }
 
@@ -29,10 +28,12 @@
 	box-shadow: none;
 	padding: 0;
 	width: 100%;
-	min-height: 4.5rem;
+	min-height: 15rem;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	padding: 0.5rem 0;
+	gap: 0.75rem;
 }
 
 .hud-status-card-list{
@@ -42,91 +43,65 @@
 
 /* hide scrollbars */
 
-.hud-body .controls {
+.hud .controls {
 	-ms-overflow-style: none;
 	scrollbar-width: none;
 	overflow-y: auto;
 	overflow-x: auto;
 	/*min-height: 4.5rem;*/
+	margin: 0.5rem 0;
 }
 
-.hud-body .controls ul {
-	min-height: 4.5rem;
+.hud .controls ul {
+	min-height: 7.5rem;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	gap: 1rem;
+	width: 100%;
+	align-items: center;
 }
 
-.hud-body .status ul li,
-.hud-body .controls ul li,
-.options {
-	background-color: transparent;
-	box-shadow: none;
-	min-height: 4.5rem;
 
-	padding: 0.5rem 1rem;
-	line-height: 4rem;
-	border: 4px solid #424143;
+.hud .controls ul li {
+	background-color: lightgray;
+	padding: 0.5rem;
+	border: 3px solid #424143;
 	border-radius: 1.5rem;
-	min-width: 12rem;
-	max-width: 250px;
 	list-style: none;
-	margin: 1rem 0 0;
-	height: unset;
+	height: 7rem;
+	width: 7rem;
+	font-size: 3rem;
+	color: darkgray;
+	cursor: default;
 }
 
-.hud-body .status ul li:hover,
-.hud-body .controls ul li:hover,
-.options:hover {
+.hud .controls ul li#rolldice {
+	margin-left: 2rem;
+	width: 9rem;
+}
+
+
+.hud .controls ul > div {
+	width: 7rem;
+}
+
+.hud .controls ul li.enabled {
 	background-color: #b79e76;
-	font-size: 1.2em;
+	color: var(--text-color);
+	cursor: pointer;
+}
+
+.hud .controls ul li.enabled:hover {
+	background-color: #e2d26c;
+	filter: drop-shadow(2px 2px 2px var(--text-color));
+	transform: translate(-1px, -1px);
 	/*Trying a darker shade #cbaf83*/
 }
 
-.hud-body .mobile {
-	display: flex;
-	position: relative;
-	width: 100%;
-	top: 6px;
-	z-index: 5;
-	justify-content: space-between;
-	visibility: hidden;
-}
 
-.hud-body .mobile > div {
-	font-size: 1.7rem;
-	cursor: pointer;
-	border-bottom: 1px dashed #0008;
-	width: fit-content;
-}
-
-.hud-body .mobile > div:hover {
-	font-weight: bold;
-}
-
-.mobile-trading-container {
-	z-index: 0;
-}
-
-/* ul to buttons in settlers hud */
-
-.hud .status ul,
-.hud .controls ul {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-evenly;
-	gap: 1rem;
-	width: 100%;
-}
-
-.status .player-notice span.acknowledge-message {
-	display: flex;
-	align-items: center;
-	gap: 1rem;
-}
-
-.player-notice span img {
-	width: 60px;
-	background-color: #456;
-	border-radius: 25%;
-	border: 1px solid #fff8;
+.player-notice img {
+	max-width: 45px;
 }
 
 @media only screen and (max-width: 600px) and (orientation: portrait) {
@@ -141,9 +116,6 @@
 	.hud-body {
 		width: calc(100% - 2rem);
 	}
-	.hud-body .mobile {
-		height: 2.2rem;
-	}
 
 	body .player-box {
 		height: auto !important;
@@ -157,27 +129,11 @@
 		margin-top: 5vw;
 	}
 
-	.mobile-trading-container {
-		display: none;
-		position: absolute;
-		background-color: black;
-		height: 100%;
-		width: 100%;
-		z-index: 10;
-		top: 0;
-		left: 0;
-		padding-top: 6vh;
-		overflow-y: scroll;
-		max-height: 120vh;
-		padding-bottom: 40vh;
-	}
-
 	.hud-body .controls ul {
 		gap: 0.5rem;
 	}
 
-	.hud-body .controls ul li,
-	.options {
+	.hud-body .controls ul li {
 		min-width: 10rem;
 		border-width: 2px;
 		padding: 0.25rem 0.5rem;

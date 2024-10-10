@@ -151,9 +151,16 @@ label.treated {
 	overflow: hidden;
 }
 
+.settings-installed-mod-header {
+    display: flex;
+    justify-content: space-between;
+}
 
-
-
+#settings-add-app {
+	font-size: 3rem;
+    margin-right: 1rem;
+    cursor: pointer;
+}
 @media only screen and (max-width: 900px) {
 	.settings-appspace {
 		padding: 1.5rem;

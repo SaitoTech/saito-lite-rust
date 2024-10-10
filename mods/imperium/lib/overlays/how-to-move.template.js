@@ -1,4 +1,4 @@
-module.exports = ImperiumHowToMoveTemplate = (imperium_self, units) => {
+module.exports  = (imperium_self, units) => {
 	return `
     <div class="how-to-move-overlay hide-scrollbar">
 

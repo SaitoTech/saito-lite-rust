@@ -78,7 +78,6 @@ class Settings extends ModTemplate {
 				this.renderIntos[qs].push(
 					new SettingsThemeSwitcherOverlay(this.app, this, '')
 				);
-				this.attachStyleSheets();
 			}
 			this.renderIntos[qs].forEach((comp) => {
 				comp.render();
@@ -94,6 +93,7 @@ class Settings extends ModTemplate {
 
 		if (type === 'saito-header') {
 			if (this.app.modules.returnActiveModule()){
+				this.attachStyleSheets();
 				return [
 					{
 						text: 'Theme',

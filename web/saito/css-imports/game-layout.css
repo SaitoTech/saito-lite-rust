@@ -7,6 +7,10 @@
 ::-webkit-resizer { background-color: #ddd;}
 
 
+:root {
+  --background-color-shim-normal: var(--background-color-shim-dark);
+}
+
 body {
   position: relative;
   background-color: #4e4e4e;
@@ -140,9 +144,14 @@ div.h3{
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 20vw;
+  width: min(15rem, 20vw);
+  height: min(15rem, 20vw);
+  z-index: 0;
 }
 
+.crypto_logo img{
+  width: 100%;
+}
 
 
 /***************************

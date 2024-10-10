@@ -24,6 +24,7 @@ module.exports = (app, mod, tweet) => {
 	let is_liked_css = mod.liked_tweets.includes(tweet.tx.signature)
 		? 'liked'
 		: '';
+
 	let is_retweeted_css = mod.retweeted_tweets.includes(tweet.tx.signature)
 		? 'retweeted'
 		: '';

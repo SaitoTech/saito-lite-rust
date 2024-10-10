@@ -33,12 +33,13 @@
 	max-width: 50%;
 	max-height: 25%;
 	height: 3rem;
-	width: 5rem;
+	min-width: 5rem;
 }
 
 .arcade-game-selector-footer .angled-notification {
 	width: fit-content;
 	padding: 0 20% 0 33%;
+	max-width: unset;
 }
 
 .arcade-game-selector-game:hover {

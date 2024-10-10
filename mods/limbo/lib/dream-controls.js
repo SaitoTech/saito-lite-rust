@@ -14,21 +14,16 @@ class DreamControls{
 
 	render(stream, is_presentation = false) {
 		if (!document.getElementById("dream-controls")){
-
 			console.log("Render Dream controls in " + this.container);
-
 			this.app.browser.addElementToSelectorOrDom(DreamControlTemplate(this.mod), this.container);
-
 			if (!document.querySelector(this.container)){
 				this.app.browser.makeDraggable('dream-controls');
 			}
 		}
-
 		if (stream){
 			if (is_presentation){
 				this.video.video_class = "noflip";
 			}
-
 			this.video.render(stream);
 			this.startTimer();
 		}
@@ -82,13 +77,13 @@ class DreamControls{
 		//Update UI
 		try {
 			document
-				.querySelector('.audio-control')
+				.querySelector('.dream-controls .audio-control')
 				.classList.toggle('disabled');
 			document
-				.querySelector('.audio-control i')
+				.querySelector('.dream-controls .audio-control i')
 				.classList.toggle('fa-microphone-slash');
 			document
-				.querySelector('.audio-control i')
+				.querySelector('.dream-controls .audio-control i')
 				.classList.toggle('fa-microphone');
 		} catch (err) {
 			console.warn('Stun UI error', err);
@@ -101,13 +96,13 @@ class DreamControls{
 		//Update UI
 		try {
 			document
-				.querySelector('.video-control')
+				.querySelector('.dream-controls .video-control')
 				.classList.toggle('disabled');
 			document
-				.querySelector('.video-control i')
+				.querySelector('.dream-controls .video-control i')
 				.classList.toggle('fa-video-slash');
 			document
-				.querySelector('.video-control i')
+				.querySelector('.dream-controls .video-control i')
 				.classList.toggle('fa-video');
 		} catch (err) {
 			console.warn('Stun UI error', err);

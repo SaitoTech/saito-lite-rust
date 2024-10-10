@@ -1,32 +1,28 @@
 class SettlersActions {
   //
   // OVERRIDE THIS FUNCTION FROM THE PARENT GAME LIBRARY TO CHANGE THE ACKNOWLEDGE TEXT TO CONTINUE
+  // and override the callback
   //
   playerAcknowledgeNotice(msg, mycallback) {
-    let html = `<ul><li class="textchoice acknowledge" id="confirmit">continue</li></ul>`;
+    let html = `<i class="fa-solid fa-forward"></i>`;
     try {
-      this.updateStatusWithOptions(`${this.getLastNotice()}<div class="player-notice"><span class="acknowledge-message">${msg}</span></div>`, html);
 
-      document.querySelectorAll(".acknowledge").forEach((el) => {
-        el.onclick = async (e) => {
+      this.updateStatusWithOptions(`<div class="player-notice">${msg}</div>`, html);
 
-          // if player clicks multiple times, don't want callback executed multiple times
-          document.querySelectorAll(".acknowledge").forEach((el) => {
-            el.onclick = null;
-          });
-          //Clear click options
-          this.updateControls('');
-
-          await mycallback();
-        };
-      });
+      document.getElementById("rolldice").onclick = async (e) => {
+        e.currentTarget.onclick = null;
+        console.log("Click ACKNOWLEDGE");
+        this.updateControls();
+        this.game.queue.splice(this.game.queue.length - 1, 1);
+        this.restartQueue();
+      }
     } catch (err) {
       console.error("Error with ACKWNOLEDGE notice!: " + err);
     }
 
     if (this.turn_limit){
       this.sleep_timer = setTimeout(()=> {
-        $(".acknowledge").click();
+        $("#rolldice").click();
         clearTimeout(this.sleep_timer);
       }, this.turn_limit);
     }
@@ -125,10 +121,10 @@ class SettlersActions {
     }
 
     if (poor_harvest) {
-      this.updateStatus(`<div class="persistent player-notice"><span>${firstMsg}: ${this.randomMsg()}</span></div>`);
+      this.updateStatus(`${firstMsg}: ${this.randomMsg()}`);
     } else {
       this.updateStatus(
-        `<div class="persistent player-notice"><span>${firstMsg}! You acquired: </span><div class="hud-status-card-list">${notice}</div></div>`
+        `<div class="player-notice"><span>${firstMsg}! You acquired: </span><div class="hud-status-card-list">${notice}</div></div>`
       );
     }
 
@@ -267,50 +263,7 @@ class SettlersActions {
 
   }
 
-  /*
-    Recursively let player select two resources, then push them to game queue to share selection
-  */
-  playYearOfPlenty(player, cardname) {
-    if (this.game.player != player) return;
-    //Pick something to get
-    let settlers_self = this;
-    let remaining = 2;
-    let resourceList = this.returnResources();
-    let cardsToGain = [];
-
-    //Player recursively selects all the resources they want to get rid of
-    let gainResource = function (settlers_self) {
-      let html = `<div class='player-notice'>Select Resources (Can get ${remaining}): <ul class="horizontal_list">`;
-      for (let i of resourceList) {
-        html += `<li id="${i}" class="iconoption option"><div class="tip"><img class="icon" src="${this.returnCardImage(
-          i
-        )}" /></div></li>`;
-      }
-      html += "</ul>";
-      html += "</div>";
-      settlers_self.displayCardfan();
-      settlers_self.updateStatus(html, 1);
-
-      $(".option").off();
-      $(".option").on("click", function () {
-        console.log("clicked on option 8");
-        let res = $(this).attr("id");
-        cardsToGain.push(res);
-        remaining--;
-        if (remaining <= 0) {
-          settlers_self.addMove(
-            `year_of_plenty\t${player}\t${cardname}\t${JSON.stringify(cardsToGain)}`
-          );
-          settlers_self.endTurn();
-          return 0;
-        } else {
-          gainResource(settlers_self);
-        }
-      });
-    };
-    gainResource(settlers_self);
-  }
-
+  
   /*
     Every time a knight played, need to check if this makes a new largest army
   */
@@ -340,7 +293,7 @@ class SettlersActions {
 
     if (vpChange){
       this.updateLog(`${this.formatPlayer(player)} claims the LARGEST ARMY`);
-      this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player-1]} forms the largest army ${this.largest.svg}`);
+      this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player-1]} forms the largest army`);
     }
   }
 
@@ -433,7 +386,7 @@ class SettlersActions {
             this.game.state.longestRoad.player = player;
             this.game.state.longestRoad.size = longest.length;
             this.game.state.longestRoad.path = longest;
-            this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player - 1]} claimed the longest road ${this.longest.svg}`);
+            this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player - 1]} claimed the longest road ${this.longest.icon}`);
           } else {
             //Increase size
             this.game.state.longestRoad.size = longest.length;
@@ -454,7 +407,7 @@ class SettlersActions {
           `claimed the ${this.longest.name} with ${longest.length} segments.`
         );
 
-        this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player - 1]} claimed the longest road ${this.longest.svg}`);
+        this.game.queue.push(`ACKNOWLEDGE\t${this.game.playerNames[player - 1]} claimed the longest road ${this.longest.icon}`);
         this.game.state.longestRoad.player = player;
         this.game.state.longestRoad.size = longest.length;
         this.game.state.longestRoad.path = longest;
@@ -515,7 +468,7 @@ class SettlersActions {
       if (this.game.confirms_needed[i]) {
         this.game.confirms_needed[i] = 0;
         if (this.game.player == i + 1) {
-          this.overlay.hide();
+          this.overlay.close();
         }
       }
     }
@@ -611,15 +564,6 @@ class SettlersActions {
       }
     });
 
-    $("input:checkbox").change(function () {
-      if ($(this).is(":checked")) {
-        settlers_self.confirm_moves = 0;
-        settlers_self.saveGamePreference("settlers_confirm_moves", 0);
-      } else {
-        settlers_self.confirm_moves = 1;
-        settlers_self.saveGamePreference("settlers_confirm_moves", 1);
-      }
-    });
   }
 }
 

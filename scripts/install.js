@@ -237,6 +237,7 @@ function webPack() {
 				{ jimp: 'jimp' },
 				{ 'image-resolve': 'image-resolver' },
 				{ sqlite: 'sqlite' },
+				{ os: 'os' },
 				{ unzipper: 'unzipper' },
 				{ webpack: 'webpack' },
 				/\.txt/,
@@ -335,8 +336,8 @@ function webPack() {
 					{
 						test: /\.zip$/,
 						exclude: [
-							path.resolve(__dirname, './mods/appstore/bundler'),
-							path.resolve(__dirname, './mods/appstore/mods')
+							path.resolve(__dirname, './mods/devtools/bundler'),
+							path.resolve(__dirname, './mods/devtools/mods')
 						]
 					}
 				]
@@ -385,7 +386,7 @@ function reset_nonpersistent() {
 	createDir('../data/blocks');
 
 	removeDir('../web/saito/saito.js');
-	removeDir('../data/appstore.sq3');
+	removeDir('../data/devtools.sq3');
 	removeDir('../data/hospital.sq3');
 	removeDir('../data/records.sq3');
 	removeDir('../data/archive.sq3');
@@ -410,19 +411,19 @@ function reset_nonpersistent() {
 
 	removeDir('../config/options');
 
-	removeDir('mods/appstore/mods');
-	createDir('mods/appstore/mods');
-	removeDir('mods/appstore/bundler/mods');
-	createDir('mods/appstore/bundler/mods');
-	removeDir('mods/appstore/bundler/dist');
-	createDir('mods/appstore/bundler/dist');
+	removeDir('mods/devtools/mods');
+	createDir('mods/devtools/mods');
+	removeDir('mods/devtools/bundler/mods');
+	createDir('mods/devtools/bundler/mods');
+	removeDir('mods/devtools/bundler/dist');
+	createDir('mods/devtools/bundler/dist');
 	removeDir('logs');
 	createDir('logs');
 
 	//rm -f ./mods/forum/web/img/thumbnails/*.png
 	removeDir('mods/registry/web/addresses.txt');
-	//rm -f ./mods/appstore/bundler/*.js
-	//rm -f ./mods/appstore/bundler/*.json
+	//rm -f ./mods/devtools/bundler/*.js
+	//rm -f ./mods/devtools/bundler/*.json
 
 	if (fs.existsSync('data/rewards.sq3')) {
 		const db = new sqlite3.Database('data/rewards.sq3');
@@ -473,7 +474,7 @@ function reset_bundler() {
 	console.log('');
 	console.log('Compiling Lite-Client JS...');
 
-	removeDir('../bundler/default/mods/appstore/bundler/dist');
+	removeDir('../bundler/default/mods/devtools/bundler/dist');
 
 	var dirRm = getDirectories('../bundler/default/mods');
 	var rmDirArr = ['web', 'sql', 'www', 'src', 'docs', 'compile'];

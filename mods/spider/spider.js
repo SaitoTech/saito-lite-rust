@@ -1,6 +1,6 @@
 const OnePlayerGameTemplate = require('../../lib/templates/oneplayer-gametemplate');
 const SpiderGameRulesTemplate = require('./lib/spider-game-rules.template');
-const SpiderGameOptionsTemplate = require('./lib/spider-game-options.template');
+const AppSettings = require('./lib/spider-settings');
 const CardStack = require('../../lib/saito/ui/game-cardstack/game-cardstack');
 const htmlTemplate = require('./lib/game-html.template');
 
@@ -13,6 +13,7 @@ class Spider extends OnePlayerGameTemplate {
 
 		this.app = app;
 		this.name = 'Spider';
+		this.slug = 'spider';
 		this.gamename = 'Spider Solitaire';
 		this.game_length = 10; //Estimated number of minutes to complete a game
 		this.description =
@@ -41,21 +42,6 @@ class Spider extends OnePlayerGameTemplate {
 		return SpiderGameRulesTemplate(this.app, this);
 	}
 
-	returnSingularGameOption(app) {
-		return SpiderGameOptionsTemplate(this.app, this);
-	}
-
-	//Single player games don't allow game-creation and options prior to join
-	returnAdvancedOptions() {
-		/* to do -- add auto play mode
-            <p>Play Mode:</p>
-            <div><input type="radio" id="auto" value="auto" name="play_mode" checked>
-            <label for="auto">Cards move to available slots</label></div>
-            <div><input type="radio" id="manual" value="manual" name="play_mode">
-            <label for="manual">Click empty slot to move card</label></div>
-    */
-		return '';
-	}
 
 	initializeGame(game_id) {
 		console.log('SET WITH GAMEID: ' + game_id);
@@ -69,13 +55,11 @@ class Spider extends OnePlayerGameTemplate {
 		console.log(JSON.parse(JSON.stringify(this.game)));
 
 		//Set difficulty
-		let input_dif = this.game.options?.difficulty || 'medium';
+		let input_dif = this.loadGamePreference('spider-difficulty') || 'medium';
+		this.changeDifficulty(input_dif);
 
 		if (this.browser_active) {
-			if (
-				this.changeDifficulty(input_dif) ||
-				this.game.deck.length == 0
-			) {
+			if (this.game.deck.length == 0) {
 				this.newRound();
 			}
 		} else {
@@ -115,87 +99,11 @@ class Spider extends OnePlayerGameTemplate {
 		});
 
 		this.menu.addSubMenuOption('game-game', {
-			text: 'Play Mode',
-			id: 'game-play',
-			class: 'game-play',
-			callback: null
-		});
-
-		this.menu.addSubMenuOption('game-play', {
-			text: `Auto ${this.game.options.play_mode == 'auto' ? '✔' : ''}`,
-			id: 'game-confirm-newbie',
-			class: 'game-confirm-newbie',
-			callback: function (app, game_mod) {
-				game_mod.game.options['play_mode'] = 'auto';
-				game_mod.attachEventsToBoard(); //change the click style
-				try {
-					document.querySelector('#game-confirm-newbie').textContent =
-						'Auto ✔';
-					document.querySelector('#game-confirm-expert').textContent =
-						'Manual';
-				} catch (err) {}
-			}
-		});
-
-		this.menu.addSubMenuOption('game-play', {
-			text: `Manual ${this.game.options.play_mode == 'auto' ? '' : '✔'}`,
-			id: 'game-confirm-expert',
-			class: 'game-confirm-expert',
-			callback: function (app, game_mod) {
-				game_mod.game.options['play_mode'] = 'manual';
-				game_mod.attachEventsToBoard(); //change the click style
-				try {
-					document.querySelector('#game-confirm-newbie').textContent =
-						'Auto';
-					document.querySelector('#game-confirm-expert').textContent =
-						'Manual ✔';
-				} catch (err) {}
-			}
-		});
-
-		this.menu.addSubMenuOption('game-game', {
-			text: 'Difficulty',
-			id: 'game-difficulty',
-			class: 'game-difficulty',
-			callback: null
-		});
-
-		this.menu.addSubMenuOption('game-difficulty', {
-			text: `One Suit (Easy) ${
-				this.game.options.difficulty == 'easy' ? '✔' : ''
-			}`,
-			id: 'game-confirm-easy',
-			class: 'game-confirm-easy',
-			callback: function (app, game_mod) {
-				game_mod.changeDifficulty('easy');
-				game_mod.game.queue.push('lose');
-				game_mod.endTurn();
-			}
-		});
-
-		this.menu.addSubMenuOption('game-difficulty', {
-			text: `Two Suits (Medium) ${
-				this.game.options.difficulty == 'medium' ? '✔' : ''
-			}`,
-			id: 'game-confirm-medium',
-			class: 'game-confirm-medium',
-			callback: function (app, game_mod) {
-				game_mod.changeDifficulty('medium');
-				game_mod.game.queue.push('lose');
-				game_mod.endTurn();
-			}
-		});
-
-		this.menu.addSubMenuOption('game-difficulty', {
-			text: `Four Suits (Expert) ${
-				this.game.options.difficulty == 'hard' ? '✔' : ''
-			}`,
-			id: 'game-confirm-hard',
-			class: 'game-confirm-hard',
-			callback: function (app, game_mod) {
-				game_mod.changeDifficulty('hard');
-				game_mod.game.queue.push('lose');
-				game_mod.endTurn();
+			text: 'Settings',
+			id: 'game-settings',
+			class: 'game-settings',
+			callback: function(app, game_mod){
+				game_mod.loadSettings();
 			}
 		});
 
@@ -290,6 +198,10 @@ class Spider extends OnePlayerGameTemplate {
 	attachEventsToBoard() {
 		let spider_self = this;
 
+		if (!this.browser_active){
+			return;
+		}
+
 		//Just in case
 		this.removeEvents();
 
@@ -311,7 +223,7 @@ class Spider extends OnePlayerGameTemplate {
 
 		$('.draw-pile').on('click', async function () {
 			if (spider_self.moves.length == 0 && spider_self.hints.length > 0) {
-				let c = await sconfirm('Are you sure you want to do that?');
+				let c = await sconfirm('Deal without making any moves?');
 				if (!c) {
 					return;
 				}
@@ -338,7 +250,7 @@ class Spider extends OnePlayerGameTemplate {
 		});
 
 		for (let i = 0; i < 10; i++) {
-			if (this.game.options.play_mode == 'auto') {
+			if (this.loadGamePreference('spider-play-mode') == 'auto') {
 				this.cardStacks[i].applyFilter(
 					this.canSelectAndMoveStack.bind(this),
 					this.pickAndMoveStack.bind(this),
@@ -1262,9 +1174,15 @@ class Spider extends OnePlayerGameTemplate {
 		return html;
 	}
 
-	changeDifficulty(dif) {
-		let saved_dif = this.loadGamePreference('spider_difficulty') || 'none';
-		this.game.options['difficulty'] = dif;
+	async changeDifficulty(dif) {
+
+		let old_dif = this.loadGamePreference("spider-difficulty");
+		this.saveGamePreference("spider-difficulty", dif);
+
+		if (!this.browser_active){
+			return;
+		}
+
 		if (dif == 'easy') {
 			this.difficulty = 1;
 		} else if (dif == 'hard') {
@@ -1272,20 +1190,14 @@ class Spider extends OnePlayerGameTemplate {
 		} else {
 			this.difficulty = 2;
 		}
-		if (
-			saved_dif !==
-			dif /*|| this.game.deck.length == 0 || this.game.deck[0].length == 0*/
-		) {
-			console.log(
-				'Original Difficulty = ' +
-					saved_dif +
-					', new difficulty: ' +
-					dif
-			);
-			this.saveGamePreference('spider_difficulty', dif);
-			return 1;
+
+		if (this.game.deck.length && dif !== old_dif) {
+			let c = await sconfirm("Abandon this game?");
+			if (c) {
+				this.game.queue.push('lose');
+				this.endTurn();
+			}
 		}
-		return 0;
 	}
 
 	displayBoard() {
@@ -1412,6 +1324,22 @@ class Spider extends OnePlayerGameTemplate {
 				'/spider/img/cards/' + imageArray[idx] + '.png';
 		}
 	}
+
+	  hasSettings() {
+	    return true;
+	  }
+
+
+	loadSettings(container = null) {
+	    if (!container){
+	      this.overlay.show(`<div class="module-settings-overlay"><h2>Spider Solitaire Settings</h2></div>`);
+	      container = ".module-settings-overlay";
+	    }
+
+		let as = new AppSettings(this.app, this, container);
+		as.render();
+	}
+
 }
 
 module.exports = Spider;

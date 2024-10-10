@@ -116,7 +116,7 @@ echo ""
 echo ""
 echo "Compiling Lite-Client JS..."
 
-    rm -rf bundler/default/mods/appstore/bundler/dist
+    rm -rf bundler/default/mods/devtools/bundler/dist
 
     for md in bundler/default/mods/* ; do
       rm -rf "$md/web"
@@ -149,7 +149,7 @@ function reset_nonpersistent {
   cp -v ./data/*.sq3 ./data/backup/
 
   # we explicitly don't delete registry/balance databases
-  rm -f ./data/appstore.sq3
+  rm -f ./data/devtools.sq3
   rm -f ./data/arcade.sq3
   rm -f ./data/records.sq3
   rm -f ./data/timeclock.sq3
@@ -165,19 +165,19 @@ function reset_nonpersistent {
   rm -f ./data/tmp/*.zip
   rm -f ./config/options
 
-  rm -rf ./mods/appstore/mods
-  mkdir ./mods/appstore/mods
+  rm -rf ./mods/devtools/mods
+  mkdir ./mods/devtools/mods
   #
   # do not delete compiled software
   #
-  # rm -rf ./mods/appstore/bundler/dist/
+  # rm -rf ./mods/devtools/bundler/dist/
 
   rm -f ./mods/registry/web/addresses.txt
-  rm -f ./mods/appstore/mods/*
-  rm -rf ./mods/appstore/bundler/mods/*
-  rm -rf ./mods/appstore/bundler/dist/*
-  rm -f ./mods/appstore/bundler/*.js
-  rm -f ./mods/appstore/bundler/*.json
+  rm -f ./mods/devtools/mods/*
+  rm -rf ./mods/devtools/bundler/mods/*
+  rm -rf ./mods/devtools/bundler/dist/*
+  rm -f ./mods/devtools/bundler/*.js
+  rm -f ./mods/devtools/bundler/*.json
   rm -f ./logs/*
 
   #let the system know that users pre-existed a reset.
@@ -250,9 +250,9 @@ function copy_lite_mods_to_bundler_directory {
     cp -rf ./mods/$i bundler/default/mods/$i
   done
 
-  rm -f ./bundler/default/mods/appstore/mods/*
-  rm -f ./bundler/default/mods/appstore/bundler/*
-  rm -f ./bundler/default/mods/appstore/dist/*
+  rm -f ./bundler/default/mods/devtools/mods/*
+  rm -f ./bundler/default/mods/devtools/bundler/*
+  rm -f ./bundler/default/mods/devtools/dist/*
 
 }
 

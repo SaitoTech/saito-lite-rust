@@ -1,4 +1,4 @@
-module.exports = ImperiumFactionBarTemplate = () => {
+module.exports  = () => {
 	return `
     <div class="factionbar">
     </div>

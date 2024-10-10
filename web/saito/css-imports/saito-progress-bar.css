@@ -1,9 +1,7 @@
 .saito-progress-bar-container{
 	background: var(--background-saito-effects);
 	width: 75%;
-	/* true horizontal centering */
-	left: 50%;
-	transform: translateX(-50%);
+	margin: 0 12.5%;
 	height: 3rem;
 	padding: 0 1rem;
 	display: flex;

@@ -90,7 +90,7 @@ class MixinModule extends CryptoModule {
 	async activate() {
 		let this_self = this;
 		if (this.mixin.account_created == 0) {
-				this.app.connection.emit('create-mixin-account');
+				this.app.connection.emit('create-mixin-account', this_self.ticker);
 				await this.mixin.createAccount(async(res) => {
 					if (Object.keys(res).length > 0) {
 						await this.mixin.createDepositAddress(this_self.asset_id);
@@ -106,7 +106,7 @@ class MixinModule extends CryptoModule {
 		} else {
 			
 			if (this.is_initialized == 0 || this.destination == "" || this.destination == null) {
-				this.app.connection.emit('create-mixin-account');
+				this.app.connection.emit('create-mixin-account', this_self.ticker);
 				await this.mixin.createDepositAddress(this_self.asset_id);
 				await this.showBackupWallet();
 			}
@@ -492,8 +492,8 @@ class MixinModule extends CryptoModule {
 	 * @abstract
 	 * @return {Function} Callback function
 	 */
-	returnHistory(asset_id = '', records = 20, callback = null) {
-		return this.mixin.fetchSafeSnapshots(asset_id, records, callback);
+	async returnHistory(asset_id = '', records = 20, callback = null) {
+		return await this.mixin.fetchSafeSnapshots(asset_id, records, callback);
 	}
 
 	async returnUtxo(state = 'unspent', limit = 500, order = 'DESC', callback = null) {

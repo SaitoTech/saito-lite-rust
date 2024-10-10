@@ -1,26 +1,23 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
-const StreamCapturer = require('./lib/stream-capturer');
+const StreamCapturer = require('../../lib/saito/ui/stream-capturer/stream-capturer');
 const screenrecordWizard = require('./lib/screenrecord-wizard');
 const ScreenRecordControls = require('./lib/screenrecord-lite-controls')
 const lamejs = require('lamejs');
+const VideoBox = require('../../lib/saito/ui/saito-videobox/video-box');
 
-// new ffmpeg.
-
-// const MPEGMode = require('lamejs/src/js/MPEGMode')
-// const Lame = require('lamejs/src/js/Lame');
-// const BitStream = require('lamejs/src/js/BitStream');
 
 class Record extends ModTemplate {
 	constructor(app) {
 		super(app);
 		this.app = app;
 		this.name = 'screenrecord';
+		this.slug = 'screenrecord';
 		this.description = 'Recording Module';
 		this.categories = 'Utilities Communications';
 		this.class = 'utility';
 		this.record_video = false;
 
-		this.styles = ['/saito/saito.css', '/screenrecord/style.css'];
+		this.styles = ['/screenrecord/style.css'];
 		this.streamData = [];
 		this.chunks = [];
 		this.mediaRecorder = null;
@@ -121,14 +118,11 @@ class Record extends ModTemplate {
 					let stream;
 					try {
 						let { includeCamera, container } = options
-						if (this.gameStreamCapturer) {
-							stream = await this.gameStreamCapturer.captureGameStream(includeCamera)
-						} else {
-							this.gameStreamCapturer = new StreamCapturer(this.app,this, this.logo);
-							this.gameStreamCapturer.view_window = container
-							stream = await this.gameStreamCapturer.captureGameStream(includeCamera);
-							stream;
-						}
+						this.gameStreamCapturer = new StreamCapturer(this.app, this, this.logo);
+						this.gameStreamCapturer.view_window = container
+						stream = await this.gameStreamCapturer.captureGameStream(includeCamera);
+						stream;
+
 						this.is_streaming_game = true
 						return stream
 					} catch (error) {
@@ -137,9 +131,8 @@ class Record extends ModTemplate {
 				},
 
 				stopStreamingGame: async () => {
-					console.log(this.is_recording_game, "is recording game")
 					this.is_streaming_game = false
-					if (this.gameStreamCapturer && !this.is_recording_game) {
+					if (this.gameStreamCapturer) {
 						this.gameStreamCapturer.stopCaptureGameStream();
 						this.gameStreamCapturer = null;
 					} else {
@@ -161,12 +154,16 @@ class Record extends ModTemplate {
 		if (type === 'screenrecord-video-controls') {
 			return {
 				mediaRecorder: this.mediaRecorder,
-				stopRecording: this.stopRecording.bind(this)
+				stopRecording: this.stopRecording.bind(this),
+				type: this.type
 			};
 		}
 		if (type === 'game-menu') {
 			this.attachStyleSheets();
 			if (!obj.recordOptions) return;
+			if(obj.recordOptions.active === false){
+				return;
+			}
 			let menu = {
 				//id: 'game-share',
 				//text: 'Share',
@@ -197,6 +194,62 @@ class Record extends ModTemplate {
 
 			return menu;
 		}
+
+		// if (type === "dream-controls") {
+		// 	let audioEnabled = true;
+		// 	let videoIcon = this.videoBox ? "fas fa-video" : "fas fa-video-slash";
+		// 	let audioIcon =  audioEnabled ? "fas fa-microphone" : 'fas fa-microphone-slash';
+		
+		// 	const streams = this.app.modules.getRespondTos('media-request');
+		
+		// 	let x = [
+		// 		{
+		// 			text: `Video control`,
+		// 			icon: videoIcon,
+		// 			callback: (app, id, combined_stream) => {
+		// 				const iconElement = document.querySelector(`#dream_controls_menu_item_${id} i`);
+		// 				if (this.videoBox) {
+		// 					this.removeVideoBox(true);
+		// 					iconElement.classList.replace('fa-video', 'fa-video-slash');
+		// 				} else {
+		// 					this.getOrCreateVideoBox();
+		// 					iconElement.classList.replace('fa-video-slash', 'fa-video');
+		// 				}
+		// 			},
+		// 			style: ""
+		// 		},
+		// 		{
+		// 			text: `Audio control`,
+		// 			icon: audioIcon,
+		// 			callback: (app, id, combined_stream) => {
+		// 				const iconElement = document.querySelector(`#dream_controls_menu_item_${id} i`);
+		// 				let audioEnabled;	
+		// 				if(this.gameStreamCapturer.localStream){
+		// 					audioEnabled = true
+		// 				}else {
+		// 					audioEnabled = false
+		// 				}		
+		// 				if (audioEnabled) {
+		// 					iconElement.classList.replace('fa-microphone', 'fa-microphone-slash');
+		// 					this.gameStreamCapturer.stopLocalAudio()
+		// 				} else {
+		// 					iconElement.classList.replace('fa-microphone-slash', 'fa-microphone');
+		// 					this.gameStreamCapturer.getLocalAudio()
+		// 				}
+		// 			},
+		// 			style: ""
+		// 		}
+		// 	];
+		
+		// 	// Hide icons if videocall streams exist
+		// 	if (streams.length > 0) {
+		// 		x.forEach(control => {
+		// 			control.style = 'hidden-control';
+		// 		});
+		// 	}
+		
+		// 	return x;
+		// }
 	}
 
 	async handlePeerTransaction(app, tx = null, peer, mycallback) {
@@ -279,12 +332,63 @@ class Record extends ModTemplate {
 		}
 	}
 
-	async initializeMediaRecorder(existingChunks, stream) {
-		// Use existing chunks if available, otherwise initialize
-		// this.chunks =  existingChunks.length > 0 ? existingChunks : [];
-		this.chunks = [];
-		// console.log(this.chunks, "this.chunks")
+	async getOrCreateVideoBox(stream) {
+		if (!this.videoBox) {
+			const streams = this.app.modules.getRespondTos('media-request');
+			if(streams.length > 0) return;
+			
+			this.localStream = await navigator.mediaDevices.getUserMedia({
+				video: true
+			});
+			let stream_id = `stream_${this.publicKey}`
+			this.videoBox = new VideoBox(this.app, this, this.publicKey);
+			this.videoBox.render(this.localStream)
+			let videoElement = document.querySelector('.video-box-container-large');
+			if (videoElement) {
+				videoElement.style.position = 'absolute';
+				videoElement.style.top = '100px';
+				videoElement.style.width = '350px';
+				videoElement.style.height = '350px';
+				videoElement.style.resize = "both"
+				videoElement.style.overflow= "auto";
+				videoElement.classList.add('game-video-box')
+				this.app.browser.makeDraggable(stream_id);
+			}
+		}
+		return this.videoBox;
+	}
 
+	removeVideoBox(forceRemove = false) {
+
+		if (!forceRemove) {
+			if (this.is_recording_game || this.is_streaming_game) {
+				return
+			}
+			if (this.videoBox) {
+				this.localStream.getTracks().forEach(track => {
+					track.stop()
+				})
+				this.localStream = null
+				this.videoBox.remove();
+				this.videoBox = null;
+			}
+		} else {
+			if (this.videoBox) {
+				this.localStream.getTracks().forEach(track => {
+					track.stop()
+				})
+				this.localStream = null
+				this.videoBox.remove();
+				this.videoBox = null;
+			}
+
+		}
+
+
+	}
+
+	async initializeMediaRecorder(existingChunks, stream) {
+		this.chunks = [];
 		let mimeType =
 			stream.getVideoTracks().length > 0
 				? 'video/webm; codecs="vp8, opus"'
@@ -334,17 +438,12 @@ class Record extends ModTemplate {
 			this.recorderVideoCallStreamCapture.view_window = '.video-container-large';
 			let stream = this.recorderVideoCallStreamCapture.captureVideoCallStreams(includeCamera);
 			this.initializeMediaRecorder(this.chunks, stream);
-		} else if (type === "game") {		
+		} else if (type === "game") {
 			let stream;
-			if (this.gameStreamCapturer) {
-				stream = await this.gameStreamCapturer.captureGameStream(includeCamera);
-			} else {
-				this.gameStreamCapturer = new StreamCapturer(this.app, this, this.logo);
-				this.gameStreamCapturer.view_window = container;
-				stream = await this.gameStreamCapturer.captureGameStream(includeCamera);
-			}
-
+			this.gameRecordCapturer = new StreamCapturer(this.app, this, this.logo);
+			this.gameRecordCapturer.view_window = container;
 			this.is_recording_game = true;
+			stream = await this.gameRecordCapturer.captureGameStream(includeCamera);
 			this.initializeMediaRecorder(this.chunks, stream);
 
 			// show controls
@@ -415,16 +514,13 @@ class Record extends ModTemplate {
 		}
 
 		console.log(this.gameStreamCapturer, "gameStreamCapturer")
-		if (this.gameStreamCapturer) {
-			if (!this.is_streaming_game) {
-				this.gameStreamCapturer.stopCaptureGameStream()
-				this.gameStreamCapturer = null
-			}
+		if (this.gameRecordCapturer) {
 			this.is_recording_game = false
-
+			this.gameRecordCapturer.stopCaptureGameStream()
+			this.gameRecordCapturer = null
 		}
 
-		if(this.screenrecordControls){
+		if (this.screenrecordControls) {
 			this.screenrecordControls.remove();
 			this.screenrecordControls = null;
 		}
@@ -462,15 +558,12 @@ class Record extends ModTemplate {
 			await fn();
 			this.mediaRecorder = null;
 		}
-		if (this.localStream) {
-			this.localStream.getTracks().forEach((track) => track.stop());
-			this.localStream = null;
-		}
+		// if (this.localStream) {
+		// 	this.localStream.getTracks().forEach((track) => track.stop());
+		// 	this.localStream = null;
+		// }
 
-		if (this.videoBox) {
-			this.videoBox.remove();
-			this.videoBox = null;
-		}
+		// this.removeVideoBox()
 
 		this.updateUIForRecordingStop();
 		this.sendStopRecordingTransaction(this.members);
@@ -478,7 +571,7 @@ class Record extends ModTemplate {
 		this.mediaRecorder = null;
 		this.members = [];
 
-		
+
 	}
 
 	async sendStartRecordingTransaction(keys) {
@@ -541,7 +634,7 @@ class Record extends ModTemplate {
 
 		const recordButtonGame = document.getElementById('record-stream');
 		if (recordButtonGame) {
-			recordButtonGame.textContent = 'record game';
+			recordButtonGame.textContent = 'Record game';
 		}
 	}
 }

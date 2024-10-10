@@ -1,4 +1,4 @@
-module.exports = YearOfPlentyOverlayTemplate = (app, mod, year_of_plenty) => {
+module.exports = (app, mod, year_of_plenty) => {
 	let resourceList = mod.returnResources();
 
 	let html = `

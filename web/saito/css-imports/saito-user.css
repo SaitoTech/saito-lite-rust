@@ -63,8 +63,18 @@ Saito User
   position: relative;
 }
 
+.saito-user > .saito-identicon-box .saito-identicon{
+  opacity: 0.75; /* make identicons less harsh */
+}
+
+
+.saito-user > .saito-identicon-box .saito-identicon[data-id]:hover{
+  opacity: 1;
+}
+
 .saito-user>.saito-address {
-  color: var(--font-color-chat-container-user-address);
+  color: var(--font-color-primary);
+
   grid-column-start: 2;
   grid-column-end: span 1;
   grid-row-start: 1;
@@ -86,7 +96,6 @@ Saito User
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: wrap; /* allow the userline to wrap intuitively (for chat messages) */
 }
 
 .saito-user .saito-datetime {

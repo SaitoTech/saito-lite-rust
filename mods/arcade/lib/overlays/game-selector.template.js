@@ -1,4 +1,4 @@
-module.exports = GameSelectorTemplate = (app, mod, game_selector = null) => {
+module.exports = (app, mod, game_selector = null) => {
 	let games_menu = '';
 
 	for (let i = 0; i < mod.arcade_games.length; i++) {

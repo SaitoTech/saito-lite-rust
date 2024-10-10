@@ -73,6 +73,24 @@ class Keychain {
 		}
 
 
+		// automatically remove old event keys & outdated modes
+		let events = this.returnKeys({type: "scheduled_call"});	
+		for (let e of events){
+			this.removeKey(e.publicKey);
+		}	
+
+		events = this.returnKeys({type: "event"});
+		let now = Date.now();
+		for (let e of events){
+			let scheduledTime = new Date(e.startTime).getTime();
+			if (scheduledTime + 24*60*60*1000 < now){
+				console.log("Event Over:", e);
+				this.removeKey(e.publicKey);
+			}
+		}	
+
+		this.saveKeys();
+
 
 		//
 		// creates hash of important info so we know if values change
@@ -309,9 +327,11 @@ class Keychain {
 			return;
 		}
 		for (let x = this.keys.length - 1; x >= 0; x--) {
-			let match = true;
 			if (this.keys[x].publicKey == publicKey) {
 				this.keys.splice(x, 1);
+				delete this.publickey_keys_hmap[publicKey];
+				this.saveKeys();
+				return;
 			}
 		}
 	}
@@ -486,7 +506,9 @@ class Keychain {
 		//
 		const options = {
 			//foreground: [247, 31, 61, 255],           // saito red
-			//background: [255, 255, 255, 255],
+			//background: [64, 64, 64, 0],
+			saturation: 0.6,
+            brightness: 0.4,
 			margin: 0.0, // 0% margin
 			size: 420, // 420px square
 			format: img_format // use SVG instead of PNG
@@ -502,8 +524,8 @@ class Keychain {
 		const hue =
 			parseInt(this.app.crypto.hash(publicKey).substr(-7), 16) /
 			0xfffffff;
-		const saturation = 0.7;
-		const brightness = 0.5;
+		const saturation = 0.6;
+		const brightness = 0.4;
 		const values = this.hsl2rgb(hue, saturation, brightness).map(
 			Math.round
 		);
@@ -514,8 +536,8 @@ class Keychain {
 		const hue =
 			parseInt(this.app.crypto.hash(publicKey).substr(-7), 16) /
 			0xfffffff;
-		const saturation = 0.7;
-		const brightness = 0.5;
+		const saturation = 0.6;
+		const brightness = 0.4;
 		const values = this.hsl2rgb(hue, saturation, brightness).map(
 			Math.round
 		);
@@ -572,7 +594,8 @@ class Keychain {
 		}
 		if (name === publicKey) {
 			if (name.length > max) {
-				return name.substring(0, max) + '...';
+				//return name.substring(0, max) + '...';
+				return 'Anon-' + name.substring(0, 6);
 			}
 		}
 		return publicKey;

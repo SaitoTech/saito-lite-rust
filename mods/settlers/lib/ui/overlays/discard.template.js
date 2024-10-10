@@ -1,4 +1,4 @@
-module.exports = DiscardOverlayTemplate = (app, mod, discard) => {
+module.exports = (app, mod, discard) => {
 	let html = `
     <div class="saitoa discard-cards-overlay">
       <div class="settlers-items-container">

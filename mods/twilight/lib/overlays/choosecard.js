@@ -30,7 +30,9 @@ class ChoiceOverlay {
 		let ui_self = this;
 		let deck = this.mod.returnAllCards(true);
 
-		let msg = "Choose Card for Midwar";
+		let msg = "Choose Card for Mid-War";
+		if (stage == "latewar") { msg = "Choose Card for Mid-War"; }
+
 		let html = `
 			<ul>
 				<li class="card option" id="${card1}">${deck[card1].name}</li>

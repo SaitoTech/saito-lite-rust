@@ -12,7 +12,6 @@ const GameScheduler = require('./lib/overlays/game-scheduler');
 const GameInvitationLink = require('./../../lib/saito/ui/modals/saito-link/saito-link');
 const Invite = require('./lib/invite');
 const JoinGameOverlay = require('./lib/overlays/join-game');
-const GameCryptoTransferManager = require('./../../lib/saito/ui/game-crypto-transfer-manager/game-crypto-transfer-manager');
 const arcadeHome = require('./index');
 
 class Arcade extends ModTemplate {
@@ -25,7 +24,7 @@ class Arcade extends ModTemplate {
 		this.debug = false;
 
 		this.name = 'Arcade';
-
+		this.slug = 'arcade';
 		this.description =
 			'Interface for creating and joining games coded for the Saito Open Source Game Engine.';
 		this.categories = 'Games Entertainment Appspace';
@@ -44,12 +43,20 @@ class Arcade extends ModTemplate {
 
 		this.is_game_initializing = false;
 
-		this.icon_fa = 'fas fa-gamepad';
+		this.icon = 'fas fa-gamepad';
 
 		this.styles = ['/arcade/style.css'];
 
 		this.affix_callbacks_to = [];
-		this.services = [new PeerService(null, 'arcade', '', 'saito')];
+		console.log("before PeerService ////");
+
+
+		this.services = [this.app.network.createPeerService(null, 'arcade', '', 'saito')];
+		
+
+		console.log('this.services: ', this.services);
+
+		console.log("after PeerService ////");
 
 		this.invite_cutoff = 3500000;
 		this.game_cutoff = 600000000;
@@ -106,10 +113,6 @@ class Arcade extends ModTemplate {
 	async initialize(app) {
 		await super.initialize(app);
 
-		if (this.browser_active) {
-			this.styles = ['/saito/saito.css', '/arcade/style.css'];
-		}
-
 		//
 		// compile list of arcade games
 		//
@@ -162,9 +165,6 @@ class Arcade extends ModTemplate {
 			this.game_selector = new GameSelector(app, this, {});
 			//We create this here so it can respond to events
 			this.game_scheduler = new GameScheduler(app, this, {});
-
-			// Necessary?
-			this.game_crypto_transfer_manager = new GameCryptoTransferManager(app, this);
 
 			//
 			// my games stored in local wallet
@@ -552,14 +552,6 @@ class Arcade extends ModTemplate {
 	//
 
 	respondTo(type = '', obj) {
-		if (type == 'header-dropdown') {
-			return {
-				name: this.appname ? this.appname : this.name,
-				icon_fa: this.icon_fa,
-				browser_active: this.browser_active,
-				slug: this.returnSlug()
-			};
-		}
 		if (type === 'user-menu') {
 			if (obj?.publicKey && obj.publicKey !== this.publicKey) {
 				let am = this.app.modules.returnActiveModule();
@@ -630,14 +622,12 @@ class Arcade extends ModTemplate {
 			x.push({
 				text: 'Games',
 				icon: this.icon || 'fas fa-gamepad',
-				disallowed_mods: ['redsquare'],
-				rank: 10,
+            is_active: this.browser_active,
+				rank: 25,
 				callback: function (app, id) {
 					app.connection.emit('arcade-launch-game-selector', {});
 				}
 			});
-			return x;
-
 			return x;
 		}
 
@@ -1208,7 +1198,7 @@ class Arcade extends ModTemplate {
 	// as part of a valid game, will trigger your browser to start initializing
 	// the game.
 	//
-	async createJoinTransaction(orig_tx) {
+	async createJoinTransaction(orig_tx, options = null) {
 
 		if (!orig_tx || !orig_tx.signature) {
 			console.error('Invalid Game Invite TX, cannot Join');
@@ -1227,6 +1217,10 @@ class Arcade extends ModTemplate {
 		newtx.msg.module = 'Arcade';
 		newtx.msg.request = 'join';
 		newtx.msg.game_id = orig_tx.signature;
+		if (options) {
+			newtx.msg.options = options;
+			newtx.msg.update_options = true;
+		}
 
 		newtx.msg.invite_sig = await this.app.crypto.signMessage(
 			'invite_game_' + orig_tx.msg.timestamp,
@@ -1236,6 +1230,29 @@ class Arcade extends ModTemplate {
 		await newtx.sign();
 
 		return newtx;
+	}
+
+	async sendJoinTransaction(invite, update_options = false){
+		//
+		// Create Transaction
+		//
+		let options = update_options ? invite.options : null;
+		let newtx = await this.createJoinTransaction(invite.tx, options);
+
+		//
+		// send it on-chain and off-chain
+		//
+		this.app.network.propagateTransaction(newtx);
+
+		this.app.connection.emit('relay-send-message', {
+			recipient: 'PEERS',
+			request: 'arcade spv update',
+			data: newtx.toJson()
+		});
+
+		this.app.browser.logMatomoEvent('GameInvite', 'JoinGame', invite.game_mod.name);
+		this.app.connection.emit('arcade-invite-manager-render-request');
+
 	}
 
 	async receiveJoinTransaction(tx) {
@@ -1266,6 +1283,13 @@ class Arcade extends ModTemplate {
 		// Don't add the same player twice!
 		//
 		if (!game.msg.players.includes(tx.from[0].publicKey)) {
+			
+			if (txmsg.update_options) {
+				console.log("Join TX updates the invite options!");
+				game.msg.options = txmsg.options;
+				//await this.updateGameOptionSQL(txmsg);
+			}
+
 			if (this.debug) {
 				console.log(
 					`Adding Player (${tx.from[0].publicKey}) to Game: `,
@@ -1367,8 +1391,8 @@ class Arcade extends ModTemplate {
 
 		// Must be an available invite
 		if (!game || (!this.isAvailableGame(game, 'accepted') && !txmsg.options?.async_dealing)) {
-			console.log(game);
-			console.log(txmsg);
+			//console.log(game);
+			//console.log(txmsg);
 			return;
 		}
 
@@ -1866,48 +1890,6 @@ class Arcade extends ModTemplate {
 		return 0;
 	}
 
-	async verifyOptions(gameType, options) {
-		/*if (gameType !== "single") {
-      for (let key of ["mine", "open"]) {
-        for (let game of this.games[key]) {
-          if (this.isMyGame(game) && game.msg.players_needed > 1) {
-            let c = await sconfirm(
-              `You already have a ${game.msg.game} game open, are you sure you want to create a new game invite?`
-            );
-            return !!c;
-          }
-          if (game.msg.game === options.game) {
-            let c = await sconfirm(
-              `There is an open invite for ${game.msg.game}, are you sure you want to create a new invite?`
-            );
-            return !!c;
-          }
-        }
-      }
-    }*/
-
-		//
-		// if crypto and stake selected, make sure creator has it
-		//
-		try {
-			if (options.crypto && parseFloat(options.stake) > 0) {
-				let success = await this.game_crypto_transfer_manager.confirmBalance(
-					this.app,
-					this,
-					options.crypto,
-					options.stake
-				);
-				if (!success) {
-					return false;
-				}
-			}
-		} catch (err) {
-			console.log('ERROR checking crypto: ' + err);
-			return false;
-		}
-
-		return true;
-	}
 
 	isSlug(slug){	
 		if (slug == this.returnSlug() || slug == "game"){
@@ -2099,14 +2081,8 @@ class Arcade extends ModTemplate {
 			this.app.connection.emit('arcade-invite-manager-render-request');
 
 			if (gameType == 'open') {
-				if (
-					this.app.browser.isMobileBrowser(navigator.userAgent) &&
-					this.app.modules.returnActiveModule().returnName() == 'Red Square'
-				) {
-					salert('Game invite created. Redirecting to arcade...');
-					setTimeout(function () {
-						window.location.href = '/arcade';
-					}, 2000);
+				if (this.app.browser.isMobileBrowser(navigator.userAgent) && !this.browser_active) {
+					siteMessage("Game invite created. Visit the Arcade to manage");
 				}
 				return;
 			}

@@ -13,7 +13,7 @@ class Jaipur extends GameTemplate {
 		this.app = app;
 
 		this.name = 'Bazaar';
-
+		this.slug = 'bazaar';
 		this.description = `Become the richest merchant in the kingdom of Jaipur by collecting sets of resources and selling them for maximum profit in this fast-paced 2-player card game.`;
 		this.status = 'Alpha';
 
@@ -24,8 +24,6 @@ class Jaipur extends GameTemplate {
 		this.maxPlayers = 2;
 
 		this.seats = [7, 4]; //Alternate player box arrangement
-
-		this.slug = this.name.toLowerCase();
 		this.card_img_dir = `/${this.slug}/img/cards/`;
 		this.token_img_dir = `/${this.slug}/img/tokens/`;
 		this.categories = 'Games Cardgame Tactical';

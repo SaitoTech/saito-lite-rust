@@ -15,11 +15,14 @@ class ReviewOverlay {
 	}
 
 	render() {
+
 		this.visible = true;
 		this.overlay.show(ReviewTemplate(this.mod));
 
 		// POPUP OLD CODE
 		setup_reinforcement_lightbox();
+		// trigger review function directly now
+		loadQuestion();
 
 		this.attachEvents();
 	}

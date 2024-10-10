@@ -9,6 +9,7 @@ class Hearts extends GameTemplate {
 		super(app);
 
 		this.name = 'Hearts';
+		this.slug = 'hearts';
 		this.description = 'A version of Hearts for the Saito Arcade';
 
 		this.categories = 'Games Cardgame Classic';

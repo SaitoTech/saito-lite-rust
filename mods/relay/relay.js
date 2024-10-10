@@ -25,8 +25,8 @@ class Relay extends ModTemplate {
 
     this.app = app;
     this.name = "Relay";
-    this.description =
-      "Adds support for off-chain, realtime communications channels through relay servers, for mobile users and real-time gaming needs.";
+    this.slug = "relay";
+    this.description = "Adds support for off-chain, realtime communications channels through relay servers, for mobile users and real-time gaming needs.";
     this.categories = "Utilities Core";
     this.class = 'utility';
     this.description = "Simple Message Relay for Saito";
@@ -52,7 +52,9 @@ class Relay extends ModTemplate {
       if (this.stun?.hasConnection(publicKey)){
         app.connection.emit("relay-is-online", publicKey, true);
       }else{
-        this.sendRelayMessage([publicKey], "ping", {}); 
+        this.sendRelayMessage([publicKey], "ping", {
+          status: this.busy
+        }); 
       }
     });
 
@@ -178,18 +180,18 @@ class Relay extends ModTemplate {
 
     try {
       if (tx.isTo(this.publicKey)) {
-        if (message.request === "ping") {
-          await this.sendRelayMessage(tx.from[0].publicKey, "echo", {
-            status: this.busy,
-          });
-          return 0;
-        }
 
-        if (message.request === "echo") {
+        if (message.request === "echo" || message.request === "ping") {
           if (message.data.status) {
             app.connection.emit("relay-is-busy", tx.from[0].publicKey);
           } else {
             app.connection.emit("relay-is-online", tx.from[0].publicKey);
+          }
+
+          if (message.request === "ping"){
+            await this.sendRelayMessage(tx.from[0].publicKey, "echo", {
+              status: this.busy,
+            });
           }
           return 0;
         }

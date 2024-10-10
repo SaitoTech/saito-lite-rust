@@ -1,4 +1,4 @@
-module.exports = LiteDreamControlsTemplate = (app, mod) => {
+module.exports  = (app, mod) => {
 
     let html = `
       <div class="screenrecord-controls" id="screenrecord-controls">
@@ -8,7 +8,7 @@ module.exports = LiteDreamControlsTemplate = (app, mod) => {
           </div>  
           <div class="control-list">`;
   
-      html += `<div class="disconnect-control icon_click_area">
+      html += `<div class="record-disconnect-control icon_click_area">
                <i class="fa-solid fa-x"></i>
             </div>`;
     

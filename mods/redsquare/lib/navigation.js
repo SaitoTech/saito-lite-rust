@@ -2,87 +2,80 @@ const RedSquareNavigationTemplate = require('./navigation.template');
 const Post = require('./post');
 
 class RedSquareNavigation {
-	constructor(app, mod, container = '') {
-		this.app = app;
-		this.mod = mod;
-		this.container = container;
 
-		app.connection.on(
-			'redsquare-clear-menu-highlighting',
-			(active_tab = '') => {
-				document
-					.querySelectorAll('.redsquare-page-active')
-					.forEach((el) => {
-						el.classList.remove('redsquare-page-active');
-					});
+  constructor(app, mod, container = '') {
 
-				if (active_tab == 'tweets') {
-					if (document.querySelector('.redsquare-menu-home')) {
-						document
-							.querySelector('.redsquare-menu-home')
-							.classList.add('redsquare-page-active');
-					}
-				}
+    this.app = app;
+    this.mod = mod;
+    this.container = container;
 
-				if (active_tab == 'notifications') {
-					if (
-						document.querySelector('.redsquare-menu-notifications')
-					) {
-						document
-							.querySelector('.redsquare-menu-notifications')
-							.classList.add('redsquare-page-active');
-					}
-				}
+    app.connection.on('redsquare-clear-menu-highlighting', (active_tab = '') => {
 
-				if (active_tab == 'profile') {
-					if (document.querySelector('.redsquare-menu-profile')) {
-						document
-							.querySelector('.redsquare-menu-profile')
-							.classList.add('redsquare-page-active');
-					}
-				}
-			}
-		);
+      document.querySelectorAll('.redsquare-page-active').forEach((el) => {
+        el.classList.remove('redsquare-page-active');
+      });
 
-    app.connection.on("redsquare-update-notifications", (num) => {
+      if (active_tab == 'tweets') {
+        if (document.querySelector('.redsquare-menu-home')) {
+          document.querySelector('.redsquare-menu-home').classList.add('redsquare-page-active');
+        }
+      }
+
+      if (active_tab == 'notifications') {
+        if (document.querySelector('.redsquare-menu-notifications')) {
+          document
+            .querySelector('.redsquare-menu-notifications')
+            .classList.add('redsquare-page-active');
+        }
+      }
+
+      if (active_tab == 'profile') {
+        if (document.querySelector('.redsquare-menu-profile')) {
+          document.querySelector('.redsquare-menu-profile').classList.add('redsquare-page-active');
+        }
+      }
+
+    });
+
+    app.connection.on('redsquare-update-notifications', (num) => {
       this.incrementNotifications(num);
     });
-	}
 
-	render() {
-		//
-		// replace element or insert into page
-		//
-		if (document.querySelector('.redsquare-menu')) {
-			this.app.browser.replaceElementBySelector(
-				RedSquareNavigationTemplate(this.app, this.mod),
-				'.redsquare-menu'
-			);
-		} else {
-			this.app.browser.addElementToSelector(
-				RedSquareNavigationTemplate(this.app, this.mod),
-				this.container
-			);
-		}
+  }
 
-		//
-		// appspace modules
-		//
-		this.app.modules
-			.returnModulesRenderingInto('.saito-main')
-			.forEach((mod) => {
-				if (
-					!document.querySelector(
-						`.redsquare-menu-${mod.returnSlug()}`
-					)
-				) {
-					this.app.browser.addElementToSelector(
-						`<li class="redsquare-menu-${mod.returnSlug()}">
-            <i class="${mod.icon}"></i>
+  render() {
+
+    //
+    // render menu container
+    //
+    if (document.querySelector('.redsquare-menu')) {
+      this.app.browser.replaceElementBySelector(RedSquareNavigationTemplate(this.app, this.mod), '.redsquare-menu');
+    } else {
+      this.app.browser.addElementToSelector(RedSquareNavigationTemplate(this.app, this.mod), this.container);
+    }
+
+    //
+    // adds chat toggle to left-menu
+    //
+    this.app.modules.returnModulesRespondingTo('saito-chat-popup').forEach((mod) => {
+      let id = `redsquare-menu-${mod.returnSlug()}`;
+      const rs = mod.respondTo('saito-chat-popup')[0];
+      this.app.browser.addElementToSelector(
+        `<li class="redsquare-menu-mobile" id="${id}">
+            <i class="${rs.icon}"></i>
             <span>${mod.returnName()}</span>
           </li>`,
-          ".saito-menu-list"
-        );
+        '.saito-menu-list'
+      );
+
+      if (rs.event) { rs.event(id); }
+
+      if (document.getElementById(id)) {
+        document.getElementById(id).onclick = () => {
+          if (rs.callback) {
+            rs.callback(this.app, id);
+          }
+        };
       }
     });
 
@@ -90,86 +83,89 @@ class RedSquareNavigation {
   }
 
   attachEvents() {
-    this_self = this;
+    let this_self = this;
 
-    document.getElementById("new-tweet").onclick = (e) => {
+    //
+    // new tweet
+    //
+    document.getElementById('new-tweet').onclick = (e) => {
       let post = new Post(this.app, this.mod);
       post.render();
     };
 
-    if (document.getElementById("mobile-new-tweet") != null) {
-      document.getElementById("mobile-new-tweet").onclick = (e) => {
+    //
+    // new tweet (mobile)
+    //
+    if (document.getElementById('mobile-new-tweet') != null) {
+      document.getElementById('mobile-new-tweet').onclick = (e) => {
         let post = new Post(this.app, this.mod);
         post.render();
       };
     }
 
-    document.querySelector(".redsquare-menu-home").onclick = (e) => {
+    //
+    // home
+    //
+    document.querySelector('.redsquare-menu-home').onclick = (e) => {
       e.preventDefault();
       e.stopImmediatePropagation();
 
       if (window.location.hash || window.location.search) {
-        this.app.connection.emit("redsquare-home-render-request");
-        this.app.connection.emit("redsquare-remove-loading-message", "navigating...");
+        this.app.connection.emit('redsquare-home-render-request');
+        this.app.connection.emit('redsquare-remove-loading-message', 'navigating...');
       } else {
-        this.app.connection.emit("redsquare-home-render-request", true);
+        this.app.connection.emit('redsquare-home-render-request', true);
 
-        //
-        // and load any NEW tweets at the top
-        //
-        let ct = this.mod.loadTweets("later", (tx_count) => {
-          this.app.connection.emit("redsquare-home-postcache-render-request", tx_count);
+        let ct = this.mod.loadTweets('later', (tx_count) => {
+          this.app.connection.emit('redsquare-home-postcache-render-request', tx_count);
         });
 
-        if (ct){
-          this.app.connection.emit("redsquare-insert-loading-message", `Checking with ${ct} peers for new tweets...`);
+        if (ct) {
+          this.app.connection.emit(
+            'redsquare-insert-loading-message',
+            `Checking with ${ct} peers for new tweets...`
+          );
         }
-
       }
 
-      window.history.pushState({}, document.title, "/" + this.mod.slug);
-      //Don't set a hash location (even on click)
-
+      window.history.replaceState({view: "home"}, '', '/' + this.mod.slug);
     };
 
-    document.querySelector(".redsquare-menu-notifications").onclick = (e) => {
-      window.history.pushState({}, document.title, "/" + this.mod.slug);
-      window.location.hash = "#notifications";
-      this.app.connection.emit("redsquare-notifications-render-request");
-      this.app.connection.emit("redsquare-remove-loading-message", "navigating...");
+    //
+    // notifications
+    //
+    document.querySelector('.redsquare-menu-notifications').onclick = (e) => {
+      window.history.pushState({view: "notifications"}, "", '/' + this.mod.slug);
+      window.location.hash = '#notifications';
+      this.app.connection.emit('redsquare-notifications-render-request');
+      this.app.connection.emit('redsquare-remove-loading-message', 'navigating...');
     };
 
-    document.querySelector(".redsquare-menu-profile").onclick = (e) => {
-      window.history.pushState({}, document.title, "/" + this.mod.slug);
-      window.location.hash = "#profile";
-      this.app.connection.emit("redsquare-profile-render-request", this.mod.publicKey);
-      this.app.connection.emit("redsquare-remove-loading-message", "navigating...");
+    //
+    // profile
+    //
+    document.querySelector('.redsquare-menu-profile').onclick = (e) => {
+      window.history.pushState({view: "profile"}, "", '/' + this.mod.slug);
+      window.location.hash = '#profile';
+      this.app.connection.emit('redsquare-profile-render-request', this.mod.publicKey);
+      this.app.connection.emit('redsquare-remove-loading-message', 'navigating...');
     };
 
-
-    document.querySelector(".redsquare-menu-settings").onclick = (e) => {
+    //
+    // settings
+    //
+    document.querySelector('.redsquare-menu-settings').onclick = (e) => {
       this.mod.loadSettings();
-    }
-
-    //
-    // appspace modules
-    //
-    this.app.modules.returnModulesRenderingInto(".saito-main").forEach((mod) => {
-      document.querySelector(`.redsquare-menu-${mod.returnSlug()}`).onclick = (e) => {
-        setHash(mod.returnSlug());
-        document.querySelector(".saito-main").innerHTML = "";
-        mod.renderInto(".saito-main");
-        document.querySelector(".saito-container").scroll({ top: 0, left: 0, behavior: "smooth" });
-        if (mod.canRenderInto(".saito-sidebar.right")) {
-          document.querySelector(".saito-sidebar.right").innerHTML = "";
-          mod.renderInto(".saito-sidebar.right");
-        }
-      };
-    });
+      let ms = this.app.modules.returnModulesRespondingTo('saito-moderation-core');
+      if (ms?.length) {
+        ms[0].loadSettings('.module-settings-overlay');
+      }
+    };
   }
 
   incrementNotifications(notifications = -1) {
-    let qs = `.redsquare-menu-notifications`;
+ 
+   let qs = `.redsquare-menu-notifications`;
 
     if (document.querySelector(qs)) {
       qs = `.redsquare-menu-notifications > .saito-notification-dot`;
@@ -187,7 +183,7 @@ class RedSquareNavigation {
           );
           qs = `.redsquare-menu-notifications > .saito-notification-dot`;
           let obj = document.querySelector(qs);
-          obj.style.display = "none";
+          obj.style.display = 'none';
         }
       } else {
         let existing_notifications = 0;
@@ -195,10 +191,10 @@ class RedSquareNavigation {
           existing_notifications = parseInt(obj.innerHTML);
         }
         if (notifications <= 0) {
-          obj.style.display = "none";
+          obj.style.display = 'none';
           obj.innerHTML = 0;
         } else {
-          obj.style.display = "flex";
+          obj.style.display = 'flex';
           existing_notifications++;
           obj.innerHTML = existing_notifications;
         }

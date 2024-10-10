@@ -1,4 +1,4 @@
- SaitoUserTemplate = require('./../../lib/saito/ui/saito-user/saito-user.template.js');
+const SaitoUserTemplate = require('./../../lib/saito/ui/saito-user/saito-user.template.js');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const ChatMain = require('./lib/appspace/main');
@@ -18,7 +18,7 @@ class Chat extends ModTemplate {
     super(app);
 
     this.name = 'Chat';
-
+    this.slug = 'chat';
     this.description = 'Saito instant-messaging client';
     this.categories = 'Messaging Chat';
     this.groups = [];
@@ -204,7 +204,7 @@ class Chat extends ModTemplate {
     this.chat_manager.render_popups_to_screen = 0;
     this.chat_manager.render_manager_to_screen = 1;
 
-    this.styles = ['/saito/saito.css', '/chat/style.css'];
+    this.styles = ['/chat/style.css'];
 
     await super.render();
 
@@ -446,16 +446,55 @@ class Chat extends ModTemplate {
         return this.chat_manager;
 
       case 'saito-game-menu':
-        // Need to make sure this is created so we can listen for requests to open chat popups
-        if (this.chat_manager == null) {
-          this.chat_manager = new ChatManager(this.app, this);
-        }
-        // Toggle this so that we can have the in-game menu launch a floating overlay for the chat manager
-        force = true;
+      case 'saito-chat-popup':
+      case 'saito-floating-menu':
+
+          // Need to make sure this is created so we can listen for requests to open chat popups
+          if (this.chat_manager == null) {
+            this.chat_manager = new ChatManager(this.app, this);
+          }
+          //Don't want mobile chat auto popping up
+          this.chat_manager.render_popups_to_screen = 0;
+
+          if (this.chat_manager_overlay == null) {
+            this.chat_manager_overlay = new ChatManagerOverlay(this.app, this);
+          }
+          return [
+            {
+              text: 'Chat',
+              icon: 'fas fa-comments',
+              callback: function (app, id) {
+                // console.log('Render Chat manager overlay');
+                chat_self.chat_manager_overlay.render();
+              },
+              rank: 15,
+              is_active: this.browser_active,
+              event: function (id) {
+                chat_self.app.connection.on(
+                  'chat-manager-render-request',
+                  () => {
+                    let unread = 0;
+                    for (let group of chat_self.groups) {
+                      unread += group.unread;
+                    }
+                    chat_self.app.browser.addNotificationToId(unread, id);
+                    chat_self.app.connection.emit(
+                      'saito-header-notification',
+                      'chat',
+                      unread
+                    );
+                  }
+                );
+
+                //Trigger my initial display
+                chat_self.app.connection.emit('chat-manager-render-request');
+              }
+            }
+          ];
+
+      break;
 
       case 'saito-header':
-
-      case 'saito-floating-menu':
         if (chat_self.browser_active) {
           return null;
         }
@@ -465,9 +504,7 @@ class Chat extends ModTemplate {
         //
         if (
           this.app.browser.isMobileBrowser() ||
-          (this.app.BROWSER && window.innerWidth < 600) ||
-          force
-        ) {
+          (this.app.BROWSER && window.innerWidth < 600)) {
           if (this.chat_manger) {
             //Don't want mobile chat auto popping up
             this.chat_manager.render_popups_to_screen = 0;
@@ -602,15 +639,16 @@ class Chat extends ModTemplate {
                 });
               },
               event: function (id) {
-                chat_self.app.connection.on(
-                  'chat-manager-render-request',
-                  () => {
-                    let group = chat_self.returnGroup(obj.call_id);
-                    if (group){
+                let group = chat_self.returnGroup(obj.call_id);
+                if (group){
+                  chat_self.app.browser.addNotificationToId(group.unread, id);
+                  chat_self.app.connection.on(
+                    'chat-manager-render-request',
+                    () => {
                       chat_self.app.browser.addNotificationToId(group.unread, id);
                     }
-                  }
-                );
+                  );
+                }
               }
             }
           ];
@@ -636,7 +674,6 @@ class Chat extends ModTemplate {
                 });
               },
               event: function (id) {
-
                 let group = chat_self.returnGroup(obj.call_id);
                 if (group){
                    chat_self.app.browser.addNotificationToId(group.unread, id);
@@ -727,6 +764,7 @@ class Chat extends ModTemplate {
   // it is mostly just a legacy safety catch for direct messaging
   //
   async onConfirmation(blk, tx, conf) {
+
     if (conf == 0) {
       //Does this break chat or fix the encryption bugs...?
       if (this.app.BROWSER && !tx.isTo(this.publicKey)) {
@@ -912,7 +950,7 @@ class Chat extends ModTemplate {
             //
             // Addressed to chat server, so forward to all
             //
-            console.log('Community Chat, relay to all: ', txmsg);
+            //console.log('Community Chat, relay to all: ', txmsg);
             peers.forEach((p) => {
               //This is filtering for not receiving your chat tx back to you... but there are case where we do want that?
               //if (p.publicKey !== peer.publicKey) {
@@ -1696,14 +1734,19 @@ class Chat extends ModTemplate {
             }
             msg += `">`;
             if (block[z].msg.indexOf('<img') != 0) {
-              msg += this.app.browser.sanitize(block[z].msg, true);
+              let saniText = this.app.browser.sanitize(block[z].msg, true);
+              if (saniText.includes("\n")){
+                msg += saniText.split("\n").join("<br>");
+              }else{
+                msg += saniText;  
+              }
             } else {
               msg += block[z].msg.substring(0, block[z].msg.indexOf('>') + 1);
             }
             msg +=
               like_number > 0
                 ? `<div class="chat-likes"> <i class="fas fa-thumbs-up"></i><div class="chat-like-number">${like_number}</div> </div>`
-                : `<div> </div>`;
+                : `<div></div>`;
             msg += `${replyButton}</div>`;
 
             if (
@@ -1824,8 +1867,8 @@ class Chat extends ModTemplate {
     let mentions = txmsg?.mentioned || tx?.mentioned || [];
 
     if (!content || typeof content !== 'string') {
-      console.warn('Not a chat message?');
-      console.log(tx);
+      //console.warn('Not a chat message?');
+      //console.log(tx);
       return 0;
     }
     let new_message = {

@@ -7,6 +7,7 @@ class SOL extends ModTemplate {
 
 		this.appname = 'SOL';
 		this.name = 'SOL';
+		this.slug = 'sol';
 		this.ticker = 'SOL';
 		this.description =
 			'Adds support for Mixin-powered Solana transfers on the Saito Network';

@@ -62,7 +62,7 @@ class FactionOverlay {
 			  keyboxen += `<div class="${hcss} faction_sheet_keytile henry_viii_marital_status henry_viii_marital_status${i + 1}" id="henry_viii_marital_status${i + 1}"></div>`;
 			}
 			for (let i = 1; i <= 9; i++) {
-				if (i >= controlled_keys) {
+				if (i > controlled_keys) {
 					keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i} england_keytile" id="faction_sheet_keytile${i}"></div>`;
 				}
 			}
@@ -88,13 +88,8 @@ class FactionOverlay {
 				);
 			}
 
-
-              his_self.game.state.henry_viii_healthy_edward = 1;
-              his_self.game.state.henry_viii_sickly_edward = 0;
-              his_self.game.state.henry_viii_add_elizabeth = 0;
-
-
 		}
+
 		// FRANCE
 		if (his_self.factions[faction].key === 'france') {
 			war_winner_vp = his_self.game.state.france_war_winner_vp;
@@ -180,9 +175,9 @@ class FactionOverlay {
 
 			war_winner_vp = his_self.game.state.papacy_war_winner_vp;
 			let total_keys = 7;
-			controlled_keys =
-				his_self.returnNumberOfKeysControlledByFaction('papacy');
+			controlled_keys = his_self.returnNumberOfKeysControlledByFaction('papacy');
 			let remaining_keys = total_keys - controlled_keys;
+console.log(remaining_keys + " = " + total_keys + " - " + controlled_keys);
 			for (let i = 0; i < 12; i++) {
 				if (his_self.game.state.saint_peters_cathedral['state'] == i) {
 					keyboxen += `<div class="faction_sheet_keytile papacy_construction_status${
@@ -194,13 +189,13 @@ class FactionOverlay {
 				if (his_self.game.state.saint_peters_cathedral['vp'] == i) {
 					keyboxen += `<div class="faction_sheet_keytile papacy_construction_status${
 						7 + i
-					} saint_peters_tile" id="papacy_construction_status_keytile${
+					} papacy_vp_tile" id="papacy_construction_status_keytile${
 						7 + i
 					}"></div>`;
 				}
 			}
 			for (let i = 1; i <= 7; i++) {
-				if (i >= controlled_keys) {
+				if (i > controlled_keys) {
 					keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i} papacy_keytile" id="faction_sheet_keytile${i}"></div>`;
 				}
 			}
@@ -293,16 +288,19 @@ class FactionOverlay {
 		if (p > 0) {
 		  for (let z = 0; z < his_self.game.state.players_info[p-1].captured.length; z++) {
 		    let c = his_self.game.state.players_info[p-1].captured[z];
+
+console.log("CAPTURED: " + JSON.stringify(c));
+
 		    if (c.capturing_faction == faction) {
-		      if (his_self.army[c.type]) {
+		      if (c.army_leader) {
 			this.app.browser.addElementToSelector(
-				'<div class="army_tile" style="background-image: url(/his/img/tiles/army/${obj.img})"></div>',
+				`<div class="army_tile" style="background-image: url(/his/img/tiles/army/${c.img})"></div>`,
 				'.faction_sheet_vp'
 			);
 		      }
-		      if (his_self.navy[c.type]) {
+		      if (c.navy_leader) {
 			this.app.browser.addElementToSelector(
-				'<div class="army_tile" style="background-image: url(/his/img/tiles/navy/${obj.img})"></div>',
+				`<div class="army_tile" style="background-image: url(/his/img/tiles/navy/${c.img})"></div>`,
 				'.faction_sheet_vp'
 			);
 		      }

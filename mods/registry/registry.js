@@ -8,14 +8,14 @@ class Registry extends ModTemplate {
 
 		this.app = app;
 		this.name = 'Registry';
+		this.slug = 'registry';
 		this.description = 'Saito DNS support';
 		this.categories = 'Core Utilities Messaging';
 		this.class = 'utility';
 		//
 		// master DNS publickey for this module
 		//
-		this.registry_publickey =
-			'zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK';
+		this.registry_publickey = 'zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK';
 
 		//
 		// peers
@@ -474,7 +474,12 @@ class Registry extends ModTemplate {
 	async onConfirmation(blk, tx, conf) {
 		let txmsg = tx.returnMessage();
 
+console.log("into Registry onConfirmation!");
+
 		if (conf == 0) {
+
+console.log("first Registry onConfirmation!");
+
 			if (!!txmsg && txmsg.module === 'Registry') {
 				console.log(`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`);
 
@@ -485,6 +490,9 @@ class Registry extends ModTemplate {
 					tx.isTo(this.publicKey) &&
 					this.publicKey === this.registry_publickey
 				) {
+
+
+				console.log("I AM THE REGISTERING MACHINE!")
 					let identifier = txmsg.identifier;
 					let publickey = tx.from[0].publicKey;
 					let unixtime = new Date().getTime();
@@ -550,8 +558,11 @@ class Registry extends ModTemplate {
 						newtx.msg.signature = '';
 					}
 
+console.log("REGISTRY signing transaction...");
 					await newtx.sign();
+console.log("REGISTRY propagating transaction...");
 					await this.app.network.propagateTransaction(newtx);
+console.log("REGISTRY done propagating transaction...");
 
 					return;
 				}
@@ -561,9 +572,10 @@ class Registry extends ModTemplate {
 			// OTHER SERVERS - mirror central DNS //
 			////////////////////////////////////////
 			if (!!txmsg && txmsg.module == 'Email') {
-				console.log('REGISTRY: ' + txmsg.title);
+console.log('REGISTRY EMAIL: ' + txmsg.title);
 
 				if (tx.from[0].publicKey == this.registry_publickey) {
+console.log("FROM THE REGISTRAR!");
 					try {
 						//
 						// am email? for us? from the DNS registrar?
@@ -658,7 +670,7 @@ class Registry extends ModTemplate {
 				keys.splice(i, 1);
 				continue;
 			}
-			/*if (this.cached_keys[keys[i]] && this.cached_keys[keys[i]] !== keys[i]) {
+      /*if (this.cached_keys[keys[i]] && this.cached_keys[keys[i]] !== keys[i]) {
         found_keys[keys[i]] = this.cached_keys[keys[i]];
         keys.splice(i, 1);
       }*/
@@ -668,7 +680,6 @@ class Registry extends ModTemplate {
 		// check database if needed
 		//
 		if (keys.length > 0) {
-			//console.log("REGISTRY: DB lookup");
 			const where_statement = `publickey in ("${keys.join('","')}")`;
 			const sql = `SELECT * 
                    FROM records

@@ -125,7 +125,7 @@ class TradeOverlay {
 						)}\t${JSON.stringify(trade_overlay.get)}`
 					);
 					settlers_self.endTurn();
-					trade_overlay.overlay.hide();
+					trade_overlay.overlay.close();
 				} else {
 					settlers_self.addMove(
 						`accept_offer\t${trade_overlay.offering_player}\t${
@@ -135,10 +135,22 @@ class TradeOverlay {
 						)}\t${JSON.stringify(trade_overlay.get)}`
 					);
 					settlers_self.endTurn();
-					trade_overlay.overlay.hide();
+					trade_overlay.overlay.close();
 				}
 			}
 		);
+
+		$("#trade_overlay_cancel_button").off();
+		$("#trade_overlay_cancel_button").on('click', function(){
+			$("#trade_overlay_cancel_button").off();
+			if (trade_overlay.offering_player == settlers_self.game.player){
+				settlers_self.addMove(`clear_advert\t${settlers_self.game.player}`);
+			}else{
+				settlers_self.addMove(`reject_offer\t${settlers_self.game.player}\t${offering_player}`);
+			}
+			settlers_self.endTurn();
+			trade_overlay.overlay.close();
+		});
 	}
 }
 

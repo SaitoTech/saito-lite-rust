@@ -13,6 +13,7 @@ class Wuziqi extends GameTemplate {
 		// Define static game parameters and add global variables.
 
 		this.name = 'Wuziqi';
+		this.slug = 'wuziqi';
 		this.game_length = 10; //Estimated number of minutes to complete a game
 		this.description =
 			'Take turns placing black or white tiles on a Go board of various sizes to make a line of five in a row to win the round. Also known as 五子棋, Gokomu, or Gobang.';
@@ -30,6 +31,7 @@ class Wuziqi extends GameTemplate {
 		this.hud.is_draggable = 0;
 
 		this.can_play_async = 1;
+		this.insert_rankings = true;
 
 		this.clock.container = "#clock_";
 		this.roles = ['observer', 'black', 'white'];
@@ -662,17 +664,6 @@ class Wuziqi extends GameTemplate {
 			break;
 		}
 	}
-
-	insertLeagueRankings() {
-		for (let i = 0; i < this.game.playerRanks.length; i++) {
-			
-			let np = this.game.playerRanks[i].rank ? 
-								`#${this.game.playerRanks[i].rank} / ${this.game.playerRanks[i].score}` :
-								`Unranked / ${this.game.playerRanks[i].score}`;
-			this.playerbox.updateUserline(np, i+1);
-		}
-	}
-
 
 	returnSingularGameOption() {
 		return WuziqiSingularGameOptionsTemplate(this.app, this);

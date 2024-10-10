@@ -1,4 +1,4 @@
-module.exports = BoardTemplate = () => {
+module.exports  = () => {
 	return `
     <div class="opponent">
       <div class="mana"></div>

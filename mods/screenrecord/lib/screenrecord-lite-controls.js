@@ -32,8 +32,8 @@ class ScreenRecordControls {
 	}
 
     attachEvents(){
-        if (document.querySelector(".screenrecord-controls .disconnect-control")){
-			document.querySelector(".screenrecord-controls .disconnect-control").onclick = async () => {	
+        if (document.querySelector(".screenrecord-controls .record-disconnect-control")){
+			document.querySelector(".screenrecord-controls .record-disconnect-control").onclick = async () => {	
 				this.mod.stopRecording()
 			}
 		}

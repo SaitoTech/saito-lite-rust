@@ -1,4 +1,4 @@
-module.exports = ChatMainTemplate = () => {
+module.exports  = () => {
 	return `
     <div id="saito-container" class="saito-container chat-main-container">
       <div id="chat-main-sidebar-left" class="saito-sidebar left"></div>

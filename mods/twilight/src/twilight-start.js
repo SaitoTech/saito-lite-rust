@@ -8,7 +8,7 @@ const WarOverlay = require('./lib/overlays/war');
 const StatsOverlay = require('./lib/overlays/stats');
 const DeckOverlay = require('./lib/overlays/deck');
 const HeadlineOverlay = require('./lib/overlays/headline');
-const htmlTemplate = require('./lib/core/game-html.template');
+const htmlTemplate = require('./lib/core/game-html.template').default;
 const GameHelp = require('./lib/overlays/game-help');
 
 
@@ -57,6 +57,7 @@ class Twilight extends GameTemplate {
     this.moves           = [];
     this.cards    	 = [];
     this.is_testing 	 = 0;
+    this.insert_rankings = true;
 
     //
     // ui components
@@ -1154,6 +1155,9 @@ console.log("LATEST MOVE: " + mv);
 	    this.game.queue.push("DECK\t1\t"+JSON.stringify(x));
             this.game.queue.push("DECKBACKUP\t1");
 
+	this.game.saito_cards_added.push(mv[1]);
+	this.game.saito_cards_added_reason.push("Player Choice");
+
 	return 1;
 
     }
@@ -1189,7 +1193,7 @@ console.log("LATEST MOVE: " + mv);
         this.addMove("RESOLVE\t"+this.publicKey);
 	
 	if (this.game.player == 1) {
-          this.choosecard_overlay.render(cardchosen[0], cardchosen[1], "midwar");
+          this.choosecard_overlay.render(cardchosen[0], cardchosen[1], "latewar");
 	} else {
           this.choosecard_overlay.render(cardchosen[2], cardchosen[3], "latewar");
 	}
@@ -1213,6 +1217,9 @@ console.log("LATEST MOVE: " + mv);
             this.game.queue.push("DECKXOR\t1\t1");
 	    this.game.queue.push("DECK\t1\t"+JSON.stringify(x));
             this.game.queue.push("DECKBACKUP\t1");
+
+	this.game.saito_cards_added.push(mv[1]);
+	this.game.saito_cards_added_reason.push("Player Choice");
 
 	return 1;
 
@@ -7543,6 +7550,10 @@ this.game_help.render({
       deck['tehran']            = { img : "TNRnTS-108" , name : "Our Man in Tehran", scoring : 0 , player : "us" , recurring : 0 , ops : 2 };
     }
 
+    if (this.game.options.deck === "saito") {
+      deck['che'] 	   		= { img : "TNRnTS-241png" ,name : "Che", scoring : 0 , player : "ussr"   , recurring : 0 , ops : 3 };
+    }
+
     if (inc_optional == true) {
 
       //
@@ -8258,7 +8269,7 @@ this.game_help.render({
       case "seasia":
         let seasia_countries = ["burma","laos", "vietnam", "malaysia", "philippines", "indonesia"];
 
-        for (country of seasia_countries) {
+        for (let country of seasia_countries) {
           for (var [player, side] of Object.entries(scoring)) {
             if (this.isControlled(player, country) == 1) { side.total++; }
           }

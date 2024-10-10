@@ -2,7 +2,6 @@ module.exports = (app, mod) => {
 
   let blacklist = app.options.modtools.blacklist;
   let whitelist = app.options.modtools.whitelist;
-  let apps = app.options.modtools.apps;
   let node_publicKey = mod.publicKey;
 
 	let html = `
@@ -15,15 +14,15 @@ module.exports = (app, mod) => {
       <meta name="description" content="">
       <meta name="author" content="">
       <title>Saito Modtools</title>
-      <link rel="stylesheet" type="text/css" href="/saito/saito.css" />
-      <link rel="stylesheet" type="text/css" href="/modtools/style.css" />
       <link rel="stylesheet" type="text/css" href="/saito/lib/jsonTree/jsonTree.css" />
       <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen">
+      <link rel="stylesheet" href="/saito/saito.css?v=${app.build_number}" type="text/css" >
       <script src="/saito/lib/jsonTree/jsonTree.js"></script>
       <link rel="icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png">
       <link rel="apple-touch-icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png">
       <link rel="icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png">
       <link rel="apple-touch-icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png"></link>
+
     </head>
     <style>
       .modtools-main-container {
@@ -116,26 +115,28 @@ module.exports = (app, mod) => {
 
       if (blacklist.length > 0) {
         for(let i=0; i<blacklist.length; i++) {
-          let timestamp = blacklist[i].created_at;
-          var newDate = new Date();
-          newDate.setTime(timestamp);
-          let dateString = newDate.toUTCString();
+          if (mod.verifyData(blacklist[i])){
+            let timestamp = blacklist[i].created_at;
+            var newDate = new Date();
+            newDate.setTime(timestamp);
+            let dateString = newDate.toUTCString();
 
-          let duration = app.browser.formatTime(blacklist[i].duration);
-          let publicKey = blacklist[i].publickey;
-          let identicon = app.keychain.returnIdenticon(publicKey);
+            let duration = app.browser.formatTime(blacklist[i].duration);
+            let publicKey = blacklist[i].publicKey;
+            let identicon = app.keychain.returnIdenticon(publicKey);
 
-          html += `
-              <div class="modtools-entry modtools-contact">
-                  <div class="modtools-contact-date">${dateString}</div>
-                  <div class="modtools-contact-date">${duration.hours}H : ${duration.minutes}M : ${duration.seconds}S</div>
-                  <div class="modtools-contact-details">
-                  <div class="saito-identicon-box">
-                    <img class="saito-identicon" src="${identicon}"></div>
-                    <div class="saito-address treated" data-id="${publicKey}">${publicKey}</div>
-                  </div>
-              </div>
-             `; 
+            html += `
+                <div class="modtools-entry modtools-contact">
+                    <div class="modtools-contact-date">${dateString}</div>
+                    <div class="modtools-contact-date">${duration.hours}H : ${duration.minutes}M : ${duration.seconds}S</div>
+                    <div class="modtools-contact-details">
+                    <div class="saito-identicon-box">
+                      <img class="saito-identicon" src="${identicon}"></div>
+                      <div class="saito-address treated" data-id="${publicKey}">${publicKey}</div>
+                    </div>
+                </div>
+               `; 
+          }
         }
       } else {
         html += `
@@ -155,28 +156,30 @@ module.exports = (app, mod) => {
 
       if (whitelist.length > 0) {
         for(let i=0; i<whitelist.length; i++) {
+          if (mod.verifyData(whitelist[i])){
+            let timestamp = whitelist[i].created_at;
+            var newDate = new Date();
+            newDate.setTime(timestamp);
+            let dateString = newDate.toUTCString();
 
-          let timestamp = whitelist[i].created_at;
-          var newDate = new Date();
-          newDate.setTime(timestamp);
-          let dateString = newDate.toUTCString();
+            let duration = app.browser.formatTime(whitelist[i].duration);
+            let publicKey = whitelist[i].publicKey;
+            let identicon = app.keychain.returnIdenticon(publicKey);
 
-          let duration = app.browser.formatTime(whitelist[i].duration);
-          let publicKey = whitelist[i].publickey;
-          let identicon = app.keychain.returnIdenticon(publicKey);
+            html += `
 
-          html += `
-
-              <div class="modtools-entry modtools-contact">
-                  <div class="modtools-contact-date">${dateString}</div>
-                  <div class="modtools-contact-date">${duration.hours}H : ${duration.minutes}M : ${duration.seconds}S</div>
-                  <div class="modtools-contact-details">
-                    <div class="saito-identicon-box">
-                      <img class="saito-identicon" src="${identicon}"></div>
-                      <div class="saito-address treated" data-id="${publicKey}">${publicKey}</div>
-                    </div>
-                </div>
-             `; 
+                <div class="modtools-entry modtools-contact">
+                    <div class="modtools-contact-date">${dateString}</div>
+                    <div class="modtools-contact-date">${duration.hours}H : ${duration.minutes}M : ${duration.seconds}S</div>
+                    <div class="modtools-contact-details">
+                      <div class="saito-identicon-box">
+                        <img class="saito-identicon" src="${identicon}"></div>
+                        <div class="saito-address treated" data-id="${publicKey}">${publicKey}</div>
+                      </div>
+                  </div>
+               `; 
+              
+          }
 
         }
       } else {
@@ -185,11 +188,13 @@ module.exports = (app, mod) => {
         `;
       }
 
+
     html +=`
+        <div class="saito-button-primary" id="whitelist">Add</div>
         </div>    
     `;
 
-
+/*
     html +=  `
         <div class="modtools-container">
           <div class="modtools-container-title">App Permissions</div>
@@ -219,11 +224,11 @@ module.exports = (app, mod) => {
 
         </div>    
     
-    </div>
-
-</body>`;
-
+    </div>`;
+*/
+    
 html += `
+</body>
 <script type="text/javascript" src="/saito/saito.js?build=${app.build_number}"></script>
 </html>`;
 

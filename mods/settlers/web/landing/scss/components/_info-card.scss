@@ -1,0 +1,34 @@
+/* ==========================================================================
+	# Global Info Card
+========================================================================== */
+.info-card {
+	max-width: 400px;
+
+	&__inner {
+		background-color: var(--color__transparent-bg);
+		padding: 60px 32px 72px;
+		display: flex;
+		flex-direction: column;
+		gap: 32px;
+		border-radius: 20px 0 20px 0;
+	}
+
+	&__title {
+		color: var(--color__text-light);
+		text-align: center;
+	}
+
+	&__text {
+		*{
+			&:not(:last-of-type){
+				margin-bottom: 1.5rem;
+			}
+		}
+		a {
+			color: var(--color__text);
+		}
+	}
+	.btn-wrap {
+		text-align: center;
+	}
+}

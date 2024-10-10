@@ -166,13 +166,6 @@
 	text-shadow: 0px 0px 3px var(--color-white);
 }
 
-.saito-scheduler-modal .saito-modal-title .saito-user .saito-address {
-	font-size: 3rem;
-}
-.saito-scheduler-modal .saito-modal-title .saito-user > .saito-userline {
-	font-size: 2rem;
-}
-
 .arcade-game-playerbox.online .online-status-indicator:after {
 	top: 3.5rem;
 	left: 3.5rem;
