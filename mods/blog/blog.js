@@ -64,12 +64,15 @@ class Blog extends ModTemplate {
 
     async loadOlderBlogTransactions() {
         let peer = this.peers[0]
-        // console.log(peer.peerIndex,  await this.app.wallet.getPublicKey());
-        // let publicKey = await this.app.wallet.getPublicKey()
-        let publicKey = "mynWa9dNFxomcWyQg2vCdnC86TEausDJRcwJx4s81cb7"
-        // let publicKeyToFetchFrom = peer.publicKey;
-        let publicKeyToFetchFrom = "pLHgNKt9UHq4JhbtwQhQbPJY9A12648UYgRQb5htuNGp"
-        this.fetchTransactionsFromPeer(peer, publicKey, publicKeyToFetchFrom, true);
+        let publicKeyToFetchFrom = "ezum1HcBjFTXpCmw4hr7iUUKvPn9p3tBkpSCU7E9rQVX"
+        let self = this
+        this.app.storage.loadTransactions( { field1: 'Blog', limit: 100 },
+            function(txs){
+                const filteredTxs = self.filterBlogPosts(txs);
+                self.txs = filteredTxs;
+                console.log('transactions gotten', txs);
+            },
+            publicKeyToFetchFrom)
     }
 
     
@@ -87,7 +90,7 @@ class Blog extends ModTemplate {
             //     await this.handleBlogHistoryFetch(data, app, peer, mycallback);
             //     break;
             default:
-                console.log('Unknown request type:', request);
+                console.log('Unknown request type:', request, txmsg, mycallback);
         }
     }
 
@@ -95,6 +98,8 @@ class Blog extends ModTemplate {
         const { publicKey, publicKeyToFetchFrom } = data;
         const myPublicKey = await this.app.wallet.getPublicKey();
         console.log(data, 'data')
+
+        console.log(this.app.options, 'returned keys');
         
         if(tx.from[0].publicKey === myPublicKey) return;
         if (publicKeyToFetchFrom === myPublicKey) {
@@ -124,15 +129,9 @@ class Blog extends ModTemplate {
                 this.fetchTransactionsFromPeer(targetPeer, publicKey, targetPeer.publicKey, false);
 
 
-                // await this.fetchLocalBlogHistory(publicKey, mycallback);
-                // const peers = await this.app.network.getPeers();
-            }
-   
-            // const targetPeer = peers.find(p => p.publicKey === publicKeyToFetchFrom) || peer;
 
-            
-           
-            // this.fetchTransactionsFromS(publicKey, mycallback);
+            }
+
         }
     }
 
@@ -147,15 +146,6 @@ class Blog extends ModTemplate {
             "localhost"
         );
     }
-
-    // async handleBlogHistoryFetch(data, app, peer, mycallback) {
-    //     if (app.BROWSER === 0) {
-    //         await this.fetchLocalBlogHistory(data.publicKey, mycallback);
-    //     } else if (app.BROWSER === 1) {
-    //         // For browser, we directly fetch from the server
-    //         this.fetchTransactionsFromServer(data.publicKey, mycallback);
-    //     }
-    // }
 
     async fetchTransactionsFromServer(publicKey, mycallback) {
         // Assuming the first peer is always the server
@@ -233,7 +223,9 @@ class Blog extends ModTemplate {
 
         this.app.connection.emit('blog-update-dom', this.publicKey, this.cache[this.publicKey].blogPosts);
 
+        let myPublicKey = await this.app.wallet.getPublicKey()
         // Propagate the transaction
+        this.saveBlogTransaction(newtx, myPublicKey )
         await this.app.network.propagateTransaction(newtx);
         return newtx;
     }
