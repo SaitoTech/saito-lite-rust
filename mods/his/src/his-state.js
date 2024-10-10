@@ -1178,23 +1178,31 @@ if (this.game.state.scenario != "is_testing") {
     for (let i = 0; i < this.game.state.military_leaders_removed_until_next_round.length; i++) {
       let obj = this.game.state.military_leaders_removed_until_next_round[i];
       if (obj.leader) {
-
         let leader = obj.leader;
 	let s = obj.space;
         let faction = obj.faction;
+	this.restoreMilitaryLeader(leader, s, faction);
+      }
+    }
+
+    this.game.state.military_leaders_removed_until_next_round = [];
+
+  }
+
+  restoreMilitaryLeader(leader, spacekey, faction) {
+
+	let s = spacekey;
 	let navalspace = false;
 
-console.log("RESTORING MILITARY LEADERS: " + faction + " -- " + s);
-
         if (faction == "ottoman") {
-          if (this.isSpaceControlled("algiers", "ottoman")) { s = obj.space = "algiers"; } else {
-            if (this.isSpaceControlled("oran", "ottoman")) { s = obj.space = "oran"; } else {
-              if (this.isSpaceControlled("oran", "ottoman")) { s = obj.space = "tripoli"; };
+	  if (leader.navy_leader == true) {
+            if (this.isSpaceControlled("algiers", "ottoman")) { s = "algiers"; } else {
+              if (this.isSpaceControlled("oran", "ottoman")) { s = "oran"; } else {
+                if (this.isSpaceControlled("oran", "ottoman")) { s = "tripoli"; };
+              }
             }
           }
         }
-
-console.log("space is now: " + s);
 
 	if (leader) {
 	  if (faction) {
@@ -1209,21 +1217,13 @@ console.log("space is now: " + s);
 	      }
 	    }
 
-console.log("space is now2: " + s);
-
 	    if (s != "") {
-
-console.log(s + " -- " + faction);
 	      leader.spacekey = s;
 	      this.game.spaces[s].units[faction].push(leader);
 	      this.displaySpace(s);
 	    }
 	  }
 	}
-      }
-    }
-
-    this.game.state.military_leaders_removed_until_next_round = [];
 
   }
 

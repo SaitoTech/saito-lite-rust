@@ -2312,7 +2312,6 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	  return 1;
 	}
 
-
 	if (mv[0] === "conquer") {
 	  let faction = mv[1];
     	  this.game.queue.splice(qe, 1);
@@ -2331,6 +2330,56 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	}
 
 
+	if (mv[0] === "give_captured_leader") {
+
+    	  this.game.queue.splice(qe, 1);
+	  let giving_faction = mv[1];
+	  let receiving_faction = mv[2];
+	  let captured_leader = mv[3];
+
+	  let p1 = this.returnPlayerCommandingFaction(giving_faction);
+	  let p2 = this.returnPlayerCommandingFaction(receiving_faction);
+
+	  if (this.game.state.players_info.length >= p1 && this.game.state.players_info.length >= p2) {
+	    if (p1 > 0 && p2 > 0) {
+
+	      for (let i = this.game.state.players_info[p1-1].captured.length-1; i >= 0; i--) {
+
+		let c = this.game.state.players_info[p1-1].captured[i];
+
+		if (c.key == captured_leader) {
+
+		  this.game.state.players_info[p1-1].captured.splice(i, 1);
+
+		  //
+		  // if the faction gets its leader back, place on board
+		  //
+		  if (c.owner == receiving_faction) {		  
+
+		    c.spacekey = "";
+		    c.space = "";
+
+		    this.restoreMilitaryLeader(c, "", receiving_faction);
+
+		  //
+		  // otherwise place in captured array of recipient
+		  //
+		  } else {
+		    c.capturing_faction = receiving_faction;
+		    this.game.state.players_info[p2-1].captured.push(c);		    
+		  }
+
+		}
+	      }
+
+	    }
+	  }
+
+	  return 1;
+
+	}
+
+
 	if (mv[0] === "is_testing") {
 
 	  // SCHMALKALDIC LEAGUE
@@ -2338,9 +2387,8 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 //	  deck['013'].onEvent(this, "protestant");
 
 
-          this.addCard("ottoman", "009");
-          this.addCard("hapsburg", "104");
-          this.addCard("france", "086");
+          this.addCard("protestant", "035");
+
 /**
           this.addCard("hapsburg", "026");
           this.addCard("hapsburg", "027");
@@ -10704,11 +10752,13 @@ defender_hits - attacker_hits;
 	    this.game.queue.push("event\tprotestant\t013");
 	  }
 
-	  // Return naval units to the nearest port
-	  this.game.queue.push("retreat_to_winter_ports");
-
 	  // Return leaders and units to fortified spaces (suffering attrition if there is no clear path to such a space)
 	  this.game.queue.push("retreat_to_winter_spaces");
+
+	  // Return naval units to the nearest port - do this before retreat_to_winter_spaces so that we don't move
+	  // naval leaders to Algiers etc. before their ships have the option of retreating to a specific port with
+	  // them.
+	  this.game.queue.push("retreat_to_winter_ports");
 
 	  this.game.queue.splice(qe, 1);
           return 1;

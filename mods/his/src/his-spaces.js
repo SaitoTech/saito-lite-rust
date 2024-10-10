@@ -432,7 +432,6 @@
   doesSpaceHaveLineOfControl(space, faction) { return this.isSpaceInLineOfControl(space, faction); }
   isSpaceInLineOfControl(space, faction, transit_passes=1, transit_seas=1) {
 
-
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
     let his_self = this;
@@ -458,12 +457,16 @@
         let invalid_choice = false;
         if (his_self.isSpaceFortified(spacekey)) {
 	  if (his_self.isSpaceHomeSpace(spacekey, faction)) { 
-	    invalid_choice = true;
+	    if (!his_self.isSpaceBesieged(spacekey) && !his_self.isSpaceInUnrest(spacekey)) { 
+	      invalid_choice = true;
+	    }
 	  } else {
 	    let x = his_self.returnFactionControllingSpace(spacekey);
 	    if (his_self.isSpaceHomeSpace(spacekey, x)) { 
 	      if (faction == his_self.returnControllingPower(x)) {
-		invalid_choice = true;
+	        if (!his_self.isSpaceBesieged(spacekey) && !his_self.isSpaceInUnrest(spacekey)) { 
+		  invalid_choice = true;
+	        }	
 	      }	
 	    }
 	  }

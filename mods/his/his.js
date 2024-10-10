@@ -16386,7 +16386,6 @@ console.log("DELETING Z: " + z);
   doesSpaceHaveLineOfControl(space, faction) { return this.isSpaceInLineOfControl(space, faction); }
   isSpaceInLineOfControl(space, faction, transit_passes=1, transit_seas=1) {
 
-
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
     let his_self = this;
@@ -16412,12 +16411,16 @@ console.log("DELETING Z: " + z);
         let invalid_choice = false;
         if (his_self.isSpaceFortified(spacekey)) {
 	  if (his_self.isSpaceHomeSpace(spacekey, faction)) { 
-	    invalid_choice = true;
+	    if (!his_self.isSpaceBesieged(spacekey) && !his_self.isSpaceInUnrest(spacekey)) { 
+	      invalid_choice = true;
+	    }
 	  } else {
 	    let x = his_self.returnFactionControllingSpace(spacekey);
 	    if (his_self.isSpaceHomeSpace(spacekey, x)) { 
 	      if (faction == his_self.returnControllingPower(x)) {
-		invalid_choice = true;
+	        if (!his_self.isSpaceBesieged(spacekey) && !his_self.isSpaceInUnrest(spacekey)) { 
+		  invalid_choice = true;
+	        }	
 	      }	
 	    }
 	  }
@@ -21725,23 +21728,31 @@ if (this.game.state.scenario != "is_testing") {
     for (let i = 0; i < this.game.state.military_leaders_removed_until_next_round.length; i++) {
       let obj = this.game.state.military_leaders_removed_until_next_round[i];
       if (obj.leader) {
-
         let leader = obj.leader;
 	let s = obj.space;
         let faction = obj.faction;
+	this.restoreMilitaryLeader(leader, s, faction);
+      }
+    }
+
+    this.game.state.military_leaders_removed_until_next_round = [];
+
+  }
+
+  restoreMilitaryLeader(leader, spacekey, faction) {
+
+	let s = spacekey;
 	let navalspace = false;
 
-console.log("RESTORING MILITARY LEADERS: " + faction + " -- " + s);
-
         if (faction == "ottoman") {
-          if (this.isSpaceControlled("algiers", "ottoman")) { s = obj.space = "algiers"; } else {
-            if (this.isSpaceControlled("oran", "ottoman")) { s = obj.space = "oran"; } else {
-              if (this.isSpaceControlled("oran", "ottoman")) { s = obj.space = "tripoli"; };
+	  if (leader.navy_leader == true) {
+            if (this.isSpaceControlled("algiers", "ottoman")) { s = "algiers"; } else {
+              if (this.isSpaceControlled("oran", "ottoman")) { s = "oran"; } else {
+                if (this.isSpaceControlled("oran", "ottoman")) { s = "tripoli"; };
+              }
             }
           }
         }
-
-console.log("space is now: " + s);
 
 	if (leader) {
 	  if (faction) {
@@ -21756,21 +21767,13 @@ console.log("space is now: " + s);
 	      }
 	    }
 
-console.log("space is now2: " + s);
-
 	    if (s != "") {
-
-console.log(s + " -- " + faction);
 	      leader.spacekey = s;
 	      this.game.spaces[s].units[faction].push(leader);
 	      this.displaySpace(s);
 	    }
 	  }
 	}
-      }
-    }
-
-    this.game.state.military_leaders_removed_until_next_round = [];
 
   }
 
@@ -25015,7 +25018,6 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	  return 1;
 	}
 
-
 	if (mv[0] === "conquer") {
 	  let faction = mv[1];
     	  this.game.queue.splice(qe, 1);
@@ -25034,6 +25036,56 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	}
 
 
+	if (mv[0] === "give_captured_leader") {
+
+    	  this.game.queue.splice(qe, 1);
+	  let giving_faction = mv[1];
+	  let receiving_faction = mv[2];
+	  let captured_leader = mv[3];
+
+	  let p1 = this.returnPlayerCommandingFaction(giving_faction);
+	  let p2 = this.returnPlayerCommandingFaction(receiving_faction);
+
+	  if (this.game.state.players_info.length >= p1 && this.game.state.players_info.length >= p2) {
+	    if (p1 > 0 && p2 > 0) {
+
+	      for (let i = this.game.state.players_info[p1-1].captured.length-1; i >= 0; i--) {
+
+		let c = this.game.state.players_info[p1-1].captured[i];
+
+		if (c.key == captured_leader) {
+
+		  this.game.state.players_info[p1-1].captured.splice(i, 1);
+
+		  //
+		  // if the faction gets its leader back, place on board
+		  //
+		  if (c.owner == receiving_faction) {		  
+
+		    c.spacekey = "";
+		    c.space = "";
+
+		    this.restoreMilitaryLeader(c, "", receiving_faction);
+
+		  //
+		  // otherwise place in captured array of recipient
+		  //
+		  } else {
+		    c.capturing_faction = receiving_faction;
+		    this.game.state.players_info[p2-1].captured.push(c);		    
+		  }
+
+		}
+	      }
+
+	    }
+	  }
+
+	  return 1;
+
+	}
+
+
 	if (mv[0] === "is_testing") {
 
 	  // SCHMALKALDIC LEAGUE
@@ -25041,9 +25093,8 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 //	  deck['013'].onEvent(this, "protestant");
 
 
-          this.addCard("ottoman", "009");
-          this.addCard("hapsburg", "104");
-          this.addCard("france", "086");
+          this.addCard("protestant", "035");
+
 /**
           this.addCard("hapsburg", "026");
           this.addCard("hapsburg", "027");
@@ -33407,11 +33458,13 @@ defender_hits - attacker_hits;
 	    this.game.queue.push("event\tprotestant\t013");
 	  }
 
-	  // Return naval units to the nearest port
-	  this.game.queue.push("retreat_to_winter_ports");
-
 	  // Return leaders and units to fortified spaces (suffering attrition if there is no clear path to such a space)
 	  this.game.queue.push("retreat_to_winter_spaces");
+
+	  // Return naval units to the nearest port - do this before retreat_to_winter_spaces so that we don't move
+	  // naval leaders to Algiers etc. before their ships have the option of retreating to a specific port with
+	  // them.
+	  this.game.queue.push("retreat_to_winter_ports");
 
 	  this.game.queue.splice(qe, 1);
           return 1;
@@ -40452,7 +40505,7 @@ return;
           opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
         }
       }
-      opt += `<li class="option" id="finish">skip</li>`;
+      opt += `<li class="option" id="finish">finish</li>`;
       opt += '</ul>';
 
       his_self.updateStatusWithOptions(msg, opt);
@@ -40643,7 +40696,7 @@ return;
           opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
         }
       }
-      opt += `<li class="option" id="finish">skip</li>`;
+      opt += `<li class="option" id="finish">finish</li>`;
       opt += '</ul>';
 
       if (viable_capitals.length == 0) {
@@ -45594,14 +45647,14 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       name : "Give Captured Leader",
       check : this.canPlayerGiveCapturedLeader,
       fnct : this.playerGiveCapturedLeader,
-      img : "the-card-players.jpg" ,
+      img : "prison.jpg" ,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
       name : "Get Captured Leader",
       check : this.canPlayerGetCapturedLeader,
       fnct : this.playerGetCapturedLeader,
-      img : "the-card-players.jpg" ,
+      img : "prison.jpg" ,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
@@ -45616,13 +45669,6 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       check : this.canPlayerPullCards,
       fnct : this.playerPullCards,
       img : "the-card-players.jpg" ,
-    });
-    menu.push({
-      factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
-      name : "Return Captured Leader",
-      check : this.canPlayerReturnCapturedArmyLeader,
-      fnct : this.playerReturnCapturedArmyLeader,
-      img : "prison.jpg" ,
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant'],
@@ -45721,6 +45767,9 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       }
       if (x[0] === "rescind_excommunication" || x[0] === "unexcommunicate_faction") {
 	text.push(`Papacy rescinds ${this.returnFactionName(x[1])} excommunication`);
+      }
+      if (x[0] === "give_captured_leader") {
+	text.push(`${this.returnFactionName(x[1])} gives ${this.returnFactionName(x[2])} ${x[3]}`);
       }
       if (x[0] === "give_squadron" || x[0] === "loan_squadron") {
 	if (!text.includes(`${this.returnFactionName(x[1])} offers ${this.returnFactionName(x[2])} ${x[3]} squadron(s)`)) {
@@ -45851,16 +45900,6 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     return 1;
   }
 
-  canPlayerReturnCapturedArmyLeader(his_self, player, faction) {
-    let p = his_self.returnPlayerCommandingFaction(faction);
-    if (p > 0) {
-      for (let z = 0; z  < his_self.game.state.players_info[p-1].captured.length; z++) { 
-        if (faction == his_self.game.state.players_info[p-1].capturing_faction) { return 1; }
-      }
-    }
-    return 0;
-  }
-
   canPlayerYieldTerritory(his_self, player, faction, target="") {
     if (target != "") { 
       if (his_self.returnPlayerCommandingFaction(faction) == his_self.returnPlayerCommandingFaction(target)) { return 0; }
@@ -45873,6 +45912,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     if (target_spaces) { return 1; }
     return 0;
   }
+
 
   canPlayerGiveCapturedLeader(his_self, player, faction) {
     for (let i = 0; i < his_self.game.state.players_info.length; i++) {
@@ -45890,7 +45930,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     for (let i = 0; i < his_self.game.state.players_info.length; i++) {
       let c = his_self.game.state.players_info[i].captured;
       for (let z = 0; z < c.length; z++) {
-	if (c[z].faction === faction) {
+	if (c[z].owner === faction) {
 	  return 1;
 	}
       }
@@ -45971,19 +46011,122 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   }
 
 
-
   async playerGetCapturedLeader(his_self, faction, mycallback=null) {
+
+    let submit_choose_leader = function(giving_faction, receiving_faction) {
+
+      let p = his_self.returnPlayerCommandingFaction(giving_faction);
+      let msg = `${his_self.returnFactionName(faction)} - Return which Leader? `;
+      let html = '<ul>';
+      for (let i = 0; i < his_self.game.state.players_info[p-1].captured.length; i++) {
+        let u = his_self.game.state.players_info[p-1].captured[i];
+        if (u.capturing_faction == giving_faction) {
+          html += `<li class="option" id="${u.type}">${u.type}</li>`;
+        }
+      }
+      html += '</ul>';
+      
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+        let give_which_leader = $(this).attr("id");
+        his_self.updateStatus("submitted");
+        if (mycallback == null) { return; }
+        mycallback([`give_captured_leader\t${giving_faction}\t${receiving_faction}\t${give_which_leader}`]);      
+      });
+
+      return; 
+
+    }
+
+    let target_faction = "";
+    if (his_self.diplomacy_overlay.proposal.target) { target_faction = his_self.diplomacy_overlay.proposal.target; }
+
+    let terms = [];
+    let msg = `${his_self.returnFactionName(faction)} - Get from Whom?`;
+    let io = his_self.returnDiplomacyImpulseOrder(faction);
+    let factions_with_leaders = [];
+    let other_factions_with_leaders = [];
+    let html = '<ul>';
+    let auto_select_target = true;
+    for (let i = 0; i < io.length; i++) {
+      if (io[i] != faction) {
+	let p1 = his_self.returnPlayerCommandingFaction(io[i]);
+	let p2 = his_self.returnPlayerCommandingFaction(faction);
+	if (p1 != p2) {
+	  for (let z = 0; z < his_self.game.state.players_info[p1-1].captured.length; z++) {
+	    if (his_self.game.state.players_info[p1-1].captured[z].capturing_faction == io[i]) {
+    	      factions_with_leaders.push(io[i]);
+	      if (io[i] != target_faction) { other_factions_with_leaders.push(io[i]); }
+              html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
+	    }
+	  }
+	}
+      }
+    }
+    html += '</ul>';
+
+    let html2 = '<ul>';
+    html2 += `<li class="option" id="${target_faction}">${his_self.returnFactionName(target_faction)}</li>`;
+    if (other_factions_with_leaders.length > 0) {
+      html2 += `<li class="option" id="other">another faction</li>`;
+    }
+    html2 += '</ul>';
+
+    his_self.updateStatusWithOptions(msg, html2);     
+    $('.option').off();
+    $('.option').on('click', function () {
+
+      let action2 = $(this).attr("id");
+      if (action2 !== target_faction) {
+
+        his_self.updateStatusWithOptions(msg, html);
+
+        $('.option').off();
+        $('.option').on('click', function () {
+          let action3 = $(this).attr("id");
+          if (mycallback == null) { return; }
+          submit_choose_leader(action3, faction);
+        });
+
+      } else {
+        if (mycallback == null) { return; }
+        submit_choose_leader(target_faction, faction);
+      }
+
+    });
+
     return 0;
   }
 
   async playerGiveCapturedLeader(his_self, faction, mycallback=null) {
-    return 0;
-    let submit_choose_leader = function(action2) {
-    }
 
-    let submit_end_war = function(action2) {
-      his_self.updateStatus("submitted...");
-      mycallback([`give_captured_leader\t${faction}\t${action2}`]);      
+    let submit_choose_leader = function(giving_faction, receiving_faction) {
+
+      let p = his_self.returnPlayerCommandingFaction(giving_faction);
+      let msg = `${his_self.returnFactionName(faction)} - Return which Leader? `;
+      let html = '<ul>';
+      for (let i = 0; i < his_self.game.state.players_info[p-1].captured.length; i++) {
+        let u = his_self.game.state.players_info[p-1].captured[i];
+        if (u.capturing_faction == faction) {
+          html += `<li class="option" id="${u.type}">${u.type}</li>`;
+        }
+      }
+      html += '</ul>';
+      
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.option').on('click', function () {
+        let give_which_leader = $(this).attr("id");
+        his_self.updateStatus("submitted");
+        if (mycallback == null) { return; }
+        mycallback([`give_captured_leader\t${giving_faction}\t${receiving_faction}\t${give_which_leader}`]);      
+      });
+
+      return; 
+
     }
 
     let target_faction = "";
@@ -46017,12 +46160,12 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
         $('.option').on('click', function () {
           let action3 = $(this).attr("id");
           if (mycallback == null) { return; }
-          submit_choose_leader(action3);
+          submit_choose_leader(faction, action3);
         });
 
       } else {
         if (mycallback == null) { return; }
-        submit_choose_leader(target_faction);
+        submit_choose_leader(faction, target_faction);
       }
 
     });
@@ -46303,36 +46446,6 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
     return 0;
   }
-
-  async playerReturnCapturedArmyLeader(his_self, faction, mycallback=null) {
-
-    let terms = [];
-
-    let p = his_self.returnPlayerCommandingFaction(faction);
-    let msg = `${his_self.returnFactionName(faction)} - Return which Leader? `;
-    let html = '<ul>';
-    for (let i = 0; i < his_self.game.state.players_info[p-1].captured.length; i++) {
-      let u = his_self.game.state.players_info[p-1].captured[i];
-      if (u.capturing_faction == faction) {
-        html += `<li class="option" id="${u}">${u}</li>`;
-      }
-    }
-    html += '</ul>';
-      
-    his_self.updateStatusWithOptions(msg, html);
-
-    $('.option').off();
-    $('.option').on('click', function () {
-      let give_which_leader = $(this).attr("id");
-      if (mycallback == null) { return; }
-      his_self.updateStatus("submitted");
-      mycallback([`ransom\t${give_which_leader}\t${faction}`]);
-    });
-
-    return 0;
-
-  }
-
 
   async playerGainTerritory(his_self, faction, mycallback=null) {
 
@@ -46813,6 +46926,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
     return 0;
   }
+
 
 
 
