@@ -63,16 +63,23 @@ class Blog extends ModTemplate {
     }
 
     async loadOlderBlogTransactions() {
+        // for testing
         let peer = this.peers[0]
-        let publicKeyToFetchFrom = "ezum1HcBjFTXpCmw4hr7iUUKvPn9p3tBkpSCU7E9rQVX"
-        let self = this
-        this.app.storage.loadTransactions( { field1: 'Blog', limit: 100 },
-            function(txs){
-                const filteredTxs = self.filterBlogPosts(txs);
-                self.txs = filteredTxs;
-                console.log('transactions gotten', txs);
-            },
-            publicKeyToFetchFrom)
+        let keys = this.app.keychain.returnKeys();
+        if(keys.length> 0){
+            let key = keys[0]
+            let self = this
+            this.app.storage.loadTransactions( { field1: 'Blog', limit: 100 },
+                function(txs){
+                    const filteredTxs = self.filterBlogPosts(txs);
+                    self.txs = filteredTxs;
+                    console.log('transactions gotten', txs);
+                },
+                key.publicKey)
+        }else {
+            console.log('there are not contacts')
+        }
+      
     }
 
     
