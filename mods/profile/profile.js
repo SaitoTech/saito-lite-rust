@@ -50,13 +50,16 @@ class Profile extends ModTemplate {
 
 							if (returned_key.profile?.description) {
 								this.cache[key].description = await this.fetchProfileFromArchive("description", returned_key.profile.description);
+
 							}
 
 							if (returned_key.profile?.image) {
 								this.cache[key].image = await this.fetchProfileFromArchive("image", returned_key.profile.image);
 							}
 							if (returned_key.profile?.archive_nodes) {
-								this.cache[key].archive_nodes = await this.fetchProfileFromArchive("archive_nodes", returned_key.publicKey);
+								this.cache[key].archive_nodes = await this.fetchProfileFromArchive("archive_nodes", returned_key.publicKey, (archive_nodes) => {
+									console.log(archive_nodes, "archive nodes");
+								});
 							}
 
 							console.log("PROFILE: async fetches for watched key finished");
@@ -88,7 +91,18 @@ class Profile extends ModTemplate {
 
 
 
-				console.log(this.cache, "my cache right now")
+					console.log(this.cache, "my cache right now")
+					let returned_key = this.app.keychain.returnKey(key);
+					console.log(returned_key, 'returned key')
+					this.app.keychain.addKey(key, {
+						profile: {
+							archive_nodes: this.cache[key].archive_nodes
+						}
+					})
+
+
+
+
 				}
 
 
@@ -106,7 +120,7 @@ class Profile extends ModTemplate {
 			this.photoUploader.callbackAfterUpload = async (photo) => {
 				let banner = await this.app.browser.resizeImg(photo);
 				this.sendProfileTransaction({ banner }, profile_key);
-			    
+
 
 			};
 			this.photoUploader.render(this.photo);
@@ -121,16 +135,25 @@ class Profile extends ModTemplate {
 
 		app.connection.on('profile-update-archive-node', (archiveNode) => {
 			const stringifiedArchiveNode = JSON.stringify(archiveNode);
-		// Update the profile object with the stringified archive node
+			// Update the profile object with the stringified archive node
 			this.sendProfileTransaction({ archive_nodes: stringifiedArchiveNode });
+			console.log('sending profile transaction')
 		});
 
 	}
 
-	onPeerHandshakeComplete(app){
+	async onPeerHandshakeComplete(app) {
 		// For testing
-		let {protocol, host, port} = this.app.browser
-		app.connection.emit('profile-update-archive-node', {protocol, host, port, publicKey: this.publicKey} )
+		if (app.BROWSER) {
+			// let { protocol, host, port } = this.app.browser
+			// let peers = await this.app.network.getPeers();
+			// app.connection.emit('profile-update-archive-node', { protocol, host, port, publicKey: peers[0].publicKey })
+
+			app.connection.emit('profile-update-archive-node', {protocol: "http", host: "127.0.0.1", port:"12101", publicKey: "public key" })
+
+			
+		}
+
 	}
 
 
@@ -153,7 +176,7 @@ class Profile extends ModTemplate {
 	async handlePeerTransaction(app, tx) {
 		if (app.BROWSER) {
 			if (tx.msg.module === "Profle") {
-				console.log('not from profile', tx, tx.msg)
+				// console.log('not from profile', tx, tx.msg)
 			}
 
 
@@ -299,14 +322,18 @@ class Profile extends ModTemplate {
 				}
 			}
 
-			let returned_key = this.app.keychain.returnKey(from);
+			const returnedKey = this.app.keychain.returnKey(from);
 
-			let profile = Object.assign({}, returned_key?.profile);
 
-			profile = Object.assign(profile, data);
+			const profile = { ...returnedKey?.profile };
+
+			Object.assign(profile, data);
 
 			console.log(profile);
 
+			profile.archive_nodes = [this.cache[from]?.archive_nodes] || [];
+
+			// Update the key in the keychain with the new profile
 			this.app.keychain.addKey(from, { profile });
 
 			await this.saveProfileTransaction(tx);
@@ -324,10 +351,10 @@ class Profile extends ModTemplate {
 		if (tx.isFrom(this.publicKey)) {
 			// Clear the saito-header notification from sendProfileTransaction
 			this.app.connection.emit("saito-header-update-message", { msg: "" })
-			if(this.app.BROWSER){
+			if (this.app.BROWSER) {
 				siteMessage('Profile updated', 2000);
 			}
-		
+
 		}
 
 		if (this.app.keychain.isWatched(from)) {
@@ -339,7 +366,7 @@ class Profile extends ModTemplate {
 	//
 	//  LOAD PROFILE VALUES FUNCTIONS
 	//
-	async fetchProfileFromArchive(field, sig) {
+	async fetchProfileFromArchive(field, sig, callback) {
 		console.log("PROFILE: Fetching local profile: ", field);
 		return this.app.storage.loadTransactions({ sig, field1: 'Profile' },
 			(txs) => {
@@ -348,7 +375,13 @@ class Profile extends ModTemplate {
 						let txmsg = tx.returnMessage();
 						if (txmsg.data[field]) {
 							console.log("PROFILE: local archive returned txs (inside)!");
-							return txmsg.data[field];
+							if (callback) {
+								callback(txmsg.data[field])
+							} else {
+								return txmsg.data[field];
+							}
+
+
 						}
 					}
 				}
