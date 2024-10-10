@@ -1,4 +1,5 @@
 const CardTemplate = require('./card.template');
+const NoticeTemplate = require('./notice.template');
 const SaitoOverlay = require('./../../../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 class CardOverlay {
@@ -68,9 +69,17 @@ class CardOverlay {
 			card.cardtext = obj.cardtext;
 		}
 
-		this.overlay.show(CardTemplate(card));
+		//this.overlay.show(CardTemplate(card));
+		let hudnotice = document.querySelector('.hud-notice');
+		hudnotice.innerHTML = NoticeTemplate(card);
+		hudnotice.classList.add('show');
+			
+		setTimeout(() => {
+				hudnotice.classList.remove('show');
+				hudnotice.innerHTML = "";				
+			}, 3500); 
 
-		document.querySelector('.cardover').style.setProperty('--settlers-cardimg', `url(${card.img})`);
+		hudnotice.style.setProperty('--settlers-cardimg', `url(${card.img})`);
 
 		// this will clear any ACKNOWLEDGE
 		this.attachEvents();
@@ -79,12 +88,13 @@ class CardOverlay {
 
 	attachEvents() {
 
+		/*
 		let settlers_self = this.mod;
 	    $(".cardover-optout").on('click', function () {
 	    	console.log("!!!!!");
           	settlers_self.saveGamePreference("settlers_overlays", 0);
 	    });
-
+		*/
 	}
 
 }
