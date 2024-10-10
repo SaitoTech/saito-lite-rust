@@ -2,12 +2,11 @@ import * as JSON from 'json-bigint';
 import Transaction from './transaction';
 import { Saito } from '../../apps/core';
 import S from 'saito-js/saito';
-
+import ws from 'ws';
 import Block from './block';
 const localforage = require('localforage');
 import fs from 'fs';
 import path from 'path';
-import { NodeSharedMethods } from './core/server';
 import WebSharedMethods from 'saito-js/lib/custom/shared_methods.web';
 const JsStore = require('jsstore');
 
@@ -262,9 +261,9 @@ class Storage {
 								let peers = await this.app.network.getPeers();
 								const targetPeer = peers.find(p => p.publicKey === publicKey) || null
 
-								// if i am connected to the archive node
+								// if we are connected to the archive node
 								if (targetPeer) {
-									console.log('connected to this peer')
+									console.log('connected to this archive node')
 									this.app.network.sendRequestAsTransaction(
 										message,
 										data,
@@ -274,24 +273,38 @@ class Storage {
 										targetPeer.peerIndex
 									);
 								} else {
-									console.log('not connected to this peer, initiating connection')
+									console.log('not connected to this archive node, initiating connection');
+											
 									// connect to the archive node
-									const url = `${protocol}://${host}:${port}`;
+									const url = `ws://${host}:${port}/wsopen`;
 									try {
-										// Get a new peer index
 										const peerIndex = await S.getLibInstance().get_next_peer_index();
-										// Connect to the peer
-										let methods = new  WebSharedMethods();
-										await methods.connectToPeer(url, peerIndex);
 
-										console.log(url, peerIndex, "peer index")
-										// S.getLibInstance().
-										// this.app.network.connectToPeer(url, peerIndex);
-
-										// Wait for the connection to be established
-										// You might need to implement a way to wait for the connection to be ready
-
-										// await this.waitForConnection(peerIndex);
+										try {
+											console.log("connecting to " + url + "....");
+											let socket = new WebSocket(url);
+											socket.binaryType = "arraybuffer";
+											socket.onmessage = (event: MessageEvent) => {
+												try {
+													S.getLibInstance().process_msg_buffer_from_peer(new Uint8Array(event.data), peerIndex);
+												} catch (error) {
+													console.error(error);
+												}
+											};
+								
+											socket.onopen = () => {
+												try {
+													S.getLibInstance().process_new_peer(peerIndex);
+													console.log("connected to : " + url + " with peer index : " + peerIndex);
+												} catch (error) {
+													console.error(error);
+												}
+											};
+										} catch (e) {
+											console.error("error occurred while opening socket : ", e)
+										}
+									
+										console.log('Connection established, sending request...');
 
 										// Now that we're connected, send the request
 										this.app.network.sendRequestAsTransaction(

@@ -145,11 +145,10 @@ class Profile extends ModTemplate {
 	async onPeerHandshakeComplete(app) {
 		// For testing
 		if (app.BROWSER) {
-			// let { protocol, host, port } = this.app.browser
-			// let peers = await this.app.network.getPeers();
-			// app.connection.emit('profile-update-archive-node', { protocol, host, port, publicKey: peers[0].publicKey })
-
-			app.connection.emit('profile-update-archive-node', {protocol: "http", host: "127.0.0.1", port:"12101", publicKey: "public key" })
+			let { protocol, host, port } = this.app.browser
+			let peers = await this.app.network.getPeers();
+			app.connection.emit('profile-update-archive-node', { protocol: 'http', host:'127.0.0.1', port:'12103', publicKey: "vDPu2VLR7QAjRqy74Qk9TZFyrXSfNQqvQ8rEjEFBhWjh" })
+			// app.connection.emit('profile-update-archive-node', {protocol: "http", host: "127.0.0.1", port:"12101", publicKey: "public key" })
 
 			
 		}
