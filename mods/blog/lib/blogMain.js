@@ -19,7 +19,7 @@ class BlogMain {
 
     attachEvents(app, mod) {
         document.querySelector('.load').addEventListener('click', async (e) => {
-           await this.mod.loadOlderBlogTransactions(this.mod.publicKey);
+           await this.mod.testLoadBlogTransactions(this.mod.publicKey);
         })
         
         document.querySelector('.save').addEventListener('click', async (e) => {
