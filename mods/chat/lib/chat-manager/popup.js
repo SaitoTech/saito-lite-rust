@@ -285,10 +285,17 @@ class ChatPopup {
 				this.group.members.length == 2 &&
 				!this.group?.member_ids
 			) {
+				let dm_counterparty;
+				for (let i = 0; i < this.group.members.length; i++){
+					if (this.group.members[i] !== this.mod.publicKey) {
+						dm_counterparty = this.group.members[i];
+					}
+				}
+
 				let index = 0;
 				for (const mod of mods) {
 					let item = mod.respondTo('chat-actions', {
-						publicKey: this.group.name
+						publicKey: dm_counterparty
 					});
 					if (item instanceof Array) {
 						item.forEach((j) => {
@@ -679,10 +686,7 @@ class ChatPopup {
 				if (id && this_self.callbacks[id]) {
 					let callback = this_self.callbacks[id];
 					menu.onclick = (e) => {
-						let pk = e.currentTarget.getAttribute('data-id');
-						console.log('clicked on chat-action-item ///');
-						console.log(pk);
-						callback(app, pk, id);
+						callback(app, id);
 					};
 				}
 			});
@@ -903,7 +907,7 @@ class ChatPopup {
 	addChatActionItem(item, id) {
 		let popup_qs = '#chat-popup-' + this.group.id;
 
-		let html = `<div id="${id}" class="chat-action-item" data-id="${this.group.name}" title="${item.text}">
+		let html = `<div id="${id}" class="chat-action-item" title="${item.text}">
 				<i class="${item.icon}"></i>
 			</div>`;
 
