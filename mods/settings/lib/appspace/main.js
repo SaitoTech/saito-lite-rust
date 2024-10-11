@@ -393,6 +393,13 @@ class SettingsAppspace {
 				app.connection.emit('saito-app-app-render-request');
 			}
 		}
+
+		if(document.getElementById('settings-edit-json')) {
+			document.getElementById('settings-edit-json').onclick =
+			function (e) {
+				window.location.href = '/debug';
+			};
+		}
 	}
 }
 
