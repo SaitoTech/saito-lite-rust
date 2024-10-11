@@ -37,7 +37,7 @@ class SettingsAppspace {
 			}
 		}
 
-		await this.renderDebugTree();
+		this.renderDebugTree();
 		this.renderStorageInfo();
 		this.renderCryptoGameSettings();
 

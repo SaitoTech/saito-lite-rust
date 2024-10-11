@@ -194,6 +194,7 @@ class Videocall extends ModTemplate {
 	respondTo(type, obj) {
 		let call_self = this;
 
+		let app = this.app;
 		if (type === 'user-menu') {
 			//Don't provide a calling hook if in the video call app!
 			// if (call_self.browser_active) {

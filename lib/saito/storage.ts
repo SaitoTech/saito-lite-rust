@@ -334,9 +334,6 @@ class Storage {
 	// build in a sufficient delay so that the browser can complete
 	//
 	saveOptions() {
-		
-		console.log(`saveOptions called ${Date.now()}`);
-
 		if (this.app.BROWSER == 1) {
 			if (this.active_tab == 0) {
 				return;
