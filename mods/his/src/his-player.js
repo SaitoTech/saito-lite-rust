@@ -2031,7 +2031,8 @@ if (relief_siege == 1) {
 
     let his_self = this;
     let menu = this.returnActionMenuOptions(this.game.player, faction, "mary_i");
-    let ops = this.game.deck[0].cards[card].ops;
+    let deck = this.returnDeck(true); // HACK
+    let ops = deck[card].ops;
     let pfactions = this.returnPlayerFactions(this.game.player);
 
     let attachEventsToMenuOptions = () => {
@@ -2364,6 +2365,56 @@ if (relief_siege == 1) {
           this.endTurn();
           return;
         }
+
+	//
+	// cost of founding depends on Loyola
+	//
+	if (menu[user_choice].name.indexOf("University") != -1) {
+
+	  let default_cost = 3;
+
+    	  if (this.canPlayerCommitDebater("papacy", "loyola-debater")) {
+
+	    let msg = "Commit Loyola to reduce cost to 2 OPs?";
+      	    let html = `<ul>`;
+            html += `<li class="option" id="commit">commit Loyola (2 OPs)</li>`;
+            if (ops > 2) { html += `<li class="option" id="donot">do not commit (3 OPs)</li>`; }
+	    html += '</ul>';
+
+	    his_self.updateStatusWithOptions(msg, html);
+      	    his_self.attachCardboxEvents(async (moar_user_choice) => {      
+
+	      if (moar_user_choice === "commit") {
+                ops -= 2;
+                if (ops > 0) {
+ 		  his_self.addMove("continue\t"+his_self.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit); 
+		}
+                his_self.addMove("commit\tpapacy\tloyola-debater\t1");
+                his_self.playerFoundJesuitUniversity(his_self, his_self.game.player, "papacy");
+                return;
+	      }
+
+	      if (moar_user_choice === "donot") {
+                ops -= 3;
+	        if (ops > 0) {
+ 	          his_self.addMove("continue\t"+his_self.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit); 
+                }
+                his_self.playerFoundJesuitUniversity(his_self, his_self.game.player, "papacy");
+                return;
+	      }
+
+	    });
+
+	  } else {
+            ops -= 3;
+	    if (ops > 0) {
+ 	      his_self.addMove("continue\t"+his_self.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit); 
+            }
+            menu[user_choice].fnct(his_self, his_self.game.player, faction, 3, ops);
+	  }
+
+	  return;
+	}
 
 	//
 	// sub-menu to simplify translations / st peters
@@ -3703,7 +3754,8 @@ does_units_to_move_have_unit = true; }
   async playerContinueToMoveFormationInClear(his_self, player, faction, spacekey, ops_to_spend, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
+    //his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
+    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining, ""); });
 
     //
     // we add this before broadcasting, or the turn ends 
@@ -5293,7 +5345,8 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	i--;
       } else {
 	let s = his_self.game.spaces[spaces_with_infantry[i]];
-	if (s.besieged > 0) {
+	let cf = his_self.returnFactionControllingSpace(spaces_with_infantry[i]);
+	if (s.besieged > 0 && his_self.areAllies(faction, cf)) {
 	  spaces_with_infantry.splice(i, 1);
 	  i--;
 	  z = s.ports.length + 2;
@@ -5420,7 +5473,6 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
     // BACK moves us to OPS menu
     his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
-
 
     let units_to_move = [];
     let units_available = his_self.returnFactionNavalUnitsToMove(faction);
@@ -6152,23 +6204,23 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 
 	let neighbours = his_self.game.spaces[spaces_in_unrest[i]].neighbours;
 	let pass = his_self.game.spaces[spaces_in_unrest[i]].pass;
-	let impeding_units = true;
+	let do_any_enemies_impede_control = false;
 
 	for (let z = 0; z < neighbours.length; z++) {
+
+	  if (z > 0 && do_any_enemies_impede_control == false) { return 1; }
+	  do_any_enemies_impede_control = false;
 
 	  let number_of_hostiles = his_self.returnHostileLandUnitsInSpace(faction, neighbours[z]);
 	  if (number_of_hostiles > 0) {
 	    if (pass.includes(neighbours[z])) {
-	      impeding_units = false;
 	    } else {
-	      return true; // at least one target
+	      do_any_enemies_impede_control = true;
 	    }
 	  } else {
-	    impeding_units = false;
+	    do_any_enemies_impede_control = false;
 	  }
 	}
-
-	if (impeding_units == false) { return 1; }
 
       }
     }

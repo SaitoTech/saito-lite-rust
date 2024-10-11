@@ -512,13 +512,14 @@ if (this.game.options.scenario != "is_testing") {
 	  //
 	  // Henry VIII reroll on first pass after 3 roll on pregnancy chart
 	  //
-	  if (this.game.state.henry_viii_auto_reroll == 1) {
+	  if (this.game.state.henry_viii_auto_reroll == 1 && faction == "england") {
 	    this.game.queue.push("advance_henry_viii_marital_status");
 	    this.game.state.henry_viii_auto_reroll = 0;
 	  }
 
           this.game.queue.splice(qe, 1);
 	  return 1;
+
 	}
 
 	if (mv[0] === "build") {
@@ -781,9 +782,6 @@ if (this.game.options.scenario != "is_testing") {
 			(spacekey != "ireland" && spacekey != "persia" && spacekey != "egypt")
 		) {
 
-
-console.log("retreat from : " + space.key + " -- " + faction);
-
 		  //
 		  // remove siege if needed so units not "besieged" when moved
 		  //
@@ -901,6 +899,7 @@ console.log("retreat from : " + space.key + " -- " + faction);
 			    let leader = this.game.spaces[spacekey].units[faction][z];
 			    this.game.spaces[spacekey].units[faction].splice(z, 1);
 			    z--;
+			    unitlen--;
 
     			    let obj = {};
 			    obj.leader = leader;
@@ -911,7 +910,7 @@ console.log("retreat from : " + space.key + " -- " + faction);
 			  }
 			}
 
-                        for (let z = 0, y = 0; z < unitlen; z++) {
+                        for (let z = 0, y = 0; z < this.game.spaces[spacekey].units[faction].length && z < unitlen; z++) {
                           if (capitals[y]) {
                             if (this.game.spaces[spacekey].units[faction][z].reformer != true && this.game.spaces[spacekey].units[faction][z].type != "squadron" && this.game.spaces[spacekey].units[faction][z].type != "corsair") {
                               this.game.spaces[capitals[y]].units[faction].push(this.game.spaces[spacekey].units[faction][z]);
@@ -1007,8 +1006,23 @@ console.log("retreat from : " + space.key + " -- " + faction);
         if (mv[0] === "decide_if_mary_i_subverts_protestantism_in_6P") {
 
 	  this.game.queue.splice(qe, 1);
-
 	  let card = mv[1];
+
+	  //
+	  // no protestant spaces, no messing around with Mary
+	  //
+	  let english_home_spaces = ["norwich", "london", "portsmouth", "plymouth", "bristol", "wales", "shrewsbury", "lincoln", "york", "carlisle", "berwick"];
+	  let any_spaces_protestant = false;
+	  for (let i = 0; i < english_home_spaces.length; i++) {
+	    if (this.game.spaces[english_home_spaces[i]]) {
+	      if (this.game.spaces[english_home_spaces[i]].religion == "protestant") { any_spaces_protestant = true; }
+	    }
+	  }
+
+	  if (any_spaces_protestant == false) {
+	    this.game.queue.push("NOTIFY\t"+this.popup("021") + ": no Catholic home spaces in England");
+	    return 1;
+	  }
 
           let x = this.rollDice(6);
           if (x >= 4) {
@@ -1024,11 +1038,21 @@ console.log("retreat from : " + space.key + " -- " + faction);
 
 	  this.game.queue.splice(qe, 1);
 
-	  let num = this.returnNumberOfProtestantSpacesInLanguageZone("english", 1);
+	  //
+	  // no protestant spaces, no messing around with Mary
+	  //
+	  let english_home_spaces = ["norwich", "london", "portsmouth", "plymouth", "bristol", "wales", "shrewsbury", "lincoln", "york", "carlisle", "berwick"];
+	  let any_spaces_protestant = false;
+	  for (let i = 0; i < english_home_spaces.length; i++) {
+	    if (this.game.spaces[english_home_spaces[i]]) {
+	      if (this.game.spaces[english_home_spaces[i]].religion == "protestant") { any_spaces_protestant = true; }
+	    }
+	  }
+
 	  let p = this.returnPlayerOfFaction("papacy");
 	  let fhand_idx = 0; // faction hand/pool is necessarily 0 in 2P
 
-	  if (num > 0) {
+	  if (any_spaces_protestant == true) {
 	    this.game.queue.push("process_mary_i_subverts_protestantism_in_2P");
             this.game.queue.push("hand_to_fhand\t1\t"+p+"\t"+"papacy"+"\t1"); // 1 = show overlay
             this.game.queue.push("DEAL\t1\t"+p+"\t"+1);
@@ -4978,13 +5002,6 @@ console.log("translation_english_language_zone = 1");
           let z = this.returnEventObjects();
 	  for (let i = 0; i < z.length; i++) {
 
-try {
-  console.log("checking events: " + z[i].name);
-} catch (err) {
-  console.log("error: " +JSON.stringify(err) + " -- " + i);
-}
-
-
 	    //
 	    // maybe event has been removed, will fail
 	    //
@@ -8126,7 +8143,7 @@ console.log("removing roll from attacker...");
 	      }	
 	    }	
 	    if (total_squadrons_issuable > squadron_count) {
-	      if (!(squadron_count > card_count && cards_issuable == true) && (squadron_count > vp_count && vp_issuable == true)) {
+	      if (!(squadron_count > card_count && squadrons_issuable == true) && !(squadron_count > vp_count && vp_issuable == true)) {
                 html += `<li class="option" id="squadron">destroy squadron</li>`;
 	      }	
 	    }	
@@ -8151,9 +8168,9 @@ console.log("removing roll from attacker...");
 		his_self.addMove("NOTIFY\t" + his_self.returnFactionName(faction) + " offers Ottomans card draw");
 	      }
 	      if (action == "squadron") {
+		squadron_count++;
 		his_self.addMove("piracy_reward_squadron\t"+faction+"\t"+mv[4]);
 		his_self.addMove("NOTIFY\t" + his_self.returnFactionName(faction) + " destroys squadron");
-		squadron_count++;
 	      }
 
 	      if (hits_given < hits) {
@@ -12868,7 +12885,9 @@ console.log("----------------------------");
 		    // we need units in this space
 		    //
 		    if (this.returnFactionLandUnitsInSpace(faction, player_last_spacekey) > 0) {
- 	              mycallback.push({ text : "continue move" , mycallback : () => {this.playerContinueToMoveFormationInClear(his_self, this.game.player, faction, player_last_spacekey, 1, (ops)); }});
+
+		      his_self.unbindBackButtonFunction();
+ 	              mycallback.push({ text : "continue move" , mycallback : () => { alert("OPS is: " + ops); this.playerContinueToMoveFormationInClear(his_self, this.game.player, faction, player_last_spacekey, 1, (ops)); }});
 	              if (!this.isSpaceControlled(faction, player_last_spacekey) && this.game.spaces[player_last_spacekey].type == "town" && !this.areAllies(faction, this.returnFactionControllingSpace(player_last_spacekey))) {
  	                mycallback.push({ text : "control town" , mycallback : () => {
 		          if (ops > 1) {
