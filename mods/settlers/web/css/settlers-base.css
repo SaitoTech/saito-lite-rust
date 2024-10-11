@@ -480,11 +480,11 @@ dt {
 }
 
 .game-playerbox .saito-identicon-box {
-	border: 5px solid;
 	width: 4rem;
 	height: 4rem;
 }
 
+/*
 .p1-lite .saito-identicon-box {
 	border-color: var(--p1-color-lite);
 }
@@ -500,6 +500,7 @@ dt {
 .p4-lite .saito-identicon-box {
 	border-color: var(--p4-color-lite);
 }
+*/
 
 .saito-userline {
 	width: 100%;
@@ -631,14 +632,16 @@ input[type='checkbox'] {
 
 .bandit {
 	color: #fff9;
-	background-image: url(/settlers/img/icons/bandit.png);
-	background-size: cover;
-	overflow: visible;
-	border: none;
-	width: 55%;
-	height: 45%;
-	box-shadow: 0 0 32px 32px #000b;
-	background-color: #000b;
+    background-image: url(/settlers/img/icons/bandit.png);
+    background-size: 35%;
+    overflow: visible;
+    border: none;
+    /* width: 55%; */
+    /* height: 45%; */
+    /* box-shadow: 0 0 32px 32px #000b; */
+    /* background-color: #000b; */
+    background-repeat: no-repeat;
+    background-position: 50% 111%;
 }
 
 .robinhood .bandit {
@@ -646,13 +649,10 @@ input[type='checkbox'] {
 }
 
 .bandit .hexTileCenter {
-	opacity: 0;
+	border-color: #fff8;
+	color: #fff8;
 }
 
-.bandit:hover .hexTileCenter {
-	opacity: 1;
-	background-color: black;
-}
 
 
 .city.p1 {
