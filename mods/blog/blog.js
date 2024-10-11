@@ -78,8 +78,7 @@ class Blog extends ModTemplate {
                 key.publicKey)
         }else {
             console.log('keychain is empty')
-        }
-      
+        }  
     }
 
     
@@ -143,41 +142,6 @@ class Blog extends ModTemplate {
 
         // }
     }
-
-    // async fetchLocalBlogHistory(publicKey, mycallback) {
-    //     await this.app.storage.loadTransactions(
-    //         { field1: 'Blog', field2: publicKey, limit: 100 },
-    //         (txs) => {
-    //             const filteredTxs = this.filterBlogPosts(txs);
-    //             this.txs = filteredTxs;
-    //             mycallback(this.txs);
-    //         },
-    //         "localhost"
-    //     );
-    // }
-
-    // async fetchTransactionsFromServer(publicKey, mycallback) {
-    //     // Assuming the first peer is always the server
-    //     let peers = await this.app.network.getPeers();
-    //     const serverPeer = peers[0];
-    //     console.log(serverPeer.publicKey, 'serverpublickey' )
-    //     let msg = {
-    //         request: 'blog history',
-    //         publicKey,
-    //         publicKeyToFetchFrom: serverPeer.publicKey, // We're fetching from the server
-    //     };
-    //     this.app.network.sendRequestAsTransaction(
-    //         'blog history',
-    //         msg,
-    //         (txs) => {
-    //             console.log(txs, 'found transactions from server');
-    //             if(mycallback){
-    //                 mycallback(txs);
-    //             }
-    //         },
-    //         serverPeer.peerIndex
-    //     );
-    // }
 
 
    async fetchTransactionsFromPeer(peer, publicKey, mycallback = null) {
@@ -243,29 +207,6 @@ class Blog extends ModTemplate {
     }
 
 
-
-    // async loadBlogTransactions(key, limit = 100) {
-    //     let loadedPosts = 0;
-    //     await this.app.storage.loadTransactions(
-    //         { field1: 'Blog', field2: key, limit: 100 },
-    //         async (txs) => {
-    //             let txs_found = [];
-    //             if (txs?.length > 0) {
-    //                 for (let i = 0; i < txs.length && loadedPosts < limit; i++) {
-    //                     let txmsg = txs[i].returnMessage();
-    //                     if (txmsg.data.type === 'blog_post') {
-    //                         txs_found.push(txs[i]);
-    //                         loadedPosts++;
-    //                     }
-    //                 }
-    //             }
-
-    //             this.txs = txs_found;
-    //         },
-    //         "localhost"
-    //     );
-
-    // }
 
     async saveBlogTransaction(tx, key) {
         await this.app.storage.saveTransaction(tx,

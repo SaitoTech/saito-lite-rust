@@ -182,7 +182,7 @@ class Storage {
 		return { err: 'Save Transaction failed' };
 	}
 
-	async loadTransactions(obj = {}, mycallback, peer = null, archive_nodes= []) {
+	async loadTransactions(obj = {}, mycallback, peer = null, archive_nodes = []) {
 		let storage_self = this;
 		const message = 'archive';
 		let data: any = {};
@@ -221,9 +221,14 @@ class Storage {
 
 		if (peer != null) {
 			if (typeof peer === "string") {
+				 // Verify if the peer string is a valid public key
 				if (this.app.crypto.isPublicKey(peer)) {
+
+					// Attempt to find the peer in the current network
 					let peers = await this.app.network.getPeers();
 					const targetPeer = peers.find(p => p.publicKey === peer) || null
+
+					// If the peer is found in the network, send the request
 					if (targetPeer) {
 						this.app.network.sendRequestAsTransaction(
 							message,
@@ -235,18 +240,21 @@ class Storage {
 						);
 					}
 
+					// Retrieve archive nodes for the peer
 					let a_nodes;
-					if(this.app.BROWSER === 1){
+					if (this.app.BROWSER === 1) {
 						a_nodes = this.app.keychain.returnPeerArchiveNodes(peer);
-					}else {
+					} else {
 						a_nodes = archive_nodes
-					}		
+					}
+
+					// If archive nodes are found, attempt to communicate
 					if (a_nodes.length > 0) {
 						let archiveNode = a_nodes[0];
 						let { protocol, port, host, publicKey } = archiveNode;
 						let peers = await this.app.network.getPeers();
 						const targetPeer = peers.find(p => p.publicKey === publicKey) || null
-						// if we are connected to the archive node
+						// If connected to the archive node, send the request
 						if (targetPeer) {
 							console.log('connected to this node')
 							this.app.network.sendRequestAsTransaction(
@@ -259,21 +267,23 @@ class Storage {
 							);
 						} else {
 
-							// To do Connect to the archive node
-							console.log('not connected to this archive node, initiating connection');							
+							 // If not connected, initiate connection to the archive node
+							console.log('not connected to this archive node, initiating connection');
 							const url = `ws://${host}:${port}/wsopen`;
 							try {
 								const peerIndex = await S.getLibInstance().get_next_peer_index();
+								// to do initiate connection to archive node and fetch txs
 							}
 							catch (error) {
 								console.error("Failed to connect to archive node:", error);
-							}										
+							}
+						}
+					} else {
+						console.log('No archive nodes found for this key');
 					}
-				} else {
-					console.log('No archive nodes found for this key');
-				}
 				}
 			} else {
+				 // If peer is not a string (likely an object), send request directly
 				this.app.network.sendRequestAsTransaction(
 					message,
 					data,
