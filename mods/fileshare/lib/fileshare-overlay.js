@@ -40,7 +40,6 @@ class FileShareOverlay {
 
 	render(needs_file = true){
 
-		this.active = true;
 		this.app.browser.addElementToDom(FileShareOverlayTemplate(this));
 
 		if (this.recipient){
@@ -251,6 +250,7 @@ class FileShareOverlay {
 							}
 						}
 					}
+					this.active = true;
 					this.onFile(input.files[0]);
 				});
 				
@@ -264,13 +264,15 @@ class FileShareOverlay {
 				}
 
 			}
+		}else{
+			this.active = true;
 		}
 
 		let close = document.querySelector(this.qs + " .icon-button#close");
 		if (close){
 			close.onclick = async (e) => {
 
-				if (this.active) {
+				if (this?.active) {
 					let c = await sconfirm("Are you sure you want to cancel?");
 					if (!c) {
 						return;
