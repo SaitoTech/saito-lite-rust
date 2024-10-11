@@ -3113,7 +3113,7 @@ return;
           opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
         }
       }
-      opt += `<li class="option" id="finish">skip</li>`;
+      opt += `<li class="option" id="finish">finish</li>`;
       opt += '</ul>';
 
       his_self.updateStatusWithOptions(msg, opt);
@@ -3304,7 +3304,7 @@ return;
           opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
         }
       }
-      opt += `<li class="option" id="finish">skip</li>`;
+      opt += `<li class="option" id="finish">finish</li>`;
       opt += '</ul>';
 
       if (viable_capitals.length == 0) {
