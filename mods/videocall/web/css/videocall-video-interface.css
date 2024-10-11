@@ -26,7 +26,7 @@
 	bottom: 0;
 	left: 0;
 	height: calc(100 * var(--saito-vh));
-	position: fixed;
+	/*position: fixed;*/
 	background-color: var(--saito-background-color);
 	transition: all 0.2s;
 	z-index: 20;
@@ -89,17 +89,14 @@
 	grid-template-columns: minmax(5rem, 1fr);
 }
 
-.minimize .stun-chatbox .footer {
-	padding: unset;
-}
-
 .minimize .stun-chatbox .minimizer i {
 	font-size: 2rem;
 }
 
 .minimize .stun-chatbox .video-container-large {
 	padding: 0.25rem;
-	grid-template-columns: 2fr 1fr;
+	/* We don't want this, show only one video in minimized view */
+	/*grid-template-columns: 2fr 1fr;*/
 	gap: 0.5rem;
 }
 
@@ -123,21 +120,16 @@
 	gap: 0.5rem;
 }
 
-.minimize .stun-chatbox .timer {
-	min-width: unset;
-	gap: 0;
-	flex: 1;
-}
 
 .minimize .stun-chatbox .stun-identicon-list img.saito-identicon {
 	width: 3rem;
 	height: 3rem;
 }
 
-.stun-chatbox.minimize .users-on-call-text,
-.stun-chatbox.minimize .add-users-container,
-.stun-chatbox.minimize .imported-actions,
-.stun-chatbox.minimize label {
+.minimize .stun-chatbox .users-on-call-text,
+.minimize .stun-chatbox .add-users-container,
+.minimize .stun-chatbox .imported-actions,
+.minimize .stun-chatbox label {
 	display: none;
 }
 
@@ -175,7 +167,7 @@
 }
 
 .stun-chatbox .video-container-large {
-	width: 97%;
+	/*width: 97%; Why!!?? */
 	height: 100%;
 	max-height: 85vh;
 	transition: all 0.5s ease;
@@ -690,6 +682,17 @@ video#presentation {
 	min-width: 7rem;
 	font-family: monospace;
 	text-align: right;
+}
+
+
+.minimize .stun-chatbox .footer {
+	padding: unset;
+	justify-content: space-between;
+}
+
+.minimize .stun-chatbox .timer {
+	min-width: unset;
+	margin: 0 1rem;
 }
 
 .minimize .timer .counter {

@@ -70,9 +70,9 @@ class Dialer {
 			r.render();
 		}
 
-		if (this.mod?.room_obj?.ui === 'video' && !making_call) {
-			this.callSetting.render();
-		}
+		//if (this.mod?.room_obj?.ui === 'video' && !making_call) {
+		//	this.callSetting.render();
+		//}
 
 		this.attachEvents();
 	}
@@ -257,9 +257,9 @@ class Dialer {
 
 		video_switch.onchange = (e) => {
 			if (video_switch.checked) {
-				this.callSetting.render();
+				//this.callSetting.render();
 			} else {
-				this.app.connection.emit('close-preview-window');
+				//this.app.connection.emit('close-preview-window');
 			}
 		};
 	}
@@ -275,16 +275,9 @@ class Dialer {
 	async establishStunCallWithPeers(recipients) {
 		// salert("Establishing a connection with your peers...");
 
-		// create a room
-		let call_id = await this.mod.generateRoomId();
 		if (!this.mod.room_obj) {
-			this.mod.room_obj = {
-				call_id,
-				host_public_key: this.mod.publicKey,
-				call_peers: [],
-				scheduled: false
-			};
-		}
+  			await this.mod.createRoom();
+  		}
 
 		// send the information to the other peers and ask them to join the call
 		recipients = recipients.filter((player) => {

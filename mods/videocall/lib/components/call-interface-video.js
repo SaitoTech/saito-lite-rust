@@ -23,69 +23,62 @@ class CallInterfaceVideo {
 		this.full_screen = fullScreen;
 		this.rendered = false;
 
-		this.app.connection.on(
-			'show-call-interface',
-			async (videoEnabled, audioEnabled) => {
-				console.log(
-					'Render Video Call Interface',
-					videoEnabled,
-					audioEnabled
-				);
+		this.app.connection.on('show-call-interface', async (videoEnabled, audioEnabled) => {
+			console.log('Render Video Call Interface', videoEnabled, audioEnabled);
 
-				//This will render the (full-screen) component
-				if (!document.querySelector('.stun-chatbox')) {
-					this.render(videoEnabled, audioEnabled);
-				}
+			//This will render the (full-screen) component
+			if (!document.querySelector('.stun-chatbox')) {
+				this.render(videoEnabled, audioEnabled);
+			}
 
-				this.room_link = this.createRoomLink();
+			if (!this.old_title) {
+				this.old_title = document.title;
+			}
 
-				if (
-					this.mod.room_obj.host_public_key == this.mod.publicKey &&
-					this.full_screen
-				) {
+			this.room_link = this.mod.generateCallLink();
+
+			if (this.full_screen) {
+				window.history.pushState({}, '', this.room_link);
+				document.title = 'Saito Talk';
+
+				if (this.mod.room_obj.host_public_key == this.mod.publicKey) {
 					this.copyInviteLink();
 				}
 			}
-		);
 
-		this.app.connection.on('stun-update-link', () => {
-			this.room_link = this.createRoomLink();
 		});
 
+		this.app.connection.on('stun-update-link', () => {
+			this.room_link = this.mod.generateCallLink();
+		});
 
 		this.app.connection.on('add-local-stream-request', (localStream) => {
 			this.addLocalStream(localStream);
 		});
 
-		this.app.connection.on(
-			'add-remote-stream-request',
-			(peer, remoteStream) => {
-				this.remote_streams.set(peer, remoteStream);
-				this.addRemoteStream(peer, remoteStream);
+		this.app.connection.on('add-remote-stream-request', (peer, remoteStream) => {
+			this.remote_streams.set(peer, remoteStream);
+			this.addRemoteStream(peer, remoteStream);
 
-				this.updateImages();
-				if (remoteStream) {
-					this.startTimer();
-				}
+			this.updateImages();
+			if (remoteStream) {
+				this.startTimer();
 			}
-		);
+		});
 
-		this.app.connection.on(
-			'add-waiting-video-box',
-			() => {
-				this.addRemoteStream('connecting', null);
-			}
-		);
+		this.app.connection.on('add-waiting-video-box', () => {
+			this.addRemoteStream('connecting', null);
+		});
 
 		this.app.connection.on('remove-waiting-video-box', () => {
-			let peer_id = "connecting"
+			let peer_id = 'connecting';
 			if (this.video_boxes[peer_id]?.video_box) {
 				if (this.video_boxes[peer_id].video_box?.remove) {
 					this.video_boxes[peer_id].video_box.remove(true);
 				}
 				delete this.video_boxes[peer_id];
 			}
-		})
+		});
 
 		this.app.connection.on('remove-peer-box', (peer_id) => {
 			this.remote_streams.delete(peer_id);
@@ -103,11 +96,10 @@ class CallInterfaceVideo {
 
 		// Change arrangement of video boxes (emitted from SwitchDisplay overlay)
 		app.connection.on('stun-switch-view', (newView, save = false) => {
-
 			siteMessage(`Switched to ${newView} display`, 2000);
 
-			if (newView == "presentation") {
-				newView = "focus";
+			if (newView == 'presentation') {
+				newView = 'focus';
 			}
 
 			this.mod.layout = newView;
@@ -122,7 +114,6 @@ class CallInterfaceVideo {
 				case 'focus':
 					this.switchDisplayToExpanded();
 			}
-
 		});
 
 		app.connection.on('stun-new-speaker', (peer) => {
@@ -130,34 +121,30 @@ class CallInterfaceVideo {
 				return;
 			}
 
-			document
-				.querySelectorAll('.video-box-container-large')
-				.forEach((item) => {
-					if (item.id === `stream${peer}`) {
-						if (item.classList.contains('speaker')) {
-							return;
-						}
-
-						if (
-							this.mod.layout == 'speaker' &&
-							!item.parentElement.classList.contains(
-								'expanded-video'
-							)
-						) {
-							console.log('New Speaker: ' + peer);
-							this.flipDisplay(peer);
-						}
-
-						item.classList.add('speaker');
-					} else {
-						item.classList.remove('speaker');
+			document.querySelectorAll('.video-box-container-large').forEach((item) => {
+				if (item.id === `stream${peer}`) {
+					if (item.classList.contains('speaker')) {
+						return;
 					}
-				});
+
+					if (
+						this.mod.layout == 'speaker' &&
+						!item.parentElement.classList.contains('expanded-video')
+					) {
+						console.log('New Speaker: ' + peer);
+						this.flipDisplay(peer);
+					}
+
+					item.classList.add('speaker');
+				} else {
+					item.classList.remove('speaker');
+				}
+			});
 		});
 
 		app.connection.on('stun-data-channel-open', (pkey) => {
-			if (this.rendered){
-				//this.insertActions(this.mod.room_obj.call_peers);	
+			if (this.rendered) {
+				//this.insertActions(this.mod.room_obj.call_peers);
 			}
 		});
 
@@ -182,16 +169,15 @@ class CallInterfaceVideo {
 				let url = '/' + slug;
 
 				const recordControls = this.app.modules.getRespondTos('screenrecord-video-controls');
-				console.log(recordControls, "recordControls")
-				let { mediaRecorder, stopRecording, type } = recordControls[0]
+				console.log(recordControls, 'recordControls');
+				let { mediaRecorder, stopRecording, type } = recordControls[0];
 
 				if (mediaRecorder) {
-					await stopRecording()
+					await stopRecording();
 				}
 				setTimeout(() => {
 					window.location.href = url;
 				}, 2000);
-
 			} else {
 				//
 				// Hopefully we don't have to reload the page on the end of a stun call
@@ -199,23 +185,18 @@ class CallInterfaceVideo {
 				//
 				if (document.querySelector('.stun-overlay-container')) {
 					const recordControls = this.app.modules.getRespondTos('screenrecord-video-controls');
-					let { mediaRecorder, stopRecording, type } = recordControls[0]
-					console.log(recordControls, "recordControls")
+					let { mediaRecorder, stopRecording, type } = recordControls[0];
+					console.log(recordControls, 'recordControls');
 					document.querySelector('.stun-overlay-container').remove();
 
 					// Don't stop until the game ends...
-					if(type === "game") return;
+					if (type === 'game') return;
 
 					if (mediaRecorder) {
-						await stopRecording()
+						await stopRecording();
 					}
 					let am = this.app.modules.returnActiveModule();
-					window.history.pushState(
-						{},
-						'',
-						window.location.origin + '/' + am.returnSlug()
-					);
-
+					window.history.pushState({}, '', window.location.origin + '/' + am.returnSlug());
 				}
 			}
 		});
@@ -251,22 +232,18 @@ class CallInterfaceVideo {
 		}
 
 		if (!this.mod.browser_active) {
-			this.app.connection.emit("stun-switch-view", "gallery");
+			this.app.connection.emit('stun-switch-view', 'gallery');
 		} else {
-			this.app.connection.emit("stun-switch-view", this.mod.layout);
+			this.app.connection.emit('stun-switch-view', this.mod.layout);
 		}
 
 		this.rendered = true;
-
-
 	}
 
 	insertActions() {
 		// add call icons
 
-		let container = document.querySelector(
-			'.control-list.imported-actions'
-		);
+		let container = document.querySelector('.control-list.imported-actions');
 
 		if (!container) {
 			return;
@@ -281,37 +258,34 @@ class CallInterfaceVideo {
 			streams.push(stream);
 		});
 
-
 		for (const mod of this.app.modules.mods) {
-
-				let item = mod.respondTo('call-actions', { call_id: this.mod.room_obj.call_id });
-				if (item instanceof Array) {
-					item.forEach((j) => {
-						this.createActionItem(j, container, index++);
-					});
-				} else if (item != null) {
-					this.createActionItem(item, container, index++);
-				}
-
-				// This should confirm to the standard API!
-
-				item = mod.respondTo('record-actions', {
-					container: ".video-container-large",
-					streams,
-					useMicrophone: true,
-					members: this.mod.room_obj.call_peers,
-					callbackAfterRecord: (data) => {
-						console.log("", data)
-					}
+			let item = mod.respondTo('call-actions', { call_id: this.mod.room_obj.call_id });
+			if (item instanceof Array) {
+				item.forEach((j) => {
+					this.createActionItem(j, container, index++);
 				});
-				if (item instanceof Array) {
-					item.forEach((j) => {
-						this.createActionItem(j, container, index++);
-					});
-				} else if (item != null) {
-					this.createActionItem(item, container, index++);
-				}
+			} else if (item != null) {
+				this.createActionItem(item, container, index++);
+			}
 
+			// This should confirm to the standard API!
+
+			item = mod.respondTo('record-actions', {
+				container: '.video-container-large',
+				streams,
+				useMicrophone: true,
+				members: this.mod.room_obj.call_peers,
+				callbackAfterRecord: (data) => {
+					console.log('', data);
+				}
+			});
+			if (item instanceof Array) {
+				item.forEach((j) => {
+					this.createActionItem(j, container, index++);
+				});
+			} else if (item != null) {
+				this.createActionItem(item, container, index++);
+			}
 		}
 
 		/*
@@ -324,7 +298,7 @@ class CallInterfaceVideo {
 
 	createActionItem(item, container, index) {
 		let id = 'call_action_item_' + index;
-		let hook = item?.hook || "";
+		let hook = item?.hook || '';
 		let html = `<div id="${id}" class="icon_click_area ${hook}">
 						<label>${item.text}</label>
 						<i class="${item.icon}"></i>
@@ -353,7 +327,6 @@ class CallInterfaceVideo {
 			if (item.event) {
 				item.event(id);
 			}
-
 		} else {
 			console.warn('Item not found');
 		}
@@ -368,11 +341,9 @@ class CallInterfaceVideo {
 		}
 
 		if (document.querySelector('.effects-control')) {
-			document
-				.querySelector('.effects-control')
-				.addEventListener('click', (e) => {
-					this.effectsMenu.render();
-				});
+			document.querySelector('.effects-control').addEventListener('click', (e) => {
+				this.effectsMenu.render();
+			});
 		}
 
 		document.querySelectorAll('.disconnect-control').forEach((item) => {
@@ -381,11 +352,6 @@ class CallInterfaceVideo {
 				siteMessage('You have been disconnected', 3000);
 			});
 		});
-
-
-
-
-
 
 		/*document.getElementById('record-icon').onclick = async () => {
 			const recordIcon = document.querySelector('#record-icon i');
@@ -442,46 +408,35 @@ class CallInterfaceVideo {
 			// can still interact with the site
 			//
 
-			document
-				.querySelector('.stun-chatbox .minimizer')
-				.addEventListener('click', (e) => {
-					// fas fa-expand"
-					let icon = document.querySelector(
-						'.stun-chatbox .minimizer i'
-					);
-					let chat_box = document.querySelector('.stun-overlay-container');
+			document.querySelector('.stun-chatbox .minimizer').addEventListener('click', (e) => {
+				// fas fa-expand"
+				let icon = document.querySelector('.stun-chatbox .minimizer i');
+				let chat_box = document.querySelector('.stun-overlay-container');
 
-					chat_box.classList.toggle('full-screen');
+				chat_box.classList.toggle('full-screen');
 
-					if (icon.classList.contains('fa-caret-down')) {
-						if (this.mod.layout !== 'focus') {
-							this.app.connection.emit(
-								'stun-switch-view',
-								'focus'
-							);
-						}
-						chat_box.classList.add('minimize');
-						icon.classList.remove('fa-caret-down');
-						icon.classList.add('fa-expand');
-						this.app.browser.makeDraggable(
-							'stun-chatbox',
-							'',
-							true
-						);
-						this.full_screen = false;
-					} else {
-						chat_box.classList.remove('minimize');
-						chat_box.style.top = '';
-						chat_box.style.bottom = '0';
-						chat_box.style.left = '0';
-						chat_box.style.width = '';
-						chat_box.style.height = '';
-						icon.classList.remove('fa-expand');
-						icon.classList.add('fa-caret-down');
-						this.app.browser.cancelDraggable('stun-chatbox');
-						this.full_screen = true;
+				if (icon.classList.contains('fa-caret-down')) {
+					if (this.mod.layout !== 'focus') {
+						this.app.connection.emit('stun-switch-view', 'focus');
 					}
-				});
+					chat_box.classList.add('minimize');
+					icon.classList.remove('fa-caret-down');
+					icon.classList.add('fa-expand');
+					this.app.browser.makeDraggable('stun-chatbox', '', true);
+					this.full_screen = false;
+				} else {
+					chat_box.classList.remove('minimize');
+					chat_box.style.top = '';
+					chat_box.style.bottom = '0';
+					chat_box.style.left = '0';
+					chat_box.style.width = '';
+					chat_box.style.height = '';
+					icon.classList.remove('fa-expand');
+					icon.classList.add('fa-caret-down');
+					this.app.browser.cancelDraggable('stun-chatbox');
+					this.full_screen = true;
+				}
+			});
 		} else {
 			//
 			// If in the stun app, all a request for full screen mode
@@ -494,65 +449,32 @@ class CallInterfaceVideo {
 			}
 		}
 
-		document
-			.querySelector('.video-container-large')
-			.addEventListener('click', (e) => {
-				if (this.mod.layout == 'gallery') {
+		document.querySelector('.video-container-large').addEventListener('click', (e) => {
+			if (this.mod.layout == 'gallery') {
+				return;
+			}
+			if (e.target.classList.contains('video-box')) {
+				let stream_id = e.target.id;
+				if (e.target.parentElement.parentElement.classList.contains(this.local_container)) {
 					return;
+				} else {
+					this.flipDisplay(stream_id);
 				}
-				if (e.target.classList.contains('video-box')) {
-					let stream_id = e.target.id;
-					if (
-						e.target.parentElement.parentElement.classList.contains(
-							this.local_container
-						)
-					) {
-						return;
-					} else {
-						this.flipDisplay(stream_id);
-					}
-				}
-			});
+			}
+		});
 	}
 
 	flipDisplay(stream_id) {
 		console.log('flipDisplay: ' + this.local_container);
-		let big_video = document.querySelector(
-			`.${this.local_container} .video-box`
-		);
+		let big_video = document.querySelector(`.${this.local_container} .video-box`);
 		if (!big_video) {
 			return;
 		}
-		this.video_boxes[big_video.id].video_box.containerClass =
-			this.remote_container;
+		this.video_boxes[big_video.id].video_box.containerClass = this.remote_container;
 		this.video_boxes[big_video.id].video_box.rerender();
 
-		this.video_boxes[stream_id].video_box.containerClass =
-			this.local_container;
+		this.video_boxes[stream_id].video_box.containerClass = this.local_container;
 		this.video_boxes[stream_id].video_box.rerender();
-	}
-
-	createRoomLink() {
-		let base64obj = this.app.crypto.stringToBase64(
-			JSON.stringify(this.mod.room_obj)
-		);
-
-		let url1 = window.location.origin + '/videocall/';
-
-		if (!this.old_title) {
-			this.old_title = document.title;
-		}
-
-		if (this.full_screen) {
-			window.history.pushState(
-				{},
-				'',
-				`${url1}?stun_video_chat=${base64obj}`
-			);
-			document.title = 'Saito Talk';
-		}
-
-		return `${url1}?stun_video_chat=${base64obj}`;
 	}
 
 	copyInviteLink() {
@@ -580,8 +502,6 @@ class CallInterfaceVideo {
 		}
 
 		this.setDisplayContainers();
-
-
 	}
 
 	addLocalStream(localStream) {
@@ -591,7 +511,6 @@ class CallInterfaceVideo {
 		this.video_boxes['local'].video_box.render(localStream);
 		this.localStream = localStream;
 		this.updateImages();
-
 
 		// segmentBackground(document.querySelector('#stream_local video'), document.querySelector('#stream_local canvas'), 1);
 		// applyBlur(7);
@@ -610,15 +529,11 @@ class CallInterfaceVideo {
 
 		//Update UI
 		try {
-			document
-				.querySelector('.call-controls .audio-control')
-				.classList.toggle('disabled');
+			document.querySelector('.call-controls .audio-control').classList.toggle('disabled');
 			document
 				.querySelector('.call-controls .audio-control i')
 				.classList.toggle('fa-microphone-slash');
-			document
-				.querySelector('.call-controls .audio-control i')
-				.classList.toggle('fa-microphone');
+			document.querySelector('.call-controls .audio-control i').classList.toggle('fa-microphone');
 		} catch (err) {
 			console.warn('Stun UI error', err);
 		}
@@ -629,15 +544,9 @@ class CallInterfaceVideo {
 
 		//Update UI
 		try {
-			document
-				.querySelector('.call-controls .video-control')
-				.classList.toggle('disabled');
-			document
-				.querySelector('.call-controls .video-control i')
-				.classList.toggle('fa-video-slash');
-			document
-				.querySelector('.call-controls .video-control i')
-				.classList.toggle('fa-video');
+			document.querySelector('.call-controls .video-control').classList.toggle('disabled');
+			document.querySelector('.call-controls .video-control i').classList.toggle('fa-video-slash');
+			document.querySelector('.call-controls .video-control i').classList.toggle('fa-video');
 		} catch (err) {
 			console.warn('Stun UI error', err);
 		}
@@ -647,12 +556,8 @@ class CallInterfaceVideo {
 		let images = ``;
 		let count = 0;
 
-		let imageDiv = document.querySelector(
-			'.users-on-call .stun-identicon-list'
-		);
-		let countDiv = document.querySelector(
-			'.users-on-call .users-on-call-count'
-		);
+		let imageDiv = document.querySelector('.users-on-call .stun-identicon-list');
+		let countDiv = document.querySelector('.users-on-call .users-on-call-count');
 
 		if (!imageDiv || !countDiv) {
 			return;
@@ -778,21 +683,21 @@ class CallInterfaceVideo {
 			this.setupContainer(sideVideosContainer);
 		}
 
-		document.querySelectorAll('.video-box-container-large').forEach(item => {
+		document.querySelectorAll('.video-box-container-large').forEach((item) => {
 			this.resizeBackground(item);
 		});
 	}
 
 	setupContainer(container) {
-		Array.from(container.children).forEach(child => {
+		Array.from(container.children).forEach((child) => {
 			child.classList.add('flex-item');
 		});
-		console.log(container, "container");
+		console.log(container, 'container');
 		this.adjustClassesAndCount(container);
 	}
 
 	adjustClassesAndCount(element) {
-		const observer = new ResizeObserver(entries => {
+		const observer = new ResizeObserver((entries) => {
 			for (let entry of entries) {
 				const width = entry.contentRect.width;
 				const height = entry.contentRect.height;
@@ -809,7 +714,7 @@ class CallInterfaceVideo {
 				}
 
 				const childCount = element.children.length;
-				Array.from(element.classList).forEach(className => {
+				Array.from(element.classList).forEach((className) => {
 					if (className.startsWith('count-')) {
 						element.classList.remove(className);
 					}
@@ -818,28 +723,27 @@ class CallInterfaceVideo {
 			}
 		});
 		observer.observe(element);
-
 	}
 
 	resizeBackground(element) {
-		const bg_observer = new ResizeObserver(entries => {
+		const bg_observer = new ResizeObserver((entries) => {
 			for (let entry of entries) {
-			  const element = entry.target;
-			  const width = entry.contentRect.width;
-			  const height = entry.contentRect.height;
-			  const aspectRatio = width / height;
-	  
-			  element.classList.remove('video-fill', 'video-contain', 'video-cover');
-	  
-			  if (aspectRatio > 16/9) {
-				element.classList.add('video-fill');
-			  } else if (aspectRatio < 9/16) {
-				element.classList.add('video-contain');
-			  } else {
-				element.classList.add('video-cover');
-			  }
+				const element = entry.target;
+				const width = entry.contentRect.width;
+				const height = entry.contentRect.height;
+				const aspectRatio = width / height;
+
+				element.classList.remove('video-fill', 'video-contain', 'video-cover');
+
+				if (aspectRatio > 16 / 9) {
+					element.classList.add('video-fill');
+				} else if (aspectRatio < 9 / 16) {
+					element.classList.add('video-contain');
+				} else {
+					element.classList.add('video-cover');
+				}
 			}
-		  });
+		});
 
 		bg_observer.observe(element);
 	}

@@ -1,3 +1,4 @@
+
 .settings-appspace {
 	display: flex;
 	flex-direction: column;
@@ -117,6 +118,15 @@ label.treated {
 
 .settings-appspace-debug-content {
 	margin: 1rem 0;
+}
+
+#settings-edit-json {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+#settings-edit-json:hover {
+  text-decoration: none;
 }
 
 /*json tree */

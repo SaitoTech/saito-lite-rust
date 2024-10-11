@@ -143,7 +143,7 @@ class Fileshare extends ModTemplate {
 					{
 						text: 'Send File',
 						icon,
-						callback: function (app, public_key, id = '') {
+						callback: function (app, id = '') {
 
 							const fileId = fss.app.crypto.generateRandomNumber().substring(0, 12);
 

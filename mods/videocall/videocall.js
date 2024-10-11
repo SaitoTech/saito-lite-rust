@@ -67,6 +67,8 @@ class Videocall extends ModTemplate {
 			} else {
 				this.CallInterface = new CallInterfaceFloat(app, this);
 			}
+
+			this.saveCallToKeychain();
 		});
 
 		app.connection.on('reset-stun', () => {
@@ -111,23 +113,6 @@ class Videocall extends ModTemplate {
 				this.room_obj = JSON.parse(
 					app.crypto.base64ToString(app.browser.returnURLParameter('stun_video_chat'))
 				);
-
-				let call_link = this.generateCallLink(this.room_obj);
-				let name = "Video Call";
-				if (this.room_obj?.host_public_key){
-					name += " " + this.app.keychain.returnUsername(this.room_obj.host_public_key);
-				}
-				if (!app.keychain.returnKey(this.room_obj.call_id), true){
-					app.keychain.addKey(this.room_obj.call_id, {
-						identifier: name,
-						type: "event",
-						mod: 'videocall',
-						startTime: Date.now(),
-						link: call_link,
-					});
-				}
-
-				app.keychain.addWatchedPublicKey(this.room_obj.call_id);
 
 				// JOIN THE ROOM
 				if (!this.browser_active) {
@@ -349,19 +334,19 @@ class Videocall extends ModTemplate {
 
 		if (type === 'chat-actions') {
 			if (obj?.publicKey) {
-				if (obj.publicKey !== this.app.wallet.publicKey) {
+				if (obj.publicKey !== this.publicKey) {
 					this.attachStyleSheets();
 					super.render(this.app, this);
 					return [
 						{
 							text: 'Video/Audio Call',
 							icon: 'fas fa-phone',
-							callback: function (app, public_key, id) {
+							callback: function (app, id) {
 								if (call_self?.room_obj) {
 									salert('Already in or establishing a call');
 									console.log(call_self.room_obj);
 								} else {
-									call_self.dialer.establishStunCallWithPeers([public_key]);
+									call_self.dialer.establishStunCallWithPeers([obj.publicKey]);
 								}
 							}
 						}
@@ -896,7 +881,32 @@ class Videocall extends ModTemplate {
 		}
 	}
 
-	createRoom(){
+	saveCallToKeychain(){
+
+		let call_link = this.generateCallLink();
+		let name = "Video Call";
+
+		if (this.room_obj?.ui){
+			name = "Private Call";
+		}
+
+		if (this.room_obj?.host_public_key){
+			name += " " + this.app.keychain.returnUsername(this.room_obj.host_public_key);
+		}
+		if (!this.app.keychain.returnKey(this.room_obj.call_id), true){
+			this.app.keychain.addKey(this.room_obj.call_id, {
+				identifier: name,
+				type: "event",
+				mod: 'videocall',
+				startTime: Date.now(),
+				link: call_link,
+			});
+		}
+
+		this.app.keychain.addWatchedPublicKey(this.room_obj.call_id);
+	}
+
+	createRoom(identifier = "my video call"){
 		let call_id = this.generateRoomId();
 		this.room_obj = {
 			call_id,
@@ -906,7 +916,7 @@ class Videocall extends ModTemplate {
 
         let link =  this.generateCallLink(this.room_obj);
 		this.app.keychain.addKey(call_id, {
-			identifier: `my video call`,
+			identifier,
 			link,
 		});
 
@@ -927,7 +937,7 @@ class Videocall extends ModTemplate {
 		return id;
 	}
 
-	generateCallLink(room_obj) {
+	generateCallLink(room_obj = this.room_obj) {
 		let base64obj = this.app.crypto.stringToBase64(JSON.stringify(room_obj));
 
 		let call_link = window.location.origin + '/videocall/';
