@@ -28,14 +28,6 @@ body {
 	color: var(--font-color-redsquare-interaction);
 }
 
-.post-delete-button {
-	width: 20rem;
-	margin-right: 0;
-	position: absolute;
-	right: 22rem;
-	bottom: 1rem;
-	line-height: 4.5rem;
-}
 
 .redsquare-home {
 	margin: -2.5rem 0 0 0;

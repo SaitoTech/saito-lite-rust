@@ -155,7 +155,7 @@ emoji-picker {
 }
 
 .saito-input-large .selection-box-tabs {
-	width: 16rem;
+	width: 14rem;
 	border-top: unset;
 	background-color: unset;
 	align-items: flex-end;
@@ -344,7 +344,8 @@ emoji-picker {
 	.saito-input-large .selection-box-tabs {
 		align-items: center;
 		height: 6rem;
-		width: 18rem;
+		width: 12rem;
+		margin-left: unset;
 	}
 
 	.saito-box-tab {
