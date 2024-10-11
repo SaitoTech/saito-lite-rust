@@ -47,7 +47,7 @@ class SettingsAppspace {
 	//
 	// Todo: Add a param to auto open one branch of the tree
 	//
-	async renderDebugTree() {
+	renderDebugTree() {
 		//debug info
 		let el = document.querySelector('.settings-appspace-debug-content');
 		el.innerHTML = '';
@@ -60,43 +60,7 @@ class SettingsAppspace {
 						typeof value === 'bigint' ? value.toString() : value // return everything else unchanged
 				)
 			);
-
-			// console.log(JSON.stringify(
-			// 		this.app.options,
-			// 		(key, value) =>
-			// 			typeof value === 'bigint' ? value.toString() : value // return everything else unchanged
-			// 	));
-			//console.log("jsonTree:", optjson);
-
-			// var tree = jsonTree.create(optjson, el);
-
-
-			// console.log("tree:", tree);
-//const JSONEditor = await import('jsoneditor');
-    const { default: JSONEditor } = await import('jsoneditor');
-
-			const container = document.getElementById("settings-appspace-debug-content")
-        const options = {}
-        const editor = new JSONEditor(container, options)
-
-        // set json
-        const initialJson = {
-            "Array": [1, 2, 3],
-            "Boolean": true,
-            "Null": null,
-            "Number": 123,
-            "Object": {"a": "b", "c": "d"},
-            "String": "Hello World"
-        }
-        editor.set(optjson)
-
-        // get json
-
-		document.querySelector("#settings-save-json").onclick = () => {
-			var json = editor.get();
-			console.log("Updated json: ", JSON.stringify(json, null, 2));
-		}        
-
+			var tree = jsonTree.create(optjson, el);
 		} catch (err) {
 			console.log('error creating jsonTree: ' + err);
 		}
@@ -428,6 +392,13 @@ class SettingsAppspace {
 			document.querySelector('#settings-add-app').onclick = () => {
 				app.connection.emit('saito-app-app-render-request');
 			}
+		}
+
+		if(document.getElementById('settings-edit-json')) {
+			document.getElementById('settings-edit-json').onclick =
+			function (e) {
+				window.location.href = '/debug';
+			};
 		}
 	}
 }
