@@ -88,21 +88,6 @@ class Profile extends ModTemplate {
 
 						return;
 					}
-
-
-
-					console.log(this.cache, "my cache right now")
-					let returned_key = this.app.keychain.returnKey(key);
-					console.log(returned_key, 'returned key')
-					this.app.keychain.addKey(key, {
-						profile: {
-							archive_nodes: this.cache[key].archive_nodes
-						}
-					})
-
-
-
-
 				}
 
 
@@ -143,14 +128,13 @@ class Profile extends ModTemplate {
 	}
 
 	async onPeerHandshakeComplete(app) {
-		// For testing
 		if (app.BROWSER) {
+			/// For testing
 			let { protocol, host, port } = this.app.browser
+			console.log(protocol, host, port, "profile checking");
 			let peers = await this.app.network.getPeers();
-			app.connection.emit('profile-update-archive-node', { protocol: 'http', host:'127.0.0.1', port:'12103', publicKey: "vDPu2VLR7QAjRqy74Qk9TZFyrXSfNQqvQ8rEjEFBhWjh" })
-			// app.connection.emit('profile-update-archive-node', {protocol: "http", host: "127.0.0.1", port:"12101", publicKey: "public key" })
-
-			
+			let serverPeer = peers[0]
+			app.connection.emit('profile-update-archive-node', { protocol: 'http', host:'127.0.0.1', port:'12102', publicKey: serverPeer.publicKey });
 		}
 
 	}

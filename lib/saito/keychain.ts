@@ -610,6 +610,25 @@ class Keychain {
 		return x;
 	}
 
+	returnPeerArchiveNodes(publicKey) {
+		const keylist: any = this.app.options.keys;
+		const key = keylist.find(key => key.publicKey === publicKey);
+		if (key && key.profile && Array.isArray(key.profile.archive_nodes)) {
+			const parsedArchiveNodes = key.profile.archive_nodes.map(node => {
+				try {
+					return JSON.parse(node);
+				} catch (error) {
+					console.error(`Failed to parse archive node: ${node}`, error);
+					return null;
+				}
+			}).filter(node => node !== null);
+			return parsedArchiveNodes || [];
+		}else {
+			console.warn('no archive nodes found');
+			return [];
+		}
+	}
+
 
 
 
@@ -644,7 +663,7 @@ class Keychain {
 					return { ...key, watched: false };
 				}
 				return key;
-			});
+			})
 			this.saveKeys();
 		} else {
 			console.warn(`PublicKey ${publicKey} not found.`);
