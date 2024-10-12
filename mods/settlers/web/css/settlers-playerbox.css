@@ -106,6 +106,10 @@
 	border: 1px solid var(--saito-border-color);
 }
 
+.die svg rect {
+	fill: #a0522d;
+}
+
 .cardct>div {
 	position: absolute;
 	color: black;

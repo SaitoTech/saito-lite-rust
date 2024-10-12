@@ -925,16 +925,33 @@ ul.horizontal_list li.iconoption {
 	font-size: 20px;
 	padding: 3px;
 	gap: 1rem;
+	position: relative;
 }
 
 .status .player-notice {
-	opacity: 0.8;
+	opacity: 0.66;
 }
 
-.status .player-notice:last-child{
+.status .player-notice:last-child {
 	opacity: 1;
 }
 
+.status .player-notice::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 1rem;
+    width: 14rem;
+    border-top: 1px solid var(--text-color);
+    border-radius: 100%;
+    height: 3px;
+    border-bottom: 1px solid var(--text-color);
+    background-color: var(--text-color);
+}
+
+.status .player-notice:last-child::before {
+	display: none;
+}
 
 .player-notice ul {
 	margin-top: 0.5em;
