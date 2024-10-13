@@ -1956,6 +1956,35 @@ if (relief_siege == 1) {
       this.addMove("cards_left\t"+faction+"\t"+(cards_in_hand-1)); // -1 because we playing this card
     }
 
+
+    //
+    // check if the eventing of this card makes interventions impossible
+    //
+    if (this.game.state.events.intervention_on_movement_possible == 1) {
+
+    }
+    if (this.game.state.events.intervention_on_events_possible == 1) {
+      if (card === "037") { this.game.state.events.intervention_on_events_possible = 0; }
+    }
+    if (this.game.state.events.intervention_on_assault_possible == 1) {
+
+    }
+    if (this.game.state.events.intervention_post_assault_possible == 1) {
+
+    }
+    if (this.game.state.events.intervention_post_naval_assault_possible == 1) {
+      if (card === "034") { this.game.state.events.intervention_naval_avoid_battle_possible = 0; }
+    }
+    if (this.game.state.events.intervention_naval_avoid_battle_possible == 1) {
+      if (card === "034") { this.game.state.events.intervention_naval_avoid_battle_possible = 0; }
+    }
+    if (this.game.state.events.intervention_naval_intercept_possible == 1) {
+      if (card === "034") { this.game.state.events.intervention_naval_intercept_possible = 0; }
+    }
+
+
+
+
     //
     // mandatory event cards effect first, then 2 OPS
     //
@@ -1984,6 +2013,14 @@ if (relief_siege == 1) {
 	  if (card === "102") { can_event_this = false; }
         }
       } catch (err) {}
+
+      //
+      // Mary I cannot event combat/response cards if England
+      //
+      if (faction == "england" && this.game.state.leaders.mary_i != 0) {
+	if (deck[card].type == "response" || deck[card].type == "combat") { can_event_this = false; }
+      }
+
       if (can_event_this) {
         html    += `<li class="card" id="event">play for event</li>`;
       }
@@ -2031,7 +2068,7 @@ if (relief_siege == 1) {
 
     let his_self = this;
     let menu = this.returnActionMenuOptions(this.game.player, faction, "mary_i");
-    let deck = this.returnDeck(true); // HACK
+    let deck = this.returnDeck(true);
     let ops = deck[card].ops;
     let pfactions = this.returnPlayerFactions(this.game.player);
 
@@ -2510,12 +2547,14 @@ if (relief_siege == 1) {
     // gameplay mid-turn and slowing everything down.
     //
     // some cards skip this acknowledge -- such as Patron of the Arts 004
+    //
     if (card !== "004") {
       if (deck[card].type == "mandatory" || !deck[card].canEvent(this, faction)) {
         this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
       } else {
+
         //
-        // otherwise, we skip if the Protestants cannot interfere
+        // otherwise, skip if Protestants cannot interfere
         //
         if ((faction == "england" && this.returnPlayerCommandingFaction("protestant") == this.returnPlayerCommandingFaction("england")) || faction == "protestant" || this.game.deck[0].discards["037"] || this.game.state.events.intervention_on_events_possible == false) {
           this.addMove("ACKNOWLEDGE\t" + this.returnFactionName(faction) + " triggers " + this.popup(card));
@@ -3876,7 +3915,7 @@ does_units_to_move_have_unit = true; }
                 if (space.units[key][i].type != "corsair" && space.units[key][i].type != "squadron") {
 	        if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
 	        if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
-	          if (space.units[key][i].locked != true && (!(his_self.game.state.events.foul_weather == 1 && space.units[key][i].already_moved == 1))) {
+	          if (space.units[key][i].locked != 1 && (!(his_self.game.state.events.foul_weather == 1 && space.units[key][i].already_moved == 1))) {
 	    	    let does_units_to_move_have_unit = false;
 	    	    for (let z = 0; z < units_to_move.length; z++) {
 	    	      if (units_to_move[z].faction == key && units_to_move[z].idx == i) { does_units_to_move_have_unit = true; break; }
@@ -4201,7 +4240,7 @@ does_units_to_move_have_unit = true; }
                 if (space.units[key][i].type != "corsair" && space.units[key][i].type != "squadron") {
 	        if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
 	        if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
-	          if (space.units[key][i].locked != true && (!(his_self.game.state.events.foul_weather == 1 && space.units[key][i].already_moved == 1))) {
+	          if (space.units[key][i].locked != 1 && (!(his_self.game.state.events.foul_weather == 1 && space.units[key][i].already_moved == 1))) {
 	    	    let does_units_to_move_have_unit = false;
 	    	    for (let z = 0; z < units_to_move.length; z++) {
 	    	      if (units_to_move[z].faction == key && units_to_move[z].idx == i) { does_units_to_move_have_unit = true; break; }
@@ -4923,7 +4962,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	        if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
                 if (space.units[key][i].type != "corsair" && space.units[key][i].type != "squadron") {
 	        if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
-	          if (space.units[key][i].locked != true && (!(his_self.game.state.events.foul_weather == 1 && space.units[key][i].already_moved == 1))) {
+	          if (space.units[key][i].locked != 1 && (!(his_self.game.state.events.foul_weather == 1 && space.units[key][i].already_moved == 1))) {
 	    	    let does_units_to_move_have_unit = false;
 	    	    for (let z = 0; z < units_to_move.length; z++) {
 	    	      if (units_to_move[z].faction == key && units_to_move[z].idx == i) { does_units_to_move_have_unit = true; break; }
@@ -5065,9 +5104,30 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     let his_self = this;
 
     let units_to_move = [];
+    let units_to_move_idx = [];
 
     let onFinishSelect = function(his_self, units_to_move) {
-      his_self.addMove("naval_intercept"+"\t"+attacker+"\t"+spacekey+"\t"+"\t"+defender+"\t"+defender_spacekey+"\t"+JSON.stringify(units_to_move));
+
+      his_self.addMove("naval_intercept"+"\t"+attacker+"\t"+spacekey+"\t"+defender+"\t"+defender_spacekey+"\t"+JSON.stringify(units_to_move));
+
+      if (his_self.game.state.events.intervention_naval_intercept_possible == 1) {
+
+	//
+	// look ahead
+	//
+	let x = his_self.game.dice;
+	let atr = his_self.rollDice(6) + his_self.rollDice(6);
+	his_self.game.dice = x;
+
+	//
+	// professional rowers will trigger if it changes outcomes
+	//
+	if (atr >= 7 && atr < 9) {
+          his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(defender)+" attempting high seas interception\tnaval_intercept\t" + spacekey);
+	  his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	}
+      }
+
       his_self.endTurn();
     };
 
@@ -5085,14 +5145,14 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       let html = "<ul>";
 
       for (let i = 0; i < space.units[defender].length; i++) {
-        if (space.units[defender][i].army_leader != true) {
-        if (space.units[defender][i].land_or_sea === "sea" || space.units[defender][i].land_or_sea === "both") {
-          if (units_to_move.includes(parseInt(i))) {
-            html += `<li class="option" style="font-weight:bold" id="${i}">${space.units[defender][i].name}</li>`;
-          } else {
-            html += `<li class="option" id="${i}">${space.units[defender][i].name}</li>`;
+        if (space.units[defender][i].locked != 1 && space.units[defender][i].army_leader != true) {
+          if (space.units[defender][i].land_or_sea === "sea" || space.units[defender][i].land_or_sea === "both") {
+            if (units_to_move_idx.includes(parseInt(i))) {
+              html += `<li class="option" style="font-weight:bold" id="${defender}-${i}">* ${space.units[defender][i].name} *</li>`;
+            } else {
+              html += `<li class="option" id="${defender}-${i}">${space.units[defender][i].name}</li>`;
+            }
           }
-        }
         }
       }
       html += `<li class="option" id="end">finish</li>`;
@@ -5103,21 +5163,26 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       $('.option').off();
       $('.option').on('click', function () {
 
-        let id = $(this).attr("id");
+        let tmpx = $(this).attr("id");
 
-        if (id === "end") {
+        if (tmpx === "end") {
           onFinishSelect(his_self, units_to_move);
           return;
         }
 
-        if (units_to_move.includes(id)) {
+	let id = tmpx.split("-")[1];
+	let f = tmpx.split("-")[0];
+
+        if (units_to_move_idx.includes(id)) {
           let idx = units_to_move.indexOf(id);
           if (idx > -1) {
+            units_to_move_idx.splice(idx, 1);
             units_to_move.splice(idx, 1);
           }
         } else {
-          units_to_move.push(parseInt(id));
-        }
+          units_to_move_idx.push(parseInt(id));
+          units_to_move.push({ idx : parseInt(id) , faction : f });
+	}
 
         selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
       });
@@ -5129,7 +5194,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     html    += `<li class="card" id="skip">skip</li>`;
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`Intercept from ${this.returnSpaceName(defender_spacekey)}?`, html);
+    this.updateStatusWithOptions(`Intercept ${this.returnSpaceName(spacekey)} from ${this.returnSpaceName(defender_spacekey)}?`, html);
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "intercept") {
 	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
@@ -5251,7 +5316,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	      for (let i = 0; i < space.units[key].length; i++) {
 	        if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
 	        if (space.units[key][i].land_or_sea === "land" || space.units[key][i].land_or_sea === "both") {
-	          if (space.units[key][i].locked != true && (!(his_self.game.state.events.foul_weather == 1 && space.units[key][i].already_moved == 1))) {
+	          if (space.units[key][i].locked != 1 && (!(his_self.game.state.events.foul_weather == 1 && space.units[key][i].already_moved == 1))) {
 	    	    let does_units_to_move_have_unit = false;
 	    	    for (let z = 0; z < units_to_move.length; z++) {
 	    	      if (units_to_move[z].faction == key && units_to_move[z].idx == i) { does_units_to_move_have_unit = true; break; }
@@ -5660,7 +5725,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       let any_unlocked_units = false;
       for (let i = 0; i < spaces_with_units.length; i++) {
        for (let z = 0; z < his_self.game.spaces[spaces_with_units[i]].units[faction].length; z++) {
-	  if (his_self.game.spaces[spaces_with_units[i]].units[faction][z].locked != true) {
+	  if (his_self.game.spaces[spaces_with_units[i]].units[faction][z].locked != 1) {
 	    // if no neighbours, no move
 	    if (his_self.game.spaces[spaces_with_units[i]].neighbours.length > 0) {
 	      return 1;

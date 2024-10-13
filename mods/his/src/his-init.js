@@ -134,7 +134,6 @@ class HereIStand extends GameTemplate {
     this.faster_play = 1; // this speeds-up some responses at the cost of potentially
 			  // leaking information on what response cards users have or
 			  // do not have.
-    //this.faster_play = 0; // for debugging purposes
 
     //
     // "showcard" popups

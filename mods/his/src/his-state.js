@@ -32,6 +32,9 @@
     //
     this.game.state.debater_committed_this_impulse = {};
     this.game.state.assaulted_this_impulse = 0;
+    this.game.state.naval_avoid_battle_bonus = 0;
+    this.game.state.naval_intercept_bonus = 0;
+
 
     // display cards left
     this.displayCardsLeft();
@@ -79,6 +82,8 @@
     this.game.state.events.intervention_on_assault_possible = 0;
     this.game.state.events.intervention_post_assault_possible = 0;
     this.game.state.events.intervention_post_naval_battle_possible = 0;
+    this.game.state.events.intervention_naval_avoid_battle_possible = 0;
+    this.game.state.events.intervention_naval_intercept_possible = 0;
 
     this.game.state.field_battle_relief_battle = false;
 
@@ -115,6 +120,9 @@
     this.game.state.cards_issued['papacy'] = 0;
     this.game.state.cards_issued['protestant'] = 0;
 
+    this.game.state.naval_avoid_battle_bonus = 0;
+    this.game.state.naval_intercept_bonus = 0;
+
     this.game.state.events.ottoman_piracy_wartburg = 0;
     this.game.state.events.ottoman_piracy_attempts = 0;
     this.game.state.events.ottoman_piracy_seazones = [];
@@ -124,6 +132,8 @@
     this.game.state.events.intervention_on_assault_possible = 0;
     this.game.state.events.intervention_post_assault_possible = 0;
     this.game.state.events.intervention_post_naval_battle_possible = 0;
+    this.game.state.events.intervention_naval_avoid_battle_possible = 0;
+    this.game.state.events.intervention_naval_intercept_possible = 0;
 
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];

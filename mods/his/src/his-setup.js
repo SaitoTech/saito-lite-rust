@@ -563,8 +563,9 @@ console.log("\n\n\n\n");
 
       if (this.game.options.scenario === "is_testing") {
 
-	  this.game.state.starting_round = 5;
 	  this.game.state.henry_viii_marital_status = 1;
+	  this.game.state.starting_round = 6;
+	  this.game.state.round = 5; // the one before 4
 
 	  this.setEnemies("ottoman", "protestant");
 	  this.setEnemies("ottoman", "hapsburg");

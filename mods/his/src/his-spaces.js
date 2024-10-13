@@ -75,14 +75,14 @@
     for (let space in this.game.spaces) {
       for (let f in this.game.spaces[space].units) {
         for (let z = 0; z < this.game.spaces[space].units[f].length; z++) {
-          this.game.spaces[space].units[f][z].locked = false;
+          this.game.spaces[space].units[f][z].locked = 0;
         }
       }
     }
     for (let space in this.game.navalspaces) {
       for (let f in this.game.navalspaces[space].units) {
         for (let z = 0; z < this.game.navalspaces[space].units[f].length; z++) {
-          this.game.navalspaces[space].units[f][z].locked = false;
+          this.game.navalspaces[space].units[f][z].locked = 0;
         }
       }
     }
@@ -1018,7 +1018,7 @@ console.log(faction + " is enemies with controlling faction " + cf);
 	    }
 	    for (let y = 0; y < leaders.length; y++) {
 	      leaders[y].spacekey = key;
-	      leaders[y].faction = faction;
+	      leaders[y].faction = fip[i];
 	      units.push(leaders[y]);
 	    }
 	  }
@@ -1430,9 +1430,12 @@ console.log(faction + " is enemies with controlling faction " + cf);
   }
 
   returnFactionNavalUnitsInSpace(faction, space, include_minor_allies=false) {
+
+
     let luis = 0;
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+
     for (f in space.units) {
       if (include_minor_allies == false && f == faction) {
         for (let i = 0; i < space.units[f].length; i++) {
@@ -1451,13 +1454,20 @@ console.log(faction + " is enemies with controlling faction " + cf);
     return luis;
   }
 
-  returnFactionSeaUnitsInSpace(faction, space) {
+  returnFactionSeaUnitsInSpace(faction, space, only_unlocked=0) {
     let luis = 0;
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     for (let i = 0; i < space.units[faction].length; i++) {
-      if (space.units[faction][i].type === "squadron") { luis++; }
-      if (space.units[faction][i].type === "corsair") { luis++; }
+      if (only_unlocked) {
+        if (!space.units[faction][i].locked) {
+          if (space.units[faction][i].type === "squadron") { luis++; }
+          if (space.units[faction][i].type === "corsair") { luis++; }
+	}
+      } else {
+        if (space.units[faction][i].type === "squadron") { luis++; }
+        if (space.units[faction][i].type === "corsair") { luis++; }
+      }
     }
     return luis;
   }
