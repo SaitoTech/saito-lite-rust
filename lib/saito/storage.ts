@@ -22,8 +22,11 @@ class Storage {
 		this.active_tab = 1; // TODO - only active tab saves, move to Browser class
 		this.timeout = null;
 		this.localDB = null;
+
+
 	}
 
+	
 	async initialize() {
 		await this.loadOptions();
 
@@ -272,6 +275,9 @@ class Storage {
 							const url = `ws://${host}:${port}/wsopen`;
 							try {
 								const peerIndex = await S.getLibInstance().get_next_peer_index();
+
+								await S.getInstance().add_static_peer(url);
+		
 								// to do initiate connection to archive node and fetch txs
 							}
 							catch (error) {
