@@ -22996,6 +22996,7 @@ this.updateLog(`###############`);
 	  this.game.queue.push("victory_determination_phase");
 	  this.game.queue.push("winter_phase");
 	  this.game.queue.push("new_world_phase");
+	  if (this.game.state.round > 4) { this.game.queue.push("advance_victory_determination_phase"); }
 	  this.game.queue.push("ACKNOWLEDGE\tThe Advent of Winter");
 	  this.game.queue.push("show_overlay\twinter_phase");
 	  this.game.queue.push("action_phase");
@@ -27203,20 +27204,10 @@ console.log("ABR: " + abr);
 	  let defender = mv[3];
 	  let defender_spacekey = mv[4];
 
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("$ naval interception check!");
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("defender: " + defender);
-
           let controller_of_defender = this.returnPlayerCommandingFaction(defender);
           if (controller_of_defender == 0) { return 1; }
             
           if (this.game.player == controller_of_defender) {
-console.log("we are the defender here...");
 	    this.playerEvaluateNavalInterceptionOpportunity(attacker, spacekey, defender, defender_spacekey);
 	  } else {
 	    this.updateStatus(this.returnFactionName(defender) + " considering naval interception from " + this.returnSpaceName(defender_spacekey));
@@ -27352,6 +27343,7 @@ console.log("we are the defender here...");
 	  }
 	  if (defender_highest_battle_rating > 0) {
 	    this.updateLog(this.returnFactionName(defender) + " gains " + defender_highest_battle_rating + " bonus from formation leader");
+	    hits_on -= defender_highest_battle_rating;
 	  }
 
 	  let d1 = this.rollDice(6);
@@ -27361,11 +27353,6 @@ console.log("we are the defender here...");
 	  this.updateLog("Interception roll #1: " + d1);
 	  this.updateLog("Interception roll #2: " + d2);
 
-//
-// IS_TESTING -- ALL INTERCEPTIONS SUCCEED
-//
-//this.updateLog("IS_TESTING - HITS ON 2");
-//hits_on = 2;
 
 	  if (dsum >= hits_on) {
 
@@ -27482,9 +27469,11 @@ console.log("we are the defender here...");
 	  let d1 = this.rollDice(6);
 	  let d2 = this.rollDice(6);
 	  let dsum = d1+d2;
+	  dsum += defender_highest_battle_rating;
 
 	  this.updateLog("Interception roll #1: " + d1);
 	  this.updateLog("Interception roll #2: " + d2);
+
 	  if (this.game.state.naval_intercept_bonus > 0) {
 	    this.updateLog("Naval Intercept Bonus: " + this.game.state.naval_intercept_bonus);
 	    dsum += this.game.state.naval_intercept_bonus;
@@ -27545,9 +27534,6 @@ console.log("we are the defender here...");
 	      factions[units_to_move_idx[i].faction][units_to_move_idx[i].idx] = m;
 	    }
 
-console.log(JSON.stringify(factions));
-
-
 	    let nb_inserted = false;
 	    for (let f in factions) {
 	      for (let z = 100; z >= 0; z--) {
@@ -27556,12 +27542,14 @@ console.log(JSON.stringify(factions));
 		}
 	      }
 	    }
-if (nb_inserted == false) {
-  nb_inserted = true;
-  his_self.game.queue.splice((index_to_insert_moves+1), 0, "naval_battle\t"+spacekey+"\t"+attacker);
-}
 
-console.log("QUEUE is now: " + JSON.stringify(his_self.game.queue));
+	    //
+	    // we have just created a naval battle, so add to queue
+	    //
+	    if (nb_inserted == false) {
+	      nb_inserted = true;
+	      his_self.game.queue.splice((index_to_insert_moves+1), 0, "naval_battle\t"+spacekey+"\t"+attacker);
+	    }
 
 	  } else {
 	    try { salert(`${this.returnFactionName(defender)} Naval Interception Fails!`); } catch (err) {}
@@ -33674,7 +33662,62 @@ defender_hits - attacker_hits;
 
 	}
 
-        if (mv[0] === "victory_determination_phase") {
+	//
+	// runs later in the game to avoid New World phase if the game is already over and 
+	// the New World phase cannot change the outcome. this prevents handling winter 
+	// retreat.
+	//
+        if (mv[0] === "advance_victory_determination_phase") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let max_new_world_points = 0;
+	  if (this.game.state.newworld['greatlakes'].claimed != 1) { max_new_world_points += 1; }
+	  if (this.game.state.newworld['stlawrence'].claimed != 1) { max_new_world_points += 1; }
+	  if (this.game.state.newworld['mississippi'].claimed != 1) { max_new_world_points += 1; }
+	  if (this.game.state.newworld['pacificstrait'].claimed != 1) { max_new_world_points += 1; }
+	  if (this.game.state.newworld['amazon'].claimed != 1) { max_new_world_points += 2; }
+	  if (this.game.state.newworld['circumnavigation'].claimed != 1) { max_new_world_points += 3; }
+	  if (this.game.state.newworld['maya'].claimed != 1) { max_new_world_points += 1; }
+	  if (this.game.state.newworld['aztec'].claimed != 1) { max_new_world_points += 2; }
+	  if (this.game.state.newworld['inca'].claimed != 1) { max_new_world_points += 2; }
+
+	  let f = this.calculateVictoryPoints();
+
+	  for (let faction in f) {
+	    if (f[faction].victory == 1) {
+
+	      let winning_vp = f[faction].vp;
+	      let contention = winning_vp - max_new_world_points;
+	      let have_they_really_won = true;
+	
+	      for (let of in f) {
+		if (of != faction) {
+		  if (f[of].vp >= contention) {
+		    have_they_really_won = false;
+		  }
+	        }
+	      }
+
+	      //
+	      // show scoring points - situation
+	      //
+	      if (have_they_really_won) {
+
+	        this.vp_overlay.render();
+	        this.updateLog(this.returnFactionName(faction) + " wins: " + f[faction].reason);
+	        this.updateStatus(this.returnFactionName(faction) + " wins: " + f[faction].reason);
+	        return 0;
+
+	      }
+	    }
+	  }
+
+          return 1;
+        }
+
+
+	if (mv[0] === "victory_determination_phase") {
 
 	  this.game.queue.splice(qe, 1);
 
@@ -33722,6 +33765,7 @@ defender_hits - attacker_hits;
 
         }
         if (mv[0] === "winter_phase") {
+
 
 	  this.factionbar.setActive();
 
