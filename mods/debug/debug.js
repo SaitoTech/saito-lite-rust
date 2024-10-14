@@ -100,6 +100,7 @@ class Debug extends ModTemplate {
 						//console.log('combined: ', combined);
 						this_self.app.options = combined;
 						this_self.app.wallet.saveWallet();
+						siteMessage("Wallet options updated", 1500);
 					}
 				}    
 
