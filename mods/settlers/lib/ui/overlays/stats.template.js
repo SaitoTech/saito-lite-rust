@@ -19,7 +19,7 @@ module.exports = (stats, winner) => {
       <div class="settlers-stats-overlay saitoa`
 
     if (winner) {
-		html += ` winner`;
+		//html += ` winner`;
 	} 
 	  
 	html +=  `">

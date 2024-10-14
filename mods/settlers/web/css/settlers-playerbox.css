@@ -5,6 +5,7 @@
 	position: absolute;
 	top: 6rem;
 	right: 3rem;
+	align-items: end;
 }
 
 .game-playerbox {
@@ -14,6 +15,7 @@
     position: relative;
     border-width: 0.5rem;
 	border-style: solid;
+    border-color: #0000;
     background-color: #d3c38d;
 	border-radius: 1rem;
     /* background: linear-gradient(#d3c38df5, #d3c38df5); */
@@ -24,23 +26,21 @@
     /* border-style: solid !important; */
     /* border-image-outset: 5px !important; */
     color: var(--text-color);
+	transition: width 500ms ease-in-out;
 }
 
 .game-playerbox.active {
-	/*
-	background-color: #e2d26c;
-	transform: translateX(-5px);
-	filter: drop-shadow(6px 6px 3px #000B);
-    */
-	border: 1rem solid #000;
-	padding: 0.5rem;
+	width: 43rem;
+	border-width: 0.5rem;
+	border-style: solid;
 }
 
+/*
 .game-playerbox>div {
-	/*background-color: #d3c38d;*/
+	background-color: #d3c38d;
 	margin: 0.5rem;
 }
-
+*/
 .game-playerbox-graphics {
 	display: flex;
 	right: 105%;
@@ -148,7 +148,6 @@
 	display: grid;
 	grid-template-columns: repeat(auto-fit, 3rem);
 	align-items: center;
-	margin-top: 1rem;
 	flex-grow: 1;
 }
 
