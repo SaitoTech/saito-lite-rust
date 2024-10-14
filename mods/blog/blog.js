@@ -108,6 +108,7 @@ class Blog extends ModTemplate {
         console.log(this.app.options, 'returned keys');
          this.fetchTransactionsFromPeer(publicKeyToFetchFrom, publicKey, false);
         
+         
         
         // if(tx.from[0].publicKey === myPublicKey) return;
         // if (publicKeyToFetchFrom === myPublicKey) {

@@ -1,3 +1,4 @@
+const { default: Saito } = require('saito-js/saito');
 const saito = require('../../lib/saito/saito');
 const Transaction = require("../../lib/saito/transaction").default;
 const ModTemplate = require('../../lib/templates/modtemplate');
@@ -348,7 +349,7 @@ class Stun extends ModTemplate {
 	handleDataChannelMessage(data, peerId) {
 		let relayed_tx = new Transaction();
 		relayed_tx.deserialize_from_web(this.app, data);
-
+		console.log('handling datachannel')
 		this.app.modules.handlePeerTransaction(relayed_tx);
 	}
 
@@ -440,6 +441,8 @@ class Stun extends ModTemplate {
 				console.log("I will be impolite to peer: ", peerId);
 				pc.rude = true;
 			}
+			
+		
 
 			this.peers.set(peerId, pc);
 
@@ -516,6 +519,8 @@ class Stun extends ModTemplate {
 				}, 5000);
 			}
 			if (peerConnection.connectionState === 'connected') {
+				console.log('adding stun peer')
+				Saito.getInstance().addStunPeer(peerId, peerConnection);
 				this.app.connection.emit('stun-connection-connected', peerId);
 			}
 
@@ -535,9 +540,9 @@ class Stun extends ModTemplate {
 		const dc = peerConnection.createDataChannel('data-channel', {negotiated: true, id: 42});
 		peerConnection.dc = dc;
 
-		dc.onmessage = (event) => {
-			this.handleDataChannelMessage(event.data, peerId);
-		};
+		// dc.onmessage = (event) => {
+		// 	this.handleDataChannelMessage(event.data, peerId);
+		// };
 
 		dc.onopen = (event) => {
 			console.log('STUN: Data channel is open');
