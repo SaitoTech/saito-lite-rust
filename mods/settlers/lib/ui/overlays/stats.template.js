@@ -16,7 +16,13 @@ module.exports = (stats, winner) => {
 	let base_height = max_bar_height / highest_count;
 
 	let html = `
-      <div class="settlers-stats-overlay saitoa">
+      <div class="settlers-stats-overlay saitoa`
+
+    if (winner) {
+		html += ` winner`;
+	} 
+	  
+	html +=  `">
       	<div class="stats-header">
       		<div class="overlay-tab active-tab" id="overview-tab">Overview</div>
       		<div class="overlay-tab" id="resource-tab">Resources</div>
