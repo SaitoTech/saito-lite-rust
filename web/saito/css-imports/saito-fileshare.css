@@ -1,6 +1,6 @@
 
 .saito-file-transfer-overlay {
-	width: min(45rem, 90vw);
+	width: min(45rem, 100vw);
 	min-height: 45rem;
   max-height: 90vh;
 	padding: 3rem;
@@ -190,6 +190,12 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  gap: 2rem;
+}
+
+.file-button-row button, .file-button-row .saito-button-secondary, .file-button-row .saito-button-primary {
+  min-width: unset;
+  flex: 1;
 }
 
 .hideme, .saito-button-primary.hideme#download-transfer {
