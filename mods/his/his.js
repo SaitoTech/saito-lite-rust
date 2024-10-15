@@ -6846,16 +6846,30 @@ console.log("selected: " + spacekey);
             let msg = "Target Committed or Uncommitted Protestant?";
             let html = '<ul>';
             if (1 <= his_self.returnDebatersInLanguageZone(language_zone, "protestant", 0)) {
-              html += '<li class="option" id="uncommitted">Uncommitted</li>';
+              html += '<li class="option uncommitted" id="uncommitted">Uncommitted</li>';
             }
             if (1 <= his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
-              html += '<li class="option" id="committed">Committed</li>';
+              html += '<li class="option committed" id="committed">Committed</li>';
             }
             html += '</ul>';
 
             his_self.updateStatusWithOptions(msg, html);
-
             $('.option').off();
+            $('.committed').on('mouseover', function () {
+	      his_self.language_zone_overlay.hideDebaters();
+	      his_self.language_zone_overlay.showDebaters(language_zone, "committed", "protestant");
+            });
+            $('.committed').on('mouseout', function () {
+	      his_self.language_zone_overlay.hideDebaters();
+            });
+            $('.uncommitted').on('mouseover', function () {
+	      his_self.language_zone_overlay.hideDebaters();
+	      his_self.language_zone_overlay.showDebaters(language_zone, "uncommitted", "protestant");
+            });
+            $('.uncommitted').on('mouseout', function () {
+	      his_self.language_zone_overlay.hideDebaters();
+            });
+
             $('.option').on('click', function () {
 
               let is_committed = $(this).attr("id");
@@ -9144,6 +9158,14 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	          function(space) {
 		    if (his_self.isSpaceUnderSiege(space.key)) { return 0; }
 		    if (his_self.returnFactionLandUnitsInSpace(faction, space.key)) { return 1; }
+		    if (his_self.game.players.length == 2) {
+		      if (faction == "protestant") {
+			// protestants cannot put protestant mercs into spaces since
+			// they aren't technically allied with those powers so much 
+			// as just controlling them to screw with the Papacy.
+			return 0;
+		      }
+		    }
 		    if (his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 1; }
 		    return 0;
 	          } ,
@@ -11872,6 +11894,12 @@ console.log("we have removed philip and redisplayed the space...");
 	    for (let key in his_self.game.spaces) {
 	      let space = his_self.game.spaces[key];
               if (his_self.game.players.length == 2 && space.type == "electorate" && space.political == "hapsburg") { return 1; }
+	      if (key == "metz" && !his_self.isSpaceControlled("metz", "independent")) { return 1; }
+	      if (his_self.game.spaces[key].language == "italian" || his_self.game.spaces[key].language == "german") {
+		if (his_self.game.spaces[key].type == "key") {
+		  if (!his_self.isSpaceControlled(key, his_self.game.spaces[key].home)) { return 1; }
+		}
+	      }
 	    }
 	  }
 	  return 0;
@@ -23891,18 +23919,20 @@ if (this.game.options.scenario != "is_testing") {
 			for (let zz = 0; zz < options[b]; zz++) {
 			  let unitlen = this.game.spaces[spacekey].units[faction].length;
 		          for (let zzz = 0, zzy = 0; zzz < unitlen; zzz++, zzy++) {
-		            if (this.game.spaces[spacekey].units[faction][zzy].reformer != true) {
-			      this.game.spaces[res[b].key].units[faction].push(this.game.spaces[spacekey].units[faction][zzy]);
-			      this.game.spaces[spacekey].units[faction].splice(zzy, 1);
-			      zzy--;
-			      // we have moved one guy...
-			      fluis--; fluis_idx--;
+		            if (this.game.spaces[spacekey].units[faction][zzy].type != "squadron" && this.game.spaces[spacekey].units[faction][zzy].type != "corsair" && this.game.spaces[spacekey].units[faction][zzy].navy_leader != true) {
+		              if (this.game.spaces[spacekey].units[faction][zzy].reformer != true) {
+			        this.game.spaces[res[b].key].units[faction].push(this.game.spaces[spacekey].units[faction][zzy]);
+			        this.game.spaces[spacekey].units[faction].splice(zzy, 1);
+			        zzy--;
+			        // we have moved one guy...
+			        fluis--; fluis_idx--;
 
-			      //
-			      // and show new unit!
-			      //
-			      this.displaySpace(res[b].key);
+			        //
+			        // and show new unit!
+			        //
+			        this.displaySpace(res[b].key);
 
+			      }
 			    }
 			    unitlen = this.game.spaces[spacekey].units[faction].length;
 			  }
@@ -35740,7 +35770,7 @@ console.log("----------------------------");
 
 	  let faction = mv[1];
 	  let card = mv[2];
-	  let player_of_faction = this.returnPlayerOfFaction(faction);
+	  let player_of_faction = this.returnPlayerCommandingFaction(faction);
 	  let already_discarded = false;
 
 	  if (this.game.deck[0].discards[card]) { already_discarded = true; }
@@ -35752,11 +35782,25 @@ console.log("----------------------------");
 	  //
 	  // and remove from hand
 	  //
+	  // song and dance here is because cards played as minor powers may try
+	  // to discard from those faction hands, which is especially an issue 
+	  // in the 2P game.
+	  //
 	  if (this.game.player === player_of_faction) {
             let fhand_idx = this.returnFactionHandIdx(player_of_faction, faction);
-	    for (let i = 0; i < this.game.deck[0].fhand[fhand_idx].length; i++) {
-	      if (this.game.deck[0].fhand[fhand_idx][i] === card) {
-		this.game.deck[0].fhand[fhand_idx].splice(i, 1);
+	    if (!this.game.deck[0].fhand[fhand_idx]) {
+	      for (let i = 0; i < this.game.deck[0].fhand.length; i++) {	
+		if (this.game.deck[0].fhand[i].includes(card)) {
+		  fhand_idx = i;
+		  i = this.game.deck[0].fhand.length+2;
+		}
+	      }
+	    }
+	    if (this.game.deck[0].fhand[fhand_idx]) {
+	      for (let i = 0; i < this.game.deck[0].fhand[fhand_idx].length; i++) {
+	        if (this.game.deck[0].fhand[fhand_idx][i] === card) {
+		  this.game.deck[0].fhand[fhand_idx].splice(i, 1);
+	        }
 	      }
 	    }
 	  }
@@ -45125,16 +45169,39 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       let msg = "Against Commited or Uncommited Debater?";
       let html = '<ul>';
       if (0 < his_self.returnDebatersInLanguageZone(language_zone, opponent_faction, 1)) {
-          html += '<li class="option" id="committed">Committed</li>';
+          html += '<li class="option committed" id="committed">Committed</li>';
       }
       if (0 < his_self.returnDebatersInLanguageZone(language_zone, opponent_faction, 0)) {
-          html += '<li class="option" id="uncommitted">Uncommitted</li>';
+          html += '<li class="option uncommitted" id="uncommitted">Uncommitted</li>';
       }
       html += '</ul>';
 
       his_self.updateStatusWithOptions(msg, html);
 
       $('.option').off();
+      $('.committed').on('mouseover', function () {
+        his_self.language_zone_overlay.hideDebaters();
+        if (faction == "papacy") { 
+	  his_self.language_zone_overlay.showDebaters(language_zone, "committed", "protestant"); 
+	} else {
+          his_self.language_zone_overlay.showDebaters(language_zone, "committed", "papacy");
+	}
+      });
+      $('.committed').on('mouseout', function () {
+        his_self.language_zone_overlay.hideDebaters();
+      });
+      $('.uncommitted').on('mouseover', function () {
+        his_self.language_zone_overlay.hideDebaters();
+	if (faction == "papacy") {
+          his_self.language_zone_overlay.showDebaters(language_zone, "uncommitted", "protestant");
+	} else {
+          his_self.language_zone_overlay.showDebaters(language_zone, "uncommitted", "papacy");
+	}
+      });
+      $('.uncommitted').on('mouseout', function () {
+        his_self.language_zone_overlay.hideDebaters();
+      });
+
       $('.option').on('click', function () {
 
         let committed = $(this).attr("id");

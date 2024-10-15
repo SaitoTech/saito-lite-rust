@@ -34,11 +34,6 @@ class DebatersOverlay {
 				'/his/img/tiles/debaters/' +
 				this.mod.game.state.debaters[i].img;
 			let tile_b = tile_f.replace('.svg', '_back.svg');
-			//if (this.mod.game.state.debaters[i].committed == 1) {
-			//  let x = tile_f;
-			//  tile_f = tile_b;
-			//  tile_b = x;
-			//}
 
 			let divsq = `.debaters-tile${i}`;
 

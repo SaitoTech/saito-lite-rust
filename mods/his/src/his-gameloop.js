@@ -951,18 +951,20 @@ if (this.game.options.scenario != "is_testing") {
 			for (let zz = 0; zz < options[b]; zz++) {
 			  let unitlen = this.game.spaces[spacekey].units[faction].length;
 		          for (let zzz = 0, zzy = 0; zzz < unitlen; zzz++, zzy++) {
-		            if (this.game.spaces[spacekey].units[faction][zzy].reformer != true) {
-			      this.game.spaces[res[b].key].units[faction].push(this.game.spaces[spacekey].units[faction][zzy]);
-			      this.game.spaces[spacekey].units[faction].splice(zzy, 1);
-			      zzy--;
-			      // we have moved one guy...
-			      fluis--; fluis_idx--;
+		            if (this.game.spaces[spacekey].units[faction][zzy].type != "squadron" && this.game.spaces[spacekey].units[faction][zzy].type != "corsair" && this.game.spaces[spacekey].units[faction][zzy].navy_leader != true) {
+		              if (this.game.spaces[spacekey].units[faction][zzy].reformer != true) {
+			        this.game.spaces[res[b].key].units[faction].push(this.game.spaces[spacekey].units[faction][zzy]);
+			        this.game.spaces[spacekey].units[faction].splice(zzy, 1);
+			        zzy--;
+			        // we have moved one guy...
+			        fluis--; fluis_idx--;
 
-			      //
-			      // and show new unit!
-			      //
-			      this.displaySpace(res[b].key);
+			        //
+			        // and show new unit!
+			        //
+			        this.displaySpace(res[b].key);
 
+			      }
 			    }
 			    unitlen = this.game.spaces[spacekey].units[faction].length;
 			  }
@@ -12800,7 +12802,7 @@ console.log("----------------------------");
 
 	  let faction = mv[1];
 	  let card = mv[2];
-	  let player_of_faction = this.returnPlayerOfFaction(faction);
+	  let player_of_faction = this.returnPlayerCommandingFaction(faction);
 	  let already_discarded = false;
 
 	  if (this.game.deck[0].discards[card]) { already_discarded = true; }
@@ -12812,11 +12814,25 @@ console.log("----------------------------");
 	  //
 	  // and remove from hand
 	  //
+	  // song and dance here is because cards played as minor powers may try
+	  // to discard from those faction hands, which is especially an issue 
+	  // in the 2P game.
+	  //
 	  if (this.game.player === player_of_faction) {
             let fhand_idx = this.returnFactionHandIdx(player_of_faction, faction);
-	    for (let i = 0; i < this.game.deck[0].fhand[fhand_idx].length; i++) {
-	      if (this.game.deck[0].fhand[fhand_idx][i] === card) {
-		this.game.deck[0].fhand[fhand_idx].splice(i, 1);
+	    if (!this.game.deck[0].fhand[fhand_idx]) {
+	      for (let i = 0; i < this.game.deck[0].fhand.length; i++) {	
+		if (this.game.deck[0].fhand[i].includes(card)) {
+		  fhand_idx = i;
+		  i = this.game.deck[0].fhand.length+2;
+		}
+	      }
+	    }
+	    if (this.game.deck[0].fhand[fhand_idx]) {
+	      for (let i = 0; i < this.game.deck[0].fhand[fhand_idx].length; i++) {
+	        if (this.game.deck[0].fhand[fhand_idx][i] === card) {
+		  this.game.deck[0].fhand[fhand_idx].splice(i, 1);
+	        }
 	      }
 	    }
 	  }

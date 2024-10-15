@@ -3124,16 +3124,30 @@ console.log("selected: " + spacekey);
             let msg = "Target Committed or Uncommitted Protestant?";
             let html = '<ul>';
             if (1 <= his_self.returnDebatersInLanguageZone(language_zone, "protestant", 0)) {
-              html += '<li class="option" id="uncommitted">Uncommitted</li>';
+              html += '<li class="option uncommitted" id="uncommitted">Uncommitted</li>';
             }
             if (1 <= his_self.returnDebatersInLanguageZone(language_zone, "protestant", 1)) {
-              html += '<li class="option" id="committed">Committed</li>';
+              html += '<li class="option committed" id="committed">Committed</li>';
             }
             html += '</ul>';
 
             his_self.updateStatusWithOptions(msg, html);
-
             $('.option').off();
+            $('.committed').on('mouseover', function () {
+	      his_self.language_zone_overlay.hideDebaters();
+	      his_self.language_zone_overlay.showDebaters(language_zone, "committed", "protestant");
+            });
+            $('.committed').on('mouseout', function () {
+	      his_self.language_zone_overlay.hideDebaters();
+            });
+            $('.uncommitted').on('mouseover', function () {
+	      his_self.language_zone_overlay.hideDebaters();
+	      his_self.language_zone_overlay.showDebaters(language_zone, "uncommitted", "protestant");
+            });
+            $('.uncommitted').on('mouseout', function () {
+	      his_self.language_zone_overlay.hideDebaters();
+            });
+
             $('.option').on('click', function () {
 
               let is_committed = $(this).attr("id");
@@ -5422,6 +5436,14 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	          function(space) {
 		    if (his_self.isSpaceUnderSiege(space.key)) { return 0; }
 		    if (his_self.returnFactionLandUnitsInSpace(faction, space.key)) { return 1; }
+		    if (his_self.game.players.length == 2) {
+		      if (faction == "protestant") {
+			// protestants cannot put protestant mercs into spaces since
+			// they aren't technically allied with those powers so much 
+			// as just controlling them to screw with the Papacy.
+			return 0;
+		      }
+		    }
 		    if (his_self.returnFriendlyLandUnitsInSpace(faction, space.key)) { return 1; }
 		    return 0;
 	          } ,
@@ -8150,6 +8172,12 @@ console.log("we have removed philip and redisplayed the space...");
 	    for (let key in his_self.game.spaces) {
 	      let space = his_self.game.spaces[key];
               if (his_self.game.players.length == 2 && space.type == "electorate" && space.political == "hapsburg") { return 1; }
+	      if (key == "metz" && !his_self.isSpaceControlled("metz", "independent")) { return 1; }
+	      if (his_self.game.spaces[key].language == "italian" || his_self.game.spaces[key].language == "german") {
+		if (his_self.game.spaces[key].type == "key") {
+		  if (!his_self.isSpaceControlled(key, his_self.game.spaces[key].home)) { return 1; }
+		}
+	      }
 	    }
 	  }
 	  return 0;
