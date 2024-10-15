@@ -11,6 +11,17 @@
 	this.welcome_overlay.overlay.zIndex = this.winter_overlay.overlay.zIndex + 2;
     }
 
+    if (c === "all_corsairs_destroyed") {
+        this.welcome_overlay.renderCustom({
+          title : "Piracy Fails" , 
+          text : "All Corsairs destroyed by Defensive Fire" ,
+          card : "" ,
+          img : '/his/img/backgrounds/corsairs_destroyed.jpg',
+          styles : [{ key : "backgroundPosition" , val : "bottom" }],
+        });
+        return;
+    }
+
     if (c === "depleted") {
         this.welcome_overlay.renderCustom({
           title : "Depleted Conquest" , 
@@ -2428,7 +2439,11 @@ try {
       }
 
       if (space.fortified == 1) {
-        obj.innerHTML += `<img class="fortified" src="/his/img/tiles/Fortress.svg" />`;
+	if (this.game.state.knights_of_st_john == space.key) {
+          obj.innerHTML += `<img class="fortified" src="/his/img/tiles/KnightsFortress.png" />`;
+	} else {
+          obj.innerHTML += `<img class="fortified" src="/his/img/tiles/Fortress.svg" />`;
+        }
       }
       if (space.pirate_haven == 1) {
         obj.innerHTML += `<img class="pirate-haven" src="/his/img/tiles/ottoman/PirateHaven.svg" />`;

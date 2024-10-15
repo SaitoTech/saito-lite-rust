@@ -145,8 +145,8 @@ class RedSquareNavigation {
     // profile
     //
     document.querySelector('.redsquare-menu-profile').onclick = (e) => {
-      window.history.pushState({view: "profile"}, "", '/' + this.mod.slug);
-      window.location.hash = '#profile';
+      window.history.pushState({view: "profile"}, "", '/' + this.mod.slug + `/?user_id=${this.mod.publicKey}`);
+      //window.location.hash = '#profile';
       this.app.connection.emit('redsquare-profile-render-request', this.mod.publicKey);
       this.app.connection.emit('redsquare-remove-loading-message', 'navigating...');
     };

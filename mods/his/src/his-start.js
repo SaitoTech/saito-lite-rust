@@ -229,6 +229,15 @@ the game engine automatically handles token denomination, merging smaller
         game_mod.units_overlay.render();
       }
     });
+    this.menu.addSubMenuOption("game-info", {
+      text: "Marriage",
+      id: "game-marriage",
+      class: "game-marriage",
+      callback: function(app, game_mod){
+	game_mod.menu.hideSubMenus();
+        game_mod.marriage_overlay.render();
+      }
+    });
 
 
 /***

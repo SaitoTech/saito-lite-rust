@@ -540,11 +540,20 @@ console.log("\n\n\n\n");
           this.addRegular("independent", "milan", 1);
           this.addRegular("independent", "tunis", 1);
 
-	  // DEBATERS
+	  // ALLIANCES
 	  this.setEnemies("ottoman", "hapsburg");
 	  this.setEnemies("hapsburg", "protestant");
 	  this.setEnemies("papacy", "protestant");
 	  this.setAllies("hapsburg", "hungary");
+
+	  // DEBATERS         
+          this.addDebater("protestant", "farel-debater");
+          this.addDebater("protestant", "cop-debater");
+          this.addDebater("protestant", "olivetan-debater");
+          this.addDebater("protestant", "calvin-debater");
+          this.addReformer("protestant", "geneva", "calvin-reformer");
+          this.convertSpace("protestant", "geneva");
+
 
           this.game.state.events.barbary_pirates = 1;
           this.game.state.events.ottoman_piracy_enabled = 1;
@@ -554,8 +563,9 @@ console.log("\n\n\n\n");
 
       if (this.game.options.scenario === "is_testing") {
 
-	  this.game.state.starting_round = 5;
 	  this.game.state.henry_viii_marital_status = 1;
+	  this.game.state.starting_round = 6;
+	  this.game.state.round = 5; // the one before 4
 
 	  this.setEnemies("ottoman", "protestant");
 	  this.setEnemies("ottoman", "hapsburg");

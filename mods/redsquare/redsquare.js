@@ -120,7 +120,7 @@ class RedSquare extends ModTemplate {
 
     this.tweets_earliest_ts = new Date().getTime();
 
-    this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif'];
+    this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif', "image/webp"];
 
     this.postScripts = ['/saito/lib/emoji-picker/emoji-picker.js'];
 
@@ -198,11 +198,7 @@ class RedSquare extends ModTemplate {
         callback: function (app, publicKey) {
           if (app.modules.returnActiveModule().returnName() == 'Red Square') {
             app.connection.emit('redsquare-profile-render-request', publicKey);
-            window.history.pushState(
-              {view: "profile"},
-              '',
-              '/' + this_mod.slug + `/?user_id=${publicKey}`
-            );
+            window.history.pushState({view: "profile"}, '', '/' + this_mod.slug + `/?user_id=${publicKey}`);
           } else {
             window.location = `/redsquare/?user_id=${publicKey}`;
           }
@@ -643,6 +639,7 @@ class RedSquare extends ModTemplate {
             break;
           case '#profile':
             this.app.connection.emit('redsquare-profile-render-request');
+            window.history.pushState({view: "profile"}, '', '/' + this.slug + `/?user_id=${this.publicKey}`);
             break;
           default:
         }

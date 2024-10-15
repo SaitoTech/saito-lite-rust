@@ -1,6 +1,6 @@
 .cropper-overlay {
-	height: 70rem;
-	width: 80rem;
+	height: min(100vh, 70rem);
+	width: min(100vw, 80rem);
 	text-align: center;
 	background-color: var(--saito-background-color);
 	border: 1px solid var(--saito-border-color);
@@ -38,10 +38,14 @@
 /* Media Queries for different screen sizes */
 
 @media (max-width: 768px) {
+	.cropper-overlay {
+		padding: 1rem;
+	}
+
 	.photo-cropper {
-		height: 60vh;
+		/*height: 60vh;*/
 		/* Increase height on smaller screens */
-		width: 95vw;
+		/*width: 95vw;*/
 		/* Increase width on smaller screens */
 		font-size: calc(12px + 2vw);
 		/* Slightly larger font on smaller screens */
@@ -51,9 +55,9 @@
 
 @media (max-width: 480px) {
 	.photo-cropper {
-		height: 70vh;
+		/*height: 70vh;*/
 		/* Further increase height on very small screens */
-		width: 98vw;
+		/*width: 98vw;*/
 		/* Almost full width on very small screens */
 		font-size: calc(14px + 2vw);
 		/* Even larger font on very small screens */
