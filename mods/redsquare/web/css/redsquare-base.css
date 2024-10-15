@@ -5,6 +5,7 @@ body {
 
 .saito-container, .saito-sidebar.left {
 	max-height: 100vh;
+	transition: height 0.65s linear;
 }
 
 .tweet-text a {

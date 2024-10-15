@@ -198,16 +198,19 @@ class RedSquareMain {
       if (st > lastScrollTop) {
         // downscroll code
         if (!triggered) {
+          let hh = getComputedStyle(document.body).getPropertyValue('--saito-header-height');
+          document.getElementById("saito-header").style.top = `-${hh}`;
           document.documentElement.style.setProperty('--saito-header-height', '0');
-          document.querySelector('#saito-header').style.opacity = '0';
+          //document.querySelector('#saito-header').style.opacity = '0';
           st -= 70;
           triggered = true;
         }
       } else if (st < lastScrollTop) {
         // upscroll code
         if (triggered) {
+          document.getElementById("saito-header").style.top = "0";
           document.documentElement.style.setProperty('--saito-header-height', '');
-          document.querySelector('#saito-header').style.opacity = '1';
+          //document.querySelector('#saito-header').style.opacity = '1';
           triggered = false;
         }
       } // else was horizontal scroll
