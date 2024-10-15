@@ -189,7 +189,6 @@ class CallSetting {
 		let videoCt = 0;
 		let audioCt = 0;
 		devices.forEach((device) => {
-			console.log(device);
 			const option = document.createElement('option');
 			option.value = device.deviceId;
 			option.textContent =

@@ -22,7 +22,7 @@ class StreamManager {
 
     this.terminationEvent = 'onpagehide' in self ? 'pagehide' : 'unload';
 
-    this.updateSettings(settings);
+    this.parseSettings(settings);
 
     app.connection.on('stun-toggle-video', async () => {
       // Turn off Video
@@ -341,7 +341,7 @@ class StreamManager {
     });
   }
 
-  updateSettings(settings) {
+  parseSettings(settings) {
     if (settings?.video) {
       this.videoEnabled = true;
       if (settings.video !== true) {
@@ -360,7 +360,27 @@ class StreamManager {
       this.audioEnabled = false;
     }
 
-    this.auto_disconnect = settings?.auto_disconnect;
+    this.auto_disconnect = this?.auto_disconnect || settings?.auto_disconnect;
+  }
+
+  updateInputs(type, source){
+
+    if (type == "video"){
+      this.videoSource = source;
+      this.videoEnabled = true;
+    }else{
+      this.audioSource = source;
+      this.audioEnabled = true;
+    }
+
+    if (this.localStream){
+        this.localStream.getTracks().forEach((track) => {
+          track.stop()
+        });
+        this.localStream = null;
+        this.getLocalMedia();
+    }
+
   }
 
   returnConstraints(onlyVideo = false) {
