@@ -54,7 +54,7 @@ class Videocall extends ModTemplate {
 			if (!this.streams) {
 				this.streams = new StreamManager(this.app, this, settings);
 			} else {
-				this.streams.updateSettings(settings);
+				this.streams.parseSettings(settings);
 				this.streams.active = true;
 			}
 
