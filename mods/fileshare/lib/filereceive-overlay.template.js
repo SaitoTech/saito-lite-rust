@@ -1,4 +1,4 @@
-module.exports = FileReceiveOverlayTemplate = (mod, fro, file) => {
+module.exports  = (mod, fro, file) => {
 	let html = `
 	<div id='file-transfer-${fro.fileId}-${fro.sender}' class='saito-file-transfer-overlay'>
 		<div class="pseudo-overlay-controls">

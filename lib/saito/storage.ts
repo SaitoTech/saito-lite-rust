@@ -18,7 +18,6 @@ class Storage {
 		this.app = app || {};
 		this.active_tab = 1; // TODO - only active tab saves, move to Browser class
 		this.timeout = null;
-
 		this.localDB = null;
 	}
 
@@ -30,10 +29,13 @@ class Storage {
 		}
 
 		if (this.app.BROWSER == 1) {
-			this.localDB = null;
-			console.log('storage initialize ///');
-			await this.initializeApplicationDB();
-			console.log(JSON.stringify(await this.loadLocalApplications()));
+			try{
+				this.localDB = null;
+				await this.initializeApplicationDB();
+				console.log(JSON.stringify(await this.loadLocalApplications()));
+			} catch(err){
+				console.log("Error initializeApplicationDB:", err);
+			}
 		}
 
 		return;
@@ -146,7 +148,6 @@ class Storage {
 	}
 
 	async updateTransaction(tx: Transaction, obj = {}, peer = null) {
-		const txmsg = tx.returnMessage();
 		const message = 'archive';
 		let data: any = {};
 		data.request = 'update';
@@ -179,6 +180,7 @@ class Storage {
 	}
 
 	async loadTransactions(obj = {}, mycallback, peer = null) {
+
 		let storage_self = this;
 
 		const message = 'archive';
@@ -224,7 +226,7 @@ class Storage {
 				},
 				peer.peerIndex
 			);
-			return;
+			return [];
 		} else {
 			this.app.network.sendRequestAsTransaction(
 				message,
@@ -233,8 +235,10 @@ class Storage {
 					internal_callback(res);
 				}
 			);
-			return;
+			return [];
 		}
+
+		return [];
 	}
 
 	async deleteTransaction(tx = null, mycallback = null, peer = null) {
@@ -413,18 +417,48 @@ class Storage {
 		}		
 	}
 
-	async loadLocalApplications() {
-		if (!this.app.BROWSER) {
-			return;
+	async loadLocalApplications(mod_slug = null) {
+		try {
+			if (!this.app.BROWSER) {
+				return;
+			}
+
+			let obj = {
+				from: 'dyn_mods',
+				order: { by: 'id', type: 'desc' }
+			}
+
+			if (mod_slug != null) {
+				obj['where'] = {
+			        mod: mod_slug
+			    };
+			}
+
+			let rows = await this.localDB.select(obj);
+
+			return rows;
+		} catch (err) {
+			console.log("Error loadLocalApplications: ", err);
 		}
+	}
 
-		let rows = await this.localDB.select({
-			from: 'dyn_mods',
-			//where: where_obj,
-			order: { by: 'id', type: 'desc' }
-		});
+	async removeLocalApplication(mod_slug = null) {
+		try {
+			if (!this.app.BROWSER) {
+				return;
+			}
 
-		return rows;
+			let rowsDeleted = await this.localDB.remove({
+			    from: "dyn_mods",
+			    where: {
+			        mod: mod_slug
+			    }
+			});
+
+			return rowsDeleted;
+		} catch (err) {
+			console.log("Error removeLocalApplication: ", err);
+		}
 	}
 
 	async initializeApplicationDB() {

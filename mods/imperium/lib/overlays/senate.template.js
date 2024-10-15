@@ -1,4 +1,4 @@
-module.exports = ImperiumSenateOverlayTemplate = () => {
+module.exports  = () => {
 	let html = `
 
     <div class="senate-overlay">

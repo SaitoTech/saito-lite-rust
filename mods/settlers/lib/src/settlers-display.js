@@ -1,70 +1,4 @@
 class SettlersDisplay {
-  renderTradeOfferInPlayerBox(offering_player, stuff_on_offer, stuff_in_return) {
-    let settlers_self = this;
-
-    let can_accept = true;
-    for (let r in stuff_in_return) {
-      if (this.countResource(this.game.player, r) < stuff_in_return[r]) {
-        can_accept = false;
-      }
-    }
-
-    if (!can_accept) {
-      this.game.state.ads[offering_player - 1].ad = true;
-      this.addMove(`reject_offer\t${this.game.player}\t${offering_player}`);
-      this.endTurn();
-      return;
-    }
-
-    //Simplify resource objects
-    let offer = this.wishListToImage(stuff_on_offer) || '<em>nothing</em>';
-    let ask = this.wishListToImage(stuff_in_return) || '<em>nothing</em>';
-
-    let html = `<div class="pbtrade">
-                  <div class="flexline">Offers <span class="tip highlight">${offer}</span> for <span class="tip highlight">${ask}</span></div>`;
-
-    if (this.game.state.canTrade) {
-      html += `<ul class="flexline">
-                <li class="pboption" id="accept">✔</li>
-                <li class="pboption" id="reject">✘</li>
-              </ul>`;
-    }
-    html += '</div>';
-
-    this.playerbox.updateBody(html, offering_player);
-
-    let selector = '#player-box-' + this.playerbox.playerBox(offering_player);
-
-    $(`${selector} .pboption`).off();
-    $(`${selector} .pboption`).on('click', function () {
-      //
-      settlers_self.playerbox.updateBody('', offering_player);
-      //
-      let choice = $(this).attr('id');
-      if (choice == 'accept') {
-        settlers_self.game.state.ads[offering_player - 1].offer = null;
-        settlers_self.game.state.ads[offering_player - 1].ask = null;
-        settlers_self.addMove(`clear_advert\t${settlers_self.game.player}`);
-        settlers_self.addMove(
-          'accept_offer\t' +
-            settlers_self.game.player +
-            '\t' +
-            offering_player +
-            '\t' +
-            JSON.stringify(stuff_on_offer) +
-            '\t' +
-            JSON.stringify(stuff_in_return)
-        );
-        settlers_self.endTurn();
-      }
-      if (choice == 'reject') {
-        settlers_self.game.state.ads[offering_player - 1].ad = true;
-        settlers_self.addMove(`reject_offer\t${settlers_self.game.player}\t${offering_player}`);
-        settlers_self.endTurn();
-      }
-    });
-  }
-
   displayBoard() {
     try {
       console.log('Display board');
@@ -277,13 +211,13 @@ class SettlersDisplay {
 
       if (num_resources) {
         icons += `<div class="cardct resource-cards">
-                    <img src="/settlers/img/cards/wheat_old.png"/>
+                    <img src="${this.back}"/>
                     <div>${num_resources}</div>
                   </div>`;
       }
       if (num_cards) {
         icons += `<div class="cardct dev-cards">
-                    <img src="/settlers/img/cards/red_back.png"/>
+                    ${this.vp.img}
                     <div>${num_cards}</div>
                   </div>`;
       }
@@ -299,13 +233,12 @@ class SettlersDisplay {
 
       if (!this.game.over) {
         if (this.game.state.ads[i - 1].offer || this.game.state.ads[i - 1].ask) {
-          if (this.game.state.ads[i - 1].ad) {
             let offer = this.wishListToImage(this.game.state.ads[i - 1].offer);
             let ask = this.wishListToImage(this.game.state.ads[i - 1].ask);
             let id = `trade_${i}`;
             let html = `<div class="trade" id="${id}">
-            <img src="/settlers/img/cards/desert.png"/>
-            <i class="fa-solid fa-right-left"></i>
+            <img src="${this.back}"/>
+            <i class="fa-solid fa-money-bill-transfer"></i>
             </div>
             `;
 
@@ -321,13 +254,6 @@ class SettlersDisplay {
                 settlers_self.game.state.ads[i - 1].offer
               );
             });
-          } else {
-            this.renderTradeOfferInPlayerBox(
-              i,
-              this.game.state.ads[i - 1].offer,
-              this.game.state.ads[i - 1].ask
-            );
-          }
         }else{
           //this.playerbox.updateGraphics('', i);
         }
@@ -425,6 +351,43 @@ class SettlersDisplay {
     });
   }
 
+
+  animateDevCard(player){
+    let destination = '#game-playerbox-' + player;
+
+    if (player == this.game.player){
+
+      let elm = this.createGameElement(
+          `<div class="card_holder"><img src="${this.card.back}"/></div>`,
+          "#game-hexgrid",
+          ".hex.dummy"
+        );
+
+      this.moveGameElement(elm, destination);
+    }else{
+      this.animationSequence.push({
+        callback: this.moveGameElement,
+        params: [
+          this.createGameElement(
+            `<div class="card_holder"><img src="${this.card.back}"/></div>`,
+            "#game-hexgrid",
+            ".hex.dummy"
+          ),
+          destination,
+          null,
+          () => {
+            $('.animated_elem').remove();
+            this.restartQueue();
+
+          }
+        ]
+      });
+      this.runAnimationQueue(250);
+    }
+
+  }
+
+
   /*
   Briefly animate the longest road and update log if there is a change in ownership
   */
@@ -513,38 +476,36 @@ class SettlersDisplay {
       });*/
   }
 
-  /*
-  So we sometimes want a status update message to persist through the next update status 
-  (so player has a chance to read it if we are rapidly knocking moves of the queue)
-  Important messages are marked with "persistent"
-  */
-  getLastNotice(preserveLonger = false) {
-    if (document.querySelector('.status .persistent')) {
-      let nodes = document.querySelectorAll('.status .persistent');
-      return `<div class="${preserveLonger ? 'persistent' : 'player-notice'}">${
-        nodes[nodes.length - 1].innerHTML
-      }</div>`;
-    }
-    return '';
-  }
 
   updateStatus(str, hide_info = 0) {
     try {
       if (this.lock_interface == 1) {
-        this.setHudHeight();
         return;
       }
 
       this.game.status = str;
+      this.status.push(str);
 
-      if (this.browser_active == 1) {
-        let status_obj = document.querySelector('.hud-body .status');
-        if (this.game.players.includes(this.publicKey)) {
-          if (!str.includes('<')) {
-            console.log('Settlers: Wrap status message --', str);
-            str = `<div class="player-notice">${str}</div>`;
+      //Keep last three
+      while (this.status.length > 3) {
+        this.status.shift();
+      }
+
+      if (this.game.players.includes(this.publicKey)) {
+
+        if (this.gameBrowserActive()) {
+    
+          let status_obj = document.querySelector('.hud-body .status');
+    
+          let complex_str = '';
+          for (let st of this.status){
+            if (!st.includes('<div')) {
+              st = `<div class="player-notice">${st}</div>`;
+            }
+            complex_str += st;
           }
-          status_obj.innerHTML = str;
+
+          status_obj.innerHTML = complex_str;
           $('.status').disableSelection();
         }
       }

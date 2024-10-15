@@ -22,7 +22,7 @@ class StreamManager {
 
     this.terminationEvent = 'onpagehide' in self ? 'pagehide' : 'unload';
 
-    this.updateSettings(settings);
+    this.parseSettings(settings);
 
     app.connection.on('stun-toggle-video', async () => {
       // Turn off Video
@@ -218,10 +218,6 @@ class StreamManager {
       }
     });
 
-    app.connection.on('remove-remote-stream', (peerId) => {
-      this.removePeer(peerId, 'was kicked out');
-    });
-
     app.connection.on('stun-track-event', (peerId, event) => {
       if (!this.active) {
         return;
@@ -233,7 +229,7 @@ class StreamManager {
 
       const remoteStream = new MediaStream();
 
-      console.log('STUN: remote stream added for', peerId, event.track);
+      console.log('STUN: remote stream added for', peerId, event.track, event.streams);
 
       if (peerId == this.mod.screen_share) {
         console.log('Expecting presentation stream');
@@ -340,12 +336,12 @@ class StreamManager {
       if (!this.active) {
         return;
       }
-
+      console.log("Disconnecting video call...");
       this.leaveCall();
     });
   }
 
-  updateSettings(settings) {
+  parseSettings(settings) {
     if (settings?.video) {
       this.videoEnabled = true;
       if (settings.video !== true) {
@@ -364,7 +360,27 @@ class StreamManager {
       this.audioEnabled = false;
     }
 
-    this.auto_disconnect = settings?.auto_disconnect;
+    this.auto_disconnect = this?.auto_disconnect || settings?.auto_disconnect;
+  }
+
+  updateInputs(type, source){
+
+    if (type == "video"){
+      this.videoSource = source;
+      this.videoEnabled = true;
+    }else{
+      this.audioSource = source;
+      this.audioEnabled = true;
+    }
+
+    if (this.localStream){
+        this.localStream.getTracks().forEach((track) => {
+          track.stop()
+        });
+        this.localStream = null;
+        this.getLocalMedia();
+    }
+
   }
 
   returnConstraints(onlyVideo = false) {
@@ -566,7 +582,7 @@ class StreamManager {
 
   visibilityChange() {
     console.log('visibilitychange triggered');
-    this.leaveCall();
+    //this.leaveCall();
   }
 }
 

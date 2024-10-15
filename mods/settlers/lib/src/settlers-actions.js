@@ -1,16 +1,20 @@
 class SettlersActions {
   //
   // OVERRIDE THIS FUNCTION FROM THE PARENT GAME LIBRARY TO CHANGE THE ACKNOWLEDGE TEXT TO CONTINUE
+  // and override the callback
   //
   playerAcknowledgeNotice(msg, mycallback) {
     let html = `<i class="fa-solid fa-forward"></i>`;
     try {
 
-      this.updateStatusWithOptions(`${this.getLastNotice()}<div class="player-notice"><span class="acknowledge-message">${msg}</span></div>`, html);
+      this.updateStatusWithOptions(`<div class="player-notice">${msg}</div>`, html);
 
-      document.querySelector("#rolldice").onclick = async (e) => {
+      document.getElementById("rolldice").onclick = async (e) => {
         e.currentTarget.onclick = null;
-        await mycallback();
+        console.log("Click ACKNOWLEDGE");
+        this.updateControls();
+        this.game.queue.splice(this.game.queue.length - 1, 1);
+        this.restartQueue();
       }
     } catch (err) {
       console.error("Error with ACKWNOLEDGE notice!: " + err);
@@ -117,10 +121,10 @@ class SettlersActions {
     }
 
     if (poor_harvest) {
-      this.updateStatus(`<div class="persistent player-notice"><span>${firstMsg}: ${this.randomMsg()}</span></div>`);
+      this.updateStatus(`${firstMsg}: ${this.randomMsg()}`);
     } else {
       this.updateStatus(
-        `<div class="persistent player-notice"><span>${firstMsg}! You acquired: </span><div class="hud-status-card-list">${notice}</div></div>`
+        `<div class="player-notice"><span>${firstMsg}! You acquired: </span><div class="hud-status-card-list">${notice}</div></div>`
       );
     }
 
@@ -560,15 +564,6 @@ class SettlersActions {
       }
     });
 
-    $("input:checkbox").change(function () {
-      if ($(this).is(":checked")) {
-        settlers_self.confirm_moves = 0;
-        settlers_self.saveGamePreference("settlers_confirm_moves", 0);
-      } else {
-        settlers_self.confirm_moves = 1;
-        settlers_self.saveGamePreference("settlers_confirm_moves", 1);
-      }
-    });
   }
 }
 

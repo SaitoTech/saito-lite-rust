@@ -1,4 +1,4 @@
-module.exports = ImperiumUpgradesOverlayTemplate = (imperium_self, tech) => {
+module.exports  = (imperium_self, tech) => {
 	let html = `
     <div class="tech-overlay hide-scrollbar">
   `;

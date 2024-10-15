@@ -1,5 +1,6 @@
 var ModTemplate = require('../../lib/templates/modtemplate');
-const Transaction = require('../../lib/saito/transaction').default;
+const MainUI = require('./lib/main');
+
 
 class Tutorial02 extends ModTemplate {
 
@@ -9,54 +10,38 @@ class Tutorial02 extends ModTemplate {
 
     this.name            = "Tutorial02";
     this.slug            = "tutorial02";
-    this.description     = "Listening for Chat Messages";
+    this.description     = "Transactions and UI Components";
+    this.categories       = 'Dev educational';
+    this.ui		 = new MainUI(this.app, this);
 
     return this;
 
   }
 
-  shouldAffixCallbackToModule(modname) {
-    if (modname == this.name) { return 1; }
-    if (modname == 'Chat') { return 1; }
-    if (modname == 'Relay') { return 1; }
-    return 0;
+
+  async render() {
+    this.ui.render();
   }
 
-  async onConfirmation(blk, tx, conf) {
-    let txmsg = tx.returnMessage();
-    if (conf == 0) {
-      if (txmsg.module == "Chat") {		
-        modself.processChatTransaction(txmsg);
+
+  async sendTutorial02Transaction() {
+
+    let address = await this.app.wallet.getPublicKey();
+
+    let newtx = await this.app.wallet.createUnsignedTransaction(address);
+    newtx.msg = {
+      module: this.name,
+      data: {
+	random : Math.random()
       }
-    }
+    };              
+    await newtx.sign();
+
+    this.app.network.propagateTransaction(newtx);
+
   }
 
-  async handlePeerTransaction(app, tx, peer, mycallback = null) {
-    let txmsg = tx.returnMessage();
-
-    if (txmsg.request == "chat relay") {
-
-      let inner_tx = new Transaction(undefined, txmsg.data);
-      await inner_tx.decryptMessage(app);
-      let inner_txmsg = inner_tx.returnMessage();
-      this.processChatTransaction(inner_txmsg);
-
-    }
-
-    if (txmsg.module == "Chat") {		
-      this.processChatTransaction(txmsg);
-    }
-  }
-
-  async processChatTransaction(txmsg) {
-    if (this.app.BROWSER) {
-      if (txmsg.message) {
-        if (txmsg.message.indexOf("huzzah") > -1) {
-	  alert("Huzzah!");                             
-        }
-      }
-    }
-  }
+  
 
 }
 

@@ -124,7 +124,7 @@ class RedSquare extends ModTemplate {
 
     this.postScripts = ['/saito/lib/emoji-picker/emoji-picker.js'];
 
-    this.styles = ['/saito/saito.css', '/redsquare/style.css'];
+    this.styles = ['/redsquare/style.css'];
 
     this.enable_profile_edits = true;
 
@@ -198,11 +198,7 @@ class RedSquare extends ModTemplate {
         callback: function (app, publicKey) {
           if (app.modules.returnActiveModule().returnName() == 'Red Square') {
             app.connection.emit('redsquare-profile-render-request', publicKey);
-            window.history.pushState(
-              {},
-              document.title,
-              '/' + this_mod.slug + `/?user_id=${publicKey}`
-            );
+            window.history.pushState({view: "profile"}, '', '/' + this_mod.slug + `/?user_id=${publicKey}`);
           } else {
             window.location = `/redsquare/?user_id=${publicKey}`;
           }
@@ -337,11 +333,9 @@ class RedSquare extends ModTemplate {
           if (tx == null || app == null) {
             return 0;
           }
-
           if (this.hidden_tweets.includes(tx.signature)){
             return -1;
           }
-
           return 0;
         }
       };
@@ -645,6 +639,7 @@ class RedSquare extends ModTemplate {
             break;
           case '#profile':
             this.app.connection.emit('redsquare-profile-render-request');
+            window.history.pushState({view: "profile"}, '', '/' + this.slug + `/?user_id=${this.publicKey}`);
             break;
           default:
         }
@@ -2585,7 +2580,7 @@ class RedSquare extends ModTemplate {
     let hex_values = [];
 
     if (this.app.BROWSER) {
-      return;
+      return [];
     }
 
     return this.app.storage.loadTransactions(
@@ -2621,6 +2616,7 @@ class RedSquare extends ModTemplate {
   ///////////////
   // webserver //
   ///////////////
+
   webServer(app, expressapp, express) {
     console.log('this is my home');
     let webdir = `${__dirname}/../../mods/${this.dirname}/web`;

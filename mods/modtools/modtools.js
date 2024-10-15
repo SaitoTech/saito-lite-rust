@@ -37,7 +37,7 @@ class ModTools extends ModTemplate {
 		this.prune_after = 1500000; // ~1 day
 		//this.prune_after = 60000; // ~1 minute
 		this.max_hops = 2; // stop blacklisting after N hops
-		this.styles = ['/saito/saito.css'];
+		this.styles = [];
 
 		//
 		// stores the objects
@@ -352,7 +352,7 @@ class ModTools extends ModTemplate {
 		// -1 = definitely filter
 		// 0 = no preference
 		//
-		/*
+/****
 		if (type === 'saito-moderation-app') {
 			return {
 				filter_func: (app = null, tx = null) => {
@@ -389,8 +389,8 @@ class ModTools extends ModTemplate {
 					return 0;
 				}
 			};
-		}*/
-
+		}
+****/
 		if (type === 'saito-moderation-core') {
 			return {
 				filter_func: (tx = null) => {

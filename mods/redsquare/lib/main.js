@@ -90,8 +90,8 @@ class RedSquareMain {
     // when someone clicks on a tweet
     //
     this.app.connection.on('redsquare-tweet-render-request', (tweet) => {
-      window.history.pushState({}, '', `/redsquare?tweet_id=${tweet.tx.signature}`);
 
+      window.history.pushState({view: "tweet"}, "", `/redsquare?tweet_id=${tweet.tx.signature}`);
       this.scrollFeed(0);
       this.manager.renderTweet(tweet);
 

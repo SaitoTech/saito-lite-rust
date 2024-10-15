@@ -11,12 +11,13 @@ class Record extends ModTemplate {
 		super(app);
 		this.app = app;
 		this.name = 'screenrecord';
+		this.slug = 'screenrecord';
 		this.description = 'Recording Module';
 		this.categories = 'Utilities Communications';
 		this.class = 'utility';
 		this.record_video = false;
 
-		this.styles = ['/saito/saito.css', '/screenrecord/style.css'];
+		this.styles = ['/screenrecord/style.css'];
 		this.streamData = [];
 		this.chunks = [];
 		this.mediaRecorder = null;

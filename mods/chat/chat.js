@@ -1,4 +1,4 @@
- SaitoUserTemplate = require('./../../lib/saito/ui/saito-user/saito-user.template.js');
+const SaitoUserTemplate = require('./../../lib/saito/ui/saito-user/saito-user.template.js');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const ChatMain = require('./lib/appspace/main');
@@ -18,7 +18,7 @@ class Chat extends ModTemplate {
     super(app);
 
     this.name = 'Chat';
-
+    this.slug = 'chat';
     this.description = 'Saito instant-messaging client';
     this.categories = 'Messaging Chat';
     this.groups = [];
@@ -204,7 +204,7 @@ class Chat extends ModTemplate {
     this.chat_manager.render_popups_to_screen = 0;
     this.chat_manager.render_manager_to_screen = 1;
 
-    this.styles = ['/saito/saito.css', '/chat/style.css'];
+    this.styles = ['/chat/style.css'];
 
     await super.render();
 
@@ -639,15 +639,16 @@ class Chat extends ModTemplate {
                 });
               },
               event: function (id) {
-                chat_self.app.connection.on(
-                  'chat-manager-render-request',
-                  () => {
-                    let group = chat_self.returnGroup(obj.call_id);
-                    if (group){
+                let group = chat_self.returnGroup(obj.call_id);
+                if (group){
+                  chat_self.app.browser.addNotificationToId(group.unread, id);
+                  chat_self.app.connection.on(
+                    'chat-manager-render-request',
+                    () => {
                       chat_self.app.browser.addNotificationToId(group.unread, id);
                     }
-                  }
-                );
+                  );
+                }
               }
             }
           ];
@@ -673,7 +674,6 @@ class Chat extends ModTemplate {
                 });
               },
               event: function (id) {
-
                 let group = chat_self.returnGroup(obj.call_id);
                 if (group){
                    chat_self.app.browser.addNotificationToId(group.unread, id);

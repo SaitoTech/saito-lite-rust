@@ -11,6 +11,17 @@
 	this.welcome_overlay.overlay.zIndex = this.winter_overlay.overlay.zIndex + 2;
     }
 
+    if (c === "all_corsairs_destroyed") {
+        this.welcome_overlay.renderCustom({
+          title : "Piracy Fails" , 
+          text : "All Corsairs destroyed by Defensive Fire" ,
+          card : "" ,
+          img : '/his/img/backgrounds/corsairs_destroyed.jpg',
+          styles : [{ key : "backgroundPosition" , val : "bottom" }],
+        });
+        return;
+    }
+
     if (c === "depleted") {
         this.welcome_overlay.renderCustom({
           title : "Depleted Conquest" , 
@@ -773,7 +784,6 @@
   displayColony() {
 
     let obj = document.querySelector(".crossing_atlantic");
-
 
     for (let i = 0; i < this.game.state.colonies.length; i++) {
 
@@ -2316,12 +2326,28 @@ try {
     //
     // sanity check on removing siege
     //
-    if (space.besieged == true) {
+    if (space.besieged > 0) {
       let f = this.returnFactionControllingSpace(space.key);
-      if (!this.doesSpaceHaveEnemyUnits(space.key, f)) {
-        console.log("removing siege in displaySpace(), since no more enemy units left!");
-        this.removeSiege(space.key);
-      } 
+      let anyone_at_war = false;
+      let anyone_here = true;
+      if (!this.doesSpaceHaveNonAlliedIndependentUnits(space.key, f)) {
+	for (let f in space.units) {
+	  for (let ff in space.units) {
+	    if (space.units[f].length > 0 && space.units[ff].length > 0) {
+	      if (f != ff) {
+		anyone_here = true;
+		if (this.areEnemies(f, ff)) { anyone_at_war = true; }
+	      }
+	    }
+	  }
+	}
+
+	if (anyone_at_war == false) {
+	  if (anyone_here == true && this.returnFactionLandUnitsInSpace(f, space.key, 1) == 0) {} else {
+     	    this.removeSiege(space.key);
+	  }
+	}
+      }
     }
 
 
@@ -2413,7 +2439,11 @@ try {
       }
 
       if (space.fortified == 1) {
-        obj.innerHTML += `<img class="fortified" src="/his/img/tiles/Fortress.svg" />`;
+	if (this.game.state.knights_of_st_john == space.key) {
+          obj.innerHTML += `<img class="fortified" src="/his/img/tiles/KnightsFortress.png" />`;
+	} else {
+          obj.innerHTML += `<img class="fortified" src="/his/img/tiles/Fortress.svg" />`;
+        }
       }
       if (space.pirate_haven == 1) {
         obj.innerHTML += `<img class="pirate-haven" src="/his/img/tiles/ottoman/PirateHaven.svg" />`;

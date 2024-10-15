@@ -1,4 +1,4 @@
-module.exports = ImperiumBombardmentOverlayTemplate = (
+module.exports = (
 	imperium_self,
 	attacker,
 	defender,

@@ -104,7 +104,7 @@ class SettingsAppspace {
 					total += localStorage[key].length + key.length;
 				}
 			}
-			return total * 2; // Because JavaScript strings are UTF-16, each character is 2 bytes
+			return total;
 		}
 		
 		function getLocalStorageUsagePercentage() {
@@ -392,6 +392,13 @@ class SettingsAppspace {
 			document.querySelector('#settings-add-app').onclick = () => {
 				app.connection.emit('saito-app-app-render-request');
 			}
+		}
+
+		if(document.getElementById('settings-edit-json')) {
+			document.getElementById('settings-edit-json').onclick =
+			function (e) {
+				window.location.href = '/debug';
+			};
 		}
 	}
 }

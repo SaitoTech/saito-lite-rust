@@ -1,0 +1,81 @@
+/* ==========================================================================
+	# Typography
+========================================================================== */
+$font-properties: (
+	"body": (
+		null: (
+			size: 16px,
+			height: 1.5,
+			weight: 400,
+			family: var(--font__base),
+			color: var(--color__text)t
+		)
+	),
+	"h1,h2,h3,h4,h5,h6": (
+		null: (
+			height: 1.19,
+			weight: 400,
+			color: var(--color__text)
+		)
+	),
+	"h1": (
+		null: (
+			size: 46px
+		),
+		medium: (
+			size: 38px
+		),
+		small: (
+			size: 40px
+		)
+	),
+	"h2": (
+		null: (
+			size: 32px,
+			height: 1.18,
+		),
+		medium: (
+			size: 26px
+		),
+		small: (
+			size: 20px
+		)
+	),
+	"h3": (
+		null: (
+			size: 40px
+		),
+		small: (
+			size: 32px
+		)
+	),
+	"h4": (
+		null: (
+			size: 32px,
+			height: 1.4
+		),
+		small: (
+			size: 24px
+		)
+	),
+	"h5": (
+		null: (
+			size: 24px,
+			height: 1.4
+		),
+		small: (
+			size: 20px
+		)
+	),
+	"h6": (
+		null: (
+			size: 20px,
+			height: 1.4
+		),
+		small: (
+			size: 18px
+		)
+	)
+);
+
+@include font($font-properties, false);

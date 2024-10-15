@@ -5,7 +5,6 @@ const CallInterfaceVideo = require('./lib/components/call-interface-video');
 const CallInterfaceFloat = require('./lib/components/call-interface-float');
 const DialingInterface = require('./lib/components/dialer');
 const SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
-const CallPreLauncher = require('./lib/components/call-interstitial');
 const StreamManager = require('./lib/StreamManager');
 const AppSettings = require('./lib/stun-settings');
 const HomePage = require('./index');
@@ -28,7 +27,7 @@ class Videocall extends ModTemplate {
 
 		this.screen_share = false;
 
-		this.styles = ['/saito/saito.css', '/videocall/style.css'];
+		this.styles = ['/videocall/style.css'];
 
 		this.stun = null; //The stun API
 		this.streams = null;
@@ -55,7 +54,7 @@ class Videocall extends ModTemplate {
 			if (!this.streams) {
 				this.streams = new StreamManager(this.app, this, settings);
 			} else {
-				this.streams.updateSettings(settings);
+				this.streams.parseSettings(settings);
 				this.streams.active = true;
 			}
 
@@ -68,6 +67,8 @@ class Videocall extends ModTemplate {
 			} else {
 				this.CallInterface = new CallInterfaceFloat(app, this);
 			}
+
+			this.saveCallToKeychain();
 		});
 
 		app.connection.on('reset-stun', () => {
@@ -112,23 +113,6 @@ class Videocall extends ModTemplate {
 				this.room_obj = JSON.parse(
 					app.crypto.base64ToString(app.browser.returnURLParameter('stun_video_chat'))
 				);
-
-				let call_link = this.generateCallLink(this.room_obj);
-				let name = "Video Call";
-				if (this.room_obj?.host_public_key){
-					name += " " + this.app.keychain.returnUsername(this.room_obj.host_public_key);
-				}
-				if (!app.keychain.returnKey(this.room_obj.call_id), true){
-					app.keychain.addKey(this.room_obj.call_id, {
-						identifier: name,
-						type: "event",
-						mod: 'videocall',
-						startTime: Date.now(),
-						link: call_link,
-					});
-				}
-
-				app.keychain.addWatchedPublicKey(this.room_obj.call_id);
 
 				// JOIN THE ROOM
 				if (!this.browser_active) {
@@ -246,8 +230,7 @@ class Videocall extends ModTemplate {
 						text: 'Saito Talk',
 						icon: this.icon,
 						callback: function (app, id) {
-							let preCheck = new CallPreLauncher(app, call_self);
-							preCheck.render();
+							call_self.renderInto('.saito-overlay');
 						}
 					}
 				];
@@ -284,7 +267,7 @@ class Videocall extends ModTemplate {
 								description
 							};
 
-							let call_link = this.mod.generateCallLink(room_obj);
+							let call_link = call_self.generateCallLink(room_obj);
 
 							app.keychain.addKey(call_id, {
 								identifier: title || 'Video Call',
@@ -351,20 +334,19 @@ class Videocall extends ModTemplate {
 
 		if (type === 'chat-actions') {
 			if (obj?.publicKey) {
-				if (obj.publicKey !== this.app.wallet.publicKey) {
+				if (obj.publicKey !== this.publicKey) {
 					this.attachStyleSheets();
 					super.render(this.app, this);
 					return [
 						{
 							text: 'Video/Audio Call',
 							icon: 'fas fa-phone',
-							callback: function (app, public_key, id) {
-								console.log('Chat Action call');
+							callback: function (app, id) {
 								if (call_self?.room_obj) {
 									salert('Already in or establishing a call');
 									console.log(call_self.room_obj);
 								} else {
-									call_self.dialer.establishStunCallWithPeers([public_key]);
+									call_self.dialer.establishStunCallWithPeers([obj.publicKey]);
 								}
 							}
 						}
@@ -533,6 +515,7 @@ class Videocall extends ModTemplate {
 					}
 
 					if (txmsg.request === 'peer-kicked') {
+						console.log("kicked out of video call...");
 						this.streams.leaveCall();
 						siteMessage(`${this.app.keychain.returnUsername(from)} kicked you out of the call`);
 					}
@@ -630,12 +613,15 @@ class Videocall extends ModTemplate {
 
 		this.app.connection.emit('relay-transaction', newtx);
 		this.app.network.propagateTransaction(newtx);
+		this.addCallParticipant(this.room_obj.call_id, this.publicKey);
 	}
 
 	async receiveCallListRequestTransaction(app, tx) {
 		let txmsg = tx.returnMessage();
 
 		let from = tx.from[0].publicKey;
+
+		this.addCallParticipant(txmsg.call_id, from);
 
 		//We are getting a tx for the call we are in
 		if (this?.room_obj?.call_id === txmsg.call_id) {
@@ -654,15 +640,17 @@ class Videocall extends ModTemplate {
 				call_list.push(this.publicKey);
 			}
 
-			console.log('STUN: peer list request from ', from, call_list);
 
-			await this.sendCallListResponseTransaction(from, call_list);
+			if (!tx.isFrom(this.publicKey)){
+				console.log('STUN: peer list request from ', from, call_list);
+				await this.sendCallListResponseTransaction(from, call_list);
+			}
 
 			return;
 		}
 
-		let event = this.app.keychain.returnKey(txmsg.call_id, true);
-		//I have bookmarked this call id!
+		// Process if we saved event but are not in the call!
+
 		if (event){
 			// I am in a different call
 			if (this.room_obj?.call_id){
@@ -697,7 +685,6 @@ class Videocall extends ModTemplate {
 
 		this.app.connection.emit('relay-transaction', newtx);
 
-		this.app.network.propagateTransaction(newtx);
 	}
 
 	receiveCallListResponseTransaction(app, tx) {
@@ -746,8 +733,6 @@ class Videocall extends ModTemplate {
 
 		this.app.connection.emit('relay-transaction', newtx);
 
-		this.app.network.propagateTransaction(newtx);
-
 		this.app.connection.emit('add-remote-stream-request', publicKey, null);
 	}
 
@@ -757,7 +742,7 @@ class Videocall extends ModTemplate {
 			return;
 		}
 
-		console.log('STUN: Send disconnect message:', this.room_obj);
+		console.log('STUN: Send disconnect message (hang up):', this.room_obj);
 
 		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
@@ -776,7 +761,6 @@ class Videocall extends ModTemplate {
 		await newtx.sign();
 
 		this.app.connection.emit('relay-transaction', newtx);
-		this.app.network.propagateTransaction(newtx);
 
 		//
 		// Allow us to use stun connection to send tx before disconnecting!
@@ -878,8 +862,68 @@ class Videocall extends ModTemplate {
 		this.app.connection.emit('peer-list', sender, txmsg.data);
 	}
 
+	addCallParticipant(call_id, publicKey){
+		let event = this.app.keychain.returnKey(call_id, true);
+		
+		// We will add this key as a call participant...
+		if (event){
+			if (!event?.profile){
+				event.profile = {};
+			}
+			if (!event.profile?.participants){
+				event.profile.participants = [];
+			}
 
-	async generateRoomId() {
+			if (!event.profile.participants.includes(publicKey)){
+				event.profile.participants.push(publicKey);	
+			}
+			this.app.keychain.saveKeys();
+		}
+	}
+
+	saveCallToKeychain(){
+
+		let call_link = this.generateCallLink();
+		let name = "Video Call";
+
+		if (this.room_obj?.ui){
+			name = "Private Call";
+		}
+
+		if (this.room_obj?.host_public_key){
+			name += " " + this.app.keychain.returnUsername(this.room_obj.host_public_key);
+		}
+		if (!this.app.keychain.returnKey(this.room_obj.call_id), true){
+			this.app.keychain.addKey(this.room_obj.call_id, {
+				identifier: name,
+				type: "event",
+				mod: 'videocall',
+				startTime: Date.now(),
+				link: call_link,
+			});
+		}
+
+		this.app.keychain.addWatchedPublicKey(this.room_obj.call_id);
+	}
+
+	createRoom(identifier = "my video call"){
+		let call_id = this.generateRoomId();
+		this.room_obj = {
+			call_id,
+			host_public_key: this.publicKey,
+			call_peers: [],
+		};
+
+        let link =  this.generateCallLink(this.room_obj);
+		this.app.keychain.addKey(call_id, {
+			identifier,
+			link,
+		});
+
+		return link;
+	}
+
+	generateRoomId() {
 		let pk = this.app.crypto.generateKeys();
 		let id = this.app.crypto.generatePublicKey(pk);
 		this.app.keychain.addKey(id, {
@@ -893,7 +937,7 @@ class Videocall extends ModTemplate {
 		return id;
 	}
 
-	generateCallLink(room_obj) {
+	generateCallLink(room_obj = this.room_obj) {
 		let base64obj = this.app.crypto.stringToBase64(JSON.stringify(room_obj));
 
 		let call_link = window.location.origin + '/videocall/';

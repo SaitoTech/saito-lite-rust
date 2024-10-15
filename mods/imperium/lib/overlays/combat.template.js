@@ -1,4 +1,4 @@
-module.exports = ImperiumCombatOverlayTemplate = () => {
+module.exports = () => {
 	return `
 
 

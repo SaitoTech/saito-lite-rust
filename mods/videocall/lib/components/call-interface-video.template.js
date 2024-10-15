@@ -1,13 +1,9 @@
 /*controll changes*/
 /*updated for git*/
 
-module.exports = CallInterfaceVideoTemplate = (
-	mod,
-	videoEnabled = true,
-	audioEnabled = true
-) => {
-	let html = `
-    <div class="stun-chatbox full-screen hide-scrollbar" id="stun-chatbox">
+module.exports  = (mod, videoEnabled = true, audioEnabled = true) => {
+  let html = `
+    <div class="stun-chatbox hide-scrollbar" id="stun-chatbox">
       <main>
         <section class="video-container-large split-view">
           <div class="expanded-video"></div>
@@ -37,22 +33,14 @@ module.exports = CallInterfaceVideoTemplate = (
 
             <div class="control-list call-controls">
 
-              <div class="audio-control icon_click_area${
-					audioEnabled ? '' : ' disabled'
-				}">
+              <div class="audio-control icon_click_area${audioEnabled ? '' : ' disabled'}">
                 <label>Audio</label>
-                <i class="fa ${
-					audioEnabled ? 'fa-microphone' : 'fa-microphone-slash'
-				}"> </i>
+                <i class="fa ${audioEnabled ? 'fa-microphone' : 'fa-microphone-slash'}"> </i>
               </div>
             
-              <div class="video-control icon_click_area${
-					videoEnabled ? '' : ' disabled'
-				}">
+              <div class="video-control icon_click_area${videoEnabled ? '' : ' disabled'}">
                 <label>Video</label>
-                <i class="fas ${
-					videoEnabled ? 'fa-video' : 'fa-video-slash'
-				}"></i>
+                <i class="fas ${videoEnabled ? 'fa-video' : 'fa-video-slash'}"></i>
               </div>
               <div class="disconnect-control icon_click_area">
                  <label>End </label>
@@ -61,23 +49,23 @@ module.exports = CallInterfaceVideoTemplate = (
             </div>
           </div>
         </section>
-    </main>
+    </main>`;
 
-    ${
-		mod.browser_active
-			? `<div class="maximizer">
-      <i class="fa fa-window-maximize" aria-hidden="true"></i>
-    </div>`
-			: `<div class="minimizer">
+  if (!mod.browser_active) {
+    html += `<div class="minimizer">
       <i class=" fas fa-caret-down"></i>
-    </div>`
-	}
+    </div>`;
+  }
 
-  </div>`;
+  //`<div class="maximizer"><i class="fa fa-window-maximize" aria-hidden="true"></i></div>`
 
-	if (!mod.browser_active) {
-		html = `<div class="stun-overlay-container">${html}</div>`;
-	}
+  html += `</div>`;
 
-	return html;
+  if (!mod.browser_active) {
+    html = `<div class="stun-overlay-container full-screen">${html}</div>`;
+  } else {
+    html = `<div class="saito-video-container">${html}</div>`;
+  }
+
+  return html;
 };

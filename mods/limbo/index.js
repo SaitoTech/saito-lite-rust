@@ -49,7 +49,7 @@ module.exports = (app, mod, build_number, og_card) => {
 
     <script src="/saito/lib/pace/pace.min.js"></script>
     <link rel="stylesheet" href="/saito/lib/pace/pace-theme.min.css">
-  
+    <link rel="stylesheet" type="text/css" href="/saito/saito.css?v=${build_number}" />  
   
     <title>${mod.returnName()}</title>
   

@@ -3,6 +3,8 @@ const StunLaunchTemplate = require('./call-launch.template.js');
 const CallSetting = require('../components/call-setting.js');
 const SaitoLoader = require('../../../../lib/saito/ui/saito-loader/saito-loader.js');
 const CallScheduleJoin = require('./call-schedule-join.js');
+const CallScheduleWizard = require('../../../../lib/saito/ui/saito-calendar/saito-schedule-wizard.js');
+
 
 /**
  *
@@ -16,8 +18,7 @@ class CallLaunch {
 		this.mod = mod;
 		this.container = container;
 		this.overlay = new SaitoOverlay(app, mod);
-		this.callSetting = new CallSetting(app, this);
-
+		this.callSetting = new CallSetting(app, mod);
 		//
 		//this looks a lot better if it is in the dom structure
 		//
@@ -26,10 +27,13 @@ class CallLaunch {
 		//
 		// close-preview-window *also* shuts down the streams in call-settings
 		//
-		app.connection.on('close-preview-window', () => {
+		app.connection.on('close-preview-window', (rerender = false) => {
 			this.overlay.remove();
 			if (document.querySelector('.stun-appspace')) {
 				document.querySelector('.stun-appspace').remove();
+			}
+			if (rerender) {
+				this.render();
 			}
 		});
 
@@ -42,14 +46,39 @@ class CallLaunch {
 		if (document.querySelector('.stun-appspace')) {
 			return;
 		}
+
+	    this.keys = this.app.keychain.returnKeys({ type: 'event', mod: 'videocall' });
+
+	    let future = Date.now() + 15*60*1000;
+	    let past = Date.now() - 15*60*1000;
+
+	    if (this.keys.length) {
+	      for (let i = this.keys.length - 1; i >= 0; i--) {
+	        if (this.keys[i].startTime > future){
+	          this.keys.splice(i,1);
+	          continue;
+	        }
+	        if (this.keys[i].startTime < past ){
+	          this.keys.splice(i,1);
+	        }
+
+	      }
+	    }
+
+	    if (!this.callScheduleJoin){
+  			this.callScheduleJoin = new CallScheduleJoin(this.app, this.mod, this.keys);
+	    }else{
+	    	this.callScheduleJoin.keys = this.keys;
+	    }
+
 		if (this.container === '.saito-overlay') {
-			this.overlay.show(StunLaunchTemplate(this.app, this.mod), () => {
+			this.overlay.show(StunLaunchTemplate(this.app, this.mod, this.keys), () => {
 				//Stop the video if we close the overlay
 				this.app.connection.emit('close-preview-window');
 			});
 		} else if (this.container === 'body') {
 			this.app.browser.addElementToDom(
-				StunLaunchTemplate(this.app, this.mod)
+				StunLaunchTemplate(this.app, this.mod, this.keys)
 			);
 		}
 
@@ -60,7 +89,6 @@ class CallLaunch {
 
 		this.attachEvents(this.app, this.mod);
 
-		this.callSetting.render();
 	}
 
 	attachEvents(app, mod) {
@@ -76,36 +104,86 @@ class CallLaunch {
 				// I am initializing the call
 				//
 				if (!this.mod.room_obj) {
-
-					let call_id = await this.mod.generateRoomId();
-					this.mod.room_obj = {
-						call_id,
-						host_public_key: this.mod.publicKey,
-						call_peers: [],
-					};
-
-	                let link =  this.mod.generateCallLink(this.mod.room_obj);
-					this.app.keychain.addKey(call_id, {
-						identifier: `my video call`,
-						link,
-					});
+					await this.mod.createRoom();
 				}
 
 				console.log(this.mod.room_obj, "room object joining");
 				this.enterCall()
 			};
 		}
+
+		if (document.getElementById('stunx-call-settings')){
+			document.getElementById('stunx-call-settings').onclick = (e) => {
+				this.callSetting.render();	
+			}
+		}
+
+
 		if (document.getElementById('createScheduleRoom')) {
+			
 			document.getElementById('createScheduleRoom').onclick = async (e) => {
+                const callScheduleWizard = new CallScheduleWizard(this.app, this.mod)
+                callScheduleWizard.callbackAfterSubmit = async (utcStartTime, duration, description = "", title = "") => {
+
+                    //Creates public key for clal
+                    const call_id = await this.mod.generateRoomId();
+
+                    const room_obj = {
+                        call_id,
+                        scheduled: true,
+                        call_peers: [],
+                        startTime: utcStartTime, 
+                        duration,
+                        profile: {description}
+                    };
+        
+                    let call_link =  this.mod.generateCallLink(room_obj)
+
+                    this.app.keychain.addKey(call_id, { identifier: title || "Video Call", startTime:utcStartTime, duration, description, link: call_link });
+        
+                    this.app.connection.emit('calendar-refresh-request');
+                    this.app.connection.emit('close-preview-window', true); // rerender screen
+
+                    let event_link =  this.app.browser.createEventInviteLink(this.app.keychain.returnKey(call_id));
+                    await navigator.clipboard.writeText(event_link);
+                    siteMessage('Invitation link copied to clipboard', 3500);
+
+                }
+
+                callScheduleWizard.render()
+
 			};
 		}
 
 		if (document.getElementById('joinScheduleRoom')) {
 			document.getElementById('joinScheduleRoom').onclick = async (e) => {
-				// show splash screen 
-				this.callScheduleJoin = new CallScheduleJoin(app, mod)
-				this.callScheduleJoin.render()
+				
+				let s = this.callScheduleJoin.render()
+
+				if (!s){
+					document.getElementById('createRoom').click();	
+				}
 			};
+		}
+
+
+		if (document.querySelector(".stunx-precall-link")) {
+			document.querySelector(".stunx-precall-link").onclick = async (e) => {
+				let mode = e.currentTarget.dataset.id;
+				console.log(mode);
+				let call_link = "";
+				if (mode == "join"){
+					call_link =  this.mod.generateCallLink(this.mod.room_obj);
+				}else if (mode == "create"){
+					call_link = this.mod.createRoom();
+				}else{
+					this.callScheduleJoin.render(false);
+					return;
+				}
+
+				await navigator.clipboard.writeText(call_link);
+				siteMessage("Call link copied");
+			}
 		}
 	}
 
@@ -113,10 +191,7 @@ class CallLaunch {
 		//
 		// Set big screen video as desired call interface
 		//
-		if(!this.callSetting.videoInput){
-			siteMessage("Waiting for media feed")
-			return 
-		}
+
 		this.app.connection.emit('stun-init-call-interface', this.callSetting.returnSettings());
 
 		//

@@ -178,6 +178,7 @@ class HereIStand extends GameTemplate {
           this.confirm_moves = 1;
         }
       }
+/****
       if (this.app.options.gameprefs.his_faster_play) {
 	if (this.app.options.gameprefs.his_faster_play !== 1) {
           this.faster_play = 0;
@@ -185,6 +186,7 @@ class HereIStand extends GameTemplate {
           this.faster_play = 1;
         }
       }
+****/
     }
 
     //

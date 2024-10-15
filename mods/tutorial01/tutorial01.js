@@ -9,7 +9,7 @@ class Tutorial01 extends ModTemplate {
     this.name            = "Tutorial01";
     this.slug            = "tutorial01";
     this.description     = "Introductory tutorial for Saito App Development";
-
+    this.categories       = 'Dev educational';
     return this;
 
   }

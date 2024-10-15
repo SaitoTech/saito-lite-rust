@@ -1,0 +1,75 @@
+/* ==========================================================================
+	# Base
+========================================================================== */
+html {
+	scroll-behavior: smooth;
+}
+
+*,
+*:before,
+*:after {
+	box-sizing: border-box;
+}
+
+body {
+	word-break: break-word;
+	text-size-adjust: 100%;
+	margin: 0;
+	background-color: var(--color__primary);
+}
+
+img,
+video,
+svg,
+iframe,
+figure,
+picture {
+	max-width: 100%;
+	height: auto;
+}
+
+.container {
+	max-width: 100%;
+	width: $container-width;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: $container-padding;
+	padding-right: $container-padding;
+	@include breakpoint(wide) {
+		width: 100%;
+		padding-inline: 30px;
+	}
+	@include breakpoint(small) {
+		padding-inline: 15px;
+	}
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol {
+	margin: 0;
+}
+
+.abs-bg-img {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+
+	img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+}
+
+.site {
+	overflow: hidden;
+}

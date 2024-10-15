@@ -329,6 +329,8 @@ class Keychain {
 		for (let x = this.keys.length - 1; x >= 0; x--) {
 			if (this.keys[x].publicKey == publicKey) {
 				this.keys.splice(x, 1);
+				delete this.publickey_keys_hmap[publicKey];
+				this.saveKeys();
 				return;
 			}
 		}

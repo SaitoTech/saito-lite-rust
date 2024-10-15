@@ -32,7 +32,7 @@
 }
 
 .chat-popup-img-enhanced {
-  max-height: 90vh;
+  max-height: 80vh;
   max-width: 95vw;
   border: 1px solid var(--saito-border-color);
   border-radius: var(--saito-border-radius);
@@ -68,6 +68,11 @@
 
 .chat-manager-list .saito-userline {
   font-size: 1.5rem;
+}
+
+.chat-manager-list.saito-sidebar-element {
+  padding: 1rem;
+  border: 1px solid var(--saito-border-color);
 }
 
 .new-notification {
@@ -390,7 +395,7 @@
 
 .chat-mobile-back {
   display: none;
-  font-size: 20px;
+  font-size: 24px;
 }
 
 .chat-body {
@@ -786,9 +791,12 @@
   display: none;
 }
 
-.chat-manager-overlay .saito-sidebar-element {
+.chat-manager-overlay .chat-manager-list.saito-sidebar-element {
   box-shadow: unset;
+  padding: unset;
+  border: unset;
 }
+
 
 .floating-cm-overlay .alternate-close-button {
   display: flex;
@@ -826,8 +834,8 @@
   }
 
   .close-chat-manager i {
-    height: var(--saito-header-height);
-    line-height: 4.5rem;
+    height: 6rem;
+    line-height: 3rem;
   }
 
   .chat-header > .chat-header-nav > i.chat-container-close {
@@ -858,7 +866,6 @@
   .chat-manager-overlay .chat-manager {
     margin-left: auto;
     margin-right: auto;
-    width: 95vw;
     min-height: 25rem;
     height: 100%;
     grid-template-rows: var(--saito-header-height) 1fr;
@@ -869,7 +876,7 @@
     height: 40px;
   }
   .chat-manager-overlay .chat-manager-header {
-    height: var(--saito-header-height);
+    height: 6rem;
   }
   .chat-container {
     margin: 0;
@@ -893,6 +900,7 @@
 
   .chat-mobile-back {
     display: flex;
+    margin: 1rem;
   }
 
 
@@ -900,6 +908,10 @@
   .chat-manager-overlay+.chat-container {
     height: 100vh;
     height: calc(var(--saito-vh) * 100);
+  }
+
+  .chat-header-info {
+    height: 6rem;
   }
 }
 

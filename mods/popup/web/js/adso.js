@@ -9,6 +9,9 @@ var object_under_editing_id = -1;
 var row_under_editing = 0;
 var is_resegmenting = 0;
 
+var saito_app = null;
+var saito_mod = null;
+
 var tt1 = '';
 var tt2 = '';
 var tt3 = '';

@@ -19,25 +19,20 @@ function load_review(qntype) {
 }
 
 function setup_hsk_menu() {
-	var html2insert =
-		'\
-        <div id="lightbox_header" class="lightbox_header" style="margin-top:70px;"> \
-          Pick a Level to Study \
-        </div> \
-        <div id="test_container" class="test_container" style="margin-top:50px"> \
-	  <div onclick="source=\'hsk-beginner\';qntype=\'\';setup_reinforcement_lightbox();loadQuestion();" style="float:left;margin-left:85px;width:220px;"> \
-	<img src="/img/hsk/hsk1.jpg" style="width:220px"/> \
-          </div> \
-	  <div onclick="source=\'hsk-intermediate\';qntype=\'\';setup_reinforcement_lightbox();loadQuestion();" style="float:left;margin-left:30px;width:220px;"> \
-	<img src="/img/hsk/hsk2.jpg" style="width:220px"/> \
-          </div> \
-	  <div onclick="source=\'hsk-advanced\';qntype=\'\';setup_reinforcement_lightbox();loadQuestion();" style="float:left;margin-left:30px;width:220px;"> \
-	<img src="/img/hsk/hsk3.jpg" style="width:220px"/> \
-          </div> \
-        </div> \
-        ';
-
-	document.getElementById('lightbox_content').innerHTML = html2insert;
+	document.getElementById('lightbox_content').innerHTML = `;
+          <div id="lightbox_header" class="lightbox_header" style="margin-top:70px;">Pick a Level to Study</div>
+          <div id="test_container" class="test_container" style="margin-top:50px">
+	    <div onclick="source=\'hsk-beginner\';qntype=\'\';setup_reinforcement_lightbox();loadQuestion();" style="float:left;margin-left:85px;width:220px;">
+	      <img src="/img/hsk/hsk1.jpg" style="width:220px"/>
+            </div>
+	    <div onclick="source=\'hsk-intermediate\';qntype=\'\';setup_reinforcement_lightbox();loadQuestion();" style="float:left;margin-left:30px;width:220px;">
+	      <img src="/img/hsk/hsk2.jpg" style="width:220px"/>
+            </div>
+	    <div onclick="source=\'hsk-advanced\';qntype=\'\';setup_reinforcement_lightbox();loadQuestion();" style="float:left;margin-left:30px;width:220px;">
+	      <img src="/img/hsk/hsk3.jpg" style="width:220px"/>
+            </div>
+          </div>
+        `;
 }
 
 var qid = ''; //question id
@@ -84,6 +79,7 @@ var language = '';
 var answered_correctly = 0;
 
 function check_answer_review(choice) {
+
 	last_question_data = '';
 
 	if (question_type == 'generative_pinyin') {
@@ -140,16 +136,10 @@ function check_answer_review(choice) {
 	advance_to_next_question();
 }
 
-function updateTotalRemaining(x) {
-	$('.total_remaining').html(x);
-}
 
-
-function loadQuestion() {
+async function loadQuestion() {
 
 	retry_load_state++;
-
-alert("in load question!");
 
 	// forced delay so the animation is smooth
 	$('#test_container').hide();
@@ -159,60 +149,65 @@ alert("in load question!");
 
 	if (endless_mode == 0) {
 		if (total_remaining > 9) {
-			updateTotalRemaining(total_remaining);
+			$('.total_remaining').html(total_remaining);
 		}
 		if (total_remaining == 9) {
-			updateTotalRemaining('nine');
+			$('.total_remaining').html("nine");
 		}
 		if (total_remaining == 8) {
-			updateTotalRemaining('eight');
+			$('.total_remaining').html("eight");
 		}
 		if (total_remaining == 7) {
-			updateTotalRemaining('seven');
+			$('.total_remaining').html("seven");
 		}
 		if (total_remaining == 6) {
-			updateTotalRemaining('six');
+			$('.total_remaining').html("six");
 		}
 		if (total_remaining == 5) {
-			updateTotalRemaining('five');
+			$('.total_remaining').html("five");
 		}
 		if (total_remaining == 4) {
-			updateTotalRemaining('four');
+			$('.total_remaining').html("four");
 		}
 		if (total_remaining == 3) {
-			updateTotalRemaining('three');
+			$('.total_remaining').html("three");
 		}
 		if (total_remaining == 2) {
-			updateTotalRemaining('two');
+			$('.total_remaining').html("two");
 		}
 		if (total_remaining == 1) {
-			updateTotalRemaining('one');
+			$('.total_remaining').html("one");
 			$('#questions').html('question');
 		}
 	}
 
 	requested_wid = return_requested_wid();
 
-alert("source is: " + source);
+	let qobj = await saito_mod.loadQuestion();
+
+alert("RETURNED OBJ: " + JSON.stringify(qobj));
 
 	// 
 	// get JSON text
 	//
-        let lesson_id = 1;
-        let word_id = 1;
-        let question_type = "vocab";
-        let question = "Question";
-        let english = "English";
-        let pinyin = "Pinyin";
-        let language = "chinese";
-        let option1 = "option1";
-        let option2 = "option2";
-        let option3 = "option3";
-        let option4 = "option4";
-        let correct = "option1";
-        let answer = "option1";
-        let hint = "hint";
-        let source_audio_url = 'http://popupchinese.com/data/';
+        lid = qobj.lesson_id;
+        wid = qobj.word_id;
+        lesson_id = qobj.lesson_id;
+        word_id = qobj.word_id;
+        question_type = qobj.question_type;
+        question = qobj.question;
+        english = qobj.english;
+        pinyin = qobj.pinyin;
+        language = qobj.language;
+        option1 = qobj.option1;
+        option2 = qobj.option2;
+        option3 = qobj.option3;
+        option4 = qobj.option4;
+        correct = qobj.correct;
+        answer = qobj.answer;
+        hint = qobj.hint;
+        source_audio = qobj.source_audio;
+        source_audio_url = qobj.source_audio_url;
 
         try {
                 answer = answer.replace(/;;/g, ';');
@@ -237,32 +232,11 @@ alert("source is: " + source);
 }
 
 
-function format_as_vertical_question() {
-	$('#question_text').css('padding-top', '15px');
-	$('#question_space').css('border', 'none');
-	$('#question_space').css('width', '100%');
-	$('#question_space').css('min-height', '80px');
-	$('.option').css('line-height', '30px');
-	$('.option').css('width', '700px');
-	$('.option').css('margin-left', '75px');
-	$('#answer_space').css('width', '700px');
-	$('#lightbox_header').css('display', 'none');
-}
-function format_as_horizontal_question() {
-	$('#question_text').css('padding-top', '120px');
-	$('#question_space').css('border-left', '1px dashed #D7D7D7');
-	$('#question_space').css('width', '435px');
-	$('#question_space').css('min-height', '300px');
-	$('.option').css('line-height', '36px');
-	$('.option').css('width', '340px');
-	$('.option').css('margin-left', '9px');
-	$('#answer_space').css('width', '400px');
-	$('#lightbox_header').css('display', 'all');
-}
-
 function resetCss() {
 	// hovering effect
 	$('.option').removeClass('option_hover');
+
+alert("TEST A");
 
 	correct_delay = 800;
 	incorrect_delay = 1500;
@@ -310,14 +284,24 @@ function resetCss() {
 		}
 	}
 
-	if (last_question_data != '') {
-		$('#feedback').html(
-			'Testing new feature... please disregard for the moment!'
-		);
-	}
+
+alert("TEST A");
 
 	if (question_type == 'test') {
-		format_as_vertical_question();
+
+		//
+		// format vertical question
+		//
+		$('#question_text').css('padding-top', '15px');
+		$('#question_space').css('border', 'none');
+		$('#question_space').css('width', '100%');
+		$('#question_space').css('min-height', '80px');
+		$('.option').css('line-height', '30px');
+		$('.option').css('width', '700px');
+		$('.option').css('margin-left', '75px');
+		$('#answer_space').css('width', '700px');
+		$('#lightbox_header').css('display', 'none');
+
 		if (option1 == '') {
 			$('#option1').hide();
 		}
@@ -331,14 +315,28 @@ function resetCss() {
 			$('#option4').hide();
 		}
 	} else {
-		format_as_horizontal_question();
+		//
+		// format horizontal question
+		//
+		$('#question_text').css('padding-top', '120px');
+		$('#question_space').css('border-left', '1px dashed #D7D7D7');
+		$('#question_space').css('width', '435px');
+		$('#question_space').css('min-height', '300px');
+		$('.option').css('line-height', '36px');
+		$('.option').css('width', '340px');
+		$('.option').css('margin-left', '9px');
+		$('#answer_space').css('width', '400px');
+		$('#lightbox_header').css('display', 'all');
 	}
+
+alert("qtype: " + question_type);
 
 	if (
 		question_type == 'multiple_choice_english' ||
 		question_type == 'multiple_choice_pinyin' ||
 		question_type == 'fill_in_the_blank' ||
-		question_type == 'test'
+		question_type == 'test' ||
+		question_type == 'vocab'
 	) {
 		if (option1 != '') {
 			$('#option1').show();
@@ -360,7 +358,10 @@ function resetCss() {
 		$('#option3').unbind('click');
 		$('#option4').unbind('click');
 
+alert("adding click bindings...");
+
 		$('#option1').bind('click', function () {
+alert("clicked on 1");
 			check_answer_review(1);
 		});
 		$('#option2').bind('click', function () {
@@ -631,23 +632,24 @@ function check_pinyin_answer() {
 	advance_to_next_question();
 }
 
-function advance_to_next_question() {
+async function advance_to_next_question() {
+
+alert("advance to next question!");
+
 	if (total_remaining == 0 && endless_mode == 0) {
 		requested_wid = return_requested_wid();
 
+		//
 		// report the final question
-		$.post(
-			'/api/loadWordQuestion',
-			{
+		//
+		await saito_mod.saveAnswer({
 				wid: wid,
 				lid: lid,
 				last_question_data: last_question_data,
 				requested_wid: requested_wid,
 				source: source,
 				correct: answered_correctly
-			},
-			function (txt) {}
-		);
+		});
 
 		if (total_correct == total_answered) {
 			setTimeout(function () {
@@ -662,6 +664,22 @@ function advance_to_next_question() {
 			}, incorrect_delay);
 			return;
 		}
+	} else {
+
+alert("in else clause!");
+
+		//
+		// report the final question
+		//
+		await saito_mod.saveAnswer({
+				wid: wid,
+				lid: lid,
+				last_question_data: last_question_data,
+				requested_wid: requested_wid,
+				source: source,
+				correct: answered_correctly
+		});
+
 	}
 
 	if (answered_correctly == 1) {
@@ -701,46 +719,25 @@ function show_points(points) {
 	);
 }
 
-function return_word_question_html() {
-	htmltmp =
-		' \
-	<div id="question_space" class="question_space"><div id="question_text" class="question_text"></div><div id="question_hint" class="question_hint"></div></div> \
-	<div id="answer_space" class="answer_space"> \
-	  <div id="instructions" class="instructions"></div> \
-	  <div id="option1" class="option"></div> \
-	  <div id="option2" class="option"></div> \
-	  <div id="option3" class="option"></div> \
-	  <div id="option4" class="option"></div> \
-	  <div id="feedback" class="feedback"></div> \
-	</div> \
-	';
-	return htmltmp;
-}
 
 function setup_reinforcement_lightbox() {
 
-	var html2insert =
-		'\
-        <div id="lightbox_header" class="lightbox_header"> \
-        ';
-	if (endless_mode == 0) {
-		html2insert +=
-			'\
-  	  Before we continue, <span class="red total_remaining" id="total_remaining">five</span> <span class="red" id="questions">questions</span> to review.... \
-	  ';
-	} else {
-		html2insert += '\
-	  ';
-	}
-	html2insert +=
-		'\
-        </div> \
-	<div id="test_container" class="test_container"> \
-	';
-	html2insert += return_word_question_html();
-	html2insert += '\
-	</div> \
-        ';
+	var html2insert = `<div id="lightbox_header" class="lightbox_header">`;
+	if (endless_mode == 0) { html2insert += `Before we continue, <span class="red total_remaining" id="total_remaining">five</span> <span class="red" id="questions">questions</span> to review....`; }
+	html2insert += `
+        	</div>
+		<div id="test_container" class="test_container">
+        	  <div id="question_space" class="question_space"><div id="question_text" class="question_text"></div><div id="question_hint" class="question_hint"></div></div> \
+        	  <div id="answer_space" class="answer_space"> \
+        	    <div id="instructions" class="instructions"></div> \
+      		    <div id="option1" class="option"></div> \
+      		    <div id="option2" class="option"></div> \
+      		    <div id="option3" class="option"></div> \
+      		    <div id="option4" class="option"></div> \
+      		    <div id="feedback" class="feedback"></div> \
+      		  </div> 
+	        </div>
+	`;
 
 	document.getElementById('lightbox_content').innerHTML = html2insert;
 

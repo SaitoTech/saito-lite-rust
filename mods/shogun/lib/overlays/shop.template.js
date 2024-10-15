@@ -1,4 +1,4 @@
-module.exports = ShopOverlayTemplate = (mod, prompt, optional = false) => {
+module.exports  = (mod, prompt, optional = false) => {
 	
   let html = `
     <div class="shop-overlay">

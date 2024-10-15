@@ -25,9 +25,9 @@ const JSON = require('json-bigint');
 //
 // CORS -- uncomment for local CORS Cross-Origin Requests by Default
 //
-//var cors = require('cors');
+var cors = require('cors');
 const expressApp = express();
-//expressApp.use(cors());
+expressApp.use(cors());
 
 
 const webserver = new Ser(expressApp);
@@ -864,9 +864,8 @@ class Server {
 
 		expressApp.get('*', (req, res) => {
 
-			//res.sendFile(`${this.web_dir}404.html`);
-			res.sendFile(`${this.web_dir}tabs.html`);
-
+            res.sendFile(`${this.web_dir}404.html`);
+			//res.sendFile(`${this.web_dir}tabs.html`);
 //
 //			res.status(404).sendFile(`${this.web_dir}404.html`);
 //			res.status(404).sendFile(`${this.web_dir}tabs.html`);

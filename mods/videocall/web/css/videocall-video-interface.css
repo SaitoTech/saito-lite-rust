@@ -1,380 +1,41 @@
-/* controll changes */
-
-/* .stun-overlay-container {
-	position: fixed;
+.stun-overlay-container {
 	z-index: 100;
-}
-
-.stun-overlay-container+.chat-container {
-	z-index: 101;
-}
-
-.stun-chatbox {
-	bottom: 0;
-	left: 0;
 	width: 100vw;
 	height: 100vh;
-	height: calc(100 * var(--saito-vh));
 	position: fixed;
+	bottom: 0;
+	left: 0;
 	background-color: var(--saito-background-color);
 	transition: all 0.2s;
 }
 
-.stun-chatbox .minimizer, .stun-chatbox .maximizer {
-	position: absolute;
-	right: 1.8rem;
-	top: 1.5rem;
-	z-index: 2;
-	cursor: pointer;
-	height: 3rem;
-	width: 3rem;
-	text-align: center;
-}
-
-.stun-chatbox.minimize .minimizer {
-	right: 1.5rem;
-}
-
-.stun-chatbox .maximizer i {
-	font-size: 3rem;
-	color: var(--saito-white);
-	transition: all 0.2s;
-	text-shadow: 0 0 3px var(--saito-black);
-}
-
-.stun-chatbox .minimizer i {
-	font-size: 4rem;
-	color: var(--saito-white);
-	transition: all 0.2s;
-	text-shadow: 0 0 3px var(--saito-black);
-	line-height: 3rem;
-}
-
-@keyframes minimize {
-	100% {
-		position: absolute;
-		opacity: 0.8;
-		transform: translate(-40%, 90%) translate(0, -50%) scale(0.2);
-	}
-} */
-
-/* .stun-chatbox.minimize {
-	width: 30rem;
-	height: 30rem;
-	min-width: 27rem;
-	min-height: 28rem;
-	overflow: auto;
-	resize: both; */
-	/* animation-name: minimize;
-  animation-duration: 1s;
-  animation-fill-mode: forwards; */
-	/* cursor: grab;
-	border-radius: 0.5rem;
-} */
-
-/* .stun-chatbox.minimize main { */
-	/* Fixed grid layout */
-	/* grid-template-rows: calc(100% - 40px) 40px;
-	grid-template-columns: minmax(5rem, 1fr);
-} */
-
-/* .stun-chatbox.minimize .footer {
-	padding: unset;
-}
-
-.stun-chatbox.minimize .minimizer i {
-	font-size: 2rem;
-}
-
-.stun-chatbox.minimize .video-container-large {
-	padding: 0.25rem;
-	grid-template-columns: 1fr;
-}
-
-.stun-chatbox.minimize .expanded-video {
-	width: 100%;
-	min-width: unset;
-	resize: unset;
-}
-
-.stun-chatbox.minimize .side-videos {
-	display: none;
-	resize: unset;
-}
-
-.stun-chatbox.minimize .control-panel {
-	padding: 0.25rem;
-	gap: 0.5rem;
-} */
-
-/* .stun-chatbox.minimize .timer {
-	min-width: unset;
-	gap: 0;
-	max-width: 50%; */
-	/* flex: 1;
-} */
-
-/* .stun-chatbox.minimize .stun-identicon-list img.saito-identicon {
-	width: 3rem;
-	height: 3rem;
-} */
-
-/* .stun-chatbox.minimize .users-on-call-text, .stun-chatbox.minimize .add-users-container, .stun-chatbox.minimize .imported-actions, .stun-chatbox.minimize label {
-	display: none;
-}
-
-.stun-chatbox.minimize .control-list {
-	width: 100%;
-	justify-content: flex-end;
-	gap: 1px;
-}
-
-.stun-chatbox.minimize .call-controls .icon_click_area {
-	display: flex;
-	width: 3.5rem;
-	height: 3.5rem;
-}
-
-.stun-chatbox.minimize .icon_click_area i {
-	font-size: unset;
-}
-
-.stun-chatbox .minimizer:hover i, .stun-chatbox .maximizer:hover i {
-	color: var(--saito-primary);
-	transform: scale(1.1);
-}
-
-
-
-.stun-chatbox main {
-	height: 100%;
-	width: 100%;
-	display: grid;
-	grid-template-rows: calc(100% - 150px) 150px;
-}
-
-.stun-chatbox .heading {
-	padding: 1rem;
-}
-
-.stun-chatbox .video-container-large {
-	display: grid;
-	width: 100%;
-	height: 100%;
-	max-height: 85vh;
-	transition: all 0.5s ease;
-	position: relative;
-	padding: 1rem;
-	gap: 1rem;
-	flex-wrap: wrap;
-}
-
-.gallery {
-	grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
-	grid-template-rows: repeat(auto-fit, minmax(100px, 1fr));
-	height: fit-content;
-	width: 100%;
-	max-height: 100%;
-}
-
-.split-view {
-	grid-template-columns: min-content 1fr;
-} */
-
-/*  video box */
-/* 
-.presentation, .expanded-video {
-	resize: horizontal;
-	overflow: auto;
-	max-height: calc(100vh - 13rem);
-	min-width: 50vw;
-	max-width: 85vw;
-	width: 75vw;
-}
-
-.stun-chatbox .side-videos {
-    display: flex;
-	flex-direction: column;
-	gap: 1rem;
-	max-height: calc(100vh - 13rem);
-	overflow: auto;
-	resize: horizontal;
-}
-
-.stun-chatbox .peer-call-list {
-	display: flex;
-	padding: 0.5rem;
-	gap: 0.5rem;
-}
-
-.peer-call-list .saito-identicon {
-	width: 2.5rem;
-	height: 2.5rem;
-}
-
-.peer-list-item.not-connected {
-	filter: grayscale(100%);
-} */
-
-/* .expanded-video .video-box-container-large {
-	width: 100%;
-	height: 100%;
-	opacity: 0;
-	opacity: 0;
-	animation: fade-in 0.5s ease-in;
-	animation-fill-mode: forwards;
-
-} */
-
-/* .side-videos .video-box-container-large { */
-	/*height: fit-content;*/
-	/* max-height: 100%;
-	overflow: clip;
-} */
-
-/* .stun-chatbox .video-box-container-large {
-	border: 2px solid var(--saito-border-color-dark);
-	border-radius: 0.5rem;
-	cursor: pointer;
-	resize: horizontal;
-	overflow: auto;
-}
-
-.presentation {
-	width: 85%;
-	height: 100%;
-	margin-right: 10px;
-}
-
-.presentation .video-box-container-large {
-	width: 100%;
-	opacity: 0;
-	opacity: 0;
-	animation: fade-in 0.5s ease-in;
-	animation-fill-mode: forwards;
-	border: 2px solid var(--saito-border-color-dark);
-} */
-/* 
-.presentation-side-videos {
-	flex: 1;
-}
-
-.presentation-side-videos .video-box-container-large {
-	height: fit-content;
-	border: 2px solid var(--saito-border-color-dark);
-}
-
-.side-videos .video-box-container-large {
-    max-height: 50%;
-}
-
-.stun-chatbox .video-box-container-large {
-	border-radius: 0.5rem;
-	position: relative;
-} */
-
-/* @keyframes fade-in {
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
-}
-
-.stun-chatbox .b-btngrid {
-	border: none;
-	margin-left: 1rem;
-	margin-top: 250px;
-	width: 160px;
-	height: 38px;
-	border-radius: 4px;
-	left: 51px;
-	cursor: pointer;
-}
-
-.stun-chatbox .heading {
-	background: linear-gradient(96.79deg, #f30c4f 0%, #f8c062 91.87%);
-} */
-
-/* video chat */
-
-/* .lds-dual-ring {
-	display: inline-block;
-} */
-
-/* .lds-dual-ring:after {
-	content: ' ';
-	display: block;
-	width: 10px;
-	height: 10px;
-	margin: 8px;
-	border-radius: 50%;
-	border: 6px solid var(--saito-white);
-	border-color: var(--saito-white) transparent var(--saito-white) transparent;
-	animation: lds-dual-ring 1.2s linear infinite;
-} */
-
-/* @keyframes lds-dual-ring {
-	0% {
-		transform: rotate(0deg);
-	}
-	100% {
-		transform: rotate(360deg);
-	}
-} */
-/* 
-@keyframes glow {
-	0% {
-		transform: scale(0.97);
-	}
-	50% {
-		transform: scale(1);
-	}
-	75% {
-		transform: scale(0.97);
-	}
-	100% {
-		transform: scale(0.97);
-	}
-} */
-
-/* .video-box-container-large {
-	display: flex;
-	height: 100%;
-	width: 100%;
-	justify-content: center;
-	align-items: center;
-	color: var(--saito-white);
-	position: relative;
-} */
-
-/* 
-
-
-*/
-
-.stun-overlay-container {
-	position: fixed;
-	z-index: 100;
-}
-
-.stun-overlay-container+.chat-container {
-	z-index: 101;
-}
-
-.stun-chatbox {
-	bottom: 0;
-	left: 0;
+.saito-video-container {
 	width: 100vw;
 	height: 100vh;
 	height: calc(100 * var(--saito-vh) - var(--saito-header-height));
-	position: fixed;
-	background-color: var(--saito-background-color);
-	transition: all 0.2s;
+	position: absolute;	
+	top: var(--saito-header-height);
+	overflow: hidden;
 }
 
-.stun-chatbox .minimizer, .stun-chatbox .maximizer {
+.stun-overlay-container+.chat-container {
+	z-index: 101;
+}
+
+.stun-chatbox {
+	bottom: 0;
+	left: 0;
+	height: calc(100 * var(--saito-vh));
+	/*position: fixed;*/
+	background-color: var(--saito-background-color);
+	transition: all 0.2s;
+	z-index: 20;
+	width: 100%;
+	height: 100%;
+}
+
+.stun-chatbox .minimizer,
+.stun-chatbox .maximizer {
 	position: absolute;
 	right: 1.8rem;
 	top: 1.5rem;
@@ -385,7 +46,7 @@
 	text-align: center;
 }
 
-.stun-chatbox.minimize .minimizer {
+.minimize .stun-chatbox .minimizer {
 	right: 1.5rem;
 }
 
@@ -412,7 +73,7 @@
 	}
 }
 
-.stun-chatbox.minimize {
+.stun-overlay-container.minimize {
 	width: 45rem;
 	height: 40rem;
 	min-width: 30rem;
@@ -423,77 +84,73 @@
 	border-radius: 0.5rem;
 }
 
-.stun-chatbox.minimize main {
+.stun-overlay-container.minimize .stun-chatbox main {
 	grid-template-rows: calc(100% - 40px) 40px;
 	grid-template-columns: minmax(5rem, 1fr);
 }
 
-.stun-chatbox.minimize .footer {
-	padding: unset;
-}
-
-.stun-chatbox.minimize .minimizer i {
+.minimize .stun-chatbox .minimizer i {
 	font-size: 2rem;
 }
 
-.stun-chatbox.minimize .video-container-large {
+.minimize .stun-chatbox .video-container-large {
 	padding: 0.25rem;
-	grid-template-columns: 2fr 1fr;
+	/* We don't want this, show only one video in minimized view */
+	/*grid-template-columns: 2fr 1fr;*/
 	gap: 0.5rem;
 }
 
-.stun-chatbox.minimize .expanded-video {
+.minimize .stun-chatbox .expanded-video {
 	width: 100%;
 	min-width: unset;
 	resize: unset;
 }
 
-.stun-chatbox.minimize .side-videos {
+/* .stun-chatbox.minimize .side-videos {
 	display: flex;
 	flex-direction: column;
 	gap: 0.5rem;
 	resize: unset;
 	max-height: 100%;
 	overflow-y: auto;
-}
+} */
 
-.stun-chatbox.minimize .control-panel {
+.minimize .stun-chatbox .control-panel {
 	padding: 0.25rem;
 	gap: 0.5rem;
 }
 
-.stun-chatbox.minimize .timer {
-	min-width: unset;
-	gap: 0;
-	flex: 1;
-}
 
-.stun-chatbox.minimize .stun-identicon-list img.saito-identicon {
+.minimize .stun-chatbox .stun-identicon-list img.saito-identicon {
 	width: 3rem;
 	height: 3rem;
 }
 
-.stun-chatbox.minimize .users-on-call-text, .stun-chatbox.minimize .add-users-container, .stun-chatbox.minimize .imported-actions, .stun-chatbox.minimize label {
+.minimize .stun-chatbox .users-on-call-text,
+.minimize .stun-chatbox .add-users-container,
+.minimize .stun-chatbox .imported-actions,
+.minimize .stun-chatbox label {
 	display: none;
 }
 
-.stun-chatbox.minimize .control-list {
+.minimize .stun-chatbox .control-list {
 	width: 100%;
 	justify-content: flex-end;
 	gap: 1px;
 }
 
-.stun-chatbox.minimize .call-controls .icon_click_area {
+.minimize .stun-chatbox .call-controls .icon_click_area {
 	display: flex;
 	width: 3.5rem;
 	height: 3.5rem;
 }
 
-.stun-chatbox.minimize .icon_click_area i {
+.minimize .stun-chatbox .icon_click_area i {
 	font-size: unset;
 }
 
-.stun-chatbox .minimizer:hover i, .stun-chatbox .maximizer:hover i {
+.stun-chatbox .minimizer:hover i,
+.stun-chatbox .maximizer:hover i {
 	color: var(--saito-primary);
 	transform: scale(1.1);
 }
@@ -510,30 +167,31 @@
 }
 
 .stun-chatbox .video-container-large {
-	display: grid;
-	width: 100%;
+	/*width: 97%; Why!!?? */
 	height: 100%;
 	max-height: 85vh;
 	transition: all 0.5s ease;
 	position: relative;
 	padding: 1rem;
+	display: grid;
 	gap: 1rem;
 	flex-wrap: wrap;
 }
 
-.gallery {
+/* .gallery {
 	grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
 	grid-template-rows: repeat(auto-fit, minmax(100px, 1fr));
 	height: fit-content;
 	width: 100%;
 	max-height: 100%;
-}
+} */
 
 .split-view {
 	grid-template-columns: min-content 1fr;
 }
 
-.presentation, .expanded-video {
+.presentation,
+.expanded-video {
 	resize: horizontal;
 	overflow: auto;
 	max-height: calc(100vh - 13rem);
@@ -542,12 +200,62 @@
 	width: 75vw;
 }
 
-.stun-chatbox .side-videos {
-    display: flex;
-	flex-direction: column;
-	gap: 1rem;
-	max-height: calc(100vh - 13rem);
+
+.gallery,
+.side-videos {
+  resize: both;
+  width: 100%;
+  max-height: 85vh;
+  box-sizing: border-box;
+  gap: 1rem;
+  transition: all 0.5s ease;
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: space-around;
 }
+
+/* Aspect ratio and layout control */
+.flex-item {
+  flex: 1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.wide {
+  flex-direction: row;
+}
+
+.wide .flex-item {
+  max-width: 66%;
+}
+
+.square .flex-item {
+  flex-basis: 33%;
+  max-width: 50%;
+}
+
+.side-videos.square .flex-item {
+  flex-basis: 100%;
+  max-width: 100%;
+}
+
+.tall {
+  flex-direction: column;
+}
+
+ .video-fill video {
+	object-fit: fill;
+  } 
+  
+  .video-contain video {
+	object-fit: contain;
+  }
+  
+  .video-cover video {
+	object-fit: cover;
+  }
+
 
 .stun-chatbox .peer-call-list {
 	display: flex;
@@ -564,9 +272,7 @@
 	filter: grayscale(100%);
 }
 
-.stun-chatbox .volume-control {
-
-}
+.stun-chatbox .volume-control {}
 
 .stun-chatbox .volume-control i {
 	font-size: 1.8rem;
@@ -578,6 +284,7 @@
 	align-items: center;
 	cursor: pointer;
 }
+
 .expanded-video .video-box-container-large {
 	width: 100%;
 	height: 100%;
@@ -587,10 +294,10 @@
 	animation-fill-mode: forwards;
 }
 
-.side-videos .video-box-container-large {
+/* .side-videos .video-box-container-large {
 	max-height: 100%;
 	overflow: clip;
-}
+} */
 
 .stun-chatbox .video-box-container-large {
 	border: 2px solid var(--saito-border-color-dark);
@@ -622,9 +329,9 @@
 	border: 2px solid var(--saito-border-color-dark);
 }
 
-.side-videos .video-box-container-large {
-    max-height: 50%;
-}
+/* .side-videos .video-box-container-large {
+	max-height: 50%;
+} */
 
 .stun-chatbox .video-box-container-large {
 	border-radius: 0.5rem;
@@ -637,6 +344,7 @@
 	from {
 		opacity: 0;
 	}
+
 	to {
 		opacity: 1;
 	}
@@ -677,6 +385,7 @@
 	0% {
 		transform: rotate(0deg);
 	}
+
 	100% {
 		transform: rotate(360deg);
 	}
@@ -686,12 +395,15 @@
 	0% {
 		transform: scale(0.97);
 	}
+
 	50% {
 		transform: scale(1);
 	}
+
 	75% {
 		transform: scale(0.97);
 	}
+
 	100% {
 		transform: scale(0.97);
 	}
@@ -699,17 +411,18 @@
 
 .video-box-container-large {
 	display: flex;
-	height: 100%;
 	width: 100%;
 	justify-content: center;
 	align-items: center;
 	color: var(--saito-white);
 	position: relative;
+	flex: 1;
 }
 
 /* When staring at self, be like a mirror */
 
-.chat-settings-preview video, video#local {
+.chat-settings-preview video,
+video#local {
 	transform: rotateY(180deg);
 }
 
@@ -733,12 +446,11 @@
 	width: 100%;
 	height: 100%;
 	max-width: 100%;
-	max-height: 100%;
+	object-fit: cover;
+	max-height: 85vh;
 	z-index: 2;
 	border-radius: 0.1rem;
-	object-fit: cover;
 	border: none;
-	overflow: clip;
 }
 
 .video-box-container-large.portrait video {
@@ -747,8 +459,8 @@
 }
 
 video#presentation {
-    object-fit: contain;
-    padding: 3px;
+	object-fit: contain;
+	padding: 3px;
 }
 
 .video-box-container-large>#connection-message {
@@ -834,7 +546,8 @@ video#presentation {
 }
 
 
-.video-call-info i.disabled, .video-call-info i.fa-microphone-slash {
+.video-call-info i.disabled,
+.video-call-info i.fa-microphone-slash {
 	background-color: unset;
 	box-shadow: unset;
 }
@@ -921,6 +634,7 @@ video#presentation {
 	0% {
 		transform: rotate(0deg);
 	}
+
 	100% {
 		transform: rotate(360deg);
 	}
@@ -930,12 +644,15 @@ video#presentation {
 	0% {
 		transform: scale(0.97);
 	}
+
 	50% {
 		transform: scale(1);
 	}
+
 	75% {
 		transform: scale(0.97);
 	}
+
 	100% {
 		transform: scale(0.97);
 	}
@@ -965,6 +682,17 @@ video#presentation {
 	min-width: 7rem;
 	font-family: monospace;
 	text-align: right;
+}
+
+
+.minimize .stun-chatbox .footer {
+	padding: unset;
+	justify-content: space-between;
+}
+
+.minimize .stun-chatbox .timer {
+	min-width: unset;
+	margin: 0 1rem;
 }
 
 .minimize .timer .counter {
@@ -1026,9 +754,10 @@ video#presentation {
 }
 
 .control-list>div:last-child {
-    border-top-right-radius: var(--saito-border-radius);
-	border-bottom-right-radius: var(--saito-border-radius); 
-;}
+	border-top-right-radius: var(--saito-border-radius);
+	border-bottom-right-radius: var(--saito-border-radius);
+	;
+}
 
 .control-list .icon_click_area.disabled {
 	background-color: grey;
@@ -1042,7 +771,8 @@ video#presentation {
 	border: 3px solid var(--saito-primary) !important;
 }
 
-.control-list .icon_click_area label, .add-users-container label {
+.control-list .icon_click_area label,
+.add-users-container label {
 	position: absolute;
 	color: var(--saito-font-color);
 	bottom: -2.5rem;
@@ -1073,10 +803,11 @@ video#presentation {
 }
 
 @media screen and (max-width: 900px) {
-	.stun-chatbox.full-screen main {
+	.full-screen.stun-overlay-container .stun-chatbox main {
 		grid-template-rows: minmax(0, 1fr) minmax(200px, 20%);
 		grid-template-columns: minmax(100px, 1fr);
 	}
+
 	.full-screen .footer {
 		flex-direction: column;
 		align-items: flex-start;
@@ -1085,6 +816,7 @@ video#presentation {
 		gap: 3rem;
 		padding-bottom: 3rem;
 	}
+
 	/*
 	.full-screen .footer .control-list {
 		margin-bottom: 1.7rem;
@@ -1102,9 +834,17 @@ video#presentation {
 		height: 10rem;
 	}
 
-	.default-video-mask {
-		width: 10rem;
-		height: 10rem;
+	.stun-chatbox .video-container-large {
+		width: 100%;
+	}
+
+	.video-container-large.gallery-view {
+		overflow-y: auto;
+	}
+
+	.video-box-container-large video {
+		width: unset;
+		height: unset;
 	}
 }
 
@@ -1112,11 +852,13 @@ video#presentation {
 	.footer {
 		padding: 4rem 1rem;
 	}
+
 	.control-panel {
 		gap: 1rem;
 		width: calc(100vw - 2rem);
 		justify-content: space-around;
 	}
+
 	/*
 	.full-screen .control-panel .control-list {
 		gap: 0.5rem;
@@ -1184,9 +926,16 @@ video#presentation {
 	position: relative;
 	border: 1px solid #e5e5e59d;
 	border-radius: var(--saito-border-radius);
-	width: 100%;
-	max-width: 90vh;
+	width: min(640px, 90vw);
+	min-height: min(480px, 70vh);
 	display: flex;
+}
+
+.chat-settings-preview span {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
 }
 
 .chat-settings video {
@@ -1239,6 +988,7 @@ video#presentation {
 	text-align: left;
 	display: none;
 }
+
 /*
 .stun-appspace select option {
 	background-color: var(--saito-black-faded);
@@ -1265,9 +1015,6 @@ video#presentation {
 	padding: 0.5rem;
 }
 
-.stunx-appspace-launch-call-btn {
-	margin-bottom:1rem;
-}
 /*
 .chat-settings-audio-progress-bar {
 	position: relative;
@@ -1306,89 +1053,54 @@ video#presentation {
 		font-size: 1rem;
 		margin-right: 0.5rem;
 	}
-	.video-container-large {
-		grid-template-columns: 1fr;
-	}
-	.stun-chatbox .side-videos {
-		width: 100%;
-		grid-template-rows: unset;
-		grid-template-columns: repeat(auto-fit, minmax(100px, auto));
-		grid-gap: 0.5rem;
-	}
-	.side-videos .video-box-container-large, .expanded-video .video-box-container-large {
-		height: min(100%, 37vh);
-		width: fit-content;
-		max-width: 100%;
-		margin: auto;
-	}
-	.video-box-container-large video {
+
+    /*.gallery, .side-videos {
+    width: 100%;
+    grid-template-rows: unset;
+    grid-template-columns: repeat(auto-fit, minmax(100px, auto));
+    grid-gap: 0.5rem; 
+    }*/
+  
+  /* .video-box-container-large video {
+    height: 100%;
+    width: auto;
+  } */
+
+
+	/* .video-box-container-large video {
 		height: 100%;
 		width: auto;
-	}
+	} */
+
 	.video-box-container-large>#connection-message {
 		width: 100%;
 	}
+
 	.video-box-container-large>#connection-message p {
 		font-size: 2rem;
 	}
-	.gallery {
-		display: flex;
-		justify-content: center;
-		flex-direction: column;
-		align-items: center;
-		height: 100%;
-	}
-	.presentation, .expanded-video {
+
+
+
+	.presentation,
+	.expanded-video {
 		resize: none;
 		overflow: hidden;
 		min-width: 100%;
 	}
 }
 
-/* --chat in video calls -- */
-/*
-.stun-chatbox .chat-static {
-	border-radius: 2px solid var(--saito-border-color-dark);
-	border-radius: 0.5rem;
-	color: var(--saito-white);
-}
 
-.stun-chatbox .saito-user:hover .saito-userline-reply {
-	background-color: var(--saito-black);
-}
-
-.stun-chatbox .saito-user:hover .saito-userline-reply i {
-	border: 1px solid var(--saito-grey);
-}
-
-.stun-chatbox .saito-address {
-	color: var(--saito-grey);
-}
-
-.stun-chatbox .chat-header, .stun-chatbox .chat-header .saito-address {
-	cursor: default;
-}
-
-.stun-chatbox.minimize .chat-static {
-	display: none;
-}
-
-.stun-chatbox .chat-header .saito-address {
-	cursor: default;
-}
-
-.stun-chatbox.minimize .chat-static {
-	display: none;
-}
-*/
 
 @keyframes pulsate {
 	0% {
 		transform: scale(1);
 	}
+
 	50% {
 		transform: scale(1.2);
 	}
+
 	100% {
 		transform: scale(1);
 	}
@@ -1410,6 +1122,7 @@ video#presentation {
 .record-container.recording {
 	background-color: var(--saito-red);
 }
+
 .record-container.recording i {
 	color: var(--saito-white);
 	animation: pulsate 1s ease-in-out infinite;

@@ -12,6 +12,7 @@ class Midnight extends GameTemplate {
 		super(app);
 
 		this.name = 'Midnight';
+		this.slug = 'midnight';
 		this.gamename = 'Midnight Rogue';
 
 		this.categories = 'Games One-player Textadventure';

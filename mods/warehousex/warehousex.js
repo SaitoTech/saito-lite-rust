@@ -5,8 +5,8 @@ class Warehousex extends ModTemplate {
 		super(app);
 		this.app = app;
 		this.name = 'Warehousex';
-		this.description =
-			'Block data warehouse for the Saito blockchain. Not suitable for lite-clients';
+		this.slug = 'warehousex';
+		this.description = 'Block data warehouse for the Saito blockchain. Not suitable for lite-clients';
 		this.categories = 'Utilities Dev';
 
 		this.tx_cts = [];

@@ -10,8 +10,8 @@ class President extends GameTemplate {
 
 		this.app = app;
 		this.name = 'President';
-		this.description =
-			'Play cards in singles or sets in increasing value. Last player starts when all are done. The first player who gets rid of their cards is the President. The last?';
+		this.slug = 'president';
+		this.description = 'Play cards in singles or sets in increasing value. Last player starts when all are done. The first player who gets rid of their cards is the President. The last?';
 		this.categories = 'Games Cardgame';
 		this.card_img_dir = '/president/img/cards';
 

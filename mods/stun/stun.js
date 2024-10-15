@@ -1,6 +1,7 @@
 const saito = require('../../lib/saito/saito');
 const Transaction = require("../../lib/saito/transaction").default;
 const ModTemplate = require('../../lib/templates/modtemplate');
+const PeerService = require('saito-js/lib/peer_service').default;
 
 /***
  *  A generic utility for creating stun connections that other modules can use
@@ -26,7 +27,7 @@ class Stun extends ModTemplate {
 		super(app);
 		this.app = app;
 		this.name = 'Stun';
-
+		this.slug = 'stun';
 		this.description = 'P2P Connection Module';
 		this.categories = 'Utilities Communications';
 		this.class = 'utility';
@@ -67,6 +68,17 @@ class Stun extends ModTemplate {
 		];
 
 		this.peers = new Map();
+
+		app.connection.on("stun-data-channel-open", (publicKey) => {
+			/*
+			Not sure where the function should be, but we want something that converts
+			the stun data channel into a viable peer object, that will trigger the onPeerServiceUp
+
+			// app.network? / app.peer.?
+
+			 upgradePeerConnection(publicKey)
+			 */
+		});
 
 	}
 
@@ -114,7 +126,45 @@ class Stun extends ModTemplate {
 			};
 		}
 
+		if (type === 'user-menu') {
+			let mod_self = this;
+			return [
+				{
+					text: 'Create Stun Connection',
+					icon: 'fa-solid fa-bolt-lightning',
+					callback: function (app, public_key, id = '') {
+						if (!mod_self.hasConnection(public_key)) {
+							mod_self.createPeerConnection(public_key, () => {
+								mod_self.sendJoinTransaction(public_key);
+							});
+						} else {
+							app.connection.emit('stun-data-channel-open', public_key);
+						}
+					}
+				}
+			];
+		}
+
 		return null;
+	}
+
+
+	// Dummy functions for testing stun-data-channel upgrade to PEER object
+	returnServices() {
+		let services = [];
+		if (this.app.BROWSER == 1) {
+			services.push(new PeerService(null, 'stun-test'));
+		}
+		return services;
+	}
+
+  async onPeerServiceUp(app, peer, service = {}) {
+		if (service.service === 'stun-test') {
+			if (this.hasConnection(peer.publicKey)) {
+				console.log('STUN PEER UPGRADE SUCCESS!!!! ' + peer.publicKey);
+				app.keychain.addKey(peer.publicKey, { lastUpdate: Date.now() });
+			}
+		}
 	}
 
 	hasConnection(peerId) {
@@ -225,10 +275,12 @@ class Stun extends ModTemplate {
 		}
 
 		if (request == 'peer-left') {
+			console.log("Stun: Peer left (close the connection)");
 			this.removePeerConnection(sender);
 			return;
 		}
 		if (request == 'peer-kicked') {
+			console.log("Stun: Peer kicked out (close the connection)");
 			this.removePeerConnection(sender);
 			return;
 		}
@@ -344,6 +396,7 @@ class Stun extends ModTemplate {
 
 			//If not a solid connection state..., delete and try again
 			if (pc.connectionState == "failed" || pc.connectionState == "disconnected"){
+				console.log("STUN: remove old connection to reconnect...");
 				this.removePeerConnection(peerId);
 				this.createPeerConnection(peerId, callback);
 				return;
@@ -404,8 +457,9 @@ class Stun extends ModTemplate {
 
 		// Handle ICE candidates
 		peerConnection.onicecandidate = async (event) => {
-			console.log('receiving ice candidate for ', peerId, event.candidate)
 			if (event.candidate) {
+				console.log('receiving ice candidate for ', peerId, event.candidate)
+	
 				let data = {
 					module: 'Stun',
 					request: 'peer-candidate',
@@ -445,7 +499,7 @@ class Stun extends ModTemplate {
 				peerConnection.connectionState === 'failed' ||
 				peerConnection.connectionState === 'disconnected'
 			) {
-				setTimeout(() => {
+				peerConnection.timer = setTimeout(() => {
 					if (
 						peerConnection.connectionState === 'failed' ||
 						peerConnection.connectionState === 'disconnected'
@@ -454,6 +508,7 @@ class Stun extends ModTemplate {
 							'stun-connection-failed',
 							peerId
 						);
+						console.log("STUN: connection not restored after 3 seconds...");
 						this.removePeerConnection(peerId);
 					}
 				}, 3000);

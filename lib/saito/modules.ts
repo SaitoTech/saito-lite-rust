@@ -185,7 +185,7 @@ console.log("IN MODULE.TS AFFIX CALLBACKS: ");
 
 	async initialize() {
 
-		// try {
+		try {
 			if (this.app.BROWSER === 1) {
 				let mods = await this.app.storage.loadLocalApplications();
 				console.log('loaded mods:', mods);
@@ -245,10 +245,10 @@ console.log("IN MODULE.TS AFFIX CALLBACKS: ");
 
 				// this.mods.push(m);
 			}
-		// } catch (error) {
-		// 	console.error('failed loading dynamic mod');
-		// 	console.error(error);
-		// }
+		} catch (error) {
+			console.error('failed loading dynamic mod');
+			console.error(error);
+		}
 
 
 		//

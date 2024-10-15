@@ -112,6 +112,7 @@ class Sector {
 			//
 			// for each space unit belonging to this faction
 			//
+			let updated_space_graphics = null;
 			if (sys.s.units[player - 1].length > 0) {
 				updated_space_graphics = 1;
 				player_fleet_drawn = 1;
@@ -424,6 +425,8 @@ class Sector {
 		console.log('attach events...');
 		console.log('testing: ' + qs);
 		console.log('to sector: ' + this.sector);
+		let xpos = 0;
+		let ypos = 0;
 
 		try {
 			$(qs).off();

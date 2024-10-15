@@ -8,6 +8,11 @@ input[type="datetime-local"] {
     color-scheme: dark;
 }
 
+.scheduled-calls {
+    max-height: 60vh;
+    overflow: auto;
+}
+
 .call-schedule-wizard-container input, .call-schedule-wizard-container textarea, .call-schedule-wizard-container select {
     width: 100%;
     padding: 1.2rem 2.0rem;
@@ -104,6 +109,23 @@ input[type="datetime-local"] {
 
 .call-schedule-card .time-left {
     margin-bottom: 1.5rem;
+}
+
+
+.call-schedule-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+}
+
+.call-schedule-buttons .saito-button-secondary {
+    flex: 1;
+    height: 100%;
+}
+
+.call-schedule-buttons .saito-button-primary {
+    flex: 3;
 }
 
 /* Media Queries for Responsiveness */

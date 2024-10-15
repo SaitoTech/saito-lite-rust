@@ -4,6 +4,8 @@ const SettlersWelcome = require('./lib/ui/overlays/welcome');
 const SettlersStats = require('./lib/ui/overlays/stats');
 const SettlersGameOptionsTemplate = require('./lib/ui/settlers-game-options.template');
 const htmlTemplate = require('./lib/ui/game-html.template');
+const AppSettings = require('./lib/ui/settlers-settings');
+
 
 const SettlersGameLoop = require('./lib/src/settlers-gameloop.js');
 const SettlersPlayer = require('./lib/src/settlers-player');
@@ -30,6 +32,7 @@ class Settlers extends GameTemplate {
 		this.app = app;
 
 		this.name = 'Settlers';
+		this.slug = 'settlers';
 		this.gamename = 'Settlers of Saitoa';
 		this.description = `Saitoa is an island rich in natural resources that are produced with every roll of the die. Collect, trade, and spend resources to grow your colony faster than your opponents to win the game!`;
 		this.categories = 'Games Boardgame Strategy';
@@ -89,16 +92,16 @@ class Settlers extends GameTemplate {
 		};
 		this.s = {
 			name: 'soldier',
-			img: `<img src="/settlers/img/icons/knight.png"/>`
+			img: `<img class="image-as-token" src="/settlers/img/icons/knight.png"/>`
 		};
 		this.t = { name: 'bank' };
 		this.vp = {
 			name: 'VP',
-			img: `<img src="/settlers/img/icons/point_card.png"/>`
+			img: `<img src="/settlers/img/cards/devcard.png"/>`
 		};
 		this.longest = {
 			name: 'Longest Road',
-			icon: `<img src="/settlers/img/icons/road.png"/>`,
+			icon: `<img class="image-as-token" src="/settlers/img/icons/road.png"/>`,
 			card: `<img src="/settlers/img/cards/longest_road.png"/>`,
 			value: 2,
 			min: 5
@@ -148,10 +151,10 @@ class Settlers extends GameTemplate {
 			['ore', 'wool', 'wheat']
 		];
 		this.cardDir = '/settlers/img/cards/';
-		this.back = '/settlers/img/cards/red_back.png'; //Hidden Resource cards
+		this.back = '/settlers/img/cards/desert.png'; //Hidden Resource cards
 		this.card = {
 			name: 'development',
-			back: '/settlers/img/cards/red_back.png'
+			back: '/settlers/img/cards/devcard.png',
 		};
 
 		this.deck = [
@@ -261,7 +264,7 @@ class Settlers extends GameTemplate {
 				img: '/settlers/img/cards/governors_statue.png',
 				title: `Governor's Statue`,
 				text: ` is elected governor of Saitoa`,
-				action: -1,
+				action: -2,
 			}
 
 		];
@@ -289,6 +292,21 @@ class Settlers extends GameTemplate {
 
 		this.sort_priority = 1;
 	}
+
+    hasSettings() {
+	    return true;
+    }
+
+	loadSettings(container = null) {
+	    if (!container){
+	      this.overlay.show(`<div class="module-settings-overlay"><h2>${this.gamename} Settings</h2></div>`);
+	      container = ".module-settings-overlay";
+	    }
+
+		let as = new AppSettings(this.app, this, container);
+		as.render();
+	}
+
 
 	async render(app) {
 		if (!this.browser_active) {
@@ -329,6 +347,16 @@ class Settlers extends GameTemplate {
 				game_mod.rules_overlay.render();
 			}
 		});
+
+		this.menu.addSubMenuOption('game-game', {
+			text: 'Settings',
+			id: 'game-settings',
+			class: 'game-settings',
+			callback: function(app, game_mod){
+				game_mod.loadSettings();
+			}
+		});
+
 		this.menu.addSubMenuOption('game-game', {
 			text: 'Stats',
 			id: 'game-stats',
@@ -397,6 +425,7 @@ class Settlers extends GameTemplate {
 		this.hud.minWidth = 600;
 		this.hud.maxWidth = 1;
 		this.hud.render();
+		this.status = [];
 
 		//
 		//Maybe we should standardize addClass() or classlist = [], for our UI components
@@ -407,7 +436,7 @@ class Settlers extends GameTemplate {
 		let html = `<ul><li class="option enabled" id="score" title="view game statistics"><i class="fa-solid fa-ranking-star"></i></li>
 	    	<li class="option enabled" id="trade" title="trade with other players"><i class="fa-solid fa-money-bill-transfer"></i></li>
 	    	<li class="option" id="bank" title="trade with the bank"><i class="fa-solid fa-building-columns"></i></li>
-	    	<li class="option" id="playcard" title="play an action card"><i class="fa-solid fa-people-robbery"></i></li>
+	    	<li class="option" id="playcard" title="play an action card"><i class="fa-solid fa-person-running"></i></li>
 	    	<li class="option" id="spend" title="build or buy"><i class="fa-solid fa-screwdriver-wrench"></i></li>
 	    	<li class="option enabled" id="rolldice"><i class="fa-solid fa-forward"></i></li></ul>
 	    	`;
@@ -476,7 +505,15 @@ class Settlers extends GameTemplate {
 						}
 					}
 				} else {
-					this.trade_overlay.render();
+
+					if (this.game.state.ads[this.game.player - 1].offer || this.game.state.ads[this.game.player - 1].ask) {
+              			this.showTradeOverlay(this.game.player,  
+              			 this.game.state.ads[this.game.player - 1].ask,
+                		 this.game.state.ads[this.game.player - 1].offer
+              			);
+					}else{
+						this.trade_overlay.render();	
+					}
 				}
 			};
 		}
@@ -532,6 +569,8 @@ class Settlers extends GameTemplate {
 	initializeGame(game_id) {
 		if (this.game.state == undefined) {
 			this.game.state = this.initializeState();
+
+			this.game.canProcess = false; // For end game... 
 
 			if (!this.game.colors) {
 				let colors = [1, 2, 3, 4];
@@ -698,6 +737,13 @@ class Settlers extends GameTemplate {
 				$('#rolldice').css('visibility', 'visible');
 				$('#rolldice').html(str);
 				return;
+			} else if (str === "WAIT") {
+				$('.controls .option').css('visibility', 'hidden');
+				$('#rolldice').css('visibility', 'visible');
+				$('#rolldice').html(`<i class="fa-solid fa-pause"></i>`);
+				$('#rolldice').removeClass('enabled');
+				document.getElementById("rolldice").onclick = null;
+				return;
 			} else {
 				console.log('UPDATE CONTROLS:', str);
 				//super.updateControls(str);
@@ -709,13 +755,69 @@ class Settlers extends GameTemplate {
 		if (this.game.state.playerTurn !== this.game.player) {
 			$('#rolldice').html(`<i class="fa-solid fa-pause"></i>`);
 			$('#rolldice').removeClass('enabled');
-			$('#rolldice').off();
+			document.getElementById("rolldice").onclick = null;
 
 			$('#bank').removeClass('enabled');
-			$('#spend').removeClass('enabled');
 			$('#playcard').removeClass('enabled');
+			$('#spend').removeClass('enabled');
 		}
 	}
+
+
+	// Overwrite inherited function so we can play nice with the specialty HUD controls
+	updateStatusForGameOver(status, allowRematch) {
+		let target = this.app.options.homeModule || 'Arcade';
+		allowRematch = allowRematch && this.game.player !== 0;
+
+		let options = `<ul>
+                      <li class="textchoice" id="confirmit">Return to ${target}</li>
+                      ${
+							allowRematch
+								? '<!--li class="textchoice" id="rematch">Rematch</li-->'
+								: ''
+						}
+                   </ul>`;
+
+		this.hud.back_button = false;
+
+		this.updateStatus(status);
+
+		let settlers_self = this;
+
+		$('.controls .option').css('visibility', 'hidden');
+		$('.controls .option').removeClass('enabled');
+
+		$('#score').addClass('enabled');
+		$('#score').css('visibility', 'visible');
+
+		/* --> rematch -- need to fix arcade-issue-challenge...
+		$('#spend').addClass('enabled');
+		$('#spend').html(`<i class="fa-solid fa-rotate-left"></i>`);
+		$('#spend').css('visibility', 'visible');
+
+		if (document.querySelector('.controls #spend')) {
+			document.querySelector('.controls #spend').onclick = (e) => {
+				e.currentTarget.onclick = null;
+				this.app.connection.emit('arcade-issue-challenge', {
+					game: this.name,
+					players: this.game.players,
+					options: this.game.options
+				});	
+			};
+		}*/
+
+		// --> return
+		$('#rolldice').addClass('enabled');
+		$('#rolldice').html(`<i class="fa-solid fa-door-open"></i>`);
+		$('#rolldice').css('visibility', 'visible');
+
+		document.getElementById('rolldice').onclick = (e) => {
+			e.currentTarget.onclick = null;
+			this.exitGame();
+		}
+
+	}
+
 }
 
 Settlers.importFunctions(

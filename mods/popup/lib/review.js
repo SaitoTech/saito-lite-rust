@@ -20,12 +20,9 @@ class ReviewOverlay {
 		this.overlay.show(ReviewTemplate(this.mod));
 
 		// POPUP OLD CODE
-alert("pre setup reinforcement lightbox");
 		setup_reinforcement_lightbox();
-alert("done setup reinforcement lightbox");
 		// trigger review function directly now
 		loadQuestion();
-alert("done loadQuestion");
 
 		this.attachEvents();
 	}

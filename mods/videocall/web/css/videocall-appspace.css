@@ -49,41 +49,73 @@
 	padding: 1.5rem;
 }
 
-.stun-appspace-content {
+.stun-appspace-content, .videocall-media-settings {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	width: min(95vw, 800px);
 	padding: 3rem;
 	gap: 3rem;
 	border: 1px solid var(--saito-border-color);
 	border-radius: var(--saito-border-radius);
 }
 
-.staun-appspace-cards {
-	display: flex;
-	gap: 5rem;
+
+.stunx-splash-image{
+	width: 300px;
+	height: 200px;
+	background-image: url(/videocall/img/splash.jpg);
+	background-size: cover;
+	border-radius: var(--saito-border-radius);	
 }
 
-.chat-settings-preview-message {
-	font-style: italic;
+.stun-appspace-footer {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	color: var(--color-contrast);
 }
+
+.stun-appspace-footer > div {
+	display: flex;
+	align-items: center;
+	gap: 2rem;
+	cursor: pointer;
+}
+
+.stun-appspace-footer > div:hover{
+	color: var(--font-color-main-body);
+}
+
+
 
 .my-stun-container-info {
 	display: none;
 	font-size: 1.75rem;
 }
 
-.saito-page-header-title {
-	margin-bottom: 1rem;
+.stun-title {
 	font-size: 5rem;
 }
 
 .stunx-appspace-actions {
 	display: flex;
-	flex-direction: column;
 	align-items: center;
 	width: 100%;
+	gap: 2rem;
+	margin-bottom:1rem;
+}
+
+.stunx-precall-link {
+	font-size: 2rem;
+	cursor: pointer;
+	color: var(--color-contrast);
+}
+
+.stunx-precall-link:hover {
+color: var(--font-color-main-body);	
 }
 
 .stunx-appspace-launch-call-btn {
@@ -203,13 +235,15 @@ input:checked+.slider:before {
 	width: 100%;
 }
 
-.stun-minimal-appspace .chat-settings-toggle-icons, .stun-minimal-appspace .chat-settings-preview-message {
+.stun-minimal-appspace .chat-settings-toggle-icons {
 	display: none;
 }
 
 .stun-minimal-appspace .chat-settings-preview {
 	width: 100% !important;
 }
+
+
 
 .stun-phone-notice {
 	font-style: italic;
@@ -227,18 +261,12 @@ input:checked+.slider:before {
 
 /*  responsive */
 
-@media screen and (max-width: 1028px) {
-	.stun-appspace-content {
-		width: 95%;
-		gap: 1rem;
-	}
-}
 
 @media screen and (max-width: 900px) {
 	.stun-appspace-content {
-		flex-direction: column;
-		width: 95%;
+		gap: 1rem;
 	}
+
 	.stun-input-settings {
 		padding: 0;
 	}

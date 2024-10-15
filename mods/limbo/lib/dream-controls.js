@@ -77,13 +77,13 @@ class DreamControls{
 		//Update UI
 		try {
 			document
-				.querySelector('.audio-control')
+				.querySelector('.dream-controls .audio-control')
 				.classList.toggle('disabled');
 			document
-				.querySelector('.audio-control i')
+				.querySelector('.dream-controls .audio-control i')
 				.classList.toggle('fa-microphone-slash');
 			document
-				.querySelector('.audio-control i')
+				.querySelector('.dream-controls .audio-control i')
 				.classList.toggle('fa-microphone');
 		} catch (err) {
 			console.warn('Stun UI error', err);
@@ -96,13 +96,13 @@ class DreamControls{
 		//Update UI
 		try {
 			document
-				.querySelector('.video-control')
+				.querySelector('.dream-controls .video-control')
 				.classList.toggle('disabled');
 			document
-				.querySelector('.video-control i')
+				.querySelector('.dream-controls .video-control i')
 				.classList.toggle('fa-video-slash');
 			document
-				.querySelector('.video-control i')
+				.querySelector('.dream-controls .video-control i')
 				.classList.toggle('fa-video');
 		} catch (err) {
 			console.warn('Stun UI error', err);

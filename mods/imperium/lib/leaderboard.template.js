@@ -1,4 +1,4 @@
-module.exports = LeaderboardTemplate = (imperium_self) => {
+module.exports  = (imperium_self) => {
 	let factions = imperium_self.returnFactions();
 	let vp_needed = 14;
 	if (

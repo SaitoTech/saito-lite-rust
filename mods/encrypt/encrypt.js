@@ -33,7 +33,7 @@ class Encrypt extends ModTemplate {
 
     this.app = app;
     this.name = "Encrypt";
-
+    this.slug = "encrypt";
     this.description = "A Diffie-Hellman encryption tool for Saito";
     this.categories = "Encryption Utilities";
     this.class = 'utility';

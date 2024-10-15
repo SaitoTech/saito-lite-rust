@@ -1,4 +1,4 @@
-module.exports = DiplomacyConfirmTemplate = (obj, proposal, proposal_idx=0, faction="") => {
+module.exports  = (obj, proposal, proposal_idx=0, faction="") => {
 
 	let help = `${obj.mod.returnFactionName(faction)} - ${obj.mod.returnFactionName(proposal.proposer)} offers the following pact:`;
 

@@ -1,4 +1,4 @@
-module.exports = ThemeSwitcherOverlayTemplate = (app, mod, theme_options, selected_theme) => {
+module.exports  = (app, mod, theme_options, selected_theme) => {
 	console.log(theme_options, selected_theme);
 
 	let options = ``;

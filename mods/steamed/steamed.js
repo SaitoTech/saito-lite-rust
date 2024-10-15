@@ -13,6 +13,7 @@ class Steamed extends GameTemplate {
 		this.app = app;
 
 		this.name = 'Steamed';
+		this.slug = 'steamed';
 		this.gamename = 'Steam Bonanza';
 
 		this.description = `Win the industrial revolution by building and liquidating factories in an open source clone of Bohnanza`;

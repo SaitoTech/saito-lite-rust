@@ -1,4 +1,4 @@
-module.exports = ImperiumStrategyCardSelectionOverlayTemplate = () => {
+module.exports  = () => {
 	return `
     <div class="strategy-card-selection-overlay hide-scrollbar">
       <div class="strategy-card-selection-content"></div>

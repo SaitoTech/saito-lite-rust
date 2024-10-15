@@ -145,7 +145,8 @@ class DreamControls {
 			//Tell PeerManager to pause streams for green room 
 			this.app.connection.emit('limbo-toggle-audio');
 			this.app.connection.emit('limbo-toggle-video');
-
+		}else{
+			this.startTimer();
 		}
 
 		if (!document.querySelector('.dream-controls-menu-item')) {

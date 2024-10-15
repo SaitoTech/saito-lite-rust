@@ -90,6 +90,9 @@ class BuildOverlay {
 						this_self.mod.addMove(
 							'SAFEDEAL\t1\t' + this_self.mod.game.player + '\t1'
 						);
+
+						this_self.mod.updateStatusWithOptions("decrypting action card", "WAIT");
+						this_self.mod.animateDevCard(this_self.mod.game.player);
 					}
 					let purchase = parseInt(id);
 					if (purchase >= 0 && purchase <= 3) {
@@ -108,9 +111,6 @@ class BuildOverlay {
 						//console.log("Unexpected selection for player move:",id);
 					}
 
-					this_self.mod.updateStatus(
-						`<div class="player-notice">purchasing...</div>`
-					);
 				}
 			};
 		});

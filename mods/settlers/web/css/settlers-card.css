@@ -77,6 +77,26 @@
 	background: #d3c38d88;
 }
 
+.cardover-optout {
+	bottom: 1rem;
+	right: 1rem;
+	max-width: 35%;
+	font-size: 2rem;
+	border-radius: 2rem;
+	backdrop-filter: blur(10px);
+	position: absolute;
+	margin: 2rem;
+	padding: 1rem;
+	background: #d3c38d88;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	cursor: pointer;
+}
+
+.cardover-optout:hover{
+	filter: brightness(1.05);
+}
 
 @media screen and (max-width: 900px) {
 

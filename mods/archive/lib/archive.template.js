@@ -7,11 +7,12 @@ module.exports = (app, row) => {
 					<div>${row.field1}</div>
 					<div>${row.field2}</div>
 					<div>${row.field3}</div>
-					<div>${app.browser.saneDateTimeFromTimestamp(row.created_at)}</div>
-					<div>${app.browser.saneDateTimeFromTimestamp(row.updated_at)}</div>
+					<div>${app.browser.saneDateTimeFromTimestamp(row.created_at, false)}</div>
+					<div>${app.browser.saneDateTimeFromTimestamp(row.updated_at, false)}</div>
 					<div class="number">${app.browser.formatNumberWithCommas(row.tx_size)}</div>
 					<div class="archive-button" data-tx='${row.tx}'>TX</div>
 					<div>${row.preserve}</div>
+					<div class="saito-button-secondary delete-me" data-id="${row.sig}">delete</div>
 				</div>`;
 	} else {
 		return `<div class="archive-header archive-row">
@@ -25,7 +26,7 @@ module.exports = (app, row) => {
 					<div>updated at</div>
 					<div>TX Size</div>
 					<div>TX</div>
-					<div>DEL</div>
+					<div>SAVE</div>
 				</div>`;
 	}
 };
