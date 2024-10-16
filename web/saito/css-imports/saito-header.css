@@ -334,8 +334,8 @@
 
 .saito-floating-plus-btn {
   margin: auto;
-  width: 6rem;
-  height: 6rem;
+  width: 4.6rem;
+  height: 4.6rem;
   transition: transform 200ms ease-out;
   background-color: var(--saito-primary); /* testing */
   border-radius: 50%;
@@ -362,17 +362,18 @@
 
 .saito-floating-menu-item {
   position: relative;
-  width: 5rem;
-  height: 5rem;
+  width: 4.1rem;
+  height: 4.1rem;
   border-radius: 50%;
   background-color: var(--background-color-main); /* testing */
   transition: box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   box-shadow: 1px 1px 1px var(--border-color-general-dividers-dark), -1px -1px 1px var(--border-color-general-dividers-dark), -1px 1px 1px var(--border-color-general-dividers-dark), 1px -1px 1px var(--border-color-general-dividers-dark);
-  line-height: 5.5rem;
   border: 1px solid var(--border-color-general-dividers); /* testing */
   color: var(--saito-font-color);
   cursor: pointer;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .saito-floating-menu-item i {
@@ -426,7 +427,7 @@
 .saito-floating-item-container.main {
   flex-direction: column;
   /*height: 0;*/
-  bottom: 8rem;
+  bottom: 6.5rem;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -434,7 +435,7 @@
 .saito-floating-item-container.alt {
   flex-direction: row;
   /*width: 0;*/
-  right: 8rem;
+  right: 6.5rem;
   top: 50%;
   transform: translateY(-50%);
 }
