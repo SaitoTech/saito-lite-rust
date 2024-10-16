@@ -5113,7 +5113,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       if (his_self.game.state.events.intervention_naval_intercept_possible == 1) {
 
 	//
-	// look ahead
+	// look ahead, then restore to avoid desync
 	//
 	let x = his_self.game.dice;
 	let atr = his_self.rollDice(6) + his_self.rollDice(6);

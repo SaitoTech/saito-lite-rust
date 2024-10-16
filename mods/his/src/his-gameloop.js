@@ -3910,7 +3910,6 @@ console.log("----------------------------");
             }
           }
 
-
           //
           // roll dice to see if avoid battle is an option
           //
@@ -4982,10 +4981,6 @@ console.log("ABR: " + abr);
 
 	}
 
-	//
-	// this does not auto-remove, it needs to be preceded by a RESETCONFIRMSNEEDED
-	// for however many people need to have the opportunity to counter or acknowledge.
-	//
 	if (mv[0] === "insert_before_counter_or_acknowledge") {
 
           this.game.queue.splice(qe, 1);
@@ -4999,7 +4994,8 @@ console.log("ABR: " + abr);
 	  for (let i = this.game.queue.length-1; i >= 0; i--) {
 	    let lqe = this.game.queue[i];
 	    let lmv = lqe.split("\t");
-	    if (lmv[0] === "counter_or_acknowledge") {
+	    // c_or_a can be swapped out for halted
+	    if (lmv[0] === "HALTED" || lmv[0] === "counter_or_acknowledge") {
 	      this.game.queue.splice(i, 0, insert);
 	      i = 0;
 	    }

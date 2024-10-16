@@ -4439,14 +4439,12 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
       menuOption  :       function(his_self, menu, player) {
         if (menu === "pre_field_battle_rolls" || menu === "pre_naval_battle_rolls") {
           let f = "";
-
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('024')) {
               f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
-
 	  if (menu === "pre_field_battle_rolls") {
 	    if (his_self.doesFactionHaveLandUnitsInSpace(f, his_self.game.state.field_battle.spacekey)) {
               return { faction : f , event : '024', html : `<li class="option" id="024">arquebusiers (${f})</li>` };
@@ -4461,7 +4459,6 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
-
 try {
         if (menu === "pre_field_battle_rolls") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
@@ -8179,6 +8176,8 @@ console.log("we have removed philip and redisplayed the space...");
 		}
 	      }
 	    }
+	  } else {
+
 	  }
 	  return 0;
 	}
@@ -8203,6 +8202,7 @@ console.log("we have removed philip and redisplayed the space...");
 	      //
 	      if (his_self.game.players.length == 2) {
 		if (his_self.game.state.events.schmalkaldic_league == 1) { if (space.type == "electorate" && space.political == "hapsburg") { return 1; } }
+	        if (space.type == "key" && space.home === "independent" && (space.key == "metz" || space.language == "german" || space.language == "italian") && (space.political !== space.home && space.political !== "" && space.political)) { return 1; }
 	        return 0;
 	      }
 

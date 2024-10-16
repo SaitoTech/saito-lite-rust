@@ -8161,14 +8161,12 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
       menuOption  :       function(his_self, menu, player) {
         if (menu === "pre_field_battle_rolls" || menu === "pre_naval_battle_rolls") {
           let f = "";
-
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
             if (his_self.game.deck[0].fhand[i].includes('024')) {
               f = his_self.game.state.players_info[his_self.game.player-1].factions[i];
               break;
             }
           }
-
 	  if (menu === "pre_field_battle_rolls") {
 	    if (his_self.doesFactionHaveLandUnitsInSpace(f, his_self.game.state.field_battle.spacekey)) {
               return { faction : f , event : '024', html : `<li class="option" id="024">arquebusiers (${f})</li>` };
@@ -8183,7 +8181,6 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
         return {};
       },
       menuOptionTriggers:  function(his_self, menu, player, spacekey) {
-
 try {
         if (menu === "pre_field_battle_rolls") {
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
@@ -11901,6 +11898,8 @@ console.log("we have removed philip and redisplayed the space...");
 		}
 	      }
 	    }
+	  } else {
+
 	  }
 	  return 0;
 	}
@@ -11925,6 +11924,7 @@ console.log("we have removed philip and redisplayed the space...");
 	      //
 	      if (his_self.game.players.length == 2) {
 		if (his_self.game.state.events.schmalkaldic_league == 1) { if (space.type == "electorate" && space.political == "hapsburg") { return 1; } }
+	        if (space.type == "key" && space.home === "independent" && (space.key == "metz" || space.language == "german" || space.language == "italian") && (space.political !== space.home && space.political !== "" && space.political)) { return 1; }
 	        return 0;
 	      }
 
@@ -26878,7 +26878,6 @@ console.log("----------------------------");
             }
           }
 
-
           //
           // roll dice to see if avoid battle is an option
           //
@@ -27950,10 +27949,6 @@ console.log("ABR: " + abr);
 
 	}
 
-	//
-	// this does not auto-remove, it needs to be preceded by a RESETCONFIRMSNEEDED
-	// for however many people need to have the opportunity to counter or acknowledge.
-	//
 	if (mv[0] === "insert_before_counter_or_acknowledge") {
 
           this.game.queue.splice(qe, 1);
@@ -27967,7 +27962,8 @@ console.log("ABR: " + abr);
 	  for (let i = this.game.queue.length-1; i >= 0; i--) {
 	    let lqe = this.game.queue[i];
 	    let lmv = lqe.split("\t");
-	    if (lmv[0] === "counter_or_acknowledge") {
+	    // c_or_a can be swapped out for halted
+	    if (lmv[0] === "HALTED" || lmv[0] === "counter_or_acknowledge") {
 	      this.game.queue.splice(i, 0, insert);
 	      i = 0;
 	    }
@@ -43055,7 +43051,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       if (his_self.game.state.events.intervention_naval_intercept_possible == 1) {
 
 	//
-	// look ahead
+	// look ahead, then restore to avoid desync
 	//
 	let x = his_self.game.dice;
 	let atr = his_self.rollDice(6) + his_self.rollDice(6);
