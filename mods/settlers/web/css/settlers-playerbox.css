@@ -5,38 +5,42 @@
 	position: absolute;
 	top: 6rem;
 	right: 3rem;
+	align-items: end;
 }
 
 .game-playerbox {
-	z-index: 3;
-	max-width: 50vw;
-	width: 26rem;
-	position: relative;
-	/* Manually add saito properties */
-	border: 3px solid #424143;
-	background-color: #d3c38d;
-	/*background: linear-gradient(#d3c38df5, #d3c38df5);*/
-	border-image: url(/settlers/img/border.png) !important;
-	border-image-slice: 55 !important;
-	border-image-width: 16px !important;
-	border-image-repeat: stretch !important;
-	border-style: solid !important;
-	border-image-outset: 5px !important;
-	color: var(--text-color);
-	padding: 0.5rem;
+    z-index: 3;
+    max-width: 50vw;
+    width: 40rem;
+    position: relative;
+    border-width: 0.5rem;
+	border-style: solid;
+    border-color: #0000;
+    background-color: #d3c38d;
+	border-radius: 1rem;
+    /* background: linear-gradient(#d3c38df5, #d3c38df5); */
+    /* border-image: url(/settlers/img/border.png) !important; */
+    /* border-image-slice: 55 !important; */
+    /* border-image-width: 16px !important; */
+    /* border-image-repeat: stretch !important; */
+    /* border-style: solid !important; */
+    /* border-image-outset: 5px !important; */
+    color: var(--text-color);
+	transition: width 500ms ease-in-out;
 }
 
 .game-playerbox.active {
-	background-color: #e2d26c;
-	transform: translateX(-5px);
-	filter: drop-shadow(6px 6px 3px #000B);
+	width: 43rem;
+	border-width: 0.5rem;
+	border-style: solid;
 }
 
+/*
 .game-playerbox>div {
-	/*background-color: #d3c38d;*/
+	background-color: #d3c38d;
 	margin: 0.5rem;
 }
-
+*/
 .game-playerbox-graphics {
 	display: flex;
 	right: 105%;
@@ -71,6 +75,23 @@
 	height: 100%;
 }
 
+
+.game-playerbox.p1-lite {
+	border-color: var(--p1-color-lite);
+}
+
+.game-playerbox.p2-lite {
+	border-color: var(--p2-color-lite);
+}
+
+.game-playerbox.p3-lite {
+	border-color: var(--p3-color-lite);
+}
+
+.game-playerbox.p4-lite {
+	border-color: var(--p4-color-lite);
+}
+
 .last-roll {
 	width: 4rem;
 }
@@ -83,7 +104,10 @@
 .cardct img {
 	width: 100%;
 	border: 1px solid var(--saito-border-color);
-	border-radius: 0.5rem;
+}
+
+.die svg rect {
+	fill: #a0522d;
 }
 
 .cardct>div {
@@ -124,7 +148,6 @@
 	display: grid;
 	grid-template-columns: repeat(auto-fit, 3rem);
 	align-items: center;
-	margin-top: 1rem;
 	flex-grow: 1;
 }
 
@@ -286,10 +309,10 @@
 	align-items: center;
 	grid-template-rows: repeat(2, 2.25rem);
 	padding-left: 0.25rem;
-	column-gap: 0.5rem;
 }
 
-.game-playerbox .saito-user, .game-playerbox .saito-user>.saito-address {
+.game-playerbox .saito-user>.saito-address {
+	font-weight: bold;
 	/*
     color: white;
     text-shadow: 1px 1px 2px black, 1px 0px 2px black, 0px 1px 2px black, 0px 0px 2px black;

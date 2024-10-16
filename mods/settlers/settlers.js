@@ -381,6 +381,7 @@ class Settlers extends GameTemplate {
 			//
 
 			for (let i = 1; i <= this.game.players.length; i++) {
+				this.playerbox.addClass(`p${this.game.colors[i - 1]}-lite`, i, 'game-playerbox'); /* add to root object so it can be inherited everywhere.*/
 				this.playerbox.addClass(`p${this.game.colors[i - 1]}-lite`, i, 'game-playerbox-head');
 			}
 

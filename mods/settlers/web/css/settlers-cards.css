@@ -13,11 +13,13 @@
 	width: 3rem;
 	height: calc(3rem * 1.4);
 	margin-left: 1rem;
-	transform: rotate(5deg);
+	transform: rotate(5deg) translateX(-0.5rem);
 }
 
 .player-notice .hud-status-card-list .card.tiny {
 	margin: unset;
+	position: absolute;
+    top: -4px;
 }
 
 .log .card.tiny {
