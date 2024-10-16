@@ -873,11 +873,13 @@ class ChatPopup {
 				</div>`
 			);
 
-			document.getElementById("photo-preview-upload").onclick = (e) => {
+			document.getElementById("photo-preview-upload").onclick = async (e) => {
 
 				this.overlay.close();
 				let msg = img.outerHTML;
-				this.input.callbackOnReturn(msg);
+				let typed_msg = this.input.getInput();
+				await this.input.callbackOnReturn(msg);
+				this.input.setInput(typed_msg);
 			}
 
 			document.getElementById("photo-preview-upload").focus();			
