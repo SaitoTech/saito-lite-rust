@@ -212,7 +212,7 @@ class Warehousex extends ModTemplate {
 			if (last_key){
 				report += ` (${percent_user_change}%)`;
 				if (percent_user_change > 0){
-					report += '⬆️';
+					report += ' ⬆️';
 				}
 			}
 			report += "\n";
@@ -221,7 +221,7 @@ class Warehousex extends ModTemplate {
 			if (last_tx){
 				report += ` (${percent_tx_change}%)`;
 				if (percent_tx_change > 0){
-					report += '⬆️';
+					report += ' ⬆️';
 				}
 			}
 			report += "\n";
