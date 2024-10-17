@@ -34011,7 +34011,10 @@ defender_hits - attacker_hits;
 	  // specific faction and that specific card.
 	  //
 	  let faction = "";
-	  if (mv[1]) { faction = mv[1]; }
+	  if (mv[1] && mv[0] === "check_intervention") { 
+	    this.game.queue.splice(qe, 1);
+	    faction = mv[1];
+	  }
 
 	  this.updateStatus("preparing for Action Phase...");
 
