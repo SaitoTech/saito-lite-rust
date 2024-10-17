@@ -1892,10 +1892,13 @@ class Browser {
 	}
 
 	sanitize(text, createLinks = false) {
-		//console.log("Sanitize: ", text);
+		if (!text) {
+			return "";
+		}
+		console.log("Sanitize: ", text);
 		try {
-			if (text !== '') {
-				text = marked.parseInline(text);
+			if (createLinks) {
+				text = marked.parse(text);
 				//trim trailing line breaks -
 				// commenting it out because no need for this now
 				// because of above marked parsing

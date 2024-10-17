@@ -1248,7 +1248,7 @@ class League extends ModTemplate {
 
 		if (!this.app.BROWSER) {
 			//for dev purposes
-			shouldTweet = true;
+			//shouldTweet = true;
 
 			for (let key of players) {
 				// Only care if at least one player has a registered username
@@ -1312,14 +1312,11 @@ class League extends ModTemplate {
 
 		let w = winner[0];
 		let l = loser[0];
-		let w_rank = w.rank ? '#' + w.rank : 'Unranked';
-		let l_rank = l.rank ? '#' + l.rank : 'Unranked';
+		let w_rank = w?.rank; //? '#' + w.rank : 'Unranked';
+		let l_rank = l?.rank; //? '#' + l.rank : 'Unranked';
+		let w_points = Math.round(w.score);
+		let l_points = Math.round(l.score);
 
-		let tweetContent = `${this.app.keychain.returnUsername(w.publicKey)} (${w_rank} / ${Math.round(
-			w.score
-		)}) beat ${this.app.keychain.returnUsername(l.publicKey)} (${l_rank} / ${Math.round(
-			l.score
-		)}) in ${league.name}. \n`;
 
 		for (let p of winner) {
 			let outcome = winner.length == 1 ? 'games_won' : 'games_tied';
@@ -1328,34 +1325,42 @@ class League extends ModTemplate {
 			let diff = p.k * (1 / winner.length - p.q / qsum);
 			p.score += diff;
 			await this.updatePlayerScore(p, league.id);
-			tweetContent += `${this.app.keychain.returnUsername(p.publicKey)} gains ${Math.round(
-				diff
-			)} points and `;
 		}
 		for (let p of loser) {
 			let diff2 = (p.k * p.q) / qsum;
 			p.score -= diff2;
 			await this.updatePlayerScore(p, league.id);
-			tweetContent += `${this.app.keychain.returnUsername(p.publicKey)} loses ${Math.round(
-				diff2
-			)} points. \n`;
 		}
 
 		if (shouldTweet) {
 			await this.fetchRankings(league.id, playerStats);
-			let w_rank2 = w.rank ? '#' + w.rank : 'Unranked';
-			let l_rank2 = l.rank ? '#' + l.rank : 'Unranked';
+			let w_rank2 = w?.rank;
+			let l_rank2 = l?.rank;
 
-			if (w_rank !== w_rank2) {
-				tweetContent += `${this.app.keychain.returnUsername(
-					w.publicKey
-				)} is now ranked ${w_rank2}. `;
+			let tweetContent = `###### _${league.name} Leaderboard Update_ ######\n`;
+			tweetContent += `| | ${this.app.keychain.returnUsername(w.publicKey)} | ${this.app.keychain.returnUsername(l.publicKey)} | \n |:---- |:----:|:----:| \n | Ranking | ${w_rank2} `;
+			if (w_rank){
+				if (w_rank2 < w_rank){
+					tweetContent += ` (+${w_rank - w_rank2}) ⬆️`;
+				}
+			}else{
+				tweetContent += " (NEW)";
 			}
-			if (l_rank !== l_rank2) {
-				tweetContent += `${this.app.keychain.returnUsername(
-					l.publicKey
-				)} is now ranked ${l_rank2}. `;
+			tweetContent += ` | ${l_rank2}`;
+			if (l_rank){
+				if (l_rank2 > l_rank){
+					tweetContent += ` (${l_rank - l_rank2}) ⬇️`;	
+				}
+			}else{
+				tweetContent += " (NEW)";
 			}
+
+			let w_points2 = Math.round(w.score);
+			let l_points2 = Math.round(l.score);
+
+			tweetContent += ` | \n | Points | ${w_points2} (+${w_points2-w_points}) ⬆️ | ${l_points2} (${l_points2-l_points}) ⬇️ |`;
+
+			console.log(tweetContent);
 
 			let obj = {
 				module: 'RedSquare',
