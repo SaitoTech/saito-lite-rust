@@ -5536,6 +5536,8 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   }
   async playerNavalMove(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
+    his_self.naval_movement_overlay.render();
+
     // BACK moves us to OPS menu
     his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
 
@@ -5553,20 +5555,34 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	let spacekey = units_available[i].spacekey;
 	let unit = units_available[i];
         if (units_to_move.includes(parseInt(i))) {
-          html += `<li class="option" style="font-weight:bold" id="${i}">${units_available[i].name} (${units_available[i].spacekey} -> ${units_available[i].destination})</li>`;
+          html += `<li class="option source" style="font-weight:bold" id="${i}">${units_available[i].name} (${units_available[i].spacekey} -> ${units_available[i].destination})</li>`;
         } else {
-          html += `<li class="option" id="${i}">${units_available[i].name} (${his_self.returnSpaceName(units_available[i].spacekey)})</li>`;
+          html += `<li class="option source" id="${i}">${units_available[i].name} (${his_self.returnSpaceName(units_available[i].spacekey)})</li>`;
         }
       }
       html += `<li class="option" id="end">finish</li>`;
       html += "</ul>";
 
       his_self.updateStatusWithOptions(msg, html);
+      his_self.naval_movement_overlay.selectUnits(msg, html);
 
       $('.option').off();
       $('.option').on('click', function () {
 
         let id = $(this).attr("id");
+	let is_source = $(this).hasClass('source');
+	let is_destination = $(this).hasClass('destination');
+
+	if (is_source) {
+	  if (document.querySelector(".dcontrols ul")) { 
+	    his_self.hideDestination();
+            selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
+	    return;
+	  }
+	}
+	if (is_destination) {
+	  return;
+	}
 
 	his_self.updateStatus("moving...");
 
@@ -5665,13 +5681,13 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	    if (his_self.doesSpaceHaveNonFactionNavalUnits(spacekey, faction) || his_self.doesSpaceHaveNonFactionUnits(spacekey, faction)) {
               any_options = true;
   	      num_options++;
-              html += `<li class="option" style="font-weight:bold" id="${spacekey}">${his_self.returnSpaceName(spacekey)}</li>`;
+              html += `<li class="option destination" style="font-weight:bold" id="${spacekey}">${his_self.returnSpaceName(spacekey)}</li>`;
 	    }
 	  } else {
 	    if (his_self.isSpaceFriendly(spacekey, faction)) {
               any_options = true;
   	      num_options++;
-              html += `<li class="option" style="font-weight:bold" id="${spacekey}">${his_self.returnSpaceName(spacekey)}</li>`;
+              html += `<li class="option destination" style="font-weight:bold" id="${spacekey}">${his_self.returnSpaceName(spacekey)}</li>`;
             }
           }
         } else {
@@ -5686,11 +5702,21 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       html += "</ul>";
 
       his_self.updateStatusWithOptions(msg, html);
+      if (num_options > 1) { his_self.naval_movement_overlay.selectDestination(msg, html); }
 
       $('.option').off();
       $('.option').on('click', function () {
 
         let id = $(this).attr("id");
+
+	let is_source = $(this).hasClass('source');
+	let is_destination = $(this).hasClass('destination');
+
+	if (is_source) {
+	  his_self.naval_movement_overlay.hideDestination();
+          selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
+	  return;
+	}
 
 	if (id === "none") {
           unit_to_move.splice(unit_to_move.length-1, 1);
@@ -5699,6 +5725,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	}
 
 	unit.destination = id;
+	his_self.naval_movement_overlay.hideDestination();
         selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
 
       });

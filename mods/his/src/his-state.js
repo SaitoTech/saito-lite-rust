@@ -80,7 +80,7 @@
     //
     if (this.game.state.cramner_active != 1) { 
       if (this.game.state.round >= 3) {
-        let where_is_cranmer = his_self.isPersonageOnMap("england", "cranmer");
+        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer");
         if (where_is_cranmer != "") { return 1; }
       }
     }

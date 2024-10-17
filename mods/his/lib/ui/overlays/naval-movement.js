@@ -1,4 +1,4 @@
-const NavalMovementTemplate = require('./language-zone.template');
+const NavalMovementTemplate = require('./naval-movement.template');
 const SaitoOverlay = require('./../../../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 class NavalMovementOverlay {
@@ -41,13 +41,30 @@ class NavalMovementOverlay {
 		this.attachEvents(mycallback);
 	}
 
-	selectDestination(html="") {
+	selectUnits(msg="", html="") {
+
+		let obj = null;
+
+		obj = document.querySelector('.naval-movement-overlay .origin .sstatus');
+		if (!obj) { return; }
+		obj.innerHTML = msg;
+
+		obj = document.querySelector('.naval-movement-overlay .origin .scontrols');
+		if (!obj) { return; }
+		obj.innerHTML = html;
+
+	}
+
+	hideDestination() {
+		let obj = document.querySelector('.naval-movement-overlay .destination .dcontrols');
+		if (!obj) { return; }
+		obj.innerHTML = "";
+	}
+
+	selectDestination(msg="", html="") {
 
 		let obj = document.querySelector('.naval-movement-overlay .destination .dcontrols');
-		if (!obj) {
-			return;
-		}
-
+		if (!obj) { return; }
 		obj.innerHTML = html;
 
 	}
