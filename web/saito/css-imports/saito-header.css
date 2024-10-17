@@ -27,6 +27,7 @@
   display: flex;
   align-items: center;
   margin-left: auto;
+  position: relative;
 }
 
 .saito-header-logo {
@@ -298,6 +299,15 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.header-hidden .hamburger-container {
+  position: absolute;
+  top: 100vh;
+  right: 1rem;
+  border: 1px solid var(--saito-border-color);
+  padding: 1rem;
+  border-radius: var(--saito-border-radius);
 }
 
 #header-msg {

@@ -200,6 +200,7 @@ class RedSquareMain {
         if (!triggered) {
           let hh = getComputedStyle(document.body).getPropertyValue('--saito-header-height');
           document.getElementById("saito-header").style.top = `-${hh}`;
+          document.getElementById("saito-header").classList.add("header-hidden");
           document.documentElement.style.setProperty('--saito-header-height', '0');
           //document.querySelector('#saito-header').style.opacity = '0';
           st -= 70;
@@ -209,6 +210,7 @@ class RedSquareMain {
         // upscroll code
         if (triggered) {
           document.getElementById("saito-header").style.top = "0";
+          document.getElementById("saito-header").classList.remove("header-hidden");
           document.documentElement.style.setProperty('--saito-header-height', '');
           //document.querySelector('#saito-header').style.opacity = '1';
           triggered = false;
