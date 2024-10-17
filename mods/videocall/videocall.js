@@ -158,7 +158,6 @@ class Videocall extends ModTemplate {
 	// 		this.renderIntos[qs].forEach((comp) => {
 	// 			comp.render();
 	// 		});
-	// 		this.renderedInto = qs;
 	// 	}
 	// }
 
@@ -172,7 +171,6 @@ class Videocall extends ModTemplate {
 			this.renderIntos[qs].forEach((comp) => {
 				comp.render();
 			});
-			this.renderedInto = qs;
 		}
 	}
 
@@ -201,7 +199,6 @@ class Videocall extends ModTemplate {
 			} else {
 				if (obj?.publicKey !== this.publicKey) {
 					this.attachStyleSheets();
-					//super.render(this.app, this);
 					return [
 						{
 							text: 'Video/Audio Call',
@@ -223,7 +220,6 @@ class Videocall extends ModTemplate {
 		if (type === 'saito-header') {
 			if (!this.browser_active) {
 				this.attachStyleSheets();
-				//super.render(this.app, this);
 
 				return [
 					{
@@ -239,7 +235,7 @@ class Videocall extends ModTemplate {
 
 		if (type === 'saito-scheduler') {
 			this.attachStyleSheets();
-			//super.render(this.app, this);
+
 			return [
 				{
 					text: 'Schedule a call',
@@ -293,7 +289,6 @@ class Videocall extends ModTemplate {
 		//
 		if (type == 'game-menu') {
 			this.attachStyleSheets();
-			super.render(this.app, this);
 
 			//Set listeners for stun events
 			this.app.connection.on('show-call-interface', () => {
@@ -336,7 +331,6 @@ class Videocall extends ModTemplate {
 			if (obj?.publicKey) {
 				if (obj.publicKey !== this.publicKey) {
 					this.attachStyleSheets();
-					super.render(this.app, this);
 					return [
 						{
 							text: 'Video/Audio Call',
