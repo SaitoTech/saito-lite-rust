@@ -25458,8 +25458,7 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 //	  deck['013'].onEvent(this, "protestant");
 
 
-          this.addCard("hapsburg", "021");
-          this.addCard("hapsburg", "035");
+          this.addCard("hapsburg", "068");
           this.addCard("papacy", "021");
 
 /**
@@ -34004,19 +34003,33 @@ defender_hits - attacker_hits;
 
 
 	// must be removed by RESOLVES -- but handled automatically
-	if (mv[0] === "check_interventions") {
+	if (mv[0] === "check_interventions" || mv[0] === "check_intervention") {
+
+	  //
+	  // if a single faction is dealt cards, we can call "check_intervention\tfaction"
+	  // to ask it to update us with any interventions that are newly enabled for that
+	  // specific faction and that specific card.
+	  //
+	  let faction = "";
+	  if (mv[1]) { faction = mv[1]; }
 
 	  this.updateStatus("preparing for Action Phase...");
 
-	  if (this.game.confirms_needed[this.game.player-1] == 1) {
+	  let should_i_check = false;
+	  if (this.game.confirms_needed[this.game.player-1] == 1) { should_i_check = true; }
+	  if (faction != "" && this.game.player == this.returnPlayerCommandingFaction(faction)) { should_i_check = true; }
+
+	  if (should_i_check) {
 
 	    //
 	    // we do not want to run this command multiple times, sending 
 	    // extra RESOLVES because we receive another RESOLVE before 
 	    // ours, so we swap out this for a HALTED command.
 	    //
-	    this.game.queue[his_self.game.queue.length-1] = "halted";
-	    this.addMove("RESOLVE\t"+this.publicKey);
+	    if (faction == "") {
+	      this.game.queue[his_self.game.queue.length-1] = "halted";
+	      this.addMove("RESOLVE\t"+this.publicKey);
+	    }
 
 	    //
 	    // Professional Rowers permits naval_intercept and naval_avoid_battle
@@ -34029,8 +34042,6 @@ defender_hits - attacker_hits;
 	        };
 	      }
 	    }
-
-
 
 	    //
 	    // Wartburg permits intervention in events
@@ -34060,7 +34071,6 @@ defender_hits - attacker_hits;
 	        }
 	      }
 	    }
-
 
 	    //
 	    // Post Naval Battle - Professional Rowers
@@ -37271,6 +37281,15 @@ try {
 	      this.deck_overlay.render('hand', cards);
 	    }
 
+	  }
+
+	  //
+	  // we only need to check manually if we have pulled a card in the 
+	  // action phase, in which case state.impulse will have been 
+	  // incremented above 0
+	  //
+	  if (this.game.state.impulse > 0 && faction != "") {
+	    this.game.queue.push("check_intervention\t"+faction);
 	  }
 
 	  return 1;
@@ -42707,8 +42726,6 @@ does_units_to_move_have_unit = true; }
     let retreat_destination = "";
     let space_name = this.game.spaces[spacekey].name;
 
-console.log(loser + " retreating from " + spacekey);
-
     let onFinishSelect = function(his_self, destination_spacekey) {
       his_self.addMove("retreat"+"\t"+loser+"\t"+spacekey+"\t"+destination_spacekey);
       his_self.endTurn();
@@ -42725,16 +42742,13 @@ console.log(loser + " retreating from " + spacekey);
                   "Choose Destination for Retreat:" ,
 
         	  function(space2) {
-console.log("checking: " + space2.key);
 
 	            if (space.neighbours.includes(space2.key)) {
-console.log("is neighbour");
 		      if (his_self.returnPlayerCommandingFaction(loser) === his_self.returnPlayerCommandingFaction(attacker)) {
 	  		if (space2.key === attacker_comes_from_this_spacekey) {
           		  return 1;
 	  		}
 		      } else {
-console.log("can we come from here? " + space2.key + " - " + attacker_comes_from_this_spacekey + " -- " + his_self.game.state.attacker_comes_from_this_spacekey);
           		if (his_self.canFactionRetreatToSpace(loser, space2.key, "") && space2.key !== attacker_comes_from_this_spacekey) {
           		  return 1;
 	  		}
@@ -43519,13 +43533,42 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       if (units_available[z].locked == 1) { units_available.splice(z, 1); z--; }
     }
 
+    let backup_units_to_move = units_to_move;
+
     let selectUnitsInterface = function(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface) {
 
       let msg = "Select Unit to Move";
       let html = "<ul>";
+
+      for (let i = 0; i < units_available.length; i++) {
+        if (units_to_move.includes(parseInt(i))) {
+	  if (units_available[i].destination === "") {
+            for (let z = 0; z < units_to_move.length; z++) {
+	      if (units_to_move[z] === parseInt(i)) {
+                units_to_move.splice(z, 1);
+		z--;
+	      }
+	    }
+	  }
+	  if (units_available[i].spacekey === units_available[i].destination) {
+	    units_available[i].destination = "";
+            for (let z = 0; z < units_to_move.length; z++) {
+	      if (units_to_move[z] === parseInt(i)) {
+                units_to_move.splice(z, 1);
+	      }
+	    }
+	  }	
+	}
+      }
+
       for (let i = 0; i < units_available.length; i++) {
 	let spacekey = units_available[i].spacekey;
 	let unit = units_available[i];
+        if (units_to_move.includes(parseInt(i))) {
+	  if (units_available[i].spacekey === units_available[i].destination) {
+	    
+	  }
+	}
         if (units_to_move.includes(parseInt(i))) {
           html += `<li class="option source" style="font-weight:bold" id="${i}">${units_available[i].name} (${units_available[i].spacekey} -> ${units_available[i].destination})</li>`;
         } else {
@@ -43538,6 +43581,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       his_self.updateStatusWithOptions(msg, html);
       his_self.naval_movement_overlay.selectUnits(msg, html);
 
+
       $('.option').off();
       $('.option').on('click', function () {
 
@@ -43546,19 +43590,47 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	let is_destination = $(this).hasClass('destination');
 
 	if (is_source) {
-	  if (document.querySelector(".dcontrols ul")) { 
+	  if (document.querySelector(".dcontrols ul .destination")) { 
+
 	    his_self.hideDestination();
+
+            for (let i = 0; i < units_available.length; i++) {
+              if (units_to_move.includes(parseInt(i))) {
+	  	if (units_available[i].destination === "") {
+          	  for (let z = 0; z < units_to_move.length; z++) {
+	  	    if (units_to_move[z] === parseInt(i)) {
+          	      units_to_move.splice(z, 1);
+		      z--;
+		    }
+		  }
+		}
+	        if (units_available[i].spacekey === units_available[i].destination) {
+		  units_available[i].destination = "";
+                  for (let z = 0; z < units_to_move.length; z++) {
+	            if (units_to_move[z] === parseInt(i)) {
+                      units_to_move.splice(z, 1);
+	            }
+	          }
+	        }	
+	      }
+            }
+
             selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
 	    return;
 	  }
 	}
 	if (is_destination) {
+	  his_self.hideDestination();
+          selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
 	  return;
 	}
 
 	his_self.updateStatus("moving...");
 
         if (id === "end") {
+
+          his_self.naval_movement_overlay.hide();
+
 	  let destinations = {};
 
 	  for (let i = 0; i < units_to_move.length; i++) {
@@ -43665,11 +43737,11 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
         } else {
           any_options = true;
 	  num_options++;
-          html += `<li class="option" style="font-weight:bold" id="${spacekey}">${his_self.returnSpaceName(spacekey)}</li>`;
+          html += `<li class="option destination" style="font-weight:bold" id="${spacekey}">${his_self.returnSpaceName(spacekey)}</li>`;
 	}
       }
       if (any_options == false) {
-        html += `<li class="option" style="font-weight:bold" id="none">no valid options</li>`;
+        html += `<li class="option destination" style="font-weight:bold" id="none">no valid options</li>`;
       }
       html += "</ul>";
 
@@ -43685,7 +43757,22 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	let is_destination = $(this).hasClass('destination');
 
 	if (is_source) {
+
 	  his_self.naval_movement_overlay.hideDestination();
+
+          for (let i = 0; i < units_available.length; i++) {
+            if (units_to_move.includes(parseInt(i))) {
+	      if (units_available[i].spacekey === units_available[i].destination) {
+	        units_available[i].destination = "";
+                for (let z = 0; z < units_to_move.length; z++) {
+	          if (units_to_move[z] === i) {
+                    units_to_move.splice(z, 1);
+	          }
+	        }	
+	      }
+            }
+	  }
+
           selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
 	  return;
 	}

@@ -14,9 +14,7 @@
 .naval-movement-overlay .destination {
     max-width: 25rem;
     text-align: center;
-    margin-left: 5rem;
 }
-
 
 .scontrols ul li , .dcontrols ul li {
     background-color: whitesmoke;
@@ -33,12 +31,13 @@
     justify-content: center;
 }
 .naval-movement-overlay .sstatus {
+	width: 25rem;
+	max-width: 25rem;
+	text-align: center;
 	line-height: 4rem;
 	position: relative;
 	height: 4rem;
 	min-height: 0;
-	width: 35rem;
-	max-width: 35rem;
 	background-color: whitesmoke;
 	z-index: 10;
 	border-radius: 1rem;
@@ -46,7 +45,7 @@
 	left: 0px;
 	white-space: nowrap;
 	float: left;
-	margin-left: 1rem;
+	margin-left: 5rem;
 	margin-top: 1rem;
 	padding-left: 0.5rem;
 	padding-right: 0.5rem;
