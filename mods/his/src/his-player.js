@@ -1027,7 +1027,7 @@ if (limit === "build") {
       category : "special" ,
       img : '/his/img/backgrounds/move/translate.jpg',
     });
-if (this.game.state.events.cramner_active == 1) {
+if (this.game.state.events.cranmer_active == 1) {
     menu.push({
       factions : ['england','protestant'],
       cost : [3,2],
@@ -6987,8 +6987,9 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       return 0;
     }
     if (faction === "england") {
-      if (his_self.isPersonageOnMap("england", "cranmer") != null) {
-	return 1;
+      let where_is_cranmer = his_self.isPersonageOnMap("england", "cranmer-reformer");
+      if (where_is_cranmer != "") {
+        return 1;
       }
     }
     return 0;

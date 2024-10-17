@@ -19,6 +19,7 @@ const AvailableUnitsOverlay = require('./lib/ui/overlays/available-units');
 const FortificationOverlay = require('./lib/ui/overlays/fortification');
 const SpringDeploymentOverlay = require('./lib/ui/overlays/spring-deployment');
 const BuildOverlay = require('./lib/ui/overlays/build');
+const NavalMovementOverlay = require('./lib/ui/overlays/naval-movement');
 const MovementOverlay = require('./lib/ui/overlays/movement');
 const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
 const FieldBattleOverlay = require('./lib/ui/overlays/field-battle');
@@ -110,6 +111,7 @@ class HereIStand extends GameTemplate {
     this.movement_overlay = new MovementOverlay(this.app, this);  // unit movement
     this.fortification_overlay = new FortificationOverlay(this.app, this);  // unit movement
     this.welcome_overlay = new WelcomeOverlay(this.app, this);  // hello world
+    this.naval_movement_overlay = new NavalMovementOverlay(this.app, this);  // overlay to move ships
     this.deck_overlay = new DeckOverlay(this.app, this);  // overlay to show cards
     this.menu_overlay = new MenuOverlay(this.app, this);  // players doing stuff
     this.winter_overlay = new WinterOverlay(this.app, this);
@@ -178,7 +180,6 @@ class HereIStand extends GameTemplate {
           this.confirm_moves = 1;
         }
       }
-/****
       if (this.app.options.gameprefs.his_faster_play) {
 	if (this.app.options.gameprefs.his_faster_play !== 1) {
           this.faster_play = 0;
@@ -186,7 +187,6 @@ class HereIStand extends GameTemplate {
           this.faster_play = 1;
         }
       }
-****/
     }
 
     //
@@ -6341,6 +6341,15 @@ console.log("selected: " + spacekey);
 	  let msg = "Henry VIII is pleased with his marital progress...";
 
 	  //
+	  // prevents Hapsburg-Papal alliance... or de-activates it as may be
+	  //
+	  if (his_self.game.state.round == his_self.game.state.henry_viii_pope_approves_divorce_round) {
+	    if (his_self.areAllies("papacy", "hapsburg")) {
+	      his_self.unsetAllies("papacy", "hapsburg");
+	    }
+	  }
+
+	  //
 	  // Henry VIII already dead, cannot roll
 	  //
 	  if (his_self.game.state.leaders.mary_i == 1 || his_self.game.state.leaders.edward_vi == 1 || his_self.game.state.leaders.elizabeth_i == 1) {
@@ -7098,7 +7107,6 @@ console.log("selected: " + spacekey);
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "debate") {
-console.log("extra: " + extra);
 	  if (extra === "german") {
 	    //
 	    // Wartburg stops Luther
@@ -7108,15 +7116,12 @@ console.log("extra: " + extra);
 	    }
 	    if (his_self.game.state.leaders.luther == 1) {
 	      if (his_self.game.state.theological_debate) {
-console.log("testing A");
 		if (his_self.game.state.theological_debate.round1_attacker_debater == "luther-debater") { return 0; }
 	        if (his_self.game.state.theological_debate.round1_defender_debater == "luther-debater") { return 0; }
 	        if (his_self.game.state.theological_debate.round2_attacker_debater == "luther-debater") { return 0; }
 	        if (his_self.game.state.theological_debate.round2_defender_debater == "luther-debater") { return 0; }
 	        if (player === his_self.returnPlayerOfFaction("protestant")) {
-console.log("testing B");
 	          if (his_self.canPlayerPlayCard("protestant", "007")) {
-console.log("testing C");
 		    return 1;
 		  } else {
 		  }
@@ -9564,9 +9569,15 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  //
 	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
 	    let lmv = his_self.game.queue[i].split("\t");
-	    if (lmv[0] !== "remove" && lmv[0] !== "cards_left" && lmv[0] !== "discard" && lmv[0] !== "round" && lmv[0] !== "play" && lmv[0].indexOf("counter_or_acknowledge") != 0 && lmv[0].indexOf("RESOLVE") != 0 && lmv[0].indexOf("HALTED") != 0) { 
+	    // TODO -- test if removes still now we have removed "remove"
+	    if (lmv[0] !== "cards_left" && lmv[0] !== "discard" && lmv[0] !== "round" && lmv[0] !== "play" && lmv[0].indexOf("counter_or_acknowledge") != 0 && lmv[0].indexOf("RESOLVE") != 0 && lmv[0].indexOf("HALTED") != 0) { 
 	      his_self.game.queue.splice(i, 1);
 	    } else {
+	      if (lmv[0] === "remove") {
+		let x = "discard";
+		for (let z = 1; z < lmv.length; z++) { x += "\t"; x += lmv[1]; }
+		his_self.game.queue[i] = x;
+	      }
 	      if (lmv[0] === "round" || lmv[0] === "play") {
 		i == 0;
 		break;
@@ -14637,7 +14648,9 @@ console.log("we have removed philip and redisplayed the space...");
               (space) => {
                 if (his_self.isSpaceControlled(space.key, faction) && space.home === faction) {
 	          if (space.ports.length > 0) {
-	   	    return 1;
+		    if (his_self.isSpaceUnderSiege(space.key)) {
+	   	      return 1;
+		    }
 		  }
 		}
 		return 0;
@@ -20829,6 +20842,7 @@ if (x) {
 
     this.game.state.loyola_bonus_active = 0;
 
+
     //
     // reset impulse commits
     //
@@ -20874,6 +20888,16 @@ if (x) {
     //
     for (let key in this.game.navalspaces) {
       this.hidePiracyMarker(key);
+    }
+
+    //
+    // add cramner if needed
+    //
+    if (this.game.state.cramner_active != 1) { 
+      if (this.game.state.round >= 3) {
+        let where_is_cranmer = his_self.isPersonageOnMap("england", "cranmer");
+        if (where_is_cranmer != "") { return 1; }
+      }
     }
 
     //
@@ -21795,6 +21819,7 @@ if (this.game.state.scenario != "is_testing") {
     state.henry_viii_rolls = [];
     state.henry_viii_wives = [];
     state.henry_viii_pope_approves_divorce = 0;
+    state.henry_viii_pope_approves_divorce_round = 0;
 
     state.knights_of_st_john = "";
 
@@ -24569,7 +24594,8 @@ if (this.game.options.scenario != "is_testing") {
 
 	  this.winter_overlay.hide();
 	  let filter_find_spaces_with_mercenaries = function(space) {
-	    let s = his_self.game.spaces[spacekey];
+	    let s = space;
+	    try { if (his_self.game.spaces[space]) { s = his_self.game.spaces[space]; } } catch (err) {}
 	    for (let i = 0; i < s.units[faction_giving].length; i++) {
 	      let u = s.units[faction_giving][i];
 	      if (u.type == "mercenary") { return 1; }
@@ -24577,7 +24603,7 @@ if (this.game.options.scenario != "is_testing") {
 	    return 0;
 	  }
 	  let command_function_on_picking_a_space = function(spacekey) {
-	    this.removeUnit(faction_giving, spacekey, "mercenary");
+	    his_self.removeUnit(faction_giving, spacekey, "mercenary");
 	    instructions.push("remove_unit\tland\t"+faction_giving+"\tmercenary\t"+spacekey+"\t"+his_self.game.player);
 	  }
 
@@ -24586,7 +24612,7 @@ if (this.game.options.scenario != "is_testing") {
 
               "Select Mercenary to Remove", 
 
-	      filter_find_spaces_with_mecenaries,
+	      filter_find_spaces_with_mercenaries,
 
 	      command_function_on_picking_a_space,
 
@@ -28486,6 +28512,8 @@ alert("HERE ... ");
  	  let defender_player = his_self.returnPlayerOfFaction(defender_faction);
 	  let is_janissaries_possible = false;
 
+	  // if card was played to attack, don't slow game by checking for intervention
+	  if (his_self.game.player_last_card == "001") { is_janissaries_possible = false; }
 
 	  //
 	  // map every faction in space to attacker or defender
@@ -28932,6 +28960,9 @@ try {
 	  let attacker_faction = attacker;
 	  let defender_faction = his_self.returnDefenderFaction(attacker_faction, space);
 	  let is_janissaries_possible = false;
+
+	  // if card was played to attack, don't slow game by checking for intervention
+	  if (his_self.game.player_last_card == "001") { is_janissaries_possible = false; }
 
  	  let attacker_player = his_self.returnPlayerOfFaction(attacker_faction);
  	  let defender_player = his_self.returnPlayerOfFaction(defender_faction);
@@ -35141,11 +35172,14 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
 	if (mv[0] === "declare_alliance" || mv[0] === "set_allies") {
 
+	  this.game.queue.splice(qe, 1);
+
 	  let f1 = mv[1];
 	  let f2 = mv[2];
 
+	  if ((f1 == "papacy" && f2 == "hapsburg") || (f1 == "hapsburg" && f2 == "papacy") && this.game.state.round == this.game.state.henry_viii_pope_approves_divorce_round == this.game.state.round) { return 1; }
+
   	  this.setAllies(f1, f2);
-	  this.game.queue.splice(qe, 1);
 
 	  return 1;
 
@@ -38965,7 +38999,7 @@ if (limit === "build") {
       category : "special" ,
       img : '/his/img/backgrounds/move/translate.jpg',
     });
-if (this.game.state.events.cramner_active == 1) {
+if (this.game.state.events.cranmer_active == 1) {
     menu.push({
       factions : ['england','protestant'],
       cost : [3,2],
@@ -44925,8 +44959,9 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       return 0;
     }
     if (faction === "england") {
-      if (his_self.isPersonageOnMap("england", "cranmer") != null) {
-	return 1;
+      let where_is_cranmer = his_self.isPersonageOnMap("england", "cranmer-reformer");
+      if (where_is_cranmer != "") {
+        return 1;
       }
     }
     return 0;
@@ -47347,12 +47382,12 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   }
 
   async playerRequestDivorce(his_self, faction, mycallback) {
-    mycallback([`advance_henry_viii_marital_status`,`SETVAR\tstate\thenry_viii_pope_approves_divorce\t1`, `NOTIFY\tThe Papacy accedes to Henry VIII's request for a divorce.`]);
+    mycallback([`advance_henry_viii_marital_status`,`SETVAR\tstate\thenry_viii_pope_approves_divorce_round\t${his_self.game.state.round}`,`SETVAR\tstate\thenry_viii_pope_approves_divorce\t1`, `NOTIFY\tThe Papacy accedes to Henry VIII's request for a divorce.`]);
     return 0;
   }
 
   async playerApproveDivorce(his_self, faction, mycallback) {
-    mycallback([`advance_henry_viii_marital_status`,`SETVAR\tstate\thenry_viii_pope_approves_divorce\t1`, `NOTIFY\tThe Papacy accedes to Henry VIII's request for a divorce.`]);
+    mycallback([`advance_henry_viii_marital_status`,`SETVAR\tstate\thenry_viii_pope_approves_divorce_round\t${his_self.game.state.round}`,`SETVAR\tstate\thenry_viii_pope_approves_divorce\t1`, `NOTIFY\tThe Papacy accedes to Henry VIII's request for a divorce.`]);
     return 0;
   }
 
@@ -48129,6 +48164,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.reformers[reformer]);
     space.units[faction][space.units[faction].length-1].owner = faction; 
+    if (reformer == "reformer-cranmer") { this.game.state.cranmer_active = 1; }
   }
 
   returnDebaterName(key) {

@@ -2619,6 +2619,15 @@ console.log("selected: " + spacekey);
 	  let msg = "Henry VIII is pleased with his marital progress...";
 
 	  //
+	  // prevents Hapsburg-Papal alliance... or de-activates it as may be
+	  //
+	  if (his_self.game.state.round == his_self.game.state.henry_viii_pope_approves_divorce_round) {
+	    if (his_self.areAllies("papacy", "hapsburg")) {
+	      his_self.unsetAllies("papacy", "hapsburg");
+	    }
+	  }
+
+	  //
 	  // Henry VIII already dead, cannot roll
 	  //
 	  if (his_self.game.state.leaders.mary_i == 1 || his_self.game.state.leaders.edward_vi == 1 || his_self.game.state.leaders.elizabeth_i == 1) {
@@ -3376,7 +3385,6 @@ console.log("selected: " + spacekey);
       },
       menuOptionTriggers:  function(his_self, menu, player, extra) {
         if (menu == "debate") {
-console.log("extra: " + extra);
 	  if (extra === "german") {
 	    //
 	    // Wartburg stops Luther
@@ -3386,15 +3394,12 @@ console.log("extra: " + extra);
 	    }
 	    if (his_self.game.state.leaders.luther == 1) {
 	      if (his_self.game.state.theological_debate) {
-console.log("testing A");
 		if (his_self.game.state.theological_debate.round1_attacker_debater == "luther-debater") { return 0; }
 	        if (his_self.game.state.theological_debate.round1_defender_debater == "luther-debater") { return 0; }
 	        if (his_self.game.state.theological_debate.round2_attacker_debater == "luther-debater") { return 0; }
 	        if (his_self.game.state.theological_debate.round2_defender_debater == "luther-debater") { return 0; }
 	        if (player === his_self.returnPlayerOfFaction("protestant")) {
-console.log("testing B");
 	          if (his_self.canPlayerPlayCard("protestant", "007")) {
-console.log("testing C");
 		    return 1;
 		  } else {
 		  }
@@ -5842,9 +5847,15 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  //
 	  for (let i = his_self.game.queue.length-1; i > 0; i--) {
 	    let lmv = his_self.game.queue[i].split("\t");
-	    if (lmv[0] !== "remove" && lmv[0] !== "cards_left" && lmv[0] !== "discard" && lmv[0] !== "round" && lmv[0] !== "play" && lmv[0].indexOf("counter_or_acknowledge") != 0 && lmv[0].indexOf("RESOLVE") != 0 && lmv[0].indexOf("HALTED") != 0) { 
+	    // TODO -- test if removes still now we have removed "remove"
+	    if (lmv[0] !== "cards_left" && lmv[0] !== "discard" && lmv[0] !== "round" && lmv[0] !== "play" && lmv[0].indexOf("counter_or_acknowledge") != 0 && lmv[0].indexOf("RESOLVE") != 0 && lmv[0].indexOf("HALTED") != 0) { 
 	      his_self.game.queue.splice(i, 1);
 	    } else {
+	      if (lmv[0] === "remove") {
+		let x = "discard";
+		for (let z = 1; z < lmv.length; z++) { x += "\t"; x += lmv[1]; }
+		his_self.game.queue[i] = x;
+	      }
 	      if (lmv[0] === "round" || lmv[0] === "play") {
 		i == 0;
 		break;
@@ -10915,7 +10926,9 @@ console.log("we have removed philip and redisplayed the space...");
               (space) => {
                 if (his_self.isSpaceControlled(space.key, faction) && space.home === faction) {
 	          if (space.ports.length > 0) {
-	   	    return 1;
+		    if (his_self.isSpaceUnderSiege(space.key)) {
+	   	      return 1;
+		    }
 		  }
 		}
 		return 0;

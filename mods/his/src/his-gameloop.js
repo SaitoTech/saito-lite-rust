@@ -1601,7 +1601,8 @@ if (this.game.options.scenario != "is_testing") {
 
 	  this.winter_overlay.hide();
 	  let filter_find_spaces_with_mercenaries = function(space) {
-	    let s = his_self.game.spaces[spacekey];
+	    let s = space;
+	    try { if (his_self.game.spaces[space]) { s = his_self.game.spaces[space]; } } catch (err) {}
 	    for (let i = 0; i < s.units[faction_giving].length; i++) {
 	      let u = s.units[faction_giving][i];
 	      if (u.type == "mercenary") { return 1; }
@@ -1609,7 +1610,7 @@ if (this.game.options.scenario != "is_testing") {
 	    return 0;
 	  }
 	  let command_function_on_picking_a_space = function(spacekey) {
-	    this.removeUnit(faction_giving, spacekey, "mercenary");
+	    his_self.removeUnit(faction_giving, spacekey, "mercenary");
 	    instructions.push("remove_unit\tland\t"+faction_giving+"\tmercenary\t"+spacekey+"\t"+his_self.game.player);
 	  }
 
@@ -1618,7 +1619,7 @@ if (this.game.options.scenario != "is_testing") {
 
               "Select Mercenary to Remove", 
 
-	      filter_find_spaces_with_mecenaries,
+	      filter_find_spaces_with_mercenaries,
 
 	      command_function_on_picking_a_space,
 
@@ -5518,6 +5519,8 @@ alert("HERE ... ");
  	  let defender_player = his_self.returnPlayerOfFaction(defender_faction);
 	  let is_janissaries_possible = false;
 
+	  // if card was played to attack, don't slow game by checking for intervention
+	  if (his_self.game.player_last_card == "001") { is_janissaries_possible = false; }
 
 	  //
 	  // map every faction in space to attacker or defender
@@ -5964,6 +5967,9 @@ try {
 	  let attacker_faction = attacker;
 	  let defender_faction = his_self.returnDefenderFaction(attacker_faction, space);
 	  let is_janissaries_possible = false;
+
+	  // if card was played to attack, don't slow game by checking for intervention
+	  if (his_self.game.player_last_card == "001") { is_janissaries_possible = false; }
 
  	  let attacker_player = his_self.returnPlayerOfFaction(attacker_faction);
  	  let defender_player = his_self.returnPlayerOfFaction(defender_faction);
@@ -12173,11 +12179,14 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
 	if (mv[0] === "declare_alliance" || mv[0] === "set_allies") {
 
+	  this.game.queue.splice(qe, 1);
+
 	  let f1 = mv[1];
 	  let f2 = mv[2];
 
+	  if ((f1 == "papacy" && f2 == "hapsburg") || (f1 == "hapsburg" && f2 == "papacy") && this.game.state.round == this.game.state.henry_viii_pope_approves_divorce_round == this.game.state.round) { return 1; }
+
   	  this.setAllies(f1, f2);
-	  this.game.queue.splice(qe, 1);
 
 	  return 1;
 

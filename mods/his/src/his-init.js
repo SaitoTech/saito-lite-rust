@@ -19,6 +19,7 @@ const AvailableUnitsOverlay = require('./lib/ui/overlays/available-units');
 const FortificationOverlay = require('./lib/ui/overlays/fortification');
 const SpringDeploymentOverlay = require('./lib/ui/overlays/spring-deployment');
 const BuildOverlay = require('./lib/ui/overlays/build');
+const NavalMovementOverlay = require('./lib/ui/overlays/naval-movement');
 const MovementOverlay = require('./lib/ui/overlays/movement');
 const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
 const FieldBattleOverlay = require('./lib/ui/overlays/field-battle');
@@ -110,6 +111,7 @@ class HereIStand extends GameTemplate {
     this.movement_overlay = new MovementOverlay(this.app, this);  // unit movement
     this.fortification_overlay = new FortificationOverlay(this.app, this);  // unit movement
     this.welcome_overlay = new WelcomeOverlay(this.app, this);  // hello world
+    this.naval_movement_overlay = new NavalMovementOverlay(this.app, this);  // overlay to move ships
     this.deck_overlay = new DeckOverlay(this.app, this);  // overlay to show cards
     this.menu_overlay = new MenuOverlay(this.app, this);  // players doing stuff
     this.winter_overlay = new WinterOverlay(this.app, this);
@@ -178,7 +180,6 @@ class HereIStand extends GameTemplate {
           this.confirm_moves = 1;
         }
       }
-/****
       if (this.app.options.gameprefs.his_faster_play) {
 	if (this.app.options.gameprefs.his_faster_play !== 1) {
           this.faster_play = 0;
@@ -186,7 +187,6 @@ class HereIStand extends GameTemplate {
           this.faster_play = 1;
         }
       }
-****/
     }
 
     //

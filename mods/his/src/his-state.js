@@ -27,6 +27,7 @@
 
     this.game.state.loyola_bonus_active = 0;
 
+
     //
     // reset impulse commits
     //
@@ -72,6 +73,16 @@
     //
     for (let key in this.game.navalspaces) {
       this.hidePiracyMarker(key);
+    }
+
+    //
+    // add cramner if needed
+    //
+    if (this.game.state.cramner_active != 1) { 
+      if (this.game.state.round >= 3) {
+        let where_is_cranmer = his_self.isPersonageOnMap("england", "cranmer");
+        if (where_is_cranmer != "") { return 1; }
+      }
     }
 
     //
@@ -993,6 +1004,7 @@ if (this.game.state.scenario != "is_testing") {
     state.henry_viii_rolls = [];
     state.henry_viii_wives = [];
     state.henry_viii_pope_approves_divorce = 0;
+    state.henry_viii_pope_approves_divorce_round = 0;
 
     state.knights_of_st_john = "";
 
