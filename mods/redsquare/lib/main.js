@@ -200,7 +200,9 @@ class RedSquareMain {
         if (!triggered) {
           let hh = getComputedStyle(document.body).getPropertyValue('--saito-header-height');
           document.getElementById("saito-header").style.top = `-${hh}`;
-          document.documentElement.style.setProperty('--saito-header-height', '0');
+          document.getElementById("saito-header").style.height = '0';
+          document.getElementById("saito-header").style.padding = "0";
+          //document.documentElement.style.setProperty('--saito-header-height', '0');
           //document.querySelector('#saito-header').style.opacity = '0';
           st -= 70;
           triggered = true;
@@ -208,8 +210,9 @@ class RedSquareMain {
       } else if (st < lastScrollTop) {
         // upscroll code
         if (triggered) {
-          document.getElementById("saito-header").style.top = "0";
-          document.documentElement.style.setProperty('--saito-header-height', '');
+          document.getElementById("saito-header").removeAttribute("style");
+          //document.getElementById("saito-header").style.top = "0";
+          //document.documentElement.style.setProperty('--saito-header-height', '');
           //document.querySelector('#saito-header').style.opacity = '1';
           triggered = false;
         }

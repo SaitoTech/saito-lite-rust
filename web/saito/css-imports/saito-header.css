@@ -11,7 +11,7 @@
   left: 0;
   z-index: 15;
   height: var(--saito-header-height);
-  transition: all 0.6s linear;
+  transition: all 0.33s linear;
 }
 
 #saito-header.wide-screen {
