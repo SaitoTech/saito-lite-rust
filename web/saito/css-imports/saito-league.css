@@ -108,7 +108,7 @@
 
 .league-overlay-body {
 	display: grid;
-	grid-template-columns: minmax(40rem, 2fr) minmax(30rem, 1fr);
+	grid-template-columns: minmax(40rem, 2fr) minmax(33rem, 1fr);
 	gap: 2rem;
 	height: min(45rem, calc(100vh - 160px));
 }
@@ -345,6 +345,10 @@ span.attention {
 	}
 	.league-overlay-body .league-overlay-controls {
 		justify-content: center;
+	}
+
+	.league-overlay-content-box {
+		max-height: 40vh;
 	}
 }
 
