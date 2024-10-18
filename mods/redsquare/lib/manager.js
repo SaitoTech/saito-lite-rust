@@ -399,8 +399,14 @@ class TweetManager {
 						mycallback(txs);
 					}
 
-					//Will add them so they are cached (in array and local cache)
-					this.mod.processTweetsFromPeer(peer, txs);
+					//
+					// Don't use processTweetsFromPeer(peer, txs)
+					// because it updates the global timestamps and caches tweets in our local storage
+					//
+				    for (let z = 0; z < txs.length; z++) {
+      					txs[z].decryptMessage(this.app);
+      					this.mod.addTweet(txs[z], `${peer.publicKey}-profile`);
+      				}
 
 					if (peer.peer !== 'localhost') {
 						this.app.connection.emit(
