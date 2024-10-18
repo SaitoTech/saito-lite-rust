@@ -1111,10 +1111,10 @@ console.log(faction + " is enemies with controlling faction " + cf);
 
 
   // max-units is number of units permitted, usually passed as 4 to find spaces that are not over-capacity
-  returnNearestFriendlyFortifiedSpacesTransitPasses(faction, space, max_units=0) {
-    return this.returnNearestFriendlyFortifiedSpaces(faction, space, 1, max_units);
+  returnNearestFriendlyFortifiedSpacesTransitPasses(faction, space, max_units=0, include_source=1) {
+    return this.returnNearestFriendlyFortifiedSpaces(faction, space, 1, max_units, include_source);
   }
-  returnNearestFriendlyFortifiedSpaces(faction, space, transit_passes = 0, max_units=0) {
+  returnNearestFriendlyFortifiedSpaces(faction, space, transit_passes = 0, max_units=0, include_source=1) {
 
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
 
@@ -1128,6 +1128,13 @@ console.log(faction + " is enemies with controlling faction " + cf);
 
       // fortified spaces
       function(spacekey) {
+
+	//
+	//
+	//
+	if (include_source != 1) {
+	  if (spacekey == original_spacekey) { return 0; }
+	}
 
 	//
 	// non-protestants can't move into electorates, so they aren't friendly fortified spaces 
@@ -3983,8 +3990,12 @@ if (x) {
       obj.returnView = function () {
 
 	let html = '<div class="space_view" id="">';
-
+	let is_naval_space = false;
 	let space = his_self.game.spaces[obj.key];
+	if (his_self.game.navalspaces[obj.key]) {
+	  space = his_self.game.navalspaces[obj.key];
+	  is_naval_space = true;
+	}
 
 	let home = obj.home;
 	let religion = obj.religion;
@@ -3996,16 +4007,23 @@ if (x) {
 	  if (home == "genoa" || home == "venice" || home == "scotland" || home == "hungary" || home == "independent") { his_self.game.state.board[home] = his_self.returnOnBoardUnits(home); }
 	}
 
-	html += `
-	  <div class="space_name">${obj.name}</div>
-	  <div class="space_properties">
-	    <div class="religion"><div class="${religion}" style="background-image: url('${his_self.returnReligionImage(religion)}')"></div><div class="label">${religion} religion</div></div>
-	    <div class="political"><div class="${political}" style="background-image: url('${his_self.returnControlImage(political)}')"></div><div class="label">${political} control</div></div>
-	    <div class="language"><div class="${language}" style="background-image: url('${his_self.returnLanguageImage(language)}')"></div><div class="label">${language} language</div></div>
-	    <div class="home"><div class="${home}" style="background-image: url('${his_self.returnControlImage(home)}')"></div><div class="label">${home} home</div></div>
-	  </div>
-	  <div class="space_units">
-	`;
+	if (is_naval_space) {
+	  html += `
+	    <div class="space_name">${obj.name}</div>
+	    <div class="space_units">
+	  `;
+	} else {
+	  html += `
+	    <div class="space_name">${obj.name}</div>
+	    <div class="space_properties">
+	      <div class="religion"><div class="${religion}" style="background-image: url('${his_self.returnReligionImage(religion)}')"></div><div class="label">${religion} religion</div></div>
+	      <div class="political"><div class="${political}" style="background-image: url('${his_self.returnControlImage(political)}')"></div><div class="label">${political} control</div></div>
+	      <div class="language"><div class="${language}" style="background-image: url('${his_self.returnLanguageImage(language)}')"></div><div class="label">${language} language</div></div>
+	      <div class="home"><div class="${home}" style="background-image: url('${his_self.returnControlImage(home)}')"></div><div class="label">${home} home</div></div>
+	    </div>
+	    <div class="space_units">
+	  `;
+	}
 
         for (let key in space.units) {
 	  html += his_self.returnArmyTiles(key, obj.key);

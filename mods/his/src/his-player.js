@@ -1039,8 +1039,8 @@ if (this.game.state.events.cranmer_active == 1) {
     });
 } else {
     menu.push({
-      factions : ['england','protestant'],
-      cost : [2,2],
+      factions : ['protestant'],
+      cost : [2],
       name : "Publish Treatise",
       check : this.canPlayerPublishTreatise,
       fnct : this.playerPublishTreatise,
@@ -1075,6 +1075,7 @@ if (this.game.state.events.cranmer_active == 1) {
       category : "special" ,
       img : '/his/img/backgrounds/move/burn_books.jpg',
     });
+if (this.game.state.events.society_of_jesus == 1) {
     // Loyola reduces Jesuit University Cost
     let university_founding_cost = 3;
     if (this.canPlayerCommitDebater("papacy", "loyola-debater") || parseInt(this.game.state.loyola_bonus_active) == 1) {
@@ -1089,7 +1090,7 @@ if (this.game.state.events.cranmer_active == 1) {
       category : "special" ,
       img : '/his/img/backgrounds/move/university.png',
     });
-
+}
     } // mary_i limit check
 }
 } // scots raid
@@ -1719,13 +1720,16 @@ if (this.game.state.events.cranmer_active == 1) {
 	  if (space.units[f][i].type == "regular" || space.units[f][i].type == "mercenary" || space.units[f][i].type == "cavalry" || space.units[f][i].army_leader == true) {
 	    if (anyone_in_relief_force == false) {
               available_units.push({ faction : f , unit_idx : i , type : space.units[f][i].type });
+	      if (space.units[f][i].besieged == 1) { units_to_move.push( { faction : f , idx : i } ); }
 	    } else {
 if (relief_siege == 1) {
 	      if (space.units[f][i].relief_force == 0) {
                 available_units.push({ faction : f , unit_idx : i , type : space.units[f][i].type });
+	        if (space.units[f][i].besieged == 1) { units_to_move.push( { faction : f , idx : i } ); }
 	      } 
 } else {
                 available_units.push({ faction : f , unit_idx : i , type : space.units[f][i].type });
+	        if (space.units[f][i].besieged == 1) { units_to_move.push( { faction : f , idx : i } ); }
 }
 	    } 
           }
@@ -4882,7 +4886,7 @@ does_units_to_move_have_unit = true; }
     html    += `<li class="card" id="skip">skip</li>`;
     html    += `</ul>`;
 
-    this.updateStatusWithOptions(`Withdraw Units into Fortification?`, html);
+    this.updateStatusWithOptions(`${his_self.returnFactionName(faction)} - Withdraw Units into Fortification?`, html);
     this.attachCardboxEvents(function(user_choice) {
       this.unbindBackButtonFunction();
       this.updateStatus("acknowledge...");
@@ -5614,7 +5618,7 @@ does_units_to_move_have_unit = true; }
 		  }
 		}
 	        if (units_available[i].spacekey === units_available[i].destination) {
-		  units_available[i].destination = "";
+	          units_available[i].destination = "";
                   for (let z = 0; z < units_to_move.length; z++) {
 	            if (units_to_move[z] === parseInt(i)) {
                       units_to_move.splice(z, 1);
@@ -5770,17 +5774,26 @@ does_units_to_move_have_unit = true; }
 	  his_self.naval_movement_overlay.hideDestination();
 
           for (let i = 0; i < units_available.length; i++) {
+
             if (units_to_move.includes(parseInt(i))) {
+	      if (units_available[i].destination === "" || !(units_available[i].destination)) {
+          	for (let z = 0; z < units_to_move.length; z++) {
+	  	  if (units_to_move[z] === parseInt(i)) {
+          	    units_to_move.splice(z, 1);
+		    z--;
+		  }
+		}
+	      }
 	      if (units_available[i].spacekey === units_available[i].destination) {
 	        units_available[i].destination = "";
                 for (let z = 0; z < units_to_move.length; z++) {
-	          if (units_to_move[z] === i) {
+	          if (units_to_move[z] === parseInt(i)) {
                     units_to_move.splice(z, 1);
 	          }
-	        }	
-	      }
-            }
-	  }
+	        }
+	      }	
+	    }
+          }
 
           selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
 	  return;
