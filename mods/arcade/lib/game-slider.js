@@ -88,6 +88,10 @@ class GameSlider {
 		}
 
 		this.attachEvents();
+
+		setTimeout(()=> {
+			document.querySelector(".game-slider").removeAttribute("style");
+		}, 1000);
 	}
 
 	attachEvents() {

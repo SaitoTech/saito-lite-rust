@@ -1027,7 +1027,7 @@ if (limit === "build") {
       category : "special" ,
       img : '/his/img/backgrounds/move/translate.jpg',
     });
-if (this.game.state.events.cramner_active == 1) {
+if (this.game.state.events.cranmer_active == 1) {
     menu.push({
       factions : ['england','protestant'],
       cost : [3,2],
@@ -4735,8 +4735,6 @@ does_units_to_move_have_unit = true; }
     let retreat_destination = "";
     let space_name = this.game.spaces[spacekey].name;
 
-console.log(loser + " retreating from " + spacekey);
-
     let onFinishSelect = function(his_self, destination_spacekey) {
       his_self.addMove("retreat"+"\t"+loser+"\t"+spacekey+"\t"+destination_spacekey);
       his_self.endTurn();
@@ -4753,16 +4751,13 @@ console.log(loser + " retreating from " + spacekey);
                   "Choose Destination for Retreat:" ,
 
         	  function(space2) {
-console.log("checking: " + space2.key);
 
 	            if (space.neighbours.includes(space2.key)) {
-console.log("is neighbour");
 		      if (his_self.returnPlayerCommandingFaction(loser) === his_self.returnPlayerCommandingFaction(attacker)) {
 	  		if (space2.key === attacker_comes_from_this_spacekey) {
           		  return 1;
 	  		}
 		      } else {
-console.log("can we come from here? " + space2.key + " - " + attacker_comes_from_this_spacekey + " -- " + his_self.game.state.attacker_comes_from_this_spacekey);
           		if (his_self.canFactionRetreatToSpace(loser, space2.key, "") && space2.key !== attacker_comes_from_this_spacekey) {
           		  return 1;
 	  		}
@@ -5536,6 +5531,8 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
   }
   async playerNavalMove(his_self, player, faction, ops_to_spend=0, ops_remaining=0) {
 
+    his_self.naval_movement_overlay.render();
+
     // BACK moves us to OPS menu
     his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
 
@@ -5545,32 +5542,104 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       if (units_available[z].locked == 1) { units_available.splice(z, 1); z--; }
     }
 
+    let backup_units_to_move = units_to_move;
+
     let selectUnitsInterface = function(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface) {
 
       let msg = "Select Unit to Move";
       let html = "<ul>";
+
+      for (let i = 0; i < units_available.length; i++) {
+        if (units_to_move.includes(parseInt(i))) {
+	  if (units_available[i].destination === "") {
+            for (let z = 0; z < units_to_move.length; z++) {
+	      if (units_to_move[z] === parseInt(i)) {
+                units_to_move.splice(z, 1);
+		z--;
+	      }
+	    }
+	  }
+	  if (units_available[i].spacekey === units_available[i].destination) {
+	    units_available[i].destination = "";
+            for (let z = 0; z < units_to_move.length; z++) {
+	      if (units_to_move[z] === parseInt(i)) {
+                units_to_move.splice(z, 1);
+	      }
+	    }
+	  }	
+	}
+      }
+
       for (let i = 0; i < units_available.length; i++) {
 	let spacekey = units_available[i].spacekey;
 	let unit = units_available[i];
         if (units_to_move.includes(parseInt(i))) {
-          html += `<li class="option" style="font-weight:bold" id="${i}">${units_available[i].name} (${units_available[i].spacekey} -> ${units_available[i].destination})</li>`;
+	  if (units_available[i].spacekey === units_available[i].destination) {
+	    
+	  }
+	}
+        if (units_to_move.includes(parseInt(i))) {
+          html += `<li class="option source" style="font-weight:bold" id="${i}">${units_available[i].name} (${units_available[i].spacekey} -> ${units_available[i].destination})</li>`;
         } else {
-          html += `<li class="option" id="${i}">${units_available[i].name} (${his_self.returnSpaceName(units_available[i].spacekey)})</li>`;
+          html += `<li class="option source" id="${i}">${units_available[i].name} (${his_self.returnSpaceName(units_available[i].spacekey)})</li>`;
         }
       }
       html += `<li class="option" id="end">finish</li>`;
       html += "</ul>";
 
       his_self.updateStatusWithOptions(msg, html);
+      his_self.naval_movement_overlay.selectUnits(msg, html);
+
 
       $('.option').off();
       $('.option').on('click', function () {
 
         let id = $(this).attr("id");
+	let is_source = $(this).hasClass('source');
+	let is_destination = $(this).hasClass('destination');
+
+	if (is_source) {
+	  if (document.querySelector(".dcontrols ul .destination")) { 
+
+	    his_self.hideDestination();
+
+            for (let i = 0; i < units_available.length; i++) {
+              if (units_to_move.includes(parseInt(i))) {
+	  	if (units_available[i].destination === "") {
+          	  for (let z = 0; z < units_to_move.length; z++) {
+	  	    if (units_to_move[z] === parseInt(i)) {
+          	      units_to_move.splice(z, 1);
+		      z--;
+		    }
+		  }
+		}
+	        if (units_available[i].spacekey === units_available[i].destination) {
+		  units_available[i].destination = "";
+                  for (let z = 0; z < units_to_move.length; z++) {
+	            if (units_to_move[z] === parseInt(i)) {
+                      units_to_move.splice(z, 1);
+	            }
+	          }
+	        }	
+	      }
+            }
+
+            selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
+	    return;
+	  }
+	}
+	if (is_destination) {
+	  his_self.hideDestination();
+          selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
+	  return;
+	}
 
 	his_self.updateStatus("moving...");
 
         if (id === "end") {
+
+          his_self.naval_movement_overlay.hide();
+
 	  let destinations = {};
 
 	  for (let i = 0; i < units_to_move.length; i++) {
@@ -5665,32 +5734,57 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	    if (his_self.doesSpaceHaveNonFactionNavalUnits(spacekey, faction) || his_self.doesSpaceHaveNonFactionUnits(spacekey, faction)) {
               any_options = true;
   	      num_options++;
-              html += `<li class="option" style="font-weight:bold" id="${spacekey}">${his_self.returnSpaceName(spacekey)}</li>`;
+              html += `<li class="option destination" style="font-weight:bold" id="${spacekey}">${his_self.returnSpaceName(spacekey)}</li>`;
 	    }
 	  } else {
 	    if (his_self.isSpaceFriendly(spacekey, faction)) {
               any_options = true;
   	      num_options++;
-              html += `<li class="option" style="font-weight:bold" id="${spacekey}">${his_self.returnSpaceName(spacekey)}</li>`;
+              html += `<li class="option destination" style="font-weight:bold" id="${spacekey}">${his_self.returnSpaceName(spacekey)}</li>`;
             }
           }
         } else {
           any_options = true;
 	  num_options++;
-          html += `<li class="option" style="font-weight:bold" id="${spacekey}">${his_self.returnSpaceName(spacekey)}</li>`;
+          html += `<li class="option destination" style="font-weight:bold" id="${spacekey}">${his_self.returnSpaceName(spacekey)}</li>`;
 	}
       }
       if (any_options == false) {
-        html += `<li class="option" style="font-weight:bold" id="none">no valid options</li>`;
+        html += `<li class="option destination" style="font-weight:bold" id="none">no valid options</li>`;
       }
       html += "</ul>";
 
       his_self.updateStatusWithOptions(msg, html);
+      if (num_options > 1) { his_self.naval_movement_overlay.selectDestination(msg, html); }
 
       $('.option').off();
       $('.option').on('click', function () {
 
         let id = $(this).attr("id");
+
+	let is_source = $(this).hasClass('source');
+	let is_destination = $(this).hasClass('destination');
+
+	if (is_source) {
+
+	  his_self.naval_movement_overlay.hideDestination();
+
+          for (let i = 0; i < units_available.length; i++) {
+            if (units_to_move.includes(parseInt(i))) {
+	      if (units_available[i].spacekey === units_available[i].destination) {
+	        units_available[i].destination = "";
+                for (let z = 0; z < units_to_move.length; z++) {
+	          if (units_to_move[z] === i) {
+                    units_to_move.splice(z, 1);
+	          }
+	        }	
+	      }
+            }
+	  }
+
+          selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
+	  return;
+	}
 
 	if (id === "none") {
           unit_to_move.splice(unit_to_move.length-1, 1);
@@ -5699,6 +5793,7 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
 	}
 
 	unit.destination = id;
+	his_self.naval_movement_overlay.hideDestination();
         selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
 
       });
@@ -6987,8 +7082,9 @@ console.log("can we come from here? " + space2.key + " - " + attacker_comes_from
       return 0;
     }
     if (faction === "england") {
-      if (his_self.isPersonageOnMap("england", "cranmer") != null) {
-	return 1;
+      let where_is_cranmer = his_self.isPersonageOnMap("england", "cranmer-reformer");
+      if (where_is_cranmer != "") {
+        return 1;
       }
     }
     return 0;

@@ -1601,7 +1601,8 @@ if (this.game.options.scenario != "is_testing") {
 
 	  this.winter_overlay.hide();
 	  let filter_find_spaces_with_mercenaries = function(space) {
-	    let s = his_self.game.spaces[spacekey];
+	    let s = space;
+	    try { if (his_self.game.spaces[space]) { s = his_self.game.spaces[space]; } } catch (err) {}
 	    for (let i = 0; i < s.units[faction_giving].length; i++) {
 	      let u = s.units[faction_giving][i];
 	      if (u.type == "mercenary") { return 1; }
@@ -1609,7 +1610,7 @@ if (this.game.options.scenario != "is_testing") {
 	    return 0;
 	  }
 	  let command_function_on_picking_a_space = function(spacekey) {
-	    this.removeUnit(faction_giving, spacekey, "mercenary");
+	    his_self.removeUnit(faction_giving, spacekey, "mercenary");
 	    instructions.push("remove_unit\tland\t"+faction_giving+"\tmercenary\t"+spacekey+"\t"+his_self.game.player);
 	  }
 
@@ -1618,7 +1619,7 @@ if (this.game.options.scenario != "is_testing") {
 
               "Select Mercenary to Remove", 
 
-	      filter_find_spaces_with_mecenaries,
+	      filter_find_spaces_with_mercenaries,
 
 	      command_function_on_picking_a_space,
 
@@ -2464,8 +2465,7 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 //	  deck['013'].onEvent(this, "protestant");
 
 
-          this.addCard("hapsburg", "021");
-          this.addCard("hapsburg", "035");
+          this.addCard("hapsburg", "068");
           this.addCard("papacy", "021");
 
 /**
@@ -5518,6 +5518,8 @@ alert("HERE ... ");
  	  let defender_player = his_self.returnPlayerOfFaction(defender_faction);
 	  let is_janissaries_possible = false;
 
+	  // if card was played to attack, don't slow game by checking for intervention
+	  if (his_self.game.player_last_card == "001") { is_janissaries_possible = false; }
 
 	  //
 	  // map every faction in space to attacker or defender
@@ -5964,6 +5966,9 @@ try {
 	  let attacker_faction = attacker;
 	  let defender_faction = his_self.returnDefenderFaction(attacker_faction, space);
 	  let is_janissaries_possible = false;
+
+	  // if card was played to attack, don't slow game by checking for intervention
+	  if (his_self.game.player_last_card == "001") { is_janissaries_possible = false; }
 
  	  let attacker_player = his_self.returnPlayerOfFaction(attacker_faction);
  	  let defender_player = his_self.returnPlayerOfFaction(defender_faction);
@@ -11005,19 +11010,36 @@ defender_hits - attacker_hits;
 
 
 	// must be removed by RESOLVES -- but handled automatically
-	if (mv[0] === "check_interventions") {
+	if (mv[0] === "check_interventions" || mv[0] === "check_intervention") {
+
+	  //
+	  // if a single faction is dealt cards, we can call "check_intervention\tfaction"
+	  // to ask it to update us with any interventions that are newly enabled for that
+	  // specific faction and that specific card.
+	  //
+	  let faction = "";
+	  if (mv[1] && mv[0] === "check_intervention") { 
+	    this.game.queue.splice(qe, 1);
+	    faction = mv[1];
+	  }
 
 	  this.updateStatus("preparing for Action Phase...");
 
-	  if (this.game.confirms_needed[this.game.player-1] == 1) {
+	  let should_i_check = false;
+	  if (this.game.confirms_needed[this.game.player-1] == 1) { should_i_check = true; }
+	  if (faction != "" && this.game.player == this.returnPlayerCommandingFaction(faction)) { should_i_check = true; }
+
+	  if (should_i_check) {
 
 	    //
 	    // we do not want to run this command multiple times, sending 
 	    // extra RESOLVES because we receive another RESOLVE before 
 	    // ours, so we swap out this for a HALTED command.
 	    //
-	    this.game.queue[his_self.game.queue.length-1] = "halted";
-	    this.addMove("RESOLVE\t"+this.publicKey);
+	    if (faction == "") {
+	      this.game.queue[his_self.game.queue.length-1] = "halted";
+	      this.addMove("RESOLVE\t"+this.publicKey);
+	    }
 
 	    //
 	    // Professional Rowers permits naval_intercept and naval_avoid_battle
@@ -11030,8 +11052,6 @@ defender_hits - attacker_hits;
 	        };
 	      }
 	    }
-
-
 
 	    //
 	    // Wartburg permits intervention in events
@@ -11061,7 +11081,6 @@ defender_hits - attacker_hits;
 	        }
 	      }
 	    }
-
 
 	    //
 	    // Post Naval Battle - Professional Rowers
@@ -12173,11 +12192,14 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 
 	if (mv[0] === "declare_alliance" || mv[0] === "set_allies") {
 
+	  this.game.queue.splice(qe, 1);
+
 	  let f1 = mv[1];
 	  let f2 = mv[2];
 
+	  if ((f1 == "papacy" && f2 == "hapsburg") || (f1 == "hapsburg" && f2 == "papacy") && this.game.state.round == this.game.state.henry_viii_pope_approves_divorce_round == this.game.state.round) { return 1; }
+
   	  this.setAllies(f1, f2);
-	  this.game.queue.splice(qe, 1);
 
 	  return 1;
 
@@ -14269,6 +14291,15 @@ try {
 	      this.deck_overlay.render('hand', cards);
 	    }
 
+	  }
+
+	  //
+	  // we only need to check manually if we have pulled a card in the 
+	  // action phase, in which case state.impulse will have been 
+	  // incremented above 0
+	  //
+	  if (this.game.state.impulse > 0 && faction != "") {
+	    this.game.queue.push("check_intervention\t"+faction);
 	  }
 
 	  return 1;
