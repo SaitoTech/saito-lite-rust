@@ -270,7 +270,9 @@
 	grid-template-rows: 1fr;
 	grid-template-columns: minmax(0px, 1fr);
 	border-radius: var(--saito-border-radius);
-	background-color: #000D;
+	background-image: url(/saito/img/tiled-logo.svg);
+	background-color: var(--color-base);
+
 }
 
 .dream-controls.lite {
@@ -293,14 +295,13 @@
 	text-align: right;
 }
 
-/*.dream-controls .video-box-container-large{
-	background-color: darkslategray;
+.dream-controls .video-box-container-large{
+	height: 100%;
 }
-*/
 
-.dream-controls .video-box-container-large video {
-	position: absolute;
-	object-fit: contain;
+
+.dream-controls .video-box-container-large video#presentation {
+	object-fit: cover;
 }
 
 .saito-container.limbo-container .dream-controls {
@@ -311,6 +312,7 @@
 .limbo-main .control-panel {
 	position: absolute;
 	bottom: 4rem;
+	left: 1rem;
 	border: 1px solid var(--saito-border-color);
 	padding: 0.5rem;
 	border-radius: var(--saito-border-radius);
@@ -337,11 +339,6 @@
 	left: 2.5rem;
 }
 
-.video-preview{
-	position: relative;
-	background-image: url(/saito/img/tiled-logo.svg);
-	background-color: var(--color-base);
-}
 
 .default-limbo-image-mask {
 	position: relative;
