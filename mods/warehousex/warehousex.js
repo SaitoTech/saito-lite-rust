@@ -207,7 +207,7 @@ class Warehousex extends ModTemplate {
 			let percent_tx_change = 1000 * (tx_ct - last_tx) / last_tx;
 			percent_tx_change = Math.round(percent_tx_change)/10;
 
-			let report = `*Today in Numbers:*\n------------------------\n`;
+			let report = `###### *Today in Numbers:*\n`;
 			report += `Unique Keys: ${unique_user_count}`; 
 			if (last_key){
 				report += ` (${percent_user_change}%)`;
