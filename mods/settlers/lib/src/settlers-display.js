@@ -482,9 +482,18 @@ class SettlersDisplay {
       if (this.lock_interface == 1) {
         return;
       }
+      let update = [];
+
+      update[0] = str;
+      update[1] = hide_info;
 
       this.game.status = str;
-      this.status.push(str);
+
+      if (this.status.length > 0 && this.status[this.status.length-1][1] == 1) {
+        this.status[this.status.length-1] = update;
+      } else {
+        this.status.push(update);
+      }
 
       //Keep last three
       while (this.status.length > 3) {
@@ -498,11 +507,11 @@ class SettlersDisplay {
           let status_obj = document.querySelector('.hud-body .status');
     
           let complex_str = '';
-          for (let st of this.status){
-            if (!st.includes('<div')) {
-              st = `<div class="player-notice">${st}</div>`;
+          for (let ud of this.status){
+            if (!ud[0].includes('<div')) {
+              ud[0] = `<div class="player-notice">${ud[0]}</div>`;
             }
-            complex_str += st;
+            complex_str += ud[0];
           }
 
           status_obj.innerHTML = complex_str;
