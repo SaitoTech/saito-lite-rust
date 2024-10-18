@@ -1,4 +1,4 @@
-const { WEBSQL } = require('localforage');
+const { WEBSQL } = require('localforage'); // unnecessary??
 const ModTemplate = require('../../lib/templates/modtemplate');
 const PeerService = require('saito-js/lib/peer_service').default;
 

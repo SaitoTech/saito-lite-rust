@@ -3,8 +3,6 @@
  *
  */
 
-const localforage = require('localforage');
-
 class StreamManager {
   constructor(app, mod, settings) {
     this.app = app;
