@@ -11,7 +11,7 @@
 .game-playerbox {
     z-index: 3;
     max-width: 50vw;
-    width: 40rem;
+    width: 30rem;
     position: relative;
     border-width: 0.5rem;
 	border-style: solid;
@@ -27,12 +27,14 @@
     /* border-image-outset: 5px !important; */
     color: var(--text-color);
 	transition: width 500ms ease-in-out;
+	transition: width 500ms ease-in-out;
+    box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.5), inset -5px -5px 10px rgba(255, 255, 255, 0.7);
 }
 
 .game-playerbox.active {
-	width: 43rem;
 	border-width: 0.5rem;
 	border-style: solid;
+	box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(255, 255, 255, 0.7);
 }
 
 /*

@@ -676,8 +676,8 @@ input[type='checkbox'] {
 }
 
 .bandit .hexTileCenter {
-	border-color: #8888;
-	color: #8888;
+	border-color: #4444;
+	color: #444;
 	z-index: 1;
 }
 

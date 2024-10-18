@@ -191,7 +191,7 @@ stats overlay
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	background-color: unset !important;
+	background: unset !important;
 	width: 100%;
 }
 

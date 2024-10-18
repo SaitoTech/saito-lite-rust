@@ -320,9 +320,9 @@ class SettlersGameloop {
           this.playerBuildRoad(mv[1], canbackup);
         } else {
           if (this.game.state.placedCity) {
-            this.hud.updateStatus(`<div class="player-notice">${this.game.playerNames[player - 1]} is placing a ${this.r.name}...</div>`);
+            this.hud.updateStatus(`<div class="player-notice">${this.game.playerNames[player - 1]} is placing a ${this.r.name}...</div>`, 1);
           }else{
-            this.updateStatus(`${this.game.playerNames[player - 1]} is building a ${this.r.name}...`);  
+            this.updateStatus(`${this.game.playerNames[player - 1]} is building a ${this.r.name}...`, 1);  
           }
           
         }
@@ -384,9 +384,9 @@ class SettlersGameloop {
           this.playerBuildTown(mv[1], parseInt(mv[2]));
         } else {
           if (this.game.state.placedCity) {
-            this.hud.updateStatus(`<div class="player-notice">${this.game.playerNames[player - 1]} is placing a ${this.c1.name}...</div>`);
+            this.hud.updateStatus(`<div class="player-notice">${this.game.playerNames[player - 1]} is placing a ${this.c1.name}...</div>`, 1);
           }else{
-            this.updateStatus(`${this.game.playerNames[player - 1]} is building a ${this.c1.name}...`);  
+            this.updateStatus(`${this.game.playerNames[player - 1]} is building a ${this.c1.name}...`, 1);  
           }
         }
 
@@ -485,7 +485,7 @@ class SettlersGameloop {
         if (this.game.player == player) {
           this.playerBuildCity(player, 1);
         } else {
-          this.updateStatus(`${this.game.playerNames[player - 1]} is upgrading to a ${this.c2.name}...`);
+          this.updateStatus(`${this.game.playerNames[player - 1]} is upgrading to a ${this.c2.name}...`, 1);
         }
 
         return 0; // halt game until next move received
@@ -722,7 +722,7 @@ class SettlersGameloop {
           }
 
           if (this.status.length == 0 || this.status[this.status.length-1] !== statushtml) {
-            this.updateStatus(`${statushtml}`);
+            this.updateStatus(`${statushtml}`, 1);
           }
           
           if (this.turn_limit){
@@ -747,7 +747,7 @@ class SettlersGameloop {
         } else {
           let statushtml = `${this.game.playerNames[player - 1]} rolling dice...`;
           if (this.status.length == 0 || this.status[this.status.length-1] !== statushtml) {
-            this.updateStatus(`${statushtml}`);
+            this.updateStatus(`${statushtml}`, 1);
           }
         }
         //this.game.queue.splice(qe, 1);
@@ -853,7 +853,7 @@ class SettlersGameloop {
 
         let player = parseInt(mv[1]);
         if (player != this.game.player) {
-          this.updateStatus(`${this.game.playerNames[player - 1]} is taking their turn`);
+          this.updateStatus(`${this.game.playerNames[player - 1]} is taking their turn`, 1);
         }
 
         return 1;
@@ -899,7 +899,7 @@ class SettlersGameloop {
         this.game.queue.push(`NOTIFY\t${discardString} must discard half their hand.`);
 
         if (!amIPlaying) {
-         this.updateStatus(`waiting for ${discardString} to discard`);
+         this.updateStatus(`waiting for ${discardString} to discard`, 1);
         }
 
         return 0;
@@ -924,10 +924,9 @@ class SettlersGameloop {
           this.playerPlayBandit();
         } else {
           if (player == player_who_rolled){
-            this.updateStatus(`${this.game.playerNames[player - 1]} moving the ${this.b.name}...`
-            );
+            this.updateStatus(`${this.game.playerNames[player - 1]} moving the ${this.b.name}...`, 1);
           }else{
-            this.updateStatus(`Robin Hood is on the loose, ${this.game.playerNames[player - 1]} is moving him...`);
+            this.updateStatus(`Robin Hood is on the loose, ${this.game.playerNames[player - 1]} is moving him...`, 1);
             $(".controls .option").css("visibility", "hidden");
           }
         }
@@ -972,7 +971,7 @@ class SettlersGameloop {
         if (this.game.player === player) {
           this.playerMoveBandit(player, hexId);
         } else {
-          this.updateStatus(`${this.game.playerNames[player - 1]} choosing the ${this.b.name}'s victim...`);
+          this.updateStatus(`${this.game.playerNames[player - 1]} choosing the ${this.b.name}'s victim...`, 1);
         }
 
         return 0;
