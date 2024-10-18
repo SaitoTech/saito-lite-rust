@@ -1895,7 +1895,7 @@ class Browser {
 		if (!text) {
 			return "";
 		}
-		console.log("Sanitize: ", text);
+		//console.log("Sanitize: ", text);
 		try {
 			if (createLinks) {
 				text = marked.parse(text);

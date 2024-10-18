@@ -353,6 +353,8 @@ class ModTools extends ModTemplate {
 		// 0 = no preference
 		//
 /****
+ *  NOTE: saito-modules handles the respondTo logic for saito-moderation-app
+ * 
 		if (type === 'saito-moderation-app') {
 			return {
 				filter_func: (app = null, tx = null) => {

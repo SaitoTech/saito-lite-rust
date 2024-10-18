@@ -100,11 +100,23 @@ class TweetMenu {
 	}
 
 	hideTweet() {
+		//remove from archive
 		this.app.storage.deleteTransaction(this.tweet.tx, null, 'localhost');
+		//remove from dom
 		this.tweet.remove();
 
+		//Add to blacklist
 		this.mod.hidden_tweets.push(this.tweet.tx.signature);
 		this.mod.saveOptions();
+
+		//remove from tweet list!
+	    for (let i = 0; i < this.mod.tweets.length; i++) {
+	        if (this.mod.tweets[i].tx.signature === this.tweet.tx.signature) {
+    	      this.mod.tweets.splice(i, 1);
+        	  return;
+        	}
+      	}
+
 	}
 }
 
