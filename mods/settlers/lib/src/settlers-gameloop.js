@@ -180,7 +180,7 @@ class SettlersGameloop {
         if (this.game.player == player) {
           this.playerPlayBandit();
         } else {
-          this.updateStatus(`${ this.game.playerNames[player - 1]} played a ${cardname} and is moving the ${this.b.name}...`);
+          this.updateStatus(`${ this.game.playerNames[player - 1]} played a ${cardname} and is moving the ${this.b.name}...`, 1);
         }
         return 0;
       }
@@ -240,7 +240,7 @@ class SettlersGameloop {
           this.game.state.players[player - 1].resources.push(resource);
 
         if (this.game.player == player){
-          this.updateStatus(`You collected ${lootCt} ${this.formatResource(resource)}`);
+          this.updateStatus(`<div class="player-notice">You collected ${lootCt} ${this.formatResource(resource)}</div>`);
         }else{
           this.card_overlay.render({ player : player , card : cardname});
           this.game.state.players[player - 1].devcards.pop(); //Remove card (for display)  
