@@ -54,6 +54,10 @@ console.log("\n\n\n\n");
     for (let key in this.game.spaces) {
       this.spaces[key] = this.importSpace(this.game.spaces[key], key);
     }
+    this.navalspaces = {};
+    for (let key in this.game.navalspaces) {
+      this.navalspaces[key] = this.importSpace(this.game.navalspaces[key], key);
+    }
 
     //
     // add initial units
@@ -572,6 +576,8 @@ console.log("\n\n\n\n");
 	  this.setAllies("france", "genoa");
 	  this.setAllies("france", "protestant");
 	  this.setAllies("hapsburg", "hungary");
+          this.addArmyLeader("hapsburg", "barcelona", "ferdinand");
+	  this.addRegular("hapsburg", "barcelona", 2);
 
 	  if (this.game.players.length == 2) {
 	    this.setActivatedPower("protestant", "france");
@@ -582,9 +588,12 @@ console.log("\n\n\n\n");
 	  this.setEnemies("papacy","france");
 
 	  this.controlSpace("ottoman", "vienna");
-	  this.addRegular("ottoman", "vienna", 3);
+	  this.addRegular("ottoman", "vienna", 4);
 
-	  this.addRegular("hapsburg", "graz", 4);
+	  this.setAllies("hapsburg", "hungary");
+	  this.addRegular("hapsburg", "prague", 4);
+	  this.addRegular("hungary", "prague", 1);	  
+
 
           // DEBATERS
           this.addDebater("papacy", "gardiner-debater");

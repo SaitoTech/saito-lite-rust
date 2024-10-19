@@ -11,9 +11,13 @@
 	display: flex;
 	justify-content: right;
 }
-.naval-movement-overlay .destination {
-    max-width: 25rem;
+.naval-movement-overlay .origin + .destination {
+    max-width: 100%;
     text-align: center;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 5rem;
+    margin-top: 5rem;
 }
 
 .scontrols ul li , .dcontrols ul li {

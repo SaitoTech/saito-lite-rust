@@ -3284,14 +3284,11 @@ console.log("selected: " + spacekey);
       type : "normal" ,
       faction : "protestant" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      canEvent : function(his_self, faction) {
-       
+      canEvent : function(his_self, faction) {       
 	if (his_self.game.state.leaders.luther != 1) { return 0; }
-
 	let cards_available = 0;
-        for (let key in his_self.game.deck[0].discards) { cards_available++; }
+        for (let key in his_self.game.deck[0].discards) { if (parseInt(key) > 23) { cards_available++; } }
         if (cards_available == 0) { return 0; }
-
 	if (Object.keys(his_self.game.deck[0].discards).length > 0) { return 1; }
 	return 0;
       },
@@ -3818,7 +3815,7 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 	his_self.schmalkaldic_overlay.render();
         his_self.setEnemies("protestant","papacy");
         his_self.setEnemies("protestant","hapsburg");
-        his_self.setAllies("papacy","hapsburg");
+        if (his_self.game.players.length == 2) { his_self.setAllies("papacy","hapsburg"); }
 
 	//
 	// protestant home + political spaces
@@ -4168,7 +4165,7 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
       img : "cards/HIS-019.svg" , 
       name : "Edward VI" ,
       ops : 2 ,
-      turn : 6 ,
+      turn : 0 ,
       type : "mandatory" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) {
@@ -4253,7 +4250,7 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
       img : "cards/HIS-021.svg" , 
       name : "Mary I" ,
       ops : 2 ,
-      turn : 6 ,
+      turn : 0 ,
       type : "mandatory" ,
       canEvent : function(his_self, faction) {
         return 1;
@@ -4268,7 +4265,7 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 	// throne and we now have Mary I being evented again after being added to
 	// the deck.
 	//
-	if (this.game.state.henry_viii_re_add_mary_to_throne == 1) {
+	if (his_self.game.state.henry_viii_re_add_mary_to_throne == 1) {
 	  his_self.game.state.henry_iii_sickly_edward = 0;
 	}
 
@@ -7377,7 +7374,7 @@ console.log("we have removed philip and redisplayed the space...");
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) {
-	if (his_self.game.state.events.england_has_changed_rulers_this_turn != 0) { 
+	if (his_self.game.state.events.england_changed_rulers_this_turn != 0) { 
 	  let expected = 0;
 	  if (!his_self.game.deck[0].discards['003']) { let expected = 1; }
 	  if (his_self.game.state.cards_left["england"] > expected) { return 1; }
@@ -7620,7 +7617,7 @@ console.log("we have removed philip and redisplayed the space...");
       img : dom_img , 
       name : "Dissolution of the Monasteries" ,
       ops : 4 ,
-      turn : 4 ,
+      turn : 0 ,
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 1; } ,
       canEvent : function(his_self, faction) { return 1; } ,

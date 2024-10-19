@@ -76,12 +76,12 @@
     }
 
     //
-    // add cramner if needed
+    // add cranmer if needed
     //
-    if (this.game.state.cramner_active != 1) { 
+    if (this.game.state.cranmer_active != 1) { 
       if (this.game.state.round >= 3) {
         let where_is_cranmer = this.isPersonageOnMap("england", "cranmer");
-        if (where_is_cranmer != "") { return 1; }
+        if (where_is_cranmer != "") { this.game.state.cranmer_active = 1; }
       }
     }
 
@@ -851,6 +851,14 @@ if (this.game.state.scenario != "is_testing") {
     state.bonus_vp['france'] = 0;
     state.bonus_vp['hapsburg'] = 0;
     state.bonus_vp['ottoman'] = 0;
+
+    state.cards_issued = {};
+    state.cards_issued['ottoman'] = 0;
+    state.cards_issued['hapsburg'] = 0;
+    state.cards_issued['england'] = 0;
+    state.cards_issued['france'] = 0;
+    state.cards_issued['papacy'] = 0;
+    state.cards_issued['protestant'] = 0;
 
     state.saint_peters_cathedral = {};
     state.saint_peters_cathedral['state'] = 0;

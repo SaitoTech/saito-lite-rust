@@ -169,14 +169,11 @@
   canPlayerCancel(his_self, player, faction, target="") {
     return 1;
   }
+
   async playerCancel(his_self, faction, mycallback=null) {
-    //his_self.diplomacy_propose_overlay.render(faction);
     his_self.diplomacy_overlay.render(faction);
     return 1;
   }
-
-
-
 
   canPlayerEndWar(his_self, player, faction, target="") {
     if (target != "") {
@@ -209,61 +206,61 @@
   canPlayerFormAlliance(his_self, player, faction, target="") {
     if (target != "") {
       let prohibited_alliance = false;
-      if (faction == "papacy" && target == "hapsburg" && his_self.game.state.henry_viii_pope_approves_divorce == 1) {
+      if (faction === "papacy" && target === "hapsburg" && his_self.game.state.henry_viii_pope_approves_divorce == 1) {
 	prohibited_alliance = true;
       }
-      if (faction == "papacy" && target == "protestant") {
+      if (faction === "papacy" && target === "protestant") {
 	prohibited_alliance = true;
       }
-      if (faction == "protestant" && target == "papacy") {
+      if (faction === "protestant" && target === "papacy") {
 	prohibited_alliance = true;
       }
-      if (faction == "hapsburg" && target == "protestant") {
+      if (faction === "hapsburg" && target === "protestant") {
 	prohibited_alliance = true;
       }
-      if (faction == "protestant" && target == "hapsburg") {
+      if (faction === "protestant" && target === "hapsburg") {
 	prohibited_alliance = true;
       }
-      if (faction == "papacy" && target == "ottoman") {
+      if (faction === "papacy" && target === "ottoman") {
 	prohibited_alliance = true;
       }
-      if (faction == "ottoman" && target == "papacy") {
+      if (faction === "ottoman" && target === "papacy") {
 	prohibited_alliance = true;
       }
-      if (faction == target) {
+      if (faction === target) {
 	prohibited_alliance = true;
       }
-      if (prohibited_alliance == false && !his_self.areAllies(faction, target) && faction !== target) { return 1; }
+      if (prohibited_alliance === false && !his_self.areAllies(faction, target) && faction !== target) { return 1; }
       return 0;
     }
     let io = his_self.returnDiplomacyImpulseOrder(faction);
     for (let i = 0; i < io.length; i++) {
       let prohibited_alliance = false;
-      if (faction == "papacy" && io[i] == "hapsburg" && his_self.game.state.henry_viii_pope_approves_divorce == 1) {
+      if (faction === "papacy" && io[i] === "hapsburg" && his_self.game.state.henry_viii_pope_approves_divorce == 1) {
 	prohibited_alliance = true;
       }
-      if (faction == "papacy" && io[i] == "protestant") {
+      if (faction === "papacy" && io[i] === "protestant") {
 	prohibited_alliance = true;
       }
-      if (faction == "protestant" && io[i] == "papacy") {
+      if (faction === "protestant" && io[i] === "papacy") {
 	prohibited_alliance = true;
       }
-      if (faction == "hapsburg" && io[i] == "protestant") {
+      if (faction === "hapsburg" && io[i] === "protestant") {
 	prohibited_alliance = true;
       }
-      if (faction == "protestant" && io[i] == "hapsburg") {
+      if (faction === "protestant" && io[i] === "hapsburg") {
 	prohibited_alliance = true;
       }
-      if (faction == "papacy" && io[i] == "ottoman") {
+      if (faction === "papacy" && io[i] === "ottoman") {
 	prohibited_alliance = true;
       }
-      if (faction == "ottoman" && io[i] == "papacy") {
+      if (faction === "ottoman" && io[i] === "papacy") {
 	prohibited_alliance = true;
       }
-      if (faction == io[i]) {
+      if (faction === io[i]) {
 	prohibited_alliance = true;
       }
-      if (prohibited_alliance == false && !his_self.areAllies(faction, io[i]) && faction !== io[i]) { return 1; }
+      if (prohibited_alliance === false && !his_self.areAllies(faction, io[i]) && faction !== io[i]) { return 1; }
     }
     return 0;
   }
@@ -288,6 +285,7 @@
     }
     let target_spaces = his_self.countSpacesWithFilter(
       function(space) { 
+        if (space.home == "independent") { return 1; } // not minor power spaces (venice, hungary, etc.)
         if (space.political == faction || (space.political == "" && space.home == faction)) { return 1; }
       }
     );
@@ -324,13 +322,9 @@
     return 1;
   }
 
-  canPlayerGainTerritory(his_self, player, faction) {
-    return 1;
-  }
-
   canPlayerRequestDivorce(his_self, player, faction, target="") {
     if (target != "papacy") { return 0; }
-    if (faction == "england" && his_self.game.state.henry_viii_marital_status == 1) { return 1; }
+    if (faction === "england" && his_self.game.state.henry_viii_marital_status == 1) { return 1; }
     return 0;
   }
 

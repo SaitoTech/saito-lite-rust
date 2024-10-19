@@ -152,6 +152,17 @@ class ThesesOverlay {
 				}
 			};
 		}
+		for (let key in this.mod.navalspaces) {
+			let qs = '.theses-overlay .gameboard .' + key;
+			document.querySelector(qs).onclick = (e) => {
+				let space_id = e.currentTarget.id;
+				if (this.spaces_onclick_callback != null) {
+					this.spaces_onclick_callback(space_id);
+				} else {
+					this.mod.displaySpaceDetailedView(space_id);
+				}
+			};
+		}
 	}
 }
 
