@@ -1058,7 +1058,7 @@ ul.horizontal_list li.iconoption {
 	}
 
 	.player-notice {
-		font-size: 18px;
+		font-size: 16px;
 		max-width: 100%;
 		flex-wrap: unset;
 	}
@@ -1067,6 +1067,13 @@ ul.horizontal_list li.iconoption {
 		border-image-width: 15px;
 		border-image-outset: 3px;
 		border-width: 3px;
+	}
+	.hud-notice {
+		width: calc(100% - 4rem);
+	}
+	.hud-notice.show {
+		top: -65%;
+		margin: 0;
 	}
 }
 
