@@ -18,7 +18,7 @@ class TweetManager {
 
 		this.profile.tab_container = '.tweet-manager';
 
-		this.profile_tabs = ['posts', 'replies', 'retweets', 'likes'];
+		this.profile_tabs = ['posts', 'replies', /*'retweets',*/ 'likes'];
 
 		this.profile.reset(this.mod.publicKey, 'posts', this.profile_tabs);
 

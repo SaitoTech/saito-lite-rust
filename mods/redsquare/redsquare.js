@@ -1423,10 +1423,9 @@ class RedSquare extends ModTemplate {
 
       t.data_renewal = source;
 
-
       if (tweet.tx.optional) {
         if (JSON.stringify(t.tx.optional) !== JSON.stringify(tweet.tx.optional)){
-          console.log("Orig: ", t.tx.optional, "New: ", tweet.tx.optional);  
+          //console.log(`Orig: (${t.updated_at})`, t.tx.optional, `New: (${tweet.updated_at})`, tweet.tx.optional);  
         }
 
         let should_rerender = false;
@@ -1448,6 +1447,10 @@ class RedSquare extends ModTemplate {
         }
         if (tweet.tx.optional.link_properties) {
           t.tx.optional.link_properties = tweet.tx.optional.link_properties;
+          should_rerender = true;
+        }
+        if (tweet.tx.updated_at > t.updated_at){
+          t.updated_at = Math.max(t.updated_at, tweet.tx.updated_at);
           should_rerender = true;
         }
 
@@ -2599,6 +2602,7 @@ class RedSquare extends ModTemplate {
             } else {
               if (redsquare_self.app.modules.moderate(txs[i], redsquare_self.name) != -1) {
                 cnt++;
+                txs[i].optional.updated_at = txs[i].updated_at;
                 hex_values.push(txs[i].serialize_to_web(this.app));
               }
             }
