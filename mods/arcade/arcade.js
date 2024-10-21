@@ -11,7 +11,6 @@ const GameSelector = require('./lib/overlays/game-selector');
 const GameScheduler = require('./lib/overlays/game-scheduler');
 const GameInvitationLink = require('./../../lib/saito/ui/modals/saito-link/saito-link');
 const Invite = require('./lib/invite');
-const Challenge = require('./../../lib/saito/ui/modals/saito-invite/saito-invite');
 const JoinGameOverlay = require('./lib/overlays/join-game');
 const arcadeHome = require('./index');
 
