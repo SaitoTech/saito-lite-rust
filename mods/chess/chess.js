@@ -186,10 +186,13 @@ class Chessgame extends GameTemplate {
 		// There is no initializing in Chess -- finish initializing
 		//
 		if (this.game.initializing == 1) {
+			this.engine.reset();
 			this.game.queue.push('READY');
 			//Check colors
 			this.switchColors();
 		}
+
+		console.log(this.game?.position);
 
 		if (this.game.position != undefined) {
 			this.engine.load(this.game.position);
@@ -201,7 +204,10 @@ class Chessgame extends GameTemplate {
 			this.game.state = { last: "" };
 		}
 
+		console.log(this.game.position, this.game.state);
+
 		if (!this.gameBrowserActive()) {
+			console.log("nope out");
 			return;
 		}
 
