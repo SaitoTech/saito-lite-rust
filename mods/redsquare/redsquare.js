@@ -1900,6 +1900,10 @@ class RedSquare extends ModTemplate {
     //
 
     if (retweeted_tweet?.tx) {
+      //
+      // Put the updated_at timestamp in the tx, in case it isn't there (wasn't read from archive)
+      //
+      retweeted_tweet.tx.updated_at = retweeted_tweet.updated_at;
       await this.incrementRetweets(retweeted_tweet.tx, tx);
       if (this.browser_active && retweeted_tweet.isRendered()) {
         retweeted_tweet.rerenderControls(true);

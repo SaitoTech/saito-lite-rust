@@ -322,7 +322,10 @@ class Post {
 				//
 
 				post_self.mod.sendRetweetTransaction(post_self.app, post_self.mod, data, this.tweet.tx);
-				this.tweet.retweeters.unshift(post_self.mod.publicKey);
+
+				if (!this.tweet.retweeters.includes(post_self.mod.publicKey)){
+					this.tweet.retweeters.unshift(post_self.mod.publicKey);	
+				}
 
 				if (this.mod?.manager?.mode?.includes('tweet')) {
 					this.tweet.render();
