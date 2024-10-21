@@ -451,7 +451,8 @@ class Stun extends ModTemplate {
 		peerConnection.timer = setTimeout(()=>{ 
 				console.log("STUN Connection timeout...");
 				this.app.connection.emit('stun-connection-timeout', peerId);
-				//this.removePeerConnection(peerId);
+				this.removePeerConnection(peerId);
+				this.createPeerConnection(peerId, callback);
 		}, 8000);
 		
 
@@ -508,10 +509,11 @@ class Stun extends ModTemplate {
 							'stun-connection-failed',
 							peerId
 						);
-						console.log("STUN: connection not restored after 3 seconds...");
+						console.log("STUN: connection not restored after 5 seconds...");
 						this.removePeerConnection(peerId);
+						this.createPeerConnection(peerId, callback);
 					}
-				}, 3000);
+				}, 5000);
 			}
 			if (peerConnection.connectionState === 'connected') {
 				this.app.connection.emit('stun-connection-connected', peerId);
