@@ -548,6 +548,11 @@
   white-space: normal;
 }
 
+.chat-message-line p {
+  overflow: hidden;
+  height: min-content;
+}
+
 .saito-userline-reply {
   display: none;
 }
