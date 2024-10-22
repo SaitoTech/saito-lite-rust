@@ -3,7 +3,7 @@ const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const pageHome = require('./index');
 const BlogMain = require("./lib/blogMain");
-const SaitoBlogWidget = require("../../lib/saito/ui/saito-blog-widget/saito-blog-widget");
+const SaitoBlogWidget = require("./lib/saito-blog-widget");
 
 class Blog extends ModTemplate {
     constructor(app) {
@@ -50,6 +50,7 @@ class Blog extends ModTemplate {
             if (this.browser_active) {
                 return
             }
+            this.attachStyleSheets();
             let {container} = obj;
             let widget = new SaitoBlogWidget(this.app, this.mod, container);
             return widget;

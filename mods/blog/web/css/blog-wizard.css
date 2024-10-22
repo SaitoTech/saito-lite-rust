@@ -1,0 +1,114 @@
+.blog-post-wizard {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background:var(--saito-background-color);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    width: 80rem;
+    /* max-width: 1000px; */
+    max-height: 90vh;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+  }
+  
+  .blog-wizard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  
+  .post-title-input,
+  .post-excerpt-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .post-excerpt-input {
+    height: 80px;
+    resize: vertical;
+  }
+  
+  .image-upload-container {
+    border: 2px dashed #ddd;
+    padding: 20px;
+    text-align: center;
+    border-radius: 4px;
+  }
+  
+  .image-preview img {
+    max-width: 100%;
+    max-height: 200px;
+    margin-top: 10px;
+  }
+  
+  .wizard-actions button {
+    padding: 8px 16px;
+    margin-left: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .wizard-save-btn {
+    /* background: #4CAF50; */
+    /* color: white; */
+    /* border: none; */
+  }
+  
+  .wizard-cancel-btn {
+    /* background: #f5f5f5; */
+    /* border: 1px solid  */
+  }
+
+
+  .tox.tox-tinymce {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  /* Editor Content Area */
+  .tox .tox-edit-area__iframe {
+    background: var(--saito-background-color) !important;
+  }
+
+
+  .tox .tox-menubar {
+    background: var(--saito-background-color) !important;
+
+  }
+
+  /* Toolbar Background */
+  .tox .tox-toolbar,
+  .tox .tox-toolbar__overflow,
+  .tox .tox-toolbar__primary {
+    background: var(--saito-background-color) !important;
+    border-bottom: 1px solid #e2e8f0;
+  }
+   
+  .tox .tox-mbtn {
+    color: var(--saito-font-color) !important;
+  }
+  .tox-promotion{
+    background: var(--saito-background-color) !important;
+  }
+
+  .tox .tox-tbtn svg {
+    fill: var(--saito-font-color) !important;
+  }
