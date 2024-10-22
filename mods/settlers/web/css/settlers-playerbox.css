@@ -18,23 +18,23 @@
     border-color: #0000;
     background-color: #d3c38d;
 	border-radius: 1rem;
-    /* background: linear-gradient(#d3c38df5, #d3c38df5); */
-    /* border-image: url(/settlers/img/border.png) !important; */
-    /* border-image-slice: 55 !important; */
-    /* border-image-width: 16px !important; */
-    /* border-image-repeat: stretch !important; */
-    /* border-style: solid !important; */
-    /* border-image-outset: 5px !important; */
+    background: linear-gradient(#d3c38df5, #d3c38df5); 
+    border-image: url(/settlers/img/border.png) !important; 
+    border-image-slice: 55 !important; 
+    border-image-width: 16px !important; 
+    border-image-repeat: stretch !important; 
+    border-style: solid !important; 
+    border-image-outset: 5px !important; 
     color: var(--text-color);
 	transition: width 500ms ease-in-out;
 	transition: width 500ms ease-in-out;
-    box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.5), inset -5px -5px 10px rgba(255, 255, 255, 0.7);
+    /*box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.5), inset -5px -5px 10px rgba(255, 255, 255, 0.7);*/
 }
 
 .game-playerbox.active {
 	border-width: 0.5rem;
 	border-style: solid;
-	box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(255, 255, 255, 0.7);
+	/*box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5), -5px -5px 10px rgba(255, 255, 255, 0.7);*/
 }
 
 /*
@@ -77,20 +77,30 @@
 	height: 100%;
 }
 
+.game-playerbox-body::after {
+    content: '';
+    position: absolute;
+    width: calc(100% - 2rem);
+    height: 2px;
+    border: 3px solid;
+    border-radius: 10px;
+    bottom: 1rem;
+}
 
-.game-playerbox.p1-lite {
+
+.game-playerbox.p1-lite .game-playerbox-body::after {
 	border-color: var(--p1-color-lite);
 }
 
-.game-playerbox.p2-lite {
+.game-playerbox.p2-lite .game-playerbox-body::after {
 	border-color: var(--p2-color-lite);
 }
 
-.game-playerbox.p3-lite {
+.game-playerbox.p3-lite .game-playerbox-body::after {
 	border-color: var(--p3-color-lite);
 }
 
-.game-playerbox.p4-lite {
+.game-playerbox.p4-lite .game-playerbox-body::after {
 	border-color: var(--p4-color-lite);
 }
 
@@ -99,7 +109,7 @@
 }
 
 .cardct {
-	width: 3rem;
+	width: 3.5rem;
 	position: relative;
 }
 
@@ -113,18 +123,25 @@
 }
 
 .cardct>div {
-	position: absolute;
-	color: black;
-	font-size: 3rem;
-	text-shadow: 1px 1px 1px whitesmoke;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
+    position: absolute;
+    color: #efefef;
+    font-size: 2rem;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 100%;
+    border: 1px solid var(--text-color);
+    height: 2.5rem;
+    width: 2.5rem;
+    background: #0005;
+    text-align: center;
+    line-height: 2.5rem;
 }
 
 .game-playerbox-body {
 	display: flex;
 	gap: 1rem;
+	min-height: 1.5rem;
 }
 
 .game-playerbox .token>img {
@@ -151,6 +168,10 @@
 	grid-template-columns: repeat(auto-fit, 3rem);
 	align-items: center;
 	flex-grow: 1;
+}
+
+.game-playerbox .token img {
+	margin-bottom: 0.5rem;
 }
 
 .game-playerbox .token.army {

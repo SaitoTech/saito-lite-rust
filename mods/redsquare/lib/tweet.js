@@ -68,7 +68,7 @@ class Tweet {
 		this.text = '';
 		this.youtube_id = null;
 		this.created_at = this.tx.timestamp;
-		this.updated_at = this.tx.timestamp;
+		this.updated_at = this.tx?.updated_at || this.tx.timestamp;
 
 		//
 		// the notice shows up at the top of the tweet BEFORE the username and
@@ -297,6 +297,7 @@ class Tweet {
 				this.app.browser.returnAddressHTML(this.tx.from[0].publicKey) +
 				' ' +
 				this.formatDate();
+
 			this.retweet.container = '.tweet-manager';
 			let t = this.mod.returnTweet(this.retweet.tx.signature);
 			if (t) {
@@ -332,7 +333,7 @@ class Tweet {
 		}
 
 		if (this.tx.optional?.update_tx) {
-			this.notice = 'this tweet was edited on ' + this.formatDate(this.updated_at);
+			this.notice = 'this tweet was edited on ' + this.formatDate();
 		}
 
 		if (this.render_after_selector) {
@@ -986,7 +987,7 @@ class Tweet {
 	// Add the given tweet somewhere, it may be a reply or a reply to a reply
 	//
 	addTweet(tweet) {
-		this.updated_at = tweet.updated_at;
+		this.updated_at = Math.max(this.updated_at, tweet.updated_at);
 
 		//
 		// if this tweet is the parent-tweet of a tweet we have already downloaded

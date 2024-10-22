@@ -261,7 +261,6 @@ class RedSquareMain {
   // load content.
   //
   canRefreshPage() {
-    return 0;
     //
     // no if we have scrolled down
     //
