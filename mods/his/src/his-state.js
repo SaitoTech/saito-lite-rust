@@ -19,14 +19,26 @@
     this.game.state.events.spring_preparations = "";
     this.game.state.events.henry_petitions_for_divorce_grant = 0;
     this.game.state.spaces_assaulted_this_turn = [];
-    this.game.state.events.cranmer_active = 0;
     this.game.state.events.more_executed_limits_debates = 0;
     this.game.state.events.more_bonus = 0;
     this.game.state.events.sack_of_rome = 0;
     this.game.state.events.roxelana = 0;
-
     this.game.state.loyola_bonus_active = 0;
 
+    //
+    // add cranmer if needed
+    //
+    if (this.game.state.events.cranmer_active == 1) { 
+      if (this.game.state.round >= 3) {
+        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer");
+        if (where_is_cranmer == "") { this.game.state.events.cranmer_active = 0; }
+      }
+    } else {
+      if (this.game.state.round >= 3) {
+        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer");
+        if (where_is_cranmer != "") { this.game.state.events.cranmer_active = 1; }
+      }
+    }
 
     //
     // reset impulse commits
@@ -78,10 +90,10 @@
     //
     // add cranmer if needed
     //
-    if (this.game.state.cranmer_active != 1) { 
+    if (this.game.state.events.cranmer_active != 1) { 
       if (this.game.state.round >= 3) {
         let where_is_cranmer = this.isPersonageOnMap("england", "cranmer");
-        if (where_is_cranmer != "") { this.game.state.cranmer_active = 1; }
+        if (where_is_cranmer != "") { this.game.state.events.cranmer_active = 1; }
       }
     }
 

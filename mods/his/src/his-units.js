@@ -348,7 +348,7 @@
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.reformers[reformer]);
     space.units[faction][space.units[faction].length-1].owner = faction; 
-    if (reformer == "reformer-cranmer") { this.game.state.cranmer_active = 1; }
+    if (reformer == "cranmer-reformer") { this.game.state.events.cranmer_active = 1; }
   }
 
   returnDebaterName(key) {
@@ -434,6 +434,7 @@
     this.game.state.debaters.push(this.debaters[debater]);
     this.game.state.debaters[this.game.state.debaters.length-1].owner = faction; 
     this.game.state.debaters[this.game.state.debaters.length-1].committed = 0; 
+    if (debater == "cranmer-debater") { this.game.state.events.cranmer_active = 1; }
 
   }
 

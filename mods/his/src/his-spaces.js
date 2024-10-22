@@ -441,6 +441,13 @@ console.log(faction + " is enemies with controlling faction " + cf);
     let his_self = this;
     let already_routed_through = {};
 
+
+console.log("###");
+console.log("###");
+console.log("###");
+console.log("###");
+console.log("###");
+console.log("### is space in line of control? " + space.key);
     //
     // path of spaces and sea-zones from that space to friendly-controlled, 
     // fortified space that is a home space for that power or one of its allies 
@@ -458,31 +465,37 @@ console.log(faction + " is enemies with controlling faction " + cf);
 
       // fortified home spaces are good destinations
       function(spacekey) {
-        let invalid_choice = false;
+        let value_to_return = 0;
         if (his_self.isSpaceFortified(spacekey)) {
 	  if (his_self.isSpaceHomeSpace(spacekey, faction)) { 
 	    if (!his_self.isSpaceBesieged(spacekey) && !his_self.isSpaceInUnrest(spacekey)) { 
 	      if (his_self.game.state.events.schmalkaldic_league != 1 && his_self.isSpaceElectorate(spacekey)) {
 	      } else {
-	        invalid_choice = true;
+	        value_to_return = 1;
 	      }
 	    }
 	  } else {
-	    let x = his_self.returnFactionControllingSpace(spacekey);
-	    if (his_self.isSpaceHomeSpace(spacekey, x)) { 
-	      if (faction == his_self.returnControllingPower(x)) {
-	        if (!his_self.isSpaceBesieged(spacekey) && !his_self.isSpaceInUnrest(spacekey)) { 
-	          if (his_self.game.state.events.schmalkaldic_league != 1 && his_self.isSpaceElectorate(spacekey)) {
-		  } else {
-		    invalid_choice = true;
+console.log("not a home key: " + spacekey);
+	    let x = his_self.game.spaces[spacekey].home;
+	    if (x != "independent") {
+	      if (his_self.isSpaceHomeSpace(spacekey, x)) { 
+console.log("is a homespace for: " + x);
+		let cp = his_self.returnControllingPower(x);
+		if (his_self.areAllies(cp, faction)) {
+	          if (!his_self.isSpaceBesieged(spacekey) && !his_self.isSpaceInUnrest(spacekey)) { 
+	            if (his_self.game.state.events.schmalkaldic_league != 1 && his_self.isSpaceElectorate(spacekey)) {
+		      value_to_return = 1;
+		    } else {
+        	      if (his_self.areAllies(x, faction, 1)) { value_to_return = 1; }
+	            }
 	          }
 	        }	
 	      }	
 	    }
 	  }
 	}
-        if (!his_self.isSpaceFriendly(spacekey, faction)) { invalid_choice = false; }
-        return invalid_choice;
+        if (!his_self.isSpaceFriendly(spacekey, faction)) { value_to_return = 0; }
+        return value_to_return;
       },
 
       // route through this?
@@ -863,6 +876,17 @@ console.log(faction + " is enemies with controlling faction " + cf);
         }
       }
     }
+    for (let key in this.game.navalspaces) {
+      if (this.game.navalspaces[key].units[faction]) {
+        for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
+	  if (this.game.navalspaces[key].units[faction][i]) {
+	    if (this.game.navalspaces[key].units[faction][i].type === personage) {
+  	      return key;
+            }
+          }
+        }
+      }
+    }
     return "";
   }
 
@@ -1012,14 +1036,18 @@ console.log(faction + " is enemies with controlling faction " + cf);
 	  //
 	  if (ships.length > 0) {
 	    for (let y = 0; y < ships.length; y++) {
-	      ships[y].spacekey = key;
-	      ships[y].faction = fip[i];
-	      units.push(ships[y]);
+	      if (!ships.locked) { 
+	        ships[y].spacekey = key;
+	        ships[y].faction = fip[i];
+	        units.push(ships[y]);
+	      }
 	    }
 	    for (let y = 0; y < leaders.length; y++) {
-	      leaders[y].spacekey = key;
-	      leaders[y].faction = fip[i];
-	      units.push(leaders[y]);
+	      if (!leaders.locked) {
+		leaders[y].spacekey = key;
+	        leaders[y].faction = fip[i];
+	        units.push(leaders[y]);
+	      }
 	    }
 	  }
 	}
@@ -1033,9 +1061,11 @@ console.log(faction + " is enemies with controlling faction " + cf);
     for (let i = 0; i < fip.length; i++) {
       for (let key in this.game.navalspaces) {
 	for (let z = 0; z < this.game.navalspaces[key].units[fip[i]].length; z++) {
-	  this.game.navalspaces[key].units[fip[i]][z].spacekey = key;
-	  this.game.navalspaces[key].units[fip[i]][z].faction = fip[i];
-	  units.push(this.game.navalspaces[key].units[fip[i]][z]);
+	  if (!this.game.navalspaces[key].units[fip[i]][z].locked) {
+	    this.game.navalspaces[key].units[fip[i]][z].spacekey = key;
+	    this.game.navalspaces[key].units[fip[i]][z].faction = fip[i];
+	    units.push(this.game.navalspaces[key].units[fip[i]][z]);
+	  }
 	}
       }
     }
@@ -3323,7 +3353,7 @@ if (x) {
       home: "hapsburg",
       political: "",
       religion: "catholic",
-      ports: ["north"],
+      ports: ["africa"],
       neighbours: [],
       language: "other",
       type: "town"

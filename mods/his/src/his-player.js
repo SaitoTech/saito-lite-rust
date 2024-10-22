@@ -2193,9 +2193,23 @@ if (relief_siege == 1) {
       let html = `<ul>`;
       html    += `<li class="card" id="${faction}">${faction}</li>`;
       for (let i = 0; i < this.game.state.activated_powers[faction].length; i++) {
-         html    += `<li class="card" id="${this.game.state.activated_powers[faction][i]}">${this.game.state.activated_powers[faction][i]}</li>`;
+	 let can_select = true;
+	 let ap = this.game.state.activated_powers[faction][i];
+	 if (faction === "france" && this.game.state.events.scots_raid == 1) {
+	   if (ap != "scotland") { can_select = false; }
+	 }
+	 if (can_select == true) {
+           html    += `<li class="card" id="${this.game.state.activated_powers[faction][i]}">${this.game.state.activated_powers[faction][i]}</li>`;
+	 }
          for (let z = 0; z < this.game.state.activated_powers[this.game.state.activated_powers[faction][i]].length; z++) {
-	   html += `<li class="card" id="${this.game.state.activated_powers[this.game.state.activated_powers[faction][i]][z]}">${this.game.state.activated_powers[this.game.state.activated_powers[faction][i]][z]}</li>`;
+	   let mp = this.game.state.activated_powers[this.game.state.activated_powers[faction][i]][z];
+console.log("MP: " + mp);
+	   let can_select = true;
+	   if (faction === "france" && this.game.state.events.scots_raid == 1) {
+console.log("MP2: " + mp);
+	     if (!(mp == "france" || mp == "scotland")) { can_select = false; }
+	   }
+	   if (can_select) { html += `<li class="card" id="${this.game.state.activated_powers[this.game.state.activated_powers[faction][i]][z]}">${this.game.state.activated_powers[this.game.state.activated_powers[faction][i]][z]}</li>`; }
 	 }
       }
       html    += `</ul>`;
@@ -6994,8 +7008,14 @@ does_units_to_move_have_unit = true; }
     );
   }
   canPlayerBuyCorsair(his_self, player, faction) {
-    if (faction === "ottoman" && his_self.game.state.events.ottoman_corsairs_enabled == 1) { return 1; }
-    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "corsair") == 0) { return false; }
+
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "squadron") == 0) { return 0; }   
+    if (faction === "ottoman" && his_self.game.state.events.ottoman_corsairs_enabled == 1) {
+      if (his_self.isSpaceControlled("algiers", "ottoman") && his_self.game.spaces["algiers"].besieged == 0) { return 1; }
+      if (his_self.isSpaceControlled("tripoli", "ottoman") && his_self.game.spaces["tripoli"].pirate_haven == 1) { return 1; }
+      if (his_self.isSpaceControlled("oran", "ottoman") && his_self.game.spaces["oran"].pirate_haven == 1) { return 1; }
+    }
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "corsair") == 0) { return 0; }
     return 0;
   }
   async playerBuyCorsair(his_self, player, faction) {

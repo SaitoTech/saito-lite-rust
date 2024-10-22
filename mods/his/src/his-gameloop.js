@@ -209,6 +209,7 @@ if (this.game.options.scenario != "is_testing") {
     	      if (this.game.state.round < 5 && this.game.state.henry_viii_marital_status >= 2 && this.game.state.henry_viii_reformation_started != 1) {
 	        this.game.state.henry_viii_reformation_started = 1;
 	        this.addDebater("protestant", "cranmer-debater");
+		this.game.state.events.cranmer_active = 1;
 	        this.addDebater("protestant", "latimer-debater");
 	        this.addDebater("protestant", "coverdale-debater");
 	        this.addReformer("protestant", "london", "cranmer-reformer");
@@ -1176,26 +1177,19 @@ if (this.game.options.scenario != "is_testing") {
 	  let ops_pulled = deck[card].ops;
 
           if (ops_pulled == 1 || ops_pulled == 2) {
-            this.addMove("mary_i_burn_books");
+            this.game.queue.push("mary_i_burn_books");
           }
 
           if (ops_pulled == 3 || ops_pulled == 4) {
-            this.addMove("mary_i_theological_debate");
+            this.game.queue.push("mary_i_theological_debate");
           }
 
           if (ops_pulled == 5 || ops_pulled == 6) {
-            this.addMove("mary_i_burn_books");
-            this.addMove("mary_i_theological_debate");
+            this.game.queue.push("mary_i_burn_books");
+            this.game.queue.push("mary_i_theological_debate");
           }
 
 	  return 1;
-
-/***
-	  if (player == this.game.player) {
-	    this.playerPlayMaryI(card, "papacy");
-	  }
-	  return 0;
-***/
 
 	}
 
@@ -2467,7 +2461,7 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 
 
 //          this.addCard("hapsburg", "068");
-//          this.addCard("papacy", "021");
+          this.addCard("ottoman", "018");
 
 /**
           this.addCard("hapsburg", "026");
@@ -2910,7 +2904,9 @@ console.log("----------------------------");
 
 	          for (let f in space.units) {
 
+		    //
 		    // we check not only for NO units, but for NUM land units
+		    //
 	            if (space.units[f].length > 0 && f != faction) {
 		      anyone_else_here = 1;
 		      for (let z = 0; z < space.units[f].length; z++) {
@@ -3582,7 +3578,9 @@ console.log("----------------------------");
 	  let post_battle = 0;
 	  let relief_siege = 0;
 	  if (mv[4]) { post_battle = parseInt(mv[4]); }
+	  //
 	  // if this is set only those with relief_siege = 0 can fortify
+	  //
 	  if (mv[5]) { relief_siege = parseInt(mv[5]); }
 	  let space = this.game.spaces[spacekey];
 
@@ -3609,7 +3607,9 @@ console.log("----------------------------");
 	    // fortifications; all other land units in excess of 4 are eliminated.
       	    //
 	    if (space.units[faction].length <= 4) {
+	      //
 	      // fortify everything
+	      //
 	      for (let i = 0; i < space.units[faction].length; i++) {
 	        his_self.game.queue.push("fortify_unit\t"+spacekey+"\t"+faction+"\t"+JSON.stringify(space.units[faction][i]));
 	      }
@@ -3974,7 +3974,7 @@ console.log("----------------------------");
 	  let attacker_comes_from_this_spacekey = mv[3];
 	  let defender = mv[4];
 
-if (defender == "" && mv[5] != "") { defender = mv[5]; }
+	  if (defender == "" && mv[5] != "") { defender = mv[5]; }
 
 	  this.game.state.naval_avoid_battle_bonus = 0;
 
@@ -3989,15 +3989,6 @@ if (defender == "" && mv[5] != "") { defender = mv[5]; }
 	  let x = this.game.dice;
 	  let abr = this.rollDice(6) + this.rollDice(6);
 	  this.game.dice = x;
-
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("# avoid naval battle check");
-console.log("#");
-console.log("#");
-console.log("ABR: " + abr);
 
 	  if (this.game.state.events.intervention_naval_avoid_battle_possible == 1 && abr >= 7 && abr < 9) {
 	    this.game.queue.push("player_evaluate_naval_retreat_opportunity\t"+attacker+"\t"+spacekey+"\t"+attacker_comes_from_this_spacekey+"\t"+defender);	   
@@ -8380,26 +8371,37 @@ console.log("cards_offered: " + cards_offered);
           let target_space = this.game.navalspaces[target_navalspace];
           let adjacent_spaces = [];
           for (let i = 0; i < target_space.ports.length; i++) {
-            adjacent_spaces.push(his_self.game.spaces[target_space.ports[i]]);
+            adjacent_spaces.push(target_space.ports[i]);
           }
 	  adjacent_spaces.push(target_navalspace);
           for (let i = 0; i < target_space.neighbours.length; i++) {
-            adjacent_spaces.push(his_self.game.spaces[target_space.ports[i]]);
+            adjacent_spaces.push(target_space.neighbours[i]);
           }
           for (let p = 0; p < adjacent_spaces.length; p++) {
-	    let ts = adjacent_spaces[p];
+	    let ts = adjacent_spaces[p].key;
 	    let s = null;
-	    if (this.game.spaces[ts]) { s = this.game.spaces[ts]; }
-	    if (this.game.navalspaces[ts]) { s = this.game.navalspaces[ts]; }
+	    let is_naval_space = false;
+	    try { if (this.game.spaces[ts]) { s = this.game.spaces[ts]; } } catch (err) {}
+	    try { if (this.game.navalspaces[ts]) { is_naval_space = true; s = this.game.navalspaces[ts]; } } catch (err) {}
             for (let key in s.units) {
-	      if (this.returnControllingPower(key) == faction) {
+	      if (is_naval_space == true) {
 	        for (let i = 0; i < s.units[key].length; i++) {
 		  if (s.units[key][i].type == "squadron") {
-		    if (!squadron_rich_targets.includes(key)) {
-		      squadron_rich_targets.push(key);
+		    if (!squadron_rich_targets.includes(ts)) {
+		      squadron_rich_targets.push(ts);
 		    }
 		  }
 		}
+	      } else {
+	        if (this.returnControllingPower(key) == faction) {
+	          for (let i = 0; i < s.units[key].length; i++) {
+		    if (s.units[key][i].type == "squadron") {
+		      if (!squadron_rich_targets.includes(ts)) {
+		        squadron_rich_targets.push(ts);
+		      }
+		    }
+		  }
+	        }
 	      }
 	    }
 	  }
@@ -8408,7 +8410,7 @@ console.log("cards_offered: " + cards_offered);
             let msg = "Destroy Squadron: ";
             let html = '<ul>';
 	    for (let i = 0; i < squadron_rich_targets.length; i++) {
-	      html += `<div class="option" id="${squadron_rich_targets[i]}">${his_self.returnPlaceName(squadron_rich_targets[i])}</div>`;
+	      html += `<li class="option" id="${squadron_rich_targets[i]}">${his_self.returnSpaceName(squadron_rich_targets[i])}</li>`;
 	    }
 	    html += '</ul>';
 
@@ -10803,12 +10805,10 @@ defender_hits - attacker_hits;
 	      // show scoring points - situation
 	      //
 	      if (have_they_really_won) {
-
 	        this.vp_overlay.render();
 	        this.updateLog(this.returnFactionName(faction) + " wins: " + f[faction].reason);
 	        this.updateStatus(this.returnFactionName(faction) + " wins: " + f[faction].reason);
 	        return 0;
-
 	      }
 	    }
 	  }
