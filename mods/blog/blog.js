@@ -3,6 +3,7 @@ const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const pageHome = require('./index');
 const BlogMain = require("./lib/blogMain");
+const SaitoBlogWidget = require("../../lib/saito/ui/saito-blog-widget/saito-blog-widget");
 
 class Blog extends ModTemplate {
     constructor(app) {
@@ -41,6 +42,22 @@ class Blog extends ModTemplate {
     }
 
 
+    respondTo(type, obj) {
+
+        
+        if (type === "blog-widget") {
+
+            if (this.browser_active) {
+                return
+            }
+            let {container} = obj;
+            let widget = new SaitoBlogWidget(this.app, this.mod, container);
+            return widget;
+
+        }
+
+    }
+
 
     async initialize(app) {
         if (app.BROWSER === 0) {
@@ -66,22 +83,22 @@ class Blog extends ModTemplate {
         let peer = this.peers[0]
         let keys = this.app.options.keys;
         console.log(keys, "keys")
-        if(keys.length>0){
+        if (keys.length > 0) {
             let key = keys[0]
             let self = this
-            this.app.storage.loadTransactions( { field1: 'Blog', limit: 100 },
-                function(txs){
+            this.app.storage.loadTransactions({ field1: 'Blog', limit: 100 },
+                function (txs) {
                     const filteredTxs = self.filterBlogPosts(txs);
                     self.txs = filteredTxs;
                     console.log('transactions gotten', txs);
                 },
                 key.publicKey)
-        }else {
+        } else {
             console.log('keychain is empty')
-        }  
+        }
     }
 
-    
+
     async handlePeerTransaction(app, tx = null, peer, mycallback) {
         if (tx == null) return 0;
 
@@ -106,10 +123,9 @@ class Blog extends ModTemplate {
         console.log(data, 'data')
 
         console.log(this.app.options, 'returned keys');
-         this.fetchTransactionsFromPeer(publicKeyToFetchFrom, publicKey, false);
-        
-         
-        
+        this.fetchTransactionsFromPeer(publicKeyToFetchFrom, publicKey, false);
+
+
         // if(tx.from[0].publicKey === myPublicKey) return;
         // if (publicKeyToFetchFrom === myPublicKey) {
         //     if(this.app.BROWSER === 1){
@@ -145,7 +161,7 @@ class Blog extends ModTemplate {
     }
 
 
-   async fetchTransactionsFromPeer(peer, publicKey, mycallback = null) {
+    async fetchTransactionsFromPeer(peer, publicKey, mycallback = null) {
         await this.app.storage.loadTransactions(
             { field1: 'Blog', limit: 100 },
             async (txs) => {
@@ -160,7 +176,7 @@ class Blog extends ModTemplate {
                     }
                 }
                 this.txs = txs_found;
-                if(mycallback){
+                if (mycallback) {
                     mycallback(txs)
                 }
             },
@@ -202,7 +218,7 @@ class Blog extends ModTemplate {
 
         let myPublicKey = await this.app.wallet.getPublicKey()
         // Propagate the transaction
-        this.saveBlogTransaction(newtx, myPublicKey )
+        this.saveBlogTransaction(newtx, myPublicKey)
         await this.app.network.propagateTransaction(newtx);
         return newtx;
     }
@@ -210,10 +226,26 @@ class Blog extends ModTemplate {
 
 
     async saveBlogTransaction(tx, key) {
-        await this.app.storage.saveTransaction(tx,
-            { field1: 'Blog', field2: key },
-            'localhost'
-        );
+        let peers = await this.app.network.getPeers();
+        peer = peers[peers.length - 1];
+        let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
+        const data = {
+            type: 'blog_post',
+            title: "daf",
+            content: JSON.stringify("content"),
+            tags: "tags",
+            timestamp: Date.now(),
+        };
+
+        newtx.msg = {
+            module: this.name,
+            request: 'create blog post request',
+            data: data
+        };
+        await newtx.sign();
+        this.app.storage.saveTransaction(newtx, { field1: 'Blog', limit: 100 }, peer)
+
+
     }
 
     async receiveBlogTransaction(tx) {
@@ -242,6 +274,7 @@ class Blog extends ModTemplate {
 
 
     }
+
 
     webServer(app, expressapp, express) {
         let webdir = `${__dirname}/../../mods/${this.dirname}/web`;

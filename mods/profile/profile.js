@@ -134,7 +134,7 @@ class Profile extends ModTemplate {
 			console.log(protocol, host, port, "profile checking");
 			let peers = await this.app.network.getPeers();
 			let serverPeer = peers[0]
-			app.connection.emit('profile-update-archive-node', { protocol: 'http', host:'127.0.0.1', port:'12103', publicKey: "cmWpP6gAtgzCLWiu6gqveL68XsM2ZUmN2VRUH7bKwWLG" });
+			app.connection.emit('profile-update-archive-node', { protocol: 'http', host:'127.0.0.1', port:'12102', publicKey: "nidNwPaE3EoKRXamoZCW5nLHosfSdY3dMR8b9tsndjFu" });
 		}
 
 	}
@@ -232,12 +232,9 @@ class Profile extends ModTemplate {
 		this.header = new SaitoHeader(this.app, this);
 
 		await this.header.initialize(this.app);
-
 		this.main.reset(this.publicKey);
-
 		this.addComponent(this.main);
 		this.addComponent(this.header);
-
 		await super.render(this.app, this);
 	}
 
