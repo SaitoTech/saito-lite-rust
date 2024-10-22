@@ -1,84 +1,152 @@
-.blog-post-wizard {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background:var(--saito-background-color);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    width: 80rem;
-    /* max-width: 1000px; */
-    max-height: 90vh;
-    overflow-y: auto;
-    z-index: 1000;
-    display: none;
+
+/* Blog Editor Styles */
+input {
+  background-color: var(--saito-background-color);
+}
+
+.blog-widget {
+  padding: 1rem;
+}
+
+.blog-editor {
+  width: 80rem;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--saito-background-color);
+  border: 1px solid var(--saito-border-color);
+  padding: 2rem;
+}
+
+.blog-editor h2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  color: var(--saito-heading-color, inherit);
+}
+
+.title-input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--saito-border-color);
+  border-radius: 4px;
+  background: var(--saito-input-background);
+  color: var(--saito-text-color, inherit);
+}
+
+.title-input:focus {
+  outline: none;
+  /* border-color: var(--saito-primary-color, #007bff); */
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+/* TinyMCE Editor Container */
+.tox.tox-tinymce {
+  margin-bottom: 1rem;
+  border: 1px solid var(--saito-border-color) !important;
+  border-radius: 4px;
+}
+
+/* Editor Actions */
+.editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--saito-border-color);
+}
+
+.editor-actions button {
+  padding: 0.5rem 1.25rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn {
+
+}
+
+.cancel-btn:hover {
+}
+
+.publish-btn {
+
+}
+
+.publish-btn:hover {
+
+}
+
+/* Blog Posts List */
+.blog-posts {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.blog-post {
+  padding: 1.5rem;
+  border: 1px solid var(--saito-border-color);
+  border-radius: 4px;
+  background: var(--saito-background-color);
+}
+
+.blog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.blog-new-post-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.blog-new-post-btn:hover {
+  /* background: var(--saito-primary-dark); */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1280px) {
+  .blog-editor {
+      width: 60rem;
   }
-  
-  .blog-wizard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+}
+
+@media (max-width: 992px) {
+  .blog-editor {
+      width: 90vw;
   }
-  
-  .form-group {
-    margin-bottom: 20px;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
-  }
-  
-  .post-title-input,
-  .post-excerpt-input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
-  .post-excerpt-input {
-    height: 80px;
-    resize: vertical;
-  }
-  
-  .image-upload-container {
-    border: 2px dashed #ddd;
-    padding: 20px;
-    text-align: center;
-    border-radius: 4px;
-  }
-  
-  .image-preview img {
-    max-width: 100%;
-    max-height: 200px;
-    margin-top: 10px;
-  }
-  
-  .wizard-actions button {
-    padding: 8px 16px;
-    margin-left: 10px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .wizard-save-btn {
-    /* background: #4CAF50; */
-    /* color: white; */
-    /* border: none; */
-  }
-  
-  .wizard-cancel-btn {
-    /* background: #f5f5f5; */
-    /* border: 1px solid  */
+}
+
+@media (max-width: 768px) {
+  .blog-editor {
+      width: 95vw;
+      padding: 1rem;
   }
 
+  .editor-actions {
+      flex-direction: column;
+      gap: 0.5rem;
+  }
+
+  .editor-actions button {
+      width: 100%;
+  }
+}
 
   .tox.tox-tinymce {
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--saito-background-color);
     border-radius: 8px;
     overflow: hidden;
   }
@@ -112,3 +180,18 @@
   .tox .tox-tbtn svg {
     fill: var(--saito-font-color) !important;
   }
+
+   html {
+  color: var(--saito-font-color) !important;
+}
+
+.mce-content-body {
+  color: var(--saito-font-color) !important;
+}
+.tox:not(.tox-tinymce-inline) .tox-editor-header {
+  background-color: var(--saito-background-color) !important;
+}
+
+/* .tox-edit-area__iframe > html > body {
+  color: white !important;
+} */

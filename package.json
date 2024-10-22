@@ -34,6 +34,7 @@
     "@giphy/js-components": "^5.8.2",
     "@giphy/js-fetch-api": "^4.4.0",
     "@mixin.dev/mixin-node-sdk": "^7.0.8",
+    "@tinymce/tinymce-react": "^5.1.1",
     "@types/uuid": "^9.0.8",
     "archiver": "^3.1.1",
     "axios": "^0.27.2",
@@ -106,7 +107,7 @@
     "ws": "^8.13.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.25.6",    
+    "@babel/cli": "^7.25.6",
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.4",
     "@babel/preset-react": "^7.24.7",
