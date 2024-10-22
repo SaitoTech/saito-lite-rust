@@ -4,6 +4,7 @@ const ModTemplate = require("../../lib/templates/modtemplate");
 const pageHome = require('./index');
 const BlogMain = require("./lib/blogMain");
 const SaitoBlogWidget = require("./lib/saito-blog-widget");
+const { key } = require("localforage");
 
 class Blog extends ModTemplate {
     constructor(app) {
@@ -41,62 +42,61 @@ class Blog extends ModTemplate {
         }
     }
 
-
     respondTo(type, obj) {
-
-        
         if (type === "blog-widget") {
-
             if (this.browser_active) {
-                return
+                return;
             }
-            this.attachStyleSheets();
-            let {container} = obj;
-            let widget = new SaitoBlogWidget(this.app, this.mod, container);
-            return widget;
-
-        }
-
-    }
-
-
-    async initialize(app) {
-        if (app.BROWSER === 0) {
-            // let key = "h7aNzZAN2HJTDUvayRDv6LXgx5qcdRs3swEM6HvmPomg"
-            // await this.loadBlogTransactions(key)
+            this.attachStyleSheets();        
+            // Get container from selector
+            const selector = obj.container;
+            console.log(obj, 'object')
+            
+            if (!selector) {
+                console.error("A selector is needed for the blog widget");
+                return;
+            }
+            let widget = new SaitoBlogWidget(this.app, this, selector)
+            return widget
         }
     }
 
+    // async initialize(app) {
+    //     if (app.BROWSER === 0) {
+          
+    //     }
+    // }
 
-    async onPeerServiceUp(app, peer, service) {
-        if (service.service === "archive") {
-            this.peers.push(peer)
-        }
+
+    async onPeerServiceUp(app, peer, service ={}){
+        if (service.service === 'archive') {
+            // load transactions from local archvie
+            let peers = await app.network.getPeers();
+            console.log(peers, "on peer service up")
+            if(peer.publicKey ===  peers[0].publicKey){
+                await this.loadBlogTransactions(this.publicKey, peers[0]);
+            }
+		}
     }
 
-
-
-    async onPeerHandshakeComplete(app) {
+    async onPeerHandshakeComplete(){
+        // if(this.app.BROWSER === 0){
+        //     await this.loadBlogTransactions(this.publicKey);
+        // }
+      
     }
 
-    async testLoadBlogTransactions() {
-        // for testing
-        let peer = this.peers[0]
-        let keys = this.app.options.keys;
-        console.log(keys, "keys")
-        if (keys.length > 0) {
-            let key = keys[0]
+    async loadBlogTransactions(key, peer) {   
             let self = this
-            this.app.storage.loadTransactions({ field1: 'Blog', limit: 100 },
+            console.log('loading transactions from peer')
+            this.app.storage.loadTransactions({ field1: 'Blog', field2: key, limit: 100 },
                 function (txs) {
                     const filteredTxs = self.filterBlogPosts(txs);
                     self.txs = filteredTxs;
                     console.log('transactions gotten', txs);
                 },
-                key.publicKey)
-        } else {
-            console.log('keychain is empty')
-        }
+                peer.peerIndex)
+      
     }
 
 
@@ -189,64 +189,88 @@ class Blog extends ModTemplate {
         return txs.filter(tx => tx.returnMessage().data.type === 'blog_post').slice(0, 100);
     }
 
-    async createBlogTransaction(content, title = '', tags = []) {
-        this.app.connection.emit("saito-header-update-message", { msg: "broadcasting blog post" });
-        let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
-        const data = {
-            type: 'blog_post',
-            title: title,
-            content: JSON.stringify(content),
-            tags: tags,
-            timestamp: Date.now(),
-        };
+    async createBlogTransaction(post = {
+        title: '',
+        content: '',
+        tags: [],
+        timestamp: Date.now()
+    }) {
 
-        newtx.msg = {
-            module: this.name,
-            request: 'create blog post request',
-            data: data
-        };
-        await newtx.sign();
-        if (!this.cache[this.publicKey]) {
-            this.cache[this.publicKey] = {};
+        let {title, content, tags, timestamp} = post
+        console.log(title, content, tags, timestamp)
+        try {
+            // // Update UI to show broadcasting status
+            // this.app.connection.emit("saito-header-update-message", { msg: "broadcasting blog post" });
+    
+            // Create new transaction
+            let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
+            
+            // Validate and sanitize the post data
+            const data = {
+                type: 'blog_post',
+                title: post.title || "Untitled",
+                content: typeof post.content === 'string' ? post.content : JSON.stringify(post.content),
+                tags: Array.isArray(post.tags) ? post.tags : [],
+                timestamp: post.timestamp || Date.now()
+            };
+    
+            // Set the transaction message
+            newtx.msg = {
+                module: this.name,
+                request: 'create blog post request',
+                data: data
+            };
+    
+            // Sign the transaction
+            await newtx.sign();
+    
+    
+    
+            // Update UI
+            // this.app.connection.emit('blog-update-dom', this.publicKey, this.cache[this.publicKey].blogPosts);
+    
+            // Get author's public key
+            let myPublicKey = await this.app.wallet.getPublicKey();
+            
+            // await this.saveBlogTransaction(newtx);
+            // Save and propagate the transaction
+         
+            await this.app.network.propagateTransaction(newtx);
+            
+            return newtx;
+        } catch (error) {
+            console.error("Error creating blog transaction:", error);
+            this.app.connection.emit("saito-header-update-message", { 
+                msg: "Error creating blog post", 
+                timeout: 2000 
+            });
+            throw error;
         }
-        if (!this.cache[this.publicKey].blogPosts) {
-            this.cache[this.publicKey].blogPosts = [];
-        }
-
-        this.cache[this.publicKey].blogPosts.push(data);
-
-        this.app.connection.emit('blog-update-dom', this.publicKey, this.cache[this.publicKey].blogPosts);
-
-        let myPublicKey = await this.app.wallet.getPublicKey()
-        // Propagate the transaction
-        this.saveBlogTransaction(newtx, myPublicKey)
-        await this.app.network.propagateTransaction(newtx);
-        return newtx;
     }
 
 
 
-    async saveBlogTransaction(tx, key) {
-        let peers = await this.app.network.getPeers();
-        peer = peers[peers.length - 1];
-        let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
-        const data = {
-            type: 'blog_post',
-            title: "daf",
-            content: JSON.stringify("content"),
-            tags: "tags",
-            timestamp: Date.now(),
-        };
-
-        newtx.msg = {
-            module: this.name,
-            request: 'create blog post request',
-            data: data
-        };
-        await newtx.sign();
-        this.app.storage.saveTransaction(newtx, { field1: 'Blog', limit: 100 }, peer)
-
-
+    async saveBlogTransaction(tx, from) {
+        try {
+            // Get first available peer
+            let peers = await this.app.network.getPeers();
+            let peer = peers[0];
+            
+            if (!peer) {
+                console.error("No peers available to save blog transaction");
+                return;
+            }
+    
+            // Save the transaction to storage with metadata
+            await this.app.storage.saveTransaction(tx, {
+                field1: 'Blog',
+            }, "localhost");
+            
+            return true;
+        } catch (error) {
+            console.error("Error saving blog transaction:", error);
+            throw error;
+        }
     }
 
     async receiveBlogTransaction(tx) {
@@ -258,20 +282,26 @@ class Blog extends ModTemplate {
 
         let txmsg = tx.returnMessage();
         console.log("BLOG UPDATE: ", txmsg.data);
+
         if (!this.cache[from]) {
             this.cache[from] = {};
         }
         if (!this.cache[from].blogPosts) {
             this.cache[from].blogPosts = [];
         }
-
         let data = { ...txmsg.data, sig: tx.signature }
         this.cache[from].blogPosts.push(data);
+
+
         if (tx.isFrom(this.publicKey)) {
             this.app.connection.emit("saito-header-update-message", { msg: "" });
             siteMessage('Blog post published', 2000);
         }
-        await this.saveBlogTransaction(tx, from);
+
+        this.saveBlogTransaction(tx, from)
+      
+
+        
 
 
     }
