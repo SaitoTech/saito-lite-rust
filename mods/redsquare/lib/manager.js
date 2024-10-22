@@ -4,7 +4,7 @@ const Post = require('./post');
 const Notification = require('./notification');
 const SaitoProfile = require('./../../../lib/saito/ui/saito-profile/saito-profile');
 const SaitoLoader = require('./../../../lib/saito/ui/saito-loader/saito-loader');
-
+const SaitoBlogWidget = require('../../blog/lib/saito-blog-widget');
 class TweetManager {
 
 	constructor(app, mod, container = '.saito-main') {
@@ -342,6 +342,9 @@ class TweetManager {
 			// Sort txs into posts/replies/retweets...
 			this.filterAndRenderProfile(txs);
 
+			// , this should add the component to click
+			// this.renderBlogWidget()
+
 			this.hideLoader();
 			this.profile.render();
 		});
@@ -518,6 +521,12 @@ class TweetManager {
 				}
 			}
 		}
+	}
+
+
+	renderBlogWidget(){
+		this.profile.menu.blog = [widget];
+		console.log(this.profile.menu);
 	}
 
 	//

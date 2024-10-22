@@ -22,6 +22,7 @@ export default class Network {
 
 	public async getPeers(): Promise<Array<Peer>> {
 		return S.getInstance().getPeers();
+		
 	}
 
 	public async getPeer(index: bigint): Promise<Peer> {

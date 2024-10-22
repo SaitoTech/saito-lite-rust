@@ -1,6 +1,8 @@
 import * as JSON from 'json-bigint';
 import Transaction from './transaction';
 import { Saito } from '../../apps/core';
+import S from 'saito-js/saito';
+import ws from 'ws';
 import Block from './block';
 const localforage = require('localforage');
 import fs from 'fs';
@@ -19,7 +21,10 @@ class Storage {
 		this.active_tab = 1; // TODO - only active tab saves, move to Browser class
 		this.timeout = null;
 		this.localDB = null;
+
+
 	}
+
 
 	async initialize() {
 		await this.loadOptions();
@@ -29,11 +34,11 @@ class Storage {
 		}
 
 		if (this.app.BROWSER == 1) {
-			try{
+			try {
 				this.localDB = null;
 				await this.initializeApplicationDB();
 				console.log(JSON.stringify(await this.loadLocalApplications()));
-			} catch(err){
+			} catch (err) {
 				console.log("Error initializeApplicationDB:", err);
 			}
 		}
@@ -179,10 +184,8 @@ class Storage {
 		return { err: 'Save Transaction failed' };
 	}
 
-	async loadTransactions(obj = {}, mycallback, peer = null) {
-
+	async loadTransactions(obj = {}, mycallback, peer = null, archive_nodes = []) {
 		let storage_self = this;
-
 		const message = 'archive';
 		let data: any = {};
 		data.request = 'load';
@@ -193,7 +196,8 @@ class Storage {
 		// idk why we have it return an array of objects that are just {"tx": serialized/stringified transaction}
 		//
 		let internal_callback = (res) => {
-			let txs = [];
+			let txs: Transaction[] = [];
+			console.log(res, 'results')
 			if (res) {
 				for (let i = 0; i < res.length; i++) {
 					let tx = new Transaction();
@@ -207,7 +211,7 @@ class Storage {
 			return mycallback(txs);
 		};
 
-		if (peer === 'localhost') {
+		if (peer === "localhost") {
 			let archive_mod = this.app.modules.returnModule('Archive');
 			if (archive_mod) {
 				return archive_mod.loadTransactionsWithCallback(obj, (res) => {
@@ -216,16 +220,122 @@ class Storage {
 			}
 		}
 
+
 		if (peer != null) {
-			//peer.sendRequestAsTransaction(message, data, function (res) {
-			this.app.network.sendRequestAsTransaction(
-				message,
-				data,
-				function (res) {
-					internal_callback(res);
-				},
-				peer.peerIndex
-			);
+			if (typeof peer === "string") {
+				// Verify if the peer string is a valid public key
+				if (this.app.crypto.isPublicKey(peer)) {
+					// Attempt to find the peer in the current network
+					let peers = await this.app.network.getPeers();
+					const targetPeer = peers.find(p => p.publicKey === peer) || null
+
+					// If the peer is found in the network, send the request
+					if (targetPeer) {
+						this.app.network.sendRequestAsTransaction(
+							message,
+							data,
+							function (res) {
+								internal_callback(res);
+							},
+							targetPeer.peerIndex
+						);
+					}
+
+					// Retrieve archive nodes for the peer
+					let a_nodes;
+					if (this.app.BROWSER === 1) {
+						a_nodes = this.app.keychain.returnPeerArchiveNodes(peer);
+					} else {
+						a_nodes = archive_nodes
+					}
+
+					// If archive nodes are found, attempt to communicate
+					if (a_nodes.length > 0) {
+						let archiveNode = a_nodes[0];
+						let { protocol, port, host, publicKey } = archiveNode;
+						let peers = await this.app.network.getPeers();
+						const targetPeer = peers.find(p => p.publicKey === publicKey) || null
+						// If connected to the archive node, send the request
+						if (targetPeer) {
+							console.log('connected to this node')
+							this.app.network.sendRequestAsTransaction(
+								message,
+								data,
+								(res) => {
+									internal_callback(res);
+								},
+								targetPeer.peerIndex
+							);
+						} else {
+							// If not connected, initiate connection to the archive node
+							console.log('not connected to this archive node, initiating connection');
+							const url = `ws://${host}:${port}/wsopen`;
+							try {
+								const peerIndex = await S.getLibInstance().get_next_peer_index();
+								await S.getLibInstance().add_new_archive_peer(peerIndex, publicKey, host, port);
+								try {
+									console.log("connecting to " + url + "....");
+									let socket = new WebSocket(url);
+									socket.binaryType = "arraybuffer";
+									S.getInstance().addNewSocket(socket, peerIndex);
+									socket.onmessage = (event: MessageEvent) => {
+										try {
+											S.getLibInstance().process_msg_buffer_from_peer(new Uint8Array(event.data), peerIndex);
+										} catch (error) {
+											console.error(error);
+										}
+									};
+									socket.onopen = () => {
+										this.app.network.sendRequestAsTransaction(
+											message,
+											data,
+											(res) => {
+												internal_callback(res);
+											},
+											peerIndex
+										);
+									};
+									socket.onclose = () => {
+										try {
+											console.log("socket.onclose : " + peerIndex);
+											S.getLibInstance().process_peer_disconnection(peerIndex);
+										} catch (error) {
+											console.error(error);
+										}
+									};
+									socket.onerror = (error) => {
+										try {
+											console.error(`socket.onerror ${peerIndex}: `, error);
+											S.getInstance().removeSocket(peerIndex);
+										} catch (error) {
+											console.error(error);
+										}
+									}
+								} catch (e) {
+									console.error("error occurred while opening socket : ", e)
+								}
+								// to do initiate connection to archive node and fetch txs
+							}
+							catch (error) {
+								console.error("Failed to connect to archive node:", error);
+							}
+						}
+					} else {
+						console.log('No archive nodes found for this key');
+					}
+				}
+			} else {
+				// If peer is not a string (likely an object), send request directly
+				this.app.network.sendRequestAsTransaction(
+					message,
+					data,
+					function (res) {
+						internal_callback(res);
+					},
+					peer.peerIndex
+				);
+			}
+
 			return [];
 		} else {
 			this.app.network.sendRequestAsTransaction(
@@ -240,6 +350,7 @@ class Storage {
 
 		return [];
 	}
+
 
 	async deleteTransaction(tx = null, mycallback = null, peer = null) {
 		if (tx == null) {
@@ -341,7 +452,7 @@ class Storage {
 		}
 
 		const saveOptionsForReal = async () => {
-//			clearTimeout(this.timeout);
+			//			clearTimeout(this.timeout);
 			//console.log("Actually saving options");
 			try {
 				localStorage.setItem(
@@ -371,13 +482,13 @@ class Storage {
 			}
 		};
 
-//
-// HACK -- debugging game-save issues, try reducing delay to nothing -- JULY 10, 2023
-//
+		//
+		// HACK -- debugging game-save issues, try reducing delay to nothing -- JULY 10, 2023
+		//
 		saveOptionsForReal();
 
-//		clearTimeout(this.timeout);
-//		this.timeout = setTimeout(saveOptionsForReal, 50);
+		//		clearTimeout(this.timeout);
+		//		this.timeout = setTimeout(saveOptionsForReal, 50);
 	}
 
 	// saveLocalApplication(tx, mod) {
@@ -396,13 +507,13 @@ class Storage {
 		if (!this.app.BROWSER) {
 			return;
 		}
-		
+
 		if (this.app.BROWSER) {
 			let obj = {
 				'mod': mod,
 				'binary': bin,
 				'created_at': new Date().getTime(),
-				'updated_at': new Date().getTime(), 
+				'updated_at': new Date().getTime(),
 			};
 
 			console.log('obj: ', obj);
@@ -411,10 +522,10 @@ class Storage {
 				into: 'dyn_mods',
 				values: [obj]
 			});
-	
+
 			let v = await this.loadLocalApplications();
 			console.log('POST INSERT: ' + JSON.stringify(v));
-		}		
+		}
 	}
 
 	async loadLocalApplications(mod_slug = null) {
