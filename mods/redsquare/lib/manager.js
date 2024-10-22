@@ -4,7 +4,7 @@ const Post = require('./post');
 const Notification = require('./notification');
 const SaitoProfile = require('./../../../lib/saito/ui/saito-profile/saito-profile');
 const SaitoLoader = require('./../../../lib/saito/ui/saito-loader/saito-loader');
-const SaitoBlogWidget = require('../../../lib/saito/ui/saito-blog-widget/saito-blog-widget');
+const SaitoBlogWidget = require('../../blog/lib/saito-blog-widget');
 class TweetManager {
 
 	constructor(app, mod, container = '.saito-main') {
