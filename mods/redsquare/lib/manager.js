@@ -131,7 +131,13 @@ class TweetManager {
 		this.profile.remove();
 
 		if (!document.querySelector(myqs)) {
-			this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
+			this.app.browser.addElementToSelector(TweetManagerTemplate(this.app, this.mod), this.container);
+		}
+
+		if (new_mode == "tweets"){
+			document.querySelector(".redsquare-feed-source").classList.remove("hidden");
+		}else{
+			document.querySelector(".redsquare-feed-source").classList.add("hidden");
 		}
 
 		let holder = document.getElementById('tweet-thread-holder');
@@ -611,6 +617,34 @@ class TweetManager {
 			if (ob.getBoundingClientRect().top > window.innerHeight) {
 				this.intersectionObserver.observe(ob);
 			}
+		}
+
+		if (!this?.eventsAttached){
+
+			if (document.getElementById("following")){
+				document.getElementById("following").onclick = (e) => {
+					e.currentTarget.classList.add("active");
+					document.getElementById("for-you").classList.remove("active");
+					this.mod.showOnlyWatched = true;
+					this.mod.reset();
+					this.clearFeed();
+					this.render();
+					this.fetchTweets();
+				}
+			}
+			if (document.getElementById("for-you")){
+				document.getElementById("for-you").onclick = (e) => {
+					e.currentTarget.classList.add("active");
+					document.getElementById("following").classList.remove("active");
+					this.mod.showOnlyWatched = false;
+					this.mod.reset();
+					this.clearFeed();
+					this.render();
+					this.fetchTweets();
+				}
+			}
+
+			this.eventsAttached = true;
 		}
 	}
 
