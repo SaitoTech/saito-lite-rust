@@ -4,6 +4,7 @@
 		"target": "es2020",
 		"moduleResolution": "node",
 		"sourceMap": true,
+		 "jsx": "react",
 		//    "skipLibCheck": true,
 		"esModuleInterop": true,
 		"outDir": "../built",
