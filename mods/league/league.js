@@ -1365,10 +1365,14 @@ class League extends ModTemplate {
 			let obj = {
 				module: 'RedSquare',
 				request: 'create tweet',
-				data: { text: tweetContent }
+				data: { text: tweetContent, mentions: players }
 			};
 
 			let newtx = await this.app.wallet.createUnsignedTransaction();
+			for (let player of players){
+				newtx.addTo(player);
+			}
+
 			newtx.msg = obj;
 
 			await newtx.sign();
