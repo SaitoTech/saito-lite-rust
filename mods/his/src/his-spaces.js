@@ -1620,6 +1620,26 @@ console.log("is a homespace for: " + x);
     return 0;
   }
 
+  doesFactionHaveUnlockedNavalUnitsOnBoard(faction) {
+    for (let key in this.game.navalspaces) {
+      if (this.game.navalspaces[key].units[faction]) {
+        for (let i = 0; i < this.game.navalspaces[key].units[faction].length; i++) {
+	  if (this.game.navalspaces[key].units[faction][i].locked != 1) { return 1; }
+	}
+      }
+    }
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].units[faction]) {
+        for (let i = 0; i < this.game.spaces[key].units[faction].length; i++) {
+	  if (this.game.spaces[key].units[faction][i].land_or_sea === "sea") {
+	    if (this.game.spaces[key].units[faction][i].locked != 1) { return 1; }
+	  }
+	}
+      }
+    }
+    return 0;
+  }
+
   doesFactionHaveNavalUnitsOnBoard(faction) {
     for (let key in this.game.navalspaces) {
       if (this.game.navalspaces[key].units[faction]) {
@@ -1646,10 +1666,10 @@ console.log("is a homespace for: " + x);
     let faction_map = {};
 
     for (let f in space.units) {
-      if (f === faction1 || this.returnPlayerCommandingFaction(f) == this.returnPlayerCommandingFaction(faction1)) {
+      if (this.returnControllingPower(f) == this.returnControllingPower(faction1)) {
         faction_map[f] = faction1;
       }
-      if (f === faction2 || this.returnPlayerCommandingFaction(f) == this.returnPlayerCommandingFaction(faction2)) {
+      if (this.returnControllingPower(f) == this.returnControllingPower(faction2)) {
         faction_map[f] = faction2;
       }
     }
@@ -4067,6 +4087,7 @@ if (x) {
             for (let i = 0; i < space.units[f].length; i++) {
 	      let b = "";
 	      if (space.units[f][i].besieged) { b = ' (besieged)'; }
+	      if (space.units[f][i].locked) { b = ' (locked)'; }
 	      html += `<div class="space_unit">${f} - ${space.units[f][i].type} ${b}</div>`;
 	    }
 	  }

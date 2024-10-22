@@ -15,7 +15,7 @@
     max-width: 100%;
     text-align: center;
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     margin-right: 5rem;
     margin-top: 5rem;
 }

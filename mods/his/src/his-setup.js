@@ -740,6 +740,12 @@ console.log("\n\n\n\n");
 	  this.addNavalSquadron("france", "marseille", 2); 
 	  this.addNavalSquadron("hapsburg", "barcelona", 2); 
 
+
+	  this.addNavalSquadron("hapsburg", "gulflyon", 1);
+	  //this.addNavalSquadron("papacy", "gulflyon", 1);
+	  this.addNavalSquadron("papacy", "tyrrhenian", 1);
+	  this.addNavalSquadron("ottoman", "barbary", 2);
+
 	  this.game.state.events.papacy_may_found_jesuit_universities = 1;
           this.game.state.events.ottoman_piracy_enabled = 1;
           this.game.state.events.ottoman_corsairs_enabled = 1;
