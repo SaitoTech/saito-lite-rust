@@ -1,0 +1,83 @@
+module.exports = (app, mod) => {
+
+	let html = `
+			<table>
+	      <tr>
+	        <th>Variable</th>
+	        <th>1</th>
+	        <th>2</th>
+	        <th>3</th>
+	        <th>4</th>
+	        <th>5</th>
+	        <th>6</th>
+	        <th>7</th>
+	        <th>8</th>
+	        <th>9</th>
+	        <th>10</th>
+	      </tr>
+
+	      <tr>
+					<td>total_fees</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+	      </tr>
+
+	      <tr>
+					<td>total_fees_new</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+	      </tr>
+
+	      <tr>
+					<td>total_fees_atr</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+	      </tr>
+
+	      <tr>
+					<td>avg_total_fees</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+					<td>0</td>      
+	      </tr>
+	    </table>
+
+	    <input type="button" value="New Block (w/ golden ticket)" />
+	    <input type="button" value="New Block (w/o golden ticket)" />
+	    <input type="button" value="Add Transaction to Mempool" />
+		`;
+
+
+		return html;
+}
