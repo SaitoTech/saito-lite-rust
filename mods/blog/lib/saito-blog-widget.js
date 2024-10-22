@@ -1,3 +1,4 @@
+const { default: BlogPostWizard } = require("./blog-post-wizard");
 const { default: SaitoBlogWidgetTemplate } = require("./saito-blog-widget.template");
 
 
@@ -8,6 +9,9 @@ class SaitoBlogWidget {
       this.container = container;
       this.name = 'SaitoBlogWidget';
       this.slug = 'SaitoBlogWidget';
+      this.postWizard = new BlogPostWizard(app, mod);
+      
+
       
       // Store blog posts
       this.posts = [];
@@ -111,18 +115,20 @@ class SaitoBlogWidget {
     }
   
     attachEvents() {
+
       // New Post Button
       document.querySelector('.blog-new-post-btn')?.addEventListener('click', () => {
-        this.app.connection.emit('blog-new-post-clicked');
+        this.postWizard.render();
       });
-  
+      
+      
       // Edit Post Buttons
       document.querySelectorAll('.blog-post-edit').forEach(button => {
         button.addEventListener('click', (e) => {
           const postId = e.currentTarget.getAttribute('data-post-id');
           const post = this.posts.find(p => p.id === postId);
           if (post) {
-            this.app.connection.emit('blog-edit-post-clicked', post);
+            this.postWizard.render(post);
           }
         });
       });
