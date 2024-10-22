@@ -7,7 +7,6 @@ import Block from './block';
 const localforage = require('localforage');
 import fs from 'fs';
 import path from 'path';
-import WebSharedMethods from 'saito-js/lib/custom/shared_methods.web';
 const JsStore = require('jsstore');
 
 class Storage {
@@ -26,7 +25,7 @@ class Storage {
 		this.wallet_options_hash = '';
 	}
 
-	
+
 	async initialize() {
 		await this.loadOptions();
 
@@ -208,9 +207,8 @@ class Storage {
 
 		if (peer != null) {
 			if (typeof peer === "string") {
-				 // Verify if the peer string is a valid public key
+				// Verify if the peer string is a valid public key
 				if (this.app.crypto.isPublicKey(peer)) {
-
 					// Attempt to find the peer in the current network
 					let peers = await this.app.network.getPeers();
 					const targetPeer = peers.find(p => p.publicKey === peer) || null
@@ -253,15 +251,53 @@ class Storage {
 								targetPeer.peerIndex
 							);
 						} else {
-
-							 // If not connected, initiate connection to the archive node
+							// If not connected, initiate connection to the archive node
 							console.log('not connected to this archive node, initiating connection');
 							const url = `ws://${host}:${port}/wsopen`;
 							try {
 								const peerIndex = await S.getLibInstance().get_next_peer_index();
-
-								await S.getInstance().add_static_peer(url);
-		
+								await S.getLibInstance().add_new_archive_peer(peerIndex, publicKey, host, port);
+								try {
+									console.log("connecting to " + url + "....");
+									let socket = new WebSocket(url);
+									socket.binaryType = "arraybuffer";
+									S.getInstance().addNewSocket(socket, peerIndex);
+									socket.onmessage = (event: MessageEvent) => {
+										try {
+											S.getLibInstance().process_msg_buffer_from_peer(new Uint8Array(event.data), peerIndex);
+										} catch (error) {
+											console.error(error);
+										}
+									};
+									socket.onopen = () => {
+										this.app.network.sendRequestAsTransaction(
+											message,
+											data,
+											(res) => {
+												internal_callback(res);
+											},
+											peerIndex
+										);
+									};
+									socket.onclose = () => {
+										try {
+											console.log("socket.onclose : " + peerIndex);
+											S.getLibInstance().process_peer_disconnection(peerIndex);
+										} catch (error) {
+											console.error(error);
+										}
+									};
+									socket.onerror = (error) => {
+										try {
+											console.error(`socket.onerror ${peerIndex}: `, error);
+											S.getInstance().removeSocket(peerIndex);
+										} catch (error) {
+											console.error(error);
+										}
+									}
+								} catch (e) {
+									console.error("error occurred while opening socket : ", e)
+								}
 								// to do initiate connection to archive node and fetch txs
 							}
 							catch (error) {
@@ -273,7 +309,7 @@ class Storage {
 					}
 				}
 			} else {
-				 // If peer is not a string (likely an object), send request directly
+				// If peer is not a string (likely an object), send request directly
 				this.app.network.sendRequestAsTransaction(
 					message,
 					data,
