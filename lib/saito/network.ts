@@ -70,8 +70,8 @@ export default class Network {
 
 	public close() { }
 
-	 addStunPeer(public_key, peerConnection) {	
-		 S.getInstance().addStunPeer(public_key, peerConnection);
+	async addStunPeer(public_key, peerConnection) {	
+		await  S.getInstance().addStunPeer(public_key, peerConnection);
 	}
 
 	initializeStun() {

@@ -50,6 +50,7 @@ data/backup/*
 data/backup
 data/issuance/issuance
 data/saito.stats
+data/peer_state.txt
 
 bundler
 bundler/*
