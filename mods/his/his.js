@@ -33,6 +33,7 @@ const ConquistadorsOverlay = require('./lib/ui/overlays/conquistadors');
 const UnitsOverlay = require('./lib/ui/overlays/units');
 const WarOverlay = require('./lib/ui/overlays/war');
 const WelcomeOverlay = require('./lib/ui/overlays/welcome');
+const HudPopup = require('./lib/ui/hud-popup');
 const WinterOverlay = require('./lib/ui/overlays/winter');
 const DeckOverlay = require('./lib/ui/overlays/deck');
 const MenuOverlay = require('./lib/ui/overlays/menu');
@@ -102,6 +103,7 @@ class HereIStand extends GameTemplate {
     this.explorers_overlay = new ExplorersOverlay(this.app, this);
     this.conquistadors_overlay = new ConquistadorsOverlay(this.app, this);
     this.schmalkaldic_overlay = new SchmalkaldicOverlay(this.app, this);  // schmalkaldic league
+    this.hud_popup = new HudPopup(this.app, this);  // hud popup
     this.assault_overlay = new AssaultOverlay(this.app, this);  // siege
     this.naval_battle_overlay = new NavalBattleOverlay(this.app, this);  // naval battles
     this.field_battle_overlay = new FieldBattleOverlay(this.app, this);  // field battles
@@ -6670,7 +6672,7 @@ console.log("selected: " + spacekey);
 		  //if (selected_reformer == "luther-reformer") { language_zone = "english"; }
 		  //if (selected_reformer == "zwingli-reformer") { language_zone = "english"; }
 		  if (selected_reformer == "cranmer-reformer") { language_zone = "english"; }
-		  if (selected_reformer == "calvin-reformer") { language_zone = "france"; }
+		  if (selected_reformer == "calvin-reformer") { language_zone = "french"; }
 
 		  if (action2 === "yes") {
 	            his_self.addMove("excommunicate_reformer\t"+selected_reformer);
@@ -17747,7 +17749,6 @@ console.log("is a homespace for: " + x);
 
   returnFactionNavalUnitsInSpace(faction, space, include_minor_allies=false) {
 
-
     let luis = 0;
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
@@ -24891,8 +24892,12 @@ if (this.game.options.scenario != "is_testing") {
 	  });
 	  let msg = this.returnFactionName(faction) + " founds a colony";
 	  this.updateLog(msg);
-	  this.game.queue.push("ACKNOWLEDGE\t"+msg);
-	  this.game.queue.push("display_custom_overlay\tcolonize\t"+msg);
+	  if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
+	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
+	    this.game.queue.push("display_custom_overlay\tcolonize\t"+msg);
+	  } else {
+	    this.displayHudPopup("colonize",msg); // true = as hud popup
+	  }
           this.game.state.may_colonize[faction] = 0;
 	  this.displayColony();
 	  return 1;
@@ -24907,9 +24912,14 @@ if (this.game.options.scenario != "is_testing") {
 	  });
 	  let msg = this.returnFactionName(faction) + " launches an expedition";
 	  this.updateLog(msg);
-	  this.game.queue.push("ACKNOWLEDGE\t"+msg);
-	  this.game.queue.push("display_custom_overlay\texplore\t"+msg);
-          this.game.state.may_explore[faction] = 0;
+	  if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
+	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
+	    this.game.queue.push("display_custom_overlay\texplore\t"+msg);
+          } else {
+	    this.displayHudPopup("explore",msg); // true = as hud popup
+
+	  }
+	  this.game.state.may_explore[faction] = 0;
 	  this.displayExploration();
 	  return 1;
 	}
@@ -25591,8 +25601,12 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	  });
 	  let msg = this.returnFactionName(faction) + " launches a conquest";
 	  this.updateLog(msg);
-	  this.game.queue.push("ACKNOWLEDGE\t"+msg);
-	  this.game.queue.push("display_custom_overlay\tconquest\t"+msg);
+	  if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
+	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
+	    this.game.queue.push("display_custom_overlay\tconquest\t"+msg);
+	  } else {
+	    this.displayHudPopup("conquest",msg); // true = as hud popup
+	  }
           this.game.state.may_conquer[faction] = 0;
 	  this.displayConquest();
 	  return 1;
@@ -27387,37 +27401,55 @@ console.log("----------------------------");
 	  //
 	  if (this.game.navalspaces[spacekey]) {
 
-	    let io = this.returnImpulseOrder();
-	    for (let i = io.length-1; i>= 0; i--) {
-	      if (this.areEnemies(io[i], faction)) {
-	        let player_of_faction = this.returnPlayerCommandingFaction(io[i]);
-	        if (player_of_faction != attacking_player && player_of_faction != 0) {
-  	          if (io[i] !== faction) {
-	            for (let zz = 0; zz < neighbours.length; zz++) {
-	              let fluis = this.returnFactionSeaUnitsInSpace(io[i], neighbours[zz], 1);
-	              if (fluis > 0) {
-	                this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+io[i]+"\t"+neighbours[zz]);
+	    //
+	    // you can't be intercepted moving into a space where you have units
+	    // or where you have allies...
+	    //
+	    let are_my_allies_already_in_this_space = false;
+	    let s = this.game.navalspaces[spacekey].units;
+
+	    for (let f in s.units) {
+	      if (this.areAllies(f, faction) && f != faction) {
+		if (this.returnFactionNavalUnitsInSpace(f, spacekey, true) > 0) {  // true = include minor allies
+		  are_my_allies_already_in_this_space = true;
+		}
+	      }
+	    }
+
+	    if (!are_my_allies_already_in_this_space) {
+	      let io = this.returnImpulseOrder();
+	      for (let i = io.length-1; i>= 0; i--) {
+	        if (this.areEnemies(io[i], faction)) {
+	          let player_of_faction = this.returnPlayerCommandingFaction(io[i]);
+	          if (player_of_faction != attacking_player && player_of_faction != 0) {
+  	            if (io[i] !== faction) {
+	              for (let zz = 0; zz < neighbours.length; zz++) {
+	                let fluis = this.returnFactionSeaUnitsInSpace(io[i], neighbours[zz], 1);
+	                if (fluis > 0) {
+	                  this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+io[i]+"\t"+neighbours[zz]);
+	                }
 	              }
 	            }
 	          }
 	        }
-	      }
-
-	      for (let z = 0; z < this.game.state.activated_powers[io[i]].length; z++) {
-	        let ap = this.game.state.activated_powers[io[i]][z];
-	        if (this.areEnemies(ap, faction)) {
-	          if (ap != faction) {
-	            for (let zz = 0; zz < neighbours.length; zz++) {
-	              let fluis = this.returnFactionSeaUnitsInSpace(ap, neighbours[zz], 1);
-	              if (fluis > 0) {
-	                this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+ap+"\t"+neighbours[zz]);
+	        for (let z = 0; z < this.game.state.activated_powers[io[i]].length; z++) {
+	          let ap = this.game.state.activated_powers[io[i]][z];
+	          if (this.areEnemies(ap, faction)) {
+	            if (ap != faction) {
+	              for (let zz = 0; zz < neighbours.length; zz++) {
+	                let fluis = this.returnFactionSeaUnitsInSpace(ap, neighbours[zz], 1);
+	                if (fluis > 0) {
+	                  this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+ap+"\t"+neighbours[zz]);
+	                }
 	              }
 	            }
 	          }
 	        }
 	      }
 	    }
+
 	  }
+
           return 1;
 	}
 
@@ -41697,6 +41729,9 @@ return;
   playerPlaySpringDeployment(faction, player, removed_queue_instruction="") {
 
     let his_self = this;
+
+    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.playerPlaySpringDeployment(faction, player, removed_queue_instruction); });
+
     let capitals = this.factions[faction].capitals;
     let viable_capitals = [];
     let can_deploy = 0;
@@ -41820,6 +41855,9 @@ return;
               for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i].idx);
               }
+
+	      his_self.unbindBackButtonFunction();
+
               //his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
               his_self.endTurn();
 	      his_self.available_units_overlay.faded_out = false;
@@ -49703,7 +49741,7 @@ does_units_to_move_have_unit = true; }
     this.welcome_overlay.pushHudUnderOverlay();
 
     if (document.querySelector(".winter")) {
-	this.welcome_overlay.overlay.zIndex = this.winter_overlay.overlay.zIndex + 2;
+      this.welcome_overlay.overlay.zIndex = this.winter_overlay.overlay.zIndex + 2;
     }
 
     if (c === "all_corsairs_destroyed") {
@@ -50014,6 +50052,326 @@ does_units_to_move_have_unit = true; }
         }
   
         this.welcome_overlay.renderCustom({
+          text : text,
+          title : title,
+          img : img,
+          card : card,
+        });
+      }
+    }
+
+  }
+
+  displayHudPopup(c="", msg="") {
+
+    if (c === "all_corsairs_destroyed") {
+        this.hud_popup.render({
+          title : "Piracy Fails" , 
+          text : "All Corsairs destroyed by Defensive Fire" ,
+          card : "" ,
+          img : '/his/img/backgrounds/corsairs_destroyed.jpg',
+          styles : [{ key : "backgroundPosition" , val : "bottom" }],
+        });
+        return;
+    }
+
+    if (c === "depleted") {
+        this.hud_popup.render({
+          title : "Depleted Conquest" , 
+          text : msg ,
+          card : "" ,
+          img : '/his/img/backgrounds/newworld/depleted_conquest.jpeg',
+          styles : [{ key : "backgroundPosition" , val : "bottom" }],
+        });
+        return;
+    }
+
+    if (c === "deserted") {
+      this.hud_popup.render({
+        title : "Deserted Colony" , 
+        text : msg ,
+        card : "" ,
+        img : '/his/img/backgrounds/newworld/deserted_colony.png',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "protestants") {
+      this.hud_popup.render({
+        title : "New to the Protestants?" , 
+        text : "Why not play cards for OPS and publish treatises in Germany? " ,
+        card : this.returnCardImage("065") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "excommunication") {
+      this.hud_popup.render({
+        title : "Excommunicated!" , 
+        text : this.returnFactionName(msg) + " has been excommunicated by Papal Decree" ,
+        card : this.returnCardImage("005") ,
+        img : '/his/img/backgrounds/events/excommunication.jpg',
+      });
+      return;
+    }
+    if (c === "protestant") {
+      this.hud_popup.render({
+        title : "New to the Protestants?" , 
+        text : "Use OPS to publish treatises and convert more spaces to Protestantism" ,
+        card : this.returnCardImage("007") ,
+        img : '/his/img/backgrounds/move/printing_press.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+    if (c === "papacy") {
+      this.hud_popup.render({
+        title : "New to the Papacy?" , 
+        text : "Why not use your OPS to control Siena and move an invasion force to Florence?" ,
+        card : this.returnCardImage("067") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+    if (c === "ottoman") {
+      this.hud_popup.render({
+        title : "New to the Ottomans?" , 
+        text : "Why not use your OPS to invade Hungary and expand your empire?" ,
+        card : this.returnCardImage("042") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+    if (c === "england") {
+      this.hud_popup.render({
+        title : "New to England?" , 
+        text : "Why not use your Home Card to declare war on Scotland or France?" ,
+        card : this.returnCardImage("003") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+    if (c === "france") {
+      this.hud_popup.render({
+        title : "New to France?" , 
+        text : "Establishing Colonies and building Chateaux is crucial early-game! " ,
+        card : this.returnCardImage("004") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+    if (c === "hapsburg") {
+      this.hud_popup.render({
+        title : "New to the Hapsburgs?" , 
+        text : "Are there any independent keys you can conquer this turn? ",
+        card : this.returnCardImage("002") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "lost-at-sea") {
+      this.hud_popup.render({
+        title : "New World Losses" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/lost_at_sea.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "killed") {
+      this.hud_popup.render({
+        title : "New World Losses" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/killed.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "stlawrence") {
+      this.hud_popup.render({
+        title : "New World Discovery" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "mississippi") {
+      this.hud_popup.render({
+        title : "New World Discovery" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/mississippi.jpg',
+	styles : [{ key : "backgroundPosition" , val : "center" }],
+      });
+      return;
+    }
+
+    if (c === "greatlakes") {
+      this.hud_popup.render({
+        title : "New World Discovery" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/greatlakes.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "amazon") {
+      this.hud_popup.render({
+        title : "New World Discovery" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/amazon3.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "pacificstrait") {
+      this.hud_popup.render({
+        title : "New World Discovery" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/pacificstrait.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "circumnavigation") {
+      this.hud_popup.render({
+        title : "New World Achievement" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/circumnavigation.jpg',
+      });
+      return;
+    }
+
+    if (c === "aztec") {
+      this.hud_popup.render({
+        title : "New World Conquest" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/aztec.jpg',
+      });
+      return;
+    }
+
+    if (c === "maya") {
+      this.hud_popup.render({
+        title : "New World Conquest" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/inca.jpg',
+      });
+      return;
+    }
+
+    if (c === "inca") {
+      this.hud_popup.render({
+        title : "New World Conquest" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/inca2.jpg',
+      });
+      return;
+    }
+
+    if (c === "battle-of-mohacs") {
+      let t = "The Ottoman subjugation of Hungary-Bohemia forces the Hapsburg Empire to intervene on the side of Christian Europe and in pre-emptive defense of Vienna";
+      if (this.areEnemies("hapsburg", "ottoman")) {  
+        t = "The Ottoman subjugation of Hungary-Bohemia prompts a Hapsburg-Hungarian Alliance in defense of Christian Europe and th city of Vienna";
+      }
+      this.hud_popup.render({
+        title : "War between the Hapsburg and Ottoman Empires" ,
+	text : t,
+        img : '/his/img/backgrounds/battle-of-mohacs.jpeg',
+      });
+      return;
+    }
+
+    if (c === "colonize") {
+      this.hud_popup.render({
+        title : msg ,
+        text : "Colonies earn factions bonus cards in the New World Phase",
+        img : '/his/img/backgrounds/move/colonize.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "conquest") {
+      this.hud_popup.render({
+        title : msg ,
+        text : "Conquests earn factions Victory Points and bonus cards in the New World Phase",
+        img : '/his/img/backgrounds/newworld/inca2.jpg',
+	styles : [{ key : "backgroundPosition" , val : "center" }],
+      });
+      return;
+    }
+
+    if (c === "spring_deployment") {
+      this.hud_popup.render({
+        title : "Spring Deployment" ,
+        text : "At the start of each round, players may move troops from their capital along any line of spaces controlled by them or their allies. Units may not cross passes or seas containing enemy ships. <b>New players can safely ignore Spring Deployment first turn</b>.",
+        img : '/his/img/backgrounds/spring-deployment.jpeg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "diet_of_worms") {
+      if (this.game.players.length == 2) {
+        this.hud_popup.render({
+          title : "Diet of Worms" ,
+          text : "Protestants pick a card and add 4. Papacy picks a card and adds the value of a card drawn randomly from the deck. Dice are rolled and the winner flips the difference in hits to the Protestant or Catholic religion.",
+          img : '/his/img/backgrounds/diet_of_worms.jpeg',
+	  styles : [{ key : "backgroundPosition" , val : "bottom" }],
+        });
+        return;
+      } else {
+        this.hud_popup.render({
+          title : "Diet of Worms" ,
+          text : "Protestants pick a card and add 4. Papacy and Hapsburg both pick cards and combine their values. Dice are rolled and the winner flips the difference in hits to the Protestant or Catholic religion.",
+          img : '/his/img/backgrounds/diet_of_worms.jpeg',
+	  styles : [{ key : "backgroundPosition" , val : "bottom" }],
+        });
+        return;
+      }
+    }
+
+    if (c === "explore") {
+      this.hud_popup.render({
+        title : msg,
+        text : "Explorations earn Victory Points for strategic discoveries in the New World Phase",
+        img : '/his/img/backgrounds/move/explore.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    let deck = this.returnDeck(true); // include removed
+    if (deck[c]) {
+      if (deck[c].returnCustomOverlay) {
+
+        let obj = deck[c].returnCustomOverlay();    
+        let title = obj.title;
+        let text = obj.text;
+        let img = obj.img;
+        let card = this.returnCardImage(c);
+
+        if (msg == "") {
+    	  msg = this.popup(c) + " triggers";
+        }
+
+        this.hud_popup.render({
           text : text,
           title : title,
           img : img,

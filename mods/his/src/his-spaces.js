@@ -1468,7 +1468,6 @@ console.log("is a homespace for: " + x);
 
   returnFactionNavalUnitsInSpace(faction, space, include_minor_allies=false) {
 
-
     let luis = 0;
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}

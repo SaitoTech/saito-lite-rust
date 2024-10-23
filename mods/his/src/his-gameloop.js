@@ -1696,8 +1696,12 @@ if (this.game.options.scenario != "is_testing") {
 	  });
 	  let msg = this.returnFactionName(faction) + " founds a colony";
 	  this.updateLog(msg);
-	  this.game.queue.push("ACKNOWLEDGE\t"+msg);
-	  this.game.queue.push("display_custom_overlay\tcolonize\t"+msg);
+	  if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
+	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
+	    this.game.queue.push("display_custom_overlay\tcolonize\t"+msg);
+	  } else {
+	    this.displayHudPopup("colonize",msg); // true = as hud popup
+	  }
           this.game.state.may_colonize[faction] = 0;
 	  this.displayColony();
 	  return 1;
@@ -1712,9 +1716,14 @@ if (this.game.options.scenario != "is_testing") {
 	  });
 	  let msg = this.returnFactionName(faction) + " launches an expedition";
 	  this.updateLog(msg);
-	  this.game.queue.push("ACKNOWLEDGE\t"+msg);
-	  this.game.queue.push("display_custom_overlay\texplore\t"+msg);
-          this.game.state.may_explore[faction] = 0;
+	  if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
+	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
+	    this.game.queue.push("display_custom_overlay\texplore\t"+msg);
+          } else {
+	    this.displayHudPopup("explore",msg); // true = as hud popup
+
+	  }
+	  this.game.state.may_explore[faction] = 0;
 	  this.displayExploration();
 	  return 1;
 	}
@@ -2396,8 +2405,12 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	  });
 	  let msg = this.returnFactionName(faction) + " launches a conquest";
 	  this.updateLog(msg);
-	  this.game.queue.push("ACKNOWLEDGE\t"+msg);
-	  this.game.queue.push("display_custom_overlay\tconquest\t"+msg);
+	  if (this.game.player == this.returnPlayerCommandingFaction(faction)) {
+	    this.game.queue.push("ACKNOWLEDGE\t"+msg);
+	    this.game.queue.push("display_custom_overlay\tconquest\t"+msg);
+	  } else {
+	    this.displayHudPopup("conquest",msg); // true = as hud popup
+	  }
           this.game.state.may_conquer[faction] = 0;
 	  this.displayConquest();
 	  return 1;
@@ -4192,37 +4205,55 @@ console.log("----------------------------");
 	  //
 	  if (this.game.navalspaces[spacekey]) {
 
-	    let io = this.returnImpulseOrder();
-	    for (let i = io.length-1; i>= 0; i--) {
-	      if (this.areEnemies(io[i], faction)) {
-	        let player_of_faction = this.returnPlayerCommandingFaction(io[i]);
-	        if (player_of_faction != attacking_player && player_of_faction != 0) {
-  	          if (io[i] !== faction) {
-	            for (let zz = 0; zz < neighbours.length; zz++) {
-	              let fluis = this.returnFactionSeaUnitsInSpace(io[i], neighbours[zz], 1);
-	              if (fluis > 0) {
-	                this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+io[i]+"\t"+neighbours[zz]);
+	    //
+	    // you can't be intercepted moving into a space where you have units
+	    // or where you have allies...
+	    //
+	    let are_my_allies_already_in_this_space = false;
+	    let s = this.game.navalspaces[spacekey].units;
+
+	    for (let f in s.units) {
+	      if (this.areAllies(f, faction) && f != faction) {
+		if (this.returnFactionNavalUnitsInSpace(f, spacekey, true) > 0) {  // true = include minor allies
+		  are_my_allies_already_in_this_space = true;
+		}
+	      }
+	    }
+
+	    if (!are_my_allies_already_in_this_space) {
+	      let io = this.returnImpulseOrder();
+	      for (let i = io.length-1; i>= 0; i--) {
+	        if (this.areEnemies(io[i], faction)) {
+	          let player_of_faction = this.returnPlayerCommandingFaction(io[i]);
+	          if (player_of_faction != attacking_player && player_of_faction != 0) {
+  	            if (io[i] !== faction) {
+	              for (let zz = 0; zz < neighbours.length; zz++) {
+	                let fluis = this.returnFactionSeaUnitsInSpace(io[i], neighbours[zz], 1);
+	                if (fluis > 0) {
+	                  this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+io[i]+"\t"+neighbours[zz]);
+	                }
 	              }
 	            }
 	          }
 	        }
-	      }
-
-	      for (let z = 0; z < this.game.state.activated_powers[io[i]].length; z++) {
-	        let ap = this.game.state.activated_powers[io[i]][z];
-	        if (this.areEnemies(ap, faction)) {
-	          if (ap != faction) {
-	            for (let zz = 0; zz < neighbours.length; zz++) {
-	              let fluis = this.returnFactionSeaUnitsInSpace(ap, neighbours[zz], 1);
-	              if (fluis > 0) {
-	                this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+ap+"\t"+neighbours[zz]);
+	        for (let z = 0; z < this.game.state.activated_powers[io[i]].length; z++) {
+	          let ap = this.game.state.activated_powers[io[i]][z];
+	          if (this.areEnemies(ap, faction)) {
+	            if (ap != faction) {
+	              for (let zz = 0; zz < neighbours.length; zz++) {
+	                let fluis = this.returnFactionSeaUnitsInSpace(ap, neighbours[zz], 1);
+	                if (fluis > 0) {
+	                  this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+ap+"\t"+neighbours[zz]);
+	                }
 	              }
 	            }
 	          }
 	        }
 	      }
 	    }
+
 	  }
+
           return 1;
 	}
 

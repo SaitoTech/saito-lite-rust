@@ -3455,6 +3455,9 @@ return;
   playerPlaySpringDeployment(faction, player, removed_queue_instruction="") {
 
     let his_self = this;
+
+    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.playerPlaySpringDeployment(faction, player, removed_queue_instruction); });
+
     let capitals = this.factions[faction].capitals;
     let viable_capitals = [];
     let can_deploy = 0;
@@ -3578,6 +3581,9 @@ return;
               for (let i = 0; i < units_to_move.length; i++) {
 		his_self.addMove("move\t"+units_to_move[i].faction+"\tland\t"+source_spacekey+"\t"+destination_spacekey+"\t"+units_to_move[i].idx);
               }
+
+	      his_self.unbindBackButtonFunction();
+
               //his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" spring deploys to "+his_self.game.spaces[destination_spacekey].name);
               his_self.endTurn();
 	      his_self.available_units_overlay.faded_out = false;

@@ -2925,7 +2925,7 @@ console.log("selected: " + spacekey);
 		  //if (selected_reformer == "luther-reformer") { language_zone = "english"; }
 		  //if (selected_reformer == "zwingli-reformer") { language_zone = "english"; }
 		  if (selected_reformer == "cranmer-reformer") { language_zone = "english"; }
-		  if (selected_reformer == "calvin-reformer") { language_zone = "france"; }
+		  if (selected_reformer == "calvin-reformer") { language_zone = "french"; }
 
 		  if (action2 === "yes") {
 	            his_self.addMove("excommunicate_reformer\t"+selected_reformer);
