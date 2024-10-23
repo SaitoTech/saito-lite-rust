@@ -69,6 +69,7 @@ class Blog extends ModTemplate {
 
 
     async onPeerServiceUp(app, peer, service ={}){
+        console.log('peer service up', service.service);
         if (service.service === 'archive') {
             // load transactions from local archvie
             let peers = await app.network.getPeers();
@@ -83,6 +84,7 @@ class Blog extends ModTemplate {
         // if(this.app.BROWSER === 0){
         //     await this.loadBlogTransactions(this.publicKey);
         // }
+        console.log('peer handshake complete')
       
     }
 
