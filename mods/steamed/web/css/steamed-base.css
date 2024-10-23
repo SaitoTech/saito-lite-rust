@@ -19,13 +19,13 @@ body {
 }
 
 .status-message {
-	background-color: tan;
 	margin-bottom: unset;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-evenly;
 	padding: 5px 0;
+	height: 100%;
 }
 
 .field_slot {
@@ -42,6 +42,7 @@ body {
 	position: absolute;
 	width: 100%;
 	max-width: 150px;
+	height: auto;
 }
 
 .pot {
@@ -70,12 +71,37 @@ body {
 	min-width: 300px;
 }
 
+.player_field#self{
+	grid-template-columns: repeat(4, 1fr);
+}
+
 .status {
 	width: 100%;
 	height: 40px;
 	position: absolute;
 	top: -40px;
 	color: black;
+	background-color: inherit;
+}
+
+.steam-controls{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  height: 100%;
+}
+
+.steam-controls .control{
+	font-size: 2.6rem;
+	border-radius: 0.5rem;
+	border: 3px outset;
+	height: 6rem;
+	width: 6rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
 }
 
 #draw_deck {
@@ -142,24 +168,13 @@ body {
 	transition: box-shadow 0.25s, transform 0.25s, filter 0.25s;
 }
 
-.delete {
-	width: fit-content;
-	padding: 5px;
-	border-radius: 1px solid black;
-	background-color: tan;
-	filter: drop-shadow(2px 2px 2px black);
-	cursor: pointer;
+.control.active_state {
+	color: tan;
+	background-color: black;
 }
 
-.delete:hover,
-.delete.active_element {
-	background-color: saddlebrown;
-	color: ghostwhite;
-}
-
-.delete.active_element:hover {
-	background-color: tan;
-	color: black;
+.control {
+	transition: visibility 0.4s;
 }
 
 .player_field > .field_slot.active_element:hover {
@@ -314,13 +329,16 @@ body {
 	transform: translate(-12%, -20%);
 }
 
-.jumpy img.card:last-child:hover {
+.jumpy img.card:last-child:hover, .cardfan img.card.active_element.activated {
 	transform: translate(2%, -20%);
 }
 
-.cardfan .active_element:hover {
-	filter: hue-rotate(120deg);
+.cardfan .active_element:hover, .cardfan .active_element.activated {
 	box-shadow: 0 0 2px 5px lime;
+}
+
+.cardfan .deletable {
+	box-shadow: 0 0 2px 5px indianred;	
 }
 
 .bighand > .card:nth-child(7n + 1) {
