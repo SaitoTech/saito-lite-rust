@@ -120,17 +120,17 @@ class Relay extends ModTemplate {
 
     if (this.stun) {
       need_server = false;
-      for (let i = 0; i < tx.to.length; i++){
-        let addressee = tx.to[i].publicKey;
-        if (addressee !== this.publicKey){
-          if (this.stun.hasConnection(addressee)){
-            this.stun.sendTransaction(addressee, tx);
-          }else {
-            //console.log("Need to use Relay server because no stun connection with " + addressee);
-            need_server = true;
-          }
-        }
-      }
+      // for (let i = 0; i < tx.to.length; i++){
+      //   let addressee = tx.to[i].publicKey;
+      //   if (addressee !== this.publicKey){
+      //     if (this.stun.hasConnection(addressee)){
+      //       this.stun.sendTransaction(addressee, tx);
+      //     }else {
+      //       //console.log("Need to use Relay server because no stun connection with " + addressee);
+      //       need_server = true;
+      //     }
+      //   }
+      // }
 
       if (!need_server && tx.isTo(this.publicKey)){
         // We won't send tx through relay service 

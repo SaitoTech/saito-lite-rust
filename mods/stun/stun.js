@@ -1,3 +1,4 @@
+const { default: Saito } = require('saito-js/saito');
 const saito = require('../../lib/saito/saito');
 const Transaction = require("../../lib/saito/transaction").default;
 const ModTemplate = require('../../lib/templates/modtemplate');
@@ -78,7 +79,12 @@ class Stun extends ModTemplate {
 
 			 upgradePeerConnection(publicKey)
 			 */
+
 		});
+
+		app.connection.on('stun-connection-connected' ,async (publicKey)=> {
+				await Saito.getInstance().addStunPeer(publicKey, this.peers.get(publicKey))
+		})
 
 	}
 

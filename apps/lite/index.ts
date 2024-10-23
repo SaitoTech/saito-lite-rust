@@ -129,7 +129,7 @@ async function init() {
 			new WebMethods(saito),
 			new Factory(),
 			saito.options.wallet?.privateKey || '',
-			LogLevel.Info,
+			LogLevel.Debug,
 			BigInt(1)
 		);
 	} catch (e) {
