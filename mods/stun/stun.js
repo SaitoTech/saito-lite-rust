@@ -1,3 +1,4 @@
+const { default: Saito } = require('saito-js/saito');
 const saito = require('../../lib/saito/saito');
 const Transaction = require("../../lib/saito/transaction").default;
 const ModTemplate = require('../../lib/templates/modtemplate');
@@ -69,17 +70,15 @@ class Stun extends ModTemplate {
 
 		this.peers = new Map();
 
-		app.connection.on("stun-data-channel-open", (publicKey) => {
-			/*
-			Not sure where the function should be, but we want something that converts
-			the stun data channel into a viable peer object, that will trigger the onPeerServiceUp
+		// app.connection.on("stun-data-channel-open", async (publicKey) => {
 
-			// app.network? / app.peer.?
+		// 	 await this.app.network.addStunPeer(publicKey, this.peers.get(publicKey))
 
-			 upgradePeerConnection(publicKey)
-			 */
+		// });
+
+		app.connection.on('stun-connection-connected', async (publicKey) => {
+			 await this.app.network.addStunPeer(publicKey, this.peers.get(publicKey))
 		});
-
 	}
 
 	respondTo(type, obj) {
@@ -186,7 +185,6 @@ class Stun extends ModTemplate {
 
 	hasConnectionWithPeer(peerId){
 		let peerConnection = this.peers.get(peerId);
-
 		if (peerConnection) {
 			if (peerConnection?.dc) {
 				if (peerConnection.connectionState == 'connected') {
@@ -200,18 +198,22 @@ class Stun extends ModTemplate {
 		return false;
 	}
 
-	sendTransaction(peerId, tx) {
-		let peerConnection = this.peers.get(peerId);
-
+	async sendTransaction(peerId, tx) {
 		if (!this.hasConnectionWithPeer(peerId)){
 			console.warn("Stun: cannot send transaction over stun");
 			return;
 		}
-
-		try {
-			peerConnection.dc.send(tx.serialize_to_web(this.app));
-		} catch (err) {
-			console.error(err);
+		let peers = await this.app.network.getPeers();
+		for (let i = 0; i < peers.length; i++) {
+		  if(peers[i].publicKey === peerId){
+			this.app.network.sendRequestAsTransaction(
+			  "relay peer message",
+			  tx.toJson(),
+			  null,
+			  peers[i].peerIndex
+			);
+		  }
+		 
 		}
 	}
 
