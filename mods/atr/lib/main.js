@@ -5,20 +5,14 @@ class Main {
                 this.app = app;
                 this.mod = mod;
                 this.container = '.saito-container';
+                this.app.connection.on('saito-atr-render-request', (obj) => {
+                	console.log("rendering atr ");
+			this.render();
+		});
         }
 
         render(){
-        	if (document.querySelector('.saito-container')) {
-			this.app.browser.replaceElementBySelector(
-				MainTemplate(this.app, this.mod),
-				'.saito-container'
-			);
-		} else {
-			this.app.browser.addElementToSelector(
-				MainTemplate(this.app, this.mod),
-				this.container
-			);
-		}
+        	document.querySelector('.saito-container').innerHTML = MainTemplate(this.app, this.mod);
 
 		this.attachEvents();
         }

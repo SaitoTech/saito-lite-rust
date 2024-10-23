@@ -14,6 +14,8 @@ class ATR extends ModTemplate {
 		this.description = `Explorer for ATR Testing`;
 		this.categories = 'Utilities Dev';
 		this.class = 'utility';
+
+		this.block_data = [];
 	}
 
 	async initialize(app) {
@@ -39,52 +41,33 @@ class ATR extends ModTemplate {
 	}
 
 
-	onNewBlock(blk, lc) {
-		console.log('warehouse - on new block');
-		var json_block = JSON.parse(blk.toJson());
+	onNewBlock(blk, lc,conf,app) {
 
-		console.log("json_block: ", json_block);
+			var json_block = JSON.parse(blk.toJson());
 
-		var txwmsgs = [];
-		try {
-			// blk.transactions.forEach((transaction) => {
-			// 	let tx = transaction.toJson();
-			// 	tx.msg = transaction.returnMessage();
-			// 	txwmsgs.push(tx);
-			// });
-		} catch (err) {
-			console.error(err);
-		}
+			console.log("json_block: ", json_block);
+			this.block_data.push(json_block);
+
+			if (this.block_data.length > 10) {
+				this.block_data.shift();
+			}
+
+			app.connection.emit('saito-atr-render-request');
 	}
 
 	async onConfirmation(blk, tx, conf) {
 		let txmsg = tx.returnMessage();
-
-		console.log("BLK: ///////////",blk);
-
 		try {
-
-
-
 			if (conf == 0) {
 
-				console.log("txmsg in ATR:", txmsg);
-				if (txmsg.request === 'send spam tx') {
-					
-				}
 			}
 		} catch (err) {
 			console.log('ERROR in ' + this.name + ' onConfirmation: ' + err);
 		}
 	}
 
-
 	async handlePeerTransaction(app, tx=null, peer, callback=null) { // BUILT-IN FUNCTION
-		// if (tx.returnMessage().request != "livedocs request") {
-		// 	return;
-		// }
 		if (this.app.BROWSER) {
-			let message = tx.returnMessage().data;
 
 		}
 	}
