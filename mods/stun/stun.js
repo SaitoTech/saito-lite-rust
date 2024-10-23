@@ -70,7 +70,7 @@ class Stun extends ModTemplate {
 
 		this.peers = new Map();
 
-		app.connection.on("stun-data-channel-open", (publicKey) => {
+		app.connection.on("stun-data-channel-open", async (publicKey) => {
 			/*
 			Not sure where the function should be, but we want something that converts
 			the stun data channel into a viable peer object, that will trigger the onPeerServiceUp
@@ -79,12 +79,9 @@ class Stun extends ModTemplate {
 
 			 upgradePeerConnection(publicKey)
 			 */
+			 await this.app.network.addStunPeer(publicKey, this.peers.get(publicKey))
 
 		});
-
-		app.connection.on('stun-connection-connected' ,async (publicKey)=> {
-				await Saito.getInstance().addStunPeer(publicKey, this.peers.get(publicKey))
-		})
 
 	}
 
