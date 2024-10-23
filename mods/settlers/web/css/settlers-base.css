@@ -1068,13 +1068,6 @@ ul.horizontal_list li.iconoption {
 		border-image-outset: 3px;
 		border-width: 3px;
 	}
-	.hud-notice {
-		width: calc(100% - 4rem);
-	}
-	.hud-notice.show {
-		top: -65%;
-		margin: 0;
-	}
 }
 
 @media screen and (orientation: landscape) and (max-height: 600px) {

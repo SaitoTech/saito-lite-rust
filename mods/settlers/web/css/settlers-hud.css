@@ -21,6 +21,15 @@
 	padding: 0 0 1rem;
 }
 
+
+.hud-notice {
+  border: 3px solid #424143;
+  background-color: #b79e76;
+  border-radius: 1rem 1rem 0 0;
+}
+
+
+
 /* override default #efefef background */
 
 .hud-body .status {
@@ -104,24 +113,6 @@
 .hud {
 	overflow: visible;
 }
-
-.hud-notice {
-    border: 3px solid #424143;
-	background-color: #b79e76;
-	border-radius: 1rem 1rem 0 0;
-    height: 65%;
-    position: absolute;
-    top: 0;
-    width: calc(100% - 2rem);
-    margin: 0 0.5rem;
-	transition: all 1s ease-in-out;
-	z-index: -1;
-}
-
-.hud-notice.show {
-	top: -50%;
-}
-
 
 .player-notice img {
 	max-width: 45px;
