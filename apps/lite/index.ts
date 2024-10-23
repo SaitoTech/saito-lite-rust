@@ -13,6 +13,10 @@ import Blockchain from '../../lib/saito/blockchain';
 import PeerServiceList from 'saito-js/lib/peer_service_list';
 import { LogLevel } from 'saito-js/saito';
 
+
+
+
+
 class WebMethods extends WebSharedMethods {
 	app: Saito;
 
@@ -49,7 +53,7 @@ class WebMethods extends WebSharedMethods {
 		await this.app.modules.handlePeerTransaction(newtx, peer, mycallback);
 	}
 
-	sendInterfaceEvent(event: string, peerIndex: bigint, public_key:string) {
+	sendInterfaceEvent(event: string, peerIndex: bigint, public_key: string) {
 		this.app.connection.emit(event, peerIndex, public_key);
 	}
 
@@ -101,10 +105,11 @@ class WebMethods extends WebSharedMethods {
 		return list;
 	}
 
-	ensureBlockDirExists(path: string): void {}
+	ensureBlockDirExists(path: string): void { }
 }
 
 async function init() {
+
 	console.log('lite init...');
 
 	const saito = new Saito({ mod_paths: mods_config.lite });
@@ -143,13 +148,16 @@ async function init() {
 	}
 
 	S.getInstance().start();
+
+
 }
 
-// init();
+
 window.onload = async function () {
 	// console.log(args, "args")
 	try {
-		await init();
+ await init();
+		
 	} catch (error) {
 		console.error(error);
 	}
