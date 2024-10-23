@@ -190,7 +190,11 @@ class DevTools extends ModTemplate {
 				this.app.browser.addDragAndDropFileUploadToElement(`appstore-zip-upload`, async (filesrc) => {
 					this_self.clear();
 
-					this_self.zip_file = filesrc.substring(28);;
+			    let startPoint = filesrc.indexOf("base64");
+			    if (startPoint < 0){
+			    	throw new Error("File not base64 zipped");
+			    }
+					this_self.zip_file = filesrc.substring(startPoint + 7);;
 			    console.log('zip_file: ', this_self.zip_file);
 
 			    await this_self.sendModuleDetailsTransaction(this_self.zip_file, async function(res){
@@ -336,7 +340,6 @@ class DevTools extends ModTemplate {
 				const directory = await unzipper.Open.file(
 					path.resolve(__dirname, zip_path)
 				);
-
 				let promises = directory.files.map(async (file) => {
 
 
@@ -522,7 +525,6 @@ class DevTools extends ModTemplate {
 							.join('');
 					}
 				});
-
 				await Promise.all(promises);
 			} catch (err) {
 				console.log("ERROR UNZIPPING: " + err);
