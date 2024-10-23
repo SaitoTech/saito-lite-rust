@@ -119,12 +119,12 @@ class Relay extends ModTemplate {
     if (this.stun) {
       need_server = false;
       for (let i = 0; i < tx.to.length; i++){
-        let addressee = tx.to[i].publicKey;
-        if (addressee !== this.publicKey){
-          if (this.stun.hasConnection(addressee)){
+        let address = tx.to[i].publicKey;
+        if (address !== this.publicKey){
+          if (this.stun.hasConnection(address)){
             let peers = await this.app.network.getPeers();
             for (let i = 0; i < peers.length; i++) {
-              if(peers[i].publicKey === addressee){
+              if(peers[i].publicKey === address){
                 this.app.network.sendRequestAsTransaction(
                   "relay peer message",
                   tx.toJson(),
@@ -141,11 +141,11 @@ class Relay extends ModTemplate {
         }
       }
 
-      // if (!need_server && tx.isTo(this.publicKey)){
-      //   // We won't send tx through relay service 
-      //   // but should make sure we process it ourselves as if it was coming in
-      //   this.app.modules.handlePeerTransaction(tx);
-      // }
+      if (!need_server && tx.isTo(this.publicKey)){
+        // We won't send tx through relay service 
+        // but should make sure we process it ourselves as if it was coming in
+        this.app.modules.handlePeerTransaction(tx);
+      }
     } 
 
     if (need_server){
