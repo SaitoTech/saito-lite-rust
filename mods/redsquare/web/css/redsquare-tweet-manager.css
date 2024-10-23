@@ -51,3 +51,25 @@
 	z-index: 55;
 	top: 1.6rem;
 }
+
+
+.redsquare-feed-source {
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+}
+
+.redsquare-feed-source .saito-button-tab{
+	flex: 1;
+	padding: 0.75rem;
+	cursor: pointer;
+	text-align: center;
+}
+
+.redsquare-feed-source .saito-button-tab.active{
+	background: var(--background-color-gray-transparent);
+}
+
+.redsquare-feed-source .saito-button-tab:hover{
+	background: var(--background-color-button-primary);;
+}
