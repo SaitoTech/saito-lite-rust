@@ -2,7 +2,7 @@ module.exports = () => {
 	return `
 
 .saito-header-logo {
-	scale: 1.4;
+        background-color: green;
 }
 
 	`;
