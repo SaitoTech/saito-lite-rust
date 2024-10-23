@@ -6666,9 +6666,15 @@ console.log("selected: " + spacekey);
 	          his_self.updateStatus("convening...");
                   let action2 = $(this).attr("id");
 
+		  let language_zone = "german";
+		  //if (selected_reformer == "luther-reformer") { language_zone = "english"; }
+		  //if (selected_reformer == "zwingli-reformer") { language_zone = "english"; }
+		  if (selected_reformer == "cranmer-reformer") { language_zone = "english"; }
+		  if (selected_reformer == "calvin-reformer") { language_zone = "france"; }
+
 		  if (action2 === "yes") {
 	            his_self.addMove("excommunicate_reformer\t"+selected_reformer);
-	            his_self.addMove("player_call_theological_debate\tpapacy");
+	            his_self.addMove("player_call_theological_debate_in_region\tpapacy\t"+language_zone);
 		    his_self.endTurn();
 		    return;
 		  }
@@ -20890,6 +20896,20 @@ if (x) {
     if (this.returnAllyOfMinorPower(power) != power) {
       this.deactivateMinorPower(this.returnAllyOfMinorPower(power), power);
     }
+
+    //
+    // any home spaces help by the major power are returned to its minor ally
+    // on the alliance being formed. this is needed to ensure that Line of 
+    // Communications can work properly...
+    //
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].home == power) {
+        if (this.game.spaces[key].political == faction) {
+	  this.game.spaces[key].political = power;
+	}
+      }
+    }
+
     this.setAllies(faction, power, 0);
     this.game.state.activated_powers[faction].push(power);
     this.game.state.minor_activated_powers.push(power);
@@ -20911,6 +20931,20 @@ if (x) {
 	this.game.state.minor_activated_powers.splice(i, 1);
       }
     }
+
+    //
+    // any home spaces help by the major power are returned to its minor ally
+    // on the alliance being disabled. this is needed to ensure that Line of 
+    // Communications can work properly...
+    //
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].home == power) {
+        if (this.game.spaces[key].political == faction) {
+          this.game.spaces[key].political = power;
+        }
+      }
+    }
+    
     this.displayBoard();
     this.displayVictoryTrack();
   }
@@ -27056,9 +27090,9 @@ console.log("----------------------------");
           if (space != null) {
             for (let i = 0; i > space.units[defender].length; i++) {
               let u = space.units[defender][i];
-              if (u.battle_rating > highest_battle_rating) { highest_battle_rating = u.battle_rating; }            
+              if (parseInt(u.battle_rating) > highest_battle_rating) { highest_battle_rating = parseInt(u.battle_rating); }            
             }
-            abr += highest_battle_rating;
+            abr += parseInt(highest_battle_rating);
             if (abr >= 9) {
               this.updateLog(this.returnFactionName(defender) + " avoid battle roll succeeds: " + abr);
             } else {
@@ -27139,7 +27173,7 @@ console.log("----------------------------");
 	  // roll dice to see if avoid battle is an option -- only in sea zones
 	  //
 	  let abr = this.rollDice(6) + this.rollDice(6);
-	  if (this.game.state.naval_avoid_battle_bonus > 0) { abr += this.game.state.naval_avoid_battle_bonus; };
+	  if (this.game.state.naval_avoid_battle_bonus > 0) { abr += parseInt(this.game.state.naval_avoid_battle_bonus); };
 	  let highest_battle_rating = 0;
 	  let space = null;
 
@@ -27148,7 +27182,7 @@ console.log("----------------------------");
 	  if (space != null) {
 	    for (let i = 0; i > space.units[defender].length; i++) {
 	      let u = space.units[defender][i];
-	      if (u.battle_rating > highest_battle_rating) { highest_battle_rating = u.battle_rating; }	      
+	      if (u.battle_rating > highest_battle_rating) { highest_battle_rating = parseInt(u.battle_rating); }	      
 	    }
 	    abr += highest_battle_rating;
 
@@ -30473,6 +30507,8 @@ try {
 
 	      space.units[faction].splice(i, 1);
 	      unit_destroyed = true;
+	      i = 10000;
+
 	    }
 	  }
 
@@ -33366,6 +33402,19 @@ try {
 
         }
 
+	if (mv[0] === "player_call_theological_debate_in_region") {
+	  this.game.queue.splice(qe, 1);
+	  let faction = mv[1];
+	  let language_zone = mv[2];
+	  let player = this.returnPlayerCommandingFaction(faction);
+	  if (this.game.player == player) {
+	    this.playerCallTheologicalDebateInRegion(this, player, faction, language_zone);
+	  } else {
+	    this.updateStatus(this.returnFactionName(faction) + " calling theological debate");
+	  }
+	  return 0;
+	}
+
 	if (mv[0] === "player_call_theological_debate") {
 	  this.game.queue.splice(qe, 1);
 	  let faction = mv[1];
@@ -35587,12 +35636,13 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 0;
+cardnum = 0;
 //if (f == "papacy") { cardnum = 0; }
-//if (f == "hapsburg") { cardnum = 1; }
+if (f == "hapsburg") { cardnum = 3; }
 //if (f == "protestant") { cardnum = 0; }
 //if (f == "england") { cardnum = 0; }
-//if (f == "ottoman") { cardnum = 0; }
+if (f == "ottoman") { cardnum = 3; }
+
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
@@ -43376,7 +43426,7 @@ does_units_to_move_have_unit = true; }
           return;
         }
 
-	let id = tmpx.split("-")[1];
+	let id = parseInt(tmpx.split("-")[1]);
 	let f = tmpx.split("-")[0];
 
         if (units_to_move_idx.includes(id)) {
@@ -45496,6 +45546,80 @@ does_units_to_move_have_unit = true; }
   }
   async playerCallTheologicalDebateMaryI(his_self, player, faction) {
     return his_self.playerCallTheologicalDebate(his_self, player, faction, 1);
+  }
+  async playerCallTheologicalDebateInRegion(his_self, player, faction, region="", mary_i=0) {
+
+      let language_zone = region;
+      let opponent_faction = "protestant";
+      if (faction != "papacy") { opponent_faction = "papacy"; }
+
+      let msg = "Against Commited or Uncommited Debater?";
+      let html = '<ul>';
+      if (0 < his_self.returnDebatersInLanguageZone(language_zone, opponent_faction, 1)) {
+          html += '<li class="option committed" id="committed">Committed</li>';
+      }
+      if (0 < his_self.returnDebatersInLanguageZone(language_zone, opponent_faction, 0)) {
+          html += '<li class="option uncommitted" id="uncommitted">Uncommitted</li>';
+      }
+      html += '</ul>';
+
+      //
+      // show visual language zone selector
+      //
+      his_self.language_zone_overlay.render();
+      his_self.language_zone_overlay.pushHudUnderOverlay();
+
+      his_self.updateStatusWithOptions(msg, html);
+
+      $('.option').off();
+      $('.committed').on('mouseover', function () {
+        his_self.language_zone_overlay.hideDebaters();
+        if (faction == "papacy") { 
+	  his_self.language_zone_overlay.showDebaters(language_zone, "committed", "protestant"); 
+	} else {
+          his_self.language_zone_overlay.showDebaters(language_zone, "committed", "papacy");
+	}
+      });
+      $('.committed').on('mouseout', function () {
+        his_self.language_zone_overlay.hideDebaters();
+      });
+      $('.uncommitted').on('mouseover', function () {
+        his_self.language_zone_overlay.hideDebaters();
+	if (faction == "papacy") {
+          his_self.language_zone_overlay.showDebaters(language_zone, "uncommitted", "protestant");
+	} else {
+          his_self.language_zone_overlay.showDebaters(language_zone, "uncommitted", "papacy");
+	}
+      });
+      $('.uncommitted').on('mouseout', function () {
+        his_self.language_zone_overlay.hideDebaters();
+      });
+
+      $('.option').on('click', function () {
+
+        let committed = $(this).attr("id");
+
+        his_self.language_zone_overlay.hide();
+
+        if (committed === "committed") { committed = 1; } else { committed = 0; }
+
+        if (faction === "papacy") {
+	  his_self.addMove("theological_debate");
+          his_self.addMove("counter_or_acknowledge\tPapacy calls a theological debate\tdebate\t"+language_zone);
+          his_self.addMove("RESETCONFIRMSNEEDED\tall");
+	  his_self.addMove("pick_first_round_debaters\tpapacy\tprotestant\t"+language_zone+"\t"+committed);
+        } else {
+    	  his_self.addMove("theological_debate");
+          his_self.addMove("counter_or_acknowledge\tProtestants call a theological debate\tdebate\t"+language_zone);
+          his_self.addMove("RESETCONFIRMSNEEDED\tall");
+    	  his_self.addMove("pick_first_round_debaters\tprotestant\tpapacy\t"+language_zone+"\t"+committed);
+        }
+        his_self.endTurn();
+
+      });
+
+    return 0;
+
   }
   async playerCallTheologicalDebate(his_self, player, faction, mary_i=0) {
 

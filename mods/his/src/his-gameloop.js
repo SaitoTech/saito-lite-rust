@@ -3895,9 +3895,9 @@ console.log("----------------------------");
           if (space != null) {
             for (let i = 0; i > space.units[defender].length; i++) {
               let u = space.units[defender][i];
-              if (u.battle_rating > highest_battle_rating) { highest_battle_rating = u.battle_rating; }            
+              if (parseInt(u.battle_rating) > highest_battle_rating) { highest_battle_rating = parseInt(u.battle_rating); }            
             }
-            abr += highest_battle_rating;
+            abr += parseInt(highest_battle_rating);
             if (abr >= 9) {
               this.updateLog(this.returnFactionName(defender) + " avoid battle roll succeeds: " + abr);
             } else {
@@ -3978,7 +3978,7 @@ console.log("----------------------------");
 	  // roll dice to see if avoid battle is an option -- only in sea zones
 	  //
 	  let abr = this.rollDice(6) + this.rollDice(6);
-	  if (this.game.state.naval_avoid_battle_bonus > 0) { abr += this.game.state.naval_avoid_battle_bonus; };
+	  if (this.game.state.naval_avoid_battle_bonus > 0) { abr += parseInt(this.game.state.naval_avoid_battle_bonus); };
 	  let highest_battle_rating = 0;
 	  let space = null;
 
@@ -3987,7 +3987,7 @@ console.log("----------------------------");
 	  if (space != null) {
 	    for (let i = 0; i > space.units[defender].length; i++) {
 	      let u = space.units[defender][i];
-	      if (u.battle_rating > highest_battle_rating) { highest_battle_rating = u.battle_rating; }	      
+	      if (u.battle_rating > highest_battle_rating) { highest_battle_rating = parseInt(u.battle_rating); }	      
 	    }
 	    abr += highest_battle_rating;
 
@@ -7312,6 +7312,8 @@ try {
 
 	      space.units[faction].splice(i, 1);
 	      unit_destroyed = true;
+	      i = 10000;
+
 	    }
 	  }
 
@@ -10205,6 +10207,19 @@ try {
 
         }
 
+	if (mv[0] === "player_call_theological_debate_in_region") {
+	  this.game.queue.splice(qe, 1);
+	  let faction = mv[1];
+	  let language_zone = mv[2];
+	  let player = this.returnPlayerCommandingFaction(faction);
+	  if (this.game.player == player) {
+	    this.playerCallTheologicalDebateInRegion(this, player, faction, language_zone);
+	  } else {
+	    this.updateStatus(this.returnFactionName(faction) + " calling theological debate");
+	  }
+	  return 0;
+	}
+
 	if (mv[0] === "player_call_theological_debate") {
 	  this.game.queue.splice(qe, 1);
 	  let faction = mv[1];
@@ -12426,12 +12441,13 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 0;
+cardnum = 0;
 //if (f == "papacy") { cardnum = 0; }
-//if (f == "hapsburg") { cardnum = 1; }
+if (f == "hapsburg") { cardnum = 3; }
 //if (f == "protestant") { cardnum = 0; }
 //if (f == "england") { cardnum = 0; }
-//if (f == "ottoman") { cardnum = 0; }
+if (f == "ottoman") { cardnum = 3; }
+
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);

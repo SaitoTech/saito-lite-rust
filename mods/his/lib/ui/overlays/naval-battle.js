@@ -156,6 +156,13 @@ try {
 				}
 
 				el.onclick = (e) => {
+
+					let this_unit_type = e.currentTarget.getAttribute('data-unit-type');
+					if (hits_left == 1 && this_unit_type == "squadron") {
+						alert("Squadrons take 2 hits to destroy...");
+						return;
+					}
+
 					document
 						.querySelectorAll('hits_to_assign')
 						.forEach((el) => {
