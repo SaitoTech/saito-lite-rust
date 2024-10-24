@@ -39,7 +39,7 @@ class Debug extends ModTemplate {
 	}
 
 	respondTo(type) {
-		console.log('debug.respondTo : ' + type);
+		//console.log('debug.respondTo : ' + type);
 		if (type === 'appspace') {
 			this.styles = [
 				'/saito/lib/jsonTree/jsonTree.css',
