@@ -984,8 +984,6 @@ class Limbo extends ModTemplate {
 			console.log(sender, this.dreams, tx);
 		}
 
-		console.log(this.dreams, this.dreamer);
-
 		if (tx.isTo(this.publicKey)) {
 			this.toggleNotification(false, sender);
 		}
