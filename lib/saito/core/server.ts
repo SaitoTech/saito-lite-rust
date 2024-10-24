@@ -236,6 +236,10 @@ export class NodeSharedMethods extends CustomSharedMethods {
 		this.app.connection.emit('wallet-updated');
 	}
 
+	sendBlockFetchStatus(count:bigint){
+		this.app.connection.emit('block-fetch-status', {count: count});
+	}
+
 	async saveWallet(): Promise<void> {
 		if (this.app.options.wallet && this.app.wallet) {
 			this.app.options.wallet.publicKey =
