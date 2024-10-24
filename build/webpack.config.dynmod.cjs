@@ -77,6 +77,9 @@ webpack(
         // "saito-js":false,
         // "saito-wasm":require.resolve("saito-wasm"),
       },
+      alias: {
+        ModTemplate$: path.resolve(__dirname, "../lib/templates/modtemplate.js"),
+      },
     },
     module: {
       rules: [
