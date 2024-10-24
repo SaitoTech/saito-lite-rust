@@ -71,6 +71,7 @@
     "jszip": "^3.5.0",
     "lamejs": "^1.2.0",
     "localforage": "^1.10.0",
+    "lucide-react": "^0.453.0",
     "markdown-linkify": "^1.0.3",
     "marked": "^4.2.4",
     "multicoin-address-validator": "^0.5.16",
