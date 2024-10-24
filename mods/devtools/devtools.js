@@ -265,7 +265,7 @@ class DevTools extends ModTemplate {
 					encoding: 'binary'
 				});
 
-				console.log("Loaded DYN_MOD_WEB:", DYN_MOD_WEB);
+				//console.log("Loaded DYN_MOD_WEB:", DYN_MOD_WEB);
 
 				execSync(`rm -rf  ./mods/tmp_mod/ ./build/dyn_mod.js`,
         (error, stdout, stderr) => {
