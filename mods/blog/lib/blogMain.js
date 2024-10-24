@@ -15,8 +15,6 @@ class BlogMain {
         this.app.browser.addElementToDom(blogMainTemplate(this.app, this.mod));
         this.attachEvents(this.app, this.mod)
     }
-
-
     attachEvents(app, mod) {
         document.querySelector('.load').addEventListener('click', async (e) => {
            await this.mod.testLoadBlogTransactions(this.mod.publicKey);
@@ -27,9 +25,6 @@ class BlogMain {
            await this.mod.createBlogTransaction('content', 'title');
         })
     }
-
-
-
 }
 
 module.exports = BlogMain;
