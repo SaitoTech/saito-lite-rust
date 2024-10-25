@@ -52,9 +52,8 @@ class Steamed extends GameTemplate {
 		await super.render(app);
 
 		this.menu.addMenuOption('game-game', 'Game');
-		this.menu.addMenuOption('game-info', 'Info');
 
-		this.menu.addSubMenuOption('game-info', {
+		this.menu.addSubMenuOption('game-game', {
 			text: 'How to Play',
 			id: 'game-rules',
 			class: 'game-rules',
@@ -194,7 +193,7 @@ class Steamed extends GameTemplate {
 				}
 
 				//For the beginning of the game only...
-				if (this.game.state.welcome == 0) {
+				/*if (this.game.state.welcome == 0) {
 					try {
 						this.overlay.show(this.returnWelcomeOverlay());
 						document.querySelector('.welcome_overlay').onclick =
@@ -203,7 +202,7 @@ class Steamed extends GameTemplate {
 							};
 					} catch (err) {}
 					this.game.state.welcome = 1;
-				}
+				}*/
 
 				if (this.browser_active) {
 					this.displayAll();
@@ -295,11 +294,10 @@ class Steamed extends GameTemplate {
 				let player = parseInt(mv[1]);
 
 				if (this.game.player == player) {
-					$('.status').css('display', 'block');
 					this.playerTurn();
 				} else {
 					this.removeEvents();
-					$('.status').css('display', 'none');
+					this.updateStatus(`<div class='status-message'>Opponent making their moves...</div>`);
 				}
 
 				$('.active').removeClass('active');
@@ -697,8 +695,6 @@ class Steamed extends GameTemplate {
 	}
 
 	playerTurn() {
-		this.app.browser.replaceElementById(this.newDrawDeck(), 'draw_deck');
-
 		let html = `<div class="status-message"><span>`;
 
 		if (this.game.state.planted < 0) {
@@ -722,9 +718,9 @@ class Steamed extends GameTemplate {
 		} else if (this.game.state.market.length > 0) {
 			html += `Build any available offers or leave them for your opponent`;
 		} else if (this.game.state.planted == 2) {
-			html += `Deal 3 new offers from the deck`;
+			html += `Dealing 3 new offers from the deck..`;
 		} else {
-			html += `Draw 2 cards and end your turn`;
+			html += `Sell a stack or end your turn`;
 		}
 
 		if (
@@ -732,7 +728,10 @@ class Steamed extends GameTemplate {
 			this.game.state.planted <= 2 &&
 			!this.game.state.discarded
 		) {
-			html += `...or...</span> <span class="delete"> Discard a card`;
+			$("#discard").css("visibility", "visible");
+			//html += `...or...</span> <span class="delete"> Discard a card`;
+		}else{
+			$("#discard").css("visibility", "hidden");
 		}
 
 		html += `</span></div>`;
@@ -834,6 +833,10 @@ class Steamed extends GameTemplate {
 			});
 		}
 
+		if (this.game.state.planted === 0) {
+			$('.cardfan img.card:last-child').addClass('activated');			
+		}
+
 		$('.offer img').addClass('active_element');
 		$('.offer img').on('click', function () {
 			$(this).off();
@@ -846,23 +849,13 @@ class Steamed extends GameTemplate {
 		});
 
 		if (this.game.state.planted !== 0) {
-			$('#draw_deck').addClass('active_element');
+			$('#forward').css("visibility", "visible");
+			$('#forward').addClass('active_element');
 		}
 
-		$('#draw_deck').on('click', function () {
+		$('#forward').on('click', function () {
 			if (steamSelf.game.state.planted !== 0) {
-				steamSelf.removeEvents();
-				steamSelf.updateStatus(
-					'<div class=\'status-message\'>Dealing new cards...</div>'
-				);
-				steamSelf.prependMove('continue');
-				if (steamSelf.animation_queue.length == 0) {
-					steamSelf.endTurn();
-				} else {
-					console.log(
-						`${steamSelf.animation_queue.length} animations still running....`
-					);
-				}
+				steamSelf.dealCards();
 			} else {
 				steamSelf.displayModal(
 					'You have to build the first plant in your hand before moving on'
@@ -904,10 +897,11 @@ class Steamed extends GameTemplate {
 			}
 		}
 
-		$('.delete').on('click', function () {
+		$('#discard').on('click', function () {
 			steamSelf.removeEvents();
-			$('.delete').addClass('active_element');
-			$('.cardfan img.card').addClass('active_element');
+			$('.active_element').removeClass('active_element');
+			$('.cardfan img.card').addClass('deletable');
+			$('#discard').addClass('active_state');
 			$('.cardfan img.card').on('click', function () {
 				steamSelf.removeEvents();
 				let card = $(this).attr('data-id');
@@ -928,11 +922,27 @@ class Steamed extends GameTemplate {
 				);
 			});
 
-			$('.delete').on('click', function () {
+			$('#discard').on('click', function () {
+				$(".deleteable").removeClass("deletable");
 				steamSelf.removeEvents();
 				steamSelf.attachBoardEvents();
 			});
 		});
+	}
+
+	dealCards(){
+		this.removeEvents();
+		this.updateStatus(
+			'<div class=\'status-message\'>Dealing new cards...</div>'
+		);
+		this.prependMove('continue');
+		if (this.animation_queue.length == 0) {
+			this.endTurn();
+		} else {
+			console.log(
+				`${this.animation_queue.length} animations still running....`
+			);
+		}
 	}
 
 	isProtected(slot) {
@@ -951,11 +961,12 @@ class Steamed extends GameTemplate {
 
 	removeEvents() {
 		$('#self > .field_slot').off();
-		$('#draw_deck').off();
+		$('#forward').off();
 		$('.offer img').off();
 		$('.cardfan img.card').off();
 		$('.active_element').removeClass('active_element');
-		$('.delete').off();
+		$('#discard').off();
+		$('#forward').css("visibility", "hidden");
 		//$(".jumpy").removeClass("jumpy");
 	}
 
@@ -1001,22 +1012,6 @@ class Steamed extends GameTemplate {
     }
   }*/
 
-	newDrawDeck() {
-		let html = `<div id="draw_deck" class="field_slot tip" style="background-image: url('${this.card_img_dir}SB_reward.png');">
-                ${this.game.deck[0].crypt.length}
-                <div class="tiptext">`;
-
-		if (this.game.state.planted == 0) {
-			html += 'You have to plant your first card before you can move on';
-		} else if (this.game.state.planted <= 2) {
-			html += 'Click here to draw three cards into the pool';
-		} else {
-			html += 'Click to draw two cards and end your turn';
-		}
-		html += `</div></div>`;
-
-		return html;
-	}
 
 	displayAll() {
 		this.displayBoard();
@@ -1036,7 +1031,7 @@ class Steamed extends GameTemplate {
 		if (this.game.deck[0].crypt.length > 0) {
 			$('#draw_deck').html(
 				this.game.deck[0].crypt.length +
-					`<div class="tiptext">The game will end when all ${this.game.deck[0].crypt.length} have been drawn</div>`
+					`<div class="tiptext">The game will end when all cards have been drawn</div>`
 			);
 		} else {
 			$('#draw_deck').css('visibility', 'hidden');

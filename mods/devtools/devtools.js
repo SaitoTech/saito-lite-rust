@@ -15,7 +15,8 @@ class DevTools extends ModTemplate {
 		this.name = 'DevTools';
 		this.appname = 'DevTools';
 		this.slug = 'devtools';
-		this.description = 'Application manages installing, indexing, compiling and serving Saito modules.';
+		this.description =
+			'Application manages installing, indexing, compiling and serving Saito modules.';
 		this.categories = 'Utilities Dev';
 		this.featured_apps = [];
 		this.header = null;
@@ -86,7 +87,6 @@ class DevTools extends ModTemplate {
 			// 			this_self.addAppOverlay.render();
 			// 		}
 			// 	});
-
 			// 	return x;
 			// }
 		}
@@ -95,10 +95,10 @@ class DevTools extends ModTemplate {
 
 	async sendSubmitModuleTransaction(zip, slug, callback) {
 		let peers = await this.app.network.getPeers();
-    if (peers.length == 0) {
-      console.warn("No peers");
-      return;
-    }
+		if (peers.length == 0) {
+			console.warn('No peers');
+			return;
+		}
 
 		let msg = {
 			module: 'AppStore',
@@ -107,26 +107,25 @@ class DevTools extends ModTemplate {
 			slug: slug
 		};
 
-		console.log("zip_file trans", zip);
+		console.log('zip_file trans', zip);
 
-    this.app.network.sendRequestAsTransaction(
-      'submit module',
-      msg,
-      (res) => {
-
-    	console.log('appstore callback: ' + res);
-      	return callback(res);
-      },
-      peers[0].peerIndex
-    );
+		this.app.network.sendRequestAsTransaction(
+			'submit module',
+			msg,
+			(res) => {
+				console.log('appstore callback: ' + res);
+				return callback(res);
+			},
+			peers[0].peerIndex
+		);
 	}
 
 	async sendModuleDetailsTransaction(zip, callback) {
 		let peers = await this.app.network.getPeers();
-    if (peers.length == 0) {
-      console.warn("No peers");
-      return;
-    }
+		if (peers.length == 0) {
+			console.warn('No peers');
+			return;
+		}
 
 		let msg = {
 			module: 'AppStore',
@@ -134,44 +133,43 @@ class DevTools extends ModTemplate {
 			module_zip: zip
 		};
 
-    this.app.network.sendRequestAsTransaction(
-      'get module details',
-      msg,
-      (res) => {
-
-    	console.log('appstore callback: ' + res);
-      	return callback(res);
-      },
-      peers[0].peerIndex
-    );
+		this.app.network.sendRequestAsTransaction(
+			'get module details',
+			msg,
+			(res) => {
+				console.log('appstore callback: ' + res);
+				return callback(res);
+			},
+			peers[0].peerIndex
+		);
 	}
 
 	async handlePeerTransaction(app, tx = null, peer, mycallback) {
 		let this_self = this;
-	    if (tx == null) {
-	      return 0;
-	    }
+		if (tx == null) {
+			return 0;
+		}
 
-	    let txmsg = tx.returnMessage();
+		let txmsg = tx.returnMessage();
 
-	    if (!txmsg.request) {
-	      return 0;
-	    }
+		if (!txmsg.request) {
+			return 0;
+		}
 
-	    if (txmsg.request === 'submit module') {
-	    	let { module_zip, slug } = txmsg.data;
-	 			await this_self.createAppBinary(module_zip, slug, mycallback);
-	    }
+		if (txmsg.request === 'submit module') {
+			let { module_zip, slug } = txmsg.data;
+			await this_self.createAppBinary(module_zip, slug, mycallback);
+		}
 
-	    if (txmsg.request === 'get module details') {
-	    	let { module_zip, slug } = txmsg.data;
-	 			await this_self.getNameAndDescriptionFromZip(module_zip, mycallback);
-	    }
+		if (txmsg.request === 'get module details') {
+			let { module_zip, slug } = txmsg.data;
+			await this_self.getNameAndDescriptionFromZip(module_zip, mycallback);
+		}
 
-	    return super.handlePeerTransaction(app, tx, peer, mycallback);
+		return super.handlePeerTransaction(app, tx, peer, mycallback);
 	}
-	
-	clear(){
+
+	clear() {
 		this.zip_file = null;
 		this.title = null;
 		this.description = null;
@@ -184,38 +182,43 @@ class DevTools extends ModTemplate {
 
 	attachEvents() {
 		try {
-			if (this.app.BROWSER){
+			if (this.app.BROWSER) {
 				let this_self = this;
 
-				this.app.browser.addDragAndDropFileUploadToElement(`appstore-zip-upload`, async (filesrc) => {
-					this_self.clear();
+				this.app.browser.addDragAndDropFileUploadToElement(
+					`appstore-zip-upload`,
+					async (filesrc) => {
+						this_self.clear();
 
-			    let startPoint = filesrc.indexOf("base64");
-			    if (startPoint < 0){
-			    	throw new Error("File not base64 zipped");
-			    }
-					this_self.zip_file = filesrc.substring(startPoint + 7);;
-			    console.log('zip_file: ', this_self.zip_file);
+						let startPoint = filesrc.indexOf('base64');
+						if (startPoint < 0) {
+							throw new Error('File not base64 zipped');
+						}
+						this_self.zip_file = filesrc.substring(startPoint + 7);
+						console.log('zip_file: ', this_self.zip_file);
 
-			    await this_self.sendModuleDetailsTransaction(this_self.zip_file, async function(res){
-			    	console.log('mod details: ', res);
+						await this_self.sendModuleDetailsTransaction(this_self.zip_file, async function (res) {
+							console.log('mod details: ', res);
 
-			    	if (res.slug == '') {
-			    		salert("Error: Application missing slug");
-			    		return;
-			    	}
+							if (res.slug == '') {
+								salert('Error: Application missing slug');
+								return;
+							}
 
-			    	this_self.generateAppOverlay.mod_details = res;
-			    	this_self.generateAppOverlay.mod_details.publisher = this_self.publicKey;
-			    	this_self.generateAppOverlay.zip_file = this_self.zip_file;
-				    this_self.generateAppOverlay.render();
-			    });
-
-				}, true, false, false);
+							this_self.generateAppOverlay.mod_details = res;
+							this_self.generateAppOverlay.mod_details.publisher = this_self.publicKey;
+							this_self.generateAppOverlay.zip_file = this_self.zip_file;
+							this_self.generateAppOverlay.render();
+						});
+					},
+					true,
+					false,
+					false
+				);
 			}
-		} catch(err) {
-			console.error("Error: ", err);
-			salert("An error occurred while compiling application. Check console for details.");
+		} catch (err) {
+			console.error('Error: ', err);
+			salert('An error occurred while compiling application. Check console for details.');
 		}
 	}
 
@@ -226,7 +229,7 @@ class DevTools extends ModTemplate {
 			const unzipper = require('unzipper');
 			const fs = this_self.app.storage.returnFileSystem();
 			let zip_path = `app.zip`;
-			
+
 			try {
 				//
 				// convert base64 to binary
@@ -240,21 +243,20 @@ class DevTools extends ModTemplate {
 				const directory = await unzipper.Open.file(path.resolve(__dirname, zip_path));
 
 				let app_path = await this_self.getAppPath(directory, slug);
- 	 			await directory.extract({ path: './mods/tmp_mod/' })
-				
- 	 			console.log("app_path: ", app_path);
+				await directory.extract({ path: './tmp_mod/' });
+
+				console.log('app_path: ', app_path);
 
 				const { execSync } = require('child_process');
-				execSync(`sh  ./scripts/dyn-mod-compile.sh ${app_path}`,
-		        (error, stdout, stderr) => {
-		            console.log(stdout);
-		            console.log(stderr);
-		            if (error !== null) {
-		                console.log(`exec error: ${error}`);
-		            }
-		        });
+				execSync(`sh  ./scripts/dyn-mod-compile.sh ${app_path}`, (error, stdout, stderr) => {
+					console.log(stdout);
+					console.log(stderr);
+					if (error !== null) {
+						console.log(`exec error: ${error}`);
+					}
+				});
 
-        //delete unziped module
+				//delete unziped module
 				try {
 					await fs.unlink(path.resolve(__dirname, zip_path));
 				} catch (error) {
@@ -265,29 +267,39 @@ class DevTools extends ModTemplate {
 					encoding: 'binary'
 				});
 
-				execSync(`rm -rf  ./mods/tmp_mod/ ./build/dyn_mod.js`,
-        (error, stdout, stderr) => {
-            console.log(stdout);
-            console.log(stderr);
-            if (error !== null) {
-                console.log(`execSync error: ${error}`);
-            }
-        });
+				//console.log("Loaded DYN_MOD_WEB:", DYN_MOD_WEB);
 
-        if (mycallback) {
-        	return mycallback({DYN_MOD_WEB});
-        }
+				execSync(`rm -rf  ./tmp_mod/ ./build/dyn_mod.js`, (error, stdout, stderr) => {
+					console.log(stdout);
+					console.log(stderr);
+					if (error !== null) {
+						console.log(`execSync error: ${error}`);
+					}
+				});
 
+				execSync(
+					`truncate -s 0 ./build/dyn/web/base.txt &&  truncate -s 0 ./build/dyn/web/dyn.module.js`,
+					(error, stdout, stderr) => {
+						console.log(stdout);
+						console.log(stderr);
+						if (error !== null) {
+							console.log(`execSync error: ${error}`);
+						}
+					}
+				);
+
+				if (mycallback) {
+					return mycallback({ DYN_MOD_WEB });
+				}
 			} catch (err) {
-				console.log("ERROR UNZIPPING: " + err);
+				console.log('ERROR UNZIPPING: ' + err);
 			}
-			
 		} catch (err) {
 			console.log('Error in Appstore createAppBinary:', err);
 		}
 	}
 
-	async getAppPath(directory, slug){
+	async getAppPath(directory, slug) {
 		//console.log("getAppPath ////", directory, slug);
 		try {
 			let app_path = `${slug}.js`;
@@ -306,7 +318,7 @@ class DevTools extends ModTemplate {
 
 			return app_path;
 		} catch (err) {
-			console.log("ERROR getAppPath: " + err);
+			console.log('ERROR getAppPath: ' + err);
 		}
 	}
 
@@ -318,7 +330,7 @@ class DevTools extends ModTemplate {
 			let zip_path = `app.zip`;
 
 			// console.log('zip_bin:',zip_bin);
-			console.log('zip_path:',zip_path);
+			console.log('zip_path:', zip_path);
 			// return;
 			//
 			// convert base64 to vinary
@@ -337,26 +349,18 @@ class DevTools extends ModTemplate {
 			let version = '1.0.0';
 
 			try {
-				const directory = await unzipper.Open.file(
-					path.resolve(__dirname, zip_path)
-				);
+				const directory = await unzipper.Open.file(path.resolve(__dirname, zip_path));
 				let promises = directory.files.map(async (file) => {
-
-
 					// console.log('file: ', file);
 					// return;
 
 					if (file.path === 'web/img/arcade/arcade.jpg') {
 						let content = await file.buffer();
-						image =
-							'data:image/jpeg;base64,' +
-							content.toString('base64');
+						image = 'data:image/jpeg;base64,' + content.toString('base64');
 					}
 					if (file.path === 'web/img/saito_icon.jpg') {
 						let content = await file.buffer();
-						image =
-							'data:image/jpeg;base64,' +
-							content.toString('base64');
+						image = 'data:image/jpeg;base64,' + content.toString('base64');
 					}
 
 					if (file.path.substr(0, 3) == 'lib') {
@@ -401,9 +405,7 @@ class DevTools extends ModTemplate {
 						let i = 0;
 						i < zip_lines.length &&
 						i < 50 &&
-						(found_name == 0 ||
-							found_description == 0 ||
-							found_categories == 0);
+						(found_name == 0 || found_description == 0 || found_categories == 0);
 						i++
 					) {
 						//
@@ -412,9 +414,7 @@ class DevTools extends ModTemplate {
 						if (/this.name/.test(zip_lines[i]) && found_name == 0) {
 							found_name = 1;
 							if (zip_lines[i].indexOf('=') > 0) {
-								name = zip_lines[i].substring(
-									zip_lines[i].indexOf('=')
-								);
+								name = zip_lines[i].substring(zip_lines[i].indexOf('='));
 								name = cleanString(name);
 								name = name.replace(/^\s+|\s+$/gm, '');
 								if (name.length > 50) {
@@ -431,60 +431,36 @@ class DevTools extends ModTemplate {
 						//
 						// get description
 						//
-						if (
-							/this.description/.test(zip_lines[i]) &&
-							found_description == 0
-						) {
+						if (/this.description/.test(zip_lines[i]) && found_description == 0) {
 							found_description = 1;
 							if (zip_lines[i].indexOf('=') > 0) {
-								description = zip_lines[i].substring(
-									zip_lines[i].indexOf('=')
-								);
+								description = zip_lines[i].substring(zip_lines[i].indexOf('='));
 								description = cleanString(description);
-								description = description.replace(
-									/^\s+|\s+$/gm,
-									''
-								);
+								description = description.replace(/^\s+|\s+$/gm, '');
 							}
 						}
 
 						//
 						// get categories
 						//
-						if (
-							/this.categories/.test(zip_lines[i]) &&
-							found_categories == 0
-						) {
+						if (/this.categories/.test(zip_lines[i]) && found_categories == 0) {
 							found_categories = 1;
 							if (zip_lines[i].indexOf('=') > 0) {
-								categories = zip_lines[i].substring(
-									zip_lines[i].indexOf('=')
-								);
+								categories = zip_lines[i].substring(zip_lines[i].indexOf('='));
 								categories = cleanString(categories);
-								categories = categories.replace(
-									/^\s+|\s+$/gm,
-									''
-								);
+								categories = categories.replace(/^\s+|\s+$/gm, '');
 							}
 						}
 
 						//
 						// get slug
 						//
-						if (
-							/this.slug/.test(zip_lines[i]) &&
-							found_slug == 0
-						) {
+						if (/this.slug/.test(zip_lines[i]) && found_slug == 0) {
 							found_slug = 1;
 							if (zip_lines[i].indexOf('=') > 0) {
-								slug = zip_lines[i].substring(
-									zip_lines[i].indexOf('=')
-								);
+								slug = zip_lines[i].substring(zip_lines[i].indexOf('='));
 								slug = cleanString(slug);
-								slug = slug.replace(
-									/^\s+|\s+$/gm,
-									''
-								);
+								slug = slug.replace(/^\s+|\s+$/gm, '');
 							}
 						}
 					}
@@ -509,12 +485,7 @@ class DevTools extends ModTemplate {
 								if (char == '`') {
 									return '';
 								}
-								if (
-									char == '\\' ||
-									char == '\'' ||
-									char == '"' ||
-									char == ';'
-								) {
+								if (char == '\\' || char == "'" || char == '"' || char == ';') {
 									return '';
 								}
 								if (!/[a-zA-Z0-9_-]/.test(char)) {
@@ -527,7 +498,7 @@ class DevTools extends ModTemplate {
 				});
 				await Promise.all(promises);
 			} catch (err) {
-				console.log("ERROR UNZIPPING: " + err);
+				console.log('ERROR UNZIPPING: ' + err);
 			}
 
 			//
@@ -539,24 +510,23 @@ class DevTools extends ModTemplate {
 			}
 
 			if (mycallback) {
-      	return mycallback({ name, image, description, categories, slug, version});
-      }
-
+				return mycallback({ name, image, description, categories, slug, version });
+			}
 		} catch (err) {
 			console.log('Error in Appstore getNameAndDescriptionFromZip:', err);
 		}
 	}
 
 	download(content, fileName, contentType, callback) {
-	  const a = document.createElement("a");
-	  const file = new Blob([content], { type: contentType });
-	  a.href = URL.createObjectURL(file);
-	  a.download = fileName;
-	  a.click();
+		const a = document.createElement('a');
+		const file = new Blob([content], { type: contentType });
+		a.href = URL.createObjectURL(file);
+		a.download = fileName;
+		a.click();
 
-	  if(callback) {
-	  	return callback();
-	  }
+		if (callback) {
+			return callback();
+		}
 	}
 }
 

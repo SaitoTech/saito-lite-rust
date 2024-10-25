@@ -77,6 +77,9 @@ class WebMethods extends WebSharedMethods {
 	sendWalletUpdate() {
 		this.app.connection.emit('wallet-updated');
 	}
+	sendBlockFetchStatus(count){
+		this.app.connection.emit('block-fetch-status', {count: count});
+	}
 
 	async saveWallet() {
 		this.app.options.wallet.publicKey =
@@ -129,7 +132,7 @@ async function init() {
 			new WebMethods(saito),
 			new Factory(),
 			saito.options.wallet?.privateKey || '',
-			LogLevel.Debug,
+			LogLevel.Info,
 			BigInt(1)
 		);
 	} catch (e) {
