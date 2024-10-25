@@ -2469,7 +2469,7 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 
 	if (mv[0] === "is_testing") {
 
-//          this.addCard("hapsburg", "068");
+          this.addCard("ottoman", "054");
 
     	  this.game.queue.splice(qe, 1);
 	  return 1;

@@ -25664,7 +25664,7 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 
 	if (mv[0] === "is_testing") {
 
-//          this.addCard("hapsburg", "068");
+          this.addCard("ottoman", "054");
 
     	  this.game.queue.splice(qe, 1);
 	  return 1;
@@ -40495,10 +40495,8 @@ if (relief_siege == 1) {
 	 }
          for (let z = 0; z < this.game.state.activated_powers[this.game.state.activated_powers[faction][i]].length; z++) {
 	   let mp = this.game.state.activated_powers[this.game.state.activated_powers[faction][i]][z];
-console.log("MP: " + mp);
 	   let can_select = true;
 	   if (faction === "france" && this.game.state.events.scots_raid == 1) {
-console.log("MP2: " + mp);
 	     if (!(mp == "france" || mp == "scotland")) { can_select = false; }
 	   }
 	   if (can_select) { html += `<li class="card" id="${this.game.state.activated_powers[this.game.state.activated_powers[faction][i]][z]}">${this.game.state.activated_powers[this.game.state.activated_powers[faction][i]][z]}</li>`; }
@@ -40888,7 +40886,6 @@ console.log("MP2: " + mp);
     return;
   }
   async playerCounterReformationAttempt(player) {
-console.log("1");
 return;
   }
 
@@ -43486,14 +43483,9 @@ does_units_to_move_have_unit = true; }
 	let id = parseInt(tmpx.split("-")[1]);
 	let f = tmpx.split("-")[0];
 
-console.log(id + " -----> " + JSON.stringify(units_to_move_idx) + " ||| " + JSON.stringify(units_to_move));
-
         if (units_to_move_idx.includes(id)) {
-console.log("units to move_idx includes this id");
           let idx = units_to_move_idx.indexOf(id);
-console.log("the index is: " + idx);
           if (idx > -1) {
-console.log("splicing it out...");
             units_to_move_idx.splice(idx, 1);
             units_to_move.splice(idx, 1);
           }
@@ -43501,10 +43493,6 @@ console.log("splicing it out...");
           units_to_move_idx.push(parseInt(id));
           units_to_move.push({ idx : parseInt(id) , faction : f });
 	}
-
-console.log("UPDATED:");
-console.log(JSON.stringify(units_to_move_idx));
-console.log(JSON.stringify(units_to_move));
 
         selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
       });
@@ -43868,15 +43856,6 @@ console.log(JSON.stringify(units_to_move));
     let units_to_move = [];
     let units_available = his_self.returnFactionNavalUnitsToMove(faction);
 
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("$");
-console.log(JSON.stringify(units_available));
-
-
     for (let z = 0; z < units_available.length; z++) {
       if (units_available[z].locked == 1) { units_available.splice(z, 1); z--; }
     }
@@ -44012,15 +43991,6 @@ console.log(JSON.stringify(units_available));
 	    revised_units_to_move.unshift(JSON.parse(JSON.stringify(units_available[units_to_move[highest_idx]])));
 	    units_to_move.splice(highest_idx, 1);
 	  }
-
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("UNITS TO MOVE: " + JSON.stringify(revised_units_to_move));
 
 	  //
 	  // revised units to move is
