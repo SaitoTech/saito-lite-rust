@@ -14,7 +14,7 @@ module.exports = (app, mod) => {
 					<div class="field_slot" id="s3"></div>
 					<div class="steam-controls">
 						<div id="forward" class="control"><i class="fa-solid fa-forward"></i></div>
-						<div id="discard" class="control"><i class="fa-solid fa-trash"></i></div>
+						<div id="discard" class="control" style="visibility:hidden;"><i class="fa-solid fa-trash"></i></div>
 					</div>
 				</div>
 				<div class="pot">
