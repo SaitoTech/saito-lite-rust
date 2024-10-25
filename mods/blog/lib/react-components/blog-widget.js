@@ -2,10 +2,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SaitoOverlayReact from '../../../../lib/saito/ui/saito-overlay/saito-overlay.react';
 import BlogPostDetail from './blog-post-detail';
-import { Calendar, User, Clock } from 'lucide-react';
+import {  Clock } from 'lucide-react';
 
 
-const BlogWidget = ({ app, mod, key }) => {
+const BlogWidget = ({ app, mod, publicKey, topMargin }) => {
     const [posts, setPosts] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
     const [title, setTitle] = useState('');
@@ -74,46 +74,20 @@ const BlogWidget = ({ app, mod, key }) => {
     };
 
 
-    // Sample blog posts array
-    const samplePosts = [
-        {
-            title: "Getting Started with React",
-            content: "<p>React is a powerful library for building user interfaces. It uses a component-based architecture that makes it easy to create reusable UI elements. Each component can maintain its own state and receive props from parent components.</p>"
-        },
-        {
-            title: "Understanding Hooks",
-            content: "<p>Hooks are a revolutionary feature in React that allow you to use state and other React features without writing class components. The most commonly used hooks are useState and useEffect.</p>"
-        }
-    ];
-
     useEffect(() => {
         const publicKey = mod.publicKey;
-        // const handleBlogUpdate = (key, blogPosts) => {
-
-        //     console.log(blogPosts, "blog update widget")
-        //     if (key === publicKey) {
-
-        //     }
-        // };
-        // app.connection.on('blog-update-widget', (key, blogPosts) => {
-        //     console.log('blog-update-widget, inside')
-        //     handleBlogUpdate(key, blogPosts)
-        // } );
-
-        mod.loadBlogTransactionsForWidget(mod.publicKey, (posts) => {
+        console.log(publicKey , "the key")
+        mod.loadBlogTransactionsForWidget(publicKey, (posts) => {
             console.log('loading my blog transaction for widget')
             setPosts(posts);
         })
 
-        setAuthorImage(app.keychain.returnIdenticon(mod.publicKey));   
+        setAuthorImage(app.keychain.returnIdenticon(publicKey));   
     }, []);
 
     const handlePublish = async () => {
         if (!title.trim() || !content.trim()) {
-            app.connection.emit("saito-header-update-message", {
-                msg: "Please fill in all fields",
-                timeout: 2000
-            });
+            siteMessage("Please fill in all fields", 2000)
             return;
         }
 
@@ -125,12 +99,13 @@ const BlogWidget = ({ app, mod, key }) => {
                 console.log('setting posts', posts)
                 setPosts((posts) => {
                     return [
-                        ...posts,
                         {
                             title,
                             content,
                             timestamp
-                        }
+                        },
+                        ...posts,
+                      
                     ]
                 })
             });
@@ -194,7 +169,7 @@ const BlogWidget = ({ app, mod, key }) => {
     );
 
     const renderMainContent = () => (
-        <div className="blog-widget">
+        <div className="blog-widget" style={{marginTop: topMargin ? "var(--saito-header-height)": ""}}>
             <div className="blog-header">
                 <button
                     className="blog-new-post-btn"
@@ -234,7 +209,7 @@ const BlogWidget = ({ app, mod, key }) => {
                     </article>
                 ))}
 
-                {samplePosts.length === 0 && (
+                {posts.length === 0 && (
                     <div className="no-posts">
                         <p>No blog posts yet. Be the first to create one!</p>
                     </div>
@@ -272,7 +247,7 @@ const BlogWidget = ({ app, mod, key }) => {
                         onClose={handleCloseDetail}
                         app={app}
                         mod={mod}
-                        publicKey={mod.publicKey}
+                        publicKey={publicKey}
                     />
                 )}
             </SaitoOverlayReact>

@@ -89,9 +89,9 @@ class Blog extends ModTemplate {
                 if (postId && author) {
                     // Load specific post
                     await this.loadSinglePost(postId, author);
-                } 
-                else{
-                     // Load post by author
+                }
+                else {
+                    // Load post by author
                     this.loadPosts(author);
                 }
             }
@@ -396,12 +396,8 @@ class Blog extends ModTemplate {
     async render() {
         this.header = new SaitoHeader(this.app, this);
         await this.header.initialize(this.app);
-        // this.main = new BlogMain(this.app, this)
-        // this.addComponent(this.main);
         this.addComponent(this.header);
         await super.render(this.app, this);
-        // this.renderPost()
-
 
     }
 
@@ -414,16 +410,29 @@ class Blog extends ModTemplate {
         let root = createRoot(widgetRoot);
 
         // if there is no author params or author is my key, load my own posts
-        if(!author || author == this.publicKey){
+        if (!author || author == this.publicKey) {
             root.render(
                 <BlogWidget
                     app={this.app}
                     mod={this}
+                    publicKey={this.publicKey}
+                    topMargin={true}
                 />
             );
         }
-      
-       
+
+        if (author && author !== this.publicKey) {
+            root.render(
+                <BlogWidget
+                    app={this.app}
+                    mod={this}
+                    publicKey={author}
+                    topMargin={true}
+                />
+            )
+        }
+
+
 
     }
 
@@ -431,7 +440,7 @@ class Blog extends ModTemplate {
     async loadSinglePost(postId, author) {
         let peer;
         if (this.publicKey === author) {
-            let p =(await this.app.network.getPeers())[0];
+            let p = (await this.app.network.getPeers())[0];
             peer = p.peerIndex
         } else {
             peer = author
