@@ -75,7 +75,6 @@ const BlogWidget = ({ app, mod, publicKey, topMargin }) => {
 
 
     useEffect(() => {
-        const publicKey = mod.publicKey;
         console.log(publicKey , "the key")
         mod.loadBlogTransactionsForWidget(publicKey, (posts) => {
             console.log('loading my blog transaction for widget')

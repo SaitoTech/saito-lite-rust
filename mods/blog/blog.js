@@ -161,6 +161,16 @@ class Blog extends ModTemplate {
                     console.log('posts gotten', posts);
                 },
                 peer.peerIndex)
+        } else {
+            this.app.storage.loadTransactions({ field1: 'Blog', field2: key, limit },
+                function (txs) {
+                    const filteredTxs = self.filterBlogPosts(txs);
+                    console.log(filteredTxs, 'filtered transactions')
+                    const posts = self.convertTransactionsToPosts(filteredTxs);
+                    callback(posts)
+                    console.log('posts gotten', posts);
+                },
+                key)
         }
     }
 
