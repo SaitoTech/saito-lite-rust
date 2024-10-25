@@ -50,7 +50,7 @@ class SaitoBlogWidget {
             <BlogWidget 
                 app={this.app}
                 mod={this.mod}
-                key={this.mod.publicKey}
+                publicKey={this.mod.publicKey}
                 topMargin= {false}
             />
         );
