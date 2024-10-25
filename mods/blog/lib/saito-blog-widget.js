@@ -4,9 +4,10 @@ const React = require('react');
 const { default: BlogWidget } = require('./react-components/blog-widget');
 
 class SaitoBlogWidget {
-    constructor(app, mod, selector) {
+    constructor(app, mod, publicKey, selector) {
         this.app = app;
         this.mod = mod;
+        this.publicKey = publicKey
         this.selector = selector;
         this.name = "SaitoBlogWidget";
         this.root = null;      
@@ -50,7 +51,7 @@ class SaitoBlogWidget {
             <BlogWidget 
                 app={this.app}
                 mod={this.mod}
-                publicKey={this.mod.publicKey}
+                publicKey={this.publicKey}
                 topMargin= {false}
             />
         );

@@ -1,2 +1,0 @@
-peer_index,public_key,limited_till,msg_limit,invalid_blocks_limit,same_depth_limit,too_far_block_limit,handshake_limit,keylist_limit
-11,"zS7RXFJ8GwxJACWhjwuE21wZQnv26ondGGiyULXTsoQU",0,false,false,false,false,false,true

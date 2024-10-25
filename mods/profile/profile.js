@@ -136,7 +136,7 @@ class Profile extends ModTemplate {
 			let peers = await this.app.network.getPeers();
 			let serverPeer = peers[0];
 			console.log(host, port, serverPeer.publicKey)
-			app.connection.emit('profile-update-archive-node', { host, port:'12102', publicKey: serverPeer.publicKey });
+			app.connection.emit('profile-update-archive-node', { host, port, publicKey: serverPeer.publicKey });
 		}
 
 	}
