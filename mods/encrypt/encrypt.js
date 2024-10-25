@@ -295,7 +295,6 @@ class Encrypt extends ModTemplate {
     tx.msg.request = "key exchange request";
     tx.msg.alice_publicKey = alice_publicKey;
     const key = this.app.keychain.returnKey(this.publicKey);
-    // tx.msg.archive_nodes = key.profile.archive_nodes
     tx.addTo(this.publicKey);
 
     //
@@ -337,7 +336,6 @@ class Encrypt extends ModTemplate {
     let remote_address = tx.from[0].publicKey;
     let our_address = tx.to[0].publicKey;
     let alice_publicKey = txmsg.alice_publicKey;
-    // let archive_nodes = txmsg.archive_nodes;
 
     if (this.app.BROWSER == 1) {
       siteMessage(`${this.app.keychain.returnUsername(remote_address, 8)} has added you as a friend`, 5000);

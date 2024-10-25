@@ -87,7 +87,7 @@ export default class Network {
   		return ps;
 	}
 
-	async connectToArchivePeer(peerIndex, peerDetails, data, message, internal_callback  ){
+	async connectToArchivePeer(peerIndex, peerDetails, data, message, internal_callback, error_callback = null  ){
 	let {publicKey, host, port, url} = peerDetails
 		try {
 			await S.getLibInstance().add_new_archive_peer(peerIndex, publicKey, host, port);
