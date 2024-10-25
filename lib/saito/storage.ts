@@ -211,8 +211,10 @@ class Storage {
 				if (this.app.crypto.isPublicKey(peer)) {
 					// Attempt to find the peer in the current network
 					let peers = await this.app.network.getPeers();
+					let serverPeer = peers[0]
 					const targetPeer = peers.find(p => p.publicKey === peer) || null
 					// If the peer is found in the network, send the request
+
 					if (targetPeer) {
 						this.app.network.sendRequestAsTransaction(
 							message,
@@ -224,9 +226,9 @@ class Storage {
 						);
 					}
 
-					// Retrieve archive nodes for the peer			
+					// R 		
 					let a_nodes = this.app.keychain.returnPeerArchiveNodes(peer);
-					
+
 					// If archive nodes are found, attempt to communicate
 					if (a_nodes.length > 0) {
 						let archiveNode = a_nodes[0];
@@ -258,7 +260,17 @@ class Storage {
 							}
 						}
 					} else {
-						console.log('No archive nodes found for this key');
+						console.log('No archive nodes found for this key, try fetching from my server');
+						// Try to fetch from my server node
+						let peers = await this.app.network.getPeers();
+						this.app.network.sendRequestAsTransaction(
+							message,
+							data,
+							(res) => {
+								internal_callback(res);
+							},
+							serverPeer.peerIndex 
+						)
 					}
 				}
 			} else {

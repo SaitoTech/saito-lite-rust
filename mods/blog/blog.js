@@ -2,7 +2,6 @@ const { default: Transaction } = require("saito-js/lib/transaction");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const pageHome = require('./index');
-const BlogMain = require("./lib/blogMain");
 const SaitoBlogWidget = require("./lib/saito-blog-widget");
 const { default: BlogWidget } = require("./lib/react-components/blog-widget");
 const { createRoot } = require("react-dom/client");
@@ -57,14 +56,14 @@ class Blog extends ModTemplate {
             }
             this.attachStyleSheets();
             // Get container from selector
-            const selector = obj.container;
+            const {container:selector, publicKey} = obj;
             console.log(obj, 'object')
 
             if (!selector) {
                 console.error("A selector is needed for the blog widget");
                 return;
             }
-            let widget = new SaitoBlogWidget(this.app, this, selector)
+            let widget = new SaitoBlogWidget(this.app, this, publicKey, selector)
             return widget
         }
     }
