@@ -1583,7 +1583,6 @@ class Limbo extends ModTemplate {
 		}
 		let peers = await this.app.network.getPeers();
 		console.log(' ******* Limbo server forward tx');
-		console.log('notifying peers', peers);
 		for (let peer of peers) {
 			if (peer.synctype == 'lite') {
 				this.app.network.sendRequestAsTransaction(

@@ -341,6 +341,9 @@ class TweetManager {
 			// Sort txs into posts/replies/retweets...
 			this.filterAndRenderProfile(txs);
 
+			// , this should add the component to click
+
+			this.hideLoader();
 			this.profile.render();
 		});
 
@@ -517,11 +520,6 @@ class TweetManager {
 		}
 	}
 
-
-	renderBlogWidget(){
-		this.profile.menu.blog = [widget];
-		console.log(this.profile.menu);
-	}
 
 	//
 	// this renders a tweet, loads all of its available children and adds them to the page
