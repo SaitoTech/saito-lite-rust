@@ -40,7 +40,7 @@ class Steamed extends GameTemplate {
 	}
 
 	async render(app) {
-		if (this.browser_active == 0) {
+		if (!this.browser_active) {
 			return;
 		}
 		if (this.initialize_game_run) {
@@ -48,7 +48,7 @@ class Steamed extends GameTemplate {
 		}
 
 		await this.injectGameHTML(htmlTemplate());
-		
+
 		await super.render(app);
 
 		this.menu.addMenuOption('game-game', 'Game');
@@ -68,10 +68,7 @@ class Steamed extends GameTemplate {
 
 		this.log.render();
 
-		$('.score_card').css(
-			'background-image',
-			`url('${this.card_img_dir}SB_reward.png')`
-		);
+		$('.score_card').css('background-image', `url('${this.card_img_dir}SB_reward.png')`);
 	}
 
 	////////////////
@@ -99,9 +96,7 @@ class Steamed extends GameTemplate {
 			console.log('---------------------------');
 			console.log('\n\n\n\n');
 
-			this.updateStatus(
-				'<div class=\'status-message\'>Generating the Game</div>'
-			);
+			this.updateStatus("<div class='status-message'>Generating the Game</div>");
 
 			this.game.queue = [];
 			this.game.queue.push(`turn\t1`);
@@ -109,9 +104,7 @@ class Steamed extends GameTemplate {
 
 			//Main Deck
 			this.game.queue.push('deal');
-			this.game.queue.push(
-				'SIMPLEDEAL\t5\t1\t' + JSON.stringify(this.returnCards())
-			);
+			this.game.queue.push('SIMPLEDEAL\t5\t1\t' + JSON.stringify(this.returnCards()));
 		}
 	}
 
@@ -133,7 +126,7 @@ class Steamed extends GameTemplate {
 			let qe = this.game.queue.length - 1;
 			let mv = this.game.queue[qe].split('\t');
 
-			/*
+	 /*
       Copy players hand into state.hand
       */
 			if (mv[0] == 'deal') {
@@ -143,30 +136,18 @@ class Steamed extends GameTemplate {
 					let card = this.game.deck[0].hand.pop();
 					card = this.game.deck[0].cards[card].type;
 					this.game.state.hand.unshift(card);
-					if (this.browser_active) {
+					if (this.gameBrowserActive()) {
 						this.animationSequence.push({
 							callback: this.moveGameElement,
 							params: [
-								this.createGameElement(
-									this.twoSidedCard(card),
-									'#draw_deck'
-								),
+								this.createGameElement(this.twoSidedCard(card), '#draw_deck'),
 								`#cardfan`,
 								{
 									callback: (id) => {
-										$(`#${id} .flipped`).removeClass(
-											'flipped'
-										);
+										$(`#${id} .flipped`).removeClass('flipped');
 										$(`#${id}`)
 											.css('z-index', `${i}`)
-											.css(
-												'transform',
-												`rotate(${
-													10 * i - 40
-												}deg) translateX(${
-													50 * i - 150
-												}px)`
-											);
+											.css('transform', `rotate(${10 * i - 40}deg) translateX(${50 * i - 150}px)`);
 									}
 								},
 								() => {
@@ -179,7 +160,7 @@ class Steamed extends GameTemplate {
 				}
 
 				//Animate the draw
-				if (this.browser_active && this.animationSequence.length > 0) {
+				if (this.gameBrowserActive() && this.animationSequence.length > 0) {
 					this.runAnimationQueue();
 					return 0;
 				}
@@ -188,7 +169,7 @@ class Steamed extends GameTemplate {
 			}
 
 			if (mv[0] == 'turn') {
-				if (!this.browser_active) {
+				if (!this.gameBrowserActive()) {
 					return 0;
 				}
 
@@ -204,9 +185,7 @@ class Steamed extends GameTemplate {
 					this.game.state.welcome = 1;
 				}*/
 
-				if (this.browser_active) {
-					this.displayAll();
-				}
+				this.displayAll();
 
 				let player = parseInt(mv[1]);
 
@@ -242,26 +221,15 @@ class Steamed extends GameTemplate {
 					if (this.game.player == 2) {
 						i_won = true;
 					}
-					this.sendGameOverTransaction(
-						this.game.players[1],
-						'Second Player wins tie'
-					);
+					this.sendGameOverTransaction(this.game.players[1], 'Second Player wins tie');
 				}
 				if (this.game.state.gold[0] > this.game.state.gold[1]) {
 					i_won = true;
-					this.sendGameOverTransaction(
-						this.game.players[this.game.player - 1],
-						'High Score'
-					);
+					this.sendGameOverTransaction(this.game.players[this.game.player - 1], 'High Score');
 				} else {
-					this.sendGameOverTransaction(
-						this.game.players[2 - this.game.player],
-						'High Score'
-					);
+					this.sendGameOverTransaction(this.game.players[2 - this.game.player], 'High Score');
 				}
-				this.updateLog(
-					`The Game is over and I ${i_won ? 'won' : 'lost'}!`
-				);
+				this.updateLog(`The Game is over and I ${i_won ? 'won' : 'lost'}!`);
 				return 0;
 			}
 
@@ -273,7 +241,7 @@ class Steamed extends GameTemplate {
 					$('.status').css('display', 'block');
 
 					this.updateStatus(
-						'<div class=\'status-message\'>Liquidating remaining factories to tally final score</div>'
+						"<div class='status-message'>Liquidating remaining factories to tally final score</div>"
 					);
 					this.game.queue.push('gameover');
 					this.game.queue.push(`liquidate\t1\t1`);
@@ -283,9 +251,7 @@ class Steamed extends GameTemplate {
 					this.game.queue.push(`liquidate\t2\t2`);
 					this.game.queue.push(`liquidate\t2\t3`);
 				} else {
-					this.game.queue.push(
-						'turn\t' + this.returnNextPlayer(parseInt(mv[1]))
-					);
+					this.game.queue.push('turn\t' + this.returnNextPlayer(parseInt(mv[1])));
 				}
 				return 1;
 			}
@@ -325,21 +291,19 @@ class Steamed extends GameTemplate {
 				if (message) {
 					message = message.substring(0, message.length - 2);
 					this.updateLog(message + ' are discarded from the offers.');
-					Array.from(document.querySelectorAll('.offer img')).forEach(
-						async (c) => {
-							this.animationSequence.push({
-								callback: this.moveGameElement,
-								params: [
-									this.copyGameElement(c),
-									'#discards',
-									{ resize: 1 },
-									() => {
-										this.finishAnimation();
-									}
-								]
-							});
-						}
-					);
+					Array.from(document.querySelectorAll('.offer img')).forEach(async (c) => {
+						this.animationSequence.push({
+							callback: this.moveGameElement,
+							params: [
+								this.copyGameElement(c),
+								'#discards',
+								{ resize: 1 },
+								() => {
+									this.finishAnimation();
+								}
+							]
+						});
+					});
 					this.runAnimationQueue(250);
 				} else {
 					return 1;
@@ -364,10 +328,7 @@ class Steamed extends GameTemplate {
 				let nextMove = this.game.queue.pop();
 
 				if (nextMove.slice(0, 5) !== 'phase') {
-					console.warn(
-						'Unexpected queue order for CONTINUE',
-						nextMove
-					);
+					console.warn('Unexpected queue order for CONTINUE', nextMove);
 					this.game.queue.push('continue');
 					this.game.queue.push(nextMove);
 				}
@@ -384,11 +345,7 @@ class Steamed extends GameTemplate {
 				this.game.queue.splice(qe, 1);
 
 				this.updateLog(
-					`${
-						this.game.player == player
-							? 'You build'
-							: 'Your Opponent builds'
-					} a ${card} factory`
+					`${this.game.player == player ? 'You build' : 'Your Opponent builds'} a ${card} factory`
 				);
 
 				if (this.game.player !== player) {
@@ -396,20 +353,14 @@ class Steamed extends GameTemplate {
 
 					if (source === 'market') {
 						this.moveGameElement(
-							this.copyGameElement(
-								`.offer .card[data-id="${card}"]`
-							),
+							this.copyGameElement(`.offer .card[data-id="${card}"]`),
 							`#o${slot + 1}`,
 							{ insert: 1 },
 							() => {
 								this.finishAnimation();
 							}
 						);
-						for (
-							let i = 0;
-							i < this.game.state.market.length;
-							i++
-						) {
+						for (let i = 0; i < this.game.state.market.length; i++) {
 							if (this.game.state.market[i] == card) {
 								this.game.state.market.splice(i, 1);
 								break;
@@ -469,20 +420,12 @@ class Steamed extends GameTemplate {
 					this.updateLog(
 						`You sell ${this.game.state.self[slot].length} ${this.game.state.self[slot][0]} factories for ${gold} gold.`
 					);
-					for (
-						let i = gold;
-						i < this.game.state.self[slot].length;
-						i++
-					) {
-						this.game.state.discards.push(
-							this.game.state.self[slot][0]
-						);
+					for (let i = gold; i < this.game.state.self[slot].length; i++) {
+						this.game.state.discards.push(this.game.state.self[slot][0]);
 					}
 
 					if (document.querySelector(`#s${mv[2]} div.field_slot`)) {
-						document
-							.querySelector(`#s${mv[2]} div.field_slot`)
-							.remove();
+						document.querySelector(`#s${mv[2]} div.field_slot`).remove();
 						$(
 							this.cardToHTML(
 								this.game.state.self[slot][0],
@@ -499,20 +442,12 @@ class Steamed extends GameTemplate {
 					this.updateLog(
 						`Your opponent sells ${this.game.state.opponent[slot].length} ${this.game.state.opponent[slot][0]} factories for ${gold} gold.`
 					);
-					for (
-						let i = gold;
-						i < this.game.state.opponent[slot].length;
-						i++
-					) {
-						this.game.state.discards.push(
-							this.game.state.opponent[slot][0]
-						);
+					for (let i = gold; i < this.game.state.opponent[slot].length; i++) {
+						this.game.state.discards.push(this.game.state.opponent[slot][0]);
 					}
 
 					if (document.querySelector(`#o${mv[2]} div.field_slot`)) {
-						document
-							.querySelector(`#o${mv[2]} div.field_slot`)
-							.remove();
+						document.querySelector(`#o${mv[2]} div.field_slot`).remove();
 						$(
 							this.cardToHTML(
 								this.game.state.opponent[slot][0],
@@ -558,8 +493,7 @@ class Steamed extends GameTemplate {
 					}
 				}
 
-				this.game.state.gold[Math.abs(this.game.player - player)] +=
-					gold;
+				this.game.state.gold[Math.abs(this.game.player - player)] += gold;
 
 				this.runAnimationQueue();
 
@@ -585,7 +519,7 @@ class Steamed extends GameTemplate {
 			}
 			this.restartQueue();
 		} else {
-			console.log('Nevermind, let\'s wait a bit');
+			console.log("Nevermind, let's wait a bit");
 		}
 	}
 
@@ -601,17 +535,12 @@ class Steamed extends GameTemplate {
 		console.log(`Add ${newCard} to market`);
 		this.game.state.market.push(newCard);
 
-		$(
-			`<div class="slot_holder" id="sh${this.game.state.market.length}"></div>`
-		).appendTo('.offer');
+		$(`<div class="slot_holder" id="sh${this.game.state.market.length}"></div>`).appendTo('.offer');
 
 		this.animationSequence.push({
 			callback: this.moveGameElement,
 			params: [
-				this.createGameElement(
-					this.twoSidedCard(newCard),
-					'#draw_deck'
-				),
+				this.createGameElement(this.twoSidedCard(newCard), '#draw_deck'),
 				`#sh${this.game.state.market.length}`,
 				{
 					callback: (id) => {
@@ -644,9 +573,9 @@ class Steamed extends GameTemplate {
 			if (used) {
 				this.game.state.market.push(discardedCard);
 
-				$(
-					`<div class="slot_holder" id="sh${this.game.state.market.length}"></div>`
-				).appendTo('.offer');
+				$(`<div class="slot_holder" id="sh${this.game.state.market.length}"></div>`).appendTo(
+					'.offer'
+				);
 				this.animationSequence.push({
 					callback: this.moveGameElement,
 					params: [
@@ -698,7 +627,7 @@ class Steamed extends GameTemplate {
 		let html = `<div class="status-message"><span>`;
 
 		if (this.game.state.planted < 0) {
-			html += 'Build any offers or discard them';
+			html += 'Do you want any of the left over cards?';
 
 			//If no offers available any more, just end the turn
 			if (this.game.state.market.length == 0) {
@@ -710,31 +639,30 @@ class Steamed extends GameTemplate {
 			if (this.hasPlayableField()) {
 				html += `Build the first plant from your hand (mandatory)`;
 			} else {
-				html +=
-					'You must liquidate a factory so you can start a new plant';
+				html += 'You must liquidate a factory so you can start a new plant';
 			}
 		} else if (this.game.state.planted == 1) {
 			html += `Build the next plant from your hand (optional)`;
 		} else if (this.game.state.market.length > 0) {
 			html += `Build any available offers or leave them for your opponent`;
 		} else if (this.game.state.planted == 2) {
-			html += `Dealing 3 new offers from the deck..`;
+			html += `Sell${!this.game.state.discarded? ", trash,":""} or deal 3 new offers from the deck..`;
 		} else {
 			html += `Sell a stack or end your turn`;
 		}
+
+		html += `</span></div>`;
 
 		if (
 			this.game.state.planted >= 1 &&
 			this.game.state.planted <= 2 &&
 			!this.game.state.discarded
 		) {
-			$("#discard").css("visibility", "visible");
-			//html += `...or...</span> <span class="delete"> Discard a card`;
-		}else{
-			$("#discard").css("visibility", "hidden");
+			$('#discard').css('visibility', 'visible');
+		} else {
+			$('#discard').css('visibility', 'hidden');
 		}
 
-		html += `</span></div>`;
 
 		//if (this.game.tutorial.show){
 		//  this.showTutorial(this.game.state.planted.toString());
@@ -769,9 +697,7 @@ class Steamed extends GameTemplate {
 
 			//Failure condition
 			if (openSlot === -1) {
-				this.displayModal(
-					'You have no available fields to place that factory'
-				);
+				this.displayModal('You have no available fields to place that factory');
 
 				if (div) {
 					//this.game.state.market.push(card);
@@ -795,9 +721,7 @@ class Steamed extends GameTemplate {
 			}
 
 			this.game.state.self[openSlot].push(card);
-			this.addMove(
-				`plant\t${this.game.player}\t${card}\t${openSlot}\t${source}`
-			);
+			this.addMove(`plant\t${this.game.player}\t${card}\t${openSlot}\t${source}`);
 			this.moveGameElement(
 				this.copyGameElement(div),
 				`#s${openSlot + 1}`,
@@ -810,6 +734,7 @@ class Steamed extends GameTemplate {
 			this.displayHand();
 			this.attachBoardEvents();
 		};
+
 
 		if (this.game.state.planted >= 0 && this.game.state.planted < 2) {
 			$('.cardfan img.card:last-child').addClass('active_element');
@@ -834,11 +759,21 @@ class Steamed extends GameTemplate {
 		}
 
 		if (this.game.state.planted === 0) {
-			$('.cardfan img.card:last-child').addClass('activated');			
+			$('.cardfan img.card:last-child').addClass('activated');
 		}
 
-		$('.offer img').addClass('active_element');
-		$('.offer img').on('click', function () {
+		document.querySelectorAll('.offer img').forEach(c => {
+			let type = c.dataset.id;
+			console.log(type);
+			for (let plot of this.game.state.self){
+				if (plot.length == 0 || plot[0] == type){
+					c.classList.add("active_element");
+				}
+			}
+		})
+
+		//$('.offer img').addClass('active_element');
+		$('.offer img.active_element').on('click', function () {
 			$(this).off();
 			let card = $(this).attr('data-id');
 			let id = $(this).attr('id').substring(2);
@@ -849,7 +784,7 @@ class Steamed extends GameTemplate {
 		});
 
 		if (this.game.state.planted !== 0) {
-			$('#forward').css("visibility", "visible");
+			$('#forward').css('visibility', 'visible');
 			$('#forward').addClass('active_element');
 		}
 
@@ -857,9 +792,7 @@ class Steamed extends GameTemplate {
 			if (steamSelf.game.state.planted !== 0) {
 				steamSelf.dealCards();
 			} else {
-				steamSelf.displayModal(
-					'You have to build the first plant in your hand before moving on'
-				);
+				steamSelf.displayModal('You have to build the first plant in your hand before moving on');
 			}
 		});
 
@@ -875,37 +808,33 @@ class Steamed extends GameTemplate {
 				if (!steamSelf.isProtected(slot)) {
 					$(field).addClass('active_element');
 					$(field).on('click', function () {
-						steamSelf.removeEvents();
-						steamSelf.prependMove(
-							`liquidate\t${steamSelf.game.player}\t${slot}`
-						);
-						if (steamSelf.animation_queue.length == 0) {
-							steamSelf.endTurn();
-						} else {
-							console.log(
-								`${steamSelf.animation_queue.length} animations still running....`
-							);
-						}
+						steamSelf.confirmSale(steamSelf.game.player, slot, () => {
+							steamSelf.removeEvents();
+							steamSelf.prependMove(`liquidate\t${steamSelf.game.player}\t${slot}`);
+							if (steamSelf.animation_queue.length == 0) {
+								steamSelf.endTurn();
+							} else {
+								console.log(`${steamSelf.animation_queue.length} animations still running....`);
+							}
+						});
 					});
 				} else {
 					$(field).on('click', function () {
-						steamSelf.displayModal(
-							'You cannot sell a single plant when you have a larger factory'
-						);
+						steamSelf.displayModal('You cannot sell a single plant when you have a larger factory');
 					});
 				}
 			}
 		}
 
 		$('#discard').on('click', function () {
+			
 			steamSelf.removeEvents();
 			$('.active_element').removeClass('active_element');
 			$('.cardfan img.card').addClass('deletable');
 			$('#discard').addClass('active_state');
 			$('.cardfan img.card').on('click', function () {
-				steamSelf.removeEvents();
 				let card = $(this).attr('data-id');
-
+				$('#discard').off();
 				let card_pos = parseInt($(this).attr('id').substring(1));
 				steamSelf.game.state.hand.splice(card_pos, 1);
 
@@ -922,26 +851,24 @@ class Steamed extends GameTemplate {
 				);
 			});
 
+			$('#discard').off();
 			$('#discard').on('click', function () {
-				$(".deleteable").removeClass("deletable");
-				steamSelf.removeEvents();
+				console.log("Hi!");
+				$('.deletable').removeClass('deletable');
+				$("#discard").removeClass("active_state");
 				steamSelf.attachBoardEvents();
 			});
 		});
 	}
 
-	dealCards(){
+	dealCards() {
 		this.removeEvents();
-		this.updateStatus(
-			'<div class=\'status-message\'>Dealing new cards...</div>'
-		);
+		this.updateStatus("<div class='status-message'>Dealing new cards...</div>");
 		this.prependMove('continue');
 		if (this.animation_queue.length == 0) {
 			this.endTurn();
 		} else {
-			console.log(
-				`${this.animation_queue.length} animations still running....`
-			);
+			console.log(`${this.animation_queue.length} animations still running....`);
 		}
 	}
 
@@ -966,7 +893,7 @@ class Steamed extends GameTemplate {
 		$('.cardfan img.card').off();
 		$('.active_element').removeClass('active_element');
 		$('#discard').off();
-		$('#forward').css("visibility", "hidden");
+		$('#forward').css('visibility', 'hidden');
 		//$(".jumpy").removeClass("jumpy");
 	}
 
@@ -976,14 +903,10 @@ class Steamed extends GameTemplate {
 
 	calculateProfit(player, slot) {
 		let factory =
-			this.game.player === player
-				? this.game.state.self[slot]
-				: this.game.state.opponent[slot];
+			this.game.player === player ? this.game.state.self[slot] : this.game.state.opponent[slot];
 		let resource = factory[0];
 		let reward = this.factory[resource];
-		return factory.length < reward.length
-			? reward[factory.length]
-			: reward[reward.length - 1];
+		return factory.length < reward.length ? reward[factory.length] : reward[reward.length - 1];
 	}
 
 	cardToHTML(card, offsety = 0, offsetx = 0) {
@@ -1012,8 +935,10 @@ class Steamed extends GameTemplate {
     }
   }*/
 
-
 	displayAll() {
+		if (!this.gameBrowserActive()){
+			return;
+		}
 		this.displayBoard();
 		this.displayScore();
 		this.displayFields();
@@ -1024,10 +949,7 @@ class Steamed extends GameTemplate {
 		//Get rid of any remaining animation stuff
 		$('.animated_elem').remove();
 
-		$('#draw_deck').css(
-			'background-image',
-			`url("${this.card_img_dir}SB_reward.png")`
-		);
+		$('#draw_deck').css('background-image', `url("${this.card_img_dir}SB_reward.png")`);
 		if (this.game.deck[0].crypt.length > 0) {
 			$('#draw_deck').html(
 				this.game.deck[0].crypt.length +
@@ -1049,11 +971,7 @@ class Steamed extends GameTemplate {
 
 		html = '';
 		for (let c = 0; c < this.game.state.discards.length; c++) {
-			html += this.cardToHTML(
-				this.game.state.discards[c],
-				-2 * c,
-				-2 * c
-			);
+			html += this.cardToHTML(this.game.state.discards[c], -2 * c, -2 * c);
 		}
 		$('#discards').html(html);
 	}
@@ -1084,15 +1002,8 @@ class Steamed extends GameTemplate {
 		for (let i = 0; i < 3; i++) {
 			html_stack = '';
 			if (this.game.state.opponent[i].length > 0) {
-				for (
-					let j = 0;
-					j < this.game.state.opponent[i].length - 1;
-					j++
-				) {
-					html_stack += this.cardToHTML(
-						this.game.state.opponent[i][j],
-						10 * j
-					);
+				for (let j = 0; j < this.game.state.opponent[i].length - 1; j++) {
+					html_stack += this.cardToHTML(this.game.state.opponent[i][j], 10 * j);
 				}
 				let gold = this.calculateProfit(3 - this.game.player, i);
 				if (gold > 0) {
@@ -1101,7 +1012,7 @@ class Steamed extends GameTemplate {
 					}SB_${this.game.state.opponent[i][0]}.png'); top: ${
 						10 * (this.game.state.opponent[i].length - 1)
 					}px;">
-                            <div class="profit${gold}"></div>
+                            <div class="profit profit${gold}"></div>
                           </div>`;
 				} else {
 					html_stack += this.cardToHTML(
@@ -1118,10 +1029,7 @@ class Steamed extends GameTemplate {
 			html_stack = '';
 			if (this.game.state.self[i].length > 0) {
 				for (let j = 0; j < this.game.state.self[i].length - 1; j++) {
-					html_stack += this.cardToHTML(
-						this.game.state.self[i][j],
-						10 * j
-					);
+					html_stack += this.cardToHTML(this.game.state.self[i][j], 10 * j);
 				}
 				let gold = this.calculateProfit(this.game.player, i);
 				if (gold > 0) {
@@ -1130,7 +1038,7 @@ class Steamed extends GameTemplate {
 					}SB_${this.game.state.self[i][0]}.png'); top: ${
 						10 * (this.game.state.self[i].length - 1)
 					}px;">
-                            <div class="profit${gold}"></div>
+                            <div class="profit profit${gold}"></div>
                           </div>`;
 				} else {
 					html_stack += this.cardToHTML(
@@ -1142,6 +1050,78 @@ class Steamed extends GameTemplate {
 
 			$(`#s${i + 1}`).html(html_stack);
 		}
+	}
+
+	confirmSale(player, plot, callback) {
+		if (this?.dontask) {
+			callback();
+			return;
+		}
+
+		let left = $(`#s${plot}`).offset().left + 50;
+		let top = $(`#s${plot}`).offset().top + 20;
+
+		plot--;
+
+		let gold = this.calculateProfit(player, plot);
+		let msg = `Sell ${this.game.state.self[plot].length} ${this.game.state.self[plot][0]} factories for ${gold} gold?`;
+
+		let steamSelf = this;
+		let html = `
+          <div class="popup-confirm-menu">
+            <div class="popup-prompt">${msg}</div>
+            <div class="action" id="confirm">yes</div>
+            <div class="action" id="stopasking">yes, stop asking</div>
+            <div id="close" class="saito-overlay-closebox"><i class="fas fa-times-circle saito-overlay-closebox-btn"></i></div>
+          </div>`;
+
+
+		$('.popup-confirm-menu').remove();
+		$('body').append(html);
+
+		if (left + 200 < window.innerWidth) {
+			$('.popup-confirm-menu').css({
+				position: 'absolute',
+				top: top,
+				left: left
+			});
+		} else {
+			$('.popup-confirm-menu').css({
+				position: 'absolute',
+				top: top,
+				right: 0
+			});
+		}
+
+		$('.action').off();
+		$('.action').on('click', function () {
+			let confirmation = $(this).attr('id');
+
+			$('.action').off();
+			$('.popup-confirm-menu').remove();
+			if (confirmation == 'stopasking') {
+				steamSelf.dontask = true;
+				callback();
+			}
+			if (confirmation == 'confirm') {
+				callback();
+			}
+		});
+
+		$("#close").off();
+		$("#close").on('click', function(){
+			$('.popup-confirm-menu').remove();
+		});
+	}
+
+	gameOverUserInterface() {
+
+		$(".player_field").fadeOut(50, function () {
+  			$(this).remove();
+ 		});
+
+ 		this.hud.render();
+		super.gameOverUserInterface();
 	}
 
 	////////////////////
@@ -1212,9 +1192,7 @@ class Steamed extends GameTemplate {
 				let hint = hints.shift();
 				$(hint.element).addClass('tutorial-highlight');
 
-				$(this.formatHelpMessage(hint.message, hints.length)).appendTo(
-					'body'
-				);
+				$(this.formatHelpMessage(hint.message, hints.length)).appendTo('body');
 
 				$('.tutorial-help button').on('click', function () {
 					$('.tutorial-highlight').removeClass('tutorial-highlight');

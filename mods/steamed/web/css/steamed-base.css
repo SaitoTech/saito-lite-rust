@@ -63,16 +63,18 @@ body {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
 	grid-gap: 10px;
-	background-color: saddlebrown;
+	background-color: darkslategray;
 	padding: 7px;
 	justify-items: center;
 	align-content: center;
 	min-height: 150px;
 	min-width: 300px;
+	border: 3px solid black;
+	filter: drop-shadow(10px 6px 5px);
 }
 
 .player_field#self{
-	grid-template-columns: repeat(4, 1fr);
+	grid-template-columns: repeat(3, 1fr) min-content;
 }
 
 .status {
@@ -80,8 +82,11 @@ body {
 	height: 40px;
 	position: absolute;
 	top: -40px;
-	color: black;
+	color: white;
+	text-shadow: 1px 2px 6px black;
 	background-color: inherit;
+	box-sizing: content-box;
+	border: inherit;
 }
 
 .steam-controls{
@@ -160,7 +165,7 @@ body {
 }
 
 .player_field.active {
-	background-color: tan;
+	background-color: lightslategray;
 }
 
 .active_element {
@@ -169,7 +174,7 @@ body {
 }
 
 .control.active_state {
-	color: tan;
+	color: lightslategray;
 	background-color: black;
 }
 
@@ -224,40 +229,29 @@ body {
 	right: 20px;
 }
 
-.profit1 {
+.profit {
 	position: absolute;
 	bottom: 3%;
 	width: 23%;
 	height: 37%;
+	background-color: rgba(175, 175, 50, 0.3);
+	border-radius: 2rem;
+}
+
+.profit1 {
 	left: 4%;
-	background-color: rgba(255, 255, 0, 0.4);
 }
 
 .profit2 {
-	position: absolute;
-	bottom: 3%;
-	width: 23%;
-	height: 37%;
 	left: 27%;
-	background-color: rgba(255, 255, 0, 0.4);
 }
 
 .profit3 {
-	position: absolute;
-	bottom: 3%;
-	width: 23%;
-	height: 37%;
 	left: 52%;
-	background-color: rgba(255, 255, 0, 0.4);
 }
 
 .profit4 {
-	position: absolute;
-	bottom: 3%;
-	width: 23%;
-	height: 37%;
 	left: 77%;
-	background-color: rgba(255, 255, 0, 0.4);
 }
 
 .slot_holder {
@@ -323,6 +317,19 @@ body {
 	padding: 10px;
 	border-radius: 20px;
 	border: 3px solid var(--saito-primary);
+}
+
+
+.hud .status {
+	position: relative;
+	top: unset;
+	height: unset;
+	color: unset;
+	text-shadow: unset;
+}
+
+.hud-header {
+	display: none;
 }
 
 .jumpy img.card:hover {
