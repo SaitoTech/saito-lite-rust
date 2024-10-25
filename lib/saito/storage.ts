@@ -168,7 +168,7 @@ class Storage {
 		return { err: 'Save Transaction failed' };
 	}
 
-	async loadTransactions(obj = {}, mycallback, peer = null, archive_nodes = []) {
+	async loadTransactions(obj = {}, mycallback, peer = null) {
 		let storage_self = this;
 		const message = 'archive';
 		let data: any = {};
@@ -212,7 +212,6 @@ class Storage {
 					// Attempt to find the peer in the current network
 					let peers = await this.app.network.getPeers();
 					const targetPeer = peers.find(p => p.publicKey === peer) || null
-
 					// If the peer is found in the network, send the request
 					if (targetPeer) {
 						this.app.network.sendRequestAsTransaction(
@@ -225,14 +224,9 @@ class Storage {
 						);
 					}
 
-					// Retrieve archive nodes for the peer
-					let a_nodes;
-					if (this.app.BROWSER === 1) {
-						a_nodes = this.app.keychain.returnPeerArchiveNodes(peer);
-					} else {
-						a_nodes = archive_nodes
-					}
-
+					// Retrieve archive nodes for the peer			
+					let a_nodes = this.app.keychain.returnPeerArchiveNodes(peer);
+					
 					// If archive nodes are found, attempt to communicate
 					if (a_nodes.length > 0) {
 						let archiveNode = a_nodes[0];
@@ -256,49 +250,8 @@ class Storage {
 							const url = `ws://${host}:${port}/wsopen`;
 							try {
 								const peerIndex = await S.getLibInstance().get_next_peer_index();
-								await S.getLibInstance().add_new_archive_peer(peerIndex, publicKey, host, port);
-								try {
-									console.log("connecting to " + url + "....");
-									let socket = new WebSocket(url);
-									socket.binaryType = "arraybuffer";
-									S.getInstance().addNewSocket(socket, peerIndex);
-									socket.onmessage = (event: MessageEvent) => {
-										try {
-											S.getLibInstance().process_msg_buffer_from_peer(new Uint8Array(event.data), peerIndex);
-										} catch (error) {
-											console.error(error);
-										}
-									};
-									socket.onopen = () => {
-										this.app.network.sendRequestAsTransaction(
-											message,
-											data,
-											(res) => {
-												internal_callback(res);
-											},
-											peerIndex
-										);
-									};
-									socket.onclose = () => {
-										try {
-											console.log("socket.onclose : " + peerIndex);
-											S.getLibInstance().process_peer_disconnection(peerIndex);
-										} catch (error) {
-											console.error(error);
-										}
-									};
-									socket.onerror = (error) => {
-										try {
-											console.error(`socket.onerror ${peerIndex}: `, error);
-											S.getInstance().removeSocket(peerIndex);
-										} catch (error) {
-											console.error(error);
-										}
-									}
-								} catch (e) {
-									console.error("error occurred while opening socket : ", e)
-								}
-								// to do initiate connection to archive node and fetch txs
+								await this.app.network.connectToArchivePeer(peerIndex, {publicKey, host, port, url}, data ,message, internal_callback)
+							
 							}
 							catch (error) {
 								console.error("Failed to connect to archive node:", error);
