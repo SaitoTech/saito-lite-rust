@@ -4230,7 +4230,17 @@ console.log("----------------------------");
 	              for (let zz = 0; zz < neighbours.length; zz++) {
 	                let fluis = this.returnFactionSeaUnitsInSpace(io[i], neighbours[zz], 1);
 	                if (fluis > 0) {
-	                  this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+io[i]+"\t"+neighbours[zz]);
+
+			  //
+			  // we've found neighbouring enemies, but they can't intercept if the 
+			  // power moving (faction) also has units in their neighbouring space
+			  //
+	                  fluis = this.returnFactionSeaUnitsInSpace(faction, neighbours[zz], 1);
+
+			  if (fluis == 0) {
+	                    this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+io[i]+"\t"+neighbours[zz]);
+	                  }
+
 	                }
 	              }
 	            }
@@ -4243,7 +4253,15 @@ console.log("----------------------------");
 	              for (let zz = 0; zz < neighbours.length; zz++) {
 	                let fluis = this.returnFactionSeaUnitsInSpace(ap, neighbours[zz], 1);
 	                if (fluis > 0) {
-	                  this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+ap+"\t"+neighbours[zz]);
+			  //
+			  // we've found neighbouring enemies, but they can't intercept if the 
+			  // power moving (faction) also has units in their neighbouring space
+			  //
+	                  fluis = this.returnFactionSeaUnitsInSpace(faction, neighbours[zz], 1);
+
+			  if (fluis == 0) {
+	                    this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+ap+"\t"+neighbours[zz]);
+	                  }
 	                }
 	              }
 	            }
@@ -4569,11 +4587,9 @@ console.log("and they have units in space...");
 	  this.game.state.naval_intercept_bonus = 0;
 
 //
-// TESTING
+// TESTING / HACK
 //
-// HACK
-//
-hits_on = 2;
+//hits_on = 2;
 
 	  //
 	  // or move if successful !

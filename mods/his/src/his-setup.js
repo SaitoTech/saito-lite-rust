@@ -743,8 +743,7 @@ console.log("\n\n\n\n");
 
 
 	  this.addNavalSquadron("hapsburg", "tyrrhenian", 3);
-	  this.addNavalSquadron("hapsburg", "gibraltar", 3);
-	  this.addNavalSquadron("papacy", "tyrrhenian", 1);
+	  this.addNavalSquadron("hapsburg", "barbary", 3);
 	  this.addNavalSquadron("ottoman", "gulflyon", 5);
 	  this.addNavyLeader("ottoman", "gulflyon", "barbarossa");
 

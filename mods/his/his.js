@@ -3086,8 +3086,7 @@ console.log("\n\n\n\n");
 
 
 	  this.addNavalSquadron("hapsburg", "tyrrhenian", 3);
-	  this.addNavalSquadron("hapsburg", "gibraltar", 3);
-	  this.addNavalSquadron("papacy", "tyrrhenian", 1);
+	  this.addNavalSquadron("hapsburg", "barbary", 3);
 	  this.addNavalSquadron("ottoman", "gulflyon", 5);
 	  this.addNavyLeader("ottoman", "gulflyon", "barbarossa");
 
@@ -27426,7 +27425,17 @@ console.log("----------------------------");
 	              for (let zz = 0; zz < neighbours.length; zz++) {
 	                let fluis = this.returnFactionSeaUnitsInSpace(io[i], neighbours[zz], 1);
 	                if (fluis > 0) {
-	                  this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+io[i]+"\t"+neighbours[zz]);
+
+			  //
+			  // we've found neighbouring enemies, but they can't intercept if the 
+			  // power moving (faction) also has units in their neighbouring space
+			  //
+	                  fluis = this.returnFactionSeaUnitsInSpace(faction, neighbours[zz], 1);
+
+			  if (fluis == 0) {
+	                    this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+io[i]+"\t"+neighbours[zz]);
+	                  }
+
 	                }
 	              }
 	            }
@@ -27439,7 +27448,15 @@ console.log("----------------------------");
 	              for (let zz = 0; zz < neighbours.length; zz++) {
 	                let fluis = this.returnFactionSeaUnitsInSpace(ap, neighbours[zz], 1);
 	                if (fluis > 0) {
-	                  this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+ap+"\t"+neighbours[zz]);
+			  //
+			  // we've found neighbouring enemies, but they can't intercept if the 
+			  // power moving (faction) also has units in their neighbouring space
+			  //
+	                  fluis = this.returnFactionSeaUnitsInSpace(faction, neighbours[zz], 1);
+
+			  if (fluis == 0) {
+	                    this.game.queue.push("player_evaluate_naval_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+ap+"\t"+neighbours[zz]);
+	                  }
 	                }
 	              }
 	            }
@@ -27765,11 +27782,9 @@ console.log("and they have units in space...");
 	  this.game.state.naval_intercept_bonus = 0;
 
 //
-// TESTING
+// TESTING / HACK
 //
-// HACK
-//
-hits_on = 2;
+//hits_on = 2;
 
 	  //
 	  // or move if successful !
@@ -43504,10 +43519,12 @@ console.log(JSON.stringify(units_to_move));
     this.updateStatusWithOptions(`Intercept ${this.returnSpaceName(spacekey)} from ${this.returnSpaceName(defender_spacekey)}?`, html);
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "intercept") {
+        his_self.updateStatus("acknowledge");
 	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
         return;
       }
       if (user_choice === "skip") {
+        his_self.updateStatus("acknowledge");
 	his_self.endTurn();
         return;
       }
@@ -43889,17 +43906,20 @@ console.log(JSON.stringify(units_available));
 	      }
 	    }
 	  }	
+	  if (units_available[i].destination === "end") {
+	    units_available[i].destination = "";
+            for (let z = 0; z < units_to_move.length; z++) {
+	      if (units_to_move[z] === parseInt(i)) {
+                units_to_move.splice(z, 1);
+	      }
+	    }
+	  }	
 	}
       }
 
       for (let i = 0; i < units_available.length; i++) {
 	let spacekey = units_available[i].spacekey;
 	let unit = units_available[i];
-        if (units_to_move.includes(parseInt(i))) {
-	  if (units_available[i].spacekey === units_available[i].destination) {
-	    
-	  }
-	}
         if (units_to_move.includes(parseInt(i))) {
           html += `<li class="option source" style="font-weight:bold" id="${i}">${units_available[i].name} (${units_available[i].spacekey} -> ${units_available[i].destination})</li>`;
         } else {
@@ -44092,6 +44112,14 @@ console.log("UNITS TO MOVE: " + JSON.stringify(revised_units_to_move));
       $('.option').on('click', function () {
 
         let id = $(this).attr("id");
+
+	//
+	// this isn't possible except on naval overlay
+	//
+	if (id === "end") {
+	  his_self.naval_movement_overlay.hideDestination();
+          selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
+	}
 
 	let is_source = $(this).hasClass('source');
 	let is_destination = $(this).hasClass('destination');
@@ -49492,6 +49520,7 @@ console.log("UNITS TO MOVE: " + JSON.stringify(revised_units_to_move));
 	  colony : pbox ,	  
 	});
 
+	this.game.state.events.potosi_silver_mines = "";
 	this.game.state.newworld[pbox].claimed = 1;
 
       }
@@ -50887,6 +50916,13 @@ console.log("UNITS TO MOVE: " + JSON.stringify(revised_units_to_move));
         if (c.colony === "hapsburg_colony2") { document.querySelector('.hapsburg_colony2').innerHTML = `<img class="nw_tile" src="${c.img}" />`; }
         if (c.colony === "hapsburg_colony3") { document.querySelector('.hapsburg_colony3').innerHTML = `<img class="nw_tile" src="${c.img}" />`; }
       }
+    }
+
+    //
+    // this will be set when unresolved...
+    //
+    if (this.game.state.events.potosi_silver_mines != "") {
+      obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/colonies/Potosi.svg" />`;
     }
 
   }

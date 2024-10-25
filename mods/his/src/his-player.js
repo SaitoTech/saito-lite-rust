@@ -5227,10 +5227,12 @@ console.log(JSON.stringify(units_to_move));
     this.updateStatusWithOptions(`Intercept ${this.returnSpaceName(spacekey)} from ${this.returnSpaceName(defender_spacekey)}?`, html);
     this.attachCardboxEvents(function(user_choice) {
       if (user_choice === "intercept") {
+        his_self.updateStatus("acknowledge");
 	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
         return;
       }
       if (user_choice === "skip") {
+        his_self.updateStatus("acknowledge");
 	his_self.endTurn();
         return;
       }
@@ -5612,17 +5614,20 @@ console.log(JSON.stringify(units_available));
 	      }
 	    }
 	  }	
+	  if (units_available[i].destination === "end") {
+	    units_available[i].destination = "";
+            for (let z = 0; z < units_to_move.length; z++) {
+	      if (units_to_move[z] === parseInt(i)) {
+                units_to_move.splice(z, 1);
+	      }
+	    }
+	  }	
 	}
       }
 
       for (let i = 0; i < units_available.length; i++) {
 	let spacekey = units_available[i].spacekey;
 	let unit = units_available[i];
-        if (units_to_move.includes(parseInt(i))) {
-	  if (units_available[i].spacekey === units_available[i].destination) {
-	    
-	  }
-	}
         if (units_to_move.includes(parseInt(i))) {
           html += `<li class="option source" style="font-weight:bold" id="${i}">${units_available[i].name} (${units_available[i].spacekey} -> ${units_available[i].destination})</li>`;
         } else {
@@ -5815,6 +5820,14 @@ console.log("UNITS TO MOVE: " + JSON.stringify(revised_units_to_move));
       $('.option').on('click', function () {
 
         let id = $(this).attr("id");
+
+	//
+	// this isn't possible except on naval overlay
+	//
+	if (id === "end") {
+	  his_self.naval_movement_overlay.hideDestination();
+          selectUnitsInterface(his_self, units_to_move, units_available, selectUnitsInterface, selectDestinationInterface);
+	}
 
 	let is_source = $(this).hasClass('source');
 	let is_destination = $(this).hasClass('destination');

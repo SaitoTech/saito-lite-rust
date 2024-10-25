@@ -1124,6 +1124,13 @@
       }
     }
 
+    //
+    // this will be set when unresolved...
+    //
+    if (this.game.state.events.potosi_silver_mines != "") {
+      obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/colonies/Potosi.svg" />`;
+    }
+
   }
 
 
