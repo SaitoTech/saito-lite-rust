@@ -4267,6 +4267,8 @@ console.log("----------------------------");
 	  let defender = mv[3];
 	  let defender_spacekey = mv[4];
 
+console.log("checking if " +defender+ " can intercept into " + spacekey);
+
           let controller_of_defender = this.returnPlayerCommandingFaction(defender);
           if (controller_of_defender == 0) { return 1; }
  
@@ -4280,8 +4282,12 @@ console.log("----------------------------");
 	  for (let f in invaded_space.units) {
 	    let cf = this.returnControllingPower(f);
 	    if (this.areEnemies(cf, defender)) {
-	      if (this.returnControllingPower(cf) != this.returnControllingPower(attacker)) {
-		return 1;
+	      if (this.returnFactionNavalUnitsInSpace(cf, spacekey, true) > 0) {
+console.log("and they have units in space...");
+	        if (this.returnControllingPower(cf) != this.returnControllingPower(attacker)) {
+console.log("and they have units in space...");
+		  return 1;
+	        }
 	      }
 	    }
 	  }
@@ -5522,7 +5528,6 @@ hits_on = 2;
 	  let stage = "naval_battle";
 	  let intended_defender = mv[3]; // if specified, this is the major power controlling the opponent
 
-
           //
           // stop naval battle if only attacker is left (retreat)
           //
@@ -5536,8 +5541,6 @@ hits_on = 2;
           if (fluis == 0 || attacker_fluis == 0) {
             return 1;
           }
-
-
 
 	  //
 	  // who is here?
@@ -8400,7 +8403,7 @@ try {
             adjacent_spaces.push(target_space.neighbours[i]);
           }
           for (let p = 0; p < adjacent_spaces.length; p++) {
-	    let ts = adjacent_spaces[p].key;
+	    let ts = adjacent_spaces[p];
 	    let s = null;
 	    let is_naval_space = false;
 	    try { if (this.game.spaces[ts]) { s = this.game.spaces[ts]; } } catch (err) {}

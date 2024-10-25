@@ -5190,12 +5190,18 @@ does_units_to_move_have_unit = true; }
           return;
         }
 
+
 	let id = parseInt(tmpx.split("-")[1]);
 	let f = tmpx.split("-")[0];
 
+console.log(id + " -----> " + JSON.stringify(units_to_move_idx) + " ||| " + JSON.stringify(units_to_move));
+
         if (units_to_move_idx.includes(id)) {
-          let idx = units_to_move.indexOf(id);
+console.log("units to move_idx includes this id");
+          let idx = units_to_move_idx.indexOf(id);
+console.log("the index is: " + idx);
           if (idx > -1) {
+console.log("splicing it out...");
             units_to_move_idx.splice(idx, 1);
             units_to_move.splice(idx, 1);
           }
@@ -5203,6 +5209,10 @@ does_units_to_move_have_unit = true; }
           units_to_move_idx.push(parseInt(id));
           units_to_move.push({ idx : parseInt(id) , faction : f });
 	}
+
+console.log("UPDATED:");
+console.log(JSON.stringify(units_to_move_idx));
+console.log(JSON.stringify(units_to_move));
 
         selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
       });
@@ -5563,6 +5573,16 @@ does_units_to_move_have_unit = true; }
 
     let units_to_move = [];
     let units_available = his_self.returnFactionNavalUnitsToMove(faction);
+
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log(JSON.stringify(units_available));
+
+
     for (let z = 0; z < units_available.length; z++) {
       if (units_available[z].locked == 1) { units_available.splice(z, 1); z--; }
     }
@@ -5695,6 +5715,15 @@ does_units_to_move_have_unit = true; }
 	    revised_units_to_move.unshift(JSON.parse(JSON.stringify(units_available[units_to_move[highest_idx]])));
 	    units_to_move.splice(highest_idx, 1);
 	  }
+
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("UNITS TO MOVE: " + JSON.stringify(revised_units_to_move));
 
 	  //
 	  // revised units to move is

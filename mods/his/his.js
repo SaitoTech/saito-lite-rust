@@ -3080,14 +3080,16 @@ console.log("\n\n\n\n");
 	  this.addRegular("hapsburg", "agram", 1);
 	  this.controlSpace("hapsburg", "agram", 1);
 
+
 	  this.addNavalSquadron("france", "marseille", 2); 
 	  this.addNavalSquadron("hapsburg", "barcelona", 2); 
 
 
-	  this.addNavalSquadron("hapsburg", "gulflyon", 1);
-	  //this.addNavalSquadron("papacy", "gulflyon", 1);
+	  this.addNavalSquadron("hapsburg", "tyrrhenian", 3);
+	  this.addNavalSquadron("hapsburg", "gibraltar", 3);
 	  this.addNavalSquadron("papacy", "tyrrhenian", 1);
-	  this.addNavalSquadron("ottoman", "barbary", 2);
+	  this.addNavalSquadron("ottoman", "gulflyon", 5);
+	  this.addNavyLeader("ottoman", "gulflyon", "barbarossa");
 
 	  this.game.state.events.papacy_may_found_jesuit_universities = 1;
           this.game.state.events.ottoman_piracy_enabled = 1;
@@ -7905,18 +7907,14 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 	// barbarossa dies, replaced by Dragut
 	let s = his_self.returnSpaceOfPersonage("ottoman", "barbarossa");
 
-console.log("BAR IS IN: " + s);
-
 	if (s != "") {
 	  let idx = his_self.returnIndexOfPersonageInSpace("ottoman", "barbarossa", s);
 	  if (idx > -1) {
 	    if (his_self.game.spaces[s]) {
-conslle.log("replacing at sea!");
 	      his_self.game.spaces[s].units["ottoman"].splice(idx, 1);
 	      his_self.addNavyLeader("ottoman", s, "dragut");
 	    }  
 	    if (his_self.game.navalspaces[s]) {
-conslle.log("replacing at sea!");
 	      his_self.game.navalspaces[s].units["ottoman"].splice(idx, 1);
 	      his_self.addNavyLeader("ottoman", s, "dragut");
 	    }  
@@ -17343,9 +17341,11 @@ console.log("is a homespace for: " + x);
       for (let key in this.game.navalspaces) {
 	for (let z = 0; z < this.game.navalspaces[key].units[fip[i]].length; z++) {
 	  if (!this.game.navalspaces[key].units[fip[i]][z].locked) {
-	    this.game.navalspaces[key].units[fip[i]][z].spacekey = key;
-	    this.game.navalspaces[key].units[fip[i]][z].faction = fip[i];
-	    units.push(this.game.navalspaces[key].units[fip[i]][z]);
+	    let u = this.game.navalspaces[key].units[fip[i]][z];
+	    u.spacekey = key;
+	    u.faction = fip[i];
+	    u.idx = z;
+	    units.push(u);
 	  }
 	}
       }
@@ -27463,6 +27463,8 @@ console.log("----------------------------");
 	  let defender = mv[3];
 	  let defender_spacekey = mv[4];
 
+console.log("checking if " +defender+ " can intercept into " + spacekey);
+
           let controller_of_defender = this.returnPlayerCommandingFaction(defender);
           if (controller_of_defender == 0) { return 1; }
  
@@ -27476,8 +27478,12 @@ console.log("----------------------------");
 	  for (let f in invaded_space.units) {
 	    let cf = this.returnControllingPower(f);
 	    if (this.areEnemies(cf, defender)) {
-	      if (this.returnControllingPower(cf) != this.returnControllingPower(attacker)) {
-		return 1;
+	      if (this.returnFactionNavalUnitsInSpace(cf, spacekey, true) > 0) {
+console.log("and they have units in space...");
+	        if (this.returnControllingPower(cf) != this.returnControllingPower(attacker)) {
+console.log("and they have units in space...");
+		  return 1;
+	        }
 	      }
 	    }
 	  }
@@ -28718,7 +28724,6 @@ hits_on = 2;
 	  let stage = "naval_battle";
 	  let intended_defender = mv[3]; // if specified, this is the major power controlling the opponent
 
-
           //
           // stop naval battle if only attacker is left (retreat)
           //
@@ -28732,8 +28737,6 @@ hits_on = 2;
           if (fluis == 0 || attacker_fluis == 0) {
             return 1;
           }
-
-
 
 	  //
 	  // who is here?
@@ -31596,7 +31599,7 @@ try {
             adjacent_spaces.push(target_space.neighbours[i]);
           }
           for (let p = 0; p < adjacent_spaces.length; p++) {
-	    let ts = adjacent_spaces[p].key;
+	    let ts = adjacent_spaces[p];
 	    let s = null;
 	    let is_naval_space = false;
 	    try { if (this.game.spaces[ts]) { s = this.game.spaces[ts]; } } catch (err) {}
@@ -43464,12 +43467,18 @@ does_units_to_move_have_unit = true; }
           return;
         }
 
+
 	let id = parseInt(tmpx.split("-")[1]);
 	let f = tmpx.split("-")[0];
 
+console.log(id + " -----> " + JSON.stringify(units_to_move_idx) + " ||| " + JSON.stringify(units_to_move));
+
         if (units_to_move_idx.includes(id)) {
-          let idx = units_to_move.indexOf(id);
+console.log("units to move_idx includes this id");
+          let idx = units_to_move_idx.indexOf(id);
+console.log("the index is: " + idx);
           if (idx > -1) {
+console.log("splicing it out...");
             units_to_move_idx.splice(idx, 1);
             units_to_move.splice(idx, 1);
           }
@@ -43477,6 +43486,10 @@ does_units_to_move_have_unit = true; }
           units_to_move_idx.push(parseInt(id));
           units_to_move.push({ idx : parseInt(id) , faction : f });
 	}
+
+console.log("UPDATED:");
+console.log(JSON.stringify(units_to_move_idx));
+console.log(JSON.stringify(units_to_move));
 
         selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, onFinishSelect);
       });
@@ -43837,6 +43850,16 @@ does_units_to_move_have_unit = true; }
 
     let units_to_move = [];
     let units_available = his_self.returnFactionNavalUnitsToMove(faction);
+
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log(JSON.stringify(units_available));
+
+
     for (let z = 0; z < units_available.length; z++) {
       if (units_available[z].locked == 1) { units_available.splice(z, 1); z--; }
     }
@@ -43969,6 +43992,15 @@ does_units_to_move_have_unit = true; }
 	    revised_units_to_move.unshift(JSON.parse(JSON.stringify(units_available[units_to_move[highest_idx]])));
 	    units_to_move.splice(highest_idx, 1);
 	  }
+
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("UNITS TO MOVE: " + JSON.stringify(revised_units_to_move));
 
 	  //
 	  // revised units to move is

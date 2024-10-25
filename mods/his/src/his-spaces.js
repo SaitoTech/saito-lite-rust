@@ -1062,9 +1062,11 @@ console.log("is a homespace for: " + x);
       for (let key in this.game.navalspaces) {
 	for (let z = 0; z < this.game.navalspaces[key].units[fip[i]].length; z++) {
 	  if (!this.game.navalspaces[key].units[fip[i]][z].locked) {
-	    this.game.navalspaces[key].units[fip[i]][z].spacekey = key;
-	    this.game.navalspaces[key].units[fip[i]][z].faction = fip[i];
-	    units.push(this.game.navalspaces[key].units[fip[i]][z]);
+	    let u = this.game.navalspaces[key].units[fip[i]][z];
+	    u.spacekey = key;
+	    u.faction = fip[i];
+	    u.idx = z;
+	    units.push(u);
 	  }
 	}
       }

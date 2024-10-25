@@ -4158,18 +4158,14 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 	// barbarossa dies, replaced by Dragut
 	let s = his_self.returnSpaceOfPersonage("ottoman", "barbarossa");
 
-console.log("BAR IS IN: " + s);
-
 	if (s != "") {
 	  let idx = his_self.returnIndexOfPersonageInSpace("ottoman", "barbarossa", s);
 	  if (idx > -1) {
 	    if (his_self.game.spaces[s]) {
-conslle.log("replacing at sea!");
 	      his_self.game.spaces[s].units["ottoman"].splice(idx, 1);
 	      his_self.addNavyLeader("ottoman", s, "dragut");
 	    }  
 	    if (his_self.game.navalspaces[s]) {
-conslle.log("replacing at sea!");
 	      his_self.game.navalspaces[s].units["ottoman"].splice(idx, 1);
 	      his_self.addNavyLeader("ottoman", s, "dragut");
 	    }  

@@ -737,14 +737,16 @@ console.log("\n\n\n\n");
 	  this.addRegular("hapsburg", "agram", 1);
 	  this.controlSpace("hapsburg", "agram", 1);
 
+
 	  this.addNavalSquadron("france", "marseille", 2); 
 	  this.addNavalSquadron("hapsburg", "barcelona", 2); 
 
 
-	  this.addNavalSquadron("hapsburg", "gulflyon", 1);
-	  //this.addNavalSquadron("papacy", "gulflyon", 1);
+	  this.addNavalSquadron("hapsburg", "tyrrhenian", 3);
+	  this.addNavalSquadron("hapsburg", "gibraltar", 3);
 	  this.addNavalSquadron("papacy", "tyrrhenian", 1);
-	  this.addNavalSquadron("ottoman", "barbary", 2);
+	  this.addNavalSquadron("ottoman", "gulflyon", 5);
+	  this.addNavyLeader("ottoman", "gulflyon", "barbarossa");
 
 	  this.game.state.events.papacy_may_found_jesuit_universities = 1;
           this.game.state.events.ottoman_piracy_enabled = 1;
