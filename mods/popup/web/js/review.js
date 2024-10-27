@@ -1,4 +1,3 @@
-// these variables should be customized
 var total_remaining = 5;
 var source = 'wordlist'; // wordlist or lesson
 var review_include_pinyin = 1;
@@ -80,6 +79,9 @@ var answered_correctly = 0;
 
 function check_answer_review(choice) {
 
+	let chosen_option = "option" + choice;
+	let chosen_option_id = "#option" + choice;
+
 	last_question_data = '';
 
 	if (question_type == 'generative_pinyin') {
@@ -95,7 +97,7 @@ function check_answer_review(choice) {
 		$('#question_hint').show();
 	}
 
-	if (choice == correct) {
+	if (chosen_option == correct) {
 		answered_correctly = 1;
 		total_answered++;
 		total_correct++;
@@ -103,6 +105,9 @@ function check_answer_review(choice) {
 		if (endless_mode != 1) {
 			total_remaining--;
 		}
+
+		$(`${chosen_option_id}`).addClass('green');
+
 	} else {
 		answered_correctly = -1;
 		total_answered++;
@@ -110,24 +115,26 @@ function check_answer_review(choice) {
 			total_remaining--;
 		}
 		total_incorrect++;
+
+		$(`${chosen_option_id}`).addClass('red');
 	}
 
-	if (correct == 1) {
+	if (correct === "option1") {
 		$('#option1').addClass('option_correct');
 	} else {
 		$('#option1').addClass('option_incorrect');
 	}
-	if (correct == 2) {
+	if (correct === "option2") {
 		$('#option2').addClass('option_correct');
 	} else {
 		$('#option2').addClass('option_incorrect');
 	}
-	if (correct == 3) {
+	if (correct === "option3") {
 		$('#option3').addClass('option_correct');
 	} else {
 		$('#option3').addClass('option_incorrect');
 	}
-	if (correct == 4) {
+	if (correct === "option4") {
 		$('#option4').addClass('option_correct');
 	} else {
 		$('#option4').addClass('option_incorrect');
@@ -185,8 +192,6 @@ async function loadQuestion() {
 
 	let qobj = await saito_mod.loadQuestion();
 
-alert("RETURNED OBJ: " + JSON.stringify(qobj));
-
 	// 
 	// get JSON text
 	//
@@ -236,8 +241,6 @@ function resetCss() {
 	// hovering effect
 	$('.option').removeClass('option_hover');
 
-alert("TEST A");
-
 	correct_delay = 800;
 	incorrect_delay = 1500;
 
@@ -250,6 +253,18 @@ alert("TEST A");
 	$('#question_text').css('line-height', '1em');
 	$('#instructions').css('background-color', '#F7F7F7');
 
+	try { $('#option1').classList.remove("green"); } catch (err) {}
+	try { $('#option2').classList.remove("green"); } catch (err) {}
+	try { $('#option3').classList.remove("green"); } catch (err) {}
+	try { $('#option4').classList.remove("green"); } catch (err) {}
+	try { $('#option1').classList.remove("red"); } catch (err) {}
+	try { $('#option2').classList.remove("red"); } catch (err) {}
+	try { $('#option3').classList.remove("red"); } catch (err) {}
+	try { $('#option4').classList.remove("red"); } catch (err) {}
+
+	$('#question_text').css('line-height', '1em');
+	$('#question_text').css('line-height', '1em');
+	$('#question_text').css('line-height', '1em');
 	if (question.length == 1) {
 		$('#question_text').css('font-size', '14em');
 		$('#question_text').css('line-height', '1em');
@@ -284,8 +299,6 @@ alert("TEST A");
 		}
 	}
 
-
-alert("TEST A");
 
 	if (question_type == 'test') {
 
@@ -329,8 +342,6 @@ alert("TEST A");
 		$('#lightbox_header').css('display', 'all');
 	}
 
-alert("qtype: " + question_type);
-
 	if (
 		question_type == 'multiple_choice_english' ||
 		question_type == 'multiple_choice_pinyin' ||
@@ -358,10 +369,7 @@ alert("qtype: " + question_type);
 		$('#option3').unbind('click');
 		$('#option4').unbind('click');
 
-alert("adding click bindings...");
-
 		$('#option1').bind('click', function () {
-alert("clicked on 1");
 			check_answer_review(1);
 		});
 		$('#option2').bind('click', function () {
@@ -634,8 +642,6 @@ function check_pinyin_answer() {
 
 async function advance_to_next_question() {
 
-alert("advance to next question!");
-
 	if (total_remaining == 0 && endless_mode == 0) {
 		requested_wid = return_requested_wid();
 
@@ -665,8 +671,6 @@ alert("advance to next question!");
 			return;
 		}
 	} else {
-
-alert("in else clause!");
 
 		//
 		// report the final question

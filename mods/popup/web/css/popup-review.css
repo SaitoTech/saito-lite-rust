@@ -6,6 +6,13 @@
 	border-radius: 1.5rem;
 }
 
+.answer_space .option.green {
+  	background-color: #EBFFD6;
+}
+.answer_space .option.red {
+  	background-color: #ffd6cc;
+}
+
 .test_container {
 	width: 850px;
 	margin-left: auto;
