@@ -9,30 +9,10 @@ var enableNumberShortcuts = 0;
 var tempLastQuestionData = '';
 
 function load_review(qntype) {
-	if (qntype == 'hsk') {
-		setup_hsk_menu();
-	} else {
-		setup_reinforcement_lightbox();
-		loadQuestion();
-	}
+	setup_reinforcement_lightbox();
+	loadQuestion();
 }
 
-function setup_hsk_menu() {
-	document.getElementById('lightbox_content').innerHTML = `;
-          <div id="lightbox_header" class="lightbox_header" style="margin-top:70px;">Pick a Level to Study</div>
-          <div id="test_container" class="test_container" style="margin-top:50px">
-	    <div onclick="source=\'hsk-beginner\';qntype=\'\';setup_reinforcement_lightbox();loadQuestion();" style="float:left;margin-left:85px;width:220px;">
-	      <img src="/img/hsk/hsk1.jpg" style="width:220px"/>
-            </div>
-	    <div onclick="source=\'hsk-intermediate\';qntype=\'\';setup_reinforcement_lightbox();loadQuestion();" style="float:left;margin-left:30px;width:220px;">
-	      <img src="/img/hsk/hsk2.jpg" style="width:220px"/>
-            </div>
-	    <div onclick="source=\'hsk-advanced\';qntype=\'\';setup_reinforcement_lightbox();loadQuestion();" style="float:left;margin-left:30px;width:220px;">
-	      <img src="/img/hsk/hsk3.jpg" style="width:220px"/>
-            </div>
-          </div>
-        `;
-}
 
 var qid = ''; //question id
 var wid = ''; //word id
@@ -77,19 +57,12 @@ var language = '';
 
 var answered_correctly = 0;
 
-function check_answer_review(choice) {
+function check_answer(choice) {
 
 	let chosen_option = "option" + choice;
 	let chosen_option_id = "#option" + choice;
 
 	last_question_data = '';
-
-	if (question_type == 'generative_pinyin') {
-		return check_pinyin_answer(choice);
-	}
-	if (question_type == 'generative_english') {
-		return check_english_answer(choice);
-	}
 
 	$('.option').removeClass('option_hover');
 
@@ -151,7 +124,7 @@ async function loadQuestion() {
 	// forced delay so the animation is smooth
 	$('#test_container').hide();
 
-	$('#question_text').html('<img src="/img/loader-big-circle.gif" />');
+	$('#question_text').html('<img src="/popup/img/loader-big-circle.gif" />');
 	$('#question_hint').html(' ');
 
 	if (endless_mode == 0) {
@@ -226,6 +199,14 @@ async function loadQuestion() {
 	document.getElementById('option2').innerHTML = option2;
 	document.getElementById('option3').innerHTML = option3;
 	document.getElementById('option4').innerHTML = option4;
+	document.getElementById('option1').classList.remove("green");
+	document.getElementById('option2').classList.remove("green");
+	document.getElementById('option3').classList.remove("green");
+	document.getElementById('option4').classList.remove("green");
+	document.getElementById('option1').classList.remove("red");
+	document.getElementById('option2').classList.remove("red");
+	document.getElementById('option3').classList.remove("red");
+	document.getElementById('option4').classList.remove("red");
 
 	resetCss();
 
@@ -370,16 +351,16 @@ function resetCss() {
 		$('#option4').unbind('click');
 
 		$('#option1').bind('click', function () {
-			check_answer_review(1);
+			check_answer(1);
 		});
 		$('#option2').bind('click', function () {
-			check_answer_review(2);
+			check_answer(2);
 		});
 		$('#option3').bind('click', function () {
-			check_answer_review(3);
+			check_answer(3);
 		});
 		$('#option4').bind('click', function () {
-			check_answer_review(4);
+			check_answer(4);
 		});
 
 		$('#question_text').unbind('click');
@@ -416,228 +397,10 @@ function resetCss() {
 			);
 		}
 		var inserthtml =
-			'<form id="user_answer_form" action="" method="POST" onsubmit="check_answer_review();return false;"><input id="user_answer" type="text" onsubmit="check_answer_review();return false;" style="background-color:#F7F7F7;border:0px solid black;border-bottom:1px dashed #333;font-size:1.4em;width:330px;" /></form>';
+			'<form id="user_answer_form" action="" method="POST" onsubmit="check_answer();return false;"><input id="user_answer" type="text" onsubmit="check_answer();return false;" style="background-color:#F7F7F7;border:0px solid black;border-bottom:1px dashed #333;font-size:1.4em;width:330px;" /></form>';
 		document.getElementById('option4').innerHTML = inserthtml;
 		$('#option4').unbind('click');
 	}
-}
-
-function is_english_close_enough(user_answer, english_answer) {
-	tmpx = user_answer.replace(/to /g, '');
-	tmpx = tmpx.replace(/be /g, '');
-	tmpx = tmpx.replace(/not /g, '');
-	tmpx = tmpx.replace(/ /g, '');
-	tmpx = tmpx.replace(/s$/g, '');
-	tmpx = tmpx.replace(/ed$/g, '');
-	tmpx = tmpx.replace(/d$/g, '');
-	tmpx = tmpx.replace(/ly$/g, '');
-	tmpx = tmpx.toLowerCase();
-
-	answered_correctly = -1;
-
-	var potential_answers = english_answer.split(/[,;]/);
-	for (i = 0; i < potential_answers.length; i++) {
-		tmpyy = potential_answers[i];
-
-		tmpyy = tmpyy.replace(/to /g, '');
-		tmpyy = tmpyy.replace(/be /g, '');
-		tmpyy = tmpyy.replace(/not /g, '');
-		tmpyy = tmpyy.replace(/ /g, '');
-		tmpyy = tmpyy.replace(/s$/g, '');
-		tmpyy = tmpyy.replace(/ed$/g, '');
-		tmpyy = tmpyy.replace(/d$/g, '');
-		tmpyy = tmpyy.replace(/ly$/g, '');
-		tmpyy = tmpyy.toLowerCase();
-
-		if (tmpx == tmpyy && tmpyy != '') {
-			return 1;
-		}
-		if (tmpx.length > tmpyy.length) {
-			if (tmpx.indexOf(tmpyy) > -1 && tmpyy != '') {
-				return 1;
-			}
-		}
-		if (tmpx.length < tmpyy.length && tmpx.length > 8) {
-			if (tmpyy.indexOf(tmpx) > -1) {
-				return 1;
-			}
-		}
-	}
-
-	return -1;
-}
-function check_english_answer() {
-	var user_answer = document.getElementById('user_answer').value;
-	var answer_for_prompt = english.split(/[,;]/)[0];
-
-	answered_correctly = is_english_close_enough(user_answer, answer);
-
-	if (answered_correctly == -1) {
-		if (is_pinyin_close_enough(user_answer, pinyin) == 1) {
-			$('#instructions').css('background-color', 'yellow');
-			document.getElementById('user_answer').value = '';
-			$('#instructions').focus();
-			return;
-		}
-	}
-
-	if (answered_correctly == 1) {
-		answered_correctly = 1;
-		total_answered++;
-		total_correct++;
-		show_points(10);
-		total_remaining--;
-	} else {
-		answered_correctly = -1;
-		last_question_data = question + '_M_' + user_answer;
-		total_answered++;
-		if (review_until_correct == 0) {
-			total_remaining--;
-		}
-		total_incorrect++;
-	}
-
-	if (answered_correctly == 1) {
-		$('#option4').addClass('option_correct');
-		$('#user_answer').css('background-color', '#EBFFD6');
-		$('#instructions').css('background-color', '#FFF');
-		$('#instructions').html(
-			'you entered: <span class="green">' + user_answer + '</span>'
-		);
-	} else {
-		incorrect_delay = generative_review_delay_on_incorrect;
-		$('#option4').addClass('option_incorrect');
-		$('#user_answer').css('background-color', '#FFD6CC');
-		$('#instructions').css('background-color', '#FFF');
-		$('#instructions').html(
-			'you entered: <span class="red">' + user_answer + '</span>'
-		);
-	}
-	document.getElementById('user_answer').value = answer_for_prompt;
-	if (answer.length > 10) {
-		$('#user_answer').css('font-size', '1em');
-	}
-	if (answer.length > 15) {
-		$('#user_answer').css('font-size', '0.9em');
-	}
-	if (answer.length > 19) {
-		$('#user_answer').css('font-size', '0.8em');
-	}
-	$('#user_answer').css('border', '0px');
-	$('#user_answer').blur();
-
-	advance_to_next_question();
-}
-
-function is_pinyin_close_enough(user_pinyin, pinyin_answer) {
-	tmpx = user_pinyin.replace(/ /g, '');
-	tmpx = tmpx.replace('\'', '');
-	tmpx = tmpx.replace('er5', 'r5');
-	tmpx = tmpx.replace(/5/g, '');
-	tmpx = tmpx.replace(/[^a-zA-Z1-9]/g, '');
-	tmpx = tmpx.toLowerCase();
-
-	answered_correctly = -1;
-
-	var potential_answers = pinyin_answer.split(/[,;]/);
-	for (i = 0; i < potential_answers.length; i++) {
-		tmpyy = potential_answers[i];
-
-		tmpyy = tmpyy.replace(/ /g, '');
-		tmpyy = tmpyy.replace(/_APOS_/g, '');
-		tmpyy = tmpyy.replace(/5/g, '');
-		tmpyy = tmpyy.replace(/[^a-zA-Z1-9]/g, '');
-		tmpyy = tmpyy.toLowerCase();
-
-		if (tmpx.indexOf('1') == -1) {
-			tmpyy = tmpyy.replace(/1/g, '');
-		}
-		if (tmpx.indexOf('2') == -1) {
-			tmpyy = tmpyy.replace(/2/g, '');
-		}
-		if (tmpx.indexOf('3') == -1) {
-			tmpyy = tmpyy.replace(/3/g, '');
-		}
-		if (tmpx.indexOf('4') == -1) {
-			tmpyy = tmpyy.replace(/4/g, '');
-		}
-
-		if (tmpx == tmpyy && tmpyy != '') {
-			return 1;
-		}
-		if (tmpx.length > tmpyy.length) {
-			if (tmpx.indexOf(tmpyy) > -1 && tmpyy != '') {
-				return 1;
-			}
-		}
-		if (tmpx.length < tmpyy.length && tmpx.length > 8) {
-			if (tmpyy.indexOf(tmpx) > -1) {
-				return 1;
-			}
-		}
-	}
-
-	return -1;
-}
-function check_pinyin_answer() {
-	var user_answer = document.getElementById('user_answer').value;
-	var answer_for_prompt = pinyin.split(/[,;]/)[0];
-
-	answered_correctly = is_pinyin_close_enough(user_answer, answer);
-
-	if (answered_correctly == -1) {
-		if (is_english_close_enough(user_answer, english) == 1) {
-			$('#instructions').css('background-color', 'yellow');
-			document.getElementById('user_answer').value = '';
-			$('#instructions').focus();
-			return;
-		}
-	}
-
-	if (answered_correctly == 1) {
-		answered_correctly = 1;
-		total_answered++;
-		total_correct++;
-		show_points(10);
-		total_remaining--;
-	} else {
-		answered_correctly = -1;
-		last_question_data = question + '_M_' + user_answer;
-		total_answered++;
-		if (review_until_correct == 0) {
-			total_remaining--;
-		}
-		total_incorrect++;
-	}
-
-	if (answered_correctly == 1) {
-		$('#option4').addClass('option_correct');
-		$('#user_answer').css('background-color', '#EBFFD6');
-		$('#instructions').html(
-			'you entered: <span class="green">' + user_answer + '</span>'
-		);
-	} else {
-		incorrect_delay = generative_review_delay_on_incorrect;
-		$('#option4').addClass('option_incorrect');
-		$('#user_answer').css('background-color', '#FFD6CC');
-		$('#instructions').html(
-			'you entered: <span class="red">' + user_answer + '</span>'
-		);
-	}
-	document.getElementById('user_answer').value = answer_for_prompt;
-	if (answer.length > 10) {
-		$('#user_answer').css('font-size', '1em');
-	}
-	if (answer.length > 15) {
-		$('#user_answer').css('font-size', '0.9em');
-	}
-	if (answer.length > 19) {
-		$('#user_answer').css('font-size', '0.8em');
-	}
-	$('#user_answer').css('border', '0px');
-	$('#user_answer').blur();
-
-	advance_to_next_question();
 }
 
 async function advance_to_next_question() {
@@ -793,7 +556,7 @@ function updateMissing() {
 	tmp3 = document.getElementById('missing_pinyin').value;
 	tmp4 = document.getElementById('missing_english').value;
 
-	$('#lightbox_header').html('<img src="/img/loader-big-circle.gif" />');
+	$('#lightbox_header').html('<img src="/popup/img/loader-big-circle.gif" />');
 
 	$.post(
 		'/api/updateMissingWordlistData',
@@ -825,7 +588,7 @@ function return_test_finished_html() {
 	   </div> \
 	   <div style="min-height:300px;"> \
              <div style="float:left;height:221px;background:#F7F7F7;padding:2px;border:1px solid #888888;margin-right:20px;"> \
-               <img src="/img/misc/facepalm.jpg" style="height:220px"/> \
+               <img src="/popup/img/misc/facepalm.jpg" style="height:220px"/> \
              </div> \
 	   </div></div> ';
 	} else {
@@ -840,7 +603,7 @@ function return_test_finished_html() {
 	   </div> \
 	   <div style="min-height:300px;"> \
              <div style="float:left;height:221px;background:#F7F7F7;padding:2px;border:1px solid #888888;margin-right:20px;"> \
-               <img src="/img/misc/congrats.jpg" style="height:220px"/> \
+               <img src="/popup/img/misc/congrats.jpg" style="height:220px"/> \
              </div> \
 	   </div></div> ';
 	}

@@ -587,7 +587,7 @@ console.log("\n\n\n\n");
 	  }
 
           this.setAllies("papacy", "hapsburg");
-          this.setAllies("papacy", "venice");
+//          this.setAllies("papacy", "venice");
 	  this.setEnemies("papacy","france");
 
 //	  this.controlSpace("ottoman", "vienna");
@@ -694,7 +694,7 @@ console.log("\n\n\n\n");
 
           // VENICE
           this.addRegular("venice", "venice", 2);
-          this.addNavalSquadron("venice", "venice", 1);
+          this.addNavalSquadron("venice", "venice", 3);
 
           // ENGLAND
           this.addRegular("england", "stirling", 4);

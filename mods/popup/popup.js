@@ -679,9 +679,6 @@ console.log(JSON.stringify(this.localDB));
 	  let question_types = [
 		"multiple_choice_english", 
 		"multiple_choice_pinyin", 
-//		"generative_english", 
-//		"generative_pinyin", 
-//		"fill_in_the_blanks"
 	  ];
 	  let question_type = question_types[Math.floor(Math.random() * question_types.length)];
 

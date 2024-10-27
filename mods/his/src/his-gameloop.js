@@ -1721,7 +1721,6 @@ if (this.game.options.scenario != "is_testing") {
 	    this.game.queue.push("display_custom_overlay\texplore\t"+msg);
           } else {
 	    this.displayHudPopup("explore",msg); // true = as hud popup
-
 	  }
 	  this.game.state.may_explore[faction] = 0;
 	  this.displayExploration();
@@ -3113,7 +3112,7 @@ console.log("----------------------------");
 	  let fluis = 0;
 	  for (let f in this.game.spaces[spacekey].units) {
 	    if (f !== attacker && !this.areAllies(this.game.state.active_faction, f, 1)) {
-	      fluis += this.returnFactionLandUnitsInSpace(f, spacekey);
+	      fluis += this.returnFactionLandUnitsInSpace(f, spacekey, 1);
 	    }
 	  }
 
@@ -3127,7 +3126,14 @@ console.log("----------------------------");
 
 	    if (f !== attacker && (this.areAllies(f, this.returnFactionControllingSpace(spacekey)) || this.isSpaceControlled(spacekey, f)) && !this.areAllies(this.game.state.active_faction, f, 1)) {
 
-	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey);
+	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey, 1); // include minor allies
+
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("# siege - " + fluis + " units in space");
+console.log("#");
+console.log("#");
 
 	      if (fluis == 0) {
 		//
@@ -3143,7 +3149,11 @@ console.log("----------------------------");
 
 		  if (this.isMinorPower(f)) {
 
+console.log("# is minor power");
+
 		    if (this.isMinorUnactivatedPower(f)) {
+
+console.log("# is minor unactivated power");
 
 		      //
 		      // auto-handled -- we retreat for siege
@@ -3578,7 +3588,9 @@ console.log("----------------------------");
 	    // space as usual. Instead, they retain up to 4 units which withdraw into the
 	    // fortifications; all other land units in excess of 4 are eliminated.
       	    //
-	    if (space.units[faction].length <= 4) {
+	    let luis = this.returnFactionLandUnitsInSpace(faction, space.key, 1);
+
+	    if (luis <= 4) {
 	      //
 	      // fortify everything
 	      //
@@ -10787,6 +10799,8 @@ defender_hits - attacker_hits;
 	  if (his_self.game.player == his_self.returnPlayerCommandingFaction("protestant")) {
 	    his_self.faction_overlay.render("protestant");
 	    his_self.faction_overlay.updateNotice("Protestants advance in Bible Translation");
+	  } else {
+	    this.displayHudPopup("translate","Bible Translation"); // true = as hud popup
 	  }
 
 	  return 1;
@@ -10824,6 +10838,8 @@ defender_hits - attacker_hits;
 	  if (his_self.game.player == his_self.returnPlayerCommandingFaction("papacy")) {
 	    his_self.faction_overlay.render("papacy");
 	    his_self.faction_overlay.updateNotice("Papacy progresses with Saint Peter's Construction");
+	  } else {
+	    this.displayHudPopup("st_peters","Saint Peter's Basilica");
 	  }
 
 	  return 1;
@@ -12285,6 +12301,10 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 	    }
 	  }
 
+
+	  if (this.returnPlayerCommandingFaction(f1) == this.game.player || this.returnPlayerCommandingFaction(f2) == this.game.player) {
+    	    this.displayHudPopup("war", `${this.returnFactionName(f1)} declares war on ${this.returnFactionName(f2)}`);
+	  }
 
 	  this.displayWarBox();
 
