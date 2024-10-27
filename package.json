@@ -34,6 +34,7 @@
     "@giphy/js-components": "^5.8.2",
     "@giphy/js-fetch-api": "^4.4.0",
     "@mixin.dev/mixin-node-sdk": "^7.0.8",
+    "@tinymce/tinymce-react": "^5.1.1",
     "@types/uuid": "^9.0.8",
     "archiver": "^3.1.1",
     "axios": "^0.27.2",
@@ -70,6 +71,7 @@
     "jszip": "^3.5.0",
     "lamejs": "^1.2.0",
     "localforage": "^1.10.0",
+    "lucide-react": "^0.453.0",
     "markdown-linkify": "^1.0.3",
     "marked": "^4.2.4",
     "multicoin-address-validator": "^0.5.16",
@@ -106,7 +108,7 @@
     "ws": "^8.13.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.25.6",    
+    "@babel/cli": "^7.25.6",
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.4",
     "@babel/preset-react": "^7.24.7",
