@@ -15,6 +15,7 @@ class ATR extends ModTemplate {
 		this.categories = 'Utilities Dev';
 		this.class = 'utility';
 
+		this.ui = null;
 		this.blocks = [];
 		this.last_block_id = 0;
 	}
@@ -35,7 +36,7 @@ class ATR extends ModTemplate {
 			return;
 		}
 
-		this.atrMain.render();
+		this.ui.render();
 	
 		await super.render(app);
 	}

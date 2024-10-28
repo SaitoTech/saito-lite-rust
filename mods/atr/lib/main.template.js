@@ -1,62 +1,70 @@
 module.exports = (app, mod) => {
 
-	console.log("New block: ", mod.block_data);
+	return `
+		<table class="blocktable">
 
-	let variable = ``;
-	let total_fees = ``;
-	let total_fees_new = ``;
-	let total_fees_atr = ``;
-	let avg_total_fees = ``;
-	let burn_fee = ``;
-	for (let i=0; i < mod.block_data.length; i++) {
-		let block = mod.block_data;
+			<tr class="header">
+				<th></th>
+				<th class="blockslot1"></th>
+				<th class="blockslot2"></th>
+				<th class="blockslot3"></th>
+				<th class="blockslot4"></th>
+				<th class="blockslot5"></th>
+				<th class="blockslot6"></th>
+				<th class="blockslot7"></th>
+				<th class="blockslot8"></th>
+				<th class="blockslot9"></th>
+				<th class="blockslot10"></th>
+	    		<tr>
 
-		console.log("block.cv.total_fees: ", block.cv.total_fees);
-		variable += `<th>${block.id}</th>`;
-		total_fees += `<td>${block.cv.total_fees}</td>`;
-		total_fees_new += `<td>${block.cv.total_fees_new}</td>`;
-		total_fees_atr += `<td>${block.cv.total_fees_atr}</td>`;
-		avg_total_fees += `<td>${block.cv.avg_total_fees}</td>`;
-		burnfee += `<td>${block.cv.burnfee}</td>`;
-	}
+			<tr class="total_fees">
+				<td>total_fees</td>
+				<th class="blockslot1"></th>
+				<th class="blockslot2"></th>
+				<th class="blockslot3"></th>
+				<th class="blockslot4"></th>
+				<th class="blockslot5"></th>
+				<th class="blockslot6"></th>
+				<th class="blockslot7"></th>
+				<th class="blockslot8"></th>
+				<th class="blockslot9"></th>
+				<th class="blockslot10"></th>
+			</tr>
 
-	let html = `
-			<table>
-	      <tr>
-	        <th>Variable</th>
-	        ${variable}
-	      </tr>
+	    		<tr class="total_fees_new">
+				<td>total_fees_new</td>
+				<th class="blockslot1"></th>
+				<th class="blockslot2"></th>
+				<th class="blockslot3"></th>
+				<th class="blockslot4"></th>
+				<th class="blockslot5"></th>
+				<th class="blockslot6"></th>
+				<th class="blockslot7"></th>
+				<th class="blockslot8"></th>
+				<th class="blockslot9"></th>
+				<th class="blockslot10"></th>
+			</tr>
 
-	      <tr>
-					<td>total_fees</td>      
-					${total_fees} 
-	      </tr>
+	    		<tr class="total_fees_atr">
+				<td>total_fees_atr</td>
+				<th class="blockslot1"></th>
+				<th class="blockslot2"></th>
+				<th class="blockslot3"></th>
+				<th class="blockslot4"></th>
+				<th class="blockslot5"></th>
+				<th class="blockslot6"></th>
+				<th class="blockslot7"></th>
+				<th class="blockslot8"></th>
+				<th class="blockslot9"></th>
+				<th class="blockslot10"></th>
+			</tr>
 
-	      <tr>
-					<td>total_fees_new</td>      
-					${total_fees_new}   
-	      </tr>
+		</table>
 
-	      <tr>
-					<td>total_fees_atr</td>      
-					${total_fees_atr}     
-	      </tr>
+		<input class="new_block_with_ticket" type="button" value="New Block (w/ golden ticket)" />
+		<input class="new_block_no_ticket" type="button" value="New Block (w/o golden ticket)" />
+		<input class="add_transaction_to_mempool" type="button" value="Add Transaction to Mempool" />
 
-	      <tr>
-					<td>avg_total_fees</td>      
-					${avg_total_fees}      
-	      </tr>
-	      <tr>
-					<td>burn_fee</td>      
-					${burn_fee}    
-	      </tr>
-	    </table>
+	`;
 
-	    <input type="button" value="New Block (w/ golden ticket)" />
-	    <input type="button" value="New Block (w/o golden ticket)" />
-	    <input type="button" value="Add Transaction to Mempool" />
-		`;
-
-
-		return html;
 }
