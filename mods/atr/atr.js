@@ -15,15 +15,15 @@ class ATR extends ModTemplate {
 		this.categories = 'Utilities Dev';
 		this.class = 'utility';
 
-		this.block_data = [];
+		this.blocks = [];
+		this.last_block_id = 0;
 	}
 
 	async initialize(app) {
 		this.styles = [
 			'/saito/style.css',
-			//'/atr/style.css'
 		];
-		this.atrMain = new ATRMain(app, this);
+		this.ui = new ATRMain(app, this);
 	}
 
 	shouldAffixCallbackToModule() {
@@ -41,35 +41,33 @@ class ATR extends ModTemplate {
 	}
 
 
-	onNewBlock(blk, lc,conf,app) {
-
-			var json_block = JSON.parse(blk.toJson());
-
-			console.log("json_block: ", json_block);
-			this.block_data.push(json_block);
-
-			if (this.block_data.length > 10) {
-				this.block_data.shift();
-			}
-
-			app.connection.emit('saito-atr-render-request');
-	}
-
 	async onConfirmation(blk, tx, conf) {
-		let txmsg = tx.returnMessage();
-		try {
-			if (conf == 0) {
+		if (conf == 0) {
+
+			if (blk.getBlockId() > this.last_block_id) {
+
+				this.last_block_id = blk.id;
+
+				if (this.blocks.length < 10) {
+					this.blocks.push(JSON.parse(blk.toJson()));
+				} else {
+					this.blocks[0] = this.block[1];
+					this.blocks[1] = this.block[2];
+					this.blocks[2] = this.block[3];
+					this.blocks[3] = this.block[4];
+					this.blocks[4] = this.block[5];
+					this.blocks[5] = this.block[6];
+					this.blocks[6] = this.block[7];
+					this.blocks[7] = this.block[8];
+					this.blocks[8] = this.block[9];
+					this.blocks[9] = JSON.parse(blk.toJson());
+				}
+
+				this.app.connection.emit('saito-atr-render-request');
 
 			}
-		} catch (err) {
-			console.log('ERROR in ' + this.name + ' onConfirmation: ' + err);
 		}
-	}
 
-	async handlePeerTransaction(app, tx=null, peer, callback=null) { // BUILT-IN FUNCTION
-		if (this.app.BROWSER) {
-
-		}
 	}
 
 }

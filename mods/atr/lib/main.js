@@ -5,7 +5,7 @@ class Main {
                 this.app = app;
                 this.mod = mod;
                 this.container = '.saito-container';
-                this.app.connection.on('saito-atr-render-request', (obj) => {
+                this.app.connection.on('saito-atr-render-request', () => {
                 	console.log("rendering atr ");
 			this.render();
 		});
