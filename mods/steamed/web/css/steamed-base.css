@@ -100,13 +100,15 @@ body {
 .steam-controls .control{
 	font-size: 2.6rem;
 	border-radius: 0.5rem;
-	border: 3px outset;
+	border: 3px solid;
 	height: 6rem;
 	width: 6rem;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	cursor: pointer;
+	background-color: #DDD6;
+	color: black;
 }
 
 #draw_deck {
@@ -174,12 +176,18 @@ body {
 }
 
 .control.active_state {
-	color: lightslategray;
+	color: whitesmoke;
 	background-color: black;
+	border-color: whitesmoke;
 }
 
 .control {
-	transition: visibility 0.4s;
+	transition: all 0.2s;
+}
+
+.control:hover{
+	box-shadow: 3px 3px 3px;
+	background-color: #5555;
 }
 
 .player_field > .field_slot.active_element:hover {

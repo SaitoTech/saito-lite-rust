@@ -642,7 +642,12 @@ class Steamed extends GameTemplate {
 				html += 'You must liquidate a factory so you can start a new plant';
 			}
 		} else if (this.game.state.planted == 1) {
-			html += `Build the next plant from your hand (optional)`;
+			if (!this.game.state.discarded){
+				html += `Build the next plant, delete any, or skip`;	
+			}else{
+				html += `Build the next plant, or continue`;	
+			}
+			
 		} else if (this.game.state.market.length > 0) {
 			html += `Build any available offers or leave them for your opponent`;
 		} else if (this.game.state.planted == 2) {
@@ -790,6 +795,8 @@ class Steamed extends GameTemplate {
 
 		$('#forward').on('click', function () {
 			if (steamSelf.game.state.planted !== 0) {
+				steamSelf.removeEvents();
+				$('#discard').css('visibility', 'hidden');
 				steamSelf.dealCards();
 			} else {
 				steamSelf.displayModal('You have to build the first plant in your hand before moving on');
@@ -853,7 +860,6 @@ class Steamed extends GameTemplate {
 
 			$('#discard').off();
 			$('#discard').on('click', function () {
-				console.log("Hi!");
 				$('.deletable').removeClass('deletable');
 				$("#discard").removeClass("active_state");
 				steamSelf.attachBoardEvents();
@@ -893,6 +899,7 @@ class Steamed extends GameTemplate {
 		$('.cardfan img.card').off();
 		$('.active_element').removeClass('active_element');
 		$('#discard').off();
+		$('#discard').removeClass('active_state');
 		$('#forward').css('visibility', 'hidden');
 		//$(".jumpy").removeClass("jumpy");
 	}
