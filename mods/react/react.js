@@ -27,7 +27,7 @@ class ReactMod extends ModTemplate {
   }
 
   onNewBlock(blk) {
-    console.log('new block', blk);
+    //console.log('new block', blk);
   }
 
   async initialize(app) {

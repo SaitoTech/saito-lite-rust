@@ -196,7 +196,7 @@ class Storage {
 		//
 		let internal_callback = (res) => {
 			let txs: Transaction[] = [];
-			console.log(res, 'results')
+			//console.log(res, 'results')
 			if (res) {
 				for (let i = 0; i < res.length; i++) {
 					let tx = new Transaction();

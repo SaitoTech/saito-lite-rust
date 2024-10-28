@@ -154,6 +154,7 @@ class Relay extends ModTemplate {
         );
       }
     }
+  }
 
   }
 
