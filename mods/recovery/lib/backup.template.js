@@ -1,4 +1,4 @@
-module.exports = BackupTemplate = (identifier, newIdentifier) => {
+module.exports  = (identifier, newIdentifier) => {
 	let txt = 'your Saito account';
 	if (identifier) {
 		if (identifier.indexOf('@saito') == -1) {

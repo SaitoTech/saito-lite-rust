@@ -22,7 +22,7 @@ export default class Wallet extends SaitoWallet {
 
 	default_fee = 0;
 
-	version = 5.641;
+	version = 5.643;
 
 	nolan_per_saito = 100000000;
 
@@ -102,6 +102,10 @@ export default class Wallet extends SaitoWallet {
 				console.log("returnBalance 1: ", await this.app.wallet.getBalance());
 				let x = await this.app.wallet.getBalance()
 				return this.app.wallet.convertNolanToSaito(x);
+			}
+
+			async returnPublicKey() {
+				return this.publicKey || await this.app.wallet.getPublicKey();
 			}
 
 			async returnAddress() {

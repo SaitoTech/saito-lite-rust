@@ -5,7 +5,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 2rem;
-	min-width: 650px;
+	width: 650px;
 	max-width: 99vw;
 	max-height: 90vh;
 	overflow-x: hidden;
@@ -17,13 +17,33 @@
 	/* Firefox */
 }
 
+.settlers-stats-overlay.winner {
+    position: relative;
+    background-color: #d3c38d88;
+}
+
+.settlers-stats-overlay.winner::before {
+	content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: url(/settlers/img/cards/governors_statue.png);
+    background-size: 114%;
+    background-position: 50% 39%;
+    filter: sepia(0.75) contrast(0.5) opacity(1);
+    left: 0;
+    top: 0;
+    z-index: -1;
+}
+
 .settlers-selection-overlay {
 	width: min(630px, 95vw);
 	align-items: center;
 }
 
-.mobile-trading-container .player-box {
-	max-width: 80vw;
+.dev-card-overlay {
+	width: unset;
+	max-width: 85vw;
 }
 
 .brick {
@@ -171,7 +191,7 @@ stats overlay
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	background-color: unset !important;
+	background: unset !important;
 	width: 100%;
 }
 

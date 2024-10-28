@@ -13,6 +13,7 @@ class Wuziqi extends GameTemplate {
 		// Define static game parameters and add global variables.
 
 		this.name = 'Wuziqi';
+		this.slug = 'wuziqi';
 		this.game_length = 10; //Estimated number of minutes to complete a game
 		this.description =
 			'Take turns placing black or white tiles on a Go board of various sizes to make a line of five in a row to win the round. Also known as 五子棋, Gokomu, or Gobang.';
@@ -118,6 +119,12 @@ class Wuziqi extends GameTemplate {
 				this.clock.displayTime(this.game.clock[i].limit - this.game.clock[i].spent, i+1);
 			}
 		}
+
+		// Temporary fallback experiment -- if successful move to gametemplate
+		if (this.game.turn.length){
+			this.sendGameMoveTransaction('game', {target: this.returnNextPlayer()});
+		}
+
 
 	}
 
@@ -231,10 +238,11 @@ class Wuziqi extends GameTemplate {
 	// Iterate through the board object to draw each cell in the DOM
 	drawBoard(board) {
 		if (!this.gameBrowserActive()){
+			console.log("Opt out of drawing board");
 			return;
 		}
 
-		//console.log("DRAWING BOARD!");
+		console.log("DRAWING BOARD!");
 		//console.log(board);
 		boardElement = document.querySelector('.board');
 		// Clear the board
@@ -342,10 +350,12 @@ class Wuziqi extends GameTemplate {
 	//
 	async handleGameLoop(msg = null) {
 		// The Game Loop hands us back moves from the end of the stack (the reverse order they were added)
+		let cell;
 
+		this.drawBoard(this.game.board);
+		
 		// Check we have a queue
 		if (this.game.queue.length > 0) {
-			this.drawBoard(this.game.board);
 
 			// Save before we start executing the game queue
 			// this.saveGame(this.game.id);
@@ -471,7 +481,7 @@ class Wuziqi extends GameTemplate {
 
 				this.boardFromString(mv[1]);
 				// Grab the played cell
-				let cell = this.returnCellById(parseInt(mv[2]));
+				cell = this.returnCellById(parseInt(mv[2]));
 
 				// And check if it won the game (this will just update winners in data structure)
 				let winner = this.findWinner(cell);
@@ -484,31 +494,33 @@ class Wuziqi extends GameTemplate {
 
 				this.playerbox.setActive(this.game.target);
 
-				if (this.game.player !== player && this.game.player !== 0) {
-					//Let player make their move
-					this.addEvents(this.game.board);
-
-					if (this.gameBrowserActive()){
-						this.updateStatus(`Your move <span class="replay">Replay Last</span>`);
-						document.querySelector('.replay').onclick = (e) => {
-							this.animatePlay(cell);
-						};
-					}else{
-						this.updateStatus("Your move");
-					}
-				} else {
-
-					this.startClock();
-					this.updateStatus(
-						`Waiting on <span class='playertitle'>${this.roles[3 - player]}</span> (${this.app.keychain.returnUsername(this.game.players[2-player])})` 
-					);
-				}
-
 				// Remove this item from the queue.
 				this.game.queue.splice(this.game.queue.length - 1, 1);
+
 				return 1;
 			}
 		}
+
+		if (this.game.player == this.game.target) {
+			//Let player make their move
+			this.addEvents(this.game.board);
+
+			if (this.gameBrowserActive() && cell){
+				this.updateStatus(`Your move <span class="replay">Replay Last</span>`);
+				document.querySelector('.replay').onclick = (e) => {
+					this.animatePlay(cell);
+				};
+			}else{
+				this.updateStatus("Your move");
+			}
+		} else {
+
+			this.startClock();
+			this.updateStatus(
+				`Waiting on <span class='playertitle'>${this.roles[3 - this.game.player]}</span> (${this.app.keychain.returnUsername(this.game.players[2-this.game.player])})` 
+			);
+		}
+
 		return 0;
 	}
 

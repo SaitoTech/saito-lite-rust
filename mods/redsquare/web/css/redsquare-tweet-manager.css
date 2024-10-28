@@ -45,12 +45,9 @@
 	margin-left: 0.5rem;
 }
 
-
-.redsquare-progress-banner{
-	height: fit-content;
-	width: calc(100% - 2rem);
-	position: fixed;
+.redsquare-progress-banner {
+	height: 0;
+	position: sticky;
 	z-index: 55;
-	max-width: 54rem;
-	top: var(--saito-header-height);
+	top: 1.6rem;
 }

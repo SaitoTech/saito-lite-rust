@@ -18,6 +18,7 @@ const SaitoMentions = require('./ui/saito-mentions/saito-mentions');
 class Browser {
 	public app: any;
 	public browser_active: any;
+	public multiple_windows_active: any;
 	public drag_callback: any;
 	public urlParams: any;
 	public active_tab: any;
@@ -32,6 +33,7 @@ class Browser {
 		this.app = app || {};
 
 		this.browser_active = 0;
+		this.multiple_windows_active = 0;
 		this.drag_callback = null;
 		this.urlParams = {};
 		this.host = '';
@@ -126,20 +128,20 @@ class Browser {
 					if (e.data.msg) {
 						if (e.data.msg == 'new_tab') {
 							window.focus();
-							//alert("moving to: " + e.data.location);
+
 //							if (window.confirm('You have followed a Saito link, do you want to open it here?')) {
 //								window.location = e.data.location;
 //							}
   	
-                            setTimeout(() => {
-                            	window.location = '/tabs.html';
-                            }, 300)
+                            				setTimeout(() => {
+                            					window.location = '/tabs/';
+                            				}, 300)
 						}
 					}
 				};
 
 
-/* channel.onmessage = async (e) => {
+/***** channel.onmessage = async (e) => {
 				  console.log("document onmessage change");
 				  if (!document[this.hidden_tab_property]) {
 					channel.postMessage({active: 1, publicKey: publicKey});
@@ -158,7 +160,7 @@ class Browser {
 					}
 				  }
 				};
-*/
+*****/
 
 				document.addEventListener(
 					this.tab_event_name,
@@ -493,6 +495,20 @@ class Browser {
 		return `${protocol}://${host}:${port}/r?i=${url_payload}`;
 	}
 
+	createEventInviteLink(event){
+
+		let obj = Object.assign({}, event);
+		delete obj.privateKey;
+
+		let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
+
+		let call_link = window.location.origin + '/redsquare/';
+		call_link = `${call_link}?event=${base64obj}`;
+
+		return call_link;
+
+	}
+
 	returnHashAndParameters() {
 		let hash = new URL(document.URL).hash.split('#')[1];
 		let component = '';
@@ -630,6 +646,7 @@ class Browser {
 	}
 
 	checkForMultipleWindows() {
+
 		//Add a check to local storage that we are open in a tab.
 		localStorage.openpages = Date.now();
 
@@ -642,17 +659,17 @@ class Browser {
 				e.key == 'page_available' &&
 				!this.isMobileBrowser(navigator.userAgent)
 			) {
-				console.log(e.key);
-				console.log(navigator.userAgent);
-				//alert("Saito already open in another tab!");
 
-				//alert("i am the new tab");
-				//alert("message sent");
+				this.multiple_windows_active = 1;
+
 				let c = await sconfirm(
 					'Your wallet appears to be connected in another Saito tab.\n\nWould you like to connect it here and close the other tab?'
 				);
 				if (c) {
+					this.multiple_windows_active = 0;
 					this.channel.postMessage({msg: 'new_tab', location: window.location.href});
+		                        await this.app.modules.render();
+                		        await this.app.modules.attachEvents();
 					return;
 				} else {
 					  setTimeout(() => {
@@ -1092,7 +1109,7 @@ class Browser {
 		return timeString;
 	}
 
-	saneDateFromTimestamp(timestamp) {
+	saneDateFromTimestamp(timestamp, with_year = true) {
 		var date = new Date(timestamp);
 		var year = date.getFullYear();
 		var month = date.getMonth() + 1; // getMonth() returns month from 0-11
@@ -1102,10 +1119,16 @@ class Browser {
 		month = month < 10 ? '0' + month : month;
 		day = day < 10 ? '0' + day : day;
 
-		return year + '-' + month + '-' + day;
+		let return_str =  month + '-' + day;
+		if (with_year){
+			return year + '-' + return_str	
+		}else{
+			return return_str
+		}
+		
 	}
 
-	saneTimeFromTimestamp(timestamp) {
+	saneTimeFromTimestamp(timestamp, with_seconds = true) {
 		var date = new Date(timestamp);
 		var hours = date.getHours();
 		var minutes = date.getMinutes();
@@ -1116,14 +1139,18 @@ class Browser {
 		minutes = minutes < 10 ? '0' + minutes : minutes;
 		seconds = seconds < 10 ? '0' + seconds : seconds;
 
-		return hours + ':' + minutes + ':' + seconds;
+		let return_str = hours + ':' + minutes;
+		if (with_seconds){
+			return_str += ':' + seconds;
+		}
+		return return_str;
 	}
 
-	saneDateTimeFromTimestamp(timestamp) {
+	saneDateTimeFromTimestamp(timestamp, detailed = true) {
 		return (
-			this.saneDateFromTimestamp(timestamp) +
-			':' +
-			this.saneTimeFromTimestamp(timestamp)
+			this.saneDateFromTimestamp(timestamp, detailed) +
+			'/' +
+			this.saneTimeFromTimestamp(timestamp, detailed)
 		);
 	}
 
@@ -1142,7 +1169,8 @@ class Browser {
 		id,
 		handleFileDrop = null,
 		click_to_upload = true,
-		read_as_array_buffer = false
+		read_as_array_buffer = false,
+		read_as_text = false
 	) {
 		const hidden_upload_form = `
       <form id="uploader_${id}" class="saito-file-uploader" style="display:none">
@@ -1182,10 +1210,14 @@ class Browser {
 					[...files].forEach(function (file) {
 						const reader = new FileReader();
 						reader.addEventListener('load', (event) => {
+							console.log('handleFileDrop ////');
 							handleFileDrop(event.target.result);
 						});
 						if (read_as_array_buffer) {
 							reader.readAsArrayBuffer(file);
+						} else if(read_as_text) {
+							console.log('readAsText ////');
+							reader.readAsText(file);
 						} else {
 							reader.readAsDataURL(file);
 						}
@@ -1205,7 +1237,7 @@ class Browser {
 							drag_and_drop = true;
 							const reader = new FileReader();
 							reader.addEventListener('load', (event) => {
-								handleFileDrop(event.target.result);
+								handleFileDrop(event.target.result, true);
 							});
 							if (read_as_array_buffer) {
 								reader.readAsArrayBuffer(file);
@@ -1860,10 +1892,12 @@ class Browser {
 	}
 
 	sanitize(text, createLinks = false) {
-		//console.log("Sanitize: ", text);
+		if (!text) {
+			return "";
+		}
 		try {
-			if (text !== '') {
-				text = marked.parseInline(text);
+			if (createLinks) {
+				text = marked.parse(text);
 				//trim trailing line breaks -
 				// commenting it out because no need for this now
 				// because of above marked parsing
@@ -2324,6 +2358,7 @@ class Browser {
 							if (identifier !== key) {
 								el.innerText = identifier;
 							} else {
+								el.innerText = 'Anon-' + identifier.substr(0,6);
 								if (!unknown_keys.includes(key)) {
 									unknown_keys.push(key);
 								}

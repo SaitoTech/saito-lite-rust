@@ -107,7 +107,7 @@ class NTFY extends ModTemplate {
             to.forEach((key) => {
               notification.topic = key;
               try {
-                console.log(notification);
+                //console.log(notification);
                 fetch(this.ntfy.server, {
                   method: 'POST',
                   body: JSON.stringify(notification)

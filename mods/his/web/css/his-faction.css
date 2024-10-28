@@ -235,6 +235,16 @@
 	background-size: cover;
 }
 
+
+.faction_sheet_vp .navy_tile , .faction_sheet_vp .army_tile {
+	background-size: contain;
+    	width: 50px;
+    	height: 50px;
+    	position: relative;
+    	margin-left: 0px;
+    	margin-top: 0px;
+}
+
 .war_winner_vp.vp1 {
 	width: 50px;
 	height: 50px;
@@ -320,6 +330,19 @@
 	overflow: normal;
 	flex-direction: rows;
 	justify-content: space-evenly;
+}
+.faction_sheet_vp .army_tile:nth-child(0) , 
+.faction_sheet_vp .army_tile:nth-child(1) ,
+.faction_sheet_vp .army_tile:nth-child(2) ,
+.faction_sheet_vp .army_tile:nth-child(3) ,
+.faction_sheet_vp .army_tile:nth-child(4) ,
+.faction_sheet_vp .army_tile:nth-child(5) ,
+.faction_sheet_vp .army_tile:nth-child(6) ,
+.faction_sheet_vp .army_tile:nth-child(7) ,
+.faction_sheet_vp .army_tile:nth-child(8) ,
+.faction_sheet_vp .army_tile:nth-child(9) {
+	margin-left: 0px;
+	margin-top: 0px;
 }
 
 .faction_sheet_keytile {

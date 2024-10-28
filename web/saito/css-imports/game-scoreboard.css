@@ -18,7 +18,10 @@
 }
 
 
-
+.game-scoreboard span {
+  width: min-content;
+  white-space: nowrap;
+}
 
 .scoreitem{
   padding: 0 10px;

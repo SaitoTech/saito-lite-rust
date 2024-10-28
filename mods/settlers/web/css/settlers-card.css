@@ -10,8 +10,8 @@
 .cardover {
 	font-family: bagnard-sans;
 	color: black;
-	width: min(1000px, 80vw);
-	height: min(550px, 60vh);
+	width: min(1200px, 80vw);
+	height: min(750px, 70vh);
 	border-radius: 2rem;
 	padding: 2rem;
 	overflow: hidden;
@@ -30,11 +30,11 @@
 	width: 100%;
 	height: 100%;
 	background-image: var(--settlers-cardimg);
-	background-size: contain;
-	background-position: center;
-	filter: blur(3px); /* Apply blur effect */
+	background-size: cover;
+	background-position: top;
+	filter: blur(3px) brightness(70%) grayscale(10%); /* Apply blur effect */
 	z-index: -1; /* Place it behind the content */
-	transform: scale(2);
+	transform: scale(1.5);
 	overflow: hidden;
 }
 
@@ -77,6 +77,26 @@
 	background: #d3c38d88;
 }
 
+.cardover-optout {
+	bottom: 1rem;
+	right: 1rem;
+	max-width: 35%;
+	font-size: 2rem;
+	border-radius: 2rem;
+	backdrop-filter: blur(10px);
+	position: absolute;
+	margin: 2rem;
+	padding: 1rem;
+	background: #d3c38d88;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	cursor: pointer;
+}
+
+.cardover-optout:hover{
+	filter: brightness(1.05);
+}
 
 @media screen and (max-width: 900px) {
 
@@ -93,4 +113,29 @@
 	.cardover-cardover {
 		width: 40%;
 	}
+}
+
+.hud-notice {
+	background-image: var(--settlers-cardimg);
+    background-size: 111%;
+    background-position: center;
+	padding: 1rem;
+	background-blend-mode: darken;
+}
+
+.cardnotice-card {
+	position: absolute;
+    right: 1rem;
+    top: 1rem;
+    transform: rotate(5deg) scale(0.2);
+    transform-origin: top right;
+}
+
+.cardnotice div {
+    width: fit-content;
+    margin: 0.7rem;
+    font-size: 2.3rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    background-color: #b79e76cc;
 }

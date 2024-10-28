@@ -159,7 +159,7 @@ webpack(
               options: {
                 root: path.resolve(__dirname, './build'),
                 rootMode: "upward",
-                presets: ["@babel/preset-env"],
+                presets: ["@babel/preset-env", "@babel/preset-react"],
                 sourceMaps: false,
                 cacheCompression: false,
                 cacheDirectory: true,
@@ -205,8 +205,8 @@ webpack(
         {
           test: /\.zip$/,
           exclude: [
-            path.resolve(__dirname, "../mods/appstore/bundler"),
-            path.resolve(__dirname, "../mods/appstore/mods"),
+            path.resolve(__dirname, "../mods/devtools/bundler"),
+            path.resolve(__dirname, "../mods/devtools/mods"),
           ],
         },
       ],

@@ -67,12 +67,12 @@ module.exports = {
         exclude: [/(mods)/, /(email)/],
       },
       {
-        test: /\.js$/,
+        test: /\.(js|jsx)$/, 
         exclude: /(node_modules)/,
         use: {
           loader: "babel-loader",
           options: {
-            presets: ["@babel/preset-env"],
+            presets: ["@babel/preset-env", "@babel/preset-react"],
           },
         },
       },
@@ -96,8 +96,8 @@ module.exports = {
       {
         test: /\.zip$/,
         exclude: [
-          path.resolve(__dirname, "../mods/appstore/bundler"),
-          path.resolve(__dirname, "../mods/appstore/mods"),
+          path.resolve(__dirname, "../mods/devtools/bundler"),
+          path.resolve(__dirname, "../mods/devtools/mods"),
         ],
       },
     ],

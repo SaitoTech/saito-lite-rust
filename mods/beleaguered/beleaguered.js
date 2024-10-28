@@ -14,8 +14,7 @@ class Beleaguered extends OnePlayerGameTemplate {
 		this.name = 'Beleaguered';
 		this.gamename = 'Beleaguered Castle';
 		this.slug = 'beleaguered';
-		this.description =
-			'Stack all cards by suit from aces to kings to win this game';
+		this.description = 'Stack all cards by suit from aces to kings to win this game';
 		this.categories = 'Games Cardgame One-player';
 		this.publisher_message =
 			'created by Pawel (twitter: @PawelPawlak14) with contributions from Saito team. Feel free to pm me with any suggestions/feedback';

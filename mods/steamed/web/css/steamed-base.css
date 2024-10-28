@@ -19,13 +19,13 @@ body {
 }
 
 .status-message {
-	background-color: tan;
 	margin-bottom: unset;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-evenly;
 	padding: 5px 0;
+	height: 100%;
 }
 
 .field_slot {
@@ -42,6 +42,7 @@ body {
 	position: absolute;
 	width: 100%;
 	max-width: 150px;
+	height: auto;
 }
 
 .pot {
@@ -62,12 +63,18 @@ body {
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
 	grid-gap: 10px;
-	background-color: saddlebrown;
+	background-color: darkslategray;
 	padding: 7px;
 	justify-items: center;
 	align-content: center;
 	min-height: 150px;
 	min-width: 300px;
+	border: 3px solid black;
+	filter: drop-shadow(10px 6px 5px);
+}
+
+.player_field#self{
+	grid-template-columns: repeat(3, 1fr) min-content;
 }
 
 .status {
@@ -75,6 +82,32 @@ body {
 	height: 40px;
 	position: absolute;
 	top: -40px;
+	color: white;
+	text-shadow: 1px 2px 6px black;
+	background-color: inherit;
+	box-sizing: content-box;
+	border: inherit;
+}
+
+.steam-controls{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  height: 100%;
+}
+
+.steam-controls .control{
+	font-size: 2.6rem;
+	border-radius: 0.5rem;
+	border: 3px solid;
+	height: 6rem;
+	width: 6rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	background-color: #DDD6;
 	color: black;
 }
 
@@ -134,7 +167,7 @@ body {
 }
 
 .player_field.active {
-	background-color: tan;
+	background-color: lightslategray;
 }
 
 .active_element {
@@ -142,24 +175,19 @@ body {
 	transition: box-shadow 0.25s, transform 0.25s, filter 0.25s;
 }
 
-.delete {
-	width: fit-content;
-	padding: 5px;
-	border-radius: 1px solid black;
-	background-color: tan;
-	filter: drop-shadow(2px 2px 2px black);
-	cursor: pointer;
+.control.active_state {
+	color: whitesmoke;
+	background-color: black;
+	border-color: whitesmoke;
 }
 
-.delete:hover,
-.delete.active_element {
-	background-color: saddlebrown;
-	color: ghostwhite;
+.control {
+	transition: all 0.2s;
 }
 
-.delete.active_element:hover {
-	background-color: tan;
-	color: black;
+.control:hover{
+	box-shadow: 3px 3px 3px;
+	background-color: #5555;
 }
 
 .player_field > .field_slot.active_element:hover {
@@ -209,40 +237,29 @@ body {
 	right: 20px;
 }
 
-.profit1 {
+.profit {
 	position: absolute;
 	bottom: 3%;
 	width: 23%;
 	height: 37%;
+	background-color: rgba(175, 175, 50, 0.3);
+	border-radius: 2rem;
+}
+
+.profit1 {
 	left: 4%;
-	background-color: rgba(255, 255, 0, 0.4);
 }
 
 .profit2 {
-	position: absolute;
-	bottom: 3%;
-	width: 23%;
-	height: 37%;
 	left: 27%;
-	background-color: rgba(255, 255, 0, 0.4);
 }
 
 .profit3 {
-	position: absolute;
-	bottom: 3%;
-	width: 23%;
-	height: 37%;
 	left: 52%;
-	background-color: rgba(255, 255, 0, 0.4);
 }
 
 .profit4 {
-	position: absolute;
-	bottom: 3%;
-	width: 23%;
-	height: 37%;
 	left: 77%;
-	background-color: rgba(255, 255, 0, 0.4);
 }
 
 .slot_holder {
@@ -310,17 +327,33 @@ body {
 	border: 3px solid var(--saito-primary);
 }
 
+
+.hud .status {
+	position: relative;
+	top: unset;
+	height: unset;
+	color: unset;
+	text-shadow: unset;
+}
+
+.hud-header {
+	display: none;
+}
+
 .jumpy img.card:hover {
 	transform: translate(-12%, -20%);
 }
 
-.jumpy img.card:last-child:hover {
+.jumpy img.card:last-child:hover, .cardfan img.card.active_element.activated {
 	transform: translate(2%, -20%);
 }
 
-.cardfan .active_element:hover {
-	filter: hue-rotate(120deg);
+.cardfan .active_element:hover, .cardfan .active_element.activated {
 	box-shadow: 0 0 2px 5px lime;
+}
+
+.cardfan .deletable {
+	box-shadow: 0 0 2px 5px indianred;	
 }
 
 .bighand > .card:nth-child(7n + 1) {

@@ -1,4 +1,4 @@
-module.exports = LeagueRankingsTemplate = () => {
+module.exports  = () => {
 	return `
  	      <div class="league-rankings">
 	        <div class="sidebar-header">

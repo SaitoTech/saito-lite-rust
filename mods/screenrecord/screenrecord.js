@@ -1,5 +1,5 @@
 const ModTemplate = require('../../lib/templates/modtemplate');
-const StreamCapturer = require('./lib/stream-capturer');
+const StreamCapturer = require('../../lib/saito/ui/stream-capturer/stream-capturer');
 const screenrecordWizard = require('./lib/screenrecord-wizard');
 const ScreenRecordControls = require('./lib/screenrecord-lite-controls')
 const lamejs = require('lamejs');
@@ -11,12 +11,13 @@ class Record extends ModTemplate {
 		super(app);
 		this.app = app;
 		this.name = 'screenrecord';
+		this.slug = 'screenrecord';
 		this.description = 'Recording Module';
 		this.categories = 'Utilities Communications';
 		this.class = 'utility';
 		this.record_video = false;
 
-		this.styles = ['/saito/saito.css', '/screenrecord/style.css'];
+		this.styles = ['/screenrecord/style.css'];
 		this.streamData = [];
 		this.chunks = [];
 		this.mediaRecorder = null;
@@ -194,61 +195,61 @@ class Record extends ModTemplate {
 			return menu;
 		}
 
-		if (type === "dream-controls") {
-			let audioEnabled = true;
-			let videoIcon = this.videoBox ? "fas fa-video" : "fas fa-video-slash";
-			let audioIcon =  audioEnabled ? "fas fa-microphone" : 'fas fa-microphone-slash';
+		// if (type === "dream-controls") {
+		// 	let audioEnabled = true;
+		// 	let videoIcon = this.videoBox ? "fas fa-video" : "fas fa-video-slash";
+		// 	let audioIcon =  audioEnabled ? "fas fa-microphone" : 'fas fa-microphone-slash';
 		
-			const streams = this.app.modules.getRespondTos('media-request');
+		// 	const streams = this.app.modules.getRespondTos('media-request');
 		
-			let x = [
-				{
-					text: `Video control`,
-					icon: videoIcon,
-					callback: (app, id, combined_stream) => {
-						const iconElement = document.querySelector(`#dream_controls_menu_item_${id} i`);
-						if (this.videoBox) {
-							this.removeVideoBox(true);
-							iconElement.classList.replace('fa-video', 'fa-video-slash');
-						} else {
-							this.getOrCreateVideoBox();
-							iconElement.classList.replace('fa-video-slash', 'fa-video');
-						}
-					},
-					style: ""
-				},
-				{
-					text: `Audio control`,
-					icon: audioIcon,
-					callback: (app, id, combined_stream) => {
-						const iconElement = document.querySelector(`#dream_controls_menu_item_${id} i`);
-						let audioEnabled;	
-						if(this.gameStreamCapturer.localStream){
-							audioEnabled = true
-						}else {
-							audioEnabled = false
-						}		
-						if (audioEnabled) {
-							iconElement.classList.replace('fa-microphone', 'fa-microphone-slash');
-							this.gameStreamCapturer.stopLocalAudio()
-						} else {
-							iconElement.classList.replace('fa-microphone-slash', 'fa-microphone');
-							this.gameStreamCapturer.getLocalAudio()
-						}
-					},
-					style: ""
-				}
-			];
+		// 	let x = [
+		// 		{
+		// 			text: `Video control`,
+		// 			icon: videoIcon,
+		// 			callback: (app, id, combined_stream) => {
+		// 				const iconElement = document.querySelector(`#dream_controls_menu_item_${id} i`);
+		// 				if (this.videoBox) {
+		// 					this.removeVideoBox(true);
+		// 					iconElement.classList.replace('fa-video', 'fa-video-slash');
+		// 				} else {
+		// 					this.getOrCreateVideoBox();
+		// 					iconElement.classList.replace('fa-video-slash', 'fa-video');
+		// 				}
+		// 			},
+		// 			style: ""
+		// 		},
+		// 		{
+		// 			text: `Audio control`,
+		// 			icon: audioIcon,
+		// 			callback: (app, id, combined_stream) => {
+		// 				const iconElement = document.querySelector(`#dream_controls_menu_item_${id} i`);
+		// 				let audioEnabled;	
+		// 				if(this.gameStreamCapturer.localStream){
+		// 					audioEnabled = true
+		// 				}else {
+		// 					audioEnabled = false
+		// 				}		
+		// 				if (audioEnabled) {
+		// 					iconElement.classList.replace('fa-microphone', 'fa-microphone-slash');
+		// 					this.gameStreamCapturer.stopLocalAudio()
+		// 				} else {
+		// 					iconElement.classList.replace('fa-microphone-slash', 'fa-microphone');
+		// 					this.gameStreamCapturer.getLocalAudio()
+		// 				}
+		// 			},
+		// 			style: ""
+		// 		}
+		// 	];
 		
-			// Hide icons if videocall streams exist
-			if (streams.length > 0) {
-				x.forEach(control => {
-					control.style = 'hidden-control';
-				});
-			}
+		// 	// Hide icons if videocall streams exist
+		// 	if (streams.length > 0) {
+		// 		x.forEach(control => {
+		// 			control.style = 'hidden-control';
+		// 		});
+		// 	}
 		
-			return x;
-		}
+		// 	return x;
+		// }
 	}
 
 	async handlePeerTransaction(app, tx = null, peer, mycallback) {
@@ -348,6 +349,9 @@ class Record extends ModTemplate {
 				videoElement.style.top = '100px';
 				videoElement.style.width = '350px';
 				videoElement.style.height = '350px';
+				videoElement.style.resize = "both"
+				videoElement.style.overflow= "auto";
+				videoElement.classList.add('game-video-box')
 				this.app.browser.makeDraggable(stream_id);
 			}
 		}

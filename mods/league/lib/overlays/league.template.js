@@ -1,4 +1,4 @@
-module.exports = LeagueOverlayTemplate = (app, mod, league) => {
+module.exports  = (app, mod, league) => {
 	let game_mod = app.modules.returnModuleByName(league.game);
 	let img = '',
 		key_words = '',

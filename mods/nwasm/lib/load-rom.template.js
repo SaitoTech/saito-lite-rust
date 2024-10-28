@@ -1,4 +1,4 @@
-module.exports = UploadRomOverlayTemplate = () => {
+module.exports  = () => {
 	return `
     <div class="nwasm-upload-overlay" id="nwasm-upload-overlay">
       <div class="nwasm-upload-rom-box" id="nwasm-upload-rom-box">

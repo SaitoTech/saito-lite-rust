@@ -1,4 +1,4 @@
-module.exports = (twilight_self, stats) => {
+const StatsTemplate = (twilight_self, stats) => {
 	let us_bg = 0;
 	let ussr_bg = 0;
 	let round_us_vp = [];
@@ -58,3 +58,4 @@ module.exports = (twilight_self, stats) => {
 
 	return html;
 };
+module.exports = StatsTemplate;

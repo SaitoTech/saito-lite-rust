@@ -1,6 +1,6 @@
 const saito = require('./../../../lib/saito/saito');
-const SaitoUser = require('./../../../lib/saito/ui/saito-user/saito-user');
 const TweetTemplate = require('./tweet.template');
+const SaitoUser = require('./../../../lib/saito/ui/saito-user/saito-user');
 const Link = require('./link');
 const Image = require('./image');
 const Post = require('./post');
@@ -8,28 +8,26 @@ const JSON = require('json-bigint');
 const Transaction = require('../../../lib/saito/transaction').default;
 
 class Tweet {
+
 	constructor(app, mod, tx, container = '.tweet-manager') {
+
 		this.app = app;
 		this.mod = mod;
 		this.container = container;
 		this.name = 'Tweet';
+		this.tx = tx;
 
-		if (!tx) {
-			console.warn('Attempting to create a tweet from a null tx');
-			return null; //Doesn't actually return null
-		}
+		//
+		// skip null txs
+		//
+		if (!tx) { return null; }
 
 		let txmsg = tx.returnMessage();
 
-		if (txmsg.module !== mod.name) {
-			console.warn('Attempting to create Tweet from non-Redsquare tx, ', txmsg.module);
-			return null;
-		}
-
 		//
-		// the core
+		// skip non-redsquare txs
 		//
-		this.tx = tx;
+		if (txmsg.module !== mod.name) { return null; }
 
 		//
 		// ancillary content is stored in the tx.optional array, where it
@@ -37,43 +35,22 @@ class Tweet {
 		// preserved along with the transaction as optional (unverified) but
 		// associated content.
 		//
-		// this includes information like the number of replies, retweets,
-		// likes, and information like open graph images, etc.
+		// since this information includes meta-data such as the number of 
+		// replies, retweets, likes, and open graph information, we set the 
+		// variables to nothing if we receive transactions without the info
 		//
-		if (!this.tx.optional) {
-			this.tx.optional = {};
-		}
-
-		if (!this.tx.optional.num_replies) {
-			this.tx.optional.num_replies = 0;
-		}
-		if (!this.tx.optional.num_retweets) {
-			this.tx.optional.num_retweets = 0;
-		}
-		if (!this.tx.optional.num_likes) {
-			this.tx.optional.num_likes = 0;
-		}
-		if (!this.tx.optional.link_properties) {
-			this.tx.optional.link_properties = null;
-		}
-		if (!this.tx.optional.parent_id) {
-			this.tx.optional.parent_id = '';
-		}
-		if (!this.tx.optional.thread_id) {
-			this.tx.optional.thread_id = '';
-		}
-		if (!this.tx.optional.retweeters) {
-			this.tx.optional.retweeters = [];
-		}
+		if (!this.tx.optional) { this.tx.optional = {}; }
+		if (!this.tx.optional.num_replies) { this.tx.optional.num_replies = 0; }
+		if (!this.tx.optional.num_retweets) { this.tx.optional.num_retweets = 0; }
+		if (!this.tx.optional.num_likes) { this.tx.optional.num_likes = 0; }
+		if (!this.tx.optional.link_properties) { this.tx.optional.link_properties = null; }
+		if (!this.tx.optional.parent_id) { this.tx.optional.parent_id = ''; }
+		if (!this.tx.optional.thread_id) { this.tx.optional.thread_id = ''; }
+		if (!this.tx.optional.retweeters) { this.tx.optional.retweeters = []; }
+		if (!this.tx.optional.thread_id) { this.tx.optional.thread_id = this.tx.signature; }		//
 
 		//
-		// If I am not part of a thread, become my own thread
-		// This value will get propagated to this.thread_id
-		//
-		this.tx.optional.thread_id = this.tx.signature;
-		//
-		// comments will specify parent and thread ids, so we should capture that in the optional
-		// field here in the constructor so that we can guarantee they exist
+		// keep track of parent_id and thread_id (replies include these vars)
 		//
 		if (txmsg.data) {
 			if (txmsg.data.parent_id) {
@@ -91,8 +68,7 @@ class Tweet {
 		this.text = '';
 		this.youtube_id = null;
 		this.created_at = this.tx.timestamp;
-		// updated by tx.optional.updated_at if exists
-		this.updated_at = this.tx.timestamp;
+		this.updated_at = this.tx?.updated_at || this.tx.timestamp;
 
 		//
 		// the notice shows up at the top of the tweet BEFORE the username and
@@ -110,67 +86,51 @@ class Tweet {
 		);
 
 		//
-		// Default is a new tweet
+		// set defaults
 		//
-		this.user.notice = 'new post on ' + this.formatDate(this.created_at);
-
 		this.children = [];
 		this.children_sigs_hmap = {};
-		this.unknown_children = [];
-		this.unknown_children_sigs_hmap = {};
 		this.critical_child = null;
-		this.render_after_selector = ''; //Used to attach replies to the original tweet
-
-		this.retweet = null;
-		this.retweet_tx = null;
-		this.links = [];
-		this.link = null;
-		this.show_controls = 1;
 		this.force_long_tweet = false;
 		this.is_long_tweet = false;
+		this.links = [];
+		this.link = null;
 		this.parent_id = '';
+		this.render_after_selector = ''; //Used to attach replies to the original tweet
+		this.retweet = null;
+		this.retweet_tx = null;
+		this.show_controls = 1;
 		this.thread_id = '';
+		this.unknown_children = [];
+		this.unknown_children_sigs_hmap = {};
+		this.user.notice = 'new post on ' + this.formatDate(this.created_at);
 
 		//
-		// Read data from txmsg.data and tx.optional to populate this class
+		// transactions can contain more specifi information for 
+		// all of the above variables. so we run a function that
+		// attempts to extract them if they exist.
 		//
-		try {
-			this.setKeys(txmsg.data);
-		} catch (err) {}
-		try {
-			this.setKeys(tx.optional);
-		} catch (err) {}
+		try { this.setKeys(txmsg.data); } catch (err) {}
+		try { this.setKeys(tx.optional); } catch (err) {}
 
 		//
-		// maybe anything is updated
+		// update from latest edit (if exists)
 		//
 		if (this.tx.optional.update_tx) {
 			let newtx = new Transaction();
 			newtx.deserialize_from_web(this.app, this.tx.optional.update_tx);
 			let newtxmsg = newtx.returnMessage();
-
 			this.text = newtxmsg.data.text;
-			//Not updating more than text
-			//this.setKeys(newtxmsg.data, true);
 		}
 
-		//
-		// if the tweet has been updated, we upate the user notice to inform users that
-		// there is a new reply!
-		//
-		//console.log(this.updated_at, this.created_at, this.tx.optional.num_replies);
-		//if (this.updated_at > this.created_at) {
 		if (this.tx.optional.num_replies > 0) {
-			//console.log("Change user notice!");
 			this.user.notice = 'originally posted on ' + this.formatDate(this.created_at);
 		}
-		//}
 
 		//
-		//This is async and won't necessarily finish before running the following code!
+		// embedded links
 		//
-
-		this.generateTweetProperties(app, mod, 0);
+		this.analyseTweetLinks(app, mod, 0);
 
 		//
 		// retweets
@@ -178,7 +138,6 @@ class Tweet {
 		if (this.retweet_tx != null) {
 			let newtx = new Transaction();
 			newtx.deserialize_from_web(this.app, this.retweet_tx);
-
 			this.retweet = new Tweet(
 				this.app,
 				this.mod,
@@ -189,7 +148,7 @@ class Tweet {
 		}
 
 		//
-		// image preview -- copied over from txmsg.data.images
+		// image preview
 		//
 		if (this.images?.length > 0) {
 			this.img_preview = new Image(
@@ -201,20 +160,11 @@ class Tweet {
 			);
 		}
 
-		// We will use this as a flag to know there were no breaking failures in the constructor
+		//
+		// use as flag to indicate no errors in constructor
+		//
 		this.noerrors = true;
-	}
 
-	isRetweet() {
-		let txmsg = this.tx.returnMessage();
-		if (txmsg.request != 'create tweet') {
-			return false;
-		}
-		if (!txmsg.data?.text && !txmsg.data?.images) {
-			return true;
-		}
-
-		return false;
 	}
 
 	isPost() {
@@ -236,6 +186,18 @@ class Tweet {
 		if (this.parent_id != '') {
 			return true;
 		}
+		return false;
+	}
+
+	isRetweet() {
+		let txmsg = this.tx.returnMessage();
+		if (txmsg.request != 'create tweet') {
+			return false;
+		}
+		if (!txmsg.data?.text && !txmsg.data?.images) {
+			return true;
+		}
+
 		return false;
 	}
 
@@ -277,8 +239,9 @@ class Tweet {
 	}
 
 	render(prepend = false) {
+
 		//
-		// handle if link
+		// create link preview if link
 		//
 		if (this.link && !this.link_preview) {
 			this.link_preview = new Link(
@@ -334,6 +297,7 @@ class Tweet {
 				this.app.browser.returnAddressHTML(this.tx.from[0].publicKey) +
 				' ' +
 				this.formatDate();
+
 			this.retweet.container = '.tweet-manager';
 			let t = this.mod.returnTweet(this.retweet.tx.signature);
 			if (t) {
@@ -369,7 +333,7 @@ class Tweet {
 		}
 
 		if (this.tx.optional?.update_tx) {
-			this.notice = 'this tweet was edited on ' + this.formatDate(this.updated_at);
+			this.notice = 'this tweet was edited on ' + this.formatDate();
 		}
 
 		if (this.render_after_selector) {
@@ -464,19 +428,14 @@ class Tweet {
 	}
 
 	rerenderControls(complete_rerender = false) {
-		//
-		// just make sure our updated tx.optional values propagate to the tweet properties
-		//
-		//console.log(JSON.parse(JSON.stringify(this.tx.optional)));
-
-		this.setKeys(this.tx.optional);
 
 		if (!this.app.BROWSER || !this.mod.browser_active) {
 			return;
 		}
 
+		this.setKeys(this.tx.optional);
+
 		if (complete_rerender) {
-			console.log("complete rerender");
 			this.render();
 		} else {
 			// like, retweet, comment
@@ -1028,7 +987,7 @@ class Tweet {
 	// Add the given tweet somewhere, it may be a reply or a reply to a reply
 	//
 	addTweet(tweet) {
-		this.updated_at = tweet.updated_at;
+		this.updated_at = Math.max(this.updated_at, tweet.updated_at);
 
 		//
 		// if this tweet is the parent-tweet of a tweet we have already downloaded
@@ -1216,7 +1175,7 @@ class Tweet {
 		return false;
 	}
 
-	async generateTweetProperties(app, mod, fetch_open_graph = 0) {
+	async analyseTweetLinks(app, mod, fetch_open_graph = 0) {
 		if (!this.text) {
 			return this;
 		}

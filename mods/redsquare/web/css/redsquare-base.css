@@ -3,16 +3,30 @@ body {
 	overscroll-behavior: none;
 }
 
+.saito-container, .saito-sidebar.left {
+	max-height: 100vh;
+	top: 0;
+	height: 100%;
+}
+#saito-header, .saito-container {
+	position: relative;
+}
+
 .tweet-text a {
 	display: inline;
 }
 
+.tweet-overlay-content {
+	margin-left: 1.5rem;
+	margin-right: 1.5rem;
+}
+.post-tweet-button {
+	margin-right: 1.5rem;
+}
+
 .saito-new-tweets {
-	position: sticky;
-	top: 5px;
-	margin: auto;
+	margin: 0 12.5%;
 	width: 75%;
-	align-self: center;
 	z-index: 5;
 	min-height: 4rem;
 }
@@ -23,14 +37,6 @@ body {
 	color: var(--font-color-redsquare-interaction);
 }
 
-.post-delete-button {
-	width: 20rem;
-	margin-right: 0;
-	position: absolute;
-	right: 22rem;
-	bottom: 1rem;
-	line-height: 4.5rem;
-}
 
 .redsquare-home {
 	margin: -2.5rem 0 0 0;
@@ -117,7 +123,11 @@ body {
 
 .saito-main {
 	transition: opacity 0.8s;
+	padding-top: 0.6rem;
+	border-left: 1px solid var(--saito-border-color);
+	border-right: 1px solid var(--saito-border-color);
 }
+
 
 .saito-profile {
 	margin: unset;
@@ -247,10 +257,6 @@ body {
 .redsquare-home .saito-user > .saito-identicon-box {
 	position: relative;
 	z-index: 5;
-}
-
-.saito-main {
-	padding-top: 1.5rem;
 }
 
 

@@ -26,6 +26,8 @@ class ChatPopup {
 
 		this.callbacks = {};
 
+		this.closeFn = null;
+
 		app.connection.on('chat-remove-fetch-button-request', (group_id) => {
 			if (this.group?.id === group_id) {
 				this.no_older_messages = true;
@@ -190,7 +192,8 @@ class ChatPopup {
 			this.input = new SaitoInput(
 				this.app,
 				this.mod,
-				`#chat-popup-${this.group.id} .chat-footer`
+				`#chat-popup-${this.group.id} .chat-footer`,
+				popup_id
 			);
 
 			if (
@@ -282,10 +285,17 @@ class ChatPopup {
 				this.group.members.length == 2 &&
 				!this.group?.member_ids
 			) {
+				let dm_counterparty;
+				for (let i = 0; i < this.group.members.length; i++){
+					if (this.group.members[i] !== this.mod.publicKey) {
+						dm_counterparty = this.group.members[i];
+					}
+				}
+
 				let index = 0;
 				for (const mod of mods) {
 					let item = mod.respondTo('chat-actions', {
-						publicKey: this.group.name
+						publicKey: dm_counterparty
 					});
 					if (item instanceof Array) {
 						item.forEach((j) => {
@@ -661,16 +671,22 @@ class ChatPopup {
 			return;
 		}
 
+
+		if (this.app.browser.isMobileBrowser()){
+			window.history.pushState("chat", "");
+			this.closeFn = window.onpopstate;
+			window.onpopstate = (e) => {
+				this.close();
+			}
+		}
+
 		if (this.group.name != this.mod.communityGroupName) {
 			document.querySelectorAll('.chat-action-item').forEach((menu) => {
 				let id = menu.getAttribute('id');
 				if (id && this_self.callbacks[id]) {
 					let callback = this_self.callbacks[id];
 					menu.onclick = (e) => {
-						let pk = e.currentTarget.getAttribute('data-id');
-						console.log('clicked on chat-action-item ///');
-						console.log(pk);
-						callback(app, pk, id);
+						callback(app, id);
 					};
 				}
 			});
@@ -780,10 +796,15 @@ class ChatPopup {
 		document.querySelector(
 			`${popup_qs} .chat-header .chat-container-close`
 		).onclick = (e) => {
-			this.manually_closed = true;
-			this.remove();
-			app.storage.saveOptions();
+			this.close();
 		};
+
+		document.querySelector(
+			`${popup_qs} .chat-header .chat-mobile-back`
+		).onclick = (e) => {
+			this.close();
+		};
+
 
 		//
 		// submit
@@ -818,7 +839,7 @@ class ChatPopup {
 			}
 		};
 
-		this.input.callbackOnUpload = async (result) => {
+		this.input.callbackOnUpload = async (result, confirm = false) => {
 			let imageUrl;
 
 			if (typeof result === 'string') {
@@ -845,12 +866,24 @@ class ChatPopup {
 			img.classList.add('img-prev');
 			img.src = resizedImageUrl;
 
-			let msg = img.outerHTML;
-			this.input.callbackOnReturn(msg);
+			this.overlay.show(
+				`<div class="chat-popup-img-overlay-box">
+				   <img class="chat-popup-img-enhanced" src="${resizedImageUrl}" >
+				   <button id="photo-preview-upload" class="saito-button-primary">Upload</button>
+				</div>`
+			);
 
-			document.querySelector(
-				`${popup_qs} .saito-input .text-input`
-			).value = '';
+			document.getElementById("photo-preview-upload").onclick = async (e) => {
+
+				this.overlay.close();
+				let msg = img.outerHTML;
+				let typed_msg = this.input.getInput();
+				await this.input.callbackOnReturn(msg);
+				this.input.setInput(typed_msg);
+			}
+
+			document.getElementById("photo-preview-upload").focus();			
+
 		};
 
 		//
@@ -860,9 +893,6 @@ class ChatPopup {
 			`${popup_qs} .chat-footer .chat-input-submit`
 		).onclick = (e) => {
 			this.input.callbackOnReturn(this.input.getInput(false));
-			document.querySelector(
-				`${popup_qs} .saito-input .text-input`
-			).value = '';
 		};
 
 		//
@@ -879,7 +909,7 @@ class ChatPopup {
 	addChatActionItem(item, id) {
 		let popup_qs = '#chat-popup-' + this.group.id;
 
-		let html = `<div id="${id}" class="chat-action-item" data-id="${this.group.name}" title="${item.text}">
+		let html = `<div id="${id}" class="chat-action-item" title="${item.text}">
 				<i class="${item.icon}"></i>
 			</div>`;
 
@@ -935,6 +965,13 @@ class ChatPopup {
 			chatPopup.style.bottom = this.dimensions.bottom + 'px';
 			chatPopup.style.right = this.dimensions.right + 'px';
 		}
+	}
+
+	close(){
+		this.manually_closed = true;
+		this.remove();
+		this.app.storage.saveOptions();
+		window.onpopstate = this.closeFn;
 	}
 }
 

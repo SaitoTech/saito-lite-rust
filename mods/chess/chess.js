@@ -16,6 +16,7 @@ class Chessgame extends GameTemplate {
 		super(app);
 
 		this.name = 'Chess';
+		this.slug = 'chess';
 		this.board = null;
 		this.engine = new chess.Chess();
 		this_chess = this;
@@ -29,8 +30,7 @@ class Chessgame extends GameTemplate {
 		
 		this.styles.push("/chess/chessboard.css");
 
-		this.description =
-			'"Minutes to learn, a lifetime to master" <br><br> Chess is the king of games and original application on the Saito Network. ';
+		this.description = '"Minutes to learn, a lifetime to master" <br><br> Chess is the king of games and original application on the Saito Network. ';
 		this.categories = 'Games Boardgame Classic';
 
 		this.confirm_moves = 1;
@@ -186,10 +186,13 @@ class Chessgame extends GameTemplate {
 		// There is no initializing in Chess -- finish initializing
 		//
 		if (this.game.initializing == 1) {
+			this.engine.reset();
 			this.game.queue.push('READY');
 			//Check colors
 			this.switchColors();
 		}
+
+		console.log(this.game?.position);
 
 		if (this.game.position != undefined) {
 			this.engine.load(this.game.position);
@@ -201,7 +204,10 @@ class Chessgame extends GameTemplate {
 			this.game.state = { last: "" };
 		}
 
+		console.log(this.game.position, this.game.state);
+
 		if (!this.gameBrowserActive()) {
+			console.log("nope out");
 			return;
 		}
 

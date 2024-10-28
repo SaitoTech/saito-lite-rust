@@ -14,7 +14,7 @@ class Crypto extends ModTemplate {
 		this.styles = ['/crypto/style.css'];
 
 		this.name = 'Crypto';
-
+		this.slug = 'crypto';
 		this.description = 'Enable crypto gaming';
 		this.categories = 'Utility Entertainment';
 

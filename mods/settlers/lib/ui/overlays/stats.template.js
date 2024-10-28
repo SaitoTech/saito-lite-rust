@@ -1,4 +1,4 @@
-module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
+module.exports = (stats, winner) => {
 	let players_count = stats.mod.game.state.players.length;
 
 	let highest_count = stats.mod.game.stats.dice[2];
@@ -16,7 +16,13 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 	let base_height = max_bar_height / highest_count;
 
 	let html = `
-      <div class="settlers-stats-overlay saitoa">
+      <div class="settlers-stats-overlay saitoa`
+
+    if (winner) {
+		//html += ` winner`;
+	} 
+	  
+	html +=  `">
       	<div class="stats-header">
       		<div class="overlay-tab active-tab" id="overview-tab">Overview</div>
       		<div class="overlay-tab" id="resource-tab">Resources</div>
@@ -82,7 +88,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 								${stats.mod.vp.img}
 							</div>
 							<div class="settlers-stats-vp" title="Longest Road">
-								${stats.mod.longest.svg}
+								${stats.mod.longest.icon}
 								<div class="settlers-stats-vp-count">${Math.max(stats.mod.longest.min, stats.mod.game.state.longestRoad.size)}</div>
 								<div class="settlers-stats-multiplier">+${stats.mod.longest.value}</div>
 							</div>
@@ -162,12 +168,23 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 	}
 
   html += `<div class="settlers-hist-row">
-  	<div class="settlers-stats-vp title="Bandit/Robber">
+  	<div class="settlers-stats-vp title="Rolls blocked by Bandit/Robber">
 	  	<img src="/settlers/img/icons/bandit.png">
 	  	<div class="settlers-stats-vp-count">%</div>
   	</div>`;
   for (let i of player_array){
-  	html += `<div class="settlers-stat-num">${Math.round(1000*i/stats.mod.game.stats.history.length)/10 || ""}</div>`;
+  	html += `<div class="settlers-stat-num">${Math.round(1000*i/stats.mod.game.stats.history.length)/10 || "0"}</div>`;
+  }
+
+  html += `</div>`;
+
+  html += `<div class="settlers-hist-row">
+  	<div class="settlers-stats-vp title="Times moved Bandit/Robber">
+	  	<img src="/settlers/img/icons/bandit.png">
+	  	<div class="settlers-stats-vp-count">-></div>
+  	</div>`;
+  for (let i of stats.mod.game.stats.move_bandit){
+  	html += `<div class="settlers-stat-num">${i}</div>`;
   }
 
   html += `</div></div></div>`;

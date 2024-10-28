@@ -5,7 +5,7 @@ class DevCardOverlay {
 	constructor(app, mod) {
 		this.app = app;
 		this.mod = mod;
-		this.overlay = new SaitoOverlay(this.app, this.mod, true, true, true);
+		this.overlay = new SaitoOverlay(this.app, this.mod);
 	}
 
 	render() {
@@ -77,9 +77,7 @@ class DevCardOverlay {
 				this_dev_card.mod.game.state.canPlayCard = false; //No more cards this turn
 
 				if (this_dev_card.mod.game.deck[0].hand.length == 0 && this_dev_card.mod.game.state.players[this_dev_card.mod.game.player-1].devcards.length == 0) {
-					document
-						.querySelector('.hud-body .mobile .cards')
-						.classList.add('hidden');
+					$(".controls #playcard").removeClass('enabled');
 				}
 			};
 		});

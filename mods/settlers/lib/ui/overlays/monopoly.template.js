@@ -1,4 +1,4 @@
-module.exports = MonopolyOverlayTemplate = (app, mod, monopoly) => {
+module.exports = (app, mod, monopoly) => {
 	let resourceList = mod.returnResources();
 
 	let html = `

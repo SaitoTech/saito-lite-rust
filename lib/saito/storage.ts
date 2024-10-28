@@ -1,27 +1,45 @@
 import * as JSON from 'json-bigint';
 import Transaction from './transaction';
 import { Saito } from '../../apps/core';
+import S from 'saito-js/saito';
 import Block from './block';
 const localforage = require('localforage');
 import fs from 'fs';
 import path from 'path';
+const JsStore = require('jsstore');
+
 class Storage {
 	public app: Saito;
 	public active_tab: any;
 	public timeout: any;
 	currentBuildNumber: bigint = BigInt(0);
+	public localDB: any = null;
 
 	constructor(app) {
 		this.app = app || {};
 		this.active_tab = 1; // TODO - only active tab saves, move to Browser class
 		this.timeout = null;
+		this.localDB = null;
+
+
 	}
+
 
 	async initialize() {
 		await this.loadOptions();
 
 		if (this.app.BROWSER === 0) {
 			this.watchBuildFile();
+		}
+
+		if (this.app.BROWSER == 1) {
+			try {
+				this.localDB = null;
+				await this.initializeApplicationDB();
+				console.log(JSON.stringify(await this.loadLocalApplications()));
+			} catch (err) {
+				console.log("Error initializeApplicationDB:", err);
+			}
 		}
 
 		return;
@@ -134,7 +152,6 @@ class Storage {
 	}
 
 	async updateTransaction(tx: Transaction, obj = {}, peer = null) {
-		const txmsg = tx.returnMessage();
 		const message = 'archive';
 		let data: any = {};
 		data.request = 'update';
@@ -168,7 +185,6 @@ class Storage {
 
 	async loadTransactions(obj = {}, mycallback, peer = null) {
 		let storage_self = this;
-
 		const message = 'archive';
 		let data: any = {};
 		data.request = 'load';
@@ -179,7 +195,8 @@ class Storage {
 		// idk why we have it return an array of objects that are just {"tx": serialized/stringified transaction}
 		//
 		let internal_callback = (res) => {
-			let txs = [];
+			let txs: Transaction[] = [];
+			//console.log(res, 'results')
 			if (res) {
 				for (let i = 0; i < res.length; i++) {
 					let tx = new Transaction();
@@ -193,7 +210,7 @@ class Storage {
 			return mycallback(txs);
 		};
 
-		if (peer === 'localhost') {
+		if (peer === "localhost") {
 			let archive_mod = this.app.modules.returnModule('Archive');
 			if (archive_mod) {
 				return archive_mod.loadTransactionsWithCallback(obj, (res) => {
@@ -202,17 +219,88 @@ class Storage {
 			}
 		}
 
+
 		if (peer != null) {
-			//peer.sendRequestAsTransaction(message, data, function (res) {
-			this.app.network.sendRequestAsTransaction(
-				message,
-				data,
-				function (res) {
-					internal_callback(res);
-				},
-				peer.peerIndex
-			);
-			return;
+			if (typeof peer === "string") {
+				// Verify if the peer string is a valid public key
+				if (this.app.crypto.isPublicKey(peer)) {
+					// Attempt to find the peer in the current network
+					let peers = await this.app.network.getPeers();
+					let serverPeer = peers[0]
+					const targetPeer = peers.find(p => p.publicKey === peer) || null
+					// If the peer is found in the network, send the request
+
+					if (targetPeer) {
+						this.app.network.sendRequestAsTransaction(
+							message,
+							data,
+							function (res) {
+								internal_callback(res);
+							},
+							targetPeer.peerIndex
+						);
+					}
+
+					// R 		
+					let a_nodes = this.app.keychain.returnPeerArchiveNodes(peer);
+
+					// If archive nodes are found, attempt to communicate
+					if (a_nodes.length > 0) {
+						let archiveNode = a_nodes[0];
+						let { protocol, port, host, publicKey } = archiveNode;
+						let peers = await this.app.network.getPeers();
+						const targetPeer = peers.find(p => p.publicKey === publicKey) || null
+						// If connected to the archive node, send the request
+						if (targetPeer) {
+							console.log('connected to this node')
+							this.app.network.sendRequestAsTransaction(
+								message,
+								data,
+								(res) => {
+									internal_callback(res);
+								},
+								targetPeer.peerIndex
+							);
+						} else {
+							// If not connected, initiate connection to the archive node
+							console.log('not connected to this archive node, initiating connection');
+							const url = `ws://${host}:${port}/wsopen`;
+							try {
+								const peerIndex = await S.getLibInstance().get_next_peer_index();
+								await this.app.network.connectToArchivePeer(peerIndex, {publicKey, host, port, url}, data ,message, internal_callback)
+							
+							}
+							catch (error) {
+								console.error("Failed to connect to archive node:", error);
+							}
+						}
+					} else {
+						console.log('No archive nodes found for this key, try fetching from my server');
+						// Try to fetch from my server node
+						let peers = await this.app.network.getPeers();
+						this.app.network.sendRequestAsTransaction(
+							message,
+							data,
+							(res) => {
+								internal_callback(res);
+							},
+							serverPeer.peerIndex 
+						)
+					}
+				}
+			} else {
+				// If peer is not a string (likely an object), send request directly
+				this.app.network.sendRequestAsTransaction(
+					message,
+					data,
+					function (res) {
+						internal_callback(res);
+					},
+					peer.peerIndex
+				);
+			}
+
+			return [];
 		} else {
 			this.app.network.sendRequestAsTransaction(
 				message,
@@ -221,9 +309,12 @@ class Storage {
 					internal_callback(res);
 				}
 			);
-			return;
+			return [];
 		}
+
+		return [];
 	}
+
 
 	async deleteTransaction(tx = null, mycallback = null, peer = null) {
 		if (tx == null) {
@@ -325,7 +416,7 @@ class Storage {
 		}
 
 		const saveOptionsForReal = async () => {
-//			clearTimeout(this.timeout);
+			//			clearTimeout(this.timeout);
 			//console.log("Actually saving options");
 			try {
 				localStorage.setItem(
@@ -355,14 +446,134 @@ class Storage {
 			}
 		};
 
-//
-// HACK -- debugging game-save issues, try reducing delay to nothing -- JULY 10, 2023
-//
+		//
+		// HACK -- debugging game-save issues, try reducing delay to nothing -- JULY 10, 2023
+		//
 		saveOptionsForReal();
 
-//		clearTimeout(this.timeout);
-//		this.timeout = setTimeout(saveOptionsForReal, 50);
+		//		clearTimeout(this.timeout);
+		//		this.timeout = setTimeout(saveOptionsForReal, 50);
 	}
+
+	// saveLocalApplication(tx, mod) {
+	// 	if (!this.app.options.dyn_mods) { this.app.options.dyn_mods = []; }
+	// 	this.app.options.dyn_mods.push(mod);
+
+	// 	this.saveOptions();
+	// }
+
+	// loadLocalApplications() {
+	// 	if (!this.app.options.dyn_mods) { this.app.options.dyn_mods = []; }
+	// 	return this.app.options.dyn_mods;
+	// }
+
+	async saveLocalApplication(mod, bin) {
+		if (!this.app.BROWSER) {
+			return;
+		}
+
+		if (this.app.BROWSER) {
+			let obj = {
+				'mod': mod,
+				'binary': bin,
+				'created_at': new Date().getTime(),
+				'updated_at': new Date().getTime(),
+			};
+
+			console.log('obj: ', obj);
+
+			let numRows = await this.localDB.insert({
+				into: 'dyn_mods',
+				values: [obj]
+			});
+
+			let v = await this.loadLocalApplications();
+			console.log('POST INSERT: ' + JSON.stringify(v));
+		}
+	}
+
+	async loadLocalApplications(mod_slug = null) {
+		try {
+			if (!this.app.BROWSER) {
+				return;
+			}
+
+			let obj = {
+				from: 'dyn_mods',
+				order: { by: 'id', type: 'desc' }
+			}
+
+			if (mod_slug != null) {
+				obj['where'] = {
+			        mod: mod_slug
+			    };
+			}
+
+			let rows = await this.localDB.select(obj);
+
+			return rows;
+		} catch (err) {
+			console.log("Error loadLocalApplications: ", err);
+		}
+	}
+
+	async removeLocalApplication(mod_slug = null) {
+		try {
+			if (!this.app.BROWSER) {
+				return;
+			}
+
+			let rowsDeleted = await this.localDB.remove({
+			    from: "dyn_mods",
+			    where: {
+			        mod: mod_slug
+			    }
+			});
+
+			return rowsDeleted;
+		} catch (err) {
+			console.log("Error removeLocalApplication: ", err);
+		}
+	}
+
+	async initializeApplicationDB() {
+		if (this.app.BROWSER) {
+
+			console.log("inside initializeApplicationDB ///");
+			this.localDB = new JsStore.Connection(
+				new Worker('/saito/lib/jsstore/jsstore.worker.js')
+			);
+
+			//
+			// create Local database
+			//
+			let dyn_mod = {
+				name: 'dyn_mods',
+				columns: {
+					id: { primaryKey: true, autoIncrement: true },
+					mod: { dataType: 'string', default: '' },
+					binary: { dataType: 'string', default: '' },
+					created_at: { dataType: 'number', default: 0 },
+					updated_at: { dataType: 'number', default: 0 }
+				}
+			};
+
+			let db = {
+				name: 'dyn_mods_db',
+				tables: [dyn_mod]
+			};
+
+			var isDbCreated = await this.localDB.initDb(db);
+			if (isDbCreated) {
+				console.log('POPUP: db created and connection opened');
+			} else {
+				console.log('POPUP: connection opened');
+			}
+		}
+
+		return;
+	}
+
 
 	getModuleOptionsByName(modname) {
 		for (let i = 0; i < this.app.options.modules.length; i++) {

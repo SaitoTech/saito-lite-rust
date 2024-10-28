@@ -1,4 +1,4 @@
-module.exports = GameWizardTemplate = (game_mod, invite_obj = {}) => {
+module.exports = (game_mod, invite_obj = {}) => {
 	let html = `<div class="arcade-wizard-overlay">`;
 	let invite = null;
 	let publicKey = null;

@@ -1,4 +1,4 @@
-module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
+module.exports  = (app, mod, main) => {
 
 	let publicKey = mod.publicKey;
 	let key = app.keychain.returnKey({ publicKey: publicKey });
@@ -49,7 +49,7 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 	}
 
 	let html = `
-  
+
   <div class="settings-appspace">
 
     <div class="settings-appspace-header">
@@ -85,7 +85,10 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
       </div>
       
       <div class="settings-appspace-modules-container">
-          <h6> Installed Modules </h6>
+          <div class="settings-installed-mod-header">
+            <h6> Installed Modules </h6>
+            <i id="settings-add-app" class="fa-solid fa-plus"></i>
+          </div>
           <div class="settings-appspace-modules">
               ${modules_html}
           </div>
@@ -99,7 +102,9 @@ module.exports = SettingsAppspaceTemplate = (app, mod, main) => {
 
       <div class="settings-appspace-debug">
         <h6>Debug Info</h6>
-        <div class="settings-appspace-debug-content"></div>
+
+        <div id="settings-edit-json">Edit wallet options</div>
+        <div class="settings-appspace-debug-content" id="settings-appspace-debug-content"></div>
       </div>
 
       <div class="settings-storage-info">

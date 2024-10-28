@@ -1,4 +1,4 @@
-module.exports = ChatManagerMenuTemplate = (app, mod) => {
+module.exports  = (app, mod) => {
 	let html = `<div class="saito-module-settings">`;
 
 	if ('Notification' in window) {

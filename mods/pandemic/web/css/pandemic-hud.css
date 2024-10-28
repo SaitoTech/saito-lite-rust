@@ -1,4 +1,23 @@
+.hud-long, .controls {
+	width: 550px;
+	padding: 0;
+}
+
+.hud-long {
+	height: 200px;
+	bottom: 1rem;
+}
+
 .status-icon-menu .menu-icon {
 	width: 100px;
 	height: 141px;
+}
+
+
+img.menu_icon_icon {
+	width: 100%;
+}
+
+.controls ul li, .options {
+	height: 6rem;
 }

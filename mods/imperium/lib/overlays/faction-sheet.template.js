@@ -1,4 +1,4 @@
-module.exports = ImperiumRulesOverlayTemplate = (
+module.exports  = (
 	imperium_self,
 	player,
 	faction_name

@@ -1,4 +1,5 @@
-const VocabTemplate = require('./vocab.template');
+const VocabMainTemplate = require('./vocab-main.template');
+const VocabRightTemplate = require('./vocab-right.template');
 const WordTemplate = require('./word.template');
 const SaitoLoader = require('./../../../lib/saito/ui/saito-loader/saito-loader');
 
@@ -12,30 +13,38 @@ class PopupVocab {
 		this.loader = new SaitoLoader(this.app, this.mod, '.popup-content');
 	}
 
-	async render(lesson_id = '') {
+	async render(lesson_id = '', offset=0) {
+
 		//
 		// vocab content
 		//
-		this.app.browser.replaceElementContentBySelector(
-			VocabTemplate(),
-			'.popup-content'
-		);
+		this.app.browser.replaceElementContentBySelector(VocabMainTemplate(), '.saito-main');
+		this.app.browser.replaceElementContentBySelector(VocabRightTemplate(), '.saito-sidebar.right');
 
-		//
-		// get our content
-		//
-		this.vocab = await this.mod.returnVocab(lesson_id);
+		// offset = 0
+		this.vocab = await this.mod.returnVocab(offset);
 
 		let html = '<table>';
 		for (let i = 0; i < this.vocab.length; i++) {
-			html += WordTemplate(this.vocab[i]);
+			html += WordTemplate(0, this.vocab[i], this.mod);
 		}
 		html += '</table>';
 
-		document.querySelector('.lesson-section.vocabulary').innerHTML = html;
+		document.querySelector('.vocabulary').innerHTML = html;
+
+		this.attachEvents();
+
 	}
 
-	attachEvents() {}
+	attachEvents() {
+
+		document.querySelector('.start_popup_review').onclick = (e) => {
+			this.mod.review.render();
+		};
+
+
+
+	}
 }
 
 module.exports = PopupVocab;

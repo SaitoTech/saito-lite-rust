@@ -1,4 +1,4 @@
-module.exports = DebugAppspaceTemplate = () => {
+module.exports  = () => {
 	return `
   
   <h3>Wallet Configuration:</h3> 

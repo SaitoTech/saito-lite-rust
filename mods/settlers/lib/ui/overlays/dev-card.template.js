@@ -1,19 +1,18 @@
-module.exports = DevCardOverlayTemplate = (app, mod, dev_card) => {
-
-let html = `
+module.exports = (app, mod, dev_card) => {
+	let html = `
     <div class="saitoa dev-card-overlay">
       <div class="settlers-items-container">`;
 	if (mod.canPlayerPlayCard()) {
 		html += `<div class="settlers-item-info-text">Select Card to Play:</div>`;
 	} else {
-		html += `<div class="settlers-item-info-text">Development Cards:</div>`;
+		html += `<div class="settlers-item-info-text">Action Cards:</div>`;
 	}
 
-	html += `<div class="settlers-item-row settlers-cards-container settlers-desired-resources">`;
+	html += `<div class="settlers-item-row settlers-cards-container">`;
 
 	let cards = '';
-	let disable = !mod.canPlayerPlayCard();
 
+	let disable = !mod.canPlayerPlayCard();
 
 	for (let x = 0; x < mod.game.state.players[mod.game.player-1].devcards.length; x++) {
 		let card = mod.game.deck[0].cards[mod.game.state.players[mod.game.player-1].devcards[x]];
@@ -25,7 +24,9 @@ let html = `
 
 		cards += `
  	           <div class="settlers-dev-card ${card_disable ? 'settlers-card-disabled' : ''}" id="${x}">
- 	             <img src="${card.img}">
+ 	             	<img src="${card.img}">
+	              <div class="settlers-dev-card-title">${card.card}</div>
+	              <div class="settlers-dev-card-text">${card.subtitle}</div>
  	           </div>
           `;
 	}
@@ -36,9 +37,21 @@ let html = `
 		cards += `
             <div class="settlers-dev-card settlers-card-disabled">
               <img src="${card.img}">
+              <div class="settlers-dev-card-title">${card.card}</div>
+              <div class="settlers-dev-card-text">${card.subtitle}</div>
             </div>
           `;
+	}
 
+	if (!cards){
+		cards = `
+            <div class='player-notice'>
+							You don't have any cards, but can buy one with             
+              ${mod.formatResource('ore')}
+              ${mod.formatResource('wheat')}
+              ${mod.formatResource('wool')}
+            </div>
+            `;
 	}
 
 	html += cards;

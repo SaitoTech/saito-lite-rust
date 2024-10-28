@@ -16,7 +16,8 @@ class BankOverlay {
 
 		this.minForTrade = this.mod.analyzePorts(); //4;  //1) Fix to have 3:1 port, 2) Fix for resource specific 2:1 ports
 
-		console.log(this?.selected_resource);
+		console.log("****************");
+		console.log(this.minForTrade);
 
 		for (let resource of this.mod.returnResources()) {
 			let temp = this.mod.countResource(this.mod.game.player, resource);
@@ -31,7 +32,7 @@ class BankOverlay {
 	}
 
 	attachEvents() {
-		this_bank = this;
+		let this_bank = this;
 
 		if (this_bank.selected_resource) {
 			document
@@ -65,12 +66,14 @@ class BankOverlay {
 					row.onclick = (e) => {
 						let target = e.currentTarget;
 
-						this_bank.selected_resource = target.getAttribute('id');
+						let disabled = target.classList.contains('settlers-row-disabled');
+						if (!disabled){
 
-						this_bank.render();
+							this_bank.selected_resource = target.getAttribute('id');
 
-						//row.classList.add("selected");
-						//document.querySelector(".settlers-items-container-desired-resources").classList.remove("hide");
+							this_bank.render();
+
+						}
 					};
 				});
 		}

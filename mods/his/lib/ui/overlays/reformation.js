@@ -18,14 +18,13 @@ class ReformationOverlay {
 		if (res) {
 			name = res.name;
 		}
-		console.log('RES: ' + JSON.stringify(res));
 		this.overlay.show(ReformationTemplate(name, res));
 		this.overlay.setBackgroundColor('#000'); // black background
 
 		//
-		// pull over thesis-overlay / zoom if visible
+		// pull over theses-overlay / zoom if visible
 		//
-		document.querySelectorAll('.thesis-overlay').forEach((el) => {
+		document.querySelectorAll('.theses-overlay').forEach((el) => {
 			let zindex = el.style.zIndex;
 			let my_zindex = document.querySelector('.reformation-overlay');
 			if (my_zindex) {

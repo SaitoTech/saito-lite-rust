@@ -61,6 +61,7 @@ const SaitoOverlay = require('./../../lib/saito/ui/saito-overlay/saito-overlay')
 */
 
 class RedSquare extends ModTemplate {
+
   constructor(app) {
     super(app);
     this.appname = 'Red Square';
@@ -119,11 +120,11 @@ class RedSquare extends ModTemplate {
 
     this.tweets_earliest_ts = new Date().getTime();
 
-    this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif'];
+    this.allowed_upload_types = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif', "image/webp"];
 
     this.postScripts = ['/saito/lib/emoji-picker/emoji-picker.js'];
 
-    this.styles = ['/saito/saito.css', '/redsquare/style.css'];
+    this.styles = ['/redsquare/style.css'];
 
     this.enable_profile_edits = true;
 
@@ -155,12 +156,17 @@ class RedSquare extends ModTemplate {
       post.render();
     });
 
+    this.app.connection.on('redsquare-post-tweet', (data, keys) => {
+      console.log("Tweeting through event interface!");
+      this.sendTweetTransaction(this.app, this, data, keys);
+    });
+
     return this;
   }
 
   returnServices() {
     let services = [];
-    services.push(new PeerService(null, 'redsquare', 'RedSquare Tweet Archive'));
+    services.push(this.app.network.createPeerService(null, "redsquare", "RedSquare Tweet Archive"));
     return services;
   }
 
@@ -192,11 +198,7 @@ class RedSquare extends ModTemplate {
         callback: function (app, publicKey) {
           if (app.modules.returnActiveModule().returnName() == 'Red Square') {
             app.connection.emit('redsquare-profile-render-request', publicKey);
-            window.history.pushState(
-              {},
-              document.title,
-              '/' + this_mod.slug + `/?user_id=${publicKey}`
-            );
+            window.history.pushState({view: "profile"}, '', '/' + this_mod.slug + `/?user_id=${publicKey}`);
           } else {
             window.location = `/redsquare/?user_id=${publicKey}`;
           }
@@ -331,11 +333,9 @@ class RedSquare extends ModTemplate {
           if (tx == null || app == null) {
             return 0;
           }
-
           if (this.hidden_tweets.includes(tx.signature)){
             return -1;
           }
-
           return 0;
         }
       };
@@ -366,14 +366,27 @@ class RedSquare extends ModTemplate {
     this.loadOptions();
 
     if (!app.BROWSER) {
+
       this.cached_recent_tweets = await this.cacheRecentTweets();
+
+      //
+      // refresh cached tweets when an address is blacklisted
+      //
+      this.app.connection.on('saito-blacklist', async (obj) => {
+	setTimeout(async () => {
+          this.cached_recent_tweets = await this.cacheRecentTweets();
+	}, 4000);
+      });
+
       return;
     }
+
+
+
 
     ///////////////////////////////////////////////////////////////////////////
     /// ONLY BROWSER CODE
     //////////////////////////////////////////////////////////////////////////
-
     //
     // add myself as peer...
     //
@@ -626,6 +639,7 @@ class RedSquare extends ModTemplate {
             break;
           case '#profile':
             this.app.connection.emit('redsquare-profile-render-request');
+            window.history.pushState({view: "profile"}, '', '/' + this.slug + `/?user_id=${this.publicKey}`);
             break;
           default:
         }
@@ -807,9 +821,9 @@ class RedSquare extends ModTemplate {
         if (txmsg.data.images) {
           let new_obj = JSON.parse(JSON.stringify(txmsg));
           new_obj.data.images = '[image tweet]';
-          console.log('txmsg: ' + JSON.stringify(new_obj));
+          //console.log('txmsg: ' + JSON.stringify(new_obj));
         } else {
-          console.log('txmsg: ' + JSON.stringify(txmsg));
+          //console.log('txmsg: ' + JSON.stringify(txmsg));
         }
       }
 
@@ -1403,16 +1417,15 @@ class RedSquare extends ModTemplate {
       let t = this.returnTweet(tweet.tx.signature);
       if (!t) {
         console.warn('REDSQUARE: Tweet indexed in hash, but not in memory');
-        console.log(tweet);
+        //console.log(tweet);
         return 0;
       }
 
       t.data_renewal = source;
 
-
       if (tweet.tx.optional) {
         if (JSON.stringify(t.tx.optional) !== JSON.stringify(tweet.tx.optional)){
-          console.log("Orig: ", t.tx.optional, "New: ", tweet.tx.optional);  
+          //console.log(`Orig: (${t.updated_at})`, t.tx.optional, `New: (${tweet.updated_at})`, tweet.tx.optional);  
         }
 
         let should_rerender = false;
@@ -1434,6 +1447,10 @@ class RedSquare extends ModTemplate {
         }
         if (tweet.tx.optional.link_properties) {
           t.tx.optional.link_properties = tweet.tx.optional.link_properties;
+          should_rerender = true;
+        }
+        if (tweet.tx.updated_at > t.updated_at){
+          t.updated_at = Math.max(t.updated_at, tweet.tx.updated_at);
           should_rerender = true;
         }
 
@@ -1883,6 +1900,10 @@ class RedSquare extends ModTemplate {
     //
 
     if (retweeted_tweet?.tx) {
+      //
+      // Put the updated_at timestamp in the tx, in case it isn't there (wasn't read from archive)
+      //
+      retweeted_tweet.tx.updated_at = retweeted_tweet.updated_at;
       await this.incrementRetweets(retweeted_tweet.tx, tx);
       if (this.browser_active && retweeted_tweet.isRendered()) {
         retweeted_tweet.rerenderControls(true);
@@ -2143,7 +2164,7 @@ class RedSquare extends ModTemplate {
       // servers -- get open graph properties
       //
 
-      tweet = await tweet.generateTweetProperties(app, this, 1);
+      tweet = await tweet.analyseTweetLinks(app, this, 1);
 
       //
       // Save the modified tx so we have open graph properties available
@@ -2561,11 +2582,12 @@ class RedSquare extends ModTemplate {
   // This may be (even) faster if we ditch the general storage/archive logic and just directly use SQL
   //
   async cacheRecentTweets() {
+
     let redsquare_self = this;
     let hex_values = [];
 
     if (this.app.BROWSER) {
-      return;
+      return [];
     }
 
     return this.app.storage.loadTransactions(
@@ -2584,6 +2606,7 @@ class RedSquare extends ModTemplate {
             } else {
               if (redsquare_self.app.modules.moderate(txs[i], redsquare_self.name) != -1) {
                 cnt++;
+                txs[i].optional.updated_at = txs[i].updated_at;
                 hex_values.push(txs[i].serialize_to_web(this.app));
               }
             }
@@ -2601,6 +2624,7 @@ class RedSquare extends ModTemplate {
   ///////////////
   // webserver //
   ///////////////
+
   webServer(app, expressapp, express) {
     console.log('this is my home');
     let webdir = `${__dirname}/../../mods/${this.dirname}/web`;

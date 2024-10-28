@@ -37,7 +37,7 @@ class ModTools extends ModTemplate {
 		this.prune_after = 1500000; // ~1 day
 		//this.prune_after = 60000; // ~1 minute
 		this.max_hops = 2; // stop blacklisting after N hops
-		this.styles = ['/saito/saito.css'];
+		this.styles = [];
 
 		//
 		// stores the objects
@@ -92,7 +92,6 @@ class ModTools extends ModTemplate {
 			// next we share it with peers
 			//
 			let newtx = await this.createBlacklistTransaction(data);
-			console.log(newtx, newtx.returnMessage());
 			await this.app.network.propagateTransaction(newtx);
 		});
 
@@ -198,13 +197,10 @@ class ModTools extends ModTemplate {
 		// modtools -- share whitelists / blacklists
 		//
 		if (service.service === 'modtools' && this.canPeerModerate(peer.publicKey)) {
-			console.log('Request lists from peer: ' + peer.publicKey);
 			app.network.sendRequestAsTransaction(
 				'modtools',
 				{ request: 'load' },
 				(res) => {
-					console.log('Received Peer Moderation Lists: ', res);
-
 					if (res?.blacklist?.length) {
 						modtools_self.addPeerBlacklist(peer.publicKey, res.blacklist);
 					}
@@ -223,8 +219,6 @@ class ModTools extends ModTemplate {
 	//
 	async onConfirmation(blk, tx, conf) {
 		let txmsg = tx.returnMessage();
-
-		console.log('modtools onConfirmation', txmsg);
 
 		if (txmsg.request == 'whitelist') {
 			await this.receiveWhitelistTransaction(blk, tx, conf, this.app);
@@ -358,7 +352,9 @@ class ModTools extends ModTemplate {
 		// -1 = definitely filter
 		// 0 = no preference
 		//
-		/*
+/****
+ *  NOTE: saito-modules handles the respondTo logic for saito-moderation-app
+ * 
 		if (type === 'saito-moderation-app') {
 			return {
 				filter_func: (app = null, tx = null) => {
@@ -395,8 +391,8 @@ class ModTools extends ModTemplate {
 					return 0;
 				}
 			};
-		}*/
-
+		}
+****/
 		if (type === 'saito-moderation-core') {
 			return {
 				filter_func: (tx = null) => {
@@ -564,7 +560,6 @@ class ModTools extends ModTemplate {
 
 
 		if (!this.blacklisted_publickeys.includes(add)) {
-			console.log(`Add ${add} to my blacklist`);
 
 			this.blacklisted_publickeys.push(add);
 
@@ -699,7 +694,6 @@ class ModTools extends ModTemplate {
 		}
 
 		this.save();
-		console.log('Loaded blacklist', JSON.stringify(this.blacklisted_publickeys), this.blacklist);
 	}
 
 	verifyData(obj) {

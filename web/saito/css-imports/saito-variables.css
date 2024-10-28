@@ -142,8 +142,8 @@ font imports
   --transition-medium: 0.5s;
   --transition-long: 0.8s;
 /*BORDER RADIUS SELECTION*/
-  --border-radius-sharp: 0.2rem;
-  --border-radius-soft: 0.5rem;
+  --border-radius-sharp: 0.5rem;
+  --border-radius-soft: 0.75rem;
   --border-radius-comfortable: 1.2rem;
   --border-radius-round: 1.5rem;
   --border-radius-voluptuous: 2.5rem;
@@ -228,7 +228,7 @@ font imports
   --font-color-post-info: var(--font-color-secondary);
   --font-color-post-icons: var(--color-primary); /* Exempt as system color */
   --font-color-post-controls: var(--font-color-secondary);
-  --font-color-hover-post-icons: var(--color-secondarys); /* tag */
+  --font-color-hover-post-icons: var(--font-color-heavy); /* tag */
   --font-color-hover-post-controls: var(--font-color-heavy);
 /* Module and Overlay Font Colors */
   --font-color-invite-stub: var(--font-color-inverse);

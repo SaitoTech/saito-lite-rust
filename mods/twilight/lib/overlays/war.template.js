@@ -1,4 +1,4 @@
-module.exports = (card, sobj) => {
+const WarTemplate = (card, sobj) => {
 	let winner = sobj.winner;
 	let roll = sobj.die;
 	let modifications = sobj.modifications;
@@ -31,3 +31,4 @@ module.exports = (card, sobj) => {
 
 	return html;
 };
+module.exports = WarTemplate;

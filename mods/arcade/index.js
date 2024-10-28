@@ -1,6 +1,5 @@
 module.exports = (app, mod, build_number, og_card, game) => {
 	let html = `
-
   
   <!DOCTYPE html>
   <html lang="en" data-theme="arcade">
@@ -51,7 +50,8 @@ module.exports = (app, mod, build_number, og_card, game) => {
     <script type="text/javascript" src="/saito/lib/jquery/jquery-3.2.1.min.js"></script>
     <script src="/saito/lib/pace/pace.min.js"></script>
     <link rel="stylesheet" href="/saito/lib/pace/pace-theme.min.css">
-    
+    <link rel="stylesheet" type="text/css" href="/saito/saito.css?v=${build_number}" />
+
     <title>Saito Arcade</title>
   
     <style type="text/css">

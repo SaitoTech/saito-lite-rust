@@ -1,0 +1,16 @@
+// -------------- @include flex-grid-width(5, 30px);
+// -------------- Note: Do not forget to add column-gap for the parent element
+@mixin flex-grid-width($columns: 1, $gap: 0px) {
+	$total-gap: calc($gap * ($columns - 1));
+	$width: calc((100% / $columns) - ($total-gap / $columns));
+	flex: 0 0 $width;
+	max-width: $width;
+}
+
+
+//-------------- Flex Width
+//-------------- @include flex-width(100%);
+@mixin flex-width($width) {
+	flex: 0 0 #{$width};
+	max-width: #{$width};
+}

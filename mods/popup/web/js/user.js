@@ -43,6 +43,9 @@ function onWordClick() {
 	add_to_vocab(field1, field2, field3, field4, field5, label);
 }
 
+//
+// this is a dummy function that will be overriden
+//
 var add_to_vocab = function (
 	field1 = '',
 	field2 = '',
@@ -51,7 +54,6 @@ var add_to_vocab = function (
 	field5 = '',
 	label = ''
 ) {
-	alert('add to vocab exists');
 };
 
 add_to_vocab();

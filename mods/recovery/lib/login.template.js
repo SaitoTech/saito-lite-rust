@@ -1,4 +1,4 @@
-module.exports = LoginTemplate = () => {
+module.exports  = () => {
 	return `
 <form id="login-template">
             <div class="saito-overlay-form">

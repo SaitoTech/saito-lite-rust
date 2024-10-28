@@ -15,16 +15,32 @@ class ReviewOverlay {
 	}
 
 	render() {
+
 		this.visible = true;
 		this.overlay.show(ReviewTemplate(this.mod));
 
-		// POPUP OLD CODE
-		setup_reinforcement_lightbox();
+		loadQuestion();
 
 		this.attachEvents();
+
 	}
 
-	attachEvents() {}
+	attachEvents() {
+
+        	document.querySelectorAll('.option').forEach((el) => {
+			el.bind('mouseover', function () {
+        	        	$(this).addClass('option_hover');
+        		});
+		});
+
+        	document.querySelectorAll('.option').forEach((el) => {
+			el.bind('mouseout', function () {
+        	        	$(this).addClass('option_hover');
+        		});
+		});
+
+	}
+
 }
 
 module.exports = ReviewOverlay;

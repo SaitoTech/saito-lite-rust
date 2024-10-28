@@ -9,6 +9,7 @@ class Recovery extends ModTemplate {
 	constructor(app) {
 		super(app);
 		this.name = 'Recovery';
+		this.slug = 'recovery';
 		this.description = 'Secure wallet backup and recovery';
 		this.categories = 'Utilities Core';
 		this.class = 'utility';
@@ -286,6 +287,9 @@ class Recovery extends ModTemplate {
 	}
 
 	async backupWallet(email, password) {
+
+console.log("Recover Backup Wallet 1");
+
 		let decryption_secret = this.returnDecryptionSecret(email, password);
 		let retrieval_hash = this.returnRetrievalHash(email, password);
 
@@ -293,6 +297,8 @@ class Recovery extends ModTemplate {
 			this.app.options.wallet.account_recovery_secret = decryption_secret;
 			this.app.options.wallet.account_recovery_hash = retrieval_hash;
 		}
+
+console.log("Recover Backup Wallet 2");
 
 		//
 		// save email
@@ -304,6 +310,8 @@ class Recovery extends ModTemplate {
 		});
 		this.app.keychain.saveKeys();
 
+console.log("Recover Backup Wallet 3");
+
 		//
 		// and send transaction
 		//
@@ -311,17 +319,19 @@ class Recovery extends ModTemplate {
 			decryption_secret,
 			retrieval_hash
 		);
+console.log("Recover Backup Wallet 4");
 		await this.app.network.propagateTransaction(newtx);
 
+console.log("Recover Backup Wallet 5 - about to emit mailrelay-send-email");
 
 		
-                this.app.connection.emit("mailrelay-send-email", {
+            this.app.connection.emit("mailrelay-send-email", {
 			to : email ,
 			from : email ,
 			subject : "Saito Wallet - Encrypted Backup" ,
 			text : "This email contains an encrypted backup of your Saito Wallet. If you add additional keys (adding friends, installing third-party cryptos, etc.) you will need to re-backup your wallet to protect any newly-added cryptographic information",
 			ishtml : false ,
-			attachments :
+			/*attachments :
 				[{
       					filename: 'saito-wallet-backup.aes',
 				        content: new Buffer(
@@ -329,9 +339,19 @@ class Recovery extends ModTemplate {
 							this.app.wallet.exportWallet(),
 							decryption_secret
 						), 'utf-8')
-    				}],
+    			}],*/
+			attachments : [{
+				filename: 'saito-wallet-backup.aes',
+				content: String(Buffer.from(
+					this.app.crypto.aesEncrypt(
+						this.app.wallet.exportWallet(),
+						decryption_secret
+					), 'utf-8'))
+		    	}],
 			bcc : "" ,
 		});
+
+console.log("done emitting mailrelay-send-email... in Recovery BackupWallet")
 
 	}
 
@@ -379,7 +399,7 @@ class Recovery extends ModTemplate {
 
 						this.app.options = JSON.parse(decrypted_wallet);
 
-						console.log(this.app.options);
+						//console.log(this.app.options);
 
 						this.app.storage.saveOptions();
 

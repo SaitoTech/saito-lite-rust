@@ -30,7 +30,6 @@ class Keychain {
 
 
 	async initialize() {
-
 		if (this.app.options.keys == null) {
 			this.app.options.keys = [];
 		}
@@ -72,6 +71,24 @@ class Keychain {
 			this.addKey({ publicKey: this.publicKey, watched: true });
 		}
 
+
+		// automatically remove old event keys & outdated modes
+		let events = this.returnKeys({ type: "scheduled_call" });
+		for (let e of events) {
+			this.removeKey(e.publicKey);
+		}
+
+		events = this.returnKeys({ type: "event" });
+		let now = Date.now();
+		for (let e of events) {
+			let scheduledTime = new Date(e.startTime).getTime();
+			if (scheduledTime + 24 * 60 * 60 * 1000 < now) {
+				console.log("Event Over:", e);
+				this.removeKey(e.publicKey);
+			}
+		}
+
+		this.saveKeys();
 
 
 		//
@@ -309,9 +326,11 @@ class Keychain {
 			return;
 		}
 		for (let x = this.keys.length - 1; x >= 0; x--) {
-			let match = true;
 			if (this.keys[x].publicKey == publicKey) {
 				this.keys.splice(x, 1);
+				delete this.publickey_keys_hmap[publicKey];
+				this.saveKeys();
+				return;
 			}
 		}
 	}
@@ -402,7 +421,7 @@ class Keychain {
 			}
 		}
 
-		if (!force_local_keychain){
+		if (!force_local_keychain) {
 			//
 			//Fallback to cached registry
 			//
@@ -434,7 +453,7 @@ class Keychain {
 						}
 					}
 				}
-			);
+				);
 
 		}
 
@@ -488,7 +507,7 @@ class Keychain {
 			//foreground: [247, 31, 61, 255],           // saito red
 			//background: [64, 64, 64, 0],
 			saturation: 0.6,
-            brightness: 0.4,
+			brightness: 0.4,
 			margin: 0.0, // 0% margin
 			size: 420, // 420px square
 			format: img_format // use SVG instead of PNG
@@ -574,7 +593,8 @@ class Keychain {
 		}
 		if (name === publicKey) {
 			if (name.length > max) {
-				return name.substring(0, max) + '...';
+				//return name.substring(0, max) + '...';
+				return 'Anon-' + name.substring(0, 6);
 			}
 		}
 		return publicKey;
@@ -590,6 +610,25 @@ class Keychain {
 		return x;
 	}
 
+	returnPeerArchiveNodes(publicKey) {
+		const keylist: any = this.app.options.keys;
+		const key = keylist.find(key => key.publicKey === publicKey);
+		if (key && key.profile && Array.isArray(key.profile.archive_nodes)) {
+			const parsedArchiveNodes = key.profile.archive_nodes.map(node => {
+				try {
+					return JSON.parse(node);
+				} catch (error) {
+					console.error(`Failed to parse archive node: ${node}`, error);
+					return null;
+				}
+			}).filter(node => node !== null);
+			return parsedArchiveNodes || [];
+		}else {
+			console.warn('no archive nodes found');
+			return [];
+		}
+	}
+
 
 
 
@@ -600,8 +639,8 @@ class Keychain {
  * @param {string} publicKey The public key to add to the watch list. Defaults to an empty string.
  */
 	addWatchedPublicKey(publicKey = '') {
-		if (publicKey){
-			this.addKey(publicKey, { watched: true });			
+		if (publicKey) {
+			this.addKey(publicKey, { watched: true });
 		}
 	}
 
@@ -624,7 +663,7 @@ class Keychain {
 					return { ...key, watched: false };
 				}
 				return key;
-			});
+			})
 			this.saveKeys();
 		} else {
 			console.warn(`PublicKey ${publicKey} not found.`);
@@ -661,7 +700,9 @@ class Keychain {
 
 		return true;
 	}
+
 }
 
 export default Keychain;
+
 

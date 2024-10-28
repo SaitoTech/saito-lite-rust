@@ -1,4 +1,4 @@
-module.exports = ArcadeMenuTemplate = (gamelist) => {
+module.exports = (gamelist) => {
 	return `
     <div class="arcade-game-list-container">
     <div class="sidebar-header">

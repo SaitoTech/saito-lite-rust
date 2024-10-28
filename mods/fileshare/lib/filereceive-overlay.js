@@ -2,60 +2,87 @@ const FileReceiveOverlayTemplate = require('./filereceive-overlay.template');
 const SaitoUser = require('./../../../lib/saito/ui/saito-user/saito-user');
 
 class FileReceiveOverlay {
-	constructor(app, mod) {
+	constructor(app, mod, fileId, sender = "") {
 		this.app = app;
 		this.mod = mod;
+		this.fileId = fileId || "generic";
+		this.sender = sender;
 		this.throttle_me = false;
 		this.ready = false;
+		this.divId = `file-transfer-${fileId}-${sender}`;
+
+		//set up stun listeners for interruptions
+		app.connection.on('stun-data-channel-close', (peerId) => {
+			if (peerId == this.sender && this?.active) {
+				this.onConnectionFailure();
+			}
+		});
+		app.connection.on('stun-connection-failed', (peerId) => {
+			if (peerId == this.sender & this?.active) {
+				this.onConnectionFailure();
+			}
+		});
+
+		app.connection.on("stun-data-channel-open", (peerId) => {
+			if (peerId == this.sender && this?.active){
+				this.onConnectionSuccess();
+			}
+		});
+
 	}
 
-	render(sender) {
+	render(file) {
 
-		this.sender = new SaitoUser(this.app, this.mod,	'.saito-file-transfer-overlay .contact', sender);
+		this.active = true;
+		this.senderUI = new SaitoUser(this.app, this.mod, `#${this.divId} .contact`, this.sender);
 
-		this.app.browser.addElementToDom(FileReceiveOverlayTemplate(this.app, this.mod));
+		this.app.browser.addElementToDom(FileReceiveOverlayTemplate(this.mod, this, file));
 
-		this.sender.render();
+		this.senderUI.render();
 		this.attachEvents();
 
-		if (!this.mod.stun.hasConnection(sender)) {
-			this.app.connection.on("stun-data-channel-open", peerId => {
-				if (peerId == sender){
-					this.onConnectionSuccess();
-				}
-			})
-		}else{
+		if (this.mod.stun.hasConnection(file.sender)) {
 			this.onConnectionSuccess();
 		}
+
 	}
 
 	remove(){
-		if (document.querySelector('.saito-file-transfer-overlay')){
-			document.querySelector('.saito-file-transfer-overlay').remove();
+		if (document.getElementById(this.divId)){
+			document.getElementById(this.divId).remove();
 		}
+		this.mod.reset(this.fileId);
 		this.ready = false;
+		this.active = false;
 	}
 
 	beginTransfer() {
-		let field = document.getElementById('transfer-speed-row');
+
+		let div = document.getElementById(this.divId);
+
+		console.log("Begin transfer", div);
+
+		let field = div?.querySelector('#transfer-speed-row');
 		if (field){
 			field.classList.remove("hideme");
 		}	
 
-		let field2 = document.getElementById("file-transfer-buttons");
+		let field2 = div?.querySelector("#file-transfer-buttons");
 		if (field2){
 			field2.classList.remove('hideme');
 		}
 
-		let field3 = document.querySelector(".stun-phone-notice");
+		let field3 = div?.querySelector(".stun-phone-notice");
 		if (field3){
 			field3.classList.add('hideme');
 		}
 	}
 
 	renderStats(stats){
+		let div = document.getElementById(this.divId);
+
 		if (!this.throttle_me){
-			let field = document.getElementById("file-transfer-status");
+			let field = div?.querySelector("#file-transfer-status");
 			if (field){
 				field.innerHTML = `<span class="fixed-width">${stats.speed}</span>`;
 			}
@@ -65,7 +92,7 @@ class FileReceiveOverlay {
 			}, 500);			
 		}
 
-		let progress_bar = document.querySelector(".file-transfer-progress");
+		let progress_bar = div?.querySelector(".file-transfer-progress");
 		if (progress_bar){
 			progress_bar.style.width = `${stats.percentage}%`;
 		}
@@ -74,37 +101,37 @@ class FileReceiveOverlay {
 	finishTransfer(blob){
 
 		console.log("Finish transfer!!!!!");
+		let div = document.getElementById(this.divId);
 
-		let field = document.getElementById("file-transfer-status");
+		let field = div?.querySelector("#file-transfer-status");
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
 		}
 
-		let progress_bar = document.querySelector(".file-transfer-progress");
+		let progress_bar = div?.querySelector(".file-transfer-progress");
 		if (progress_bar){
 			progress_bar.style.width = `100%`;
+		}
+
+		let field2 = div?.querySelector(".saito-file-transfer");
+		if (field2){
+			field2.classList.add("complete");
 		}
 
 		const received = new Blob(blob.receiveBuffer);
 
 		let html = `<a href="${URL.createObjectURL(received)}" download="${blob.name}"></a>`
 
-		this.app.browser.addElementToSelector(html, ".saito-file-transfer-overlay");
+		this.app.browser.addElementToId(html, this.divId);
 
-		let download_btn = document.getElementById('download-transfer');
+		let download_btn = div?.querySelector('#download-transfer');
 		if (download_btn){
 			download_btn.classList.remove("hideme");
 			download_btn.onclick = () => {
-				document.querySelector(".saito-file-transfer-overlay a").click();
-				document.querySelector(".saito-file-transfer-overlay a").remove();
-				this.mod.reset();
+				document.querySelector(`#${this.divId} a`).click();
+				document.querySelector(`#${this.divId} a`).remove();
 				this.remove();
 			}
-		}
-
-		let cancel_btn = document.getElementById("cancel-transfer");
-		if (cancel_btn){
-			cancel_btn.style.visibility = "hidden";
 		}
 
 		this.ready = true;
@@ -112,28 +139,45 @@ class FileReceiveOverlay {
 	
 
 	onCancel(){
-		let field2 = document.getElementById("file-transfer-buttons");
+
+		let div = document.getElementById(this.divId);
+
+		let field2 = div.querySelector("#file-transfer-buttons");
 		if (field2){
 			field2.classList.add('hideme');
 		}
 
-		let field = document.getElementById("file-transfer-status");
+		let field = div.querySelector("#file-transfer-status");
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
+		}
+
+		let field3 = div.querySelector("#peer-permission-buttons");
+		if (field3){
+			field3.classList.add('hideme');
 		}
 
 	}
 
 
 	onConnectionSuccess(){
-		let field = document.getElementById("peer-connection-status");
+		let div = document.getElementById(this.divId);
+
+		let field = div.querySelector("#peer-connection-status");
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-check"></i>`;
+		}
+
+		let field2 = div.querySelector("#accept-file");
+		if (field2){
+			field2.removeAttribute("disabled");
 		}
 	}
 
 	onConnectionFailure(){
-		let field = document.getElementById("peer-connection-status");
+		let div = document.getElementById(this.divId);
+
+		let field = div.querySelector("#peer-connection-status");
 		if (field){
 			field.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
 		}
@@ -141,16 +185,17 @@ class FileReceiveOverlay {
 
 
 	attachEvents(){
-		this.app.browser.makeDraggable('file-transfer');
+		this.app.browser.makeDraggable(this.divId);
+		let div = document.getElementById(this.divId);
 
-		let accept_btn = document.getElementById("accept-file");
-		let reject_btn = document.getElementById("reject-file");
+		let accept_btn = div.querySelector("#accept-file");
+		let reject_btn = div.querySelector("#reject-file");
 
 		if (accept_btn){
 			accept_btn.onclick = () => {
-				this.mod.prepareToReceive();
+				this.mod.prepareToReceive(this.fileId);
 
-				let button_row = document.getElementById('peer-permission-buttons');
+				let button_row = div.querySelector('#peer-permission-buttons');
 				if (button_row){
 					button_row.remove();
 				}
@@ -160,27 +205,21 @@ class FileReceiveOverlay {
 
 		if (reject_btn){
 			reject_btn.onclick = () => {
-				this.mod.file = null;
-				this.mod.fileId = null;
 
-				this.app.connection.emit('relay-send-message', {
-					recipient: this.sender.publicKey,
-					request: 'deny file permission',
-					data: {}
-				});
-
+				this.mod.sendRejectTransferTransaction(this.fileId, this.sender);
 				this.remove();
 			}
 		}
 
-		let cancel = document.getElementById('cancel-transfer');
+		let cancel = div.querySelector('#cancel-transfer');
 		if (cancel){
 			cancel.onclick = () => {
-				this.mod.interrupt(true);
+				this.mod.interrupt(this.fileId, this.sender);
+				this.mod.sendRejectTransferTransaction(this.fileId, this.sender);
 			}
 		}
 
-		let close = document.querySelector(".icon-button#close");
+		let close = div.querySelector(".icon-button#close");
 		if (close){
 			close.onclick = async (e) => {
 				if (this.ready){
@@ -189,31 +228,22 @@ class FileReceiveOverlay {
 						console.log("Okay Don't close overlay yet");
 						return;
 					}
-				}else if (this.mod.sending){
-					this.mod.interrupt(true);	
-				}else{
-					this.mod.file = null;
-					this.mod.fileId = null;
-
-					this.app.connection.emit('relay-send-message', {
-						recipient: this.sender.publicKey,
-						request: 'deny file permission',
-						data: {}
-					});
+				}else if (this.mod.incoming[this.fileId]?.sending){
+					this.mod.interrupt(this.fileId, this.sender);	
+				}else if (this.mod.incoming[this.fileId]) {
+					this.mod.sendRejectTransferTransaction(this.fileId, this.sender);
 				}
 				
-				this.mod.reset();
 				this.remove();
 			}
 		}
 
 
-		let resize = document.querySelector(".icon-button#resize");
+		let resize = div.querySelector(".icon-button#resize");
 		if (resize){
 			resize.onclick = (e) => {
-				let overlay = document.getElementById("file-transfer");
-				overlay.classList.toggle("minimize");
-				overlay.removeAttribute("style");
+				div.classList.toggle("minimize");
+				div.removeAttribute("style");
 			}
 		}
 	}

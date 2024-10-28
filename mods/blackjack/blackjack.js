@@ -12,10 +12,10 @@ class Blackjack extends GameTableTemplate {
 
 		this.app = app;
 		this.name = 'Blackjack';
+		this.slug = 'blackjack';
 		this.title = "Saito Blackjack";
 
-		this.description =
-			'Classic casino game with home rules. Try to get closest to 21 without going over and beat the dealer to win your bet, but look out! You may be dealer next hand.';
+		this.description = 'Classic casino game with home rules. Try to get closest to 21 without going over and beat the dealer to win your bet, but look out! You may be dealer next hand.';
 
 		this.categories = 'Games Cardgame Casino';
 

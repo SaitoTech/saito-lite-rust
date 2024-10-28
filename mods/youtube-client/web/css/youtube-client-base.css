@@ -9,14 +9,14 @@
 
 .yt-stream {
 	width: min(550px, 98vw);
-    padding: 3rem;
-    border-radius: 0.5rem;
-    border: 1px solid;
-    background-color: var(--color-base);
-    color: var(--color-contrast);
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+	padding: 3rem;
+	border-radius: 0.5rem;
+	border: 1px solid var(--saito-border-color);
+	background-color: var(--color-base);
+	color: var(--color-contrast);
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
 }
 
 .yt-stream-title {
@@ -27,7 +27,7 @@
 	color: #f70004;
 }
 
-#yt-stream-btn  {
+#yt-stream-btn {
 	width: fit-content;
-    align-self: flex-end;
+	align-self: flex-end;
 }

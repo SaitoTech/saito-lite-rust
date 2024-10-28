@@ -4,8 +4,8 @@ const Post = require('./post');
 const Notification = require('./notification');
 const SaitoProfile = require('./../../../lib/saito/ui/saito-profile/saito-profile');
 const SaitoLoader = require('./../../../lib/saito/ui/saito-loader/saito-loader');
-
 class TweetManager {
+
 	constructor(app, mod, container = '.saito-main') {
 		this.app = app;
 		this.mod = mod;
@@ -17,7 +17,7 @@ class TweetManager {
 
 		this.profile.tab_container = '.tweet-manager';
 
-		this.profile_tabs = ['posts', 'replies', 'retweets', 'likes'];
+		this.profile_tabs = ['posts', 'replies', /*'retweets',*/ 'likes'];
 
 		this.profile.reset(this.mod.publicKey, 'posts', this.profile_tabs);
 
@@ -104,6 +104,14 @@ class TweetManager {
 
 		if (document.querySelector('.highlight-tweet')) {
 			document.querySelector('.highlight-tweet').classList.remove('highlight-tweet');
+		}
+
+		if (this.mode === "tweets" && new_mode !== "tweets"){
+	      this.app.connection.emit("saito-header-replace-logo", (e) => {
+	        this.app.connection.emit("redsquare-home-render-request");
+	        window.history.pushState({view: "home"}, "", "/" + this.mod.slug);
+	      });
+
 		}
 
 		//
@@ -319,28 +327,32 @@ class TweetManager {
 			this.profile.reset(publicKey, 'posts', this.profile_tabs);
 		}
 
-		this.profile.render();
-
 		this.loader.render();
+
+		this.profile.render();
 
 		this.loadProfile((txs) => {
 			if (this.mode !== 'profile') {
 				return;
 			}
 
-			this.loader.remove();
-			
+			this.hideLoader();
+
 			// Sort txs into posts/replies/retweets...
 			this.filterAndRenderProfile(txs);
+
+			// , this should add the component to click
 
 			this.hideLoader();
 			this.profile.render();
 		});
 
-		this.attachEvents();
 	}
 
-	loadProfile(mycallback) {
+
+	// When we render the profile, we have a synchronous fetch on local archive for banner/description
+	// by making this async the storage loading here should get pushed back
+	async loadProfile(mycallback) {
 		if (this.mod.publicKey == this.profile.publicKey) {
 			// Find likes...
 			// I already have a list of tweets I liked available
@@ -387,8 +399,14 @@ class TweetManager {
 						mycallback(txs);
 					}
 
-					//Will add them so they are cached (in array and local cache)
-					this.mod.processTweetsFromPeer(peer, txs);
+					//
+					// Don't use processTweetsFromPeer(peer, txs)
+					// because it updates the global timestamps and caches tweets in our local storage
+					//
+				    for (let z = 0; z < txs.length; z++) {
+      					txs[z].decryptMessage(this.app);
+      					this.mod.addTweet(txs[z], `${peer.publicKey}-profile`);
+      				}
 
 					if (peer.peer !== 'localhost') {
 						this.app.connection.emit(
@@ -502,6 +520,7 @@ class TweetManager {
 		}
 	}
 
+
 	//
 	// this renders a tweet, loads all of its available children and adds them to the page
 	// as they appear...
@@ -547,13 +566,15 @@ class TweetManager {
 					if (document.querySelector(`.tweet-${tweet.tx.signature}`)) {
 						document.querySelector(`.tweet-${tweet.tx.signature}`).classList.add('highlight-tweet');
 
-						let post = new Post(this.app, this.mod, tweet);
-						post.parent_id = tweet.tx.signature;
-						post.thread_id = tweet.thread_id;
+						if (!this.app.browser.isMobileBrowser()){
+							let post = new Post(this.app, this.mod, tweet);
+							post.parent_id = tweet.tx.signature;
+							post.thread_id = tweet.thread_id;
 
-						post.source = 'Reply';
+							post.source = 'Reply';
 
-						post.render(`.tweet-${tweet.tx.signature}`);
+							post.render(`.tweet-${tweet.tx.signature}`);
+						}
 					}
 				}
 
@@ -563,13 +584,15 @@ class TweetManager {
 			if (document.querySelector(`.tweet-${tweet.tx.signature}`)) {
 				document.querySelector(`.tweet-${tweet.tx.signature}`).classList.add('highlight-tweet');
 
-				let post = new Post(this.app, this.mod, tweet);
-				post.parent_id = tweet.tx.signature;
-				post.thread_id = tweet.thread_id;
+				if (!this.app.browser.isMobileBrowser()){
+					let post = new Post(this.app, this.mod, tweet);
+					post.parent_id = tweet.tx.signature;
+					post.thread_id = tweet.thread_id;
 
-				post.source = 'Reply';
+					post.source = 'Reply';
 
-				post.render(`.tweet-${tweet.tx.signature}`);
+					post.render(`.tweet-${tweet.tx.signature}`);
+				}
 			}
 		}
 	}

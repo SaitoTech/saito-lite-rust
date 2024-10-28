@@ -1,0 +1,22 @@
+// ------------------------ Breakpoints
+@mixin breakpoint($point, $mobileFirst: false) {
+	@each $breakpoint, $value in $breakpoints {
+		@if $point == $breakpoint {
+			@if $mobileFirst {
+				@media screen and (min-width: #{$value + 1px}) {
+					@content;
+				}
+			} @else {
+				@media screen and (max-width: #{$value}) {
+					@content;
+				}
+			}
+		}
+	}
+
+	@if $point == "prm" {
+		@media prefers-reduced-motion {
+			@content;
+		}
+	}
+}

@@ -106,8 +106,6 @@
 */
 
 
-
-
 .tweet-header .saito-user .saito-identicon-box .saito-identicon {
   z-index: 51;
   position: absolute;
@@ -227,6 +225,17 @@
 
 .tweet-text a {
   display: inherit;
+}
+
+/* handling for embedded tweets */
+
+.tweet .tweet {
+  padding: 0;
+}
+
+.tweet .tweet .tweet-body {
+  grid-template-columns: 0 auto;
+  padding: 1rem 0 0;
 }
 
 
@@ -453,6 +462,24 @@
 .link-description {
   color: var(--font-color-post-link-description); 
 }
+
+
+/***  Some formatting for auto-generated tables  ***/
+
+
+.tweet td {
+  text-align: center;
+}
+
+.tweet td, .tweet th, .tweet table {
+  border: 1px solid var(--saito-font-color-light);
+  border-collapse: collapse;
+}
+
+.tweet td, .tweet th {
+  padding: 4px 16px;
+}
+
 
 @media screen and (max-width: 1280px) {
   .tweet-picture {

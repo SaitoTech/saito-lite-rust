@@ -3,8 +3,6 @@
  *
  */
 
-const localforage = require('localforage');
-
 class StreamManager {
   constructor(app, mod, settings) {
     this.app = app;
@@ -22,7 +20,7 @@ class StreamManager {
 
     this.terminationEvent = 'onpagehide' in self ? 'pagehide' : 'unload';
 
-    this.updateSettings(settings);
+    this.parseSettings(settings);
 
     app.connection.on('stun-toggle-video', async () => {
       // Turn off Video
@@ -49,19 +47,14 @@ class StreamManager {
             this.localStream.addTrack(videoTrack);
 
             // Add new track to the local stream
-            this.app.connection.emit(
-              'add-local-stream-request',
-              this.localStream
-            );
+            this.app.connection.emit('add-local-stream-request', this.localStream);
 
             this.mod.stun.peers.forEach((peerConnection, key) => {
               console.log('Attach new video to: ' + key);
               if (this.mod.room_obj.call_peers.includes(key)) {
                 const videoSenders = peerConnection
                   .getSenders()
-                  .filter(
-                    (sender) => sender.track && sender.track.kind === 'video'
-                  );
+                  .filter((sender) => sender.track && sender.track.kind === 'video');
                 if (videoSenders.length > 0) {
                   videoSenders.forEach((sender) => {
                     sender.replaceTrack(videoTrack);
@@ -129,13 +122,13 @@ class StreamManager {
         //   systemAudio: 'include',
         // });
 
-        this.presentationStream = await  navigator.mediaDevices.getDisplayMedia({
-					video: true,
-					audio: true,
-					selfBrowserSurface: 'include',
-					monitorTypeSurfaces: 'include',
-					systemAudio: 'include'
-				});
+        this.presentationStream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+          audio: true,
+          selfBrowserSurface: 'include',
+          monitorTypeSurfaces: 'include',
+          systemAudio: 'include'
+        });
         this.presentationStream.getVideoTracks()[0].onended = this.endPresentation.bind(this);
 
         this.mod.screen_share = true;
@@ -161,7 +154,6 @@ class StreamManager {
 
             this.presentationStream.getTracks().forEach((track) => {
               pc.addTrack(track, this.presentationStream);
-              
             });
             // for (let track of this.presentationStream.getTracks()) {
             //   console.log('tracks added', track)
@@ -196,10 +188,7 @@ class StreamManager {
         JSON.stringify(this.mod.room_obj.call_peers)
       );
 
-      if (
-        !this.mod?.room_obj ||
-        !this.mod.room_obj.call_peers.includes(peerId)
-      ) {
+      if (!this.mod?.room_obj || !this.mod.room_obj.call_peers.includes(peerId)) {
         return;
       }
 
@@ -221,19 +210,11 @@ class StreamManager {
       });
     });
 
-
-    // app.connection.on(
-    //   'stun-update-connection-message',
-    //   (peerId, connectionState) => {
-    //     if (this.active) {
-    //       this.broadcastPeerList();
-    //     }
-    //   }
-    // );
-
-    app.connection.on('remove-remote-stream', peerId => {
-      this.removePeer(peerId, "was kicked out")
-    })
+    app.connection.on('stun-update-connection-message', (peerId, connectionState) => {
+      if (this.active) {
+        this.broadcastPeerList();
+      }
+    });
 
     app.connection.on('stun-track-event', (peerId, event) => {
       if (!this.active) {
@@ -246,8 +227,7 @@ class StreamManager {
 
       const remoteStream = new MediaStream();
 
-     
-      console.log('STUN: remote stream added for', peerId, event.track);
+      console.log('STUN: remote stream added for', peerId, event.track, event.streams);
 
       if (peerId == this.mod.screen_share) {
         console.log('Expecting presentation stream');
@@ -260,12 +240,7 @@ class StreamManager {
           });
         }
 
-       
-        this.app.connection.emit(
-          'add-remote-stream-request',
-          'presentation',
-          remoteStream
-        );
+        this.app.connection.emit('add-remote-stream-request', 'presentation', remoteStream);
       } else {
         if (event.streams.length === 0) {
           console.log('Use track');
@@ -280,11 +255,7 @@ class StreamManager {
         this.remoteStreams.set(peerId, {
           remoteStream
         });
-        this.app.connection.emit(
-          'add-remote-stream-request',
-          peerId,
-          remoteStream
-        );
+        this.app.connection.emit('add-remote-stream-request', peerId, remoteStream);
 
         if (remoteStream.getAudioTracks()?.length) {
           this.analyzeAudio(remoteStream, peerId);
@@ -298,108 +269,77 @@ class StreamManager {
         return;
       }
 
-      window.addEventListener(
-        this.terminationEvent,
-        this.visibilityChange.bind(this)
-      );
+      window.addEventListener(this.terminationEvent, this.visibilityChange.bind(this));
       window.addEventListener('beforeunload', this.beforeUnloadHandler);
       if (this.app.browser.isMobileBrowser()) {
-        document.addEventListener(
-          'visibilitychange',
-          this.visibilityChange.bind(this)
-        );
+        document.addEventListener('visibilitychange', this.visibilityChange.bind(this));
       }
 
-      console.log(
-        'STUN: start-stun-call',
-        JSON.parse(JSON.stringify(this.mod.room_obj))
-      );
+      console.log('STUN: start-stun-call', JSON.parse(JSON.stringify(this.mod.room_obj)));
       this.firstConnect = true;
 
       //Render the UI component
-      this.app.connection.emit(
-        'show-call-interface',
-        this.videoEnabled,
-        this.audioEnabled
-      );
+      this.app.connection.emit('show-call-interface', this.videoEnabled, this.audioEnabled);
 
       await this.getLocalMedia();
 
       //
       // The person who set up the call is the "host", and we have to wait for peopel to join us in order to create
       // peer connections, but if we reconnect, or refresh, we have saved in local storage the people in our call
-      //
-      if (this.mod.room_obj?.scheduled === false) {
-        if (this.mod.room_obj?.host_public_key === this.mod.publicKey) {
-          //
-          // Not direct calling!
-          //
-          if (!this.mod.room_obj?.ui) {
-            console.log('STUN HOST: my peers, ', this.mod.room_obj.call_peers);
-            for (peer of this.mod.room_obj.call_peers) {
-              if (peer !== this.mod.publicKey) {
-                this.mod.sendCallEntryTransaction(peer);
-                break;
-              }
+      /*
+      if (this.mod.room_obj?.host_public_key === this.mod.publicKey) {
+        //
+        // Not direct calling!
+        //
+        if (!this.mod.room_obj?.ui) {
+          console.log('STUN HOST: my peers, ', this.mod.room_obj.call_peers);
+          for (peer of this.mod.room_obj.call_peers) {
+            if (peer !== this.mod.publicKey) {
+              this.mod.sendCallEntryTransaction(peer);
+              break;
             }
           }
-        } else {
-          // send ping transaction
-          this.mod.sendCallEntryTransaction();
         }
       } else {
-        let call_id = this.mod.room_obj.call_id
-        this.app.keychain.addWatchedPublicKey(call_id);
-        this.app.keychain.addKey(call_id, { identifier: call_id });
-        console.log('watched public key', this.mod.room_obj)
-        let base64obj = this.app.crypto.stringToBase64(
-          JSON.stringify(this.mod.room_obj)
-        );
-    
-        let call_link = window.location.origin + '/videocall/';
-        call_link = `${call_link}?stun_video_chat=${base64obj}`;
-        this.mod.sendBroadcastPresenceTransaction(call_id, call_link)
-      }
-
-
+        // send ping transaction
+        this.mod.sendCallEntryTransaction();  
+      }*/
+      this.mod.sendCallEntryTransaction();
+      
       let sound = new Audio('/saito/sound/Calm.mp3');
       sound.play();
 
       this.analyzeAudio(this.localStream, 'local');
     });
 
-    app.connection.on(
-      'stun-new-peer-connection',
-      async (publicKey, peerConnection) => {
-        console.log
-        if (!this.active) {
-          return;
-        }
-
-        console.log('New Stun peer connection with ' + publicKey);
-        console.log(this.mod.room_obj.call_peers);
-        if (this.mod.room_obj.call_peers.includes(publicKey)) {
-          peerConnection.firstConnect = true;
-
-          console.log('Attach my audio/video!');
-          await this.getLocalMedia();
-          this.localStream.getTracks().forEach((track) => {
-            peerConnection.addTrack(track, this.localStream);
-          });
-        }
+    app.connection.on('stun-new-peer-connection', async (publicKey, peerConnection) => {
+      if (!this.active) {
+        return;
       }
-    );
+
+      console.log('New Stun peer connection with ' + publicKey);
+      console.log(this.mod.room_obj.call_peers);
+      if (this.mod.room_obj.call_peers.includes(publicKey)) {
+        peerConnection.firstConnect = true;
+
+        console.log('Attach my audio/video!');
+        await this.getLocalMedia();
+        this.localStream.getTracks().forEach((track) => {
+          peerConnection.addTrack(track, this.localStream);
+        });
+      }
+    });
 
     app.connection.on('stun-disconnect', () => {
       if (!this.active) {
         return;
       }
-
+      console.log("Disconnecting video call...");
       this.leaveCall();
     });
   }
 
-  updateSettings(settings) {
+  parseSettings(settings) {
     if (settings?.video) {
       this.videoEnabled = true;
       if (settings.video !== true) {
@@ -418,7 +358,27 @@ class StreamManager {
       this.audioEnabled = false;
     }
 
-    this.auto_disconnect = settings?.auto_disconnect;
+    this.auto_disconnect = this?.auto_disconnect || settings?.auto_disconnect;
+  }
+
+  updateInputs(type, source){
+
+    if (type == "video"){
+      this.videoSource = source;
+      this.videoEnabled = true;
+    }else{
+      this.audioSource = source;
+      this.audioEnabled = true;
+    }
+
+    if (this.localStream){
+        this.localStream.getTracks().forEach((track) => {
+          track.stop()
+        });
+        this.localStream = null;
+        this.getLocalMedia();
+    }
+
   }
 
   returnConstraints(onlyVideo = false) {
@@ -444,18 +404,16 @@ class StreamManager {
   }
 
   async getLocalMedia() {
-
     if (this.localStream) {
       let shouldReturn = true;
       this.localStream.getTracks().forEach((track) => {
         if (track.readyState === 'ended') {
-          console.log("Track ready state is ended, reacquiring media...");
+          console.log('Track ready state is ended, reacquiring media...');
           shouldReturn = false;
         }
       });
       if (shouldReturn) return; // If none of the tracks have ended, return early
     }
-  
 
     console.log(this.videoSource, this.audioSource);
 
@@ -464,7 +422,6 @@ class StreamManager {
     //Get my local media
     try {
       this.localStream = await navigator.mediaDevices.getUserMedia(c);
-  
     } catch (err) {
       console.warn('Problem attempting to get User Media', err);
       console.log('Trying without video');
@@ -493,17 +450,14 @@ class StreamManager {
     this.app.connection.emit('add-local-stream-request', this.localStream);
   }
 
-  removePeer(peer, message = "left the meeting") {
+  removePeer(peer, message = 'left the meeting') {
     this.remoteStreams.delete(peer);
 
     if (this.auto_disconnect) {
       siteMessage(`${this.app.keychain.returnUsername(peer)} hung up`, 2500);
       this.app.connection.emit('stun-disconnect');
     } else {
-      siteMessage(
-        `${this.app.keychain.returnUsername(peer)} ${message}`,
-        2500
-      );
+      siteMessage(`${this.app.keychain.returnUsername(peer)} ${message}`, 2500);
     }
 
     let sound = new Audio('/saito/sound/Sharp.mp3');
@@ -516,15 +470,9 @@ class StreamManager {
     console.log('STUN: Hanging up...');
 
     window.removeEventListener('beforeunload', this.beforeUnloadHandler);
-    window.removeEventListener(
-      this.terminationEvent,
-      this.visibilityChange.bind(this)
-    );
+    window.removeEventListener(this.terminationEvent, this.visibilityChange.bind(this));
     if (this.app.browser.isMobileBrowser()) {
-      document.removeEventListener(
-        'visibilitychange',
-        this.visibilityChange.bind(this)
-      );
+      document.removeEventListener('visibilitychange', this.visibilityChange.bind(this));
     }
 
     this.endPresentation();
@@ -598,7 +546,10 @@ class StreamManager {
     if (this.mod.screen_share) {
       console.log('Screen sharing stopped by user');
       this.app.connection.emit('remove-peer-box', 'presentation');
-      this.app.connection.emit('stun-switch-view', this.app.options.stun.settings?.layout || this.mod.layout);
+      this.app.connection.emit(
+        'stun-switch-view',
+        this.app.options.stun.settings?.layout || this.mod.layout
+      );
       this.mod.screen_share = false;
 
       this.mod.sendOffChainMessage('screen-share-stop');
@@ -608,7 +559,6 @@ class StreamManager {
       this.presentationStream.getTracks().forEach((track) => track.stop());
       this.presentationStream = null;
     }
-
   }
 
   broadcastPeerList() {
@@ -630,7 +580,7 @@ class StreamManager {
 
   visibilityChange() {
     console.log('visibilitychange triggered');
-    this.leaveCall();
+    //this.leaveCall();
   }
 }
 

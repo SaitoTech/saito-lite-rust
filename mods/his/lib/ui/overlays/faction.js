@@ -62,7 +62,7 @@ class FactionOverlay {
 			  keyboxen += `<div class="${hcss} faction_sheet_keytile henry_viii_marital_status henry_viii_marital_status${i + 1}" id="henry_viii_marital_status${i + 1}"></div>`;
 			}
 			for (let i = 1; i <= 9; i++) {
-				if (i >= controlled_keys) {
+				if (i > controlled_keys) {
 					keyboxen += `<div class="faction_sheet_keytile faction_sheet_${his_self.factions[faction].key}_keytile${i} england_keytile" id="faction_sheet_keytile${i}"></div>`;
 				}
 			}
@@ -88,13 +88,8 @@ class FactionOverlay {
 				);
 			}
 
-
-              his_self.game.state.henry_viii_healthy_edward = 1;
-              his_self.game.state.henry_viii_sickly_edward = 0;
-              his_self.game.state.henry_viii_add_elizabeth = 0;
-
-
 		}
+
 		// FRANCE
 		if (his_self.factions[faction].key === 'france') {
 			war_winner_vp = his_self.game.state.france_war_winner_vp;
@@ -293,16 +288,19 @@ console.log(remaining_keys + " = " + total_keys + " - " + controlled_keys);
 		if (p > 0) {
 		  for (let z = 0; z < his_self.game.state.players_info[p-1].captured.length; z++) {
 		    let c = his_self.game.state.players_info[p-1].captured[z];
+
+console.log("CAPTURED: " + JSON.stringify(c));
+
 		    if (c.capturing_faction == faction) {
-		      if (his_self.army[c.type]) {
+		      if (c.army_leader) {
 			this.app.browser.addElementToSelector(
-				'<div class="army_tile" style="background-image: url(/his/img/tiles/army/${obj.img})"></div>',
+				`<div class="army_tile" style="background-image: url(/his/img/tiles/army/${c.img})"></div>`,
 				'.faction_sheet_vp'
 			);
 		      }
-		      if (his_self.navy[c.type]) {
+		      if (c.navy_leader) {
 			this.app.browser.addElementToSelector(
-				'<div class="army_tile" style="background-image: url(/his/img/tiles/navy/${obj.img})"></div>',
+				`<div class="army_tile" style="background-image: url(/his/img/tiles/navy/${c.img})"></div>`,
 				'.faction_sheet_vp'
 			);
 		      }
