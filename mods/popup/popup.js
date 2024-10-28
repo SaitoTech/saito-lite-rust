@@ -70,7 +70,7 @@ class Popup extends ModTemplate {
 		//
 		// create in-browser DB
 		//
-		await this.deleteDatabase();
+//		await this.deleteDatabase();
 		await this.initializeDatabase();
 
 		//
@@ -524,17 +524,32 @@ class Popup extends ModTemplate {
 		if (this.app.BROWSER) {
 
 			if (!this.localDB) {
+
 				this.localDB = new JsStore.Connection(
                 	                new Worker('/saito/lib/jsstore/jsstore.worker.js')
                 	        );
+
+				console.log('Local DB instance:', this.localDB);
+
+				const vocabulary = {
+				    name: 'vocabulary', 
+				};
+
+				const db = {
+				    name: 'popup',
+				    tables: [vocabulary]
+				};
+
+				this.localDB.initDb(db).then(() => {
+				    console.log('Database initialized successfully');
+				    this.localDB.dropDb('popup');
+				    this.initializeDatabase();
+				}).then(() => {
+				    console.log('Popup Database deleted successfully');
+				}).catch((error) => {
+				    console.error('Error:', error);
+				});
 			}
-
-			this.localDB.dropDb("popup").then(function() {
-				console.log('Popup Database deleted successfully');
-			}).catch(function(error) {
-				console.error('Error deleting the database:', error);
-			});
-
 
 		}
 		return;
@@ -579,6 +594,16 @@ class Popup extends ModTemplate {
 			};
 
 			var isDbCreated = await this.localDB.initDb(db);
+
+console.log("@");
+console.log("@");
+console.log("@");
+console.log("@");
+console.log("@");
+console.log("@");
+console.log("@");
+console.log(JSON.stringify(this.localDB));
+
 			if (isDbCreated) {
 				console.log('POPUP: db created and connection opened');
 			} else {
@@ -623,14 +648,21 @@ class Popup extends ModTemplate {
 			});
 		}
 
-		let v = await this.returnVocab();
-		console.log('POST INSERT: ' + JSON.stringify(v));
+		//let v = await this.returnVocab();
+		//console.log('POST INSERT: ' + JSON.stringify(v));
 	}
 
 	async returnVocab(offset = 0) {
 		if (!this.app.BROWSER) {
 			return;
 		}
+
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log(JSON.stringify(this.localDB));
 
 		let rows = await this.localDB.select({
 			from: 'vocabulary',
@@ -644,20 +676,11 @@ class Popup extends ModTemplate {
 
 	async loadQuestion() {
 
-	  //let rows = await this.localDB.select({
-	  //	from: 'vocabulary',
-	  //});
-	  //let idx = Math.floor(Math.random() * rows.length);
-	  //let word = rows[idx];
-
 	  let question_types = [
 		"multiple_choice_english", 
 		"multiple_choice_pinyin", 
-		"generative_english", 
-		"generative_pinyin", 
-//		"fill_in_the_blanks"
 	  ];
-	  let question_type = question_types[Math.floor(Math.randon() * question_types.length)];
+	  let question_type = question_types[Math.floor(Math.random() * question_types.length)];
 
 	  let tdate1 = new Date().getTime();
 	  let tdate2 = new Date().getTime() - (172800 * 1000);	
@@ -704,21 +727,116 @@ class Popup extends ModTemplate {
 	  let idx = Math.floor(Math.random() * rows.length);
 	  let word = rows[idx];
 
+
+	  let words = [];
+	  let options = [];
+
+	  const shuffleArray = (array) => array.sort(() => Math.random() - 0.5);
+
+	  if (rows.length > 4) {
+	    while (options.length < 4) {
+	      shuffleArray(rows);
+	      if (!options.includes(rows[0].field1)) {
+		words.push(rows[0]);
+		options.push(rows[0].field1);
+	      }
+	    }
+	  } else {
+	    words.push({
+	      english : "good",
+	      pinyin  : "hao3",
+	      field1 : "good",
+	      field2 : "hao3",
+	      field3 : "好",
+	      field4 : "好",
+	    });
+	    words.push({
+	      english : "ok",
+	      pinyin  : "xing2",
+	      field1 : "ok",
+	      field2 : "xing2",
+	      field3 : "行",
+	      field4 : "行",
+	    });
+	    words.push({
+	      english : "to eat",
+	      pinyin  : "chi1",
+	      field1 : "to eat",
+	      field2 : "chi1",
+	      field3 : "吃",
+	      field4 : "吃",
+	    });
+	    words.push({
+	      english : "to go",
+	      pinyin  : "zou3",
+	      field1 : "to go",
+	      field2 : "zou3",
+	      field3 : "走",
+	      field4 : "走",
+	    });
+	  }
+
+	  //
+	  // substitute random entry for our test
+	  //
+	  let correct = Math.floor(Math.random() * 4);
+	  if (word != null) {
+	    words[correct] = word;
+	  } else {
+	    word = words[correct];
+	  }
+
+	  let option1 = "";
+	  let option2 = "";
+	  let option3 = "";
+	  let option4 = "";
+	  let question = "";
+	  let english = "";
+
+console.log("#");
+console.log("#");
+console.log("# words length: " + words.length);
+console.log(JSON.stringify(words));
+
+	  //
+	  // options depend on question type
+	  //
+	  if (question_type === "multiple_choice_english") {
+	    option1 = words[0].field1;
+	    option2 = words[1].field1;
+	    option3 = words[2].field1;
+	    option4 = words[3].field1;
+	    question = word.field3;
+	    english = word.field1;
+	    pinyin = word.field2;
+	  }
+	  if (question_type === "multiple_choice_pinyin") {
+	    option1 = words[0].field2;
+	    option2 = words[1].field2;
+	    option3 = words[2].field2;
+	    option4 = words[3].field2;
+	    question = word.field3;
+	    english = word.field1;
+	    pinyin = word.field2;
+	  }
+
+
+	  
  	  obj = {
 	    lesson_id : word.lesson_id ,
 	    word_id : word.id ,
-	    question_type : "vocab" ,
-	    question : "Question" ,
-	    english : "English" ,
-	    pinyin : "pinyin" ,
+	    question_type : question_type ,
+	    question : question ,
+	    english : english ,
+	    pinyin : pinyin ,
 	    language : "chinese" ,
-	    option1 : "option1" ,
-	    option2 : "option2" ,
-	    option3 : "option3" ,
-	    option4 : "option4" ,
-	    correct : "option1" ,
-	    answer : "option1" ,
-	    hint : "hint" ,
+	    option1 : option1 ,
+	    option2 : option2 ,
+	    option3 : option3 ,
+	    option4 : option4 ,
+	    correct : `option${correct+1}` ,
+	    answer : "" ,
+	    hint : "" ,
             source_audio_url : 'http://popupchinese.com/data/'
 	  }
 
@@ -727,7 +845,10 @@ class Popup extends ModTemplate {
 	}
 
 	async saveAnswer(obj) {
-        
+
+		if (!obj) { return; } 
+		if (!obj.wid) { return; } 
+       
                 //	{
                 //                wid: wid,
                 //                lid: lid,

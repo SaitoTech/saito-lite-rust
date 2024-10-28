@@ -244,11 +244,41 @@
       return;
     }
 
+    if (c === "war") {
+      this.welcome_overlay.renderCustom({
+        title : "War!" ,
+        text : msg ,
+        img : '/his/img/backgrounds/war_horse.png',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
     if (c === "colonize") {
       this.welcome_overlay.renderCustom({
         title : msg ,
         text : "Colonies earn factions bonus cards in the New World Phase",
         img : '/his/img/backgrounds/move/colonize.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "translate") {
+      this.welcome_overlay.renderCustom({
+        title : msg ,
+        text : "Protestants advance in biblical translation",
+        img : '/his/img/backgrounds/move/translate.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "stpeters") {
+      this.welcome_overlay.renderCustom({
+        title : msg ,
+        text : "The Papacy continues to build St. Peter's Basilica",
+        img : '/his/img/backgrounds/move/saint_peters.png',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
       return;
@@ -351,6 +381,16 @@
           styles : [{ key : "backgroundPosition" , val : "bottom" }],
         });
         return;
+    }
+
+    if (c === "war") {
+      this.hud_popup.render({
+        title : "War" ,
+        text : msg ,
+        img : '/his/img/backgrounds/war_horse.png',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
     }
 
     if (c === "deserted") {
@@ -619,6 +659,26 @@
         title : msg,
         text : "Explorations earn Victory Points for strategic discoveries in the New World Phase",
         img : '/his/img/backgrounds/move/explore.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "translate") {
+      this.hud_popup.render({
+        title : msg ,
+        text : "Protestants advance in biblical translation",
+        img : '/his/img/backgrounds/move/translate.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "stpeters") {
+      this.hud_popup.render({
+        title : msg ,
+        text : "The Papacy continues to build St. Peter's Basilica",
+        img : '/his/img/backgrounds/move/saint_peters.png',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
       return;
@@ -3084,6 +3144,11 @@ try {
       "img/backgrounds/diet_of_worms.jpeg",
       "img/backgrounds/language-zone.jpg",
       "img/backgrounds/95_theses.jpeg",
+      "img/backgrounds/war_horse.png",
+      "img/backgrounds/move/assault.jpg",
+      "img/backgrounds/move/colonize.jpg",
+      "img/backgrounds/move/explore.jpg",
+      "img/backgrounds/move/conquer.jpg",
       "img/cards/PASS.png",
     ];
 

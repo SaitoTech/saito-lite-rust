@@ -8850,15 +8850,15 @@ console.log("we have removed philip and redisplayed the space...");
 	    his_self.addMove("display_new_world");
 	    if (action == "conquest-england" || action == "conquest-france" || action == "conquest-hapsburg") {
 	      if (action == "conquest-england") {
-	        his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" cancels English exploration");
+	        his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" cancels English conquest");
 	        his_self.addMove("remove_conquest\tengland"); 
 	      }
 	      if (action == "conquest-france") {
-	        his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" cancels French exploration");
+	        his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" cancels French conquest");
 	        his_self.addMove("remove_conquest\tfrance"); 
 	      }
 	      if (action == "conquest-hapsburg") {
-	        his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" cancels Hapsburg exploration");
+	        his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" cancels Hapsburg conquest");
 	        his_self.addMove("remove_conquest\thapsburg"); 
 	      }
 	      his_self.endTurn();
@@ -12217,12 +12217,17 @@ console.log("we have removed philip and redisplayed the space...");
     	    let hp = his_self.returnPlayerOfFaction("hapsburg");
   	    let pf = his_self.returnPlayerOfFaction(faction);
 
-	    if (his_self.game.players.length != 2) {
-	      his_self.game.queue.push("hand_to_fhand\t1\t"+hp+"\t"+"hapsburg"+"\t1");
-              his_self.game.queue.push(`DEAL\t1\t${hp}\t1`);
-	    }
 	    if (faction !== "hapsburg") {
-	      his_self.game.queue.push("hand_to_fhand\t1\t"+pf+"\t"+faction+"\t1");
+	      if (his_self.game.players.length != 2) {
+	        his_self.game.queue.push("hand_to_fhand\t1\t"+hp+"\t"+"hapsburg"+"\t1");
+                his_self.game.queue.push(`DEAL\t1\t${hp}\t1`);
+	      } else {
+	        his_self.game.queue.push("hand_to_fhand\t1\t"+pf+"\t"+faction+"\t1");
+                his_self.game.queue.push(`DEAL\t1\t${pf}\t1`);
+	      }
+	    } else {
+	      his_self.game.queue.push("hand_to_fhand\t1\t"+pf+"\t"+"hapsburg"+"\t1");
+              his_self.game.queue.push(`DEAL\t1\t${pf}\t1`);
               his_self.game.queue.push(`DEAL\t1\t${pf}\t1`);
 	    }
 	  }

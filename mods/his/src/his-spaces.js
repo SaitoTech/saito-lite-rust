@@ -1423,7 +1423,7 @@ console.log("is a homespace for: " + x);
   returnFactionLandUnitsAndLeadersInSpace(faction, space, include_minor_allies=false) {
     let luis = 0;
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (f in space.units) {
+    for (let f in space.units) {
       if (include_minor_allies == false && f == faction) {
         for (let i = 0; i < space.units[f].length; i++) {
           if (space.units[f][i].type === "regular") { luis++; }
@@ -1448,20 +1448,19 @@ console.log("is a homespace for: " + x);
   returnFactionLandUnitsInSpace(faction, space, include_minor_allies=false) {
     let luis = 0;
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
-    for (f in space.units) {
+    for (let f in space.units) {
       if (include_minor_allies == false && f == faction) {
         for (let i = 0; i < space.units[f].length; i++) {
           if (space.units[f][i].type === "regular") { luis++; }
           if (space.units[f][i].type === "mercenary") { luis++; }
           if (space.units[f][i].type === "cavalry") { luis++; }
         }
-      } else {
-	if (include_minor_allies == true && (f == faction || this.isAlliedMinorPower(f, faction))) {
-          for (let i = 0; i < space.units[f].length; i++) {
-            if (space.units[f][i].type === "regular") { luis++; }
-            if (space.units[f][i].type === "mercenary") { luis++; }
-            if (space.units[f][i].type === "cavalry") { luis++; }
-          }
+      }
+      if (include_minor_allies == true && (f == faction || this.isAlliedMinorPower(f, faction))) {
+        for (let i = 0; i < space.units[f].length; i++) {
+          if (space.units[f][i].type === "regular") { luis++; }
+          if (space.units[f][i].type === "mercenary") { luis++; }
+          if (space.units[f][i].type === "cavalry") { luis++; }
         }
       }
     }
@@ -1474,7 +1473,7 @@ console.log("is a homespace for: " + x);
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
 
-    for (f in space.units) {
+    for (let f in space.units) {
       if (include_minor_allies == false && f == faction) {
         for (let i = 0; i < space.units[f].length; i++) {
           if (space.units[f][i].type === "squadron") { luis++; }
