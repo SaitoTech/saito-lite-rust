@@ -45,7 +45,7 @@ class ATR extends ModTemplate {
 	async onConfirmation(blk, tx, conf) {
 		if (conf == 0) {
 
-			if (blk.getBlockId() > this.last_block_id) {
+			if (blk.id > this.last_block_id) {
 
 				this.last_block_id = blk.id;
 
@@ -64,7 +64,9 @@ class ATR extends ModTemplate {
 					this.blocks[9] = JSON.parse(blk.toJson());
 				}
 
-				this.app.connection.emit('saito-atr-render-request');
+				if (this.app.BROWSER) {
+					this.app.connection.emit('saito-atr-render-request');
+				}
 
 			}
 		}
