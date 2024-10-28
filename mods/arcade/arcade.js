@@ -1587,7 +1587,7 @@ class Arcade extends ModTemplate {
 
     let txmsg = tx.returnMessage();
 
-    console.log(txmsg);
+    //console.log(txmsg);
 
     if (!tx.isFrom(this.publicKey)){
     	this.challenge_tx = tx;
