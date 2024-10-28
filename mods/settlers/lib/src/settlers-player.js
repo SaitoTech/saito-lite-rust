@@ -35,7 +35,7 @@ class SettlersPlayer {
           }
         }
         html += "</ul></div>";
-        this.hud.updateStatus(html, 1);
+        this.hud.updateStatus(html);
 
         //Select a player to steal from
         $(".textchoice").off();
@@ -63,7 +63,7 @@ class SettlersPlayer {
     let xpos = 0;
     let ypos = 0;
 
-    this.updateStatus(`MOVE the ${this.b.name}`, 1);
+    this.updateStatus(`MOVE the ${this.b.name}`);
     $(".option").css("visibility", "hidden");
     let settlers_self = this;
     $(".sector-container").addClass("rhover");
@@ -150,7 +150,7 @@ class SettlersPlayer {
       });
     } else {
       /* During game, must build roads to open up board for new settlements*/
-      this.updateStatus(`You may build a ${this.c1.name}`, 1);
+      this.updateStatus(`You may build a ${this.c1.name}...`);
       if (canBackUp) {
         this.updateControls(`<i class="fa-solid fa-xmark"></i>`);
           document.getElementById("rolldice").onclick = (e) => {
@@ -209,7 +209,7 @@ class SettlersPlayer {
     let settlers_self = this;
 
     if (this.game.state.placedCity) {
-      this.hud.updateStatus(`YOUR TURN: place a connecting ${this.r.name}`, 1);
+      this.hud.updateStatus(`<div class="player-notice">YOUR TURN: place a connecting ${this.r.name}</diiv>`);
 
       /*Initial placing of settlements and roads, road must connect to settlement just placed
           Use a "new" class tag to restrict scope
@@ -236,7 +236,7 @@ class SettlersPlayer {
         });
       });
     } else {
-      this.updateStatus(`You may build a ${this.r.name}...`, 1);
+      this.updateStatus(`You may build a ${this.r.name}...`);
       if (canBackUp) {
         this.updateControls(`<i class="fa-solid fa-xmark"></i>`);
         document.getElementById("rolldice").onclick = (e) => {
@@ -282,7 +282,7 @@ class SettlersPlayer {
   }
 
   playerBuildCity(player, canBackUp = 0) {
-    this.updateStatus(`Click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...`, 1);
+    this.updateStatus(`Click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...`);
     if (canBackUp) {
       this.updateControls(`<i class="fa-solid fa-xmark"></i>`);
       document.getElementById("rolldice").onclick = (e) => {
@@ -394,9 +394,7 @@ class SettlersPlayer {
     }
 
     let statushtml = "YOUR TURN:";
-    if (this.status.length == 0 || this.status[this.status.length-1] !== statushtml) {
-      this.updateStatus(`${statushtml}`, 1);
-    }
+    this.updateStatus(`${statushtml}`);
 
     document.getElementById("rolldice").onclick = (e) => {
         e.currentTarget.onclick = null;

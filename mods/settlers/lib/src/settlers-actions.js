@@ -121,11 +121,10 @@ class SettlersActions {
     }
 
     if (poor_harvest) {
-      this.updateStatus(`${firstMsg}: ${this.randomMsg()}`);
+      this.updateStatus(`${firstMsg}: ${this.randomMsg()}`, 1);
     } else {
       this.updateStatus(
-        `<div class="player-notice"><span>${firstMsg}! You acquired: </span><div class="hud-status-card-list">${notice}</div></div>`
-      );
+        `<div class="player-notice"><span>${firstMsg}! You acquired: </span><div class="hud-status-card-list">${notice}</div></div>`, 1);
     }
 
     if (this.animationSequence.length > 0){
