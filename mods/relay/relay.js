@@ -156,7 +156,7 @@ class Relay extends ModTemplate {
     }
   }
 
-  }
+  
 
   //
   // currently a 1-hop function, should abstract to take an array of
