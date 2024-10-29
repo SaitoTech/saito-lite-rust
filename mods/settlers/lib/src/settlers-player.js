@@ -25,7 +25,7 @@ class SettlersPlayer {
 
       if (thievingTargets.length > 1) {
         let html =
-          '<div class="status-header"><span id="status-content">Steal from which Player:</span></div>';
+          '<div class="status-header"><span id="status-content">steal from which Player:</span></div>';
         html += `<div class="status-text-menu"> <ul>`;
         for (let i = 0; i < this.game.players.length; i++) {
           if (thievingTargets.includes(i + 1)) {
@@ -63,7 +63,7 @@ class SettlersPlayer {
     let xpos = 0;
     let ypos = 0;
 
-    this.updateStatus(`MOVE the ${this.b.name}`);
+    this.updateStatus(`MOVE the <span class="to-upper">${this.b.name}</span>:`);
     $(".option").css("visibility", "hidden");
     let settlers_self = this;
     $(".sector-container").addClass("rhover");
@@ -150,7 +150,7 @@ class SettlersPlayer {
       });
     } else {
       /* During game, must build roads to open up board for new settlements*/
-      this.updateStatus(`You may build a ${this.c1.name}...`);
+      this.updateStatus(`you may build a ${this.c1.name}...`);
       if (canBackUp) {
         this.updateControls(`<i class="fa-solid fa-xmark"></i>`);
           document.getElementById("rolldice").onclick = (e) => {
@@ -236,7 +236,7 @@ class SettlersPlayer {
         });
       });
     } else {
-      this.updateStatus(`You may build a ${this.r.name}...`);
+      this.updateStatus(`you may build a ${this.r.name}...`);
       if (canBackUp) {
         this.updateControls(`<i class="fa-solid fa-xmark"></i>`);
         document.getElementById("rolldice").onclick = (e) => {
@@ -282,7 +282,7 @@ class SettlersPlayer {
   }
 
   playerBuildCity(player, canBackUp = 0) {
-    this.updateStatus(`Click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...`);
+    this.updateStatus(`click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...`);
     if (canBackUp) {
       this.updateControls(`<i class="fa-solid fa-xmark"></i>`);
       document.getElementById("rolldice").onclick = (e) => {
@@ -378,7 +378,7 @@ class SettlersPlayer {
     //
     if (can_do_something != true) {
       this.addMove("end_turn\t" + this.game.player); //End turn deletes the previous move (player_actions)
-      this.addMove("ACKNOWLEDGE\tYou cannot do anything - end turn\t" + this.game.player);
+      this.addMove("ACKNOWLEDGE\tyou cannot do anything - end turn\t" + this.game.player);
       this.endTurn();
       return;
     }

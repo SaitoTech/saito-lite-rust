@@ -104,7 +104,7 @@ class SettlersActions {
       threatened: this.game.state.threatened.slice(),
     });
 
-    let firstMsg = (this.game.player == player_who_rolled)  ? "You" : this.game.playerNames[player_who_rolled - 1];
+    let firstMsg = (this.game.player == player_who_rolled)  ? "you" : this.game.playerNames[player_who_rolled - 1];
     firstMsg += ` rolled <span class='die_value'>${value}</span>`;
 
     for (let player in collection){
@@ -124,7 +124,7 @@ class SettlersActions {
       this.updateStatus(`${firstMsg}: ${this.randomMsg()}`, 1);
     } else {
       this.updateStatus(
-        `<div class="player-notice"><span>${firstMsg}! You acquired: </span><div class="hud-status-card-list">${notice}</div></div>`, 1);
+        `<div class="player-notice"><span>${firstMsg}! you gain: </span><div class="hud-status-card-list">${notice}</div></div>`, 1);
     }
 
     if (this.animationSequence.length > 0){
