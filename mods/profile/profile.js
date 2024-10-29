@@ -128,7 +128,7 @@ class Profile extends ModTemplate {
 	}
 
 	async onPeerHandshakeComplete(app) {
-		/*if (app.BROWSER) {
+		if (app.BROWSER) {
 			/// For testing
 			let { port } = this.app.browser
 			console.log(app.browser, 'browser console');
@@ -138,7 +138,7 @@ class Profile extends ModTemplate {
 			console.log(host, port, serverPeer.publicKey)
 			app.connection.emit('profile-update-archive-node', { host, port, publicKey: serverPeer.publicKey });
 		}
-		*/
+
 	}
 
 
