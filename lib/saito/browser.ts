@@ -63,6 +63,14 @@ class Browser {
 			return 0;
 		}
 
+		app.connection.on("saito-render-complete", ()=> {
+			// xclose (loading wallpaper) looks for this class on body
+			console.log("rendering complete, remove wallpaper");
+			setTimeout(()=> {
+				document.querySelector("body").classList.add("xclose");
+			}, 1000);
+		});
+
 		this.app.connection.on('new-version-detected', (version) => {
 			console.log('New wallet version detected: ' + version);
 			localStorage.setItem('wallet_version', JSON.stringify(version));
