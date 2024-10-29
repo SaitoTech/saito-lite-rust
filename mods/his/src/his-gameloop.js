@@ -3336,10 +3336,25 @@ console.log("# is minor unactivated power");
 	      // exist.
       	      //
 	      //
-	      // fortify everything
+	      // fortify up to four units, the rest retreats
 	      //
+	      let retreat_option = "";
+	      for (let z = 0; z < space.neighbours.length; z++) {
+		if (his_self.isSpaceFriendly(space, faction)) {
+		  retreat_option = space.neighbours[z];
+		}
+	      }
+
+	      let fortification_limit = 0;
 	      for (let i = 0; i < space.units[faction].length; i++) {
-	        his_self.game.queue.push("fortify_unit\t"+spacekey+"\t"+faction+"\t"+JSON.stringify(space.units[faction][i]));
+		if (fortification_limit < 4) {
+	          his_self.game.queue.push("fortify_unit\t"+spacekey+"\t"+faction+"\t"+JSON.stringify(space.units[faction][i]));
+		  fortification_limit++;
+	        } else {
+		  his_self.game.spaces[retreat_option].units[faction].push(space.units[faction][i]);
+		  space.units[faction].splice(i, 1);
+		  i--;
+	        }
 	      }
 	      return 1;
 	    }
@@ -7579,7 +7594,6 @@ try {
 	  // end. this is probably the most counterintuitive part of the code that follows
 	  // -- to understand process in reverse.
 	  //
-
 
 	  //
 	  // purge units and capture leaders

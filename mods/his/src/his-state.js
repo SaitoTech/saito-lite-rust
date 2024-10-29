@@ -303,6 +303,44 @@
     if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    winning_faction = this.returnControllingPower(winning_faction);
+
+    let return_to_nearest_fortified_key = false;
+
+    //
+    // special treatment if unaligned minor power captures
+    //
+    // independent factions cannot capture leaders, so we return them to the nearest
+    // friendly, fortified space. edge-case out of rule book. rules determination here
+    // by Ed Beach (Oct 29, 2024 on WhatsApp)
+    //
+    if (["independent","venice","hungary","genoa","scotland"].includes(winning_faction)) {
+
+      let res = this.returnNearestFriendlyFortifiedSpacesTransitPasses(losing_faction, space, 0, 0);
+      let capitals = this.returnCapitals(losing_faction);
+
+      if (res.length > 0) {
+	this.addArmyLeader(losing_faction, res[0].key, unit.type);
+	return;
+      } else {
+	for (let z = 0; z < capitals.length; z++) {
+	  if (this.isSpaceControlled(losing_faction, capitals[z])) {
+	    this.addArmyLeader(losing_faction, capitals[z], unit.type);
+	    return;
+	  }
+	}
+      }
+
+      //
+      // no capital? push problem until next round
+      //
+      // no need to delete, function will sort out after return in this case
+      //
+      this.game.state.military_leaders_removed_until_next_round.push(unit);
+      return;
+
+    }
+
     let winning_player = this.returnPlayerCommandingFaction(winning_faction);
     if (winning_player > 0) {
       let p = this.game.state.players_info[winning_player-1];

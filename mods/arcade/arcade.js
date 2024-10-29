@@ -330,6 +330,7 @@ class Arcade extends ModTemplate {
 	// Since no open transactions are addressed to us, we can't just read them off the blockchain
 	//
 	async onPeerHandshakeComplete(app, peer) {
+
 		if (!app.BROWSER) {
 			return;
 		}
@@ -341,6 +342,8 @@ class Arcade extends ModTemplate {
 		//
 		// load open games from server
 		//  ( status = "open" OR status = "private" ) AND
+
+
 
 		let sql = `SELECT *
                FROM games
@@ -417,15 +420,36 @@ class Arcade extends ModTemplate {
 		if (!app.BROWSER) {
 			return;
 		}
+console.log("on peer service up...1 ");
 
 		if (service.service === 'archive') {
+console.log("on peer service up...2 ");
 			for (let game of this.app.options.games) {
+console.log("on peer service up...3 ");
+
 				if (game?.over) {
 					continue;
 				}
 
 				let query = game.module + '_' + game.id;
 
+				console.log("Arcade check for missed game events: ", query);
+				console.log("Arcade check for missed game events: ", query);
+				console.log("Arcade check for missed game events: ", query);
+				console.log("Arcade check for missed game events: ", query);
+				console.log("Arcade check for missed game events: ", query);
+				console.log("Arcade check for missed game events: ", query);
+				console.log("Arcade check for missed game events: ", query);
+				console.log("Arcade check for missed game events: ", query);
+				console.log("Arcade check for missed game events: ", query);
+				console.log("Arcade check for missed game events: ", query);
+				console.log("Arcade check for missed game events: ", query);
+				console.log("Arcade check for missed game events: ", query);
+				console.log("Arcade check for missed game events: ", query);
+				console.log("Arcade check for missed game events: ", query);
+				console.log("Arcade check for missed game events: ", query);
+				console.log("Arcade check for missed game events: ", query);
+				console.log("Arcade check for missed game events: ", query);
 				console.log("Arcade check for missed game events: ", query);
 
 				let game_mod = this.app.modules.returnModule(game.module);
@@ -434,6 +458,15 @@ class Arcade extends ModTemplate {
 					continue;
 				}
 
+				//
+				// URL param includes this to skip archive fetch
+				//
+	                        let noload = app.browser.returnURLParameter('noload');
+alert(JSON.stringify(noload));
+        	                if (noload) { alert("NOT LOADING TXS"); return; }
+else {
+  alert("no load not provided");
+}
 				this.app.storage.loadTransactions(
 					{
 						field1: query

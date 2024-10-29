@@ -474,11 +474,7 @@ class Registry extends ModTemplate {
 	async onConfirmation(blk, tx, conf) {
 		let txmsg = tx.returnMessage();
 
-console.log("into Registry onConfirmation!");
-
 		if (conf == 0) {
-
-console.log("first Registry onConfirmation!");
 
 			if (!!txmsg && txmsg.module === 'Registry') {
 				console.log(`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`);

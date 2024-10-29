@@ -21303,6 +21303,44 @@ if (x) {
     if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    winning_faction = this.returnControllingPower(winning_faction);
+
+    let return_to_nearest_fortified_key = false;
+
+    //
+    // special treatment if unaligned minor power captures
+    //
+    // independent factions cannot capture leaders, so we return them to the nearest
+    // friendly, fortified space. edge-case out of rule book. rules determination here
+    // by Ed Beach (Oct 29, 2024 on WhatsApp)
+    //
+    if (["independent","venice","hungary","genoa","scotland"].includes(winning_faction)) {
+
+      let res = this.returnNearestFriendlyFortifiedSpacesTransitPasses(losing_faction, space, 0, 0);
+      let capitals = this.returnCapitals(losing_faction);
+
+      if (res.length > 0) {
+	this.addArmyLeader(losing_faction, res[0].key, unit.type);
+	return;
+      } else {
+	for (let z = 0; z < capitals.length; z++) {
+	  if (this.isSpaceControlled(losing_faction, capitals[z])) {
+	    this.addArmyLeader(losing_faction, capitals[z], unit.type);
+	    return;
+	  }
+	}
+      }
+
+      //
+      // no capital? push problem until next round
+      //
+      // no need to delete, function will sort out after return in this case
+      //
+      this.game.state.military_leaders_removed_until_next_round.push(unit);
+      return;
+
+    }
+
     let winning_player = this.returnPlayerCommandingFaction(winning_faction);
     if (winning_player > 0) {
       let p = this.game.state.players_info[winning_player-1];
@@ -26535,10 +26573,25 @@ console.log("# is minor unactivated power");
 	      // exist.
       	      //
 	      //
-	      // fortify everything
+	      // fortify up to four units, the rest retreats
 	      //
+	      let retreat_option = "";
+	      for (let z = 0; z < space.neighbours.length; z++) {
+		if (his_self.isSpaceFriendly(space, faction)) {
+		  retreat_option = space.neighbours[z];
+		}
+	      }
+
+	      let fortification_limit = 0;
 	      for (let i = 0; i < space.units[faction].length; i++) {
-	        his_self.game.queue.push("fortify_unit\t"+spacekey+"\t"+faction+"\t"+JSON.stringify(space.units[faction][i]));
+		if (fortification_limit < 4) {
+	          his_self.game.queue.push("fortify_unit\t"+spacekey+"\t"+faction+"\t"+JSON.stringify(space.units[faction][i]));
+		  fortification_limit++;
+	        } else {
+		  his_self.game.spaces[retreat_option].units[faction].push(space.units[faction][i]);
+		  space.units[faction].splice(i, 1);
+		  i--;
+	        }
 	      }
 	      return 1;
 	    }
@@ -30778,7 +30831,6 @@ try {
 	  // end. this is probably the most counterintuitive part of the code that follows
 	  // -- to understand process in reverse.
 	  //
-
 
 	  //
 	  // purge units and capture leaders
@@ -41534,7 +41586,7 @@ return;
           opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
         }
       }
-      opt += `<li class="option" id="finish">finish</li>`;
+      opt += `<li class="option" id="finish">skip / finish</li>`;
       opt += '</ul>';
 
       his_self.updateStatusWithOptions(msg, opt);
@@ -41656,7 +41708,9 @@ return;
 
     select_spacekey_function = function(his_self, pick_capital_function, select_spacekey_function, select_units_function, finish_selecting_from_space_function) {
 
+      //
       // reset u2m
+      //
       units_to_move = [];
 
       let count = his_self.countSpacesWithFilter((space) => {
@@ -44875,12 +44929,14 @@ does_units_to_move_have_unit = true; }
       }
     } else {
 
+      if (faction == "protestant" && his_self.game.state.events.schmalkaldic_league == 0 && his_self.game.spaces[spaces_in_unrest[i]].language == "german") { spaces_to_fix.push(spaces_in_unrest[i]); }
+
       let adjacent_influence = his_self.returnSpacesWithAdjacentFactionInfantry(faction);
       let direct_influence = his_self.returnSpacesWithFactionInfantry(faction);
 
       for (let i = 0; i < spaces_in_unrest.length; i++) {
 
-        if (faction == "protestant" && his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant") {spaces_to_fix.push(spaces_in_unrest[i]);} else {
+        if (faction == "protestant" && (his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" || his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant")) {spaces_to_fix.push(spaces_in_unrest[i]);} else {
 
         //
         // i have regulars / infantry in this space
@@ -46200,11 +46256,11 @@ does_units_to_move_have_unit = true; }
 	  his_self.addMove("hide_overlay\tburn_books\t"+id);
 	  his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	  if (id2 === "cajetan-debater" || id2 === "caraffa-debater") {
+            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
 	    if (id2 === "cajetan-debater") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
 	    if (id2 === "caraffa-debater") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
-            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
-            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
-            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
 	  } else {
             his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id+"\t1");
             his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id+"\t1");

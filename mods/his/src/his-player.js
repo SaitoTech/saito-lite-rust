@@ -3218,7 +3218,7 @@ return;
           opt += `<li class="option" id="${viable_capitals[i]}">${viable_capitals[i]}</li>`;
         }
       }
-      opt += `<li class="option" id="finish">finish</li>`;
+      opt += `<li class="option" id="finish">skip / finish</li>`;
       opt += '</ul>';
 
       his_self.updateStatusWithOptions(msg, opt);
@@ -3340,7 +3340,9 @@ return;
 
     select_spacekey_function = function(his_self, pick_capital_function, select_spacekey_function, select_units_function, finish_selecting_from_space_function) {
 
+      //
       // reset u2m
+      //
       units_to_move = [];
 
       let count = his_self.countSpacesWithFilter((space) => {
@@ -6559,12 +6561,14 @@ does_units_to_move_have_unit = true; }
       }
     } else {
 
+      if (faction == "protestant" && his_self.game.state.events.schmalkaldic_league == 0 && his_self.game.spaces[spaces_in_unrest[i]].language == "german") { spaces_to_fix.push(spaces_in_unrest[i]); }
+
       let adjacent_influence = his_self.returnSpacesWithAdjacentFactionInfantry(faction);
       let direct_influence = his_self.returnSpacesWithFactionInfantry(faction);
 
       for (let i = 0; i < spaces_in_unrest.length; i++) {
 
-        if (faction == "protestant" && his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant") {spaces_to_fix.push(spaces_in_unrest[i]);} else {
+        if (faction == "protestant" && (his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" || his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant")) {spaces_to_fix.push(spaces_in_unrest[i]);} else {
 
         //
         // i have regulars / infantry in this space
@@ -7884,11 +7888,11 @@ does_units_to_move_have_unit = true; }
 	  his_self.addMove("hide_overlay\tburn_books\t"+id);
 	  his_self.addMove("SETVAR\tstate\tskip_counter_or_acknowledge\t0");
 	  if (id2 === "cajetan-debater" || id2 === "caraffa-debater") {
+            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
+            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
 	    if (id2 === "cajetan-debater") { his_self.addMove("commit\tpapacy\tcajetan-debater"); }
 	    if (id2 === "caraffa-debater") { his_self.addMove("commit\tpapacy\tcaraffa-debater"); }
-            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
-            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
-            his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id);
 	  } else {
             his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id+"\t1");
             his_self.addMove("catholic_counter_reformation\t"+player+"\t"+id+"\t1");
