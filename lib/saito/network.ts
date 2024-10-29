@@ -22,7 +22,6 @@ export default class Network {
 
 	public async getPeers(): Promise<Array<Peer>> {
 		return S.getInstance().getPeers();
-		
 	}
 
 	public async getPeer(index: bigint): Promise<Peer> {
@@ -85,52 +84,6 @@ export default class Network {
 	createPeerService(data, service, name, domain) {
 		let ps = new PeerService(data, service, name, domain);
   		return ps;
-	}
-
-	async connectToArchivePeer(peerIndex, peerDetails, data, message, internal_callback, error_callback = null  ){
-	let {publicKey, host, port, url} = peerDetails
-		try {
-			await S.getLibInstance().add_new_archive_peer(peerIndex, publicKey, host, port);
-			console.log("connecting to " + url + "....");
-			let socket = new WebSocket(url);
-			socket.binaryType = "arraybuffer";
-			S.getInstance().addNewSocket(socket, peerIndex);
-			socket.onmessage = (event: MessageEvent) => {
-				try {
-					S.getLibInstance().process_msg_buffer_from_peer(new Uint8Array(event.data), peerIndex);
-				} catch (error) {
-					console.error(error);
-				}
-			};
-			socket.onopen = () => {
-				this.app.network.sendRequestAsTransaction(
-					message,
-					data,
-					(res) => {
-						internal_callback(res);
-					},
-					peerIndex
-				);
-			};
-			socket.onclose = () => {
-				try {
-					console.log("socket.onclose : " + peerIndex);
-					S.getLibInstance().process_peer_disconnection(peerIndex);
-				} catch (error) {
-					console.error(error);
-				}
-			};
-			socket.onerror = (error) => {
-				try {
-					console.error(`socket.onerror ${peerIndex}: `, error);
-					S.getInstance().removeSocket(peerIndex);
-				} catch (error) {
-					console.error(error);
-				}
-			}
-		} catch (e) {
-			console.error("error occurred while opening socket : ", e)
-		}
 	}
 
 	public getServices(): PeerService[] {

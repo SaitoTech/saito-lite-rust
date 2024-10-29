@@ -290,11 +290,9 @@ class Encrypt extends ModTemplate {
     const alice_privatekey = alice.getPrivateKey(null, "compressed").toString("hex");
     this.app.keychain.updateEncryptionByPublicKey(recipient, alice_publicKey, alice_privatekey, "");
 
-
     tx.msg.module = this.name;
     tx.msg.request = "key exchange request";
     tx.msg.alice_publicKey = alice_publicKey;
-    const key = this.app.keychain.returnKey(this.publicKey);
     tx.addTo(this.publicKey);
 
     //

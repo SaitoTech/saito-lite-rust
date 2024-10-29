@@ -129,15 +129,14 @@ class Relay extends ModTemplate {
           }
         }
       }
-  
-    //   if (!need_server && tx.isTo(this.publicKey)){
-    //     // We won't send tx through relay service 
-    //     // but should make sure we process it ourselves as if it was coming in
-    //     this.app.modules.handlePeerTransaction(tx);
-    //   }
 
-    } 
-
+      if (!need_server && tx.isTo(this.publicKey)){
+        // We won't send tx through relay service 
+        // but should make sure we process it ourselves as if it was coming in
+        this.app.modules.handlePeerTransaction(tx);
+      }
+    }
+    
     if (need_server){
       let peers = await this.app.network.getPeers();
       for (let i = 0; i < peers.length; i++) {
@@ -154,7 +153,7 @@ class Relay extends ModTemplate {
         );
       }
     }
-  }
+  
 
   }
 

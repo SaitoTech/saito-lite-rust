@@ -4,6 +4,7 @@ const Post = require('./post');
 const Notification = require('./notification');
 const SaitoProfile = require('./../../../lib/saito/ui/saito-profile/saito-profile');
 const SaitoLoader = require('./../../../lib/saito/ui/saito-loader/saito-loader');
+
 class TweetManager {
 
 	constructor(app, mod, container = '.saito-main') {
@@ -341,9 +342,6 @@ class TweetManager {
 			// Sort txs into posts/replies/retweets...
 			this.filterAndRenderProfile(txs);
 
-			// , this should add the component to click
-
-			this.hideLoader();
 			this.profile.render();
 		});
 
@@ -519,7 +517,6 @@ class TweetManager {
 			}
 		}
 	}
-
 
 	//
 	// this renders a tweet, loads all of its available children and adds them to the page

@@ -60,7 +60,6 @@ class WebMethods extends WebSharedMethods {
 	sendBlockSuccess(hash: string, blockId: bigint) {
 		this.app.connection.emit('add-block-success', { hash, blockId });
 	}
-	
 
 	sendNewVersionAlert(
 		major: number,
