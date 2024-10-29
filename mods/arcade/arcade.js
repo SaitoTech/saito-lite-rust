@@ -462,11 +462,8 @@ console.log("on peer service up...3 ");
 				// URL param includes this to skip archive fetch
 				//
 	                        let noload = app.browser.returnURLParameter('noload');
-alert(JSON.stringify(noload));
-        	                if (noload) { alert("NOT LOADING TXS"); return; }
-else {
-  alert("no load not provided");
-}
+        	                if (noload) { return; }
+
 				this.app.storage.loadTransactions(
 					{
 						field1: query
