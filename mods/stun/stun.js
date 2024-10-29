@@ -1,5 +1,3 @@
-const { default: Saito } = require('saito-js/saito');
-const saito = require('../../lib/saito/saito');
 const Transaction = require("../../lib/saito/transaction").default;
 const ModTemplate = require('../../lib/templates/modtemplate');
 const PeerService = require('saito-js/lib/peer_service').default;
@@ -70,14 +68,8 @@ class Stun extends ModTemplate {
 
 		this.peers = new Map();
 
-		// app.connection.on("stun-data-channel-open", async (publicKey) => {
-
-		// 	 await this.app.network.addStunPeer(publicKey, this.peers.get(publicKey))
-
-		// });
-
 		app.connection.on('stun-connection-connected', async (publicKey) => {
-			 await this.app.network.addStunPeer(publicKey, this.peers.get(publicKey))
+			 //await this.app.network.addStunPeer(publicKey, this.peers.get(publicKey))
 		});
 	}
 
@@ -520,8 +512,6 @@ class Stun extends ModTemplate {
 				}, 5000);
 			}
 			if (peerConnection.connectionState === 'connected') {
-				console.log('adding stun peer')
-				Saito.getInstance().addStunPeer(peerId, peerConnection);
 				this.app.connection.emit('stun-connection-connected', peerId);
 			}
 
