@@ -1,5 +1,3 @@
-const { default: Saito } = require('saito-js/saito');
-const saito = require('../../lib/saito/saito');
 const Transaction = require("../../lib/saito/transaction").default;
 const ModTemplate = require('../../lib/templates/modtemplate');
 const PeerService = require('saito-js/lib/peer_service').default;
@@ -77,7 +75,7 @@ class Stun extends ModTemplate {
 		// });
 
 		app.connection.on('stun-connection-connected', async (publicKey) => {
-			 await this.app.network.addStunPeer(publicKey, this.peers.get(publicKey))
+			 //await this.app.network.addStunPeer(publicKey, this.peers.get(publicKey))
 		});
 	}
 
@@ -203,7 +201,15 @@ class Stun extends ModTemplate {
 			console.warn("Stun: cannot send transaction over stun");
 			return;
 		}
-		let peers = await this.app.network.getPeers();
+
+		try {
+			let peerConnection = this.peers.get(peerId);
+			peerConnection.dc.send(tx.serialize_to_web(this.app));
+		}catch(err){
+			console.error(err);
+		}
+
+		/*let peers = await this.app.network.getPeers();
 		for (let i = 0; i < peers.length; i++) {
 		  if(peers[i].publicKey === peerId){
 			this.app.network.sendRequestAsTransaction(
@@ -213,8 +219,7 @@ class Stun extends ModTemplate {
 			  peers[i].peerIndex
 			);
 		  }
-		 
-		}
+		}*/
 	}
 
 	async onConfirmation(blk, tx, conf) {
