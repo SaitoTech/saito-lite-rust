@@ -133,13 +133,15 @@ class Post {
 		let post_self = this;
 		post_self.images = [];
 
-		if (post_self.file_event_added == false) {
-			post_self.app.browser.addDragAndDropFileUploadToElement(
-				'tweet-overlay',
-				post_self.input.callbackOnUpload,
-				false
-			);
-			post_self.file_event_added = true;
+		if (this.container == ".saito-overlay "){
+			if (post_self.file_event_added == false) {
+				post_self.app.browser.addDragAndDropFileUploadToElement(
+					'tweet-overlay',
+					post_self.input.callbackOnUpload,
+					false
+				);
+				post_self.file_event_added = true;
+			}
 		}
 
 		//
@@ -393,13 +395,12 @@ class Post {
 
 	addImg(img) {
 		let post_self = this;
-		this.app.browser.addElementToDom(
-			`<div class="post-tweet-img-preview">
-        <img src="${img}"/>
-        <i class="fa fa-times"></i>
-       </div>`,
-			document.querySelector(this.container + '#post-tweet-img-preview-container')
-		);
+		let html = `<div class="post-tweet-img-preview">
+        				<img src="${img}"/>
+        				<i class="fa fa-times"></i>
+       				</div>`;
+
+		this.app.browser.addElementToSelector(html, this.container + '#post-tweet-img-preview-container');
 		this.images.push(img);
 
 		// attach img preview event
