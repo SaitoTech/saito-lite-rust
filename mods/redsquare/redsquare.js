@@ -2649,7 +2649,7 @@ class RedSquare extends ModTemplate {
                 let txmsg = tx.returnMessage();
                 let text = txmsg.data.text;
                 let publicKey = tx.from[0].publicKey;
-                let user = app.keychain.returnIdentifierByPublicKey(publicKey, true);
+                let user = app.keychain.returnUsername(publicKey);
 
                 //
                 // We need adequate protection here
