@@ -284,6 +284,16 @@
       return;
     }
 
+    if (c === "overcapacity") {
+      this.welcome_overlay.renderCustom({
+        title : msg ,
+        text : "Merge units until you have a 1-unit token free and can build more. See <b>Info > Units</b> for faction limits.",
+        img : '/his/img/backgrounds/move/regular.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
     if (c === "conquest") {
       this.welcome_overlay.renderCustom({
         title : msg ,
@@ -2009,6 +2019,7 @@ try {
         html += this.returnArmyTiles(z, spacekey);
 	tile = html;
       } else {
+
 
         new_units = false;
 

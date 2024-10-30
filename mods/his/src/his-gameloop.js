@@ -22,8 +22,6 @@
 	let z = this.returnEventObjects();
         let shd_continue = 1;
 
-
-
 console.log("QUEUE: " + JSON.stringify(this.game.queue));
 console.log("MOVE: " + mv[0]);
 
@@ -2468,8 +2466,6 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 
 	if (mv[0] === "is_testing") {
 
-          this.addCard("ottoman", "054");
-
     	  this.game.queue.splice(qe, 1);
 	  return 1;
 
@@ -3636,6 +3632,8 @@ console.log("# is minor unactivated power");
 
 	  let space = this.game.spaces[spacekey];
 	  let anyone_left = false;
+	  let leaders_left = false;
+	  let leaders_left_factions = [];
 	  let cf = this.returnControllingPower(faction);
 
 	  for (let f in space.units) {
@@ -3645,12 +3643,30 @@ console.log("# is minor unactivated power");
 		if (t == "mercenary" || t == "cavalry" || t == "regular") {
 		  anyone_left = true;
 		} 
+		if (space.units[f][i].army_leader) {
+		  leaders_left = true;
+		  leaders_left_factions.push(f);
+		}
 	      }
 	    }
 	  }
 
-	  if (anyone_left == false && space.besieged != 0) {
-	    this.game.queue.push("remove_siege\t"+spacekey);
+console.log("ANYONE LEFT: " + anyone_left);
+console.log("LEADERS LEFT: " + anyone_left);
+console.log("FACTIONS: " + JSON.stringify(leaders_left_factions));
+
+	  //
+	  // remove siege, evacuate or capture leaders
+	  //
+	  if (anyone_left == false) {
+ 	    if (space.besieged != 0) {
+	      this.game.queue.push("remove_siege\t"+spacekey);
+	    }
+	    if (leaders_left == true) {
+	      for (let i = 0; i < leaders_left_factions.length; i++) {
+	        this.game.queue.push("maybe_evacuate_or_capture_leaders\t"+leaders_left_factions[i]+"\t"+spacekey);
+	      }
+	    }
 	  }
 
 	  return 1;
@@ -7401,12 +7417,12 @@ try {
 
 	if (mv[0] === "foreign-war-cleanup") {
 
-          this.game.state.foreign_wars_fought_this_impulse.push(spacekey);
-
           this.game.queue.splice(qe, 1);
 	  let faction = "ottoman";
 	  let spacekey = mv[1];
 	  if (spacekey == "ireland") { faction = "england"; }
+
+          this.game.state.foreign_wars_fought_this_impulse.push(spacekey);
 
 	  //
 	  // no need for cleanup unless battle is over
@@ -12476,7 +12492,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		// is_testing
 		//
-		//if (this.game.options.scenario == "is_testing") { cardnum = 5; }
+		if (this.game.options.scenario == "is_testing") { cardnum = 10; }
 
 	        //
 	        // fuggers card -1
@@ -13754,6 +13770,82 @@ try {
 	  // finally, return any overstacked units to capital
 	  //
           this.returnOverstackedUnitsToCapitals();
+
+	  return 1;
+
+	}
+
+
+
+	if (mv[0] === "check_for_stranded_leaders") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let his_self = this;
+	  let faction = mv[1];
+
+	  for (let key in his_self.game.spaces) {
+	    let s = his_self.game.spaces[key];
+	    if (s.units[faction].length > 0) {
+	      let leader_exists = false;
+	      let anyone_else = false;
+	      for (let z = 0; z < s.units[faction].length; z++) {
+		let u = s.units[faction][z];
+		if (u.type == "regular" || u.type == "mercenary" || u.type == "cavalry") {
+		  anyone_else = true;
+		}
+		if (s.units[faction][z].army_leader == true) {
+		  leader_exists = true;
+		}
+	      }
+	      if (leader_exists && !anyone_else) {
+	        this.game.queue.push("maybe_evacuate_or_capture_leaders\t"+faction+"\t"+key);
+	      }
+	    }
+	  }
+
+	  return 1;
+
+	}
+
+	
+	//
+	// examines the space to see if there are leaders with no supporting units in 
+	// which case the leaders are either captured by the faction that controls
+	// the space or moved to the nearest fortified space if it is an independent-
+	// controlled space.
+	//
+	if (mv[0] === "maybe_evacuate_or_capture_leaders") {
+
+	  this.game.queue.splice(qe, 1);
+
+	  let his_self = this;
+	  let faction = mv[1];
+	  let spacekey = mv[2];
+ 	  let space = this.game.spaces[spacekey];
+	  let faction_controlling_space = this.returnFactionControllingSpace(space);
+	  faction_controlling_space = his_self.returnControllingPower(faction_controlling_space);
+
+	  //
+	  // avoid edge cases where it is my own guys
+	  //
+	  if (faction_controlling_space == his_self.returnControllingPower(faction)) { return 1; }
+
+	  let luis = this.returnFactionLandUnitsInSpace(faction, spacekey, 1);
+	  if (luis == 0) {
+	    for (let f in space.units) {
+	      let cf = his_self.returnControllingPower(f);
+	      if (cf == faction) {
+		for (let z = 0; z < space.units[f].length; z++) {
+		  if (space.units[f][z].army_leader == true) {
+		    this.captureLeader(faction_controlling_space, f, space, space.units[f][z]);
+		    space.units[f].splice(z, 1);
+		    z--;
+		  }
+		}
+	      }
+	    }
+	  }
 
 	  return 1;
 

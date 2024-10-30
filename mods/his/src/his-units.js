@@ -936,17 +936,17 @@
     for (let key in my_spaces) {
       if (my_spaces[key]['regular'] > 0) { 
 	if (!results.missing[key]) { results.missing[key] = {}; }
-	results.missing[key]['regular'] = my_spaces[key]['regular'];
+	results.missing[key]['regular']['1'] = my_spaces[key]['regular'];
 	results.overcapacity = 1;
       }	
       if (my_spaces[key]['mercenary'] > 0) { 
 	if (!results.missing[key]) { results.missing[key] = {}; }
-	results.missing[key]['mercenary'] = my_spaces[key]['mercenary'];
+	results.missing[key]['mercenary']['1'] = my_spaces[key]['mercenary'];
 	results.overcapacity = 1;
       }	
       if (my_spaces[key]['cavalry'] > 0) { 
 	if (!results.missing[key]) { results.missing[key] = {}; }
-	results.missing[key]['cavalry'] = my_spaces[key]['cavalry'];
+	results.missing[key]['cavalry']['1'] = my_spaces[key]['cavalry'];
 	results.overcapacity = 1;
       }	
     }
@@ -971,7 +971,7 @@
 
     let amount_over_capacity = 0;
     for (let key in res.missing) {
-      if ((unittype == "regular" && res.missing[key]['regular'] > 0) || (unittype == "mercenary" && res.missing[key]['mercenary'] > 0) || (unittype == "regular" && res.missing[key]['cavalry'] > 0)) {
+      if ((unittype == "regular" && res.missing[key]['regular']['1'] > 0) || (unittype == "mercenary" && res.missing[key]['mercenary']['1'] > 0) || (unittype == "regular" && res.missing[key]['cavalry']['1'] > 0)) {
         return 0;
       }
     }

@@ -653,12 +653,25 @@ console.log("\n\n\n\n");
           this.addRegular("france", "glasgow", 2);
           this.setAllies("france", "scotland");
           this.controlSpace("france", "ragusa");
-          this.addRegular("france", "ragusa", 1);
           this.addNavalSquadron("france", "ragusa", 4);
+          this.addRegular("france", "ragusa", 1);
+          this.addRegular("france", "brest", 1);
+          this.addRegular("france", "nantes", 1);
+          this.addRegular("france", "rouen", 1);
+          this.addRegular("france", "boulogne", 1);
+          this.addRegular("france", "dijon", 1);
+          this.addRegular("france", "lyon", 1);
+          this.addRegular("france", "limoges", 1);
+          this.addRegular("france", "bordeaux", 1);
+          this.addRegular("france", "grenoble", 1);
+          this.addRegular("france", "marseille", 1);
+          this.addRegular("france", "avignon", 1);
+          this.addRegular("france", "toulouse", 1);
 
           // HAPSBURG
           this.addArmyLeader("hapsburg", "brussels", "duke-of-alva");
           this.addArmyLeader("hapsburg", "brussels", "charles-v");
+	  this.addMercenary("hapsburg", "brussels", 4);
           this.addRegular("hapsburg", "naples", 4);
           this.addNavalSquadron("hapsburg", "naples", 1);
           this.addRegular("hapsburg", "nuremberg", 1);

@@ -2419,7 +2419,8 @@ console.log("selected: " + spacekey);
 	  function(space) {
 		if (
 		  space.home === "hapsburg" &&
-		  his_self.isSpaceControlled(space, "hapsburg")
+		  his_self.isSpaceControlled(space, "hapsburg") &&
+		  !his_self.isSpaceBesieged(space)
 	        ) {
 		  return 1;
 	        }
@@ -2515,7 +2516,7 @@ console.log("selected: " + spacekey);
 	    }
 
 	    if (his_self.game.state.round >= 2 && his_self.game.state.leaders.henry_viii == 1) {
-	      if (!his_self.isCaptured("england", "henry_viii") && !his_self.isBesieged("hapsburg", "charles-v")) {
+	      if (!his_self.isCaptured("england", "henry-viii") && !his_self.isBesieged("hapsburg", "charles-v")) {
 	        options2 = true;
 	      }
 	    }
@@ -2809,7 +2810,82 @@ console.log("selected: " + spacekey);
         canEvent : function(his_self, faction) {
 	  return 1;
         },
-        onEvent : function(his_self, faction) {
+        handleGameLoop : function(his_self, qe, mv) {
+
+          if (mv[0] === "papal_bull_add_unrest") {
+        
+            let region = mv[1]; // france, england, hapsburg
+  	    his_self.game.queue.splice(qe, 1);
+
+	    if (his_self.game.player == his_self.returnPlayerOfFaction("papacy")) {
+
+              let space1 = "";
+              let space2 = "";
+	      let regiontxt = "France";
+	      if (region == "england") { regiontxt = "English"; }
+	      if (region == "hapsburg") { regiontxt = "Spanish"; }
+
+              his_self.playerSelectSpaceWithFilter(
+                `Select 1st Unoccupied ${regiontxt} Home Space: `,
+                function(space) {
+                  if (
+                    space.home === region &&
+                    !his_self.isOccupied(space)
+                  ) {
+                    return 1;
+                  }
+                  return 0;
+                },
+                function(spacekey) {
+
+                  space1 = spacekey;
+
+                  his_self.addUnrest(space1);
+                  his_self.displaySpace(space1);
+
+                  his_self.playerSelectSpaceWithFilter(
+                    `Select 2nd Unoccupied ${regiontxt} Home Space: `,
+                    function(space) {
+                      if (
+                        space.home === region &&
+                        space.key != space1 &&
+                        !his_self.isOccupied(space)
+                      ) {
+                        return 1;
+                      }
+                      return 0;
+                    },
+                    function(spacekey2) {
+                      his_self.updateStatus("adding unrest...");
+                      space2 = spacekey2;
+
+                      his_self.addUnrest(space2);
+                      his_self.displaySpace(space2);
+
+                      his_self.addMove("unrest\t"+space1);
+                      his_self.addMove("unrest\t"+space2);
+                      his_self.endTurn();
+                    },
+                    null,
+                    true
+                  );
+                },
+                null,
+                true
+	      );
+
+	    } else {
+	      his_self.updateStatus("Papacy adding unrest after Excommunication");
+	    }
+
+	    return 0;
+
+	  }
+
+	  return 1;
+
+        },
+	onEvent : function(his_self, faction) {
 
 	  let do_grounds_for_excommunication_exist = [];
 	  let papacy = his_self.returnPlayerOfFaction("papacy");
@@ -2837,6 +2913,7 @@ console.log("selected: " + spacekey);
 
                 let action2 = $(this).attr("id");
 		his_self.updateStatus("clerics processing excommunication...");
+	        his_self.addMove("papal_bull_add_unrest\t"+action2);
 	        his_self.addMove("excommunicate_faction\t"+action2);
 	        his_self.endTurn();
 
@@ -4214,9 +4291,9 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 	let placed = 0;
 
         // henry_viii dies, replaced by dudley
-        let s = his_self.returnSpaceOfPersonage("england", "henry_viii");
+        let s = his_self.returnSpaceOfPersonage("england", "henry-viii");
         if (s != "") {
-          let idx = his_self.returnIndexOfPersonageInSpace("england", "henry_viii", s);
+          let idx = his_self.returnIndexOfPersonageInSpace("england", "henry-viii", s);
           if (idx > -1) {
             his_self.game.spaces[s].units["england"].splice(idx, 1);
             his_self.addArmyLeader("england", s, "dudley");
@@ -4227,6 +4304,8 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 	if (placed == 0) {
           his_self.addArmyLeader("england", "london", "dudley");
 	}
+
+	his_self.displaySpace("london");
 
 	return 1;
       },
@@ -9431,6 +9510,7 @@ console.log("we have removed philip and redisplayed the space...");
 	    },
 
 	    function (target) {
+	      his_self.addMove("check_for_stranded_leaders\t"+faction);
 	      his_self.addMove("mercenaries-demand-pay\t"+target+"\t"+faction);
 	      his_self.endTurn();
 	    }
@@ -9954,11 +10034,13 @@ console.log("we have removed philip and redisplayed the space...");
    	    let msg = "Move Army Leader: ";
 	    let options = [];
 	    for (let key in his_self.game.spaces) {
-	      let space = his_self.game.spaces[key];
-              for (let i = 0; i < space.units["ottoman"].length; i++) {
-                let u = space.units["ottoman"][i];
-	        if (u.army_leader) {
-	  	  options.push({ spacekey : key , idx : i , name : u.name });
+	      if (key != "persia" && key != "egypt" && key != "ireland") {
+	        let space = his_self.game.spaces[key];
+                for (let i = 0; i < space.units["ottoman"].length; i++) {
+                  let u = space.units["ottoman"][i];
+	          if (u.army_leader) {
+	  	    options.push({ spacekey : key , idx : i , name : u.name });
+	          }
 	        }
 	      }
 	    }
@@ -10159,11 +10241,13 @@ console.log("we have removed philip and redisplayed the space...");
  	    let msg = "Move Army Leader: ";
 	    let options = [];
 	    for (let key in his_self.game.spaces) {
-	      let space = his_self.game.spaces[key];
-              for (let i = 0; i < space.units["england"].length; i++) {
-                let u = space.units["england"][i];
-	        if (u.army_leader) {
-		  options.push({ spacekey : key , idx : i , name : u.name });
+	      if (key != "persia" && key != "egypt" && key != "ireland") {
+	        let space = his_self.game.spaces[key];
+                for (let i = 0; i < space.units["england"].length; i++) {
+                  let u = space.units["england"][i];
+	          if (u.army_leader) {
+	  	    options.push({ spacekey : key , idx : i , name : u.name });
+	          }
 	        }
 	      }
 	    }
@@ -10293,11 +10377,6 @@ console.log("we have removed philip and redisplayed the space...");
 
 		his_self.displaySpace(spacekey);
 
-
-		console.log("!!!");
-		console.log("!!! plague unit removal");
-		console.log("!!!");
-          	console.log("remove_unit\t"+land_or_sea+"\t"+"england"+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
           	his_self.addMove("remove_unit\t"+land_or_sea+"\t"+"england"+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
           	his_self.addMove("build\tland\tengland\t"+unittype+"\tireland");
           	his_self.endTurn();
@@ -10392,6 +10471,7 @@ console.log("we have removed philip and redisplayed the space...");
 	              let action = parseInt($(this).attr("id"));
 
 		      his_self.updateStatus("removing unit...");
+          	      his_self.addMove("build\tland\tindependent\tregular\tireland");
 		      his_self.addMove(	"remove_unit" + "\t" +
 					"land" + "\t" +
 					faction + "\t" +
@@ -11595,6 +11675,8 @@ console.log("we have removed philip and redisplayed the space...");
 		  regulars_to_delete = Math.ceil(total_to_delete/2);
 		  nonregulars_to_delete = total_to_delete - regulars_to_delete;
 		
+	          his_self.addMove("check_for_stranded_leaders\t"+faction);
+
 		  for (let z = his_self.game.spaces[spacekey].units[action].length-1; z >= 0; z--) {
 		    let u = his_self.game.spaces[spacekey].units[action][z];
 		    if (u.type == "regular" && regulars_to_delete > 0) {
@@ -11886,11 +11968,13 @@ console.log("we have removed philip and redisplayed the space...");
    	    let msg = "Move Army Leader: ";
 	    let options = [];
 	    for (let key in his_self.game.spaces) {
-	      let space = his_self.game.spaces[key];
-              for (let i = 0; i < space.units["ottoman"].length; i++) {
-                let u = space.units["ottoman"][i];
-	        if (u.army_leader) {
-	          options.push({ spacekey : key , idx : i , name : u.name });
+	      if (key != "persia" && key != "egypt" && key != "ireland") {
+	        let space = his_self.game.spaces[key];
+                for (let i = 0; i < space.units["ottoman"].length; i++) {
+                  let u = space.units["ottoman"][i];
+	          if (u.army_leader) {
+	            options.push({ spacekey : key , idx : i , name : u.name });
+	          }
 	        }
 	      }
 	    }

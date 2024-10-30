@@ -776,10 +776,28 @@ if (limit === "build") {
       factions : ['hapsburg','england','france','papacy','protestant'],
       cost : [1,1,1,1,1],
       name : "Mercenary",
+      check : this.canPlayerBuyMercenaryOverLimit,
+      fnct : this.playerBuyMercenaryOverLimit,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/mercenary.jpg',
+    });
+    menu.push({
+      factions : ['hapsburg','england','france','papacy','protestant'],
+      cost : [1,1,1,1,1],
+      name : "Mercenary",
       check : this.canPlayerBuyMercenary,
       fnct : this.playerBuyMercenary,
       category : "build" ,
       img : '/his/img/backgrounds/move/mercenary.jpg',
+    });
+    menu.push({
+      factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
+      cost : [2,2,2,2,2,2,2,2,2,2],
+      name : "Regular",
+      check : this.canPlayerBuyRegularOverLimit,
+      fnct : this.playerBuyRegularOverLimit,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/regular.jpg',
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
@@ -879,6 +897,24 @@ if (limit === "build") {
       fnct : this.playerNavalMove,
       category : "move" ,
       img : '/his/img/backgrounds/move/move_fleet.jpg',
+    });
+    menu.push({
+      factions : ['hapsburg','england','france','papacy','protestant'],
+      cost : [1,1,1,1,1],
+      name : "Mercenary",
+      check : this.canPlayerBuyMercenaryOverLimit,
+      fnct : this.playerBuyMercenaryOverLimit,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/mercenary.jpg',
+    });
+    menu.push({
+      factions : ['hapsburg','england','france','papacy','protestant'],
+      cost : [1,1,1,1,1],
+      name : "Regular",
+      check : this.canPlayerBuyRegularOverLimit,
+      fnct : this.playerBuyRegularOverLimit,
+      category : "build" ,
+      img : '/his/img/backgrounds/move/regular.jpg',
     });
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy','protestant', 'genoa', 'hungary', 'scotland', 'venice'],
@@ -5673,6 +5709,15 @@ does_units_to_move_have_unit = true; }
 
 	  let destinations = {};
 
+	  //
+	  // if there are no units to move...
+	  //
+	  if (units_to_move.length == 0) {
+	    // "end" without anything selected is like clicking on the back button...
+	    if (his_self.hud.back_button_callback != null) { his_self.hud.back_button_callback(); return; }
+	  }
+
+
 	  for (let i = 0; i < units_to_move.length; i++) {
 	    let unit = units_available[units_to_move[i]];
 	    if (!destinations[unit.destination]) {
@@ -5880,6 +5925,15 @@ does_units_to_move_have_unit = true; }
     return 0;
   }
 
+  canPlayerBuyMercenaryOverLimit(his_self, player, faction) {
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "regular") == 0 && his_self.game.state.board[faction].overcapacity == 1) { return true; }
+    return false;
+  }
+  async playerBuyMercenaryOverLimit(his_self, player, faction, ops_to_spend, ops_remaining) {
+    his_self.displayCustomOverlay("overcapacity", `${his_self.returnFactionName(faction)} is Overcapacity`);
+    return 1;
+  }
   canPlayerBuyMercenary(his_self, player, faction) {
 
     // no for protestants early-game
@@ -5993,6 +6047,15 @@ does_units_to_move_have_unit = true; }
     );
   }
 
+  canPlayerBuyRegularOverLimit(his_self, player, faction) {
+    if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
+    if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "regular") == 0 && his_self.game.state.board[faction].overcapacity == 1) { return true; }
+    return false;
+  }
+  async playerBuyRegularOverLimit(his_self, player, faction, ops_to_spend, ops_remaining) {
+    his_self.displayCustomOverlay("overcapacity", `${his_self.returnFactionName(faction)} is Overcapacity`);
+    return 1;
+  }
   canPlayerBuyRegular(his_self, player, faction) {
 
     // no for protestants early-game
