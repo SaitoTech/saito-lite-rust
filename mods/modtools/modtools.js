@@ -141,7 +141,7 @@ class ModTools extends ModTemplate {
 		await this.header.initialize(this.app);
 
 		this.addComponent(this.header);
-
+		//this.styles = [`/${this.returnSlug()}/style.css`];
 		await super.render();
 		this.attachEvents();
 	}
@@ -730,6 +730,8 @@ class ModTools extends ModTemplate {
 			res.charset = 'UTF-8';
 			res.send(modtoolsIndex(app, modtools_self));
 		});
+
+		expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
 	}
 }
 
