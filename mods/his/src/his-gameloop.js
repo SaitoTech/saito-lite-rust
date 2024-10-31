@@ -1981,6 +1981,8 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	      let x = this.rollDice(6) + this.rollDice(6);
 	      c.bonus_base_roll = x;
 	      if (x <= 6) {
+	        // player pulls card as conquest depleted
+		this.game.state.new_world_bonus[c.faction]++;
 		c.depleted = 1;
 	        this.updateLog(`${this.returnFactionName(c.faction)} - Mayan Empire is Depleted`);
 	        if (this.game.player == this.returnPlayerCommandingFaction(c.faction)) {

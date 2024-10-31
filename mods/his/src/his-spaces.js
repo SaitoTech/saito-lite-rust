@@ -269,19 +269,20 @@
     let cf = this.returnFactionControllingSpace(space);
 
     //
+    // we can always move into spaces where we already have land units
+    //
+    if (this.returnFactionLandUnitsInSpace(faction, space, 1) > 0) { return 1; }
+
+    //
     // we can move into spaces controlled by powers we are at war with
     //
     if (this.isMinorPower(cf)) { cf = this.returnControllingPower(cf); }
     if (cf == faction) { return 1; }
 
-console.log(faction + " does not control " + space.key);
-
     //
     // if we're enemies with the faction that controls the space
     //
     if (this.areEnemies(faction, cf)) { 
-
-console.log(faction + " is enemies with controlling faction " + cf);
 
       //
       // ... we can normally move into this space, unless there are besieging units
@@ -314,6 +315,9 @@ console.log(faction + " is enemies with controlling faction " + cf);
     }
     if (this.areAllies(faction, cf)) { return 1; }
     if (this.isSpaceIndependent(space.key)) {
+
+      // if besieged, we cannot enter
+      if (this.isSpaceBesieged(space.key)) { return 0; }
 
       // if controlled by non-independent, we cannot enter
       if (cf !== "independent") { return 0; }
@@ -441,13 +445,6 @@ console.log(faction + " is enemies with controlling faction " + cf);
     let his_self = this;
     let already_routed_through = {};
 
-
-console.log("###");
-console.log("###");
-console.log("###");
-console.log("###");
-console.log("###");
-console.log("### is space in line of control? " + space.key);
     //
     // path of spaces and sea-zones from that space to friendly-controlled, 
     // fortified space that is a home space for that power or one of its allies 
@@ -475,11 +472,9 @@ console.log("### is space in line of control? " + space.key);
 	      }
 	    }
 	  } else {
-console.log("not a home key: " + spacekey);
 	    let x = his_self.game.spaces[spacekey].home;
 	    if (x != "independent") {
 	      if (his_self.isSpaceHomeSpace(spacekey, x)) { 
-console.log("is a homespace for: " + x);
 		let cp = his_self.returnControllingPower(x);
 		if (his_self.areAllies(cp, faction)) {
 	          if (!his_self.isSpaceBesieged(spacekey) && !his_self.isSpaceInUnrest(spacekey)) { 

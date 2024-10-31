@@ -9539,8 +9539,11 @@ console.log("we have removed philip and redisplayed the space...");
             let fhand_idx = his_self.returnFactionHandIdx(his_self.game.player, target);
 	    let valid_options = 0;
 	    let invalid_options = 0;
+	    let home_card_option = 0;
+
 	    for (let i = 0; i < his_self.game.deck[0].fhand[fhand_idx].length; i++) {
 	      let card = his_self.game.deck[0].fhand[fhand_idx][i];
+	      if (parseInt(card) <= 8) { home_card_option++ };
 	      if (his_self.game.deck[0].cards[card].type != "mandatory" && parseInt(card) > 8) { valid_options++; } else {
 		invalid_options++;
 	      }
@@ -9550,18 +9553,25 @@ console.log("we have removed philip and redisplayed the space...");
 	    // if only invalid options, skip discard
 	    //
 	    if (valid_options == 0 && invalid_options == 0) {
-	      his_self.addMove("destroy_all_mercenaries\t"+target);
-	      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(target) + " must destroy_all_mercenaries");
-	      his_self.endTurn();
-	      return 0;
+	      if (home_card_option == 0) {
+	        his_self.addMove("destroy_all_mercenaries\t"+target);
+	        his_self.addMove("NOTIFY\t"+his_self.returnFactionName(target) + " must destroy_all_mercenaries");
+	        his_self.endTurn();
+	        return 0;
+	      }
 	    }
 
 	    if (valid_options == 0 && invalid_options > 0) {
-	      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(target) + " cannot be forced to discard cards in hand.");
-	      his_self.addMove("NOTIFY\t"+his_self.returnFactionName(target) + " mercenaries survive.");
-	      his_self.endTurn();
-	      return 0;
+	      if (home_card_option == 0) {
+	        his_self.addMove("NOTIFY\t"+his_self.returnFactionName(target) + " cannot be forced to discard cards in hand.");
+	        his_self.addMove("NOTIFY\t"+his_self.returnFactionName(target) + " mercenaries survive.");
+	        his_self.endTurn();
+	        return 0;
+	      }
 	    }
+
+
+cancel_func = null, permit_no_selection = false
 
             his_self.playerFactionSelectCardWithFilter(
 
@@ -9611,7 +9621,12 @@ console.log("we have removed philip and redisplayed the space...");
 		  },
 		  retained
 		);
-	      }
+	      },
+
+	      null ,
+
+	      true // permit passing/no-selection
+
 	    );
 	  }
 	  return 0;

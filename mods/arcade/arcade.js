@@ -737,6 +737,7 @@ console.log("on peer service up...3 ");
 					// kick off game initialization
 					//
 					if (txmsg.request === 'accept') {
+console.log("arcade - receive accept tx");
 						await arcade_self.receiveAcceptTransaction(tx);
 					}
 				} else {
@@ -1432,8 +1433,10 @@ console.log("on peer service up...3 ");
 		}
 		let txmsg = tx.returnMessage();
 
+		//
 		// Must have game module installed
 		// We call the game-initialization function directly on gamemod further down
+		//
 		let gamemod = this.app.modules.returnModule(txmsg.game);
 
 		// I guess this safety catch should be further up the processing chain, like we shouldn't even display an invite/join a game we don't have installed
@@ -1446,6 +1449,7 @@ console.log("on peer service up...3 ");
 
 		// Must be an available invite
 		if (!game || (!this.isAvailableGame(game, 'accepted') && !txmsg.options?.async_dealing)) {
+console.log("NOT AVAILABLE GAME");
 			//console.log(game);
 			//console.log(txmsg);
 			return;
@@ -1453,7 +1457,8 @@ console.log("on peer service up...3 ");
 
 		// do not re-accept game already in my local storage (a consequence of game initialization)
 		for (let i = 0; i < this.app?.options?.games?.length; i++) {
-			if (this.app.options.games[i].id == txmsg.game_id) {
+			if (this.app.options.games[i].id === txmsg.game_id) {
+console.log("RETURNING...")
 				return;
 			}
 		}
@@ -1466,8 +1471,13 @@ console.log("on peer service up...3 ");
 		//
 		// If I am a player in the game, let's start it initializing
 		//
-
 		if (txmsg.players.includes(this.publicKey)) {
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("$ i am in this game");
 			if (!this.app.options.arcade[txmsg.game]) {
 				this.app.options.arcade[txmsg.game] = 0;
 			}
@@ -1486,7 +1496,9 @@ console.log("on peer service up...3 ");
       from initializing, so... we should wait for feedback and nope out of the spinner if something breaks
       */
 
+console.log("before igfat 1");
 			let game_engine_id = await gamemod.initializeGameFromAcceptTransaction(tx);
+console.log("before igfat 2");
 
 			console.log('game engine id ///////');
 			console.log(game_engine_id);

@@ -552,6 +552,9 @@ export default class Wallet extends SaitoWallet {
 	}
 
 	async returnAvailableCryptosAssociativeArray() {
+
+console.log("into wallet.returnAvailableCryptosAssociativeArray()");
+
 		let cryptos = {};
 
 		let ticker;
@@ -573,6 +576,7 @@ export default class Wallet extends SaitoWallet {
 			console.error(err);
 			console.log(ticker);
 		}
+console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 		return cryptos;
 	}
 
