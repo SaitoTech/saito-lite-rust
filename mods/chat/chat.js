@@ -1636,7 +1636,7 @@ class Chat extends ModTemplate {
       if (tx.isFrom(this.publicKey)) {
         for (let i = 0; i < tx.to.length; i++) {
           let key = tx.to[i].publicKey;
-          if (this.app.modules.moderateAddress(key) == -1) {
+          if (this.app.modules.moderateAddress(key) == -1 && !this.communityGroup.members.includes(key)) {
             let new_message = `<div class="saito-chat-notice">
 							<span class="saito-mention saito-address" data-id="${key}">${this.app.keychain.returnUsername(
               key
