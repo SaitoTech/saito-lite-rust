@@ -420,7 +420,6 @@ class Arcade extends ModTemplate {
 		if (!app.BROWSER) {
 			return;
 		}
-console.log("on peer service up...1 ");
 
 		if (service.service === 'archive') {
 console.log("on peer service up...2 ");
@@ -433,23 +432,11 @@ console.log("on peer service up...3 ");
 
 				let query = game.module + '_' + game.id;
 
-				console.log("Arcade check for missed game events: ", query);
-				console.log("Arcade check for missed game events: ", query);
-				console.log("Arcade check for missed game events: ", query);
-				console.log("Arcade check for missed game events: ", query);
-				console.log("Arcade check for missed game events: ", query);
-				console.log("Arcade check for missed game events: ", query);
-				console.log("Arcade check for missed game events: ", query);
-				console.log("Arcade check for missed game events: ", query);
-				console.log("Arcade check for missed game events: ", query);
-				console.log("Arcade check for missed game events: ", query);
-				console.log("Arcade check for missed game events: ", query);
-				console.log("Arcade check for missed game events: ", query);
-				console.log("Arcade check for missed game events: ", query);
-				console.log("Arcade check for missed game events: ", query);
-				console.log("Arcade check for missed game events: ", query);
-				console.log("Arcade check for missed game events: ", query);
-				console.log("Arcade check for missed game events: ", query);
+				console.log("*");
+				console.log("* *");
+				console.log("* * *");
+				console.log("* *");
+				console.log("*");
 				console.log("Arcade check for missed game events: ", query);
 
 				let game_mod = this.app.modules.returnModule(game.module);
@@ -463,21 +450,24 @@ console.log("on peer service up...3 ");
 				//
 	                        let noload = app.browser.returnURLParameter('noload');
         	                if (noload) { return; }
-
+/****
 				this.app.storage.loadTransactions(
 					{
 						field1: query
 					},
 					async (txs) => {
 						for (let i = txs.length - 1; i >= 0; i--) {
-							//Process in Arcade
+
+							// arcade 
 							await this.onConfirmation(-1, txs[i], 0);
-							//Process in game mod
+
+							// game mod
 							await game_mod.onConfirmation(-1, txs[i], 0);
 						}
 					},
 					peer
 				);
+****/
 			}
 		}
 	}
