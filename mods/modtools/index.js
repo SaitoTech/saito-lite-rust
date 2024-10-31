@@ -28,17 +28,15 @@ module.exports = (app, mod) => {
 <body>
 
 
-    <div class="modtools-main-container" id="modtools-main-container">
-    <div class="saito-module">
+    <div class="modtools-main-container hide-scrollbar" id="modtools-main-container">
       <div class="saito-module-details-box">
         <div class="saito-module-title">Modtools</div>
         <div class="saito-module-description">Module for managing and customizing wallet and application moderation tools</div>
       </div>
       
-    </div>
 
     <div class="modtools-container">
-    <div class="modtools-container-title">Node</div>
+      <div class="modtools-container-title">Node</div>
       <div class="saito-address treated" data-id="${node_publicKey}">
         ${node_publicKey}
       </div>
@@ -127,7 +125,9 @@ module.exports = (app, mod) => {
 
     html +=`
         <div class="saito-button-primary" id="whitelist">Add</div>
-        </div>    
+        </div>
+        <div id="options-space"></div>    
+        </div>
     `;
 
 /*
@@ -162,9 +162,22 @@ module.exports = (app, mod) => {
     
     </div>`;
 */
+
+let public_options = Object.assign({}, app.options);
+delete public_options.wallet;
     
+let opt_str = JSON.stringify(
+          public_options,
+          (key, value) =>
+            typeof value === 'bigint' ? value.toString() : value // return everything else unchanged
+          );
 html += `
 </body>
+
+  <script type="text/javascript">
+    var options = \'${opt_str}\';
+  </script>
+
 <script type="text/javascript" src="/saito/saito.js?build=${app.build_number}"></script>
 </html>`;
 

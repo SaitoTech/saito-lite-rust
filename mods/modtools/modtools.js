@@ -5,6 +5,7 @@ var SaitoOverlay = require('../../lib/saito/ui/saito-overlay/saito-overlay');
 var AppSettings = require('./lib/modtools-settings');
 const modtoolsIndex = require('./index');
 const WhitelistTemplate = require('./lib/add-whitelist.template');
+const jsonTree = require('json-tree-viewer');
 
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 
@@ -144,6 +145,20 @@ class ModTools extends ModTemplate {
 		//this.styles = [`/${this.returnSlug()}/style.css`];
 		await super.render();
 		this.attachEvents();
+
+
+		let el = document.querySelector('#options-space');
+		el.innerHTML = '';
+
+		if (window?.options){
+			try {
+				let optjson = JSON.parse(window.options);
+				var tree = jsonTree.create(optjson, el);
+			} catch (err) {
+				console.log('error creating jsonTree: ' + err);
+			}
+
+		}
 	}
 
 	attachEvents() {

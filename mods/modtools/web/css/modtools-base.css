@@ -6,11 +6,11 @@
   gap: 2rem;
   margin-top: calc(var(--saito-header-height) + 2rem);
   max-height: calc(100vh - var(--saito-header-height));
-  overflow: auto;
 }
 
-.modtools-main-container .saito-module {
+.modtools-main-container .saito-module-details-box {
   background-color: var(--saito-primary-transparent);
+  padding: 1rem;
 }
 
 .modtools-main-container .saito-module-title {
