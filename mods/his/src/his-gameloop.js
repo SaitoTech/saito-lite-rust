@@ -5133,16 +5133,21 @@ console.log("and they have units in space...");
 	  //
 	  let have_i_resolved = false;
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
+console.log("reason 1 yes");
 	    have_i_resolved = true;
 	  } else {
 	    if (this.game.tmp_confirm_sent == 1) { 
+console.log("reason 2 yes");
 	      have_i_resolved = true;
 	    } else {
 	      if (await this.hasMyResolvePending()) {
+console.log("reason 3 yes");
 	        have_i_resolved = true;
 	      }
 	    }
 	  }
+
+console.log("have I resolved: " + have_i_resolved);
 
 	  //
 	  //

@@ -701,15 +701,6 @@ console.log("on peer service up...3 ");
 					}
 
 					//
-					// Allow the game originator to change mind about game being open or private
-					//
-					/*
-          if (txmsg.request.includes("change")) {
-            arcade_self.receiveChangeTransaction(tx);
-          }
-          */
-
-					//
 					// Add a player to the game invite
 					//
 					if (txmsg.request == 'join') {
@@ -1189,8 +1180,8 @@ console.log("arcade - receive accept tx");
 
 		if (!this.app.BROWSER) {
 			let sql = `UPDATE games
-                 SET step = $step
-                 WHERE game_id = $game_id`;
+               			  SET step = $step
+               			  WHERE game_id = $game_id`;
 			let params = {
 				$step: JSON.stringify(txmsg.step),
 				$game_id: txmsg.game_id
@@ -1962,7 +1953,6 @@ console.log("before igfat 2");
 		}
 		for (let i = 0; i < this.affix_callbacks_to.length; i++) {
 			if (this.affix_callbacks_to[i] == modname) {
-				//console.info("AFFIXING CALLBACKS TO: " + modname);
 				return 1;
 			}
 		}
