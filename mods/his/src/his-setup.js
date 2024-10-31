@@ -587,7 +587,7 @@ console.log("\n\n\n\n");
 	  }
 
           this.setAllies("papacy", "hapsburg");
-          this.setAllies("papacy", "venice");
+//          this.setAllies("papacy", "venice");
 	  this.setEnemies("papacy","france");
 
 //	  this.controlSpace("ottoman", "vienna");
@@ -694,7 +694,7 @@ console.log("\n\n\n\n");
 
           // VENICE
           this.addRegular("venice", "venice", 2);
-          this.addNavalSquadron("venice", "venice", 1);
+          this.addNavalSquadron("venice", "venice", 3);
 
           // ENGLAND
           this.addRegular("england", "stirling", 4);
@@ -737,8 +737,15 @@ console.log("\n\n\n\n");
 	  this.addRegular("hapsburg", "agram", 1);
 	  this.controlSpace("hapsburg", "agram", 1);
 
+
 	  this.addNavalSquadron("france", "marseille", 2); 
 	  this.addNavalSquadron("hapsburg", "barcelona", 2); 
+
+
+	  this.addNavalSquadron("hapsburg", "tyrrhenian", 3);
+	  this.addNavalSquadron("hapsburg", "barbary", 3);
+	  this.addNavalSquadron("ottoman", "gulflyon", 5);
+	  this.addNavyLeader("ottoman", "gulflyon", "barbarossa");
 
 	  this.game.state.events.papacy_may_found_jesuit_universities = 1;
           this.game.state.events.ottoman_piracy_enabled = 1;

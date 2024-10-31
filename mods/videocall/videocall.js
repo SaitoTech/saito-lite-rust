@@ -132,7 +132,6 @@ class Videocall extends ModTemplate {
 		if (app.BROWSER !== 1) {
 			return;
 		}
-
 		if (service.service === 'relay') {
 			this.isRelayConnected = true;
 		}

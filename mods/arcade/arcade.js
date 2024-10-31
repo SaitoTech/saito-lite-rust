@@ -73,6 +73,25 @@ class Arcade extends ModTemplate {
 			image: 'https://saito.tech/wp-content/uploads/2023/11/arcade-300x300.png'
 		};
 
+		app.connection.on('arcade-issue-challenge', async ({game, players, options}) => {
+			let tx;
+
+			if (this.challenge_tx){
+				tx = await this.createJoinTransaction(this.challenge_tx);
+			} else {
+				tx = await this.createChallengeTransaction(game, players, options);
+			}
+			
+			if (tx){
+				app.connection.emit('relay-send-message', {
+					recipient: players,
+					request: 'arcade spv update',
+					data: tx.toJson()
+				});
+			}
+
+		});
+
 		app.connection.on('arcade-notify-player-turn', (game_id, target, status) => {
 			for (let game of app.options.games) {
 				if (game.id == game_id) {
@@ -773,19 +792,20 @@ class Arcade extends ModTemplate {
 					await this.receiveAcceptTransaction(tx);
 				}
 
-				/*
-        //TODO - reimplement / check
-        // This was an idea to completely off-chain send a player a direct/play now game invite
-        // Which will pop up a yes/no demand for immediate response
+	        //TODO - reimplement / check
+	        // This was an idea to completely off-chain send a player a direct/play now game invite
+	        // Which will pop up a yes/no demand for immediate response
 
-        if (txmsg.request == "challenge") {
-          this.receiveChallengeTransaction(tx);
-        }
+	        if (txmsg.request == "challenge") {
+	        	 console.log("RECEIVE CHALLENGE!");
+	          this.receiveChallengeTransaction(tx);
+	        }
 
-        if (txmsg.request == "sorry"){
-          app.connection.emit("arcade-reject-challenge", txmsg.game_id);
-        }
-        */
+	        if (txmsg.request == "sorry"){
+	        	 //Trigger UI update in game
+	          app.connection.emit("arcade-reject-challenge", txmsg.game_id);
+	        }
+
 			} else {
 				if (txmsg.request === 'stopgame') {
 					await this.receiveCloseTransaction(tx);
@@ -913,16 +933,20 @@ class Arcade extends ModTemplate {
 			siteMessage(`You were invited to play ${txmsg.game}`, 5000);
 		}
 
+		this.saveGameInvite(tx, blk);
+	}
+
+	async saveGameInvite(tx, blk){
 		//
 		// Only the arcade service node (non-browser) needs to bother executing SQL
 		//
 
+		let txmsg = tx.returnMessage();
+		
 		let options = txmsg.options != undefined ? txmsg.options : {};
 
 		let players_array = txmsg.players[0] + '/' + txmsg.players_sigs[0];
 		let start_bid = blk != null ? blk.id : BigInt(1);
-
-		let created_at = tx.timestamp;
 
 		let sql = `INSERT
     OR IGNORE INTO games (
@@ -957,10 +981,11 @@ class Arcade extends ModTemplate {
 			$options: options,
 			$tx: JSON.stringify(tx.toJson()),
 			$start_bid: start_bid,
-			$created_at: created_at,
+			$created_at: tx.timestamp,
 			$winner: ''
 		};
 		await this.app.storage.runDatabase(sql, params, 'arcade');
+
 	}
 
 	////////////
@@ -1501,55 +1526,77 @@ class Arcade extends ModTemplate {
 	//
 	// a direct invitation from one player to another
 	//
-	/*
-  createChallengeTransaction(gameData) {
+
+  async createChallengeTransaction(game, players, options) {
     let timestamp = new Date().getTime();
-    let accept_sig = this.app.crypto.signMessage(
-      `invite_game_${ts}`,
-      this.app.wallet.returnPrivateKey()
-    );
 
-    let tx = this.app.wallet.createUnsignedTransactionWithDefaultFee();
+	 let accept_sig = await this.app.crypto.signMessage(
+		`invite_game_${timestamp}`,
+		await this.app.wallet.getPrivateKey()
+	 );
 
-    for (let sendto of gameData.players) {
-      tx.to.push(new saito.default.slip(sendto, 0.0));
+    let tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
+
+    let otherPlayer = null;
+
+    console.log(players);
+
+    for (let sendto of players) {
+      if (sendto !== this.publicKey){
+      	otherPlayer = sendto;
+      	tx.addTo(otherPlayer);
+      }
+    }
+
+    if (!otherPlayer){
+    	return null;
     }
 
     tx.msg = {
       timestamp: timestamp,
       module: "Arcade",
       request: "challenge",
-      game: gameData.game,
-      options: gameData.options,
-      players_needed: gameData.players.length,
+      game,
+      options,
+      players_needed: players.length,
       players: [this.publicKey],
       players_sigs: [accept_sig],
       originator: this.publicKey,
-      invitees: gameData.players,
+      desired_opponent_publickey: otherPlayer,
     };
 
-    tx = this.app.wallet.signTransaction(tx);
+	 await tx.sign();
 
     return tx;
-
   }
 
-  receiveChallengeTransaction(tx) {
-    if (!tx.transaction || !tx.signature || !tx.msg) {
+  receiveChallengeTransaction(tx, blk = null) {
+    if (!tx || !tx.signature) {
       return;
+    }
+
+    if (!this.app.BROWSER){
+    	this.saveGameInvite(tx, blk);
     }
 
     if (!tx.isTo(this.publicKey)) {
       return;
     }
 
-    this.addGame(tx, "open");
+    this.addGame(tx, "private");
 
-    let challenge = new ChallengeModal(app, this, tx);
-    challenge.processChallenge(app, tx);
+    let txmsg = tx.returnMessage();
+
+    //console.log(txmsg);
+
+    if (!tx.isFrom(this.publicKey)){
+    	this.challenge_tx = tx;
+    }
+
+    this.app.connection.emit("arcade-challenge-issued", tx);
 
   }
-  */
+
 
 	/*
   Update the Games Table with a new list of players+signatures for the multiplayer game

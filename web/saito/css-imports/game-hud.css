@@ -37,6 +37,29 @@
   z-index: 40;
   font-size: 1.6rem;
   border-bottom: 0px;
+  overflow: visible;
+}
+
+
+.hud-notice {
+  display: none;
+  border: 3px solid #424143;
+  background-color: #b79e76;
+  border-radius: 1rem 1rem 0 0;
+  height: 65%;
+  position: absolute;
+  top: 0;
+  width: calc(100% - 2rem);
+  margin: 0 0.5rem;
+  transition: all 1.5s ease-in-out;
+  z-index: -1;
+  transform: scale(0.95); /* Slightly scale down */
+}
+
+.hud-notice.show {
+  display: block;
+  top: -50%;
+  transform: scale(1); /* Slightly scale down */
 }
 
 .hud-square {
@@ -186,5 +209,18 @@
 
 .controls ul li:hover , .options {
    background-color: #e7e7e7;
+}
+
+
+@media screen and (orientation: portrait) and (max-width: 600px) {
+
+        .hud-notice {
+                width: calc(100% - 4rem);
+        }
+        .hud-notice.show {
+                top: -65%;
+                margin: 0;
+        }
+
 }
 

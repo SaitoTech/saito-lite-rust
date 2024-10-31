@@ -290,7 +290,6 @@ class ChatManager {
 
 							//If you don't hear back in 5 seconds, assume offline
 							this.timers[group.id] = setTimeout(() => {
-								console.log('Auto change to offline');
 								let cm_handle = document.querySelector(
 									`.chat-manager #saito-user-${group.id}`
 								);

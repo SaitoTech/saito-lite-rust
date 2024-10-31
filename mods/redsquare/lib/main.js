@@ -192,9 +192,18 @@ class RedSquareMain {
 
     let lastScrollTop = 0;
     let triggered = false;
+    let is_running = false;
 
     scrollableElement.addEventListener('scroll', (e) => {
       var st = scrollableElement.scrollTop;
+      
+      if (is_running){
+        return;
+      }
+
+      // console.log("A:", scrollableElement.scrollTop, lastScrollTop, triggered);
+      is_running = true;
+
       if (st > lastScrollTop) {
         // downscroll code
         if (!triggered) {
@@ -204,7 +213,7 @@ class RedSquareMain {
           document.getElementById("saito-header").style.padding = "0";
           //document.documentElement.style.setProperty('--saito-header-height', '0');
           //document.querySelector('#saito-header').style.opacity = '0';
-          st -= 70;
+          //st -= 70;
           triggered = true;
         }
       } else if (st < lastScrollTop) {
@@ -219,10 +228,16 @@ class RedSquareMain {
       } // else was horizontal scroll
       lastScrollTop = st <= 0 ? 0 : st; // For Mobile or negative scrolling
 
+      //console.log("B:", scrollableElement.scrollTop, lastScrollTop, triggered);
+
       if (this.manager.mode == 'tweets') {
         this.scroll_depth = scrollableElement.scrollTop;
         this.idleTime = 0;
       }
+    
+      setTimeout(()=> {
+        is_running = false;
+      }, 150);
     });
   }
 

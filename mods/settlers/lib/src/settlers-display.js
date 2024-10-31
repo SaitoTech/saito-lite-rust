@@ -477,23 +477,24 @@ class SettlersDisplay {
   }
 
 
-  updateStatus(str, hide_info = 0) {
+  updateStatus(str, preserve = 0) {
     try {
       if (this.lock_interface == 1) {
         return;
       }
-      let update = [];
 
-      update[0] = str;
-      update[1] = hide_info;
+      let update = [str, preserve];
 
       this.game.status = str;
 
-      if (this.status.length > 0 && this.status[this.status.length-1][1] == 1) {
-        this.status[this.status.length-1] = update;
-      } else {
-        this.status.push(update);
+      if (this.status.length > 0){
+        let last = this.status.pop();
+        if (last[1]){
+          this.status.push(last);
+        }
       }
+
+      this.status.push(update);
 
       //Keep last three
       while (this.status.length > 3) {
@@ -508,11 +509,14 @@ class SettlersDisplay {
     
           let complex_str = '';
           for (let ud of this.status){
-            if (!ud[0].includes('<div')) {
-              ud[0] = `<div class="player-notice">${ud[0]}</div>`;
+            let s = ud[0];
+            if (!s.includes('<div')) {
+              s = `<div class="player-notice">${s}</div>`;
             }
-            complex_str += ud[0];
+            complex_str += s;
           }
+
+          console.log(complex_str);
 
           status_obj.innerHTML = complex_str;
           $('.status').disableSelection();
@@ -522,7 +526,7 @@ class SettlersDisplay {
         this.setHudHeight();
       }
     } catch (err) {
-      //console.log("ERR: " + err);
+      console.error("ERR: " + err);
     }
   }
 
@@ -539,7 +543,7 @@ class SettlersDisplay {
         //hud.style.top = "unset";
       }
     } catch (err) {
-      console.log(err);
+      console.erorr(err);
     }
   }
 

@@ -334,25 +334,23 @@ class TweetManager {
 			this.profile.reset(publicKey, 'posts', this.profile_tabs);
 		}
 
-		this.profile.render();
-
 		this.loader.render();
+
+		this.profile.render();
 
 		this.loadProfile((txs) => {
 			if (this.mode !== 'profile') {
 				return;
 			}
 
-			this.loader.remove();
-			
+			this.hideLoader();
+
 			// Sort txs into posts/replies/retweets...
 			this.filterAndRenderProfile(txs);
 
-			this.hideLoader();
 			this.profile.render();
 		});
 
-		this.attachEvents();
 	}
 
 

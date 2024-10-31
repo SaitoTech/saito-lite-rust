@@ -385,6 +385,7 @@
 
   addNavalSquadron(faction, space, num=1) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "squadron"));
     }

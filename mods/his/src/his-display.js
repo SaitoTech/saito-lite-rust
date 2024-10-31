@@ -8,7 +8,7 @@
     this.welcome_overlay.pushHudUnderOverlay();
 
     if (document.querySelector(".winter")) {
-	this.welcome_overlay.overlay.zIndex = this.winter_overlay.overlay.zIndex + 2;
+      this.welcome_overlay.overlay.zIndex = this.winter_overlay.overlay.zIndex + 2;
     }
 
     if (c === "all_corsairs_destroyed") {
@@ -244,11 +244,41 @@
       return;
     }
 
+    if (c === "war") {
+      this.welcome_overlay.renderCustom({
+        title : "War!" ,
+        text : msg ,
+        img : '/his/img/backgrounds/war_horse.png',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
     if (c === "colonize") {
       this.welcome_overlay.renderCustom({
         title : msg ,
         text : "Colonies earn factions bonus cards in the New World Phase",
         img : '/his/img/backgrounds/move/colonize.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "translate") {
+      this.welcome_overlay.renderCustom({
+        title : msg ,
+        text : "Protestants advance in biblical translation",
+        img : '/his/img/backgrounds/move/translate.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "stpeters") {
+      this.welcome_overlay.renderCustom({
+        title : msg ,
+        text : "The Papacy continues to build St. Peter's Basilica",
+        img : '/his/img/backgrounds/move/saint_peters.png',
 	styles : [{ key : "backgroundPosition" , val : "bottom" }],
       });
       return;
@@ -319,6 +349,356 @@
         }
   
         this.welcome_overlay.renderCustom({
+          text : text,
+          title : title,
+          img : img,
+          card : card,
+        });
+      }
+    }
+
+  }
+
+  displayHudPopup(c="", msg="") {
+
+    if (c === "all_corsairs_destroyed") {
+        this.hud_popup.render({
+          title : "Piracy Fails" , 
+          text : "All Corsairs destroyed by Defensive Fire" ,
+          card : "" ,
+          img : '/his/img/backgrounds/corsairs_destroyed.jpg',
+          styles : [{ key : "backgroundPosition" , val : "bottom" }],
+        });
+        return;
+    }
+
+    if (c === "depleted") {
+        this.hud_popup.render({
+          title : "Depleted Conquest" , 
+          text : msg ,
+          card : "" ,
+          img : '/his/img/backgrounds/newworld/depleted_conquest.jpeg',
+          styles : [{ key : "backgroundPosition" , val : "bottom" }],
+        });
+        return;
+    }
+
+    if (c === "war") {
+      this.hud_popup.render({
+        title : "War" ,
+        text : msg ,
+        img : '/his/img/backgrounds/war_horse.png',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "deserted") {
+      this.hud_popup.render({
+        title : "Deserted Colony" , 
+        text : msg ,
+        card : "" ,
+        img : '/his/img/backgrounds/newworld/deserted_colony.png',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "protestants") {
+      this.hud_popup.render({
+        title : "New to the Protestants?" , 
+        text : "Why not play cards for OPS and publish treatises in Germany? " ,
+        card : this.returnCardImage("065") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "excommunication") {
+      this.hud_popup.render({
+        title : "Excommunicated!" , 
+        text : this.returnFactionName(msg) + " has been excommunicated by Papal Decree" ,
+        card : this.returnCardImage("005") ,
+        img : '/his/img/backgrounds/events/excommunication.jpg',
+      });
+      return;
+    }
+    if (c === "protestant") {
+      this.hud_popup.render({
+        title : "New to the Protestants?" , 
+        text : "Use OPS to publish treatises and convert more spaces to Protestantism" ,
+        card : this.returnCardImage("007") ,
+        img : '/his/img/backgrounds/move/printing_press.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+    if (c === "papacy") {
+      this.hud_popup.render({
+        title : "New to the Papacy?" , 
+        text : "Why not use your OPS to control Siena and move an invasion force to Florence?" ,
+        card : this.returnCardImage("067") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+    if (c === "ottoman") {
+      this.hud_popup.render({
+        title : "New to the Ottomans?" , 
+        text : "Why not use your OPS to invade Hungary and expand your empire?" ,
+        card : this.returnCardImage("042") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+    if (c === "england") {
+      this.hud_popup.render({
+        title : "New to England?" , 
+        text : "Why not use your Home Card to declare war on Scotland or France?" ,
+        card : this.returnCardImage("003") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+    if (c === "france") {
+      this.hud_popup.render({
+        title : "New to France?" , 
+        text : "Establishing Colonies and building Chateaux is crucial early-game! " ,
+        card : this.returnCardImage("004") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+    if (c === "hapsburg") {
+      this.hud_popup.render({
+        title : "New to the Hapsburgs?" , 
+        text : "Are there any independent keys you can conquer this turn? ",
+        card : this.returnCardImage("002") ,
+        img : '/his/img/backgrounds/tutorials/95theses.jpg',
+        styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "lost-at-sea") {
+      this.hud_popup.render({
+        title : "New World Losses" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/lost_at_sea.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "killed") {
+      this.hud_popup.render({
+        title : "New World Losses" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/killed.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "stlawrence") {
+      this.hud_popup.render({
+        title : "New World Discovery" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/st_lawrence.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "mississippi") {
+      this.hud_popup.render({
+        title : "New World Discovery" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/mississippi.jpg',
+	styles : [{ key : "backgroundPosition" , val : "center" }],
+      });
+      return;
+    }
+
+    if (c === "greatlakes") {
+      this.hud_popup.render({
+        title : "New World Discovery" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/greatlakes.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "amazon") {
+      this.hud_popup.render({
+        title : "New World Discovery" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/amazon3.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "pacificstrait") {
+      this.hud_popup.render({
+        title : "New World Discovery" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/pacificstrait.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "circumnavigation") {
+      this.hud_popup.render({
+        title : "New World Achievement" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/circumnavigation.jpg',
+      });
+      return;
+    }
+
+    if (c === "aztec") {
+      this.hud_popup.render({
+        title : "New World Conquest" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/aztec.jpg',
+      });
+      return;
+    }
+
+    if (c === "maya") {
+      this.hud_popup.render({
+        title : "New World Conquest" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/inca.jpg',
+      });
+      return;
+    }
+
+    if (c === "inca") {
+      this.hud_popup.render({
+        title : "New World Conquest" ,
+        text : msg ,
+        img : '/his/img/backgrounds/newworld/inca2.jpg',
+      });
+      return;
+    }
+
+    if (c === "battle-of-mohacs") {
+      let t = "The Ottoman subjugation of Hungary-Bohemia forces the Hapsburg Empire to intervene on the side of Christian Europe and in pre-emptive defense of Vienna";
+      if (this.areEnemies("hapsburg", "ottoman")) {  
+        t = "The Ottoman subjugation of Hungary-Bohemia prompts a Hapsburg-Hungarian Alliance in defense of Christian Europe and th city of Vienna";
+      }
+      this.hud_popup.render({
+        title : "War between the Hapsburg and Ottoman Empires" ,
+	text : t,
+        img : '/his/img/backgrounds/battle-of-mohacs.jpeg',
+      });
+      return;
+    }
+
+    if (c === "colonize") {
+      this.hud_popup.render({
+        title : msg ,
+        text : "Colonies earn factions bonus cards in the New World Phase",
+        img : '/his/img/backgrounds/move/colonize.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "conquest") {
+      this.hud_popup.render({
+        title : msg ,
+        text : "Conquests earn factions Victory Points and bonus cards in the New World Phase",
+        img : '/his/img/backgrounds/newworld/inca2.jpg',
+	styles : [{ key : "backgroundPosition" , val : "center" }],
+      });
+      return;
+    }
+
+    if (c === "spring_deployment") {
+      this.hud_popup.render({
+        title : "Spring Deployment" ,
+        text : "At the start of each round, players may move troops from their capital along any line of spaces controlled by them or their allies. Units may not cross passes or seas containing enemy ships. <b>New players can safely ignore Spring Deployment first turn</b>.",
+        img : '/his/img/backgrounds/spring-deployment.jpeg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "diet_of_worms") {
+      if (this.game.players.length == 2) {
+        this.hud_popup.render({
+          title : "Diet of Worms" ,
+          text : "Protestants pick a card and add 4. Papacy picks a card and adds the value of a card drawn randomly from the deck. Dice are rolled and the winner flips the difference in hits to the Protestant or Catholic religion.",
+          img : '/his/img/backgrounds/diet_of_worms.jpeg',
+	  styles : [{ key : "backgroundPosition" , val : "bottom" }],
+        });
+        return;
+      } else {
+        this.hud_popup.render({
+          title : "Diet of Worms" ,
+          text : "Protestants pick a card and add 4. Papacy and Hapsburg both pick cards and combine their values. Dice are rolled and the winner flips the difference in hits to the Protestant or Catholic religion.",
+          img : '/his/img/backgrounds/diet_of_worms.jpeg',
+	  styles : [{ key : "backgroundPosition" , val : "bottom" }],
+        });
+        return;
+      }
+    }
+
+    if (c === "explore") {
+      this.hud_popup.render({
+        title : msg,
+        text : "Explorations earn Victory Points for strategic discoveries in the New World Phase",
+        img : '/his/img/backgrounds/move/explore.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "translate") {
+      this.hud_popup.render({
+        title : msg ,
+        text : "Protestants advance in biblical translation",
+        img : '/his/img/backgrounds/move/translate.jpg',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    if (c === "stpeters") {
+      this.hud_popup.render({
+        title : msg ,
+        text : "The Papacy continues to build St. Peter's Basilica",
+        img : '/his/img/backgrounds/move/saint_peters.png',
+	styles : [{ key : "backgroundPosition" , val : "bottom" }],
+      });
+      return;
+    }
+
+    let deck = this.returnDeck(true); // include removed
+    if (deck[c]) {
+      if (deck[c].returnCustomOverlay) {
+
+        let obj = deck[c].returnCustomOverlay();    
+        let title = obj.title;
+        let text = obj.text;
+        let img = obj.img;
+        let card = this.returnCardImage(c);
+
+        if (msg == "") {
+    	  msg = this.popup(c) + " triggers";
+        }
+
+        this.hud_popup.render({
           text : text,
           title : title,
           img : img,
@@ -802,6 +1182,13 @@
         if (c.colony === "hapsburg_colony2") { document.querySelector('.hapsburg_colony2').innerHTML = `<img class="nw_tile" src="${c.img}" />`; }
         if (c.colony === "hapsburg_colony3") { document.querySelector('.hapsburg_colony3').innerHTML = `<img class="nw_tile" src="${c.img}" />`; }
       }
+    }
+
+    //
+    // this will be set when unresolved...
+    //
+    if (this.game.state.events.potosi_silver_mines != "") {
+      obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/colonies/Potosi.svg" />`;
     }
 
   }
@@ -2757,6 +3144,11 @@ try {
       "img/backgrounds/diet_of_worms.jpeg",
       "img/backgrounds/language-zone.jpg",
       "img/backgrounds/95_theses.jpeg",
+      "img/backgrounds/war_horse.png",
+      "img/backgrounds/move/assault.jpg",
+      "img/backgrounds/move/colonize.jpg",
+      "img/backgrounds/move/explore.jpg",
+      "img/backgrounds/move/conquer.jpg",
       "img/cards/PASS.png",
     ];
 

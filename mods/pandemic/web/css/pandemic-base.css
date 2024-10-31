@@ -3,6 +3,7 @@ body {
 	padding: 0px;
 	margin: 0px;
 
+	position: fixed;
 	background: -webkit-linear-gradient(top, #0a2942, #010204);
 	background: -moz-linear-gradient(top, #0a2942, #010204);
 	background: linear-gradient(to top, #0a2942, #010204);
@@ -30,6 +31,8 @@ img {
 .status-icon-menu {
 	height: unset;
 	width: 100%;
+	display: flex;
+	justify-content: space-evenly;
 }
 
 .status-text-menu ul li {
@@ -111,6 +114,14 @@ img {
 /* have to override default tip without fucking up hud sizing */
 .tip.menu_icon {
 	width: 100px;
+}
+
+.menu_icon {
+	color: whitesmoke;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
 }
 
 .status-text-menu ul li.textchoice.confirmed {
@@ -313,6 +324,7 @@ img {
 
 .card {
 	cursor: pointer;
+	position: relative;
 }
 
 .link {

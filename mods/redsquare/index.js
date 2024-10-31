@@ -55,11 +55,6 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
 
   <style type="text/css">
     /* css for fade-out bg effect while content is loading */
-    body {
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-    }
     body::before {
       content: "";
       opacity: 1;

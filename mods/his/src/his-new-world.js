@@ -145,6 +145,7 @@
 	  colony : pbox ,	  
 	});
 
+	this.game.state.events.potosi_silver_mines = "";
 	this.game.state.newworld[pbox].claimed = 1;
 
       }

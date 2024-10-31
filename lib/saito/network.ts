@@ -70,8 +70,8 @@ export default class Network {
 
 	public close() { }
 
-	addStunPeer() {
-		throw new Error('not implemented');
+	async addStunPeer(public_key, peerConnection) {	
+		await  S.getInstance().addStunPeer(public_key, peerConnection);
 	}
 
 	initializeStun() {

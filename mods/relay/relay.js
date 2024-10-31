@@ -115,16 +115,14 @@ class Relay extends ModTemplate {
   }
 
   async sendRelayTransaction(tx){
-
     let need_server = true;
-
     if (this.stun) {
       need_server = false;
       for (let i = 0; i < tx.to.length; i++){
         let addressee = tx.to[i].publicKey;
         if (addressee !== this.publicKey){
           if (this.stun.hasConnection(addressee)){
-            this.stun.sendTransaction(addressee, tx);
+            this.stun.sendTransaction(addressee, tx)
           }else {
             //console.log("Need to use Relay server because no stun connection with " + addressee);
             need_server = true;
@@ -137,8 +135,8 @@ class Relay extends ModTemplate {
         // but should make sure we process it ourselves as if it was coming in
         this.app.modules.handlePeerTransaction(tx);
       }
-    } 
-
+    }
+    
     if (need_server){
       let peers = await this.app.network.getPeers();
       for (let i = 0; i < peers.length; i++) {
@@ -155,6 +153,7 @@ class Relay extends ModTemplate {
         );
       }
     }
+  
 
   }
 

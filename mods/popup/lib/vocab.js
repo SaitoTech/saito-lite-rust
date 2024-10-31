@@ -39,7 +39,6 @@ class PopupVocab {
 	attachEvents() {
 
 		document.querySelector('.start_popup_review').onclick = (e) => {
-alert("TESTING");
 			this.mod.review.render();
 		};
 
