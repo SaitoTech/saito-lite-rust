@@ -237,9 +237,11 @@ class Steamed extends GameTemplate {
 				this.removeEvents();
 				this.game.queue.splice(qe, 1);
 				if (this.game.deck[0].crypt.length == 0) {
-					$('.active').removeClass('active');
-					$('.status').css('display', 'block');
-
+					if (this.gameBrowserActive()){
+						$('.active').removeClass('active');
+						$('.status').css('display', 'block');
+						$('.offer').fadeOut();
+					}
 					this.updateStatus(
 						"<div class='status-message'>Liquidating remaining factories to tally final score</div>"
 					);
@@ -411,6 +413,10 @@ class Steamed extends GameTemplate {
 				this.game.queue.splice(qe, 1);
 				let steamSelf = this;
 				let gold = this.calculateProfit(player, slot);
+
+				if (gold < 0){
+					return 1;
+				}
 
 				//$("#deal").children().animate({left: "1000px"}, 1200, "swing", function(){$(this).remove();});
 				let children = [];
@@ -912,7 +918,12 @@ class Steamed extends GameTemplate {
 		let factory =
 			this.game.player === player ? this.game.state.self[slot] : this.game.state.opponent[slot];
 		let resource = factory[0];
+		if (!resource){
+			//this is an empty slot
+			return -1;
+		}
 		let reward = this.factory[resource];
+		console.log(player, slot, resource, reward);
 		return factory.length < reward.length ? reward[factory.length] : reward[reward.length - 1];
 	}
 
