@@ -459,9 +459,6 @@ export default class Wallet extends SaitoWallet {
 	 * Saves the current wallet state to local storage.
 	 */
 	async saveWallet() {
-
-		console.log("save wallet called inside SLR /////", this);
-
 		if (!this.app.options.wallet) {
 			this.app.options.wallet = {};
 		}
@@ -477,7 +474,6 @@ export default class Wallet extends SaitoWallet {
 		// fetch latest pending txs from rust and 
 		// add to app.options as serialize_to_web
 		let pending_txs = await this.getPendingTransactions();
-		console.log("pending_txs fetched from rust ////////", pending_txs);
 		if (pending_txs.length > 0) {
 			for(let i=0; i<pending_txs.length; i++) {
 				let tx: any = pending_txs[i];
