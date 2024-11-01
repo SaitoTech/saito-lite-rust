@@ -5246,6 +5246,10 @@ console.log("have I resolved: " + have_i_resolved);
 	      //
 //	      his_self.game.queue[his_self.game.queue.length-1] = "halted";
 //if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
+console.log("1");
+console.log("1");
+console.log("1");
+console.log("1");
 	      his_self.game.tmp_confirm_sent = 1;
 	      his_self.game.confirms_needed[his_self.game.player-1] = 1;
               his_self.addMove("RESOLVE\t"+his_self.publicKey);
@@ -5309,6 +5313,10 @@ console.log("have I resolved: " + have_i_resolved);
 
 	    });
 
+console.log("2");
+console.log("2");
+console.log("2");
+console.log("2");
 	    his_self.game.tmp_confirm_sent = 1;
             his_self.addMove("RESOLVE\t"+his_self.publicKey);
             his_self.endTurn();
@@ -5382,6 +5390,10 @@ console.log("have I resolved: " + have_i_resolved);
 		    }, 5);
 	    });
 
+console.log("3");
+console.log("3");
+console.log("3");
+console.log("3");
 	    his_self.game.tmp_confirm_sent = 1;
             his_self.addMove("RESOLVE\t"+his_self.publicKey);
             his_self.endTurn();
