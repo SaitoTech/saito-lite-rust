@@ -1275,6 +1275,8 @@ if (this.game.state.events.society_of_jesus == 1) {
     $('.option').off();
     $('.option').on('click', function () {
 
+      let action = $(this).attr("id");
+
       //
       // and remove on-board clickability
       //
@@ -1295,7 +1297,6 @@ if (this.game.state.events.society_of_jesus == 1) {
       $('.space').off();
       $('.hextile').off();
 
-      let action = $(this).attr("id");
       if (action == "cancel") {
         cancel_func();
         return 0;

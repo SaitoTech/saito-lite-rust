@@ -14578,7 +14578,6 @@ try {
 
                 "Select Reformation Target",
 
-
                 //
                 // catholic spaces adjacent to protestant
                 //
