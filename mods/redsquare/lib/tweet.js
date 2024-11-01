@@ -1230,6 +1230,12 @@ class Tweet {
 					videoId = split[1];
 				}
 
+				//check for live
+				split = this.link.split('/live/');
+				if (typeof split[1] != 'undefined') {
+					videoId = split[1];
+				}
+
 				if (videoId != null && videoId != 'null') {
 					this.youtube_id = videoId;
 				}
