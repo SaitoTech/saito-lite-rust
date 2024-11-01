@@ -181,6 +181,22 @@
   color: var(--font-color-hover-mention);
 }
 
+.tweet-body li {
+  list-style-type: disc;
+  list-style-position: inside;
+  line-height: 1rem;
+}
+
+.tweet-body h1,
+.tweet-body h2,
+.tweet-body h3,
+.tweet-body h4,
+.tweet-body h5,
+.tweet-body h6 {
+  margin-bottom: 0rem;
+  line-height: 1.2em;
+}
+
 /* For overly long tweets, we crop and show that it can be expanded */
 
 .tweet-text.preview {
