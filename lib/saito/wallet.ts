@@ -362,6 +362,22 @@ export default class Wallet extends SaitoWallet {
 				}
 			}
 
+
+			//resend pending txs
+			if (!this.app.options.pending_txs) {
+				this.app.options.pending_txs = [];
+			}
+			let pending_txs = this.app.options.pending_txs;
+			if (pending_txs.length > 0) {
+				for(let i=0; i<pending_txs.length; i++) {
+					let tx_webstring = this.app.options.pending_txs[i];
+					let newtx = new Transaction();
+					newtx.deserialize_from_web(this.app, tx_webstring);
+					this.app.options.pending_txs.splice(i, 1);
+					await this.app.wallet.addTransactionToPending(newtx, false);
+				}
+			}
+
 			this.app.connection.on('wallet-updated', async () => {
 				await this.saveWallet();
 				this.setKeyList(this.app.keychain.returnWatchedPublicKeys());
@@ -443,6 +459,9 @@ export default class Wallet extends SaitoWallet {
 	 * Saves the current wallet state to local storage.
 	 */
 	async saveWallet() {
+
+		console.log("save wallet called inside SLR /////", this);
+
 		if (!this.app.options.wallet) {
 			this.app.options.wallet = {};
 		}
@@ -451,8 +470,24 @@ export default class Wallet extends SaitoWallet {
 		this.app.options.wallet.version = this.version;
 		this.app.options.wallet.default_fee = this.default_fee;
 
-		let slips = await this.getSlips();
+		if (!this.app.options.pending_txs) {
+			this.app.options.pending_txs = [];
+		}
 
+		// fetch latest pending txs from rust and 
+		// add to app.options as serialize_to_web
+		let pending_txs = await this.getPendingTransactions();
+		console.log("pending_txs fetched from rust ////////", pending_txs);
+		if (pending_txs.length > 0) {
+			for(let i=0; i<pending_txs.length; i++) {
+				let tx: any = pending_txs[i];
+				this.app.options.pending_txs.push(tx.serialize_to_web(this.app));
+			}
+		} else {
+			this.app.options.pending_txs = [];
+		}
+
+		let slips = await this.getSlips();
 		this.app.options.wallet.slips = slips.map((slip) => slip.toJson());
 
 		await this.save();
@@ -1300,7 +1335,15 @@ export default class Wallet extends SaitoWallet {
 		}
 	}
 
-	public async addTransactionToPending(tx: Transaction) {
+	public async addTransactionToPending(tx: Transaction, save = true) {
+		if (save) {
+			if (!this.app.options.pending_txs) {
+				this.app.options.pending_txs = [];
+			}
+			this.app.options.pending_txs.push(tx.serialize_to_web(this.app));
+		}
+
+		this.app.storage.saveOptions();
 		return S.getInstance().addPendingTx(tx);
 	}
 
