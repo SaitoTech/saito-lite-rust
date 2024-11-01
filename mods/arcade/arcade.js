@@ -172,7 +172,9 @@ class Arcade extends ModTemplate {
 			// my games stored in local wallet
 			//
 			if (this.app.options.games) {
+
 				this.purgeBadGamesFromWallet();
+				this.purgeOldGamesFromWallet();
 
 				for (let game of this.app.options.games) {
 					if (game.players.includes(this.publicKey) || game.accepted.includes(this.publicKey)) {
@@ -1754,6 +1756,9 @@ console.log("before igfat 2");
 		}
 	}
 
+	//
+	// purges invites unaccepted
+	//
 	purgeOldGames() {
 		let now = new Date().getTime();
 		for (let key in this.games) {
@@ -1776,6 +1781,22 @@ console.log("before igfat 2");
 				} else if (this.app.options.games[i].players_set == 0) {
 					//This will be games created but not fully initialized for whatever reason
 					this.app.options.games.splice(i, 1);
+				}
+			}
+		}
+	}
+
+	//
+	// purges games that are completed
+	//
+	purgeOldGamesFromWallet() {
+		if (this.app.options.games) {
+			for (let i = this.app.options.games.length - 1; i >= 0; i--) {
+				let g = this.app.options.games[i];
+				if (g.over >= 1) {
+					if (g.timestamp < (new Date().getTime() - 240000)) { // after 1 hour
+						this.app.options.games.splice(i, 1);
+					}
 				}
 			}
 		}
