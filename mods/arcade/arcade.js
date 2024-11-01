@@ -411,7 +411,7 @@ class Arcade extends ModTemplate {
 	                        let noload = app.browser.returnURLParameter('noload');
         	                if (noload) { return; }
 
-/****
+
 				this.app.storage.loadTransactions(
 					{
 						field1: query
@@ -420,7 +420,7 @@ class Arcade extends ModTemplate {
 						for (let i = txs.length - 1; i >= 0; i--) {
 
 							// arcade 
-							await this.onConfirmation(-1, txs[i], 0);
+							//await this.onConfirmation(-1, txs[i], 0);
 
 							// game mod
 							await game_mod.onConfirmation(-1, txs[i], 0);
@@ -428,7 +428,6 @@ class Arcade extends ModTemplate {
 					},
 					peer
 				);
-****/
 			}
 		}
 	}
