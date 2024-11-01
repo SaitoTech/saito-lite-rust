@@ -3126,13 +3126,6 @@ console.log("----------------------------");
 
 	      let fluis = this.returnFactionLandUnitsInSpace(f, spacekey, 1); // include minor allies
 
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("# siege - " + fluis + " units in space");
-console.log("#");
-console.log("#");
-
 	      if (fluis == 0) {
 		//
 		// no troops - skip
@@ -3147,11 +3140,7 @@ console.log("#");
 
 		  if (this.isMinorPower(f)) {
 
-console.log("# is minor power");
-
 		    if (this.isMinorUnactivatedPower(f)) {
-
-console.log("# is minor unactivated power");
 
 		      //
 		      // auto-handled -- we retreat for siege
@@ -3653,10 +3642,6 @@ console.log("# is minor unactivated power");
 	    }
 	  }
 
-console.log("ANYONE LEFT: " + anyone_left);
-console.log("LEADERS LEFT: " + anyone_left);
-console.log("FACTIONS: " + JSON.stringify(leaders_left_factions));
-
 	  //
 	  // remove siege, evacuate or capture leaders
 	  //
@@ -3766,7 +3751,6 @@ console.log("FACTIONS: " + JSON.stringify(leaders_left_factions));
 	  // pass through if attacker (not besieged)
 	  //
 	  if (anyone_besieged == 0) {
-	    console.log("no-one found besieged...");
 	    return 1;
 	  }
 
@@ -4330,8 +4314,6 @@ console.log("FACTIONS: " + JSON.stringify(leaders_left_factions));
 	  let defender = mv[3];
 	  let defender_spacekey = mv[4];
 
-console.log("checking if " +defender+ " can intercept into " + spacekey);
-
           let controller_of_defender = this.returnPlayerCommandingFaction(defender);
           if (controller_of_defender == 0) { return 1; }
  
@@ -4346,9 +4328,7 @@ console.log("checking if " +defender+ " can intercept into " + spacekey);
 	    let cf = this.returnControllingPower(f);
 	    if (this.areEnemies(cf, defender)) {
 	      if (this.returnFactionNavalUnitsInSpace(cf, spacekey, true) > 0) {
-console.log("and they have units in space...");
 	        if (this.returnControllingPower(cf) != this.returnControllingPower(attacker)) {
-console.log("and they have units in space...");
 		  return 1;
 	        }
 	      }
@@ -5133,21 +5113,16 @@ console.log("and they have units in space...");
 	  //
 	  let have_i_resolved = false;
 	  if (this.game.confirms_needed[this.game.player-1] == 0) {
-console.log("reason 1 yes");
 	    have_i_resolved = true;
 	  } else {
 	    if (this.game.tmp_confirm_sent == 1) { 
-console.log("reason 2 yes");
 	      have_i_resolved = true;
 	    } else {
 	      if (await this.hasMyResolvePending()) {
-console.log("reason 3 yes");
 	        have_i_resolved = true;
 	      }
 	    }
 	  }
-
-console.log("have I resolved: " + have_i_resolved);
 
 	  //
 	  //
@@ -5241,19 +5216,9 @@ console.log("have I resolved: " + have_i_resolved);
 	  //
 	  if (this.game.state.skip_counter_or_acknowledge == 1) {
 	    if (attach_menu_events == 0) {
-	      //
-	      // replaces so we do not sent 2x
-	      //
-//	      his_self.game.queue[his_self.game.queue.length-1] = "halted";
-//if (his_self.game.confirms_needed[his_self.game.player-1] == 1) {
-console.log("1");
-console.log("1");
-console.log("1");
-console.log("1");
 	      his_self.game.tmp_confirm_sent = 1;
 	      his_self.game.confirms_needed[his_self.game.player-1] = 1;
               his_self.addMove("RESOLVE\t"+his_self.publicKey);
-//}
               his_self.endTurn();
 	      his_self.updateStatus("skipping acknowledge...");
 	      return 0;
@@ -5313,10 +5278,6 @@ console.log("1");
 
 	    });
 
-console.log("2");
-console.log("2");
-console.log("2");
-console.log("2");
 	    his_self.game.tmp_confirm_sent = 1;
             his_self.addMove("RESOLVE\t"+his_self.publicKey);
             his_self.endTurn();
@@ -5390,10 +5351,6 @@ console.log("2");
 		    }, 5);
 	    });
 
-console.log("3");
-console.log("3");
-console.log("3");
-console.log("3");
 	    his_self.game.tmp_confirm_sent = 1;
             his_self.addMove("RESOLVE\t"+his_self.publicKey);
             his_self.endTurn();

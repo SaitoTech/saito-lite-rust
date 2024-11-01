@@ -48,16 +48,9 @@ class Arcade extends ModTemplate {
 		this.styles = ['/arcade/style.css'];
 
 		this.affix_callbacks_to = [];
-		console.log("before PeerService ////");
-
 
 		this.services = [this.app.network.createPeerService(null, 'arcade', '', 'saito')];
 		
-
-		console.log('this.services: ', this.services);
-
-		console.log("after PeerService ////");
-
 		this.invite_cutoff = 3500000;
 		this.game_cutoff = 600000000;
 
@@ -103,16 +96,6 @@ class Arcade extends ModTemplate {
 
 					// save with turn updated, so reload works
 					app.storage.saveOptions();
-
-					//if (prev_target == target){
-					//	prev_target--;
-					//	if (prev_target < 1){
-					//		prev_target = game.players.length;
-					//	}
-					//	console.log("Adjust prev target");
-					//}
-					//console.log("Last: ", prev_target, "Me:", target);
-					//console.log(`${this.app.keychain.returnUsername(game.players[prev_target-1])} played a move **********`);
 
 					siteMessage(`It is now your turn in ${game.module}`, 5000);
 					app.connection.emit('arcade-invite-manager-render-request');
@@ -191,8 +174,6 @@ class Arcade extends ModTemplate {
 			if (this.app.options.games) {
 				this.purgeBadGamesFromWallet();
 
-				//console.log("Processing games from app.options:");
-
 				for (let game of this.app.options.games) {
 					if (game.players.includes(this.publicKey) || game.accepted.includes(this.publicKey)) {
 						if (game.over) {
@@ -220,13 +201,10 @@ class Arcade extends ModTemplate {
 
 			//Check for server delivered data load
 			if (window?.game) {
-				console.log('GAME FROM WEBSERVER!!!!!');
-				console.log(window.game);
 				let tx = this.createGameFromRecord(window.game);
 				this.addGame(tx, window.game?.status);
 			}
 
-			//console.log(JSON.parse(JSON.stringify(this.games)));
 			this.app.connection.emit('arcade-invite-manager-render-request');
 		}
 
@@ -355,9 +333,6 @@ class Arcade extends ModTemplate {
 
 			if (res?.rows) {
 				for (let record of res.rows) {
-					if (this.debug) {
-						console.log(JSON.parse(JSON.stringify(record)));
-					}
 
 					let game_tx = this.createGameFromRecord(record);
 					//
@@ -367,7 +342,6 @@ class Arcade extends ModTemplate {
 
 					//Game is marked as "active" but we didn't already add it from our app.options file...
 					if (record.status == "active" && game_added && arcade_self.isMyGame(game_tx)){
-						console.log("ARCADE: Asynchronous game creation!")
 						game_tx.msg.game_id = game_tx.signature;
 						arcade_self.receiveAcceptTransaction(game_tx);
 					}
@@ -378,12 +352,8 @@ class Arcade extends ModTemplate {
 			// For processing direct link to game invite
 			//
 			if (arcade_self.app.browser.returnURLParameter('game_id')) {
+
 				let game_id_short = arcade_self.app.browser.returnURLParameter('game_id');
-
-				if (arcade_self.debug) {
-					console.log('attempting to join game... ' + game_id_short);
-				}
-
 				let game = arcade_self.returnGameFromHash(game_id_short);
 
 				if (!game) {
@@ -392,7 +362,6 @@ class Arcade extends ModTemplate {
 				}
 
 				if (arcade_self.isAvailableGame(game)) {
-					console.log('Make it my game');
 					//Mark myself as an invited guest
 					//game.msg.options.desired_opponent_publickey = this.publicKey;
 
@@ -422,22 +391,13 @@ class Arcade extends ModTemplate {
 		}
 
 		if (service.service === 'archive') {
-console.log("on peer service up...2 ");
 			for (let game of this.app.options.games) {
-console.log("on peer service up...3 ");
 
 				if (game?.over) {
 					continue;
 				}
 
 				let query = game.module + '_' + game.id;
-
-				console.log("*");
-				console.log("* *");
-				console.log("* * *");
-				console.log("* *");
-				console.log("*");
-				console.log("Arcade check for missed game events: ", query);
 
 				let game_mod = this.app.modules.returnModule(game.module);
 
@@ -450,7 +410,7 @@ console.log("on peer service up...3 ");
 				//
 	                        let noload = app.browser.returnURLParameter('noload');
         	                if (noload) { return; }
-/****
+
 				this.app.storage.loadTransactions(
 					{
 						field1: query
@@ -467,7 +427,7 @@ console.log("on peer service up...3 ");
 					},
 					peer
 				);
-****/
+
 			}
 		}
 	}
@@ -505,9 +465,7 @@ console.log("on peer service up...3 ");
 
 			let path = window.location.pathname.split("/");
 			let game_name = path.pop();
-			console.log(game_name);
 			let game_mod = this.app.modules.returnModuleBySlug(game_name);
-			console.log(game_mod);
 			if (game_mod){
 				game_mod.game = null;
 				game_mod.attachEvents();
@@ -682,7 +640,6 @@ console.log("on peer service up...3 ");
 	////////////////////////////////////////////////////
 
 	async onConfirmation(blk, tx, conf) {
-		// console.log("onConfirmation called");
 		let txmsg = tx.returnMessage();
 		let arcade_self = this.app.modules.returnModule('Arcade');
 
@@ -718,7 +675,6 @@ console.log("on peer service up...3 ");
 					// kick off game initialization
 					//
 					if (txmsg.request === 'accept') {
-console.log("arcade - receive accept tx");
 						await arcade_self.receiveAcceptTransaction(tx);
 					}
 				} else {
@@ -809,7 +765,6 @@ console.log("arcade - receive accept tx");
 	        // Which will pop up a yes/no demand for immediate response
 
 	        if (txmsg.request == "challenge") {
-	        	 console.log("RECEIVE CHALLENGE!");
 	          this.receiveChallengeTransaction(tx);
 	        }
 
@@ -854,7 +809,6 @@ console.log("arcade - receive accept tx");
 		}
 		let peers = await this.app.network.getPeers();
 		for (let peer of peers) {
-			// console.log("sync type : " + peer.peerIndex + " -> " + peer.synctype);
 			if (peer.synctype == 'lite') {
 				//
 				// fwd tx to peer
@@ -863,7 +817,6 @@ console.log("arcade - receive accept tx");
 				message.request = 'arcade spv update';
 				message.data = tx.toJson();
 
-				// console.log("notifying peer : " + peer.peerIndex);
 				this.app.network
 					.sendRequestAsTransaction(message.request, message.data, null, peer.peerIndex)
 					.then(() => {
@@ -920,13 +873,6 @@ console.log("arcade - receive accept tx");
 			players_sigs: [accept_sig],
 			originator: this.publicKey
 		};
-
-		if (this.debug) {
-			console.log(
-				`Creating ${invitation_type} Game Invite: `,
-				JSON.parse(JSON.stringify(newtx.msg))
-			);
-		}
 
 		newtx.packData();
 		await newtx.sign();
