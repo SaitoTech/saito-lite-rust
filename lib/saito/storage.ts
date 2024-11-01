@@ -13,7 +13,7 @@ class Storage {
 	public timeout: any;
 	currentBuildNumber: bigint = BigInt(0);
 	public localDB: any = null;
-	public wallet_options_hash = any;
+	public wallet_options_hash: any = "";
 
 	constructor(app) {
 		this.app = app || {};
