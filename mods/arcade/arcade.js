@@ -714,6 +714,7 @@ class Arcade extends ModTemplate {
 	// handles off-chain transactions, packaged as data by Relay module
 	//
 	async handlePeerTransaction(app, newtx = null, peer, mycallback = null) {
+
 		if (newtx == null) {
 			return 0;
 		}
