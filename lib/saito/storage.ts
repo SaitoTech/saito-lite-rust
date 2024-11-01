@@ -13,12 +13,14 @@ class Storage {
 	public timeout: any;
 	currentBuildNumber: bigint = BigInt(0);
 	public localDB: any = null;
+	public wallet_options_hash: any = '';
 
 	constructor(app) {
 		this.app = app || {};
 		this.active_tab = 1; // TODO - only active tab saves, move to Browser class
 		this.timeout = null;
 		this.localDB = null;
+		this.wallet_options_hash = '';
 	}
 
 	async initialize() {
@@ -29,12 +31,12 @@ class Storage {
 		}
 
 		if (this.app.BROWSER == 1) {
-			try{
+			try {
 				this.localDB = null;
 				await this.initializeApplicationDB();
 				console.log(JSON.stringify(await this.loadLocalApplications()));
-			} catch(err){
-				console.log("Error initializeApplicationDB:", err);
+			} catch (err) {
+				console.log('Error initializeApplicationDB:', err);
 			}
 		}
 
@@ -127,17 +129,9 @@ class Storage {
 				}
 			}
 			if (peer != null) {
-				return await this.app.network.sendRequestAsTransaction(
-					message,
-					data,
-					null,
-					peer.peerIndex
-				);
+				return await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
 			} else {
-				return await this.app.network.sendRequestAsTransaction(
-					message,
-					data
-				);
+				return await this.app.network.sendRequestAsTransaction(message, data);
 			}
 		} catch (error) {
 			console.warn('failed saving tx : ' + tx.signature);
@@ -163,24 +157,15 @@ class Storage {
 			}
 		} else {
 			if (peer != null) {
-				return await this.app.network.sendRequestAsTransaction(
-					message,
-					data,
-					null,
-					peer.peerIndex
-				);
+				return await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
 			} else {
-				return await this.app.network.sendRequestAsTransaction(
-					message,
-					data
-				);
+				return await this.app.network.sendRequestAsTransaction(message, data);
 			}
 		}
 		return { err: 'Save Transaction failed' };
 	}
 
 	async loadTransactions(obj = {}, mycallback, peer = null) {
-
 		let storage_self = this;
 
 		const message = 'archive';
@@ -228,13 +213,9 @@ class Storage {
 			);
 			return [];
 		} else {
-			this.app.network.sendRequestAsTransaction(
-				message,
-				data,
-				function (res) {
-					internal_callback(res);
-				}
-			);
+			this.app.network.sendRequestAsTransaction(message, data, function (res) {
+				internal_callback(res);
+			});
 			return [];
 		}
 
@@ -259,15 +240,11 @@ class Storage {
 		}
 
 		if (peer != null) {
-			this.app.network.sendRequestAsTransaction(
-				message,
-				data,
-				function () {
-					if (mycallback != null) {
-						mycallback();
-					}
+			this.app.network.sendRequestAsTransaction(message, data, function () {
+				if (mycallback != null) {
+					mycallback();
 				}
-			);
+			});
 		}
 	}
 
@@ -289,15 +266,11 @@ class Storage {
 		}
 
 		if (peer != null) {
-			this.app.network.sendRequestAsTransaction(
-				message,
-				data,
-				function (obj) {
-					if (mycallback != null) {
-						mycallback();
-					}
+			this.app.network.sendRequestAsTransaction(message, data, function (obj) {
+				if (mycallback != null) {
+					mycallback();
 				}
-			);
+			});
 		}
 	}
 
@@ -328,6 +301,13 @@ class Storage {
 		}
 	}
 
+	async saveOptionsToForage(){
+		let key = await this.app.wallet.getPublicKey();
+		if (key){
+			localforage.setItem(key, this.app.options);
+		}
+	}
+
 	//
 	// Note: this function won't save options for at least 250 ms from it's call
 	// So, if you are going to redirect the browser after calling it, you need to
@@ -340,44 +320,30 @@ class Storage {
 			}
 		}
 
-		const saveOptionsForReal = async () => {
-//			clearTimeout(this.timeout);
-			//console.log("Actually saving options");
-			try {
-				localStorage.setItem(
-					'options',
-					JSON.stringify(this.app.options)
-				);
+		let new_wallet_json = JSON.stringify(this.app.options);
+		let new_wallet_hash = this.app.crypto.hash(new_wallet_json);
 
-				if (this.app?.wallet) {
-					let key = await this.app.wallet.getPublicKey();
-					localforage
-						.setItem(key, this.app.options)
-						.then(function (value) {
-							//console.log("Local forage updated for public key: " + key);
-						});
-				}
-			} catch (err) {
-				console.error(err);
-				for (let i = 0; i < localStorage.length; i++) {
-					let item = localStorage.getItem(localStorage.key(i));
-					console.log(
-						localStorage.key(i),
-						item.length,
-						item,
-						JSON.parse(item)
-					);
-				}
+		if (new_wallet_hash == this?.wallet_options_hash) {
+			return;
+		}
+
+		try {
+			localStorage.setItem('options', new_wallet_json);
+			
+			//Update hash
+			this.wallet_options_hash = new_wallet_hash;
+
+			//update indexedDB (which is needed for privateKey wallet recovery)
+			this.saveOptionsToForage();
+			
+		} catch (err) {
+			console.error(err);
+			for (let i = 0; i < localStorage.length; i++) {
+				let item = localStorage.getItem(localStorage.key(i));
+				console.log(localStorage.key(i), item.length, item, JSON.parse(item));
 			}
-		};
+		}
 
-//
-// HACK -- debugging game-save issues, try reducing delay to nothing -- JULY 10, 2023
-//
-		saveOptionsForReal();
-
-//		clearTimeout(this.timeout);
-//		this.timeout = setTimeout(saveOptionsForReal, 50);
 	}
 
 	// saveLocalApplication(tx, mod) {
@@ -396,13 +362,13 @@ class Storage {
 		if (!this.app.BROWSER) {
 			return;
 		}
-		
+
 		if (this.app.BROWSER) {
 			let obj = {
-				'mod': mod,
-				'binary': bin,
-				'created_at': new Date().getTime(),
-				'updated_at': new Date().getTime(), 
+				mod: mod,
+				binary: bin,
+				created_at: new Date().getTime(),
+				updated_at: new Date().getTime()
 			};
 
 			console.log('obj: ', obj);
@@ -411,10 +377,10 @@ class Storage {
 				into: 'dyn_mods',
 				values: [obj]
 			});
-	
+
 			let v = await this.loadLocalApplications();
 			console.log('POST INSERT: ' + JSON.stringify(v));
-		}		
+		}
 	}
 
 	async loadLocalApplications(mod_slug = null) {
@@ -426,19 +392,19 @@ class Storage {
 			let obj = {
 				from: 'dyn_mods',
 				order: { by: 'id', type: 'desc' }
-			}
+			};
 
 			if (mod_slug != null) {
 				obj['where'] = {
-			        mod: mod_slug
-			    };
+					mod: mod_slug
+				};
 			}
 
 			let rows = await this.localDB.select(obj);
 
 			return rows;
 		} catch (err) {
-			console.log("Error loadLocalApplications: ", err);
+			console.log('Error loadLocalApplications: ', err);
 		}
 	}
 
@@ -449,25 +415,22 @@ class Storage {
 			}
 
 			let rowsDeleted = await this.localDB.remove({
-			    from: "dyn_mods",
-			    where: {
-			        mod: mod_slug
-			    }
+				from: 'dyn_mods',
+				where: {
+					mod: mod_slug
+				}
 			});
 
 			return rowsDeleted;
 		} catch (err) {
-			console.log("Error removeLocalApplication: ", err);
+			console.log('Error removeLocalApplication: ', err);
 		}
 	}
 
 	async initializeApplicationDB() {
 		if (this.app.BROWSER) {
-
-			console.log("inside initializeApplicationDB ///");
-			this.localDB = new JsStore.Connection(
-				new Worker('/saito/lib/jsstore/jsstore.worker.js')
-			);
+			console.log('inside initializeApplicationDB ///');
+			this.localDB = new JsStore.Connection(new Worker('/saito/lib/jsstore/jsstore.worker.js'));
 
 			//
 			// create Local database
@@ -499,7 +462,6 @@ class Storage {
 		return;
 	}
 
-
 	getModuleOptionsByName(modname) {
 		for (let i = 0; i < this.app.options.modules.length; i++) {
 			if (this.app.options.modules[i].name === modname) {
@@ -512,7 +474,7 @@ class Storage {
 	/**
 	 * DUMMY FUNCTIONS IMPLEMENTED BY STORAGE-CORE IN ./core/storage-core.js
 	 **/
-	deleteBlockFromDisk(filename) { }
+	deleteBlockFromDisk(filename) {}
 
 	async loadBlockById(bid): Promise<Block> {
 		return null;
@@ -546,25 +508,25 @@ class Storage {
 		return '';
 	}
 
-	saveClientOptions() { }
+	saveClientOptions() {}
 
 	async returnDatabaseByName(dbname) {
 		return null;
 	}
 
-	async returnBlockFilenameByHash(block_hash, mycallback) { }
+	async returnBlockFilenameByHash(block_hash, mycallback) {}
 
 	returnTokenSupplySlipsFromDisk(): any {
 		return [];
 	}
 
-	returnBlockFilenameByHashPromise(block_hash: string) { }
+	returnBlockFilenameByHashPromise(block_hash: string) {}
 
-	async queryDatabase(sql, params, database) { }
+	async queryDatabase(sql, params, database) {}
 
-	async runDatabase(sql, params, database, mycallback = null) { }
+	async runDatabase(sql, params, database, mycallback = null) {}
 
-	async executeDatabase(sql, database) { }
+	async executeDatabase(sql, database) {}
 
 	generateBlockFilename(block: Block): string {
 		return ''; // empty
@@ -601,20 +563,12 @@ class Storage {
 						let peers = await this.app.network.getPeers();
 						console.log('peers', peers);
 						peers.forEach((peer) => {
-							this.app.network.sendRequest(
-								'software-update',
-								data,
-								null,
-								peer
-							);
+							this.app.network.sendRequest('software-update', data, null, peer);
 						});
 
 						this.currentBuildNumber = buildNumber;
 
-						console.log(
-							'Updated build number to:',
-							this.currentBuildNumber
-						);
+						console.log('Updated build number to:', this.currentBuildNumber);
 					} else {
 						// console.log("Current build number is up-to-date or higher");
 					}
