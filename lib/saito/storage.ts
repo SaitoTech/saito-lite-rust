@@ -62,15 +62,6 @@ class Storage {
 			}
 		}
 
-		//
-		// we reference this when saving to know if we should update
-		//
-		// this is needed to avoid multiple rapid-saves with processing
-		// async gaming transactions, for instance. as we will save after
-		// submitting a move to a game, even if the move is old.
-		//
-		this.wallet_options_hash = this.app.crypto.hash(JSON.stringify(this.app.options));
-
 		await this.resetOptions();
 	}
 
