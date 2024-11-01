@@ -411,6 +411,7 @@ class Arcade extends ModTemplate {
 	                        let noload = app.browser.returnURLParameter('noload');
         	                if (noload) { return; }
 
+/****
 				this.app.storage.loadTransactions(
 					{
 						field1: query
@@ -427,7 +428,7 @@ class Arcade extends ModTemplate {
 					},
 					peer
 				);
-
+****/
 			}
 		}
 	}
