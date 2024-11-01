@@ -13,12 +13,14 @@ class Storage {
 	public timeout: any;
 	currentBuildNumber: bigint = BigInt(0);
 	public localDB: any = null;
+	public wallet_options_hash = any;
 
 	constructor(app) {
 		this.app = app || {};
 		this.active_tab = 1; // TODO - only active tab saves, move to Browser class
 		this.timeout = null;
 		this.localDB = null;
+	        this.wallet_options_hash = "";
 	}
 
 	async initialize() {
@@ -59,6 +61,15 @@ class Storage {
 				return;
 			}
 		}
+
+		//
+		// we reference this when saving to know if we should update
+		//
+		// this is needed to avoid multiple rapid-saves with processing
+		// async gaming transactions, for instance. as we will save after
+		// submitting a move to a game, even if the move is old.
+		//
+		this.wallet_options_hash = this.app.crypto.hash(JSON.stringify(this.app.options));
 
 		await this.resetOptions();
 	}
@@ -334,29 +345,30 @@ class Storage {
 	// build in a sufficient delay so that the browser can complete
 	//
 	saveOptions() {
+
 		if (this.app.BROWSER == 1) {
 			if (this.active_tab == 0) {
 				return;
 			}
 		}
 
-		const saveOptionsForReal = async () => {
-//			clearTimeout(this.timeout);
-			//console.log("Actually saving options");
+		let should_we_save = true;
+		let new_wallet_json = JSON.stringify(this.app.options);
+		let new_wallet_hash = this.app.crypto.hash(new_wallet_json);
+
+		if (this.wallet_options_hash != "") {
+		  if (new_wallet_hash == this.wallet_options_hash) { should_we_save = false; return; }
+		}
+
+
+		if (should_we_save == true) {
+
 			try {
 				localStorage.setItem(
 					'options',
-					JSON.stringify(this.app.options)
+					new_wallet_json
 				);
 
-				if (this.app?.wallet) {
-					let key = await this.app.wallet.getPublicKey();
-					localforage
-						.setItem(key, this.app.options)
-						.then(function (value) {
-							//console.log("Local forage updated for public key: " + key);
-						});
-				}
 			} catch (err) {
 				console.error(err);
 				for (let i = 0; i < localStorage.length; i++) {
@@ -369,15 +381,10 @@ class Storage {
 					);
 				}
 			}
-		};
 
-//
-// HACK -- debugging game-save issues, try reducing delay to nothing -- JULY 10, 2023
-//
-		saveOptionsForReal();
+			this.wallet_options_hash = new_wallet_hash;
+		}
 
-//		clearTimeout(this.timeout);
-//		this.timeout = setTimeout(saveOptionsForReal, 50);
 	}
 
 	// saveLocalApplication(tx, mod) {
