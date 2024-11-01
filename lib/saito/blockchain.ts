@@ -21,7 +21,6 @@ export default class Blockchain extends SaitoBlockchain {
 	}
 
 	async resetBlockchain() {
-		console.log('resetting blockchain');
 		this.app.options.blockchain = {
 			last_block_hash: DefaultEmptyBlockHash,
 			last_block_id: 0,
@@ -58,7 +57,6 @@ export default class Blockchain extends SaitoBlockchain {
 			),
 			fork_id: await this.instance.get_fork_id()
 		};
-		// console.log("saveBlockchain : ", this.app.options.blockchain);
 		this.app.storage.saveOptions();
 	}
 
@@ -79,22 +77,17 @@ export default class Blockchain extends SaitoBlockchain {
 		this.app.connection.on(
 			'add-block-success',
 			async ({ blockId, hash }) => {
-				console.log("calling add block success on : " + hash + " with id : " + blockId);
 				await this.onAddBlockSuccess(blockId, hash);
-				console.log("done calling add block success on : " + hash + " with id : " + blockId);
 			}
 		);
 	}
 
 	public async affixCallbacks(block: Block) {
-		console.log(' --- AFFIX CALLBACK --- ' + block.id);
-		console.log('affixing callbacks for block : ' + block.hash);
 		let callbacks = [];
 		let callbackIndices = [];
 		let txs: Transaction[] = block.transactions as Transaction[];
 		let validTxs = 0;
 		for (let z = 0; z < txs.length; z++) {
-			// console.log("tx type : " + (txs[z].type as TransactionType));
 			if (txs[z].type === TransactionType.Normal) {
 				await txs[z].decryptMessage(this.app);
 				const txmsg = txs[z].returnMessage();
@@ -113,14 +106,12 @@ export default class Blockchain extends SaitoBlockchain {
 				validTxs++;
 			}
 		}
-		// console.log(`affixed callbacks for : ${validTxs} out of ${txs.length}`);
 		this.callbacks.set(block.hash, callbacks);
 		this.callbackIndices.set(block.hash, callbackIndices);
 		this.confirmations.set(block.hash, BigInt(-1));
 	}
 
 	public async onNewBlock(block: Block, lc: boolean) {
-		console.log('on new block : ' + block.hash);
 		await this.saveBlockchain();
 		this.app.modules.onNewBlock(block, lc);
 	}
