@@ -25365,6 +25365,10 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	    if (!c.destroyed) {
 
 	      let x = this.rollDice(6) + this.rollDice(6);
+
+// TESTING / HACK TO DESTROY
+x = 2;
+
 	      c.base_roll = x;
 
 	      if (this.game.state.plantations[c.faction] == 1) { x++; }
@@ -35962,13 +35966,13 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 0;
-//if (f == "france") { cardnum = 0; }
-//if (f == "papacy") { cardnum = 0; }
-//if (f == "hapsburg") { cardnum = 3; }
-//if (f == "protestant") { cardnum = 0; }
-//if (f == "england") { cardnum = 0; }
-//if (f == "ottoman") { cardnum = 10; }
+cardnum = 0;
+if (f == "france") { cardnum = 0; }
+if (f == "papacy") { cardnum = 0; }
+if (f == "hapsburg") { cardnum = 0; }
+if (f == "protestant") { cardnum = 0; }
+if (f == "england") { cardnum = 0; }
+if (f == "ottoman") { cardnum = 0; }
 
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
