@@ -1323,6 +1323,7 @@ console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 	// temporarily disabled
 	//
 	public async addTransactionToPending(tx: Transaction, save = true) {
+		if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; }		
 		return;
 //		if (save) {
 //			if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; }
