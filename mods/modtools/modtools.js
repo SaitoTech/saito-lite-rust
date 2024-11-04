@@ -35,7 +35,7 @@ class ModTools extends ModTemplate {
 		this.class = 'modtools';
 		this.categories = 'Core Moderation';
 		this.icon = 'fas fa-eye-slash';
-		this.prune_after = 1500000; // ~1 day
+		this.prune_after = 200000000; // ~2 day
 		//this.prune_after = 60000; // ~1 minute
 		this.max_hops = 2; // stop blacklisting after N hops
 		this.styles = [];
@@ -729,7 +729,7 @@ class ModTools extends ModTemplate {
 			}
 		} else {
 			if (this.prune_after < current_time - obj.created_at) {
-				false;
+				return false;
 			}
 		}
 
