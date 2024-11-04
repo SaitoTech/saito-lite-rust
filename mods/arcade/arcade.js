@@ -395,24 +395,18 @@ class Arcade extends ModTemplate {
 		if (service.service === 'archive') {
 			for (let game of this.app.options.games) {
 
-				if (game?.over) {
-					continue;
-				}
+				if (game?.over) { continue; }
 
 				let query = game.module + '_' + game.id;
-
 				let game_mod = this.app.modules.returnModule(game.module);
 
-				if (!game_mod){
-					continue;
-				}
+				if (!game_mod) { continue; }
 
 				//
 				// URL param includes this to skip archive fetch
 				//
 	                        let noload = app.browser.returnURLParameter('noload');
         	                if (noload) { return; }
-
 
 				this.app.storage.loadTransactions(
 					{

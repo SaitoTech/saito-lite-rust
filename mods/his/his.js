@@ -3095,8 +3095,15 @@ console.log("\n\n\n\n");
 	  this.controlSpace("hapsburg", "agram", 1);
 
 
-	  this.addNavalSquadron("france", "marseille", 2); 
 	  this.addNavalSquadron("hapsburg", "barcelona", 2); 
+	  this.addNavalSquadron("hapsburg", "adriatic", 1); 
+	  this.addNavalSquadron("hapsburg", "gulflyon", 3); 
+	  this.addNavalSquadron("hapsburg", "tyrrhenian", 3); 
+	  this.addNavalSquadron("hapsburg", "gibraltar", 1); 
+
+	  this.addNavalSquadron("ottoman", "ionian", 3); 
+	  this.addCorsair("ottoman", "barbary", 3); 
+
 
 
 	  this.addNavalSquadron("hapsburg", "tyrrhenian", 3);
@@ -6112,8 +6119,8 @@ console.log("selected: " + spacekey);
           //
           his_self.playerSelectSpaceWithFilter(
                 
-            "Add 4 regulars in Ottoman Home Space or Foreign War",
-                
+            "Add 4 regulars in Ottoman Home Space or Foreign War: #1", 
+               
             function(space) {
               if (space.political != "" && space.political != "ottoman") { return 0; }
               if (space.key === "oran") { return 0; }
@@ -6125,11 +6132,93 @@ console.log("selected: " + spacekey);
             },
 
 	    function(spacekey) {
-	      his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey);
-	      his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey);
-	      his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey);
-	      his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey);
-	      his_self.endTurn();
+	      his_self.addRegular("ottoman", spacekey, 1);
+	      his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey+"\t"+his_self.game.player);
+
+	      //
+	      // #2
+	      //
+              his_self.playerSelectSpaceWithFilter(
+                
+                "Add 4 regulars in Ottoman Home Space or Foreign War: #2",                
+
+                function(space) {
+                  if (space.political != "" && space.political != "ottoman") { return 0; }
+                  if (space.key === "oran") { return 0; }
+                  if (space.key === "algiers") { return 0; }
+                  if (space.pirate_haven === 1) { return 0; }
+                  if (space.home == "ottoman") { return 1; }
+                  if ((space.key == "persia" && his_self.game.state.events.war_in_persia == 1) || (space.key == "egypt" && his_self.game.state.events.revolt_in_egypt == 1)) { return 1; }
+	          return 0;
+                },
+
+	        function(spacekey) {
+	          his_self.addRegular("ottoman", spacekey, 1);
+	          his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey+"\t"+his_self.game.player);
+
+	      	  //
+	      	  // #3
+	          //
+                  his_self.playerSelectSpaceWithFilter(
+                
+                    "Add 4 regulars in Ottoman Home Space or Foreign War: #2",                
+
+                    function(space) {
+                      if (space.political != "" && space.political != "ottoman") { return 0; }
+                      if (space.key === "oran") { return 0; }
+                      if (space.key === "algiers") { return 0; }
+                      if (space.pirate_haven === 1) { return 0; }
+                      if (space.home == "ottoman") { return 1; }
+                      if ((space.key == "persia" && his_self.game.state.events.war_in_persia == 1) || (space.key == "egypt" && his_self.game.state.events.revolt_in_egypt == 1)) { return 1; }
+	              return 0;
+                    },
+
+	            function(spacekey) {
+	              his_self.addRegular("ottoman", spacekey, 1);
+	              his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey+"\t"+his_self.game.player);
+
+	              //
+	      	      // #3
+	              //
+                      his_self.playerSelectSpaceWithFilter(
+                
+                        "Add 4 regulars in Ottoman Home Space or Foreign War: #2",                
+
+                        function(space) {
+                          if (space.political != "" && space.political != "ottoman") { return 0; }
+                          if (space.key === "oran") { return 0; }
+                          if (space.key === "algiers") { return 0; }
+                          if (space.pirate_haven === 1) { return 0; }
+                          if (space.home == "ottoman") { return 1; }
+                          if ((space.key == "persia" && his_self.game.state.events.war_in_persia == 1) || (space.key == "egypt" && his_self.game.state.events.revolt_in_egypt == 1)) { return 1; }
+	                  return 0;
+                        },
+ 
+	                function(spacekey) {
+	                  his_self.addRegular("ottoman", spacekey, 1);
+	                  his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey+"\t"+his_self.game.player);
+			  his_self.endTurn();
+		        },
+
+			null, 
+
+		        true
+
+		      );
+		    },
+
+		    null, 
+
+		    true
+
+	          );
+	        },
+	        
+	        null,
+
+	        true
+
+	      );
 	    },
 
 	    null,
@@ -6137,8 +6226,7 @@ console.log("selected: " + spacekey);
 	    true
 
 	  );
-
-        }
+	}
 
 	return 0;
       },
@@ -7667,6 +7755,7 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 	// protestant home + political spaces
 	//
 	// skip keys are home for other factions
+	//
 	let skip_keys = ["innsbruck","linz","vienna","graz","zurich","basel"];
 	for (let key in his_self.game.spaces) {
 	  s = his_self.game.spaces[key];
@@ -7674,7 +7763,7 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 	    if (s.religion == "protestant") {
 	      if (!skip_keys.includes(key)) {
 	 	s.home = "protestant";
-	        if (!s.fortified) {
+	        if (!s.fortified && !s.unrest) {
 	          s.political = "protestant";
 	        }
 	      }
@@ -9950,7 +10039,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  for (let i = 0; i < powers.length; i++) {
 	    if (powers[i] !== faction) {
 	      if (!(powers[i] == "protestant" && his_self.game.state.events.schmalkaldic_league == 1)) {
-		if (!his_self.areEnemies(powers[i], faction)) {
+		if (!his_self.areEnemies(powers[i], faction) && !his_self.areAllies(powers[i], faction)) {
                   html += `<li class="option" id="${powers[i]}">${powers[i]}</li>`;
 	        }
 	      }
@@ -13333,8 +13422,6 @@ console.log("we have removed philip and redisplayed the space...");
 	    }
 
 
-cancel_func = null, permit_no_selection = false
-
             his_self.playerFactionSelectCardWithFilter(
 
 	      target,
@@ -13362,6 +13449,7 @@ cancel_func = null, permit_no_selection = false
 		let c = his_self.game.deck[0].cards[card].ops;	      
 
   	  	his_self.addMove("discard\t"+target+"\t"+card);
+		his_self.addMove("NOTIFY\t" + his_self.returnFactionName(target) + " discards " + his_self.popup(card));
 
 		let retained = 2;
 		if (c == 2) { retained = 4; }
@@ -21138,12 +21226,12 @@ if (x) {
     //
     if (this.game.state.events.cranmer_active == 1) { 
       if (this.game.state.round >= 3) {
-        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer");
+        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer-reformer");
         if (where_is_cranmer == "") { this.game.state.events.cranmer_active = 0; }
       }
     } else {
       if (this.game.state.round >= 3) {
-        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer");
+        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer-reformer");
         if (where_is_cranmer != "") { this.game.state.events.cranmer_active = 1; }
       }
     }
@@ -21540,6 +21628,7 @@ if (x) {
 
   addCorsair(faction, space, num=1) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "corsair"));
     }
@@ -23475,7 +23564,9 @@ if (this.game.options.scenario != "is_testing") {
 	          this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 		}
 
-	        this.game.queue.push("retreat_to_winter_spaces");
+//
+// done elsewhere, right?
+//	        this.game.queue.push("retreat_to_winter_spaces");
 
 	      }
 	    }
@@ -23546,7 +23637,7 @@ if (this.game.options.scenario != "is_testing") {
 	      }
 
 	      //
-	      //
+	      // round 3 or later ?
 	      //
     	      if (this.game.state.round < 5 && this.game.state.henry_viii_marital_status >= 2 && this.game.state.henry_viii_reformation_started != 1) {
 	        this.game.state.henry_viii_reformation_started = 1;
@@ -25285,10 +25376,12 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	      }
 	      if (x > 4 && x < 9 && c.faction == this.game.state.events.native_uprising) {
 	        x = 2;
+	        this.updateLog(this.returnFactionName(this.game.state.events.native_uprising) + " hurt by Native Uprising");
 	        this.game.state.events.native_uprising = "";
 	      }
 	      if (x > 4 && x < 9 && c.faction == this.game.state.events.colonial_governor) {
 	        x = 10;
+	        this.updateLog(this.returnFactionName(this.game.state.events.colonial_governor) + " helped by Colonial Governor");
 	        this.game.state.events.colonial_governor = "";
 	      }
 	      if (x <= 4) { 
@@ -26129,6 +26222,9 @@ console.log("----------------------------");
 	            if (this.game.navalspaces[current_destination]) {
 	              cdest = this.game.navalspaces[current_destination];
 	            }
+
+		    // refresh for each new destination
+		    who_wants_a_fight = [];
 
                     for (let f in cdest.units) {
                       if (cdest.units[f].length > 0 && f != faction) {
@@ -29797,14 +29893,14 @@ try {
 	    let max_possible_hits_assignable = 0;
 	    let faction_map = his_self.game.state.field_battle.faction_map;
 
-	    if (faction === "independent") {
+	    if (faction == "independent") {
 	      max_possible_hits_assignable += his_self.returnFactionLandUnitsInSpace(faction, space);
 	    } else {
 	      //
 	      // max hits to assign are the faction land units
 	      //
-	      for (let f in his_self.game.state.faction_map) {
-	        if (faction_map[f] === faction) {
+	      for (let f in faction_map) {
+	        if (faction_map[f] == faction) {
 	      	  max_possible_hits_assignable += his_self.returnFactionLandUnitsInSpace(f, space);
 	        }
 	      }
@@ -29901,6 +29997,8 @@ try {
 	        }
 	      }
 
+console.log("and out!");
+
 	      //
 	      // we now have fewer hits to assign than there are factions available
 	      // to share the damage, so we pick randomly by rolling a dice.
@@ -29958,6 +30056,7 @@ try {
 	  // auto-assign hits to independent entities
 	  //
 	  if (player == 0) {
+console.log("player is zero...");
 	    if (faction === this.game.state.field_battle.attacker_faction) {
 	      assign_hits(faction, this.game.state.field_battle.defender_hits);
 	    } else {
@@ -32251,6 +32350,7 @@ try {
           this.game.queue.splice(qe, 1);
 	  this.game.state.assault = {};
           this.game.state.assaulted_this_impulse = 1;
+	  this.game.state.events.roxelana = 0; // no more free assaults :)
 
 	  //
 	  // calculate rolls
@@ -35863,11 +35963,12 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		if (cardnum < 0) { cardnum = 0; }
 
 //cardnum = 0;
+//if (f == "france") { cardnum = 0; }
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 3; }
 //if (f == "protestant") { cardnum = 0; }
 //if (f == "england") { cardnum = 0; }
-//if (f == "ottoman") { cardnum = 3; }
+//if (f == "ottoman") { cardnum = 10; }
 
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
@@ -40763,6 +40864,19 @@ if (relief_siege == 1) {
       return;
     }
 
+
+    //
+    // Roxelana offers free Assault
+    //
+    if (this.game.state.events.roxelana == 1 && faction == "ottoman") {
+      for (let m in menu) {
+	if (menu[m].name === "Assault") {
+	  menu[m].cost = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	}
+      }
+    }
+
+
     //
     // "ACTIVATED POWERS" are those for whom players have the choice of moving.
     // this can be triggered through alliance with a minor power, or through a 
@@ -40799,6 +40913,17 @@ if (relief_siege == 1) {
       this.attachCardboxEvents(function(selected_faction) {
 
         menu = this.returnActionMenuOptions(this.game.player, selected_faction, limit);
+
+        //
+        // Roxelana offers free Assault
+        //
+        if (this.game.state.events.roxelana == 1 && faction == "ottoman") {
+          for (let m in menu) {
+	    if (menu[m].name === "Assault") {
+	      menu[m].cost = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	    }
+          }
+        }
 
 	//
 	// duplicates code below
@@ -45168,14 +45293,13 @@ does_units_to_move_have_unit = true; }
       }
     } else {
 
-      if (faction == "protestant" && his_self.game.state.events.schmalkaldic_league == 0 && his_self.game.spaces[spaces_in_unrest[i]].language == "german") { spaces_to_fix.push(spaces_in_unrest[i]); }
 
       let adjacent_influence = his_self.returnSpacesWithAdjacentFactionInfantry(faction);
       let direct_influence = his_self.returnSpacesWithFactionInfantry(faction);
 
       for (let i = 0; i < spaces_in_unrest.length; i++) {
 
-        if (faction == "protestant" && (his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" || his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant")) {spaces_to_fix.push(spaces_in_unrest[i]);} else {
+        if (faction == "protestant" && his_self.game.state.events.schmalkaldic_league == 0 && his_self.game.spaces[spaces_in_unrest[i]].language == "german") { spaces_to_fix.push(spaces_in_unrest[i]); } else {
 
         //
         // i have regulars / infantry in this space

@@ -130,7 +130,9 @@ if (this.game.options.scenario != "is_testing") {
 	          this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 		}
 
-	        this.game.queue.push("retreat_to_winter_spaces");
+//
+// done elsewhere, right?
+//	        this.game.queue.push("retreat_to_winter_spaces");
 
 	      }
 	    }
@@ -201,7 +203,7 @@ if (this.game.options.scenario != "is_testing") {
 	      }
 
 	      //
-	      //
+	      // round 3 or later ?
 	      //
     	      if (this.game.state.round < 5 && this.game.state.henry_viii_marital_status >= 2 && this.game.state.henry_viii_reformation_started != 1) {
 	        this.game.state.henry_viii_reformation_started = 1;
@@ -1940,10 +1942,12 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 	      }
 	      if (x > 4 && x < 9 && c.faction == this.game.state.events.native_uprising) {
 	        x = 2;
+	        this.updateLog(this.returnFactionName(this.game.state.events.native_uprising) + " hurt by Native Uprising");
 	        this.game.state.events.native_uprising = "";
 	      }
 	      if (x > 4 && x < 9 && c.faction == this.game.state.events.colonial_governor) {
 	        x = 10;
+	        this.updateLog(this.returnFactionName(this.game.state.events.colonial_governor) + " helped by Colonial Governor");
 	        this.game.state.events.colonial_governor = "";
 	      }
 	      if (x <= 4) { 
@@ -2784,6 +2788,9 @@ console.log("----------------------------");
 	            if (this.game.navalspaces[current_destination]) {
 	              cdest = this.game.navalspaces[current_destination];
 	            }
+
+		    // refresh for each new destination
+		    who_wants_a_fight = [];
 
                     for (let f in cdest.units) {
                       if (cdest.units[f].length > 0 && f != faction) {
@@ -6452,14 +6459,14 @@ try {
 	    let max_possible_hits_assignable = 0;
 	    let faction_map = his_self.game.state.field_battle.faction_map;
 
-	    if (faction === "independent") {
+	    if (faction == "independent") {
 	      max_possible_hits_assignable += his_self.returnFactionLandUnitsInSpace(faction, space);
 	    } else {
 	      //
 	      // max hits to assign are the faction land units
 	      //
-	      for (let f in his_self.game.state.faction_map) {
-	        if (faction_map[f] === faction) {
+	      for (let f in faction_map) {
+	        if (faction_map[f] == faction) {
 	      	  max_possible_hits_assignable += his_self.returnFactionLandUnitsInSpace(f, space);
 	        }
 	      }
@@ -6556,6 +6563,8 @@ try {
 	        }
 	      }
 
+console.log("and out!");
+
 	      //
 	      // we now have fewer hits to assign than there are factions available
 	      // to share the damage, so we pick randomly by rolling a dice.
@@ -6613,6 +6622,7 @@ try {
 	  // auto-assign hits to independent entities
 	  //
 	  if (player == 0) {
+console.log("player is zero...");
 	    if (faction === this.game.state.field_battle.attacker_faction) {
 	      assign_hits(faction, this.game.state.field_battle.defender_hits);
 	    } else {
@@ -8906,6 +8916,7 @@ try {
           this.game.queue.splice(qe, 1);
 	  this.game.state.assault = {};
           this.game.state.assaulted_this_impulse = 1;
+	  this.game.state.events.roxelana = 0; // no more free assaults :)
 
 	  //
 	  // calculate rolls
@@ -12518,11 +12529,12 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		if (cardnum < 0) { cardnum = 0; }
 
 //cardnum = 0;
+//if (f == "france") { cardnum = 0; }
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 3; }
 //if (f == "protestant") { cardnum = 0; }
 //if (f == "england") { cardnum = 0; }
-//if (f == "ottoman") { cardnum = 3; }
+//if (f == "ottoman") { cardnum = 10; }
 
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);

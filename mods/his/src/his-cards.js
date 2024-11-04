@@ -2350,8 +2350,8 @@ console.log("selected: " + spacekey);
           //
           his_self.playerSelectSpaceWithFilter(
                 
-            "Add 4 regulars in Ottoman Home Space or Foreign War",
-                
+            "Add 4 regulars in Ottoman Home Space or Foreign War: #1", 
+               
             function(space) {
               if (space.political != "" && space.political != "ottoman") { return 0; }
               if (space.key === "oran") { return 0; }
@@ -2363,11 +2363,93 @@ console.log("selected: " + spacekey);
             },
 
 	    function(spacekey) {
-	      his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey);
-	      his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey);
-	      his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey);
-	      his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey);
-	      his_self.endTurn();
+	      his_self.addRegular("ottoman", spacekey, 1);
+	      his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey+"\t"+his_self.game.player);
+
+	      //
+	      // #2
+	      //
+              his_self.playerSelectSpaceWithFilter(
+                
+                "Add 4 regulars in Ottoman Home Space or Foreign War: #2",                
+
+                function(space) {
+                  if (space.political != "" && space.political != "ottoman") { return 0; }
+                  if (space.key === "oran") { return 0; }
+                  if (space.key === "algiers") { return 0; }
+                  if (space.pirate_haven === 1) { return 0; }
+                  if (space.home == "ottoman") { return 1; }
+                  if ((space.key == "persia" && his_self.game.state.events.war_in_persia == 1) || (space.key == "egypt" && his_self.game.state.events.revolt_in_egypt == 1)) { return 1; }
+	          return 0;
+                },
+
+	        function(spacekey) {
+	          his_self.addRegular("ottoman", spacekey, 1);
+	          his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey+"\t"+his_self.game.player);
+
+	      	  //
+	      	  // #3
+	          //
+                  his_self.playerSelectSpaceWithFilter(
+                
+                    "Add 4 regulars in Ottoman Home Space or Foreign War: #2",                
+
+                    function(space) {
+                      if (space.political != "" && space.political != "ottoman") { return 0; }
+                      if (space.key === "oran") { return 0; }
+                      if (space.key === "algiers") { return 0; }
+                      if (space.pirate_haven === 1) { return 0; }
+                      if (space.home == "ottoman") { return 1; }
+                      if ((space.key == "persia" && his_self.game.state.events.war_in_persia == 1) || (space.key == "egypt" && his_self.game.state.events.revolt_in_egypt == 1)) { return 1; }
+	              return 0;
+                    },
+
+	            function(spacekey) {
+	              his_self.addRegular("ottoman", spacekey, 1);
+	              his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey+"\t"+his_self.game.player);
+
+	              //
+	      	      // #3
+	              //
+                      his_self.playerSelectSpaceWithFilter(
+                
+                        "Add 4 regulars in Ottoman Home Space or Foreign War: #2",                
+
+                        function(space) {
+                          if (space.political != "" && space.political != "ottoman") { return 0; }
+                          if (space.key === "oran") { return 0; }
+                          if (space.key === "algiers") { return 0; }
+                          if (space.pirate_haven === 1) { return 0; }
+                          if (space.home == "ottoman") { return 1; }
+                          if ((space.key == "persia" && his_self.game.state.events.war_in_persia == 1) || (space.key == "egypt" && his_self.game.state.events.revolt_in_egypt == 1)) { return 1; }
+	                  return 0;
+                        },
+ 
+	                function(spacekey) {
+	                  his_self.addRegular("ottoman", spacekey, 1);
+	                  his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey+"\t"+his_self.game.player);
+			  his_self.endTurn();
+		        },
+
+			null, 
+
+		        true
+
+		      );
+		    },
+
+		    null, 
+
+		    true
+
+	          );
+	        },
+	        
+	        null,
+
+	        true
+
+	      );
 	    },
 
 	    null,
@@ -2375,8 +2457,7 @@ console.log("selected: " + spacekey);
 	    true
 
 	  );
-
-        }
+	}
 
 	return 0;
       },
@@ -3905,6 +3986,7 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 	// protestant home + political spaces
 	//
 	// skip keys are home for other factions
+	//
 	let skip_keys = ["innsbruck","linz","vienna","graz","zurich","basel"];
 	for (let key in his_self.game.spaces) {
 	  s = his_self.game.spaces[key];
@@ -3912,7 +3994,7 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 	    if (s.religion == "protestant") {
 	      if (!skip_keys.includes(key)) {
 	 	s.home = "protestant";
-	        if (!s.fortified) {
+	        if (!s.fortified && !s.unrest) {
 	          s.political = "protestant";
 	        }
 	      }
@@ -6188,7 +6270,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  for (let i = 0; i < powers.length; i++) {
 	    if (powers[i] !== faction) {
 	      if (!(powers[i] == "protestant" && his_self.game.state.events.schmalkaldic_league == 1)) {
-		if (!his_self.areEnemies(powers[i], faction)) {
+		if (!his_self.areEnemies(powers[i], faction) && !his_self.areAllies(powers[i], faction)) {
                   html += `<li class="option" id="${powers[i]}">${powers[i]}</li>`;
 	        }
 	      }
@@ -9571,8 +9653,6 @@ console.log("we have removed philip and redisplayed the space...");
 	    }
 
 
-cancel_func = null, permit_no_selection = false
-
             his_self.playerFactionSelectCardWithFilter(
 
 	      target,
@@ -9600,6 +9680,7 @@ cancel_func = null, permit_no_selection = false
 		let c = his_self.game.deck[0].cards[card].ops;	      
 
   	  	his_self.addMove("discard\t"+target+"\t"+card);
+		his_self.addMove("NOTIFY\t" + his_self.returnFactionName(target) + " discards " + his_self.popup(card));
 
 		let retained = 2;
 		if (c == 2) { retained = 4; }

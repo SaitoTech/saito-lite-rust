@@ -30,12 +30,12 @@
     //
     if (this.game.state.events.cranmer_active == 1) { 
       if (this.game.state.round >= 3) {
-        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer");
+        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer-reformer");
         if (where_is_cranmer == "") { this.game.state.events.cranmer_active = 0; }
       }
     } else {
       if (this.game.state.round >= 3) {
-        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer");
+        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer-reformer");
         if (where_is_cranmer != "") { this.game.state.events.cranmer_active = 1; }
       }
     }
@@ -432,6 +432,7 @@
 
   addCorsair(faction, space, num=1) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "corsair"));
     }

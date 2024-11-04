@@ -467,21 +467,8 @@ export default class Wallet extends SaitoWallet {
 		this.app.options.wallet.version = this.version;
 		this.app.options.wallet.default_fee = this.default_fee;
 
-		if (!this.app.options.pending_txs) {
-			this.app.options.pending_txs = [];
-		}
-
-		// fetch latest pending txs from rust and 
-		// add to app.options as serialize_to_web
-		let pending_txs = await this.getPendingTransactions();
-		if (pending_txs.length > 0) {
-			for(let i=0; i<pending_txs.length; i++) {
-				let tx: any = pending_txs[i];
-				this.app.options.pending_txs.push(tx.serialize_to_web(this.app));
-			}
-		} else {
-			this.app.options.pending_txs = [];
-		}
+		this.app.options.pending_txs = await this.getPendingTransactions();
+		if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; }
 
 		let slips = await this.getSlips();
 		this.app.options.wallet.slips = slips.map((slip) => slip.toJson());

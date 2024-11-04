@@ -2220,6 +2220,19 @@ if (relief_siege == 1) {
       return;
     }
 
+
+    //
+    // Roxelana offers free Assault
+    //
+    if (this.game.state.events.roxelana == 1 && faction == "ottoman") {
+      for (let m in menu) {
+	if (menu[m].name === "Assault") {
+	  menu[m].cost = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	}
+      }
+    }
+
+
     //
     // "ACTIVATED POWERS" are those for whom players have the choice of moving.
     // this can be triggered through alliance with a minor power, or through a 
@@ -2256,6 +2269,17 @@ if (relief_siege == 1) {
       this.attachCardboxEvents(function(selected_faction) {
 
         menu = this.returnActionMenuOptions(this.game.player, selected_faction, limit);
+
+        //
+        // Roxelana offers free Assault
+        //
+        if (this.game.state.events.roxelana == 1 && faction == "ottoman") {
+          for (let m in menu) {
+	    if (menu[m].name === "Assault") {
+	      menu[m].cost = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	    }
+          }
+        }
 
 	//
 	// duplicates code below
@@ -6625,14 +6649,13 @@ does_units_to_move_have_unit = true; }
       }
     } else {
 
-      if (faction == "protestant" && his_self.game.state.events.schmalkaldic_league == 0 && his_self.game.spaces[spaces_in_unrest[i]].language == "german") { spaces_to_fix.push(spaces_in_unrest[i]); }
 
       let adjacent_influence = his_self.returnSpacesWithAdjacentFactionInfantry(faction);
       let direct_influence = his_self.returnSpacesWithFactionInfantry(faction);
 
       for (let i = 0; i < spaces_in_unrest.length; i++) {
 
-        if (faction == "protestant" && (his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" || his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant")) {spaces_to_fix.push(spaces_in_unrest[i]);} else {
+        if (faction == "protestant" && his_self.game.state.events.schmalkaldic_league == 0 && his_self.game.spaces[spaces_in_unrest[i]].language == "german") { spaces_to_fix.push(spaces_in_unrest[i]); } else {
 
         //
         // i have regulars / infantry in this space

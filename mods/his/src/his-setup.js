@@ -751,8 +751,15 @@ console.log("\n\n\n\n");
 	  this.controlSpace("hapsburg", "agram", 1);
 
 
-	  this.addNavalSquadron("france", "marseille", 2); 
 	  this.addNavalSquadron("hapsburg", "barcelona", 2); 
+	  this.addNavalSquadron("hapsburg", "adriatic", 1); 
+	  this.addNavalSquadron("hapsburg", "gulflyon", 3); 
+	  this.addNavalSquadron("hapsburg", "tyrrhenian", 3); 
+	  this.addNavalSquadron("hapsburg", "gibraltar", 1); 
+
+	  this.addNavalSquadron("ottoman", "ionian", 3); 
+	  this.addCorsair("ottoman", "barbary", 3); 
+
 
 
 	  this.addNavalSquadron("hapsburg", "tyrrhenian", 3);
