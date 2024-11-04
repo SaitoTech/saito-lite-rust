@@ -31,12 +31,12 @@
     if (this.game.state.events.cranmer_active == 1) { 
       if (this.game.state.round >= 3) {
         let where_is_cranmer = this.isPersonageOnMap("england", "cranmer-reformer");
-        if (where_is_cranmer == "") { this.game.state.events.cranmer_active = 0; }
+        if (where_is_cranmer) { this.game.state.events.cranmer_active = 0; }
       }
     } else {
       if (this.game.state.round >= 3) {
         let where_is_cranmer = this.isPersonageOnMap("england", "cranmer-reformer");
-        if (where_is_cranmer != "") { this.game.state.events.cranmer_active = 1; }
+        if (where_is_cranmer) { this.game.state.events.cranmer_active = 1; }
       }
     }
 
@@ -92,8 +92,8 @@
     //
     if (this.game.state.events.cranmer_active != 1) { 
       if (this.game.state.round >= 3) {
-        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer");
-        if (where_is_cranmer != "") { this.game.state.events.cranmer_active = 1; }
+        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer-reformer");
+        if (where_is_cranmer) { this.game.state.events.cranmer_active = 1; }
       }
     }
 

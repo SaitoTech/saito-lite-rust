@@ -2364,6 +2364,7 @@ console.log("selected: " + spacekey);
 
 	    function(spacekey) {
 	      his_self.addRegular("ottoman", spacekey, 1);
+	      his_self.displayBoard(spacekey);
 	      his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey+"\t"+his_self.game.player);
 
 	      //
@@ -2384,7 +2385,9 @@ console.log("selected: " + spacekey);
                 },
 
 	        function(spacekey) {
+
 	          his_self.addRegular("ottoman", spacekey, 1);
+		  his_self.displayBoard(spacekey);
 	          his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey+"\t"+his_self.game.player);
 
 	      	  //
@@ -2392,7 +2395,7 @@ console.log("selected: " + spacekey);
 	          //
                   his_self.playerSelectSpaceWithFilter(
                 
-                    "Add 4 regulars in Ottoman Home Space or Foreign War: #2",                
+                    "Add 4 regulars in Ottoman Home Space or Foreign War: #3",                
 
                     function(space) {
                       if (space.political != "" && space.political != "ottoman") { return 0; }
@@ -2406,6 +2409,7 @@ console.log("selected: " + spacekey);
 
 	            function(spacekey) {
 	              his_self.addRegular("ottoman", spacekey, 1);
+		      his_self.displayBoard(spacekey);
 	              his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey+"\t"+his_self.game.player);
 
 	              //
@@ -2413,7 +2417,7 @@ console.log("selected: " + spacekey);
 	              //
                       his_self.playerSelectSpaceWithFilter(
                 
-                        "Add 4 regulars in Ottoman Home Space or Foreign War: #2",                
+                        "Add 4 regulars in Ottoman Home Space or Foreign War: #4",                
 
                         function(space) {
                           if (space.political != "" && space.political != "ottoman") { return 0; }
@@ -2427,6 +2431,7 @@ console.log("selected: " + spacekey);
  
 	                function(spacekey) {
 	                  his_self.addRegular("ottoman", spacekey, 1);
+		          his_self.displayBoard(spacekey);
 	                  his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey+"\t"+his_self.game.player);
 			  his_self.endTurn();
 		        },

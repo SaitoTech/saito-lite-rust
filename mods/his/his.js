@@ -6133,6 +6133,7 @@ console.log("selected: " + spacekey);
 
 	    function(spacekey) {
 	      his_self.addRegular("ottoman", spacekey, 1);
+	      his_self.displayBoard(spacekey);
 	      his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey+"\t"+his_self.game.player);
 
 	      //
@@ -6153,7 +6154,9 @@ console.log("selected: " + spacekey);
                 },
 
 	        function(spacekey) {
+
 	          his_self.addRegular("ottoman", spacekey, 1);
+		  his_self.displayBoard(spacekey);
 	          his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey+"\t"+his_self.game.player);
 
 	      	  //
@@ -6161,7 +6164,7 @@ console.log("selected: " + spacekey);
 	          //
                   his_self.playerSelectSpaceWithFilter(
                 
-                    "Add 4 regulars in Ottoman Home Space or Foreign War: #2",                
+                    "Add 4 regulars in Ottoman Home Space or Foreign War: #3",                
 
                     function(space) {
                       if (space.political != "" && space.political != "ottoman") { return 0; }
@@ -6175,6 +6178,7 @@ console.log("selected: " + spacekey);
 
 	            function(spacekey) {
 	              his_self.addRegular("ottoman", spacekey, 1);
+		      his_self.displayBoard(spacekey);
 	              his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey+"\t"+his_self.game.player);
 
 	              //
@@ -6182,7 +6186,7 @@ console.log("selected: " + spacekey);
 	              //
                       his_self.playerSelectSpaceWithFilter(
                 
-                        "Add 4 regulars in Ottoman Home Space or Foreign War: #2",                
+                        "Add 4 regulars in Ottoman Home Space or Foreign War: #4",                
 
                         function(space) {
                           if (space.political != "" && space.political != "ottoman") { return 0; }
@@ -6196,6 +6200,7 @@ console.log("selected: " + spacekey);
  
 	                function(spacekey) {
 	                  his_self.addRegular("ottoman", spacekey, 1);
+		          his_self.displayBoard(spacekey);
 	                  his_self.addMove("build\tland\tottoman\t"+"regular"+"\t"+spacekey+"\t"+his_self.game.player);
 			  his_self.endTurn();
 		        },
@@ -21227,12 +21232,12 @@ if (x) {
     if (this.game.state.events.cranmer_active == 1) { 
       if (this.game.state.round >= 3) {
         let where_is_cranmer = this.isPersonageOnMap("england", "cranmer-reformer");
-        if (where_is_cranmer == "") { this.game.state.events.cranmer_active = 0; }
+        if (where_is_cranmer) { this.game.state.events.cranmer_active = 0; }
       }
     } else {
       if (this.game.state.round >= 3) {
         let where_is_cranmer = this.isPersonageOnMap("england", "cranmer-reformer");
-        if (where_is_cranmer != "") { this.game.state.events.cranmer_active = 1; }
+        if (where_is_cranmer) { this.game.state.events.cranmer_active = 1; }
       }
     }
 
@@ -21288,8 +21293,8 @@ if (x) {
     //
     if (this.game.state.events.cranmer_active != 1) { 
       if (this.game.state.round >= 3) {
-        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer");
-        if (where_is_cranmer != "") { this.game.state.events.cranmer_active = 1; }
+        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer-reformer");
+        if (where_is_cranmer) { this.game.state.events.cranmer_active = 1; }
       }
     }
 
@@ -23642,6 +23647,7 @@ if (this.game.options.scenario != "is_testing") {
     	      if (this.game.state.round < 5 && this.game.state.henry_viii_marital_status >= 2 && this.game.state.henry_viii_reformation_started != 1) {
 	        this.game.state.henry_viii_reformation_started = 1;
 	        this.addDebater("protestant", "cranmer-debater");
+alert("setting cranmer active 1");
 		this.game.state.events.cranmer_active = 1;
 	        this.addDebater("protestant", "latimer-debater");
 	        this.addDebater("protestant", "coverdale-debater");
@@ -25366,9 +25372,6 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 
 	      let x = this.rollDice(6) + this.rollDice(6);
 
-// TESTING / HACK TO DESTROY
-x = 2;
-
 	      c.base_roll = x;
 
 	      if (this.game.state.plantations[c.faction] == 1) { x++; }
@@ -25570,6 +25573,8 @@ x = 2;
 	      }
 	    }
 	  }
+
+	  this.displayNewWorld();
 
 	  this.newworld_overlay.render("results");
     	  this.game.queue.splice(qe, 1);
@@ -28056,11 +28061,6 @@ console.log("----------------------------");
 	  // and undo so as not to affect future intercepts
 	  this.game.state.naval_intercept_bonus = 0;
 
-//
-// TESTING / HACK
-//
-//hits_on = 2;
-
 	  //
 	  // or move if successful !
 	  //
@@ -30001,8 +30001,6 @@ try {
 	        }
 	      }
 
-console.log("and out!");
-
 	      //
 	      // we now have fewer hits to assign than there are factions available
 	      // to share the damage, so we pick randomly by rolling a dice.
@@ -30060,7 +30058,6 @@ console.log("and out!");
 	  // auto-assign hits to independent entities
 	  //
 	  if (player == 0) {
-console.log("player is zero...");
 	    if (faction === this.game.state.field_battle.attacker_faction) {
 	      assign_hits(faction, this.game.state.field_battle.defender_hits);
 	    } else {
@@ -35966,13 +35963,13 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-cardnum = 0;
-if (f == "france") { cardnum = 0; }
-if (f == "papacy") { cardnum = 0; }
-if (f == "hapsburg") { cardnum = 0; }
-if (f == "protestant") { cardnum = 0; }
-if (f == "england") { cardnum = 0; }
-if (f == "ottoman") { cardnum = 0; }
+//cardnum = 0;
+//if (f == "france") { cardnum = 0; }
+//if (f == "papacy") { cardnum = 0; }
+//if (f == "hapsburg") { cardnum = 0; }
+//if (f == "protestant") { cardnum = 0; }
+//if (f == "england") { cardnum = 0; }
+//if (f == "ottoman") { cardnum = 0; }
 
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
@@ -41214,11 +41211,15 @@ if (relief_siege == 1) {
 
 	} else {
 
+console.log("@");
+console.log("@ inbound " + ops);
+console.log("@");
+
 	  let ops_to_spend = 0;
 	  let cost = 0;
 
           for (let z = 0; z < menu[user_choice].factions.length; z++) {
-            if (pfactions.includes(menu[user_choice].factions[z])) {
+            if (faction == menu[user_choice].factions[z]) {
 	      cost = menu[user_choice].cost[z];
               ops -= menu[user_choice].cost[z];
 	      ops_to_spend = menu[user_choice].cost[z];
@@ -51411,6 +51412,14 @@ does_units_to_move_have_unit = true; }
 
     let obj = document.querySelector(".crossing_atlantic");
 
+    document.querySelector('.england_colony1').innerHTML  = ``;
+    document.querySelector('.england_colony2').innerHTML  = ``;
+    document.querySelector('.france_colony1').innerHTML   = ``;
+    document.querySelector('.france_colony2').innerHTML   = ``;
+    document.querySelector('.hapsburg_colony1').innerHTML = ``;
+    document.querySelector('.hapsburg_colony2').innerHTML = ``;
+    document.querySelector('.hapsburg_colony3').innerHTML = ``;
+
     for (let i = 0; i < this.game.state.colonies.length; i++) {
 
       let c = this.game.state.colonies[i];
@@ -51628,9 +51637,9 @@ does_units_to_move_have_unit = true; }
 
   displayNewWorld() {
 try {
+    this.displayColony();
     this.displayConquest();
     this.displayExploration();
-    this.displayColony();
     this.displayNewWorldBonuses();
 } catch (err) {}
   }

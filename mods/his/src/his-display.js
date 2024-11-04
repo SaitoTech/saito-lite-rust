@@ -1175,6 +1175,14 @@
 
     let obj = document.querySelector(".crossing_atlantic");
 
+    document.querySelector('.england_colony1').innerHTML  = ``;
+    document.querySelector('.england_colony2').innerHTML  = ``;
+    document.querySelector('.france_colony1').innerHTML   = ``;
+    document.querySelector('.france_colony2').innerHTML   = ``;
+    document.querySelector('.hapsburg_colony1').innerHTML = ``;
+    document.querySelector('.hapsburg_colony2').innerHTML = ``;
+    document.querySelector('.hapsburg_colony3').innerHTML = ``;
+
     for (let i = 0; i < this.game.state.colonies.length; i++) {
 
       let c = this.game.state.colonies[i];
@@ -1392,9 +1400,9 @@
 
   displayNewWorld() {
 try {
+    this.displayColony();
     this.displayConquest();
     this.displayExploration();
-    this.displayColony();
     this.displayNewWorldBonuses();
 } catch (err) {}
   }

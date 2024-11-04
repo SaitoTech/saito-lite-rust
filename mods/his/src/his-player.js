@@ -2566,11 +2566,15 @@ if (relief_siege == 1) {
 
 	} else {
 
+console.log("@");
+console.log("@ inbound " + ops);
+console.log("@");
+
 	  let ops_to_spend = 0;
 	  let cost = 0;
 
           for (let z = 0; z < menu[user_choice].factions.length; z++) {
-            if (pfactions.includes(menu[user_choice].factions[z])) {
+            if (faction == menu[user_choice].factions[z]) {
 	      cost = menu[user_choice].cost[z];
               ops -= menu[user_choice].cost[z];
 	      ops_to_spend = menu[user_choice].cost[z];

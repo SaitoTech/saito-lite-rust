@@ -208,6 +208,7 @@ if (this.game.options.scenario != "is_testing") {
     	      if (this.game.state.round < 5 && this.game.state.henry_viii_marital_status >= 2 && this.game.state.henry_viii_reformation_started != 1) {
 	        this.game.state.henry_viii_reformation_started = 1;
 	        this.addDebater("protestant", "cranmer-debater");
+alert("setting cranmer active 1");
 		this.game.state.events.cranmer_active = 1;
 	        this.addDebater("protestant", "latimer-debater");
 	        this.addDebater("protestant", "coverdale-debater");
@@ -1932,9 +1933,6 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 
 	      let x = this.rollDice(6) + this.rollDice(6);
 
-// TESTING / HACK TO DESTROY
-x = 2;
-
 	      c.base_roll = x;
 
 	      if (this.game.state.plantations[c.faction] == 1) { x++; }
@@ -2136,6 +2134,8 @@ x = 2;
 	      }
 	    }
 	  }
+
+	  this.displayNewWorld();
 
 	  this.newworld_overlay.render("results");
     	  this.game.queue.splice(qe, 1);
@@ -4622,11 +4622,6 @@ console.log("----------------------------");
 	  // and undo so as not to affect future intercepts
 	  this.game.state.naval_intercept_bonus = 0;
 
-//
-// TESTING / HACK
-//
-//hits_on = 2;
-
 	  //
 	  // or move if successful !
 	  //
@@ -6567,8 +6562,6 @@ try {
 	        }
 	      }
 
-console.log("and out!");
-
 	      //
 	      // we now have fewer hits to assign than there are factions available
 	      // to share the damage, so we pick randomly by rolling a dice.
@@ -6626,7 +6619,6 @@ console.log("and out!");
 	  // auto-assign hits to independent entities
 	  //
 	  if (player == 0) {
-console.log("player is zero...");
 	    if (faction === this.game.state.field_battle.attacker_faction) {
 	      assign_hits(faction, this.game.state.field_battle.defender_hits);
 	    } else {
@@ -12532,13 +12524,13 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-cardnum = 0;
-if (f == "france") { cardnum = 0; }
-if (f == "papacy") { cardnum = 0; }
-if (f == "hapsburg") { cardnum = 0; }
-if (f == "protestant") { cardnum = 0; }
-if (f == "england") { cardnum = 0; }
-if (f == "ottoman") { cardnum = 0; }
+//cardnum = 0;
+//if (f == "france") { cardnum = 0; }
+//if (f == "papacy") { cardnum = 0; }
+//if (f == "hapsburg") { cardnum = 0; }
+//if (f == "protestant") { cardnum = 0; }
+//if (f == "england") { cardnum = 0; }
+//if (f == "ottoman") { cardnum = 0; }
 
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
