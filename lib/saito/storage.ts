@@ -329,6 +329,8 @@ class Storage {
 
 		try {
 			localStorage.setItem('options', new_wallet_json);
+
+			console.log('options saved', new_wallet_json)
 			
 			//Update hash
 			this.wallet_options_hash = new_wallet_hash;
@@ -345,6 +347,7 @@ class Storage {
 		}
 
 	}
+
 
 	// saveLocalApplication(tx, mod) {
 	// 	if (!this.app.options.dyn_mods) { this.app.options.dyn_mods = []; }

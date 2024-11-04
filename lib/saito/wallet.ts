@@ -232,7 +232,7 @@ export default class Wallet extends SaitoWallet {
 				return nf.format(balance_as_float).toString();
 			}
 
-			validateAddress(address){
+			validateAddress(address) {
 				return this.app.wallet.isValidPublicKey(address);
 			}
 		}
@@ -310,6 +310,19 @@ export default class Wallet extends SaitoWallet {
 							}
 						);
 						await this.addSlips(slips);
+
+						// const uniqueSlipsMap = new Map();
+						// this.app.options.wallet.slips.forEach((json: any) => {
+						// 	if (json?.utxokey) {
+						// 		uniqueSlipsMap.set(json.utxokey, json);
+						// 	}
+						// });
+						// const uniqueSlips = Array.from(uniqueSlipsMap.values()).map((json: any) => {
+						// 	const slip = new WalletSlip();
+						// 	slip.copyFrom(json);
+						// 	return slip;
+						// });
+						// await this.addSlips(uniqueSlips);
 					}
 					// reset games and restore game settings
 					this.app.options.games = [];
@@ -351,6 +364,7 @@ export default class Wallet extends SaitoWallet {
 						this.app.options.wallet.preferred_crypto;
 				}
 				if (this.app.options.wallet.slips) {
+					console.log(this.app.options.wallet.slips , "this is the slip")
 					let slips = this.app.options.wallet.slips.map(
 						(json: any) => {
 							let slip = new WalletSlip();
@@ -359,6 +373,19 @@ export default class Wallet extends SaitoWallet {
 						}
 					);
 					await this.addSlips(slips);
+
+					// const uniqueSlipsMap = new Map();
+					// 	this.app.options.wallet.slips.forEach((json: any) => {
+					// 		if (json?.utxokey) {
+					// 			uniqueSlipsMap.set(json.utxokey, json);
+					// 		}
+					// 	});
+					// 	const uniqueSlips = Array.from(uniqueSlipsMap.values()).map((json: any) => {
+					// 		const slip = new WalletSlip();
+					// 		slip.copyFrom(json);
+					// 		return slip;
+					// 	});
+					// 	await this.addSlips(uniqueSlips);
 				}
 			}
 
@@ -369,7 +396,7 @@ export default class Wallet extends SaitoWallet {
 			}
 			let pending_txs = this.app.options.pending_txs;
 			if (pending_txs.length > 0) {
-				for(let i=0; i<pending_txs.length; i++) {
+				for (let i = 0; i < pending_txs.length; i++) {
 					let tx_webstring = this.app.options.pending_txs[i];
 					let newtx = new Transaction();
 					newtx.deserialize_from_web(this.app, tx_webstring);
@@ -401,7 +428,7 @@ export default class Wallet extends SaitoWallet {
 		// this.recreate_pending_transactions = 0;
 	}
 
-	
+
 
 	/**
 	 * Generates a new keypair for the user, resets all stored wallet info, and saves
@@ -475,7 +502,7 @@ export default class Wallet extends SaitoWallet {
 		// add to app.options as serialize_to_web
 		let pending_txs = await this.getPendingTransactions();
 		if (pending_txs.length > 0) {
-			for(let i=0; i<pending_txs.length; i++) {
+			for (let i = 0; i < pending_txs.length; i++) {
 				let tx: any = pending_txs[i];
 				this.app.options.pending_txs.push(tx.serialize_to_web(this.app));
 			}
@@ -484,6 +511,7 @@ export default class Wallet extends SaitoWallet {
 		}
 
 		let slips = await this.getSlips();
+		console.log('gottenf from actual wallet',slips)
 		this.app.options.wallet.slips = slips.map((slip) => slip.toJson());
 
 		await this.save();
@@ -584,7 +612,7 @@ export default class Wallet extends SaitoWallet {
 
 	async returnAvailableCryptosAssociativeArray() {
 
-console.log("into wallet.returnAvailableCryptosAssociativeArray()");
+		console.log("into wallet.returnAvailableCryptosAssociativeArray()");
 
 		let cryptos = {};
 
@@ -607,7 +635,7 @@ console.log("into wallet.returnAvailableCryptosAssociativeArray()");
 			console.error(err);
 			console.log(ticker);
 		}
-console.log("done wallet.returnAvailableCryptosAssociativeArray()");
+		console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 		return cryptos;
 	}
 
@@ -874,8 +902,8 @@ console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 						unique_hash,
 						ticker
 					);
-				} 
-				
+				}
+
 				if (mycallback) {
 					mycallback({ hash: hash });
 				}
@@ -892,7 +920,7 @@ console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 					unique_hash,
 					ticker
 				);
-				mycallback({err: err});
+				mycallback({ err: err });
 				return;
 			}
 		} else {
@@ -1028,8 +1056,8 @@ console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 					// some hope of figuring out why the game isn't progressing.
 					console.log(
 						'Did not receive payment after ' +
-							(pollWaitTime * tries) / 1000 +
-							' seconds'
+						(pollWaitTime * tries) / 1000 +
+						' seconds'
 					);
 					return;
 					// mycallback({err: "Did not receive payment after " + ((pollWaitTime * tries)/1000) + " seconds"});
@@ -1050,10 +1078,10 @@ console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 		return this.app.crypto.hash(
 			Buffer.from(
 				JSON.stringify(senders) +
-					JSON.stringify(receivers) +
-					JSON.stringify(amounts) +
-					unique_hash +
-					ticker,
+				JSON.stringify(receivers) +
+				JSON.stringify(amounts) +
+				unique_hash +
+				ticker,
 				'utf-8'
 			)
 		);
@@ -1191,7 +1219,7 @@ console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 				pom.setAttribute(
 					'href',
 					'data:application/json;utf-8,' +
-						encodeURIComponent(this.exportWallet())
+					encodeURIComponent(this.exportWallet())
 				);
 				pom.setAttribute('download', `saito-wallet-${publicKey}.json`);
 				document.body.appendChild(pom);
@@ -1252,7 +1280,7 @@ console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 	 */
 	async signAndEncryptTransaction(tx: Transaction, recipient = '') {
 
-		
+
 		if (tx == null) {
 			return null;
 		}
@@ -1328,9 +1356,9 @@ console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 	}
 
 	public isValidPublicKey(key: string): boolean {
-		if (this.app.crypto.isBase58(key)){
+		if (this.app.crypto.isBase58(key)) {
 			return S.getInstance().isValidPublicKey(key);
-		}else{
+		} else {
 			return false;
 		}
 	}
@@ -1379,7 +1407,7 @@ console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 				} catch (err) {
 					try {
 						alert('error: ' + JSON.stringify(err));
-					} catch (err) {}
+					} catch (err) { }
 					console.log(err);
 					return err.name;
 				}
@@ -1438,8 +1466,8 @@ console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 		} else {
 			console.error(
 				`convertNolanToSaito: Type ` +
-					typeof amount +
-					` provided. BigInt required`
+				typeof amount +
+				` provided. BigInt required`
 			);
 		}
 
@@ -1450,7 +1478,7 @@ console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 		try {
 			let pc = await this.returnPreferredCrypto();
 			return await pc.validateAddress(address, ticker);
-		} catch(err) {
+		} catch (err) {
 			console.error("Error 'isAddressValid' wallet.ts: ", err);
 		}
 	}
