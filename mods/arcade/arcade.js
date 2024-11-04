@@ -208,6 +208,21 @@ class Arcade extends ModTemplate {
 			}
 
 			this.app.connection.emit('arcade-invite-manager-render-request');
+
+			setInterval(()=>{
+				let cutoff = new Date().getTime() - this.invite_cutoff;
+				for (let key of ['mine', 'open']){
+					let my_games = this.games[key];
+					for (let i = my_games.length-1; i >= 0; i--){
+						if (my_games[i].timestamp < cutoff ){
+							this.removeGame(my_games[i].signature);
+							this.addGame(my_games[i], 'close');
+							this.app.connection.emit('arcade-invite-manager-render-request');
+						}
+					}
+				}
+			}, 90000);
+
 		}
 
 		try {

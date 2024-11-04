@@ -89,8 +89,10 @@ class GameSlider {
 
 		this.attachEvents();
 
-		setTimeout(()=> {
-			document.querySelector(".game-slider").removeAttribute("style");
+		setTimeout(() => {
+			if (document.querySelector(".game-slider")){
+				document.querySelector(".game-slider").removeAttribute("style");	
+			}
 		}, 1000);
 	}
 
