@@ -552,6 +552,10 @@
   height: min-content;
 }
 
+.chat-message-line li {
+  margin-left: 2rem;
+}
+
 .saito-userline-reply {
   display: none;
 }
