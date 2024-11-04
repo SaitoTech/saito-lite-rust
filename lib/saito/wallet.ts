@@ -467,9 +467,6 @@ export default class Wallet extends SaitoWallet {
 		this.app.options.wallet.version = this.version;
 		this.app.options.wallet.default_fee = this.default_fee;
 
-		this.app.options.pending_txs = await this.getPendingTransactions();
-		if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; }
-
 		let slips = await this.getSlips();
 		this.app.options.wallet.slips = slips.map((slip) => slip.toJson());
 
@@ -1322,13 +1319,17 @@ console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 		}
 	}
 
+	//
+	// temporarily disabled
+	//
 	public async addTransactionToPending(tx: Transaction, save = true) {
-		if (save) {
-			if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; }
-			this.app.options.pending_txs.push(tx.serialize_to_web(this.app));
-		}
-		return S.getInstance().addPendingTx(tx);
-		if (save) { this.app.storage.saveOptions(); }
+		return;
+//		if (save) {
+//			if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; }
+//			this.app.options.pending_txs.push(tx.serialize_to_web(this.app));
+//		}
+//		return S.getInstance().addPendingTx(tx);
+//		if (save) { this.app.storage.saveOptions(); }
 	}
 
 	public async onUpgrade(type = '', privatekey = '', walletfile = null) {

@@ -308,17 +308,22 @@ class Storage {
 		}
 	}
 
-	//
-	// Note: this function won't save options for at least 250 ms from it's call
-	// So, if you are going to redirect the browser after calling it, you need to
-	// build in a sufficient delay so that the browser can complete
-	//
 	saveOptions() {
+
 		if (this.app.BROWSER == 1) {
 			if (this.active_tab == 0) {
 				return;
 			}
 		}
+
+		//
+		// update pending txs
+ 	        //       this.app.options.pending_txs = await this.getPendingTransactions();
+        	//       if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; }
+		//} catch (err) {
+		//	this.app.options.pending_txs = [];
+		//}
+
 
 		let new_wallet_json = JSON.stringify(this.app.options);
 		let new_wallet_hash = this.app.crypto.hash(new_wallet_json);
@@ -326,6 +331,7 @@ class Storage {
 		if (new_wallet_hash == this?.wallet_options_hash) {
 			return;
 		}
+
 
 		try {
 			localStorage.setItem('options', new_wallet_json);
@@ -337,11 +343,13 @@ class Storage {
 			this.saveOptionsToForage();
 			
 		} catch (err) {
+
 			console.error(err);
 			for (let i = 0; i < localStorage.length; i++) {
 				let item = localStorage.getItem(localStorage.key(i));
 				console.log(localStorage.key(i), item.length, item, JSON.parse(item));
 			}
+
 		}
 
 	}
