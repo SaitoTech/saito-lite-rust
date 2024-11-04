@@ -82,9 +82,6 @@ export default class Transaction extends SaitoTransaction {
 					// );
 					this.addFromSlip(slip);
 				}
-				// if (jsonobj.from.length > 0) {
-				//   console.log("important tx: " + jsonobj.from[0].publicKey);
-				// }
 
 				for (let i = 0; i < jsonobj.to.length; i++) {
 					const fslip = jsonobj.to[i];
@@ -247,8 +244,6 @@ export default class Transaction extends SaitoTransaction {
 	}
 
 	returnMessage() {
-		//console.log("TRANSACTION:");
-		//console.log(JSON.stringify(this));
 
 		if (this.dmsg) {
 			return this.dmsg;
@@ -266,14 +261,9 @@ export default class Transaction extends SaitoTransaction {
 				this.msg = {};
 			}
 		} catch (err) {
-			// TODO : handle this without printing an error
-			console.log('ERROR: ' + JSON.stringify(err));
 			try {
-				console.log('fallback on failure... 1');
 				const reconstruct = Buffer.from(this.data).toString('utf-8');
-				console.log('fallback on failure... 2');
 				this.msg = JSON.parse(reconstruct);
-				console.log('fallback on failure... 3');
 			} catch (err) {
 				console.log(
 					`buffer length = ${
@@ -337,14 +327,12 @@ export default class Transaction extends SaitoTransaction {
 			m: m.toString('base64'),
 			opt: app.crypto.stringToBase64(opt)
 		};
-		//console.log("serialize_to_web : ", web_obj);
 		return JSON.stringify(web_obj);
 	}
 
 	deserialize_from_web(app: Saito, webstring: string) {
 		try {
-			let web_obj: { t: string; m: string; opt: string } =
-				JSON.parse(webstring);
+			let web_obj: { t: string; m: string; opt: string } = JSON.parse(webstring);
 			this.deserialize_from_base64(web_obj.t);
 			this.data = Buffer.from(web_obj.m, 'base64');
 			this.unpackData();

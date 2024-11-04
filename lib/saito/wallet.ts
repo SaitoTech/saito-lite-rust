@@ -1,5 +1,6 @@
 import Peer from './peer';
 
+import * as JSON from 'json-bigint';
 const getUuid = require('uuid-by-string');
 const ModalSelectCrypto = require('./ui/modals/select-crypto/select-crypto');
 import Transaction from './transaction';
@@ -77,15 +78,10 @@ export default class Wallet extends SaitoWallet {
 
 
 	async initialize() {
-		console.log('wallet.initialize');
 
 		let privateKey = await this.getPrivateKey();
 		let publicKey = await this.getPublicKey();
 		this.publicKey = publicKey;
-		console.log(
-			'public key = ' + publicKey,
-			' / private key ? ' + (privateKey !== '')
-		);
 
 		// add ghost crypto module so Saito interface available
 		class SaitoCrypto extends CryptoModule {
@@ -99,7 +95,6 @@ export default class Wallet extends SaitoWallet {
 			}
 
 			async returnBalance() {
-				console.log("returnBalance 1: ", await this.app.wallet.getBalance());
 				let x = await this.app.wallet.getBalance()
 				return this.app.wallet.convertNolanToSaito(x);
 			}
@@ -363,18 +358,24 @@ export default class Wallet extends SaitoWallet {
 			}
 
 
-			//resend pending txs
-			if (!this.app.options.pending_txs) {
-				this.app.options.pending_txs = [];
-			}
+			//
+			// filter and resend pending txs
+			//
+			if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; };
 			let pending_txs = this.app.options.pending_txs;
-			if (pending_txs.length > 0) {
-				for(let i=0; i<pending_txs.length; i++) {
-					let tx_webstring = this.app.options.pending_txs[i];
-					let newtx = new Transaction();
-					newtx.deserialize_from_web(this.app, tx_webstring);
-					this.app.options.pending_txs.splice(i, 1);
-					await this.app.wallet.addTransactionToPending(newtx, false);
+			this.app.options.pending_txs = [];
+			for (let i = pending_txs.length-1, k = 0; i >= 0; i--, k++) {
+				try {
+					if (pending_txs[i].instance) { delete pending_txs[i].instance; }
+					if (!pending_txs[i].from) {} else {
+						let newtx = new Transaction();
+						newtx.deserialize_from_web(this.app, JSON.stringify(pending_txs[i]));
+						if (newtx.timestamp > (new Date().getTime() - 85000000)) { 
+							await this.app.wallet.addTransactionToPending(newtx, false);
+						}
+					}
+				} catch (err) {
+					console.log("caught error: " + JSON.stringify(err));
 				}
 			}
 
@@ -383,7 +384,6 @@ export default class Wallet extends SaitoWallet {
 				this.setKeyList(this.app.keychain.returnWatchedPublicKeys());
 			});
 
-			// this.instance = Object.assign(this.instance, this.app.options.wallet);
 		}
 		////////////////
 		// new wallet //
@@ -1324,14 +1324,11 @@ console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 
 	public async addTransactionToPending(tx: Transaction, save = true) {
 		if (save) {
-			if (!this.app.options.pending_txs) {
-				this.app.options.pending_txs = [];
-			}
+			if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; }
 			this.app.options.pending_txs.push(tx.serialize_to_web(this.app));
 		}
-
-		this.app.storage.saveOptions();
 		return S.getInstance().addPendingTx(tx);
+		if (save) { this.app.storage.saveOptions(); }
 	}
 
 	public async onUpgrade(type = '', privatekey = '', walletfile = null) {
