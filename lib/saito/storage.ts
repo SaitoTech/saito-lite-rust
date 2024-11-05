@@ -316,15 +316,6 @@ class Storage {
 			}
 		}
 
-		//
-		// update pending txs
- 	        //       this.app.options.pending_txs = await this.getPendingTransactions();
-        	//       if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; }
-		//} catch (err) {
-		//	this.app.options.pending_txs = [];
-		//}
-
-
 		let new_wallet_json = JSON.stringify(this.app.options);
 		let new_wallet_hash = this.app.crypto.hash(new_wallet_json);
 

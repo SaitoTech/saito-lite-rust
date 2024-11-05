@@ -6274,7 +6274,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
           let html = '<ul>';
 	  for (let i = 0; i < powers.length; i++) {
 	    if (powers[i] !== faction) {
-	      if (!(powers[i] == "protestant" && his_self.game.state.events.schmalkaldic_league == 1)) {
+	      if (!(powers[i] == "protestant" && his_self.game.state.events.schmalkaldic_league != 1)) {
 		if (!his_self.areEnemies(powers[i], faction) && !his_self.areAllies(powers[i], faction)) {
                   html += `<li class="option" id="${powers[i]}">${powers[i]}</li>`;
 	        }

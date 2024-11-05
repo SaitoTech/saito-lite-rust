@@ -8341,19 +8341,45 @@ try {
 
             let msg = `Offer the Ottoman Empire which Reward (${(hits_given+1)} of ${hits})? `;
             let html = '<ul>';
+	    let numchoice = 0;
 
 	    if (vp_issuable == true && (vp_offered <= cards_offered && vp_offered <= squadrons_offered)) {
               html += `<li class="option" id="vp">give vp</li>`;
+	      numchoice++;
 	    }
 	    if (cards_issuable == true && (cards_offered <= vp_offered && cards_offered <= squadrons_offered)) {
               html += `<li class="option" id="card">give card draw</li>`;
+	      numchoice++;
 	    }	
 	    if (squadrons_issuable == true && (squadrons_offered <= vp_offered && squadrons_offered <= cards_offered)) {
               html += `<li class="option" id="squadron">destroy squadron</li>`;
+	      numchoice++;
 	    }	
             html += '</ul>';
 
+	    if (numchoice == 0) {
+	      if (vp_issuable == true) {
+                html += `<li class="option" id="vp">give vp</li>`;
+	        numchoice++;
+	      }
+	      if (cards_issuable == true) {
+                html += `<li class="option" id="card">give card draw</li>`;
+	        numchoice++;
+	      }	
+	      if (squadrons_issuable == true) {
+                html += `<li class="option" id="squadron">destroy squadron</li>`;
+	        numchoice++;
+	      }	
+	    }
+
+	    if (numchoice == 0) {
+	      his_self.updateStatus("No piracy wards can be issued...");
+	      his_self.endTurn();
+	      return 0;
+	    }	    
+
             his_self.updateStatusWithOptions(msg, html);
+
             $('.option').off();
             $('.option').on('click', function () {
 

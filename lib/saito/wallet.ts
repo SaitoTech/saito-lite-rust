@@ -467,6 +467,13 @@ export default class Wallet extends SaitoWallet {
 		this.app.options.wallet.version = this.version;
 		this.app.options.wallet.default_fee = this.default_fee;
 
+                try {
+			this.app.options.pending_txs = await this.getPendingTransactions();
+                	if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; }
+                } catch (err) {
+                      this.app.options.pending_txs = [];
+                }
+                        
 		let slips = await this.getSlips();
 		this.app.options.wallet.slips = slips.map((slip) => slip.toJson());
 
