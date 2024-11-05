@@ -1331,14 +1331,12 @@ console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 	//
 	public async addTransactionToPending(tx: Transaction, save = true) {
 		if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; }		
-		return;
-//
-//		if (save) {
-//			if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; }
-//			this.app.options.pending_txs.push(tx.serialize_to_web(this.app));
-//		}
-//		return S.getInstance().addPendingTx(tx);
-//		if (save) { this.app.storage.saveOptions(); }
+		if (save) {
+			if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; }
+			this.app.options.pending_txs.push(tx.serialize_to_web(this.app));
+		}
+		return S.getInstance().addPendingTx(tx);
+		//if (save) { await this.app.storage.saveWallet(); }
 	}
 
 	public async onUpgrade(type = '', privatekey = '', walletfile = null) {
