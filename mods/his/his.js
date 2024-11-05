@@ -10043,7 +10043,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
           let html = '<ul>';
 	  for (let i = 0; i < powers.length; i++) {
 	    if (powers[i] !== faction) {
-	      if (!(powers[i] == "protestant" && his_self.game.state.events.schmalkaldic_league == 1)) {
+	      if (!(powers[i] == "protestant" && his_self.game.state.events.schmalkaldic_league != 1)) {
 		if (!his_self.areEnemies(powers[i], faction) && !his_self.areAllies(powers[i], faction)) {
                   html += `<li class="option" id="${powers[i]}">${powers[i]}</li>`;
 	        }
@@ -16317,9 +16317,14 @@ console.log("we have removed philip and redisplayed the space...");
 
         if (mv[0] === "thomas_cromwell_cancels_bull") {
 	  his_self.updateLog("Thomas Cromwell cancels Cranmer Excommunication");
-	  // cancel the excommunication and fall through
           his_self.game.queue.splice(qe, 1);
-          his_self.game.queue.splice(qe-1, 1);
+	  // cancel the excommunication and fall through
+	  for (let z = his_self.game.queue.length-1; z >= 1; z--) {
+	    let lmv = his_self.game.queue[z].split("\t");
+	    if (lmv[0] != "continue" && lmv[0] != "cards_left" && lmv[0] != "play" && lmv[0] != "discard") {
+              his_self.game.queue.splice(z, 1);
+	    }
+	  } 
 	  return 1;
 	}
 
@@ -31780,19 +31785,45 @@ try {
 
             let msg = `Offer the Ottoman Empire which Reward (${(hits_given+1)} of ${hits})? `;
             let html = '<ul>';
+	    let numchoice = 0;
 
 	    if (vp_issuable == true && (vp_offered <= cards_offered && vp_offered <= squadrons_offered)) {
               html += `<li class="option" id="vp">give vp</li>`;
+	      numchoice++;
 	    }
 	    if (cards_issuable == true && (cards_offered <= vp_offered && cards_offered <= squadrons_offered)) {
               html += `<li class="option" id="card">give card draw</li>`;
+	      numchoice++;
 	    }	
 	    if (squadrons_issuable == true && (squadrons_offered <= vp_offered && squadrons_offered <= cards_offered)) {
               html += `<li class="option" id="squadron">destroy squadron</li>`;
+	      numchoice++;
 	    }	
             html += '</ul>';
 
+	    if (numchoice == 0) {
+	      if (vp_issuable == true) {
+                html += `<li class="option" id="vp">give vp</li>`;
+	        numchoice++;
+	      }
+	      if (cards_issuable == true) {
+                html += `<li class="option" id="card">give card draw</li>`;
+	        numchoice++;
+	      }	
+	      if (squadrons_issuable == true) {
+                html += `<li class="option" id="squadron">destroy squadron</li>`;
+	        numchoice++;
+	      }	
+	    }
+
+	    if (numchoice == 0) {
+	      his_self.updateStatus("No piracy wards can be issued...");
+	      his_self.endTurn();
+	      return 0;
+	    }	    
+
             his_self.updateStatusWithOptions(msg, html);
+
             $('.option').off();
             $('.option').on('click', function () {
 
@@ -51284,58 +51315,58 @@ does_units_to_move_have_unit = true; }
       if (this.game.state.events.revolt_in_egypt) { this.displayEgypt(); }
       if (this.game.state.events.revolt_in_ireland) { this.displayIreland(); }
     } catch (err) {
-      console.log("error displaying foreign wars... " + err);
+      //console.log("error displaying foreign wars... " + err);
     }
 
     try {
       this.displayPregnancyChart();
     } catch (err) {
-      console.log("error displaying turn track... " + err);
+      //console.log("error displaying turn track... " + err);
     }
     try {
       this.displayTurnTrack();
     } catch (err) {
-      console.log("error displaying turn track... " + err);
+      //console.log("error displaying turn track... " + err);
     }
     try {
       this.displayWarBox();
     } catch (err) {
-      console.log("error displaying diplomacy box... " + err);
+      //console.log("error displaying diplomacy box... " + err);
     }
     try {
       this.displayColony();
     } catch (err) {
-      console.log("error displaying colonies... " + err);
+      //console.log("error displaying colonies... " + err);
     }
     try {
       this.displayConquest();
     } catch (err) {
-      console.log("error displaying conquest... " + err);
+      //console.log("error displaying conquest... " + err);
     }
     try {
       this.displayElectorateDisplay();
     } catch (err) {
-      console.log("error displaying electorates... " + err);
+      //console.log("error displaying electorates... " + err);
     }
     try {
       this.displayNewWorld();
     } catch (err) {
-      console.log("error displaying new world... " + err);
+      //console.log("error displaying new world... " + err);
     }
     try {
       this.displaySpaces();
     } catch (err) {
-      console.log("error displaying spaces... " + err);
+      //console.log("error displaying spaces... " + err);
     }
     try {
       this.displayNavalSpaces();
     } catch (err) {
-      console.log("error displaying naval spaces... " + err);
+      //console.log("error displaying naval spaces... " + err);
     }
     try {
       this.displayVictoryTrack();
     } catch (err) {
-      console.log("error displaying victory track... " + err);
+      //console.log("error displaying victory track... " + err);
     }
   }
 
@@ -51411,6 +51442,7 @@ does_units_to_move_have_unit = true; }
   displayColony() {
 
     let obj = document.querySelector(".crossing_atlantic");
+    obj.innerHTML = "";
 
     document.querySelector('.england_colony1').innerHTML  = ``;
     document.querySelector('.england_colony2').innerHTML  = ``;
@@ -51452,7 +51484,6 @@ does_units_to_move_have_unit = true; }
   displayConquest() {
 
     let obj = document.querySelector(".crossing_atlantic");
-        obj.innerHTML = "";
 
     for (let z = 0; z < this.game.state.conquests.length; z++) {
 
@@ -51637,11 +51668,14 @@ does_units_to_move_have_unit = true; }
 
   displayNewWorld() {
 try {
+    document.querySelector(".crossing_atlantic").innerHTML = "";
     this.displayColony();
     this.displayConquest();
     this.displayExploration();
     this.displayNewWorldBonuses();
-} catch (err) {}
+} catch (err) {
+console.log("ERROR SIAPLYING NEW WORLD STUFF: " + JSON.stringify(err));
+    }
   }
 
   displaySpaceDetailedView(name) {

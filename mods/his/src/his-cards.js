@@ -12548,9 +12548,14 @@ console.log("we have removed philip and redisplayed the space...");
 
         if (mv[0] === "thomas_cromwell_cancels_bull") {
 	  his_self.updateLog("Thomas Cromwell cancels Cranmer Excommunication");
-	  // cancel the excommunication and fall through
           his_self.game.queue.splice(qe, 1);
-          his_self.game.queue.splice(qe-1, 1);
+	  // cancel the excommunication and fall through
+	  for (let z = his_self.game.queue.length-1; z >= 1; z--) {
+	    let lmv = his_self.game.queue[z].split("\t");
+	    if (lmv[0] != "continue" && lmv[0] != "cards_left" && lmv[0] != "play" && lmv[0] != "discard") {
+              his_self.game.queue.splice(z, 1);
+	    }
+	  } 
 	  return 1;
 	}
 

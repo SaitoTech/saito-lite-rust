@@ -1047,58 +1047,58 @@
       if (this.game.state.events.revolt_in_egypt) { this.displayEgypt(); }
       if (this.game.state.events.revolt_in_ireland) { this.displayIreland(); }
     } catch (err) {
-      console.log("error displaying foreign wars... " + err);
+      //console.log("error displaying foreign wars... " + err);
     }
 
     try {
       this.displayPregnancyChart();
     } catch (err) {
-      console.log("error displaying turn track... " + err);
+      //console.log("error displaying turn track... " + err);
     }
     try {
       this.displayTurnTrack();
     } catch (err) {
-      console.log("error displaying turn track... " + err);
+      //console.log("error displaying turn track... " + err);
     }
     try {
       this.displayWarBox();
     } catch (err) {
-      console.log("error displaying diplomacy box... " + err);
+      //console.log("error displaying diplomacy box... " + err);
     }
     try {
       this.displayColony();
     } catch (err) {
-      console.log("error displaying colonies... " + err);
+      //console.log("error displaying colonies... " + err);
     }
     try {
       this.displayConquest();
     } catch (err) {
-      console.log("error displaying conquest... " + err);
+      //console.log("error displaying conquest... " + err);
     }
     try {
       this.displayElectorateDisplay();
     } catch (err) {
-      console.log("error displaying electorates... " + err);
+      //console.log("error displaying electorates... " + err);
     }
     try {
       this.displayNewWorld();
     } catch (err) {
-      console.log("error displaying new world... " + err);
+      //console.log("error displaying new world... " + err);
     }
     try {
       this.displaySpaces();
     } catch (err) {
-      console.log("error displaying spaces... " + err);
+      //console.log("error displaying spaces... " + err);
     }
     try {
       this.displayNavalSpaces();
     } catch (err) {
-      console.log("error displaying naval spaces... " + err);
+      //console.log("error displaying naval spaces... " + err);
     }
     try {
       this.displayVictoryTrack();
     } catch (err) {
-      console.log("error displaying victory track... " + err);
+      //console.log("error displaying victory track... " + err);
     }
   }
 
@@ -1174,6 +1174,7 @@
   displayColony() {
 
     let obj = document.querySelector(".crossing_atlantic");
+    obj.innerHTML = "";
 
     document.querySelector('.england_colony1').innerHTML  = ``;
     document.querySelector('.england_colony2').innerHTML  = ``;
@@ -1215,7 +1216,6 @@
   displayConquest() {
 
     let obj = document.querySelector(".crossing_atlantic");
-        obj.innerHTML = "";
 
     for (let z = 0; z < this.game.state.conquests.length; z++) {
 
@@ -1400,11 +1400,14 @@
 
   displayNewWorld() {
 try {
+    document.querySelector(".crossing_atlantic").innerHTML = "";
     this.displayColony();
     this.displayConquest();
     this.displayExploration();
     this.displayNewWorldBonuses();
-} catch (err) {}
+} catch (err) {
+console.log("ERROR SIAPLYING NEW WORLD STUFF: " + JSON.stringify(err));
+    }
   }
 
   displaySpaceDetailedView(name) {
