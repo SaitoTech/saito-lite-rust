@@ -340,10 +340,6 @@ class TweetManager {
 
 			// Sort txs into posts/replies/retweets...
 			this.filterAndRenderProfile(txs);
-
-			// , this should add the component to click
-
-			this.hideLoader();
 			this.profile.render();
 		});
 

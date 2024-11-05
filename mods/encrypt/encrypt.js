@@ -294,7 +294,6 @@ class Encrypt extends ModTemplate {
     tx.msg.module = this.name;
     tx.msg.request = "key exchange request";
     tx.msg.alice_publicKey = alice_publicKey;
-    const key = this.app.keychain.returnKey(this.publicKey);
     tx.addTo(this.publicKey);
 
     //
