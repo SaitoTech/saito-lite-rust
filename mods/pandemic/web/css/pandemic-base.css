@@ -60,11 +60,6 @@ img {
 	max-height: 40vh;
 }
 
-.close_epidemic_overlay {
-	background-color: var(--saito-red);
-	color: #fefefe;
-	text-align: center;
-}
 
 .hud {
 	background-color: #444a;
@@ -135,6 +130,18 @@ img {
 .fa-border {
 	padding: 0.26em 0.14em;
 }
+
+i.menu_icon_icon {
+	font-size: 5rem;
+	height: 10rem;
+	border-radius: 2rem;
+	border-width: 0.75rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #111F;
+}
+
 
 .fake-border {
 	font-size: 1.2em;
