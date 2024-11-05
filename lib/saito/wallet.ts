@@ -1336,7 +1336,7 @@ console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 			this.app.options.pending_txs.push(tx.serialize_to_web(this.app));
 		}
 		return S.getInstance().addPendingTx(tx);
-		//if (save) { await this.app.storage.saveWallet(); }
+		if (save) { this.app.storage.saveOptions(); }
 	}
 
 	public async onUpgrade(type = '', privatekey = '', walletfile = null) {
