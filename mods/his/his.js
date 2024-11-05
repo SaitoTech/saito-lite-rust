@@ -13366,8 +13366,9 @@ console.log("we have removed philip and redisplayed the space...");
 	    },
 
 	    function (target) {
-	      his_self.addMove("check_for_stranded_leaders\t"+faction);
+	      his_self.addMove("check_for_stranded_leaders\t"+target);
 	      his_self.addMove("mercenaries-demand-pay\t"+target+"\t"+faction);
+	      his_self.addMove("NOTIFY\t"+his_self.popup("087")+" targets "+his_self.returnFactionName(target));
 	      his_self.endTurn();
 	    }
 	  );
