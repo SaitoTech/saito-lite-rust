@@ -180,7 +180,6 @@ class Storage {
 		//
 		let internal_callback = (res) => {
 			let txs: Transaction[] = [];
-			console.log(res, 'results')
 			if (res) {
 				for (let i = 0; i < res.length; i++) {
 					let tx = new Transaction();
@@ -226,7 +225,7 @@ class Storage {
 					}
 
 					// R 		
-					let a_nodes = this.app.keychain.returnPeerArchiveNodes(peer);
+					let a_nodes = this.app.keychain.returnKeyArchiveNodes(peer);
 
 					// If archive nodes are found, attempt to communicate
 					if (a_nodes.length > 0) {

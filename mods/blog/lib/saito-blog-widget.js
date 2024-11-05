@@ -1,4 +1,3 @@
-// SaitoBlogWidget.js
 const { createRoot } = require('react-dom/client');
 const React = require('react');
 const { default: BlogWidget } = require('./react-components/blog-widget');
@@ -10,11 +9,7 @@ class SaitoBlogWidget {
         this.publicKey = publicKey
         this.selector = selector;
         this.name = "SaitoBlogWidget";
-        this.root = null;      
-        // Bind methods
-        this.render = this.render.bind(this);
-        this.cleanup = this.cleanup.bind(this);    
-        // Initialize state
+        this.render = this.render.bind(this); 
         this.posts = [];
         this.isEditing = false;
     }
@@ -40,20 +35,15 @@ class SaitoBlogWidget {
 
         // Clear any existing content
         container.innerHTML = '';
-       
-        // Create root element
-        const widgetRoot = document.createElement('div');
-        widgetRoot.id = `blog-widget-${Date.now()}`;
-        container.appendChild(widgetRoot);
-        // Initialize React
-        this.root = createRoot(widgetRoot);
-        this.root.render(
-            <BlogWidget 
-                app={this.app}
-                mod={this.mod}
-                publicKey={this.publicKey}
-                topMargin= {false}
-            />
+        const { root, cleanup } = this.app.browser.renderReactToExistingContainer(
+            BlogWidget,
+            {
+                app: this.app,
+                mod: this.mod,
+                publicKey: this.publicKey,
+                topMargin: false
+            },
+           container
         );
     }
 }

@@ -331,6 +331,14 @@ class SettingsAppspace {
 				};
 			}
 
+			if (document.getElementById('update-archive-node-btn')) {
+				document.getElementById('update-archive-node-btn').onclick = async (
+					e
+				) => {
+		           app.connection.emit('profile-update-archive-node')
+				};
+			}
+
 			Array.from(
 				document.querySelectorAll(
 					'.settings-appspace .pubkey-containter'

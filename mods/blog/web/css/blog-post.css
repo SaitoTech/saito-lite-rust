@@ -5,9 +5,9 @@
     color: var(--saito-font-color);
     background: var(--saito-background-color);
     width: 95vw;
-    height: 80vh;
+    height: 60vh;
     overflow-y: auto;
-    margin-top: var(--saito-header-height);
+    /* margin-top: var(--saito-header-height); */
 }
 
 
@@ -148,8 +148,130 @@
     transition: all 0.2s ease;
 }
 
-.close-btn:hover {
+
+
+.post-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 1rem;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--saito-border-color);
+    background: transparent;
+    color: var(--saito-font-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
     background: var(--saito-border-color);
+}
+
+.edit-btn {
+    color: var(--saito-font-color);
+    background-color: var(--saito-primary);
+}
+
+.delete-btn {
+    background-color: var(--saito-red);
+}
+
+
+
+.author-info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--saito-border-color);
+    flex-wrap: wrap;
+}
+
+
+/* Edit mode styles */
+.edit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--saito-border-color);
+}
+
+.edit-title-input {
+    font-size: 2rem;
+    padding: 0.5rem;
+    border: 1px solid var(--saito-border-color);
+    border-radius: 4px;
+    background: var(--saito-background-color);
+    color: var(--saito-font-color);
+    width: 100%;
+    margin-right: 1rem;
+}
+
+.edit-actions {
+    display: flex;
+    gap: 1rem;
+    white-space: nowrap;
+}
+
+.save-btn {
+    /* background-color: #22c55e; */
+    /* color: white; */
+    border: none;
+    background-color: var(--saito-primary);
+}
+
+
+
+.cancel-btn {
+    background-color: transparent;
+    border: 1px solid var(--saito-border-color);
+}
+
+.editor-container {
+    margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+    .edit-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .edit-title-input {
+        font-size: 1.5rem;
+        margin-right: 0;
+    }
+    
+    .edit-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+}
+
+/* Responsive styles for the action buttons */
+@media (max-width: 768px) {
+    .post-actions {
+        width: 100%;
+        margin-top: 1rem;
+        justify-content: flex-end;
+    }
+
+    .action-btn span {
+        display: none;
+    }
+
+    .action-btn {
+        padding: 0.5rem;
+    }
 }
 
 /* Responsive Styles */

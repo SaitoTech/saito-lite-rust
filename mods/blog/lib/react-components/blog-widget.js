@@ -1,8 +1,8 @@
-// BlogWidgetComponent.js
 import React, { useState, useEffect, useRef } from 'react';
 import SaitoOverlayReact from '../../../../lib/saito/ui/saito-overlay/saito-overlay.react';
 import BlogPostDetail from './blog-post-detail';
-import {  Clock } from 'lucide-react';
+import { Clock } from 'lucide-react';
+import BlogEditor from './BlogEditor';
 
 
 const BlogWidget = ({ app, mod, publicKey, topMargin }) => {
@@ -34,12 +34,10 @@ const BlogWidget = ({ app, mod, publicKey, topMargin }) => {
                 // Try parsing as JSON first
                 try {
                     const parsedContent = JSON.parse(content);
-                    // Create a temporary div to parse HTML
                     const temp = document.createElement('div');
                     temp.innerHTML = parsedContent;
                     textContent = temp.textContent || temp.innerText;
                 } catch {
-                    // If JSON parsing fails, treat it as direct HTML
                     const temp = document.createElement('div');
                     temp.innerHTML = content;
                     textContent = temp.textContent || temp.innerText;
@@ -75,13 +73,11 @@ const BlogWidget = ({ app, mod, publicKey, topMargin }) => {
 
 
     useEffect(() => {
-        console.log(publicKey , "the key")
-        mod.loadBlogTransactionsForWidget(publicKey, (posts) => {
-            console.log('loading my blog transaction for widget')
+        mod.loadBlogPostTransactionsForWidget(publicKey, (posts) => {
             setPosts(posts);
         })
 
-        setAuthorImage(app.keychain.returnIdenticon(publicKey));   
+        setAuthorImage(app.keychain.returnIdenticon(publicKey));
     }, []);
 
     const handlePublish = async () => {
@@ -93,9 +89,7 @@ const BlogWidget = ({ app, mod, publicKey, topMargin }) => {
         try {
             let timestamp = Date.now();
 
-            await mod.createBlogTransaction({ title, content, tags: [], timestamp }, () => {
-
-                console.log('setting posts', posts)
+            await mod.createBlogPostTransaction({ title, content, tags: [], timestamp }, () => {
                 setPosts((posts) => {
                     return [
                         {
@@ -104,7 +98,7 @@ const BlogWidget = ({ app, mod, publicKey, topMargin }) => {
                             timestamp
                         },
                         ...posts,
-                      
+
                     ]
                 })
             });
@@ -134,6 +128,39 @@ const BlogWidget = ({ app, mod, publicKey, topMargin }) => {
         setSelectedPost(null);
     };
 
+
+    const handleEdit = (sig, newTitle, newContent) => {
+        // Update the posts state with the edited content
+        setPosts(currentPosts => 
+            currentPosts.map(post => {
+                if (post.sig === sig) {
+                    return {
+                        ...post,
+                        title: newTitle,
+                        content: newContent
+                    };
+                }
+                return post;
+            })
+        );
+        setSelectedPost(null);
+    };
+
+    const handleDelete = async (sig) => {
+        try {
+            setPosts(currentPosts => 
+                currentPosts.filter(post => post.sig !== sig)
+            );   
+            setSelectedPost(null);
+       
+        } catch (error) {
+            console.error('Error deleting post:', error);
+            app.connection.emit("saito-header-update-message", {
+                msg: "Error deleting post",
+                timeout: 2000
+            });
+        }
+    };
 
     const renderEditor = () => (
         <div className="blog-editor">
@@ -167,16 +194,18 @@ const BlogWidget = ({ app, mod, publicKey, topMargin }) => {
         </div>
     );
 
+    let showNewPostBtn = publicKey === mod.publicKey
+    console.log(showNewPostBtn, publicKey, mod.publicKey, "how far")
     const renderMainContent = () => (
-        <div className="blog-widget" style={{marginTop: topMargin ? "var(--saito-header-height)": ""}}>
+        <div className="blog-widget" style={{ marginTop: topMargin ? "var(--saito-header-height)" : "" }}>
             <div className="blog-header">
-                <button
+                {showNewPostBtn && <button
                     className="blog-new-post-btn"
                     onClick={() => setShowEditorOverlay(true)}
                 >
                     <i className="fa-solid fa-plus"></i>
                     New Post
-                </button>
+                </button>}
             </div>
 
             <h4>Blog posts</h4>
@@ -210,12 +239,14 @@ const BlogWidget = ({ app, mod, publicKey, topMargin }) => {
 
                 {posts.length === 0 && (
                     <div className="no-posts">
-                        <p>No blog posts yet. Be the first to create one!</p>
+                        <p>No blog posts yet.</p>
                     </div>
                 )}
             </div>
         </div>
     );
+
+
 
     return (
         <>
@@ -240,13 +271,15 @@ const BlogWidget = ({ app, mod, publicKey, topMargin }) => {
                 clickBackdropToClose={true}
             >
                 {selectedPost && (
-                    
+
                     <BlogPostDetail
                         post={selectedPost}
                         onClose={handleCloseDetail}
                         app={app}
                         mod={mod}
                         publicKey={publicKey}
+                        onedit={handleEdit}
+                        ondelete={handleDelete}
                     />
                 )}
             </SaitoOverlayReact>
@@ -257,61 +290,4 @@ const BlogWidget = ({ app, mod, publicKey, topMargin }) => {
 export default BlogWidget;
 
 
-const BlogEditor = ({ value, onEditorChange }) => {
-    const editorRef = useRef(null);
 
-    useEffect(() => {
-        // Load TinyMCE from CDN So I won't have to deal with API keys yet
-        if (!window.tinymce) {
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.7.0/tinymce.min.js';
-            script.referrerPolicy = 'origin';
-            document.head.appendChild(script);
-
-            script.onload = () => initEditor();
-        } else {
-            initEditor();
-        }
-
-        return () => {
-            // Cleanup
-            if (window.tinymce) {
-                window.tinymce.remove(editorRef.current);
-            }
-        };
-    }, []);
-
-    const initEditor = () => {
-        window.tinymce.init({
-            target: editorRef.current,
-            height: 400,
-            menubar: false,
-            branding: false,
-            promotion: false,
-            plugins: [
-                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                'insertdatetime', 'media', 'table', 'help', 'wordcount'
-            ],
-            toolbar: `undo redo | blocks | bold italic backcolor | \
-                    alignleft aligncenter alignright alignjustify | \
-                    bullist numlist outdent indent | removeformat | help`,
-            content_style: 'body { color: var(--saito-font-color) !important, background: var(--saito-background-color) }',
-            setup: (editor) => {
-                editor.on('change', () => {
-                    const content = editor.getContent();
-                    onEditorChange(content);
-                });
-
-                // Set initial content if any
-                if (value) {
-                    editor.on('init', () => {
-                        editor.setContent(value);
-                    });
-                }
-            }
-        });
-    };
-
-    return <textarea ref={editorRef} />;
-};

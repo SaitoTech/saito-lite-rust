@@ -610,7 +610,7 @@ class Keychain {
 		return x;
 	}
 
-	returnPeerArchiveNodes(publicKey) {
+	returnKeyArchiveNodes(publicKey) {
 		const keylist: any = this.app.options.keys;
 		const key = keylist.find(key => key.publicKey === publicKey);
 		if (key && key.profile && Array.isArray(key.profile.archive_nodes)) {

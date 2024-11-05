@@ -2,7 +2,8 @@
 
 import screenfull, { element } from 'screenfull';
 import { getDiffieHellman } from 'crypto';
-
+import React  from 'react'
+import {createRoot} from 'react-dom/client'
 let marked = require('marked');
 let sanitizeHtml = require('sanitize-html');
 const sanitizer = require('sanitizer');
@@ -63,10 +64,10 @@ class Browser {
 			return 0;
 		}
 
-		app.connection.on("saito-render-complete", ()=> {
+		app.connection.on("saito-render-complete", () => {
 			// xclose (loading wallpaper) looks for this class on body
 			console.log("rendering complete, remove wallpaper");
-			setTimeout(()=> {
+			setTimeout(() => {
 				document.querySelector("body").classList.add("xclose");
 			}, 1000);
 		});
@@ -92,7 +93,7 @@ class Browser {
 
 		try {
 
-			if (screenfull.isEnabled){
+			if (screenfull.isEnabled) {
 				screenfull.on('change', () => {
 					this.app.connection.emit("browser-fullscreen-toggle", screenfull.isFullscreen);
 				});
@@ -102,7 +103,7 @@ class Browser {
 				//
 				// Polyfill for other browsers...
 				//
-			 	if (typeof document.msHidden !== 'undefined') {
+				if (typeof document.msHidden !== 'undefined') {
 					this.hidden_tab_property = 'msHidden';
 					this.tab_event_name = 'msvisibilitychange';
 				} else if (typeof document.webkitHidden !== 'undefined') {
@@ -137,38 +138,38 @@ class Browser {
 						if (e.data.msg == 'new_tab') {
 							window.focus();
 
-//							if (window.confirm('You have followed a Saito link, do you want to open it here?')) {
-//								window.location = e.data.location;
-//							}
-  	
-                            				setTimeout(() => {
-                            					window.location = '/tabs/';
-                            				}, 300)
+							//							if (window.confirm('You have followed a Saito link, do you want to open it here?')) {
+							//								window.location = e.data.location;
+							//							}
+
+							setTimeout(() => {
+								window.location = '/tabs/';
+							}, 300)
 						}
 					}
 				};
 
 
-/***** channel.onmessage = async (e) => {
-				  console.log("document onmessage change");
-				  if (!document[this.hidden_tab_property]) {
-					channel.postMessage({active: 1, publicKey: publicKey});
-					this.setActiveTab(1);
-				  } else {
-					//
-					// only disable if someone else active w/ same key
-					//
-					if (e.data) {
-					  if (e.data.active == 1) {
-						if (e.data.active == 1 && e.data.publicKey === publicKey) {
-						  this.setActiveTab(0);
-						  salert("Saito is already open in another tab");
-						}
-					  }
-					}
-				  }
-				};
-*****/
+				/***** channel.onmessage = async (e) => {
+								  console.log("document onmessage change");
+								  if (!document[this.hidden_tab_property]) {
+									channel.postMessage({active: 1, publicKey: publicKey});
+									this.setActiveTab(1);
+								  } else {
+									//
+									// only disable if someone else active w/ same key
+									//
+									if (e.data) {
+									  if (e.data.active == 1) {
+										if (e.data.active == 1 && e.data.publicKey === publicKey) {
+										  this.setActiveTab(0);
+										  salert("Saito is already open in another tab");
+										}
+									  }
+									}
+								  }
+								};
+				*****/
 
 				document.addEventListener(
 					this.tab_event_name,
@@ -193,8 +194,8 @@ class Browser {
 							if (this.title_interval) {
 								clearInterval(this.title_interval);
 								this.title_interval = null;
-								if (this.original_title){
-									document.title = this.original_title;	
+								if (this.original_title) {
+									document.title = this.original_title;
 								}
 							}
 						}
@@ -321,14 +322,14 @@ class Browser {
 			let theme = document.documentElement.getAttribute('data-theme') || "lite";
 			console.log("HTML provided theme: " + theme);
 
-		    if (this.app.options?.theme) {
-		      if (this.app.options.theme[active_module]){
-		      	theme = this.app.options.theme[active_module];
-		      	this.switchTheme(theme);
-		      }
-		    }
-		    console.log("New theme: " + theme);
-		    this.updateThemeInHeader(theme);
+			if (this.app.options?.theme) {
+				if (this.app.options.theme[active_module]) {
+					theme = this.app.options.theme[active_module];
+					this.switchTheme(theme);
+				}
+			}
+			console.log("New theme: " + theme);
+			this.updateThemeInHeader(theme);
 
 			const updateViewHeight = () => {
 				let vh = window.innerHeight * 0.01;
@@ -503,7 +504,7 @@ class Browser {
 		return `${protocol}://${host}:${port}/r?i=${url_payload}`;
 	}
 
-	createEventInviteLink(event){
+	createEventInviteLink(event) {
 
 		let obj = Object.assign({}, event);
 		delete obj.privateKey;
@@ -636,8 +637,8 @@ class Browser {
 		}
 	}
 
-	createTabNotification(message1, message2){
-		if (this.app.BROWSER == 0 || this.active_tab){
+	createTabNotification(message1, message2) {
+		if (this.app.BROWSER == 0 || this.active_tab) {
 			return;
 		}
 
@@ -675,12 +676,12 @@ class Browser {
 				);
 				if (c) {
 					this.multiple_windows_active = 0;
-					this.channel.postMessage({msg: 'new_tab', location: window.location.href});
-		                        await this.app.modules.render();
-                		        await this.app.modules.attachEvents();
+					this.channel.postMessage({ msg: 'new_tab', location: window.location.href });
+					await this.app.modules.render();
+					await this.app.modules.attachEvents();
 					return;
 				} else {
-					  setTimeout(() => {
+					setTimeout(() => {
 						window.location = '/tabs.html';
 					}, 300)
 				}
@@ -736,25 +737,25 @@ class Browser {
 		}
 	}
 
-	addNotificationToId(count, id){
-	  let elem = document.getElementById(id);
+	addNotificationToId(count, id) {
+		let elem = document.getElementById(id);
 
-	  if (elem) {
-	    if (count) {
-	      if (elem.querySelector(".saito-notification-dot")) {
-	        elem.querySelector(".saito-notification-dot").innerHTML = count;
-	      } else {
-	        this.addElementToId(
-	          `<div class="saito-notification-dot">${count}</div>`,
-	          id
-	        );
-	      }
-	    } else {
-	      if (elem.querySelector(".saito-notification-dot")) {
-	        elem.querySelector(".saito-notification-dot").remove();
-	      }
-	    }
-	  }
+		if (elem) {
+			if (count) {
+				if (elem.querySelector(".saito-notification-dot")) {
+					elem.querySelector(".saito-notification-dot").innerHTML = count;
+				} else {
+					this.addElementToId(
+						`<div class="saito-notification-dot">${count}</div>`,
+						id
+					);
+				}
+			} else {
+				if (elem.querySelector(".saito-notification-dot")) {
+					elem.querySelector(".saito-notification-dot").remove();
+				}
+			}
+		}
 
 	}
 
@@ -815,7 +816,7 @@ class Browser {
 			let obj = document.getElementById(id);
 			if (obj) {
 				this.app.browser.addElementToDom(html, obj);
-			}else{
+			} else {
 				console.warn("id not found");
 			}
 		}
@@ -831,7 +832,7 @@ class Browser {
 			let obj = document.getElementById(id);
 			if (obj) {
 				this.app.browser.addElementToDom(html, obj);
-			}else{
+			} else {
 				console.warn("ID not found (addelementafterid)");
 			}
 		}
@@ -1127,13 +1128,13 @@ class Browser {
 		month = month < 10 ? '0' + month : month;
 		day = day < 10 ? '0' + day : day;
 
-		let return_str =  month + '-' + day;
-		if (with_year){
-			return year + '-' + return_str	
-		}else{
+		let return_str = month + '-' + day;
+		if (with_year) {
+			return year + '-' + return_str
+		} else {
 			return return_str
 		}
-		
+
 	}
 
 	saneTimeFromTimestamp(timestamp, with_seconds = true) {
@@ -1148,7 +1149,7 @@ class Browser {
 		seconds = seconds < 10 ? '0' + seconds : seconds;
 
 		let return_str = hours + ':' + minutes;
-		if (with_seconds){
+		if (with_seconds) {
 			return_str += ':' + seconds;
 		}
 		return return_str;
@@ -1223,7 +1224,7 @@ class Browser {
 						});
 						if (read_as_array_buffer) {
 							reader.readAsArrayBuffer(file);
-						} else if(read_as_text) {
+						} else if (read_as_text) {
 							console.log('readAsText ////');
 							reader.readAsText(file);
 						} else {
@@ -1329,7 +1330,7 @@ class Browser {
 			return;
 		}
 
-		if (!mycallback){
+		if (!mycallback) {
 			console.error("no callback!");
 			return;
 		}
@@ -1726,7 +1727,7 @@ class Browser {
 				dy = evt.screenY - y;
 				x = evt.screenX;
 				y = evt.screenY;
-				
+
 				if (direction == 'horizontal') {
 					wd += dx;
 					target.style.width = wd + 'px';
@@ -1754,7 +1755,7 @@ class Browser {
 			}
 		};
 	}
-	
+
 	returnAddressHTML(key) {
 		return `<div class="saito-address" data-id="${key}">${this.app.keychain.returnIdentifierByPublicKey(
 			key,
@@ -1884,19 +1885,19 @@ class Browser {
 	// neither of these is quite right and the internet is full of wrong answers
 	//
 	urlRegexp() {
-        // from tweet.js 
+		// from tweet.js 
 		// let expression = /\b(?:https?:\/\/)?[\w.]{2,}\.[a-zA-Z]{1,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
 
-        // from sanitize let urlPattern = /\b(?:https?:\/\/)?[\w]+(\.[\w]+)+\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
-        // The sanitizeHtml converts & into `&amp;` so we should match on ;
-        // let daniels_regex = /(?<!>)\b(?:https?:\/\/|www\.|https?:\/\/www\.)?(?:\w{2,}\.)+\w{2,}(?:\/[a-zA-Z0-9_\?=#&;@\-\.]*)*\b(?!<\/)/gi;
-        // this pointlessly looks for www, but does not identify the majority of valid urls or any url without http/https in front of it.
+		// from sanitize let urlPattern = /\b(?:https?:\/\/)?[\w]+(\.[\w]+)+\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+		// The sanitizeHtml converts & into `&amp;` so we should match on ;
+		// let daniels_regex = /(?<!>)\b(?:https?:\/\/|www\.|https?:\/\/www\.)?(?:\w{2,}\.)+\w{2,}(?:\/[a-zA-Z0-9_\?=#&;@\-\.]*)*\b(?!<\/)/gi;
+		// this pointlessly looks for www, but does not identify the majority of valid urls or any url without http/https in front of it.
 
 		// Re-added this code as urls don't work without it. Did chance the var names for safety.
 
-        //this should identify patterns like x.com and staging.saito.io which the others do not.
+		//this should identify patterns like x.com and staging.saito.io which the others do not.
 		let urlIndentifierRegexp = /\b(?:https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
-        return urlIndentifierRegexp;
+		return urlIndentifierRegexp;
 	}
 
 	sanitize(text, createLinks = false) {
@@ -2088,7 +2089,7 @@ class Browser {
 	// This function should make strings friendly to put INSIDE an html tag
 	// escaping special characters like & < > "
 	//
-	escapeHTML(text){
+	escapeHTML(text) {
 		return sanitizer.escapeAttrib(text);
 	}
 
@@ -2319,7 +2320,7 @@ class Browser {
 				fetch('https://ntfy.hda0.net/', {
 					method: 'POST',
 					body: JSON.stringify(content)
-				  });
+				});
 			};
 
 			HTMLElement.prototype.destroy = function destroy() {
@@ -2366,7 +2367,7 @@ class Browser {
 							if (identifier !== key) {
 								el.innerText = identifier;
 							} else {
-								el.innerText = 'Anon-' + identifier.substr(0,6);
+								el.innerText = 'Anon-' + identifier.substr(0, 6);
 								if (!unknown_keys.includes(key)) {
 									unknown_keys.push(key);
 								}
@@ -2443,22 +2444,22 @@ class Browser {
 		}
 	}
 
-	updateThemeInHeader(theme){
+	updateThemeInHeader(theme) {
 		//Update header
-		setTimeout(()=> {
+		setTimeout(() => {
 			let theme_icon_obj = document.querySelector(".saito-theme-icon");
 			let am = this.app.modules.returnActiveModule();
 
-			if (theme_icon_obj && am){
+			if (theme_icon_obj && am) {
 				let classes = theme_icon_obj.classList;
-				for (let c of classes){
+				for (let c of classes) {
 					theme_icon_obj.classList.remove(c);
 				}
 
 				theme_icon_obj.classList.add("saito-theme-icon");
 
 				let theme_classes = am.theme_options[theme].split(" ");
-				for (let t of theme_classes){
+				for (let t of theme_classes) {
 					theme_icon_obj.classList.add(t);
 				}
 			}
@@ -2552,115 +2553,173 @@ class Browser {
 		)
 	}
 
-	extractMentions(text){
+	extractMentions(text) {
 		let potential_keys = text.matchAll(/(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]+)/g);
 		let keys = [];
 
-        for (let k of potential_keys){
-            let split = k[0].split('@');
-            let username = '';
-            let key = '';
+		for (let k of potential_keys) {
+			let split = k[0].split('@');
+			let username = '';
+			let key = '';
 
-            if (split.length > 2) {
-              username = split[1] + '@' + split[2];
-              key =
-                this.app.keychain.returnPublicKeyByIdentifier(
-                  username
-                );
-            } else {
-              username = this.app.keychain.returnUsername(split[1]);
-              key = split[1];
-            }
+			if (split.length > 2) {
+				username = split[1] + '@' + split[2];
+				key =
+					this.app.keychain.returnPublicKeyByIdentifier(
+						username
+					);
+			} else {
+				username = this.app.keychain.returnUsername(split[1]);
+				key = split[1];
+			}
 
-            console.log("Key: ", key);
-            if (this.app.wallet.isValidPublicKey(key)) {
-            	if (!keys.includes(key)){
-            		keys.push(key);
-            	}
-            }
-        }
+			console.log("Key: ", key);
+			if (this.app.wallet.isValidPublicKey(key)) {
+				if (!keys.includes(key)) {
+					keys.push(key);
+				}
+			}
+		}
 
-	    return keys;
+		return keys;
 	}
 
-	markupMentions(text){
-        return text.replaceAll(
-          /(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]+)/g,
-          (k) => {
-            let split = k.split('@');
-            let username = '';
-            let key = '';
+	markupMentions(text) {
+		return text.replaceAll(
+			/(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]+)/g,
+			(k) => {
+				let split = k.split('@');
+				let username = '';
+				let key = '';
 
-            if (split.length > 2) {
-              username = split[1] + '@' + split[2];
-              key =
-                this.app.keychain.returnPublicKeyByIdentifier(
-                  username
-                );
-            } else {
-              username = this.app.keychain.returnUsername(split[1]);
-              key = split[1];
-            }
+				if (split.length > 2) {
+					username = split[1] + '@' + split[2];
+					key =
+						this.app.keychain.returnPublicKeyByIdentifier(
+							username
+						);
+				} else {
+					username = this.app.keychain.returnUsername(split[1]);
+					key = split[1];
+				}
 
-            if (this.app.wallet.isValidPublicKey(key)) {
-            	return 	`<span class="saito-mention saito-address" data-id="${key}">${username}</span>`;
-            }else{
-            	return k;
-            }
+				if (this.app.wallet.isValidPublicKey(key)) {
+					return `<span class="saito-mention saito-address" data-id="${key}">${username}</span>`;
+				} else {
+					return k;
+				}
 
-          }
-        );
+			}
+		);
 	}
 
 
 
-	validateAmountLimit(amount, event){
+	validateAmountLimit(amount, event) {
 		// allow only numbers, dot, backspace
 		// 95 to 106 corresponds to Numpad 0 through 9;
 		// 47 to 58 corresponds to 0 through 9 on the Number Row; 
 		// 8 is Backspace
 		// 190, 110, 46 are for dot (.)
-		if(!((event.keyCode > 95 && event.keyCode < 106)
-	      || (event.keyCode > 47 && event.keyCode < 58) 
-	      || event.keyCode == 8 || event.keyCode==190 || event.keyCode==110 || event.keyCode==46) 
-		  ) {
-	      	event.preventDefault();
-	        return false;
-	    }
+		if (!((event.keyCode > 95 && event.keyCode < 106)
+			|| (event.keyCode > 47 && event.keyCode < 58)
+			|| event.keyCode == 8 || event.keyCode == 190 || event.keyCode == 110 || event.keyCode == 46)
+		) {
+			event.preventDefault();
+			return false;
+		}
 
-      // prevent user for adding number gretaer than 10^9 to input
-      if (amount > 1000000000) {
-        if (!isNaN(event.key)) {
-          event.preventDefault();
-          return false;
-        }
-      }
+		// prevent user for adding number gretaer than 10^9 to input
+		if (amount > 1000000000) {
+			if (!isNaN(event.key)) {
+				event.preventDefault();
+				return false;
+			}
+		}
 
-      // prevent user for adding more than 8 decimal point precision
-      let amount_string = amount.toString();
-      let decimal_separator =  this.app.browser.getDecimalSeparator();
-     
-      if (amount_string.indexOf(decimal_separator)) {
-        let myArray = amount.split(decimal_separator);
-        if (typeof myArray[1] != 'undefined') {
-	       let decimal_value = myArray[1];
-	       if (decimal_value.length > 8) {
-	         if (!isNaN(event.key)) {
-	           event.preventDefault();
-	           return false;
-	         }
-	       }
-	      }
-      } 
+		// prevent user for adding more than 8 decimal point precision
+		let amount_string = amount.toString();
+		let decimal_separator = this.app.browser.getDecimalSeparator();
+
+		if (amount_string.indexOf(decimal_separator)) {
+			let myArray = amount.split(decimal_separator);
+			if (typeof myArray[1] != 'undefined') {
+				let decimal_value = myArray[1];
+				if (decimal_value.length > 8) {
+					if (!isNaN(event.key)) {
+						event.preventDefault();
+						return false;
+					}
+				}
+			}
+		}
 	}
 
-	formatDecimals(num, string = false){
-		let pos = Math.abs((Math.log10(num))); 
+	formatDecimals(num, string = false) {
+		let pos = Math.abs((Math.log10(num)));
 		let number = Number(num);
-	  	number = number.toFixed(pos+2);
-	  	number = (number);
-	  	return (string) ? number.toString(): number;  
+		number = number.toFixed(pos + 2);
+		number = (number);
+		return (string) ? number.toString() : number;
 	}
+
+	/**
+	* Creates a container div and renders a React component into it
+	* @param Component The React component to render
+	* @param props Props to pass to the component
+	* @param containerId Optional custom container ID (default: auto-generated)
+	* @returns Object containing the container element, root instance, and cleanup function
+	*/
+	createReactRoot(
+		Component: React.ComponentType<any>,
+		props: Record<string, any> = {},
+		containerId?: string
+	) {
+		const id = containerId || `saito-react-root-${Date.now()}`;
+		const container = document.createElement('div');
+		container.id = id;
+		document.body.appendChild(container);
+
+		const root = createRoot(container);
+		root.render(React.createElement(Component, props));
+
+		const cleanup = () => {
+			root.unmount();
+			container.remove();
+		};
+
+		return {
+			container,
+			root,
+			cleanup
+		};
+	}
+
+	  /**
+     * Renders a React component into an existing container element
+     * @param Component The React component to render
+     * @param props Props to pass to the component
+     * @param container The existing container element to render into
+     * @returns Object containing the root instance and cleanup function
+     */
+	  renderReactToExistingContainer(
+        Component: React.ComponentType<any>,
+        props: Record<string, any> = {},
+        container: HTMLElement
+    ) {
+        const root = createRoot(container);
+		root.render(React.createElement(Component, props));
+
+        const cleanup = () => {
+            root.unmount();
+        };
+
+        return {
+            root,
+            cleanup
+        };
+    }
+
 }
 
 export default Browser;

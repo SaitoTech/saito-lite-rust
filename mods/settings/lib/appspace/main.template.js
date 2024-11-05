@@ -1,6 +1,8 @@
 module.exports  = (app, mod, main) => {
 
 	let publicKey = mod.publicKey;
+  let can_add_archive_nodes = app.modules.returnModule('Profile');
+
 	let key = app.keychain.returnKey({ publicKey: publicKey });
 	let identifier_registered;
 
@@ -59,7 +61,8 @@ module.exports  = (app, mod, main) => {
         <div class="saito-button-secondary small" id="backup-account-btn">Backup Wallet</div>
         <div class="saito-button-secondary small" id="nuke-account-btn">Nuke Account</div>
         <div class="saito-button-secondary small" id="clear-storage-btn">Clear Local Cache</div>
-      </div>
+        ${can_add_archive_nodes ? `<div class="saito-button-secondary small" id="update-archive-node-btn">Update Archive node</div>`: ""}
+      </div>  
     </div>
 
     <div class="settings-appspace-body">

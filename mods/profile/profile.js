@@ -1,11 +1,10 @@
-const saito = require('../../lib/saito/saito');
-const Transaction = require('../../lib/saito/transaction').default;
 const ModTemplate = require('../../lib/templates/modtemplate');
 const PhotoUploader = require('../../lib/saito/ui/saito-photo-uploader/saito-photo-uploader');
 const UpdateDescription = require('./lib/ui/update-description');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const SaitoProfile = require('../../lib/saito/ui/saito-profile/saito-profile');
 const pageHome = require('./index');
+const UpdateArchiveNode = require('./lib/ui/update-archive-node');
 
 class Profile extends ModTemplate {
 	constructor(app) {
@@ -25,6 +24,8 @@ class Profile extends ModTemplate {
 			description: 'Peer to peer Web3 social media platform',
 			image: 'https://saito.tech/wp-content/uploads/2022/04/saito_card.png' //square image with "Saito" below logo
 		};
+
+		this.styles = ['/profile/style.css'];
 
 		app.connection.on('profile-fetch-content-and-update-dom',
 			async (key) => {
@@ -119,27 +120,14 @@ class Profile extends ModTemplate {
 		});
 
 		app.connection.on('profile-update-archive-node', (archiveNode) => {
-			const stringifiedArchiveNode = JSON.stringify(archiveNode);
-			// Update the profile object with the stringified archive node
-			this.sendProfileTransaction({ archive_nodes: stringifiedArchiveNode });
-			console.log('sending profile transaction')
-		});
-
+			this.attachStyleSheets();
+			this.updateArchiveNode = new UpdateArchiveNode(this.app, this);
+			let archiveNodes = this.app.keychain.returnKeyArchiveNodes(this.publicKey)
+			console.log("archive nodes", archiveNodes)
+			this.updateArchiveNode.render(archiveNodes);
+		})
 	}
 
-	async onPeerHandshakeComplete(app) {
-		if (app.BROWSER) {
-			/// For testing
-			let { port } = this.app.browser
-			console.log(app.browser, 'browser console');
-			let host = app.browser.host.split(':')[0];
-			let peers = await this.app.network.getPeers();
-			let serverPeer = peers[0];
-			console.log(host, port, serverPeer.publicKey)
-			app.connection.emit('profile-update-archive-node', { host, port, publicKey: serverPeer.publicKey });
-		}
-
-	}
 
 
 	async onConfirmation(blk, tx, conf) {
@@ -178,7 +166,6 @@ class Profile extends ModTemplate {
 
 		if (service.service === 'archive') {
 			let keys_to_check = app.keychain.returnKeys({ watched: true, profile: undefined });
-
 			for (let key of keys_to_check) {
 				// Save an empty profile, so we don't keep querying on every page load... 
 				// if we are watching them, we will get the tx when they update...
@@ -250,7 +237,6 @@ class Profile extends ModTemplate {
 	async sendProfileTransaction(data) {
 
 		this.app.connection.emit("saito-header-update-message", { msg: "broadcasting profile update" })
-
 		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
 		newtx.msg = {
 			module: this.name,
@@ -259,9 +245,7 @@ class Profile extends ModTemplate {
 		};
 
 		await newtx.sign();
-
 		this.app.connection.emit('profile-update-dom', this.publicKey, data);
-
 		await this.app.network.propagateTransaction(newtx);
 
 	}
@@ -308,7 +292,13 @@ class Profile extends ModTemplate {
 			const profile = { ...returnedKey?.profile };
 			Object.assign(profile, data);
 
-			profile.archive_nodes = [this.cache[from]?.archive_nodes] || [];
+			const archive_nodes = this.cache[from]?.archive_nodes;
+			if (archive_nodes.length > 0) {
+				profile.archive_nodes = archive_nodes;
+				// profile.archive_nodes.push(archive_node);
+			}
+
+
 
 			// Update the key in the keychain with the new profile
 			this.app.keychain.addKey(from, { profile });
@@ -382,6 +372,13 @@ class Profile extends ModTemplate {
 
 
 
+	async updateArchiveNodes(archiveNodes){
+			const stringifiedArchiveNodes = archiveNodes.map(node => {
+				return JSON.stringify(node);
+			})
+			this.sendProfileTransaction({ archive_nodes: stringifiedArchiveNodes });
+			console.log('sending profile transaction')
+	}
 
 
 
