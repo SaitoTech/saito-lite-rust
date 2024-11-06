@@ -2920,6 +2920,7 @@ console.log("\n\n\n\n");
 	  this.setEnemies("ottoman", "venice");
 	  this.setEnemies("ottoman", "papacy");
 	  this.setEnemies("france", "hapsburg");
+	  this.setEnemies("england", "france");
 	  this.setAllies("france", "genoa");
 	  this.setAllies("france", "ottoman");
 	  this.setAllies("hapsburg", "hungary");
@@ -3104,6 +3105,8 @@ console.log("\n\n\n\n");
 	  this.addNavalSquadron("ottoman", "ionian", 3); 
 	  this.addCorsair("ottoman", "barbary", 3); 
 
+	  this.addNavalSquadron("france", "channel", 4);
+	  this.addNavalSquadron("england", "north", 3);
 
 
 	  this.addNavalSquadron("hapsburg", "tyrrhenian", 3);
@@ -12419,7 +12422,7 @@ console.log("we have removed philip and redisplayed the space...");
 	        function(space) {
 	          if (space.besieged) { return 0; }
 	          if (space.type == "electorate" && his_self.game.state.events.schmalkaldic_league != 1) { return 0; }
-		  if (his_self.isSpaceControlled(space, faction)) { return 1; }
+	          if (his_self.isSpaceControlled(space, faction) && his_self.isSpaceHomeSpace(space, faction)) { return 1; }
 	          return 0;
 	        },
 	        function(spacekey) {
@@ -12745,7 +12748,10 @@ console.log("we have removed philip and redisplayed the space...");
 
 	  let msg = "Cancel Which Expedition / Conquest?";
           let html = '<ul>';
+	  let cabot_found = 0;
+
 	  for (let i = 0; i < his_self.game.state.explorations.length; i++) {
+
 	    let exp = his_self.game.state.explorations[i];
 
             if (exp.cabot == 1) {
@@ -12757,14 +12763,17 @@ console.log("we have removed philip and redisplayed the space...");
 	    if (exp.round == his_self.game.state.round) {
               html += `<li class="option" id="${his_self.game.state.explorations[i].faction}">${his_self.returnFactionName(his_self.game.state.explorations[i].faction)} (exploration)</li>`;
 	    }
-	    if (his_self.game.state.events.cabot_england == 1 && cabot_england_found == 0) {
+	    if (cabot_found == 0 && his_self.game.state.events.cabot_england == 1 && cabot_england_found == 0) {
               html += `<li class="option" id="cabot_england">sebastian cabot (england)</li>`;
+	      cabot_found = 1;
 	    }
-	    if (his_self.game.state.events.cabot_france == 1 && cabot_france_found == 0) {
+	    if (cabot_found == 0 && his_self.game.state.events.cabot_france == 1 && cabot_france_found == 0) {
               html += `<li class="option" id="cabot_france">sebastian cabot (france)</li>`;
+	      cabot_found = 1;
 	    }
-	    if (his_self.game.state.events.cabot_hapsburg == 1 && cabot_hapsburg_found == 0) {
+	    if (cabot_found == 0 && his_self.game.state.events.cabot_hapsburg == 1 && cabot_hapsburg_found == 0) {
               html += `<li class="option" id="cabot_hapsburg">sebastian cabot (haps)</li>`;
+	      cabot_found = 1;
 	    }
 	  }
 	  for (let i = 0; i < his_self.game.state.conquests.length; i++) {
@@ -19141,7 +19150,7 @@ if (x) {
       home: "england",
       political: "england",
       religion: "catholic",
-      ports:["north"], 
+      ports:["north", "channel"], 
       neighbours: ["boulogne","brussels","antwerp"],
       language: "french",
       type: "key"
@@ -23653,7 +23662,6 @@ if (this.game.options.scenario != "is_testing") {
     	      if (this.game.state.round < 5 && this.game.state.henry_viii_marital_status >= 2 && this.game.state.henry_viii_reformation_started != 1) {
 	        this.game.state.henry_viii_reformation_started = 1;
 	        this.addDebater("protestant", "cranmer-debater");
-alert("setting cranmer active 1");
 		this.game.state.events.cranmer_active = 1;
 	        this.addDebater("protestant", "latimer-debater");
 	        this.addDebater("protestant", "coverdale-debater");
@@ -26576,7 +26584,14 @@ console.log("----------------------------");
 	  // whoever is being attacked can retreat into the fortification if they
 	  // have 4 or less land units
 	  //
+	  let processed_factions = [];
 	  for (let f in this.game.spaces[spacekey].units) {
+
+	    //
+	    // if minor powers are here and a major power is as well, we treat the minor as a major power
+	    //
+	    f = this.returnControllingPower(f);
+	    if (processed_factions.includes(f)) { continue; } else { processed_factions.push(f); }
 
 	    if (f !== attacker && (this.areAllies(f, this.returnFactionControllingSpace(spacekey)) || this.isSpaceControlled(spacekey, f)) && !this.areAllies(this.game.state.active_faction, f, 1)) {
 
@@ -31920,16 +31935,8 @@ try {
 	    try { if (this.game.spaces[ts]) { s = this.game.spaces[ts]; } } catch (err) {}
 	    try { if (this.game.navalspaces[ts]) { is_naval_space = true; s = this.game.navalspaces[ts]; } } catch (err) {}
             for (let key in s.units) {
-	      if (is_naval_space == true) {
-	        for (let i = 0; i < s.units[key].length; i++) {
-		  if (s.units[key][i].type == "squadron") {
-		    if (!squadron_rich_targets.includes(ts)) {
-		      squadron_rich_targets.push(ts);
-		    }
-		  }
-		}
-	      } else {
-	        if (this.returnControllingPower(key) == faction) {
+	      if (his_self.returnControllingPower(key) == his_self.returnControllingPower(faction)) {
+	        if (is_naval_space == true) {
 	          for (let i = 0; i < s.units[key].length; i++) {
 		    if (s.units[key][i].type == "squadron") {
 		      if (!squadron_rich_targets.includes(ts)) {
@@ -31937,7 +31944,17 @@ try {
 		      }
 		    }
 		  }
-	        }
+	        } else {
+	          if (this.returnControllingPower(key) == faction) {
+	            for (let i = 0; i < s.units[key].length; i++) {
+		      if (s.units[key][i].type == "squadron") {
+		        if (!squadron_rich_targets.includes(ts)) {
+		          squadron_rich_targets.push(ts);
+		        }
+		      }
+		    }
+	          }
+		}
 	      }
 	    }
 	  }
@@ -44637,11 +44654,11 @@ does_units_to_move_have_unit = true; }
     return false;
   }
   async playerBuyMercenaryOverLimit(his_self, player, faction, ops_to_spend, ops_remaining) {
+    his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, "");
     his_self.displayCustomOverlay("overcapacity", `${his_self.returnFactionName(faction)} is Overcapacity`);
     return 1;
   }
   canPlayerBuyMercenary(his_self, player, faction) {
-
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
     if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "mercenary") == 0) { return false; }
@@ -44759,6 +44776,7 @@ does_units_to_move_have_unit = true; }
     return false;
   }
   async playerBuyRegularOverLimit(his_self, player, faction, ops_to_spend, ops_remaining) {
+    his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, "");
     his_self.displayCustomOverlay("overcapacity", `${his_self.returnFactionName(faction)} is Overcapacity`);
     return 1;
   }
@@ -45038,7 +45056,7 @@ does_units_to_move_have_unit = true; }
 
 	    let squadrons_protecting_space = his_self.returnNumberOfSquadronsProtectingSpace(conquerable_spaces[i]);
 	    for (let y = 0; y < his_self.game.spaces[conquerable_spaces[i]].ports.length; y++) {
-	      let attacker_squadrons_adjacent = 0;
+      	      let attacker_squadrons_adjacent = 0;
 	      let p = his_self.game.spaces[conquerable_spaces[i]].ports[y];
 	      for (let f in his_self.game.navalspaces[p].units) {
 		if (his_self.returnControllingPower(f) == his_self.returnControllingPower(faction)) {
@@ -45048,14 +45066,14 @@ does_units_to_move_have_unit = true; }
 	          }
 		}
 	      }
-	      if (attacker_squadrons_adjacent <= squadrons_protecting_space) {
-	        if (999 < squadrons_protecting_space) {
-		  alert("Space cannot be assaulted if protected by fleet in adjacent sea");
-		  player_warned = 1;
-	        } else {
-	          alert("You have a space under siege, but it is protected by a fleet. To assault such a space, you need more naval forces adjacent to this space than the defender has protecting it.");
-	          player_warned = 1;
-	        }
+	    }
+	    if (attacker_squadrons_adjacent <= squadrons_protecting_space) {
+	      if (999 < squadrons_protecting_space) {
+	        alert("Space cannot be assaulted if protected by fleet in adjacent sea");
+	        player_warned = 1;
+	      } else {
+	        alert("You have a space under siege, but it is protected by a fleet. To assault such a space, you need more naval forces adjacent to this space than the defender has protecting it.");
+	        player_warned = 1;
 	      }
 	    }
 	  }
@@ -45087,16 +45105,20 @@ does_units_to_move_have_unit = true; }
 
 	      let squadrons_protecting_space = his_self.returnNumberOfSquadronsProtectingSpace(conquerable_spaces[i]);
 	      if (squadrons_protecting_space == 0) { return 1; }
+	      let attacker_squadrons_adjacent = 0;
 
 	      for (let y = 0; y < his_self.game.spaces[conquerable_spaces[i]].ports.length; y++) {
-	        let attacker_squadrons_adjacent = 0;
 	        let sea = his_self.game.spaces[conquerable_spaces[i]].ports[y];
-	        for (let z = 0; z < his_self.game.navalspaces[sea].units[faction].length; z++) {
-		  let u = his_self.game.navalspaces[sea].units[faction][z];
-		  if (u.type == "squadron") { attacker_squadrons_adjacent++; }
+		for (let f in sea.units) {
+		  if (his_self.returnControllingPower(f) == his_self.returnControllingPower(faction)) {
+	            for (let z = 0; z < his_self.game.navalspaces[sea].units[faction].length; z++) {
+		      let u = his_self.game.navalspaces[sea].units[faction][z];
+		      if (u.type == "squadron") { attacker_squadrons_adjacent++; }
+	            }
+	          }
 	        }
-	        if (attacker_squadrons_adjacent <= squadrons_protecting_space) { return 0; }
 	      }
+	      if (attacker_squadrons_adjacent <= squadrons_protecting_space) { return 0; }
 	      return 1;
 	    }
 	  }

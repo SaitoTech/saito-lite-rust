@@ -5960,11 +5960,11 @@ does_units_to_move_have_unit = true; }
     return false;
   }
   async playerBuyMercenaryOverLimit(his_self, player, faction, ops_to_spend, ops_remaining) {
+    his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, "");
     his_self.displayCustomOverlay("overcapacity", `${his_self.returnFactionName(faction)} is Overcapacity`);
     return 1;
   }
   canPlayerBuyMercenary(his_self, player, faction) {
-
     // no for protestants early-game
     if (faction === "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return false; }
     if (his_self.returnNumberOfUnitsAvailableForConstruction(faction, "mercenary") == 0) { return false; }
@@ -6082,6 +6082,7 @@ does_units_to_move_have_unit = true; }
     return false;
   }
   async playerBuyRegularOverLimit(his_self, player, faction, ops_to_spend, ops_remaining) {
+    his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, "");
     his_self.displayCustomOverlay("overcapacity", `${his_self.returnFactionName(faction)} is Overcapacity`);
     return 1;
   }
@@ -6361,7 +6362,7 @@ does_units_to_move_have_unit = true; }
 
 	    let squadrons_protecting_space = his_self.returnNumberOfSquadronsProtectingSpace(conquerable_spaces[i]);
 	    for (let y = 0; y < his_self.game.spaces[conquerable_spaces[i]].ports.length; y++) {
-	      let attacker_squadrons_adjacent = 0;
+      	      let attacker_squadrons_adjacent = 0;
 	      let p = his_self.game.spaces[conquerable_spaces[i]].ports[y];
 	      for (let f in his_self.game.navalspaces[p].units) {
 		if (his_self.returnControllingPower(f) == his_self.returnControllingPower(faction)) {
@@ -6371,14 +6372,14 @@ does_units_to_move_have_unit = true; }
 	          }
 		}
 	      }
-	      if (attacker_squadrons_adjacent <= squadrons_protecting_space) {
-	        if (999 < squadrons_protecting_space) {
-		  alert("Space cannot be assaulted if protected by fleet in adjacent sea");
-		  player_warned = 1;
-	        } else {
-	          alert("You have a space under siege, but it is protected by a fleet. To assault such a space, you need more naval forces adjacent to this space than the defender has protecting it.");
-	          player_warned = 1;
-	        }
+	    }
+	    if (attacker_squadrons_adjacent <= squadrons_protecting_space) {
+	      if (999 < squadrons_protecting_space) {
+	        alert("Space cannot be assaulted if protected by fleet in adjacent sea");
+	        player_warned = 1;
+	      } else {
+	        alert("You have a space under siege, but it is protected by a fleet. To assault such a space, you need more naval forces adjacent to this space than the defender has protecting it.");
+	        player_warned = 1;
 	      }
 	    }
 	  }
@@ -6410,16 +6411,20 @@ does_units_to_move_have_unit = true; }
 
 	      let squadrons_protecting_space = his_self.returnNumberOfSquadronsProtectingSpace(conquerable_spaces[i]);
 	      if (squadrons_protecting_space == 0) { return 1; }
+	      let attacker_squadrons_adjacent = 0;
 
 	      for (let y = 0; y < his_self.game.spaces[conquerable_spaces[i]].ports.length; y++) {
-	        let attacker_squadrons_adjacent = 0;
 	        let sea = his_self.game.spaces[conquerable_spaces[i]].ports[y];
-	        for (let z = 0; z < his_self.game.navalspaces[sea].units[faction].length; z++) {
-		  let u = his_self.game.navalspaces[sea].units[faction][z];
-		  if (u.type == "squadron") { attacker_squadrons_adjacent++; }
+		for (let f in sea.units) {
+		  if (his_self.returnControllingPower(f) == his_self.returnControllingPower(faction)) {
+	            for (let z = 0; z < his_self.game.navalspaces[sea].units[faction].length; z++) {
+		      let u = his_self.game.navalspaces[sea].units[faction][z];
+		      if (u.type == "squadron") { attacker_squadrons_adjacent++; }
+	            }
+	          }
 	        }
-	        if (attacker_squadrons_adjacent <= squadrons_protecting_space) { return 0; }
 	      }
+	      if (attacker_squadrons_adjacent <= squadrons_protecting_space) { return 0; }
 	      return 1;
 	    }
 	  }

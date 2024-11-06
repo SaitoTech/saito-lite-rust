@@ -576,6 +576,7 @@ console.log("\n\n\n\n");
 	  this.setEnemies("ottoman", "venice");
 	  this.setEnemies("ottoman", "papacy");
 	  this.setEnemies("france", "hapsburg");
+	  this.setEnemies("england", "france");
 	  this.setAllies("france", "genoa");
 	  this.setAllies("france", "ottoman");
 	  this.setAllies("hapsburg", "hungary");
@@ -760,6 +761,8 @@ console.log("\n\n\n\n");
 	  this.addNavalSquadron("ottoman", "ionian", 3); 
 	  this.addCorsair("ottoman", "barbary", 3); 
 
+	  this.addNavalSquadron("france", "channel", 4);
+	  this.addNavalSquadron("england", "north", 3);
 
 
 	  this.addNavalSquadron("hapsburg", "tyrrhenian", 3);

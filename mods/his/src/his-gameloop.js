@@ -208,7 +208,6 @@ if (this.game.options.scenario != "is_testing") {
     	      if (this.game.state.round < 5 && this.game.state.henry_viii_marital_status >= 2 && this.game.state.henry_viii_reformation_started != 1) {
 	        this.game.state.henry_viii_reformation_started = 1;
 	        this.addDebater("protestant", "cranmer-debater");
-alert("setting cranmer active 1");
 		this.game.state.events.cranmer_active = 1;
 	        this.addDebater("protestant", "latimer-debater");
 	        this.addDebater("protestant", "coverdale-debater");
@@ -3131,7 +3130,14 @@ console.log("----------------------------");
 	  // whoever is being attacked can retreat into the fortification if they
 	  // have 4 or less land units
 	  //
+	  let processed_factions = [];
 	  for (let f in this.game.spaces[spacekey].units) {
+
+	    //
+	    // if minor powers are here and a major power is as well, we treat the minor as a major power
+	    //
+	    f = this.returnControllingPower(f);
+	    if (processed_factions.includes(f)) { continue; } else { processed_factions.push(f); }
 
 	    if (f !== attacker && (this.areAllies(f, this.returnFactionControllingSpace(spacekey)) || this.isSpaceControlled(spacekey, f)) && !this.areAllies(this.game.state.active_faction, f, 1)) {
 
@@ -8475,16 +8481,8 @@ try {
 	    try { if (this.game.spaces[ts]) { s = this.game.spaces[ts]; } } catch (err) {}
 	    try { if (this.game.navalspaces[ts]) { is_naval_space = true; s = this.game.navalspaces[ts]; } } catch (err) {}
             for (let key in s.units) {
-	      if (is_naval_space == true) {
-	        for (let i = 0; i < s.units[key].length; i++) {
-		  if (s.units[key][i].type == "squadron") {
-		    if (!squadron_rich_targets.includes(ts)) {
-		      squadron_rich_targets.push(ts);
-		    }
-		  }
-		}
-	      } else {
-	        if (this.returnControllingPower(key) == faction) {
+	      if (his_self.returnControllingPower(key) == his_self.returnControllingPower(faction)) {
+	        if (is_naval_space == true) {
 	          for (let i = 0; i < s.units[key].length; i++) {
 		    if (s.units[key][i].type == "squadron") {
 		      if (!squadron_rich_targets.includes(ts)) {
@@ -8492,7 +8490,17 @@ try {
 		      }
 		    }
 		  }
-	        }
+	        } else {
+	          if (this.returnControllingPower(key) == faction) {
+	            for (let i = 0; i < s.units[key].length; i++) {
+		      if (s.units[key][i].type == "squadron") {
+		        if (!squadron_rich_targets.includes(ts)) {
+		          squadron_rich_targets.push(ts);
+		        }
+		      }
+		    }
+	          }
+		}
 	      }
 	    }
 	  }
