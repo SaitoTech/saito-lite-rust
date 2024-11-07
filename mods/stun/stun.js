@@ -339,7 +339,7 @@ class Stun extends ModTemplate {
 				await peerConnection.addIceCandidate(data.iceCandidate);
 			}catch(err){
 				if (!peerConnection?.ignoreOffer){
-					console.error('Error adding remote candidate:', err);	
+					console.error('Error adding remote candidate:', err, data.iceCandidate);	
 				}
 			}
 			return;

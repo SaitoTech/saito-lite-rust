@@ -532,6 +532,8 @@ class Videocall extends ModTemplate {
 							'stun-switch-view',
 							this.app.options.stun.settings?.layout || this.layout
 						);
+
+						this.streams.remoteStreams.delete("presentation");
 						this.screen_share = null;
 					}
 					if (txmsg.request === 'broadcast-call-list') {
