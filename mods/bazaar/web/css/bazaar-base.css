@@ -6,15 +6,7 @@ body {
 	font-family: var(--theme-font);
 }
 
-.poker-seat-4 {
-	top: 40px;
-}
 
-.status-message {
-	min-height: 60px;
-	padding-top: 5px;
-	padding-bottom: 5px;
-}
 
 .gameboard {
 	/* Default fill the background with image */
@@ -152,13 +144,14 @@ body {
 	transform: translateX(-50%);
 }
 
-.player-box-graphic {
+.game-playerbox-graphics {
 	position: absolute;
 	right: 100%;
 }
 
-#player-box-graphic-4 {
-	left: 100%;
+
+.game-playerbox, .saito-user > .saito-address {
+	color: white;
 }
 
 .score {
@@ -179,8 +172,7 @@ body {
 	text-shadow: none;
 }
 
-.player-box-info,
-.plog {
+.game-playerbox-body {
 	font-size: 24px;
 	text-align: center;
 	padding: unset;
@@ -322,9 +314,8 @@ body {
 
 .hud {
 	display: block;
-	width: 900px;
-	max-height: initial;
-	height: 400px;
+	max-height: 400px;
+	height: fit-content;
 	height: -moz-fit-content;
 	background: rgba(43, 29, 14, 0.8);
 	border: 2px solid rgb(230, 206, 180);
@@ -342,6 +333,10 @@ body {
 	overflow-y: visible;
 	cursor: initial;
 	width: auto;
+}
+
+.status {
+	color: black;
 }
 
 .hud-header {
@@ -377,7 +372,7 @@ body {
 
 /**** AND PLAYER BOXES *****/
 
-.player-box {
+.game-playerbox {
 	height: fit-content;
 	background-color: rgba(43, 29, 14, 0.7);
 	margin: 0.5em;
@@ -387,11 +382,8 @@ body {
 	width: unset;
 }
 
-.player-box.poker-seat-7 {
-	max-width: 25vw;
-}
 
-.player-box.active {
+.game-playerbox.active {
 	background-color: red;
 }
 
