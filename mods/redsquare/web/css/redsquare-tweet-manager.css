@@ -59,6 +59,10 @@
 	justify-content: space-evenly;
 }
 
+.redsquare-feed-source.hidden {
+	display: none;
+}
+
 .redsquare-feed-source .saito-button-tab{
 	flex: 1;
 	padding: 0.75rem;
