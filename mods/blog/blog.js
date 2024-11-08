@@ -390,13 +390,9 @@ class Blog extends ModTemplate {
         if (!author || author == this.publicKey) {
             this.app.browser.createReactRoot(BlogWidget, { app: this.app, mod: this, publicKey: this.publicKey, topMargin: true }, `blog-widget-${Date.now()}`)
         }
-
         if (author && author !== this.publicKey) {
             this.app.browser.createReactRoot(BlogWidget, { app: this.app, mod: this, publicKey: author, topMargin: true }, `blog-widget-${Date.now()}`)
         }
-
-
-
     }
 
 
