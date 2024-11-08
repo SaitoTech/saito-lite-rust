@@ -3107,6 +3107,17 @@ console.log("----------------------------");
 	  let attacker = mv[1];
 	  let spacekey = mv[2];
 	  let attacker_comes_from_this_spacekey = mv[3];
+	  let defender = "";
+
+	  //
+	  // if this is a defensive interception, the attacker will be
+	  // the active player.
+	  //
+	  if (this.returnControllingPower(attacker) != this.returnControllingPower(this.game.state.active_faction)) {
+	    defender = attacker;
+	    attacker = this.game.state.active_faction;
+	    attacker_comes_from_this_spacekey = this.game.state.attacker_comes_from_this_spacekey;
+	  }
 
 	  let space = this.game.spaces[spacekey];
 
@@ -3118,9 +3129,15 @@ console.log("----------------------------");
 	  // no units, no fortification check
 	  //
 	  let fluis = 0;
-	  for (let f in this.game.spaces[spacekey].units) {
-	    if (f !== attacker && !this.areAllies(this.game.state.active_faction, f, 1)) {
-	      fluis += this.returnFactionLandUnitsInSpace(f, spacekey, 1);
+	  if (defender != "") {
+	    if (defender !== attacker && !this.areAllies(this.game.state.active_faction, defender, 1)) {
+	      fluis += this.returnFactionLandUnitsInSpace(defender, spacekey, 1);
+            }
+	  } else {
+	    for (let f in this.game.spaces[spacekey].units) {
+	      if (f !== attacker && !this.areAllies(this.game.state.active_faction, f, 1)) {
+	        fluis += this.returnFactionLandUnitsInSpace(f, spacekey, 1);
+	      }
 	    }
 	  }
 
@@ -3132,6 +3149,11 @@ console.log("----------------------------");
 	  //
 	  let processed_factions = [];
 	  for (let f in this.game.spaces[spacekey].units) {
+
+	    //
+	    // if from interception
+	    //
+	    if (defender != "") { f = defender; }
 
 	    //
 	    // if minor powers are here and a major power is as well, we treat the minor as a major power
@@ -3227,6 +3249,13 @@ console.log("----------------------------");
 	      //
 
 	    }
+
+
+	    //
+	    // if from interception
+	    //
+	    if (defender != "") { break; }
+
 	  }
 
           return 1;
@@ -4497,7 +4526,6 @@ console.log("----------------------------");
 
 	  this.updateLog("Interception roll #1: " + d1);
 	  this.updateLog("Interception roll #2: " + d2);
-
 
 	  if (dsum >= hits_on) {
 

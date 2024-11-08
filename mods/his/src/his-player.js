@@ -2566,10 +2566,6 @@ if (relief_siege == 1) {
 
 	} else {
 
-console.log("@");
-console.log("@ inbound " + ops);
-console.log("@");
-
 	  let ops_to_spend = 0;
 	  let cost = 0;
 
@@ -6361,8 +6357,8 @@ does_units_to_move_have_unit = true; }
 	    let space = his_self.game.spaces[conquerable_spaces[i]];
 
 	    let squadrons_protecting_space = his_self.returnNumberOfSquadronsProtectingSpace(conquerable_spaces[i]);
+      	    let attacker_squadrons_adjacent = 0;
 	    for (let y = 0; y < his_self.game.spaces[conquerable_spaces[i]].ports.length; y++) {
-      	      let attacker_squadrons_adjacent = 0;
 	      let p = his_self.game.spaces[conquerable_spaces[i]].ports[y];
 	      for (let f in his_self.game.navalspaces[p].units) {
 		if (his_self.returnControllingPower(f) == his_self.returnControllingPower(faction)) {
