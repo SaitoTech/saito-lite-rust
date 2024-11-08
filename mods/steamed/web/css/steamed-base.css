@@ -53,6 +53,7 @@ body {
 	width: calc(95vw - 10px);
 	display: grid;
 	grid-template-columns: minmax(150px, 1fr) 5fr minmax(150px, 1fr);
+	grid-gap: 1rem;
 	align-items: center;
 }
 
@@ -112,12 +113,11 @@ body {
 }
 
 #draw_deck {
-	margin: 0 10px;
 	background-size: contain;
 	background-position: center;
-	font-size: min(5vh, 6vw);
+	font-size: 64px;
 	text-align: center;
-	line-height: min(21vh, 23vw);
+	line-height: 190px;
 }
 
 #draw_deck.active_element:hover {
@@ -125,12 +125,11 @@ body {
 }
 
 #discards {
-	margin: 0 10px;
-
-	width: calc(0.8 * var(--steamed-card-width));
-	height: calc(0.8 * var(--steamed-card-height));
+	width: calc(0.9 * var(--steamed-card-width));
+	height: calc(0.9 * var(--steamed-card-height));
 	max-width: 120px;
 	max-height: 186px;
+	margin-left: auto;
 }
 
 #discards img {
@@ -213,12 +212,12 @@ body {
 	flex-direction: row;
 	justify-content: space-evenly;
 	min-width: fit-content;
+	gap: 1rem;
 }
 
 .offer > img.card {
 	position: relative;
 	width: var(--steamed-card-width);
-	margin: 0 10px;
 }
 
 .offer img.card.active_element:hover {
@@ -393,4 +392,48 @@ body {
 
 .bighand > .card:nth-child(n + 8) {
 	top: 5vh;
+}
+
+
+@media screen and (max-width: 700px) {
+	.player_field {
+		min-height: unset;
+		min-width: 250px;
+		padding: 3px;
+		grid-gap: 3px;
+		align-items: center;
+	}
+
+	#opponent_score { 
+		right: 5px;
+		top: 45px;
+	 }
+
+	#my_score{
+		right: 5px;
+		bottom: 5px;
+	}
+
+	#self { 
+		bottom: 7px;
+	 }
+
+	 .pot {
+	 	grid-template-columns: min-content 1fr;
+	 	row-gap: 1rem;
+	 }
+
+	 .offer {
+	 	gap: 5px;
+	 }
+
+	 #draw_deck {
+	 	font-size: 32px;
+	 	line-height: 95px;
+	 }
+
+	 .score_card {
+	 	font-size: 24px;
+	 	line-height: 45px;
+	 }
 }
