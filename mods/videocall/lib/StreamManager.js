@@ -224,43 +224,32 @@ class StreamManager {
       //
       // Note: This happens twice because audio and video are added separately as mediaTracks...
       //
+      let id = (peerId == this.mod.screen_share) ? "presentation" : peerId;
+      
+      const remoteStream = (this.remoteStreams.has(id)) ? this.remoteStreams.get(id): new MediaStream();
 
-      const remoteStream = new MediaStream();
-
-      console.log('STUN: remote stream added for', peerId, event.track, event.streams);
-
-      if (peerId == this.mod.screen_share) {
-        console.log('Expecting presentation stream');
-
-        if (event.streams.length === 0) {
-          remoteStream.addTrack(event.track);
-        } else {
-          event.streams[0].getTracks().forEach((track) => {
-            remoteStream.addTrack(track);
-          });
-        }
-
-        this.app.connection.emit('add-remote-stream-request', 'presentation', remoteStream);
-      } else {
-        if (event.streams.length === 0) {
-          console.log('Use track');
-          remoteStream.addTrack(event.track);
-        } else {
-          console.log('Use stream', event.streams);
-          event.streams[0].getTracks().forEach((track) => {
-            remoteStream.addTrack(track);
-          });
-        }
-
-        this.remoteStreams.set(peerId, {
-          remoteStream
-        });
-        this.app.connection.emit('add-remote-stream-request', peerId, remoteStream);
-
-        if (remoteStream.getAudioTracks()?.length) {
-          this.analyzeAudio(remoteStream, peerId);
-        }
+      if (!this.remoteStreams.has(id)){
+        this.remoteStreams.set(id, remoteStream);
       }
+
+      console.log('STUN: remote stream added for', id, event.track, event.streams);
+
+      if (event.streams.length === 0) {
+        console.log('Use track');
+        remoteStream.addTrack(event.track);
+      } else {
+        console.log('Use stream', event.streams);
+        event.streams[0].getTracks().forEach((track) => {
+          remoteStream.addTrack(track);
+        });
+      }
+
+      this.app.connection.emit('add-remote-stream-request', id, remoteStream);
+
+      if (remoteStream.getAudioTracks()?.length) {
+        this.analyzeAudio(remoteStream, peerId);
+      }
+
     });
 
     //Launch the Stun call

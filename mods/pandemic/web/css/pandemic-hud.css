@@ -3,8 +3,13 @@
 	padding: 0;
 }
 
+.controls {
+	margin: 1rem 0;
+}
+
 .hud-long {
-	height: 200px;
+	height: fit-content;
+	max-height: 240px;
 	bottom: 1rem;
 }
 
@@ -14,10 +19,38 @@
 }
 
 
-img.menu_icon_icon {
+img.menu_icon_icon, i.menu_icon_icon {
 	width: 100%;
 }
 
 .controls ul li, .options {
 	height: 6rem;
+}
+
+.hud-controls {
+	cursor: pointer;
+	color: ghostwhite;
+	text-shadow: 1px 1px 1px black;
+}
+
+.hud-controls:hover{
+	color: black;
+	text-shadow: 1px 1px 1px white;
+}
+
+.hud-header {
+	padding: 1rem;
+	height: 2.5rem;
+}
+
+.hud-body {
+	height: unset;
+}
+
+.hud-body .status {
+	width: unset;
+}
+
+.game-cardbox {
+	height: 55vh;
 }

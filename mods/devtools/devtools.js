@@ -215,6 +215,13 @@ class DevTools extends ModTemplate {
 					false,
 					false
 				);
+			
+				if (document.getElementById("install")){
+					document.getElementById("install").onclick = (e) => {
+						this.app.connection.emit('saito-app-app-render-request');
+					}
+				}
+
 			}
 		} catch (err) {
 			console.error('Error: ', err);

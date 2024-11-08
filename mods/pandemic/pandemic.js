@@ -3108,7 +3108,7 @@ class Pandemic extends GameTemplate {
         <div class="epidemic-card">
           <img src="/${this.name.toLowerCase()}/img/${this.skin.epidemic.img}"/>
         </div>
-        <div class="button close_epidemic_overlay" id="close_epidemic_overlay">close</div>
+        <div class="saito-button-primary close_epidemic_overlay" id="close_epidemic_overlay">close</div>
       </div>
     `;
 

@@ -12,6 +12,7 @@ class GenerateAppOverlay {
 
 	render() {
 		this.overlay.show(GenerateAppOverlayTemplate(this.app, this.mod, this));
+		this.overlay.blockClose();
 		this.attachEvents();
 	}
 
@@ -22,6 +23,7 @@ class GenerateAppOverlay {
 			document.querySelector('#saito-app-generate-btn').onclick = async (e) => {
 
 				document.querySelector('#saito-app-generate-btn').innerHTML = 'Generating app, please wait...';
+				document.querySelector('#saito-app-generate-btn').classList.add("active");
 
 				await this_self.mod.sendSubmitModuleTransaction(this_self.zip_file, this_self.mod_details.slug, async function(res){
 			    	console.log('mod details: ', res);
