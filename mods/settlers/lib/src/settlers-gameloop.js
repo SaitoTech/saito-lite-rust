@@ -670,11 +670,18 @@ class SettlersGameloop {
 
         this.game.confirms_needed[refusing_player - 1] = 0; //Manually resolve
         if (this.game.player == offering_player) {
-          this.updateStatus("your offer has been rejected");
+          this.updateStatus("your trade offer has been rejected", 1);
         }
         if (this.game.player == refusing_player) {
-          this.updateStatus(`you rejected ${this.game.playerNames[offering_player - 1]}'s trade offer`);
+          this.updateStatus(`you rejected ${this.game.playerNames[offering_player - 1]}'s trade offer`, 1);
+   
+          this.game.state.ads[offering_player - 1].offer = null;
+          this.game.state.ads[offering_player - 1].ask = null;
+
+          this.playerbox.updateGraphics('', offering_player);
+          this.displayPlayers();
         }
+
         this.updateLog(
             `${this.formatPlayer(refusing_player)} turned down a trade offer from ${
             this.formatPlayer(offering_player)}.`);
