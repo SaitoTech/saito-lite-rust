@@ -21,6 +21,7 @@ class ATR extends ModTemplate {
 	}
 
 	async initialize(app) {
+		await super.initialize(app);
 		this.styles = [
 			'/saito/style.css',
 		];
@@ -41,36 +42,71 @@ class ATR extends ModTemplate {
 		await super.render(app);
 	}
 
+		
 
 	async onConfirmation(blk, tx, conf) {
+		let txmsg = tx.returnMessage();
+		let atr_self = this.app.modules.returnModule('ATR');
+
 		if (conf == 0) {
 
-			if (blk.id > this.last_block_id) {
 
-				this.last_block_id = blk.id;
+			//	console.log("block info: ", blk);
+			// console.log("block.id: ", blk.id);
+			// console.log("block.totalFees: ", blk.totalFees);
+			// console.log("block.totalFeesNew: ", blk.totalFeesNew);
+			// console.log("block.totalFeesAtr: ", blk.totalFeesAtr);
+			// console.log("block.avgTotalFees: ", blk.avgTotalFees);
 
-				if (this.blocks.length < 10) {
-					this.blocks.push(JSON.parse(blk.toJson()));
+			// console.log("block.avgTotalFeesNew: ", blk.avgTotalFeesNew);
+			// console.log("block.avgTotalFeesAtr: ", blk.avgTotalFeesAtr);
+			// console.log("block.totalPayoutRouting: ", blk.totalPayoutRouting);
+
+			// console.log("block.totalPayoutMining: ", blk.totalPayoutMining);
+			// console.log("block.totalPayoutTreasury: ", blk.totalPayoutTreasury);
+			// console.log("block.totalPayoutGraveyard: ", blk.totalPayoutGraveyard);
+			// console.log("block.avgPayoutAtr: ", blk.avgPayoutAtr);
+
+			// console.log("block.avgFeePerByte: ", blk.avgFeePerByte);
+			// console.log("block.feePerByte: ", blk.feePerByte);
+			// console.log("block.burnFee: ", blk.burnFee);
+			// console.log("block.difficulty: ", blk.difficulty);
+			// console.log("block.previousBlockUnpaid: ", blk.previousBlockUnpaid);
+
+			console.log('blk.id', Number(blk.id)); 
+			console.log('this.last_block_id', atr_self.last_block_id);
+			console.log(Number(blk.id) > atr_self.last_block_id);
+			if (Number(blk.id) > atr_self.last_block_id) {
+
+				atr_self.last_block_id = Number(blk.id);
+
+				if (atr_self.blocks.length < 10) {
+					atr_self.blocks.push(JSON.parse(blk.toJson()));
 				} else {
-					this.blocks[0] = this.block[1];
-					this.blocks[1] = this.block[2];
-					this.blocks[2] = this.block[3];
-					this.blocks[3] = this.block[4];
-					this.blocks[4] = this.block[5];
-					this.blocks[5] = this.block[6];
-					this.blocks[6] = this.block[7];
-					this.blocks[7] = this.block[8];
-					this.blocks[8] = this.block[9];
-					this.blocks[9] = JSON.parse(blk.toJson());
+					atr_self.blocks[0] = atr_self.block[1];
+					atr_self.blocks[1] = atr_self.block[2];
+					atr_self.blocks[2] = atr_self.block[3];
+					atr_self.blocks[3] = atr_self.block[4];
+					atr_self.blocks[4] = atr_self.block[5];
+					atr_self.blocks[5] = atr_self.block[6];
+					atr_self.blocks[6] = atr_self.block[7];
+					atr_self.blocks[7] = atr_self.block[8];
+					atr_self.blocks[8] = atr_self.block[9];
+					atr_self.blocks[9] = JSON.parse(blk.toJson());
 				}
 
-				if (this.app.BROWSER) {
-					this.app.connection.emit('saito-atr-render-request');
-				}
+				console.log('atr_self.last_block_id: ', atr_self.last_block_id);
 
+				console.log('atr_self.app.BROWSER ///', atr_self.app.BROWSER);
+
+				
+				atr_self.app.connection.emit('saito-atr-render-request', {});	
 			}
+			
+			
 		}
 
+		return;
 	}
 
 }
