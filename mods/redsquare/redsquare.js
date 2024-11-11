@@ -101,6 +101,7 @@ class RedSquare extends ModTemplate {
 
     this.ignoreCentralServer = false;
     this.offerService = false;
+    this.showOnlyWatched = false;
 
     //
     // set by main
@@ -329,11 +330,23 @@ class RedSquare extends ModTemplate {
 
     if (type === 'saito-moderation-app') {
       return {
-        filter_func: (app = null, tx = null) => {
-          if (tx == null || app == null) {
+        filter_func: (mod = null, tx = null) => {
+          if (tx == null || mod == null) {
             return 0;
           }
           if (this.hidden_tweets.includes(tx.signature)){
+            return -1;
+          }
+
+          // Generate a white list from keychain and filter
+          if (this.showOnlyWatched){
+            let keys = this.app.keychain.returnWatchedPublicKeys();
+            for (let key of keys){
+              if (tx.isTo(key) || tx.isFrom(key)){
+                return 1;
+              }
+            }
+
             return -1;
           }
           return 0;
@@ -1635,6 +1648,17 @@ class RedSquare extends ModTemplate {
         this.unknown_children.splice(j, 1);
         return;
       }
+    }
+  }
+
+  reset(){
+    this.tweets = [];
+    this.tweets_sigs_hmap = {};
+    this.tweets_earliest_ts = new Date().getTime();
+
+    for (let peer of this.peers){
+      peer.tweets_earliest_ts = new Date().getTime();
+      peer.tweets_latest_ts = 0;
     }
   }
 

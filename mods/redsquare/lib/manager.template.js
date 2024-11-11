@@ -1,5 +1,9 @@
-module.exports = (app, mod, tweet) => {
+module.exports = (app, mod) => {
 	return `
+    <div class="redsquare-feed-source hidden">
+      <div class="saito-button-tab ${mod.showOnlyWatched ? "" : "active"}" id="for-you">for you</div>
+      <div class="saito-button-tab ${mod.showOnlyWatched ? "active" : ""}" id="following">following</div>
+    </div>
     <div class="redsquare-progress-banner"></div>
     <div class="tweet-manager"></div>
     <div class="redsquare-intersection" id="redsquare-intersection">
