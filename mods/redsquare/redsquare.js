@@ -346,6 +346,12 @@ class RedSquare extends ModTemplate {
                 return 1;
               }
             }
+            // Second order following...
+            for (let key of this.following){
+              if (tx.isTo(key.publicKey) || tx.isFrom(key.publicKey)){
+                return 1;
+              }
+            }
 
             return -1;
           }
