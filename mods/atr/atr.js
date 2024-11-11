@@ -33,22 +33,41 @@ class ATR extends ModTemplate {
 	}
 
 	async render(app) { 
+
+console.log("# 1");
+console.log("#");
+console.log("#");
+
 		if (!this.app.BROWSER) {
 			return;
 		}
+console.log("# 2");
+console.log("#");
+console.log("#");
 
 		this.ui.render();
+console.log("# 3");
+console.log("#");
+console.log("#");
 	
 		await super.render(app);
+console.log("# 4");
+console.log("#");
+console.log("#");
 	}
 
 		
 
 	async onConfirmation(blk, tx, conf) {
+console.log("A 1");
 		let txmsg = tx.returnMessage();
+console.log("A 2");
 		let atr_self = this.app.modules.returnModule('ATR');
+console.log("A 3");
+
 
 		if (conf == 0) {
+console.log("A 4");
 
 
 			//	console.log("block info: ", blk);
@@ -72,13 +91,19 @@ class ATR extends ModTemplate {
 			// console.log("block.burnFee: ", blk.burnFee);
 			// console.log("block.difficulty: ", blk.difficulty);
 			// console.log("block.previousBlockUnpaid: ", blk.previousBlockUnpaid);
+console.log("A 5");
 
 			console.log('blk.id', Number(blk.id)); 
 			console.log('this.last_block_id', atr_self.last_block_id);
 			console.log(Number(blk.id) > atr_self.last_block_id);
+
+console.log("A 6");
 			if (Number(blk.id) > atr_self.last_block_id) {
 
+console.log("A 7");
+
 				atr_self.last_block_id = Number(blk.id);
+console.log("A 8");
 
 				if (atr_self.blocks.length < 10) {
 					atr_self.blocks.push(JSON.parse(blk.toJson()));
@@ -95,6 +120,7 @@ class ATR extends ModTemplate {
 					atr_self.blocks[9] = JSON.parse(blk.toJson());
 				}
 
+console.log("A 9");
 				console.log('atr_self.last_block_id: ', atr_self.last_block_id);
 
 				console.log('atr_self.app.BROWSER ///', atr_self.app.BROWSER);
