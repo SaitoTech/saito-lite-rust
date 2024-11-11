@@ -68,12 +68,18 @@
 	padding: 0.75rem;
 	cursor: pointer;
 	text-align: center;
+	color: var(--saito-font-color-light);
 }
 
 .redsquare-feed-source .saito-button-tab.active{
-	background: var(--background-color-gray-transparent);
+	color: var(--saito-font-color-heavy);
+	font-weight: bold;
+}
+
+.redsquare-feed-source .saito-button-tab.active span {
+	border-bottom: 2px solid var(--saito-primary);
 }
 
 .redsquare-feed-source .saito-button-tab:hover{
-	background: var(--background-color-button-primary);;
+	background: var(--background-color-gray-transparent);
 }
