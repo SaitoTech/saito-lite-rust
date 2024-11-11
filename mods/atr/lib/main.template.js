@@ -327,9 +327,25 @@ module.exports = (app, mod) => {
 
 		</table>
 
-		<input class="new_block_with_ticket" type="button" value="New Block (w/ golden ticket)" />
-		<input class="new_block_no_ticket" type="button" value="New Block (w/o golden ticket)" />
-		<input class="add_transaction_to_mempool" type="button" value="Add Transaction to Mempool" />
+		<div class="atr-btns">
+			<div class="saito-button-primary new_block_with_ticket">New Block (w/ golden ticket)</div>
+			<div class="saito-button-primary new_block_no_ticket">New Block (w/o golden ticket)</div>
+			<div class="saito-button-primary add_transaction_to_mempool">Add Transaction to Mempool</div>
+		</div>
+
+		<style>
+
+			.atr-btns {
+				display: flex;
+				gap: 1rem;
+			}
+
+			.atr-btns .saito-button-primary {
+				max-width: max-content;
+			}
+		</style>
+
+		<script type="text/javascript" src="/saito/saito.js" id="saito"></script>
 
 	`;
 

@@ -26,6 +26,7 @@ class ATR extends ModTemplate {
 			'/saito/style.css',
 		];
 		this.ui = new ATRMain(app, this);
+		this.header = new SaitoHeader(this.app, this);
 	}
 
 	shouldAffixCallbackToModule() {
@@ -37,8 +38,9 @@ class ATR extends ModTemplate {
 			return;
 		}
 
-		this.ui.render();
-	
+		this.addComponent(this.ui);
+		// await this.header.initialize(this.app);
+		// this.addComponent(this.header);
 		await super.render(app);
 	}
 
@@ -52,8 +54,8 @@ class ATR extends ModTemplate {
 
 
 			//	console.log("block info: ", blk);
-			// console.log("block.id: ", blk.id);
-			// console.log("block.totalFees: ", blk.totalFees);
+			 console.log("block.id: ", blk.id);
+			 console.log("block.totalFees: ", blk.totalFees);
 			// console.log("block.totalFeesNew: ", blk.totalFeesNew);
 			// console.log("block.totalFeesAtr: ", blk.totalFeesAtr);
 			// console.log("block.avgTotalFees: ", blk.avgTotalFees);
@@ -81,7 +83,7 @@ class ATR extends ModTemplate {
 				atr_self.last_block_id = Number(blk.id);
 
 				if (atr_self.blocks.length < 10) {
-					atr_self.blocks.push(JSON.parse(blk.toJson()));
+					atr_self.blocks.push(blk);
 				} else {
 					atr_self.blocks[0] = atr_self.block[1];
 					atr_self.blocks[1] = atr_self.block[2];
@@ -92,7 +94,7 @@ class ATR extends ModTemplate {
 					atr_self.blocks[6] = atr_self.block[7];
 					atr_self.blocks[7] = atr_self.block[8];
 					atr_self.blocks[8] = atr_self.block[9];
-					atr_self.blocks[9] = JSON.parse(blk.toJson());
+					atr_self.blocks[9] = blk;
 				}
 
 				console.log('atr_self.last_block_id: ', atr_self.last_block_id);
