@@ -10,7 +10,7 @@ class Record extends ModTemplate {
 	constructor(app) {
 		super(app);
 		this.app = app;
-		this.name = 'screenrecord';
+		this.name = 'Screenrecord';
 		this.slug = 'screenrecord';
 		this.description = 'Recording Module';
 		this.categories = 'Utilities Communications';

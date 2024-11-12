@@ -12,8 +12,9 @@ class Main {
         }
 
         render() {
-        	console.log("render() atr main ///");
         	document.querySelector('body').innerHTML = MainTemplate(this.app, this.mod);
+
+        	console.log("mod blocks: ", this.mod.blocks);
 
         	for (let i = 0; i < this.mod.blocks.length; i++) {
 
@@ -29,7 +30,7 @@ class Main {
 			document.querySelector(`.blocktable .total_fees_atr .blockslot${blockslot}`).innerHTML = block.totalFeesAtr;
 
 			document.querySelector(`.blocktable .avg_total_fees .blockslot${blockslot}`).innerHTML = block.avgTotalFees;
-			document.querySelector(`.blocktable .avg_total_fees_new .blockslot${blockslot}`).innerHTML = block.avgTotalFees_new;
+			document.querySelector(`.blocktable .avg_total_fees_new .blockslot${blockslot}`).innerHTML = block.avgTotalFeesNew;
 			document.querySelector(`.blocktable .avg_total_fees_atr .blockslot${blockslot}`).innerHTML = block.avgTotalFeesAtr;
 
 			document.querySelector(`.blocktable .total_payout_routing .blockslot${blockslot}`).innerHTML = block.totalPayoutRouting;
