@@ -1553,7 +1553,7 @@ class RedSquare extends ModTemplate {
         // only insert notification if doesn't already exist
         //
         if (this.notifications_sigs_hmap[tx.signature] != 1) {
-          console.log('Add notification', tx.msg);
+          console.log('Add notification', tx.msg, tx.timestamp);
 
           //
           // Turn TX into a "Tweet" and insert into notification array
@@ -1563,6 +1563,8 @@ class RedSquare extends ModTemplate {
           if (!tweet?.tx) {
             return 0;
           }
+
+          console.log("Tweet notification: ", tweet.timestamp, tweet.created_at, tweet.updated_at);
 
           let insertion_index = 0;
 
