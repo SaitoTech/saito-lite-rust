@@ -123,7 +123,7 @@ body {
 
 .saito-main {
 	transition: opacity 0.8s;
-	padding-top: 0.6rem;
+	margin-top: 0.5rem;
 	border-left: 1px solid var(--saito-border-color);
 	border-right: 1px solid var(--saito-border-color);
 }

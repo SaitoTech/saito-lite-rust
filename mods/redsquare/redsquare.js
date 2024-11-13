@@ -101,6 +101,7 @@ class RedSquare extends ModTemplate {
 
     this.ignoreCentralServer = false;
     this.offerService = false;
+    this.showOnlyWatched = false;
 
     //
     // set by main
@@ -329,11 +330,29 @@ class RedSquare extends ModTemplate {
 
     if (type === 'saito-moderation-app') {
       return {
-        filter_func: (app = null, tx = null) => {
-          if (tx == null || app == null) {
+        filter_func: (mod = null, tx = null) => {
+          if (tx == null || mod == null) {
             return 0;
           }
           if (this.hidden_tweets.includes(tx.signature)){
+            return -1;
+          }
+
+          // Generate a white list from keychain and filter
+          if (this.showOnlyWatched){
+            let keys = this.app.keychain.returnWatchedPublicKeys();
+            for (let key of keys){
+              if (tx.isTo(key) || tx.isFrom(key)){
+                return 1;
+              }
+            }
+            // Second order following...
+            for (let key of this.following){
+              if (tx.isTo(key.publicKey) || tx.isFrom(key.publicKey)){
+                return 1;
+              }
+            }
+
             return -1;
           }
           return 0;
@@ -1534,27 +1553,19 @@ class RedSquare extends ModTemplate {
         // only insert notification if doesn't already exist
         //
         if (this.notifications_sigs_hmap[tx.signature] != 1) {
-          console.log('Add notification', tx.msg);
-
-          //
-          // Turn TX into a "Tweet" and insert into notification array
-          //
-          let tweet = new Tweet(this.app, this, tx, '.tweet-manager');
-
-          if (!tweet?.tx) {
-            return 0;
-          }
+          console.log('Add notification', tx.msg, tx.timestamp);
 
           let insertion_index = 0;
 
           for (let i = 0; i < this.notifications.length; i++) {
-            if (tweet.created_at > this.notifications[i].created_at) {
-              insertion_index = i;
+            if (tx.timestamp > this.notifications[i].timestamp) {
               break;
+            }else{
+              insertion_index++;
             }
           }
 
-          this.notifications.splice(insertion_index, 0, tweet);
+          this.notifications.splice(insertion_index, 0, tx);
           this.notifications_sigs_hmap[tx.signature] = 1;
 
           if (tx.timestamp > this.notifications_last_viewed_ts) {
@@ -1638,6 +1649,17 @@ class RedSquare extends ModTemplate {
     }
   }
 
+  reset(){
+    this.tweets = [];
+    this.tweets_sigs_hmap = {};
+    this.tweets_earliest_ts = new Date().getTime();
+
+    for (let peer of this.peers){
+      peer.tweets_earliest_ts = new Date().getTime();
+      peer.tweets_latest_ts = 0;
+    }
+  }
+
   returnNotification(tweet_sig = null) {
     if (tweet_sig == null) {
       return null;
@@ -1648,7 +1670,7 @@ class RedSquare extends ModTemplate {
     }
 
     for (let i = 0; i < this.notifications.length; i++) {
-      if (this.notifications[i].tx.signature === tweet_sig) {
+      if (this.notifications[i].signature === tweet_sig) {
         return this.notifications[i];
       }
     }
