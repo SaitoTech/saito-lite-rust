@@ -68,7 +68,8 @@ class Main {
 			alert("new block no golden ticket");
 			await this_self.app.wallet.produceBlockWithoutGt();
 		}
-		document.querySelector(".add_transaction_to_mempool").onclick = async (e) => {
+		document.querySelector("#add_transaction_to_mempool").onclick = async (e) => {
+			alert('adding tx to Mempool');
 			let newtx = await this.app.wallet.createUnsignedTransaction();
     			newtx.msg = {
       				module: "ATR" ,
