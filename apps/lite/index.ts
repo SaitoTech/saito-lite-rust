@@ -132,12 +132,13 @@ async function init() {
 			new WebMethods(saito),
 			new Factory(),
 			saito.options.wallet?.privateKey || '',
-			LogLevel.Info,
+			LogLevel.Debug,
 			BigInt(1)
 		);
 	} catch (e) {
 		console.error(e);
 	}
+	await S.getInstance().disableProducingBlocksByTimer();
 	saito.wallet = (await S.getInstance().getWallet()) as Wallet;
 	saito.wallet.app = saito;
 	saito.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;

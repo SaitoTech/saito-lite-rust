@@ -46,6 +46,7 @@ async function initSaito() {
 	).then(() => {
 		console.log('saito wasm lib initialized');
 	});
+	await S.getInstance().disableProducingBlocksByTimer();
 
 	app.wallet = (await S.getInstance().getWallet()) as Wallet;
 	app.wallet.app = app;
