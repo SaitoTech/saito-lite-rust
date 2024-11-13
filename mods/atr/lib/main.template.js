@@ -330,7 +330,7 @@ module.exports = (app, mod) => {
 		<div class="atr-btns">
 			<div class="saito-button-primary new_block_with_ticket">New Block (w/ golden ticket)</div>
 			<div class="saito-button-primary new_block_no_ticket">New Block (w/o golden ticket)</div>
-			<div class="saito-button-primary add_transaction_to_mempool">Add Transaction to Mempool</div>
+			<div class="saito-button-primary add_transaction_to_mempool" id="add_transaction_to_mempool">Add Transaction to Mempool</div>
 		</div>
 
 		<style>

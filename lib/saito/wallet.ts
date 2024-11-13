@@ -1451,4 +1451,15 @@ console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 		return await this.instance.set_key_list(keylist);
 	}
 
+	public async disableProducingBlocksByTimer() {
+		return S.getInstance().disableProducingBlocksByTimer();
+	}
+
+	public async produceBlockWithGt() {
+		return S.getInstance().produceBlockWithGt();
+	}
+
+	public async produceBlockWithoutGt() {
+		return S.getInstance().produceBlockWithoutGt();
+	}
 }

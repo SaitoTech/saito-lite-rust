@@ -35,32 +35,16 @@ class ATR extends ModTemplate {
 
 	async render(app) { 
 
-console.log("# 1");
-console.log("#");
-console.log("#");
-
 		if (!this.app.BROWSER) {
 			return;
 		}
-console.log("# 2");
-console.log("#");
-console.log("#");
 
-<<<<<<< HEAD
 		this.ui.render();
-console.log("# 3");
-console.log("#");
-console.log("#");
-	
-=======
 		this.addComponent(this.ui);
 		// await this.header.initialize(this.app);
 		// this.addComponent(this.header);
->>>>>>> 26063dfd715bb089ce13ed0e9499747c15f6f020
 		await super.render(app);
-console.log("# 4");
-console.log("#");
-console.log("#");
+
 	}
 
 		
