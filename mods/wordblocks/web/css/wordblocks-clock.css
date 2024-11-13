@@ -1,0 +1,14 @@
+.player_clock .game-clock{
+	position: static;
+	background: unset;
+	height: 100%;
+	display: block;
+	font-size: 3rem;
+	filter: drop-shadow(2px 2px 1px black);
+}
+
+@media only screen and (max-width: 600px) {
+	.player_clock .game-clock{
+		font-size: 2.4rem;
+	}
+}

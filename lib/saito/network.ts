@@ -70,8 +70,8 @@ export default class Network {
 
 	public close() { }
 
-	addStunPeer() {
-		throw new Error('not implemented');
+	async addStunPeer(public_key, peerConnection) {	
+		await  S.getInstance().addStunPeer(public_key, peerConnection);
 	}
 
 	initializeStun() {
@@ -80,6 +80,11 @@ export default class Network {
 
 	returnPeersWithService() { }
 
+
+	createPeerService(data, service, name, domain) {
+		let ps = new PeerService(data, service, name, domain);
+  		return ps;
+	}
 
 	public getServices(): PeerService[] {
 		let my_services = [];

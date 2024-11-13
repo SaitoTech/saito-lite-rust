@@ -1,10 +1,13 @@
 
+  returnArrayOfFactionsInSpace(spacekey="") {
+    return this.returnArrayOfFactionsInSpacekey(spacekey);
+  }
   returnArrayOfFactionsInSpacekey(spacekey="") {
     let res = [];
     let s = this.game.spaces[spacekey];
     if (s) {
       for (let f in s.units) {
-	if (s.units[key].length > 0) { res.push(f); }
+	if (s.units[f].length > 0) { res.push(f); }
       }
     };
     return res;
@@ -25,6 +28,17 @@
   }
  
   returnFactionName(f) {
+    if (f == "france") { return "France"; }
+    if (f == "ottoman") { return "Ottoman"; }
+    if (f == "hapsburg") { return "Hapsburg"; }
+    if (f == "england") { return "England"; }
+    if (f == "papacy") { return "Papacy"; }
+    if (f == "protestant") { return "Protestant"; }
+    if (f == "venice") { return "Venice"; }
+    if (f == "scotland") { return "Scotland"; }
+    if (f == "hungary") { return "Hungary"; }
+    if (f == "genoa") { return "Genoa"; }
+    if (f == "independent") { return "Independent"; }
     if (this.factions[f]) {
       return this.factions[f].name;
     }

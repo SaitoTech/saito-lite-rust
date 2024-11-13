@@ -119,14 +119,20 @@
 }
 
 .post-tweet-button, .post-delete-button {
-  width: 20rem;
   margin-right: 0;
   line-height: 4.5rem;
   font-size: 2.2rem;
 }
 
+.post-delete-button {
+  position: absolute;
+  right: 22rem;
+  bottom: 1rem;
+}
 
-@media screen and (max-width: 768px) {
+
+
+@media screen and (max-width: 600px) {
   .post-tweet-preview {
       display: none;
   }
@@ -135,10 +141,19 @@
     max-width: 98vw;
   }
 
-  .tweet-overlay .post-tweet-button {
-    min-width: unset;
-    max-width: calc(100% - 24rem);
+  .tweet-overlay .tweet-overlay-content{
+    margin: 0;
+  }
+
+  .tweet-overlay .post-tweet-button, .tweet-overlay .post-delete-button {
+    min-width: 10rem;
+    max-width: 30%;
     padding: 0.5rem 0;
+    margin-right: 0;
+  }
+
+  .tweet-overlay .post-delete-button {
+    right: 12rem;
   }
 
   .post-tweet-img-preview-container {

@@ -1,14 +1,14 @@
-const LessonManagerTemplate = require('./manager.template');
+const LessonListTemplate = require('./manager-main.template');
+const LessonMenuTemplate = require('./manager-right.template');
 const TeaserTemplate = require('./teaser.template');
 const SaitoLoader = require('./../../../lib/saito/ui/saito-loader/saito-loader');
 
 class LessonManager {
-	constructor(app, mod, container = '.popup-content') {
+	constructor(app, mod, container = '.saito-main') {
 		this.app = app;
 		this.mod = mod;
 		this.container = container;
 
-		//This is an in-place loader... not super useful when content is overflowing off the bottom of the screen
 		this.loader = new SaitoLoader(app, mod, '#popup-intersection');
 
 		//////////////////////////////
@@ -31,16 +31,23 @@ class LessonManager {
 	}
 
 	render(level = 'all') {
+
 		//
-		// Stop observering while we rebuild the page
+		// stop observering while we rebuild the page
 		//
 		this.intersectionObserver.disconnect();
 
-		this.app.browser.addElementToSelector(
-			LessonManagerTemplate(),
-			this.container
-		);
+		//
+		// insert list of lessons into .saito-main
+		//
+		document.querySelector(".saito-main").innerHTML = "";
+		document.querySelector(".saito-sidebar.right").innerHTML = "";
+		this.app.browser.addElementToSelector(LessonListTemplate(), ".saito-main");
+		this.app.browser.addElementToSelector(LessonMenuTemplate(), ".saito-sidebar.right");
+
 		this.showLoader();
+
+console.log("HOW MANY LESSONS: " + this.mod.lessons.length);
 
 		for (let i = 0; i < this.mod.lessons.length; i++) {
 			if (level === 'all' || this.mod.lessons[i].userslug === level) {
@@ -51,9 +58,7 @@ class LessonManager {
 			}
 		}
 
-		setTimeout(() => {
-			this.hideLoader();
-		}, 50);
+		setTimeout(() => { this.hideLoader(); }, 50);
 
 		//
 		// enable intersection observer
@@ -62,11 +67,14 @@ class LessonManager {
 	}
 
 	attachEvents() {
+
+try {
+
 		document.querySelector('.absolute-beginners').onclick = (e) => {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/absolute-beginners'
+				'/popup/lessons/absolute-beginners'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
@@ -76,7 +84,7 @@ class LessonManager {
 		};
 
 		document.querySelector('.elementary').onclick = (e) => {
-			window.history.pushState({}, document.title, '/lessons/elementary');
+			window.history.pushState({}, document.title, '/popup/lessons/elementary');
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
 				'popup-lessons-render-request',
@@ -88,7 +96,7 @@ class LessonManager {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/intermediate'
+				'/popup/lessons/intermediate'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
@@ -98,7 +106,7 @@ class LessonManager {
 		};
 
 		document.querySelector('.advanced').onclick = (e) => {
-			window.history.pushState({}, document.title, '/lessons/advanced');
+			window.history.pushState({}, document.title, '/popup/lessons/advanced');
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
 				'popup-lessons-render-request',
@@ -110,7 +118,7 @@ class LessonManager {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/film-friday'
+				'/popup/lessons/film-friday'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
@@ -120,7 +128,7 @@ class LessonManager {
 		};
 
 		document.querySelector('.quiz-night').onclick = (e) => {
-			window.history.pushState({}, document.title, '/lessons/quiz-night');
+			window.history.pushState({}, document.title, '/popup/lessons/quiz-night');
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
 				'popup-lessons-render-request',
@@ -132,7 +140,7 @@ class LessonManager {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/short-stories'
+				'/popup/lessons/short-stories'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
@@ -145,7 +153,7 @@ class LessonManager {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/ktv-wednesday'
+				'/popup/lessons/ktv-wednesday'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
@@ -179,7 +187,7 @@ class LessonManager {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/absolute-beginners'
+				'/popup/lessons/absolute-beginners'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
@@ -189,7 +197,7 @@ class LessonManager {
 		};
 
 		document.querySelector('.elementary').onclick = (e) => {
-			window.history.pushState({}, document.title, '/lessons/elementary');
+			window.history.pushState({}, document.title, '/popup/lessons/elementary');
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
 				'popup-lessons-render-request',
@@ -201,7 +209,7 @@ class LessonManager {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/intermediate'
+				'/popup/lessons/intermediate'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
@@ -211,7 +219,7 @@ class LessonManager {
 		};
 
 		document.querySelector('.advanced').onclick = (e) => {
-			window.history.pushState({}, document.title, '/lessons/advanced');
+			window.history.pushState({}, document.title, '/popup/lessons/advanced');
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
 				'popup-lessons-render-request',
@@ -223,7 +231,7 @@ class LessonManager {
 			window.history.pushState(
 				{},
 				document.title,
-				'/lessons/film-friday'
+				'/popup/lessons/film-friday'
 			);
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
@@ -233,13 +241,18 @@ class LessonManager {
 		};
 
 		document.querySelector('.quiz-night').onclick = (e) => {
-			window.history.pushState({}, document.title, '/lessons/quiz-night');
+			window.history.pushState({}, document.title, '/popup/lessons/quiz-night');
 			history.replaceState(null, null, ' ');
 			this.app.connection.emit(
 				'popup-lessons-render-request',
 				'quiz-night'
 			);
 		};
+
+} catch (err) {
+
+}
+
 	}
 
 	showLoader() {

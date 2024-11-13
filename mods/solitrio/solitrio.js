@@ -13,12 +13,12 @@ class Solitrio extends OnePlayerGameTemplate {
 		this.name = 'Solitrio';
 		this.slug = 'solitrio';
 		this.game_length = 5; //Estimated number of minutes to complete a game
-		this.description =
-			'Once you\'ve started playing Solitrio, how can you go back to old-fashioned Solitaire? This one-player card game is the perfect way to pass a flight from Hong Kong to pretty much anywhere. Arrange the cards on the table from 2-10 ordered by suite. Harder than it looks and wildly addictive.';
+		this.description = 'Once you\'ve started playing Solitrio, how can you go back to old-fashioned Solitaire? This one-player card game is the perfect way to pass a flight from Hong Kong to pretty much anywhere. Arrange the cards on the table from 2-10 ordered by suite. Harder than it looks and wildly addictive.';
 		this.categories = 'Games Cardgame One-player';
 		this.animationSpeed = 500;
 		this.card_img_dir = '/saito/img/arcade/cards';
 		this.app = app;
+		this.version = '1.1.4';
 	}
 
 	returnGameRulesHTML() {
@@ -93,6 +93,23 @@ class Solitrio extends OnePlayerGameTemplate {
 
 		await super.render(app);
 
+		/*if (app.browser.isMobileBrowser(navigator.userAgent)) {
+			this.app.connection.on('browser-fullscreen-toggle', (value) => {
+				if (value) {
+					setTimeout(()=> {
+					    screen.orientation.lock('landscape')
+					    .then(()=> {
+					    	console.log("Lock success");
+					    }).catch((error) => {
+					    	alert(error);
+					    });
+					}, 25);
+				}else{
+					screen.orientation.unlock();
+				}
+			});
+		}*/
+
 		//
 		// ADD MENU
 		//
@@ -145,6 +162,7 @@ class Solitrio extends OnePlayerGameTemplate {
 		this.app.connection.on("solitrio-update-settings", ()=> {
 			this.attachEventsToBoard();
 		});
+
 	}
 
 	returnState() {

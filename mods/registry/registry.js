@@ -8,14 +8,14 @@ class Registry extends ModTemplate {
 
 		this.app = app;
 		this.name = 'Registry';
+		this.slug = 'registry';
 		this.description = 'Saito DNS support';
 		this.categories = 'Core Utilities Messaging';
 		this.class = 'utility';
 		//
 		// master DNS publickey for this module
 		//
-		this.registry_publickey =
-			'zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK';
+		this.registry_publickey = 'zYCCXRZt2DyPD9UmxRfwFgLTNAqCd5VE8RuNneg4aNMK';
 
 		//
 		// peers
@@ -233,6 +233,8 @@ class Registry extends ModTemplate {
 	}
 
 	respondTo(type = '') {
+		let registry_self = this;
+
 		if (type == 'saito-return-key') {
 			return {
 				returnKey: (data = null) => {
@@ -250,31 +252,37 @@ class Registry extends ModTemplate {
 					//
 					// if keys exist
 					//
-					for (let key in this.cached_keys) {
-						if (key === data.publicKey) {
+					for (let key in registry_self.cached_keys) {
+						if (key === data?.publicKey) {
 							if (
-								this.cached_keys[key] &&
-								key !== this.cached_keys[key]
+								registry_self.cached_keys[key] &&
+								key !== registry_self.cached_keys[key]
 							) {
 								return {
 									publicKey: key,
-									identifier: this.cached_keys[key]
+									identifier: registry_self.cached_keys[key]
 								};
 							} else {
 								return { publicKey: key };
 							}
+						}else if (registry_self.cached_keys[key] === data?.identifier){
+							return {
+									publicKey: key,
+									identifier: registry_self.cached_keys[key]
+								};
 						}
 					}
 
 					return null;
 				},
+
 				returnKeys: () => {
 					keyList = [];
 
-					for (let key in this.cached_keys) {
+					for (let key in registry_self.cached_keys) {
 						keyList.push({
 							publicKey: key,
-							identifier: this.cached_keys[key]
+							identifier: registry_self.cached_keys[key]
 						});
 					}
 
@@ -467,6 +475,7 @@ class Registry extends ModTemplate {
 		let txmsg = tx.returnMessage();
 
 		if (conf == 0) {
+
 			if (!!txmsg && txmsg.module === 'Registry') {
 				console.log(`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`);
 
@@ -477,6 +486,9 @@ class Registry extends ModTemplate {
 					tx.isTo(this.publicKey) &&
 					this.publicKey === this.registry_publickey
 				) {
+
+
+				console.log("I AM THE REGISTERING MACHINE!")
 					let identifier = txmsg.identifier;
 					let publickey = tx.from[0].publicKey;
 					let unixtime = new Date().getTime();
@@ -542,8 +554,11 @@ class Registry extends ModTemplate {
 						newtx.msg.signature = '';
 					}
 
+console.log("REGISTRY signing transaction...");
 					await newtx.sign();
+console.log("REGISTRY propagating transaction...");
 					await this.app.network.propagateTransaction(newtx);
+console.log("REGISTRY done propagating transaction...");
 
 					return;
 				}
@@ -553,9 +568,10 @@ class Registry extends ModTemplate {
 			// OTHER SERVERS - mirror central DNS //
 			////////////////////////////////////////
 			if (!!txmsg && txmsg.module == 'Email') {
-				console.log('REGISTRY: ' + txmsg.title);
+console.log('REGISTRY EMAIL: ' + txmsg.title);
 
 				if (tx.from[0].publicKey == this.registry_publickey) {
+console.log("FROM THE REGISTRAR!");
 					try {
 						//
 						// am email? for us? from the DNS registrar?
@@ -650,7 +666,7 @@ class Registry extends ModTemplate {
 				keys.splice(i, 1);
 				continue;
 			}
-			/*if (this.cached_keys[keys[i]] && this.cached_keys[keys[i]] !== keys[i]) {
+      /*if (this.cached_keys[keys[i]] && this.cached_keys[keys[i]] !== keys[i]) {
         found_keys[keys[i]] = this.cached_keys[keys[i]];
         keys.splice(i, 1);
       }*/
@@ -660,7 +676,6 @@ class Registry extends ModTemplate {
 		// check database if needed
 		//
 		if (keys.length > 0) {
-			//console.log("REGISTRY: DB lookup");
 			const where_statement = `publickey in ("${keys.join('","')}")`;
 			const sql = `SELECT * 
                    FROM records

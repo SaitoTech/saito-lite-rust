@@ -4,6 +4,7 @@ class TST extends CryptoModule {
 	constructor(app) {
 		super(app, 'TST');
 		this.name = 'TST';
+		this.slug = 'tst';
 		this.ticker = 'TST';
 		this.description =
 			'This module implement CryptoModule functions without moving tokens';
@@ -11,6 +12,7 @@ class TST extends CryptoModule {
 		this.information =
 			'This is some important information you may care to read about when enabling the TST crypto module';
 		this.warning = 'The TST crypto module wishes you to read this warning';
+		this.balance = (100*Math.random()).toFixed(8);
 	}
 
 	//
@@ -42,7 +44,8 @@ class TST extends CryptoModule {
 	// @return {Array} Array of {address: {String}, balance: {Int}}
 	//
 	async returnBalance(address = '') {
-		return '100.00000000';
+		return this.balance;
+		//return '100.00000000';
 	}
 
 	//
@@ -80,8 +83,8 @@ class TST extends CryptoModule {
 		return 0;
 	}
 
-	renderModalSelectCrypto(app, mod, cryptomod) {
-		return WarningTemplate(this.returnAddress());
+	async renderModalSelectCrypto(app, mod, cryptomod) {
+		return WarningTemplate(await this.returnAddress());
 	}
 
 	attachEventsModalSelectCrypto(app, mod, cryptomod) {
@@ -98,6 +101,17 @@ class TST extends CryptoModule {
 		}
 		return;
 	}
+
+	respondTo(type = '', obj) {
+		if (type == 'crypto-logo') {
+			if (obj?.ticker == this.ticker) {
+				return null;
+			}
+		}
+
+		return null;
+	}
+
 }
 
 module.exports = TST;

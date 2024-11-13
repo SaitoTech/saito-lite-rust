@@ -1,4 +1,4 @@
-module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
+module.exports = (app, mod, invite) => {
 	if (mod.debug) {
 		//console.log("INVITATION DETAILS: ", invite);
 	}
@@ -34,7 +34,7 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 	  </div>
   </div>
   <div class="arcade-game-overlay-body">
-	  <div class="arcade-game-options">
+	  <div class="arcade-game-options hide-scrollbar">
 	    <div class="arcade-game-players">
 	`;
 
@@ -133,9 +133,9 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 			if (mod.isMyGame(game_tx)) {
 				html += `<div id="arcade-game-controls-continue-game" class="saito-button saito-button-primary">continue game</div>`;
 				if (invite.players.length > 1) {
-					html += `<div id="arcade-game-controls-forfeit-game" class="saito-button saito-button-primary">forfeit game</div>`;
+					html += `<div id="arcade-game-controls-forfeit-game" class="saito-button saito-button-secondary">forfeit game</div>`;
 				}
-				html += `<div id="arcade-game-controls-close-game" class="saito-button saito-button-primary">close game</div>`;
+				html += `<div id="arcade-game-controls-close-game" class="saito-button saito-button-secondary">cancel game</div>`;
 			} else if (invite.game_mod.enable_observer) {
 				//Observer mode -- ongoing
 				html += `<div id="arcade-game-controls-watch-game" class="saito-button saito-button-primary">watch game</div>`;
@@ -143,9 +143,9 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 		} else {
 			if (invite.players.includes(mod.publicKey)) {
 				if (mod.publicKey === invite.originator || mod.isAcceptedGame(invite.game_id)) {
-					html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">cancel invite</div>`;
+					html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-secondary">cancel invite</div>`;
 				} else {
-					html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">leave invite</div>`;
+					html += `<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-secondary">leave invite</div>`;
 				}
 			} else if (invite.empty_slots > 0) {
 				html += `<div id="arcade-game-controls-join-game" class="saito-button saito-button-primary">join game</div>`;
@@ -153,9 +153,11 @@ module.exports = JoinGameOverlayTemplate = (app, mod, invite) => {
 				invite.desired_opponent_publickeys.includes(mod.publicKey)
 			) {
 				html += `<div id="arcade-game-controls-join-game" class="saito-button saito-button-primary">join game</div>
-								<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-primary">decline invite</div>`;
+								<div id="arcade-game-controls-cancel-join" class="saito-button saito-button-secondary">decline invite</div>`;
 			}
 		}
+	} else if (invite.game_mod.doesGameExistLocally(invite.game_id)) {
+		html += `<div id="arcade-game-controls-continue-game" class="saito-button saito-button-primary">view game</div>`;
 	} else if (invite.game_mod.enable_observer && invite?.step > 0) {
 		//Observer mode -- finished
 		html += `<div id="arcade-game-controls-review-game" class="saito-button saito-button-primary">review game</div>`;

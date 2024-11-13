@@ -47,10 +47,10 @@
 	max-width: 1375px;
 }
 
-.nomoves .card-stack-array {
+/*.nomoves .card-stack-array {
 	transition: filter 1s 1s;
 	filter: brightness(0.4);
-}
+}*/
 
 /* ANIMATIONS */
 .nomoves .draw-pile {

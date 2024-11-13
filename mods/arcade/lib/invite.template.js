@@ -5,7 +5,7 @@ module.exports = (app, mod, invite) => {
 	let html = `
 
       <div class="saito-module saito-game${invite_class}" id="saito-game-${invite.game_id}" 
-      				style="background-image: url('/${invite.game_slug}/img/arcade/arcade.jpg');">
+      				style="background-image: url('/${invite.game_slug}/img/arcade/arcade-banner-background.png');">
         <div class="saito-module-titlebar">
           <div class="saito-module-titlebar-title">${invite.game_name}</div>
           <div class="saito-module-titlebar-details game-type">${invite.game_type.toUpperCase()}</div>
@@ -19,7 +19,7 @@ module.exports = (app, mod, invite) => {
 	for (let i = 0; i < invite.players.length; i++) {
 		//invite_class = (invite.target && invite.target == i + 1) ? " player-turn" : ""; 
 		html += `
-          <div>
+          <div class="saito-identicon-box">
             <img class="saito-module-identicon saito-identicon" id-${invite.players[i]}" 
             				src="${app.keychain.returnIdenticon(invite.players[i])}">`;
 //    if (invite_class){
@@ -51,9 +51,17 @@ module.exports = (app, mod, invite) => {
           </div>
         </div>`;
   
-  if (invite_class){
+  if (invite_class) {
     html += `<div class="angled-notification">your turn</div>`;
-  }      
+  } 
+  // Overwrite "your turn" as necessary
+  if (invite.winner) {
+    if (invite.winner.includes(mod.publicKey)) {
+      html += `<div class="angled-notification">you won</div>`;
+    } else {
+      html += `<div class="angled-notification">you lost</div>`;
+    } 
+  }    
   
   html += `</div>`;
 

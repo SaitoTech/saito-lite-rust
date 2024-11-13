@@ -8,8 +8,8 @@ class ExplorerCore extends ModTemplate {
 		super(app);
 		this.app = app;
 		this.name = 'Explorer';
-		this.description =
-			'Block explorer for the Saito blockchain. Not suitable for lite-clients';
+		this.slug = 'explorer';
+		this.description = 'Block explorer for the Saito blockchain. Not suitable for lite-clients';
 		this.categories = 'Utilities Dev';
 		this.class = 'utility';
 	}
@@ -166,6 +166,10 @@ class ExplorerCore extends ModTemplate {
 		});
 	}
 
+	async initialize(app) {
+		console.log("inside initialize of explorer.js");
+	}
+
 	returnHead() {
 		return '<html> \
   <head> \
@@ -199,6 +203,9 @@ class ExplorerCore extends ModTemplate {
 	async returnIndexMain() {
 		let txs = await S.getInstance().getMempoolTxs();
 		console.log(await this.listBlocks);
+		let balance = await this.app.wallet.getBalance();
+		let balanceSaito = balance/BigInt(100000000);
+		let nolansRemainder = balance - (balanceSaito * BigInt(100000000));
 		return (
 			'<div class="explorer-main"> \
         <div class="block-table"> \
@@ -206,7 +213,7 @@ class ExplorerCore extends ModTemplate {
 			(await this.app.wallet.getPublicKey()) +
 			'</div> \
           <div class="explorer-data"><h4>Balance:</h4> </div><div>' +
-			(await this.app.wallet.getBalance()) +
+			(balanceSaito+"."+nolansRemainder) +
 			'</div> \
           <div class="explorer-data"><h4>Mempool:</h4></div> <div><a href="/explorer/mempool">' +
 			txs.length +
@@ -453,11 +460,25 @@ class ExplorerCore extends ModTemplate {
 
 		html += `
 		<div class="explorer-main">
+		
 			<div class="explorer-balance-row">
 				<a href="/explorer">
 					<button class="balance-button"><i class="fas fa-cubes"></i> Back to explorer</button>
 				</a>
 			</div>
+			<h2>Holders</h2>
+			<h3>Total Supply</h3>
+			<div class="block-table">
+				<div class="explorer-data">
+					<h4>Saito:</h4>
+				</div>
+				<div class="balance-saito">-</div>
+				<div class="explorer-data">
+					<h4>Nolan:</h4>
+				</div>
+				<div class="balance-nolan">-</div>
+			</div>
+
 			<div class="explorer-balance-row">
 				<div class="explorer-balance-table">
 					<div class="explorer-balance-header">Wallet</div>

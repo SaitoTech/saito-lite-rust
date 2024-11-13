@@ -5,9 +5,9 @@
 
       this.game.state.events.samotlor = 1;
 
-      if (this.game.player == 1) {
+      this.startClockAndSetActivePlayer(1);
 
-        this.startClock();
+      if (this.game.player == 1) {
 
         var twilight_self = this;
         let cards_discarded = 0;

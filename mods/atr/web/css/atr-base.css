@@ -1,0 +1,7 @@
+.atr-btns {
+	display: flex;
+}
+
+.atr-btns .saito-button-primary {
+	max-width: max-content;
+}

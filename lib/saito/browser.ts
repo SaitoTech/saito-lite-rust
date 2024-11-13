@@ -18,12 +18,12 @@ const SaitoMentions = require('./ui/saito-mentions/saito-mentions');
 class Browser {
 	public app: any;
 	public browser_active: any;
+	public multiple_windows_active: any;
 	public drag_callback: any;
 	public urlParams: any;
 	public active_tab: any;
 	public files: any;
 	public returnIdentifier: any;
-	public active_module: any;
 	public host: any;
 	public port: any;
 	public protocol: any;
@@ -33,9 +33,9 @@ class Browser {
 		this.app = app || {};
 
 		this.browser_active = 0;
+		this.multiple_windows_active = 0;
 		this.drag_callback = null;
 		this.urlParams = {};
-		this.active_module = '';
 		this.host = '';
 		this.port = '';
 		this.protocol = '';
@@ -63,6 +63,14 @@ class Browser {
 			return 0;
 		}
 
+		app.connection.on("saito-render-complete", ()=> {
+			// xclose (loading wallpaper) looks for this class on body
+			console.log("rendering complete, remove wallpaper");
+			setTimeout(()=> {
+				document.querySelector("body").classList.add("xclose");
+			}, 1000);
+		});
+
 		this.app.connection.on('new-version-detected', (version) => {
 			console.log('New wallet version detected: ' + version);
 			localStorage.setItem('wallet_version', JSON.stringify(version));
@@ -83,6 +91,12 @@ class Browser {
 		});
 
 		try {
+
+			if (screenfull.isEnabled){
+				screenfull.on('change', () => {
+					this.app.connection.emit("browser-fullscreen-toggle", screenfull.isFullscreen);
+				});
+			}
 
 			if (typeof document.hidden === 'undefined') {
 				//
@@ -113,12 +127,29 @@ class Browser {
 			try {
 				this.attachWindowFunctions();
 
-				const channel = new BroadcastChannel('saito');
+				this.channel = new BroadcastChannel('saito');
 				if (!document[this.hidden_tab_property]) {
-					channel.postMessage({ active: 1, publicKey: publicKey });
+					//channel.postMessage({ active: 1, publicKey: publicKey });
 				}
 
-/* channel.onmessage = async (e) => {
+				this.channel.onmessage = async (e) => {
+					if (e.data.msg) {
+						if (e.data.msg == 'new_tab') {
+							window.focus();
+
+//							if (window.confirm('You have followed a Saito link, do you want to open it here?')) {
+//								window.location = e.data.location;
+//							}
+  	
+                            				setTimeout(() => {
+                            					window.location = '/tabs/';
+                            				}, 300)
+						}
+					}
+				};
+
+
+/***** channel.onmessage = async (e) => {
 				  console.log("document onmessage change");
 				  if (!document[this.hidden_tab_property]) {
 					channel.postMessage({active: 1, publicKey: publicKey});
@@ -137,20 +168,20 @@ class Browser {
 					}
 				  }
 				};
-*/
+*****/
 
 				document.addEventListener(
 					this.tab_event_name,
 					() => {
 						if (document[this.hidden_tab_property]) {
 							this.setActiveTab(0);
-							channel.postMessage({
+							this.channel.postMessage({
 								active: 0,
 								publicKey: publicKey
 							});
 						} else {
 							this.setActiveTab(1);
-							channel.postMessage({
+							this.channel.postMessage({
 								active: 1,
 								publicKey: publicKey
 							});
@@ -200,7 +231,6 @@ class Browser {
 			if (active_module == '') {
 				active_module = 'website';
 			}
-			this.active_module = active_module;
 
 			//
 			// query strings
@@ -243,7 +273,7 @@ class Browser {
 			// tell that module it is active
 			//
 			for (let i = 0; i < this.app.modules.mods.length; i++) {
-				if (this.app.modules.mods[i].returnSlug() == active_module) {
+				if (this.app.modules.mods[i].isSlug(active_module)) {
 					this.app.modules.mods[i].browser_active = 1;
 					this.app.modules.mods[i].alerts = 0;
 
@@ -253,6 +283,7 @@ class Browser {
 					const urlParams = new URLSearchParams(location.search);
 
 					this.app.modules.mods[i].handleUrlParams(urlParams);
+					break;
 				}
 			}
 
@@ -287,13 +318,24 @@ class Browser {
 
 			this.browser_active = 1;
 
+			let theme = document.documentElement.getAttribute('data-theme') || "lite";
+			console.log("HTML provided theme: " + theme);
+
+		    if (this.app.options?.theme) {
+		      if (this.app.options.theme[active_module]){
+		      	theme = this.app.options.theme[active_module];
+		      	this.switchTheme(theme);
+		      }
+		    }
+		    console.log("New theme: " + theme);
+		    this.updateThemeInHeader(theme);
+
 			const updateViewHeight = () => {
 				let vh = window.innerHeight * 0.01;
 				document.documentElement.style.setProperty(
 					'--saito-vh',
 					`${vh}px`
 				);
-				console.log(`Update view height ${vh}px`);
 				//siteMessage(`Update: ${vh}px`);
 			};
 
@@ -309,27 +351,25 @@ class Browser {
 			}
 		}
 
-		if (this.app.BROWSER == 1) {
-			//
-			// Add Connection Monitors
-			//
-			this.app.connection.on(
-				'peer_connect',
-				function (peerIndex: bigint) {
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					siteMessage('Websocket Connection Established', 1000);
-				}
-			);
-			this.app.connection.on(
-				'peer_disconnect',
-				function (peerIndex: bigint) {
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					siteMessage('Websocket Connection Lost');
-				}
-			);
-		}
+		//
+		// Add Connection Monitors
+		//
+		this.app.connection.on(
+			'peer_connect',
+			function (peerIndex: bigint) {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				siteMessage('Websocket Connection Established', 1000);
+			}
+		);
+		this.app.connection.on(
+			'peer_disconnect',
+			function (peerIndex: bigint) {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				siteMessage('Websocket Connection Lost');
+			}
+		);
 
 		// attach listening events
 		document.querySelector('body').addEventListener(
@@ -344,7 +384,7 @@ class Browser {
 					let publicKey = e.target.getAttribute('data-id');
 					if (
 						!publicKey ||
-						!app.crypto.isPublicKey(publicKey) ||
+						!app.wallet.isValidPublicKey(publicKey) ||
 						disable_click === 'true' ||
 						disable_click == true
 					) {
@@ -414,7 +454,7 @@ class Browser {
 							add = key.publicKey;
 						}
 						if (
-							this.app.crypto.isPublicKey(cleaner) &&
+							this.app.wallet.isValidPublicKey(cleaner) &&
 							(add == '' || add == null)
 						) {
 							add = cleaner;
@@ -432,7 +472,7 @@ class Browser {
 
 		if (adds) {
 			adds.forEach((add) => {
-				if (this.app.crypto.isPublicKey(add) && !keys.includes(add)) {
+				if (this.app.wallet.isValidPublicKey(add) && !keys.includes(add)) {
 					keys.push(add);
 				}
 			});
@@ -442,7 +482,7 @@ class Browser {
 				let key = this.app.keychain.returnKey({ identifier: id });
 				if (key.publicKey) {
 					let add = key.publicKey;
-					if (this.app.crypto.isPublicKey(add)) {
+					if (this.app.wallet.isValidPublicKey(add)) {
 						if (!keys.includes(add)) {
 							keys.push(add);
 						}
@@ -461,6 +501,20 @@ class Browser {
 			)
 		);
 		return `${protocol}://${host}:${port}/r?i=${url_payload}`;
+	}
+
+	createEventInviteLink(event){
+
+		let obj = Object.assign({}, event);
+		delete obj.privateKey;
+
+		let base64obj = this.app.crypto.stringToBase64(JSON.stringify(obj));
+
+		let call_link = window.location.origin + '/redsquare/';
+		call_link = `${call_link}?event=${base64obj}`;
+
+		return call_link;
+
 	}
 
 	returnHashAndParameters() {
@@ -600,10 +654,11 @@ class Browser {
 	}
 
 	checkForMultipleWindows() {
+
 		//Add a check to local storage that we are open in a tab.
 		localStorage.openpages = Date.now();
 
-		const onLocalStorageEvent = (e) => {
+		const onLocalStorageEvent = async (e) => {
 			if (e.key == 'openpages') {
 				// Listen if anybody else opening the same page!
 				localStorage.page_available = Date.now();
@@ -612,13 +667,23 @@ class Browser {
 				e.key == 'page_available' &&
 				!this.isMobileBrowser(navigator.userAgent)
 			) {
-				console.log(e.key);
-				console.log(navigator.userAgent);
-				//alert("Saito already open in another tab!");
 
-				setTimeout(() => {
-					window.location.href = '/tabs.html';
-				}, 300)
+				this.multiple_windows_active = 1;
+
+				let c = await sconfirm(
+					'Your wallet appears to be connected in another Saito tab.\n\nWould you like to connect it here and close the other tab?'
+				);
+				if (c) {
+					this.multiple_windows_active = 0;
+					this.channel.postMessage({msg: 'new_tab', location: window.location.href});
+		                        await this.app.modules.render();
+                		        await this.app.modules.attachEvents();
+					return;
+				} else {
+					  setTimeout(() => {
+						window.location = '/tabs.html';
+					}, 300)
+				}
 
 			}
 		};
@@ -1052,7 +1117,7 @@ class Browser {
 		return timeString;
 	}
 
-	saneDateFromTimestamp(timestamp) {
+	saneDateFromTimestamp(timestamp, with_year = true) {
 		var date = new Date(timestamp);
 		var year = date.getFullYear();
 		var month = date.getMonth() + 1; // getMonth() returns month from 0-11
@@ -1062,10 +1127,16 @@ class Browser {
 		month = month < 10 ? '0' + month : month;
 		day = day < 10 ? '0' + day : day;
 
-		return year + '-' + month + '-' + day;
+		let return_str =  month + '-' + day;
+		if (with_year){
+			return year + '-' + return_str	
+		}else{
+			return return_str
+		}
+		
 	}
 
-	saneTimeFromTimestamp(timestamp) {
+	saneTimeFromTimestamp(timestamp, with_seconds = true) {
 		var date = new Date(timestamp);
 		var hours = date.getHours();
 		var minutes = date.getMinutes();
@@ -1076,14 +1147,18 @@ class Browser {
 		minutes = minutes < 10 ? '0' + minutes : minutes;
 		seconds = seconds < 10 ? '0' + seconds : seconds;
 
-		return hours + ':' + minutes + ':' + seconds;
+		let return_str = hours + ':' + minutes;
+		if (with_seconds){
+			return_str += ':' + seconds;
+		}
+		return return_str;
 	}
 
-	saneDateTimeFromTimestamp(timestamp) {
+	saneDateTimeFromTimestamp(timestamp, detailed = true) {
 		return (
-			this.saneDateFromTimestamp(timestamp) +
-			':' +
-			this.saneTimeFromTimestamp(timestamp)
+			this.saneDateFromTimestamp(timestamp, detailed) +
+			'/' +
+			this.saneTimeFromTimestamp(timestamp, detailed)
 		);
 	}
 
@@ -1102,7 +1177,8 @@ class Browser {
 		id,
 		handleFileDrop = null,
 		click_to_upload = true,
-		read_as_array_buffer = false
+		read_as_array_buffer = false,
+		read_as_text = false
 	) {
 		const hidden_upload_form = `
       <form id="uploader_${id}" class="saito-file-uploader" style="display:none">
@@ -1142,10 +1218,14 @@ class Browser {
 					[...files].forEach(function (file) {
 						const reader = new FileReader();
 						reader.addEventListener('load', (event) => {
+							console.log('handleFileDrop ////');
 							handleFileDrop(event.target.result);
 						});
 						if (read_as_array_buffer) {
 							reader.readAsArrayBuffer(file);
+						} else if(read_as_text) {
+							console.log('readAsText ////');
+							reader.readAsText(file);
 						} else {
 							reader.readAsDataURL(file);
 						}
@@ -1165,7 +1245,7 @@ class Browser {
 							drag_and_drop = true;
 							const reader = new FileReader();
 							reader.addEventListener('load', (event) => {
-								handleFileDrop(event.target.result);
+								handleFileDrop(event.target.result, true);
 							});
 							if (read_as_array_buffer) {
 								reader.readAsArrayBuffer(file);
@@ -1702,14 +1782,12 @@ class Browser {
 
 	logMatomoEvent(category, action, name, value) {
 		try {
-			this.app.modules
-				.returnFirstRespondTo('matomo_event_push')
-				.push(category, action, name, value);
+			let m = this.app.modules.returnFirstRespondTo('matomo_event_push');
+			if (m) {
+				m.push(category, action, name, value);
+			}
 		} catch (err) {
-			//if (err.startsWith("Module responding to")) {
-			//} else {
 			console.error(err);
-			//}
 		}
 	}
 
@@ -1806,20 +1884,28 @@ class Browser {
 	// neither of these is quite right and the internet is full of wrong answers
 	//
 	urlRegexp() {
-		// from tweet.js let expression = /\b(?:https?:\/\/)?[\w.]{3,}\.[a-zA-Z]{1,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
-		// from sanitize let urlPattern = /\b(?:https?:\/\/)?[\w]+(\.[\w]+)+\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+        // from tweet.js 
+		// let expression = /\b(?:https?:\/\/)?[\w.]{2,}\.[a-zA-Z]{1,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
 
-		// The sanitizeHtml converts & into `&amp;` so we should match on ;
-		let daniels_regex = /(?<!>)\b(?:https?:\/\/|www\.|https?:\/\/www\.)?(?:\w{2,}\.)+\w{2,}(?:\/[a-zA-Z0-9_\?=#&;@\-\.]*)*\b(?!<\/)/gi;
+        // from sanitize let urlPattern = /\b(?:https?:\/\/)?[\w]+(\.[\w]+)+\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+        // The sanitizeHtml converts & into `&amp;` so we should match on ;
+        // let daniels_regex = /(?<!>)\b(?:https?:\/\/|www\.|https?:\/\/www\.)?(?:\w{2,}\.)+\w{2,}(?:\/[a-zA-Z0-9_\?=#&;@\-\.]*)*\b(?!<\/)/gi;
+        // this pointlessly looks for www, but does not identify the majority of valid urls or any url without http/https in front of it.
 
-		return daniels_regex;
+		// Re-added this code as urls don't work without it. Did chance the var names for safety.
+
+        //this should identify patterns like x.com and staging.saito.io which the others do not.
+		let urlIndentifierRegexp = /\b(?:https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
+        return urlIndentifierRegexp;
 	}
 
 	sanitize(text, createLinks = false) {
-		//console.log("Sanitize: ", text);
+		if (!text) {
+			return "";
+		}
 		try {
-			if (text !== '') {
-				text = marked.parseInline(text);
+			if (createLinks) {
+				text = marked.parse(text);
 				//trim trailing line breaks -
 				// commenting it out because no need for this now
 				// because of above marked parsing
@@ -2225,6 +2311,17 @@ class Browser {
 				);
 			};
 
+			window.ntfy = function (
+				to,
+				content
+			) {
+				content.topic = to;
+				fetch('https://ntfy.hda0.net/', {
+					method: 'POST',
+					body: JSON.stringify(content)
+				  });
+			};
+
 			HTMLElement.prototype.destroy = function destroy() {
 				try {
 					this.parentNode.removeChild(this);
@@ -2260,7 +2357,7 @@ class Browser {
 					) {
 						el.classList.add('treated');
 						let key = el.dataset?.id;
-						if (key && saito_app.crypto.isPublicKey(key)) {
+						if (key && saito_app.wallet.isValidPublicKey(key)) {
 							let identifier =
 								saito_app.keychain.returnIdentifierByPublicKey(
 									key,
@@ -2269,6 +2366,7 @@ class Browser {
 							if (identifier !== key) {
 								el.innerText = identifier;
 							} else {
+								el.innerText = 'Anon-' + identifier.substr(0,6);
 								if (!unknown_keys.includes(key)) {
 									unknown_keys.push(key);
 								}
@@ -2327,18 +2425,44 @@ class Browser {
 		document.documentElement.setAttribute('data-theme', theme);
 
 		if (this.app.BROWSER == 1) {
+
 			let mod_obj = this.app.modules.returnActiveModule();
 
 			if (!this.app.options.theme) {
 				this.app.options.theme = {};
 			}
 
-			if (mod_obj.slug != null) {
-				this.app.options.theme[mod_obj.slug] = theme;
-				this.app.storage.saveOptions();
+			if (mod_obj != null) {
+				if (mod_obj.slug != null) {
+					this.app.options.theme[mod_obj.slug] = theme;
+					this.app.storage.saveOptions();
+				}
 			}
-			console.debug(this.app.options);
+
+			this.updateThemeInHeader(theme);
 		}
+	}
+
+	updateThemeInHeader(theme){
+		//Update header
+		setTimeout(()=> {
+			let theme_icon_obj = document.querySelector(".saito-theme-icon");
+			let am = this.app.modules.returnActiveModule();
+
+			if (theme_icon_obj && am){
+				let classes = theme_icon_obj.classList;
+				for (let c of classes){
+					theme_icon_obj.classList.remove(c);
+				}
+
+				theme_icon_obj.classList.add("saito-theme-icon");
+
+				let theme_classes = am.theme_options[theme].split(" ");
+				for (let t of theme_classes){
+					theme_icon_obj.classList.add(t);
+				}
+			}
+		}, 500);
 	}
 
 	isValidUrl(urlString) {
@@ -2418,70 +2542,77 @@ class Browser {
 		}
 	}
 
-	addSaitoMentions(users, textarea, listDiv, inputType) {
-		const resolveFn = prefix => prefix === ''
-			? users
-			: users.filter(user => {
-				if (typeof user.identifier != 'undefined') {
-					return user.identifier.startsWith(prefix)
-				} else {
-					return user.publicKey.startsWith(prefix)
-				}
-			})
-
-		const replaceFn = (user, trigger) => {
-			let replace = '';
-			if (typeof user.identifier != 'undefined') {
-				replace = `${trigger}${user.identifier} `;
-			} else {
-				replace = `${trigger}${user.publicKey} `;
-			}
-
-			return replace;
-		}
-
-		const menuItemFn = (user, setItem, selected) => {
-			const parentDiv = document.createElement('div');
-			parentDiv.classList.add('saito-mentions-contact');
-
-
-			// identifier 
-			const identicon = document.createElement('img');
-			identicon.classList.add('saito-identicon');
-			identicon.setAttribute('src', user.identicon);
-
-			parentDiv.appendChild(identicon);
-
-			// username div
-			const div = document.createElement('div')
-			div.setAttribute('role', 'option')
-			div.className = 'menu-item'
-			if (selected) {
-				div.classList.add('selected')
-				div.setAttribute('aria-selected', '')
-			}
-
-			if (typeof user.identifier != 'undefined') {
-				div.textContent = user.identifier
-			} else {
-				div.textContent = user.publicKey
-			}
-			
-
-			parentDiv.appendChild(div);
-			parentDiv.onclick = setItem;
-			return parentDiv;
-		}
+	addSaitoMentions(textarea, listDiv, inputType) {
 
 		new SaitoMentions(
+			this.app,
 			textarea,
 			listDiv,
-			resolveFn,
-			replaceFn,
-			menuItemFn,
 			inputType
 		)
 	}
+
+	extractMentions(text){
+		let potential_keys = text.matchAll(/(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]+)/g);
+		let keys = [];
+
+        for (let k of potential_keys){
+            let split = k[0].split('@');
+            let username = '';
+            let key = '';
+
+            if (split.length > 2) {
+              username = split[1] + '@' + split[2];
+              key =
+                this.app.keychain.returnPublicKeyByIdentifier(
+                  username
+                );
+            } else {
+              username = this.app.keychain.returnUsername(split[1]);
+              key = split[1];
+            }
+
+            console.log("Key: ", key);
+            if (this.app.wallet.isValidPublicKey(key)) {
+            	if (!keys.includes(key)){
+            		keys.push(key);
+            	}
+            }
+        }
+
+	    return keys;
+	}
+
+	markupMentions(text){
+        return text.replaceAll(
+          /(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([^\s]+)/g,
+          (k) => {
+            let split = k.split('@');
+            let username = '';
+            let key = '';
+
+            if (split.length > 2) {
+              username = split[1] + '@' + split[2];
+              key =
+                this.app.keychain.returnPublicKeyByIdentifier(
+                  username
+                );
+            } else {
+              username = this.app.keychain.returnUsername(split[1]);
+              key = split[1];
+            }
+
+            if (this.app.wallet.isValidPublicKey(key)) {
+            	return 	`<span class="saito-mention saito-address" data-id="${key}">${username}</span>`;
+            }else{
+            	return k;
+            }
+
+          }
+        );
+	}
+
+
 
 	validateAmountLimit(amount, event){
 		// allow only numbers, dot, backspace
@@ -2521,6 +2652,14 @@ class Browser {
 	       }
 	      }
       } 
+	}
+
+	formatDecimals(num, string = false){
+		let pos = Math.abs((Math.log10(num))); 
+		let number = Number(num);
+	  	number = number.toFixed(pos+2);
+	  	number = (number);
+	  	return (string) ? number.toString(): number;  
 	}
 }
 

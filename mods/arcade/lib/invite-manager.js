@@ -21,6 +21,8 @@ class InviteManager {
 		this.list = 'all';
 		this.lists = ['mine', 'open'];
 
+		this.game_filter = null;
+
 		this.loader_overlay = new SaitoOverlay(app, mod, false, true);
 
 		//
@@ -52,7 +54,9 @@ class InviteManager {
 
 				let target = '.arcade_game_overlay_loader';
 
-				if (document.querySelector(".invite-manager")){
+				let im = document.querySelector(".invite-manager");
+				//If we have an invite manager AND it is visible
+				if (im && im.getBoundingClientRect().width){
 					document.querySelector(".invite-manager").innerHTML = "";	
 					target = ".invite-manager";
 				}else{
@@ -141,7 +145,7 @@ class InviteManager {
 					this.mod.games[list] = [];
 				}
 
-				if (this.mod.games[list].length > 0) {
+				if (this.mod.games[list].length > 0 && !this.game_filter) {
 					if (list === 'mine') {
 						this.app.browser.addElementToSelector(
 							`<h5 class="sidebar-header">My Games</h5>`,
@@ -173,31 +177,35 @@ class InviteManager {
 				}
 
 				for (let i = 0; i < this.mod.games[list].length && i < 5; i++) {
-					let newInvite = new Invite(
-						this.app,
-						this.mod,
-						target,
-						this.type,
-						this.mod.games[list][i],
-						this.mod.publicKey
-					);
+					
+					if (!this?.game_filter || this.game_filter == this.mod.games[list][i].msg.game){
+						let newInvite = new Invite(
+							this.app,
+							this.mod,
+							target,
+							this.type,
+							this.mod.games[list][i],
+							this.mod.publicKey
+						);
 
-					if (newInvite.invite_data.league) {
-						if (
-							!this.mod.leagueCallback?.testMembership(
-								newInvite.invite_data.league
-							)
-						) {
-							continue;
+						if (newInvite.invite_data.league) {
+							if (
+								!this.mod.leagueCallback?.testMembership(
+									newInvite.invite_data.league
+								)
+							) {
+								continue;
+							}
 						}
+						newInvite.render();
+						rendered_content = true;
+
 					}
-					newInvite.render();
-					rendered_content = true;
 				}
 			}
 		}
 
-		if (!rendered_content){
+		if (!rendered_content && !this.game_filter){
 			this.slider.render();
 		}
 

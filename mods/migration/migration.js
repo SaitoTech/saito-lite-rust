@@ -7,14 +7,13 @@ class Migration extends ModTemplate {
 
 		this.app = app;
 		this.name = 'Migration';
+		this.slug = 'migration';
 		this.description = 'Migrate ERC20 or BEP20 tokens to Saito Native Tokens';
 		this.categories = 'Core Utilities Messaging';
 		this.publickey = '';
 
 		return this;
 	}
-
-	async onConfirmation(blk, tx, conf) {}
 
 	async render() {
 		if (!this.browser_active) {
@@ -182,6 +181,11 @@ class Migration extends ModTemplate {
 	}
 
 	async onConfirmation(blk, tx, conf) {
+
+		if (this.app.BROWSER && !tx.isTo(this.publicKey)) {
+			return;
+		}
+
 		let txmsg = tx.returnMessage();
 		try {
 			if (conf == 0) {

@@ -13,6 +13,7 @@ class Wuziqi extends GameTemplate {
 		// Define static game parameters and add global variables.
 
 		this.name = 'Wuziqi';
+		this.slug = 'wuziqi';
 		this.game_length = 10; //Estimated number of minutes to complete a game
 		this.description =
 			'Take turns placing black or white tiles on a Go board of various sizes to make a line of five in a row to win the round. Also known as 五子棋, Gokomu, or Gobang.';
@@ -27,9 +28,12 @@ class Wuziqi extends GameTemplate {
 		this.social.creator = "Richard M Parris";
 		this.title = '五子棋 - Five-in-a-Row';
 
-		this.seats = [2, 5];
-		this.app = app;
+		this.hud.is_draggable = 0;
 
+		this.can_play_async = 1;
+		this.insert_rankings = true;
+
+		this.clock.container = "#clock_";
 		this.roles = ['observer', 'black', 'white'];
 		this.acknowledge_text = 'next round...'; // not "i understand..."
 
@@ -91,6 +95,37 @@ class Wuziqi extends GameTemplate {
 			this.racetrack.players.push(player);
 		}
 		this.racetrack.render();
+
+		this.playerbox.render();
+
+		for (let i = 1; i <= this.game.players.length; i++) {
+			this.playerbox.updateIcons(
+				`<div class="tool-item item-detail turn-shape ${this.roles[
+					i
+				].toLowerCase()}"></div>`,
+				i
+			);
+
+			this.playerbox.updateBody(`<div class="player_clock" id="clock_${i}"></div>`, i);
+		}
+
+		if (this.game.player == 1) {
+			$('.game-playerbox-manager').addClass('reverse');
+		}
+
+		if (this.useClock == 1) {
+			this.clock.render();
+			for (let i = 0; i < this.game.clock.length; i++){
+				this.clock.displayTime(this.game.clock[i].limit - this.game.clock[i].spent, i+1);
+			}
+		}
+
+		// Temporary fallback experiment -- if successful move to gametemplate
+		if (this.game.turn.length){
+			this.sendGameMoveTransaction('game', {target: this.returnNextPlayer()});
+		}
+
+
 	}
 
 	//html for game intro/rules
@@ -155,6 +190,10 @@ class Wuziqi extends GameTemplate {
         but data structures for player properties are typically 0-indexed arrays
     */
 	updateScore() {
+		if (!this.gameBrowserActive()){
+			return;
+		}
+
 		let roundsToWin = Math.ceil(this.game.options.best_of / 2);
 		for (let i = 0; i < this.game.players.length; i++) {
 			let scoreHTML = `<div>Score: </div><div class="tokens">`;
@@ -179,7 +218,7 @@ class Wuziqi extends GameTemplate {
 
 		this.game.status = str;
 
-		if (this.browser_active == 1) {
+		if (this.gameBrowserActive()) {
 			let status_obj = document.querySelector('.status');
 			if (status_obj) {
 				status_obj.innerHTML = str;
@@ -198,7 +237,12 @@ class Wuziqi extends GameTemplate {
 
 	// Iterate through the board object to draw each cell in the DOM
 	drawBoard(board) {
-		//console.log("DRAWING BOARD!");
+		if (!this.gameBrowserActive()){
+			console.log("Opt out of drawing board");
+			return;
+		}
+
+		console.log("DRAWING BOARD!");
 		//console.log(board);
 		boardElement = document.querySelector('.board');
 		// Clear the board
@@ -234,9 +278,13 @@ class Wuziqi extends GameTemplate {
 	}
 
 	// Add click events to the board
-	// This is the functional playerTurn() function of Wuziqi
+	// This is the functional function of Wuziqi
 	addEvents(board) {
-		this.playerTurn();
+		this.setPlayerActive();
+
+		if (!this.gameBrowserActive()){
+			return;
+		}
 
 		board.forEach((cell) => {
 			el = document.getElementById('tile_' + cell.id);
@@ -288,6 +336,13 @@ class Wuziqi extends GameTemplate {
 
 	removeEvents() {
 		this.drawBoard(this.game.board);
+		this.playerbox.setInactive();
+	}
+
+	onTimeOver(){
+		this.removeEvents();
+		this.moves = [`roundover\t${3-this.game.player}`];
+		this.endTurn();
 	}
 
 	//
@@ -295,10 +350,12 @@ class Wuziqi extends GameTemplate {
 	//
 	async handleGameLoop(msg = null) {
 		// The Game Loop hands us back moves from the end of the stack (the reverse order they were added)
+		let cell;
 
+		this.drawBoard(this.game.board);
+		
 		// Check we have a queue
 		if (this.game.queue.length > 0) {
-			this.drawBoard(this.game.board);
 
 			// Save before we start executing the game queue
 			// this.saveGame(this.game.id);
@@ -311,7 +368,7 @@ class Wuziqi extends GameTemplate {
 			if (mv[0] === 'gameover') {
 				// Remove this item from the queue.
 				this.game.queue = [];
-
+				this.stopClock();
 				await this.sendGameOverTransaction(
 					this.game.players[parseInt(mv[1]) - 1],
 					`best of ${this.game.options.best_of}`
@@ -326,10 +383,24 @@ class Wuziqi extends GameTemplate {
 				// Remove this item from the queue.
 				this.game.queue.splice(this.game.queue.length - 1, 1);
 
+				this.game.target = first_player;
+				console.log("Update target: ", this.game.target);
+
+				this.playerbox.setActive(first_player);
+
+				if (this.useClock == 1) {
+					this.game.time.last_received = new Date().getTime();
+					for (let i = 0; i < this.game.clock.length; i++){
+						this.game.clock[i].spent = 0;
+						this.clock.displayTime(this.game.clock[i].limit - this.game.clock[i].spent, i+1);
+					}
+				}
+
 				if (this.game.player == first_player) {
 					this.addEvents(this.game.board);
 					this.updateStatus('You go first');
 				} else {
+					this.startClock();
 					this.updateStatus(
 						`Waiting for <span class="playertitle">${this.roles[first_player]} (${this.app.keychain.returnUsername(this.game.players[first_player - 1])})</span> to start`
 					);
@@ -359,6 +430,14 @@ class Wuziqi extends GameTemplate {
 			if (mv[0] == 'roundover') {
 				let winner = parseInt(mv[1]);
 
+				this.game.target = this.returnNextPlayer(winner);
+
+				if (!this.gameBrowserActive() && this.game.player === this.game.target){
+					this.updateStatus("You lost the round");
+					this.setPlayerActive();
+					return 0;
+				}
+
 				// Remove this item from the queue.
 				this.game.queue.splice(this.game.queue.length - 1, 1);
 
@@ -377,6 +456,7 @@ class Wuziqi extends GameTemplate {
 					// Add a game over message to the stack.
 					this.game.queue.push('gameover\t' + winner);
 				} else {
+					this.stopClock();
 					// Initiate next round.
 					// Add a continue button if player did not play the winning token, just draw the board (and remove events if they did not);
 					if (winner != this.game.player) {
@@ -401,7 +481,7 @@ class Wuziqi extends GameTemplate {
 
 				this.boardFromString(mv[1]);
 				// Grab the played cell
-				let cell = this.returnCellById(parseInt(mv[2]));
+				cell = this.returnCellById(parseInt(mv[2]));
 
 				// And check if it won the game (this will just update winners in data structure)
 				let winner = this.findWinner(cell);
@@ -410,26 +490,37 @@ class Wuziqi extends GameTemplate {
 					this.animatePlay(cell);
 				}
 
-				if (this.game.player !== player && this.game.player !== 0) {
-					//Let player make their move
-					this.addEvents(this.game.board);
-					this.updateStatus(
-						`Your move <span class="replay">Replay Last</span>`
-					);
-					document.querySelector('.replay').onclick = (e) => {
-						this.animatePlay(cell);
-					};
-				} else {
-					this.updateStatus(
-						`Waiting on <span class='playertitle'>${this.roles[3 - player]}</span> (${this.app.keychain.returnUsername(this.game.players[2-player])})` 
-					);
-				}
+				this.game.target = this.returnNextPlayer(player);
+
+				this.playerbox.setActive(this.game.target);
 
 				// Remove this item from the queue.
 				this.game.queue.splice(this.game.queue.length - 1, 1);
+
 				return 1;
 			}
 		}
+
+		if (this.game.player == this.game.target) {
+			//Let player make their move
+			this.addEvents(this.game.board);
+
+			if (this.gameBrowserActive() && cell){
+				this.updateStatus(`Your move <span class="replay">Replay Last</span>`);
+				document.querySelector('.replay').onclick = (e) => {
+					this.animatePlay(cell);
+				};
+			}else{
+				this.updateStatus("Your move");
+			}
+		} else {
+
+			this.startClock();
+			this.updateStatus(
+				`Waiting on <span class='playertitle'>${this.roles[3 - this.game.player]}</span> (${this.app.keychain.returnUsername(this.game.players[2-this.game.player])})` 
+			);
+		}
+
 		return 0;
 	}
 

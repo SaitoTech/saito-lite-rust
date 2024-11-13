@@ -123,7 +123,6 @@ class NavalBattleOverlay {
 		// count undestroyed corsairs
 		//
 		document.querySelectorAll(qs2).forEach((el) => {
-			let factionspace = el.querySelector('.naval-battle-desc').innerHTML;
 			let unit_type = el.getAttribute('data-unit-type');
 			if (unit_type == "corsair") { undestroyed_corsairs++; }
 		});
@@ -145,7 +144,7 @@ try {
 
 			if (can_i_kill_this_guy) {
 				if (factionspace) {
-					factionspace.innerHTML += ' (click to assign hit)';
+					el.querySelector('.naval-battle-desc').innerHTML += ' (click to assign hit)';
 				}
 				el.classList.add('hits-assignable-hover-effect');
 
@@ -157,10 +156,17 @@ try {
 				}
 
 				el.onclick = (e) => {
+
+					let this_unit_type = e.currentTarget.getAttribute('data-unit-type');
+					if (hits_left == 1 && this_unit_type == "squadron") {
+						alert("Squadrons take 2 hits to destroy...");
+						return;
+					}
+
 					document
 						.querySelectorAll('hits_to_assign')
-						.forEach((el) => {
-							el.innerHTML = hits_left;
+						.forEach((el2) => {
+							el2.innerHTML = hits_left;
 						});
 
 					let unit_type = el.getAttribute('data-unit-type');
@@ -200,8 +206,8 @@ try {
 					) {
 						document
 							.querySelectorAll('.hits-assignable')
-							.forEach((el) => {
-								el.onclick = (e) => {};
+							.forEach((el3) => {
+								el3.onclick = (e) => {};
 							});
 						this.updateInstructions(
 							`Cannot Assign More Hits (squadrons take 2 hits to destroy) - close to continue`

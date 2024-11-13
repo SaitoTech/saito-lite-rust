@@ -10,13 +10,11 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
   
   <meta name="description" content="${app.browser.escapeHTML(mod.description)}" />
   <meta name="keywords" content="${mod.categories}"/>
-  <meta name="author" content="Saito Team"/>
+  <meta name="author" content="Saito 🟥"/>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes" />
 
   <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen" />
-  <link rel="stylesheet" href="/modtools/style.css" type="text/css" media="screen" />
-
-
+  
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="application-name" content="saito.io redsquare" />
@@ -51,16 +49,12 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
 
   <script src="/saito/lib/pace/pace.min.js"></script>
   <link rel="stylesheet" href="/saito/lib/pace/pace-theme.min.css">
-
+  <link rel="stylesheet" type="text/css" href="/saito/saito.css?v=${build_number}" />
+  
   <title>Saito RedSquare</title>
 
   <style type="text/css">
     /* css for fade-out bg effect while content is loading */
-    body {
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-    }
     body::before {
       content: "";
       opacity: 1;

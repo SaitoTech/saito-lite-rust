@@ -1,12 +1,10 @@
-module.exports = DialerTemplate = (app, mod, is_dialing = true) => {
+module.exports  = (app, mod, is_dialing = true) => {
 	let html = `
       <div class="stun-minimal-appspace"> 
       	<h2>Saito Talk</h2>
-      	<div class="contact"></div>
-
-		<div id="stun-phone-notice" class="stun-phone-notice">${
-	is_dialing ? '' : ' is calling you'
-}</div>`;
+      	<div>direct peer-to-peer chat</div>
+      	<div class="stunx-splash-image"></div>
+      	<div class="contact"></div>`
 
 	if (is_dialing) {
 		html += `<div class="video_switch">
@@ -15,20 +13,18 @@ module.exports = DialerTemplate = (app, mod, is_dialing = true) => {
 			  <input type="checkbox" id="video_call_switch">
 			  <span class="slider round"></span>
 			</label>
-		</div>`;
-	}
-
-	html += `<div class="video-preview stun-appspace-settings"></div>`;
-
-	if (is_dialing) {
-		html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="startcall">Call</div>`;
+		</div>
+		<div class="saito-button-primary stunx-appspace-launch-call-btn" id="startcall">Call</div>
+		`;
 	} else {
 		html += `
+			<div id="stun-phone-notice" class="stun-phone-notice"> is <em>${mod.room_obj.ui}</em> calling you</div>
 			<div class="stun-button-row">
 				<div class="saito-button-primary" id="rejectcall">Reject</div>
 				<div class="saito-button-primary" id="answercall">Answer</div>
 			</div>`;
 	}
+
 	html += `</div>`;
 
 	return html;

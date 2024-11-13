@@ -7,6 +7,7 @@ class DiplomacyConfirmOverlay {
 		this.app = app;
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(this.app, this.mod, false);
+		this.overlay.clickBackdropToClose = false;
 		this.faction = "";
 		this.proposal_idx = 0;
 	}
@@ -27,6 +28,8 @@ class DiplomacyConfirmOverlay {
 	  let proposal = this.mod.game.state.diplomacy[proposal_idx];
 	  this.faction = faction;
 	  this.overlay.show(DiplomacyConfirmTemplate(this, proposal, proposal_idx, faction));
+	  // and hide winter
+	  this.mod.winter_overlay.hide();
     	  this.attachEvents(faction, proposal_idx);
 	}
 

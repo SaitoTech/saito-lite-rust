@@ -1,4 +1,4 @@
-module.exports = ChatManagerMenuTemplate = (app, mod) => {
+module.exports  = (app, mod) => {
 	let html = `<div class="saito-module-settings">`;
 
 	if ('Notification' in window) {
@@ -40,6 +40,12 @@ module.exports = ChatManagerMenuTemplate = (app, mod) => {
 			`;
 
 	}
+
+	html += 
+		`<fieldset id="add-publickey" class="saito-grid settings-link">
+			<i class="fa-solid fa-user-group"></i>
+			<label>add contact</label>
+		</fieldset>`;
 
 	html += 
 		`<fieldset id="add-contacts" class="saito-grid settings-link">

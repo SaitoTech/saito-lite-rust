@@ -70,12 +70,20 @@
     grid-column: 3;
 }
 
-.game-playerbox-head .saito-user>.saito-address , .game-playerbox-head .saito-user>.saito-userline {
+.game-playerbox-head .saito-user .saito-address {
+  max-width: calc(100% + 1rem);
+}
+
+.game-playerbox-head .saito-user>.saito-userline {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     width: 100%;
+}
+
+.game-playerbox-head .saito-user>.saito-userline .player-stake {
+  text-transform: uppercase;
 }
   
 .game-playerbox-seat-8 {

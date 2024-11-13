@@ -10,10 +10,9 @@ class GameTestSuite extends GameTemplate {
 		super(app);
 
 		this.name = 'GameTestSuite';
+		this.slug = 'gametestsuite';
 		this.gamename = 'Game Test Suite';
-		this.description =
-			'A test suite covering core functions for the Saito Game Engine';
-
+		this.description = 'A test suite covering core functions for the Saito Game Engine';
 		this.categories = 'Utilities Development Demonstration';
 
 		this.card_img_dir = '/gametestsuite/img/cards';

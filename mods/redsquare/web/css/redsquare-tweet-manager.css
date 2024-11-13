@@ -45,12 +45,41 @@
 	margin-left: 0.5rem;
 }
 
-
-.redsquare-progress-banner{
-	height: fit-content;
-	width: calc(100% - 2rem);
-	position: fixed;
+.redsquare-progress-banner {
+	height: 0;
+	position: sticky;
 	z-index: 55;
-	max-width: 54rem;
-	top: var(--saito-header-height);
+	top: 1.6rem;
+}
+
+
+.redsquare-feed-source {
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+}
+
+.redsquare-feed-source.hidden {
+	display: none;
+}
+
+.redsquare-feed-source .saito-button-tab{
+	flex: 1;
+	padding: 0.75rem;
+	cursor: pointer;
+	text-align: center;
+	color: var(--saito-font-color-light);
+}
+
+.redsquare-feed-source .saito-button-tab.active{
+	color: var(--saito-font-color-heavy);
+	font-weight: bold;
+}
+
+.redsquare-feed-source .saito-button-tab.active span {
+	border-bottom: 2px solid var(--saito-primary);
+}
+
+.redsquare-feed-source .saito-button-tab:hover{
+	background: var(--background-color-gray-transparent);
 }

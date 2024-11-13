@@ -10,20 +10,45 @@ class DreamSpace{
 		this.video.display_wave_form = true;
 		this.startTime = new Date().getTime();
 		this.timer_interval = null;
+
+		app.connection.on('limbo-spaces-update', () => {
+			if (mod.dreamer){
+				if (mod.dreams[mod.dreamer]){
+					if (mod.dreams[mod.dreamer]?.muted === undefined){
+						return;
+					}
+
+					let elem = document.querySelector(".dream-controls .default-limbo-image-mask");
+					if (mod.dreams[mod.dreamer].muted){
+						this.video.hide();
+						if (elem){
+							elem.classList.remove("hidden");
+						}
+					}else{
+						this.video.show();
+						if (elem){
+							elem.classList.add("hidden");	
+						}
+					}
+				}
+			}
+		});
 	}
 
 	render(stream = null) {
 		if (!document.getElementById("dream-controls")){
-
-			console.log("Render Dream space in " + this.container);
 			this.app.browser.addElementToSelectorOrDom(DreamSpaceTemplate(), this.container);
+			this.video.render();
 		}
 
-		this.video.render(stream);
-
 		if (stream){
-			console.log("Add stream", stream);
+			console.log("Render DreamSpace with tracks", stream.getTracks());
 			this.startTimer();
+
+			this.video.stream = stream;
+			this.video.rerender();
+
+			this.app.connection.emit("limbo-spaces-update");
 		}
 
 		this.attachEvents();

@@ -37,6 +37,22 @@ class ArcadeMain {
 			this.render();
 		});
 
+		let league_hook = app.modules.returnFirstRespondTo("leagues-for-arcade");
+		if (league_hook){
+			app.connection.on('league-rankings-render-request', ()=>{
+				for (let league of league_hook.returnLeagues()){
+					let card = document.querySelector(`.arcade-game-selector-game[data-league="${league.id}"] .arcade-game-selector-footer`);
+					if (card){
+						let html = "";
+						if (league.rank > 0){
+							html = `<div class="leaderboard-rank angled-notification">${league.rank}</div>`;
+						}
+						card.innerHTML = html;
+					}
+				}
+			});
+		}
+
 		this.intersectionObserver = new IntersectionObserver((entries) => {
 		  let gameListContainer = document.querySelector(".arcade-main");			
 		  entries.forEach(entry => {
@@ -55,6 +71,8 @@ class ArcadeMain {
 			  }
 		  });
 		});
+
+
 
 	}
 

@@ -1,5 +1,6 @@
 import Peer from './peer';
 
+import * as JSON from 'json-bigint';
 const getUuid = require('uuid-by-string');
 const ModalSelectCrypto = require('./ui/modals/select-crypto/select-crypto');
 import Transaction from './transaction';
@@ -22,7 +23,7 @@ export default class Wallet extends SaitoWallet {
 
 	default_fee = 0;
 
-	version = 5.632;
+	version = 5.643;
 
 	nolan_per_saito = 100000000;
 
@@ -75,16 +76,12 @@ export default class Wallet extends SaitoWallet {
 		return BigInt(0);
 	}
 
+
 	async initialize() {
-		console.log('wallet.initialize');
 
 		let privateKey = await this.getPrivateKey();
 		let publicKey = await this.getPublicKey();
 		this.publicKey = publicKey;
-		console.log(
-			'public key = ' + publicKey,
-			' / private key ? ' + (privateKey !== '')
-		);
 
 		// add ghost crypto module so Saito interface available
 		class SaitoCrypto extends CryptoModule {
@@ -98,13 +95,16 @@ export default class Wallet extends SaitoWallet {
 			}
 
 			async returnBalance() {
-				return this.app.wallet.convertNolanToSaito(
-					await this.app.wallet.getBalance()
-				);
+				let x = await this.app.wallet.getBalance()
+				return this.app.wallet.convertNolanToSaito(x);
 			}
 
-			returnAddress() {
-				return this.publicKey;
+			async returnPublicKey() {
+				return this.publicKey || await this.app.wallet.getPublicKey();
+			}
+
+			async returnAddress() {
+				return this.publicKey || await this.app.wallet.getPublicKey();
 			}
 
 			returnPrivateKey() {
@@ -117,9 +117,10 @@ export default class Wallet extends SaitoWallet {
 				}
 			}
 
-			returnHistory(asset_id = '', records = 20, callback = null) {
+			async returnHistory(asset_id = '', records = 20, callback = null) {
 				// to be implemented in future
 				// redirecting users to block explorer for now
+				return callback(false);
 			}
 
 			async sendPayment(amount, to_address, unique_hash = '') {
@@ -132,6 +133,7 @@ export default class Wallet extends SaitoWallet {
 					);
 				await this.app.wallet.signAndEncryptTransaction(newtx);
 				await this.app.network.propagateTransaction(newtx);
+
 				return newtx.signature;
 			}
 
@@ -226,11 +228,7 @@ export default class Wallet extends SaitoWallet {
 			}
 
 			validateAddress(address){
-				let isPublicKey = this.app.crypto.isPublicKey(address);
-				if (isPublicKey) {
-					return true;
-				}
-				return false;
+				return this.app.wallet.isValidPublicKey(address);
 			}
 		}
 
@@ -359,12 +357,33 @@ export default class Wallet extends SaitoWallet {
 				}
 			}
 
+
+			//
+			// filter and resend pending txs
+			//
+			if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; };
+			let pending_txs = this.app.options.pending_txs;
+			this.app.options.pending_txs = [];
+			for (let i = pending_txs.length-1, k = 0; i >= 0; i--, k++) {
+				try {
+					if (pending_txs[i].instance) { delete pending_txs[i].instance; }
+					if (!pending_txs[i].from) {} else {
+						let newtx = new Transaction();
+						newtx.deserialize_from_web(this.app, JSON.stringify(pending_txs[i]));
+						if (newtx.timestamp > (new Date().getTime() - 85000000)) { 
+							await this.app.wallet.addTransactionToPending(newtx, false);
+						}
+					}
+				} catch (err) {
+					console.log("caught error: " + JSON.stringify(err));
+				}
+			}
+
 			this.app.connection.on('wallet-updated', async () => {
 				await this.saveWallet();
 				this.setKeyList(this.app.keychain.returnWatchedPublicKeys());
 			});
 
-			// this.instance = Object.assign(this.instance, this.app.options.wallet);
 		}
 		////////////////
 		// new wallet //
@@ -381,6 +400,8 @@ export default class Wallet extends SaitoWallet {
 
 		// this.recreate_pending_transactions = 0;
 	}
+
+	
 
 	/**
 	 * Generates a new keypair for the user, resets all stored wallet info, and saves
@@ -425,7 +446,7 @@ export default class Wallet extends SaitoWallet {
 
 		this.app.options.gameprefs.crypto_transfers_inbound_approved = 1;
 		this.app.options.gameprefs.crypto_transfers_outbound_approved = 1;
-		this.app.options.gameprefs.crypto_transfers_inbound_trusted = 0;
+		this.app.options.gameprefs.crypto_transfers_inbound_trusted = 1;
 		this.app.options.gameprefs.crypto_transfers_outbound_trusted = 1;
 
 
@@ -445,8 +466,15 @@ export default class Wallet extends SaitoWallet {
 		this.app.options.wallet.preferred_txs = this.preferred_txs;
 		this.app.options.wallet.version = this.version;
 		this.app.options.wallet.default_fee = this.default_fee;
-		let slips = await this.getSlips();
 
+                try {
+			this.app.options.pending_txs = await this.getPendingTransactions();
+                	if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; }
+                } catch (err) {
+                      this.app.options.pending_txs = [];
+                }
+                        
+		let slips = await this.getSlips();
 		this.app.options.wallet.slips = slips.map((slip) => slip.toJson());
 
 		await this.save();
@@ -488,31 +516,20 @@ export default class Wallet extends SaitoWallet {
 		throw 'Module Not Found: ' + ticker;
 	}
 
-	async setPreferredCrypto(ticker, show_overlay = 0) {
-		let can_we_do_this = 0;
+	async setPreferredCrypto(ticker) {
+
 		const mods = this.returnInstalledCryptos();
-		let cryptomod = null;
 
 		for (let i = 0; i < mods.length; i++) {
 			if (mods[i].ticker === ticker) {
-				cryptomod = mods[i];
-				can_we_do_this = 1;
-
-				if (mods[i].options.isActivated == true) {
-					show_overlay = 0;
-				}
+				this.preferred_crypto = ticker;
+				console.log('Activating cryptomod: ' + ticker);
+				await mods[i].activate();
+				await this.saveWallet();
+				return;
 			}
 		}
 
-		if (can_we_do_this == 1) {
-			this.preferred_crypto = ticker;
-			console.log('Activating cryptomod: ' + cryptomod.ticker);
-			await cryptomod.activate();
-			//cryptomod.returnBalance();
-			await this.saveWallet();
-		}
-
-		return;
 	}
 
 	async returnPreferredCrypto() {
@@ -539,14 +556,14 @@ export default class Wallet extends SaitoWallet {
 		}
 	}
 
-	returnCryptoAddressByTicker(ticker = 'SAITO') {
+	async returnCryptoAddressByTicker(ticker = 'SAITO') {
 		try {
 			if (ticker === 'SAITO') {
 				return this.publicKey;
 			} else {
 				const cmod = this.returnCryptoModuleByTicker(ticker);
 				if (cmod) {
-					return cmod.returnAddress();
+					return await cmod.returnAddress();
 				}
 				console.log(`Crypto Module (${ticker}) not found`);
 			}
@@ -557,6 +574,9 @@ export default class Wallet extends SaitoWallet {
 	}
 
 	async returnAvailableCryptosAssociativeArray() {
+
+console.log("into wallet.returnAvailableCryptosAssociativeArray()");
+
 		let cryptos = {};
 
 		let ticker;
@@ -564,7 +584,7 @@ export default class Wallet extends SaitoWallet {
 			let mods = this.returnActivatedCryptos();
 			for (let i = 0; i < mods.length; i++) {
 				ticker = mods[i].ticker;
-				let address = mods[i].returnAddress();
+				let address = await mods[i].returnAddress();
 				let balance = await mods[i].returnBalance();
 				if (!cryptos[ticker]) {
 					cryptos[ticker] = { address, balance };
@@ -578,6 +598,7 @@ export default class Wallet extends SaitoWallet {
 			console.error(err);
 			console.log(ticker);
 		}
+console.log("done wallet.returnAvailableCryptosAssociativeArray()");
 		return cryptos;
 	}
 
@@ -605,12 +626,12 @@ export default class Wallet extends SaitoWallet {
 		return returnObj;
 	}
 
-	savePreferredCryptoBalance(ticker, address, balance) {
+	async savePreferredCryptoBalance(ticker, address, balance) {
 		// if this is my address...
 		let cryptomods = this.returnInstalledCryptos();
 		for (let i = 0; i < cryptomods.length; i++) {
 			if (cryptomods[i].ticker === ticker) {
-				if (cryptomods[i].returnAddress() === address) {
+				if (await cryptomods[i].returnAddress() === address) {
 					// cache the results, so i know if payments are new
 					cryptomods[i].balance = balance;
 					this.app.wallet.cryptos[ticker] = {
@@ -641,7 +662,7 @@ export default class Wallet extends SaitoWallet {
 	async returnPreferredCryptoBalance() {
 		const cryptomod = await this.returnPreferredCrypto();
 		return await this.checkBalance(
-			cryptomod.returnAddress(),
+			await cryptomod.returnAddress(),
 			cryptomod.ticker
 		);
 	}
@@ -699,7 +720,8 @@ export default class Wallet extends SaitoWallet {
 				// DEBUGGING - sender is address to which we send the crypto
 				//       - not our own publickey
 				//
-				if (senders[i] === cryptomod.returnAddress()) {
+
+				if (senders[i] === await cryptomod.returnAddress()) {
 					// Need to save before we await, otherwise there is a race condition
 					await this.savePreferredCryptoTransaction(
 						senders,
@@ -762,7 +784,7 @@ export default class Wallet extends SaitoWallet {
 						'Cannot send payment from wrong crypto address'
 					);
 					console.log(cryptomod.name);
-					console.log(senders[i], cryptomod.returnAddress());
+					console.log(senders[i], await cryptomod.returnAddress());
 				}
 			}
 		} else {
@@ -1104,7 +1126,7 @@ export default class Wallet extends SaitoWallet {
 	}
 
 	private async isSlipInPendingTransactions(input: Slip): Promise<boolean> {
-		let pending = await this.getPendingTxs();
+		let pending = await this.getPendingTransactions();
 		for (let i = 0; i < pending.length; i++) {
 			let ptx = pending[i];
 			for (let ii = 0; ii < ptx.from.length; ii++) {
@@ -1114,6 +1136,10 @@ export default class Wallet extends SaitoWallet {
 			}
 		}
 		return false;
+	}
+
+	async getPendingTransactions() {
+		return this.getPendingTxs();
 	}
 
 	/////////////////////
@@ -1142,6 +1168,7 @@ export default class Wallet extends SaitoWallet {
 	async backupWallet() {
 		try {
 			if (this.app.BROWSER == 1) {
+				let publicKey = await this.getPublicKey();
 
 				if (this.app.options.wallet.backup_required_msg) {
 					this.app.options.wallet.backup_required_msg = 0;
@@ -1157,7 +1184,7 @@ export default class Wallet extends SaitoWallet {
 					'data:application/json;utf-8,' +
 						encodeURIComponent(this.exportWallet())
 				);
-				pom.setAttribute('download', 'saito.wallet.json');
+				pom.setAttribute('download', `saito-wallet-${publicKey}.json`);
 				document.body.appendChild(pom);
 				pom.click();
 				pom.remove();
@@ -1215,6 +1242,8 @@ export default class Wallet extends SaitoWallet {
 	 * @return {Transaction}
 	 */
 	async signAndEncryptTransaction(tx: Transaction, recipient = '') {
+
+		
 		if (tx == null) {
 			return null;
 		}
@@ -1290,7 +1319,24 @@ export default class Wallet extends SaitoWallet {
 	}
 
 	public isValidPublicKey(key: string): boolean {
-		return S.getInstance().isValidPublicKey(key);
+		if (this.app.crypto.isBase58(key)){
+			return S.getInstance().isValidPublicKey(key);
+		}else{
+			return false;
+		}
+	}
+
+	//
+	// temporarily disabled
+	//
+	public async addTransactionToPending(tx: Transaction, save = true) {
+		if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; }		
+		if (save) {
+			if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; }
+			this.app.options.pending_txs.push(tx.serialize_to_web(this.app));
+		}
+		return S.getInstance().addPendingTx(tx);
+		if (save) { this.app.storage.saveOptions(); }
 	}
 
 	public async onUpgrade(type = '', privatekey = '', walletfile = null) {

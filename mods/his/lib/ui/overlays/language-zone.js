@@ -90,6 +90,39 @@ class LanguageZoneOverlay {
 			};
 		}
 	}
+
+	showDebaters(language_zone="german", committed="uncommitted", faction="protestant") {
+
+                let his_self = this.mod;
+
+		let obj = document.querySelector(".language-zone-overlay .debaters");
+		if (obj) { obj.innerHTML = ""; obj.style.display = "flex"; }
+
+                for (let i = 0; i < his_self.game.state.debaters.length; i++) {
+
+			if (his_self.game.state.debaters[i].faction == faction) {
+	                        if (committed == "committed" && his_self.game.state.debaters[i].committed == 1) {
+        	                	this.app.browser.addElementToSelector(
+                	                	`<div class="debaters-tile debaters-tile${i} debater-commited" data-key="${his_self.game.state.debaters[i].key}" data-id="${his_self.game.state.debaters[i].img}" style="background-image:url('/his/img/tiles/debaters/${his_self.game.state.debaters[i].img}')"></div>`,
+                        	        	'.language-zone-overlay .debaters' 
+                        		);
+                        	}
+                       		if (committed == "uncommitted" && his_self.game.state.debaters[i].committed != 1) {
+                        		this.app.browser.addElementToSelector(
+                        	        	`<div class="debaters-tile debaters-tile${i}" data-key="${his_self.game.state.debaters[i].key}" data-id="${his_self.game.state.debaters[i].img}" style="background-image:url('/his/img/tiles/debaters/${his_self.game.state.debaters[i].img}')"></div>`,
+                        	        	'.language-zone-overlay .debaters' 
+                        		);
+				}
+                	}
+                }
+              
+	}
+
+	hideDebaters() {
+		let obj = document.querySelector(".language-zone-overlay .debaters");
+		if (obj) { obj.style.display = "none"; }
+	}
+
 }
 
 module.exports = LanguageZoneOverlay;

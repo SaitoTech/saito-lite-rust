@@ -19,7 +19,6 @@ html[data-theme="milquetoast"] {
     /*Border padding*/ 
       --border-padding-style-leaderboard-ranking: var(--border-padding-small);  
       --border-padding-style: var(--border-padding-wide);
-      --border-padding-identicon-style: var(--border-padding-identicon-thin);
        
     /* FONTS */
     /* Text decoration */
@@ -91,6 +90,5 @@ html[data-theme="milquetoast"] {
       --background-color-calendar-hover: var(--color-highlight);
       --background-color-chat-popup-main: var(--background-color-main);
       --background-color-chat-popup-subheader: var(--color-base);
-      --background-color-chat-popup-message-self: var(--color-base);
       
     }

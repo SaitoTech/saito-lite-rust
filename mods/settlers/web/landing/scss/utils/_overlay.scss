@@ -1,0 +1,33 @@
+.overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100dvh;
+	background: rgba(0, 0, 0, 0.84);
+	z-index: 2;
+	visibility: hidden;
+	opacity: 0;
+	transition:
+		visibility 0.29s,
+		opacity 0.29s;
+	@include breakpoint(ipadPro, small){
+		display: none;
+	}
+}
+
+body {
+	&.menu-opened {
+		.overlay {
+			opacity: 1;
+			visibility: visible;
+			transition-delay: 0;
+		}
+	}
+
+	&:not(.menu-opened) {
+		.overlay {
+			transition-delay: 1.28s;
+		}
+	}
+}

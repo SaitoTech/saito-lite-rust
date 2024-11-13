@@ -13,6 +13,7 @@
 	color: rgb(250, 244, 239);
 	padding: 0;
 	cursor: default;
+	box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);
 }
 
 .hud-body {
@@ -22,6 +23,10 @@
 	overflow-y: visible;
 	padding: 0 16px;
 	width: 611px;
+}
+
+.hud-body .status {
+	box-shadow: unset;
 }
 
 .hud-header {
@@ -43,5 +48,13 @@
 }
 
 .hud-body .status {
+	background-color: transparent;
+}
+
+.controls {
+	margin-top: 0;
+}
+
+.controls ul li {
 	background-color: transparent;
 }

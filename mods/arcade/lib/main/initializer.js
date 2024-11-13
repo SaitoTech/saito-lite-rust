@@ -57,7 +57,7 @@ class Initializer {
 		//Play chime no matter what
 		try{
 			let chime = new Audio("/saito/sound/Jinja.mp3");
-			chime.play();
+			try { chime.play(); } catch (err) {}
 		}catch(err){
 			console.error(err);
 		}
@@ -70,7 +70,7 @@ class Initializer {
 				'.arcade-game-initializer-success-button'
 			).onclick = (e) => {
 				//Remember where we enter the game from
-				let am = this.app.modules.returnActiveModule().returnName();
+				let am = this.app.modules.returnActiveModule()?.returnName() || "Arcade";
 				this.app.options.homeModule = am;
 				this.app.storage.saveOptions();
 

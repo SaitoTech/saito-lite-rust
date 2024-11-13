@@ -1,6 +1,8 @@
 body::before {
-   transition: opacity 1.5s ease-in-out, z-index 2s ease-in-out;
-   -webkit-transition: opacity 1.5s ease-in-out, z-index 2s ease-in-out;
+   transition: opacity 1.8s ease-in-out, z-index 4s ease-in-out;
+   -webkit-transition: opacity 1.8s ease-in-out, z-index 4s ease-in-out;
+}
+body.xclose::before {
    opacity: 0 !important;
    z-index: -2 !important;
 }

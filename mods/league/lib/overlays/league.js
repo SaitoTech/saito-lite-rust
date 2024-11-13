@@ -61,7 +61,7 @@ class LeagueOverlay {
 		this.leaderboards[this.league.id].render();
 
 		//Show list of recent games (once refreshed)
-		this.app.modules.renderInto('.league-overlay-games-list');
+		await this.app.modules.renderInto('.league-overlay-games-list');
 
 		let obj = { game: this.league.game };
 		if (this.league.admin) {

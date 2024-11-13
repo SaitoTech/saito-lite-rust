@@ -25,8 +25,8 @@ class Relay extends ModTemplate {
 
     this.app = app;
     this.name = "Relay";
-    this.description =
-      "Adds support for off-chain, realtime communications channels through relay servers, for mobile users and real-time gaming needs.";
+    this.slug = "relay";
+    this.description = "Adds support for off-chain, realtime communications channels through relay servers, for mobile users and real-time gaming needs.";
     this.categories = "Utilities Core";
     this.class = 'utility';
     this.description = "Simple Message Relay for Saito";
@@ -52,7 +52,9 @@ class Relay extends ModTemplate {
       if (this.stun?.hasConnection(publicKey)){
         app.connection.emit("relay-is-online", publicKey, true);
       }else{
-        this.sendRelayMessage([publicKey], "ping", {}); 
+        this.sendRelayMessage([publicKey], "ping", {
+          status: this.busy
+        }); 
       }
     });
 
@@ -113,16 +115,14 @@ class Relay extends ModTemplate {
   }
 
   async sendRelayTransaction(tx){
-
     let need_server = true;
-
     if (this.stun) {
       need_server = false;
       for (let i = 0; i < tx.to.length; i++){
         let addressee = tx.to[i].publicKey;
         if (addressee !== this.publicKey){
           if (this.stun.hasConnection(addressee)){
-            this.stun.sendTransaction(addressee, tx);
+            this.stun.sendTransaction(addressee, tx)
           }else {
             //console.log("Need to use Relay server because no stun connection with " + addressee);
             need_server = true;
@@ -135,8 +135,8 @@ class Relay extends ModTemplate {
         // but should make sure we process it ourselves as if it was coming in
         this.app.modules.handlePeerTransaction(tx);
       }
-    } 
-
+    }
+    
     if (need_server){
       let peers = await this.app.network.getPeers();
       for (let i = 0; i < peers.length; i++) {
@@ -153,6 +153,7 @@ class Relay extends ModTemplate {
         );
       }
     }
+  
 
   }
 
@@ -178,18 +179,18 @@ class Relay extends ModTemplate {
 
     try {
       if (tx.isTo(this.publicKey)) {
-        if (message.request === "ping") {
-          await this.sendRelayMessage(tx.from[0].publicKey, "echo", {
-            status: this.busy,
-          });
-          return 0;
-        }
 
-        if (message.request === "echo") {
+        if (message.request === "echo" || message.request === "ping") {
           if (message.data.status) {
             app.connection.emit("relay-is-busy", tx.from[0].publicKey);
           } else {
             app.connection.emit("relay-is-online", tx.from[0].publicKey);
+          }
+
+          if (message.request === "ping"){
+            await this.sendRelayMessage(tx.from[0].publicKey, "echo", {
+              status: this.busy,
+            });
           }
           return 0;
         }
@@ -202,7 +203,7 @@ class Relay extends ModTemplate {
             up by the gametemplate so we can get away with this...
           */
 
-          app.connection.emit("relay-notification", message.data.module, message.data.notification);
+          app.connection.emit("relay-notification", message.data);
 
           //return app.modules.handlePeerTransaction(relayed_tx, peer, mycallback);
         }

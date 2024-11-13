@@ -72,29 +72,29 @@ function listTransactions(blk, hash) {
       var tmptx = blk.transactions[mt];
       tmptx.id = mt;
 
-      var tx_fees = 0;
+      var tx_fees = BigInt(0);
       //if (tmptx.fees_total == "") {
 
       //
       // sum inputs
       //
-      let inputs = 0;
+      let inputs = BigInt(0);
       if (tmptx.from != null) {
         for (let v = 0; v < tmptx.from.length; v++) {
-          inputs += parseFloat(tmptx.from[v].amount);
+          inputs += BigInt(tmptx.from[v].amount);
         }
       }
 
       //
       // sum outputs
       //
-      let outputs = 0;
+      let outputs = BigInt(0);
       for (let v = 0; v < tmptx.to.length; v++) {
         //
         // only count non-gt transaction outputs
         //
         if (tmptx.to[v].type != 1 && tmptx.to[v].type != 2) {
-          outputs += parseFloat(tmptx.to[v].amount);
+          outputs += BigInt(tmptx.to[v].amount);
         }
       }
 
@@ -104,11 +104,16 @@ function listTransactions(blk, hash) {
       let tx_from = "fee tx";
       if (tmptx.from.length > 0) {
         tx_from = tmptx.from[0].publicKey;
+      } else if (tmptx.type===6){
+        tx_from = "issuance tx";
+        tx_fees = 0;
+      } else if (tmptx.type===7){
+        tx_from = "block stake tx";
       }
 
       html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + mt + `</a></div>`;
       html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + tx_from + `</a></div>`;
-      html += "<div>" + BigInt(tx_fees * nolan_per_saito) + "</div>";
+      html += "<div>" + (BigInt(tx_fees) * BigInt(nolan_per_saito)) + "</div>";
       html += "<div>" + tmptx.type + "</div>";
       if (tmptx.type == 0) {
         if (tmptx.msg.module) {
@@ -181,6 +186,7 @@ async function checkBalance(pubkey = "") {
   if (pubkey) {
     // API
     let balance = await balanceAPI();
+    let supply = 0.0
     if (balance.hasOwnProperty(pubkey)) {
       document.querySelector('.balance-search-input').placeholder = pubkey;
       let balance_nolan = balance[pubkey] || 0;
@@ -193,13 +199,19 @@ async function checkBalance(pubkey = "") {
   }
 }
 
+
+
 async function checkAllBalance() {
   // API
   let balance = await balanceAPI();
 
+  let supply = BigInt(0);
+
   // draw
   let node = document.querySelector(".explorer-balance-table");
   for (row in balance) {
+    supply = supply + BigInt(balance[row]);
+
     let wallet = document.createElement("div");
     wallet.setAttribute("class", "explorer-balance-data");
     wallet.innerHTML = row;
@@ -216,6 +228,8 @@ async function checkAllBalance() {
     balance_nolan.innerHTML = balance[row];
     node.appendChild(balance_nolan);
   }
+  document.querySelector('.balance-saito').innerHTML = formatNumberLocale(parseFloat(supply) / 100000000);
+  document.querySelector('.balance-nolan').innerHTML = formatNumberLocale(supply);
 }
 
 async function balanceAPI(pubkey = "") {

@@ -1,0 +1,99 @@
+#modtools-apps {
+	display: flex;
+    flex-direction: column;
+    align-items: self-start;
+}
+
+#modtools-app-permissions {
+	width: 40rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.add-new-permission-box {
+	display: none;
+}
+
+#modtools-apps-add-new {
+	max-width: 7rem;
+}
+
+.app-permission-option {
+	display: flex;
+	flex-wrap: initial;
+	flex-direction: row;
+	width: 100%;
+	justify-content: space-between;
+}
+
+.app-options-select {
+	width: 11rem;
+}
+
+.modtools-addnew-permission-container .saito-grid {
+	display: flex;
+}
+
+.modtools-addnew-permission-container 
+.modtools-app-permission-dropdowns {
+	display: flex;
+    gap: 2rem;
+}
+
+.modtools-add-permission-actions {
+	align: end;
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+}
+
+.app-name {
+	align-self: center;
+}
+
+.app-options-select {
+	background: transparent;
+	border: 1px solid var(--color-primary);
+	color: var(--color-white);
+	font-size: 1.6rem;
+	appearance: none;
+	padding: 0 1rem;
+}
+
+.app-options-select:focus {
+	outline: none;
+}
+
+.app-options-select::after {
+	border-left: 3px solid var(--color-primary);
+}
+
+/* div.overlay-input {
+	position: relative;
+    display: flex;
+    min-width: 16rem;
+    height: 2.5em;
+    line-height: 2.5;
+    background-color: transparent;
+    overflow: hidden;
+    outline: none;
+    background-color: none;
+    border: 1px solid var(--color-primary);
+}
+
+div.overlay-input::after {
+	content: '\25BC';
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 0 1em;
+	color: var(--color-white);
+	background: var(--background-color-button-mod-arcade);
+	cursor: pointer;
+	pointer-events: none;
+	-webkit-transition: 0.25s all ease;
+	-o-transition: 0.25s all ease;
+	transition: 0.25s all ease;
+	border-radius: 0 1rem 1rem 0;
+}*/

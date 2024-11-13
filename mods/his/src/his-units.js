@@ -21,6 +21,7 @@
     if (obj.key == null)                { obj.key = name; }
     if (obj.gout == null)               { obj.gout = false; }
     if (obj.locked == null)		{ obj.locked = 0; }
+    if (obj.relief_force == null)	{ obj.relief_force = false; }
     if (obj.already_moved == null)	{ obj.already_moved = 0; }
     if (obj.onCommitted == null) {
       obj.onCommitted = function(his_self, faction) { return 1; }
@@ -318,6 +319,9 @@
     }
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    for (let z = 0; z < space.units[faction].length; z++) {
+      if (space.units[faction][z].type == leader) { return 1; }
+    }
     space.units[faction].push(this.navy[leader]);
     space.units[faction][space.units[faction].length-1].owner = faction; 
   }
@@ -344,6 +348,7 @@
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     space.units[faction].push(this.reformers[reformer]);
     space.units[faction][space.units[faction].length-1].owner = faction; 
+    if (reformer == "cranmer-reformer") { this.game.state.events.cranmer_active = 1; }
   }
 
   returnDebaterName(key) {
@@ -429,6 +434,7 @@
     this.game.state.debaters.push(this.debaters[debater]);
     this.game.state.debaters[this.game.state.debaters.length-1].owner = faction; 
     this.game.state.debaters[this.game.state.debaters.length-1].committed = 0; 
+    if (debater == "cranmer-debater") { this.game.state.events.cranmer_active = 1; }
 
   }
 
@@ -510,6 +516,8 @@
       if (this.game.state.excommunicated[i].debater) {
 	if (this.game.state.excommunicated[i].debater.type == debater) {
 	  if (this.game.state.debaters[i].committed == 1) { return 1; }
+	  // sorry, you're committed !
+	  return 1;
         }
       }
     }
@@ -928,17 +936,17 @@
     for (let key in my_spaces) {
       if (my_spaces[key]['regular'] > 0) { 
 	if (!results.missing[key]) { results.missing[key] = {}; }
-	results.missing[key]['regular'] = my_spaces[key]['regular'];
+	results.missing[key]['regular']['1'] = my_spaces[key]['regular'];
 	results.overcapacity = 1;
       }	
       if (my_spaces[key]['mercenary'] > 0) { 
 	if (!results.missing[key]) { results.missing[key] = {}; }
-	results.missing[key]['mercenary'] = my_spaces[key]['mercenary'];
+	results.missing[key]['mercenary']['1'] = my_spaces[key]['mercenary'];
 	results.overcapacity = 1;
       }	
       if (my_spaces[key]['cavalry'] > 0) { 
 	if (!results.missing[key]) { results.missing[key] = {}; }
-	results.missing[key]['cavalry'] = my_spaces[key]['cavalry'];
+	results.missing[key]['cavalry']['1'] = my_spaces[key]['cavalry'];
 	results.overcapacity = 1;
       }	
     }
@@ -963,7 +971,7 @@
 
     let amount_over_capacity = 0;
     for (let key in res.missing) {
-      if ((unittype == "regular" && res.missing[key]['regular'] > 0) || (unittype == "mercenary" && res.missing[key]['mercenary'] > 0) || (unittype == "regular" && res.missing[key]['cavalry'] > 0)) {
+      if ((unittype == "regular" && res.missing[key]['regular']['1'] > 0) || (unittype == "mercenary" && res.missing[key]['mercenary']['1'] > 0) || (unittype == "regular" && res.missing[key]['cavalry']['1'] > 0)) {
         return 0;
       }
     }

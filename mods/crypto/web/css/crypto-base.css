@@ -1,0 +1,17 @@
+.game-wizard-crypto-hook{
+	font-size: 2.2rem;
+	cursor: pointer;
+	padding: 0 0.75rem;
+}
+
+.game-wizard-crypto-hook:hover{
+	color: var(--hover-text-color);
+}
+
+
+.game-crypto-transfer-manager-container .token-dropdown select{
+	height: unset;
+	font-size: 1.8rem;
+	padding: 0 1rem;
+	width: min-content;
+}

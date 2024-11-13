@@ -19,9 +19,23 @@
   cursor: pointer;
 }
 
+
+.chat-popup-img-overlay-box {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: 1px solid var(--saito-border-color);
+  border-radius: var(--saito-border-radius);
+  background-image: url(/saito/img/tiled-logo.svg);
+  background-color: var(--background-color-chat-popup-main);
+}
+
 .chat-popup-img-enhanced {
-  max-height: 90vh;
+  max-height: 80vh;
   max-width: 95vw;
+  border: 1px solid var(--saito-border-color);
+  border-radius: var(--saito-border-radius);
 }
 
 .chat-manager .saito-user {
@@ -39,7 +53,7 @@
 }
 
 .chat-manager-list {
-  gap: 0.5rem;
+  gap: 1.5rem;
   display: flex;
   flex-direction: column;
   min-height: 22rem;
@@ -54,6 +68,11 @@
 
 .chat-manager-list .saito-userline {
   font-size: 1.5rem;
+}
+
+.chat-manager-list.saito-sidebar-element {
+  padding: 1rem;
+  border: 1px solid var(--saito-border-color);
 }
 
 .new-notification {
@@ -84,11 +103,31 @@
   cursor: pointer;
 }
 
+.chat-popup.minimized .saito-notification-dot {
+  min-height: unset;
+  height: 100%;
+  left: 0;
+  bottom: 0;
+  border-radius: 0;
+  z-index: inherit;
+}
+
+
+/* Swap between new messages display and arrow */
 .chat-popup .saito-notification-dot i, .chat-popup .saito-notification-dot:hover .new-message-count {
   display: none;
 }
 
 .chat-popup .saito-notification-dot:hover i {
+  display: block;
+}
+
+/* Don't Swap between new messages display and arrow when minimized */
+.chat-popup.minimized .saito-notification-dot:hover i {
+  display: none;
+} 
+
+.chat-popup.minimized .saito-notification-dot .new-message-count{
   display: block;
 }
 
@@ -127,7 +166,7 @@
   height: 50rem;
   width: 36rem;
   border-radius: var(--border-radius-chat-popup);
-  z-index: 103;
+  z-index: 20;
   /* making z-index greater than overlay so that users
      can chat or send each other their crypto address without
      closing the withdraw overlay
@@ -167,11 +206,11 @@
 }
 
 .chat-container.active {
-  z-index: 104;
+  z-index: 21;
 }
 
 .chat-container.dragging {
-  z-index: 105;
+  z-index: 22;
 }
 
 .chat-container.minimized {
@@ -289,7 +328,7 @@
 
 }
 
-.chat-action-item, .chat-action-menu {
+.chat-action-item, .chat-action-menu, .chat-mobile-back {
   cursor: pointer;
   height: 4rem;
   width: 3.5rem;
@@ -308,7 +347,6 @@
   color: var(--font-color-button-hover-chat-popup-header);
 }
 
-}
 
 .chat-action-item:hover i, .chat-action-menu:hover i {
   
@@ -333,11 +371,12 @@
 
 .chat-header-nav .chat-details,
 .chat-header-info .chat-details {
-  width: 71%;
   display: flex;
   flex-direction: row;
   gap: 1rem;
   margin-left: 1rem;
+  align-items: center;
+  flex-grow: 1;
 }
 
 .chat-header-nav .chat-details {
@@ -352,6 +391,11 @@
   display: flex;
 }
 
+
+.chat-mobile-back {
+  display: none;
+  font-size: 24px;
+}
 
 .chat-body {
   padding: 1rem;
@@ -401,7 +445,9 @@
 
 .chat-body .saito-user > .saito-address {
   margin-bottom: 0.5rem;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
+  font-family: var(--saito-font-medium);
+  color: var(--saito-font-color-light);
 }
 
 .chat-body .saito-user-self.saito-user {
@@ -501,6 +547,15 @@
   white-space: normal;
 }
 
+.chat-message-line p {
+  overflow: hidden;
+  height: min-content;
+}
+
+.chat-message-line li {
+  margin-left: 2rem;
+}
+
 .saito-userline-reply {
   display: none;
 }
@@ -516,18 +571,29 @@
   position: absolute;
   flex-direction: row;
   align-items: center;
-  gap: 1rem;
   right: -5rem;
   bottom: 1; /* bumped it down a notch, and closer to the element */
   z-index: 9;
   background: var(--background-color-hover-chat-popup-message-tag);
-  padding: 5px 7px 2px;
   border-radius: var(--border-radius-chat-popup-message-tag);
   border: var(--border-thickness-chat-popup-message-tag) solid var(--border-color-chat-popup-message-tag);
   font-size: 1.1rem; /* made this way smaller, but this way access immediately below the line works better */
   opacity: 0; /* Initial opacity set to 0 for invisibility */
   transition: opacity 0.3s ease-in-out; /* Transition effect on opacity */
-  
+}
+
+.chat-message-line .saito-userline-reply > div {
+  padding: 4px;
+  cursor: pointer;
+  min-height: 22px;
+  min-width: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-message-line .saito-userline-reply > div.saito-chat-line-timestamp{
+  cursor: revert;
 }
 
 .chat-message-line:hover .saito-userline-reply {
@@ -559,13 +625,14 @@
 
 }
 
-.saito-user-self .chat-message-line .saito-userline-reply .chat-copy, .saito-user-self .chat-message-line .saito-userline-reply .chat-reply, .saito-user-self .chat-message-line .saito-userline-reply .chat-like {
+.saito-user-self .chat-message-line .saito-userline-reply .chat-message-action {
   display: none;
-  cursor: pointer;
 }
 
 .saito-user .saito-userline-reply i:hover {
+  transform: scale(1.2);
   color: var(--font-color-hover-chat-popup-reply);
+  cursor: pointer;
 }
 
 .chat-footer {
@@ -688,7 +755,6 @@
 /* Mobile Overlay */
 
 .close-chat-manager {
-  margin-left: 1rem;
   margin-right: auto;
   display: none;
   position: relative;
@@ -719,6 +785,9 @@
   top: var(--saito-header-height);
   z-index: 15;
   width: 300px;
+  border: var(--border-thickness-chat-popup) solid var(--border-color-chat-popup);
+  box-shadow: var(--box-shadow-sidebar-elements);
+  border-radius: var(--border-radius-sidebar-menu);
   height: fit-content;
 }
 
@@ -729,6 +798,13 @@
 .alternate-close-button, .floating-cm-overlay .chat-manager-options, .chat-manager-overlay.floating-cm-overlay .close-chat-manager {
   display: none;
 }
+
+.chat-manager-overlay .chat-manager-list.saito-sidebar-element {
+  box-shadow: unset;
+  padding: unset;
+  border: unset;
+}
+
 
 .floating-cm-overlay .alternate-close-button {
   display: flex;
@@ -749,6 +825,13 @@
 }
 
 
+.chat-popup.maximized .chat-maximizer-icon,
+.chat-popup.minimized .chat-minimizer-icon {
+  background-color: var(--background-color-button-hover-chat-popup-header);
+  color: var(--font-color-button-hover-chat-popup-header);
+}
+
+
 @media screen and (max-width: 720px) {
   .chat-manager-overlay .chat-manager-title {
     display: none;
@@ -759,8 +842,8 @@
   }
 
   .close-chat-manager i {
-    height: var(--saito-header-height);
-    line-height: 4.5rem;
+    height: 6rem;
+    line-height: 3rem;
   }
 
   .chat-header > .chat-header-nav > i.chat-container-close {
@@ -791,7 +874,6 @@
   .chat-manager-overlay .chat-manager {
     margin-left: auto;
     margin-right: auto;
-    width: 95vw;
     min-height: 25rem;
     height: 100%;
     grid-template-rows: var(--saito-header-height) 1fr;
@@ -802,10 +884,11 @@
     height: 40px;
   }
   .chat-manager-overlay .chat-manager-header {
-    height: var(--saito-header-height);
+    height: 6rem;
   }
   .chat-container {
     margin: 0;
+    min-width: unset;
     width: 100vw;
     height: 100vh;
     height: calc(100 * var(--saito-vh));
@@ -819,12 +902,24 @@
     left: 0;
   }
 
+  .chat-header > .chat-header-nav {
+    display: none;
+  }
+
+  .chat-mobile-back {
+    display: flex;
+    margin: 1rem;
+  }
 
 
   /* emoji-picker breaks this */
   .chat-manager-overlay+.chat-container {
     height: 100vh;
     height: calc(var(--saito-vh) * 100);
+  }
+
+  .chat-header-info {
+    height: 6rem;
   }
 }
 
@@ -837,7 +932,4 @@
   border: var(--border-thickness-modal-menu) solid var(--border-color-modal-menu);
   border-radius: var(--border-radius-modal-menu);
 
-}
-.chat-member-list-overlay .saito-modal-content{
-  border: unset;
 }

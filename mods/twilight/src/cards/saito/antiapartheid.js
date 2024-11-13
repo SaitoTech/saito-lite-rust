@@ -8,9 +8,10 @@
 
       var twilight_self = this;
 
+      twilight_self.startClockAndSetActivePlayer(1);
+
       if (twilight_self.game.player == 1) {
 
-        twilight_self.startClock();
         twilight_self.addMove("resolve\tantiapartheid");
 
         twilight_self.updateStatusWithOptions(`${twilight_self.cardToText(card)}: `,'<ul><li class="option" id="anywhere">2 Influence in Non-Battlegrounds</li><li class="option" id="african">2 Influence in African Battlegrounds</li></ul>', function(action2) {

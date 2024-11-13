@@ -19,16 +19,35 @@
     this.game.state.events.spring_preparations = "";
     this.game.state.events.henry_petitions_for_divorce_grant = 0;
     this.game.state.spaces_assaulted_this_turn = [];
-    this.game.state.events.cranmer_active = 0;
     this.game.state.events.more_executed_limits_debates = 0;
     this.game.state.events.more_bonus = 0;
     this.game.state.events.sack_of_rome = 0;
+    this.game.state.events.roxelana = 0;
+    this.game.state.loyola_bonus_active = 0;
+
+    //
+    // add cranmer if needed
+    //
+    if (this.game.state.events.cranmer_active == 1) { 
+      if (this.game.state.round >= 3) {
+        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer-reformer");
+        if (where_is_cranmer) { this.game.state.events.cranmer_active = 0; }
+      }
+    } else {
+      if (this.game.state.round >= 3) {
+        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer-reformer");
+        if (where_is_cranmer) { this.game.state.events.cranmer_active = 1; }
+      }
+    }
 
     //
     // reset impulse commits
     //
     this.game.state.debater_committed_this_impulse = {};
     this.game.state.assaulted_this_impulse = 0;
+    this.game.state.naval_avoid_battle_bonus = 0;
+    this.game.state.naval_intercept_bonus = 0;
+
 
     // display cards left
     this.displayCardsLeft();
@@ -69,11 +88,25 @@
     }
 
     //
+    // add cranmer if needed
+    //
+    if (this.game.state.events.cranmer_active != 1) { 
+      if (this.game.state.round >= 3) {
+        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer-reformer");
+        if (where_is_cranmer) { this.game.state.events.cranmer_active = 1; }
+      }
+    }
+
+    //
     // reset variables that permit intervention
     //
     this.game.state.events.intervention_on_movement_possible = 0;
     this.game.state.events.intervention_on_events_possible = 0;
     this.game.state.events.intervention_on_assault_possible = 0;
+    this.game.state.events.intervention_post_assault_possible = 0;
+    this.game.state.events.intervention_post_naval_battle_possible = 0;
+    this.game.state.events.intervention_naval_avoid_battle_possible = 0;
+    this.game.state.events.intervention_naval_intercept_possible = 0;
 
     this.game.state.field_battle_relief_battle = false;
 
@@ -87,6 +120,7 @@
     this.game.state.events.julia_gonzaga_activated = 0;
     this.game.state.events.england_changed_rulers_this_turn = 0;
     this.game.state.events.smallpox = "";
+    this.game.state.protestant_cards_evented = [];
     this.game.state.cards_evented = [];
     this.game.state.foreign_wars_fought_this_impulse = [];
     this.game.state.henry_viii_pope_approves_divorce = 0;
@@ -109,6 +143,9 @@
     this.game.state.cards_issued['papacy'] = 0;
     this.game.state.cards_issued['protestant'] = 0;
 
+    this.game.state.naval_avoid_battle_bonus = 0;
+    this.game.state.naval_intercept_bonus = 0;
+
     this.game.state.events.ottoman_piracy_wartburg = 0;
     this.game.state.events.ottoman_piracy_attempts = 0;
     this.game.state.events.ottoman_piracy_seazones = [];
@@ -116,6 +153,10 @@
     this.game.state.events.intervention_on_movement_possible = 0;
     this.game.state.events.intervention_on_events_possible = 0;
     this.game.state.events.intervention_on_assault_possible = 0;
+    this.game.state.events.intervention_post_assault_possible = 0;
+    this.game.state.events.intervention_post_naval_battle_possible = 0;
+    this.game.state.events.intervention_naval_avoid_battle_possible = 0;
+    this.game.state.events.intervention_naval_intercept_possible = 0;
 
     this.game.state.tmp_reformations_this_turn = [];
     this.game.state.tmp_counter_reformations_this_turn = [];
@@ -262,6 +303,44 @@
     if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    winning_faction = this.returnControllingPower(winning_faction);
+
+    let return_to_nearest_fortified_key = false;
+
+    //
+    // special treatment if unaligned minor power captures
+    //
+    // independent factions cannot capture leaders, so we return them to the nearest
+    // friendly, fortified space. edge-case out of rule book. rules determination here
+    // by Ed Beach (Oct 29, 2024 on WhatsApp)
+    //
+    if (["independent","venice","hungary","genoa","scotland"].includes(winning_faction)) {
+
+      let res = this.returnNearestFriendlyFortifiedSpacesTransitPasses(losing_faction, space, 0, 0);
+      let capitals = this.returnCapitals(losing_faction);
+
+      if (res.length > 0) {
+	this.addArmyLeader(losing_faction, res[0].key, unit.type);
+	return;
+      } else {
+	for (let z = 0; z < capitals.length; z++) {
+	  if (this.isSpaceControlled(losing_faction, capitals[z])) {
+	    this.addArmyLeader(losing_faction, capitals[z], unit.type);
+	    return;
+	  }
+	}
+      }
+
+      //
+      // no capital? push problem until next round
+      //
+      // no need to delete, function will sort out after return in this case
+      //
+      this.game.state.military_leaders_removed_until_next_round.push(unit);
+      return;
+
+    }
+
     let winning_player = this.returnPlayerCommandingFaction(winning_faction);
     if (winning_player > 0) {
       let p = this.game.state.players_info[winning_player-1];
@@ -344,6 +423,7 @@
 
   addNavalSquadron(faction, space, num=1) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "squadron"));
     }
@@ -352,6 +432,7 @@
 
   addCorsair(faction, space, num=1) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "corsair"));
     }
@@ -379,6 +460,7 @@
 	};
       }
     }
+
     //
     // let factions calculate their VP
     //
@@ -526,6 +608,10 @@
 	leaders = [];
         leaders.push(key);
       }
+      if (factions[key].vp < max_vp && factions[key].vp > runner_up_vp) {
+	runner_up_vp = factions[key].vp;
+      }
+
     }
     if (max_vp >= (runner_up_vp+lead_required) && this.game.state.round >= domination_round && this.game.players.length > 2) {
       if (leaders.length == 1) {
@@ -533,7 +619,6 @@
 	factions[leaders[0]].reason = "Domination Victory";
       }
     }
-
 
     //
     // final victory if round 9
@@ -741,6 +826,7 @@ if (this.game.state.scenario != "is_testing") {
     state.spaces_assaulted_this_turn = [];
     state.board_updated = new Date().getTime();
     state.board = {}; // units on board
+    state.protestant_cards_evented = [];
     state.cards_evented = [];
 
     state.foreign_wars_fought_this_impulse = [];
@@ -817,6 +903,14 @@ if (this.game.state.scenario != "is_testing") {
     state.bonus_vp['france'] = 0;
     state.bonus_vp['hapsburg'] = 0;
     state.bonus_vp['ottoman'] = 0;
+
+    state.cards_issued = {};
+    state.cards_issued['ottoman'] = 0;
+    state.cards_issued['hapsburg'] = 0;
+    state.cards_issued['england'] = 0;
+    state.cards_issued['france'] = 0;
+    state.cards_issued['papacy'] = 0;
+    state.cards_issued['protestant'] = 0;
 
     state.saint_peters_cathedral = {};
     state.saint_peters_cathedral['state'] = 0;
@@ -924,7 +1018,7 @@ if (this.game.state.scenario != "is_testing") {
     state.brandenburg_electoral_bonus = 0;
 
     state.galleons = {};
-    state.galleons['french'] = 0;
+    state.galleons['france'] = 0;
     state.galleons['hapsburg'] = 0;
     state.galleons['england'] = 0;
 
@@ -970,6 +1064,7 @@ if (this.game.state.scenario != "is_testing") {
     state.henry_viii_rolls = [];
     state.henry_viii_wives = [];
     state.henry_viii_pope_approves_divorce = 0;
+    state.henry_viii_pope_approves_divorce_round = 0;
 
     state.knights_of_st_john = "";
 
@@ -1096,7 +1191,10 @@ if (this.game.state.scenario != "is_testing") {
     //
     for (let i = 0; i < this.game.state.debaters.length; i++) {
       if (this.game.state.debaters[i].key === debater) {
+        // and commit the debater too !
+        this.game.state.debaters[i].committed = 1;
         obj.debater = this.game.state.debaters[i];
+        obj.debater.committed = 1;
         this.game.state.debaters.splice(i, 1);
       }
     }
@@ -1153,24 +1251,61 @@ if (this.game.state.scenario != "is_testing") {
     }
 
   }
+
+  //
+  // military leader returned to original space or capital (if controlled)
+  //
   restoreMilitaryLeaders() {
 
     for (let i = 0; i < this.game.state.military_leaders_removed_until_next_round.length; i++) {
+      let obj = this.game.state.military_leaders_removed_until_next_round[i];
       if (obj.leader) {
-
         let leader = obj.leader;
 	let s = obj.space;
         let faction = obj.faction;
+	this.restoreMilitaryLeader(leader, s, faction);
+      }
+    }
+
+    this.game.state.military_leaders_removed_until_next_round = [];
+
+  }
+
+  restoreMilitaryLeader(leader, spacekey, faction) {
+
+	let s = spacekey;
+	let navalspace = false;
+
+        if (faction == "ottoman") {
+	  if (leader.navy_leader == true) {
+            if (this.isSpaceControlled("algiers", "ottoman")) { s = "algiers"; } else {
+              if (this.isSpaceControlled("oran", "ottoman")) { s = "oran"; } else {
+                if (this.isSpaceControlled("oran", "ottoman")) { s = "tripoli"; };
+              }
+            }
+          }
+        }
 
 	if (leader) {
-	  if (s) {
-	    if (faction) {
+	  if (faction) {
+
+	    if (s == "") {
+	      let capitals = this.returnCapitals(faction);
+              for (let z = 0; z < capitals.length; z++) {
+                if (this.isSpaceControlled(capitals[z], faction)) {
+	          s = capitals[z];
+	          z = capitals.length += 2;
+	        }
+	      }
+	    }
+
+	    if (s != "") {
+	      leader.spacekey = s;
 	      this.game.spaces[s].units[faction].push(leader);
+	      this.displaySpace(s);
 	    }
 	  }
 	}
-      }
-    }
 
   }
 

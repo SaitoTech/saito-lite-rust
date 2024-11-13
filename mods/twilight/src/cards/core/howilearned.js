@@ -25,9 +25,9 @@
         twilight_self.endTurn();
       }
 
+      this.startClockAndSetActivePlayer(this.roles.indexOf(player));
+
       if (i_played_the_card) {
-        //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
 
       	//
       	// make DEFCON boxes clickable

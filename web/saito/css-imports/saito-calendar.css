@@ -3,12 +3,6 @@
     --calendar-minwidth: 10rem;
 }
 
-/*
-.container {
-    max-width: var(--calendar-width);
-    min-width: var(--calendar-minwidth);
-}
-*/
 .saito-calendar {
     border-radius: 0.5rem;
     width: 100%;
@@ -17,10 +11,63 @@
     flex-direction: column;
 }
 
+.saito-modal-calendar-tabs {
+	display: flex;
+	margin-bottom: 1rem;
+}
+
+.saito-tab-button {
+	border: none;
+	padding: 1rem;
+	font-size: 1.6rem;
+	cursor: pointer;
+	flex: 1;
+	text-align: center;
+    margin-right: 1rem;
+    border-radius: var(--saito-border-radius);
+    border: 1px solid var(--saito-primary);
+}
+
+.saito-tab-button.active {
+    color: var(--saito-white);
+    background-color: var(--saito-primary);
+}
+
+.saito-tab-button:hover {
+	background-color: var(--saito-primary);
+	color: var(--saito-white);
+}
+
+.saito-calendar-events-details {
+	clear: both;
+	font-size: 1.5rem;
+	color: var(--saito-font-color);
+	font-weight: bold;
+    max-height: 50vh;
+	overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.saito-calendar-events-details#tab2 {
+	display: none;
+}
+
+.saito-calendar-event-actions {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.saito-calendar-event-actions button {
+    margin-bottom: 1rem;
+}
 
 .saito-modal.saito-modal-calendar {
     display: grid;
-    grid-template-columns: 30rem 1fr;
+    /* grid-template-columns: 30rem 1fr; */
     width: 100%;
     padding: 4rem;
     grid-gap: 0;
@@ -28,7 +75,7 @@
 }
 
 .saito-modal-calendar-content {
-    padding-right: 3rem;
+/*    padding-right: 3rem; */
 }
 
 .saito-modal-calendar-title {
@@ -36,38 +83,30 @@
     margin-bottom: 1rem;
 }
 .saito-modal-calendar-note {
-    font-size: 2rem;
-    line-height: 2.8rem;
+    font-size: 1.5rem;
     display: block;
-}
-
-.saito-calendar-events {
-    background-color: whitesmoke;
-    width: 40rem;
-    height: 35rem;
-    padding: 0px;
-    margin: 0px;
-    border: var(--border-thickness-calendar-event-inner) solid var(--border-color-calendar-event-inner);
 }
 
 .saito-calendar-events-date {
   float: right;
   padding: 0.5rem;
   color: #777;
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-style: italic;
 }
 
-.saito-calendar-events-details {
-  clear: both;
-  font-size: 2rem;
-  color: var(--saito-font-color);
-  font-weight: bold;
-  padding-left: 2rem;
+
+
+
+
+.saito-calendar-event {
+    padding: 1rem;
+    border-radius: 0.5rem; 
+    border: 1px solid #ccc; 
+    width: 95%;
 }
 
 .saito-calendar-month {
-    /* padding: 1rem 1rem; */
     display: grid;
     grid-template-columns: min-content max-content min-content;
     justify-content: space-between;
@@ -77,9 +116,9 @@
 }
 
 .saito-calendar-month i {
-    font-size: 2rem;
+    font-size: 1.5rem;
     cursor: pointer;
-    padding: 2px 1rem;
+    padding: 1px 1rem 3px;
 }
 
 .saito-calendar-date {
@@ -111,11 +150,16 @@
     cursor: pointer;
     width: 100%;
     text-align: center;
+    display: flex;
+}
+
+.saito-calendar-day-date {
+margin-right:  .2rem;
 }
 
 .saito-calendar-day-icon {
-    font-size: 2.3rem;
     padding-right: 0.75rem;
+    background: red;
 }
 
 .saito-calendar-days div:hover {
@@ -129,7 +173,7 @@
 }
 
 .next-date {
-    color: rgba(0, 0, 0, 0.391);
+    color: #8888;
 }
 
 .today {
@@ -137,3 +181,5 @@
     color: var(--font-color-calendar-today);
     border-radius: var(--border-radius-calendar-hover-today);
 }
+
+

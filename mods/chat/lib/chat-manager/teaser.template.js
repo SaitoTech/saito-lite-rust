@@ -1,4 +1,4 @@
-module.exports = ChatTeaser = (app, mod, group, chat_open) => {
+module.exports  = (app, mod, group, chat_open) => {
 	let id = group.id;
 
 	let last_msg = '<em>new chat</em>';
@@ -22,7 +22,12 @@ module.exports = ChatTeaser = (app, mod, group, chat_open) => {
 		const regex2 = /<a[^>]+>/i;
 		last_msg = last_msg.replace(regex2, '').replace('</a>', '');
 
-		last_msg = last_msg.replace('saito-mention saito-address treated', '');
+		if (tx?.mentioned) {
+				for (let m of tx.mentioned){
+					last_msg = last_msg.replace(`data-id="${m}"`, "");
+				}
+		}
+
 	}
 
 	let identicon_source = id;

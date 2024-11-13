@@ -1,4 +1,5 @@
 module.exports = (app, mod, post) => {
+
 	let placeholder = 'What\'s happening';
 
 	let html = `
@@ -18,11 +19,11 @@ module.exports = (app, mod, post) => {
 	if (post.source === 'Edit') {
 		html += `
       <div class="saito-button-primary post-tweet-button" id="post-tweet-button">${post.source}</div>
-      <div class="saito-button-primary post-delete-button" id="post-delete-button">Delete</div>
+      <button class="saito-button-secondary post-delete-button" id="post-delete-button">Delete</button>
     `;
 	} else {
 		html += `
-      <div class="saito-button-primary post-tweet-button" id="post-tweet-button">${post.source}</div>
+      <div class="saito-button-primary post-tweet-button" id="post-tweet-button" title="Pro-tip: ctrl+enter to submit">${post.source}</div>
     `;
 	}
 

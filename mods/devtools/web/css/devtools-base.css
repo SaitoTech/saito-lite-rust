@@ -1,0 +1,192 @@
+.saito-app-overlay .saito-app-body .saito-app-upload {
+  border: 3px dotted;
+  width: 70%;
+  margin: auto;
+}
+
+/* From index.html / main body */
+html,
+body {
+  overflow-y: scroll !important;
+}
+
+/* css for fade-out bg effect while content is loading */
+body::before {
+  content: '';
+  opacity: 1;
+  z-index: 160; /*saito-header has z-index:15 */
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  height: 100vh;
+  width: 100vw;
+  /* hardcode bg colors used because saito-variables arent accessible here */
+  background-color: #ddd;
+  background-image: url('/saito/img/tiled-logo.svg');
+}
+
+.main-container {
+  width: 65vw;
+  margin: auto;
+  display: flex;
+  flex-direction: row;
+  gap: 3rem;
+  margin-top: calc(var(--saito-header-height) + 3rem);
+  justify-content: space-between;
+}
+
+.sub-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 70%;
+}
+
+.container-title {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+#generate-tx {
+  width: fit-content;
+}
+
+textarea {
+  resize: vertical;
+}
+
+#file {
+  border: none;
+}
+
+#appstore-zip-upload {
+  border: 3px dotted;
+  height: 50rem;
+  text-align: center;
+  line-height: 50rem;
+  font-size: 2rem;
+  border-radius: 1rem;
+}
+
+#binary {
+  display: none;
+}
+
+#cancel-file {
+  position: absolute;
+  background: var(--saito-primary);
+  color: var(--font-color-button-primary);
+  padding: 0.2rem 0.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+#file-icon {
+  font-size: 5rem;
+}
+
+#uploaded-file {
+  display: none;
+}
+
+.how-to {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  max-width: 20vw;
+}
+
+.how-to-link {
+  font-weight: bold;
+  color: var(--font-color-a-link);
+  cursor: pointer;
+}
+
+.how-to .title {
+  font-weight: bold;
+  font-size: 2.5rem;
+}
+
+.how-to .text {
+  font-size: 1.8rem;
+}
+
+/*  from generate-app.template */
+
+.saito-module-overlay.saito-app-install-overlay .saito-module-header {
+  background-size: cover;
+}
+
+.saito-module-overlay.saito-app-install-overlay .saito-module-titlebar {
+  background: #000a;
+  margin-bottom: 0rem;
+}
+
+#saito-app-generate-btn {
+  align-items: flex-end;
+  align-self: end;
+  background: #029b02;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+}
+
+#saito-app-generate-btn.active {
+  background: var(--background-color-button-primary);
+  background-size: 400% auto;
+  animation: btn-shimmer 3s ease-in-out infinite alternate;
+}
+
+@keyframes btn-shimmer {
+  0% {
+    background-position: 1% 1%;
+  }
+
+  50% {
+    background-position: 99% 99%;
+  }
+
+  100% {
+    background-position: 1% 1%;
+  }
+}
+
+#saito-app-generate-btn.active:hover {
+  color: var(--font-color-button-primary);
+}
+
+#publisher {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+/*  from install-app.template  */
+
+
+#saito-app-install-btn {
+  max-width: 30rem;
+  align-items: flex-end;
+  align-self: end;
+  background: #029b02;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+}
+
+
+/*  from add-app.template */
+
+.saito-app-overlay .saito-app-body .saito-app-upload {
+  border: 3px dotted;
+  width: 100%;
+  margin: auto;
+  text-align: center;
+  font-size: 2.2rem;
+  padding: 15rem 0rem;
+}
+
+
+.saito-overlay-backdrop {
+  backdrop-filter: blur(2px);
+}

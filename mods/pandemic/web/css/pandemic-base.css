@@ -3,6 +3,7 @@ body {
 	padding: 0px;
 	margin: 0px;
 
+	position: fixed;
 	background: -webkit-linear-gradient(top, #0a2942, #010204);
 	background: -moz-linear-gradient(top, #0a2942, #010204);
 	background: linear-gradient(to top, #0a2942, #010204);
@@ -30,6 +31,8 @@ img {
 .status-icon-menu {
 	height: unset;
 	width: 100%;
+	display: flex;
+	justify-content: space-evenly;
 }
 
 .status-text-menu ul li {
@@ -57,11 +60,6 @@ img {
 	max-height: 40vh;
 }
 
-.close_epidemic_overlay {
-	background-color: var(--saito-red);
-	color: #fefefe;
-	text-align: center;
-}
 
 .hud {
 	background-color: #444a;
@@ -113,6 +111,14 @@ img {
 	width: 100px;
 }
 
+.menu_icon {
+	color: whitesmoke;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+}
+
 .status-text-menu ul li.textchoice.confirmed {
 	background-color: rgb(69, 69, 69);
 	color: rgb(231, 231, 231);
@@ -124,6 +130,18 @@ img {
 .fa-border {
 	padding: 0.26em 0.14em;
 }
+
+i.menu_icon_icon {
+	font-size: 5rem;
+	height: 10rem;
+	border-radius: 2rem;
+	border-width: 0.75rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #111F;
+}
+
 
 .fake-border {
 	font-size: 1.2em;
@@ -313,6 +331,7 @@ img {
 
 .card {
 	cursor: pointer;
+	position: relative;
 }
 
 .link {

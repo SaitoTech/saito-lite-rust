@@ -15,7 +15,7 @@ class NoticeOverlay {
 	attachEvents() {
 		try {
 			document.querySelector('.notice_overlay').onclick = () => {
-				this.overlay.hide();
+				this.overlay.close();
 			};
 		} catch (err) {
 			console.log(err);

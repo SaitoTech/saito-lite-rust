@@ -1,4 +1,5 @@
 const CallSettingTemplate = require('./call-setting.template');
+const SaitoOverlay = require('../../../../lib/saito/ui/saito-overlay/saito-overlay.js');
 
 /**
  *
@@ -9,63 +10,51 @@ const CallSettingTemplate = require('./call-setting.template');
  */
 
 class CallSetting {
-	videoStream = null;
-	audioStream = null;
-	videoEnabled = true;
-	audioEnabled = true;
-	isRecording = false;
-	recordedChunks = [];
-	mediaRecorder;
-	recordedAudio = null;
-	isPlaying = false;
 
 	constructor(app, mod) {
 		this.app = app;
 		this.mod = mod;
-
-		app.connection.on('close-preview-window', () => {
-			if (this.audioStream) {
-				this.audioStream.getTracks().forEach((track) => {
-					track.stop();
-					console.log('stopping audio track');
-				});
-			}
-
-			if (this.videoStream) {
-				this.videoStream.getTracks().forEach((track) => {
-					track.stop();
-					console.log(track);
-					console.log('stopping video track');
-				});
-			}
-
-			this.remove();
-		});
+		this.overlay = new SaitoOverlay(app, mod);
+		this.videoStream = null;
+		this.audioStream = null;
+		this.videoEnabled = true;
+		this.audioEnabled = true;
+		this.isRecording = false;
+		this.recordedChunks = [];
+		this.mediaRecorder;
+		this.recordedAudio = null;
+		this.isPlaying = false;
 	}
 
 	render() {
-		this.app.browser.addElementToClass(
-			CallSettingTemplate(this),
-			'stun-appspace-settings'
-		);
 
-		let previewWindow = document.getElementById('video');
+		this.overlay.show(CallSettingTemplate(this), ()=> {this.remove()});
+
+		let previewWindow = document.getElementById('preview-video');
 		if (previewWindow){
 			this.getUserMedia(previewWindow);	
 		}else{
-			console.error("No video element to display user media");
+			//console.error("No video element to display user media");
 		}
 		
 	}
 
 	remove() {
-		if (document.querySelector('.chat-settings')) {
-			document
-				.querySelector('.chat-settings')
-				.parentElement.removeChild(
-					document.querySelector('.chat-settings')
-				);
+		if (this.audioStream) {
+			this.audioStream.getTracks().forEach((track) => {
+				track.stop();
+				console.log('stopping audio track');
+			});
 		}
+
+		if (this.videoStream) {
+			this.videoStream.getTracks().forEach((track) => {
+				track.stop();
+				console.log(track);
+				console.log('stopping video track');
+			});
+		}
+
 	}
 
 	attachEvents(videoElement) {
@@ -126,12 +115,17 @@ class CallSetting {
 			});
 		}
 
-		this.videoInput.addEventListener('change', () =>
-			this.updateMedia('video', videoElement)
-		);
-		this.audioInput.addEventListener('change', () =>
-			this.updateMedia('audio', videoElement)
-		);
+		if (this.videoInput){
+			this.videoInput.addEventListener('change', () =>
+				this.updateMedia('video', videoElement)
+			);
+		}
+
+		if (this.audioInput){
+			this.audioInput.addEventListener('change', () =>
+				this.updateMedia('audio', videoElement)
+			);
+		}
 
 		if (togglePlayback) {
 			togglePlayback.addEventListener('click', () => {
@@ -195,15 +189,14 @@ class CallSetting {
 		let videoCt = 0;
 		let audioCt = 0;
 		devices.forEach((device) => {
-			console.log(device);
 			const option = document.createElement('option');
 			option.value = device.deviceId;
 			option.textContent =
 				device.label || `${device.kind} - ${device.deviceId}`;
-			if (device.kind === 'videoinput') {
+			if (device.kind === 'videoinput' && this.videoInput) {
 				videoCt++;
 				this.videoInput.appendChild(option);
-			} else if (device.kind === 'audioinput') {
+			} else if (device.kind === 'audioinput' && this.audioInput) {
 				audioCt++;
 				this.audioInput.appendChild(option);
 			}
@@ -301,6 +294,15 @@ class CallSetting {
 	}
 
 	returnSettings(){
+		//Use defaults if unopened...
+		if (!this.videoInput){
+			return {
+				ui: "large",
+				video: true,
+				audio: true,
+			};
+		}
+
 		return {
 			ui: "large",
 			video: (this.videoEnabled) ? this.videoInput.value : false,

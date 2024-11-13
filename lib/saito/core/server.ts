@@ -21,7 +21,15 @@ import { TransactionType } from 'saito-js/lib/transaction';
 import { BlockType } from 'saito-js/lib/block';
 
 const JSON = require('json-bigint');
+
+//
+// CORS -- uncomment for local CORS Cross-Origin Requests by Default
+//
+var cors = require('cors');
 const expressApp = express();
+expressApp.use(cors());
+
+
 const webserver = new Ser(expressApp);
 
 export class NodeSharedMethods extends CustomSharedMethods {
@@ -56,25 +64,18 @@ export class NodeSharedMethods extends CustomSharedMethods {
 		});
 	}
 
-	connectToPeer(peerData: any): void {
-		let protocol = 'ws';
-		if (peerData.protocol === 'https') {
-			protocol = 'wss';
-		}
-		let url =
-			protocol + '://' + peerData.host + ':' + peerData.port + '/wsopen';
-
+	connectToPeer(url: string, peer_index: bigint): void {
 		try {
 			console.log('connecting to ' + url + '....');
 
 			let socket = new ws.WebSocket(url);
-			let index = S.getInstance().addNewSocket(socket);
+			S.getInstance().addNewSocket(socket, peer_index);
 
 			socket.on('message', (buffer: any) => {
 				try {
 					S.getLibInstance().process_msg_buffer_from_peer(
 						buffer,
-						index
+						peer_index
 					);
 				} catch (e) {
 					console.error(e);
@@ -82,18 +83,27 @@ export class NodeSharedMethods extends CustomSharedMethods {
 			});
 			socket.on('close', () => {
 				try {
-					S.getLibInstance().process_peer_disconnection(index);
+					S.getLibInstance().process_peer_disconnection(peer_index);
 				} catch (e) {
 					console.error(e);
 				}
 			});
 			socket.on('error', (error) => {
 				console.error(error);
+				try {
+					S.getLibInstance().process_peer_disconnection(peer_index);
+				} catch (e) {
+					console.error(e);
+				}
 			});
-			S.getLibInstance().process_new_peer(index, peerData);
-			console.log(
-				'connected to : ' + url + ' with peer index : ' + index
-			);
+			socket.on('open',()=>{
+				S.getLibInstance().process_new_peer(peer_index)
+					.then(() => {
+						console.log(
+							'connected to : ' + url + ' with peer index : ' + peer_index
+						);
+					});
+			});
 		} catch (e) {
 			console.error(e);
 		}
@@ -115,7 +125,8 @@ export class NodeSharedMethods extends CustomSharedMethods {
 		}
 	}
 
-	flushData(key: string): void { }
+	flushData(key: string): void {
+	}
 
 	readValue(key: string): Uint8Array {
 		try {
@@ -213,8 +224,8 @@ export class NodeSharedMethods extends CustomSharedMethods {
 		await this.app.modules.handlePeerTransaction(newtx, peer, mycallback);
 	}
 
-	sendInterfaceEvent(event: string, peerIndex: bigint) {
-		this.app.connection.emit(event, peerIndex);
+	sendInterfaceEvent(event: string, peerIndex: bigint, public_key: string) {
+		this.app.connection.emit(event, peerIndex, public_key);
 	}
 
 	sendBlockSuccess(hash: string, blockId: bigint) {
@@ -223,6 +234,10 @@ export class NodeSharedMethods extends CustomSharedMethods {
 
 	sendWalletUpdate() {
 		this.app.connection.emit('wallet-updated');
+	}
+
+	sendBlockFetchStatus(count:bigint){
+		this.app.connection.emit('block-fetch-status', {count: count});
 	}
 
 	async saveWallet(): Promise<void> {
@@ -261,7 +276,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 		patch: number,
 		peerIndex: bigint
 	): void {
-		console.error('This is an older version', "current version: ", this.app.wallet.version, " expected version: ", major)
+		console.error('This is an older version', 'current version: ', this.app.wallet.version, ' expected version: ', major);
 	}
 
 	ensureBlockDirExists(path: string): void {
@@ -285,6 +300,7 @@ class Server {
 		publicKey: '',
 		protocol: '',
 		name: '',
+		url: '',
 		block_fetch_url: '',
 		endpoint: {
 			host: '',
@@ -313,19 +329,17 @@ class Server {
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		const ws = require('ws');
 
-		const wss = new ws.Server({
+		const wss = new ws.WebSocketServer({
 			noServer: true,
 			path: '/wsopen'
 		});
 		webserver.on('upgrade', (request: any, socket: any, head: any) => {
-			// console.debug("connection upgrade ----> " + request.url);
+			console.debug("connection upgrade ----> " + request.url);
 			const { pathname } = parse(request.url);
 			if (pathname === '/wsopen') {
 				wss.handleUpgrade(request, socket, head, (websocket: any) => {
 					wss.emit('connection', websocket, request);
 				});
-			} else {
-				socket.destroy();
 			}
 		});
 		webserver.on('error', (error) => {
@@ -334,35 +348,28 @@ class Server {
 		wss.on('connection', (socket: any, request: any) => {
 			const { pathname } = parse(request.url);
 			console.log('connection established');
-			let index = S.getInstance().addNewSocket(socket);
+			S.getLibInstance().get_next_peer_index()
+				.then((peer_index: bigint) => {
+					S.getInstance().addNewSocket(socket, peer_index);
 
-			socket.on('message', (buffer: any) => {
-				S.getLibInstance()
-					.process_msg_buffer_from_peer(new Uint8Array(buffer), index)
-					.then(() => { });
-			});
-			socket.on('close', () => {
-				S.getLibInstance().process_peer_disconnection(index);
-			});
-			socket.on('error', (error) => {
-				console.error('error on socket : ' + index, error);
-			});
+					socket.on('message', (buffer: any) => {
+						S.getLibInstance()
+							.process_msg_buffer_from_peer(new Uint8Array(buffer), peer_index);
+					});
+					socket.on('close', () => {
+						S.getLibInstance().process_peer_disconnection(peer_index);
+					});
+					socket.on('error', (error) => {
+						console.error('error on socket : ' + peer_index, error);
+						S.getLibInstance().process_peer_disconnection(peer_index);
+					});
 
-			S.getLibInstance().process_new_peer(index, null);
+					return S.getLibInstance().process_new_peer(peer_index);
+				});
+
 		});
-		// app.on("upgrade", (request, socket, head) => {
-		//   server.handleUpgrade(request, socket, head, (websocket) => {
-		//     server.emit("connection", websocket, request);
-		//   });
-		// });
-		//
-		// server.on("connection", (wsocket, request) => {
-		//   //console.log("new connection received by server", request);
-		//   this.app.network.addRemotePeer(wsocket).catch((error) => {
-		//     console.log("failed adding remote peer");
-		//     console.error(error);
-		//   });
-		// });
+
+		this.app.modules.onWebSocketServer(webserver);
 	}
 
 	initialize() {
@@ -446,6 +453,7 @@ class Server {
 		url += this.server.endpoint.port;
 		// url += "/block/";
 
+		this.server.url = url;
 		this.server.block_fetch_url = url;
 
 		//
@@ -829,15 +837,16 @@ class Server {
 			//
 			// caching in prod
 			//
-			/* Not needed as handled by nginx.
-	const caching =
-	process.env.NODE_ENV === "prod"
-	  ? "private max-age=31536000"
-	  : "private, no-cache, no-store, must-revalidate";
-	res.setHeader("Cache-Control", caching);
-	res.setHeader("expires", "-1");
-	res.setHeader("pragma", "no-cache");
-	*/
+			/*** No longer needed as handled by nginx.
+			const caching =
+			process.env.NODE_ENV === "prod"
+			  ? "private max-age=31536000"
+			  : "private, no-cache, no-store, must-revalidate";
+			res.setHeader("Cache-Control", caching);
+			res.setHeader("expires", "-1");
+			res.setHeader("pragma", "no-cache");
+			****/
+
 			res.sendFile(this.web_dir + '/saito/saito.js');
 			return;
 		});
@@ -858,8 +867,12 @@ class Server {
 		this.app.modules.webServer(expressApp, express);
 
 		expressApp.get('*', (req, res) => {
-			res.status(404).sendFile(`${this.web_dir}404.html`);
-			res.status(404).sendFile(`${this.web_dir}tabs.html`);
+
+            res.sendFile(`${this.web_dir}404.html`);
+			//res.sendFile(`${this.web_dir}tabs.html`);
+//
+//			res.status(404).sendFile(`${this.web_dir}404.html`);
+//			res.status(404).sendFile(`${this.web_dir}tabs.html`);
 		});
 
 		//     io.on('connection', (socket) => {

@@ -82,9 +82,6 @@ export default class Transaction extends SaitoTransaction {
 					// );
 					this.addFromSlip(slip);
 				}
-				// if (jsonobj.from.length > 0) {
-				//   console.log("important tx: " + jsonobj.from[0].publicKey);
-				// }
 
 				for (let i = 0; i < jsonobj.to.length; i++) {
 					const fslip = jsonobj.to[i];
@@ -142,35 +139,48 @@ export default class Transaction extends SaitoTransaction {
 		}
 
 		let counter_party_key = '';
-
-		if (this.from[0].publicKey !== myPublicKey) {
-			counter_party_key = this.from[0].publicKey;
-		} else {
-			for (let i = 0; i < this.to.length; i++) {
-				if (this.to[i].publicKey !== myPublicKey) {
-					counter_party_key = this.to[i].publicKey;
-					break;
-				}
+		let addresses = [];
+		for (let i = 0; i < this.from.length; i++){
+			if (!addresses.includes(this.from[i].publicKey)){
+				addresses.push(this.from[i].publicKey);
+			}
+		}
+		for (let i = 0; i < this.to.length; i++){
+			if (!addresses.includes(this.to[i].publicKey)){
+				addresses.push(this.to[i].publicKey);
 			}
 		}
 
-		//console.log("Decrypt message from: " + counter_party_key);
-
-		try {
-			let dmsg = app.keychain.decryptMessage(
-				counter_party_key,
-				parsed_msg
-			);
-			if (dmsg !== parsed_msg) {
-				this.dmsg = dmsg;
-			}
-		} catch (e) {
-			console.error('Decryption error: ', e);
+		// I am not involved in this encrypted transaction!
+		if (!addresses.includes(myPublicKey)){
 			this.dmsg = '';
-			// there was (pre-wasm) code to automatically try to get the keys, but that seems
-			// like a security risk, no???
+			return;
 		}
-		return;
+
+		for (let a of addresses){
+			if (a !== myPublicKey){
+				counter_party_key = a;
+				break;
+			}
+		}
+
+		if (addresses.length !== 2) {
+			console.warn("Attempting to decrypt multiparty message: ", addresses);	
+		}
+
+
+		let dmsg = app.keychain.decryptMessage(
+			counter_party_key,
+			parsed_msg
+		);
+
+		if (dmsg && dmsg !== parsed_msg) {
+			this.dmsg = dmsg;
+		}else{
+			this.dmsg = '';
+		}
+
+
 	}
 
 	async generateRebroadcastTransaction(
@@ -234,8 +244,6 @@ export default class Transaction extends SaitoTransaction {
 	}
 
 	returnMessage() {
-		//console.log("TRANSACTION:");
-		//console.log(JSON.stringify(this));
 
 		if (this.dmsg) {
 			return this.dmsg;
@@ -253,14 +261,9 @@ export default class Transaction extends SaitoTransaction {
 				this.msg = {};
 			}
 		} catch (err) {
-			// TODO : handle this without printing an error
-			console.log('ERROR: ' + JSON.stringify(err));
 			try {
-				console.log('fallback on failure... 1');
 				const reconstruct = Buffer.from(this.data).toString('utf-8');
-				console.log('fallback on failure... 2');
 				this.msg = JSON.parse(reconstruct);
-				console.log('fallback on failure... 3');
 			} catch (err) {
 				console.log(
 					`buffer length = ${
@@ -275,8 +278,8 @@ export default class Transaction extends SaitoTransaction {
 	}
 
 	/*
-  Sanka -- maybe these convenience functions should be moved up a level?
-  */
+  	  Sanka -- maybe these convenience functions should be moved up a level?
+  	*/
 	addTo(publicKey: string) {
 		console.assert(!!this.to, 'to field not found : ', this);
 		for (let s of this.to) {
@@ -324,14 +327,12 @@ export default class Transaction extends SaitoTransaction {
 			m: m.toString('base64'),
 			opt: app.crypto.stringToBase64(opt)
 		};
-		//console.log("serialize_to_web : ", web_obj);
 		return JSON.stringify(web_obj);
 	}
 
 	deserialize_from_web(app: Saito, webstring: string) {
 		try {
-			let web_obj: { t: string; m: string; opt: string } =
-				JSON.parse(webstring);
+			let web_obj: { t: string; m: string; opt: string } = JSON.parse(webstring);
 			this.deserialize_from_base64(web_obj.t);
 			this.data = Buffer.from(web_obj.m, 'base64');
 			this.unpackData();

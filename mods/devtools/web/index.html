@@ -1,0 +1,67 @@
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content="" />
+		<meta name="author" content="Khan" />
+
+		<title>Saito Devtools: Manage Applications</title>
+
+		<link
+			rel="stylesheet"
+			href="/saito/lib/font-awesome-6/css/fontawesome.min.css"
+			type="text/css"
+			media="screen"
+		/>
+		<link
+			rel="stylesheet"
+			href="/saito/lib/font-awesome-6/css/all.css"
+			type="text/css"
+			media="screen"
+		/>
+		<link rel="stylesheet" type="text/css" href="/saito/style.css" />
+		<link rel="stylesheet" type="text/css" href="style.css" />
+	</head>
+
+	<body>
+		<div class="main-container">
+			<div class="sub-container">
+				<div class="container-title">Generate Application Bundle</div>
+
+				<div class="saito-app-upload active-tab paste_event" id="appstore-zip-upload">
+					drag-and-drop module zip file
+				</div>
+			</div>
+
+			<div class="how-to">
+				<div class="title">How to?</div>
+				<div class="text">
+					This application compiles Saito modules into *.saito files that can be installed directly
+					in a browser. Simply ZIP your module directory and drag-and-drop the file to this
+					application.
+				</div>
+				<div class="text">
+					More specific instructions on compiling applications files is available here on our wiki.
+					If you are new to Saito please see our
+					<a	target="_blank"
+						href="https://wiki.saito.io/tech/applications/building_apps"
+						class="how-to-link">
+						tutorials
+					</a>
+					for help building applications.
+				</div>
+				<div class="text">
+					If you run into problems after installation, you can uninstall the application or
+					<a target="_blank" class="how-to-link" href="/devtools/nuke">nuke</a> your browser to
+					remove any installed modules.
+				</div>
+				<div class="text">
+					Already have a saito compiled module and want to <span id="install" class="how-to-link">install</span> it?
+				</div>
+			</div>
+		</div>
+
+		<script id="saito" type="text/javascript" src="/saito/saito.js"></script>
+	</body>
+</html>

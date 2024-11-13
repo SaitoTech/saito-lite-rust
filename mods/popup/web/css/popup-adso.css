@@ -21,8 +21,9 @@
 	height: auto;
 	z-index: 10004;
 }
-span.adso:hover {
-	background-color: white;
+span.adso:hover , .lesson_sentence_source span:hover , .lesson_sentence_pinyin span:hover {
+	background-color: yellow;
+	cursor: pointer;
 }
 .row_1 {
 	font-size: 25px;

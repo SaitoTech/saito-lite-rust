@@ -32,7 +32,7 @@ class Pandemic extends GameTemplate {
 
 		this.hud.mode = 0;
 		this.hud.card_width = 120;
-		this.hud.enable_mode_change = 1;
+		/*this.hud.enable_mode_change = 1;*/
 
 		let temp_self = this;
 		this.menu_backup_callback = function () {
@@ -78,6 +78,23 @@ class Pandemic extends GameTemplate {
 	// initialize //
 	////////////////
 	initializeGame(game_id) {
+
+		if (!this.skin) {
+			switch (this.game.options.theme) {
+				case 'classic':
+					this.skin = new PandemicOriginalSkin(this.app, this);
+					break;
+				case 'retro':
+					this.skin = new PandemicRetroSkin(this.app, this);
+					break;
+				case 'modern':
+					this.skin = new PandemicNewSkin(this.app, this);
+					break;
+				default:
+					this.skin = new PandemicRetroSkin(this.app, this);
+			}
+		}
+
 		if (!this.game.state) {
 			this.game.state = this.returnState();
 			this.game.players_info = this.initializePlayers(
@@ -672,7 +689,7 @@ class Pandemic extends GameTemplate {
 			can_play_event_card = 1;
 		}
 
-		let html = `<div class="status-message">${statMsg}</div>
+		let html = `
        <div class="status-icon-menu">
        <div class="menu_icon tip" id="move"><img class="menu_icon_icon" src="/${this.name.toLowerCase()}/img/icons/MOVE.png" /><div class="menu-text">Move</div><div class="tiptext">Move to new city</div></div>
        <div class="menu_icon tip" id="treat" style="opacity:${treat_opacity}" ><img class="menu_icon_icon" src="/${this.name.toLowerCase()}/img/icons/TREAT.png" /><div class="menu-text">Treat</div><div class="tiptext">Treat disease in this city (remove cubes)</div></div>
@@ -682,7 +699,8 @@ class Pandemic extends GameTemplate {
        </div>`;
 
 		$('.menu_icon').off();
-		this.updateStatus(html);
+		this.updateStatus(`<div class="status-message">${statMsg}</div>`);
+		this.updateControls(html);
 		$('.menu_icon').on('click', function () {
 			let action = $(this).attr('id');
 			let flight1 = player.cards.length > 0 ? 1 : 0.4;
@@ -694,7 +712,7 @@ class Pandemic extends GameTemplate {
 					: 0.4;
 			switch (action) {
 				case 'move':
-					html = `<div class="status-message">${statMsg}</div>
+					html = `
             <div class="status-icon-menu">
             <div class="menu_icon tip" id="goback" ><i class="menu_icon_icon fas fa-arrow-alt-circle-left fa-fw fa-border "></i><div class="menu-text">Go back</div><div class="tiptext">return to previous menu</div></div>
             <div class="menu_icon tip" id="move" ><i class="menu_icon_icon fas fa-car-side fa-fw fa-border "></i><div class="menu-text">Drive/Ferry</div><div class="tiptext">ground transportation to an adjacent city</div></div>
@@ -704,7 +722,8 @@ class Pandemic extends GameTemplate {
             </div>`;
 
 					$('.menu_icon').off();
-					pandemic_self.updateStatus(html);
+					pandemic_self.updateStatus(`<div class="status-message">${statMsg}</div>`);
+					pandemic_self.updateControls(html);
 					$('.menu_icon').on('click', function () {
 						let action = $(this).attr('id');
 						if (action == 'goback') {
@@ -3089,7 +3108,7 @@ class Pandemic extends GameTemplate {
         <div class="epidemic-card">
           <img src="/${this.name.toLowerCase()}/img/${this.skin.epidemic.img}"/>
         </div>
-        <div class="button close_epidemic_overlay" id="close_epidemic_overlay">close</div>
+        <div class="saito-button-primary close_epidemic_overlay" id="close_epidemic_overlay">close</div>
       </div>
     `;
 

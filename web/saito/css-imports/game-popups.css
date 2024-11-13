@@ -54,7 +54,7 @@
   gap: 1rem;
 }
 
-.popup-confirm-menu div {
+.popup-confirm-menu .action, .popup-confirm-menu .popup-prompt {
   background-color: #efefef;
   box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);
   padding: 5px;
@@ -78,4 +78,21 @@
 .popup-confirm-menu .action:hover {
   background-color: lightgrey;
   font-weight: bold;
+}
+
+.popup-confirm-menu .saito-overlay-closebox{
+  display: flex;
+}
+
+@media only screen and (max-width: 600px) and (orientation: portrait) {
+  .popup-confirm-menu {
+    padding: 6px;
+    width: 16rem;
+    border-radius: 6px;
+  }  
+
+  .popup-confirm-menu .action {
+    padding: 1rem;
+  }
+
 }

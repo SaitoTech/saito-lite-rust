@@ -1,6 +1,5 @@
-module.exports = (app, mod, build_number, og_card) => {
-	return `
-
+module.exports = (app, mod, build_number, og_card, game) => {
+	let html = `
   
   <!DOCTYPE html>
   <html lang="en" data-theme="arcade">
@@ -51,17 +50,12 @@ module.exports = (app, mod, build_number, og_card) => {
     <script type="text/javascript" src="/saito/lib/jquery/jquery-3.2.1.min.js"></script>
     <script src="/saito/lib/pace/pace.min.js"></script>
     <link rel="stylesheet" href="/saito/lib/pace/pace-theme.min.css">
-    
+    <link rel="stylesheet" type="text/css" href="/saito/saito.css?v=${build_number}" />
+
     <title>Saito Arcade</title>
   
     <style type="text/css">
     /* css for fade-out bg effect while content is loading */
-    body {
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-    }
-
     body::before {
       content: "";
       opacity: 1;
@@ -80,12 +74,19 @@ module.exports = (app, mod, build_number, og_card) => {
   </style>
   </head>
   
-  <body>
-  
-  </body>
-  <script type="text/javascript" src="/saito/saito.js?build=${build_number}" >
+  <body></body>`;
+
+  if (game){
+    html += `
+    <script type="text/javascript">
+    var game = ${JSON.stringify(game)};
+    </script>
+    `;
+  }
+
+  html += `<script type="text/javascript" src="/saito/saito.js?build=${build_number}" >
 </script>
-  </html>
-  
-  `;
+  </html>`;
+
+  return html;
 };

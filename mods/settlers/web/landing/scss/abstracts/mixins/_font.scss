@@ -1,0 +1,95 @@
+@use "sass:string";
+
+// ------------------------ Mixin to declare Font-face
+@mixin font-face($font-name, $font-path, $font-types, $font-weight: false) {
+	// Declare a variable to store src string
+	$src: "";
+
+	// Iterate through each font-type and add the src to $src.
+	@each $type in $font-types {
+		@if $type ==otf {
+			$src: $src + "url('#{$font-path}.#{$type}') format('opentype'),";
+		} @else if $type ==woff {
+			$src: $src + "url('#{$font-path}.#{$type}') format('woff'),";
+		} @else if $type ==woff2 {
+			$src: $src + "url('#{$font-path}.#{$type}') format('woff2'),";
+		} @else if $type ==ttf {
+			$src: $src + "url('#{$font-path}.#{$type}') format('truetype'),";
+		} @else if $type ==svg {
+			$src: $src + "url('#{$font-path}.#{$type}') format('svg'),";
+		} @else if $type ==eot {
+			$src: $src +
+				"url('#{$font-path}.#{$type}') format('embedded-opentype'),";
+		}
+	}
+
+	// Remove comma(,) at the end of the src string
+	$src: string.slice($src, 0, -2);
+
+	@font-face {
+		font-family: "#{$font-name}";
+		src: #{$src};
+		font-display: swap;
+		font-style: normal;
+		@if $font-weight != false {
+			font-weight: $font-weight;
+		}
+	}
+}
+
+// -------------------------  Mixin for Typography
+
+@mixin font($font-map, $mobileFirst: false) {
+	// Loop Through the $font-properties Map
+	@each $selector, $font-breakpoints in $font-map {
+		#{$selector} {
+			// Loop Through the $font-breakpoints
+			@each $font-breakpoint, $properties in $font-breakpoints {
+				// If $font-breakpoint is null
+				@if $font-breakpoint == null {
+					@include font-prop($properties);
+				}
+				// If $font-breakpoint is not null
+				@else {
+					@include breakpoint($font-breakpoint, $mobileFirst) {
+						@include font-prop($properties);
+					}
+				}
+			}
+		}
+	}
+}
+
+@mixin font-prop($props) {
+	@each $property, $value in $props {
+		@if $property == size {
+			font-size: $value;
+		}
+		@if $property == height {
+			line-height: $value;
+		}
+		@if $property == weight {
+			font-weight: $value;
+		}
+		@if $property == family {
+			font-family: $value;
+		}
+		@if $property == color {
+			color: $value;
+		}
+		@if $property == spacing {
+			letter-spacing: $value;
+		}
+	}
+}
+
+@mixin typography($font-size: inherit, $line-height: inherit, $font-weight: inherit, $font-family: inherit) {
+	font-size: $font-size;
+	@if type-of($line-height) == number and type-of($line-height) != unit {
+		line-height: $line-height;
+	} @else {
+		line-height: ($line-height / $font-size);
+	}
+	font-weight: $font-weight;
+	font-family: $font-family;
+}

@@ -21,10 +21,9 @@
         return 1;
       }
 
+      this.startClockAndSetActivePlayer(this.roles.indexOf(player));
 
       if (i_played_the_card) {
-        //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
 
         // pick discarded card
         var twilight_self = this;

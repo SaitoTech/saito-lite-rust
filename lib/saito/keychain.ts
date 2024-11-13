@@ -73,6 +73,24 @@ class Keychain {
 		}
 
 
+		// automatically remove old event keys & outdated modes
+		let events = this.returnKeys({type: "scheduled_call"});	
+		for (let e of events){
+			this.removeKey(e.publicKey);
+		}	
+
+		events = this.returnKeys({type: "event"});
+		let now = Date.now();
+		for (let e of events){
+			let scheduledTime = new Date(e.startTime).getTime();
+			if (scheduledTime + 24*60*60*1000 < now){
+				console.log("Event Over:", e);
+				this.removeKey(e.publicKey);
+			}
+		}	
+
+		this.saveKeys();
+
 
 		//
 		// creates hash of important info so we know if values change
@@ -165,40 +183,37 @@ class Keychain {
 		// submit JSON parsed object after unencryption
 		for (let x = 0; x < this.keys.length; x++) {
 			// check for matching public key && see if it has an aes_secret
-			if (
-				this.keys[x].publicKey === publicKey &&
-				this.keys[x].aes_secret
-			) {
-				//console.log(encrypted_msg, "------>");
-				try {
-					const tmpmsg = this.app.crypto.aesDecrypt(
-						encrypted_msg,
-						this.keys[x].aes_secret
-					);
-					if (tmpmsg == null) {
-						console.log('Failed decryption with aes_secret');
-						return encrypted_msg;
-					}
+			if (this.keys[x].publicKey === publicKey && this.keys[x].aes_secret) {
+				const tmpmsg = this.app.crypto.aesDecrypt(
+					encrypted_msg,
+					this.keys[x].aes_secret
+				);
 
+				if (tmpmsg == null) {
+					console.warn('Failed decryption with aes_secret');
+					return null;
+				}
+
+				try {
 					const decrypted_msg = JSON.parse(tmpmsg);
 
 					// Succesful decryption and parsing returns here
 					return decrypted_msg;
-				
 				} catch (err) {
-					console.error('Failed to JSON.parse decrypted message',	err);
+					console.error('Failed to JSON.parse decrypted message', err);
 					this.app.connection.emit('encrypt-decryption-failed', publicKey);
-					return encrypted_msg;
+					return null;
 				}
 			}
 		}
 
 		if (this.app.BROWSER) {
-			console.warn('I don\'t share a decryption key with encrypter, cannot decrypt');
+			console.warn(
+				"I don't share a decryption key with encrypter, cannot decrypt"
+			);
 			this.app.connection.emit('encrypt-decryption-failed', publicKey);
 		}
-
-		return encrypted_msg;
+		return null;
 	}
 
 	hasPublicKey(publicKey = '') {
@@ -312,9 +327,11 @@ class Keychain {
 			return;
 		}
 		for (let x = this.keys.length - 1; x >= 0; x--) {
-			let match = true;
 			if (this.keys[x].publicKey == publicKey) {
 				this.keys.splice(x, 1);
+				delete this.publickey_keys_hmap[publicKey];
+				this.saveKeys();
+				return;
 			}
 		}
 	}
@@ -373,7 +390,7 @@ class Keychain {
 		return return_key;
 	}
 
-	returnKeys(data = null) {
+	returnKeys(data = null, force_local_keychain = true) {
 		const kx = [];
 
 		//
@@ -405,8 +422,48 @@ class Keychain {
 			}
 		}
 
+		if (!force_local_keychain){
+			//
+			//Fallback to cached registry
+			//
+			this.app.modules
+				.getRespondTos('saito-return-key')
+				.forEach((modResponse) => {
+					//
+					// Return keys converts the publickey->identifer object into
+					// an array of {publicKey, identifier} objects
+					//
+					for (let key of modResponse.returnKeys()) {
+						let can_add = true;
+
+						// Don't add myself
+						if (key.publicKey == this.publicKey) {
+							continue;
+						}
+
+						// Make sure not already added from my actual keychain
+						for (let added_keys of kx) {
+							if (added_keys.publicKey == key.publicKey) {
+								can_add = false;
+								break;
+							}
+						}
+
+						if (can_add) {
+							kx.push(key);
+						}
+					}
+				}
+			);
+
+		}
+
 		return kx;
 	}
+
+
+
+
 
 	returnGroups() {
 		return this.groups;
@@ -449,7 +506,9 @@ class Keychain {
 		//
 		const options = {
 			//foreground: [247, 31, 61, 255],           // saito red
-			//background: [255, 255, 255, 255],
+			//background: [64, 64, 64, 0],
+			saturation: 0.6,
+            brightness: 0.4,
 			margin: 0.0, // 0% margin
 			size: 420, // 420px square
 			format: img_format // use SVG instead of PNG
@@ -465,8 +524,8 @@ class Keychain {
 		const hue =
 			parseInt(this.app.crypto.hash(publicKey).substr(-7), 16) /
 			0xfffffff;
-		const saturation = 0.7;
-		const brightness = 0.5;
+		const saturation = 0.6;
+		const brightness = 0.4;
 		const values = this.hsl2rgb(hue, saturation, brightness).map(
 			Math.round
 		);
@@ -477,8 +536,8 @@ class Keychain {
 		const hue =
 			parseInt(this.app.crypto.hash(publicKey).substr(-7), 16) /
 			0xfffffff;
-		const saturation = 0.7;
-		const brightness = 0.5;
+		const saturation = 0.6;
+		const brightness = 0.4;
 		const values = this.hsl2rgb(hue, saturation, brightness).map(
 			Math.round
 		);
@@ -506,11 +565,10 @@ class Keychain {
 
 	returnPublicKeyByIdentifier(identifier: string) {
 		let key = this.returnKey({ identifier: identifier });
-		if (key) {
-			if (key.publicKey) {
-				return key.publicKey;
-			}
+		if (key?.publicKey) {
+			return key.publicKey;
 		}
+		console.log(identifier + " not found!");
 		return null;
 	}
 
@@ -529,14 +587,15 @@ class Keychain {
 		}
 	}
 
-	returnUsername(publicKey: string, max = 12): string {
+	returnUsername(publicKey: string = "", max = 12): string {
 		const name = this.returnIdentifierByPublicKey(publicKey, true);
 		if (name != publicKey && name != '') {
 			return name;
 		}
-		if (name == publicKey) {
+		if (name === publicKey) {
 			if (name.length > max) {
-				return name.substring(0, max) + '...';
+				//return name.substring(0, max) + '...';
+				return 'Anon-' + name.substring(0, 6);
 			}
 		}
 		return publicKey;

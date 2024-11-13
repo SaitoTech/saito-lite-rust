@@ -53,7 +53,7 @@ class NewWorldOverlay {
 		      active_colonies++;
 		      his_self.app.browser.addElementToSelector(this.returnRowHTML({ prize : c.prize , img : c.img , type : "colony", name : c.name , faction : c.faction , total_hits : c.modified_roll , bonus_card : bonus_card }, stage), ".new-world-overlay .content .colonies");
 		    } else {
-		      if (c.destroyed == 1) {
+		      if (c.destroyed == 1 && c.round_destroyed == his_self.game.state.round) {
 		        active_colonies++;
 			let x = c.colony;
 		        if (his_self.game.state.newworld[x].claimed != 1) {

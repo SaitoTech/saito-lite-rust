@@ -147,6 +147,12 @@
   color: #333;
 }
 
+.withdraw-identicon-container {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
 #saito-withdraw-overlay {
   min-width: 32vw;
   padding: 2rem;
@@ -656,6 +662,10 @@
 
 #withdraw-step-one .input-elem {
   color: var(--font-color-primary);
+}
+
+#withdraw-step-one .input-elem.disabled {
+  cursor: not-allowed;
 }
 
 .saito-history-msg {

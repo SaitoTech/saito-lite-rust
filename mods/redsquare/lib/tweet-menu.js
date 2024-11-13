@@ -2,6 +2,7 @@ const TweetMenuTemplate = require('./tweet-menu.template');
 const SaitoOverlay = require('./../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 class TweetMenu {
+
 	constructor(app, mod) {
 		this.app = app;
 		this.mod = mod;
@@ -18,15 +19,19 @@ class TweetMenu {
 	}
 
 	render() {
+
 		this.overlay.remove();
 		this.overlay.show(TweetMenuTemplate(this), () => {
 			this.close();
+			if (document.querySelector(".activated-dot-menu")){
+				document.querySelector(".activated-dot-menu").classList.remove("activated-dot-menu");
+			}
 		});
 
 		let reference = this.container.getBoundingClientRect();
 
-		let new_top = Math.max(0, Math.round(reference.top) - 260);
-		let new_left = Math.max(0, Math.round(reference.left) - 280);
+		let new_top = Math.max(0, Math.round(reference.top) - 190);
+		let new_left = Math.max(0, Math.round(reference.right) - 280);
 
 		this.overlay.move(new_top, new_left);
 		this.overlay.setBackgroundColor('#0003');
@@ -50,6 +55,9 @@ class TweetMenu {
 							break;
 						case 'report_tweet':
 							await this.reportTweet();
+							break;
+						case 'hide_tweet':
+							this.hideTweet();
 					}
 
 					this.overlay.close();
@@ -64,7 +72,7 @@ class TweetMenu {
 	}
 
 	blockContact() {
-		this.app.connection.emit('saito-blacklist', this.tweeter);
+		this.app.connection.emit('saito-blacklist', ({ publicKey : this.tweeter, duration : -1 })); // -1 is forever
 		siteMessage('User blocked... reloading feed');
 		setTimeout(() => {
 			setTimeout(() => {
@@ -86,19 +94,29 @@ class TweetMenu {
 			);
 
 			siteMessage('Reporting tweet to moderators...', 3000);
-		} else {
-			siteMessage('Insufficient SAITO to Moderate...', 3000);
-		}
+		} 
 
 		this.hideTweet();
 	}
 
 	hideTweet() {
+		//remove from archive
 		this.app.storage.deleteTransaction(this.tweet.tx, null, 'localhost');
+		//remove from dom
 		this.tweet.remove();
 
+		//Add to blacklist
 		this.mod.hidden_tweets.push(this.tweet.tx.signature);
 		this.mod.saveOptions();
+
+		//remove from tweet list!
+	    for (let i = 0; i < this.mod.tweets.length; i++) {
+	        if (this.mod.tweets[i].tx.signature === this.tweet.tx.signature) {
+    	      this.mod.tweets.splice(i, 1);
+        	  return;
+        	}
+      	}
+
 	}
 }
 

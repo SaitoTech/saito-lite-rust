@@ -2,6 +2,11 @@ body {
 	background-color: black !important;
 }
 
+.saito-overlay:has(> .nwasm-upload-overlay) {
+  box-shadow: none;
+  background: transparent;
+}
+
 #maindiv.container.text-center {
 	max-width: unset;
 	min-width: unset;
@@ -82,16 +87,9 @@ body {
 	font-size: 1.5rem;
 }
 
-.nwasm-libraries .nwasm-libraries-header.saito-table-row {
-	grid-template-columns: 1fr 1fr 1fr;
-	font-size: 2rem;
-	color: whitesmoke;
-	min-width: 100%;
-	font-weight: bold;
-}
-
 .nwasm-libraries .saito-table-row {
-	grid-template-columns: 1fr 1fr 1fr;
+	display: flex;
+	column-gap: 2rem;
 	align-items: center;
 	font-size: 4rem;
 	color: whitesmoke;
@@ -99,6 +97,17 @@ body {
 	min-width: 100%;
 	padding: 0.75rem;
 	padding-left: 1.5rem;
+}
+
+.nwasm-lib-owner {
+  max-width: 6ch;
+  overflow-x: hidden;
+  font-family: courier;
+}
+.nwasm-lib-sig {
+  max-width: 6ch;
+  overflow-x: hidden;
+  font-family: courier;
 }
 
 .nwasm-libraries-header.saito-table-row:hover {

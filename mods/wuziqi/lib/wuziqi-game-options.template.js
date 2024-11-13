@@ -14,7 +14,16 @@ module.exports = (app, mod) => {
                         <option value="23">23</>
                         <option value="25">25</>
                     </select>
-                </div>`;
+                </div>
+            <label for="clock">Round time limit:</label>
+              <select name="clock">
+                <option value="0" default>no clock</option>
+                <option value="1">1 minute</option>
+                <option value="3">3 minutes</option>
+                <option value="5">5 minutes</option>
+                <option value="10">10 minutes</option>
+              </select>
+            `;
 
 	return html;
 };

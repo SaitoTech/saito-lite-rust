@@ -11,25 +11,29 @@ const FactionBar = require('./lib/ui/factionbar');
 const ReligiousOverlay = require('./lib/ui/overlays/religious');
 const CouncilOfTrentOverlay = require('./lib/ui/overlays/council-of-trent');
 const ReformationOverlay = require('./lib/ui/overlays/reformation');
+// diplomacy overlay is new
+const DiplomacyOverlay = require('./lib/ui/overlays/diplomacy');
 const DiplomacyConfirmOverlay = require('./lib/ui/overlays/diplomacy-confirm');
 const DiplomacyProposeOverlay = require('./lib/ui/overlays/diplomacy-propose');
 const AvailableUnitsOverlay = require('./lib/ui/overlays/available-units');
 const FortificationOverlay = require('./lib/ui/overlays/fortification');
 const SpringDeploymentOverlay = require('./lib/ui/overlays/spring-deployment');
 const BuildOverlay = require('./lib/ui/overlays/build');
+const NavalMovementOverlay = require('./lib/ui/overlays/naval-movement');
 const MovementOverlay = require('./lib/ui/overlays/movement');
 const DietOfWormsOverlay = require('./lib/ui/overlays/diet-of-worms');
 const FieldBattleOverlay = require('./lib/ui/overlays/field-battle');
 const NavalBattleOverlay = require('./lib/ui/overlays/naval-battle');
 const SchmalkaldicOverlay = require('./lib/ui/overlays/schmalkaldic');
 const AssaultOverlay = require('./lib/ui/overlays/siege');
-const WarOverlay = require('./lib/ui/overlays/war');
 const ThesesOverlay = require('./lib/ui/overlays/theses');
 const DebatersOverlay = require('./lib/ui/overlays/debaters');
 const ExplorersOverlay = require('./lib/ui/overlays/explorers');
 const ConquistadorsOverlay = require('./lib/ui/overlays/conquistadors');
 const UnitsOverlay = require('./lib/ui/overlays/units');
+const WarOverlay = require('./lib/ui/overlays/war');
 const WelcomeOverlay = require('./lib/ui/overlays/welcome');
+const HudPopup = require('./lib/ui/hud-popup');
 const WinterOverlay = require('./lib/ui/overlays/winter');
 const DeckOverlay = require('./lib/ui/overlays/deck');
 const MenuOverlay = require('./lib/ui/overlays/menu');
@@ -45,6 +49,12 @@ const HISingularOption = require('./lib/core/options.template');
 const htmlTemplate = require('./lib/core/game-html.template');
 
 const JSON = require('json-bigint');
+
+  //
+  // used in counter_or_acknowledge
+  //
+  var counter_or_acknowledge_inactivity_timeout = null;
+  var true_if_counter_or_acknowledge_cleared = false;
 
 
 
@@ -77,8 +87,9 @@ class HereIStand extends GameTemplate {
     this.faction_overlay = new FactionOverlay(this.app, this);  // faction sheet
     this.factionbar = new FactionBar(this.app, this); // shows you which factions you are in multiplayer
     this.diet_of_worms_overlay = new DietOfWormsOverlay(this.app, this);  // diet of worms
+    this.diplomacy_overlay = new DiplomacyOverlay(this.app, this);
     this.diplomacy_confirm_overlay = new DiplomacyConfirmOverlay(this.app, this);
-    this.diplomacy_propose_overlay = new DiplomacyProposeOverlay(this.app, this);
+    //this.diplomacy_propose_overlay = new DiplomacyProposeOverlay(this.app, this);
     this.council_of_trent_overlay = new CouncilOfTrentOverlay(this.app, this);  // council of trent
     this.chateaux_overlay = new ChateauxOverlay(this.app, this);  // build some fucking chateaux
     this.marriage_overlay = new MarriageOverlay(this.app, this);  // marry, divorce, repeat
@@ -92,8 +103,8 @@ class HereIStand extends GameTemplate {
     this.explorers_overlay = new ExplorersOverlay(this.app, this);
     this.conquistadors_overlay = new ConquistadorsOverlay(this.app, this);
     this.schmalkaldic_overlay = new SchmalkaldicOverlay(this.app, this);  // schmalkaldic league
+    this.hud_popup = new HudPopup(this.app, this);  // hud popup
     this.assault_overlay = new AssaultOverlay(this.app, this);  // siege
-    this.war_overlay = new WarOverlay(this.app, this);  // naval battles
     this.naval_battle_overlay = new NavalBattleOverlay(this.app, this);  // naval battles
     this.field_battle_overlay = new FieldBattleOverlay(this.app, this);  // field battles
     this.spring_deployment_overlay = new SpringDeploymentOverlay(this.app, this);  // spring deployment
@@ -102,10 +113,12 @@ class HereIStand extends GameTemplate {
     this.movement_overlay = new MovementOverlay(this.app, this);  // unit movement
     this.fortification_overlay = new FortificationOverlay(this.app, this);  // unit movement
     this.welcome_overlay = new WelcomeOverlay(this.app, this);  // hello world
+    this.naval_movement_overlay = new NavalMovementOverlay(this.app, this);  // overlay to move ships
     this.deck_overlay = new DeckOverlay(this.app, this);  // overlay to show cards
     this.menu_overlay = new MenuOverlay(this.app, this);  // players doing stuff
     this.winter_overlay = new WinterOverlay(this.app, this);
     this.units_overlay = new UnitsOverlay(this.app, this);
+    this.war_overlay = new WarOverlay(this.app, this);
 
     //
     // triangular help button
@@ -158,26 +171,23 @@ class HereIStand extends GameTemplate {
   ////////////////
   initializeGame(game_id) {
 
-
-    //this.realEndTurn = this.endTurn;
-    //this.endTurn = () => {
-    //  console.log("TESTING REAL END TURN");
-    //  this.realEndTurn();
-    //}
-
     //
     // check user preferences to update interface, if text
     //
     if (this.app?.options?.gameprefs) {
-      if (this.app.options.gameprefs.his_expert_mode == 1) {
-        this.confirm_moves = 0;
-      } else {
-        this.confirm_moves = 1;
+      if (this.app.options.gameprefs.his_expert_mode) {
+        if (this.app.options.gameprefs.his_expert_mode == 1) {
+          this.confirm_moves = 0;
+        } else {
+          this.confirm_moves = 1;
+        }
       }
-      if (this.app.options.gameprefs.his_faster_play == 1) {
-        this.faster_play = 1;
-      } else {
-        this.faster_play = 0;
+      if (this.app.options.gameprefs.his_faster_play) {
+	if (this.app.options.gameprefs.his_faster_play !== 1) {
+          this.faster_play = 0;
+        } else {
+          this.faster_play = 1;
+        }
       }
     }
 

@@ -1,0 +1,121 @@
+/* .record-icon {
+    transition: color 0.3s ease;
+}
+
+.recording {
+    color: var(--saito-white);
+    animation: pulsate 1s ease-in-out infinite;
+}
+
+.record-container {
+    background-color: red;
+} */
+
+.screenrecord-wizard {
+	width: min(550px, 98vw);
+	padding: 2rem 3rem;
+	border-radius: 0.5rem;
+	border: 1px solid var(--saito-border-color);
+	background-color: var(--color-base);
+	color: var(--color-contrast);
+}
+
+/* .screenrecord-wizard h1{
+	font-size: 4rem;
+} */
+
+.screenrecord-wizard-title {
+	text-align: center;
+	margin-bottom: 2rem;
+}
+
+.screenrecord-wizard .button {
+	margin: 1rem 0;
+}
+
+.screenrecord-wizard .record-mode {
+	display: flex;
+	justify-content: space-evenly;
+	align-items: center;
+	font-size: 6rem;
+	margin-bottom: 2rem;
+}
+
+.screenrecord-wizard .record-mode i {
+	padding: 2rem;
+	border-radius: 2rem;
+	/* border: 1px solid var(--saito-border-color); */
+	text-align: center;
+	min-width: 12rem;
+}
+
+.record-mode-option {
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
+	padding: 1rem;
+	border-radius: 2rem;
+	border: 1px solid var(--saito-border-color);
+	margin: 1rem;
+}
+
+.screenrecord-wizard .record-mode .selected {
+	color: var(--saito-font-color);
+	border-width: 3px;
+	text-shadow: 1px 1px 5px var(--saito-black);
+	box-shadow: 1px 1px 5px 1px var(--saito-black);
+}
+
+.record-mode label {
+	font-size: 3rem;
+}
+
+.pulsate {
+	animation: pulsate 1s infinite;
+	/* color: red !important; */
+}
+
+@keyframes pulsate {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.2);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+
+/* floating Control panel  */
+
+.screenrecord-controls {
+	position: absolute;
+	top: 2rem;
+	left: 2rem;
+	width: 100%;
+	height: 100%;
+	border-radius: var(--saito-border-radius);
+	background-color: #000D;
+	width: unset;
+	height: unset;
+	display: flex;
+	z-index: 1000;
+	cursor: grab;
+}
+
+.screenrecord-controls .control-panel {
+	padding: 2px;
+	gap: 2rem;
+	align-items: center;
+}
+
+.screenrecord-controls .timer {
+	text-align: right;
+}
+
+.hidden-control {
+	display: none !important;
+}

@@ -6,9 +6,9 @@
 
       this.game.state.events.junta = 1;
 
+      this.startClockAndSetActivePlayer(this.roles.indexOf(player));
+      
       if (i_played_the_card) {
-        //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
         
         let className = (player == "us")? "westerneurope" : "easterneurope";
         var twilight_self = this;

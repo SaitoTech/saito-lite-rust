@@ -16,23 +16,31 @@ class Chessgame extends GameTemplate {
 		super(app);
 
 		this.name = 'Chess';
+		this.slug = 'chess';
 		this.board = null;
-		this.engine = null;
+		this.engine = new chess.Chess();
 		this_chess = this;
 		this.icon = 'fa-sharp fa-solid fa-chess';
 
 		this.minPlayers = 2;
 		this.maxPlayers = 2;
 
-		this.title = "Saito Chess";
-		this.styles = ["/chess/chessboard.css"];
 
-		this.description =
-			'"Minutes to learn, a lifetime to master" <br><br> Chess is the king of games and original application on the Saito Network. ';
+		this.title = "Saito Chess";
+		
+		this.styles.push("/chess/chessboard.css");
+
+		this.description = '"Minutes to learn, a lifetime to master" <br><br> Chess is the king of games and original application on the Saito Network. ';
 		this.categories = 'Games Boardgame Classic';
 
 		this.confirm_moves = 1;
 
+		this.can_play_async = 1;
+
+		this.insert_rankings = true;
+
+		this.clock.container = "#clock_";
+		
 		this.roles = ['observer', 'white', 'black'];
 		this.app = app;
 	}
@@ -47,7 +55,7 @@ class Chessgame extends GameTemplate {
 
 		await this.injectGameHTML(htmlTemplate());
 
-		super.render(app);
+		await super.render(app);
 
 		//
 		// ADD MENU
@@ -65,9 +73,6 @@ class Chessgame extends GameTemplate {
 							'Offer to end the game in a draw?'
 						);
 						if (c) {
-							game_mod.updateStatusMessage(
-								'Draw offer sent; ' + game_mod.status
-							);
 							game_mod.game.draw_offered = -1; //Offer already sent
 							var data = { draw: 'offer' };
 							game_mod.endTurn(data);
@@ -87,9 +92,6 @@ class Chessgame extends GameTemplate {
 							'Accept offer to end the game in a draw?'
 						);
 						if (c) {
-							game_mod.updateStatusMessage(
-								'Draw offer accepted!'
-							);
 							game_mod.game.draw_offered = -1; //Offer already sent
 							var data = { draw: 'accept' };
 							game_mod.endTurn(data);
@@ -106,7 +108,9 @@ class Chessgame extends GameTemplate {
 				callback: async function (app, game_mod) {
 					let c = await sconfirm('Do you really want to resign?');
 					if (c) {
-						await game_mod.sendStopGameTransaction('resignation');
+						game_mod.game.turn = [`resignation\t${game_mod.game.player}`];
+						game_mod.sendGameMoveTransaction("game", {});
+						//await game_mod.sendStopGameTransaction('resignation');
 						return;
 					}
 				}
@@ -131,42 +135,64 @@ class Chessgame extends GameTemplate {
 		this.playerbox.render();
 
 		for (let i = 1; i <= 2; i++) {
-			this.playerbox.updateUserline(this.roles[i], i);
+			
 			this.playerbox.updateIcons(
 				`<div class="tool-item item-detail turn-shape ${this.roles[
 					i
 				].toLowerCase()}"></div>`,
 				i
 			);
+
+			let newhtml = "";
+			if (this.game.player == i){
+				newhtml += `<div></div>`;
+			}else{
+				newhtml += `<div class="last_move" id="last_${i}"></div>`;;
+			}
+
+			if (this.useClock){
+				newhtml += `<div class="player_clock" id="clock_${i}"></div>`;
+			}
+			newhtml += `<div class="trophies" id="trophies_${i}"></div>`;
+			if (this.game.player == i){
+				newhtml += `<div class="status" id="status"></div>`;
+			}
+			this.playerbox.updateBody(newhtml, i);
+
 		}
 
 		if (this.game.player == 1) {
 			$('.game-playerbox-manager').addClass('reverse');
 		}
 
+		if (this.useClock == 1) {
+			this.clock.render();
+			for (let i = 0; i < this.game.clock.length; i++){
+				this.clock.displayTime(this.game.clock[i].limit - this.game.clock[i].spent, i+1);
+			}
+		}
+
+		this.playerbox.setActive(this.game.target);	
+
 		window.onresize = () => this.board.resize();
 	}
 
 	async initializeGame(game_id) {
-		console.log('######################################################');
-		console.log('######################################################');
 		console.log('######################         #######################');
-		console.log('######################  CHESS  #######################');
+		console.log('##### INITIALIZE #####  CHESS  #######################');
 		console.log('######################         #######################');
-		console.log('######################################################');
-		console.log('######################################################');
-		console.log(game_id);
 
 		//
 		// There is no initializing in Chess -- finish initializing
 		//
 		if (this.game.initializing == 1) {
+			this.engine.reset();
 			this.game.queue.push('READY');
 			//Check colors
 			this.switchColors();
 		}
 
-		this.engine = new chess.Chess();
+		console.log(this.game?.position);
 
 		if (this.game.position != undefined) {
 			this.engine.load(this.game.position);
@@ -174,7 +200,14 @@ class Chessgame extends GameTemplate {
 			this.game.position = this.engine.fen();
 		}
 
-		if (!this.browser_active) {
+		if (!this.game.state){
+			this.game.state = { last: "" };
+		}
+
+		console.log(this.game.position, this.game.state);
+
+		if (!this.gameBrowserActive()) {
+			console.log("nope out");
 			return;
 		}
 
@@ -182,29 +215,33 @@ class Chessgame extends GameTemplate {
 			this.confirm_moves = 0;
 		}
 
-		this.board = new chessboard('board', {
-			pieceTheme: '/chess/img/pieces/{piece}.png'
-		});
+		if (!this.board){
+			this.board = new chessboard('board', {
+				pieceTheme: '/chess/img/pieces/{piece}.png'
+			});
+			
+		}
 
 		if (this.game.over) {
-			this.lockBoard(this.engine.fen());
+			this.lockBoard(this.game.position);
 		} else {
-			this.setBoard(this.engine.fen());
+			this.setBoard(this.game.position);
 		}
 
 		//
 		//game.target is initialized to 1, which is white (switched above if "player 1" wanted to be black)
 		//
+		console.log("Target/Player", this.game.target, this.game.player);
 		if (this.game.target == this.game.player) {
-			this.playerTurn();
+			this.setPlayerActive();
 		}
+		this.updatePlayers();
 
 		// If we have a fast-ish timed game turn off move confirmations initially
 		if (this.useClock && parseInt(this.game.options.clock) < 15) {
 			this.confirm_moves = 0;
 		}
 
-		this.updateStatusMessage();
 		this.game.draw_offered = this.game.draw_offered || 0;
 		//this.attachGameEvents();
 	}
@@ -212,21 +249,49 @@ class Chessgame extends GameTemplate {
 	////////////////
 	// handleGame //
 	////////////////
-	async handleGameLoop(msg = {}) {
-		msg = {};
+	async handleGameLoop() {
+
+		console.log("######## HANDLE GAME LOOP CHESS ###########");
+		console.log('QUEUE IN CHESS: ' + JSON.stringify(this.game.queue));
+
+		let msg = {};
 		if (this.game.queue.length > 0) {
-			msg.extra = JSON.parse(
-				this.app.crypto.base64ToString(
-					this.game.queue[this.game.queue.length - 1]
-				)
-			);
+			let mv = this.game.queue.pop();
+
+			if (mv == "checkmate"){
+				var winnerColor = this.engine.turn() === 'b' ? 'white' : 'black';
+				let winner = this.roles.indexOf(winnerColor);
+				this.sendGameOverTransaction(this.game.players[winner-1], "checkmate");
+				return 0;
+			}
+
+			if (mv.includes("resignation")){
+				let cmd = mv.split("\t");
+				let loser = cmd.pop();
+				let winner = 2-loser;
+				this.sendGameOverTransaction(this.game.players[winner], "resignation");
+				return 0;
+			}
+
+			msg.extra = JSON.parse(this.app.crypto.base64ToString(mv));
 		} else {
 			msg.extra = {};
+			this.startClock();
+			return;
 		}
-		this.game.queue.splice(this.game.queue.length - 1, 1);
+		
 
-		console.log('QUEUE IN CHESS: ' + JSON.stringify(this.game.queue));
-		console.log(JSON.parse(JSON.stringify(msg.extra)));
+
+		if (this.game?.position) {
+			console.log(this.game.position);
+			this.engine.load(this.game.position);
+
+			if (this.engine.in_check()){
+				this.playerbox.setInactive();
+				this.playerbox.addClass("in_check", this.game.target);
+			}
+		}
+
 
 		if (msg.extra == undefined) {
 			console.log('NO MESSAGE DEFINED!');
@@ -254,9 +319,9 @@ class Chessgame extends GameTemplate {
 				//(data.draw == "offer")
 				this.game.draw_offered = msg.extra.target; //I am receving offer
 				if (this.game.player === msg.extra.target) {
-					this.updateStatusMessage(
+					/*this.updateStatusMessage(
 						'Opponent offers a draw; ' + this.game.status
-					);
+					);*/
 				}
 				this.initialize_game_run = 0;
 				this.render(this.app);
@@ -277,11 +342,11 @@ class Chessgame extends GameTemplate {
 
 		this.game.last_position = this.game.position;
 		this.game.position = data.position;
-
 		this.updateLog(data.move);
+		this.game.target = msg.extra.target;
 
-		this.updateBoard(this.game.position);
-		this.updateOpponent(msg.extra.target, data.move);
+		this.updateBoard(data.position);
+		this.updatePlayers(msg.extra.target, data.move.substring(data.move.indexOf(':') + 2));
 
 		//Check for draw according to game engine
 		if (this.engine.in_draw() === true) {
@@ -289,18 +354,29 @@ class Chessgame extends GameTemplate {
 			return 0;
 		}
 
-		this.game.target = msg.extra.target;
-
-		this.updateStatusMessage();
-
+		if (this.engine.in_check()){
+			this.playerbox.setInactive();
+			this.playerbox.addClass("in_check", this.game.target);
+		}else{
+			this.playerbox.setActive(this.game.target);	
+			$(".in_check").removeClass("in_check");
+		}
+		
 		if (msg.extra.target == this.game.player) {
+			this.setPlayerActive();
+		}else{
 			//I announce that I am in checkmate to end the game
 			if (this.engine.in_checkmate() === true) {
-				this.sendStopGameTransaction('checkmate');
+				this.game.turn = ["checkmate"];
+
+				this.sendGameMoveTransaction("game", {});
+
+				//this.sendStopGameTransaction('checkmate');
 				return 0;
+			}else{
+				this.startClock();
 			}
 
-			this.playerTurn();
 		}
 
 		this.saveGame(this.game.id);
@@ -349,6 +425,7 @@ class Chessgame extends GameTemplate {
 		this.lockBoard(this.game.position);
 
 		if (this.game.over) {
+			this.playerbox.setInactive();
 			let cont = document.getElementById('commands-cont');
 			if (cont) {
 				cont.style.display = 'none';
@@ -370,70 +447,25 @@ class Chessgame extends GameTemplate {
 		this.sendGameMoveTransaction('game', extra);
 	}
 
-	updateStatusMessage(str = '') {
 
-		if (!str){
-			var moveColor = this.engine.turn() === 'b' ? 'black' : 'white';
+	updatePlayers(target = this.game.target, move = this.game.state.last) {
+		if (this.game.player == 0 || !this.gameBrowserActive()) {
+			return;
+		}
 
-			// check?
-			if (this.engine.in_check() === true) {
-				str = moveColor + ' is in check';
-			} else {
-				if (this.roles[this.game.player] == moveColor) {
-					str = 'your move';
-				} else {
-					str = 'waiting for ' + moveColor;
-				}
+		for (let i = 1; i < 3; i++){
+			let captured = this.returnCapturedHTML(this.returnCaptured(this.engine.fen()), i);
+			if (document.querySelector(`#trophies_${i}`)){
+				document.querySelector(`#trophies_${i}`).innerHTML = captured;
 			}
-
-			this.game.status = str;
-			str = `<div class="status">${str}</div>`;
+		}
 		
-			console.log(this.game.status);
-		}
-
-		if (!this.browser_active) {
-			return;
-		}
-
-		if (this.game.player > 0) {
-			let captHTML = this.returnCapturedHTML(
-				this.returnCaptured(this.engine.fen()),
-				this.game.player
-			);
-
-			this.playerbox.updateBody(captHTML + str, this.game.player);
-		} else {
-
-			for (let i = 1; i < 3; i++) {
-				let captHTML = this.returnCapturedHTML(
-					this.returnCaptured(this.engine.fen()),
-					i
-				);
-				this.playerbox.updateBody(captHTML, i);
-				this.updateStatus(status);
+		this.game.state.last = move;
+		if (target == this.game.player) {
+			if (document.querySelector(".last_move")){
+				document.querySelector(".last_move").innerHTML = this.game.state.last;
 			}
 		}
-
-	}
-
-	updateOpponent(target, move) {
-		if (this.game.player == 0 || !this.browser_active) {
-			return;
-		}
-
-		let status = this.returnCapturedHTML(
-			this.returnCaptured(this.engine.fen()),
-			3 - this.game.player
-		);
-
-		if (target == this.game.player) {
-			status += `<div class="last_move">${move.substring(
-				move.indexOf(':') + 2
-			)}</div>`;
-		}
-
-		this.playerbox.updateBody(status, 3 - this.game.player);
 
 		if (document.querySelector('.last_move')) {
 			document.querySelector('.last_move').onclick = () => {
@@ -448,9 +480,9 @@ class Chessgame extends GameTemplate {
 	updateBoard(position) {
 		this.engine.load(position);
 
-		if (!this.browser_active) { return; }
-		console.log('MOVING OPPONENT\'s PIECE');
-		this.board.position(position, true);
+		if (this.gameBrowserActive()) { 
+			this.board.position(position, true);
+		}
 	}
 
 	setBoard(position) {
@@ -477,7 +509,7 @@ class Chessgame extends GameTemplate {
 			moveSpeed: 400
 		};
 
-		if (this.browser_active == 1) {
+		if (this.gameBrowserActive()) {
 			this.board = new chessboard('board', cfg);
 
 			if (this.game.player == 2) {
@@ -576,17 +608,14 @@ class Chessgame extends GameTemplate {
 		});
 
 		// legal move - make it
-		this_chess.game.move += `${this_chess.pieces(move.piece)} - ${
-			move.san
-		}`;
+		this_chess.game.move += `${this_chess.pieces(move.piece)} - ${move.san
+			}`;
 
 		var data = {};
 		data.position = this.engine.fen();
 		data.move = this.game.move;
 		this.endTurn(data);
-		this_chess.updateStatusMessage(
-			'Pawn promoted to ' + this_chess.pieces(piece) + '.'
-		);
+		this.updateLog('Pawn promoted to ' + this_chess.pieces(piece) + '.');
 	}
 
 	checkPromotion(source, target, color) {
@@ -698,7 +727,6 @@ class Chessgame extends GameTemplate {
 			return;
 		}
 
-		console.log(oldPos, newPos);
 	}
 
 	confirmPlacement(callback) {
@@ -768,10 +796,10 @@ class Chessgame extends GameTemplate {
 
 	colours(x) {
 		switch (x) {
-		case 'w':
-			return 'white';
-		case 'b':
-			return 'black';
+			case 'w':
+				return 'white';
+			case 'b':
+				return 'black';
 		}
 
 		return;
@@ -779,18 +807,18 @@ class Chessgame extends GameTemplate {
 
 	pieces(x) {
 		switch (x) {
-		case 'p':
-			return 'Pawn';
-		case 'r':
-			return 'Rook';
-		case 'n':
-			return 'Knight';
-		case 'b':
-			return 'Bishop';
-		case 'q':
-			return 'Queen';
-		case 'k':
-			return 'King';
+			case 'p':
+				return 'Pawn';
+			case 'r':
+				return 'Rook';
+			case 'n':
+				return 'Knight';
+			case 'b':
+				return 'Bishop';
+			case 'q':
+				return 'Queen';
+			case 'k':
+				return 'King';
 		}
 
 		return;
@@ -847,8 +875,6 @@ class Chessgame extends GameTemplate {
 	returnCapturedHTML(acapt, player) {
 		let captHTML = '';
 
-		console.log('CHESS:', acapt, player);
-
 		if (player == 2) {
 			for (var i = 0; i < acapt[0].length; i++) {
 				captHTML += this.piecehtml(acapt[0][i], 'w');
@@ -859,13 +885,7 @@ class Chessgame extends GameTemplate {
 			}
 		}
 
-		console.log(captHTML);
-
-		if (captHTML) {
-			return `<div class="trophies">${captHTML}</div>`;
-		} else {
-			return '';
-		}
+		return captHTML;
 	}
 
 	piecehtml(p, c) {
@@ -894,6 +914,7 @@ class Chessgame extends GameTemplate {
 		}
 		return ngoa;
 	}
+
 }
 
 module.exports = Chessgame;

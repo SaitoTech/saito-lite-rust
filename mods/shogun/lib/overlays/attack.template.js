@@ -1,4 +1,4 @@
-module.exports = AttackOverlayTemplate = (title) => {
+module.exports  = (title) => {
 	return `
     <div class="attack-overlay">
       <div class="h2">Attack! -- ${this.deck[card].name}</div>

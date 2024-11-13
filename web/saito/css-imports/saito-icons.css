@@ -1,9 +1,15 @@
 
 .gif-icon {
-  background-image: url('/saito/img/GIF.svg');
+  /*background-image: url('/saito/img/GIF.svg');*/
   height: 26px;
   width: 26px;
+  fill: var(--font-color-post-icons);
 }
+
+.gif-icon:hover {
+  fill: var(--font-color-hover-post-icons);
+}
+
 
 .resize-icon {
   position: absolute;

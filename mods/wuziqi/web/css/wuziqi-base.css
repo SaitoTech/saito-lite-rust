@@ -1,4 +1,4 @@
-.main {
+.main, .scrollable-page {
 	position: absolute;
 	height: 100%;
 	width: 100%;
@@ -44,12 +44,15 @@
 
 .board {
 	display: grid;
-	margin: auto auto;
 	background-image: url('/wuziqi/img/wood-new.jpg');
 	background-size: 102%;
-	padding: min(2.5rem, 2vw);
+	padding: min(2rem, 2vw);
 	/*box-shadow: 2px 2px 5px 0px rgba(0,0,0,0.75);*/
 	border-radius: 2.5rem;
+	position: absolute;
+	top: 48%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
 
 .racetrack .pblack {
@@ -189,11 +192,8 @@ Board is a grid of wooden squares
 
 @media (orientation: landscape) {
 	.board {
-		width: 90vh;
-		height: 90vh;
-	}
-	.inner {
-		padding: 5vh;
+		width: calc(100vh - 10rem);
+		height: calc(100vh - 10rem);
 	}
 }
 
@@ -201,13 +201,8 @@ Board is a grid of wooden squares
 	.board {
 		width: 90vw;
 		height: 90vw;
-		margin-top: max(5vw, 5vh);
 	}
 
-	.inner {
-		padding: 5vw;
-		padding-top: 0px;
-	}
 }
 
 /*
@@ -215,13 +210,9 @@ Board is a grid of wooden squares
 */
 @media (max-aspect-ratio: 8/7) and (min-aspect-ratio: 3/4) {
 	.board {
-		margin-top: 0px;
-		width: min(80vh, 92vw);
-		height: min(80vh, 92vw);
-	}
-	.inner {
-		padding: 5vh;
-		padding-top: 45px;
+		top: 50%;
+		width: min(85vh, 92vw);
+		height: min(85vh, 92vw);
 	}
 }
 
@@ -236,9 +227,6 @@ Board is a grid of wooden squares
 		height: 95vh;
 		padding: 1rem;
 	}
-	.inner {
-		padding: 2.5vh;
-	}
 }
 
 @media (max-width: 500px) and (orientation: portrait) and (max-aspect-ratio: 7/8) {
@@ -247,9 +235,5 @@ Board is a grid of wooden squares
 		height: 95vw;
 		padding: 0.5em;
 		margin-top: max(5vw, 5vh);
-	}
-	.inner {
-		padding: 2.5vw;
-		padding-top: 45px;
 	}
 }

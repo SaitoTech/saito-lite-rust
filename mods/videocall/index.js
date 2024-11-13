@@ -49,7 +49,7 @@ module.exports = (app, mod, build_number, og_card) => {
 
     <script src="/saito/lib/pace/pace.min.js"></script>
     <link rel="stylesheet" href="/saito/lib/pace/pace-theme.min.css">
-  
+    <link rel="stylesheet" type="text/css" href="/saito/saito.css?v=${build_number}" />  
   
     <title>Saito Talk</title>
   
@@ -57,12 +57,6 @@ module.exports = (app, mod, build_number, og_card) => {
     
     <style type="text/css">
     /* css for fade-out bg effect while content is loading */
-    body {
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-    }
-
     body::before {
       content: "";
       opacity: 1;
@@ -81,7 +75,7 @@ module.exports = (app, mod, build_number, og_card) => {
   </style>
   </head>
   
-  <body>
+  <body class="videocall">
   
   </body>
   <script type="text/javascript" src="/saito/saito.js?build=${build_number}" >

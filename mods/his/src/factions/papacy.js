@@ -23,7 +23,7 @@
       },
       returnCardsDealt  :       function(game_mod) {
         
-        let kc = game_mod.returnNumberOfKeysControlledByFaction("england");
+        let kc = game_mod.returnNumberOfKeysControlledByFaction("papacy");
         let base = 0;
         
         switch (kc) {
@@ -76,7 +76,7 @@
         for (let i = 0; i < game_mod.game.state.burned.length; i++) {
           let bd = game_mod.game.state.burned[i];
           if (game_mod.debaters[bd]) {
-            if (game_mod.debaters[bd].faction == "papacy") {
+            if (game_mod.debaters[bd].faction == "protestant") {
               base += game_mod.debaters[bd].power;
             }
           }

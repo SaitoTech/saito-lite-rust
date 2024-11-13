@@ -5,16 +5,22 @@ import Block from './block';
 const localforage = require('localforage');
 import fs from 'fs';
 import path from 'path';
+const JsStore = require('jsstore');
+
 class Storage {
 	public app: Saito;
 	public active_tab: any;
 	public timeout: any;
 	currentBuildNumber: bigint = BigInt(0);
+	public localDB: any = null;
+	public wallet_options_hash: any = '';
 
 	constructor(app) {
 		this.app = app || {};
 		this.active_tab = 1; // TODO - only active tab saves, move to Browser class
 		this.timeout = null;
+		this.localDB = null;
+		this.wallet_options_hash = '';
 	}
 
 	async initialize() {
@@ -22,6 +28,16 @@ class Storage {
 
 		if (this.app.BROWSER === 0) {
 			this.watchBuildFile();
+		}
+
+		if (this.app.BROWSER == 1) {
+			try {
+				this.localDB = null;
+				await this.initializeApplicationDB();
+				console.log(JSON.stringify(await this.loadLocalApplications()));
+			} catch (err) {
+				console.log('Error initializeApplicationDB:', err);
+			}
 		}
 
 		return;
@@ -113,17 +129,9 @@ class Storage {
 				}
 			}
 			if (peer != null) {
-				return await this.app.network.sendRequestAsTransaction(
-					message,
-					data,
-					null,
-					peer.peerIndex
-				);
+				return await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
 			} else {
-				return await this.app.network.sendRequestAsTransaction(
-					message,
-					data
-				);
+				return await this.app.network.sendRequestAsTransaction(message, data);
 			}
 		} catch (error) {
 			console.warn('failed saving tx : ' + tx.signature);
@@ -134,7 +142,6 @@ class Storage {
 	}
 
 	async updateTransaction(tx: Transaction, obj = {}, peer = null) {
-		const txmsg = tx.returnMessage();
 		const message = 'archive';
 		let data: any = {};
 		data.request = 'update';
@@ -150,17 +157,9 @@ class Storage {
 			}
 		} else {
 			if (peer != null) {
-				return await this.app.network.sendRequestAsTransaction(
-					message,
-					data,
-					null,
-					peer.peerIndex
-				);
+				return await this.app.network.sendRequestAsTransaction(message, data, null, peer.peerIndex);
 			} else {
-				return await this.app.network.sendRequestAsTransaction(
-					message,
-					data
-				);
+				return await this.app.network.sendRequestAsTransaction(message, data);
 			}
 		}
 		return { err: 'Save Transaction failed' };
@@ -212,17 +211,15 @@ class Storage {
 				},
 				peer.peerIndex
 			);
-			return;
+			return [];
 		} else {
-			this.app.network.sendRequestAsTransaction(
-				message,
-				data,
-				function (res) {
-					internal_callback(res);
-				}
-			);
-			return;
+			this.app.network.sendRequestAsTransaction(message, data, function (res) {
+				internal_callback(res);
+			});
+			return [];
 		}
+
+		return [];
 	}
 
 	async deleteTransaction(tx = null, mycallback = null, peer = null) {
@@ -243,15 +240,11 @@ class Storage {
 		}
 
 		if (peer != null) {
-			this.app.network.sendRequestAsTransaction(
-				message,
-				data,
-				function () {
-					if (mycallback != null) {
-						mycallback();
-					}
+			this.app.network.sendRequestAsTransaction(message, data, function () {
+				if (mycallback != null) {
+					mycallback();
 				}
-			);
+			});
 		}
 	}
 
@@ -273,15 +266,11 @@ class Storage {
 		}
 
 		if (peer != null) {
-			this.app.network.sendRequestAsTransaction(
-				message,
-				data,
-				function (obj) {
-					if (mycallback != null) {
-						mycallback();
-					}
+			this.app.network.sendRequestAsTransaction(message, data, function (obj) {
+				if (mycallback != null) {
+					mycallback();
 				}
-			);
+			});
 		}
 	}
 
@@ -312,51 +301,168 @@ class Storage {
 		}
 	}
 
-	//
-	// Note: this function won't save options for at least 250 ms from it's call
-	// So, if you are going to redirect the browser after calling it, you need to
-	// build in a sufficient delay so that the browser can complete
-	//
+	async saveOptionsToForage(){
+		let key = await this.app.wallet.getPublicKey();
+		if (key){
+			localforage.setItem(key, this.app.options);
+		}
+	}
+
 	saveOptions() {
+
 		if (this.app.BROWSER == 1) {
 			if (this.active_tab == 0) {
 				return;
 			}
 		}
 
-		const saveOptionsForReal = async () => {
-			clearTimeout(this.timeout);
-			//console.log("Actually saving options");
-			try {
-				localStorage.setItem(
-					'options',
-					JSON.stringify(this.app.options)
-				);
+		let new_wallet_json = JSON.stringify(this.app.options);
+		let new_wallet_hash = this.app.crypto.hash(new_wallet_json);
 
-				if (this.app?.wallet) {
-					let key = await this.app.wallet.getPublicKey();
-					localforage
-						.setItem(key, this.app.options)
-						.then(function (value) {
-							//console.log("Local forage updated for public key: " + key);
-						});
-				}
-			} catch (err) {
-				console.error(err);
-				for (let i = 0; i < localStorage.length; i++) {
-					let item = localStorage.getItem(localStorage.key(i));
-					console.log(
-						localStorage.key(i),
-						item.length,
-						item,
-						JSON.parse(item)
-					);
-				}
+		if (new_wallet_hash == this?.wallet_options_hash) {
+			return;
+		}
+
+
+		try {
+			localStorage.setItem('options', new_wallet_json);
+			
+			//Update hash
+			this.wallet_options_hash = new_wallet_hash;
+
+			//update indexedDB (which is needed for privateKey wallet recovery)
+			this.saveOptionsToForage();
+			
+		} catch (err) {
+
+			console.error(err);
+			for (let i = 0; i < localStorage.length; i++) {
+				let item = localStorage.getItem(localStorage.key(i));
+				console.log(localStorage.key(i), item.length, item, JSON.parse(item));
 			}
-		};
 
-		clearTimeout(this.timeout);
-		this.timeout = setTimeout(saveOptionsForReal, 250);
+		}
+
+	}
+
+	// saveLocalApplication(tx, mod) {
+	// 	if (!this.app.options.dyn_mods) { this.app.options.dyn_mods = []; }
+	// 	this.app.options.dyn_mods.push(mod);
+
+	// 	this.saveOptions();
+	// }
+
+	// loadLocalApplications() {
+	// 	if (!this.app.options.dyn_mods) { this.app.options.dyn_mods = []; }
+	// 	return this.app.options.dyn_mods;
+	// }
+
+	async saveLocalApplication(mod, bin) {
+		if (!this.app.BROWSER) {
+			return;
+		}
+
+		if (this.app.BROWSER) {
+			let obj = {
+				mod: mod,
+				binary: bin,
+				created_at: new Date().getTime(),
+				updated_at: new Date().getTime()
+			};
+
+			console.log('obj: ', obj);
+
+			let numRows = await this.localDB.insert({
+				into: 'dyn_mods',
+				values: [obj]
+			});
+
+			let v = await this.loadLocalApplications();
+			console.log('POST INSERT: ' + JSON.stringify(v));
+		}
+	}
+
+	async loadLocalApplications(mod_slug = null) {
+		try {
+			if (!this.app.BROWSER) {
+				return;
+			}
+
+			let obj = {
+				from: 'dyn_mods',
+				order: { by: 'id', type: 'desc' }
+			};
+
+			if (mod_slug != null) {
+				obj['where'] = {
+					mod: mod_slug
+				};
+			}
+
+			let rows = await this.localDB.select(obj);
+
+			return rows;
+		} catch (err) {
+			console.log('Error loadLocalApplications: ', err);
+		}
+	}
+
+	async removeLocalApplication(mod_slug = null) {
+		try {
+			if (!this.app.BROWSER) {
+				return;
+			}
+
+			let rowsDeleted = await this.localDB.remove({
+				from: 'dyn_mods',
+				where: {
+					mod: mod_slug
+				}
+			});
+
+			return rowsDeleted;
+		} catch (err) {
+			console.log('Error removeLocalApplication: ', err);
+		}
+	}
+
+	async initializeApplicationDB() {
+
+		if (this.app.BROWSER) {
+			console.log('inside initializeApplicationDB ///');
+			this.localDB = new JsStore.Connection(new Worker('/saito/lib/jsstore/jsstore.worker.js'));
+			console.log('done opening JSStore connection...');
+
+			//
+			// create Local database
+			//
+			let dyn_mod = {
+				name: 'dyn_mods',
+				columns: {
+					id: { primaryKey: true, autoIncrement: true },
+					mod: { dataType: 'string', default: '' },
+					binary: { dataType: 'string', default: '' },
+					created_at: { dataType: 'number', default: 0 },
+					updated_at: { dataType: 'number', default: 0 }
+				}
+			};
+
+			let db = {
+				name: 'dyn_mods_db',
+				tables: [dyn_mod]
+			};
+
+console.log("initializing DB 1");
+			var isDbCreated = await this.localDB.initDb(db);
+console.log("initializing DB 2");
+			if (isDbCreated) {
+				console.log('POPUP: db created and connection opened');
+			} else {
+				console.log('POPUP: connection opened');
+			}
+		}
+
+		return;
 	}
 
 	getModuleOptionsByName(modname) {
@@ -371,7 +477,7 @@ class Storage {
 	/**
 	 * DUMMY FUNCTIONS IMPLEMENTED BY STORAGE-CORE IN ./core/storage-core.js
 	 **/
-	deleteBlockFromDisk(filename) { }
+	deleteBlockFromDisk(filename) {}
 
 	async loadBlockById(bid): Promise<Block> {
 		return null;
@@ -405,25 +511,25 @@ class Storage {
 		return '';
 	}
 
-	saveClientOptions() { }
+	saveClientOptions() {}
 
 	async returnDatabaseByName(dbname) {
 		return null;
 	}
 
-	async returnBlockFilenameByHash(block_hash, mycallback) { }
+	async returnBlockFilenameByHash(block_hash, mycallback) {}
 
 	returnTokenSupplySlipsFromDisk(): any {
 		return [];
 	}
 
-	returnBlockFilenameByHashPromise(block_hash: string) { }
+	returnBlockFilenameByHashPromise(block_hash: string) {}
 
-	async queryDatabase(sql, params, database) { }
+	async queryDatabase(sql, params, database) {}
 
-	async runDatabase(sql, params, database, mycallback = null) { }
+	async runDatabase(sql, params, database, mycallback = null) {}
 
-	async executeDatabase(sql, database) { }
+	async executeDatabase(sql, database) {}
 
 	generateBlockFilename(block: Block): string {
 		return ''; // empty
@@ -460,20 +566,12 @@ class Storage {
 						let peers = await this.app.network.getPeers();
 						console.log('peers', peers);
 						peers.forEach((peer) => {
-							this.app.network.sendRequest(
-								'software-update',
-								data,
-								null,
-								peer
-							);
+							this.app.network.sendRequest('software-update', data, null, peer);
 						});
 
 						this.currentBuildNumber = buildNumber;
 
-						console.log(
-							'Updated build number to:',
-							this.currentBuildNumber
-						);
+						console.log('Updated build number to:', this.currentBuildNumber);
 					} else {
 						// console.log("Current build number is up-to-date or higher");
 					}

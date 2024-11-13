@@ -6,6 +6,11 @@ saitolitedocs
 .idea/
 .vs/*
 
+.compile.icloud
+.gen-issuance.ts.icloud
+.start.ts.icloud
+.wh.ts.icloud
+
 .env
 
 cpu-profile.cpuprofile
@@ -45,6 +50,7 @@ data/backup/*
 data/backup
 data/issuance/issuance
 data/saito.stats
+data/peer_state.txt
 
 bundler
 bundler/*
@@ -77,11 +83,11 @@ style.css
 
 mods/popup/src/*
 mods/popup/src/sql/*
-mods/appstore/mods/*
-mods/appstore/bundler
-mods/appstore/bundler/*
-mods/appstore/modules
-mods/appstore/modules/*
+mods/devtools/mods/*
+mods/devtools/bundler
+mods/devtools/bundler/*
+mods/devtools/modules
+mods/devtools/modules/*
 mods/stunx-staging
 mods/stunx-staging/*
 #mods/stunx
@@ -93,14 +99,14 @@ mods/citysim
 mods/citysim/*
 mods/mastersolitrio
 mods/mastersolitrio/*
-mods/appstore/mods/*.zip
-mods/appstore/modules/
-mods/appstore/bundler/dist
-mods/appstore/saitolib
-mods/appstore/saitolib/*
-mods/appstore/saitolib/saito/web/client.options
+mods/devtools/mods/*.zip
+mods/devtools/modules/
+mods/devtools/bundler/dist
+mods/devtools/saitolib
+mods/devtools/saitolib/*
+mods/devtools/saitolib/saito/web/client.options
 mods/advert/web/cache/*.png
-mods/appstore/web/cache/*
+mods/devtools/web/cache/*
 mods/explorer/web/index.html
 mods/fcm-notification/*.json
 mods/registry/web/addresses.txt

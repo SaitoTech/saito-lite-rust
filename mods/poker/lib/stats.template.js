@@ -1,4 +1,4 @@
-module.exports = StatsOverlayTemplate = (poker, tracked_stats) => {
+module.exports = (poker, tracked_stats) => {
 
 	let html = `<div class="poker-stats-overlay">
 								<div class="h2">Game Statistics</div>

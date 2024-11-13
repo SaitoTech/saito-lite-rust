@@ -75,6 +75,7 @@ class AssaultOverlay {
 	}
 
 	assignHitsManually(res = {}, faction = '', hits_to_assign = 1) {
+
 		let am_i_attacker = false;
 		let am_i_defender = false;
 
@@ -94,7 +95,7 @@ class AssaultOverlay {
 		this.pushHudUnderOverlay();
 
 		let side = '.attacker';
-		if (faction != res.attacker_faction) {
+		if (this.mod.returnPlayerCommandingFaction(faction) != this.mod.returnPlayerCommandingFaction(res.attacker_faction)) {
 			side = '.defender';
 		}
 
@@ -332,7 +333,6 @@ class AssaultOverlay {
 		if (pre_battle == 1) {
 			res.defender_modified_rolls = res.defender_results;
 		}
-console.log("SOBJ: " + JSON.stringify(res));
 
 		if (res.attacker_modified_rolls) {
 			let faction_name = '';

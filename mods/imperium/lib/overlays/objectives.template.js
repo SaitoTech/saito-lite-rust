@@ -1,4 +1,4 @@
-module.exports = ImperiumObjectivesOverlayTemplate = () => {
+module.exports  = () => {
 	return `
     <div class="objectives-overlay hide-scrollbar">
       <div class="objectives-overlay-title">Objectives</div>

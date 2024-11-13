@@ -1,9 +1,4 @@
-module.exports = ThemeSwitcherOverlayTemplate = (
-	app,
-	mod,
-	theme_options,
-	selected_theme
-) => {
+module.exports  = (app, mod, theme_options, selected_theme) => {
 	console.log(theme_options, selected_theme);
 
 	let options = ``;
@@ -12,8 +7,8 @@ module.exports = ThemeSwitcherOverlayTemplate = (
           <div id="user_menu_item_${theme}" data-theme="${theme}" class="saito-modal-menu-option">
             <i class="${theme_options[theme]}"></i>
             <div>${theme.toUpperCase()} ${
-	theme == selected_theme ? `<i class="fa-solid fa-check"></i>` : ``
-}</div>
+			theme == selected_theme ? `<i class="fa-solid fa-check"></i>` : ``
+		}</div>
           </div>`;
 	}
 

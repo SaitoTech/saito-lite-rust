@@ -1,3 +1,4 @@
+
 .settings-appspace {
 	display: flex;
 	flex-direction: column;
@@ -119,6 +120,15 @@ label.treated {
 	margin: 1rem 0;
 }
 
+#settings-edit-json {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+#settings-edit-json:hover {
+  text-decoration: none;
+}
+
 /*json tree */
 
 .jsontree_node {
@@ -150,9 +160,16 @@ label.treated {
 	overflow: hidden;
 }
 
+.settings-installed-mod-header {
+    display: flex;
+    justify-content: space-between;
+}
 
-
-
+#settings-add-app {
+	font-size: 3rem;
+    margin-right: 1rem;
+    cursor: pointer;
+}
 @media only screen and (max-width: 900px) {
 	.settings-appspace {
 		padding: 1.5rem;

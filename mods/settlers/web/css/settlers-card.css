@@ -1,0 +1,141 @@
+.saito-overlay:has(> .cardover) {
+	overflow: hidden;
+	border-radius: 2rem;
+}
+
+.saito-overlay:has(> .cardover) + .saito-overlay-backdrop {
+	background-color: #0009;
+}
+
+.cardover {
+	font-family: bagnard-sans;
+	color: black;
+	width: min(1200px, 80vw);
+	height: min(750px, 70vh);
+	border-radius: 2rem;
+	padding: 2rem;
+	overflow: hidden;
+	-webkit-user-select: none; /* Safari */
+	-moz-user-select: none; /* Firefox */
+	-ms-user-select: none; /* Internet Explorer/Edge */
+	user-select: none; /* Standard syntax */
+	--settlers-cardimg: url(/settlers/img/cards/devcards/university.png);
+}
+
+.cardover::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-image: var(--settlers-cardimg);
+	background-size: cover;
+	background-position: top;
+	filter: blur(3px) brightness(70%) grayscale(10%); /* Apply blur effect */
+	z-index: -1; /* Place it behind the content */
+	transform: scale(1.5);
+	overflow: hidden;
+}
+
+.cardover img {
+	width: 100%;
+}
+
+.cardover-cardover {
+	position: relative;
+	display: block;
+	width: 33%;
+	top: 50%;
+	right: 2rem;
+	transform: rotate(5deg) translateY(-50%);
+	float: right;
+	margin: 2rem 3rem;
+}
+
+.cardover-title {
+	font-size: 3.5rem;
+	position: absolute;
+	border-radius: 2rem;
+	backdrop-filter: blur(10px);
+	background: #d3c38d88;
+	margin: 2rem;
+	padding: 2rem;
+	letter-spacing: 0.2rem;
+	font-weight: bold;
+}
+
+.cardover-text {
+	bottom: 1rem;
+	max-width: 45%;
+	font-size: 2.6rem;
+	border-radius: 2rem;
+	backdrop-filter: blur(10px);
+	position: absolute;
+	margin: 2rem;
+	padding: 2rem;
+	background: #d3c38d88;
+}
+
+.cardover-optout {
+	bottom: 1rem;
+	right: 1rem;
+	max-width: 35%;
+	font-size: 2rem;
+	border-radius: 2rem;
+	backdrop-filter: blur(10px);
+	position: absolute;
+	margin: 2rem;
+	padding: 1rem;
+	background: #d3c38d88;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	cursor: pointer;
+}
+
+.cardover-optout:hover{
+	filter: brightness(1.05);
+}
+
+@media screen and (max-width: 900px) {
+
+	.cardover {
+		padding: 1rem;
+	}
+
+	.cardover-title, .cardover-text {
+		margin: 1rem;
+		padding: 1.5rem;
+	}	
+
+
+	.cardover-cardover {
+		width: 40%;
+	}
+}
+
+.hud-notice {
+	background-image: var(--settlers-cardimg);
+    background-size: 111%;
+    background-position: center;
+	padding: 1rem;
+	background-blend-mode: darken;
+}
+
+.cardnotice-card {
+	position: absolute;
+    right: 1rem;
+    top: 1rem;
+    transform: rotate(5deg) scale(0.2);
+    transform-origin: top right;
+}
+
+.cardnotice div {
+    width: fit-content;
+    margin: 0.7rem;
+    font-size: 2.3rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    background-color: #b79e76cc;
+}

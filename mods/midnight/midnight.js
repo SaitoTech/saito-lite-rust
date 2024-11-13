@@ -12,10 +12,11 @@ class Midnight extends GameTemplate {
 		super(app);
 
 		this.name = 'Midnight';
+		this.slug = 'midnight';
 		this.gamename = 'Midnight Rogue';
 
-		this.description = '';
-		this.categories = `Danger lurks around every corner in this second-person interactive role playing story. <br> 
+		this.categories = 'Games One-player Textadventure';
+		this.description = `Danger lurks around every corner in this second-person interactive role playing story. <br> 
 												As a thief apprentice, you are tasked to steal the EYE OF THE BASILISK and your special skills
 												will be put to the limit. What terrors await in the darkness as you test your luck and choose 
 												your way through this adventure?`;

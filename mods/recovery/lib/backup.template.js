@@ -1,4 +1,4 @@
-module.exports = BackupTemplate = (identifier, newIdentifier) => {
+module.exports  = (identifier, newIdentifier) => {
 	let txt = 'your Saito account';
 	if (identifier) {
 		if (identifier.indexOf('@saito') == -1) {
@@ -33,7 +33,7 @@ module.exports = BackupTemplate = (identifier, newIdentifier) => {
          
           <div class="saito-overlay-subform-inputs">
             <input type="text" id="saito-overlay-form-input" class="saito-overlay-form-input saito-overlay-form-email" placeholder="address@domain.com" value="" />
-            <input type="text" id="saito-overlay-form-input" class="saito-overlay-form-input saito-overlay-form-password" placeholder="password" value="" />
+            <input type="text" id="saito-overlay-form-input" class="saito-overlay-form-input saito-overlay-form-password saito-password" placeholder="password" value="" />
           </div>
       	
       		<div class="saito-overlay-form-checkbox-container">	

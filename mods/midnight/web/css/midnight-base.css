@@ -1,8 +1,5 @@
-body {
-	font-family: arial, helvetica, sans-serif;
-	font-size: 13px;
-	padding: 0px;
-	margin: 0px;
+:root{
+	--theme-font: 'Georgia', serif;
 }
 
 .bold {

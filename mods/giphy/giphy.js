@@ -22,7 +22,7 @@ class Giphy extends ModTemplate {
 		this.app = app;
 		this.mod = mod;
 		this.name = 'Giphy';
-
+		this.slug = 'giphy';
 		this.input_id = input_id;
 		this.parent_callback = parent_callback;
 		this.overlay = new SaitoOverlay(app, mod);
@@ -121,7 +121,8 @@ class Giphy extends ModTemplate {
 				{},
 				function (res) {
 					gif_self.auth = res;
-				}
+				},
+				peer.peerIndex
 			);
 		}
 	}

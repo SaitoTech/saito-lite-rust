@@ -1,17 +1,11 @@
-module.exports = (players = 2) => {
-	let help = 'Foreign War';
-
+module.exports = () => {
 	let html = `
       <div class="war-overlay" id="war-overlay">
-	<div class="help">${help}</div>
-	<div class="war-grid">
-	  <div class="attacker">
-	    <div class="title">attacker</div>
-	  </div>
-	  <div class="defender">
-	    <div class="title">defender</div>
-	  </div>
-	</div>
+        <div class="status"></div>
+        <div class="controls"></div>
+	<div class="warquote">
+	  Grim-visaged war has mounted barded steeds /
+	  To fright the souls of fearful adversaries
 	</div>
       </div>
   `;

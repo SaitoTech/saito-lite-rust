@@ -7,9 +7,9 @@
       }
 
       let twilight_self = this;
+      this.startClockAndSetActivePlayer(this.roles.indexOf(player));
+
       if (i_played_the_card){
-        //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
 
         let choicehtml = '<ul><li class="option" id="endgame">end the game</li><li class="option" id="cont">continue playing</li></ul>';
 

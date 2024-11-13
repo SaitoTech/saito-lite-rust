@@ -1,9 +1,9 @@
-:root{
+:root {
 	--saito-arcade-width: 1500px;
 }
 
-.arcade-container.saito-container{
-	grid-template-columns: auto 30rem;
+.arcade-container.saito-container {
+	grid-template-columns: auto 33rem;
 	grid-template-rows: minmax(5px, 1fr);
 	padding: 0 calc((100vw - var(--saito-arcade-width)) / 2);
 	padding-left: calc((100vw - var(--saito-arcade-width)) / 4);
@@ -11,7 +11,8 @@
 }
 
 /* Filter buttons */
-.arcade-game-filter-list{
+
+.arcade-game-filter-list {
 	display: flex;
 	width: 100%;
 	align-items: center;
@@ -20,34 +21,36 @@
 	position: relative;
 }
 
-.game-filter-item{
+.game-filter-item {
 	padding: 1rem;
 	border-radius: 1rem;
-	border: 1px solid;
+	border: 1px solid var(--saito-border-color);
 	cursor: pointer;
 }
 
-/* right sidebar*/ 
-.saito-sidebar.right{
+/* right sidebar*/
+
+.saito-sidebar.right {
 	grid-column: unset;
 	grid-row: unset;
 }
 
+/* main panel */
 
-/* main panel */ 
 .arcade-main {
 	position: relative;
 	padding: 1rem;
 	height: 100%;
 }
 
-.arcade-scrollable-panel-container{
+.arcade-scrollable-panel-container {
 	height: 100%;
 }
 
 .arcade-initializer {
 	text-align: center;
-	min-width: 18rem; /*Width of the button*/
+	min-width: 18rem;
+	/*Width of the button*/
 	display: flex;
 	flex-direction: column;
 }
@@ -56,7 +59,6 @@
 	height: calc(100vh - var(--saito-header-height) - 3rem);
 	padding-top: 2rem;
 	gap: 5rem;
-
 }
 
 .arcade-game-initializer-success-title {
@@ -71,14 +73,13 @@
 	max-width: 35rem;
 }
 
-.arcade-central-panel{
+.arcade-central-panel {
 	height: 100%;
 	position: relative;
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 	grid-gap: 1rem;
 }
-
 
 .arcade-sidebar .saito-announcement {
 	margin-bottom: 1rem;
@@ -86,27 +87,29 @@
 }
 
 .saito-sidebar.arcade-sidebar {
-  height: calc(100 * var(--saito-vh) - var(--saito-header-height));
-  top: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+	height: calc(100 * var(--saito-vh) - var(--saito-header-height));
+	top: 0;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
 }
 
 /******************************************
  *  OVER WRITE Game Selector Overlay code
  *****************************************/
-.arcade-central-panel .arcade-game-selector-game{
+
+.arcade-central-panel .arcade-game-selector-game {
 	box-shadow: 0px 2px 4px var(--saito-bubble-shadow);
+	height: min(250px, calc((100vw - 34.5rem) / 4));
 	border-radius: 0.5rem;
 }
 
-.arcade-game-selector-game-image img{
+.arcade-game-selector-game-image img {
 	border-radius: 0.5rem;
 }
 
-.arcade-central-panel .arcade-game-selector-game-title{
+.arcade-central-panel .arcade-game-selector-game-title {
 	height: 5rem;
 	display: flex;
 	align-items: center;
@@ -115,7 +118,7 @@
 	border-radius: 0.5rem 0.5rem 0 0;
 }
 
-.arcade-central-panel .arcade-game-selector-game-title span{
+.arcade-central-panel .arcade-game-selector-game-title span {
 	font-size: 2.4rem;
 	text-transform: unset;
 	overflow: hidden;
@@ -138,7 +141,7 @@
 	min-width: 5rem;
 }
 
-.arcade-central-panel .arcade-game-selector-game:hover{
+.arcade-central-panel .arcade-game-selector-game:hover {
 	transform: none;
 	border-color: var(--saito-font-color-heavy);
 }
@@ -147,18 +150,22 @@
 	display: none;
 }
 
-
 /*************************************
  * Override saito-page-layout 
  * to make arcade better on mobile
 **************************************/
 
+@media screen and (max-width: 1200px) {
+	.arcade-central-panel {
+		grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	}
+}
+
 @media screen and (max-width: 900px) {
-	.saito-container.arcade-container{
+	.saito-container.arcade-container {
 		grid-template-columns: 1fr;
 		grid-template-rows: repeat(auto-fit, minmax(0px, min-content));
 	}
-
 	.arcade-container .saito-sidebar.right {
 		display: block;
 		visibility: visible;
@@ -168,7 +175,6 @@
 		padding: 0 1rem;
 		height: unset;
 	}
-
 	.arcade-container .saito-main {
 		margin: 0;
 		order: 2;
@@ -180,40 +186,34 @@
 		grid-gap: 0.8rem;
 		font-size: 1.6rem;
 	}
-
-	.arcade-container .saito-sidebar.right .game-slider, 
-	.arcade-container .saito-sidebar.right .chat-manager{
+	.arcade-container .saito-sidebar.right .game-slider, .arcade-container .saito-sidebar.right .chat-manager {
 		display: none;
 	}
-
-	.arcade-central-panel {
-		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-	}
-
 	.arcade-sidebar .saito-announcement {
 		display: none;
 	}
-
+	.arcade-central-panel .arcade-game-selector-game {
+		height: min(180px, calc(100vw / 3));
+	}
 }
 
 @media screen and (max-width: 600px) {
-
 	.arcade-main {
 		padding: 0.5rem;
 	}
-
-	.arcade-central-panel {
-		grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
-		grid-gap: 0.5rem;
-	}
-
 	.arcade-central-panel .arcade-game-selector-game-title span {
 		font-size: 1.8rem;
 	}
 }
 
+@media screen and (max-width: 450px) {
+	.arcade-central-panel {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
 
 /************ DEPRECATED ***************/
+
 .arcade-game-list-container {
 	max-height: 60%;
 	position: relative;
@@ -221,68 +221,65 @@
 
 .arcade-menu {
 	max-height: calc(100% - 4rem);
-
 }
 
 /**************************
  * Fancy scrolling
 **************************/
 
-#top-of-game-list{
+#top-of-game-list {
 	position: absolute;
 	top: 5rem;
 }
 
-#bottom-of-game-list{
+#bottom-of-game-list {
 	position: relative;
 	top: calc(100% - 25px);
 	height: 5px;
 }
 
-
-
 .can-scroll-down::before {
-  font-family: FontAwesome;
-  content: "";
-  font-size: 4rem;
-  color: var(--border-color-general-dividers-dark);
+	font-family: FontAwesome;
+	content: "";
+	font-size: 4rem;
+	color: var(--border-color-general-dividers-dark);
 	position: absolute;
 	bottom: 0;
 	left: 0;
 	width: 100%;
 	text-align: center;
-  line-height: 10rem;
+	line-height: 10rem;
 	height: 10rem;
 	text-shadow: -3px -2px 2px var(--border-color-general-dividers), 0px 2px 2px var(--border-color-general-dividers), 3px -2px 2px var(--border-color-general-dividers);
 	z-index: 5;
 	pointer-events: none;
-    background: linear-gradient(180deg, transparent, var(--saito-background-color) 80%);
-} 
+	background: linear-gradient(180deg, transparent, var(--saito-background-color) 80%);
+}
 
 .can-scroll-down:hover::before {
-  content: "\f0d7";
+	content: "\f0d7";
 }
 
 /*  "\f0d8"  */
+
 .can-scroll-up::after {
-  font-family: FontAwesome;
-  content: "";
-  font-size: 4rem;
-  color: var(--border-color-general-dividers-dark);
+	font-family: FontAwesome;
+	content: "";
+	font-size: 4rem;
+	color: var(--border-color-general-dividers-dark);
 	position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
 	text-align: center;
-  line-height: 10rem;
+	line-height: 10rem;
 	height: 10rem;
 	text-shadow: -3px 2px 2px var(--border-color-general-dividers), 0px -2px 2px var(--border-color-general-dividers), 3px 2px 2px var(--border-color-general-dividers);
 	z-index: 5;
 	pointer-events: none;
-    background: linear-gradient(0deg, transparent, var(--saito-background-color) 80%);
-} 
-
-.can-scroll-up:hover::after {
-  content: "\f0d8";
+	background: linear-gradient(0deg, transparent, var(--saito-background-color) 80%);
 }
 
+.can-scroll-up:hover::after {
+	content: "\f0d8";
+}

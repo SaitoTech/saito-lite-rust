@@ -9,6 +9,8 @@
 	--p2-color-lite: #004193e9; /* bluish */
 	--p3-color-lite: #adce14e9; /* yellowish */
 	--p4-color-lite: #644700e9; /* brown */
+
+	--theme-font: bagnard-sans;
 }
 
 @font-face {
@@ -65,6 +67,12 @@ p {
 	width: unset;
 }
 
+.image-as-token {
+	border-radius: 50%;
+	border: 2px solid #fff8;
+	background-color: #456;
+}
+
 span.tip {
 	border-bottom: 1px dotted;
 	font-weight: bold;
@@ -116,7 +124,7 @@ dt {
 	color: unset;
 }
 
-.gameboard.dark {
+.main.dark {
 	background-color: #369;
 }
 
@@ -124,7 +132,7 @@ dt {
 
 /* !-- background moved to body so board is resizable */
 /* gameboard == ocean, the "board" that gets resized is #hexgrid */
-.gameboard {
+.main, .scrollable-page {
 	position: absolute;
     width: 100%;
     height: 100%;
@@ -247,9 +255,24 @@ dt {
 }
 
 .city.empty.rhover {
-	background-color: rgba(255, 255, 128, 0.95);
-	border: 3px dotted purple;
+	border: 1px solid #fff;
+    position: absolute;
+    z-index: 0;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 70%), radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.4), rgba(0, 0, 1, 0.5) 80%);
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.5), 0 5px 15px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(1px);
+	z-index: 999;
 }
+
+.road.rhover {
+    border: 1px solid #aaa;
+    position: absolute;
+    z-index: 0;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 70%), radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2), rgba(0, 0, 0, 0.3) 80%);
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.5), 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+
 
 .rhover:hover,
 .city.empty.rhover:hover {
@@ -273,6 +296,7 @@ dt {
 .port {
 	width: 100%;
 	height: 60%;
+	pointer-events: none;
 }
 
 .port1 {
@@ -430,27 +454,28 @@ dt {
 	width: unset;
 }
 
-.mobile-trading-container .flexline {
-	min-width: 16rem;
-}
-
 /* p1-4 is legacy code for ownership of cities/roads, not playerboxes  */
 
 .p1 {
 	background-color: var(--p1-color);
+	background: linear-gradient(0deg, var(--p1-color), var(--p1-color)), linear-gradient(145deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 70%), radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.4), rgba(0, 0, 1, 0.5) 80%);
 }
 
 .p2 {
 	background-color: var(--p2-color);
+	background: linear-gradient(0deg, var(--p2-color), var(--p2-color)), linear-gradient(145deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 70%), radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.4), rgba(0, 0, 1, 0.5) 80%);
 }
 
 .p3 {
 	background-color: var(--p3-color);
+	background: linear-gradient(0deg, var(--p3-color), var(--p3-color)), linear-gradient(145deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 70%), radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.4), rgba(0, 0, 1, 0.5) 80%);
 }
 
 .p4 {
 	background-color: var(--p4-color);
+	background: linear-gradient(0deg, var(--p4-color), var(--p4-color)), linear-gradient(145deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 70%), radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.4), rgba(0, 0, 1, 0.5) 80%);
 }
+
 
 .display-name {
 	text-shadow: 0px 0px 1px;
@@ -475,11 +500,11 @@ dt {
 }
 
 .game-playerbox .saito-identicon-box {
-	border: 5px solid;
 	width: 4rem;
 	height: 4rem;
 }
 
+/*
 .p1-lite .saito-identicon-box {
 	border-color: var(--p1-color-lite);
 }
@@ -495,6 +520,7 @@ dt {
 .p4-lite .saito-identicon-box {
 	border-color: var(--p4-color-lite);
 }
+*/
 
 .saito-userline {
 	width: 100%;
@@ -625,24 +651,37 @@ input[type='checkbox'] {
 }
 
 .bandit {
-	color: #fff9;
-	background-image: url(/settlers/img/icons/bandit.png);
-	background-size: cover;
-	overflow: visible;
-	border: none;
-	width: 50%;
-	height: 40%;
-	box-shadow: 0 0 32px 32px #000b;
-	background-color: #000b;
+	position: relative;
 }
 
-.robinhood .bandit {
+.bandit::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	color: #fff9;
+    background-image: url(/settlers/img/icons/bandit.png);
+    background-size: 45%;
+    overflow: visible;
+    border: none;
+    width: 100%; 
+    height: 100%; 
+    background-repeat: no-repeat;
+    background-position: 50% 100%;
+    z-index: 2;
+}
+
+.robinhood .bandit::after {
 	background-image: url(/settlers/img/icons/robinhood.png);
 }
 
 .bandit .hexTileCenter {
-	opacity: 0.5;
+	border-color: #4444;
+	color: #444;
+	z-index: 1;
 }
+
+
 
 .city.p1 {
 	border: 10px solid var(--p1-color);
@@ -838,11 +877,6 @@ ul.horizontal_list li.iconoption {
 	cursor: pointer;
 }
 
-.cardct {
-	width: fit-content;
-	font-size: 1.35rem;
-	min-width: 15rem;
-}
 
 /*SVG token coloring*/
 
@@ -915,9 +949,36 @@ ul.horizontal_list li.iconoption {
 	align-items: center;
 	flex-wrap: wrap;
 	width: max-content;
+	max-width: 100%;
 	font-size: 20px;
-	padding: 8px;
+	padding: 3px;
 	gap: 1rem;
+	position: relative;
+}
+
+.status .player-notice {
+	opacity: 0.66;
+}
+
+.status .player-notice:last-child {
+	opacity: 1;
+}
+
+.status .player-notice::before {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 1rem;
+    width: 14rem;
+    border-top: 1px solid var(--text-color);
+    border-radius: 100%;
+    height: 3px;
+    border-bottom: 1px solid var(--text-color);
+    background-color: var(--text-color);
+}
+
+.status .player-notice:last-child::before {
+	display: none;
 }
 
 .player-notice ul {
@@ -946,35 +1007,10 @@ ul.horizontal_list li.iconoption {
 	bottom: 1px;
 }
 
-.mobile-trading-container {
-	position: absolute;
-	top: 70px;
-	display: flex;
-	flex-direction: column;
-	gaps: 2.5rem;
-}
-
 .player-box {
 	display: relative;
 }
 
-/*****
-.mobile-trading-container .player-box.notme:nth-child(0) {
-  top: 76px;
-  right: 40px;
-}
-.mobile-trading-container .player-box.notme:nth-child(1) {
-  top: auto;
-  bottom: 76px;
-  left: 40px;
-  right: auto;
-}
-.mobile-trading-container .player-box.notme:nth-child(2) {
-  top: auto;
-  bottom: 76px;
-  right: 40px;
-}
-*****/
 
 .flash {
 	animation-name: flash;
@@ -1001,7 +1037,7 @@ ul.horizontal_list li.iconoption {
 	border-image-width: 21px;
 	border-image-repeat: stretch;
 	border-style: solid;
-	border-image-outset: 7px;
+	border-image-outset: 4px;
 	color: var(--text-color);
 }
 
@@ -1022,7 +1058,7 @@ ul.horizontal_list li.iconoption {
 	}
 
 	.player-notice {
-		font-size: 18px;
+		font-size: 16px;
 		max-width: 100%;
 		flex-wrap: unset;
 	}
@@ -1051,103 +1087,3 @@ ul.horizontal_list li.iconoption {
 	}
 }
 
-.game-playerbox-icons .army img {
-	width: 4rem;
-	margin: 0 0 0 -2rem;
-}
-
-.game-playerbox-icons .army {
-	display: flex;
-	flex-direction: row;
-	padding: 0 0 0 2rem;
-}
-
-.game-playerbox-icons .longest-road img {
-	width: 4rem;
-}
-
-.victory_point_cards,
-.longest-road {
-	display: flex;
-	gap: 1rem;
-	flex-direction: row;
-	align-items: center;
-}
-
-.game-playerbox-icons .victory_point_cards img {
-	height: 3.5rem;
-	margin: 0;
-	display: block;
-	transform: rotate(-5deg);
-}
-
-.game-playerbox-icons .victory_point_card {
-	margin: 0 0 0 -2rem;
-	display: flex;
-	align-items: center;
-}
-
-.game-playerbox-icons .token img,
-.game-playerbox-icons .token svg {
-	transition: all ease-in-out 300ms;
-	border-radius: 50%;
-	border: 2px solid #fff8;
-	background-color: #456;
-}
-
-.game-playerbox-icons .token img:hover,
-.game-playerbox-icons .token svg:hover {
-	transform: scale(1.3);
-}
-
-.token.largest.army,
-.longest-road,
-.victory_point_cards {
-	position: relative;
-	margin: 0 -4rem 0 0;
-}
-
-.vproundel {
-	position: relative;
-	width: 3rem;
-	line-height: 3rem;
-	font-size: 1.5rem;
-	color: #fff;
-	text-align: center;
-	margin: 0.5rem;
-	background-color: #ffa400cc;
-	border-radius: 50%;
-	font-weight: bold;
-	right: 3rem;
-	top: -1rem;
-	height: 3rem;
-}
-
-.flexline img.icon {
-	height: 3.5rem;
-}
-
-.flexline span {
-	display: flex;
-	justify-content: flex-start;
-	align-items: center;
-	flex-direction: row;
-	width: 100%;
-	flex-wrap: wrap;
-	gap: 1rem;
-}
-
-#cleartrade {
-	cursor: pointer;
-	font-size: 24px;
-	width: 35px;
-	height: 35px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	transition: all ease-in-out 250ms;
-}
-
-#cleartrade:hover {
-	transform: scale(1.3);
-}

@@ -7,6 +7,7 @@ class Wallet extends ModTemplate {
 		super(app);
 
 		this.name = 'Wallet';
+		this.slug = 'wallet';
 		this.description =
 			'Adds menu element for sending and receiving tokens.';
 		this.categories = 'Finance Utilities';

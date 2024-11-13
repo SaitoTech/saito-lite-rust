@@ -19,7 +19,7 @@ module.exports = (app, mod, build_number, og_card) => {
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="application-name" content="saito.io ${mod.returnSlug()}" />
-    <meta name="apple-mobile-web-app-title" content="Saito Talk" />
+    <meta name="apple-mobile-web-app-title" content="${mod.returnName()}" />
     <meta name="theme-color" content="#FFFFFF" />
     <meta name="msapplication-navbutton-color" content="#FFFFFF" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -49,20 +49,14 @@ module.exports = (app, mod, build_number, og_card) => {
 
     <script src="/saito/lib/pace/pace.min.js"></script>
     <link rel="stylesheet" href="/saito/lib/pace/pace-theme.min.css">
+    <link rel="stylesheet" type="text/css" href="/saito/saito.css?v=${build_number}" />  
   
-  
-    <title>Saito Limbo</title>
+    <title>${mod.returnName()}</title>
   
     <script type="text/javascript" src="/saito/lib/jquery/jquery-3.2.1.min.js"></script>
     
     <style type="text/css">
     /* css for fade-out bg effect while content is loading */
-    body {
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-    }
-
     body::before {
       content: "";
       opacity: 1;

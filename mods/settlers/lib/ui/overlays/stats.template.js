@@ -1,4 +1,4 @@
-module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
+module.exports = (stats, winner) => {
 	let players_count = stats.mod.game.state.players.length;
 
 	let highest_count = stats.mod.game.stats.dice[2];
@@ -16,7 +16,13 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 	let base_height = max_bar_height / highest_count;
 
 	let html = `
-      <div class="settlers-stats-overlay saitoa">
+      <div class="settlers-stats-overlay saitoa`
+
+    if (winner) {
+		//html += ` winner`;
+	} 
+	  
+	html +=  `">
       	<div class="stats-header">
       		<div class="overlay-tab active-tab" id="overview-tab">Overview</div>
       		<div class="overlay-tab" id="resource-tab">Resources</div>
@@ -61,7 +67,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 		for (let i = 2; i <= 12; i++) {
 			html += `<div class="settlers-dice-number">${i}</div>`;
 		}
-		html += `</div></div>`;
+		html += `</div><hr></div>`;
 
 
 
@@ -82,7 +88,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 								${stats.mod.vp.img}
 							</div>
 							<div class="settlers-stats-vp" title="Longest Road">
-								${stats.mod.longest.svg}
+								${stats.mod.longest.icon}
 								<div class="settlers-stats-vp-count">${Math.max(stats.mod.longest.min, stats.mod.game.state.longestRoad.size)}</div>
 								<div class="settlers-stats-multiplier">+${stats.mod.longest.value}</div>
 							</div>
@@ -162,12 +168,23 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 	}
 
   html += `<div class="settlers-hist-row">
-  	<div class="settlers-stats-vp title="Bandit/Robber">
+  	<div class="settlers-stats-vp title="Rolls blocked by Bandit/Robber">
 	  	<img src="/settlers/img/icons/bandit.png">
 	  	<div class="settlers-stats-vp-count">%</div>
   	</div>`;
   for (let i of player_array){
-  	html += `<div class="settlers-stat-num">${Math.round(1000*i/stats.mod.game.stats.history.length)/10}</div>`;
+  	html += `<div class="settlers-stat-num">${Math.round(1000*i/stats.mod.game.stats.history.length)/10 || "0"}</div>`;
+  }
+
+  html += `</div>`;
+
+  html += `<div class="settlers-hist-row">
+  	<div class="settlers-stats-vp title="Times moved Bandit/Robber">
+	  	<img src="/settlers/img/icons/bandit.png">
+	  	<div class="settlers-stats-vp-count">-></div>
+  	</div>`;
+  for (let i of stats.mod.game.stats.move_bandit){
+  	html += `<div class="settlers-stat-num">${i}</div>`;
   }
 
   html += `</div></div></div>`;
@@ -211,7 +228,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 	// Losses
 	//
 	html += `<div class="settlers-state-container">`;
-	html += ` <div class="settlers-stats-row"><div class="settlers-stats-player hover-hint" title="Cards discarded or stolen by robber">Losses</div>`;
+	html += ` <div class="settlers-stats-row"><div class="settlers-stats-player hover-hint" title="Cards discarded or stolen by robber">Stolen</div>`;
 	for (let r in stats.mod.game.stats.production) {
 		html += `	<div class="settlers-stats-card">
 								<img src="/settlers/img/cards/${r}.png">
@@ -244,7 +261,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 	// Non-production
 	//
 	html += `<div class="settlers-state-container">`;
-	html += ` <div class="settlers-stats-row"><div class="settlers-stats-player hover-hint" title="Resources blocked by presence of bandit">Unrealized</div>`;
+	html += ` <div class="settlers-stats-row"><div class="settlers-stats-player hover-hint" title="Resources blocked by presence of bandit">Blocked</div>`;
 	for (let r in stats.mod.game.stats.production) {
 		html += `	<div class="settlers-stats-card no-vp">
 								<img src="/settlers/img/cards/${r}.png">
@@ -278,7 +295,7 @@ module.exports = SettlersStatsOverlayTemplate = (stats, winner) => {
 
     html += `<div class="settlers-hist-container hide-scrollbar">
     	<div class="settlers-hist-row">
-    		<div></div>`;
+    		<div class="settlers-timeline-turn-lables"><div>Turn</div><div>Roll</div></div>`;
 
    	for (let i = 0; i < stats.mod.game.players.length; i++) {
     	html += `<div class="settlers-stats-player p${stats.mod.game.colors[i]}">${stats.mod.game.playerNames[i]}</div>`;

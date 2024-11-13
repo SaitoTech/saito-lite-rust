@@ -3,11 +3,11 @@
 
       let opponent = (this.game.player == 2)? "ussr" : "us";
       let success = 0;
-
+      
+      this.startClockAndSetActivePlayer(this.roles.indexOf(player));
+      
       if (this.roles[this.game.player] == player) {
-        //If the event card has a UI component, run the clock for the player we are waiting on
-        this.startClock();
-
+        
         var twilight_self = this;
 
         twilight_self.playerFinishedPlacingInfluence();

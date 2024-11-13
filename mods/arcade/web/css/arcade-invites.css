@@ -48,9 +48,11 @@
   border-radius: var(--border-radius-identicon-needed);
 }
 
+/*
 .my-turn {
 	border: solid 2px;
 }
+*/
 
 .player-turn {
 	position: relative;
@@ -78,6 +80,7 @@
 	right: 0;
 	height: 100%;
 	width: 10rem;
+	max-width: 100%;
 	padding: 0 1rem 0 3.5rem;
 	display: flex;
 	flex-direction: column;
@@ -88,6 +91,8 @@
 	font-weight: bold;
 	text-transform: uppercase;
 	white-space: break-spaces;
+	color: var(--font-color-header-msg);
+	text-shadow: 1px 1px 2px var(--saito-black);
 	background-color: var(--background-color-notification-status);
 	clip-path: polygon(25% 0, 100% 0, 100% 100%, 0 100%);
 }

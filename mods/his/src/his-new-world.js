@@ -45,7 +45,7 @@
       if (this.game.state.newworld['hapsburg_colony1'].claimed != 1) {
         return "/his/img/tiles/colonies/PuertoRico.svg";
       } else {
-	if (this.game.state.newworld['hapsburg_colony1'].claimed != 1) {
+	if (this.game.state.newworld['hapsburg_colony2'].claimed != 1) {
           return "/his/img/tiles/colonies/Cuba.svg";
 	} else {
           return "/his/img/tiles/colonies/Hispaniola.svg";
@@ -145,6 +145,7 @@
 	  colony : pbox ,	  
 	});
 
+	this.game.state.events.potosi_silver_mines = "";
 	this.game.state.newworld[pbox].claimed = 1;
 
       }

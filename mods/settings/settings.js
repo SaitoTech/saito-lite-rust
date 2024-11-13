@@ -78,7 +78,6 @@ class Settings extends ModTemplate {
 				this.renderIntos[qs].push(
 					new SettingsThemeSwitcherOverlay(this.app, this, '')
 				);
-				this.attachStyleSheets();
 			}
 			this.renderIntos[qs].forEach((comp) => {
 				comp.render();
@@ -93,34 +92,37 @@ class Settings extends ModTemplate {
 		let settings_self = this;
 
 		if (type === 'saito-header') {
-			return [
-				{
-					text: 'Theme',
-					icon: 'fa-solid fa-moon',
-					rank: 120,
-					callback: function (app, id) {
-						settings_self.renderInto('.theme-selector');
-					}
-				},
-				{
-					text: 'Nuke',
-					icon: 'fa-solid fa-radiation',
-					rank: 130,
-					callback: async function (app, id) {
-						let confirmation = await sconfirm(
-							'This will reset/nuke your account, do you wish to proceed?'
-						);
+			if (this.app.modules.returnActiveModule()){
+				this.attachStyleSheets();
+				return [
+					{
+						text: 'Theme',
+						icon: "saito-theme-icon fa-solid fa-moon",
+						rank: 120,
+						callback: function (app, id) {
+							settings_self.renderInto('.theme-selector');
+						}
+					},
+					{
+						text: 'Nuke',
+						icon: 'fa-solid fa-radiation',
+						rank: 130,
+						callback: async function (app, id) {
+							let confirmation = await sconfirm(
+								'This will reset/nuke your account, do you wish to proceed?'
+							);
 
-						if (confirmation) {
-							await app.wallet.onUpgrade('nuke');
+							if (confirmation) {
+								await app.wallet.onUpgrade('nuke');
 
-							setTimeout(() => {
-								window.location.reload();
-							}, 300);
+								setTimeout(() => {
+									window.location.reload();
+								}, 300);
+							}
 						}
 					}
-				}
-			];
+				];
+			}
 		}
 		return null;
 	}

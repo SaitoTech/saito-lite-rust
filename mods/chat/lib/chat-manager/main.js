@@ -62,12 +62,17 @@ class ChatManager {
 					this.popups[group.id].group = group;
 				}
 
+				let popup_rendered = 0;
 				if (
 					this.render_popups_to_screen ||
 					this.popups[group.id].is_rendered
 				) {
-					this.popups[group.id].render();
+					popup_rendered = this.popups[group.id].render();
 				}
+
+				//if (!popup_rendered) {
+				//	this.app.connection.emit("chat-group-not-rendered", group);
+				//}
 
 				//
 				// We use an event so that other components can piggy back off this request
@@ -285,7 +290,6 @@ class ChatManager {
 
 							//If you don't hear back in 5 seconds, assume offline
 							this.timers[group.id] = setTimeout(() => {
-								console.log('Auto change to offline');
 								let cm_handle = document.querySelector(
 									`.chat-manager #saito-user-${group.id}`
 								);

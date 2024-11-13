@@ -1,0 +1,67 @@
+.modtools-main-container {
+  width: 85vw;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: calc(var(--saito-header-height) + 2rem);
+  max-height: calc(100vh - var(--saito-header-height));
+}
+
+.modtools-main-container .saito-module-details-box {
+  background-color: var(--saito-primary-transparent);
+  padding: 1rem;
+}
+
+.modtools-main-container .saito-module-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.modtools-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.modtools-container-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.modtools-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid black;
+}
+
+.modtools-contact {
+  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 0.5fr 2fr;
+  text-align: left;
+}
+
+.modtools-contact-daetails {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.modtools-contact-details {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.modtools-contact-details i {
+  cursor: pointer;
+}
+
+.app-permission-option {
+  display: flex;
+  justify-content: space-between;
+  width: 50%;
+}

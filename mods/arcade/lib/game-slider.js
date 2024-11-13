@@ -44,9 +44,7 @@ class GameSlider {
 					game_mod.name
 				}">
           <span class="game-slider-name">${game_mod.returnName()}</span>
-          <img alt="${game_mod.returnName()}" src="${
-	game_mod.respondTo('arcade-games').banner
-}">
+          <img alt="${game_mod.returnName()}" src="${game_mod.respondTo('arcade-games').banner}">
           </li>`
 			]);
 		}
@@ -90,6 +88,12 @@ class GameSlider {
 		}
 
 		this.attachEvents();
+
+		setTimeout(() => {
+			if (document.querySelector(".game-slider")){
+				document.querySelector(".game-slider").removeAttribute("style");	
+			}
+		}, 1000);
 	}
 
 	attachEvents() {
@@ -115,7 +119,10 @@ class GameSlider {
 						? 0
 						: newIndex;
 			slides.children[newIndex].dataset.activeSlide = true;
-			delete activeSlide.dataset.activeSlide;
+			if (typeof activeSlide.dataset != 'undefined' &&
+				activeSlide != null) {
+				delete activeSlide.dataset.activeSlide;
+			}
 			/*
         const circles = document.querySelector(".slides-circles");
         const activeCircle = circles.querySelector("[data-active-slide]");

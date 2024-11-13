@@ -9,10 +9,19 @@
   gap: 1rem;
 }
 
+.saito-sidebar.right, .saito-sidebar.left {
+	padding: 0.5rem 1rem;
+	margin: unset;
+}
+
 
 .redsquare-menu .saito-button-primary{
 	border: var(--border-thickness-button-primary) solid var(--border-color-button-primary);
 	box-shadow: var(--shadow-primary-button);
+}
+
+.saito-menu > ul > li.redsquare-menu-mobile {
+	display: none;
 }
 
 @media screen and (max-width: 1200px) {
@@ -61,5 +70,9 @@
 
 	.saito-sidebar.left .chat-manager {
 		display: none;
+	}
+
+ 	.saito-menu > ul > li.redsquare-menu-mobile {
+		display: flex;
 	}
 }

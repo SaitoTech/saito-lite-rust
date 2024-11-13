@@ -6,6 +6,7 @@ const JSON = require('json-bigint');
 
 class Post {
 	constructor(app, mod, tweet = null) {
+
 		this.app = app;
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(this.app, this.mod, true, true);
@@ -19,21 +20,25 @@ class Post {
 		this.source = 'Post';
 	}
 
-	render(container = "") {
-		this.container = (container) ? ".tweet-manager " : ".saito-overlay ";
+	render(container = '') {
 
-		console.log("Post render: " + this.container);
+		this.container = container ? '.tweet-manager ' : '.saito-overlay ';
 
-		if (container){
-			if (document.getElementById("tweet-overlay")){
-				console.log("replace");
-				this.app.browser.replaceElementById(PostTemplate(this.app, this.mod, this), "tweet-overlay");
-			}else{
-				console.log("Insert post form");
+		console.log('Post render: ' + this.container);
+
+		if (container) {
+			if (document.getElementById('tweet-overlay')) {
+				console.log('replace');
+				this.app.browser.replaceElementById(
+					PostTemplate(this.app, this.mod, this),
+					'tweet-overlay'
+				);
+			} else {
+				console.log('Insert post form');
 				this.app.browser.addElementAfterSelector(PostTemplate(this.app, this.mod, this), container);
 			}
-		}else{
-			console.log("overlay");
+		} else {
+			//console.log('overlay');
 			this.overlay.show(PostTemplate(this.app, this.mod, this));
 			this.overlay.blockClose();
 		}
@@ -43,15 +48,10 @@ class Post {
 		//
 
 		if (!this.input) {
-			this.input = new SaitoInput(
-				this.app,
-				this.mod,
-				this.container + '.tweet-overlay-content'
-			);
-			this.input.enable_mentions = false;
+			this.input = new SaitoInput(this.app, this.mod, this.container + '.tweet-overlay-content', "tweet-overlay");
 		}
 
-		if (!this.user){
+		if (!this.user) {
 			this.user = new SaitoUser(
 				this.app,
 				this.mod,
@@ -65,17 +65,15 @@ class Post {
 
 		this.input.display = 'large';
 
-		this.input.placeholder = 'What\'s happening';
+		this.input.placeholder = "What's happening";
 		if (this.source == 'Retweet') {
 			this.input.placeholder = 'optional comment';
-			this.user.notice =
-				'add a comment to your retweet or just click submit...';
+			this.user.notice = 'add a comment to your retweet or just click submit...';
 		}
 
 		if (this.source == 'Edit') {
 			this.input.placeholder = this.tweet.text || '';
-			this.user.notice =
-				'tweets are editable for a brief period after posting...';
+			this.user.notice = 'tweets are editable for a brief period after posting...';
 		}
 
 		if (this.source == 'Reply') {
@@ -93,29 +91,31 @@ class Post {
 			} else if (file.includes('giphy.gif')) {
 				this.addImg(file);
 			} else {
-				let type = file.substring(
-					file.indexOf(':') + 1,
-					file.indexOf(';')
-				);
+				let type = file.substring(file.indexOf(':') + 1, file.indexOf(';'));
 				if (this.mod.allowed_upload_types.includes(type)) {
 					let resized_img = await this.app.browser.resizeImg(file);
 					this.addImg(resized_img);
 				} else {
-					salert(`Cannot upload ${type} image, allowed file types: 
-              ${this.mod.allowed_upload_types.join(', ')} 
-              - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading.`);
+					salert(
+						`Cannot upload ${type} image! Allowed file types: ${this.mod.allowed_upload_types.join(
+							', '
+						)}`
+					);
 				}
 			}
 		};
 
 		this.user.render();
-
+		
 		this.input.render();
-		this.input.focus(true);
+		
+		if (!this.app.browser.isMobileBrowser() || this.container == '.saito-overlay ') {
+			console.log("Focus on post");
+			this.input.focus(true);
+		}
 
 		if (this.source == 'Edit') {
-			document.querySelector(this.container + '.post-tweet-textarea').innerHTML =
-				this.tweet.text;
+			document.querySelector(this.container + '.post-tweet-textarea').innerHTML = this.tweet.text;
 		}
 
 		this.attachEvents();
@@ -133,36 +133,15 @@ class Post {
 		let post_self = this;
 		post_self.images = [];
 
-		if (post_self.file_event_added == false) {
-			post_self.app.browser.addDragAndDropFileUploadToElement(
-				'tweet-overlay',
-				async (file) => {
-					if (post_self.images.length >= 4) {
-						salert('Maximum 4 images allowed per tweet.');
-					} else {
-						let type = file.substring(
-							file.indexOf(':') + 1,
-							file.indexOf(';')
-						);
-						if (post_self.mod.allowed_upload_types.includes(type)) {
-							let resized_img = await this.app.browser.resizeImg(
-								file
-							);
-							this.addImg(resized_img);
-						} else {
-							salert(
-								'allowed file types: ' +
-									post_self.mod.allowed_upload_types.join(
-										', '
-									) +
-									' - this issue can be caused by image files missing common file-extensions. In this case try clicking on the image upload button and manually uploading.'
-							);
-						}
-					}
-					post_self.file_event_added = true;
-				},
-				false
-			);
+		if (this.container == ".saito-overlay "){
+			if (post_self.file_event_added == false) {
+				post_self.app.browser.addDragAndDropFileUploadToElement(
+					'tweet-overlay',
+					post_self.input.callbackOnUpload,
+					false
+				);
+				post_self.file_event_added = true;
+			}
 		}
 
 		//
@@ -170,43 +149,22 @@ class Post {
 			document.querySelector(this.container + '.saito-file-uploader').style.display = 'none';
 		}
 
-		document
-			.querySelector(this.container + '.post-tweet-textarea')
-			.addEventListener('keydown', (e) => {
-				if (e.keyCode === 13 && e.ctrlKey) {
-					document.querySelector(this.container + '#post-tweet-button').click();
-					e.preventDefault();
-				}
-
-				if ((e.keyCode == 50 || e.charCode == 64) && e.key == '@') {
-					let keys = post_self.input.findKeyOrIdentifier();
-					for (let key of keys) {
-						let identicon = this_self.app.keychain.returnIdenticon(key.publicKey);
-						key.identicon =  identicon;
-					}
-
-					console.log('keys:', keys);
-
-				   post_self.app.browser.addSaitoMentions(
-				   	keys, 
-				   	document.querySelector(this.container + '#tweet-overlay #post-tweet-textarea'), 
-				   	document.querySelector(this.container + '#tweet-overlay #saito-mentions-list'),
-				   	'input'
-				   );
-				}
-			});
+		try {
+			if (document.querySelector(this.container + '#post-delete-button')) {
+				document
+					.querySelector(this.container + '#post-delete-button')
+					.addEventListener('click', (e) => {
+						this.deleteTweet();
+					});
+			}
+		} catch (err) {}
 		try {
 			document
-				.querySelector(this.container + '#post-delete-button')
+				.querySelector(this.container + '#post-tweet-button')
 				.addEventListener('click', (e) => {
-					this.deleteTweet();
+					this.postTweet();
 				});
 		} catch (err) {}
-		document
-			.querySelector(this.container + '#post-tweet-button')
-			.addEventListener('click', (e) => {
-				this.postTweet();
-			});
 	}
 
 	async deleteTweet() {
@@ -221,14 +179,11 @@ class Post {
 
 		this.overlay.remove();
 
+		this.app.browser.logMatomoEvent('RedSquare', 'Post', 'deleteTweet');
+
 		data = { tweet_id: this.tweet.tx.signature };
 		this.tweet.remove();
-		let newtx = await this.mod.sendDeleteTransaction(
-			this.app,
-			this.mod,
-			data,
-			keys
-		);
+		let newtx = await this.mod.sendDeleteTransaction(this.app, this.mod, data, keys);
 	}
 
 	async postTweet() {
@@ -249,11 +204,8 @@ class Post {
 		// restrict moderation
 		console.log(text);
 		console.log('TEXT LENGTH: ' + text.length);
-		if (
-			wallet_balance == 0 &&
-			this.app.BROWSER == 1 &&
-			text.length > 5000
-		) {
+		if (wallet_balance == 0 && this.app.BROWSER == 1 && text.length > 5000) {
+			this.app.browser.logMatomoEvent('RedSquare', 'Post', 'failure');
 			siteMessage('Insufficient SAITO to Enable Oversized Posts...', 3000);
 			return;
 		}
@@ -261,11 +213,7 @@ class Post {
 		//
 		//don't send empty posts
 		//
-		if (
-			post_self.images.length == 0 &&
-			text.trim().length == 0 &&
-			post_self.source != 'Retweet'
-		) {
+		if (post_self.images.length == 0 && text.trim().length == 0 && post_self.source != 'Retweet') {
 			siteMessage('Post Empty', 1000);
 			return;
 		}
@@ -297,26 +245,24 @@ class Post {
 		// saito-loader
 		//
 		post_self.overlay.remove();
-		if (document.querySelector(this.container + "#tweet-overlay")){
-			document.querySelector(this.container + "#tweet-overlay").remove();
+		if (document.querySelector(this.container + '#tweet-overlay')) {
+			document.querySelector(this.container + '#tweet-overlay').remove();
 		}
 
 		//Edit
 		if (source === 'Edit') {
 			data = { text: text, tweet_id: this.tweet.tx.signature };
 
-			let qs = this.container + `.tweet-${this.tweet.tx.signature} .tweet-body .tweet-main .tweet-text`;
+			let qs =
+				this.container + `.tweet-${this.tweet.tx.signature} .tweet-body .tweet-main .tweet-text`;
 			let obj = document.querySelector(qs);
 			if (obj) {
 				obj.innerHTML = text;
 			}
 
-			let newtx = await post_self.mod.sendEditTransaction(
-				post_self.app,
-				post_self.mod,
-				data,
-				keys
-			);
+			let newtx = await post_self.mod.sendEditTransaction(post_self.app, post_self.mod, data, keys);
+
+			this.app.browser.logMatomoEvent('RedSquare', 'Post', 'editTweet');
 			return;
 		}
 
@@ -330,6 +276,8 @@ class Post {
 		//Replies
 		if (parent_id !== '') {
 			is_reply = true;
+
+			this.app.browser.logMatomoEvent('RedSquare', 'Post', 'replyTweet');
 			this.mod.replyTweet(this.tweet.tx.signature);
 			data = Object.assign(data, {
 				parent_id: parent_id,
@@ -359,6 +307,7 @@ class Post {
 			data.signature = post_self.tweet.tx.signature;
 			//save the tweet I am retweeting or replying to to my local archive
 			this.mod.retweetTweet(this.tweet.tx.signature);
+			this.app.browser.logMatomoEvent('RedSquare', 'Post', 'reTweet');
 
 			// We temporarily increase the number of retweets, this affects the next rendering
 			// but only adjust tx.optional when we get confirmation from the blockchain
@@ -374,13 +323,11 @@ class Post {
 				// This is a pure retweet, treat similar to a like and send a specialize tx to update stats only
 				//
 
-				post_self.mod.sendRetweetTransaction(
-					post_self.app,
-					post_self.mod,
-					data,
-					this.tweet.tx
-				);
-				this.tweet.retweeters.unshift(post_self.mod.publicKey);
+				post_self.mod.sendRetweetTransaction(post_self.app, post_self.mod, data, this.tweet.tx);
+
+				if (!this.tweet.retweeters.includes(post_self.mod.publicKey)){
+					this.tweet.retweeters.unshift(post_self.mod.publicKey);	
+				}
 
 				if (this.mod?.manager?.mode?.includes('tweet')) {
 					this.tweet.render();
@@ -390,12 +337,11 @@ class Post {
 			}
 		}
 
-		let newtx = await post_self.mod.sendTweetTransaction(
-			post_self.app,
-			post_self.mod,
-			data,
-			keys
-		);
+		let newtx = await post_self.mod.sendTweetTransaction(post_self.app, post_self.mod, data, keys);
+
+		if (source == 'Post') {
+			this.app.browser.logMatomoEvent('RedSquare', 'Post', 'newTweet');
+		}
 
 		if (this.mod?.manager?.mode?.includes('tweet')) {
 			this.renderNewTweet(newtx);
@@ -405,9 +351,9 @@ class Post {
         It's an art, not a science
         */
 
-		//	if (source == 'Post') {
-		//		this.mod.main.scrollFeed(0);
-		//	}
+			//	if (source == 'Post') {
+			//		this.mod.main.scrollFeed(0);
+			//	}
 		}
 	}
 
@@ -417,12 +363,7 @@ class Post {
 		// new Tweet is not a constructor error!!! ???
 		//
 		const Tweet = require('./tweet');
-		let posted_tweet = new Tweet(
-			this.app,
-			this.mod,
-			newtx,
-			'.tweet-manager'
-		);
+		let posted_tweet = new Tweet(this.app, this.mod, newtx, '.tweet-manager');
 		//console.log("New tweet:", posted_tweet);
 
 		let rparent = this.tweet;
@@ -453,14 +394,13 @@ class Post {
 	}
 
 	addImg(img) {
-		post_self = this;
-		this.app.browser.addElementToDom(
-			`<div class="post-tweet-img-preview">
-        <img src="${img}"/>
-        <i class="fa fa-times"></i>
-       </div>`,
-			document.querySelector(this.container + '#post-tweet-img-preview-container')
-		);
+		let post_self = this;
+		let html = `<div class="post-tweet-img-preview">
+        				<img src="${img}"/>
+        				<i class="fa fa-times"></i>
+       				</div>`;
+
+		this.app.browser.addElementToSelector(html, this.container + '#post-tweet-img-preview-container');
 		this.images.push(img);
 
 		// attach img preview event
@@ -474,14 +414,12 @@ class Post {
 				let array_position = e.target.getAttribute('data-id');
 				e.target.parentNode.remove();
 				post_self.images.splice(array_position, 1);
-				document
-					.querySelectorAll(this.container + '.post-tweet-img-preview')
-					.forEach((el2) => {
-						let array_position2 = el2.getAttribute('data-id');
-						if (array_position2 > array_position) {
-							el2.setAttribute('data-id', array_position2 - 1);
-						}
-					});
+				document.querySelectorAll(this.container + '.post-tweet-img-preview').forEach((el2) => {
+					let array_position2 = el2.getAttribute('data-id');
+					if (array_position2 > array_position) {
+						el2.setAttribute('data-id', array_position2 - 1);
+					}
+				});
 			});
 		});
 	}

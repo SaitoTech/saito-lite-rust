@@ -38,18 +38,6 @@
 
     this.menu.addMenuOption("game-game", "Game");
 
-/***
-    this.menu.addSubMenuOption("game-game", {
-      text: "Divorce",
-      id: "game-divorce",
-      class: "game-divorce",
-      callback: function(app, game_mod){
-	game_mod.menu.hideSubMenus();
-        game_mod.marriage_overlay.renderApproveDivorce();
-      }
-    });
-***/
-
     this.menu.addSubMenuOption("game-game", {
       text : "About H.I.S.",
       id : "game-about",
@@ -67,20 +55,34 @@ minor changes have been made to hasten gameplay, including:
 browsers will "automatically" respond "no" when asked if they want to play
    event-response cards (like Wartburg) if they do not have those cards. This
    speeds up gameplay at the cost of "leaking" info that some players do not
-   hold those cards. This feature can be disabled by switching to slow gameplay
-   mode.
+   hold those cards. Players who have response cards also only have a limited 
+   amount of time to select those cards. You can turn this feature off by 
+   switching to "slow mode".
 </li>
 <li>
-winter retreat is heavily automated, with units automatically returned to the
-   nearest fortified space, or returned to a random capital (with attrition if
-   needed) if no such space exists. attrition costs are automatically assigned 
-   to the lowest-cost units being moved.
+players have a limited amount of time to trigger response cards in response to
+   opponent moves. this is designed to prevent slow players unnecessarily slowing
+   gameplay and preventing opponents from moving.
+</li>
+<li>
+impulse order is not enforced in Spring Deployment and Diplomacy and a few other
+   minor retreat options. advanced players who wish to enforce Impulse Order in
+   these cases can do so simply by having factions commit their moves in that 
+   order.
+</li>
+<li>
+winter retreat to fortified spaces is automated. all units are automatically 
+   returned to the nearest fortified space with space. If no such space exists
+   attrition costs are automatically assigned to the lowest-cost units being 
+   moved. this removes some granularity in controlling which exact units winter
+   in which exact spaces. players can take this into account when maneuvering 
+   units out of fortified spaces.
 </li>
 <li>
 the game engine automatically handles token denomination, merging smaller
    units into larger ones as possible. if factions hit their limits units are
-   not destroyed however - the faction is registered as being in "over-capacity" 
-   and blocked from constructing new units until back under their token limit.
+   not destroyed - the faction is registered as being in "over-capacity" and 
+   blocked from constructing new units until back under their token limit.
 </li>
 </ul>
 `;
@@ -155,12 +157,14 @@ the game engine automatically handles token denomination, merging smaller
       callback : null
     });
 
-    this.faster_play = 1;
-    if (this.app.options.gameprefs) {
-      if (this.app.options.gameprefs.his_faster_play) {
-	this.faster_play = parseInt(this.app.options.gameprefs.his_faster_play);
-      }
-    }
+//    if (this.faster_play !== 0 && this.faster_player !== 1) {
+//      this.faster_play = 1;
+//    }
+//    if (this.app.options.gameprefs) {
+//      if (this.app.options.gameprefs.his_faster_play) {
+//	this.faster_play = parseInt(this.app.options.gameprefs.his_faster_play);
+//      }
+//    }
     this.menu.addSubMenuOption("game-gameplay",{
       text: `Faster ${(this.faster_play==1)?"✔":""}`,
       id:"game-gameplay-faster",
@@ -225,6 +229,15 @@ the game engine automatically handles token denomination, merging smaller
         game_mod.units_overlay.render();
       }
     });
+    this.menu.addSubMenuOption("game-info", {
+      text: "Marriage",
+      id: "game-marriage",
+      class: "game-marriage",
+      callback: function(app, game_mod){
+	game_mod.menu.hideSubMenus();
+        game_mod.marriage_overlay.render();
+      }
+    });
 
 
 /***
@@ -253,37 +266,37 @@ the game engine automatically handles token denomination, merging smaller
         game_mod.deck_overlay.render("discards");
       }
     });
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Papacy",
-      id : "game-papacy-cards",
-      class : "game-papacy-cards",
-      callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-	if (game_mod.returnPlayerOfFaction("papacy") == game_mod.game.player) {
-          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "papacy");
-          let c = game_mod.game.deck[0].fhand[fhand_idx];
-          game_mod.deck_overlay.render("hand", c);
-	  return;
-	}
-        game_mod.deck_overlay.render("papacy");
-      }
-    });
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Protestant",
-      id : "game-protestant-cards",
-      class : "game-protestant-cards",
-      callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-	if (game_mod.returnPlayerOfFaction("protestant") == game_mod.game.player) {
-          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "protestant");
-          let c = game_mod.game.deck[0].fhand[fhand_idx];
-          game_mod.deck_overlay.render("hand", c);
-	  return;
-	}
-        game_mod.deck_overlay.render("protestant");
-      }
-    });
 if (this.game.players.length > 2) {
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Ottoman",
+      id : "game-ottoman-cards",
+      class : "game-ottoman-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+	if (game_mod.returnPlayerOfFaction("ottoman") == game_mod.game.player) {
+          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "ottoman");
+          let c = game_mod.game.deck[0].fhand[fhand_idx];
+          game_mod.deck_overlay.render("hand", c);
+	  return;
+	}
+        game_mod.deck_overlay.render("ottoman");
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Hapsburg",
+      id : "game-hapsburg-cards",
+      class : "game-hapsburg-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+	if (game_mod.returnPlayerOfFaction("hapsburg") == game_mod.game.player) {
+          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "hapsburg");
+          let c = game_mod.game.deck[0].fhand[fhand_idx];
+          game_mod.deck_overlay.render("hand", c);
+	  return;
+	}
+        game_mod.deck_overlay.render("hapsburg");
+      }
+    });
     this.menu.addSubMenuOption("game-cards", {
       text : "England",
       id : "game-england-cards",
@@ -314,37 +327,37 @@ if (this.game.players.length > 2) {
         game_mod.deck_overlay.render("france");
       }
     });
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Hapsburg",
-      id : "game-hapsburg-cards",
-      class : "game-hapsburg-cards",
-      callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-	if (game_mod.returnPlayerOfFaction("hapsburg") == game_mod.game.player) {
-          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "hapsburg");
-          let c = game_mod.game.deck[0].fhand[fhand_idx];
-          game_mod.deck_overlay.render("hand", c);
-	  return;
-	}
-        game_mod.deck_overlay.render("hapsburg");
-      }
-    });
-    this.menu.addSubMenuOption("game-cards", {
-      text : "Ottoman",
-      id : "game-ottoman-cards",
-      class : "game-ottoman-cards",
-      callback : function(app, game_mod) {
-	game_mod.menu.hideSubMenus();
-	if (game_mod.returnPlayerOfFaction("ottoman") == game_mod.game.player) {
-          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "ottoman");
-          let c = game_mod.game.deck[0].fhand[fhand_idx];
-          game_mod.deck_overlay.render("hand", c);
-	  return;
-	}
-        game_mod.deck_overlay.render("ottoman");
-      }
-    });
 }
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Papacy",
+      id : "game-papacy-cards",
+      class : "game-papacy-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+	if (game_mod.returnPlayerOfFaction("papacy") == game_mod.game.player) {
+          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "papacy");
+          let c = game_mod.game.deck[0].fhand[fhand_idx];
+          game_mod.deck_overlay.render("hand", c);
+	  return;
+	}
+        game_mod.deck_overlay.render("papacy");
+      }
+    });
+    this.menu.addSubMenuOption("game-cards", {
+      text : "Protestant",
+      id : "game-protestant-cards",
+      class : "game-protestant-cards",
+      callback : function(app, game_mod) {
+	game_mod.menu.hideSubMenus();
+	if (game_mod.returnPlayerOfFaction("protestant") == game_mod.game.player) {
+          let fhand_idx = game_mod.returnFactionHandIdx(game_mod.game.player, "protestant");
+          let c = game_mod.game.deck[0].fhand[fhand_idx];
+          game_mod.deck_overlay.render("hand", c);
+	  return;
+	}
+        game_mod.deck_overlay.render("protestant");
+      }
+    });
 
 
 /****
@@ -462,6 +475,14 @@ if (this.game.players.length > 2) {
 
     this.menu.addMenuOption("game-factions", "Factions");
     this.menu.addSubMenuOption("game-factions", {
+      text : "Ottomans",
+      id : "game-ottoman",
+      class : "game-ottoman",
+      callback : function(app, game_mod) {
+        game_mod.faction_overlay.render("ottoman");
+      }
+    });
+    this.menu.addSubMenuOption("game-factions", {
       text : "Hapsburgs",
       id : "game-hapsburg",
       class : "game-hapsburg",
@@ -486,11 +507,11 @@ if (this.game.players.length > 2) {
       }
     });
     this.menu.addSubMenuOption("game-factions", {
-      text : "Ottomans",
-      id : "game-ottoman",
-      class : "game-ottoman",
+      text : "Papacy",
+      id : "game-papacy",
+      class : "game-papacy",
       callback : function(app, game_mod) {
-        game_mod.faction_overlay.render("ottoman");
+        game_mod.faction_overlay.render("papacy");
       }
     });
     this.menu.addSubMenuOption("game-factions", {
@@ -499,14 +520,6 @@ if (this.game.players.length > 2) {
       class : "game-protestants",
       callback : function(app, game_mod) {
         game_mod.faction_overlay.render("protestant");
-      }
-    });
-    this.menu.addSubMenuOption("game-factions", {
-      text : "Papacy",
-      id : "game-papacy",
-      class : "game-papacy",
-      callback : function(app, game_mod) {
-        game_mod.faction_overlay.render("papacy");
       }
     });
 

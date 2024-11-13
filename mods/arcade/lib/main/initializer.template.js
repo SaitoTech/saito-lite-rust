@@ -2,8 +2,8 @@ module.exports = (game_id) => {
 	if (game_id) {
 		return `
         <div class="arcade-initializer"> 
-            <div class="arcade-game-initializer-success-title">Your game is ready to start!</div>
-            <button class="arcade-game-initializer-success-button saito-button saito-primary-button">start game</button>
+            <div class="arcade-game-initializer-success-title">Your game is ready!</div>
+            <button class="arcade-game-initializer-success-button saito-button">start game</button>
         </div>`;
 	} else {
 		return `

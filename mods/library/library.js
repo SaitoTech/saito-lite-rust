@@ -31,8 +31,9 @@ const PeerService = require('saito-js/lib/peer_service').default;
 //      description 	: "description" ,
 //      num 		: 1 ,				// total in collection
 //      available 	: 1 ,				// total available (not in use)
+//      key 		: "" ,				// random key that encrypts content
 //      checkout 	: [] ,
-//      sig 		: "sig"
+//      sig 		: "sig"				// sig of transaction with content
 //   }
 // ]
 //
@@ -51,13 +52,15 @@ class Library extends ModTemplate {
 
 		this.app = app;
 		this.name = 'Library';
-		this.description =
-			'Adds digital rights management (DRM) and curation and lending functionality, permitting users to create curated collections of content and share it in rights-permitting fashion.';
+		this.slug = 'library';
+		this.description = `Adds digital rights management (DRM) and curation and lending functionality, permitting 
+			users to create curated collections of content and share it in rights-permitting fashion.
+		`;;
 		this.categories = 'Core Utilities DRM';
 
 		//
 		// any library borrowing coded for 2 hour minimum increments
-		//
+		// TODO -- is this still used
 		this.return_milliseconds = 7200000;
 
 		//
@@ -242,9 +245,9 @@ class Library extends ModTemplate {
 				return;
 			}
 			if (mycallback) {
-				mycallback(
-					this.library[message.data.collection].peers[this.publicKey]
-				);
+				let x = JSON.parse(JSON.stringify(this.library[message.data.collection].peers[this.publicKey]));
+				for (let key in x) { x.random = ""; } // do not share decryption key is all
+				mycallback( this.library[message.data.collection].peers[this.publicKey] );
 				return 1;
 			}
 			return;
@@ -328,11 +331,15 @@ class Library extends ModTemplate {
 			this.addCollection(collection);
 		}
 
+		//
+		// the object inside the library looks like this
+		//
 		// id 		: "id" ,
-		// title 		: "title" ,
+		// title	: "title" ,
 		// description 	: "description" ,
 		// num 		: 1 ,				// total in collection
 		// available 	: 1 ,				// total available (not in use)
+		// random 	: "" ,				// random hash used to encrypt
 		// checkout 	: [] ,
 		// sig 		: "sig"
 

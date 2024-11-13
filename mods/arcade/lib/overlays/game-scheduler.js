@@ -1,7 +1,6 @@
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay');
-const SaitoScheduler = require('./../../../../lib/saito/ui/saito-scheduler/saito-scheduler');
+//const SaitoScheduler = require('./../../../../lib/saito/ui/saito-scheduler/saito-scheduler');
 const ScheduleInviteTemplate = require('./game-scheduler.template');
-const JSON = require('json-bigint');
 
 class GameScheduler {
 	constructor(app, mod, invite_tx = null) {

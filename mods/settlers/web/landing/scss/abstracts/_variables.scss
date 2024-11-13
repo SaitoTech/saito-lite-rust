@@ -1,0 +1,41 @@
+/* ==========================================================================
+	# Global Variables
+========================================================================== */
+
+:root{
+	// --------------------------- Theme Colors
+	--color__primary: #006680;
+	--color__secondary: #1DA7B0;
+	--color__brown: #BE6545;
+	--color__text: #000;
+	--color__text-light: #e0f2ff;
+	--color__transparent-bg: rgba(224, 242, 255, .35);
+	
+	
+	// --------------------------- Other Colors
+	--color__black: #000;
+	--color__white: #fff;
+
+	// --------------------------- Fonts
+	--font__base: "Bagnard", sans-serif;
+}
+
+
+
+// --------------------------- Breakpoints
+$breakpoints: (
+	"xxs": 320px,
+	"iPhone5": 374px,
+	"extraSmall": 479px,
+	"smaller": 575px,
+	"small": 767px,
+	"medium": 991px,
+	"ipadPro": 1024px,
+	"wide": 1199px,
+	"laptop": 1400px,
+	"extraWide": 1930px,
+);
+
+// --------------------------- Container
+$container-width: 1898px;
+$container-padding: 15px;

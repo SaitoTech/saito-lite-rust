@@ -42,6 +42,20 @@
     if (this.returnAllyOfMinorPower(power) != power) {
       this.deactivateMinorPower(this.returnAllyOfMinorPower(power), power);
     }
+
+    //
+    // any home spaces help by the major power are returned to its minor ally
+    // on the alliance being formed. this is needed to ensure that Line of 
+    // Communications can work properly...
+    //
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].home == power) {
+        if (this.game.spaces[key].political == faction) {
+	  this.game.spaces[key].political = power;
+	}
+      }
+    }
+
     this.setAllies(faction, power, 0);
     this.game.state.activated_powers[faction].push(power);
     this.game.state.minor_activated_powers.push(power);
@@ -63,6 +77,20 @@
 	this.game.state.minor_activated_powers.splice(i, 1);
       }
     }
+
+    //
+    // any home spaces help by the major power are returned to its minor ally
+    // on the alliance being disabled. this is needed to ensure that Line of 
+    // Communications can work properly...
+    //
+    for (let key in this.game.spaces) {
+      if (this.game.spaces[key].home == power) {
+        if (this.game.spaces[key].political == faction) {
+          this.game.spaces[key].political = power;
+        }
+      }
+    }
+    
     this.displayBoard();
     this.displayVictoryTrack();
   }

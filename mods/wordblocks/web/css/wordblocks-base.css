@@ -1,23 +1,9 @@
-.main {
+.main, .scrollable-page {
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	background: url('/wordblocks/img/background.jpg');
 	background-size: cover;
-}
-
-.pboxlog {
-	margin-top: 1rem;
-	color: white;
-}
-.pboxinfo {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
-	margin: 1px 0;
-	margin-top: 1rem;
-	color: white;
 }
 
 .textchoice:hover {
@@ -48,8 +34,19 @@
 }
 
 .playerscore {
-	font-weight: bolder;
-	text-shadow: -2px 3px 2px black;
+	text-shadow: -1px 1px 1px red;
+	color: black;
+	background-image: url('/wordblocks/img/slot2.png');
+	background-size: contain;
+	border-radius: 0.5rem;
+	border: 1px solid var(--saito-border-color);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 6rem;
+	height: 3.5rem;
+	font-size: 2rem;
+	cursor: pointer;
 }
 
 .discardedtiles {
@@ -57,8 +54,12 @@
 	color: var(--saito-red);
 }
 
-.score-overlay,
-.stats-overlay {
+.saito-overlay {
+	background-color: transparent;
+	box-shadow: none;
+}
+
+.score-overlay, .stats-overlay {
 	width: min(500px, 90vw);
 	min-height: 200px;
 	max-height: 65vh;
@@ -71,8 +72,7 @@
 	border: 1px solid rgb(230, 206, 180);
 }
 
-.stats-overlay table,
-.score-overlay table {
+.stats-overlay table, .score-overlay table {
 	margin: auto;
 	width: 100%;
 	border-spacing: 1em;
@@ -80,13 +80,16 @@
 	color: rgb(250, 244, 239);
 }
 
-.score-overlay td,
-.stats-overlay td {
+.score-overlay td.center_align, .stats-overlay td.center_align {
 	text-align: center;
 }
 
-thead,
-tfoot {
+.score-overlay td.right_align, .stats-overlay td.right_align {
+	text-align: right;
+	padding-right: 2.5rem;
+}
+
+thead, tfoot {
 	font-weight: bold;
 	text-align: center;
 }
@@ -117,21 +120,32 @@ tfoot {
 }
 
 /* Popup menu controls */
-.tile-placement-controls,
-.tile-submit-controls {
+
+.tile-placement-controls, .tile-submit-controls {
 	position: absolute;
-	top: 100%;
-	left: 50%;
-	transform: translateX(-50%);
+	bottom: 100%;
 	text-align: center;
-	width: 150px;
 	display: flex;
-	flex-direction: column;
 	align-items: center;
 }
 
+.tile-placement-controls {
+	flex-direction: column;
+	width: 150px;
+	/*left: 50%;
+	transform: translateX(-50%);*/
+}
+
+.tile-submit-controls {
+	left: 50%;
+	transform: translateX(-50%);
+	max-width: 100%;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
 .tile-submit-controls .playable {
-	font-size: 1.5em;
+	font-size: 2.8rem;
 	color: #fff;
 	text-shadow: 1px 1px #555;
 	background: rgb(43, 29, 14);
@@ -149,7 +163,7 @@ tfoot {
 .action {
 	color: #fff;
 	border: 4px solid #cccccc;
-	padding: 5px;
+	padding: 7px;
 	border-radius: 10px;
 	margin: 5px 0;
 	background-color: #777;
@@ -158,12 +172,14 @@ tfoot {
 	font-size: 16px;
 }
 
-/*.action {
-  justify-self: center;
-  align-self: center;
-  padding: 1.5vh 0px;
-  width: 100%;
-}*/
+.tile-submit-controls .action {
+	width: 120px;
+}
+
+.action:hover {
+	border-color: var(--saito-white);
+	text-shadow: 1px 1px 3px black;
+}
 
 #lastmove {
 	cursor: pointer;
@@ -228,12 +244,14 @@ tfoot {
 }
 
 /* Player Tile Rack*/
+
 .rack {
 	align-self: center;
 	display: flex;
 	/* padding: 10px 0;
   height: 80px; */
 }
+
 .tiles {
 	margin: auto;
 	display: flex;
@@ -252,12 +270,25 @@ tfoot {
 }
 
 /*Game board spaces*/
+
 .active_board .slot {
 	cursor: pointer;
 }
 
-.active_board.slot:hover {
-	filter: brightness(0.5);
+.slot .tile {
+	filter: brightness(1.15);
+}
+
+.slot.set .tile {
+	filter: revert;
+}
+
+.slot.set.new .tile {
+	filter: brightness(0.85) opacity(0.9);
+}
+
+.active_board .slot:hover {
+	filter: brightness(0.8);
 }
 
 .slot {
@@ -270,8 +301,7 @@ tfoot {
 	height: 54px;
 }
 
-.slot .bonus,
-div.tile {
+.slot .bonus, div.tile {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
@@ -299,6 +329,7 @@ div.tile {
 /*
   Double/Triple Letter/Word Bonus Tiles and Star Tiles
 */
+
 .slot .bonus {
 	font-weight: bold;
 	font-size: 12px;
@@ -310,32 +341,27 @@ div.tile {
   line-height: 15px;*/
 }
 
-.tw,
-.twbk {
+.tw, .twbk {
 	border: 1px solid rgb(133, 20, 0);
 	background: rgba(159, 24, 0, 0.8);
 }
 
-.dw,
-.dwbk {
+.dw, .dwbk {
 	border: 1px solid rgb(221, 70, 0);
 	background: rgba(221, 102, 0, 0.8);
 }
 
-.tl,
-.tlbk {
+.tl, .tlbk {
 	border: 1px solid rgb(54, 0, 108);
 	background: rgba(0, 64, 128, 0.8);
 }
 
-.dl,
-.dlbk {
+.dl, .dlbk {
 	border: 1px solid rgb(0, 103, 51);
 	background: rgba(0, 128, 64, 0.8);
 }
 
-.star,
-.starbk {
+.star, .starbk {
 	border: 1px solid #888822;
 	background: rgba(187, 187, 102, 0.8);
 }
@@ -358,7 +384,7 @@ div.tile {
 	justify-content: space-around;
 }
 
-.rack-controls > div {
+.rack-controls>div {
 	display: flex;
 	align-items: center;
 	justify-content: space-evenly;
@@ -368,93 +394,21 @@ div.tile {
 	padding: 10px;
 }
 
-.shuffle,
-#skipturn,
-#deletectrl {
+.shuffle, #skipturn, #deletectrl, #canceldelete {
 	cursor: pointer;
 }
 
 /*Rearrange HUD/Playerbox elements for portrait layout  */
+
 @media (orientation: portrait) {
 	.player-box-head-name {
 		font-size: 2vh;
 	}
-
 	.tile-submit-controls {
 		flex-direction: row;
 		justify-content: space-between;
 		width: 550px;
 		max-width: 100vw;
-	}
-}
-
-/*
-Resize board on smaller screens
-*/
-
-@media only screen and (max-width: 600px) {
-	#game-scoreboard {
-		display: flex;
-		cursor: pointer;
-		width: 40%;
-		font-size: 24px;
-		justify-content: space-between;
-	}
-
-	#opponentbox {
-		display: none;
-	}
-
-	.visible#opponentbox {
-		display: flex;
-	}
-
-	.hud-status-update-message,
-	.subrack {
-		font-size: 0.8em;
-	}
-
-	.hud {
-		font-size: 22px;
-		width: 100vw;
-		position: fixed;
-		top: unset !important;
-		bottom: 0 !important;
-		left: 0 !important;
-		height: unset;
-		height: -moz-fit-content;
-		min-height: unset;
-		min-width: 100vw;
-		transform: none;
-		display: block;
-		z-index: 100;
-	}
-	.hud-header,
-	.hud-menu {
-		display: none;
-	}
-	.hud-body {
-		height: unset;
-		max-height: unset;
-		height: fit-content;
-		height: -moz-fit-content;
-	}
-
-	.tiles {
-		width: auto;
-		/*height: 72px;*/
-	}
-	.tiles div.tile {
-		margin: 1vw;
-		font-size: min(7vw, 36px);
-		/*width: 72px;
-    height: 72px;*/
-		max-width: 11vw;
-		max-height: 11vw;
-	}
-
-	.rack-controls i {
-		padding: 8px;
 	}
 }
 
@@ -470,24 +424,26 @@ Resize board on smaller screens
 
 /* End of responsive layout */
 
-.hidden,
-.rack-controls > div.hidden {
+.hidden, .rack-controls>div.hidden {
 	display: none;
 }
 
 /* Highlight selected tile in rack*/
+
 .tiles .tile.highlighttile {
 	color: rgb(250, 244, 239);
 	border-color: rgb(250, 244, 239);
 }
 
 /* Highlight temporary tiles on board*/
+
 .slot .tile.tempplacement {
 	background-color: #32cd3279;
 	color: black;
 }
 
 /* Highlight selected tile on board*/
+
 .slot .tile.highlighttile {
 	background-color: limegreen;
 	color: black;
@@ -528,4 +484,117 @@ Resize board on smaller screens
 
 .status_container {
 	width: 100%;
+}
+
+#remainingctrl {
+	cursor: pointer;
+}
+
+.remaining_tiles {
+	width: 500px;
+	max-width: 90vw;
+	max-height: min(600px, 90vh);
+	font-size: 28px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem;
+	padding: 1rem;
+	background: rgb(43, 29, 14);
+	border-radius: 1rem;
+	border: 1px solid rgb(230, 206, 180);
+	justify-content: space-evenly;
+}
+
+.remaining_tiles .tile {
+	background-image: url(/wordblocks/img/empty_tile.png);
+	background-size: cover;
+	color: rgb(43, 29, 14);
+	border-radius: 5px;
+}
+
+.remaining_tiles .tile, .remaining_tiles .gap {
+	width: 4.5rem;
+	height: 4.5rem;
+}
+
+/*
+Resize board on smaller screens
+*/
+
+@media only screen and (max-width: 600px) {
+	#game-scoreboard {
+		display: flex;
+		cursor: pointer;
+		max-width: calc(100% - 12rem);
+		font-size: 24px;
+		color: rgb(250, 244, 239);
+		background: rgb(43, 29, 14);
+		height: 4rem;
+		padding: 0;
+	}
+	#game-scoreboard .score {
+		gap: 0.5rem;
+		padding: 0.5rem;
+	}
+	#opponentbox {
+		display: none;
+	}
+	.visible#opponentbox {
+		display: flex;
+	}
+	.remaining_tiles {
+		font-size: 20px;
+	}
+	.remaining_tiles .tile, .remaining_tiles .gap {
+		width: 3rem;
+		height: 3rem;
+	}
+	.hud-status-update-message, .subrack {
+		font-size: 0.8em;
+	}
+	.tile-submit-controls .playable {
+		font-size: 2rem;
+	}
+	.hud {
+		font-size: 22px;
+		width: 100vw;
+		position: fixed;
+		top: unset !important;
+		bottom: 0 !important;
+		left: 0 !important;
+		height: unset;
+		height: -moz-fit-content;
+		min-height: unset;
+		min-width: 100vw;
+		transform: none;
+		display: block;
+		z-index: 100;
+	}
+	.hud-header, .hud-menu {
+		display: none;
+	}
+	.hud-body {
+		height: unset;
+		max-height: unset;
+		height: fit-content;
+		height: -moz-fit-content;
+	}
+	.tiles {
+		width: auto;
+		/*height: 72px;*/
+	}
+	.tiles div.tile, #helper {
+		margin: 1vw;
+		font-size: min(7vw, 36px);
+		/*width: 72px;
+    height: 72px;*/
+		max-width: 11vw;
+		max-height: 11vw;
+	}
+	.tiles .tile.highlighttile {
+		visibility: hidden;
+	}
+	.rack-controls i {
+		padding: 8px;
+	}
 }

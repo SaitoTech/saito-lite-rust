@@ -4,9 +4,9 @@
       this.game.state.events.pinochet = 1;
       this.game.state.events.pinochet_added = 1;
 
-      if (this.game.player == 2) {
+      this.startClockAndSetActivePlayer(2);
 
-        this.startClock();
+      if (this.game.player == 2) {
 
         var twilight_self = this;
         twilight_self.playerFinishedPlacingInfluence();

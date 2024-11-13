@@ -7,13 +7,14 @@ Saito Identicon
   height: 3.5rem;
   border: var(--border-thickness-identicon) solid var(--border-color-identicon);
   border-radius: var(--border-radius-identicon);
-  padding: var(--border-padding-identicon-style);
   background: var(--background-color-identicon);
 }
 
 .saito-identicon-box {
   width: 3.5rem;
   height: 3.5rem;
+  border: var(--border-thickness-identicon) solid var(--border-color-identicon);
+  border-radius: var(--border-radius-identicon);
   cursor: pointer; /* app.browser tries to turn all .saito-identicon into clickable target */
 }
 
@@ -21,6 +22,8 @@ Saito Identicon
   /* It should grow to fit the box! */
   width: 100%;
   height: 100%;
+  border-radius: inherit;
+  border: none;
 }
 
 /* ----------------------------------------------------------------
@@ -48,6 +51,7 @@ Saito User
   width: 100%;
   position: relative;
   white-space: nowrap; /* don't auto wrap time stamps or stuff */
+  row-gap: 0;
 }
 
 /*  saito-identicon-box  */
@@ -59,8 +63,18 @@ Saito User
   position: relative;
 }
 
+.saito-user > .saito-identicon-box .saito-identicon{
+  opacity: 0.75; /* make identicons less harsh */
+}
+
+
+.saito-user > .saito-identicon-box .saito-identicon[data-id]:hover{
+  opacity: 1;
+}
+
 .saito-user>.saito-address {
-  color: var(--font-color-chat-container-user-address);
+  color: var(--font-color-primary);
+
   grid-column-start: 2;
   grid-column-end: span 1;
   grid-row-start: 1;
@@ -82,7 +96,6 @@ Saito User
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: wrap; /* allow the userline to wrap intuitively (for chat messages) */
 }
 
 .saito-user .saito-datetime {

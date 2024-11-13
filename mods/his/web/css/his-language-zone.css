@@ -87,3 +87,21 @@
 	font-size: 2.6rem;
 	background-color: #0009;
 }
+
+.language-zone-overlay {
+	display: grid;
+	grid-template-columns: min-content 1fr;
+}
+.language-zone-overlay .debaters-container {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    margin-left: 2rem;
+}
+.language-zone-overlay .debaters-container .debaters {
+    width: inherit;
+    display: flex;
+    flex-wrap: wrap;
+}
+

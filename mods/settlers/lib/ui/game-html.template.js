@@ -1,4 +1,4 @@
 module.exports = (app, mod) => {
 
-	return `<div class="gameboard dark"></div>`;
+	return `<div class="main dark"></div>`;
 }
