@@ -138,7 +138,10 @@ async function init() {
 	} catch (e) {
 		console.error(e);
 	}
-	await S.getInstance().disableProducingBlocksByTimer();
+
+	// enable it for ATR testing
+	// await S.getInstance().disableProducingBlocksByTimer();
+
 	saito.wallet = (await S.getInstance().getWallet()) as Wallet;
 	saito.wallet.app = saito;
 	saito.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;
