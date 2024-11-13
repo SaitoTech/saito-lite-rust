@@ -201,7 +201,7 @@ class TweetManager {
 				);
 
 				for (let i = 0; i < this.mod.notifications.length; i++) {
-					let notification = new Notification(this.app, this.mod, this.mod.notifications[i].tx);
+					let notification = new Notification(this.app, this.mod, this.mod.notifications[i]);
 					notification.render('.tweet-manager');
 				}
 			}

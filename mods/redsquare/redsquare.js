@@ -1555,27 +1555,17 @@ class RedSquare extends ModTemplate {
         if (this.notifications_sigs_hmap[tx.signature] != 1) {
           console.log('Add notification', tx.msg, tx.timestamp);
 
-          //
-          // Turn TX into a "Tweet" and insert into notification array
-          //
-          let tweet = new Tweet(this.app, this, tx, '.tweet-manager');
-
-          if (!tweet?.tx) {
-            return 0;
-          }
-
-          console.log("Tweet notification: ", tweet.timestamp, tweet.created_at, tweet.updated_at);
-
           let insertion_index = 0;
 
           for (let i = 0; i < this.notifications.length; i++) {
-            if (tweet.created_at > this.notifications[i].created_at) {
-              insertion_index = i;
+            if (tx.timestamp > this.notifications[i].timestamp) {
               break;
+            }else{
+              insertion_index++;
             }
           }
 
-          this.notifications.splice(insertion_index, 0, tweet);
+          this.notifications.splice(insertion_index, 0, tx);
           this.notifications_sigs_hmap[tx.signature] = 1;
 
           if (tx.timestamp > this.notifications_last_viewed_ts) {
@@ -1680,7 +1670,7 @@ class RedSquare extends ModTemplate {
     }
 
     for (let i = 0; i < this.notifications.length; i++) {
-      if (this.notifications[i].tx.signature === tweet_sig) {
+      if (this.notifications[i].signature === tweet_sig) {
         return this.notifications[i];
       }
     }
