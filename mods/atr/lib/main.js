@@ -59,12 +59,14 @@ class Main {
         }
 
         attachEvents() {
-
-		document.querySelector(".new_block_with_ticket").onclick = (e) => {
+        	let this_self = this;
+		document.querySelector(".new_block_with_ticket").onclick = async(e) => {
 			alert("new block with golden ticket");
+			await this_self.app.wallet.produceBlockWithGt();
 		}
-		document.querySelector(".new_block_no_ticket").onclick = (e) => {
+		document.querySelector(".new_block_no_ticket").onclick = async(e) => {
 			alert("new block no golden ticket");
+			await this_self.app.wallet.produceBlockWithoutGt();
 		}
 		document.querySelector(".add_transaction_to_mempool").onclick = async (e) => {
 			let newtx = await this.app.wallet.createUnsignedTransaction();

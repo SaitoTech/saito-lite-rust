@@ -27,6 +27,9 @@ class ATR extends ModTemplate {
 		];
 		this.ui = new ATRMain(app, this);
 		this.header = new SaitoHeader(this.app, this);
+
+		// stop periodic creation of blocks on initialize
+
 	}
 
 	shouldAffixCallbackToModule() {
@@ -37,6 +40,9 @@ class ATR extends ModTemplate {
 		if (!this.app.BROWSER) {
 			return;
 		}
+
+		console.log('rendering atr mod ///////');
+		//await app.wallet.disableProducingBlocksByTimer();
 
 		this.addComponent(this.ui);
 		// await this.header.initialize(this.app);
