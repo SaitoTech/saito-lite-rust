@@ -23,7 +23,7 @@ class Main {
 
 			console.log("block: ", blockslot);
 
-			document.querySelector(`.blocktable .header .blockslot${blockslot}`).innerHTML = block.id;
+			document.querySelector(`.blocktable .table-header .blockslot${blockslot}`).innerHTML = block.id;
 
 			document.querySelector(`.blocktable .total_fees .blockslot${blockslot}`).innerHTML = block.totalFees;
 			document.querySelector(`.blocktable .total_fees_new .blockslot${blockslot}`).innerHTML = block.totalFeesNew;
@@ -49,7 +49,7 @@ class Main {
 			document.querySelector(`.blocktable .fee_per_byte .blockslot${blockslot}`).innerHTML = block.feePerByte;
 
 			document.querySelector(`.blocktable .avg_nolan_rebroadcast_per_block .blockslot${blockslot}`).innerHTML = block.avgNolanRebroadcastPerBlock;
-			document.querySelector(`.blocktable .burnfee .blockslot${blockslot}`).innerHTML = block.burnFee;
+			document.querySelector(`.blocktable .burn_fee .blockslot${blockslot}`).innerHTML = block.burnFee;
 			document.querySelector(`.blocktable .difficulty .blockslot${blockslot}`).innerHTML = block.difficulty;
 			document.querySelector(`.blocktable .previous_block_unpaid .blockslot${blockslot}`).innerHTML = block.previousBlockUnpaid;
 
