@@ -1,4 +1,5 @@
 const MainTemplate = require('./main.template');
+const AddMempool = require('./add-mempool');
 
 class Main {
         constructor(app, mod, container="") {
@@ -9,6 +10,7 @@ class Main {
                 	console.log("event atr-render-request");
 			this.render();
 		});
+		this.add_mempool = new AddMempool(app, mod);
         }
 
         render() {
@@ -69,15 +71,16 @@ class Main {
 			await this_self.app.wallet.produceBlockWithoutGt();
 		}
 		document.querySelector("#add_transaction_to_mempool").onclick = async (e) => {
-			alert('adding tx to Mempool');
-			let newtx = await this.app.wallet.createUnsignedTransaction();
-    			newtx.msg = {
-      				module: "ATR" ,
-      				request: 'test',
- 				data: { random : Math.random() }
-			};
-               		await newtx.sign();
-    			await this.app.network.propagateTransaction(newtx);
+			alert('rendering Mempool overlay');
+			this_self.add_mempool.render();
+			// let newtx = await this.app.wallet.createUnsignedTransaction();
+    			// newtx.msg = {
+      			// 	module: "ATR" ,
+      			// 	request: 'test',
+ 			// 	data: { random : Math.random() }
+			// };
+               		// await newtx.sign();
+    			// await this.app.network.propagateTransaction(newtx);
 		}
 
         }
