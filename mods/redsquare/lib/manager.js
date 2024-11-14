@@ -55,9 +55,7 @@ class TweetManager {
 								console.log(
 									'REDSQUARE: Turn off intersection observer before loading more notifications...'
 								);
-								this.intersectionObserver.unobserve(
-									document.querySelector('#intersection-observer-trigger')
-								);
+								this.intersectionObserver.disconnect();
 							}
 
 							this.loadNotifications();
@@ -230,9 +228,7 @@ class TweetManager {
 					'.tweet-manager'
 				);
 				if (document.querySelector('#intersection-observer-trigger')) {
-					this.intersectionObserver.unobserve(
-						document.querySelector('#intersection-observer-trigger')
-					);
+					this.intersectionObserver.disconnect();
 				}
 
 				if (this.mod.notifications.length == 0) {
@@ -253,6 +249,7 @@ class TweetManager {
 	}
 
 	fetchTweets(){
+		this.intersectionObserver.disconnect();
 		let numActivePeers = this.mod.loadTweets(
 			'earlier',
 			this.insertOlderTweets.bind(this)
@@ -283,6 +280,9 @@ class TweetManager {
 					tweet.renderWithCriticalChild();
 				}
 			}
+
+			this.intersectionObserver.observe(document.getElementById('intersection-observer-trigger'));
+
 		} else if (peer?.tweets_earliest_ts) {
 			console.log(
 				`${peer.publicKey} still has tweets as early as ${new Date(
@@ -311,13 +311,11 @@ class TweetManager {
 						'.tweet-manager'
 					);
 				}
-				if (document.querySelector('#intersection-observer-trigger')) {
-					this.intersectionObserver.unobserve(
-						document.querySelector('#intersection-observer-trigger')
-					);
-				}
+				this.intersectionObserver.disconnect();
+				console.log("Out of content");
 			} else {
-				console.log('Waiting on other peers to respond');
+				this.fetchTweets();
+				console.log('Requery all peers');
 			}
 		}
 	}
@@ -609,6 +607,7 @@ class TweetManager {
 		}, 5);
 
 		let ob = document.getElementById('intersection-observer-trigger');
+
 		if (ob) {
 			//Only set up intersection observer if we have more content than fits on the screen
 			//(so we don't double tap the servers)
@@ -624,6 +623,7 @@ class TweetManager {
 					e.currentTarget.classList.add("active");
 					document.getElementById("for-you").classList.remove("active");
 					this.mod.showOnlyWatched = true;
+					this.showLoader();
 					this.mod.reset();
 					this.clearFeed();
 					this.render();
@@ -635,6 +635,7 @@ class TweetManager {
 					e.currentTarget.classList.add("active");
 					document.getElementById("following").classList.remove("active");
 					this.mod.showOnlyWatched = false;
+					this.showLoader();
 					this.mod.reset();
 					this.clearFeed();
 					this.render();
