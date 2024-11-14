@@ -34,7 +34,6 @@ class ATR extends ModTemplate {
 	}
 
 	async render(app) { 
-
 		if (!this.app.BROWSER) {
 			return;
 		}
@@ -47,54 +46,13 @@ class ATR extends ModTemplate {
 
 	}
 
-		
-
 	async onConfirmation(blk, tx, conf) {
-console.log("A 1");
 		let txmsg = tx.returnMessage();
-console.log("A 2");
 		let atr_self = this.app.modules.returnModule('ATR');
-console.log("A 3");
-
 
 		if (conf == 0) {
-console.log("A 4");
-
-
-			//	console.log("block info: ", blk);
-			 console.log("block.id: ", blk.id);
-			 console.log("block.totalFees: ", blk.totalFees);
-			// console.log("block.totalFeesNew: ", blk.totalFeesNew);
-			// console.log("block.totalFeesAtr: ", blk.totalFeesAtr);
-			// console.log("block.avgTotalFees: ", blk.avgTotalFees);
-
-			// console.log("block.avgTotalFeesNew: ", blk.avgTotalFeesNew);
-			// console.log("block.avgTotalFeesAtr: ", blk.avgTotalFeesAtr);
-			// console.log("block.totalPayoutRouting: ", blk.totalPayoutRouting);
-
-			// console.log("block.totalPayoutMining: ", blk.totalPayoutMining);
-			// console.log("block.totalPayoutTreasury: ", blk.totalPayoutTreasury);
-			// console.log("block.totalPayoutGraveyard: ", blk.totalPayoutGraveyard);
-			// console.log("block.avgPayoutAtr: ", blk.avgPayoutAtr);
-
-			// console.log("block.avgFeePerByte: ", blk.avgFeePerByte);
-			// console.log("block.feePerByte: ", blk.feePerByte);
-			// console.log("block.burnFee: ", blk.burnFee);
-			// console.log("block.difficulty: ", blk.difficulty);
-			// console.log("block.previousBlockUnpaid: ", blk.previousBlockUnpaid);
-console.log("A 5");
-
-			console.log('blk.id', Number(blk.id)); 
-			console.log('this.last_block_id', atr_self.last_block_id);
-			console.log(Number(blk.id) > atr_self.last_block_id);
-
-console.log("A 6");
 			if (Number(blk.id) > atr_self.last_block_id) {
-
-console.log("A 7");
-
 				atr_self.last_block_id = Number(blk.id);
-console.log("A 8");
 
 				if (atr_self.blocks.length < 10) {
 					atr_self.blocks.push(blk);
@@ -110,19 +68,10 @@ console.log("A 8");
 					atr_self.blocks[8] = atr_self.block[9];
 					atr_self.blocks[9] = blk;
 				}
-
-console.log("A 9");
-				console.log('atr_self.last_block_id: ', atr_self.last_block_id);
-
-				console.log('atr_self.app.BROWSER ///', atr_self.app.BROWSER);
-
 				
 				atr_self.app.connection.emit('saito-atr-render-request', {});	
-			}
-			
-			
+			}	
 		}
-
 		return;
 	}
 

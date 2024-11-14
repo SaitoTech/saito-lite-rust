@@ -1,4 +1,5 @@
 const MainTemplate = require('./main.template');
+const AddMempool = require('./add-mempool');
 
 class Main {
         constructor(app, mod, container="") {
@@ -9,6 +10,7 @@ class Main {
                 	console.log("event atr-render-request");
 			this.render();
 		});
+		this.add_mempool = new AddMempool(app, mod);
         }
 
         render() {
@@ -23,7 +25,7 @@ class Main {
 
 			console.log("block: ", blockslot);
 
-			document.querySelector(`.blocktable .header .blockslot${blockslot}`).innerHTML = block.id;
+			document.querySelector(`.blocktable .table-header .blockslot${blockslot}`).innerHTML = block.id;
 
 			document.querySelector(`.blocktable .total_fees .blockslot${blockslot}`).innerHTML = block.totalFees;
 			document.querySelector(`.blocktable .total_fees_new .blockslot${blockslot}`).innerHTML = block.totalFeesNew;
@@ -49,7 +51,7 @@ class Main {
 			document.querySelector(`.blocktable .fee_per_byte .blockslot${blockslot}`).innerHTML = block.feePerByte;
 
 			document.querySelector(`.blocktable .avg_nolan_rebroadcast_per_block .blockslot${blockslot}`).innerHTML = block.avgNolanRebroadcastPerBlock;
-			document.querySelector(`.blocktable .burnfee .blockslot${blockslot}`).innerHTML = block.burnFee;
+			document.querySelector(`.blocktable .burn_fee .blockslot${blockslot}`).innerHTML = block.burnFee;
 			document.querySelector(`.blocktable .difficulty .blockslot${blockslot}`).innerHTML = block.difficulty;
 			document.querySelector(`.blocktable .previous_block_unpaid .blockslot${blockslot}`).innerHTML = block.previousBlockUnpaid;
 
@@ -69,15 +71,16 @@ class Main {
 			await this_self.app.wallet.produceBlockWithoutGt();
 		}
 		document.querySelector("#add_transaction_to_mempool").onclick = async (e) => {
-			alert('adding tx to Mempool');
-			let newtx = await this.app.wallet.createUnsignedTransaction();
-    			newtx.msg = {
-      				module: "ATR" ,
-      				request: 'test',
- 				data: { random : Math.random() }
-			};
-               		await newtx.sign();
-    			await this.app.network.propagateTransaction(newtx);
+			alert('rendering Mempool overlay');
+			this_self.add_mempool.render();
+			// let newtx = await this.app.wallet.createUnsignedTransaction();
+    			// newtx.msg = {
+      			// 	module: "ATR" ,
+      			// 	request: 'test',
+ 			// 	data: { random : Math.random() }
+			// };
+               		// await newtx.sign();
+    			// await this.app.network.propagateTransaction(newtx);
 		}
 
         }
