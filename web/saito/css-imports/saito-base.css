@@ -49,6 +49,12 @@ a:hover {
   opacity: 0.8;
 }
 
+.saito-text-link {
+  font-weight: bold;
+  cursor: pointer;
+  color: var(--font-color-a-link);
+}
+
 /* ----------------------------------------------------------------
 	Headings
 -----------------------------------------------------------------*/
