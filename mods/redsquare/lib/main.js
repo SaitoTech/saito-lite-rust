@@ -194,51 +194,52 @@ class RedSquareMain {
     let triggered = false;
     let is_running = false;
 
-    scrollableElement.addEventListener('scroll', (e) => {
-      var st = scrollableElement.scrollTop;
+    if (this.app.browser.isSupportedBrowser()){
+     let hh = getComputedStyle(document.body).getPropertyValue('--saito-header-height');
+
+      scrollableElement.addEventListener('scroll', (e) => {
+        var st = scrollableElement.scrollTop;
+        
+        if (is_running){
+          return;
+        }
+
+        // console.log("A:", scrollableElement.scrollTop, lastScrollTop, triggered);
+        is_running = true;
+
+        if (st > lastScrollTop) {
+          // downscroll code
+          if (!triggered) {
+            document.getElementById("saito-header").style.top = `-${hh}`;
+            document.getElementById("saito-header").style.height = '0';
+            document.getElementById("saito-header").style.padding = "0";
+            triggered = true;
+          }
+        } else if (st < lastScrollTop) {
+          // upscroll code
+          if (triggered) {
+            document.getElementById("saito-header").removeAttribute("style");
+            triggered = false;
+          }
+        } // else was horizontal scroll
+        lastScrollTop = st <= 0 ? 0 : st; // For Mobile or negative scrolling
+
+        //console.log("B:", scrollableElement.scrollTop, lastScrollTop, triggered);
+
+        if (this.manager.mode == 'tweets') {
+          this.scroll_depth = scrollableElement.scrollTop;
+          this.idleTime = 0;
+        }
       
-      if (is_running){
-        return;
-      }
-
-      // console.log("A:", scrollableElement.scrollTop, lastScrollTop, triggered);
-      is_running = true;
-
-      if (st > lastScrollTop) {
-        // downscroll code
-        if (!triggered) {
-          let hh = getComputedStyle(document.body).getPropertyValue('--saito-header-height');
-          document.getElementById("saito-header").style.top = `-${hh}`;
-          document.getElementById("saito-header").style.height = '0';
-          document.getElementById("saito-header").style.padding = "0";
-          //document.documentElement.style.setProperty('--saito-header-height', '0');
-          //document.querySelector('#saito-header').style.opacity = '0';
-          //st -= 70;
-          triggered = true;
-        }
-      } else if (st < lastScrollTop) {
-        // upscroll code
-        if (triggered) {
-          document.getElementById("saito-header").removeAttribute("style");
-          //document.getElementById("saito-header").style.top = "0";
-          //document.documentElement.style.setProperty('--saito-header-height', '');
-          //document.querySelector('#saito-header').style.opacity = '1';
-          triggered = false;
-        }
-      } // else was horizontal scroll
-      lastScrollTop = st <= 0 ? 0 : st; // For Mobile or negative scrolling
-
-      //console.log("B:", scrollableElement.scrollTop, lastScrollTop, triggered);
-
-      if (this.manager.mode == 'tweets') {
-        this.scroll_depth = scrollableElement.scrollTop;
-        this.idleTime = 0;
-      }
-    
-      setTimeout(()=> {
-        is_running = false;
-      }, 150);
-    });
+        setTimeout(()=> {
+          is_running = false;
+          if (scrollableElement.scrollTop < 70 && triggered){
+            document.getElementById("saito-header").removeAttribute("style");
+            triggered = false;
+          }
+        }, 150);
+      });
+    }
   }
 
   scrollFeed(newDepth = this.scroll_depth, behavior = 'auto') {

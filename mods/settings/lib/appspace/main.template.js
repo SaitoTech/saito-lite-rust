@@ -103,7 +103,8 @@ module.exports  = (app, mod, main) => {
       <div class="settings-appspace-debug">
         <h6>Debug Info</h6>
 
-        <div id="settings-edit-json">Edit wallet options</div>
+        <!--div id="settings-edit-json">Edit wallet options</div-->
+        <div>Advanced: ALT-select items to mark them, and than click <span class="saito-text-link" id="delete_marked">here to delete selected entries</span></div>
         <div class="settings-appspace-debug-content" id="settings-appspace-debug-content"></div>
       </div>
 

@@ -608,6 +608,7 @@ class Server {
 			//
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
+			//
 			const block = await this.app.blockchain.getBlock(bsh);
 
 			if (!block) {
@@ -620,6 +621,12 @@ class Server {
 				block.block_type === BlockType.Full ||
 				!block.hasKeylistTxs(keylist)
 			) {
+
+console.log("*");
+console.log("* block_id requested " + block.id);
+console.log("* ... has txs");
+console.log("*");
+
 				res.writeHead(200, {
 					'Content-Type': 'text/plain',
 					'Content-Transfer-Encoding': 'utf8'
@@ -643,7 +650,10 @@ class Server {
 			console.log('loading block from disk : ' + bsh);
 
 			let methods = new NodeSharedMethods(this.app);
+
+			//
 			// TODO - load from disk to ensure we have txs -- slow.
+			//
 			try {
 				let buffer = new Uint8Array();
 				let list = methods.loadBlockFileList();
@@ -660,6 +670,23 @@ class Server {
 				let blk = new Block();
 				blk.deserialize(buffer);
 				const newblk = blk.generateLiteBlock(keylist);
+
+console.log("KEYLIST: " + JSON.stringify(keylist));
+console.log("^");
+console.log("^");
+console.log("^ no txs, so loading from disk... ");
+console.log("^");
+for (let z = 0; z < newblk.transactions.length; z++) {
+console.log("tx: " + z);
+let ttx = newblk.transactions[z];
+//console.log(JSON.stringify(ttxjson));
+}
+				newblk.transactions.filter(
+					(tx) => tx.type !== TransactionType.SPV
+				).forEach((tx) => {
+console.log(JSON.stringify(tx.serialize()));
+				});
+
 				// console.log(
 				//   `lite block : ${newblk.hash} generated with txs : ${newblk.transactions.length}`
 				// );

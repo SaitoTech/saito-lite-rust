@@ -64,6 +64,49 @@ class SettingsAppspace {
 		} catch (err) {
 			console.log('error creating jsonTree: ' + err);
 		}
+
+		if (document.getElementById("delete_marked")){
+			document.getElementById("delete_marked").onclick = (e) => {
+				Array.from(document.querySelectorAll(".jsontree_node_marked")).forEach(node => {
+					let path = this.getJSONPath(node).replaceAll(`"]`, "").split("[\"");
+
+					let obj = this.app.options;
+					while(path.length > 1){
+						let key = path.shift();
+						if (key){
+							obj = obj[key];
+						}
+					}
+
+					let final_key = path.shift();
+					console.log(obj, final_key);
+					if (Array.isArray(obj)){
+						obj.splice(parseInt(final_key), 1);
+					}else{
+						delete obj[final_key];	
+					}
+
+				});
+				this.renderDebugTree();
+			}
+		}
+	}
+
+	getJSONPath(node){
+		if (node.classList.contains("jsontree_tree")){
+			return "";
+		}
+
+		let currentPath = '';
+		//Find the label
+		if (node.classList.contains("jsontree_node")){
+			if (node.children[0].classList.contains("jsontree_label-wrapper")){
+				//currentPath = node.querySelector(".jsontree_label").textContent;
+				currentPath = "[" + node.querySelector(".jsontree_label").textContent + "]";
+			}
+		}
+
+		return this.getJSONPath(node.parentElement) + currentPath;
 	}
 
 	renderCryptoGameSettings(){
