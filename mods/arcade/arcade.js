@@ -424,25 +424,25 @@ class Arcade extends ModTemplate {
 // we should no longer need this, now that receiving TXS from others will result in the
 // game opening and executing regardless of whether we are in another game... NOV 4, 2024
 //
-//	                        let noload = app.browser.returnURLParameter('noload');
-//        	                if (noload) { return; }
-//
-//				this.app.storage.loadTransactions(
-//					{
-//						field1: query
-//					},
-//					async (txs) => {
-//						for (let i = txs.length - 1; i >= 0; i--) {
-//
-//							// arcade 
-//							await this.onConfirmation(-1, txs[i], 0);
-//
-//							// game mod
-//							await game_mod.onConfirmation(-1, txs[i], 0);
-//						}
-//					},
-//					peer
-//				);
+	                        let noload = app.browser.returnURLParameter('noload');
+        	                if (noload) { return; }
+
+				this.app.storage.loadTransactions(
+					{
+						field1: query
+					},
+					async (txs) => {
+						for (let i = txs.length - 1; i >= 0; i--) {
+
+							// arcade 
+							await this.onConfirmation(-1, txs[i], 0);
+
+							// game mod
+							await game_mod.onConfirmation(-1, txs[i], 0);
+						}
+					},
+					peer
+				);
 			}
 		}
 	}

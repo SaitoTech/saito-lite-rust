@@ -83,12 +83,20 @@ export default class Blockchain extends SaitoBlockchain {
 	}
 
 	public async affixCallbacks(block: Block) {
+
+console.log("============");
+console.log("IN BLOCK: " + block.id);
+
 		let callbacks = [];
 		let callbackIndices = [];
 		let txs: Transaction[] = block.transactions as Transaction[];
+console.log("how many txs: " + txs.length);
 		let validTxs = 0;
 		for (let z = 0; z < txs.length; z++) {
+				let txmsg2 = txs[z].returnMessage();
+console.log("examining tx: " + JSON.stringify(txmsg2));
 			if (txs[z].type === TransactionType.Normal) {
+console.log("processing tx!");
 				await txs[z].decryptMessage(this.app);
 				const txmsg = txs[z].returnMessage();
 				this.app.modules.affixCallbacks(
@@ -106,6 +114,7 @@ export default class Blockchain extends SaitoBlockchain {
 				validTxs++;
 			}
 		}
+console.log("============");
 		this.callbacks.set(block.hash, callbacks);
 		this.callbackIndices.set(block.hash, callbackIndices);
 		this.confirmations.set(block.hash, BigInt(-1));
