@@ -573,11 +573,11 @@ class Browser {
 		return check;
 	}
 
-	isSupportedBrowser(userAgent) {
+	isSupportedBrowser(userAgent = navigator.userAgent) {
 		//
 		// no to Safari
 		//
-		if (userAgent.toLowerCase().indexOf('safari/') > -1) {
+		if (userAgent.toLowerCase().indexOf('safari') > -1) {
 			if (
 				userAgent.toLowerCase().indexOf('chrome') == -1 &&
 				userAgent.toLowerCase().indexOf('firefox') == -1
