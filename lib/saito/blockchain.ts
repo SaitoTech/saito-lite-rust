@@ -85,6 +85,7 @@ export default class Blockchain extends SaitoBlockchain {
 	public async affixCallbacks(block: Block) {
 		let callbacks = [];
 		let callbackIndices = [];
+
 		let txs: Transaction[] = block.transactions as Transaction[];
 		let validTxs = 0;
 		for (let z = 0; z < txs.length; z++) {
@@ -109,6 +110,9 @@ export default class Blockchain extends SaitoBlockchain {
 		this.callbacks.set(block.hash, callbacks);
 		this.callbackIndices.set(block.hash, callbackIndices);
 		this.confirmations.set(block.hash, BigInt(-1));
+	
+		await this.instance.set_safe_to_prune_transaction(block.id);
+
 	}
 
 	public async onNewBlock(block: Block, lc: boolean) {
