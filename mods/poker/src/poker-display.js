@@ -10,13 +10,6 @@
 
 		await this.injectGameHTML(htmlTemplate());
 
-  this.game_help.renderCustomOverlay("diet_of_worms", {
-    line1 : "diet",
-    line2 : "of worms?",
-    fontsize : "2.1rem" ,
-  }); 
-
-
 		//
 		// ADD MENU
 		//
@@ -150,62 +143,6 @@
 		this.playerbox.renderNotice(msg, player);
 	}
 
-	displayTable() {
-
-		if (!this.browser_active) {
-			return;
-		}
-
-		try {
-			if (document.getElementById('deal')) {
-				let newHTML = '';
-				for (
-					let i = 0;
-					i < 5 || i < this.game.pool[0].hand.length;
-					i++
-				) {
-					let card = {};
-
-					if (i < this.game.pool[0].hand.length) {
-						card =
-							this.game.pool[0].cards[this.game.pool[0].hand[i]];
-						newHTML += `<div class="flip-card card"><img class="cardFront" src="${this.card_img_dir}/${card.name}"></div>`;
-					} else {
-						newHTML += `<div class="flip-card card"><img class="cardBack" src="${this.card_img_dir}/red_back.png"></div>`;
-					}
-				}
-				document.getElementById('deal').innerHTML = newHTML;
-			}
-		} catch (err) {
-			console.warn('Card error displaying table:', err);
-		}
-
-		this.pot.render();
-	}
-
-	displayPot() {
-		this.pot.render();
-	}
-
-
-
-	async clearTable() {
-
-		if (!this.browser_active) {
-			return;
-		}
-
-		// triggers animation
-		this.board.clearTable();
-
-		$('#pot').fadeOut(1650);
-		$('.winner').removeClass('winner');
-
-		// allow animations to work
-		await this.timeout(600);
-		this.restartQueue();
-	}
-
 	displayPlayerLog(html, player) {
 		this.playerbox.renderNotice(html, player);
 	}
@@ -224,21 +161,21 @@
 	}
 
 	async exitGame(){
-      if (this.game.over == 0 && this.game.player){
-	      let c = await sconfirm("forfeit the game?");
-	      if (c) {
-	      	await this.sendStopGameTransaction("forfeit");
-	      	this.game.over = 2;
-					this.removePlayer(this.publicKey);
-	      	this.saveGame(this.game.id);
-	      	setTimeout(
-	      		() => {
-	      			super.exitGame();
-	      		}, 500); 
-				}
-      }else{
-      	super.exitGame();
-      }
+      		if (this.game.over == 0 && this.game.player){
+	      		let c = await sconfirm("forfeit the game?");
+	      		if (c) {
+	      			await this.sendStopGameTransaction("forfeit");
+	      			this.game.over = 2;
+				this.removePlayer(this.publicKey);
+	      			this.saveGame(this.game.id);
+	      			setTimeout(
+	      				() => {
+	      					super.exitGame();
+	      				}, 500); 
+			}
+		}  else {
+      			super.exitGame();
+      		}
 	}
 
 

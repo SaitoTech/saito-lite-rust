@@ -14,27 +14,32 @@
 	filter: grayscale(100%) brightness(0.55);
 }
 
-.cardBack {
-	transition: transform 0.5s ease;
-	backface-visibility: hidden;
-	-webkit-backface-visibility: hidden;
+.cardFront, .cardBack {
+    position: absolute; /* Ensure both sides overlap properly */
+    width: 100%;        /* Adjust as needed for your layout */
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transition: transform 0.5s ease;
 }
 
 .cardFront {
-	transform: rotateY(180deg);
-	transition: transform 0.5s ease;
-	backface-visibility: visible;
-	-webkit-backface-visibility: visible;
+    transform: rotateY(0deg); /* Front side starts facing up */
 }
 
-.flipped .cardFront,
 .cardBack {
-	transform: rotateY(0deg);
+    transform: rotateY(180deg); /* Back side starts flipped */
+}
+
+.flipped .cardFront {
+    transform: rotateY(180deg); /* Front side flips to back */
 }
 
 .flipped .cardBack {
-	transform: rotateY(-180deg);
+    display: block;
+    transform: rotateY(0deg); /* Back side flips to front */
 }
+
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
 	.cardfan {

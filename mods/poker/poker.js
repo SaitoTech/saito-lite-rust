@@ -486,7 +486,7 @@ class Poker extends GameTableTemplate {
 					this.cardfan.hide();
 					this.playerAcknowledgeNotice(msg, async () => {
 						this.settleLastRound([this.game.players[player_left_idx]], "fold");
-						this.clearTable();
+						this.board.clearTable();
 					});
 
 					return 0;
@@ -656,11 +656,12 @@ class Poker extends GameTableTemplate {
 				);
 
 				let playercards = `
-          <div class="other-player-hand hand tinyhand">
-            <div class="card"><img src="${this.card_img_dir}/${this.game.deck[0].cards[card1].name}"></div>
-            <div class="card"><img src="${this.card_img_dir}/${this.game.deck[0].cards[card2].name}"></div>
-          </div>
-        `;
+			          <div class="other-player-hand hand tinyhand">
+			            <div class="card"><img src="${this.card_img_dir}/${this.game.deck[0].cards[card1].name}"></div>
+			            <div class="card"><img src="${this.card_img_dir}/${this.game.deck[0].cards[card2].name}"></div>
+			          </div>
+			        `;
+
 				this.playerbox.updateGraphics(playercards, scorer);
 
 				//Everyone can use the pool
@@ -908,7 +909,7 @@ class Poker extends GameTableTemplate {
 				this.cardfan.hide();
 				this.playerAcknowledgeNotice(winnerStr, async () => {
 					this.settleLastRound(winner_keys, "besthand");
-					this.clearTable();
+					this.board.clearTable();
 				});
 
 				return 0;
@@ -992,9 +993,9 @@ class Poker extends GameTableTemplate {
 			}
 
 			/* Set up a round
-         We don't splice it, so we keep coming back here after each player has taken their turn
-         until we reach an endgame state which runs startNextRound and clears to queue
-      */
+  			       We don't splice it, so we keep coming back here after each player has taken their turn
+  			       until we reach an endgame state which runs startNextRound and clears to queue
+  		        */
 			if (mv[0] === 'round') {
 				// Start betting to the left of the big blind on first turn
 
@@ -1017,8 +1018,9 @@ class Poker extends GameTableTemplate {
 				}
 			}
 
-			/* WE programmatically determine here how much the call is*/
+
 			if (mv[0] === 'call') {
+
 				let player = parseInt(mv[1]);
 
 				let amount_to_call =
@@ -1228,13 +1230,6 @@ class Poker extends GameTableTemplate {
 
 		await this.injectGameHTML(htmlTemplate());
 
-  this.game_help.renderCustomOverlay("diet_of_worms", {
-    line1 : "diet",
-    line2 : "of worms?",
-    fontsize : "2.1rem" ,
-  }); 
-
-
 		//
 		// ADD MENU
 		//
@@ -1368,62 +1363,6 @@ class Poker extends GameTableTemplate {
 		this.playerbox.renderNotice(msg, player);
 	}
 
-	displayTable() {
-
-		if (!this.browser_active) {
-			return;
-		}
-
-		try {
-			if (document.getElementById('deal')) {
-				let newHTML = '';
-				for (
-					let i = 0;
-					i < 5 || i < this.game.pool[0].hand.length;
-					i++
-				) {
-					let card = {};
-
-					if (i < this.game.pool[0].hand.length) {
-						card =
-							this.game.pool[0].cards[this.game.pool[0].hand[i]];
-						newHTML += `<div class="flip-card card"><img class="cardFront" src="${this.card_img_dir}/${card.name}"></div>`;
-					} else {
-						newHTML += `<div class="flip-card card"><img class="cardBack" src="${this.card_img_dir}/red_back.png"></div>`;
-					}
-				}
-				document.getElementById('deal').innerHTML = newHTML;
-			}
-		} catch (err) {
-			console.warn('Card error displaying table:', err);
-		}
-
-		this.pot.render();
-	}
-
-	displayPot() {
-		this.pot.render();
-	}
-
-
-
-	async clearTable() {
-
-		if (!this.browser_active) {
-			return;
-		}
-
-		// triggers animation
-		this.board.clearTable();
-
-		$('#pot').fadeOut(1650);
-		$('.winner').removeClass('winner');
-
-		// allow animations to work
-		await this.timeout(600);
-		this.restartQueue();
-	}
-
 	displayPlayerLog(html, player) {
 		this.playerbox.renderNotice(html, player);
 	}
@@ -1442,21 +1381,21 @@ class Poker extends GameTableTemplate {
 	}
 
 	async exitGame(){
-      if (this.game.over == 0 && this.game.player){
-	      let c = await sconfirm("forfeit the game?");
-	      if (c) {
-	      	await this.sendStopGameTransaction("forfeit");
-	      	this.game.over = 2;
-					this.removePlayer(this.publicKey);
-	      	this.saveGame(this.game.id);
-	      	setTimeout(
-	      		() => {
-	      			super.exitGame();
-	      		}, 500); 
-				}
-      }else{
-      	super.exitGame();
-      }
+      		if (this.game.over == 0 && this.game.player){
+	      		let c = await sconfirm("forfeit the game?");
+	      		if (c) {
+	      			await this.sendStopGameTransaction("forfeit");
+	      			this.game.over = 2;
+				this.removePlayer(this.publicKey);
+	      			this.saveGame(this.game.id);
+	      			setTimeout(
+	      				() => {
+	      					super.exitGame();
+	      				}, 500); 
+			}
+		}  else {
+      			super.exitGame();
+      		}
 	}
 
 

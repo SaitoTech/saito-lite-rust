@@ -9,6 +9,7 @@ class GameBoard {
 	constructor(app, mod) {
 		this.app = app;
 		this.game_mod = mod;
+		this.cards_visible = 0;
 	}
 
 	render() {
@@ -32,8 +33,19 @@ class GameBoard {
 
 		let poker_self = this.game_mod;
 
+		let animate_flip = false;
+		let flip_from_idx = 0;
+
+		if (this.game_mod.game.state.flipped > 0 && this.game_mod.game.state.flipped > this.cards_visible) {
+			animate_flip = true;
+			if (this.game_mod.game.state.flipped == 3) { flip_from_idx = 0; }
+			if (this.game_mod.game.state.flipped == 4) { flip_from_idx = 3; }
+			if (this.game_mod.game.state.flipped == 5) { flip_from_idx = 4; }
+		}
+
         	try {   
                         if (document.getElementById('deal')) {
+
                                 let newHTML = '';
                                 for (
                                         let i = 0;
@@ -42,20 +54,38 @@ class GameBoard {
                                 ) {
                                         let card = {};
                 
-                                        if (i < poker_self.game.pool[0].hand.length) {
-                                                card =
-                                                        poker_self.game.pool[0].cards[poker_self.game.pool[0].hand[i]];
-                                                newHTML += `<div class="flip-card card"><img class="cardFront" src="${poker_self.card_img_dir}/${card.name}"></div>`;
+                                        if (i < poker_self.game.pool[0].hand.length && i < flip_from_idx) {
+                                                card = poker_self.game.pool[0].cards[poker_self.game.pool[0].hand[i]];
+                                                newHTML += `<div class="card slot${i+1}"><img class="cardFront" src="${poker_self.card_img_dir}/${card.name}"></div>`;
                                         } else {
-                                                newHTML += `<div class="flip-card card"><img class="cardBack" src="${poker_self.card_img_dir}/red_back.png"></div>`;
+						if (i < poker_self.game.pool[0].hand.length) {
+                                                  card = poker_self.game.pool[0].cards[poker_self.game.pool[0].hand[i]];
+                                                  newHTML += `<div class="flipped slot${i+1} card"><img class="cardFront" src="${poker_self.card_img_dir}/${card.name}"><img class="cardBack" src="${poker_self.card_img_dir}/red_back.png"></div>`;
+						} else {
+                                                  newHTML += `<div class="flipped slot${i+1} card"><img class="cardBack" src="${poker_self.card_img_dir}/red_back.png"></div>`;
+						}
                                         }
                                 }
                                 document.getElementById('deal').innerHTML = newHTML;
                         }       
+
+			//
+			// animate card flip
+			//
+			setTimeout(() => {
+				if (animate_flip == true && this.cards_visible < poker_self.game.pool[0].hand.length) {
+				  for (let i = 0; i < poker_self.game.pool[0].hand.length; i++) {
+				    let obj = document.querySelector(`.slot${i+1}`);
+				    if (obj) { obj.classList.remove("flipped"); }
+				  }
+				}
+				this.cards_visible = poker_self.game.pool[0].hand.length;
+			}, 200);
+
+
                 } catch (err) {
                         console.warn('Card error displaying table:', err);
                 }       
-
                 poker_self.pot.render();
         }                                       
                 
@@ -66,6 +96,8 @@ class GameBoard {
 
 
 	clearTable() {
+
+		this.cards_visible = 0;
 
 		//
 		// this animation sweeps the cards off the table

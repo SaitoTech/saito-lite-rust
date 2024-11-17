@@ -22,10 +22,6 @@
   width: 110px;
 }
 
-.flipped .cardBack {
-  display: none;
-}
-
 .mystuff {
   position: absolute;
   display: flex;

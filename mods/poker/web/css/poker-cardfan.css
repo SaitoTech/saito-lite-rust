@@ -1,9 +1,11 @@
 
 .cardfan {
   display: block;
-  position: relative;
-  top: 40px;
-  left: 60px;
+  position: fixed;
+  top: 65%;
+  left: 10%;
+  height: 35vh
+  width: auto;
 }
 
 .cardfan > .card:nth-child(1), .hand > .card:nth-child(1) {

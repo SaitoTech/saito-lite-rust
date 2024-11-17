@@ -13,7 +13,6 @@ class Cardfan {
 	}
 
 	render() {
-
 		if (!document.querySelector(".cardfan")) {
 		  this.app.browser.addElementToSelector(CardfanTemplate(), '.mystuff');
 		} else {

@@ -19,6 +19,16 @@ class Pot {
                   this.app.browser.replaceElementBySelector(html, ".pot-label");
 		}
 
+		let pot = 0;
+		for (let i = 0; i < this.game_mod.game.state.player_pot.length; i++) {
+		  pot += this.game_mod.game.state.player_pot[i];
+	        }
+
+		this.game_mod.game_help.renderCustomOverlay("diet_of_worms", {
+    		  line1 : "pot:",
+    		  line2 : `${pot} CHIPS`,
+    	  	  fontsize : "2.1rem" ,
+  		});
 
 		this.attachEvents();
 	}

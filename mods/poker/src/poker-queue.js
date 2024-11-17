@@ -282,7 +282,7 @@
 					this.cardfan.hide();
 					this.playerAcknowledgeNotice(msg, async () => {
 						this.settleLastRound([this.game.players[player_left_idx]], "fold");
-						this.clearTable();
+						this.board.clearTable();
 					});
 
 					return 0;
@@ -452,11 +452,12 @@
 				);
 
 				let playercards = `
-          <div class="other-player-hand hand tinyhand">
-            <div class="card"><img src="${this.card_img_dir}/${this.game.deck[0].cards[card1].name}"></div>
-            <div class="card"><img src="${this.card_img_dir}/${this.game.deck[0].cards[card2].name}"></div>
-          </div>
-        `;
+			          <div class="other-player-hand hand tinyhand">
+			            <div class="card"><img src="${this.card_img_dir}/${this.game.deck[0].cards[card1].name}"></div>
+			            <div class="card"><img src="${this.card_img_dir}/${this.game.deck[0].cards[card2].name}"></div>
+			          </div>
+			        `;
+
 				this.playerbox.updateGraphics(playercards, scorer);
 
 				//Everyone can use the pool
@@ -704,7 +705,7 @@
 				this.cardfan.hide();
 				this.playerAcknowledgeNotice(winnerStr, async () => {
 					this.settleLastRound(winner_keys, "besthand");
-					this.clearTable();
+					this.board.clearTable();
 				});
 
 				return 0;
@@ -788,9 +789,9 @@
 			}
 
 			/* Set up a round
-         We don't splice it, so we keep coming back here after each player has taken their turn
-         until we reach an endgame state which runs startNextRound and clears to queue
-      */
+  			       We don't splice it, so we keep coming back here after each player has taken their turn
+  			       until we reach an endgame state which runs startNextRound and clears to queue
+  		        */
 			if (mv[0] === 'round') {
 				// Start betting to the left of the big blind on first turn
 
@@ -813,8 +814,9 @@
 				}
 			}
 
-			/* WE programmatically determine here how much the call is*/
+
 			if (mv[0] === 'call') {
+
 				let player = parseInt(mv[1]);
 
 				let amount_to_call =

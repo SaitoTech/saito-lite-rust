@@ -13,7 +13,9 @@ class GameBoard {
 	}
 
 	render() {
-		this.app.browser.addElementToDom(PlayerboxContainerTemplate());
+		if (!document.querySelector(".playerboxes")) {
+		  this.app.browser.addElementToDom(PlayerboxContainerTemplate());
+	        }
 		for (let i = 0; i < this.game_mod.game.players.length; i++) { this.addPlayerbox((i+1)); }
 		this.renderPlayerboxes();
 		this.attachEvents();
@@ -86,6 +88,8 @@ class GameBoard {
 
 	  let publickey = this.game_mod.game.players[player-1];
 	  let qs = `.playerbox-${publickey}`;
+
+console.log("adding playerbox for: " + player);
 
 	  if (!document.querySelector(qs)) { 
 	    if (player == this.game_mod.game.player) {
