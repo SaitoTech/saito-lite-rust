@@ -2370,7 +2370,7 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 		html += '<li class="option" id="amazon">The Amazon (2VP, explorer retires)</li>';
 	      }
 	      if (this.game.state.newworld['circumnavigation'].claimed != 1) {
-		let vp_at_stake = "2";
+		let vp_at_stake = "3";
 		if (this.game.state.newworld['pacificstrait'].claimed != 1) { vp_at_stake = "2-5"; }
 		html += `<li class="option" id="circumnavigation">Attempt Circumnavigation (${vp_at_stake}VP, requires 12 and explorer retires)</li>`;
 	      }
@@ -8060,11 +8060,14 @@ try {
 	      opponent_dice++;
 	    }
           }
+	  // why? because some ports on multiple seas
+	  let already_counted_knights = false;
           if (his_self.game.state.knights_of_st_john != "") {
             let indspace = his_self.game.spaces[his_self.game.state.knights_of_st_john];
             if (indspace.unrest != 1 && indspace.besieged <= 0) {
               for (let b = 0; b < indspace.ports.length; b++) {
-                if (indspace.ports[b] == target_space.key) {
+                if (indspace.ports[b] == target_space.key && already_counted_knights == false) {
+		  already_counted_knights = true;
 	          anti_piracy_faction.push(indspace.ports[b]);
 	          anti_piracy_unittype.push("fortress");
 	          fortress_adjacent++;
@@ -8086,6 +8089,7 @@ try {
 	        let x = his_self.returnFactionControllingSpace(ap);
 	        if (x == target_faction || factions_at_war_with_ottoman.includes(x)) {
 		  if (his_self.isSpaceFortified(ap) && !his_self.isSpaceInUnrest(ap) && !his_self.isSpaceBesieged(ap)) {
+		    already_counted.push(ap);
 	            anti_piracy_faction.push(ap);
 	            anti_piracy_unittype.push("fortress");
 	            fortress_adjacent++;
@@ -8105,7 +8109,6 @@ try {
 	  if (fortress_adjacent > 0) {
 	    his_self.updateLog(` ${fortress_adjacent} dice from fortresses`);
 	  }
-	  his_self.updateLog("Anti-Piracy Dice: " + opponent_dice);
 
           //
           // eliminate 1 corsair for each hit of 5 or 6

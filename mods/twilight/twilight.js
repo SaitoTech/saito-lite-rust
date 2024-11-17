@@ -4357,7 +4357,15 @@ async playerTurnHeadlineSelected(card, player) {
 
   playerTurn(selected_card=null) {
 
+
     if (this.browser_active == 0) { return; }
+
+    try {
+      $(".easterneurope").removeClass("easterneurope");
+    } catch (err) {
+      // sanity for CHE
+    }
+
 
     let twilight_self = this;
 
@@ -6186,11 +6194,6 @@ this.game_help.render({
   }
 
   playerFinishedPlacingInfluence(player, mycallback=null) {
-
-    /*for (var i in this.countries) {
-      let divname      = '#'+i;
-      $(divname).off();
-    }*/
     $(".country").off();
     $(".easterneurope").removeClass("easterneurope");
     $(".westerneurope").removeClass("westerneurope");

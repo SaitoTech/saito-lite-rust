@@ -2741,13 +2741,24 @@ return;
 	    //
 	    his_self.addMove("unset_enemies\tpapacy\t"+enemy);
 
+	    let do_any_foreign_occupied_spaces_exist = false;
+	    for (let key in his_self.game.spaces) {
+	      if (his_self.game.spaces[key].home == "papacy") {
+		if (his_self.game.spaces[key].political != "" && his_self.game.spaces[key].political != "papacy") {
+		  do_any_foreign_occupied_spaces_exist = true;
+		}
+	      }
+	    }
+
 	    //
 	    // regain control of home space, or draw card
 	    //
     	    let msg = `Regain Home Space or Draw Card?`;
     	    let opt = "<ul>";
-    	    opt += `<li class="option" id="regain">regain home space</li>`;
-    	    opt += `<li class="option" id="draw">draw card</li>`;
+	    if (do_any_foreign_occupied_spaces_exist == true) {
+    	      opt += `<li class="option" id="regain">regain home space</li>`;
+	    } 
+   	    opt += `<li class="option" id="draw">draw card</li>`;
     	    opt += '</ul>';
 
 	    his_self.updateStatusWithOptions(msg, opt);
@@ -2770,7 +2781,7 @@ return;
                   "Select Home Space to Recapture" ,
 
         	  function(space) {
-	            if (space.home === "papacy" && space.political !== "papacy") {
+	            if (space.home === "papacy" && (space.political !== "" && space.political !== "papacy")) {
 		      return 1;
 		    }
 		  },
@@ -2783,7 +2794,7 @@ return;
 		    his_self.endTurn();
 		  },
 
-	    	  cancel_func,
+	    	  () => { his_self.playerPlayPapacyDiplomacyPhaseSpecialTurn(); } , 
 
 	    	  true 
 
