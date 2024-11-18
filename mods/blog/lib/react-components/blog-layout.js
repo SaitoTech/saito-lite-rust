@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, Heart, MessageCircle, X, ImageIcon, Pen, Trash, ArrowRight } from 'lucide-react';
+import {  ArrowRight } from 'lucide-react';
 import PostModal from './post-modal';
 import { samplePosts } from './sample-posts';
 import BlogPost from './blog-post';
-import { getImageUrl, parseMarkdown } from '../utils';
+import { copyPostLinkToClipboard, getImageUrl, parseMarkdown } from '../utils';
 import NoPostsAvailable from './NoPosts';
 
 
 
 
 
-const USERS = ['All'];
+const USERS = ['All', 'StackTooDeep@saito'];
 
 
 
@@ -47,6 +47,8 @@ const BlogLayout = ({ app, mod, publicKey, post=null }) => {
     };
 
 
+   
+    
 
     const filteredPosts = posts.filter(post =>
         selectedUser === 'All' || post.author === selectedUser
@@ -96,19 +98,22 @@ const BlogLayout = ({ app, mod, publicKey, post=null }) => {
                     },
                     () => {
                         // Callback after successful post creation
-                        setShowPostModal(false);
+                        siteMessage("Submitting blog post")
                         setTimeout(() => {
+                            setShowPostModal(false);
+                           
                             loadPosts();
                         }, 2000)
                         // Reload posts to show the new one
                     }
                 );
             }
-            setShowPostModal(false);
-            setEditingPost(null);
-            setTimeout(() => {
-                loadPosts();
-            }, 2000)
+           
+            // setEditingPost(null);
+            // setTimeout(() => {    
+            //     setShowPostModal(false);
+            //     loadPosts();
+            // }, 2000)
         } catch (error) {
             console.error("Error saving post:", error);
             alert("Failed to save post. Please try again.");
@@ -231,7 +236,7 @@ const BlogLayout = ({ app, mod, publicKey, post=null }) => {
                                                            Published on November 15 2024, 3:41am
                                                         </div>
                                                     </div>
-                                                    <div className="engagement-stat">
+                                                    <div className="engagement-stat" onClick={() => copyPostLinkToClipboard(post)}>
                                                         <i className='fa fa-arrow-up-from-bracket'></i>
                                                     </div>
                                                 </div>
@@ -243,7 +248,7 @@ const BlogLayout = ({ app, mod, publicKey, post=null }) => {
                                             }}><div className="post-date">
                                                    {/* Published on {app.browser.prettifyTimeStamp(post.timestamp)} */}
                                                    Published on November 15 2024, 3:41am
-                                                </div>  <div className="engagement-stat" onClick={() => ""}>
+                                                </div>  <div  className="engagement-stat" onClick={() => copyPostLinkToClipboard(post)}>
                                                     <i className='fa fa-arrow-up-from-bracket'></i>
                                                     {/* <span>{selectedPost.shares}</span> */}
                                                 </div>  </div>}

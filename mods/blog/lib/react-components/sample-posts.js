@@ -3,7 +3,7 @@ export const samplePosts = [
       sig: "post1",
       title: "Understanding Blockchain Technology: A Beginner's Guide",
       author: "StackTooDeep@saito",
-      publicKey: "your_public_key_1",
+      publicKey: "xHGQyMDx22bsPzqzdEk5WDQsxhCQgzF9xsJDEbjosuk3",
       timestamp: Date.now() - 86400000, // 1 day ago
       image: "https://saito.tech/wp-content/uploads/2024/10/his-board-scaled-2048x1325.jpg", // Featured image
       content: `
@@ -32,39 +32,38 @@ export const samplePosts = [
       comments: 23,
       shares: 0
     },
-  //   {
-  //     sig: "post8",
-  //     title: "Understanding Blockchain Technology: A Beginner's Guide",
-  //     author: "StackTooDeep@saito",
-  //     publicKey: "your_public_key_1",
-  //     timestamp: Date.now() - 86400000, // 1 day ago
-  //     image: "https://saito.tech/wp-content/uploads/2024/10/his-board-scaled-2048x1325.jpg", // Featured image
-  //     content: `
-  // ![Blockchain Technology])
+    {
+      sig: "post8",
+      title: "Understanding Blockchain Technology: A Beginner's Guide",
+      author: "StackTooDeep@saito",
+      publicKey: "xHGQyMDx22bsPzqzdEk5WDQsxhCQgzF9xsJDEbjosuk3",
+      timestamp: Date.now() - 86400000, 
+      image: "https://saito.tech/wp-content/uploads/2024/10/his-board-scaled-2048x1325.jpg", 
+      content: `
   
-  // Blockchain technology is revolutionizing the way we think about digital transactions and data storage. In this comprehensive guide, we'll explore the fundamental concepts that make blockchain unique and powerful.
+  Blockchain technology is revolutionizing the way we think about digital transactions and data storage. In this comprehensive guide, we'll explore the fundamental concepts that make blockchain unique and powerful.
   
-  // ## Key Concepts
+  ## Key Concepts
   
-  // 1. **Decentralization**: Unlike traditional systems, blockchain operates without a central authority
-  // 2. **Immutability**: Once data is recorded, it cannot be altered
-  // 3. **Transparency**: All transactions are visible to network participants
+  1. **Decentralization**: Unlike traditional systems, blockchain operates without a central authority
+  2. **Immutability**: Once data is recorded, it cannot be altered
+  3. **Transparency**: All transactions are visible to network participants
   
-  // Let's dive deeper into each of these concepts and understand how they work together to create a robust and secure system.
+  Let's dive deeper into each of these concepts and understand how they work together to create a robust and secure system.
   
-  // ### Real-World Applications
+  ### Real-World Applications
   
-  // - Digital currencies
-  // - Smart contracts
-  // - Supply chain management
-  // - Digital identity verification
+  - Digital currencies
+  - Smart contracts
+  - Supply chain management
+  - Digital identity verification
   
-  // Stay tuned for more in-depth analysis of each application!
-  // `,
-  //     likes: 156,
-  //     comments: 23,
-  //     shares: 0
-  //   },
+  Stay tuned for more in-depth analysis of each application!
+  `,
+      likes: 156,
+      comments: 23,
+      shares: 0
+    },
   //   {
   //     sig: "post2",
   //     title: "Understanding Blockchain Technology: A Beginner's Guide",

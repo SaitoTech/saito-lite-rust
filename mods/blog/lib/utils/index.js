@@ -29,3 +29,17 @@ export const getImageUrl = (base64String) => {
     
     return `data:image/${mimeType};base64,${base64String}`;
   };
+
+
+  export const copyPostLinkToClipboard = async (post) => {
+    try {
+        const url = new URL(window.location.origin + window.location.pathname);
+        url.searchParams.set('public_key', post.publicKey);
+        url.searchParams.set('tx_id', post.sig);
+        await navigator.clipboard.writeText(url.toString());
+        salert('Post link copied to clipboard!');
+    } catch (err) {
+        console.error('Failed to copy link:', err);
+        salert('Failed to copy link');
+    }
+};

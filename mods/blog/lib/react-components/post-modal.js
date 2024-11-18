@@ -58,15 +58,6 @@ const PostModal = ({ app, mod, onClose, onSubmit }) => {
     const tagsArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag);
     
     onSubmit({title, content, image:base64Image, tags:tagsArray})
-    // mod.createBlogPostTransaction({
-    //   title,
-    //   content,
-    //   image: base64Image,
-    //   tags: tagsArray
-    // });
-    
-    // onClose();
-    // onClose();
   };
 
   const handleDragEnter = useCallback((e) => {
@@ -223,7 +214,7 @@ const PostModal = ({ app, mod, onClose, onSubmit }) => {
               Cancel
             </button>
             <div className="action-buttons">
-              <button type="button" className="btn-draft">Preview</button>
+              {/* <button type="button" className="btn-draft">Preview</button> */}
               <button 
                 type="submit" 
                 className="btn-publish"

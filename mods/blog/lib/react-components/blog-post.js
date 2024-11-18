@@ -1,8 +1,12 @@
 import React from 'react';
 import { Heart, MessageCircle } from 'lucide-react';
-import { getImageUrl, parseMarkdown } from '../utils';
+import { copyPostLinkToClipboard, getImageUrl, parseMarkdown } from '../utils';
 
 const BlogPost = ({app, mod, post, publicKey}) => {
+
+ 
+
+
     return (
         <div className="post-view">
             <article className="post-content">
@@ -31,7 +35,7 @@ const BlogPost = ({app, mod, post, publicKey}) => {
                             </div>
                         </div>
         
-                        <div className="engagement-stat" onClick={() => ""}>
+                        <div className="engagement-stat" onClick={() => copyPostLinkToClipboard(post)}>
                             <i className='fa fa-arrow-up-from-bracket'></i>
                         </div>
                     </div>

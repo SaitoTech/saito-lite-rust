@@ -1,10 +1,9 @@
-/* BlogPostEditor.css */
 .modal-container {
     width: 100%;
     max-width: 800px;
     max-height: 90vh;
     position: fixed;
-    top: 50%;
+    top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
     background:var(--saito-background-color); 
@@ -15,8 +14,8 @@
     position: absolute;
     border: 1px solid var(--saito-border-color);
     box-shadow: var(--shadow-overlay);
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;     /* Firefox */
+    -ms-overflow-style: none; 
+    scrollbar-width: none;   
   }
   
   .modal-header {
@@ -200,7 +199,6 @@
   .btn-draft {
     background: var(--saito-background-color);
     border: 1px solid #333;
-    /* color: #fff; */
     color: var(--saito-font-color);
   }
   
