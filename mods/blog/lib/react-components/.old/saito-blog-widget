@@ -1,0 +1,55 @@
+// const { createRoot } = require('react-dom/client');
+// const React = require('react');
+// const { default: BlogWidget } = require('./react-components/.blog-widget');
+
+// class SaitoBlogWidget {
+//     constructor(app, mod, publicKey, selector) {
+//         this.app = app;
+//         this.mod = mod;
+//         this.publicKey = publicKey
+//         this.selector = selector;
+//         this.name = "SaitoBlogWidget";
+//         this.render = this.render.bind(this); 
+//         this.posts = [];
+//         this.isEditing = false;
+//     }
+
+//     cleanup() {
+//         if (this.root) {
+//             this.root.unmount();
+//             this.root = null;
+//         }
+//     }
+
+//     async render() {
+//         let selector = this.selector;
+//         if (!selector) {
+//             console.error("Blog Widget: No selector provided");
+//             return;
+//         }
+//         const container = document.querySelector(selector);    
+//         if (!container) {
+//             console.error(`Blog Widget: Container not found with selector "${selector}"`);
+//             return;
+//         }
+
+//         // Clear any existing content
+//         container.innerHTML = '';
+//         const { root, cleanup } = this.app.browser.renderReactToExistingContainer(
+//             BlogWidget,
+//             {
+//                 app: this.app,
+//                 mod: this.mod,
+//                 publicKey: this.publicKey,
+//                 topMargin: false
+//             },
+//            container
+//         );
+//     }
+// }
+
+// module.exports = SaitoBlogWidget;
+
+
+
+

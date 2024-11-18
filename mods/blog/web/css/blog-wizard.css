@@ -152,11 +152,9 @@ input {
 }
 
 .cancel-btn:hover {
-  /* background: var(--saito-border-color); */
 }
 
 .publish-btn {
-  /* background: var(--saito-border-color); */
   border: 1px solid var(--saito-border-color);
   color: var(--saito-font-color);
 }
@@ -165,7 +163,6 @@ input {
   opacity: 0.9;
 }
 
-/* TinyMCE Styles (preserved from original) */
 .tox.tox-tinymce {
   margin-bottom: 1rem;
   border: 1px solid var(--saito-border-color) !important;

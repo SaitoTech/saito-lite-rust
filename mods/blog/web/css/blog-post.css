@@ -1,3 +1,73 @@
+
+  
+  /* Single Post View */
+  .post-view {
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    height: 100%;
+    overflow-y: auto;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+
+  }
+
+  .post-view::-webkit-scrollbar {
+    display: none;
+  }
+
+  .post-image-container {
+    width: 100%;
+    height: 400px; /* Adjust height as needed */
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.post-header-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+    
+
+.post-meta-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--saito-border-color);
+}
+  .post-content  {
+    padding: 24px;
+    height: 100%;
+    font-size: 2rem;
+  }
+
+  .post-content p {
+    font-size: 2rem;
+  }
+  
+  .post-header {
+    margin-bottom: 24px;
+  }
+
+  .post-title {
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .post-body {
+    line-height: 1.625;
+  }
+
+  .post-card-footer {
+    display: flex;
+    gap: 24px;
+  }
+
+ /* -----> Single Post View */
+
+
 .blog-post-detail {
     margin: 0 auto;
     padding: 2rem;
@@ -6,7 +76,6 @@
     width: 95vw;
     height: 60vh;
     overflow-y: auto;
-    /* margin-top: var(--saito-header-height); */
 }
 
 
@@ -60,14 +129,12 @@
     margin-bottom: 2rem;
     background: var(--saito-background-color);
     padding-bottom: 1rem;
-    position: sticky;
     top: -2rem;
     padding-top: .5rem;
     border-bottom: 1px solid var(--saito-border-color);
 }
 
 .blog-post-detail .post-title {
-    font-size: 2rem;
     margin-bottom: 1rem;
     color: var(--saito-font-color);
 }
@@ -133,7 +200,6 @@
     padding-top: 1rem;
     border-top: 1px solid var(--saito-border-color);
     display: flex;
-    justify-content: flex-end;
 }
 
 .close-btn {
@@ -221,8 +287,6 @@
 }
 
 .save-btn {
-    /* background-color: #22c55e; */
-    /* color: white; */
     border: none;
     background-color: var(--saito-primary);
 }

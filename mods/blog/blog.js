@@ -2,11 +2,9 @@ const { default: Transaction } = require("saito-js/lib/transaction");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const pageHome = require('./index');
-const SaitoBlogWidget = require("./lib/saito-blog-widget");
-const { default: BlogWidget } = require("./lib/react-components/blog-widget");
-const { createRoot } = require("react-dom/client");
 const React = require('react');
-const { default: BlogPostDetail } = require("./lib/react-components/blog-post-detail");
+const { default: BlogPost } = require("./lib/react-components/blog-post");
+const { default: BlogLayout } = require("./lib/react-components/blog-layout");
 
 class Blog extends ModTemplate {
     constructor(app) {
@@ -57,24 +55,24 @@ class Blog extends ModTemplate {
         }
     }
 
-    respondTo(type, obj) {
-        if (type === "blog-widget") {
-            if (this.browser_active) {
-                return;
-            }
-            this.attachStyleSheets();
-            // Get container from selector
-            const { container: selector, publicKey } = obj;
-            console.log(obj, 'object')
+    // respondTo(type, obj) {
+    //     if (type === "blog-widget") {
+    //         if (this.browser_active) {
+    //             return;
+    //         }
+    //         this.attachStyleSheets();
+    //         // Get container from selector
+    //         const { container: selector, publicKey } = obj;
+    //         console.log(obj, 'object')
 
-            if (!selector) {
-                console.error("A selector is needed for the blog widget");
-                return;
-            }
-            let widget = new SaitoBlogWidget(this.app, this, publicKey, selector)
-            return widget
-        }
-    }
+    //         if (!selector) {
+    //             console.error("A selector is needed for the blog widget");
+    //             return;
+    //         }
+    //         let widget = new SaitoBlogWidget(this.app, this, publicKey, selector)
+    //         return widget
+    //     }
+    // }
 
     async onPeerServiceUp(app, peer, service = {}) {
         console.log('peer service up', service.service);
@@ -83,8 +81,8 @@ class Blog extends ModTemplate {
             if (this.browser_active) {
                 // Get post_id from URL parameters
                 const urlParams = new URLSearchParams(window.location.search);
-                const postId = urlParams.get('id');
-                const author = urlParams.get('author')
+                const postId = urlParams.get('tx_id');
+                const author = urlParams.get('public_key')
 
                 if (postId && author) {
                     // Load specific post
@@ -92,7 +90,7 @@ class Blog extends ModTemplate {
                 }
                 else {
                     // Load post by author
-                    this.loadPosts(author);
+                    this.loadPosts(this.publicKey);
                 }
             }
         }
@@ -106,8 +104,10 @@ class Blog extends ModTemplate {
             return {
                 title: data.title || "Untitled",
                 content: data.content,
+                image: data.image,
                 timestamp: tx.updated_at || data.timestamp,
-                sig: tx.signature
+                sig: tx.signature,
+                publicKey: tx.from[0].publicKey
             };
         });
     }
@@ -121,6 +121,8 @@ class Blog extends ModTemplate {
             content: data.content,
             timestamp: tx.updated_at || data.timestamp,
             sig: tx.signature,
+            publicKey: tx.from[0].publicKey,
+            image: data.image
         };
     }
     async loadBlogPostTransactions(key, peer) {
@@ -173,12 +175,13 @@ class Blog extends ModTemplate {
     async createBlogPostTransaction(post = {
         title: '',
         content: '',
+        image: "",
         tags: [],
         timestamp: Date.now()
     }, callback) {
 
-        let { title, content, tags, timestamp } = post
-        console.log(title, content, tags, timestamp)
+        let { title, content, tags, timestamp, image } = post
+        console.log(title, content,image, tags, timestamp)
         try {
             // Create new transaction
             let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
@@ -189,6 +192,7 @@ class Blog extends ModTemplate {
                 title: post.title || "Untitled",
                 content: typeof post.content === 'string' ? post.content : JSON.stringify(post.content),
                 tags: Array.isArray(post.tags) ? post.tags : [],
+                image,
                 timestamp: post.timestamp || Date.now()
             };
 
@@ -202,8 +206,10 @@ class Blog extends ModTemplate {
             await newtx.sign();
 
             await this.app.network.propagateTransaction(newtx);
-
-            callback()
+            if(callback){
+                callback()
+            }
+      
             return newtx;
         } catch (error) {
             console.error("Error creating blog transaction:", error);
@@ -387,12 +393,8 @@ class Blog extends ModTemplate {
 
     async loadPosts(author = null) {
         // if there is no author params or author is my key, load my own posts
-        if (!author || author == this.publicKey) {
-            this.app.browser.createReactRoot(BlogWidget, { app: this.app, mod: this, publicKey: this.publicKey, topMargin: true }, `blog-widget-${Date.now()}`)
-        }
-        if (author && author !== this.publicKey) {
-            this.app.browser.createReactRoot(BlogWidget, { app: this.app, mod: this, publicKey: author, topMargin: true }, `blog-widget-${Date.now()}`)
-        }
+              this.app.browser.createReactRoot(BlogLayout, { app: this.app, mod: this, publicKey: author, topMargin: true }, `blog-layout-${Date.now()}`)
+        
     }
 
 
@@ -417,7 +419,7 @@ class Blog extends ModTemplate {
                         console.log(targetTx)
                         const post = self.convertTransactionToPost(targetTx);
 
-                        self.app.browser.createReactRoot(BlogPostDetail, { post, app: self.app, mod: self, publicKey: public_key, topMargin:true, ondelete:()=> {
+                        self.app.browser.createReactRoot(BlogLayout, { post, app: self.app, mod: self, publicKey: public_key, topMargin:true, ondelete:()=> {
                             const baseUrl = window.location.origin;
                             window.location.href = `${baseUrl}/blog`;
                         } }, `blog-post-detail-${Date.now()}`)
