@@ -253,14 +253,9 @@ export default class Transaction extends SaitoTransaction {
 			return this.msg;
 		}
 
-		try {
-			if (this.data && this.data.byteLength > 0) {
-				const reconstruct = Buffer.from(this.data).toString('utf-8');
-				this.msg = JSON.parse(reconstruct);
-			} else {
-				this.msg = {};
-			}
-		} catch (err) {
+		this.msg = {};
+
+		if (this.data && this.data.byteLength > 0) {
 			try {
 				const reconstruct = Buffer.from(this.data).toString('utf-8');
 				this.msg = JSON.parse(reconstruct);
@@ -271,9 +266,9 @@ export default class Transaction extends SaitoTransaction {
 					} type = ${typeof this.data}`
 				);
 				console.error('error parsing return message', err);
-				console.log('here: ' + JSON.stringify(this.msg));
 			}
 		}
+
 		return this.msg;
 	}
 
