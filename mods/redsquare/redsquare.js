@@ -2689,9 +2689,13 @@ class RedSquare extends ModTemplate {
                 };
               }
 
-              res.setHeader('Content-type', 'text/html');
-              res.charset = 'UTF-8';
-              res.send(redsquareHome(app, redsquare_self, app.build_number, updated_social));
+              let html = redsquareHome(app, redsquare_self, app.build_number, updated_social);
+	      if (!res.finished) {
+	              res.setHeader('Content-type', 'text/html');
+        	      res.charset = 'UTF-8';
+             	      return res.send(html);
+	      }
+	      return;
             });
 
             return;
@@ -2727,12 +2731,13 @@ class RedSquare extends ModTemplate {
                 }
 
                 console.info('### write from redsquare.js:1651 (request Open Graph Image)');
-                res.writeHead(200, {
-                  'Content-Type': img_type,
-                  'Content-Length': img.length
-                });
-                res.end(img);
-                return;
+		if (!res.finished) {
+                  res.writeHead(200, {
+                    'Content-Type': img_type,
+                    'Content-Length': img.length
+                  });
+                  return res.end(img);
+		}
               }
             });
 
@@ -2743,15 +2748,9 @@ class RedSquare extends ModTemplate {
         console.log('Loading OG data failed with error: ' + err);
       }
 
-      // fallback for default
-      res.setHeader('Content-type', 'text/html');
-      res.charset = 'UTF-8';
-
       if (redsquare_self.cached_recent_tweets.length > 10) {
         redsquare_self.cached_recent_tweets.shift();
       }
-
-      // It is stupid to cache tweets that may be moderated after the fact
 
       for (let i = redsquare_self.cached_recent_tweets.length - 1; i >= 0; i--){
         if (redsquare_self.app.modules.moderate(redsquare_self.cached_recent_tweets[i], redsquare_self.name) == -1){
@@ -2759,15 +2758,12 @@ class RedSquare extends ModTemplate {
         }
       }
 
-      res.send(
-        redsquareHome(
-          app,
-          redsquare_self,
-          app.build_number,
-          redsquare_self.social,
-          redsquare_self.cached_recent_tweets
-        )
-      );
+      if (!res.finished) {
+	let html = redsquareHome(app, redsquare_self, app.build_number, redsquare_self.social, redsquare_self.cached_recent_tweets);
+        res.setHeader('Content-type', 'text/html');
+        res.charset = 'UTF-8';
+        return res.send(html);
+      }
       return;
     });
 

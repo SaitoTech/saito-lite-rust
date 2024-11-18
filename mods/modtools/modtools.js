@@ -743,7 +743,7 @@ class ModTools extends ModTemplate {
 		expressapp.get('/' + encodeURI(this.returnSlug()), async function (req, res) {
 			res.set('Content-type', 'text/html');
 			res.charset = 'UTF-8';
-			res.send(modtoolsIndex(app, modtools_self));
+			return res.send(modtoolsIndex(app, modtools_self));
 		});
 
 		expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));

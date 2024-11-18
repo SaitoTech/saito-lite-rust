@@ -113,7 +113,7 @@
             imperium_self.addMove("NOTIFY\tdealing two action cards to "+imperium_self.returnFactionNickname(imperium_self.game.player));
 
 	    // and change speaker
-	    let html = 'Make which player the speaker? <ul>';
+	    let html = '<div class="status-message">Make which player the speaker?</div><ul>';
             for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
               html += '<li class="textchoice" id="'+i+'">' + factions[imperium_self.game.state.players_info[i].faction].name + '</li>';
             }

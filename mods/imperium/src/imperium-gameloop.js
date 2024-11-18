@@ -1723,9 +1723,9 @@ if (debugging == 0) {
         this.game.queue.push("playerschoosestrategycards_before");
 
         if (this.game.state.round == 1) {
-          this.game.queue.push("ACKNOWLEDGE\tNEXT: all players select a Strategy Card for Round 1.");
+          this.game.queue.push("ACKNOWLEDGE\tAll players select a Strategy Card for Round 1.");
 	} else {
-          this.game.queue.push(`ACKNOWLEDGE\tNEXT: all players select their strategy card(s) for Round ${this.game.state.round}.`);
+          this.game.queue.push(`ACKNOWLEDGE\tAll players select their strategy card(s) for Round ${this.game.state.round}.`);
 	}
 
         if (this.game.state.round == 1) {

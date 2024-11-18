@@ -613,7 +613,9 @@ class Server {
 
 			if (!block) {
 				console.log(`block : ${bsh} doesn't exist...`);
-				res.sendStatus(404);
+				if (!res.finished) {
+					res.sendStatus(404);
+				}
 				return;
 			}
 
@@ -622,28 +624,17 @@ class Server {
 				!block.hasKeylistTxs(keylist)
 			) {
 
-console.log("*");
-console.log("* block_id requested " + block.id);
-console.log("* ... has txs");
-console.log("*");
-
-				res.writeHead(200, {
-					'Content-Type': 'text/plain',
-					'Content-Transfer-Encoding': 'utf8'
-				});
 				const liteblock = block.generateLiteBlock(keylist);
-
-				// console.log(
-				//   `liteblock : ${bsh} from memory txs count = : ${liteblock.transactions.length}`
-				// );
-				// console.log(
-				//   "valid txs : " +
-				//     liteblock.transactions.filter((tx) => tx.type !== TransactionType.SPV).length
-				// );
-				// liteblock.transactions.forEach((tx) => {
-				// });
 				const buffer = Buffer.from(liteblock.serialize());
-				res.end(buffer, 'utf8');
+
+				if (!res.finished) {
+					res.writeHead(200, {
+						'Content-Type': 'text/plain',
+						'Content-Transfer-Encoding': 'utf8'
+					});
+					return res.end(buffer, 'utf8');
+				}
+
 				return;
 			}
 
@@ -664,32 +655,15 @@ console.log("*");
 					}
 				}
 				if (buffer.byteLength == 0) {
-					res.sendStatus(404);
+					if (!res.finished) {
+						return res.sendStatus(404);
+					}
 					return;
 				}
 				let blk = new Block();
 				blk.deserialize(buffer);
 				const newblk = blk.generateLiteBlock(keylist);
 
-console.log("KEYLIST: " + JSON.stringify(keylist));
-console.log("^");
-console.log("^");
-console.log("^ no txs, so loading from disk... ");
-console.log("^");
-for (let z = 0; z < newblk.transactions.length; z++) {
-console.log("tx: " + z);
-let ttx = newblk.transactions[z];
-//console.log(JSON.stringify(ttxjson));
-}
-				newblk.transactions.filter(
-					(tx) => tx.type !== TransactionType.SPV
-				).forEach((tx) => {
-console.log(JSON.stringify(tx.serialize()));
-				});
-
-				// console.log(
-				//   `lite block : ${newblk.hash} generated with txs : ${newblk.transactions.length}`
-				// );
 				console.log(
 					`lite block fetch : block  = ${req.params.bhash} key = ${pkey} with txs : ${newblk.transactions.length}`
 				);
@@ -702,20 +676,26 @@ console.log(JSON.stringify(tx.serialize()));
 						(tx) => tx.type !== TransactionType.SPV
 					).length
 				);
-
-				res.writeHead(200, {
-					'Content-Type': 'text/plain',
-					'Content-Transfer-Encoding': 'utf8'
-				});
 				const buffer2 = Buffer.from(newblk.serialize());
-				res.end(buffer2);
+
+				if (!res.finished) {
+					res.writeHead(200, {
+						'Content-Type': 'text/plain',
+						'Content-Transfer-Encoding': 'utf8'
+					});
+					return res.end(buffer2);
+				}
 				return;
 			} catch (error) {
 				console.log('failed serving lite block : ' + bsh);
 				console.error(error);
 			}
 			try {
-				res.sendStatus(400);
+				if (!res.finished) {
+					res.sendStatus(400);
+				} 
+				return;
+
 			} catch (error) {
 				console.error(error);
 			}
@@ -727,21 +707,31 @@ console.log(JSON.stringify(tx.serialize()));
 				// console.debug("server giving out block : " + hash);
 				if (!hash) {
 					console.warn('hash not provided');
-					return res.sendStatus(400); // Bad request
+					if (!res.finished) {
+						return res.sendStatus(400); // Bad request
+					}
 				}
 
 				const block = await this.app.blockchain.loadBlockAsync(hash);
-				if (!block) {
-					console.warn('block not found for : ' + hash);
-					return res.sendStatus(404); // Not Found
-				}
 				let buffer = block.serialize();
 
-				res.status(200);
-				res.end(buffer);
+				if (!block) {
+					console.warn('block not found for : ' + hash);
+					if (!res.finished) {
+						return res.sendStatus(404); // Not Found
+					}
+					return;
+				}
+
+				if (!res.finished) {
+					res.status(200);
+					res.end(buffer);
+				}
 			} catch (err) {
 				console.log('ERROR: server cannot feed out block');
-				res.sendStatus(404);
+				if (!res.finished) {
+					return res.sendStatus(404);
+				}
 			}
 		});
 
@@ -767,7 +757,10 @@ console.log(JSON.stringify(tx.serialize()));
 				res.end(snapshot.toString());
 			} catch (error) {
 				console.error(error);
-				res.sendStatus(404);
+				if (!res.finished) {
+					return res.sendStatus(404);
+				}
+				return;
 			}
 		});
 
@@ -829,12 +822,16 @@ console.log(JSON.stringify(tx.serialize()));
 				);
 				fs.closeSync(fd);
 			}
-			res.sendFile(client_options_file);
-			//res.send(this.app.storage.returnClientOptions());
+			if (!res.finished) {
+				return res.sendFile(client_options_file);
+			}
+			return;
 		});
 
 		expressApp.get('/r', (req, res) => {
-			res.sendFile(this.web_dir + 'refer.html');
+			if (!res.finished) {
+				return res.sendFile(this.web_dir + 'refer.html');
+			}
 			return;
 		});
 
@@ -869,12 +866,14 @@ console.log(JSON.stringify(tx.serialize()));
 			process.env.NODE_ENV === "prod"
 			  ? "private max-age=31536000"
 			  : "private, no-cache, no-store, must-revalidate";
-			res.setHeader("Cache-Control", caching);
-			res.setHeader("expires", "-1");
-			res.setHeader("pragma", "no-cache");
+				res.setHeader("Cache-Control", caching);
+				res.setHeader("expires", "-1");
+				res.setHeader("pragma", "no-cache");
 			****/
 
-			res.sendFile(this.web_dir + '/saito/saito.js');
+			if (!res.finished) {
+				return res.sendFile(this.web_dir + '/saito/saito.js');
+			}
 			return;
 		});
 
@@ -894,24 +893,17 @@ console.log(JSON.stringify(tx.serialize()));
 		this.app.modules.webServer(expressApp, express);
 
 		expressApp.get('*', (req, res) => {
-
-            res.sendFile(`${this.web_dir}404.html`);
-			//res.sendFile(`${this.web_dir}tabs.html`);
-//
-//			res.status(404).sendFile(`${this.web_dir}404.html`);
-//			res.status(404).sendFile(`${this.web_dir}tabs.html`);
+	            	if (!res.finished) {
+		    		return res.sendFile(`${this.web_dir}404.html`);
+			}
+			return;
 		});
 
-		//     io.on('connection', (socket) => {
-		// console.log("IO CONNECTION on NODE: ");
-		//       this.app.network.addRemotePeer(socket);
-		//     });
 		this.initializeWebSocketServer();
 
 		webserver.listen(this.server.port, () => {
 			console.log('web server is listening');
 		});
-		// try webserver.listen(this.server.port, {cookie: false});
 		this.webserver = webserver;
 	}
 

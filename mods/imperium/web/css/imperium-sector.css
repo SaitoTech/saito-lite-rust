@@ -2,7 +2,7 @@
 	height: min-content;
 	width: min-content;
 	max-width: 1000px;
-	max-height: 85vh;
+	max-height: 60vh;
 	min-width: 400px;
 	background-image: url(/imperium/img/backgrounds/sector-background.jpg);
 	background-size: cover;
@@ -10,6 +10,7 @@
 	color: white;
 	border: 1px solid #fff8;
 	border-radius: 0.5rem;
+	scale: 1.5; /* increase */
 }
 
 .sector-overlay .name {
