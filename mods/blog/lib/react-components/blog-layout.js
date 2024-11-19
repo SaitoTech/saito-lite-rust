@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import {  ArrowRight } from 'lucide-react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { ArrowRight } from 'lucide-react';
 import PostModal from './post-modal';
 import { samplePosts } from './sample-posts';
 import BlogPost from './blog-post';
@@ -14,7 +14,7 @@ const USERS = ['All', 'StackTooDeep@saito'];
 
 
 
-const BlogLayout = ({ app, mod, publicKey, post=null }) => {
+const BlogLayout = ({ app, mod, publicKey, post = null }) => {
     // console.log(app, mod, publicKey, post, "army")
     const [selectedUser, setSelectedUser] = useState('All');
     const [selectedPost, setSelectedPost] = useState(post);
@@ -22,33 +22,91 @@ const BlogLayout = ({ app, mod, publicKey, post=null }) => {
     const [editingPost, setEditingPost] = useState(null);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [posts, setPosts] = useState([]);
+    const [posts, setPosts] = useState(samplePosts);
 
-    const createPreview = (content) => {
-        const lines = content.split('\n');
+    // const createPreview = (content) => {
+    //     const lines = content.split('\n');
 
-        const firstTextLine = lines.find(line => {
-            const trimmed = line.trim();
-            if (!trimmed) return false;
-            if (
-                trimmed.startsWith('![') ||
-                trimmed.includes('base64') ||
-                trimmed.match(/^\[!\[.*?\]\(.*?\)\]\(.*?\)$/) ||
-                trimmed.startsWith('<img') ||
-                trimmed.startsWith('http') ||
-                trimmed.startsWith('<iframe')
-            ) return false;
-            return true;
-        }) || '';
+    //     const firstTextLine = lines.find(line => {
+    //         const trimmed = line.trim();
+    //         if (!trimmed) return false;
+    //         if (
+    //             trimmed.startsWith('![') ||
+    //             trimmed.includes('base64') ||
+    //             trimmed.match(/^\[!\[.*?\]\(.*?\)\]\(.*?\)$/) ||
+    //             trimmed.startsWith('<img') ||
+    //             trimmed.startsWith('http') ||
+    //             trimmed.startsWith('<iframe')
+    //         ) return false;
+    //         return true;
+    //     }) || '';
 
-        const cleanContent = firstTextLine.replace(/[#*`_~]/g, '').trim();
-        const preview = cleanContent.slice(0, 59);
-        return preview + (cleanContent.length > 59 ? '...' : '');
+    //     const cleanContent = firstTextLine.replace(/[#*`_~]/g, '').trim();
+    //     const preview = cleanContent.slice(0, 59);
+    //     return preview + (cleanContent.length > 59 ? '...' : '');
+    // };
+
+
+    const measureTitleHeight = (element) => {
+        if (!element) return;
+        // Get the line height and actual height
+        const style = window.getComputedStyle(element);
+        const lineHeight = parseInt(style.lineHeight);
+        const height = element.offsetHeight;
+
+        // If height is greater than lineHeight, it's multiline
+        return height > lineHeight;
+    };
+
+    const PostCard = ({ post, index }) => {
+        // Assume titles longer than 50 characters will wrap
+        const isMultiline = post.title.length > 50;
+
+        return (
+            <div className="post-card">
+                <div className="post-card-content">
+                    <div className="post-card-main">
+                        <h4 className="post-card-title">
+                            {post.title}
+                        </h4>
+                        {selectedUser === 'All' && (
+                            <div className="post-card-meta">
+
+                                {isMultiline ? <div className='saito-user single-line'> Published on date by person </div> : <div className={`saito-user saito-user-${post.publicKey} ${isMultiline ? 'single-line' : ''}`}
+                                    id={`saito-user-${post.publicKey}`}
+                                    data-id={post.publicKey}>
+                                    <div className="saito-identicon-box">
+                                        <img className="saito-identicon"
+                                            src={app.keychain.returnIdenticon(post.publicKey)}
+                                            alt="user identicon" />
+                                    </div>
+                                    <div className="saito-address treated"
+                                        data-id={post.publicKey}>
+                                        {app.keychain.returnUsername(post.publicKey)}
+                                    </div>
+                                    <div className="saito-userline">
+                                        Published on {app.browser.prettifyTimeStamp(post.timestamp)}
+                                    </div>
+                                </div>}
+                                <div className="engagement-stat" onClick={() => copyPostLinkToClipboard(post)}>
+                                    <i className='fa fa-arrow-up-from-bracket'></i>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                    <div className="post-card-image">
+                        <img
+                            src={post.image? getImageUrl(post.image) : mod.returnImage()}
+                            alt="Post preview"
+                            className="preview-image"
+                        />
+                    </div>
+                </div>
+            </div>
+        );
     };
 
 
-   
-    
 
     const filteredPosts = posts.filter(post =>
         selectedUser === 'All' || post.author === selectedUser
@@ -56,7 +114,7 @@ const BlogLayout = ({ app, mod, publicKey, post=null }) => {
 
 
     useEffect(() => {
-        loadPosts();
+        // loadPosts();
     }, [publicKey]);
 
     const loadPosts = () => {
@@ -67,7 +125,7 @@ const BlogLayout = ({ app, mod, publicKey, post=null }) => {
             if (editingPost) {
                 const updatedPost = loadedPosts.find(p => p.sig === editingPost.sig);
                 if (updatedPost) {
-                
+
                     setSelectedPost(updatedPost);
                 }
             }
@@ -101,19 +159,15 @@ const BlogLayout = ({ app, mod, publicKey, post=null }) => {
                         siteMessage("Submitting blog post")
                         setTimeout(() => {
                             setShowPostModal(false);
-                           
+
                             loadPosts();
                         }, 2000)
                         // Reload posts to show the new one
                     }
                 );
             }
-           
-            // setEditingPost(null);
-            // setTimeout(() => {    
-            //     setShowPostModal(false);
-            //     loadPosts();
-            // }, 2000)
+
+
         } catch (error) {
             console.error("Error saving post:", error);
             alert("Failed to save post. Please try again.");
@@ -173,11 +227,11 @@ const BlogLayout = ({ app, mod, publicKey, post=null }) => {
 
             <div className="center-column" style={{
                 // width: selectedPost ? '768px' : undefined,
-                maxWidth: selectedPost ? '900px': '100%',
+                maxWidth: selectedPost ? '900px' : '100%',
                 margin: selectedPost ? '0 auto' : undefined
             }}>
                 {selectedPost ? (
-                  <BlogPost app={app} mod={mod} post={selectedPost} publicKey={selectedPost.publicKey} />
+                    <BlogPost app={app} mod={mod} post={selectedPost} publicKey={selectedPost.publicKey} />
                 ) : (
 
                     <>
@@ -198,7 +252,7 @@ const BlogLayout = ({ app, mod, publicKey, post=null }) => {
                                             {app.keychain.returnUsername(publicKey)}
                                         </div>
                                         <div className="saito-userline">
-                                           Welcome to my blog where i share my ideas
+                                            Welcome to my blog where i share my ideas
                                         </div>
                                     </div>
                                     {/* <h5>{app.keychain.returnUsername(publicKey)}'s blog</h5> */}
@@ -210,83 +264,10 @@ const BlogLayout = ({ app, mod, publicKey, post=null }) => {
 
                         <div className="posts-list">
                             {filteredPosts.map((post, index) => (
-                                <div
-                                    key={post.sig || index}
-                                    className="post-card"
-                                >
-                                    <div className="post-card-content">
-                                        <div className="post-card-main">
-                                            <h4 className="post-card-title">{post.title}</h4>
-                                            {selectedUser === 'All' && (
-                                                <div className="post-card-meta">
-                                                    <div className={`saito-user saito-user-${post.publicKey}`}
-                                                        id={`saito-user-${post.publicKey}`}
-                                                        data-id={post.publicKey}
-                                                        data-disable="false">
-                                                        <div className="saito-identicon-box">
-                                                            <img className="saito-identicon"
-                                                                src={app.keychain.returnIdenticon(post.publicKey)}
-                                                                alt="user identicon" />
-                                                        </div>
-                                                        <div className="saito-address treated"
-                                                            data-id={post.publicKey}>
-                                                            {app.keychain.returnUsername(post.publicKey)}
-                                                        </div>
-                                                        <div className="saito-userline">
-                                                           {/* Published on November 15 2024, 3:41am */}
-                                                           Published on {app.browser.prettifyTimeStamp(post.timestamp)}
-                                                        </div>
-                                                    </div>
-                                                    <div className="engagement-stat" onClick={() => copyPostLinkToClipboard(post)}>
-                                                        <i className='fa fa-arrow-up-from-bracket'></i>
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {selectedUser !== 'All' && <div className="post-published-div" style={{
-                                                display: 'flex',
-                                                justifyContent: selectedPost ? 'center' : 'space-between',
-                                                position: 'relative'
-                                            }}><div className="post-date">
-                                                   Published on {app.browser.prettifyTimeStamp(post.timestamp)}
-                                                   {/* Published on November 15 2024, 3:41am */}
-                                                </div>  <div  className="engagement-stat" onClick={() => copyPostLinkToClipboard(post)}>
-                                                    <i className='fa fa-arrow-up-from-bracket'></i>
-                                                    {/* <span>{selectedPost.shares}</span> */}
-                                                </div>  </div>}
-                                            <div className="post-card-preview markdown-content"
-                                                dangerouslySetInnerHTML={{
-                                                    __html: parseMarkdown(createPreview(post.content))
-                                                }}
-                                            />
-                                            <div className="post-card-footer">
-                                                <a
-                                                    className="read-more-button"
-                                                    onClick={() => {
-                                                        app.connection.emit('saito-header-replace-logo', handleBackClick);
-                                                        setSelectedPost(post);
-                                                        const url = new URL(window.location);
-                                                        url.searchParams.set('public_key', post.publicKey);
-                                                        url.searchParams.set('tx_id', post.sig);
-                                                        window.history.pushState({}, '', url);
-                                                    }}
-                                                >
-                                                    Read More
-                                                    <ArrowRight className="icon" />
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div className="post-card-image">
-                                            <img
-                                                src={getImageUrl(post.image)}
-                                                alt="Post preview"
-                                                className="preview-image"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
+                                <PostCard index={index} post={post} />
                             ))}
                             {
-                                filteredPosts.length === 0 && <NoPostsAvailable showModal={()=> setShowPostModal(true)}/>
+                                filteredPosts.length === 0 && <NoPostsAvailable showModal={() => setShowPostModal(true)} />
                             }
                         </div>
                     </>
