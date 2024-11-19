@@ -1,18 +1,14 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { Share2, Clock, MessageCircle } from 'lucide-react';
 import PostModal from './post-modal';
 import { samplePosts } from './sample-posts';
 import BlogPost from './blog-post';
 import { copyPostLinkToClipboard, getImageUrl, parseMarkdown } from '../utils';
 import NoPostsAvailable from './NoPosts';
-
-
-
+import PostCard from './post-card';
 
 
 const USERS = ['All', 'StackTooDeep@saito'];
-
-
 
 const BlogLayout = ({ app, mod, publicKey, post = null }) => {
     // console.log(app, mod, publicKey, post, "army")
@@ -23,89 +19,6 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [posts, setPosts] = useState(samplePosts);
-
-    // const createPreview = (content) => {
-    //     const lines = content.split('\n');
-
-    //     const firstTextLine = lines.find(line => {
-    //         const trimmed = line.trim();
-    //         if (!trimmed) return false;
-    //         if (
-    //             trimmed.startsWith('![') ||
-    //             trimmed.includes('base64') ||
-    //             trimmed.match(/^\[!\[.*?\]\(.*?\)\]\(.*?\)$/) ||
-    //             trimmed.startsWith('<img') ||
-    //             trimmed.startsWith('http') ||
-    //             trimmed.startsWith('<iframe')
-    //         ) return false;
-    //         return true;
-    //     }) || '';
-
-    //     const cleanContent = firstTextLine.replace(/[#*`_~]/g, '').trim();
-    //     const preview = cleanContent.slice(0, 59);
-    //     return preview + (cleanContent.length > 59 ? '...' : '');
-    // };
-
-
-    const measureTitleHeight = (element) => {
-        if (!element) return;
-        // Get the line height and actual height
-        const style = window.getComputedStyle(element);
-        const lineHeight = parseInt(style.lineHeight);
-        const height = element.offsetHeight;
-
-        // If height is greater than lineHeight, it's multiline
-        return height > lineHeight;
-    };
-
-    const PostCard = ({ post, index }) => {
-        // Assume titles longer than 50 characters will wrap
-        const isMultiline = post.title.length > 50;
-
-        return (
-            <div className="post-card">
-                <div className="post-card-content">
-                    <div className="post-card-main">
-                        <h4 className="post-card-title">
-                            {post.title}
-                        </h4>
-                        {selectedUser === 'All' && (
-                            <div className="post-card-meta">
-
-                                {isMultiline ? <div className='saito-user single-line'> Published on date by person </div> : <div className={`saito-user saito-user-${post.publicKey} ${isMultiline ? 'single-line' : ''}`}
-                                    id={`saito-user-${post.publicKey}`}
-                                    data-id={post.publicKey}>
-                                    <div className="saito-identicon-box">
-                                        <img className="saito-identicon"
-                                            src={app.keychain.returnIdenticon(post.publicKey)}
-                                            alt="user identicon" />
-                                    </div>
-                                    <div className="saito-address treated"
-                                        data-id={post.publicKey}>
-                                        {app.keychain.returnUsername(post.publicKey)}
-                                    </div>
-                                    <div className="saito-userline">
-                                        Published on {app.browser.prettifyTimeStamp(post.timestamp)}
-                                    </div>
-                                </div>}
-                                <div className="engagement-stat" onClick={() => copyPostLinkToClipboard(post)}>
-                                    <i className='fa fa-arrow-up-from-bracket'></i>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                    <div className="post-card-image">
-                        <img
-                            src={post.image? getImageUrl(post.image) : mod.returnImage()}
-                            alt="Post preview"
-                            className="preview-image"
-                        />
-                    </div>
-                </div>
-            </div>
-        );
-    };
-
 
 
     const filteredPosts = posts.filter(post =>
@@ -119,7 +32,6 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
 
     const loadPosts = () => {
         mod.loadBlogPostTransactionsForWidget(publicKey || mod.publicKey, (loadedPosts) => {
-            console.log('loading posts', loadedPosts)
             setPosts(loadedPosts);
 
             if (editingPost) {
@@ -226,14 +138,12 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
             </div>
 
             <div className="center-column" style={{
-                // width: selectedPost ? '768px' : undefined,
                 maxWidth: selectedPost ? '900px' : '100%',
                 margin: selectedPost ? '0 auto' : undefined
             }}>
                 {selectedPost ? (
                     <BlogPost app={app} mod={mod} post={selectedPost} publicKey={selectedPost.publicKey} />
                 ) : (
-
                     <>
                         {selectedUser !== 'All' && (
                             <div className="user-header">
@@ -255,8 +165,6 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                                             Welcome to my blog where i share my ideas
                                         </div>
                                     </div>
-                                    {/* <h5>{app.keychain.returnUsername(publicKey)}'s blog</h5> */}
-                                    {/* <h5>StackTooDeep@saito's blog</h5> */}
                                 </div>
                                 <div className="user-header-divider"></div>
                             </div>
@@ -264,7 +172,7 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
 
                         <div className="posts-list">
                             {filteredPosts.map((post, index) => (
-                                <PostCard index={index} post={post} />
+                                <PostCard  index={index} post={post} />
                             ))}
                             {
                                 filteredPosts.length === 0 && <NoPostsAvailable showModal={() => setShowPostModal(true)} />

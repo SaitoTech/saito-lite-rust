@@ -3,9 +3,9 @@ export const samplePosts = [
       sig: "post4",
       title: "Second ATR Cycle and Rewards",
       author: "StackTooDeep@saito",
-      publicKey: "your_public_key_1",
+      publicKey: "vyMNHWAi8osp5UYmiCjVPnpqnNTWrkQbHuNScsy1gt8t_1",
       timestamp: Date.now() - 86400000, // 1 day ago
-      image: "https://saito.tech/wp-content/uploads/2024/10/his-board-scaled-2048x1325.jpg", // Featured image
+      image: "https://saito.tech/wp-content/uploads/2024/10/ATR_5APY_1200x6302.png", // Featured image
       content: `
   ![Blockchain Technology])
   
@@ -34,9 +34,9 @@ export const samplePosts = [
     },
     {
       sig: "post5",
-      title: "TSaito Summer 11",
+      title: "Saito Summer 11",
       author: "CryptoNinja@saito",
-      publicKey: "your_public_key_2",
+      publicKey: "vyMNHWAi8osp5UYmiCjVPnpqnNTWrkQbHuNScsy1gt8t_2",
       timestamp: Date.now() - 172800000, // 2 days ago
       image: "https://saito.tech/wp-content/uploads/2024/10/his-board-scaled-2048x1325.jpg",
       content: `
@@ -69,7 +69,45 @@ export const samplePosts = [
       sig: "post9",
       title: "Don’t Trust Us; One-click P2P Encrypted Chat and Video Call on Saito",
       author: "BlockchainBoss@saito",
-      publicKey: "your_public_key_3",
+      publicKey: "vyMNHWAi8osp5UYmiCjVPnpqnNTWrkQbHuNScsy1gt8t_3",
+      timestamp: Date.now() - 259200000, // 3 days ago
+      image: "",
+      content: `
+  ![DeFi Farming])
+  
+  Yield farming continues to be one of the most popular ways to earn passive income in the DeFi space. Today, we'll explore some effective strategies that can help maximize your returns while managing risks.
+  
+  ## Popular Strategies
+  
+  1. **Liquidity Providing**
+     - Choose stable pairs
+     - Monitor impermanent loss
+     - Leverage yield aggregators
+  
+  2. **Staking**
+     - Single-sided staking
+     - LP token staking
+     - Governance token staking
+  
+  ### Risk Management
+  
+  Always remember:
+  - Diversify your portfolio
+  - Audit smart contracts
+  - Monitor market conditions
+  - Set realistic expectations
+  
+  *Not financial advice. Always do your own research.*
+  `,
+      likes: 189,
+      comments: 34,
+      shares: 0
+    },
+    {
+      sig: "post9",
+      title: "Don’t Trust Us; One-click P2P Encrypted Chat and Video Call on Saito. More title post content to fill up space",
+      author: "BlockchainBoss@saito",
+      publicKey: "vyMNHWAi8osp5UYmiCjVPnpqnNTWrkQbHuNScsy1gt8t_3",
       timestamp: Date.now() - 259200000, // 3 days ago
       image: "",
       content: `
@@ -107,7 +145,7 @@ export const samplePosts = [
       sig: "post6",
       title: "Saito Summer 13 – LCX Listing and Tech Update",
       author: "David@saito",
-      publicKey: "your_public_key_4",
+      publicKey: "vyMNHWAi8osp5UYmiCjVPnpqnNTWrkQbHuNScsy1gt8t_4",
       timestamp: Date.now() - 345600000, // 4 days ago
       image: "",
       content: `
@@ -144,9 +182,9 @@ export const samplePosts = [
       sig: "post7",
       title: "Saito Fileshare – Unlimited, P2P, Encrypted",
       author: "Richard@saito",
-      publicKey: "your_public_key_5",
+      publicKey: "vyMNHWAi8osp5UYmiCjVPnpqnNTWrkQbHuNScsy1gt8t_5",
       timestamp: Date.now() - 432000000, // 5 days ago
-      image: "https://saito.tech/wp-content/uploads/2024/10/his-board-scaled-2048x1325.jpg",
+      image: "https://saito.tech/wp-content/uploads/2024/07/saito-summer-banner.jpg",
       content: `
   ![Smart Contract Security])
   
