@@ -1,11 +1,12 @@
 import React from "react";
+import { copyPostLinkToClipboard, getImageUrl } from "../utils";
 
-const PostCard = ({ post, index }) => {
+
+const PostCard = ({ app, mod, post, index, onClick, selectedUser }) => {
     const isMultiline = post.title.length > 50;
-
     return (
-        <div className="post-card">
-            <div className="post-card-content">
+        <div key={index} onClick={onClick} className="post-card">
+            <div  className="post-card-content">
                 <div className="post-card-main">
                     <h4 className="post-card-title">
                         {post.title}

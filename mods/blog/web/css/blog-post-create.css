@@ -126,6 +126,10 @@
     width: 100%;
     max-width: 300px;
   }
+  .markdown-preview {
+    padding: 1.5rem;
+    max-height: 30rem;
+  }
   
   .preview-img {
     width: 100%;

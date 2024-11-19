@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
-import { Share2, Clock, MessageCircle } from 'lucide-react';
 import PostModal from './post-modal';
 import { samplePosts } from './sample-posts';
 import BlogPost from './blog-post';
-import { copyPostLinkToClipboard, getImageUrl, parseMarkdown } from '../utils';
 import NoPostsAvailable from './NoPosts';
 import PostCard from './post-card';
 
@@ -172,7 +170,14 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
 
                         <div className="posts-list">
                             {filteredPosts.map((post, index) => (
-                                <PostCard  index={index} post={post} />
+                                <PostCard  selectedUser={selectedUser}  app={app}  mod={mod}index={index} post={post}  onClick={() => {
+                                    app.connection.emit('saito-header-replace-logo', handleBackClick);
+                                    setSelectedPost(post);
+                                    const url = new URL(window.location);
+                                    url.searchParams.set('public_key', post.publicKey);
+                                    url.searchParams.set('tx_id', post.sig);
+                                    window.history.pushState({}, '', url);
+                                }}/>
                             ))}
                             {
                                 filteredPosts.length === 0 && <NoPostsAvailable showModal={() => setShowPostModal(true)} />
