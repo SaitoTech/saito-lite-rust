@@ -233,7 +233,8 @@ const BlogLayout = ({ app, mod, publicKey, post=null }) => {
                                                             {app.keychain.returnUsername(post.publicKey)}
                                                         </div>
                                                         <div className="saito-userline">
-                                                           Published on November 15 2024, 3:41am
+                                                           {/* Published on November 15 2024, 3:41am */}
+                                                           Published on {app.browser.prettifyTimeStamp(post.timestamp)}
                                                         </div>
                                                     </div>
                                                     <div className="engagement-stat" onClick={() => copyPostLinkToClipboard(post)}>
@@ -246,8 +247,8 @@ const BlogLayout = ({ app, mod, publicKey, post=null }) => {
                                                 justifyContent: selectedPost ? 'center' : 'space-between',
                                                 position: 'relative'
                                             }}><div className="post-date">
-                                                   {/* Published on {app.browser.prettifyTimeStamp(post.timestamp)} */}
-                                                   Published on November 15 2024, 3:41am
+                                                   Published on {app.browser.prettifyTimeStamp(post.timestamp)}
+                                                   {/* Published on November 15 2024, 3:41am */}
                                                 </div>  <div  className="engagement-stat" onClick={() => copyPostLinkToClipboard(post)}>
                                                     <i className='fa fa-arrow-up-from-bracket'></i>
                                                     {/* <span>{selectedPost.shares}</span> */}
