@@ -335,6 +335,12 @@ class RedSquare extends ModTemplate {
           if (tx == null || mod == null) {
             return 0;
           }
+
+          //This function is called with every module for some reasons
+          if (mod.name !== this.name){
+            return 0;
+          }
+
           if (this.hidden_tweets.includes(tx.signature)){
             return -1;
           }
@@ -976,7 +982,7 @@ class RedSquare extends ModTemplate {
 
         if (created_at == 'earlier') {
           obj.updated_earlier_than = this.peers[i].tweets_earliest_ts;
-          console.log(`REDSQUARE: fetch earlier tweets from ${this.peers[i].publicKey}`);
+          console.log(`REDSQUARE: fetch earlier tweets from ${this.peers[i].publicKey} / ${this.peers[i].tweets_earliest_ts}`);
         } else if (created_at == 'later') {
           //
           // For "new" tweets we maybe want to look at updated, not created
@@ -1667,8 +1673,16 @@ class RedSquare extends ModTemplate {
     this.tweets_sigs_hmap = {};
     this.tweets_earliest_ts = new Date().getTime();
 
+    if (!this.ignoreCentralServer && window?.tweets?.length) {
+      for (let z = 0; z < window.tweets.length; z++) {
+        let newtx = new Transaction();
+        newtx.deserialize_from_web(this.app, window.tweets[z]);
+        this.addTweet(newtx, 'server_cache');
+      }
+    }
+
     for (let peer of this.peers){
-      peer.tweets_earliest_ts = new Date().getTime();
+      peer.tweets_earliest_ts = this.tweets_earliest_ts;
       peer.tweets_latest_ts = 0;
     }
   }

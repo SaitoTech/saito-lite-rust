@@ -627,7 +627,6 @@ class TweetManager {
 					this.showLoader();
 					this.mod.reset();
 					this.clearFeed();
-					this.render();
 					this.fetchTweets();
 				}
 			}
@@ -640,7 +639,6 @@ class TweetManager {
 					this.showLoader();
 					this.mod.reset();
 					this.clearFeed();
-					this.render();
 					this.fetchTweets();
 				}
 			}
