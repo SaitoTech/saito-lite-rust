@@ -1,13 +1,9 @@
 .card {
 	position: relative;
-	width: min(18vw, 130px);
-	height: min(27.54vw, 199px);
-}
-
-.card.used {
-	/*border: 2px solid var(--saito-secondary);
-  background-color: var(--saito-secondary);
-  border-radius: 8px;*/
+	width: 15vw;
+	height: 21vw;
+	max-width: 190px;
+	max-height: 265px;
 }
 
 .card.not_used {
@@ -51,11 +47,3 @@
 }
 
 
-@media screen and (orientation: landscape) and (max-height: 600px) {
-
-	.card {
-		height: min(100px, 23vh);
-		width: min(65px, 15vh);
-	}
-
-}

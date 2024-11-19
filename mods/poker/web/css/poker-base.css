@@ -1,7 +1,7 @@
 .gameboard {
   border-radius: 2rem;
   position: absolute;
-  background-image: url(https://saito.io/saito/img/arcade/greenfelt.jpg);
+  background-image: url(/saito/img/arcade/greenfelt.jpg);
   background-size: cover;
   width: 100vw;
   height: 100vh;
@@ -15,11 +15,7 @@
 
 .deal {
   display: flex;
-  gap: 5px;
-}
-
-.card, .cardBack {
-  width: 110px;
+  gap: 1rem;
 }
 
 .mystuff {
