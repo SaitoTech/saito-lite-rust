@@ -1,5 +1,4 @@
 import React from 'react';
-import { Heart, MessageCircle } from 'lucide-react';
 import { copyPostLinkToClipboard, getImageUrl, parseMarkdown } from '../utils';
 
 const BlogPost = ({app, mod, post, publicKey}) => {
@@ -14,7 +13,7 @@ const BlogPost = ({app, mod, post, publicKey}) => {
                 
                 <div className="post-content-body">
                 <header className="post-header">
-                        <h1 className="post-title">{post.title}</h1>
+                        <h2 className="post-title">{post.title}</h2>
                     </header>
                     <div className="post-meta-header">        
                         <div className={`saito-user saito-user-${publicKey}`}
