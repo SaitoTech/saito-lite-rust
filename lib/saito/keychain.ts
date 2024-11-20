@@ -614,6 +614,25 @@ class Keychain {
 
 
 
+	returnKeyArchiveNodes(publicKey) {
+		const keylist: any = this.app.options.keys;
+		const key = keylist.find(key => key.publicKey === publicKey);
+		if (key && key.profile && Array.isArray(key.profile.archive_nodes)) {
+			const parsedArchiveNodes = key.profile.archive_nodes.map(node => {
+				try {
+					return JSON.parse(node);
+				} catch (error) {
+					console.error(`Failed to parse archive node: ${node}`, error);
+					return null;
+				}
+			}).filter(node => node !== null);
+			return parsedArchiveNodes || [];
+		}else {
+			console.warn('no archive nodes found');
+			return [];
+		}
+	}
+
 	/**
  * Adds a publicKey to the watch list and updates the keys storage.
  * This function takes a publicKey as input, marks it as watched, saves the updated keys,

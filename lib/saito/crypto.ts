@@ -283,6 +283,19 @@ export default class Crypto {
 		return stringx;
 	}
 
+	 isValidPublicKey (key) {
+		if (typeof key !== 'string') {
+			return false;
+		}
+	
+		if (key.length !== 44) {
+			return false;
+		}
+	
+		const base58Regex = /^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]+$/;
+		return base58Regex.test(key);
+	};
+
 
   	isPublicKey(publicKey: string) {
            if (publicKey){

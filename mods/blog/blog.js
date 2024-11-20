@@ -32,8 +32,128 @@ class Blog extends ModTemplate {
             console.log('blog-update-widget')
         });
 
+        this.postsCache = {
+            byUser: new Map(), 
+            lastFetch: new Map(), 
+            allPosts: [], 
+            lastAllPostsFetch: 0 
+        };
+
+         // Cache timeout (10 seconds)
+         this.CACHE_TIMEOUT = 10000;
+
+        //  app.connection.on('blog-update-widget', () => {
+        //      console.log('blog-update-widget');
+        //      this.clearCache();
+        //  });
 
 
+
+
+    }
+
+    // clearCache() {
+    //     this.postsCache.byUser.clear();
+    //     this.postsCache.lastFetch.clear();
+    //     this.postsCache.allPosts = [];
+    //     this.postsCache.lastAllPostsFetch = 0;
+    // }
+
+    updateCache(key, posts) {
+        const existingPosts = this.postsCache.byUser.get(key) || [];
+        
+        const allPosts = [...posts];
+        existingPosts.forEach(existingPost => {
+            if (!allPosts.some(p => p.sig === existingPost.sig)) {
+                allPosts.push(existingPost);
+            }
+        });
+
+        allPosts.sort((a, b) => b.timestamp - a.timestamp);
+
+        this.postsCache.byUser.set(key, allPosts);
+        this.postsCache.lastFetch.set(key, Date.now());
+
+        return allPosts;
+    }
+
+    async loadBlogPostForUser(key, callback, limit = 10) {
+        // Check cache first
+        const cachedPosts = this.postsCache.byUser.get(key) || [];
+        const lastFetch = this.postsCache.lastFetch.get(key) || 0;
+        const isCacheValid = Date.now() - lastFetch < this.CACHE_TIMEOUT;
+
+        if (cachedPosts.length > 0 && isCacheValid) {
+            console.log('Using cached posts for user:', key);
+            callback(cachedPosts.slice(0, limit));
+            return;
+        }
+
+        try {
+            const peer = key === this.publicKey 
+                ? (await this.app.network.getPeers())[0]?.peerIndex
+                : key;
+
+            this.app.storage.loadTransactions(
+                { field1: 'Blog', field2: key, limit: 100 },
+                (txs) => {
+                    const filteredTxs = this.filterBlogPosts(txs);
+                    const posts = this.convertTransactionsToPosts(filteredTxs);
+                    const updatedPosts = this.updateCache(key, posts);
+                    callback(updatedPosts.slice(0, limit));
+                },
+                peer
+            );
+        } catch (error) {
+            console.error("Error loading posts for user:", error);
+            callback(cachedPosts.slice(0, limit));
+        }
+    }
+
+    async loadAllPosts(keys, callback = null) {
+        const isCacheValid = Date.now() - this.postsCache.lastAllPostsFetch < this.CACHE_TIMEOUT;
+        if (this.postsCache.allPosts.length > 0 && isCacheValid) {
+            console.log('Using cached all posts');
+            if (callback) callback(this.postsCache.allPosts);
+            return this.postsCache.allPosts;
+        }
+
+        try {
+            const loadPromises = keys.map(key => 
+                new Promise((resolve) => {
+                    const peer = key === this.publicKey 
+                        ? "localhost"
+                        : key;
+
+                    this.app.storage.loadTransactions(
+                        { field1: 'Blog', field2: key, limit: 100 },
+                        (txs) => {
+                            const filteredTxs = this.filterBlogPosts(txs);
+                            const posts = this.convertTransactionsToPosts(filteredTxs);
+                            this.updateCache(key, posts);
+                            resolve(posts);
+                        },
+                        peer
+                    );
+                })
+            );
+
+            const postsArrays = await Promise.all(loadPromises);
+            const allPosts = postsArrays
+                .flat()
+                .sort((a, b) => b.timestamp - a.timestamp);
+
+            // Update all posts cache
+            this.postsCache.allPosts = allPosts;
+            this.postsCache.lastAllPostsFetch = Date.now();
+
+            if (callback) callback(allPosts);
+            return allPosts;
+        } catch (error) {
+            console.error("Error loading all posts:", error);
+            if (callback) callback([]);
+            return [];
+        }
     }
 
 
@@ -55,24 +175,6 @@ class Blog extends ModTemplate {
         }
     }
 
-    // respondTo(type, obj) {
-    //     if (type === "blog-widget") {
-    //         if (this.browser_active) {
-    //             return;
-    //         }
-    //         this.attachStyleSheets();
-    //         // Get container from selector
-    //         const { container: selector, publicKey } = obj;
-    //         console.log(obj, 'object')
-
-    //         if (!selector) {
-    //             console.error("A selector is needed for the blog widget");
-    //             return;
-    //         }
-    //         let widget = new SaitoBlogWidget(this.app, this, publicKey, selector)
-    //         return widget
-    //     }
-    // }
 
     async onPeerServiceUp(app, peer, service = {}) {
         console.log('peer service up', service.service);
@@ -138,33 +240,6 @@ class Blog extends ModTemplate {
 
     }
 
-    async loadBlogPostTransactionsForWidget(key, callback, limit = 10,) {
-        let self = this
-        if (key === this.publicKey) {
-            let peers = await this.app.network.getPeers();
-            console.log(peers, "on peer service up")
-            let peer = peers[0]
-            this.app.storage.loadTransactions({ field1: 'Blog', field2: key, limit },
-                function (txs) {
-                    const filteredTxs = self.filterBlogPosts(txs);
-                    console.log(filteredTxs, 'filtered transactions')
-                    const posts = self.convertTransactionsToPosts(filteredTxs);
-                    callback(posts)
-                    console.log('posts gotten', posts);
-                },
-                peer.peerIndex)
-        } else {
-            this.app.storage.loadTransactions({ field1: 'Blog', field2: key, limit },
-                function (txs) {
-                    const filteredTxs = self.filterBlogPosts(txs);
-                    console.log(filteredTxs, 'filtered transactions')
-                    const posts = self.convertTransactionsToPosts(filteredTxs);
-                    callback(posts)
-                    console.log('posts gotten', posts);
-                },
-                key)
-        }
-    }
 
 
 

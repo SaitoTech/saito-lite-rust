@@ -17,13 +17,12 @@ export const getImageUrl = (base64String) => {
     if (base64String.startsWith('data:image/')) return base64String;
     if (base64String.startsWith('http')) return base64String;
     
-    // Try to detect image type from the base64 string
-    // This is a simple version - you might want to add more sophisticated detection
+
     const isPNG = base64String.charAt(0) === 'i';
     const isJPEG = base64String.charAt(0) === '/';
     const isGIF = base64String.charAt(0) === 'R';
     
-    let mimeType = 'jpeg'; // default
+    let mimeType = 'jpeg'; 
     if (isPNG) mimeType = 'png';
     if (isGIF) mimeType = 'gif';
     
@@ -43,3 +42,42 @@ export const getImageUrl = (base64String) => {
         salert('Failed to copy link');
     }
 };
+
+
+export const initializeUsers = (app, mod)=> {
+    const USERS = [{ username: 'All', publicKey: null }];
+    app.keychain.returnKeys().forEach(k => {
+        USERS.push({
+            username: app.keychain.returnUsername(k.publicKey),
+            publicKey: k.publicKey
+        });
+    });
+    USERS.push({
+        username: app.keychain.returnUsername(mod.publicKey),
+        publicKey: mod.publicKey
+    })
+    return USERS
+}
+
+
+    // const createPreview = (content) => {
+    //     const lines = content.split('\n');
+
+    //     const firstTextLine = lines.find(line => {
+    //         const trimmed = line.trim();
+    //         if (!trimmed) return false;
+    //         if (
+    //             trimmed.startsWith('![') ||
+    //             trimmed.includes('base64') ||
+    //             trimmed.match(/^\[!\[.*?\]\(.*?\)\]\(.*?\)$/) ||
+    //             trimmed.startsWith('<img') ||
+    //             trimmed.startsWith('http') ||
+    //             trimmed.startsWith('<iframe')
+    //         ) return false;
+    //         return true;
+    //     }) || '';
+
+    //     const cleanContent = firstTextLine.replace(/[#*`_~]/g, '').trim();
+    //     const preview = cleanContent.slice(0, 59);
+    //     return preview + (cleanContent.length > 59 ? '...' : '');
+    // };

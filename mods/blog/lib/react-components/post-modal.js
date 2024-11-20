@@ -1,6 +1,17 @@
 import React, { useState, useCallback } from 'react';
+import DOMPurify from 'dompurify';
+import { marked } from 'marked';
 
-const PostModal = ({ app, mod, onClose, onSubmit }) => {
+
+
+marked.setOptions({
+  gfm: true,
+  breaks: true,
+  headerIds: true,
+  mangle: false
+});
+
+const PostModal = ({ onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -11,6 +22,12 @@ const PostModal = ({ app, mod, onClose, onSubmit }) => {
   
   const [isDragging, setIsDragging] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const parseMarkdown = (content) => {
+    return DOMPurify.sanitize(marked.parse(content));
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,42 +39,48 @@ const PostModal = ({ app, mod, onClose, onSubmit }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Create a FormData object to handle file uploads
-    const submitData = new FormData();
+    setIsSubmitting(true);
     
-    Object.keys(formData).forEach(key => {
-      if (key === 'images') {
-        formData.images.forEach(image => {
-          submitData.append('images', image);
-        });
-      } else if (key === 'tags') {
-        const tagsArray = formData.tags.split(',').map(tag => tag.trim());
-        submitData.append('tags', JSON.stringify(tagsArray));
-      } else {
-        submitData.append(key, formData[key]);
-      }
-    });
-
-    console.log('Form data:', formData);
-    let {title, images, content, tags} = formData;
+    try {
+      const submitData = new FormData();
       
-    let base64Image = null;
-    if (images.length > 0) {
-      const reader = new FileReader();
-      base64Image = await new Promise((resolve, reject) => {
-        reader.onloadend = () => {
-          // Get base64 string without the data URL prefix
-          const base64String = reader.result.split(',')[1];
-          resolve(base64String);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(images[0]);
+      Object.keys(formData).forEach(key => {
+        if (key === 'images') {
+          formData.images.forEach(image => {
+            submitData.append('images', image);
+          });
+        } else if (key === 'tags') {
+          const tagsArray = formData.tags.split(',').map(tag => tag.trim());
+          submitData.append('tags', JSON.stringify(tagsArray));
+        } else {
+          submitData.append(key, formData[key]);
+        }
       });
+
+      let {title, images, content, tags} = formData;
+        
+      let base64Image = null;
+      if (images.length > 0) {
+        const reader = new FileReader();
+        base64Image = await new Promise((resolve, reject) => {
+          reader.onloadend = () => {
+            const base64String = reader.result.split(',')[1];
+            resolve(base64String);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(images[0]);
+        });
+      }
+      
+      const tagsArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag);
+      
+      await onSubmit({title, content, image: base64Image, tags: tagsArray});
+      onClose();
+    } catch (error) {
+      console.error('Error submitting post:', error);
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    const tagsArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag);
-    
-    onSubmit({title, content, image:base64Image, tags:tagsArray})
   };
 
   const handleDragEnter = useCallback((e) => {
@@ -83,7 +106,6 @@ const PostModal = ({ app, mod, onClose, onSubmit }) => {
     setIsDragging(false);
 
     const files = [...e.dataTransfer.files];
-    
     const imageFiles = files.filter(file => file.type.startsWith('image/'));
     
     if (imageFiles.length > 0) {
@@ -147,17 +169,35 @@ const PostModal = ({ app, mod, onClose, onSubmit }) => {
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="content">Content Body (Markdown Supported)</label>
-            <textarea
-              id="content"
-              name="content"
-              placeholder="Write your blog content here..."
-              value={formData.content}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          {!showPreview ? (
+            <div className="form-group">
+              <label htmlFor="content">Content Body (Markdown Supported)</label>
+              <textarea
+                id="content"
+                name="content"
+                placeholder="Write your blog content here..."
+                value={formData.content}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          ) : (
+            <div className="form-group">
+              <label>Content Preview</label>
+              <div 
+                className="markdown-preview"
+                style={{
+                  border: '1px solid var(--saito-border-color)',
+                  borderRadius: '6px',
+                  padding: '12px',
+                  minHeight: '200px',
+                  background: 'var(--saito-background-color)',
+                  overflow: 'auto'
+                }}
+                dangerouslySetInnerHTML={{ __html: parseMarkdown(formData.content) }}
+              />
+            </div>
+          )}
 
           <div className="form-group">
             <label htmlFor="tags">Tags</label>
@@ -214,13 +254,19 @@ const PostModal = ({ app, mod, onClose, onSubmit }) => {
               Cancel
             </button>
             <div className="action-buttons">
-              {/* <button type="button" className="btn-draft">Preview</button> */}
+              <button 
+                type="button" 
+                className="btn-draft"
+                onClick={() => setShowPreview(!showPreview)}
+              >
+                {showPreview ? 'Edit' : 'Preview'}
+              </button>
               <button 
                 type="submit" 
                 className="btn-publish"
-                disabled={!formData.title || !formData.content}
+                disabled={!formData.title || !formData.content || isSubmitting}
               >
-                Publish
+                {isSubmitting ? 'Publishing...' : 'Publish'}
               </button>
             </div>
           </div>
