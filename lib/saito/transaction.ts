@@ -265,16 +265,27 @@ returnMessage() {
 				const reconstruct = Buffer.from(this.data).toString('utf-8');
 				this.msg = JSON.parse(reconstruct);
 			} catch (err) {
-				console.log(
-					`buffer length = ${
-						this.data.byteLength
-					} type = ${typeof this.data}`
-				);
-				console.error('error parsing return message', err);
-				console.log('here: ' + JSON.stringify(this.msg));
+
+				// catcheption
+				try {
+					console.log(
+						`buffer length = ${
+							this.data.byteLength
+						} type = ${typeof this.data}`
+					);
+					console.error('error parsing return message', err);
+					console.log('tx: ' + this.serialize_to_web(this.app));
+				} catch (err) {
+					console.log("even logging the issue seems to cause issues...");
+				}
 			}
 		}
-		return this.msg;
+
+		if (this.msg) {
+		  return this.msg;
+		} else {
+		  return {};
+		}
 	}
 
 	/*
