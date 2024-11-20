@@ -243,7 +243,7 @@ export default class Transaction extends SaitoTransaction {
 		return transaction;
 	}
 
-	returnMessage() {
+returnMessage() {
 
 		if (this.dmsg) {
 			return this.dmsg;
@@ -253,9 +253,14 @@ export default class Transaction extends SaitoTransaction {
 			return this.msg;
 		}
 
-		this.msg = {};
-
-		if (this.data && this.data.byteLength > 0) {
+		try {
+			if (this.data && this.data.byteLength > 0) {
+				const reconstruct = Buffer.from(this.data).toString('utf-8');
+				this.msg = JSON.parse(reconstruct);
+			} else {
+				this.msg = {};
+			}
+		} catch (err) {
 			try {
 				const reconstruct = Buffer.from(this.data).toString('utf-8');
 				this.msg = JSON.parse(reconstruct);
@@ -266,14 +271,14 @@ export default class Transaction extends SaitoTransaction {
 					} type = ${typeof this.data}`
 				);
 				console.error('error parsing return message', err);
+				console.log('here: ' + JSON.stringify(this.msg));
 			}
 		}
-
 		return this.msg;
 	}
 
 	/*
-  	  Sanka -- maybe these convenience functions should be moved up a level?
+  	  TODO -- maybe these convenience functions should be moved up a level?
   	*/
 	addTo(publicKey: string) {
 		console.assert(!!this.to, 'to field not found : ', this);
