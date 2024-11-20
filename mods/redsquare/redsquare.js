@@ -346,7 +346,7 @@ class RedSquare extends ModTemplate {
           }
 
           // Generate a white list from keychain and filter
-          if (this.curated){
+          if (this.curated && this.app.BROWSER){
 
             switch (this.curationLevel){
               
