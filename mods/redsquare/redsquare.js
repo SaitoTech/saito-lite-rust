@@ -332,7 +332,7 @@ class RedSquare extends ModTemplate {
     if (type === 'saito-moderation-app') {
       return {
         filter_func: (mod = null, tx = null) => {
-          if (tx == null || mod == null) {
+          if (tx == null || mod == null || !tx?.from) {
             return 0;
           }
 
