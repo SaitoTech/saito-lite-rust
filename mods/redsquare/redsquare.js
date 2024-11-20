@@ -930,8 +930,9 @@ class RedSquare extends ModTemplate {
     // are new to us so we can have a better UX
     //
     let peer_count = 0;
+    let peers_returned = 0;
 
-    console.log(`RS timestamp: ${new Date(this.tweets_earliest_ts)}`);
+    //console.log(`RS timestamp: ${new Date(this.tweets_earliest_ts)}`);
 
     for (let i = 0; i < this.peers.length; i++) {
       //
@@ -1011,12 +1012,12 @@ class RedSquare extends ModTemplate {
                 );
               }
 
-              peer_count--;
+              peers_returned++;
               setTimeout(() => {
-                if (peer_count > 0) {
+                if (peer_count > peers_returned) {
                   this.app.connection.emit(
                     'redsquare-insert-loading-message',
-                    `Still waiting on ${peer_count} peer(s)...`
+                    `Still waiting on ${peer_count - peers_returned} peer(s)...`
                   );
                 } else {
                   this.app.connection.emit('redsquare-remove-loading-message');
