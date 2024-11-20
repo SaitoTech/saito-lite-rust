@@ -407,6 +407,7 @@ class Arcade extends ModTemplate {
 			return;
 		}
 
+/******** NOV 18 - disabled to test chain-sync bug
 		if (service.service === 'archive') {
 			for (let game of this.app.options.games) {
 
@@ -427,7 +428,6 @@ class Arcade extends ModTemplate {
 //	                        let noload = app.browser.returnURLParameter('noload');
 //        	                if (noload) { return; }
 //
-/******** NOV 18 - disabled to test chain-sync bug
 				this.app.storage.loadTransactions(
 					{
 						field1: query
@@ -444,9 +444,9 @@ class Arcade extends ModTemplate {
 					},
 					peer
 				);
-********/
 			}
 		}
+********/
 	}
 
 	////////////

@@ -351,8 +351,10 @@ class RedSquare extends ModTemplate {
             switch (this.curationLevel){
               
               case "named":
-                if (this.app.keychain.returnIdentifierByPublicKey(tx.from[0].publicKey, false)){
-                  return 1;
+                if (tx.from[0]?.publicKey){
+                  if (this.app.keychain.returnIdentifierByPublicKey(tx.from[0].publicKey, false)){
+                    return 1;
+                  }
                 }
 
               case "following":
