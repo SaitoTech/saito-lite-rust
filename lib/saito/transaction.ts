@@ -261,31 +261,26 @@ export default class Transaction extends SaitoTransaction {
 				this.msg = {};
 			}
 		} catch (err) {
+			// TODO : handle this without printing an error
+			console.log('ERROR: ' + JSON.stringify(err));
 			try {
+				console.log('fallback on failure... 1');
 				const reconstruct = Buffer.from(this.data).toString('utf-8');
+				console.log('fallback on failure... 2');
 				this.msg = JSON.parse(reconstruct);
+				console.log('fallback on failure... 3');
 			} catch (err) {
-
-				// catcheption
-				try {
-					console.log(
-						`buffer length = ${
-							this.data.byteLength
-						} type = ${typeof this.data}`
-					);
-					console.error('error parsing return message', err);
-					console.error('tx: ' + JSON.stringify(this.msg));
-				} catch (err) {
-					console.error("even logging the issue seems to cause issues...");
-				}
+				console.log(
+					`buffer length = ${
+						this.data.byteLength
+					} type = ${typeof this.data}`
+				);
+				console.error('error parsing return message', err);
+				console.log('here: ' + JSON.stringify(this.msg));
 			}
 		}
 
-		if (this.msg) {
-		  return this.msg;
-		} else {
-		  return {};
-		}
+		return this.msg;
 	}
 
 	/*

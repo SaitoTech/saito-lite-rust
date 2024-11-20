@@ -93,9 +93,9 @@ console.log("IN BLOCK: " + block.id);
 console.log("how many txs: " + txs.length);
 		let validTxs = 0;
 		for (let z = 0; z < txs.length; z++) {
+			if (txs[z].type === TransactionType.Normal) {
 				let txmsg2 = txs[z].returnMessage();
 console.log("examining tx: " + JSON.stringify(txmsg2));
-			if (txs[z].type === TransactionType.Normal) {
 console.log("processing tx!");
 				await txs[z].decryptMessage(this.app);
 				const txmsg = txs[z].returnMessage();
