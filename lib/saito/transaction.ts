@@ -274,7 +274,7 @@ returnMessage() {
 						} type = ${typeof this.data}`
 					);
 					console.error('error parsing return message', err);
-					console.log('tx: ' + this.serialize_to_web(this.app));
+					console.log('tx: ' + JSON.stringify(this.msg));
 				} catch (err) {
 					console.log("even logging the issue seems to cause issues...");
 				}
