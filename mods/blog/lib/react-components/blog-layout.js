@@ -8,7 +8,10 @@ import PostCard from './post-card';
 
 const USERS = ['All', 'StackTooDeep@saito'];
 
+
 const BlogLayout = ({ app, mod, publicKey, post = null }) => {
+
+    console.log(app.keychain.returnKeys(), "user's keys")
     // console.log(app, mod, publicKey, post, "army")
     const [selectedUser, setSelectedUser] = useState('All');
     const [selectedPost, setSelectedPost] = useState(post);

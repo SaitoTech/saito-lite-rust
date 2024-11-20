@@ -1,9 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
-// import './BlogPostEditor.css';
 
-// Configure marked options
+
+
 marked.setOptions({
   gfm: true,
   breaks: true,
