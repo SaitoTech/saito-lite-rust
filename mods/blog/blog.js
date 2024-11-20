@@ -138,7 +138,48 @@ class Blog extends ModTemplate {
 
     }
 
-    async loadBlogPostTransactionsForWidget(key, callback, limit = 10,) {
+    async loadAllPosts(keys, callback = null) {
+        try {
+
+            let allPosts = [];
+            
+            const loadPromises = keys.map(key => {
+                return new Promise((resolve) => {
+                    this.app.storage.loadTransactions(
+                        { field1: 'Blog', field2: key, limit: 100 },
+                        (txs) => {
+                            const filteredTxs = this.filterBlogPosts(txs);
+                            const posts = this.convertTransactionsToPosts(filteredTxs);
+                            resolve(posts);
+                        },
+                        key 
+                    );
+                });
+            });
+    
+   
+            const postsArrays = await Promise.all(loadPromises);
+            
+
+            allPosts = postsArrays.flat();
+    
+            allPosts.sort((a, b) => b.timestamp - a.timestamp);
+            if (callback && typeof callback === 'function') {
+                callback(allPosts);
+            }
+    
+            return allPosts;
+    
+        } catch (error) {
+            console.error("Error loading all posts:", error);
+            if (callback && typeof callback === 'function') {
+                callback([]);
+            }
+            return [];
+        }
+    }
+
+    async loadBlogPostForUser(key, callback, limit = 10,) {
         let self = this
         if (key === this.publicKey) {
             let peers = await this.app.network.getPeers();

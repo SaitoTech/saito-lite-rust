@@ -4,16 +4,16 @@ import { samplePosts } from './sample-posts';
 import BlogPost from './blog-post';
 import NoPostsAvailable from './NoPosts';
 import PostCard from './post-card';
+import { initializeUsers } from '../utils';
 
 
-const USERS = ['All', 'StackTooDeep@saito'];
+
+
 
 
 const BlogLayout = ({ app, mod, publicKey, post = null }) => {
-
-    console.log(app.keychain.returnKeys(), "user's keys")
-    // console.log(app, mod, publicKey, post, "army")
-    const [selectedUser, setSelectedUser] = useState('All');
+    const USERS = initializeUsers(app, mod);
+    const [selectedUser, setSelectedUser] = useState(USERS[0]);
     const [selectedPost, setSelectedPost] = useState(post);
     const [showPostModal, setShowPostModal] = useState(false);
     const [editingPost, setEditingPost] = useState(null);
@@ -23,29 +23,44 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
 
 
     const filteredPosts = posts.filter(post =>
-        selectedUser === 'All' || post.author === selectedUser
+        selectedUser.username === 'All' || post.publicKey === selectedUser.publicKey
     );
 
 
     useEffect(() => {
-        // loadPosts();
-    }, [publicKey]);
+        loadPosts();
+    }, [selectedUser, publicKey]);
+
 
     const loadPosts = () => {
-        mod.loadBlogPostTransactionsForWidget(publicKey || mod.publicKey, (loadedPosts) => {
-            setPosts(loadedPosts);
-
-            if (editingPost) {
-                const updatedPost = loadedPosts.find(p => p.sig === editingPost.sig);
-                if (updatedPost) {
-
-                    setSelectedPost(updatedPost);
+        if (selectedUser.username === 'All') {
+            const userKeys = USERS
+                .filter(user => user.username !== 'All' && user.publicKey)
+                .map(user => user.publicKey);
+         
+            mod.loadAllPosts(userKeys, (loadedPosts) => {
+                setPosts(loadedPosts);
+                if (editingPost) {
+                    const updatedPost = loadedPosts.find(p => p.sig === editingPost.sig);
+                    if (updatedPost) {
+                        setSelectedPost(updatedPost);
+                    }
                 }
-            }
-
-
-        });
+            });
+        } else {
+            mod.loadBlogPostForUser(selectedUser.publicKey, (loadedPosts) => {
+                setPosts(loadedPosts);
+                if (editingPost) {
+                    const updatedPost = loadedPosts.find(p => p.sig === editingPost.sig);
+                    if (updatedPost) {
+                        setSelectedPost(updatedPost);
+                    }
+                }
+            });
+        }
     };
+
+
 
     const handlePostSubmit = async (postData) => {
         try {
@@ -124,15 +139,14 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                 <div className="filter-container">
                     <label className="filter-label">Filter by Author</label>
                     <select
-                        value={selectedUser}
+                        value={selectedUser.username}
                         onChange={(e) => {
-                            setSelectedUser(e.target.value)
-
+                            const selected = USERS.find(user => user.username === e.target.value);
+                            setSelectedUser(selected);
                         }}
-                        className="filter-select"
                     >
                         {USERS.map(user => (
-                            <option key={user} value={user}>{user}</option>
+                            <option key={user.publicKey} value={user.username}>{user.username}</option>
                         ))}
                     </select>
                 </div>
@@ -146,41 +160,20 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                     <BlogPost app={app} mod={mod} post={selectedPost} publicKey={selectedPost.publicKey} />
                 ) : (
                     <>
-                        {selectedUser !== 'All' && (
-                            <div className="user-header">
-                                <div className="user-header-content">
-                                    <div className={`saito-user saito-user-${publicKey}`}
-                                        id={`saito-user-${publicKey}`}
-                                        data-id={publicKey}
-                                        data-disable="false">
-                                        <div className="saito-identicon-box">
-                                            <img className="saito-identicon"
-                                                src={app.keychain.returnIdenticon(publicKey)}
-                                                alt="user identicon" />
-                                        </div>
-                                        <div className="saito-address treated"
-                                            data-id={publicKey}>
-                                            {app.keychain.returnUsername(publicKey)}
-                                        </div>
-                                        <div className="saito-userline">
-                                            Welcome to my blog where i share my ideas
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="user-header-divider"></div>
-                            </div>
+                        {selectedUser.username !== 'All' && (
+                            <></>
                         )}
 
                         <div className="posts-list">
                             {filteredPosts.map((post, index) => (
-                                <PostCard  selectedUser={selectedUser}  app={app}  mod={mod}index={index} post={post}  onClick={() => {
+                                <PostCard selectedUser={selectedUser} app={app} mod={mod} index={index} post={post} onClick={() => {
                                     app.connection.emit('saito-header-replace-logo', handleBackClick);
                                     setSelectedPost(post);
                                     const url = new URL(window.location);
                                     url.searchParams.set('public_key', post.publicKey);
                                     url.searchParams.set('tx_id', post.sig);
                                     window.history.pushState({}, '', url);
-                                }}/>
+                                }} />
                             ))}
                             {
                                 filteredPosts.length === 0 && <NoPostsAvailable showModal={() => setShowPostModal(true)} />

@@ -17,13 +17,12 @@ export const getImageUrl = (base64String) => {
     if (base64String.startsWith('data:image/')) return base64String;
     if (base64String.startsWith('http')) return base64String;
     
-    // Try to detect image type from the base64 string
-    // This is a simple version - you might want to add more sophisticated detection
+
     const isPNG = base64String.charAt(0) === 'i';
     const isJPEG = base64String.charAt(0) === '/';
     const isGIF = base64String.charAt(0) === 'R';
     
-    let mimeType = 'jpeg'; // default
+    let mimeType = 'jpeg'; 
     if (isPNG) mimeType = 'png';
     if (isGIF) mimeType = 'gif';
     
@@ -44,6 +43,21 @@ export const getImageUrl = (base64String) => {
     }
 };
 
+
+export const initializeUsers = (app, mod)=> {
+    const USERS = [{ username: 'All', publicKey: null }];
+    app.keychain.returnKeys().forEach(k => {
+        USERS.push({
+            username: app.keychain.returnUsername(k.publicKey),
+            publicKey: k.publicKey
+        });
+    });
+    USERS.push({
+        username: app.keychain.returnUsername(mod.publicKey),
+        publicKey: mod.publicKey
+    })
+    return USERS
+}
 
 
     // const createPreview = (content) => {

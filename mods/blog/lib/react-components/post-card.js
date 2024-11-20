@@ -11,7 +11,7 @@ const PostCard = ({ app, mod, post, index, onClick, selectedUser }) => {
                     <h4 className="post-card-title">
                         {post.title}
                     </h4>
-                    {selectedUser === 'All' && (
+                    {selectedUser.username && (
                         <div className="post-card-meta">
 
                             {isMultiline ? <div className='saito-user single-line'> Published on {app.browser.prettifyTimeStamp(post.timestamp)} by {app.keychain.returnUsername(post.publicKey)}</div> : <div className={`saito-user saito-user-${post.publicKey} ${isMultiline ? 'single-line' : ''}`}

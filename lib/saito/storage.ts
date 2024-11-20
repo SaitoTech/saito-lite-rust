@@ -6,7 +6,7 @@ const localforage = require('localforage');
 import fs from 'fs';
 import path from 'path';
 const JsStore = require('jsstore')
-import  Saito as S from 'saito-js'
+import S from 'saito-js/saito';
 
 
 
@@ -171,6 +171,7 @@ class Storage {
 	}
 
 	async loadTransactions(obj = {}, mycallback, peer = null) {
+		console.log(peer, "this is the peer")
         let storage_self = this;
         const message = 'archive';
         let data: any = {};
@@ -253,7 +254,7 @@ class Storage {
                             const url = `ws://${host}:${port}/wsopen`;
                             try {
                                 const peerIndex = await S.getLibInstance().get_next_peer_index();
-                                await this.app.network.connectToArchivePeer(peerIndex, {publicKey, host, port, url}, data ,message, internal_callback)
+                                // await this.app.network.connectToArchivePeer(peerIndex, {publicKey, host, port, url}, data ,message, internal_callback)
                             
                             }
                             catch (error) {
