@@ -256,7 +256,7 @@ class Storage {
                             }
                         }
                     } else {
-                        console.log('No archive nodes found for this key, try fetching from  server');
+                        // console.log('No archive nodes found for this key, try fetching from  server');
                         // Try to fetch from my server node
                         let peers = await this.app.network.getPeers();
                         this.app.network.sendRequestAsTransaction(
