@@ -171,7 +171,6 @@ class Storage {
 	}
 
 	async loadTransactions(obj = {}, mycallback, peer = null) {
-		console.log(peer, "this is the peer")
         let storage_self = this;
         const message = 'archive';
         let data: any = {};
@@ -208,15 +207,13 @@ class Storage {
 
 
         if (peer != null) {
-            if (typeof peer === "string") {
+            if (this.app.crypto.isValidPublicKey(peer)) {
                 // Verify if the peer string is a valid public key
-                if (this.app.crypto.isPublicKey(peer)) {
                     // Attempt to find the peer in the current network
                     let peers = await this.app.network.getPeers();
                     let serverPeer = peers[0]
                     const targetPeer = peers.find(p => p.publicKey === peer) || null
                     // If the peer is found in the network, send the request
-
                     if (targetPeer) {
                         this.app.network.sendRequestAsTransaction(
                             message,
@@ -226,11 +223,8 @@ class Storage {
                             },
                             targetPeer.peerIndex
                         );
-                    }
-
-                    // R        
+                    }   
                     let a_nodes = this.app.keychain.returnKeyArchiveNodes(peer);
-
                     // If archive nodes are found, attempt to communicate
                     if (a_nodes.length > 0) {
                         let archiveNode = a_nodes[0];
@@ -262,7 +256,7 @@ class Storage {
                             }
                         }
                     } else {
-                        console.log('No archive nodes found for this key, try fetching from my server');
+                        console.log('No archive nodes found for this key, try fetching from  server');
                         // Try to fetch from my server node
                         let peers = await this.app.network.getPeers();
                         this.app.network.sendRequestAsTransaction(
@@ -274,7 +268,7 @@ class Storage {
                             serverPeer.peerIndex 
                         )
                     }
-                }
+       
             } else {
                 // If peer is not a string (likely an object), send request directly
                 this.app.network.sendRequestAsTransaction(

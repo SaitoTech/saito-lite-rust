@@ -17,29 +17,60 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
     const [selectedPost, setSelectedPost] = useState(post);
     const [showPostModal, setShowPostModal] = useState(false);
     const [editingPost, setEditingPost] = useState(null);
-
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [posts, setPosts] = useState(samplePosts);
-
+    const [posts, setPosts] = useState([]);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const latestPostRef = useRef(null);
 
     const filteredPosts = posts.filter(post =>
         selectedUser.username === 'All' || post.publicKey === selectedUser.publicKey
     );
 
+    // Function to merge new posts with existing ones
+    const mergePosts = (existingPosts, newPosts) => {
+        const combined = [...existingPosts];
+        
+        newPosts.forEach(newPost => {
+            const existingIndex = combined.findIndex(p => p.sig === newPost.sig);
+            if (existingIndex === -1) {
+                combined.push(newPost);
+            } else {
+                combined[existingIndex] = newPost;
+            }
+        });
 
-    useEffect(() => {
-        loadPosts();
-    }, [selectedUser, publicKey]);
+        return combined.sort((a, b) => b.timestamp - a.timestamp);
+    };
 
+    const loadPosts = async (useCache = true) => {
+        setIsLoadingMore(true);
+        const latestTimestamp = latestPostRef.current?.timestamp;
 
-    const loadPosts = () => {
         if (selectedUser.username === 'All') {
             const userKeys = USERS
                 .filter(user => user.username !== 'All' && user.publicKey)
                 .map(user => user.publicKey);
-         
+
+
+            if (useCache) {
+                const cachedPosts = mod.postsCache?.allPosts || [];
+                if (cachedPosts.length > 0) {
+                    setPosts(cachedPosts);
+                    latestPostRef.current = cachedPosts[0];
+                }
+            }
+
+       
             mod.loadAllPosts(userKeys, (loadedPosts) => {
-                setPosts(loadedPosts);
+                setPosts(prevPosts => {
+                    const mergedPosts = mergePosts(prevPosts, loadedPosts);
+                    if (mergedPosts.length > 0) {
+                        latestPostRef.current = mergedPosts[0];
+                    }
+                    return mergedPosts;
+                });
+                setIsLoadingMore(false);
+
                 if (editingPost) {
                     const updatedPost = loadedPosts.find(p => p.sig === editingPost.sig);
                     if (updatedPost) {
@@ -48,8 +79,26 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                 }
             });
         } else {
+
+            if (useCache) {
+                const cachedUserPosts = mod.postsCache?.byUser.get(selectedUser.publicKey) || [];
+                if (cachedUserPosts.length > 0) {
+                    setPosts(cachedUserPosts);
+                    latestPostRef.current = cachedUserPosts[0];
+                }
+            }
+
+            // Then load new posts
             mod.loadBlogPostForUser(selectedUser.publicKey, (loadedPosts) => {
-                setPosts(loadedPosts);
+                setPosts(prevPosts => {
+                    const mergedPosts = mergePosts(prevPosts, loadedPosts);
+                    if (mergedPosts.length > 0) {
+                        latestPostRef.current = mergedPosts[0];
+                    }
+                    return mergedPosts;
+                });
+                setIsLoadingMore(false);
+
                 if (editingPost) {
                     const updatedPost = loadedPosts.find(p => p.sig === editingPost.sig);
                     if (updatedPost) {
@@ -60,20 +109,25 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
         }
     };
 
+    useEffect(() => {
+        loadPosts(true); 
+    }, [selectedUser, publicKey]);
 
+
+    const refreshPosts = () => {
+        loadPosts(false);
+    };
 
     const handlePostSubmit = async (postData) => {
         try {
             setIsSubmitting(true);
             if (editingPost) {
-                // Handle edit
                 await mod.updateBlogPostTransaction(
                     editingPost.sig,
                     postData.title,
                     postData.content
                 );
             } else {
-                // Handle create
                 await mod.createBlogPostTransaction(
                     {
                         title: postData.title,
@@ -83,19 +137,14 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                         timestamp: Date.now()
                     },
                     () => {
-                        // Callback after successful post creation
-                        siteMessage("Submitting blog post")
+                        siteMessage("Submitting blog post");
                         setTimeout(() => {
                             setShowPostModal(false);
-
-                            loadPosts();
-                        }, 2000)
-                        // Reload posts to show the new one
+                            refreshPosts(); // Refresh posts after new post
+                        }, 2000);
                     }
                 );
             }
-
-
         } catch (error) {
             console.error("Error saving post:", error);
             alert("Failed to save post. Please try again.");
@@ -175,9 +224,12 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                                     window.history.pushState({}, '', url);
                                 }} />
                             ))}
-                            {
-                                filteredPosts.length === 0 && <NoPostsAvailable showModal={() => setShowPostModal(true)} />
-                            }
+                              {isLoadingMore && (
+                                <div className="loading-indicator">Loading more posts...</div>
+                            )}
+                            {filteredPosts.length === 0 && !isLoadingMore && (
+                                <NoPostsAvailable isCurrentUser={selectedUser.publicKey === mod.publicKey || selectedUser.username==='All'} showModal={() => setShowPostModal(true)} />
+                            )}
                         </div>
                     </>
                 )}

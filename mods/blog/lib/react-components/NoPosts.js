@@ -2,24 +2,28 @@ import React from 'react';
 import { FileText } from 'lucide-react';
 
 
-const NoPostsAvailable = ({ showModal }) => {
+const NoPostsAvailable = ({ showModal, isCurrentUser }) => {
   return (
     <div className="no-posts-container">
       <div className="icon-circle">
         <FileText color="white" size={32} />
       </div>
+      
       <h2 className="no-posts-title">
         No Posts Available
       </h2>
+      
       <p className="no-posts-message">
-        There are no posts at the moment. Please check back later or create a new post.
+        {isCurrentUser 
+          ? "You haven't created any posts yet. Start sharing your thoughts with the community!"
+          : "This user hasn't posted anything yet. Check back later for updates."}
       </p>
-      <button 
-        className="create-post-button"
-        onClick={showModal}
-      >
-        Create New Post
-      </button>
+      
+      {isCurrentUser && (
+        <button onClick={showModal} className="create-post-button">
+          Create New Post
+        </button>
+      )}
     </div>
   );
 };
