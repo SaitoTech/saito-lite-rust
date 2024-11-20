@@ -18,6 +18,7 @@ function getCommandLineArg(key) {
 }
 
 async function initSaito() {
+	Error.stackTraceLimit = 20;
 	const app = new Saito({
 		mod_paths: mods_config.core
 	});
@@ -57,6 +58,10 @@ async function initSaito() {
 	app.server = new Server(app);
 
 	await app.init();
+
+	if (app.options.blockchain.fork_id){
+		await app.blockchain.setForkId(app.options.blockchain.fork_id);
+	}
 
 	S.getInstance().start();
 
