@@ -243,7 +243,7 @@ export default class Transaction extends SaitoTransaction {
 		return transaction;
 	}
 
-returnMessage() {
+	returnMessage() {
 
 		if (this.dmsg) {
 			return this.dmsg;
@@ -274,9 +274,9 @@ returnMessage() {
 						} type = ${typeof this.data}`
 					);
 					console.error('error parsing return message', err);
-					console.log('tx: ' + JSON.stringify(this.msg));
+					console.error('tx: ' + JSON.stringify(this.msg));
 				} catch (err) {
-					console.log("even logging the issue seems to cause issues...");
+					console.error("even logging the issue seems to cause issues...");
 				}
 			}
 		}
