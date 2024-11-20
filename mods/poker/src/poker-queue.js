@@ -283,6 +283,8 @@
 					this.playerAcknowledgeNotice(msg, async () => {
 						this.settleLastRound([this.game.players[player_left_idx]], "fold");
 						this.board.clearTable();
+						await this.timeout(1000);
+						this.restartQueue();
 					});
 
 					return 0;
@@ -706,6 +708,8 @@
 				this.playerAcknowledgeNotice(winnerStr, async () => {
 					this.settleLastRound(winner_keys, "besthand");
 					this.board.clearTable();
+					await this.timeout(1000);
+					this.restartQueue();
 				});
 
 				return 0;
@@ -1000,7 +1004,7 @@
 				this.game.queue.splice(qe, 1);
 				this.displayPlayerStack(player); //Here we don't want to hide cards
 
-				return 0;
+				return 1;
 			}
 
 			//

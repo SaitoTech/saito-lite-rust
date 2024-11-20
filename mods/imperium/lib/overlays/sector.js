@@ -37,21 +37,20 @@ class SectorOverlay {
 				owner = this.mod.returnFactionNickname(sys.p[i].owner);
 			}
 
+	
 			html = `
-        <div class="planet">
-          ${owner}
-          <div class="system_summary_content">
-            ${this.mod.returnInfantryOnPlanet(sys.p[i])} infantry
-            <br />
-            ${this.mod.returnPDSOnPlanet(sys.p[i])} PDS
-            <br />
-            ${this.mod.returnSpaceDocksOnPlanet(sys.p[i])} spacedocks
-          </div>
-          <div class="planet-card" style="background-image: url('${
-	sys.p[i].img
-}');"></div>
-        </div>
-      `;
+		        	<div class="planet">
+		        	  ${owner}
+		        	  <div class="system_summary_content">
+		        	    ${this.mod.returnInfantryOnPlanet(sys.p[i])} infantry
+		        	    <br />
+		        	    ${this.mod.returnPDSOnPlanet(sys.p[i])} PDS
+		        	    <br />
+		        	    ${this.mod.returnSpaceDocksOnPlanet(sys.p[i])} spacedocks
+		        	  </div>
+		        	  <div class="planet-card" style="background-image: url('${sys.p[i].img}');"></div>
+			        </div>
+		      	`;
 
 			this.app.browser.addElementToSelector(
 				html,

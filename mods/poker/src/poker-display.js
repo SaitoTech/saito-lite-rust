@@ -33,12 +33,62 @@
 			}
 		});
 
+		//
+		// if flat, we remove the active transform below this.board.render()
+		//
+		this.theme = this.loadGamePreference("theme");
+		this.sandee_theme_style = "perspective(700px) rotateX(33deg) !important";
+		this.current_board_style = this.sandee_theme_style;
+		if (this.theme == "flat") { this.current_board_style = ""; }
+		if (this.theme == "" || this.theme == undefined) { this.theme = "flat"; this.current_board_style = ""; }
+
+                this.menu.addSubMenuOption("game-game", {
+                      text : "Theme",
+                      id : "game-theme",
+                      class : "game-theme",
+                      callback : null
+                    });
+
+                this.menu.addSubMenuOption("game-theme",{
+                      text: `Flat ${(this.theme=="flat")?"✔":""}`,
+                      id:"game-theme-flat",
+                      class:"game-theme-flat",
+                      callback: function(app,game_mod){
+			game_mod.menu.hideSubMenus();
+			game_mod.theme = "flat";
+			game_mod.saveGamePreference("theme", "flat");
+			game_mod.current_board_style = "";
+ 			game_mod.board.render();
+                      }
+                });
+                        
+                this.menu.addSubMenuOption("game-theme",{ 
+                      text: `3D ${(this.theme=="3d")?"✔":""}`,
+                      id:"game-theme-3d",
+                      class:"game-theme-3d",
+                      callback: function(app,game_mod){
+			game_mod.menu.hideSubMenus();
+			game_mod.theme = "3d";
+			game_mod.saveGamePreference("theme", "3d");
+			game_mod.current_board_style = game_mod.sandee_theme_style;
+			game_mod.board.render();
+                      }
+                });
+
+
+
 		await super.render(app);
 
 		//
 		// board renders all subcomponents
 		//
 		this.board.render();
+
+
+		if (this.theme == "flat") { 
+			let gb = document.querySelector(".gameboard");
+			gb.style.transform = "";
+		}
 
 		this.menu.addChatMenu();
 		this.menu.render();

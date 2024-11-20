@@ -243,7 +243,7 @@ export default class Transaction extends SaitoTransaction {
 		return transaction;
 	}
 
-	returnMessage() {
+returnMessage() {
 
 		if (this.dmsg) {
 			return this.dmsg;
@@ -277,9 +277,6 @@ export default class Transaction extends SaitoTransaction {
 		return this.msg;
 	}
 
-	/*
-  	  Sanka -- maybe these convenience functions should be moved up a level?
-  	*/
 	addTo(publicKey: string) {
 		console.assert(!!this.to, 'to field not found : ', this);
 		for (let s of this.to) {

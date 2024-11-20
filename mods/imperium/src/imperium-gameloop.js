@@ -192,18 +192,12 @@
 	      }
 	    }
 
-	    let notice = "Players still to move: <ul>";
+	    let notice = "<div class=\"status-message\">Players still to move: </div><ul>";
 	    let am_i_still_to_move = 0;
-console.log("STILL TO MOVE: " + JSON.stringify(still_to_move));
-console.log("PLAYERS: " + JSON.stringify(this.game.players));
 	    for (let i = 0; i < still_to_move.length; i++) {
 	      for (let z = 0; z < this.game.players.length; z++) {
 		if (this.game.players[z] === still_to_move[i]) {
 		  if (this.game.players[z] === this.getPublicKey()) { am_i_still_to_move = 1; }
-console.log("WHO - IDX " + z);
-console.log("WHO - PLAYER " + (z+1));
-console.log("WHO: " + this.game.players[z]);
-console.log("WHO: " + this.returnFaction(z+1));
 	          notice += '<li class="option">'+this.returnFaction((z+1))+'</li>';
 		}
 	      }

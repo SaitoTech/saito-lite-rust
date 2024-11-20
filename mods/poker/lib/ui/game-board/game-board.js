@@ -15,10 +15,12 @@ class GameBoard {
 	render() {
 
 		if (!document.querySelector(".gameboard")) {
-		  this.app.browser.addElementToDom(GameBoardTemplate());
+		  this.app.browser.addElementToDom(GameBoardTemplate(this.game_mod));
+		  this.attachEvents();
+		} else {
+		  this.app.browser.replaceElementBySelector(GameBoardTemplate(this.game_mod), ".gameboard");
 		  this.attachEvents();
 		}
-
 
 		this.game_mod.playerbox.render();
 		this.game_mod.cardfan.render();

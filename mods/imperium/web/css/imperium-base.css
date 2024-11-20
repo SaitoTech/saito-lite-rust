@@ -1311,7 +1311,7 @@ body {
 	right: 50px;
 }
 
-#hexGrid {
+#hexGrid , .gameboard-clone {
 	display: flex;
 	flex-wrap: wrap;
 	width: 2000px;
@@ -1676,7 +1676,7 @@ body {
 
 @media (min-width: 1201px) {
 	/* <- 5-4  hexagons per row */
-	#hexGrid {
+	#hexGri , .gameboard-cloned {
 		padding-bottom: 4.4%;
 	}
 	.hex {
@@ -1692,7 +1692,7 @@ body {
 
 @media (max-width: 1200px) and (min-width: 901px) {
 	/* <- 4-3  hexagons per row */
-	#hexGrid {
+	#hexGrid , .gameboard-clone {
 		padding-bottom: 5.5%;
 	}
 	.hex {
@@ -1708,7 +1708,7 @@ body {
 
 @media (max-width: 900px) and (min-width: 601px) {
 	/* <- 3-2  hexagons per row */
-	#hexGrid {
+	#hexGrid , .gameboard-clone {
 		padding-bottom: 7.4%;
 	}
 	.hex {
@@ -1724,7 +1724,7 @@ body {
 
 @media (max-width: 600px) {
 	/* <- 2-1  hexagons per row */
-	#hexGrid {
+	#hexGrid , .gameboard-clone {
 		padding-bottom: 11.2%;
 	}
 	.hex {
@@ -1739,7 +1739,7 @@ body {
 }
 
 @media (max-width: 400px) {
-	#hexGrid {
+	#hexGrid , .gameboard-clone {
 		font-size: 13px;
 	}
 }

@@ -1,3 +1,7 @@
+body {
+    background-image: url(/poker/img/backgrounds/castle2.png);
+}
+
 .gameboard {
   border-radius: 2rem;
   position: absolute;
@@ -10,8 +14,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
-  transform: perspective(700px) rotateX(33deg) !important;
+  transform: perspective(700px) rotateX(33deg);
 }
+/*
+  transform: perspective(700px) rotateX(33deg) !important;
+*/
+/* NOTE - transform 3d is included in code for menu option */
 
 .deal {
   display: flex;
