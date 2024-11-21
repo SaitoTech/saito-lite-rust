@@ -89,6 +89,7 @@ console.log("IN BLOCK: " + block.id);
 
 		let callbacks = [];
 		let callbackIndices = [];
+
 		let txs: Transaction[] = block.transactions as Transaction[];
 console.log("how many txs: " + txs.length);
 		let validTxs = 0;
@@ -118,6 +119,9 @@ console.log("============");
 		this.callbacks.set(block.hash, callbacks);
 		this.callbackIndices.set(block.hash, callbackIndices);
 		this.confirmations.set(block.hash, BigInt(-1));
+	
+		await this.instance.set_safe_to_prune_transaction(block.id);
+
 	}
 
 	public async onNewBlock(block: Block, lc: boolean) {
