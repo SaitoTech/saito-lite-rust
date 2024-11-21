@@ -168,7 +168,9 @@ class RedSquare extends ModTemplate {
 
   returnServices() {
     let services = [];
-    services.push(this.app.network.createPeerService(null, "redsquare", "RedSquare Tweet Archive"));
+    if (!this.app.BROWSER || this.offerService){
+      services.push(this.app.network.createPeerService(null, "redsquare", "RedSquare Tweet Archive"));
+    }
     return services;
   }
 

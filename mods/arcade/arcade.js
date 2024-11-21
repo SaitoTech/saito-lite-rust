@@ -49,7 +49,8 @@ class Arcade extends ModTemplate {
 
 		this.affix_callbacks_to = [];
 
-		this.services = [this.app.network.createPeerService(null, 'arcade', '', 'saito')];
+		// Still using deprecated peerhandshakecomplete rather than peerservice
+		this.services = []; //[this.app.network.createPeerService(null, 'arcade', '', 'saito')];
 		
 		this.invite_cutoff = 3500000;
 		this.game_cutoff = 600000000;

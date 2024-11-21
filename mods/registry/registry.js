@@ -48,7 +48,7 @@ class Registry extends ModTemplate {
 		// All it does is allows both main nodes and lite clients to update
 		// this.registry_publickey with the public key of the main node
 		//
-		this.local_dev = 0;
+		this.local_dev = 1;
 
 		//
 		// EVENTS
@@ -57,80 +57,70 @@ class Registry extends ModTemplate {
 		// the DNS service and then updates the DOM, and a second that starts the registration
 		// process by showing a popup. The first is the entry point for most applications.
 		//
-		this.app.connection.on(
-			'registry-fetch-identifiers-and-update-dom',
-			async (keys) => {
-				//
-				// every 1 in 20 times, clear cache of anonymous keys to requery
-				//
-				if (Math.random() < 0.05) {
-					for (let i of Object.keys(this.cached_keys)) {
-						if (i == this.cached_keys[i]) {
-							delete this.cached_keys[i];
-						}
+		this.app.connection.on('registry-fetch-identifiers-and-update-dom', async (keys) => {
+			//
+			// every 1 in 20 times, clear cache of anonymous keys to requery
+			//
+			if (Math.random() < 0.05) {
+				for (let i of Object.keys(this.cached_keys)) {
+					if (i == this.cached_keys[i]) {
+						delete this.cached_keys[i];
 					}
 				}
+			}
 
-				for (let i = 0; i < keys.length; i++) {
-					if (this.cached_keys[keys[i]]) {
-						this.app.browser.updateAddressHTML(
-							keys[i],
-							this.cached_keys[keys[i]]
-						);
-					} else {
-						if (!this.keys_to_look_up.includes(keys[i])) {
-							this.keys_to_look_up.push(keys[i]);
-						}
+			for (let i = 0; i < keys.length; i++) {
+				if (this.cached_keys[keys[i]]) {
+					this.app.browser.updateAddressHTML(keys[i], this.cached_keys[keys[i]]);
+				} else {
+					if (!this.keys_to_look_up.includes(keys[i])) {
+						this.keys_to_look_up.push(keys[i]);
 					}
 				}
+			}
 
-				if (this.identifier_timeout) {
-					clearTimeout(this.identifier_timeout);
-				}
+			if (this.identifier_timeout) {
+				clearTimeout(this.identifier_timeout);
+			}
 
-				this.identifier_timeout = setTimeout(() => {
-					let unidentified_keys = Array.from(this.keys_to_look_up);
-					this.keys_to_look_up = [];
+			this.identifier_timeout = setTimeout(() => {
+				let unidentified_keys = Array.from(this.keys_to_look_up);
+				this.keys_to_look_up = [];
 
-					this.fetchManyIdentifiers(unidentified_keys, (answer) => {
-						//
-						// This callback is run in the browser
-						//
-						//console.log("REGISTRY: event triggered fetchManyIdentifiers callback");
-						Object.entries(answer).forEach(([key, value]) => {
-							if (value !== this.publicKey) {
-								//
-								// if this is a key that is stored in our keychain, then we want
-								// to update the cached value that we have stored there as well
-								//
-								if (
-									this.app.keychain.returnKey(key, true) &&
-									key !== value
-								) {
-									this.app.keychain.addKey({
-										publicKey: key,
-										identifier: value
-									});
-								}
-
-								this.app.browser.updateAddressHTML(key, value);
+				this.fetchManyIdentifiers(unidentified_keys, (answer) => {
+					//
+					// This callback is run in the browser
+					//
+					//console.log("REGISTRY: event triggered fetchManyIdentifiers callback");
+					Object.entries(answer).forEach(([key, value]) => {
+						if (value !== this.publicKey) {
+							//
+							// if this is a key that is stored in our keychain, then we want
+							// to update the cached value that we have stored there as well
+							//
+							if (this.app.keychain.returnKey(key, true) && key !== value) {
+								this.app.keychain.addKey({
+									publicKey: key,
+									identifier: value
+								});
 							}
-						});
 
-						//
-						// save all keys queried to cache so even if we get nothing
-						// back we won't query the server again for them.
-						//
-						for (let i = 0; i < unidentified_keys.length; i++) {
-							if (!this.cached_keys[unidentified_keys[i]]) {
-								this.cached_keys[unidentified_keys[i]] =
-									unidentified_keys[i];
-							}
+							this.app.browser.updateAddressHTML(key, value);
 						}
 					});
-				}, 250);
-			}
-		);
+
+					//
+					// save all keys queried to cache so even if we get nothing
+					// back we won't query the server again for them.
+					//
+					for (let i = 0; i < unidentified_keys.length; i++) {
+						if (!this.cached_keys[unidentified_keys[i]]) {
+							this.cached_keys[unidentified_keys[i]] = unidentified_keys[i];
+						}
+					}
+				});
+			}, 250);
+		});
 
 		this.app.connection.on('register-username-or-login', (obj) => {
 			let key = this.app.keychain.returnKey(this.publicKey);
@@ -138,10 +128,7 @@ class Registry extends ModTemplate {
 				return;
 			}
 			if (!this.register_username_overlay) {
-				this.register_username_overlay = new RegisterUsernameOverlay(
-					this.app,
-					this
-				);
+				this.register_username_overlay = new RegisterUsernameOverlay(this.app, this);
 			}
 			if (obj?.success_callback) {
 				this.register_username_overlay.callback = obj.success_callback;
@@ -204,8 +191,7 @@ class Registry extends ModTemplate {
 		const missing_keys = [];
 
 		publickeys.forEach((publickey) => {
-			const identifier =
-				this.app.keychain.returnIdentifierByPublicKey(publickey);
+			const identifier = this.app.keychain.returnIdentifierByPublicKey(publickey);
 
 			//returns "" if not found
 			if (identifier) {
@@ -254,10 +240,7 @@ class Registry extends ModTemplate {
 					//
 					for (let key in registry_self.cached_keys) {
 						if (key === data?.publicKey) {
-							if (
-								registry_self.cached_keys[key] &&
-								key !== registry_self.cached_keys[key]
-							) {
+							if (registry_self.cached_keys[key] && key !== registry_self.cached_keys[key]) {
 								return {
 									publicKey: key,
 									identifier: registry_self.cached_keys[key]
@@ -265,11 +248,11 @@ class Registry extends ModTemplate {
 							} else {
 								return { publicKey: key };
 							}
-						}else if (registry_self.cached_keys[key] === data?.identifier){
+						} else if (registry_self.cached_keys[key] === data?.identifier) {
 							return {
-									publicKey: key,
-									identifier: registry_self.cached_keys[key]
-								};
+								publicKey: key,
+								identifier: registry_self.cached_keys[key]
+							};
 						}
 					}
 
@@ -299,10 +282,9 @@ class Registry extends ModTemplate {
 	// Throws errors for invalid identifier types
 	//
 	async tryRegisterIdentifier(identifier, domain = '@saito') {
-		let newtx =
-			await this.app.wallet.createUnsignedTransactionWithDefaultFee(
-				this.registry_publickey
-			);
+		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+			this.registry_publickey
+		);
 		if (!newtx) {
 			throw Error('NULL TX CREATED IN REGISTRY MODULE');
 		}
@@ -404,19 +386,11 @@ class Registry extends ModTemplate {
 					//if (peer.publicKey == registry_self.registry_publickey) {
 					let identifier = myKey.identifier.split('@');
 					if (identifier.length !== 2) {
-						console.log(
-							'REGISTRY: Invalid identifier',
-							myKey.identifier
-						);
+						console.log('REGISTRY: Invalid identifier', myKey.identifier);
 						return;
 					}
-					registry_self.tryRegisterIdentifier(
-						identifier[0],
-						'@' + identifier[1]
-					);
-					console.log(
-						'REGISTRY: Attempting to register our name again'
-					);
+					registry_self.tryRegisterIdentifier(identifier[0], '@' + identifier[1]);
+					console.log('REGISTRY: Attempting to register our name again');
 					//}
 				});
 			} else if (myKey?.has_registered_username) {
@@ -426,6 +400,22 @@ class Registry extends ModTemplate {
 				});
 				this.app.connection.emit('update_identifier', this.publicKey);
 			}
+
+
+			// Bulk get cached keys
+			let msg = {
+				request: 'cached keys',
+			};
+
+			this.app.network.sendRequestAsTransaction('registry', msg, (keys) => {
+				for (let key in keys) {
+					if (!this.cached_keys[key] || key == this.cached_keys[key]) {
+						this.cached_keys[key] = keys[key];	
+					}
+				}
+				this.app.connection.emit("registry-cache-loaded");
+			}, peer.peerIndex);
+
 		}
 	}
 
@@ -458,6 +448,14 @@ class Registry extends ModTemplate {
 			}
 		}
 
+		if (txmsg.request == 'registry') {
+			if (txmsg.data.request === 'cached keys') {
+				if (mycallback){
+					mycallback(this.cached_keys);
+				}
+			}
+		}
+
 		return super.handlePeerTransaction(app, newtx, peer, mycallback);
 	}
 
@@ -475,20 +473,14 @@ class Registry extends ModTemplate {
 		let txmsg = tx.returnMessage();
 
 		if (conf == 0) {
-
 			if (!!txmsg && txmsg.module === 'Registry') {
 				console.log(`REGISTRY: ${tx.from[0].publicKey} -> ${txmsg.identifier}`);
 
 				/////////////////////////////////////////
 				// REGISTRATION REQUESTS - main server //
 				/////////////////////////////////////////
-				if (
-					tx.isTo(this.publicKey) &&
-					this.publicKey === this.registry_publickey
-				) {
-
-
-				console.log("I AM THE REGISTERING MACHINE!")
+				if (tx.isTo(this.publicKey) && this.publicKey === this.registry_publickey) {
+					console.log('I AM THE REGISTERING MACHINE!');
 					let identifier = txmsg.identifier;
 					let publickey = tx.from[0].publicKey;
 					let unixtime = new Date().getTime();
@@ -554,11 +546,11 @@ class Registry extends ModTemplate {
 						newtx.msg.signature = '';
 					}
 
-console.log("REGISTRY signing transaction...");
+					console.log('REGISTRY signing transaction...');
 					await newtx.sign();
-console.log("REGISTRY propagating transaction...");
+					console.log('REGISTRY propagating transaction...');
 					await this.app.network.propagateTransaction(newtx);
-console.log("REGISTRY done propagating transaction...");
+					console.log('REGISTRY done propagating transaction...');
 
 					return;
 				}
@@ -568,10 +560,10 @@ console.log("REGISTRY done propagating transaction...");
 			// OTHER SERVERS - mirror central DNS //
 			////////////////////////////////////////
 			if (!!txmsg && txmsg.module == 'Email') {
-console.log('REGISTRY EMAIL: ' + txmsg.title);
+				console.log('REGISTRY EMAIL: ' + txmsg.title);
 
 				if (tx.from[0].publicKey == this.registry_publickey) {
-console.log("FROM THE REGISTRAR!");
+					console.log('FROM THE REGISTRAR!');
 					try {
 						//
 						// am email? for us? from the DNS registrar?
@@ -587,13 +579,7 @@ console.log("FROM THE REGISTRAR!");
 						let signer = tx.msg.signer;
 						let lc = 1;
 
-						if (
-							this.app.crypto.verifyMessage(
-								signed_message,
-								sig,
-								this.registry_publickey
-							)
-						) {
+						if (this.app.crypto.verifyMessage(signed_message, sig, this.registry_publickey)) {
 							if (this.publicKey != this.registry_publickey) {
 								// servers update database
 								if (!this.app.BROWSER) {
@@ -611,39 +597,24 @@ console.log("FROM THE REGISTRAR!");
 								}
 
 								if (tx.isTo(this.publicKey)) {
-									this.app.keychain.addKey(
-										tx.to[0].publicKey,
-										{
-											identifier: identifier,
-											watched: true,
-											block_id: blk.id,
-											block_hash: blk.hash,
-											lc: 1
-										}
-									);
+									this.app.keychain.addKey(tx.to[0].publicKey, {
+										identifier: identifier,
+										watched: true,
+										block_id: blk.id,
+										block_hash: blk.hash,
+										lc: 1
+									});
 									console.info('***********************');
-									console.info(
-										'verification success for : ' +
-											identifier
-									);
+									console.info('verification success for : ' + identifier);
 									console.info('***********************');
 
-									this.app.browser.updateAddressHTML(
-										tx.to[0].publicKey,
-										identifier
-									);
-									this.app.connection.emit(
-										'update_identifier',
-										tx.to[0].publicKey
-									);
+									this.app.browser.updateAddressHTML(tx.to[0].publicKey, identifier);
+									this.app.connection.emit('update_identifier', tx.to[0].publicKey);
 								}
 							}
 						}
 					} catch (err) {
-						console.error(
-							'ERROR verifying username registration message: ',
-							err
-						);
+						console.error('ERROR verifying username registration message: ', err);
 					}
 				}
 			}
@@ -666,7 +637,7 @@ console.log("FROM THE REGISTRAR!");
 				keys.splice(i, 1);
 				continue;
 			}
-      /*if (this.cached_keys[keys[i]] && this.cached_keys[keys[i]] !== keys[i]) {
+			/*if (this.cached_keys[keys[i]] && this.cached_keys[keys[i]] !== keys[i]) {
         found_keys[keys[i]] = this.cached_keys[keys[i]];
         keys.splice(i, 1);
       }*/
@@ -681,16 +652,11 @@ console.log("FROM THE REGISTRAR!");
                    FROM records
                    WHERE ${where_statement}`;
 
-			let rows = await this.app.storage.queryDatabase(
-				sql,
-				{},
-				'registry'
-			);
+			let rows = await this.app.storage.queryDatabase(sql, {}, 'registry');
 			if (rows?.length > 0) {
 				for (let i = 0; i < rows.length; i++) {
 					found_keys[rows[i].publickey] = rows[i].identifier;
-					registry_self.cached_keys[rows[i].publickey] =
-						rows[i].identifier;
+					registry_self.cached_keys[rows[i].publickey] = rows[i].identifier;
 				}
 			}
 		}
@@ -711,10 +677,7 @@ console.log("FROM THE REGISTRAR!");
 		//
 		// Fallback because browsers don't automatically have DNS as a peer
 		//
-		if (
-			missing_keys.length > 0 &&
-			this.publicKey !== this.registry_publickey
-		) {
+		if (missing_keys.length > 0 && this.publicKey !== this.registry_publickey) {
 			let has_peer = false;
 			//
 			// if we were asked about any missing keys, ask our parent server
@@ -723,27 +686,23 @@ console.log("FROM THE REGISTRAR!");
 				if (this.peers[i].publicKey == this.registry_publickey) {
 					has_peer = true;
 					// ask the parent for the missing values, cache results
-					return this.queryKeys(
-						this.peers[i],
-						missing_keys,
-						(res) => {
-							//
-							// This is run by the main service node
-							//
-							for (let key in res) {
-								if (res[key] !== key) {
-									registry_self.cached_keys[key] = res[key];
-									found_keys[key] = res[key];
-								}
-							}
-
-							if (mycallback) {
-								//console.log("REGISTRY: run nested DB callback on found keys", found_keys);
-								mycallback(found_keys);
-								return 1;
+					return this.queryKeys(this.peers[i], missing_keys, (res) => {
+						//
+						// This is run by the main service node
+						//
+						for (let key in res) {
+							if (res[key] !== key) {
+								registry_self.cached_keys[key] = res[key];
+								found_keys[key] = res[key];
 							}
 						}
-					);
+
+						if (mycallback) {
+							//console.log("REGISTRY: run nested DB callback on found keys", found_keys);
+							mycallback(found_keys);
+							return 1;
+						}
+					});
 				}
 			}
 
@@ -772,11 +731,7 @@ console.log("FROM THE REGISTRAR!");
 		if (this.publicKey == this.registry_publickey) {
 			const sql = `SELECT * FROM records WHERE identifier = ?`;
 
-			let rows = await this.app.storage.queryDatabase(
-				sql,
-				[identifier],
-				'registry'
-			);
+			let rows = await this.app.storage.queryDatabase(sql, [identifier], 'registry');
 
 			mycallback(rows);
 			return 1;
