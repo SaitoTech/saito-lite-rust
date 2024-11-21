@@ -1,5 +1,5 @@
 module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
-	let html = `
+  let html = `
 
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -72,28 +72,18 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
   </style>
 </head>
 
-<body>
-RedSquare is currently under debugging. We expect it to return in about 24 hours.
-
-<p></p>
-
-You can continue to use Saito at:
-
-<p></p>
-
-<a href="https://saito.io/arcade">Saito Arcade</a>
-</body>`;
-	html += `<script type="text/javascript">
+<body></body>`;
+  html += `<script type="text/javascript">
   if (!tweets) { 
     var tweets = [];
   }`;
 
-	for (let tweet of recent_tweets) {
-		html += ` tweets.push(\`${tweet}\`);`;
-	}
-	html += `</script>
+  for (let tweet of recent_tweets) {
+    html += ` tweets.push(\`${tweet}\`);`;
+  }
+  html += `</script>
 
 <script type="text/javascript" src="/saito/saito.js?build=${build_number}"></script>
 </html>`;
-	return html;
+  return html;
 };
