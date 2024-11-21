@@ -101,7 +101,8 @@ class RedSquare extends ModTemplate {
 
     this.ignoreCentralServer = false;
     this.offerService = false;
-    this.showOnlyWatched = false;
+    this.curated = true;
+    this.curationLevel = "named"; // "named", "following", ...
 
     //
     // set by main
@@ -331,29 +332,48 @@ class RedSquare extends ModTemplate {
     if (type === 'saito-moderation-app') {
       return {
         filter_func: (mod = null, tx = null) => {
-          if (tx == null || mod == null) {
+          if (tx == null || mod == null || !tx?.from) {
             return 0;
           }
+
+          //This function is called with every module for some reasons
+          if (mod.name !== this.name){
+            return 0;
+          }
+
           if (this.hidden_tweets.includes(tx.signature)){
             return -1;
           }
 
           // Generate a white list from keychain and filter
-          if (this.showOnlyWatched){
-            let keys = this.app.keychain.returnWatchedPublicKeys();
-            for (let key of keys){
-              if (tx.isTo(key) || tx.isFrom(key)){
-                return 1;
-              }
-            }
-            // Second order following...
-            for (let key of this.following){
-              if (tx.isTo(key.publicKey) || tx.isFrom(key.publicKey)){
-                return 1;
-              }
+          if (this.curated && this.app.BROWSER){
+
+            switch (this.curationLevel){
+              
+              case "named":
+                if (tx.from[0]?.publicKey){
+                  if (this.app.keychain.returnIdentifierByPublicKey(tx.from[0].publicKey, false)){
+                    return 1;
+                  }
+                }
+
+              case "following":
+                let keys = this.app.keychain.returnWatchedPublicKeys();
+                for (let key of keys){
+                  if (tx.isTo(key) || tx.isFrom(key)){
+                    return 1;
+                  }
+                }
+                // Second order following...
+                for (let key of this.following){
+                  if (tx.isTo(key.publicKey) || tx.isFrom(key.publicKey)){
+                    return 1;
+                  }
+                }
             }
 
             return -1;
+
           }
           return 0;
         }
@@ -964,7 +984,7 @@ class RedSquare extends ModTemplate {
 
         if (created_at == 'earlier') {
           obj.updated_earlier_than = this.peers[i].tweets_earliest_ts;
-          console.log(`REDSQUARE: fetch earlier tweets from ${this.peers[i].publicKey}`);
+          console.log(`REDSQUARE: fetch earlier tweets from ${this.peers[i].publicKey} / ${this.peers[i].tweets_earliest_ts}`);
         } else if (created_at == 'later') {
           //
           // For "new" tweets we maybe want to look at updated, not created
@@ -1655,8 +1675,16 @@ class RedSquare extends ModTemplate {
     this.tweets_sigs_hmap = {};
     this.tweets_earliest_ts = new Date().getTime();
 
+    if (!this.ignoreCentralServer && window?.tweets?.length) {
+      for (let z = 0; z < window.tweets.length; z++) {
+        let newtx = new Transaction();
+        newtx.deserialize_from_web(this.app, window.tweets[z]);
+        this.addTweet(newtx, 'server_cache');
+      }
+    }
+
     for (let peer of this.peers){
-      peer.tweets_earliest_ts = new Date().getTime();
+      peer.tweets_earliest_ts = this.tweets_earliest_ts;
       peer.tweets_latest_ts = 0;
     }
   }
@@ -2476,6 +2504,15 @@ class RedSquare extends ModTemplate {
       if (this.app.options.redsquare.following) {
         this.app.options.redsquare.following.forEach((key) => this.addPseudoPeer(key));
       }
+
+      if (this.app.options.redsquare.show_curated != undefined){
+        this.curated = this.app.options.redsquare.show_curated;
+      }
+
+      if (this.app.options.redsquare?.curation_level){
+        this.curationLevel = this.app.options.redsquare.curation_level;
+      }
+
       this.ignoreCentralServer = this.app.options.redsquare?.distributed;
       this.offerService = this.app.options.redsquare?.offer_service;
     }
@@ -2510,6 +2547,8 @@ class RedSquare extends ModTemplate {
     this.app.options.redsquare.retweeted_tweets = this.retweeted_tweets;
     this.app.options.redsquare.replied_tweets = this.replied_tweets;
     this.app.options.redsquare.hidden_tweets = this.hidden_tweets;
+    this.app.options.redsquare.show_curated = this.curated;
+    this.app.options.redsquare.curation_level = this.curationLevel;
 
     let keys_to_follow = [];
     this.following.forEach((peer) => keys_to_follow.push(peer.publicKey));
@@ -2689,9 +2728,13 @@ class RedSquare extends ModTemplate {
                 };
               }
 
-              res.setHeader('Content-type', 'text/html');
-              res.charset = 'UTF-8';
-              res.send(redsquareHome(app, redsquare_self, app.build_number, updated_social));
+              let html = redsquareHome(app, redsquare_self, app.build_number, updated_social);
+	      if (!res.finished) {
+	              res.setHeader('Content-type', 'text/html');
+        	      res.charset = 'UTF-8';
+             	      return res.send(html);
+	      }
+	      return;
             });
 
             return;
@@ -2727,12 +2770,13 @@ class RedSquare extends ModTemplate {
                 }
 
                 console.info('### write from redsquare.js:1651 (request Open Graph Image)');
-                res.writeHead(200, {
-                  'Content-Type': img_type,
-                  'Content-Length': img.length
-                });
-                res.end(img);
-                return;
+		if (!res.finished) {
+                  res.writeHead(200, {
+                    'Content-Type': img_type,
+                    'Content-Length': img.length
+                  });
+                  return res.end(img);
+		}
               }
             });
 
@@ -2743,15 +2787,9 @@ class RedSquare extends ModTemplate {
         console.log('Loading OG data failed with error: ' + err);
       }
 
-      // fallback for default
-      res.setHeader('Content-type', 'text/html');
-      res.charset = 'UTF-8';
-
       if (redsquare_self.cached_recent_tweets.length > 10) {
         redsquare_self.cached_recent_tweets.shift();
       }
-
-      // It is stupid to cache tweets that may be moderated after the fact
 
       for (let i = redsquare_self.cached_recent_tweets.length - 1; i >= 0; i--){
         if (redsquare_self.app.modules.moderate(redsquare_self.cached_recent_tweets[i], redsquare_self.name) == -1){
@@ -2759,15 +2797,12 @@ class RedSquare extends ModTemplate {
         }
       }
 
-      res.send(
-        redsquareHome(
-          app,
-          redsquare_self,
-          app.build_number,
-          redsquare_self.social,
-          redsquare_self.cached_recent_tweets
-        )
-      );
+      if (!res.finished) {
+	let html = redsquareHome(app, redsquare_self, app.build_number, redsquare_self.social, redsquare_self.cached_recent_tweets);
+        res.setHeader('Content-type', 'text/html');
+        res.charset = 'UTF-8';
+        return res.send(html);
+      }
       return;
     });
 

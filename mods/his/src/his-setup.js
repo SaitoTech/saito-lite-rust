@@ -278,6 +278,8 @@ console.log("\n\n\n\n");
 	  this.addDebater("protestant", "bucer-debater");
 	  this.addDebater("protestant", "carlstadt-debater");
 
+
+
 	}
 
       }
@@ -571,10 +573,10 @@ console.log("\n\n\n\n");
 	  this.game.state.starting_round = 6;
 	  this.game.state.round = 5; // the one before 4
 
-	  this.setEnemies("ottoman", "protestant");
-	  this.setEnemies("ottoman", "hapsburg");
-	  this.setEnemies("ottoman", "venice");
-	  this.setEnemies("ottoman", "papacy");
+//	  this.setEnemies("ottoman", "protestant");
+//	  this.setEnemies("ottoman", "hapsburg");
+//	  this.setEnemies("ottoman", "venice");
+//	  this.setEnemies("ottoman", "papacy");
 	  this.setEnemies("france", "hapsburg");
 	  this.setEnemies("england", "france");
 	  this.setAllies("france", "genoa");
@@ -758,16 +760,12 @@ console.log("\n\n\n\n");
 	  this.addNavalSquadron("hapsburg", "tyrrhenian", 3); 
 	  this.addNavalSquadron("hapsburg", "gibraltar", 1); 
 
-	  this.addNavalSquadron("ottoman", "ionian", 3); 
-	  this.addCorsair("ottoman", "barbary", 3); 
+	  this.addNavalSquadron("ottoman", "barbary", 4); 
+	  this.addCorsair("ottoman", "barbary", 5); 
 
 	  this.addNavalSquadron("france", "channel", 4);
 	  this.addNavalSquadron("england", "north", 3);
 
-
-	  this.addNavalSquadron("hapsburg", "tyrrhenian", 3);
-	  this.addNavalSquadron("hapsburg", "barbary", 3);
-	  this.addNavalSquadron("ottoman", "gulflyon", 5);
 	  this.addNavyLeader("ottoman", "gulflyon", "barbarossa");
 
 	  this.game.state.events.papacy_may_found_jesuit_universities = 1;

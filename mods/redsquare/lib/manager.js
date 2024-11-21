@@ -622,11 +622,11 @@ class TweetManager {
 				document.getElementById("following").onclick = (e) => {
 					e.currentTarget.classList.add("active");
 					document.getElementById("for-you").classList.remove("active");
-					this.mod.showOnlyWatched = true;
+					this.mod.curated = true;
+					this.mod.saveOptions();
 					this.showLoader();
 					this.mod.reset();
 					this.clearFeed();
-					this.render();
 					this.fetchTweets();
 				}
 			}
@@ -634,11 +634,11 @@ class TweetManager {
 				document.getElementById("for-you").onclick = (e) => {
 					e.currentTarget.classList.add("active");
 					document.getElementById("following").classList.remove("active");
-					this.mod.showOnlyWatched = false;
+					this.mod.curated = false;
+					this.mod.saveOptions();
 					this.showLoader();
 					this.mod.reset();
 					this.clearFeed();
-					this.render();
 					this.fetchTweets();
 				}
 			}

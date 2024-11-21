@@ -8232,6 +8232,7 @@ console.log("we have removed philip and redisplayed the space...");
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
         let f = his_self.returnAllyOfMinorPower("genoa");
+	if (faction == "ottoman" || faction == "protestant" || faction == "england") { return 0; }
 	if (faction !== f) { return 1; }
 	return 0;
       },

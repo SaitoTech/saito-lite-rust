@@ -2622,6 +2622,8 @@ console.log("\n\n\n\n");
 	  this.addDebater("protestant", "bucer-debater");
 	  this.addDebater("protestant", "carlstadt-debater");
 
+
+
 	}
 
       }
@@ -2915,10 +2917,10 @@ console.log("\n\n\n\n");
 	  this.game.state.starting_round = 6;
 	  this.game.state.round = 5; // the one before 4
 
-	  this.setEnemies("ottoman", "protestant");
-	  this.setEnemies("ottoman", "hapsburg");
-	  this.setEnemies("ottoman", "venice");
-	  this.setEnemies("ottoman", "papacy");
+//	  this.setEnemies("ottoman", "protestant");
+//	  this.setEnemies("ottoman", "hapsburg");
+//	  this.setEnemies("ottoman", "venice");
+//	  this.setEnemies("ottoman", "papacy");
 	  this.setEnemies("france", "hapsburg");
 	  this.setEnemies("england", "france");
 	  this.setAllies("france", "genoa");
@@ -3102,16 +3104,12 @@ console.log("\n\n\n\n");
 	  this.addNavalSquadron("hapsburg", "tyrrhenian", 3); 
 	  this.addNavalSquadron("hapsburg", "gibraltar", 1); 
 
-	  this.addNavalSquadron("ottoman", "ionian", 3); 
-	  this.addCorsair("ottoman", "barbary", 3); 
+	  this.addNavalSquadron("ottoman", "barbary", 4); 
+	  this.addCorsair("ottoman", "barbary", 5); 
 
 	  this.addNavalSquadron("france", "channel", 4);
 	  this.addNavalSquadron("england", "north", 3);
 
-
-	  this.addNavalSquadron("hapsburg", "tyrrhenian", 3);
-	  this.addNavalSquadron("hapsburg", "barbary", 3);
-	  this.addNavalSquadron("ottoman", "gulflyon", 5);
 	  this.addNavyLeader("ottoman", "gulflyon", "barbarossa");
 
 	  this.game.state.events.papacy_may_found_jesuit_universities = 1;
@@ -12004,6 +12002,7 @@ console.log("we have removed philip and redisplayed the space...");
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
         let f = his_self.returnAllyOfMinorPower("genoa");
+	if (faction == "ottoman" || faction == "protestant" || faction == "england") { return 0; }
 	if (faction !== f) { return 1; }
 	return 0;
       },
@@ -17056,6 +17055,15 @@ console.log("DELETING Z: " + z);
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     if (space.type == "electorate" || space.type == "key" || space.type == "fortress") { return true; }
     if (space.fortified == 1 || space.fortified == true) { return true; }
+    return false;
+  }
+
+  isSpaceFortress(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.type == "electorate" || space.type == "key") { return false; }
+    if (space.type == "fortress") { return true; }
+    if (space.fortified == 1 || space.fortified == true) { return true; }
+    if (space.key == this.game.state.knights_of_st_john) { return true; }
     return false;
   }
 
@@ -25824,7 +25832,7 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 		html += '<li class="option" id="amazon">The Amazon (2VP, explorer retires)</li>';
 	      }
 	      if (this.game.state.newworld['circumnavigation'].claimed != 1) {
-		let vp_at_stake = "2";
+		let vp_at_stake = "3";
 		if (this.game.state.newworld['pacificstrait'].claimed != 1) { vp_at_stake = "2-5"; }
 		html += `<li class="option" id="circumnavigation">Attempt Circumnavigation (${vp_at_stake}VP, requires 12 and explorer retires)</li>`;
 	      }
@@ -31514,11 +31522,14 @@ try {
 	      opponent_dice++;
 	    }
           }
+	  // why? because some ports on multiple seas
+	  let already_counted_knights = false;
           if (his_self.game.state.knights_of_st_john != "") {
             let indspace = his_self.game.spaces[his_self.game.state.knights_of_st_john];
             if (indspace.unrest != 1 && indspace.besieged <= 0) {
               for (let b = 0; b < indspace.ports.length; b++) {
-                if (indspace.ports[b] == target_space.key) {
+                if (indspace.ports[b] == target_space.key && already_counted_knights == false) {
+		  already_counted_knights = true;
 	          anti_piracy_faction.push(indspace.ports[b]);
 	          anti_piracy_unittype.push("fortress");
 	          fortress_adjacent++;
@@ -31539,7 +31550,8 @@ try {
 	      if (his_self.game.spaces[ap]) {
 	        let x = his_self.returnFactionControllingSpace(ap);
 	        if (x == target_faction || factions_at_war_with_ottoman.includes(x)) {
-		  if (his_self.isSpaceFortified(ap) && !his_self.isSpaceInUnrest(ap) && !his_self.isSpaceBesieged(ap)) {
+		  if (his_self.isSpaceFortress(ap) && !his_self.isSpaceInUnrest(ap) && !his_self.isSpaceBesieged(ap)) {
+		    already_counted.push(ap);
 	            anti_piracy_faction.push(ap);
 	            anti_piracy_unittype.push("fortress");
 	            fortress_adjacent++;
@@ -31559,7 +31571,6 @@ try {
 	  if (fortress_adjacent > 0) {
 	    his_self.updateLog(` ${fortress_adjacent} dice from fortresses`);
 	  }
-	  his_self.updateLog("Anti-Piracy Dice: " + opponent_dice);
 
           //
           // eliminate 1 corsair for each hit of 5 or 6
@@ -31831,17 +31842,20 @@ try {
             let html = '<ul>';
 	    let numchoice = 0;
 
-	    if (vp_issuable == true && (vp_offered <= cards_offered && vp_offered <= squadrons_offered)) {
+	    if (vp_issuable == true && ((cards_available == 0 && squadrons_available == 0) || (vp_offered <= cards_offered && vp_offered <= squadrons_offered))) {
               html += `<li class="option" id="vp">give vp</li>`;
 	      numchoice++;
 	    }
-	    if (cards_issuable == true && (cards_offered <= vp_offered && cards_offered <= squadrons_offered)) {
+	    if (cards_issuable == true && ((vp_available == 0 && squadrons_available == 0 ) || (cards_offered <= vp_offered && cards_offered <= squadrons_offered))) {
               html += `<li class="option" id="card">give card draw</li>`;
 	      numchoice++;
 	    }	
-	    if (squadrons_issuable == true && (squadrons_offered <= vp_offered && squadrons_offered <= cards_offered)) {
+	    if (squadrons_issuable == true && ((cards_available == 0 && vp_available == 0 ) || (squadrons_offered <= vp_offered && squadrons_offered <= cards_offered))) {
               html += `<li class="option" id="squadron">destroy squadron</li>`;
 	      numchoice++;
+	    }
+	    if (numchoice == 0) {
+              html += `<li class="option" id="none">none available</li>`;
 	    }	
             html += '</ul>';
 
@@ -31877,18 +31891,25 @@ try {
 
 	      if (action == "vp") {
 		vp_offered++;
+		vp_available--;
 		his_self.addMove("piracy_reward_vp");
 		his_self.addMove("NOTIFY\t" + his_self.returnFactionName(faction) + " offers Ottomans 1 VP");
 	      }
 	      if (action == "card") {
 		cards_offered++;
+		cards_available--;
 		his_self.addMove("piracy_reward_card\t"+faction);
 		his_self.addMove("NOTIFY\t" + his_self.returnFactionName(faction) + " offers Ottomans card draw");
 	      }
 	      if (action == "squadron") {
 		squadrons_offered++;
+		squadrons_available--;
 		his_self.addMove("piracy_reward_squadron\t"+faction+"\t"+mv[4]);
 		his_self.addMove("NOTIFY\t" + his_self.returnFactionName(faction) + " destroys squadron");
+	      }
+	      if (action == "none") {
+                his_self.updateStatus("acknowledge...");
+	        his_self.endTurn();
 	      }
 
 	      if (hits_given < hits) {
@@ -41463,13 +41484,24 @@ return;
 	    //
 	    his_self.addMove("unset_enemies\tpapacy\t"+enemy);
 
+	    let do_any_foreign_occupied_spaces_exist = false;
+	    for (let key in his_self.game.spaces) {
+	      if (his_self.game.spaces[key].home == "papacy") {
+		if (his_self.game.spaces[key].political != "" && his_self.game.spaces[key].political != "papacy") {
+		  do_any_foreign_occupied_spaces_exist = true;
+		}
+	      }
+	    }
+
 	    //
 	    // regain control of home space, or draw card
 	    //
     	    let msg = `Regain Home Space or Draw Card?`;
     	    let opt = "<ul>";
-    	    opt += `<li class="option" id="regain">regain home space</li>`;
-    	    opt += `<li class="option" id="draw">draw card</li>`;
+	    if (do_any_foreign_occupied_spaces_exist == true) {
+    	      opt += `<li class="option" id="regain">regain home space</li>`;
+	    } 
+   	    opt += `<li class="option" id="draw">draw card</li>`;
     	    opt += '</ul>';
 
 	    his_self.updateStatusWithOptions(msg, opt);
@@ -41492,7 +41524,7 @@ return;
                   "Select Home Space to Recapture" ,
 
         	  function(space) {
-	            if (space.home === "papacy" && space.political !== "papacy") {
+	            if (space.home === "papacy" && (space.political !== "" && space.political !== "papacy")) {
 		      return 1;
 		    }
 		  },
@@ -41505,7 +41537,7 @@ return;
 		    his_self.endTurn();
 		  },
 
-	    	  cancel_func,
+	    	  () => { his_self.playerPlayPapacyDiplomacyPhaseSpecialTurn(); } , 
 
 	    	  true 
 

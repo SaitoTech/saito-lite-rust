@@ -214,9 +214,12 @@ class Graffiti extends ModTemplate {
 					? `${this.snapshotsDirSubpath}/${this.lastSnapshotFileName}`
 					: null;
 
-			res.setHeader('Content-type', 'text/html');
-			res.charset = 'UTF-8';
-			res.send(graffitiHTML(app, this.slug, lastSnapshotPath));
+			if (!res.finished) {
+				res.setHeader('Content-type', 'text/html');
+				res.charset = 'UTF-8';
+				return res.send(graffitiHTML(app, this.slug, lastSnapshotPath));
+			}
+			return;
 		});
 
 		expressapp.use('/' + encodeURI(this.slug), express.static(this.webdir));

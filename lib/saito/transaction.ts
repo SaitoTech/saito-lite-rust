@@ -261,9 +261,14 @@ export default class Transaction extends SaitoTransaction {
 				this.msg = {};
 			}
 		} catch (err) {
+			// TODO : handle this without printing an error
+			console.log('ERROR: ' + JSON.stringify(err));
 			try {
+				console.log('fallback on failure... 1');
 				const reconstruct = Buffer.from(this.data).toString('utf-8');
+				console.log('fallback on failure... 2');
 				this.msg = JSON.parse(reconstruct);
+				console.log('fallback on failure... 3');
 			} catch (err) {
 				console.log(
 					`buffer length = ${
@@ -274,11 +279,12 @@ export default class Transaction extends SaitoTransaction {
 				console.log('here: ' + JSON.stringify(this.msg));
 			}
 		}
+
 		return this.msg;
 	}
 
 	/*
-  	  Sanka -- maybe these convenience functions should be moved up a level?
+  	  TODO -- maybe these convenience functions should be moved up a level?
   	*/
 	addTo(publicKey: string) {
 		console.assert(!!this.to, 'to field not found : ', this);

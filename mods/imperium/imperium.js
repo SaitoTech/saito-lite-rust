@@ -2188,15 +2188,15 @@ this.importTech("faction2-brilliant", {
                 let id = $(this).attr("id");
 
                 if (id === "no") {
-                  imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
-                  imperium_self.addPublickeyConfirm(this.publicKey, 1);
+                  imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+                  imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
                   imperium_self.endTurn();
                   return 0;
                 }
 
                 imperium_self.playerResearchTechnology(function (tech) {
-                  imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
-                  imperium_self.addPublickeyConfirm(this.publicKey, 1);
+                  imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+                  imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
                   imperium_self.addMove("purchase\t" + player + "\ttechnology\t" + tech);
 
                   //
@@ -4997,7 +4997,7 @@ this.importStrategyCard("politics", {
       // pick the speaker
       //
       let factions = imperium_self.returnFactions();
-      let html = "Make which player the speaker? <ul>";
+      let html = `<div class="status-message">Make which player the speaker?</div><ul>`;
       for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
         html +=
           '<li class="option" id="' +
@@ -5041,7 +5041,7 @@ this.importStrategyCard("politics", {
       ) {
         imperium_self.playerBuyActionCards(2);
       } else {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
         imperium_self.addPublickeyConfirm(this.publicKey, 1);
         imperium_self.endTurn();
       }
@@ -5857,8 +5857,8 @@ this.importStrategyCard("imperial", {
       ) {
         imperium_self.playerBuySecretObjective(2);
       } else {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
-        imperium_self.addPublickeyConfirm(this.publicKey, 1);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
         imperium_self.endTurn();
       }
     }
@@ -5883,8 +5883,8 @@ this.importStrategyCard("imperial", {
           imperium_self,
           function (x, vp, objective) {
             imperium_self.updateStatus("scoring completed");
-            imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
-            imperium_self.addPublickeyConfirm(this.publicKey, 1);
+            imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+            imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
 
             if (my_secret_vp > 0) {
               if (imperium_self.secret_objectives[my_secret_objective] != undefined) {
@@ -11136,7 +11136,7 @@ console.log("qe: " + qe);
             imperium_self.addMove("NOTIFY\tdealing two action cards to "+imperium_self.returnFactionNickname(imperium_self.game.player));
 
 	    // and change speaker
-	    let html = 'Make which player the speaker? <ul>';
+	    let html = '<div class="status-message">Make which player the speaker?</div><ul>';
             for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
               html += '<li class="textchoice" id="'+i+'">' + factions[imperium_self.game.state.players_info[i].faction].name + '</li>';
             }
@@ -15927,9 +15927,9 @@ if (debugging == 0) {
         this.game.queue.push("playerschoosestrategycards_before");
 
         if (this.game.state.round == 1) {
-          this.game.queue.push("ACKNOWLEDGE\tNEXT: all players select a Strategy Card for Round 1.");
+          this.game.queue.push("ACKNOWLEDGE\tAll players select a Strategy Card for Round 1.");
 	} else {
-          this.game.queue.push(`ACKNOWLEDGE\tNEXT: all players select their strategy card(s) for Round ${this.game.state.round}.`);
+          this.game.queue.push(`ACKNOWLEDGE\tAll players select their strategy card(s) for Round ${this.game.state.round}.`);
 	}
 
         if (this.game.state.round == 1) {
@@ -20514,7 +20514,7 @@ console.log("HGL 1: " + z[i].name);
 returnPlayers(num = 0) {
 
   var players = [];
-  let col = '';
+
   let factions = JSON.parse(JSON.stringify(this.returnFactions()));
 
   for (let i = 0; i < num; i++) {
@@ -26454,11 +26454,25 @@ playerActivateSystem() {
   imperium_self.updateStatus(html);
 
   $('.sector').off();
+  $('.sector').on('mouseover', function (e) {
+    let id = e.currentTarget.id;
+    let s = document.getElementById(`hex_bg_${id}`);
+    s.style.filter = "brightness(1.5)";
+  });
+  $('.sector').on('mouseout', function (e) {
+    let id = e.currentTarget.id;
+    let s = document.getElementById(`hex_bg_${id}`);
+    s.style.filter = "brightness(1)";
+  });
   $('.sector').on('mousedown', function (e) {
     xpos = e.clientX;
     ypos = e.clientY;
   });
   $('.sector').on('mouseup', function (e) {
+
+    let id = e.currentTarget.id;
+    let s = document.getElementById(`hex_bg_${id}`);
+    s.style.filter = "brightness(1)";
 
     if (Math.abs(xpos-e.clientX) > 4) { return; }
     if (Math.abs(ypos-e.clientY) > 4) { return; }

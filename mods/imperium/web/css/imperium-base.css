@@ -1126,7 +1126,7 @@ body {
 	cursor: pointer;
 	font-family: 'orbitron-medium', helvetica, arial, courier;
 	text-transform: uppercase;
-	padding: 15px;
+	padding: 2rem;
 	user-select: none;
 }
 .buildchoice {

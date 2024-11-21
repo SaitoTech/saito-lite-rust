@@ -4357,7 +4357,15 @@ async playerTurnHeadlineSelected(card, player) {
 
   playerTurn(selected_card=null) {
 
+
     if (this.browser_active == 0) { return; }
+
+    try {
+      $(".easterneurope").removeClass("easterneurope");
+    } catch (err) {
+      // sanity for CHE
+    }
+
 
     let twilight_self = this;
 
@@ -5741,18 +5749,28 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
       twilight_self.addMove("resolve\tplacement");
 
-      if (this.game.player == 1) { //USSR
-   
-this.game_help.render({
-    title : "Standard USSR Placement" ,
-    text : "A strong opening protects your critical battleground countries (East Germany and Poland) and uses your final OP to secure access to Italy and Greece",
-    img : "/twilight/img/backgrounds/ussr_placement.png" ,
-    color: "#d2242a" ,
-    line1 : "where",
-    line2 : "to place?",
-    fontsize : "2.1rem" ,
-}); 
+      //
+      // HACK intended to prevent the double-placement bug, which is possible
+      // in some games for some unknown reason -- the first placement happens
+      // 2x.
+      //
+      if (twilight_self.game.state.placement >= 1) { 
+	twilight_self.endTurn();
+	return;
+      }
 
+      if (this.game.player == 1) { //USSR
+
+	this.game_help.render({
+	    title : "Standard USSR Placement" ,
+	    text : "A strong opening protects your critical battleground countries (East Germany and Poland) and uses your final OP to secure access to Italy and Greece",
+	    img : "/twilight/img/backgrounds/ussr_placement.png" ,
+	    color: "#d2242a" ,
+	    line1 : "where",
+	    line2 : "to place?",
+	    fontsize : "2.1rem" ,
+	}); 
+	
         this.updateStatusAndListCards(`You are the USSR. Place six additional influence in Eastern Europe.`);
 
         var placeable = ["finland", "eastgermany", "poland", "austria", "czechoslovakia", "hungary", "romania", "yugoslavia", "bulgaria"];
@@ -5778,7 +5796,7 @@ this.game_help.render({
               twilight_self.playerFinishedPlacingInfluence();
               twilight_self.game.state.placement = 1;
               twilight_self.endTurn();
-            }else{
+            } else {
               twilight_self.updateStatusAndListCards(`You are the USSR. Place ${ops_to_place} additional influence in Eastern Europe.`);
             }
           } else { //Should be impossible to hit here
@@ -5787,18 +5805,17 @@ this.game_help.render({
         });
 
         return;
-      }else{ //US
+      } else { //US
 
-this.game_help.render({
-    title : "Standard US Placement" ,
-    text : "Controlling Italy and West Germany protects France. Consider using your bonus to protect Iran and your access to Asia from the Middle East",
-    img : "/twilight/img/backgrounds/us_placement.png" ,
-    color: "#008fd5" ,
-    line1 : "where",
-    line2 : "to place?",
-    fontsize : "2.1rem" ,
-}); 
-
+	this.game_help.render({
+	    title : "Standard US Placement" ,
+	    text : "Controlling Italy and West Germany protects France. Consider using your bonus to protect Iran and your access to Asia from the Middle East",
+	    img : "/twilight/img/backgrounds/us_placement.png" ,
+	    color: "#008fd5" ,
+	    line1 : "where",
+	    line2 : "to place?",
+	    fontsize : "2.1rem" ,
+	}); 
 
         this.updateStatusAndListCards(`You are the US. Place seven additional influence in Western Europe.`)
 
@@ -5844,6 +5861,16 @@ this.game_help.render({
 
     twilight_self.addMove("resolve\tplacement_bonus");
 
+    //
+    // HACK intended to prevent the double-placement bug, which is possible
+    // in some games for some unknown reason -- the first placement happens
+    // 2x.
+    //
+    if (twilight_self.game.state.placement >= 2) { 
+      twilight_self.endTurn();
+      return;
+    }
+
     if (this.game.player == 1) { //USSR
 
       this.updateStatusAndListCards(`You are the USSR. Place ${bonus} additional influence in countries with existing Soviet influence.`);
@@ -5865,7 +5892,7 @@ this.game_help.render({
 
             if (bonus == 0) {
               twilight_self.playerFinishedPlacingInfluence();
-              twilight_self.game.state.placement = 1;
+              twilight_self.game.state.placement = 2;
               twilight_self.endTurn();
             }
           });
@@ -5894,7 +5921,7 @@ this.game_help.render({
 
         if (bonus == 0) {
           twilight_self.playerFinishedPlacingInfluence();
-          twilight_self.game.state.placement = 1;
+          twilight_self.game.state.placement = 2;
           twilight_self.endTurn();
         }else{
           twilight_self.updateStatusAndListCards(`You are the US. Place ${bonus} additional influence in countries with existing American influence.`);
@@ -6186,11 +6213,6 @@ this.game_help.render({
   }
 
   playerFinishedPlacingInfluence(player, mycallback=null) {
-
-    /*for (var i in this.countries) {
-      let divname      = '#'+i;
-      $(divname).off();
-    }*/
     $(".country").off();
     $(".easterneurope").removeClass("easterneurope");
     $(".westerneurope").removeClass("westerneurope");
@@ -6951,6 +6973,7 @@ this.game_help.render({
 
     state.dealt = 0;
     state.back_button_cancelled = 0;
+    state.r1_placement = 0;
     state.placement = 0;
     state.headline  = 0;
     state.headline_hash = "";

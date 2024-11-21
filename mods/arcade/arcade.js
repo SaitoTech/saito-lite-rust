@@ -407,6 +407,7 @@ class Arcade extends ModTemplate {
 			return;
 		}
 
+/******** NOV 18 - disabled to test chain-sync bug
 		if (service.service === 'archive') {
 			for (let game of this.app.options.games) {
 
@@ -427,24 +428,25 @@ class Arcade extends ModTemplate {
 //	                        let noload = app.browser.returnURLParameter('noload');
 //        	                if (noload) { return; }
 //
-//				this.app.storage.loadTransactions(
-//					{
-//						field1: query
-//					},
-//					async (txs) => {
-//						for (let i = txs.length - 1; i >= 0; i--) {
-//
-//							// arcade 
-//							await this.onConfirmation(-1, txs[i], 0);
-//
-//							// game mod
-//							await game_mod.onConfirmation(-1, txs[i], 0);
-//						}
-//					},
-//					peer
-//				);
+				this.app.storage.loadTransactions(
+					{
+						field1: query
+					},
+					async (txs) => {
+						for (let i = txs.length - 1; i >= 0; i--) {
+
+							// arcade 
+							await this.onConfirmation(-1, txs[i], 0);
+
+							// game mod
+							await game_mod.onConfirmation(-1, txs[i], 0);
+						}
+					},
+					peer
+				);
 			}
 		}
+********/
 	}
 
 	////////////
@@ -1976,29 +1978,39 @@ console.log("before igfat 2");
 			}
 
 			updatedSocial.url = reqBaseURL + encodeURI(arcade_self.returnSlug());
-			res.setHeader('Content-type', 'text/html');
-			res.charset = 'UTF-8';
-			res.send(arcadeHome(app, arcade_self, app.build_number, updatedSocial, game_data));
+			let html = arcadeHome(app, arcade_self, app.build_number, updatedSocial, game_data);
+			if (!res.finished) {
+				res.setHeader('Content-type', 'text/html');
+				res.charset = 'UTF-8';
+				return res.send(html);
+			}
 			return;
 		});
 
 
 		expressapp.get('/game/:game', async function (req, res){
+
 			let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
-
 			let game = req.params.game;
-
 			let game_mod = arcade_self.app.modules.returnModuleBySlug(game);
 
-			res.setHeader('Content-type', 'text/html');
-			res.charset = 'UTF-8';
-
 			if (game_mod){
-				res.send(game_mod.returnHomePage(reqBaseURL));
-			}else{
-				res.send(arcadeHome(app, arcade_self, app.build_number, arcade_self.social, null));
+				let html = game_mod.returnHomePage(reqBaseURL);
+				if (!res.finished) {
+					res.setHeader('Content-type', 'text/html');
+					res.charset = 'UTF-8';
+					return res.send(html);
+				}
+				return;
+			} else {
+				let html = arcadeHome(app, arcade_self, app.build_number, arcade_self.social, null);
+				if (!res.finished) {
+					res.setHeader('Content-type', 'text/html');
+					res.charset = 'UTF-8';
+					return res.send(html);
+				}
+				return;
 			}
-
 		});
 
 		expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));

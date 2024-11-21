@@ -569,7 +569,7 @@ class StreamManager {
 
   visibilityChange() {
     console.log('visibilitychange triggered');
-    //this.leaveCall();
+    this.leaveCall();
   }
 }
 

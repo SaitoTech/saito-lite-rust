@@ -1873,8 +1873,6 @@ class Limbo extends ModTemplate {
 			let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
 
 			mod_self.social.url = reqBaseURL + encodeURI(mod_self.returnSlug());
-			res.setHeader('Content-type', 'text/html');
-			res.charset = 'UTF-8';
 
 			let dream = req.query?.dream;
 			let updated_social = mod_self.social;
@@ -1895,7 +1893,12 @@ class Limbo extends ModTemplate {
 				}
 			}
 
-			res.send(HomePage(app, mod_self, app.build_number, updated_social));
+			let html = HomePage(app, mod_self, app.build_number, updated_social);
+			if (!res.finished) {
+				res.setHeader('Content-type', 'text/html');
+				res.charset = 'UTF-8';
+				return res.send(html);
+			}
 			return;
 		};
 

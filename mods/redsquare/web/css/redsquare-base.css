@@ -265,6 +265,10 @@ body {
 		--saito-width: 580px;
 	}
 
+	.saito-main {
+        	padding: 0rem 1rem 1rem 1rem;
+	}
+
 	.saito-container {
 		grid-template-columns: minmax(20rem, 1fr);
 		justify-content: center;

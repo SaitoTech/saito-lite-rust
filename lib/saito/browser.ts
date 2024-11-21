@@ -2,7 +2,8 @@
 
 import screenfull, { element } from 'screenfull';
 import { getDiffieHellman } from 'crypto';
-
+import React from 'react';
+import {createRoot} from 'react-dom'
 let marked = require('marked');
 let sanitizeHtml = require('sanitize-html');
 const sanitizer = require('sanitizer');
@@ -573,11 +574,11 @@ class Browser {
 		return check;
 	}
 
-	isSupportedBrowser(userAgent) {
+	isSupportedBrowser(userAgent = navigator.userAgent) {
 		//
 		// no to Safari
 		//
-		if (userAgent.toLowerCase().indexOf('safari/') > -1) {
+		if (userAgent.toLowerCase().indexOf('safari') > -1) {
 			if (
 				userAgent.toLowerCase().indexOf('chrome') == -1 &&
 				userAgent.toLowerCase().indexOf('firefox') == -1
@@ -2661,6 +2662,62 @@ class Browser {
 	  	number = (number);
 	  	return (string) ? number.toString(): number;  
 	}
+		/**
+	* Creates a container div and renders a React component into it
+	* @param Component The React component to render
+	* @param props Props to pass to the component
+	* @param containerId Optional custom container ID (default: auto-generated)
+	* @returns Object containing the container element, root instance, and cleanup function
+	*/
+	createReactRoot(
+		Component: React.ComponentType<any>,
+		props: Record<string, any> = {},
+		containerId?: string
+	) {
+		const id = containerId || `saito-react-root-${Date.now()}`;
+		const container = document.createElement('div');
+		container.id = id;
+		document.body.appendChild(container);
+
+		const root = createRoot(container);
+		root.render(React.createElement(Component, props));
+
+		const cleanup = () => {
+			root.unmount();
+			container.remove();
+		};
+
+		return {
+			container,
+			root,
+			cleanup
+		};
+	}
+
+	  /**
+     * Renders a React component into an existing container element
+     * @param Component The React component to render
+     * @param props Props to pass to the component
+     * @param container The existing container element to render into
+     * @returns Object containing the root instance and cleanup function
+     */
+	  renderReactToExistingContainer(
+        Component: React.ComponentType<any>,
+        props: Record<string, any> = {},
+        container: HTMLElement
+    ) {
+        const root = createRoot(container);
+		root.render(React.createElement(Component, props));
+
+        const cleanup = () => {
+            root.unmount();
+        };
+
+        return {
+            root,
+            cleanup
+        };
+    }
 }
 
 export default Browser;

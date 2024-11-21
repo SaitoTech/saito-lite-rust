@@ -555,6 +555,15 @@
     return false;
   }
 
+  isSpaceFortress(space) {
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    if (space.type == "electorate" || space.type == "key") { return false; }
+    if (space.type == "fortress") { return true; }
+    if (space.fortified == 1 || space.fortified == true) { return true; }
+    if (space.key == this.game.state.knights_of_st_john) { return true; }
+    return false;
+  }
+
   returnHopsToFortifiedHomeSpace(source, faction) {
     let his_self = this;
     try { if (this.game.spaces[source]) { source = this.game.spaces[source]; } } catch (err) {}

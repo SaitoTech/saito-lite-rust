@@ -52,12 +52,15 @@ class ReactMod extends ModTemplate {
       let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
       mod_self.social.url = reqBaseURL + encodeURI(mod_self.returnSlug());
 
-      res.setHeader('Content-type', 'text/html');
-      res.charset = 'UTF-8';
+      if (!res.finished) {
+        res.setHeader('Content-type', 'text/html');
+        res.charset = 'UTF-8';
+        return res.send(HomePage(app, mod_self, app.build_number, mod_self.social));
+      }
+      return;
 
-      res.send(HomePage(app, mod_self, app.build_number, mod_self.social));
     });
-
+      
     expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
   }
 }

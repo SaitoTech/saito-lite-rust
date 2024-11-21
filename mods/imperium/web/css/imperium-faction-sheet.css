@@ -74,9 +74,11 @@
 .faction-sheet-tokens {
 }
 .faction-sheet-sidebar {
-	grid-column: 2;
-	min-width: 25rem;
-	max-width: 25vw;
+    	grid-column: 2;
+    	min-width: 25rem;
+    	max-width: 25vw;
+    	font-size: 1.5rem;
+	line-height: 2rem;
 }
 .faction-sheet-faction-abilities {
 	background-color: #0008;

@@ -2370,7 +2370,7 @@ if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 		html += '<li class="option" id="amazon">The Amazon (2VP, explorer retires)</li>';
 	      }
 	      if (this.game.state.newworld['circumnavigation'].claimed != 1) {
-		let vp_at_stake = "2";
+		let vp_at_stake = "3";
 		if (this.game.state.newworld['pacificstrait'].claimed != 1) { vp_at_stake = "2-5"; }
 		html += `<li class="option" id="circumnavigation">Attempt Circumnavigation (${vp_at_stake}VP, requires 12 and explorer retires)</li>`;
 	      }
@@ -8060,11 +8060,14 @@ try {
 	      opponent_dice++;
 	    }
           }
+	  // why? because some ports on multiple seas
+	  let already_counted_knights = false;
           if (his_self.game.state.knights_of_st_john != "") {
             let indspace = his_self.game.spaces[his_self.game.state.knights_of_st_john];
             if (indspace.unrest != 1 && indspace.besieged <= 0) {
               for (let b = 0; b < indspace.ports.length; b++) {
-                if (indspace.ports[b] == target_space.key) {
+                if (indspace.ports[b] == target_space.key && already_counted_knights == false) {
+		  already_counted_knights = true;
 	          anti_piracy_faction.push(indspace.ports[b]);
 	          anti_piracy_unittype.push("fortress");
 	          fortress_adjacent++;
@@ -8085,7 +8088,8 @@ try {
 	      if (his_self.game.spaces[ap]) {
 	        let x = his_self.returnFactionControllingSpace(ap);
 	        if (x == target_faction || factions_at_war_with_ottoman.includes(x)) {
-		  if (his_self.isSpaceFortified(ap) && !his_self.isSpaceInUnrest(ap) && !his_self.isSpaceBesieged(ap)) {
+		  if (his_self.isSpaceFortress(ap) && !his_self.isSpaceInUnrest(ap) && !his_self.isSpaceBesieged(ap)) {
+		    already_counted.push(ap);
 	            anti_piracy_faction.push(ap);
 	            anti_piracy_unittype.push("fortress");
 	            fortress_adjacent++;
@@ -8105,7 +8109,6 @@ try {
 	  if (fortress_adjacent > 0) {
 	    his_self.updateLog(` ${fortress_adjacent} dice from fortresses`);
 	  }
-	  his_self.updateLog("Anti-Piracy Dice: " + opponent_dice);
 
           //
           // eliminate 1 corsair for each hit of 5 or 6
@@ -8377,17 +8380,20 @@ try {
             let html = '<ul>';
 	    let numchoice = 0;
 
-	    if (vp_issuable == true && (vp_offered <= cards_offered && vp_offered <= squadrons_offered)) {
+	    if (vp_issuable == true && ((cards_available == 0 && squadrons_available == 0) || (vp_offered <= cards_offered && vp_offered <= squadrons_offered))) {
               html += `<li class="option" id="vp">give vp</li>`;
 	      numchoice++;
 	    }
-	    if (cards_issuable == true && (cards_offered <= vp_offered && cards_offered <= squadrons_offered)) {
+	    if (cards_issuable == true && ((vp_available == 0 && squadrons_available == 0 ) || (cards_offered <= vp_offered && cards_offered <= squadrons_offered))) {
               html += `<li class="option" id="card">give card draw</li>`;
 	      numchoice++;
 	    }	
-	    if (squadrons_issuable == true && (squadrons_offered <= vp_offered && squadrons_offered <= cards_offered)) {
+	    if (squadrons_issuable == true && ((cards_available == 0 && vp_available == 0 ) || (squadrons_offered <= vp_offered && squadrons_offered <= cards_offered))) {
               html += `<li class="option" id="squadron">destroy squadron</li>`;
 	      numchoice++;
+	    }
+	    if (numchoice == 0) {
+              html += `<li class="option" id="none">none available</li>`;
 	    }	
             html += '</ul>';
 
@@ -8423,18 +8429,25 @@ try {
 
 	      if (action == "vp") {
 		vp_offered++;
+		vp_available--;
 		his_self.addMove("piracy_reward_vp");
 		his_self.addMove("NOTIFY\t" + his_self.returnFactionName(faction) + " offers Ottomans 1 VP");
 	      }
 	      if (action == "card") {
 		cards_offered++;
+		cards_available--;
 		his_self.addMove("piracy_reward_card\t"+faction);
 		his_self.addMove("NOTIFY\t" + his_self.returnFactionName(faction) + " offers Ottomans card draw");
 	      }
 	      if (action == "squadron") {
 		squadrons_offered++;
+		squadrons_available--;
 		his_self.addMove("piracy_reward_squadron\t"+faction+"\t"+mv[4]);
 		his_self.addMove("NOTIFY\t" + his_self.returnFactionName(faction) + " destroys squadron");
+	      }
+	      if (action == "none") {
+                his_self.updateStatus("acknowledge...");
+	        his_self.endTurn();
 	      }
 
 	      if (hits_given < hits) {

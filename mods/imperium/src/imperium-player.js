@@ -5942,11 +5942,25 @@ playerActivateSystem() {
   imperium_self.updateStatus(html);
 
   $('.sector').off();
+  $('.sector').on('mouseover', function (e) {
+    let id = e.currentTarget.id;
+    let s = document.getElementById(`hex_bg_${id}`);
+    s.style.filter = "brightness(1.5)";
+  });
+  $('.sector').on('mouseout', function (e) {
+    let id = e.currentTarget.id;
+    let s = document.getElementById(`hex_bg_${id}`);
+    s.style.filter = "brightness(1)";
+  });
   $('.sector').on('mousedown', function (e) {
     xpos = e.clientX;
     ypos = e.clientY;
   });
   $('.sector').on('mouseup', function (e) {
+
+    let id = e.currentTarget.id;
+    let s = document.getElementById(`hex_bg_${id}`);
+    s.style.filter = "brightness(1)";
 
     if (Math.abs(xpos-e.clientX) > 4) { return; }
     if (Math.abs(ypos-e.clientY) > 4) { return; }

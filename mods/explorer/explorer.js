@@ -21,21 +21,33 @@ class ExplorerCore extends ModTemplate {
 		// web resources //
 		///////////////////
 		expressapp.get('/explorer/', async function (req, res) {
-			res.set('Content-type', 'text/html');
-			res.charset = 'UTF-8';
-			res.send(await explorer_self.returnIndexHTML(app));
+			if (!res.finished) {
+				res.set('Content-type', 'text/html');
+				res.charset = 'UTF-8';
+				return res.send(await explorer_self.returnIndexHTML(app));
+			}
+			return;
 		});
 
 		expressapp.get('/explorer/style.css', function (req, res) {
-			res.sendFile(__dirname + '/web/style.css');
+			if (!res.finished) {
+				return res.sendFile(__dirname + '/web/style.css');
+			}
+			return;
 		});
 
 		expressapp.get('/explorer/css/explorer-base.css', function (req, res) {
-			res.sendFile(__dirname + '/web/css/explorer-base.css');
+			if (!res.finished) {
+				return res.sendFile(__dirname + '/web/css/explorer-base.css');
+			}
+			return;
 		});
 
 		expressapp.get('/explorer/utils.js', function (req, res) {
-			res.sendFile(__dirname + '/web/utils.js');
+			if (!res.finished) {
+				return res.sendFile(__dirname + '/web/utils.js');
+			}
+			return;
 		});
 
 		///////////////////
@@ -45,38 +57,50 @@ class ExplorerCore extends ModTemplate {
 			var hash = sanitizer.sanitize(req.query.hash);
 
 			if (hash == null) {
-				res.setHeader('Content-type', 'text/html');
-				res.charset = 'UTF-8';
-				res.send('Please provide a block hash.');
+				if (!res.finished) {
+					res.setHeader('Content-type', 'text/html');
+					res.charset = 'UTF-8';
+					return res.send('Please provide a block hash.');
+				}
+				return;
 			} else {
-				res.setHeader('Content-type', 'text/html');
-				res.charset = 'UTF-8';
-				res.send(await explorer_self.returnBlockHTML(app, hash));
+				if (!res.finished) {
+					res.setHeader('Content-type', 'text/html');
+					res.charset = 'UTF-8';
+					return res.send(await explorer_self.returnBlockHTML(app, hash));
+				}
+				return;
 			}
 		});
 
 		expressapp.get('/explorer/mempool', function (req, res) {
-			res.setHeader('Content-type', 'text/html');
-			res.charset = 'UTF-8';
-			res.send(explorer_self.returnMempoolHTML());
+			if (!res.finished) {
+				res.setHeader('Content-type', 'text/html');
+				res.charset = 'UTF-8';
+				return res.send(explorer_self.returnMempoolHTML());
+			}
+			return;
 		});
 
 		expressapp.get('/explorer/blocksource', async function (req, res) {
 			var hash = sanitizer.sanitize(req.query.hash);
 
 			if (hash == null) {
-				res.setHeader('Content-type', 'text/html');
-				res.charset = 'UTF-8';
-				res.send('NO BLOCK FOUND 1: ');
-			} else {
-				if (hash != null) {
-					//let blk = explorer_self.app.storage.loadBlockByHash(hash);
-
+				if (!res.finished) {
 					res.setHeader('Content-type', 'text/html');
 					res.charset = 'UTF-8';
-					res.send(
-						await explorer_self.returnBlockSourceHTML(app, hash)
-					);
+					return res.send('NO BLOCK FOUND 1: ');
+				}
+				return;
+			} else {
+				if (hash != null) {
+					let html = await explorer_self.returnBlockSourceHTML(app, hash)
+					if (!res.finished && html) {
+						res.setHeader('Content-type', 'text/html');
+						res.charset = 'UTF-8';
+						return res.send(html);
+					}
+					return;
 				}
 			}
 		});
@@ -85,28 +109,31 @@ class ExplorerCore extends ModTemplate {
 			var pubkey = sanitizer.sanitize(req.query.pubkey);
 
 			if (pubkey == null) {
-				res.setHeader('Content-type', 'text/html');
-				res.charset = 'UTF-8';
-				res.send('Please provide a public key.');
+				if (!res.finished) {
+					res.setHeader('Content-type', 'text/html');
+					res.charset = 'UTF-8';
+					return res.send('Please provide a public key.');
+				}
+				return;
 			} else {
-				res.setHeader('Content-type', 'text/html');
-				res.charset = 'UTF-8';
-				res.send(await explorer_self.returnBalanceHTML(app, pubkey));
+				let html = await explorer_self.returnAllBalanceHTML(app, pubkey);
+				if (!res.finished) {
+					res.setHeader('Content-type', 'text/html');
+					res.charset = 'UTF-8';
+					return res.send(html);
+				}
+				return;
 			}
 		});
 
 		expressapp.get('/explorer/balance/all', async function (req, res) {
-			// var pubkey = sanitizer.sanitize(req.query.pubkey);
-
-			// if (pubkey == null) {
-			// 	res.setHeader('Content-type', 'text/html');
-			// 	res.charset = 'UTF-8';
-			// 	res.send('Please provide a public key.');
-			// } else {
-				res.setHeader('Content-type', 'text/html');
-				res.charset = 'UTF-8';
-				res.send(await explorer_self.returnAllBalanceHTML(app, res));
-			// }
+				let html = await explorer_self.returnAllBalanceHTML(app);
+				if (!res.finished) {
+					res.setHeader('Content-type', 'text/html');
+					res.charset = 'UTF-8';
+					return res.send(html);
+				}
+				return;
 		});
 
 		// //////////////////////
@@ -139,29 +166,29 @@ class ExplorerCore extends ModTemplate {
 					txwmsgs.push(tx);
 				});
 
-				// console.info("### write from line 232 of server.ts.");
-				res.writeHead(200, {
-					'Content-Type': 'text/plain',
-					'Content-Transfer-Encoding': 'utf8'
-				});
-				// res.end(Buffer.from(JSON.stringify(blkwtx), "utf8"), "utf8");
 				var fullblock = JSON.parse(blk.toJson());
 				fullblock.transactions = txwmsgs;
-				res.end(JSON.stringify(fullblock));
+				let html_to_return = JSON.stringify(fullblock);
+
+				if (!res.finished) {
+					res.writeHead(200, {
+						'Content-Type': 'text/plain',
+						'Content-Transfer-Encoding': 'utf8'
+					});
+					return res.end(html_to_return);
+				}
+
 			} catch (err) {
-				//
-				// file does not exist on disk, check in memory
-				//
-				//let blk = await this.app.blockchain.returnBlockByHash(bsh);
 
 				console.error('FETCH BLOCKS ERROR SINGLE BLOCK FETCH: ', err);
-				// console.info("### write from line 188 of server.ts.");
-				res.status(400);
-				res.end({
-					error: {
-						message: `FAILED SERVER REQUEST: could not find block: ${bhash}`
-					}
-				});
+				if (!res.finished) {
+					res.status(400);
+					return res.end({
+						error: {
+							message: `FAILED SERVER REQUEST: could not find block: ${bhash}`
+						}
+					});
+				}
 			}
 		});
 	}
@@ -455,7 +482,7 @@ class ExplorerCore extends ModTemplate {
 		return html;
 	}
 
-	async returnAllBalanceHTML(app, res) {
+	async returnAllBalanceHTML(app) {
 		var html = this.returnHead() + this.returnHeader();
 
 		html += `
