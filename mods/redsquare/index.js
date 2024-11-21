@@ -73,15 +73,6 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
 </head>
 
 <body>
-RedSquare is currently under debugging. We expect it to return in about 24 hours.
-
-<p></p>
-
-You can continue to use Saito at:
-
-<p></p>
-
-<a href="https://saito.io/arcade">Saito Arcade</a>
 </body>`;
 	html += `<script type="text/javascript">
   if (!tweets) { 
