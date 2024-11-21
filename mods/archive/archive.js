@@ -836,6 +836,7 @@ try {
 	// the future if it is abused.
 	//
 	async onNewBlock() {
+
 		// 90% of blocks don't try to delete anything
 		if (Math.random() < 0.95) {
 			return;
@@ -857,6 +858,8 @@ try {
 		let sql = `DELETE FROM archives WHERE owner = "" AND updated_at < $ts AND preserve = 0`;
 		let params = { $ts: ts };
 		await this.app.storage.runDatabase(sql, params, 'archive');
+		
+console.log('$ done 1');
 
 		//
 		// delete private transactions
@@ -865,6 +868,8 @@ try {
 		sql = `DELETE FROM archives WHERE owner != "" AND updated_at < $ts AND preserve = 0`;
 		params = { $ts: ts };
 		await this.app.storage.runDatabase(sql, params, 'archive');
+
+console.log('$ done 2');
 
 		//
 		// localDB
@@ -883,12 +888,19 @@ try {
 			console.log(rows, 'automatically pruned from local archive');
 		}
 
+console.log('$ done 3');
+
 		// 90% of prunings don't vacuum
 		if (Math.random() < 0.9) {
 			return;
 		}
 
+console.log('$ done 4');
+
 		await this.app.storage.executeDatabase('VACUUM', 'archive');
+
+console.log('$ done 5');
+
 	}
 
 	//////////////////////////
