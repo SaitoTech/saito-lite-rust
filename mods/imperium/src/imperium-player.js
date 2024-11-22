@@ -4129,6 +4129,8 @@ console.log(JSON.stringify(array_of_cards));
       selected_cost += parseInt(imperium_self.game.planets[array_of_cards[idx]].resources);
     }
 
+console.log(cost + " <= " + selected_cost);
+
     if (cost <= selected_cost) { 
       $('.cardchoice , .textchoice').off();
       mycallback(1); 

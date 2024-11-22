@@ -28,6 +28,7 @@ const SpaceCombatOverlay = require('./lib/overlays/space-combat');
 const GroundCombatOverlay = require('./lib/overlays/ground-combat');
 const BombardmentOverlay = require('./lib/overlays/bombardment');
 const AntiFighterBarrageOverlay = require('./lib/overlays/anti-fighter-barrage');
+const ZoomOverlay = require('./lib/overlays/zoom');
 const UnitTemplate = require('./lib/unit.template');
 const Unit = require('./lib/unit');
 const FactionBar = require('./lib/factionbar');
@@ -62,6 +63,7 @@ class Imperium extends GameTemplate {
     //
     //this.rules_overlay = new RulesOverlay(this.app, this);
     this.faction_sheet_overlay = new FactionSheetOverlay(this.app, this);
+    this.zoom_overlay = new ZoomOverlay(this.app, this);
     this.strategy_card_selection_overlay = new StrategyCardSelectionOverlay(this.app, this);
     this.strategy_card_overlay = new StrategyCardOverlay(this.app, this);
     this.combat_overlay = new CombatOverlay(this.app, this);
@@ -14396,18 +14398,12 @@ console.log("#");
 	      }
 	    }
 
-	    let notice = "Players still to move: <ul>";
+	    let notice = "<div class=\"status-message\">Players still to move: </div><ul>";
 	    let am_i_still_to_move = 0;
-console.log("STILL TO MOVE: " + JSON.stringify(still_to_move));
-console.log("PLAYERS: " + JSON.stringify(this.game.players));
 	    for (let i = 0; i < still_to_move.length; i++) {
 	      for (let z = 0; z < this.game.players.length; z++) {
 		if (this.game.players[z] === still_to_move[i]) {
 		  if (this.game.players[z] === this.getPublicKey()) { am_i_still_to_move = 1; }
-console.log("WHO - IDX " + z);
-console.log("WHO - PLAYER " + (z+1));
-console.log("WHO: " + this.game.players[z]);
-console.log("WHO: " + this.returnFaction(z+1));
 	          notice += '<li class="option">'+this.returnFaction((z+1))+'</li>';
 		}
 	      }
@@ -24641,6 +24637,8 @@ console.log(JSON.stringify(array_of_cards));
       selected_cost += parseInt(imperium_self.game.planets[array_of_cards[idx]].resources);
     }
 
+console.log(cost + " <= " + selected_cost);
+
     if (cost <= selected_cost) { 
       $('.cardchoice , .textchoice').off();
       mycallback(1); 
@@ -32064,7 +32062,6 @@ returnPlanetInformationHTML(planet) {
     powner = "nowner";
   }
 
-
   let html = '';
 
   if (ionp > 0) {
@@ -32083,7 +32080,6 @@ returnPlanetInformationHTML(planet) {
 //    html += '<div class="planet_tech_label tech_'+this.game.planets[planet].bonus+' bold">'+this.game.planets[planet].bonus+' TECH</div><div></div>';
 //  }
 
-//  if (ponp+sonp+ionp > 0 || this.game.planets[planet].bonus != "") {
   if (ponp+sonp+ionp > 0) {
     html = `<div class="sector_information_planetname ${powner}">${p.name}</div><div class="sector_information_planet_content">` + html + `</div>`;
   } else {
@@ -32225,12 +32221,6 @@ showSector(pid) {
   let sector_name = this.game.board[pid].tile;
   this.showSectorHighlight(sector_name);
 
-//  let hex_space = ".sector_graphics_space_" + pid;
-//  let hex_ground = ".sector_graphics_planet_" + pid;
-//
-//  $(hex_space).fadeOut();
-//  $(hex_ground).fadeIn();
-
 }
 hideSector(pid) {
 
@@ -32238,9 +32228,6 @@ hideSector(pid) {
   this.hideSectorHighlight(sector_name);
 
   let hex_space = ".sector_graphics_space_" + pid;
-//  let hex_ground = ".sector_graphics_planet_" + pid;
-//
-//  $(hex_ground).fadeOut();
   $(hex_space).fadeIn();
 
 }
@@ -32347,8 +32334,9 @@ updateLeaderboard() {
 
   showSectorHighlight(sector) { this.addSectorHighlight(sector); }
   hideSectorHighlight(sector) { this.removeSectorHighlight(sector); }
-  addSectorHighlight(sector) {
+  addSectorHighlight(sector, zoom_overlay=0) {
 
+    let orig_sector = sector;
     if (sector.indexOf("_") > -1) { sector = this.game.board[sector].tile; }
 
     let sys = this.returnSectorAndPlanets(sector);
@@ -32366,7 +32354,12 @@ updateLeaderboard() {
     if (this.game.sectors[sector].planets.length == 0) { return;}
 
     //handle writing for one or two planets
-    var info_tile = document.querySelector("#hex_info_" + sys.s.tile);
+    var info_tile;
+    if (zoom_overlay == 0) {
+      info_tile = document.querySelector("#hex_info_" + sys.s.tile);
+    } else {
+      info_tile = document.querySelector(".gameboard-clone .sector_"+orig_sector+" .hexIn .hexLink .hexInfo");
+    }
 
     let html = '';
 
@@ -32384,11 +32377,15 @@ updateLeaderboard() {
       info_tile.classList.add('two_planet');
     }
 
-    document.querySelector("#hexIn_" + sys.s.tile).classList.add('bi');
+    if (zoom_overlay == 0) {
+      document.querySelector("#hexIn_" + sys.s.tile).classList.add('bi');
+    } else {
+      document.querySelector(".gameboard-clone .sector_"+orig_sector+" .hexIn").classList.add('bi');
+    }
     } catch (err) {}
   }
 
-  removeSectorHighlight(sector) {
+  removeSectorHighlight(sector, zoom_overlay=0) {
     try {
     if (sector.indexOf("planet") == 0 || sector == 'new-byzantium') {
       sector = this.game.planets[sector].sector;
@@ -32398,9 +32395,11 @@ updateLeaderboard() {
     let divname = ".sector_graphics_space_" + sys.s.tile;
     $(divname).css('display', 'all');
 
-    //let divname = "#hex_space_" + sys.s.tile;
-    //$(divname).css('background-color', 'transparent');
-    document.querySelector("#hexIn_" + sys.s.tile).classList.remove('bi');
+    if (zoom_overlay == 0) {
+      document.querySelector("#hexIn_" + sys.s.tile).classList.remove('bi');
+    } else {
+      document.querySelector(".gameboard-clone .sector_"+sector+" .hexIn").classList.remove('bi');
+    }
     } catch (err) {}
   }
 

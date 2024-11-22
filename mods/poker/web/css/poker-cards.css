@@ -1,59 +1,41 @@
 .card {
 	position: relative;
-	width: min(18vw, 130px);
-	height: min(27.54vw, 199px);
-}
-
-.card.used {
-	/*border: 2px solid var(--saito-secondary);
-  background-color: var(--saito-secondary);
-  border-radius: 8px;*/
+	width: 15vw;
+	height: 21vw;
+	max-width: 190px;
+	max-height: 265px;
 }
 
 .card.not_used {
 	filter: grayscale(100%) brightness(0.55);
 }
 
-.cardfan {
-	max-height: 20vh;
-	max-width: 20vw;
-}
-
-.cardfan > .card:nth-child(1),
-.hand > .card:nth-child(1) {
-	transform: rotate(-15deg);
-	left: 0px;
-}
-
-.cardfan > .card:nth-child(2),
-.hand > .card:nth-child(2) {
-	transform: rotate(-5deg);
-	left: 3vh;
-}
-
-.cardfan .card {
-	width: min(20vw, 130px);
-}
-
-.cardFront,
-.cardBack {
-	transition: transform 0.5s ease;
-	backface-visibility: hidden;
-	-webkit-backface-visibility: hidden;
+.cardFront, .cardBack {
+    position: absolute; /* Ensure both sides overlap properly */
+    width: 100%;        /* Adjust as needed for your layout */
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transition: transform 0.5s ease;
 }
 
 .cardFront {
-	transform: rotateY(180deg);
+    transform: rotateY(0deg); /* Front side starts facing up */
 }
 
-.flipped .cardFront,
 .cardBack {
-	transform: rotateY(0deg);
+    transform: rotateY(180deg); /* Back side starts flipped */
+}
+
+.flipped .cardFront {
+    transform: rotateY(180deg); /* Front side flips to back */
 }
 
 .flipped .cardBack {
-	transform: rotateY(-180deg);
+    display: block;
+    transform: rotateY(0deg); /* Back side flips to front */
 }
+
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
 	.cardfan {
@@ -65,11 +47,3 @@
 }
 
 
-@media screen and (orientation: landscape) and (max-height: 600px) {
-
-	.card {
-		height: min(100px, 23vh);
-		width: min(65px, 15vh);
-	}
-
-}

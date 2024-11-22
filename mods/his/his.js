@@ -23894,6 +23894,8 @@ if (this.game.options.scenario != "is_testing") {
 
           this.game.queue.splice(qe, 1);
 
+	  if (!this.browser_active) { return 1; }
+
           let card = mv[1];
 	  let msg = "";
 	  let obj = "";

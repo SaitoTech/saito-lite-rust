@@ -1,0 +1,14 @@
+.stack img {
+  display: block;
+  width: 200px;
+  transform: rotate(3deg);
+}
+
+.stacklabel {
+  color: #fff;
+  font-size: 3rem;
+  font-family: sans;
+  text-align: center;
+  margin-top: -40px;
+}
+

@@ -1,0 +1,15 @@
+
+rm ../../web/saito/saito.js
+
+
+cat ./src/poker-init.js > ./poker.js
+cat ./src/poker-queue.js >> ./poker.js
+cat ./src/poker-display.js >> ./poker.js
+cat ./src/poker-state.js >> ./poker.js
+cat ./src/poker-stake.js >> ./poker.js
+cat ./src/poker-cards.js >> ./poker.js
+cat ./src/poker-player.js >> ./poker.js
+cat ./src/poker-end.js >> ./poker.js
+
+npm run compile $1
+

@@ -1,3 +1,28 @@
+
+.playerboxes {
+    display: flex;
+    flex-direction: row;
+    width: 95vw;
+    height: max-content;
+    justify-content: space-around;
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    top: 5rem;
+    left: 50%;
+    transform: translate(-50%, 0%);
+}
+
+.saito-user {
+  grid-template-columns: min-content 1fr;
+}
+.playerbox {
+    display: block;
+    height: 10rem;
+    width: 40rem;
+    background-color: red;
+}
+
 .other-player-hand {
 	position: absolute;
 }
@@ -26,7 +51,7 @@
 }
 
 .game-playerbox-head .saito-user .saito-userline {
-	grid-column: 2 / span 3;
+	grid-column: 2 / span 1;
 }
 
 .game-playerbox-manager.game-playerbox-seat-manager {
@@ -70,6 +95,22 @@
 
 .game-playerbox-head .saito-user > .saito-address {
 	color: white;
+<<<<<<< HEAD
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+
+}
+.game-playerbox-head .saito-user > .saito-address {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: inherit;
+    display: revert;
+=======
+>>>>>>> staging
 }
 
 .game-playerbox-graphics {
@@ -88,6 +129,12 @@
 
 .game-playerbox-seat-5, .game-playerbox-seat-6{
 	left: 1.5rem;
+}
+
+.plog-update {
+	width: 100%;
+	text-align: center;
+	margin-top: 1rem;
 }
 
 
