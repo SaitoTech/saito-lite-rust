@@ -254,8 +254,9 @@ class Post {
 			data = { text: text, tweet_id: this.tweet.tx.signature };
 
 			let qs =
-				this.container + `.tweet-${this.tweet.tx.signature} .tweet-body .tweet-main .tweet-text`;
+				`.tweet-manager > .tweet-${this.tweet.tx.signature} .tweet-body .tweet-main .tweet-text`;
 			let obj = document.querySelector(qs);
+			
 			if (obj) {
 				obj.innerHTML = text;
 			}
