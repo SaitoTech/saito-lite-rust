@@ -2060,15 +2060,33 @@ class RedSquare extends ModTemplate {
     let txmsg = tx.returnMessage();
 
     if (!txmsg.data?.tweet_id) {
+      console.warn("no tweet id to edit");
       return;
+    }
+
+    if (this.browser_active){
+      let edited_tweet = this.returnTweet(txmsg.data.tweet_id);
+
+      if (edited_tweet){
+        let orig_tx = edited_tweet.tx;
+        if (!orig_tx.optional){
+          orig_tx.optional = {};
+        }
+
+        orig_tx.optional.update_tx = tx.serialize_to_web(this.app);
+        let new_tweet = new Tweet(this.app, this, orig_tx, edited_tweet.container);
+
+        new_tweet.data_source = `onchain-edit-${tx.from[0].publicKey}`;
+        if (new_tweet.isRendered()){
+          new_tweet.rerenderControls(true);
+        }
+      }
     }
 
     await this.app.storage.loadTransactions(
       { sig: txmsg.data.tweet_id, field1: 'RedSquare' },
       async (txs) => {
         if (txs?.length) {
-          console.log('about to receive edit tx 3');
-
           //
           // only update first copy??
           //
@@ -2077,13 +2095,11 @@ class RedSquare extends ModTemplate {
           //
           // save the tx
           //
-          console.log('2 publickeys: ' + oldtx.from[0].publicKey + ' -- ' + tx.from[0].publicKey);
           if (oldtx.from[0].publicKey === tx.from[0].publicKey) {
             if (!oldtx.optional) {
               oldtx.optional = {};
             }
             oldtx.optional.update_tx = tx.serialize_to_web(this.app);
-            console.log('UPDATING OLD TRANSACTION with edit');
             await this.app.storage.updateTransaction(oldtx, {}, 'localhost');
           }
         }

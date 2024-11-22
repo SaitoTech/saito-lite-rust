@@ -1,5 +1,5 @@
 module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
-	let html = `
+  let html = `
 
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
@@ -28,16 +28,16 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content="${og_card.twitter}" />
   <meta name="twitter:creator" content="${og_card.twitter}" />
-  <meta name="twitter:title" content="${og_card.title}" />
+  <meta name="twitter:title" content="${app.browser.escapeHTML(og_card.title)}" />
   <meta name="twitter:url" content="${og_card.url}" />
   <meta name="twitter:description" content="${app.browser.escapeHTML(og_card.description)}" />
   <meta name="twitter:image" content="${og_card.image}" />
 
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="${og_card.title}" />
+  <meta property="og:title" content="${app.browser.escapeHTML(og_card.title)}" />
   <meta property="og:url" content="${og_card.url}" />
   <meta property="og:description" content="${app.browser.escapeHTML(og_card.description)}"/>
-  <meta property="og:site_name" content="${og_card.title}" />
+  <meta property="og:site_name" content="${app.browser.escapeHTML(og_card.title)}" />
   <meta property="og:image" content="${og_card.image}"/>
   <meta property="og:image:url" content="${og_card.image}"/>
   <meta property="og:image:secure_url" content="${og_card.image}"/>
@@ -72,28 +72,18 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
   </style>
 </head>
 
-<body>
-RedSquare is currently under debugging. We expect it to return in about 24 hours.
-
-<p></p>
-
-You can continue to use Saito at:
-
-<p></p>
-
-<a href="https://saito.io/arcade">Saito Arcade</a>
-</body>`;
-	html += `<script type="text/javascript">
+<body></body>`;
+  html += `<script type="text/javascript">
   if (!tweets) { 
     var tweets = [];
   }`;
 
-	for (let tweet of recent_tweets) {
-		html += ` tweets.push(\`${tweet}\`);`;
-	}
-	html += `</script>
+  for (let tweet of recent_tweets) {
+    html += ` tweets.push(\`${tweet}\`);`;
+  }
+  html += `</script>
 
 <script type="text/javascript" src="/saito/saito.js?build=${build_number}"></script>
 </html>`;
-	return html;
+  return html;
 };

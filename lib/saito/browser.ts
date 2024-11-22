@@ -2113,11 +2113,24 @@ class Browser {
 		if (typeof window !== 'undefined') {
 			let browser_self = this;
 
+			let mutationThrottle = null;
+			let mutatedNodes = [];
 			let mutationObserver = new MutationObserver(function (mutations) {
 				mutations.forEach(function (mutation) {
 					if (mutation.addedNodes.length > 0) {
-						browser_self.treatElements(mutation.addedNodes);
-						browser_self.treatIdentifiers(mutation.addedNodes);
+						for (let m of mutation.addedNodes){
+							mutatedNodes.push(m);
+						}
+						if (mutationThrottle){
+							clearTimeout(mutationThrottle);
+						}
+						mutationThrottle = setTimeout(()=> {
+							//console.log("treat mutated nodes: ", mutatedNodes.length);
+							browser_self.treatElements(mutatedNodes);
+							browser_self.treatIdentifiers(mutatedNodes);
+							mutatedNodes = [];
+							mutationThrottle = null;
+						}, 120);
 					}
 				});
 			});
