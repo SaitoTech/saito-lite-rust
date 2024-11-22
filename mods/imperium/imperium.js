@@ -23795,6 +23795,8 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
       player_build.warsuns = 0;
       imperium_self.production_overlay.reset();
       return;
+    } else {
+      imperium_self.production_overlay.update(stuff_to_build, calculated_total_cost);
     }
 
     //

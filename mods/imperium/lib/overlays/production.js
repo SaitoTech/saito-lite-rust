@@ -41,6 +41,16 @@ class ProductionOverlay {
 		this.attachEvents();
 	}
 
+	update(
+		stuff_to_build,
+		calculated_total_cost
+	) {
+		document.querySelector(".production-description .required").innerHTML = calculated_total_cost + "resource";
+		if (calculated_total_cost != 1) { 
+			document.querySelector(".production-description .required").innerHTML += "s";
+		}
+	}
+
 	reset() {
 		document.querySelectorAll('.production-table .unit').forEach((el) => {
 			let desc = el.querySelector('.unit-description');
@@ -49,6 +59,7 @@ class ProductionOverlay {
 			desc.innerHTML = name;
 			desc.classList.remove('highlight');
 		});
+		document.querySelector(".production-description .required").innerHTML = "0 resources";
 	}
 
 	attachEvents() {
