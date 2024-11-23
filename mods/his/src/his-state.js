@@ -1263,7 +1263,24 @@ if (this.game.state.scenario != "is_testing") {
         let leader = obj.leader;
 	let s = obj.space;
         let faction = obj.faction;
+
+	//	
+	// only return to original space if controlled
+	//
+	let fcs = this.returnFactionControllingSpace(s);
+
+	if (this.returnControllingPower(fcs) == this.returnControllingPower(faction) || this.areAllies(faction, fcs)) {
+	} else {
+	  let capitals = this.returnCapitals(faction);
+	  for (let z = 0; z < capitals.length; z++) {
+	    if (this.returnFactionControllingSpace(capitals[0]) == faction) {
+	      s = capitals[z];
+	    }
+	  }
+	}
+
 	this.restoreMilitaryLeader(leader, s, faction);
+
       }
     }
 

@@ -1406,7 +1406,7 @@ try {
     this.displayExploration();
     this.displayNewWorldBonuses();
 } catch (err) {
-console.log("ERROR SIAPLYING NEW WORLD STUFF: " + JSON.stringify(err));
+console.log("ERROR DISPLAYING NEW WORLD STUFF: " + JSON.stringify(err));
     }
   }
 

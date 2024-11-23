@@ -2184,6 +2184,8 @@ if (relief_siege == 1) {
       }
     }
 
+console.log("HERE: " + ops);
+
     //
     // cards left
     //
@@ -2427,6 +2429,7 @@ if (relief_siege == 1) {
               if (ops > 0) {
 	        this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
               }
+console.log("submitting with: " + ops_to_spend + " -- " + ops);
               menu[user_choice].fnct(this, this.game.player, selected_faction, ops_to_spend, ops);
               return;
 
@@ -2436,6 +2439,7 @@ if (relief_siege == 1) {
 
 	} // function
 
+console.log("sending to visual menu w/ ops: " + ops);
 	his_self.menu_overlay.render(menu, this.game.player, selected_faction, ops, attachEventsToMenuOptions);
 
 	attachEventsToMenuOptions();
@@ -2594,6 +2598,7 @@ if (relief_siege == 1) {
 
       } // attach events to menu options
 
+console.log("sending to visual menu2: " + ops);
       this.menu_overlay.render(menu, this.game.player, faction, ops, attachEventsToMenuOptions);
       attachEventsToMenuOptions();
 
@@ -3883,12 +3888,12 @@ does_units_to_move_have_unit = true; }
 //
 // duplicates playerMoveFormationInClear -- this is the function we hit
 // if we use the shortcut "continue move". the reason we need to duplicate
-// is that the handling of the OPS is slightly different.
+// is that the handling of the OPS is slightly different and there is a 
+// spacekey argument in the function call that doesn't exist otherwise.
 //
   async playerContinueToMoveFormationInClear(his_self, player, faction, spacekey, ops_to_spend, ops_remaining=0) {
 
     // BACK moves us to OPS menu
-    //his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
     his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining, ""); });
 
     //
@@ -6380,6 +6385,7 @@ does_units_to_move_have_unit = true; }
 		}
 	      }
 	    }
+
 	    if (attacker_squadrons_adjacent <= squadrons_protecting_space) {
 	      if (999 < squadrons_protecting_space) {
 	        alert("Space cannot be assaulted if protected by fleet in adjacent sea");
@@ -6411,6 +6417,7 @@ does_units_to_move_have_unit = true; }
         if (!his_self.isSpaceControlled(conquerable_spaces[i], faction) && his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction)) {
           if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1 || (faction == "ottoman" && his_self.game.state.events.roxelana == 1)) {
 	    if (!his_self.game.state.spaces_assaulted_this_turn.includes(conquerable_spaces[i])) {
+
 	      //
 	      // now check if there are squadrons in the port or sea protecting the town
 	      //
@@ -6422,9 +6429,9 @@ does_units_to_move_have_unit = true; }
 
 	      for (let y = 0; y < his_self.game.spaces[conquerable_spaces[i]].ports.length; y++) {
 	        let sea = his_self.game.spaces[conquerable_spaces[i]].ports[y];
-		for (let f in sea.units) {
+		for (let f in his_self.game.navalspaces[sea].units) {
 		  if (his_self.returnControllingPower(f) == his_self.returnControllingPower(faction)) {
-	            for (let z = 0; z < his_self.game.navalspaces[sea].units[faction].length; z++) {
+	            for (let z = 0; z < his_self.game.navalspaces[sea].units[f].length; z++) {
 		      let u = his_self.game.navalspaces[sea].units[faction][z];
 		      if (u.type == "squadron") { attacker_squadrons_adjacent++; }
 	            }
@@ -6512,8 +6519,17 @@ does_units_to_move_have_unit = true; }
     if (his_self.game.players.length == 2) {
       for (let i = 0; i < spaces_in_unrest.length; i++) {
         if (his_self.game.spaces[spaces_in_unrest[i]].religion == "protestant" && faction == "protestant") { return 1; }
-        if (faction == "protestant" && his_self.game.spaces[spaces_in_unrest[i]].home == "" && his_self.game.spaces[spaces_in_unrest[i]].language == "german" && his_self.game.state.events.schmalkaldic_league == 0) { return 1; }
+        if (faction == "protestant" && (his_self.game.spaces[spaces_in_unrest[i]].home != "independent" && his_self.game.spaces[spaces_in_unrest[i]].home == "") && his_self.game.spaces[spaces_in_unrest[i]].language == "german" && his_self.game.state.events.schmalkaldic_league == 0) { return 1; }
         if (his_self.game.spaces[spaces_in_unrest[i]].religion == "catholic" && faction == "papacy") { return 1; }
+      }
+    }
+
+    //
+    // protestants can always remove unrest in protestant home spaces pre-league (home = "" && language = "german")
+    //
+    if (faction == "protestant") {
+      for (let i = 0; i < spaces_in_unrest.length; i++) {
+        if ((his_self.game.spaces[spaces_in_unrest[i]].home != "independent" && his_self.game.spaces[spaces_in_unrest[i]].home == "") && his_self.game.spaces[spaces_in_unrest[i]].language == "german" && his_self.game.state.events.schmalkaldic_league == 0) { return 1; }
       }
     }
 
@@ -6652,7 +6668,14 @@ does_units_to_move_have_unit = true; }
     }
     return 0;
   }
-  async playerRemoveUnrest(his_self, player, faction) {
+  async playerRemoveUnrest(his_self, player, faction, ops_to_spend, ops_remaining=0) {
+
+console.log(ops_to_spend + " -- " + ops_remaining);
+
+    // BACK moves us to OPS menu
+    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });
+
+// TEST
 
     let spaces_in_unrest = his_self.returnSpacesInUnrest();
     let spaces_to_fix = [];
@@ -6665,46 +6688,44 @@ does_units_to_move_have_unit = true; }
       }
     } else {
 
-
       let adjacent_influence = his_self.returnSpacesWithAdjacentFactionInfantry(faction);
       let direct_influence = his_self.returnSpacesWithFactionInfantry(faction);
 
       for (let i = 0; i < spaces_in_unrest.length; i++) {
 
-        if (faction == "protestant" && his_self.game.state.events.schmalkaldic_league == 0 && his_self.game.spaces[spaces_in_unrest[i]].language == "german") { spaces_to_fix.push(spaces_in_unrest[i]); } else {
+        if (faction == "protestant" && his_self.game.state.events.schmalkaldic_league == 0 && his_self.game.spaces[spaces_in_unrest[i]].language == "german") {
+          spaces_to_fix.push(spaces_in_unrest[i]);
+        } else {
 
-        //
-        // i have regulars / infantry in this space
-        //
-	if (direct_influence.includes(spaces_in_unrest[i])) {
-	  spaces_to_fix.push(spaces_in_unrest[i]);
-	} else {
-	  if (adjacent_influence.includes(spaces_in_unrest[i])) {
-	    let neighbours = his_self.game.spaces[spaces_in_unrest[i]].neighbours;
-	    let pass = his_self.game.spaces[spaces_in_unrest[i]].pass;
-	    let any_violent_neighbours = false;
-	    for (let z = 0; z < neighbours.length; z++) {
-	      let number_of_hostiles = his_self.returnHostileLandUnitsInSpace(faction, neighbours[z]);
-	      if (number_of_hostiles > 0) {
-		if (!pass.includes(neighbours[z])) {
-		  any_violent_neighbours = true;
-		}
-	      } else {
-		if (his_self.game.spaces[neighbours[z]].unrest == true) {
-		  any_violent_neighbours = true;
-		} else {
-	          if (his_self.game.spaces[spaces_in_unrest[i]].pass.includes(neighbours[z])) {
-		    any_violent_neighbours = true;
-		  };
-		}
+          //
+          // i have regulars / infantry in this space
+          //
+	  if (direct_influence.includes(spaces_in_unrest[i])) {
+	    spaces_to_fix.push(spaces_in_unrest[i]);
+	  } else {
+	    if (adjacent_influence.includes(spaces_in_unrest[i])) {
+
+	      let neighbours = his_self.game.spaces[spaces_in_unrest[i]].neighbours;
+	      let pass = his_self.game.spaces[spaces_in_unrest[i]].pass;
+	      let any_violent_neighbours = false;
+
+	      for (let z = 0; z < neighbours.length; z++) {
+
+	        if (!his_self.game.spaces[spaces_in_unrest[i]].pass.includes(neighbours[z])) {	
+	          let number_of_hostiles = his_self.returnHostileLandUnitsInSpace(faction, neighbours[z]);
+	          if (number_of_hostiles > 0) {
+	  	    if (!pass.includes(neighbours[z])) {
+		      any_violent_neighbours = true;
+		    }
+	          }
+	        }
 	      }
-	    }
-	    if (any_violent_neighbours == false) {
-	      spaces_to_fix.push(spaces_in_unrest[i]);
+	      if (any_violent_neighbours == false) {
+	        spaces_to_fix.push(spaces_in_unrest[i]);
+	      }
 	    }
 	  }
 	}
-      }
       }
     }
 
@@ -6855,6 +6876,7 @@ does_units_to_move_have_unit = true; }
       },
 
       function(destination_spacekey) {
+	his_self.updateStatus("Controlling Space...");
 	his_self.addMove("pacify\t"+faction+"\t"+destination_spacekey);
 	his_self.endTurn();
       },

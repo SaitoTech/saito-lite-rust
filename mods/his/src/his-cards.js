@@ -10764,7 +10764,11 @@ console.log("we have removed philip and redisplayed the space...");
 	//
 	// otherwise we have a field battle
 	//
- 	his_self.game.spaces["rome"].units[fact] = his_self.game.spaces[spacekey].units[fact];
+	for (let f in his_self.game.spaces[spacekey].units) {
+	  if (f == fact || his_self.returnControllingPower(f) == his_self.returnControllingPower(fact)) {
+	    his_self.game.spaces["rome"].units[f] = his_self.game.spaces[spacekey].units[f];
+	  }
+	}
  	his_self.game.spaces[spacekey].units[fact] = [];
 	his_self.game.queue.push("post_sack_of_rome_retreat\t"+fact+"\t"+spacekey);
 	his_self.game.queue.push("field_battle\trome\t"+fact);
@@ -10778,9 +10782,14 @@ console.log("we have removed philip and redisplayed the space...");
 
           let faction = mv[1];
           let spacekey = mv[2];
+	  let power_controlling_rome = his_self.returnFactionControllingSpace("rome");
 
- 	  his_self.game.spaces[spacekey].units[faction] = his_self.game.spaces["rome"].units[faction];
- 	  if (spacekey != "rome") { his_self.game.spaces["rome"].units[faction] = []; }
+	  for (let f in his_self.game.spaces["rome"].units) {
+	    if (f != power_controlling_rome && his_self.returnControllingPower(f) != his_self.returnControllingPower(power_controlling_rome)) {
+ 	      his_self.game.spaces[spacekey].units[f] = his_self.game.spaces["rome"].units[f];
+ 	      if (spacekey != "rome") { his_self.game.spaces["rome"].units[faction] = []; }
+	    }
+	  }
 	 
 	  //
 	  // 2P game give cards to Protestants

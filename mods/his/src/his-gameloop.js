@@ -4245,7 +4245,7 @@ console.log("----------------------------");
 	          for (let zz = 0; zz < neighbours.length; zz++) {
 		    if (neighbours[zz] != spacekey) {
 	              let fluis = this.returnFactionLandUnitsInSpace(ap, neighbours[zz]);
-	              if (fluis > 0) {
+	              if (fluis > 0 && this.game.spaces[neighbours[zz]].unrest != 1) {
 		        if (!already_asked.includes(his_self.returnPlayerCommandingFaction(ap)) && !already_asked.includes(neighbours[zz])) {
 	                  this.game.queue.push("player_evaluate_interception_opportunity\t"+faction+"\t"+spacekey+"\t"+"0"+"\t"+ap+"\t"+neighbours[zz]);
 	  	          already_asked.push(neighbours[zz]);
@@ -6012,28 +6012,38 @@ try {
           // if there is no-one here but the attacker, we want to stop the field battle 
 	  // because it is pointless...
           //
-          let fluis = 0;
-          for (let f in this.game.spaces[spacekey].units) {
-            if (f !== attacker && !this.areAllies(this.game.state.active_faction, f, 1)) {
-              fluis += this.returnFactionLandUnitsInSpace(f, spacekey);
+
+	  if (this.game.state.events.sack_of_rome == 1) {
+
+	    //
+	    // 
+	    //
+
+	  } else {
+
+            let fluis = 0;
+            for (let f in this.game.spaces[spacekey].units) {
+              if (f !== attacker && !this.areAllies(this.game.state.active_faction, f, 1)) {
+                fluis += this.returnFactionLandUnitsInSpace(f, spacekey);
+              }
             }
-          }
 
-          if (fluis == 0) { 
+            if (fluis == 0) { 
 
-	    //
-	    // if key or fortress or electorate, we may need to besiege first
-	    //
-	    if (this.game.spaces[spacekey].type == "fortress" || this.game.spaces[spacekey].type == "electorate" || this.game.spaces[spacekey].type == "key") {
-	      let fac = this.returnFactionControllingSpace(spacekey);
-	      if (fac != attacker) {
-		this.game.spaces[spacekey].besieged = 2;
-                this.game.spaces[spacekey].besieged_factions.push(fac);
+	      //
+	      // if key or fortress or electorate, we may need to besiege first
+	      //
+	      if (this.game.spaces[spacekey].type == "fortress" || this.game.spaces[spacekey].type == "electorate" || this.game.spaces[spacekey].type == "key") {
+	        let fac = this.returnFactionControllingSpace(spacekey);
+	        if (fac != attacker) {
+	    	  this.game.spaces[spacekey].besieged = 2;
+                  this.game.spaces[spacekey].besieged_factions.push(fac);
+	        }
 	      }
-	    }
 
-	    this.displaySpace(spacekey);
-	    return 1; 
+	      this.displaySpace(spacekey);
+	      return 1; 
+	    }
 
 	  }
 
@@ -6249,7 +6259,7 @@ try {
  	      if (defender_units.length == 1) { no_defender_units = true; }
 	    }
 	  }
-	  if (no_defender_units == true && (space.type == "electorate" || space.type == "key" || this.isSpaceFortified(space.key) || space.type == "fortress")) {
+	  if (!this.game.state.sack_of_rome != 1 && no_defender_units == true && (space.type == "electorate" || space.type == "key" || this.isSpaceFortified(space.key) || space.type == "fortress")) {
 	    if (space.besieged != 1) { // not if already besieged
 	      space.besieged = 2;
 	      this.updateLog(space.name + " put under siege.");
@@ -6261,7 +6271,7 @@ try {
 	  //
 	  // no unbesieged defender units
 	  //
-	  if (unbesieged_defender_units == 0) {
+	  if (!this.game.state.sack_of_rome != 1 && unbesieged_defender_units == 0) {
 	    this.displaySpace(space.key);
 	    return 1;
 	  }
@@ -6272,7 +6282,7 @@ try {
 	  // immediately since there is no battle at all. note that we have already handled
 	  // edge-cases with siege/assault above.
 	  //
-	  if (no_defender_units == true) {
+	  if (!this.game.state.sack_of_rome != 1 && no_defender_units == true) {
 	    this.displaySpace(space.key);
 	    return 1;	    
 	  }
