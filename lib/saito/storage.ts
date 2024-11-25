@@ -67,7 +67,8 @@ class Storage {
 			}
 		}
 
-		await this.resetOptions();
+		const response = await fetch(`/options`);
+		this.app.options = await response.json();
 	}
 
 	returnClientOptions(): string {
