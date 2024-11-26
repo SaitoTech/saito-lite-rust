@@ -15,7 +15,7 @@ this.importStrategyCard("trade", {
       imperium_self.addMove("purchase\t" + imperium_self.game.player + "\tcommodities\t" + imperium_self.game.state.players_info[imperium_self.game.player - 1].commodity_limit);
 
       let factions = imperium_self.returnFactions();
-      let html = '<p>You will receive 3 trade goods and ' + imperium_self.game.state.players_info[imperium_self.game.player - 1].commodity_limit + ' commodities. You may choose to replenish the commodities of any other players: </p><ul>';
+      let html = '<p class="status-message">Replenish commodities for any other player?</p><ul>';
       for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
         if (i != imperium_self.game.player - 1) {
           html += '<li class="option" id="' + i + '">' + factions[imperium_self.game.state.players_info[i].faction].name + '</li>';
