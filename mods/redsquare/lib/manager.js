@@ -170,13 +170,15 @@ class TweetManager {
 		// tweets //
 		////////////
 		if (this.mode == 'tweets') {
+			// Do curation before rendering...
+			this.mod.reset();
+
 			if (holder) {
 				let kids = holder.children;
 				managerElem.replaceChildren(...kids);
 			}
 
-			for (let i = 0; i < this.mod.tweets.length; i++) {
-				let tweet = this.mod.tweets[i];
+			for (let tweet of this.mod.curated_tweets) {
 				if (!tweet.isRendered()) {
 					tweet.renderWithCriticalChild();
 				}
@@ -273,9 +275,8 @@ class TweetManager {
 
 		if (tx_count) {
 			this.hideLoader();
-
-			for (let i = 0; i < this.mod.tweets.length; i++) {
-				let tweet = this.mod.tweets[i];
+			this.mod.reset();
+			for (let tweet of this.mod.curated_tweets) {
 				if (!tweet.isRendered()) {
 					tweet.renderWithCriticalChild();
 				}
@@ -627,7 +628,7 @@ class TweetManager {
 					this.showLoader();
 					this.mod.reset();
 					this.clearFeed();
-					this.fetchTweets();
+					this.render();
 				}
 			}
 			if (document.getElementById("for-you")){
@@ -639,7 +640,7 @@ class TweetManager {
 					this.showLoader();
 					this.mod.reset();
 					this.clearFeed();
-					this.fetchTweets();
+					this.render();
 				}
 			}
 

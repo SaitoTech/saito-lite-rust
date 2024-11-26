@@ -111,8 +111,8 @@ class TweetMenu {
 
 		//remove from tweet list!
 	    for (let i = 0; i < this.mod.tweets.length; i++) {
-	        if (this.mod.tweets[i].tx.signature === this.tweet.tx.signature) {
-    	      this.mod.tweets.splice(i, 1);
+	        if (this.mod.curated_tweets[i].tx.signature === this.tweet.tx.signature) {
+    	      this.mod.curated_tweets.splice(i, 1);
         	  return;
         	}
       	}
