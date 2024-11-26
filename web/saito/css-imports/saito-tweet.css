@@ -186,9 +186,11 @@
 }
 
 .tweet-body li {
-  list-style-type: disc;
   list-style-position: inside;
-  line-height: 1rem;
+  line-height: 2rem;
+  list-style-type: disc;
+  text-indent: -16px;
+  padding-left: 22px;
 }
 
 .tweet-body h1,
