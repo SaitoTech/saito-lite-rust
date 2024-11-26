@@ -22,6 +22,10 @@
   padding-top: 0px;
 }
 
+.tweet-main ul li {
+  line-height: 2rem;
+}
+
 .tweet.has-reply {
   border-bottom: none;
 }
