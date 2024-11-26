@@ -460,13 +460,15 @@ class RedSquare extends ModTemplate {
     if (this.browser_active) {
       try {
         this.stun = app.modules.returnFirstRespondTo('peer-manager');
-        this.app.connection.on('relay-is-online', (pkey) => {
-          for (let i = 0; i < this.following.length; i++) {
-            if (this.following[i].publicKey === pkey) {
-              this.stun.createPeerConnection(pkey);
+        if (this?.stun){
+          this.app.connection.on('relay-is-online', (pkey) => {
+            for (let i = 0; i < this.following.length; i++) {
+              if (this.following[i].publicKey === pkey) {
+                this.stun.createPeerConnection(pkey);
+              }
             }
-          }
-        });
+          });
+        }
       } catch (err) {
         console.warn('Stun not available for P2P Redsquare');
       }
@@ -1699,6 +1701,8 @@ class RedSquare extends ModTemplate {
 
       this.curated_tweets.push(tweet);
     }
+
+    console.log(`RS tweets filtered -- ${this.curated_tweets.length} acceptable out of ${this.tweets.length} total`);
 
   }
 
