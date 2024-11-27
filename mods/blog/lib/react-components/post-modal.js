@@ -1,15 +1,17 @@
 import React, { useState, useCallback } from 'react';
-import DOMPurify from 'dompurify';
 import { marked } from 'marked';
-
-
+import DOMPurify from 'dompurify';
 
 marked.setOptions({
   gfm: true,
   breaks: true,
   headerIds: true,
-  mangle: false
+  mangle: false,
+  smartLists: true,
+  smartypants: true,
+  tables: true  // explicitly enable tables
 });
+
 
 const PostModal = ({ onClose, onSubmit }) => {
   const [formData, setFormData] = useState({

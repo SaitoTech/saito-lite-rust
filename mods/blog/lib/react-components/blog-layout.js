@@ -18,7 +18,7 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
     const [showPostModal, setShowPostModal] = useState(false);
     const [editingPost, setEditingPost] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [posts, setPosts] = useState([]);
+    const [posts, setPosts] = useState(samplePosts)
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const latestPostRef = useRef(null);
 

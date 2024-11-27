@@ -14,8 +14,12 @@ const BlogPost = ({app, mod, post, publicKey}) => {
                 <div className="post-content-body">
                 <header className="post-header">
                         <h2 className="post-title">{post.title}</h2>
+
+                        <p className='byline'> 
+                        Published by <span style={{color: "var(--saito-primary)"}}>StackTooDeep@saito</span> on November 23, 2024
+                    </p>
                     </header>
-                    <div className="post-meta-header">        
+                    {/* <div className="post-meta-header">        
                         <div className={`saito-user saito-user-${publicKey}`}
                             id={`saito-user-${post.publicKey}`}
                             data-id={post.publicKey}
@@ -37,7 +41,9 @@ const BlogPost = ({app, mod, post, publicKey}) => {
                         <div className="engagement-stat" onClick={() => copyPostLinkToClipboard(post)}>
                             <i className='fa fa-arrow-up-from-bracket'></i>
                         </div>
-                    </div>
+                    </div> */}
+
+                    
 
                   
                     

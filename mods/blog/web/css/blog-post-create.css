@@ -17,6 +17,28 @@
     -ms-overflow-style: none; 
     scrollbar-width: none;   
   }
+
+.markdown-preview table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+}
+
+.markdown-preview th,
+.markdown-preview td {
+  border: 1px solid var(--saito-border-color);
+  padding: 8px;
+  text-align: left;
+}
+
+.markdown-preview th {
+  background-color: var(--saito-background-color-alt);
+  font-weight: bold;
+}
+
+.markdown-preview tr:nth-child(even) {
+  background-color: var(--saito-background-color-light);
+}
   
   .modal-header {
     display: flex;
