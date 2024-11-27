@@ -34,7 +34,7 @@ class TweetManager {
 					if (entry.isIntersecting) {
 						console.log('IntersectionObserver');
 
-						if (this.mode === 'tweet') {
+						if (this.mode === 'tweet' || this.mode == 'loading') {
 							return;
 						}
 
@@ -105,6 +105,11 @@ class TweetManager {
 			document.querySelector('.highlight-tweet').classList.remove('highlight-tweet');
 		}
 
+		//
+		// Stop observering while we rebuild the page
+		//
+		this.intersectionObserver.disconnect();
+
 		if (this.mode === "tweets" && new_mode !== "tweets"){
 	      this.app.connection.emit("saito-header-replace-logo", (e) => {
 	        this.app.connection.emit("redsquare-home-render-request");
@@ -122,10 +127,6 @@ class TweetManager {
 
 		let myqs = `.tweet-manager`;
 
-		//
-		// Stop observering while we rebuild the page
-		//
-		this.intersectionObserver.disconnect();
 		this.profile.remove();
 
 		if (!document.querySelector(myqs)) {
@@ -252,11 +253,13 @@ class TweetManager {
 
 	fetchTweets(){
 		this.intersectionObserver.disconnect();
-		let numActivePeers = this.mod.loadTweets(
+
+		this.numActivePeers = this.mod.loadTweets(
 			'earlier',
 			this.insertOlderTweets.bind(this)
 		);
-		if (!numActivePeers) {
+
+		if (!this.numActivePeers) {
 			console.log('Try again');
 			this.mod.tweets_earliest_ts--;
 			numActivePeers = this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this));
@@ -268,6 +271,8 @@ class TweetManager {
 	}
 
 	insertOlderTweets(tx_count, peer = null) {
+
+		this.numActivePeers--;
 		if (this.mode !== 'tweets') {
 			console.log('Not on main feed anymore, currently on: ' + this.mode);
 			return;
@@ -283,6 +288,7 @@ class TweetManager {
 			}
 
 			this.intersectionObserver.observe(document.getElementById('intersection-observer-trigger'));
+			return;
 
 		} else if (peer?.tweets_earliest_ts) {
 			console.log(
@@ -291,7 +297,7 @@ class TweetManager {
 				)}, keep querying...`
 			);
 			this.mod.tweets_earliest_ts--;
-			this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this), peer);
+			this.numActivePeers += this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this), peer);
 		} else {
 			//If all peers have returned 0, then clear feed...
 
@@ -314,10 +320,7 @@ class TweetManager {
 				}
 				this.intersectionObserver.disconnect();
 				console.log("Out of content");
-			} else {
-				this.fetchTweets();
-				console.log('Requery all peers');
-			}
+			} 
 		}
 	}
 
