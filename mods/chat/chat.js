@@ -262,6 +262,10 @@ class Chat extends ModTemplate {
         console.log('Chat: onPeerServiceUp', service.service);
       }
 
+      this.loading = 0;
+
+      /* We shouldn't need to fall back to archive to retrieve offline messages anymore... maybe
+
       this.loading = this.groups.length;
 
       for (let group of this.groups) {
@@ -287,7 +291,7 @@ class Chat extends ModTemplate {
             }
           );
         }
-      }
+      }*/
     }
 
     //
