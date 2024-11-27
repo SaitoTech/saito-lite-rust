@@ -216,6 +216,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 			// console.log("buffer length : " + buffer.byteLength, buffer);
 			newtx.deserialize(buffer);
 			newtx.unpackData();
+			console.debug("processing peer tx : ", newtx.msg);
 		} catch (error) {
 			console.error(error);
 			newtx.msg = buffer;
@@ -347,9 +348,10 @@ class Server {
 		});
 		wss.on('connection', (socket: any, request: any) => {
 			const { pathname } = parse(request.url);
-			console.log('connection established');
+			console.log('connection established : ', (request.headers['x-forwarded-for']||request.socket.remoteAddress));
 			S.getLibInstance().get_next_peer_index()
 				.then((peer_index: bigint) => {
+					console.log("adding new peer : " + (request.headers['x-forwarded-for']||request.socket.remoteAddress) + " as " + peer_index);
 					S.getInstance().addNewSocket(socket, peer_index);
 
 					socket.on('message', (buffer: any) => {

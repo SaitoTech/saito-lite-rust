@@ -215,6 +215,9 @@ class RedSquareMain {
             document.getElementById("saito-header").style.padding = "0";
             triggered = true;
           }
+
+          is_running = "down";
+
         } else if (st < lastScrollTop) {
           // upscroll code
           if (triggered) {
@@ -233,11 +236,11 @@ class RedSquareMain {
       
         setTimeout(()=> {
           is_running = false;
-          if (scrollableElement.scrollTop < 70 && triggered){
+          if (scrollableElement.scrollTop < 50 && triggered){
             document.getElementById("saito-header").removeAttribute("style");
             triggered = false;
           }
-        }, 150);
+        }, 75);
       });
     }
   }

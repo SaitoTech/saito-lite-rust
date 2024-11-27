@@ -74,6 +74,7 @@ class RedSquare extends ModTemplate {
     this.debug = true;
 
     this.tweets = [];
+    this.curated_tweets = [];
     this.tweets_sigs_hmap = {};
     this.unknown_children = [];
 
@@ -414,9 +415,9 @@ class RedSquare extends ModTemplate {
       // refresh cached tweets when an address is blacklisted
       //
       this.app.connection.on('saito-blacklist', async (obj) => {
-	setTimeout(async () => {
+	      setTimeout(async () => {
           this.cached_recent_tweets = await this.cacheRecentTweets();
-	}, 4000);
+	      }, 4000);
       });
 
       return;
@@ -459,17 +460,29 @@ class RedSquare extends ModTemplate {
     if (this.browser_active) {
       try {
         this.stun = app.modules.returnFirstRespondTo('peer-manager');
-        this.app.connection.on('relay-is-online', (pkey) => {
-          for (let i = 0; i < this.following.length; i++) {
-            if (this.following[i].publicKey === pkey) {
-              this.stun.createPeerConnection(pkey);
+        if (this?.stun){
+          this.app.connection.on('relay-is-online', (pkey) => {
+            for (let i = 0; i < this.following.length; i++) {
+              if (this.following[i].publicKey === pkey) {
+                this.stun.createPeerConnection(pkey);
+              }
             }
-          }
-        });
+          });
+        }
       } catch (err) {
         console.warn('Stun not available for P2P Redsquare');
       }
     }
+
+    if (this.curated) {
+      this.app.connection.on("registry-cache-loaded", ()=> {
+        let ct1 = this.curated_tweets.length;
+        this.reset();
+        let ct2 = this.curated_tweets.length;
+        this.app.connection.emit('redsquare-home-postcache-render-request', ct2-ct1);
+      });
+    }
+
   }
 
   isFollowing(key) {
@@ -879,8 +892,7 @@ class RedSquare extends ModTemplate {
       if (txmsg.request === 'follow') {
         if (this.app.BROWSER) {
           if (tx.isFrom(this.publicKey)) {
-            this.addPseudoPeer(tx.to[0].publicKey);
-            this.saveOptions();
+            console.log("RS follow transaction received onchain -- success");
           } else if (tx.isTo(this.publicKey)) {
             if (!this.app.options.redsquare.followers) {
               this.app.options.redsquare.followers = [];
@@ -1408,7 +1420,7 @@ class RedSquare extends ModTemplate {
     // and received on chain... we just nope out and all the niceties such as infinite scrolling
     // should function normally...
     //
-    if (this?.bizarro){
+    /*if (this?.bizarro){
       if (this.app.modules.moderate(tx, this.name) != -1) {
         console.log("Bizarro -- Skip normal tweet");
         return 0;
@@ -1417,7 +1429,7 @@ class RedSquare extends ModTemplate {
       if (this.app.modules.moderate(tx, this.name) == -1) {
         return 0;
       }
-    }
+    }*/
 
     this.addNotification(tx);
 
@@ -1673,22 +1685,25 @@ class RedSquare extends ModTemplate {
   }
 
   reset(){
-    this.tweets = [];
-    this.tweets_sigs_hmap = {};
-    this.tweets_earliest_ts = new Date().getTime();
+    this.curated_tweets = [];
 
-    if (!this.ignoreCentralServer && window?.tweets?.length) {
-      for (let z = 0; z < window.tweets.length; z++) {
-        let newtx = new Transaction();
-        newtx.deserialize_from_web(this.app, window.tweets[z]);
-        this.addTweet(newtx, 'server_cache');
+    for (let tweet of this.tweets){
+      if (this?.bizarro){
+        if (this.app.modules.moderate(tweet.tx, this.name) != -1) {
+          console.log("Bizarro -- Skip normal tweet");
+          continue;
+        }
+      }else{
+        if (this.app.modules.moderate(tweet.tx, this.name) == -1) {
+          continue;
+        }
       }
+
+      this.curated_tweets.push(tweet);
     }
 
-    for (let peer of this.peers){
-      peer.tweets_earliest_ts = this.tweets_earliest_ts;
-      peer.tweets_latest_ts = 0;
-    }
+    console.log(`RS tweets filtered -- ${this.curated_tweets.length} acceptable out of ${this.tweets.length} total`);
+
   }
 
   returnNotification(tweet_sig = null) {
@@ -1753,6 +1768,9 @@ class RedSquare extends ModTemplate {
       request: 'follow',
       data: { key }
     };
+
+    this.addPseudoPeer(key);
+    this.saveOptions();
 
     await newtx.sign();
     await this.app.network.propagateTransaction(newtx);
@@ -2341,14 +2359,14 @@ class RedSquare extends ModTemplate {
             'localhost'
           );
         }
-      } else {
+      } /*else {
         if (this.app.modules.moderate(tx, this.name) != -1) {
           this.cached_recent_tweets.push(tx.serialize_to_web(this.app));
         }
         if (this.cached_recent_tweets.length > 10) {
           this.cached_recent_tweets.shift();
         }
-      }
+      }*/
     } catch (err) {
       console.log('ERROR in receiveTweetsTransaction() in RedSquare: ' + err);
     }
