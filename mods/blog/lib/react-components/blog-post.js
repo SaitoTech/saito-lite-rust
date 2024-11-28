@@ -16,7 +16,7 @@ const BlogPost = ({app, mod, post, publicKey}) => {
                         <h2 className="post-title">{post.title}</h2>
 
                         <p className='byline'> 
-                        Published by <span style={{color: "var(--saito-primary)"}}>StackTooDeep@saito</span> on November 23, 2024
+                        Published by <span style={{color: "var(--saito-primary)"}}>{app.keychain.returnUsername(post.publicKey)}</span> on November 23, 2024
                     </p>
                     </header>
                     {/* <div className="post-meta-header">        

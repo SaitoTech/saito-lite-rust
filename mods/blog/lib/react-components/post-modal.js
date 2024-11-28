@@ -1,35 +1,22 @@
-import React, { useState, useCallback } from 'react';
+
+
+import React, { useState } from 'react';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-
-marked.setOptions({
-  gfm: true,
-  breaks: true,
-  headerIds: true,
-  mangle: false,
-  smartLists: true,
-  smartypants: true,
-  tables: true  // explicitly enable tables
-});
-
 
 const PostModal = ({ onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    metaDescription: '',
     tags: '',
-    images: []
+    images: [],
+    publisher: ""
   });
   
   const [isDragging, setIsDragging] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const parseMarkdown = (content) => {
-    return DOMPurify.sanitize(marked.parse(content));
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,27 +26,26 @@ const PostModal = ({ onClose, onSubmit }) => {
     }));
   };
 
+  const handleImageUpload = async (file) => {
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+        setFormData(prev => ({
+          ...prev,
+          images: [file]
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     
     try {
-      const submitData = new FormData();
-      
-      Object.keys(formData).forEach(key => {
-        if (key === 'images') {
-          formData.images.forEach(image => {
-            submitData.append('images', image);
-          });
-        } else if (key === 'tags') {
-          const tagsArray = formData.tags.split(',').map(tag => tag.trim());
-          submitData.append('tags', JSON.stringify(tagsArray));
-        } else {
-          submitData.append(key, formData[key]);
-        }
-      });
-
-      let {title, images, content, tags} = formData;
+      let {title, images, content, tags, publisher} = formData;
         
       let base64Image = null;
       if (images.length > 0) {
@@ -76,7 +62,7 @@ const PostModal = ({ onClose, onSubmit }) => {
       
       const tagsArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag);
       
-      await onSubmit({title, content, image: base64Image, tags: tagsArray});
+      await onSubmit({title, content, image: base64Image, tags: tagsArray, publisher});
       onClose();
     } catch (error) {
       console.error('Error submitting post:', error);
@@ -85,193 +71,148 @@ const PostModal = ({ onClose, onSubmit }) => {
     }
   };
 
-  const handleDragEnter = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  }, []);
-
-  const handleDragOver = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-  }, []);
-
-  const handleDrop = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-
-    const files = [...e.dataTransfer.files];
-    const imageFiles = files.filter(file => file.type.startsWith('image/'));
-    
-    if (imageFiles.length > 0) {
-      setFormData(prev => ({
-        ...prev,
-        images: [...prev.images, ...imageFiles]
-      }));
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(imageFiles[0]);
-    }
-  }, []);
-
-  const handleFileInput = useCallback((e) => {
-    const files = [...e.target.files];
-    if (files.length > 0) {
-      setFormData(prev => ({
-        ...prev,
-        images: [...prev.images, ...files]
-      }));
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(files[0]);
-    }
-  }, []);
-
-  const removeImage = useCallback((index) => {
-    setFormData(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index)
-    }));
-    if (formData.images.length <= 1) {
-      setImagePreview(null);
-    }
-  }, [formData.images.length]);
-
   return (
-    <div className="modal-container">
-      <div className="modal-header">
-        <h1 className="modal-title">Create New Blog Post</h1>
-      </div>
+    <div className="layout modal-layout">
+      <div className="left-column">
+        <div className="filter-container">
+          <label className="filter-label">Tags</label>
+          <input
+            type="text"
+            name="tags"
+            value={formData.tags}
+            onChange={handleChange}
+            placeholder="Add tags separated by commas"
+          />
+        </div>
+
+        <div className="filter-container">
+          <label className="filter-label">Preview Image</label>
+          <div 
+            className={`image-upload-area ${isDragging ? 'dragging' : ''}`}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setIsDragging(true);
+            }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setIsDragging(false);
+              const file = e.dataTransfer.files[0];
+              if (file && file.type.startsWith('image/')) {
+                handleImageUpload(file);
+              }
+            }}
+          >
+            {imagePreview ? (
+              <div className="image-preview">
+                <img src={imagePreview} alt="Preview" />
+                <button 
+                  type="button"
+                  className="remove-image"
+                  onClick={() => {
+                    setImagePreview(null);
+                    setFormData(prev => ({ ...prev, images: [] }));
+                  }}
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <>
+                <p>Drag and drop image here or</p>
+                <input
+                  type="file"
+                  id="fileInput"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      handleImageUpload(file);
+                    }
+                  }}
+                  className="file-input"
+                />
+                <label htmlFor="fileInput" className="file-input-label">
+                  Choose File
+                </label>
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className='filter-container'>
+          <label className="filter-label">Publisher</label>
+     
+          <input onChange={handleChange} name='publisher' value={formData.publisher} placeholder='Public key of publisher' type='text' />
+
+          </div>
+
+        <div className="left-column-buttons">
+          <div className='filter-container'>
+          <label className="filter-label">Action</label>
+          <button 
+            type="button" 
+            className="btn-preview"
+            onClick={() => setShowPreview(!showPreview)}
+          >
+            {showPreview ? 'Edit' : 'Preview'}
+          </button>
+          <button type="button" className="btn-cancel" onClick={onClose}>
+              Cancel
+            </button>
+            <button 
+              onClick={handleSubmit}
+              type="submit" 
+              className="btn-publish"
+              disabled={!formData.title || !formData.content || isSubmitting}
+            >
+              {isSubmitting ? 'Publishing...' : 'Publish'}
+            </button>
+          
+          <div className="action-buttons">
+          
+          </div>
+
+          </div>
       
-      <div className="modal-content">
+        </div>
+      </div>
+
+      <div className="center-column">
         <form onSubmit={handleSubmit} className="editor-form">
           <div className="form-group">
-            <label htmlFor="title">Title</label>
             <input
               type="text"
-              id="title"
               name="title"
-              placeholder="Enter your blog title"
               value={formData.title}
               onChange={handleChange}
+              placeholder="Enter your blog title"
+              className="editor-title"
               required
             />
           </div>
 
           {!showPreview ? (
             <div className="form-group">
-              <label htmlFor="content">Content Body (Markdown Supported)</label>
               <textarea
-                id="content"
                 name="content"
-                placeholder="Write your blog content here..."
                 value={formData.content}
                 onChange={handleChange}
+                placeholder="Write your blog content here..."
+                className="editor-content"
                 required
               />
             </div>
           ) : (
             <div className="form-group">
-              <label>Content Preview</label>
               <div 
                 className="markdown-preview"
-                style={{
-                  border: '1px solid var(--saito-border-color)',
-                  borderRadius: '6px',
-                  padding: '12px',
-                  minHeight: '200px',
-                  background: 'var(--saito-background-color)',
-                  overflow: 'auto'
+                dangerouslySetInnerHTML={{ 
+                  __html: DOMPurify.sanitize(marked.parse(formData.content)) 
                 }}
-                dangerouslySetInnerHTML={{ __html: parseMarkdown(formData.content) }}
               />
             </div>
           )}
-
-          <div className="form-group">
-            <label htmlFor="tags">Tags</label>
-            <input
-              type="text"
-              id="tags"
-              name="tags"
-              placeholder="Add tags separated by commas"
-              value={formData.tags}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Preview Image</label>
-            <div 
-              className={`image-upload-area ${isDragging ? 'dragging' : ''}`}
-              onDragEnter={handleDragEnter}
-              onDragLeave={handleDragLeave}
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-            >
-              {imagePreview ? (
-                <div className="image-preview">
-                  <img src={imagePreview} alt="Preview" className="preview-img" />
-                  <button 
-                    type="button" 
-                    className="remove-image"
-                    onClick={() => removeImage(0)}
-                  >
-                    Remove
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <p>Drag and drop image here or</p>
-                  <input
-                    type="file"
-                    id="fileInput"
-                    accept="image/*"
-                    onChange={handleFileInput}
-                    className="file-input"
-                  />
-                  <label htmlFor="fileInput" className="file-input-label">
-                    Choose File
-                  </label>
-                </>
-              )}
-            </div>
-          </div>
-
-          <div className="modal-footer">
-            <button type="button" className="btn-draft" onClick={onClose}>
-              Cancel
-            </button>
-            <div className="action-buttons">
-              <button 
-                type="button" 
-                className="btn-draft"
-                onClick={() => setShowPreview(!showPreview)}
-              >
-                {showPreview ? 'Edit' : 'Preview'}
-              </button>
-              <button 
-                type="submit" 
-                className="btn-publish"
-                disabled={!formData.title || !formData.content || isSubmitting}
-              >
-                {isSubmitting ? 'Publishing...' : 'Publish'}
-              </button>
-            </div>
-          </div>
         </form>
       </div>
     </div>

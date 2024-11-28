@@ -209,7 +209,7 @@ class Blog extends ModTemplate {
                 image: data.image,
                 timestamp: tx.updated_at || data.timestamp,
                 sig: tx.signature,
-                publicKey: tx.from[0].publicKey
+                publicKey: data.publisher
             };
         });
     }
@@ -223,7 +223,7 @@ class Blog extends ModTemplate {
             content: data.content,
             timestamp: tx.updated_at || data.timestamp,
             sig: tx.signature,
-            publicKey: tx.from[0].publicKey,
+            publicKey: data.publisher,
             image: data.image
         };
     }
@@ -252,14 +252,19 @@ class Blog extends ModTemplate {
         content: '',
         image: "",
         tags: [],
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        publisher: ""
     }, callback) {
 
-        let { title, content, tags, timestamp, image } = post
-        console.log(title, content,image, tags, timestamp)
+        let { title, content, tags, timestamp, image, publisher } = post
+        console.log(title, content,image, tags, timestamp, publisher, "consoling")
         try {
             // Create new transaction
-            let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
+            let newtx = '';
+            newtx  = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
+
+        
+        
 
             // Validate and sanitize the post data
             const data = {
@@ -268,7 +273,8 @@ class Blog extends ModTemplate {
                 content: typeof post.content === 'string' ? post.content : JSON.stringify(post.content),
                 tags: Array.isArray(post.tags) ? post.tags : [],
                 image,
-                timestamp: post.timestamp || Date.now()
+                timestamp: post.timestamp || Date.now(),
+                publisher: publisher || this.publicKey
             };
 
             // Set the transaction message
@@ -278,6 +284,7 @@ class Blog extends ModTemplate {
                 data: data
             };
 
+    
             await newtx.sign();
 
             await this.app.network.propagateTransaction(newtx);
@@ -348,6 +355,7 @@ class Blog extends ModTemplate {
 
     async receiveBlogPostTransaction(tx) {
         let from = tx?.from[0]?.publicKey;
+        console.log('from', tx.from)
         if (!from) {
             console.error("Blog: Invalid TX");
             return;
@@ -368,7 +376,12 @@ class Blog extends ModTemplate {
             this.app.connection.emit("saito-header-update-message", { msg: "" });
             siteMessage('Blog post published', 2000);
         }
-        this.saveBlogPostTransaction(tx, from)
+        let publisher;
+
+        console.log(txmsg.data, "data")
+
+
+        this.saveBlogPostTransaction(tx)
     }
 
 
@@ -493,6 +506,7 @@ class Blog extends ModTemplate {
                         let public_key = targetTx.from[0].publicKey;
                         console.log(targetTx)
                         const post = self.convertTransactionToPost(targetTx);
+                        console.log(post, 'post');
 
                         self.app.browser.createReactRoot(BlogLayout, { post, app: self.app, mod: self, publicKey: public_key, topMargin:true, ondelete:()=> {
                             const baseUrl = window.location.origin;
