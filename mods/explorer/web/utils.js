@@ -13,11 +13,33 @@ async function fetchBlock(hash) {
     .then((response) => response.json())
     .then((data) => {
       listTransactions(data, hash);
+
+      if (document.querySelector(".block-transactions-table") == null) {
+        loadBlockFromDisk(hash);
+      }
     })
     .catch((err) => {
       console.error('Error fetching content: ' + err);
       return '';
     });
+}
+
+async function loadBlockFromDisk(hash) {
+  try {
+    var url = window.location.origin + `/lite-block-disk/${hash}`;
+
+    await fetch(url).then((response) => response.json())
+    .then((data) => {
+      document.querySelector(".txlist").innerHTML = (data.html);
+    })
+    .catch((err) => {
+      console.error('Error fetching content: ' + err);
+      return '';
+    });
+
+  } catch(err) {
+    console.error('Error fetching block from disk: ' + err);
+  }
 }
 
 async function fetchRawBlock(hash) {
