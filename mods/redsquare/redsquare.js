@@ -730,7 +730,7 @@ class RedSquare extends ModTemplate {
       }*/
 
       if (this.manager) {
-        this.loadTweets('earlier', this.manager.insertOlderTweets.bind(this.manager));
+        this.manager.fetchTweets();
       }
 
     }
