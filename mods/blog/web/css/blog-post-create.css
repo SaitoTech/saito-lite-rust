@@ -1,4 +1,4 @@
-.modal-container {
+/* .modal-container {
     width: 100%;
     max-width: 80rem;
     max-height: 90vh;
@@ -16,15 +16,101 @@
     box-shadow: var(--shadow-overlay);
     -ms-overflow-style: none; 
     scrollbar-width: none;   
+  } */
+
+
+  .modal-layout {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--saito-background-color);
+    margin-top: 0;
+  }
+  .modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5); /* semi-transparent background */
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    margin: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    flex: 1;
+    overflow-y: auto;
   }
   
   .modal-header {
+    padding: 20px;
+    border-radius: 8px 8px 0 0;
+  }
+  
+  .modal-footer {
+    padding: 20px;
+    border-radius: 0 0 8px 8px;
+    border-top: 1px solid var(--saito-border-color);
+  }
+
+ 
+  .center-column {
+    flex: 1;
+    padding: 20px;
+  }
+  
+  .controls-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .controls-container button {
+    width: 100%;
+  }
+  
+  .filter-container {
+    margin-bottom: 20px;
+  }
+
+.markdown-preview table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+}
+
+.markdown-preview th,
+.markdown-preview td {
+  border: 1px solid var(--saito-border-color);
+  padding: 8px;
+  text-align: left;
+}
+
+.markdown-preview th {
+  background-color: var(--saito-background-color-alt);
+  font-weight: bold;
+}
+
+.markdown-preview tr:nth-child(even) {
+  background-color: var(--saito-background-color-light);
+}
+  
+  /* .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem;
     border-bottom: 1px solid var(--saito-border-color)
-  }
+  } */
   
   .modal-title {
     font-size: 2.4rem;
@@ -39,14 +125,14 @@
     padding: 0 8px;
   }
 
-
+/* 
   .modal-content {
     padding: 2rem;
     overflow-y: auto;
     flex: 1;
     -ms-overflow-style: none;  
     scrollbar-width: none;     
-  }
+  } */
   
   .editor-form {
     display: flex;
@@ -58,6 +144,10 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+  }
+
+  .editor-content {
+    height: 80rem;
   }
   
   .form-group label {
@@ -83,7 +173,7 @@
   }
   
   .form-group textarea {
-    min-height: 20rem;
+    min-height: 80rem;
     resize: vertical;
   }
   
@@ -126,9 +216,16 @@
     width: 100%;
     max-width: 300px;
   }
+
+  .image-preview img {
+    width: 20rem;
+    height: 100px;
+    margin-top: 2rem;
+  }
   .markdown-preview {
-    padding: 1.5rem;
-    max-height: 30rem;
+    padding-left: 3rem;
+    height: 80rem;
+    border: 1px solid var(--border-color-post-input);
   }
   
   .preview-img {
@@ -139,10 +236,10 @@
   
   .remove-image {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    background:var(--saito-primary);
-    color: white;
+    top: 10px;
+    left: 15px;
+    right: 15px;
+    background: var(--saito-primary);
     border: none;
     padding: 4px 8px;
     border-radius: 4px;
@@ -166,6 +263,7 @@
   .action-buttons {
     display: flex;
     gap: 1rem;
+    margin-top: 1rem;
   }
   
   button:disabled {
@@ -184,10 +282,46 @@
     padding: 1rem;
   }
   
-  .action-buttons {
+
+  .left-column-buttons {
+    margin-top: auto; /* Push buttons to bottom */
     display: flex;
+    flex-direction: column;
     gap: 10px;
   }
+  
+  .btn-preview {
+    width: 100%;
+    padding: 10px;
+    background: var(--saito-background-color);
+    border: 1px solid var(--saito-border-color);
+    border-radius: 6px;
+    color: var(--saito-font-color);
+    margin-bottom: 1rem;
+  }
+  
+
+  .btn-cancel, .btn-publish {
+    flex: 1;
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    margin-bottom: 1rem;
+  
+  }
+  
+  .btn-cancel {
+    background: var(--saito-background-color);
+    border: 1px solid var(--saito-border-color);
+    color: var(--saito-font-color);
+  }
+  
+  .btn-publish {
+    background: var(--saito-primary);
+    color: white;
+  }
+  
   
   .btn-draft,
   .btn-publish {
@@ -222,9 +356,13 @@
     top: 25%;
   }
 
+  .modal-layout {
+    height: 1000rem;
+  }
   .modal-title {
     font-size: 20px;
   }
+
 
   .image-upload-area {
     padding: 20px;
@@ -268,12 +406,10 @@
     padding: 15px;
     flex-direction: column;
     gap: 10px;
+    background-color: var(--saito-background-color);
   }
 
-  .action-buttons {
-    width: 100%;
-  }
-
+ 
   .btn-draft,
   .btn-publish {
     flex: 1;

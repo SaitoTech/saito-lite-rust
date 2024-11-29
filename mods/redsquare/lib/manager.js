@@ -278,9 +278,11 @@ class TweetManager {
 			return;
 		}
 
-		if (tx_count) {
+		// Curation is done after the return so we don't care about tx_count per se 
+		let acceptable_tweet_ct = this.mod.reset();
+
+		if (acceptable_tweet_ct > 0) {
 			this.hideLoader();
-			this.mod.reset();
 			for (let tweet of this.mod.curated_tweets) {
 				if (!tweet.isRendered()) {
 					tweet.renderWithCriticalChild();
@@ -622,28 +624,30 @@ class TweetManager {
 
 		if (!this?.eventsAttached){
 
-			if (document.getElementById("following")){
+			if (document.getElementById("following")){ // for you
 				document.getElementById("following").onclick = (e) => {
 					e.currentTarget.classList.add("active");
 					document.getElementById("for-you").classList.remove("active");
 					this.mod.curated = true;
 					this.mod.saveOptions();
-					this.showLoader();
-					this.mod.reset();
 					this.clearFeed();
-					this.render();
+					this.showLoader();
+					setTimeout(() => {
+						this.render();
+					}, 10);
 				}
 			}
-			if (document.getElementById("for-you")){
+			if (document.getElementById("for-you")){ // everything
 				document.getElementById("for-you").onclick = (e) => {
 					e.currentTarget.classList.add("active");
 					document.getElementById("following").classList.remove("active");
 					this.mod.curated = false;
 					this.mod.saveOptions();
 					this.showLoader();
-					this.mod.reset();
 					this.clearFeed();
-					this.render();
+					setTimeout(() => {
+						this.render();
+					}, 10);
 				}
 			}
 

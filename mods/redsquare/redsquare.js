@@ -1685,6 +1685,9 @@ class RedSquare extends ModTemplate {
   }
 
   reset(){
+
+    let current = this.curated_tweets.length;
+
     this.curated_tweets = [];
 
     for (let tweet of this.tweets){
@@ -1704,6 +1707,7 @@ class RedSquare extends ModTemplate {
 
     console.log(`RS tweets filtered -- ${this.curated_tweets.length} acceptable out of ${this.tweets.length} total`);
 
+    return this.curated_tweets.length - current;
   }
 
   returnNotification(tweet_sig = null) {

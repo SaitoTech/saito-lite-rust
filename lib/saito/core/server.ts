@@ -802,6 +802,173 @@ class Server {
 		//   }
 		// });
 
+
+		expressApp.get('/lite-block-disk/:bhash/:pkey?', async (req, res) => {
+			if (req.params.bhash == null) {
+				return;
+			}
+			let pkey = await server_self.app.wallet.getPublicKey();
+			if (req.params.pkey != null) {
+				pkey = req.params.pkey;
+				if (pkey.length == 66) {
+					pkey = toBase58(pkey);
+				}
+			}
+
+			const bsh = req.params.bhash;
+			let keylist = [];
+			let peer: Peer | null = null;
+			let peers: Peer[] = await this.app.network.getPeers();
+			for (let i = 0; i < peers.length; i++) {
+				try {
+					if (peers[i].publicKey === pkey) {
+						peer = peers[i];
+						break;
+					}
+				} catch (error) {
+					console.error(error);
+				}
+			}
+			if (peer == null) {
+				keylist.push(pkey);
+			} else {
+				keylist = peer.keyList;
+				if (!keylist.includes(pkey)) {
+					keylist.push(pkey);
+				}
+			}
+
+			let methods = new NodeSharedMethods(this.app);
+
+			//
+			// TODO - load from disk to ensure we have txs -- slow.
+			//
+			try {
+				let buffer = new Uint8Array();
+				let list = methods.loadBlockFileList();
+				for (let filename of list) {
+					if (filename.includes(bsh)) {
+						buffer = methods.readValue('./data/blocks/' + filename);
+						break;
+					}
+				}
+				if (buffer.byteLength == 0) {
+					if (!res.finished) {
+						return res.sendStatus(404);
+					}
+					return;
+				}
+				let blk = new Block();
+				blk.deserialize(buffer);
+				const newblk = blk.generateLiteBlock(keylist);
+
+				var html = '<div class="block-table">';
+				  html += "<div><h4>id</h4></div><div>" + newblk.id + "</div>";
+				  html += "<div><h4>hash</h4></div><div>" + bsh + "</div>";
+				  html += "<div><h4>creator</h4></div><div></div>";
+				  html +=
+				    '<div><h4>source</h4></div><div><a href="/explorer/blocksource?hash=' +
+				    bsh +
+				    '">click to view source</a></div>';
+				  html += "</div>";
+
+				if (newblk.transactions.length > 0) {
+					let nolan_per_saito = 100000000;
+				    html += "<h3>Bundled Transactions:</h3></div>";
+
+				    html += '<div class="block-transactions-table">';
+				    html += '<div class="table-header">id</div>';
+				    html += '<div class="table-header">sender</div>';
+				    html += '<div class="table-header">fee</div>';
+				    html += '<div class="table-header">type</div>';
+				    html += '<div class="table-header">module</div>';
+
+				    for (var mt = 0; mt < blk.transactions.length; mt++) {
+				      var tmptx = blk.transactions[mt];
+				      console.log('tmptx: ', tmptx);
+				      let id = mt;
+
+				      var tx_fees = null;
+				      //if (tmptx.fees_total == "") {
+
+				      //
+				      // sum inputs
+				      //
+				      // let inputs = null;
+				      // if (tmptx.from != null) {
+				      //   for (let v = 0; v < tmptx.from.length; v++) {
+				      //   	console.log("typeof tmptx.from[v].amount: ", typeof tmptx.from[v].amount);
+				      //   	console.log("typeof inputs: ", typeof inputs);
+				      //     inputs += tmptx.from[v].amount;
+				      //   }
+				      // }
+
+				      // //
+				      // // sum outputs
+				      // //
+				      // let outputs = null;
+				      // for (let v = 0; v < tmptx.to.length; v++) {
+				      //   //
+				      //   // only count non-gt transaction outputs
+				      //   //
+				      //   if (tmptx.to[v].type != 1 && tmptx.to[v].type != 2) {
+				      //     outputs += tmptx.to[v].amount;
+				      //   }
+				      // }
+
+//tx_fees = inputs - outputs;
+
+				      //}
+				      let tx_from = "fee tx";
+				      if (tmptx.from.length > 0) {
+				        tx_from = tmptx.from[0].publicKey;
+				      } else if (tmptx.type===6){
+				        tx_from = "issuance tx";
+				        tx_fees = 0;
+				      } else if (tmptx.type===7){
+				        tx_from = "block stake tx";
+				      }
+
+				      html += `<div><a onclick="showTransaction('tx-` + id + `');">` + mt + `</a></div>`;
+				      html += `<div><a onclick="showTransaction('tx-` + id + `');">` + tx_from + `</a></div>`;
+				      html += "<div>" + (tx_fees) + "</div>";
+				      html += "<div>" + tmptx.type + "</div>";
+				      if (tmptx.type == 0) {
+				        if (tmptx.msg.module) {
+				          html += "<div>" + tmptx.msg.module + "</div>";
+				        } else {
+				          html += "<div>Money</div>";
+				        }
+				      }
+				      if (tmptx.type == 1) {
+				        html += "<div>" + tmptx.msg.name + "</div>";
+				      }
+				      if (tmptx.type > 1) {
+				        html += "<div> </div>";
+				      }
+				      html += '<div class="hidden txbox tx-' + id + '" >' + JSON.stringify(tmptx) + "</div>";
+				    }
+				    html += "</div>";
+				}
+
+				
+				let obj = JSON.stringify({html: html});
+				console.log("html:", obj);
+
+				if (!res.finished) {
+					res.writeHead(200, {
+						'Content-Type': 'application/json',
+						'Content-Transfer-Encoding': 'UTF-8'
+					});
+					return res.end(obj);
+				}
+				return;
+			} catch (error) {
+				console.log('failed serving lite block : ' + bsh);
+				console.error(error);
+			}
+		});
+
 		/////////
 		// web //
 		/////////

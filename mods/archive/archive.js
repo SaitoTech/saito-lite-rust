@@ -109,6 +109,9 @@ class Archive extends ModTemplate {
 	}
 
 	async initInBrowserDatabase() {
+
+		if (!this.app.BROWSER) { return; }
+
 		//
 		// Create Local DB schema
 		//
@@ -836,6 +839,11 @@ try {
 	// the future if it is abused.
 	//
 	async onNewBlock() {
+
+//
+// TESTING / HACK / TODO - remove
+//
+return;
 
 		// 90% of blocks don't try to delete anything
 		if (Math.random() < 0.95) {
