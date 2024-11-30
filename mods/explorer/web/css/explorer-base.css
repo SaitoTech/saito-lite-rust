@@ -64,7 +64,7 @@ h4, h5 {
 	padding: 10px;
 	overflow: auto;
 	width: 99%;
-	height: calc(100vh - 50rem);
+	max-height: calc(100vh - 50rem);
 	box-shadow: var(--box-shadow-sidebar-elements);
 }
 
@@ -118,7 +118,7 @@ a.button {
 	margin-bottom: 2em;
 	box-shadow: var(--box-shadow-sidebar-elements);
 	padding: 1rem;
-    border-radius: 0.5rem;
+	border-radius: 0.5rem;
 }
 
 .block-table div {
@@ -207,8 +207,8 @@ a {
 
 .explorer-balance-header {
 	padding: 1.2rem 1.5rem 0.7rem;
-    font-family: 'Courier New', Courier, monospace;
-	font-weight: bold; 
+	font-family: 'Courier New', Courier, monospace;
+	font-weight: bold;
 }
 
 .explorer-balance-data {
