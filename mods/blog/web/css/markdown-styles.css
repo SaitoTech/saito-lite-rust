@@ -1,7 +1,7 @@
 
 .markdown-preview {
     padding-left: 3rem;
-    height: 80rem;
+    min-height: 80rem;
     line-height: 1.6;
     font-size: 2rem;
   }
@@ -157,7 +157,7 @@
     .markdown-preview {
       padding-left: 1.5rem;
       height: auto;
-      min-height: 150px;
+      min-height: 40rem;
     }
   
     .markdown-preview pre {

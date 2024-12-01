@@ -154,43 +154,43 @@ const PostModal = ({ onClose, onSubmit }) => {
               }}
             >
               {imagePreview ? (
-              <div className="image-preview">
-                <img src={imagePreview} alt="Preview" />
-                <button 
-                  type="button"
-                  className="remove-image"
-                  onClick={() => {
-                    setImagePreview(null);
-                    setFormData(prev => ({ ...prev, images: [] }));
-                  }}
-                >
-                  Remove
-                </button>
-              </div>
-            ) : (
-              <>
-                <p>Drag and drop image here or</p>
-                <input
-                  type="file"
-                  id="fileInput"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      handleImageUpload(file);
-                    }
-                  }}
-                  className="file-input"
-                />
-                <label htmlFor="fileInput" className="file-input-label">
-                  Choose File
-                </label>
-              </>
-            )}
+                <div className="image-preview">
+                  <img src={imagePreview} alt="Preview" />
+                  <button
+                    type="button"
+                    className="remove-image"
+                    onClick={() => {
+                      setImagePreview(null);
+                      setFormData(prev => ({ ...prev, images: [] }));
+                    }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <p>Drag and drop image here or</p>
+                  <input
+                    type="file"
+                    id="fileInput"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        handleImageUpload(file);
+                      }
+                    }}
+                    className="file-input"
+                  />
+                  <label htmlFor="fileInput" className="file-input-label">
+                    Choose File
+                  </label>
+                </>
+              )}
             </div>
           ) : (
             <div>
-              <input 
+              <input
                 type="text"
                 name="imageUrl"
                 placeholder="paste image URL"
@@ -204,15 +204,15 @@ const PostModal = ({ onClose, onSubmit }) => {
               {imagePreview && (
                 <div className="image-preview">
                   <img src={imagePreview} alt="URL Preview" />
-                  <button 
+                  <button
                     type="button"
                     className="remove-image"
                     onClick={() => {
                       setImagePreview(null);
-                      setFormData(prev => ({ 
-                        ...prev, 
+                      setFormData(prev => ({
+                        ...prev,
                         imageUrl: '',
-                        images: [] 
+                        images: []
                       }));
                     }}
                   >
@@ -224,7 +224,7 @@ const PostModal = ({ onClose, onSubmit }) => {
           )}
         </div>
 
-       
+
 
         <div className="left-column-buttons">
           <div className='filter-container'>
@@ -236,9 +236,9 @@ const PostModal = ({ onClose, onSubmit }) => {
             >
               {showPreview ? 'Edit' : 'Preview'}
             </button>
-            <button type="button" className="btn-cancel" onClick={onClose}>
+            {/* <button type="button" className="btn-cancel" onClick={onClose}>
               Cancel
-            </button>
+            </button> */}
             <button
               onClick={handleSubmit}
               type="submit"
@@ -281,6 +281,7 @@ const PostModal = ({ onClose, onSubmit }) => {
                 className="editor-content"
                 required
               />
+    
             </div>
           ) : (
             <div className="form-group">
@@ -292,6 +293,165 @@ const PostModal = ({ onClose, onSubmit }) => {
               />
             </div>
           )}
+          <div className='small-controls'>
+                <div className="filter-container">
+                  <label className="filter-label">Tags</label>
+                  <input
+                    type="text"
+                    name="tags"
+                    value={formData.tags}
+                    onChange={handleChange}
+                    placeholder="Add tags separated by commas"
+                  />
+                </div>
+
+                <div className="filter-container">
+                  <label className="filter-label">Preview Image</label>
+                  <div className="image-method-toggle">
+                    <button
+                      className={`btn-preview ${imageMethod === 'file' ? 'active' : ''}`}
+                      onClick={() => setImageMethod('file')}
+                    >
+                      File Upload
+                    </button>
+                    <button
+                      className={`btn-preview ${imageMethod === 'url' ? 'active' : ''}`}
+                      onClick={() => setImageMethod('url')}
+                    >
+                      Image URL
+                    </button>
+                  </div>
+
+                  {imageMethod === 'file' ? (
+                    <div
+                      className={`image-upload-area ${isDragging ? 'dragging' : ''}`}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        setIsDragging(true);
+                      }}
+                      onDragLeave={() => setIsDragging(false)}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        setIsDragging(false);
+                        const file = e.dataTransfer.files[0];
+                        if (file && file.type.startsWith('image/')) {
+                          handleImageUpload(file);
+                        }
+                      }}
+                    >
+                      {imagePreview ? (
+                        <div className="image-preview">
+                          <img src={imagePreview} alt="Preview" />
+                          <button
+                            type="button"
+                            className="remove-image"
+                            onClick={() => {
+                              setImagePreview(null);
+                              setFormData(prev => ({ ...prev, images: [] }));
+                            }}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ) : (
+                        <>
+                          <input
+                            type="file"
+                            id="fileInput"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              if (file) {
+                                handleImageUpload(file);
+                              }
+                            }}
+                            className="file-input"
+                          />
+                          <label htmlFor="fileInput" className="file-input-label">
+                            Choose File
+                          </label>
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    <div>
+                      <input
+                        type="text"
+                        name="imageUrl"
+                        placeholder="paste image URL"
+                        value={formData.imageUrl}
+                        onChange={(e) => {
+                          handleChange(e);
+                          handleImageUrl(e.target.value);
+                        }}
+                        className="editor-title"
+                      />
+                      <div
+                        className={`image-upload-area ${isDragging ? 'dragging' : ''}`}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          setIsDragging(true);
+                        }}
+                        onDragLeave={() => setIsDragging(false)}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setIsDragging(false);
+                          const file = e.dataTransfer.files[0];
+                          if (file && file.type.startsWith('image/')) {
+                            handleImageUpload(file);
+                          }
+                        }}
+                      >
+                        {imagePreview && (
+                          <div className="image-preview">
+                            <img src={imagePreview} alt="URL Preview" />
+                            <button
+                              type="button"
+                              className="remove-image"
+                              onClick={() => {
+                                setImagePreview(null);
+                                setFormData(prev => ({
+                                  ...prev,
+                                  imageUrl: '',
+                                  images: []
+                                }));
+                              }}
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className='filter-container'>
+                  <label className="filter-label">Action</label>
+                  <button
+                    type="button"
+                    className="btn-preview"
+                    onClick={() => setShowPreview(!showPreview)}
+                  >
+                    {showPreview ? 'Edit' : 'Preview'}
+                  </button>
+                  {/* <button type="button" className="btn-cancel" onClick={onClose}>
+                    Cancel
+                  </button> */}
+                  <button
+                    onClick={handleSubmit}
+                    type="submit"
+                    className="btn-publish"
+                    disabled={!formData.title || !formData.content || isSubmitting}
+                  >
+                    {isSubmitting ? 'Publishing...' : 'Publish'}
+                  </button>
+
+                  <div className="action-buttons">
+
+                  </div>
+
+                </div>
+              </div>
         </form>
       </div>
     </div>

@@ -320,6 +320,8 @@ html, body {
   .left-column {
     display: none !important;
   }
+
+  
 }
 
 
@@ -410,8 +412,8 @@ html, body {
   }
 
   .saito-user.single-line {
-    flex-direction: column;
-    align-items: flex-start;
+    /* flex-direction: column;
+    align-items: flex-start; */
   }
 
   .saito-user.single-line .saito-userline {
