@@ -134,8 +134,8 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                         content: postData.content,
                         tags: [],
                         image: postData.image,
+                        imageUrl: postData.imageUrl,
                         timestamp: Date.now(),
-                        publisher: postData.publisher
                     },
                     () => {
                         siteMessage("Submitting blog post");

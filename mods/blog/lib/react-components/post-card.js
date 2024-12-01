@@ -4,12 +4,18 @@ import { copyPostLinkToClipboard, getImageUrl } from "../utils";
 
 const PostCard = ({ app, mod, post, index, onClick, selectedUser }) => {
     const isMultiline = post.title.length > 50;
+    let source = mod.returnImage()
+    if(post.image){
+        source = getImageUrl(post.image)
+    }else if(post.imageUrl){
+        source = post.imageUrl;
+    }
     return (
         <div key={index} onClick={onClick} className="post-card">
             <div  className="post-card-content">
             <div className="post-card-image">
                     <img
-                        src={post.image? getImageUrl(post.image) : mod.returnImage()}
+                        src={source}
                         alt="Post preview"
                         className="preview-image"
                     />
