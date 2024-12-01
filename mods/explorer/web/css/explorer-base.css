@@ -208,10 +208,16 @@ a {
 	box-shadow: var(--box-shadow-sidebar-elements);
 }
 
+.explorer-balance-data:nth-child(3n+2), .explorer-balance-data:nth-child(3n) {
+	text-align: right;
+  }
+
+
 .explorer-balance-header {
 	padding: 1.2rem 1.5rem 0.7rem;
 	font-family: 'Courier New', Courier, monospace;
 	font-weight: bold;
+	text-align: center;
 }
 
 .explorer-balance-data {
