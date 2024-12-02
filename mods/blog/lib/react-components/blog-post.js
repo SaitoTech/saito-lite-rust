@@ -11,6 +11,7 @@ const BlogPost = ({app, mod, post, publicKey}) => {
         source = post.imageUrl;
     }
 
+    let date = app.browser.formatDate(post.timestamp)
     return (
         <div className="post-view">
             <article className="post-content">     
@@ -19,7 +20,7 @@ const BlogPost = ({app, mod, post, publicKey}) => {
                         <h4 className="post-title">{post.title}</h4>
 
                         <p className='byline'> 
-                        Published by <span style={{color: "var(--saito-primary)"}}>{app.keychain.returnUsername(post.publicKey)}</span> on November 23, 2024
+                        Published by <span style={{color: "var(--saito-primary)"}}>{app.keychain.returnUsername(post.publicKey)}</span> on {date.month} {date.day}, {date.year}
                     </p>
                     </header>                 
                     {source && (

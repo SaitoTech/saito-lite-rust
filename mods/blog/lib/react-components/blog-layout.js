@@ -251,7 +251,6 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                                 } />
                             )}
 
-
                         </div>
                     </>
                 )}

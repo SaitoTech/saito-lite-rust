@@ -474,7 +474,7 @@ class Blog extends ModTemplate {
                     await this.app.network.propagateTransaction(post);
                 }
                 if (!result.isComplete) {
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    await new Promise(resolve => setTimeout(resolve, 3000));
                 }
                 isComplete = result.isComplete;
                 processedCount = result.nextBatchStartIndex;

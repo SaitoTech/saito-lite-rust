@@ -1,5 +1,5 @@
 import React from "react";
-import { copyPostLinkToClipboard, getImageUrl } from "../utils";
+import { getImageUrl } from "../utils";
 
 
 const PostCard = ({ app, mod, post, index, onClick, selectedUser }) => {
@@ -10,6 +10,7 @@ const PostCard = ({ app, mod, post, index, onClick, selectedUser }) => {
     }else if(post.imageUrl){
         source = post.imageUrl;
     }
+    let date = app.browser.formatDate(post.timestamp)
     return (
         <div key={index} onClick={onClick} className="post-card">
             <div  className="post-card-content">
@@ -26,7 +27,7 @@ const PostCard = ({ app, mod, post, index, onClick, selectedUser }) => {
                     </h4>
                     {selectedUser.username && (
                         <div className="post-card-meta">
-                            <div className='saito-user single-line'> Published by <span style={{color: "var(--saito-primary)"}}>{app.keychain.returnUsername(post.publicKey)}</span> on November 23, 2024 </div>         
+                            <div className='saito-user single-line'> Published by <span style={{color: "var(--saito-primary)"}}>{app.keychain.returnUsername(post.publicKey)}</span> on {date.month} {date.day}, {date.year} </div>         
                         </div>
                     )}
                 </div>

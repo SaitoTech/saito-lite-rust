@@ -4,9 +4,7 @@ html, body {
   margin: 0;
   padding: 0;
   -ms-overflow-style: none;
-    /* IE and Edge */
     scrollbar-width: none;
-    /* Firefox */
 }
 
 .html::-webkit-scrollbar body::-webkit-scrollbar {
@@ -110,9 +108,6 @@ html, body {
   justify-content: space-between;
   align-items: center;
   padding-left: 2rem;
-}
-
-.user-header-content>h5 {
 }
 
 .user-header .saito-user {
@@ -302,7 +297,7 @@ html, body {
 }
 
 
-/* Responsive adjustments */
+
 @media (max-width: 768px) {
   .post-card-content {
     flex-direction: column;
@@ -321,7 +316,7 @@ html, body {
     display: none !important;
   }
 
-  
+
 }
 
 
@@ -338,19 +333,6 @@ html, body {
 }
 
 @media (max-width: 768px) {
-  .layout {
-    /* flex-direction: column; */
-  }
-
-  /* .left-column {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid var(--saito-border-color);
-  } */
-
-  /* .center-column {
-    padding: 16px;
-  } */
 
   .post-card-content {
     flex-direction: column;
@@ -409,11 +391,6 @@ html, body {
 
   .post-card-title {
     font-size: 1.6rem;
-  }
-
-  .saito-user.single-line {
-    /* flex-direction: column;
-    align-items: flex-start; */
   }
 
   .saito-user.single-line .saito-userline {

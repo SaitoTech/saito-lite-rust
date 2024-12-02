@@ -20,7 +20,6 @@
   bottom: 0;
   width: 100vw;
   height: 100vh;
-  /* background: rgba(0, 0, 0, 0.5); */
   display: flex;
   flex-direction: column;
   z-index: 1000;
@@ -288,7 +287,6 @@ button:disabled {
 
 
 
-/* Tablet Breakpoint */
 @media (max-width: 768px) {
   .modal-container {
     width: 95%;
@@ -382,7 +380,6 @@ button:disabled {
   }
 }
 
-/* Small Mobile Breakpoint */
 @media (max-width: 320px) {
   .modal-title {
     font-size: 16px;
