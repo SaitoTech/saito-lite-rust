@@ -1,4 +1,4 @@
-
+class PokerPlayer {
 
         playerTurn() {
                 if (this.browser_active == 0) {
@@ -177,15 +177,7 @@
         }
 
 
-        endTurn(nextTarget = 0) {
-                if (this.browser_active) {
-                        this.updateStatus('waiting for information from peers...');
-                        $('.option').off();
-                }
 
-                super.endTurn(nextTarget);
-        }
+}
 
-
-
-
+module.exports = PokerPlayer;

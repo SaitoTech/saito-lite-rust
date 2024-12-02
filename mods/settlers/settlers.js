@@ -721,6 +721,8 @@ class Settlers extends GameTemplate {
 	}
 
 	endTurn() {
+		this.halted = 0;
+
 		if (this.sleep_timer) {
 			clearTimeout(this.sleep_timer);
 			this.sleep_timer = null;

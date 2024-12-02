@@ -59,25 +59,3 @@ export const initializeUsers = (app, mod)=> {
     return USERS
 }
 
-
-    // const createPreview = (content) => {
-    //     const lines = content.split('\n');
-
-    //     const firstTextLine = lines.find(line => {
-    //         const trimmed = line.trim();
-    //         if (!trimmed) return false;
-    //         if (
-    //             trimmed.startsWith('![') ||
-    //             trimmed.includes('base64') ||
-    //             trimmed.match(/^\[!\[.*?\]\(.*?\)\]\(.*?\)$/) ||
-    //             trimmed.startsWith('<img') ||
-    //             trimmed.startsWith('http') ||
-    //             trimmed.startsWith('<iframe')
-    //         ) return false;
-    //         return true;
-    //     }) || '';
-
-    //     const cleanContent = firstTextLine.replace(/[#*`_~]/g, '').trim();
-    //     const preview = cleanContent.slice(0, 59);
-    //     return preview + (cleanContent.length > 59 ? '...' : '');
-    // };

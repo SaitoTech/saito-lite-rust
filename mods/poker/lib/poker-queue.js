@@ -1,4 +1,6 @@
 
+class PokerQueue {
+
 	handleGameLoop() {
 
 		///////////
@@ -1018,3 +1020,6 @@
 		return 1;
 	}
 
+}
+
+module.exports = PokerQueue;

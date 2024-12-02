@@ -339,6 +339,12 @@ function webPack() {
 							path.resolve(__dirname, './mods/devtools/bundler'),
 							path.resolve(__dirname, './mods/devtools/mods')
 						]
+					},
+					{ 
+						test: /\.m?js/, 
+						resolve: { 
+							fullySpecified: false 
+						} 
 					}
 				]
 			},
