@@ -209,7 +209,14 @@ webpack(
             path.resolve(__dirname, "../mods/devtools/mods"),
           ],
         },
+        { 
+          test: /\.m?js/, 
+          resolve: { 
+            fullySpecified: false 
+          } 
+        }
       ],
+
     },
     plugins: [
       // Work around for Buffer is undefined:
