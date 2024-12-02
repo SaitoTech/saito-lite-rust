@@ -139,10 +139,6 @@ html, body {
 
 
 
-.post-card:hover {
-
-}
-
 .post-card-title {
   font-weight: 900;
   font-size: 2.3rem;
@@ -154,11 +150,6 @@ html, body {
   -webkit-box-orient: vertical;
 }
 
-
-
-.post-date {
-
-}
 
 .post-card-preview {
   margin-bottom: 16px;
@@ -243,6 +234,29 @@ html, body {
   height: 100%;
 }
 
+.engagement-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.engagement-button,
+.engagement-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  right: 1rem;
+}
+
+
+
+.icon {
+  width: 16px;
+  height: 16px;
+}
 
 /* No post */
 .no-posts-container {
@@ -306,32 +320,9 @@ html, body {
   .left-column {
     display: none !important;
   }
+
+  
 }
-
-.engagement-button,
-.engagement-stat {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  right: 1rem;
-}
-
-.engagement-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: color 0.2s ease;
-}
-
-
-.icon {
-  width: 16px;
-  height: 16px;
-}
-
-
 
 
 
@@ -421,8 +412,8 @@ html, body {
   }
 
   .saito-user.single-line {
-    flex-direction: column;
-    align-items: flex-start;
+    /* flex-direction: column;
+    align-items: flex-start; */
   }
 
   .saito-user.single-line .saito-userline {

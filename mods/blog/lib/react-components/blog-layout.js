@@ -18,7 +18,7 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
     const [showPostModal, setShowPostModal] = useState(false);
     const [editingPost, setEditingPost] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [posts, setPosts] = useState(samplePosts)
+    const [posts, setPosts] = useState([])
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const latestPostRef = useRef(null);
 
@@ -29,7 +29,7 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
     // Function to merge new posts with existing ones
     const mergePosts = (existingPosts, newPosts) => {
         const combined = [...existingPosts];
-        
+
         newPosts.forEach(newPost => {
             const existingIndex = combined.findIndex(p => p.sig === newPost.sig);
             if (existingIndex === -1) {
@@ -60,7 +60,7 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                 }
             }
 
-       
+
             mod.loadAllPosts(userKeys, (loadedPosts) => {
                 setPosts(prevPosts => {
                     const mergedPosts = mergePosts(prevPosts, loadedPosts);
@@ -110,7 +110,7 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
     };
 
     useEffect(() => {
-        loadPosts(true); 
+        loadPosts(true);
     }, [selectedUser, publicKey]);
 
 
@@ -134,8 +134,8 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                         content: postData.content,
                         tags: [],
                         image: postData.image,
+                        imageUrl: postData.imageUrl,
                         timestamp: Date.now(),
-                        publisher: postData.publisher
                     },
                     () => {
                         siteMessage("Submitting blog post");
@@ -184,7 +184,11 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                 left: 0
             }}>
                 <div className="new-post-container">
-                    <button onClick={() => setShowPostModal(true)}>New Post</button>
+                    <button onClick={() => {
+                        setShowPostModal(true)
+                          app.connection.emit('saito-header-replace-logo', handleCloseModal);
+                    }
+                    }>New Post</button>
                 </div>
                 <div className="filter-container">
                     <label className="filter-label">Filter by Author</label>
@@ -206,6 +210,16 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                 maxWidth: selectedPost ? '900px' : '100%',
                 margin: selectedPost ? '0 auto' : undefined
             }}>
+
+            {!showPostModal && <div id="saito-floating-menu" class="saito-floating-container">
+                <div  onClick={()=>{
+                    setShowPostModal(true)
+                    app.connection.emit('saito-header-replace-logo', handleCloseModal);
+                }
+                } class="saito-floating-plus-btn" id="saito-floating-plus-btn">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+            </div>}
                 {selectedPost ? (
                     <BlogPost app={app} mod={mod} post={selectedPost} publicKey={selectedPost.publicKey} />
                 ) : (
@@ -225,12 +239,19 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                                     window.history.pushState({}, '', url);
                                 }} />
                             ))}
-                              {isLoadingMore && (
+                            {isLoadingMore && (
                                 <div className="loading-indicator">Loading more posts...</div>
                             )}
                             {filteredPosts.length === 0 && !isLoadingMore && (
-                                <NoPostsAvailable isCurrentUser={selectedUser.publicKey === mod.publicKey || selectedUser.username==='All'} showModal={() => setShowPostModal(true)} />
+                                <NoPostsAvailable isCurrentUser={selectedUser.publicKey === mod.publicKey || selectedUser.username === 'All'} showModal={() =>{ 
+                                    setShowPostModal(true)
+                                    app.connection.emit('saito-header-replace-logo', handleCloseModal);
+                                }
+                                    
+                                } />
                             )}
+
+
                         </div>
                     </>
                 )}
