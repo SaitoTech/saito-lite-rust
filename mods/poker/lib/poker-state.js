@@ -1,3 +1,9 @@
+const PokerGameRulesTemplate = require('./poker-game-rules.template');
+const PokerGameOptionsTemplate = require('./poker-game-options.template');
+//const GameTemplateArcade = require('../../../lib/templates/gametemplate-src');
+
+
+class PokerState {
 
 
         returnState(num_of_players) {
@@ -92,42 +98,7 @@
                 return PokerGameOptionsTemplate(this.app, this);
         }
 
-        returnShortGameOptionsArray(options) {
-                let sgoa = super.returnShortGameOptionsArray(options);
-                let ngoa = {};
-                let crypto = '';
-                for (let i in sgoa) {
-                        if (sgoa[i] != '') {
-                                let okey = i;
-                                let oval = sgoa[i];
 
-                                let output_me = 1;
-                                if (okey == 'chip') {
-                                        if (oval !== '0') {
-                                                okey = 'small blind';
-                                        } else {
-                                                output_me = 0;
-                                        }
-                                }
-                                if (okey == 'blind_mode') {
-                                        if (oval == 'increase') {
-                                                okey = 'mode';
-                                                oval = 'tournament';
-                                        } else {
-                                                output_me = 0;
-                                        }
-                                }
-                                if (okey == 'num_chips') {
-                                        okey = 'chips';
-                                }
+}
 
-                                if (output_me == 1) {
-                                        ngoa[okey] = oval;
-                                }
-                        }
-                }
-
-                return ngoa;
-        }
-
-
+module.exports = PokerState;

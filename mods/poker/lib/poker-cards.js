@@ -1,4 +1,4 @@
-
+class PokerCards {
 
 	returnCardFromDeck(idx) {
 		let deck = this.returnDeck();
@@ -1388,4 +1388,6 @@
 		html += '</div> ';
 		return html;
 	}
+}
 
+module.exports = PokerCards;
