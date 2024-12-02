@@ -1,3 +1,6 @@
+const htmlTemplate = require('../lib/game-html.template');
+
+class PokerDisplay {
 
 	async render(app) {
 
@@ -361,3 +364,6 @@
 		}
 	}
 
+}
+
+module.exports = PokerDisplay;

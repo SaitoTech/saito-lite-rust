@@ -1,4 +1,4 @@
-
+class PokerPlayer {
 
         playerTurn() {
                 if (this.browser_active == 0) {
@@ -189,3 +189,6 @@
 
 
 
+}
+
+module.exports = PokerPlayer;

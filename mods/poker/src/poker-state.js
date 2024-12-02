@@ -1,3 +1,7 @@
+const PokerGameRulesTemplate = require('../lib/poker-game-rules.template');
+const PokerGameOptionsTemplate = require('../lib/poker-game-options.template');
+
+class PokerState {
 
 
         returnState(num_of_players) {
@@ -130,4 +134,6 @@
                 return ngoa;
         }
 
+}
 
+module.exports = PokerState;
