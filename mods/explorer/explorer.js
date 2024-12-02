@@ -21,10 +21,12 @@ class ExplorerCore extends ModTemplate {
 		// web resources //
 		///////////////////
 		expressapp.get('/explorer/', async function (req, res) {
+			const page = parseInt(req.query.page) || 0;
+
 			if (!res.finished) {
 				res.set('Content-type', 'text/html');
 				res.charset = 'UTF-8';
-				return res.send(await explorer_self.returnIndexHTML(app));
+				return res.send(await explorer_self.returnIndexHTML(page));
 			}
 			return;
 		});
@@ -227,12 +229,60 @@ class ExplorerCore extends ModTemplate {
     </div>';
 	}
 
-	async returnIndexMain() {
+	async returnIndexMain(page = 0) {
 		let txs = await S.getInstance().getMempoolTxs();
-		console.log(await this.listBlocks);
 		let balance = await this.app.wallet.getBalance();
 		let balanceSaito = balance/BigInt(100000000);
 		let nolansRemainder = balance - (balanceSaito * BigInt(100000000));
+		
+		// Update pagination controls in returnIndexMain
+		const createPaginationControls = async () => {
+			const totalBlocks = Number(await this.app.blockchain.getLatestBlockId());
+			const totalPages = Math.ceil(totalBlocks / 200);
+			const currentPage = page;
+			
+			let pages = [];
+			const range = 5;
+			
+			// Always add first page
+			pages.push(0);
+			
+			// Add pages around current page
+			for (let i = Math.max(1, currentPage - range); i <= Math.min(totalPages - 2, currentPage + range); i++) {
+				if (i === 1 && currentPage - range > 1) {
+					pages.push('...');
+				}
+				pages.push(i);
+				if (i === currentPage + range && currentPage + range < totalPages - 2) {
+					pages.push('...');
+				}
+			}
+			
+			// Always add last page if we have more than one page
+			if (totalPages > 1) {
+				pages.push(totalPages - 1);
+			}
+			
+			const pageButtons = pages.map(p => {
+				if (p === '...') {
+					return '<span class="page-ellipsis">...</span>';
+				}
+				return `<a href="/explorer?page=${p}" class="secondary-button ${p === currentPage ? 'disabled current-page' : ''}">${p + 1}</a>`;
+			}).join('');
+
+			return `
+				<div class="pagination-controls">
+					<a href="/explorer?page=0" class="secondary-button ${currentPage === 0 ? 'disabled' : ''}">First</a>
+					<a href="/explorer?page=${Math.max(0, currentPage - 1)}" class="secondary-button ${currentPage === 0 ? 'disabled' : ''}">Previous</a>
+					${pageButtons}
+					<a href="/explorer?page=${currentPage + 1}" class="secondary-button ${currentPage >= totalPages - 1 ? 'disabled' : ''}">Next</a>
+					<a href="/explorer?page=${totalPages - 1}" class="secondary-button ${currentPage >= totalPages - 1 ? 'disabled' : ''}">Last</a>
+				</div>
+			`;
+		};
+
+		const paginationControls = await createPaginationControls();
+
 		return (
 			'<div class="explorer-main"> \
         <div class="block-table"> \
@@ -251,9 +301,11 @@ class ExplorerCore extends ModTemplate {
         <form method="get" action="/explorer/block"><div class="one-line-form"><input type="text" name="hash" class="hash-search-input" /> \
         <input type="submit" id="explorer-button" class="button" value="search" /></div></form> </div> \
         <div class="explorer-data"><h3>Recent Blocks:</h3></div> \
+        ' + paginationControls + '\
         <div id="block-list">' +
-			(await this.listBlocks()) +
+			(await this.listBlocks(page)) +
 			'</div> \
+        ' + paginationControls + '\
       </div> '
 		);
 	}
@@ -266,11 +318,11 @@ class ExplorerCore extends ModTemplate {
 	/////////////////////
 	// Main Index Page //
 	/////////////////////
-	async returnIndexHTML(app) {
+	async returnIndexHTML(page) {
 		var html =
 			this.returnHead() +
 			this.returnHeader() +
-			(await this.returnIndexMain()) +
+			(await this.returnIndexMain(page)) +
 			this.returnPageClose();
 		return html;
 	}
@@ -324,18 +376,28 @@ class ExplorerCore extends ModTemplate {
 		return jstxt;
 	}
 
-	async listBlocks() {
+	async listBlocks(page = 0) {
+		console.log("page: ", page);
 		var explorer_self = this;
-		let latest_block_id =
-			await explorer_self.app.blockchain.getLatestBlockId();
+		let latest_block_id = await explorer_self.app.blockchain.getLatestBlockId();
 
 		var html = '<div class="blockchain-table">';
-		html +=
-			'<div class="table-header"></div><div class="table-header">id</div><div class="table-header">block hash</div><div class="table-header">tx</div><div class="table-header">previous block</div><div class="table-header">block creator</div>';
+		html += '<div class="table-header"></div><div class="table-header">id</div><div class="table-header">block hash</div><div class="table-header">tx</div><div class="table-header">previous block</div><div class="table-header">block creator</div>';
+
+		const BLOCKS_PER_PAGE = 200;
+		const startBlock = latest_block_id - (BigInt(page) * BigInt(BLOCKS_PER_PAGE));
+		let endBlock = startBlock - BigInt(BLOCKS_PER_PAGE);
+		console.log("startBlock: ", startBlock);
+		console.log("endBlock: ", endBlock);
+		
+		// Ensure endBlock doesn't go below 0
+		if (endBlock < BigInt(0)) {
+			endBlock = BigInt(0);
+		}
 
 		for (
-			var mb = latest_block_id;
-			mb >= BigInt(0) && mb > latest_block_id - BigInt(200);
+			var mb = startBlock;
+			mb >= endBlock;
 			mb--
 		) {
 			let longest_chain_hash =

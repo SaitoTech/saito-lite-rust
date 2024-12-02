@@ -11,13 +11,12 @@ h4, h5 {
 }
 
 .explorer-main {
-	margin-top: 75px;
-	/* padding: 0 10px; */
-	line-height: 1.6em;
-	font-family: 'visuelt-light', 'Microsoft Yahei', 'Hiragino Sans GB';
-	height: calc(100vh - 9rem);
-	overflow: auto;
-	padding: 5px 2em;
+	margin-top: 7rem;
+    line-height: 1.6em;
+    font-family: 'visuelt-light', 'Microsoft Yahei', 'Hiragino Sans GB';
+    height: calc(100vh - 7.5rem);
+    overflow: auto;
+    padding: 5px 2em 0;
 }
 
 .explorer-main table {
@@ -42,11 +41,15 @@ h4, h5 {
 }
 
 .explorer-main h3 {
-	margin: 20px 0 10px 0;
+    margin: 20px 0 -4rem;
 }
 
 .explorer-main i {
 	margin: 0 10px;
+}
+
+.explorer-main .pagination-controls:last-child {
+	margin-bottom: 0em;
 }
 
 #explorer-button {
@@ -64,7 +67,7 @@ h4, h5 {
 	padding: 10px;
 	overflow: auto;
 	width: 99%;
-	height: calc(100vh - 50rem);
+	max-height: calc(100vh - 19rem);
 	box-shadow: var(--box-shadow-sidebar-elements);
 }
 
@@ -115,10 +118,10 @@ a.button {
 	grid-template-columns: 7em 1fr;
 	grid-gap: 10px;
 	max-width: 850px;
-	margin-bottom: 2em;
+	margin: 1em 0;
 	box-shadow: var(--box-shadow-sidebar-elements);
 	padding: 1rem;
-    border-radius: 0.5rem;
+	border-radius: 0.5rem;
 }
 
 .block-table div {
@@ -205,10 +208,16 @@ a {
 	box-shadow: var(--box-shadow-sidebar-elements);
 }
 
+.explorer-balance-data:nth-child(3n+2), .explorer-balance-data:nth-child(3n) {
+	text-align: right;
+  }
+
+
 .explorer-balance-header {
 	padding: 1.2rem 1.5rem 0.7rem;
-    font-family: 'Courier New', Courier, monospace;
-	font-weight: bold; 
+	font-family: 'Courier New', Courier, monospace;
+	font-weight: bold;
+	text-align: center;
 }
 
 .explorer-balance-data {
@@ -229,3 +238,45 @@ input.button {
 	width: 10rem;
 	border-radius: 0.5rem;
 }
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    gap: 8px;
+}
+
+.pagination-controls .disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.pagination-controls .current-page {
+    font-size: 1.2em;
+    font-weight: bold;
+	opacity: 1;
+}
+
+.page-ellipsis {
+    padding: 0 4px;
+}
+
+.pagination-controls .secondary-button {
+    min-width: 2.5em;
+    text-align: center;
+}
+
+.page-button:hover {
+    opacity: 0.9;
+}
+
+.page-button.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.page-info {
+    font-size: 1.1em;
+    color: var(--saito-primary);
+} 

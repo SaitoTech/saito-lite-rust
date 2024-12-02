@@ -180,10 +180,6 @@ dt {
 	display: none;
 }
 
-.plog .status-header {
-	background-color: unset;
-	box-shadow: unset;
-}
 
 #tradenow {
 	text-align: center;
@@ -282,7 +278,7 @@ dt {
 }
 
 .ship {
-	font-size: 2em;
+	font-size: 3rem;
 	overflow-x: visible;
 	white-space: nowrap;
 }
@@ -424,7 +420,7 @@ dt {
 	height: 23%;
 	background-color: transparent;
 	z-index: 12;
-	font-size: 2em;
+	font-size: 3rem;
 	text-align: center;
 	border-radius: 50%;
 	scale: 1.6;
@@ -610,8 +606,8 @@ input[type='checkbox'] {
 .sector-container {
 	position: absolute;
 	border-radius: 50%;
-	width: 12em;
-	height: 12em;
+	width: 18rem;
+	height: 18rem;
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);
@@ -633,14 +629,14 @@ input[type='checkbox'] {
 
 .sector_value {
 	position: absolute;
-	font-size: 2.5em;
+	font-size: 3.5rem;
 	z-index: 15;
 	font-weight: bold;
 	border: 2px solid #fff;
 	border-radius: 50%;
-	width: 2em;
-	height: 2em;
-	line-height: 2em;
+	width: 7rem;
+	height: 7rem;
+	line-height: 7rem;
 	text-align: center;
 	background: #6664;
 	color: white;
@@ -847,7 +843,6 @@ ul.horizontal_list li.iconoption {
 	align-items: center;
 	flex-direction: row;
 	width: 100%;
-	/*margin-bottom: 0.5em;*/
 }
 
 .notme .flexline2 {
@@ -983,6 +978,21 @@ ul.horizontal_list li.iconoption {
 
 .player-notice ul {
 	margin-top: 0.5em;
+}
+
+.status-header{
+	font-size: 2rem;
+}
+
+.status-text-menu ul li.textchoice {
+	padding: 1rem 0.5rem;
+	list-style: none;
+	text-align: left;
+	cursor: pointer;
+}
+
+.status-text-menu ul li.textchoice:hover{
+	filter: drop-shadow(1px 1px);
 }
 
 /*******

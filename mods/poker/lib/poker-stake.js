@@ -1,4 +1,4 @@
-
+class PokerStake {
 
 
         convertChipsToCrypto(numChips, asString = true) {
@@ -143,3 +143,6 @@
 
         }
 
+}
+
+module.exports = PokerStake;

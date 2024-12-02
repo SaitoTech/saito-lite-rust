@@ -3,6 +3,7 @@ class SettlersPlayer {
   //Select the person to steal from
   playerMoveBandit(player, hexId) {
     let settlers_self = this;
+    this.halted = 1;
     //Find adjacent cities and launch into stealing mechanism
     let thievingTargets = [];
 
@@ -95,6 +96,7 @@ class SettlersPlayer {
   playerBuildTown(player, canBackUp = 0) {
     let settlers_self = this;
     let existing_cities = 0;
+    this.halted = 1;
     for (let i = 0; i < this.game.state.cities.length; i++) {
       if (this.game.state.cities[i].player == this.game.player) {
         existing_cities++;
@@ -207,6 +209,7 @@ class SettlersPlayer {
 
   playerBuildRoad(player, canBackUp = false) {
     let settlers_self = this;
+    this.halted = 1;
 
     if (this.game.state.placedCity) {
       this.hud.updateStatus(`<div class="player-notice">YOUR TURN: place a connecting ${this.r.name}</diiv>`);
@@ -282,6 +285,7 @@ class SettlersPlayer {
   }
 
   playerBuildCity(player, canBackUp = 0) {
+    this.halted = 1;
     this.updateStatus(`click on a ${this.c1.name} to upgrade it to a ${this.c2.name}...`);
     if (canBackUp) {
       this.updateControls(`<i class="fa-solid fa-xmark"></i>`);
