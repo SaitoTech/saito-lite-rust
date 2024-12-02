@@ -9,12 +9,12 @@ const PokerStats = require("./lib/stats");
 const GameHelp = require('./lib/ui/game-help/game-help');
 
 
-const PokerState = require('./src/poker-state');
-const PokerStake = require('./src/poker-stake');
-const PokerQueue = require('./src/poker-queue');
-const PokerPlayer = require('./src/poker-player');
-const PokerDisplay = require('./src/poker-display');
-const PokerCards = require('./src/poker-cards');
+const PokerState = require('./lib/poker-state.js');
+const PokerStake = require('./lib/poker-stake.js');
+const PokerQueue = require('./lib/poker-queue.js');
+const PokerPlayer = require('./lib/poker-player.js');
+const PokerDisplay = require('./lib/poker-display.js');
+const PokerCards = require('./lib/poker-cards.js');
 
 //////////////////
 // CONSTRUCTOR  //
