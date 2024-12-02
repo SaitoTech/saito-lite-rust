@@ -177,17 +177,6 @@ class PokerPlayer {
         }
 
 
-        endTurn(nextTarget = 0) {
-                if (this.browser_active) {
-                        this.updateStatus('waiting for information from peers...');
-                        $('.option').off();
-                }
-
-                super.endTurn(nextTarget);
-        }
-
-
-
 
 }
 
