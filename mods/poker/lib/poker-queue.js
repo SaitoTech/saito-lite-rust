@@ -1,6 +1,40 @@
 
 class PokerQueue {
 
+	initializeQueue() {
+		this.game.queue = [];
+
+		this.game.queue.push('ante');
+		this.game.queue.push('READY');
+		this.game.queue.push('POOL\t1');
+		this.game.queue.push(
+			`SIMPLEDEAL\t2\t1\t` + JSON.stringify(this.returnDeck())
+		);
+	}
+
+	startRound() {
+
+		this.updateLog('===============');
+		this.updateLog('Round: ' + this.game.state.round);
+
+		for (let i = 0; i < this.game.players.length; i++) {
+			this.updateLog(
+				`Player ${i + 1}${
+					i + 1 == this.game.state.button_player ? ' (dealer)' : ''
+				}: ${this.game.state.player_names[i]} (${this.formatWager(
+					this.game.state.player_credit[i],
+					true
+				)})`
+			);
+		}
+
+		for (let i = 1; i <= this.game.players.length; i++) {
+			this.playerbox.updateGraphics('', i);
+		}
+
+		this.initializeQueue();
+	}
+
 	handleGameLoop() {
 
 		///////////

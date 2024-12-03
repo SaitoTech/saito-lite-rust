@@ -1,7 +1,5 @@
 const PokerGameRulesTemplate = require('./poker-game-rules.template');
 const PokerGameOptionsTemplate = require('./poker-game-options.template');
-//const GameTemplateArcade = require('../../../lib/templates/gametemplate-src');
-
 
 class PokerState {
 

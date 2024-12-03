@@ -1,5 +1,12 @@
 class PokerStake {
 
+        returnTicker() {
+                if (this.game.crypto) {
+                        return this.game.crypto;
+                }
+                return 'CHIPS';
+        }
+
 
         convertChipsToCrypto(numChips, asString = true) {
                 let numCrypto =
@@ -142,6 +149,53 @@ class PokerStake {
                 this.game.queue.push(`ROUNDOVER\t${JSON.stringify(winner_array)}\t${method}`);
 
         }
+
+        // Extension of game engine stub for advanced stake selection before starting a game
+        
+        attachAdvancedOptionsEventListeners() {
+
+                let blindModeInput = document.getElementById('blind_mode');
+                let numChips = document.getElementById('num_chips');
+                let blindDisplay = document.getElementById('blind_explainer');
+                let crypto = document.getElementById('crypto');
+                let stakeValue = document.getElementById('stake');
+                let chipInput = document.getElementById('chip_wrapper');
+                //let stake = document.getElementById("stake");
+
+                const updateChips = function () {
+                        if (numChips && stakeValue && chipInput /*&& stake*/) {
+                                if (crypto.value == '') {
+                                        chipInput.style.display = 'none';
+                                        stake.value = '0';
+                                } else {
+                                        let nChips = parseInt(numChips.value);
+                                        let stakeAmt = parseFloat(stakeValue.value);
+                                        let jsMath = stakeAmt / nChips;
+                                        chipInput.style.display = 'block';
+                                }
+                        }
+                };
+
+                if (blindModeInput && blindDisplay) {
+                        blindModeInput.onchange = function () {
+                                if (blindModeInput.value == 'static') {
+                                        blindDisplay.textContent =
+                                                'Small blind is one chip, big blind is two chips throughout the game';
+                                } else {
+                                        blindDisplay.textContent =
+                                                'Small blind starts at one chip, and increments by 1 every 5 rounds';
+                                }
+                        };
+                }
+
+                if (crypto) {
+                        crypto.onchange = updateChips;
+                }
+                if (numChips) {
+                        numChips.onchange = updateChips;
+                }
+        }
+
 
 }
 
