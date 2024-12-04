@@ -8,13 +8,13 @@ const JSON = require('json-bigint');
 const PokerStats = require("./lib/stats");
 const GameHelp = require('./lib/ui/game-help/game-help');
 const htmlTemplate = require('./lib/game-html.template');
-
+const PokerGameRulesTemplate = require('./lib/poker-game-rules.template');
+const PokerGameOptionsTemplate = require('./lib/poker-game-options.template');
 
 const PokerState = require('./lib/poker-state.js');
 const PokerStake = require('./lib/poker-stake.js');
 const PokerQueue = require('./lib/poker-queue.js');
-const PokerPlayer = require('./lib/poker-player.js');
-const PokerDisplay = require('./lib/poker-display.js');
+const PokerUI = require('./lib/poker-ui.js');
 const PokerCards = require('./lib/poker-cards.js');
 
 //////////////////
@@ -75,7 +75,6 @@ class Poker extends GameTableTemplate {
 		this.game.state.small_blind;  // (INTEGER) value of small-blind
 		this.game.state.last_raise;   // (INTEGER) value of last raise
 		this.game.state.required_pot; // (INTEGER) value players need in pot to keep playing
-		this.game.state.pot;    // (INTEGER) current pot
    
 		this.game.state.passed[i];    // (INT) 1 = has passed
 		this.game.state.player_pot[i];  // (INTEGER) value contributed to pot
@@ -93,63 +92,6 @@ class Poker extends GameTableTemplate {
 
 
 
-	//
-	// initializes chips / pools / pots information
-	//
-	initializeGameStake(crypto = 'CHIPS', stake = '100') {
-		console.log("Initialize Poker Stakes!");
-		this.game.crypto = crypto;
-		this.game.stake = stake;
-		this.game.chips = 100;
-		this.game.blind_mode = 'static';
-
-		if (this.game.options.num_chips > 0) {
-			this.game.chips = this.game.options.num_chips;
-		}
-		if (this.game.options.crypto) {
-			this.game.crypto = this.game.options.crypto;
-		}
-		if (this.game.options.stake) {
-			this.game.stake = this.game.options.stake;
-		}
-		if (this.game.options.blind_mod) {
-			this.game.blind_mod = this.game.options.blind_mode;
-		}
-
-		this.settleNow = true;
-
-		this.game.state.round = 1;
-
-		this.game.state.big_blind = 2;
-		this.game.state.small_blind = 1;
-		this.game.state.last_raise = this.game.state.big_blind;
-		this.game.state.required_pot = this.game.state.big_blind;
-
-		for (let i = 0; i < this.game.players.length; i++) {
-			this.game.state.passed[i] = 0;
-			this.game.state.player_pot[i] = 0;
-			this.game.state.debt[i] = 0;
-			this.game.state.player_credit[i] = this.game.chips;
-		}
-
-		this.game.queue = ['newround'];
-
-		//
-		// and redisplay board
-		//
-		for (let i = 1; i <= this.game.players; i++) {
-			this.playerbox.updateGraphics('', i);
-		}
-
-		console.log(JSON.parse(JSON.stringify(this.game.state)));
-
-		this.board.render();
-
-		//Doesn't do anything substantial
-		console.log("Initialize Poker Stakes 2!");
-		super.initializeGameStake(crypto, stake);
-		console.log("Initialize Poker Stakes 3!");
-	}
 
 	initializeGame() {
 		//
@@ -423,6 +365,59 @@ class Poker extends GameTableTemplate {
 		super.endTurn(nextTarget);
 	}
 
+        returnGameRulesHTML() {
+                return PokerGameRulesTemplate(this.app, this);
+        }
+
+        returnAdvancedOptions() {
+                return PokerGameOptionsTemplate(this.app, this);
+        }
+
+        // Extension of game engine stub for advanced stake selection before starting a game
+        
+        attachAdvancedOptionsEventListeners() {
+
+                let blindModeInput = document.getElementById('blind_mode');
+                let numChips = document.getElementById('num_chips');
+                let blindDisplay = document.getElementById('blind_explainer');
+                let crypto = document.getElementById('crypto');
+                let stakeValue = document.getElementById('stake');
+                let chipInput = document.getElementById('chip_wrapper');
+                //let stake = document.getElementById("stake");
+
+                const updateChips = function () {
+                        if (numChips && stakeValue && chipInput /*&& stake*/) {
+                                if (crypto.value == '') {
+                                        chipInput.style.display = 'none';
+                                        stake.value = '0';
+                                } else {
+                                        let nChips = parseInt(numChips.value);
+                                        let stakeAmt = parseFloat(stakeValue.value);
+                                        let jsMath = stakeAmt / nChips;
+                                        chipInput.style.display = 'block';
+                                }
+                        }
+                };
+
+                if (blindModeInput && blindDisplay) {
+                        blindModeInput.onchange = function () {
+                                if (blindModeInput.value == 'static') {
+                                        blindDisplay.textContent =
+                                                'Small blind is one chip, big blind is two chips throughout the game';
+                                } else {
+                                        blindDisplay.textContent =
+                                                'Small blind starts at one chip, and increments by 1 every 5 rounds';
+                                }
+                        };
+                }
+
+                if (crypto) {
+                        crypto.onchange = updateChips;
+                }
+                if (numChips) {
+                        numChips.onchange = updateChips;
+                }
+        }
 
 
 
@@ -433,8 +428,7 @@ Poker.importFunctions(
 	PokerState,
 	PokerStake,
 	PokerQueue,
-	PokerPlayer,
-	PokerDisplay,
+	PokerUI,
 	PokerCards
 );
 

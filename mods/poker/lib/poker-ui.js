@@ -1,4 +1,4 @@
-class PokerPlayer {
+class PokerUI {
 
         returnPlayerRole(player) {
                 if (this.game.state.winners.includes(player)){
@@ -289,4 +289,4 @@ class PokerPlayer {
 
 }
 
-module.exports = PokerPlayer;
+module.exports = PokerUI;
