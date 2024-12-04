@@ -46,7 +46,7 @@ class WebMethods extends WebSharedMethods {
 		try {
 			newtx.deserialize(buffer);
 			newtx.unpackData();
-			console.debug("processing peer tx : ", newtx.msg);
+			// console.debug("processing peer tx : ", newtx.msg);
 		} catch (error) {
 			console.error(error);
 			newtx.msg = buffer;

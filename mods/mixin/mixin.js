@@ -206,7 +206,7 @@ class Mixin extends ModTemplate {
 
       const { privateKey: spendPrivateKey, publicKey: spendPublicKey, seed: sessionSeed } = getED25519KeyPair();
       
-      const spend_private_key = spendPrivateKey;
+      const spend_private_key = sessionSeed;
       const spend_public_key = spendPublicKey.toString('hex');
       const session_seed = sessionSeed.toString('hex');
     

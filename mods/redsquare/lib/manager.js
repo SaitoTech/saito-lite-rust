@@ -624,10 +624,10 @@ class TweetManager {
 
 		if (!this?.eventsAttached){
 
-			if (document.getElementById("following")){ // for you
-				document.getElementById("following").onclick = (e) => {
+			if (document.getElementById("curated")){ // for you
+				document.getElementById("curated").onclick = (e) => {
 					e.currentTarget.classList.add("active");
-					document.getElementById("for-you").classList.remove("active");
+					document.getElementById("everything").classList.remove("active");
 					this.mod.curated = true;
 					this.mod.saveOptions();
 					this.clearFeed();
@@ -637,10 +637,10 @@ class TweetManager {
 					}, 10);
 				}
 			}
-			if (document.getElementById("for-you")){ // everything
-				document.getElementById("for-you").onclick = (e) => {
+			if (document.getElementById("everything")){ // everything
+				document.getElementById("everything").onclick = (e) => {
 					e.currentTarget.classList.add("active");
-					document.getElementById("following").classList.remove("active");
+					document.getElementById("curated").classList.remove("active");
 					this.mod.curated = false;
 					this.mod.saveOptions();
 					this.showLoader();
