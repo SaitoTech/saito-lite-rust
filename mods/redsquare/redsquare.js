@@ -546,15 +546,18 @@ class RedSquare extends ModTemplate {
       }
     }
 
-    if (!this.ignoreCentralServer && window?.tweets?.length) {
-      for (let z = 0; z < window.tweets.length; z++) {
-        let newtx = new Transaction();
-        newtx.deserialize_from_web(this.app, window.tweets[z]);
-        if (!newtx?.optional) {
-          newtx.optional = {};
+    if (window?.tweets?.length) {
+      console.log("RS options: ", this.curated, this.ignoreCentralServer);
+      if (!this.ignoreCentralServer && this.curated) { 
+        for (let z = 0; z < window.tweets.length; z++) {
+          let newtx = new Transaction();
+          newtx.deserialize_from_web(this.app, window.tweets[z]);
+          if (!newtx?.optional) {
+            newtx.optional = {};
+          }
+          newtx.optional.data_source = 'server_cache';
+          this.addTweet(newtx, 'server_cache');
         }
-        newtx.optional.data_source = 'server_cache';
-        this.addTweet(newtx, 'server_cache');
       }
     }
 
@@ -748,9 +751,9 @@ class RedSquare extends ModTemplate {
         );
       }*/
 
-      //if (this.manager) {
-      //  this.manager.fetchTweets();
-      //}
+      if (!this.curated && this.manager) {
+        this.manager.fetchTweets();
+      }
     }
 
     //
