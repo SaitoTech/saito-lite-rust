@@ -65,18 +65,22 @@ class Blog extends ModTemplate {
 
 
 
-    async loadBlogPostForUser(key, callback, limit = 10) {
+    async loadBlogPostForUser(key, callback, useCache, limit = 10) {
         // Check cache first
         const cachedPosts = this.postsCache.byUser.get(key) || [];
         const lastFetch = this.postsCache.lastFetch.get(key) || 0;
         const isCacheValid = Date.now() - lastFetch < this.CACHE_TIMEOUT;
 
-        if (cachedPosts.length > 0 && isCacheValid) {
-            console.log('Using cached posts for user:', key);
-            callback(cachedPosts.slice(0, limit));
-            return;
+        if(useCache){
+            if (cachedPosts.length > 0 && isCacheValid) {
+                console.log('Using cached posts for user:', key);
+                callback(cachedPosts.slice(0, limit));
+                return;
+            }
+    
         }
 
+       
         try {
             const peer = key === this.publicKey
                 ? (await this.app.network.getPeers())[0]?.peerIndex
@@ -98,13 +102,17 @@ class Blog extends ModTemplate {
         }
     }
 
-    async loadAllPosts(keys, callback = null) {
-        const isCacheValid = Date.now() - this.postsCache.lastAllPostsFetch < this.CACHE_TIMEOUT;
-        if (this.postsCache.allPosts.length > 0 && isCacheValid) {
-            console.log('Using cached all posts');
-            if (callback) callback(this.postsCache.allPosts);
-            return this.postsCache.allPosts;
+    async loadAllPosts(keys, callback = null, useCache) {
+
+        if(useCache){
+            const isCacheValid = Date.now() - this.postsCache.lastAllPostsFetch < this.CACHE_TIMEOUT;
+            if (this.postsCache.allPosts.length > 0 && isCacheValid) {
+                console.log('Using cached all posts');
+                if (callback) callback(this.postsCache.allPosts);
+                return this.postsCache.allPosts;
+            }
         }
+       
 
         try {
             const loadPromises = keys.map(key =>

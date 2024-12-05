@@ -77,7 +77,7 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                         setSelectedPost(updatedPost);
                     }
                 }
-            });
+            }, useCache);
         } else {
 
             if (useCache) {
@@ -105,12 +105,12 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                         setSelectedPost(updatedPost);
                     }
                 }
-            });
+            }, useCache);
         }
     };
 
     useEffect(() => {
-        loadPosts(true);
+        loadPosts(false);
     }, [selectedUser, publicKey]);
 
 
