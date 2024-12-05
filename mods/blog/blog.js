@@ -1,3 +1,5 @@
+
+
 const { default: Transaction } = require("saito-js/lib/transaction");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const ModTemplate = require("../../lib/templates/modtemplate");
@@ -26,6 +28,7 @@ class Blog extends ModTemplate {
             image: 'https://saito.tech/wp-content/uploads/2022/04/saito_card.png'
         };
 
+        this.callbackAfterPost = null
 
         this.styles = ['/saito/saito.css', '/blog/style.css'];
 
@@ -284,7 +287,7 @@ class Blog extends ModTemplate {
 
             await this.app.network.propagateTransaction(newtx);
             if (callback) {
-                callback()
+                this.callbackAfterPost = callback
             }
 
             return newtx;
@@ -312,6 +315,14 @@ class Blog extends ModTemplate {
             await this.app.storage.saveTransaction(tx, {
                 field1: 'Blog',
             }, "localhost");
+
+
+            if(this.callbackAfterPost){
+                this.callbackAfterPost()
+                this.callbackAfterPost = null;
+            }
+        
+ 
 
             return true;
         } catch (error) {
@@ -366,7 +377,7 @@ class Blog extends ModTemplate {
         this.cache[from].blogPosts.push(data);
         if (tx.isFrom(this.publicKey)) {
             this.app.connection.emit("saito-header-update-message", { msg: "" });
-            siteMessage('Blog post published', 2000);
+            siteMessage('Blog post published', 1500);
         }
 
 

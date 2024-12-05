@@ -128,6 +128,7 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                     postData.content
                 );
             } else {
+                siteMessage("Submitting blog post");
                 await mod.createBlogPostTransaction(
                     {
                         title: postData.title,
@@ -137,12 +138,12 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                         imageUrl: postData.imageUrl,
                         timestamp: Date.now(),
                     },
-                    () => {
-                        siteMessage("Submitting blog post");
-                        setTimeout(() => {
-                            setShowPostModal(false);
-                            refreshPosts(); // Refresh posts after new post
-                        }, 2000);
+                    () => {      
+                        setShowPostModal(false);
+                        refreshPosts();      
+                        if (document.querySelector('.saito-back-button')) {
+                            document.querySelector('.saito-back-button').remove();
+                          }
                     }
                 );
             }
