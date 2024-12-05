@@ -472,8 +472,9 @@ class Keychain {
 	saveKeys() {
 		this.app.options.keys = [...this.keys];
 		this.app.storage.saveOptions();
-		if (this.returnHash() != this.hash) {
-			this.hash = this.returnHash();
+		let new_hash = this.returnHash();
+		if (new_hash != this.hash) {
+			this.hash = new_hash;
 			this.app.connection.emit('wallet-updated');
 		}
 	}
