@@ -40,7 +40,7 @@ class Blog extends ModTemplate {
 
     async installModule(app) {
         super.installModule(app);
-        this.processBlogPosts();
+        // this.processBlogPosts();
     }
 
 
