@@ -42,7 +42,7 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
         return combined.sort((a, b) => b.timestamp - a.timestamp);
     };
 
-    const loadPosts = async (useCache = true) => {
+    const loadPosts = async (useCache = false) => {
         setIsLoadingMore(true);
         const latestTimestamp = latestPostRef.current?.timestamp;
 
