@@ -7,13 +7,12 @@
    async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_hash="")
 
 **********************************************************************************/
-const { ApiNetworkProvider } = require("@elrondnetwork/erdjs-network-providers");
+//const { ApiNetworkProvider } = require("@elrondnetwork/erdjs-network-providers");
 const {TokenPayment} = require("@elrondnetwork/erdjs");
 const axios  = require('axios')
-const {account:Account, transaction: Transaction} = require('@elrondnetwork/elrond-core-js');
+const {transaction: Transaction} = require('@elrondnetwork/elrond-core-js');
 const CryptoModule = require("../../lib/templates/cryptomodule");
-
-
+const { ApiNetworkProvider, ProxyNetworkProvider, Account, UserSigner, Address } = require("@multiversx/sdk-core");
 
 class EGLDModule extends CryptoModule {
 
@@ -30,70 +29,138 @@ class EGLDModule extends CryptoModule {
     // this.base_url = "https://elrond.saito.io/0"
     this.api_network_provider = "https://devnet-api.elrond.com"
     this.has_loaded = false
-  }
-
+    this.apiNetworkProvider = null;
+    this.proxyNetworkProvider = null;
+    this.networkConfig = null;
+    this.account_created = 0;
+    this.account = null;
+    this.nonce = 0;
+    this.address_obj = null;
+}
 
   async initialize(){
-       //if(!this.has_loaded){
-        // try {
-        //   const res = await axios({
-        //     method: "get",
-        //     url: `https://elrond.saito.io/0/hello`
-        //    })
-        //    this.base_url = "https://elrond.saito.io/0"
-        // } catch (error) {
-        //   this.base_url = "https://elrond-api-devnet.public.blastapi.io"
-        // }
-       //  this.base_url = "https://elrond-api-devnet.public.blastapi.io";
-       // // finally {
-       //    this.createEGLDAccount();
-       //    this.networkProvider = new ApiNetworkProvider(this.api_network_provider)
-       //    let address = this.egld.keyfile.bech32;
-       //    await this.updateBalance(address);
-       //    await this.updateAddressNonce(address);
-       //    console.log('base url', this.base_url);
-       //    this.has_loaded = true;
-       //  //}
-       // }
-
-
-       // check saito api status periodically, use fallback if it fails
-       // setInterval(async ()=> {
-       //  try {
-       //    const res = await axios({
-       //      method: "get",
-       //      url: `https://elrond.saito.io/0/hello`
-       //     })
-       //     this.base_url = "https://elrond.saito.io/0"
-       //  } catch (error) {
-       //    this.base_url = "https://elrond-api-devnet.public.blastapi.io"
-       //  }
-       // }, 60000)
-
-   
-
+        await this.load();
+        this.apiNetworkProvider = new ApiNetworkProvider("https://devnet-api.multiversx.com", { clientName: "multiversx-your-client-name" });
+        this.proxyNetworkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", { clientName: "multiversx-your-client-name" });
+        this.networkConfig = await this.apiNetworkProvider.getNetworkConfig();
+        console.log(this.networkConfig.MinGasPrice);
+        console.log(this.networkConfig.ChainID);
   }
-
 
   async activate() {
     console.log("activating egld ///");
-    if(!this.has_loaded){
-        this.createEGLDAccount();
-        this.networkProvider = new ApiNetworkProvider(this.api_network_provider)
-        let address = this.egld.keyfile.bech32;
-        await this.updateBalance(address);
-        await this.updateAddressNonce(address);
-        console.log('base url', this.base_url);
-        this.has_loaded = true;
+
+    if (this.account_created == 0){
+        await this.generateAddress();
+        await this.generateAccount();
+
         await this.showBackupWallet();
+        this.account_created = 1;
         this.save();
     }
 
     await super.activate();
   }
 
+  async generateAddress(address = null) {
+    console.log("EGLD generateAddress");
+      try {
+        if (address == null) {
+            let privKey = this.app.crypto.generateKeys();
+            this.address_obj = new Address(privKey);
+            
+        } else {
+            this.address_obj = new Address(address);
+        }
 
-  async showBackupWallet(){
+        console.log("this.address_obj: ", this.address_obj);
+    
+        this.egld.address = this.address = this.destination = this.address_obj.toBech32();
+      } catch (error) {
+        console.error("Error creating EGLD address:", error);
+        throw error;
+      }
+  }
+
+  async generateAccount() {
+    console.log("EGLD generateAccount");
+      try {
+        if (this.address_obj != null) {
+            let account = new Account(this.address_obj);
+            this.account = account;
+
+            this.egld.balance = this.balance = this.account.balance;
+            this.egld.nonce = this.nonce = this.account.nonce;
+
+            console.log("generateAccount account: ", this.account);
+        }
+      } catch (error) {
+        console.error("Error creating EGLD account:", error);
+        throw error;
+      }
+  }
+
+  async updateAccount() {
+    console.log("EGLD updateAccount");
+    try {
+        if (this.address_obj != null) {
+            if (this.account == null) {
+                this.account = new Account(this.address_obj);
+            }
+            console.log("updateAccount this.address_obj:", this.address_obj);
+            const accOnNetwork = await this.apiNetworkProvider.getAccount(this.address_obj);
+            this.account.update(accOnNetwork);
+
+            this.egld.bigIntBalance = BigInt(this.account.balance.toNumber())
+            this.egld.balance = this.balance = this.convertBigIntToNumber(this.egld.bigIntBalance);
+            this.egld.nonce = this.nonce = this.account.nonce;
+
+            console.log("updateAccount account: ", this.account);
+            console.log("updateAccount account balance bigint: ", this.balance);
+            //console.log("updateAccount account balance: ", this.account.balance.toString());
+        }
+      } catch (error) {
+        console.error("Error updating EGLD account:", error);
+        throw error;
+      }
+
+  }
+
+
+   convertNumberToBigint(amount = '0.0') {
+        let bigIntNum = 0;
+        let num = Number(amount);
+        if (num > 0) {
+            bigIntNum = num * 1000000000000000000; // 100,000,000
+        }
+
+        return BigInt(bigIntNum);
+    }
+     
+    convertBigIntToNumber(amount = BigInt(0)) {
+        let string = '0.00';
+        let num = 0;
+        let bigint_divider = 1000000000000000000n;
+
+        if (typeof amount == 'bigint') {
+            // convert bigint to number
+            num = Number((amount * 1000000000000000000n) / bigint_divider) / 1000000000000000000;
+
+            // convert number to string
+            string = num.toString();
+        } else {
+            console.error(
+                `convertNolanToSaito: Type ` +
+                    typeof amount +
+                    ` provided. BigInt required`
+            );
+        }
+
+        return string;
+    }
+
+
+    async showBackupWallet(){
         this.app.options.wallet.backup_required = 1;
         await this.app.wallet.saveWallet();
         
@@ -107,176 +174,62 @@ class EGLDModule extends CryptoModule {
     }
 
 
-
-
-
-async returnBalance(address){
-    return this.balance;
-    
-    let  res  = await  axios({
-        method: 'get',
-        url: `${this.base_url}/address/${address}/balance`,
-        data: ""
-      })
-      this.balance = res.data.data.balance;
-      return res.data.data.balance;
-}
-
-returnAddress (){
-    return this.egld.keyfile.bech32;
-}
-
-
-
-async getAddressNonce(address){
-   const res = await axios({
-    method: "get",
-    url: `${this.base_url}/address/${address}/nonce`
-   })
-   let nonce = res.data.data.nonce;
-//    console.log(res, 'data')
-   return  nonce
-}
-
-
-async updateAddressNonce(address){
-    console.log("this.nonce before: ", this.nonce);
-    const res = await axios({
-        method: "get",
-        url: `${this.base_url}/address/${address}/nonce`
-       })
-
-       this.nonce = res.data.data.nonce;
-       console.log("this.nonce after: ", this.nonce);
-}
-
-
-incrementNonce(nonce){
-    return  nonce + 1
-}
-
-
-
-returnPrivateKey(){
-    return this.egld.account.privateKey;
-}
-
-async updateBalance(address){
-    let balance = await this.returnBalance(address)
-    balance = TokenPayment.egldFromBigInteger(balance)
-    console.log('egld balance: ', balance);
-    this.balance  = 0; // balance; //balance.toPrettyString()
-    console.log('egld balance', this.balance)
-
-}
-
-
-
-async createEGLDAccount(){
-    console.log("createEGLDAccount egld ///");
-    if(this.app.options.egld){
-      let keyfile =  this.app.options.egld.keyfile
-      let account = new Account(this.app.options.egld.keyfile, this.app.options.egld.password)
-      this.egld.keyfile = keyfile;
-      this.egld.account = account;
-    }
-    else {
-      let password = this.app.crypto.generateRandomNumber().substring(0, 8);
-    //   let password = "password"
-      let keyfile =  new Account().initNewAccountFromPassword(password)
-      let account = new Account().loadFromKeyFile(keyfile, password)
-      this.egld.keyfile = keyfile;
-      this.egld.account = account;
-      //this.app.options.egld = {keyfile, password}
-      //this.app.storage.saveOptions(); 
-      console.log("keyfile: ", keyfile);
-      console.log("account: ", account);
-      this.address = keyfile.bech32;
-      this.destination = keyfile.bech32;
-
-      console.log("this.address: ", this.address);
-      console.log("this.destination: ", this.destination);
+    async returnBalance(){
+        console.log("EGLD returnBalance ///");
+        await this.updateAccount();
+        return this.balance;
     }
 
-  }
-
-
-
-    async sendPayment(amount, recipient,  unique_hash=""){
-    let from = this.egld.keyfile.bech32
-    let config = await this.networkProvider.getNetworkConfig();
-    let nonce = await this.nonce
-    console.log('nonce ', nonce)
-    let tokenPayment = TokenPayment.egldFromAmount(String(amount));
-    let value = BigInt(amount * (10 ** tokenPayment.numDecimals));
-    console.log('value ', value.toString())
-    const balance =  await this.returnBalance(from);
-    if (parseFloat(balance) < parseFloat(value.toString())){
-      return console.log("your balance is not enough for this transaction", balance);
+    returnAddress (){
+        return this.address;
     }
-   let  to = recipient
-    let tx = new Transaction({
-        nonce,
-        from,
-        to,
-        senderUsername: "" ,
-        receiverUsername: "" ,
-        value : value.toString(),
-        gasPrice: 1000000000 ,
-        gasLimit: 70000 ,
-        data: "" ,
-        chainID: config.ChainID,
-        version: 1
-    })
-    try {
-       let serializedTx = tx.prepareForSigning();
-       tx.signature = this.egld.account.sign(serializedTx)
-        let signedtx = tx.prepareForNode();
-        signedtx.chainId = config.ChainID;
-        let signedTxJson = JSON.stringify(signedtx, null, 4);;
 
-        let res  = await  axios({
-            method: 'post',
-            url: `${this.base_url}/transactions`,
-            data: signedtx
-        })
- 
-        console.log('transaction successful', res)
 
-        await this.updateAddressNonce(from);
 
-        return res.data.txHash;
-    } catch (error) {
-        console.log(error, "error");
+    async getNonce(){
+        await this.updateAccount();
+        return this.nonce;
     }
-}
 
 
-async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_hash=""){
+    async updateNonce(){
+    }
 
-    const res = await axios({
-        method: "get",
-        url: `${this.base_url}/accounts/${recipient}/transfers?sender=${sender}`
-       })
-    //    console.log(res.data)
 
-       let toReturn = null
+    incrementNonce(){
+        
+    }
 
-       for(let i = 0; i< res.data.length; i++){
-         if(res.data[i].timestamp > timestamp){
-            let amountRes = TokenPayment.egldFromBigInteger(res.data[i].value);
-            let amountSent = TokenPayment.egldFromAmount(String(amount));
-                // console.log(amountRes.toString(), amountSent.toString())
-            if(parseFloat(amountRes.toString()) === parseFloat(amountSent.toString())){
-                toReturn = 1;
-                // console.log(res.data[i], "actual transaction");
-            }
-       
-          
-         }
-       }
-       return toReturn
-}
+    returnPrivateKey(){
+
+    }
+
+    async updateBalance(){
+
+    }
+
+    async load(){
+        if (this.app?.options?.crypto?.egld) {
+          this.egld = this.app.options.crypto.egld;
+          console.log("EGLD OPTIONS: " + JSON.stringify(this.app.options.crypto.egld));
+          if (this.egld.address) {
+            this.destination = this.egld.address;
+            await this.generateAddress(this.egld.address);
+            //await this.updateAccount();
+            this.account_created = 1;
+          }
+        }
+    }
+
+    save() {
+        if (!this.app.options?.crypto?.egld) {
+            this.app.options.crypto = {};
+            this.app.options.crypto.egld = {};
+        }
+        this.app.options.crypto.egld = this.egld;
+        this.app.storage.saveOptions();
+        super.save();
+    }
 
 
 }

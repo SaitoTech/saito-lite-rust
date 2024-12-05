@@ -35,6 +35,7 @@
     "@giphy/js-components": "^5.8.2",
     "@giphy/js-fetch-api": "^4.4.0",
     "@mixin.dev/mixin-node-sdk": "^7.2.1",
+    "@multiversx/sdk-core": "^13.15.0",
     "@types/uuid": "^9.0.8",
     "archiver": "^3.1.1",
     "axios": "^0.27.2",
