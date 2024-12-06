@@ -97,7 +97,7 @@ const PostModal = ({ onClose, onSubmit }) => {
       const tagsArray = tags.split(',').map(tag => tag.trim()).filter(tag => tag);
 
       await onSubmit({ title, content, image: base64Image, tags: tagsArray, imageUrl });
-      onClose();
+      // onClose();
     } catch (error) {
       console.error('Error submitting post:', error);
     } finally {

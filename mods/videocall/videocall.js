@@ -107,8 +107,6 @@ class Videocall extends ModTemplate {
 				this.layout = this.app.options.stun.settings?.layout;
 			}
 
-			console.log('************* LAYOUT', this.layout);
-
 			if (app.browser.returnURLParameter('stun_video_chat')) {
 				this.room_obj = JSON.parse(
 					app.crypto.base64ToString(app.browser.returnURLParameter('stun_video_chat'))
@@ -598,6 +596,14 @@ class Videocall extends ModTemplate {
 			newtx.addTo(this.room_obj.host_public_key);
 		}
 
+		// Fallback for saved calls when blocks aren't forming correctly
+		let event = this.app.keychain.returnKey(this.room_obj.call_id, true);
+		if (event?.profile?.participants){
+			for (let participant of event.profile.participants){
+				newtx.addTo(participant);
+			}
+		}
+
 		newtx.msg.module = 'Videocall';
 		newtx.msg.request = 'call-list-request';
 		newtx.msg.call_id = this.room_obj.call_id;
@@ -695,6 +701,7 @@ class Videocall extends ModTemplate {
 		console.log('STUN: My peer list: ', this.room_obj.call_peers, 'Received list: ', call_list);
 
 		for (let peer of call_list) {
+			this.addCallParticipant(txmsg.call_id, peer);
 			if (peer !== this.publicKey) {
 				if (!this.room_obj?.call_peers.includes(peer)) {
 					this.room_obj?.call_peers.push(peer);
@@ -859,7 +866,6 @@ class Videocall extends ModTemplate {
 
 	addCallParticipant(call_id, publicKey){
 		let event = this.app.keychain.returnKey(call_id, true);
-		
 		// We will add this key as a call participant...
 		if (event){
 			if (!event?.profile){
@@ -871,13 +877,14 @@ class Videocall extends ModTemplate {
 
 			if (!event.profile.participants.includes(publicKey)){
 				event.profile.participants.push(publicKey);	
+				this.app.keychain.saveKeys();
 			}
-			this.app.keychain.saveKeys();
 		}
 	}
 
 	saveCallToKeychain(){
 
+		console.log("Saving call as event in keychain");
 		let call_link = this.generateCallLink();
 		let name = "Video Call";
 

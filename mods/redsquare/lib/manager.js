@@ -143,7 +143,7 @@ class TweetManager {
 		let managerElem = document.querySelector(myqs);
 
 		if (this.mode == 'tweets' && new_mode !== 'tweets') {
-			console.log('Stash rendered tweets from main feed');
+			//console.log('Stash rendered tweets from main feed');
 			let kids = managerElem.children;
 			holder.replaceChildren(...kids);
 			if (document.getElementById('saito-new-tweets')) {
@@ -151,7 +151,7 @@ class TweetManager {
 			}
 			this.thread_id = null;
 		} else {
-			console.log('Remove temporary content from page');
+			//console.log('Remove temporary content from page');
 			while (managerElem.hasChildNodes()) {
 				managerElem.firstChild.remove();
 			}
@@ -165,7 +165,7 @@ class TweetManager {
 			this.mode = new_mode;
 		}
 
-		console.log('Redsquare manager rendering: ', this.mode);
+		//console.log('Redsquare manager rendering: ', this.mode);
 
 		////////////
 		// tweets //
@@ -260,11 +260,11 @@ class TweetManager {
 		);
 
 		if (!this.numActivePeers) {
-			console.log('Try again');
+			console.log('RS: Try again');
 			this.mod.tweets_earliest_ts--;
 			numActivePeers = this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this));
 			if (!numActivePeers) {
-				console.log('Give up');
+				console.log('RS: Give up');
 				this.insertOlderTweets(0);
 			}
 		}
@@ -321,7 +321,7 @@ class TweetManager {
 					);
 				}
 				this.intersectionObserver.disconnect();
-				console.log("Out of content");
+				console.log("RS: Out of content");
 			} 
 		}
 	}
