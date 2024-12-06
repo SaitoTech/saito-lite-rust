@@ -146,11 +146,11 @@ class Archive extends ModTemplate {
 
 		var isDbCreated = await this.localDB.initDb(db);
 
-		if (isDbCreated) {
+		/*if (isDbCreated) {
 			console.log('ARCHIVE: Db Created & connection is opened');
 		} else {
 			console.log('ARCHIVE: Connection is opened');
-		}
+		}*/
 	}
 
 	async render() {

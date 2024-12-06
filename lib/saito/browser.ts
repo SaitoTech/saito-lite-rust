@@ -66,8 +66,8 @@ class Browser {
 
 		app.connection.on("saito-render-complete", ()=> {
 			// xclose (loading wallpaper) looks for this class on body
-			console.log("rendering complete, remove wallpaper");
 			setTimeout(()=> {
+				console.log("DOM rendering complete, remove wallpaper");
 				document.querySelector("body").classList.add("xclose");
 			}, 1000);
 		});

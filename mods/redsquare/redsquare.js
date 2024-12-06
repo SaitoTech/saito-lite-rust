@@ -547,7 +547,6 @@ class RedSquare extends ModTemplate {
     }
 
     if (window?.tweets?.length) {
-      console.log("RS options: ", this.curated, this.ignoreCentralServer);
       if (!this.ignoreCentralServer && this.curated) { 
         for (let z = 0; z < window.tweets.length; z++) {
           let newtx = new Transaction();
@@ -1714,10 +1713,6 @@ class RedSquare extends ModTemplate {
 
       this.curated_tweets.push(tweet);
     }
-
-    console.log(
-      `RS tweets filtered -- ${this.curated_tweets.length} acceptable out of ${this.tweets.length} total`
-    );
 
     return this.curated_tweets.length - current;
   }

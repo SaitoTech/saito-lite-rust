@@ -107,8 +107,6 @@ class Videocall extends ModTemplate {
 				this.layout = this.app.options.stun.settings?.layout;
 			}
 
-			console.log('************* LAYOUT', this.layout);
-
 			if (app.browser.returnURLParameter('stun_video_chat')) {
 				this.room_obj = JSON.parse(
 					app.crypto.base64ToString(app.browser.returnURLParameter('stun_video_chat'))
