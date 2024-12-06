@@ -1,25 +1,24 @@
-const Transaction = require("../../lib/saito/transaction").default;
+const Transaction = require('../../lib/saito/transaction').default;
 const ModTemplate = require('../../lib/templates/modtemplate');
 const PeerService = require('saito-js/lib/peer_service').default;
 
 /***
  *  A generic utility for creating stun connections that other modules can use
  *  API is a combination of respondTo and event space
- * 
+ *
  * Will emit (with publicKey of peer):
  *  'stun-new-peer-connection'
- * 
+ *
  * 	'stun-connection-connected' --- when you have created the basic stun connection (for media streaming)
  *  'stun-connection-failed'
  *  'stun-data-channel-open'
  *  'stun-data-channel-close'
  *  'stun-update-connection-message'
- * 
+ *
  *  'stun-track-event'
- * 
+ *
  * 	Your modules can set a listener for these and process accordingly
- */ 
-
+ */
 
 class Stun extends ModTemplate {
 	constructor(app) {
@@ -68,6 +67,8 @@ class Stun extends ModTemplate {
 
 		this.peers = new Map();
 
+		this.noloop = []; // array of failed/timedout peer publickeys, so we don't repeat ad infinitum
+
 		// app.connection.on("stun-data-channel-open", async (publicKey) => {
 
 		// 	 await this.app.network.addStunPeer(publicKey, this.peers.get(publicKey))
@@ -75,7 +76,7 @@ class Stun extends ModTemplate {
 		// });
 
 		app.connection.on('stun-connection-connected', async (publicKey) => {
-			 //await this.app.network.addStunPeer(publicKey, this.peers.get(publicKey))
+			//await this.app.network.addStunPeer(publicKey, this.peers.get(publicKey))
 		});
 	}
 
@@ -91,29 +92,31 @@ class Stun extends ModTemplate {
 					this.sendTransaction(peerId, tx);
 				},
 
-			  // For the API, it isn't enough for one party to create a peer connection, so if you don't 
-			  // provide a callback, it uses the sendJoinTransaction to message your peer and have them 
-			  // create a peer connection on their end, it is akin to texting your friend to say call me.
-			  // This is good for most data channel set ups, but if you need more control over who messages 
-			  // who when you can get around this by setting the callback deliberately to false. (i.e. my friend
-			  // has texted me and it is on me to call them)
+				// For the API, it isn't enough for one party to create a peer connection, so if you don't
+				// provide a callback, it uses the sendJoinTransaction to message your peer and have them
+				// create a peer connection on their end, it is akin to texting your friend to say call me.
+				// This is good for most data channel set ups, but if you need more control over who messages
+				// who when you can get around this by setting the callback deliberately to false. (i.e. my friend
+				// has texted me and it is on me to call them)
 				createPeerConnection: (peerId, callback = null) => {
 					//
 					// send ready message to peer, so if they want to create the channel, we are receptive
 					//
-					if (callback == null){
-						console.log("STUN API: Create dummy callback for joinTransaction");
+					if (callback == null) {
+						console.log('STUN API: Create dummy callback for joinTransaction');
 						callback = (peerId) => {
 							this.sendJoinTransaction(peerId);
-						}			
-					}else if (!callback){
-						console.log("STUN API: We are intentionally not setting a callback in the stun connection API");
+						};
+					} else if (!callback) {
+						console.log(
+							'STUN API: We are intentionally not setting a callback in the stun connection API'
+						);
 					}
 
-					if (Array.isArray(peerId)){
+					if (Array.isArray(peerId)) {
 						peerId.forEach((peer) => this.createPeerConnection(peer, callback));
-					}else{
-						this.createPeerConnection(peerId, callback);	
+					} else {
+						this.createPeerConnection(peerId, callback);
 					}
 				},
 				removePeerConnection: (peerId) => {
@@ -145,7 +148,6 @@ class Stun extends ModTemplate {
 		return null;
 	}
 
-
 	// Dummy functions for testing stun-data-channel upgrade to PEER object
 	returnServices() {
 		let services = [];
@@ -155,7 +157,7 @@ class Stun extends ModTemplate {
 		return services;
 	}
 
-  async onPeerServiceUp(app, peer, service = {}) {
+	async onPeerServiceUp(app, peer, service = {}) {
 		if (service.service === 'stun-test') {
 			if (this.hasConnection(peer.publicKey)) {
 				console.log('STUN PEER UPGRADE SUCCESS!!!! ' + peer.publicKey);
@@ -165,29 +167,29 @@ class Stun extends ModTemplate {
 	}
 
 	hasConnection(peerId) {
-		if (Array.isArray(peerId)){
-			if (peerId.length == 0){ 
+		if (Array.isArray(peerId)) {
+			if (peerId.length == 0) {
 				return false;
 			}
 			let answer = true;
-			for (let peer of peerId){
-				if (!this.hasConnectionWithPeer(peer)){
+			for (let peer of peerId) {
+				if (!this.hasConnectionWithPeer(peer)) {
 					return false;
 				}
 			}
 			return answer;
-		}else{
+		} else {
 			return this.hasConnectionWithPeer(peerId);
 		}
 	}
 
-	hasConnectionWithPeer(peerId){
+	hasConnectionWithPeer(peerId) {
 		let peerConnection = this.peers.get(peerId);
 		if (peerConnection) {
 			if (peerConnection?.dc) {
 				if (peerConnection.connectionState == 'connected') {
-					if (peerConnection.dc.readyState == "open"){
-						return true;	
+					if (peerConnection.dc.readyState == 'open') {
+						return true;
 					}
 				}
 			}
@@ -197,15 +199,15 @@ class Stun extends ModTemplate {
 	}
 
 	async sendTransaction(peerId, tx) {
-		if (!this.hasConnectionWithPeer(peerId)){
-			console.warn("Stun: cannot send transaction over stun");
+		if (!this.hasConnectionWithPeer(peerId)) {
+			console.warn('Stun: cannot send transaction over stun');
 			return;
 		}
 
 		try {
 			let peerConnection = this.peers.get(peerId);
 			peerConnection.dc.send(tx.serialize_to_web(this.app));
-		}catch(err){
+		} catch (err) {
 			console.error(err);
 		}
 
@@ -235,11 +237,7 @@ class Stun extends ModTemplate {
 					if (this.hasSeenTransaction(tx)) return;
 
 					if (tx.isTo(this.publicKey) && !tx.isFrom(this.publicKey)) {
-						await this.handleSignalingMessage(
-							tx.from[0].publicKey,
-							message.request,
-							message
-						);
+						await this.handleSignalingMessage(tx.from[0].publicKey, message.request, message);
 					}
 				}
 			}
@@ -260,11 +258,7 @@ class Stun extends ModTemplate {
 					return;
 				}
 
-				await this.handleSignalingMessage(
-					tx.from[0].publicKey,
-					txmsg.request,
-					txmsg
-				);
+				await this.handleSignalingMessage(tx.from[0].publicKey, txmsg.request, txmsg);
 			}
 		}
 
@@ -276,18 +270,18 @@ class Stun extends ModTemplate {
 		// Stun metadata messages
 		//
 		if (request == 'peer-joined') {
-			console.log("Stun: Peer joined (requested a connection)");
+			console.log('Stun: Peer joined (requested a connection)');
 			this.createPeerConnection(sender);
 			return;
 		}
 
 		if (request == 'peer-left') {
-			console.log("Stun: Peer left (close the connection)");
+			console.log('Stun: Peer left (close the connection)');
 			this.removePeerConnection(sender);
 			return;
 		}
 		if (request == 'peer-kicked') {
-			console.log("Stun: Peer kicked out (close the connection)");
+			console.log('Stun: Peer kicked out (close the connection)');
 			this.removePeerConnection(sender);
 			return;
 		}
@@ -295,51 +289,48 @@ class Stun extends ModTemplate {
 		let peerConnection = this.peers.get(sender);
 
 		if (!peerConnection) {
-			console.warn(
-				'Receiving stun signalling messages for a non-peer connection'
-			);
+			console.warn('Receiving stun signalling messages for a non-peer connection');
 			return;
 		}
 
 		// Stun protocol messages
 		if (request == 'peer-description') {
 			let description = data.description;
-			try{
-
-				const readyForOffer = !peerConnection?.makingOffer && (peerConnection.signalingState == "stable" || peerConnection?.answerPending);
-				const offerCollision = description.type === "offer" && !readyForOffer;
+			try {
+				const readyForOffer =
+					!peerConnection?.makingOffer &&
+					(peerConnection.signalingState == 'stable' || peerConnection?.answerPending);
+				const offerCollision = description.type === 'offer' && !readyForOffer;
 
 				peerConnection.ignoreOffer = offerCollision && peerConnection?.rude;
 
 				if (peerConnection.ignoreOffer) {
-					console.log("STUN: Impolite peer ignores offer collision");
+					console.log('STUN: Impolite peer ignores offer collision');
 					return;
 				}
 
-				peerConnection.answerPending = description.type == "answer";
+				peerConnection.answerPending = description.type == 'answer';
 				await peerConnection.setRemoteDescription(description);
 				peerConnection.answerPending = false;
 
-				if (description.type === "offer"){
-					await peerConnection.setLocalDescription();	
+				if (description.type === 'offer') {
+					await peerConnection.setLocalDescription();
 					this.sendPeerDescriptionTransaction(sender, peerConnection.localDescription);
 				}
-				
+
 				this.peers.set(sender, peerConnection);
-				
-			}catch(err){
-				console.error("STUN: failure in peer-offer --- ", err);
+			} catch (err) {
+				console.error('STUN: failure in peer-offer --- ', err);
 			}
 			return;
 		}
 
-
 		if (request === 'peer-candidate') {
-			try{
+			try {
 				await peerConnection.addIceCandidate(data.iceCandidate);
-			}catch(err){
-				if (!peerConnection?.ignoreOffer){
-					console.error('Error adding remote candidate:', err, data.iceCandidate);	
+			} catch (err) {
+				if (!peerConnection?.ignoreOffer) {
+					console.error('Error adding remote candidate:', err, data.iceCandidate);
 				}
 			}
 			return;
@@ -359,13 +350,12 @@ class Stun extends ModTemplate {
 		this.app.modules.handlePeerTransaction(relayed_tx);
 	}
 
-	async sendJoinTransaction(peer){
-		let newtx =
-			await this.app.wallet.createUnsignedTransactionWithDefaultFee(peer);
+	async sendJoinTransaction(peer) {
+		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(peer);
 
 		newtx.msg = {
 			module: 'Stun',
-			request: 'peer-joined',
+			request: 'peer-joined'
 		};
 
 		await newtx.sign();
@@ -375,22 +365,23 @@ class Stun extends ModTemplate {
 	}
 
 	async sendPeerDescriptionTransaction(peer, description) {
-				let newtx =
-					await this.app.wallet.createUnsignedTransactionWithDefaultFee(peer);
+		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(peer);
 
-				newtx.msg = {
-					module: 'Stun',
-					request: 'peer-description',
-					description
-				};
+		newtx.msg = {
+			module: 'Stun',
+			request: 'peer-description',
+			description
+		};
 
-				await newtx.sign();
+		await newtx.sign();
 
-				this.app.connection.emit('relay-transaction', newtx);
+		this.app.connection.emit('relay-transaction', newtx);
 	}
 
 	createPeerConnection(peerId, callback = null) {
-		console.log('STUN: Create Peer Connection with ' + peerId + ` and ${callback?"a":"no"} callback`);
+		console.log(
+			'STUN: Create Peer Connection with ' + peerId + ` and ${callback ? 'a' : 'no'} callback`
+		);
 
 		if (peerId === this.publicKey) {
 			console.log('STUN: Attempting to create a peer Connection with myself!');
@@ -399,17 +390,17 @@ class Stun extends ModTemplate {
 
 		if (this.peers.get(peerId)) {
 			let pc = this.peers.get(peerId);
-			console.log(`STUN: ${peerId} already in stun peer list`, "Status: " + pc.connectionState);
+			console.log(`STUN: ${peerId} already in stun peer list`, 'Status: ' + pc.connectionState);
 
 			//If not a solid connection state..., delete and try again
-			if (pc.connectionState == "failed" || pc.connectionState == "disconnected"){
-				console.log("STUN: remove old connection to reconnect...");
+			if (pc.connectionState == 'failed' || pc.connectionState == 'disconnected') {
+				console.log('STUN: remove old connection to reconnect...');
 				this.removePeerConnection(peerId);
 				this.createPeerConnection(peerId, callback);
 				return;
 			}
-			
-			if (callback){
+
+			if (callback) {
 				callback(peerId);
 			}
 
@@ -417,67 +408,67 @@ class Stun extends ModTemplate {
 			// Assuming you are properly connected, simulate that the connection just came through,
 			// so the mods listeners can pick up and do their UI things
 			//
-			// Todo: this is a mess, should streamline events in stun, 
+			// Todo: this is a mess, should streamline events in stun,
 			// the UI components are a little too indebted to the old idiosyncratic logic
 			//
-			this.app.connection.emit("stun-new-peer-connection", peerId, pc);
+			this.app.connection.emit('stun-new-peer-connection', peerId, pc);
 
-			if (pc.connectionState === "connected"){
-				this.app.connection.emit("stun-connection-connected", peerId);
-			}else{
-				this.app.connection.emit("stun-update-connection-message", peerId, pc.connectionState);
+			if (pc.connectionState === 'connected') {
+				this.app.connection.emit('stun-connection-connected', peerId);
+			} else {
+				this.app.connection.emit('stun-update-connection-message', peerId, pc.connectionState);
 			}
 
-			if (this.hasConnection(peerId)){
-				this.app.connection.emit("stun-data-channel-open", peerId);	
+			if (this.hasConnection(peerId)) {
+				this.app.connection.emit('stun-data-channel-open', peerId);
 			}
 
 			return;
-		}else{
-
+		} else {
 			const pc = new RTCPeerConnection({
 				iceServers: this.servers
-			})
-
+			});
 
 			// use string compare of public keys rather than presence or absence of callback
 			// to determine who will be impolite in any pairing because we may be simultnaeously attempting
-			// to create connections with callbacks for whatever reason 
+			// to create connections with callbacks for whatever reason
 			if (this.publicKey > peerId) {
-				console.log("I will be impolite to peer: ", peerId);
+				console.log('I will be impolite to peer: ', peerId);
 				pc.rude = true;
 			}
 
 			this.peers.set(peerId, pc);
 
-			this.app.connection.emit("stun-new-peer-connection", peerId, pc);
+			this.app.connection.emit('stun-new-peer-connection', peerId, pc);
 		}
 
 		const peerConnection = this.peers.get(peerId);
 
-		peerConnection.timer = setTimeout(()=>{ 
-				console.log("STUN Connection timeout...");
-				this.app.connection.emit('stun-connection-timeout', peerId);
-				this.removePeerConnection(peerId);
+		peerConnection.timer = setTimeout(() => {
+			console.log('STUN Connection timeout...');
+			this.app.connection.emit('stun-connection-timeout', peerId);
+			this.removePeerConnection(peerId);
+			if (!this.noloop.includes(peerId)) {
+				console.log('Attempt STUN reconnection once');
 				this.createPeerConnection(peerId, callback);
+				this.noloop.push(peerId);
+			} else {
+				console.log('STUN reconnection attempt timed out, give up!');
+			}
 		}, 8000);
-		
 
 		// Handle ICE candidates
 		peerConnection.onicecandidate = async (event) => {
 			if (event.candidate) {
-				console.log('receiving ice candidate for ', peerId, event.candidate)
-	
+				console.log('receiving ice candidate for ', peerId, event.candidate);
+
 				let data = {
 					module: 'Stun',
 					request: 'peer-candidate',
 					iceCandidate: event.candidate
 				};
 
-				let tx =
-					await this.app.wallet.createUnsignedTransactionWithDefaultFee(
-						peerId
-					);
+				let tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(peerId);
 				tx.msg = data;
 				await tx.sign();
 
@@ -485,20 +476,17 @@ class Stun extends ModTemplate {
 			}
 		};
 
-		
 		//Receive Remote media
 		peerConnection.addEventListener('track', (event) => {
-			console.log('new track', peerId, event)
-			this.app.connection.emit("stun-track-event", peerId, event);
+			console.log('new track', peerId, event);
+			this.app.connection.emit('stun-track-event', peerId, event);
 		});
 
 		peerConnection.onconnectionstatechange = () => {
-			console.log(
-				`STUN: ${peerId} connectionstatechange -- ` +
-					peerConnection.connectionState
-			);
+			console.log(`STUN: ${peerId} connectionstatechange -- ` + peerConnection.connectionState);
 
-			if (peerConnection?.timer){
+			//cancel timer if any activity on connectionstate
+			if (peerConnection?.timer) {
 				clearTimeout(peerConnection.timer);
 				delete peerConnection.timer;
 			}
@@ -507,20 +495,23 @@ class Stun extends ModTemplate {
 				peerConnection.connectionState === 'failed' ||
 				peerConnection.connectionState === 'disconnected'
 			) {
-				peerConnection.timer = setTimeout(() => {
-					if (
-						peerConnection.connectionState === 'failed' ||
-						peerConnection.connectionState === 'disconnected'
-					) {
-						this.app.connection.emit(
-							'stun-connection-failed',
-							peerId
-						);
-						console.log("STUN: connection not restored after 5 seconds...");
-						this.removePeerConnection(peerId);
-						this.createPeerConnection(peerId, callback);
-					}
-				}, 5000);
+				console.log('STUN: set reconnection timer...');
+				let timerAmt = callback ? 6000 : 4000;
+				peerConnection.timer = setTimeout(
+					() => {
+						if (
+							peerConnection.connectionState === 'failed' ||
+							peerConnection.connectionState === 'disconnected'
+						) {
+							this.app.connection.emit('stun-connection-failed', peerId);
+							console.log('STUN: connection not restored after 5 seconds...');
+							console.log('STUN: remove peer and attempt reconnection');
+							this.removePeerConnection(peerId);
+							this.createPeerConnection(peerId, callback);
+						}
+					},
+					timerAmt
+				);
 			}
 			if (peerConnection.connectionState === 'connected') {
 				this.app.connection.emit('stun-connection-connected', peerId);
@@ -534,12 +525,12 @@ class Stun extends ModTemplate {
 		};
 
 		peerConnection.oniceconnectionstatechange = () => {
-			if (peerConnection.iceConnectionState === "failed"){
+			if (peerConnection.iceConnectionState === 'failed') {
 				peerConnection.restartIce();
-			}	
-		}
+			}
+		};
 
-		const dc = peerConnection.createDataChannel('data-channel', {negotiated: true, id: 42});
+		const dc = peerConnection.createDataChannel('data-channel', { negotiated: true, id: 42 });
 		peerConnection.dc = dc;
 
 		dc.onmessage = (event) => {
@@ -562,31 +553,34 @@ class Stun extends ModTemplate {
 		//
 		peerConnection.onnegotiationneeded = async () => {
 			try {
-				
-				if (!peerConnection?.negotiation_counter){
+				if (!peerConnection?.negotiation_counter) {
 					peerConnection.negotiation_counter = 0;
 				}
 
-				if (peerConnection.negotiation_counter > 10){
+				if (peerConnection.negotiation_counter > 10) {
 					console.log(`STUN: Negotation needed, but going to cool off instead`);
 					return;
 				}
 
-				console.log(`STUN: Negotation needed! sending offer to ${peerId} with peer connection, ` + peerConnection.signalingState);
+				console.log(
+					`STUN: Negotation needed! sending offer to ${peerId} with peer connection, ` +
+						peerConnection.signalingState
+				);
 
 				peerConnection.negotiation_counter++;
 				peerConnection.makingOffer = true;
 
-				if (peerConnection?.negotiation_timeout){
+				if (peerConnection?.negotiation_timeout) {
 					clearTimeout(peerConnection.negotiation_timeout);
 				}
 
-				peerConnection.negotiation_timeout = setTimeout(()=>{peerConnection.negotiation_counter = 0;}, 12000);
+				peerConnection.negotiation_timeout = setTimeout(() => {
+					peerConnection.negotiation_counter = 0;
+				}, 12000);
 
 				await peerConnection.setLocalDescription();
 
 				await this.sendPeerDescriptionTransaction(peerId, peerConnection.localDescription);
-
 			} catch (err) {
 				console.error('Error creating offer:', err);
 			} finally {
@@ -597,8 +591,6 @@ class Stun extends ModTemplate {
 		if (callback) {
 			callback(peerId);
 		}
-
-
 	}
 
 	//This can get double processed by PeerTransaction and onConfirmation
@@ -606,12 +598,11 @@ class Stun extends ModTemplate {
 	removePeerConnection(peerId) {
 		const peerConnection = this.peers.get(peerId);
 		if (peerConnection) {
-			console.log("Stun remove peer connection!");
+			console.log('Stun remove peer connection!');
 			peerConnection.close();
 			this.peers.delete(peerId);
 		}
 	}
-
 }
 
 module.exports = Stun;
