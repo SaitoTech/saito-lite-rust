@@ -1755,12 +1755,13 @@ class Browser {
 			}
 		};
 	}
-	
+
 	returnAddressHTML(key) {
-		return `<div class="saito-address" data-id="${key}">${this.app.keychain.returnIdentifierByPublicKey(
-			key,
-			true
-		)}</div>`;
+		let identifier = this.app.keychain.returnIdentifierByPublicKey(key, true);
+		if (identifier === key){
+			identifier = 'Anon-' + identifier.substr(0,6);
+		}
+		return `<div class="saito-address" data-id="${key}">${identifier}</div>`;
 	}
 
 	updateAddressHTML(key, id) {
