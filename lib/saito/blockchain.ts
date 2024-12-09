@@ -130,4 +130,10 @@ console.log("============");
 		await this.saveBlockchain();
 		this.app.modules.onNewBlock(block, lc);
 	}
+
+	public async getLatestBlockHash() {
+		let hash = await Saito.getInstance().getLatestBlockHash();
+
+		return hash;
+	}
 }
