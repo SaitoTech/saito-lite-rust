@@ -29,7 +29,6 @@ class InviteManager {
 		// handle requests to re-render invite manager
 		//
 		app.connection.on('arcade-invite-manager-render-request', () => {
-			console.log('arcade-invite-manager-render-request');
 			if (!this.mod.is_game_initializing) {
 				this.mod.purgeOldGames();
 				this.render();

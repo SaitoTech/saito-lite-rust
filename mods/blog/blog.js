@@ -1,3 +1,5 @@
+
+
 const { default: Transaction } = require("saito-js/lib/transaction");
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const ModTemplate = require("../../lib/templates/modtemplate");
@@ -26,6 +28,7 @@ class Blog extends ModTemplate {
             image: 'https://saito.tech/wp-content/uploads/2022/04/saito_card.png'
         };
 
+        this.callbackAfterPost = null
 
         this.styles = ['/saito/saito.css', '/blog/style.css'];
 
@@ -39,8 +42,8 @@ class Blog extends ModTemplate {
     }
 
     async installModule(app) {
-        super.installModule(app);
-        this.processBlogPosts();
+        // super.installModule(app);
+        // this.processBlogPosts();
     }
 
 
@@ -65,18 +68,22 @@ class Blog extends ModTemplate {
 
 
 
-    async loadBlogPostForUser(key, callback, limit = 10) {
+    async loadBlogPostForUser(key, callback, useCache, limit = 10) {
         // Check cache first
         const cachedPosts = this.postsCache.byUser.get(key) || [];
         const lastFetch = this.postsCache.lastFetch.get(key) || 0;
         const isCacheValid = Date.now() - lastFetch < this.CACHE_TIMEOUT;
 
-        if (cachedPosts.length > 0 && isCacheValid) {
-            console.log('Using cached posts for user:', key);
-            callback(cachedPosts.slice(0, limit));
-            return;
+        if(useCache){
+            if (cachedPosts.length > 0 && isCacheValid) {
+                console.log('Using cached posts for user:', key);
+                callback(cachedPosts.slice(0, limit));
+                return;
+            }
+    
         }
 
+       
         try {
             const peer = key === this.publicKey
                 ? (await this.app.network.getPeers())[0]?.peerIndex
@@ -98,13 +105,17 @@ class Blog extends ModTemplate {
         }
     }
 
-    async loadAllPosts(keys, callback = null) {
-        const isCacheValid = Date.now() - this.postsCache.lastAllPostsFetch < this.CACHE_TIMEOUT;
-        if (this.postsCache.allPosts.length > 0 && isCacheValid) {
-            console.log('Using cached all posts');
-            if (callback) callback(this.postsCache.allPosts);
-            return this.postsCache.allPosts;
+    async loadAllPosts(keys, callback = null, useCache) {
+
+        if(useCache){
+            const isCacheValid = Date.now() - this.postsCache.lastAllPostsFetch < this.CACHE_TIMEOUT;
+            if (this.postsCache.allPosts.length > 0 && isCacheValid) {
+                console.log('Using cached all posts');
+                if (callback) callback(this.postsCache.allPosts);
+                return this.postsCache.allPosts;
+            }
         }
+       
 
         try {
             const loadPromises = keys.map(key =>
@@ -276,7 +287,7 @@ class Blog extends ModTemplate {
 
             await this.app.network.propagateTransaction(newtx);
             if (callback) {
-                callback()
+                this.callbackAfterPost = callback
             }
 
             return newtx;
@@ -304,6 +315,14 @@ class Blog extends ModTemplate {
             await this.app.storage.saveTransaction(tx, {
                 field1: 'Blog',
             }, "localhost");
+
+
+            if(this.callbackAfterPost){
+                this.callbackAfterPost()
+                this.callbackAfterPost = null;
+            }
+        
+ 
 
             return true;
         } catch (error) {
@@ -358,7 +377,7 @@ class Blog extends ModTemplate {
         this.cache[from].blogPosts.push(data);
         if (tx.isFrom(this.publicKey)) {
             this.app.connection.emit("saito-header-update-message", { msg: "" });
-            siteMessage('Blog post published', 2000);
+            siteMessage('Blog post published', 1500);
         }
 
 

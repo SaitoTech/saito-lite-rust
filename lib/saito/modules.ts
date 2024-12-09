@@ -156,9 +156,9 @@ class Mods {
     try {
       if (this.app.BROWSER === 1) {
         let mods = await this.app.storage.loadLocalApplications();
-        console.log('loaded mods:', mods);
 
         if (mods.length > 0) {
+          console.log('loaded mods:', mods);
           self['saito-js'] = require('saito-js').default;
           self['saito-js/lib/slip'] = require('saito-js/lib/slip').default;
           self['saito-js/lib/transaction'] = require('saito-js/lib/transaction').default;

@@ -8,13 +8,13 @@ const JSON = require('json-bigint');
 const PokerStats = require("./lib/stats");
 const GameHelp = require('./lib/ui/game-help/game-help');
 const htmlTemplate = require('./lib/game-html.template');
-
+const PokerGameRulesTemplate = require('./lib/poker-game-rules.template');
+const PokerGameOptionsTemplate = require('./lib/poker-game-options.template');
 
 const PokerState = require('./lib/poker-state.js');
 const PokerStake = require('./lib/poker-stake.js');
 const PokerQueue = require('./lib/poker-queue.js');
-const PokerPlayer = require('./lib/poker-player.js');
-const PokerDisplay = require('./lib/poker-display.js');
+const PokerUI = require('./lib/poker-ui.js');
 const PokerCards = require('./lib/poker-cards.js');
 
 //////////////////
@@ -75,7 +75,6 @@ class Poker extends GameTableTemplate {
 		this.game.state.small_blind;  // (INTEGER) value of small-blind
 		this.game.state.last_raise;   // (INTEGER) value of last raise
 		this.game.state.required_pot; // (INTEGER) value players need in pot to keep playing
-		this.game.state.pot;    // (INTEGER) current pot
    
 		this.game.state.passed[i];    // (INT) 1 = has passed
 		this.game.state.player_pot[i];  // (INTEGER) value contributed to pot
@@ -92,75 +91,7 @@ class Poker extends GameTableTemplate {
 	}
 
 
-	initializeQueue() {
-		this.game.queue = [];
 
-		this.game.queue.push('ante');
-		this.game.queue.push('READY');
-		this.game.queue.push('POOL\t1');
-		this.game.queue.push(
-			`SIMPLEDEAL\t2\t1\t` + JSON.stringify(this.returnDeck())
-		);
-	}
-
-
-	//
-	// initializes chips / pools / pots information
-	//
-	initializeGameStake(crypto = 'CHIPS', stake = '100') {
-		console.log("Initialize Poker Stakes!");
-		this.game.crypto = crypto;
-		this.game.stake = stake;
-		this.game.chips = 100;
-		this.game.blind_mode = 'static';
-
-		if (this.game.options.num_chips > 0) {
-			this.game.chips = this.game.options.num_chips;
-		}
-		if (this.game.options.crypto) {
-			this.game.crypto = this.game.options.crypto;
-		}
-		if (this.game.options.stake) {
-			this.game.stake = this.game.options.stake;
-		}
-		if (this.game.options.blind_mod) {
-			this.game.blind_mod = this.game.options.blind_mode;
-		}
-
-		this.settleNow = true;
-
-		this.game.state.round = 1;
-
-		this.game.state.big_blind = 2;
-		this.game.state.small_blind = 1;
-		this.game.state.last_raise = this.game.state.big_blind;
-		this.game.state.required_pot = this.game.state.big_blind;
-
-		for (let i = 0; i < this.game.players.length; i++) {
-			this.game.state.passed[i] = 0;
-			this.game.state.player_pot[i] = 0;
-			this.game.state.debt[i] = 0;
-			this.game.state.player_credit[i] = this.game.chips;
-		}
-
-		this.game.queue = ['newround'];
-
-		//
-		// and redisplay board
-		//
-		for (let i = 1; i <= this.game.players; i++) {
-			this.playerbox.updateGraphics('', i);
-		}
-
-		console.log(JSON.parse(JSON.stringify(this.game.state)));
-
-		this.board.render();
-
-		//Doesn't do anything substantial
-		console.log("Initialize Poker Stakes 2!");
-		super.initializeGameStake(crypto, stake);
-		console.log("Initialize Poker Stakes 3!");
-	}
 
 	initializeGame() {
 		//
@@ -242,6 +173,7 @@ class Poker extends GameTableTemplate {
 
 		return ngoa;
 	}
+
 
 	async render(app) {
 
@@ -350,6 +282,7 @@ class Poker extends GameTableTemplate {
 			document.querySelector('.game-scoreboard').style.display = 'none';
 		}
 	}
+
 	async exitGame() {
 		if (this.game.over == 0 && this.game.player) {
 			let c = await sconfirm("forfeit the game?");
@@ -430,80 +363,63 @@ class Poker extends GameTableTemplate {
 		}
 
 		super.endTurn(nextTarget);
-}
-
-
-
-	preloadImages() {
-		let allImages = [
-			'/poker/img/cards/C1.png',
-			'/poker/img/cards/C2.png',
-			'/poker/img/cards/C3.png',
-			'/poker/img/cards/C4.png',
-			'/poker/img/cards/C5.png',
-			'/poker/img/cards/C6.png',
-			'/poker/img/cards/C7.png',
-			'/poker/img/cards/C8.png',
-			'/poker/img/cards/C9.png',
-			'/poker/img/cards/C10.png',
-			'/poker/img/cards/C11.png',
-			'/poker/img/cards/C12.png',
-			'/poker/img/cards/C13.png',
-			'/poker/img/cards/S1.png',
-			'/poker/img/cards/S2.png',
-			'/poker/img/cards/S3.png',
-			'/poker/img/cards/S4.png',
-			'/poker/img/cards/S5.png',
-			'/poker/img/cards/S6.png',
-			'/poker/img/cards/S7.png',
-			'/poker/img/cards/S8.png',
-			'/poker/img/cards/S9.png',
-			'/poker/img/cards/S10.png',
-			'/poker/img/cards/S11.png',
-			'/poker/img/cards/S12.png',
-			'/poker/img/cards/S13.png',
-			'/poker/img/cards/D1.png',
-			'/poker/img/cards/D2.png',
-			'/poker/img/cards/D3.png',
-			'/poker/img/cards/D4.png',
-			'/poker/img/cards/D5.png',
-			'/poker/img/cards/D6.png',
-			'/poker/img/cards/D7.png',
-			'/poker/img/cards/D8.png',
-			'/poker/img/cards/D9.png',
-			'/poker/img/cards/D10.png',
-			'/poker/img/cards/D11.png',
-			'/poker/img/cards/D12.png',
-			'/poker/img/cards/D13.png',
-			'/poker/img/cards/H1.png',
-			'/poker/img/cards/H2.png',
-			'/poker/img/cards/H3.png',
-			'/poker/img/cards/H4.png',
-			'/poker/img/cards/H5.png',
-			'/poker/img/cards/H6.png',
-			'/poker/img/cards/H7.png',
-			'/poker/img/cards/H8.png',
-			'/poker/img/cards/H9.png',
-			'/poker/img/cards/H10.png',
-			'/poker/img/cards/H11.png',
-			'/poker/img/cards/H12.png',
-			'/poker/img/cards/H13.png'
-		];
-
-		this.preloadImageArray(allImages, 0);
 	}
 
-	preloadImageArray(imageArray = [], idx = 0) {
-		let pre_images = [imageArray.length];
+        returnGameRulesHTML() {
+                return PokerGameRulesTemplate(this.app, this);
+        }
 
-		if (imageArray && imageArray.length > idx) {
-			pre_images[idx] = new Image();
-			pre_images[idx].onload = () => {
-				this.preloadImageArray(imageArray, idx + 1);
-			};
-			pre_images[idx].src = imageArray[idx];
-		}
-	}
+        returnAdvancedOptions() {
+                return PokerGameOptionsTemplate(this.app, this);
+        }
+
+        // Extension of game engine stub for advanced stake selection before starting a game
+        
+        attachAdvancedOptionsEventListeners() {
+
+                let blindModeInput = document.getElementById('blind_mode');
+                let numChips = document.getElementById('num_chips');
+                let blindDisplay = document.getElementById('blind_explainer');
+                let crypto = document.getElementById('crypto');
+                let stakeValue = document.getElementById('stake');
+                let chipInput = document.getElementById('chip_wrapper');
+                //let stake = document.getElementById("stake");
+
+                const updateChips = function () {
+                        if (numChips && stakeValue && chipInput /*&& stake*/) {
+                                if (crypto.value == '') {
+                                        chipInput.style.display = 'none';
+                                        stake.value = '0';
+                                } else {
+                                        let nChips = parseInt(numChips.value);
+                                        let stakeAmt = parseFloat(stakeValue.value);
+                                        let jsMath = stakeAmt / nChips;
+                                        chipInput.style.display = 'block';
+                                }
+                        }
+                };
+
+                if (blindModeInput && blindDisplay) {
+                        blindModeInput.onchange = function () {
+                                if (blindModeInput.value == 'static') {
+                                        blindDisplay.textContent =
+                                                'Small blind is one chip, big blind is two chips throughout the game';
+                                } else {
+                                        blindDisplay.textContent =
+                                                'Small blind starts at one chip, and increments by 1 every 5 rounds';
+                                }
+                        };
+                }
+
+                if (crypto) {
+                        crypto.onchange = updateChips;
+                }
+                if (numChips) {
+                        numChips.onchange = updateChips;
+                }
+        }
+
+
 
 }
 
@@ -512,8 +428,7 @@ Poker.importFunctions(
 	PokerState,
 	PokerStake,
 	PokerQueue,
-	PokerPlayer,
-	PokerDisplay,
+	PokerUI,
 	PokerCards
 );
 
