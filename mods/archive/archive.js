@@ -282,7 +282,8 @@ class Archive extends ModTemplate {
 				if (txs?.length > 0) {
 					this.updateTransaction(tx, { block_id, block_hash });
 				} else {
-					this.saveTransaction(tx, { block_id, block_hash });
+					// Use the storage function for standard formatting
+					this.app.storage.saveTransaction(tx, { block_id, block_hash }, "localhost");
 				}
 			}, 10000);
 		}
