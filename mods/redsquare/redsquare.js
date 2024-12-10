@@ -486,15 +486,15 @@ class RedSquare extends ModTemplate {
       } catch (err) {
         console.warn('Stun not available for P2P Redsquare');
       }
-    }
 
-    if (this.curated) {
-      this.app.connection.on('registry-cache-loaded', () => {
-        let ct1 = this.curated_tweets.length;
-        this.reset();
-        let ct2 = this.curated_tweets.length;
-        this.app.connection.emit('redsquare-home-postcache-render-request', ct2 - ct1);
-      });
+      if (this.curated) {
+        this.app.connection.on('registry-cache-loaded', () => {
+          let ct1 = this.curated_tweets.length;
+          this.reset();
+          let ct2 = this.curated_tweets.length;
+          this.app.connection.emit('redsquare-home-postcache-render-request', ct2 - ct1);
+        });
+      }
     }
   }
 
@@ -2395,7 +2395,7 @@ class RedSquare extends ModTemplate {
       obj.data[key] = data[key];
     }
 
-    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction(tx.from[0].publicKey);
+    let newtx = await redsquare_self.app.wallet.createUnsignedTransaction();
 
     newtx.msg = obj;
     await newtx.sign();
@@ -2414,10 +2414,33 @@ class RedSquare extends ModTemplate {
 
     let flagged_tweet = this.returnTweet(txmsg.data.signature);
 
+    let process_action = tx.isFrom(this.publicKey);
+
+    let modScore = this.app.modules.moderate(tx);
+
+    if (modScore == -1){
+      // Ignore blacklisted people
+      return;
+    } else if (modScore == 1) {
+      // Trusted moderator
+      process_action = true;
+    } else {
+      if (flagged_tweet){
+        // two people who are not moderators have flagged it
+        if (flagged_tweet.flagged){
+          process_action = true;
+        }else{
+          // add a note that this was flagged, but don't necessarily update the database
+          flagged_tweet.flagged = true;  
+        }
+      }
+    }
+
     //
     // we will "soft delete" the tweet for the person who flagged it and in the central archives
     //
-    if (tx.isFrom(this.publicKey) || app.BROWSER == 0) {
+    if (process_action) {
+
       if (flagged_tweet?.tx) {
         await this.app.storage.updateTransaction(flagged_tweet.tx, { flagged: 1 }, 'localhost');
       } else {
@@ -2445,6 +2468,8 @@ class RedSquare extends ModTemplate {
           siteMessage('One of your tweets was flagged for review', 10000);
         }
       }
+    }else{
+      this.cacheRecentTweets();
     }
 
     return;
@@ -2655,10 +2680,17 @@ class RedSquare extends ModTemplate {
     let temp_array = [];
 
     for (let tweet of this.tweets){
+      if (tweet?.flagged) {
+        continue;
+      }
+
       let score = 0;
       score += tweet.num_likes;
       score += 2*tweet.num_retweets;
-      score += 5*tweet.num_replies;
+      score += 5*tweet.num_replies;      
+
+      score += 10*this.app.modules.moderate(tweet.tx);
+
       if (tweet.images?.length > 0){
         score += 5;
       }
@@ -2666,6 +2698,7 @@ class RedSquare extends ModTemplate {
         score += 2;
       }
       for (let key in tweet.retweeters){
+        score += 8*this.app.modules.moderate(tweet.tx);
         if (this.app.keychain.returnIdentifierByPublicKey(key)){
           score++;
         }

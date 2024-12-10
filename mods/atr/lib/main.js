@@ -63,15 +63,12 @@ class Main {
         attachEvents() {
         	let this_self = this;
 		document.querySelector(".new_block_with_ticket").onclick = async(e) => {
-			alert("new block with golden ticket");
 			await this_self.app.wallet.produceBlockWithGt();
 		}
 		document.querySelector(".new_block_no_ticket").onclick = async(e) => {
-			alert("new block no golden ticket");
 			await this_self.app.wallet.produceBlockWithoutGt();
 		}
 		document.querySelector("#add_transaction_to_mempool").onclick = async (e) => {
-			alert('rendering Mempool overlay');
 			this_self.add_mempool.render();
 			// let newtx = await this.app.wallet.createUnsignedTransaction();
     			// newtx.msg = {
