@@ -44,6 +44,15 @@ class ATR extends ModTemplate {
 		let txmsg = tx.returnMessage();
 		let atr_self = this.app.modules.returnModule('ATR');
 
+		console.log("txmsg: ", txmsg);
+
+		if (!txmsg.module == 'ATR') {
+	    	return;
+	    }
+
+	    console.log("getLastBlockHash: ", await this.app.blockchain.getLatestBlockHash());
+	    console.log("blk: ", blk.last_block_hash)
+
 		if (conf == 0) {
 
 			if (Number(blk.id) > atr_self.last_block_id) {
@@ -63,11 +72,10 @@ class ATR extends ModTemplate {
 					atr_self.blocks[8] = atr_self.block[9];
 					atr_self.blocks[9] = blk;
 				}
-				// if (this.browser_active) {
-				// 	console.log('atr render request')
-				// 	atr_self.app.connection.emit('saito-atr-render-request', {});
-				// }
-
+				if (this.browser_active) {
+					console.log('atr render request')
+					atr_self.app.connection.emit('saito-atr-render-request', {});
+				}
 
 			}
 		}

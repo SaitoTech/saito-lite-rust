@@ -29,6 +29,7 @@ class Main {
 			};
                		await newtx.sign();
     			await this.app.network.propagateTransaction(newtx);
+    			console.log("newtx", newtx);
     			this_self.overlay.hide();
 		}
 
