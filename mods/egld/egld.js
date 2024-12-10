@@ -8,11 +8,11 @@
 
 **********************************************************************************/
 //const { ApiNetworkProvider } = require("@elrondnetwork/erdjs-network-providers");
-const {TokenPayment} = require("@elrondnetwork/erdjs");
+//const {TokenPayment} = require("@elrondnetwork/erdjs");
 const axios  = require('axios')
-const {transaction: Transaction} = require('@elrondnetwork/elrond-core-js');
+//const {transaction: Transaction} = require('@elrondnetwork/elrond-core-js');
 const CryptoModule = require("../../lib/templates/cryptomodule");
-const { ApiNetworkProvider, ProxyNetworkProvider, Account, UserSigner, Address } = require("@multiversx/sdk-core");
+const { ApiNetworkProvider, ProxyNetworkProvider, Account, UserSigner, Address, UserWallet, Transaction, TransactionComputer, UserSecretKey  } = require("@multiversx/sdk-core");
 
 class EGLDModule extends CryptoModule {
 
@@ -66,8 +66,8 @@ class EGLDModule extends CryptoModule {
     console.log("EGLD generateAddress");
       try {
         if (address == null) {
-            let privKey = this.app.crypto.generateKeys();
-            this.address_obj = new Address(privKey);
+            this.egld.privKey = this.app.crypto.generateKeys();
+            this.address_obj = new Address(this.egld.privKey);
             
         } else {
             this.address_obj = new Address(address);
@@ -108,6 +108,15 @@ class EGLDModule extends CryptoModule {
                 this.account = new Account(this.address_obj);
             }
             console.log("updateAccount this.address_obj:", this.address_obj);
+
+
+            console.log("privKey: ", this.egld.privKey);
+            let userSecKey = UserSecretKey.fromString(this.egld.privKey);
+            console.log("this.userSecKey: ", userSecKey);
+            const signer = new UserSigner(userSecKey);
+            console.log("this.signer: ", signer);
+
+
             const accOnNetwork = await this.apiNetworkProvider.getAccount(this.address_obj);
             this.account.update(accOnNetwork);
 
@@ -171,6 +180,39 @@ class EGLDModule extends CryptoModule {
             'saito-backup-render-request',
             {msg: msg, title: 'BACKUP YOUR WALLET'}
         );
+    }
+
+    async sendPayment(amount = '', recipient = '', unique_hash = '') {
+
+        console.log("inside sendPayment ////");
+        console.log("amount, recipient, unique_hash: ", amount , recipient , unique_hash);
+        let txObj = {
+            nonce: this.account.nonce,
+            sender: new Address(this.address),
+            receiver: new Address(recipient),
+            value: this.convertNumberToBigint('0.05'),//50000000000000000n, // 0.05egld
+            //gasLimit: this.convertNumberToBigint('0.00000000000005'),//50000n,
+            chainID: "D"
+        };
+        const transaction = new Transaction(txObj);
+
+        console.log("obj:", txObj);
+        console.log("transaction: ", transaction);
+
+         console.log("privKey: ", this.egld.privKey);
+        let userSecKey = UserSecretKey.fromString(this.egld.privKey);
+        console.log("this.userSecKey: ", userSecKey);
+        const signer = new UserSigner(userSecKey);
+        console.log("this.signer: ", signer);
+
+
+        const transactionComputer = new TransactionComputer()
+        let serializedTransaction = transactionComputer.computeBytesForSigning(transaction);
+        transaction.signature = await signer.sign(serializedTransaction);
+
+        console.log("Signature", Buffer.from(transaction.signature).toString("hex"));
+        const txHash = await this.apiNetworkProvider.sendTransaction(transaction);
+        console.log("TX hash:", txHash);
     }
 
 
