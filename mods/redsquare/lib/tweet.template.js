@@ -14,6 +14,9 @@ module.exports = (app, mod, tweet) => {
 	if (tweet.data_renewal) {
 		html_markers += ` data-renewal="${tweet.data_renewal}"`;
 	}
+	if (tweet?.updated_at){
+		html_markers += ` data-timestamp="${tweet.updated_at}"`;	
+	}
 
 	if (!text && !notice && tweet.retweet_tx) {
 		notice =
