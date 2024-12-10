@@ -1,8 +1,8 @@
 module.exports = (app, mod) => {
 	return `
     <div class="redsquare-feed-source hidden">
-      <div class="saito-button-tab ${mod.curated ? "active" : ""}" id="following" title="curated feed"><span>for you</span></div>
-      <div class="saito-button-tab ${mod.curated ? "" : "active"}" id="for-you" title="original redsquare feed"><span>everything</span></div>
+      <div class="saito-button-tab ${mod.curated ? "active" : ""}" id="curated" title="curated feed"><span>curated</span></div>
+      <div class="saito-button-tab ${mod.curated ? "" : "active"}" id="everything" title="original redsquare feed"><span>unfiltered</span></div>
     </div>
     <div class="redsquare-progress-banner"></div>
     <div class="tweet-manager"></div>

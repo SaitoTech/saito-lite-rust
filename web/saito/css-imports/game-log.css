@@ -1,9 +1,9 @@
 #log-wrapper {
   top: 0px;
-  right: calc(16px - min(500px, 25vw));
+  right: calc(16px - min(500px, 65vw));
   position: absolute;
   display: block;
-  width: min(500px, 25vw);
+  width: min(500px, 65vw);
   height: 100%;
   z-index: 500;
   color: #fff;

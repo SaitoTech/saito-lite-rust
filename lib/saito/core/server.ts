@@ -216,7 +216,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 			// console.log("buffer length : " + buffer.byteLength, buffer);
 			newtx.deserialize(buffer);
 			newtx.unpackData();
-			console.debug("processing peer tx : ", newtx.msg);
+			// console.debug("processing peer tx : ", newtx.msg);
 		} catch (error) {
 			console.error(error);
 			newtx.msg = buffer;

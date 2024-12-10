@@ -27,19 +27,16 @@ class ATR extends ModTemplate {
 		];
 		this.ui = new ATRMain(app, this);
 		this.header = new SaitoHeader(this.app, this);
+
 	}
 
 	shouldAffixCallbackToModule() {
 		return 1;
 	}
 
-	async render(app) { 
-
-		if (!this.app.BROWSER) {
-			return;
-		}
-
-		this.ui.render();
+	async render(app) {
+		 this.addComponent(this.header);
+		 this.addComponent(this.ui);
 		await super.render(app);
 	}
 
@@ -48,6 +45,7 @@ class ATR extends ModTemplate {
 		let atr_self = this.app.modules.returnModule('ATR');
 
 		if (conf == 0) {
+
 			if (Number(blk.id) > atr_self.last_block_id) {
 				atr_self.last_block_id = Number(blk.id);
 
@@ -65,9 +63,13 @@ class ATR extends ModTemplate {
 					atr_self.blocks[8] = atr_self.block[9];
 					atr_self.blocks[9] = blk;
 				}
-				
-				atr_self.app.connection.emit('saito-atr-render-request', {});	
-			}	
+				// if (this.browser_active) {
+				// 	console.log('atr render request')
+				// 	atr_self.app.connection.emit('saito-atr-render-request', {});
+				// }
+
+
+			}
 		}
 		return;
 	}

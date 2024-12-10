@@ -1,4 +1,113 @@
-class PokerPlayer {
+class PokerUI {
+
+        returnPlayerRole(player) {
+                if (this.game.state.winners.includes(player)){
+                        return "Winner!";
+                }
+                if (player == this.game.state.small_blind_player) {
+                        return 'small blind';
+                }
+                if (player == this.game.state.big_blind_player) {
+                        return 'big blind';
+                }
+                if (player == this.game.state.button_player) {
+                        return 'dealer';
+                }
+
+                return '';
+        }
+
+        displayPlayers(preserveLog = false) {
+                if (!this.browser_active) {
+                        return;
+                }
+                try {
+                        for (let i = 1; i <= this.game.players.length; i++) {
+                                this.displayPlayerStack(i);
+                                this.playerbox.updateIcons(``, i);
+                                if (!preserveLog) {
+                                        this.displayPlayerNotice('', i);
+                                }
+                        }
+                        this.playerbox.updateIcons(
+                                `<i class="fa-solid fa-circle-dot"></i>`,
+                                this.game.state.button_player
+                        );
+                } catch (err) {
+                        console.log('error displaying player box', err);
+                }
+        }
+
+        displayHand() {
+                if (this.game.player == 0) {
+                        this.updateStatus(`You are observing the game`, -1);
+                        return;
+                }
+
+                if (this.game.state.passed[this.game.player - 1]) {
+                        this.cardfan.hide();
+                } else {
+                        this.cardfan.render();
+                }
+        }
+
+
+        displayPlayerNotice(msg, player) {
+                this.playerbox.renderNotice(msg, player);
+        }
+
+        displayPlayerLog(html, player) {
+                this.playerbox.renderNotice(html, player);
+        }
+
+        displayPlayerStack(player) {
+
+                if (!this.browser_active) { return; }
+
+                let credit = this.game.state.player_credit[player - 1]; 
+                let userline = `${this.returnPlayerRole(player)}<div class="saito-balance">${this.formatWager(credit)}</div>`;
+
+                this.playerbox.renderUserline(userline, player);
+
+                this.stack.render();
+
+        }
+
+
+
+        updateStatus(str, hide_info = 0) {
+                if (str.indexOf('<') == -1) {
+                        str = `<div style="padding-top:2rem">${str}</div>`;
+                }
+
+                this.game.status = str;
+                if (!this.browser_active) {
+                        return;
+                }
+                if (this.lock_interface == 1) {
+                        return;
+                }
+
+                //
+                // insert status message into playerbox BODY unless the status
+                // already exists, in which case we simplify update it instead
+                // of updating the body again.
+                //
+                try {
+                        let status_obj = document.querySelector('.status');
+                        if (status_obj) {
+                                status_obj.innerHTML = str;
+                        } else {
+                                this.playerbox.renderNotice(
+                                        `<div class="status">${str}</div>`,
+                                        this.game.player
+                                );
+                        }
+                } catch (err) {
+                        console.log('ERR: ' + err);
+                }
+        }
+
 
         playerTurn() {
                 if (this.browser_active == 0) {
@@ -180,4 +289,4 @@ class PokerPlayer {
 
 }
 
-module.exports = PokerPlayer;
+module.exports = PokerUI;
