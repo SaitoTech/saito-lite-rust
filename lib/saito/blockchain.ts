@@ -131,9 +131,8 @@ console.log("============");
 		this.app.modules.onNewBlock(block, lc);
 	}
 
-	public async getLatestBlockHash() {
-		let hash = await Saito.getInstance().getLatestBlockHash();
-
+	public async getLastBlockHash() {
+		let hash = await this.instance.get_last_block_hash();
 		return hash;
 	}
 }

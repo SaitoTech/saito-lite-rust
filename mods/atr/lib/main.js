@@ -54,6 +54,7 @@ class Main {
 			document.querySelector(`.blocktable .burn_fee .blockslot${blockslot}`).innerHTML = block.burnFee;
 			document.querySelector(`.blocktable .difficulty .blockslot${blockslot}`).innerHTML = block.difficulty;
 			document.querySelector(`.blocktable .previous_block_unpaid .blockslot${blockslot}`).innerHTML = block.previousBlockUnpaid;
+			document.querySelector(`.blocktable .gtNum .blockslot${blockslot}`).innerHTML = block.gtNum;
 
 		}
 
