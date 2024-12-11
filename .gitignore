@@ -57,6 +57,9 @@ bundler/*
 built
 built/*
 
+nettest/nodes
+nettest/nodes/*
+
 saito-issuance
 saito-issuance/*
 
