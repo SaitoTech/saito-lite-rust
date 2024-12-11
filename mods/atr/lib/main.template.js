@@ -162,9 +162,10 @@ module.exports = (app, mod) => {
 
 		<div class="dashboard-container">
     <div class="header">
-        <h2>ATR Testing</h2>
+        <h2>SAITO ATR Explorer</h2>
     </div>
 
+    <!--
     <div class="metrics">
         <div class="metric">
             <h3>5 secs</h3>
@@ -175,6 +176,7 @@ module.exports = (app, mod) => {
             <p class="positive">Genesis Period</p>
         </div>
     </div>
+    -->
 
     <div class="controls">
         <button class="saito-button-secondary control-button new_block_with_ticket">New Block (w/ golden ticket)</button>
@@ -478,6 +480,19 @@ module.exports = (app, mod) => {
             </tr>
             <tr class="previous_block_unpaid">
                 <td>previous_block_unpaid</td>
+                <td class="blockslot1"></td>
+                <td class="blockslot2"></td>
+                <td class="blockslot3"></td>
+                <td class="blockslot4"></td>
+                <td class="blockslot5"></td>
+                <td class="blockslot6"></td>
+                <td class="blockslot7"></td>
+                <td class="blockslot8"></td>
+                <td class="blockslot9"></td>
+                <td class="blockslot10"></td>
+            </tr>
+            <tr class="gtNum">
+                <td>gtNum</td>
                 <td class="blockslot1"></td>
                 <td class="blockslot2"></td>
                 <td class="blockslot3"></td>
