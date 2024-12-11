@@ -74,16 +74,8 @@ class ATR extends ModTemplate {
 					if (this.blocks.length < 10) {
 						this.blocks.push(blk_data);
 					} else {
-						this.blocks[0] = this.block[1];
-						this.blocks[1] = this.block[2];
-						this.blocks[2] = this.block[3];
-						this.blocks[3] = this.block[4];
-						this.blocks[4] = this.block[5];
-						this.blocks[5] = this.block[6];
-						this.blocks[6] = this.block[7];
-						this.blocks[7] = this.block[8];
-						this.blocks[8] = this.block[9];
-						this.blocks[9] = blk_data;
+						this.blocks.shift();
+						this.blocks.push(blk_data);
 					}
 				}
 			}
@@ -202,8 +194,6 @@ class ATR extends ModTemplate {
 	async onConfirmation(blk, tx, conf) {
 		let txmsg = tx.returnMessage();
 		let atr_self = this.app.modules.returnModule('ATR');
-
-		console.log("txmsg: ", txmsg);
 
 		if (!txmsg.module == 'ATR') {
 	    	return;
