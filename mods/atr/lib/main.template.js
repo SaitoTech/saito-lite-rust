@@ -119,7 +119,7 @@ module.exports = (app, mod) => {
     }
 
     .data-table th, .data-table td {
-        padding: 6px 16px;
+        padding: 6px 6px;
         text-align: left;
         font-size: 1.5rem;
     }
