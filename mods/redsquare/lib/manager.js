@@ -366,7 +366,7 @@ class TweetManager {
 			// I already have a list of tweets I liked available
 			this.loadLikes(this.mod.liked_tweets, 'localhost');
 		} else {
-			this.app.storage.loadTransactions(
+			await this.app.storage.loadTransactions(
 				{ field1: 'RedSquareLike', field2: this.profile.publicKey },
 				(txs) => {
 					let liked_tweets = [];
@@ -396,7 +396,7 @@ class TweetManager {
 		}
 
 		for (let peer of this.mod.peers) {
-			this.app.storage.loadTransactions(
+			await this.app.storage.loadTransactions(
 				{
 					field1: 'RedSquare',
 					field2: this.profile.publicKey,
@@ -506,7 +506,6 @@ class TweetManager {
 				insertion_index++;
 			}
 		}
-
 		list.splice(insertion_index, 0, tweet);
 	}
 

@@ -410,7 +410,7 @@ class RedSquare extends ModTemplate {
     this.loadOptions();
 
     if (!app.BROWSER) {
-      this.app.storage.loadTransactions(
+      await this.app.storage.loadTransactions(
         {
           field1: 'RedSquare',
           flagged: 0,
@@ -806,7 +806,7 @@ class RedSquare extends ModTemplate {
 
             //console.log(txmsg.data);
 
-            this.app.storage.loadTransactions(
+            await this.app.storage.loadTransactions(
               txmsg.data,
               async (txs) => {
                 //have to reserialize the txs ...
