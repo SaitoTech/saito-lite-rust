@@ -141,6 +141,7 @@ function deploy_scenario() {
             local target_dir="${nodes_dir}/${node_num}"
             announce "----------------------------------------"
             announce "Setting up node${node_num}..."
+            
             # Clone repository
             announce "Cloning branch ${branch} for node${node_num}..."
             execute "git clone --depth 1 --branch $branch ${PROJECT_DIR} $target_dir" || {
@@ -160,6 +161,13 @@ function deploy_scenario() {
                 announce "Copying configuration files for node${node_num}..."
                 execute "mkdir -p ${target_dir}/config"
                 execute "cp -r ${node_dir}/config/* ${target_dir}/config/" || true
+            fi
+
+                        # Copy blocks if they exist
+            if [ -d "${node_dir}/data/blocks" ]; then
+                announce "Copying blockchain data for node${node_num}..."
+                mkdir -p "${target_dir}/data/blocks"
+                execute "cp -r ${node_dir}/data/blocks/* ${target_dir}/data/blocks/"
             fi
 
             # Install dependencies and compile
@@ -197,8 +205,6 @@ function deploy_scenario() {
 
     announce "Deployment complete!"
     display_issuance
-    announce "----------------------------------------"
-    show_endpoints
     announce "----------------------------------------"
 }
 
@@ -244,6 +250,13 @@ function reset_scenario() {
                 execute "cp -r ${node_dir}/data/* ${target_dir}/data/" || true
             fi
 
+            # Copy blocks if they exist
+            if [ -d "${node_dir}/data/blocks" ]; then
+                announce "Copying blockchain data for node${node_num}..."
+                mkdir -p "${target_dir}/data/blocks"
+                execute "cp -r ${node_dir}/data/blocks/* ${target_dir}/data/blocks/"
+            fi
+
             # Copy new conf directory if it exists
             if [ -d "${node_dir}/conf" ]; then
                 announce "Copying new configuration files for node${node_num}..."
@@ -267,7 +280,8 @@ function display_issuance() {
         announce "Keys with SAITO on the Network:"
         cat "$issuance_file" >> "$LOG_FILE"
         cat "$issuance_file"
-        announce "\n----------------------------------------"
+        announce ""
+        announce "----------------------------------------"
     else
         announce "No issuance file found at: $issuance_file"
     fi
@@ -399,7 +413,7 @@ function show_help() {
     announce ""
     announce "deploy <scenario> <branch>"
     announce "  Sets up test nodes based on scenario configuration"
-    announce "  - scenario: Name of the scenario folder in nettest/scenario/"
+    announce "  - scenario: Name of the scenario folder in nettest/scenarios/"
     announce "  - branch: Git branch to use for node deployment"
     announce ""
     announce "reset <scenario>"
@@ -422,6 +436,85 @@ function show_help() {
     announce "endpoints"
     announce "  Lists all node endpoints in the network"
     announce ""
+    announce "snapshot"
+    announce "  Creates a new scenario from the current network state"
+    announce "  - Prompts for scenario name"
+    announce "  - Copies configuration and issuance files"
+    announce "  - Optionally includes blockchain data"
+    announce ""
+}
+
+function snapshot_network() {
+    # Prompt for scenario name
+    announce "Enter name for new scenario:"
+    read -r scenario_name
+
+    local scenario_dir="${PROJECT_DIR}/nettest/scenarios/${scenario_name}"
+    local nodes_dir="${PROJECT_DIR}/nettest/nodes"
+
+    # Check if scenario already exists
+    if [ -d "$scenario_dir" ]; then
+        announce "Warning: Scenario '$scenario_name' already exists."
+        announce "Do you want to overwrite it? (y/N)"
+        read -r overwrite
+        if [[ ! "$overwrite" =~ ^[Yy]$ ]]; then
+            announce "Snapshot cancelled"
+            return 1
+        fi
+        rm -rf "$scenario_dir"
+    fi
+
+    # Create scenario directory
+    mkdir -p "$scenario_dir"
+    announce "Creating scenario: $scenario_name"
+
+    # Loop through existing nodes
+    for node_dir in "$nodes_dir"/[0-9]*; do
+        if [ -d "$node_dir" ]; then
+            local node_num=$(basename "$node_dir")
+            local target_dir="${scenario_dir}/${node_num}"
+            
+            announce "Processing node${node_num}..."
+            
+            # Create node directory in scenario
+            mkdir -p "${target_dir}/conf"
+            mkdir -p "${target_dir}/data/issuance"
+
+            # Copy configuration files
+            if [ -f "${node_dir}/config/options" ]; then
+                execute "cp ${node_dir}/config/options ${target_dir}/config/"
+            else
+                announce "Warning: No options file found for node${node_num}"
+            fi
+
+            if [ -f "${node_dir}/config/modules.config.js" ]; then
+                execute "cp ${node_dir}/config/modules.config.js ${target_dir}/config/"
+            else
+                announce "Warning: No modules.config.js found for node${node_num}"
+            fi
+
+            # Copy issuance files
+            if [ -d "${node_dir}/data/issuance" ]; then
+                execute "cp -r ${node_dir}/data/issuance/* ${target_dir}/data/issuance/"
+            fi
+
+            # Check for blocks directory
+            if [ -d "${node_dir}/data/blocks" ]; then
+                announce "Node${node_num} has a blocks directory."
+                announce "Do you want to include blocks for node ${node_num} in the snapshot? (y/N)"
+                read -r copy_blocks
+                if [[ "$copy_blocks" =~ ^[Yy]$ ]]; then
+                    mkdir -p "${target_dir}/data/blocks"
+                    execute "cp -r ${node_dir}/data/blocks/* ${target_dir}/data/blocks/"
+                    announce "Blocks copied for node${node_num}"
+                else
+                    announce "Skipping blocks for node${node_num}"
+                fi
+            fi
+        fi
+    done
+
+    announce "Snapshot complete! New scenario created at: $scenario_dir"
 }
 
 # Main command handler
@@ -468,8 +561,11 @@ case "$1" in
     "help")
         show_help
         ;;
+    "snapshot")
+        snapshot_network
+        ;;
     *)
-        announce "Usage: nettest {install|clear|deploy|reset|start|stop|status|logs|endpoints|help}"
+        announce "Usage: nettest {install|clear|deploy|reset|start|stop|status|logs|endpoints|help|snapshot}"
         announce "Run 'nettest help' for detailed information about commands"
         exit 1
         ;;
