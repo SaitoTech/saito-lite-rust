@@ -118,6 +118,11 @@ function deploy_scenario() {
     local scenario_dir="${PROJECT_DIR}/nettest/scenarios/${scenario}"
     local nodes_dir="${PROJECT_DIR}/nettest/nodes"
 
+    announce "----------------------------------------"
+    announce "Checking requirements..."
+    check_folder_structure
+    announce "----------------------------------------"
+
     announce "Deploying scenario: [$scenario] from branch: [$branch]"
 
     # Check if scenario exists
