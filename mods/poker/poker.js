@@ -202,14 +202,8 @@ class Poker extends GameTableTemplate {
 			}
 		});
 
-		//
-		// if flat, we remove the active transform below this.board.render()
-		//
-		this.theme = this.loadGamePreference("theme");
-		this.sandee_theme_style = "perspective(700px) rotateX(33deg) !important";
-		this.current_board_style = this.sandee_theme_style;
-		if (this.theme == "flat") { this.current_board_style = ""; }
-		if (this.theme == "" || this.theme == undefined) { this.theme = "flat"; this.current_board_style = ""; }
+
+		this.theme = this.loadGamePreference("theme") || "flat";
 
 		this.menu.addSubMenuOption("game-game", {
 			text: "Theme",
@@ -226,21 +220,21 @@ class Poker extends GameTableTemplate {
 				game_mod.menu.hideSubMenus();
 				game_mod.theme = "flat";
 				game_mod.saveGamePreference("theme", "flat");
-				game_mod.current_board_style = "";
-				game_mod.board.render();
+				game_mod.board.toggleView();
+				game_mod.menu.render();
 			}
 		});
 
 		this.menu.addSubMenuOption("game-theme", {
-			text: `3D ${(this.theme == "3d") ? "✔" : ""}`,
+			text: `3D ${(this.theme == "threed") ? "✔" : ""}`,
 			id: "game-theme-3d",
 			class: "game-theme-3d",
 			callback: function (app, game_mod) {
 				game_mod.menu.hideSubMenus();
-				game_mod.theme = "3d";
-				game_mod.saveGamePreference("theme", "3d");
-				game_mod.current_board_style = game_mod.sandee_theme_style;
-				game_mod.board.render();
+				game_mod.theme = "threed";
+				game_mod.saveGamePreference("theme", "threed");
+				game_mod.board.toggleView();
+				game_mod.menu.render();
 			}
 		});
 
