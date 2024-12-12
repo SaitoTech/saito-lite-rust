@@ -264,9 +264,7 @@ function display_issuance() {
         announce "Keys with SAITO on the Network:"
         cat "$issuance_file" >> "$LOG_FILE"
         cat "$issuance_file"
-        announce "----------------------------------------"
-        announce "these may include nodes, at the end of the list"
-        announce "----------------------------------------"
+        announce "\n----------------------------------------"
     else
         announce "No issuance file found at: $issuance_file"
     fi
