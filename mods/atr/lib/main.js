@@ -14,7 +14,7 @@ class Main {
         }
 
         render() {
-        	document.querySelector('body').innerHTML = MainTemplate(this.app, this.mod);
+        	document.querySelector('.saito-container.atr').innerHTML = MainTemplate(this.app, this.mod);
 
         	console.log("mod blocks: ", this.mod.blocks);
 
