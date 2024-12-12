@@ -59,6 +59,7 @@ built/*
 
 nettest/nodes
 nettest/nodes/*
+nettest/nodes/nettest.log
 
 saito-issuance
 saito-issuance/*

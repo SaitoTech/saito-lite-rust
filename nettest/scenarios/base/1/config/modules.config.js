@@ -1,5 +1,6 @@
 export default {
   core: [
+    "atr/atr.js",
     "blog/blog.js",
     //"egld/egld.js",
     'redsquare/redsquare.js',
@@ -62,6 +63,7 @@ export default {
     'youtube-server/youtube-server.js'
   ],
   lite: [
+    "atr/atr.js",
     "blog/blog.js",
     //"egld/egld.js",
     'redsquare/redsquare.js',
