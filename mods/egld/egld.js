@@ -13,6 +13,7 @@ const axios  = require('axios')
 //const {transaction: Transaction} = require('@elrondnetwork/elrond-core-js');
 const CryptoModule = require("../../lib/templates/cryptomodule");
 const { ApiNetworkProvider, ProxyNetworkProvider, Account, UserSigner, Address, UserWallet, Transaction, TransactionComputer, UserSecretKey  } = require("@multiversx/sdk-core");
+const crypto = require('crypto');
 
 class EGLDModule extends CryptoModule {
 
@@ -54,7 +55,7 @@ class EGLDModule extends CryptoModule {
         await this.generateAddress();
         await this.generateAccount();
 
-        await this.showBackupWallet();
+        //await this.showBackupWallet();
         this.account_created = 1;
         this.save();
     }
@@ -66,8 +67,14 @@ class EGLDModule extends CryptoModule {
     console.log("EGLD generateAddress");
       try {
         if (address == null) {
-            this.egld.privKey = this.app.crypto.generateKeys();
-            this.address_obj = new Address(this.egld.privKey);
+
+            const privateKeyBuffer = crypto.randomBytes(32);
+            //const signer = new UserSigner(privateKeyBuffer);
+            const privateKeyHex = privateKeyBuffer.toString('hex');
+
+            console.log('Private Key (Hex):', privateKeyHex);
+            this.egld.privateKey = privateKeyHex;
+            this.address_obj = new Address(this.egld.privateKey);
             
         } else {
             this.address_obj = new Address(address);
@@ -110,8 +117,8 @@ class EGLDModule extends CryptoModule {
             console.log("updateAccount this.address_obj:", this.address_obj);
 
 
-            console.log("privKey: ", this.egld.privKey);
-            let userSecKey = UserSecretKey.fromString(this.egld.privKey);
+            console.log("privKey: ", this.egld.privateKey);
+            let userSecKey = UserSecretKey.fromString(this.egld.privateKey);
             console.log("this.userSecKey: ", userSecKey);
             const signer = new UserSigner(userSecKey);
             console.log("this.signer: ", signer);
@@ -186,24 +193,54 @@ class EGLDModule extends CryptoModule {
 
         console.log("inside sendPayment ////");
         console.log("amount, recipient, unique_hash: ", amount , recipient , unique_hash);
+        // let txObj = {
+        //     nonce: this.account.nonce,
+        //     sender: new Address(this.address),
+        //     receiver: new Address(recipient),
+        //     value: 50000000000000000n, // 0.05egld
+        //     gasLimit: 50000n,
+        //     chainID: "D"
+        // };
+
+        // let txObj = {
+        //     "nonce":7,
+        //     "value":"50000000000000000",
+        //     "receiver":"erd1729atl092k6mhj2stlqag9auwcswt3d0v9hgrn4f87s4yqeh2p4sfqyuhx",
+        //     "sender":"erd14fzf5f6zs6g8x209tyym90sjt7s8cflk23eupgj34ercaqzwvsgsymggql",
+        //     "gasPrice":1000000000,
+        //     "gasLimit":70000,
+        //     "data":"",
+        //     "chainID":"D"
+        // };
         let txObj = {
-            nonce: this.account.nonce,
-            sender: new Address(this.address),
-            receiver: new Address(recipient),
-            value: this.convertNumberToBigint('0.05'),//50000000000000000n, // 0.05egld
-            //gasLimit: this.convertNumberToBigint('0.00000000000005'),//50000n,
-            chainID: "D"
-        };
+          nonce: BigInt(0), // Set this value to match the expected nonce
+          value: BigInt(50000000000000000), // Set this value to match the expected amount
+          receiver: 'erd1729atl092k6mhj2stlqag9auwcswt3d0v9hgrn4f87s4yqeh2p4sfqyuhx', // Correct receiver
+          sender: 'erd14fzf5f6zs6g8x209tyym90sjt7s8cflk23eupgj34ercaqzwvsgsymggql', // Correct sender
+          gasPrice: BigInt(1000000000),
+          gasLimit: BigInt(50000),
+          chainID: 'D', // Expected chainID
+          version: 1, // Required version field
+        }
         const transaction = new Transaction(txObj);
 
         console.log("obj:", txObj);
         console.log("transaction: ", transaction);
 
-         console.log("privKey: ", this.egld.privKey);
-        let userSecKey = UserSecretKey.fromString(this.egld.privKey);
-        console.log("this.userSecKey: ", userSecKey);
-        const signer = new UserSigner(userSecKey);
+
+        //console.log("privateKey: ", this.egld.privateKey);
+        const privKeyBuffer = Buffer.from(this.egld.privateKey, 'hex');
+        console.log("privateKey buffer: ", privKeyBuffer);
+        const signer = new UserSigner(privKeyBuffer);
         console.log("this.signer: ", signer);
+
+
+        // const transactionBytes = Buffer.from(transaction.serializeForSigning());
+        // console.log(transaction.serializeForSigning());
+        // console.log("transaction bytes: ", transactionBytes);
+        // console.log('Serialized Transaction Payload (hex):', transactionBytes.toString('hex'));
+
+        //transaction.signature = await signer.sign(transaction);
 
 
         const transactionComputer = new TransactionComputer()
@@ -211,6 +248,7 @@ class EGLDModule extends CryptoModule {
         transaction.signature = await signer.sign(serializedTransaction);
 
         console.log("Signature", Buffer.from(transaction.signature).toString("hex"));
+
         const txHash = await this.apiNetworkProvider.sendTransaction(transaction);
         console.log("TX hash:", txHash);
     }

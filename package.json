@@ -28,10 +28,6 @@
   "license": "SAITO",
   "homepage": "https://saito.io",
   "dependencies": {
-    "@elrondnetwork/elrond-core-js": "^2.1.0",
-    "@elrondnetwork/erdjs": "^11.1.0",
-    "@elrondnetwork/erdjs-network-providers": "^1.1.1",
-    "@elrondnetwork/erdjs-web-wallet-provider": "^2.1.1",
     "@giphy/js-components": "^5.8.2",
     "@giphy/js-fetch-api": "^4.4.0",
     "@mixin.dev/mixin-node-sdk": "^7.2.1",
