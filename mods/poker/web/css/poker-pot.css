@@ -1,31 +1,37 @@
 
-.pot img {
-  display: block;
-  width: 280px;
-  transform: rotate(3deg);
-}
 
 .pot {
-  display: none;
-/*  display: flex; */
-  position: absolute;
-  top: 10px;
-  justify-content: center;
-  width: 80vw;
-  margin-left: 10vw;
+    cursor: pointer;
+    position: absolute;
+    display: block;
+    width: 30rem;
+    height: 20rem;
+    background: #ff7700;
+    overflow: hidden;
+    color: #fff;
+    padding-left: 30px;
+    line-height: 22px;
+    bottom: 0px;
+    left: 0px;
+    transform: skew(+55deg);
+    margin-left: -24rem;
+    z-index: 999;
 }
 
-.potlabel {
-  color: #fff;
-  font-size: 3rem;
-  font-family: sans;
-  text-align: center;
-  position: absolute;
-  top: 80px;
-  width: 50px;
-  background-color: #0008;
-  padding: 5px 20px;
-  border-radius: 5px;
-  left: 50%;
-  transform: translateX(-50%);
+.pot:hover {
+    background: #ee6600;
 }
+
+.potholder {
+    font-size: 2.7rem;
+    padding-top: 12rem;
+    margin-left: 23rem;
+    transform: skew(-55deg);
+    width: 16rem;
+    min-width: 10rem;
+    overflow: visible;
+    line-height: 3.5rem;
+    letter-spacing: 0.1rem;
+    font-weight: bold;
+}
+

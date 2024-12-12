@@ -6,7 +6,6 @@ const Cardfan = require('./lib/ui/cardfan/cardfan');
 const Playerbox = require('./lib/ui/playerbox/playerbox');
 const JSON = require('json-bigint');
 const PokerStats = require("./lib/stats");
-const GameHelp = require('./lib/ui/game-help/game-help');
 const htmlTemplate = require('./lib/game-html.template');
 const PokerGameRulesTemplate = require('./lib/poker-game-rules.template');
 const PokerGameOptionsTemplate = require('./lib/poker-game-options.template');
@@ -45,12 +44,6 @@ class Poker extends GameTableTemplate {
 		this.pot = new Pot(app, this);
 		this.cardfan = new Cardfan(app, this);
 		this.playerbox = new Playerbox(app, this);
-
-		//
-		// triangular help button
-		//
-		this.game_help = new GameHelp(this.app, this);
-
 
 		/********************
 		*********************
