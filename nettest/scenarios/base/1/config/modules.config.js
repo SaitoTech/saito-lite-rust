@@ -33,7 +33,7 @@ export default {
     'modtools/modtools.js',
     //'matomo/matomo.js',
     //'pandemic/pandemic.js',
-    'ntfy/ntfy.js',
+    //'ntfy/ntfy.js',
     'poker/poker.js',
     'profile/profile.js',
     //'quake3/quake3.js',

@@ -197,6 +197,9 @@ function deploy_scenario() {
 
     announce "Deployment complete!"
     display_issuance
+    announce "----------------------------------------"
+    show_endpoints
+    announce "----------------------------------------"
 }
 
 function reset_scenario() {
@@ -297,6 +300,8 @@ function start_network() {
     pm2 start all
     
     announce "Network started"
+    announce "----------------------------------------"
+    show_endpoints
 }
 
 function stop_network() {
@@ -346,6 +351,79 @@ function view_logs() {
     tail -f "$log_file"
 }
 
+function show_endpoints() {
+    announce "Node Endpoints:"
+    local nodes_dir="${PROJECT_DIR}/nettest/nodes"
+    
+    # Check if nodes directory exists
+    if [ ! -d "$nodes_dir" ]; then
+        announce "No nodes directory found at: $nodes_dir"
+        return 1
+    fi
+
+    # Loop through numbered directories
+    for node_dir in "$nodes_dir"/[0-9]*; do
+        if [ -d "$node_dir" ]; then
+            local node_num=$(basename "$node_dir")
+            local options_file="${node_dir}/config/options"
+            
+            if [ -f "$options_file" ]; then
+                # Extract endpoint details using grep and sed
+                local protocol=$(grep -o '"endpoint":[^}]*"protocol":"[^"]*"' "$options_file" | sed 's/.*"protocol":"\([^"]*\)".*/\1/')
+                local host=$(grep -o '"endpoint":[^}]*"host":"[^"]*"' "$options_file" | sed 's/.*"host":"\([^"]*\)".*/\1/')
+                local port=$(grep -o '"endpoint":[^}]*"port":[0-9]*' "$options_file" | sed 's/.*"port":\([0-9]*\).*/\1/')
+                
+                if [ -n "$protocol" ] && [ -n "$host" ] && [ -n "$port" ]; then
+                    announce "Node $node_num endpoint: $protocol://$host:$port/"
+                else
+                    announce "Node $node_num: Unable to parse endpoint configuration"
+                fi
+            else
+                announce "Node $node_num: No options file found"
+            fi
+        fi
+    done
+}
+
+function show_help() {
+    announce "Saito Network Testing Tool"
+    announce "========================="
+    announce ""
+    announce "Available commands:"
+    announce ""
+    announce "install"
+    announce "  Checks and installs required dependencies (pm2)"
+    announce ""
+    announce "clear"
+    announce "  Stops all pm2 processes and deletes all node folders"
+    announce ""
+    announce "deploy <scenario> <branch>"
+    announce "  Sets up test nodes based on scenario configuration"
+    announce "  - scenario: Name of the scenario folder in nettest/scenario/"
+    announce "  - branch: Git branch to use for node deployment"
+    announce ""
+    announce "reset <scenario>"
+    announce "  Resets configuration for all nodes in a scenario"
+    announce "  - scenario: Name of the scenario to reset"
+    announce ""
+    announce "start"
+    announce "  Starts the network in sequence (node1 first, then others)"
+    announce ""
+    announce "stop"
+    announce "  Stops all running nodes"
+    announce ""
+    announce "status"
+    announce "  Shows current pm2 process status"
+    announce ""
+    announce "logs <node_number>"
+    announce "  Displays live logs for specified node"
+    announce "  - node_number: Number of the node to view logs for"
+    announce ""
+    announce "endpoints"
+    announce "  Lists all node endpoints in the network"
+    announce ""
+}
+
 # Main command handler
 case "$1" in
     "install")
@@ -384,8 +462,15 @@ case "$1" in
         fi
         view_logs "$2"
         ;;
+    "endpoints")
+        show_endpoints
+        ;;
+    "help")
+        show_help
+        ;;
     *)
-        announce "Usage: nettest {install|clear|deploy|reset|start|stop|status|logs}"
+        announce "Usage: nettest {install|clear|deploy|reset|start|stop|status|logs|endpoints|help}"
+        announce "Run 'nettest help' for detailed information about commands"
         exit 1
         ;;
 esac
