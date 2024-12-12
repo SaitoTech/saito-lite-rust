@@ -257,14 +257,15 @@ function reset_scenario() {
 
 function display_issuance() {
     local node_dir="${PROJECT_DIR}/nettest/nodes/1"
-    local issuance_file="${node_dir}/data/issuance/issuance"
+    local issuance_file="${node_dir}/data/issuance/issuance.keys"
 
     if [ -f "$issuance_file" ]; then
         announce "----------------------------------------"
         announce "Keys with SAITO on the Network:"
         cat "$issuance_file" >> "$LOG_FILE"
         cat "$issuance_file"
-        announce "these may include nodes at the end of the list"
+        announce "----------------------------------------"
+        announce "these may include nodes, at the end of the list"
         announce "----------------------------------------"
     else
         announce "No issuance file found at: $issuance_file"
