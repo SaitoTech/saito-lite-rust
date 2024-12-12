@@ -1,6 +1,5 @@
 const createHash = require("crypto").createHash;
 const path = require("path");
-const fs = require("fs").promises;
 
 const PeerService = require("saito-js/lib/peer_service").default;
 const Transaction = require("../../lib/saito/transaction").default;
