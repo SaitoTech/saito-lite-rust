@@ -442,6 +442,13 @@ function show_help() {
     announce "  - Copies configuration and issuance files"
     announce "  - Optionally includes blockchain data"
     announce ""
+    announce "list"
+    announce "  Lists all available scenarios with their descriptions"
+    announce ""
+    announce "whatis <scenario>"
+    announce "  Displays the full description of a specific scenario"
+    announce "  - scenario: Name of the scenario to describe"
+    announce ""
 }
 
 function snapshot_network() {
@@ -464,8 +471,22 @@ function snapshot_network() {
         rm -rf "$scenario_dir"
     fi
 
-    # Create scenario directory
+    # Prompt for description
+    announce "Please enter a snapshot description so you know what it does."
+    announce "(Press Ctrl+D or enter 'EOF' on a new line when finished)"
+    announce ""
+    
+    description=""
+    while IFS= read -r line; do
+        if [ "$line" = "EOF" ]; then
+            break
+        fi
+        description="${description}${line}"$'\n'
+    done
+
+    # Create scenario directory and save description
     mkdir -p "$scenario_dir"
+    echo "$description" > "${scenario_dir}/README.md"
     announce "Creating scenario: $scenario_name"
 
     # Loop through existing nodes
@@ -515,6 +536,71 @@ function snapshot_network() {
     done
 
     announce "Snapshot complete! New scenario created at: $scenario_dir"
+    announce "Description saved to: ${scenario_dir}/README.md"
+}
+
+function list_scenarios() {
+    local scenarios_dir="${PROJECT_DIR}/nettest/scenarios"
+    
+    if [ ! -d "$scenarios_dir" ]; then
+        announce "No scenarios directory found at: $scenarios_dir"
+        return 1
+    fi
+
+    announce "Available Scenarios:"
+    announce "==================="
+    announce ""
+
+    # Loop through directories in scenarios folder
+    for scenario_dir in "$scenarios_dir"/*; do
+        if [ -d "$scenario_dir" ]; then
+            local scenario_name=$(basename "$scenario_dir")
+            local readme_file="${scenario_dir}/README.md"
+            
+            announce "$scenario_name:"
+            if [ -f "$readme_file" ]; then
+                # Get first line of README.md
+                local description=$(head -n 1 "$readme_file")
+                if [ -n "$description" ]; then
+                    announce "  $description"
+                else
+                    announce "  (No description provided)"
+                fi
+            else
+                announce "  (No README.md found)"
+            fi
+            announce ""
+        fi
+    done
+}
+
+function whatis_scenario() {
+    local scenario=$1
+    local scenario_dir="${PROJECT_DIR}/nettest/scenarios/${scenario}"
+    local readme_file="${scenario_dir}/README.md"
+
+    if [ -z "$scenario" ]; then
+        announce "Error: Scenario name is required"
+        announce "Usage: nettest whatis <scenario>"
+        exit 1
+    fi
+
+    if [ ! -d "$scenario_dir" ]; then
+        announce "Error: Scenario not found: $scenario"
+        exit 1
+    fi
+
+    announce "Description for scenario: $scenario"
+    announce "=================================="
+    
+    if [ -f "$readme_file" ]; then
+        # Output full README contents
+        while IFS= read -r line; do
+            announce "$line"
+        done < "$readme_file"
+    else
+        announce "No description available (README.md not found)"
+    fi
 }
 
 # Main command handler
@@ -564,8 +650,18 @@ case "$1" in
     "snapshot")
         snapshot_network
         ;;
+    "list")
+        list_scenarios
+        ;;
+    "whatis")
+        if [ -z "$2" ]; then
+            announce "Usage: nettest whatis <scenario>"
+            exit 1
+        fi
+        whatis_scenario "$2"
+        ;;
     *)
-        announce "Usage: nettest {install|clear|deploy|reset|start|stop|status|logs|endpoints|help|snapshot}"
+        announce "Usage: nettest {install|clear|deploy|reset|start|stop|status|logs|endpoints|help|snapshot|list|whatis}"
         announce "Run 'nettest help' for detailed information about commands"
         exit 1
         ;;
