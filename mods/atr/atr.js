@@ -199,10 +199,6 @@ class ATR extends ModTemplate {
 
 		console.log("txmsg: ", txmsg);
 
-		if (txmsg.module !== 'ATR') {
-	    	return;
-	    }
-
 		if (conf === 0) {
 			await this.loadBlocks(blk);
 		}
