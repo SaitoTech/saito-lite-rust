@@ -115,6 +115,7 @@ function clear_network() {
 function deploy_scenario() {
     local scenario=$1
     local branch=$2
+    local no_confirm=$3
     local scenario_dir="${PROJECT_DIR}/nettest/scenarios/${scenario}"
     local nodes_dir="${PROJECT_DIR}/nettest/nodes"
 
@@ -163,14 +164,7 @@ function deploy_scenario() {
                 execute "cp -r ${node_dir}/config/* ${target_dir}/config/" || true
             fi
 
-                        # Copy blocks if they exist
-            if [ -d "${node_dir}/data/blocks" ]; then
-                announce "Copying blockchain data for node${node_num}..."
-                mkdir -p "${target_dir}/data/blocks"
-                execute "cp -r ${node_dir}/data/blocks/* ${target_dir}/data/blocks/"
-            fi
-
-            # Install dependencies and compile
+            # Install dependencies, compile, and copy blocks
             announce "Running [npm install] for node${node_num}..."
             (cd "$target_dir" && {
                 execute "npm install" || {
@@ -185,6 +179,18 @@ function deploy_scenario() {
                     exit 1
                 }
                 announce "---"
+                # Copy data directory if it exists again post nuke
+                if [ -d "${node_dir}/data" ]; then
+                    announce "Copying data files for node${node_num}..."
+                    execute "mkdir -p ${target_dir}/data"
+                    execute "cp -r ${node_dir}/data/* data/" || true
+                fi
+                # Copy blocks if they exist
+                if [ -d "${node_dir}/data/blocks" ]; then
+                    announce "Copying blockchain data for node${node_num}..."
+                    mkdir -p "${target_dir}/data/blocks"
+                    execute "cp -r ${node_dir}/data/blocks/* data/blocks/"
+                fi
 
                 announce "Creating PM2 configuration for node${node_num}..."
                 pm2 start "npm start" --time --merge-logs -l ./saito.log --name "node${node_num}" && pm2 stop "node${node_num}" || {
@@ -200,12 +206,19 @@ function deploy_scenario() {
     # Wait for all background processes to complete
     wait
 
-    announce "----------------------------------------"
-    start_network
-
     announce "Deployment complete!"
     display_issuance
-    announce "----------------------------------------"
+
+    # Check if we should prompt for start
+    if [ "$no_confirm" != "--noconfirm" ]; then
+        announce "Would you like to start the network now? (y/N)"
+        read -r start_network
+        if [[ "$start_network" =~ ^[Yy]$ ]]; then
+            start_network
+        else
+            announce "Network not started. Use 'nettest start' to start it later."
+        fi
+    fi
 }
 
 function reset_scenario() {
@@ -233,7 +246,7 @@ function reset_scenario() {
             announce "Resetting node${node_num}..."
             
             # Clear existing conf and data directories
-            if [ -d "${target_dir}/conf" ]; then
+            if [ -d "${target_dir}/config" ]; then
                 announce "Clearing configuration for node${node_num}..."
                 execute "rm -rf ${target_dir:?}/config/*"
             fi
@@ -258,7 +271,7 @@ function reset_scenario() {
             fi
 
             # Copy new conf directory if it exists
-            if [ -d "${node_dir}/conf" ]; then
+            if [ -d "${node_dir}/config" ]; then
                 announce "Copying new configuration files for node${node_num}..."
                 execute "mkdir -p ${target_dir}/config"
                 execute "cp -r ${node_dir}/config/* ${target_dir}/config/" || true
@@ -380,20 +393,25 @@ function show_endpoints() {
         if [ -d "$node_dir" ]; then
             local node_num=$(basename "$node_dir")
             local options_file="${node_dir}/config/options"
+            local options_conf="${node_dir}/config/options.conf"
             
+            # Try options first, then options.conf
             if [ -f "$options_file" ]; then
-                # Extract endpoint details using grep and sed
+                # Single line JSON format
                 local protocol=$(grep -o '"endpoint":[^}]*"protocol":"[^"]*"' "$options_file" | sed 's/.*"protocol":"\([^"]*\)".*/\1/')
                 local host=$(grep -o '"endpoint":[^}]*"host":"[^"]*"' "$options_file" | sed 's/.*"host":"\([^"]*\)".*/\1/')
                 local port=$(grep -o '"endpoint":[^}]*"port":[0-9]*' "$options_file" | sed 's/.*"port":\([0-9]*\).*/\1/')
+            elif [ -f "$options_conf" ]; then
+                # Multiline JSON format
+                local protocol=$(grep -A 5 '"endpoint"' "$options_conf" | grep '"protocol"' | sed 's/.*"protocol"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
+                local host=$(grep -A 5 '"endpoint"' "$options_conf" | grep '"host"' | sed 's/.*"host"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
+                local port=$(grep -A 5 '"endpoint"' "$options_conf" | grep '"port"' | sed 's/.*"port"[[:space:]]*:[[:space:]]*\([0-9]*\).*/\1/')
+            fi
                 
-                if [ -n "$protocol" ] && [ -n "$host" ] && [ -n "$port" ]; then
-                    announce "Node $node_num endpoint: $protocol://$host:$port/"
-                else
-                    announce "Node $node_num: Unable to parse endpoint configuration"
-                fi
+            if [ -n "$protocol" ] && [ -n "$host" ] && [ -n "$port" ]; then
+                announce "Node $node_num endpoint: $protocol://$host:$port/"
             else
-                announce "Node $node_num: No options file found"
+                announce "Node $node_num: Unable to parse endpoint configuration"
             fi
         fi
     done
@@ -411,10 +429,11 @@ function show_help() {
     announce "clear"
     announce "  Stops all pm2 processes and deletes all node folders"
     announce ""
-    announce "deploy <scenario> <branch>"
+    announce "deploy <scenario> <branch> [--noconfirm]"
     announce "  Sets up test nodes based on scenario configuration"
     announce "  - scenario: Name of the scenario folder in nettest/scenarios/"
     announce "  - branch: Git branch to use for node deployment"
+    announce "  - --noconfirm: Skip the prompt to start network after deployment"
     announce ""
     announce "reset <scenario>"
     announce "  Resets configuration for all nodes in a scenario"
@@ -498,12 +517,12 @@ function snapshot_network() {
             announce "Processing node${node_num}..."
             
             # Create node directory in scenario
-            mkdir -p "${target_dir}/conf"
+            mkdir -p "${target_dir}/config"
             mkdir -p "${target_dir}/data/issuance"
 
             # Copy configuration files
-            if [ -f "${node_dir}/config/options" ]; then
-                execute "cp ${node_dir}/config/options ${target_dir}/config/"
+            if [ -f "${node_dir}/config/options.conf" ]; then
+                execute "cp ${node_dir}/config/options.conf ${target_dir}/config/"
             else
                 announce "Warning: No options file found for node${node_num}"
             fi
@@ -613,10 +632,10 @@ case "$1" in
         ;;
     "deploy")
         if [ -z "$2" ] || [ -z "$3" ]; then
-            announce "Usage: nettest deploy <scenario> <branch>"
+            announce "Usage: nettest deploy <scenario> <branch> [--noconfirm]"
             exit 1
         fi
-        deploy_scenario "$2" "$3"
+        deploy_scenario "$2" "$3" "$4"
         ;;
     "reset")
         if [ -z "$2" ]; then

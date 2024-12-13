@@ -1,5 +1,3 @@
-Two nodes one chain for 10 blocks each on a separate chain for another 10 blocks.
-Unresolved 10 block fork.
-
-Both nodes spamming. Node 1 running app suite.
+Two nodes with the same chain for ten blocks then both fork for 10 blocks.
+Both nodes running spammer, only 1 running appsuite.
 
