@@ -42,11 +42,12 @@ class ATR extends ModTemplate {
 	}
 
 	async loadBlocks(blk = null) {
+		console.log('loading blocks');
 		try {
 			if (blk == null) {
 				
 				let last_blk_hash = await this.app.blockchain.getLastBlockHash();
-				if (last_blk_hash.includes("0000000000") == false) {
+				if (last_blk_hash !== "0000000000000000000000000000000000000000000000000000000000000000") {
 					console.log("if case: ");
 					for (let i=0; i< 10; i++) {
 						let blk = await this.fetchBlock(last_blk_hash);
@@ -64,6 +65,8 @@ class ATR extends ModTemplate {
 						this.blocks.reverse();
 						this.last_block_id = this.blocks[this.blocks.length-1].id;
 					}
+				}else{
+					console.warn("we don't have a last block hash set");
 				}
 			} else {
 				let blk_data = this.getBlockData(blk);
@@ -71,27 +74,17 @@ class ATR extends ModTemplate {
 				if (Number(blk_data.id) > this.last_block_id) {
 					this.last_block_id = Number(blk_data.id);
 
-					if (this.blocks.length < 10) {
-						this.blocks.push(blk_data);
-					} else {
-						this.blocks[0] = this.block[1];
-						this.blocks[1] = this.block[2];
-						this.blocks[2] = this.block[3];
-						this.blocks[3] = this.block[4];
-						this.blocks[4] = this.block[5];
-						this.blocks[5] = this.block[6];
-						this.blocks[6] = this.block[7];
-						this.blocks[7] = this.block[8];
-						this.blocks[8] = this.block[9];
-						this.blocks[9] = blk_data;
+					if (this.blocks.length >= 10) {
+						this.blocks.shift();
 					}
+					this.blocks.push(blk_data);
 				}
 			}
 
 
 			this.ui.render();
 		} catch(err) {
-			//console.log("Err getBlock: ", err);
+			console.log("Err getBlock: ", err);
 		}
 	}
 
@@ -120,7 +113,7 @@ class ATR extends ModTemplate {
 		atr_obj.burnFee = blk.burnFee;
 		atr_obj.difficulty = blk.difficulty;
 		atr_obj.previousBlockUnpaid = blk.previousBlockUnpaid;
-		atr_obj.gtNum = blk.gtNum;
+		atr_obj.hasGoldenTicket = blk.hasGoldenTicket;
 
 		let fullblock = JSON.parse(blk.toJson());
 		atr_obj.previous_block_hash = fullblock.previous_block_hash;
@@ -200,21 +193,37 @@ class ATR extends ModTemplate {
 	}
 
 	async onConfirmation(blk, tx, conf) {
+		console.log("onConfirmation")
 		let txmsg = tx.returnMessage();
 		let atr_self = this.app.modules.returnModule('ATR');
 
 		console.log("txmsg: ", txmsg);
 
-		if (!txmsg.module == 'ATR') {
+		if (txmsg.module !== 'ATR') {
 	    	return;
 	    }
 
-		if (conf == 0) {
+		if (conf === 0) {
 			await this.loadBlocks(blk);
 		}
-		return;
 	}
 
+	async handlePeerTransaction(app, tx = null, peer, mycallback = null) {
+		if (tx == null) {
+			return;
+		}
+		let txmsg = tx.returnMessage();
+		console.log("atr.handlePeerTransaction : " + txmsg.request);
+
+		if (txmsg.request === 'new-block-with-gt') {
+			await app.wallet.produceBlockWithGt()
+			return 0;
+		}else if (txmsg.request === 'new-block-with-no-gt') {
+			await app.wallet.produceBlockWithoutGt();
+			return 0;
+		}
+		return super.handlePeerTransaction(app, tx, peer, mycallback);
+	}
 }
 
 module.exports = ATR;

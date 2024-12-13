@@ -491,8 +491,8 @@ module.exports = (app, mod) => {
                 <td class="blockslot9"></td>
                 <td class="blockslot10"></td>
             </tr>
-            <tr class="gtNum">
-                <td>gtNum</td>
+            <tr class="hasGoldenTicket">
+                <td>hasGoldenTicket</td>
                 <td class="blockslot1"></td>
                 <td class="blockslot2"></td>
                 <td class="blockslot3"></td>
