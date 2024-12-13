@@ -3,6 +3,7 @@ const sanitizer = require('sanitizer');
 const JSON = require('json-bigint');
 const ATRMain = require('./lib/main');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
+const HomePage = require('./index');
 
 class ATR extends ModTemplate {
 
@@ -18,13 +19,18 @@ class ATR extends ModTemplate {
 		this.ui = null;
 		this.blocks = [];
 		this.last_block_id = 0;
+		this.social = {
+	      twitter: '@SaitoOfficial',
+	      title: 'Saito ATR Explorer',
+	      url: 'https://saito.io/atr/',
+	      description: 'ATR explorer for Saito Network blockchain',
+	      image:
+	        'https://saito.tech/wp-content/uploads/2022/04/saito_card_horizontal.png'
+	    };
 	}
 
 	async initialize(app) {
 		await super.initialize(app);
-		this.styles = [
-			'/saito/style.css',
-		];
 		this.ui = new ATRMain(app, this);
 		this.header = new SaitoHeader(this.app, this);
 
@@ -35,20 +41,18 @@ class ATR extends ModTemplate {
 	}
 
 	async render(app) {
-		//this.addComponent(this.header);
-		await this.loadBlocks();
-		this.ui.render();
+		this.addComponent(this.header);
+		await this.loadBlocks(null);
+		//this.ui.render();
+		this.styles = ['/atr/style.css'];
 		await super.render(app);
 	}
 
 	async loadBlocks(blk = null) {
-		console.log('loading blocks');
 		try {
 			if (blk == null) {
-				
 				let last_blk_hash = await this.app.blockchain.getLastBlockHash();
 				if (last_blk_hash !== "0000000000000000000000000000000000000000000000000000000000000000") {
-					console.log("if case: ");
 					for (let i=0; i< 10; i++) {
 						let blk = await this.fetchBlock(last_blk_hash);
 						if (blk != null) {
@@ -73,14 +77,12 @@ class ATR extends ModTemplate {
 
 				if (Number(blk_data.id) > this.last_block_id) {
 					this.last_block_id = Number(blk_data.id);
-
 					if (this.blocks.length >= 10) {
 						this.blocks.shift();
 					}
 					this.blocks.push(blk_data);
 				}
 			}
-
 
 			this.ui.render();
 		} catch(err) {
@@ -139,9 +141,28 @@ class ATR extends ModTemplate {
 		return blk;
 	}
 
-	webServer(app, expressapp) {
-		var atr_self = app.modules.returnModule('ATR');
-		expressapp.get('/atr/json-block/:bhash', async (req, res) => {
+	webServer(app, expressapp, express) {
+	    let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
+	    var atr_self = app.modules.returnModule('ATR');
+
+	    expressapp.get(
+	      '/' + encodeURI(this.returnSlug()),
+	      async function (req, res) {
+	        let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
+
+	        atr_self.social.url = reqBaseURL + encodeURI(atr_self.returnSlug());
+
+		if (!res.finished) {
+	        	res.setHeader('Content-type', 'text/html');
+	        	res.charset = 'UTF-8';
+	        	return res.send(HomePage(app, atr_self, app.build_number, atr_self.social));
+		}
+		return;
+
+	      }
+	    );
+
+	    expressapp.get('/atr/json-block/:bhash', async (req, res) => {
 
 				const bhash = req.params.bhash;
 				if (bhash == null) {
@@ -190,14 +211,13 @@ class ATR extends ModTemplate {
 					}
 				}
 			});
+	  expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
 	}
 
 	async onConfirmation(blk, tx, conf) {
 		console.log("onConfirmation")
 		let txmsg = tx.returnMessage();
 		let atr_self = this.app.modules.returnModule('ATR');
-
-		console.log("txmsg: ", txmsg);
 
 		if (conf === 0) {
 			await this.loadBlocks(blk);

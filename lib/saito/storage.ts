@@ -173,7 +173,7 @@ class Storage {
 
 	
 
-
+	// You might need to await this function for the internal callbacks to work...
     async loadTransactions(obj = {}, mycallback, peer = null) {
         let storage_self = this;
 

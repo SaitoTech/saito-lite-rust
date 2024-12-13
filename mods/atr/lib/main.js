@@ -13,11 +13,9 @@ class Main {
 		this.add_mempool = new AddMempool(app, mod);
 	}
 
-	render() {
-		if (this.app.BROWSER === 0) {
-			return;
-		}
-		document.querySelector('body').innerHTML = MainTemplate(this.app, this.mod);
+
+        render() {
+        	document.querySelector('.saito-container.atr').innerHTML = MainTemplate(this.app, this.mod);
 
 		console.log('mod blocks: ', this.mod.blocks);
 

@@ -21,8 +21,8 @@ module.exports  = (app, mod, keys) => {
   }else{
       html += `<div class="saito-button-primary stunx-appspace-launch-call-btn" id="createRoom">Start Meeting</div>`;
       mode = "create";
+      html += `<div class="stunx-precall-link" data-id="${mode}"><i class="fas fa-link"></i></div>`;
   }
-  html += `<div class="stunx-precall-link" data-id="${mode}"><i class="fas fa-link"></i></div>`;
 
   html += `</div>
         

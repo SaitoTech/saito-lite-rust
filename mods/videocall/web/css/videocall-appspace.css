@@ -270,31 +270,17 @@ input:checked+.slider:before {
 	.stun-input-settings {
 		padding: 0;
 	}
-	/*
-	.stunx-appspace-splash {
-		padding: 0 5rem;
-	}
-	*/
 }
 
 @media (max-width: 600px) {
-	.stun-appspace {
-		padding: 1rem;
-		margin: 0;
-		justify-content: flex-start;
-	}
 	.stun-appspace-content {
-		margin-top: 1rem;
-		gap: 0;
-		padding: 0;
+		gap: 3rem;
 		border: unset;
+		height: 100%;
+		justify-content: space-evenly;
 	}
 	#createRoom {
 		width: 100%;
-	}
-	.stunx-appspace-splash {
-		padding: 0;
-		height: unset;
 	}
 	.stun-appspace-navigation {
 		gap: 2rem;
@@ -302,9 +288,9 @@ input:checked+.slider:before {
 		justify-content: center;
 	}
 	.stunx-appspace-actions {
-		position: fixed;
-		bottom: 1rem;
+		order: 2;
 		width: calc(100vw - 2rem);
+		flex-direction: column;
 	}
 	.stun-minimal-appspace {
 		padding: 1rem;

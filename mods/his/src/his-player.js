@@ -8328,7 +8328,7 @@ console.log(ops_to_spend + " -- " + ops_remaining);
 
     let f = this.canFactionSueForPeace(faction);
 
-    let msg = "Sue for Peace?";
+    let msg = `${his_self.returnFactionName(faction)} - Sue for Peace?`;
     let html = '<ul>';
     for (let i = 0; i < f.length; i++) {
       html += `<li class="option" id="${f[i]}">${his_self.returnFactionName(f[i])}</li>`;

@@ -400,7 +400,8 @@
   doesSpaceHaveEnemyUnits(space, faction) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     for (let f in space.units) {
-      if (this.areEnemies(faction, f)) {
+      let cp = this.returnControllingPower(f);
+      if (this.areEnemies(faction, cp)) {
         for (let i = 0; i < space.units[f].length; i++) {
 	  let u = space.units[f][i];
 	  if (u.reformer == true) {} else {

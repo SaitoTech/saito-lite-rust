@@ -1,0 +1,814 @@
+export default (app, mod) => {
+        return `<div id="main" class="main" style="display: all">
+                <div class="gameboard" id="gameboard">
+                        <!--- SPACES ---> 
+                        <div class="space london" id="london"></div>
+                        <div class="space calais" id="calais"></div>
+                        <div class="space amiens" id="amiens"></div>
+                        <div class="space cambral" id="cambral"></div>
+                        <div class="space sedan" id="sedan"></div>
+                        <div class="space verdun" id="verdun"></div>
+                        <div class="space chateauthierry" id="chateauthierry"></div>
+                        <div class="space paris" id="paris"></div>
+                        <div class="space rouen" id="rouen"></div>
+                        <div class="space lehavre" id="lehavre"></div>
+                        <div class="space cherbourg" id="cherbourg"></div>
+                        <div class="space barleduc" id="barleduc"></div>
+                        <div class="space caen" id="caen"></div>
+                        <div class="space rennes" id="rennes"></div>
+                        <div class="space lemans" id="lemans"></div>
+                        <div class="space orleans" id="orleans"></div>
+                        <div class="space melun" id="melun"></div>
+                        <div class="space nancy" id="nancy"></div>
+                        <div class="space nantes" id="nantes"></div>
+                        <div class="space tours" id="tours"></div>
+                        <div class="space larochelle" id="larochelle"></div>
+                        <div class="space boreaux" id="boreaux"></div>
+                        <div class="space poitiers" id="poitiers"></div>
+                        <div class="space stamand" id="stamand"></div>
+                        <div class="space nevers" id="nevers"></div>
+                        <div class="space lyron" id="lyon"></div>
+                        <div class="space avignon" id="avignon"></div>
+                        <div class="space marseilles" id="marseilles"></div>
+                        <div class="space nice" id="nice"></div>
+                        <div class="space grenoble" id="grenoble"></div>
+                        <div class="space belfort" id="belfort"></div>
+                        <div class="space ostend" id="ostend"></div>
+                        <div class="space antwerp" id="antwerp"></div>
+                        <div class="space brussels" id="brussels"></div>
+                        <div class="space liege" id="liege"></div>
+                        <div class="space wilhelmshaven" id="wilhelmshaven"></div>
+                        <div class="space essen" id="essen"></div>
+                        <div class="space aachen" id="aachen"></div>
+                        <div class="space koblenz" id="koblenz"></div>
+                        <div class="space metz" id="metz"></div>
+                        <div class="space strasbourg" id="strasbourg"></div>
+                        <div class="space mulhouse" id="mulhouse"></div>
+                        <div class="space stuttgart" id="stuttgart"></div>
+                        <div class="space mannheim" id="mannheim"></div>
+                        <div class="space frankfurt" id="frankfurt"></div>
+                        <div class="space kassel" id="kassel"></div>
+                        <div class="space bremen" id="bremen"></div>
+                        <div class="space keil" id="keil"></div>
+                        <div class="space hamburg" id="hamburg"></div>
+                        <div class="space hannover" id="hannover"></div>
+                        <div class="space erfurt" id="erfurt"></div>
+                        <div class="space nuremberg" id="nuremberg"></div>
+                        <div class="space augsburg" id="augsburg"></div>
+                        <div class="space munich" id="munich"></div>
+                        <div class="space regensburg" id="regensburg"></div>
+                        <div class="space leipzig" id="leipzig"></div>
+                        <div class="space kiel" id="kiel"></div>
+                        <div class="space ancona" id="ancona"></div>
+                        <div class="space bordeaux" id="bordeaux"></div>
+                        <div class="space berlin" id="berlin"></div>
+                        <div class="space rostock" id="rostock"></div>
+                        <div class="space stettin" id="stettin"></div>
+                        <div class="space cottbus" id="cottbus"></div>
+                        <div class="space desden" id="dresden"></div>
+                        <div class="space breslau" id="breslau"></div>
+                        <div class="space oppeln" id="oppeln"></div>
+                        <div class="space posen" id="posen"></div>
+                        <div class="space kolberg" id="kolberg"></div>
+                        <div class="space thorn" id="thorn"></div>
+                        <div class="space danzig" id="danzig"></div>
+                        <div class="space konigsberg" id="konigsberg"></div>
+                        <div class="space tannenberg" id="tannenberg"></div>
+                        <div class="space insterberg" id="insterberg"></div>
+                        <div class="space memel" id="memel"></div>
+                        <div class="space mulhouse" id="mulhouse"></div>
+                        <div class="space turin" id="turin"></div>
+                        <div class="space milan" id="milan"></div>
+                        <div class="space genoa" id="genoa"></div>
+                        <div class="space verona" id="verona"></div>
+                        <div class="space asiago" id="asiago"></div>
+                        <div class="space maggiore" id="maggiore"></div>
+                        <div class="space udine" id="udine"></div>
+                        <div class="space venice" id="venice"></div>
+                        <div class="space bologna" id="bologna"></div>
+                        <div class="space florence" id="florence"></div>
+                        <div class="space ravenna" id="ravenna"></div>
+                        <div class="space anacona" id="anacona"></div>
+                        <div class="space viterbo" id="viterbo"></div>
+                        <div class="space rome" id="rome"></div>
+                        <div class="space pescara" id="pescara"></div>
+                        <div class="space naples" id="naples"></div>
+                        <div class="space foggia" id="foggia"></div>
+                        <div class="space taranto" id="taranto"></div>
+                        <div class="space prague" id="prague"></div>
+                        <div class="space trent" id="trent"></div>
+                        <div class="space innsbruck" id="innsbruck"></div>
+                        <div class="space spittal" id="spittal"></div>
+                        <div class="space linz" id="linz"></div>
+                        <div class="space villach" id="villach"></div>
+                        <div class="space trieste" id="trieste"></div>
+                        <div class="space kolin" id="kolin"></div>
+                        <div class="space brun" id="brun"></div>
+                        <div class="space vienna" id="vienna"></div>
+                        <div class="space graz" id="graz"></div>
+                        <div class="space zagreb" id="zagreb"></div>
+                        <div class="space banjaluka" id="banjaluka"></div>
+                        <div class="space mostar" id="mostar"></div>
+                        <div class="space sarajevo" id="sarajevo"></div>
+                        <div class="space pecs" id="pecs"></div>
+                        <div class="space olmutz" id="olmutz"></div>
+                        <div class="space martin" id="martin"></div>
+                        <div class="space budapest" id="budapest"></div>
+                        <div class="space szeged" id="szeged"></div>
+                        <div class="space novisad" id="novisad"></div>
+                        <div class="space timisvar" id="timisvar"></div>
+                        <div class="space debrecen" id="debrecen"></div>
+                        <div class="space miskolcz" id="miskolcz"></div>
+                        <div class="space cracow" id="cracow"></div>
+                        <div class="space tarnow" id="tarnow"></div>
+                        <div class="space gorlice" id="gorlice"></div>
+                        <div class="space przemysl" id="przemysl"></div>
+                        <div class="space uzhgorod" id="uzhgorod"></div>
+                        <div class="space lemberg" id="lemberg"></div>
+                        <div class="space stanislau" id="stanislau"></div>
+                        <div class="space munkacs" id="munkacs"></div>
+                        <div class="space cluj" id="cluj"></div>
+                        <div class="space hermannstadt" id="hermannstadt"></div>
+                        <div class="space kronstadt" id="kronstadt"></div>
+                        <div class="space schossburg" id="schossburg"></div>
+                        <div class="space czernowitz" id="czernowitz"></div>
+                        <div class="space tarnopol" id="tarnopol"></div>
+                        <div class="space reval" id="reval"></div>
+                        <div class="space pskov" id="pskov"></div>
+                        <div class="space petrograd" id="petrograd"></div>
+                        <div class="space riga" id="riga"></div>
+                        <div class="space libau" id="libau"></div>
+                        <div class="space szawli" id="szawli"></div>
+                        <div class="space dvinsk" id="dvinsk"></div>
+                        <div class="space opochka" id="opochka"></div>
+                        <div class="space velikiyeluki" id="velikiyeluki"></div>
+                        <div class="space kovno" id="kovno"></div>
+                        <div class="space vilna" id="vilna"></div>
+                        <div class="space moldechno" id="moldechno"></div>
+                        <div class="space polotsk" id="polotsk"></div>
+                        <div class="space vitebsk" id="vitebsk"></div>
+                        <div class="space grodno" id="grodno"></div>
+                        <div class="space baranovichi" id="baranovichi"></div>
+                        <div class="space minsk" id="minsk"></div>
+                        <div class="space orsha" id="orsha"></div>
+                        <div class="space smolensk" id="smolensk"></div>
+                        <div class="space moscow" id="moscow"></div>
+                        <div class="space lomza" id="lomza"></div>
+                        <div class="space bialystok" id="bialystok"></div>
+                        <div class="space pinsk" id="pinsk"></div>
+                        <div class="space sarny" id="sarny"></div>
+                        <div class="space slutsk" id="slutsk"></div>
+                        <div class="space mogilev" id="mogilev"></div>
+                        <div class="space gomel" id="gomel"></div>
+                        <div class="space roslavl" id="roslavl"></div>
+                        <div class="space plock" id="plock"></div>
+                        <div class="space lodz" id="lodz"></div>
+                        <div class="space warsaw" id="warsaw"></div>
+                        <div class="space brestlitovsk" id="brestlitovsk"></div>
+                        <div class="space kovel" id="kovel"></div>
+                        <div class="space mozyr" id="mozyr"></div>
+                        <div class="space chernigov" id="chernigov"></div>
+                        <div class="space czestochowa" id="czestochowa"></div>
+                        <div class="space ivangorod" id="ivangorod"></div>
+                        <div class="space lublin" id="lublin"></div>
+                        <div class="space lutsk" id="lutsk"></div>
+                        <div class="space rovno" id="rovno"></div>
+                        <div class="space dubno" id="dubno"></div>
+                        <div class="space zhitomir" id="zhitomir"></div>
+                        <div class="space kiev" id="kiev"></div>
+                        <div class="space kharkov" id="kharkov"></div>
+                        <div class="space kamenestspodolsky" id="kamenestspodolski"></div>
+                        <div class="space vinnitsa" id="vinnitsa"></div>
+                        <div class="space belayaterkov" id="belayatserkov"></div>
+                        <div class="space zhmerinka" id="zhmerinka"></div>
+                        <div class="space uman" id="uman"></div>
+                        <div class="space kishinev" id="kishinev"></div>
+                        <div class="space caucasus" id="caucasus"></div>
+                        <div class="space ismail" id="ismail"></div>
+                        <div class="space odessa" id="odessa"></div>
+                        <div class="space poti" id="poti"></div>
+                        <div class="space grozny" id="grozny"></div>
+                        <div class="space petrovsk" id="petrovsk"></div>
+                        <div class="space batum" id="batum"></div>
+                        <div class="space kars" id="kars"></div>
+                        <div class="space tbilisi" id="tbilisi"></div>
+                        <div class="space erivan" id="erivan"></div>
+                        <div class="space elizabethpol" id="elizabethpol"></div>
+                        <div class="space baku" id="baku"></div>
+                        <div class="space dilman" id="dilman"></div>
+                        <div class="space tabriz" id="tabriz"></div>
+                        <div class="space hamadan" id="hamadan"></div>
+                        <div class="space kermanshah" id="kermanshah"></div>
+                        <div class="space khorramabad" id="khorramabad"></div>
+                        <div class="space ahwaz" id="ahwaz"></div>
+                        <div class="space basra" id="basra"></div>
+                        <div class="space constantinople" id="constantinople"></div>
+                        <div class="space adapazari" id="adapazari"></div>
+                        <div class="space sinope" id="sinope"></div>
+                        <div class="space samsun" id="samsun"></div>
+                        <div class="space giresun" id="giresun"></div>
+                        <div class="space trebizond" id="trebizond"></div>
+                        <div class="space rize" id="rize"></div>
+                        <div class="space bursa" id="bursa"></div>
+                        <div class="space eskidor" id="eskidor"></div>
+                        <div class="space ankara" id="ankara"></div>
+                        <div class="space sivas" id="sivas"></div>
+                        <div class="space erzingan" id="erzingan"></div>
+                        <div class="space erzerum" id="erzerum"></div>
+                        <div class="space eleskrit" id="eleskrit"></div>
+                        <div class="space konya" id="konya"></div>
+                        <div class="space kayseri" id="kayseri"></div>
+                        <div class="space kharput" id="kharput"></div>
+                        <div class="space diyarbakir" id="diyarbakir"></div>
+                        <div class="space bitlis" id="bitlis"></div>
+                        <div class="space van" id="van"></div>
+                        <div class="space adana" id="adana"></div>
+                        <div class="space aleppo" id="aleppo"></div>
+                        <div class="space urfa" id="urfa"></div>
+                        <div class="space mardin" id="mardin"></div>
+                        <div class="space mosul" id="mosul"></div>
+                        <div class="space beirut" id="beirut"></div>
+                        <div class="space damascus" id="damascus"></div>
+                        <div class="space kirkuk" id="kirkuk"></div>
+                        <div class="space nablus" id="nablus"></div>
+                        <div class="space amman" id="amman"></div>
+                        <div class="space baghdad" id="baghdad"></div>
+                        <div class="space kut" id="kut"></div>
+                        <div class="space gaza" id="gaza"></div>
+                        <div class="space jerusalem" id="jerusalem"></div>
+                        <div class="space samawah" id="samawah"></div>
+                        <div class="space qurna" id="qurna"></div>
+                        <div class="space sinai" id="sinai"></div>
+                        <div class="space beersheba" id="beersheba"></div>
+                        <div class="space aqaba" id="aqaba"></div>
+                        <div class="space arabia" id="arabia"></div>
+                        <div class="space medina" id="medina"></div>
+                        <div class="space annasiriya" id="annasiriya"></div>
+                        <div class="space izmir" id="izmir"></div>
+                        <div class="space balikesir" id="balikesir"></div>
+                        <div class="space canakale" id="canakale"></div>
+                        <div class="space bursa" id="bursa"></div>
+                        <div class="space constantinople" id="constantinople"></div>
+                       <div class="space gallipoli" id="gallipoli"></div>
+                        <div class="space adrianople" id="adrianople"></div>
+                        <div class="space libya" id="libya"></div>
+                        <div class="space alexandria" id="alexandria"></div>
+                        <div class="space portsaid" id="portsaid"></div>
+                        <div class="space cairo" id="cairo"></div>
+                        <div class="space jassy" id="jassy"></div>
+                        <div class="space barlad" id="barlad"></div>
+                        <div class="space galatz" id="galatz"></div>
+                        <div class="space ploesti" id="ploesti"></div>
+                        <div class="space cartedearges" id="cartedearges"></div>
+                        <div class="space targujiu" id="targujiu"></div>
+                        <div class="space caracal" id="caracal"></div>
+                        <div class="space bucharest" id="bucharest"></div>
+                        <div class="space constanta" id="constanta"></div>
+                        <div class="space varna" id="varna"></div>
+                        <div class="space plevna" id="plevna"></div>
+                        <div class="space sofia" id="sofia"></div>
+                        <div class="space kazanlik" id="kazanlik"></div>
+                        <div class="space burgas" id="burgas"></div>
+                        <div class="space philippoli" id="philippoli"></div>
+                        <div class="space strumitsa" id="strumitsa"></div>
+                        <div class="space belgrade" id="belgrade"></div>
+                        <div class="space valjevo" id="valjevo"></div>
+                        <div class="space nis" id="nis"></div>
+                        <div class="space skopje" id="skopje"></div>
+                        <div class="space monastir" id="monastir"></div>
+                        <div class="space centije" id="centije"></div>
+                        <div class="space tirana" id="tirana"></div>
+                        <div class="space valona" id="valona"></div>
+                        <div class="space florina" id="florina"></div>
+                        <div class="space salonika" id="salonika"></div>
+                        <div class="space kavala" id="kavala"></div>
+                        <div class="space larisa" id="larisa"></div>
+                        <div class="space athens" id="athens"></div>
+
+                        <!--- TURN TRACK --->
+                        <div class="turn-track turn-track-1" id="turn-track-1"></div>
+                        <div class="turn-track turn-track-2" id="turn-track-2"></div>
+                        <div class="turn-track turn-track-3" id="turn-track-3"></div>
+                        <div class="turn-track turn-track-4" id="turn-track-4"></div>
+                        <div class="turn-track turn-track-5" id="turn-track-5"></div>
+                        <div class="turn-track turn-track-6" id="turn-track-6"></div>
+                        <div class="turn-track turn-track-7" id="turn-track-7"></div>
+                        <div class="turn-track turn-track-8" id="turn-track-8"></div>
+                        <div class="turn-track turn-track-9" id="turn-track-9"></div>
+                        <div class="turn-track turn-track-10" id="turn-track-10"></div>
+                        <div class="turn-track turn-track-11" id="turn-track-11"></div>
+                        <div class="turn-track turn-track-12" id="turn-track-12"></div>
+                       <div class="turn-track turn-track-13" id="turn-track-13"></div>
+                        <div class="turn-track turn-track-14" id="turn-track-14"></div>
+                        <div class="turn-track turn-track-15" id="turn-track-15"></div>
+                        <div class="turn-track turn-track-16" id="turn-track-16"></div>
+                        <div class="turn-track turn-track-17" id="turn-track-17"></div>
+                        <div class="turn-track turn-track-18" id="turn-track-18"></div>
+                        <div class="turn-track turn-track-19" id="turn-track-19"></div>
+                        <div class="turn-track turn-track-20" id="turn-track-20"></div>
+
+                        <!--- GENERAL RECORDS TRACK --->
+                        <div
+                                class="general-records-track general-records-track-0"
+                                id="general-records-track-0"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-1"
+                                id="general-records-track-1"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-2"
+                                id="general-records-track-2"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-3"
+                                id="general-records-track-3"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-4"
+                                id="general-records-track-4"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-5"
+                                id="general-records-track-5"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-6"
+                                id="general-records-track-6"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-7"
+                                id="general-records-track-7"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-8"
+                                id="general-records-track-8"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-9"
+                                id="general-records-track-9"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-10"
+                                id="general-records-track-10"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-11"
+                                id="general-records-track-11"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-12"
+                                id="general-records-track-12"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-13"
+                                id="general-records-track-13"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-14"
+                                id="general-records-track-14"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-15"
+                                id="general-records-track-15"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-16"
+                                id="general-records-track-16"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-17"
+                                id="general-records-track-17"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-18"
+                                id="general-records-track-18"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-19"
+                                id="general-records-track-19"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-20"
+                                id="general-records-track-20"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-21"
+                                id="general-records-track-21"
+                        ></div>
+                        <div
+
+                        <div
+                                class="general-records-track general-records-track-22"
+                                id="general-records-track-22"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-23"
+                                id="general-records-track-23"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-24"
+                                id="general-records-track-24"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-25"
+                                id="general-records-track-25"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-26"
+                                id="general-records-track-26"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-27"
+                                id="general-records-track-27"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-28"
+                                id="general-records-track-28"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-29"
+                                id="general-records-track-29"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-30"
+                                id="general-records-track-30"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-31"
+                                id="general-records-track-31"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-32"
+                                id="general-records-track-32"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-33"
+                                id="general-records-track-33"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-34"
+                                id="general-records-track-34"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-35"
+                                id="general-records-track-35"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-36"
+                                id="general-records-track-36"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-37"
+                                id="general-records-track-37"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-38"
+                                id="general-records-track-38"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-39"
+                                id="general-records-track-39"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-40"
+                                id="general-records-track-40"
+                        ></div>
+
+                        <!--- ACTION ROUND CHARTS --->
+                        <div
+                                class="central-action-round-track central-action-round-track-1"
+                                id="central-action-round-track-1"
+                        ></div>
+                        <div
+                                class="central-action-round-track central-action-round-track-2"
+                                id="central-action-round-track-2"
+                        ></div>
+                        <div
+                                class="central-action-round-track central-action-round-track-3"
+                                id="central-action-round-track-3"
+                        ></div>
+                        <div
+                                class="central-action-round-track central-action-round-track-4"
+                                id="central-action-round-track-4"
+                        ></div>
+                        <div
+                                class="central-action-round-track central-action-round-track-5"
+                                id="central-action-round-track-5"
+                        ></div>
+                        <div
+                                class="central-action-round-track central-action-round-track-6"
+                                id="central-action-round-track-6"
+                        ></div>
+                        <div
+                                class="central-action-round-track central-action-round-track-7"
+                                id="central-action-round-track-7"
+                        ></div>
+                        <div
+                                class="central-action-round-track central-action-round-track-8"
+                                id="central-action-round-track-8"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-9"
+                                id="general-records-track-9"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-10"
+                                id="general-records-track-10"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-11"
+                                id="general-records-track-11"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-12"
+                                id="general-records-track-12"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-13"
+                                id="general-records-track-13"
+                        ></div> 
+                        <div    
+                                class="general-records-track general-records-track-14"
+                                id="general-records-track-14"
+                        ></div> 
+                        <div    
+                                class="general-records-track general-records-track-15"
+                                id="general-records-track-15"
+                        ></div> 
+                        <div    
+                                class="general-records-track general-records-track-16"
+                                id="general-records-track-16"
+                        ></div> 
+                        <div    
+                                class="general-records-track general-records-track-17"
+                                id="general-records-track-17"
+                        ></div> 
+                        <div    
+                                class="general-records-track general-records-track-18"
+                                id="general-records-track-18"
+                        ></div> 
+                        <div    
+                                class="general-records-track general-records-track-19"
+                                id="general-records-track-19"
+                        ></div> 
+                        <div    
+                                class="general-records-track general-records-track-20"
+                                id="general-records-track-20"
+                        ></div> 
+                        <div    
+                                class="general-records-track general-records-track-21"
+                                id="general-records-track-21"
+                        ></div> 
+                        <div
+                                class="general-records-track general-records-track-22"
+                                id="general-records-track-22"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-23"
+                                id="general-records-track-23"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-24"
+                                id="general-records-track-24"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-25"
+                                id="general-records-track-25"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-26"
+                                id="general-records-track-26"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-27"
+                                id="general-records-track-27"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-28"
+                                id="general-records-track-28"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-29"
+                                id="general-records-track-29"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-30"
+                                id="general-records-track-30"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-31"
+                                id="general-records-track-31"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-32"
+                                id="general-records-track-32"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-33"
+                                id="general-records-track-33"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-34"
+                                id="general-records-track-34"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-35"
+                                id="general-records-track-35"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-36"
+                                id="general-records-track-36"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-37"
+                                id="general-records-track-37"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-38"
+                                id="general-records-track-38"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-39"
+                                id="general-records-track-39"
+                        ></div>
+                        <div
+                                class="general-records-track general-records-track-40"
+                                id="general-records-track-40"
+                        ></div>
+
+                        <!--- ACTION ROUND CHARTS --->
+                        <div
+                                class="central-action-round-track central-action-round-track-1"
+                                id="central-action-round-track-1"
+                        ></div>
+                        <div
+                                class="central-action-round-track central-action-round-track-2"
+                                id="central-action-round-track-2"
+                        ></div>
+                        <div
+                                class="central-action-round-track central-action-round-track-3"
+                                id="central-action-round-track-3"
+                        ></div>
+                        <div
+                                class="central-action-round-track central-action-round-track-4"
+                                id="central-action-round-track-4"
+                        ></div>
+                        <div
+                                class="central-action-round-track central-action-round-track-5"
+                                id="central-action-round-track-5"
+                        ></div>
+                        <div
+                                class="central-action-round-track central-action-round-track-6"
+                                id="central-action-round-track-6"
+                        ></div>
+                        <div
+                                class="central-action-round-track central-action-round-track-7"
+                                id="central-action-round-track-7"
+                        ></div>
+                        <div
+                                class="central-action-round-track central-action-round-track-8"
+                                id="central-action-round-track-8"
+                        ></div>
+                        <div
+                                class="central-action-round-track central-action-round-track-9"
+                                id="central-action-round-track-9"
+                        ></div>
+                        <div
+                                class="central-action-round-track central-action-round-track-10"
+                                id="central-action-round-track-10"
+                        ></div>
+
+                        <div
+                                class="allies-action-round-track allies-action-round-track-1"
+                                id="central-action-round-track-1"
+                        ></div>
+                        <div
+                                class="allies-action-round-track allies-action-round-track-2"
+                                id="central-action-round-track-2"
+                        ></div>
+                        <div
+                                class="allies-action-round-track allies-action-round-track-3"
+                                id="central-action-round-track-3"
+                        ></div>
+                        <div
+                                class="allies-action-round-track allies-action-round-track-4"
+                                id="central-action-round-track-4"
+                        ></div>
+                        <div
+                                class="allies-action-round-track allies-action-round-track-5"
+                                id="central-action-round-track-5"
+                        ></div>
+                        <div
+                                class="allies-action-round-track allies-action-round-track-6"
+                                id="central-action-round-track-6"
+                        ></div>
+                        <div
+                                class="allies-action-round-track allies-action-round-track-7"
+                                id="central-action-round-track-7"
+                        ></div>
+                        <div
+                                class="allies-action-round-track allies-action-round-track-8"
+                                id="central-action-round-track-8"
+                        ></div>
+                        <div
+                                class="allies-action-round-track allies-action-round-track-9"
+                                id="central-action-round-track-9"
+                        ></div>
+                        <div
+                                class="allies-action-round-track allies-action-round-track-10"
+                                id="central-action-round-track-10"
+                        ></div>
+                        <div
+                                class="allies-action-round-track allies-action-round-track-11"
+                                id="central-action-round-track-11"
+                        ></div>
+                        <div
+                                class="allies-action-round-track allies-action-round-track-12"
+                                id="central-action-round-track-12"
+                        ></div>
+
+                        <!--- MANDATED OFFENSIVE TRACK --->
+                        <div
+                                class="central-mandated-offensive-track central-mandated-offensive-track-1"
+                                id="central-mandated-offensive-track-1"
+                        ></div>
+                        <div
+                                class="allies-mandated-offensive-track allies-mandated-offensive-track-1"
+                                id="allies-mandated-offensive-track-1"
+                        ></div>
+
+                        <!--- US COMMITMENT TRACK --->
+                        <div
+                                class="us-commitment-track us-commitment-track-1"
+                                id="us-commitment-track-1"
+                        ></div>
+                        <div
+                                class="us-commitment-track us-commitment-track-2"
+                                id="us-commitment-track-2"
+                        ></div>
+                        <div
+                                class="us-commitment-track us-commitment-track-3"
+                                id="us-commitment-track-3"
+                        ></div>
+                        <div
+                                class="us-commitment-track us-commitment-track-4"
+                                id="us-commitment-track-4"
+                        ></div>
+
+                        <!--- RUSSIAN CAPITULATION TRACK --->
+                        <div
+                                class="russian-capitulation-track russian-capitulation-track-1"
+                                id="russian-capitulation-track-1"
+                        ></div>
+                        <div
+                                class="russian-capitulation-track russian-capitulation-track-2"
+                                id="russian-capitulation-track-2"
+                        ></div>
+                        <div
+                                class="russian-capitulation-track russian-capitulation-track-3"
+                                id="russian-capitulation-track-3"
+                        ></div>
+                        <div
+                                class="russian-capitulation-track russian-capitulation-track-4"
+                                id="russian-capitulation-track-4"
+                        ></div>
+                        <div
+                                class="russian-capitulation-track russian-capitulation-track-5"
+                                id="russian-capitulation-track-5"
+                        ></div>
+                        <div
+                                class="russian-capitulation-track russian-capitulation-track-6"
+                                id="russian-capitulation-track-6"
+                        ></div>
+                        <div
+                                class="russian-capitulation-track russian-capitulation-track-7"
+                                id="russian-capitulation-track-7"
+                        ></div>
+                        <div
+                                class="russian-capitulation-track russian-capitulation-track-8"
+                                id="russian-capitulation-track-8"
+                        ></div>
+
+                        <!--- RESERVE BOXES --->
+                        <div
+                                class="allies-reserve-box reserve-box"
+                                id="allies-reserve-box"
+                        ></div>
+                        <div
+                                class="central-reserve-box reserve-box"
+                                id="central-reserve-box"
+                        ></div>
+                        <div
+                                class="allies-eliminated-units-box eliminated-units-box"
+                                id="allies-eliminated-units-box"
+                        ></div>
+                        <div
+                                class="central-eliminated-units-box eliminated-units-box"
+                                id="central-eliminated-units-box"
+                        ></div>
+                </div>
+	</div>
+
+	`;
+};
