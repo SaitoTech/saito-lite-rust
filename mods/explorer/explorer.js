@@ -118,7 +118,7 @@ class ExplorerCore extends ModTemplate {
 				}
 				return;
 			} else {
-				let html = await explorer_self.returnAllBalanceHTML(app, pubkey);
+				let html = await explorer_self.returnBalanceHTML(app, pubkey);
 				if (!res.finished) {
 					res.setHeader('Content-type', 'text/html');
 					res.charset = 'UTF-8';
@@ -284,7 +284,7 @@ class ExplorerCore extends ModTemplate {
 		const paginationControls = await createPaginationControls();
 
 		return (
-			'<div class="explorer-main"> \
+			'<div class="explorer-main explorer-main--index"> \
         <div class="block-table"> \
           <div class="explorer-data"><h4>Server Address:</h4></div> <div class="address">' +
 			(await this.app.wallet.getPublicKey()) +
@@ -331,7 +331,7 @@ class ExplorerCore extends ModTemplate {
 		let txs = await S.getInstance().getMempoolTxs();
 		var html = this.returnHead();
 		html += this.returnHeader();
-		html += '<div class="explorer-main">';
+		html += '<div class="explorer-main explorer-main--mempool">';
 		html +=
 			'<a class="button" href="/explorer/"><i class="fas fa-cubes"></i> back to blocks</a>';
 		html +=
@@ -348,7 +348,7 @@ class ExplorerCore extends ModTemplate {
 	async returnBlockSourceHTML(app, hash) {
 		var html = this.returnHead();
 		html += this.returnHeader();
-		html += '<div class="explorer-main">';
+		html += '<div class="explorer-main explorer-main--block-source">';
 		html +=
 			'<a class="button" href="/explorer/block?hash=' +
 			hash +
@@ -465,7 +465,7 @@ class ExplorerCore extends ModTemplate {
 		var html = this.returnHead() + this.returnHeader();
 
 		html +=
-			'<div class="explorer-main"> \
+			'<div class="explorer-main explorer-main--block-explorer"> \
       <a href="/explorer"> \
           <button class="explorer-nav"><i class="fas fa-cubes"></i> back to blocks</button> \
         </a> \
@@ -505,7 +505,7 @@ class ExplorerCore extends ModTemplate {
 		var html = this.returnHead() + this.returnHeader();
 
 		html += `
-		<div class="explorer-main">
+		<div class="explorer-main explorer-main--balance">
 			<div class="block-table">
 				<div class="explorer-data">
 					<h4>Wallet Address:</h4>
@@ -548,7 +548,7 @@ class ExplorerCore extends ModTemplate {
 		var html = this.returnHead() + this.returnHeader();
 
 		html += `
-		<div class="explorer-main">
+		<div class="explorer-main explorer-main--all-balance">
 		
 			<div class="explorer-balance-row">
 				<a href="/explorer">
