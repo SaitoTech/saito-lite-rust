@@ -12,7 +12,9 @@
 const axios  = require('axios')
 //const {transaction: Transaction} = require('@elrondnetwork/elrond-core-js');
 const CryptoModule = require("../../lib/templates/cryptomodule");
-const { ApiNetworkProvider, ProxyNetworkProvider, Account, UserSigner, Address, UserWallet, Transaction, TransactionComputer, UserSecretKey  } = require("@multiversx/sdk-core");
+const { ApiNetworkProvider, ProxyNetworkProvider, 
+Account, UserSigner, Address, UserWallet, Transaction, 
+TransactionComputer, UserSecretKey, Mnemonic  } = require("@multiversx/sdk-core");
 const crypto = require('crypto');
 const nacl = require('tweetnacl');
 
@@ -39,6 +41,7 @@ class EGLDModule extends CryptoModule {
     this.account = null;
     this.nonce = 0;
     this.address_obj = null;
+    this.secretKey = null;
 }
 
   async initialize(){
@@ -54,7 +57,7 @@ class EGLDModule extends CryptoModule {
     console.log("activating egld ///");
 
     if (this.account_created == 0){
-        await this.generateAddress();
+        await this.getAddress();
         await this.generateAccount();
 
         //await this.showBackupWallet();
@@ -65,32 +68,29 @@ class EGLDModule extends CryptoModule {
     await super.activate();
   }
 
-  async generateAddress(address = null) {
-    console.log("EGLD generateAddress");
+  async getAddress(mnemonic_text = null) {
+    console.log("EGLD getAddress");
       try {
-        if (address == null) {
-
+        let mnemonic = null;
+        if (mnemonic_text == null) {
+            console.log("if case");
             // Generate Ed25519 key pair
-            const keyPair = nacl.sign.keyPair();
-
-            const privateKeyHex = Buffer.from(keyPair.secretKey).toString('hex');
-            const rawPublicKey = Buffer.from(keyPair.publicKey);
-
-            console.log('Private Key (Hex):', privateKeyHex);
-            console.log('Public Key (Buffer):', rawPublicKey);
-            console.log('keyPair.secretKey:', this.uint8ArrayToBase64(keyPair.secretKey));
-
-            this.egld.secretKey = keyPair.secretKey;
-            this.egld.privateKey = privateKeyHex;
-            this.egld.publicKey = rawPublicKey.toString('hex');
-            this.address_obj = new Address(rawPublicKey);
-            
+            mnemonic = Mnemonic.generate();            
         } else {
-            this.address_obj = new Address(address);
+            console.log("else case");
+            mnemonic = Mnemonic.fromString(mnemonic_text);  
         }
 
+        this.secretKey = mnemonic.deriveKey(0);
+        const publicKey = this.secretKey.generatePublicKey();
+        this.address_obj = publicKey.toAddress();
+
+        console.log("mnemonic: ", mnemonic);
+        console.log("this.secretKey: ", this.secretKey);
+        console.log("publicKey: ", publicKey);
         console.log("this.address_obj: ", this.address_obj);
-    
+
+        this.egld.mnemonic_text = mnemonic.text;
         this.egld.address = this.address = this.destination = this.address_obj.toBech32();
       } catch (error) {
         console.error("Error creating EGLD address:", error);
@@ -151,7 +151,7 @@ class EGLDModule extends CryptoModule {
             bigIntNum = num * 1000000000000000000; // 100,000,000
         }
 
-        return BigInt(bigIntNum);
+        return (bigIntNum);
     }
      
     convertBigIntToNumber(amount = BigInt(0)) {
@@ -195,55 +195,103 @@ class EGLDModule extends CryptoModule {
         console.log("inside sendPayment ////");
         console.log("amount, recipient, unique_hash: ", amount , recipient , unique_hash);
 
-        let txObj = {
-          nonce: BigInt(0), // Set this value to match the expected nonce
-          value: BigInt(50000000000000000), // Set this value to match the expected amount
-          receiver: recipient, // Correct receiver
-          sender: this.address, // Correct sender
-          gasPrice: BigInt(1000000000),
-          gasLimit: BigInt(50000),
-          chainID: 'D', // Expected chainID
-          version: 1, // Required version field
+        console.log("this.egld: ", this.egld);
+
+        if (this.address_obj == null) {
+            await this.load();    
         }
+
+        console.log("this.secretKey: ", this.secretKey);
+        let txObj = {
+            value: this.convertNumberToBigint(amount),
+            sender: this.address_obj,
+            receiver: Address.newFromBech32(recipient),
+            chainID: "D",
+            nonce: this.account.nonce,
+            gasLimit: 50000,
+            //data: "SAITO multiwallet transfer"
+        };
+        console.log("txObj: ", txObj);
+
+        // get funds to you address before creating the transaction
         const transaction = new Transaction(txObj);
 
-        // const secretKey = this.base64ToUint8Array(this.egld.secretKey);
-        console.log("Decoded key (Uint8Array):", this.egld.secretKey);
-        // console.log("Decoded key length:", secretKey.length);
+        // let gasLimit =   this.networkConfig.erd_min_gas_limit + 
+        //                 this.networkConfig.erd_gas_per_data_byte * (Buffer.from(transaction.data, "hex").length);
+        console.log("transaction before: ", transaction);
 
-        // // Ensure it's exactly 32 bytes
-        // if (secretKey.length !== 32) {
-        //   console.error("Decoded key must be 32 bytes long.");
-        // }
+        // serialize transaction for signing
+        const txComputer = new TransactionComputer();
+        const serializedTX = txComputer.computeBytesForSigning(transaction);
 
-        // console.log("obj:", txObj);
-        // console.log("transaction: ", transaction);
-        // console.log("secretKey: ", secretKey);
+        console.log("serializedTX: ", serializedTX);
 
-        // Convert JSON object to string and then to a buffer
-        const message = new TextEncoder().encode(JSON.stringify(txObj));
+        // set the signature
+        transaction.signature = this.secretKey.sign(serializedTX);
 
-        console.log("message: ", message);
+        console.log("transaction after: ", transaction);
 
-        // const privateKeyUint8Array = Buffer.from(this.egld.secretKey, 'hex');
-        // console.log("privateKeyUint8Array:", privateKeyUint8Array);
-        const signature = nacl.sign.detached(message, this.egld.secretKey);
-
-        if (signature.length !== 64) {
-            console.error("Invalid signature length. Expected 64 bytes.");
-        }
-
-         console.log('Raw signature:', signature);
-        console.log('Raw signature length:', signature.length);
-
-      transaction.signature = Buffer.from(signature).toString('hex');
-      console.log('Encoded signature:', transaction.signature);
-
-        console.log("transaction after:", transaction);
-
+        // broadcast transaction
         const txHash = await this.apiNetworkProvider.sendTransaction(transaction);
-        console.log("TX hash:", txHash);
+        console.log("txHash: ", txHash);
+        return txHash;
     }
+
+
+    // async sendPayment(amount = '', recipient = '', unique_hash = '') {
+
+    //     console.log("inside sendPayment ////");
+    //     console.log("amount, recipient, unique_hash: ", amount , recipient , unique_hash);
+
+    //     let txObj = {
+    //       nonce: BigInt(0), // Set this value to match the expected nonce
+    //       value: BigInt(50000000000000000), // Set this value to match the expected amount
+    //       receiver: recipient, // Correct receiver
+    //       sender: this.address, // Correct sender
+    //       gasPrice: BigInt(1000000000),
+    //       gasLimit: BigInt(50000),
+    //       chainID: 'D', // Expected chainID
+    //       version: 1, // Required version field
+    //     }
+    //     const transaction = new Transaction(txObj);
+
+    //     // const secretKey = this.base64ToUint8Array(this.egld.secretKey);
+    //     console.log("Decoded key (Uint8Array):", this.egld.secretKey);
+    //     // console.log("Decoded key length:", secretKey.length);
+
+    //     // // Ensure it's exactly 32 bytes
+    //     // if (secretKey.length !== 32) {
+    //     //   console.error("Decoded key must be 32 bytes long.");
+    //     // }
+
+    //     // console.log("obj:", txObj);
+    //     // console.log("transaction: ", transaction);
+    //     // console.log("secretKey: ", secretKey);
+
+    //     // Convert JSON object to string and then to a buffer
+    //     const message = new TextEncoder().encode(JSON.stringify(txObj));
+
+    //     console.log("message: ", message);
+
+    //     // const privateKeyUint8Array = Buffer.from(this.egld.secretKey, 'hex');
+    //     // console.log("privateKeyUint8Array:", privateKeyUint8Array);
+    //     const signature = nacl.sign.detached(message, this.egld.secretKey);
+
+    //     if (signature.length !== 64) {
+    //         console.error("Invalid signature length. Expected 64 bytes.");
+    //     }
+
+    //      console.log('Raw signature:', signature);
+    //     console.log('Raw signature length:', signature.length);
+
+    //   transaction.signature = Buffer.from(signature).toString('hex');
+    //   console.log('Encoded signature:', transaction.signature);
+
+    //     console.log("transaction after:", transaction);
+
+    //     const txHash = await this.apiNetworkProvider.sendTransaction(transaction);
+    //     console.log("TX hash:", txHash);
+    // }
 
 
     async returnBalance(){
@@ -286,7 +334,8 @@ class EGLDModule extends CryptoModule {
           console.log("EGLD OPTIONS: " + JSON.stringify(this.app.options.crypto.egld));
           if (this.egld.address) {
             this.destination = this.egld.address;
-            await this.generateAddress(this.egld.address);
+
+            await this.getAddress(this.egld.mnemonic_text);
             //await this.updateAccount();
             this.account_created = 1;
           }
