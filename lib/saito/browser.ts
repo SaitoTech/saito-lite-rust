@@ -1,9 +1,8 @@
 // @ts-nocheck
 
-import screenfull, { element } from 'screenfull';
-import { getDiffieHellman } from 'crypto';
 import React from 'react';
 import { createRoot } from 'react-dom';
+import screenfull from 'screenfull';
 let marked = require('marked');
 let sanitizeHtml = require('sanitize-html');
 const sanitizer = require('sanitizer');
@@ -64,15 +63,6 @@ class Browser {
       return 0;
     }
 
-<<<<<<< HEAD
-    app.connection.on('saito-render-complete', () => {
-      // xclose (loading wallpaper) looks for this class on body
-      console.log('rendering complete, remove wallpaper');
-      setTimeout(() => {
-        document.querySelector('body').classList.add('xclose');
-      }, 1000);
-    });
-=======
 		app.connection.on("saito-render-complete", ()=> {
 			// xclose (loading wallpaper) looks for this class on body
 			setTimeout(()=> {
@@ -80,7 +70,6 @@ class Browser {
 				document.querySelector("body").classList.add("xclose");
 			}, 1000);
 		});
->>>>>>> staging
 
     this.app.connection.on('new-version-detected', (version) => {
       console.log('New wallet version detected: ' + version);
@@ -103,63 +92,41 @@ class Browser {
 
     app.connection.on('block-fetch-status', (count) => {
       // trigger block sync ui here
-      console.log("blocks currently being fetched: ", Number(count.count));
-      // trigger-block-download
-      var html = `
-	  <div>grah
-			<svg width="64" height="64" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      let block_count = Number(count.count);
+      console.log("blocks currently being fetched: ", block_count);
+
+      if (block_count > 0) {
+        // trigger-block-download
+        var html = `
+	  <div style="font-size: 24px; display: flex; flex-direction: row; align-items: center; justify-content: space-around; gap: 10px;">
+    <div>Blocks to download:  </div>
+<svg width="64" height="64" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
   <style>
     @keyframes rotate {
       0% { stroke-dashoffset: 289; }
-      100% { stroke-dashoffset: -289; }
-    }
-    .background-circle {
-      fill: none;
-      stroke: #ffff;
-      stroke-width: 4;
+      100% { stroke-dashoffset: 0; }
     }
     .foreground-circle {
       fill: none;
-      stroke: #fff;
-      stroke-width: 4;
+      stroke: #FFF;
+      stroke-width: 5;
       stroke-linecap: round;
       stroke-dasharray: 289;
-      animation: rotate 2s ease-in-out 1;
-    }
-    .gradient-circle {
-      fill: none;
-      stroke: url(#gradient);
-      stroke-width: 4;
-      stroke-linecap: round;
-      stroke-dasharray: 289;
-      animation: rotate 2s ease-in-out 1;
+      animation: rotate 1s ease-in-out 1;
     }
     .number {
       font-size: 40px;
       font-weight: bold;
-      fill: #F71F3D;
+      fill: #FFF;
       font-family: sans, sans-serif;
     }
   </style>
-  
-  <defs>
-    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#fff" stop-opacity="0" />
-      <stop offset="50%" stop-color="#fff" stop-opacity="1" />
-      <stop offset="100%" stop-color="#fff" stop-opacity="0" />
-    </linearGradient>
-  </defs>
-  
-  <circle class="background-circle" cx="50" cy="50" r="46" />
-  <circle class="foreground-circle" cx="50" cy="50" r="46" />
-  <circle class="gradient-circle" cx="50" cy="50" r="46" />
-  
-  <text x="50" y="50" text-anchor="middle" dominant-baseline="central" class="number">7</text>
+  <circle class="foreground-circle" cx="50" cy="50" r="40" />
+  <text x="50" y="50" text-anchor="middle" dominant-baseline="central" class="number">${block_count}</text>
 </svg>
-${Number(count.count)}
 </div>`;
-    siteMessage(html, 2000);
-	console.log(html);
+        siteMessage(html, 1500, console.log('blockdl'), true);
+      }
     });
 
     try {
@@ -1254,835 +1221,6 @@ ${Number(count.count)}
 			  selection.getRangeAt(0).insertNode(document.createTextNode(paste));
 			  selection.collapseToEnd();
 			}*/
-<<<<<<< HEAD
-          },
-          false
-        );
-
-        dropArea.classList.add('paste_event');
-      }
-      const input = document.getElementById(`hidden_file_element_${id}`);
-      if (click_to_upload == true) {
-        dropArea.addEventListener('click', function (e) {
-          input.click();
-        });
-      }
-
-      input.addEventListener(
-        'change',
-        function (e) {
-          const fileName = '';
-          if (this.files && this.files.length > 0) {
-            const files = this.files;
-            [...files].forEach(function (file) {
-              const reader = new FileReader();
-              reader.addEventListener('load', (event) => {
-                handleFileDrop(event.target.result);
-              });
-              if (read_as_array_buffer) {
-                reader.readAsArrayBuffer(file);
-              } else {
-                reader.readAsDataURL(file);
-              }
-            });
-          }
-        },
-        false
-      );
-      dropArea.focus();
-    }
-  }
-
-  highlight(e) {
-    document.getElementById(e.currentTarget.id).style.opacity = 0.8;
-  }
-
-  unhighlight(e) {
-    document.getElementById(e.currentTarget.id).style.opacity = 1;
-  }
-
-  preventDefaults(e) {
-    console.log('preventing the defaults');
-    e.preventDefault();
-    e.stopPropagation();
-  }
-
-  makeRefreshable(selector, mycallback = null) {
-    let touchStartY = 0;
-    let triggerRefresh = false;
-
-    let element = document.querySelector(selector);
-
-    if (!element) {
-      console.error("browser/makeRefreshable: Element doesn't exist!");
-      return;
-    }
-
-    if (!mycallback) {
-      console.error('no callback!');
-      return;
-    }
-
-    element.addEventListener('touchstart', (e) => {
-      touchStartY = e.touches[0].clientY;
-      triggerRefresh = false;
-    });
-
-    element.addEventListener('touchmove', (e) => {
-      const touchY = e.touches[0].clientY;
-      const touchDiff = touchY - touchStartY;
-      if (touchDiff > 100 && window.scrollY === 0) {
-        triggerRefresh = true;
-      }
-    });
-
-    element.addEventListener('touchend', (e) => {
-      if (triggerRefresh) {
-        mycallback();
-      }
-    });
-  }
-
-  makeDraggable(id_to_move, id_to_drag = '', dockable = false, mycallback = null) {
-    //console.log("make draggable: " + id_to_drag);
-    //console.log(" and move? " + id_to_move);
-
-    try {
-      const element_to_move = document.getElementById(id_to_move);
-      let timeout = null;
-      let element_to_drag = element_to_move;
-      if (id_to_drag) {
-        element_to_drag = document.getElementById(id_to_drag);
-      }
-
-      let element_moved = 0;
-
-      let mouse_down_left = 0;
-      let mouse_down_top = 0;
-      let mouse_current_left = 0;
-      let mouse_current_top = 0;
-      let element_start_left = 0;
-      let element_start_top = 0;
-
-      element_to_drag.onmousedown = function (e) {
-        if (timeout) {
-          clearTimeout(timeout);
-        }
-        let resizeable = ['both', 'vertical', 'horizontal'];
-        //nope out if the elemtn or it's parent are css resizable - and the click is within 20px of the bottom right corner.
-
-        if (
-          resizeable.indexOf(getComputedStyle(e.target).resize) > -1 ||
-          resizeable.indexOf(getComputedStyle(e.target.parentElement).resize) > -1
-        ) {
-          if (e.offsetX > e.target.offsetWidth - 20 && e.offsetY > e.target.offsetHeight - 20) {
-            return;
-          }
-        }
-
-        e = e || window.event;
-
-        //console.log("DRAG MOUSEDOWN");
-        //console.log(e.clientX);
-        //console.log(e.offsetX);
-
-        if (
-          !e.currentTarget.id ||
-          (e.currentTarget.id != id_to_move && e.currentTarget.id != id_to_drag)
-        ) {
-          document.onmouseup = null;
-          document.onmousemove = null;
-          return;
-        }
-
-        element_to_move.style.transition = 'unset';
-
-        const rect = element_to_move.getBoundingClientRect();
-        element_start_left = rect.left;
-        element_start_top = rect.top;
-
-        mouse_down_left = e.clientX;
-        mouse_down_top = e.clientY;
-
-        element_moved = false;
-
-        document.onmouseup = async function (e) {
-          if (dockable) {
-            if (element_to_move.classList.contains('dockedLeft')) {
-              element_to_move.style.left = 0;
-            }
-
-            if (element_to_move.classList.contains('dockedTop')) {
-              element_to_move.style.top = 0;
-            }
-
-            if (element_to_move.classList.contains('dockedRight')) {
-              element_to_move.style.left =
-                window.innerWidth - element_to_move.getBoundingClientRect().width + 'px';
-            }
-
-            if (element_to_move.classList.contains('dockedBottom')) {
-              element_to_move.style.top =
-                window.innerHeight - element_to_move.getBoundingClientRect().height + 'px';
-            }
-
-            if (element_to_move.classList.contains('dragging')) {
-              element_to_move.classList.remove('dragging');
-            }
-
-            timeout = setTimeout(() => {
-              element_to_move.classList.remove('dockedBottom');
-              element_to_move.classList.remove('dockedTop');
-              element_to_move.classList.remove('dockedRight');
-              element_to_move.classList.remove('dockedLeft');
-            }, 1200);
-          }
-
-          document.onmouseup = null;
-          document.onmousemove = null;
-
-          element_to_move.style.transition = '';
-          if (mycallback && element_moved) {
-            await mycallback();
-          }
-        };
-
-        document.onmousemove = function (e) {
-          e = e || window.event;
-          e.preventDefault();
-          const threshold = 25;
-
-          mouse_current_left = e.clientX;
-          mouse_current_top = e.clientY;
-          const adjustmentX = mouse_current_left - mouse_down_left;
-          const adjustmentY = mouse_current_top - mouse_down_top;
-
-          if (adjustmentX !== 0 || adjustmentY !== 0) {
-            element_moved = true;
-          }
-
-          element_to_move.classList.add('dragging');
-
-          let newPosX = element_start_left + adjustmentX;
-          let newPosY = element_start_top + adjustmentY;
-
-          //if dockable show docking edge
-          if (dockable) {
-            if (Math.abs(element_to_move.getBoundingClientRect().x) < threshold) {
-              element_to_move.classList.add('dockedLeft');
-            } else {
-              element_to_move.classList.remove('dockedLeft');
-            }
-
-            if (Math.abs(element_to_move.getBoundingClientRect().y < threshold)) {
-              element_to_move.classList.add('dockedTop');
-            } else {
-              element_to_move.classList.remove('dockedTop');
-            }
-
-            if (
-              Math.abs(
-                element_to_move.getBoundingClientRect().x +
-                  element_to_move.getBoundingClientRect().width -
-                  window.innerWidth
-              ) < threshold
-            ) {
-              element_to_move.classList.add('dockedRight');
-            } else {
-              element_to_move.classList.remove('dockedRight');
-            }
-
-            if (
-              Math.abs(
-                element_to_move.getBoundingClientRect().y +
-                  element_to_move.getBoundingClientRect().height -
-                  window.innerHeight
-              ) < threshold
-            ) {
-              element_to_move.classList.add('dockedBottom');
-            } else {
-              element_to_move.classList.remove('dockedBottom');
-            }
-
-            // set the element's new position:
-
-            if (Math.abs(newPosX) < threshold) {
-              newPosX = 0;
-            }
-            if (
-              Math.abs(
-                newPosX + element_to_move.getBoundingClientRect().width - window.innerWidth
-              ) < threshold
-            ) {
-              newPosX = window.innerWidth - element_to_move.getBoundingClientRect().width;
-            }
-
-            if (Math.abs(newPosY) < threshold) {
-              newPosY = 0;
-            }
-            if (
-              Math.abs(
-                newPosY + element_to_move.getBoundingClientRect().height - window.innerHeight
-              ) < threshold
-            ) {
-              newPosY = window.innerHeight - element_to_move.getBoundingClientRect().height;
-            }
-          }
-
-          element_to_move.style.left = newPosX + 'px';
-          element_to_move.style.top = newPosY + 'px';
-
-          //We are changing to Top/Left so get rid of bottom/right
-          element_to_move.style.bottom = 'unset';
-          element_to_move.style.right = 'unset';
-          //Styles that adjust where the element goes, need to go away!
-          element_to_move.style.transform = 'unset';
-          element_to_move.style.marginTop = 'unset';
-          element_to_move.style.marginLeft = 'unset';
-        };
-
-        return false;
-      };
-
-      element_to_drag.ontouchstart = function (e) {
-        e = e || window.event;
-
-        if (
-          !e.currentTarget.id ||
-          (e.currentTarget.id != id_to_move && e.currentTarget.id != id_to_drag)
-        ) {
-          document.ontouchend = null;
-          document.ontouchmove = null;
-          return;
-        }
-
-        element_to_move.style.transition = 'unset';
-
-        //e.preventDefault();
-        //if (e.stopPropagation) { e.stopPropagation(); }
-        //if (e.preventDefault) { e.preventDefault(); }
-        //e.cancelBubble = true;
-        //e.returnValue = false;
-
-        const rect = element_to_move.getBoundingClientRect();
-        element_start_left = rect.left;
-        element_start_top = rect.top;
-        mouse_down_left = e.targetTouches[0]
-          ? e.targetTouches[0].pageX
-          : e.changedTouches[e.changedTouches.length - 1].pageX;
-        mouse_down_top = e.targetTouches[0]
-          ? event.targetTouches[0].pageY
-          : e.changedTouches[e.changedTouches.length - 1].pageY;
-        mouse_current_left = mouse_down_left;
-        mouse_current_top = mouse_down_top;
-
-        document.ontouchend = async function (e) {
-          document.ontouchend = null;
-          document.ontouchmove = null;
-          if (mycallback && element_moved) {
-            await mycallback();
-          }
-        };
-
-        document.ontouchmove = function (e) {
-          e = e || window.event;
-          //e.preventDefault();
-
-          mouse_current_left = e.targetTouches[0]
-            ? e.targetTouches[0].pageX
-            : e.changedTouches[e.changedTouches.length - 1].pageX;
-          mouse_current_top = e.targetTouches[0]
-            ? event.targetTouches[0].pageY
-            : e.changedTouches[e.changedTouches.length - 1].pageY;
-          const adjustmentX = mouse_current_left - mouse_down_left;
-          const adjustmentY = mouse_current_top - mouse_down_top;
-
-          if (adjustmentX !== 0 || adjustmentY !== 0) {
-            element_moved = true;
-          }
-
-          // set the element's new position:
-          element_to_move.style.left = element_start_left + adjustmentX + 'px';
-          element_to_move.style.top = element_start_top + adjustmentY + 'px';
-          element_to_move.style.bottom = 'unset';
-          element_to_move.style.right = 'unset';
-          element_to_move.style.transform = 'unset';
-          element_to_move.style.marginTop = 'unset';
-          element_to_move.style.marginLeft = 'unset';
-        };
-      };
-    } catch (err) {
-      console.error('error: ' + err);
-    }
-  }
-
-  cancelDraggable(id_to_drag) {
-    try {
-      let element_to_drag = document.getElementById(id_to_drag);
-      element_to_drag.onmousedown = null;
-      element_to_drag.ontouchstart = null;
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  /**
-   * Callback is called on mousedown
-   */
-  makeResizeable(
-    target_div,
-    icon_div = null,
-    unique_id = null,
-    direction = 'diagonal',
-    callback = null
-  ) {
-    let d = document;
-    let target = d.querySelector(target_div);
-    let pullTab = null;
-
-    this.addElementToSelector(
-      `<div class="resize-icon ${direction}" id="resize-icon-${unique_id}"></div>`,
-      icon_div
-    );
-    pullTab = d.getElementById(`resize-icon-${unique_id}`);
-
-    let ht, wd, x, y, dx, dy;
-
-    const prepareToResize = () => {
-      let dimensions = target.getBoundingClientRect();
-      ht = dimensions.height;
-      wd = dimensions.width;
-
-      //
-      // Draggable elements may have top/left set, but we want the bottom/right to be fixed
-      //
-      target.style.top = '';
-      target.style.left = '';
-      target.style.bottom = window.innerHeight - dimensions.bottom + 'px';
-      target.style.right = window.innerWidth - dimensions.right + 'px';
-    };
-
-    pullTab.onmousedown = (evt) => {
-      x = evt.screenX;
-      y = evt.screenY;
-
-      evt.stopImmediatePropagation();
-      evt.preventDefault();
-
-      prepareToResize();
-
-      //Get rid of any animation delays
-      target.style.transition = 'unset';
-
-      d.body.onmousemove = (evt) => {
-        dx = evt.screenX - x;
-        dy = evt.screenY - y;
-        x = evt.screenX;
-        y = evt.screenY;
-
-        if (direction == 'horizontal') {
-          wd += dx;
-          target.style.width = wd + 'px';
-        }
-        if (direction == 'vertical') {
-          ht += dy;
-          target.style.height = ht + 'px';
-        }
-
-        if (direction == 'diagonal') {
-          wd -= dx;
-          ht -= dy;
-          target.style.width = wd + 'px';
-          target.style.height = ht + 'px';
-        }
-      };
-
-      d.body.onmouseup = () => {
-        d.body.onmousemove = null;
-        target.style.transition = '';
-      };
-
-      if (callback) {
-        callback();
-      }
-    };
-  }
-
-  returnAddressHTML(key) {
-    return `<div class="saito-address" data-id="${key}">${this.app.keychain.returnIdentifierByPublicKey(
-      key,
-      true
-    )}</div>`;
-  }
-
-  updateAddressHTML(key, id) {
-    if (!id) {
-      return;
-    }
-    if (key === id) {
-      return;
-    }
-    try {
-      Array.from(document.querySelectorAll(`.saito-address[data-id='${key}']`)).forEach(
-        (add) => (add.innerHTML = id)
-      );
-    } catch (err) {
-      console.error(err);
-    }
-
-    this.app.connection.emit('update-username-in-game');
-  }
-
-  logMatomoEvent(category, action, name, value) {
-    try {
-      let m = this.app.modules.returnFirstRespondTo('matomo_event_push');
-      if (m) {
-        m.push(category, action, name, value);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /////////////////////// url-hash helper functions ////////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-  // TODO: Add a function which alphabetizes keys so that noop url changes will
-  // always act correctly... .e.g. someFunction("#bar=1&foo=2") should never
-  // return "#foo=1&bar=2". Some other way of preserving order may be better...
-  //////////////////////////////////////////////////////////////////////////////
-  //
-  // Parse a url-hash string into an object.
-  // usage: parseHash("#foo=1&bar=2") --> {foo: 1, bar: 2}
-  parseHash(hash) {
-    if (hash === '') {
-      return {};
-    }
-    return hash
-      .substr(1)
-      .split('&')
-      .reduce(function (result, item) {
-        const parts = item.split('=');
-        result[parts[0]] = parts[1];
-        return result;
-      }, {});
-  }
-
-  // Build a url-hash string from an object.
-  // usage: buildHash({foo: 1, bar: 2}) --> "#foo=1&bar=2"
-  buildHash(hashObj) {
-    const hashString = Object.keys(hashObj).reduce((output, key) => {
-      const val = hashObj[key];
-      return output + `&${key}=${hashObj[key]}`;
-    }, '');
-    return '#' + hashString.substr(1);
-  }
-
-  // Remove a subset of key-value pairs from a url-hash string.
-  // usage: removeFromHash("#foo=1&bar=2","bar") --> "#foo=1"
-  removeFromHash(hash, ...keys) {
-    const hashObj = this.parseHash(hash);
-    keys.forEach((key, i) => {
-      delete hashObj[key];
-    });
-    return this.buildHash(hashObj);
-  }
-
-  // Add new key-value pairs to the hash.
-  // usage: modifyHash("#foo=1",{bar: 2}) --> "#foo=1&bar=2"
-  modifyHash(oldHash, newHashValues) {
-    return this.buildHash(Object.assign(this.parseHash(oldHash), newHashValues));
-  }
-
-  // Override defaults with other values. Useful to initialize a page.
-  // usage: modifyHash("#foo=1&bar=2","#foo=3") --> "#foo=3&bar=2"
-  defaultHashTo(defaultHash, newHash) {
-    return this.buildHash(Object.assign(this.parseHash(defaultHash), this.parseHash(newHash)));
-  }
-
-  // Initialize a hash on page load.
-  // Typically some values need a setting but can be overridden by a "deep link".
-  // Other values must take certain values on page load, e.g. ready=false these
-  // go in the forcedHashValues
-  //
-  // usage:
-  // let currentHash = window.location.hash; // (e.g."#page=2&ready=1")
-  initializeHash(defaultHash, deepLinkHash, forcedHashValues) {
-    return this.modifyHash(this.defaultHashTo(defaultHash, deepLinkHash), forcedHashValues);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-  /////////////////////// end url-hash helper functions ////////////////////////
-  //////////////////////////////////////////////////////////////////////////////
-
-  async screenshotCanvasElementById(id = '', callback = null) {
-    let canvas = document.getElementById(id);
-    if (canvas) {
-      let img = canvas.toDataURL('image/jpeg', 0.35);
-      if (callback != null) {
-        callback(img);
-        d;
-      }
-    }
-  }
-
-  //
-  // neither of these is quite right and the internet is full of wrong answers
-  //
-  urlRegexp() {
-    // from tweet.js
-    // let expression = /\b(?:https?:\/\/)?[\w.]{2,}\.[a-zA-Z]{1,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
-
-    // from sanitize let urlPattern = /\b(?:https?:\/\/)?[\w]+(\.[\w]+)+\.[a-zA-Z]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
-    // The sanitizeHtml converts & into `&amp;` so we should match on ;
-    // let daniels_regex = /(?<!>)\b(?:https?:\/\/|www\.|https?:\/\/www\.)?(?:\w{2,}\.)+\w{2,}(?:\/[a-zA-Z0-9_\?=#&;@\-\.]*)*\b(?!<\/)/gi;
-    // this pointlessly looks for www, but does not identify the majority of valid urls or any url without http/https in front of it.
-
-    // Re-added this code as urls don't work without it. Did chance the var names for safety.
-
-    //this should identify patterns like x.com and staging.saito.io which the others do not.
-    let urlIndentifierRegexp =
-      /\b(?:https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w\/.-]*)?(\?[^<\s]*)?(?![^<]*>)/gi;
-    return urlIndentifierRegexp;
-  }
-
-  sanitize(text, createLinks = false) {
-    if (!text) {
-      return '';
-    }
-    try {
-      if (createLinks) {
-        text = marked.parse(text);
-        //trim trailing line breaks -
-        // commenting it out because no need for this now
-        // because of above marked parsing
-        //text = text.replace(/[\r<br>]+$/, "");
-      }
-
-      text = sanitizeHtml(text, {
-        allowedTags: [
-          'h1',
-          'h2',
-          'h3',
-          'h4',
-          'h5',
-          'h6',
-          'blockquote',
-          'p',
-          'ul',
-          'ol',
-          'nl',
-          'li',
-          'b',
-          'i',
-          'strong',
-          'em',
-          'strike',
-          'code',
-          'hr',
-          'br',
-          'div',
-          'table',
-          'thead',
-          'caption',
-          'tbody',
-          'tr',
-          'th',
-          'td',
-          'pre',
-          'marquee',
-          'pre',
-          'span'
-        ],
-        allowedAttributes: {
-          div: ['class', 'id'],
-          span: ['class', 'id', 'data-id'],
-          img: ['src', 'class'],
-          blockquote: ['href'],
-          i: ['class']
-        },
-        selfClosing: ['img', 'br', 'hr', 'area', 'base', 'basefont', 'input', 'link', 'meta'],
-        allowedSchemes: ['http', 'https', 'ftp', 'mailto'],
-        allowedSchemesByTag: {},
-        allowedSchemesAppliedToAttributes: ['href', 'cite'],
-        allowProtocolRelative: true
-      });
-
-      /* wrap link in <a> tag */
-
-      if (createLinks) {
-        text = text.replace(this.urlRegexp(), function (url) {
-          let url1 = url.trim();
-          let url2 = url1;
-          if (url2.length > 42) {
-            if (url2.indexOf('http') == 0 && url2.includes('://')) {
-              let temp = url2.split('://');
-              url2 = temp[1];
-            }
-            if (url2.indexOf('www.') == 0) {
-              url2 = url2.substr(4);
-            }
-            if (url2.length > 40) {
-              url2 = url2.substr(0, 37) + '...';
-            }
-          }
-
-          return `<a ${
-            url.includes(window.location.host) ? '' : "target='_blank' rel='noopener noreferrer' "
-          } class="saito-treated-link" href="${!url.includes('http') ? `http://${url1}` : url1}">${url2}</a>`;
-        });
-      }
-
-      //trim lines at start and end
-      text = text.replace(/^\s+|\s+$/g, '');
-
-      text = emoji.emojify(text);
-
-      return text;
-    } catch (err) {
-      console.log('Err in sanitizing: ' + err);
-      return text;
-    }
-  }
-
-  async resizeImg(img, targetSize = 512, maxDimensions = { w: 1920, h: 1024 }) {
-    let self = this;
-    let dimensions = await this.getImageDimensions(img);
-    let new_img = '';
-    let canvas = document.createElement('canvas');
-    let oImg = document.createElement('img');
-
-    let w = dimensions.w;
-    let h = dimensions.h;
-    let aspect = w / h;
-
-    if (w > maxDimensions.w) {
-      w = maxDimensions.w;
-      h = maxDimensions.w / aspect;
-    }
-    if (h > maxDimensions.h) {
-      h = maxDimensions.h;
-      w = maxDimensions.h * aspect;
-    }
-
-    canvas.width = w;
-    canvas.height = h;
-
-    let last_img_size = 1000000000000;
-
-    function resizeLoop(img, quality = 1) {
-      oImg.setAttribute('src', img);
-      canvas.getContext('2d').drawImage(oImg, 0, 0, w, h);
-      new_img = canvas.toDataURL('image/jpeg', quality);
-      let imgSize = new_img.length / 1024; // in KB
-      console.log('resizing: ' + imgSize);
-
-      //Prevent infinite loops by seeing if the size is still going down
-      if (imgSize > targetSize && imgSize < last_img_size) {
-        last_img_size = imgSize;
-        resizeLoop(new_img, quality * 0.9);
-      } else {
-        return;
-      }
-    }
-
-    resizeLoop(img);
-
-    oImg.remove();
-    canvas.remove();
-
-    console.log('Resized to: ' + new_img.length / 1024);
-
-    return new_img;
-  }
-
-  getImageDimensions(file) {
-    return new Promise(function (resolved, rejected) {
-      let i = new Image();
-      i.onload = function () {
-        resolved({ w: i.width, h: i.height });
-      };
-      i.src = file;
-    });
-  }
-
-  stripHtml(html) {
-    if (this.app.BROWSER) {
-      let tmp = document.createElement('DIV');
-      tmp.innerHTML = html;
-      return tmp.textContent || tmp.innerText || '';
-    }
-
-    return html.replace(/(<([^>]+)>)/gi, '');
-  }
-
-  //
-  // This function should make strings friendly to put INSIDE an html tag
-  // escaping special characters like & < > "
-  //
-  escapeHTML(text) {
-    return sanitizer.escapeAttrib(text);
-  }
-
-  //////////////////////
-  // helper functions //
-  //////////////////////
-  filterText(text = '') {
-    text = text.replace(/^\s+$/gm, '');
-    text = text.replace(/^\n+$/gm, '');
-    text = text.replace(/<div>\s*<br>\s*<\/div>\s*<div>\s*<br>\s*<\/div>/gm, '<div><br></div>');
-    text = text.replace(/<div>\s*<br>\s*<\/div>$/gm, '');
-
-    return text;
-  }
-
-  attachWindowFunctions() {
-    if (typeof window !== 'undefined') {
-      let browser_self = this;
-
-      let mutationThrottle = null;
-      let mutatedNodes = [];
-      let mutationObserver = new MutationObserver(function (mutations) {
-        mutations.forEach(function (mutation) {
-          if (mutation.addedNodes.length > 0) {
-            for (let m of mutation.addedNodes) {
-              mutatedNodes.push(m);
-            }
-            if (mutationThrottle) {
-              clearTimeout(mutationThrottle);
-            }
-            mutationThrottle = setTimeout(() => {
-              //console.log("treat mutated nodes: ", mutatedNodes.length);
-              browser_self.treatElements(mutatedNodes);
-              browser_self.treatIdentifiers(mutatedNodes);
-              mutatedNodes = [];
-              mutationThrottle = null;
-            }, 120);
-          }
-        });
-      });
-
-      mutationObserver.observe(document.documentElement, {
-        attributes: true,
-        characterData: true,
-        childList: true,
-        subtree: true,
-        attributeOldValue: true
-      });
-
-      window.sanitize = function (msg) {
-        let result = browser_self.sanitize(msg);
-        return result;
-      };
-
-      window.salert = function (message) {
-        if (document.getElementById('saito-alert')) {
-          return;
-        }
-        let wrapper = document.createElement('div');
-        wrapper.id = 'saito-alert';
-        let html = `<div id="saito-alert-shim">
-=======
 					},
 					false
 				);
@@ -2770,7 +1908,8 @@ ${Number(count.count)}
 					span: ['class', 'id', 'data-id'],
 					img: ['src', 'class'],
 					blockquote: ['href'],
-					i: ['class']
+					i: ['class'],
+          svg: ['class', 'id']
 				},
 				selfClosing: [
 					'img',
@@ -2972,7 +2111,6 @@ ${Number(count.count)}
 				let wrapper = document.createElement('div');
 				wrapper.id = 'saito-alert';
 				let html = `<div id="saito-alert-shim">
->>>>>>> staging
                       <div id="saito-alert-box">
                         <div class="saito-alert-message">${browser_self.sanitize(message)}</div>
                         <div id="saito-alert-buttons">
@@ -3093,7 +2231,7 @@ ${Number(count.count)}
         });
       };
 
-      window.siteMessage = function (message, killtime = 9999999, callback = null) {
+      window.siteMessage = function (message, killtime = 9999999, callback = null, raw = false) {
         if (document.getElementById('message-wrapper')) {
           document.getElementById('message-wrapper').remove();
         }
@@ -3102,12 +2240,16 @@ ${Number(count.count)}
         if (callback) {
           wrapper.classList.add('message-clickable');
         }
-        wrapper.innerHTML = `<div class="message-message">${browser_self.sanitize(message)}</div>`;
+        let cleanMessage = raw ? message : browser_self.sanitize(message);
+        wrapper.innerHTML = `<div class="message-message">${cleanMessage}</div>`;
 
         document.body.appendChild(wrapper);
 
         let timeout = setTimeout(() => {
           wrapper.remove();
+          if (callback) {
+            callback();
+          }
         }, killtime);
 
         document.querySelector('#message-wrapper').addEventListener(
