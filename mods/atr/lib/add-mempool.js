@@ -18,11 +18,10 @@ class Main {
         	let this_self = this;
 		
 		document.querySelector("#add_transaction").onclick = async (e) => {
-			alert('adding tx to Mempool');
 			let fee = document.querySelector('#fee').value;
 			console.log("fee: ", fee);
 
-			let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee('', BigInt(0), BigInt(fee));
+			let newtx = await this.app.wallet.createUnsignedTransaction('', BigInt(0), BigInt(fee));
     			newtx.msg = {
       				module: "ATR" ,
       				request: 'test',
@@ -30,6 +29,7 @@ class Main {
 			};
                		await newtx.sign();
     			await this.app.network.propagateTransaction(newtx);
+    			console.log("newtx", newtx);
     			this_self.overlay.hide();
 		}
 

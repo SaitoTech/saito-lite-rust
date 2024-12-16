@@ -79,22 +79,22 @@ class TweetMenu {
 				window.location.reload();
 			}, 200);
 		}, 2000);
+		//Also flag the tweet
+		this.reportTweet();
 	}
 
 	async reportTweet() {
-		let wallet_balance = await this.app.wallet.getBalance('SAITO');
+		//let wallet_balance = await this.app.wallet.getBalance('SAITO');
 
 		// restrict moderation
-		if (wallet_balance) {
-			this.mod.sendFlagTransaction(
-				this.app,
-				this.mod,
-				{ signature: this.tweet.tx.signature },
-				this.tweet.tx
-			);
+		this.mod.sendFlagTransaction(
+			this.app,
+			this.mod,
+			{ signature: this.tweet.tx.signature },
+			this.tweet.tx
+		);
 
-			siteMessage('Reporting tweet to moderators...', 3000);
-		} 
+		siteMessage('Reporting tweet to moderators...', 3000);
 
 		this.hideTweet();
 	}

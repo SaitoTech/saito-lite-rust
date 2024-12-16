@@ -175,7 +175,7 @@ fieldset.saito-grid > fieldset.saito-grid{
 
 .saito-grid-extra-button {
     position: absolute;
-    right: 0;
+    right: 1rem;
     height: min(70%, 40px);
 }
 

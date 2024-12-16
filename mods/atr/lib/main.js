@@ -14,7 +14,7 @@ class Main {
         }
 
         render() {
-        	document.querySelector('body').innerHTML = MainTemplate(this.app, this.mod);
+        	document.querySelector('.saito-container.atr').innerHTML = MainTemplate(this.app, this.mod);
 
         	console.log("mod blocks: ", this.mod.blocks);
 
@@ -54,6 +54,7 @@ class Main {
 			document.querySelector(`.blocktable .burn_fee .blockslot${blockslot}`).innerHTML = block.burnFee;
 			document.querySelector(`.blocktable .difficulty .blockslot${blockslot}`).innerHTML = block.difficulty;
 			document.querySelector(`.blocktable .previous_block_unpaid .blockslot${blockslot}`).innerHTML = block.previousBlockUnpaid;
+			document.querySelector(`.blocktable .gtNum .blockslot${blockslot}`).innerHTML = block.gtNum;
 
 		}
 
@@ -63,15 +64,12 @@ class Main {
         attachEvents() {
         	let this_self = this;
 		document.querySelector(".new_block_with_ticket").onclick = async(e) => {
-			alert("new block with golden ticket");
 			await this_self.app.wallet.produceBlockWithGt();
 		}
 		document.querySelector(".new_block_no_ticket").onclick = async(e) => {
-			alert("new block no golden ticket");
 			await this_self.app.wallet.produceBlockWithoutGt();
 		}
 		document.querySelector("#add_transaction_to_mempool").onclick = async (e) => {
-			alert('rendering Mempool overlay');
 			this_self.add_mempool.render();
 			// let newtx = await this.app.wallet.createUnsignedTransaction();
     			// newtx.msg = {

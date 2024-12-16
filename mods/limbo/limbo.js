@@ -459,8 +459,6 @@ class Limbo extends ModTemplate {
 		}
 
 		if (service.service === 'inception') {
-			console.log('Limbo: onPeerServiceUp', service.service);
-
 			this.app.network.sendRequestAsTransaction(
 				'dream list',
 				{},

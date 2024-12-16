@@ -23,15 +23,16 @@ class Post {
 	render(container = '') {
 
 		this.container = container ? '.tweet-manager ' : '.saito-overlay ';
+		this.id = container ? 'tweet-overlay-embedded' : 'tweet-overlay';
 
 		console.log('Post render: ' + this.container);
 
 		if (container) {
-			if (document.getElementById('tweet-overlay')) {
+			if (document.getElementById(this.id)) {
 				console.log('replace');
 				this.app.browser.replaceElementById(
 					PostTemplate(this.app, this.mod, this),
-					'tweet-overlay'
+					this.id
 				);
 			} else {
 				console.log('Insert post form');
@@ -48,7 +49,7 @@ class Post {
 		//
 
 		if (!this.input) {
-			this.input = new SaitoInput(this.app, this.mod, this.container + '.tweet-overlay-content', "tweet-overlay");
+			this.input = new SaitoInput(this.app, this.mod, this.container + '.tweet-overlay-content', this.id);
 		}
 
 		if (!this.user) {
@@ -133,15 +134,13 @@ class Post {
 		let post_self = this;
 		post_self.images = [];
 
-		if (this.container == ".saito-overlay "){
-			if (post_self.file_event_added == false) {
-				post_self.app.browser.addDragAndDropFileUploadToElement(
-					'tweet-overlay',
-					post_self.input.callbackOnUpload,
-					false
-				);
-				post_self.file_event_added = true;
-			}
+		if (post_self.file_event_added == false) {
+			post_self.app.browser.addDragAndDropFileUploadToElement(
+				this.id,
+				post_self.input.callbackOnUpload,
+				false
+			);
+			post_self.file_event_added = true;
 		}
 
 		//
@@ -245,8 +244,8 @@ class Post {
 		// saito-loader
 		//
 		post_self.overlay.remove();
-		if (document.querySelector(this.container + '#tweet-overlay')) {
-			document.querySelector(this.container + '#tweet-overlay').remove();
+		if (document.querySelector(this.container + '#' + this.id)) {
+			document.querySelector(this.container + '#' + this.id).remove();
 		}
 
 		//Edit

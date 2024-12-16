@@ -66,6 +66,8 @@ class ModtoolsSettings {
 
     if (document.getElementById('add-whitelist')){
       document.getElementById('add-whitelist').onclick = (e) => {
+          e.stopPropagation();
+          e.preventDefault();
           this.contacts.multi_button = 'Add to Whitelist';
           this.contacts.callback = (keys) => {
             for (let key of keys) {

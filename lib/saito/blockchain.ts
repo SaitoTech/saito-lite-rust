@@ -130,4 +130,9 @@ console.log("============");
 		await this.saveBlockchain();
 		this.app.modules.onNewBlock(block, lc);
 	}
+
+	public async getLastBlockHash() {
+		let hash = await this.instance.get_last_block_hash();
+		return hash;
+	}
 }
