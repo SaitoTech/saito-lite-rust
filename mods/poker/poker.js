@@ -1,6 +1,5 @@
 const GameTableTemplate = require('../../lib/templates/table-gametemplate');
 const GameBoard = require('./lib/ui/game-board/game-board');
-const Stack = require('./lib/ui/stack/stack');
 const Pot = require('./lib/ui/pot/pot');
 const Cardfan = require('./lib/ui/cardfan/cardfan');
 const Playerbox = require('./lib/ui/playerbox/playerbox');
@@ -40,7 +39,6 @@ class Poker extends GameTableTemplate {
 
 		this.stats = new PokerStats(app, this);
 		this.board = new GameBoard(app, this);
-		this.stack = new Stack(app, this);
 		this.pot = new Pot(app, this);
 		this.cardfan = new Cardfan(app, this);
 		this.playerbox = new Playerbox(app, this);
