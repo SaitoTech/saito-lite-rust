@@ -274,6 +274,9 @@ export default class Wallet extends SaitoWallet {
 					// save theme options
 					let theme = this.app.options.theme;
 
+					// keep moderated whitelists & blacklists
+					let modtools = this.app.options.modtools;
+
 					// keep user's game preferences
 					let gameprefs = this.app.options.gameprefs;
 
@@ -321,6 +324,9 @@ export default class Wallet extends SaitoWallet {
 
 					// keep theme
 					this.app.options.theme = theme;
+
+					// restore white and black lists
+					this.app.options.modtools = modtools;
 
 					await this.saveWallet();
 
