@@ -306,7 +306,7 @@ font imports
   --border-radius-leaderboard-ranking: var(--border-radius-soft);
   /*Border padding*/ 
   --border-padding-sidebar-style: var(--border-padding-normal);
-  --border-padding-style-leaderboard-ranking:; /* no override from arcade on main theme */
+  --border-padding-style-leaderboard-ranking: var(--border-padding-normal); /* no override from arcade on main theme */
   --border-padding-overlay-post: var(--border-padding-ultra-wide);
   /*thickness*/
   --border-thickness-general-dividers: var(--border-thickness-thin);
@@ -501,6 +501,78 @@ font imports
   --background-color-alert-box: var(--background-color-main);
 /* Theme Specific */
   --saito-arcade-header-background: var(--dreamscape);
+}
+
+[data-theme^="modern"] {
+  /* Typography */
+  --font-family-modern: 'Inter', system-ui, sans-serif;
+  --font-size-base: 1.6rem;
+  
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Modern Light Theme */
+[data-theme="modern-lite"] {
+  /* Colors */
+  --color-primary: #2563eb;
+  --color-secondary: #3b82f6;
+  --color-accent: #f43f5e;
+  --color-surface: #ffffff;
+  --color-background: #f8fafc;
+  --color-text-primary: #1a202c;
+  --color-text-secondary: #4a5568;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+
+  /* Theme specific overrides */
+  --background-color-main: var(--color-background);
+  --background-color-light: #f7fafc;
+  --font-color-primary: var(--color-text-primary);
+  --font-color-secondary: var(--color-text-secondary);
+  --border-color-general-dividers: rgb(0 0 0 / 0.05);
+  --saito-border-color: rgb(0 0 0 / 0.1);
+}
+
+/* Modern Dark Theme */
+[data-theme="modern-dark"] {
+  /* Colors */
+  --color-primary: #3b82f6;
+  --color-secondary: #60a5fa;
+  --color-accent: #f43f5e;
+  --color-surface: #1e293b;
+  --color-background: #0f172a;
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #cbd5e1;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+
+  /* Theme specific overrides */
+  --background-color-main: var(--color-background);
+  --background-color-light: #1e293b;
+  --font-color-primary: var(--color-text-primary);
+  --font-color-secondary: var(--color-text-secondary);
+  --border-color-general-dividers: rgb(255 255 255 / 0.05);
+  --saito-border-color: rgb(255 255 255 / 0.1);
 }
 
 

@@ -2,7 +2,7 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
   let html = `
 
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="modern">
 
 <head>
   <meta charset="utf-8" />

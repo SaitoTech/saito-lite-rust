@@ -99,3 +99,30 @@ button.fat, saito-button-primary.fat, .saito-button-secondary.fat, saito-button-
   }
 
 }
+
+[data-theme="modern"] .saito-button-primary {
+  /* Add loading state support */
+  position: relative;
+  
+  &[data-loading="true"] {
+    color: transparent;
+    pointer-events: none;
+    
+    &::after {
+      content: "";
+      position: absolute;
+      width: 1.6rem;
+      height: 1.6rem;
+      border: 2px solid var(--color-surface);
+      border-radius: 50%;
+      border-right-color: transparent;
+      animation: spin 0.75s linear infinite;
+    }
+  }
+  
+  /* Add disabled state */
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

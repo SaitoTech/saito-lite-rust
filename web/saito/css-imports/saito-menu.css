@@ -103,4 +103,30 @@
   -webkit-text-stroke: var(--font-color-hover-icons-left-sidebar) 1px;
 }
 
+/* Modern menu styling */
+[data-theme^="modern"] .saito-menu > ul {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+[data-theme^="modern"] .saito-menu > ul > li {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin: 0;
+  transition: var(--transition-normal);
+  border: 1px solid var(--border-color-general-dividers);
+}
+
+[data-theme^="modern"] .saito-menu > ul > li:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme^="modern"] .saito-menu > ul > li:active {
+  transform: scale(0.98);
+}
+
 

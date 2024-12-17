@@ -182,4 +182,19 @@ margin-right:  .2rem;
     border-radius: var(--border-radius-calendar-hover-today);
 }
 
+/* Modern calendar styling */
+[data-theme^="modern"] .saito-calendar {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-md);
+  border: 1px solid var(--border-color-general-dividers);
+  margin-bottom: var(--spacing-md);
+}
+
+[data-theme^="modern"] .saito-calendar-days div:hover {
+  background: var(--background-color-light);
+  border-radius: var(--radius-sm);
+}
+
 

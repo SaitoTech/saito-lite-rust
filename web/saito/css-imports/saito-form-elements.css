@@ -286,3 +286,37 @@ input[type="password"],
 select {
   width: 99%;
 }
+
+[data-theme="modern"] input[type="text"],
+[data-theme="modern"] input[type="password"],
+[data-theme="modern"] textarea {
+  border-radius: var(--radius-md);
+  border: 1px solid rgb(0 0 0 / 0.1);
+  padding: var(--spacing-sm);
+  transition: var(--transition-fast);
+}
+
+[data-theme="modern"] input[type="text"]:focus,
+[data-theme="modern"] input[type="password"]:focus,
+[data-theme="modern"] textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+}
+
+[data-theme="modern"] input:focus-visible,
+[data-theme="modern"] textarea:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+[data-theme="modern"] input::placeholder,
+[data-theme="modern"] textarea::placeholder {
+  color: rgb(100 116 139);
+}
+
+/* Add visual feedback for invalid state */
+[data-theme="modern"] input:invalid,
+[data-theme="modern"] textarea:invalid {
+  border-color: var(--color-accent);
+}

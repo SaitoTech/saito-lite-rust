@@ -97,3 +97,24 @@
     transform: rotate(720deg);
   }
 }
+
+[data-theme="modern"] .saito-loader {
+  /* Modern shimmer effect */
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 0%,
+    var(--color-background) 50%,
+    var(--color-surface) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}

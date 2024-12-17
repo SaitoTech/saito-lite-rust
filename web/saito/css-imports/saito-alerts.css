@@ -56,3 +56,39 @@
   }
 
 }
+
+:root {
+  --breakpoint-mobile: 480px;
+  --breakpoint-tablet: 768px;
+  --breakpoint-desktop: 1200px;
+}
+
+@mixin mobile {
+  @media (max-width: var(--breakpoint-mobile)) {
+    @content;
+  }
+}
+
+.tweet {
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.tweet-picture img {
+  width: 100%;
+  max-width: 52rem;
+  height: auto;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+}
+
+.saito-overlay {
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

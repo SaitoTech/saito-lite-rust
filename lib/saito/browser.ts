@@ -1,9 +1,8 @@
 // @ts-nocheck
 
-import screenfull, { element } from 'screenfull';
-import { getDiffieHellman } from 'crypto';
 import React from 'react';
-import {createRoot} from 'react-dom'
+import { createRoot } from 'react-dom';
+import screenfull from 'screenfull';
 let marked = require('marked');
 let sanitizeHtml = require('sanitize-html');
 const sanitizer = require('sanitizer');

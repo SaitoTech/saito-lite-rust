@@ -331,3 +331,23 @@ Media Queries
     font-size: 1.4rem;
   }
 }
+
+[data-theme="modern"] {
+  /* Modern scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) transparent;
+}
+
+[data-theme="modern"]::-webkit-scrollbar {
+  width: 8px;
+}
+
+[data-theme="modern"]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-theme="modern"]::-webkit-scrollbar-thumb {
+  background-color: var(--color-primary);
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+}
