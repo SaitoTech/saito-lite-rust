@@ -69,8 +69,6 @@ class PokerUI {
 
                 this.playerbox.renderUserline(userline, player);
 
-                this.stack.render();
-
         }
 
 

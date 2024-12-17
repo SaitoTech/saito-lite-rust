@@ -43,7 +43,6 @@
   color: var(--font-color-menu-hamburger);
   display: flex;
   justify-content: center;
-  filter: var(--header-readability-drop-shadow);
 }
 
 #saito-header-menu-toggle i {
@@ -308,7 +307,6 @@
   max-width: 20rem;
   overflow: hidden;
   text-overflow: ellipsis;
-  filter: var(--header-readability-drop-shadow);
 }
 
 #header-msg.flash {
@@ -453,7 +451,6 @@
 }
 
 .saito-header-logo-wrapper img, .saito-header-logo-wrapper i::before{
-  filter: var(--header-readability-drop-shadow);
 }
 
 .saito-back-button {

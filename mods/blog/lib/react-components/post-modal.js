@@ -1,10 +1,10 @@
 
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 
-const PostModal = ({ onClose, onSubmit }) => {
+const PostModal = ({ onClose, onSubmit, post }) => {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -14,20 +14,34 @@ const PostModal = ({ onClose, onSubmit }) => {
   });
 
   const [isDragging, setIsDragging] = useState(false);
-  const [imagePreview, setImagePreview] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [imageMethod, setImageMethod] = useState('file');
   const [imageUrl, setImageUrl] = useState('');
 
-  // if (imageUrl) {
-  //   setImagePreview(imageUrl);
-  //   setFormData(prev => ({
-  //     ...prev,
-  //     images: [imageUrl]
-  //   }));
-  // }
+  const [imagePreview, setImagePreview] = useState(
+    post?.imageUrl || (post?.image ? `data:image/jpeg;base64,${post.image}` : null)
+  );
+
+
+  useEffect(() => {
+    if (post) {
+      setFormData({
+        title: post.title,
+        content: post.content,
+        tags: post.tags ? post.tags.join(',') : '',
+        images: [],
+        imageUrl: post.imageUrl || ''
+      });
+      
+      if (post.imageUrl) {
+        setImagePreview(post.imageUrl);
+      } else if (post.image) {
+        setImagePreview(`data:image/jpeg;base64,${post.image}`);
+      }
+    }
+  }, [post]);
 
   const handleImageUrl = (url) => {
     const img = new Image();
@@ -120,7 +134,7 @@ const PostModal = ({ onClose, onSubmit }) => {
         </div>
 
         <div className="filter-container">
-          <label className="filter-label">Preview Image</label>
+          <label className="filter-label">Upload Image</label>
           <div className="image-method-toggle">
             <button
               className={`btn-preview ${imageMethod === 'file' ? 'active' : ''}`}

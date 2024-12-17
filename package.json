@@ -22,7 +22,8 @@
     "analyze": "webpack --config ./build/webpack.analyze.js",
     "jsdoc": "jsdoc --destination saitolitedocs lib/templates/abstractcryptomodule.js lib/templates/substratebasedcrypto.js lib/saito/wallet.js README.md",
     "pretty": "npx prettier --write .",
-    "go": "npm run compile dev $@ && npm run start --"
+    "go": "npm run compile dev $@ && npm run start --",
+    "nettest": "bash scripts/nettest.sh"
   },
   "author": "Team Saito",
   "license": "SAITO",
@@ -74,7 +75,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "readline": "^1.3.0",
-    "saito-js": "0.2.37",
+    "saito-js": "0.2.40",
     "sanitize-html": "^2.13.1",
     "sanitizer": "^0.1.3",
     "screenfull": "^5.2.0",

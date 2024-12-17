@@ -1,14 +1,37 @@
-.card {
+.deal .card, .cardfan .card {
 	position: relative;
-	width: 15vw;
-	height: 21vw;
+	width: min(16vh,18vw);
+	/*width: 15vw;
+	height: 21vw;*/
+	height: calc(1.53 * min(16vh, 18vw));
 	max-width: 190px;
 	max-height: 265px;
 }
 
-.card.not_used {
-	filter: grayscale(100%) brightness(0.55);
+
+.cardfan .card {
+  position: absolute;
 }
+
+.cardfan {
+  display: block;
+  position: fixed;
+  top: 65%;
+  left: 10%;
+  height: calc(1.53 * min(16vh, 18vw));
+  width: min(16vh,18vw);
+}
+
+/*.cardfan > .card:nth-child(1), .hand > .card:nth-child(1) {
+  transform: rotate(-15deg);
+  left: 0px;
+}
+
+.cardfan > .card:nth-child(2), .hand > .card:nth-child(2) {
+  transform: rotate(-5deg);
+  left: 3vh;
+}
+*/
 
 .cardFront, .cardBack {
     position: absolute; /* Ensure both sides overlap properly */
@@ -35,6 +58,12 @@
     display: block;
     transform: rotateY(0deg); /* Back side flips to front */
 }
+
+
+.card.not_used {
+	filter: grayscale(100%) brightness(0.55);
+}
+
 
 
 @media screen and (orientation: portrait) and (max-width: 600px) {

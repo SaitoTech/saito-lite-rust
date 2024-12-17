@@ -41,7 +41,11 @@ h4, h5 {
 }
 
 .explorer-main h3 {
-    margin: 20px 0 -4rem;
+    margin: 20px 0 0;
+}
+
+.explorer-main--index h3 {
+    margin: 20px 0 -5rem;
 }
 
 .explorer-main i {
