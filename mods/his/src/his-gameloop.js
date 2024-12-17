@@ -3621,6 +3621,7 @@ console.log("----------------------------");
 
 	  if (player > 0) {
 	    if (this.game.player === player) {
+console.log("running player fortify space...");
 	      this.playerFortifySpace(faction, attacker, spacekey, post_battle, relief_siege);
 	    } else {
 	      this.updateLog(this.returnFactionName(faction) + " fortifies in " + this.returnSpaceName(spacekey));
@@ -5999,7 +6000,6 @@ try {
           // if there is no-one here but the attacker, we want to stop the field battle 
 	  // because it is pointless...
           //
-
 	  if (this.game.state.events.sack_of_rome == 1) {
 
 	    //
@@ -6011,9 +6011,11 @@ try {
             let fluis = 0;
             for (let f in this.game.spaces[spacekey].units) {
               if (f !== attacker && !this.areAllies(this.game.state.active_faction, f, 1)) {
-                fluis += this.returnFactionLandUnitsInSpace(f, spacekey);
+                fluis += this.returnUnbesiegedFactionLandUnitsInSpace(f, spacekey);
               }
             }
+
+console.log("number of active units in space: " + fluis);
 
             if (fluis == 0) { 
 
@@ -8462,7 +8464,8 @@ try {
           if (his_self.game.player == his_self.returnPlayerCommandingFaction(faction)) {
 
             let fhand_idx = this.returnFactionHandIdx(his_self.game.player, faction);
-	    let cards_available = this.game.deck[0].fhand[fhand_idx].length;
+
+	    cards_available = this.game.deck[0].fhand[fhand_idx].length;
 
 	    if (faction == "hapsburg" && !this.game.deck[0].discards['002']) { cards_available--; }
 	    if (faction == "england" && !this.game.deck[0].discards['003']) { cards_available--; }
@@ -8473,7 +8476,7 @@ try {
 
 	    if (vp_available == 0 || ((vp_available-vp_offered) == 0)) { vp_issuable = false; }
 	    if (squadrons_available == 0) { squadrons_issuable = false; }
-	    if (cards_available == 0) { cards_issuable = false; }
+	    if (cards_available <= 0) { cards_issuable = false; }
 
             selectPiracyRewards(selectPiracyRewards);
 
@@ -9706,6 +9709,15 @@ try {
 	      space.unrest = 0;
 	      this.controlSpace(attacker_faction, space.key);
 	      this.updateLog(this.returnFactionName(attacker_faction) + " wins seige, controls " + this.returnSpaceName(space.key));
+	      for (let f in space.units) {
+		if (!this.areAllies(f, attacker_faction, 1) && f != attacker_faction) {
+		  for (let i = 0; i < space.units[f].length; i++) {
+		    if (space.units[f][i].type == "squadron" || space.units[f][i].type == "corsair") { 
+		      space.units[f].splice(i, 1); i--;
+		    }
+		  }
+		}
+	      }
 	    }
 
           } else {
@@ -14054,7 +14066,7 @@ try {
 
 
 	  //
-	  // capture any leaders
+	  // capture any leaders, remove any squadron
 	  //
 	  for (let f in this.game.spaces[space].units) {
 	    if (!this.areAllies(f, faction)) {
@@ -14067,7 +14079,6 @@ try {
 	    }
 	  }
 
-	  this.game.spaces[space].political = faction;
 
 	  //
 	  // post schmalkaldic_league
