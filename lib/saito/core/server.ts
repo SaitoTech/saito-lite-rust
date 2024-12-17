@@ -97,7 +97,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 				}
 			});
 			socket.on('open',()=>{
-				S.getLibInstance().process_new_peer(peer_index)
+				S.getLibInstance().process_new_peer(peer_index, url)
 					.then(() => {
 						console.log(
 							'connected to : ' + url + ' with peer index : ' + peer_index
@@ -366,7 +366,7 @@ class Server {
 						S.getLibInstance().process_peer_disconnection(peer_index);
 					});
 
-					return S.getLibInstance().process_new_peer(peer_index);
+					return S.getLibInstance().process_new_peer(peer_index, request.headers['x-forwarded-for'] || request.socket.remoteAddress);
 				});
 
 		});
