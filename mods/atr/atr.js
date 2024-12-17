@@ -215,6 +215,8 @@ class ATR extends ModTemplate {
 	}
 
 	async onConfirmation(blk, tx, conf) {
+		// only run on the browser	
+		if (this.app.BROWSER == 0) { return };
 		console.log("onConfirmation")
 		let txmsg = tx.returnMessage();
 		let atr_self = this.app.modules.returnModule('ATR');
