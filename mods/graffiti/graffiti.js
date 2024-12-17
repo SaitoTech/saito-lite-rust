@@ -547,13 +547,13 @@ class Graffiti extends ModTemplate {
   webServer(app, expressapp, express) {
     this.webdir = path.normalize(`${__dirname}/../../mods/${this.dirname}/web`);
 
+    expressapp.use("/" + encodeURI(this.slug), express.static(this.webdir));
+
     expressapp.get("/" + encodeURI(this.slug), (req, res) => {
       res.setHeader("Content-type", "text/html");
       res.charset = "UTF-8";
-      res.send(index(app, this.slug));
+      res.send(index(app));
     });
-
-    expressapp.use("/" + encodeURI(this.slug), express.static(this.webdir));
   }
 
 
