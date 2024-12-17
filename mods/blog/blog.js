@@ -29,6 +29,7 @@ class Blog extends ModTemplate {
         };
 
         this.callbackAfterPost = null
+        this.callBackAfterDelete = null
 
         this.styles = ['/saito/saito.css', '/blog/style.css'];
 
@@ -36,9 +37,11 @@ class Blog extends ModTemplate {
             byUser: new Map(),
             lastFetch: new Map(),
             allPosts: [],
-            lastAllPostsFetch: 0
+            lastAllPostsFetch: 0,
+            deletedPosts: new Set() 
         };
         this.CACHE_TIMEOUT = 10000;
+        this.limit = 20
     }
 
     async installModule(app) {
@@ -68,46 +71,44 @@ class Blog extends ModTemplate {
 
 
 
-    async loadBlogPostForUser(key, callback, useCache, limit = 10) {
+    async loadBlogPostForUser(key, callback, useCache, limit = 20) {
         // Check cache first
         const cachedPosts = this.postsCache.byUser.get(key) || [];
         const lastFetch = this.postsCache.lastFetch.get(key) || 0;
         const isCacheValid = Date.now() - lastFetch < this.CACHE_TIMEOUT;
 
-        if(useCache){
+        if (useCache) {
             if (cachedPosts.length > 0 && isCacheValid) {
                 console.log('Using cached posts for user:', key);
-                callback(cachedPosts.slice(0, limit));
+                callback(cachedPosts);
                 return;
             }
-    
+
         }
 
-       
+
         try {
-            const peer = key === this.publicKey
-                ? (await this.app.network.getPeers())[0]?.peerIndex
-                : key;
+            let peers = await this.app.network.getPeers();
+            let peer = peers[0];
 
             this.app.storage.loadTransactions(
-                { field1: 'Blog', field2: key, limit: 100 },
+                { field1: 'Blog', field2: key, limit: this.limit },
                 (txs) => {
                     const filteredTxs = this.filterBlogPosts(txs);
                     const posts = this.convertTransactionsToPosts(filteredTxs);
                     const updatedPosts = this.updateCache(key, posts);
-                    callback(updatedPosts.slice(0, limit));
+                    callback(updatedPosts);
                 },
                 peer
             );
         } catch (error) {
             console.error("Error loading posts for user:", error);
-            callback(cachedPosts.slice(0, limit));
+            callback(cachedPosts);
         }
     }
 
-    async loadAllPosts(keys, callback = null, useCache) {
-
-        if(useCache){
+    async loadAllPostsFromKeys(keys, callback = null, useCache) {
+        if (useCache) {
             const isCacheValid = Date.now() - this.postsCache.lastAllPostsFetch < this.CACHE_TIMEOUT;
             if (this.postsCache.allPosts.length > 0 && isCacheValid) {
                 console.log('Using cached all posts');
@@ -115,17 +116,14 @@ class Blog extends ModTemplate {
                 return this.postsCache.allPosts;
             }
         }
-       
 
         try {
+            let peers = await this.app.network.getPeers();
+            let peer = peers[0];
             const loadPromises = keys.map(key =>
                 new Promise((resolve) => {
-                    const peer = key === this.publicKey
-                        ? "localhost"
-                        : key;
-
                     this.app.storage.loadTransactions(
-                        { field1: 'Blog', field2: key, limit: 100 },
+                        { field1: 'Blog', field2: key, limit: this.limit },
                         (txs) => {
                             const filteredTxs = this.filterBlogPosts(txs);
                             const posts = this.convertTransactionsToPosts(filteredTxs);
@@ -152,6 +150,40 @@ class Blog extends ModTemplate {
             console.error("Error loading all posts:", error);
             if (callback) callback([]);
             return [];
+        }
+    }
+
+    async loadAllBlogPosts(callback, useCache = false, limit = 20) {
+        if (useCache) {
+            const isCacheValid = Date.now() - this.postsCache.lastAllPostsFetch < this.CACHE_TIMEOUT;
+            if (this.postsCache.allPosts.length > 0 && isCacheValid) {
+                console.log('Using cached all posts');
+                if (callback) callback(this.postsCache.allPosts);
+                return;
+            }
+        }
+
+        try {
+            let peers = await this.app.network.getPeers();
+            let peer = peers[0];
+            this.app.storage.loadTransactions(
+                { field1: 'Blog', limit: this.limit },
+                (txs) => {
+                    console.log(txs)
+                    const filteredTxs = this.filterBlogPosts(txs);
+                    const posts = this.convertTransactionsToPosts(filteredTxs);
+           
+                    this.postsCache.allPosts = posts;
+                    this.postsCache.lastAllPostsFetch = Date.now();
+
+                    if (callback) callback(posts);
+                },
+                peer
+            );
+        } catch (error) {
+            console.error("Error loading all blog posts:", error);
+            // If error, return empty array through callback
+            if (callback) callback([]);
         }
     }
 
@@ -230,7 +262,7 @@ class Blog extends ModTemplate {
     }
     async loadBlogPostTransactions(key, peer) {
         let self = this
-        this.app.storage.loadTransactions({ field1: 'Blog', field2: key, limit: 100 },
+        this.app.storage.loadTransactions({ field1: 'Blog', field2: key, limit: this.limit },
             function (txs) {
                 const filteredTxs = self.filterBlogPosts(txs);
                 const posts = self.convertTransactionsToPosts(filteredTxs);
@@ -244,7 +276,7 @@ class Blog extends ModTemplate {
 
 
     filterBlogPosts(txs) {
-        return txs.filter(tx => tx.returnMessage().data.type === 'blog_post').slice(0, 100);
+        return txs.filter(tx => tx.returnMessage().data.type === 'blog_post');
     }
 
     async createBlogPostTransaction(post = {
@@ -287,7 +319,7 @@ class Blog extends ModTemplate {
 
             await this.app.network.propagateTransaction(newtx);
             if (callback) {
-                this.callbackAfterPost = callback
+                this.callbackAfterPost = callback;
             }
 
             return newtx;
@@ -311,18 +343,11 @@ class Blog extends ModTemplate {
             if (!peer) {
                 return;
             }
-
             await this.app.storage.saveTransaction(tx, {
                 field1: 'Blog',
             }, "localhost");
 
-
-            if(this.callbackAfterPost){
-                this.callbackAfterPost()
-                this.callbackAfterPost = null;
-            }
-        
- 
+            this.runCallBackAfterPost()
 
             return true;
         } catch (error) {
@@ -331,7 +356,7 @@ class Blog extends ModTemplate {
         }
     }
 
-    async updateBlogPostTransaction(signature, title, content) {
+    async updateBlogPostTransaction(signature, title, content, tags, image, imageUrl, callback) {
         try {
 
             let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
@@ -339,7 +364,11 @@ class Blog extends ModTemplate {
             const data = {
                 title,
                 content,
-                signature
+                signature,
+                content,
+                tags,
+                image,
+                imageUrl
             }
 
             newtx.msg = {
@@ -347,6 +376,10 @@ class Blog extends ModTemplate {
                 request: 'update blog post request',
                 data: data
             };
+
+            if (callback) {
+                this.callbackAfterPost = callback
+            }
 
             // Sign the transaction
             await newtx.sign();
@@ -380,9 +413,6 @@ class Blog extends ModTemplate {
             siteMessage('Blog post published', 1500);
         }
 
-
-
-
         this.saveBlogPostTransaction(tx)
     }
 
@@ -400,7 +430,7 @@ class Blog extends ModTemplate {
             siteMessage('Blog post updated', 2000);
         }
 
-        let { signature, content, title } = txmsg.data;
+        let { signature, content, title, tags, image, imageUrl } = txmsg.data;
         await this.app.storage.loadTransactions(
             { signature, field1: 'Blog' },
             async (txs) => {
@@ -408,11 +438,17 @@ class Blog extends ModTemplate {
                     let tx = txs[0];
                     tx.msg.data.content = content;
                     tx.msg.data.title = title;
-                    await this.app.storage.updateTransaction(tx, {}, 'localhost');
+                    tx.msg.data.image = image,
+                        tx.msg.data.tags = tags,
+                        tx.msg.data.imageUrl = imageUrl,
+
+                        await this.app.storage.updateTransaction(tx, {}, 'localhost');
                 }
             },
             'localhost'
         );
+
+        this.runCallBackAfterPost()
         return true;
     }
     async receiveBlogPostDeleteTransaction(tx) {
@@ -429,6 +465,9 @@ class Blog extends ModTemplate {
         }
 
         let { signature } = txmsg.data;
+
+        this.postsCache.deletedPosts.add(signature);
+
         await this.app.storage.loadTransactions(
             { signature, field1: 'Blog' },
             async (txs) => {
@@ -439,48 +478,53 @@ class Blog extends ModTemplate {
             },
             'localhost'
         );
+        if (this.callBackAfterDelete) {
+            this.callBackAfterDelete();
+            this.callBackAfterDelete = null
+        }
         return true;
     }
 
 
-    async fetchAllBlogPosts() {
-        try {
-            const self = this;
-            const BATCH_SIZE = 3;
+    // async fetchAllBlogPosts() {
+    //     try {
+    //         const self = this;
+    //         const BATCH_SIZE = 3;
 
-            return new Promise((resolve, reject) => {
-                let processedCount = 0;
-                const processBatch = () => {
-                    this.app.storage.loadTransactions(
-                        {
-                            field1: 'Blog',
-                            limit: BATCH_SIZE,
-                            offset: processedCount
-                        },
-                        function (transactions) {
-                            const filteredPosts = self.filterBlogPosts(transactions);
-                            processedCount += transactions.length;
-                            const isLastBatch = transactions.length < BATCH_SIZE;
+    //         return new Promise((resolve, reject) => {
+    //             let processedCount = 0;
+    //             const processBatch = () => {
+    //                 this.app.storage.loadTransactions(
+    //                     {
+    //                         field1: 'Blog',
+    //                         limit: BATCH_SIZE,
+    //                         offset: processedCount
+    //                     },
+    //                     function (transactions) {
+    //                         const filteredPosts = self.filterBlogPosts(transactions);
+    //                         processedCount += transactions.length;
+    //                         const isLastBatch = transactions.length < BATCH_SIZE;
 
-                            resolve({
-                                posts: filteredPosts,
-                                isComplete: isLastBatch,
-                                nextBatchStartIndex: processedCount
-                            });
-                        },
-                        'localhost'
-                    );
-                };
+    //                         resolve({
+    //                             posts: filteredPosts,
+    //                             isComplete: isLastBatch,
+    //                             nextBatchStartIndex: processedCount
+    //                         });
+    //                     },
+    //                     'localhost'
+    //                 );
+    //             };
 
-                processBatch();
-            });
-        } catch (error) {
-            console.error("Error in fetchAllBlogPosts:", error);
-            throw error;
-        }
-    }
+    //             processBatch();
+    //         });
+    //     } catch (error) {
+    //         console.error("Error in fetchAllBlogPosts:", error);
+    //         throw error;
+    //     }
+    // }
 
-  
+
+
 
     async processBlogPosts() {
         try {
@@ -592,12 +636,14 @@ class Blog extends ModTemplate {
         }
     }
 
-    async deleteBlogPost(postId) {
+    async deleteBlogPost(sig, callback) {
         try {
             let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
             const data = {
-                signature: postId
+                signature: sig
             }
+
+            console.log('post data', data)
 
             newtx.msg = {
                 module: this.name,
@@ -605,13 +651,24 @@ class Blog extends ModTemplate {
                 data: data
             };
 
+            if (callback) {
+                this.callBackAfterDelete = callback;
+            }
             // Sign the transaction
             await newtx.sign();
             await this.app.network.propagateTransaction(newtx);
 
+
         } catch (error) {
             console.error("Error deleting blog transaction:", error);
             throw error;
+        }
+    }
+
+    runCallBackAfterPost() {
+        if (this.callbackAfterPost) {
+            this.callbackAfterPost()
+            this.callbackAfterPost = null
         }
     }
 

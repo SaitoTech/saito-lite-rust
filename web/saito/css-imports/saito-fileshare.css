@@ -171,11 +171,9 @@
 .saito-file-transfer i {
   font-size: 4rem;
   grid-row: 1 / span 2;
-  filter: var(--header-readability-drop-shadow);
 }
 
 .saito-file-transfer .file-name, .saito-file-transfer .file-size {
- filter: var(--header-readability-drop-shadow); 
 }
 
 .saito-file-uploader.needs-file {

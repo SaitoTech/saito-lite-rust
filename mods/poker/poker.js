@@ -1,12 +1,10 @@
 const GameTableTemplate = require('../../lib/templates/table-gametemplate');
 const GameBoard = require('./lib/ui/game-board/game-board');
-const Stack = require('./lib/ui/stack/stack');
 const Pot = require('./lib/ui/pot/pot');
 const Cardfan = require('./lib/ui/cardfan/cardfan');
 const Playerbox = require('./lib/ui/playerbox/playerbox');
 const JSON = require('json-bigint');
 const PokerStats = require("./lib/stats");
-const GameHelp = require('./lib/ui/game-help/game-help');
 const htmlTemplate = require('./lib/game-html.template');
 const PokerGameRulesTemplate = require('./lib/poker-game-rules.template');
 const PokerGameOptionsTemplate = require('./lib/poker-game-options.template');
@@ -41,16 +39,9 @@ class Poker extends GameTableTemplate {
 
 		this.stats = new PokerStats(app, this);
 		this.board = new GameBoard(app, this);
-		this.stack = new Stack(app, this);
 		this.pot = new Pot(app, this);
 		this.cardfan = new Cardfan(app, this);
 		this.playerbox = new Playerbox(app, this);
-
-		//
-		// triangular help button
-		//
-		this.game_help = new GameHelp(this.app, this);
-
 
 		/********************
 		*********************
@@ -209,14 +200,8 @@ class Poker extends GameTableTemplate {
 			}
 		});
 
-		//
-		// if flat, we remove the active transform below this.board.render()
-		//
-		this.theme = this.loadGamePreference("theme");
-		this.sandee_theme_style = "perspective(700px) rotateX(33deg) !important";
-		this.current_board_style = this.sandee_theme_style;
-		if (this.theme == "flat") { this.current_board_style = ""; }
-		if (this.theme == "" || this.theme == undefined) { this.theme = "flat"; this.current_board_style = ""; }
+
+		this.theme = this.loadGamePreference("theme") || "flat";
 
 		this.menu.addSubMenuOption("game-game", {
 			text: "Theme",
@@ -233,21 +218,21 @@ class Poker extends GameTableTemplate {
 				game_mod.menu.hideSubMenus();
 				game_mod.theme = "flat";
 				game_mod.saveGamePreference("theme", "flat");
-				game_mod.current_board_style = "";
-				game_mod.board.render();
+				game_mod.board.toggleView();
+				game_mod.menu.render();
 			}
 		});
 
 		this.menu.addSubMenuOption("game-theme", {
-			text: `3D ${(this.theme == "3d") ? "✔" : ""}`,
+			text: `3D ${(this.theme == "threed") ? "✔" : ""}`,
 			id: "game-theme-3d",
 			class: "game-theme-3d",
 			callback: function (app, game_mod) {
 				game_mod.menu.hideSubMenus();
-				game_mod.theme = "3d";
-				game_mod.saveGamePreference("theme", "3d");
-				game_mod.current_board_style = game_mod.sandee_theme_style;
-				game_mod.board.render();
+				game_mod.theme = "threed";
+				game_mod.saveGamePreference("theme", "threed");
+				game_mod.board.toggleView();
+				game_mod.menu.render();
 			}
 		});
 

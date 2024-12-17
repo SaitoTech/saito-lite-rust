@@ -1,9 +1,9 @@
-module.exports = PotTemplate = () => {
+module.exports = PotTemplate = (amount = "") => {
 	return `
 	<div class="pot">
   	  <div class="potholder">
-	    <img class="stackimg" src="https://saito.tech/wp-content/uploads/2024/04/testpokerchips.png"/>
-	    <div class="potlabel">87</div>
+		<div class="line1">pot: </div>
+		<div class="line2">${amount}</div>
  	  </div>
 	</div>
 	`;

@@ -102,7 +102,7 @@ class YoutubeClient extends ModTemplate {
 			console.log('WebSocket Open', e);
 			this_self.mediaRecorder = new MediaRecorder(mediaStream, {
 			  mimeType: this_self.getMIME(),
-			  videoBitsPerSecond : 3 * 1024 * 1024
+			  videoBitsPerSecond : 1.5 * 1024 * 1024
 			});
 
 			this_self.mediaRecorder.addEventListener('dataavailable', (e) => {
