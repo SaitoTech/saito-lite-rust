@@ -15,6 +15,10 @@ class Main {
 
 
         render() {
+        	if (document.querySelector('.saito-container.atr') == null){
+        		return;
+        	}
+
         	document.querySelector('.saito-container.atr').innerHTML = MainTemplate(this.app, this.mod);
 
 		console.log('mod blocks: ', this.mod.blocks);
