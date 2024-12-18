@@ -1,4 +1,4 @@
-.deal .card, .cardfan .card {
+.deal .card, .cardfan .card, .hand .card {
 	position: relative;
 	width: min(16vh,18vw);
 	/*width: 15vw;
