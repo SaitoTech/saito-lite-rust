@@ -1277,6 +1277,9 @@ class League extends ModTemplate {
 		let winner = [],
 			loser = [];
 		let qsum = 0;
+
+		let playerObj = {};
+
 		for (let player of playerStats) {
 			//Convert each players ELO rating into a logistic function
 			player.q = Math.pow(10, player.score / 400);
@@ -1304,19 +1307,13 @@ class League extends ModTemplate {
 			} else {
 				loser.push(player);
 			}
+
+			playerObj[player.publicKey] = {
+				iRank: player?.rank,
+				iScore: Math.round(player.score)
+			};
+
 		}
-
-		if (winner.length !== 1 || loser.length !== 1) {
-			shouldTweet = false;
-		}
-
-		let w = winner[0];
-		let l = loser[0];
-		let w_rank = w?.rank; //? '#' + w.rank : 'Unranked';
-		let l_rank = l?.rank; //? '#' + l.rank : 'Unranked';
-		let w_points = Math.round(w.score);
-		let l_points = Math.round(l.score);
-
 
 		for (let p of winner) {
 			let outcome = winner.length == 1 ? 'games_won' : 'games_tied';
@@ -1333,34 +1330,47 @@ class League extends ModTemplate {
 		}
 
 		if (shouldTweet) {
+
 			await this.fetchRankings(league.id, playerStats);
-			let w_rank2 = w?.rank;
-			let l_rank2 = l?.rank;
 
-			let tweetContent = `###### _${league.name} Leaderboard Update_ ######\n`;
-			tweetContent += `| | ${this.app.keychain.returnUsername(w.publicKey)} | ${this.app.keychain.returnUsername(l.publicKey)} | \n |:---- |:----:|:----:| \n | Ranking | ${w_rank2} `;
-			if (w_rank){
-				if (w_rank2 < w_rank){
-					tweetContent += ` (+${w_rank - w_rank2}) ⬆️`;
-				}
-			}else{
-				tweetContent += " (NEW)";
-			}
-			tweetContent += ` | ${l_rank2}`;
-			if (l_rank){
-				if (l_rank2 > l_rank){
-					tweetContent += ` (${l_rank - l_rank2}) ⬇️`;	
-				}
-			}else{
-				tweetContent += " (NEW)";
+			let tweetContent = `###### _${league.name} Leaderboard Update_ ######\n|`;
+
+			for (let player of playerStats){
+				tweetContent += ` | ${this.app.keychain.returnUsername(player.publicKey)}`;
 			}
 
-			let w_points2 = Math.round(w.score);
-			let l_points2 = Math.round(l.score);
+			let space = ':----:|';
 
-			tweetContent += ` | \n | Points | ${w_points2} (+${w_points2-w_points}) ⬆️ | ${l_points2} (${l_points2-l_points}) ⬇️ |`;
+			tweetContent += ` | \n|:---- |${space.repeat(playerStats.length)} \n| Ranking`;
 
-			console.log(tweetContent);
+			for (let player of playerStats) {
+				tweetContent += ` | ${player.rank}`;
+				let rank = playerObj[player.publicKey]?.iRank;
+				if (rank){
+					if (player.rank < rank) {
+						tweetContent += ` (+${rank - player.rank}) ⬆️`;
+					}else if (player.rank > rank){
+						tweetContent += ` (${rank - player.rank}) ⬇️`;
+					} // else -- no change
+				}else {
+					tweetContent += " (NEW)";
+				}
+			}
+
+			tweetContent += ` | \n| Points |`;
+
+			for (let player of playerStats) {
+				let points2 = Math.round(player.score);
+				let points1 = playerObj[player.publicKey]?.iScore;
+
+				if (points2 > points1){
+					tweetContent += ` ${points2} (+${points2-points1}) ⬆️ |`;
+				}else{
+					tweetContent += ` ${points2} (${points2-points1}) ⬇️ |`;
+				}
+			}
+
+			//console.log(tweetContent);
 
 			let obj = {
 				module: 'RedSquare',
