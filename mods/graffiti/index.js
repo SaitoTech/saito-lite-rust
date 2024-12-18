@@ -1,4 +1,4 @@
-module.exports = (app, slug) => {
+module.exports = (app) => {
   const title = "Saito Graffiti";
 
   return `
@@ -16,13 +16,13 @@ module.exports = (app, slug) => {
         <link rel="stylesheet" type="text/css" href="/saito/lib/font-awesome-6/css/fontawesome.min.css" media="screen">
         <link rel="stylesheet" type="text/css" href="/saito/lib/font-awesome-6/css/all.css" media="screen">
 
-        <link rel="stylesheet" type="text/css" href="/graffiti/style.css" media="screen">
+        <link rel="stylesheet" type="text/css" href="style.css" media="screen">
       </head>
 
       <body class="wait-cursor">
         <main>
           <div id="logo-title" class="non-display side-column">
-            <img id="logo" src="${slug}/img/saito-logo.svg" alt="saito-logo">
+            <img id="logo" src="img/saito-logo.svg" alt="saito-logo">
             <div id="title" class="text">${title}</div>
           </div>
 
@@ -68,7 +68,7 @@ module.exports = (app, slug) => {
           </div>
         </main>
 
-        <script type="module" src="${slug}/main.js"></script>
+        <script type="module" src="main.js"></script>
         <script id="saito" src="/saito/saito.js?build=${app.build_number}"></script>
       </body>
     </html>
