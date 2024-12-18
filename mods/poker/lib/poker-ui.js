@@ -4,14 +4,14 @@ class PokerUI {
                 if (this.game.state.winners.includes(player)){
                         return "Winner!";
                 }
+                if (player == this.game.state.button_player) {
+                        return 'dealer';
+                }
                 if (player == this.game.state.small_blind_player) {
                         return 'small blind';
                 }
                 if (player == this.game.state.big_blind_player) {
                         return 'big blind';
-                }
-                if (player == this.game.state.button_player) {
-                        return 'dealer';
                 }
 
                 return '';
@@ -24,15 +24,17 @@ class PokerUI {
                 try {
                         for (let i = 1; i <= this.game.players.length; i++) {
                                 this.displayPlayerStack(i);
-                                this.playerbox.updateIcons(``, i);
+                                //this.playerbox.updateIcons(``, i);
                                 if (!preserveLog) {
                                         this.displayPlayerNotice('', i);
                                 }
                         }
-                        this.playerbox.updateIcons(
+
+                        // Temporary disabled...
+                        /*this.playerbox.updateIcons(
                                 `<i class="fa-solid fa-circle-dot"></i>`,
                                 this.game.state.button_player
-                        );
+                        );*/
                 } catch (err) {
                         console.log('error displaying player box', err);
                 }
@@ -51,15 +53,14 @@ class PokerUI {
                 }
         }
 
-
+        //
+        // Updates the status / text information body of player box
+        //
         displayPlayerNotice(msg, player) {
-                this.playerbox.renderNotice(msg, player);
+                this.playerbox.updateBody(msg, player);
         }
 
-        displayPlayerLog(html, player) {
-                this.playerbox.renderNotice(html, player);
-        }
-
+        // Update the player's role and wager... 
         displayPlayerStack(player) {
 
                 if (!this.browser_active) { return; }
@@ -67,7 +68,7 @@ class PokerUI {
                 let credit = this.game.state.player_credit[player - 1]; 
                 let userline = `${this.returnPlayerRole(player)}<div class="saito-balance">${this.formatWager(credit)}</div>`;
 
-                this.playerbox.renderUserline(userline, player);
+                this.playerbox.updateUserline(userline, player);
 
         }
 
@@ -96,7 +97,7 @@ class PokerUI {
                         if (status_obj) {
                                 status_obj.innerHTML = str;
                         } else {
-                                this.playerbox.renderNotice(
+                                this.playerbox.updateBody(
                                         `<div class="status">${str}</div>`,
                                         this.game.player
                                 );
