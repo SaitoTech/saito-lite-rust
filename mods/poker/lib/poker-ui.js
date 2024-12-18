@@ -21,23 +21,19 @@ class PokerUI {
                 if (!this.browser_active) {
                         return;
                 }
-                try {
-                        for (let i = 1; i <= this.game.players.length; i++) {
-                                this.displayPlayerStack(i);
-                                //this.playerbox.updateIcons(``, i);
-                                if (!preserveLog) {
-                                        this.displayPlayerNotice('', i);
-                                }
+                for (let i = 1; i <= this.game.players.length; i++) {
+                        this.displayPlayerStack(i);
+                        //this.playerbox.updateIcons(``, i);
+                        if (!preserveLog) {
+                                this.displayPlayerNotice('', i);
                         }
-
-                        // Temporary disabled...
-                        /*this.playerbox.updateIcons(
-                                `<i class="fa-solid fa-circle-dot"></i>`,
-                                this.game.state.button_player
-                        );*/
-                } catch (err) {
-                        console.log('error displaying player box', err);
                 }
+
+                // Temporary disabled...
+                /*this.playerbox.updateIcons(
+                        `<i class="fa-solid fa-circle-dot"></i>`,
+                        this.game.state.button_player
+                );*/
         }
 
         displayHand() {
@@ -51,6 +47,21 @@ class PokerUI {
                 } else {
                         this.cardfan.render();
                 }
+        }
+
+        showPlayerHand(player, card1, card2){
+                if (!this.gameBrowserActive()){
+                        return;
+                }
+
+                  let playercards = `<div class="other-player-hand hand">
+                    <div class="card"><img src="${this.card_img_dir}/${this.game.deck[0].cards[card1].name}"></div>
+                    <div class="card"><img src="${this.card_img_dir}/${this.game.deck[0].cards[card2].name}"></div>
+                  </div>
+                `;
+
+                this.playerbox.updateGraphics(playercards, player);
+
         }
 
         //
@@ -92,18 +103,14 @@ class PokerUI {
                 // already exists, in which case we simplify update it instead
                 // of updating the body again.
                 //
-                try {
-                        let status_obj = document.querySelector('.status');
-                        if (status_obj) {
-                                status_obj.innerHTML = str;
-                        } else {
-                                this.playerbox.updateBody(
-                                        `<div class="status">${str}</div>`,
-                                        this.game.player
-                                );
-                        }
-                } catch (err) {
-                        console.log('ERR: ' + err);
+                let status_obj = document.querySelector('.status');
+                if (status_obj) {
+                        status_obj.innerHTML = str;
+                } else {
+                        this.playerbox.updateBody(
+                                `<div class="status">${str}</div>`,
+                                this.game.player
+                        );
                 }
         }
 
