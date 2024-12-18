@@ -1,53 +1,34 @@
-/*********************************************************************************
-
-   returnAddress()
-   returnPrivateKey()
-   async returnBalance(address = "")
-   async sendPayment(amount="", recipient="", unique_hash="")
-   async receivePayment(amount="", sender="", recipient="", timestamp=0, unique_hash="")
-
-**********************************************************************************/
-//const { ApiNetworkProvider } = require("@elrondnetwork/erdjs-network-providers");
-//const {TokenPayment} = require("@elrondnetwork/erdjs");
-const axios  = require('axios')
-//const {transaction: Transaction} = require('@elrondnetwork/elrond-core-js');
 const CryptoModule = require("../../lib/templates/cryptomodule");
 const { ApiNetworkProvider, ProxyNetworkProvider, 
 Account, UserSigner, Address, UserWallet, Transaction, 
 TransactionComputer, UserSecretKey, Mnemonic  } = require("@multiversx/sdk-core");
-const crypto = require('crypto');
-const nacl = require('tweetnacl');
-
 
 class EGLDModule extends CryptoModule {
-
-  constructor(app, mod) {
-
-    super(app);
-    this.app = app;
-    this.ticker = "EGLD";
-    this.name = "EGLD";
-    this.categories = "Cryptocurrency";
-    this.balance = 0
-    this.egld = {}
-    this.base_url = "https://elrond-api-devnet.public.blastapi.io"
-    // this.base_url = "https://elrond.saito.io/0"
-    this.api_network_provider = "https://devnet-api.elrond.com"
-    this.has_loaded = false
-    this.apiNetworkProvider = null;
-    this.proxyNetworkProvider = null;
-    this.networkConfig = null;
-    this.account_created = 0;
-    this.account = null;
-    this.nonce = 0;
-    this.address_obj = null;
-    this.secretKey = null;
-}
+    constructor(app, mod) {
+        super(app);
+        this.app = app;
+        this.ticker = "EGLD";
+        this.name = "EGLD";
+        this.categories = "Cryptocurrency";
+        this.balance = 0;
+        this.egld = {};
+        this.base_url = "https://devnet-api.multiversx.com";
+        this.network_provider_url = "https://devnet-gateway.multiversx.com";
+        this.explorer_url = "https://devnet-explorer.multiversx.com";
+        this.apiNetworkProvider = null;
+        this.proxyNetworkProvider = null;
+        this.networkConfig = null;
+        this.account_created = 0;
+        this.account = null;
+        this.nonce = 0;
+        this.address_obj = null;
+        this.secretKey = null;
+    }
 
   async initialize(){
         await this.load();
-        this.apiNetworkProvider = new ApiNetworkProvider("https://devnet-api.multiversx.com", { clientName: "multiversx-your-client-name" });
-        this.proxyNetworkProvider = new ProxyNetworkProvider("https://devnet-gateway.multiversx.com", { clientName: "multiversx-your-client-name" });
+        this.apiNetworkProvider = new ApiNetworkProvider(this.base_url, { clientName: "multiversx-your-client-name" });
+        this.proxyNetworkProvider = new ProxyNetworkProvider(this.network_provider_url, { clientName: "multiversx-your-client-name" });
         this.networkConfig = await this.apiNetworkProvider.getNetworkConfig();
         console.log(this.networkConfig.MinGasPrice);
         console.log(this.networkConfig.ChainID);
@@ -129,7 +110,7 @@ class EGLDModule extends CryptoModule {
             this.account.update(accOnNetwork);
 
             this.egld.bigIntBalance = BigInt(this.account.balance.toNumber())
-            this.egld.balance = this.balance = this.convertBigIntToNumber(this.egld.bigIntBalance);
+            this.egld.balance = this.balance = this.convertAtomicToEgld(this.egld.bigIntBalance);
             this.egld.nonce = this.nonce = this.account.nonce;
 
             console.log("updateAccount account: ", this.account);
@@ -142,40 +123,6 @@ class EGLDModule extends CryptoModule {
       }
 
   }
-
-
-   convertNumberToBigint(amount = '0.0') {
-        let bigIntNum = 0;
-        let num = Number(amount);
-        if (num > 0) {
-            bigIntNum = num * 1000000000000000000; // 100,000,000
-        }
-
-        return (bigIntNum);
-    }
-     
-    convertBigIntToNumber(amount = BigInt(0)) {
-        let string = '0.00';
-        let num = 0;
-        let bigint_divider = 1000000000000000000n;
-
-        if (typeof amount == 'bigint') {
-            // convert bigint to number
-            num = Number((amount * 1000000000000000000n) / bigint_divider) / 1000000000000000000;
-
-            // convert number to string
-            string = num.toString();
-        } else {
-            console.error(
-                `convertNolanToSaito: Type ` +
-                    typeof amount +
-                    ` provided. BigInt required`
-            );
-        }
-
-        return string;
-    }
-
 
     async showBackupWallet(){
         this.app.options.wallet.backup_required = 1;
@@ -237,65 +184,7 @@ class EGLDModule extends CryptoModule {
         return txHash;
     }
 
-
-    // async sendPayment(amount = '', recipient = '', unique_hash = '') {
-
-    //     console.log("inside sendPayment ////");
-    //     console.log("amount, recipient, unique_hash: ", amount , recipient , unique_hash);
-
-    //     let txObj = {
-    //       nonce: BigInt(0), // Set this value to match the expected nonce
-    //       value: BigInt(50000000000000000), // Set this value to match the expected amount
-    //       receiver: recipient, // Correct receiver
-    //       sender: this.address, // Correct sender
-    //       gasPrice: BigInt(1000000000),
-    //       gasLimit: BigInt(50000),
-    //       chainID: 'D', // Expected chainID
-    //       version: 1, // Required version field
-    //     }
-    //     const transaction = new Transaction(txObj);
-
-    //     // const secretKey = this.base64ToUint8Array(this.egld.secretKey);
-    //     console.log("Decoded key (Uint8Array):", this.egld.secretKey);
-    //     // console.log("Decoded key length:", secretKey.length);
-
-    //     // // Ensure it's exactly 32 bytes
-    //     // if (secretKey.length !== 32) {
-    //     //   console.error("Decoded key must be 32 bytes long.");
-    //     // }
-
-    //     // console.log("obj:", txObj);
-    //     // console.log("transaction: ", transaction);
-    //     // console.log("secretKey: ", secretKey);
-
-    //     // Convert JSON object to string and then to a buffer
-    //     const message = new TextEncoder().encode(JSON.stringify(txObj));
-
-    //     console.log("message: ", message);
-
-    //     // const privateKeyUint8Array = Buffer.from(this.egld.secretKey, 'hex');
-    //     // console.log("privateKeyUint8Array:", privateKeyUint8Array);
-    //     const signature = nacl.sign.detached(message, this.egld.secretKey);
-
-    //     if (signature.length !== 64) {
-    //         console.error("Invalid signature length. Expected 64 bytes.");
-    //     }
-
-    //      console.log('Raw signature:', signature);
-    //     console.log('Raw signature length:', signature.length);
-
-    //   transaction.signature = Buffer.from(signature).toString('hex');
-    //   console.log('Encoded signature:', transaction.signature);
-
-    //     console.log("transaction after:", transaction);
-
-    //     const txHash = await this.apiNetworkProvider.sendTransaction(transaction);
-    //     console.log("TX hash:", txHash);
-    // }
-
-
     async returnBalance(){
-        console.log("EGLD returnBalance ///");
         await this.updateAccount();
         return this.balance;
     }
@@ -304,28 +193,9 @@ class EGLDModule extends CryptoModule {
         return this.address;
     }
 
-
-
     async getNonce(){
         await this.updateAccount();
         return this.nonce;
-    }
-
-
-    async updateNonce(){
-    }
-
-
-    incrementNonce(){
-        
-    }
-
-    returnPrivateKey(){
-
-    }
-
-    async updateBalance(){
-
     }
 
     async load(){
@@ -352,23 +222,74 @@ class EGLDModule extends CryptoModule {
         super.save();
     }
 
+    async returnHistory(callback = null) {
+        const address = Address.newFromBech32(this.address);
+        const transactions = await this.apiNetworkProvider.doGetGeneric(
+            `accounts/${address.toBech32()}/transactions`
+        );
 
-    // Convert Uint8Array to Base64
-    uint8ArrayToBase64(uint8Array) {
-      return btoa(String.fromCharCode.apply(null, uint8Array));
+        let balance = BigInt(this.account.balance); // Start with the latest balance
+        console.log("return history: ", transactions);
+
+        let html = '';
+        if (transactions.length > 0) {
+            transactions.sort((a, b) => b.timestamp - a.timestamp);
+
+            for (let i = 0; i < transactions.length; i++) {
+                const row = transactions[i];
+                const created_at = new Date(row.timestamp * 1000).toLocaleString(); // Convert timestamp to readable date
+                const amount = BigInt(row.value);
+                const type = (row.sender.toLowerCase() === this.address.toLowerCase()) ? 'Withdraw' : 'Deposit';
+
+                const displayed_balance = this.convertAtomicToEgld(balance);
+                if (type === 'Withdraw') {
+                    balance += amount;
+                } else {
+                    balance -= amount;
+                }
+
+                const trans_hash = row.txHash;
+                const sender_html = `
+                    <a class="history-tx-link" href="${this.explorer_url}/transactions/${trans_hash}" target="_blank">
+                        <div class="history-tx-id">${trans_hash}</div>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>`;
+
+                html += `<div class='saito-table-row'>
+                    <div class='mixin-his-created-at'>${created_at}</div>
+                    <div>${type}</div>
+                    <div class='${type.toLowerCase()}'>${this.convertAtomicToEgld(amount)} EGLD</div>
+                    <div>${displayed_balance} EGLD</div>
+                    <div>${sender_html}</div>
+                </div>`;
+            }
+        } else {
+            html = `<div class='saito-table-row'>No transaction history available.</div>`;
+        }
+
+        return callback(html);
     }
 
-    // Decode Base64 back to Uint8Array
-    base64ToUint8Array(base64) {
-      const binaryString = atob(base64);
-      const len = binaryString.length;
-      const bytes = new Uint8Array(len);
-      for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-      return bytes;
-    }
+    convertEgldToAtomic(amount = '0.0') {
+        let bigIntNum = 0;
+        let num = Number(amount);
+        if (num > 0) {
+            bigIntNum = num * 1000000000000000000; // 100,000,000
+        }
 
+        return (bigIntNum);
+    }
+     
+    convertAtomicToEgld(amount = BigInt(0)) {
+        let string = '0.00';
+        let num = 0;
+        let bigint_divider = 1000000000000000000n;
+
+        num = Number((BigInt(amount) * 1000000000000000000n) / bigint_divider) / 1000000000000000000;
+
+        string = num.toString();
+        return string;
+    }
 
 }
 
