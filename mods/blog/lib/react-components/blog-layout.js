@@ -24,7 +24,7 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const loaderRef = useRef(null);
-    const limit = 20
+    const limit = 40
 
 
     const loadMorePosts = async () => {
@@ -143,7 +143,7 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
             case 'all':
                 return true;
             case 'contacts':
-             
+
                 const contactKeys = app.keychain.returnKeys().map(k => k.publicKey);
                 return contactKeys.includes(post.publicKey);
             default:
@@ -308,7 +308,7 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                     postData.imageUrl,
                     () => {
                         setShowPostModal(false);
-                        refreshPosts();        
+                        refreshPosts();
                         if (document.querySelector('.saito-back-button')) {
                             document.querySelector('.saito-back-button').remove();
                         }
@@ -431,7 +431,7 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
 
                         <div className="posts-list">
                             {filteredPosts.map((post, index) => (
-                                <PostCard  key={post.sig} selectedUser={selectedUser} app={app} mod={mod} index={index} post={post} onClick={() => {
+                                <PostCard key={post.sig} selectedUser={selectedUser} app={app} mod={mod} index={index} post={post} onClick={() => {
                                     app.connection.emit('saito-header-replace-logo', handleBackClick);
                                     setSelectedPost(post);
                                     const url = new URL(window.location);
@@ -442,12 +442,16 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                             ))}
                             {hasMore && (
                                 <div ref={loaderRef} className="loading-indicator">
-                                    {isLoadingMore ? 'Loading more posts...' : ''}
+                                    {isLoadingMore && <>
+                                        <div>
+                                            <div className='saito-loader'> </div>
+                                        </div>
+                                    </>}
                                 </div>
                             )}
 
                             {!hasMore && filteredPosts.length > 0 && (
-                                <div className="end-message">No more posts to load</div>
+                                <div style={{textAlign: 'center'}} className="end-message">No more posts to load</div>
                             )}
                             {filteredPosts.length === 0 && !isLoadingMore && (
                                 <NoPostsAvailable isCurrentUser={selectedUser.publicKey === mod.publicKey || selectedUser.username === 'All'} showModal={() => {

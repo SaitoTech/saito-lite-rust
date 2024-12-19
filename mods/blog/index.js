@@ -81,10 +81,13 @@ module.exports = (app, mod, build_number, og_card) => {
       background-image: url('/saito/img/tiled-logo.svg');
     }
   </style>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+
   </head>
   
   <body>
-  
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
   </body>
   <script type="text/javascript" src="/saito/saito.js?build=${build_number}" >
 </script>

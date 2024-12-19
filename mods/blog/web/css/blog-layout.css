@@ -94,13 +94,14 @@ html, body {
   flex: 1;
   padding: 24px;
   max-width: 768px;
-  height: calc(100vh - var(--saito-header-height));
   -ms-overflow-style: none;
   /* IE and Edge */
   scrollbar-width: none;
   /* Firefox */
   overflow-y: visible; 
 }
+
+
 
 .center-column::-webkit-scrollbar {
   display: initial;

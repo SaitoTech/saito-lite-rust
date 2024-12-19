@@ -51,7 +51,7 @@ const BlogPost = ({ app, mod, post, publicKey, onEditClick , onDeleteClick}) => 
                             />
                         </div>
                     )}
-                    <div className="post-body markdown-preview markdown-content"
+                    <div className="post-body richtext-preview richtext-content"
                         dangerouslySetInnerHTML={{
                             __html: parseMarkdown(post.content)
                         }}
