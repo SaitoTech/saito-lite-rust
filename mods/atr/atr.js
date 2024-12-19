@@ -226,6 +226,11 @@ class ATR extends ModTemplate {
 		}
 	}
 
+	async onNewBlock(blk, lc) {
+		if (this.app.BROWSER == 0) { return };
+		await this.loadBlocks(blk);
+	}
+
 	async handlePeerTransaction(app, tx = null, peer, mycallback = null) {
 		if (tx == null) {
 			return;

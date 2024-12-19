@@ -5,6 +5,7 @@ import BlogPost from './blog-post';
 import NoPostsAvailable from './NoPosts';
 import PostCard from './post-card';
 import { initializeUsers } from '../utils';
+import { ArrowUp, ChevronUp, MoveUp, ChevronsUp } from 'lucide-react';
 
 
 
@@ -20,11 +21,12 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [posts, setPosts] = useState([])
     const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [showScrollTop, setShowScrollTop] = useState(false);
     const latestPostRef = useRef(null);
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const loaderRef = useRef(null);
-    const limit = 20
+    const limit = 40
 
 
     const loadMorePosts = async () => {
@@ -138,12 +140,17 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
         }
     };
 
+    const handleScroll = async () => {
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+    }
+
     const filteredPosts = posts.filter(post => {
         switch (selectedUser.publicKey) {
             case 'all':
                 return true;
             case 'contacts':
-             
+
                 const contactKeys = app.keychain.returnKeys().map(k => k.publicKey);
                 return contactKeys.includes(post.publicKey);
             default:
@@ -262,8 +269,6 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
 
     useEffect(() => {
         const currentLoaderRef = loaderRef.current;
-
-        // Don't setup observer if we don't have more posts or are currently loading
         if (!hasMore || isLoadingMore) return;
 
         const observerCallback = (entries) => {
@@ -272,25 +277,37 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                 loadMorePosts();
             }
         };
-
         const observer = new IntersectionObserver(observerCallback, {
-            root: null, // use viewport
-            rootMargin: '100px', // start loading 100px before element is visible
-            threshold: 0.1 // trigger when even 10% of the element is visible
+            root: null,
+            rootMargin: '100px',
+            threshold: 0.1
         });
-
         if (currentLoaderRef) {
             observer.observe(currentLoaderRef);
         }
-
         return () => {
             if (currentLoaderRef) {
                 observer.unobserve(currentLoaderRef);
             }
             observer.disconnect();
         };
-    }, [hasMore, isLoadingMore]); // Only re-run when these values change
+    }, [hasMore, isLoadingMore]);
 
+
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setShowScrollTop(window.scrollY > 300);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const scrollToTop = () => {
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+    };
     const refreshPosts = () => {
         loadPosts(false);
     };
@@ -308,7 +325,7 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                     postData.imageUrl,
                     () => {
                         setShowPostModal(false);
-                        refreshPosts();        
+                        refreshPosts();
                         if (document.querySelector('.saito-back-button')) {
                             document.querySelector('.saito-back-button').remove();
                         }
@@ -431,9 +448,10 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
 
                         <div className="posts-list">
                             {filteredPosts.map((post, index) => (
-                                <PostCard  key={post.sig} selectedUser={selectedUser} app={app} mod={mod} index={index} post={post} onClick={() => {
+                                <PostCard key={post.sig} selectedUser={selectedUser} app={app} mod={mod} index={index} post={post} onClick={() => {
                                     app.connection.emit('saito-header-replace-logo', handleBackClick);
                                     setSelectedPost(post);
+                                    scrollToTop()
                                     const url = new URL(window.location);
                                     url.searchParams.set('public_key', post.publicKey);
                                     url.searchParams.set('tx_id', post.sig);
@@ -442,12 +460,16 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                             ))}
                             {hasMore && (
                                 <div ref={loaderRef} className="loading-indicator">
-                                    {isLoadingMore ? 'Loading more posts...' : ''}
+                                    {isLoadingMore && <>
+                                        <div>
+                                            <div className='saito-loader'> </div>
+                                        </div>
+                                    </>}
                                 </div>
                             )}
 
                             {!hasMore && filteredPosts.length > 0 && (
-                                <div className="end-message">No more posts to load</div>
+                                <div style={{ textAlign: 'center' }} className="end-message">No more posts to load</div>
                             )}
                             {filteredPosts.length === 0 && !isLoadingMore && (
                                 <NoPostsAvailable isCurrentUser={selectedUser.publicKey === mod.publicKey || selectedUser.username === 'All'} showModal={() => {
@@ -461,6 +483,16 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                         </div>
                     </>
                 )}
+                {/* {showScrollTop && ( */}
+                <div
+                    onClick={() => {
+                        scrollToTop()
+                    }}
+                    className='scroll-button'
+                >
+                    <ArrowUp size={30} />
+                </div>
+                {/* )} */}
             </div>
             {showPostModal && editingPost && (
                 <PostModal
@@ -481,6 +513,8 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                     isSubmitting={isSubmitting}
                 />
             )}
+
+
         </div>
     );
 };
