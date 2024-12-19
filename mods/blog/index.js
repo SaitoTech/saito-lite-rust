@@ -55,7 +55,7 @@ module.exports = (app, mod, build_number, og_card) => {
     <link rel="stylesheet" href="/saito/lib/pace/pace-theme.min.css">
     <link rel="stylesheet" type="text/css" href="/saito/saito.css?v=${build_number}">
     
-    <title>Saito Profile</title>
+    <title>Saito Blog</title>
   
     <style type="text/css">
     /* css for fade-out bg effect while content is loading */

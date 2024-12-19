@@ -140,6 +140,11 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
         }
     };
 
+    const handleScroll = async () => {
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+    }
+
     const filteredPosts = posts.filter(post => {
         switch (selectedUser.publicKey) {
             case 'all':
@@ -300,15 +305,8 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
     }, []);
 
     const scrollToTop = () => {
-        try {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        } catch (error) {
             document.documentElement.scrollTop = 0;
             document.body.scrollTop = 0;
-        }
     };
     const refreshPosts = () => {
         loadPosts(false);
@@ -453,6 +451,7 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                                 <PostCard key={post.sig} selectedUser={selectedUser} app={app} mod={mod} index={index} post={post} onClick={() => {
                                     app.connection.emit('saito-header-replace-logo', handleBackClick);
                                     setSelectedPost(post);
+                                    scrollToTop()
                                     const url = new URL(window.location);
                                     url.searchParams.set('public_key', post.publicKey);
                                     url.searchParams.set('tx_id', post.sig);
@@ -487,9 +486,7 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                 {/* {showScrollTop && ( */}
                 <div
                     onClick={() => {
-                        document.documentElement.scrollTop = 0;
-                        document.body.scrollTop = 0;
-
+                        scrollToTop()
                     }}
                     className='scroll-button'
                 >
