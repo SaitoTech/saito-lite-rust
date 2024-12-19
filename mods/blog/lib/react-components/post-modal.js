@@ -29,35 +29,6 @@ const PostModal = ({ onClose, onSubmit, post }) => {
 
 
 
-
-
-  // useEffect(() => {
-  //   if (window.Quill && editorRef.current && !quillInstance.current) {
-  //     quillInstance.current = new window.Quill(editorRef.current, {
-  //       theme: 'snow',
-  //       modules: modules,
-  //       placeholder: 'Write your blog content here...',
-  //     });
-
-  //     if (formData.content) {
-  //       quillInstance.current.root.innerHTML = formData.content;
-  //     }
-
-  //     quillInstance.current.on('text-change', () => {
-  //       setFormData(prev => ({
-  //         ...prev,
-  //         content: quillInstance.current.root.innerHTML
-  //       }));
-  //     });
-  //   }
-
-  //   return () => {
-  //     if (quillInstance.current) {
-  //       // Cleanup if needed
-  //     }
-  //   };
-  // }, []);
-
   useEffect(() => {
     if (window.Quill && editorRef.current && !quillInstance.current) {
       const imageHandler = () => {
