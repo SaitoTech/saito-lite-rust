@@ -505,6 +505,11 @@ class League extends ModTemplate {
 				return;
 			}
 
+			if (this.hasSeenTransaction(tx)) {
+				console.warn("Duplicate transaction in League");
+				return;
+			}
+
 			let txmsg = tx.returnMessage();
 
 			if (this.debug) {
