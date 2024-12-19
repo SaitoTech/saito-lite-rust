@@ -59,9 +59,7 @@ const PostModal = ({ onClose, onSubmit, post }) => {
   // }, []);
 
   useEffect(() => {
-    // Initialize Quill once the scripts are loaded
     if (window.Quill && editorRef.current && !quillInstance.current) {
-      // Add image handler to toolbar
       const imageHandler = () => {
         const input = document.createElement('input');
         input.setAttribute('type', 'file');
@@ -188,7 +186,6 @@ const PostModal = ({ onClose, onSubmit, post }) => {
         imageUrl: post.imageUrl || ''
       });
 
-      // Update Quill content when post changes
       if (quillInstance.current && post.content) {
         quillInstance.current.root.innerHTML = post.content;
       }
