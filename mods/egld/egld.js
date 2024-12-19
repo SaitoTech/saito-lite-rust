@@ -137,53 +137,6 @@ class EGLDModule extends CryptoModule {
         );
     }
 
-    async sendPayment(amount = '', recipient = '', unique_hash = '') {
-
-        console.log("inside sendPayment ////");
-        console.log("amount, recipient, unique_hash: ", amount , recipient , unique_hash);
-
-        console.log("this.egld: ", this.egld);
-
-        if (this.address_obj == null) {
-            await this.load();    
-        }
-
-        console.log("this.secretKey: ", this.secretKey);
-        let txObj = {
-            value: this.convertNumberToBigint(amount),
-            sender: this.address_obj,
-            receiver: Address.newFromBech32(recipient),
-            chainID: "D",
-            nonce: this.account.nonce,
-            gasLimit: 50000,
-            //data: "SAITO multiwallet transfer"
-        };
-        console.log("txObj: ", txObj);
-
-        // get funds to you address before creating the transaction
-        const transaction = new Transaction(txObj);
-
-        // let gasLimit =   this.networkConfig.erd_min_gas_limit + 
-        //                 this.networkConfig.erd_gas_per_data_byte * (Buffer.from(transaction.data, "hex").length);
-        console.log("transaction before: ", transaction);
-
-        // serialize transaction for signing
-        const txComputer = new TransactionComputer();
-        const serializedTX = txComputer.computeBytesForSigning(transaction);
-
-        console.log("serializedTX: ", serializedTX);
-
-        // set the signature
-        transaction.signature = this.secretKey.sign(serializedTX);
-
-        console.log("transaction after: ", transaction);
-
-        // broadcast transaction
-        const txHash = await this.apiNetworkProvider.sendTransaction(transaction);
-        console.log("txHash: ", txHash);
-        return txHash;
-    }
-
     async returnBalance(){
         await this.updateAccount();
         return this.balance;
@@ -196,30 +149,6 @@ class EGLDModule extends CryptoModule {
     async getNonce(){
         await this.updateAccount();
         return this.nonce;
-    }
-
-    async load(){
-        if (this.app?.options?.crypto?.egld) {
-          this.egld = this.app.options.crypto.egld;
-          console.log("EGLD OPTIONS: " + JSON.stringify(this.app.options.crypto.egld));
-          if (this.egld.address) {
-            this.destination = this.egld.address;
-
-            await this.getAddress(this.egld.mnemonic_text);
-            //await this.updateAccount();
-            this.account_created = 1;
-          }
-        }
-    }
-
-    save() {
-        if (!this.app.options?.crypto?.egld) {
-            this.app.options.crypto = {};
-            this.app.options.crypto.egld = {};
-        }
-        this.app.options.crypto.egld = this.egld;
-        this.app.storage.saveOptions();
-        super.save();
     }
 
     async returnHistory(callback = null) {
@@ -270,6 +199,92 @@ class EGLDModule extends CryptoModule {
         return callback(html);
     }
 
+
+    async sendPayment(amount = '', recipient = '', unique_hash = '') {
+
+        console.log("inside sendPayment ////");
+        console.log("amount, recipient, unique_hash: ", amount , recipient , unique_hash);
+
+        console.log("this.egld: ", this.egld);
+
+        if (this.address_obj == null) {
+            await this.load();    
+        }
+
+        console.log("this.secretKey: ", this.secretKey);
+        let txObj = {
+            value: this.convertEgldToAtomic(amount),
+            sender: this.address_obj,
+            receiver: Address.newFromBech32(recipient),
+            chainID: "D",
+            nonce: this.account.nonce,
+            gasLimit: 50000,
+            //data: "SAITO multiwallet transfer"
+        };
+        console.log("txObj: ", txObj);
+
+        // get funds to you address before creating the transaction
+        const transaction = new Transaction(txObj);
+
+        // let gasLimit =   this.networkConfig.erd_min_gas_limit + 
+        //                 this.networkConfig.erd_gas_per_data_byte * (Buffer.from(transaction.data, "hex").length);
+        console.log("transaction before: ", transaction);
+
+        // serialize transaction for signing
+        const txComputer = new TransactionComputer();
+        const serializedTX = txComputer.computeBytesForSigning(transaction);
+
+        console.log("serializedTX: ", serializedTX);
+
+        // set the signature
+        transaction.signature = this.secretKey.sign(serializedTX);
+
+        console.log("transaction after: ", transaction);
+
+        // broadcast transaction
+        const txHash = await this.apiNetworkProvider.sendTransaction(transaction);
+        console.log("txHash: ", txHash);
+
+        //await this.receivePayment(txObj.value, txObj.sender, txObj.receiver, new Date(), txHash);
+
+        return txHash;
+    }
+
+
+    async receivePayment(
+        amount = '',
+        sender = '',
+        recipient = '',
+        timestamp = 0,
+        unique_hash = ''
+    ) {
+        let this_self = this;
+        let status = 0;
+        console.log('amount, sender, timestamp, unique_hash:');
+        console.log(amount, sender, timestamp, unique_hash);
+
+        let txDetails = await this.getTransactionStatus(unique_hash);
+        console.log("Transaction Details:", transactionDetails);
+
+        if (txDetails.status.isSuccessful()) {
+            status = 1;
+        }
+
+        console.log('receivePayment status: ', status);
+        return status;
+    }
+
+    async getTransactionStatus(txHash) {
+        try {
+            const transactionDetails = await this.apiNetworkProvider.getTransaction(txHash);
+            return transactionDetails;
+        } catch (error) {
+            console.error("Error fetching transaction status:", error.message);
+            throw error;
+        }
+    }
+
+
     convertEgldToAtomic(amount = '0.0') {
         let bigIntNum = 0;
         let num = Number(amount);
@@ -289,6 +304,30 @@ class EGLDModule extends CryptoModule {
 
         string = num.toString();
         return string;
+    }
+
+    async load(){
+        if (this.app?.options?.crypto?.egld) {
+          this.egld = this.app.options.crypto.egld;
+          console.log("EGLD OPTIONS: " + JSON.stringify(this.app.options.crypto.egld));
+          if (this.egld.address) {
+            this.destination = this.egld.address;
+
+            await this.getAddress(this.egld.mnemonic_text);
+            //await this.updateAccount();
+            this.account_created = 1;
+          }
+        }
+    }
+
+    save() {
+        if (!this.app.options?.crypto?.egld) {
+            this.app.options.crypto = {};
+            this.app.options.crypto.egld = {};
+        }
+        this.app.options.crypto.egld = this.egld;
+        this.app.storage.saveOptions();
+        super.save();
     }
 
 }
