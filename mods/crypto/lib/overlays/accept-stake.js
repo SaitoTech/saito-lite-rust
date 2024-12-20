@@ -6,6 +6,8 @@ class AcceptStake {
 		this.app = app;
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(app, mod);
+		this.accept_callback = null;
+		this.reject_callback = null;
 	}
 
 	async render(obj) {
@@ -28,6 +30,8 @@ class AcceptStake {
 		if (document.querySelector('#approve-crypto-request-container #enable_staking_yes')){
 			document.querySelector('#approve-crypto-request-container #enable_staking_yes').onclick = async(e) => {
 
+				console.log("enable_staking_yes clicked ///");
+
 				let confirm = document.querySelector(
 					'#approve-crypto-request-container #approve-crypto-stake-confirm-input'
 				).checked;
@@ -40,6 +44,9 @@ class AcceptStake {
 					return;
 				}
 
+				console.log("this.accept_callback inside accept-stake///", this.accept_callback);
+				console.log("this.accept_callback inside accept-stake ///", this.reject_callback);
+
 				if (this.accept_callback){
 					this.accept_callback();
 				}
@@ -50,6 +57,7 @@ class AcceptStake {
 
 		if (document.querySelector('#approve-crypto-request-container #enable_staking_no')){
 			document.querySelector('#approve-crypto-request-container #enable_staking_no').onclick = (e) => {
+				console.log("enable_staking_no clicked ///");
 				if (this.reject_callback){
 					this.reject_callback();
 				}

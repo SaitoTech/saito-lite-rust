@@ -44,18 +44,11 @@ export const getImageUrl = (base64String) => {
 };
 
 
-export const initializeUsers = (app, mod)=> {
-    const USERS = [{ username: 'All', publicKey: null }];
-    app.keychain.returnKeys().forEach(k => {
-        USERS.push({
-            username: app.keychain.returnUsername(k.publicKey),
-            publicKey: k.publicKey
-        });
-    });
-    USERS.push({
-        username: app.keychain.returnUsername(mod.publicKey),
-        publicKey: mod.publicKey
-    })
-    return USERS
-}
+export const initializeUsers = (app, mod) => {
+    return [
+        { username: 'All posts', publicKey: 'all' },
+        { username: 'My contacts', publicKey: 'contacts' },
+        { username: 'My posts', publicKey: mod.publicKey }
+    ];
+};
 

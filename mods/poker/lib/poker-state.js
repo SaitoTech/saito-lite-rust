@@ -1,7 +1,3 @@
-const PokerGameRulesTemplate = require('./poker-game-rules.template');
-const PokerGameOptionsTemplate = require('./poker-game-options.template');
-//const GameTemplateArcade = require('../../../lib/templates/gametemplate-src');
-
 
 class PokerState {
 
@@ -17,8 +13,6 @@ class PokerState {
                 state.player_cards_required = 0;
 
                 state.plays_since_last_raise = 0;
-
-                state.pot = 0;
 
                 state.big_blind_player = 1;
                 state.small_blind_player = 2;
@@ -88,14 +82,6 @@ class PokerState {
                 }else{
                         console.warn("Invalid index removePlayerFromState");
                 }
-        }
-
-        returnGameRulesHTML() {
-                return PokerGameRulesTemplate(this.app, this);
-        }
-
-        returnAdvancedOptions() {
-                return PokerGameOptionsTemplate(this.app, this);
         }
 
 

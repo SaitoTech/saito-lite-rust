@@ -104,7 +104,7 @@ class ModTools extends ModTemplate {
 			let data = {
 				publicKey: obj.publicKey,
 				moderator: obj?.moderator || this.publicKey,
-				duration: obj?.duration || this.prune_after,
+				duration: obj?.duration || -1,
 				created_at: new Date().getTime(),
 				hop: 0
 			};
@@ -180,7 +180,7 @@ class ModTools extends ModTemplate {
 						let data = {
 							publicKey: key,
 							moderator: this.publicKey,
-							duration: this.prune_after,
+							duration: -1,
 							created_at: new Date().getTime(),
 							hop: 0
 						};
@@ -319,9 +319,6 @@ class ModTools extends ModTemplate {
 			this.whitelistAddress(txmsg.data);
 		} else if (txmsg?.credential) {
 			if (txmsg.credential === 'cceb1c83976a46634021ca252a218a53ae882788d9507741db89f6582fc17233') {
-				console.log('*************');
-				console.log('Adding white list data');
-				console.log('*************');
 				this.whitelistAddress(txmsg.data);
 			}
 		}
@@ -496,6 +493,11 @@ class ModTools extends ModTemplate {
 			return 1;
 		}
 
+		// Strict whitelist only for server node
+		if (!this.app.BROWSER){
+			return 0;
+		}
+
 		if (this.blacklisted_publickeys.includes(moderator)) {
 			return 0;
 		}
@@ -548,21 +550,18 @@ class ModTools extends ModTemplate {
 				this.blacklistAddress(list[i]);
 			}
 		}
-		this.save();
 	}
 
 	addPeerWhitelist(moderator, list = []) {
 		if (!list) {
 			return;
 		}
-		let am_i_blacklisted = 0;
-		let is_anyone_whitelisted = 0;
+
 		for (let i = 0; i < list.length; i++) {
 			if (list[i].hop < this.max_hops) {
 				this.whitelistAddress(list[i]);
 			}
 		}
-		this.save();
 	}
 
 	blacklistAddress(data) {
@@ -581,6 +580,12 @@ class ModTools extends ModTemplate {
 			if (data.moderator !== this.publicKey) {
 				console.log('Add hop because using other moderator!');
 				data.hop++;
+				// reduce duration per hop
+				if (data.duration == -1){
+					data.duration = this.prune_after;
+				}else {
+					data.duration = data.duration / 2;
+				}
 			}
 
 			this.blacklist.push(data);
@@ -600,6 +605,12 @@ class ModTools extends ModTemplate {
 
 			if (data.moderator !== this.publicKey) {
 				data.hop++;
+				// reduce duration per hop
+				if (data.duration == -1){
+					data.duration = this.prune_after;
+				}else {
+					data.duration = data.duration / 2;
+				}
 			}
 
 			this.whitelist.push(data);
@@ -607,21 +618,10 @@ class ModTools extends ModTemplate {
 		}
 	}
 
+	// Will probably want to run this on a loop sometime, but we are pruning on initialize
+	// which lets things stay on the black list a little bit longer...
 	prune() {
 		let current_time = new Date().getTime();
-		for (let i = 0; i < this.whitelist.length; i++) {
-			if (this.whitelist[i].duration != -1) {
-				if (this.whitelist[i].duration > 0) {
-					if (this.whitelist[i].duration < current_time - this.whitelist[i].created_at) {
-						this.whitelist.splice(i, 1);
-					}
-				} else {
-					if (this.prune_after < current_time - this.whitelist[i].created_at) {
-						this.whitelist.splice(i, 1);
-					}
-				}
-			}
-		}
 		for (let i = 0; i < this.blacklist.length; i++) {
 			if (this.prune_after < current_time - this.blacklist[i].created_at) {
 				this.blacklist.splice(i, 1);
@@ -690,7 +690,7 @@ class ModTools extends ModTemplate {
 		this.permissions = this.app.options.modtools.permissions;
 
 		for (let i = 0; i < this.app.options.modtools.whitelist.length; i++) {
-			if (this.verifyData(this.app.options.modtools.whitelist[i])){
+			if (this.verifyData(this.app.options.modtools.whitelist[i], false)){
 				let pk = this.app.options.modtools.whitelist[i].publicKey;
 				if (!this.whitelisted_publickeys.includes(pk)) {
 					this.whitelisted_publickeys.push(pk);
@@ -699,7 +699,7 @@ class ModTools extends ModTemplate {
 			}
 		}
 		for (let i = 0; i < this.app.options.modtools.blacklist.length; i++) {
-			if (this.verifyData(this.app.options.modtools.blacklist[i])){
+			if (this.verifyData(this.app.options.modtools.blacklist[i], true)){
 				let pk = this.app.options.modtools.blacklist[i].publicKey;
 				if (!this.blacklisted_publickeys.includes(pk)) {
 					this.blacklisted_publickeys.push(pk);
@@ -711,7 +711,7 @@ class ModTools extends ModTemplate {
 		this.save();
 	}
 
-	verifyData(obj) {
+	verifyData(obj, check_time = true) {
 		// Update data structure live
 		if (!obj?.publicKey) {
 			return false;
@@ -722,14 +722,16 @@ class ModTools extends ModTemplate {
 		}
 
 		// Prune Old Listed Keys
-		let current_time = new Date().getTime();
-		if (obj.duration > 0) {
-			if (obj.duration < current_time - obj.created_at) {
-				return false;
-			}
-		} else {
-			if (this.prune_after < current_time - obj.created_at) {
-				return false;
+		if (check_time){
+			let current_time = new Date().getTime();
+			if (obj.duration > 0) {
+				if (obj.duration < current_time - obj.created_at) {
+					return false;
+				}
+			} else {
+				if (this.prune_after < current_time - obj.created_at) {
+					return false;
+				}
 			}
 		}
 

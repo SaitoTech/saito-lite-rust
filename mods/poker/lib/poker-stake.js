@@ -1,5 +1,55 @@
 class PokerStake {
 
+        //
+        // initializes chips / pools / pots information
+        //
+        initializeGameStake(crypto = 'CHIPS', stake = '100') {
+                console.log("Initialize Poker Stakes!");
+                this.game.crypto = crypto;
+                this.game.stake = stake;
+                this.game.chips = 100;
+                this.game.blind_mode = 'static';
+
+                if (this.game.options.num_chips > 0) {
+                        this.game.chips = this.game.options.num_chips;
+                }
+                if (this.game.options.crypto) {
+                        this.game.crypto = this.game.options.crypto;
+                }
+                if (this.game.options.stake) {
+                        this.game.stake = this.game.options.stake;
+                }
+                if (this.game.options.blind_mod) {
+                        this.game.blind_mod = this.game.options.blind_mode;
+                }
+
+                this.settleNow = true;
+
+                this.game.state.round = 1;
+
+                this.game.state.big_blind = 2;
+                this.game.state.small_blind = 1;
+                this.game.state.last_raise = this.game.state.big_blind;
+                this.game.state.required_pot = this.game.state.big_blind;
+
+                for (let i = 0; i < this.game.players.length; i++) {
+                        this.game.state.passed[i] = 0;
+                        this.game.state.player_pot[i] = 0;
+                        this.game.state.debt[i] = 0;
+                        this.game.state.player_credit[i] = this.game.chips;
+                }
+
+                this.game.queue = ['newround'];
+
+        }
+
+        returnTicker() {
+                if (this.game.crypto) {
+                        return this.game.crypto;
+                }
+                return 'CHIPS';
+        }
+
 
         convertChipsToCrypto(numChips, asString = true) {
                 let numCrypto =
@@ -142,6 +192,8 @@ class PokerStake {
                 this.game.queue.push(`ROUNDOVER\t${JSON.stringify(winner_array)}\t${method}`);
 
         }
+
+
 
 }
 

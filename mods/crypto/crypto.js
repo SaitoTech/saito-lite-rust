@@ -44,6 +44,8 @@ class Crypto extends ModTemplate {
 
 		app.connection.on('accept-game-stake', async (sobj) => {
 			
+			console.log("accept-game-stake sobj: ", sobj);
+
 			await this.app.wallet.setPreferredCrypto(sobj.ticker);
 
 			let cryptomod = this.app.wallet.returnCryptoModuleByTicker(sobj.ticker);

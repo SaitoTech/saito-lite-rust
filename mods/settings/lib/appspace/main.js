@@ -66,8 +66,10 @@ class SettingsAppspace {
 		}
 
 		if (document.getElementById("delete_marked")){
-			document.getElementById("delete_marked").onclick = (e) => {
+			document.getElementById("delete_marked").onclick = async (e) => {
+				let updated = false;
 				Array.from(document.querySelectorAll(".jsontree_node_marked")).forEach(node => {
+					updated = true;
 					let path = this.getJSONPath(node).replaceAll(`"]`, "").split("[\"");
 
 					let obj = this.app.options;
@@ -88,6 +90,10 @@ class SettingsAppspace {
 
 				});
 				this.renderDebugTree();
+				let c = await sconfirm(`Would you like to save your ${updated ? "updated " : ""}options file?`)
+				if (c) {
+					this.app.storage.saveOptions();
+				}
 			}
 		}
 	}

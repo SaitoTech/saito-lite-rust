@@ -1,7 +1,6 @@
 import React from 'react';
 import { FileText } from 'lucide-react';
 
-
 const NoPostsAvailable = ({ showModal, isCurrentUser }) => {
   return (
     <div className="no-posts-container">
@@ -19,11 +18,11 @@ const NoPostsAvailable = ({ showModal, isCurrentUser }) => {
           : "This user hasn't posted anything yet. Check back later for updates."}
       </p>
       
-      {isCurrentUser && (
+      {/* {isCurrentUser && (
         <button onClick={showModal} className="create-post-button">
           Create New Post
         </button>
-      )}
+      )} */}
     </div>
   );
 };

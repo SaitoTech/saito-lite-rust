@@ -25,13 +25,15 @@ class EGLDModule extends CryptoModule {
         this.secretKey = null;
     }
 
-  async initialize(){
+  async initialize(app) {
+        await super.initialize(app);
         await this.load();
         this.apiNetworkProvider = new ApiNetworkProvider(this.base_url, { clientName: "multiversx-your-client-name" });
         this.proxyNetworkProvider = new ProxyNetworkProvider(this.network_provider_url, { clientName: "multiversx-your-client-name" });
         this.networkConfig = await this.apiNetworkProvider.getNetworkConfig();
         console.log(this.networkConfig.MinGasPrice);
         console.log(this.networkConfig.ChainID);
+        this.app.connection.emit('header-update-balance');
   }
 
   async activate() {
@@ -43,6 +45,7 @@ class EGLDModule extends CryptoModule {
 
         //await this.showBackupWallet();
         this.account_created = 1;
+        this.egld.isActivated = true;
         this.save();
     }
 
@@ -51,6 +54,7 @@ class EGLDModule extends CryptoModule {
 
   async getAddress(mnemonic_text = null) {
     console.log("EGLD getAddress");
+    console.log('mnemonic_text: ', mnemonic_text);
       try {
         let mnemonic = null;
         if (mnemonic_text == null) {
@@ -104,7 +108,7 @@ class EGLDModule extends CryptoModule {
             if (this.account == null) {
                 this.account = new Account(this.address_obj);
             }
-            console.log("updateAccount this.address_obj:", this.address_obj);
+           // console.log("updateAccount this.address_obj:", this.address_obj);
 
             const accOnNetwork = await this.apiNetworkProvider.getAccount(this.address_obj);
             this.account.update(accOnNetwork);
@@ -113,8 +117,8 @@ class EGLDModule extends CryptoModule {
             this.egld.balance = this.balance = this.convertAtomicToEgld(this.egld.bigIntBalance);
             this.egld.nonce = this.nonce = this.account.nonce;
 
-            console.log("updateAccount account: ", this.account);
-            console.log("updateAccount account balance bigint: ", this.balance);
+            // console.log("updateAccount account: ", this.account);
+            // console.log("updateAccount account balance bigint: ", this.balance);
             //console.log("updateAccount account balance: ", this.account.balance.toString());
         }
       } catch (error) {
@@ -139,6 +143,10 @@ class EGLDModule extends CryptoModule {
 
     async returnBalance(){
         await this.updateAccount();
+        return this.balance;
+    }
+
+    formatBalance(){
         return this.balance;
     }
 
@@ -307,27 +315,34 @@ class EGLDModule extends CryptoModule {
     }
 
     async load(){
-        if (this.app?.options?.crypto?.egld) {
-          this.egld = this.app.options.crypto.egld;
-          console.log("EGLD OPTIONS: " + JSON.stringify(this.app.options.crypto.egld));
-          if (this.egld.address) {
+        if (this.app?.options?.crypto?.EGLD) {
+          this.egld = this.app.options.crypto.EGLD;
+          console.log("EGLD OPTIONS: " + JSON.stringify(this.app.options.crypto.EGLD));
+          console.log("this.egld:", this.egld);
+          if (this.egld.mnemonic_text) {
+            this.is_initialized = 1;
+            this.account_created = 1;
+            this.options = this.egld;
+            this.balance = this.egld.balance;
+            this.address = this.egld.address;
             this.destination = this.egld.address;
-
+            
             await this.getAddress(this.egld.mnemonic_text);
             //await this.updateAccount();
-            this.account_created = 1;
           }
         }
     }
 
     save() {
-        if (!this.app.options?.crypto?.egld) {
+        if (!this.app.options?.crypto?.EGLD) {
             this.app.options.crypto = {};
-            this.app.options.crypto.egld = {};
+            this.app.options.crypto.EGLD = {};
         }
-        this.app.options.crypto.egld = this.egld;
+        this.app.options.address = this.egld.address;
+        this.app.options.destination = this.egld.destination; 
+        this.app.options.balance = this.egld.balance; 
+        this.app.options.crypto.EGLD = this.egld;
         this.app.storage.saveOptions();
-        super.save();
     }
 
 }

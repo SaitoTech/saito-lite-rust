@@ -66,8 +66,8 @@ class Browser {
 
 		app.connection.on("saito-render-complete", ()=> {
 			// xclose (loading wallpaper) looks for this class on body
-			console.log("rendering complete, remove wallpaper");
 			setTimeout(()=> {
+				console.log("DOM rendering complete, remove wallpaper");
 				document.querySelector("body").classList.add("xclose");
 			}, 1000);
 		});
@@ -1755,12 +1755,13 @@ class Browser {
 			}
 		};
 	}
-	
+
 	returnAddressHTML(key) {
-		return `<div class="saito-address" data-id="${key}">${this.app.keychain.returnIdentifierByPublicKey(
-			key,
-			true
-		)}</div>`;
+		let identifier = this.app.keychain.returnIdentifierByPublicKey(key, true);
+		if (identifier === key){
+			identifier = 'Anon-' + identifier.substr(0,6);
+		}
+		return `<div class="saito-address" data-id="${key}">${identifier}</div>`;
 	}
 
 	updateAddressHTML(key, id) {
@@ -1915,6 +1916,7 @@ class Browser {
 
 			text = sanitizeHtml(text, {
 				allowedTags: [
+					'a',
 					'h1',
 					'h2',
 					'h3',
@@ -1946,7 +1948,10 @@ class Browser {
 					'pre',
 					'marquee',
 					'pre',
-					'span'
+					'span',
+					'img',
+					'video',
+					'audio'
 				],
 				allowedAttributes: {
 					div: ['class', 'id'],

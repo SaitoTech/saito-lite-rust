@@ -29126,7 +29126,7 @@ console.log("----------------------------");
 	    //
 	    // check for janissaries in this loop
 	    //
-	    if (f === "ottoman" && space.units["ottoman"].length > 0) {
+	    if (f === "ottoman" && space.units["ottoman"].length > 0 && (attacker_faction == "ottoman" || defender_faction == "ottoman")) {
 	      if (!his_self.game.deck[0].discards['001']) {
 	        if (!this.game.queue.includes("discard\tottoman\t001")) { is_janissaries_possible = true; }
 	      }
@@ -29338,33 +29338,24 @@ try {
 	  //
 	  his_self.game.queue.push(`naval_battle_continue\t${mv[1]}`);
 
-	  let from_whom = his_self.returnArrayOfPlayersInNavalSpacekey(mv[1]);
-
-	  if ((his_self.game.state.naval_battle.attacker_hits_first == 1 || ap.tmp_roll_first == 1) && (dp.tmp_roll_first != 1 && his_self.game.state.naval_battle.defender_hits_first != 1)) {
-	    his_self.game.state.naval_battle.attacker_hits_first = 1;
-	    if (attacker_hits > 0 || defender_hits > 0) {
-	      his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.defender_faction);
-	      his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.attacker_faction);
-	    }
-	  } else if ((his_self.game.state.naval_battle.attacker_hits_first != 1 && ap.tmp_roll_first != 1) && (dp.tmp_roll_first == 1 || his_self.game.state.naval_battle.defender_hits_first == 1)) {
-	    if (attacker_hits > 0 || defender_hits > 0) {
-	      his_self.game.state.naval_battle.defender_hits_first = 1;
-	      his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.attacker_faction);
-	      his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.defender_faction);
-	    }
-	  } else {
-	    if (attacker_hits > 0 || defender_hits > 0) {
-	      his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.attacker_faction);
-	      his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.defender_faction);
-	    }
+	  if (defender_hits > 0) {
+	    his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.attacker_faction);
+	  }
+	  if (attacker_hits > 0) {
+	    his_self.game.queue.push("naval_battle_assign_hits\t"+his_self.game.state.naval_battle.defender_faction);
 	  }
 
+	  let from_whom = his_self.returnArrayOfPlayersInNavalSpacekey(mv[1]);
+
+	  //
+	  // this should stop execution while we are looking at the pre-naval battle overlay
+	  //
 	  if (his_self.game.state.events.intervention_post_naval_battle_possible) {
             his_self.game.queue.push("counter_or_acknowledge\tProceed to Assign Hits in Sea Battle\tpost_naval_battle_rolls\t"+space.key);
             his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
 	  } else {
 	    if (attacker_hits == 0 && defender_hits == 0) {
-	      his_self.game.queue.push("ACKNOWLEDGE\tEntirely Futile Assault");
+	      his_self.game.queue.push("ACKNOWLEDGE\tEntirely Futile Sea Battle");
 	    } else {
 	      if (from_whom.includes(his_self.game.players[his_self.game.player-1])) {
 	        his_self.game.queue.push("ACKNOWLEDGE\tProceed to Hits Assignment");
@@ -29372,19 +29363,15 @@ try {
 	    }
 	  }
 
-
-
-	  //
-	  // this should stop execution while we are looking at the pre-naval battle overlay
-	  //
-	  his_self.game.queue.push("naval_battle_assign_hits_render");
           if (is_janissaries_possible) {
+	    his_self.game.queue.push("naval_battle_assign_hits_render");
             his_self.game.queue.push("counter_or_acknowledge\tOttomans considering playing Janissaries\tjanissaries_naval\t"+space.key); 
-            his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
+	    his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
           }
+
+	  his_self.game.queue.push("naval_battle_assign_hits_render");
 	  his_self.game.queue.push("counter_or_acknowledge\tNaval Battle commences in "+space.name + "\tpre_naval_battle_rolls\t"+space.key);
-          his_self.game.queue.push("RESETCONFIRMSNEEDED\tall");
-          
+	  his_self.game.queue.push("RESETCONFIRMSNEEDED\t"+JSON.stringify(from_whom));
           
           his_self.naval_battle_overlay.renderPreNavalBattle(his_self.game.state.naval_battle);
           his_self.naval_battle_overlay.pullHudOverOverlay();
@@ -29946,6 +29933,7 @@ try {
 	  return 1;
 
 	}
+
 
 
         if (mv[0] === "field_battle_assign_hits") {

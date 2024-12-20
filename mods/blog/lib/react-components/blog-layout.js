@@ -21,98 +21,275 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
     const [posts, setPosts] = useState([])
     const [isLoadingMore, setIsLoadingMore] = useState(false);
     const latestPostRef = useRef(null);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const loaderRef = useRef(null);
+    const limit = 40
 
-    const filteredPosts = posts.filter(post =>
-        selectedUser.username === 'All' || post.publicKey === selectedUser.publicKey
-    );
 
-    // Function to merge new posts with existing ones
+    const loadMorePosts = async () => {
+        if (isLoadingMore || !hasMore) return;
+        setIsLoadingMore(true);
+
+        const latestPost = posts[posts.length - 1];
+        const earliestTimestamp = latestPost?.timestamp || Date.now();
+
+        let peers = await mod.app.network.getPeers();
+        let peer = peers[0];
+
+        try {
+            switch (selectedUser.publicKey) {
+                case 'all':
+                    await new Promise((resolve) => {
+                        mod.app.storage.loadTransactions(
+                            {
+                                field1: 'Blog',
+                                limit,
+                                updated_earlier_than: earliestTimestamp
+                            },
+                            (txs) => {
+                                if (txs.length === 0) {
+                                    setHasMore(false);
+                                    return resolve();
+                                }
+
+                                const filteredTxs = mod.filterBlogPosts(txs);
+                                const newPosts = mod.convertTransactionsToPosts(filteredTxs);
+
+                                if (newPosts.length > 0) {
+                                    setPosts(prevPosts => mergePosts(prevPosts, newPosts));
+                                } else {
+                                    setHasMore(false);
+                                }
+                                resolve();
+                            },
+                            peer
+                        );
+                    });
+                    break;
+
+                case 'contacts':
+                    const contactKeys = app.keychain.returnKeys().map(k => k.publicKey);
+                    await new Promise((resolve) => {
+                        mod.app.storage.loadTransactions(
+                            {
+                                field1: 'Blog',
+                                limit: limit * 2,
+                                updated_earlier_than: earliestTimestamp
+                            },
+                            (txs) => {
+                                if (txs.length === 0) {
+                                    setHasMore(false);
+                                    return resolve();
+                                }
+
+                                const filteredTxs = mod.filterBlogPosts(txs)
+                                    .filter(tx => contactKeys.includes(tx.from[0].publicKey));
+                                const newPosts = mod.convertTransactionsToPosts(filteredTxs);
+
+                                if (newPosts.length > 0) {
+                                    setPosts(prevPosts => mergePosts(prevPosts, newPosts));
+                                } else {
+                                    setHasMore(false);
+                                }
+                                resolve();
+                            },
+                            peer
+                        );
+                    });
+                    break;
+
+                default:
+                    // My posts
+                    await new Promise((resolve) => {
+                        mod.app.storage.loadTransactions(
+                            {
+                                field1: 'Blog',
+                                field2: mod.publicKey,
+                                limit,
+                                updated_earlier_than: earliestTimestamp
+                            },
+                            (txs) => {
+                                if (txs.length === 0) {
+                                    setHasMore(false);
+                                    return resolve();
+                                }
+
+                                const filteredTxs = mod.filterBlogPosts(txs);
+                                const newPosts = mod.convertTransactionsToPosts(filteredTxs);
+
+                                if (newPosts.length > 0) {
+                                    setPosts(prevPosts => mergePosts(prevPosts, newPosts));
+                                } else {
+                                    setHasMore(false);
+                                }
+                                resolve();
+                            },
+                            peer
+                        );
+                    });
+                    break;
+            }
+        } catch (error) {
+            console.error('Error loading more posts:', error);
+            setHasMore(false);
+        } finally {
+            setIsLoadingMore(false);
+        }
+    };
+
+    const filteredPosts = posts.filter(post => {
+        switch (selectedUser.publicKey) {
+            case 'all':
+                return true;
+            case 'contacts':
+
+                const contactKeys = app.keychain.returnKeys().map(k => k.publicKey);
+                return contactKeys.includes(post.publicKey);
+            default:
+                return post.publicKey === mod.publicKey;
+        }
+    });
+
     const mergePosts = (existingPosts, newPosts) => {
-        const combined = [...existingPosts];
+        const combined = existingPosts.filter(post =>
+            !mod.postsCache.deletedPosts.has(post.sig)
+        );
 
         newPosts.forEach(newPost => {
-            const existingIndex = combined.findIndex(p => p.sig === newPost.sig);
-            if (existingIndex === -1) {
-                combined.push(newPost);
-            } else {
-                combined[existingIndex] = newPost;
+            if (!mod.postsCache.deletedPosts.has(newPost.sig)) {
+                const existingIndex = combined.findIndex(p => p.sig === newPost.sig);
+                if (existingIndex === -1) {
+                    combined.push(newPost);
+                } else {
+                    combined[existingIndex] = newPost;
+                }
             }
         });
 
         return combined.sort((a, b) => b.timestamp - a.timestamp);
     };
-
-    const loadPosts = async (useCache = true) => {
+    const loadPosts = async (useCache = false) => {
         setIsLoadingMore(true);
-        const latestTimestamp = latestPostRef.current?.timestamp;
+        // setPage(1);
+        // setHasMore(true);
+        // setPosts([]);
 
-        if (selectedUser.username === 'All') {
-            const userKeys = USERS
-                .filter(user => user.username !== 'All' && user.publicKey)
-                .map(user => user.publicKey);
-
-
-            if (useCache) {
-                const cachedPosts = mod.postsCache?.allPosts || [];
-                if (cachedPosts.length > 0) {
-                    setPosts(cachedPosts);
-                    latestPostRef.current = cachedPosts[0];
-                }
-            }
-
-
-            mod.loadAllPosts(userKeys, (loadedPosts) => {
-                setPosts(prevPosts => {
-                    const mergedPosts = mergePosts(prevPosts, loadedPosts);
-                    if (mergedPosts.length > 0) {
-                        latestPostRef.current = mergedPosts[0];
-                    }
-                    return mergedPosts;
-                });
-                setIsLoadingMore(false);
-
-                if (editingPost) {
-                    const updatedPost = loadedPosts.find(p => p.sig === editingPost.sig);
-                    if (updatedPost) {
-                        setSelectedPost(updatedPost);
+        switch (selectedUser.publicKey) {
+            case 'all':
+                if (useCache) {
+                    const cachedPosts = mod.postsCache?.allPosts || [];
+                    if (cachedPosts.length > 0) {
+                        setPosts(cachedPosts);
+                        latestPostRef.current = cachedPosts[0];
                     }
                 }
-            });
-        } else {
+                mod.loadAllBlogPosts((loadedPosts) => {
+                    setPosts(prevPosts => {
+                        const mergedPosts = mergePosts(prevPosts, loadedPosts);
+                        if (mergedPosts.length > 0) {
+                            latestPostRef.current = mergedPosts[0];
+                        }
+                        return mergedPosts;
+                    });
+                    setIsLoadingMore(false);
+                }, useCache);
+                break;
+            case 'contacts':
+                // Get only contact keys
+                const contactKeys = app.keychain.returnKeys().map(k => k.publicKey);
 
-            if (useCache) {
-                const cachedUserPosts = mod.postsCache?.byUser.get(selectedUser.publicKey) || [];
-                if (cachedUserPosts.length > 0) {
-                    setPosts(cachedUserPosts);
-                    latestPostRef.current = cachedUserPosts[0];
-                }
-            }
-
-            // Then load new posts
-            mod.loadBlogPostForUser(selectedUser.publicKey, (loadedPosts) => {
-                setPosts(prevPosts => {
-                    const mergedPosts = mergePosts(prevPosts, loadedPosts);
-                    if (mergedPosts.length > 0) {
-                        latestPostRef.current = mergedPosts[0];
-                    }
-                    return mergedPosts;
-                });
-                setIsLoadingMore(false);
-
-                if (editingPost) {
-                    const updatedPost = loadedPosts.find(p => p.sig === editingPost.sig);
-                    if (updatedPost) {
-                        setSelectedPost(updatedPost);
+                if (useCache) {
+                    const cachedContactPosts = mod.postsCache?.allPosts?.filter(post =>
+                        contactKeys.includes(post.publicKey)
+                    ) || [];
+                    if (cachedContactPosts.length > 0) {
+                        setPosts(cachedContactPosts);
+                        latestPostRef.current = cachedContactPosts[0];
                     }
                 }
-            });
+
+                mod.loadAllPostsFromKeys(contactKeys, (loadedPosts) => {
+                    setPosts(prevPosts => {
+                        const mergedPosts = mergePosts(prevPosts, loadedPosts);
+                        if (mergedPosts.length > 0) {
+                            latestPostRef.current = mergedPosts[0];
+                        }
+                        return mergedPosts;
+                    });
+                    setIsLoadingMore(false);
+                }, useCache);
+                break;
+
+            default:
+                if (useCache) {
+                    const cachedUserPosts = mod.postsCache?.byUser.get(mod.publicKey) || [];
+                    if (cachedUserPosts.length > 0) {
+                        setPosts(cachedUserPosts);
+                        latestPostRef.current = cachedUserPosts[0];
+                    }
+                }
+
+                mod.loadBlogPostForUser(mod.publicKey, (loadedPosts) => {
+                    setPosts(prevPosts => {
+                        const mergedPosts = mergePosts(prevPosts, loadedPosts);
+                        if (mergedPosts.length > 0) {
+                            latestPostRef.current = mergedPosts[0];
+                        }
+                        return mergedPosts;
+                    });
+                    setIsLoadingMore(false);
+                }, useCache);
+                break;
         }
     };
 
+    const handleDeleteBlogPost = (sig) => {
+        mod.deleteBlogPost(sig, () => {
+            if (document.querySelector('.saito-back-button')) {
+                document.querySelector('.saito-back-button').remove();
+            }
+            handleBackClick()
+        })
+    }
+
+
+
     useEffect(() => {
-        loadPosts(true);
+        loadPosts(false);
     }, [selectedUser, publicKey]);
 
+
+    useEffect(() => {
+        const currentLoaderRef = loaderRef.current;
+
+        // Don't setup observer if we don't have more posts or are currently loading
+        if (!hasMore || isLoadingMore) return;
+
+        const observerCallback = (entries) => {
+            const [entry] = entries;
+            if (entry.isIntersecting) {
+                loadMorePosts();
+            }
+        };
+
+        const observer = new IntersectionObserver(observerCallback, {
+            root: null, // use viewport
+            rootMargin: '100px', // start loading 100px before element is visible
+            threshold: 0.1 // trigger when even 10% of the element is visible
+        });
+
+        if (currentLoaderRef) {
+            observer.observe(currentLoaderRef);
+        }
+
+        return () => {
+            if (currentLoaderRef) {
+                observer.unobserve(currentLoaderRef);
+            }
+            observer.disconnect();
+        };
+    }, [hasMore, isLoadingMore]); // Only re-run when these values change
 
     const refreshPosts = () => {
         loadPosts(false);
@@ -125,9 +302,22 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                 await mod.updateBlogPostTransaction(
                     editingPost.sig,
                     postData.title,
-                    postData.content
+                    postData.content,
+                    postData.tags,
+                    postData.image,
+                    postData.imageUrl,
+                    () => {
+                        setShowPostModal(false);
+                        refreshPosts();
+                        if (document.querySelector('.saito-back-button')) {
+                            document.querySelector('.saito-back-button').remove();
+                        }
+                        handleBackClick()
+                    }
+
                 );
             } else {
+                siteMessage("Submitting blog post");
                 await mod.createBlogPostTransaction(
                     {
                         title: postData.title,
@@ -138,11 +328,11 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                         timestamp: Date.now(),
                     },
                     () => {
-                        siteMessage("Submitting blog post");
-                        setTimeout(() => {
-                            setShowPostModal(false);
-                            refreshPosts(); // Refresh posts after new post
-                        }, 2000);
+                        setShowPostModal(false);
+                        refreshPosts();
+                        if (document.querySelector('.saito-back-button')) {
+                            document.querySelector('.saito-back-button').remove();
+                        }
                     }
                 );
             }
@@ -161,15 +351,24 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
 
     const handleEditClick = (post) => {
         setEditingPost(post);
+        app.connection.emit('saito-header-replace-logo', handleBackClick);
         setShowPostModal(true);
     };
 
+
+
     const handleBackClick = () => {
+        setShowPostModal(false);
+        setEditingPost(null);
         setSelectedPost(null);
         const url = new URL(window.location);
         url.searchParams.delete('public_key');
         url.searchParams.delete('tx_id');
         window.history.pushState({}, '', url);
+        setTimeout(() => {
+            refreshPosts()
+        }, 1000)
+
     };
 
     return (
@@ -186,12 +385,12 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                 <div className="new-post-container">
                     <button onClick={() => {
                         setShowPostModal(true)
-                          app.connection.emit('saito-header-replace-logo', handleCloseModal);
+                        app.connection.emit('saito-header-replace-logo', handleCloseModal);
                     }
                     }>New Post</button>
                 </div>
                 <div className="filter-container">
-                    <label className="filter-label">Filter by Author</label>
+                    <label className="filter-label">Filter by</label>
                     <select
                         value={selectedUser.username}
                         onChange={(e) => {
@@ -200,7 +399,9 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                         }}
                     >
                         {USERS.map(user => (
-                            <option key={user.publicKey} value={user.username}>{user.username}</option>
+                            <option key={user.publicKey} value={user.username}>
+                                {user.username}
+                            </option>
                         ))}
                     </select>
                 </div>
@@ -211,17 +412,17 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                 margin: selectedPost ? '0 auto' : undefined
             }}>
 
-            {!showPostModal && <div id="saito-floating-menu" class="saito-floating-container">
-                <div  onClick={()=>{
-                    setShowPostModal(true)
-                    app.connection.emit('saito-header-replace-logo', handleCloseModal);
-                }
-                } class="saito-floating-plus-btn" id="saito-floating-plus-btn">
-                    <i class="fa-solid fa-plus"></i>
-                </div>
-            </div>}
+                {!showPostModal && <div id="saito-floating-menu" class="saito-floating-container">
+                    <div onClick={() => {
+                        setShowPostModal(true)
+                        app.connection.emit('saito-header-replace-logo', handleCloseModal);
+                    }
+                    } class="saito-floating-plus-btn" id="saito-floating-plus-btn">
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                </div>}
                 {selectedPost ? (
-                    <BlogPost app={app} mod={mod} post={selectedPost} publicKey={selectedPost.publicKey} />
+                    <BlogPost app={app} mod={mod} post={selectedPost} publicKey={selectedPost.publicKey} onEditClick={handleEditClick} onDeleteClick={handleDeleteBlogPost} />
                 ) : (
                     <>
                         {selectedUser.username !== 'All' && (
@@ -230,7 +431,7 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
 
                         <div className="posts-list">
                             {filteredPosts.map((post, index) => (
-                                <PostCard selectedUser={selectedUser} app={app} mod={mod} index={index} post={post} onClick={() => {
+                                <PostCard key={post.sig} selectedUser={selectedUser} app={app} mod={mod} index={index} post={post} onClick={() => {
                                     app.connection.emit('saito-header-replace-logo', handleBackClick);
                                     setSelectedPost(post);
                                     const url = new URL(window.location);
@@ -239,15 +440,25 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                                     window.history.pushState({}, '', url);
                                 }} />
                             ))}
-                            {isLoadingMore && (
-                                <div className="loading-indicator">Loading more posts...</div>
+                            {hasMore && (
+                                <div ref={loaderRef} className="loading-indicator">
+                                    {isLoadingMore && <>
+                                        <div>
+                                            <div className='saito-loader'> </div>
+                                        </div>
+                                    </>}
+                                </div>
+                            )}
+
+                            {!hasMore && filteredPosts.length > 0 && (
+                                <div style={{textAlign: 'center'}} className="end-message">No more posts to load</div>
                             )}
                             {filteredPosts.length === 0 && !isLoadingMore && (
-                                <NoPostsAvailable isCurrentUser={selectedUser.publicKey === mod.publicKey || selectedUser.username === 'All'} showModal={() =>{ 
+                                <NoPostsAvailable isCurrentUser={selectedUser.publicKey === mod.publicKey || selectedUser.username === 'All'} showModal={() => {
                                     setShowPostModal(true)
                                     app.connection.emit('saito-header-replace-logo', handleCloseModal);
                                 }
-                                    
+
                                 } />
                             )}
 
@@ -255,9 +466,18 @@ const BlogLayout = ({ app, mod, publicKey, post = null }) => {
                     </>
                 )}
             </div>
-            {showPostModal && (
+            {showPostModal && editingPost && (
                 <PostModal
                     post={editingPost}
+                    app={app}
+                    mod={mod}
+                    onClose={handleCloseModal}
+                    onSubmit={handlePostSubmit}
+                    isSubmitting={isSubmitting}
+                />
+            )}
+            {showPostModal && !editingPost && (
+                <PostModal
                     app={app}
                     mod={mod}
                     onClose={handleCloseModal}

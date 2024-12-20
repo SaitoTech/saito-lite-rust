@@ -97,7 +97,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 				}
 			});
 			socket.on('open',()=>{
-				S.getLibInstance().process_new_peer(peer_index)
+				S.getLibInstance().process_new_peer(peer_index, url)
 					.then(() => {
 						console.log(
 							'connected to : ' + url + ' with peer index : ' + peer_index
@@ -216,7 +216,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 			// console.log("buffer length : " + buffer.byteLength, buffer);
 			newtx.deserialize(buffer);
 			newtx.unpackData();
-			console.debug("processing peer tx : ", newtx.msg);
+			// console.debug("processing peer tx : ", newtx.msg);
 		} catch (error) {
 			console.error(error);
 			newtx.msg = buffer;
@@ -366,7 +366,7 @@ class Server {
 						S.getLibInstance().process_peer_disconnection(peer_index);
 					});
 
-					return S.getLibInstance().process_new_peer(peer_index);
+					return S.getLibInstance().process_new_peer(peer_index, request.headers['x-forwarded-for'] || request.socket.remoteAddress);
 				});
 
 		});
@@ -860,19 +860,21 @@ class Server {
 				}
 				let blk = new Block();
 				blk.deserialize(buffer);
+
 				const newblk = blk.generateLiteBlock(keylist);
+				let block = JSON.parse(newblk.toJson());
 
 				var html = '<div class="block-table">';
-				  html += "<div><h4>id</h4></div><div>" + newblk.id + "</div>";
+				  html += "<div><h4>id</h4></div><div>" + block.id + "</div>";
 				  html += "<div><h4>hash</h4></div><div>" + bsh + "</div>";
-				  html += "<div><h4>creator</h4></div><div></div>";
+				  html += "<div><h4>creator</h4></div><div>"+ block.creator +"</div>";
 				  html +=
 				    '<div><h4>source</h4></div><div><a href="/explorer/blocksource?hash=' +
 				    bsh +
 				    '">click to view source</a></div>';
 				  html += "</div>";
 
-				if (newblk.transactions.length > 0) {
+				if (block.transactions.length > 0) {
 					let nolan_per_saito = 100000000;
 				    html += "<h3>Bundled Transactions:</h3></div>";
 
@@ -883,40 +885,37 @@ class Server {
 				    html += '<div class="table-header">type</div>';
 				    html += '<div class="table-header">module</div>';
 
-				    for (var mt = 0; mt < blk.transactions.length; mt++) {
-				      var tmptx = blk.transactions[mt];
-				      console.log('tmptx: ', tmptx);
-				      let id = mt;
+				    for (var mt = 0; mt < block.transactions.length; mt++) {
+				      var tmptx = block.transactions[mt];
+				      tmptx.id = mt;
 
-				      var tx_fees = null;
+				      var tx_fees = (0);
 				      //if (tmptx.fees_total == "") {
 
 				      //
 				      // sum inputs
 				      //
-				      // let inputs = null;
-				      // if (tmptx.from != null) {
-				      //   for (let v = 0; v < tmptx.from.length; v++) {
-				      //   	console.log("typeof tmptx.from[v].amount: ", typeof tmptx.from[v].amount);
-				      //   	console.log("typeof inputs: ", typeof inputs);
-				      //     inputs += tmptx.from[v].amount;
-				      //   }
-				      // }
+				      let inputs = (0);
+				      if (tmptx.from != null) {
+				        for (let v = 0; v < tmptx.from.length; v++) {
+				          inputs += (tmptx.from[v].amount);
+				        }
+				      }
 
-				      // //
-				      // // sum outputs
-				      // //
-				      // let outputs = null;
-				      // for (let v = 0; v < tmptx.to.length; v++) {
-				      //   //
-				      //   // only count non-gt transaction outputs
-				      //   //
-				      //   if (tmptx.to[v].type != 1 && tmptx.to[v].type != 2) {
-				      //     outputs += tmptx.to[v].amount;
-				      //   }
-				      // }
+				      //
+				      // sum outputs
+				      //
+				      let outputs = (0);
+				      for (let v = 0; v < tmptx.to.length; v++) {
+				        //
+				        // only count non-gt transaction outputs
+				        //
+				        if (tmptx.to[v].type != 1 && tmptx.to[v].type != 2) {
+				          outputs += (tmptx.to[v].amount);
+				        }
+				      }
 
-//tx_fees = inputs - outputs;
+				      tx_fees = inputs - outputs;
 
 				      //}
 				      let tx_from = "fee tx";
@@ -929,32 +928,30 @@ class Server {
 				        tx_from = "block stake tx";
 				      }
 
-				      html += `<div><a onclick="showTransaction('tx-` + id + `');">` + mt + `</a></div>`;
-				      html += `<div><a onclick="showTransaction('tx-` + id + `');">` + tx_from + `</a></div>`;
-				      html += "<div>" + (tx_fees) + "</div>";
+				      html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + mt + `</a></div>`;
+				      html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + tx_from + `</a></div>`;
+				      html += "<div>" + ((tx_fees) * (nolan_per_saito)) + "</div>";
 				      html += "<div>" + tmptx.type + "</div>";
 				      if (tmptx.type == 0) {
-				        if (tmptx.msg.module) {
-				          html += "<div>" + tmptx.msg.module + "</div>";
+				        if (tmptx.msg?.module) {
+				          html += "<div>" + tmptx.msg?.module + "</div>";
 				        } else {
 				          html += "<div>Money</div>";
 				        }
 				      }
 				      if (tmptx.type == 1) {
-				        html += "<div>" + tmptx.msg.name + "</div>";
+				        html += "<div>" + tmptx.msg?.name + "</div>";
 				      }
 				      if (tmptx.type > 1) {
 				        html += "<div> </div>";
 				      }
-				      html += '<div class="hidden txbox tx-' + id + '" >' + JSON.stringify(tmptx) + "</div>";
+				      html += '<div class="hidden txbox tx-' + tmptx.id + '">' + JSON.stringify(tmptx) + "</div>";
 				    }
 				    html += "</div>";
 				}
 
 				
 				let obj = JSON.stringify({html: html});
-				console.log("html:", obj);
-
 				if (!res.finished) {
 					res.writeHead(200, {
 						'Content-Type': 'application/json',

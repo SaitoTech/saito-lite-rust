@@ -30,6 +30,7 @@ class YoutubeClient extends ModTemplate {
 		this.app.connection.on('saito-yt-start-stream', async (obj = {}) => {
 			this.stream_key = obj.stream_key;
 			//this.stream_type = obj.stream_type;
+			document.addEventListener('visibilitychange', this.visibilityChange.bind(this));
 			await this.startStream();
 			this.startStreamStatus();
 		});
@@ -54,12 +55,12 @@ class YoutubeClient extends ModTemplate {
 
 
 	respondTo(type = "", obj) {
-	    let this_self = this;
-	    if (type === "dream-controls") {
-	    	let x = [];
+		let this_self = this;
+		if (type === "dream-controls") {
+			let x = [];
 			x.push({
 				text: `Youtube Stream`,
-				icon: "fa-brands fa-youtube", 
+				icon: "fa-brands fa-youtube",
 				callback: function (app, id, combined_stream) {
 					this_self.icon_id = `dream_controls_menu_item_${id}`;
 					this_self.combined_stream = combined_stream;
@@ -71,19 +72,19 @@ class YoutubeClient extends ModTemplate {
 						this_self.stopStreamStatus();
 					}
 
-					 
+
 				} // callback
 
 			}); // x
 
 			return x;
-	    } // type = dream-controls
+		} // type = dream-controls
 	} // respondTo
 
 
-	async startStream(){
+	async startStream() {
 		let this_self = this;
-		
+
 		let mediaStream = await this.getStreamData();
 		console.log("mediaStream:", mediaStream);
 
@@ -92,17 +93,17 @@ class YoutubeClient extends ModTemplate {
 		}
 
 		const ws_url = window.location.protocol.replace('http', 'ws') + '//' + // http: -> ws:, https: -> wss:
-	        (window.location.hostname) + this.getPort() +
-	        '/encoder?url=' +
-	        encodeURIComponent(`${this.stream_url[this.stream_type]}/${this_self.stream_key}`);
-		 console.log('url:', ws_url);
+			(window.location.hostname) + this.getPort() +
+			'/encoder?url=' +
+			encodeURIComponent(`${this.stream_url[this.stream_type]}/${this_self.stream_key}`);
+		console.log('url:', ws_url);
 
-	    this_self.ws = new WebSocket(ws_url,"echo-protocol");
+		this_self.ws = new WebSocket(ws_url, "echo-protocol");
 		this_self.ws.addEventListener('open', (e) => {
 			console.log('WebSocket Open', e);
 			this_self.mediaRecorder = new MediaRecorder(mediaStream, {
-			  mimeType: this_self.getMIME(),
-			  videoBitsPerSecond : 3 * 1024 * 1024
+				mimeType: this_self.getMIME(),
+				videoBitsPerSecond: 1.5 * 1024 * 1024
 			});
 
 			this_self.mediaRecorder.addEventListener('dataavailable', (e) => {
@@ -123,7 +124,7 @@ class YoutubeClient extends ModTemplate {
 		});
 	}
 
-	startStreamStatus(){
+	startStreamStatus() {
 		if (document.getElementById(this.icon_id)) {
 			document.getElementById(this.icon_id).classList.add('yt-active');
 		}
@@ -131,7 +132,7 @@ class YoutubeClient extends ModTemplate {
 		this.stream_status = true;
 	}
 
-	stopStreamStatus(){
+	stopStreamStatus() {
 		if (document.getElementById(this.icon_id)) {
 			document.getElementById(this.icon_id).classList.remove('yt-active');
 		}
@@ -160,9 +161,9 @@ class YoutubeClient extends ModTemplate {
 							identifier: "Swarmcast",
 							description: limbo.description
 						}
-						console.log("options:",options);
+						console.log("options:", options);
 						await limbo.getStream(options);
-						
+
 						console.log('limbo mod after: ', limbo);
 					}
 
@@ -181,7 +182,7 @@ class YoutubeClient extends ModTemplate {
 		// 3000 - local dev
 		let port = '';
 		let protocol = this.app.browser.protocol;
-		
+
 		console.log('protocol:', protocol);
 		if (protocol == 'http:') {
 			port = `:${this.app.browser.port}`;
@@ -198,49 +199,52 @@ class YoutubeClient extends ModTemplate {
 		if (isFirefox) {
 			let supported = this.getAllSupportedMimeTypes();
 			console.log('supported mimes: ', supported);
-			for (let i=0; i<supported.length; i++) {
+			for (let i = 0; i < supported.length; i++) {
 				if (supported[i] == 'video/webm;codecs="vp8.0, opus"') {
 					mime = supported[i];
 					break;
 				}
 			}
 		}
-	
+
 		console.log('mime:', mime);
 		return mime;
 	}
 
 	getAllSupportedMimeTypes(...mediaTypes) {
-	  if (!mediaTypes.length) mediaTypes.push('video', 'audio')
-	  const CONTAINERS = ['webm', 'ogg', 'mp3', 'mp4', 'x-matroska', '3gpp', '3gpp2', '3gp2', 'quicktime', 'mpeg', 'aac', 'flac', 'x-flac', 'wave', 'wav', 'x-wav', 'x-pn-wav', 'not-supported']
-	  const CODECS = ['vp9', 'vp9.0', 'vp8', 'vp8.0', 'avc1', 'av1', 'h265', 'h.265', 'h264', 'h.264', 'opus', 'vorbis', 'pcm', 'aac', 'mpeg', 'mp4a', 'rtx', 'red', 'ulpfec', 'g722', 'pcmu', 'pcma', 'cn', 'telephone-event', 'not-supported']
-	  
-	  return [...new Set(
-	    CONTAINERS.flatMap(ext =>
-	        mediaTypes.flatMap(mediaType => [
-	          `${mediaType}/${ext}`,
-	        ]),
-	    ),
-	  ), ...new Set(
-	    CONTAINERS.flatMap(ext =>
-	      CODECS.flatMap(codec =>
-	        mediaTypes.flatMap(mediaType => [
-	          // NOTE: 'codecs:' will always be true (false positive)
-	          `${mediaType}/${ext};codecs=${codec}`,
-	        ]),
-	      ),
-	    ),
-	  ), ...new Set(
-	    CONTAINERS.flatMap(ext =>
-	      CODECS.flatMap(codec1 =>
-	      CODECS.flatMap(codec2 =>
-	        mediaTypes.flatMap(mediaType => [
-	          `${mediaType}/${ext};codecs="${codec1}, ${codec2}"`,
-	        ]),
-	      ),
-	      ),
-	    ),
-	  )].filter(variation => MediaRecorder.isTypeSupported(variation))
+		if (!mediaTypes.length) mediaTypes.push('video', 'audio')
+		const CONTAINERS = ['webm', 'ogg', 'mp3', 'mp4', 'x-matroska', '3gpp', '3gpp2', '3gp2', 'quicktime', 'mpeg', 'aac', 'flac', 'x-flac', 'wave', 'wav', 'x-wav', 'x-pn-wav', 'not-supported']
+		const CODECS = ['vp9', 'vp9.0', 'vp8', 'vp8.0', 'avc1', 'av1', 'h265', 'h.265', 'h264', 'h.264', 'opus', 'vorbis', 'pcm', 'aac', 'mpeg', 'mp4a', 'rtx', 'red', 'ulpfec', 'g722', 'pcmu', 'pcma', 'cn', 'telephone-event', 'not-supported']
+
+		return [...new Set(
+			CONTAINERS.flatMap(ext =>
+				mediaTypes.flatMap(mediaType => [
+					`${mediaType}/${ext}`,
+				]),
+			),
+		), ...new Set(
+			CONTAINERS.flatMap(ext =>
+				CODECS.flatMap(codec =>
+					mediaTypes.flatMap(mediaType => [
+						// NOTE: 'codecs:' will always be true (false positive)
+						`${mediaType}/${ext};codecs=${codec}`,
+					]),
+				),
+			),
+		), ...new Set(
+			CONTAINERS.flatMap(ext =>
+				CODECS.flatMap(codec1 =>
+					CODECS.flatMap(codec2 =>
+						mediaTypes.flatMap(mediaType => [
+							`${mediaType}/${ext};codecs="${codec1}, ${codec2}"`,
+						]),
+					),
+				),
+			),
+		)].filter(variation => MediaRecorder.isTypeSupported(variation))
+	}
+	visibilityChange() {
+		salert("You navigated away from this tab. To ensure the best streaming experience, please keep this tab in focus")
 	}
 }
 
