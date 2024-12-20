@@ -29,8 +29,7 @@
 }	
 
 .game-playerbox.in_check{
-	background: #ff5846e5;
-	border: 2px solid gold;
+	border: 5px solid red;
 }
 
 .game-playerbox-body {
