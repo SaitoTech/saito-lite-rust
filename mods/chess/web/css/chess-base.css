@@ -3,6 +3,24 @@
 	--font-color-primary: #000;
 }
 
+@font-face {
+    font-family: 'chess';
+    src: url('../fonts/DS-DIGI.TTF');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  .player_clock .game-clock {
+    position: static;
+    background: unset;
+    height: 100%;
+    display: block;
+    font-size: 3rem;
+    filter: none;
+	color: red;
+	font-family: 'chess', sans-serif;
+}
+
 .log-lock .mobile-log-tab {
 	background-color: #222d;
 	color: #f9efdf;
@@ -51,7 +69,7 @@ input[type='checkbox']:checked {
 	display: grid;
 	grid-template-columns: min(86vh, 60vw, 700px) 280px;
 	grid-template-rows: max-content;
-	column-gap: 20px;
+	column-gap: 7rem;
 	align-items: center;
 	justify-items: center;
 	align-content: center;
@@ -95,10 +113,16 @@ input[type='checkbox']:checked {
 	overflow: hidden;
 }
 
-.player-identicon {
+.saito-identicon {
 	width: 48px;
 	margin: 1px 4px;
-	box-shadow: 0 0 1px 1px dimgray;
+	border-radius: 5px;
+	border: 1px solid #888;
+}
+
+
+.saito-address.treated {
+    color: unset;
 }
 
 #opponent_id {

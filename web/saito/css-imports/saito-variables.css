@@ -503,5 +503,38 @@ font imports
   --saito-arcade-header-background: var(--dreamscape);
 }
 
+[data-theme^="modern"] {
+  /* Keep existing modern theme variables */
+
+  /* Add Chess Fonts */
+  @font-face {
+    font-family: 'chess';
+    src: url('/chess/fonts/chess.eot');
+    src: url('/chess/fonts/chess.eot?#iefix') format('embedded-opentype'),
+         url('/chess/fonts/chess.woff2') format('woff2'),
+         url('/chess/fonts/chess.woff') format('woff'),
+         url('/chess/fonts/chess.ttf') format('truetype'),
+         url('/chess/fonts/chess.svg#chess') format('svg');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'chess7';
+    src: url('/chess/fonts/chess7.eot');
+    src: url('/chess/fonts/chess7.eot?#iefix') format('embedded-opentype'),
+         url('/chess/fonts/chess7.woff2') format('woff2'),
+         url('/chess/fonts/chess7.woff') format('woff'),
+         url('/chess/fonts/chess7.ttf') format('truetype'),
+         url('/chess/fonts/chess7.svg#chess7') format('svg');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  /* Add font variables */
+  --font-chess: 'chess', sans-serif;
+  --font-chess7: 'chess7', sans-serif;
+}
+
 
 
