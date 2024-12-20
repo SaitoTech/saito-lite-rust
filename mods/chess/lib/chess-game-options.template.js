@@ -9,6 +9,15 @@ module.exports = (app, mod) => {
                     <option value="white">White</option>
                   </select>
                 </div>`;
+  html += `<div class="overlay-input">   
+                  <label for="lightning">Lightning Mode:</label>
+                  <select name="lightning">
+                    <option value="0" default>none</option>
+                    <option value="2">+2 seconds</option>
+                    <option value="3">+3 seconds</option>
+                    <option value="5">+5 seconds</option>
+                  </select>
+                </div>`;
 
 	/*html   +=  `<div class="overlay-input">
                   <label for="observer_mode">Observer Mode:</label>
