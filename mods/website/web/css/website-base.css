@@ -76,6 +76,7 @@ nav>img {
 
 .splash-container video {
   width: 120vw;
+  min-width: 120%;
   height: 134vh;
   object-fit: cover;
   overflow: hidden;
