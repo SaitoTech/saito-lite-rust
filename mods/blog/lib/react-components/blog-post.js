@@ -2,7 +2,7 @@ import React from 'react';
 import { copyPostLinkToClipboard, getImageUrl, parseMarkdown } from '../utils';
 import { Pencil, Trash2 } from 'lucide-react';
 
-const BlogPost = ({ app, mod, post, publicKey, onEditClick , onDeleteClick}) => {
+const BlogPost = ({ app, mod, post, publicKey, onEditClick, onDeleteClick }) => {
 
 
     let source = ""
@@ -18,21 +18,26 @@ const BlogPost = ({ app, mod, post, publicKey, onEditClick , onDeleteClick}) => 
             <article className="post-content">
 
                 <div className="post-content-body">
-                   {post.publicKey === mod.publicKey && <div className="post-actions">
+                    {post.publicKey === mod.publicKey && <div className="post-actions">
                         <div className="action-button">
 
-                            <Pencil onClick={() =>{
-                                 onEditClick(post)}                                  
+                            <Pencil onClick={() => {
+                                onEditClick(post)
+                            }
                             }
 
-                            size={20} 
+                                size={20}
                             />
 
                         </div>
                         <div className="action-button">
-                            <Trash2 size={20}  onClick={()=> {
-                                onDeleteClick(post.sig)
-                            }}/>
+                            <Trash2 size={20} onClick={async () => {
+                                let confirm = await sconfirm("Are you are sure you want to delete?")
+                                if (confirm) {
+                                    onDeleteClick(post.sig)
+                                }
+
+                            }} />
                         </div>
                     </div>}
                     <header className="post-header">
@@ -51,7 +56,7 @@ const BlogPost = ({ app, mod, post, publicKey, onEditClick , onDeleteClick}) => 
                             />
                         </div>
                     )}
-                    <div className="post-body markdown-preview markdown-content"
+                    <div className="post-body richtext-preview richtext-content"
                         dangerouslySetInnerHTML={{
                             __html: parseMarkdown(post.content)
                         }}

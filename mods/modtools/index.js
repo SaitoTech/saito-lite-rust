@@ -1,8 +1,9 @@
 module.exports = (app, mod) => {
 
-  let blacklist = app.options.modtools.blacklist;
-  let whitelist = app.options.modtools.whitelist;
+  let blacklist = mod.blacklist;
+  let whitelist = mod.whitelist;
   let node_publicKey = mod.publicKey;
+  let time_now = Date.now();
 
 	let html = `
   <!DOCTYPE html>
@@ -49,20 +50,27 @@ module.exports = (app, mod) => {
 
       if (blacklist.length > 0) {
         for(let i=0; i<blacklist.length; i++) {
-          if (mod.verifyData(blacklist[i])){
-            let timestamp = blacklist[i].created_at;
-            var newDate = new Date();
-            newDate.setTime(timestamp);
-            let dateString = newDate.toUTCString();
+            var added = new Date(blacklist[i].created_at);
+            let dateString = added.toUTCString();
 
-            let duration = app.browser.formatTime(blacklist[i].duration);
+            let expString = "forever";
+            if (blacklist[i].duration > 0) {
+              let timeleft = blacklist[i].created_at + blacklist[i].duration - time_now;
+              if (timeleft < 0){
+                expString = "expired";
+              }else{
+                let duration = app.browser.formatTime(timeleft);
+                expString = `${duration.hours}H : ${duration.minutes}M : ${duration.seconds}S`;
+              }
+            }
+
             let publicKey = blacklist[i].publicKey;
             let identicon = app.keychain.returnIdenticon(publicKey);
 
             html += `
                 <div class="modtools-entry modtools-contact">
                     <div class="modtools-contact-date">${dateString}</div>
-                    <div class="modtools-contact-date">${duration.hours}H : ${duration.minutes}M : ${duration.seconds}S</div>
+                    <div class="modtools-contact-date">${expString}</div>
                     <div class="modtools-contact-details">
                     <div class="saito-identicon-box">
                       <img class="saito-identicon" src="${identicon}"></div>
@@ -70,7 +78,6 @@ module.exports = (app, mod) => {
                     </div>
                 </div>
                `; 
-          }
         }
       } else {
         html += `
@@ -90,21 +97,28 @@ module.exports = (app, mod) => {
 
       if (whitelist.length > 0) {
         for(let i=0; i<whitelist.length; i++) {
-          if (mod.verifyData(whitelist[i])){
-            let timestamp = whitelist[i].created_at;
-            var newDate = new Date();
-            newDate.setTime(timestamp);
-            let dateString = newDate.toUTCString();
+            var added = new Date(whitelist[i].created_at);
+            let dateString = added.toUTCString();
 
-            let duration = app.browser.formatTime(whitelist[i].duration);
+            let expString = "forever";
+            if (whitelist[i].duration > 0) {
+              let timeleft = whitelist[i].created_at + whitelist[i].duration - time_now;
+
+              if (timeleft < 0){
+                expString = "expired";
+              }else{
+                let duration = app.browser.formatTime(timeleft);
+                expString = `${duration.hours}H : ${duration.minutes}M : ${duration.seconds}S`;
+              }
+            }
+            
             let publicKey = whitelist[i].publicKey;
             let identicon = app.keychain.returnIdenticon(publicKey);
 
             html += `
-
                 <div class="modtools-entry modtools-contact">
                     <div class="modtools-contact-date">${dateString}</div>
-                    <div class="modtools-contact-date">${duration.hours}H : ${duration.minutes}M : ${duration.seconds}S</div>
+                    <div class="modtools-contact-date">${expString}</div>
                     <div class="modtools-contact-details">
                       <div class="saito-identicon-box">
                         <img class="saito-identicon" src="${identicon}"></div>
@@ -112,8 +126,6 @@ module.exports = (app, mod) => {
                       </div>
                   </div>
                `; 
-              
-          }
 
         }
       } else {

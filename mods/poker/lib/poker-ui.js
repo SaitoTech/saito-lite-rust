@@ -4,14 +4,14 @@ class PokerUI {
                 if (this.game.state.winners.includes(player)){
                         return "Winner!";
                 }
+                if (player == this.game.state.button_player) {
+                        return 'dealer';
+                }
                 if (player == this.game.state.small_blind_player) {
                         return 'small blind';
                 }
                 if (player == this.game.state.big_blind_player) {
                         return 'big blind';
-                }
-                if (player == this.game.state.button_player) {
-                        return 'dealer';
                 }
 
                 return '';
@@ -21,21 +21,19 @@ class PokerUI {
                 if (!this.browser_active) {
                         return;
                 }
-                try {
-                        for (let i = 1; i <= this.game.players.length; i++) {
-                                this.displayPlayerStack(i);
-                                this.playerbox.updateIcons(``, i);
-                                if (!preserveLog) {
-                                        this.displayPlayerNotice('', i);
-                                }
+                for (let i = 1; i <= this.game.players.length; i++) {
+                        this.displayPlayerStack(i);
+                        //this.playerbox.updateIcons(``, i);
+                        if (!preserveLog) {
+                                this.displayPlayerNotice('', i);
                         }
-                        this.playerbox.updateIcons(
-                                `<i class="fa-solid fa-circle-dot"></i>`,
-                                this.game.state.button_player
-                        );
-                } catch (err) {
-                        console.log('error displaying player box', err);
                 }
+
+                // Temporary disabled...
+                /*this.playerbox.updateIcons(
+                        `<i class="fa-solid fa-circle-dot"></i>`,
+                        this.game.state.button_player
+                );*/
         }
 
         displayHand() {
@@ -51,15 +49,29 @@ class PokerUI {
                 }
         }
 
+        showPlayerHand(player, card1, card2){
+                if (!this.gameBrowserActive()){
+                        return;
+                }
 
+                  let playercards = `<div class="other-player-hand hand">
+                    <div class="card"><img src="${this.card_img_dir}/${this.game.deck[0].cards[card1].name}"></div>
+                    <div class="card"><img src="${this.card_img_dir}/${this.game.deck[0].cards[card2].name}"></div>
+                  </div>
+                `;
+
+                this.playerbox.updateGraphics(playercards, player);
+
+        }
+
+        //
+        // Updates the status / text information body of player box
+        //
         displayPlayerNotice(msg, player) {
-                this.playerbox.renderNotice(msg, player);
+                this.playerbox.updateBody(msg, player);
         }
 
-        displayPlayerLog(html, player) {
-                this.playerbox.renderNotice(html, player);
-        }
-
+        // Update the player's role and wager... 
         displayPlayerStack(player) {
 
                 if (!this.browser_active) { return; }
@@ -67,7 +79,7 @@ class PokerUI {
                 let credit = this.game.state.player_credit[player - 1]; 
                 let userline = `${this.returnPlayerRole(player)}<div class="saito-balance">${this.formatWager(credit)}</div>`;
 
-                this.playerbox.renderUserline(userline, player);
+                this.playerbox.updateUserline(userline, player);
 
         }
 
@@ -91,18 +103,14 @@ class PokerUI {
                 // already exists, in which case we simplify update it instead
                 // of updating the body again.
                 //
-                try {
-                        let status_obj = document.querySelector('.status');
-                        if (status_obj) {
-                                status_obj.innerHTML = str;
-                        } else {
-                                this.playerbox.renderNotice(
-                                        `<div class="status">${str}</div>`,
-                                        this.game.player
-                                );
-                        }
-                } catch (err) {
-                        console.log('ERR: ' + err);
+                let status_obj = document.querySelector('.status');
+                if (status_obj) {
+                        status_obj.innerHTML = str;
+                } else {
+                        this.playerbox.updateBody(
+                                `<div class="status">${str}</div>`,
+                                this.game.player
+                        );
                 }
         }
 
