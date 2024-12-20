@@ -219,6 +219,8 @@ class CallInterfaceVideo {
 				CallInterfaceVideoTemplate(this.mod, videoEnabled, audioEnabled)
 			);
 
+			//stun-overlay-container make 
+
 			this.insertActions();
 			this.attachEvents();
 		}
@@ -403,6 +405,7 @@ class CallInterfaceVideo {
 		});
 
 		if (!this.mod.browser_active) {
+
 			//
 			// If you are in RedSquare/Arcade/etc, allow stun to shrink down to small box so you
 			// can still interact with the site
