@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS records (
+  id INTEGER,
+  publickey TEXT,
+  count INTEGER,
+  CREATED_AT INTEGER,
+  UPDATED_AT INTEGER,
+  UNIQUE (publickey),
+  PRIMARY KEY(id ASC)
+);
+
+
