@@ -34,7 +34,7 @@ h1 {
 }
 
 input[type='checkbox'] {
-	border: 1px solid #644b37;
+	border: 1px solid #fffa;
 	margin: 0;
 }
 
@@ -172,15 +172,37 @@ input[type='checkbox']:checked {
 }
 
 .popup-confirm-menu {
-	background-color: #644b37;
-	padding: 5px;
+	padding: 16px;
 	font-size: 18px;
+	color: #efefef;
+	background-color: #000a;
 }
+
+.popup-confirm-menu .action {
+	color: #101010;
+	display: flex;
+	flex-direction: row;
+	padding: 0;
+	justify-content: center;
+	gap: 1rem;
+	align-items: center;
+}
+
+
+.popup-confirm-menu .popup-prompt, .popup-confirm-menu .confirm_check {
+	background-color: unset;
+	box-shadow: none;
+  }
+
 .popup-confirm-menu div {
-	background-color: #f9efdf;
 	margin: 7px 0;
 	padding: 7px 5px;
 }
+
+.popup-confirm-menu .action div:nth-child(2) {
+	width: 70px;
+}
+
 .popup-confirm-menu .action:hover {
 	background-color: #fffff8;
 }
