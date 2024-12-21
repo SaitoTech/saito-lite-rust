@@ -32,13 +32,19 @@
 	border: 5px solid red;
 }
 
+.game-playerbox-head {
+	padding: 5px 0;
+}
+
 .game-playerbox-body {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	grid-template-rows: auto;
 	grid-template-areas: "a b" "c c" "d d";
+	/*
 	justify-items: flex-end;
 	row-gap: 0.5rem;
+	*/
 }
 
 .game-playerbox-body div:nth-child(3){
