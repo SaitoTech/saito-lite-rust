@@ -1,6 +1,6 @@
-const saito = require('./../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
 const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
+const PopupHome = require('./index.js');
 const PopupLesson = require('./lib/lesson');
 const PopupVocab = require('./lib/vocab');
 const PopupReview = require('./lib/review');
@@ -19,6 +19,8 @@ class Popup extends ModTemplate {
 		this.description = 'Chinese Language Education on the Saito Network';
 		this.categories = 'Social Entertainment';
 		this.icon_fa = 'fa-solid fa-language';
+
+		this.lesson = {}; // if being studied
 
 		this.styles = ['/popup/style.css'];
 		this.peers = [];
@@ -70,13 +72,32 @@ class Popup extends ModTemplate {
 		//
 		// create in-browser DB
 		//
-//		await this.deleteDatabase();
+		await this.deleteDatabase();
 		await this.initializeDatabase();
 
 		//
 		// load local data
 		//
 		this.load();
+
+		//
+		// urlpath check for subpages
+		//
+		for (let i = 0; i < this.urlpath.length; i++) {
+			if (this.urlpath[i] === "") {
+				this.urlpath.splice(i, 1); i--; 
+			}
+			if (this.urlpath[i] === "popup") {
+				this.browser_active = 1;
+			}
+			if (this.urlpath[i] === "lessons") {
+				if (this.urlpath.length > (i+1)) {
+					this.app.connection.emit("popup-lessons-render-request");
+				} else {
+					this.app.connection.emit("popup-lessons-render-request");
+				}
+			}
+		}
 
 	}
 
@@ -114,25 +135,25 @@ class Popup extends ModTemplate {
 
 		await super.render();
 
-	
-		let path = window.location.pathname;
-		let x = path.split("/");
-		if (path.length > 1) {
-			if (path[1] == "lessons") {
-				if (path.length > 2) {
-					if (path[2] == "absolute-beginners") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
-					if (path[2] == "elementary") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
-					if (path[2] == "intermediate") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
-					if (path[2] == "advanced") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
-					if (path[2] == "film-friday") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
-					if (path[2] == "quiz-night") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+
+console.log("URLPATH2: " + JSON.stringify(this.urlpath));
+
+		if (this.urlpath.length >= 2) {
+			if (this.urlpath[1] == "lessons") {
+console.log("PATH LESSONS FOUND");
+				if (this.urlpath.length > 2) {
+					if (this.urlpath[2] == "absolute-beginners") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+					if (this.urlpath[2] == "elementary") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+					if (this.urlpath[2] == "intermediate") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+					if (this.urlpath[2] == "advanced") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+					if (this.urlpath[2] == "film-friday") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+					if (this.urlpath[2] == "quiz-night") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
 				} else {
 					this.app.connection.emit('popup-lessons-render-request', ("all"));
 				}
 				return;
 			}
 		}
-
 
 		this.app.connection.emit('popup-home-render-request');
 	}
@@ -342,8 +363,9 @@ class Popup extends ModTemplate {
 			`SELECT * FROM sentences WHERE lesson_id = ${lesson.id} ORDER BY display_order ASC`,
 			async (res) => {
 				if (res.rows) {
-					lesson.sentences = res.rows;
-					mycallback(lesson);
+					//this.lesson.sentences = res.rows;
+alert("setting lesson sentences!");
+					//mycallback();
 				}
 			},
 			(p) => {
@@ -367,10 +389,13 @@ class Popup extends ModTemplate {
 		this.sendPeerDatabaseRequestWithFilter(
 			'Popup',
 			`SELECT * FROM words WHERE lesson_id = ${lesson.id} ORDER BY display_order ASC`,
-			async (res) => {
-				if (res.rows) {
-					lesson.words = res.rows;
-					mycallback(lesson);
+			async (res2) => {
+				if (res2.rows) {
+					this.lesson.words = res2.rows;
+alert("setting lesson words!");
+console.log("WORDS 2: ");
+console.log(JSON.stringify(this.lesson.words));
+					mycallback();
 				}
 			},
 			(p) => {
@@ -394,9 +419,9 @@ class Popup extends ModTemplate {
 		this.sendPeerDatabaseRequestWithFilter(
 			'Popup',
 			`SELECT * FROM questions WHERE lesson_id = ${lesson.id} ORDER BY display_order ASC`,
-			async (res) => {
-				if (res.rows) {
-					lesson.questions = res.rows;
+			async (res3) => {
+				if (res3.rows) {
+					lesson.questions = res3.rows;
 					mycallback(lesson);
 				}
 			},
@@ -408,6 +433,7 @@ class Popup extends ModTemplate {
 			}
 		);
 	}
+
 
 	returnLesson(lesson_id = null) {
 		for (let i = 0; i < this.lessons.length; i++) {
@@ -602,7 +628,7 @@ console.log("@");
 console.log("@");
 console.log("@");
 console.log("@");
-console.log(JSON.stringify(this.localDB));
+//console.log(JSON.stringify(this.localDB));
 
 			if (isDbCreated) {
 				console.log('POPUP: db created and connection opened');
@@ -889,6 +915,36 @@ console.log(JSON.stringify(words));
 			  console.log("ERROR: " + JSON.stringify(err));
 			}
 		}
+	}
+
+
+
+
+        webServer(app, expressapp, express) {
+
+                let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
+                let popup_self = this;
+
+                expressapp.get('/' + encodeURI(this.returnSlug() + '/lessons'), async function (req, res) {
+                        let html = PopupHome(app, popup_self, app.build_number);
+                        if (!res.finished) {
+                                res.setHeader('Content-type', 'text/html');
+                                res.charset = 'UTF-8';
+                                return res.send(html);
+                        }
+                        return;
+                });
+
+                expressapp.get('/' + encodeURI(this.returnSlug() + '/lessons/*'), async function (req, res) {
+                        let html = PopupHome(app, popup_self, app.build_number);
+                        if (!res.finished) {
+                                res.setHeader('Content-type', 'text/html');
+                                res.charset = 'UTF-8';
+                                return res.send(html);
+                        }
+                        return;
+                });
+
 	}
 
 
