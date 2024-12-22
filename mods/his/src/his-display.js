@@ -1325,24 +1325,24 @@
       //      
       if (round == this.game.state.round) {
         if (faction == "hapsburg") {
-          if (this.game.state.hapsburg_charted == 1) {
-            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/hapsburg/Hapsburg_ExplorationCharted.svg" />`;
-          } else {
+          if (this.game.state.hapsburg_uncharted == 1) {
             obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/hapsburg/Hapsburg_Exploration.svg" />`;
+          } else {
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/hapsburg/Hapsburg_ExplorationCharted.svg" />`;
           }
         }
         if (faction == "france") {
-          if (this.game.state.france_charted == 1) {
-            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/france/French_ExplorationCharted.svg" />`;
-          } else {
+          if (this.game.state.france_uncharted == 1) {
             obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/france/French_Exploration.svg" />`;
+          } else {
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/france/French_ExplorationCharted.svg" />`;
           }
         }
         if (faction == "england") {
-          if (this.game.state.england_charted == 1) {
-            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/English_ExplorationCharted.svg" />`;
-          } else {
+          if (this.game.state.england_uncharted == 1) {
             obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/English_Exploration.svg" />`;
+          } else {
+            obj.innerHTML += `<img class="army_tile" src="/his/img/tiles/england/English_ExplorationCharted.svg" />`;
           }
         }
       }

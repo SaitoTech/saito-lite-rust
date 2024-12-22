@@ -475,8 +475,8 @@
 	  } else {
 	    let x = his_self.game.spaces[spacekey].home;
 	    if (x != "independent") {
+	      let cp = his_self.returnControllingPower(x);
 	      if (his_self.isSpaceHomeSpace(spacekey, x)) { 
-		let cp = his_self.returnControllingPower(x);
 		if (his_self.areAllies(cp, faction)) {
 	          if (!his_self.isSpaceBesieged(spacekey) && !his_self.isSpaceInUnrest(spacekey)) { 
 	            if (his_self.game.state.events.schmalkaldic_league != 1 && his_self.isSpaceElectorate(spacekey)) {
@@ -1443,6 +1443,31 @@
             if (space.units[f][i].type === "mercenary") { luis++; }
             if (space.units[f][i].type === "cavalry") { luis++; }
             if (space.units[f][i].navy_leader == true || space.units[f][i].army_leader == true) { luis++; }
+          }
+        }
+      }
+    }
+    return luis;
+  }
+  returnUnbesiegedFactionLandUnitsInSpace(faction, space, include_minor_allies=false) {
+    let luis = 0;
+    try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    for (let f in space.units) {
+      if (include_minor_allies == false && f == faction) {
+        for (let i = 0; i < space.units[f].length; i++) {
+          if (space.units[f][i].besieged == 0) {
+            if (space.units[f][i].type === "regular") { luis++; }
+            if (space.units[f][i].type === "mercenary") { luis++; }
+            if (space.units[f][i].type === "cavalry") { luis++; }
+          }
+        }
+      }
+      if (include_minor_allies == true && (f == faction || this.isAlliedMinorPower(f, faction))) {
+        for (let i = 0; i < space.units[f].length; i++) {
+          if (space.units[f][i].besieged == 0) {
+            if (space.units[f][i].type === "regular") { luis++; }
+            if (space.units[f][i].type === "mercenary") { luis++; }
+            if (space.units[f][i].type === "cavalry") { luis++; }
           }
         }
       }
