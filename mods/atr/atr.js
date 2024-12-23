@@ -215,6 +215,8 @@ class ATR extends ModTemplate {
 	}
 
 	async onConfirmation(blk, tx, conf) {
+		// only run on the browser	
+		if (this.app.BROWSER == 0) { return };
 		console.log("onConfirmation")
 		let txmsg = tx.returnMessage();
 		let atr_self = this.app.modules.returnModule('ATR');
@@ -222,6 +224,11 @@ class ATR extends ModTemplate {
 		if (conf === 0) {
 			await this.loadBlocks(blk);
 		}
+	}
+
+	async onNewBlock(blk, lc) {
+		if (this.app.BROWSER == 0) { return };
+		await this.loadBlocks(blk);
 	}
 
 	async handlePeerTransaction(app, tx = null, peer, mycallback = null) {

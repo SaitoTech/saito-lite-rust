@@ -410,12 +410,14 @@ class RedSquare extends ModTemplate {
     this.loadOptions();
 
     if (!app.BROWSER) {
+      let ts = Date.now() - 7*24*60*60*1000;
       await this.app.storage.loadTransactions(
         {
           field1: 'RedSquare',
           flagged: 0,
           tx_size_less_than: 100000,
-          limit: 50
+          limit: 50,
+          updated_later_than: ts
         },
         (txs) => {
           for (let i = 0; i < txs.length; i++) {
@@ -2726,9 +2728,8 @@ class RedSquare extends ModTemplate {
   ///////////////
   // webserver //
   ///////////////
-
   webServer(app, expressapp, express) {
-    console.log('this is my home');
+
     let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
     let redsquare_self = this;
 

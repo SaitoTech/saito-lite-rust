@@ -5,12 +5,29 @@ html, body {
   padding: 0;
   -ms-overflow-style: none;
     scrollbar-width: none;
+    scroll-behavior: smooth;
 }
 
 .html::-webkit-scrollbar body::-webkit-scrollbar {
   display: initial;
 }
 
+.scroll-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background-color: var(--saito-primary);
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 1000;
+  transition: background-color 0.3s
+}
 
 
 
@@ -94,13 +111,14 @@ html, body {
   flex: 1;
   padding: 24px;
   max-width: 768px;
-  height: calc(100vh - var(--saito-header-height));
   -ms-overflow-style: none;
   /* IE and Edge */
   scrollbar-width: none;
   /* Firefox */
   overflow-y: visible; 
 }
+
+
 
 .center-column::-webkit-scrollbar {
   display: initial;
@@ -411,5 +429,9 @@ html, body {
   .post-card-image {
     width: 100%;
     height: 120px; 
+  }
+
+  .scroll-button {
+    display: none;
   }
 }

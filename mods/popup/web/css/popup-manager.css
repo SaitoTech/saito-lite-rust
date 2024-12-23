@@ -1,0 +1,91 @@
+.manager {
+	display: flex;
+	flex-flow: row;
+	padding: 1rem;
+}
+
+.manager .menu {
+	max-width: 20rem;
+	font-size: 1.8rem;
+}
+
+.manager .menu {
+	max-width: 22rem;
+	font-size: 1.8rem;
+	width: 22rem;
+	line-height: 3rem;
+}
+
+.manager-menu {
+	font-size: 2rem;
+	line-height: 2.5rem;
+}
+.manager-menu:hover {
+	color: #9C1010;
+}
+
+.lessons {
+	max-width: 100%;
+	width: 100%;
+}
+
+.saito-sidebar.right ul {
+	padding-left: 2rem;
+}
+
+.manager-menu {
+	cursor: pointer;
+}
+
+.teaser {
+	font-size: 1.4em;
+	height: 80px;
+	clear: both;
+	width: 98%;
+	border-bottom: 1px solid #dddddd;
+	display: grid;
+	grid-template-columns: min-content 1fr;
+	padding-left: 0.5rem;
+	padding-right: 0.5rem;
+	padding: 0.5rem;
+}
+
+.teaser:nth-child(even) {
+	background-color: #f7f7f7;
+}
+
+.title {
+	cursor: pointer;
+}
+.level {
+	cursor: pointer;
+}
+
+.header .level {
+	margin-right: 1rem;
+}
+
+.teaser .title {
+	display: block;
+	padding-left: 1rem;
+	margin-top: auto;
+	margin-bottom: auto;
+	line-height: 2.9rem;
+}
+
+.teaser .title a {
+	font-size: 1.9rem;
+	color: #222;
+}
+
+.teaser .title .level {
+	font-weight: bold;
+	font-size: 1.8rem;
+}
+
+.teaser .photo {
+	height: 70px;
+	width: 110px;
+	background-size: cover;
+	padding: 1rem;
+}

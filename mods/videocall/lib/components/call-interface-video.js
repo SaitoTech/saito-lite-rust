@@ -422,7 +422,7 @@ class CallInterfaceVideo {
 					chat_box.classList.add('minimize');
 					icon.classList.remove('fa-caret-down');
 					icon.classList.add('fa-expand');
-					this.app.browser.makeDraggable('stun-chatbox', '', true);
+					this.app.browser.makeDraggable('stun-chatbox-box', '', true);
 					this.full_screen = false;
 				} else {
 					chat_box.classList.remove('minimize');
@@ -433,7 +433,7 @@ class CallInterfaceVideo {
 					chat_box.style.height = '';
 					icon.classList.remove('fa-expand');
 					icon.classList.add('fa-caret-down');
-					this.app.browser.cancelDraggable('stun-chatbox');
+					this.app.browser.cancelDraggable('stun-chatbox-box');
 					this.full_screen = true;
 				}
 			});

@@ -1,11 +1,11 @@
 .modal-layout {
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   width: 100vw;
   height: 100vh;
   background: var(--saito-background-color);
-  margin-top: 0;
+  margin-top: var(--saito-header-height);
 }
 
 .small-controls {
@@ -47,7 +47,9 @@
 
 .center-column {
   flex: 1;
-  padding: 20px;
+  padding: 2rem;
+  /* border-left: 1px solid var(--saito-border-color); */
+
 }
 
 .controls-container {
@@ -80,6 +82,41 @@
   gap: 2rem;
 }
 
+.editor-content {
+  min-height: 400px;
+  margin-bottom: 20px;
+}
+
+.ql-container {
+  font-size: 16px;
+}
+
+.ql-editor {
+  overflow-y: auto;
+
+}
+
+.ql-snow.ql-toolbar button {
+  min-width: 0 !important;
+  color: var(--saito-font-color);
+}
+
+.ql-editor.ql-blank::before {
+  color: var(--border-color-post-input);
+}
+
+.ql-container.ql-snow {
+  border: 1px solid var(--saito-border-color);
+  border-radius: var(--saito-border-radius);
+}
+.ql-toolbar.ql-snow  {
+  border: 1px solid var(--saito-border-color);
+  border-radius: var(--saito-border-radius);
+}
+
+.ql-snow .ql-stroke {
+  stroke: var(--saito-font-color);
+}
 .form-group {
   display: flex;
   flex-direction: column;
@@ -87,7 +124,7 @@
 }
 
 .editor-content {
-  /* height: 80rem; */
+  height: 70rem;
 }
 
 .form-group label {
@@ -288,6 +325,11 @@ button:disabled {
 
 
 @media (max-width: 768px) {
+
+
+  .center-column {
+    overflow: scroll;
+  }
   .modal-container {
     width: 95%;
     max-height: 95vh;
@@ -329,6 +371,7 @@ button:disabled {
 
 /* Mobile Breakpoint */
 @media (max-width: 480px) {
+
   .modal-container {
     width: 100%;
     height: 100vh;

@@ -185,10 +185,18 @@
   color: var(--font-color-hover-mention);
 }
 
-.tweet-body li {
+.tweet-body ul li {
   list-style-position: inside;
-  line-height: 2rem;
+  line-height: 1.5rem;
   list-style-type: disc;
+  text-indent: -16px;
+  padding-left: 22px;
+}
+
+.tweet-body ol li {
+  list-style-position: inside;
+  line-height: 1.5rem;
+  list-style-type: decimal;
   text-indent: -16px;
   padding-left: 22px;
 }
