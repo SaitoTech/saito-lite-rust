@@ -9,9 +9,6 @@
 
   }
 
-  .post-view::-webkit-scrollbar {
-    display: none;
-  }
 
   .post-image-container {
     width: 100%;
