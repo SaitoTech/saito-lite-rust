@@ -219,13 +219,16 @@ class EGLDModule extends CryptoModule {
             await this.load();    
         }
 
+        // update account to get latest nonce
+        this.updateAccount();
+
         console.log("this.secretKey: ", this.secretKey);
         let txObj = {
             value: this.convertEgldToAtomic(amount),
             sender: this.address_obj,
             receiver: Address.newFromBech32(recipient),
             chainID: "D",
-            nonce: this.account.nonce,
+            nonce: this.egld.nonce,
             gasLimit: 50000,
             //data: "SAITO multiwallet transfer"
         };
@@ -253,8 +256,6 @@ class EGLDModule extends CryptoModule {
         const txHash = await this.apiNetworkProvider.sendTransaction(transaction);
         console.log("txHash: ", txHash);
 
-        //await this.receivePayment(txObj.value, txObj.sender, txObj.receiver, new Date(), txHash);
-
         return txHash;
     }
 
@@ -268,18 +269,66 @@ class EGLDModule extends CryptoModule {
     ) {
         let this_self = this;
         let status = 0;
-        console.log('amount, sender, timestamp, unique_hash:');
-        console.log(amount, sender, timestamp, unique_hash);
+        try {
+            console.log('amount, sender, timestamp, unique_hash:');
+            console.log(amount, sender, timestamp, unique_hash);
 
-        let txDetails = await this.getTransactionStatus(unique_hash);
-        console.log("Transaction Details:", transactionDetails);
+            const address = Address.newFromBech32(this.address);
+            const txs = await this.apiNetworkProvider.doGetGeneric(
+                `accounts/${address.toBech32()}/transactions`
+            );
 
-        if (txDetails.status.isSuccessful()) {
-            status = 1;
+            console.log("receivePayment transactions: ", txs);
+
+            let tx = txs[0];
+            //compare timestamps
+            timestamp = Math.floor(timestamp/1000);
+            console.log('received_datetime - snapshot_datetime - diff : ', 
+                timestamp, tx.timestamp, (tx.timestamp - timestamp));
+
+            if (tx.timestamp - timestamp > 0) {
+                console.log('*************************************');               
+                console.log("snapshot response ///");
+
+                let senders = tx.senders;
+
+                console.log('sender: ', sender);
+                console.log('sender: ', tx.sender);
+                console.log('sender == : ', (sender == tx.sender));
+
+                // filter out opponents
+                if (tx.sender == sender) {
+
+                    console.log('opponent_id matched ////');
+                    console.log("tx: ", tx);
+
+                    let snapshot_amount = this.convertAtomicToEgld(tx.value);
+                    console.log('amount: ', amount);
+                    console.log('snapshot_amount: ', snapshot_amount);
+
+                    if (snapshot_amount == amount){
+                        
+                        console.log("checking status ///")
+
+                        // check tx status 
+                        if (tx.status == 'success') {
+                            console.log('match found ///');
+                            return 1;
+                        }
+                        
+                    }
+                    
+                }
+        
+            }
+
+            console.log('receivePayment status: ', status);
+            return status;
+        
+        } catch (error) {
+            console.error("Error fetching transaction status:", error.message);
+            return status;
         }
-
-        console.log('receivePayment status: ', status);
-        return status;
     }
 
     async getTransactionStatus(txHash) {
