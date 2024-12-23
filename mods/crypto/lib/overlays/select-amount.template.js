@@ -1,5 +1,6 @@
 module.exports = (app, mod, form) => {
   console.log("Select amount", form?.ticker);
+  console.log("mod: ", mod);
 	let html = `
 
     <div class="game-crypto-transfer-manager-container" id="stake-crypto-request-container">
