@@ -454,6 +454,10 @@ class MixinModule extends CryptoModule {
 	// in order to process the payment.
 	//
 	async returnWithdrawalFeeForAddress(recipient = '', mycallback) {
+		if (recipient == '') {
+			return mycallback(0);
+		}
+
 		let r = recipient.split('|');
 		let ts = new Date().getTime();
 

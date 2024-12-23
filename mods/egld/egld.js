@@ -31,8 +31,7 @@ class EGLDModule extends CryptoModule {
         this.apiNetworkProvider = new ApiNetworkProvider(this.base_url, { clientName: "multiversx-your-client-name" });
         this.proxyNetworkProvider = new ProxyNetworkProvider(this.network_provider_url, { clientName: "multiversx-your-client-name" });
         this.networkConfig = await this.apiNetworkProvider.getNetworkConfig();
-        console.log(this.networkConfig.MinGasPrice);
-        console.log(this.networkConfig.ChainID);
+        //console.log(this.networkConfig);
         this.app.connection.emit('header-update-balance');
   }
 
@@ -42,10 +41,6 @@ class EGLDModule extends CryptoModule {
     if (this.account_created == 0){
         await this.getAddress();
         await this.generateAccount();
-
-        //await this.showBackupWallet();
-        this.account_created = 1;
-        this.egld.isActivated = true;
         this.save();
     }
 
@@ -53,27 +48,18 @@ class EGLDModule extends CryptoModule {
   }
 
   async getAddress(mnemonic_text = null) {
-    console.log("EGLD getAddress");
-    console.log('mnemonic_text: ', mnemonic_text);
       try {
         let mnemonic = null;
         if (mnemonic_text == null) {
-            console.log("if case");
             // Generate Ed25519 key pair
             mnemonic = Mnemonic.generate();            
         } else {
-            console.log("else case");
             mnemonic = Mnemonic.fromString(mnemonic_text);  
         }
 
         this.secretKey = mnemonic.deriveKey(0);
         const publicKey = this.secretKey.generatePublicKey();
         this.address_obj = publicKey.toAddress();
-
-        console.log("mnemonic: ", mnemonic);
-        console.log("this.secretKey: ", this.secretKey);
-        console.log("publicKey: ", publicKey);
-        console.log("this.address_obj: ", this.address_obj);
 
         this.egld.mnemonic_text = mnemonic.text;
         this.egld.address = this.address = this.destination = this.address_obj.toBech32();
@@ -84,7 +70,6 @@ class EGLDModule extends CryptoModule {
   }
 
   async generateAccount() {
-    console.log("EGLD generateAccount");
       try {
         if (this.address_obj != null) {
             let account = new Account(this.address_obj);
@@ -93,7 +78,13 @@ class EGLDModule extends CryptoModule {
             this.egld.balance = this.balance = this.account.balance;
             this.egld.nonce = this.nonce = this.account.nonce;
 
-            console.log("generateAccount account: ", this.account);
+            if (this.account != null) {
+                await this.showBackupWallet();
+                this.account_created = 1;
+                this.egld.isActivated = true;
+            }
+
+            //console.log("generateAccount account: ", this.account);
         }
       } catch (error) {
         console.error("Error creating EGLD account:", error);
@@ -102,7 +93,6 @@ class EGLDModule extends CryptoModule {
   }
 
   async updateAccount() {
-    console.log("EGLD updateAccount");
     try {
         if (this.address_obj != null) {
             if (this.account == null) {
@@ -147,6 +137,10 @@ class EGLDModule extends CryptoModule {
     }
 
     formatBalance(){
+        const balanceStr = this.balance.toString();
+        if (balanceStr.includes('e-')) {
+            return '0.00';
+        }
         return this.balance;
     }
 
@@ -177,6 +171,8 @@ class EGLDModule extends CryptoModule {
                 const created_at = new Date(row.timestamp * 1000).toLocaleString(); // Convert timestamp to readable date
                 const amount = BigInt(row.value);
                 const type = (row.sender.toLowerCase() === this.address.toLowerCase()) ? 'Withdraw' : 'Deposit';
+
+                let fee = BigInt(row.fee);
 
                 const displayed_balance = this.convertAtomicToEgld(balance);
                 if (type === 'Withdraw') {
@@ -341,6 +337,12 @@ class EGLDModule extends CryptoModule {
         }
     }
 
+    async returnWithdrawalFeeForAddress(address, callback) {
+        let fee = BigInt(this.networkConfig.MinGasLimit * this.networkConfig.MinGasPrice);
+        console.log("egld fee;", fee);
+        return callback(this.convertAtomicToEgld(fee));
+    }
+
 
     convertEgldToAtomic(amount = '0.0') {
         let bigIntNum = 0;
@@ -366,8 +368,7 @@ class EGLDModule extends CryptoModule {
     async load(){
         if (this.app?.options?.crypto?.EGLD) {
           this.egld = this.app.options.crypto.EGLD;
-          console.log("EGLD OPTIONS: " + JSON.stringify(this.app.options.crypto.EGLD));
-          console.log("this.egld:", this.egld);
+          //console.log("EGLD OPTIONS: " + JSON.stringify(this.app.options.crypto.EGLD));
           if (this.egld.mnemonic_text) {
             this.is_initialized = 1;
             this.account_created = 1;

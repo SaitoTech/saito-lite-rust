@@ -688,7 +688,15 @@
   display: none;
 }
 
+.withdraw-fee-cont.egld {
+  display: none!important;
+}
+
 .withdraw-external-fee-span.saito {
+  display: none;
+}
+
+.withdraw-fee-info-icon.egld {
   display: none;
 }
 
