@@ -3,26 +3,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-import TurndownService from 'turndown';
+import { htmlToMarkdown, isMarkdownContent } from '../utils';
 
-const turndownService = new TurndownService({
-  headingStyle: 'atx',
-  codeBlockStyle: 'fenced',
-  emDelimiter: '*',
-  bulletListMarker: '-',
-  hr: '---',
-});
 
-turndownService.addRule('codeBlocks', {
-  filter: ['pre'],
-  replacement: function (content, node) {
-    return '```\n' + content + '\n```'
-  }
-});
-
-const htmlToMarkdown = (html) => {
-  return turndownService.turndown(html);
-};
 
 const PostModal = ({ onClose, onSubmit, post }) => {
   const [formData, setFormData] = useState({
@@ -39,8 +22,14 @@ const PostModal = ({ onClose, onSubmit, post }) => {
 
   const [imageMethod, setImageMethod] = useState('file');
   const [imageUrl, setImageUrl] = useState('');
-  const [editorMode, setEditorMode] = useState('rich');
+  const [editorMode, setEditorMode] = useState(() => {
+    if (post?.content) {
+      return isMarkdownContent(post.content) ? 'markdown' : 'rich';
+    }
+    return 'rich';
+  });
   const isQuillUpdate = useRef(false);
+  
 
 
   const editorRef = useRef(null);
@@ -212,8 +201,12 @@ const PostModal = ({ onClose, onSubmit, post }) => {
       }
     }
   }, [editorMode]);
+
   useEffect(() => {
     if (post) {
+      const initialMode = isMarkdownContent(post.content) ? 'markdown' : 'rich';
+      setEditorMode(initialMode);
+      
       setFormData({
         title: post.title,
         content: post.content,
@@ -221,11 +214,11 @@ const PostModal = ({ onClose, onSubmit, post }) => {
         images: [],
         imageUrl: post.imageUrl || ''
       });
-
-      if (quillInstance.current && post.content) {
+  
+      if (quillInstance.current && post.content && initialMode === 'rich') {
         quillInstance.current.root.innerHTML = post.content;
       }
-
+  
       if (post.imageUrl) {
         setImagePreview(post.imageUrl);
       } else if (post.image) {
@@ -233,7 +226,6 @@ const PostModal = ({ onClose, onSubmit, post }) => {
       }
     }
   }, [post]);
-
 
   const handleEditorModeSwitch = () => {
     if (editorMode === 'rich') {
@@ -246,7 +238,7 @@ const PostModal = ({ onClose, onSubmit, post }) => {
       }));
     } else {
       const htmlContent = DOMPurify.sanitize(marked.parse(formData.content));
-      const delta = quillInstance.current.clipboard.convert(htmlContent);
+      const delta = quillInstance.current.clipboard.convert(formData.content);
       quillInstance.current.setContents(delta, 'silent');
     }
     setEditorMode(prev => prev === 'rich' ? 'markdown' : 'rich');
