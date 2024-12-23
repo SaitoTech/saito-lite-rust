@@ -1,3 +1,28 @@
+        function playWordAudio(audioFile, imgElement) {
+
+            const audioPlayer = document.getElementById('audioPlayer');
+            const audioSource = document.getElementById('audioSource');
+
+            // Update the audio source with the new file
+            audioSource.src = audioFile;
+            audioPlayer.load(); // Reload audio source
+
+            // Toggle play/pause when clicking the image
+            if (audioPlayer.paused) {
+                audioPlayer.play();  // Play the audio
+                imgElement.src = "/popup/img/buttons/pause_button.gif";  // Change image to pause button
+            } else {
+                audioPlayer.pause(); // Pause the audio
+                imgElement.src = "/popup/img/buttons/play_button.gif";  // Change image to play button
+            }
+
+            // Optional: Set up event to change back to play button when audio ends
+            audioPlayer.onended = function() {
+                imgElement.src = "/popup/img/buttons/play_button.gif"; // Reset image when audio ends
+            };
+        }
+
+
 
 function switch_display_mode_in_string(fulltext="", dmode="simplified", existing_preference="simplified") {
 
@@ -37,6 +62,15 @@ function switch_display_mode_in_string(fulltext="", dmode="simplified", existing
 			var tfld5 = extract_field5(entries[i]);
 			var tfld6 = extract_field6(entries[i]);
 			var visible_field = tfld3;
+
+if (tfld1 === "unknown") { tfld1 = visible_field; }
+if (tfld2 === "unknown") { tfld2 = visible_field; }
+if (tfld3 === "unknown") { tfld3 = visible_field; }
+if (tfld4 === "unknown") { tfld4 = visible_field; }
+if (tfld5 === "unknown") { tfld5 = visible_field; }
+if (tfld6 === "unknown") { tfld6 = visible_field; }
+
+console.log(tfld1 + " / " + tfld2 + " / " + tfld3 + " / " + tfld4 + " / " + tfld5 + " / " + tfld6);
 
 			// Update to avoid breaking non-converting entries
 			if (tfld3 === null && tfld4 === null && tfld6 === null) {

@@ -35,10 +35,8 @@ class PopupLesson {
 		// sentences
 		//
 		this.mod.loadLessonSentences(this.mod.lesson, () => {
-console.log("SENTENCES: ");
-console.log(JSON.stringify(this.mod.lesson.sentences));
-		  let html = '<div class="lesson-section header">transcript</div>';
 		  if (this.mod.lesson.sentences) {
+		    let html = '<div class="lesson-section header">transcript</div>';
 		    html += '<table style="width:100%;max-width:1400px;">';
 		    for (let i = 0; i < this.mod.lesson.sentences.length; i++) {
 		      html += SentenceTemplate(this.mod.lesson, this.mod.lesson.sentences[i], this.mod);
@@ -46,15 +44,13 @@ console.log(JSON.stringify(this.mod.lesson.sentences));
 		    html += '</table>';
 		    this.app.browser.addElementToSelector(html, '.lesson-section.transcript');
 		  }
-		});
+
 
 		//
 		// words
 		//
 		this.mod.loadLessonWords(this.mod.lesson, () => {
 		  if (this.mod.lesson.words) {
-console.log("WORDS:");
-console.log(JSON.stringify(this.mod.lesson.words));
 		    let html = '<div class="lesson-section header">vocabulary</div>';
 		    html += '<table style="width:100%;max-width:1400px;">';
 		    for (let i = 0; i < this.mod.lesson.words.length; i++) {
@@ -63,13 +59,10 @@ console.log(JSON.stringify(this.mod.lesson.words));
 		    html += '</table>';
 		    this.app.browser.addElementToSelector(html, '.lesson-section.vocabulary');
 		  }
-		});
-	
 
 		//
 		// questions
 		//
-/***
 		this.mod.loadLessonQuestions(this.mod.lesson, () => {
 		  if (this.mod.lesson.questions) {
 		    let html = '<div class="lesson-section header">comprehension:</div>';
@@ -78,10 +71,16 @@ console.log(JSON.stringify(this.mod.lesson.words));
 		      html += QuestionTemplate(this.mod.lesson, this.mod.lesson.questions[i]);
 		    }
 	 	    html += '</table>';
+		    this.app.browser.addElementToSelector(html, '.lesson-section.questions');
 		  }
-		  this.app.browser.addElementToSelector(html, '.lesson-section.questions');
-		});
-***/	
+	
+		}); // questions
+
+		}); // words
+
+		}); // sentences
+
+		//
 
 		this.attachEvents();
 

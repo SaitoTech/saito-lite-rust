@@ -9,6 +9,9 @@ class LessonManager {
 		this.mod = mod;
 		this.container = container;
 
+		this.waiting_to_display = false;
+		this.level = "";
+
 		this.loader = new SaitoLoader(app, mod, '#popup-intersection');
 
 		//////////////////////////////
@@ -32,6 +35,8 @@ class LessonManager {
 
 	render(level = 'all') {
 
+		this.level = level;
+
 		//
 		// stop observering while we rebuild the page
 		//
@@ -47,7 +52,7 @@ class LessonManager {
 
 		this.showLoader();
 
-console.log("HOW MANY LESSONS: " + this.mod.lessons.length);
+		if (this.mod.lessons.length == 0) { this.waiting_to_display = true; } else { this.waiting_to_display = false; }
 
 		for (let i = 0; i < this.mod.lessons.length; i++) {
 			if (level === 'all' || this.mod.lessons[i].userslug === level) {

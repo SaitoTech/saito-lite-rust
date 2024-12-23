@@ -35,6 +35,14 @@ audio {
 	font-size:2.5rem;
 }
 
+.lesson-section.vocabulary table {
+	margin-left: 3.5rem;
+}
+
+.lesson-section.questions table {
+	margin-left: 3.5rem;
+}
+
 .lesson-container .discussion {
 	padding: 1.5rem 0rem;
 	font-size: 2rem;

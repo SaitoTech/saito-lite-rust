@@ -18,15 +18,16 @@ module.exports = () => {
                 <span>Lessons</span>
               </li>
 
+<!---
               <li class="popup-notifications redsquare-menu-notifications">
                 <i class="fas fa-bell"></i>
                 <span>Notifications</span>
                 <div class="saito-notification-dot" style="display: none;">0</div>
               </li>
-
+---->
               <li class="popup-tools redsquare-menu-profile">
                 <i class="fas fa-user"></i>
-                <span>Tools</span>
+                <span>Vocab</span>
               </li>
 
             </ul>

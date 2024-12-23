@@ -65,6 +65,11 @@ class Popup extends ModTemplate {
 	async initialize(app) {
 
 		//
+		// load local data
+		//
+		this.load();
+
+		//
 		// database setup etc.
 		//
 		await super.initialize(app);
@@ -74,11 +79,6 @@ class Popup extends ModTemplate {
 		//
 		await this.deleteDatabase();
 		await this.initializeDatabase();
-
-		//
-		// load local data
-		//
-		this.load();
 
 		//
 		// urlpath check for subpages
@@ -110,6 +110,7 @@ class Popup extends ModTemplate {
 		// create and render components
 		//
 		if (this.main == null) {
+
 			// initialize components
 			this.header = new SaitoHeader(this.app, this);
 			await this.header.initialize(this.app);
@@ -135,19 +136,15 @@ class Popup extends ModTemplate {
 
 		await super.render();
 
-
-console.log("URLPATH2: " + JSON.stringify(this.urlpath));
-
 		if (this.urlpath.length >= 2) {
 			if (this.urlpath[1] == "lessons") {
-console.log("PATH LESSONS FOUND");
 				if (this.urlpath.length > 2) {
 					if (this.urlpath[2] == "absolute-beginners") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
-					if (this.urlpath[2] == "elementary") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
-					if (this.urlpath[2] == "intermediate") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
-					if (this.urlpath[2] == "advanced") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
-					if (this.urlpath[2] == "film-friday") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
-					if (this.urlpath[2] == "quiz-night") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
+					if (this.urlpath[2] == "elementary") { this.app.connection.emit('popup-lessons-render-request', ("elementary")); }
+					if (this.urlpath[2] == "intermediate") { this.app.connection.emit('popup-lessons-render-request', ("intermediate")); }
+					if (this.urlpath[2] == "advanced") { this.app.connection.emit('popup-lessons-render-request', ("advanced")); }
+					if (this.urlpath[2] == "film-friday") { this.app.connection.emit('popup-lessons-render-request', ("film-friday")); }
+					if (this.urlpath[2] == "quiz-night") { this.app.connection.emit('popup-lessons-render-request', ("quiz-night")); }
 				} else {
 					this.app.connection.emit('popup-lessons-render-request', ("all"));
 				}
@@ -317,6 +314,9 @@ console.log("PATH LESSONS FOUND");
 						for (let record of res.rows) {
 							this.addLesson(record);
 						}
+						if (this.manager.waiting_to_display == true ) {
+							this.manager.render(this.manager.level);
+						}
 						return;
 					}
 				},
@@ -363,9 +363,8 @@ console.log("PATH LESSONS FOUND");
 			`SELECT * FROM sentences WHERE lesson_id = ${lesson.id} ORDER BY display_order ASC`,
 			async (res) => {
 				if (res.rows) {
-					//this.lesson.sentences = res.rows;
-alert("setting lesson sentences!");
-					//mycallback();
+					this.lesson.sentences = res.rows;
+					mycallback();
 				}
 			},
 			(p) => {
@@ -392,9 +391,9 @@ alert("setting lesson sentences!");
 			async (res2) => {
 				if (res2.rows) {
 					this.lesson.words = res2.rows;
-alert("setting lesson words!");
-console.log("WORDS 2: ");
+console.log("WORDS");
 console.log(JSON.stringify(this.lesson.words));
+
 					mycallback();
 				}
 			},
@@ -421,8 +420,8 @@ console.log(JSON.stringify(this.lesson.words));
 			`SELECT * FROM questions WHERE lesson_id = ${lesson.id} ORDER BY display_order ASC`,
 			async (res3) => {
 				if (res3.rows) {
-					lesson.questions = res3.rows;
-					mycallback(lesson);
+					this.lesson.questions = res3.rows;
+					mycallback();
 				}
 			},
 			(p) => {
@@ -945,6 +944,7 @@ console.log(JSON.stringify(words));
                         return;
                 });
 
+    		expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
 	}
 
 
