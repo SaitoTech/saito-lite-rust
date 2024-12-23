@@ -448,6 +448,7 @@ const PostModal = ({ onClose, onSubmit, post }) => {
             <label className="filter-label">Current Editor Mode</label>
             <button
             className='btn-publish'
+            style={{background: 'none'}}
               type="button"
               onClick={() => { 
                 handleEditorModeSwitch()
