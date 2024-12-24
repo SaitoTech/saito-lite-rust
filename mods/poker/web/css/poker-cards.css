@@ -1,9 +1,9 @@
 .deal .card, .cardfan .card, .hand .card {
 	position: relative;
-	width: min(16vh,18vw);
+	width: min(15vh,17vw);
 	/*width: 15vw;
 	height: 21vw;*/
-	height: calc(1.53 * min(16vh, 18vw));
+	height: calc(1.53 * min(15vh, 17vw));
 	max-width: 190px;
 	max-height: 265px;
 }
@@ -14,24 +14,22 @@
 }
 
 .cardfan {
-  display: block;
-  position: fixed;
-  top: 65%;
-  left: 10%;
-  height: calc(1.53 * min(16vh, 18vw));
-  width: min(16vh,18vw);
+  top: max(-7rem, -8vw);
+  left: 5px;
+  height: calc(1.53 * min(15vh, 17vw));
+  width: min(15vh,17vw);
 }
 
-/*.cardfan > .card:nth-child(1), .hand > .card:nth-child(1) {
-  transform: rotate(-15deg);
+.cardfan > .card:nth-child(1), .hand > .card:nth-child(1) {
+  transform: rotate(0deg);
   left: 0px;
 }
 
 .cardfan > .card:nth-child(2), .hand > .card:nth-child(2) {
-  transform: rotate(-5deg);
-  left: 3vh;
+  transform: rotate(10deg);
+  left: 2.5rem;
+  top: 0.5rem;
 }
-*/
 
 .cardFront, .cardBack {
     position: absolute; /* Ensure both sides overlap properly */
@@ -67,12 +65,6 @@
 
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
-	.cardfan {
-		left: 38vw;
-		top: 53vh;
-		position: absolute;
-		width: 100%;
-	}
 }
 
 

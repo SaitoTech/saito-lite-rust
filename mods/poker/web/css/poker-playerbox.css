@@ -12,12 +12,6 @@
 .saito-user {
   grid-template-columns: min-content 1fr;
 }
-.playerbox {
-    display: block;
-    height: 10rem;
-    width: 40rem;
-    background-color: red;
-}
 
 .other-player-hand {
 	position: absolute;
@@ -53,12 +47,16 @@
 	border: 1px solid #fff3;
 	min-height: 11rem;
 	color: white;
-	background-color: #4448;
+	background-color: #020E;
 	position: relative;
+	border-radius: 2rem;
+	transition: all 0.5s;
 }
 
-.game-playerbox.active {
+.game-playerbox.active:not(.game-playerbox-seat-1) {
 	border: 1px solid #fff;
+	filter: drop-shadow(5px 5px 3px black);
+  	transform: translate(-3px, -2px);
 }
 
 .game-playerbox-body .status {

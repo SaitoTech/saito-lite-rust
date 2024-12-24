@@ -24,13 +24,15 @@ body {
 .deal {
   display: flex;
   gap: 1rem;
+  margin-bottom: 10%;
 }
 
 .mystuff {
   position: absolute;
   display: flex;
-  bottom: 0px;
-  width: 100vw;
+  bottom: 10px;
+  width: 250px;
+  height: 250px;
   justify-content: space-around;
 }
 
@@ -50,4 +52,16 @@ body {
 	background: #fffd;
 	padding: 4px 2px;
 	border-radius: 6px;
+}
+
+@media screen and (max-width: 900px) {
+  .deal {
+    gap: 5px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .gameboard {
+    padding: 2rem;
+  }
 }
