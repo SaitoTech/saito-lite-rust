@@ -20,6 +20,10 @@
   width: min(15vh,17vw);
 }
 
+.cardfan.dragging {
+    position: fixed;
+}
+
 .cardfan > .card:nth-child(1), .hand > .card:nth-child(1) {
   transform: rotate(0deg);
   left: 0px;

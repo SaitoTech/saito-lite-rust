@@ -54,6 +54,10 @@ body {
 	border-radius: 6px;
 }
 
+#log-wrapper {
+  width: min(450px, 65vw);
+}
+
 @media screen and (max-width: 900px) {
   .deal {
     gap: 5px;
