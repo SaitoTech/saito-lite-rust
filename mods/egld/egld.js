@@ -216,8 +216,6 @@ class EGLDModule extends CryptoModule {
                     <div>${sender_html}</div>
                 </div>`;
             }
-        } else {
-            html = `<div class='saito-table-row'>No transaction history available.</div>`;
         }
 
         return callback(html);

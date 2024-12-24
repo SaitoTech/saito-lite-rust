@@ -117,10 +117,14 @@ export default class Wallet extends SaitoWallet {
 				}
 			}
 
-			async returnHistory(asset_id = '', records = 20, callback = null) {
-				// to be implemented in future
-				// redirecting users to block explorer for now
-				return callback(false);
+			async returnHistory(callback = null) {
+				let html = `
+	      		<a target="_blank" href="/explorer" class="saito-history-msg">
+	      			View SAITO history on block explorer 
+	      			<i class="fa-solid fa-arrow-up-right-from-square"></i>
+	      		</a>`;
+
+				return callback(html);
 			}
 
 			async sendPayment(amount, to_address, unique_hash = '') {
