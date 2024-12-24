@@ -8,7 +8,7 @@ const PopupMain = require('./lib/main');
 const PopupLessonManager = require('./lib/manager');
 const PeerService = require('saito-js/lib/peer_service').default;
 //const localforage = require('localforage');
-const JsStore = require('jsstore');
+const JsStorePopup = require('jsstore');
 
 class Popup extends ModTemplate {
 	constructor(app) {
@@ -102,7 +102,9 @@ class Popup extends ModTemplate {
 		this.offset = 0;
 
 		if (this.app.BROWSER) {
-		  this.localDB = new JsStore.Connection();
+                        this.localDB = new JsStorePopup.Connection(
+                                new Worker('/saito/lib/jsstore/jsstore.worker.js')
+                        );
 		}
 
 		return this;
@@ -119,6 +121,9 @@ class Popup extends ModTemplate {
 	////////////////////
 	async initialize(app) {
 
+
+console.log(JsStorePopup);
+
 		//
 		// load local data
 		//
@@ -131,9 +136,100 @@ class Popup extends ModTemplate {
 
 		if (!this.app.BROWSER) { return; }
 
+		const connection = new JsStorePopup.Connection();
+
+console.log("AND CONNECTION");
+console.log(connection);
+
+        // Open the connection explicitly
+        const isDbExist = await connection.isDbExists("TestDB");
+        console.log("Database exists:", isDbExist);
+
+        // If the database doesn't exist, initialize it
+        if (!isDbExist) {
+            await connection.initDb({
+                name: "TestDB",
+                tables: [{
+                    name: "users",
+                    columns: {
+                        id: { primaryKey: true, autoIncrement: true },
+                        name: { notNull: true },
+                        email: { notNull: true, unique: true }
+                    }
+                }]
+            });
+            console.log("Database initialized successfully!");
+        }
+
+        // Ensure the connection is open
+        if (connection.isConOpened_) {
+            console.log("Connection is open and ready.");
+        } else {
+            console.log("Connection is not open.");
+        }
+
+
+console.log("AND CONNECTION");
+console.log(connection);
+
+
+
+const userSchema = {
+    name: 'Users',
+    columns: [
+        {
+            name: 'id',
+            primaryKey: true,
+            autoIncrement: true
+        },
+        {
+            name: 'name',
+            notNull: true
+        },
+        {
+            name: 'email',
+            notNull: true
+        },
+        {
+            name: 'age',
+            notNull: false
+        }
+    ]
+};
+
+console.log("pre init db");
+try {
+        await connection.runSql(`
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                email TEXT NOT NULL UNIQUE,
+                age INTEGER
+            )
+        `)
+    .then(() => {
+        console.log("Table created successfully!");
+    })
+    .catch(err => {
+        console.error("Error running SQL:", err);
+    });
+
+//await connection.initDb({
+//            name: 'UserDB',
+//            tables: [userSchema]
+//        });
+} catch (err) {
+ console.log("ERROR WITH INIT DB, ", err);
+}
+console.log("post init db");
+
+
+return;
+
 console.log("about to ask for selecting from local DB 1");
+		this.localDB = new JsStore.Connection();
 console.log(JSON.stringify(this.db));
-///                let isDbCreated = await this.localDB.initDb(this.db);
+                let isDbCreated = await this.localDB.initDb(db);
 
 console.log("about to ask for selecting from local DB 2");
                 //if (isDbCreated) {
