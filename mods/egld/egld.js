@@ -12,9 +12,9 @@ class EGLDModule extends CryptoModule {
         this.categories = "Cryptocurrency";
         this.balance = 0;
         this.egld = {};
-        this.base_url = "https://devnet-api.multiversx.com";
-        this.network_provider_url = "https://devnet-gateway.multiversx.com";
-        this.explorer_url = "https://devnet-explorer.multiversx.com";
+        this.base_url = null;
+        this.network_provider_url = null;
+        this.explorer_url = null;
         this.apiNetworkProvider = null;
         this.proxyNetworkProvider = null;
         this.networkConfig = null;
@@ -27,11 +27,7 @@ class EGLDModule extends CryptoModule {
 
   async initialize(app) {
         await super.initialize(app);
-        await this.load();
-        this.apiNetworkProvider = new ApiNetworkProvider(this.base_url, { clientName: "multiversx-your-client-name" });
-        this.proxyNetworkProvider = new ProxyNetworkProvider(this.network_provider_url, { clientName: "multiversx-your-client-name" });
-        this.networkConfig = await this.apiNetworkProvider.getNetworkConfig();
-        //console.log(this.networkConfig);
+        await this.load();    
         this.app.connection.emit('header-update-balance');
   }
 
@@ -40,6 +36,7 @@ class EGLDModule extends CryptoModule {
 
     if (this.account_created == 0){
         await this.getAddress();
+        await this.setupNetwork();
         await this.generateAccount();
         this.save();
     }
@@ -94,6 +91,10 @@ class EGLDModule extends CryptoModule {
 
   async updateAccount() {
     try {
+        if (this.apiNetworkProvider == null) {
+            return;
+        }
+
         if (this.address_obj != null) {
             if (this.account == null) {
                 this.account = new Account(this.address_obj);
@@ -415,6 +416,112 @@ class EGLDModule extends CryptoModule {
         this.app.storage.saveOptions();
     }
 
+    getEnv(){
+        console.log("getEnv ///");
+        if (typeof process.env.EGLD != "undefined") {
+          return JSON.parse(process.env.EGLD);
+        } else {
+            return {
+                base_url: "https://devnet-api.multiversx.com",
+                network_provider_url: "https://devnet-gateway.multiversx.com",
+                explorer_url: "https://devnet-explorer.multiversx.com",
+            }
+        }
+    }
+
+    async setupNetwork(){
+        let this_self = this;
+        
+        //console.log("this_self.egld.base_url:", this_self.egld.base_url);    
+        if (this_self.egld.base_url == null) {
+            await this_self.sendFetchEnvTransaction(async function (res){
+                
+                if (typeof res == 'object' && Object.keys(res).length > 0) {
+                    this_self.base_url = this_self.egld.base_url = res.base_url;
+                    this_self.explorer_url = this_self.egld.explorer_url = res.explorer_url;
+                    this_self.network_provider_url = this_self.egld.network_provider_url = res.network_provider_url;
+
+                    await this_self.initiateNetwork();
+                } else {
+                    console.error("Unable to load config from env");
+                }
+            });
+        } else {
+            await this_self.initiateNetwork();
+        } 
+    }
+
+    async initiateNetwork() {
+        // console.log("outside: ////");
+        // console.log("base_url:", this.base_url);
+        // console.log("base_url:", this.explorer_url);
+        // console.log("base_url:", this.network_provider_url);
+
+        this.apiNetworkProvider = new ApiNetworkProvider(this.base_url, { clientName: "multiversx-your-client-name" });
+        this.proxyNetworkProvider = new ProxyNetworkProvider(this.network_provider_url, { clientName: "multiversx-your-client-name" });
+        this.networkConfig = await this.apiNetworkProvider.getNetworkConfig();
+    }
+
+    async onPeerServiceUp(app, peer, service = {}) {
+        //console.log("service:", service.service);
+    }
+
+    async handlePeerTransaction(app, tx = null, peer, mycallback) {
+        if (tx == null) {
+          return 0;
+        }
+        let message = tx.returnMessage();
+
+        //
+        // we receive requests to create accounts here
+        //
+        if (message.request === "egld fetch env") {
+          await this.receiveFetchEnvTransaction(app, tx, peer, mycallback);
+        }
+
+        return super.handlePeerTransaction(app, tx, peer, mycallback);
+      }
+
+    async sendFetchEnvTransaction(callback = null){
+        let this_self = this;
+        let peers = await this.app.network.getPeers();
+        // we cannot create an account if the network is down
+        if (peers.length == 0) {
+          console.warn("No peers");
+          return;
+        }
+      
+        let data = {
+        };
+        this_self.app.network.sendRequestAsTransaction(
+          "egld fetch env",
+          data,
+          function (res) {
+            console.log("Callback for sendCreateAccountTransaction request: ", res);
+            if (typeof res == 'object' && Object.keys(res).length > 0) {
+              //console.log("response from env", res);
+            }
+
+            if (callback) {
+              return callback(res);
+            }
+          },
+          peers[0].peerIndex
+        );
+      }
+
+    async receiveFetchEnvTransaction(app, tx, peer, callback) {
+        if (app.BROWSER == 0) {
+          let m = this.getEnv();
+          console.log("m: ", m);
+          if (!m) {
+            console.error("MIXIN ENV variable missing.");
+            return;
+          }
+
+          return callback(m);
+        }
+    }
 }
 
 module.exports = EGLDModule;
