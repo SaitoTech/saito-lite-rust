@@ -7,7 +7,7 @@ const PopupReview = require('./lib/review');
 const PopupMain = require('./lib/main');
 const PopupLessonManager = require('./lib/manager');
 const PeerService = require('saito-js/lib/peer_service').default;
-const localforage = require('localforage');
+//const localforage = require('localforage');
 const JsStore = require('jsstore');
 
 class Popup extends ModTemplate {
@@ -133,7 +133,7 @@ class Popup extends ModTemplate {
 
 console.log("about to ask for selecting from local DB 1");
 console.log(JSON.stringify(this.db));
-                let isDbCreated = await this.localDB.initDb(this.db);
+///                let isDbCreated = await this.localDB.initDb(this.db);
 
 console.log("about to ask for selecting from local DB 2");
                 //if (isDbCreated) {
@@ -557,6 +557,7 @@ console.log("about to ask for selecting from local DB 2");
 			this.app.options.popup.review.enable = 1;
 		}
 
+/***
 		localforage.getItem(`popup_vocabulary`, (error, value) => {
 			if (value && value.length > 0) {
 				for (let tx of value) {
@@ -567,6 +568,7 @@ console.log("about to ask for selecting from local DB 2");
 				//this.app.connection.emit("redsquare-home-render-request");
 			}
 		});
+***/
 	}
 
 	updatePreference(field1, value1) {
