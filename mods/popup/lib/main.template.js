@@ -25,7 +25,7 @@ module.exports = () => {
                 <div class="saito-notification-dot" style="display: none;">0</div>
               </li>
 ---->
-              <li class="popup-tools redsquare-menu-profile">
+              <li class="popup-vocab redsquare-menu-profile">
                 <i class="fas fa-user"></i>
                 <span>Vocab</span>
               </li>

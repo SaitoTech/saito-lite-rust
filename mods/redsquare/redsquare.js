@@ -1849,10 +1849,18 @@ class RedSquare extends ModTemplate {
 
     let liked_tweet = this.returnTweet(txmsg.data.signature);
 
+
+    //
+    // set as curated if liked by moderator
+    //
+    if (this.app.modules.reverseModerate(tweet.tx) == -1) {
+      liked_tweet.curated = 1;
+    }
+
+
     //
     // save optional likes
     //
-
     if (liked_tweet?.tx) {
       if (!liked_tweet.tx.optional) {
         liked_tweet.tx.optional = {};
@@ -2680,33 +2688,67 @@ class RedSquare extends ModTemplate {
 
     this.curated_tweets = [];
     let temp_array = [];
+    let img_bonus_used = 0;
 
     for (let tweet of this.tweets){
+
       if (tweet?.flagged) {
         continue;
       }
 
-      let score = 0;
-      score += tweet.num_likes;
-      score += 2*tweet.num_retweets;
-      score += 5*tweet.num_replies;      
 
-      score += 10*this.app.modules.moderate(tweet.tx);
+      //
+      // we want the server to show mostly new stuff in its cached_tweets cache
+      // since people still want to view the latest tweets, but we are going to
+      // loop through after adding and pull up the first tweet with an image or
+      // link, to add some visual oomph to the initial load...
+      //
+      let score = 0;
+
+      //
+      // older curation algorithm pushed content around based on its content, 
+      // resulting in older content always being pushed to the top of the feed
+      // which is... not precisely what we want, but close.
+      //
+      //score += tweet.num_likes;
+      //score += 2*tweet.num_retweets;
+      //score += 5*tweet.num_replies;      
+      //score += 10*this.app.modules.moderate(tweet.tx);
+      //
+      //if (this.app.modules.moderate(tweet.tx) == 1) {
+      //	score = 1;
+      //}
+
+      if (tweet.curated == 1) {
+	score = 1;
+      }
+
+      if (this.app.modules.reverseModerate(tweet.tx) == -1) {
+	score = 1;
+      }
 
       if (tweet.images?.length > 0){
-        score += 5;
-      }
-      if (this.app.keychain.returnIdentifierByPublicKey(tweet.tx.from[0].publicKey)){
-        score += 2;
-      }
-      for (let key in tweet.retweeters){
-        score += 8*this.app.modules.moderate(tweet.tx);
-        if (this.app.keychain.returnIdentifierByPublicKey(key)){
-          score++;
-        }
+ 	if (img_bonus_used == 0 && score == 1) {
+          score += 5;
+	  img_bonus_used = 1;
+	}
       }
 
-      temp_array.push({tweet, score});
+      //if (this.app.keychain.returnIdentifierByPublicKey(tweet.tx.from[0].publicKey)){
+      //  score += 2;
+      //}
+      //for (let key in tweet.retweeters){
+      //  score += 8*this.app.modules.moderate(tweet.tx);
+      //  if (this.app.keychain.returnIdentifierByPublicKey(key)){
+      //    score++;
+      //  }
+      }
+
+      if (score > 0) {
+        //temp_array.push({tweet, score});
+        temp_array.push({tweet, 1});
+      }
+
     }
 
     temp_array.sort((a, b)=> {
