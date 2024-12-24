@@ -144,6 +144,19 @@ class EGLDModule extends CryptoModule {
         return this.balance;
     }
 
+    formatReadableNum(num){
+        if (num % 1 === 0) {
+            return num.toString(); // Return as is for integers
+        }
+        let numStr = num.toString();
+        let decimalIndex = numStr.indexOf('.');
+        if (decimalIndex !== -1) {
+            let trailingZerosTrimmed = numStr.replace(/(\.\d*?)0+$/, '$1'); // Remove trailing zeros
+            return trailingZerosTrimmed;
+        }
+        return numStr; // Return unchanged if no decimal part exists
+    }
+
     returnAddress (){
         return this.address;
     }
@@ -168,6 +181,7 @@ class EGLDModule extends CryptoModule {
 
             for (let i = 0; i < transactions.length; i++) {
                 const row = transactions[i];
+
                 const created_at = new Date(row.timestamp * 1000).toLocaleString(); // Convert timestamp to readable date
                 const amount = BigInt(row.value);
                 const type = (row.sender.toLowerCase() === this.address.toLowerCase()) ? 'Withdraw' : 'Deposit';
@@ -175,8 +189,11 @@ class EGLDModule extends CryptoModule {
                 let fee = BigInt(row.fee);
 
                 const displayed_balance = this.convertAtomicToEgld(balance);
-                if (type === 'Withdraw') {
-                    balance += amount;
+                
+                if (row.status == 'invalid') {
+                    balance += fee; 
+                } else if (type === 'Withdraw') {
+                    balance += (amount+fee);
                 } else {
                     balance -= amount;
                 }
@@ -190,8 +207,11 @@ class EGLDModule extends CryptoModule {
 
                 html += `<div class='saito-table-row'>
                     <div class='mixin-his-created-at'>${created_at}</div>
-                    <div>${type}</div>
-                    <div class='${type.toLowerCase()}'>${this.convertAtomicToEgld(amount)} EGLD</div>
+                    <div>${type} ${row.status == 'invalid' ? '(Invalid)' : ''}</div>
+                    <div class='${type.toLowerCase()} ${row.status}'>
+                        ${this.convertAtomicToEgld(amount)} EGLD
+                        ${type == 'Withdraw' ? `(${this.convertAtomicToEgld(fee)} fee)` : ``}
+                    </div>
                     <div>${displayed_balance} EGLD</div>
                     <div>${sender_html}</div>
                 </div>`;
@@ -360,6 +380,8 @@ class EGLDModule extends CryptoModule {
         let bigint_divider = 1000000000000000000n;
 
         num = Number((BigInt(amount) * 1000000000000000000n) / bigint_divider) / 1000000000000000000;
+
+        num = num.toFixed(5);
 
         string = num.toString();
         return string;

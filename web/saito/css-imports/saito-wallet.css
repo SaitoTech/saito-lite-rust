@@ -415,6 +415,10 @@
   font-weight: bold;
 }
 
+.withdraw.invalid, .deposit.invalid {
+  color: #cab202;
+}
+
 #mixin-balance-container .mixin-item {
   width: calc(100% * (1/4));
 }
