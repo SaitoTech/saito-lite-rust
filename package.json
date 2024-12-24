@@ -59,7 +59,7 @@
     "jimp": "^0.16.13",
     "json-bigint": "^1.0.0",
     "json-tree-viewer": "0.0.2",
-    "jsstore": "^4.9.0",
+    "jsstore": "4.8.4",
     "lamejs": "^1.2.0",
     "localforage": "^1.10.0",
     "lucide-react": "^0.461.0",

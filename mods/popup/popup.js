@@ -102,7 +102,9 @@ class Popup extends ModTemplate {
 		this.offset = 0;
 
 		if (this.app.BROWSER) {
-		  this.localDB = new JsStore.Connection();
+			this.localDB = new JsStore.Connection(
+				new Worker('/saito/lib/jsstore/jsstore.worker.js')
+			);
 		}
 
 		return this;
