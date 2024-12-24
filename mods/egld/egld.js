@@ -28,15 +28,16 @@ class EGLDModule extends CryptoModule {
   async initialize(app) {
         await super.initialize(app);
         await this.load();    
+        await this.setupNetwork();
         this.app.connection.emit('header-update-balance');
   }
 
   async activate() {
     console.log("activating egld ///");
+    await this.setupNetwork();
 
     if (this.account_created == 0){
         await this.getAddress();
-        await this.setupNetwork();
         await this.generateAccount();
         this.save();
     }
@@ -431,8 +432,7 @@ class EGLDModule extends CryptoModule {
 
     async setupNetwork(){
         let this_self = this;
-        
-        //console.log("this_self.egld.base_url:", this_self.egld.base_url);    
+        console.log("this_self.egld.base_url:", this_self.egld.base_url);    
         if (this_self.egld.base_url == null) {
             await this_self.sendFetchEnvTransaction(async function (res){
                 
@@ -451,19 +451,22 @@ class EGLDModule extends CryptoModule {
         } 
     }
 
-    async initiateNetwork() {
-        // console.log("outside: ////");
-        // console.log("base_url:", this.base_url);
-        // console.log("base_url:", this.explorer_url);
-        // console.log("base_url:", this.network_provider_url);
+    async initiateNetwork() {        
+        if (this.apiNetworkProvider == null) {
+            console.log("initiateNetwork: ////");
+            console.log("base_url:", this.egld.base_url);
+            console.log("base_url:", this.egld.explorer_url);
+            console.log("base_url:", this.egld.network_provider_url);
 
-        this.apiNetworkProvider = new ApiNetworkProvider(this.base_url, { clientName: "multiversx-your-client-name" });
-        this.proxyNetworkProvider = new ProxyNetworkProvider(this.network_provider_url, { clientName: "multiversx-your-client-name" });
-        this.networkConfig = await this.apiNetworkProvider.getNetworkConfig();
+            this.apiNetworkProvider = new ApiNetworkProvider(this.egld.base_url, { clientName: "multiversx-your-client-name" });
+            this.proxyNetworkProvider = new ProxyNetworkProvider(this.egld.network_provider_url, { clientName: "multiversx-your-client-name" });
+            this.networkConfig = await this.apiNetworkProvider.getNetworkConfig();
+        }
     }
 
     async onPeerServiceUp(app, peer, service = {}) {
         //console.log("service:", service.service);
+        await this.setupNetwork();
     }
 
     async handlePeerTransaction(app, tx = null, peer, mycallback) {
@@ -521,6 +524,27 @@ class EGLDModule extends CryptoModule {
 
           return callback(m);
         }
+    }
+
+    respondTo(type = '', obj) {
+        if (type == 'crypto-logo') {
+            if (obj?.ticker == this.ticker) {
+                return {
+                    svg: `<?xml version="1.0" encoding="utf-8"?>
+                        <!-- Generator: Adobe Illustrator 27.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+                        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                             viewBox="0 0 192 148" style="enable-background:new 0 0 192 148;" xml:space="preserve">
+                        <style type="text/css">
+                            .st0{fill:#23F7DD;}
+                        </style>
+                        <path class="st0" d="M106.4,74L192,28L177.6,0.2L99.2,32.1c-2,0.8-4.3,0.8-6.3,0L14.5,0.2L0.1,28l85.6,46l-85.6,46l14.4,27.8
+                            l78.4-31.9c2-0.8,4.3-0.8,6.3,0l78.4,31.9l14.4-27.8L106.4,74z"/>
+                        </svg>
+                    `
+                };
+            }
+        }
+        return null;
     }
 }
 
