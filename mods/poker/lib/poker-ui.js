@@ -22,18 +22,16 @@ class PokerUI {
                         return;
                 }
                 for (let i = 1; i <= this.game.players.length; i++) {
+
+                        this.playerbox.updateUserline(this.returnPlayerRole(i), i);
+
                         this.displayPlayerStack(i);
-                        //this.playerbox.updateIcons(``, i);
+
                         if (!preserveLog) {
                                 this.displayPlayerNotice('', i);
                         }
                 }
 
-                // Temporary disabled...
-                /*this.playerbox.updateIcons(
-                        `<i class="fa-solid fa-circle-dot"></i>`,
-                        this.game.state.button_player
-                );*/
         }
 
         displayHand() {
@@ -76,10 +74,10 @@ class PokerUI {
 
                 if (!this.browser_active) { return; }
 
-                let credit = this.game.state.player_credit[player - 1]; 
-                let userline = `${this.returnPlayerRole(player)}<div class="saito-balance">${this.formatWager(credit)}</div>`;
+                let credit = this.convertChipsToCrypto(this.game.state.player_credit[player - 1]);
+                let chips = this.game.crypto || ('CHIP' + credit !== 1 ? "S" : "");
 
-                this.playerbox.updateUserline(userline, player);
+                this.playerbox.updateIcons(`<div class="poker-stack-balance">${credit}</div><div class="poker-stack-units">${chips}</div>`, player);
 
         }
 
@@ -193,7 +191,7 @@ class PokerUI {
 
                 balance_html = `
   <div class="menu-player-upper">
-          <div style="float:right;" class="saito-balance">${this.formatWager(
+          <div style="float:right;" class="saito-balance">!!!${this.formatWager(
                 this.game.state.player_credit[this.game.player - 1]
         )}</div>
         </div>

@@ -32,14 +32,18 @@
 	display: flex;
 }
 
-.game-playerbox-head .saito-user .game-playerbox-icons {
-	grid-row: 1;
-	position: absolute;
+.game-playerbox-icons {
+	flex-direction: column;
+	align-items: center;
 }
 
-.game-playerbox-head .saito-user .saito-userline {
-	grid-column: 2 / span 1;
+.game-playerbox-icons .poker-stack-balance {
+	font-size: 1.2em;
 }
+.game-playerbox-icons .poker-stack-units {
+	font-size: 0.8em;
+}
+
 
 .game-playerbox {
 	min-width: 250px;
