@@ -152,9 +152,9 @@ class PokerUI {
     }
 
     let html = '<ul>';
+    html += '<li class="option" id="fold">fold</li>';
 
     if (match_required > 0) {
-      html += '<li class="option" id="fold">fold</li>';
       html += `<li class="option" id="call">call - ${this.formatWager(match_required)}</li>`;
     } else {
       // we don't NEED to match
@@ -168,7 +168,7 @@ class PokerUI {
     this.updateStatus(html);
 
     $('.option').off();
-    $('.option').on('click', function () {
+    $('.option').on('click', async function () {
       let choice = $(this).attr('id');
 
       if (choice === 'raise') {
@@ -221,6 +221,13 @@ class PokerUI {
           }
         });
       } else {
+        if (choice == "fold" && !match_required){
+                let c = await sconfirm("Are you sure you want to fold?");
+                if (!c){
+                        poker_self.playerTurn();
+                        return;
+                }
+        }
         poker_self.addMove(`${choice}\t${poker_self.game.player}`);
         poker_self.endTurn();
       }

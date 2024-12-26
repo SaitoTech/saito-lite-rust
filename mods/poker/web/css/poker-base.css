@@ -34,12 +34,11 @@ body {
 
 .mystuff {
   position: absolute;
-  display: flex;
-  bottom: 10px;
   width: 250px;
   height: 250px;
   max-height: 36vh;
-  justify-content: space-around;
+  left: calc(50% - 125px);
+  bottom: 0px;
 }
 
 

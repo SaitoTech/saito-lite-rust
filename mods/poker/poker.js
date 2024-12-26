@@ -242,6 +242,8 @@ class Poker extends GameTableTemplate {
 		this.playerbox.render();
 		this.displayPlayerNotice(this.status, this.game.player);
 
+		$(".game-playerbox-seat-1").appendTo(".mystuff");
+
 		this.menu.addChatMenu();
 		this.menu.render();
 

@@ -1,7 +1,7 @@
 
 .game-playerbox-manager {
-    display: flex;
-    flex-direction: row-reverse;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     width: 95vw;
     height: max-content;
     justify-content: space-around;
@@ -46,7 +46,7 @@
 
 
 .game-playerbox {
-	min-width: 250px;
+	width: 100%;
 	max-width: min(250px, 30vw);
 	border: 1px solid #fff3;
 	min-height: 10rem;
@@ -55,6 +55,7 @@
 	position: relative;
 	border-radius: 2rem;
 	transition: all 0.5s;
+	margin: auto; /* auto-center in grid */
 }
 
 .game-playerbox.active:not(.game-playerbox-seat-1) {
@@ -85,35 +86,14 @@
 }
 
 
-@media screen and (max-width: 600px) {
-	.game-playerbox {
-		max-width: 45vw;
-		min-width: unset;
-		padding: 0.5rem;
-		min-height: 8rem;
-	}
-
-	.game-playerbox.game-playerbox-seat-1 {
-		min-width: 250px;
-		max-width: 250px;
-		margin-bottom: 0.5rem;
-	}
-
-	.plog-update{
-		padding-top: 0.8rem;
-		padding-bottom: 0.6rem;
-	}
-
+@media screen and (max-width: 900px) {
+  .game-playerbox-manager {
+    gap: 2rem;
+  }
 }
 
-@media screen and (max-height: 600px) {
-	.game-playerbox {
-		min-width: unset;
-		padding: 0.5rem;
-		min-height: 8rem;
-	}
-	.game-playerbox.game-playerbox-seat-1 {
-		min-width: 250px;
-		max-width: 75vw;
-	}
+@media screen and (max-width: 600px) {
+  .game-playerbox-manager {
+    gap: 1rem;
+  }
 }
