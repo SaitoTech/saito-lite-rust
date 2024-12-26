@@ -498,7 +498,7 @@ class MixinModule extends CryptoModule {
 	 */
 	async returnHistory(callback = null) {
     let this_self = this;
-    let d = await this.mixin.fetchSafeSnapshots(this.asset_id, 1000, function(d) {
+    let d = await this.mixin.fetchSafeSnapshots(this.asset_id, 1000, async function(d) {
 	   	console.log('mixin tx history:', d);
 
 	    let html = '';
