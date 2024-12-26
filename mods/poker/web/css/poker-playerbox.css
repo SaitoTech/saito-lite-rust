@@ -1,7 +1,7 @@
 
 .game-playerbox-manager {
     display: flex;
-    flex-direction: row;
+    flex-direction: row-reverse;
     width: 95vw;
     height: max-content;
     justify-content: space-around;
