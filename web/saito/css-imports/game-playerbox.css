@@ -141,7 +141,7 @@
 .game-playerbox-seat-1 {
   position: absolute;
   min-width: 30vh;
-  max-height: 32vh;
+  max-height: 36vh;
   left: 50vw;
   transform: translateX(-50%);
   width: 16vw;

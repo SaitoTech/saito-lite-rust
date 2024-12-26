@@ -40,7 +40,7 @@
 }
 
 @media screen and (max-width: 900px) {
-    .pot {
+.pot {
     width: 30rem;
     height: 20rem;
     padding-left: 30px;
@@ -64,5 +64,24 @@
 }
 
 
+@media screen and (max-width: 1000px) {
+ .pot {
+    width: 25rem;
+    height: 18rem;
+    padding-left: 22px;
+    transform: skew(50deg);
+ }
+ .potholder {
+    padding-top: 11rem;
+    font-size: 2rem;
+    width: 10rem;
+    margin-left: 23.5rem;
+    transform: skew(-50deg);
+ }
+ .potholder .line2 {
+    font-size: 3rem;
+ }
+
+}
 
 }

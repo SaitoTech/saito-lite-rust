@@ -11,6 +11,8 @@
 
 .cardfan .card {
   position: absolute;
+  min-width: 100px;
+  min-height: 153px;
 }
 
 .cardfan {

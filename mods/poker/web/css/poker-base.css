@@ -33,6 +33,7 @@ body {
   bottom: 10px;
   width: 250px;
   height: 250px;
+  max-height: 36vh;
   justify-content: space-around;
 }
 
