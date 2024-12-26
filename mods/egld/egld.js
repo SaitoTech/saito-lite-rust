@@ -418,15 +418,11 @@ class EGLDModule extends CryptoModule {
     }
 
     getEnv(){
-        console.log("getEnv ///");
         if (typeof process.env.EGLD != "undefined") {
           return JSON.parse(process.env.EGLD);
         } else {
-            return {
-                base_url: "https://devnet-api.multiversx.com",
-                network_provider_url: "https://devnet-gateway.multiversx.com",
-                explorer_url: "https://devnet-explorer.multiversx.com",
-            }
+            console.error("Env variable not found");
+            return {};
         }
     }
 
@@ -435,7 +431,6 @@ class EGLDModule extends CryptoModule {
         console.log("this_self.egld.base_url:", this_self.egld.base_url);    
         if (this_self.egld.base_url == null) {
             await this_self.sendFetchEnvTransaction(async function (res){
-                
                 if (typeof res == 'object' && Object.keys(res).length > 0) {
                     this_self.base_url = this_self.egld.base_url = res.base_url;
                     this_self.explorer_url = this_self.egld.explorer_url = res.explorer_url;
@@ -453,10 +448,10 @@ class EGLDModule extends CryptoModule {
 
     async initiateNetwork() {        
         if (this.apiNetworkProvider == null) {
-            console.log("initiateNetwork: ////");
-            console.log("base_url:", this.egld.base_url);
-            console.log("base_url:", this.egld.explorer_url);
-            console.log("base_url:", this.egld.network_provider_url);
+            // console.log("initiateNetwork: ////");
+            // console.log("base_url:", this.egld.base_url);
+            // console.log("base_url:", this.egld.explorer_url);
+            // console.log("base_url:", this.egld.network_provider_url);
 
             this.apiNetworkProvider = new ApiNetworkProvider(this.egld.base_url, { clientName: "multiversx-your-client-name" });
             this.proxyNetworkProvider = new ProxyNetworkProvider(this.egld.network_provider_url, { clientName: "multiversx-your-client-name" });
