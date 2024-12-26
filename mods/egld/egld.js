@@ -202,7 +202,7 @@ class EGLDModule extends CryptoModule {
 
                 const trans_hash = row.txHash;
                 const sender_html = `
-                    <a class="history-tx-link" href="${this.explorer_url}/transactions/${trans_hash}" target="_blank">
+                    <a class="history-tx-link" href="${this.egld.explorer_url}/transactions/${trans_hash}" target="_blank">
                         <div class="history-tx-id">${trans_hash}</div>
                         <i class="fa-solid fa-arrow-up-right-from-square"></i>
                     </a>`;
