@@ -428,7 +428,7 @@ class EGLDModule extends CryptoModule {
 
     async setupNetwork(){
         let this_self = this;
-        console.log("this_self.egld.base_url:", this_self.egld.base_url);    
+        //console.log("this_self.egld.base_url:", this_self.egld.base_url);    
         if (this_self.egld.base_url == null) {
             await this_self.sendFetchEnvTransaction(async function (res){
                 if (typeof res == 'object' && Object.keys(res).length > 0) {
@@ -495,7 +495,7 @@ class EGLDModule extends CryptoModule {
           "egld fetch env",
           data,
           function (res) {
-            console.log("Callback for sendCreateAccountTransaction request: ", res);
+           // console.log("Callback for sendCreateAccountTransaction request: ", res);
             if (typeof res == 'object' && Object.keys(res).length > 0) {
               //console.log("response from env", res);
             }
@@ -511,7 +511,7 @@ class EGLDModule extends CryptoModule {
     async receiveFetchEnvTransaction(app, tx, peer, callback) {
         if (app.BROWSER == 0) {
           let m = this.getEnv();
-          console.log("m: ", m);
+          //console.log("m: ", m);
           if (!m) {
             console.error("MIXIN ENV variable missing.");
             return;
