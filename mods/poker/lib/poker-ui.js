@@ -66,7 +66,13 @@ class PokerUI {
         // Updates the status / text information body of player box
         //
         displayPlayerNotice(msg, player) {
-                this.playerbox.updateBody(msg, player);
+                if (player == this.game.player){
+                        this.playerbox.updateBody(`<div class="status"></div>`, player);
+                        this.updateStatus(msg);
+                }else{
+                        this.playerbox.updateBody(msg, player);
+                }
+                
         }
 
         // Update the player's role and wager... 
@@ -82,7 +88,7 @@ class PokerUI {
         }
 
 
-
+/*
         updateStatus(str, hide_info = 0) {
                 if (str.indexOf('<') == -1) {
                         str = `<div style="padding-top:2rem">${str}</div>`;
@@ -111,7 +117,7 @@ class PokerUI {
                         );
                 }
         }
-
+*/
 
         playerTurn() {
                 if (this.browser_active == 0) {

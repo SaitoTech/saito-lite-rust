@@ -300,9 +300,6 @@ body {
 
 /* Undo HUD styling for Acknowledge */
 .status-header,
-.status-text-menu,
-.status-text-menu ul,
-.status-text-menu ul li,
 .textchoice,
 .status-message {
 	background: unset;

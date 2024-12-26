@@ -49,7 +49,7 @@
 	min-width: 250px;
 	max-width: min(250px, 30vw);
 	border: 1px solid #fff3;
-	min-height: 11rem;
+	min-height: 10rem;
 	color: white;
 	background-color: #020E;
 	position: relative;
@@ -63,27 +63,6 @@
   	transform: translate(-3px, -2px);
 }
 
-.game-playerbox-body .status {
-	width: 100%;
-	padding: 0rem;
-	margin-top: 0.5rem;
-	line-height: 2.3rem;
-	font-size: 1.8rem;
-	text-align: center;
-}
-
-.game-playerbox-body .status .status-header .status-message {
-	box-shadow: none;
-}
-
-.game-playerbox .status-header .status-message {
-	background: unset;
-}
-
-.game-playerbox .status-text-menu,
-.game-playerbox .status-text-menu ul {
-	background: unset;
-}
 
 .game-playerbox-head .saito-user > .saito-address {
 	color: white;
@@ -99,10 +78,10 @@
 }
 
 
-.plog-update {
+.plog-update, .status {
 	width: 100%;
 	text-align: center;
-	margin-top: 1rem;
+	margin-top: 0.5rem;
 }
 
 
