@@ -1,6 +1,5 @@
 module.exports = (app, mod, form) => {
   console.log("Select amount", form?.ticker);
-  console.log("mod: ", mod);
 	let html = `
 
     <div class="game-crypto-transfer-manager-container" id="stake-crypto-request-container">
@@ -11,8 +10,15 @@ module.exports = (app, mod, form) => {
         <input autocomplete="off" id="amount_to_stake_input" class="stake" 
         type="number" min="0" max="9999999999.99999999" step="0.00000001" value="${form?.stake || '0.0'}" >`;
 
+      let fee = 0;
+
       if (form.fixed){
         html += `<div class="crypto-ticker">${form.ticker}</div>`;
+        crypto_mod = app.wallet.returnCryptoModuleByTicker(form.ticker);
+        crypto_mod.returnWithdrawalFeeForAddress('', function(res){
+          fee = res;
+        });
+        mod.max_balance = Number(mod.max_balance) - Number(fee);
       } else {
         html +=  `
                  <div class="token-dropdown"><select class="withdraw-select-crypto" id="stake-select-crypto">`;
@@ -22,6 +28,16 @@ module.exports = (app, mod, form) => {
             form.ticker = ticker;
             mod.max_balance = parseFloat(mod.balances[ticker].balance);
           }
+
+          if (form.ticker == ticker) {
+            crypto_mod = app.wallet.returnCryptoModuleByTicker(ticker);
+            crypto_mod.returnWithdrawalFeeForAddress('', function(res){
+              fee = res;
+            });
+
+            mod.max_balance = Number(mod.max_balance) - Number(fee);
+          }
+
           html += `<option value="${ticker}" ${form.ticker == ticker ? "selected" : ""}>${ticker}</option>`;
         }
         html +=  `</select>
