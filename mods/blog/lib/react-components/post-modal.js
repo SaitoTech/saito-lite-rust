@@ -3,6 +3,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+import { htmlToMarkdown, isMarkdownContent } from '../utils';
+
+
 
 const PostModal = ({ onClose, onSubmit, post }) => {
   const [formData, setFormData] = useState({
@@ -19,6 +22,15 @@ const PostModal = ({ onClose, onSubmit, post }) => {
 
   const [imageMethod, setImageMethod] = useState('file');
   const [imageUrl, setImageUrl] = useState('');
+  const [editorMode, setEditorMode] = useState(() => {
+    if (post?.content) {
+      return isMarkdownContent(post.content) ? 'markdown' : 'rich';
+    }
+    return 'rich';
+  });
+  const isQuillUpdate = useRef(false);
+  
+
 
   const editorRef = useRef(null);
   const quillInstance = useRef(null);
@@ -28,35 +40,6 @@ const PostModal = ({ onClose, onSubmit, post }) => {
   );
 
 
-
-
-
-  // useEffect(() => {
-  //   if (window.Quill && editorRef.current && !quillInstance.current) {
-  //     quillInstance.current = new window.Quill(editorRef.current, {
-  //       theme: 'snow',
-  //       modules: modules,
-  //       placeholder: 'Write your blog content here...',
-  //     });
-
-  //     if (formData.content) {
-  //       quillInstance.current.root.innerHTML = formData.content;
-  //     }
-
-  //     quillInstance.current.on('text-change', () => {
-  //       setFormData(prev => ({
-  //         ...prev,
-  //         content: quillInstance.current.root.innerHTML
-  //       }));
-  //     });
-  //   }
-
-  //   return () => {
-  //     if (quillInstance.current) {
-  //       // Cleanup if needed
-  //     }
-  //   };
-  // }, []);
 
   useEffect(() => {
     if (window.Quill && editorRef.current && !quillInstance.current) {
@@ -82,8 +65,8 @@ const PostModal = ({ onClose, onSubmit, post }) => {
           }
         };
       };
-      const imageUrlHandler = () => {
-        const url = prompt('Enter image URL:');
+      const imageUrlHandler = async () => {
+        const url = await sprompt('Enter image URL:');
         if (url) {
           const range = quillInstance.current.getSelection(true);
           quillInstance.current.insertEmbed(range.index, 'image', url);
@@ -106,16 +89,33 @@ const PostModal = ({ onClose, onSubmit, post }) => {
               [{ 'indent': '-1' }, { 'indent': '+1' }],
               [{ 'script': 'sub' }, { 'script': 'super' }],
               ['blockquote', 'code-block'],
-              ['image'],
+              ['link', 'image'],
               ['clean']
             ],
             handlers: {
-              image: () => {
-                const selection = window.confirm('Would you like to upload a file instead of using a URL?');
+              image: async () => {
+                const selection = await sconfirm('Would you like to upload a file instead of using a URL?');
                 if (selection) {
                   imageHandler();
                 } else {
                   imageUrlHandler();
+                }
+              },
+              link: function (value) {
+                if (value) {
+                  const href = prompt('Enter the URL:');
+                  if (href) {
+                    const quill = quillInstance.current;
+                    const range = quill.getSelection();
+                    if (range && range.length > 0) {
+                      quill.format('link', href);
+                    } else {
+                      quill.insertText(range.index, href, 'link', href);
+                      quill.setSelection(range.index + href.length);
+                    }
+                  }
+                } else {
+                  quillInstance.current.format('link', false);
                 }
               }
             }
@@ -128,8 +128,8 @@ const PostModal = ({ onClose, onSubmit, post }) => {
       });
 
       const toolbar = quillInstance.current.getModule('toolbar');
-      toolbar.addHandler('image', () => {
-        const selection = window.confirm('Would you like to upload a file instead of using a URL?');
+      toolbar.addHandler('image', async () => {
+        const selection = await sconfirm('Would you like to upload a file instead of using a URL?');
         if (selection) {
           imageHandler();
         } else {
@@ -141,10 +141,13 @@ const PostModal = ({ onClose, onSubmit, post }) => {
         quillInstance.current.root.innerHTML = formData.content;
       }
       quillInstance.current.on('text-change', () => {
-        setFormData(prev => ({
-          ...prev,
-          content: quillInstance.current.root.innerHTML
-        }));
+        if (!isQuillUpdate.current) {
+          const htmlContent = quillInstance.current.root.innerHTML;
+          setFormData(prev => ({
+            ...prev,
+            content: htmlContent
+          }));
+        }
       });
 
       editorRef.current.addEventListener('paste', (e) => {
@@ -170,14 +173,40 @@ const PostModal = ({ onClose, onSubmit, post }) => {
 
     return () => {
       if (quillInstance.current) {
-        // Cleanup 
       }
     };
   }, []);
 
+  useEffect(() => {
+    if (!editorRef.current) return;
+
+    if (editorMode === 'rich' && quillInstance.current) {
+      const editorElement = editorRef.current;
+      if (editorElement && editorElement.style) {
+        editorElement.style.display = 'block';
+        document.querySelector('.ql-toolbar').style.display = "block";
+        if (formData.content && !formData.content.includes('<')) {
+          isQuillUpdate.current = true;
+          const htmlContent = DOMPurify.sanitize(marked.parse(formData.content));
+          const delta = quillInstance.current.clipboard.convert(htmlContent);
+          quillInstance.current.setContents(delta, 'silent');
+          isQuillUpdate.current = false;
+        }
+      }
+    } else if (editorMode === 'markdown' && quillInstance.current) {
+      const editorElement = editorRef.current;
+      if (editorElement && editorElement.style) {
+        editorElement.style.display = 'none';
+        document.querySelector('.ql-toolbar').style.display = "none";
+      }
+    }
+  }, [editorMode]);
 
   useEffect(() => {
     if (post) {
+      const initialMode = isMarkdownContent(post.content) ? 'markdown' : 'rich';
+      setEditorMode(initialMode);
+      
       setFormData({
         title: post.title,
         content: post.content,
@@ -185,11 +214,11 @@ const PostModal = ({ onClose, onSubmit, post }) => {
         images: [],
         imageUrl: post.imageUrl || ''
       });
-
-      if (quillInstance.current && post.content) {
+  
+      if (quillInstance.current && post.content && initialMode === 'rich') {
         quillInstance.current.root.innerHTML = post.content;
       }
-
+  
       if (post.imageUrl) {
         setImagePreview(post.imageUrl);
       } else if (post.image) {
@@ -198,6 +227,22 @@ const PostModal = ({ onClose, onSubmit, post }) => {
     }
   }, [post]);
 
+  const handleEditorModeSwitch = () => {
+    if (editorMode === 'rich') {
+      const htmlContent = quillInstance.current.root.innerHTML;
+      const cleanHtml = htmlContent.replace(/(<p><br><\/p>)+/g, '<p><br></p>');
+      const markdownContent = htmlToMarkdown(cleanHtml);
+      setFormData(prev => ({
+        ...prev,
+        content: markdownContent
+      }));
+    } else {
+      const htmlContent = DOMPurify.sanitize(marked.parse(formData.content));
+      const delta = quillInstance.current.clipboard.convert(formData.content);
+      quillInstance.current.setContents(delta, 'silent');
+    }
+    setEditorMode(prev => prev === 'rich' ? 'markdown' : 'rich');
+  };
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -400,6 +445,33 @@ const PostModal = ({ onClose, onSubmit, post }) => {
 
         <div className="left-column-buttons">
           <div className='filter-container'>
+            <label className="filter-label">Current Editor Mode</label>
+            <button
+            className='btn-publish'
+            style={{background: 'none'}}
+              type="button"
+              onClick={() => { 
+                handleEditorModeSwitch()
+              }}
+            >
+              {editorMode === "rich" ? "Rich Text" : "Markdown"}
+            </button>
+     
+            {/* <button
+              onClick={handleSubmit}
+              type="submit"
+              className="btn-publish"
+              disabled={!formData.title || !formData.content || isSubmitting}
+            >
+              {isSubmitting ? 'Publishing...' : 'Publish'}
+            </button> */}
+
+            <div className="action-buttons">
+
+            </div>
+
+          </div>
+          <div className='filter-container'>
             <label className="filter-label">Action</label>
             {/* <button
               type="button"
@@ -443,22 +515,27 @@ const PostModal = ({ onClose, onSubmit, post }) => {
             />
           </div>
 
-          {!showPreview ? (
-            <div className="form-group">
-              {/* <textarea
+
+          <div className="form-group">
+            <div ref={editorRef} className="editor-content" />
+            {
+              editorMode !== 'rich' && !showPreview && <textarea
                 name="content"
                 value={formData.content}
                 onChange={handleChange}
-                placeholder="Write your blog content here..."
-                className="editor-content"
+                placeholder="Write your blog content here using Markdown..."
+                className="editor-content h-96 w-full p-4 border rounded"
                 required
-              /> */}
-              <div ref={editorRef} className="editor-content" />
-            </div>
-          ) : (
-            <div className="form-group">
+              />
+            }
+
+
+          </div>
+
+          {showPreview && (
+            <div className="form-group mt-4">
               <div
-                className=""
+                className="preview-content"
                 dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(marked.parse(formData.content))
                 }}
@@ -597,6 +674,24 @@ const PostModal = ({ onClose, onSubmit, post }) => {
                 </div>
               )}
             </div>
+
+            <div className='filter-container'>
+            <label className="filter-label">Current Editor Mode</label>
+            <button
+            className='btn-publish'
+              type="button"
+              onClick={() => { 
+                handleEditorModeSwitch()
+              }}
+            >
+              {editorMode === "rich" ? "Rich Text" : "Markdown"}
+            </button>
+
+            <div className="action-buttons">
+
+            </div>
+
+          </div>
             <div className='filter-container'>
               <label className="filter-label">Action</label>
               {/* <button

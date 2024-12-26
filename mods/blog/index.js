@@ -55,7 +55,7 @@ module.exports = (app, mod, build_number, og_card) => {
     <link rel="stylesheet" href="/saito/lib/pace/pace-theme.min.css">
     <link rel="stylesheet" type="text/css" href="/saito/saito.css?v=${build_number}">
     
-    <title>Saito Profile</title>
+    <title>Saito Blog</title>
   
     <style type="text/css">
     /* css for fade-out bg effect while content is loading */
@@ -81,13 +81,12 @@ module.exports = (app, mod, build_number, og_card) => {
       background-image: url('/saito/img/tiled-logo.svg');
     }
   </style>
-<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 
 
   </head>
   
   <body>
-  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+  <script src="/blog/js/quill.js"></script>
   </body>
   <script type="text/javascript" src="/saito/saito.js?build=${build_number}" >
 </script>

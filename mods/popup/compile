@@ -1,6 +1,0 @@
-
-rm ../../web/saito/saito.js
-
-
-npm run compile $1
-

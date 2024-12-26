@@ -338,6 +338,13 @@ Useful declarations for game stats
   padding: 3rem;
   padding-left: 2rem;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.debug_overlay button {
+  margin: auto;
 }
 
 @media screen and (max-width: 600px) {

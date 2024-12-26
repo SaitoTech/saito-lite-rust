@@ -17,13 +17,11 @@ class GameBoard {
 		if (!document.querySelector(".gameboard")) {
 		  this.app.browser.addElementToDom(GameBoardTemplate(this.game_mod.theme));
 		  this.attachEvents();
-		} else {
-		  this.app.browser.replaceElementBySelector(GameBoardTemplate(this.game_mod.theme), ".gameboard");
-		  this.attachEvents();
-		}
+		} 
 
 		this.game_mod.cardfan.render();
 		this.game_mod.pot.render();
+
 
 		this.displayTable();
 

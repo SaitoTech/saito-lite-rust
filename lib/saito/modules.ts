@@ -177,6 +177,7 @@ class Mods {
             const current_url = window.location.toString();
             const myurl = new URL(current_url);
             const myurlpath = myurl.pathname.split('/');
+
             let active_module = myurlpath[1] ? myurlpath[1].toLowerCase() : '';
             if (active_module == '') {
               active_module = 'website';
@@ -434,7 +435,7 @@ class Mods {
   }
 
   //
-  // 1 = permit, -1 = do not permit
+  // 1 = permit, -1 = do not permit, 0 = indifferent
   //
   moderateModule(tx = null, mod = null) {
     if (mod == null || tx == null) {
@@ -480,6 +481,13 @@ class Mods {
     return this.moderate(newtx);
   }
 
+  //
+  // return 1 if we permit or do not block
+  //
+  // 1 if (yes or maybe)
+  //
+  // note that permit_through can be returned -1 (no) 0 (indifferent) or 1 (yes)
+  //
   moderate(tx = null, app = '') {
     let permit_through = 0;
 
@@ -515,6 +523,54 @@ class Mods {
     //
     return 1;
   }
+
+
+  //
+  // return 1 if we do not explicitly permit
+  //
+  // 1 if (no or maybe)
+  //
+  // note that permit_through can be returned -1 (no) 0 (indifferent) or 1 (yes)
+  //
+  reverseModerate(tx = null, app = '') {
+    let permit_through = 0;
+
+    //
+    // if there is a relevant app-filter-function, respect it
+    //
+    for (let i = 0; i < this.mods.length; i++) {
+      if (this.mods[i].name == app || app == '*') {
+        permit_through = this.moderateModule(tx, this.mods[i]);
+        if (permit_through == -1) {
+          return 1;
+        }
+        if (permit_through == 1) {
+          return 0;
+        }
+      }
+    }
+
+    //
+    // otherwise go through blacklist
+    //
+    permit_through = this.moderateCore(tx);
+
+    if (permit_through == -1) {
+      return 1;
+    }
+    if (permit_through == 0) {
+      return 1;
+    }
+    if (permit_through == 1) {
+      return 0;
+    }
+
+    //
+    // not permitted, so...
+    //
+    return 0;
+  }
+
 
   async render() {
     for (let icb = 0; icb < this.mods.length; icb++) {

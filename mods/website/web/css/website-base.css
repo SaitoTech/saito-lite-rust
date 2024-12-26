@@ -76,6 +76,7 @@ nav>img {
 
 .splash-container video {
   width: 120vw;
+  min-width: 120%;
   height: 134vh;
   object-fit: cover;
   overflow: hidden;
@@ -128,15 +129,6 @@ video {
   }
 }
 
-/* 
-@media (max-aspect-ratio: 9/5) {
-  video {
-    width: 100vh;
-  }
-  .feature {
-    width: 100vh;
-  }
-} */
 
 .banner-logo {
   width: 30vw;
@@ -174,6 +166,10 @@ hr {
   margin: 4rem 0;
   border: 0px;
   border-top: 2px solid #fff;
+}
+
+.info h2 {
+  font-weight: bold;
 }
 
 @keyframes rotate {
@@ -340,7 +336,7 @@ body {
   }
 }
 
-@media screen and (max-height: 650px) {
+@media screen and (max-height: 768px) {
   .content {
     width: 100vw;
     height: 100vh;
@@ -356,6 +352,10 @@ body {
     top: 0;
     left: 0;
     background-color: unset;
+  }
+
+  .feature {
+    display: none !important;
   }
 }
 

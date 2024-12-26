@@ -5,6 +5,7 @@ class Pot {
 	constructor(app, mod) {
 		this.app = app;
 		this.game_mod = mod;
+		this.pot_counter = mod.crypto || 'CHIPS';
 	}
 
 	render() {
@@ -14,9 +15,9 @@ class Pot {
         }
 
 		if (!document.querySelector(".pot")) {
-		  this.app.browser.addElementToDom(PotTemplate(`${pot} CHIPS`));
+		  this.app.browser.addElementToDom(PotTemplate(pot, this.pot_counter));
 		} else {
-		  this.app.browser.replaceElementBySelector(PotTemplate(`${pot} CHIPS`), ".pot");
+		  this.app.browser.replaceElementBySelector(PotTemplate(pot, this.pot_counter), ".pot");
 		}
 
 		this.attachEvents();

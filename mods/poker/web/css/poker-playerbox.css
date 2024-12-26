@@ -1,7 +1,7 @@
 
 .game-playerbox-manager {
     display: flex;
-    flex-direction: row;
+    flex-direction: row-reverse;
     width: 95vw;
     height: max-content;
     justify-content: space-around;
@@ -11,12 +11,6 @@
 
 .saito-user {
   grid-template-columns: min-content 1fr;
-}
-.playerbox {
-    display: block;
-    height: 10rem;
-    width: 40rem;
-    background-color: red;
 }
 
 .other-player-hand {
@@ -38,14 +32,18 @@
 	display: flex;
 }
 
-.game-playerbox-head .saito-user .game-playerbox-icons {
-	grid-row: 1;
-	position: absolute;
+.game-playerbox-icons {
+	flex-direction: column;
+	align-items: center;
 }
 
-.game-playerbox-head .saito-user .saito-userline {
-	grid-column: 2 / span 1;
+.game-playerbox-icons .poker-stack-balance {
+	font-size: 1.2em;
 }
+.game-playerbox-icons .poker-stack-units {
+	font-size: 0.8em;
+}
+
 
 .game-playerbox {
 	min-width: 250px;
@@ -53,12 +51,16 @@
 	border: 1px solid #fff3;
 	min-height: 11rem;
 	color: white;
-	background-color: #4448;
+	background-color: #020E;
 	position: relative;
+	border-radius: 2rem;
+	transition: all 0.5s;
 }
 
-.game-playerbox.active {
+.game-playerbox.active:not(.game-playerbox-seat-1) {
 	border: 1px solid #fff;
+	filter: drop-shadow(5px 5px 3px black);
+  	transform: translate(-3px, -2px);
 }
 
 .game-playerbox-body .status {
