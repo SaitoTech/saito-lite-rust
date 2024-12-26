@@ -322,7 +322,7 @@ class EGLDModule extends CryptoModule {
                     console.log('amount: ', amount);
                     console.log('snapshot_amount: ', snapshot_amount);
 
-                    if (snapshot_amount == amount){
+                    if (Number(snapshot_amount) == Number(amount)){
                         
                         console.log("checking status ///")
 
