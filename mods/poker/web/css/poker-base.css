@@ -38,7 +38,7 @@ body {
   height: 250px;
   max-height: 36vh;
   left: calc(50% - 125px);
-  bottom: 0px;
+  bottom: 10px;
 }
 
 
