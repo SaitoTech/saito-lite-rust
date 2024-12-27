@@ -1,3 +1,8 @@
+:root {
+  --ideal-game-log: min(450px, 65vw);
+}
+
+
 body {
     background-image: url(/poker/img/backgrounds/castle2.png);
 }
@@ -24,14 +29,16 @@ body {
 .deal {
   display: flex;
   gap: 1rem;
+  margin-bottom: 10%;
 }
 
 .mystuff {
   position: absolute;
-  display: flex;
+  width: 250px;
+  height: 250px;
+  max-height: 36vh;
+  left: calc(50% - 125px);
   bottom: 0px;
-  width: 100vw;
-  justify-content: space-around;
 }
 
 
@@ -50,4 +57,16 @@ body {
 	background: #fffd;
 	padding: 4px 2px;
 	border-radius: 6px;
+}
+
+@media screen and (max-width: 900px) {
+  .deal {
+    gap: 5px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .gameboard {
+    padding: 2rem;
+  }
 }

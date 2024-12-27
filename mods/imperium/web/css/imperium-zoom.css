@@ -90,12 +90,6 @@
 	position: relative;
 }
 
-.zoom-overlay .status .status-text-menu ul .textchoice {
-	background-color: whitesmoke;
-	padding: 1.5rem;
-	border-radius: 0.5rem;
-}
-
 /*
 .zoom-german {
 	transform: translate(-42%, -20%) scaleX(0.7) scaleY(0.7);

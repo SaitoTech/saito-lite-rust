@@ -331,3 +331,11 @@ Media Queries
     font-size: 1.4rem;
   }
 }
+
+[data-theme^="modern"] .chess-font {
+  font-family: var(--font-chess);
+}
+
+[data-theme^="modern"] .chess7-font {
+  font-family: var(--font-chess7);
+}

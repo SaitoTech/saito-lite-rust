@@ -69,104 +69,55 @@ class Popup extends ModTemplate {
 	////////////////////
 	// initialization //
 	////////////////////
-/***
 	async initializeDatabase() {
-
-		// Open (or create) the database
-		const request = indexedDB.open(this.dbName, this.dbVersion);
-
-		request.onerror = (event) => {
-		    console.error('Database error:', event.target.errorCode);
-		};
-
-		request.onsuccess = async (event) => {
-		    this.localDB = event.target.result;
-		    console.log('Database opened successfully:', this.localDB.name);
-		    // You can start using the database now
-
-		    let x = await this.returnVocab();
-		    if (x.length > 0) {
-			this.show_vocab = true;
-		    }
-
-		};
-
-		request.onupgradeneeded = (event) => {
-		    this.localDB = event.target.result;
-		    console.log('Database upgrade needed. Creating object stores...');
-    
-		    // Create an object store (table) if it doesn't exist
-		    if (!this.localDB.objectStoreNames.contains('vocabulary')) {
-		        const objectStore = this.localDB.createObjectStore('vocabulary', { keyPath: 'id', autoIncrement: true });
-        
-		        // Create an index if needed
-        		objectStore.createIndex('field3', 'field3', { unique: true });
-        		objectStore.createIndex('field4', 'field4', { unique: true });
-        		objectStore.createIndex('lesson_id', 'lesson_id', { unique: false });
-        		objectStore.createIndex('label', 'label', { unique: false });
-        		objectStore.createIndex('last_studied', 'last_studied', { unique: false });
-        		objectStore.createIndex('srs_rank', 'srs_rank', { unique: false });
-
-		        console.log('Object store "vocabulary" created');
-		    }
-		};
-
-		return;
-	}
-****/
-
-
-
-
-async initializeDatabase() {
-    return new Promise((resolve, reject) => {
-        // Open (or create) the database
-        const request = indexedDB.open(this.dbName, this.dbVersion);
-
-        request.onerror = (event) => {
-            console.error('Database error:', event.target.errorCode);
-            reject(new Error('Failed to open database'));
-        };
-
-        request.onsuccess = async (event) => {
-            this.localDB = event.target.result;
-            console.log('Database opened successfully:', this.localDB.name);
+	    return new Promise((resolve, reject) => {
+	        // Open (or create) the database
+	        const request = indexedDB.open(this.dbName, this.dbVersion);
+	
+	        request.onerror = (event) => {
+	            console.error('Database error:', event.target.errorCode);
+	            reject(new Error('Failed to open database'));
+	        };
+	
+	        request.onsuccess = async (event) => {
+	            this.localDB = event.target.result;
+	            console.log('Database opened successfully:', this.localDB.name);
             
-            // Wait for the database initialization logic to complete
-            try {
-                let x = await this.returnVocab();
-                if (x.length > 0) {
-                    this.show_vocab = true;
-                }
+	            // Wait for the database initialization logic to complete
+	            try {
+	                let x = await this.returnVocab();
+	                if (x.length > 0) {
+	                    this.show_vocab = true;
+	                }
                 
-                // Resolve the Promise after all initialization is done
-                resolve(this.localDB);
-            } catch (error) {
-                reject(error);  // If something goes wrong during the vocab check
-            }
-        };
+	                // Resolve the Promise after all initialization is done
+	                resolve(this.localDB);
+	            } catch (error) {
+	                reject(error);  // If something goes wrong during the vocab check
+	            }
+        	};
 
-        request.onupgradeneeded = (event) => {
-            this.localDB = event.target.result;
-            console.log('Database upgrade needed. Creating object stores...');
+        	request.onupgradeneeded = (event) => {
+        	    this.localDB = event.target.result;
+        	    console.log('Database upgrade needed. Creating object stores...');
+	
+	            // Create an object store (table) if it doesn't exist
+	            if (!this.localDB.objectStoreNames.contains('vocabulary')) {
+	                const objectStore = this.localDB.createObjectStore('vocabulary', { keyPath: 'id', autoIncrement: true });
+	
+	                // Create an index if needed
+	                objectStore.createIndex('field3', 'field3', { unique: true });
+	                objectStore.createIndex('field4', 'field4', { unique: true });
+	                objectStore.createIndex('lesson_id', 'lesson_id', { unique: false });
+	                objectStore.createIndex('label', 'label', { unique: false });
+	                objectStore.createIndex('last_studied', 'last_studied', { unique: false });
+	                objectStore.createIndex('srs_rank', 'srs_rank', { unique: false });
 
-            // Create an object store (table) if it doesn't exist
-            if (!this.localDB.objectStoreNames.contains('vocabulary')) {
-                const objectStore = this.localDB.createObjectStore('vocabulary', { keyPath: 'id', autoIncrement: true });
-
-                // Create an index if needed
-                objectStore.createIndex('field3', 'field3', { unique: true });
-                objectStore.createIndex('field4', 'field4', { unique: true });
-                objectStore.createIndex('lesson_id', 'lesson_id', { unique: false });
-                objectStore.createIndex('label', 'label', { unique: false });
-                objectStore.createIndex('last_studied', 'last_studied', { unique: false });
-                objectStore.createIndex('srs_rank', 'srs_rank', { unique: false });
-
-                console.log('Object store "vocabulary" created');
-            }
-        };
-    });
-}
+	                console.log('Object store "vocabulary" created');
+	            }
+	        };
+	    });
+	}
 
 
 	async initialize(app) {
@@ -183,11 +134,8 @@ async initializeDatabase() {
 
 		if (!this.app.BROWSER) { return; }
 
-console.log("PRE CHECKING INITIALIZE DATABASE");
 		await this.initializeDatabase();
-console.log("PRE CHECKING INITIALIZE DATABASE 2");
 		this.show_vocab = await this.doesVocabExist();
-console.log("POST CHECKING INITIALIZE DATABASE");
 
 		//
 		// urlpath check for subpages
@@ -608,18 +556,6 @@ console.log("POST CHECKING INITIALIZE DATABASE");
 			this.app.options.popup.review.enable = 1;
 		}
 
-/***
-		localforage.getItem(`popup_vocabulary`, (error, value) => {
-			if (value && value.length > 0) {
-				for (let tx of value) {
-					try {
-						// process transactions one-by-one
-					} catch (err) {}
-				}
-				//this.app.connection.emit("redsquare-home-render-request");
-			}
-		});
-***/
 	}
 
 	updatePreference(field1, value1) {
@@ -652,24 +588,18 @@ console.log("POST CHECKING INITIALIZE DATABASE");
 	}
 
 
-async doesVocabExist() {
-console.log("1");
-    const transaction = this.localDB.transaction(['vocabulary'], 'readonly');
-console.log("2");
-    const objectStore = transaction.objectStore('vocabulary');
-console.log("3");
-    const request = objectStore.count();
-console.log("4");
-
-    const count = await new Promise((resolve, reject) => {
-        request.onsuccess = (event) => resolve(event.target.result);
-        request.onerror = (event) => reject(event.target.error);
-    });
-console.log("5");
-
-    console.log('Number of entries in the vocabulary store:', count);
-    return count > 0;  // Return true or false based on the count
-}
+	async doesVocabExist() {
+    		const transaction = this.localDB.transaction(['vocabulary'], 'readonly');
+    		const objectStore = transaction.objectStore('vocabulary');
+    		const request = objectStore.count();
+	
+	    	const count = await new Promise((resolve, reject) => {
+	        	request.onsuccess = (event) => resolve(event.target.result);
+	        	request.onerror = (event) => reject(event.target.error);
+	    	});
+	
+	    	return count > 0;  // Return true or false based on the count
+	}
 
 
 
@@ -712,8 +642,6 @@ console.log("5");
 
 		request.onsuccess = async () => {
 		       	console.log('Vocabulary added successfully:', obj);
-let x = await this.returnVocab();
-console.log(JSON.stringify(x));
     		};
 
 	    	request.onerror = (event) => {
@@ -724,40 +652,40 @@ console.log(JSON.stringify(x));
 
 
 
-async returnVocab(offset = 0, limit = 10) {
-    if (!this.app.BROWSER) {
-        return [];
-    }
+	async returnVocab(offset = 0, limit = 10) {
+	    if (!this.app.BROWSER) {
+	        return [];
+	    }
 
-    return new Promise((resolve, reject) => {
-        const transaction = this.localDB.transaction(['vocabulary'], 'readonly');
-        const objectStore = transaction.objectStore('vocabulary');
+	    return new Promise((resolve, reject) => {
+	        const transaction = this.localDB.transaction(['vocabulary'], 'readonly');
+	        const objectStore = transaction.objectStore('vocabulary');
         
-        const request = objectStore.openCursor();
-        const allEntries = [];
-        let index = 0;
+	        const request = objectStore.openCursor();
+	        const allEntries = [];
+	        let index = 0;
+	
+	        request.onsuccess = (event) => {
+	            const cursor = event.target.result;
 
-        request.onsuccess = (event) => {
-            const cursor = event.target.result;
+	            if (cursor) {
+	                if (index >= offset && allEntries.length < limit) {
+	                    allEntries.push(cursor.value);
+	                }
+	                index++;
+	                cursor.continue();
+	            } else {
+	                console.log('Fetched vocabulary entries:', allEntries);
+	                resolve(allEntries);
+	            }
+	        };
 
-            if (cursor) {
-                if (index >= offset && allEntries.length < limit) {
-                    allEntries.push(cursor.value);
-                }
-                index++;
-                cursor.continue();
-            } else {
-                console.log('Fetched vocabulary entries:', allEntries);
-                resolve(allEntries);
-            }
-        };
-
-        request.onerror = (event) => {
-            console.error('Error fetching vocabulary entries:', event.target.error);
-            reject(event.target.error);
-        };
-    });
-}
+        	request.onerror = (event) => {
+        	    console.error('Error fetching vocabulary entries:', event.target.error);
+        	    reject(event.target.error);
+        	};
+    	    });
+	}
 
 
 
@@ -768,8 +696,6 @@ async loadQuestion() {
             "multiple_choice_pinyin",
         ];
         let question_type = question_types[Math.floor(Math.random() * question_types.length)];
-
-console.log("ok running here...");
 
         let tdate1 = new Date().getTime();
         let tdate2 = new Date().getTime() - (172800 * 1000);
@@ -794,10 +720,6 @@ console.log("ok running here...");
 
             if (cursor) {
 
-console.log("on success in loadQuestion!");
-console.log("examining: " + cursor.value.field3);
-console.log("V " + JSON.stringify(cursor.value));
-
                 // Check the conditions for filtering the rows
                 if (
                     (cursor.value.srs_rank === 0) || 
@@ -813,10 +735,9 @@ console.log("V " + JSON.stringify(cursor.value));
                 }
 
 		last_entry = cursor.value;
-
                 cursor.continue();
-            } else {
 
+            } else {
 
 		if (rows.length == 0) {
 			if (last_entry) {
@@ -826,8 +747,6 @@ console.log("V " + JSON.stringify(cursor.value));
 
                 // Resolve with a random row if rows exist
                 if (rows.length > 0) {
-
-console.log("ROW: " + JSON.stringify(rows));
 
 	  		let idx = Math.floor(Math.random() * rows.length);
 	  		let word = rows[idx];
@@ -897,11 +816,6 @@ console.log("ROW: " + JSON.stringify(rows));
 	  		let question = "";
 	  		let english = "";
 
-console.log("#");
-console.log("#");
-console.log("# words length: " + words.length);
-console.log(JSON.stringify(words));
-
 	  		//
 	  		// options depend on question type
 	  		//
@@ -942,12 +856,9 @@ console.log(JSON.stringify(words));
           		  source_audio_url : 'http://popupchinese.com/data/'
 	  		}
 
-console.log("OBJ: " + JSON.stringify(obj));
-
 	  		resolve(obj);
 
                 } else {
-console.log("no rows found...");
                     resolve(null);  // No matching rows found
                 }
             }

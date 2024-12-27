@@ -1405,10 +1405,6 @@ class Browser {
 
 				e = e || window.event;
 
-				//console.log("DRAG MOUSEDOWN");
-				//console.log(e.clientX);
-				//console.log(e.offsetX);
-
 				if (
 					!e.currentTarget.id ||
 					(e.currentTarget.id != id_to_move &&
@@ -1610,12 +1606,6 @@ class Browser {
 
 				element_to_move.style.transition = 'unset';
 
-				//e.preventDefault();
-				//if (e.stopPropagation) { e.stopPropagation(); }
-				//if (e.preventDefault) { e.preventDefault(); }
-				//e.cancelBubble = true;
-				//e.returnValue = false;
-
 				const rect = element_to_move.getBoundingClientRect();
 				element_start_left = rect.left;
 				element_start_top = rect.top;
@@ -1653,6 +1643,8 @@ class Browser {
 						element_moved = true;
 					}
 
+					element_to_move.classList.add('dragging');
+					
 					// set the element's new position:
 					element_to_move.style.left =
 						element_start_left + adjustmentX + 'px';

@@ -2746,11 +2746,11 @@ class RedSquare extends ModTemplate {
       //  if (this.app.keychain.returnIdentifierByPublicKey(key)){
       //    score++;
       //  }
-      }
+      //}
 
       if (score > 0) {
         //temp_array.push({tweet, score});
-        temp_array.push({tweet, 1});
+        temp_array.push({tweet, score: 1});
       }
 
     }

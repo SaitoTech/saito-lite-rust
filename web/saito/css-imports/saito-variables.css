@@ -27,6 +27,28 @@ font imports
   src: url("/saito/fonts/password.ttf") format("truetype");
 }
 
+@font-face {
+  font-family: 'ds-digital';
+  src: url('/saito/fonts/DS-DIGI.TTF') format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ds-digital-italic';
+  src: url('/saito/fonts/DS-DIGII.TTF') format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ds-digital-bold';
+  src: url('/saito/fonts/DS-DIGIB.TTF') format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+
 :root {
 
   /* ====================== OLD VARIABLES SECTION =========================== */
@@ -306,7 +328,7 @@ font imports
   --border-radius-leaderboard-ranking: var(--border-radius-soft);
   /*Border padding*/ 
   --border-padding-sidebar-style: var(--border-padding-normal);
-  --border-padding-style-leaderboard-ranking:; /* no override from arcade on main theme */
+  --border-padding-style-leaderboard-ranking: var(--border-padding-normal); /* no override from arcade on main theme */
   --border-padding-overlay-post: var(--border-padding-ultra-wide);
   /*thickness*/
   --border-thickness-general-dividers: var(--border-thickness-thin);
@@ -501,6 +523,39 @@ font imports
   --background-color-alert-box: var(--background-color-main);
 /* Theme Specific */
   --saito-arcade-header-background: var(--dreamscape);
+}
+
+[data-theme^="modern"] {
+  /* Keep existing modern theme variables */
+
+  /* Add Chess Fonts */
+  @font-face {
+    font-family: 'chess';
+    src: url('/chess/fonts/chess.eot');
+    src: url('/chess/fonts/chess.eot?#iefix') format('embedded-opentype'),
+         url('/chess/fonts/chess.woff2') format('woff2'),
+         url('/chess/fonts/chess.woff') format('woff'),
+         url('/chess/fonts/chess.ttf') format('truetype'),
+         url('/chess/fonts/chess.svg#chess') format('svg');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  @font-face {
+    font-family: 'chess7';
+    src: url('/chess/fonts/chess7.eot');
+    src: url('/chess/fonts/chess7.eot?#iefix') format('embedded-opentype'),
+         url('/chess/fonts/chess7.woff2') format('woff2'),
+         url('/chess/fonts/chess7.woff') format('woff'),
+         url('/chess/fonts/chess7.ttf') format('truetype'),
+         url('/chess/fonts/chess7.svg#chess7') format('svg');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  /* Add font variables */
+  --font-chess: 'chess', sans-serif;
+  --font-chess7: 'chess7', sans-serif;
 }
 
 

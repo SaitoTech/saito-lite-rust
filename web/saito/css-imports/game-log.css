@@ -1,9 +1,13 @@
+:root {
+  --ideal-game-log: min(500px, 65vw);
+}
+
 #log-wrapper {
   top: 0px;
-  right: calc(16px - min(500px, 65vw));
+  right: calc(16px - var(--ideal-game-log));
   position: absolute;
   display: block;
-  width: min(500px, 65vw);
+  width: var(--ideal-game-log);
   height: 100%;
   z-index: 500;
   color: #fff;
