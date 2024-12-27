@@ -2723,6 +2723,10 @@ class RedSquare extends ModTemplate {
 	score = 1;
       }
 
+      if (tweet.num_replies > 0) {
+	score = 1;
+      }
+
       if (this.app.modules.reverseModerate(tweet.tx) == -1) {
 	score = 1;
       }

@@ -4,7 +4,6 @@ const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
 const Transaction = require('../../lib/saito/transaction').default;
 const AddAppOverlay = require('./lib/overlay/add-app');
 const GenerateAppOverlay = require('./lib/overlay/generate-app');
-const JsStore = require('jsstore');
 
 class DevTools extends ModTemplate {
 	constructor(app) {
