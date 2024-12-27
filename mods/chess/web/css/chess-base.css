@@ -3,6 +3,24 @@
 	--font-color-primary: #000;
 }
 
+@font-face {
+    font-family: 'chess';
+    src: url('../fonts/DS-DIGI.TTF');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  .player_clock .game-clock {
+    position: static;
+    background: unset;
+    height: 100%;
+    display: block;
+    font-size: 3rem;
+    filter: none;
+	color: red;
+	font-family: 'chess', sans-serif;
+}
+
 .log-lock .mobile-log-tab {
 	background-color: #222d;
 	color: #f9efdf;
@@ -16,25 +34,44 @@
 	padding-top: 1rem;
 }
 
-.observer-mode #board {
-	transform: rotate(90deg);
-}
-
 .saito-userline {
 	text-transform: lowercase;
+}
+
+/*
+.observer-mode #board {
+	transform: rotate(90deg);
 }
 
 .observer-mode .notation-322f9,
 .observer-mode .piece-417db {
 	transform: rotate(-90deg);
 }
+*/
+#game-observer-hud {
+	border-radius: 7px;
+	font-size: 1rem;
+	height: 110px;
+	width: 300px;
+	padding: 10px;
+  }
+
+  .game-observer-status, #obstatus {
+	font-size: 1.7rem;
+	height: unset;
+  }
+
+  #game-observer-controls {
+	font-size: 2rem;
+	height: 40px;
+  }
 
 h1 {
 	margin: 0;
 }
 
 input[type='checkbox'] {
-	border: 1px solid #644b37;
+	border: 1px solid #fffa;
 	margin: 0;
 }
 
@@ -51,7 +88,7 @@ input[type='checkbox']:checked {
 	display: grid;
 	grid-template-columns: min(86vh, 60vw, 700px) 280px;
 	grid-template-rows: max-content;
-	column-gap: 20px;
+	column-gap: 7rem;
 	align-items: center;
 	justify-items: center;
 	align-content: center;
@@ -95,10 +132,16 @@ input[type='checkbox']:checked {
 	overflow: hidden;
 }
 
-.player-identicon {
+.saito-identicon {
 	width: 48px;
 	margin: 1px 4px;
-	box-shadow: 0 0 1px 1px dimgray;
+	border-radius: 5px;
+	border: 1px solid #888;
+}
+
+
+.saito-address.treated {
+    color: unset;
 }
 
 #opponent_id {
@@ -172,15 +215,37 @@ input[type='checkbox']:checked {
 }
 
 .popup-confirm-menu {
-	background-color: #644b37;
-	padding: 5px;
+	padding: 16px;
 	font-size: 18px;
+	color: #efefef;
+	background-color: #000a;
 }
+
+.popup-confirm-menu .action {
+	color: #101010;
+	display: flex;
+	flex-direction: row;
+	padding: 0;
+	justify-content: center;
+	gap: 1rem;
+	align-items: center;
+}
+
+
+.popup-confirm-menu .popup-prompt, .popup-confirm-menu .confirm_check {
+	background-color: unset;
+	box-shadow: none;
+  }
+
 .popup-confirm-menu div {
-	background-color: #f9efdf;
 	margin: 7px 0;
 	padding: 7px 5px;
 }
+
+.popup-confirm-menu .action div:nth-child(2) {
+	width: 70px;
+}
+
 .popup-confirm-menu .action:hover {
 	background-color: #fffff8;
 }

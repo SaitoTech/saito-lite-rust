@@ -54,6 +54,12 @@ class Chessgame extends GameTemplate {
 		}
 
 		await this.injectGameHTML(htmlTemplate());
+		document.documentElement.setAttribute('data-theme', 'dark');
+
+		//this.sizer.render();
+		//this.sizer.attachEvents('#board');
+		//this.app.browser.makeDraggable('#board');
+
 
 		await super.render(app);
 
@@ -738,8 +744,8 @@ class Chessgame extends GameTemplate {
 		let html = `
           <div class="popup-confirm-menu">
             <div class="popup-prompt">Are you sure?</div>
-            <div class="action" id="confirm"> ✔ yes</div>
-            <div class="action" id="cancel"> ✘ cancel</div>
+            <div class="action" id="confirm"><div>✔</div><div>yes</div></div>
+            <div class="action" id="cancel"><div>✘</div><div>cancel</div></div>
             <div class="confirm_check"><input type="checkbox" name="dontshowme" value="true"/> don't ask </div>
           </div>`;
 
