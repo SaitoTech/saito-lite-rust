@@ -24,7 +24,7 @@ class PopupMain {
 		this.app.connection.on('popup-lesson-render-request', (lesson_id) => {
 			document.querySelector('.saito-main').innerHTML = '';
 			document.querySelector('.saito-sidebar.right').innerHTML = '';
-			this.mod.lesson.render(lesson_id);
+			this.mod.lessonui.render(lesson_id);
 		});
 		} catch (err) {}
 
@@ -36,21 +36,15 @@ class PopupMain {
 		});
 		} catch (err) {}
 
-		try {
-		this.app.connection.on('popup-review-render-request', (review_id) => {
-			document.querySelector('.popup-content').innerHTML = '';
-			this.mod.review.render(review_id);
-		});
-		} catch (err) {}
 	}
 
 	render() {
 
 		if (!document.querySelector('.saito-container')) {
-			this.app.browser.addElementToDom(PopupMainTemplate());
+			this.app.browser.addElementToDom(PopupMainTemplate(this.mod));
 			this.app.browser.addElementToSelector(TestimonialsTemplate(), '.saito-main');
 		} else {
-			this.app.browser.replaceElementBySelector(PopupMainTemplate(), '.saito-container');
+			this.app.browser.replaceElementBySelector(PopupMainTemplate(this.mod), '.saito-container');
 			document.querySelector(".saito-main").innerHTML = "";
 			this.app.browser.addElementToSelector(TestimonialsTemplate(), '.saito-main');
 		}
