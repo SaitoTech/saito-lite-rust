@@ -6,7 +6,6 @@ import DOMPurify from 'dompurify';
 import { htmlToMarkdown, isMarkdownContent } from '../utils';
 
 
-
 const PostModal = ({ onClose, onSubmit, post }) => {
   const [formData, setFormData] = useState({
     title: '',
@@ -74,11 +73,12 @@ const PostModal = ({ onClose, onSubmit, post }) => {
       };
 
 
-
-
+      // window.Quill.register('modules/markdownShortcuts', window.MarkdownShortcuts);
       quillInstance.current = new window.Quill(editorRef.current, {
         theme: 'snow',
         modules: {
+
+          // markdownShortcuts: {},
           toolbar: {
             container: [
               [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
@@ -227,22 +227,102 @@ const PostModal = ({ onClose, onSubmit, post }) => {
     }
   }, [post]);
 
+  // const handleEditorModeSwitch = () => {
+  //   if (editorMode === 'rich') {
+  //     const htmlContent = quillInstance.current.root.innerHTML;
+  //     const cleanHtml = htmlContent.replace(/(<p><br><\/p>)+/g, '<p><br></p>');
+  //     const markdownContent = htmlToMarkdown(cleanHtml);
+  //     setFormData(prev => ({
+  //       ...prev,
+  //       content: markdownContent
+  //     }));
+  //   } else {
+  //     const htmlContent = DOMPurify.sanitize(marked.parse(formData.content));
+  //     const delta = quillInstance.current.clipboard.convert(formData.content);
+  //     quillInstance.current.setContents(delta, 'silent');
+  //   }
+  //   setEditorMode(prev => prev === 'rich' ? 'markdown' : 'rich');
+  // };
+
   const handleEditorModeSwitch = () => {
     if (editorMode === 'rich') {
       const htmlContent = quillInstance.current.root.innerHTML;
-      const cleanHtml = htmlContent.replace(/(<p><br><\/p>)+/g, '<p><br></p>');
+    
+      let cleanHtml = htmlContent.replace(/(<p><br><\/p>)+/g, '<p><br></p>');
+
+      cleanHtml = cleanHtml.replace(/<hr\s*\/?>/g, '\n---\n');
+      cleanHtml = cleanHtml.replace(/<br\s*\/?>/g, '\n');
+    
+      cleanHtml = cleanHtml.replace(
+        /<table[^>]*>([\s\S]*?)<\/table>/g,
+        (match, tableContent) => {
+          const rows = tableContent.match(/<tr[^>]*>([\s\S]*?)<\/tr>/g) || [];
+          const markdownRows = rows.map(row => {
+            const cells = row.match(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/g) || [];
+            return `|${cells.map(cell => {
+              const content = cell.replace(/<\/?t[dh][^>]*>/g, '').trim();
+              return ` ${content} `;
+            }).join('|')}|`;
+          });
+          
+          if (markdownRows.length > 0) {
+            const columnCount = (markdownRows[0].match(/\|/g) || []).length - 1;
+            const separator = `|${' --- |'.repeat(columnCount)}`;
+            markdownRows.splice(1, 0, separator);
+          }
+          
+          return '\n' + markdownRows.join('\n') + '\n';
+        }
+      );
+      
       const markdownContent = htmlToMarkdown(cleanHtml);
+      
+      const finalMarkdown = markdownContent
+        .replace(/\n---\n/g, '\n\n---\n\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .replace(/(\n\|[^\n]+\|)\n(?!\|)/g, '$1\n\n');
+      
       setFormData(prev => ({
         ...prev,
-        content: markdownContent
+        content: finalMarkdown
       }));
-    } else {
-      const htmlContent = DOMPurify.sanitize(marked.parse(formData.content));
-      const delta = quillInstance.current.clipboard.convert(formData.content);
-      quillInstance.current.setContents(delta, 'silent');
+
+      if (editorRef.current) {
+        editorRef.current.style.display = 'none';
+        const toolbar = document.querySelector('.ql-toolbar');
+        if (toolbar) {
+          toolbar.style.display = 'none';
+        }
+      }
+
+      setEditorMode('markdown');
     }
-    setEditorMode(prev => prev === 'rich' ? 'markdown' : 'rich');
+
   };
+
+  const renderEditorModeButton = () => (
+    <button
+      className='btn-publish'
+      style={{
+        background: editorMode === 'markdown' ? '#ccc' : 'none',
+        cursor: editorMode === 'markdown' ? 'not-allowed' : 'pointer'
+      }}
+      type="button"
+      onClick={async () => {
+
+        if (editorMode === 'rich') {
+          let res = await sconfirm("Are you sure you want to switch editor to markdown mode?");
+          if(res){
+            handleEditorModeSwitch();
+          }
+
+        }
+      }}
+      disabled={editorMode === 'markdown'}
+    >
+      {editorMode === "rich" ? "Switch to Markdown" : "Markdown Mode"}
+    </button>
+  );
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -445,17 +525,9 @@ const PostModal = ({ onClose, onSubmit, post }) => {
 
         <div className="left-column-buttons">
           <div className='filter-container'>
-            <label className="filter-label">Current Editor Mode</label>
-            <button
-            className='btn-publish'
-            style={{background: 'none'}}
-              type="button"
-              onClick={() => { 
-                handleEditorModeSwitch()
-              }}
-            >
-              {editorMode === "rich" ? "Rich Text" : "Markdown"}
-            </button>
+            <label className="filter-label">Editor Mode</label>
+            {renderEditorModeButton()}
+
      
             {/* <button
               onClick={handleSubmit}
@@ -677,15 +749,8 @@ const PostModal = ({ onClose, onSubmit, post }) => {
 
             <div className='filter-container'>
             <label className="filter-label">Current Editor Mode</label>
-            <button
-            className='btn-publish'
-              type="button"
-              onClick={() => { 
-                handleEditorModeSwitch()
-              }}
-            >
-              {editorMode === "rich" ? "Rich Text" : "Markdown"}
-            </button>
+            {renderEditorModeButton()}
+
 
             <div className="action-buttons">
 
