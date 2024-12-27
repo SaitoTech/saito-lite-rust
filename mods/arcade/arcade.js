@@ -1728,17 +1728,18 @@ console.log("before igfat 2");
 		tx.msg.request = list;
 
 		if (list !== 'over' && list !== 'close') {
-			if (tx.msg?.options['open-table']) {
-				list = 'open';
-			}
-
 			//
 			// Sanity check the target list so my games are grouped together
 			//
 			if (this.isMyGame(tx)) {
 				list = 'mine';
-			}else if (tx.msg.players_needed <= tx.msg.players.length){
-				list = 'active';
+			}else {
+				if (tx.msg.players_needed <= tx.msg.players.length){
+					list = 'active';
+				}
+				if (tx.msg?.options['open-table']) {
+					list = 'open';
+				}
 			}
 		}
 
@@ -2077,15 +2078,6 @@ console.log("before igfat 2");
 		if (!players_needed) {
 			console.error('ERROR 582342: Create Game Error');
 			return;
-		}
-
-		if (
-			options['game-wizard-players-select-max'] &&
-			options['game-wizard-players-select-max'] < players_needed
-		) {
-			options['game-wizard-players-select'] = options['game-wizard-players-select-max'];
-			options['game-wizard-players-select-max'] = players_needed;
-			players_needed = options['game-wizard-players-select'];
 		}
 
 		let gamedata = {
