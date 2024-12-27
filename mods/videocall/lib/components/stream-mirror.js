@@ -16,7 +16,7 @@ class StreamMirror {
 
         const videoContainer = document.createElement('div');
         videoContainer.className = 'video-overlay-container';
-        videoContainer.style.cssText = 'position: relative; width: 100%; height: 100%;';
+        videoContainer.style.cssText = 'position: relative; width: 100%;';
 
         const video = document.createElement('video');
         video.id = `mirror-${id}`;
