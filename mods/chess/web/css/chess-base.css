@@ -4,7 +4,7 @@
 }
 
 @font-face {
-    font-family: 'chess';
+    font-family: 'digital';
     src: url('../fonts/DS-DIGI.TTF');
     font-weight: normal;
     font-style: normal;
@@ -18,7 +18,7 @@
     font-size: 3rem;
     filter: none;
 	color: red;
-	font-family: 'chess', sans-serif;
+	font-family: 'digital', sans-serif;
 }
 
 .log-lock .mobile-log-tab {
