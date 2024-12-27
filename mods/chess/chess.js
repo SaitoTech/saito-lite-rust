@@ -139,6 +139,8 @@ class Chessgame extends GameTemplate {
 		this.log.render();
 
 		this.playerbox.render();
+		//Opt in to playerbox holding video call boxes
+		this.playerbox.hostVideo();
 
 		for (let i = 1; i <= 2; i++) {
 			
