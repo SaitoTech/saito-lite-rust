@@ -77,7 +77,7 @@ class EGLDModule extends CryptoModule {
             this.egld.nonce = this.nonce = this.account.nonce;
 
             if (this.account != null) {
-                await this.showBackupWallet();
+                await this.showBackupWalletMsg();
                 this.account_created = 1;
                 this.egld.isActivated = true;
             }
@@ -120,7 +120,7 @@ class EGLDModule extends CryptoModule {
 
   }
 
-    async showBackupWallet(){
+    async showBackupWalletMsg(){
         this.app.options.wallet.backup_required = 1;
         await this.app.wallet.saveWallet();
         
