@@ -15,22 +15,27 @@ class PopupVocab {
 
 	async render(lesson_id = '', offset=0) {
 
+console.log("rendering... 1");
 		//
 		// vocab content
 		//
 		this.app.browser.replaceElementContentBySelector(VocabMainTemplate(), '.saito-main');
 		this.app.browser.replaceElementContentBySelector(VocabRightTemplate(), '.saito-sidebar.right');
+console.log("rendering... 2");
 
 		// offset = 0
 		this.vocab = await this.mod.returnVocab(offset);
+console.log("rendering... 3");
 
 		let html = '<table>';
 		for (let i = 0; i < this.vocab.length; i++) {
 			html += WordTemplate(0, this.vocab[i], this.mod);
 		}
 		html += '</table>';
+console.log("rendering... 4");
 
 		document.querySelector('.vocabulary').innerHTML = html;
+console.log("rendering... 5");
 
 		this.attachEvents();
 

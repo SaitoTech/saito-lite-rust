@@ -20,13 +20,6 @@ img {
 	padding-right: 0;
 }
 
-.status-text-menu {
-	color: whitesmoke;
-}
-
-.status-text-menu ul li:hover {
-	color: black;
-}
 
 .status-icon-menu {
 	height: unset;
@@ -35,9 +28,6 @@ img {
 	justify-content: space-evenly;
 }
 
-.status-text-menu ul li {
-	padding: unset;
-}
 
 .epidemic_overlay {
 	display: flex;
@@ -117,14 +107,6 @@ img {
 	flex-direction: column;
 	align-items: center;
 	gap: 0.5rem;
-}
-
-.status-text-menu ul li.textchoice.confirmed {
-	background-color: rgb(69, 69, 69);
-	color: rgb(231, 231, 231);
-}
-.status-text-menu ul li.textchoice.confirmed:hover {
-	background-color: rgb(69, 69, 69);
 }
 
 .fa-border {

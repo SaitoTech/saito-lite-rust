@@ -270,10 +270,6 @@ img.captured {
 	visibility: hidden;
 }
 
-.status-text-menu ul li {
-	line-height: unset;
-}
-
 /* The letters numbers go in a 30px wide border, default 16px size
 */
 .alpha-d2270 {

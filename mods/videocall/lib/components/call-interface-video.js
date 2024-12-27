@@ -4,6 +4,7 @@ const CallInterfaceVideoTemplate = require('./call-interface-video.template');
 
 const Effects = require('../overlays/effects');
 const VideocallSettings = require('../overlays/videocall-settings');
+const StreamMirror = require('./stream-mirror');
 
 class CallInterfaceVideo {
 	constructor(app, mod, fullScreen = true) {
@@ -13,7 +14,7 @@ class CallInterfaceVideo {
 		this.effectsMenu = new Effects(app, mod);
 		this.localStream;
 		this.video_boxes = {};
-
+		this.streamMirror = new StreamMirror(app, mod);
 		this.local_container = 'expanded-video';
 		this.remote_container = 'side-videos';
 		this.remote_streams = new Map();
@@ -63,6 +64,8 @@ class CallInterfaceVideo {
 			this.updateImages();
 			if (remoteStream) {
 				this.startTimer();
+				this.streamMirror.addStream(remoteStream, peer);
+
 			}
 		});
 
@@ -90,6 +93,9 @@ class CallInterfaceVideo {
 				delete this.video_boxes[peer_id];
 				this.updateImages();
 			}
+
+			this.streamMirror.removeStream(peer_id);
+
 
 			//this.insertActions(this.mod.room_obj.call_peers);
 		});
@@ -210,6 +216,7 @@ class CallInterfaceVideo {
 		this.app.connection.removeAllListeners('stun-new-speaker');
 		this.app.connection.removeAllListeners('stun-switch-view');
 		this.rendered = false;
+		this.streamMirror?.destroy();
 	}
 
 	render(videoEnabled, audioEnabled) {
@@ -514,6 +521,8 @@ class CallInterfaceVideo {
 		this.video_boxes['local'].video_box.render(localStream);
 		this.localStream = localStream;
 		this.updateImages();
+
+		this.streamMirror.addStream(localStream, 'local');
 
 		// segmentBackground(document.querySelector('#stream_local video'), document.querySelector('#stream_local canvas'), 1);
 		// applyBlur(7);

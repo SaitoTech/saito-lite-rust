@@ -9,7 +9,7 @@ module.exports = GameBoardTemplate = (theme) => {
     <div class="card"><img class="cardBack" src="https://saito.io/saito/img/arcade/cards/red_back.png"></div>
     <div class="card"><img class="cardBack" src="https://saito.io/saito/img/arcade/cards/red_back.png"></div>
   </div>
-  <div class="mystuff"></div>
 </div>
+<div class="mystuff"></div>
 	`;
 };
