@@ -41,10 +41,8 @@
 	grid-template-columns: 1fr 1fr;
 	grid-template-rows: auto;
 	grid-template-areas: "a b" "c c" "d d";
-	/*
-	justify-items: flex-end;
-	row-gap: 0.5rem;
-	*/
+	margin: 0rem;
+	gap: 1rem;
 }
 
 .game-playerbox-body div:nth-child(3){

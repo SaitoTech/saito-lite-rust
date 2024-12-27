@@ -688,7 +688,7 @@ video#presentation {
 
 
 .minimize .stun-chatbox .footer {
-	padding: unset;
+	/*padding: unset;*/
 	justify-content: space-between;
 }
 
