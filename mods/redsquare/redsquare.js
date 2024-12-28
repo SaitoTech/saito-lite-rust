@@ -2691,6 +2691,7 @@ class RedSquare extends ModTemplate {
     this.curated_tweets = [];
     let temp_array = [];
     let img_bonus_used = 0;
+    let number_of_tweets_with_positive_score = 0;
 
     for (let tweet of this.tweets){
 
@@ -2752,10 +2753,31 @@ class RedSquare extends ModTemplate {
 
       if (score > 0) {
         //temp_array.push({tweet, score});
+        number_of_tweets_with_positive_score++;
         temp_array.push({tweet, score: 1});
       }
 
     }
+
+    //
+    // 2nd pass in case not enough curated
+    //
+    if (number_of_tweets_with_positive_score < 3) {
+      for (let tweet of this.tweets){
+	if (tweet.curated == 0) {
+          if (tweet.num_likes > 00 {
+            number_of_tweets_with_positive_score++;
+            temp_array.push({tweet, score: 1});
+	  } else {
+            if (tweet.num_retweets > 00 {
+              number_of_tweets_with_positive_score++;
+              temp_array.push({tweet, score: 1});
+	    }
+	  }
+	}
+      }
+    }
+
 
     temp_array.sort((a, b)=> {
       return b.score - a.score;
