@@ -192,9 +192,8 @@ class RedSquare extends ModTemplate {
     let this_mod = this;
     if (type === 'user-menu') {
       return {
-        text: `${
-          obj?.publicKey && obj.publicKey === this.publicKey ? 'My' : 'View'
-        } RedSquare Profile`,
+        text: `${obj?.publicKey && obj.publicKey === this.publicKey ? 'My' : 'View'
+          } RedSquare Profile`,
         icon: 'fa fa-user',
         callback: function (app, publicKey) {
           if (app.modules.returnActiveModule().returnName() == 'Red Square') {
@@ -410,7 +409,7 @@ class RedSquare extends ModTemplate {
     this.loadOptions();
 
     if (!app.BROWSER) {
-      let ts = Date.now() - 7*24*60*60*1000;
+      let ts = Date.now() - 7 * 24 * 60 * 60 * 1000;
       await this.app.storage.loadTransactions(
         {
           field1: 'RedSquare',
@@ -549,7 +548,7 @@ class RedSquare extends ModTemplate {
     }
 
     if (window?.tweets?.length) {
-      if (!this.ignoreCentralServer && this.curated) { 
+      if (!this.ignoreCentralServer && this.curated) {
         for (let z = 0; z < window.tweets.length; z++) {
           let newtx = new Transaction();
           newtx.deserialize_from_web(this.app, window.tweets[z]);
@@ -965,9 +964,9 @@ class RedSquare extends ModTemplate {
 
       if (this.app.BROWSER) {
         this.addNotification(tx);
-      }else{
+      } else {
         // How often should we re-analyze our set of tweets for which ones to promote???
-        if (Math.random() < 0.05){
+        if (Math.random() < 0.05) {
           this.cacheRecentTweets();
         }
       }
@@ -1058,8 +1057,7 @@ class RedSquare extends ModTemplate {
             }
 
             console.log(
-              `REDSQUARE-${i} (${this.peers[i].publicKey}): returned ${
-                txs.length
+              `REDSQUARE-${i} (${this.peers[i].publicKey}): returned ${txs.length
               } ${created_at} tweets, ${count} are new to the feed. New earliest timestamp -- ${new Date(
                 this.peers[i].tweets_earliest_ts
               )}`
@@ -2382,7 +2380,7 @@ class RedSquare extends ModTemplate {
             'localhost'
           );
         }
-      } 
+      }
     } catch (err) {
       console.log('ERROR in receiveTweetsTransaction() in RedSquare: ' + err);
     }
@@ -2430,20 +2428,20 @@ class RedSquare extends ModTemplate {
 
     let modScore = this.app.modules.moderate(tx);
 
-    if (modScore == -1){
+    if (modScore == -1) {
       // Ignore blacklisted people
       return;
     } else if (modScore == 1) {
       // Trusted moderator
       process_action = true;
     } else {
-      if (flagged_tweet){
+      if (flagged_tweet) {
         // two people who are not moderators have flagged it
-        if (flagged_tweet.flagged){
+        if (flagged_tweet.flagged) {
           process_action = true;
-        }else{
+        } else {
           // add a note that this was flagged, but don't necessarily update the database
-          flagged_tweet.flagged = true;  
+          flagged_tweet.flagged = true;
         }
       }
     }
@@ -2480,7 +2478,7 @@ class RedSquare extends ModTemplate {
           siteMessage('One of your tweets was flagged for review', 10000);
         }
       }
-    }else{
+    } else {
       this.cacheRecentTweets();
     }
 
@@ -2693,7 +2691,7 @@ class RedSquare extends ModTemplate {
     let img_bonus_used = 0;
     let number_of_tweets_with_positive_score = 0;
 
-    for (let tweet of this.tweets){
+    for (let tweet of this.tweets) {
 
       if (tweet?.flagged) {
         continue;
@@ -2723,22 +2721,22 @@ class RedSquare extends ModTemplate {
       //}
 
       if (tweet.curated == 1) {
-	score = 1;
+        score = 1;
       }
 
       if (tweet.num_replies > 0) {
-	score = 1;
+        score = 1;
       }
 
       if (this.app.modules.reverseModerate(tweet.tx) == -1) {
-	score = 1;
+        score = 1;
       }
 
-      if (tweet.images?.length > 0){
- 	if (img_bonus_used == 0 && score == 1) {
+      if (tweet.images?.length > 0) {
+        if (img_bonus_used == 0 && score == 1) {
           score += 5;
-	  img_bonus_used = 1;
-	}
+          img_bonus_used = 1;
+        }
       }
 
       //if (this.app.keychain.returnIdentifierByPublicKey(tweet.tx.from[0].publicKey)){
@@ -2754,7 +2752,7 @@ class RedSquare extends ModTemplate {
       if (score > 0) {
         //temp_array.push({tweet, score});
         number_of_tweets_with_positive_score++;
-        temp_array.push({tweet, score: 1});
+        temp_array.push({ tweet, score: 1 });
       }
 
     }
@@ -2763,33 +2761,33 @@ class RedSquare extends ModTemplate {
     // 2nd pass in case not enough curated
     //
     if (number_of_tweets_with_positive_score < 3) {
-      for (let tweet of this.tweets){
-	if (tweet.curated == 0) {
+      for (let tweet of this.tweets) {
+        if (tweet.curated == 0) {
           if (tweet.num_likes > 0) {
             number_of_tweets_with_positive_score++;
-            temp_array.push({tweet, score: 1});
-	  } else {
+            temp_array.push({ tweet, score: 1 });
+          } else {
             if (tweet.num_retweets > 0) {
               number_of_tweets_with_positive_score++;
-              temp_array.push({tweet, score: 1});
-	    }
-	  }
-	}
+              temp_array.push({ tweet, score: 1 });
+            }
+          }
+        }
       }
     }
 
 
-    temp_array.sort((a, b)=> {
+    temp_array.sort((a, b) => {
       return b.score - a.score;
     });
 
-    for (let i = 0; i < 10 && i < temp_array.length; i++){
+    for (let i = 0; i < 10 && i < temp_array.length; i++) {
       this.curated_tweets.push(temp_array[i].tweet);
     }
 
     //Update cache
     this.cached_tweets = [];
-    for (let tweet of this.curated_tweets){
+    for (let tweet of this.curated_tweets) {
       this.cached_tweets.push(tweet.tx.serialize_to_web(this.app));
     }
 
@@ -2960,7 +2958,7 @@ class RedSquare extends ModTemplate {
 
           try {
             no_tags.title = dom.getElementsByTagName('title')[0].textContent;
-          } catch (err) {}
+          } catch (err) { }
 
           // fetch meta element for og tags
           let meta_tags = dom.getElementsByTagName('meta');
