@@ -2765,11 +2765,11 @@ class RedSquare extends ModTemplate {
     if (number_of_tweets_with_positive_score < 3) {
       for (let tweet of this.tweets){
 	if (tweet.curated == 0) {
-          if (tweet.num_likes > 00 {
+          if (tweet.num_likes > 0) {
             number_of_tweets_with_positive_score++;
             temp_array.push({tweet, score: 1});
 	  } else {
-            if (tweet.num_retweets > 00 {
+            if (tweet.num_retweets > 0) {
               number_of_tweets_with_positive_score++;
               temp_array.push({tweet, score: 1});
 	    }
