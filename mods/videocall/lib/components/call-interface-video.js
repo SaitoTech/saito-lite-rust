@@ -232,18 +232,18 @@ class CallInterfaceVideo {
 			this.attachEvents();
 		}
 
+		if (!this.mod.browser_active) {
+			this.app.connection.emit('stun-switch-view', 'gallery');
+		} else {
+			this.app.connection.emit('stun-switch-view', this.mod.layout);
+		}
+
 		if (!this.full_screen) {
 			try {
 				document.querySelector('.stun-chatbox .minimizer').click();
 			} catch (err) {
 				console.error(err);
 			}
-		}
-
-		if (!this.mod.browser_active) {
-			this.app.connection.emit('stun-switch-view', 'gallery');
-		} else {
-			this.app.connection.emit('stun-switch-view', this.mod.layout);
 		}
 
 		this.rendered = true;

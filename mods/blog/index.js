@@ -87,6 +87,7 @@ module.exports = (app, mod, build_number, og_card) => {
   
   <body>
   <script src="/blog/js/quill.js"></script>
+  https://cdn.jsdelivr.net/npm/quill-markdown-shortcuts@0.0.10/dist/markdownShortcuts.min.js
   </body>
   <script type="text/javascript" src="/saito/saito.js?build=${build_number}" >
 </script>

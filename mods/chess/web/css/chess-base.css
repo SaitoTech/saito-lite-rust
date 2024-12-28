@@ -10,7 +10,7 @@
 	display: block;
 	font-size: 3rem;
 	filter: none;
-	font-family: "ds-digital", sans-serif;
+	font-family: "ds-digital", monospace, courier-new, courier, sans-serif;
 	background: #fff;
 	border: 1px solid #888;
 	margin: 3px;

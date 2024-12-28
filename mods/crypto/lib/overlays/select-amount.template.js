@@ -18,7 +18,13 @@ module.exports = (app, mod, form) => {
         crypto_mod.returnWithdrawalFeeForAddress('', function(res){
           fee = res;
         });
-        mod.max_balance = Number(mod.max_balance) - Number(fee);
+
+        let diff = Number(mod.max_balance) - Number(fee);
+        if (diff < 0) {
+          mod.max_balance = 0;  
+        } else {
+          mod.max_balance = Number(mod.max_balance) - Number(fee);
+        }
       } else {
         html +=  `
                  <div class="token-dropdown"><select class="withdraw-select-crypto" id="stake-select-crypto">`;
@@ -35,7 +41,12 @@ module.exports = (app, mod, form) => {
               fee = res;
             });
 
-            mod.max_balance = Number(mod.max_balance) - Number(fee);
+            let diff = Number(mod.max_balance) - Number(fee);
+            if (diff < 0) {
+              mod.max_balance = 0;  
+            } else {
+              mod.max_balance = Number(mod.max_balance) - Number(fee);
+            }
           }
 
           html += `<option value="${ticker}" ${form.ticker == ticker ? "selected" : ""}>${ticker}</option>`;

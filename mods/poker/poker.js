@@ -26,7 +26,7 @@ class Poker extends GameTableTemplate {
 		this.title = "Saito Poker";
 		this.description =
 			`Texas Hold\'em Poker for the Saito Arcade. With five cards on the table and two in your hand, can you bet and bluff your way to victory? 
-				<br> Play with up to five other players for fun or wager integrated web3 cryptocurrencies through your hnady Saito Wallets`;
+				<br> Play with up to five other players for fun or wager integrated web3 cryptocurrencies through your handy Saito Wallets`;
 		this.categories = 'Games Cardgame Casino';
 		this.card_img_dir = '/saito/img/arcade/cards';
 		this.icon = 'fa-solid fa-diamond';

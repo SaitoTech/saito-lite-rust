@@ -30,8 +30,9 @@
     overflow: visible;
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: center;
+    gap: 0.5rem;
 }
 
 .potholder .line2 {
@@ -67,12 +68,12 @@
 @media screen and (max-width: 1000px) {
  .pot {
     width: 25rem;
-    height: 18rem;
+    height: 22rem;
     padding-left: 22px;
     transform: skew(50deg);
  }
  .potholder {
-    padding-top: 11rem;
+    padding-top: 15rem;
     font-size: 2rem;
     width: 10rem;
     margin-left: 23.5rem;
