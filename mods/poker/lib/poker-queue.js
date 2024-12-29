@@ -320,6 +320,7 @@ class PokerQueue {
 
 					this.playerAcknowledgeNotice(msg, async () => {
 						this.cardfan.hide();
+						this.pot.render(0);
 						this.settleLastRound([this.game.players[player_left_idx]], "fold");
 						this.board.clearTable();
 						await this.timeout(1000);
@@ -739,6 +740,7 @@ class PokerQueue {
 				this.halted = 1;
 				this.playerAcknowledgeNotice(winnerStr, async () => {
 					this.cardfan.hide();
+					this.pot.render(0);
 					this.settleLastRound(winner_keys, "besthand");
 					this.board.clearTable();
 					await this.timeout(1000);

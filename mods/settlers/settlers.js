@@ -815,7 +815,7 @@ class Settlers extends GameTemplate {
 
 		if (document.getElementById('spend')) {
 			document.getElementById('spend').onclick = (e) => {
-				this.initialize_game_queue_run = 0;
+				this.initialize_game_run = 0;
 				e.currentTarget.onclick = null;
 				$("#spend").removeClass('enabled');
 				$("#spend").css('visibility', 'hidden');

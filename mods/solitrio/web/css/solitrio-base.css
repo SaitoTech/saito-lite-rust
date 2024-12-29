@@ -45,11 +45,6 @@
 	margin-top: 20px;
 }
 
-.logobox .status-header,
-.logobox .status-text-menu {
-	background-color: #fffe;
-}
-
 .selected .empty:hover {
 	background-color: rgba(240, 240, 240, 0.7);
 	border-radius: 10px;
@@ -164,9 +159,7 @@
 		display: none;
 	}
 
-	.logobox .status,
-	.logobox .status-header,
-	.logobox .status-text-menu {
+	.logobox .status {
 		width: min(500px, 90vw);
 	}
 

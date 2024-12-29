@@ -1,9 +1,3 @@
-.status ul {
-	margin-left: auto;
-	margin-right: auto;
-	overflow-y: auto;
-	font-size: 1.6rem;
-}
 
 .status ul li,
 .option {

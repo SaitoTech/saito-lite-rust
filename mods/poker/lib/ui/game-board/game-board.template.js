@@ -11,5 +11,6 @@ module.exports = GameBoardTemplate = (theme) => {
   </div>
   <div class="mystuff"></div>
 </div>
+<div class="mystuff"></div>
 	`;
 };

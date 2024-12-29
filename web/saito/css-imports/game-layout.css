@@ -143,9 +143,9 @@ div.h3{
 .crypto_logo {
   position: absolute;
   bottom: 0;
-  left: 0;
-  width: min(15rem, 20vw);
-  height: min(15rem, 20vw);
+  left: 40px;
+  width: min(12rem, 20vw);
+  height: min(12rem, 20vw);
   z-index: 0;
 }
 

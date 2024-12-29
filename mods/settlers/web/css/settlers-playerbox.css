@@ -233,63 +233,6 @@
 	transform: scale(1.3);
 }
 
-/******************************/
-
-/*** Poker / Cardgame Boxes ***/
-
-/******************************/
-
-.game-playerbox-seat-8 {
-	bottom: 1vh;
-	left: 1em;
-}
-
-.game-playerbox-seat-7 {
-	bottom: 1vh;
-	right: 1em;
-}
-
-.game-playerbox-seat-6 {
-	left: 1em;
-	top: 45vh;
-	transform: translateY(-50%);
-}
-
-.game-playerbox-seat-5 {
-	left: 1em;
-	top: 20vh;
-	transform: translateY(-50%);
-}
-
-.game-playerbox-seat-4 {
-	left: 50vw;
-	top: 30px;
-	transform: translateX(-50%);
-}
-
-.game-playerbox-seat-3 {
-	right: 1em;
-	top: 20vh;
-	transform: translateY(-50%);
-}
-
-.game-playerbox-seat-2 {
-	right: 1em;
-	top: 45vh;
-	transform: translateY(-50%);
-}
-
-/*** special rules for P1 ***/
-
-.game-playerbox-seat-1 {
-	min-width: 30vh;
-	max-height: 32vh;
-	bottom: 1vh;
-	left: 50vw;
-	transform: translateX(-50%);
-	width: 16vw;
-}
-
 @media screen and (orientation: portrait) and (max-width: 600px) {
 	.game-playerbox-manager {
 		display: none;

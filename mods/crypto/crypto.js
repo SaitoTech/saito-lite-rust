@@ -44,10 +44,13 @@ class Crypto extends ModTemplate {
 
 		app.connection.on('accept-game-stake', async (sobj) => {
 			
+			console.log("accept-game-stake sobj: ", sobj);
+
 			await this.app.wallet.setPreferredCrypto(sobj.ticker);
 
 			let cryptomod = this.app.wallet.returnCryptoModuleByTicker(sobj.ticker);
 			let current_balance = await cryptomod.returnBalance();
+
 			let needed_balance = (typeof sobj.stake == "object") ? parseFloat(sobj.stake.min) : parseFloat(sobj.stake);
 
 			if (needed_balance > current_balance){

@@ -267,6 +267,12 @@ class GameWizard {
 			this.meta_overlay.remove();
 		}
 
+		// Check for open table here
+		if (options["game-wizard-players-select"] == "open-table"){
+			options["open-table"] = 1;
+			options["game-wizard-players-select"] = 2;
+			options["game-wizard-players-select-max"] = 6;
+		}
 
 		return options;
 	}

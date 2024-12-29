@@ -41,7 +41,7 @@ class CryptoSelectAmount {
 		let max_button = document.querySelector('.select_max');
 		if (max_button) {
 			max_button.onclick = (e) => {
-				stake_input.value = this.mod.max_balance;
+				stake_input.value = Number(this.mod.max_balance);
 			};
 		}
 
@@ -91,6 +91,7 @@ class CryptoSelectAmount {
 			document.querySelector('#stake-select-crypto').onchange = (e) => {
 				this.ticker = e.target.value;
 				this.stake = 0;
+
 				this.mod.max_balance = parseFloat(this.mod.balances[this.ticker].balance);
 
 				this.app.browser.replaceElementById(CryptoSelectAmountTemplate(this.app, this.mod, this), "stake-crypto-request-container");

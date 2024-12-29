@@ -1,3 +1,21 @@
+.start_popup_review {
+    margin-left: 80px;
+    padding: 2rem;
+    border: 1px solid #9c1010;
+    border-radius: 1rem;
+    color: black;
+    cursor: pointer;
+    text-align: center;
+    background-color: #9c1010;
+    color: white;
+    font-weight: bold;
+    letter-spacing: 0.1rem;
+}
+.start_popup_review:hover {
+    color: #9C1010;
+    background-color: white;
+}
+
 .review-overlay {
 	background-color: white;
 	padding: 2rem;
@@ -37,7 +55,7 @@
     height: 300px;
 }
 .question_text {
-	font-size: 10em;
+	font-size: 10rem;
 	margin-right: auto;
 	margin-left: auto;
 	line-height: 1em;

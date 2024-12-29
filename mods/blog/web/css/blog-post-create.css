@@ -48,6 +48,7 @@
 .center-column {
   flex: 1;
   padding: 2rem;
+  max-width: 90rem;
   /* border-left: 1px solid var(--saito-border-color); */
 
 }

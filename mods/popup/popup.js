@@ -7,7 +7,7 @@ const PopupReview = require('./lib/review');
 const PopupMain = require('./lib/main');
 const PopupLessonManager = require('./lib/manager');
 const PeerService = require('saito-js/lib/peer_service').default;
-const localforage = require('localforage');
+//const localforage = require('localforage');
 const JsStore = require('jsstore');
 
 class Popup extends ModTemplate {
@@ -21,6 +21,7 @@ class Popup extends ModTemplate {
 		this.icon_fa = 'fa-solid fa-language';
 
 		this.lesson = {}; // if being studied
+		this.show_vocab = false;
 
 		this.styles = ['/popup/style.css'];
 		this.peers = [];
@@ -47,6 +48,12 @@ class Popup extends ModTemplate {
 			og_image_secure_url: 'https://popupchinese.com'
 		};
 
+
+		// define database and version
+		this.dbName = 'popup';
+		this.dbVersion = 1;
+
+
 		this.lessons = [];
 		this.offset = 0;
 
@@ -62,23 +69,87 @@ class Popup extends ModTemplate {
 	////////////////////
 	// initialization //
 	////////////////////
+	async initializeDatabase() {
+	    return new Promise((resolve, reject) => {
+	        // Open (or create) the database
+	        const request = indexedDB.open(this.dbName, this.dbVersion);
+	
+	        request.onerror = (event) => {
+	            console.error('Database error:', event.target.errorCode);
+	            reject(new Error('Failed to open database'));
+	        };
+	
+	        request.onsuccess = async (event) => {
+	            this.localDB = event.target.result;
+	            console.log('Database opened successfully:', this.localDB.name);
+            
+	            // Wait for the database initialization logic to complete
+	            try {
+	                let x = await this.returnVocab();
+	                if (x.length > 0) {
+	                    this.show_vocab = true;
+	                }
+                
+	                // Resolve the Promise after all initialization is done
+	                resolve(this.localDB);
+	            } catch (error) {
+	                reject(error);  // If something goes wrong during the vocab check
+	            }
+        	};
+
+        	request.onupgradeneeded = (event) => {
+        	    this.localDB = event.target.result;
+        	    console.log('Database upgrade needed. Creating object stores...');
+	
+	            // Create an object store (table) if it doesn't exist
+	            if (!this.localDB.objectStoreNames.contains('vocabulary')) {
+	                const objectStore = this.localDB.createObjectStore('vocabulary', { keyPath: 'id', autoIncrement: true });
+	
+	                // Create an index if needed
+	                objectStore.createIndex('field3', 'field3', { unique: true });
+	                objectStore.createIndex('field4', 'field4', { unique: true });
+	                objectStore.createIndex('lesson_id', 'lesson_id', { unique: false });
+	                objectStore.createIndex('label', 'label', { unique: false });
+	                objectStore.createIndex('last_studied', 'last_studied', { unique: false });
+	                objectStore.createIndex('srs_rank', 'srs_rank', { unique: false });
+
+	                console.log('Object store "vocabulary" created');
+	            }
+	        };
+	    });
+	}
+
+
 	async initialize(app) {
 
 		//
 		// load local data
 		//
-		this.load();
+		for (let i = 0; i < this.urlpath.length; i++) {
+			if (this.urlpath[i] === "") {
+				this.urlpath.splice(i, 1); i--; 
+			}
+			if (this.urlpath[i] === "popup") {
+				this.browser_active = 1;
+			}
+			if (this.urlpath[i] === "lessons") {
+				if (this.urlpath.length > (i+1)) {
+					this.app.connection.emit("popup-lessons-render-request");
+				} else {
+					this.app.connection.emit("popup-lessons-render-request");
+				}
+			}
+		}
 
 		//
 		// database setup etc.
 		//
 		await super.initialize(app);
 
-		//
-		// create in-browser DB
-		//
-		await this.deleteDatabase();
+		if (!this.app.BROWSER) { return; }
+
 		await this.initializeDatabase();
+		this.show_vocab = await this.doesVocabExist();
 
 		//
 		// urlpath check for subpages
@@ -98,8 +169,8 @@ class Popup extends ModTemplate {
 				}
 			}
 		}
-
 	}
+
 
 	////////////
 	// render //
@@ -116,7 +187,7 @@ class Popup extends ModTemplate {
 			await this.header.initialize(this.app);
 			this.main = new PopupMain(this.app, this);
 			this.manager = new PopupLessonManager(this.app, this);
-			this.lesson = new PopupLesson(this.app, this);
+			this.lessonui = new PopupLesson(this.app, this);
 			this.review = new PopupReview(this.app, this);
 			this.vocab = new PopupVocab(this.app, this);
 
@@ -137,6 +208,10 @@ class Popup extends ModTemplate {
 		await super.render();
 
 		if (this.urlpath.length >= 2) {
+			if (this.urlpath[1] == "review" || this.urlpath[1] == "vocab") {
+				this.app.connection.emit('popup-vocab-render-request');
+				return;
+			}
 			if (this.urlpath[1] == "lessons") {
 				if (this.urlpath.length > 2) {
 					if (this.urlpath[2] == "absolute-beginners") { this.app.connection.emit('popup-lessons-render-request', ("absolute-beginners")); }
@@ -391,9 +466,6 @@ class Popup extends ModTemplate {
 			async (res2) => {
 				if (res2.rows) {
 					this.lesson.words = res2.rows;
-console.log("WORDS");
-console.log(JSON.stringify(this.lesson.words));
-
 					mycallback();
 				}
 			},
@@ -498,16 +570,6 @@ console.log(JSON.stringify(this.lesson.words));
 			this.app.options.popup.review.enable = 1;
 		}
 
-		localforage.getItem(`popup_vocabulary`, (error, value) => {
-			if (value && value.length > 0) {
-				for (let tx of value) {
-					try {
-						// process transactions one-by-one
-					} catch (err) {}
-				}
-				//this.app.connection.emit("redsquare-home-render-request");
-			}
-		});
 	}
 
 	updatePreference(field1, value1) {
@@ -540,104 +602,21 @@ console.log(JSON.stringify(this.lesson.words));
 	}
 
 
-
-	/////////////////////////
-	// in-browser database //
-	/////////////////////////
-	async deleteDatabase() {
-
-		if (this.app.BROWSER) {
-
-			if (!this.localDB) {
-
-				this.localDB = new JsStore.Connection(
-                	                new Worker('/saito/lib/jsstore/jsstore.worker.js')
-                	        );
-
-				console.log('Local DB instance:', this.localDB);
-
-				const vocabulary = {
-				    name: 'vocabulary', 
-				};
-
-				const db = {
-				    name: 'popup',
-				    tables: [vocabulary]
-				};
-
-				this.localDB.initDb(db).then(() => {
-				    console.log('Database initialized successfully');
-				    this.localDB.dropDb('popup');
-				    this.initializeDatabase();
-				}).then(() => {
-				    console.log('Popup Database deleted successfully');
-				}).catch((error) => {
-				    console.error('Error:', error);
-				});
-			}
-
-		}
-		return;
+	async doesVocabExist() {
+    		const transaction = this.localDB.transaction(['vocabulary'], 'readonly');
+    		const objectStore = transaction.objectStore('vocabulary');
+    		const request = objectStore.count();
+	
+	    	const count = await new Promise((resolve, reject) => {
+	        	request.onsuccess = (event) => resolve(event.target.result);
+	        	request.onerror = (event) => reject(event.target.error);
+	    	});
+	
+	    	return count > 0;  // Return true or false based on the count
 	}
 
 
-	async initializeDatabase() {
-		if (this.app.BROWSER) {
 
-			this.localDB = new JsStore.Connection(
-				new Worker('/saito/lib/jsstore/jsstore.worker.js')
-			);
-
-			//
-			// create Local database
-			//
-			let vocabulary = {
-				name: 'vocabulary',
-				columns: {
-					id: { primaryKey: true, autoIncrement: true },
-					field1: { dataType: 'string', default: '' },
-					field2: { dataType: 'string', default: '' },
-					field3: { dataType: 'string', default: '' },
-					field4: { dataType: 'string', default: '' },
-					field5: { dataType: 'string', default: '' },
-					label: { dataType: 'string', default: '' },
-					lesson_id: { dataType: 'number', default: 0 },
-					created_at: { dataType: 'number', default: 0 },
-					updated_at: { dataType: 'number', default: 0 },
-					last_studied: { dataType: 'number', default: 0 },
-					last_correct: { dataType: 'number', default: 0 },
-					times_studied: { dataType: 'number', default: 0 },
-					times_correct: { dataType: 'number', default: 0 },
-					times_incorrect: { dataType: 'number', default: 0 },
-					srs_rank: { dataType: 'number', default: 1 },
-				}
-			};
-
-			let db = {
-				name: 'popup',
-				tables: [vocabulary]
-			};
-
-			var isDbCreated = await this.localDB.initDb(db);
-
-console.log("@");
-console.log("@");
-console.log("@");
-console.log("@");
-console.log("@");
-console.log("@");
-console.log("@");
-//console.log(JSON.stringify(this.localDB));
-
-			if (isDbCreated) {
-				console.log('POPUP: db created and connection opened');
-			} else {
-				console.log('POPUP: connection opened');
-			}
-		}
-
-		return;
-	}
 
 	async addVocab(
 		field1 = '',
@@ -648,14 +627,15 @@ console.log("@");
 		label = '',
 		lesson_id = ''
 	) {
+
 		let obj = {};
-		obj.field1 = field1;
-		obj.field2 = field2;
-		obj.field3 = field3;
-		obj.field4 = field4;
-		obj.field5 = field5;
-		obj.lesson_id = lesson_id;
-		obj.label = label;
+		obj.field1 = field1 || '';
+		obj.field2 = field2 || '';
+		obj.field3 = field3 || '';
+		obj.field4 = field4 || '';
+		obj.field5 = field5 || '';
+		obj.lesson_id = lesson_id || 0;
+		obj.label = label || '';
 		obj.audio_source = "";
 		obj.audio_translation = "";
 		obj.display_order = 0;
@@ -665,212 +645,256 @@ console.log("@");
 		obj.times_studied = 0;
 		obj.times_correct = 0;
 		obj.times_incorrect = 0;
+		obj.srs_rank = 0;
 
-		if (this.app.BROWSER) {
-			let numRows = await this.localDB.insert({
-				into: 'vocabulary',
-				values: [obj]
-			});
-		}
 
-		//let v = await this.returnVocab();
-		//console.log('POST INSERT: ' + JSON.stringify(v));
-	}
+                const transaction = this.localDB.transaction(['vocabulary'], 'readwrite');
+                const objectStore = transaction.objectStore('vocabulary');
 
-	async returnVocab(offset = 0) {
-		if (!this.app.BROWSER) {
-			return;
-		}
+		const request = objectStore.add(obj);
 
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("$");
-console.log(JSON.stringify(this.localDB));
 
-		let rows = await this.localDB.select({
-			from: 'vocabulary',
-			//where: where_obj,
-			order: { by: 'id', type: 'desc' }
-		});
+		request.onsuccess = async () => {
+		       	console.log('Vocabulary added successfully:', obj);
+    		};
 
-		return rows;
+	    	request.onerror = (event) => {
+        		console.error('Error adding vocabulary:', event.target.error);
+    		};
+
 	}
 
 
-	async loadQuestion() {
 
-	  let question_types = [
-		"multiple_choice_english", 
-		"multiple_choice_pinyin", 
-	  ];
-	  let question_type = question_types[Math.floor(Math.random() * question_types.length)];
-
-	  let tdate1 = new Date().getTime();
-	  let tdate2 = new Date().getTime() - (172800 * 1000);	
-	  let tdate3 = new Date().getTime() - (518400 * 1000);	
-	  let tdate4 = new Date().getTime() - (1123200 * 1000);	
-	  let tdate5 = new Date().getTime() - (2419200 * 1000);	
-	  let tdate6 = new Date().getTime() - (4924800 * 1000);
-	  let tdate7 = new Date().getTime() - (14774400 * 1000);	
-
-	  let rows = await this.localDB.select({
-	    from: 'vocabulary',
-	    where: [
-		{
-			srs_rank: 1 ,
-            		last_studied: { '<': tdate1 }
-		},
-		{
-			srs_rank: { '<' : 2 } ,
-            		last_studied: { '<': tdate2 }
-		},
-		{
-			srs_rank: { '<' : 3 } ,
-            		last_studied: { '<': tdate3 }
-		},
-		{
-			srs_rank: { '<' : 4 } ,
-            		last_studied: { '<': tdate4 }
-		},
-		{
-			srs_rank: { '<' : 5 } ,
-            		last_studied: { '<': tdate5 }
-		},
-		{
-			srs_rank: { '<' : 6 } ,
-            		last_studied: { '<': tdate6 }
-		},
-		{
-			srs_rank: { '<' : 7 } ,
-            		last_studied: { '<': tdate7 }
-		}
-	      ],
-	    or: true
-	  });
-	  let idx = Math.floor(Math.random() * rows.length);
-	  let word = rows[idx];
-
-
-	  let words = [];
-	  let options = [];
-
-	  const shuffleArray = (array) => array.sort(() => Math.random() - 0.5);
-
-	  if (rows.length > 4) {
-	    while (options.length < 4) {
-	      shuffleArray(rows);
-	      if (!options.includes(rows[0].field1)) {
-		words.push(rows[0]);
-		options.push(rows[0].field1);
-	      }
+	async returnVocab(offset = 0, limit = 10) {
+	    if (!this.app.BROWSER) {
+	        return [];
 	    }
-	  } else {
-	    words.push({
-	      english : "good",
-	      pinyin  : "hao3",
-	      field1 : "good",
-	      field2 : "hao3",
-	      field3 : "好",
-	      field4 : "好",
-	    });
-	    words.push({
-	      english : "ok",
-	      pinyin  : "xing2",
-	      field1 : "ok",
-	      field2 : "xing2",
-	      field3 : "行",
-	      field4 : "行",
-	    });
-	    words.push({
-	      english : "to eat",
-	      pinyin  : "chi1",
-	      field1 : "to eat",
-	      field2 : "chi1",
-	      field3 : "吃",
-	      field4 : "吃",
-	    });
-	    words.push({
-	      english : "to go",
-	      pinyin  : "zou3",
-	      field1 : "to go",
-	      field2 : "zou3",
-	      field3 : "走",
-	      field4 : "走",
-	    });
-	  }
 
-	  //
-	  // substitute random entry for our test
-	  //
-	  let correct = Math.floor(Math.random() * 4);
-	  if (word != null) {
-	    words[correct] = word;
-	  } else {
-	    word = words[correct];
-	  }
+	    return new Promise((resolve, reject) => {
+	        const transaction = this.localDB.transaction(['vocabulary'], 'readonly');
+	        const objectStore = transaction.objectStore('vocabulary');
+        
+	        const request = objectStore.openCursor();
+	        const allEntries = [];
+	        let index = 0;
+	
+	        request.onsuccess = (event) => {
+	            const cursor = event.target.result;
 
-	  let option1 = "";
-	  let option2 = "";
-	  let option3 = "";
-	  let option4 = "";
-	  let question = "";
-	  let english = "";
+	            if (cursor) {
+	                if (index >= offset && allEntries.length < limit) {
+	                    allEntries.push(cursor.value);
+	                }
+	                index++;
+	                cursor.continue();
+	            } else {
+	                console.log('Fetched vocabulary entries:', allEntries);
+	                resolve(allEntries);
+	            }
+	        };
 
-console.log("#");
-console.log("#");
-console.log("# words length: " + words.length);
-console.log(JSON.stringify(words));
-
-	  //
-	  // options depend on question type
-	  //
-	  if (question_type === "multiple_choice_english") {
-	    option1 = words[0].field1;
-	    option2 = words[1].field1;
-	    option3 = words[2].field1;
-	    option4 = words[3].field1;
-	    question = word.field3;
-	    english = word.field1;
-	    pinyin = word.field2;
-	  }
-	  if (question_type === "multiple_choice_pinyin") {
-	    option1 = words[0].field2;
-	    option2 = words[1].field2;
-	    option3 = words[2].field2;
-	    option4 = words[3].field2;
-	    question = word.field3;
-	    english = word.field1;
-	    pinyin = word.field2;
-	  }
-
-
-	  
- 	  obj = {
-	    lesson_id : word.lesson_id ,
-	    word_id : word.id ,
-	    question_type : question_type ,
-	    question : question ,
-	    english : english ,
-	    pinyin : pinyin ,
-	    language : "chinese" ,
-	    option1 : option1 ,
-	    option2 : option2 ,
-	    option3 : option3 ,
-	    option4 : option4 ,
-	    correct : `option${correct+1}` ,
-	    answer : "" ,
-	    hint : "" ,
-            source_audio_url : 'http://popupchinese.com/data/'
-	  }
-
-	  return obj;
-
+        	request.onerror = (event) => {
+        	    console.error('Error fetching vocabulary entries:', event.target.error);
+        	    reject(event.target.error);
+        	};
+    	    });
 	}
 
-	async saveAnswer(obj) {
 
+
+async loadQuestion() {
+    return new Promise((resolve, reject) => {
+        let question_types = [
+            "multiple_choice_english",
+            "multiple_choice_pinyin",
+        ];
+        let question_type = question_types[Math.floor(Math.random() * question_types.length)];
+
+        let tdate1 = new Date().getTime();
+        let tdate2 = new Date().getTime() - (172800 * 1000);
+        let tdate3 = new Date().getTime() - (518400 * 1000);
+        let tdate4 = new Date().getTime() - (1123200 * 1000);
+        let tdate5 = new Date().getTime() - (2419200 * 1000);
+        let tdate6 = new Date().getTime() - (4924800 * 1000);
+        let tdate7 = new Date().getTime() - (14774400 * 1000);
+
+        const transaction = this.localDB.transaction(['vocabulary'], 'readonly');
+        const objectStore = transaction.objectStore('vocabulary');
+
+        // Use a cursor to fetch and filter records
+        const request = objectStore.openCursor();
+        const rows = [];
+
+	let last_entry = "";
+
+        request.onsuccess = (event) => {
+
+            const cursor = event.target.result;
+
+            if (cursor) {
+
+                // Check the conditions for filtering the rows
+                if (
+                    (cursor.value.srs_rank === 0) || 
+                    (cursor.value.srs_rank === 1 && cursor.value.last_studied < tdate1) ||
+                    (cursor.value.srs_rank < 2 && cursor.value.last_studied < tdate2) ||
+                    (cursor.value.srs_rank < 3 && cursor.value.last_studied < tdate3) ||
+                    (cursor.value.srs_rank < 4 && cursor.value.last_studied < tdate4) ||
+                    (cursor.value.srs_rank < 5 && cursor.value.last_studied < tdate5) ||
+                    (cursor.value.srs_rank < 6 && cursor.value.last_studied < tdate6) ||
+                    (cursor.value.srs_rank < 7 && cursor.value.last_studied < tdate7)
+                ) {
+                    rows.push(cursor.value);
+                }
+
+		last_entry = cursor.value;
+                cursor.continue();
+
+            } else {
+
+		if (rows.length == 0) {
+			if (last_entry) {
+				rows.push(last_entry);
+			}
+		}
+
+                // Resolve with a random row if rows exist
+                if (rows.length > 0) {
+
+	  		let idx = Math.floor(Math.random() * rows.length);
+	  		let word = rows[idx];
+
+	  		let words = [];
+	  		let options = [];
+
+	  		const shuffleArray = (array) => array.sort(() => Math.random() - 0.5);
+
+	  		if (rows.length > 4) {
+	  		  while (options.length < 4) {
+	  		    shuffleArray(rows);
+	  		    if (!options.includes(rows[0].field1)) {
+				words.push(rows[0]);
+				options.push(rows[0].field1);
+			      }
+			    }
+	  		} else {
+	  		  words.push({
+	  		    english : "good",
+	  		    pinyin  : "hao3",
+	  		    field1 : "good",
+	  		    field2 : "hao3",
+	  		    field3 : "好",
+	  		    field4 : "好",
+	  		  });
+	  		  words.push({
+	  		    english : "ok",
+	  		    pinyin  : "xing2",
+	  		    field1 : "ok",
+	  		    field2 : "xing2",
+	  		    field3 : "行",
+	  		    field4 : "行",
+	  		  });
+	  		  words.push({
+	  		    english : "to eat",
+	  		    pinyin  : "chi1",
+	  		    field1 : "to eat",
+	  		    field2 : "chi1",
+	  		    field3 : "吃",
+	  		    field4 : "吃",
+	  		  });
+	  		  words.push({
+	  		    english : "to go",
+	  		    pinyin  : "zou3",
+	  		    field1 : "to go",
+	  		    field2 : "zou3",
+	  		    field3 : "走",
+	  		    field4 : "走",
+	  		  });
+	  		}
+
+	  		//
+	  		// substitute random entry for our test
+	  		//
+	  		let correct = Math.floor(Math.random() * 4);
+	  		if (word != null) {
+	  		  words[correct] = word;
+	  		} else {
+	  		  word = words[correct];
+	  		}
+
+	  		let option1 = "";
+	  		let option2 = "";
+	  		let option3 = "";
+	  		let option4 = "";
+	  		let question = "";
+	  		let english = "";
+
+	  		//
+	  		// options depend on question type
+	  		//
+	  		if (question_type === "multiple_choice_english") {
+	  		  option1 = words[0].field1;
+	  		  option2 = words[1].field1;
+	  		  option3 = words[2].field1;
+	  		  option4 = words[3].field1;
+	  		  question = word.field3;
+	  		  english = word.field1;
+	  		  pinyin = word.field2;
+	  		}
+	  		if (question_type === "multiple_choice_pinyin") {
+	  		  option1 = words[0].field2;
+	  		  option2 = words[1].field2;
+	  		  option3 = words[2].field2;
+	  		  option4 = words[3].field2;
+	  		  question = word.field3;
+	  		  english = word.field1;
+	  		  pinyin = word.field2;
+	  		}
+
+ 	  		obj = {
+	  		  lesson_id : word.lesson_id ,
+	  		  word_id : word.id ,
+	  		  question_type : question_type ,
+	  		  question : question ,
+	  		  english : english ,
+	  		  pinyin : pinyin ,
+	  		  language : "chinese" ,
+	  		  option1 : option1 ,
+	  		  option2 : option2 ,
+	  		  option3 : option3 ,
+	  		  option4 : option4 ,
+	  		  correct : `option${correct+1}` ,
+	  		  answer : "" ,
+	  		  hint : "" ,
+          		  source_audio_url : 'http://popupchinese.com/data/'
+	  		}
+
+	  		resolve(obj);
+
+                } else {
+                    resolve(null);  // No matching rows found
+                }
+            }
+        };
+
+        request.onerror = (event) => {
+            console.error('Error fetching vocabulary:', event.target.error);
+            reject(event.target.error);  // Reject on error
+        };
+    });
+}
+
+
+
+
+async saveAnswer(obj) {
+    return new Promise((resolve, reject) => {
+
+        // Open a transaction to the 'vocabulary' object store in readwrite mode
+        const transaction = this.localDB.transaction(['vocabulary'], 'readwrite');
+        const objectStore = transaction.objectStore('vocabulary');
+        
 		if (!obj) { return; } 
 		if (!obj.wid) { return; } 
        
@@ -882,38 +906,104 @@ console.log(JSON.stringify(words));
                 //                source: source,
                 //                correct: answered_correctly
                 //	}
-		let rows = await this.localDB.select({
-			from: 'vocabulary',
-			where: { id : obj.wid }
-		});
 
-		for (let i = 0; i < rows.length; i++) {
+        const request = objectStore.get(obj.wid);
+        
+        request.onsuccess = (event) => {
+            const word = event.target.result;
 
-			let dset = {};
-			let dwhere = {};
-			dwhere.id = rows[i].id;
+            if (word) {
+                word.updated_at = new Date().getTime();  // Update the timestamp
 
-			if (obj.correct) {
-			  dset.last_studied = new Date().getTime();
-			  dset.last_correct= dset.last_studied;
-			  dset.times_studied = rows[i].last_studied++;
-			  dset.times_correct = rows[i].times_correct++;
-			} else {
-			  dset.last_studied = new Date().getTime();
-			  dset.times_studied = rows[i].last_studied++;
-			  dset.times_incorrect = rows[i].times_incorrect++;
-			}
-
-			try {
-			  let rowsUpdated = await this.localDB.update({
-				in : 'vocabulary' ,
-				set : dset ,
-				where : dwhere 
-			  });
-			} catch (err) {
-			  console.log("ERROR: " + JSON.stringify(err));
-			}
+                if (obj.correct) {
+                  word.last_studied = new Date().getTime();
+                  word.last_correct = word.last_studied;
+                  word.times_studied++;
+                  word.times_correct++;
+                  word.srs_rank++;
+                } else {
+                  word.last_studied = new Date().getTime();
+                  word.times_studied++;
+                  word.times_incorrect++;
+                  word.srs_rank = 0;
 		}
+
+                // Put the updated word back into the database
+                const updateRequest = objectStore.put(word);
+
+                updateRequest.onsuccess = () => {
+                    console.log('Vocabulary updated successfully:', word);
+                    resolve(word);  // Resolve with the updated word
+                };
+
+                updateRequest.onerror = (updateError) => {
+                    console.error('Error updating vocabulary:', updateError.target.error);
+                    reject(updateError.target.error);  // Reject if there's an error updating
+                };
+            } else {
+                console.error('No word found with the provided ID');
+                reject(new Error('No word found with the provided ID'));  // Reject if the word doesn't exist
+            }
+        };
+
+        request.onerror = (event) => {
+            console.error('Error retrieving word:', event.target.error);
+            reject(event.target.error);  // Reject if there's an error retrieving the word
+        };
+    });
+}
+
+
+
+
+
+
+        webServer(app, expressapp, express) {
+
+                let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
+                let popup_self = this;
+
+                expressapp.get('/' + encodeURI(this.returnSlug() + '/review'), async function (req, res) {
+                        let html = PopupHome(app, popup_self, app.build_number);
+                        if (!res.finished) {
+                                res.setHeader('Content-type', 'text/html');
+                                res.charset = 'UTF-8';
+                                return res.send(html);
+                        }
+                        return;
+                });
+
+                expressapp.get('/' + encodeURI(this.returnSlug() + '/review/*'), async function (req, res) {
+                        let html = PopupHome(app, popup_self, app.build_number);
+                        if (!res.finished) {
+                                res.setHeader('Content-type', 'text/html');
+                                res.charset = 'UTF-8';
+                                return res.send(html);
+                        }
+                        return;
+                });
+
+                expressapp.get('/' + encodeURI(this.returnSlug() + '/lessons'), async function (req, res) {
+                        let html = PopupHome(app, popup_self, app.build_number);
+                        if (!res.finished) {
+                                res.setHeader('Content-type', 'text/html');
+                                res.charset = 'UTF-8';
+                                return res.send(html);
+                        }
+                        return;
+                });
+
+                expressapp.get('/' + encodeURI(this.returnSlug() + '/lessons/*'), async function (req, res) {
+                        let html = PopupHome(app, popup_self, app.build_number);
+                        if (!res.finished) {
+                                res.setHeader('Content-type', 'text/html');
+                                res.charset = 'UTF-8';
+                                return res.send(html);
+                        }
+                        return;
+                });
+
+    		expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
 	}
 
 

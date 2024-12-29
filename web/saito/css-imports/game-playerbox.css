@@ -12,15 +12,6 @@
   flex-direction: column-reverse;
 }
 
-.game-playerbox-manager.game-playerbox-seat-manager {
-   position: absolute;
-   display: block;
-   top: unset;
-   right: unset;
-   height: 100vh;
-   width: 100vw;
-}
-
 .game-playerbox {
     padding: 1rem;
     z-index: 3;
@@ -86,67 +77,33 @@
   text-transform: uppercase;
 }
   
-.game-playerbox-seat-8 {
-  position: absolute;
-  bottom: 1vh;
-  left: 1rem;
-} 
-
-.game-playerbox-seat-7 {
-  position: absolute;
-  bottom: 1vh;
-  right: 1rem;
-}
 
 .game-playerbox-seat-6 {
-  position: absolute;
-  left: 1rem;
-  top: 60vh;
-  transform: translateY(-50%);
+  order: 1;
 }
   
 .game-playerbox-seat-5 {
-  position: absolute;
-  left: 1rem;
-  top: 22vh;
-  transform: translateY(-50%);
+  order: 2;
 }
 
 .game-playerbox-seat-4 {
-  position: absolute;
-  left: 50vw;
-  top: 2rem;
-  transform: translateX(-50%);
-}
-
-/* Only opponent */
-.game-playerbox-seat-4.game-playerbox-2 {
-  top: 4rem;
+  order: 3;
 }
 
 .game-playerbox-seat-3 {
-  position: absolute;
-  right: 1rem;
-  top: 22vh;
-  transform: translateY(-50%);
+  order: 4;
 }
 
 .game-playerbox-seat-2 {
-  position: absolute;
-  right: 1rem;
-  top: 60vh;
-  transform: translateY(-50%);
+  order: 5;
 }
 
 .game-playerbox-seat-1 {
   position: absolute;
   min-width: 30vh;
-  max-height: 32vh;
-  left: 50vw;
-  transform: translateX(-50%);
+  max-height: 36vh;
   width: 16vw;
-  bottom: 0px;
-  margin-bottom: 2rem;
+  bottom: 20px;
 }
 
 
@@ -170,21 +127,6 @@
     min-width: unset;
   }
 
-  .game-playerbox-seat-4 {
-    top: 1rem;
-  }
-
-  .game-playerbox-seat-3, .game-playerbox-seat-5 {
-    top: 20vh;
-  }
-
-  .game-playerbox-seat-3, .game-playerbox-seat-2 {
-    right: 5px;
-  }
-
-  .game-playerbox-seat-5, .game-playerbox-seat-6 {
-    left: 5px;
-  }
 }
 
 

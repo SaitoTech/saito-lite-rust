@@ -63,6 +63,7 @@ class PopupLesson {
 		//
 		// questions
 		//
+/****
 		this.mod.loadLessonQuestions(this.mod.lesson, () => {
 		  if (this.mod.lesson.questions) {
 		    let html = '<div class="lesson-section header">comprehension:</div>';
@@ -75,6 +76,7 @@ class PopupLesson {
 		  }
 	
 		}); // questions
+****/
 
 		}); // words
 

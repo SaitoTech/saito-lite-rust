@@ -25,9 +25,18 @@ class PopupVocab {
 		this.vocab = await this.mod.returnVocab(offset);
 
 		let html = '<table>';
-		for (let i = 0; i < this.vocab.length; i++) {
-			html += WordTemplate(0, this.vocab[i], this.mod);
-		}
+		if (this.vocab.length > 0) {
+			html += `
+				<tr>
+					<th></th>
+					<th>traditional</th>
+					<th>simplified</th>
+					<th>english</th>
+					<th>pinyin</th>
+				</tr>
+			`;
+	        }
+		for (let i = 0; i < this.vocab.length; i++) { html += WordTemplate(0, this.vocab[i], this.mod); }
 		html += '</table>';
 
 		document.querySelector('.vocabulary').innerHTML = html;
@@ -42,9 +51,9 @@ class PopupVocab {
 			this.mod.review.render();
 		};
 
-
-
 	}
+
 }
 
 module.exports = PopupVocab;
+
