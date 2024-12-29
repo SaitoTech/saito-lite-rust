@@ -177,6 +177,7 @@ class Mods {
             const current_url = window.location.toString();
             const myurl = new URL(current_url);
             const myurlpath = myurl.pathname.split('/');
+
             let active_module = myurlpath[1] ? myurlpath[1].toLowerCase() : '';
             if (active_module == '') {
               active_module = 'website';

@@ -62,9 +62,9 @@ module.exports  = (mod, videoEnabled = true, audioEnabled = true) => {
   html += `</div>`;
 
   if (!mod.browser_active) {
-    html = `<div class="stun-overlay-container full-screen">${html}</div>`;
+    html = `<div id="stun-chatbox-box" class="stun-overlay-container full-screen">${html}</div>`;
   } else {
-    html = `<div class="saito-video-container">${html}</div>`;
+    html = `<div id="stun-chatbox-box" class="saito-video-container">${html}</div>`;
   }
 
   return html;

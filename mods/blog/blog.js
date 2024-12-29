@@ -598,13 +598,13 @@ class Blog extends ModTemplate {
 
 
     async loadSinglePost(postId, author) {
-        let peer;
-        if (this.publicKey === author) {
-            let p = (await this.app.network.getPeers())[0];
-            peer = p.peerIndex
-        } else {
-            peer = author
-        }
+        let peer = (await this.app.network.getPeers())[0];
+
+        // if (this.publicKey === author) {
+            
+        // } else {
+        //     peer = author
+        // }
         try {
             let self = this;
             this.app.storage.loadTransactions(
@@ -628,7 +628,7 @@ class Blog extends ModTemplate {
                         self.loadPosts();
                     }
                 },
-                "localhost"
+                peer
             );
         } catch (error) {
             console.error('Error loading single post:', error);

@@ -34,3 +34,20 @@ body {
   justify-content: space-around;
 }
 
+
+/* cool graphics in game-log */
+.suit {
+	font-size: larger;
+}
+
+.htmlhand {
+	text-indent: 0;
+}
+
+.htmlCard {
+	margin: 5px 3px;
+	display: inline-block;
+	background: #fffd;
+	padding: 4px 2px;
+	border-radius: 6px;
+}

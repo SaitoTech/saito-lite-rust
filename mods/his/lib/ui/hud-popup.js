@@ -47,7 +47,7 @@ class HudPopup {
 		  `;
 
 		}
-                       
+
                 his_self.hud.showPopup(html, 5000); 
 
 	}

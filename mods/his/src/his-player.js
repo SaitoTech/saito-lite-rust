@@ -1734,7 +1734,8 @@ if (this.game.state.events.society_of_jesus == 1) {
 
     let space = this.game.spaces[spacekey];
     let faction_map = this.returnFactionMap(space, attacker, faction);
-    let attacker_player = this.returnPlayerCommandingFaction(attacker);
+    let cp = this.returnControllingPower(attacker);
+    let attacker_player = this.returnPlayerCommandingFaction(cp);
     let player = this.returnPlayerCommandingFaction(faction);
 
     let his_self = this;
@@ -2612,12 +2613,23 @@ console.log("sending to visual menu2: " + ops);
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
     this.addMove("cards_left\t"+faction+"\t"+this.game.deck[0].fhand[faction_hand_idx].length-1); // -1 because we playing this card
     
-    let deck = this.returnDeck();
+    let deck = this.returnDeck(true);
     if (deck[card].removeFromDeckAfterPlay(this, faction)) {
       this.addMove("remove\t"+faction+"\t"+card);
     }
+
+    //
+    // sanity check in case a mandatory card is dealt mid-game
+    // and not removed from the deck.
+    //
+    if (this.game.state.removed.includes(card)) {
+      this.endTurn();
+      return;
+    }
+
     this.addMove("event\t"+faction+"\t"+card);
     this.addMove("discard\t"+faction+"\t"+card);
+
 
     // counter_or_acknowledge if the player is the Protestants and Wartburg is not in the discard pile as
     // the Protestants might have it. Otherwise ACKNOWLEDGE to ensure players know what is happening but
@@ -3532,7 +3544,7 @@ return;
 
     let his_self = this;
 
-    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.playerPlaySpringDeployment(faction, player, removed_queue_instruction); });
+    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("RESOLVE\t"+this.publicKey); his_self.playerPlaySpringDeployment(faction, player, removed_queue_instruction); });
 
     let capitals = this.factions[faction].capitals;
     let viable_capitals = [];
@@ -6336,21 +6348,25 @@ does_units_to_move_have_unit = true; }
     return 0;
   }
   canPlayerAssaultTutorial(his_self, player, faction) {
+    let assaultable_spaces = 0;
+    let nonassaultable_spaces = 0;
     if (his_self.game.state.assaulted_this_impulse == 1) { return 0; }
     if (!his_self.canPlayerAssault(his_self, player, faction)) {
       let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
       for (let i = 0; i < conquerable_spaces.length; i++) {
-        if (conquerable_spaces[i] !== "egypt" && conquerable_spaces[i] !== "persia" && conquerable_spaces[i] !== "ireland") {
-          if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1) {
+        if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1) {
+          if (conquerable_spaces[i] !== "egypt" && conquerable_spaces[i] !== "persia" && conquerable_spaces[i] !== "ireland") {
+	    assaultable_spaces++;
             if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
               if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1) {
-                return 1;
+	  	nonassaultable_spaces++;
               }
             }
           }
         }
       }
     }
+    if (nonassaultable_spaces >= assaultable_spaces) { return 1; }
     return 0;
   }
   playerAssaultTutorial(his_self, player, faction) {
@@ -6412,47 +6428,55 @@ does_units_to_move_have_unit = true; }
 
     let conquerable_spaces = his_self.returnSpacesWithFactionInfantry(faction);
 
+    let assaultable_spaces = 0;
+    let nonassaultable_spaces = 0;
+
     for (let i = 0; i < conquerable_spaces.length; i++) {
-      if (conquerable_spaces[i] !== "egypt" && conquerable_spaces[i] !== "persia" && conquerable_spaces[i] !== "ireland") {
-        if (!his_self.isSpaceControlled(conquerable_spaces[i], faction) && his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction)) {
-          if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1 || (faction == "ottoman" && his_self.game.state.events.roxelana == 1)) {
-	    if (!his_self.game.state.spaces_assaulted_this_turn.includes(conquerable_spaces[i])) {
+      if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
+        if (conquerable_spaces[i] !== "egypt" && conquerable_spaces[i] !== "persia" && conquerable_spaces[i] !== "ireland") {
+	  if (his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction)) {
+            if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1 || (faction == "ottoman" && his_self.game.state.events.roxelana == 1)) {
+	      if (!his_self.game.state.spaces_assaulted_this_turn.includes(conquerable_spaces[i])) {
 
-	      //
-	      // now check if there are squadrons in the port or sea protecting the town
-	      //
-	      let space = his_self.game.spaces[conquerable_spaces[i]];
+	        //
+	        // now check if there are squadrons in the port or sea protecting the town
+	        //
+	        let space = his_self.game.spaces[conquerable_spaces[i]];
 
-	      let squadrons_protecting_space = his_self.returnNumberOfSquadronsProtectingSpace(conquerable_spaces[i]);
-	      if (squadrons_protecting_space == 0) { return 1; }
-	      let attacker_squadrons_adjacent = 0;
+	        let squadrons_protecting_space = his_self.returnNumberOfSquadronsProtectingSpace(conquerable_spaces[i]);
+	        if (squadrons_protecting_space == 0) { assaultable_spaces++ } else {
 
-	      for (let y = 0; y < his_self.game.spaces[conquerable_spaces[i]].ports.length; y++) {
-	        let sea = his_self.game.spaces[conquerable_spaces[i]].ports[y];
-		for (let f in his_self.game.navalspaces[sea].units) {
-		  if (his_self.returnControllingPower(f) == his_self.returnControllingPower(faction)) {
-	            for (let z = 0; z < his_self.game.navalspaces[sea].units[f].length; z++) {
-		      let u = his_self.game.navalspaces[sea].units[faction][z];
-		      if (u.type == "squadron") { attacker_squadrons_adjacent++; }
-	            }
-	          }
+		      let attacker_squadrons_adjacent = 0;
+
+		      for (let y = 0; y < his_self.game.spaces[conquerable_spaces[i]].ports.length; y++) {
+		        let sea = his_self.game.spaces[conquerable_spaces[i]].ports[y];
+			for (let f in his_self.game.navalspaces[sea].units) {
+			  if (his_self.returnControllingPower(f) == his_self.returnControllingPower(faction)) {
+		            for (let z = 0; z < his_self.game.navalspaces[sea].units[f].length; z++) {
+			      let u = his_self.game.navalspaces[sea].units[faction][z];
+			      if (u.type == "squadron") { attacker_squadrons_adjacent++; }
+		            }
+		          }
+		        }
+	      	      }
+
+	      	      if (attacker_squadrons_adjacent <= squadrons_protecting_space) { nonassaultable_spaces++; } else { assaultable_spaces++; }
 	        }
 	      }
-	      if (attacker_squadrons_adjacent <= squadrons_protecting_space) { return 0; }
-	      return 1;
 	    }
 	  }
         }
       }
     }
 
+    if (assaultable_spaces > 0 ) { return 1; }
     return 0;
   }
   async playerAssault(his_self, player, faction) {
 
     his_self.playerSelectSpaceWithFilter(
 
-      "Select Space for Siege/Assault: ",
+      `${his_self.returnFactionName(faction)} - Select Space for Siege/Assault: `,
 
       function(space) {
 	if (his_self.game.state.spaces_assaulted_this_turn.includes(space.key)) { return 0; }

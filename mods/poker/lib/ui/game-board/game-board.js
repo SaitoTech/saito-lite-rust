@@ -22,7 +22,6 @@ class GameBoard {
 		  this.attachEvents();
 		}
 
-		this.game_mod.playerbox.render();
 		this.game_mod.cardfan.render();
 		this.game_mod.pot.render();
 

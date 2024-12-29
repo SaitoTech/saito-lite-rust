@@ -580,10 +580,14 @@ console.log("\n\n\n\n");
 	  this.setEnemies("papacy","france");
           this.setEnemies("england", "france");
           this.setEnemies("england", "scotland");
+          this.setEnemies("hapsburg", "protestant");
 	  this.setAllies("france", "genoa");
 	  this.setAllies("france", "ottoman");
           this.setAllies("england", "france");
 	  this.setAllies("hapsburg", "hungary");
+
+this.addRegular("hapsburg", "prague", 3);
+
           this.setAllies("papacy", "hapsburg");
 	  this.setAllies("hapsburg", "hungary");
           this.setAllies("papacy", "hapsburg");

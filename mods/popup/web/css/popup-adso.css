@@ -1,0 +1,53 @@
+/* Adso */
+
+#adso_tooltip {
+	cursor: pointer;
+	position: absolute;
+	width: auto;
+	height: auto;
+	max-width: 300px;
+	border: 1px solid black;
+	padding: 8px;
+	background-color: lightyellow;
+	line-height: 200%;
+	visibility: hidden;
+	z-index: 10000;
+	overflow: hidden;
+}
+#adso_status {
+	display: none;
+	position: absolute;
+	width: auto;
+	height: auto;
+	z-index: 10004;
+}
+span.adso:hover , .lesson_sentence_source span:hover , .lesson_sentence_pinyin span:hover {
+	background-color: yellow;
+	cursor: pointer;
+}
+.row_1 {
+	font-size: 25px;
+	margin-top: 4px;
+	margin-bottom: 5px;
+}
+.row_2 {
+	font-size: 25px;
+	margin-bottom: 5px;
+}
+.row_3 {
+	font-size: 20px;
+	margin-bottom: 5px;
+}
+.row_4 {
+	font-size: 20px;
+	margin-bottom: 5px;
+}
+.row_5 {
+	font-size: 14px;
+	margin-bottom: 5px;
+	line-height: 1.1em;
+}
+.row_6 {
+	display: none;
+	visibility: hidden;
+}

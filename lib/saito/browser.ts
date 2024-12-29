@@ -1916,6 +1916,7 @@ class Browser {
 
 			text = sanitizeHtml(text, {
 				allowedTags: [
+					'a',
 					'h1',
 					'h2',
 					'h3',
@@ -1947,7 +1948,10 @@ class Browser {
 					'pre',
 					'marquee',
 					'pre',
-					'span'
+					'span',
+					'img',
+					'video',
+					'audio'
 				],
 				allowedAttributes: {
 					div: ['class', 'id'],

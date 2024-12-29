@@ -103,16 +103,6 @@ class YoutubeServer extends ModTemplate {
     });
   }
 
-  webServer(app, expressapp, express) {
-    // this.initializeWebSocketServer();
-    let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
-    expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
-  }
-
-  getWebsocketPath() {
-    return 'encoder';
-  }
-
   async onWebSocketServer(wss) {
     const child_process = require('child_process');
     console.log('youtube on websocket server');

@@ -1,16 +1,12 @@
 
-.playerboxes {
+.game-playerbox-manager {
     display: flex;
     flex-direction: row;
     width: 95vw;
     height: max-content;
     justify-content: space-around;
-    position: absolute;
-    margin-left: auto;
-    margin-right: auto;
     top: 5rem;
-    left: 50%;
-    transform: translate(-50%, 0%);
+    left: 2.5vw;
 }
 
 .saito-user {
@@ -35,10 +31,7 @@
 
 .game-playerbox.game-playerbox-seat-1 {
 	height: 250px;
-}
-
-.game-playerbox-2.game-playerbox-seat-4 {
-	height: 100px;
+	position: fixed;
 }
 
 .game-playerbox-graphics {
@@ -54,10 +47,6 @@
 	grid-column: 2 / span 1;
 }
 
-.game-playerbox-manager.game-playerbox-seat-manager {
-	display: none;
-}
-
 .game-playerbox {
 	min-width: 250px;
 	max-width: min(250px, 30vw);
@@ -65,6 +54,7 @@
 	min-height: 11rem;
 	color: white;
 	background-color: #4448;
+	position: relative;
 }
 
 .game-playerbox.active {
@@ -95,22 +85,6 @@
 
 .game-playerbox-head .saito-user > .saito-address {
 	color: white;
-<<<<<<< HEAD
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	align-items: center;
-	width: 100%;
-
-}
-.game-playerbox-head .saito-user > .saito-address {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: inherit;
-    display: revert;
-=======
->>>>>>> staging
 }
 
 .game-playerbox-graphics {
@@ -122,14 +96,6 @@
 	z-index: -10;
 }
 
-.game-playerbox-seat-5 .game-playerbox-graphics, .game-playerbox-seat-3 .game-playerbox-graphics{
-	left: 20%;
-	top: 100%;
-}
-
-.game-playerbox-seat-5, .game-playerbox-seat-6{
-	left: 1.5rem;
-}
 
 .plog-update {
 	width: 100%;
@@ -150,10 +116,6 @@
 		min-width: 250px;
 		max-width: 250px;
 		margin-bottom: 0.5rem;
-	}
-
-	.game-playerbox-seat-5, .game-playerbox-seat-6{
-		left: 1.5rem;
 	}
 
 	.plog-update{

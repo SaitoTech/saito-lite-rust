@@ -384,8 +384,8 @@ class Arcade extends ModTemplate {
 					//game.msg.options.desired_opponent_publickey = this.publicKey;
 
 					//Then we have to remove and readd the game so it goes under "mine"
-					//arcade_self.removeGame(game.signature);
-					//arcade_self.addGame(game, "private");
+					arcade_self.removeGame(game.signature);
+					arcade_self.addGame(game, "private");
 				}
 
 				app.browser.logMatomoEvent('GameInvite', 'FollowLink', game.game);
