@@ -333,8 +333,7 @@ export default class Wallet extends SaitoWallet {
                     // restore white and black lists
                     this.app.options.modtools = modtools;
 
-                    console.log('111');
-                    this.reset(true);
+                    await this.reset(true);
                     await this.saveWallet();
 
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
