@@ -34,9 +34,6 @@ const PostModal = ({ onClose, onSubmit, post }) => {
   const editorRef = useRef(null);
   const quillInstance = useRef(null);
 
-  const editorRef = useRef(null);
-  const quillInstance = useRef(null);
-
   const [imagePreview, setImagePreview] = useState(
     post?.imageUrl || (post?.image ? `data:image/jpeg;base64,${post.image}` : null)
   );
