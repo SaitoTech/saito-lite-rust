@@ -262,8 +262,8 @@ class Poker extends GameTableTemplate {
 	}
 
 	async exitGame() {
-		if (this.game.over == 0 && this.game.player) {
-			let c = await sconfirm("forfeit the game?");
+		if (this.game.over == 0 && this.game.player && this.game.options['open-table']) {
+			let c = await sconfirm("give up your seat at the table?");
 			if (c) {
 				await this.sendStopGameTransaction("forfeit");
 				this.game.over = 2;
