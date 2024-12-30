@@ -472,7 +472,6 @@ export default class Wallet extends SaitoWallet {
 	 * Saves the current wallet state to local storage.
 	 */
     async saveWallet() {
-        console.log('222');
         if (!this.app.options.wallet) {
             this.app.options.wallet = {};
         }
@@ -489,9 +488,7 @@ export default class Wallet extends SaitoWallet {
         }
                         
         let slips = await this.getSlips();
-        console.log('slip count 1 : ',slips.length);
         this.app.options.wallet.slips = slips.map((slip) => slip.toJson());
-        console.log('slip count 2 : ',this.app.options.wallet.slips.length);
 
         await this.save();
         this.app.storage.saveOptions();
