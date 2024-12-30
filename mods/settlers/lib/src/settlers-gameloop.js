@@ -702,6 +702,19 @@ class SettlersGameloop {
         let inResource = mv[5];
         this.game.queue.splice(qe, 1);
 
+        // Check that this is possible first
+        let check = 0;
+        for (let r of this.game.state.players[player - 1].resources){
+          if (r == outResource){
+            check++;
+          }
+        }
+
+        if (check < outCount){
+          console.warn("Attempted double trade!");
+          return 1;
+        }
+
         // let offering player know
         if (this.game.player == player) {
           this.updateStatus("your bank trade is completed", 1);
@@ -788,7 +801,7 @@ class SettlersGameloop {
         let roll = d1 + d2;
 
         // Less bandit in early game
-        if (roll == 7 && this.game.stats.history.length < 6) {
+        while (roll == 7 && this.game.stats.history.length < 5) {
           console.log("Re-roll the 7 (you're welcome)!");
           d1 = this.rollDice(6);
           d2 = this.rollDice(6);
