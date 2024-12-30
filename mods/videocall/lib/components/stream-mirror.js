@@ -142,15 +142,15 @@ class StreamMirror {
     }
 
     placeVideoInPlayerBox(videoContainer, peerId) {
-        const shortPeerId = peerId === 'local' ? this.mod.publicKey.substring(0, 6) : peerId.substring(0, 6);
+        const gottenAddress = peerId === 'local' ? this.mod.publicKey : peerId;
+
         const playerBoxes = document.querySelectorAll('.game-video-container');
         let placed = false;
 
         for (const box of playerBoxes) {
-            const address = box.querySelector('.saito-address');
+            const address = box.querySelector('.saito-address').getAttribute('data-id');
             if (address) {
-                const shortAddress = address.textContent.split('-')[1];
-                if (shortAddress === shortPeerId) {
+                if (address === gottenAddress) {
                     box.appendChild(videoContainer);
                     placed = true;
                     break;
