@@ -98,8 +98,21 @@ console.log("how many txs: " + txs.length);
 		for (let z = 0; z < txs.length; z++) {
 			if (txs[z].type === TransactionType.Normal) {
 				let txmsg2 = txs[z].returnMessage();
-console.log("examining tx: " + JSON.stringify(txmsg2));
-console.log("processing tx!");
+
+        const str_txmsg2 = JSON.stringify(txmsg2);
+        const ellipsis = "\n...\n";
+        const prefixLength = 500, suffixLength = 500;
+        const maxStrLength =
+          prefixLength + ellipsis.length + suffixLength;
+        console.log(
+          "examining tx:",
+          str_txmsg2.length > maxStrLength ?
+              str_txmsg2.slice(0, prefixLength)
+                + ellipsis + str_txmsg2.slice(-suffixLength)
+            : str_txmsg2
+        );
+
+        console.log("processing tx!");
 				await txs[z].decryptMessage(this.app);
 				const txmsg = txs[z].returnMessage();
 				this.app.modules.affixCallbacks(

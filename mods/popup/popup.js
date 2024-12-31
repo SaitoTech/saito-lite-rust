@@ -125,7 +125,21 @@ class Popup extends ModTemplate {
 		//
 		// load local data
 		//
-		this.load();
+		for (let i = 0; i < this.urlpath.length; i++) {
+			if (this.urlpath[i] === "") {
+				this.urlpath.splice(i, 1); i--; 
+			}
+			if (this.urlpath[i] === "popup") {
+				this.browser_active = 1;
+			}
+			if (this.urlpath[i] === "lessons") {
+				if (this.urlpath.length > (i+1)) {
+					this.app.connection.emit("popup-lessons-render-request");
+				} else {
+					this.app.connection.emit("popup-lessons-render-request");
+				}
+			}
+		}
 
 		//
 		// database setup etc.
@@ -968,6 +982,37 @@ async saveAnswer(obj) {
                         }
                         return;
                 });
+
+                expressapp.get('/' + encodeURI(this.returnSlug() + '/lessons'), async function (req, res) {
+                        let html = PopupHome(app, popup_self, app.build_number);
+                        if (!res.finished) {
+                                res.setHeader('Content-type', 'text/html');
+                                res.charset = 'UTF-8';
+                                return res.send(html);
+                        }
+                        return;
+                });
+
+                expressapp.get('/' + encodeURI(this.returnSlug() + '/lessons/*'), async function (req, res) {
+                        let html = PopupHome(app, popup_self, app.build_number);
+                        if (!res.finished) {
+                                res.setHeader('Content-type', 'text/html');
+                                res.charset = 'UTF-8';
+                                return res.send(html);
+                        }
+                        return;
+                });
+
+    		expressapp.use('/' + encodeURI(this.returnSlug()), express.static(webdir));
+	}
+
+
+
+
+        webServer(app, expressapp, express) {
+
+                let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
+                let popup_self = this;
 
                 expressapp.get('/' + encodeURI(this.returnSlug() + '/lessons'), async function (req, res) {
                         let html = PopupHome(app, popup_self, app.build_number);

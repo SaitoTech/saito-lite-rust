@@ -1,6 +1,6 @@
-const VocabMainTemplate = require('./vocab-main.template');
-const VocabRightTemplate = require('./vocab-right.template');
-const WordTemplate = require('./word.template');
+//const VocabMainTemplate = require('./vocab-main.template');
+//const VocabRightTemplate = require('./vocab-right.template');
+//const WordTemplate = require('./word.template');
 const SaitoLoader = require('./../../../lib/saito/ui/saito-loader/saito-loader');
 
 class PopupVocab {

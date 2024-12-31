@@ -274,8 +274,8 @@ class Graffiti extends ModTemplate {
   }
 
   async setTilesInDatabase(tileArray) {
-    const maxSqlValueNumber = 999, nbSqlColumns = 7;
-    const nbTilesPerStatement = Math.ceil(maxSqlValueNumber / nbSqlColumns) - 1;
+    const maxNbValuesPerStatement = 32766, nbSqlColumns = 7;
+    const nbTilesPerStatement = Math.ceil(maxNbValuesPerStatement / nbSqlColumns) - 1;
     const nbTiles = tileArray.length;
     const nbStatements = Math.ceil(nbTiles / nbTilesPerStatement);
     let kMin, kMax, sqlValues, params;
@@ -293,9 +293,9 @@ class Graffiti extends ModTemplate {
         params[`$alpha${k}`] = Math.round(tileArray[k].rgbaColor.alpha);
         params[`$ordinal${k}`] = tileArray[k].ordinal;
       }
-      const sql = "REPLACE INTO tiles (i, j, red, green, blue, alpha, ordinal) VALUES\n" + sqlValues.join(",\n");
+      const sqlStatement = "REPLACE INTO tiles (i, j, red, green, blue, alpha, ordinal) VALUES\n" + sqlValues.join(",\n");
       console.log(`[Graffiti] Updating database... (${n+1}/${nbStatements})`);
-      await this.app.storage.runDatabase(sql, params, "graffiti");
+      await this.app.storage.runDatabase(sqlStatement, params, "graffiti");
     }
     console.log(`[Graffiti] Database updated.`);
   }
