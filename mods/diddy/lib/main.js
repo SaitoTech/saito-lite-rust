@@ -21,8 +21,8 @@ class DiddyMain {
     }
 
     try {
-      console.log("Rendering DiddyMain...");
-      console.log("Energy from backend:", this.mod.diddy.energy, "/", this.mod.diddy.maxEnergy);
+      // console.log("Rendering DiddyMain...");
+      // console.log("Energy from backend:", this.mod.diddy.energy, "/", this.mod.diddy.maxEnergy);
 
       document.querySelector(".text-number").innerHTML = this.mod.diddy.count;
 
@@ -35,10 +35,10 @@ class DiddyMain {
       if (energyElement) {
         energyElement.innerText = `${this.mod.diddy.energy} / ${this.mod.diddy.maxEnergy}`;
       } else {
-        console.error("#energy element not found in the DOM.");
+        // console.error("#energy element not found in the DOM.");
       }
     } catch (err) {
-      console.error("Error updating UI:", err);
+      // console.error("Error updating UI:", err);
     }
 
     this.attachEvents();
@@ -54,26 +54,25 @@ class DiddyMain {
     const walletButtonContainer = document.querySelector(".wallet-button-container");
     if (walletButtonContainer) {
       walletButtonContainer.onclick = () => {
-        console.log("Wallet button container clicked!");
+        // console.log("Wallet button container clicked!");
         const saitoHeaderMenuToggle = document.getElementById("saito-header-menu-toggle");
         if (saitoHeaderMenuToggle) {
           saitoHeaderMenuToggle.click();
-          console.log("Saito header menu toggle clicked successfully.");
+          // console.log("Saito header menu toggle clicked successfully.");
         } else {
-          console.error("Saito header menu toggle button not found.");
+          // console.error("Saito header menu toggle button not found.");
         }
       };
     } else {
-      console.error("Wallet button container not found in the DOM.");
+      // console.error("Wallet button container not found in the DOM.");
     }
 }
 
   async clickCoinButton() {
-    console.log("Coin button clicked!");
+    // console.log("Coin button clicked!");
 
     if (this.mod.diddy.energy <= 0) {
-      console.log("No energy left! Please wait for recharge.");
-      alert("No energy left! Wait for recharge.");
+      // console.log("No energy left! Please wait for recharge.");
       return;
     }
 
@@ -88,12 +87,12 @@ class DiddyMain {
     if (this.mod.diddy.count % 20 === 0) {
       const newtx = await this.mod.createClickTransaction();
       this.app.network.propagateTransaction(newtx);
-      console.log("Transaction propagated for every 20 clicks.");
+      // console.log("Transaction propagated for every 20 clicks.");
     }
   }
 
   updateUI() {
-    console.log(`Updating UI: Energy = ${this.mod.diddy.energy}, Max Energy = ${this.mod.diddy.maxEnergy}`);
+    // console.log(`Updating UI: Energy = ${this.mod.diddy.energy}, Max Energy = ${this.mod.diddy.maxEnergy}`);
 
     document.querySelector('.text-number').innerText = this.mod.diddy.count;
 
@@ -136,7 +135,7 @@ class DiddyMain {
         }
 
         this.updateUI();
-        console.log(`Recharging... Energy: ${this.mod.diddy.energy}`);
+        // console.log(`Recharging... Energy: ${this.mod.diddy.energy}`);
       }
 
       this.mod.diddy.lastUpdated = Date.now();

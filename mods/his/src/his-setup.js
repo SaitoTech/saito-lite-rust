@@ -581,10 +581,13 @@ console.log("\n\n\n\n");
           this.setEnemies("england", "france");
           this.setEnemies("england", "scotland");
           this.setEnemies("hapsburg", "protestant");
+          this.setEnemies("hapsburg", "ottoman");
 	  this.setAllies("france", "genoa");
 	  this.setAllies("france", "ottoman");
           this.setAllies("england", "france");
 	  this.setAllies("hapsburg", "hungary");
+          this.addNavalSquadron("genoa", "genoa", 1);
+          this.addRegular("france", "genoa", 1);
 
 this.addRegular("hapsburg", "prague", 3);
 
@@ -669,6 +672,20 @@ this.addRegular("hapsburg", "prague", 3);
           this.addNavalSquadron("france", "ragusa", 4);
           this.addRegular("france", "lyon", 1);
           this.addRegular("france", "toulouse", 1);
+
+	
+          this.addRegular("france", "paris", 14);
+          this.addRegular("france", "bordeaux", 1);
+          this.addRegular("france", "limoges", 1);
+          this.addRegular("france", "tours", 1);
+          this.addRegular("france", "nantes", 1);
+          this.addRegular("france", "brest", 1);
+          this.addRegular("france", "rouen", 1);
+          this.addRegular("france", "orleans", 1);
+          this.addRegular("france", "dijon", 1);
+          this.addRegular("france", "boulogne", 1);
+          this.addRegular("france", "marseille", 1);
+
 
           // HAPSBURG
           this.addArmyLeader("hapsburg", "brussels", "duke-of-alva");

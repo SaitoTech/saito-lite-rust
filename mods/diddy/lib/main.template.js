@@ -5,7 +5,7 @@ module.exports = () => {
         <div class="top-bar">
             <img src="img/coins.png" alt="Coins Icon" class="top-bar-coin-icon">
             <div class="top-bar-label">
-                <span class="game-name">$SLAPDIDDY</span>
+                <span class="game-name">$DIDDY</span>
                 <span class="level" id="level">Level 1</span>
             </div>
             <div class="per-tap-button">
@@ -21,7 +21,7 @@ module.exports = () => {
         </section>
 
         <!-- Character Icon - Only Image is Clickable -->
-        <img src="img/Untitled design (17).png" alt="Character Icon" class="character-image" id="character-image">
+        <img src="img/Untitled design (17).png" alt="Character Icon" class="character-image" id="character-image" style="touch-action: manipulation;">
 
         <!-- Energy/Score Bar Section -->
         <section class="score-bar">
