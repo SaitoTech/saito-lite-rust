@@ -14,7 +14,7 @@ module.exports = (app, mod, build_number) => {
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
   <link rel="stylesheet" href="/saito/lib/font-awesome-6/css/all.css" type="text/css" media="screen" />
-  <link rel="stylesheet" href="/saito/lib/jquery/jquery-ui.css" type="text/css" media="screen" />
+  <link rel="stylesheet" href="/saito/lib/jquery/jquery-ui.min.css" type="text/css" media="screen" />
   <link rel="stylesheet" href="/saito/saito.css" type="text/css" media="screen" />
 
   <meta name="mobile-web-app-capable" content="yes" />
