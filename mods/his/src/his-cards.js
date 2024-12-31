@@ -7489,7 +7489,7 @@ console.log("we have removed philip and redisplayed the space...");
           let p1 = his_self.returnPlayerOfFaction(faction_taking);
           let p2 = his_self.returnPlayerOfFaction(faction_giving);
 
-          if (his_self.game.player == p2) {
+          if (his_self.game.player == p1) {
             for (let i = 0; i < cards.length; i++) {
 	      his_self.game.state.pulled_cards.push({ faction : faction_giving , card : cards[i] });
             }
@@ -10023,6 +10023,7 @@ console.log("we have removed philip and redisplayed the space...");
 
 	    let options_idx = $(this).attr("id");
 	    his_self.addMove("ransom\t"+options[options_idx]);
+	    his_self.addMove("NOTIFY\t" + options[options_idx] + " ransomed...");
 	    his_self.endTurn();
 	  });
 
@@ -10073,7 +10074,7 @@ console.log("we have removed philip and redisplayed the space...");
 
             his_self.playerSelectSpaceWithFilter(
 
-	      "Seclect Fortified Home Space: ",
+	      "Select Fortified Home Space: ",
 
 	      function(space) {
 		if (space.type == "fortress" && space.home == ransomed_leader.owner) {
@@ -11642,8 +11643,10 @@ console.log("we have removed philip and redisplayed the space...");
 	let p = his_self.returnPlayerOfFaction(faction);
 	if (p == his_self.game.player) {
 
-          his_self.playerSelectSpaceWithFilter(
+          let sswf_function = () => {
 
+          his_self.playerSelectSpaceWithFilter(
+	
             "Select Space With Unpaid Mercenaries" ,
 
             function(space) {
@@ -11677,6 +11680,7 @@ console.log("we have removed philip and redisplayed the space...");
 	        for (let i = 0; i < factions.length; i++) {
                   html += `<li class="option" id="${factions[i]}">${factions[i]}</li>`;
 		}
+                html += `<li class="option" id="switch">change target</li>`;
     	        html += '</ul>';
 
                 his_self.updateStatusWithOptions(msg, html);
@@ -11686,6 +11690,9 @@ console.log("we have removed philip and redisplayed the space...");
 
  		  $('.option').off();
 	    	  let action = $(this).attr("id");
+
+		  // we can switch if we want now
+		  if (action == "switch") { sswf_function(); return; }
 
 		  his_self.addMove(`unbesiege_if_empty\t${spacekey}\t${action}`);
 		  for (let z = 0; z < his_self.game.spaces[spacekey].units[action].length; z++) {
@@ -11712,6 +11719,8 @@ console.log("we have removed philip and redisplayed the space...");
 
 	    true
           );
+	} // sswf_function
+	sswf_function();
 
         }
 
@@ -11762,6 +11771,7 @@ console.log("we have removed philip and redisplayed the space...");
 		  op++;
                   html += `<li class="option" id="${factions[i]}">${factions[i]}</li>`;
 		}
+                html += `<li class="option" id="switch">change target</li>`;
     	        html += '</ul>';
 
                 his_self.updateStatusWithOptions(msg, html);
@@ -11771,6 +11781,10 @@ console.log("we have removed philip and redisplayed the space...");
 
  		  $('.option').off();
 	    	  let action = $(this).attr("id");
+
+		  if (action == "switch") {
+		    sswf_function(); return;
+		  }
 
 		  if (his_self.game.player == his_self.returnPlayerCommandingFaction(action)) {
                     let c = confirm("Unorthodox! Are you sure you want to sicken your own men?");
