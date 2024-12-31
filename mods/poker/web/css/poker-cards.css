@@ -4,8 +4,8 @@
 	/*width: 15vw;
 	height: 21vw;*/
 	height: calc(1.53 * min(15vh, 17vw));
-	max-width: 190px;
-	max-height: 265px;
+	max-width: 150px;
+	max-height: 230px;
 }
 
 
@@ -16,7 +16,7 @@
 }
 
 .cardfan {
-  top: max(-7rem, -8vw);
+  top: max(-7rem, -17vw);
   left: 5px;
   height: calc(1.53 * min(15vh, 17vw));
   width: min(15vh,17vw);

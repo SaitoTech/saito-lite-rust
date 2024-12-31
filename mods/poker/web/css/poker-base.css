@@ -29,7 +29,8 @@ body {
 .deal {
   display: flex;
   gap: 1rem;
-  margin-bottom: 10%;
+  margin-bottom: 2rem;
+  height: 230px;
 }
 
 .mystuff {
