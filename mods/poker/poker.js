@@ -249,6 +249,7 @@ class Poker extends GameTableTemplate {
 
 		this.log.render();
 
+		this.displayButton();
 		this.insertCryptoLogo(this.game?.options?.crypto);
 
 		//

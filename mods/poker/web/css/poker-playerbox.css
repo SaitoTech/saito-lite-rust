@@ -15,6 +15,7 @@
 
 .other-player-hand {
 	position: absolute;
+	left: 100%;
 }
 .other-player-hand .card {
 	position: absolute;
@@ -25,10 +26,6 @@
 
 .game-playerbox.game-playerbox-seat-1 {
 	height: 250px;
-}
-
-.game-playerbox-graphics {
-	display: flex;
 }
 
 .game-playerbox-icons {
@@ -70,10 +67,10 @@
 
 .game-playerbox-graphics {
 	position: absolute;
-	height: 100px;
+	display: flex;
+	height: 100%;
 	width: 100%;
-	left: 100%;
-	top: 20%;
+	top: 0;
 	z-index: -10;
 }
 
