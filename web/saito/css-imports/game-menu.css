@@ -16,6 +16,11 @@
   color: black;
 }
 
+#saito-header .game-menu{
+  position: static;
+  margin: unset;
+}
+
 .game-menu ul,
 .game-menu-mobile-toggle {
   box-shadow: 2px 2px 5px 0px rgba(0, 0, 0, 0.75);

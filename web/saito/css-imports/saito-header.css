@@ -25,7 +25,8 @@
 }
 
 #saito-header.game {
-  padding: 1rem;
+  padding: 0;
+  padding-right: 2rem;
 }
 
 #saito-header.game .saito-header-logo-wrapper, #saito-header.game .header-msg {
@@ -100,14 +101,14 @@
   top: var(--saito-header-height);
   border-top: 1px solid var(--border-color-general-dividers);
   border-left: 1px solid var(--border-color-general-dividers);
-  transition: right 0.33s;
+  transition: right 0.33s, width 0.33s;
   z-index: 21;
   width: 40rem;
   height: calc(100 * var(--saito-vh) - var(--saito-header-height) + 3px);
   overflow: hidden auto;
 }
 
-.show-menu {
+.saito-header-hamburger-contents.show-menu {
   right: 0;
 }
 
@@ -139,7 +140,7 @@
   height: calc(100vh - var(--saito-header-height));
   overflow: hidden;
   z-index: 19;
-  background: #11111169;
+  background: #11111179;
   transition: opacity 0.33s;
 }
 
@@ -294,6 +295,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin-left: auto;
 }
 
 #header-msg {
@@ -522,27 +524,12 @@
 }
 
 
-@media screen and (max-width: 768px) {
-  .saito-header-hamburger-contents {
-    width: 80vw;
-    overflow-x: hidden;
-  }
-  .slidein-panel {
-    width: 80vw;
-  }
-  .external-links {
-    padding-bottom: 10rem;
-  }
-}
-
 @media screen and (max-width: 620px) {
   .saito-header-hamburger-contents {
     width: 100vw;
-    padding: 0rem;
+    right: -100vw;
   }
-  .slidein-panel {
-    width: 100vw;
-  }
+
   #saito-header {
     padding: 1.3rem 1rem;
   }
