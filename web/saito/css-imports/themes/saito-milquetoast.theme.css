@@ -17,7 +17,6 @@ html[data-theme="milquetoast"] {
       
       --shadow-chat-message-bottom: 0px 0px 2px var(--color-shadow-bubble); /* flattened and centered the shadow */
     /*Border padding*/ 
-      --border-padding-style-leaderboard-ranking: var(--border-padding-small);  
       --border-padding-style: var(--border-padding-wide);
        
     /* FONTS */
