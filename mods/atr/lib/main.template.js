@@ -7,18 +7,12 @@ module.exports = (app, mod) => {
         <h2>SAITO ATR Explorer</h2>
     </div>
 
-    <!--
     <div class="metrics">
-        <div class="metric">
-            <h3>5 secs</h3>
-            <p class="positive">Heartbeat</p>
-        </div>
-        <div class="metric">
-            <h3>100</h3>
-            <p class="positive">Genesis Period</p>
+        <div class="metric balance">
+            <h3><span class='metric-amount'>0.00</span> <span class='metric-amount'>SAITO</span></h3>
+            <p class="positive">Balance</p>
         </div>
     </div>
-    -->
 
     <div class="controls">
         <button class="saito-button-secondary control-button new_block_with_ticket">New Block (w/ golden ticket)</button>

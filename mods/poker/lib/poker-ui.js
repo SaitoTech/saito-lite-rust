@@ -31,6 +31,16 @@ class PokerUI {
     }
   }
 
+  displayButton(){
+    for (let i = 1; i <= this.game.players.length; i++) {
+      if (i == this.game.state.button_player){
+        this.playerbox.updateGraphics(`<div class="dealer-button"></div>`, i); 
+      }else{
+        this.playerbox.updateGraphics('', i); 
+      }
+    }
+  }
+
   displayHand() {
     if (this.game.player == 0) {
       this.updateStatus(`You are observing the game`, -1);

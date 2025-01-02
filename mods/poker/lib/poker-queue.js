@@ -28,9 +28,7 @@ class PokerQueue {
 			);
 		}
 
-		for (let i = 1; i <= this.game.players.length; i++) {
-			this.playerbox.updateGraphics('', i);
-		}
+		this.displayButton();
 
 		this.initializeQueue();
 	}
