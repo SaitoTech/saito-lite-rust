@@ -13,7 +13,7 @@ class Main {
 	}
 
 
-    render() {
+    async render() {
     	if (document.querySelector('.saito-container.atr') == null){
     		return;
     	}
@@ -50,6 +50,8 @@ class Main {
 			document.querySelector(`.blocktable .hasGoldenTicket .blockslot${blockslot}`).innerHTML = block.hasGoldenTicket;
 		}
 
+		await this.renderBalance();
+
 		this.attachEvents();
 	}
 
@@ -73,6 +75,19 @@ class Main {
 			// await this.app.network.propagateTransaction(newtx);
 		};
 
+	}
+
+	async renderBalance(){
+		let balance = await this.app.wallet.getBalance();
+		let balanceSaito = balance/BigInt(100000000);
+		let nolansRemainder = balance - (balanceSaito * BigInt(100000000));
+
+		let balance_str = balanceSaito+"."+nolansRemainder;
+
+		console.log('balance string: ', balance_str);
+		if (document.querySelector(".metric.balance h3 .metric-amount") != null) {
+			document.querySelector(".metric.balance h3 .metric-amount").innerHTML = balance_str;
+		}
 	}
 }
 
