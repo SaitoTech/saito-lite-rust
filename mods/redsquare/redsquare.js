@@ -423,7 +423,7 @@ class RedSquare extends ModTemplate {
             try {
               if (!txs[i].optional?.parent_id) {
                 //Server only checks blacklist / saito-moderation-app skips BROWSER=0
-                if (this.app.modules.moderate(txs[i], this.name) != -1) {
+                if (this.app.modules.moderate(txs[i], this.name) > -1) {
                   this.addTweet(txs[i], "server_load");
                 }
               }
@@ -953,6 +953,7 @@ class RedSquare extends ModTemplate {
       }
       if (txmsg.request === 'like tweet') {
         await this.receiveLikeTransaction(blk, tx, conf, this.app);
+        this.cacheRecentTweets();
       }
       if (txmsg.request === 'flag tweet') {
         await this.receiveFlagTransaction(blk, tx, conf, this.app);
@@ -1703,7 +1704,7 @@ class RedSquare extends ModTemplate {
 
     for (let tweet of this.tweets) {
       if (this?.bizarro) {
-        if (this.app.modules.moderate(tweet.tx, this.name) != -1) {
+        if (this.app.modules.moderate(tweet.tx, this.name) > -1) {
           console.log('Bizarro -- Skip normal tweet');
           continue;
         }
@@ -2720,15 +2721,21 @@ class RedSquare extends ModTemplate {
       //	score = 1;
       //}
 
+      let mod_score = this.app.modules.moderate(tweet.tx);
+
       if (tweet.curated == 1) {
         score = 1;
       }
 
-      if (tweet.num_replies > 0) {
+      if (tweet.num_replies > 0 && mod_score != -1) {
         score = 1;
       }
 
-      if (this.app.modules.reverseModerate(tweet.tx) == -1) {
+      if (tweet.num_likes > 1 && mod_score != -1) {
+        score = 1;
+      }
+
+      if (mod_score == 1) {
         score = 1;
       }
 
@@ -2750,7 +2757,6 @@ class RedSquare extends ModTemplate {
       //}
 
       if (score > 0) {
-        //temp_array.push({tweet, score});
         number_of_tweets_with_positive_score++;
         temp_array.push({ tweet, score: 1 });
       }
@@ -2777,11 +2783,13 @@ class RedSquare extends ModTemplate {
     }
 
 
-    temp_array.sort((a, b) => {
-      return b.score - a.score;
-    });
+//    temp_array.sort((a, b) => {
+//      return b.score - a.score;
+//    });
 
-    for (let i = 0; i < 10 && i < temp_array.length; i++) {
+    let added_tweets = 0;
+    for (let i = 0; added_tweets < 10 && i < temp_array.length; i++) {
+      added_tweets++;
       this.curated_tweets.push(temp_array[i].tweet);
     }
 
