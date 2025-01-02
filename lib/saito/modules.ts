@@ -519,58 +519,10 @@ class Mods {
     }
 
     //
-    // seems OK if we made it this far
-    //
-    return 1;
-  }
-
-
-  //
-  // return 1 if we do not explicitly permit
-  //
-  // 1 if (no or maybe)
-  //
-  // note that permit_through can be returned -1 (no) 0 (indifferent) or 1 (yes)
-  //
-  reverseModerate(tx = null, app = '') {
-    let permit_through = 0;
-
-    //
-    // if there is a relevant app-filter-function, respect it
-    //
-    for (let i = 0; i < this.mods.length; i++) {
-      if (this.mods[i].name == app || app == '*') {
-        permit_through = this.moderateModule(tx, this.mods[i]);
-        if (permit_through == -1) {
-          return 1;
-        }
-        if (permit_through == 1) {
-          return 0;
-        }
-      }
-    }
-
-    //
-    // otherwise go through blacklist
-    //
-    permit_through = this.moderateCore(tx);
-
-    if (permit_through == -1) {
-      return 1;
-    }
-    if (permit_through == 0) {
-      return 1;
-    }
-    if (permit_through == 1) {
-      return 0;
-    }
-
-    //
-    // not permitted, so...
+    // we don't know, so return 0;
     //
     return 0;
   }
-
 
   async render() {
     for (let icb = 0; icb < this.mods.length; icb++) {
