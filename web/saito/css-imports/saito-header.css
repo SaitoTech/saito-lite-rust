@@ -6,12 +6,13 @@
   backdrop-filter: blur(1px);
   margin: 0;
   align-items: center;
+  justify-content: space-between;
   padding: 1rem max(2rem, calc((100vw - var(--saito-width)) / 2 + 0.5rem));
   top: 0;
   left: 0;
   z-index: 15;
   height: var(--saito-header-height);
-  transition: all 0.33s linear;
+  /*transition: all 0.33s linear;*/
 }
 
 #saito-header.wide-screen {
@@ -23,10 +24,13 @@
   padding-left: max(1.5rem, calc((100vw - var(--saito-arcade-width)) / 4 + 1rem));
 }
 
-#saito-header nav {
-  display: flex;
-  align-items: center;
-  margin-left: auto;
+#saito-header.game {
+  padding: 0;
+  padding-right: 2rem;
+}
+
+#saito-header.game .saito-header-logo-wrapper, #saito-header.game .header-msg {
+  display: none;
 }
 
 .saito-header-logo {
@@ -90,22 +94,23 @@
 
 .saito-header-hamburger-contents {
   display: block;
-  pointer-events: none;
-  background-color: var(--background-color-menu-hamburger-chat); /* affects chat only, it seems*/
+  background: var(--background-color-header-menu);
   border-radius: var(--border-radius-menu-hamburger);
   position: absolute;
-  right: 0;
+  right: -40rem;
   top: var(--saito-header-height);
   border-top: 1px solid var(--border-color-general-dividers);
   border-left: 1px solid var(--border-color-general-dividers);
-  transition: all 0.2s;
-  opacity: 0;
+  transition: right 0.33s, width 0.33s;
   z-index: 21;
-  width: 20rem;
+  width: 40rem;
   height: calc(100 * var(--saito-vh) - var(--saito-header-height) + 3px);
   overflow: hidden auto;
 }
 
+.saito-header-hamburger-contents.show-menu {
+  right: 0;
+}
 
 .saito-header-menu-section {
   padding: 1.5rem 0;
@@ -124,17 +129,9 @@
   border-bottom: 1px solid var(--border-color-general-dividers);
 }
 
-.show-menu {
-  opacity: 1;
-  width: 40rem;
-  -webkit-transform: translateX(0);
-  transform: translateX(0);
-  pointer-events: auto;
-  background: var(--background-color-header-menu);
-}
 
 .saito-header-backdrop {
-  display: none;
+  opacity: 0;
   pointer-events: none;
   position: fixed;
   top: var(--saito-header-height);
@@ -143,11 +140,12 @@
   height: calc(100vh - var(--saito-header-height));
   overflow: hidden;
   z-index: 19;
-  background: #11111169;
+  background: #11111179;
+  transition: opacity 0.33s;
 }
 
 .saito-header-backdrop.menu-visible {
-  display: block;
+  opacity: 1;
   pointer-events: auto;
 }
 
@@ -297,6 +295,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin-left: auto;
 }
 
 #header-msg {
@@ -525,27 +524,12 @@
 }
 
 
-@media screen and (max-width: 768px) {
-  .saito-header-hamburger-contents {
-    width: 80vw;
-    overflow-x: hidden;
-  }
-  .slidein-panel {
-    width: 80vw;
-  }
-  .external-links {
-    padding-bottom: 10rem;
-  }
-}
-
 @media screen and (max-width: 620px) {
   .saito-header-hamburger-contents {
     width: 100vw;
-    padding: 0rem;
+    right: -100vw;
   }
-  .slidein-panel {
-    width: 100vw;
-  }
+
   #saito-header {
     padding: 1.3rem 1rem;
   }

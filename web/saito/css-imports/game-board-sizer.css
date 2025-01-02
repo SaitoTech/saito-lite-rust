@@ -10,6 +10,11 @@
   align-items: center;
   justify-content: space-evenly;
 }
+
+#saito-header #game_board_sizer{
+  position: static;
+}
+
 #game_board_sizer i {
   font-size: 24px;
   color: var(--saito-white);
