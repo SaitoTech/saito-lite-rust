@@ -9,6 +9,10 @@
 
 :root {
   --background-color-shim-normal: var(--background-color-shim-dark);
+
+  /* for the header */
+  --saito-header-height: 4rem;
+  --saito-arcade-header-background: transparent;
 }
 
 body {
