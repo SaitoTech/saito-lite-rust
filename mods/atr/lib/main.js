@@ -68,7 +68,12 @@ class Main {
 			await this.app.network.sendRequestAsTransaction("new-block-with-no-gt");
 		};
 		document.querySelector('#add_transaction_to_mempool').onclick = async (e) => {
-			this_self.add_mempool.render();
+			
+			this_self.app.connection.emit(
+				'saito-crypto-withdraw-render-request',
+				{ ticker: 'SAITO', autofill: true, dynamicFee: true, fee: 0 }
+			);
+			//this_self.add_mempool.render();
 			// let newtx = await this.app.wallet.createUnsignedTransaction();
 			// newtx.msg = {
 			// 	module: "ATR" ,

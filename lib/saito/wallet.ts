@@ -127,14 +127,19 @@ export default class Wallet extends SaitoWallet {
                 return callback(html);
 			}
 
-            async sendPayment(amount, to_address, unique_hash = '') {
+            async sendPayment(amount, to_address, unique_hash = '', fee = null) {
                 let nolan_amount = this.app.wallet.convertSaitoToNolan(amount);
 
-                let newtx =
-					await this.app.wallet.createUnsignedTransactionWithDefaultFee(
-					    to_address,
-					    nolan_amount
-					);
+                let newtx = null;
+                if (fee != null) {
+                    newtx = await this.app.wallet.createUnsignedTransaction(to_address, BigInt(amount), BigInt(fee));
+                } else {
+                    newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(
+                        to_address,
+                        nolan_amount
+                    );
+                }
+
                 await this.app.wallet.signAndEncryptTransaction(newtx);
                 await this.app.network.propagateTransaction(newtx);
 
@@ -697,7 +702,8 @@ export default class Wallet extends SaitoWallet {
         timestamp,
         unique_hash = '',
         mycallback = null,
-        ticker
+        ticker, 
+        fee = null
     ) {
         console.log('wallet sendPayment 1');
         // validate inputs
@@ -755,7 +761,8 @@ export default class Wallet extends SaitoWallet {
                         const hash = await cryptomod.sendPayment(
                             amounts[i],
                             receivers[i],
-                            unique_tx_hash
+                            unique_tx_hash,
+                            fee
                         );
                         //
                         // hash is "" if unsuccessful, trace_id if successful

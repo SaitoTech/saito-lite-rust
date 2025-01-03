@@ -57,7 +57,7 @@ class TST extends CryptoModule {
 	//        of the transaction that makes this transfer on the external web3
 	//        crypto.
 	//
-	async sendPayment(amounts = '', recipient = '', unique_hash = '') {
+	async sendPayment(amounts = '', recipient = '', unique_hash = '', fee) {
 		return this.app.crypto.hash(Math.random().toString());
 	}
 
