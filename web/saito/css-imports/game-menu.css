@@ -17,7 +17,7 @@
 }
 
 #saito-header .game-menu{
-  position: static;
+  position: relative;
   margin: unset;
 }
 

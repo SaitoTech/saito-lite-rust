@@ -27,6 +27,8 @@
 #saito-header.game {
   padding: 0;
   padding-right: 2rem;
+  /* redefining base variable in game-layout doesn't work if people push themes on games */
+  background: transparent; 
 }
 
 #saito-header.game .saito-header-logo-wrapper, #saito-header.game .header-msg {
