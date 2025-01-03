@@ -42,13 +42,13 @@ class ATR extends ModTemplate {
 
 	async render(app) {
 		this.addComponent(this.header);
-		await this.loadBlocks(null);
+		await this.loadBlocks(null, 'old');
 		//this.ui.render();
 		this.styles = ['/atr/style.css'];
 		await super.render(app);
 	}
 
-	async loadBlocks(blk = null) {
+	async loadBlocks(blk = null, type) {
 		try {
 			if (blk == null) {
 				let last_blk_hash = await this.app.blockchain.getLastBlockHash();
@@ -73,7 +73,7 @@ class ATR extends ModTemplate {
 					console.warn("we don't have a last block hash set");
 				}
 			} else {
-				let blk_data = this.getBlockData(blk);
+				let blk_data = await this.getBlockData(blk, type);
 
 				if (Number(blk_data.id) > this.last_block_id) {
 					this.last_block_id = Number(blk_data.id);
@@ -90,7 +90,7 @@ class ATR extends ModTemplate {
 		}
 	}
 
-	getBlockData(blk){
+	async getBlockData(blk, type){
 		let atr_obj = {};
 		atr_obj.id = blk.id;
 		atr_obj.totalFees = blk.totalFees
@@ -116,6 +116,23 @@ class ATR extends ModTemplate {
 		atr_obj.difficulty = blk.difficulty;
 		atr_obj.previousBlockUnpaid = blk.previousBlockUnpaid;
 		atr_obj.hasGoldenTicket = blk.hasGoldenTicket;
+
+
+		let treasury = blk.treasury;
+		let graveyard = blk.graveyard;
+
+		atr_obj.treasury = blk.treasury;
+		atr_obj.graveyard = blk.graveyard;
+
+		let utxo = null;
+		if (type == 'old') {
+			atr_obj.utxo = '-';
+			atr_obj.total_supply = '-';
+		} else {
+			utxo = await this.fetchBalanceSnapshot('');
+			atr_obj.utxo = utxo;
+			atr_obj.total_supply = utxo+treasury+graveyard;
+		}
 
 		let fullblock = JSON.parse(blk.toJson());
 		atr_obj.previous_block_hash = fullblock.previous_block_hash;
@@ -186,7 +203,7 @@ class ATR extends ModTemplate {
 						txwmsgs.push(tx);
 					});
 
-					let atr_obj = atr_self.getBlockData(blk);
+					let atr_obj = await atr_self.getBlockData(blk, 'old');
 
 					let html_to_return = JSON.stringify(atr_obj);
 
@@ -217,18 +234,17 @@ class ATR extends ModTemplate {
 	async onConfirmation(blk, tx, conf) {
 		// only run on the browser	
 		if (this.app.BROWSER == 0) { return };
-		console.log("onConfirmation")
 		let txmsg = tx.returnMessage();
 		let atr_self = this.app.modules.returnModule('ATR');
 
 		if (conf === 0) {
-			await this.loadBlocks(blk);
+			await this.loadBlocks(blk, 'new');
 		}
 	}
 
 	async onNewBlock(blk, lc) {
 		if (this.app.BROWSER == 0) { return };
-		await this.loadBlocks(blk);
+		await this.loadBlocks(blk, 'new');
 	}
 
 	async handlePeerTransaction(app, tx = null, peer, mycallback = null) {
@@ -247,6 +263,25 @@ class ATR extends ModTemplate {
 		}
 		return super.handlePeerTransaction(app, tx, peer, mycallback);
 	}
+
+	async fetchBalanceSnapshot(key) {
+        try {
+            let response = await fetch('/balance/' + key);
+            let data = await response.text();
+            let utxo = null;
+
+            let split_data = data.split(' ');
+
+            const result = split_data.slice(1).filter(item => item.includes('\n')).map(item => {
+			  return item.split('\n')[0];
+			});
+
+            utxo = result.reduce((acc, num) => acc + BigInt(num), BigInt(0));
+        	return utxo;
+        } catch (error) {
+            console.error(error);
+        }
+    }
 }
 
 module.exports = ATR;

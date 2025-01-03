@@ -229,7 +229,7 @@ class MixinModule extends CryptoModule {
 	 * @abstract
 	 * @return {Number}
 	 */
-	async sendPayment(amount = '', recipient = '', unique_hash = '') {
+	async sendPayment(amount = '', recipient = '', unique_hash = '', fee) {
 		try{
 			let r = recipient.split('|');
 			let ts = new Date().getTime();

@@ -224,11 +224,13 @@ class Twilight extends GameTemplate {
 
   async render(app) {
 
+
     if (this.browser_active == 0) { return; }
 
     if (this.initialize_game_run) {
       return;
     }
+
 
     if (this.game_html_injected != 1) {
       await this.injectGameHTML(htmlTemplate());
@@ -377,7 +379,6 @@ class Twilight extends GameTemplate {
       }
     });
 
-
     this.menu.addSubMenuOption("game-game",{
       text: "Language",
       id: "game-language",
@@ -393,8 +394,8 @@ class Twilight extends GameTemplate {
         game_mod.lang = "en";
         game_mod.saveGamePreference("lang", "en");
         setTimeout(function() { 
-								window.location.reload();
- }, 1000);
+		window.location.reload();
+	}, 1000);
       }
     });
     this.menu.addSubMenuOption("game-language", {
@@ -405,8 +406,8 @@ class Twilight extends GameTemplate {
         game_mod.lang = "zh";
         game_mod.saveGamePreference("lang", "zh");
         setTimeout(function() {
-								window.location.reload();
-			 }, 1000);
+		window.location.reload();
+	}, 1000);
       }
     });
     this.menu.addSubMenuOption("game-language", {
@@ -417,8 +418,8 @@ class Twilight extends GameTemplate {
         game_mod.lang = "ru";
         game_mod.saveGamePreference("lang", "ru");
         setTimeout(function() {  
-								window.location.reload();
-	 }, 1000);
+		window.location.reload();
+	}, 1000);
       }
     });
     this.menu.addSubMenuOption("game-language", {
@@ -429,8 +430,8 @@ class Twilight extends GameTemplate {
         game_mod.lang = "es";
         game_mod.saveGamePreference("lang", "es");
         setTimeout(function() {
-								window.location.reload();
-		 }, 1000);
+		window.location.reload();
+	}, 1000);
       }
     });
 
@@ -445,6 +446,7 @@ class Twilight extends GameTemplate {
     });
 
     this.menu.addChatMenu();
+
     this.menu.render();
 
     this.log.render();
@@ -458,7 +460,6 @@ class Twilight extends GameTemplate {
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
 
     try {
-
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         this.hud.card_width = 110;
         this.cardbox.skip_card_prompt = 0;

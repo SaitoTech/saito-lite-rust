@@ -15,7 +15,6 @@ html[data-theme="midnight"] {
   /* off-white */
   /* Spacing and padding adjustments */
   --border-padding-style: var(--border-padding-wide);
-  --border-padding-style-leaderboard-ranking: var(--border-padding-small);
   /*TINTS COLOR SECTION*/
   --color-tint-primary: #f8f8f8;
   /* bright-off-white */

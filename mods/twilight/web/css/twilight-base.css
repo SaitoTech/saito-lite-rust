@@ -355,6 +355,7 @@ body {
 	height: 100vh;
 	/*overflow: auto; We don't want scroll bars showing up*/
 	margin-top: unset;
+	position: absolute;
 }
 
 /** Modal **/

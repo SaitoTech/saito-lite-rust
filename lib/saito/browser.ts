@@ -823,19 +823,20 @@ class Browser {
 	}
 
 	addElementAfterId(html, id = null) {
-		if (id == null) {
-			console.warn(
-				`no id provided to addElementAfterId, so adding to DOM`
-			);
-			this.app.browser.addElementToDom(html);
-		} else {
+		if (id) {
 			let obj = document.getElementById(id);
 			if (obj) {
 				this.app.browser.addElementToDom(html, obj);
-			}else{
-				console.warn("ID not found (addelementafterid)");
+				const el = document.createElement('div');
+				el.outerHTML = html;
+				obj.insertAdjacentElement('afterend', el);
+				return;
 			}
 		}
+		console.warn(
+			`no id provided/found to addElementAfterId, so adding to DOM`
+		);
+		this.app.browser.addElementToDom(html);
 	}
 
 	prependElementToId(html, id = null) {
@@ -922,18 +923,24 @@ class Browser {
 	}
 
 	addElementAfterSelector(html, selector = '') {
-		if (selector === '') {
-			console.warn(
-				'no selector provided to addElementAfterSelector, so adding direct to DOM'
-			);
-			console.log(html);
-			this.app.browser.addElementToDom(html);
-		} else {
+		console.log("addElementAfterSelector");
+		if (selector) {
 			let container = document.querySelector(selector);
 			if (container) {
-				this.app.browser.addElementAfterElement(html, container);
+				const el = document.createElement('div');
+				console.log(html);
+				container.insertAdjacentElement('afterend', el);
+				el.outerHTML = html;
+				console.log(el);
+				return;
 			}
 		}
+
+		console.warn(
+			'no selector provided/found to addElementAfterSelector, so adding direct to DOM'
+		);
+		console.log(html, selector);
+		this.app.browser.addElementToDom(html);
 	}
 
 	prependElementToSelector(html, selector = '') {

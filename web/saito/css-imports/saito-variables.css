@@ -322,7 +322,6 @@ font imports
   --border-radius-leaderboard-ranking: var(--border-radius-soft);
   /*Border padding*/ 
   --border-padding-sidebar-style: var(--border-padding-normal);
-  --border-padding-style-leaderboard-ranking: var(--border-padding-normal); /* no override from arcade on main theme */
   --border-padding-overlay-post: var(--border-padding-ultra-wide);
   /*thickness*/
   --border-thickness-general-dividers: var(--border-thickness-thin);

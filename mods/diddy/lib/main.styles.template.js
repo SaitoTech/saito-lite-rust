@@ -174,6 +174,10 @@ module.exports = () => {
         display: none !important;
     }
 
+    .wallet-btn * {
+      color: black;
+    }
+
     </style>
     `;
 };

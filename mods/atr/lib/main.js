@@ -48,6 +48,10 @@ class Main {
 			document.querySelector(`.blocktable .difficulty .blockslot${blockslot}`).innerHTML = block.difficulty;
 			document.querySelector(`.blocktable .previous_block_unpaid .blockslot${blockslot}`).innerHTML = block.previousBlockUnpaid;
 			document.querySelector(`.blocktable .hasGoldenTicket .blockslot${blockslot}`).innerHTML = block.hasGoldenTicket;
+			document.querySelector(`.blocktable .treasury .blockslot${blockslot}`).innerHTML = block.treasury;
+			document.querySelector(`.blocktable .graveyard .blockslot${blockslot}`).innerHTML = block.graveyard;
+			document.querySelector(`.blocktable .utxo .blockslot${blockslot}`).innerHTML = block.utxo;
+			document.querySelector(`.blocktable .total_supply .blockslot${blockslot}`).innerHTML = block.total_supply;
 		}
 
 		await this.renderBalance();
@@ -64,7 +68,12 @@ class Main {
 			await this.app.network.sendRequestAsTransaction("new-block-with-no-gt");
 		};
 		document.querySelector('#add_transaction_to_mempool').onclick = async (e) => {
-			this_self.add_mempool.render();
+			
+			this_self.app.connection.emit(
+				'saito-crypto-withdraw-render-request',
+				{ ticker: 'SAITO', autofill: true, dynamicFee: true, fee: 0 }
+			);
+			//this_self.add_mempool.render();
 			// let newtx = await this.app.wallet.createUnsignedTransaction();
 			// newtx.msg = {
 			// 	module: "ATR" ,

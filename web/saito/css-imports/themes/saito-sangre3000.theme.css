@@ -52,7 +52,6 @@ html[data-theme="sangre3000"] {
   /* gives it that famous sangre glow */
   /* Spacing and padding adjustments */
   --border-padding-style: var(--border-padding-wide);
-  --border-padding-style-leaderboard-ranking: var(--border-padding-small);
   --border-padding-overlay-post: var(--border-padding-huge);
   /*MAIN BACKGROUND COLOR SECTION*/
   --background-color-main: #1f1a1b;
