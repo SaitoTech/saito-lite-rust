@@ -224,7 +224,7 @@ class EGLDModule extends CryptoModule {
     }
 
 
-    async sendPayment(amount = '', recipient = '', unique_hash = '') {
+    async sendPayment(amount = '', recipient = '', unique_hash = '', fee = null) {
 
         console.log("inside sendPayment ////");
         console.log("amount, recipient, unique_hash: ", amount , recipient , unique_hash);
