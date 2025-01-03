@@ -298,12 +298,9 @@ object.saito-text {
 @media (min-width: 768px) {
     .main-header {
         transform: translateY(-100%);
-        background: #f71f3d;
     }
 
     .main-header.scrolled {
-        background: #f71f3d;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
     .desktop-menu {
@@ -408,7 +405,6 @@ object.saito-text {
         position: absolute;
         top: 100%;
         min-width: 200px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         border-radius: 4px;
     }
 
@@ -521,10 +517,6 @@ object.saito-text {
     }
 }
 
-/* Scrolled State */
-.main-header.scrolled {
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
 
 .main-header.scrolled .header-logo {
     display: block;
