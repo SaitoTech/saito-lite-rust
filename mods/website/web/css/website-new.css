@@ -25,6 +25,10 @@ font imports
     font-style: normal;
 }
 
+:root {
+    --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%), linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000), linear-gradient(180deg, #e9ce93, #f71f3d);
+}
+
 
 * {
     margin: 0;
@@ -76,10 +80,14 @@ a {
     color: white;
 }
 
-#about {
-    background-color: #555;
+#consensus {
+    background: var(--dreamscape);
     flex-direction: column;
     color: #fff;
+}
+
+#about {
+    background-color: #efefef;
 }
 
 #features {
