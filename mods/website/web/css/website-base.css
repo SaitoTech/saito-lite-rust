@@ -1,3 +1,25 @@
+@font-face {
+  font-family: "visuelt-black";
+  src: url("/saito/fonts/visuelt-black.eot");
+  src: url("/saito/fonts/visuelt-black.eot?#iefix") format("embedded-opentype"), url("/saito/fonts/visuelt-black.woff2") format("woff2"), url("/saito/fonts/visuelt-black.woff") format("woff"), url("/saito/fonts/visuelt-black.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "visuelt-light";
+  src: url("/saito/fonts/visuelt-light.eot");
+  src: url("/saito/fonts/visuelt-light.eot?#iefix") format("embedded-opentype"), url("/saito/fonts/visuelt-light.woff2") format("woff2"), url("/saito/fonts/visuelt-light.woff") format("woff"), url("/saito/fonts/visuelt-light.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "visuelt-medium";
+  src: url("/saito/fonts/visuelt-medium.eot");
+  src: url("/saito/fonts/visuelt-medium.eot?#iefix") format("embedded-opentype"), url("/saito/fonts/visuelt-medium.woff2") format("woff2"), url("/saito/fonts/visuelt-medium.woff") format("woff"), url("/saito/fonts/visuelt-medium.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -8,6 +30,7 @@ body {
   overflow-y: scroll;
   position: relative;
   width: auto;
+  font-family: visuelt-light;
 }
 
 nav {
