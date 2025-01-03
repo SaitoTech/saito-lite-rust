@@ -224,7 +224,6 @@ class Twilight extends GameTemplate {
 
   async render(app) {
 
-alert("tending menu 1!");
 
     if (this.browser_active == 0) { return; }
 
@@ -232,7 +231,6 @@ alert("tending menu 1!");
       return;
     }
 
-alert("tending menu 2!");
 
     if (this.game_html_injected != 1) {
       await this.injectGameHTML(htmlTemplate());
@@ -449,14 +447,12 @@ alert("tending menu 2!");
 
     this.menu.addChatMenu();
 
-alert("tending menu 3!");
     this.menu.render();
 
     this.log.render();
 
     this.cardbox.render();
 
-alert("tending menu 4!");
 
     //
     // add card events -- text shown and callback run if there
@@ -503,11 +499,9 @@ alert("tending menu 4!");
       }
 
 
-alert("before hud render...");
       this.hud.render();
 
 
-alert("after hud render...");
 
       /* Attach classes to hud to visualize player roles */
       //this.game.player == 1 --> ussr, == 2 --> usa

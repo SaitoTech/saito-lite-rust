@@ -310,8 +310,8 @@ class RedSquare extends ModTemplate {
     }
 
     if (type == 'game-menu') {
-      this.attachStyleSheets();
-      super.render(this.app, this);
+      //this.attachStyleSheets();
+      //super.render(this.app, this);
       return {
         //id: 'game-share',
         //text: 'Share',

@@ -224,7 +224,6 @@ class Twilight extends GameTemplate {
 
   async render(app) {
 
-alert("tending menu 2!");
 
     if (this.browser_active == 0) { return; }
 
@@ -232,7 +231,6 @@ alert("tending menu 2!");
       return;
     }
 
-alert("tending menu 3!");
 
     if (this.game_html_injected != 1) {
       await this.injectGameHTML(htmlTemplate());
@@ -449,7 +447,6 @@ alert("tending menu 3!");
 
     this.menu.addChatMenu();
 
-alert("tending menu!");
     this.menu.render();
 
     this.log.render();
