@@ -12,6 +12,10 @@ module.exports = (app, mod) => {
             <h3><span class='metric-amount'>0.00</span> <span class='metric-amount'>SAITO</span></h3>
             <p class="positive">Balance</p>
         </div>
+        <div class="metric utxo">
+            <h3><span class='metric-utxo'></span></h3>
+            <p class="positive">Spendable UTXO</p>
+        </div>
     </div>
 
     <div class="controls">

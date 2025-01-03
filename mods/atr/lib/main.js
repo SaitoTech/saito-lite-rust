@@ -52,6 +52,10 @@ class Main {
 
 		await this.renderBalance();
 
+		await this.mod.fetchBalanceSnapshot('', function(utxo){
+			document.querySelector('.metric.utxo h3 .metric-utxo').innerHTML = utxo;
+		});
+
 		this.attachEvents();
 	}
 
