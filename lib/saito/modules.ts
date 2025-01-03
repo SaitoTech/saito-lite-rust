@@ -260,6 +260,9 @@ class Mods {
     // modules have the installed flag set to 0
     //
     for (let i = 0; i < this.mods.length; i++) {
+      //make sure slugs are defined
+      this.mods[i].returnSlug();
+
       let mi_idx = -1;
       let install_this_module = 1;
 
