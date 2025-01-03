@@ -89,3 +89,113 @@ document.addEventListener('click', (e) => {
         });
     }
 });
+
+document.getElementById("start_anim_mobile").addEventListener("click", function () {
+    document.getElementById("anim_mobile").classList.add("vis");
+}, false);
+document.getElementById("close_anim_bttn").addEventListener("click", function () {
+    document.getElementById("anim_mobile").classList.remove("vis");
+}, false);
+
+
+document.getElementById("start_anim2").addEventListener("click", function () {
+    document.getElementById("bottom_title").classList.add("hidden");
+    document.getElementById("bottom-animation").classList.add("expand");
+    document.getElementById("bttm_anim1").classList.remove("vis");
+    document.getElementById("bttm_anim2").classList.add("vis");
+    document.getElementById("close_anim2").classList.add("vis");
+}, false);
+document.getElementById("close_anim2").addEventListener("click", function () {
+    document.getElementById("bottom_title").classList.remove("hidden");
+    document.getElementById("bottom-animation").classList.remove("expand");
+    document.getElementById("bttm_anim1").classList.add("vis");
+    document.getElementById("bttm_anim2").classList.remove("vis");
+    document.getElementById("close_anim2").classList.remove("vis");
+}, false);
+document.getElementById("start_anim2_mobile").addEventListener("click", function () {
+    document.getElementById("anim2_mobile").classList.add("vis");
+}, false);
+document.getElementById("close_anim2_bttn").addEventListener("click", function () {
+    document.getElementById("anim2_mobile").classList.remove("vis");
+}, false);
+
+// Function to check if a color is light
+function isLightColor(color) {
+    const rgb = color.match(/\d+/g);
+    if (!rgb) return false;
+    
+    // Calculate relative luminance
+    const luminance = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
+    return luminance > 0.7; // threshold for "light" colors
+}
+
+// Debounce function to handle scroll stop
+function debounce(func, wait) {
+    let timeout;
+    return function() {
+        const context = this;
+        const args = arguments;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            func.apply(context, args);
+        }, wait);
+    };
+}
+
+// Function to update colors based on background
+function updateColors() {
+    const hamburger = document.querySelector('.hamburger');
+    const activeNavDot = document.querySelector('.nav a.active');
+    if (!hamburger || !activeNavDot) return;
+
+    // Get the element at the center of the viewport
+    const centerY = window.innerHeight / 2;
+    const centerX = window.innerWidth / 2;
+    const elementAtCenter = document.elementFromPoint(centerX, centerY);
+    
+    if (!elementAtCenter) return;
+    
+    // Get background color of the element or its closest section parent
+    const section = elementAtCenter.closest('section');
+    if (!section) return;
+    
+    const backgroundColor = window.getComputedStyle(section).backgroundColor;
+    const isLight = isLightColor(backgroundColor);
+    
+    // Update hamburger span colors
+    const spans = hamburger.querySelectorAll('span');
+    spans.forEach(span => {
+        span.style.backgroundColor = isLight ? '#f61745' : '#fff';
+    });
+
+    // Update active nav dot color
+    // Update all nav dots
+    document.querySelectorAll('.nav a').forEach(dot => {
+        dot.style.backgroundColor = '#fff4';
+    });
+    activeNavDot.style.backgroundColor = isLight ? '#f61745' : '#fff';
+}
+
+// Create debounced version of updateColors
+const updateColorsOnScrollStop = debounce(updateColors, 150);
+
+
+// Update on scroll
+document.querySelector('.container').addEventListener('scroll', updateColorsOnScrollStop);
+
+// Initial update
+document.addEventListener('DOMContentLoaded', updateColorsOnScrollStop);
+
+function setVH() {
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+    //alert('vh: ' + vh);
+}
+
+// Set initial height
+setVH();
+
+// Update height on resize and orientation change
+window.addEventListener('resize', setVH);
+window.addEventListener('orientationchange', setVH);
+document.addEventListener('DOMContentLoaded', setVH);

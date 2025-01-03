@@ -15,25 +15,20 @@
             <img src="/saito/img/logo.svg" alt="Saito" class="header-logo">
             <div class="menu-container">
                 <div class="menu-section">
-                    <h3 class="menu-title">Apps</h3>
+                    <h1 class="menu-title">Apps</h1>
                     <div class="menu-links">
-                        <a href="/arcade" class="menu-button">Arcade</a>
-                        <a href="/chat" class="menu-button">Chat</a>
-                        <a href="/explorer" class="menu-button">Explorer</a>
-                        <a href="/poker" class="menu-button">Poker</a>
-                        <a href="/redsquare" class="menu-button">Red Square</a>
-                        <a href="/wallet" class="menu-button">Wallet</a>
+                        <a href="/redsquare" class="menu-button">Red Square - Social</a>
+                        <a href="/arcade" class="menu-button">Arcade - Games</a>
+                        <a href="/chat" class="menu-button">Chat - Messaging</a>
+                        <a href="/videocall" class="menu-button">Video Call</a>
                     </div>
                 </div>
                 <div class="menu-section">
-                    <h3 class="menu-title">Links</h3>
+                    <h1 class="menu-title">Links</h1>
                     <div class="menu-links">
-                        <a href="https://org.saito.tech" class="menu-button">Organization</a>
                         <a href="https://wiki.saito.io" class="menu-button">Wiki</a>
                         <a href="https://github.com/saitotech" class="menu-button">Github</a>
-                        <a href="https://t.me/SaitoIO" class="menu-button">Telegram</a>
-                        <a href="https://twitter.com/SaitoOfficial" class="menu-button">Twitter</a>
-                        <a href="https://discord.gg/HjTFh9Tfec" class="menu-button">Discord</a>
+                        <a href="/blog" class="menu-button">Blog</a>
                     </div>
                 </div>
             </div>
@@ -41,29 +36,29 @@
 
         <!-- Mobile Menu -->
         <div class="mobile-menu">
-            <button class="hamburger" aria-label="Menu">
+            <div class="hamburger" aria-label="Menu">
                 <span></span>
                 <span></span>
                 <span></span>
-            </button>
+            </div>
             <div class="mobile-menu-content">
                 <div class="menu-section">
                     <h3>Apps</h3>
-                    <a href="/arcade">Arcade</a>
-                    <a href="/chat">Chat</a>
-                    <a href="/explorer">Explorer</a>
-                    <a href="/poker">Poker</a>
-                    <a href="/redsquare">Red Square</a>
-                    <a href="/wallet">Wallet</a>
+                    <a href="/redsquare">Red Square - Social</a>
+                    <a href="/arcade">Arcade - Games</a>
+                    <a href="/chat">Chat - Messaging</a>
+                    <a href="/videocall">Video Call</a>
+                    <!--a href="/explorer">Explorer</a>
+                    <a href="/poker">Poker</a-->
                 </div>
                 <div class="menu-section">
                     <h3>Links</h3>
-                    <a href="https://org.saito.tech">Organization</a>
                     <a href="https://wiki.saito.io">Wiki</a>
                     <a href="https://github.com/saitotech">Github</a>
-                    <a href="https://t.me/SaitoIO">Telegram</a>
-                    <a href="https://twitter.com/SaitoOfficial">Twitter</a>
-                    <a href="https://discord.gg/HjTFh9Tfec">Discord</a>
+                    <a href="/blog">Blog</a>
+                    <!--a href="https://t.me/SaitoIO">Telegram</a-->
+                    <!--a href="https://twitter.com/SaitoOfficial">Twitter</a-->
+                    <!--a href="https://discord.gg/HjTFh9Tfec">Discord</a-->
                 </div>
             </div>
         </div>
@@ -71,9 +66,10 @@
 
     <div class="nav">
         <a href="#landing" class="active"></a>
-        <a href="#about"></a>
+        <!--a href="#about"></a-->
         <a href="#consensus"></a>
-        <a href="#features"></a>
+        <a href="#community"></a>
+        <a href="#web3"></a>
         <a href="#contact"></a>
     </div>
 
@@ -83,33 +79,32 @@
                 <div class="cube-container">
                     <object class="saito-cube" data="/saito/img/saito-cube.svg" type="image/svg+xml"></object>
                 </div>
-                <object class="saito-text" data="/saito/img/saito-text.svg" type="image/svg+xml"></object>
+                <div class="saito-text-container">
+                    <object class="saito-text" data="/saito/img/saito-text.svg" type="image/svg+xml"></object>
+                </div>
                 <object class="background-cube" data="/saito/img/saito-cube.svg" type="image/svg+xml"></object>
             </div>
         </section>
 
-        <section id="about">
+        <!--section id="about">
             <h2>about</h2>
-        </section>
+        </section-->
 
         <section id="consensus">
 
             <div class="animation-one-controls">
                 <div id="animation-ttl" class="info col-lg-7">
-                    <h4 class="va-sub-title text-uppercase">SAITO CONSENSUS</h4>
-                    <h2 class="va-title">Evolution beyond Proof of Work / Stake</h2>
-
-                    <!--a href="javascript:;" id="start_anim_mobile" class="va-btn various btn-white mb-show">
-                        PLAY ANIMATION
-                    </a-->
+                    <h1 class="va-sub-title text-uppercase">SAITO CONSENSUS</h1>
+                    <h2 class="va-title">Evolution beyond Proof of Work and Proof of Stake</h2>
                 </div>
-                <a id="learn_more" href="https://wiki.saito.io/en/consensus" target="_blank">Learn More</a>
+                <a id="learn_more" href="https://wiki.saito.io/en/consensus" target="_blank">Learn More ↗</a>
             </div>
 
             <div class="animation-one-holder">
 
-                <a href="javascript:;" id="bttn_anim_01"
-                    class="va-btn various btn-white mb-hide play-animation-one">▶</a>
+                <a href="javascript:;" id="start_anim" class="va-btn various btn-white mb-hide play-animation-one">See Saito Consensus in Action ▶</a>
+                <a href="javascript:;" id="start_anim_mobile" class="va-btn various btn-white mb-show"> See Saito Consensus in Action ▶</a>
+
 
                 <svg id="top_animation" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                     viewBox="0 0 1920 1080">
@@ -1072,11 +1067,11 @@
 
                 let start_anim = true;
 
-                $("#bttn_anim_01").addEventListener("click", function () {
+                $("#start_anim").addEventListener("click", function () {
                     if (start_anim) {
                         $("#animation-ttl").classList.add("fadeout");
                         //$("#close_bttn").classList.remove("invis");
-                        $("#bttn_anim_01").classList.add("invis");
+                        $("#start_anim").classList.add("invis");
                         animID = requestAnimationFrame(animate);
                     }
                     start_anim = false;
@@ -1108,7 +1103,7 @@
                 */
             </script>
             <div id="anim_mobile">
-                <object type="image/svg+xml" data="/wp-content/uploads/2022/04/saito_popup.svg"></object>
+                <object type="image/svg+xml" data="./saito_popup.svg"></object>
                 <a id="close_anim_bttn" href="javascript:;">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="#fff" width="24" height="24"
                         viewBox="0 0 489.8 489.8">
@@ -1119,22 +1114,62 @@
                     </svg>
                 </a>
             </div>
-            <script>
-                /*
-                document.getElementById("start_anim_mobile").addEventListener("click", function () {
-                    document.getElementById("anim_mobile").classList.add("vis");
-                }, false);
-                document.getElementById("close_anim_bttn").addEventListener("click", function () {
-                    document.getElementById("anim_mobile").classList.remove("vis");
-                }, false);
-                */
-            </script>
         </section>
 
-        <section id="features">
-            <h2>Features</h2>
+        <section id="community">
+            <h1>Saito Community</h1>
+            <div class="community-content">
+                <div class="community-image">
+                    <img src="/saito/img/community-cats-square.jpeg" alt="Saito Community">
+                </div>
+                <div class="community-divider"></div>
+                <div class="community-text">
+                    <p>The Saito Community lives on <a href="/redsquare">RedSquare</a>.<br>
+                    Head over to ask a question, chat with devs or just post a meme.</p>
+
+                    <p>If you want to dig into the economic design, tech or anything else, you want the <a href="https://wiki.saito.com">Saito Wiki</a>.</p>
+
+                    <p>For quick answers check out the <a href="https://saitofaqs.com/">Saito Community FAQs</a></p>
+                </div>
+            </div>
+
         </section>
 
+        <section id="web3">
+            <div id="bottom_title" class="advan-title">
+                <h2 class="va-title">Saito makes real web3 possible. <br>No Strings attached.</h2>
+                <p>Unlike other blockchains, <br>Saito’s economic incentives are <br>fundamentally aligned, <br>allowing for true and sustainable web3</p>
+                <a id="start_anim2" href="javascript:;" class="va-btn text-uppercase btn-white">See True web3 with Saito</a>
+                <a id="start_anim2_mobile" href="javascript:;" class="va-btn text-uppercase btn-white">See True web3 with Saito</a>
+            </div>
+            <div id="bottom-animation" class="section-bg">
+                <a id="close_anim2" href="javascript:;">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="#fff" width="48" height="48"
+                        viewBox="0 0 489.8 489.8">
+                        <path
+                            d="M438.2 0H51.6C23.1 0 0 23.2 0 51.6v386.6c0 28.5 23.2 51.6 51.6 51.6h386.6c28.5 0 51.6-23.2 51.6-51.6V51.6c0-28.4-23.2-51.6-51.6-51.6zm27.1 438.2c0 14.9-12.2 27.1-27.1 27.1H51.6c-14.9 0-27.1-12.2-27.1-27.1V51.6c0-14.9 12.2-27.1 27.1-27.1h386.6c14.9 0 27.1 12.2 27.1 27.1v386.6z" />
+                        <path
+                            d="M319 170.8a12.2 12.2 0 0 0-17.3 0l-56.8 56.8-56.8-56.8c-4.8-4.8-12.5-4.8-17.3 0s-4.8 12.5 0 17.3l56.8 56.8-56.8 56.8a12.2 12.2 0 0 0 0 17.3c2.4 2.4 5.5 3.6 8.7 3.6s6.3-1.2 8.7-3.6l56.8-56.8 56.8 56.8c2.4 2.4 5.5 3.6 8.7 3.6s6.3-1.2 8.7-3.6a12.2 12.2 0 0 0 0-17.3l-57-56.8 56.8-56.8a12.2 12.2 0 0 0 0-17.3z" />
+                    </svg>
+                </a>
+                <object id="bttm_anim1" class="vis" type="image/svg+xml"
+                    data="./saito_bottom_init.svg"></object>
+                <object id="bttm_anim2" type="image/svg+xml"
+                    data="./saito_bottom.svg"></object>
+            </div>
+            <div id="anim2_mobile">
+                <object type="image/svg+xml" data="./saito_bottom_popup.svg"></object>
+                <a id="close_anim2_bttn" href="javascript:;">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="#fff" width="24" height="24"
+                        viewBox="0 0 489.8 489.8">
+                        <path
+                            d="M438.2 0H51.6C23.1 0 0 23.2 0 51.6v386.6c0 28.5 23.2 51.6 51.6 51.6h386.6c28.5 0 51.6-23.2 51.6-51.6V51.6c0-28.4-23.2-51.6-51.6-51.6zm27.1 438.2c0 14.9-12.2 27.1-27.1 27.1H51.6c-14.9 0-27.1-12.2-27.1-27.1V51.6c0-14.9 12.2-27.1 27.1-27.1h386.6c14.9 0 27.1 12.2 27.1 27.1v386.6z" />
+                        <path
+                            d="M319 170.8a12.2 12.2 0 0 0-17.3 0l-56.8 56.8-56.8-56.8c-4.8-4.8-12.5-4.8-17.3 0s-4.8 12.5 0 17.3l56.8 56.8-56.8 56.8a12.2 12.2 0 0 0 0 17.3c2.4 2.4 5.5 3.6 8.7 3.6s6.3-1.2 8.7-3.6l56.8-56.8 56.8 56.8c2.4 2.4 5.5 3.6 8.7 3.6s6.3-1.2 8.7-3.6a12.2 12.2 0 0 0 0-17.3l-57-56.8 56.8-56.8a12.2 12.2 0 0 0 0-17.3z" />
+                    </svg>
+                </a>
+            </div>
+        </section>
 
 
         <section id="contact">
@@ -1145,10 +1180,10 @@
 
                 <div class="contact-column">
                     <div class="contact-links">
-                        <h3>Email</h3>
+                        <h2>Email</h2>
                         <a href="mailto:info@saito.tech">info@saito.tech</a>
 
-                        <h3>Social</h3>
+                        <h2>Social</h2>
                         <a href="/redsquare">RedSquare</a>
                         <a href="/chat">Saito Chat</a>
                     </div>
