@@ -247,6 +247,26 @@ class ATR extends ModTemplate {
 		}
 		return super.handlePeerTransaction(app, tx, peer, mycallback);
 	}
+
+	async fetchBalanceSnapshot(key, callback) {
+        try {
+            console.log('fetching balance snapshot for key : ' + key);
+            let response = await fetch('/balance/' + key);
+            let data = await response.text();
+            let utxo = null;
+
+            let split_data = data.split(' ');
+
+            const result = split_data.slice(1).filter(item => item.includes('\n')).map(item => {
+			  return item.split('\n')[0];
+			});
+
+            utxo = result.reduce((acc, num) => acc + BigInt(num), BigInt(0));
+        	return callback(utxo);
+        } catch (error) {
+            console.error(error);
+        }
+    }
 }
 
 module.exports = ATR;
