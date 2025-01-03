@@ -224,11 +224,15 @@ class Twilight extends GameTemplate {
 
   async render(app) {
 
+alert("tending menu 1!");
+
     if (this.browser_active == 0) { return; }
 
     if (this.initialize_game_run) {
       return;
     }
+
+alert("tending menu 2!");
 
     if (this.game_html_injected != 1) {
       await this.injectGameHTML(htmlTemplate());
@@ -377,7 +381,6 @@ class Twilight extends GameTemplate {
       }
     });
 
-
     this.menu.addSubMenuOption("game-game",{
       text: "Language",
       id: "game-language",
@@ -393,8 +396,8 @@ class Twilight extends GameTemplate {
         game_mod.lang = "en";
         game_mod.saveGamePreference("lang", "en");
         setTimeout(function() { 
-								window.location.reload();
- }, 1000);
+		window.location.reload();
+	}, 1000);
       }
     });
     this.menu.addSubMenuOption("game-language", {
@@ -405,8 +408,8 @@ class Twilight extends GameTemplate {
         game_mod.lang = "zh";
         game_mod.saveGamePreference("lang", "zh");
         setTimeout(function() {
-								window.location.reload();
-			 }, 1000);
+		window.location.reload();
+	}, 1000);
       }
     });
     this.menu.addSubMenuOption("game-language", {
@@ -417,8 +420,8 @@ class Twilight extends GameTemplate {
         game_mod.lang = "ru";
         game_mod.saveGamePreference("lang", "ru");
         setTimeout(function() {  
-								window.location.reload();
-	 }, 1000);
+		window.location.reload();
+	}, 1000);
       }
     });
     this.menu.addSubMenuOption("game-language", {
@@ -429,8 +432,8 @@ class Twilight extends GameTemplate {
         game_mod.lang = "es";
         game_mod.saveGamePreference("lang", "es");
         setTimeout(function() {
-								window.location.reload();
-		 }, 1000);
+		window.location.reload();
+	}, 1000);
       }
     });
 
@@ -445,11 +448,15 @@ class Twilight extends GameTemplate {
     });
 
     this.menu.addChatMenu();
+
+alert("tending menu 3!");
     this.menu.render();
 
     this.log.render();
 
     this.cardbox.render();
+
+alert("tending menu 4!");
 
     //
     // add card events -- text shown and callback run if there
@@ -458,7 +465,6 @@ class Twilight extends GameTemplate {
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
 
     try {
-
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         this.hud.card_width = 110;
         this.cardbox.skip_card_prompt = 0;
@@ -496,7 +502,12 @@ class Twilight extends GameTemplate {
         }
       }
 
+
+alert("before hud render...");
       this.hud.render();
+
+
+alert("after hud render...");
 
       /* Attach classes to hud to visualize player roles */
       //this.game.player == 1 --> ussr, == 2 --> usa
@@ -14255,11 +14266,11 @@ console.log("total countries: " + total_countries);
             placeable.push("norway");
             placeable.push("sweden");
             placeable.push("finland");
-            this.updateStatus("US is playing Special Relationship. Place 2 OPS anywhere in Western Europe.");
+            this.updateStatus("US is playing Special Relationship. Add 2 Influence to any country in Western Europe.");
 
           } else {
 
-            this.updateStatus("US is playing Special Relationship. Place 1 OP adjacent to the UK.");
+            this.updateStatus("US is playing Special Relationship. Add 1 Influence to any country adjacent to the UK.");
             placeable.push("canada");
             placeable.push("france");
             placeable.push("norway");
