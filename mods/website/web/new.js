@@ -2,6 +2,8 @@
 const sections = document.querySelectorAll('section');
 const navLinks = document.querySelectorAll('.nav a');
 const header = document.querySelector('.main-header');
+const saitoText = document.querySelector('.saito-text');
+const mainHeader = document.querySelector('.main-header');
 
 const observerOptions = {
     threshold: 0.5
@@ -33,13 +35,15 @@ document.querySelector('.container').addEventListener('scroll', () => {
     if (currentScroll > 100) {
         header.classList.add('scrolled');
         header.style.transform = `translateY(0)`;
+        saitoText.classList.add('scrolled');
+        mainHeader.classList.add('loaded');
     } else {
         header.classList.remove('scrolled');
         // Calculate transform based on scroll position
         const transformValue = Math.min(0, (currentScroll / 100 - 1) * 100);
         header.style.transform = `translateY(${transformValue}%)`;
+        saitoText.classList.remove('scrolled');
     }
-
     lastScroll = currentScroll;
 });
 
@@ -126,7 +130,7 @@ function isLightColor(color) {
     
     // Calculate relative luminance
     const luminance = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
-    return luminance > 0.7; // threshold for "light" colors
+    return luminance > 0.7;
 }
 
 // Debounce function to handle scroll stop
@@ -146,8 +150,11 @@ function debounce(func, wait) {
 function updateColors() {
     const hamburger = document.querySelector('.hamburger');
     const activeNavDot = document.querySelector('.nav a.active');
-    if (!hamburger || !activeNavDot) return;
-
+    const desktopLogo = document.querySelector('.desktop-menu .header-logo svg');
+    const mobileLogo = document.querySelector('.mobile-header .header-logo svg');
+    const menuTitles = document.querySelectorAll('.desktop-menu .menu-title');
+    const menuLinks = document.querySelectorAll('.main-header.scrolled .menu-links a');
+    
     // Get the element at the center of the viewport
     const centerY = window.innerHeight / 2;
     const centerX = window.innerWidth / 2;
@@ -162,29 +169,82 @@ function updateColors() {
     const backgroundColor = window.getComputedStyle(section).backgroundColor;
     const isLight = isLightColor(backgroundColor);
     
+    // Colors to use
+    const lightBgColor = '#f61745';  // Saito red for light backgrounds
+    const darkBgColor = '#ffffff';   // White for dark backgrounds
+    const color = isLight ? lightBgColor : darkBgColor;
+    
     // Update hamburger span colors
-    const spans = hamburger.querySelectorAll('span');
-    spans.forEach(span => {
-        span.style.backgroundColor = isLight ? '#f61745' : '#fff';
-    });
+    if (hamburger) {
+        const spans = hamburger.querySelectorAll('span');
+        spans.forEach(span => {
+            span.style.backgroundColor = color;
+        });
+    }
 
     // Update active nav dot color
-    // Update all nav dots
-    document.querySelectorAll('.nav a').forEach(dot => {
-        dot.style.backgroundColor = '#fff4';
+    if (activeNavDot) {
+        activeNavDot.style.backgroundColor = color;
+    }
+
+    // Update desktop menu text colors
+    menuTitles.forEach(title => {
+        title.style.color = color;
     });
-    activeNavDot.style.backgroundColor = isLight ? '#f61745' : '#fff';
+
+    // Update dropdown menu links color
+    menuLinks.forEach(link => {
+        link.style.color = color;
+    });
+
+    // Update desktop logo color
+    if (desktopLogo) {
+        const styleEl = desktopLogo.querySelector('style');
+        if (styleEl) {
+            styleEl.textContent = `.cls-1{fill:${color};}`;
+        }
+    }
+
+    // Update mobile logo color
+    if (mobileLogo) {
+        const styleEl = mobileLogo.querySelector('style');
+        if (styleEl) {
+            styleEl.textContent = `.cls-1{fill:${color};}`;
+        }
+    }
+
+    // Debug logging
+    console.log('Color update:', {
+        section: section.id,
+        isLight,
+        color,
+        hasDesktopLogo: !!desktopLogo,
+        hasMobileLogo: !!mobileLogo,
+        menuTitlesCount: menuTitles.length,
+        menuLinksCount: menuLinks.length
+    });
 }
 
-// Create debounced version of updateColors
-const updateColorsOnScrollStop = debounce(updateColors, 150);
+// Make sure this is being called on container scroll
+const container = document.querySelector('.container');
+if (container) {
+    container.addEventListener('scroll', debounce(updateColors, 50));
+}
 
+// Set initial height and colors
+function init() {
+    setVH();
+    updateColors();
+}
 
-// Update on scroll
-document.querySelector('.container').addEventListener('scroll', updateColorsOnScrollStop);
-
-// Initial update
-document.addEventListener('DOMContentLoaded', updateColorsOnScrollStop);
+// Run init on various events
+document.addEventListener('DOMContentLoaded', init);
+window.addEventListener('load', () => {
+    init();
+    setTimeout(init, 100);
+});
+window.addEventListener('resize', setVH);
+window.addEventListener('orientationchange', setVH);
 
 function setVH() {
     let vh = window.innerHeight * 0.01;
@@ -192,10 +252,39 @@ function setVH() {
     //alert('vh: ' + vh);
 }
 
-// Set initial height
-setVH();
+// Add this to your scroll handler
+function updateHeaderState() {
+    const header = document.querySelector('.main-header');
+    const landingSection = document.querySelector('#landing');
+    
+    if (header && landingSection) {
+        const rect = landingSection.getBoundingClientRect();
+        if (rect.top >= 0) {
+            header.classList.add('on-landing');
+        } else {
+            header.classList.remove('on-landing');
+        }
+    }
+}
 
-// Update height on resize and orientation change
-window.addEventListener('resize', setVH);
-window.addEventListener('orientationchange', setVH);
-document.addEventListener('DOMContentLoaded', setVH);
+// Add to your container scroll listener
+if (container) {
+    container.addEventListener('scroll', () => {
+        updateHeaderState();
+        // ... existing scroll handlers ...
+    });
+}
+
+// Add to your existing scroll handler
+function handleScroll() {
+    const landingSection = document.querySelector('#landing');
+    const container = document.querySelector('.container');
+    
+    if (landingSection && !window.hasShownAlert) {
+        const rect = landingSection.getBoundingClientRect();
+        if (rect.bottom <= 0) {
+            alert("You've scrolled past the landing page!");
+            window.hasShownAlert = true;  // Only show once
+        }
+    }
+}
