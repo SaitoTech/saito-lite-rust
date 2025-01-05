@@ -2,6 +2,8 @@
 const sections = document.querySelectorAll('section');
 const navLinks = document.querySelectorAll('.nav a');
 const header = document.querySelector('.main-header');
+const saitoText = document.querySelector('.saito-text');
+const mainHeader = document.querySelector('.main-header');
 
 const observerOptions = {
     threshold: 0.5
@@ -33,13 +35,15 @@ document.querySelector('.container').addEventListener('scroll', () => {
     if (currentScroll > 100) {
         header.classList.add('scrolled');
         header.style.transform = `translateY(0)`;
+        saitoText.classList.add('scrolled');
+        mainHeader.classList.add('loaded');
     } else {
         header.classList.remove('scrolled');
         // Calculate transform based on scroll position
         const transformValue = Math.min(0, (currentScroll / 100 - 1) * 100);
         header.style.transform = `translateY(${transformValue}%)`;
+        saitoText.classList.remove('scrolled');
     }
-
     lastScroll = currentScroll;
 });
 
@@ -146,11 +150,11 @@ function debounce(func, wait) {
 function updateColors() {
     const hamburger = document.querySelector('.hamburger');
     const activeNavDot = document.querySelector('.nav a.active');
-    const logo = document.querySelector('.header-logo');
-    const menuItems = document.querySelectorAll('.menu-title');
+    const desktopLogo = document.querySelector('.desktop-menu .header-logo svg');
+    const mobileLogo = document.querySelector('.mobile-header .header-logo svg');
+    const menuTitles = document.querySelectorAll('.desktop-menu .menu-title');
+    const menuLinks = document.querySelectorAll('.main-header.scrolled .menu-links a');
     
-    if (!hamburger || !activeNavDot) return;
-
     // Get the element at the center of the viewport
     const centerY = window.innerHeight / 2;
     const centerX = window.innerWidth / 2;
@@ -167,48 +171,64 @@ function updateColors() {
     
     // Colors to use
     const lightBgColor = '#f61745';  // Saito red for light backgrounds
-    const darkBgColor = 'white';     // White for dark backgrounds
+    const darkBgColor = '#ffffff';   // White for dark backgrounds
     const color = isLight ? lightBgColor : darkBgColor;
     
     // Update hamburger span colors
-    const spans = hamburger.querySelectorAll('span');
-    spans.forEach(span => {
-        span.style.backgroundColor = color;
-    });
+    if (hamburger) {
+        const spans = hamburger.querySelectorAll('span');
+        spans.forEach(span => {
+            span.style.backgroundColor = color;
+        });
+    }
 
     // Update active nav dot color
-    activeNavDot.style.backgroundColor = color;
+    if (activeNavDot) {
+        activeNavDot.style.backgroundColor = color;
+    }
 
-    // Update menu items color
-    menuItems.forEach(item => {
-        item.style.color = color;
+    // Update desktop menu text colors
+    menuTitles.forEach(title => {
+        title.style.color = color;
     });
 
-    // Update SVG logo color
-    if (logo) {
-        const svg = logo.querySelector('svg');
-        if (svg) {
-            const styleEl = svg.querySelector('style');
-            if (styleEl) {
-                styleEl.textContent = `.cls-1{fill:${color};}`;
-            }
+    // Update dropdown menu links color
+    menuLinks.forEach(link => {
+        link.style.color = color;
+    });
+
+    // Update desktop logo color
+    if (desktopLogo) {
+        const styleEl = desktopLogo.querySelector('style');
+        if (styleEl) {
+            styleEl.textContent = `.cls-1{fill:${color};}`;
         }
     }
 
-    // Debug log
-/*
+    // Update mobile logo color
+    if (mobileLogo) {
+        const styleEl = mobileLogo.querySelector('style');
+        if (styleEl) {
+            styleEl.textContent = `.cls-1{fill:${color};}`;
+        }
+    }
+
+    // Debug logging
     console.log('Color update:', {
-        color,
         section: section.id,
-        isLight
+        isLight,
+        color,
+        hasDesktopLogo: !!desktopLogo,
+        hasMobileLogo: !!mobileLogo,
+        menuTitlesCount: menuTitles.length,
+        menuLinksCount: menuLinks.length
     });
-*/
 }
 
 // Make sure this is being called on container scroll
 const container = document.querySelector('.container');
 if (container) {
-    container.addEventListener('scroll', debounce(updateColors, 100));
+    container.addEventListener('scroll', debounce(updateColors, 50));
 }
 
 // Set initial height and colors
@@ -253,4 +273,18 @@ if (container) {
         updateHeaderState();
         // ... existing scroll handlers ...
     });
+}
+
+// Add to your existing scroll handler
+function handleScroll() {
+    const landingSection = document.querySelector('#landing');
+    const container = document.querySelector('.container');
+    
+    if (landingSection && !window.hasShownAlert) {
+        const rect = landingSection.getBoundingClientRect();
+        if (rect.bottom <= 0) {
+            alert("You've scrolled past the landing page!");
+            window.hasShownAlert = true;  // Only show once
+        }
+    }
 }
