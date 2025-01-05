@@ -126,7 +126,7 @@ function isLightColor(color) {
     
     // Calculate relative luminance
     const luminance = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
-    return luminance > 0.7; // threshold for "light" colors
+    return luminance > 0.7;
 }
 
 // Debounce function to handle scroll stop
@@ -146,6 +146,9 @@ function debounce(func, wait) {
 function updateColors() {
     const hamburger = document.querySelector('.hamburger');
     const activeNavDot = document.querySelector('.nav a.active');
+    const logo = document.querySelector('.header-logo');
+    const menuItems = document.querySelectorAll('.menu-title');
+    
     if (!hamburger || !activeNavDot) return;
 
     // Get the element at the center of the viewport
@@ -162,29 +165,66 @@ function updateColors() {
     const backgroundColor = window.getComputedStyle(section).backgroundColor;
     const isLight = isLightColor(backgroundColor);
     
+    // Colors to use
+    const lightBgColor = '#f61745';  // Saito red for light backgrounds
+    const darkBgColor = 'white';     // White for dark backgrounds
+    const color = isLight ? lightBgColor : darkBgColor;
+    
     // Update hamburger span colors
     const spans = hamburger.querySelectorAll('span');
     spans.forEach(span => {
-        span.style.backgroundColor = isLight ? '#f61745' : '#fff';
+        span.style.backgroundColor = color;
     });
 
     // Update active nav dot color
-    // Update all nav dots
-    document.querySelectorAll('.nav a').forEach(dot => {
-        dot.style.backgroundColor = '#fff4';
+    activeNavDot.style.backgroundColor = color;
+
+    // Update menu items color
+    menuItems.forEach(item => {
+        item.style.color = color;
     });
-    activeNavDot.style.backgroundColor = isLight ? '#f61745' : '#fff';
+
+    // Update SVG logo color
+    if (logo) {
+        const svg = logo.querySelector('svg');
+        if (svg) {
+            const styleEl = svg.querySelector('style');
+            if (styleEl) {
+                styleEl.textContent = `.cls-1{fill:${color};}`;
+            }
+        }
+    }
+
+    // Debug log
+/*
+    console.log('Color update:', {
+        color,
+        section: section.id,
+        isLight
+    });
+*/
 }
 
-// Create debounced version of updateColors
-const updateColorsOnScrollStop = debounce(updateColors, 150);
+// Make sure this is being called on container scroll
+const container = document.querySelector('.container');
+if (container) {
+    container.addEventListener('scroll', debounce(updateColors, 100));
+}
 
+// Set initial height and colors
+function init() {
+    setVH();
+    updateColors();
+}
 
-// Update on scroll
-document.querySelector('.container').addEventListener('scroll', updateColorsOnScrollStop);
-
-// Initial update
-document.addEventListener('DOMContentLoaded', updateColorsOnScrollStop);
+// Run init on various events
+document.addEventListener('DOMContentLoaded', init);
+window.addEventListener('load', () => {
+    init();
+    setTimeout(init, 100);
+});
+window.addEventListener('resize', setVH);
+window.addEventListener('orientationchange', setVH);
 
 function setVH() {
     let vh = window.innerHeight * 0.01;
@@ -192,10 +232,25 @@ function setVH() {
     //alert('vh: ' + vh);
 }
 
-// Set initial height
-setVH();
+// Add this to your scroll handler
+function updateHeaderState() {
+    const header = document.querySelector('.main-header');
+    const landingSection = document.querySelector('#landing');
+    
+    if (header && landingSection) {
+        const rect = landingSection.getBoundingClientRect();
+        if (rect.top >= 0) {
+            header.classList.add('on-landing');
+        } else {
+            header.classList.remove('on-landing');
+        }
+    }
+}
 
-// Update height on resize and orientation change
-window.addEventListener('resize', setVH);
-window.addEventListener('orientationchange', setVH);
-document.addEventListener('DOMContentLoaded', setVH);
+// Add to your container scroll listener
+if (container) {
+    container.addEventListener('scroll', () => {
+        updateHeaderState();
+        // ... existing scroll handlers ...
+    });
+}
