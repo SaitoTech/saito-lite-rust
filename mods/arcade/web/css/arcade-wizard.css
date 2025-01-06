@@ -3,7 +3,6 @@
 
 #advanced-options-overlay-container {
 	color: var(--saito-font-color-dark-modal);
-	border-radius: 0.5rem;
 	min-width: min(40rem, 90vw);
 	min-height: 15rem;
 	display: flex;
@@ -15,7 +14,7 @@
 	max-height: 95vh;
 	overflow-y: auto;
 	overflow-x: hidden;
-	background: var(--saito-arcade-overlay-background);
+	/*background: var(--saito-arcade-overlay-background)*/;
 }
 
 
@@ -48,7 +47,6 @@
 
 #advanced-options-overlay-container .options_notice {
 	margin-bottom: 1.2rem;
-	color: var(--font-color-modal-arcade-body);
 	font-style: italic;
 	text-align: center;
 }

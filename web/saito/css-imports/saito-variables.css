@@ -265,7 +265,6 @@ font imports
   --font-color-icons-left-sidebar: var(--font-color-primary);
   --font-color-hover-icons-left-sidebar: var(--font-color-inverse);
   --font-color-post-downward-arrow: var(--font-color-secondary);
-  --font-color-modal-arcade-body: var(--font-color-inverse);
   --font-color-main-body: var(--font-color-primary); /* MAIN system color */
   --font-color-redsquare-interaction: #e2264d; /* match the red heart animation */
 /* Alerts and Status Font Colors */

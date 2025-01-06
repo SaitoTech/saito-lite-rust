@@ -9,7 +9,7 @@
   gap: 2.5rem;
   width: auto;
   padding: 3rem;
-  min-width: 55rem;
+  min-width: min(55rem, 100vw);
 }
 
 .saito-overlay:has(.game-crypto-transfer-manager-container) {
