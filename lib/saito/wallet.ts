@@ -131,8 +131,9 @@ export default class Wallet extends SaitoWallet {
                 let nolan_amount = this.app.wallet.convertSaitoToNolan(amount);
 
                 let newtx = null;
-                if (fee != null && fee != 0) {
-                    newtx = await this.app.wallet.createUnsignedTransaction(to_address, BigInt(amount), BigInt(fee));
+                if (fee != null && Number(fee) != 0) {
+                    let nolan_fee = this.app.wallet.convertSaitoToNolan(fee);
+                    newtx = await this.app.wallet.createUnsignedTransaction(to_address, BigInt(nolan_amount), BigInt(nolan_fee));
                 } else {
                     newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(
                         to_address,
