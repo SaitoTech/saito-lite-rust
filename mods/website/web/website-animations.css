@@ -1108,7 +1108,6 @@ text {
 }
 
 #start_anim {
-    border: 3px solid #fff;
     border-radius: 5rem;
     display: flex;
     justify-content: center;
@@ -1120,11 +1119,11 @@ text {
     top: 50%;
     transform: translate(-50%, -50%);
     transition: transform 0.3s ease-in-out;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-a#start_anim:hover {
-    transform: translate(-50%, -50%) scale(1.07);
-    transform-origin: center;
+a#start_anim:hover, a#start_anim2:hover {
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 
@@ -1135,9 +1134,9 @@ a#start_anim:hover {
     position: absolute;
     font-size: 1.33rem;
     white-space: nowrap;
-    border: 2px solid #fff;
     border-radius: 50px;
     transform: translateX(-50%);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 #start_anim_mobile {

@@ -183,9 +183,11 @@ function updateColors() {
     }
 
     // Update active nav dot color
+    /*
     if (activeNavDot) {
         activeNavDot.style.backgroundColor = color;
     }
+    */
 
     // Update desktop menu text colors
     menuTitles.forEach(title => {
@@ -214,6 +216,7 @@ function updateColors() {
     }
 
     // Debug logging
+    /*
     console.log('Color update:', {
         section: section.id,
         isLight,
@@ -223,6 +226,7 @@ function updateColors() {
         menuTitlesCount: menuTitles.length,
         menuLinksCount: menuLinks.length
     });
+    */
 }
 
 // Make sure this is being called on container scroll
@@ -288,3 +292,19 @@ function handleScroll() {
         }
     }
 }
+
+// Optional click handler for the caret
+document.addEventListener('DOMContentLoaded', () => {
+    const caret = document.querySelector('.scroll-caret');
+    const container = document.querySelector('.container');
+    const consensusSection = document.querySelector('#consensus');
+
+    if (caret && container && consensusSection) {
+        caret.addEventListener('click', () => {
+            container.scrollTo({
+                top: consensusSection.offsetTop,
+                behavior: 'smooth'
+            });
+        });
+    }
+});
