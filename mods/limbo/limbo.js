@@ -38,8 +38,6 @@ class Limbo extends ModTemplate {
 		this.stun = null;
 		this.rendered = false;
 
-		this.terminationEvent = 'unload';
-
 		this.social = {
 			twitter: '@SaitoOfficial',
 			title: `🟥 ${this.returnName()}`,
@@ -210,7 +208,7 @@ class Limbo extends ModTemplate {
 					text: 'Swarmcast',
 					icon: this.icon_fa,
 					callback: function (app, id) {
-						window.location = '/' + mod_self.returnSlug();
+						navigateWindow('/' + mod_self.returnSlug());
 					}
 				});
 
@@ -444,7 +442,7 @@ class Limbo extends ModTemplate {
 			});
 
 			document.querySelector('.spaces-list').onclick = (e) => {
-				window.location = '/' + this.returnSlug();
+				navigateWindow('/' + this.returnSlug());
 			};
 		}
 	}
@@ -817,29 +815,19 @@ class Limbo extends ModTemplate {
 	}
 
 	attachMetaEvents() {
-		if ('onpagehide' in self) {
-			this.terminationEvent = 'pagehide';
-		}
 
 		this.saveMe = () => {
 			this.visibilityChange();
 		};
 
-		window.addEventListener(this.terminationEvent, this.saveMe);
-		window.addEventListener('beforeunload', this.beforeUnloadHandler);
-		if (this.app.browser.isMobileBrowser()) {
-			document.addEventListener('visibilitychange', this.saveMe);
-		}
+		this.app.browser.lockNavigation(this.saveMe);
+
 	}
 
 	detachMetaEvents() {
 		console.log('Safe to navigate!');
 
-		window.removeEventListener('beforeunload', this.beforeUnloadHandler);
-		window.removeEventListener(this.terminationEvent, this.saveMe);
-		if (this.app.browser.isMobileBrowser()) {
-			document.removeEventListener('visibilitychange', this.saveMe);
-		}
+		this.app.browser.unlockNavigation(this.saveMe);
 	}
 
 	async sendDreamTransaction(options = {}) {
@@ -1820,11 +1808,6 @@ class Limbo extends ModTemplate {
 		// const isCasting = castButtonGame.textContent.trim().toLowerCase() === 'stop cast';
 
 		// console.log('isCasting', isCasting);
-	}
-
-	beforeUnloadHandler(event) {
-		event.preventDefault();
-		event.returnValue = true;
 	}
 
 	visibilityChange() {

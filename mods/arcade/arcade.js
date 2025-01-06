@@ -616,7 +616,7 @@ class Arcade extends ModTemplate {
 					icon: 'fa-solid fa-building-columns',
 					rank: 15,
 					callback: function (app, id) {
-						window.location = '/arcade';
+						navigateWindow('/arcade');
 					}
 				});
 			}

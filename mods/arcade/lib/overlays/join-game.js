@@ -101,9 +101,9 @@ class JoinGameOverlay {
 		if (document.getElementById('arcade-game-controls-continue-game')) {
 			document.getElementById('arcade-game-controls-continue-game').onclick = async (e) => {
 				this.app.browser.logMatomoEvent('GameInvite', 'ContinueGame', this.invite.game_mod.name);
-				window.location = `/${this.invite.game_slug}/#gid=${this.app.crypto
+				navigateWindow(`/${this.invite.game_slug}/#gid=${this.app.crypto
 					.hash(this.invite.game_id)
-					.slice(-6)}`;
+					.slice(-6)}`);
 			};
 		}
 

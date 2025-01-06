@@ -57,6 +57,8 @@ class Browser {
 		this.hidden_tab_property = "hidden";
 		this.tab_event_name = "visibilitychange";
 		this.title_interval = null;
+	    this.terminationEvent = 'unload';
+
 	}
 
 	async initialize(app) {
@@ -110,6 +112,9 @@ class Browser {
 				}
 			}
 
+			if ('onpagehide' in self) {
+				this.terminationEvent = 'pagehide';
+			}
 
 
 			if (!document[this.hidden_tab_property]) {
@@ -2348,7 +2353,7 @@ class Browser {
 
 
 			window.reloadWindow = this.reloadWindow;
-			window.navigateWindow = this.navigateWindow;
+			window.navigateWindow = this.navigateWindow.bind(this);
 
 		}
 	}
@@ -2685,12 +2690,23 @@ class Browser {
 		}
 	}
 
-	lockNavigation(){
+	lockNavigation(callback){
 		this.navigation_locked = true;
+
+	    window.addEventListener(this.terminationEvent, callback);
+	    if (this.app.browser.isMobileBrowser()) {
+	      document.addEventListener('visibilitychange', callback);
+	    }
 	}
 
-	unlockNavigation(){
+	unlockNavigation(callback){
 		this.navigation_locked = false;
+
+	    window.removeEventListener(this.terminationEvent, callback);
+	    if (this.app.browser.isMobileBrowser()) {
+	      document.removeEventListener('visibilitychange', callback);
+	    }
+
 	}
 
 	async navigateWindow(target, delay = 0){

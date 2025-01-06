@@ -318,7 +318,7 @@ class QRScanner extends ModTemplate {
 			this.stop();
 			let c = confirm('Visit: ' + msg + '?');
 			if (c) {
-				window.location = msg;
+				navigateWindow(msg);
 				return;
 			}
 		}

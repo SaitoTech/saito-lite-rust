@@ -27,7 +27,7 @@ class GameWizard {
 					//
 					if (game_mod.doWeHaveAnOngoingGame()) {
 						if (obj.skip){
-							window.location = `/${game_mod.returnSlug()}/`;
+							navigateWindow(`/${game_mod.returnSlug()}/`);
 						}else{
 							console.log('Found existing game', game_mod.game);
 							app.connection.emit(
