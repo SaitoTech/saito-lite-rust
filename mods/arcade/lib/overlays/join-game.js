@@ -164,9 +164,7 @@ class JoinGameOverlay {
 		if (document.getElementById('arcade-game-controls-watch-game')) {
 			document.getElementById('arcade-game-controls-watch-game').onclick = (e) => {
 				this.app.connection.emit('league-overlay-remove-request');
-
-				this.mod.observeGame(this.invite.game_id);
-
+				this.mod.observeGame(this.invite.game_id, true);
 				this.overlay.remove();
 				this.app.browser.logMatomoEvent('GameInvite', 'WatchGame', this.invite.game_mod.name);
 			};

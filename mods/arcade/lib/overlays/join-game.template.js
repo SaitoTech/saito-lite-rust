@@ -136,7 +136,9 @@ module.exports = (app, mod, invite) => {
 					html += `<div id="arcade-game-controls-forfeit-game" class="saito-button saito-button-secondary">forfeit game</div>`;
 				}
 				html += `<div id="arcade-game-controls-close-game" class="saito-button saito-button-secondary">cancel game</div>`;
-			} else if (invite.game_mod.enable_observer) {
+			} else if (invite.empty_slots){
+				html += `<div id="arcade-game-controls-watch-game" class="saito-button saito-button-primary">join table</div>`;
+			}else if (invite.game_mod.enable_observer) {
 				//Observer mode -- ongoing
 				html += `<div id="arcade-game-controls-watch-game" class="saito-button saito-button-primary">watch game</div>`;
 			}
