@@ -70,6 +70,9 @@ class Popup extends ModTemplate {
 	// initialization //
 	////////////////////
 	async initializeDatabase() {
+
+	    if (!this.browser_active) { return; }
+
 	    return new Promise((resolve, reject) => {
 	        // Open (or create) the database
 	        const request = indexedDB.open(this.dbName, this.dbVersion);
@@ -667,6 +670,7 @@ class Popup extends ModTemplate {
 
 
 	async returnVocab(offset = 0, limit = 10) {
+	    if (!this.browser_active) { return; }
 	    if (!this.app.BROWSER) {
 	        return [];
 	    }

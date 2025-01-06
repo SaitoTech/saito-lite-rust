@@ -1,3 +1,4 @@
+const ImportGame = require('./import-game.js');
 const GameWizardTemplate = require('./game-wizard.template.js');
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay.js');
 
@@ -9,10 +10,12 @@ const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-ove
 //
 
 class GameWizard {
+
 	constructor(app, mod, game_mod = null, obj = {}) {
 		this.app = app;
 		this.mod = mod;
 		this.game_mod = game_mod;
+		this.import_game = new ImportGame(app, mod, game_mod);
 		this.overlay = new SaitoOverlay(app, mod);
 		this.obj = obj;
 
@@ -190,7 +193,7 @@ class GameWizard {
 							'CreateDirectInvite',
 							options.game
 						);
-					}else if (gameType == 'async'){
+					} else if (gameType == 'async'){
 						if (options['game-wizard-players-select'] > 2) {
 							salert("Asynchronous game creation is experimental and assumes there are only two players!");
 							return;
@@ -208,6 +211,11 @@ class GameWizard {
 							'CreateOpenInvite',
 							options.game
 						);
+					}
+
+					if (gameType === "import") {
+						this.import_game.render(options.game);
+						return;
 					}
 
 					this.mod.makeGameInvite(options, gameType, this.obj);

@@ -6366,7 +6366,7 @@ does_units_to_move_have_unit = true; }
         }
       }
     }
-    if (nonassaultable_spaces >= assaultable_spaces) { return 1; }
+    if (nonassaultable_spaces > 0 && nonassaultable_spaces >= assaultable_spaces) { return 1; }
     return 0;
   }
   playerAssaultTutorial(his_self, player, faction) {

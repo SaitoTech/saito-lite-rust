@@ -968,7 +968,6 @@ class Arcade extends ModTemplate {
 	////////////
 	// Cancel //
 	////////////
-
 	async createCancelTransaction(orig_tx) {
 		let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
@@ -2057,6 +2056,7 @@ console.log("before igfat 2");
 	}
 
 	async makeGameInvite(options, gameType = 'open', invite_obj = {}) {
+
 		let game = options.game;
 		let game_mod = this.app.modules.returnModule(game);
 		let players_needed = options['game-wizard-players-select'];
@@ -2074,11 +2074,17 @@ console.log("before igfat 2");
 			options.desired_opponent_publickey = invite_obj.publicKey;
 			gameType = 'direct';
 		}
+		if (invite_obj.gameobj) {
+			options.gameobj = invite_obj.gameobj;
+			gameType = 'import';
+		}
 
 		if (!players_needed) {
 			console.error('ERROR 582342: Create Game Error');
 			return;
 		}
+
+console.log("creating gamedata...");
 
 		let gamedata = {
 			ts: new Date().getTime(),
@@ -2088,6 +2094,7 @@ console.log("before igfat 2");
 			players_needed: players_needed,
 			invitation_type: gameType
 		};
+console.log("X: " + JSON.stringify(gamedata));
 
 		if (players_needed == 1) {
 			this.launchSinglePlayerGame(gamedata);
@@ -2118,7 +2125,16 @@ console.log("before igfat 2");
 				}
 			}
 
+console.log("creating gamedata... 2");
 			let newtx = await this.createOpenTransaction(gamedata);
+console.log("creating gamedata... 3");
+
+			if (gameType == 'import') {
+console.log("creating gamedata... 3");
+				this.app.connection.emit('arcade-launch-game-import', newtx);
+console.log("creating gamedata... 4");
+				return;
+			}
 
 			if (gameType == 'direct') {
 				this.app.connection.emit('arcade-launch-game-scheduler', newtx);

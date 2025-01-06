@@ -8068,7 +8068,6 @@ console.log("we have removed philip and redisplayed the space...");
 	  }
         );
 
-
 	for (let i = 0; i < spaces.length; i++) {
 	  valid_spaces_with_cavalry.push(spaces[i]);
 	}
@@ -8113,8 +8112,12 @@ console.log("we have removed philip and redisplayed the space...");
 
         let msg = "Steal Random Card from Which Faction?";
         let html = '<ul>';
+	let options_provided = [];
         for (let i = 0; i < valid_target_factions.length; i++) {
-           html += `<li class="option" id="${valid_target_factions[i]}">${valid_target_factions[i]}</li>`;
+	   if (!options_provided.includes(valid_target_factions[i])) {
+	     options_provided.push(valid_target_factions[i]);
+             html += `<li class="option" id="${valid_target_factions[i]}">${valid_target_factions[i]}</li>`;
+	  }
 	}
 	html += '</ul>';
 

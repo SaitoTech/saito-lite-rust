@@ -2,6 +2,10 @@
 	padding-top: 15px;
 }
 
+#saito-header {
+  backdrop-filter: blur(1px);
+}
+
 :root {
  --border-color-general-dividers: #ddd;
 }
