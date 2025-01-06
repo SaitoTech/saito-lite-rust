@@ -183,8 +183,9 @@ font imports
   --border-thickness-thick: 3px;
   --border-thickness-fat: 5px;
 /*BACKGROUND SHIM COLORS*/
-  --background-color-shim-light: #0001;
-  --background-color-shim-dark: #0009;
+  --background-color-shim-light: #0003;
+  --background-color-shim-normal: #0008;
+  --background-color-shim-dark: #000B;
 
 /*========== REDEFINED ELEMENTS ===========*/
 
@@ -315,7 +316,6 @@ font imports
   --border-radius-arcade-game-list: var(--border-radius-soft);
   --border-radius-arcade-menu: var(--border-radius-soft);
   --border-radius-sidebar-game-module: var(--border-radius-soft);
-  --border-radius-identicon-needed: var(--border-radius-sharp);
   --border-radius-progress-bar: var(--border-radius-soft);
   --border-radius-sidebar-chat-manager: var(--border-radius-soft);
   --border-radius-leaderboard-ranking: var(--border-radius-soft);
@@ -491,8 +491,6 @@ font imports
   --background-color-button-hover-leaderboard-ranking: var(--background-color-button-sidebar);
   /* Special UI Components */
   --background-color-sidebar-left: var(--color-base);
-  --background-color-shim-normal: var(--background-color-shim-light);
-  --background-color-shim-warning: var(--background-color-shim-dark);
   --background-color-camera: var(--background-color-ui-elements);
   --background-color-calendar-today: var(--background-color-ui-elements);
   --background-color-calendar-hover: var(--background-color-ui-elements);

@@ -14,7 +14,7 @@
 	max-height: 95vh;
 	overflow-y: auto;
 	overflow-x: hidden;
-	/*background: var(--saito-arcade-overlay-background)*/;
+	background: var(--saito-arcade-overlay-background);
 }
 
 
