@@ -239,9 +239,7 @@ class Pandemic extends GameTemplate {
 			callback: function (app, game_mod) {
 				game_mod.game.options.theme = 'classic';
 				game_mod.saveGame(game_mod.game.id);
-				setTimeout(() => {
-					window.location.reload();
-				}, 1000);
+				reloadWindow(500);
 			}
 		});
 
@@ -252,9 +250,7 @@ class Pandemic extends GameTemplate {
 			callback: function (app, game_mod) {
 				game_mod.game.options.theme = 'retro';
 				game_mod.saveGame(game_mod.game.id);
-				setTimeout(() => {
-					window.location.reload();
-				}, 1000);
+				reloadWindow(500);
 			}
 		});
 
@@ -265,9 +261,7 @@ class Pandemic extends GameTemplate {
       callback: function(app,game_mod){
         game_mod.game.options.theme = "modern";
         game_mod.saveGame(game_mod.game.id);
-        setTimeout(()=>{
-								window.location.reload();
-						},1000);
+       	reloadWindow(500); 
       
     });*/
 

@@ -85,9 +85,7 @@ class Browser {
 				}
 			});
 			if (shouldReload) {
-				setTimeout(() => {
-					window.location.reload();
-				}, 300);
+				reloadWindow(300);
 			}
 		});
 
@@ -403,10 +401,6 @@ class Browser {
 				capture: true
 			}
 		);
-
-		window.setHash = function (hash) {
-			window.history.pushState('', '', `/redsquare/#${hash}`);
-		};
 
 		//hide pace-js if its still active
 		setTimeout(function () {
@@ -2351,6 +2345,11 @@ class Browser {
 			window.setHash = function (hash) {
 				window.history.pushState('', '', `/redsquare/#${hash}`);
 			};
+
+
+			window.reloadWindow = this.reloadWindow;
+			window.navigateWindow = this.navigateWindow;
+
 		}
 	}
 
@@ -2516,9 +2515,7 @@ class Browser {
 				siteMessage(
 					`New software update found: ${receivedBuildNumber}. Updating...`
 				);
-				setTimeout(function () {
-					window.location.reload();
-				}, 3000);
+				reloadWindow(1000);
 			}
 		}
 	}
@@ -2679,6 +2676,39 @@ class Browser {
 	  	number = (number);
 	  	return (string) ? number.toString(): number;  
 	}
+
+	reloadWindow(delay = 0){
+		if (delay > 0) {
+			setTimeout(() => { window.location.reload(); }, delay);		
+		} else {
+			window.location.reload();
+		}
+	}
+
+	lockNavigation(){
+		this.navigation_locked = true;
+	}
+
+	unlockNavigation(){
+		this.navigation_locked = false;
+	}
+
+	async navigateWindow(target, delay = 0){
+		if (this.navigation_locked){
+			let c = await sconfirm("Are you sure you want to leave this page?");
+			if (!c){
+				return;
+			}
+		}
+
+		if (delay > 0){
+			setTimeout(() => { window.location.href = target; }, delay);		
+		}else{
+			window.location.href = target;	
+		}
+		
+	}
+
 		/**
 	* Creates a container div and renders a React component into it
 	* @param Component The React component to render

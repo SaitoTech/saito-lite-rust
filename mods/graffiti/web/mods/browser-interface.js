@@ -331,7 +331,7 @@ class BrowserInterface {
 
   async nukeWallet() {
     await this.app.wallet.onUpgrade('nuke');
-    window.location.reload();
+    reloadWindow(50);
   }
 
   handleMouseup_forColorPickerButton() {

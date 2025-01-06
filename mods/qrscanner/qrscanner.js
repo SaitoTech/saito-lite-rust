@@ -137,9 +137,6 @@ class QRScanner extends ModTemplate {
 		this.app.browser.addElementToDom(this.returnScannerHTML());
 		//document.body.innerHTML = this.returnScannerHTML();
 		document.querySelector('.close-scanner').onclick = () => {
-			// //setTimeout(() => {
-			// 					window.location.reload();
-			// 				}, 300);;
 			document.querySelector('.qrscanner-container').remove();
 			this.stop();
 		};
@@ -171,9 +168,7 @@ class QRScanner extends ModTemplate {
 
 		el.innerHTML = this.returnScannerHTML();
 		document.querySelector('.close-scanner').onclick = () => {
-			setTimeout(() => {
-				window.location.reload();
-			}, 300);
+			reloadWindow(300);
 		};
 
 		let scanner_self = this;

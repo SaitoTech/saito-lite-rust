@@ -173,7 +173,7 @@ class Profile extends ModTemplate {
 				if (result){
 					let c = await sconfirm(`Import key ${this.app.keychain.returnUsername(key.publicKey)}?`);
 					if (c){
-						setTimeout(() => { window.location.reload(); }, 300);
+						reloadWindow(300);
 					}
 					return;
 				}

@@ -74,11 +74,7 @@ class TweetMenu {
 	blockContact() {
 		this.app.connection.emit('saito-blacklist', ({ publicKey : this.tweeter, duration : -1 })); // -1 is forever
 		siteMessage('User blocked... reloading feed');
-		setTimeout(() => {
-			setTimeout(() => {
-				window.location.reload();
-			}, 200);
-		}, 2000);
+		reloadWindow(1500);
 		//Also flag the tweet
 		this.reportTweet();
 	}

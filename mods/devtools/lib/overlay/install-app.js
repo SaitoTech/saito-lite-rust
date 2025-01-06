@@ -68,9 +68,7 @@ class AddAppOverlay {
 		salert("Applicaton saved. Reloading page...");
 		this_self.overlay.close();
 
-		setTimeout(function(){
-			window.location.reload();
-		}, 1500);
+		reloadWindow(1500);
 	}
 }
 
