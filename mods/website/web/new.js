@@ -148,12 +148,8 @@ function debounce(func, wait) {
 
 // Function to update colors based on background
 function updateColors() {
-    const hamburger = document.querySelector('.hamburger');
-    const activeNavDot = document.querySelector('.nav a.active');
     const desktopLogo = document.querySelector('.desktop-menu .header-logo svg');
     const mobileLogo = document.querySelector('.mobile-header .header-logo svg');
-    const menuTitles = document.querySelectorAll('.desktop-menu .menu-title');
-    const menuLinks = document.querySelectorAll('.main-header.scrolled .menu-links a');
     
     // Get the element at the center of the viewport
     const centerY = window.innerHeight / 2;
@@ -174,36 +170,14 @@ function updateColors() {
     const darkBgColor = '#ffffff';   // White for dark backgrounds
     const color = isLight ? lightBgColor : darkBgColor;
     
-    // Update hamburger span colors
-    if (hamburger) {
-        const spans = hamburger.querySelectorAll('span');
-        spans.forEach(span => {
-            span.style.backgroundColor = color;
-        });
-    }
-
-    // Update active nav dot color
-    /*
-    if (activeNavDot) {
-        activeNavDot.style.backgroundColor = color;
-    }
-    */
-
-    // Update desktop menu text colors
-    menuTitles.forEach(title => {
-        title.style.color = color;
-    });
-
-    // Update dropdown menu links color
-    menuLinks.forEach(link => {
-        link.style.color = color;
-    });
+    // Set the CSS variable at root level
+    document.documentElement.style.setProperty('--menu-color', color);
 
     // Update desktop logo color
     if (desktopLogo) {
         const styleEl = desktopLogo.querySelector('style');
         if (styleEl) {
-            styleEl.textContent = `.cls-1{fill:${color};}`;
+            styleEl.textContent = `.cls-1{fill:${color}}`;
         }
     }
 
@@ -211,22 +185,9 @@ function updateColors() {
     if (mobileLogo) {
         const styleEl = mobileLogo.querySelector('style');
         if (styleEl) {
-            styleEl.textContent = `.cls-1{fill:${color};}`;
+            styleEl.textContent = `.cls-1{fill:${color}}`;
         }
     }
-
-    // Debug logging
-    /*
-    console.log('Color update:', {
-        section: section.id,
-        isLight,
-        color,
-        hasDesktopLogo: !!desktopLogo,
-        hasMobileLogo: !!mobileLogo,
-        menuTitlesCount: menuTitles.length,
-        menuLinksCount: menuLinks.length
-    });
-    */
 }
 
 // Make sure this is being called on container scroll
