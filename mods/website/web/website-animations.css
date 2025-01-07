@@ -1108,7 +1108,6 @@ text {
 #bttm_anim2.vis {
     opacity: 1;
     pointer-events: auto;
-    scale: 1.8;
 }
 
 .home-animate-2 {
@@ -1281,5 +1280,9 @@ a#start_anim2:hover {
 
     #anim2_mobile.vis {
         display: block;
+    }
+
+    #bttm_anim2 {
+        scale: 1.8;
     }
 }
