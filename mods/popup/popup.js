@@ -125,6 +125,8 @@ class Popup extends ModTemplate {
 
 	async initialize(app) {
 
+console.log("popup 1");
+
 		//
 		// database setup etc.
 		//
@@ -132,8 +134,11 @@ class Popup extends ModTemplate {
 
 		if (!this.app.BROWSER) { return; }
 
+console.log("popup 2");
 		await this.initializeDatabase();
+console.log("popup 3");
 		this.show_vocab = await this.doesVocabExist();
+console.log("popup 4");
 
 		//
 		// urlpath check for subpages
@@ -153,6 +158,7 @@ class Popup extends ModTemplate {
 				}
 			}
 		}
+console.log("popup 5");
 	}
 
 
@@ -587,16 +593,22 @@ class Popup extends ModTemplate {
 
 
 	async doesVocabExist() {
-    		const transaction = this.localDB.transaction(['vocabulary'], 'readonly');
-    		const objectStore = transaction.objectStore('vocabulary');
-    		const request = objectStore.count();
+
+		try {
+	    		const transaction = this.localDB.transaction(['vocabulary'], 'readonly');
+    			const objectStore = transaction.objectStore('vocabulary');
+    			const request = objectStore.count();
 	
-	    	const count = await new Promise((resolve, reject) => {
-	        	request.onsuccess = (event) => resolve(event.target.result);
-	        	request.onerror = (event) => reject(event.target.error);
-	    	});
+		    	const count = await new Promise((resolve, reject) => {
+		        	request.onsuccess = (event) => resolve(event.target.result);
+		        	request.onerror = (event) => reject(event.target.error);
+		    	});
 	
-	    	return count > 0;  // Return true or false based on the count
+		    	return count > 0;  // Return true or false based on the count
+		} catch (err) {
+			return false;
+		}
+
 	}
 
 
