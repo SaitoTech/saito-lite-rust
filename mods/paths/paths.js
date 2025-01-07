@@ -112,16 +112,11 @@ class PathsOfGlory extends GameTemplate {
 	if (game_mod.confirm_moves == 0) {
 	  game_mod.confirm_moves = 1;
           game_mod.saveGamePreference('his_expert_mode', 0);
-	  setTimeout(() => {
-								window.location.reload();
-							}, 300);;	
+          reloadWindow(300);
 	} else {
 	  game_mod.confirm_moves = 0;
           game_mod.saveGamePreference('his_expert_mode', 1);
-	  setTimeout(() => {
-								window.location.reload();
-							}, 300);;	
-	}
+          reloadWindow(300);
       }
     });
     this.menu.addSubMenuOption("game-game", {

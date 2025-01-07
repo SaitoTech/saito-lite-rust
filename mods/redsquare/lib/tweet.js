@@ -737,9 +737,7 @@ class Tweet {
 								}
 							}, 50);
 						} else {
-							setTimeout(() => {
-								window.location.href = `/redsquare?tweet_id=${this.thread_id}`;
-							}, 300);
+							navigateWindow(`/redsquare?tweet_id=${this.thread_id}`, 300);
 						}
 					}
 				};

@@ -2,6 +2,8 @@
 const sections = document.querySelectorAll('section');
 const navLinks = document.querySelectorAll('.nav a');
 const header = document.querySelector('.main-header');
+const saitoText = document.querySelector('.saito-text');
+const mainHeader = document.querySelector('.main-header');
 
 const observerOptions = {
     threshold: 0.5
@@ -33,13 +35,15 @@ document.querySelector('.container').addEventListener('scroll', () => {
     if (currentScroll > 100) {
         header.classList.add('scrolled');
         header.style.transform = `translateY(0)`;
+        saitoText.classList.add('scrolled');
+        mainHeader.classList.add('loaded');
     } else {
         header.classList.remove('scrolled');
         // Calculate transform based on scroll position
         const transformValue = Math.min(0, (currentScroll / 100 - 1) * 100);
         header.style.transform = `translateY(${transformValue}%)`;
+        saitoText.classList.remove('scrolled');
     }
-
     lastScroll = currentScroll;
 });
 
@@ -90,6 +94,46 @@ document.addEventListener('click', (e) => {
     }
 });
 
+
+let start_anim = true;
+
+$("#start_anim").addEventListener("click", function () {
+    if (start_anim) {
+        $("#animation-ttl").classList.add("invis");
+        $(".animation-one-title").classList.add("animating");
+        //$("#close_bttn").classList.remove("invis");
+        $(".animation-one-holder").style.flexDirection = "column";
+        $("#start_anim").classList.add("invis");
+        animID = requestAnimationFrame(animate);
+    }
+    start_anim = false;
+}, false);
+
+//$("#animation-ttl").classList.add("fadeout");
+//animID = requestAnimationFrame(animate);
+
+/*
+$("#close_bttn").addEventListener("click", function () {
+    cancelAnimationFrame(animID);
+    saito = false;
+    pause = true;
+    start_anim = true;
+    initial_state();
+    switch_mode();
+    $("#switch").classList.add("n", "h");
+    $("#switch").classList.remove("saito");
+    $("#circles").classList.add("shift_right");
+    $("#init_lines").classList.add("shift_right");
+    $("#miner_icns").classList.add("shift_right");
+    $("#node_icns").classList.add("shift_right");
+    $("#user_icons").classList.add("shift_right");
+    $("#learn_more").classList.remove("vis");
+    $("#animation-ttl").classList.remove("fadeout");
+    $("#close_bttn").classList.add("invis");
+    animID = requestAnimationFrame(animate);
+}, false);
+*/
+
 document.getElementById("start_anim_mobile").addEventListener("click", function () {
     document.getElementById("anim_mobile").classList.add("vis");
 }, false);
@@ -126,7 +170,7 @@ function isLightColor(color) {
     
     // Calculate relative luminance
     const luminance = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
-    return luminance > 0.7; // threshold for "light" colors
+    return luminance > 0.7;
 }
 
 // Debounce function to handle scroll stop
@@ -144,10 +188,9 @@ function debounce(func, wait) {
 
 // Function to update colors based on background
 function updateColors() {
-    const hamburger = document.querySelector('.hamburger');
-    const activeNavDot = document.querySelector('.nav a.active');
-    if (!hamburger || !activeNavDot) return;
-
+    const desktopLogo = document.querySelector('.desktop-menu .header-logo svg');
+    const mobileLogo = document.querySelector('.mobile-header .header-logo svg');
+    
     // Get the element at the center of the viewport
     const centerY = window.innerHeight / 2;
     const centerX = window.innerWidth / 2;
@@ -162,29 +205,51 @@ function updateColors() {
     const backgroundColor = window.getComputedStyle(section).backgroundColor;
     const isLight = isLightColor(backgroundColor);
     
-    // Update hamburger span colors
-    const spans = hamburger.querySelectorAll('span');
-    spans.forEach(span => {
-        span.style.backgroundColor = isLight ? '#f61745' : '#fff';
-    });
+    // Colors to use
+    const lightBgColor = '#f61745';  // Saito red for light backgrounds
+    const darkBgColor = '#ffffff';   // White for dark backgrounds
+    const color = isLight ? lightBgColor : darkBgColor;
+    
+    // Set the CSS variable at root level
+    document.documentElement.style.setProperty('--menu-color', color);
 
-    // Update active nav dot color
-    // Update all nav dots
-    document.querySelectorAll('.nav a').forEach(dot => {
-        dot.style.backgroundColor = '#fff4';
-    });
-    activeNavDot.style.backgroundColor = isLight ? '#f61745' : '#fff';
+    // Update desktop logo color
+    if (desktopLogo) {
+        const styleEl = desktopLogo.querySelector('style');
+        if (styleEl) {
+            styleEl.textContent = `.cls-1{fill:${color}}`;
+        }
+    }
+
+    // Update mobile logo color
+    if (mobileLogo) {
+        const styleEl = mobileLogo.querySelector('style');
+        if (styleEl) {
+            styleEl.textContent = `.cls-1{fill:${color}}`;
+        }
+    }
 }
 
-// Create debounced version of updateColors
-const updateColorsOnScrollStop = debounce(updateColors, 150);
+// Make sure this is being called on container scroll
+const container = document.querySelector('.container');
+if (container) {
+    container.addEventListener('scroll', debounce(updateColors, 50));
+}
 
+// Set initial height and colors
+function init() {
+    setVH();
+    updateColors();
+}
 
-// Update on scroll
-document.querySelector('.container').addEventListener('scroll', updateColorsOnScrollStop);
-
-// Initial update
-document.addEventListener('DOMContentLoaded', updateColorsOnScrollStop);
+// Run init on various events
+document.addEventListener('DOMContentLoaded', init);
+window.addEventListener('load', () => {
+    init();
+    setTimeout(init, 100);
+});
+window.addEventListener('resize', setVH);
+window.addEventListener('orientationchange', setVH);
 
 function setVH() {
     let vh = window.innerHeight * 0.01;
@@ -192,10 +257,55 @@ function setVH() {
     //alert('vh: ' + vh);
 }
 
-// Set initial height
-setVH();
+// Add this to your scroll handler
+function updateHeaderState() {
+    const header = document.querySelector('.main-header');
+    const landingSection = document.querySelector('#landing');
+    
+    if (header && landingSection) {
+        const rect = landingSection.getBoundingClientRect();
+        if (rect.top >= 0) {
+            header.classList.add('on-landing');
+        } else {
+            header.classList.remove('on-landing');
+        }
+    }
+}
 
-// Update height on resize and orientation change
-window.addEventListener('resize', setVH);
-window.addEventListener('orientationchange', setVH);
-document.addEventListener('DOMContentLoaded', setVH);
+// Add to your container scroll listener
+if (container) {
+    container.addEventListener('scroll', () => {
+        updateHeaderState();
+        // ... existing scroll handlers ...
+    });
+}
+
+// Add to your existing scroll handler
+function handleScroll() {
+    const landingSection = document.querySelector('#landing');
+    const container = document.querySelector('.container');
+    
+    if (landingSection && !window.hasShownAlert) {
+        const rect = landingSection.getBoundingClientRect();
+        if (rect.bottom <= 0) {
+            alert("You've scrolled past the landing page!");
+            window.hasShownAlert = true;  // Only show once
+        }
+    }
+}
+
+// Optional click handler for the caret
+document.addEventListener('DOMContentLoaded', () => {
+    const caret = document.querySelector('.scroll-caret');
+    const container = document.querySelector('.container');
+    const consensusSection = document.querySelector('#consensus');
+
+    if (caret && container && consensusSection) {
+        caret.addEventListener('click', () => {
+            container.scrollTo({
+                top: consensusSection.offsetTop,
+                behavior: 'smooth'
+            });
+        });
+    }
+});

@@ -52,8 +52,6 @@ class Fileshare extends ModTemplate {
 		}		
 		************/
 
-		this.terminationEvent = 'unload';
-
 		this.social = {
 			twitter: '@SaitoOfficial',
 			title: 'Saito Fileshare',
@@ -67,10 +65,6 @@ class Fileshare extends ModTemplate {
 		await super.initialize(app);
 
 		if (app.BROWSER) {
-			if ('onpagehide' in self) {
-				this.terminationEvent = 'pagehide';
-			}
-
 			try {
 				this.stun = app.modules.returnFirstRespondTo('peer-manager');
 			} catch (err) {
@@ -528,13 +522,7 @@ class Fileshare extends ModTemplate {
 
 	addNavigationProtections(){
 		if (Object.keys(this.outgoing_files).length + Object.keys(this.incoming).length <= 1){
-			//navigation away checks...
-			window.addEventListener(this.terminationEvent, this.visibilityChange.bind(this));
-			window.addEventListener('beforeunload', this.beforeUnloadHandler);
-			if (this.app.browser.isMobileBrowser()) {
-				document.addEventListener('visibilitychange', this.visibilityChange.bind(this));
-			}
-
+			this.app.browser.lockNavigation(this.visibilityChange.bind(this));
 		}
 	}
 
@@ -584,11 +572,7 @@ class Fileshare extends ModTemplate {
 		delete this.incoming[fileId];
 
 		if (Object.keys(this.outgoing_files).length + Object.keys(this.incoming).length == 0){
- 			window.removeEventListener('beforeunload', this.beforeUnloadHandler);
-			window.removeEventListener(this.terminationEvent, this.visibilityChange.bind(this));
-			if (this.app.browser.isMobileBrowser()) {
-				document.removeEventListener('visibilitychange', this.visibilityChange.bind(this));
-			}
+			this.app.browser.unlockNavigation(this.visibilityChange.bind(this));
 		}
 	}
 
@@ -695,11 +679,6 @@ class Fileshare extends ModTemplate {
 			b2[i] = b[i];
 		}
 		return b2;
-	}
-
-	beforeUnloadHandler(event) {
-		event.preventDefault();
-		event.returnValue = true;
 	}
 
 	visibilityChange() {

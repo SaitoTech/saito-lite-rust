@@ -25661,9 +25661,7 @@ console.log("DONE!");
       //
       if (id == "clear") {
         salert("To change movement options, please reload!");
-        setTimeout(()=> {
-					window.location.reload(true);
-				}, 300)
+        reloadWindow(300);
         return;
       }
 
@@ -26110,9 +26108,7 @@ playerSelectInfantryToLand(sector) {
     //
     if (id == "clear") {
       salert("To change movement options, just reload!");
-      setTimeout(()=> {
-        window.location.reload(true);
-      }, 300)
+      reloadWindow(300);
       return;
     }
 

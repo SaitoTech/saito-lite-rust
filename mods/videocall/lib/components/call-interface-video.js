@@ -181,9 +181,7 @@ class CallInterfaceVideo {
 				if (mediaRecorder) {
 					await stopRecording();
 				}
-				setTimeout(() => {
-					window.location.href = url;
-				}, 2000);
+				navigateWindow(url, 2000);
 			} else {
 				//
 				// Hopefully we don't have to reload the page on the end of a stun call

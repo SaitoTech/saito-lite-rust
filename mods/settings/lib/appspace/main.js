@@ -317,9 +317,7 @@ class SettingsAppspace {
 									alert(
 										'Restoration Complete ... click to reload Saito'
 									);
-									setTimeout(() => {
-										window.location.reload();
-									}, 300);
+									reloadWindow(300);
 								} else {
 									let err = result;
 									if (err.name == 'SyntaxError') {
@@ -348,9 +346,7 @@ class SettingsAppspace {
 				if (confirmation) {
 					await app.wallet.onUpgrade('nuke');
 					if (this.app.browser.browser_active == 1) {
-						setTimeout(() => {
-							window.location.reload();
-						}, 300);
+						reloadWindow(300);
 					}
 				}
 			};
@@ -419,9 +415,7 @@ class SettingsAppspace {
 								'Success! Confirm to reload'
 							);
 							if (c) {
-								setTimeout(() => {
-									window.location.reload();
-								}, 300);
+								reloadWindow(300);
 							}
 						} else {
 							let err = result;
@@ -443,12 +437,6 @@ class SettingsAppspace {
 			}
 		}
 
-		if(document.getElementById('settings-edit-json')) {
-			document.getElementById('settings-edit-json').onclick =
-			function (e) {
-				window.location.href = '/debug';
-			};
-		}
 	}
 }
 

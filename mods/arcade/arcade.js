@@ -616,7 +616,7 @@ class Arcade extends ModTemplate {
 					icon: 'fa-solid fa-building-columns',
 					rank: 15,
 					callback: function (app, id) {
-						window.location = '/arcade';
+						navigateWindow('/arcade');
 					}
 				});
 			}
@@ -2176,6 +2176,8 @@ console.log("creating gamedata... 4");
 			return;
 		}
 
+		console.log("Observe Game: ", watch_live);
+
 		let game_msg = game_tx.returnMessage();
 
 		let game_mod = this.app.modules.returnModule(game_msg.game);
@@ -2192,7 +2194,8 @@ console.log("creating gamedata... 4");
 
 		if (!game_mod.doesGameExistLocally(game_id)) {
 			console.log('Initialize game');
-			game_mod.initializeObserverMode(game_tx);
+			await game_mod.initializeObserverMode(game_tx);
+			
 		} else {
 			console.log('Game already exists');
 			game_mod.loadGame(game_id);
@@ -2202,14 +2205,14 @@ console.log("creating gamedata... 4");
 		await this.observerDownloadNextMoves(game_mod, () => {
 			if (watch_live) {
 				game_mod.game.live = watch_live;
-				game_mod.saveGame(game_id);
+				game_mod.startQueue();
 			}
 
-			this.app.connection.emit('arcade-game-ready-render-request', {
+			/*this.app.connection.emit('arcade-game-ready-render-request', {
 				id: game_id,
 				name: game_msg.game,
 				slug: game_mod.returnSlug()
-			});
+			});*/
 		});
 	}
 
