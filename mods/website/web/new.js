@@ -100,6 +100,7 @@ let start_anim = true;
 $("#start_anim").addEventListener("click", function () {
     if (start_anim) {
         $("#animation-ttl").classList.add("invis");
+        $(".animation-one-title").classList.add("animating");
         //$("#close_bttn").classList.remove("invis");
         $(".animation-one-holder").style.flexDirection = "column";
         $("#start_anim").classList.add("invis");

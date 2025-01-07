@@ -831,7 +831,6 @@ object.saito-text {
     }
 
     .community-image {
-        flex: 1;
         overflow: hidden;
         max-height: 56px;
     }
@@ -1042,6 +1041,7 @@ object.saito-text {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
+    backdrop-filter: blur(50px);
 }
 
 /* Remove individual menu section hover states */

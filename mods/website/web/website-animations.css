@@ -25,11 +25,17 @@ svg#top_animation {
 }
 
 .animation-one-title {
-    width: 40%;
+    width: 45%;
     overflow: visible;
     position: absolute;
     left: 25%;
-    transform: translateX(-50%);
+    transform: translateX(-38%);
+}
+
+.animation-one-title.animating {
+    width: 480px;
+    left: 50%;
+    transform: translate(-50%, -40%);
 }
 
 #switch-body {
@@ -1033,8 +1039,20 @@ text {
     transition: all .5s ease-in-out;
 }
 
-.shift_right {
-    transform: translate(200px, 0px);
+@media (min-width: 768px) {
+    .shift_right {
+        transform: translate(200px, 0px);
+    }
+}
+
+@media (max-width: 768px) {
+    #top_animation #app_lines,
+    #top_animation #user_lines,
+    #top_animation #nonsaito_icons #user_icons,
+    #top_animation #infrastructure
+    {
+        opacity: 1;
+    }
 }
 
 #anim_mobile {
@@ -1220,7 +1238,7 @@ a#start_anim2:hover {
     display: block;
 }
 
-@media screen and (max-width: 750px) {
+@media screen and (max-width: 768px) {
 
     .animation-one-controls {
         display: flex;
