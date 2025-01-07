@@ -1165,7 +1165,7 @@ a#start_anim2:hover {
 
 #bottom_title {
     position: absolute;
-    width: 60%;
+    width: 42%;
     left: 6vw;
     top: 50%;
     transform: translate(0, -60%);
@@ -1173,7 +1173,7 @@ a#start_anim2:hover {
     color: #fff;
     text-align: left;
     transition: all .5s linear;
-    max-width: 40%;
+    max-width: 560px;
 }
 
 #bottom_title.hidden {
