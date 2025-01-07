@@ -94,6 +94,45 @@ document.addEventListener('click', (e) => {
     }
 });
 
+
+let start_anim = true;
+
+$("#start_anim").addEventListener("click", function () {
+    if (start_anim) {
+        $("#animation-ttl").classList.add("invis");
+        //$("#close_bttn").classList.remove("invis");
+        $(".animation-one-holder").style.flexDirection = "column";
+        $("#start_anim").classList.add("invis");
+        animID = requestAnimationFrame(animate);
+    }
+    start_anim = false;
+}, false);
+
+//$("#animation-ttl").classList.add("fadeout");
+//animID = requestAnimationFrame(animate);
+
+/*
+$("#close_bttn").addEventListener("click", function () {
+    cancelAnimationFrame(animID);
+    saito = false;
+    pause = true;
+    start_anim = true;
+    initial_state();
+    switch_mode();
+    $("#switch").classList.add("n", "h");
+    $("#switch").classList.remove("saito");
+    $("#circles").classList.add("shift_right");
+    $("#init_lines").classList.add("shift_right");
+    $("#miner_icns").classList.add("shift_right");
+    $("#node_icns").classList.add("shift_right");
+    $("#user_icons").classList.add("shift_right");
+    $("#learn_more").classList.remove("vis");
+    $("#animation-ttl").classList.remove("fadeout");
+    $("#close_bttn").classList.add("invis");
+    animID = requestAnimationFrame(animate);
+}, false);
+*/
+
 document.getElementById("start_anim_mobile").addEventListener("click", function () {
     document.getElementById("anim_mobile").classList.add("vis");
 }, false);

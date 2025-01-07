@@ -92,6 +92,12 @@ h3 {
     font-weight: normal;
 }
 
+p {
+    margin-bottom: 1.5rem;
+    line-height: 2rem;
+    font-size: 1.33rem;
+}
+
 .container {
     height: 100%;
     overflow-y: auto;
@@ -132,7 +138,7 @@ h3 {
 }
 
 #contact {
-    background-color: #333;
+    background-color: #1c1c23;
     color: white;
     align-items: center;
 }
@@ -386,11 +392,11 @@ object.saito-text {
         padding: 0.75rem 1rem;
         color: white;
         text-decoration: none;
-        border: 1px solid #fff0;
+        border: 2px solid #fffc;
         border-radius: 50px;
         transition: all 0.3s ease;
         text-align: center;
-        font-size: 2rem;
+        font-size: 1.5rem;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     }
 
@@ -703,10 +709,6 @@ object.saito-text {
     line-height: 1.6;
 }
 
-.community-text p {
-    margin-bottom: 1.5rem;
-}
-
 .community-text a {
     color: #f61745;
     text-decoration: none;
@@ -907,8 +909,8 @@ object.saito-text {
 
     h2,
     .h2 {
-        font-size: 2.8rem;
-        line-height: 1.3;
+        font-size: 2.5rem;
+        line-height: 1.75;
     }
 
     h3,
