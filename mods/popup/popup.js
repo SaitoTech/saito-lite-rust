@@ -125,8 +125,6 @@ class Popup extends ModTemplate {
 
 	async initialize(app) {
 
-console.log("popup 1");
-
 		//
 		// database setup etc.
 		//
@@ -134,11 +132,8 @@ console.log("popup 1");
 
 		if (!this.app.BROWSER) { return; }
 
-console.log("popup 2");
 		await this.initializeDatabase();
-console.log("popup 3");
 		this.show_vocab = await this.doesVocabExist();
-console.log("popup 4");
 
 		//
 		// urlpath check for subpages
@@ -158,7 +153,6 @@ console.log("popup 4");
 				}
 			}
 		}
-console.log("popup 5");
 	}
 
 
@@ -593,7 +587,6 @@ console.log("popup 5");
 
 
 	async doesVocabExist() {
-
 		try {
 	    		const transaction = this.localDB.transaction(['vocabulary'], 'readonly');
     			const objectStore = transaction.objectStore('vocabulary');
@@ -609,6 +602,7 @@ console.log("popup 5");
 			return false;
 		}
 
+		return false;
 	}
 
 
