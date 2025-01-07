@@ -36196,7 +36196,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-cardnum = 1;
+//cardnum = 2;
 //if (f == "france") { cardnum = 0; }
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 0; }
@@ -36206,7 +36206,7 @@ cardnum = 1;
 
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
-//    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
+    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 
 		//
@@ -40858,6 +40858,11 @@ if (relief_siege == 1) {
   playerPlayCard(card, player, faction) {
   
     //
+    // remove selectable elemets on board
+    //
+    this.removeSelectable();
+
+    //
     // cards left
     //
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
@@ -41032,6 +41037,11 @@ if (relief_siege == 1) {
   }
 
   async playerPlayOps(card="", faction, ops=null, limit="") {
+
+    //
+    // remove selectable elemets on board
+    //
+    this.removeSelectable();
 
     //
     // make sure this is whoever is in control
@@ -42423,7 +42433,11 @@ return;
 
     his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("RESOLVE\t"+this.publicKey); his_self.playerPlaySpringDeployment(faction, player, removed_queue_instruction); });
 
-    let capitals = this.factions[faction].capitals;
+console.log("asking for capitals for faction: " + faction);
+console.log("capitals are: " + JSON.stringify(this.factions[faction]));
+
+    let capitals = this.returnCapitals(faction);
+console.log("return capitals: " + JSON.stringify(capitals));
     let viable_capitals = [];
     let can_deploy = 0;
     let units_to_move = [];
@@ -42446,8 +42460,12 @@ return;
       }
     }
 
+console.log("capitals are: " + JSON.stringify(capitals));
+
     for (let i = 0; i < capitals.length; i++) {
       let c = capitals[i];
+console.log("this capital is: " + c);
+console.log("this faction is: " + faction);
       if (this.game.spaces[c].units[faction].length > 0) {
         can_deploy = 1;
         viable_capitals.push(capitals[i]);
@@ -49093,14 +49111,13 @@ console.log(ops_to_spend + " -- " + ops_remaining);
   }
 
   returnCapitals(faction) {
-    for (let i = 0; i < this.game.state.players_info.length; i++) {
-      for (let ii = 0; ii < this.game.state.players_info[i].factions.length; ii++) {
-	if (faction === this.game.state.players_info[i].factions[ii]) {
-          return this.factions[this.game.state.players_info[i].factions[ii]].capitals;
-        }
+    let x = [];
+    if (this.factions[faction]) {
+      for (let i = 0; i < this.factions[faction].capitals.length; i++) {
+        x.push(this.factions[faction].capitals[i]);
       }
     }
-    return [];
+    return x;
   }
 
   returnFactionHandIdx(player, faction) {

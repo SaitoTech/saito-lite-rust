@@ -134,14 +134,13 @@
   }
 
   returnCapitals(faction) {
-    for (let i = 0; i < this.game.state.players_info.length; i++) {
-      for (let ii = 0; ii < this.game.state.players_info[i].factions.length; ii++) {
-	if (faction === this.game.state.players_info[i].factions[ii]) {
-          return this.factions[this.game.state.players_info[i].factions[ii]].capitals;
-        }
+    let x = [];
+    if (this.factions[faction]) {
+      for (let i = 0; i < this.factions[faction].capitals.length; i++) {
+        x.push(this.factions[faction].capitals[i]);
       }
     }
-    return [];
+    return x;
   }
 
   returnFactionHandIdx(player, faction) {
