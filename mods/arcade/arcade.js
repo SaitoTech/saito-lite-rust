@@ -2178,8 +2178,8 @@ console.log("before igfat 2");
 
 		if (!game_mod.doesGameExistLocally(game_id)) {
 			console.log('Initialize game');
-			game_mod.initializeObserverMode(game_tx);
-			await game_mod.initializeGameQueue(game_id);
+			await game_mod.initializeObserverMode(game_tx);
+			
 		} else {
 			console.log('Game already exists');
 			game_mod.loadGame(game_id);
@@ -2189,14 +2189,14 @@ console.log("before igfat 2");
 		await this.observerDownloadNextMoves(game_mod, () => {
 			if (watch_live) {
 				game_mod.game.live = watch_live;
-				game_mod.saveGame(game_id);
+				game_mod.startQueue();
 			}
 
-			this.app.connection.emit('arcade-game-ready-render-request', {
+			/*this.app.connection.emit('arcade-game-ready-render-request', {
 				id: game_id,
 				name: game_msg.game,
 				slug: game_mod.returnSlug()
-			});
+			});*/
 		});
 	}
 
