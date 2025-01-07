@@ -126,25 +126,6 @@ class Popup extends ModTemplate {
 	async initialize(app) {
 
 		//
-		// load local data
-		//
-		for (let i = 0; i < this.urlpath.length; i++) {
-			if (this.urlpath[i] === "") {
-				this.urlpath.splice(i, 1); i--; 
-			}
-			if (this.urlpath[i] === "popup") {
-				this.browser_active = 1;
-			}
-			if (this.urlpath[i] === "lessons") {
-				if (this.urlpath.length > (i+1)) {
-					this.app.connection.emit("popup-lessons-render-request");
-				} else {
-					this.app.connection.emit("popup-lessons-render-request");
-				}
-			}
-		}
-
-		//
 		// database setup etc.
 		//
 		await super.initialize(app);
