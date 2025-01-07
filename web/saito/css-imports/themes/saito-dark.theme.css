@@ -47,7 +47,6 @@ html[data-theme="dark"] {
   --color-shadow-bubble: #000c;
   /*MAIN BACKGROUND COLOR SECTION*/
   --background-color-main: #211f25;
-  --background-color-shim-normal: #0009;
   /*FONTS SECTION*/
   /*quick settings*/
   --font-color-primary: var(--color-tint-primary);

@@ -18,7 +18,6 @@ class StreamManager {
     this.auto_disconnect = false;
     this.active = true;
 
-    this.terminationEvent = 'onpagehide' in self ? 'pagehide' : 'unload';
 
     this.parseSettings(settings);
 
@@ -258,11 +257,7 @@ class StreamManager {
         return;
       }
 
-      window.addEventListener(this.terminationEvent, this.visibilityChange.bind(this));
-      window.addEventListener('beforeunload', this.beforeUnloadHandler);
-      if (this.app.browser.isMobileBrowser()) {
-        document.addEventListener('visibilitychange', this.visibilityChange.bind(this));
-      }
+      this.app.browser.lockNavigation(this.visibilityChange.bind(this));
 
       console.log('STUN: start-stun-call', JSON.parse(JSON.stringify(this.mod.room_obj)));
       this.firstConnect = true;
@@ -458,11 +453,7 @@ class StreamManager {
   async leaveCall() {
     console.log('STUN: Hanging up...');
 
-    window.removeEventListener('beforeunload', this.beforeUnloadHandler);
-    window.removeEventListener(this.terminationEvent, this.visibilityChange.bind(this));
-    if (this.app.browser.isMobileBrowser()) {
-      document.removeEventListener('visibilitychange', this.visibilityChange.bind(this));
-    }
+    this.app.browser.unlockNavigation(this.visibilityChange.bind(this));
 
     this.endPresentation();
 
@@ -562,14 +553,9 @@ class StreamManager {
     this.mod.sendOffChainMessage('broadcast-call-list', peer_list);
   }
 
-  beforeUnloadHandler(event) {
-    event.preventDefault();
-    event.returnValue = true;
-  }
-
   visibilityChange() {
     console.log('visibilitychange triggered');
-    // this.leaveCall();
+    this.leaveCall();
   }
 }
 

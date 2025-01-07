@@ -114,10 +114,7 @@ class Settings extends ModTemplate {
 
 							if (confirmation) {
 								await app.wallet.onUpgrade('nuke');
-
-								setTimeout(() => {
-									window.location.reload();
-								}, 300);
+								reloadWindow(300);
 							}
 						}
 					}

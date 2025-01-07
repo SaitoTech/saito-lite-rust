@@ -616,7 +616,7 @@ class Arcade extends ModTemplate {
 					icon: 'fa-solid fa-building-columns',
 					rank: 15,
 					callback: function (app, id) {
-						window.location = '/arcade';
+						navigateWindow('/arcade');
 					}
 				});
 			}
@@ -2160,6 +2160,8 @@ console.log("before igfat 2");
 			return;
 		}
 
+		console.log("Observe Game: ", watch_live);
+
 		let game_msg = game_tx.returnMessage();
 
 		let game_mod = this.app.modules.returnModule(game_msg.game);
@@ -2177,6 +2179,7 @@ console.log("before igfat 2");
 		if (!game_mod.doesGameExistLocally(game_id)) {
 			console.log('Initialize game');
 			game_mod.initializeObserverMode(game_tx);
+			await game_mod.initializeGameQueue(game_id);
 		} else {
 			console.log('Game already exists');
 			game_mod.loadGame(game_id);

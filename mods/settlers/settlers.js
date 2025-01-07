@@ -860,9 +860,7 @@ class Settlers extends GameTemplate {
 				$('#rolldice').css('visibility', 'visible');
 				document.getElementById('rolldice').onclick = (e) => {
 					e.currentTarget.onclick = null;
-					setTimeout(() => {
-						window.location = '/' + game_details.slug;
-					}, 100);
+					navigateWindow('/' + game_details.slug, 100);
 				}
 			}
 		);

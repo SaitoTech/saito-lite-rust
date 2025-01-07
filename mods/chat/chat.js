@@ -556,7 +556,7 @@ class Chat extends ModTemplate {
               text: 'Chat',
               icon: 'fas fa-comments',
               callback: function (app, id) {
-                window.location = '/chat';
+                navigateWindow('/chat');
               }
             }
           ];

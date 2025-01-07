@@ -72,6 +72,9 @@ class PokerUI {
   // Updates the status / text information body of player box
   //
   displayPlayerNotice(msg, player) {
+    if (!player) {
+      return;
+    }
     if (player == this.game.player) {
       this.playerbox.updateBody(`<div class="status"></div>`, player);
       this.updateStatus(msg);

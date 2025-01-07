@@ -109,7 +109,6 @@ html[data-theme="midnight"] {
   --border-radius-calendar-hover-today: var(--border-radius-round);
   --border-radius-status-message: var(--border-radius-round);
   --border-radius-sidebar-game-module: var(--border-radius-round);
-  --border-radius-identicon-needed: var(--border-radius-voluptuous);
   --border-radius-offset: 0.3rem;
   --border-radius-leaderboard-ranking: var(--border-radius-round);
   /* BORDER THICKNESS */
@@ -137,7 +136,6 @@ html[data-theme="midnight"] {
   /* General Background Colors */
   --saito-background-color: var(--background-color-main);
   --background-color-main: #000;
-  --background-color-shim-normal: #0009;
   --background-color-hover-post: none;
   /* Turns it off for this theme*/
   --background-color-hover-post-preview: var(--background-color-main);

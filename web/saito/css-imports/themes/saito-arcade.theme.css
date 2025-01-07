@@ -56,7 +56,6 @@ html[data-theme="arcade"] {
   /*MAIN BACKGROUND COLOR SECTION*/
   --background-color-main: #180c24;
   --background-color-light: #140a1e;
-  --background-color-shim-normal: #0009;
   /*FONTS SECTION*/
   /*quick settings*/
   --font-color-primary: var(--color-tint-primary);
