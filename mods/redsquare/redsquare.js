@@ -204,7 +204,7 @@ class RedSquare extends ModTemplate {
               '/' + this_mod.slug + `/?user_id=${publicKey}`
             );
           } else {
-            window.location = `/redsquare/?user_id=${publicKey}`;
+            navigateWindow(`/redsquare/?user_id=${publicKey}`);
           }
         }
       };
@@ -217,7 +217,7 @@ class RedSquare extends ModTemplate {
           icon: 'fa-solid fa-square',
           rank: 20,
           callback: function (app, id) {
-            window.location = '/redsquare';
+            navigateWindow('/redsquare');
           },
           event: function (id) {
             this_mod.app.connection.on('redsquare-update-notifications', (unread) => {

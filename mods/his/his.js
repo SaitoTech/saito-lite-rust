@@ -11844,7 +11844,6 @@ console.log("we have removed philip and redisplayed the space...");
 	  }
         );
 
-
 	for (let i = 0; i < spaces.length; i++) {
 	  valid_spaces_with_cavalry.push(spaces[i]);
 	}
@@ -11889,8 +11888,12 @@ console.log("we have removed philip and redisplayed the space...");
 
         let msg = "Steal Random Card from Which Faction?";
         let html = '<ul>';
+	let options_provided = [];
         for (let i = 0; i < valid_target_factions.length; i++) {
-           html += `<li class="option" id="${valid_target_factions[i]}">${valid_target_factions[i]}</li>`;
+	   if (!options_provided.includes(valid_target_factions[i])) {
+	     options_provided.push(valid_target_factions[i]);
+             html += `<li class="option" id="${valid_target_factions[i]}">${valid_target_factions[i]}</li>`;
+	  }
 	}
 	html += '</ul>';
 
@@ -31162,6 +31165,7 @@ console.log("number of active units in space: " + fluis);
 	  // end. this is probably the most counterintuitive part of the code that follows
 	  // -- to understand process in reverse.
 	  //
+	  let purge_instructions_added = 0;
 
 	  //
 	  // purge units and capture leaders
@@ -31170,6 +31174,7 @@ console.log("number of active units in space: " + fluis);
 	    this.game.queue.push("show_overlay\tfield_battle\tpost_field_battle_defenders_win");
             for (let f in his_self.game.state.field_battle.faction_map) {
               if (his_self.game.state.field_battle.faction_map[f] == his_self.game.state.field_battle.attacker_faction) {
+	        purge_instructions_added++;
                 this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key);
 	      }
 	    }
@@ -31178,6 +31183,7 @@ console.log("number of active units in space: " + fluis);
 	    this.game.queue.push("show_overlay\tfield_battle\tpost_field_battle_attackers_win");
             for (let f in his_self.game.state.field_battle.faction_map) {
               if (his_self.game.state.field_battle.faction_map[f] == his_self.game.state.field_battle.defender_faction) {
+	        purge_instructions_added++;
                 this.game.queue.push("purge_units_and_capture_leaders_if_unbesieged\t"+f+"\t"+his_self.game.state.field_battle.attacker_faction+"\t"+space.key);
 	      }
 	    }
@@ -31265,7 +31271,16 @@ console.log("number of active units in space: " + fluis);
           }
 
 
-          if (winner === his_self.game.state.field_battle.attacker_faction) {	  
+          if (winner === his_self.game.state.field_battle.attacker_faction) {
+
+	    //
+	    // if the attacker has fewer units than the defender has fortified at the end of the fortification 
+	    // process then we want to force them to retreat or sacrifice their units as well.
+	    //
+	    let idx = this.game.queue.length-1;
+	    idx -= purge_instructions_added;
+	    let cmd = "post_field_battle_player_evaluate_continued_assault_or_retreat\t"+his_self.game.state.field_battle.attacker_faction+"\t"+his_self.game.state.field_battle.defender_faction+"\t"+space.key;
+            this.game.queue.splice(idx, 0, cmd);
 
 	    //
 	    // normal battle, but the defenders can retreat to any space that is eligible, or fortify if they
@@ -33296,9 +33311,6 @@ console.log("number of active units in space: " + fluis);
 	  if (space.units[loser].length > 0) {
 	    for (let z = 0; z < space.units[loser].length; z++) {
 
-
-
-
 	      if (space.units[loser][z].army_leader || space.units[loser][z].navy_leader) {
 	        if (space.units[loser][z].besieged == 0) { this.captureLeader(winner, loser, spacekey, space.units[loser][z]); }
 	      }
@@ -33414,6 +33426,45 @@ console.log("number of active units in space: " + fluis);
           return 0;
 
         }
+
+
+
+        if (mv[0] === "post_field_battle_player_evaluate_continued_assault_or_retreat") {
+
+          this.game.queue.splice(qe, 1);
+
+	  let attacker = mv[1];
+	  let defender = mv[2];
+	  let spacekey = mv[3];
+
+	  let his_self = this;
+
+	  let attacker_units = 0;
+	  let fortified_defender_units = 0;
+
+	  for (let f in his_self.game.spaces[spacekey].units) {
+	    if (his_self.returnPlayerCommandingFaction(f) == his_self.returnPlayerCommandingFaction(attacker)) {
+	      for (let z = 0; z < his_self.game.spaces[spacekey].units[f].length; z++) {
+		let u = his_self.game.spaces[spacekey].units[f][z];
+		if (u.type == "regular" || u.type == "cavalry" || u.type == "mercenary") { attacker_units++; }
+	      }
+	    }
+	    if (his_self.returnPlayerCommandingFaction(f) == his_self.returnPlayerCommandingFaction(defender)) {
+	      for (let z = 0; z < his_self.game.spaces[spacekey].units[f].length; z++) {
+		let u = his_self.game.spaces[spacekey].units[f][z];
+		if (u.type == "regular" || u.type == "cavalry" || u.type == "mercenary") { fortified_defender_units++; }
+	      }
+	    }
+	  }
+
+	  if (attacker_units <= fortified_defender_units) {
+	    his_self.game.state.field_battle_relief_battle = false; // no longer relevant
+	    his_self.game.queue.push("post_field_battle_player_evaluate_retreat"+"\t"+attacker+"\t"+spacekey);
+	  }
+
+	  return 1;
+
+	}
 
 
         if (mv[0] === "post_field_battle_player_evaluate_retreat") {
@@ -36145,7 +36196,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 1;
+//cardnum = 2;
 //if (f == "france") { cardnum = 0; }
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 0; }
@@ -40807,6 +40858,11 @@ if (relief_siege == 1) {
   playerPlayCard(card, player, faction) {
   
     //
+    // remove selectable elemets on board
+    //
+    this.removeSelectable();
+
+    //
     // cards left
     //
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
@@ -40981,6 +41037,11 @@ if (relief_siege == 1) {
   }
 
   async playerPlayOps(card="", faction, ops=null, limit="") {
+
+    //
+    // remove selectable elemets on board
+    //
+    this.removeSelectable();
 
     //
     // make sure this is whoever is in control
@@ -42372,7 +42433,11 @@ return;
 
     his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("RESOLVE\t"+this.publicKey); his_self.playerPlaySpringDeployment(faction, player, removed_queue_instruction); });
 
-    let capitals = this.factions[faction].capitals;
+console.log("asking for capitals for faction: " + faction);
+console.log("capitals are: " + JSON.stringify(this.factions[faction]));
+
+    let capitals = this.returnCapitals(faction);
+console.log("return capitals: " + JSON.stringify(capitals));
     let viable_capitals = [];
     let can_deploy = 0;
     let units_to_move = [];
@@ -42395,8 +42460,12 @@ return;
       }
     }
 
+console.log("capitals are: " + JSON.stringify(capitals));
+
     for (let i = 0; i < capitals.length; i++) {
       let c = capitals[i];
+console.log("this capital is: " + c);
+console.log("this faction is: " + faction);
       if (this.game.spaces[c].units[faction].length > 0) {
         can_deploy = 1;
         viable_capitals.push(capitals[i]);
@@ -45192,7 +45261,7 @@ does_units_to_move_have_unit = true; }
         }
       }
     }
-    if (nonassaultable_spaces >= assaultable_spaces) { return 1; }
+    if (nonassaultable_spaces > 0 && nonassaultable_spaces >= assaultable_spaces) { return 1; }
     return 0;
   }
   playerAssaultTutorial(his_self, player, faction) {
@@ -49042,14 +49111,13 @@ console.log(ops_to_spend + " -- " + ops_remaining);
   }
 
   returnCapitals(faction) {
-    for (let i = 0; i < this.game.state.players_info.length; i++) {
-      for (let ii = 0; ii < this.game.state.players_info[i].factions.length; ii++) {
-	if (faction === this.game.state.players_info[i].factions[ii]) {
-          return this.factions[this.game.state.players_info[i].factions[ii]].capitals;
-        }
+    let x = [];
+    if (this.factions[faction]) {
+      for (let i = 0; i < this.factions[faction].capitals.length; i++) {
+        x.push(this.factions[faction].capitals[i]);
       }
     }
-    return [];
+    return x;
   }
 
   returnFactionHandIdx(player, faction) {

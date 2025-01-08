@@ -80,10 +80,7 @@ class Initializer {
 					slug.slice(0, 1).toUpperCase() + slug.slice(1)
 				);
 
-				//Make sure we have enough time to save the options
-				setTimeout(() => {
-					window.location = '/' + slug;
-				}, 400);
+				navigateWindow(`/${slug}`, 200);
 			};
 		}
 	}

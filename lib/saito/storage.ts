@@ -441,9 +441,7 @@ class Storage {
 	async initializeApplicationDB() {
 
 		if (this.app.BROWSER) {
-			console.log('inside initializeApplicationDB ///');
 			this.localDB = new JsStore.Connection(new Worker('/saito/lib/jsstore/jsstore.worker.js'));
-			console.log('done opening JSStore connection...');
 
 			//
 			// create Local database
@@ -464,13 +462,11 @@ class Storage {
 				tables: [dyn_mod]
 			};
 
-console.log("initializing DB 1");
 			var isDbCreated = await this.localDB.initDb(db);
-console.log("initializing DB 2");
 			if (isDbCreated) {
-				console.log('POPUP: db created and connection opened');
+				console.log('STORAGE: db created and connection opened');
 			} else {
-				console.log('POPUP: connection opened');
+				console.log('STORAGE: connection opened');
 			}
 		}
 

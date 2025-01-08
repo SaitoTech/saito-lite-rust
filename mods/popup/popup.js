@@ -70,6 +70,9 @@ class Popup extends ModTemplate {
 	// initialization //
 	////////////////////
 	async initializeDatabase() {
+
+	    if (!this.browser_active) { return; }
+
 	    return new Promise((resolve, reject) => {
 	        // Open (or create) the database
 	        const request = indexedDB.open(this.dbName, this.dbVersion);
@@ -121,25 +124,6 @@ class Popup extends ModTemplate {
 
 
 	async initialize(app) {
-
-		//
-		// load local data
-		//
-		for (let i = 0; i < this.urlpath.length; i++) {
-			if (this.urlpath[i] === "") {
-				this.urlpath.splice(i, 1); i--; 
-			}
-			if (this.urlpath[i] === "popup") {
-				this.browser_active = 1;
-			}
-			if (this.urlpath[i] === "lessons") {
-				if (this.urlpath.length > (i+1)) {
-					this.app.connection.emit("popup-lessons-render-request");
-				} else {
-					this.app.connection.emit("popup-lessons-render-request");
-				}
-			}
-		}
 
 		//
 		// database setup etc.
@@ -603,16 +587,22 @@ class Popup extends ModTemplate {
 
 
 	async doesVocabExist() {
-    		const transaction = this.localDB.transaction(['vocabulary'], 'readonly');
-    		const objectStore = transaction.objectStore('vocabulary');
-    		const request = objectStore.count();
+		try {
+	    		const transaction = this.localDB.transaction(['vocabulary'], 'readonly');
+    			const objectStore = transaction.objectStore('vocabulary');
+    			const request = objectStore.count();
 	
-	    	const count = await new Promise((resolve, reject) => {
-	        	request.onsuccess = (event) => resolve(event.target.result);
-	        	request.onerror = (event) => reject(event.target.error);
-	    	});
+		    	const count = await new Promise((resolve, reject) => {
+		        	request.onsuccess = (event) => resolve(event.target.result);
+		        	request.onerror = (event) => reject(event.target.error);
+		    	});
 	
-	    	return count > 0;  // Return true or false based on the count
+		    	return count > 0;  // Return true or false based on the count
+		} catch (err) {
+			return false;
+		}
+
+		return false;
 	}
 
 
@@ -667,6 +657,7 @@ class Popup extends ModTemplate {
 
 
 	async returnVocab(offset = 0, limit = 10) {
+	    if (!this.browser_active) { return; }
 	    if (!this.app.BROWSER) {
 	        return [];
 	    }

@@ -345,9 +345,6 @@ export default class Wallet extends SaitoWallet {
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
                     alert('Saito Upgrade: Wallet Version: ' + this.version);
-                    // setTimeout(() => {
-                    // 	window.location.reload();
-                    // }, 300);
                 } else {
                     // purge old slips
                     this.app.options.wallet.version = this.version;
@@ -1238,9 +1235,7 @@ export default class Wallet extends SaitoWallet {
                 // this.app.storage.saveOptions(); //Included above, no need to double save
 
                 alert('Restoration Complete ... click to reload Saito');
-                setTimeout(() => {
-                    window.location.reload();
-                }, 300);
+                this.app.browser.reloadWindow(300);                    
             } catch (err) {
                 if (err.name == 'SyntaxError') {
                     alert(

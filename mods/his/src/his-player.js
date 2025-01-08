@@ -1981,6 +1981,11 @@ if (relief_siege == 1) {
   playerPlayCard(card, player, faction) {
   
     //
+    // remove selectable elemets on board
+    //
+    this.removeSelectable();
+
+    //
     // cards left
     //
     let faction_hand_idx = this.returnFactionHandIdx(this.game.player, faction);
@@ -2155,6 +2160,11 @@ if (relief_siege == 1) {
   }
 
   async playerPlayOps(card="", faction, ops=null, limit="") {
+
+    //
+    // remove selectable elemets on board
+    //
+    this.removeSelectable();
 
     //
     // make sure this is whoever is in control
@@ -3546,7 +3556,11 @@ return;
 
     his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("RESOLVE\t"+this.publicKey); his_self.playerPlaySpringDeployment(faction, player, removed_queue_instruction); });
 
-    let capitals = this.factions[faction].capitals;
+console.log("asking for capitals for faction: " + faction);
+console.log("capitals are: " + JSON.stringify(this.factions[faction]));
+
+    let capitals = this.returnCapitals(faction);
+console.log("return capitals: " + JSON.stringify(capitals));
     let viable_capitals = [];
     let can_deploy = 0;
     let units_to_move = [];
@@ -3569,8 +3583,12 @@ return;
       }
     }
 
+console.log("capitals are: " + JSON.stringify(capitals));
+
     for (let i = 0; i < capitals.length; i++) {
       let c = capitals[i];
+console.log("this capital is: " + c);
+console.log("this faction is: " + faction);
       if (this.game.spaces[c].units[faction].length > 0) {
         can_deploy = 1;
         viable_capitals.push(capitals[i]);
@@ -6366,7 +6384,7 @@ does_units_to_move_have_unit = true; }
         }
       }
     }
-    if (nonassaultable_spaces >= assaultable_spaces) { return 1; }
+    if (nonassaultable_spaces > 0 && nonassaultable_spaces >= assaultable_spaces) { return 1; }
     return 0;
   }
   playerAssaultTutorial(his_self, player, faction) {

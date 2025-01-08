@@ -66,7 +66,6 @@ html[data-theme="milquetoast"] {
       --border-radius-calendar-hover-today: var(--border-radius-round);
       --border-radius-status-message: var(--border-radius-round);
       --border-radius-sidebar-game-module: var(--border-radius-round);
-      --border-radius-identicon-needed: var(--border-radius-voluptuous);
       --border-radius-leaderboard-ranking: var(--border-radius-round);
       --border-radius-offset: 0.3rem;
 

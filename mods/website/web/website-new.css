@@ -92,6 +92,12 @@ h3 {
     font-weight: normal;
 }
 
+p {
+    margin-bottom: 1.5rem;
+    line-height: 2rem;
+    font-size: 1.33rem;
+}
+
 .container {
     height: 100%;
     overflow-y: auto;
@@ -124,7 +130,7 @@ h3 {
     background-color: #fff;
     align-items: center;
     flex-direction: column;
-  }
+}
 
 #web3 {
     background: var(--dreamscape);
@@ -132,7 +138,7 @@ h3 {
 }
 
 #contact {
-    background-color: #333;
+    background-color: #1c1c23;
     color: white;
     align-items: center;
 }
@@ -246,6 +252,7 @@ object.saito-text {
     left: 0;
     animation: slideTextPortrait 1s ease-out 1.5s forwards;
     z-index: 999;
+    max-width: min(25vh, 50vw);
 }
 
 @keyframes slideTextPortrait {
@@ -266,7 +273,7 @@ object.saito-text {
 @media (orientation: landscape) {
     .saito-text-container {
         width: 70vw;
-        max-width: 70rem;
+        max-width: min(70rem, 50vw);
         height: auto;
         bottom: 110vh;
         left: 0;
@@ -282,7 +289,7 @@ object.saito-text {
         }
 
         100% {
-            bottom:  0;
+            bottom: 0;
             opacity: 1;
         }
     }
@@ -346,11 +353,12 @@ object.saito-text {
         }
     }
 
+    /* Grid Layout for Desktop Initial State */
     .main-header:not(.scrolled) .desktop-menu {
         position: fixed;
-        top: 2rem;
-        left: 2rem;
-        width: 40%;
+        top: 13rem;
+        left: min(8vw, 5rem);
+        width: calc(60vw + 7rem);
     }
 
     .main-header:not(.scrolled) .header-logo {
@@ -361,7 +369,8 @@ object.saito-text {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 2rem;
-        width: 100%;
+        max-width: 100%;
+        margin: auto;
     }
 
     .main-header:not(.scrolled) .menu-title {
@@ -379,18 +388,18 @@ object.saito-text {
     h1.menu-title {
         font-size: 2rem;
     }
-    
+
     .main-header:not(.scrolled) .menu-button {
         display: block;
-        width: 25rem;
+        width: min(25rem, 40vw);
         padding: 0.75rem 1rem;
         color: white;
         text-decoration: none;
-        border: 1px solid #fff0;
+        border: 2px solid #fffc;
         border-radius: 50px;
         transition: all 0.3s ease;
         text-align: center;
-        font-size: 2rem;
+        font-size: 1.5rem;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     }
 
@@ -416,12 +425,12 @@ object.saito-text {
 
     .main-header.scrolled .menu-links {
         position: relative;
-        top: 0;
-        left: 0;
+        top: 4rem;
+        left: 4rem;
         min-width: 200px;
         padding: 1rem;
         border-radius: 4px;
-        pointer-events: none;  /* Initially disable pointer events */
+        pointer-events: none;
         opacity: 0;
         visibility: hidden;
         transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -431,7 +440,8 @@ object.saito-text {
     .main-header.scrolled .menu-section:hover .menu-links {
         opacity: 1;
         visibility: visible;
-        pointer-events: auto;  /* Re-enable pointer events on hover */
+        pointer-events: auto;
+        /* Re-enable pointer events on hover */
     }
 
     /* Keep menu visible when hovering the links */
@@ -450,6 +460,36 @@ object.saito-text {
 
     .main-header.scrolled .menu-button:hover {
         border-bottom: 1px solid #fff;
+    }
+
+    /* Add hamburger indicator in scrolled state */
+    .main-header.scrolled .menu-container::before {
+        content: '';
+        position: absolute;
+        right: 5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 36px;
+        height: 24px;
+        border-top: 3px solid #fff;
+        border-bottom: 3px solid #fff;
+    }
+
+    .main-header.scrolled .menu-container::after {
+        content: '';
+        position: absolute;
+        right: 5rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 36px;
+        height: 3px;
+        background: #fff;
+    }
+
+    /* Hover state */
+    .main-header.scrolled .menu-container:hover::before,
+    .main-header.scrolled .menu-container:hover::after {
+        opacity: 1;
     }
 }
 
@@ -475,7 +515,7 @@ object.saito-text {
     position: absolute;
     width: 100%;
     height: 3px;
-    background: white;
+    background-color: var(--menu-color, #fff);
     transition: all 0.3s ease;
     border-radius: 3px;
 }
@@ -551,21 +591,6 @@ object.saito-text {
 }
 
 
-/* Grid Layout for Desktop Initial State */
-@media (min-width: 768px) {
-    .main-header:not(.scrolled) .desktop-menu {
-        position: fixed;
-        top: 13rem;
-        left: 5rem;
-        width: 40%;
-    }
-
-    .main-header:not(.scrolled) .menu-container {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2rem;
-    }
-}
 
 /* Update background cube styles */
 .background-cube {
@@ -590,18 +615,9 @@ object.saito-text {
 }
 
 @media (max-width: 1500px) {
-    .saito-text-container {
-        max-width: 45vw;
-    }
 
     .background-cube {
         max-width: 30vw;
-    }
-    .main-header:not(.scrolled) .desktop-menu {
-        position: fixed;
-        top: 3rem;
-        left: 8vw;
-        width: 40%;
     }
 
     .menu-button {
@@ -621,18 +637,13 @@ object.saito-text {
 
 
 @media (orientation: landscape) and (max-height: 1000px) {
-    .saito-text-container {
-        max-width: 45vw;
-    }
-
     .background-cube {
         max-width: 30vw;
     }
+
     .main-header:not(.scrolled) .desktop-menu {
         position: fixed;
-        top: 3rem;
         left: 8vw;
-        width: 40%;
     }
 }
 
@@ -670,10 +681,6 @@ object.saito-text {
     line-height: 1.6;
 }
 
-.community-text p {
-    margin-bottom: 1.5rem;
-}
-
 .community-text a {
     color: #f61745;
     text-decoration: none;
@@ -695,6 +702,7 @@ object.saito-text {
         height: 2px;
     }
 }
+
 /* Contact section styles */
 .contact-container {
     display: flex;
@@ -797,6 +805,7 @@ object.saito-text {
     body {
         font-size: 1.2rem;
     }
+
     section {
         padding: 6rem 0 0 0;
         justify-content: left;
@@ -807,7 +816,8 @@ object.saito-text {
         padding-top: 0;
     }
 
-    #community, #web3 {
+    #community,
+    #web3 {
         padding: 6rem 1rem 0 1rem;
     }
 
@@ -815,11 +825,12 @@ object.saito-text {
         font-size: 2.6rem;
         line-height: 1.2;
     }
+
     h2 {
         font-size: 1.66rem;
     }
+
     .community-image {
-        flex: 1;
         overflow: hidden;
         max-height: 56px;
     }
@@ -840,7 +851,8 @@ object.saito-text {
 
 /* Adjust mobile logo size */
 .mobile-header .header-logo {
-    height: 40px;  /* Smaller size for mobile */
+    height: 40px;
+    /* Smaller size for mobile */
 }
 
 /* Adjust hamburger position */
@@ -858,23 +870,28 @@ object.saito-text {
 
 /* Typography - Desktop (> 768px) */
 @media (min-width: 768px) {
+
     /* Headings */
-    h1, .h1 {
+    h1,
+    .h1 {
         font-size: 3.5rem;
         line-height: 1.2;
     }
 
-    h2, .h2 {
-        font-size: 2.8rem;
-        line-height: 1.3;
+    h2,
+    .h2 {
+        font-size: 2.5rem;
+        line-height: 1.75;
     }
 
-    h3, .h3 {
+    h3,
+    .h3 {
         font-size: 2rem;
         line-height: 1.4;
     }
 
-    h4, .h4 {
+    h4,
+    .h4 {
         font-size: 1.5rem;
         line-height: 1.4;
     }
@@ -885,7 +902,7 @@ object.saito-text {
     }
 
     .menu-links a {
-        font-size: 1rem;
+        font-size: 1.5rem;
     }
 
     .nav-text {
@@ -909,24 +926,29 @@ object.saito-text {
 
 /* Typography - Mobile (≤ 768px) */
 @media (max-width: 767px) {
+
     /* Headings */
-    h1, .h1 {
+    h1,
+    .h1 {
         font-size: 2.5rem;
         line-height: 1.2;
     }
 
-    h2, .h2 {
+    h2,
+    .h2 {
         font-size: 2rem;
         line-height: 1.2;
         margin: 2rem 0
     }
 
-    h3, .h3 {
+    h3,
+    .h3 {
         font-size: 1.5rem;
         line-height: 1.4;
     }
 
-    h4, .h4 {
+    h4,
+    .h4 {
         font-size: 1.25rem;
         line-height: 1.4;
     }
@@ -964,7 +986,7 @@ object.saito-text {
     .scroll-caret {
         display: none;
     }
-} 
+}
 
 /* Scroll Caret - Desktop Only */
 @media (min-width: 768px) {
@@ -985,24 +1007,84 @@ object.saito-text {
         height: 40px;
         padding: 10px;
         border-radius: 3px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     }
 
     .scroll-caret svg {
         width: 100%;
         height: 100%;
-        filter: drop-shadow(0 0 5px rgba(0,0,0,0.3));
+        filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.3));
     }
 
     @keyframes bounce {
-        0%, 20%, 50%, 80%, 100% {
+
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
             transform: translateY(0);
         }
+
         40% {
             transform: translateY(-10px);
         }
+
         60% {
             transform: translateY(-5px);
         }
     }
-} 
+}
+
+/* Update menu hover behavior */
+.main-header.scrolled .menu-container:hover .menu-links {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    backdrop-filter: blur(50px);
+}
+
+/* Remove individual menu section hover states */
+.main-header.scrolled .menu-section:hover .menu-links {
+    opacity: initial;
+    visibility: initial;
+    pointer-events: initial;
+}
+
+/* Position the menus side by side */
+.main-header.scrolled .menu-container:hover .menu-section:first-child .menu-links {
+    right: calc(100% + 1rem);
+    /* Position first menu to the left */
+}
+
+.main-header.scrolled .menu-container:hover .menu-section:last-child .menu-links {
+    right: 0;
+    /* Keep second menu aligned to the right */
+}
+
+/* Color variable usage */
+.hamburger span {
+    background-color: var(--menu-color, #fff);
+}
+
+.menu-title {
+    color: var(--menu-color, #fff);
+}
+
+.main-header.scrolled .menu-links a {
+    color: var(--menu-color, #fff);
+}
+
+.main-header.scrolled .menu-container::before {
+    border-top-color: var(--menu-color, #fff);
+    border-bottom-color: var(--menu-color, #fff);
+}
+
+.main-header.scrolled .menu-container::after {
+    background-color: var(--menu-color, #fff);
+}
+
+/* For SVG logo */
+.header-logo svg style {
+    content: ".cls-1{fill:var(--menu-color, #fff)}";
+}

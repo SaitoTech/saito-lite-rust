@@ -661,7 +661,7 @@ class Videocall extends ModTemplate {
 				let c = await sconfirm(`${this.app.keychain.returnUsername(from)} ready for ${event.identifier}, join now?`);
 				if (c) {
 					if (event?.link){
-						window.location = event.link;	
+						navigateWindow(event.link);	
 					}else{
 						salert("No saved link");
 					}
