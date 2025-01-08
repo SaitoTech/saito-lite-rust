@@ -657,7 +657,7 @@ object.saito-text {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4rem;
+    gap: 2rem;
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
@@ -665,10 +665,13 @@ object.saito-text {
 
 .community-image {
     flex: 1;
-    min-height: 475px;
+    min-height: 470px;
     background-image: url(/saito/img/community-cats-square.jpeg);
-    background-size: cover;
-    background-position: center;
+    background-size: contain;
+    background-position-y: center;
+    background-repeat: no-repeat;
+    margin: auto;
+    max-width: 470px;
 }
 
 .community-image img {
@@ -702,14 +705,38 @@ object.saito-text {
 @media (max-width: 768px) {
     .community-content {
         flex-direction: column;
-        gap: 2rem;
+        gap: 1.5rem;
+        padding: 2rem 0.5rem;
     }
 
     .community-divider {
-        width: 80%;
+        width: 85%;
         height: 2px;
     }
+
+    .community-text {
+        padding: 0 1rem;
+    }
+
+    .community-image {
+        overflow: hidden;
+        min-height: 12vw;
+        min-width: 100%;
+        background-image: url(/saito/img/community-cats-row.jpeg);
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
 }
+
+@media (min-width: 1200px) {
+    .community-content {
+        gap: 4rem;
+    }
+}
+
+
+
 
 /* Contact section styles */
 .contact-container {
@@ -838,15 +865,6 @@ object.saito-text {
         font-size: 1.66rem;
     }
 
-    .community-image {
-        overflow: hidden;
-        max-height: 56px;
-        min-height: 56px;
-        min-width: 100%;
-        background-image: url(/saito/img/community-cats-row.jpeg);
-        background-size: cover;
-        background-position: center;
-    }
 }
 
 /* Mobile header styles */
