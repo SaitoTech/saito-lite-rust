@@ -1156,7 +1156,7 @@ a#start_anim2:hover {
 #start_anim2,
 #start_anim2_mobile {
     padding: 1rem 4rem;
-    margin: 3rem 0;
+    margin: 2rem 0;
     left: 50%;
     position: absolute;
     font-size: 1.33rem;
@@ -1290,17 +1290,20 @@ a#start_anim2:hover {
     }
 
     #bottom-animation {
-        position: relative;
         top: 10rem;
-        right: 50%;
-        transform: translateX(34%);
     }
 
     #anim2_mobile.vis {
         display: block;
     }
 
-    #bttm_anim2 {
-        scale: 1.8;
+    #bttm_anim1 {
+        scale: 1.7;
+    }
+
+    #bottom-animation #bttm_anim1 {
+        right: unset;
+        left: 50%;
+        transform: translate(-33%, -45%);
     }
 }

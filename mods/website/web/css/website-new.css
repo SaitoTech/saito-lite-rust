@@ -98,6 +98,10 @@ p {
     font-size: 1.33rem;
 }
 
+h2 + p {
+    margin-top: 1rem;
+}
+
 .container {
     height: 100%;
     overflow-y: auto;
