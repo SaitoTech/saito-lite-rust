@@ -661,6 +661,10 @@ object.saito-text {
 
 .community-image {
     flex: 1;
+    min-height: 475px;
+    background-image: url(/saito/img/community-cats-square.jpeg);
+    background-size: cover;
+    background-position: center;
 }
 
 .community-image img {
@@ -833,6 +837,10 @@ object.saito-text {
     .community-image {
         overflow: hidden;
         max-height: 56px;
+        min-height: 56px;
+        background-image: url(/saito/img/community-cats-row.jpeg);
+        background-size: cover;
+        background-position: center;
     }
 }
 
