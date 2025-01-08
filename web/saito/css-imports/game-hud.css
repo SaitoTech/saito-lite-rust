@@ -224,3 +224,10 @@
 
 }
 
+/* Game Hamburger Menu */
+.hamburger-container {
+  padding: 0.5rem;
+  background: #0003;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+}
