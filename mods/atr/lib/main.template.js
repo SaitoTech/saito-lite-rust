@@ -45,7 +45,7 @@ module.exports = (app, mod) => {
             </tr>
         </thead>
         <tbody>
-            <tr class="treasury">
+            <tr class="treasury total_supply_value">
                 <td>treasury</td>
                 <td class="blockslot1"></td>
                 <td class="blockslot2"></td>
@@ -58,7 +58,7 @@ module.exports = (app, mod) => {
                 <td class="blockslot9"></td>
                 <td class="blockslot10"></td>
             </tr>
-            <tr class="graveyard">
+            <tr class="graveyard total_supply_value">
                 <td>graveyard</td>
                 <td class="blockslot1"></td>
                 <td class="blockslot2"></td>
@@ -71,7 +71,33 @@ module.exports = (app, mod) => {
                 <td class="blockslot9"></td>
                 <td class="blockslot10"></td>
             </tr>
-            <tr class="utxo">
+            <tr class="previous_block_unpaid total_supply_value">
+                <td>previous_block_unpaid</td>
+                <td class="blockslot1"></td>
+                <td class="blockslot2"></td>
+                <td class="blockslot3"></td>
+                <td class="blockslot4"></td>
+                <td class="blockslot5"></td>
+                <td class="blockslot6"></td>
+                <td class="blockslot7"></td>
+                <td class="blockslot8"></td>
+                <td class="blockslot9"></td>
+                <td class="blockslot10"></td>
+            </tr>
+            <tr class="total_fees total_supply_value">
+                <td>total_fees</td>
+                <td class="blockslot1"></td>
+                <td class="blockslot2"></td>
+                <td class="blockslot3"></td>
+                <td class="blockslot4"></td>
+                <td class="blockslot5"></td>
+                <td class="blockslot6"></td>
+                <td class="blockslot7"></td>
+                <td class="blockslot8"></td>
+                <td class="blockslot9"></td>
+                <td class="blockslot10"></td>
+            </tr>
+            <tr class="utxo total_supply_value">
                 <td>utxo</td>
                 <td class="blockslot1"></td>
                 <td class="blockslot2"></td>
@@ -84,21 +110,8 @@ module.exports = (app, mod) => {
                 <td class="blockslot9"></td>
                 <td class="blockslot10"></td>
             </tr>
-            <tr class="total_supply">
+            <tr class="total_supply total_supply_value">
                 <td>total_supply</td>
-                <td class="blockslot1"></td>
-                <td class="blockslot2"></td>
-                <td class="blockslot3"></td>
-                <td class="blockslot4"></td>
-                <td class="blockslot5"></td>
-                <td class="blockslot6"></td>
-                <td class="blockslot7"></td>
-                <td class="blockslot8"></td>
-                <td class="blockslot9"></td>
-                <td class="blockslot10"></td>
-            </tr>
-            <tr class="total_fees">
-                <td>total_fees</td>
                 <td class="blockslot1"></td>
                 <td class="blockslot2"></td>
                 <td class="blockslot3"></td>
@@ -359,19 +372,6 @@ module.exports = (app, mod) => {
             </tr>
             <tr class="difficulty">
                 <td>difficulty</td>
-                <td class="blockslot1"></td>
-                <td class="blockslot2"></td>
-                <td class="blockslot3"></td>
-                <td class="blockslot4"></td>
-                <td class="blockslot5"></td>
-                <td class="blockslot6"></td>
-                <td class="blockslot7"></td>
-                <td class="blockslot8"></td>
-                <td class="blockslot9"></td>
-                <td class="blockslot10"></td>
-            </tr>
-            <tr class="previous_block_unpaid">
-                <td>previous_block_unpaid</td>
                 <td class="blockslot1"></td>
                 <td class="blockslot2"></td>
                 <td class="blockslot3"></td>

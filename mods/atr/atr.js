@@ -116,11 +116,6 @@ class ATR extends ModTemplate {
 		atr_obj.difficulty = blk.difficulty;
 		atr_obj.previousBlockUnpaid = blk.previousBlockUnpaid;
 		atr_obj.hasGoldenTicket = blk.hasGoldenTicket;
-
-
-		let treasury = blk.treasury;
-		let graveyard = blk.graveyard;
-
 		atr_obj.treasury = blk.treasury;
 		atr_obj.graveyard = blk.graveyard;
 
@@ -131,7 +126,7 @@ class ATR extends ModTemplate {
 		} else {
 			utxo = await this.fetchBalanceSnapshot('');
 			atr_obj.utxo = utxo;
-			atr_obj.total_supply = utxo+treasury+graveyard;
+			atr_obj.total_supply = utxo+blk.treasury+blk.graveyard+blk.totalFees+blk.previousBlockUnpaid;
 		}
 
 		let fullblock = JSON.parse(blk.toJson());
