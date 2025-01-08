@@ -838,6 +838,7 @@ object.saito-text {
         overflow: hidden;
         max-height: 56px;
         min-height: 56px;
+        min-width: 100%;
         background-image: url(/saito/img/community-cats-row.jpeg);
         background-size: cover;
         background-position: center;
