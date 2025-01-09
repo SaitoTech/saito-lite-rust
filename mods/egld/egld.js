@@ -438,7 +438,7 @@ class EGLDModule extends CryptoModule {
 
                     await this_self.initiateNetwork();
                 } else {
-                    console.error("Unable to load config from env");
+                    //console.error("Unable to load config from env");
                 }
             });
         } else {

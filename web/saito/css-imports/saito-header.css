@@ -29,6 +29,7 @@
   padding-right: 2rem;
   /* redefining base variable in game-layout doesn't work if people push themes on games */
   background: transparent; 
+  backdrop-filter: none;
 }
 
 #saito-header.game .saito-header-logo-wrapper, #saito-header.game .header-msg {
@@ -299,6 +300,7 @@
   gap: 1rem;
   margin-left: auto;
 }
+
 
 #header-msg {
   color: var(--font-color-header-msg);

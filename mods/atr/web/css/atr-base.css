@@ -135,6 +135,14 @@
         border-bottom: 1px solid #E0E0E0;
     }
 
+    .data-table tr.total_supply_value {
+        background-color: #dddddd;
+    }
+
+    .data-table tr.total_supply.total_supply_value {
+        background-color: #aaa;
+    }
+
     .data-table td {
         color: #333333;
     }
