@@ -6495,7 +6495,7 @@ console.log("space assault: " + conquerable_spaces[i]);
 console.log("loc? " + his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction));
 
 	  if (his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction)) {
-            if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1 || (faction == "ottoman" && his_self.game.state.events.roxelana == 1) || (faction == his_self.returnControllingPower("scotland") && this.game.state.events.scots_raid == 1)) {
+            if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1 || (faction == "ottoman" && his_self.game.state.events.roxelana == 1) || (faction == his_self.returnControllingPower("scotland") && his_self.game.state.events.scots_raid == 1)) {
 	      if (!his_self.game.state.spaces_assaulted_this_turn.includes(conquerable_spaces[i])) {
 
 	        //
