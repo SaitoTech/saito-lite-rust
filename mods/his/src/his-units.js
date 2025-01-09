@@ -223,6 +223,12 @@
     }
   }
 
+  returnLeaderName(key) {
+    if (this.army[leader]) { return this.army[leader].name; }
+    if (this.name[leader]) { return this.navy[leader].name; }
+    return key;
+  }
+
   returnConquistadorName(key) {
     if (this.conquistadors[key]) { return this.conquistadors[key].name; }
     return "Conquistador";

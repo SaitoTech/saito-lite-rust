@@ -1064,6 +1064,7 @@ if (limit === "build") {
       img : '/his/img/backgrounds/move/translate.jpg',
     });
 if (this.game.state.events.cranmer_active == 1) {
+  if (this.game.state.events.cromwell != 0) {
     menu.push({
       factions : ['england','protestant'],
       cost : [3,2],
@@ -1073,6 +1074,17 @@ if (this.game.state.events.cranmer_active == 1) {
       category : "special" ,
       img : '/his/img/backgrounds/move/printing_press.jpg',
     });
+  } else {
+    menu.push({
+      factions : ['england','protestant'],
+      cost : [2,2],
+      name : "Publish Treatise",
+      check : this.canPlayerPublishTreatise,
+      fnct : this.playerPublishTreatise,
+      category : "special" ,
+      img : '/his/img/backgrounds/move/printing_press.jpg',
+    });
+  }
 } else {
     menu.push({
       factions : ['protestant'],
@@ -1188,6 +1200,35 @@ if (this.game.state.events.society_of_jesus == 1) {
     });
 
     return 0;
+  }
+
+  playerSelectCardFromArrayWithFilter(msg, cardarray=[], filter_func, mycallback = null, cancel_func = null, permit_no_selection = false) {
+
+    let cards = [];
+
+    for (let i = 0; i < cardarray.length; i++) {
+      if (filter_func(cardarray[i])) {
+	cards.push(cardarray[i]);
+      }
+    }
+
+    if (permit_no_selection) {
+      cards.push("pass");
+    }
+
+    this.updateStatusAndListCards(msg, cards);
+    this.attachCardboxEvents(function(card) {
+      mycallback(card);
+    });
+
+  }
+
+  countSpacesWithFilter(filter_func) {
+    let count = 0;
+    for (let key in this.game.spaces) {
+      if (filter_func(this.game.spaces[key]) == 1) { count++; }
+    }
+    return count;
   }
 
   playerFactionSelectCardWithFilter(faction, msg, filter_func, mycallback = null, cancel_func = null, permit_no_selection = false) {
@@ -2195,8 +2236,6 @@ if (relief_siege == 1) {
       }
     }
 
-console.log("HERE: " + ops);
-
     //
     // cards left
     //
@@ -2233,7 +2272,6 @@ console.log("HERE: " + ops);
       return;
     }
 
-
     //
     // Roxelana offers free Assault
     //
@@ -2244,7 +2282,6 @@ console.log("HERE: " + ops);
 	}
       }
     }
-
 
     //
     // "ACTIVATED POWERS" are those for whom players have the choice of moving.
@@ -5022,6 +5059,7 @@ does_units_to_move_have_unit = true; }
         return;
       }
       if (user_choice === "skip") {
+	his_self.game.state.rejected_pre_battle_fortification.push(faction);
 	his_self.endTurn();
         return;
       }
@@ -6452,8 +6490,12 @@ does_units_to_move_have_unit = true; }
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
         if (conquerable_spaces[i] !== "egypt" && conquerable_spaces[i] !== "persia" && conquerable_spaces[i] !== "ireland") {
+
+console.log("space assault: " + conquerable_spaces[i]);
+console.log("loc? " + his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction));
+
 	  if (his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction)) {
-            if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1 || (faction == "ottoman" && his_self.game.state.events.roxelana == 1)) {
+            if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1 || (faction == "ottoman" && his_self.game.state.events.roxelana == 1) || (faction == his_self.returnControllingPower("scotland") && this.game.state.events.scots_raid == 1)) {
 	      if (!his_self.game.state.spaces_assaulted_this_turn.includes(conquerable_spaces[i])) {
 
 	        //
@@ -6502,7 +6544,7 @@ does_units_to_move_have_unit = true; }
 	if (faction == "ottoman" && space.key == "egypt" && his_self.game.state.events.revolt_in_egypt == 1) { return 0; }
 	if (faction == "england" && space.key == "ireland" && his_self.game.state.events.revolt_in_ireland == 1) { return 0; }
         if (his_self.game.spaces[space.key].type !== "fortress" && his_self.game.spaces[space.key].type !== "electorate" && his_self.game.spaces[space.key].type !== "key") { return 0; }
-        if (his_self.isSpaceInLineOfControl(space, faction) && !his_self.isSpaceControlled(space, faction) && his_self.returnFactionLandUnitsInSpace(faction, space) > 0 && space.besieged == 1) {
+        if (his_self.isSpaceInLineOfControl(space, faction) && !his_self.isSpaceControlled(space, faction) && his_self.returnFactionLandUnitsInSpace(faction, space) > 0 && (space.besieged == 1 || his_self.game.state.events.scots_raid == 1)) {
           //
           // now check if there are squadrons in the port or sea protecting the town
           //
@@ -6953,8 +6995,25 @@ console.log(ops_to_spend + " -- " + ops_remaining);
     if (faction === "hapsburg") {
       if (his_self.game.state.newworld['hapsburg_colony1'].claimed == 1 && his_self.game.state.newworld['hapsburg_colony2'].claimed == 1 && his_self.game.state.newworld['hapsburg_colony3'].claimed == 1){ return 0; }
     }
+
+    //
+    // Potosi takes the last colony
+    //
+    if (his_self.game.state.events.potosi_silver_mines_added == faction) {
+      if (faction === "england") {
+        if (his_self.game.state.newworld['england_colony1'].claimed == 1) { return 0; }
+      }
+      if (faction === "france") {
+        if (his_self.game.state.newworld['france_colony1'].claimed == 1) { return 0; }
+      }
+      if (faction === "hapsburg") {
+        if (his_self.game.state.newworld['hapsburg_colony1'].claimed == 1 && his_self.game.state.newworld['hapsburg_colony2'].claimed == 1) { return 0; }
+      }
+    }
+
     return 1;
   }
+
   async playerExplore(his_self, player, faction) {
     his_self.addMove("explore\t"+faction);
     his_self.endTurn();

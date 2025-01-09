@@ -520,6 +520,27 @@
       0
     );
 
+    //
+    // we put the neighbours immediately into the search space for the 
+    // above function, so we do a sanity check on any ports to ensure we
+    // are not fully blockaded if the only results are overseas.
+    //
+    let all_overseas = true;
+    for (let i = 0; i < res.length; i++) {
+      if (res[i].overseas != true) { all_overseas = false; }
+    }
+    if (all_overseas == true) {
+      let are_we_blockaded = true;
+      if (space.ports) {
+        for (let z = 0; z < space.ports.length; z++) {
+	  if (his_self.isNavalSpaceFriendly(space.ports[z], faction)) {
+	    are_we_blockaded = false;
+	  }
+        }
+      }
+      if (are_we_blockaded) { return 0; }
+    }
+
     return res.length;
 
   }
@@ -2105,12 +2126,15 @@ try {
     if (s) {
       if (s.ports.length > 0) {
 	if (transit_seas) {
+
+
 	  for (let i = 0; i < s.ports.length; i++) {
 	    if (this.doesNavalSpaceHaveFriendlyShip(s.ports[i], faction)) {
 	      vns.push(s.ports[i]);
 	    }
 	  }
 	  let vnslen = vns.length;
+
 	  for (let i = 0; i < vnslen; i++) {
 	    let x = this.game.navalspaces[vns[i]];
 if (x) {

@@ -142,7 +142,7 @@
 	text.push(`${this.returnFactionName(x[2])} offers ${this.returnFactionName(x[1])} a card`);
       }
       if (x[0] === "returns_captured" || x[0] === "ransom") {
-	text.push(`${this.returnFactionName(x[1])} returns ${x[1]}`);
+	text.push(`${this.returnFactionName(x[1])} returns ${this.returnLeaderName(x[1])}`);
       }
       if (x[0] === "control" || x[0] === "yield_key") {
 	text.push(`${this.returnFactionName(x[3])} yields ${this.returnSpaceName(x[2])} to ${this.returnFactionName(x[1])}`);
