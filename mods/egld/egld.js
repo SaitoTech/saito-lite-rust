@@ -2,6 +2,7 @@ const CryptoModule = require("../../lib/templates/cryptomodule");
 const { ApiNetworkProvider, ProxyNetworkProvider, 
 Account, UserSigner, Address, UserWallet, Transaction, 
 TransactionComputer, UserSecretKey, Mnemonic  } = require("@multiversx/sdk-core");
+const PeerService = require('saito-js/lib/peer_service').default;
 
 class EGLDModule extends CryptoModule {
     constructor(app, mod) {
@@ -459,9 +460,22 @@ class EGLDModule extends CryptoModule {
         }
     }
 
+    returnServices() {
+        let services = [];
+            if (this.app.BROWSER == 0) {
+              services.push(new PeerService(null, "egld"));
+            }
+        return services;
+    }
+
     async onPeerServiceUp(app, peer, service = {}) {
-        //console.log("service:", service.service);
-        await this.setupNetwork();
+        if (!app.BROWSER) {
+          return;
+        }
+
+        if (service.service == 'egld') {
+            await this.setupNetwork();
+        }
     }
 
     async handlePeerTransaction(app, tx = null, peer, mycallback) {
