@@ -713,7 +713,11 @@ class Limbo extends ModTemplate {
 				if (includeCamera) {
 					options.mode = 'camera';
 					this.localStream = await navigator.mediaDevices.getUserMedia({
-						video: true,
+						video: {
+							width: { ideal: 640 },
+							height: { ideal: 480 },
+							frameRate: { ideal: 15 }
+						},
 						audio: true // Capture microphone audio
 					});
 				} else {
