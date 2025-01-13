@@ -208,9 +208,12 @@ console.log("\n\n\n\n");
           this.addNavalSquadron("hapsburg", "naples", 1);
           this.addRegular("hapsburg", "besancon", 1);
           this.addRegular("hapsburg", "brussels", 1);
-	  this.addArmyLeader("hapsburg", "vienna", "ferdinand");
+	  //this.addArmyLeader("hapsburg", "vienna", "ferdinand");
           this.addRegular("hapsburg", "vienna", 4);
           this.addRegular("hapsburg", "antwerp", 1);
+
+	  this.game.state.players_info[0].captured.push(JSON.parse(JSON.stringify(this.army["ferdinand"])));
+
 
 	  // ENGLAND
           this.addArmyLeader("england", "london", "henry-viii");
@@ -569,6 +572,8 @@ console.log("\n\n\n\n");
 
       if (this.game.options.scenario === "is_testing") {
 
+          this.addRegular("hungary", "vienna", 1);
+
 	  this.game.state.henry_viii_marital_status = 1;
 	  this.game.state.starting_round = 6;
 	  this.game.state.round = 5; // the one before 4
@@ -699,9 +704,10 @@ this.addRegular("hapsburg", "prague", 3);
           this.addRegular("hapsburg", "antwerp", 2);
 
           // OTTOMAN
-          this.addArmyLeader("ottoman", "sofia", "ibrahim-pasha");
-          this.addArmyLeader("ottoman", "bucharest", "suleiman");
+          this.addArmyLeader("ottoman", "mohacs", "ibrahim-pasha");
+          this.addArmyLeader("ottoman", "mohacs", "suleiman");
           this.addCavalry("ottoman", "bucharest", 2);
+          this.addRegular("ottoman","mohacs", 4);
           this.addRegular("ottoman","athens", 3);
           this.addRegular("ottoman","istanbul", 3);
 

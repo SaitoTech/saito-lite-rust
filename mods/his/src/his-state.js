@@ -7,6 +7,7 @@
     this.game.state.player_last_move = "";
     this.game.state.player_last_spacekey = "";
     this.game.state.field_battle_relief_battle = false;
+    this.game.state.rejected_pre_battle_fortification = [];
 
     //
     // remove foul weather
@@ -124,6 +125,7 @@
     this.game.state.cards_evented = [];
     this.game.state.foreign_wars_fought_this_impulse = [];
     this.game.state.henry_viii_pope_approves_divorce = 0;
+    this.game.state.events.cromwell = 0;
 
     this.game.state.may_explore['england'] = 1;
     this.game.state.may_explore['france'] = 1;
@@ -846,6 +848,7 @@ if (this.game.state.scenario != "is_testing") {
     state.debater_committed_this_impulse = {};
 
     state.cards_left = {};
+    state.rejected_pre_battle_fortification = [];
 
     state.master_of_italy = {};
     state.master_of_italy['ottoman'] = 0;
@@ -923,6 +926,7 @@ if (this.game.state.scenario != "is_testing") {
     state.events.copernicus = "";        // faction that gets VP
     state.events.copernicus_vp = 0;     // 1 or 2 VP
     state.events.scots_raid = 0;	// 1 if active, limits French activities
+    state.events.cromwell = 0;		// 1 if England publishes for 2 CP
 
     state.french_chateaux_vp = 0;
 

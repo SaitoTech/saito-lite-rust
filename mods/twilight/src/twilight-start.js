@@ -3864,7 +3864,6 @@ console.log("TURN IS: " + this.game.state.turn);
 
      if (this.game.player === 0) {
       this.updateLog("Processing Headline Cards...");
-console.log("processing headline cards - TEST");
       return;
     }
 

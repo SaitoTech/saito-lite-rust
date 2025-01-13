@@ -162,6 +162,7 @@
 	width: 100%;
 	display: grid;
 	grid-template-rows: calc(100% - 150px) 150px;
+	max-height: 100vh;
 }
 
 .stun-chatbox .heading {
@@ -661,11 +662,13 @@ video#presentation {
 }
 
 .footer {
-	padding: 2rem;
-	display: flex;
 	justify-content: left;
 	align-items: center;
 	gap: 2rem;
+	padding: 1.5rem;
+	display: flex;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .footer .timer {
@@ -804,6 +807,23 @@ video#presentation {
 	color: var(--saito-red);
 }
 
+@media screen and (min-width: 2560px) {
+	.stun-chatbox main {
+	  max-width: 2560px;
+	  margin: 0 auto;
+	  height: 100vh;
+	}
+	
+	.video-container-large {
+	  max-height: calc(100vh - 180px); 
+	}
+	
+	.footer {
+	  padding: 2rem;
+	  min-height: 120px;
+	}
+  }
+
 @media screen and (max-width: 900px) {
 	.full-screen.stun-overlay-container .stun-chatbox main {
 		grid-template-rows: minmax(0, 1fr) minmax(200px, 20%);
@@ -848,29 +868,91 @@ video#presentation {
 		width: unset;
 		height: unset;
 	}
-}
 
-@media screen and (max-width: 600px) {
 	.footer {
-		padding: 4rem 1rem;
-	}
-
-	.control-panel {
+		padding: 1rem;
 		gap: 1rem;
-		width: calc(100vw - 2rem);
-		justify-content: space-around;
-	}
-
-	/*
-	.full-screen .control-panel .control-list {
-		gap: 0.5rem;
-	}
-	*/
-	.full-screen .control-panel .control-list .icon_click_area {
-		width: 4rem;
-		height: 4rem;
-	}
+	  }
+	
+	  .control-panel {
+		gap: 0.75rem;
+	  }
+	
+	  .control-list .icon_click_area {
+		width: 4.5rem;
+		height: 4.5rem;
+	  }
 }
+
+
+  @media screen and (max-width: 826px) {
+	.footer {
+	  flex-wrap: wrap;
+	  justify-content: center;
+	  gap: 0.5rem;
+	}
+  
+	.timer {
+	  min-width: unset;
+	  order: -1;
+	  width: 100%;
+	  justify-content: center;
+	  margin-bottom: 0.5rem;
+	}
+  
+	.control-panel {
+	  width: 100%;
+	  justify-content: center;
+	  gap: 0.5rem;
+	}
+  
+	.control-list {
+	  gap: 0.5rem;
+	}
+  
+	.control-list .icon_click_area {
+	  width: 4rem;
+	  height: 4rem;
+	}
+  
+	.icon_click_area i {
+	  font-size: 1.8rem;
+	}
+  }
+  
+  @media screen and (max-width: 600px) {
+	.footer {
+	  padding: 0.75rem;
+	}
+  
+	.timer {
+	  flex-wrap: wrap;
+	}
+  
+	.control-list .icon_click_area {
+	  width: 3.5rem;
+	  height: 3.5rem;
+	}
+  
+	.icon_click_area i {
+	  font-size: 1.6rem;
+	}
+  }
+  
+  @media screen and (max-width: 380px) {
+	.footer {
+	  padding: 0.5rem;
+	}
+  
+	.control-list .icon_click_area {
+	  width: 3rem;
+	  height: 3rem;
+	}
+  
+	.icon_click_area i {
+	  font-size: 1.4rem;
+	}
+  }
 
 /* CHAT SETTINGS */
 
