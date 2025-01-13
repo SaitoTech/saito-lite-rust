@@ -52,11 +52,14 @@ class ATR extends ModTemplate {
 		try {
 			if (blk == null) {
 				let last_blk_hash = await this.app.blockchain.getLastBlockHash();
-				if (last_blk_hash !== "0000000000000000000000000000000000000000000000000000000000000000") {
+				console.log("last_blk_hash:", last_blk_hash);
+				//if (last_blk_hash !== "0000000000000000000000000000000000000000000000000000000000000000") {
 					for (let i=0; i< 10; i++) {
+						console.log("fetcing blk: ", last_blk_hash);
 						let blk = await this.fetchBlock(last_blk_hash);
+						console.log('fetched blk:', blk);
 						if (blk != null) {
-							if (Number(blk.id) > 1) {
+							if (Number(blk.id) >= 1) {
 								if (this.blocks.length < 10) {
 									this.blocks.push(blk);
 								}
@@ -69,9 +72,11 @@ class ATR extends ModTemplate {
 						this.blocks.reverse();
 						this.last_block_id = this.blocks[this.blocks.length-1].id;
 					}
-				}else{
-					console.warn("we don't have a last block hash set");
-				}
+
+					console.log("all blocks: ", this.blocks);
+				// }else{
+				// 	console.warn("we don't have a last block hash set");
+				// }
 			} else {
 				let blk_data = await this.getBlockData(blk, type);
 
