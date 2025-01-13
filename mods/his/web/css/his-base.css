@@ -4,6 +4,7 @@
 
 #saito-header {
   backdrop-filter: blur(1px);
+  z-index: 90;
 }
 
 :root {

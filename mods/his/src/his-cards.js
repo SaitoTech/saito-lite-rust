@@ -7508,15 +7508,53 @@ console.log("we have removed philip and redisplayed the space...");
 	  let faction = mv[1];
 	  let p = his_self.returnPlayerOfFaction(faction);
 
+	  let protcards = [];
+	  let engcards = [];
+	  let pcards = [];
+	  for (let z = 0; z < his_self.game.state.pulled_cards.length; z++) { 
+	    if (his_self.game.state.pulled_cards[z].faction == "protestant") {
+	      protcards.push(his_self.game.state.pulled_cards[z].card);
+	    }
+	    if (his_self.game.state.pulled_cards[z].faction == "england") {
+	      engcards.push(his_self.game.state.pulled_cards[z].card);
+	    }
+	    let c = his_self.game.state.pulled_cards[z].card;
+	    let d = his_self.returnDeck(true);
+	    if (d[c]) {
+	      if (d[c].type != "mandatory" && parseInt(c) > 9) {
+	        pcards.push(c);
+	      } 
+	    }
+	  }
+
 	  if (his_self.game.player == p) {
- 	    his_self.playerFactionSelectCardWithFilter(
-	      faction,
+
+	    let prothtml = "";
+	    let enghtml = "";
+
+	    for (let z = 0; z < protcards.length; z++) {
+	      if (z > 0) { prothtml += ", "; }
+	      prothtml += his_self.popup(protcards[z]);
+	    }
+	    for (let z = 0; z < engcards.length; z++) {
+	      if (z > 0) { enghtml += ", "; }
+	      enghtml += his_self.popup(protcards[z]);
+	    }
+
+	    his_self.updateLog("England hand: " + enghtml);
+	    his_self.updateLog("Protestant hand: " + prothtml);
+
+	    if (pcards.length == 0) {
+	      his_self.updateLog("No cards available to discard...");
+	      his_self.endTurn();
+	      return;
+	    }
+
+	    his_self.playerSelectCardFromArrayWithFilter(
 	      "Select Card to Discard",
+	      pcards,
 	      function(card) {
-	        for (let i = 0; i < his_self.game.state.pulled_cards.length; i++) {
-	          if (card === his_self.game.state.pulled_cards[i].card) { return 1; }
-	        }
-	        return 0;
+	        return 1;
 	      },
 	      function(card) {
 	        let f = "";
@@ -10071,6 +10109,8 @@ console.log("we have removed philip and redisplayed the space...");
 
 	  if (ransomed_leader === null) { return; }
 
+	  his_self.game.state.ransomed_leader = ransomed_leader;
+
 	  let player = his_self.returnPlayerOfFaction(ransomed_leader.owner);
 
 	  if (player == his_self.game.player) {
@@ -12514,8 +12554,9 @@ console.log("we have removed philip and redisplayed the space...");
 	    his_self.addMove("thomas_cromwell_retrieves_monasteries");
 	    his_self.endTurn();
 	  }
-	
+
 	  if (action === "treatise") {
+	    his_self.addMove("SETVAR\tstate\tevents\tcromwell\t1");
 	    his_self.addMove("player_publish_treatise\tengland");
 	    his_self.endTurn();
 	  }
