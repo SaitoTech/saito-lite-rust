@@ -98,7 +98,7 @@ p {
     font-size: 1.33rem;
 }
 
-h2 + p {
+h2+p {
     margin-top: 1rem;
 }
 
@@ -1118,4 +1118,152 @@ object.saito-text {
 /* For SVG logo */
 .header-logo svg style {
     content: ".cls-1{fill:var(--menu-color, #fff)}";
+}
+
+#multiwallet {
+    background: var(--dreamscape);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    /* For nav pip tracking */
+}
+
+.multiwallet-content {
+    display: flex;
+    max-width: 1200px;
+    width: 100%;
+    gap: 2rem;
+}
+
+.multiwallet-text {
+    flex: 1;
+    color: white;
+    padding: 1rem;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.multiwallet-text h1 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    color: white;
+}
+
+.multiwallet-text p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+}
+
+.multiwallet-logos {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-container {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.logo-circle {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2rem;
+    transition: transform 0.3s ease;
+}
+
+
+
+.logo-disk object {
+    width: 60px;
+    height: 60px;
+    margin: auto;
+}
+
+.logo-circle span {
+    color: white;
+    font-weight: 500;
+    white-space: nowrap;
+    font-size: 2rem;
+}
+
+/* Position the logos in an arc */
+.logo-circle:nth-child(1) {
+    /* Bitcoin */
+    left: 10%;
+}
+
+.logo-circle:nth-child(2) {
+    /* Ethereum */
+    left: 0%;
+}
+
+.logo-circle:nth-child(3) {
+    /* Saito */
+    left: 6%;
+}
+
+.logo-circle:nth-child(4) {
+    /* MultiverseX */
+    left: 25%;
+}
+
+/* Update nav pip styles to include new section */
+.nav a:nth-child(4) {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.nav a:nth-child(4).active {
+    background-color: white;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .multiwallet-content {
+        flex-direction: column;
+    }
+
+    .logo-container {
+        padding: 0 1rem;
+        gap: 1rem;
+    }
+
+    /* Adjust logo positions for mobile */
+    .logo-circle:nth-child(1) {
+        left: 50%;
+        top: 10%;
+        transform: translateX(-50%);
+    }
+
+    .logo-circle:nth-child(2) {
+        left: 50%;
+        top: 30%;
+        transform: translateX(-50%);
+    }
+
+    .logo-circle:nth-child(3) {
+        left: 50%;
+        top: 50%;
+        transform: translateX(-50%);
+    }
+
+    .logo-circle:nth-child(4) {
+        left: 50%;
+        top: 70%;
+        transform: translateX(-50%);
+    }
+
+    .logo-circle:hover {
+        transform: translateX(-50%) scale(1.1);
+    }
 }
