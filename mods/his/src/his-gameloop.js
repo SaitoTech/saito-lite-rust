@@ -130,10 +130,6 @@ this.updateLog(`###############`);
 	          this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 		}
 
-//
-// done elsewhere, right?
-//	        this.game.queue.push("retreat_to_winter_spaces");
-
 	      }
 	    }
 	  }
@@ -945,7 +941,7 @@ this.updateLog(`###############`);
 		        if (res[b].key == "paris" || res[b].key == "valladolid" || res[b].key == "london" || res[b].key == "vienna" || res[b].key == "istanbul" || res[b].key == "rome") { unit_limit = 1000; } else {
 			  unit_limit = 4;
 			}
-			options.push(unit_limit - this.returnFactionLandUnitsInSpace(faction, res[b].key));
+			options.push(unit_limit - this.returnFactionLandUnitsInSpace(faction, res[b].key, true));
 		      }
 
 		      //
@@ -4171,7 +4167,7 @@ console.log("running player fortify space...");
 	  let from = mv[2];
 	  let to = mv[3];
 
-	  this.updateLog(this.returnFactionName(faction) + " retreats from " + this.returnSpaceName(from) + " to " + this.returnSpaceName(to));
+	  this.updateLog(this.returnFactionName(f) + " retreats from " + this.returnSpaceName(from) + " to " + this.returnSpaceName(to));
 
 	  let source = this.game.spaces[from];
 	  let destination = this.game.spaces[to];
