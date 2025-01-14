@@ -400,6 +400,8 @@ class Arcade extends ModTemplate {
 			app.connection.emit('arcade-data-loaded');
 
 		});
+
+		this.initial_connect = true;
 	}
 
 	async onPeerServiceUp(app, peer, service = {}) {
@@ -2194,6 +2196,7 @@ console.log("creating gamedata... 4");
 
 		if (!game_mod.doesGameExistLocally(game_id)) {
 			console.log('Initialize game');
+			//starts running the queue...
 			await game_mod.initializeObserverMode(game_tx);
 			
 		} else {
@@ -2202,18 +2205,11 @@ console.log("creating gamedata... 4");
 			game_mod.game.player = 0;
 		}
 
-		await this.observerDownloadNextMoves(game_mod, () => {
-			if (watch_live) {
-				game_mod.game.live = watch_live;
-				game_mod.startQueue();
-			}
+		if (watch_live) {
+			game_mod.game.live = watch_live;
+			game_mod.saveGame(game_id);
+		}
 
-			/*this.app.connection.emit('arcade-game-ready-render-request', {
-				id: game_id,
-				name: game_msg.game,
-				slug: game_mod.returnSlug()
-			});*/
-		});
 	}
 
 	async sendFollowTx(game) {
@@ -2243,46 +2239,6 @@ console.log("creating gamedata... 4");
 		});
 	}
 
-	async observerDownloadNextMoves(game_mod, mycallback = null) {
-		// purge old transactions
-		for (let i = game_mod.game.future.length - 1; i >= 0; i--) {
-			let queued_tx = new Transaction(undefined, JSON.parse(game_mod.game.future[i]));
-			let queued_txmsg = queued_tx.returnMessage();
-
-			if (
-				queued_txmsg.step.game <= game_mod.game.step.game &&
-				queued_txmsg.step.game <= game_mod.game.step.players[queued_tx.from[0].publicKey]
-			) {
-				console.log('Trimming future move to download new ones:', JSON.stringify(queued_txmsg));
-				game_mod.game.future.splice(i, 1);
-			}
-		}
-
-		console.log(`${game_mod.name}_${game_mod.game.id} from ${game_mod.game.originator}`);
-
-		this.app.storage.loadTransactions(
-			{ field1: game_mod.name + '_' + game_mod.game.id, limit: 100 },
-			(txs) => {
-				for (let tx of txs) {
-					let game_move = tx.returnMessage();
-					let loaded_step = game_move.step.game;
-
-					if (
-						loaded_step > game_mod.game.step.game ||
-						loaded_step > game_mod.game.step.players[tx.from[0].publicKey]
-					) {
-						console.log('Add move: ' + JSON.stringify(game_move));
-						game_mod.addFutureMove(tx); //This will save future moves (so saveGame below doesn't overwrite them)
-					}
-				}
-				game_mod.saveGame(game_mod.game.id);
-
-				if (mycallback) {
-					mycallback(game_mod);
-				}
-			}
-		);
-	}
 }
 
 module.exports = Arcade;

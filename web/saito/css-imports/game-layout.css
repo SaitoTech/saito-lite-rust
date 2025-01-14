@@ -33,6 +33,11 @@ body {
   user-select: none;
  }
 
+.debug-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
 
 /*********************/
 /*  SIZING ISSUES    */

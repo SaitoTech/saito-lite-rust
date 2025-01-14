@@ -283,8 +283,6 @@ class PokerQueue {
 					}
 
 					// if everyone has folded - start a new round
-					this.halted = 1;
-
 					let msg = `${this.game.state.player_names[player_left_idx]} wins the round`;
 					if (this.game.player == player_left_idx + 1) {
 						msg = 'You win the round';
@@ -313,6 +311,8 @@ class PokerQueue {
 					if (this.game.state.flipped == 5) {
 						this.playerbox.setInactive();
 
+						console.log("PREPARE FOR SHOWDOWN");
+						
 						this.game.queue = [];
 						let first_scorer = 0;
 
@@ -638,7 +638,6 @@ class PokerQueue {
 					}
 				}
 
-				this.halted = 1;
 				this.playerAcknowledgeNotice(winnerStr, async () => {
 					this.cardfan.hide();
 					this.pot.render(0);
