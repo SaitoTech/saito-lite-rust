@@ -313,11 +313,9 @@ input.button {
     align-items: center;
 }
 
-
 .block-navigation a.button {
     font-size: 2.5rem;
 }
-
 
 .block-navigation a {
     font-size: 1.75rem;
@@ -335,6 +333,27 @@ input.button {
     border-top: 1px solid var(--saito-border-color);
     padding-top: 2rem;
 }
+
+/* Tailwind-like utility classes */
+.flex { display: flex; }
+.flex-row { flex-direction: row; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.gap-4 { gap: 1rem; }
+.gap-8 { gap: 2rem; }
+.gap-16 { gap: 4rem; }
+.mt-8 { margin-top: 2rem; }
+.mt-12 { margin-top: 3rem; }
+.mb-8 { margin-bottom: 2rem; }
+.mb-12 { margin-bottom: 3rem; }
+.pt-8 { padding-top: 2rem; }
+.text-lg { font-size: 1.125rem; }
+.text-xl { font-size: 1.25rem; }
+.text-2xl { font-size: 1.5rem; }
+.text-3xl { font-size: 1.875rem; }
+.text-4xl { font-size: 2.25rem; }
+.border-t { border-top-width: 1px; }
+.border-saito { border-color: var(--saito-border-color); }
 
 .dropdown {
     position: relative;

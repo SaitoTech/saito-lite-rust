@@ -458,8 +458,8 @@ class ExplorerCore extends ModTemplate {
 		html += '<div class="explorer-main explorer-main--block-explorer">';
 		
 		// Top navigation back to block list
-		html += '<div class="block-navigation">';
-		html += '<a href="/explorer" class="button"><i class="fas fa-cubes"></i> Back to Block List</a>';
+		html += '<div class="block-navigation flex items-center gap-16 mt-12 mb-12">';
+		html += '<a href="/explorer" class="button text-2xl"><i class="fas fa-cubes"></i> Back to Block List</a>';
 		html += '</div>';
 		
 		html += '<h3>Block Explorer:</h3>';
@@ -476,7 +476,7 @@ class ExplorerCore extends ModTemplate {
 				const previous_block_hash = this_block.previousBlockHash;
 				const next_block_id = Number(this_block.id) + 1;
 				
-				html += '<div class="block-navigation block-navigation--controls">';
+				html += '<div class="block-navigation--controls flex justify-center items-center gap-16 mt-8 mb-8 pt-8 border-t border-saito">';
 				
 				// Previous block link
 				if (previous_block_hash) {
