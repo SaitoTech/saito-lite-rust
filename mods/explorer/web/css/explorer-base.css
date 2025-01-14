@@ -109,7 +109,7 @@ a.button {
 
 .blockchain-table {
 	display: grid;
-	grid-template-columns: 0.5em 4em auto 2.5em auto auto;
+	grid-template-columns: 0.5em 4em auto 2.5em auto auto auto;
 	grid-gap: 10px 20px;
 }
 
@@ -283,4 +283,112 @@ input.button {
 .page-info {
     font-size: 1.1em;
     color: var(--saito-primary);
+}
+
+/* Add tooltip styling */
+.timestamp {
+    position: relative;
+    cursor: help;
+}
+
+.timestamp:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 4px;
+    font-size: 0.9em;
+    white-space: nowrap;
+    z-index: 1000;
+}
+
+.block-navigation {
+    display: flex;
+    gap: 4rem;
+    margin: 2rem 0;
+    align-items: center;
+}
+
+.block-navigation a.button {
+    font-size: 2.5rem;
+}
+
+.block-navigation a {
+    font-size: 1.75rem;
+}
+
+.block-navigation:first-child {
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+}
+
+.block-navigation--controls {
+    justify-content: center;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    border-top: 1px solid var(--saito-border-color);
+    padding-top: 2rem;
+}
+
+/* Tailwind-like utility classes */
+.flex { display: flex; }
+.flex-row { flex-direction: row; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.gap-4 { gap: 1rem; }
+.gap-8 { gap: 2rem; }
+.gap-16 { gap: 4rem; }
+.mt-8 { margin-top: 2rem; }
+.mt-12 { margin-top: 3rem; }
+.mb-8 { margin-bottom: 2rem; }
+.mb-12 { margin-bottom: 3rem; }
+.pt-8 { padding-top: 2rem; }
+.text-lg { font-size: 1.125rem; }
+.text-xl { font-size: 1.25rem; }
+.text-2xl { font-size: 1.5rem; }
+.text-3xl { font-size: 1.875rem; }
+.text-4xl { font-size: 2.25rem; }
+.border-t { border-top-width: 1px; }
+.border-saito { border-color: var(--saito-border-color); }
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: var(--saito-white);
+    min-width: 200px;
+    box-shadow: var(--box-shadow-sidebar-elements);
+    border-radius: 0.5rem;
+    z-index: 1;
+}
+
+.dropdown-content a {
+    color: var(--saito-primary);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: var(--saito-primary-background);
+    color: var(--saito-white);
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 } 

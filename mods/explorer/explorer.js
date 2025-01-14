@@ -382,7 +382,8 @@ class ExplorerCore extends ModTemplate {
 		let latest_block_id = await explorer_self.app.blockchain.getLatestBlockId();
 
 		var html = '<div class="blockchain-table">';
-		html += '<div class="table-header"></div><div class="table-header">id</div><div class="table-header">block hash</div><div class="table-header">tx</div><div class="table-header">previous block</div><div class="table-header">block creator</div>';
+		html += '<div class="table-header"></div><div class="table-header">id</div><div class="table-header">block hash</div>';
+		html += '<div class="table-header">tx</div><div class="table-header">previous block</div><div class="table-header">block creator</div><div class="table-header">timestamp</div>';
 
 		const BLOCKS_PER_PAGE = 200;
 		const startBlock = latest_block_id - (BigInt(page) * BigInt(BLOCKS_PER_PAGE));
@@ -395,67 +396,58 @@ class ExplorerCore extends ModTemplate {
 			endBlock = BigInt(0);
 		}
 
-		for (
-			var mb = startBlock;
-			mb >= endBlock;
-			mb--
-		) {
-			let longest_chain_hash =
-				await explorer_self.app.blockchain.getLongestChainHashAtId(mb);
-			let hashes_at_block_id =
-				await explorer_self.app.blockchain.getHashesAtId(mb);
+		for (var mb = startBlock; mb >= endBlock; mb--) {
+			let longest_chain_hash = await explorer_self.app.blockchain.getLongestChainHashAtId(mb);
+			let hashes_at_block_id = await explorer_self.app.blockchain.getHashesAtId(mb);
 
 			for (let i = 0; i < hashes_at_block_id.length; i++) {
 				let txs_in_block = 0;
 				let previous_block_hash = '';
 				let block_creator = '';
+				let timestamp = '';
 
-				let block = await explorer_self.app.blockchain.getBlock(
-					hashes_at_block_id[i]
-				);
+				let block = await explorer_self.app.blockchain.getBlock(hashes_at_block_id[i]);
 
 				if (block) {
 					let blk = JSON.parse(block.toJson());
 					txs_in_block = block.transactions.length;
 					previous_block_hash = block.previousBlockHash;
 					block_creator = blk.creator;
+					
+					// Format timestamp with 24-hour time
+					const blockTime = new Date(Number(blk.timestamp));
+					const localTime = blockTime.toISOString().replace('T', ' ').slice(0, 19);
+					const timeDiff = this.getTimeDifference(Number(blk.timestamp));
+					timestamp = `<div class="timestamp" data-tooltip="${timeDiff}">${localTime}</div>`;
 				}
+
 				if (longest_chain_hash === hashes_at_block_id[i]) {
 					html += '<div>*</div>';
 				} else {
 					html += '<div></div>';
 				}
-				html +=
-					'<div class="ellipsis"><a href="/explorer/block?hash=' +
-					block.hash +
-					'">' +
-					block.id +
-					'</a></div>';
-				html +=
-					'<div class="ellipsis" title="' +
-					block.hash +
-					'"><a href="/explorer/block?hash=' +
-					block.hash +
-					'">' +
-					block.hash +
-					'</a></div>';
+
+				html += '<div class="ellipsis"><a href="/explorer/block?hash=' + block.hash + '">' + block.id + '</a></div>';
+				html += '<div class="ellipsis" title="' + block.hash + '"><a href="/explorer/block?hash=' + block.hash + '">' + block.hash + '</a></div>';
 				html += '<div>' + txs_in_block + '</div>';
-				html +=
-					'<div class="ellipsis" title="' +
-					previous_block_hash +
-					'">' +
-					previous_block_hash +
-					'</div>';
-				html +=
-					'<div class="ellipsis" title="' +
-					block_creator +
-					'">' +
-					block_creator +
-					'</div>';
+				html += '<div class="ellipsis" title="' + previous_block_hash + '">' + previous_block_hash + '</div>';
+				html += '<div class="ellipsis" title="' + block_creator + '">' + block_creator + '</div>';
+				html += timestamp;
 			}
 		}
 		html += '</div>';
 		return html;
+	}
+
+	// Fixed getTimeDifference to properly calculate time differences
+	getTimeDifference(timestamp) {
+		const now = Math.floor(Date.now() / 1000); // Convert current time to seconds
+		const diff = now - timestamp;
+		
+		if (diff < 60) return 'Just now';
+		if (diff < 3600) return `${Math.floor(diff/60)} minutes ago`;
+		if (diff < 86400) return `${Math.floor(diff/3600)} hours ago`;
+		return `${Math.floor(diff/86400)} days ago`;
 	}
 
 	////////////////////////
@@ -463,23 +455,70 @@ class ExplorerCore extends ModTemplate {
 	////////////////////////
 	async returnBlockHTML(app, hash) {
 		var html = this.returnHead() + this.returnHeader();
+		html += '<div class="explorer-main explorer-main--block-explorer">';
+		
+		// Top navigation back to block list
+		html += '<div class="block-navigation flex items-center gap-16 mt-12 mb-12">';
+		html += '<a href="/explorer" class="button text-2xl"><i class="fas fa-cubes"></i> Back to Block List</a>';
+		html += '</div>';
+		
+		html += '<h3>Block Explorer:</h3>';
+		
+		try {
+			const this_block = await this.app.blockchain.getBlock(hash);
+			if (this_block) {
+				// Initial block data
+				html += '<div class="txlist">';
+				html += '<div class="loader"></div>';
+				html += '</div>';
 
-		html +=
-			'<div class="explorer-main explorer-main--block-explorer"> \
-      <a href="/explorer"> \
-          <button class="explorer-nav"><i class="fas fa-cubes"></i> back to blocks</button> \
-        </a> \
-      <h3>Block Explorer:</h3> \
-      <div class="txlist"><div class="loader"></div></div> \
-      </div> \
-      <script> \
-        fetchBlock("' +
-			hash +
-			'"); \
-      </script> \
-      ';
+				// Block navigation section
+				const previous_block_hash = this_block.previousBlockHash;
+				const next_block_id = Number(this_block.id) + 1;
+				
+				html += '<div class="block-navigation--controls flex justify-center items-center gap-16 mt-8 mb-8 pt-8 border-t border-saito">';
+				
+				// Previous block link
+				if (previous_block_hash) {
+					html += `<a href="/explorer/block?hash=${previous_block_hash}" class="button">
+						<i class="fas fa-chevron-left"></i> Previous Block
+					</a>`;
+				}
+				
+				// Next blocks
+				try {
+					const next_block_hashes = await this.app.blockchain.getHashesAtId(BigInt(next_block_id));
+					if (next_block_hashes && next_block_hashes.length > 0) {
+						if (next_block_hashes.length === 1) {
+							html += `<a href="/explorer/block?hash=${next_block_hashes[0]}" class="button">
+								Next Block <i class="fas fa-chevron-right"></i>
+							</a>`;
+						} else {
+							// Multiple next blocks
+							html += '<div class="dropdown">';
+							html += '<button class="button dropdown-toggle">Next Blocks <i class="fas fa-chevron-down"></i></button>';
+							html += '<div class="dropdown-content">';
+							for (let i = 0; i < next_block_hashes.length; i++) {
+								html += `<a href="/explorer/block?hash=${next_block_hashes[i]}">Block ${next_block_id} (${i + 1}/${next_block_hashes.length})</a>`;
+							}
+							html += '</div></div>';
+						}
+					}
+				} catch (err) {
+					console.log("Error fetching next blocks:", err);
+				}
+				
+				html += '</div>'; // Close block-navigation--controls
+			}
+		} catch (err) {
+			console.log("Error fetching block data:", err);
+			html += '<div class="loader"></div>';
+		}
 
+		html += '</div>'; // Close explorer-main
+		html += `<script>fetchBlock("${hash}");</script>`;
 		html += this.returnPageClose();
+		
 		return html;
 	}
 
