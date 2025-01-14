@@ -374,7 +374,6 @@ object.saito-text {
         grid-template-columns: repeat(2, 1fr);
         gap: 2rem;
         max-width: 100%;
-        margin: auto;
     }
 
     .main-header:not(.scrolled) .menu-title {
@@ -647,7 +646,6 @@ object.saito-text {
 
     .main-header:not(.scrolled) .desktop-menu {
         position: fixed;
-        left: 8vw;
     }
 }
 
