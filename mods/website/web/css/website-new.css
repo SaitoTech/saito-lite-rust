@@ -27,7 +27,7 @@ font imports
 
 :root {
     --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%), linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000), linear-gradient(180deg, #e9ce93, #f71f3d);
-    --vh: 1vh;
+    --vh: calc(var(--vh) * 1);
 }
 
 
@@ -54,7 +54,7 @@ html {
 body {
     line-height: 1.6;
     font-family: visuelt-light, sans-serif, Arial;
-    min-height: 100vh;
+    min-height: calc(var(--vh) * 100);
     min-height: 100dvh;
     min-height: -webkit-fill-available;
 }
@@ -223,6 +223,7 @@ h2+p {
     width: 100%;
     position: relative;
     overflow: visible;
+    height: 100%;
 }
 
 .feature-cards {
@@ -230,8 +231,6 @@ h2+p {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 100%;
-    max-width: 800px;
     opacity: 0;
     animation: fadeInCards 1s ease-out 1.75s forwards;
 }
@@ -239,12 +238,12 @@ h2+p {
 @keyframes fadeInCards {
     0% {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translate(-50%, -60%) scale(1.25);
     }
 
     100% {
         opacity: 1;
-        transform: translateY(0);
+        transform: translate(-50%, -50%) scale(1.25);
     }
 }
 
@@ -305,10 +304,10 @@ h2+p {
 }
 
 /* Mobile styles */
-@media (max-width: 768px) {
+
     .landing-content {
         flex-direction: column;
-        height: 100vh;
+        height: calc(var(--vh) * 100);
         position: relative;
     }
 
@@ -321,10 +320,10 @@ h2+p {
     .landing-content::before {
         content: '';
         position: fixed;
-        top: -3vh;
-        right: -3vh;
-        width: 25vh;
-        height: 25vh;
+        top: calc(var(--vh) * -3);
+        right: calc(var(--vh) * -3);
+        width: calc(var(--vh) * 25);
+        height: calc(var(--vh) * 25);
         background: url('/saito/img/saito-cube.svg') no-repeat center/contain;
         opacity: 0;
         z-index: 0;
@@ -342,21 +341,17 @@ h2+p {
             transform: scale(1) translateY(0);
         }
     }
-
+    @media (max-width: 768px) {
     .feature-cards {
-        margin-top: 25vh;
+        margin-top: calc(var(--vh) * 25);
         width: 100%;
         order: -1;
         position: relative;
         z-index: 1;
         opacity: 0;
         animation: fadeInCards 1s ease-out 1.25s forwards;
-    }
-
-    .saito-text-container {
-        position: relative;
-        z-index: 1;
-        /* Ensure text is above background cube */
+        top: 0;
+        left: 0; 
     }
 
     .card-container {
@@ -391,27 +386,7 @@ h2+p {
         /* Add horizontal spacing between cards */
     }
 
-    .saito-text-container {
-        position: relative;
-        width: 33vh;
-        margin-top: 2rem;
-        animation: slideTextPortrait 1s ease-out 1.5s forwards;
-        z-index: 999;
-        max-width: min(25vh, 50vw);
-        opacity: 0;
-    }
 
-    @keyframes slideTextPortrait {
-        0% {
-            bottom: 110vh;
-            opacity: 0;
-        }
-
-        100% {
-            bottom: 0;
-            opacity: 1;
-        }
-    }
 
     .saito-text-container {
         position: absolute;
@@ -423,7 +398,7 @@ h2+p {
     @keyframes slideTextMobile {
         0% {
             opacity: 0;
-            bottom: 110vh;
+            bottom: calc(var(--vh) * 110);
         }
 
         100% {
@@ -458,7 +433,7 @@ object.saito-text {
     object.saito-text {
         transform: rotate(90deg) translateX(-97%);
         transform-origin: bottom left;
-        width: 33vh;
+        width: calc(var(--vh) * 33);
     }
 }
 
@@ -468,12 +443,14 @@ object.saito-text {
 
 
 /* Landscape styles */
+/* Landscape styles */
 @media (orientation: landscape) {
     .saito-text-container {
+        position: absolute;
         width: 70vw;
         max-width: min(70rem, 50vw);
         height: auto;
-        bottom: 110vh;
+        bottom: calc(var(--vh) * 110);
         left: 0;
         transform-origin: initial;
         animation: slideTextLandscape 1s ease-out 1.5s forwards;
@@ -482,7 +459,7 @@ object.saito-text {
 
     @keyframes slideTextLandscape {
         0% {
-            bottom: 110vh;
+            bottom: calc(var(--vh) * 110);
             opacity: 0;
         }
 
@@ -763,7 +740,7 @@ object.saito-text {
     background: #fff;
     padding: 4rem 2rem 2rem;
     min-width: 250px;
-    height: 100vh;
+    height: calc(var(--vh) * 100);
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
 }
 
@@ -1325,7 +1302,7 @@ object.saito-text {
 
 #multiwallet {
     background: var(--dreamscape);
-    min-height: 100vh;
+    min-height: calc(var(--vh) * 100);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1475,4 +1452,55 @@ object.saito-text {
 #landing .desktop-menu,
 #landing .mobile-menu {
     display: none;
+}
+
+/* Desktop styles */
+@media (min-width: 768px) {
+    .landing-content::before {
+        content: '';
+        position: fixed;
+        top: calc(var(--vh) * -3);
+        right: calc(var(--vh) * -6);
+        width: calc(var(--vh) * 40);
+        height: calc(var(--vh) * 40);
+        background: url('/saito/img/saito-cube.svg') no-repeat center/contain;
+        opacity: 0;
+        z-index: 0;
+        animation: fadeInBackgroundCube 2s ease-out 0.5s forwards;
+    }
+}
+
+/* Keep existing mobile styles */
+@media (max-width: 768px) {
+    .landing-content::before {
+        content: '';
+        position: fixed;
+        top: calc(var(--vh) * -3);
+        right: calc(var(--vh) * -3);
+        width: calc(var(--vh) * 25);
+        height: calc(var(--vh) * 25);
+        background: url('/saito/img/saito-cube.svg') no-repeat center/contain;
+        opacity: 0;
+        z-index: 0;
+        animation: fadeInBackgroundCube 2s ease-out 0.5s forwards;
+    }
+}
+
+/* Reset scale and add max-width for mobile */
+@media (max-width: 768px) {
+    .feature-cards {
+        max-width: 800px;
+    }
+
+    @keyframes fadeInCards {
+        0% {
+            opacity: 0;
+            transform: translate(-50%, -60%) scale(1);
+        }
+    
+        100% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+    }
 }
