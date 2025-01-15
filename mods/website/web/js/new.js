@@ -309,3 +309,34 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+function loadScript(url, callback) {
+    // Create a new script element
+    const script = document.createElement('script');
+    script.src = url; // Set the source to the script URL
+    script.type = 'text/javascript';
+    script.async = true; // Optional: Load asynchronously
+  
+    // Add an event listener for when the script is loaded
+    script.onload = () => {
+      console.log(`${url} has been loaded successfully.`);
+      if (callback) callback(); // Call the callback if provided
+    };
+  
+    // Handle errors
+    script.onerror = () => {
+      console.error(`Error loading script: ${url}`);
+    };
+  
+    // Append the script to the document's head or body
+    document.head.appendChild(script);
+  }
+  
+  // Usage
+  loadScript('/saito/saito.js', async () => {
+    console.log('Script executed!');
+    const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
+    let header = new SaitoHeader(this.app, this);
+    await header.initialize(this.app);
+  });
+  
