@@ -428,35 +428,43 @@ class EGLDModule extends CryptoModule {
     }
 
     async setupNetwork(){
-        let this_self = this;
-        //console.log("this_self.egld.base_url:", this_self.egld.base_url);    
-        if (this_self.egld.base_url == null) {
-            await this_self.sendFetchEnvTransaction(async function (res){
-                if (typeof res == 'object' && Object.keys(res).length > 0) {
-                    this_self.base_url = this_self.egld.base_url = res.base_url;
-                    this_self.explorer_url = this_self.egld.explorer_url = res.explorer_url;
-                    this_self.network_provider_url = this_self.egld.network_provider_url = res.network_provider_url;
+        try {
+            let this_self = this;
+            //console.log("this_self.egld.base_url:", this_self.egld.base_url);    
+            if (this_self.egld.base_url == null) {
+                await this_self.sendFetchEnvTransaction(async function (res){
+                    if (typeof res == 'object' && Object.keys(res).length > 0) {
+                        this_self.base_url = this_self.egld.base_url = res.base_url;
+                        this_self.explorer_url = this_self.egld.explorer_url = res.explorer_url;
+                        this_self.network_provider_url = this_self.egld.network_provider_url = res.network_provider_url;
 
-                    await this_self.initiateNetwork();
-                } else {
-                    //console.error("Unable to load config from env");
-                }
-            });
-        } else {
-            await this_self.initiateNetwork();
-        } 
+                        await this_self.initiateNetwork();
+                    } else {
+                        //console.error("Unable to load config from env");
+                    }
+                });
+            } else {
+                await this_self.initiateNetwork();
+            } 
+        } catch(err) {
+            console.log(err);
+        }
     }
 
     async initiateNetwork() {        
-        if (this.apiNetworkProvider == null) {
-            // console.log("initiateNetwork: ////");
-            // console.log("base_url:", this.egld.base_url);
-            // console.log("base_url:", this.egld.explorer_url);
-            // console.log("base_url:", this.egld.network_provider_url);
+        try {
+            if (this.apiNetworkProvider == null) {
+                // console.log("initiateNetwork: ////");
+                // console.log("base_url:", this.egld.base_url);
+                // console.log("base_url:", this.egld.explorer_url);
+                // console.log("base_url:", this.egld.network_provider_url);
 
-            this.apiNetworkProvider = new ApiNetworkProvider(this.egld.base_url, { clientName: "multiversx-your-client-name" });
-            this.proxyNetworkProvider = new ProxyNetworkProvider(this.egld.network_provider_url, { clientName: "multiversx-your-client-name" });
-            this.networkConfig = await this.apiNetworkProvider.getNetworkConfig();
+                this.apiNetworkProvider = new ApiNetworkProvider(this.egld.base_url, { clientName: "multiversx-your-client-name" });
+                this.proxyNetworkProvider = new ProxyNetworkProvider(this.egld.network_provider_url, { clientName: "multiversx-your-client-name" });
+                this.networkConfig = await this.apiNetworkProvider.getNetworkConfig();
+            }
+        } catch(err) {
+            console.log(err);
         }
     }
 
