@@ -120,8 +120,7 @@ class SettlersDisplay {
       } else {
         this.cardfan.hide();
       }
-
-      this.cardfan.addClass('bighand');
+      
     } catch (err) {
       console.error(err);
     }

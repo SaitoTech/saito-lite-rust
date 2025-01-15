@@ -55,9 +55,11 @@ class DiplomacyOverlay {
 	        this.is_visible = false;
 		this.overlay.hide();
           	let gm = document.querySelector("#saito-header");
-          	if (gm) {
-          	      gm.style.zIndex = this.game_menu_zindex;
-		}
+		if (this.game_menu_zindex > 0) {
+          	  if (gm) {
+          	    gm.style.zIndex = this.game_menu_zindex;
+		  }
+	        }
 		return;
 	}
 
@@ -67,7 +69,6 @@ class DiplomacyOverlay {
 	  this.is_visible = true;
 	  let num = 0;
 	  this.active_proposal = -1;
-
 
           let gm = document.querySelector("#saito-header");
           if (gm) {

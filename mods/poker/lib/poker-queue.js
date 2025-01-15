@@ -116,13 +116,17 @@ class PokerQueue {
 			// turns "resolve"
 			//
 			if (mv[0] === 'resolve') {
-				let last_mv = this.game.queue[qe - 1].split('\t');
-				if (mv[1] === last_mv[0]) {
-					this.game.queue.splice(qe - 1, 2);
-				} else {
-					console.error('Unexpected resolve in queue');
-					this.game.queue.splice(qe, 1);
+				if (qe > 0){
+					let last_mv = this.game.queue[qe - 1].split('\t');
+					if (mv[1] === last_mv[0]) {
+						this.game.queue.splice(qe - 1, 2);
+						return 1; // Successful
+					}
 				}
+
+				console.error('Unexpected resolve in queue, removing and continuing...');
+				this.game.queue.splice(qe, 1);
+
 				return 1;
 			}
 
@@ -283,8 +287,6 @@ class PokerQueue {
 					}
 
 					// if everyone has folded - start a new round
-					this.halted = 1;
-
 					let msg = `${this.game.state.player_names[player_left_idx]} wins the round`;
 					if (this.game.player == player_left_idx + 1) {
 						msg = 'You win the round';
@@ -313,6 +315,8 @@ class PokerQueue {
 					if (this.game.state.flipped == 5) {
 						this.playerbox.setInactive();
 
+						console.log("PREPARE FOR SHOWDOWN");
+						
 						this.game.queue = [];
 						let first_scorer = 0;
 
@@ -638,7 +642,6 @@ class PokerQueue {
 					}
 				}
 
-				this.halted = 1;
 				this.playerAcknowledgeNotice(winnerStr, async () => {
 					this.cardfan.hide();
 					this.pot.render(0);
