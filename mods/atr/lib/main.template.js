@@ -123,71 +123,6 @@ module.exports = (app, mod) => {
                 <td class="blockslot9"></td>
                 <td class="blockslot10"></td>
             </tr>
-            <tr class="total_fees_new">
-                <td>total_fees_new</td>
-                <td class="blockslot1"></td>
-                <td class="blockslot2"></td>
-                <td class="blockslot3"></td>
-                <td class="blockslot4"></td>
-                <td class="blockslot5"></td>
-                <td class="blockslot6"></td>
-                <td class="blockslot7"></td>
-                <td class="blockslot8"></td>
-                <td class="blockslot9"></td>
-                <td class="blockslot10"></td>
-            </tr>
-            <tr class="total_fees_atr">
-                <td>total_fees_atr</td>
-                <td class="blockslot1"></td>
-                <td class="blockslot2"></td>
-                <td class="blockslot3"></td>
-                <td class="blockslot4"></td>
-                <td class="blockslot5"></td>
-                <td class="blockslot6"></td>
-                <td class="blockslot7"></td>
-                <td class="blockslot8"></td>
-                <td class="blockslot9"></td>
-                <td class="blockslot10"></td>
-            </tr>
-            <tr class="avg_total_fees">
-                <td>avg_total_fees</td>
-                <td class="blockslot1"></td>
-                <td class="blockslot2"></td>
-                <td class="blockslot3"></td>
-                <td class="blockslot4"></td>
-                <td class="blockslot5"></td>
-                <td class="blockslot6"></td>
-                <td class="blockslot7"></td>
-                <td class="blockslot8"></td>
-                <td class="blockslot9"></td>
-                <td class="blockslot10"></td>
-            </tr>
-            <tr class="avg_total_fees_new">
-                <td>avg_total_fees_new</td>
-                <td class="blockslot1"></td>
-                <td class="blockslot2"></td>
-                <td class="blockslot3"></td>
-                <td class="blockslot4"></td>
-                <td class="blockslot5"></td>
-                <td class="blockslot6"></td>
-                <td class="blockslot7"></td>
-                <td class="blockslot8"></td>
-                <td class="blockslot9"></td>
-                <td class="blockslot10"></td>
-            </tr>
-            <tr class="avg_total_fees_atr">
-                <td>avg_total_fees_atr</td>
-                <td class="blockslot1"></td>
-                <td class="blockslot2"></td>
-                <td class="blockslot3"></td>
-                <td class="blockslot4"></td>
-                <td class="blockslot5"></td>
-                <td class="blockslot6"></td>
-                <td class="blockslot7"></td>
-                <td class="blockslot8"></td>
-                <td class="blockslot9"></td>
-                <td class="blockslot10"></td>
-            </tr>
             <tr class="total_payout_routing">
                 <td>total_payout_routing</td>
                 <td class="blockslot1"></td>
@@ -307,6 +242,71 @@ module.exports = (app, mod) => {
             </tr>
             <tr class="avg_payout_atr">
                 <td>avg_payout_atr</td>
+                <td class="blockslot1"></td>
+                <td class="blockslot2"></td>
+                <td class="blockslot3"></td>
+                <td class="blockslot4"></td>
+                <td class="blockslot5"></td>
+                <td class="blockslot6"></td>
+                <td class="blockslot7"></td>
+                <td class="blockslot8"></td>
+                <td class="blockslot9"></td>
+                <td class="blockslot10"></td>
+            </tr>
+            <tr class="total_fees_new">
+                <td>total_fees_new</td>
+                <td class="blockslot1"></td>
+                <td class="blockslot2"></td>
+                <td class="blockslot3"></td>
+                <td class="blockslot4"></td>
+                <td class="blockslot5"></td>
+                <td class="blockslot6"></td>
+                <td class="blockslot7"></td>
+                <td class="blockslot8"></td>
+                <td class="blockslot9"></td>
+                <td class="blockslot10"></td>
+            </tr>
+            <tr class="total_fees_atr">
+                <td>total_fees_atr</td>
+                <td class="blockslot1"></td>
+                <td class="blockslot2"></td>
+                <td class="blockslot3"></td>
+                <td class="blockslot4"></td>
+                <td class="blockslot5"></td>
+                <td class="blockslot6"></td>
+                <td class="blockslot7"></td>
+                <td class="blockslot8"></td>
+                <td class="blockslot9"></td>
+                <td class="blockslot10"></td>
+            </tr>
+            <tr class="avg_total_fees">
+                <td>avg_total_fees</td>
+                <td class="blockslot1"></td>
+                <td class="blockslot2"></td>
+                <td class="blockslot3"></td>
+                <td class="blockslot4"></td>
+                <td class="blockslot5"></td>
+                <td class="blockslot6"></td>
+                <td class="blockslot7"></td>
+                <td class="blockslot8"></td>
+                <td class="blockslot9"></td>
+                <td class="blockslot10"></td>
+            </tr>
+            <tr class="avg_total_fees_new">
+                <td>avg_total_fees_new</td>
+                <td class="blockslot1"></td>
+                <td class="blockslot2"></td>
+                <td class="blockslot3"></td>
+                <td class="blockslot4"></td>
+                <td class="blockslot5"></td>
+                <td class="blockslot6"></td>
+                <td class="blockslot7"></td>
+                <td class="blockslot8"></td>
+                <td class="blockslot9"></td>
+                <td class="blockslot10"></td>
+            </tr>
+            <tr class="avg_total_fees_atr">
+                <td>avg_total_fees_atr</td>
                 <td class="blockslot1"></td>
                 <td class="blockslot2"></td>
                 <td class="blockslot3"></td>

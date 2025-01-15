@@ -7723,16 +7723,19 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
         
         for (let key in f) {
           if (f[key] >= 4) {
-	    his_self.game.queue.push("SETVAR\tstate\tmaster_of_italy\t"+faction+"\t"+parseInt(his_self.game.state.master_of_italy[faction])+2);
+	    his_self.game.queue.push("SETVAR\tstate\tmaster_of_italy\t"+key+"\t"+parseInt(his_self.game.state.master_of_italy[faction])+2);
+	    his_self.game.queue.push(`NOTIFY\t${his_self.returnFactionName(key)} gains 2 VP as Master of Italy`);
           }
           if (f[key] == 3) {
-	    his_self.game.queue.push("SETVAR\tstate\tmaster_of_italy\t"+faction+"\t"+parseInt(his_self.game.state.master_of_italy[faction])+1);
+	    his_self.game.queue.push("SETVAR\tstate\tmaster_of_italy\t"+key+"\t"+parseInt(his_self.game.state.master_of_italy[faction])+1);
+	    his_self.game.queue.push(`NOTIFY\t${his_self.returnFactionName(key)} gains 1 VP from Master of Italy`);
           }
           if (f[key] == 2) {
 	    if (his_self.game.players.length > 2) {
 	      let player = his_self.returnPlayerOfFaction(key);
  	      his_self.game.queue.push("hand_to_fhand\t1\t"+(player)+"\t"+key+"\t1");
 	      his_self.game.queue.push(`DEAL\t1\t${player}\t1`);
+	      his_self.game.queue.push(`NOTIFY\t${his_self.returnFactionName(key)} draws 1 card from Master of Italy`);
             }
           }
         }
@@ -7783,6 +7786,13 @@ console.log(JSON.stringify(his_self.game.state.theological_debate));
 	 	s.home = "protestant";
 	        if (!s.fortified && !s.unrest) {
 	          s.political = "protestant";
+	        }
+	      }
+	    } else {
+	      if (!skip_keys.includes(key)) {
+	 	s.home = "protestant";
+		if (s.political == "") { 
+		  s.political = "haspburg";
 	        }
 	      }
 	    }
@@ -23742,10 +23752,6 @@ this.updateLog(`###############`);
 	          this.game.queue.push("RESETCONFIRMSNEEDED\tall");
 		}
 
-//
-// done elsewhere, right?
-//	        this.game.queue.push("retreat_to_winter_spaces");
-
 	      }
 	    }
 	  }
@@ -24557,7 +24563,7 @@ this.updateLog(`###############`);
 		        if (res[b].key == "paris" || res[b].key == "valladolid" || res[b].key == "london" || res[b].key == "vienna" || res[b].key == "istanbul" || res[b].key == "rome") { unit_limit = 1000; } else {
 			  unit_limit = 4;
 			}
-			options.push(unit_limit - this.returnFactionLandUnitsInSpace(faction, res[b].key));
+			options.push(unit_limit - this.returnFactionLandUnitsInSpace(faction, res[b].key, true));
 		      }
 
 		      //
@@ -27783,7 +27789,7 @@ console.log("running player fortify space...");
 	  let from = mv[2];
 	  let to = mv[3];
 
-	  this.updateLog(this.returnFactionName(faction) + " retreats from " + this.returnSpaceName(from) + " to " + this.returnSpaceName(to));
+	  this.updateLog(this.returnFactionName(f) + " retreats from " + this.returnSpaceName(from) + " to " + this.returnSpaceName(to));
 
 	  let source = this.game.spaces[from];
 	  let destination = this.game.spaces[to];

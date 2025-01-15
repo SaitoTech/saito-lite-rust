@@ -30,6 +30,7 @@
   /* redefining base variable in game-layout doesn't work if people push themes on games */
   background: transparent; 
   backdrop-filter: none;
+  z-index: 500; /* to be the same as game-menu was */
 }
 
 #saito-header.game .saito-header-logo-wrapper, #saito-header.game .header-msg {
