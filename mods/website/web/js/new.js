@@ -333,10 +333,12 @@ function loadScript(url, callback) {
   }
   
   // Usage
+  /*
   loadScript('/saito/saito.js', async () => {
     console.log('Script executed!');
     const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
     let header = new SaitoHeader(this.app, this);
     await header.initialize(this.app);
   });
+  */
   
