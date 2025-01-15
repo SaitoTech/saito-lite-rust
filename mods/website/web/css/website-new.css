@@ -226,9 +226,12 @@ h2+p {
 }
 
 .feature-cards {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 100%;
-    overflow: hidden;
-    margin-top: 4rem;
+    max-width: 800px;
     opacity: 0;
     animation: fadeInCards 1s ease-out 1.75s forwards;
 }
@@ -238,6 +241,7 @@ h2+p {
         opacity: 0;
         transform: translateY(20px);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0);
@@ -309,7 +313,8 @@ h2+p {
     }
 
     .cube-container {
-        display: none; /* Hide main cube */
+        display: none;
+        /* Hide main cube */
     }
 
     /* Add background cube for mobile */
@@ -331,6 +336,7 @@ h2+p {
             opacity: 0;
             transform: scale(0.8) translateY(-100%);
         }
+
         100% {
             opacity: 1;
             transform: scale(1) translateY(0);
@@ -349,7 +355,8 @@ h2+p {
 
     .saito-text-container {
         position: relative;
-        z-index: 1;  /* Ensure text is above background cube */
+        z-index: 1;
+        /* Ensure text is above background cube */
     }
 
     .card-container {
@@ -358,25 +365,32 @@ h2+p {
         scroll-snap-type: x mandatory;
         -webkit-overflow-scrolling: touch;
         padding: 1rem 0;
-        scrollbar-width: none;  /* Firefox */
-        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;
+        /* Firefox */
+        -ms-overflow-style: none;
+        /* IE and Edge */
         gap: 0;
     }
 
     .card-container::-webkit-scrollbar {
-        display: none;  /* Chrome, Safari and Opera */
+        display: none;
+        /* Chrome, Safari and Opera */
     }
 
     .card-spacer {
-        flex: 0 0 calc(50% - 125px);  /* Half viewport minus half card width */
-        height: 1px;  /* Minimal height */
+        flex: 0 0 calc(50% - 125px);
+        /* Half viewport minus half card width */
+        height: 1px;
+        /* Minimal height */
     }
 
     .feature-card {
         height: 300px;
         scroll-snap-align: center;
-        margin: 0 0.5rem;  /* Add horizontal spacing between cards */
+        margin: 0 0.5rem;
+        /* Add horizontal spacing between cards */
     }
+
     .saito-text-container {
         position: relative;
         width: 33vh;
@@ -386,13 +400,13 @@ h2+p {
         max-width: min(25vh, 50vw);
         opacity: 0;
     }
-    
+
     @keyframes slideTextPortrait {
         0% {
             bottom: 110vh;
             opacity: 0;
         }
-    
+
         100% {
             bottom: 0;
             opacity: 1;
@@ -411,6 +425,7 @@ h2+p {
             opacity: 0;
             bottom: 110vh;
         }
+
         100% {
             opacity: 1;
             bottom: 0;
@@ -418,7 +433,8 @@ h2+p {
     }
 
     object.saito-text {
-        transform: none; /* Reset portrait transform */
+        transform: none;
+        /* Reset portrait transform */
         width: 100%;
     }
 }
@@ -517,6 +533,7 @@ object.saito-text {
         opacity: 0;
         animation: fadeInMenu 0.5s ease-out 2.5s forwards;
         /* Start after text animation (1.5s + 1s) */
+        display: none;
     }
 
     .main-header.loaded {
