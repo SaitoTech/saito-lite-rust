@@ -10,6 +10,7 @@
 	border: 1px solid var(--saito-border-color);
 	padding: 7rem;
 	background: linear-gradient(135deg, #0008, #0000);
+	max-width: 800px;
 }
 
 input[type='text'] {
