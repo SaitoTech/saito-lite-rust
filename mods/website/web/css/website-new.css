@@ -343,15 +343,14 @@ h2+p {
     }
     @media (max-width: 768px) {
     .feature-cards {
-        margin-top: calc(var(--vh) * 25);
+        top: calc(var(--vh) * 42);
         width: 100%;
         order: -1;
-        position: relative;
+        position: absolute;
         z-index: 1;
         opacity: 0;
         animation: fadeInCards 1s ease-out 1.25s forwards;
-        top: 0;
-        left: 0; 
+
     }
 
     .card-container {
@@ -1396,11 +1395,6 @@ object.saito-text {
 .logo-circle:nth-child(4) {
     /* MultiverseX */
     left: 25%;
-}
-
-/* Update nav pip styles to include new section */
-.nav a:nth-child(4) {
-    background-color: rgba(255, 255, 255, 0.3);
 }
 
 .nav a:nth-child(4).active {
