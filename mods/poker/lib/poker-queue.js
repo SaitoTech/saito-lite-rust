@@ -116,7 +116,7 @@ class PokerQueue {
 			// turns "resolve"
 			//
 			if (mv[0] === 'resolve') {
-				if (this.game.queue.length > qe){
+				if (qe > 0){
 					let last_mv = this.game.queue[qe - 1].split('\t');
 					if (mv[1] === last_mv[0]) {
 						this.game.queue.splice(qe - 1, 2);

@@ -20,7 +20,10 @@ class GameBoard {
 		  this.attachEvents();
 		} 
 
-		this.game_mod.cardfan.render();
+		if (!this.game_mod.game.state.passed[this.game_mod.game.player - 1]){
+			this.game_mod.cardfan.render();	
+		}
+		
 		this.game_mod.pot.render();
 
 
