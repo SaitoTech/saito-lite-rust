@@ -247,12 +247,12 @@ h2+p {
     }
 }
 
-.card-container {
-    display: flex;
-    gap: 1rem;
-    padding: 1rem;
-    width: 100%;
-}
+    .card-container {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem;
+        width: 100%;
+    }
 
 .card-link {
     text-decoration: none;
@@ -296,7 +296,6 @@ h2+p {
     width: 100%;
     text-align: left;
     min-height: 4.5em;
-    margin-top: auto;
 }
 
 .card-link:hover .feature-card {
@@ -305,88 +304,45 @@ h2+p {
 
 /* Mobile styles */
 
-    .landing-content {
-        flex-direction: column;
-        height: calc(var(--vh) * 100);
-        position: relative;
-    }
+.landing-content {
+    flex-direction: column;
+    height: calc(var(--vh) * 100);
+    position: relative;
+}
 
-    .cube-container {
-        display: none;
-        /* Hide main cube */
-    }
+.cube-container {
+    display: none;
+    /* Hide main cube */
+}
 
-    /* Add background cube for mobile */
-    .landing-content::before {
-        content: '';
-        position: fixed;
-        top: calc(var(--vh) * -3);
-        right: calc(var(--vh) * -3);
-        width: calc(var(--vh) * 25);
-        height: calc(var(--vh) * 25);
-        background: url('/saito/img/saito-cube.svg') no-repeat center/contain;
+/* Add background cube for mobile */
+.landing-content::before {
+    content: '';
+    position: fixed;
+    top: calc(var(--vh) * -3);
+    right: calc(var(--vh) * -3);
+    width: calc(var(--vh) * 25);
+    height: calc(var(--vh) * 25);
+    background: url('/saito/img/saito-cube.svg') no-repeat center/contain;
+    opacity: 0;
+    z-index: 0;
+    animation: fadeInBackgroundCube 2s ease-out 0.5s forwards;
+}
+
+@keyframes fadeInBackgroundCube {
+    0% {
         opacity: 0;
-        z-index: 0;
-        animation: fadeInBackgroundCube 2s ease-out 0.5s forwards;
+        transform: scale(0.8) translateY(-100%);
     }
 
-    @keyframes fadeInBackgroundCube {
-        0% {
-            opacity: 0;
-            transform: scale(0.8) translateY(-100%);
-        }
-
-        100% {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-        }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
     }
-    @media (max-width: 768px) {
-    .feature-cards {
-        top: calc(var(--vh) * 42);
-        width: 100%;
-        order: -1;
-        position: absolute;
-        z-index: 1;
-        opacity: 0;
-        animation: fadeInCards 1s ease-out 1.25s forwards;
+}
 
-    }
-
-    .card-container {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        padding: 1rem 0;
-        scrollbar-width: none;
-        /* Firefox */
-        -ms-overflow-style: none;
-        /* IE and Edge */
-        gap: 0;
-    }
-
-    .card-container::-webkit-scrollbar {
-        display: none;
-        /* Chrome, Safari and Opera */
-    }
-
-    .card-spacer {
-        flex: 0 0 calc(50% - 125px);
-        /* Half viewport minus half card width */
-        height: 1px;
-        /* Minimal height */
-    }
-
-    .feature-card {
-        height: 300px;
-        scroll-snap-align: center;
-        margin: 0 0.5rem;
-        /* Add horizontal spacing between cards */
-    }
-
-
-
+@media (orientation: portrait) {
+ 
     .saito-text-container {
         position: absolute;
         animation: slideTextMobile 2s ease-out 1.5s forwards;
@@ -410,6 +366,51 @@ h2+p {
         transform: none;
         /* Reset portrait transform */
         width: 100%;
+    }
+}
+
+@media (max-width: 1400px) {
+    .feature-cards {
+        top: calc(var(--vh) * 42);
+        width: 100%;
+        order: -1;
+        position: absolute;
+        z-index: 1;
+        opacity: 0;
+        animation: fadeInCards 1s ease-out 1.25s forwards;
+    }
+
+    .card-container::-webkit-scrollbar {
+        display: none;
+        /* Chrome, Safari and Opera */
+    }
+
+    .card-spacer {
+        flex: 0 0 calc(50% - 125px);
+        /* Half viewport minus half card width */
+        height: 1px;
+        /* Minimal height */
+    }
+
+    .feature-card {
+        height: 300px;
+        scroll-snap-align: center;
+        margin: 0 0.5rem;
+        /* Add horizontal spacing between cards */
+    }
+
+
+    .card-container {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        padding: 1rem 0;
+        scrollbar-width: none;
+        /* Firefox */
+        -ms-overflow-style: none;
+        /* IE and Edge */
+        gap: 0;
     }
 }
 
@@ -1449,7 +1450,7 @@ object.saito-text {
 }
 
 /* Desktop styles */
-@media (min-width: 768px) {
+@media (min-width: 768px) and (orientation: landscape) {
     .landing-content::before {
         content: '';
         position: fixed;
@@ -1465,7 +1466,7 @@ object.saito-text {
 }
 
 /* Keep existing mobile styles */
-@media (max-width: 768px) {
+@media (max-width: 768px) or (orientation: portrait) {
     .landing-content::before {
         content: '';
         position: fixed;
@@ -1491,7 +1492,7 @@ object.saito-text {
             opacity: 0;
             transform: translate(-50%, -60%) scale(1);
         }
-    
+
         100% {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
