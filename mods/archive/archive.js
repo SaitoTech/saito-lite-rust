@@ -127,7 +127,7 @@ class Archive extends ModTemplate {
 				field2: { dataType: 'string', default: '' },
 				field3: { dataType: 'string', default: '' },
 				field4: { dataType: 'string', default: '' },
-				field5: { dataType: 'string', default: '' },
+				field5: { dataType: 'string', default: '' }, 
 				block_id: { dataType: 'number', default: 0 },
 				block_hash: { dataType: 'string', default: '' },
 				created_at: { dataType: 'number', default: 0 },
@@ -138,6 +138,12 @@ class Archive extends ModTemplate {
 				preserve: { dataType: 'number', default: 0 }
 			}
 		};
+
+		/*
+			Ideally one, of the 5 arbitrary fields should be number with an ability to search above/below...
+			without changing the db schemas, we will designate field5 as a string coded number 
+			(since no apps are using it yet) and pending further flexibility treat its inclusion as a >= search tag
+		*/
 
 		let db = {
 			name: 'archive_db',
@@ -525,6 +531,7 @@ try {
 		let timestamp_limiting_clause = '';
 
 		let order_clause = ' ORDER BY archives.id';
+		let sort = "DESC";
 
 		//For JS-Store
 		let order_obj = { by: 'id', type: 'desc' };
@@ -596,6 +603,11 @@ try {
 			where_obj = { flagged: { '=': parseInt(obj.flagged) } };
 		}
 
+		if (obj.ascending || obj.hasOwnProperty('ascending')){
+			sort = "ASC";
+			order_obj.type = "asc";
+		}
+
 		//
 		// ACCEPT REASONABLE LIMITS -- [10, 100]
 		//
@@ -612,9 +624,19 @@ try {
 
 		let param_count = 0;
 
+		let params = { $limit: limit };
+
 		let sql = `SELECT * FROM archives WHERE`;
 
-		let params = { $limit: limit };
+		//Hardcode field5 as a flexible search term
+		if (obj.field5 || obj.hasOwnProperty('field5')) {
+			where_obj['field5'] = { '>=': obj.field5 };
+			sql += ' archives.field5 >= $field5 AND';
+			params["$field5"] = obj.field5;
+			order_clause = ' ORDER BY archives.field5';
+			order_obj.by = "field5";
+			delete obj.field5;
+		}
 
 		for (let key in obj) {
 			if (this.schema.includes(key)) {
@@ -630,7 +652,7 @@ try {
 		// Should we be ordering by time stamp instead of id?
 		//
 
-		sql += timestamp_limiting_clause + order_clause + ` DESC LIMIT $limit`;
+		sql += timestamp_limiting_clause + order_clause + ` ${sort} LIMIT $limit`;
 
 		//
 		// SEARCH BASED ON CRITERIA PROVIDED

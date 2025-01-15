@@ -116,13 +116,17 @@ class PokerQueue {
 			// turns "resolve"
 			//
 			if (mv[0] === 'resolve') {
-				let last_mv = this.game.queue[qe - 1].split('\t');
-				if (mv[1] === last_mv[0]) {
-					this.game.queue.splice(qe - 1, 2);
-				} else {
-					console.error('Unexpected resolve in queue');
-					this.game.queue.splice(qe, 1);
+				if (this.game.queue.length > qe){
+					let last_mv = this.game.queue[qe - 1].split('\t');
+					if (mv[1] === last_mv[0]) {
+						this.game.queue.splice(qe - 1, 2);
+						return 1; // Successful
+					}
 				}
+
+				console.error('Unexpected resolve in queue, removing and continuing...');
+				this.game.queue.splice(qe, 1);
+
 				return 1;
 			}
 
