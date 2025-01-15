@@ -31,6 +31,20 @@ class PokerUI {
     }
   }
 
+  refreshPlayerboxes(){
+      this.playerbox.removeBoxes();
+      this.playerbox.render();
+      this.displayPlayerNotice(this?.status || "", this.game.player);
+
+      $(".game-playerbox-seat-1").appendTo(".mystuff");
+      
+      if (this.game.player == 0){
+        this.observerControls.render();
+      }else{
+        this.observerControls.remove();  
+      }
+  }
+
   displayButton(){
     for (let i = 1; i <= this.game.players.length; i++) {
       if (i == this.game.state.button_player){

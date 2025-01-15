@@ -372,6 +372,8 @@ class Settlers extends GameTemplate {
 		this.menu.render();
 		this.log.render();
 		this.hexgrid.render('.main');
+		this.cardfan.render();
+        this.cardfan.addClass('bighand');
 
 		try {
 			this.playerbox.render();
