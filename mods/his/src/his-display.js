@@ -2892,6 +2892,19 @@ console.log("ERROR DISPLAYING NEW WORLD STUFF: " + JSON.stringify(err));
     let space = this.game.navalspaces[key];
 
     //
+    // to prevent desyncs we make sure all units are in the same order
+    //
+    for (let key in space.units) {
+      if (space.units[key].length > 0) {
+	space.units[key].sort((a, b) => {
+    	  if (a.type < b.type) return -1;
+    	  if (a.type > b.type) return 1;
+    	  return 0;
+	});
+      }
+    }
+
+    //
     // should we show the tile?
     //
     let show_tile = 1;
