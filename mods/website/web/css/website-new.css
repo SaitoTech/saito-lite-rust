@@ -260,6 +260,7 @@ h2+p {
     flex: 1;
     min-width: 250px;
     max-width: 250px;
+    margin: 0 0.5rem;
 }
 
 .feature-card {
@@ -342,12 +343,12 @@ h2+p {
 }
 
 @media (orientation: portrait) {
- 
     .saito-text-container {
         position: absolute;
         animation: slideTextMobile 2s ease-out 1.5s forwards;
         margin: 0;
         left: 0;
+        bottom: 133vh;
     }
 
     @keyframes slideTextMobile {
@@ -380,38 +381,22 @@ h2+p {
         animation: fadeInCards 1s ease-out 1.25s forwards;
     }
 
-    .card-container::-webkit-scrollbar {
-        display: none;
-        /* Chrome, Safari and Opera */
-    }
-
-    .card-spacer {
-        flex: 0 0 calc(50% - 125px);
-        /* Half viewport minus half card width */
-        height: 1px;
-        /* Minimal height */
-    }
-
-    .feature-card {
-        height: 300px;
-        scroll-snap-align: center;
-        margin: 0 0.5rem;
-        /* Add horizontal spacing between cards */
-    }
-
-
     .card-container {
         flex-wrap: nowrap;
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         -webkit-overflow-scrolling: touch;
-        padding: 1rem 0;
+        padding: 1rem;
         scrollbar-width: none;
-        /* Firefox */
-        -ms-overflow-style: none;
-        /* IE and Edge */
-        gap: 0;
+        gap: 1rem;
     }
+
+    .feature-card {
+        scroll-snap-align: center;
+        margin: 0;
+    }
+
+    /* Add JavaScript to scroll to second card on load */
 }
 
 .saito-text {

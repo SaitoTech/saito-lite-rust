@@ -341,4 +341,18 @@ function loadScript(url, callback) {
     await header.initialize(this.app);
   });
   
+  // Scroll to second card on load
+  document.addEventListener('DOMContentLoaded', () => {
+    const cardContainer = document.querySelector('.card-container');
+    if (cardContainer) {
+      // Wait for animations to complete
+      setTimeout(() => {
+        const secondCard = cardContainer.children[2]; // Index 2 because of spacer
+        if (secondCard) {
+          secondCard.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+        }
+      }, 2000); // Adjust timing based on your animations
+    }
+  });
+  
   
