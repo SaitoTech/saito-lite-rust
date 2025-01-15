@@ -176,6 +176,7 @@ h2+p {
     position: relative;
     width: 105.3px;
     height: 120.6px;
+    margin-top: 4rem;
 }
 
 .saito-cube {
@@ -215,14 +216,142 @@ h2+p {
 }
 
 .landing-content {
-    position: relative;
-    height: 100vh;
-    width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    gap: 2rem;
+    width: 100%;
+    position: relative;
     overflow: visible;
+}
+
+.feature-cards {
+    width: 100%;
+    overflow: hidden;
+    margin-top: 4rem;
+}
+
+.card-container {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    width: 100%;
+}
+
+.feature-card {
+    flex: 1;
+    min-width: 250px;
+    max-width: 250px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+}
+
+.feature-card h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: white;
+    width: 100%;
+    text-align: center;
+}
+
+.feature-icon {
+    width: 64px;
+    height: 64px;
+    margin: auto 0;
+}
+
+.feature-card p {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--text-color);
+    width: 100%;
+    text-align: left;
+    min-height: 4.5em;
+    margin-top: auto;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .landing-content {
+        flex-direction: column;
+        height: 100vh;
+        position: relative;
+    }
+
+    .cube-container {
+        display: none; /* Hide cube in mobile */
+    }
+
+    .feature-cards {
+        margin-top: 2rem;
+        width: 100%;
+        order: -1; /* Move cards to top */
+    }
+
+    .card-container {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        padding: 1rem;
+    }
+
+    .feature-card {
+        flex: 0 0 250px;
+        height: 300px;
+        scroll-snap-align: center;
+    }
+    .saito-text-container {
+        position: relative;
+        width: 33vh;
+        margin-top: 2rem;
+        animation: slideTextPortrait 1s ease-out 1.5s forwards;
+        z-index: 999;
+        max-width: min(25vh, 50vw);
+        opacity: 0;
+    }
+    
+    @keyframes slideTextPortrait {
+        0% {
+            bottom: 110vh;
+            opacity: 0;
+        }
+    
+        100% {
+            bottom: 0;
+            opacity: 1;
+        }
+    }
+
+    .saito-text-container {
+        position: absolute;
+        animation: slideTextMobile 2s ease-out 1.5s forwards;
+        margin: 0;
+        left: 0;
+    }
+
+    @keyframes slideTextMobile {
+        0% {
+            opacity: 0;
+            bottom: 110vh;
+        }
+        100% {
+            opacity: 1;
+            bottom: 0;
+        }
+    }
+
+    object.saito-text {
+        transform: none; /* Reset portrait transform */
+        width: 100%;
+    }
 }
 
 .saito-text {
@@ -249,27 +378,7 @@ object.saito-text {
 }
 
 /* Portrait styles (default) */
-.saito-text-container {
-    position: absolute;
-    width: 33vh;
-    bottom: 110vh;
-    left: 0;
-    animation: slideTextPortrait 1s ease-out 1.5s forwards;
-    z-index: 999;
-    max-width: min(25vh, 50vw);
-}
 
-@keyframes slideTextPortrait {
-    0% {
-        bottom: 110vh;
-        opacity: 0;
-    }
-
-    100% {
-        bottom: 0;
-        opacity: 1;
-    }
-}
 
 
 
@@ -1264,4 +1373,10 @@ object.saito-text {
     .logo-circle:hover {
         transform: translateX(-50%) scale(1.1);
     }
+}
+
+/* Hide menu in landing section */
+#landing .desktop-menu,
+#landing .mobile-menu {
+    display: none;
 }
