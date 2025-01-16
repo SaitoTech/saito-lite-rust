@@ -294,6 +294,7 @@ class PokerQueue {
 						this.cardfan.hide();
 					}
 
+					this.halted = 1; // because not inside the function for now
 					this.playerAcknowledgeNotice(msg, async () => {
 						this.cardfan.hide();
 						this.pot.render(0);
@@ -642,6 +643,7 @@ class PokerQueue {
 					}
 				}
 
+				this.halted = 1; // because not inside the function for now
 				this.playerAcknowledgeNotice(winnerStr, async () => {
 					this.cardfan.hide();
 					this.pot.render(0);
