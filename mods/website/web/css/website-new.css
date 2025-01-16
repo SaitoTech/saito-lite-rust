@@ -233,6 +233,10 @@ h2+p {
     transform: translate(-50%, -50%);
     opacity: 0;
     animation: fadeInCards 1s ease-out 1.75s forwards;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
 }
 
 @keyframes fadeInCards {
@@ -422,12 +426,6 @@ object.saito-text {
     }
 }
 
-/* Portrait styles (default) */
-
-
-
-
-/* Landscape styles */
 /* Landscape styles */
 @media (orientation: landscape) {
     .saito-text-container {
@@ -628,28 +626,21 @@ object.saito-text {
         position: absolute;
         right: 5rem;
         top: 50%;
-        transform: translateY(-50%);
-        width: 36px;
-        height: 24px;
-        border-top: 3px solid #fff;
+        width: 16px;
+        height: 16px;
+        border-right: 3px solid #fff;
         border-bottom: 3px solid #fff;
+        transform: translateY(-75%) rotate(45deg);
+        transition: transform 0.3s ease;
     }
 
     .main-header.scrolled .menu-container::after {
-        content: '';
-        position: absolute;
-        right: 5rem;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 36px;
-        height: 3px;
-        background: #fff;
+        display: none;  /* Remove the middle line */
     }
 
-    /* Hover state */
-    .main-header.scrolled .menu-container:hover::before,
-    .main-header.scrolled .menu-container:hover::after {
-        opacity: 1;
+    /* Rotate chevron when menu is hovered */
+    .main-header.scrolled .menu-container:hover::before {
+        transform: translateY(-25%) rotate(-135deg);
     }
 }
 
@@ -1435,7 +1426,7 @@ object.saito-text {
 }
 
 /* Desktop styles */
-@media (min-width: 768px) and (orientation: landscape) {
+@media (min-width: 1400px) and (orientation: landscape) {
     .landing-content::before {
         content: '';
         position: fixed;
@@ -1451,7 +1442,7 @@ object.saito-text {
 }
 
 /* Keep existing mobile styles */
-@media (max-width: 768px) or (orientation: portrait) {
+@media (max-width: 1400px) or (orientation: portrait) {
     .landing-content::before {
         content: '';
         position: fixed;
@@ -1482,5 +1473,21 @@ object.saito-text {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1);
         }
-sudo     }
+}
+}
+
+.wallet-init-button {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+    border-radius: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.wallet-init-button:hover {
+    transform: scale(1.05);
 }

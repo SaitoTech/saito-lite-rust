@@ -16,12 +16,20 @@ class Website extends ModTemplate {
 		return this;
 	}
 
-	initializeHompage(app) {}
+	initializeHompage(app) {
+		alert('initializeHompage');	
+	}
 
 	initializeHTML(app) {
 		alert('initializeHTML');
 	}
-	initialize(app) {}
+	async initialize(app) {
+		await super.initialize(app);
+
+		if(app.BROWSER == 1) {
+			this.initializeHompage(app);
+		}
+	}
 
 	webServer(app, expressapp, express) {
 		expressapp.use(

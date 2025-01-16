@@ -167,7 +167,7 @@ document.getElementById("close_anim2_bttn").addEventListener("click", function (
 function isLightColor(color) {
     const rgb = color.match(/\d+/g);
     if (!rgb) return false;
-    
+
     // Calculate relative luminance
     const luminance = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
     return luminance > 0.7;
@@ -176,7 +176,7 @@ function isLightColor(color) {
 // Debounce function to handle scroll stop
 function debounce(func, wait) {
     let timeout;
-    return function() {
+    return function () {
         const context = this;
         const args = arguments;
         clearTimeout(timeout);
@@ -190,26 +190,26 @@ function debounce(func, wait) {
 function updateColors() {
     const desktopLogo = document.querySelector('.desktop-menu .header-logo svg');
     const mobileLogo = document.querySelector('.mobile-header .header-logo svg');
-    
+
     // Get the element at the center of the viewport
     const centerY = window.innerHeight / 2;
     const centerX = window.innerWidth / 2;
     const elementAtCenter = document.elementFromPoint(centerX, centerY);
-    
+
     if (!elementAtCenter) return;
-    
+
     // Get background color of the element or its closest section parent
     const section = elementAtCenter.closest('section');
     if (!section) return;
-    
+
     const backgroundColor = window.getComputedStyle(section).backgroundColor;
     const isLight = isLightColor(backgroundColor);
-    
+
     // Colors to use
     const lightBgColor = '#f61745';  // Saito red for light backgrounds
     const darkBgColor = '#ffffff';   // White for dark backgrounds
     const color = isLight ? lightBgColor : darkBgColor;
-    
+
     // Set the CSS variable at root level
     document.documentElement.style.setProperty('--menu-color', color);
 
@@ -261,7 +261,7 @@ function setVH() {
 function updateHeaderState() {
     const header = document.querySelector('.main-header');
     const landingSection = document.querySelector('#landing');
-    
+
     if (header && landingSection) {
         const rect = landingSection.getBoundingClientRect();
         if (rect.top >= 0) {
@@ -284,7 +284,7 @@ if (container) {
 function handleScroll() {
     const landingSection = document.querySelector('#landing');
     const container = document.querySelector('.container');
-    
+
     if (landingSection && !window.hasShownAlert) {
         const rect = landingSection.getBoundingClientRect();
         if (rect.bottom <= 0) {
@@ -311,48 +311,47 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function loadScript(url, callback) {
-    // Create a new script element
-    const script = document.createElement('script');
-    script.src = url; // Set the source to the script URL
+    var script = document.createElement('script');
     script.type = 'text/javascript';
-    script.async = true; // Optional: Load asynchronously
-  
-    // Add an event listener for when the script is loaded
-    script.onload = () => {
-      console.log(`${url} has been loaded successfully.`);
-      if (callback) callback(); // Call the callback if provided
+    script.src = url;
+    script.onload = callback;
+    script.onerror = function() {
+        console.error(`Failed to load script: ${url}`);
     };
-  
-    // Handle errors
-    script.onerror = () => {
-      console.error(`Error loading script: ${url}`);
-    };
-  
-    // Append the script to the document's head or body
-    document.head.appendChild(script);
-  }
-  
-  // Usage
-  
-  loadScript('/saito/saito.js', async () => {
-    console.log('Script executed!');
-    const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
-    let header = new SaitoHeader(this.app, this);
-    await header.initialize(this.app);
-  });
-  
-  // Scroll to second card on load
-  document.addEventListener('DOMContentLoaded', () => {
+    document.body.appendChild(script);
+}
+
+function loadSaitoScript() {
+    loadScript('/saito/saito.js', function() {
+        console.log('Saito script loaded and executed!');
+        // Ensure dependent code runs here
+    });
+}
+
+loadScript('/saito/saito.js', () => {
+    console.log('Saito script loaded!');
+});
+
+// Add wallet init button click handler
+const walletButton = document.querySelector('.wallet-init-button');
+if (walletButton) {
+    walletButton.addEventListener('click', () => {
+        console.log("walletButton clicked");
+    });
+}
+
+// Scroll to second card on load
+document.addEventListener('DOMContentLoaded', () => {
     const cardContainer = document.querySelector('.card-container');
     if (cardContainer) {
-      // Wait for animations to complete
-      setTimeout(() => {
-        const secondCard = cardContainer.children[2]; // Index 2 because of spacer
-        if (secondCard) {
-          secondCard.scrollIntoView({ behavior: 'smooth', inline: 'center' });
-        }
-      }, 2000); // Adjust timing based on your animations
+        // Wait for animations to complete
+        setTimeout(() => {
+            const secondCard = cardContainer.children[2]; // Index 2 because of spacer
+            if (secondCard) {
+                secondCard.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+            }
+        }, 2000); // Adjust timing based on your animations
     }
-  });
-  
-  
+});
+
+
