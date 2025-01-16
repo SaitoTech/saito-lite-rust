@@ -776,9 +776,11 @@ class SettlersGameloop {
           //Or, choose menu option
           if (document.getElementById("rolldice")){
             document.getElementById("rolldice").onclick = (e) => {
+                e.currentTarget.onclick = null;
+                e.currentTarget.classList.remove("enabled");
                 settlers_self.addMove("roll\t" + player);
                 settlers_self.endTurn();
-                e.currentTarget.onclick = null;
+                this.updateStatus("rolling dice...");
             }
           }
         } else {
