@@ -4157,3 +4157,1357 @@ f2a7da8b170894bac3152957c6b45a0b5af823cef9224df5cb66807042ec8917 	bujP18K4fkzHvt
 [2025-01-04 13:17:25] Output: 
 [2025-01-04 13:17:25] Node folders cleared
 [2025-01-04 13:17:25] Network cleared successfully
+[2025-01-13 14:27:46] Usage: nettest {install|clear|deploy|reset|start|stop|status|logs|endpoints|help|snapshot|list|whatis}
+[2025-01-13 14:27:46] Run 'nettest help' for detailed information about commands
+[2025-01-13 14:28:03] ----------------------------------------
+[2025-01-13 14:28:03] Checking requirements...
+[2025-01-13 14:28:03] Checking folder structure...
+[2025-01-13 14:28:03] Base directory: /Users/david/Programming/saito-lite-rust/nettest
+[2025-01-13 14:28:03] Command: tree /Users/david/Programming/saito-lite-rust/nettest || ls -R /Users/david/Programming/saito-lite-rust/nettest
+[2025-01-13 14:28:03] Output: scripts/nettest.sh: line 26: tree: command not found
+[2025-01-13 14:28:03] ----------------------------------------
+[2025-01-13 14:28:03] Deploying scenario: [atr] from branch: [staging]
+[2025-01-13 14:28:03] Clearing network configuration...
+[2025-01-13 14:28:03] Stopping all pm2 processes...
+[2025-01-13 14:28:03] Command: pm2 delete all &> /dev/null || true
+[2025-01-13 14:28:03] Output: [PM2][WARN] No process found
+[2025-01-13 14:28:03] PM2 processes cleared
+[2025-01-13 14:28:03] Removing all node folders...
+[2025-01-13 14:28:03] Command: rm -rf /Users/david/Programming/saito-lite-rust/nettest/nodes/*
+[2025-01-13 14:28:03] Output: 
+[2025-01-13 14:28:03] Command: mkdir -p /Users/david/Programming/saito-lite-rust/nettest/nodes
+[2025-01-13 14:28:03] Output: 
+[2025-01-13 14:28:04] Node folders cleared
+[2025-01-13 14:28:04] Network cleared successfully
+[2025-01-13 14:28:04] ----------------------------------------
+[2025-01-13 14:28:04] Setting up node1...
+[2025-01-13 14:28:04] Cloning branch staging for node1...
+[2025-01-13 14:28:12] Command: git clone --depth 1 --branch staging /Users/david/Programming/saito-lite-rust /Users/david/Programming/saito-lite-rust/nettest/nodes/1
+[2025-01-13 14:28:12] Output: Cloning into '/Users/david/Programming/saito-lite-rust/nettest/nodes/1'...
+warning: --depth is ignored in local clones; use file:// instead.
+done.
+Updating files:  11% (1089/9768)Updating files:  12% (1173/9768)Updating files:  13% (1270/9768)Updating files:  14% (1368/9768)Updating files:  15% (1466/9768)Updating files:  16% (1563/9768)Updating files:  17% (1661/9768)Updating files:  18% (1759/9768)Updating files:  19% (1856/9768)Updating files:  20% (1954/9768)Updating files:  21% (2052/9768)Updating files:  21% (2097/9768)Updating files:  22% (2149/9768)Updating files:  23% (2247/9768)Updating files:  24% (2345/9768)Updating files:  25% (2442/9768)Updating files:  26% (2540/9768)Updating files:  27% (2638/9768)Updating files:  28% (2736/9768)Updating files:  28% (2801/9768)Updating files:  29% (2833/9768)Updating files:  30% (2931/9768)Updating files:  31% (3029/9768)Updating files:  32% (3126/9768)Updating files:  33% (3224/9768)Updating files:  34% (3322/9768)Updating files:  35% (3419/9768)Updating files:  36% (3517/9768)Updating files:  37% (3615/9768)Updating files:  38% (3712/9768)Updating files:  39% (3810/9768)Updating files:  40% (3908/9768)Updating files:  41% (4005/9768)Updating files:  41% (4009/9768)Updating files:  42% (4103/9768)Updating files:  43% (4201/9768)Updating files:  44% (4298/9768)Updating files:  45% (4396/9768)Updating files:  46% (4494/9768)Updating files:  47% (4591/9768)Updating files:  48% (4689/9768)Updating files:  49% (4787/9768)Updating files:  50% (4884/9768)Updating files:  50% (4955/9768)Updating files:  51% (4982/9768)Updating files:  52% (5080/9768)Updating files:  53% (5178/9768)Updating files:  53% (5263/9768)Updating files:  54% (5275/9768)Updating files:  55% (5373/9768)Updating files:  56% (5471/9768)Updating files:  57% (5568/9768)Updating files:  58% (5666/9768)Updating files:  59% (5764/9768)Updating files:  60% (5861/9768)Updating files:  60% (5864/9768)Updating files:  61% (5959/9768)Updating files:  62% (6057/9768)Updating files:  63% (6154/9768)Updating files:  64% (6252/9768)Updating files:  65% (6350/9768)Updating files:  66% (6447/9768)Updating files:  67% (6545/9768)Updating files:  68% (6643/9768)Updating files:  69% (6740/9768)Updating files:  70% (6838/9768)Updating files:  71% (6936/9768)Updating files:  72% (7033/9768)Updating files:  73% (7131/9768)Updating files:  74% (7229/9768)Updating files:  74% (7282/9768)Updating files:  75% (7326/9768)Updating files:  76% (7424/9768)Updating files:  77% (7522/9768)Updating files:  78% (7620/9768)Updating files:  79% (7717/9768)Updating files:  80% (7815/9768)Updating files:  81% (7913/9768)Updating files:  82% (8010/9768)Updating files:  83% (8108/9768)Updating files:  84% (8206/9768)Updating files:  85% (8303/9768)Updating files:  86% (8401/9768)Updating files:  87% (8499/9768)Updating files:  88% (8596/9768)Updating files:  89% (8694/9768)Updating files:  90% (8792/9768)Updating files:  91% (8889/9768)Updating files:  92% (8987/9768)Updating files:  93% (9085/9768)Updating files:  94% (9182/9768)Updating files:  95% (9280/9768)Updating files:  96% (9378/9768)Updating files:  97% (9475/9768)Updating files:  98% (9573/9768)Updating files:  99% (9671/9768)Updating files: 100% (9768/9768)Updating files: 100% (9768/9768), done.
+[2025-01-13 14:28:12] Copying data files for node1...
+[2025-01-13 14:28:12] Command: mkdir -p /Users/david/Programming/saito-lite-rust/nettest/nodes/1/data
+[2025-01-13 14:28:12] Output: 
+[2025-01-13 14:28:12] Command: cp -r /Users/david/Programming/saito-lite-rust/nettest/scenarios/atr/1/data/* /Users/david/Programming/saito-lite-rust/nettest/nodes/1/data/
+[2025-01-13 14:28:12] Output: 
+[2025-01-13 14:28:12] Copying configuration files for node1...
+[2025-01-13 14:28:12] Command: mkdir -p /Users/david/Programming/saito-lite-rust/nettest/nodes/1/config
+[2025-01-13 14:28:12] Output: 
+[2025-01-13 14:28:12] Command: cp -r /Users/david/Programming/saito-lite-rust/nettest/scenarios/atr/1/config/* /Users/david/Programming/saito-lite-rust/nettest/nodes/1/config/
+[2025-01-13 14:28:12] Output: 
+[2025-01-13 14:28:12] Running [npm install] for node1...
+[2025-01-13 14:28:12] ----------------------------------------
+[2025-01-13 14:28:12] Setting up node2...
+[2025-01-13 14:28:12] Cloning branch staging for node2...
+[2025-01-13 14:28:20] Command: git clone --depth 1 --branch staging /Users/david/Programming/saito-lite-rust /Users/david/Programming/saito-lite-rust/nettest/nodes/2
+[2025-01-13 14:28:20] Output: Cloning into '/Users/david/Programming/saito-lite-rust/nettest/nodes/2'...
+warning: --depth is ignored in local clones; use file:// instead.
+done.
+Updating files:  11% (1100/9768)Updating files:  12% (1173/9768)Updating files:  13% (1270/9768)Updating files:  14% (1368/9768)Updating files:  15% (1466/9768)Updating files:  16% (1563/9768)Updating files:  17% (1661/9768)Updating files:  18% (1759/9768)Updating files:  19% (1856/9768)Updating files:  19% (1908/9768)Updating files:  20% (1954/9768)Updating files:  21% (2052/9768)Updating files:  22% (2149/9768)Updating files:  23% (2247/9768)Updating files:  23% (2282/9768)Updating files:  24% (2345/9768)Updating files:  25% (2442/9768)Updating files:  26% (2540/9768)Updating files:  27% (2638/9768)Updating files:  28% (2736/9768)Updating files:  29% (2833/9768)Updating files:  30% (2931/9768)Updating files:  31% (3029/9768)Updating files:  31% (3104/9768)Updating files:  32% (3126/9768)Updating files:  33% (3224/9768)Updating files:  34% (3322/9768)Updating files:  35% (3419/9768)Updating files:  36% (3517/9768)Updating files:  37% (3615/9768)Updating files:  38% (3712/9768)Updating files:  39% (3810/9768)Updating files:  40% (3908/9768)Updating files:  41% (4005/9768)Updating files:  42% (4103/9768)Updating files:  43% (4201/9768)Updating files:  44% (4298/9768)Updating files:  44% (4309/9768)Updating files:  45% (4396/9768)Updating files:  46% (4494/9768)Updating files:  47% (4591/9768)Updating files:  48% (4689/9768)Updating files:  49% (4787/9768)Updating files:  50% (4884/9768)Updating files:  51% (4982/9768)Updating files:  52% (5080/9768)Updating files:  53% (5178/9768)Updating files:  54% (5275/9768)Updating files:  55% (5373/9768)Updating files:  56% (5471/9768)Updating files:  56% (5507/9768)Updating files:  57% (5568/9768)Updating files:  58% (5666/9768)Updating files:  59% (5764/9768)Updating files:  60% (5861/9768)Updating files:  61% (5959/9768)Updating files:  62% (6057/9768)Updating files:  63% (6154/9768)Updating files:  64% (6252/9768)Updating files:  65% (6350/9768)Updating files:  66% (6447/9768)Updating files:  67% (6545/9768)Updating files:  68% (6643/9768)Updating files:  69% (6740/9768)Updating files:  70% (6838/9768)Updating files:  71% (6936/9768)Updating files:  72% (7033/9768)Updating files:  73% (7131/9768)Updating files:  74% (7229/9768)Updating files:  75% (7326/9768)Updating files:  76% (7424/9768)Updating files:  77% (7522/9768)Updating files:  77% (7540/9768)Updating files:  78% (7620/9768)Updating files:  79% (7717/9768)Updating files:  80% (7815/9768)Updating files:  81% (7913/9768)Updating files:  82% (8010/9768)Updating files:  83% (8108/9768)Updating files:  84% (8206/9768)Updating files:  85% (8303/9768)Updating files:  86% (8401/9768)Updating files:  87% (8499/9768)Updating files:  88% (8596/9768)Updating files:  89% (8694/9768)Updating files:  90% (8792/9768)Updating files:  91% (8889/9768)Updating files:  92% (8987/9768)Updating files:  93% (9085/9768)Updating files:  94% (9182/9768)Updating files:  95% (9280/9768)Updating files:  96% (9378/9768)Updating files:  97% (9475/9768)Updating files:  98% (9573/9768)Updating files:  99% (9671/9768)Updating files: 100% (9768/9768)Updating files: 100% (9768/9768), done.
+[2025-01-13 14:28:20] Copying configuration files for node2...
+[2025-01-13 14:28:20] Command: mkdir -p /Users/david/Programming/saito-lite-rust/nettest/nodes/2/config
+[2025-01-13 14:28:20] Output: 
+[2025-01-13 14:28:20] Command: cp -r /Users/david/Programming/saito-lite-rust/nettest/scenarios/atr/2/config/* /Users/david/Programming/saito-lite-rust/nettest/nodes/2/config/
+[2025-01-13 14:28:20] Output: 
+[2025-01-13 14:28:20] Running [npm install] for node2...
+[2025-01-13 14:29:06] Command: npm install
+[2025-01-13 14:29:06] Output: npm warn deprecated crypto@1.0.1: This package is no longer supported. It's now a built-in Node module. If you've depended on crypto, you should switch to the one that's built-in.
+npm warn deprecated @types/node-fetch@3.0.3: This is a stub types definition. node-fetch provides its own type definitions, so you do not need this installed.
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated @npmcli/move-file@1.1.2: This functionality has been moved to @npmcli/fs
+npm warn deprecated phin@2.9.3: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm warn deprecated npmlog@6.0.2: This package is no longer supported.
+npm warn deprecated babel@6.23.0: In 6.x, the babel package has been deprecated in favor of babel-cli. Check https://opencollective.com/babel to support the Babel maintainers
+npm warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated abab@2.0.6: Use your platform's native atob() and btoa() methods instead
+npm warn deprecated are-we-there-yet@3.0.1: This package is no longer supported.
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+npm warn deprecated domexception@2.0.1: Use your platform's native DOMException instead
+npm warn deprecated date-format@3.0.0: 3.x is no longer supported. Please upgrade to 4.x or higher.
+npm warn deprecated date-format@2.1.0: 2.x is no longer supported. Please upgrade to 4.x or higher.
+npm warn deprecated w3c-hr-time@1.0.2: Use your platform's native performance.now() and performance.timeOrigin.
+npm warn deprecated formidable@1.2.6: Please upgrade to latest, formidable@v2 or formidable@v3! Check these notes: https://bit.ly/2ZEqIau
+npm warn deprecated gauge@4.0.4: This package is no longer supported.
+npm warn deprecated fstream@1.0.12: This package is no longer supported.
+npm warn deprecated streamroller@2.2.4: 2.x is no longer supported. Please upgrade to 3.x or higher.
+npm warn deprecated superagent@3.8.3: Please upgrade to v9.0.0+ as we have fixed a public vulnerability with formidable dependency. Note that v9.0.0+ requires Node.js v14.18.0+. See https://github.com/ladjs/superagent/pull/1800 for insight. This project is supported and maintained by the team at Forward Email @ https://forwardemail.net
+npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+npm warn deprecated core-js@2.6.12: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
+
+added 1352 packages, and audited 1353 packages in 53s
+
+151 packages are looking for funding
+  run `npm fund` for details
+
+18 vulnerabilities (4 low, 9 moderate, 5 high)
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+[2025-01-13 14:29:06] ---
+[2025-01-13 14:29:06] Compiling node1...
+[2025-01-13 14:29:09] Command: npm install
+[2025-01-13 14:29:09] Output: npm warn deprecated crypto@1.0.1: This package is no longer supported. It's now a built-in Node module. If you've depended on crypto, you should switch to the one that's built-in.
+npm warn deprecated @types/node-fetch@3.0.3: This is a stub types definition. node-fetch provides its own type definitions, so you do not need this installed.
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated @npmcli/move-file@1.1.2: This functionality has been moved to @npmcli/fs
+npm warn deprecated phin@2.9.3: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm warn deprecated npmlog@6.0.2: This package is no longer supported.
+npm warn deprecated babel@6.23.0: In 6.x, the babel package has been deprecated in favor of babel-cli. Check https://opencollective.com/babel to support the Babel maintainers
+npm warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated abab@2.0.6: Use your platform's native atob() and btoa() methods instead
+npm warn deprecated are-we-there-yet@3.0.1: This package is no longer supported.
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+npm warn deprecated domexception@2.0.1: Use your platform's native DOMException instead
+npm warn deprecated date-format@3.0.0: 3.x is no longer supported. Please upgrade to 4.x or higher.
+npm warn deprecated date-format@2.1.0: 2.x is no longer supported. Please upgrade to 4.x or higher.
+npm warn deprecated w3c-hr-time@1.0.2: Use your platform's native performance.now() and performance.timeOrigin.
+npm warn deprecated formidable@1.2.6: Please upgrade to latest, formidable@v2 or formidable@v3! Check these notes: https://bit.ly/2ZEqIau
+npm warn deprecated gauge@4.0.4: This package is no longer supported.
+npm warn deprecated fstream@1.0.12: This package is no longer supported.
+npm warn deprecated streamroller@2.2.4: 2.x is no longer supported. Please upgrade to 3.x or higher.
+npm warn deprecated superagent@3.8.3: Please upgrade to v9.0.0+ as we have fixed a public vulnerability with formidable dependency. Note that v9.0.0+ requires Node.js v14.18.0+. See https://github.com/ladjs/superagent/pull/1800 for insight. This project is supported and maintained by the team at Forward Email @ https://forwardemail.net
+npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+npm warn deprecated core-js@2.6.12: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
+
+added 1352 packages, and audited 1353 packages in 49s
+
+151 packages are looking for funding
+  run `npm fund` for details
+
+18 vulnerabilities (4 low, 9 moderate, 5 high)
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+[2025-01-13 14:29:09] ---
+[2025-01-13 14:29:09] Compiling node2...
+[2025-01-13 14:29:21] Command: npm run nuke dev
+[2025-01-13 14:29:21] Output: 
+> saito@0.2.0 nuke
+> ./scripts/compile nuke dev
+
+Builing Lite Client (nuke dev)
+
+  Updating build number in options file
+  Current Timestamp: 1736753350
+./config/build.json
+  build.json not found, creating file...
+  Consolidating CSS files
+
+link module css in mods/arcade/
+link module css in mods/archive/
+link module css in mods/atr/
+link module css in mods/bazaar/
+link module css in mods/beleaguered/
+link module css in mods/blackjack/
+link module css in mods/blog/
+link module css in mods/chat/
+link module css in mods/chess/
+link module css in mods/crypto/
+link module css in mods/devtools/
+link module css in mods/disburse/
+link module css in mods/explorer/
+link module css in mods/gametestsuite/
+link module css in mods/giphy/
+link module css in mods/graffiti/
+link module css in mods/hearts/
+link module css in mods/his/
+link module css in mods/imperium/
+link module css in mods/invites/
+link module css in mods/labyrinth/
+link module css in mods/league/
+link module css in mods/library/
+link module css in mods/limbo/
+link module css in mods/mahjong/
+link module css in mods/midnight/
+link module css in mods/migration/
+link module css in mods/modtools/
+link module css in mods/nwasm/
+link module css in mods/pandemic/
+link module css in mods/paths/
+link module css in mods/poker/
+link module css in mods/popup/
+link module css in mods/president/
+link module css in mods/qrscanner/
+link module css in mods/quake3/
+link module css in mods/react/
+link module css in mods/realms/
+link module css in mods/redsquare/
+link module css in mods/saitorun/
+link module css in mods/scotland/
+link module css in mods/screenrecord/
+link module css in mods/settings/
+link module css in mods/settlers/
+link module css in mods/shogun/
+link module css in mods/solitrio/
+link module css in mods/spam/
+link module css in mods/spider/
+link module css in mods/steamed/
+link module css in mods/thirteen/
+link module css in mods/twilight/
+link module css in mods/videocall/
+link module css in mods/website/
+link module css in mods/wordblocks/
+link module css in mods/wuziqi/
+link module css in mods/youtube-client/
+link module css in mods/youtube-server/
+
+linking game-*.css files into game.css
+linking saito-*.css files into saito.css
+
+CSS complete
+
+
+Dev build - don't update build number
+
+
+
+     _.-^^---....,,--        
+ _--                  --_    
+ <                        >) 
+ |                         | 
+  \._                   _./  
+     '''--. . , ; .--'''     
+          | |   |            
+       .-=||  | |=-.         
+        -=#$%&%$/=-'         
+          | ;  :|            
+      .,-#%&$/#@%#&#~,         
+  -------------------------  
+  NUKING YOUR SAITO INSTALL  
+  -------------------------  
+  (resetting configuration)  
+
+
+cp: ./data/*.sq3: No such file or directory
+copying options from defaults
+cp: ./data/*.sq3: No such file or directory
+Resetting Saito to Default Modules!
+
+installing mod for lite-client bundling: atr
+
+Compiling Lite-Client JS...
+dev mode source not minified
+Bundle Success!
+
+real	0m8.857s
+user	0m15.553s
+sys	0m1.767s
+
+done!
+[2025-01-13 14:29:21] ---
+[2025-01-13 14:29:21] Creating PM2 configuration for node2...
+[2025-01-13 14:29:22] PM2 configuration for node2 created
+[2025-01-13 14:29:22] ---
+[2025-01-13 14:29:48] Command: npm run nuke dev
+[2025-01-13 14:29:48] Output: 
+> saito@0.2.0 nuke
+> ./scripts/compile nuke dev
+
+Builing Lite Client (nuke dev)
+
+  Updating build number in options file
+  Current Timestamp: 1736753346
+./config/build.json
+  build.json not found, creating file...
+  Consolidating CSS files
+
+link module css in mods/arcade/
+link module css in mods/archive/
+link module css in mods/atr/
+link module css in mods/bazaar/
+link module css in mods/beleaguered/
+link module css in mods/blackjack/
+link module css in mods/blog/
+link module css in mods/chat/
+link module css in mods/chess/
+link module css in mods/crypto/
+link module css in mods/devtools/
+link module css in mods/disburse/
+link module css in mods/explorer/
+link module css in mods/gametestsuite/
+link module css in mods/giphy/
+link module css in mods/graffiti/
+link module css in mods/hearts/
+link module css in mods/his/
+link module css in mods/imperium/
+link module css in mods/invites/
+link module css in mods/labyrinth/
+link module css in mods/league/
+link module css in mods/library/
+link module css in mods/limbo/
+link module css in mods/mahjong/
+link module css in mods/midnight/
+link module css in mods/migration/
+link module css in mods/modtools/
+link module css in mods/nwasm/
+link module css in mods/pandemic/
+link module css in mods/paths/
+link module css in mods/poker/
+link module css in mods/popup/
+link module css in mods/president/
+link module css in mods/qrscanner/
+link module css in mods/quake3/
+link module css in mods/react/
+link module css in mods/realms/
+link module css in mods/redsquare/
+link module css in mods/saitorun/
+link module css in mods/scotland/
+link module css in mods/screenrecord/
+link module css in mods/settings/
+link module css in mods/settlers/
+link module css in mods/shogun/
+link module css in mods/solitrio/
+link module css in mods/spam/
+link module css in mods/spider/
+link module css in mods/steamed/
+link module css in mods/thirteen/
+link module css in mods/twilight/
+link module css in mods/videocall/
+link module css in mods/website/
+link module css in mods/wordblocks/
+link module css in mods/wuziqi/
+link module css in mods/youtube-client/
+link module css in mods/youtube-server/
+
+linking game-*.css files into game.css
+linking saito-*.css files into saito.css
+
+CSS complete
+
+
+Dev build - don't update build number
+
+
+
+     _.-^^---....,,--        
+ _--                  --_    
+ <                        >) 
+ |                         | 
+  \._                   _./  
+     '''--. . , ; .--'''     
+          | |   |            
+       .-=||  | |=-.         
+        -=#$%&%$/=-'         
+          | ;  :|            
+      .,-#%&$/#@%#&#~,         
+  -------------------------  
+  NUKING YOUR SAITO INSTALL  
+  -------------------------  
+  (resetting configuration)  
+
+
+cp: ./data/*.sq3: No such file or directory
+copying options from defaults
+cp: ./data/*.sq3: No such file or directory
+Resetting Saito to Default Modules!
+
+installing mod for lite-client bundling: atr
+installing mod for lite-client bundling: blog
+installing mod for lite-client bundling: redsquare
+installing mod for lite-client bundling: mixin
+installing mod for lite-client bundling: arcade
+installing mod for lite-client bundling: archive
+installing mod for lite-client bundling: beleaguered
+installing mod for lite-client bundling: chat
+installing mod for lite-client bundling: chess
+installing mod for lite-client bundling: crypto
+installing mod for lite-client bundling: disburse
+installing mod for lite-client bundling: encrypt
+installing mod for lite-client bundling: eth
+installing mod for lite-client bundling: fileshare
+installing mod for lite-client bundling: giphy
+installing mod for lite-client bundling: graffiti
+installing mod for lite-client bundling: league
+installing mod for lite-client bundling: limbo
+installing mod for lite-client bundling: mahjong
+installing mod for lite-client bundling: mailrelay
+installing mod for lite-client bundling: migration
+installing mod for lite-client bundling: modtools
+installing mod for lite-client bundling: qrscanner
+installing mod for lite-client bundling: poker
+installing mod for lite-client bundling: profile
+installing mod for lite-client bundling: screenrecord
+installing mod for lite-client bundling: recovery
+installing mod for lite-client bundling: relay
+installing mod for lite-client bundling: registry
+installing mod for lite-client bundling: settings
+installing mod for lite-client bundling: settlers
+installing mod for lite-client bundling: solitrio
+installing mod for lite-client bundling: spider
+installing mod for lite-client bundling: stun
+installing mod for lite-client bundling: tst
+installing mod for lite-client bundling: videocall
+installing mod for lite-client bundling: wordblocks
+installing mod for lite-client bundling: website
+installing mod for lite-client bundling: wuziqi
+installing mod for lite-client bundling: youtube-client
+
+Compiling Lite-Client JS...
+dev mode source not minified
+[BABEL] Note: The code generator has deoptimised the styling of /Users/david/Programming/saito-lite-rust/nettest/nodes/1/node_modules/typescript/lib/typescript.js as it exceeds the max of 500KB.
+Bundle Success!
+
+real	0m37.837s
+user	0m52.381s
+sys	0m4.142s
+
+done!
+[2025-01-13 14:29:48] ---
+[2025-01-13 14:29:48] Copying data files for node1...
+[2025-01-13 14:29:48] Command: mkdir -p /Users/david/Programming/saito-lite-rust/nettest/nodes/1/data
+[2025-01-13 14:29:48] Output: 
+[2025-01-13 14:29:48] Command: cp -r /Users/david/Programming/saito-lite-rust/nettest/scenarios/atr/1/data/* data/
+[2025-01-13 14:29:48] Output: 
+[2025-01-13 14:29:48] Creating PM2 configuration for node1...
+[2025-01-13 14:29:49] PM2 configuration for node1 created
+[2025-01-13 14:29:49] ---
+[2025-01-13 14:29:49] Deployment complete!
+[2025-01-13 14:29:49] ----------------------------------------
+[2025-01-13 14:29:49] Keys with SAITO on the Network:
+Private Key 	                                                    Public Key
+d62cd978a0bac0bcf97eff82f7388c6210f649e2126c332dcee3894cfd77a103 	wDwNGzgx1yn2N21gHiHs43USRiXPx9H9NAcef1UZjLRX
+0435658a9dd54ce741b4ce4789711707e8cf4aa7e841a76ff5df0313caf941d1 	sHs6UQb5TDN5WTJ4nnehSUo79uCMxZaCENrzPzGiV6pJ
+c8beb43281c53efea632d3a6185577b446ab1403b4b67525f8e8aef4f7513ba6 	h17F8nAJ6BEsFuUbD4EbQKwHHYQBZxzwQpAsL58akY7m
+7614198ed41f4214729a7d5957c2e79d969792d3046bfd43348b8bed5567f582 	xM2vUs5XCpNjYjcgxk4yVhybDcayk3tnwZNWrFg7jRGs
+45dd08cfa770778c5dcaa9d6c0e63815f16dda79c43cf6aaadbbcae017a8bd5d 	tFCXYDgmKxTZTKG1wDuLLkLW1T1tZ5uiz4fZDPeYGWfC
+ce17f5286520182283876638ffc36bc8a0db3e2498dddcc30587cfa94eb4b50d 	zavTygq2xGHETckJvnMNfgY5UpqWEU46vBXyVz2wUZgz
+7462b66d116779aafd485d86fce0e7c86e7396e0fb8b6b995bba0a9578ba9466 	dd4s6mdnYdq4bb7QtcwTRWoq7hApUiQrDGi9CE8hvfdc
+f2a7da8b170894bac3152957c6b45a0b5af823cef9224df5cb66807042ec8917 	bujP18K4fkzHvtuRriXqgN6ay8AmUjhoRSj9jjBXohkj
+503ed5ff51f2a17866ce8ca34013e58bb697a4aae740c40e6d1c1d3cf0d528a0 	muJ8J1paK3nvHdFtdpakTejgCsAVkFmG7rGkc2dvCNpm
+5e8baa6faf568242ab7bce2cbdaa7684d50de778f2e873f2423cd0d3c955fbed 	urxxJT3p3wBNM1FSpF8nCUd8mKbyqGARbgDybr43Umna[2025-01-13 14:29:49] 
+[2025-01-13 14:29:49] ----------------------------------------
+[2025-01-13 14:29:49] Would you like to start the network now? (y/N)
+[2025-01-13 14:45:14] Starting network...
+[2025-01-13 14:45:14] 1
+[2025-01-13 14:45:14] Starting node1...
+[2025-01-13 14:45:14] Waiting 15 seconds for node1 to initialize...
+[2025-01-13 14:45:29] Starting remaining nodes...
+[2025-01-13 14:45:29] Network started
+[2025-01-13 14:45:29] ----------------------------------------
+[2025-01-13 14:45:29] Node Endpoints:
+[2025-01-13 14:45:29] Node 1 endpoint: http://127.0.0.1:12101/
+[2025-01-13 14:45:29] Node 2: Unable to parse endpoint configuration
+[2025-01-13 14:46:10] Usage: nettest {install|clear|deploy|reset|start|stop|status|logs|endpoints|help|snapshot|list|whatis}
+[2025-01-13 14:46:10] Run 'nettest help' for detailed information about commands
+[2025-01-13 14:46:55] ----------------------------------------
+[2025-01-13 14:46:55] Checking requirements...
+[2025-01-13 14:46:55] Checking folder structure...
+[2025-01-13 14:46:55] Base directory: /Users/david/Programming/saito-lite-rust/nettest
+[2025-01-13 14:46:55] Command: tree /Users/david/Programming/saito-lite-rust/nettest || ls -R /Users/david/Programming/saito-lite-rust/nettest
+[2025-01-13 14:46:56] Output: scripts/nettest.sh: line 26: tree: command not found
+[2025-01-13 14:46:56] ----------------------------------------
+[2025-01-13 14:46:56] Deploying scenario: [staging] from branch: [atr]
+[2025-01-13 14:46:56] Error: Scenario directory not found: /Users/david/Programming/saito-lite-rust/nettest/scenarios/staging
+[2025-01-13 14:47:02] ----------------------------------------
+[2025-01-13 14:47:02] Checking requirements...
+[2025-01-13 14:47:02] Checking folder structure...
+[2025-01-13 14:47:02] Base directory: /Users/david/Programming/saito-lite-rust/nettest
+[2025-01-13 14:47:02] Command: tree /Users/david/Programming/saito-lite-rust/nettest || ls -R /Users/david/Programming/saito-lite-rust/nettest
+[2025-01-13 14:47:02] Output: scripts/nettest.sh: line 26: tree: command not found
+[2025-01-13 14:47:02] ----------------------------------------
+[2025-01-13 14:47:02] Deploying scenario: [atr] from branch: [staging]
+[2025-01-13 14:47:02] Clearing network configuration...
+[2025-01-13 14:47:02] Stopping all pm2 processes...
+[2025-01-13 14:47:02] Command: pm2 delete all &> /dev/null || true
+[2025-01-13 14:47:02] Output: [PM2] Applying action deleteProcessId on app [all](ids: [ 0, 1 ])
+[PM2] [node2](0) ✓
+[PM2] [node1](1) ✓
+[PM2][ERROR] Process or Namespace &> not found
+[2025-01-13 14:47:02] PM2 processes cleared
+[2025-01-13 14:47:02] Removing all node folders...
+[2025-01-13 14:47:12] Command: rm -rf /Users/david/Programming/saito-lite-rust/nettest/nodes/*
+[2025-01-13 14:47:12] Output: 
+[2025-01-13 14:47:12] Command: mkdir -p /Users/david/Programming/saito-lite-rust/nettest/nodes
+[2025-01-13 14:47:12] Output: 
+[2025-01-13 14:47:12] Node folders cleared
+[2025-01-13 14:47:12] Network cleared successfully
+[2025-01-13 14:47:12] ----------------------------------------
+[2025-01-13 14:47:12] Setting up node1...
+[2025-01-13 14:47:12] Cloning branch staging for node1...
+[2025-01-13 14:47:18] Command: git clone --depth 1 --branch staging /Users/david/Programming/saito-lite-rust /Users/david/Programming/saito-lite-rust/nettest/nodes/1
+[2025-01-13 14:47:18] Output: Cloning into '/Users/david/Programming/saito-lite-rust/nettest/nodes/1'...
+warning: --depth is ignored in local clones; use file:// instead.
+done.
+Updating files:  13% (1290/9768)Updating files:  14% (1368/9768)Updating files:  15% (1466/9768)Updating files:  16% (1563/9768)Updating files:  17% (1661/9768)Updating files:  18% (1759/9768)Updating files:  19% (1856/9768)Updating files:  20% (1954/9768)Updating files:  21% (2052/9768)Updating files:  22% (2149/9768)Updating files:  23% (2247/9768)Updating files:  23% (2331/9768)Updating files:  24% (2345/9768)Updating files:  25% (2442/9768)Updating files:  26% (2540/9768)Updating files:  27% (2638/9768)Updating files:  28% (2736/9768)Updating files:  29% (2833/9768)Updating files:  30% (2931/9768)Updating files:  31% (3029/9768)Updating files:  32% (3126/9768)Updating files:  33% (3224/9768)Updating files:  34% (3322/9768)Updating files:  35% (3419/9768)Updating files:  36% (3517/9768)Updating files:  37% (3615/9768)Updating files:  38% (3712/9768)Updating files:  39% (3810/9768)Updating files:  40% (3908/9768)Updating files:  40% (3952/9768)Updating files:  41% (4005/9768)Updating files:  42% (4103/9768)Updating files:  43% (4201/9768)Updating files:  44% (4298/9768)Updating files:  45% (4396/9768)Updating files:  46% (4494/9768)Updating files:  47% (4591/9768)Updating files:  48% (4689/9768)Updating files:  49% (4787/9768)Updating files:  50% (4884/9768)Updating files:  50% (4960/9768)Updating files:  51% (4982/9768)Updating files:  52% (5080/9768)Updating files:  53% (5178/9768)Updating files:  54% (5275/9768)Updating files:  55% (5373/9768)Updating files:  56% (5471/9768)Updating files:  57% (5568/9768)Updating files:  58% (5666/9768)Updating files:  58% (5729/9768)Updating files:  59% (5764/9768)Updating files:  60% (5861/9768)Updating files:  61% (5959/9768)Updating files:  62% (6057/9768)Updating files:  63% (6154/9768)Updating files:  64% (6252/9768)Updating files:  65% (6350/9768)Updating files:  66% (6447/9768)Updating files:  67% (6545/9768)Updating files:  68% (6643/9768)Updating files:  69% (6740/9768)Updating files:  70% (6838/9768)Updating files:  71% (6936/9768)Updating files:  72% (7033/9768)Updating files:  73% (7131/9768)Updating files:  74% (7229/9768)Updating files:  75% (7326/9768)Updating files:  76% (7424/9768)Updating files:  76% (7503/9768)Updating files:  77% (7522/9768)Updating files:  78% (7620/9768)Updating files:  79% (7717/9768)Updating files:  80% (7815/9768)Updating files:  81% (7913/9768)Updating files:  82% (8010/9768)Updating files:  83% (8108/9768)Updating files:  84% (8206/9768)Updating files:  85% (8303/9768)Updating files:  86% (8401/9768)Updating files:  87% (8499/9768)Updating files:  88% (8596/9768)Updating files:  89% (8694/9768)Updating files:  90% (8792/9768)Updating files:  91% (8889/9768)Updating files:  92% (8987/9768)Updating files:  93% (9085/9768)Updating files:  94% (9182/9768)Updating files:  95% (9280/9768)Updating files:  96% (9378/9768)Updating files:  97% (9475/9768)Updating files:  98% (9573/9768)Updating files:  99% (9671/9768)Updating files: 100% (9768/9768)Updating files: 100% (9768/9768), done.
+[2025-01-13 14:47:18] Copying data files for node1...
+[2025-01-13 14:47:18] Command: mkdir -p /Users/david/Programming/saito-lite-rust/nettest/nodes/1/data
+[2025-01-13 14:47:18] Output: 
+[2025-01-13 14:47:18] Command: cp -r /Users/david/Programming/saito-lite-rust/nettest/scenarios/atr/1/data/* /Users/david/Programming/saito-lite-rust/nettest/nodes/1/data/
+[2025-01-13 14:47:18] Output: 
+[2025-01-13 14:47:18] Copying configuration files for node1...
+[2025-01-13 14:47:18] Command: mkdir -p /Users/david/Programming/saito-lite-rust/nettest/nodes/1/config
+[2025-01-13 14:47:18] Output: 
+[2025-01-13 14:47:18] Command: cp -r /Users/david/Programming/saito-lite-rust/nettest/scenarios/atr/1/config/* /Users/david/Programming/saito-lite-rust/nettest/nodes/1/config/
+[2025-01-13 14:47:19] Output: 
+[2025-01-13 14:47:19] Running [npm install] for node1...
+[2025-01-13 14:47:19] ----------------------------------------
+[2025-01-13 14:47:19] Setting up node2...
+[2025-01-13 14:47:19] Cloning branch staging for node2...
+[2025-01-13 14:47:25] Command: git clone --depth 1 --branch staging /Users/david/Programming/saito-lite-rust /Users/david/Programming/saito-lite-rust/nettest/nodes/2
+[2025-01-13 14:47:25] Output: Cloning into '/Users/david/Programming/saito-lite-rust/nettest/nodes/2'...
+warning: --depth is ignored in local clones; use file:// instead.
+done.
+Updating files:  18% (1816/9768)Updating files:  19% (1856/9768)Updating files:  20% (1954/9768)Updating files:  21% (2052/9768)Updating files:  22% (2149/9768)Updating files:  23% (2247/9768)Updating files:  24% (2345/9768)Updating files:  25% (2442/9768)Updating files:  25% (2476/9768)Updating files:  26% (2540/9768)Updating files:  27% (2638/9768)Updating files:  28% (2736/9768)Updating files:  29% (2833/9768)Updating files:  30% (2931/9768)Updating files:  31% (3029/9768)Updating files:  32% (3126/9768)Updating files:  33% (3224/9768)Updating files:  34% (3322/9768)Updating files:  35% (3419/9768)Updating files:  36% (3517/9768)Updating files:  37% (3615/9768)Updating files:  38% (3712/9768)Updating files:  39% (3810/9768)Updating files:  40% (3908/9768)Updating files:  40% (3932/9768)Updating files:  41% (4005/9768)Updating files:  42% (4103/9768)Updating files:  43% (4201/9768)Updating files:  44% (4298/9768)Updating files:  45% (4396/9768)Updating files:  46% (4494/9768)Updating files:  47% (4591/9768)Updating files:  48% (4689/9768)Updating files:  49% (4787/9768)Updating files:  49% (4879/9768)Updating files:  50% (4884/9768)Updating files:  51% (4982/9768)Updating files:  52% (5080/9768)Updating files:  53% (5178/9768)Updating files:  54% (5275/9768)Updating files:  55% (5373/9768)Updating files:  56% (5471/9768)Updating files:  57% (5568/9768)Updating files:  58% (5666/9768)Updating files:  59% (5764/9768)Updating files:  60% (5861/9768)Updating files:  60% (5890/9768)Updating files:  61% (5959/9768)Updating files:  62% (6057/9768)Updating files:  63% (6154/9768)Updating files:  64% (6252/9768)Updating files:  65% (6350/9768)Updating files:  66% (6447/9768)Updating files:  67% (6545/9768)Updating files:  68% (6643/9768)Updating files:  69% (6740/9768)Updating files:  70% (6838/9768)Updating files:  71% (6936/9768)Updating files:  72% (7033/9768)Updating files:  73% (7131/9768)Updating files:  74% (7229/9768)Updating files:  75% (7326/9768)Updating files:  76% (7424/9768)Updating files:  77% (7522/9768)Updating files:  78% (7620/9768)Updating files:  79% (7717/9768)Updating files:  80% (7815/9768)Updating files:  81% (7913/9768)Updating files:  82% (8010/9768)Updating files:  83% (8108/9768)Updating files:  84% (8206/9768)Updating files:  85% (8303/9768)Updating files:  86% (8401/9768)Updating files:  87% (8499/9768)Updating files:  88% (8596/9768)Updating files:  89% (8694/9768)Updating files:  90% (8792/9768)Updating files:  91% (8889/9768)Updating files:  92% (8987/9768)Updating files:  93% (9085/9768)Updating files:  94% (9182/9768)Updating files:  95% (9280/9768)Updating files:  96% (9378/9768)Updating files:  97% (9475/9768)Updating files:  98% (9573/9768)Updating files:  99% (9671/9768)Updating files: 100% (9768/9768)Updating files: 100% (9768/9768), done.
+[2025-01-13 14:47:25] Copying configuration files for node2...
+[2025-01-13 14:47:25] Command: mkdir -p /Users/david/Programming/saito-lite-rust/nettest/nodes/2/config
+[2025-01-13 14:47:25] Output: 
+[2025-01-13 14:47:25] Command: cp -r /Users/david/Programming/saito-lite-rust/nettest/scenarios/atr/2/config/* /Users/david/Programming/saito-lite-rust/nettest/nodes/2/config/
+[2025-01-13 14:47:25] Output: 
+[2025-01-13 14:47:25] Running [npm install] for node2...
+[2025-01-13 14:47:54] Command: npm install
+[2025-01-13 14:47:54] Output: npm warn deprecated crypto@1.0.1: This package is no longer supported. It's now a built-in Node module. If you've depended on crypto, you should switch to the one that's built-in.
+npm warn deprecated @types/node-fetch@3.0.3: This is a stub types definition. node-fetch provides its own type definitions, so you do not need this installed.
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated @npmcli/move-file@1.1.2: This functionality has been moved to @npmcli/fs
+npm warn deprecated phin@2.9.3: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm warn deprecated npmlog@6.0.2: This package is no longer supported.
+npm warn deprecated babel@6.23.0: In 6.x, the babel package has been deprecated in favor of babel-cli. Check https://opencollective.com/babel to support the Babel maintainers
+npm warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated abab@2.0.6: Use your platform's native atob() and btoa() methods instead
+npm warn deprecated are-we-there-yet@3.0.1: This package is no longer supported.
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+npm warn deprecated domexception@2.0.1: Use your platform's native DOMException instead
+npm warn deprecated date-format@3.0.0: 3.x is no longer supported. Please upgrade to 4.x or higher.
+npm warn deprecated date-format@2.1.0: 2.x is no longer supported. Please upgrade to 4.x or higher.
+npm warn deprecated w3c-hr-time@1.0.2: Use your platform's native performance.now() and performance.timeOrigin.
+npm warn deprecated formidable@1.2.6: Please upgrade to latest, formidable@v2 or formidable@v3! Check these notes: https://bit.ly/2ZEqIau
+npm warn deprecated gauge@4.0.4: This package is no longer supported.
+npm warn deprecated fstream@1.0.12: This package is no longer supported.
+npm warn deprecated streamroller@2.2.4: 2.x is no longer supported. Please upgrade to 3.x or higher.
+npm warn deprecated superagent@3.8.3: Please upgrade to v9.0.0+ as we have fixed a public vulnerability with formidable dependency. Note that v9.0.0+ requires Node.js v14.18.0+. See https://github.com/ladjs/superagent/pull/1800 for insight. This project is supported and maintained by the team at Forward Email @ https://forwardemail.net
+npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+npm warn deprecated core-js@2.6.12: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
+
+added 1352 packages, and audited 1353 packages in 35s
+
+151 packages are looking for funding
+  run `npm fund` for details
+
+18 vulnerabilities (4 low, 9 moderate, 5 high)
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+[2025-01-13 14:47:54] ---
+[2025-01-13 14:47:54] Compiling node1...
+[2025-01-13 14:48:03] Command: npm install
+[2025-01-13 14:48:03] Output: npm warn deprecated crypto@1.0.1: This package is no longer supported. It's now a built-in Node module. If you've depended on crypto, you should switch to the one that's built-in.
+npm warn deprecated @types/node-fetch@3.0.3: This is a stub types definition. node-fetch provides its own type definitions, so you do not need this installed.
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated @npmcli/move-file@1.1.2: This functionality has been moved to @npmcli/fs
+npm warn deprecated phin@2.9.3: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm warn deprecated npmlog@6.0.2: This package is no longer supported.
+npm warn deprecated babel@6.23.0: In 6.x, the babel package has been deprecated in favor of babel-cli. Check https://opencollective.com/babel to support the Babel maintainers
+npm warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated abab@2.0.6: Use your platform's native atob() and btoa() methods instead
+npm warn deprecated are-we-there-yet@3.0.1: This package is no longer supported.
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+npm warn deprecated domexception@2.0.1: Use your platform's native DOMException instead
+npm warn deprecated date-format@3.0.0: 3.x is no longer supported. Please upgrade to 4.x or higher.
+npm warn deprecated date-format@2.1.0: 2.x is no longer supported. Please upgrade to 4.x or higher.
+npm warn deprecated w3c-hr-time@1.0.2: Use your platform's native performance.now() and performance.timeOrigin.
+npm warn deprecated formidable@1.2.6: Please upgrade to latest, formidable@v2 or formidable@v3! Check these notes: https://bit.ly/2ZEqIau
+npm warn deprecated gauge@4.0.4: This package is no longer supported.
+npm warn deprecated fstream@1.0.12: This package is no longer supported.
+npm warn deprecated streamroller@2.2.4: 2.x is no longer supported. Please upgrade to 3.x or higher.
+npm warn deprecated superagent@3.8.3: Please upgrade to v9.0.0+ as we have fixed a public vulnerability with formidable dependency. Note that v9.0.0+ requires Node.js v14.18.0+. See https://github.com/ladjs/superagent/pull/1800 for insight. This project is supported and maintained by the team at Forward Email @ https://forwardemail.net
+npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+npm warn deprecated core-js@2.6.12: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
+
+added 1352 packages, and audited 1353 packages in 38s
+
+151 packages are looking for funding
+  run `npm fund` for details
+
+18 vulnerabilities (4 low, 9 moderate, 5 high)
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+[2025-01-13 14:48:03] ---
+[2025-01-13 14:48:03] Compiling node2...
+[2025-01-13 14:48:15] Command: npm run nuke dev
+[2025-01-13 14:48:15] Output: 
+> saito@0.2.0 nuke
+> ./scripts/compile nuke dev
+
+Builing Lite Client (nuke dev)
+
+  Updating build number in options file
+  Current Timestamp: 1736754483
+./config/build.json
+  build.json not found, creating file...
+  Consolidating CSS files
+
+link module css in mods/arcade/
+link module css in mods/archive/
+link module css in mods/atr/
+link module css in mods/bazaar/
+link module css in mods/beleaguered/
+link module css in mods/blackjack/
+link module css in mods/blog/
+link module css in mods/chat/
+link module css in mods/chess/
+link module css in mods/crypto/
+link module css in mods/devtools/
+link module css in mods/disburse/
+link module css in mods/explorer/
+link module css in mods/gametestsuite/
+link module css in mods/giphy/
+link module css in mods/graffiti/
+link module css in mods/hearts/
+link module css in mods/his/
+link module css in mods/imperium/
+link module css in mods/invites/
+link module css in mods/labyrinth/
+link module css in mods/league/
+link module css in mods/library/
+link module css in mods/limbo/
+link module css in mods/mahjong/
+link module css in mods/midnight/
+link module css in mods/migration/
+link module css in mods/modtools/
+link module css in mods/nwasm/
+link module css in mods/pandemic/
+link module css in mods/paths/
+link module css in mods/poker/
+link module css in mods/popup/
+link module css in mods/president/
+link module css in mods/qrscanner/
+link module css in mods/quake3/
+link module css in mods/react/
+link module css in mods/realms/
+link module css in mods/redsquare/
+link module css in mods/saitorun/
+link module css in mods/scotland/
+link module css in mods/screenrecord/
+link module css in mods/settings/
+link module css in mods/settlers/
+link module css in mods/shogun/
+link module css in mods/solitrio/
+link module css in mods/spam/
+link module css in mods/spider/
+link module css in mods/steamed/
+link module css in mods/thirteen/
+link module css in mods/twilight/
+link module css in mods/videocall/
+link module css in mods/website/
+link module css in mods/wordblocks/
+link module css in mods/wuziqi/
+link module css in mods/youtube-client/
+link module css in mods/youtube-server/
+
+linking game-*.css files into game.css
+linking saito-*.css files into saito.css
+
+CSS complete
+
+
+Dev build - don't update build number
+
+
+
+     _.-^^---....,,--        
+ _--                  --_    
+ <                        >) 
+ |                         | 
+  \._                   _./  
+     '''--. . , ; .--'''     
+          | |   |            
+       .-=||  | |=-.         
+        -=#$%&%$/=-'         
+          | ;  :|            
+      .,-#%&$/#@%#&#~,         
+  -------------------------  
+  NUKING YOUR SAITO INSTALL  
+  -------------------------  
+  (resetting configuration)  
+
+
+cp: ./data/*.sq3: No such file or directory
+copying options from defaults
+cp: ./data/*.sq3: No such file or directory
+Resetting Saito to Default Modules!
+
+installing mod for lite-client bundling: atr
+
+Compiling Lite-Client JS...
+dev mode source not minified
+Bundle Success!
+
+real	0m8.964s
+user	0m15.267s
+sys	0m1.755s
+
+done!
+[2025-01-13 14:48:15] ---
+[2025-01-13 14:48:15] Creating PM2 configuration for node2...
+[2025-01-13 14:48:16] PM2 configuration for node2 created
+[2025-01-13 14:48:16] ---
+[2025-01-13 14:48:36] Command: npm run nuke dev
+[2025-01-13 14:48:36] Output: 
+> saito@0.2.0 nuke
+> ./scripts/compile nuke dev
+
+Builing Lite Client (nuke dev)
+
+  Updating build number in options file
+  Current Timestamp: 1736754474
+./config/build.json
+  build.json not found, creating file...
+  Consolidating CSS files
+
+link module css in mods/arcade/
+link module css in mods/archive/
+link module css in mods/atr/
+link module css in mods/bazaar/
+link module css in mods/beleaguered/
+link module css in mods/blackjack/
+link module css in mods/blog/
+link module css in mods/chat/
+link module css in mods/chess/
+link module css in mods/crypto/
+link module css in mods/devtools/
+link module css in mods/disburse/
+link module css in mods/explorer/
+link module css in mods/gametestsuite/
+link module css in mods/giphy/
+link module css in mods/graffiti/
+link module css in mods/hearts/
+link module css in mods/his/
+link module css in mods/imperium/
+link module css in mods/invites/
+link module css in mods/labyrinth/
+link module css in mods/league/
+link module css in mods/library/
+link module css in mods/limbo/
+link module css in mods/mahjong/
+link module css in mods/midnight/
+link module css in mods/migration/
+link module css in mods/modtools/
+link module css in mods/nwasm/
+link module css in mods/pandemic/
+link module css in mods/paths/
+link module css in mods/poker/
+link module css in mods/popup/
+link module css in mods/president/
+link module css in mods/qrscanner/
+link module css in mods/quake3/
+link module css in mods/react/
+link module css in mods/realms/
+link module css in mods/redsquare/
+link module css in mods/saitorun/
+link module css in mods/scotland/
+link module css in mods/screenrecord/
+link module css in mods/settings/
+link module css in mods/settlers/
+link module css in mods/shogun/
+link module css in mods/solitrio/
+link module css in mods/spam/
+link module css in mods/spider/
+link module css in mods/steamed/
+link module css in mods/thirteen/
+link module css in mods/twilight/
+link module css in mods/videocall/
+link module css in mods/website/
+link module css in mods/wordblocks/
+link module css in mods/wuziqi/
+link module css in mods/youtube-client/
+link module css in mods/youtube-server/
+
+linking game-*.css files into game.css
+linking saito-*.css files into saito.css
+
+CSS complete
+
+
+Dev build - don't update build number
+
+
+
+     _.-^^---....,,--        
+ _--                  --_    
+ <                        >) 
+ |                         | 
+  \._                   _./  
+     '''--. . , ; .--'''     
+          | |   |            
+       .-=||  | |=-.         
+        -=#$%&%$/=-'         
+          | ;  :|            
+      .,-#%&$/#@%#&#~,         
+  -------------------------  
+  NUKING YOUR SAITO INSTALL  
+  -------------------------  
+  (resetting configuration)  
+
+
+cp: ./data/*.sq3: No such file or directory
+copying options from defaults
+cp: ./data/*.sq3: No such file or directory
+Resetting Saito to Default Modules!
+
+installing mod for lite-client bundling: atr
+installing mod for lite-client bundling: blog
+installing mod for lite-client bundling: redsquare
+installing mod for lite-client bundling: mixin
+installing mod for lite-client bundling: arcade
+installing mod for lite-client bundling: archive
+installing mod for lite-client bundling: beleaguered
+installing mod for lite-client bundling: chat
+installing mod for lite-client bundling: chess
+installing mod for lite-client bundling: crypto
+installing mod for lite-client bundling: disburse
+installing mod for lite-client bundling: encrypt
+installing mod for lite-client bundling: eth
+installing mod for lite-client bundling: fileshare
+installing mod for lite-client bundling: giphy
+installing mod for lite-client bundling: graffiti
+installing mod for lite-client bundling: league
+installing mod for lite-client bundling: limbo
+installing mod for lite-client bundling: mahjong
+installing mod for lite-client bundling: mailrelay
+installing mod for lite-client bundling: migration
+installing mod for lite-client bundling: modtools
+installing mod for lite-client bundling: qrscanner
+installing mod for lite-client bundling: poker
+installing mod for lite-client bundling: profile
+installing mod for lite-client bundling: screenrecord
+installing mod for lite-client bundling: recovery
+installing mod for lite-client bundling: relay
+installing mod for lite-client bundling: registry
+installing mod for lite-client bundling: settings
+installing mod for lite-client bundling: settlers
+installing mod for lite-client bundling: solitrio
+installing mod for lite-client bundling: spider
+installing mod for lite-client bundling: stun
+installing mod for lite-client bundling: tst
+installing mod for lite-client bundling: videocall
+installing mod for lite-client bundling: wordblocks
+installing mod for lite-client bundling: website
+installing mod for lite-client bundling: wuziqi
+installing mod for lite-client bundling: youtube-client
+
+Compiling Lite-Client JS...
+dev mode source not minified
+[BABEL] Note: The code generator has deoptimised the styling of /Users/david/Programming/saito-lite-rust/nettest/nodes/1/node_modules/typescript/lib/typescript.js as it exceeds the max of 500KB.
+Bundle Success!
+
+real	0m37.610s
+user	0m52.070s
+sys	0m3.816s
+
+done!
+[2025-01-13 14:48:36] ---
+[2025-01-13 14:48:36] Copying data files for node1...
+[2025-01-13 14:48:36] Command: mkdir -p /Users/david/Programming/saito-lite-rust/nettest/nodes/1/data
+[2025-01-13 14:48:36] Output: 
+[2025-01-13 14:48:36] Command: cp -r /Users/david/Programming/saito-lite-rust/nettest/scenarios/atr/1/data/* data/
+[2025-01-13 14:48:36] Output: 
+[2025-01-13 14:48:36] Creating PM2 configuration for node1...
+[2025-01-13 14:48:37] PM2 configuration for node1 created
+[2025-01-13 14:48:37] ---
+[2025-01-13 14:48:37] Deployment complete!
+[2025-01-13 14:48:37] ----------------------------------------
+[2025-01-13 14:48:37] Keys with SAITO on the Network:
+Private Key 	                                                    Public Key
+d62cd978a0bac0bcf97eff82f7388c6210f649e2126c332dcee3894cfd77a103 	wDwNGzgx1yn2N21gHiHs43USRiXPx9H9NAcef1UZjLRX
+0435658a9dd54ce741b4ce4789711707e8cf4aa7e841a76ff5df0313caf941d1 	sHs6UQb5TDN5WTJ4nnehSUo79uCMxZaCENrzPzGiV6pJ
+c8beb43281c53efea632d3a6185577b446ab1403b4b67525f8e8aef4f7513ba6 	h17F8nAJ6BEsFuUbD4EbQKwHHYQBZxzwQpAsL58akY7m
+7614198ed41f4214729a7d5957c2e79d969792d3046bfd43348b8bed5567f582 	xM2vUs5XCpNjYjcgxk4yVhybDcayk3tnwZNWrFg7jRGs
+45dd08cfa770778c5dcaa9d6c0e63815f16dda79c43cf6aaadbbcae017a8bd5d 	tFCXYDgmKxTZTKG1wDuLLkLW1T1tZ5uiz4fZDPeYGWfC
+ce17f5286520182283876638ffc36bc8a0db3e2498dddcc30587cfa94eb4b50d 	zavTygq2xGHETckJvnMNfgY5UpqWEU46vBXyVz2wUZgz
+7462b66d116779aafd485d86fce0e7c86e7396e0fb8b6b995bba0a9578ba9466 	dd4s6mdnYdq4bb7QtcwTRWoq7hApUiQrDGi9CE8hvfdc
+f2a7da8b170894bac3152957c6b45a0b5af823cef9224df5cb66807042ec8917 	bujP18K4fkzHvtuRriXqgN6ay8AmUjhoRSj9jjBXohkj
+503ed5ff51f2a17866ce8ca34013e58bb697a4aae740c40e6d1c1d3cf0d528a0 	muJ8J1paK3nvHdFtdpakTejgCsAVkFmG7rGkc2dvCNpm
+5e8baa6faf568242ab7bce2cbdaa7684d50de778f2e873f2423cd0d3c955fbed 	urxxJT3p3wBNM1FSpF8nCUd8mKbyqGARbgDybr43Umna[2025-01-13 14:48:37] 
+[2025-01-13 14:48:37] ----------------------------------------
+[2025-01-13 14:48:37] Would you like to start the network now? (y/N)
+[2025-01-13 14:48:37] Network not started. Use 'nettest start' to start it later.
+[2025-01-13 14:48:53] ----------------------------------------
+[2025-01-13 14:48:53] Checking requirements...
+[2025-01-13 14:48:53] Checking folder structure...
+[2025-01-13 14:48:53] Base directory: /Users/david/Programming/saito-lite-rust/nettest
+[2025-01-13 14:48:53] Command: tree /Users/david/Programming/saito-lite-rust/nettest || ls -R /Users/david/Programming/saito-lite-rust/nettest
+[2025-01-13 14:48:53] Output: scripts/nettest.sh: line 26: tree: command not found
+[2025-01-13 14:48:53] ----------------------------------------
+[2025-01-13 14:48:53] Deploying scenario: [atr] from branch: [staging]
+[2025-01-13 14:48:53] Clearing network configuration...
+[2025-01-13 14:48:53] Stopping all pm2 processes...
+[2025-01-13 14:48:53] Command: pm2 delete all &> /dev/null || true
+[2025-01-13 14:48:53] Output: [PM2] Applying action deleteProcessId on app [all](ids: [ 0, 1 ])
+[PM2] [node2](0) ✓
+[PM2] [node1](1) ✓
+[PM2][ERROR] Process or Namespace &> not found
+[2025-01-13 14:48:53] PM2 processes cleared
+[2025-01-13 14:48:53] Removing all node folders...
+[2025-01-13 14:49:05] Command: rm -rf /Users/david/Programming/saito-lite-rust/nettest/nodes/*
+[2025-01-13 14:49:05] Output: 
+[2025-01-13 14:49:05] Command: mkdir -p /Users/david/Programming/saito-lite-rust/nettest/nodes
+[2025-01-13 14:49:05] Output: 
+[2025-01-13 14:49:05] Node folders cleared
+[2025-01-13 14:49:05] Network cleared successfully
+[2025-01-13 14:49:05] ----------------------------------------
+[2025-01-13 14:49:05] Setting up node1...
+[2025-01-13 14:49:05] Cloning branch staging for node1...
+[2025-01-13 14:49:11] Command: git clone --depth 1 --branch staging /Users/david/Programming/saito-lite-rust /Users/david/Programming/saito-lite-rust/nettest/nodes/1
+[2025-01-13 14:49:11] Output: Cloning into '/Users/david/Programming/saito-lite-rust/nettest/nodes/1'...
+warning: --depth is ignored in local clones; use file:// instead.
+done.
+Updating files:  12% (1209/9768)Updating files:  13% (1270/9768)Updating files:  14% (1368/9768)Updating files:  15% (1466/9768)Updating files:  16% (1563/9768)Updating files:  17% (1661/9768)Updating files:  18% (1759/9768)Updating files:  19% (1856/9768)Updating files:  20% (1954/9768)Updating files:  21% (2052/9768)Updating files:  22% (2149/9768)Updating files:  22% (2179/9768)Updating files:  23% (2247/9768)Updating files:  24% (2345/9768)Updating files:  25% (2442/9768)Updating files:  26% (2540/9768)Updating files:  27% (2638/9768)Updating files:  28% (2736/9768)Updating files:  29% (2833/9768)Updating files:  30% (2931/9768)Updating files:  31% (3029/9768)Updating files:  32% (3126/9768)Updating files:  33% (3224/9768)Updating files:  34% (3322/9768)Updating files:  35% (3419/9768)Updating files:  36% (3517/9768)Updating files:  36% (3527/9768)Updating files:  37% (3615/9768)Updating files:  38% (3712/9768)Updating files:  39% (3810/9768)Updating files:  40% (3908/9768)Updating files:  41% (4005/9768)Updating files:  42% (4103/9768)Updating files:  43% (4201/9768)Updating files:  44% (4298/9768)Updating files:  45% (4396/9768)Updating files:  46% (4494/9768)Updating files:  47% (4591/9768)Updating files:  48% (4689/9768)Updating files:  49% (4787/9768)Updating files:  49% (4830/9768)Updating files:  50% (4884/9768)Updating files:  51% (4982/9768)Updating files:  52% (5080/9768)Updating files:  53% (5178/9768)Updating files:  54% (5275/9768)Updating files:  55% (5373/9768)Updating files:  56% (5471/9768)Updating files:  56% (5492/9768)Updating files:  57% (5568/9768)Updating files:  58% (5666/9768)Updating files:  59% (5764/9768)Updating files:  60% (5861/9768)Updating files:  61% (5959/9768)Updating files:  62% (6057/9768)Updating files:  63% (6154/9768)Updating files:  64% (6252/9768)Updating files:  65% (6350/9768)Updating files:  66% (6447/9768)Updating files:  67% (6545/9768)Updating files:  68% (6643/9768)Updating files:  69% (6740/9768)Updating files:  70% (6838/9768)Updating files:  70% (6930/9768)Updating files:  71% (6936/9768)Updating files:  72% (7033/9768)Updating files:  73% (7131/9768)Updating files:  74% (7229/9768)Updating files:  75% (7326/9768)Updating files:  76% (7424/9768)Updating files:  77% (7522/9768)Updating files:  78% (7620/9768)Updating files:  79% (7717/9768)Updating files:  80% (7815/9768)Updating files:  81% (7913/9768)Updating files:  82% (8010/9768)Updating files:  83% (8108/9768)Updating files:  84% (8206/9768)Updating files:  85% (8303/9768)Updating files:  86% (8401/9768)Updating files:  87% (8499/9768)Updating files:  88% (8596/9768)Updating files:  89% (8694/9768)Updating files:  90% (8792/9768)Updating files:  91% (8889/9768)Updating files:  92% (8987/9768)Updating files:  93% (9085/9768)Updating files:  94% (9182/9768)Updating files:  95% (9280/9768)Updating files:  96% (9378/9768)Updating files:  97% (9475/9768)Updating files:  98% (9573/9768)Updating files:  99% (9671/9768)Updating files: 100% (9768/9768)Updating files: 100% (9768/9768), done.
+[2025-01-13 14:49:11] Copying data files for node1...
+[2025-01-13 14:49:11] Command: mkdir -p /Users/david/Programming/saito-lite-rust/nettest/nodes/1/data
+[2025-01-13 14:49:11] Output: 
+[2025-01-13 14:49:11] Command: cp -r /Users/david/Programming/saito-lite-rust/nettest/scenarios/atr/1/data/* /Users/david/Programming/saito-lite-rust/nettest/nodes/1/data/
+[2025-01-13 14:49:11] Output: 
+[2025-01-13 14:49:11] Copying configuration files for node1...
+[2025-01-13 14:49:11] Command: mkdir -p /Users/david/Programming/saito-lite-rust/nettest/nodes/1/config
+[2025-01-13 14:49:11] Output: 
+[2025-01-13 14:49:11] Command: cp -r /Users/david/Programming/saito-lite-rust/nettest/scenarios/atr/1/config/* /Users/david/Programming/saito-lite-rust/nettest/nodes/1/config/
+[2025-01-13 14:49:11] Output: 
+[2025-01-13 14:49:11] Running [npm install] for node1...
+[2025-01-13 14:49:11] ----------------------------------------
+[2025-01-13 14:49:11] Setting up node2...
+[2025-01-13 14:49:11] Cloning branch staging for node2...
+[2025-01-13 14:49:18] Command: git clone --depth 1 --branch staging /Users/david/Programming/saito-lite-rust /Users/david/Programming/saito-lite-rust/nettest/nodes/2
+[2025-01-13 14:49:18] Output: Cloning into '/Users/david/Programming/saito-lite-rust/nettest/nodes/2'...
+warning: --depth is ignored in local clones; use file:// instead.
+done.
+Updating files:  18% (1776/9768)Updating files:  19% (1856/9768)Updating files:  20% (1954/9768)Updating files:  21% (2052/9768)Updating files:  22% (2149/9768)Updating files:  23% (2247/9768)Updating files:  24% (2345/9768)Updating files:  24% (2403/9768)Updating files:  25% (2442/9768)Updating files:  26% (2540/9768)Updating files:  27% (2638/9768)Updating files:  28% (2736/9768)Updating files:  29% (2833/9768)Updating files:  30% (2931/9768)Updating files:  31% (3029/9768)Updating files:  32% (3126/9768)Updating files:  33% (3224/9768)Updating files:  34% (3322/9768)Updating files:  35% (3419/9768)Updating files:  36% (3517/9768)Updating files:  37% (3615/9768)Updating files:  38% (3712/9768)Updating files:  39% (3810/9768)Updating files:  40% (3908/9768)Updating files:  40% (3929/9768)Updating files:  41% (4005/9768)Updating files:  42% (4103/9768)Updating files:  43% (4201/9768)Updating files:  44% (4298/9768)Updating files:  45% (4396/9768)Updating files:  46% (4494/9768)Updating files:  46% (4577/9768)Updating files:  47% (4591/9768)Updating files:  48% (4689/9768)Updating files:  49% (4787/9768)Updating files:  50% (4884/9768)Updating files:  51% (4982/9768)Updating files:  52% (5080/9768)Updating files:  53% (5178/9768)Updating files:  54% (5275/9768)Updating files:  55% (5373/9768)Updating files:  56% (5471/9768)Updating files:  57% (5568/9768)Updating files:  58% (5666/9768)Updating files:  59% (5764/9768)Updating files:  59% (5854/9768)Updating files:  60% (5861/9768)Updating files:  61% (5959/9768)Updating files:  62% (6057/9768)Updating files:  63% (6154/9768)Updating files:  64% (6252/9768)Updating files:  65% (6350/9768)Updating files:  66% (6447/9768)Updating files:  67% (6545/9768)Updating files:  68% (6643/9768)Updating files:  69% (6740/9768)Updating files:  70% (6838/9768)Updating files:  71% (6936/9768)Updating files:  72% (7033/9768)Updating files:  73% (7131/9768)Updating files:  74% (7229/9768)Updating files:  75% (7326/9768)Updating files:  76% (7424/9768)Updating files:  77% (7522/9768)Updating files:  78% (7620/9768)Updating files:  79% (7717/9768)Updating files:  80% (7815/9768)Updating files:  81% (7913/9768)Updating files:  82% (8010/9768)Updating files:  83% (8108/9768)Updating files:  84% (8206/9768)Updating files:  85% (8303/9768)Updating files:  86% (8401/9768)Updating files:  87% (8499/9768)Updating files:  88% (8596/9768)Updating files:  89% (8694/9768)Updating files:  90% (8792/9768)Updating files:  91% (8889/9768)Updating files:  92% (8987/9768)Updating files:  93% (9085/9768)Updating files:  94% (9182/9768)Updating files:  95% (9280/9768)Updating files:  96% (9378/9768)Updating files:  97% (9475/9768)Updating files:  98% (9573/9768)Updating files:  99% (9671/9768)Updating files: 100% (9768/9768)Updating files: 100% (9768/9768), done.
+[2025-01-13 14:49:18] Copying configuration files for node2...
+[2025-01-13 14:49:18] Command: mkdir -p /Users/david/Programming/saito-lite-rust/nettest/nodes/2/config
+[2025-01-13 14:49:18] Output: 
+[2025-01-13 14:49:18] Command: cp -r /Users/david/Programming/saito-lite-rust/nettest/scenarios/atr/2/config/* /Users/david/Programming/saito-lite-rust/nettest/nodes/2/config/
+[2025-01-13 14:49:18] Output: 
+[2025-01-13 14:49:18] Running [npm install] for node2...
+[2025-01-13 14:49:46] Command: npm install
+[2025-01-13 14:49:46] Output: npm warn deprecated crypto@1.0.1: This package is no longer supported. It's now a built-in Node module. If you've depended on crypto, you should switch to the one that's built-in.
+npm warn deprecated @types/node-fetch@3.0.3: This is a stub types definition. node-fetch provides its own type definitions, so you do not need this installed.
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated @npmcli/move-file@1.1.2: This functionality has been moved to @npmcli/fs
+npm warn deprecated phin@2.9.3: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm warn deprecated npmlog@6.0.2: This package is no longer supported.
+npm warn deprecated babel@6.23.0: In 6.x, the babel package has been deprecated in favor of babel-cli. Check https://opencollective.com/babel to support the Babel maintainers
+npm warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated abab@2.0.6: Use your platform's native atob() and btoa() methods instead
+npm warn deprecated are-we-there-yet@3.0.1: This package is no longer supported.
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+npm warn deprecated domexception@2.0.1: Use your platform's native DOMException instead
+npm warn deprecated date-format@3.0.0: 3.x is no longer supported. Please upgrade to 4.x or higher.
+npm warn deprecated date-format@2.1.0: 2.x is no longer supported. Please upgrade to 4.x or higher.
+npm warn deprecated w3c-hr-time@1.0.2: Use your platform's native performance.now() and performance.timeOrigin.
+npm warn deprecated formidable@1.2.6: Please upgrade to latest, formidable@v2 or formidable@v3! Check these notes: https://bit.ly/2ZEqIau
+npm warn deprecated gauge@4.0.4: This package is no longer supported.
+npm warn deprecated fstream@1.0.12: This package is no longer supported.
+npm warn deprecated streamroller@2.2.4: 2.x is no longer supported. Please upgrade to 3.x or higher.
+npm warn deprecated superagent@3.8.3: Please upgrade to v9.0.0+ as we have fixed a public vulnerability with formidable dependency. Note that v9.0.0+ requires Node.js v14.18.0+. See https://github.com/ladjs/superagent/pull/1800 for insight. This project is supported and maintained by the team at Forward Email @ https://forwardemail.net
+npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+npm warn deprecated core-js@2.6.12: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
+
+added 1352 packages, and audited 1353 packages in 35s
+
+151 packages are looking for funding
+  run `npm fund` for details
+
+18 vulnerabilities (4 low, 9 moderate, 5 high)
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+[2025-01-13 14:49:46] ---
+[2025-01-13 14:49:46] Compiling node1...
+[2025-01-13 14:49:52] Command: npm install
+[2025-01-13 14:49:52] Output: npm warn deprecated crypto@1.0.1: This package is no longer supported. It's now a built-in Node module. If you've depended on crypto, you should switch to the one that's built-in.
+npm warn deprecated @types/node-fetch@3.0.3: This is a stub types definition. node-fetch provides its own type definitions, so you do not need this installed.
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated @npmcli/move-file@1.1.2: This functionality has been moved to @npmcli/fs
+npm warn deprecated phin@2.9.3: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+npm warn deprecated npmlog@6.0.2: This package is no longer supported.
+npm warn deprecated babel@6.23.0: In 6.x, the babel package has been deprecated in favor of babel-cli. Check https://opencollective.com/babel to support the Babel maintainers
+npm warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated rimraf@2.7.1: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated abab@2.0.6: Use your platform's native atob() and btoa() methods instead
+npm warn deprecated are-we-there-yet@3.0.1: This package is no longer supported.
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+npm warn deprecated domexception@2.0.1: Use your platform's native DOMException instead
+npm warn deprecated date-format@3.0.0: 3.x is no longer supported. Please upgrade to 4.x or higher.
+npm warn deprecated date-format@2.1.0: 2.x is no longer supported. Please upgrade to 4.x or higher.
+npm warn deprecated w3c-hr-time@1.0.2: Use your platform's native performance.now() and performance.timeOrigin.
+npm warn deprecated formidable@1.2.6: Please upgrade to latest, formidable@v2 or formidable@v3! Check these notes: https://bit.ly/2ZEqIau
+npm warn deprecated gauge@4.0.4: This package is no longer supported.
+npm warn deprecated fstream@1.0.12: This package is no longer supported.
+npm warn deprecated streamroller@2.2.4: 2.x is no longer supported. Please upgrade to 3.x or higher.
+npm warn deprecated superagent@3.8.3: Please upgrade to v9.0.0+ as we have fixed a public vulnerability with formidable dependency. Note that v9.0.0+ requires Node.js v14.18.0+. See https://github.com/ladjs/superagent/pull/1800 for insight. This project is supported and maintained by the team at Forward Email @ https://forwardemail.net
+npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+npm warn deprecated core-js@2.6.12: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
+
+added 1352 packages, and audited 1353 packages in 34s
+
+151 packages are looking for funding
+  run `npm fund` for details
+
+18 vulnerabilities (4 low, 9 moderate, 5 high)
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+[2025-01-13 14:49:52] ---
+[2025-01-13 14:49:52] Compiling node2...
+[2025-01-13 14:50:04] Command: npm run nuke dev
+[2025-01-13 14:50:04] Output: 
+> saito@0.2.0 nuke
+> ./scripts/compile nuke dev
+
+Builing Lite Client (nuke dev)
+
+  Updating build number in options file
+  Current Timestamp: 1736754593
+./config/build.json
+  build.json not found, creating file...
+  Consolidating CSS files
+
+link module css in mods/arcade/
+link module css in mods/archive/
+link module css in mods/atr/
+link module css in mods/bazaar/
+link module css in mods/beleaguered/
+link module css in mods/blackjack/
+link module css in mods/blog/
+link module css in mods/chat/
+link module css in mods/chess/
+link module css in mods/crypto/
+link module css in mods/devtools/
+link module css in mods/disburse/
+link module css in mods/explorer/
+link module css in mods/gametestsuite/
+link module css in mods/giphy/
+link module css in mods/graffiti/
+link module css in mods/hearts/
+link module css in mods/his/
+link module css in mods/imperium/
+link module css in mods/invites/
+link module css in mods/labyrinth/
+link module css in mods/league/
+link module css in mods/library/
+link module css in mods/limbo/
+link module css in mods/mahjong/
+link module css in mods/midnight/
+link module css in mods/migration/
+link module css in mods/modtools/
+link module css in mods/nwasm/
+link module css in mods/pandemic/
+link module css in mods/paths/
+link module css in mods/poker/
+link module css in mods/popup/
+link module css in mods/president/
+link module css in mods/qrscanner/
+link module css in mods/quake3/
+link module css in mods/react/
+link module css in mods/realms/
+link module css in mods/redsquare/
+link module css in mods/saitorun/
+link module css in mods/scotland/
+link module css in mods/screenrecord/
+link module css in mods/settings/
+link module css in mods/settlers/
+link module css in mods/shogun/
+link module css in mods/solitrio/
+link module css in mods/spam/
+link module css in mods/spider/
+link module css in mods/steamed/
+link module css in mods/thirteen/
+link module css in mods/twilight/
+link module css in mods/videocall/
+link module css in mods/website/
+link module css in mods/wordblocks/
+link module css in mods/wuziqi/
+link module css in mods/youtube-client/
+link module css in mods/youtube-server/
+
+linking game-*.css files into game.css
+linking saito-*.css files into saito.css
+
+CSS complete
+
+
+Dev build - don't update build number
+
+
+
+     _.-^^---....,,--        
+ _--                  --_    
+ <                        >) 
+ |                         | 
+  \._                   _./  
+     '''--. . , ; .--'''     
+          | |   |            
+       .-=||  | |=-.         
+        -=#$%&%$/=-'         
+          | ;  :|            
+      .,-#%&$/#@%#&#~,         
+  -------------------------  
+  NUKING YOUR SAITO INSTALL  
+  -------------------------  
+  (resetting configuration)  
+
+
+cp: ./data/*.sq3: No such file or directory
+copying options from defaults
+cp: ./data/*.sq3: No such file or directory
+Resetting Saito to Default Modules!
+
+installing mod for lite-client bundling: atr
+
+Compiling Lite-Client JS...
+dev mode source not minified
+Bundle Success!
+
+real	0m8.778s
+user	0m15.217s
+sys	0m1.771s
+
+done!
+[2025-01-13 14:50:04] ---
+[2025-01-13 14:50:04] Creating PM2 configuration for node2...
+[2025-01-13 14:50:05] PM2 configuration for node2 created
+[2025-01-13 14:50:05] ---
+[2025-01-13 14:50:30] Command: npm run nuke dev
+[2025-01-13 14:50:30] Output: 
+> saito@0.2.0 nuke
+> ./scripts/compile nuke dev
+
+Builing Lite Client (nuke dev)
+
+  Updating build number in options file
+  Current Timestamp: 1736754587
+./config/build.json
+  build.json not found, creating file...
+  Consolidating CSS files
+
+link module css in mods/arcade/
+link module css in mods/archive/
+link module css in mods/atr/
+link module css in mods/bazaar/
+link module css in mods/beleaguered/
+link module css in mods/blackjack/
+link module css in mods/blog/
+link module css in mods/chat/
+link module css in mods/chess/
+link module css in mods/crypto/
+link module css in mods/devtools/
+link module css in mods/disburse/
+link module css in mods/explorer/
+link module css in mods/gametestsuite/
+link module css in mods/giphy/
+link module css in mods/graffiti/
+link module css in mods/hearts/
+link module css in mods/his/
+link module css in mods/imperium/
+link module css in mods/invites/
+link module css in mods/labyrinth/
+link module css in mods/league/
+link module css in mods/library/
+link module css in mods/limbo/
+link module css in mods/mahjong/
+link module css in mods/midnight/
+link module css in mods/migration/
+link module css in mods/modtools/
+link module css in mods/nwasm/
+link module css in mods/pandemic/
+link module css in mods/paths/
+link module css in mods/poker/
+link module css in mods/popup/
+link module css in mods/president/
+link module css in mods/qrscanner/
+link module css in mods/quake3/
+link module css in mods/react/
+link module css in mods/realms/
+link module css in mods/redsquare/
+link module css in mods/saitorun/
+link module css in mods/scotland/
+link module css in mods/screenrecord/
+link module css in mods/settings/
+link module css in mods/settlers/
+link module css in mods/shogun/
+link module css in mods/solitrio/
+link module css in mods/spam/
+link module css in mods/spider/
+link module css in mods/steamed/
+link module css in mods/thirteen/
+link module css in mods/twilight/
+link module css in mods/videocall/
+link module css in mods/website/
+link module css in mods/wordblocks/
+link module css in mods/wuziqi/
+link module css in mods/youtube-client/
+link module css in mods/youtube-server/
+
+linking game-*.css files into game.css
+linking saito-*.css files into saito.css
+
+CSS complete
+
+
+Dev build - don't update build number
+
+
+
+     _.-^^---....,,--        
+ _--                  --_    
+ <                        >) 
+ |                         | 
+  \._                   _./  
+     '''--. . , ; .--'''     
+          | |   |            
+       .-=||  | |=-.         
+        -=#$%&%$/=-'         
+          | ;  :|            
+      .,-#%&$/#@%#&#~,         
+  -------------------------  
+  NUKING YOUR SAITO INSTALL  
+  -------------------------  
+  (resetting configuration)  
+
+
+cp: ./data/*.sq3: No such file or directory
+copying options from defaults
+cp: ./data/*.sq3: No such file or directory
+Resetting Saito to Default Modules!
+
+installing mod for lite-client bundling: atr
+installing mod for lite-client bundling: blog
+installing mod for lite-client bundling: redsquare
+installing mod for lite-client bundling: mixin
+installing mod for lite-client bundling: arcade
+installing mod for lite-client bundling: archive
+installing mod for lite-client bundling: beleaguered
+installing mod for lite-client bundling: chat
+installing mod for lite-client bundling: chess
+installing mod for lite-client bundling: crypto
+installing mod for lite-client bundling: disburse
+installing mod for lite-client bundling: encrypt
+installing mod for lite-client bundling: eth
+installing mod for lite-client bundling: fileshare
+installing mod for lite-client bundling: giphy
+installing mod for lite-client bundling: graffiti
+installing mod for lite-client bundling: league
+installing mod for lite-client bundling: limbo
+installing mod for lite-client bundling: mahjong
+installing mod for lite-client bundling: mailrelay
+installing mod for lite-client bundling: migration
+installing mod for lite-client bundling: modtools
+installing mod for lite-client bundling: qrscanner
+installing mod for lite-client bundling: poker
+installing mod for lite-client bundling: profile
+installing mod for lite-client bundling: screenrecord
+installing mod for lite-client bundling: recovery
+installing mod for lite-client bundling: relay
+installing mod for lite-client bundling: registry
+installing mod for lite-client bundling: settings
+installing mod for lite-client bundling: settlers
+installing mod for lite-client bundling: solitrio
+installing mod for lite-client bundling: spider
+installing mod for lite-client bundling: stun
+installing mod for lite-client bundling: tst
+installing mod for lite-client bundling: videocall
+installing mod for lite-client bundling: wordblocks
+installing mod for lite-client bundling: website
+installing mod for lite-client bundling: wuziqi
+installing mod for lite-client bundling: youtube-client
+
+Compiling Lite-Client JS...
+dev mode source not minified
+[BABEL] Note: The code generator has deoptimised the styling of /Users/david/Programming/saito-lite-rust/nettest/nodes/1/node_modules/typescript/lib/typescript.js as it exceeds the max of 500KB.
+Bundle Success!
+
+real	0m38.928s
+user	0m53.904s
+sys	0m4.110s
+
+done!
+[2025-01-13 14:50:30] ---
+[2025-01-13 14:50:30] Copying data files for node1...
+[2025-01-13 14:50:30] Command: mkdir -p /Users/david/Programming/saito-lite-rust/nettest/nodes/1/data
+[2025-01-13 14:50:30] Output: 
+[2025-01-13 14:50:30] Command: cp -r /Users/david/Programming/saito-lite-rust/nettest/scenarios/atr/1/data/* data/
+[2025-01-13 14:50:30] Output: 
+[2025-01-13 14:50:30] Creating PM2 configuration for node1...
+[2025-01-13 14:50:30] PM2 configuration for node1 created
+[2025-01-13 14:50:30] ---
+[2025-01-13 14:50:30] Deployment complete!
+[2025-01-13 14:50:30] ----------------------------------------
+[2025-01-13 14:50:30] Keys with SAITO on the Network:
+Private Key 	                                                    Public Key
+d62cd978a0bac0bcf97eff82f7388c6210f649e2126c332dcee3894cfd77a103 	wDwNGzgx1yn2N21gHiHs43USRiXPx9H9NAcef1UZjLRX
+0435658a9dd54ce741b4ce4789711707e8cf4aa7e841a76ff5df0313caf941d1 	sHs6UQb5TDN5WTJ4nnehSUo79uCMxZaCENrzPzGiV6pJ
+c8beb43281c53efea632d3a6185577b446ab1403b4b67525f8e8aef4f7513ba6 	h17F8nAJ6BEsFuUbD4EbQKwHHYQBZxzwQpAsL58akY7m
+7614198ed41f4214729a7d5957c2e79d969792d3046bfd43348b8bed5567f582 	xM2vUs5XCpNjYjcgxk4yVhybDcayk3tnwZNWrFg7jRGs
+45dd08cfa770778c5dcaa9d6c0e63815f16dda79c43cf6aaadbbcae017a8bd5d 	tFCXYDgmKxTZTKG1wDuLLkLW1T1tZ5uiz4fZDPeYGWfC
+ce17f5286520182283876638ffc36bc8a0db3e2498dddcc30587cfa94eb4b50d 	zavTygq2xGHETckJvnMNfgY5UpqWEU46vBXyVz2wUZgz
+7462b66d116779aafd485d86fce0e7c86e7396e0fb8b6b995bba0a9578ba9466 	dd4s6mdnYdq4bb7QtcwTRWoq7hApUiQrDGi9CE8hvfdc
+f2a7da8b170894bac3152957c6b45a0b5af823cef9224df5cb66807042ec8917 	bujP18K4fkzHvtuRriXqgN6ay8AmUjhoRSj9jjBXohkj
+503ed5ff51f2a17866ce8ca34013e58bb697a4aae740c40e6d1c1d3cf0d528a0 	muJ8J1paK3nvHdFtdpakTejgCsAVkFmG7rGkc2dvCNpm
+5e8baa6faf568242ab7bce2cbdaa7684d50de778f2e873f2423cd0d3c955fbed 	urxxJT3p3wBNM1FSpF8nCUd8mKbyqGARbgDybr43Umna[2025-01-13 14:50:30] 
+[2025-01-13 14:50:30] ----------------------------------------
+[2025-01-13 14:50:30] Would you like to start the network now? (y/N)
+[2025-01-13 14:50:33] Starting network...
+[2025-01-13 14:50:33] 1
+[2025-01-13 14:50:33] Starting node1...
+[2025-01-13 14:50:33] Waiting 15 seconds for node1 to initialize...
+[2025-01-13 14:50:48] Starting remaining nodes...
+[2025-01-13 14:50:48] Network started
+[2025-01-13 14:50:48] ----------------------------------------
+[2025-01-13 14:50:48] Node Endpoints:
+[2025-01-13 14:50:48] Node 1 endpoint: http://127.0.0.1:12101/
+[2025-01-13 14:50:48] Node 2: Unable to parse endpoint configuration

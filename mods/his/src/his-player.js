@@ -1067,7 +1067,7 @@ if (this.game.state.events.cranmer_active == 1) {
   if (this.game.state.events.cromwell != 0) {
     menu.push({
       factions : ['england','protestant'],
-      cost : [3,2],
+      cost : [2,2],
       name : "Publish Treatise",
       check : this.canPlayerPublishTreatise,
       fnct : this.playerPublishTreatise,
@@ -1077,7 +1077,7 @@ if (this.game.state.events.cranmer_active == 1) {
   } else {
     menu.push({
       factions : ['england','protestant'],
-      cost : [2,2],
+      cost : [3,2],
       name : "Publish Treatise",
       check : this.canPlayerPublishTreatise,
       fnct : this.playerPublishTreatise,
@@ -4771,7 +4771,7 @@ does_units_to_move_have_unit = true; }
       for (let i = 0; i < neighbours.length; i++) {
         if (his_self.canFactionRetreatToNavalSpace(defender, neighbours[i])) {
           available_destinations = true;
-          html += `<li class="option" id="${neighbours[i]}">${neighbours[i]}</li>`;
+          html += `<li class="option" id="${neighbours[i]}">${his_self.returnFactionName(neighbours[i])}</li>`;
 	}
       }
       if (available_destinations == false) {

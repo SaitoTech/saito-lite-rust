@@ -5581,7 +5581,7 @@ console.log("running player fortify space...");
           let calculate_highest_battle_rating = function(faction) {
 	    let highest_battle_rating = 0;
             for (let i = 0; i < space.units[faction].length; i++) {
-	      if (space.units[faction][i].battle_rating > 0) {
+	      	if (space.units[faction][i].battle_rating > 0) {
 	        if (highest_battle_rating < space.units[faction][i].battle_rating) {
 		  highest_battle_rating = space.units[faction][i].battle_rating;
 		}
@@ -5658,7 +5658,7 @@ console.log("running player fortify space...");
 	  let is_janissaries_possible = false;
 
 	  // if card was played to attack, don't slow game by checking for intervention
-	  if (his_self.game.player_last_card == "001") { is_janissaries_possible = false; }
+	  if (his_self.game.state.active_card == "001") { is_janissaries_possible = false; }
 
 	  //
 	  // map every faction in space to attacker or defender
@@ -6121,7 +6121,7 @@ try {
 	  let is_janissaries_possible = false;
 
 	  // if card was played to attack, don't slow game by checking for intervention
-	  if (his_self.game.player_last_card == "001") { is_janissaries_possible = false; }
+	  if (his_self.game.state.active_card == "001") { is_janissaries_possible = false; }
 
  	  let attacker_player = his_self.returnPlayerOfFaction(attacker_faction);
  	  let defender_player = his_self.returnPlayerOfFaction(defender_faction);
@@ -8409,25 +8409,67 @@ try {
 
 	  let selectPiracyRewards = function(selectPiracyRewards) {
 
+console.log("DEBUGGING PIRACY");
+console.log("vp_issuable: " + vp_issuable);
+console.log("cards_issuable: " + cards_issuable);
+console.log("squadrons_issuable: " + squadrons_issuable);
+console.log("vp_available: " + vp_available);
+console.log("cards_available: " + cards_available);
+console.log("squadrons_available: " + squadrons_available);
+console.log("vp_offered: " + vp_offered);
+console.log("cards_offered: " + cards_offered);
+console.log("squadrons_offered: " + squadrons_offered);
+
             let msg = `Offer the Ottoman Empire which Reward (${(hits_given+1)} of ${hits})? `;
             let html = '<ul>';
 	    let numchoice = 0;
 
-	    if (vp_issuable == true && ((cards_available == 0 && squadrons_available == 0) || (vp_offered <= cards_offered && vp_offered <= squadrons_offered))) {
+	    if (
+		vp_issuable == true && 
+		(
+			(vp_offered <= cards_offered && vp_offered <= squadrons_offered) ||
+			(vp_offered <= cards_offered && squadrons_issuable == false) || 
+			(vp_offered <= squadrons_offered && vp_offered <= cards_offered) ||
+			(vp_offered <= squadrons_offered && cards_issuable == false)
+		)
+	    ) {
               html += `<li class="option" id="vp">give vp</li>`;
 	      numchoice++;
 	    }
-	    if (cards_issuable == true && ((vp_available == 0 && squadrons_available == 0 ) || (cards_offered <= vp_offered && cards_offered <= squadrons_offered))) {
+
+
+	    if (
+		cards_issuable == true && 
+		(
+			(cards_offered <= vp_offered && cards_offered <= squadrons_offered) ||
+			(cards_offered <= vp_offered && squadrons_issuable == false) || 
+			(cards_offered <= squadrons_offered && cards_offered <= vp_offered) ||
+			(cards_offered <= squadrons_offered && vp_issuable == false)
+		)
+	    ) {
               html += `<li class="option" id="card">give card draw</li>`;
 	      numchoice++;
-	    }	
-	    if (squadrons_issuable == true && ((cards_available == 0 && vp_available == 0 ) || (squadrons_offered <= vp_offered && squadrons_offered <= cards_offered))) {
+	    }
+
+
+	    if (
+		squadrons_issuable == true && 
+		(
+			(squadrons_offered <= vp_offered && squadrons_offered <= cards_offered) ||
+			(squadrons_offered <= vp_offered && cards_issuable == false) || 
+			(squadrons_offered <= cards_offered && squadrons_offered <= vp_offered) ||
+			(squadrons_offered <= cards_offered && vp_issuable == false)
+		)
+	    ) {
               html += `<li class="option" id="squadron">destroy squadron</li>`;
 	      numchoice++;
 	    }
+
+
 	    if (numchoice == 0) {
               html += `<li class="option" id="none">none available</li>`;
 	    }	
+
             html += '</ul>';
 
 	    if (numchoice == 0) {
