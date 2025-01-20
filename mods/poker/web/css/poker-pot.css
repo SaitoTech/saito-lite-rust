@@ -14,7 +14,7 @@
     left: 0px;
     margin-left: -8rem;
     z-index: 99;
-    border-radius: 50%;
+    border-radius: 0 50rem 50rem 0;
 }
 
 .pot:hover {

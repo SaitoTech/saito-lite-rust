@@ -55,6 +55,8 @@ class PokerQueue {
 					this.playerbox.updateGraphics('', i);
 				}
 
+				this.updateStatus("dealing new round...");
+
 				this.game.state.round++;
 
 				//Shift dealer, small blind, and big blind
@@ -132,6 +134,10 @@ class PokerQueue {
 
 			if (mv[0] === 'checkplayers') {
 				this.game.queue.splice(qe, 1);
+
+				if (this.gameBrowserActive()){
+					$(".folded").removeClass("folded");
+				}
 
 				//Check for end of game -- everyone except 1 player has zero credit...
 				let alive_players = 0;
@@ -294,6 +300,7 @@ class PokerQueue {
 						this.cardfan.hide();
 					}
 
+					this.halted = 1; // because not inside the function for now
 					this.playerAcknowledgeNotice(msg, async () => {
 						this.cardfan.hide();
 						this.pot.render(0);
@@ -302,6 +309,7 @@ class PokerQueue {
 						await this.timeout(1000);
 						this.restartQueue();
 					});
+					this.setShotClock('.acknowledge');
 
 					return 0;
 				}
@@ -385,6 +393,7 @@ class PokerQueue {
 				this.game.queue.splice(qe, 1);
 
 				this.board.render();
+				this.displayPlayers();
 
 				if (this.game.state.flipped === 0) {
 					if (this.game.player > 0) {
@@ -642,6 +651,7 @@ class PokerQueue {
 					}
 				}
 
+				this.halted = 1; // because not inside the function for now
 				this.playerAcknowledgeNotice(winnerStr, async () => {
 					this.cardfan.hide();
 					this.pot.render(0);
@@ -650,6 +660,8 @@ class PokerQueue {
 					await this.timeout(1000);
 					this.restartQueue();
 				});
+				this.setShotClock('.acknowledge');
+
 
 				return 0;
 			}
@@ -777,8 +789,10 @@ class PokerQueue {
 				if (this.browser_active) {
 					if (this.game.player !== player) {
 						this.displayPlayerNotice(`<div class="plog-update">folds</div>`, player);
+						this.playerbox.addClass("folded", player);
 					} else {
 						this.displayHand();
+						this.ignore_notifications = true;
 					}
 				}
 			}

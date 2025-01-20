@@ -731,6 +731,8 @@ class Settlers extends GameTemplate {
 		}
 		this.clock.stopClock();
 
+		this.updateStatus("submitting game move...");
+		
 		super.endTurn();
 	}
 

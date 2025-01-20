@@ -3,6 +3,11 @@ class PokerUI {
     if (this.game.state.winners.includes(player)) {
       return 'Winner!';
     }
+
+    if (player == this.game.state.button_player && player == this.game.state.big_blind_player) {
+      return 'dealer / big blind';
+    }
+
     if (player == this.game.state.button_player) {
       return 'dealer';
     }

@@ -5458,7 +5458,12 @@ if (this.game.players.length > 2) {
                 his_self.addMove("build\tland\tvenice\t"+"squadron"+"\t"+spacekey);
                 his_self.addMove("build\tland\tvenice\t"+"squadron"+"\t"+spacekey);
                 his_self.endTurn();
-              }
+              },
+
+	      null,
+
+	      true
+
             );
             return 0;
           } else {
@@ -6698,7 +6703,7 @@ console.log("selected: " + spacekey);
                 function(space) {
                   if (
                     space.home === region &&
-                    !his_self.isOccupied(space)
+                    (!his_self.isOccupied(space) && !space.unrest)
                   ) {
                     return 1;
                   }
@@ -6717,7 +6722,7 @@ console.log("selected: " + spacekey);
                       if (
                         space.home === region &&
                         space.key != space1 &&
-                        !his_self.isOccupied(space)
+                        (!his_self.isOccupied(space) && !space.unrest)
                       ) {
                         return 1;
                       }
@@ -11101,11 +11106,8 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 
 	  let ph = his_self.returnSpaceOfPersonage("protestant", "philip-hesse");
 
-console.log("philip hesse is located in: " + ph);
-
 	  his_self.removeArmyLeader("protestant", ph, "philip-hesse");
 	  his_self.displaySpace(ph);
-console.log("we have removed philip and redisplayed the space...");
 	  his_self.updateLog("Philip of Hesse removed from game");
           his_self.game.queue.splice(qe, 1);
 
@@ -11124,7 +11126,14 @@ console.log("we have removed philip and redisplayed the space...");
  	    let msg = "Choose Action: ";
             let html = '<ul>';
             html += '<li class="option" id="discard">discard card</li>';
-            if (ph) { html += '<li class="option" id="hesse">remove Philip of Hesse</li>'; }
+
+	    let adequate_cards_to_discard = false;
+            let fhand_idx = his_self.returnFactionHandIdx(his_self.game.player, "protestant");
+            for (let i = 0; i < his_self.game.deck[0].fhand[fhand_idx].length; i++) {
+	      if (parseInt(his_self.game.deck[0].fhand[fhand_idx][i]) > 7) { adequate_cards_to_discard = true; } 
+	    };
+
+            if (ph && adequate_cards_to_discard == true) { html += '<li class="option" id="hesse">remove Philip of Hesse</li>'; }
     	    html += '</ul>';
 
             his_self.updateStatusWithOptions(msg, html);
@@ -12795,7 +12804,17 @@ console.log("we have removed philip and redisplayed the space...");
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
-	if (his_self.game.state.explorations.length > 0 || his_self.game.state.conquests.length > 0) { return 1; }
+	if (his_self.game.state.explorations.length > 0 || his_self.game.state.conquests.length > 0) { 
+	  for (let z = 0; z < his_self.game.state.explorations.length; z++) {
+	    let e = his_self.game.state.explorations[z];
+	    if (e.round == his_self.game.state.round) { return 1; }
+	  }
+	  for (let z = 0; z < his_self.game.staate.conquests.length; z++) {
+	    let c = his_self.game.state.conquests[z];
+	    if (c.round == his_self.game.state.round) { return 1; }
+	  }
+	  return 1;
+	}
 	return 0;
       },
       onEvent(his_self, faction) {
@@ -13022,7 +13041,7 @@ console.log("we have removed philip and redisplayed the space...");
 	    function(space) {
 	      if (
 		space.home === "france" &&
-		!his_self.isOccupied(space)
+		(!his_self.isOccupied(space) && !space.unrest)
 	      ) {
 		return 1;
 	      }
@@ -13041,7 +13060,7 @@ console.log("we have removed philip and redisplayed the space...");
 	          if (
 	  	    space.home === "france" &&
 	  	    space.key != space1 &&
-		    !his_self.isOccupied(space)
+		    (!his_self.isOccupied(space) && !space.unrest)
 	          ) {
 		    return 1;
 	          }
@@ -16455,15 +16474,15 @@ console.log("we have removed philip and redisplayed the space...");
 
 	for (let i = 0; i < spaces.length; i++) {
 	  for (let z = 0; z < his_self.game.spaces[spaces[i]].units["england"].length; z++) {
-	    let u = his_self.game.spaces[spaces[i]].units["england"][i];
+	    let u = his_self.game.spaces[spaces[i]].units["england"][z];
 	    if (u.type == "squadron" || u.type == "mercenary" || u.type == "regular") { english_units++; }
 	  }
 	  for (let z = 0; z < his_self.game.spaces[spaces[i]].units["france"].length; z++) {
-	    let u = his_self.game.spaces[spaces[i]].units["france"][i];
+	    let u = his_self.game.spaces[spaces[i]].units["france"][z];
 	    if (u.type == "squadron" || u.type == "mercenary" || u.type == "regular") { french_units++; }
 	  }
 	  for (let z = 0; z < his_self.game.spaces[spaces[i]].units["scotland"].length; z++) {
-	    let u = his_self.game.spaces[spaces[i]].units["scotland"][i];
+	    let u = his_self.game.spaces[spaces[i]].units["scotland"][z];
 	    if (u.type == "squadron" || u.type == "mercenary" || u.type == "regular") { french_units++; }
 	  }
 	}
@@ -28773,12 +28792,6 @@ console.log("running player fortify space...");
 	// exists to be removed by counter_or_acknowledge -- TODO check if still needed
 	//
 	if (mv[0] === "halted") {
-	  // in order to avoid hangs, we auto-broadcast our RESOLVE again
-	  // if we reach this...
-	  //if (this.is_first_loop == 1) {
-	    //this.addMove("RESOLVE\t"+this.publicKey);
-	    //this.endTurn();
-	  //}
 	  this.updateStatus("acknowledged...");
 	  return 0;
 	}
@@ -28931,7 +28944,6 @@ console.log("running player fortify space...");
 	    // we don't need to HALT the game because the game will not progress
 	    // until all players have hit RESOLVE anyway. 
 	    //
-	    his_self.is_halted = 1;
 	    his_self.halted = 1;
             his_self.game.queue[his_self.game.queue.length-1] = "HALTED\tWaiting for Game to Continue\t"+his_self.publicKey;
             his_self.hud.back_button = false;
@@ -28950,7 +28962,6 @@ console.log("running player fortify space...");
               }
 
 	      // tell game engine we can move
-	      his_self.is_halted = 0;
 	      his_self.halted = 0;
 	      his_self.gaming_active = 0;
 
@@ -29002,7 +29013,6 @@ console.log("running player fortify space...");
 
 	    his_self.cardbox.hide();
 
-            his_self.is_halted = 1;
             his_self.halted = 1;
             his_self.hud.back_button = false;
                   
@@ -29027,7 +29037,6 @@ console.log("running player fortify space...");
                 	    }
 
                 	    // tell game engine we can move
-                	    his_self.is_halted = 0;
                 	    his_self.halted = 0;
                 	    his_self.gaming_active = 0;
             
@@ -29132,6 +29141,11 @@ console.log("running player fortify space...");
             if (action2 == "ok") {
 
 	      //
+	      // make sure we are not halted
+	      //
+	      his_self.halted = 0;
+
+	      //
 	      // this ensures we clear regardless of choice
 	      //
 	      // manually add, to avoid re-processing
@@ -29208,7 +29222,7 @@ console.log("running player fortify space...");
           let calculate_highest_battle_rating = function(faction) {
 	    let highest_battle_rating = 0;
             for (let i = 0; i < space.units[faction].length; i++) {
-	      if (space.units[faction][i].battle_rating > 0) {
+	      	if (space.units[faction][i].battle_rating > 0) {
 	        if (highest_battle_rating < space.units[faction][i].battle_rating) {
 		  highest_battle_rating = space.units[faction][i].battle_rating;
 		}
@@ -29285,7 +29299,7 @@ console.log("running player fortify space...");
 	  let is_janissaries_possible = false;
 
 	  // if card was played to attack, don't slow game by checking for intervention
-	  if (his_self.game.player_last_card == "001") { is_janissaries_possible = false; }
+	  if (his_self.game.state.active_card == "001") { is_janissaries_possible = false; }
 
 	  //
 	  // map every faction in space to attacker or defender
@@ -29748,7 +29762,7 @@ try {
 	  let is_janissaries_possible = false;
 
 	  // if card was played to attack, don't slow game by checking for intervention
-	  if (his_self.game.player_last_card == "001") { is_janissaries_possible = false; }
+	  if (his_self.game.state.active_card == "001") { is_janissaries_possible = false; }
 
  	  let attacker_player = his_self.returnPlayerOfFaction(attacker_faction);
  	  let defender_player = his_self.returnPlayerOfFaction(defender_faction);
@@ -31885,6 +31899,8 @@ try {
 
 	  this.piracy_overlay.render(pobj);
 
+piracy_hits = 3;
+
 	  if (piracy_hits > 0) {
             if (his_self.game.state.events.julia_gonzaga_activated == 1 && target_navalspace == "tyrrhenian") {
               his_self.game.queue.push("SETVAR\tstate\tevents\tottoman_julia_gonzaga_vp\t1");
@@ -32036,25 +32052,67 @@ try {
 
 	  let selectPiracyRewards = function(selectPiracyRewards) {
 
+console.log("DEBUGGING PIRACY");
+console.log("vp_issuable: " + vp_issuable);
+console.log("cards_issuable: " + cards_issuable);
+console.log("squadrons_issuable: " + squadrons_issuable);
+console.log("vp_available: " + vp_available);
+console.log("cards_available: " + cards_available);
+console.log("squadrons_available: " + squadrons_available);
+console.log("vp_offered: " + vp_offered);
+console.log("cards_offered: " + cards_offered);
+console.log("squadrons_offered: " + squadrons_offered);
+
             let msg = `Offer the Ottoman Empire which Reward (${(hits_given+1)} of ${hits})? `;
             let html = '<ul>';
 	    let numchoice = 0;
 
-	    if (vp_issuable == true && ((cards_available == 0 && squadrons_available == 0) || (vp_offered <= cards_offered && vp_offered <= squadrons_offered))) {
+	    if (
+		vp_issuable == true && 
+		(
+			(vp_offered <= cards_offered && vp_offered <= squadrons_offered) ||
+			(vp_offered <= cards_offered && squadrons_issuable == false) || 
+			(vp_offered <= squadrons_offered && vp_offered <= cards_offered) ||
+			(vp_offered <= squadrons_offered && cards_issuable == false)
+		)
+	    ) {
               html += `<li class="option" id="vp">give vp</li>`;
 	      numchoice++;
 	    }
-	    if (cards_issuable == true && ((vp_available == 0 && squadrons_available == 0 ) || (cards_offered <= vp_offered && cards_offered <= squadrons_offered))) {
+
+
+	    if (
+		cards_issuable == true && 
+		(
+			(cards_offered <= vp_offered && cards_offered <= squadrons_offered) ||
+			(cards_offered <= vp_offered && squadrons_issuable == false) || 
+			(cards_offered <= squadrons_offered && cards_offered <= vp_offered) ||
+			(cards_offered <= squadrons_offered && vp_issuable == false)
+		)
+	    ) {
               html += `<li class="option" id="card">give card draw</li>`;
 	      numchoice++;
-	    }	
-	    if (squadrons_issuable == true && ((cards_available == 0 && vp_available == 0 ) || (squadrons_offered <= vp_offered && squadrons_offered <= cards_offered))) {
+	    }
+
+
+	    if (
+		squadrons_issuable == true && 
+		(
+			(squadrons_offered <= vp_offered && squadrons_offered <= cards_offered) ||
+			(squadrons_offered <= vp_offered && cards_issuable == false) || 
+			(squadrons_offered <= cards_offered && squadrons_offered <= vp_offered) ||
+			(squadrons_offered <= cards_offered && vp_issuable == false)
+		)
+	    ) {
               html += `<li class="option" id="squadron">destroy squadron</li>`;
 	      numchoice++;
 	    }
+
+
 	    if (numchoice == 0) {
               html += `<li class="option" id="none">none available</li>`;
 	    }	
+
             html += '</ul>';
 
 	    if (numchoice == 0) {
@@ -36305,17 +36363,17 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-cardnum = 6;
-if (f == "france") { cardnum = 0; }
-if (f == "papacy") { cardnum = 0; }
+//cardnum = 6;
+//if (f == "france") { cardnum = 0; }
+//if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 0; }
-if (f == "protestant") { cardnum = 0; }
-if (f == "england") { cardnum = 0; }
+//if (f == "protestant") { cardnum = 0; }
+//if (f == "england") { cardnum = 0; }
 //if (f == "ottoman") { cardnum = 0; }
 
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
-//    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
+    	        this.game.queue.push("add_home_card\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
     	        this.game.queue.push("DEAL\t1\t"+(i+1)+"\t"+(cardnum));
 
 		//
@@ -40053,7 +40111,7 @@ if (this.game.state.events.cranmer_active == 1) {
   if (this.game.state.events.cromwell != 0) {
     menu.push({
       factions : ['england','protestant'],
-      cost : [3,2],
+      cost : [2,2],
       name : "Publish Treatise",
       check : this.canPlayerPublishTreatise,
       fnct : this.playerPublishTreatise,
@@ -40063,7 +40121,7 @@ if (this.game.state.events.cranmer_active == 1) {
   } else {
     menu.push({
       factions : ['england','protestant'],
-      cost : [2,2],
+      cost : [3,2],
       name : "Publish Treatise",
       check : this.canPlayerPublishTreatise,
       fnct : this.playerPublishTreatise,
@@ -40506,7 +40564,6 @@ if (this.game.state.events.society_of_jesus == 1) {
         // until all players have hit RESOLVE anyway.
         //
         let my_specific_game_id = his_self.game.id;
-        his_self.is_halted = 1;
         his_self.halted = 1;
         his_self.game.queue[his_self.game.queue.length-1] = "HALTED\tWaiting for Game to Continue\t"+his_self.publicKey;
         his_self.hud.back_button = false;
@@ -40521,7 +40578,6 @@ if (this.game.state.events.society_of_jesus == 1) {
           his_self.game = his_self.loadGame(my_specific_game_id);
             
           // tell game engine we can move
-          his_self.is_halted = 0;
           his_self.halted = 0;
           his_self.gaming_active = 0;
 
@@ -43759,7 +43815,7 @@ does_units_to_move_have_unit = true; }
       for (let i = 0; i < neighbours.length; i++) {
         if (his_self.canFactionRetreatToNavalSpace(defender, neighbours[i])) {
           available_destinations = true;
-          html += `<li class="option" id="${neighbours[i]}">${neighbours[i]}</li>`;
+          html += `<li class="option" id="${neighbours[i]}">${his_self.returnFactionName(neighbours[i])}</li>`;
 	}
       }
       if (available_destinations == false) {

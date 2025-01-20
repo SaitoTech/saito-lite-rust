@@ -1067,7 +1067,7 @@ if (this.game.state.events.cranmer_active == 1) {
   if (this.game.state.events.cromwell != 0) {
     menu.push({
       factions : ['england','protestant'],
-      cost : [3,2],
+      cost : [2,2],
       name : "Publish Treatise",
       check : this.canPlayerPublishTreatise,
       fnct : this.playerPublishTreatise,
@@ -1077,7 +1077,7 @@ if (this.game.state.events.cranmer_active == 1) {
   } else {
     menu.push({
       factions : ['england','protestant'],
-      cost : [2,2],
+      cost : [3,2],
       name : "Publish Treatise",
       check : this.canPlayerPublishTreatise,
       fnct : this.playerPublishTreatise,
@@ -1520,7 +1520,6 @@ if (this.game.state.events.society_of_jesus == 1) {
         // until all players have hit RESOLVE anyway.
         //
         let my_specific_game_id = his_self.game.id;
-        his_self.is_halted = 1;
         his_self.halted = 1;
         his_self.game.queue[his_self.game.queue.length-1] = "HALTED\tWaiting for Game to Continue\t"+his_self.publicKey;
         his_self.hud.back_button = false;
@@ -1535,7 +1534,6 @@ if (this.game.state.events.society_of_jesus == 1) {
           his_self.game = his_self.loadGame(my_specific_game_id);
             
           // tell game engine we can move
-          his_self.is_halted = 0;
           his_self.halted = 0;
           his_self.gaming_active = 0;
 
@@ -4773,7 +4771,7 @@ does_units_to_move_have_unit = true; }
       for (let i = 0; i < neighbours.length; i++) {
         if (his_self.canFactionRetreatToNavalSpace(defender, neighbours[i])) {
           available_destinations = true;
-          html += `<li class="option" id="${neighbours[i]}">${neighbours[i]}</li>`;
+          html += `<li class="option" id="${neighbours[i]}">${his_self.returnFactionName(neighbours[i])}</li>`;
 	}
       }
       if (available_destinations == false) {

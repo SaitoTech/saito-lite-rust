@@ -522,6 +522,8 @@ class CallInterfaceVideo {
 
 		this.streamMirror.addStream(localStream, 'local');
 
+		this.setDisplayContainers();
+		
 		// segmentBackground(document.querySelector('#stream_local video'), document.querySelector('#stream_local canvas'), 1);
 		// applyBlur(7);
 	}
@@ -717,7 +719,7 @@ class CallInterfaceVideo {
 
 				if (aspectRatio > 5 / 3) {
 					element.classList.add('wide');
-				} else if (aspectRatio < 3 / 5) {
+				} else if (aspectRatio < 4 / 5) {
 					element.classList.add('tall');
 				} else {
 					element.classList.add('square');

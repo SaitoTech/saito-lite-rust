@@ -1676,7 +1676,12 @@
                 his_self.addMove("build\tland\tvenice\t"+"squadron"+"\t"+spacekey);
                 his_self.addMove("build\tland\tvenice\t"+"squadron"+"\t"+spacekey);
                 his_self.endTurn();
-              }
+              },
+
+	      null,
+
+	      true
+
             );
             return 0;
           } else {
@@ -2916,7 +2921,7 @@ console.log("selected: " + spacekey);
                 function(space) {
                   if (
                     space.home === region &&
-                    !his_self.isOccupied(space)
+                    (!his_self.isOccupied(space) && !space.unrest)
                   ) {
                     return 1;
                   }
@@ -2935,7 +2940,7 @@ console.log("selected: " + spacekey);
                       if (
                         space.home === region &&
                         space.key != space1 &&
-                        !his_self.isOccupied(space)
+                        (!his_self.isOccupied(space) && !space.unrest)
                       ) {
                         return 1;
                       }
@@ -7319,11 +7324,8 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 
 	  let ph = his_self.returnSpaceOfPersonage("protestant", "philip-hesse");
 
-console.log("philip hesse is located in: " + ph);
-
 	  his_self.removeArmyLeader("protestant", ph, "philip-hesse");
 	  his_self.displaySpace(ph);
-console.log("we have removed philip and redisplayed the space...");
 	  his_self.updateLog("Philip of Hesse removed from game");
           his_self.game.queue.splice(qe, 1);
 
@@ -7342,7 +7344,14 @@ console.log("we have removed philip and redisplayed the space...");
  	    let msg = "Choose Action: ";
             let html = '<ul>';
             html += '<li class="option" id="discard">discard card</li>';
-            if (ph) { html += '<li class="option" id="hesse">remove Philip of Hesse</li>'; }
+
+	    let adequate_cards_to_discard = false;
+            let fhand_idx = his_self.returnFactionHandIdx(his_self.game.player, "protestant");
+            for (let i = 0; i < his_self.game.deck[0].fhand[fhand_idx].length; i++) {
+	      if (parseInt(his_self.game.deck[0].fhand[fhand_idx][i]) > 7) { adequate_cards_to_discard = true; } 
+	    };
+
+            if (ph && adequate_cards_to_discard == true) { html += '<li class="option" id="hesse">remove Philip of Hesse</li>'; }
     	    html += '</ul>';
 
             his_self.updateStatusWithOptions(msg, html);
@@ -9013,7 +9022,17 @@ console.log("we have removed philip and redisplayed the space...");
       type : "normal" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       canEvent : function(his_self, faction) {
-	if (his_self.game.state.explorations.length > 0 || his_self.game.state.conquests.length > 0) { return 1; }
+	if (his_self.game.state.explorations.length > 0 || his_self.game.state.conquests.length > 0) { 
+	  for (let z = 0; z < his_self.game.state.explorations.length; z++) {
+	    let e = his_self.game.state.explorations[z];
+	    if (e.round == his_self.game.state.round) { return 1; }
+	  }
+	  for (let z = 0; z < his_self.game.staate.conquests.length; z++) {
+	    let c = his_self.game.state.conquests[z];
+	    if (c.round == his_self.game.state.round) { return 1; }
+	  }
+	  return 1;
+	}
 	return 0;
       },
       onEvent(his_self, faction) {
@@ -9240,7 +9259,7 @@ console.log("we have removed philip and redisplayed the space...");
 	    function(space) {
 	      if (
 		space.home === "france" &&
-		!his_self.isOccupied(space)
+		(!his_self.isOccupied(space) && !space.unrest)
 	      ) {
 		return 1;
 	      }
@@ -9259,7 +9278,7 @@ console.log("we have removed philip and redisplayed the space...");
 	          if (
 	  	    space.home === "france" &&
 	  	    space.key != space1 &&
-		    !his_self.isOccupied(space)
+		    (!his_self.isOccupied(space) && !space.unrest)
 	          ) {
 		    return 1;
 	          }
@@ -12673,15 +12692,15 @@ console.log("we have removed philip and redisplayed the space...");
 
 	for (let i = 0; i < spaces.length; i++) {
 	  for (let z = 0; z < his_self.game.spaces[spaces[i]].units["england"].length; z++) {
-	    let u = his_self.game.spaces[spaces[i]].units["england"][i];
+	    let u = his_self.game.spaces[spaces[i]].units["england"][z];
 	    if (u.type == "squadron" || u.type == "mercenary" || u.type == "regular") { english_units++; }
 	  }
 	  for (let z = 0; z < his_self.game.spaces[spaces[i]].units["france"].length; z++) {
-	    let u = his_self.game.spaces[spaces[i]].units["france"][i];
+	    let u = his_self.game.spaces[spaces[i]].units["france"][z];
 	    if (u.type == "squadron" || u.type == "mercenary" || u.type == "regular") { french_units++; }
 	  }
 	  for (let z = 0; z < his_self.game.spaces[spaces[i]].units["scotland"].length; z++) {
-	    let u = his_self.game.spaces[spaces[i]].units["scotland"][i];
+	    let u = his_self.game.spaces[spaces[i]].units["scotland"][z];
 	    if (u.type == "squadron" || u.type == "mercenary" || u.type == "regular") { french_units++; }
 	  }
 	}

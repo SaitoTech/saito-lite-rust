@@ -15,6 +15,10 @@ class GameBoard {
 
 	render() {
 
+		if (!this.game_mod.gameBrowserActive()){
+			return;
+		}
+		
 		if (!document.querySelector(".gameboard")) {
 		  this.app.browser.addElementToDom(GameBoardTemplate(this.game_mod.theme));
 		  this.attachEvents();

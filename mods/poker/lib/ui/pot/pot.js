@@ -9,6 +9,10 @@ class Pot {
 	}
 
 	render(pot = -1) {
+
+		if (!this.game_mod.gameBrowserActive()){
+			return;
+		}
 		
 		// By default, calculate the dynamic pot...
 		if (pot == -1){

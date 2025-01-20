@@ -57,6 +57,7 @@ bundler/*
 built
 built/*
 
+nettest/nettest.log
 nettest/nodes
 nettest/nodes/*
 nettest/nodes/nettest.log
