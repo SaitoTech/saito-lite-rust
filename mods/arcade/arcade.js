@@ -203,6 +203,8 @@ class Arcade extends ModTemplate {
 						//
 						if (!game.over) {
 							this.addGame(game_tx, 'active');
+						}else{
+							this.addGame(game_tx, 'over');
 						}
 					}
 				}
