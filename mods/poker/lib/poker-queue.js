@@ -133,6 +133,10 @@ class PokerQueue {
 			if (mv[0] === 'checkplayers') {
 				this.game.queue.splice(qe, 1);
 
+				if (this.gameBrowserActive()){
+					$(".folded").removeClass("folded");
+				}
+
 				//Check for end of game -- everyone except 1 player has zero credit...
 				let alive_players = 0;
 				let winner = -1;
@@ -386,6 +390,7 @@ class PokerQueue {
 				this.game.queue.splice(qe, 1);
 
 				this.board.render();
+				this.displayPlayers();
 
 				if (this.game.state.flipped === 0) {
 					if (this.game.player > 0) {
@@ -779,8 +784,10 @@ class PokerQueue {
 				if (this.browser_active) {
 					if (this.game.player !== player) {
 						this.displayPlayerNotice(`<div class="plog-update">folds</div>`, player);
+						this.playerbox.addClass("folded", player);
 					} else {
 						this.displayHand();
+						this.ignore_notifications = true;
 					}
 				}
 			}
