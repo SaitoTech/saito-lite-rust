@@ -192,7 +192,7 @@ class Poker extends GameTableTemplate {
 			class: 'game-stats',
 			callback: function (app, game_mod) {
 				game_mod.menu.hideSubMenus();
-				game_mod.stats.render();
+				game_mod.stats.toggle();
 			}
 		});
 
