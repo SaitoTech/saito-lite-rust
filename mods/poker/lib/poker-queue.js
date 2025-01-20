@@ -55,6 +55,8 @@ class PokerQueue {
 					this.playerbox.updateGraphics('', i);
 				}
 
+				this.updateStatus("dealing new round...");
+
 				this.game.state.round++;
 
 				//Shift dealer, small blind, and big blind
@@ -307,6 +309,7 @@ class PokerQueue {
 						await this.timeout(1000);
 						this.restartQueue();
 					});
+					this.setShotClock('.acknowledge');
 
 					return 0;
 				}
@@ -657,6 +660,8 @@ class PokerQueue {
 					await this.timeout(1000);
 					this.restartQueue();
 				});
+				this.setShotClock('.acknowledge');
+
 
 				return 0;
 			}
