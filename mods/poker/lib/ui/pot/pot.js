@@ -6,6 +6,7 @@ class Pot {
 		this.app = app;
 		this.game_mod = mod;
 		this.pot_counter = mod.crypto || 'CHIPS';
+		this.pot_active = true;
 	}
 
 	render(pot = -1) {
@@ -15,11 +16,15 @@ class Pot {
 		}
 		
 		// By default, calculate the dynamic pot...
-		if (pot == -1){
+		if (pot == -1) {
+	
 			pot = 0;
-			for (let i = 0; i < this.game_mod.game.state.player_pot.length; i++) {
-			  pot += this.game_mod.game.state.player_pot[i];
-	        }
+	
+			if (this.pot_active){
+				for (let i = 0; i < this.game_mod.game.state.player_pot.length; i++) {
+				  pot += this.game_mod.game.state.player_pot[i];
+		        }
+			}
 		}
 
 		if (!document.querySelector(".pot")) {
@@ -32,6 +37,15 @@ class Pot {
 			this.attachEvents();	
 		}
 		
+	}
+
+	activate(){
+		this.pot_active = true;
+	}
+
+	clearPot(){
+		this.pot_active = false;
+		this.render(0);
 	}
 
 	attachEvents() {

@@ -103,12 +103,17 @@ class PokerUI {
   }
 
   // Update the player's role and wager...
-  displayPlayerStack(player) {
+  displayPlayerStack(player, amount = -1) {
     if (!this.browser_active) {
       return;
     }
 
     let credit = this.convertChipsToCrypto(this.game.state.player_credit[player - 1]);
+
+    if (amount !== -1){
+      credit = this.convertChipsToCrypto(amount);
+    }
+
     let chips = this.game.crypto || ('CHIP' + credit !== 1 ? 'S' : '');
 
     this.playerbox.updateIcons(
@@ -116,6 +121,85 @@ class PokerUI {
       player
     );
   }
+
+
+  //
+  // We will actually increment player stack / decrement the game pot in this function!!!
+  //
+  async animateWin(amount, winners){ 
+
+    console.log("***********************");
+    console.log(winners);
+
+    this.can_animate = true;
+
+    while (amount >= Object.keys(winners).length && this.can_animate) {
+  
+      for (let j in winners){
+        j = parseInt(j);
+        this.moveGameElement(this.createGameElement(`<div class="poker-chip"></div>`, ".pot"),
+          `.game-playerbox-${j + 1}`,
+          {
+            callback: () => {
+              this.pot.render(--amount);
+              this.displayPlayerStack(j + 1, ++winners[j]);
+              console.log(`Animation step -- Player ${j}: ${winners[j]}. Remaining pot: ${amount}`);
+            },
+            run_all_callbacks: true
+          },
+          (item) => {
+            $(item).remove();
+          });
+        await this.timeout(1000/amount);
+      }
+    }
+
+    if (amount > 0) {
+      // ***TO DO: examine possibility of fractional chips
+      // Randomly give the remaining chip to one player
+    }
+
+
+  }
+
+  async animateBet(amount, player_index, restartQueue = false){
+
+    if (restartQueue){
+      this.halted = 1;
+    }
+    
+    for (let i = 0; i < amount; i++){
+
+      this.moveGameElement(this.createGameElement(`<div class="poker-chip"></div>`, `.game-playerbox-${player_index+1}`),
+        ".pot-chips",
+        {
+          callback: () => {
+            this.game.state.pot++;
+            this.game.state.player_credit[player_index]--;
+            this.pot.render();
+            this.displayPlayerStack(player_index+1);
+          },
+          run_all_callbacks: !restartQueue
+        },
+        (item) => {
+          if (!restartQueue){
+            $(item).remove(); 
+          }else{
+            $('.animated_elem').remove();
+            console.log("*******************************");
+            this.restartQueue();
+          }
+          
+        });
+      await this.timeout(500/amount);
+    }
+
+  }
+
+
+  /*
+  This is the core Poker function
+  */
 
   playerTurn() {
     if (this.browser_active == 0) {

@@ -110,6 +110,8 @@ class PokerQueue {
 					this.game.stats[this.game.players[i]].hands++;
 				}
 
+				this.pot.activate();
+
 				this.startRound();
 				return 1;
 			}
@@ -245,10 +247,15 @@ class PokerQueue {
 
 					this.updateLog(logMsg);
 
+					// For animating
+					let winners = {};
+					winners[player_left_idx] = this.game.state.player_credit[player_left_idx];
+
 					this.game.state.player_credit[player_left_idx] += total_pot;
 
 					this.game.stats[this.game.players[player_left_idx]].wins++;
 
+					// Poker Stats
 					if (this.game.state.flipped == 0) {
 						if (total_pot == this.game.state.big_blind + this.game.state.small_blind) {
 							// No one called or raised --> walk
@@ -300,10 +307,12 @@ class PokerQueue {
 						this.cardfan.hide();
 					}
 
+					this.animateWin(total_pot, winners);
 					this.halted = 1; // because not inside the function for now
 					this.playerAcknowledgeNotice(msg, async () => {
+						this.can_animate = false;
 						this.cardfan.hide();
-						this.pot.render(0);
+						this.pot.clearPot();
 						this.settleLastRound([this.game.players[player_left_idx]], 'fold');
 						this.board.clearTable();
 						await this.timeout(1000);
@@ -549,6 +558,8 @@ class PokerQueue {
 				let pot_size = Math.floor(pot_total / winners.length);
 				let winnerStr = '';
 
+				let winObj = {};
+
 				// single winner gets everything
 
 				let logMsg =
@@ -567,6 +578,10 @@ class PokerQueue {
 							winnerStr += ', and ';
 						}
 					}
+
+					// For animating chip change
+					winObj[winners[i]] = this.game.state.player_credit[winners[i]];
+
 					this.game.stats[this.game.players[winners[i]]].wins++;
 					if (winners[i] == this.game.player - 1) {
 						winnerStr += 'You';
@@ -652,9 +667,11 @@ class PokerQueue {
 				}
 
 				this.halted = 1; // because not inside the function for now
+				this.animateWin(pot_total, winObj);
 				this.playerAcknowledgeNotice(winnerStr, async () => {
+					this.can_animate = false;
 					this.cardfan.hide();
-					this.pot.render(0);
+					this.pot.clearPot();
 					this.settleLastRound(winner_keys, 'besthand');
 					this.board.clearTable();
 					await this.timeout(1000);
