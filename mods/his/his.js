@@ -29861,13 +29861,22 @@ try {
 	      attacker_rolls += x.rolls;
 	      attacker_units.push(...x.units);
 
-	      for (let i = 0; i < x.rolls; i++) { attacker_units_faction.push(f);
-	        if (space.units[f][i].relief_force == 1) { attacker_units_relief_force.push(1); } else { attacker_units_relief_force.push(0); }
+	      for (let i = 0; i < x.rolls; i++) { 
+		attacker_units_faction.push(f);
+	      }
+
+              for (let i = 0; i < space.units[f].length; i++) {
+	        if (space.units[f][i].navy_header != true && space.units[f][i].army_leader != true && space.units[f][i].personage == false && space.units[f][i].besieged == 0) {
+	  	  if (space.units[f][i].land_or_sea === "land" || space.units[f][i].land_or_sea === "both") {
+		   if (space.units[f][i].relief_force == 1) { attacker_units_relief_force.push(1); } else { attacker_units_relief_force.push(0); }
+	          }
+	        }
 	      }
 
 	      if (calculate_highest_battle_rating(f) > attacker_highest_battle_rating) {
 		attacker_highest_battle_rating = calculate_highest_battle_rating(f);
 	      }
+
 	    }
 	    if (faction_map[f] === defender_faction) {
 	      for (let z = 0; z < space.units[f].length; z++) {
