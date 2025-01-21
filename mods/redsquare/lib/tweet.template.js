@@ -11,6 +11,12 @@ module.exports = (app, mod, tweet) => {
 	if (tweet.data_source) {
 		html_markers += ` data-source="${tweet.data_source}"`;
 	}
+	if (tweet.source.type) {
+		html_markers += ` data-source-type="${tweet.source.type}"`;
+	}
+	if (tweet.source.node) {
+		html_markers += ` data-source-node="${tweet.source.node}"`;
+	}
 	if (tweet.data_renewal) {
 		html_markers += ` data-renewal="${tweet.data_renewal}"`;
 	}

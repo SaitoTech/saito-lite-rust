@@ -6190,6 +6190,7 @@ try {
 	  let attacker_rolls = 0;
 	  let defender_rolls = 1;
 	  let attacker_units = [];
+	  let attacker_units_relief_force = []; // set as 1 if index is previously fortified unit coming out for field battle
 	  let defender_units = ['defender'];
 
 	  //
@@ -6216,7 +6217,10 @@ try {
 	      attacker_rolls += x.rolls;
 	      attacker_units.push(...x.units);
 
-	      for (let i = 0; i < x.rolls; i++) { attacker_units_faction.push(f); }
+	      for (let i = 0; i < x.rolls; i++) { attacker_units_faction.push(f);
+	        if (space.units[f][i].relief_force == 1) { attacker_units_relief_force.push(1); } else { attacker_units_relief_force.push(0); }
+	      }
+
 	      if (calculate_highest_battle_rating(f) > attacker_highest_battle_rating) {
 		attacker_highest_battle_rating = calculate_highest_battle_rating(f);
 	      }
@@ -6375,6 +6379,7 @@ try {
 	  his_self.game.state.field_battle.attacker_units = attacker_units;
 	  his_self.game.state.field_battle.defender_units = defender_units;
 	  his_self.game.state.field_battle.attacker_units_faction = attacker_units_faction;
+	  his_self.game.state.field_battle.attacker_units_relief_force = attacker_units_relief_force;
 	  his_self.game.state.field_battle.defender_units_faction = defender_units_faction;
 	  his_self.game.state.field_battle.attacker_rolls = attacker_rolls;
 	  his_self.game.state.field_battle.defender_rolls = defender_rolls;

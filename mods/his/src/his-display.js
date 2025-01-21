@@ -2823,9 +2823,10 @@ console.log("ERROR DISPLAYING NEW WORLD STUFF: " + JSON.stringify(err));
     //
     // and force if has units
     //
+    let has_units = 0;
     for (let key in space.units) {
       if (space.units[key].length > 0) {
-	show_tile = 1; 
+        has_units = 1;
       }
     }
 
@@ -2839,8 +2840,8 @@ console.log("ERROR DISPLAYING NEW WORLD STUFF: " + JSON.stringify(err));
 
       obj.innerHTML = "";
 
-      if (show_tile === 1) {
-	if (!no_keytiles_in_keys.includes(key)) {
+      if (has_units === 1 || show_tile === 1) {
+	if (!no_keytiles_in_keys.includes(key) && show_tile == 1) {
           obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
 	}
         obj.innerHTML += this.returnArmies(space);

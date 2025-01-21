@@ -238,12 +238,19 @@ try {
 
 		if (res.attacker_modified_rolls) {
 			for (let i = 0; i < res.attacker_modified_rolls.length; i++) {
+
 				let roll = res.attacker_modified_rolls[i];
 				let unit_type = '';
 				let faction_name = '';
+				let previously_besieged_unit = 0;
+
 				if (i < res.attacker_units.length) {
 					unit_type = res.attacker_units[i];
 					faction_name = res.attacker_units_faction[i];
+					previously_besieged_unit = res.attacker_units_relief_force[i];
+					if (previously_besieged_unit) {
+						faction_name += " (fortified)";
+					}
 				} else {
 					faction_name = 'army leader present';
 					unit_type = 'bonus';

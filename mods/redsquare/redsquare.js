@@ -991,6 +991,7 @@ class RedSquare extends ModTemplate {
   // via the manager.
   //
   loadTweets(created_at = 'earlier', mycallback, peer = null) {
+
     //
     // Instead of just passing the txs to the callback, we count how many of these txs
     // are new to us so we can have a better UX
@@ -1106,6 +1107,7 @@ class RedSquare extends ModTemplate {
   }
 
   processTweetsFromPeer(peer, txs) {
+
     let count = 0;
 
     //
@@ -1113,6 +1115,7 @@ class RedSquare extends ModTemplate {
     // saving in local-storage or whitelisting by peers.
     //
     for (let z = 0; z < txs.length; z++) {
+
       txs[z].decryptMessage(this.app);
 
       if (txs[z].updated_at < peer.tweets_earliest_ts) {
@@ -1121,6 +1124,14 @@ class RedSquare extends ModTemplate {
       if (txs[z].updated_at > peer.tweets_latest_ts) {
         peer.tweets_latest_ts = txs[z].updated_at;
       }
+
+      //
+      // specify the source of the tweet
+      //
+      if (!txs[z].optional.source) { txs[z].optional.source = {}; }
+      txs[z].optional.source.type = "archive";
+      txs[z].optional.source.node = peer.publicKey;
+
 
       // (---------  false  --------- )
       // only add if this is a new tweet, it might be an
@@ -1854,7 +1865,7 @@ class RedSquare extends ModTemplate {
     //
     // set as curated if liked by moderator
     //
-    if (this.app.modules.reverseModerate(tweet.tx) == -1) {
+    if (this.app.modules.moderate(liked_tweet.tx) == 1) {
       liked_tweet.curated = 1;
     }
 
@@ -1922,8 +1933,6 @@ class RedSquare extends ModTemplate {
     // I'm not sure we really want to save these like this... but it may work out for profile views...
     //
     await this.app.storage.saveTransaction(tx, { field1: 'RedSquareLike' }, 'localhost');
-
-    console.log(`RS Save like from: ${tx.from[0].publicKey} to ${tx.to[0].publicKey}`);
 
     return;
   }
@@ -2683,21 +2692,29 @@ class RedSquare extends ModTemplate {
   }
 
   cacheRecentTweets() {
+
     if (this.app.BROWSER) {
       return;
     }
+
+console.log("###");
+console.log("### Caching Tweets");
+console.log("###");
 
     this.curated_tweets = [];
     let temp_array = [];
     let img_bonus_used = 0;
     let number_of_tweets_with_positive_score = 0;
 
+let number_of_tweets = 0;
+
     for (let tweet of this.tweets) {
+
+number_of_tweets++;
 
       if (tweet?.flagged) {
         continue;
       }
-
 
       //
       // we want the server to show mostly new stuff in its cached_tweets cache
@@ -2758,10 +2775,20 @@ class RedSquare extends ModTemplate {
 
       if (score > 0) {
         number_of_tweets_with_positive_score++;
+console.log("adding tweet with positive score!");
         temp_array.push({ tweet, score: 1 });
       }
 
     }
+
+
+console.log("processed: " + number_of_tweets);
+
+
+    temp_array.sort((a, b) => {
+      return b.score - a.score;
+    });
+
 
     //
     // 2nd pass in case not enough curated
@@ -2771,10 +2798,12 @@ class RedSquare extends ModTemplate {
         if (tweet.curated == 0) {
           if (tweet.num_likes > 0) {
             number_of_tweets_with_positive_score++;
+console.log("adding tweet with zero-score but a like...");
             temp_array.push({ tweet, score: 1 });
           } else {
             if (tweet.num_retweets > 0) {
               number_of_tweets_with_positive_score++;
+console.log("adding tweet with zero-score but a retweet...");
               temp_array.push({ tweet, score: 1 });
             }
           }
@@ -2783,19 +2812,25 @@ class RedSquare extends ModTemplate {
     }
 
 
-//    temp_array.sort((a, b) => {
-//      return b.score - a.score;
-//    });
-
     let added_tweets = 0;
     for (let i = 0; added_tweets < 10 && i < temp_array.length; i++) {
       added_tweets++;
       this.curated_tweets.push(temp_array[i].tweet);
     }
 
-    //Update cache
+    //
+    // update cache
+    //
     this.cached_tweets = [];
     for (let tweet of this.curated_tweets) {
+
+      //
+      // update tweet source
+      //
+      tweet.tx.optional.source = {};
+      tweet.tx.optional.source.type = "curated";
+      tweet.tx.optional.source.node = this.publicKey;
+
       this.cached_tweets.push(tweet.tx.serialize_to_web(this.app));
     }
 

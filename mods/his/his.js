@@ -1079,7 +1079,7 @@ Habsburg conquistadores:
       },  
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "translation_german_language_zone") {
-          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tluther-debater");
+          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tluther-debater\t1");
           his_self.addMove("insert_before_counter_or_acknowledge\ttranslation\tgerman");
           his_self.endTurn();
         } 
@@ -1119,7 +1119,7 @@ Habsburg conquistadores:
       },  
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "translation_german_language_zone") {
-          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tmelanchthon-debater");
+          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tmelanchthon-debater\t1");
           his_self.addMove("insert_before_counter_or_acknowledge\ttranslation\tgerman");
           his_self.endTurn();
         } 
@@ -1791,7 +1791,7 @@ Habsburg conquistadores:
       },  
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "translation_french_language_zone") {
-          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tolivetan-debater");
+          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tolivetan-debater\t1");
           his_self.addMove("insert_before_counter_or_acknowledge\ttranslation\tfrench");
           his_self.endTurn();
           his_self.updateStatus("acknowledge");
@@ -2021,7 +2021,7 @@ Habsburg conquistadores:
       }, 
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "translation_english_language_zone") {
-          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\ttyndale-debater");
+          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\ttyndale-debater\t1");
           his_self.addMove("insert_before_counter_or_acknowledge\ttranslation\tenglish");
           his_self.endTurn();
         }
@@ -2062,7 +2062,7 @@ Habsburg conquistadores:
       }, 
       menuOptionActivated:  function(his_self, menu, player, faction) {
         if (menu == "translation_english_language_zone") {
-          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tcoverdale-debater");
+          his_self.addMove("insert_before_counter_or_acknowledge\tcommit\tprotestant\tcoverdale-debater\t1");
           his_self.addMove("insert_before_counter_or_acknowledge\ttranslation\tenglish");
           his_self.endTurn();
         }
@@ -2424,6 +2424,9 @@ console.log("\n\n\n\n");
         // 2P variant
         //
         if (this.game.players.length == 2) {
+
+// TESTING
+this.convertSpace("protestant", "mainz");
 
 	  this.unsetEnemies("papacy", "france");
 	  this.unsetEnemies("hapsburg", "france");
@@ -2938,7 +2941,7 @@ console.log("\n\n\n\n");
           this.addNavalSquadron("genoa", "genoa", 1);
           this.addRegular("france", "genoa", 1);
 
-this.addRegular("hapsburg", "prague", 3);
+this.addRegular("hapsburg", "palma", 1);
 
           this.setAllies("papacy", "hapsburg");
 	  this.setAllies("hapsburg", "hungary");
@@ -29831,6 +29834,7 @@ try {
 	  let attacker_rolls = 0;
 	  let defender_rolls = 1;
 	  let attacker_units = [];
+	  let attacker_units_relief_force = []; // set as 1 if index is previously fortified unit coming out for field battle
 	  let defender_units = ['defender'];
 
 	  //
@@ -29857,7 +29861,10 @@ try {
 	      attacker_rolls += x.rolls;
 	      attacker_units.push(...x.units);
 
-	      for (let i = 0; i < x.rolls; i++) { attacker_units_faction.push(f); }
+	      for (let i = 0; i < x.rolls; i++) { attacker_units_faction.push(f);
+	        if (space.units[f][i].relief_force == 1) { attacker_units_relief_force.push(1); } else { attacker_units_relief_force.push(0); }
+	      }
+
 	      if (calculate_highest_battle_rating(f) > attacker_highest_battle_rating) {
 		attacker_highest_battle_rating = calculate_highest_battle_rating(f);
 	      }
@@ -30016,6 +30023,7 @@ try {
 	  his_self.game.state.field_battle.attacker_units = attacker_units;
 	  his_self.game.state.field_battle.defender_units = defender_units;
 	  his_self.game.state.field_battle.attacker_units_faction = attacker_units_faction;
+	  his_self.game.state.field_battle.attacker_units_relief_force = attacker_units_relief_force;
 	  his_self.game.state.field_battle.defender_units_faction = defender_units_faction;
 	  his_self.game.state.field_battle.attacker_rolls = attacker_rolls;
 	  his_self.game.state.field_battle.defender_rolls = defender_rolls;
@@ -31898,8 +31906,6 @@ try {
 	  };
 
 	  this.piracy_overlay.render(pobj);
-
-piracy_hits = 3;
 
 	  if (piracy_hits > 0) {
             if (his_self.game.state.events.julia_gonzaga_activated == 1 && target_navalspace == "tyrrhenian") {
@@ -44685,6 +44691,8 @@ does_units_to_move_have_unit = true; }
 
   canPlayerCommitDebater(faction, debater) {
 
+console.log("asked if " + faction + " can commit " + debater + " //// " + JSON.stringify(this.game.state.debater_committed_this_impulse));
+
     if (faction !== "protestant" && faction !== "papacy") { return false; }
 
     if (this.game.state.debater_committed_this_impulse[faction] == 1) { return false; }   
@@ -46082,7 +46090,7 @@ console.log(ops_to_spend + " -- " + ops_remaining);
     his_self.endTurn();
     return 0;
   }
-  canPlayerInitiatePiracyInASea(his_self, player, faction) {
+  canPlayerInitiatePiracyInASea(his_self, player, faction, selected_card) {
 
     if (his_self.game.state.events.foul_weather) { return 0; }
 
@@ -46112,12 +46120,14 @@ console.log(ops_to_spend + " -- " + ops_remaining);
 
   async playerInitiatePiracyInASea(his_self, player, faction) {
 
-    // relevant
+    // relevant vars defined for this function
     //state.events.ottoman_piracy_enabled = 0;
     //state.events.ottoman_corsairs_enabled = 0;
     //state.events.ottoman_piracy_attempts = 0;
     //state.events.ottoman_piracy_seazones = [];
     
+    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.playerTurn(faction, selected_card); });
+
     let msg = "Select Sea for Piracy: ";
     let html = '<ul>';
     for (let key in his_self.game.navalspaces) {
@@ -46181,7 +46191,7 @@ console.log(ops_to_spend + " -- " + ops_remaining);
 
       $('.option').off();
       $('.option').on('click', function () {
- 
+
         let target_port = $(this).attr("id");
         his_self.unbindBackButtonFunction();
         his_self.updateStatus("acknowledge");
@@ -53600,9 +53610,10 @@ console.log("ERROR DISPLAYING NEW WORLD STUFF: " + JSON.stringify(err));
     //
     // and force if has units
     //
+    let has_units = 0;
     for (let key in space.units) {
       if (space.units[key].length > 0) {
-	show_tile = 1; 
+        has_units = 1;
       }
     }
 
@@ -53616,8 +53627,8 @@ console.log("ERROR DISPLAYING NEW WORLD STUFF: " + JSON.stringify(err));
 
       obj.innerHTML = "";
 
-      if (show_tile === 1) {
-	if (!no_keytiles_in_keys.includes(key)) {
+      if (has_units === 1 || show_tile === 1) {
+	if (!no_keytiles_in_keys.includes(key) && show_tile == 1) {
           obj.innerHTML = `<img class="${stype}tile" src="${tile}" />`;
 	}
         obj.innerHTML += this.returnArmies(space);

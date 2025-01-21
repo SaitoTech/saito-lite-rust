@@ -81,6 +81,9 @@ console.log("\n\n\n\n");
         //
         if (this.game.players.length == 2) {
 
+// TESTING
+this.convertSpace("protestant", "mainz");
+
 	  this.unsetEnemies("papacy", "france");
 	  this.unsetEnemies("hapsburg", "france");
 	  this.unsetEnemies("ottoman", "hungary");
@@ -594,7 +597,7 @@ console.log("\n\n\n\n");
           this.addNavalSquadron("genoa", "genoa", 1);
           this.addRegular("france", "genoa", 1);
 
-this.addRegular("hapsburg", "prague", 3);
+this.addRegular("hapsburg", "palma", 1);
 
           this.setAllies("papacy", "hapsburg");
 	  this.setAllies("hapsburg", "hungary");

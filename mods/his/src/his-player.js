@@ -5641,6 +5641,8 @@ does_units_to_move_have_unit = true; }
 
   canPlayerCommitDebater(faction, debater) {
 
+console.log("asked if " + faction + " can commit " + debater + " //// " + JSON.stringify(this.game.state.debater_committed_this_impulse));
+
     if (faction !== "protestant" && faction !== "papacy") { return false; }
 
     if (this.game.state.debater_committed_this_impulse[faction] == 1) { return false; }   
@@ -7038,7 +7040,7 @@ console.log(ops_to_spend + " -- " + ops_remaining);
     his_self.endTurn();
     return 0;
   }
-  canPlayerInitiatePiracyInASea(his_self, player, faction) {
+  canPlayerInitiatePiracyInASea(his_self, player, faction, selected_card) {
 
     if (his_self.game.state.events.foul_weather) { return 0; }
 
@@ -7068,12 +7070,14 @@ console.log(ops_to_spend + " -- " + ops_remaining);
 
   async playerInitiatePiracyInASea(his_self, player, faction) {
 
-    // relevant
+    // relevant vars defined for this function
     //state.events.ottoman_piracy_enabled = 0;
     //state.events.ottoman_corsairs_enabled = 0;
     //state.events.ottoman_piracy_attempts = 0;
     //state.events.ottoman_piracy_seazones = [];
     
+    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.playerTurn(faction, selected_card); });
+
     let msg = "Select Sea for Piracy: ";
     let html = '<ul>';
     for (let key in his_self.game.navalspaces) {
@@ -7137,7 +7141,7 @@ console.log(ops_to_spend + " -- " + ops_remaining);
 
       $('.option').off();
       $('.option').on('click', function () {
- 
+
         let target_port = $(this).attr("id");
         his_self.unbindBackButtonFunction();
         his_self.updateStatus("acknowledge");

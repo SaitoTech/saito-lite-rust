@@ -48,6 +48,7 @@ class Tweet {
 		if (!this.tx.optional.thread_id) { this.tx.optional.thread_id = ''; }
 		if (!this.tx.optional.retweeters) { this.tx.optional.retweeters = []; }
 		if (!this.tx.optional.thread_id) { this.tx.optional.thread_id = this.tx.signature; }		//
+		if (!this.tx.optional.source) { this.tx.optional.source = {}; }
 
 		//
 		// keep track of parent_id and thread_id (replies include these vars)
@@ -104,6 +105,8 @@ class Tweet {
 		this.unknown_children = [];
 		this.unknown_children_sigs_hmap = {};
 		this.user.notice = 'new post on ' + this.formatDate(this.created_at);
+		this.source = this.tx.optional.source;
+
 
 		//
 		// transactions can contain more specifi information for 
