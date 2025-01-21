@@ -775,7 +775,7 @@ class PokerQueue {
 						this.displayPlayerNotice(`<div class="plog-update">All in!</div>`, player);
 					}
 				} else {
-					this.updateLog(this.game.state.player_names[player - 1] + ' calls');
+					this.updateLog(this.game.state.player_names[player - 1] + ' calls to match ' + this.formatWager(this.game.state.required_pot));
 					if (this.game.player !== player) {
 						this.displayPlayerNotice(`<div class="plog-update">calls</div>`, player);
 					}
@@ -794,7 +794,7 @@ class PokerQueue {
 			if (mv[0] === 'fold') {
 				let player = parseInt(mv[1]);
 
-				this.updateLog(this.game.state.player_names[player - 1] + ' folds');
+				this.updateLog(this.game.state.player_names[player - 1] + ` folds with ${this.formatWager(this.game.state.player_pot[player-1])}`);
 
 				this.game.stats[this.game.players[player - 1]].folds++;
 				this.game.state.passed[player - 1] = 1;

@@ -1,4 +1,6 @@
 const PotTemplate = require('./pot.template');
+const PotDetailsTemplate = require('./pot-details.template');
+const SaitoOverlay = require('./../../../../../lib/saito/ui/saito-overlay/saito-overlay');
 
 class Pot {
 
@@ -7,6 +9,7 @@ class Pot {
 		this.game_mod = mod;
 		this.pot_counter = mod.crypto || 'CHIPS';
 		this.pot_active = true;
+		this.overlay = new SaitoOverlay(app, mod);
 	}
 
 	render(pot = -1) {
@@ -17,9 +20,7 @@ class Pot {
 		
 		// By default, calculate the dynamic pot...
 		if (pot == -1) {
-	
 			pot = 0;
-	
 			if (this.pot_active){
 				for (let i = 0; i < this.game_mod.game.state.player_pot.length; i++) {
 				  pot += this.game_mod.game.state.player_pot[i];
@@ -34,7 +35,7 @@ class Pot {
 		  this.app.browser.replaceElementBySelector(PotTemplate(pot, this.pot_counter), ".pot");
 		}
 
-		if (pot){
+		if (pot && !this.game_mod.animating) {
 			this.attachEvents();	
 		}
 		
@@ -57,6 +58,11 @@ class Pot {
 	}
 
 	attachEvents() {
+		if (document.querySelector(".pot")){
+			document.querySelector(".pot").onclick = () => {
+				this.overlay.show(PotDetailsTemplate(this.game_mod));
+			}
+		}
 	}
 
 }
