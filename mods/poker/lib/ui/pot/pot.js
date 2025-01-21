@@ -25,6 +25,7 @@ class Pot {
 				  pot += this.game_mod.game.state.player_pot[i];
 		        }
 			}
+
 		}
 
 		if (!document.querySelector(".pot")) {
@@ -37,6 +38,7 @@ class Pot {
 			this.attachEvents();	
 		}
 		
+		return pot;
 	}
 
 	activate(){
@@ -46,6 +48,12 @@ class Pot {
 	clearPot(){
 		this.pot_active = false;
 		this.render(0);
+	}
+
+	addPulse(){
+		if (document.querySelector(".pot .line2")){
+			document.querySelector(".pot .line2").classList.add("pulse");
+		}
 	}
 
 	attachEvents() {

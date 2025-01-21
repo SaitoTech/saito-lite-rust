@@ -25,7 +25,7 @@ class PokerQueue {
 		this.initializeQueue();
 	}
 
-	handleGameLoop() {
+	async handleGameLoop() {
 		///////////
 		// QUEUE //
 		///////////
@@ -310,7 +310,7 @@ class PokerQueue {
 					this.animateWin(total_pot, winners);
 					this.halted = 1; // because not inside the function for now
 					this.playerAcknowledgeNotice(msg, async () => {
-						this.can_animate = false;
+						this.animating = false;
 						this.cardfan.hide();
 						this.pot.clearPot();
 						this.settleLastRound([this.game.players[player_left_idx]], 'fold');
@@ -669,7 +669,7 @@ class PokerQueue {
 				this.halted = 1; // because not inside the function for now
 				this.animateWin(pot_total, winObj);
 				this.playerAcknowledgeNotice(winnerStr, async () => {
-					this.can_animate = false;
+					this.animating = false;
 					this.cardfan.hide();
 					this.pot.clearPot();
 					this.settleLastRound(winner_keys, 'besthand');
@@ -781,9 +781,7 @@ class PokerQueue {
 					}
 				}
 
-				//
-				// reset plays since last raise
-				//
+				await this.animateBet(player, amount_to_call);
 
 				this.game.state.player_pot[player - 1] += amount_to_call;
 				this.game.state.player_credit[player - 1] -= amount_to_call;
@@ -833,6 +831,8 @@ class PokerQueue {
 
 				this.game.state.plays_since_last_raise = 1;
 
+				await this.animateBet(player, raise);
+
 				this.game.state.player_credit[player - 1] -= raise;
 				this.game.state.player_pot[player - 1] += raise;
 				this.game.state.last_raise = raise_portion;
@@ -864,6 +864,7 @@ class PokerQueue {
 					this.updateLog(`${this.game.state.player_names[player - 1]} ${raise_message}`);
 				}
 				this.game.queue.splice(qe, 1);
+				
 				return 1;
 			}
 		}

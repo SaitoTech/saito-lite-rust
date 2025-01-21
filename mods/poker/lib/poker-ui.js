@@ -128,12 +128,11 @@ class PokerUI {
   //
   async animateWin(amount, winners){ 
 
-    console.log("***********************");
-    console.log(winners);
+    this.animating = true;
 
-    this.can_animate = true;
+    let step_speed = Math.min(200, 1000/amount);
 
-    while (amount >= Object.keys(winners).length && this.can_animate) {
+    while (amount >= Object.keys(winners).length && this.animating) {
   
       for (let j in winners){
         j = parseInt(j);
@@ -143,14 +142,13 @@ class PokerUI {
             callback: () => {
               this.pot.render(--amount);
               this.displayPlayerStack(j + 1, ++winners[j]);
-              console.log(`Animation step -- Player ${j}: ${winners[j]}. Remaining pot: ${amount}`);
             },
             run_all_callbacks: true
           },
           (item) => {
             $(item).remove();
           });
-        await this.timeout(1000/amount);
+        await this.timeout(step_speed);
       }
     }
 
@@ -162,24 +160,28 @@ class PokerUI {
 
   }
 
-  async animateBet(amount, player_index, restartQueue = false){
+  async animateBet(better, amount, restartQueue = false){
 
     if (restartQueue){
       this.halted = 1;
     }
-    
+
+    let initial_pot = this.pot.render();
+    let initial_stack = this.game.state.player_credit[better-1];
+
+    let step_speed = Math.min(150, 550/amount);
+
     for (let i = 0; i < amount; i++){
 
-      this.moveGameElement(this.createGameElement(`<div class="poker-chip"></div>`, `.game-playerbox-${player_index+1}`),
-        ".pot-chips",
+      this.moveGameElement(this.createGameElement(`<div class="poker-chip"></div>`, `.game-playerbox-${better}`),
+        ".pot",
         {
           callback: () => {
-            this.game.state.pot++;
-            this.game.state.player_credit[player_index]--;
-            this.pot.render();
-            this.displayPlayerStack(player_index+1);
+            this.pot.render(++initial_pot);
+            this.displayPlayerStack(better, --initial_stack);
+            this.pot.addPulse();
           },
-          run_all_callbacks: !restartQueue
+          run_all_callbacks: true
         },
         (item) => {
           if (!restartQueue){
@@ -191,9 +193,9 @@ class PokerUI {
           }
           
         });
-      await this.timeout(500/amount);
+      await this.timeout(step_speed);
     }
-
+    await this.timeout(500);
   }
 
 
