@@ -54,6 +54,10 @@
 	margin: auto; /* auto-center in grid */
 }
 
+.game-playerbox.folded {
+	filter: grayscale(100%) brightness(0.6) opacity(75%);
+}
+
 .game-playerbox.active:not(.game-playerbox-seat-1) {
 	border: 1px solid #fff;
 	filter: drop-shadow(5px 5px 3px black);

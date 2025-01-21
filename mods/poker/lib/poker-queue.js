@@ -25,7 +25,7 @@ class PokerQueue {
 		this.initializeQueue();
 	}
 
-	handleGameLoop() {
+	async handleGameLoop() {
 		///////////
 		// QUEUE //
 		///////////
@@ -54,6 +54,8 @@ class PokerQueue {
 				for (let i = 1; i <= this.game.players; i++) {
 					this.playerbox.updateGraphics('', i);
 				}
+
+				this.updateStatus("dealing new round...");
 
 				this.game.state.round++;
 
@@ -108,6 +110,8 @@ class PokerQueue {
 					this.game.stats[this.game.players[i]].hands++;
 				}
 
+				this.pot.activate();
+
 				this.startRound();
 				return 1;
 			}
@@ -132,6 +136,10 @@ class PokerQueue {
 
 			if (mv[0] === 'checkplayers') {
 				this.game.queue.splice(qe, 1);
+
+				if (this.gameBrowserActive()){
+					$(".folded").removeClass("folded");
+				}
 
 				//Check for end of game -- everyone except 1 player has zero credit...
 				let alive_players = 0;
@@ -239,10 +247,15 @@ class PokerQueue {
 
 					this.updateLog(logMsg);
 
+					// For animating
+					let winners = {};
+					winners[player_left_idx] = this.game.state.player_credit[player_left_idx];
+
 					this.game.state.player_credit[player_left_idx] += total_pot;
 
 					this.game.stats[this.game.players[player_left_idx]].wins++;
 
+					// Poker Stats
 					if (this.game.state.flipped == 0) {
 						if (total_pot == this.game.state.big_blind + this.game.state.small_blind) {
 							// No one called or raised --> walk
@@ -294,14 +307,18 @@ class PokerQueue {
 						this.cardfan.hide();
 					}
 
+					this.animateWin(total_pot, winners);
+					this.halted = 1; // because not inside the function for now
 					this.playerAcknowledgeNotice(msg, async () => {
+						this.animating = false;
 						this.cardfan.hide();
-						this.pot.render(0);
+						this.pot.clearPot();
 						this.settleLastRound([this.game.players[player_left_idx]], 'fold');
 						this.board.clearTable();
 						await this.timeout(1000);
 						this.restartQueue();
 					});
+					this.setShotClock('.acknowledge');
 
 					return 0;
 				}
@@ -385,6 +402,7 @@ class PokerQueue {
 				this.game.queue.splice(qe, 1);
 
 				this.board.render();
+				this.displayPlayers();
 
 				if (this.game.state.flipped === 0) {
 					if (this.game.player > 0) {
@@ -540,6 +558,8 @@ class PokerQueue {
 				let pot_size = Math.floor(pot_total / winners.length);
 				let winnerStr = '';
 
+				let winObj = {};
+
 				// single winner gets everything
 
 				let logMsg =
@@ -558,6 +578,10 @@ class PokerQueue {
 							winnerStr += ', and ';
 						}
 					}
+
+					// For animating chip change
+					winObj[winners[i]] = this.game.state.player_credit[winners[i]];
+
 					this.game.stats[this.game.players[winners[i]]].wins++;
 					if (winners[i] == this.game.player - 1) {
 						winnerStr += 'You';
@@ -642,14 +666,19 @@ class PokerQueue {
 					}
 				}
 
+				this.halted = 1; // because not inside the function for now
+				this.animateWin(pot_total, winObj);
 				this.playerAcknowledgeNotice(winnerStr, async () => {
+					this.animating = false;
 					this.cardfan.hide();
-					this.pot.render(0);
+					this.pot.clearPot();
 					this.settleLastRound(winner_keys, 'besthand');
 					this.board.clearTable();
 					await this.timeout(1000);
 					this.restartQueue();
 				});
+				this.setShotClock('.acknowledge');
+
 
 				return 0;
 			}
@@ -746,15 +775,13 @@ class PokerQueue {
 						this.displayPlayerNotice(`<div class="plog-update">All in!</div>`, player);
 					}
 				} else {
-					this.updateLog(this.game.state.player_names[player - 1] + ' calls');
+					this.updateLog(this.game.state.player_names[player - 1] + ' calls to match ' + this.formatWager(this.game.state.required_pot));
 					if (this.game.player !== player) {
 						this.displayPlayerNotice(`<div class="plog-update">calls</div>`, player);
 					}
 				}
 
-				//
-				// reset plays since last raise
-				//
+				await this.animateBet(player, amount_to_call);
 
 				this.game.state.player_pot[player - 1] += amount_to_call;
 				this.game.state.player_credit[player - 1] -= amount_to_call;
@@ -767,7 +794,7 @@ class PokerQueue {
 			if (mv[0] === 'fold') {
 				let player = parseInt(mv[1]);
 
-				this.updateLog(this.game.state.player_names[player - 1] + ' folds');
+				this.updateLog(this.game.state.player_names[player - 1] + ` folds with ${this.formatWager(this.game.state.player_pot[player-1])}`);
 
 				this.game.stats[this.game.players[player - 1]].folds++;
 				this.game.state.passed[player - 1] = 1;
@@ -777,8 +804,10 @@ class PokerQueue {
 				if (this.browser_active) {
 					if (this.game.player !== player) {
 						this.displayPlayerNotice(`<div class="plog-update">folds</div>`, player);
+						this.playerbox.addClass("folded", player);
 					} else {
 						this.displayHand();
+						this.ignore_notifications = true;
 					}
 				}
 			}
@@ -801,6 +830,8 @@ class PokerQueue {
 				let raise_portion = raise - call_portion;
 
 				this.game.state.plays_since_last_raise = 1;
+
+				await this.animateBet(player, raise);
 
 				this.game.state.player_credit[player - 1] -= raise;
 				this.game.state.player_pot[player - 1] += raise;
@@ -833,6 +864,7 @@ class PokerQueue {
 					this.updateLog(`${this.game.state.player_names[player - 1]} ${raise_message}`);
 				}
 				this.game.queue.splice(qe, 1);
+				
 				return 1;
 			}
 		}

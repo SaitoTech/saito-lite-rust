@@ -22,8 +22,8 @@ class Diddy extends ModTemplate {
         return this;
     }
 
-    initialize(app) {
-        super.initialize(app);
+    async initialize(app) {
+        await super.initialize(app);
 
         // console.log("Initializing Diddy module...");
 
@@ -36,13 +36,15 @@ class Diddy extends ModTemplate {
         // Ensure dynamic properties are recalculated
         this.recalculateState();
 
-        // Initialize components
-        this.ui = new DiddyMain(app, this);
-        this.header = new SaitoHeader(app, this);
+        if (this.browser_active){
+            // Initialize components
+            this.ui = new DiddyMain(app, this);
+            this.header = new SaitoHeader(app, this);
 
-        // Add components to the app
-        this.addComponent(this.ui);
-        this.addComponent(this.header);
+            // Add components to the app
+            this.addComponent(this.ui);
+            this.addComponent(this.header);
+        }
     }
 
     recalculateState() {

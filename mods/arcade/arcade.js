@@ -51,7 +51,7 @@ class Arcade extends ModTemplate {
 
 		// Still using deprecated peerhandshakecomplete rather than peerservice
 		this.services = []; //[this.app.network.createPeerService(null, 'arcade', '', 'saito')];
-		
+
 		this.invite_cutoff = 3500000;
 		this.game_cutoff = 600000000;
 
@@ -67,29 +67,27 @@ class Arcade extends ModTemplate {
 			image: 'https://saito.tech/wp-content/uploads/2023/11/arcade-300x300.png'
 		};
 
-		app.connection.on('arcade-issue-challenge', async ({game, players, options}) => {
+		app.connection.on('arcade-issue-challenge', async ({ game, players, options }) => {
 			let tx;
 
-			if (this.challenge_tx){
+			if (this.challenge_tx) {
 				tx = await this.createJoinTransaction(this.challenge_tx);
 			} else {
 				tx = await this.createChallengeTransaction(game, players, options);
 			}
-			
-			if (tx){
+
+			if (tx) {
 				app.connection.emit('relay-send-message', {
 					recipient: players,
 					request: 'arcade spv update',
 					data: tx.toJson()
 				});
 			}
-
 		});
 
 		app.connection.on('arcade-notify-player-turn', (game_id, target, status) => {
 			for (let game of app.options.games) {
 				if (game.id == game_id) {
-
 					//let prev_target = game.target;
 
 					game.status = status;
@@ -101,6 +99,15 @@ class Arcade extends ModTemplate {
 					siteMessage(`It is now your turn in ${game.module}`, 5000);
 					app.connection.emit('arcade-invite-manager-render-request');
 				}
+			}
+		});
+
+		app.connection.on('arcade-gametable-addplayer', (game_id) => {
+			console.log('arcade-gametable-addplayer');
+			let game = this.returnGame(game_id);
+			if (game) {
+				console.log(game);
+				this.sendJoinTransaction({tx: game, game_name: "open_table"});
 			}
 		});
 	}
@@ -173,7 +180,6 @@ class Arcade extends ModTemplate {
 			// my games stored in local wallet
 			//
 			if (this.app.options.games) {
-
 				this.purgeBadGamesFromWallet();
 				this.purgeOldGamesFromWallet();
 
@@ -197,6 +203,8 @@ class Arcade extends ModTemplate {
 						//
 						if (!game.over) {
 							this.addGame(game_tx, 'active');
+						}else{
+							this.addGame(game_tx, 'over');
 						}
 					}
 				}
@@ -210,12 +218,12 @@ class Arcade extends ModTemplate {
 
 			this.app.connection.emit('arcade-invite-manager-render-request');
 
-			setInterval(()=>{
+			setInterval(() => {
 				let cutoff = new Date().getTime() - this.invite_cutoff;
-				for (let key of ['mine', 'open']){
+				for (let key of ['mine', 'open']) {
 					let my_games = this.games[key];
-					for (let i = my_games.length-1; i >= 0; i--){
-						if (my_games[i].timestamp < cutoff ){
+					for (let i = my_games.length - 1; i >= 0; i--) {
+						if (my_games[i].timestamp < cutoff) {
 							this.removeGame(my_games[i].signature);
 							this.addGame(my_games[i], 'close');
 							this.app.connection.emit('arcade-invite-manager-render-request');
@@ -223,7 +231,6 @@ class Arcade extends ModTemplate {
 					}
 				}
 			}, 90000);
-
 		}
 
 		try {
@@ -326,7 +333,6 @@ class Arcade extends ModTemplate {
 	// Since no open transactions are addressed to us, we can't just read them off the blockchain
 	//
 	async onPeerHandshakeComplete(app, peer) {
-
 		if (!app.BROWSER) {
 			return;
 		}
@@ -339,8 +345,6 @@ class Arcade extends ModTemplate {
 		// load open games from server
 		//  ( status = "open" OR status = "private" ) AND
 
-
-
 		let sql = `SELECT *
                FROM games
                WHERE created_at > ${cutoff1}
@@ -348,10 +352,8 @@ class Arcade extends ModTemplate {
                ORDER BY created_at ASC`;
 
 		this.sendPeerDatabaseRequestWithFilter('Arcade', sql, (res) => {
-
 			if (res?.rows) {
 				for (let record of res.rows) {
-
 					let game_tx = this.createGameFromRecord(record);
 					//
 					//record.status will overwrite the open/private msg.request from the original game invite creation
@@ -359,7 +361,7 @@ class Arcade extends ModTemplate {
 					let game_added = arcade_self.addGame(game_tx, record.status);
 
 					//Game is marked as "active" but we didn't already add it from our app.options file...
-					if (record.status == "active" && game_added && arcade_self.isMyGame(game_tx)){
+					if (record.status == 'active' && game_added && arcade_self.isMyGame(game_tx)) {
 						game_tx.msg.game_id = game_tx.signature;
 						arcade_self.receiveAcceptTransaction(game_tx);
 					}
@@ -370,7 +372,6 @@ class Arcade extends ModTemplate {
 			// For processing direct link to game invite
 			//
 			if (arcade_self.app.browser.returnURLParameter('game_id')) {
-
 				let game_id_short = arcade_self.app.browser.returnURLParameter('game_id');
 				let game = arcade_self.returnGameFromHash(game_id_short);
 
@@ -385,7 +386,7 @@ class Arcade extends ModTemplate {
 
 					//Then we have to remove and readd the game so it goes under "mine"
 					arcade_self.removeGame(game.signature);
-					arcade_self.addGame(game, "private");
+					arcade_self.addGame(game, 'private');
 				}
 
 				app.browser.logMatomoEvent('GameInvite', 'FollowLink', game.game);
@@ -398,19 +399,17 @@ class Arcade extends ModTemplate {
 
 			app.connection.emit('arcade-invite-manager-render-request');
 			app.connection.emit('arcade-data-loaded');
-
 		});
 
 		this.initial_connect = true;
 	}
 
 	async onPeerServiceUp(app, peer, service = {}) {
-
 		if (!app.BROWSER) {
 			return;
 		}
 
-/******** NOV 18 - disabled to test chain-sync bug
+		/******** NOV 18 - disabled to test chain-sync bug
 		if (service.service === 'archive') {
 			for (let game of this.app.options.games) {
 
@@ -461,8 +460,7 @@ class Arcade extends ModTemplate {
 	// while the application is loaded.
 	//
 	async render() {
-		if (window.location.pathname.includes(this.returnSlug())){
-
+		if (window.location.pathname.includes(this.returnSlug())) {
 			if (this.main == null) {
 				this.main = new ArcadeMain(this.app, this);
 				this.header = new SaitoHeader(this.app, this);
@@ -480,20 +478,17 @@ class Arcade extends ModTemplate {
 			}
 
 			await super.render();
-
-		}else{
-
-			let path = window.location.pathname.split("/");
+		} else {
+			let path = window.location.pathname.split('/');
 			let game_name = path.pop();
 			let game_mod = this.app.modules.returnModuleBySlug(game_name);
-			if (game_mod){
+			if (game_mod) {
 				game_mod.game = null;
 				game_mod.attachEvents();
 			}
 
 			this.browser_active = 0;
 		}
-
 	}
 
 	//
@@ -572,7 +567,7 @@ class Arcade extends ModTemplate {
 		if (type === 'user-menu') {
 			if (obj?.publicKey && obj.publicKey !== this.publicKey) {
 				let am = this.app.modules.returnActiveModule();
-				if (!am || !this.shouldAffixCallbackToModule(am.name) || this.name == am.name){
+				if (!am || !this.shouldAffixCallbackToModule(am.name) || this.name == am.name) {
 					return {
 						text: 'Challenge to Game',
 						icon: 'fas fa-gamepad',
@@ -587,18 +582,18 @@ class Arcade extends ModTemplate {
 		}
 
 		if (type === 'game-manager') {
-			let container = obj?.container || "";
+			let container = obj?.container || '';
 			let gm = new GameManager(this.app, this, container);
 			return { gm };
 		}
 
-		if (type === 'invite-manager'){
+		if (type === 'invite-manager') {
 			let game_filter = obj?.filter || null;
 
 			if (!this.renderIntos) {
 				this.renderIntos = [];
 			}
-			
+
 			if (!this.renderIntos['.game-page-invites']) {
 				this.renderIntos['.game-page-invites'] = [];
 				let obj = new InviteManager(this.app, this, '.game-page-invites');
@@ -639,7 +634,7 @@ class Arcade extends ModTemplate {
 			x.push({
 				text: 'Games',
 				icon: this.icon || 'fas fa-gamepad',
-            is_active: this.browser_active,
+				is_active: this.browser_active,
 				rank: 25,
 				callback: function (app, id) {
 					app.connection.emit('arcade-launch-game-selector', {});
@@ -714,16 +709,13 @@ class Arcade extends ModTemplate {
 					// Archive game overs for async to work
 					//
 					if (!this.app.BROWSER) {
-
 						let step = txmsg?.step?.game || null;
-						if (step){
+						if (step) {
 							step = String(step).padStart(5, '0');
 						}
 						await this.app.storage.saveTransaction(
 							tx,
-							{ field4: txmsg.game_id,
-							  field5: step
-						   },
+							{ field4: txmsg.game_id, field5: step },
 							'localhost'
 						);
 					}
@@ -741,7 +733,6 @@ class Arcade extends ModTemplate {
 	// handles off-chain transactions, packaged as data by Relay module
 	//
 	async handlePeerTransaction(app, newtx = null, peer, mycallback = null) {
-
 		if (newtx == null) {
 			return 0;
 		}
@@ -788,19 +779,18 @@ class Arcade extends ModTemplate {
 					await this.receiveAcceptTransaction(tx);
 				}
 
-	        //TODO - reimplement / check
-	        // This was an idea to completely off-chain send a player a direct/play now game invite
-	        // Which will pop up a yes/no demand for immediate response
+				//TODO - reimplement / check
+				// This was an idea to completely off-chain send a player a direct/play now game invite
+				// Which will pop up a yes/no demand for immediate response
 
-	        if (txmsg.request == "challenge") {
-	          this.receiveChallengeTransaction(tx);
-	        }
+				if (txmsg.request == 'challenge') {
+					this.receiveChallengeTransaction(tx);
+				}
 
-	        if (txmsg.request == "sorry"){
-	        	 //Trigger UI update in game
-	          app.connection.emit("arcade-reject-challenge", txmsg.game_id);
-	        }
-
+				if (txmsg.request == 'sorry') {
+					//Trigger UI update in game
+					app.connection.emit('arcade-reject-challenge', txmsg.game_id);
+				}
 			} else {
 				if (txmsg.request === 'stopgame') {
 					await this.receiveCloseTransaction(tx);
@@ -922,13 +912,13 @@ class Arcade extends ModTemplate {
 		this.saveGameInvite(tx, blk);
 	}
 
-	async saveGameInvite(tx, blk){
+	async saveGameInvite(tx, blk) {
 		//
 		// Only the arcade service node (non-browser) needs to bother executing SQL
 		//
 
 		let txmsg = tx.returnMessage();
-		
+
 		let options = txmsg.options != undefined ? txmsg.options : {};
 
 		let players_array = txmsg.players[0] + '/' + txmsg.players_sigs[0];
@@ -971,7 +961,6 @@ class Arcade extends ModTemplate {
 			$winner: ''
 		};
 		await this.app.storage.runDatabase(sql, params, 'arcade');
-
 	}
 
 	////////////
@@ -1069,7 +1058,6 @@ class Arcade extends ModTemplate {
 	}
 
 	async changeGameStatus(game_id, newStatus) {
-
 		let game = this.returnGame(game_id);
 
 		if (game?.msg?.request == 'over') {
@@ -1126,7 +1114,7 @@ class Arcade extends ModTemplate {
 		let params = {
 			$winner: JSON.stringify(winner),
 			$method: txmsg.reason,
-			$status: "over",
+			$status: 'over',
 			$timestamp: txmsg.timestamp,
 			$game_id: txmsg.game_id
 		};
@@ -1209,7 +1197,6 @@ class Arcade extends ModTemplate {
 	// the game.
 	//
 	async createJoinTransaction(orig_tx, options = null) {
-
 		if (!orig_tx || !orig_tx.signature) {
 			console.error('Invalid Game Invite TX, cannot Join');
 			return;
@@ -1242,7 +1229,7 @@ class Arcade extends ModTemplate {
 		return newtx;
 	}
 
-	async sendJoinTransaction(invite, update_options = false){
+	async sendJoinTransaction(invite, update_options = false) {
 		//
 		// Create Transaction
 		//
@@ -1260,9 +1247,8 @@ class Arcade extends ModTemplate {
 			data: newtx.toJson()
 		});
 
-		this.app.browser.logMatomoEvent('GameInvite', 'JoinGame', invite.game_mod.name);
+		this.app.browser.logMatomoEvent('GameInvite', 'JoinGame', invite.game_name);
 		this.app.connection.emit('arcade-invite-manager-render-request');
-
 	}
 
 	async receiveJoinTransaction(tx) {
@@ -1285,39 +1271,45 @@ class Arcade extends ModTemplate {
 		//
 		// If we don't find it, or we have already marked the game as active, stop processing
 		//
-		if (!game || !this.isAvailableGame(game)) {
+		if (!game) {
 			return;
 		}
 
-		//
-		// Don't add the same player twice!
-		//
-		if (!game.msg.players.includes(tx.from[0].publicKey)) {
-			
-			if (txmsg.update_options) {
-				console.log("Join TX updates the invite options!");
-				game.msg.options = txmsg.options;
-				//await this.updateGameOptionSQL(txmsg);
-			}
-
-			if (this.debug) {
-				console.log(
-					`Adding Player (${tx.from[0].publicKey}) to Game: `,
-					JSON.parse(JSON.stringify(game))
-				);
-			}
-
+		if (this.isAvailableGame(game) || game.msg?.options['open-table']) {
 			//
-			// add player to game
+			// Don't add the same player twice!
 			//
-			game.msg.players.push(tx.from[0].publicKey);
-			game.msg.players_sigs.push(txmsg.invite_sig);
+			if (!game.msg.players.includes(tx.from[0].publicKey)) {
+				if (txmsg.update_options) {
+					console.log('Join TX updates the invite options!');
+					game.msg.options = txmsg.options;
+					//await this.updateGameOptionSQL(txmsg);
+				}
 
-			//Update DB
-			await this.updatePlayerListSQL(txmsg.game_id, game.msg.players, game.msg.players_sigs);
+				if (this.debug) {
+					console.log(
+						`Adding Player (${tx.from[0].publicKey}) to Game: `,
+						JSON.parse(JSON.stringify(game))
+					);
+				}
 
-			//Update UI
-			this.app.connection.emit('arcade-invite-manager-render-request');
+				//
+				// add player to game
+				//
+				game.msg.players.push(tx.from[0].publicKey);
+				game.msg.players_sigs.push(txmsg.invite_sig);
+
+				//Update DB
+				await this.updatePlayerListSQL(txmsg.game_id, game.msg.players, game.msg.players_sigs);
+
+				//Update UI
+				this.app.connection.emit('arcade-invite-manager-render-request');
+			}
+		}
+
+		// If this is an already initialized table game... stop
+		if (!this.isAvailableGame(game)) {
+			return;
 		}
 
 		//
@@ -1330,7 +1322,10 @@ class Arcade extends ModTemplate {
 			//
 			// First player (originator) sends the accept message
 			//
-			if (game.msg.originator == this.publicKey || tx.isFrom(this.publicKey) && game.msg.options?.async_dealing) {
+			if (
+				game.msg.originator == this.publicKey ||
+				(tx.isFrom(this.publicKey) && game.msg.options?.async_dealing)
+			) {
 				let newtx = await this.createAcceptTransaction(game);
 				this.app.network.propagateTransaction(newtx);
 				this.app.connection.emit('relay-send-message', {
@@ -1377,12 +1372,10 @@ class Arcade extends ModTemplate {
 		return newtx;
 	}
 
-
 	async receiveAcceptTransaction(tx) {
-
 		//Must be valid tx
 		if (!tx) {
-			console.warn("Invalid tx");
+			console.warn('Invalid tx');
 			return;
 		}
 		let txmsg = tx.returnMessage();
@@ -1403,7 +1396,7 @@ class Arcade extends ModTemplate {
 
 		// Must be an available invite
 		if (!game || (!this.isAvailableGame(game, 'accepted') && !txmsg.options?.async_dealing)) {
-console.log("NOT AVAILABLE GAME");
+			console.log('NOT AVAILABLE GAME');
 			//console.log(game);
 			//console.log(txmsg);
 			return;
@@ -1412,7 +1405,7 @@ console.log("NOT AVAILABLE GAME");
 		// do not re-accept game already in my local storage (a consequence of game initialization)
 		for (let i = 0; i < this.app?.options?.games?.length; i++) {
 			if (this.app.options.games[i].id === txmsg.game_id) {
-console.log("RETURNING...")
+				console.log('RETURNING...');
 				return;
 			}
 		}
@@ -1426,12 +1419,12 @@ console.log("RETURNING...")
 		// If I am a player in the game, let's start it initializing
 		//
 		if (txmsg.players.includes(this.publicKey)) {
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("$");
-console.log("$ i am in this game");
+			console.log('$');
+			console.log('$');
+			console.log('$');
+			console.log('$');
+			console.log('$');
+			console.log('$ i am in this game');
 			if (!this.app.options.arcade[txmsg.game]) {
 				this.app.options.arcade[txmsg.game] = 0;
 			}
@@ -1450,9 +1443,9 @@ console.log("$ i am in this game");
       from initializing, so... we should wait for feedback and nope out of the spinner if something breaks
       */
 
-console.log("before igfat 1");
+			console.log('before igfat 1');
 			let game_engine_id = await gamemod.initializeGameFromAcceptTransaction(tx);
-console.log("before igfat 2");
+			console.log('before igfat 2');
 
 			console.log('game engine id ///////');
 			console.log(game_engine_id);
@@ -1523,76 +1516,74 @@ console.log("before igfat 2");
 	// a direct invitation from one player to another
 	//
 
-  async createChallengeTransaction(game, players, options) {
-    let timestamp = new Date().getTime();
+	async createChallengeTransaction(game, players, options) {
+		let timestamp = new Date().getTime();
 
-	 let accept_sig = await this.app.crypto.signMessage(
-		`invite_game_${timestamp}`,
-		await this.app.wallet.getPrivateKey()
-	 );
+		let accept_sig = await this.app.crypto.signMessage(
+			`invite_game_${timestamp}`,
+			await this.app.wallet.getPrivateKey()
+		);
 
-    let tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
+		let tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
 
-    let otherPlayer = null;
+		let otherPlayer = null;
 
-    console.log(players);
+		console.log(players);
 
-    for (let sendto of players) {
-      if (sendto !== this.publicKey){
-      	otherPlayer = sendto;
-      	tx.addTo(otherPlayer);
-      }
-    }
+		for (let sendto of players) {
+			if (sendto !== this.publicKey) {
+				otherPlayer = sendto;
+				tx.addTo(otherPlayer);
+			}
+		}
 
-    if (!otherPlayer){
-    	return null;
-    }
+		if (!otherPlayer) {
+			return null;
+		}
 
-    tx.msg = {
-      timestamp: timestamp,
-      module: "Arcade",
-      request: "challenge",
-      game,
-      options,
-      players_needed: players.length,
-      players: [this.publicKey],
-      players_sigs: [accept_sig],
-      originator: this.publicKey,
-      desired_opponent_publickey: otherPlayer,
-    };
+		tx.msg = {
+			timestamp: timestamp,
+			module: 'Arcade',
+			request: 'challenge',
+			game,
+			options,
+			players_needed: players.length,
+			players: [this.publicKey],
+			players_sigs: [accept_sig],
+			originator: this.publicKey,
+			desired_opponent_publickey: otherPlayer
+		};
 
-	 await tx.sign();
+		await tx.sign();
 
-    return tx;
-  }
+		return tx;
+	}
 
-  receiveChallengeTransaction(tx, blk = null) {
-    if (!tx || !tx.signature) {
-      return;
-    }
+	receiveChallengeTransaction(tx, blk = null) {
+		if (!tx || !tx.signature) {
+			return;
+		}
 
-    if (!this.app.BROWSER){
-    	this.saveGameInvite(tx, blk);
-    }
+		if (!this.app.BROWSER) {
+			this.saveGameInvite(tx, blk);
+		}
 
-    if (!tx.isTo(this.publicKey)) {
-      return;
-    }
+		if (!tx.isTo(this.publicKey)) {
+			return;
+		}
 
-    this.addGame(tx, "private");
+		this.addGame(tx, 'private');
 
-    let txmsg = tx.returnMessage();
+		let txmsg = tx.returnMessage();
 
-    //console.log(txmsg);
+		//console.log(txmsg);
 
-    if (!tx.isFrom(this.publicKey)){
-    	this.challenge_tx = tx;
-    }
+		if (!tx.isFrom(this.publicKey)) {
+			this.challenge_tx = tx;
+		}
 
-    this.app.connection.emit("arcade-challenge-issued", tx);
-
-  }
-
+		this.app.connection.emit('arcade-challenge-issued', tx);
+	}
 
 	/*
   Update the Games Table with a new list of players+signatures for the multiplayer game
@@ -1741,8 +1732,8 @@ console.log("before igfat 2");
 			//
 			if (this.isMyGame(tx)) {
 				list = 'mine';
-			}else {
-				if (tx.msg.players_needed <= tx.msg.players.length){
+			} else {
+				if (tx.msg.players_needed <= tx.msg.players.length) {
 					list = 'active';
 				}
 				if (tx.msg?.options['open-table']) {
@@ -1819,7 +1810,8 @@ console.log("before igfat 2");
 			for (let i = this.app.options.games.length - 1; i >= 0; i--) {
 				let g = this.app.options.games[i];
 				if (g.over >= 1) {
-					if (g.timestamp < (new Date().getTime() - 240000)) { // after 1 hour
+					if (g.timestamp < new Date().getTime() - 240000) {
+						// after 1 hour
 						this.app.options.games.splice(i, 1);
 					}
 				}
@@ -1952,14 +1944,12 @@ console.log("before igfat 2");
 		return 0;
 	}
 
-
-	isSlug(slug){	
-		if (slug == this.returnSlug() || slug == "game"){
+	isSlug(slug) {
+		if (slug == this.returnSlug() || slug == 'game') {
 			return true;
 		}
 		return false;
 	}
-
 
 	webServer(app, expressapp, express) {
 		let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
@@ -1997,14 +1987,12 @@ console.log("before igfat 2");
 			return;
 		});
 
-
-		expressapp.get('/game/:game', async function (req, res){
-
+		expressapp.get('/game/:game', async function (req, res) {
 			let reqBaseURL = req.protocol + '://' + req.headers.host + '/';
 			let game = req.params.game;
 			let game_mod = arcade_self.app.modules.returnModuleBySlug(game);
 
-			if (game_mod){
+			if (game_mod) {
 				let html = game_mod.returnHomePage(reqBaseURL);
 				if (!res.finished) {
 					res.setHeader('Content-type', 'text/html');
@@ -2065,7 +2053,6 @@ console.log("before igfat 2");
 	}
 
 	async makeGameInvite(options, gameType = 'open', invite_obj = {}) {
-
 		let game = options.game;
 		let game_mod = this.app.modules.returnModule(game);
 		let players_needed = options['game-wizard-players-select'];
@@ -2093,7 +2080,7 @@ console.log("before igfat 2");
 			return;
 		}
 
-console.log("creating gamedata...");
+		console.log('creating gamedata...');
 
 		let gamedata = {
 			ts: new Date().getTime(),
@@ -2103,7 +2090,7 @@ console.log("creating gamedata...");
 			players_needed: players_needed,
 			invitation_type: gameType
 		};
-console.log("X: " + JSON.stringify(gamedata));
+		console.log('X: ' + JSON.stringify(gamedata));
 
 		if (players_needed == 1) {
 			this.launchSinglePlayerGame(gamedata);
@@ -2134,14 +2121,14 @@ console.log("X: " + JSON.stringify(gamedata));
 				}
 			}
 
-console.log("creating gamedata... 2");
+			console.log('creating gamedata... 2');
 			let newtx = await this.createOpenTransaction(gamedata);
-console.log("creating gamedata... 3");
+			console.log('creating gamedata... 3');
 
 			if (gameType == 'import') {
-console.log("creating gamedata... 3");
+				console.log('creating gamedata... 3');
 				this.app.connection.emit('arcade-launch-game-import', newtx);
-console.log("creating gamedata... 4");
+				console.log('creating gamedata... 4');
 				return;
 			}
 
@@ -2162,7 +2149,7 @@ console.log("creating gamedata... 4");
 
 			if (gameType == 'open') {
 				if (this.app.browser.isMobileBrowser(navigator.userAgent) && !this.browser_active) {
-					siteMessage("Game invite created. Visit the Arcade to manage");
+					siteMessage('Game invite created. Visit the Arcade to manage');
 				}
 				return;
 			}
@@ -2185,7 +2172,7 @@ console.log("creating gamedata... 4");
 			return;
 		}
 
-		console.log("Observe Game: ", watch_live);
+		console.log('Observe Game: ', watch_live);
 
 		let game_msg = game_tx.returnMessage();
 
@@ -2195,7 +2182,8 @@ console.log("creating gamedata... 4");
 
 		//We want to send a message to the players to add us to the game.accept list so they route their game moves to us as well
 		game_msg.game_id = game_id;
-		this.sendFollowTx(game_msg);
+
+		game_mod.sendFollowTx(game_msg);
 
 		if (!this.app.options.games) {
 			this.app.options.games = [];
@@ -2205,7 +2193,6 @@ console.log("creating gamedata... 4");
 			console.log('Initialize game');
 			//starts running the queue...
 			await game_mod.initializeObserverMode(game_tx);
-			
 		} else {
 			console.log('Game already exists');
 			game_mod.loadGame(game_id);
@@ -2216,36 +2203,7 @@ console.log("creating gamedata... 4");
 			game_mod.game.live = watch_live;
 			game_mod.saveGame(game_id);
 		}
-
 	}
-
-	async sendFollowTx(game) {
-		let tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
-		tx.msg = {
-			module: game.game,
-			game_id: game.game_id,
-			request: 'follow game',
-			my_key: this.publicKey
-		};
-
-		for (let p of game.players) {
-			tx.addTo(p);
-		}
-		await tx.sign();
-
-		//Only looking for this in handlePeerRequest, pure off-chain
-		//this.app.network.propagateTransaction(tx);
-
-		//
-		// relay too
-		//
-		this.app.connection.emit('relay-send-message', {
-			recipient: game.players,
-			request: 'game relay update',
-			data: tx.toJson()
-		});
-	}
-
 }
 
 module.exports = Arcade;

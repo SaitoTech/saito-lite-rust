@@ -128,6 +128,9 @@ class Stun extends ModTemplate {
 
 		if (type === 'user-menu') {
 			let mod_self = this;
+			if (obj?.publicKey || obj.publicKey == this.publicKey){
+				return null;
+			}
 			return [
 				{
 					text: 'Create Stun Connection',

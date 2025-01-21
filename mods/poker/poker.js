@@ -192,7 +192,7 @@ class Poker extends GameTableTemplate {
 			class: 'game-stats',
 			callback: function (app, game_mod) {
 				game_mod.menu.hideSubMenus();
-				game_mod.stats.render();
+				game_mod.stats.toggle();
 			}
 		});
 
@@ -257,6 +257,14 @@ class Poker extends GameTableTemplate {
 		if (document.querySelector('.game-scoreboard')) {
 			document.querySelector('.game-scoreboard').style.display = 'none';
 		}
+
+
+		document.body.addEventListener("click", ()=> {
+			console.log("user interaction");
+			this.clearShotClock();
+		});
+		
+
 	}
 
 	async exitGame() {
@@ -338,6 +346,11 @@ class Poker extends GameTableTemplate {
 				$('.option').off();
 		}
 
+		if (this.shot_clock){
+			clearTimeout(this.shot_clock);
+			this.shot_clock = null;
+		}
+
 		super.endTurn(nextTarget);
 	}
 
@@ -393,6 +406,32 @@ class Poker extends GameTableTemplate {
                 if (numChips) {
                         numChips.onchange = updateChips;
                 }
+        }
+
+        setShotClock(target = "", timer = 3000){
+        	this.clearShotClock();
+        	let elem = document.querySelector(target);
+        	let t = timer / 1000;
+        	if (elem){
+        		this.app.browser.addElementToSelector(`<div class="animated_mask"></div>`, target);
+
+        		this.shot_clock = setTimeout(()=>{
+        			console.log("Auto move!");
+        			elem.click();
+        			this.clearShotClock();
+        		}, timer);
+        		
+        		$(".animated_mask").animate({width: "0px"}, timer);
+
+        	}
+        }
+
+        clearShotClock(){
+		if (this.shot_clock){
+			clearTimeout(this.shot_clock);
+			this.shot_clock = null;
+			$('.animated_mask').stop();
+		}
         }
 
 
