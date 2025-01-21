@@ -275,8 +275,9 @@ h2+p {
     padding: 1.5rem;
     border: 1px solid #fff8;
     border-radius: 1rem;
-    background: linear-gradient(135deg, #fff2 0%, #fff0 100%);
+    background: linear-gradient(135deg, #0001 0%, #0000 100%);
     transition: transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .feature-card h1 {

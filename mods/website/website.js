@@ -17,7 +17,10 @@ class Website extends ModTemplate {
 	}
 
 	initializeHompage(app) {
-		alert('initializeHompage');	
+		const wallet_init_button = document.querySelector('.wallet-init-button');
+		wallet_init_button.addEventListener('click', () => {
+			alert('wallet_init_button');
+		});
 	}
 
 	initializeHTML(app) {
