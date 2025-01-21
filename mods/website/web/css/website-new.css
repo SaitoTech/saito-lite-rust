@@ -267,6 +267,10 @@ h2+p {
     margin: 0 0.5rem;
 }
 
+.card-spacer {
+    min-width: 250px;
+}
+
 .feature-card {
     height: 300px;
     display: flex;

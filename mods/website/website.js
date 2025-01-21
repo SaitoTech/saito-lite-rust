@@ -1,6 +1,8 @@
 const path = require('path');
 const saito = require('../../lib/saito/saito');
 const ModTemplate = require('../../lib/templates/modtemplate');
+const SaitoHeader = require('../../lib/saito/ui/saito-header/saito-header');
+
 
 class Website extends ModTemplate {
 	constructor(app) {
@@ -18,8 +20,12 @@ class Website extends ModTemplate {
 
 	initializeHompage(app) {
 		const wallet_init_button = document.querySelector('.wallet-init-button');
-		wallet_init_button.addEventListener('click', () => {
-			alert('wallet_init_button');
+		wallet_init_button.addEventListener('click', async () => {
+			//alert('wallet_init_button');
+			let header = new SaitoHeader(this.app, this);
+			await header.initialize(this.app);
+			header.header_location = '/';
+			await header.render();
 		});
 	}
 
