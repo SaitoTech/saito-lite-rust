@@ -205,12 +205,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 
 .controls ul li:hover , .options:hover {
    background-color: #e7e7e7;
 }
 
+
+#controls ul li, ul li.option {
+    position: relative;    
+}
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
 

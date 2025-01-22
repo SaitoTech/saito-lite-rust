@@ -11,11 +11,14 @@ class SettlersActions {
 
       document.getElementById("rolldice").onclick = async (e) => {
         e.currentTarget.onclick = null;
-        console.log("Click ACKNOWLEDGE");
+        this.clearShotClock();
         this.updateControls();
         this.game.queue.splice(this.game.queue.length - 1, 1);
         this.restartQueue();
       }
+
+      this.setShotClock("#rolldice");
+      
     } catch (err) {
       console.error("Error with ACKWNOLEDGE notice!: " + err);
     }
