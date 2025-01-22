@@ -419,11 +419,16 @@ class RedSquare extends ModTemplate {
           updated_later_than: ts
         },
         (txs) => {
+
+console.log("LOAD FROM STORAGE: " + txs.length + " txs");
+
           for (let i = 0; i < txs.length; i++) {
             try {
               if (!txs[i].optional?.parent_id) {
+console.log("potential tx without parent_id");
                 //Server only checks blacklist / saito-moderation-app skips BROWSER=0
                 if (this.app.modules.moderate(txs[i], this.name) > -1) {
+console.log("adding as moderated...");
                   this.addTweet(txs[i], "server_load");
                 }
               }
@@ -1709,6 +1714,7 @@ class RedSquare extends ModTemplate {
   }
 
   reset() {
+
     let current = this.curated_tweets.length;
 
     this.curated_tweets = [];
@@ -2709,6 +2715,8 @@ console.log("###");
 let number_of_tweets = 0;
 
     for (let tweet of this.tweets) {
+
+console.log("TWEET: " + tweet.text);
 
 number_of_tweets++;
 
