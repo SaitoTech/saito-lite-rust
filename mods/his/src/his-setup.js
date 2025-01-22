@@ -81,9 +81,6 @@ console.log("\n\n\n\n");
         //
         if (this.game.players.length == 2) {
 
-// TESTING
-this.convertSpace("protestant", "mainz");
-
 	  this.unsetEnemies("papacy", "france");
 	  this.unsetEnemies("hapsburg", "france");
 	  this.unsetEnemies("ottoman", "hungary");

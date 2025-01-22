@@ -2425,9 +2425,6 @@ console.log("\n\n\n\n");
         //
         if (this.game.players.length == 2) {
 
-// TESTING
-this.convertSpace("protestant", "mainz");
-
 	  this.unsetEnemies("papacy", "france");
 	  this.unsetEnemies("hapsburg", "france");
 	  this.unsetEnemies("ottoman", "hungary");
@@ -22348,7 +22345,7 @@ if (this.game.state.scenario != "is_testing") {
     state.raiders['protestant'] = 0;
     state.raiders['papacy'] = 0;
     state.raiders['france'] = 0;
-    state.raiders['england'] = 1;
+    state.raiders['england'] = 0;
     state.raiders['ottoman'] = 0;
     state.raiders['hapsburg'] = 0;
     state.plantations = {};
