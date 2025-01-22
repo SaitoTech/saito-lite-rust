@@ -129,13 +129,22 @@
     top: 1rem;
     transform: rotate(5deg) scale(0.2);
     transform-origin: top right;
+	font-size: 1.6rem;
 }
 
 .cardnotice div {
     width: fit-content;
     margin: 0.7rem;
-    font-size: 2.3rem;
     padding: 1rem;
     border-radius: 1rem;
     background-color: #b79e76cc;
 }
+
+.cardnotice-title {
+    font-size: 2.2rem;
+}
+
+.cardnotice-text {
+    font-size: 1.8rem;
+}
+
