@@ -18,18 +18,10 @@ class SettlersActions {
       }
 
       this.setShotClock("#rolldice");
-      
+
     } catch (err) {
       console.error("Error with ACKWNOLEDGE notice!: " + err);
     }
-
-    if (this.turn_limit){
-      this.sleep_timer = setTimeout(()=> {
-        $("#rolldice").click();
-        clearTimeout(this.sleep_timer);
-      }, this.turn_limit);
-    }
-
 
     return 0;
   }

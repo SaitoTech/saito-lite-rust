@@ -729,6 +729,8 @@ class Settlers extends GameTemplate {
 			clearTimeout(this.sleep_timer);
 			this.sleep_timer = null;
 		}
+
+		this.clearShotClock();
 		this.clock.stopClock();
 
 		this.updateStatus("submitting game move...");

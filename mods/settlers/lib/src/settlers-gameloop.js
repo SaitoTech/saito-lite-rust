@@ -762,12 +762,7 @@ class SettlersGameloop {
 
           this.updateStatus(`${statushtml}`);
           
-          if (this.turn_limit){
-            this.clock.startClock(this.turn_limit);
-            this.sleep_timer = setTimeout(()=> {
-              $("#rolldice").click();
-            }, this.turn_limit);
-          }
+          this.setShotClock("#rolldice");
 
           // **********************************************************
           // > To DO rewrite this if we like the new dev card interface
