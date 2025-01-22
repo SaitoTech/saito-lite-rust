@@ -755,20 +755,19 @@ class SettlersGameloop {
           $("#rolldice").html(`<i class="fa-solid fa-dice"></i>`);
           $("#rolldice").addClass("enabled");
 
+          let timer = 4000;
           if (this.canPlayerPlayCard(true)) {
             $("#playcard").addClass("enabled");
             statushtml = "YOUR TURN:";
+            timer = 6000;
           }
 
           this.updateStatus(`${statushtml}`);
           
-          if (this.turn_limit){
-            this.clock.startClock(this.turn_limit);
-            this.sleep_timer = setTimeout(()=> {
-              $("#rolldice").click();
-            }, this.turn_limit);
+          if (this.loadGamePreference("settlers_play_mode") !== 0 || this.turn_limit) {
+            this.setShotClock("#rolldice", timer);
           }
-
+          
           // **********************************************************
           // > To DO rewrite this if we like the new dev card interface
           // **********************************************************

@@ -53,7 +53,7 @@ class PokerUI {
   displayButton(){
     for (let i = 1; i <= this.game.players.length; i++) {
       if (i == this.game.state.button_player){
-        this.playerbox.updateGraphics(`<div class="dealer-button"></div>`, i); 
+        this.playerbox.updateGraphics(`<div class="dealer-button" title="dealer button"></div>`, i); 
       }else{
         this.playerbox.updateGraphics('', i); 
       }
@@ -112,6 +112,9 @@ class PokerUI {
 
     if (amount !== -1){
       credit = this.convertChipsToCrypto(amount);
+    }else{
+      let html = `<div class="poker-player-stake">${this.game.state.player_pot[player - 1]}</div>`;
+      this.playerbox.replaceGraphics(html, ".poker-player-stake", player); 
     }
 
     let chips = this.game.crypto || ('CHIP' + credit !== 1 ? 'S' : '');
@@ -120,6 +123,7 @@ class PokerUI {
       `<div class="poker-stack-balance">${credit}</div><div class="poker-stack-units">${chips}</div>`,
       player
     );
+
   }
 
 
@@ -140,8 +144,8 @@ class PokerUI {
           `.game-playerbox-${j + 1}`,
           {
             callback: () => {
-              this.pot.render(--amount);
-              this.displayPlayerStack(j + 1, ++winners[j]);
+              this.pot.render(amount--);
+              this.displayPlayerStack(j + 1, winners[j]++);
             },
             run_all_callbacks: true
           },
@@ -171,7 +175,7 @@ class PokerUI {
 
     let step_speed = Math.min(150, 550/amount);
 
-    for (let i = 0; i < amount; i++){
+    for (let i = 1; i <= amount; i++){
 
       this.moveGameElement(this.createGameElement(`<div class="poker-chip"></div>`, `.game-playerbox-${better}`),
         ".pot",
@@ -179,6 +183,7 @@ class PokerUI {
           callback: () => {
             this.pot.render(++initial_pot);
             this.displayPlayerStack(better, --initial_stack);
+            this.playerbox.replaceGraphics(`<div class="poker-player-stake">${this.game.state.player_pot[better - 1]+i}</div>`, ".poker-player-stake", better); 
             this.pot.addPulse();
           },
           run_all_callbacks: true

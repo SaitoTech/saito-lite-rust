@@ -88,8 +88,18 @@
 .hud .controls ul li#rolldice {
 	margin-left: 2rem;
 	width: 9rem;
+	overflow: hidden;
 }
 
+
+.hud .controls ul li i {
+	z-index: 2;
+}
+
+.animated-mask {
+	z-index: 1;
+	background-color: chocolate;
+}
 
 .hud .controls ul > div {
 	width: 7rem;

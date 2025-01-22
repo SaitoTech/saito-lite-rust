@@ -10,7 +10,6 @@
 	justify-content: center;
 	list-style: none;
 	cursor: pointer;
-	position: relative;
 }
 
 .status ul li:hover,
@@ -19,12 +18,4 @@ option:hover {
 }
 
 
-.animated_mask {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	z-index: -1;
-	background-color: orangered;
-	left: 0;
-}
 

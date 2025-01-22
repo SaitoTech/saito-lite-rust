@@ -391,10 +391,7 @@ class SettlersPlayer {
     // Set timer to auto-end my turn if I take too long
     // 
     if (this.turn_limit){
-      this.clock.startClock(this.turn_limit);
-      this.sleep_timer = setTimeout(()=> {
-        $("#rolldice").click();
-      }, this.turn_limit);
+      this.setShotClock("#rolldice", this.turn_limit, false);
     }
 
     let statushtml = "YOUR TURN:";

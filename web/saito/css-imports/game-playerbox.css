@@ -34,7 +34,7 @@
     width: 100%;
     display: inline-flex;
     align-items: center;
-    cursor: pointer;
+    cursor: default;
 }
 
 .game-playerbox-body {

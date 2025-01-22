@@ -173,7 +173,7 @@ class Settlers extends GameTemplate {
 				img: '/settlers/img/cards/devcards/unexpected_bounty.png',
 				title: 'Windfall',
 				subtitle: 'receive any two resources',
-				text: ' may collect any two resources',
+				text: ' collects two resources',
 				action: 2
 			},
 			{
@@ -182,7 +182,7 @@ class Settlers extends GameTemplate {
 				img: '/settlers/img/cards/devcards/monopoly.png',
 				title: 'Legal Monopoly',
 				subtitle: 'get resource from opponents',
-				text: ' may collect all available of any resource',
+				text: ' steals all of any resource',
 				action: 3
 			},
 			{
@@ -729,6 +729,8 @@ class Settlers extends GameTemplate {
 			clearTimeout(this.sleep_timer);
 			this.sleep_timer = null;
 		}
+
+		this.clearShotClock();
 		this.clock.stopClock();
 
 		this.updateStatus("submitting game move...");
