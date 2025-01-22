@@ -73,6 +73,7 @@ module.exports = (app, mod, tweet) => {
         <div class="tweet tweet-${tweet.tx.signature}" data-id="${
 	tweet.tx.signature
 }"${html_markers}>
+          <div class="tweet-html-markers">${html_markers.replace(/data-/g, "<br>")}</div>
           <div class="tweet-notice">${notice}</div>
           <div class="tweet-header"></div>
           <div class="tweet-body">
