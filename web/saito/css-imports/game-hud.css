@@ -126,6 +126,7 @@
     height: min-content;
     min-height: fit-content;
     text-align: center;
+    cursor: default;
 }
 
 
