@@ -17,7 +17,9 @@ class SettlersActions {
         this.restartQueue();
       }
 
-      this.setShotClock("#rolldice");
+      if (this.loadGamePreference("settlers_play_mode") !== 0 || this.turn_limit) {
+        this.setShotClock("#rolldice", 2500);  
+      }
 
     } catch (err) {
       console.error("Error with ACKWNOLEDGE notice!: " + err);
