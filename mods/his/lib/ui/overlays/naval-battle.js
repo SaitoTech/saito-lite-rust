@@ -136,15 +136,18 @@ try {
 			if (
 				factionspace === faction ||
 				his_self.returnAllyOfMinorPower(factionspace) === faction ||
-				his_self.game.player ===
-					his_self.returnPlayerCommandingFaction(faction)
+				his_self.game.player === his_self.returnPlayerCommandingFaction(faction)
 			) {
 				can_i_kill_this_guy = true;
 			}
 
 			if (can_i_kill_this_guy) {
+
 				if (factionspace) {
-					el.querySelector('.naval-battle-desc').innerHTML += ' (click to assign hit)';
+					let obj = el.querySelector('.naval-battle-desc');
+					if (obj) {
+						obj.innerHTML += ' (click to assign hit)';
+					}
 				}
 				el.classList.add('hits-assignable-hover-effect');
 

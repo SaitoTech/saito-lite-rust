@@ -2921,6 +2921,8 @@ this.convertSpace("protestant", "mainz");
 
           this.addRegular("hungary", "vienna", 1);
 
+this.convertSpace("london", "protestant");
+
 	  this.game.state.henry_viii_marital_status = 1;
 	  this.game.state.starting_round = 6;
 	  this.game.state.round = 5; // the one before 4
@@ -22346,7 +22348,7 @@ if (this.game.state.scenario != "is_testing") {
     state.raiders['protestant'] = 0;
     state.raiders['papacy'] = 0;
     state.raiders['france'] = 0;
-    state.raiders['england'] = 0;
+    state.raiders['england'] = 1;
     state.raiders['ottoman'] = 0;
     state.raiders['hapsburg'] = 0;
     state.plantations = {};
@@ -28898,18 +28900,18 @@ console.log("running player fortify space...");
 	    //
 	    try {
 
-	    if (z[i].key !== this.game.state.active_card) {
-              if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
-                let x = z[i].menuOption(this, stage, this.game.player, extra);
-		if (x.html) {
-                  html += x.html;
-	          z[i].faction = x.faction; // add faction
-	          menu_index.push(i);
-	          menu_triggers.push(x.event);
-	          attach_menu_events = 1;
+	      if (z[i].key !== this.game.state.active_card) {
+                if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
+                  let x = z[i].menuOption(this, stage, this.game.player, extra);
+		  if (x.html) {
+                    html += x.html;
+	            z[i].faction = x.faction;
+	            menu_index.push(i);
+	            menu_triggers.push(x.event);
+	            attach_menu_events = 1;
+	          }
 	        }
 	      }
-	    }
 
 	    } catch (err) {
 	      console.log("caught error looking for event: " + JSON.stringify(err));
@@ -36378,7 +36380,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 6;
+//cardnum = 3;
 //if (f == "france") { cardnum = 0; }
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 0; }
@@ -39942,7 +39944,7 @@ if (limit === "build") {
     menu.push({
       factions : ['ottoman','hapsburg','england','france','papacy', 'genoa', 'scotland', 'venice'],
       cost : [2,2,2,2,2,2,2,2],
-      name : "Move across Sea",
+      name : "Move Across Sea",
       check : this.canPlayerNavalTransport,
       fnct : this.playerNavalTransport,
       category : "move" ,
@@ -43830,7 +43832,7 @@ does_units_to_move_have_unit = true; }
       for (let i = 0; i < neighbours.length; i++) {
         if (his_self.canFactionRetreatToNavalSpace(defender, neighbours[i])) {
           available_destinations = true;
-          html += `<li class="option" id="${neighbours[i]}">${his_self.returnFactionName(neighbours[i])}</li>`;
+          html += `<li class="option" id="${neighbours[i]}">${his_self.returnName(neighbours[i])}</li>`;
 	}
       }
       if (available_destinations == false) {
@@ -44490,11 +44492,34 @@ does_units_to_move_have_unit = true; }
     let cancel_func = null;
     let space = null;
     let destination = "";
+    let cost_of_transport = 2;
 
     //
     // destination already set, so just fire the info out
     //
     let selectDestinationInterface = function(his_self, units_to_move) {
+
+console.log("COST OF TRANSPORT: " + cost_of_transport);
+	      if (cost_of_transport > 2) {
+console.log("PRE QUEUE: " + JSON.stringify(his_self.moves));
+console.log("cost of transport: " + cost_of_transport);
+	        for (let z = 0; z < his_self.moves.length; z++) {
+		  let pma = his_self.moves[z].split("\t");
+		  if (pma[0] === "continue") {
+console.log("pma[4]: " + pma[4]);
+		    if ((parseInt(pma[4]) - (cost_of_transport-2)) > 0) {
+console.log("math: " + parseInt(pma[4]) + " - " + cost_of_transport + " - " + 2);
+                      his_self.moves[z] = "continue\t"+pma[1]+"\t"+pma[2]+"\t"+pma[3]+"\t"+(parseInt(pma[4])-(cost_of_transport-2))+"\t"+pma[5];
+		    } else {
+		      his_self.moves.splice(z, 1);
+		      z--;
+		    }
+		  }
+	        }
+	      }
+
+console.log("POST QUEUE: " + JSON.stringify(his_self.moves));
+
 
               units_to_move.sort(function(a, b){return parseInt(a.idx)-parseInt(b.idx)});
 
@@ -44527,7 +44552,7 @@ does_units_to_move_have_unit = true; }
 
     }
 
-    let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface) {
+    let selectUnitsInterface = function(his_self, units_to_move, selectUnitsInterface, cost=2) {
 
 	  let unmoved_units = [];
 	  let moved_units = [];
@@ -44678,6 +44703,7 @@ does_units_to_move_have_unit = true; }
       his_self.updateStatusWithOptions(`Select Destination:`, html);
       his_self.attachCardboxEvents(function(d) {
 	destination = dest[d].key;
+	cost_of_transport = ops_remaining + ops_to_spend - dest[d].cost;
 	selectUnitsInterface(his_self, units_to_move, selectUnitsInterface, selectDestinationInterface);
       });
     });
@@ -45331,6 +45357,10 @@ console.log("asked if " + faction + " can commit " + debater + " //// " + JSON.s
       "Select Destination for Regular",
 
       function(space) {
+	if (faction === "ottoman" && his_self.game.state.events.barbary_pirates == 1) {
+	  // can not build regulars in Algiers
+	  if (space.key == "algiers" || space.pirate_haven == 1) { return 0; }
+	}
 	if (faction === "ottoman" && his_self.game.state.events.war_in_persia == 1) {
 	  if (his_self.returnFactionLandUnitsInSpace("ottoman", "persia") < 5) {
 	    if (space.key == "persia") { return 1; }
@@ -51900,6 +51930,15 @@ console.log(ops_to_spend + " -- " + ops_remaining);
 
   displayNewWorldBonuses() {
     try {
+
+      document.querySelector(".france_colony1_bonus").innerHTML = "";
+      document.querySelector(".france_colony2_bonus").innerHTML = "";
+      document.querySelector(".england_colony1_bonus").innerHTML = "";
+      document.querySelector(".england_colony2_bonus").innerHTML = "";
+      document.querySelector(".hapsburg_colony1_bonus").innerHTML = "";
+      document.querySelector(".hapsburg_colony2_bonus").innerHTML = "";
+      document.querySelector(".hapsburg_colony3_bonus").innerHTML = "";
+
       //
       // Galleons Colony #1
       //

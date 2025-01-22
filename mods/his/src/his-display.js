@@ -1104,6 +1104,15 @@
 
   displayNewWorldBonuses() {
     try {
+
+      document.querySelector(".france_colony1_bonus").innerHTML = "";
+      document.querySelector(".france_colony2_bonus").innerHTML = "";
+      document.querySelector(".england_colony1_bonus").innerHTML = "";
+      document.querySelector(".england_colony2_bonus").innerHTML = "";
+      document.querySelector(".hapsburg_colony1_bonus").innerHTML = "";
+      document.querySelector(".hapsburg_colony2_bonus").innerHTML = "";
+      document.querySelector(".hapsburg_colony3_bonus").innerHTML = "";
+
       //
       // Galleons Colony #1
       //

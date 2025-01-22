@@ -577,6 +577,8 @@ this.convertSpace("protestant", "mainz");
 
           this.addRegular("hungary", "vienna", 1);
 
+this.convertSpace("london", "protestant");
+
 	  this.game.state.henry_viii_marital_status = 1;
 	  this.game.state.starting_round = 6;
 	  this.game.state.round = 5; // the one before 4

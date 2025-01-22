@@ -5254,18 +5254,18 @@ console.log("running player fortify space...");
 	    //
 	    try {
 
-	    if (z[i].key !== this.game.state.active_card) {
-              if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
-                let x = z[i].menuOption(this, stage, this.game.player, extra);
-		if (x.html) {
-                  html += x.html;
-	          z[i].faction = x.faction; // add faction
-	          menu_index.push(i);
-	          menu_triggers.push(x.event);
-	          attach_menu_events = 1;
+	      if (z[i].key !== this.game.state.active_card) {
+                if (z[i].menuOptionTriggers(this, stage, this.game.player, extra) == 1) {
+                  let x = z[i].menuOption(this, stage, this.game.player, extra);
+		  if (x.html) {
+                    html += x.html;
+	            z[i].faction = x.faction;
+	            menu_index.push(i);
+	            menu_triggers.push(x.event);
+	            attach_menu_events = 1;
+	          }
 	        }
 	      }
-	    }
 
 	    } catch (err) {
 	      console.log("caught error looking for event: " + JSON.stringify(err));
@@ -12734,7 +12734,7 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 6;
+//cardnum = 3;
 //if (f == "france") { cardnum = 0; }
 //if (f == "papacy") { cardnum = 0; }
 //if (f == "hapsburg") { cardnum = 0; }
