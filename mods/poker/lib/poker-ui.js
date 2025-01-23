@@ -1,8 +1,18 @@
 class PokerUI {
   returnPlayerRole(player) {
-    if (this.game.state.winners.includes(player)) {
-      return 'Winner!';
+    
+    if (this.game.state.winners.length > 0){
+      if (this.game.state.winners.includes(player)) {
+        return 'Winner!';
+      }else{
+        return `Lost ${this.formatWager(this.game.state.player_pot[player-1])}`;
+      }
     }
+
+    if (this.game.state.flipped){
+      return `${this.formatWager(this.game.state.player_pot[player-1])} in pot`;
+    }
+
 
     if (player == this.game.state.button_player && player == this.game.state.big_blind_player) {
       return 'dealer / big blind';
@@ -53,7 +63,7 @@ class PokerUI {
   displayButton(){
     for (let i = 1; i <= this.game.players.length; i++) {
       if (i == this.game.state.button_player){
-        this.playerbox.updateGraphics(`<div class="dealer-button" title="dealer button"></div>`, i); 
+        this.playerbox.updateGraphics(`<div class="dealer-button" title="dealer button">D</div>`, i); 
       }else{
         this.playerbox.updateGraphics('', i); 
       }
@@ -144,8 +154,8 @@ class PokerUI {
           `.game-playerbox-${j + 1}`,
           {
             callback: () => {
-              this.pot.render(amount--);
-              this.displayPlayerStack(j + 1, winners[j]++);
+              this.pot.render(Math.max(0, --amount));
+              this.displayPlayerStack(j + 1, ++winners[j]);
             },
             run_all_callbacks: true
           },
@@ -193,7 +203,6 @@ class PokerUI {
             $(item).remove(); 
           }else{
             $('.animated_elem').remove();
-            console.log("*******************************");
             this.restartQueue();
           }
           

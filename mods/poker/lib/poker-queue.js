@@ -267,6 +267,7 @@ class PokerQueue {
 
 					//So that userline updates with winner
 					this.game.state.winners = [player_left_idx + 1];
+					this.displayPlayers();
 
 					//
 					// everyone settles with winner if needed
@@ -322,12 +323,11 @@ class PokerQueue {
 
 					return 0;
 				}
-				this.game.state.plays_since_last_raise++;
 
 				//
 				// Is this the end of betting?
 				//
-				if (this.game.state.plays_since_last_raise > this.game.players.length) {
+				if (this.game.state.plays_since_last_raise >= this.game.players.length) {
 					//Is this the end of the hand?
 					if (this.game.state.flipped == 5) {
 						this.playerbox.setInactive();
@@ -594,6 +594,8 @@ class PokerQueue {
 					this.game.state.winners.push(winners[i] + 1);
 				}
 
+				this.displayPlayers();
+
 				//update log
 				this.updateLog(winnerStr + logMsg);
 
@@ -781,6 +783,8 @@ class PokerQueue {
 					}
 				}
 
+				this.game.state.plays_since_last_raise++;
+
 				await this.animateBet(player, amount_to_call);
 
 				this.game.state.player_pot[player - 1] += amount_to_call;
@@ -801,6 +805,8 @@ class PokerQueue {
 				this.game.state.last_fold = player;
 				this.game.queue.splice(qe, 1);
 
+				this.game.state.plays_since_last_raise++;
+
 				if (this.browser_active) {
 					if (this.game.player !== player) {
 						this.displayPlayerNotice(`<div class="plog-update">folds</div>`, player);
@@ -819,6 +825,8 @@ class PokerQueue {
 				if (this.game.player !== player && this.browser_active) {
 					this.displayPlayerNotice(`<div class="plog-update">checks</div>`, player);
 				}
+				this.game.state.plays_since_last_raise++;
+
 				return 1;
 			}
 

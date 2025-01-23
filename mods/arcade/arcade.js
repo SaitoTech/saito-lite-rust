@@ -296,8 +296,8 @@ class Arcade extends ModTemplate {
 	async createPseudoTransaction(game) {
 		let game_tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
 
-		if (game.players) {
-			game.players.forEach((player) => {
+		if (game.accepted) {
+			game.accepted.forEach((player) => {
 				game_tx.addTo(player);
 				game_tx.addFrom(player);
 			});
@@ -313,7 +313,7 @@ class Arcade extends ModTemplate {
 			game: game.module,
 			options: game.options,
 			players_needed: game.players_needed,
-			players: game.players,
+			players: game.accepted,
 			players_sigs: [], //Only used to verify cryptology when initializing the game
 			originator: game.originator,
 			//winner: game.winner,
