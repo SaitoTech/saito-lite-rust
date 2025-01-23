@@ -407,6 +407,14 @@ class Stun extends ModTemplate {
 				callback(peerId);
 			}
 
+			//Attempt to reset tracks
+			if (pc?.senders){
+				console.log("STUN: Clearing media tracks for clean re-init...");
+				for (let s of pc.senders){
+					pc.removeTrack(s);
+				}
+			}
+
 			//
 			// Assuming you are properly connected, simulate that the connection just came through,
 			// so the mods listeners can pick up and do their UI things

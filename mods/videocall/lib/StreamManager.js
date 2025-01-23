@@ -307,9 +307,12 @@ class StreamManager {
         peerConnection.firstConnect = true;
 
         console.log('Attach my audio/video!');
+        if (!peerConnection?.senders){
+          peerConnection.senders = [];
+        }
         await this.getLocalMedia();
         this.localStream.getTracks().forEach((track) => {
-          peerConnection.addTrack(track, this.localStream);
+          peerConnection.senders.push(peerConnection.addTrack(track, this.localStream));
         });
       }
     });
@@ -555,7 +558,7 @@ class StreamManager {
 
   visibilityChange() {
     console.log('visibilitychange triggered');
-    this.leaveCall();
+    //this.leaveCall();
   }
 }
 
