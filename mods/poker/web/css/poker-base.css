@@ -19,9 +19,16 @@ body {
   justify-content: space-around;
   padding: 4rem;
   /* To adjust shade of felt */
-  background-color: #0091;
   background-image: url(/saito/img/arcade/greenfelt.jpg);
   background-blend-mode: luminosity;
+}
+
+.gameboard.red{
+  background-color: #6004;
+}
+
+.gameboard.blue{
+  background-color: #0092;  
 }
 
 .gameboard.threed {
@@ -89,6 +96,10 @@ body {
   font-weight: bolder;
   font-family: "Times New Roman", serif;
   cursor: default;
+}
+
+.module-settings-overlay {
+  min-width: min(400px, 90vw);
 }
 
 @media screen and (max-width: 900px) {

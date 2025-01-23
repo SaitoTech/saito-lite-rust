@@ -12,6 +12,7 @@ const PokerStake = require('./lib/poker-stake.js');
 const PokerQueue = require('./lib/poker-queue.js');
 const PokerUI = require('./lib/poker-ui.js');
 const PokerCards = require('./lib/poker-cards.js');
+const AppSettings = require('./lib/poker-settings');
 
 //////////////////
 // CONSTRUCTOR  //
@@ -27,6 +28,8 @@ class Poker extends GameTableTemplate {
 				<br> Play with up to five other players for fun or wager integrated web3 cryptocurrencies through your handy Saito Wallets`;
 		this.categories = 'Games Cardgame Casino';
 		this.card_img_dir = '/saito/img/arcade/cards';
+		this.card_img = 'new_red';
+		this.felt = "green";
 		this.icon = 'fa-solid fa-diamond';
 
 		this.minPlayers = 2;
@@ -188,40 +191,28 @@ class Poker extends GameTableTemplate {
 			}
 		});
 
-		this.theme = this.loadGamePreference('theme') || 'flat';
 
 		this.menu.addSubMenuOption('game-game', {
-			text: 'Theme',
-			id: 'game-theme',
-			class: 'game-theme',
-			callback: null
-		});
-
-		this.menu.addSubMenuOption('game-theme', {
-			text: `Flat ${this.theme == 'flat' ? '✔' : ''}`,
-			id: 'game-theme-flat',
-			class: 'game-theme-flat',
-			callback: function (app, game_mod) {
-				game_mod.menu.hideSubMenus();
-				game_mod.theme = 'flat';
-				game_mod.saveGamePreference('theme', 'flat');
-				game_mod.board.toggleView();
-				game_mod.menu.render();
+			text: 'Settings',
+			id: 'game-settings',
+			class: 'game-settings',
+			callback: function(app, game_mod){
+				game_mod.loadSettings();
 			}
 		});
 
-		this.menu.addSubMenuOption('game-theme', {
-			text: `3D ${this.theme == 'threed' ? '✔' : ''}`,
-			id: 'game-theme-3d',
-			class: 'game-theme-3d',
-			callback: function (app, game_mod) {
-				game_mod.menu.hideSubMenus();
-				game_mod.theme = 'threed';
-				game_mod.saveGamePreference('theme', 'threed');
-				game_mod.board.toggleView();
-				game_mod.menu.render();
-			}
-		});
+
+		//default by device
+		this.theme = (this.app.browser.isMobileBrowser()) ? "flat" : "threed";
+		if (this.loadGamePreference('poker-theme')){
+			this.theme = this.loadGamePreference('poker-theme');
+		}
+		if (this.loadGamePreference("poker-cards")){
+			this.card_img = this.loadGamePreference("poker-cards");
+		}
+		if (this.loadGamePreference("poker-felt")){
+			this.felt = this.loadGamePreference("poker-felt");
+		}
 
 		this.cardfan.container = '.mystuff';
 
@@ -382,6 +373,20 @@ class Poker extends GameTableTemplate {
 			numChips.onchange = updateChips;
 		}
 	}
+
+	loadSettings(container = null) {
+	    if (!container){
+
+	      this.overlay.show(`<div class="module-settings-overlay"><h2>${this.returnName()} Settings</h2></div>`);
+	      container = ".module-settings-overlay";
+	      this.overlay.setBackgroundColor("#0001");
+
+	    }
+
+		let as = new AppSettings(this.app, this, container);
+		as.render();
+	}
+
 }
 
 Poker.importFunctions(PokerState, PokerStake, PokerQueue, PokerUI, PokerCards);
