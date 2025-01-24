@@ -14195,7 +14195,8 @@ try {
 	    if (!this.areAllies(f, faction)) {
 	      for (let z = 0; z < this.game.spaces[space].units[f].length; z++) {
 	        his_self.captureLeader(faction, f, space, this.game.spaces[space].units[f][z]);
-		if (his_self.game.spaces[space].units[f][z].type == "squadron" || his_self.game.spaces[space].units[f][z].type == "corsair") {
+		let u = his_self.game.spaces[space].units[f][z];
+		if (u.type == "squadron" || u.type == "corsair" || u.army_leader == true || u.navy_leader == true) {
 		  his_self.game.spaces[space].units[f].splice(z, 1); z--;
 		}
 	      };

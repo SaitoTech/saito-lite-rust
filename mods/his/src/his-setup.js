@@ -609,7 +609,7 @@ this.addRegular("hapsburg", "palma", 1);
 	  this.addMercenary("france","modena", 2);
 	  this.addRegular("genoa","modena", 2);
 
-          this.addArmyLeader("hapsburg", "barcelona", "ferdinand");
+          this.addArmyLeader("hapsburg", "szegedin", "ferdinand");
 	  this.addRegular("hapsburg", "barcelona", 2);
 
 	  if (this.game.players.length == 2) {

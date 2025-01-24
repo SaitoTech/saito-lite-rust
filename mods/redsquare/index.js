@@ -1,4 +1,7 @@
 module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
+
+  let x = recent_tweets.slice(0, 3);
+
   let html = `
 
 <!DOCTYPE html>
@@ -30,7 +33,8 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
   <meta name="twitter:creator" content="${og_card.twitter}" />
   <meta name="twitter:title" content="${app.browser.escapeHTML(og_card.title)}" />
   <meta name="twitter:url" content="${og_card.url}" />
-  <meta name="twitter:description" content="${app.browser.escapeHTML(og_card.description)}" />
+  /recent_tw
+a<meta name="twitter:description" content="${app.browser.escapeHTML(og_card.description)}" />
   <meta name="twitter:image" content="${og_card.image}" />
 
   <meta property="og:type" content="website" />
@@ -78,7 +82,7 @@ module.exports = (app, mod, build_number, og_card, recent_tweets = []) => {
     var tweets = [];
   }`;
 
-  for (let tweet of recent_tweets) {
+  for (let tweet of x) {
     html += ` tweets.push(\`${tweet}\`);`;
   }
   html += `</script>

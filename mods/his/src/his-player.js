@@ -5438,16 +5438,11 @@ does_units_to_move_have_unit = true; }
     //
     let selectDestinationInterface = function(his_self, units_to_move) {
 
-console.log("COST OF TRANSPORT: " + cost_of_transport);
 	      if (cost_of_transport > 2) {
-console.log("PRE QUEUE: " + JSON.stringify(his_self.moves));
-console.log("cost of transport: " + cost_of_transport);
 	        for (let z = 0; z < his_self.moves.length; z++) {
 		  let pma = his_self.moves[z].split("\t");
 		  if (pma[0] === "continue") {
-console.log("pma[4]: " + pma[4]);
 		    if ((parseInt(pma[4]) - (cost_of_transport-2)) > 0) {
-console.log("math: " + parseInt(pma[4]) + " - " + cost_of_transport + " - " + 2);
                       his_self.moves[z] = "continue\t"+pma[1]+"\t"+pma[2]+"\t"+pma[3]+"\t"+(parseInt(pma[4])-(cost_of_transport-2))+"\t"+pma[5];
 		    } else {
 		      his_self.moves.splice(z, 1);
@@ -5456,9 +5451,6 @@ console.log("math: " + parseInt(pma[4]) + " - " + cost_of_transport + " - " + 2)
 		  }
 	        }
 	      }
-
-console.log("POST QUEUE: " + JSON.stringify(his_self.moves));
-
 
               units_to_move.sort(function(a, b){return parseInt(a.idx)-parseInt(b.idx)});
 
@@ -5629,7 +5621,7 @@ console.log("POST QUEUE: " + JSON.stringify(his_self.moves));
     his_self.attachCardboxEvents(function(user_choice) {
 
       spacekey = spaces_with_infantry[user_choice];
-
+console.log("start: " + ops_remaining + " ==> " +  ops_to_spend);
       let dest = his_self.returnNavalTransportDestinations(faction, spaces_with_infantry[user_choice], (ops_remaining+ops_to_spend));
 
       let html = `<ul>`;

@@ -74,7 +74,7 @@ class RedSquare extends ModTemplate {
 
     this.tweets = []; // time sorted master list of tweets 
     this.curated_tweets = []; // accepted tweets for display / sharing
-    this.cached_tweets = []; // serialized version of curated_tweets
+    this.cached_tweets = []; // serialized-for-web version of curated_tweets
     this.tweets_sigs_hmap = {};
     this.unknown_children = [];
 
@@ -396,6 +396,7 @@ class RedSquare extends ModTemplate {
   // so most of the work is pre-network init.
   //
   async initialize(app) {
+
     //
     // database setup etc.
     //
@@ -409,26 +410,23 @@ class RedSquare extends ModTemplate {
     this.loadOptions();
 
     if (!app.BROWSER) {
+
       let ts = Date.now() - 7 * 24 * 60 * 60 * 1000;
       await this.app.storage.loadTransactions(
         {
           field1: 'RedSquare',
           flagged: 0,
-          tx_size_less_than: 100000,
-          limit: 50,
+          tx_size_less_than: 1000000,
+          limit: 40,
           updated_later_than: ts
         },
         (txs) => {
 
-console.log("LOAD FROM STORAGE: " + txs.length + " txs");
-
           for (let i = 0; i < txs.length; i++) {
             try {
               if (!txs[i].optional?.parent_id) {
-console.log("potential tx without parent_id");
                 //Server only checks blacklist / saito-moderation-app skips BROWSER=0
                 if (this.app.modules.moderate(txs[i], this.name) > -1) {
-console.log("adding as moderated...");
                   this.addTweet(txs[i], "server_load");
                 }
               }
@@ -539,7 +537,6 @@ console.log("adding as moderated...");
     let firstRender = 'tweets';
     let hash = window.location.hash;
     if (hash) {
-      console.log(hash);
       switch (hash) {
         case '#notifications':
           firstRender = 'notifications';
@@ -2746,30 +2743,40 @@ number_of_tweets++;
       //	score = 1;
       //}
 
-      let mod_score = this.app.modules.moderate(tweet.tx);
-
+      //
+      // we don't need to run tweets through the moderate function
+      // multiple times if we have already processed them and marked
+      // them as curated....
+      //
       if (tweet.curated == 1) {
         score = 1;
       }
 
-      if (tweet.num_replies > 0 && mod_score != -1) {
-        score = 1;
-      }
+      if (score == 0) {
 
-      if (tweet.num_likes > 1 && mod_score != -1) {
-        score = 1;
-      }
+        let mod_score = this.app.modules.moderate(tweet.tx);
 
-      if (mod_score == 1) {
-        score = 1;
-      }
-
-      if (tweet.images?.length > 0) {
-        if (img_bonus_used == 0 && score == 1) {
-          score += 5;
-          img_bonus_used = 1;
+        if (tweet.num_replies > 0 && mod_score != -1) {
+          score = 1;
         }
+
+        if (tweet.num_likes > 1 && mod_score != -1) {
+          score = 1;
+        }
+
+        if (mod_score == 1) {
+          score = 1;
+        }
+
+        if (tweet.images?.length > 0) {
+          if (img_bonus_used == 0 && score == 1) {
+            score += 5;
+            img_bonus_used = 1;
+          }
+        }
+
       }
+
 
       //if (this.app.keychain.returnIdentifierByPublicKey(tweet.tx.from[0].publicKey)){
       //  score += 2;
@@ -2783,19 +2790,19 @@ number_of_tweets++;
 
       if (score > 0) {
         number_of_tweets_with_positive_score++;
-console.log("adding tweet with positive score!");
         temp_array.push({ tweet, score: 1 });
       }
 
     }
 
-
 console.log("processed: " + number_of_tweets);
 
-
-    temp_array.sort((a, b) => {
-      return b.score - a.score;
-    });
+    //
+    // display by timestamp
+    //
+    //temp_array.sort((a, b) => {
+    //  return b.tx.timestamp - a.tx.timestamp;
+    //});
 
 
     //
