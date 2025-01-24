@@ -107,10 +107,10 @@ class Twilight extends GameTemplate {
               There are no cards to display
               </div>`;
     }
-    this.overlay.show(html);
-    $(".transparent-card-overlay").onclick = (e) => {
-      this.overlay.hide();
-    }
+
+    let cc_status = this.overlay.clickToClose;
+    this.overlay.clickToClose = true;
+    this.overlay.show(html, ()=> { this.overlay.clickToClose = cc_status;});
   }
 
 
@@ -437,7 +437,6 @@ class Twilight extends GameTemplate {
 
     this.cardbox.render();
 
-
     //
     // add card events -- text shown and callback run if there
     //
@@ -482,10 +481,7 @@ class Twilight extends GameTemplate {
         }
       }
 
-
       this.hud.render();
-
-
 
       /* Attach classes to hud to visualize player roles */
       //this.game.player == 1 --> ussr, == 2 --> usa
@@ -3868,7 +3864,6 @@ console.log("TURN IS: " + this.game.state.turn);
 
      if (this.game.player === 0) {
       this.updateLog("Processing Headline Cards...");
-console.log("processing headline cards - TEST");
       return;
     }
 

@@ -31,7 +31,7 @@
 
 
 .transparent-card-overlay {
-	max-width: 85vw;
+	width: 85vw;
 	max-height: 80vh;
 	display: grid;
 	grid-template-columns: repeat(auto-fit, 200px);
@@ -42,6 +42,7 @@
 	box-shadow: none;
 	overflow-y: auto;
 	justify-content: center;
+	pointer-events: none;
 }
 
 .transparent-card-overlay .card {

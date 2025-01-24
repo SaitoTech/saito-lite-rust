@@ -107,10 +107,10 @@ class Twilight extends GameTemplate {
               There are no cards to display
               </div>`;
     }
-    this.overlay.show(html);
-    $(".transparent-card-overlay").onclick = (e) => {
-      this.overlay.hide();
-    }
+
+    let cc_status = this.overlay.clickToClose;
+    this.overlay.clickToClose = true;
+    this.overlay.show(html, ()=> { this.overlay.clickToClose = cc_status;});
   }
 
 
