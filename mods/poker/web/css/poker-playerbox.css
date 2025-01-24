@@ -70,6 +70,10 @@
 	color: white;
 }
 
+.game-playerbox-head .saito-user > .saito-userline {
+	text-transform: lowercase;
+}
+
 .game-playerbox-graphics {
 	position: absolute;
 	display: flex;
@@ -81,6 +85,9 @@
 
 
 .poker-player-stake {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	font-size: 14px;
 	position: absolute;
 	top: calc(100% + 2px);
@@ -92,9 +99,7 @@
 	text-shadow: 1px 1px 3px black;
 	height: 4rem;
 	width: 4rem;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	display: none;
 }
 
 .game-playerbox-seat-1 .poker-player-stake{

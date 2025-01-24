@@ -20,7 +20,7 @@ class GameBoard {
 		}
 		
 		if (!document.querySelector(".gameboard")) {
-		  this.app.browser.addElementToDom(GameBoardTemplate(this.game_mod.theme));
+		  this.app.browser.addElementToDom(GameBoardTemplate(this.game_mod));
 		  this.attachEvents();
 		} 
 
@@ -49,6 +49,17 @@ class GameBoard {
 		}
 	}
 
+	changeFelt(){
+		let gb = document.querySelector(".gameboard");
+		if (!gb) {
+			return;
+		}
+		gb.classList.remove("green");
+		gb.classList.remove("red");
+		gb.classList.remove("blue");
+		gb.classList.add(this.game_mod.felt);
+	}
+
   	displayTable() {
 
 		let poker_self = this.game_mod;
@@ -74,9 +85,9 @@ class GameBoard {
                                         } else {
 						if (i < poker_self.game.pool[0].hand.length) {
                                                   card = poker_self.game.pool[0].cards[poker_self.game.pool[0].hand[i]];
-                                                  newHTML += `<div class="flipped slot${i+1} card"><img class="cardFront" src="${poker_self.card_img_dir}/${card.name}"><img class="cardBack" src="${poker_self.card_img_dir}/red_back.png"></div>`;
+                                                  newHTML += `<div class="flipped slot${i+1} card"><img class="cardFront" src="${poker_self.card_img_dir}/${card.name}"><img class="cardBack" src="${poker_self.card_img_dir}/${poker_self.card_img}.png"></div>`;
 						} else {
-                                                  newHTML += `<div class="flipped slot${i+1} card"><img class="cardBack" src="${poker_self.card_img_dir}/red_back.png"></div>`;
+                                                  newHTML += `<div class="flipped slot${i+1} card"><img class="cardBack" src="${poker_self.card_img_dir}/${poker_self.card_img}.png"></div>`;
 						}
                                         }
                                 }
