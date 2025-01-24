@@ -52,7 +52,7 @@ class Arcade extends ModTemplate {
 		// Still using deprecated peerhandshakecomplete rather than peerservice
 		this.services = []; //[this.app.network.createPeerService(null, 'arcade', '', 'saito')];
 
-		this.invite_cutoff = 3500000;
+		this.invite_cutoff = 1500000; //25 minutes
 		this.game_cutoff = 600000000;
 
 		this.possibleHome = 1;
@@ -1782,10 +1782,20 @@ class Arcade extends ModTemplate {
 			if (key == 'active' || key == 'over' || key == 'mine') {
 				cutoff = now - this.game_cutoff;
 			}
-
 			this.games[key] = this.games[key].filter((game) => {
 				return game.timestamp > cutoff;
 			});
+		}
+
+		//Second pass for my open invites
+		let cutoff = now - this.invite_cutoff;
+		for (let g = this.games.mine.length - 1; g >=0 ; g--){
+			if (!this.isAcceptedGame(this.games.mine[g].signature)){
+				if (this.games.mine[g].timestamp < cutoff) {
+					siteMessage("Game invite timed out...", 4000);
+					this.games.mine.splice(g, 1);
+				}
+			}
 		}
 	}
 
