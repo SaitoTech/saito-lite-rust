@@ -18,13 +18,30 @@
 /* Center Column */
 .center-column {
   flex: 1;
-  padding: 24px;
+  padding: 2.4rem;
   max-width: 768px;
   height: calc(100vh - 48px);
   overflow: scroll;
   -ms-overflow-style: none;
   scrollbar-width: none;
-  /* overflow-y: visible;   */
+}
+
+.no-elections {
+  text-align: center;
+  padding: 40px;
+  color: #9ca3af;
+  background: rgba(55, 65, 81, 0.3);
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.no-elections h3 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.no-elections p {
+  font-size: 14px;
 }
 
 

@@ -290,20 +290,42 @@ const VoteLayout = ({ app, mod }) => {
           )}
 
           {activeTab === 'dashboard' && (
-            <div className="elections-list">
-              {elections.map(election => (
+            // <div className="elections-list">
+            //   {elections.map(election => (
 
-                <ElectionCard
-                key={election.id}
-                election={election}
-                voteCounts={voteCounts}
-                selectedCandidates={selectedCandidates}
-                loading={loading}
-                finalizedElections={finalizedElections}
-                onVote={handleVote}
-                onFinalize={handleFinalize}
-                onSelect={handleSelection}
-              />   ))}
+            //     <ElectionCard
+            //     key={election.id}
+            //     election={election}
+            //     voteCounts={voteCounts}
+            //     selectedCandidates={selectedCandidates}
+            //     loading={loading}
+            //     finalizedElections={finalizedElections}
+            //     onVote={handleVote}
+            //     onFinalize={handleFinalize}
+            //     onSelect={handleSelection}
+            //   />   ))}
+            // </div>
+            <div className="elections-list">
+              {elections.length === 0 ? (
+                <div className="no-elections">
+                  <h3>No Elections Found</h3>
+                  <p>Create a new election to get started</p>
+                </div>
+              ) : (
+                elections.map(election => (
+                  <ElectionCard
+                    key={election.id}
+                    election={election}
+                    voteCounts={voteCounts}
+                    selectedCandidates={selectedCandidates}
+                    loading={loading}
+                    finalizedElections={finalizedElections}
+                    onVote={handleVote}
+                    onFinalize={handleFinalize}
+                    onSelect={handleSelection}
+                  />
+                ))
+              )}
             </div>
           )}
 

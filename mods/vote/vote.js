@@ -173,7 +173,6 @@ class Vote extends ModTemplate {
             });
         } catch (error) {
             console.error("Error fetching current election ID:", error);
-            // Fallback to incrementing current ID if exists, or start at 1
             this.currentElectionId = (this.currentElectionId || 0) + 1;
             return this.currentElectionId;
         }
