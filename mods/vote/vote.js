@@ -1,7 +1,5 @@
 const ModTemplate = require("../../lib/templates/modtemplate");
-// const circomlibjs = require("circomlibjs");
 const snarkjs = require('snarkjs')
-const fs = require('fs');
 const pageHome = require('./index');
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const { default: VoteLayout } = require("./lib/Vote-layout");
