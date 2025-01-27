@@ -148,6 +148,11 @@ class ChatManager {
 						group = group2;
 					}
 				}
+
+				if (data?.temporary){
+					group.temporary = true;
+				}
+
 			}
 
 			if (this.mod.browser_active) {

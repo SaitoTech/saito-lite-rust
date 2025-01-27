@@ -24,6 +24,10 @@
 	color: #424143;
 }
 
+.crypto_logo{
+	left: 50px;
+}
+
 .player-box {
 	min-height: 0vh;
 }

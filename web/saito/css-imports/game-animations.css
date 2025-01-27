@@ -6,10 +6,24 @@
   animation: flash 1s infinite cubic-bezier(0.4, 0, 1, 1);
 }
 
+.flash2 {
+  animation: flash2 1s 1 forwards;
+}
+
+@keyframes flash2 {
+   0%, 50%, 100% {
+      opacity: 0;
+   }
+   30%, 80% { 
+      opacity: 1;
+   }
+}
+
+
 
 @keyframes flash {
   from {
-    opacity: 0.3;
+    opacity: 0;
   }
   to {
     opacity: 1;
@@ -67,4 +81,9 @@
   z-index: -1;
   background-color: orangered;
   left: 0;
+}
+
+
+.animated-mask.animated {
+
 }

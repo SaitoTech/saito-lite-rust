@@ -280,11 +280,6 @@
 	justify-content: center;
 }
 
-.cardover-cardover .settlers-dev-card-title{
-	bottom: 0;
-	height: 26%;
-}
-
 .settlers-dev-card-text {
 	font-size: 1.5rem;
 	z-index: 2;

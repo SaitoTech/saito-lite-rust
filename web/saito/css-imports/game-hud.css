@@ -51,15 +51,16 @@
   top: 0;
   width: calc(100% - 2rem);
   margin: 0 0.5rem;
-  transition: all 1.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
   z-index: -1;
   transform: scale(0.95); /* Slightly scale down */
 }
 
 .hud-notice.show {
-  display: block;
-  top: -50%;
+  /*display: block;*/
+  top: -65%;
   transform: scale(1); /* Slightly scale down */
+  transition: all 1.5s ease-in-out;
 }
 
 .hud-square {

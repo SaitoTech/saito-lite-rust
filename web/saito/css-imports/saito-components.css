@@ -3,6 +3,7 @@
 .saito-notification-dot {
   min-width: 2rem;
   min-height: 2rem;
+  padding: 1px 3px;
   border-radius: 0.5rem;
   background-color: var(--saito-primary);
   color: var(--saito-white);

@@ -755,17 +755,19 @@ class SettlersGameloop {
           $("#rolldice").html(`<i class="fa-solid fa-dice"></i>`);
           $("#rolldice").addClass("enabled");
 
-          let timer = 4000;
+          let timer = 3000;
           if (this.canPlayerPlayCard(true)) {
             $("#playcard").addClass("enabled");
             statushtml = "YOUR TURN:";
-            timer = 6000;
+            timer = 5000;
           }
 
           this.updateStatus(`${statushtml}`);
           
-          if (this.loadGamePreference("settlers_play_mode") !== 0 || this.turn_limit) {
+          if (this.turn_limit) {
             this.setShotClock("#rolldice", timer);
+          }else{
+            this.promptMove("#rolldice", 7000);
           }
           
           // **********************************************************

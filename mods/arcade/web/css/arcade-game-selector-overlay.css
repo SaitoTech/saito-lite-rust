@@ -1,10 +1,14 @@
 /*  Game Selector Overlay */
 
-.arcade-game-selector {
-	max-width: 95vw;
+.game-selector-overlay{
+	display: flex;
+  	flex-direction: column;
+	padding: 1rem;
+	width: fit-content;
 	max-height: 95vh;
-	/*display: flex;
-  flex-wrap: wrap;*/
+}
+
+.arcade-game-selector {
 	display: grid;
 	grid-template-columns: repeat(4, 30rem);
 	grid-template-rows: repeat(auto-fit, 20rem);
@@ -12,8 +16,7 @@
 	transition: all 0.2s;
 	gap: 1.5rem;
 	justify-content: center;
-	padding: 1rem;
-
+	max-width: 95vw;
 }
 
 .arcade-game-selector-game {
@@ -97,7 +100,6 @@
 @media screen and (max-width: 800px) {
 	.arcade-game-selector {
 		grid-template-columns: repeat(2, 24rem);
-		width: 95vw;
 	}
 }
 
@@ -105,6 +107,7 @@
 	.arcade-game-selector {
 		grid-template-columns: repeat(2, minmax(14rem, 1fr));
 		grid-template-rows: repeat(auto-fit, minmax(9rem, 1fr));
+		width: 95vw;
 	}
 	.arcade-game-selector-game-title {
 		padding: 0.8rem;
