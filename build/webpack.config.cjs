@@ -108,7 +108,7 @@ webpack(
     resolve: {
       // Add '.ts' and '.tsx' as resolvable extensions.
       //extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
-      extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
+      extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js", ],
       fallback: {
         fs: false,
         tls: false,
@@ -123,6 +123,12 @@ webpack(
         "crypto-browserify": require.resolve("crypto-browserify"),
       },
     },
+    experiments: {
+      asyncWebAssembly: true,
+      syncWebAssembly: true,
+      topLevelAwait: true
+    },
+    
     module: {
       rules: [
         // All files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'.
@@ -133,7 +139,8 @@ webpack(
             loader: 'ts-loader',
             options: {
                 configFile:path.resolve(__dirname, "../build/tsconfig.json")
-            }
+            },
+            
         }],
           // exclude: [
           //   {
@@ -189,19 +196,44 @@ webpack(
         },
         // wasm files should not be processed but just be emitted and we want
         // to have their public URL.
-        {
-          test: /quirc\.wasm$/,
-          type: "javascript/auto",
-          loader: "file-loader",
-          options: {
-            publicPath: "dist/",
-          },
-        },
         // {
-        //   test: /\.wasm$/,
-        //   type: "webassembly/async",
-        //   loader:'file-loader'
+        //   test: /quirc\.wasm$/,
+        //   type: "javascript/auto",
+        //   loader: "file-loader",
+        //   options: {
+        //     publicPath: "dist/",
+        //   },
         // },
+        {
+          test: /\.wasm$/,
+           type: "asset/resource",
+           generator: {
+             filename: 'static/zkey/[name][hash][ext]'
+           }
+        },
+        {
+          test: /\.zkey$/,
+          type: "asset/resource",
+          generator: {
+            filename: 'static/zkey/[name][hash][ext]'
+          }
+        },
+      
+        {
+          test: /\.ptau$/,
+          type: "asset/resource",
+          generator: {
+            filename: 'static/zkey/[name][hash][ext]'
+          }
+        },
+        {
+          test: /\.circom$/,
+          type: "asset/resource",
+          generator: {
+            filename: 'static/zkey/[name][hash][ext]'
+          }
+        },
+     
         {
           test: /\.zip$/,
           exclude: [
@@ -228,10 +260,7 @@ webpack(
         process: "process/browser",
       }),
     ],
-    experiments: {
-      asyncWebAssembly: true,
-      // syncWebAssembly: true
-    },
+ 
     mode: "production",
     devtool: devtool,
   },

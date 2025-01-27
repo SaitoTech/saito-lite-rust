@@ -11,6 +11,13 @@ module.exports = {
   node: {
     fs: "empty",
   },
+
+    
+  experiments: {
+    asyncWebAssembly: true,
+    syncWebAssembly: true,
+    topLevelAwait: true
+  },
   externals: [
     {
       archiver: "archiver",
@@ -85,13 +92,37 @@ module.exports = {
       },
       // wasm files should not be processed but just be emitted and we want
       // to have their public URL.
+      // {
+      //   test: /quirc\.wasm$/,
+      //   type: "javascript/auto",
+      //   loader: "file-loader",
+      //   options: {
+      //     publicPath: "dist/",
+      //   },
+      // },
+
       {
-        test: /quirc\.wasm$/,
-        type: "javascript/auto",
-        loader: "file-loader",
-        options: {
-          publicPath: "dist/",
-        },
+        test: /\.wasm$/,
+         type: "asset/resource",
+         generator: {
+           filename: 'static/zkey/[name][hash][ext]'
+         }
+      },
+     
+
+      {
+        test: /\.zkey$/,
+        type: "asset/resource",
+        generator: {
+          filename: 'static/zkey/[name][hash][ext]'
+        }
+      },
+      {
+        test: /\.ptau$/,
+        type: "asset/resource",
+        generator: {
+          filename: 'static/zkey/[name][hash][ext]'
+        }
       },
       {
         test: /\.zip$/,
@@ -102,6 +133,8 @@ module.exports = {
       },
     ],
   },
+
+ 
 
   resolve: {
     alias: {
