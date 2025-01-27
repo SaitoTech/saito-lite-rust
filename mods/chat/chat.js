@@ -406,12 +406,16 @@ class Chat extends ModTemplate {
       let now = new Date().getTime();
 
       for (let group of this.groups) {
-        
+        /*
+        -- Video call/limbo uses the server as a member
+        -- games address the players, but add a flag when creating the group
+        */
+
         if (group.name !== this.communityGroupName) {
           //
           // Not the community group but using the chat server, clear these out after 1 day by default
           //
-          if (group.members.includes(peer.publicKey)){
+          if (group.members.includes(peer.publicKey) || group?.temporary){
 
             let last_update = group?.last_update || 0;
 
@@ -750,7 +754,8 @@ class Chat extends ModTemplate {
       members: this.communityGroup.members, //general chat services host key
       name,
       txs: [],
-      unread: 0
+      unread: 0,
+      temporary: true
       //
       // USE A TARGET Container if the chat box is supposed to show up embedded within the UI
       // Don't include if you want it to be just a chat popup....

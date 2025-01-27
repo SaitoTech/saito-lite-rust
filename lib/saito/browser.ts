@@ -1943,9 +1943,8 @@ class Browser {
 					'tr',
 					'th',
 					'td',
-					'pre',
 					'marquee',
-					'pre',
+					/*'pre',*/
 					'span',
 					'img',
 					'video',
