@@ -533,6 +533,7 @@
   .saito-header-hamburger-contents {
     width: 100vw;
     right: -100vw;
+    border-radius: unset;
   }
 
   #saito-header {

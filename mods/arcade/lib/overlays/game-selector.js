@@ -10,7 +10,7 @@ class GameSelector {
 		this.app = app;
 		this.mod = mod;
 		this.name = 'GameSelector';
-		this.overlay = new SaitoOverlay(app, mod, false, true);
+		this.overlay = new SaitoOverlay(app, mod, true, true);
 		this.obj = obj;
 
 		this.app.connection.on('arcade-launch-game-selector', (obj = {}) => {

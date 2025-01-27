@@ -869,6 +869,7 @@
     max-height: -webkit-fill-available;
     max-width: -webkit-fill-available;
     z-index: 15;
+    border-radius: unset;
   }
 
   .chat-manager-overlay .chat-manager {

@@ -54,7 +54,7 @@
   bottom: unset;
   left: unset;
   height: 3rem;
-  width: 3rem;
+  min-width: 3rem;
 }
 
 .saito-user:hover .saito-notification-dot{
@@ -62,8 +62,10 @@
   color: var(--saito-font-color);
 }
 
+
 #saito-header-menu-toggle .saito-notification-dot {
   bottom: unset;
-  top: -12%;
-  left: 60%; 
+  top: -20%;
+  left: unset;
+  right: -10%; 
 }
