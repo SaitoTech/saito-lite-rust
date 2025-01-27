@@ -2611,7 +2611,15 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
     if (mv[0] === "event") {
 
-      if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.cardToText(mv[2]); }
+      if (this.game.deck[0].cards[mv[2]] != undefined) { 
+        if (mv[1] === "us") {
+	  this.game.state.stats.us_events_ops += parseInt(this.game.deck[0].cards[mv[2]].ops);
+        }
+        if (mv[1] === "ussr") {
+	  this.game.state.stats.ussr_events_ops += parseInt(this.game.deck[0].cards[mv[2]].ops);
+        }
+	this.game.state.event_name = this.cardToText(mv[2]);
+      }
       this.updateLog(mv[1].toUpperCase() + ` triggers ${this.game.state.event_name} as an event`);
 
       shd_continue = this.playEvent(mv[1], mv[2]);
@@ -3324,6 +3332,8 @@ try {
           this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_scorings = this.game.state.stats.ussr_scorings;
           this.game.state.stats.round[this.game.state.stats.round.length-1].us_ops = this.game.state.stats.us_ops;
           this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ops = this.game.state.stats.ussr_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].us_events_ops = this.game.state.stats.us_events_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_events_ops = this.game.state.stats.ussr_events_ops;
           this.game.state.stats.round[this.game.state.stats.round.length-1].us_modified_ops = this.game.state.stats.us_modified_ops;
           this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_modified_ops = this.game.state.stats.ussr_modified_ops;
           this.game.state.stats.round[this.game.state.stats.round.length-1].us_us_ops = this.game.state.stats.us_ops;
@@ -7124,6 +7134,8 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
     state.stats.ussr_ops_spaced = 0;
     state.stats.us_modified_ops = 0;
     state.stats.ussr_modified_ops = 0;
+    state.stats.us_events_ops = 0;
+    state.stats.ussr_events_ops = 0;
     state.stats.us_coups = [];
     state.stats.ussr_coups = [];
     state.stats.round = [];

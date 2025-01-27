@@ -75,17 +75,20 @@
 .global-desc-ops-modified {
 	grid-column: 3;
 }
-.global-desc-space {
+.global-desc-evented-ops {
 	grid-column: 4;
 }
-.global-desc-scoring {
+.global-desc-space {
 	grid-column: 5;
 }
-.global-desc-bg {
+.global-desc-scoring {
 	grid-column: 6;
 }
-.global-desc-roll {
+.global-desc-bg {
 	grid-column: 7;
+}
+.global-desc-roll {
+	grid-column: 8;
 }
 
 .round-stats-grid {
