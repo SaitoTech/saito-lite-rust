@@ -967,16 +967,22 @@ console.log("error here 222");
       let scoring = twilight_self.calculateScoring(region, 1);
 
       let total_vp = scoring.us.vp - scoring.ussr.vp;
-      let vp_color = "white";
+      let vp_color = "#FFF";
 
-      if (total_vp > 0) { vp_color = "blue" }
-      if (total_vp < 0) { vp_color = "red" }
+      if (total_vp > 0) { vp_color = "#00F" }
+      if (total_vp < 0) { vp_color = "#F00" }
+      
       if (total_vp > (twilight_self.game.vp_needed) || total_vp < (twilight_self.game.vp_needed*-1)) { total_vp = "WIN" }
+      if (total_vp == "WIN" || Math.abs(total_vp) > 15){
+        vp_color += "F";
+      }else {
+        vp_color += Math.abs(total_vp).toString(16).toUpperCase();
+      }
+
+      $(`.display_vp#${region}`).html(`VP ${total_vp}`);
+      $(`.display_vp#${region}`).css("background", vp_color);
 
       $(`.display_card#${region}`).show();
-      $(`.display_vp#${region}`).html(
-        `VP <div style="color:${vp_color}">&nbsp${total_vp}</div>`
-      );
     }).mouseout(function() {
       let region = this.id;
       $(`.display_card#${region}`).hide();
