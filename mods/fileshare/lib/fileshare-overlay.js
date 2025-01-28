@@ -234,7 +234,7 @@ class FileShareOverlay {
 	}
 
 	attachEvents(needs_file){
-		this.app.browser.makeDraggable(`file-transfer-${this.fileId}-${this.recipient}`);
+		this.app.browser.makeDraggable(`file-transfer-${this.fileId}-${this.recipient}`, "", true);
 
 		if (needs_file){
 			let input = document.querySelector(this.qs + ` #hidden_file_element_uploader_overlay`);

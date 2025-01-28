@@ -47,6 +47,7 @@ html[data-theme="sangre3000"] {
   --shadow-draggable-popup: var(--shadow-shape-glow);
   --box-shadow-sidebar-elements: var(--shadow-shape-flat);
   --shadow-chat-message-bottom: 0px 0px 0px var(--color-shadow-bubble);
+  --shadow-shape-glow: 0 0 5px var(--color-primary);
   /* flattened and centered the shadow */
   --shadow-overlay: 0 0 150px -60px var(--color-primary);
   /* gives it that famous sangre glow */
