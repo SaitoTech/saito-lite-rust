@@ -52,6 +52,13 @@ class StatsOverlay {
 		}
 	}
 
+
+	update(){
+		if (this.rendered){
+			this.render();
+		}
+	}
+
 	render() {
 		this.overlay.show(StatsOverlayTemplate(this.mod, this.tracked_stats), () => { this.rendered = false; });
 		this.rendered = true;

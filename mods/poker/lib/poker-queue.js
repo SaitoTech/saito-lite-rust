@@ -111,7 +111,7 @@ class PokerQueue {
 				}
 
 				this.pot.activate();
-
+				this.stats.update();
 				this.startRound();
 				return 1;
 			}
