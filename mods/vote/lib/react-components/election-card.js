@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Edit2, Trash2 } from 'lucide-react';
 
 const ElectionCard = ({
     election,
@@ -7,9 +8,13 @@ const ElectionCard = ({
     selectedCandidates,
     loading,
     finalizedElections,
+    refreshElections,
     onVote,
     onFinalize,
-    onSelect
+    onSelect,
+    handleEditStart,
+    app,
+    mod
 }) => {
     const getElectionStatus = (startDate, endDate) => {
         const now = new Date().getTime();
@@ -25,6 +30,33 @@ const ElectionCard = ({
 
         if (!totalVotes || !votes) return 0;
         return (votes / totalVotes) * 100;
+    };
+
+    const handleEdit = () => {
+        if (!isOwner) {
+            return window.salert("You cannot edit this poll");
+        }
+
+        // Cannot edit if voting has started
+        const status = getElectionStatus(election.startDate, election.endDate);
+        if (status !== 'not-started') {
+            return window.salert("Cannot edit poll after voting has started");
+        }
+        handleEditStart(election);
+    };
+
+    const handleDelete = async (signature, electionId) => {
+        let result = await sconfirm("Are you sure you want to delete this poll?")
+        if (!result) return;
+        console.log('Delete election:', election.id);
+        mod.sendDeleteElectionTransaction({ signature, electionId }, ({ success, message }) => {
+            if (success) {
+                siteMessage(message, 2000)
+                refreshElections()
+            } else if (success === false) {
+                salert(message);
+            }
+        })
     };
 
     const style = {
@@ -127,6 +159,8 @@ const ElectionCard = ({
 
     const status = getElectionStatus(election.startDate, election.endDate);
     const totalVotes = voteCounts[election.id] || 0;
+    const isOwner = election.publicKey === mod.publicKey;
+
 
     return (
         <div className="election-container">
@@ -134,6 +168,22 @@ const ElectionCard = ({
                 <div className="election-header">
                     <h2 className="election-title">{election.description}</h2>
                     <span className="vote-count">{totalVotes} votes</span>
+                    {isOwner && (
+                        <div className="election-actions">
+                            <div
+                                onClick={handleEdit}
+                                className="election-icon-button"
+                            >
+                                <Edit2 className="election-icon" />
+                            </div>
+                            <div
+                                onClick={() => handleDelete(election.signature)}
+                                className="election-icon-button"
+                            >
+                                <Trash2 className="election-icon" />
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div style={style.dates}>

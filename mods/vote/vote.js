@@ -3,6 +3,7 @@ const snarkjs = require('snarkjs')
 const pageHome = require('./index');
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
 const { default: VoteLayout } = require("./lib/Vote-layout");
+const { resolve } = require("url");
 
 
 class Vote extends ModTemplate {
@@ -19,13 +20,16 @@ class Vote extends ModTemplate {
         // Load verification key
         this.vkey = require('./zk/output/verification_key.json');
         this.wasmFile = './zk/build/election_js/election.wasm',
-            this.zkeyFile = './zk/output/election_final.zkey'
+        this.zkeyFile = './zk/output/election_final.zkey'
 
     }
 
     onPeerServiceUp(app, peer, service = {}) {
         if (service.service === 'archive') {
-            this.loadVoteLayout()
+            if(this.browser_active){
+                this.loadVoteLayout()
+            }
+
         }
 
     }
@@ -42,6 +46,10 @@ class Vote extends ModTemplate {
 
             case "create election":
                 await this.receiveCreateElectionTransaction(app, tx, peer, mycallback);
+                break;
+
+            case "delete election":
+                await this.receiveDeleteElectionTransaction(app, tx, peer, mycallback);
                 break;
 
             case "submit vote":
@@ -66,7 +74,12 @@ class Vote extends ModTemplate {
                 await this.receiveCreateElectionTransaction(tx);
 
             }
-          
+            if (txmsg.request === "delete election") {
+                await this.receiveDeleteElectionTransaction(tx);
+
+            }
+
+
         }
     }
 
@@ -99,7 +112,7 @@ class Vote extends ModTemplate {
             let self = this
 
             await this.app.storage.loadTransactions(
-                { field1: 'Vote' },
+                { field1: 'Vote', limit: 50 },
                 (txs) => {
                     const elections = new Map();
                     txs.forEach(tx => {
@@ -129,7 +142,7 @@ class Vote extends ModTemplate {
                     console.log(this.elections);
                     if (callback) callback(Array.from(elections.values()));
                 },
-               peer
+                peer
             );
         } catch (error) {
             console.error("Error fetching elections:", error);
@@ -139,6 +152,46 @@ class Vote extends ModTemplate {
 
 
 
+    async fetchElectionsForUser(publicKey, callback) {
+        try {
+            let peers = await this.app.network.getPeers();
+            let peer = peers[0];
+
+            await this.app.storage.loadTransactions(
+                { field1: 'Vote', limit:100 },
+                (txs) => {
+                    const elections = new Map();
+                    txs.forEach(tx => {
+                        const msg = tx.returnMessage();
+                        if (msg.request === "create election" && tx.from[0].publicKey === publicKey) {
+                            const data = msg.data;
+                            elections.set(data.electionId, {
+                                signature: tx.signature,
+                                id: data.electionId,
+                                numCandidates: data.numCandidates,
+                                candidateNames: data.candidateNames,
+                                description: data.description,
+                                startDate: data.startDate,
+                                endDate: data.endDate,
+                                status: data.status || "active",
+                                votes: data.votes || null,
+                               created: tx.updated_at,
+                                publicKey: tx.from[0].publicKey,
+                                finalTally: data.finalTally || []
+                            });
+                        }
+                    });
+
+                    const userElections = Array.from(elections.values());
+                    if (callback) callback(userElections);
+                },
+                peer
+            );
+        } catch (error) {
+            console.error("Error fetching elections for user:", error);
+            callback(cachedElections);
+        }
+    }
 
     async fetchCurrentElectionId() {
         try {
@@ -170,7 +223,7 @@ class Vote extends ModTemplate {
                 );
             });
         } catch (error) {
-            console.error("Error fetching current election ID:", error);
+            console.error("Error fetching current poll ID:", error);
             this.currentElectionId = (this.currentElectionId || 0) + 1;
             return this.currentElectionId;
         }
@@ -206,61 +259,6 @@ class Vote extends ModTemplate {
     }
 
 
-    async finalizeElection(electionId, signature) {
-        const election = await this.app.storage.loadTransactions(
-          { field1: 'Vote', signature },
-          (txs) =>
-            txs.find(
-              (tx) =>
-                tx.returnMessage().request === "create election" &&
-                tx.returnMessage().data.electionId === electionId
-            ),
-          "localhost"
-        );
-
-        console.log(election, "election found")
-      
-        if (!election) {
-          throw new Error("Election not found or you are not the creator.");
-        }
-    
-        const votes = election.msg.data.votes || {};
-    
-        const tally = new Array(election.msg.data.numCandidates).fill(0);
-    
-        for (const [nullifier, voteData] of Object.entries(votes)) {
-          const candidateIndex =
-            BigInt(voteData.commitment) % BigInt(election.msg.data.numCandidates);
-    
-          tally[Number(candidateIndex)]++;
-        }
-    
-        election.msg.data.finalTally = tally;
-        election.msg.data.status = "finalized";
-    
-        await this.app.storage.updateTransaction(election, {}, "localhost");
-        
-        console.log(tally, "election tally")
-        return tally;
-      }
-      
-    // Network message handlers
-    async sendVerifyVoteTransaction(params = {}, callback = null) {
-        const peers = await this.app.network.getPeers();
-        if (peers.length === 0) {
-            throw new Error("No peers available");
-        }
-
-        await this.app.network.sendRequestAsTransaction(
-            "verify vote",
-            params,
-            callback,
-            peers[0].peerIndex
-        );
-    }
-
-
-
     async sendCreateElectionTransaction(params = {}, callback = null) {
         const peers = await this.app.network.getPeers();
         if (peers.length === 0) {
@@ -291,24 +289,100 @@ class Vote extends ModTemplate {
         return true;
     }
 
-    async receiveCreateElectionTransaction( tx) {
-            const message = tx.returnMessage();
-            const { numCandidates, candidateNames, description } = message.data;
-            try {
-                await this.saveElectionTransaction(tx);
-                if (this.callbackAfterCreate) {
-                    this.callbackAfterCreate()
-                    siteMessage("Election created successfully")
-                }
+    // async sendDeleteElectionTransaction(signature, callback) {
+    //     const peers = await this.app.network.getPeers();
+    //     const peer = peers[0];
 
-            } catch (error) {
-                console.log(error);
+    //     await this.app.storage.loadTransactions(
+    //         { signature, field1: 'Vote' },
+    //         async (txs) => {
+    //             if (txs?.length > 0) {
+    //                 let tx = txs[0];
+    //                 await this.app.storage.deleteTransaction(tx, null, peer);
+    //                 callback({ success: true, message: "Poll deleted successfully" })
+    //             }
+    //         },
+    //         peer
+    //     );
+    // }
+
+    async sendDeleteElectionTransaction(params = {}, callback = null) {
+        const peers = await this.app.network.getPeers();
+        if (peers.length === 0) {
+            throw new Error("No peers available");
+        }
+
+        let newtx = await this.app.wallet.createUnsignedTransactionWithDefaultFee(this.publicKey);
+        newtx.msg = {
+            module: this.name,
+            request: "delete election",
+            data: {
+                electionId: params.electionId,
+                signature: params.signature
             }
+        };
 
+        this.callbackAfterDelete = callback;
+        await newtx.sign();
+        await this.app.network.propagateTransaction(newtx);
     }
+
+
+    async receiveDeleteElectionTransaction(tx) {
+        let callback = this.callbackAfterDelete;
+        try {
+            const message = tx.returnMessage();
+            const { electionId, signature } = message.data;
+            let peers = await this.app.network.getPeers();
+            await this.app.storage.loadTransactions(
+                { signature, field1: 'Vote' },
+                async (txs) => {
+                    if (txs?.length > 0) {
+                        const electionTx = txs[0];
+                        // Verify ownership
+                        if (electionTx.from[0].publicKey !== tx.from[0].publicKey) {
+                            return console.log('Error: Unauthorized delete request');
+                        }
+                        await this.app.storage.deleteTransaction(electionTx, null, "localhost");
+                    }
+                },
+                "localhost"
+            );
+
+            if (callback) {
+                callback({
+                    success: true,
+                    message: "Poll deleted successfully"
+                });
+            }
+        } catch (error) {
+            console.error("Error deleting election:", error);
+            if (callback) {
+                callback({
+                    success: false,
+                    message: "Error deleting poll"
+                });
+            }
+        }
+    }
+    async receiveCreateElectionTransaction(tx) {
+        const message = tx.returnMessage();
+        const { numCandidates, candidateNames, description } = message.data;
+        try {
+            await this.saveElectionTransaction(tx);
+            if (this.callbackAfterCreate) {
+                this.callbackAfterCreate()
+                siteMessage("Poll created successfully", 2000)
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
 
     async sendSubmitVoteTransaction(params = {}, callback = null) {
         const peers = await this.app.network.getPeers();
+        const peer = peers[0]
         if (peers.length === 0) {
             throw new Error("No peers available");
         }
@@ -328,153 +402,197 @@ class Vote extends ModTemplate {
                 nullifier
             );
 
-            // Send transaction with proof and nullifier
-            await this.app.network.sendRequestAsTransaction(
-                "submit vote",
-                {
-                    signature,
-                    electionId,
-                    proof,
-                    publicSignals,
-                    nullifier
-                },
-                callback,
-                peers[0].peerIndex
+            // Prevent double voting via nullifier check:
+            let isUsed = await this.isNullifierUsed(signature, electionId, nullifier);
+            if (isUsed) {
+                if (callback) {
+                    return callback({
+                        success: false,
+                        message: "Error: Double voting detected"
+                    });
+                }
+                return;
+            }
+
+            // Verify proof on submission:
+            const verified = await window.snarkjs.groth16.verify(
+                this.vkey,
+                publicSignals,
+                proof
             );
-            // this.callBackAfterVote = callback
+            if (!verified) {
+                if (callback) {
+                    callback({
+                        success: false,
+                        message: "Could not verify proof"
+                    });
+                }
+                return;
+            }
+
+            try {
+                await this.app.storage.loadTransactions(
+                    { signature, field1: 'Vote' },
+                    async (txs) => {
+                        if (txs?.length > 0) {
+                            const electionTx = txs[0];
+                            if (!electionTx.msg.data.votes) {
+                                electionTx.msg.data.votes = {};
+                            }
+
+                            electionTx.msg.data.votes[nullifier] = {
+                                commitment: publicSignals[0],
+                                proof,
+                                publicSignals,
+                                timestamp: Date.now()
+                            };
+
+                            // Update transaction in storage
+                            await this.app.storage.updateTransaction(electionTx, {}, peer);
+
+                            if (callback) {
+                                callback({ success: true, message: "Vote recorded successfully" });
+                            }
+                        }
+                    },
+                    peer
+                );
+            } catch (error) {
+                if (callback) {
+                    return callback({
+                        success: false,
+                        message: error
+                    });
+                }
+            }
+
         } catch (error) {
             throw error;
         }
     }
 
-    async receiveSubmitVoteTransaction(app, tx, peer, callback) {
-        if (app.BROWSER == 0) {
-          const message = tx.returnMessage();
-          const { signature, electionId, proof, publicSignals, nullifier } = message.data;
-      
-          // Prevent double voting via nullifier check:
-          let isUsed = await this.isNullifierUsed(signature, electionId, nullifier);
-          if (isUsed) {
-            if (callback) {     
-              return callback({
-                success: false,
-                message: "Error: Double voting detected"
-              });
-            }
-
-            return;
-          }
-
-      
-          // Verify proof on submission:
-          const verified = await snarkjs.groth16.verify(
-            this.vkey,
-            publicSignals,
-            proof
-          );
-          if (!verified) {
-            if (callback) {
-              callback({
-                success: false,
-                message: "Could not verify proof"
-              });
-            }
-            return;
-          }
-      
-          try {
-            await this.app.storage.loadTransactions(
-              { signature, field1: 'Vote' },
-              async (txs) => {
-                if (txs?.length > 0) {
-                  const electionTx = txs[0];
-                  if (!electionTx.msg.data.votes) {
-                    electionTx.msg.data.votes = {};
-                  }
-    
-                  electionTx.msg.data.votes[nullifier] = {
-                    commitment: publicSignals[0], 
-                    proof,
-                    publicSignals,
-                    timestamp: Date.now()
-                  };
-      
-                  // Update transaction in storage
-                  await this.app.storage.updateTransaction(electionTx, {}, "localhost");
-      
-                  if (callback) {
-                    callback({ success: true, message: "Vote recorded successfully" });
-                  }
-                }
-              },
-              "localhost"
-            );
-          } catch (error) {
-            if (callback) {
-              return callback({
-                success: false,
-                message: error
-              });
-            }
-          }
+    async sendUpdateElectionTransaction(params = {}, callback = null) {
+        const peers = await this.app.network.getPeers();
+        const peer = peers[0];
+        if (peers.length === 0) {
+            throw new Error("No peers available");
         }
-      }
-      
+    
+        const { signature, description, candidateNames, startDate, endDate } = params;
+    
+        try {
+            await this.app.storage.loadTransactions(
+                { signature, field1: 'Vote' },
+                async (txs) => {
+                    if (txs?.length > 0) {
+                        const electionTx = txs[0];
+                        
+                        // Verify ownership
+                        if (electionTx.from[0].publicKey !== this.publicKey) {
+                            if (callback) {
+                                return callback({
+                                    success: false,
+                                    message: "Unauthorized to update this election"
+                                });
+                            }
+                            return;
+                        }
+    
+                        // Update election data
+                        electionTx.msg.data = {
+                            ...electionTx.msg.data,
+                            description: description || electionTx.msg.data.description,
+                            candidateNames: candidateNames || electionTx.msg.data.candidateNames,
+                            startDate: startDate || electionTx.msg.data.startDate,
+                            endDate: endDate || electionTx.msg.data.endDate,
+                        };
+    
+                        // Update transaction in storage
+                        await this.app.storage.updateTransaction(electionTx, {}, peer);
+    
+                        if (callback) {
+                            callback({ 
+                                success: true, 
+                                message: "Election updated successfully" 
+                            });
+                        }
+                    } else {
+                        if (callback) {
+                            callback({ 
+                                success: false, 
+                                message: "Election not found" 
+                            });
+                        }
+                    }
+                },
+                peer
+            );
+        } catch (error) {
+            if (callback) {
+                callback({ 
+                    success: false, 
+                    message: error.message || "Error updating election" 
+                });
+            }
+        }
+    }
+
     async sendFinalizeElectionTransaction(params = {}, callback = null) {
         const peers = await this.app.network.getPeers();
         if (peers.length === 0) throw new Error("No peers available");
+        const { electionId, signature } = params;
 
-        await this.app.network.sendRequestAsTransaction(
-            "finalize election",
-            params,
-            callback,
-            peers[0].peerIndex
-        );
-        return true;
-    }
+        console.log('finalizing election')
 
-    async receiveFinalizeElectionTransaction(app, tx, peer, callback) {
-        console.log('receiving finalize election tx')
-        if (app.BROWSER !== 0) return;
-        
-        const message = tx.returnMessage();
-        const { electionId, signature } = message.data;
-
-    
         try {
             const tally = await this.finalizeElection(electionId, signature);
-            if(callback) callback({success: true, tally});
+            console.log('tally', tally)
+            if (callback) callback({ success: true, tally });
         } catch (error) {
-            if(callback) callback({success: false, error: error.message});
+            if (callback) callback({ success: false, error: error.message });
         }
     }
-
     async finalizeElection(electionId, signature) {
-        const election = await this.app.storage.loadTransactions(
-            { field1: 'Vote', signature },
-            (txs) => txs.find(tx => 
-                tx.returnMessage().request === "create election" &&
-                tx.returnMessage().data.electionId === electionId
-            ),
-            "localhost"
-        );
+        console.log(electionId, signature)
+        const peers = await this.app.network.getPeers();
+        const peer = peers[0]
 
-        if (!election) throw new Error("Election not found");
-        const votes = election.msg.data.votes || {};
-        const tally = new Array(election.msg.data.numCandidates).fill(0);
-    
-        for (const [nullifier, voteData] of Object.entries(votes)) {
-            // Extract candidate index from commitment using modulo
-            const candidateIndex = BigInt(voteData.commitment) % BigInt(election.msg.data.numCandidates);
-            tally[Number(candidateIndex)]++;
-        }
-    
-        election.msg.data.finalTally = tally;
-        election.msg.data.status = "finalized";
-    
-        await this.app.storage.updateTransaction(election, {}, "localhost");
-        return tally;
+        return new Promise(async (resolve, reject) => {
+            this.app.storage.loadTransactions(
+                { field1: 'Vote', signature },
+                (txs) => {
+                    console.log(txs, 'found ones')
+                    let election = txs.find(tx =>
+                        tx.returnMessage().request === "create election" &&
+                        tx.returnMessage().data.electionId === electionId
+                    )
+                    console.log(election, 'election')
+
+                    if (!election) throw new Error("Poll not found");
+                    const votes = election.msg.data.votes || {};
+                    const tally = new Array(election.msg.data.numCandidates).fill(0);
+
+                    for (const [nullifier, voteData] of Object.entries(votes)) {
+                        // Extract candidate index from commitment using modulo
+                        const candidateIndex = BigInt(voteData.commitment) % BigInt(election.msg.data.numCandidates);
+                        tally[Number(candidateIndex)]++;
+                    }
+
+                    election.msg.data.finalTally = tally;
+                    election.msg.data.status = "finalized";
+
+                    this.app.storage.updateTransaction(election, {}, peer);
+                    resolve(tally);
+                },
+                peer
+            );
+
+
+        })
+
     }
+
+
     webServer(app, expressapp, express) {
         let webdir = `${__dirname}/../../mods/${this.dirname}/web`;
         let mod_self = this;
@@ -520,7 +638,7 @@ class Vote extends ModTemplate {
                 { field1: 'Vote', signature: signature },
                 (txs) => {
 
-                    console.log(txs, 'election transaction')
+         
                     const electionTx = txs.find(tx =>
                         tx.returnMessage().request === "create election" &&
                         tx.returnMessage().data.electionId === electionId
@@ -542,6 +660,10 @@ class Vote extends ModTemplate {
     }
 
     async isNullifierUsed(signature, electionId, nullifier) {
+        let peers = await this.app.network.getPeers();
+        let peer = peers[0];
+
+        if (!peer) return;
         return new Promise(async (resolve) => {
             await this.app.storage.loadTransactions(
                 { field1: 'Vote', signature },
@@ -559,13 +681,13 @@ class Vote extends ModTemplate {
                         resolve(false);
                     }
                 },
-                "localhost"
+                peer
             );
         });
     }
 
     async loadVoteLayout() {
-        this.app.browser.createReactRoot(VoteLayout, { app: this.app, mod: this }, 'vote-layout');
+        this.app.browser.createReactRoot(VoteLayout, { app: this.app, mod: this }, `vote-layout-${Date.now()}`);
     }
 
     async createNullifier(electionId) {

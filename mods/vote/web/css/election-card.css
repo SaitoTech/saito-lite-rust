@@ -21,6 +21,40 @@
     font-size: 2.4rem;
     font-weight: 600;
   }
+
+  .election-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .election-icon-button {
+    padding: 8px;
+    border-radius: 9999px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .election-icon-button:hover {
+    background-color: #374151;
+  }
+  
+  .election-icon {
+    width: 20px;
+    height: 20px;
+    color: #9ca3af;
+  }
+  
+  .election-header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
   
   .vote-count {
     color: #9ca3af;

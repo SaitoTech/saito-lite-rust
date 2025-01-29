@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import ElectionCard from './react-components/election-card';
+import { Globe, UserSquare, PlusSquare } from 'lucide-react';
+
 
 const VoteLayout = ({ app, mod }) => {
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('All Polls');
   const [newElection, setNewElection] = useState({
     description: '',
     numCandidates: 2,
     candidateNames: ['', ''],
-    startDate: '',
+    startDate: new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16),
     endDate: ''
   });
   const [elections, setElections] = useState([]);
@@ -17,23 +19,107 @@ const VoteLayout = ({ app, mod }) => {
   const [selectedCandidates, setSelectedCandidates] = useState({});
   const [voteCounts, setVoteCounts] = useState({});
   const [finalizedElections, setFinalizedElections] = useState(new Set());
+  const [loadingStates, setLoadingStates] = useState({});
 
 
   useEffect(() => {
-    fetchElections();
-  }, []);
+    refreshElections();
+  }, [activeTab]);
 
 
   const getElectionStatus = (startDate, endDate) => {
     const now = new Date().getTime();
     const start = new Date(startDate).getTime();
     const end = new Date(endDate).getTime();
-
     if (now < start) return 'not-started';
     if (now > end) return 'ended';
     return 'active';
   };
 
+  const handleEditStart = (election) => {
+    setActiveTab('create');
+    setNewElection({
+      description: election.description,
+      numCandidates: election.candidateNames.length,
+      candidateNames: [...election.candidateNames],
+      startDate: election.startDate,
+      endDate: election.endDate,
+      isEditing: true,
+      signature: election.signature,
+      id: election.id
+    });
+  };
+
+
+  const handleCreateElection = async () => {
+    if (!newElection.startDate || !newElection.endDate) {
+      window.salert("Please set both start and end dates");
+      return;
+    }
+
+    const startTime = new Date(newElection.startDate).getTime();
+    const endTime = new Date(newElection.endDate).getTime();
+
+    if (startTime >= endTime) {
+      window.salert("End date must be after start date");
+      return;
+    }
+
+    try {
+      if (newElection.isEditing) {
+        // Handle edit
+        await mod.sendUpdateElectionTransaction({
+          signature: newElection.signature,
+          description: newElection.description,
+          candidateNames: newElection.candidateNames,
+          startDate: newElection.startDate,
+          endDate: newElection.endDate
+        }, (result) => {
+          if (result.success) {
+            window.siteMessage("Poll updated successfully", 2000);
+            setActiveTab('All Polls');
+            setNewElection({
+              description: '',
+              numCandidates: 2,
+              candidateNames: ['', ''],
+              startDate: new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16),
+              endDate: '',
+              isEditing: false
+            });
+            fetchElections();
+          } else {
+            window.salert(result.message || "Could not update poll");
+          }
+        });
+      } else {
+        let result = await mod.sendCreateElectionTransaction({
+          numCandidates: newElection.numCandidates,
+          candidateNames: newElection.candidateNames,
+          description: newElection.description,
+          startDate: newElection.startDate,
+          endDate: newElection.endDate
+        }, () => {
+          fetchElections()
+        });
+
+        if (result) {
+          setActiveTab('All Polls');
+          setNewElection({
+            description: '',
+            numCandidates: 2,
+            candidateNames: ['', ''],
+            startDate: new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16),
+            endDate: ''
+          });
+          fetchElections();
+        } else {
+          window.salert("Could not create poll");
+        }
+      }
+    } catch (err) {
+      window.salert(err.message);
+    }
+  };
 
   const handleSelection = (electionId, index) => {
     setSelectedCandidates(prev => ({
@@ -42,18 +128,32 @@ const VoteLayout = ({ app, mod }) => {
     }));
   };
 
+
   const fetchElections = async () => {
     try {
-      await mod.fetchElections(async (elections) => {
-        setElections(elections)
-        console.log(elections, 'elections')
-        const counts = {};
-        for (const election of elections) {
-          const count = await mod.getVoteCount(election.id, election.signature);
-          counts[election.id] = count.totalVotes;
-        }
-        setVoteCounts(counts);
-      });
+      if (activeTab === 'My Polls') {
+        await mod.fetchElectionsForUser(mod.publicKey, async (elections) => {
+          setElections(elections);
+          const counts = {};
+          for (const election of elections) {
+            const count = await mod.getVoteCount(election.id, election.signature);
+            counts[election.id] = count.totalVotes;
+          }
+          setVoteCounts(counts);
+          handleFinalizeAll(elections);
+        });
+      } else {
+        await mod.fetchElections(async (elections) => {
+          setElections(elections);
+          const counts = {};
+          for (const election of elections) {
+            const count = await mod.getVoteCount(election.id, election.signature);
+            counts[election.id] = count.totalVotes;
+          }
+          setVoteCounts(counts);
+          handleFinalizeAll(elections);
+        });
+      }
     } catch (err) {
       setError("Failed to fetch elections");
     }
@@ -61,8 +161,15 @@ const VoteLayout = ({ app, mod }) => {
 
 
 
+
+
+  const refreshElections = () => {
+    fetchElections()
+  }
+
+
   const handleVote = async (signature, electionId, candidateIndex) => {
-    setLoading(true);
+    setLoadingStates(prev => ({ ...prev, [electionId]: true }));
     try {
       const election = elections.find(e => e.id === electionId);
       const now = new Date().getTime();
@@ -88,7 +195,7 @@ const VoteLayout = ({ app, mod }) => {
           console.log('an error occured', result.message)
           window.salert(result.message)
         } else {
-          window.siteMessage('Vote submitted successfully')
+          window.siteMessage('Vote submitted successfully', 2000)
           fetchElections();
         }
       });
@@ -96,7 +203,34 @@ const VoteLayout = ({ app, mod }) => {
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      setLoadingStates(prev => ({ ...prev, [electionId]: false }));
+    }
+  };
+
+
+  const handleFinalizeAll = async (elections) => {
+    try {
+      const eligibleElections = elections.filter(election => {
+        const status = getElectionStatus(election.startDate, election.endDate);
+        return status === 'ended' &&
+          election.status !== "finalized"
+      });
+
+      for (const election of eligibleElections) {
+        await mod.sendFinalizeElectionTransaction({
+          signature: election.signature,
+          electionId: election.id
+        }, (result) => {
+          if (result.success) {
+            setFinalizedElections(prev => new Set([...prev, election.id]));
+          }
+        });
+      }
+      if (eligibleElections.length > 0) {
+        fetchElections();
+      }
+    } catch (err) {
+      setError("Error finalizing elections: " + err.message);
     }
   };
 
@@ -116,49 +250,6 @@ const VoteLayout = ({ app, mod }) => {
     }
   };
 
-
-  const handleCreateElection = async () => {
-    if (!newElection.startDate || !newElection.endDate) {
-      window.salert("Please set both start and end dates");
-      return;
-    }
-
-    const startTime = new Date(newElection.startDate).getTime();
-    const endTime = new Date(newElection.endDate).getTime();
-
-    if (startTime >= endTime) {
-      window.salert("End date must be after start date");
-      return;
-    }
-
-    try {
-      let result = await mod.sendCreateElectionTransaction({
-        numCandidates: newElection.numCandidates,
-        candidateNames: newElection.candidateNames,
-        description: newElection.description,
-        startDate: newElection.startDate,
-        endDate: newElection.endDate
-      }, () => {
-        fetchElections()
-      });
-
-      if (result) {
-        setActiveTab('dashboard');
-        setNewElection({
-          description: '',
-          numCandidates: 2,
-          candidateNames: ['', ''],
-          startDate: '',
-          endDate: ''
-        });
-        fetchElections();
-      } else {
-        window.salert("Could not create election");
-      }
-    } catch (err) {
-      window.salert(err.message);
-    }
-  };
 
   const updateCandidateName = (index, name) => {
     const newNames = [...newElection.candidateNames];
@@ -199,16 +290,32 @@ const VoteLayout = ({ app, mod }) => {
             className={`tab-button ${activeTab === 'create' ? 'active' : ''}`}
             onClick={() => setActiveTab('create')}
           >
-            Create Election
+            <PlusSquare size={18} className="mr-2" />
+
+            Create Poll
           </button>
           <button
             style={{
               background: 'none'
             }}
-            className={`tab-button ${activeTab === 'dashboard' ? 'active' : ''}`}
-            onClick={() => setActiveTab('dashboard')}
+            className={`tab-button ${activeTab === 'All Polls' ? 'active' : ''}`}
+            onClick={() => setActiveTab('All Polls')}
           >
-            Dashboard
+            <Globe size={18} className="mr-2" />
+
+            All Polls
+          </button>
+
+          <button
+            style={{
+              background: 'none'
+            }}
+            className={`tab-button ${activeTab === 'My Polls' ? 'active' : ''}`}
+            onClick={() => setActiveTab('My Polls')}
+          >
+            <UserSquare size={18} className="mr-2" />
+
+            My Polls
           </button>
 
         </div>
@@ -216,7 +323,6 @@ const VoteLayout = ({ app, mod }) => {
 
       <div className="center-column" style={{
         maxWidth: '900px',
-        // margin: selectedPost ? '0 auto' : undefined
       }}>
         <div className="voting-system">
           {error && (
@@ -230,18 +336,18 @@ const VoteLayout = ({ app, mod }) => {
           {activeTab === 'create' && (
             <div className="card">
               <div className="card-header">
-                <h5>Create New Election</h5>
+                <h5>{newElection.isEditing ? 'Edit Poll' : 'Create New Poll'}</h5>
               </div>
               <div className="card-content">
                 <div className="form-group">
                   <input
                     className="input"
-                    placeholder="Election Description"
+                    placeholder="Poll Description"
                     value={newElection.description}
                     onChange={(e) => setNewElection({ ...newElection, description: e.target.value })}
                   />
                   <div className="date-input-group">
-                    <label>Election Duration:</label>
+                    <label>Poll Duration:</label>
                     <div className="date-inputs">
                       <input
                         className="input"
@@ -260,7 +366,7 @@ const VoteLayout = ({ app, mod }) => {
                     </div>
                   </div>
                   <div className="number-input-group">
-                    <label>Number of Candidates:</label>
+                    <label>Number of Options:</label>
                     <input
                       className="input"
                       type="number"
@@ -275,41 +381,30 @@ const VoteLayout = ({ app, mod }) => {
                       <input
                         key={index}
                         className="input"
-                        placeholder={`Candidate ${index + 1} Name`}
+                        placeholder={`Option ${index + 1} Name`}
                         value={name}
                         onChange={(e) => updateCandidateName(index, e.target.value)}
                       />
                     ))}
                   </div>
                   <button className="button primary" onClick={handleCreateElection}>
-                    Create Election
+                    {newElection.isEditing ? 'Update Poll' : 'Create Poll'}
                   </button>
                 </div>
               </div>
             </div>
           )}
 
-          {activeTab === 'dashboard' && (
-            // <div className="elections-list">
-            //   {elections.map(election => (
-
-            //     <ElectionCard
-            //     key={election.id}
-            //     election={election}
-            //     voteCounts={voteCounts}
-            //     selectedCandidates={selectedCandidates}
-            //     loading={loading}
-            //     finalizedElections={finalizedElections}
-            //     onVote={handleVote}
-            //     onFinalize={handleFinalize}
-            //     onSelect={handleSelection}
-            //   />   ))}
-            // </div>
+          {(activeTab === 'All Polls' || activeTab === 'My Polls') && (
             <div className="elections-list">
               {elections.length === 0 ? (
                 <div className="no-elections">
                   <h3>No Elections Found</h3>
-                  <p>Create a new election to get started</p>
+                  <p>
+                    {activeTab === 'My Polls'
+                      ? "You haven't created any polls yet"
+                      : "Create a new election to get started"}
+                  </p>
                 </div>
               ) : (
                 elections.map(election => (
@@ -318,11 +413,15 @@ const VoteLayout = ({ app, mod }) => {
                     election={election}
                     voteCounts={voteCounts}
                     selectedCandidates={selectedCandidates}
-                    loading={loading}
+                    loading={loadingStates[election.id]}
                     finalizedElections={finalizedElections}
                     onVote={handleVote}
+                    mod={mod}
+                    app={app}
+                    refreshElections={refreshElections}
                     onFinalize={handleFinalize}
                     onSelect={handleSelection}
+                    handleEditStart={handleEditStart}
                   />
                 ))
               )}
