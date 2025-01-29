@@ -126,6 +126,14 @@ mods/graffiti/web/img/snapshots/*
 
 extras/shashmap/build
 
+# Ignore ptau files
+*.ptau
+*/*.ptau
+*/*/ptau
+circuits/*.ptau
+zk/*.ptau
+zk/*/*.ptau
+
 # Ignore vim files:
 *~
 *.swp
