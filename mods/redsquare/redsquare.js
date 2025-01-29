@@ -1473,7 +1473,7 @@ class RedSquare extends ModTemplate {
     //
     if (tweet.parent_id) {
       if (this.app.modules.moderate(tweet.tx, this.name) == -1) { return; }
-      if (this.app.keychain.returnUsername(tweet.tx).indexOf("Anon") == 0 && tweet.num_likes == 0) { return; }
+      if (this.app.keychain.returnIdentifierByPublicKey(tweet.user.publicKey).indexOf("Anon") == 0 && tweet.num_likes == 0) { return; }
     }
 
 
