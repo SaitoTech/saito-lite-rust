@@ -241,6 +241,7 @@ class PokerUI {
       this.game.state.required_pot - this.game.state.player_pot[this.game.player - 1];
 
     if (match_required == 0 && this.game.state.all_in) {
+      poker_self.addMove(`allin`);
       poker_self.endTurn();
       return;
     }
