@@ -258,6 +258,7 @@ const VoteLayout = ({ app, mod }) => {
   };
 
   const updateNumCandidates = (num) => {
+    if(num > 5) return salert("Poll options shouldn't exceed 5")
     const candidateNames = [...newElection.candidateNames];
     while (candidateNames.length < num) {
       candidateNames.push('');
