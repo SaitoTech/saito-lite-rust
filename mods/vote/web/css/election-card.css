@@ -30,7 +30,7 @@
   
   .election-icon-button {
     padding: 8px;
-    border-radius: 9999px;
+    border-radius: 999rem;
     background: none;
     border: none;
     cursor: pointer;
@@ -45,8 +45,8 @@
   }
   
   .election-icon {
-    width: 20px;
-    height: 20px;
+    width: 2rem;
+    height: 2rem;
     color: #9ca3af;
   }
   
