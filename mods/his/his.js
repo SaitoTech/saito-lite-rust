@@ -2953,7 +2953,7 @@ this.addRegular("hapsburg", "palma", 1);
 	  this.addMercenary("france","modena", 2);
 	  this.addRegular("genoa","modena", 2);
 
-          this.addArmyLeader("hapsburg", "barcelona", "ferdinand");
+          this.addArmyLeader("hapsburg", "szegedin", "ferdinand");
 	  this.addRegular("hapsburg", "barcelona", 2);
 
 	  if (this.game.players.length == 2) {
@@ -16914,6 +16914,7 @@ console.log("DELETING Z: " + z);
 	  let fluis = this.returnFactionLandUnitsInSpace(f, space.key);
 	  if (fluis > 0) {
 
+
 	    //
 	    // ... then we need to be allies with them to move in
 	    //
@@ -18994,7 +18995,7 @@ if (x) {
       top : 775 ,
       left : 1100 ,
       name : "Irish Sea" ,
-      ports : ["glasgow"] ,
+      ports : ["glasgow","bristol"] ,
       neighbours : ["biscay","north","channel"] ,
     }
     seas['biscay'] = {
@@ -21685,6 +21686,7 @@ if (x) {
   }
 
   captureLeader(winning_faction, losing_faction, space, unit = false) {
+
     if (!unit) { return; }
     if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
@@ -37838,7 +37840,8 @@ try {
 	    if (!this.areAllies(f, faction)) {
 	      for (let z = 0; z < this.game.spaces[space].units[f].length; z++) {
 	        his_self.captureLeader(faction, f, space, this.game.spaces[space].units[f][z]);
-		if (his_self.game.spaces[space].units[f][z].type == "squadron" || his_self.game.spaces[space].units[f][z].type == "corsair") {
+		let u = his_self.game.spaces[space].units[f][z];
+		if (u.type == "squadron" || u.type == "corsair" || u.army_leader == true || u.navy_leader == true) {
 		  his_self.game.spaces[space].units[f].splice(z, 1); z--;
 		}
 	      };
@@ -44496,16 +44499,11 @@ does_units_to_move_have_unit = true; }
     //
     let selectDestinationInterface = function(his_self, units_to_move) {
 
-console.log("COST OF TRANSPORT: " + cost_of_transport);
 	      if (cost_of_transport > 2) {
-console.log("PRE QUEUE: " + JSON.stringify(his_self.moves));
-console.log("cost of transport: " + cost_of_transport);
 	        for (let z = 0; z < his_self.moves.length; z++) {
 		  let pma = his_self.moves[z].split("\t");
 		  if (pma[0] === "continue") {
-console.log("pma[4]: " + pma[4]);
 		    if ((parseInt(pma[4]) - (cost_of_transport-2)) > 0) {
-console.log("math: " + parseInt(pma[4]) + " - " + cost_of_transport + " - " + 2);
                       his_self.moves[z] = "continue\t"+pma[1]+"\t"+pma[2]+"\t"+pma[3]+"\t"+(parseInt(pma[4])-(cost_of_transport-2))+"\t"+pma[5];
 		    } else {
 		      his_self.moves.splice(z, 1);
@@ -44514,9 +44512,6 @@ console.log("math: " + parseInt(pma[4]) + " - " + cost_of_transport + " - " + 2)
 		  }
 	        }
 	      }
-
-console.log("POST QUEUE: " + JSON.stringify(his_self.moves));
-
 
               units_to_move.sort(function(a, b){return parseInt(a.idx)-parseInt(b.idx)});
 
@@ -44687,7 +44682,7 @@ console.log("POST QUEUE: " + JSON.stringify(his_self.moves));
     his_self.attachCardboxEvents(function(user_choice) {
 
       spacekey = spaces_with_infantry[user_choice];
-
+console.log("start: " + ops_remaining + " ==> " +  ops_to_spend);
       let dest = his_self.returnNavalTransportDestinations(faction, spaces_with_infantry[user_choice], (ops_remaining+ops_to_spend));
 
       let html = `<ul>`;

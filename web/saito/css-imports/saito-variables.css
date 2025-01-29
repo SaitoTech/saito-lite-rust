@@ -191,7 +191,7 @@ font imports
 
 /*SHADOW SELECTION*/
 --shadow-primary-button: var(--shadow-standard);
---shadow-chat-popup: var(--box-shadow-sidebar-elements);
+--shadow-draggable-popup: var(--box-shadow-sidebar-elements);
 --shadow-overlay: var(--shadow-standard);
 /*FONTS SECTION*/
 /* Quick Settings - Basic Font Colors */
@@ -217,7 +217,7 @@ font imports
   --font-color-button-chat-popup-header: var(--font-color-heavy);
   --font-color-button-hover-chat-popup-header: var(--font-color-inverse);
   --font-color-button-primary: var(--font-color-inverse);
-  --font-color-button-hover-primary: none;
+  --font-color-button-hover-primary: var(--font-color-inverse);
   --font-color-button-sidebar: none;
   --font-color-button-hover-sidebar: var(--font-color-inverse);
   --font-color-button-sidebar-chat-container-active-subtitle: var(--font-color-primary); /* chat container text below user.  */
@@ -254,7 +254,7 @@ font imports
   --font-color-module-menu-header: var(--font-color-inverse);
   --font-color-overlay-form-header: var(--font-color-inverse);
   --font-color-overlay-form-text: none;
-  --font-color-overlay-subform-recover: none;
+  --font-color-overlay-subform-recover: var(--font-color-primary);
 /* Form and Miscellaneous Font Colors */
   --font-color-form-input: var(--font-color-heavy);
   --font-color-form-input-body: none;

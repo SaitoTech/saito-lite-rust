@@ -27,38 +27,15 @@ const SaitoOverlay = require('./../../lib/saito/ui/saito-overlay/saito-overlay')
 
 ////////////////////////////////////////////
 //
-// RedSquare is now entirely dependent on Archive for TX storage
-// This may create some lingering issues because having a dedicated DB
-// allowed us to surface important information. For reference, the original
-// schema is:
-/*
-
-  tweets (
-    id      INTEGER,
-    tx      TEXT,
-    sig       VARCHAR(99),
-    publickey     VARCHAR(99),
-    thread_id     VARCHAR(99),
-    parent_id     VARCHAR(99),
-    `text`    TEXT,
-    link      TEXT,
-    link_properties TEXT,
-    type      INTEGER,
-    processed   INTEGER,
-    flagged     INTEGER,
-    moderated     INTEGER,
-    has_images      INTEGER,
-    tx_size   INTEGER,
-    num_likes     INTEGER,
-    num_retweets    INTEGER,
-    num_replies     INTEGER,
-    created_at    INTEGER,
-    updated_at    INTEGER,
-    UNIQUE    (id),
-    UNIQUE    (sig),
-    PRIMARY KEY     (id ASC)
-  );
-*/
+// RedSquare depends on the Archive module for TX storage. This allows the 
+// module to fetch tweets from multiple machines using a consistent API, 
+// the loadTransactions() function.
+//
+// Transactions are fetched and submitted to the addTweet() function which
+// creates a tweet /lib/tweet.js which is responsible for formatting and 
+// displaying itself as and when requested.
+//
+///////////////////////////////////////////
 
 class RedSquare extends ModTemplate {
   constructor(app) {
@@ -74,7 +51,7 @@ class RedSquare extends ModTemplate {
 
     this.tweets = []; // time sorted master list of tweets 
     this.curated_tweets = []; // accepted tweets for display / sharing
-    this.cached_tweets = []; // serialized version of curated_tweets
+    this.cached_tweets = []; // serialized-for-web version of curated_tweets
     this.tweets_sigs_hmap = {};
     this.unknown_children = [];
 
@@ -333,7 +310,9 @@ class RedSquare extends ModTemplate {
 
     if (type === 'saito-moderation-app') {
       return {
+
         filter_func: (mod = null, tx = null) => {
+
           if (tx == null || mod == null || !tx?.from) {
             return 0;
           }
@@ -396,11 +375,15 @@ class RedSquare extends ModTemplate {
   // so most of the work is pre-network init.
   //
   async initialize(app) {
+
     //
     // database setup etc.
     //
     await super.initialize(app);
 
+    //
+    // ensure easy-access in non-awaitable 
+    //
     this.publicKey = await app.wallet.getPublicKey();
 
     //
@@ -409,26 +392,23 @@ class RedSquare extends ModTemplate {
     this.loadOptions();
 
     if (!app.BROWSER) {
+
       let ts = Date.now() - 7 * 24 * 60 * 60 * 1000;
       await this.app.storage.loadTransactions(
         {
           field1: 'RedSquare',
           flagged: 0,
-          tx_size_less_than: 100000,
-          limit: 50,
+          tx_size_less_than: 1000000,
+          limit: 40,
           updated_later_than: ts
         },
         (txs) => {
 
-console.log("LOAD FROM STORAGE: " + txs.length + " txs");
-
           for (let i = 0; i < txs.length; i++) {
             try {
               if (!txs[i].optional?.parent_id) {
-console.log("potential tx without parent_id");
                 //Server only checks blacklist / saito-moderation-app skips BROWSER=0
                 if (this.app.modules.moderate(txs[i], this.name) > -1) {
-console.log("adding as moderated...");
                   this.addTweet(txs[i], "server_load");
                 }
               }
@@ -539,7 +519,6 @@ console.log("adding as moderated...");
     let firstRender = 'tweets';
     let hash = window.location.hash;
     if (hash) {
-      console.log(hash);
       switch (hash) {
         case '#notifications':
           firstRender = 'notifications';
@@ -1462,6 +1441,7 @@ console.log("adding as moderated...");
   // returns 1 if this is a new tweet that can be displayed
   //
   addTweet(tx, source) {
+
     //
     // if this is a like or flag tx, it isn't anything to add to the feed so stop here
     //
@@ -1480,11 +1460,22 @@ console.log("adding as moderated...");
       return 0;
     }
 
+
+
     //
     // create the tweet
     //
     let tweet = new Tweet(this.app, this, tx, '.tweet-manager');
     tweet.data_source = source;
+
+    //
+    // if we are in curated mode, check for trollish behavior
+    //
+    if (tweet.parent_id) {
+      if (this.app.modules.moderate(tweet.tx, this.name) == -1) { return; }
+      if (this.app.keychain.returnUsername(tweet.tx).indexOf("Anon") == 0 && tweet.num_likes == 0) { return; }
+    }
+
 
     //
     // avoid errors
@@ -2712,13 +2703,7 @@ console.log("###");
     let img_bonus_used = 0;
     let number_of_tweets_with_positive_score = 0;
 
-let number_of_tweets = 0;
-
     for (let tweet of this.tweets) {
-
-console.log("TWEET: " + tweet.text);
-
-number_of_tweets++;
 
       if (tweet?.flagged) {
         continue;
@@ -2746,30 +2731,40 @@ number_of_tweets++;
       //	score = 1;
       //}
 
-      let mod_score = this.app.modules.moderate(tweet.tx);
-
+      //
+      // we don't need to run tweets through the moderate function
+      // multiple times if we have already processed them and marked
+      // them as curated....
+      //
       if (tweet.curated == 1) {
         score = 1;
       }
 
-      if (tweet.num_replies > 0 && mod_score != -1) {
-        score = 1;
-      }
+      if (score == 0) {
 
-      if (tweet.num_likes > 1 && mod_score != -1) {
-        score = 1;
-      }
+        let mod_score = this.app.modules.moderate(tweet.tx);
 
-      if (mod_score == 1) {
-        score = 1;
-      }
-
-      if (tweet.images?.length > 0) {
-        if (img_bonus_used == 0 && score == 1) {
-          score += 5;
-          img_bonus_used = 1;
+        if (tweet.num_replies > 0 && mod_score != -1) {
+          score = 1;
         }
+
+        if (tweet.num_likes > 1 && mod_score != -1) {
+          score = 1;
+        }
+
+        if (mod_score == 1) {
+          score = 1;
+        }
+
+        if (tweet.images?.length > 0) {
+          if (img_bonus_used == 0 && score == 1) {
+            score += 5;
+            img_bonus_used = 1;
+          }
+        }
+
       }
+
 
       //if (this.app.keychain.returnIdentifierByPublicKey(tweet.tx.from[0].publicKey)){
       //  score += 2;
@@ -2783,19 +2778,17 @@ number_of_tweets++;
 
       if (score > 0) {
         number_of_tweets_with_positive_score++;
-console.log("adding tweet with positive score!");
         temp_array.push({ tweet, score: 1 });
       }
 
     }
 
-
-console.log("processed: " + number_of_tweets);
-
-
-    temp_array.sort((a, b) => {
-      return b.score - a.score;
-    });
+    //
+    // display by timestamp
+    //
+    //temp_array.sort((a, b) => {
+    //  return b.tx.timestamp - a.tx.timestamp;
+    //});
 
 
     //
