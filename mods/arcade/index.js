@@ -79,7 +79,7 @@ module.exports = (app, mod, build_number, og_card, game) => {
   if (game){
     html += `
     <script type="text/javascript">
-    var game = ${JSON.stringify(game)};
+    var game = ${game.serialize_to_web(app)};
     </script>
     `;
   }
