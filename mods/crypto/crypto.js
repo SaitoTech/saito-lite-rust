@@ -169,13 +169,15 @@ class Crypto extends ModTemplate {
 
 			let game_name = document.querySelector("input[name='game']")?.value;
 			if (game_name){
-				let gm = this.app.modules.returnModuleByName(game_name);
-				if (gm?.opengame){
+				this.gm = this.app.modules.returnModuleByName(game_name);
+				if (this.gm?.opengame){
 					this.min_balance = -1;
 				}
-				if (!gm?.can_bet){
+				if (!this.gm?.can_bet){
 					return;
 				}
+			}else {
+				return;
 			}
 
 			this.attachStyleSheets();

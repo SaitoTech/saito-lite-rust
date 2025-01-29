@@ -19,6 +19,7 @@ module.exports = (app, mod, form) => {
           fee = res;
         });
 
+
         let diff = Number(mod.max_balance) - Number(fee);
         if (diff < 0) {
           mod.max_balance = 0;  
@@ -55,6 +56,15 @@ module.exports = (app, mod, form) => {
           </div>`;
       }
 
+  let warning_msg = "(0 network fees)";
+  if (fee){
+    if (mod.gm?.opengame) {
+      warning_msg = `(${fee}${ticker} per round)`;
+    } else {
+      warning_msg = `(${fee}${ticker} at end of game)`;
+    }
+  }
+
   html +=  `<div class="crypto_msg"><div></div><div class="select_max">Max: ${mod.max_balance}</div></div></div>`;
 
   if (mod.min_balance >= 0){
@@ -76,7 +86,7 @@ module.exports = (app, mod, form) => {
 
       <div class="crypto-stake-confirm-container">
         <input type="checkbox" checked name="crypto-stake-confirm-input" id="crypto-stake-confirm-input">
-        <label for="crypto-stake-confirm-input" class="commentary">authorize in-game crypto transfer</label>
+        <label for="crypto-stake-confirm-input" class="commentary">authorize in-game crypto transfer ${warning_msg}</label>
       </div>
       <div class="stake-input-error" id="stake-checkbox-error"></div>
 
