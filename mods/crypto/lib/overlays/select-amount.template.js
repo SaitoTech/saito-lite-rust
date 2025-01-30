@@ -14,19 +14,11 @@ module.exports = (app, mod, form) => {
 
       if (form.fixed){
         html += `<div class="crypto-ticker">${form.ticker}</div>`;
-        crypto_mod = app.wallet.returnCryptoModuleByTicker(form.ticker);
-        crypto_mod.returnWithdrawalFeeForAddress('', function(res){
-          fee = res;
-        });
+        
+        fee = mod.includeFeeInMax(form.ticker);
 
-
-        let diff = Number(mod.max_balance) - Number(fee);
-        if (diff < 0) {
-          mod.max_balance = 0;  
-        } else {
-          mod.max_balance = Number(mod.max_balance) - Number(fee);
-        }
       } else {
+
         html +=  `
                  <div class="token-dropdown"><select class="withdraw-select-crypto" id="stake-select-crypto">`;
         for (let ticker in mod.balances){
@@ -37,19 +29,7 @@ module.exports = (app, mod, form) => {
           }
 
           if (form.ticker == ticker) {
-            crypto_mod = app.wallet.returnCryptoModuleByTicker(ticker);
-            crypto_mod.returnWithdrawalFeeForAddress('', function(res){
-              fee = res;
-            });
-
-            let diff = Number(mod.max_balance) - Number(fee);
-            diff = parseFloat(diff.toFixed(8));
-
-            if (diff < 0) {
-              mod.max_balance = 0;  
-            } else {
-              mod.max_balance = diff;
-            }
+            fee = mod.includeFeeInMax(ticker);            
           }
 
           html += `<option value="${ticker}" ${form.ticker == ticker ? "selected" : ""}>${ticker}</option>`;

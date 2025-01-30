@@ -71,6 +71,7 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
+    flex-wrap: wrap;
 }
 
 .game-playerbox-head .saito-user>.saito-userline .player-stake {

@@ -254,7 +254,25 @@ class Crypto extends ModTemplate {
 	}
 
 
+	includeFeeInMax(ticker) {
+		let fee = 0;
 
+    let crypto_mod = this.app.wallet.returnCryptoModuleByTicker(ticker);
+    crypto_mod.returnWithdrawalFeeForAddress('', function(res){
+      fee = res;
+    });
+
+    let diff = Number(this.max_balance) - Number(fee);
+    diff = parseFloat(diff.toFixed(8));
+
+    if (diff < 0) {
+      this.max_balance = 0;  
+    } else {
+      this.max_balance = diff;
+    }
+
+    return fee;
+	}
 
 
 
