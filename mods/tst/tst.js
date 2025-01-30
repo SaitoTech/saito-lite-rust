@@ -87,6 +87,11 @@ class TST extends CryptoModule {
 		return WarningTemplate(await this.returnAddress());
 	}
 
+
+	async returnWithdrawalFeeForAddress(address="", callback){
+		callback(0.005);
+	}
+
 	attachEventsModalSelectCrypto(app, mod, cryptomod) {
 		try {
 			let dotgo = document.getElementById('dot-warning-confirm');

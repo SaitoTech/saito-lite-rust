@@ -43,10 +43,12 @@ module.exports = (app, mod, form) => {
             });
 
             let diff = Number(mod.max_balance) - Number(fee);
+            diff = parseFloat(diff.toFixed(8));
+
             if (diff < 0) {
               mod.max_balance = 0;  
             } else {
-              mod.max_balance = Number(mod.max_balance) - Number(fee);
+              mod.max_balance = diff;
             }
           }
 
