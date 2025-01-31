@@ -9027,7 +9027,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	    let e = his_self.game.state.explorations[z];
 	    if (e.round == his_self.game.state.round) { return 1; }
 	  }
-	  for (let z = 0; z < his_self.game.staate.conquests.length; z++) {
+	  for (let z = 0; z < his_self.game.state.conquests.length; z++) {
 	    let c = his_self.game.state.conquests[z];
 	    if (c.round == his_self.game.state.round) { return 1; }
 	  }

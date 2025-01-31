@@ -12811,7 +12811,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	    let e = his_self.game.state.explorations[z];
 	    if (e.round == his_self.game.state.round) { return 1; }
 	  }
-	  for (let z = 0; z < his_self.game.staate.conquests.length; z++) {
+	  for (let z = 0; z < his_self.game.state.conquests.length; z++) {
 	    let c = his_self.game.state.conquests[z];
 	    if (c.round == his_self.game.state.round) { return 1; }
 	  }
@@ -18427,8 +18427,10 @@ try {
       let neighbours = [];
       for (let i = 0; i < space.neighbours.length; i++) {
         let x = space.neighbours[i];      
-        if (!space.pass.includes(x)) {
-  	  neighbours.push({ neighbour : x , overseas : false });
+	if (space.pass) {
+          if (!space.pass.includes(x)) {
+  	    neighbours.push({ neighbour : x , overseas : false });
+          }
         }
       }
       return neighbours;
@@ -18502,7 +18504,7 @@ try {
       return neighbours;
     }
 } catch (err) {
-  alert("return neighbours bug pls report: " + JSON.stringify(err));
+  alert("return neighbours bug? this won't kill the game, but it would be useful to know if there is an error message here ---> " + JSON.stringify(err));
 }
     return [];
   }
@@ -46181,7 +46183,8 @@ console.log(ops_to_spend + " -- " + ops_remaining);
     $('.option').off();
     $('.option').on('click', function () {
  
-      his_self.unbindBackButtonFunction();
+      // maybe no targets
+      //his_self.unbindBackButtonFunction();
       his_self.updateStatus("acknowledge");
       let key = $(this).attr("id");
       let ports = [];
@@ -47528,6 +47531,7 @@ console.log(ops_to_spend + " -- " + ops_remaining);
       let target_faction = $(this).attr("id");
 
       if (target_faction == "skip") {
+        his_self.updateStatus("skipping...");
 	his_self.endTurn();
 	return;
       }

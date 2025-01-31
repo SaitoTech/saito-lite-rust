@@ -7120,7 +7120,8 @@ console.log(ops_to_spend + " -- " + ops_remaining);
     $('.option').off();
     $('.option').on('click', function () {
  
-      his_self.unbindBackButtonFunction();
+      // maybe no targets
+      //his_self.unbindBackButtonFunction();
       his_self.updateStatus("acknowledge");
       let key = $(this).attr("id");
       let ports = [];
@@ -8467,6 +8468,7 @@ console.log(ops_to_spend + " -- " + ops_remaining);
       let target_faction = $(this).attr("id");
 
       if (target_faction == "skip") {
+        his_self.updateStatus("skipping...");
 	his_self.endTurn();
 	return;
       }
