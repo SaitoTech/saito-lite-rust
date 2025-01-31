@@ -28,6 +28,7 @@ font imports
 :root {
     --dreamscape: linear-gradient(125deg, #e8001e 30%, #0000 55%, #ff8235 80%), linear-gradient(40deg, #f7009b, #f7009b, #f71f3d, #f71f3d, #e98eaf, #0000), linear-gradient(180deg, #e9ce93, #f71f3d);
     --vh: calc(var(--vh) * 1);
+    --saito-red: #f71f3d;
 }
 
 
@@ -264,16 +265,29 @@ h2+p {
 }
 
 .feature-card {
+    position: relative;
     height: 300px;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 1.5rem;
-    border: 1px solid #fff8;
-    border-radius: 1rem;
-    background: linear-gradient(135deg, #fff2 0%, #fff0 100%);
+    border-radius: 7px;
+    background: linear-gradient(135deg, rgba(154, 142, 142, 0.133) 0%, #fff0 100%);
     transition: transform 0.2s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--saito-red);
+    z-index: -1;
+    border-radius: 7px;
+  }
 
 .feature-card h1 {
     margin: 0;

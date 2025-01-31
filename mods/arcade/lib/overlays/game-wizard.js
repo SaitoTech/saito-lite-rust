@@ -90,6 +90,7 @@ class GameWizard {
 			this.meta_overlay.hide();
 		}
 
+		//Hook for Crypto module (if installed) to add button to attach functionality
 		this.app.modules.renderInto("#arcade-advance-opt");
 
 		this.attachEvents();

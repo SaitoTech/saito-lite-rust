@@ -111,7 +111,7 @@ class PokerQueue {
 				}
 
 				this.pot.activate();
-
+				this.stats.update();
 				this.startRound();
 				return 1;
 			}
@@ -372,12 +372,14 @@ class PokerQueue {
 					//
 					// we auto-clear without need for player to broadcast
 					//
+					this.game.state.plays_since_last_raise++;
 					this.game.queue.splice(qe, 1);
 					return 1;
 				} else if (this.game.state.player_credit[player_to_go - 1] == 0) {
 					//
 					// we auto-clear without need for player to broadcast
 					//
+					this.game.state.plays_since_last_raise++;
 					this.game.queue.splice(qe, 1);
 					return 1;
 				} else {
@@ -816,6 +818,12 @@ class PokerQueue {
 						this.ignore_notifications = true;
 					}
 				}
+			}
+
+			if (mv[0] === 'allin') {
+				this.game.queue.splice(qe, 1);
+				this.game.state.plays_since_last_raise++;
+				return 1;
 			}
 
 			if (mv[0] === 'check') {

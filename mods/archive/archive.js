@@ -68,7 +68,8 @@ class Archive extends ModTemplate {
 		// settings saved and loaded from app.options
 		//
 		this.archive = {
-			index_blockchain: 0
+			index_blockchain: 0,
+			last_prune: 0
 		};
 
 		if (this.app.BROWSER == 0) {
@@ -106,6 +107,15 @@ class Archive extends ModTemplate {
 				}
 			}
 		}
+
+		let now = new Date().getTime();
+		//
+		// Don't prune more than once a day, but otherwise on connection/spin up
+		//
+		if (!this.archive?.last_prune || (this.archive.last_prune + (24*60*60*1000) < now)){
+			this.pruneArchive();
+		}
+
 	}
 
 	async initInBrowserDatabase() {
@@ -865,46 +875,42 @@ try {
 	// transactions that users have marked as prune = false, although this may change in
 	// the future if it is abused.
 	//
-	async onNewBlock() {
-
-//
-// TESTING / HACK / TODO - remove
-//
-return;
-
-		// 90% of blocks don't try to delete anything
-		if (Math.random() < 0.95) {
-			return;
-		}
+	async pruneArchive() {
 
 		console.log('$');
 		console.log('$');
-		console.log('$');
-		console.log('$ PURGING ARCHIVE BLOCK');
-		console.log('$');
+		console.log('$ PURGING ARCHIVE');
 		console.log('$');
 		console.log('$');
 
-		let ts = new Date().getTime() - this.prune_public_ts;
+		// SQL
+		let now = new Date().getTime();
+
+		let ts = now - this.prune_public_ts;
 
 		//
 		// delete public blockchain transactions
 		//
+		let pruned_ct = 0;
 		let sql = `DELETE FROM archives WHERE owner = "" AND updated_at < $ts AND preserve = 0`;
 		let params = { $ts: ts };
-		await this.app.storage.runDatabase(sql, params, 'archive');
-		
-console.log('$ done 1');
+		let results = await this.app.storage.runDatabase(sql, params, 'archive');
+		if (results?.changes){
+			pruned_ct += results?.changes;
+		}
 
 		//
 		// delete private transactions
 		//
-		ts = new Date().getTime() - this.prune_private_ts;
+		ts = now - this.prune_private_ts;
 		sql = `DELETE FROM archives WHERE owner != "" AND updated_at < $ts AND preserve = 0`;
 		params = { $ts: ts };
-		await this.app.storage.runDatabase(sql, params, 'archive');
+		results = await this.app.storage.runDatabase(sql, params, 'archive');
+		if (results?.changes){
+			pruned_ct += results?.changes;
+		}
 
-console.log('$ done 2');
+		console.log(`Deleted ${pruned_ct} txs from archive`);
 
 		//
 		// localDB
@@ -914,6 +920,9 @@ console.log('$ done 2');
 		// preserve flag is set to 0.
 		//
 		if (this.app.BROWSER) {
+
+			ts = now - this.prune_public_ts;
+
 			where_obj = { updated_at: { '<': ts } };
 			where_obj['preserve'] = 0;
 			rows = await this.localDB.remove({
@@ -923,18 +932,8 @@ console.log('$ done 2');
 			console.log(rows, 'automatically pruned from local archive');
 		}
 
-console.log('$ done 3');
-
-		// 90% of prunings don't vacuum
-		if (Math.random() < 0.9) {
-			return;
-		}
-
-console.log('$ done 4');
-
-		await this.app.storage.executeDatabase('VACUUM', 'archive');
-
-console.log('$ done 5');
+		this.archive.last_prune = now;
+		this.save();
 
 	}
 

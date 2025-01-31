@@ -44,9 +44,10 @@ html[data-theme="sangre3000"] {
   --color-shadow-bubble: #000000E2;
   /* slightly lightened shadow */
   /*SHADOW SELECTION*/
-  --shadow-chat-popup: var(--shadow-shape-glow-big);
+  --shadow-draggable-popup: var(--shadow-shape-glow);
   --box-shadow-sidebar-elements: var(--shadow-shape-flat);
   --shadow-chat-message-bottom: 0px 0px 0px var(--color-shadow-bubble);
+  --shadow-shape-glow: 0 0 5px var(--color-primary);
   /* flattened and centered the shadow */
   --shadow-overlay: 0 0 150px -60px var(--color-primary);
   /* gives it that famous sangre glow */
@@ -102,7 +103,6 @@ html[data-theme="sangre3000"] {
   --font-color-hover-module-menu: var(--font-color-heavy);
   --font-color-overlay-form-header: var(--font-color-primary);
   --font-color-overlay-form-text: var(--font-color-primary);
-  --font-color-overlay-subform-recover: var(--font-color-primary);
   /* BORDER RADIUS */
   --border-radius-text-input: var(--border-radius-soft);
   /*chat module*/

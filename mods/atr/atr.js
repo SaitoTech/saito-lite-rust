@@ -131,7 +131,7 @@ class ATR extends ModTemplate {
 		} else {
 			utxo = await this.fetchBalanceSnapshot('');
 			atr_obj.utxo = utxo;
-			atr_obj.total_supply = utxo+blk.treasury+blk.graveyard+blk.totalFees+blk.previousBlockUnpaid;
+			atr_obj.total_supply = utxo+blk.treasury+blk.graveyard+blk.totalFees+blk.previousBlockUnpaid+blk.totalFeesAtr;
 		}
 
 		let fullblock = JSON.parse(blk.toJson());

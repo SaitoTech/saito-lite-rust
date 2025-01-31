@@ -34,6 +34,7 @@ body {
 .gameboard.threed {
   border-radius: 12rem;
   transform: perspective(700px) rotateX(33deg) translateY(-35px);
+  filter: drop-shadow(0px 10px 20px black);
 }
 
 .deal {

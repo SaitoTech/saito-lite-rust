@@ -86,6 +86,7 @@ class Wuziqi extends GameTemplate {
 		this.racetrack.win = Math.ceil(this.game.options.best_of / 2);
 		this.racetrack.title = 'Best of ' + this.game.options.best_of;
 		this.racetrack.icon = `<i class="fa-solid fa-trophy"></i>`;
+		this.racetrack.players = [];
 		for (let i = 0; i < this.game.players.length; i++) {
 			let player = {
 				name: this.app.keychain.returnUsername(this.game.players[i])/*this.roles[i + 1].toUpperCase()*/,
@@ -496,14 +497,15 @@ class Wuziqi extends GameTemplate {
 
 				// Remove this item from the queue.
 				this.game.queue.splice(this.game.queue.length - 1, 1);
-
-				return 1;
 			}
 		}
 
 		if (this.game.player == this.game.target) {
 			//Let player make their move
 			this.addEvents(this.game.board);
+
+			console.log("GBA: ", this.gameBrowserActive());
+			console.log("cell: ", cell);
 
 			if (this.gameBrowserActive() && cell){
 				this.updateStatus(`Your move <span class="replay">Replay Last</span>`);

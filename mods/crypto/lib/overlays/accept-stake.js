@@ -18,7 +18,7 @@ class AcceptStake {
 			this.reject_callback = obj.reject_callback;
 		}
 
-		this.overlay.show(AcceptStakeTemplate(this.app, obj.game_mod, obj));
+		this.overlay.show(AcceptStakeTemplate(this.app, this.mod, obj));
 		this.overlay.blockClose();
 		this.attachEvents();
 
