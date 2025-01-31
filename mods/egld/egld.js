@@ -27,23 +27,31 @@ class EGLDModule extends CryptoModule {
     }
 
   async initialize(app) {
-        await super.initialize(app);
-        await this.load();    
-        await this.setupNetwork();
-        this.app.connection.emit('header-update-balance');
+        try {
+            await super.initialize(app);
+            await this.load();    
+            await this.setupNetwork();
+            this.app.connection.emit('header-update-balance');
+        } catch (error) {
+            console.error("Error initialize:", error);
+        }
   }
 
   async activate() {
-    console.log("activating egld ///");
-    await this.setupNetwork();
+    try {
+        console.log("activating egld ///");
+        await this.setupNetwork();
 
-    if (this.account_created == 0){
-        await this.getAddress();
-        await this.generateAccount();
-        this.save();
+        if (this.account_created == 0){
+            await this.getAddress();
+            await this.generateAccount();
+            this.save();
+        }
+
+        await super.activate();
+    } catch (error) {
+        console.error("Error activate:", error);
     }
-
-    await super.activate();
   }
 
   async getAddress(mnemonic_text = null) {
@@ -64,7 +72,6 @@ class EGLDModule extends CryptoModule {
         this.egld.address = this.address = this.destination = this.address_obj.toBech32();
       } catch (error) {
         console.error("Error creating EGLD address:", error);
-        throw error;
       }
   }
 
@@ -87,7 +94,6 @@ class EGLDModule extends CryptoModule {
         }
       } catch (error) {
         console.error("Error creating EGLD account:", error);
-        throw error;
       }
   }
 
@@ -114,166 +120,196 @@ class EGLDModule extends CryptoModule {
             // console.log("updateAccount account balance bigint: ", this.balance);
             //console.log("updateAccount account balance: ", this.account.balance.toString());
         }
-      } catch (error) {
+    } catch (error) {
         console.error("Error updating EGLD account:", error);
-        throw error;
-      }
+    }
 
   }
 
     async showBackupWalletMsg(){
-        this.app.options.wallet.backup_required = 1;
-        await this.app.wallet.saveWallet();
-        
-        let msg = `Your wallet has added new crypto keys. 
-        Unless you backup your wallet, you may lose these keys. 
-        Do you want help backing up your wallet?`;
-        this.app.connection.emit(
-            'saito-backup-render-request',
-            {msg: msg, title: 'BACKUP YOUR WALLET'}
-        );
+        try {
+            this.app.options.wallet.backup_required = 1;
+            await this.app.wallet.saveWallet();
+            
+            let msg = `Your wallet has added new crypto keys. 
+            Unless you backup your wallet, you may lose these keys. 
+            Do you want help backing up your wallet?`;
+            this.app.connection.emit(
+                'saito-backup-render-request',
+                {msg: msg, title: 'BACKUP YOUR WALLET'}
+            );
+        } catch (error) {
+            console.error("Error backup wallet:", error);
+        }
     }
 
     async returnBalance(){
-        await this.updateAccount();
-        return this.balance;
+        try {
+            await this.updateAccount();
+            return this.balance;
+        } catch (error) {
+            console.error("Error returning balance:", error);
+        }
     }
 
     formatBalance(){
-        const balanceStr = this.balance.toString();
-        if (balanceStr.includes('e-')) {
-            return '0.00';
+        try {
+            const balanceStr = this.balance.toString();
+            if (balanceStr.includes('e-')) {
+                return '0.00';
+            }
+            return this.balance;
+        } catch (error) {
+            console.error("Error formatBalance:", error);
         }
-        return this.balance;
     }
 
     formatReadableNum(num){
-        if (num % 1 === 0) {
-            return num.toString(); // Return as is for integers
+        try {
+            if (num % 1 === 0) {
+                return num.toString(); // Return as is for integers
+            }
+            let numStr = num.toString();
+            let decimalIndex = numStr.indexOf('.');
+            if (decimalIndex !== -1) {
+                let trailingZerosTrimmed = numStr.replace(/(\.\d*?)0+$/, '$1'); // Remove trailing zeros
+                return trailingZerosTrimmed;
+            }
+            return numStr; // Return unchanged if no decimal part exists
+        } catch (error) {
+            console.error("Error formatReadableNum:", error);
         }
-        let numStr = num.toString();
-        let decimalIndex = numStr.indexOf('.');
-        if (decimalIndex !== -1) {
-            let trailingZerosTrimmed = numStr.replace(/(\.\d*?)0+$/, '$1'); // Remove trailing zeros
-            return trailingZerosTrimmed;
-        }
-        return numStr; // Return unchanged if no decimal part exists
     }
 
     returnAddress (){
-        return this.address;
+        try {
+            return this.address;
+        } catch (error) {
+            console.error("Error returnAddress:", error);
+        }
     }
 
     async getNonce(){
-        await this.updateAccount();
-        return this.nonce;
+        try {
+            await this.updateAccount();
+            return this.nonce;
+        } catch (error) {
+            console.error("Error getNonce:", error);
+        }
     }
 
     async returnHistory(callback = null) {
-        const address = Address.newFromBech32(this.address);
-        const transactions = await this.apiNetworkProvider.doGetGeneric(
-            `accounts/${address.toBech32()}/transactions`
-        );
+        try {
+            const address = Address.newFromBech32(this.address);
+            const transactions = await this.apiNetworkProvider.doGetGeneric(
+                `accounts/${address.toBech32()}/transactions`
+            );
 
-        let balance = BigInt(this.account.balance); // Start with the latest balance
-        console.log("return history: ", transactions);
+            let balance = BigInt(this.account.balance); // Start with the latest balance
+            console.log("return history: ", transactions);
 
-        let html = '';
-        if (transactions.length > 0) {
-            transactions.sort((a, b) => b.timestamp - a.timestamp);
+            let html = '';
+            if (transactions.length > 0) {
+                transactions.sort((a, b) => b.timestamp - a.timestamp);
 
-            for (let i = 0; i < transactions.length; i++) {
-                const row = transactions[i];
+                for (let i = 0; i < transactions.length; i++) {
+                    const row = transactions[i];
 
-                const created_at = new Date(row.timestamp * 1000).toLocaleString(); // Convert timestamp to readable date
-                const amount = BigInt(row.value);
-                const type = (row.sender.toLowerCase() === this.address.toLowerCase()) ? 'Withdraw' : 'Deposit';
+                    const created_at = new Date(row.timestamp * 1000).toLocaleString(); // Convert timestamp to readable date
+                    const amount = BigInt(row.value);
+                    const type = (row.sender.toLowerCase() === this.address.toLowerCase()) ? 'Withdraw' : 'Deposit';
 
-                let fee = BigInt(row.fee);
+                    let fee = BigInt(row.fee);
 
-                const displayed_balance = this.convertAtomicToEgld(balance);
-                
-                if (row.status == 'invalid') {
-                    balance += fee; 
-                } else if (type === 'Withdraw') {
-                    balance += (amount+fee);
-                } else {
-                    balance -= amount;
+                    const displayed_balance = this.convertAtomicToEgld(balance);
+                    
+                    if (row.status == 'invalid') {
+                        balance += fee; 
+                    } else if (type === 'Withdraw') {
+                        balance += (amount+fee);
+                    } else {
+                        balance -= amount;
+                    }
+
+                    const trans_hash = row.txHash;
+                    const sender_html = `
+                        <a class="history-tx-link" href="${this.egld.explorer_url}/transactions/${trans_hash}" target="_blank">
+                            <div class="history-tx-id">${trans_hash}</div>
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>`;
+
+                    html += `<div class='saito-table-row'>
+                        <div class='mixin-his-created-at'>${created_at}</div>
+                        <div>${type} ${row.status == 'invalid' ? '(Invalid)' : ''}</div>
+                        <div class='${type.toLowerCase()} ${row.status}'>
+                            ${this.convertAtomicToEgld(amount)} EGLD
+                            ${type == 'Withdraw' ? `(${this.convertAtomicToEgld(fee)} fee)` : ``}
+                        </div>
+                        <div>${displayed_balance} EGLD</div>
+                        <div>${sender_html}</div>
+                    </div>`;
                 }
-
-                const trans_hash = row.txHash;
-                const sender_html = `
-                    <a class="history-tx-link" href="${this.egld.explorer_url}/transactions/${trans_hash}" target="_blank">
-                        <div class="history-tx-id">${trans_hash}</div>
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                    </a>`;
-
-                html += `<div class='saito-table-row'>
-                    <div class='mixin-his-created-at'>${created_at}</div>
-                    <div>${type} ${row.status == 'invalid' ? '(Invalid)' : ''}</div>
-                    <div class='${type.toLowerCase()} ${row.status}'>
-                        ${this.convertAtomicToEgld(amount)} EGLD
-                        ${type == 'Withdraw' ? `(${this.convertAtomicToEgld(fee)} fee)` : ``}
-                    </div>
-                    <div>${displayed_balance} EGLD</div>
-                    <div>${sender_html}</div>
-                </div>`;
             }
-        }
 
-        return callback(html);
+            return callback(html);
+        } catch (error) {
+            console.error("Error returnHistory:", error);
+        }
     }
 
 
     async sendPayment(amount = '', recipient = '', unique_hash = '', fee = null) {
+        try {
+            console.log("inside sendPayment ////");
+            console.log("amount, recipient, unique_hash: ", amount , recipient , unique_hash);
 
-        console.log("inside sendPayment ////");
-        console.log("amount, recipient, unique_hash: ", amount , recipient , unique_hash);
+            console.log("this.egld: ", this.egld);
 
-        console.log("this.egld: ", this.egld);
+            if (this.address_obj == null) {
+                await this.load();    
+            }
 
-        if (this.address_obj == null) {
-            await this.load();    
+            // update account to get latest nonce
+            this.updateAccount();
+
+            console.log("this.secretKey: ", this.secretKey);
+            let txObj = {
+                value: this.convertEgldToAtomic(amount),
+                sender: this.address_obj,
+                receiver: Address.newFromBech32(recipient),
+                chainID: "D",
+                nonce: this.egld.nonce,
+                gasLimit: 50000,
+                //data: "SAITO multiwallet transfer"
+            };
+            console.log("txObj: ", txObj);
+
+            // get funds to you address before creating the transaction
+            const transaction = new Transaction(txObj);
+
+            // let gasLimit =   this.networkConfig.erd_min_gas_limit + 
+            //                 this.networkConfig.erd_gas_per_data_byte * (Buffer.from(transaction.data, "hex").length);
+            console.log("transaction before: ", transaction);
+
+            // serialize transaction for signing
+            const txComputer = new TransactionComputer();
+            const serializedTX = txComputer.computeBytesForSigning(transaction);
+
+            console.log("serializedTX: ", serializedTX);
+
+            // set the signature
+            transaction.signature = this.secretKey.sign(serializedTX);
+
+            console.log("transaction after: ", transaction);
+
+            // broadcast transaction
+            const txHash = await this.apiNetworkProvider.sendTransaction(transaction);
+            console.log("txHash: ", txHash);
+
+            return txHash;
+        } catch (error) {
+            console.error("Error sendPayment:", error);
         }
-
-        // update account to get latest nonce
-        this.updateAccount();
-
-        console.log("this.secretKey: ", this.secretKey);
-        let txObj = {
-            value: this.convertEgldToAtomic(amount),
-            sender: this.address_obj,
-            receiver: Address.newFromBech32(recipient),
-            chainID: "1",
-            nonce: this.egld.nonce,
-            gasLimit: 50000,
-            //data: "SAITO multiwallet transfer"
-        };
-        console.log("txObj: ", txObj);
-
-        // get funds to you address before creating the transaction
-        const transaction = new Transaction(txObj);
-
-        // let gasLimit =   this.networkConfig.erd_min_gas_limit + 
-        //                 this.networkConfig.erd_gas_per_data_byte * (Buffer.from(transaction.data, "hex").length);
-        console.log("transaction before: ", transaction);
-
-        // serialize transaction for signing
-        const txComputer = new TransactionComputer();
-        const serializedTX = txComputer.computeBytesForSigning(transaction);
-
-        console.log("serializedTX: ", serializedTX);
-
-        // set the signature
-        transaction.signature = this.secretKey.sign(serializedTX);
-
-        console.log("transaction after: ", transaction);
-
-        // broadcast transaction
-        const txHash = await this.apiNetworkProvider.sendTransaction(transaction);
-        console.log("txHash: ", txHash);
-
-        return txHash;
     }
 
 
@@ -354,76 +390,99 @@ class EGLDModule extends CryptoModule {
             return transactionDetails;
         } catch (error) {
             console.error("Error fetching transaction status:", error.message);
-            throw error;
         }
     }
 
     async returnWithdrawalFeeForAddress(address, callback) {
-        let fee = BigInt(this.networkConfig.MinGasLimit * this.networkConfig.MinGasPrice);
-        console.log("egld fee;", fee);
-        return callback(this.convertAtomicToEgld(fee));
+        try {
+            let fee = BigInt(this.networkConfig.MinGasLimit * this.networkConfig.MinGasPrice);
+            console.log("egld fee;", fee);
+            return callback(this.convertAtomicToEgld(fee));
+        } catch (error) {
+            console.error("Error returnWithdrawalFeeForAddress:", error);
+        }
     }
 
 
     convertEgldToAtomic(amount = '0.0') {
-        let bigIntNum = 0;
-        let num = Number(amount);
-        if (num > 0) {
-            bigIntNum = num * 1000000000000000000; // 100,000,000
-        }
+        try {
+            let bigIntNum = 0;
+            let num = Number(amount);
+            if (num > 0) {
+                bigIntNum = num * 1000000000000000000; // 100,000,000
+            }
 
-        return (bigIntNum);
+            return (bigIntNum);
+        } catch (error) {
+            console.error("Error convertEgldToAtomic:", error);
+        }
     }
      
     convertAtomicToEgld(amount = BigInt(0)) {
-        let string = '0.00';
-        let num = 0;
-        let bigint_divider = 1000000000000000000n;
+        try {
+            let string = '0.00';
+            let num = 0;
+            let bigint_divider = 1000000000000000000n;
 
-        num = Number((BigInt(amount) * 1000000000000000000n) / bigint_divider) / 1000000000000000000;
+            num = Number((BigInt(amount) * 1000000000000000000n) / bigint_divider) / 1000000000000000000;
 
-        num = num.toFixed(5);
+            num = num.toFixed(5);
 
-        string = num.toString();
-        return string;
+            string = num.toString();
+            return string;
+        } catch (error) {
+            console.error("Error convertAtomicToEgld:", error);
+        }
     }
 
     async load(){
-        if (this.app?.options?.crypto?.EGLD) {
-          this.egld = this.app.options.crypto.EGLD;
-          //console.log("EGLD OPTIONS: " + JSON.stringify(this.app.options.crypto.EGLD));
-          if (this.egld.mnemonic_text) {
-            this.is_initialized = 1;
-            this.account_created = 1;
-            this.options = this.egld;
-            this.balance = this.egld.balance;
-            this.address = this.egld.address;
-            this.destination = this.egld.address;
-            
-            await this.getAddress(this.egld.mnemonic_text);
-            //await this.updateAccount();
-          }
+        try {
+            if (this.app?.options?.crypto?.EGLD) {
+              this.egld = this.app.options.crypto.EGLD;
+              //console.log("EGLD OPTIONS: " + JSON.stringify(this.app.options.crypto.EGLD));
+              if (this.egld.mnemonic_text) {
+                this.is_initialized = 1;
+                this.account_created = 1;
+                this.options = this.egld;
+                this.balance = this.egld.balance;
+                this.address = this.egld.address;
+                this.destination = this.egld.address;
+                
+                await this.getAddress(this.egld.mnemonic_text);
+                //await this.updateAccount();
+              }
+            }
+        } catch (error) {
+            console.error("Error load options:", error);
         }
     }
 
     save() {
-        if (!this.app.options?.crypto?.EGLD) {
-            this.app.options.crypto = {};
-            this.app.options.crypto.EGLD = {};
+        try {
+            if (!this.app.options?.crypto?.EGLD) {
+                this.app.options.crypto = {};
+                this.app.options.crypto.EGLD = {};
+            }
+            this.app.options.address = this.egld.address;
+            this.app.options.destination = this.egld.destination; 
+            this.app.options.balance = this.egld.balance; 
+            this.app.options.crypto.EGLD = this.egld;
+            this.app.storage.saveOptions();
+        } catch (error) {
+            console.error("Error save options:", error);
         }
-        this.app.options.address = this.egld.address;
-        this.app.options.destination = this.egld.destination; 
-        this.app.options.balance = this.egld.balance; 
-        this.app.options.crypto.EGLD = this.egld;
-        this.app.storage.saveOptions();
     }
 
     getEnv(){
-        if (typeof process.env.EGLD != "undefined") {
-          return JSON.parse(process.env.EGLD);
-        } else {
-            console.error("Env variable not found");
-            return {};
+        try {
+            if (typeof process.env.EGLD != "undefined") {
+              return JSON.parse(process.env.EGLD);
+            } else {
+                console.error("Env variable not found");
+                return {};
+            }
+        } catch (error) {
+            console.error("Error env:", error);
         }
     }
 
@@ -469,99 +528,123 @@ class EGLDModule extends CryptoModule {
     }
 
     returnServices() {
-        let services = [];
-            if (this.app.BROWSER == 0) {
-              services.push(new PeerService(null, "egld"));
-            }
-        return services;
+        try {
+            let services = [];
+                if (this.app.BROWSER == 0) {
+                  services.push(new PeerService(null, "egld"));
+                }
+            return services;
+        } catch (error) {
+            console.error("Error returnServices:", error);
+        }
     }
 
     async onPeerServiceUp(app, peer, service = {}) {
-        if (!app.BROWSER) {
-          return;
-        }
+        try {
+            if (!app.BROWSER) {
+              return;
+            }
 
-        if (service.service == 'egld') {
-            await this.setupNetwork();
+            if (service.service == 'egld') {
+                await this.setupNetwork();
+            }
+        } catch (error) {
+            console.error("Error onPeerServiceUp:", error);
         }
     }
 
     async handlePeerTransaction(app, tx = null, peer, mycallback) {
-        if (tx == null) {
-          return 0;
-        }
-        let message = tx.returnMessage();
+        try {
+            if (tx == null) {
+              return 0;
+            }
+            let message = tx.returnMessage();
 
-        //
-        // we receive requests to create accounts here
-        //
-        if (message.request === "egld fetch env") {
-          await this.receiveFetchEnvTransaction(app, tx, peer, mycallback);
-        }
+            //
+            // we receive requests to create accounts here
+            //
+            if (message.request === "egld fetch env") {
+              await this.receiveFetchEnvTransaction(app, tx, peer, mycallback);
+            }
 
-        return super.handlePeerTransaction(app, tx, peer, mycallback);
+            return super.handlePeerTransaction(app, tx, peer, mycallback);
+        } catch (error) {
+            console.error("Error handlePeerTransaction:", error);
+        }
       }
 
     async sendFetchEnvTransaction(callback = null){
-        let this_self = this;
-        let peers = await this.app.network.getPeers();
-        // we cannot create an account if the network is down
-        if (peers.length == 0) {
-          console.warn("No peers");
-          return;
-        }
-      
-        let data = {
-        };
-        this_self.app.network.sendRequestAsTransaction(
-          "egld fetch env",
-          data,
-          function (res) {
-           // console.log("Callback for sendCreateAccountTransaction request: ", res);
-            if (typeof res == 'object' && Object.keys(res).length > 0) {
-              //console.log("response from env", res);
+        try {    
+            let this_self = this;
+            let peers = await this.app.network.getPeers();
+            // we cannot create an account if the network is down
+            if (peers.length == 0) {
+              console.warn("No peers");
+              return;
             }
+          
+            let data = {
+            };
+            this_self.app.network.sendRequestAsTransaction(
+              "egld fetch env",
+              data,
+              function (res) {
+               // console.log("Callback for sendCreateAccountTransaction request: ", res);
+                if (typeof res == 'object' && Object.keys(res).length > 0) {
+                  //console.log("response from env", res);
+                }
 
-            if (callback) {
-              return callback(res);
-            }
-          },
-          peers[0].peerIndex
-        );
-      }
+                if (callback) {
+                  return callback(res);
+                }
+              },
+              peers[0].peerIndex
+            );
+        } catch (error) {
+            console.error("Error sendFetchEnvTransaction:", error);
+        }
+    }
 
     async receiveFetchEnvTransaction(app, tx, peer, callback) {
-        if (app.BROWSER == 0) {
-          let m = this.getEnv();
-          //console.log("m: ", m);
-          if (!m) {
-            console.error("MIXIN ENV variable missing.");
-            return;
-          }
+        try {
+            if (app.BROWSER == 0) {
+              let m = this.getEnv();
+              //console.log("m: ", m);
+              if (!m) {
+                console.error("MIXIN ENV variable missing.");
+                return;
+              }
 
-          return callback(m);
+              return callback(m);
+            }
+        } catch (error) {
+            console.error("Error receiveFetchEnvTransaction:", error);
         }
     }
 
     respondTo(type = '', obj) {
-        if (type == 'crypto-logo') {
-            if (obj?.ticker == this.ticker) {
-                return {
-                    svg: `<?xml version="1.0" encoding="utf-8"?>
-                        <!-- Generator: Adobe Illustrator 27.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-                        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-                             viewBox="0 0 192 148" style="enable-background:new 0 0 192 148;" xml:space="preserve">
-                        <style type="text/css">
-                            .st0{fill:#23F7DD;}
-                        </style>
-                        <path class="st0" d="M106.4,74L192,28L177.6,0.2L99.2,32.1c-2,0.8-4.3,0.8-6.3,0L14.5,0.2L0.1,28l85.6,46l-85.6,46l14.4,27.8
-                            l78.4-31.9c2-0.8,4.3-0.8,6.3,0l78.4,31.9l14.4-27.8L106.4,74z"/>
-                        </svg>
-                    `
-                };
+        try {
+            if (type == 'crypto-logo') {
+                if (obj?.ticker == this.ticker) {
+                    return {
+                        svg: `<?xml version="1.0" encoding="utf-8"?>
+                            <!-- Generator: Adobe Illustrator 27.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+                            <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                                 viewBox="0 0 192 148" style="enable-background:new 0 0 192 148;" xml:space="preserve">
+                            <style type="text/css">
+                                .st0{fill:#23F7DD;}
+                            </style>
+                            <path class="st0" d="M106.4,74L192,28L177.6,0.2L99.2,32.1c-2,0.8-4.3,0.8-6.3,0L14.5,0.2L0.1,28l85.6,46l-85.6,46l14.4,27.8
+                                l78.4-31.9c2-0.8,4.3-0.8,6.3,0l78.4,31.9l14.4-27.8L106.4,74z"/>
+                            </svg>
+                        `
+                    };
+                }
             }
+            return null;
+        } catch (error) {
+            console.error("Error respondTo:", error);
         }
-        return null;
     }
 }
 
