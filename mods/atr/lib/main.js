@@ -25,7 +25,10 @@ class Main {
 			let blockslot = (i + 1);
 
 			document.querySelector(`.blocktable .table-header .blockslot${blockslot}`).innerHTML = block.id;
-			document.querySelector(`.blocktable .total_fees .blockslot${blockslot}`).innerHTML = (block.totalFees).toLocaleString();
+			
+			document.querySelectorAll(`.blocktable .total_fees .blockslot${blockslot}`).forEach(function(item,index){
+				item.innerHTML = (block.totalFees).toLocaleString();
+			});
 			document.querySelector(`.blocktable .total_fees_new .blockslot${blockslot}`).innerHTML = (block.totalFeesNew).toLocaleString();
 			document.querySelector(`.blocktable .total_fees_atr .blockslot${blockslot}`).innerHTML = (block.totalFeesAtr).toLocaleString();
 			document.querySelector(`.blocktable .avg_total_fees .blockslot${blockslot}`).innerHTML = (block.avgTotalFees).toLocaleString();
