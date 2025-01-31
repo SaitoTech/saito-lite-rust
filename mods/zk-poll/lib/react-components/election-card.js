@@ -235,7 +235,7 @@ const ElectionCard = ({
                         onClick={() => onVote(election.signature, election.id, selectedCandidates[election.id])}
                         disabled={loading || selectedCandidates[election.id] === undefined}
                     >
-                        {loading ? 'Submitting...' : 'Cast Vote'}
+                        {loading ? 'Submitting...' : 'Vote'}
                     </button>
                 )}
 

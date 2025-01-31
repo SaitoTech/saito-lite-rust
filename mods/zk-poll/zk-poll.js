@@ -1,9 +1,9 @@
 const ModTemplate = require("../../lib/templates/modtemplate");
-const snarkjs = require('snarkjs')
+
 const pageHome = require('./index');
 const SaitoHeader = require("../../lib/saito/ui/saito-header/saito-header");
-const { default: VoteLayout } = require("./lib/Vote-layout");
-const { resolve } = require("url");
+const { default: VoteLayout } = require("./lib/zk-poll-layout");
+
 
 
 class Vote extends ModTemplate {
@@ -32,6 +32,13 @@ class Vote extends ModTemplate {
 
         }
 
+    }
+
+    initialize(app) {
+        if(app.BROWSER){
+        //   let snarkjs  = require('../../web/saito/lib/snark')
+        //     window.snarkjs = snarkjs
+        }
     }
 
     async handlePeerTransaction(app, tx = null, peer, mycallback) {

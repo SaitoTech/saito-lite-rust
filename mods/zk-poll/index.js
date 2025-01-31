@@ -47,13 +47,12 @@ module.exports = (app, mod, build_number, og_card) => {
     <link rel="icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/saito/img/touch/pwa-192x192.png" />
     <link rel="icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
-    <link rel="apple-touch-icon" sizes="512x512" href="/saito/img/touch/pwa-512x512.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/saito/img/
   
-    <script type="text/javascript" src="/saito/lib/jquery/jquery-3.2.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/snarkjs@0.7.0/build/snarkjs.min.js"></script>
 
   
     <script src="/saito/lib/pace/pace.min.js"></script>
+    <script src="/saito/lib/snark.js"> </script>
     <link rel="stylesheet" href="/saito/lib/pace/pace-theme.min.css">
     <link rel="stylesheet" type="text/css" href="/saito/saito.css?v=${build_number}">
     

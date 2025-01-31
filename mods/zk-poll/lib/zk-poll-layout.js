@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import ElectionCard from './react-components/election-card';
-import { Globe, UserSquare, PlusSquare } from 'lucide-react';
+import { Globe, UserSquare, PlusSquare, ShieldCheck, X } from 'lucide-react';
+import FilterSort from './react-components/filter-sort';
+import ZKInfoBox from './react-components/info-box';
+
 
 
 const VoteLayout = ({ app, mod }) => {
@@ -20,6 +23,12 @@ const VoteLayout = ({ app, mod }) => {
   const [voteCounts, setVoteCounts] = useState({});
   const [finalizedElections, setFinalizedElections] = useState(new Set());
   const [loadingStates, setLoadingStates] = useState({});
+  const [filterOptions, setFilterOptions] = useState({
+    status: 'all',
+    voteRange: 'all'
+  });
+  const [sortOption, setSortOption] = useState('newest');
+  const [searchTerm, setSearchTerm] = useState('');
 
 
   useEffect(() => {
@@ -27,6 +36,7 @@ const VoteLayout = ({ app, mod }) => {
   }, [activeTab]);
 
 
+  
   const getElectionStatus = (startDate, endDate) => {
     const now = new Date().getTime();
     const start = new Date(startDate).getTime();
@@ -67,7 +77,6 @@ const VoteLayout = ({ app, mod }) => {
 
     try {
       if (newElection.isEditing) {
-        // Handle edit
         await mod.sendUpdateElectionTransaction({
           signature: newElection.signature,
           description: newElection.description,
@@ -158,8 +167,6 @@ const VoteLayout = ({ app, mod }) => {
       setError("Failed to fetch elections");
     }
   };
-
-
 
 
 
@@ -258,7 +265,7 @@ const VoteLayout = ({ app, mod }) => {
   };
 
   const updateNumCandidates = (num) => {
-    if(num > 5) return salert("Poll options shouldn't exceed 5")
+    if (num > 5) return salert("Poll options shouldn't exceed 5")
     const candidateNames = [...newElection.candidateNames];
     while (candidateNames.length < num) {
       candidateNames.push('');
@@ -271,6 +278,64 @@ const VoteLayout = ({ app, mod }) => {
       numCandidates: num,
       candidateNames
     });
+  };
+
+  const getFilteredAndSortedElections = () => {
+    let filtered = [...elections];
+
+    // Apply search filter
+    if (searchTerm) {
+      filtered = filtered.filter(election =>
+        election.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply status filter
+    if (filterOptions.status !== 'all') {
+      filtered = filtered.filter(election => {
+        const status = getElectionStatus(election.startDate, election.endDate);
+        return status === filterOptions.status;
+      });
+    }
+
+    // Apply vote range filter
+    if (filterOptions.voteRange !== 'all') {
+      filtered = filtered.filter(election => {
+        const voteCount = voteCounts[election.id] || 0;
+        switch (filterOptions.voteRange) {
+          case '0-10':
+            return voteCount <= 10;
+          case '11-50':
+            return voteCount > 10 && voteCount <= 50;
+          case '50+':
+            return voteCount > 50;
+          default:
+            return true;
+        }
+      });
+    }
+
+    switch (sortOption) {
+      case 'newest':
+        filtered.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+        break;
+      case 'oldest':
+        filtered.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+        break;
+      case 'ending-soon':
+        filtered.sort((a, b) => new Date(a.endDate) - new Date(b.endDate));
+        break;
+      case 'most-votes':
+        filtered.sort((a, b) => (voteCounts[b.id] || 0) - (voteCounts[a.id] || 0));
+        break;
+      case 'alphabetical':
+        filtered.sort((a, b) => a.description.localeCompare(b.description));
+        break;
+      default:
+        break;
+    }
+
+    return filtered;
   };
 
   return (
@@ -398,17 +463,58 @@ const VoteLayout = ({ app, mod }) => {
 
           {(activeTab === 'All Polls' || activeTab === 'My Polls') && (
             <div className="elections-list">
-              {elections.length === 0 ? (
+             
+              <ZKInfoBox/>
+
+              <FilterSort
+                filterOptions={filterOptions}
+                sortOption={sortOption}
+                searchTerm={searchTerm}
+                onFilterChange={(key, value) => setFilterOptions(prev => ({ ...prev, [key]: value }))}
+                onSortChange={(value) => setSortOption(value)}
+                onSearchChange={(value) => setSearchTerm(value)}
+              />
+              {/* {elections.length === 0 ? (
                 <div className="no-elections">
-                  <h3>No Elections Found</h3>
+                  <h3>No Polls Found</h3>
                   <p>
                     {activeTab === 'My Polls'
                       ? "You haven't created any polls yet"
-                      : "Create a new election to get started"}
+                      : "Create a new poll to get started"}
                   </p>
                 </div>
               ) : (
                 elections.map(election => (
+                  <ElectionCard
+                    key={election.id}
+                    election={election}
+                    voteCounts={voteCounts}
+                    selectedCandidates={selectedCandidates}
+                    loading={loadingStates[election.id]}
+                    finalizedElections={finalizedElections}
+                    onVote={handleVote}
+                    mod={mod}
+                    app={app}
+                    refreshElections={refreshElections}
+                    onFinalize={handleFinalize}
+                    onSelect={handleSelection}
+                    handleEditStart={handleEditStart}
+                  />
+                ))
+              )} */}
+
+              {/* Use filtered and sorted elections */}
+              {getFilteredAndSortedElections().length === 0 ? (
+                <div className="no-elections">
+                  <h3>No Polls Found</h3>
+                  <p>
+                    {activeTab === 'My Polls'
+                      ? "You haven't created any polls yet"
+                      : "Create a new poll to get started"}
+                  </p>
+                </div>
+              ) : (
+                getFilteredAndSortedElections().map(election => (
                   <ElectionCard
                     key={election.id}
                     election={election}

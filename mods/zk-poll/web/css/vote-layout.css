@@ -196,6 +196,36 @@
   /* font-size: 0.875rem; */
 }
 
+.zk-info-box {
+  margin-bottom: 1rem;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.zk-info-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.zk-icon {
+  width: 2rem;
+  height: 2rem;
+  margin-right: 8px;
+  color: #2563eb;
+}
+
+.zk-title {
+  font-weight: 600;
+  /* color: #1f2937; */
+}
+
+.zk-info-content {
+  font-size: 14px;
+  line-height: 1.5;
+  /* color: #4b5563; */
+}
+
 .candidates-list {
   display: flex;
   flex-direction: column;
