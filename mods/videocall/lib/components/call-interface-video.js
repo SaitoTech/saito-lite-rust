@@ -14,7 +14,6 @@ class CallInterfaceVideo {
 		this.effectsMenu = new Effects(app, mod);
 		this.localStream;
 		this.video_boxes = {};
-		this.streamMirror = new StreamMirror(app, mod);
 		this.local_container = 'expanded-video';
 		this.remote_container = 'side-videos';
 		this.remote_streams = new Map();
@@ -64,8 +63,6 @@ class CallInterfaceVideo {
 			this.updateImages();
 			if (remoteStream) {
 				this.startTimer();
-				this.streamMirror.addStream(remoteStream, peer);
-
 			}
 		});
 
@@ -77,7 +74,7 @@ class CallInterfaceVideo {
 			let peer_id = 'connecting';
 			if (this.video_boxes[peer_id]?.video_box) {
 				if (this.video_boxes[peer_id].video_box?.remove) {
-					this.video_boxes[peer_id].video_box.remove(true);
+					this.video_boxes[peer_id].video_box.remove();
 				}
 				delete this.video_boxes[peer_id];
 			}
@@ -88,29 +85,28 @@ class CallInterfaceVideo {
 
 			if (this.video_boxes[peer_id]?.video_box) {
 				if (this.video_boxes[peer_id].video_box?.remove) {
-					this.video_boxes[peer_id].video_box.remove(true);
+					this.video_boxes[peer_id].video_box.remove();
 				}
 				delete this.video_boxes[peer_id];
 				this.updateImages();
 			}
 
-			this.streamMirror.removeStream(peer_id);
-
-
 			//this.insertActions(this.mod.room_obj.call_peers);
 		});
 
 		// Change arrangement of video boxes (emitted from SwitchDisplay overlay)
-		app.connection.on('stun-switch-view', (newView, save = false) => {
+		app.connection.on('stun-switch-view', (newView = "", save = false) => {
 			siteMessage(`Switched to ${newView} display`, 2000);
 
 			if (newView == 'presentation') {
 				newView = 'focus';
 			}
 
-			this.mod.layout = newView;
+			if (newView){
+				this.mod.layout = newView;
+			}
 
-			switch (newView) {
+			switch (this.mod.layout) {
 				case 'gallery':
 					this.switchDisplayToGallery();
 					break;
@@ -168,19 +164,14 @@ class CallInterfaceVideo {
 				delete this.old_title;
 			}
 
+			app.connection.emit("interrupt-screen-recording");
+
 			if (this.mod.browser_active) {
 				let homeModule = this.app.options?.homeModule || this.name;
 				let mod = this.app.modules.returnModuleByName(homeModule);
 				let slug = mod?.returnSlug() || 'videocall';
 				let url = '/' + slug;
 
-				const recordControls = this.app.modules.getRespondTos('screenrecord-video-controls');
-				console.log(recordControls, 'recordControls');
-				let { mediaRecorder, stopRecording, type } = recordControls[0];
-
-				if (mediaRecorder) {
-					await stopRecording();
-				}
 				navigateWindow(url, 2000);
 			} else {
 				//
@@ -188,17 +179,8 @@ class CallInterfaceVideo {
 				// But keep on eye on this for errors and make sure all the components shut themselves down properly
 				//
 				if (document.querySelector('.stun-overlay-container')) {
-					const recordControls = this.app.modules.getRespondTos('screenrecord-video-controls');
-					let { mediaRecorder, stopRecording, type } = recordControls[0];
-					console.log(recordControls, 'recordControls');
 					document.querySelector('.stun-overlay-container').remove();
 
-					// Don't stop until the game ends...
-					if (type === 'game') return;
-
-					if (mediaRecorder) {
-						await stopRecording();
-					}
 					let am = this.app.modules.returnActiveModule();
 					window.history.pushState({}, '', window.location.origin + '/' + am.returnSlug());
 				}
@@ -214,7 +196,7 @@ class CallInterfaceVideo {
 		this.app.connection.removeAllListeners('stun-new-speaker');
 		this.app.connection.removeAllListeners('stun-switch-view');
 		this.rendered = false;
-		this.streamMirror?.destroy();
+		this?.streamMirror?.destroy();
 	}
 
 	render(videoEnabled, audioEnabled) {
@@ -229,6 +211,13 @@ class CallInterfaceVideo {
 			this.insertActions();
 			this.attachEvents();
 		}
+
+		if (document.querySelector('.game-video-container')){
+			if (!this?.streamMirror){
+				this.streamMirror = new StreamMirror(this.app, this.mod);		
+			}
+		}
+
 
 		if (!this.mod.browser_active) {
 			this.app.connection.emit('stun-switch-view', 'gallery');
@@ -519,8 +508,6 @@ class CallInterfaceVideo {
 		this.video_boxes['local'].video_box.render(localStream);
 		this.localStream = localStream;
 		this.updateImages();
-
-		this.streamMirror.addStream(localStream, 'local');
 
 		this.setDisplayContainers();
 		
