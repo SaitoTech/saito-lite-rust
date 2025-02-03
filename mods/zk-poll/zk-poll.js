@@ -10,12 +10,12 @@ class Vote extends ModTemplate {
     constructor(app) {
         super(app);
         this.app = app;
-        this.name = 'Vote';
-        this.slug = 'vote';
+        this.name = 'zk-poll';
+        this.slug = 'zk-poll';
         this.elections = new Map(); // Store elections
         this.votes = new Map();     // Store vote commitments
         this.nullifiers = new Set(); // Prevent double voting
-        this.styles = ['/saito/saito.css', '/vote/style.css'];
+        this.styles = ['/saito/saito.css', '/zk-poll/style.css'];
 
         // Load verification key
         this.vkey = require('./zk/output/verification_key.json');
