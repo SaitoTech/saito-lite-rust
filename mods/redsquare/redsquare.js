@@ -393,13 +393,14 @@ class RedSquare extends ModTemplate {
 
     if (!app.BROWSER) {
 
+          //limit: 40,
       let ts = Date.now() - 7 * 24 * 60 * 60 * 1000;
       await this.app.storage.loadTransactions(
         {
           field1: 'RedSquare',
           flagged: 0,
           tx_size_less_than: 1000000,
-          limit: 40,
+          limit: 400,
           updated_later_than: ts
         },
         (txs) => {
@@ -2749,11 +2750,11 @@ console.log("###");
 	  is_anonymous_user = false;
 	}
 
-        if (tweet.num_replies > 0 && mod_score != -1 && is_anonymous_user == true) {
+        if (tweet.num_replies > 0 && mod_score != -1 && is_anonymous_user == false) {
           score = 1;
         }
 
-        if (tweet.num_likes > 1 && mod_score != -1 && is_anonymous_user == true) {
+        if (tweet.num_likes > 1 && mod_score != -1 && is_anonymous_user == false) {
           score = 1;
         }
 

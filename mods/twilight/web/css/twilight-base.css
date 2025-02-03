@@ -42,7 +42,6 @@
 	box-shadow: none;
 	overflow-y: auto;
 	justify-content: center;
-	pointer-events: none;
 }
 
 .transparent-card-overlay .card {
