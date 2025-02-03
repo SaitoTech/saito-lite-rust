@@ -96,6 +96,7 @@ class NavalBattleOverlay {
 		let his_self = this.mod;
 		let hitstext = ' Hits';
 		let undestroyed_corsairs = 0;
+		let undestroyed_squadrons = 0;
 		if (hits_to_assign == 1) {
 			hitstext = ' Hit';
 		}
@@ -125,6 +126,7 @@ class NavalBattleOverlay {
 		document.querySelectorAll(qs2).forEach((el) => {
 			let unit_type = el.getAttribute('data-unit-type');
 			if (unit_type == "corsair") { undestroyed_corsairs++; }
+			if (unit_type == "squadron") { undestroyed_squadrons++; }
 		});
 
 
@@ -164,6 +166,12 @@ try {
 					if (hits_left == 1 && this_unit_type == "squadron") {
 						alert("Squadrons take 2 hits to destroy...");
 						return;
+					}
+					if (hits_left == 2 && this_unit_type == "corsair") {
+						if (undestroyed_corsairs <= 1 && undestroyed_squadrons > 0) {
+							alert("Only One Corsair Remains - You Must Target a Squadron...");
+							return;
+						}
 					}
 
 					document

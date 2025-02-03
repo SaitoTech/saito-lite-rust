@@ -1,9 +1,11 @@
 
-  returnSpaceName(spacekey) {
+  returnSpaceName(spacekey="") {
     if (this.game.spaces[spacekey]) { return this.game.spaces[spacekey].name; }
     if (this.game.navalspaces[spacekey]) { return this.game.navalspaces[spacekey].name; }
     return spacekey;
   }
+
+
 
  
   moveFactionUnitsInSpaceToCapitalIfPossible(faction, spacekey) {
@@ -2496,12 +2498,6 @@ if (x) {
     }
 
     return seas;
-  }
-
-  returnSpaceName(key) {
-    if (this.game.spaces[key]) { return this.game.spaces[key].name; }
-    if (this.game.navalspaces[key]) { return this.game.navalspaces[key].name; }
-    return "Unknown";
   }
 
 

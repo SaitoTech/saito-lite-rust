@@ -14099,7 +14099,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	      }
 	      
    	      let msg = "Remove Which Unit: ";
-              let unittypes = ["squadron"];
+              let unittypes = ["corsair", "squadron"];
 	      let unit_destroyed = 0;
               let html = '<ul>';
 	      let du = -1;
@@ -14307,7 +14307,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	      }
 	      
    	      let msg = "Remove Which Unit: ";
-              let unittypes = ["squadron"];
+              let unittypes = ["corsair", "squadron"];
 	      let unit_destroyed = 0;
               let html = '<ul>';
 	      let du = -1;
@@ -16612,11 +16612,13 @@ console.log("DELETING Z: " + z);
 
 
 
-  returnSpaceName(spacekey) {
+  returnSpaceName(spacekey="") {
     if (this.game.spaces[spacekey]) { return this.game.spaces[spacekey].name; }
     if (this.game.navalspaces[spacekey]) { return this.game.navalspaces[spacekey].name; }
     return spacekey;
   }
+
+
 
  
   moveFactionUnitsInSpaceToCapitalIfPossible(faction, spacekey) {
@@ -19109,12 +19111,6 @@ if (x) {
     }
 
     return seas;
-  }
-
-  returnSpaceName(key) {
-    if (this.game.spaces[key]) { return this.game.spaces[key].name; }
-    if (this.game.navalspaces[key]) { return this.game.navalspaces[key].name; }
-    return "Unknown";
   }
 
 
@@ -32231,6 +32227,15 @@ console.log("squadrons_offered: " + squadrons_offered);
 
 	if (mv[0] === "piracy_reward_card") {
           this.game.queue.splice(qe, 1);
+
+	  let turkish_cards_left = parseInt(this.game.state.cards_left["ottoman"]);
+	  if (turkish_cards_left > 0) {
+	    turkish_cards_left += 1;
+	  } else {
+	    turkish_cards_left = 1;
+	  }
+
+	  this.game.queue.push("cards_left\tottoman\t"+turkish_cards_left);
 	  this.game.queue.push("pull_card\tottoman\t"+mv[1]);
 	  his_self.updateLog("Ottoman Empire earns Bonus Card from Piracy");
 	  return 1;
@@ -43834,7 +43839,7 @@ does_units_to_move_have_unit = true; }
       for (let i = 0; i < neighbours.length; i++) {
         if (his_self.canFactionRetreatToNavalSpace(defender, neighbours[i])) {
           available_destinations = true;
-          html += `<li class="option" id="${neighbours[i]}">${his_self.returnName(neighbours[i])}</li>`;
+          html += `<li class="option" id="${neighbours[i]}">${his_self.returnSpaceName(neighbours[i])}</li>`;
 	}
       }
       if (available_destinations == false) {
