@@ -212,8 +212,8 @@ class Arcade extends ModTemplate {
 
 			//Check for server delivered data load
 			if (window?.game) {
-            let game_tx = new Transaction();
-            game_tx.deserialize_from_web(app, window.game);
+				let game_tx = new Transaction();
+				game_tx.deserialize_from_web(app, window.game);
 				this.addGame(game_tx);
 			}
 
@@ -240,7 +240,6 @@ class Arcade extends ModTemplate {
 			this.leagueCallback = {};
 		}
 	}
-
 
 	async createPseudoTransaction(game) {
 		let game_tx = await this.app.wallet.createUnsignedTransactionWithDefaultFee();
@@ -298,8 +297,8 @@ class Arcade extends ModTemplate {
 		if (service.service == 'arcade') {
 			this.app.network.sendRequestAsTransaction('arcade invite list', {}, (txs) => {
 				for (let serial_tx of txs) {
-               let game_tx = new Transaction();
-               game_tx.deserialize_from_web(app, serial_tx);
+					let game_tx = new Transaction();
+					game_tx.deserialize_from_web(app, serial_tx);
 
 					let status = game_tx.msg.request;
 					let game_added = arcade_self.addGame(game_tx);
@@ -674,10 +673,8 @@ class Arcade extends ModTemplate {
 		}
 		let message = newtx.returnMessage();
 
-		if (message.request === "arcade invite list"){
-
-
-			// Process stuff on server side 
+		if (message.request === 'arcade invite list') {
+			// Process stuff on server side
 
 			// maybe do some filtering ???
 
@@ -688,24 +685,26 @@ class Arcade extends ModTemplate {
 			//for (let i = 0; i < peers.length; i++) {
 			//	console.log(peers[i].publicKey);
 			//}
+			console.log(this.games);
+
 			for (let key in this.games) {
 				for (let g of this.games[key]) {
 					let pkey = g.from[0].publicKey;
 					let success = false;
 					for (let i = 0; i < peers.length; i++) {
-   					if (peers[i].publicKey === pkey) {
-  							txs.push(g.serialize_to_web(this.app));	
-  							success = true;
-  							break;
-  						}
-  					}
-  					if (!success) {
-  						console.log("hide invite from offline peer");
-  					}
+						if (peers[i].publicKey === pkey) {
+							txs.push(g.serialize_to_web(this.app));
+							success = true;
+							break;
+						}
+					}
+					if (!success) {
+						console.log('hide invite from offline peer');
+					}
 				}
 			}
 
-			if (mycallback){
+			if (mycallback) {
 				mycallback(txs);
 				return 1;
 			}
@@ -883,7 +882,6 @@ class Arcade extends ModTemplate {
 		if (txmsg?.options?.desired_opponent_publickey == this.publicKey) {
 			siteMessage(`You were invited to play ${txmsg.game}`, 5000);
 		}
-
 	}
 
 	////////////
@@ -981,6 +979,8 @@ class Arcade extends ModTemplate {
 	async changeGameStatus(game_id, newStatus) {
 		let game = this.returnGame(game_id);
 
+		console.log(`Change game status from ${game.msg.request} to ${newStatus}`);
+
 		if (game?.msg?.request == 'over') {
 			return;
 		}
@@ -1003,6 +1003,10 @@ class Arcade extends ModTemplate {
 
 		let game = this.returnGame(txmsg.game_id);
 
+		//In case we arrive at gameover without close game
+		this.app.connection.emit('arcade-close-game', txmsg.game_id);
+		await this.changeGameStatus(txmsg.game_id, 'over');
+
 		let winner = txmsg.winner || null;
 		console.log('Winner:', winner);
 
@@ -1017,6 +1021,7 @@ class Arcade extends ModTemplate {
 
 		if (this.debug) {
 			console.log('Winner updated in arcade');
+			console.log(this.games);
 		}
 	}
 
@@ -1580,7 +1585,6 @@ class Arcade extends ModTemplate {
 	//Add a game (tx) to a specified list
 	//
 	addGame(tx, list = null) {
-
 		//
 		// Sanity check the tx and make sure we don't already have it
 		//
@@ -1601,12 +1605,12 @@ class Arcade extends ModTemplate {
 			}
 		}
 
-		if (list){
+		if (list) {
 			//Update the game status (open/private/active/close/over)
 			tx.msg.request = list;
-		}else{
+		} else {
 			//default to the embedded invite type
-			list = tx.msg?.request || "open";
+			list = tx.msg?.request || 'open';
 		}
 
 		if (list !== 'over' && list !== 'close') {
