@@ -2743,12 +2743,17 @@ console.log("###");
       if (score == 0) {
 
         let mod_score = this.app.modules.moderate(tweet.tx);
+	let is_anonymous_user = true;
 
-        if (tweet.num_replies > 0 && mod_score != -1) {
+	if (this.app.keychain.returnIdentifierByPublicKey(tweet.user.publicKey).indexOf("Anon") != 0) {
+	  is_anonymous_user = false;
+	}
+
+        if (tweet.num_replies > 0 && mod_score != -1 && is_anonymous_user == true) {
           score = 1;
         }
 
-        if (tweet.num_likes > 1 && mod_score != -1) {
+        if (tweet.num_likes > 1 && mod_score != -1 && is_anonymous_user == true) {
           score = 1;
         }
 
@@ -2799,12 +2804,10 @@ console.log("###");
         if (tweet.curated == 0) {
           if (tweet.num_likes > 0) {
             number_of_tweets_with_positive_score++;
-console.log("adding tweet with zero-score but a like...");
             temp_array.push({ tweet, score: 1 });
           } else {
             if (tweet.num_retweets > 0) {
               number_of_tweets_with_positive_score++;
-console.log("adding tweet with zero-score but a retweet...");
               temp_array.push({ tweet, score: 1 });
             }
           }
