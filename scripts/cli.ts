@@ -1,4 +1,4 @@
-// import "source-map-support/register";
+jaka43// import "source-map-support/register";
 import Server from '../lib/saito/core/server';
 import StorageCore from '../lib/saito/core/storage-core';
 import { Saito } from '../apps/core';
