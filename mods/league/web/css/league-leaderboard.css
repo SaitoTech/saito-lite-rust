@@ -17,6 +17,18 @@
 	z-index: 3;
 }
 
+.leaderboard-updating-msg {
+	display: none;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	padding: 1rem;
+	border: 1px solid var(--saito-border-color);
+	transform: translate(-50%, -50%);
+	background: var(--background-saito-effects);
+	border-radius: var(--saito-border-radius);
+}
+
 .saito-table-row.league-leaderboard-ranking {
 	border-radius: var(--border-radius-leaderboard-ranking);
 }

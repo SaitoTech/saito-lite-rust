@@ -296,6 +296,7 @@ class League extends ModTemplate {
 					for (let i = 0; i < this.leagues.length; i++) {
 						if (this.leagues[i].game == am_name) {
 							this.fetchLeagueLeaderboard(this.leagues[i].id, () => {
+								console.log("Update league info for curent game:", this.leagues[i]);
 								this.app.connection.emit(
 									'league-leaderboard-loaded',
 									this.leagues[i].game,
@@ -1033,6 +1034,10 @@ class League extends ModTemplate {
 		// update database
 		//
 		for (let leag of relevantLeagues) {
+
+			let myScore = leag.score;
+			let myRank = leag.rank;
+
 			//
 			// update rankings (ELO)
 			//
@@ -1047,10 +1052,8 @@ class League extends ModTemplate {
 			}
 
 			if (this.app.BROWSER) {
-				//console.log("Update league rankings on game over");
-				//console.log(JSON.parse(JSON.stringify(leag.players)));
-				let myScore = leag.score;
-				let myRank = leag.rank;
+				console.log("Update league rankings on game over");
+				console.log(JSON.parse(JSON.stringify(leag.players)), myScore, myRank);
 				this.fetchLeagueLeaderboard(leag.id, () => {
 					if (myRank <= 0 && leag.rank > 0) {
 						if (is_gameover) {
