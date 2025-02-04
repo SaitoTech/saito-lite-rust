@@ -41,7 +41,7 @@ class Record extends ModTemplate {
 			}
 		});
 
-		this.app.connection.on("interrupt-screen-recording", ()=>{
+		this.app.connection.on("interrupt-screen-recording", async ()=>{
 
 			// Don't stop until the game ends...
 			if (this.type === 'game') return;
