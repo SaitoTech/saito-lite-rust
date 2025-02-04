@@ -102,6 +102,10 @@
 	grid-template-rows: minmax(0, 1fr);
 }
 
+.min-gallery .stun-chatbox .video-container-large {
+	grid-template-columns: minmax(0px, 1fr);
+}
+
 .minimize .stun-chatbox .expanded-video {
 	width: 100%;
 	min-width: unset;
