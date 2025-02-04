@@ -1596,6 +1596,17 @@ console.log("LATEST MOVE: " + mv);
 
     //
     // Che
+    if (mv[0] == "clearcheclicktargets") {
+
+      try {   
+        $(".easterneurope").removeClass("easterneurope");
+      } catch (err) {}      
+
+      this.game.queue.splice(qe, 1);
+      return 1;
+
+    }
+
     if (mv[0] == "checoup") {
 
       let target1 = mv[2];
@@ -1652,6 +1663,7 @@ console.log("LATEST MOVE: " + mv);
               $(".easterneurope").on('click', function() {
                 twilight_self.playerFinishedPlacingInfluence("ussr");
                 let c = $(this).attr('id');
+                twilight_self.addMove("clearcheclicktargets");
                 twilight_self.addMove("coup\tussr\t"+c+"\t"+couppower);
                 twilight_self.addMove("NOTIFY\tChe launches coup in "+twilight_self.countries[c].name);
                 twilight_self.endTurn();

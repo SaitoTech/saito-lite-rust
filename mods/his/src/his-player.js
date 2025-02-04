@@ -5270,6 +5270,32 @@ does_units_to_move_have_unit = true; }
 
     let onFinishSelect = function(his_self, units_to_move) {
 
+      let includes_naval_leader = false;
+      let includes_naval_ship = false;
+
+      let space;
+      if (his_self.game.spaces[defender_spacekey]) {
+        space = his_self.game.spaces[defender_spacekey];
+      }
+      if (his_self.game.navalspaces[defender_spacekey]) {
+        space = his_self.game.navalspaces[defender_spacekey];
+      }
+
+      for (let i = 0; i < units_to_move.length; i++) {
+	let id = units_to_move[i].idx;
+	let f = units_to_move[i].faction;
+	let u = space.units[f][id];
+	if (u.navy_leader == true) { includes_naval_leader = true; }
+	if (u.type == "squadron" || u.type == "corsair") { includes_naval_ship = true; }
+      }
+
+      if (includes_naval_leader == true && includes_naval_ship == false) {
+        his_self.addMove("counter_or_acknowledge\t"+his_self.returnFactionName(defender)+" aborts high seas interception");
+	his_self.addMove("RESETCONFIRMSNEEDED\tall");
+        his_self.endTurn();
+	return;
+      }
+
       his_self.addMove("naval_intercept"+"\t"+attacker+"\t"+spacekey+"\t"+defender+"\t"+defender_spacekey+"\t"+JSON.stringify(units_to_move));
 
       if (his_self.game.state.events.intervention_naval_intercept_possible == 1) {

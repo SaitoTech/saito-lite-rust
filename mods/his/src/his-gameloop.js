@@ -9866,9 +9866,10 @@ console.log("squadrons_offered: " + squadrons_offered);
                 //
                 // do not strip ships if this is a space that needs to be besieged...
                 //
-                if ((space.units[loser][z].type == "squadron" || space.units[loser][z].type == "corsair") && (space.fortified == 1 || space.fortified == true || space.type == "key" || space.type == "fortress")) {
+                if ((space.units[loser][z].type == "squadron" || space.units[loser][z].type == "corsair") && (space.fortified == 1 || space.fortified == true || space.type == "key" || space.type == "fortress")) {		  
+		  if ((space.key == "oran" && space.pirate_haven == 1) || (space.key == "tripoli" && space.pirate_haven == 1)) {  space.units[loser].splice(z, 1); z--; }
                 } else {
-		  space.units[loser].splice(z, 1); z--; 
+		  space.units[loser].splice(z, 1); z--;
                 }
 
 	      }
@@ -10027,7 +10028,8 @@ console.log("squadrons_offered: " + squadrons_offered);
 	  let unfortified_units = 0;
 	  let fortified_units = 0;
 	  for (let i = 0; i < this.game.spaces[spacekey].units[loser].length; i++) {
-	    if (this.game.spaces[spacekey].units[loser][i].besieged == 0) {
+	    let u = this.game.spaces[spacekey].units[loser][i];
+	    if (u.besieged == 0 && (u.type == "regular" || u.type == "cavalry" || u.type == "mercenary")) {
 	      unfortified_units++;
 	    }
 	  }
@@ -12743,13 +12745,13 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-//cardnum = 3;
-//if (f == "france") { cardnum = 0; }
-//if (f == "papacy") { cardnum = 0; }
-//if (f == "hapsburg") { cardnum = 0; }
-//if (f == "protestant") { cardnum = 0; }
-//if (f == "england") { cardnum = 0; }
-//if (f == "ottoman") { cardnum = 0; }
+cardnum = 3;
+if (f == "france") { cardnum = 0; }
+if (f == "papacy") { cardnum = 0; }
+if (f == "hapsburg") { cardnum = 0; }
+if (f == "protestant") { cardnum = 0; }
+if (f == "england") { cardnum = 0; }
+if (f == "ottoman") { cardnum = 0; }
 
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);

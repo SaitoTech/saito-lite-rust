@@ -1642,6 +1642,9 @@
 	if (ally === "" || ally === "venice") {
 	  his_self.activateMinorPower("papacy", "venice");
 	}
+	if (ally == "france") {
+	  his_self.deactivateMinorPower("france", "venice");
+	}
 	if (ally == "hapsburg") {
 	  his_self.deactivateMinorPower("hapsburg", "venice");
 	}
@@ -5921,7 +5924,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  if (menu === "pre_field_battle_rolls") { spacekey = his_self.game.state.player_last_spacekey; }
 
 	  his_self.addMove("ACKNOWLEDGE\t"+his_self.returnFactionName(faction)+" plays " + his_self.popup("036"));
-	  if (spacekey != "") {
+	  if (spacekey != "" && target_faction == faction) {
 	    his_self.addMove("add_units_before_field_battle\t"+target_faction+"\t"+"mercenary"+"\t"+target_number+"\t"+spacekey);
           } else {
 	    his_self.addMove("swiss_mercenaries_place\t"+target_faction+"\t"+target_number);
@@ -7875,6 +7878,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	his_self.game.queue.push("protestant_reformation\tprotestant\tenglish");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tenglish");
 	his_self.game.queue.push("protestant_reformation\tprotestant\tenglish");
+	his_self.game.queue.push("commit\tengland\tcranmer-debater");
         his_self.game.queue.push("SETVAR\tstate\tskip_counter_or_acknowledge\t1");
 
 	return 1;
@@ -10007,7 +10011,9 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	  his_self.addRegular("ottoman", spacekey, 1);
 	  his_self.addCorsair("ottoman", spacekey, 2);
 	  his_self.game.spaces[spacekey].pirate_haven = 1;
-	  his_self.game.spaces[spacekey].fortified = 1;
+	  if (spacekey != "oran" && spacekey != "tripoli") {
+	    his_self.game.spaces[spacekey].fortified = 1;
+	  }
 
 	  his_self.controlSpace("ottoman", spacekey);
 	  his_self.displaySpace(spacekey);
