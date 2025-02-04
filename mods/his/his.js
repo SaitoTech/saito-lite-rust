@@ -2689,9 +2689,12 @@ console.log("\n\n\n\n");
           this.addNavalSquadron("hapsburg", "naples", 1);
           this.addRegular("hapsburg", "besancon", 1);
           this.addRegular("hapsburg", "brussels", 1);
-	  this.addArmyLeader("hapsburg", "vienna", "ferdinand");
-          this.addRegular("hapsburg", "vienna", 4);
-          this.addMercenary("hapsburg", "vienna", 2);
+	  //this.addArmyLeader("hapsburg", "vienna", "ferdinand");
+          //this.addRegular("hapsburg", "vienna", 4);
+          //this.addMercenary("hapsburg", "vienna", 2);
+// HACK / TESTING
+this.controlSpace("ottoman", "vienna");
+
           this.addRegular("hapsburg", "antwerp", 3);
           this.controlSpace("hapsburg", "prague");
           this.controlSpace("hapsburg", "breslau");
@@ -36394,13 +36397,13 @@ If this is your first game, it is usually fine to skip the diplomacy phase until
 		//
 		if (cardnum < 0) { cardnum = 0; }
 
-cardnum = 3;
-if (f == "france") { cardnum = 0; }
-if (f == "papacy") { cardnum = 0; }
-if (f == "hapsburg") { cardnum = 0; }
-if (f == "protestant") { cardnum = 0; }
-if (f == "england") { cardnum = 0; }
-if (f == "ottoman") { cardnum = 0; }
+cardnum = 0;
+//if (f == "france") { cardnum = 0; }
+//if (f == "papacy") { cardnum = 0; }
+if (f == "hapsburg") { cardnum = 1; }
+//if (f == "protestant") { cardnum = 0; }
+//if (f == "england") { cardnum = 0; }
+//if (f == "ottoman") { cardnum = 0; }
 
 
     	        this.game.queue.push("hand_to_fhand\t1\t"+(i+1)+"\t"+this.game.state.players_info[i].factions[z]);
