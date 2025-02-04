@@ -345,11 +345,9 @@ console.log("\n\n\n\n");
           this.addNavalSquadron("hapsburg", "naples", 1);
           this.addRegular("hapsburg", "besancon", 1);
           this.addRegular("hapsburg", "brussels", 1);
-	  //this.addArmyLeader("hapsburg", "vienna", "ferdinand");
-          //this.addRegular("hapsburg", "vienna", 4);
-          //this.addMercenary("hapsburg", "vienna", 2);
-// HACK / TESTING
-this.controlSpace("ottoman", "vienna");
+	  this.addArmyLeader("hapsburg", "vienna", "ferdinand");
+          this.addRegular("hapsburg", "vienna", 4);
+          this.addMercenary("hapsburg", "vienna", 2);
 
           this.addRegular("hapsburg", "antwerp", 3);
           this.controlSpace("hapsburg", "prague");
