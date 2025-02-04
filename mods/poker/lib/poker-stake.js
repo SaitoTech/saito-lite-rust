@@ -52,6 +52,10 @@ class PokerStake {
 
 
         convertChipsToCrypto(numChips, asString = true) {
+                if (this.returnTicker() == "CHIPS"){
+                        return numChips;
+                }
+
                 let numCrypto =
                         (numChips * parseFloat(this.game.stake)) / this.game.chips;
                 

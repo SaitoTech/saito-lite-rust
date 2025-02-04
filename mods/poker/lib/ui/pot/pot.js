@@ -7,7 +7,6 @@ class Pot {
 	constructor(app, mod) {
 		this.app = app;
 		this.game_mod = mod;
-		this.pot_counter = mod.crypto || 'CHIPS';
 		this.pot_active = true;
 		this.overlay = new SaitoOverlay(app, mod);
 	}
@@ -30,9 +29,9 @@ class Pot {
 		}
 
 		if (!document.querySelector(".pot")) {
-		  this.app.browser.addElementToDom(PotTemplate(pot, this.pot_counter));
+		  this.app.browser.addElementToDom(PotTemplate(pot, this.game_mod));
 		} else {
-		  this.app.browser.replaceElementBySelector(PotTemplate(pot, this.pot_counter), ".pot");
+		  this.app.browser.replaceElementBySelector(PotTemplate(pot, this.game_mod), ".pot");
 		}
 
 		if (pot && !this.game_mod.animating) {
