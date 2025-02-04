@@ -329,6 +329,14 @@ Useful declarations for game stats
 }
 
 
+.saito-modal-menu-option .option-keyword {
+  display: flex;
+  gap: 1rem;
+}
+.saito-modal-menu-option span.option-explanation {
+  font-size: 1.6rem;
+}
+
 
 .debug_overlay {
   max-height: 90vh;
