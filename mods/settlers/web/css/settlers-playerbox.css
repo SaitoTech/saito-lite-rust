@@ -279,6 +279,7 @@
 
 .game-playerbox .saito-user>.saito-address {
 	font-weight: bold;
+	color: #222;
 	/*
     color: white;
     text-shadow: 1px 1px 2px black, 1px 0px 2px black, 0px 1px 2px black, 0px 0px 2px black;

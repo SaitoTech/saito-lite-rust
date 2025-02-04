@@ -414,7 +414,8 @@ class CallInterfaceVideo {
 
 				if (icon.classList.contains('fa-caret-down')) {
 					if (this.mod.layout !== 'focus') {
-						this.app.connection.emit('stun-switch-view', 'focus');
+						chat_box.classList.add('gallery');
+						//this.app.connection.emit('stun-switch-view', 'focus');
 					}
 					chat_box.classList.add('minimize');
 					icon.classList.remove('fa-caret-down');
