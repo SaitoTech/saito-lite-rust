@@ -114,7 +114,13 @@ class Settings extends ModTemplate {
 
 							if (confirmation) {
 								await app.wallet.onUpgrade('nuke');
-								reloadWindow(300);
+								if (app.modules.returnActiveModule().respondTo("arcade-games")){
+									app.browser.unlockNavigation();
+									navigateWindow("/arcade", 300);
+								}else{
+									reloadWindow(300);	
+								}
+								
 							}
 						}
 					}
