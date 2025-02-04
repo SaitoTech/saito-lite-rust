@@ -81,6 +81,7 @@ class StreamManager {
 
     app.connection.on('stun-toggle-audio', async () => {
       if (!this.active) {
+        console.warn("Stun toggle event when not active...");
         return;
       }
 
@@ -327,23 +328,21 @@ class StreamManager {
   }
 
   parseSettings(settings) {
+    this.videoEnabled = false;
     if (settings?.video) {
       this.videoEnabled = true;
       if (settings.video !== true) {
         this.videoSource = settings.video;
       }
-    } else {
-      this.videoEnabled = false;
-    }
+    } 
 
+    this.audioEnabled = false;
     if (settings?.audio) {
       this.audioEnabled = true;
       if (settings.audio !== true) {
         this.audioSource = settings.audio;
       }
-    } else {
-      this.audioEnabled = false;
-    }
+    } 
 
     this.auto_disconnect = this?.auto_disconnect || settings?.auto_disconnect;
   }
@@ -441,10 +440,11 @@ class StreamManager {
     this.remoteStreams.delete(peer);
 
     if (this.auto_disconnect) {
-      siteMessage(`${this.app.keychain.returnUsername(peer)} hung up`, 2500);
-      this.app.connection.emit('stun-disconnect');
+      siteMessage(`${this.app.keychain.returnUsername(peer)} hung up`, 1500);
+      setTimeout(()=>{this.app.connection.emit('stun-disconnect');}, 1500);
     } else {
       siteMessage(`${this.app.keychain.returnUsername(peer)} ${message}`, 2500);
+      this.app.connection.emit("stun-switch-view");
     }
 
     let sound = new Audio('/saito/sound/Sharp.mp3');
@@ -460,14 +460,14 @@ class StreamManager {
 
     this.endPresentation();
 
-    await this.mod.sendCallDisconnectTransaction();
-
     if (this.localStream) {
       this.localStream.getTracks().forEach((track) => {
         track.stop();
         console.log('STUN: stopping track to leave call');
       });
     }
+
+    await this.mod.sendCallDisconnectTransaction();
 
     this.localStream = null; //My Video Feed
 

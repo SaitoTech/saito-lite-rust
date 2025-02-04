@@ -241,22 +241,6 @@ class Poker extends GameTableTemplate {
 		}
 	}
 
-	async exitGame() {
-		if (this.game.over == 0 && this.game.player && this.game.options['open-table']) {
-			let c = await sconfirm('give up your seat at the table?');
-			if (c) {
-				await this.sendStopGameTransaction('forfeit');
-				this.game.over = 2;
-				this.removePlayer(this.publicKey);
-				this.saveGame(this.game.id);
-				setTimeout(() => {
-					super.exitGame();
-				}, 500);
-			}
-		} else {
-			super.exitGame();
-		}
-	}
 
 	async receiveStopGameTransaction(resigning_player, txmsg) {
 		console.log('Poker: receiveStopGameTransaction', txmsg, resigning_player);

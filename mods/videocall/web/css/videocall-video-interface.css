@@ -97,9 +97,13 @@
 
 .minimize .stun-chatbox .video-container-large {
 	padding: 0.25rem;
-	/* We don't want this, show only one video in minimized view */
-	/*grid-template-columns: 2fr 1fr;*/
-	gap: 0.5rem;
+	gap: 0;
+	grid-template-columns: 0 1fr;
+	grid-template-rows: minmax(0, 1fr);
+}
+
+.min-gallery .stun-chatbox .video-container-large {
+	grid-template-columns: minmax(0px, 1fr);
 }
 
 .minimize .stun-chatbox .expanded-video {

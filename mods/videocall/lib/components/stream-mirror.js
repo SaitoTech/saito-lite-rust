@@ -3,6 +3,20 @@ class StreamMirror {
         this.app = app;
         this.mod = mod;
         this.streams = new Map();
+
+        console.log("********************", "Use Stream Mirroring", "***********************");
+
+        app.connection.on('add-local-stream-request', (localStream) => {
+            this.addStream(localStream, "local");
+        });
+        app.connection.on('add-remote-stream-request', (peer, remoteStream) => {
+            this.addStream(remoteStream, peer);
+        });
+
+        app.connection.on('remove-peer-box', (peer_id) => {
+            this.removeStream(peer_id);
+        });
+
     }
 
     addStream(stream, id) {

@@ -502,7 +502,9 @@ class Videocall extends ModTemplate {
 					}
 
 					if (txmsg.request === 'peer-left') {
-						this.disconnect(tx.from[0].publicKey);
+						if (!tx.isFrom(this.publicKey)){
+							this.disconnect(tx.from[0].publicKey);	
+						}
 					}
 
 					if (txmsg.request === 'peer-kicked') {

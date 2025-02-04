@@ -45,11 +45,8 @@ class Settlers extends GameTemplate {
 		this.sleep_timer = null;
 		this.insert_rankings = true;
 
-		this.recordOptions = {
-			container: 'body',
-			callbackAfterRecord: null,
-			active: false
-		};
+		//Deactivate screen record, but why?
+		this.recordOptions.active = false;
 
 		//
 		// UI components
