@@ -443,8 +443,6 @@ video#local {
 
 .default-video-mask {
 	position: absolute;
-	width: 20rem;
-	height: 20rem;
 	overflow: hidden;
 	top: 50%;
 	z-index: 10;
@@ -452,9 +450,25 @@ video#local {
 	transform: translateY(-55%);
 	border-radius: 62%;
 	border: 1px solid var(--color-primary);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-shadow: 2px 2px 3px dimgray;
+	font-size: 6rem;
+	padding: 3rem;
+}
+
+/*.default-video-mask {
+	width: 20rem;
+	height: 20rem;
 	background-image: url('/swarmcast/img/inception.gif');
 	background-position: center;
 	background-size: 200%;
+}*/
+
+
+.default-video-mask.hidden {
+	display: none;
 }
 
 .video-box-container-large video {
