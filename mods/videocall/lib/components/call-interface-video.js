@@ -413,9 +413,17 @@ class CallInterfaceVideo {
 				chat_box.classList.toggle('full-screen');
 
 				if (icon.classList.contains('fa-caret-down')) {
-					if (this.mod.layout !== 'focus') {
-						chat_box.classList.add('min-gallery');
-						//this.app.connection.emit('stun-switch-view', 'focus');
+					if (this.mod.layout == 'focus') {
+						// Make sure that I am not staring at myself in local!
+						// >>>>>>>>>>>
+						/*if (remoteStream) {
+							let peer_elem = document.getElementById(`stream_${peer}`);
+							if (peer_elem) {
+								peer_elem.querySelector('.video-box').click();
+							}
+						}*/
+
+
 					}
 					chat_box.classList.add('minimize');
 					icon.classList.remove('fa-caret-down');
