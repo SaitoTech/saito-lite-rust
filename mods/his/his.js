@@ -3167,6 +3167,9 @@ this.addRegular("hapsburg", "palma", 1);
     // preload images
     //
     this.preloadImages();
+    setTimeout(() => {
+      this.preloadMoreImage();
+    }, 20000);
 
 
     // required here so menu will be proper
@@ -45025,7 +45028,7 @@ does_units_to_move_have_unit = true; }
 	let spacekey = destinations[i];
 	if (his_self.game.spaces[spacekey]) {
 	  if (his_self.isSpaceHostileOrIndependent(spacekey, faction)) {
-	    if (his_self.doesSpaceHaveNonFactionNavalUnits(spacekey, faction) || his_self.doesSpaceHaveNonFactionUnits(spacekey, faction)) {
+	    if (his_self.doesSpaceHaveNonFactionNavalUnits(spacekey, faction)) {
               any_options = true;
   	      num_options++;
               html += `<li class="option destination" style="font-weight:bold" id="${spacekey}">${his_self.returnSpaceName(spacekey)}</li>`;
@@ -54049,7 +54052,23 @@ try {
       "img/backgrounds/move/colonize.jpg",
       "img/backgrounds/move/explore.jpg",
       "img/backgrounds/move/conquer.jpg",
+      "img/backgrounds/language_zone.jpg",
       "img/cards/PASS.png",
+    ];
+
+    this.preloadImageArray(allImages);
+  }
+
+  async preloadMoreImages() {
+    var allImages = [
+      "img/backgrounds/war-horse.png",
+      "img/backgrounds/winter_background.png",
+      "img/backgrounds/corsairs_destroyed.jpg",
+      "img/backgrounds/diplomacy/excommunication.png",
+      "img/backgrounds/henry_viii.png",
+      "img/backgrounds/marital_status.png",
+      "img/backgrounds/naval_battle.png",
+      "img/backgrounds/new_world.png",
     ];
 
     this.preloadImageArray(allImages);
