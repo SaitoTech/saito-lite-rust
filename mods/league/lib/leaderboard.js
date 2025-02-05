@@ -58,7 +58,9 @@ class Leaderboard {
 			}
 			this.mod.fetchLeagueLeaderboard(this.league.id, (rows) => {
 				//console.log("Run callback on returned leaderboard");
-				document.querySelector(this.container + " .leaderboard-updating-msg").style.display = "none";
+				if (document.querySelector(this.container + " .leaderboard-updating-msg")){
+					document.querySelector(this.container + " .leaderboard-updating-msg").style.display = "none";
+				}
 				this.renderLeaderboardContents();
 			});
 		}
