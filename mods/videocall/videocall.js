@@ -654,8 +654,10 @@ class Videocall extends ModTemplate {
 		}
 
 		// Process if we saved event but are not in the call!
-
+		let event = this.app.keychain.returnKey(txmsg.call_id, true);
+		
 		if (event){
+			console.log("EVENT!!!", event);
 			// I am in a different call
 			if (this.room_obj?.call_id){
 				siteMessage(`${this.app.keychain.returnUsername(from)} joined ${event.identifier}`);
