@@ -558,7 +558,7 @@ class Settlers extends GameTemplate {
 		// Preliminary DOM set up, adding elements to display
 		//
 		this.generateMap();
-		this.addCitiesToAdjust();
+		this.addCitiesToGameboard();
 		this.addPortsToGameboard();
 
 		this.displayBoard();

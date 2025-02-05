@@ -2076,8 +2076,9 @@ class Arcade extends ModTemplate {
 
 		//We want to send a message to the players to add us to the game.accept list so they route their game moves to us as well
 		game_msg.game_id = game_id;
-
-		game_mod.sendFollowTx(game_msg);
+		if (watch_live){
+			game_msg.send_state = true;
+		}
 
 		if (!this.app.options.games) {
 			this.app.options.games = [];
@@ -2086,17 +2087,15 @@ class Arcade extends ModTemplate {
 		if (!game_mod.doesGameExistLocally(game_id)) {
 			console.log('Initialize game');
 			//starts running the queue...
-			await game_mod.initializeObserverMode(game_tx);
+			await game_mod.initializeObserverMode(game_tx, watch_live);
 		} else {
 			console.log('Game already exists');
 			game_mod.loadGame(game_id);
 			game_mod.game.player = 0;
 		}
 
-		if (watch_live) {
-			game_mod.game.live = watch_live;
-			game_mod.saveGame(game_id);
-		}
+		game_mod.sendFollowTx(game_msg);
+
 	}
 }
 
