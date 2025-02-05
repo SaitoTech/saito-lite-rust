@@ -2659,6 +2659,12 @@ console.log("----------------------------");
 	  if (mv[6]) { skip_avoid_battle = parseInt(mv[6]); }
 	  let is_this_an_interception = 0;
 	  if (parseInt(mv[7]) > 0) { is_this_an_interception = 1; }
+	  let is_our_next_command_a_move = false;
+
+	  if (qe > 0) {
+	    let lmv = this.game.queue[qe-1].split("\t");
+	    if (lmv[0] == "move") { is_our_next_command_a_move = true; } 	
+	  }
 
 	  this.game.state.board[faction] = this.returnOnBoardUnits(faction);
 
@@ -2682,8 +2688,11 @@ console.log("----------------------------");
 	    }
 
 	    this.game.navalspaces[source].units[faction] = [];
-	    this.displaySpace(source);
-	    this.displaySpace(destination);
+
+	    if (!is_our_next_command_a_move) {
+	      this.displaySpace(source);
+	      this.displaySpace(destination);
+	    }
 
 	  }
 
@@ -2702,8 +2711,10 @@ console.log("----------------------------");
               this.game.navalspaces[destination].units[faction].push(unit_to_move);
               this.game.spaces[source].units[faction].splice(unitidx, 1);
 	      this.updateLog(this.returnFactionName(faction)+" moves "+unit_to_move.name+" from " + this.returnSpaceName(source) + " to " + this.returnSpaceName(destination));
-	      this.displaySpace(source);
-	      this.displayNavalSpace(destination);
+	      if (!is_our_next_command_a_move) {
+	        this.displaySpace(source);
+	        this.displayNavalSpace(destination);
+	      }
 	    }
 
 	    //
@@ -2714,6 +2725,8 @@ console.log("----------------------------");
 	      for (let i = 0; i < this.game.navalspaces[source].units[faction].length; i++) {
 		if (this.game.navalspaces[source].units[faction][i].idx === unitidx) {
 		  actual_unitidx = i;
+		  break; // it will always be the first match, since other ships may have moved
+		  	 // into the space with the same IDX
 		};
 	      }
 
@@ -2722,9 +2735,13 @@ console.log("----------------------------");
  	      unit_to_move.already_moved = 1;
               this.game.navalspaces[destination].units[faction].push(unit_to_move);
               this.game.navalspaces[source].units[faction].splice(actual_unitidx, 1);
+
 	      this.updateLog(this.returnFactionName(faction)+" moves "+unit_to_move.name+" from " + this.returnSpaceName(source) + " to " + this.returnSpaceName(destination));
-	      this.displayNavalSpace(source);
-	      this.displayNavalSpace(destination);
+
+	      if (!is_our_next_command_a_move) {
+	        this.displayNavalSpace(source);
+	        this.displayNavalSpace(destination);
+	      }
 	    }
 
 	    //
@@ -2745,8 +2762,10 @@ console.log("----------------------------");
               this.game.spaces[destination].units[faction].push(unit_to_move);
               this.game.navalspaces[source].units[faction].splice(actual_unitidx, 1);
 	      this.updateLog(this.returnFactionName(faction)+" moves "+unit_to_move.name+" from " + this.returnSpaceName(source) + " to " + this.returnSpaceName(destination));
-	      this.displayNavalSpace(source);
-	      this.displaySpace(destination);
+	      if (!is_our_next_command_a_move) {
+	        this.displayNavalSpace(source);
+	        this.displaySpace(destination);
+	      }
 	    }
 
 	    //
@@ -3099,8 +3118,10 @@ console.log("----------------------------");
 	      this.removeSiege(source);
 	    }
 
-	    this.displaySpace(source);
-	    this.displaySpace(destination);
+	    if (!is_our_next_command_a_move) {
+	      this.displaySpace(source);
+	      this.displaySpace(destination);
+	    }
 
 	  }
 
@@ -3437,9 +3458,6 @@ console.log("----------------------------");
 	  let spacekey = mv[4];
 	  let space = this.game.spaces[spacekey];
 
-console.log("into player_evaluate_fortification: " + faction + " / " + spacekey);
-console.log("PENDING QUEUE: " + JSON.stringify(this.game.queue));
-
 	  let any_unbesieged_units = false;
 	  for (let f in this.game.spaces[spacekey].units) {
 	    if (f == faction || this.areAllies(f, faction, true)) {
@@ -3632,7 +3650,6 @@ console.log("PENDING QUEUE: " + JSON.stringify(this.game.queue));
 
 	  if (player > 0) {
 	    if (this.game.player === player) {
-console.log("running player fortify space...");
 	      this.playerFortifySpace(faction, attacker, spacekey, post_battle, relief_siege);
 	    } else {
 	      this.updateLog(this.returnFactionName(faction) + " fortifies in " + this.returnSpaceName(spacekey));
@@ -5581,7 +5598,7 @@ console.log("running player fortify space...");
           let calculate_highest_battle_rating = function(faction) {
 	    let highest_battle_rating = 0;
             for (let i = 0; i < space.units[faction].length; i++) {
-	      	if (space.units[faction][i].battle_rating > 0) {
+	      	if (space.units[faction][i].navy_leader == true && space.units[faction][i].battle_rating > 0) {
 	        if (highest_battle_rating < space.units[faction][i].battle_rating) {
 		  highest_battle_rating = space.units[faction][i].battle_rating;
 		}
@@ -5681,7 +5698,6 @@ console.log("running player fortify space...");
 	      }
 	    }
 
-
 	    if (f !== attacker_faction && faction_map[f] === attacker_faction) {
 try {
 	      let p = his_self.game.state.players_info[his_self.returnPlayerCommandingFaction(attacker)-1];
@@ -5697,6 +5713,7 @@ try {
 	      }
 } catch (err) {}
 	    }
+
 	    if (f !== defender_faction && faction_map[f] === attacker_faction) {
 try {
 	      let p = his_self.game.state.players_info[his_self.returnPlayerCommandingFaction(defender_faction)-1];
@@ -8422,17 +8439,6 @@ try {
 	  let squadrons_issuable = true;
 
 	  let selectPiracyRewards = function(selectPiracyRewards) {
-
-console.log("DEBUGGING PIRACY");
-console.log("vp_issuable: " + vp_issuable);
-console.log("cards_issuable: " + cards_issuable);
-console.log("squadrons_issuable: " + squadrons_issuable);
-console.log("vp_available: " + vp_available);
-console.log("cards_available: " + cards_available);
-console.log("squadrons_available: " + squadrons_available);
-console.log("vp_offered: " + vp_offered);
-console.log("cards_offered: " + cards_offered);
-console.log("squadrons_offered: " + squadrons_offered);
 
             let msg = `Offer the Ottoman Empire which Reward (${(hits_given+1)} of ${hits})? `;
             let html = '<ul>';

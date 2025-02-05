@@ -2475,7 +2475,6 @@ if (relief_siege == 1) {
               if (ops > 0) {
 	        this.addMove("continue\t"+this.game.player+"\t"+faction+"\t"+card+"\t"+ops+"\t"+limit);
               }
-console.log("submitting with: " + ops_to_spend + " -- " + ops);
               menu[user_choice].fnct(this, this.game.player, selected_faction, ops_to_spend, ops);
               return;
 
@@ -2485,7 +2484,6 @@ console.log("submitting with: " + ops_to_spend + " -- " + ops);
 
 	} // function
 
-console.log("sending to visual menu w/ ops: " + ops);
 	his_self.menu_overlay.render(menu, this.game.player, selected_faction, ops, attachEventsToMenuOptions);
 
 	attachEventsToMenuOptions();
@@ -2644,7 +2642,6 @@ console.log("sending to visual menu w/ ops: " + ops);
 
       } // attach events to menu options
 
-console.log("sending to visual menu2: " + ops);
       this.menu_overlay.render(menu, this.game.player, faction, ops, attachEventsToMenuOptions);
       attachEventsToMenuOptions();
 
@@ -3591,11 +3588,7 @@ return;
 
     his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("RESOLVE\t"+this.publicKey); his_self.playerPlaySpringDeployment(faction, player, removed_queue_instruction); });
 
-console.log("asking for capitals for faction: " + faction);
-console.log("capitals are: " + JSON.stringify(this.factions[faction]));
-
     let capitals = this.returnCapitals(faction);
-console.log("return capitals: " + JSON.stringify(capitals));
     let viable_capitals = [];
     let can_deploy = 0;
     let units_to_move = [];
@@ -3618,12 +3611,8 @@ console.log("return capitals: " + JSON.stringify(capitals));
       }
     }
 
-console.log("capitals are: " + JSON.stringify(capitals));
-
     for (let i = 0; i < capitals.length; i++) {
       let c = capitals[i];
-console.log("this capital is: " + c);
-console.log("this faction is: " + faction);
       if (this.game.spaces[c].units[faction].length > 0) {
         can_deploy = 1;
         viable_capitals.push(capitals[i]);
@@ -4075,7 +4064,7 @@ does_units_to_move_have_unit = true; }
 	  let msg = "Max Formation Size: " + max_formation_size + " units";
 	  let html = "<ul>";
 	  for (let key in space.units) {
-	    if (his_self.returnPlayerCommandingFaction(key) == parent_player) {
+	    if (his_self.returnPlayerCommandingFaction(key) == parent_player && (key == faction || his_self.returnControllingPower(key) == faction)) {
 	      for (let i = 0; i < space.units[key].length; i++) {
                 if (space.units[key][i].type != "corsair" && space.units[key][i].type != "squadron") {
 	        if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
@@ -4400,7 +4389,7 @@ does_units_to_move_have_unit = true; }
 	  let msg = "Max Formation Size: " + max_formation_size + " units";
 	  let html = "<ul>";
 	  for (let key in space.units) {
-	    if (his_self.returnPlayerCommandingFaction(key) == parent_player) {
+	    if (his_self.returnPlayerCommandingFaction(key) == parent_player && (key == faction || his_self.returnControllingPower(key) == faction)) {
 	      for (let i = 0; i < space.units[key].length; i++) {
                 if (space.units[key][i].type != "corsair" && space.units[key][i].type != "squadron") {
 	        if (space.units[key][i].reformer != true && space.units[key][i].navy_leader != true) {
@@ -5647,7 +5636,6 @@ does_units_to_move_have_unit = true; }
     his_self.attachCardboxEvents(function(user_choice) {
 
       spacekey = spaces_with_infantry[user_choice];
-console.log("start: " + ops_remaining + " ==> " +  ops_to_spend);
       let dest = his_self.returnNavalTransportDestinations(faction, spaces_with_infantry[user_choice], (ops_remaining+ops_to_spend));
 
       let html = `<ul>`;
@@ -5682,8 +5670,6 @@ console.log("start: " + ops_remaining + " ==> " +  ops_to_spend);
   }
 
   canPlayerCommitDebater(faction, debater) {
-
-console.log("asked if " + faction + " can commit " + debater + " //// " + JSON.stringify(this.game.state.debater_committed_this_impulse));
 
     if (faction !== "protestant" && faction !== "papacy") { return false; }
 
@@ -6536,10 +6522,6 @@ console.log("asked if " + faction + " can commit " + debater + " //// " + JSON.s
     for (let i = 0; i < conquerable_spaces.length; i++) {
       if (!his_self.isSpaceControlled(conquerable_spaces[i], faction)) {
         if (conquerable_spaces[i] !== "egypt" && conquerable_spaces[i] !== "persia" && conquerable_spaces[i] !== "ireland") {
-
-console.log("space assault: " + conquerable_spaces[i]);
-console.log("loc? " + his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction));
-
 	  if (his_self.isSpaceInLineOfControl(conquerable_spaces[i], faction)) {
             if (his_self.game.spaces[conquerable_spaces[i]].besieged == 1 || (faction == "ottoman" && his_self.game.state.events.roxelana == 1) || (faction == his_self.returnControllingPower("scotland") && his_self.game.state.events.scots_raid == 1)) {
 	      if (!his_self.game.state.spaces_assaulted_this_turn.includes(conquerable_spaces[i])) {
@@ -6799,8 +6781,6 @@ console.log("loc? " + his_self.isSpaceInLineOfControl(conquerable_spaces[i], fac
     return 0;
   }
   async playerRemoveUnrest(his_self, player, faction, ops_to_spend, ops_remaining=0) {
-
-console.log(ops_to_spend + " -- " + ops_remaining);
 
     // BACK moves us to OPS menu
     his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.addMove("discard\t"+his_self.returnControllingPower(faction)+"\t"+his_self.game.player_last_card); his_self.playerPlayOps("", his_self.returnControllingPower(faction), ops_remaining+ops_to_spend, ""); });

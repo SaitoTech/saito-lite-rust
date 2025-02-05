@@ -575,8 +575,6 @@ console.log("\n\n\n\n");
 
           this.addRegular("hungary", "vienna", 1);
 
-this.convertSpace("london", "protestant");
-
 	  this.game.state.henry_viii_marital_status = 1;
 	  this.game.state.starting_round = 6;
 	  this.game.state.round = 5; // the one before 4
@@ -604,11 +602,11 @@ this.addRegular("hapsburg", "palma", 1);
           this.setAllies("papacy", "hapsburg");
 
 	  this.controlSpace("papacy", "florence");
+	  this.controlSpace("hapsburg", "milan");
 	  this.addRegular("papacy","florence", 2);
-	  this.addRegular("france","milan", 4);
-	  this.addMercenary("france","milan", 2);
-	  this.addMercenary("france","modena", 2);
-	  this.addRegular("genoa","modena", 2);
+	  this.addMercenary("hapsburg","milan", 2);
+	  this.addMercenary("papacy","modena", 2);
+	  this.addRegular("papacy","modena", 2);
 
           this.addArmyLeader("hapsburg", "szegedin", "ferdinand");
 	  this.addRegular("hapsburg", "barcelona", 2);
@@ -747,7 +745,7 @@ this.addRegular("hapsburg", "palma", 1);
 
 	  // TESTING
           this.addRegular("papacy", "turin", 4);
-          this.addMercenary("france","milan", 2);
+          //this.addMercenary("france","milan", 2);
           this.addMercenary("protestant","trier", 3);
           this.addArmyLeader("protestant", "trier", "maurice-of-saxony");
 	  //this.addMercenary("papacy", "prague", 5);
