@@ -708,8 +708,6 @@ class Arcade extends ModTemplate {
 				mycallback(txs);
 				return 1;
 			}
-
-			return 0;
 		}
 
 		//
@@ -1187,6 +1185,10 @@ class Arcade extends ModTemplate {
 				//
 				game.msg.players.push(tx.from[0].publicKey);
 				game.msg.players_sigs.push(txmsg.invite_sig);
+
+				// Necessary because we aren't processing a private invite link as a desired opponent public key
+				this.removeGame(txmsg.game_id);
+				this.addGame(game, 'private');
 
 				//Update UI
 				this.app.connection.emit('arcade-invite-manager-render-request');
