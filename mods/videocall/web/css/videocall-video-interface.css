@@ -213,6 +213,18 @@
   box-sizing: border-box;
   gap: 1rem;
   transition: all 0.5s ease;
+}
+
+.gallery {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+}
+
+.gallery.count-4.wide {
+	grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
+}
+
+.side-videos {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;

@@ -335,7 +335,7 @@ class Browser {
 		    this.updateThemeInHeader(theme);
 
 			const updateViewHeight = () => {
-				let vh = window.innerHeight * 0.01;
+				let vh = window.innerHeight / 100;
 				document.documentElement.style.setProperty(
 					'--saito-vh',
 					`${vh}px`
