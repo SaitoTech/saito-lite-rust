@@ -410,8 +410,6 @@ class CallInterfaceVideo {
 				let icon = document.querySelector('.stun-chatbox .minimizer i');
 				let chat_box = document.querySelector('.stun-overlay-container');
 
-				chat_box.classList.toggle('full-screen');
-
 				if (icon.classList.contains('fa-caret-down')) {
 					if (this.mod.layout == 'focus') {
 						// Make sure that I am not staring at myself in local!

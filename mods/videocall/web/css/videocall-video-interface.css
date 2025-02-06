@@ -13,12 +13,12 @@
 	width: 100vw;
 	height: 100vh;
 	height: calc(100 * var(--saito-vh) - var(--saito-header-height));
-	position: absolute;	
+	position: absolute;
 	top: var(--saito-header-height);
 	overflow: hidden;
 }
 
-.stun-overlay-container+.chat-container {
+.stun-overlay-container + .chat-container {
 	z-index: 101;
 }
 
@@ -81,7 +81,7 @@
 	overflow: auto;
 	resize: both;
 	cursor: grab;
-	border-radius: var(--saito-border-radius);;
+	border-radius: var(--saito-border-radius);
 	max-width: 100%;
 	max-height: 50vh;
 }
@@ -103,15 +103,12 @@
 	border-radius: var(--border-radius-round);
 }
 
-
-
 .minimize .stun-chatbox .video-container-large.split-view .side-videos {
 	position: absolute;
 	top: 7px;
 	right: 7px;
 	width: 25%;
-}
-
+} /* Also for mobile, narrow screens */
 
 .minimize .stun-chatbox .expanded-video {
 	width: 100%;
@@ -119,12 +116,24 @@
 	resize: unset;
 }
 
-
-.minimize .stun-chatbox .control-panel {
-	padding: 0.25rem;
-	gap: 0.5rem;
+.minimize .stun-chatbox .footer {
+	padding: unset;
+	gap: 1rem;
+	justify-content: space-between;
+	flex-wrap: nowrap;
+	flex-direction: row;
 }
 
+.minimize .stun-chatbox .timer {
+	min-width: unset;
+	margin: 0 1rem;
+	width: fit-content;
+}
+
+.minimize .timer .counter {
+	font-size: 1.8rem;
+	min-width: unset;
+}
 
 .minimize .stun-chatbox .stun-identicon-list img.saito-identicon {
 	width: 3rem;
@@ -138,13 +147,19 @@
 	display: none;
 }
 
+.minimize .stun-chatbox .control-panel {
+	margin: 0 1rem;
+	width: fit-content;
+	gap: 0.5rem;
+}
+
 .minimize .stun-chatbox .control-list {
 	width: 100%;
 	justify-content: flex-end;
 	gap: 1px;
 }
 
-.minimize .stun-chatbox .call-controls .icon_click_area {
+.minimize .stun-chatbox .control-list .icon_click_area {
 	display: flex;
 	width: 3.5rem;
 	height: 3.5rem;
@@ -184,7 +199,6 @@
 	flex-wrap: wrap;
 }
 
-
 .gallery-view {
 	grid-template-columns: minmax(0px, 1fr);
 	grid-template-rows: minmax(0px, 1fr);
@@ -204,15 +218,14 @@
 	width: 75vw;
 }
 
-
 .gallery,
 .side-videos {
-  resize: both;
-  width: 100%;
-  max-height: 85vh;
-  box-sizing: border-box;
-  gap: 1rem;
-  transition: all 0.5s ease;
+	resize: both;
+	width: 100%;
+	max-height: 85vh;
+	box-sizing: border-box;
+	gap: 1rem;
+	transition: all 0.5s ease;
 }
 
 .gallery {
@@ -225,55 +238,54 @@
 }
 
 .side-videos {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
 }
 
 /* Aspect ratio and layout control */
 .flex-item {
-  flex: 1;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  max-width: 100%;
+	flex: 1;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+	max-width: 100%;
 }
 
 .wide {
-  flex-direction: row;
+	flex-direction: row;
 }
 
 .wide .flex-item {
- /* max-width: 66%; */
+	/* max-width: 66%; */
 }
 
 .square .flex-item {
-  flex-basis: 33%;
-/*  max-width: 50%; */
+	flex-basis: 33%;
+	/*  max-width: 50%; */
 }
 
 .side-videos.square .flex-item {
-  flex-basis: 100%;
-  max-width: 100%;
+	flex-basis: 100%;
+	max-width: 100%;
 }
 
 .tall {
-  flex-direction: column;
-  flex-wrap: unset;
+	flex-direction: column;
+	flex-wrap: unset;
 }
 
- .video-fill video {
+.video-fill video {
 	object-fit: fill;
-  } 
-  
-  .video-contain video {
-	object-fit: contain;
-  }
-  
-  .video-cover video {
-	object-fit: cover;
-  }
+}
 
+.video-contain video {
+	object-fit: contain;
+}
+
+.video-cover video {
+	object-fit: cover;
+}
 
 .stun-chatbox .peer-call-list {
 	display: flex;
@@ -290,7 +302,8 @@
 	filter: grayscale(100%);
 }
 
-.stun-chatbox .volume-control {}
+.stun-chatbox .volume-control {
+}
 
 .stun-chatbox .volume-control i {
 	font-size: 1.8rem;
@@ -348,7 +361,6 @@
 	height: fit-content;
 	border: 2px solid var(--saito-border-color-dark);
 }
-
 
 @keyframes fade-in {
 	from {
@@ -462,7 +474,6 @@ video#local {
 	background-size: 200%;
 }*/
 
-
 .default-video-mask.hidden {
 	display: none;
 }
@@ -488,7 +499,7 @@ video#presentation {
 	padding: 3px;
 }
 
-.video-box-container-large>#connection-message {
+.video-box-container-large > #connection-message {
 	color: var(--saito-white);
 	width: 50%;
 	line-height: 1.5;
@@ -529,7 +540,7 @@ video#presentation {
 	border: 1px solid transparent;
 }
 
-.video-box-container-large>#connection-message>p {
+.video-box-container-large > #connection-message > p {
 	color: var(--saito-white);
 	font-size: 2.8rem;
 }
@@ -537,14 +548,12 @@ video#presentation {
 .video-call-info {
 	color: var(--saito-white);
 	text-shadow: 0px 1px 2px var(--saito-black-faded), 0px -1px 2px var(--saito-black-faded);
-	line-height: 1.5;
+	height: 3.5rem;
 	position: absolute;
 	display: grid;
 	grid-template-columns: min-content 1fr min-content min-content;
 	align-items: center;
 	width: calc(100% - 2rem);
-	font-size: 1rem;
-	left: 1rem;
 	gap: 1rem;
 	bottom: 0;
 	z-index: 2;
@@ -552,7 +561,6 @@ video#presentation {
 
 .video-call-info .saito-address {
 	font-size: 2rem;
-	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	max-width: 100%;
@@ -569,7 +577,6 @@ video#presentation {
 	background-color: var(--saito-primary);
 	box-shadow: 0 0 8px 4px var(--saito-primary);
 }
-
 
 .video-call-info i.disabled,
 .video-call-info i.fa-microphone-slash {
@@ -686,7 +693,7 @@ video#presentation {
 .footer {
 	justify-content: left;
 	align-items: center;
-	gap: 2rem;
+	gap: 5rem;
 	padding: 1.5rem;
 	display: flex;
 	width: 100%;
@@ -709,22 +716,6 @@ video#presentation {
 	min-width: 7rem;
 	font-family: monospace;
 	text-align: right;
-}
-
-
-.minimize .stun-chatbox .footer {
-	/*padding: unset;*/
-	justify-content: space-between;
-}
-
-.minimize .stun-chatbox .timer {
-	min-width: unset;
-	margin: 0 1rem;
-}
-
-.minimize .timer .counter {
-	font-size: 1.8rem;
-	min-width: unset;
 }
 
 .users-on-call {
@@ -775,15 +766,14 @@ video#presentation {
 	position: relative;
 }
 
-.control-list>div:first-child {
+.control-list > div:first-child {
 	border-top-left-radius: var(--saito-border-radius);
 	border-bottom-left-radius: var(--saito-border-radius);
 }
 
-.control-list>div:last-child {
+.control-list > div:last-child {
 	border-top-right-radius: var(--saito-border-radius);
 	border-bottom-right-radius: var(--saito-border-radius);
-	;
 }
 
 .control-list .icon_click_area.disabled {
@@ -791,7 +781,7 @@ video#presentation {
 }
 
 .control-list .icon_click_area.disabled i {
-	color: var(--saito-background-color)
+	color: var(--saito-background-color);
 }
 
 .speaker {
@@ -831,46 +821,25 @@ video#presentation {
 
 @media screen and (min-width: 2560px) {
 	.stun-chatbox main {
-	  max-width: 2560px;
-	  margin: 0 auto;
-	  height: 100vh;
+		max-width: 2560px;
+		margin: 0 auto;
+		height: 100vh;
 	}
-	
+
 	.video-container-large {
-	  max-height: calc(100vh - 180px); 
+		max-height: calc(100vh - 180px);
 	}
-	
+
 	.footer {
-	  padding: 2rem;
-	  min-height: 120px;
+		padding: 2rem;
+		min-height: 120px;
 	}
-  }
+}
 
 @media screen and (max-width: 900px) {
-	.full-screen.stun-overlay-container .stun-chatbox main {
+	.stun-chatbox main {
 		grid-template-rows: minmax(0, 1fr) minmax(200px, 20%);
 		grid-template-columns: minmax(100px, 1fr);
-	}
-
-	.full-screen .footer {
-		flex-direction: column;
-		align-items: flex-start;
-		justify-content: end;
-		align-items: center;
-		gap: 3rem;
-		padding-bottom: 3rem;
-	}
-
-	/*
-	.full-screen .footer .control-list {
-		margin-bottom: 1.7rem;
-	}
-	.control-list .icon_click_area {
-		margin: 0;
-	}
-	*/
-	.control-list label {
-		display: none;
 	}
 
 	.video-box-container-large canvas#oscilloscope {
@@ -886,91 +855,89 @@ video#presentation {
 		overflow-y: auto;
 	}
 
-
 	.footer {
-		padding: 1rem;
-		gap: 1rem;
-	  }
-	
-	  .control-panel {
-		gap: 0.75rem;
-	  }
-	
-	  .control-list .icon_click_area {
-		width: 4.5rem;
-		height: 4.5rem;
-	  }
+		flex-direction: column;
+		align-items: flex-start;
+		justify-content: center;
+		align-items: center;
+		gap: 3rem;
+	}
+
+	.control-panel {
+		gap: 3rem;
+	}
+
+	.control-list .icon_click_area label {
+		bottom: -2rem;
+	}
 }
 
 
-  @media screen and (max-width: 826px) {
-	.footer {
-	  flex-wrap: wrap;
-	  justify-content: center;
-	  gap: 0.5rem;
-	}
-  
-	.timer {
-	  min-width: unset;
-	  order: -1;
-	  width: 100%;
-	  justify-content: center;
-	  margin-bottom: 0.5rem;
-	}
-  
-	.control-panel {
-	  width: 100%;
-	  justify-content: center;
-	  gap: 0.5rem;
-	}
-  
-	.control-list {
-	  gap: 0.5rem;
-	}
-  
+@media screen and (max-width: 600px) {
+
 	.control-list .icon_click_area {
-	  width: 4rem;
-	  height: 4rem;
+		width: 4.2rem;
+		height: 4.2rem;
 	}
-  
+
 	.icon_click_area i {
-	  font-size: 1.8rem;
+		font-size: 1.8rem;
 	}
-  }
-  
-  @media screen and (max-width: 600px) {
+
+	.control-list label {
+		display: none;
+	}
+
+
+	/* PiP effect */
+	.stun-chatbox .video-container-large {
+		padding: 0.25rem;
+		gap: 0;
+		grid-template-columns: minmax(0px, 1fr);
+		grid-template-rows: minmax(0px, 1fr);
+		border-radius: var(--border-radius-round);
+	}
+	.stun-chatbox .video-container-large.split-view .side-videos {
+		position: absolute;
+		top: 5px;
+		right: 5px;
+		width: 25%;
+	}
+	.stun-chatbox .video-container-large.split-view .side-videos .call-icons {
+		display: none;
+	}
+
+	.stun-chatbox .video-container-large.split-view .side-videos .video-call-info {
+		height: 2.75rem;
+	}
+	.stun-chatbox .video-container-large.split-view .side-videos .video-call-info .saito-address {
+		font-size: 1.5rem;
+	}
+	.stun-chatbox .video-container-large.split-view .side-videos .video-call-info i {
+		display: none;
+	}
+	.stun-chatbox .video-container-large.split-view .side-videos .peer-call-list .saito-identicon {
+		width: 2rem;
+		height: 2rem;
+	}
+
+
+}
+
+@media screen and (max-width: 395px) {
 	.footer {
-	  padding: 0.75rem;
+		padding: 0.5rem;
 	}
-  
-	.timer {
-	  flex-wrap: wrap;
-	}
-  
+
 	.control-list .icon_click_area {
-	  width: 3.5rem;
-	  height: 3.5rem;
+		width: 3.8rem;
+		height: 3.8rem;
 	}
-  
+
 	.icon_click_area i {
-	  font-size: 1.6rem;
+		font-size: 1.6rem;
 	}
-  }
-  
-  @media screen and (max-width: 380px) {
-	.footer {
-	  padding: 0.5rem;
-	}
-  
-	.control-list .icon_click_area {
-	  width: 3rem;
-	  height: 3rem;
-	}
-  
-	.icon_click_area i {
-	  font-size: 1.4rem;
-	}
-  }
+}
 
 /* CHAT SETTINGS */
 
@@ -984,7 +951,6 @@ video#presentation {
 .stun-minimal-appspace .chat-settings-preview-section {
 	width: unset;
 }
-
 
 .chat-settings-join-section {
 	display: flex;
@@ -1067,7 +1033,6 @@ video#presentation {
 	color: var(--saito-secondary);
 }
 
-
 .stun-input-settings {
 	padding: 1rem;
 	border: 0px solid var(--saito-border-color);
@@ -1076,7 +1041,6 @@ video#presentation {
 	flex-direction: column;
 	gap: 1rem;
 }
-
 
 .stun-input-settings select {
 	background-color: var(--saito-background-color);
@@ -1156,27 +1120,23 @@ video#presentation {
 		margin-right: 0.5rem;
 	}
 
-  
-  /* .video-box-container-large video {
+	/* .video-box-container-large video {
     height: 100%;
     width: auto;
   } */
-
 
 	/* .video-box-container-large video {
 		height: 100%;
 		width: auto;
 	} */
 
-	.video-box-container-large>#connection-message {
+	.video-box-container-large > #connection-message {
 		width: 100%;
 	}
 
-	.video-box-container-large>#connection-message p {
+	.video-box-container-large > #connection-message p {
 		font-size: 2rem;
 	}
-
-
 
 	.presentation,
 	.expanded-video {
@@ -1185,8 +1145,6 @@ video#presentation {
 		min-width: 100%;
 	}
 }
-
-
 
 @keyframes pulsate {
 	0% {
