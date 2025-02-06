@@ -11,6 +11,7 @@ class PokerQueue {
 	startRound() {
 		this.updateLog('===============');
 		this.updateLog('Round: ' + this.game.state.round);
+		console.log(JSON.parse(JSON.stringify(this.game.state)));
 
 		for (let i = 0; i < this.game.players.length; i++) {
 			this.updateLog(
@@ -109,6 +110,7 @@ class PokerQueue {
 					this.game.state.player_pot[i] = 0;
 					this.game.stats[this.game.players[i]].hands++;
 				}
+
 
 				this.pot.activate();
 				this.stats.update();

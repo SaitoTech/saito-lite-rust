@@ -330,11 +330,17 @@ Useful declarations for game stats
 
 
 .saito-modal-menu-option .option-keyword {
-  display: flex;
+  display: grid;
   gap: 1rem;
+  grid-template-columns: max-content min-content 1fr;
+  margin: 0;
 }
 .saito-modal-menu-option span.option-explanation {
   font-size: 1.6rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
 }
 
 

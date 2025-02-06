@@ -685,7 +685,6 @@ class Arcade extends ModTemplate {
 			//for (let i = 0; i < peers.length; i++) {
 			//	console.log(peers[i].publicKey);
 			//}
-			console.log(this.games);
 
 			for (let key in this.games) {
 				for (let g of this.games[key]) {

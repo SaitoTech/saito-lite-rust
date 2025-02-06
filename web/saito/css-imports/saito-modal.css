@@ -411,6 +411,9 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 @media only screen and (max-width: 768px) {
+  .saito-modal-menu-option{
+    margin: 0 1rem;
+  }
   .saito-modal-menu-option>i {
     font-size: 2.2rem;
   }
@@ -425,6 +428,7 @@ This alows for a header with a header with title to be added without extra CSS
   }
   .saito-modal-menu-option {
     margin: 0;
+    padding: 1.5rem 1rem;
   }
 }
 
