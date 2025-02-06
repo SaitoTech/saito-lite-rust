@@ -68,6 +68,26 @@ class TweetManager {
 						// about not having enough history available
 						//
 						//////////////////////////////////////////////////
+					
+
+						if (this.mode === "profile"){
+							this.intersectionObserver.disconnect();
+							this.showLoader();
+
+							this.loadProfile((txs) => {
+								if (this.mode !== 'profile') {
+									return;
+								}
+
+								this.hideLoader();
+
+								// Sort txs into posts/replies/retweets...
+								this.filterAndRenderProfile(txs);
+
+								this.profile.render();
+							});
+
+						}
 					}
 				});
 			},
@@ -342,6 +362,10 @@ class TweetManager {
 
 		this.profile.render();
 
+		for (let peer of this.mod.peers){
+			peer.profile_ts = new Date().getTime();
+		}
+
 		this.loadProfile((txs) => {
 			if (this.mode !== 'profile') {
 				return;
@@ -400,7 +424,8 @@ class TweetManager {
 				{
 					field1: 'RedSquare',
 					field2: this.profile.publicKey,
-					limit: 100
+					limit: 100,
+					created_earlier_than: peer.profile_ts
 				},
 				(txs) => {
 					if (mycallback) {
@@ -414,6 +439,11 @@ class TweetManager {
 				    for (let z = 0; z < txs.length; z++) {
       					txs[z].decryptMessage(this.app);
       					this.mod.addTweet(txs[z], `${peer.publicKey}-profile`);
+      					peer.profile_ts = txs[z]?.timestamp;
+      				}
+
+      				if (txs.length == 100) {
+      					this.intersectionObserver.observe(document.getElementById('intersection-observer-trigger'));
       				}
 
 					if (peer.peer !== 'localhost') {

@@ -614,7 +614,7 @@ class RedSquare extends ModTemplate {
         publicKey: publicKey,
         tweets_earliest_ts: new Date().getTime(),
         tweets_latest_ts: 0,
-        tweets_limit: tweet_limit
+        tweets_limit: tweet_limit,
       });
     } else {
       this.peers[peer_idx].peer = peer;
