@@ -165,7 +165,6 @@
   height: calc(100% - 2px);
   width: 0%;
   background-color: var(--saito-primary);
-  /*z-index: -1;*/
 }
 
 .saito-file-transfer.received .file-transfer-progress{
@@ -175,9 +174,11 @@
 .saito-file-transfer i {
   font-size: 4rem;
   grid-row: 1 / span 2;
+  z-index: 1;
 }
 
 .saito-file-transfer .file-name, .saito-file-transfer .file-size {
+  z-index: 1;
 }
 
 .saito-file-uploader.needs-file {
