@@ -1,7 +1,7 @@
 .stun-overlay-container {
 	z-index: 100;
 	width: 100vw;
-	height: 100vh;
+	height: calc(100 * var(--saito-vh));
 	position: fixed;
 	bottom: 0;
 	left: 0;
@@ -178,9 +178,11 @@
 .stun-chatbox main {
 	height: 100%;
 	width: 100%;
+	max-width: min(100vw, 2560px);
 	display: grid;
+	margin: 0 auto;
 	grid-template-rows: calc(100% - 150px) 150px;
-	max-height: 100vh;
+	max-height: calc(100 * var(--saito-vh));
 }
 
 .stun-chatbox .heading {
@@ -190,7 +192,7 @@
 .stun-chatbox .video-container-large {
 	/*width: 97%; Why!!?? */
 	height: 100%;
-	max-height: 85vh;
+	max-height: calc(85 * var(--saito-vh));
 	transition: all 0.5s ease;
 	position: relative;
 	padding: 1rem;
@@ -212,7 +214,7 @@
 .expanded-video {
 	resize: horizontal;
 	overflow: auto;
-	max-height: calc(100vh - 13rem);
+	max-height: calc(85 * var(--saito-vh));
 	min-width: 50vw;
 	max-width: 85vw;
 	width: 75vw;
@@ -222,7 +224,7 @@
 .side-videos {
 	resize: both;
 	width: 100%;
-	max-height: 85vh;
+	max-height: calc(85 * var(--saito-vh));
 	box-sizing: border-box;
 	gap: 1rem;
 	transition: all 0.5s ease;
@@ -483,7 +485,7 @@ video#local {
 	height: 100%;
 	max-width: 100%;
 	object-fit: cover;
-	max-height: 85vh;
+	max-height: calc(85 * var(--saito-vh));
 	z-index: 2;
 	border-radius: inherit;
 	border: none;
@@ -819,17 +821,8 @@ video#presentation {
 	color: var(--saito-red);
 }
 
+
 @media screen and (min-width: 2560px) {
-	.stun-chatbox main {
-		max-width: 2560px;
-		margin: 0 auto;
-		height: 100vh;
-	}
-
-	.video-container-large {
-		max-height: calc(100vh - 180px);
-	}
-
 	.footer {
 		padding: 2rem;
 		min-height: 120px;
