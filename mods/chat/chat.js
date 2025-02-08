@@ -262,6 +262,10 @@ class Chat extends ModTemplate {
         console.log('Chat: onPeerServiceUp', service.service);
       }
 
+      this.loading = 0;
+
+      /* We shouldn't need to fall back to archive to retrieve offline messages anymore... maybe
+
       this.loading = this.groups.length;
 
       for (let group of this.groups) {
@@ -287,7 +291,7 @@ class Chat extends ModTemplate {
             }
           );
         }
-      }
+      }*/
     }
 
     //
@@ -402,12 +406,16 @@ class Chat extends ModTemplate {
       let now = new Date().getTime();
 
       for (let group of this.groups) {
-        
+        /*
+        -- Video call/limbo uses the server as a member
+        -- games address the players, but add a flag when creating the group
+        */
+
         if (group.name !== this.communityGroupName) {
           //
           // Not the community group but using the chat server, clear these out after 1 day by default
           //
-          if (group.members.includes(peer.publicKey)){
+          if (group.members.includes(peer.publicKey) || group?.temporary){
 
             let last_update = group?.last_update || 0;
 
@@ -552,7 +560,7 @@ class Chat extends ModTemplate {
               text: 'Chat',
               icon: 'fas fa-comments',
               callback: function (app, id) {
-                window.location = '/chat';
+                navigateWindow('/chat');
               }
             }
           ];
@@ -746,7 +754,8 @@ class Chat extends ModTemplate {
       members: this.communityGroup.members, //general chat services host key
       name,
       txs: [],
-      unread: 0
+      unread: 0,
+      temporary: true
       //
       // USE A TARGET Container if the chat box is supposed to show up embedded within the UI
       // Don't include if you want it to be just a chat popup....
@@ -1636,7 +1645,7 @@ class Chat extends ModTemplate {
       if (tx.isFrom(this.publicKey)) {
         for (let i = 0; i < tx.to.length; i++) {
           let key = tx.to[i].publicKey;
-          if (this.app.modules.moderateAddress(key) == -1) {
+          if (this.app.modules.moderateAddress(key) == -1 && !this.communityGroup.members.includes(key)) {
             let new_message = `<div class="saito-chat-notice">
 							<span class="saito-mention saito-address" data-id="${key}">${this.app.keychain.returnUsername(
               key
@@ -2477,10 +2486,13 @@ class Chat extends ModTemplate {
 
         mod_self.social.url = reqBaseURL + encodeURI(mod_self.returnSlug());
 
-        res.setHeader('Content-type', 'text/html');
-        res.charset = 'UTF-8';
-        res.send(HomePage(app, mod_self, app.build_number, mod_self.social));
-        return;
+	if (!res.finished) {
+        	res.setHeader('Content-type', 'text/html');
+        	res.charset = 'UTF-8';
+        	return res.send(HomePage(app, mod_self, app.build_number, mod_self.social));
+	}
+	return;
+
       }
     );
 

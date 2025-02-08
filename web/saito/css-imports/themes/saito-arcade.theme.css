@@ -56,7 +56,6 @@ html[data-theme="arcade"] {
   /*MAIN BACKGROUND COLOR SECTION*/
   --background-color-main: #180c24;
   --background-color-light: #140a1e;
-  --background-color-shim-normal: #0009;
   /*FONTS SECTION*/
   /*quick settings*/
   --font-color-primary: var(--color-tint-primary);
@@ -104,7 +103,6 @@ html[data-theme="arcade"] {
   --font-color-module-menu-header: var(--font-color-primary);
   --font-color-overlay-form-header: var(--font-color-primary);
   --font-color-overlay-form-text: var(--font-color-primary);
-  --font-color-overlay-subform-recover: var(--font-color-primary);
   --font-color-button-wallet-control: var(--font-color-primary);
   /* BORDER THICKNESS */
   --border-thickness-button-primary: var(--border-thickness-thin);

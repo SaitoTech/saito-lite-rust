@@ -1,0 +1,13 @@
+.wait-cursor, .wait-cursor * { cursor: wait; }
+
+.normal-cursor .default     { cursor: default;     }
+.normal-cursor .crosshair   { cursor: crosshair;   }
+.normal-cursor .grab        { cursor: grab;        }
+.normal-cursor .ew-resize   { cursor: ew-resize;   }
+.normal-cursor .ns-resize   { cursor: ns-resize;   }
+.normal-cursor .nwse-resize { cursor: nwse-resize; }
+.normal-cursor .nesw-resize { cursor: nesw-resize; }
+.normal-cursor .copy        { cursor: copy;        }
+.normal-cursor .pointer     { cursor: pointer;     }
+.normal-cursor .not-allowed { cursor: not-allowed; }
+.normal-cursor .grabbing    { cursor: grabbing;    }

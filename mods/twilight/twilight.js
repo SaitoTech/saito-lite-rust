@@ -107,10 +107,10 @@ class Twilight extends GameTemplate {
               There are no cards to display
               </div>`;
     }
-    this.overlay.show(html);
-    $(".transparent-card-overlay").onclick = (e) => {
-      this.overlay.hide();
-    }
+
+    let cc_status = this.overlay.clickToClose;
+    this.overlay.clickToClose = true;
+    this.overlay.show(html, ()=> { this.overlay.clickToClose = cc_status;});
   }
 
 
@@ -204,18 +204,14 @@ class Twilight extends GameTemplate {
         twilight_self.displayModal("Card Menu options changed to text-mode. Please reload.");
         twilight_self.interface = 0;
         twilight_self.saveGamePreference("interface", 0);
-	      setTimeout(function() {
-								window.location.reload();
-					 }, 1000);
+	      reloadWindow(1000);
       }
 
       if (action2 === "graphics") {
         twilight_self.displayModal("Card Menu options changed to graphical mode. Please reload.");
         twilight_self.interface = 1;
         twilight_self.saveGamePreference("interface", 1);
-      	setTimeout(function() { 
-								window.location.reload();
-							;	}, 1000);
+        reloadWindow(1000);
       }
 
     });
@@ -224,11 +220,13 @@ class Twilight extends GameTemplate {
 
   async render(app) {
 
+
     if (this.browser_active == 0) { return; }
 
     if (this.initialize_game_run) {
       return;
     }
+
 
     if (this.game_html_injected != 1) {
       await this.injectGameHTML(htmlTemplate());
@@ -287,9 +285,7 @@ class Twilight extends GameTemplate {
           game_mod.displayModal("Game Settings", "Will confirm moves before committing");
           game_mod.confirm_moves = 1;
           game_mod.saveGamePreference('twilight_expert_mode', 0);
-          setTimeout(function() { 
-								window.location.reload();
-						 }, 1000);
+          reloadWindow(1000);
         }else{
           game_mod.menu.hideSubMenus();
         }
@@ -305,9 +301,7 @@ class Twilight extends GameTemplate {
           game_mod.displayModal("Game Settings", "No need to confirm moves");
           game_mod.confirm_moves = 0;
           game_mod.saveGamePreference('twilight_expert_mode', 1);
-          setTimeout(function() { 
-								window.location.reload();
-						 }, 1000);
+          reloadWindow(1000);
         }else{
           game_mod.menu.hideSubMenus();
         }
@@ -377,7 +371,6 @@ class Twilight extends GameTemplate {
       }
     });
 
-
     this.menu.addSubMenuOption("game-game",{
       text: "Language",
       id: "game-language",
@@ -392,9 +385,7 @@ class Twilight extends GameTemplate {
         game_mod.displayModal("Language Settings", "Card settings changed to English");
         game_mod.lang = "en";
         game_mod.saveGamePreference("lang", "en");
-        setTimeout(function() { 
-								window.location.reload();
- }, 1000);
+        reloadWindow(1000);
       }
     });
     this.menu.addSubMenuOption("game-language", {
@@ -404,9 +395,7 @@ class Twilight extends GameTemplate {
         game_mod.displayModal("语言设定", "卡牌语言改成简体中文");
         game_mod.lang = "zh";
         game_mod.saveGamePreference("lang", "zh");
-        setTimeout(function() {
-								window.location.reload();
-			 }, 1000);
+        reloadWindow(1000);
       }
     });
     this.menu.addSubMenuOption("game-language", {
@@ -416,9 +405,7 @@ class Twilight extends GameTemplate {
         game_mod.displayModal("");
         game_mod.lang = "ru";
         game_mod.saveGamePreference("lang", "ru");
-        setTimeout(function() {  
-								window.location.reload();
-	 }, 1000);
+        reloadWindow(1000);
       }
     });
     this.menu.addSubMenuOption("game-language", {
@@ -428,9 +415,7 @@ class Twilight extends GameTemplate {
         game_mod.displayModal("");
         game_mod.lang = "es";
         game_mod.saveGamePreference("lang", "es");
-        setTimeout(function() {
-								window.location.reload();
-		 }, 1000);
+        reloadWindow(1000);
       }
     });
 
@@ -445,6 +430,7 @@ class Twilight extends GameTemplate {
     });
 
     this.menu.addChatMenu();
+
     this.menu.render();
 
     this.log.render();
@@ -458,7 +444,6 @@ class Twilight extends GameTemplate {
     this.cardbox.addCardType("card", "select", this.cardbox_callback);
 
     try {
-
       if (app.browser.isMobileBrowser(navigator.userAgent)) {
         this.hud.card_width = 110;
         this.cardbox.skip_card_prompt = 0;
@@ -982,16 +967,22 @@ console.log("error here 222");
       let scoring = twilight_self.calculateScoring(region, 1);
 
       let total_vp = scoring.us.vp - scoring.ussr.vp;
-      let vp_color = "white";
+      let vp_color = "#FFF";
 
-      if (total_vp > 0) { vp_color = "blue" }
-      if (total_vp < 0) { vp_color = "red" }
+      if (total_vp > 0) { vp_color = "#00F" }
+      if (total_vp < 0) { vp_color = "#F00" }
+      
       if (total_vp > (twilight_self.game.vp_needed) || total_vp < (twilight_self.game.vp_needed*-1)) { total_vp = "WIN" }
+      if (total_vp == "WIN" || Math.abs(total_vp) > 15){
+        vp_color += "F";
+      }else {
+        vp_color += Math.abs(total_vp).toString(16).toUpperCase();
+      }
+
+      $(`.display_vp#${region}`).html(`VP ${total_vp}`);
+      $(`.display_vp#${region}`).css("background", vp_color);
 
       $(`.display_card#${region}`).show();
-      $(`.display_vp#${region}`).html(
-        `VP <div style="color:${vp_color}">&nbsp${total_vp}</div>`
-      );
     }).mouseout(function() {
       let region = this.id;
       $(`.display_card#${region}`).hide();
@@ -1605,6 +1596,17 @@ console.log("LATEST MOVE: " + mv);
 
     //
     // Che
+    if (mv[0] == "clearcheclicktargets") {
+
+      try {   
+        $(".easterneurope").removeClass("easterneurope");
+      } catch (err) {}      
+
+      this.game.queue.splice(qe, 1);
+      return 1;
+
+    }
+
     if (mv[0] == "checoup") {
 
       let target1 = mv[2];
@@ -1661,6 +1663,7 @@ console.log("LATEST MOVE: " + mv);
               $(".easterneurope").on('click', function() {
                 twilight_self.playerFinishedPlacingInfluence("ussr");
                 let c = $(this).attr('id');
+                twilight_self.addMove("clearcheclicktargets");
                 twilight_self.addMove("coup\tussr\t"+c+"\t"+couppower);
                 twilight_self.addMove("NOTIFY\tChe launches coup in "+twilight_self.countries[c].name);
                 twilight_self.endTurn();
@@ -2626,7 +2629,15 @@ console.log("DESC: " + JSON.stringify(discarded_cards));
 
     if (mv[0] === "event") {
 
-      if (this.game.deck[0].cards[mv[2]] != undefined) { this.game.state.event_name = this.cardToText(mv[2]); }
+      if (this.game.deck[0].cards[mv[2]] != undefined) { 
+        if (mv[1] === "us") {
+	  this.game.state.stats.us_events_ops += parseInt(this.game.deck[0].cards[mv[2]].ops);
+        }
+        if (mv[1] === "ussr") {
+	  this.game.state.stats.ussr_events_ops += parseInt(this.game.deck[0].cards[mv[2]].ops);
+        }
+	this.game.state.event_name = this.cardToText(mv[2]);
+      }
       this.updateLog(mv[1].toUpperCase() + ` triggers ${this.game.state.event_name} as an event`);
 
       shd_continue = this.playEvent(mv[1], mv[2]);
@@ -3339,6 +3350,8 @@ try {
           this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_scorings = this.game.state.stats.ussr_scorings;
           this.game.state.stats.round[this.game.state.stats.round.length-1].us_ops = this.game.state.stats.us_ops;
           this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_ops = this.game.state.stats.ussr_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].us_events_ops = this.game.state.stats.us_events_ops;
+          this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_events_ops = this.game.state.stats.ussr_events_ops;
           this.game.state.stats.round[this.game.state.stats.round.length-1].us_modified_ops = this.game.state.stats.us_modified_ops;
           this.game.state.stats.round[this.game.state.stats.round.length-1].ussr_modified_ops = this.game.state.stats.ussr_modified_ops;
           this.game.state.stats.round[this.game.state.stats.round.length-1].us_us_ops = this.game.state.stats.us_ops;
@@ -3879,7 +3892,6 @@ console.log("TURN IS: " + this.game.state.turn);
 
      if (this.game.player === 0) {
       this.updateLog("Processing Headline Cards...");
-console.log("processing headline cards - TEST");
       return;
     }
 
@@ -4357,7 +4369,15 @@ async playerTurnHeadlineSelected(card, player) {
 
   playerTurn(selected_card=null) {
 
+
     if (this.browser_active == 0) { return; }
+
+    try {
+      $(".easterneurope").removeClass("easterneurope");
+    } catch (err) {
+      // sanity for CHE
+    }
+
 
     let twilight_self = this;
 
@@ -5741,18 +5761,28 @@ console.log("REVERTING: " + twilight_self.game.queue[i]);
 
       twilight_self.addMove("resolve\tplacement");
 
-      if (this.game.player == 1) { //USSR
-   
-this.game_help.render({
-    title : "Standard USSR Placement" ,
-    text : "A strong opening protects your critical battleground countries (East Germany and Poland) and uses your final OP to secure access to Italy and Greece",
-    img : "/twilight/img/backgrounds/ussr_placement.png" ,
-    color: "#d2242a" ,
-    line1 : "where",
-    line2 : "to place?",
-    fontsize : "2.1rem" ,
-}); 
+      //
+      // HACK intended to prevent the double-placement bug, which is possible
+      // in some games for some unknown reason -- the first placement happens
+      // 2x.
+      //
+      if (twilight_self.game.state.placement >= 1) { 
+	twilight_self.endTurn();
+	return;
+      }
 
+      if (this.game.player == 1) { //USSR
+
+	this.game_help.render({
+	    title : "Standard USSR Placement" ,
+	    text : "A strong opening protects your critical battleground countries (East Germany and Poland) and uses your final OP to secure access to Italy and Greece",
+	    img : "/twilight/img/backgrounds/ussr_placement.png" ,
+	    color: "#d2242a" ,
+	    line1 : "where",
+	    line2 : "to place?",
+	    fontsize : "2.1rem" ,
+	}); 
+	
         this.updateStatusAndListCards(`You are the USSR. Place six additional influence in Eastern Europe.`);
 
         var placeable = ["finland", "eastgermany", "poland", "austria", "czechoslovakia", "hungary", "romania", "yugoslavia", "bulgaria"];
@@ -5778,7 +5808,7 @@ this.game_help.render({
               twilight_self.playerFinishedPlacingInfluence();
               twilight_self.game.state.placement = 1;
               twilight_self.endTurn();
-            }else{
+            } else {
               twilight_self.updateStatusAndListCards(`You are the USSR. Place ${ops_to_place} additional influence in Eastern Europe.`);
             }
           } else { //Should be impossible to hit here
@@ -5787,18 +5817,17 @@ this.game_help.render({
         });
 
         return;
-      }else{ //US
+      } else { //US
 
-this.game_help.render({
-    title : "Standard US Placement" ,
-    text : "Controlling Italy and West Germany protects France. Consider using your bonus to protect Iran and your access to Asia from the Middle East",
-    img : "/twilight/img/backgrounds/us_placement.png" ,
-    color: "#008fd5" ,
-    line1 : "where",
-    line2 : "to place?",
-    fontsize : "2.1rem" ,
-}); 
-
+	this.game_help.render({
+	    title : "Standard US Placement" ,
+	    text : "Controlling Italy and West Germany protects France. Consider using your bonus to protect Iran and your access to Asia from the Middle East",
+	    img : "/twilight/img/backgrounds/us_placement.png" ,
+	    color: "#008fd5" ,
+	    line1 : "where",
+	    line2 : "to place?",
+	    fontsize : "2.1rem" ,
+	}); 
 
         this.updateStatusAndListCards(`You are the US. Place seven additional influence in Western Europe.`)
 
@@ -5844,6 +5873,16 @@ this.game_help.render({
 
     twilight_self.addMove("resolve\tplacement_bonus");
 
+    //
+    // HACK intended to prevent the double-placement bug, which is possible
+    // in some games for some unknown reason -- the first placement happens
+    // 2x.
+    //
+    if (twilight_self.game.state.placement >= 2) { 
+      twilight_self.endTurn();
+      return;
+    }
+
     if (this.game.player == 1) { //USSR
 
       this.updateStatusAndListCards(`You are the USSR. Place ${bonus} additional influence in countries with existing Soviet influence.`);
@@ -5865,7 +5904,7 @@ this.game_help.render({
 
             if (bonus == 0) {
               twilight_self.playerFinishedPlacingInfluence();
-              twilight_self.game.state.placement = 1;
+              twilight_self.game.state.placement = 2;
               twilight_self.endTurn();
             }
           });
@@ -5894,7 +5933,7 @@ this.game_help.render({
 
         if (bonus == 0) {
           twilight_self.playerFinishedPlacingInfluence();
-          twilight_self.game.state.placement = 1;
+          twilight_self.game.state.placement = 2;
           twilight_self.endTurn();
         }else{
           twilight_self.updateStatusAndListCards(`You are the US. Place ${bonus} additional influence in countries with existing American influence.`);
@@ -6186,11 +6225,6 @@ this.game_help.render({
   }
 
   playerFinishedPlacingInfluence(player, mycallback=null) {
-
-    /*for (var i in this.countries) {
-      let divname      = '#'+i;
-      $(divname).off();
-    }*/
     $(".country").off();
     $(".easterneurope").removeClass("easterneurope");
     $(".westerneurope").removeClass("westerneurope");
@@ -6951,6 +6985,7 @@ this.game_help.render({
 
     state.dealt = 0;
     state.back_button_cancelled = 0;
+    state.r1_placement = 0;
     state.placement = 0;
     state.headline  = 0;
     state.headline_hash = "";
@@ -7117,6 +7152,8 @@ this.game_help.render({
     state.stats.ussr_ops_spaced = 0;
     state.stats.us_modified_ops = 0;
     state.stats.ussr_modified_ops = 0;
+    state.stats.us_events_ops = 0;
+    state.stats.ussr_events_ops = 0;
     state.stats.us_coups = [];
     state.stats.ussr_coups = [];
     state.stats.round = [];
@@ -14232,11 +14269,11 @@ console.log("total countries: " + total_countries);
             placeable.push("norway");
             placeable.push("sweden");
             placeable.push("finland");
-            this.updateStatus("US is playing Special Relationship. Place 2 OPS anywhere in Western Europe.");
+            this.updateStatus("US is playing Special Relationship. Add 2 Influence to any country in Western Europe.");
 
           } else {
 
-            this.updateStatus("US is playing Special Relationship. Place 1 OP adjacent to the UK.");
+            this.updateStatus("US is playing Special Relationship. Add 1 Influence to any country adjacent to the UK.");
             placeable.push("canada");
             placeable.push("france");
             placeable.push("norway");

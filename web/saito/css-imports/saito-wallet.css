@@ -415,6 +415,10 @@
   font-weight: bold;
 }
 
+.withdraw.invalid, .deposit.invalid {
+  color: #cab202;
+}
+
 #mixin-balance-container .mixin-item {
   width: calc(100% * (1/4));
 }
@@ -688,7 +692,15 @@
   display: none;
 }
 
+.withdraw-fee-cont.egld {
+  display: none!important;
+}
+
 .withdraw-external-fee-span.saito {
+  display: none;
+}
+
+.withdraw-fee-info-icon.egld {
   display: none;
 }
 

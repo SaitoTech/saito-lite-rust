@@ -183,7 +183,7 @@
   max-height: 100vh;
   min-width: 30rem;
   min-height: 20rem;
-  box-shadow: var(--shadow-chat-popup);
+  box-shadow: var(--shadow-draggable-popup);
 
   /*
   making overflow hiddent for saito mention list
@@ -347,7 +347,6 @@
   color: var(--font-color-button-hover-chat-popup-header);
 }
 
-}
 
 .chat-action-item:hover i, .chat-action-menu:hover i {
   
@@ -546,6 +545,15 @@
   padding: 0.25rem;
   word-wrap: anywhere;
   white-space: normal;
+}
+
+.chat-message-line p {
+  overflow: hidden;
+  height: min-content;
+}
+
+.chat-message-line li {
+  margin-left: 2rem;
 }
 
 .saito-userline-reply {
@@ -861,6 +869,7 @@
     max-height: -webkit-fill-available;
     max-width: -webkit-fill-available;
     z-index: 15;
+    border-radius: unset;
   }
 
   .chat-manager-overlay .chat-manager {

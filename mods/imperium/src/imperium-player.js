@@ -3283,6 +3283,8 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
       player_build.warsuns = 0;
       imperium_self.production_overlay.reset();
       return;
+    } else {
+      imperium_self.production_overlay.update(stuff_to_build, calculated_total_cost);
     }
 
     //
@@ -4126,6 +4128,8 @@ console.log(JSON.stringify(array_of_cards));
       $(divid).css('opacity', '0.2');
       selected_cost += parseInt(imperium_self.game.planets[array_of_cards[idx]].resources);
     }
+
+console.log(cost + " <= " + selected_cost);
 
     if (cost <= selected_cost) { 
       $('.cardchoice , .textchoice').off();
@@ -5149,9 +5153,7 @@ console.log("DONE!");
       //
       if (id == "clear") {
         salert("To change movement options, please reload!");
-        setTimeout(()=> {
-					window.location.reload(true);
-				}, 300)
+        reloadWindow(300);
         return;
       }
 
@@ -5598,9 +5600,7 @@ playerSelectInfantryToLand(sector) {
     //
     if (id == "clear") {
       salert("To change movement options, just reload!");
-      setTimeout(()=> {
-        window.location.reload(true);
-      }, 300)
+      reloadWindow(300);
       return;
     }
 
@@ -5942,11 +5942,25 @@ playerActivateSystem() {
   imperium_self.updateStatus(html);
 
   $('.sector').off();
+  $('.sector').on('mouseover', function (e) {
+    let id = e.currentTarget.id;
+    let s = document.getElementById(`hex_bg_${id}`);
+    s.style.filter = "brightness(1.5)";
+  });
+  $('.sector').on('mouseout', function (e) {
+    let id = e.currentTarget.id;
+    let s = document.getElementById(`hex_bg_${id}`);
+    s.style.filter = "brightness(1)";
+  });
   $('.sector').on('mousedown', function (e) {
     xpos = e.clientX;
     ypos = e.clientY;
   });
   $('.sector').on('mouseup', function (e) {
+
+    let id = e.currentTarget.id;
+    let s = document.getElementById(`hex_bg_${id}`);
+    s.style.filter = "brightness(1)";
 
     if (Math.abs(xpos-e.clientX) > 4) { return; }
     if (Math.abs(ypos-e.clientY) > 4) { return; }

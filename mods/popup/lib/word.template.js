@@ -1,7 +1,9 @@
 module.exports = (lesson, word, popup_self) => {
 
     let as = "";
-    if (word.audio_source) { as = word.audio_source; }
+    let play_button_visible = "visibility:hidden";
+    if (word.audio_source) { as = word.audio_source; play_button_visible = ""; }
+    if (as != "") { as = `http://popupchinese.com/data/${lesson.id}/mp3/vocab/${as}`; }
 
     let df1 = "";
     let df2 = "";
@@ -25,7 +27,7 @@ module.exports = (lesson, word, popup_self) => {
 
     return `
     	<tr class="word">
-    	  <td class="player"><img src="/popup/img/buttons/play_button.gif" onclick="playWordAudio('${as}',this);"></td>
+    	  <td class="player" style="${play_button_visible}"><img src="/popup/img/buttons/play_button.gif" onclick="playWordAudio('${as}',this);"></td>
     	  <td class="lesson_word_field4 field4" style="display:${df4}">${word.field4}</td>
     	  <td class="lesson_word_field3 field3" style="display:${df3}">${word.field3}</td>
     	  <td class="lesson_word_field1 field1" style="display:${df1}">${word.field1}</td>

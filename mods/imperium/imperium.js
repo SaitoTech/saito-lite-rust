@@ -28,6 +28,7 @@ const SpaceCombatOverlay = require('./lib/overlays/space-combat');
 const GroundCombatOverlay = require('./lib/overlays/ground-combat');
 const BombardmentOverlay = require('./lib/overlays/bombardment');
 const AntiFighterBarrageOverlay = require('./lib/overlays/anti-fighter-barrage');
+const ZoomOverlay = require('./lib/overlays/zoom');
 const UnitTemplate = require('./lib/unit.template');
 const Unit = require('./lib/unit');
 const FactionBar = require('./lib/factionbar');
@@ -62,6 +63,7 @@ class Imperium extends GameTemplate {
     //
     //this.rules_overlay = new RulesOverlay(this.app, this);
     this.faction_sheet_overlay = new FactionSheetOverlay(this.app, this);
+    this.zoom_overlay = new ZoomOverlay(this.app, this);
     this.strategy_card_selection_overlay = new StrategyCardSelectionOverlay(this.app, this);
     this.strategy_card_overlay = new StrategyCardOverlay(this.app, this);
     this.combat_overlay = new CombatOverlay(this.app, this);
@@ -2188,15 +2190,15 @@ this.importTech("faction2-brilliant", {
                 let id = $(this).attr("id");
 
                 if (id === "no") {
-                  imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
-                  imperium_self.addPublickeyConfirm(this.publicKey, 1);
+                  imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+                  imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
                   imperium_self.endTurn();
                   return 0;
                 }
 
                 imperium_self.playerResearchTechnology(function (tech) {
-                  imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
-                  imperium_self.addPublickeyConfirm(this.publicKey, 1);
+                  imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+                  imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
                   imperium_self.addMove("purchase\t" + player + "\ttechnology\t" + tech);
 
                   //
@@ -4997,7 +4999,7 @@ this.importStrategyCard("politics", {
       // pick the speaker
       //
       let factions = imperium_self.returnFactions();
-      let html = "Make which player the speaker? <ul>";
+      let html = `<div class="status-message">Make which player the speaker?</div><ul>`;
       for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
         html +=
           '<li class="option" id="' +
@@ -5041,7 +5043,7 @@ this.importStrategyCard("politics", {
       ) {
         imperium_self.playerBuyActionCards(2);
       } else {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
         imperium_self.addPublickeyConfirm(this.publicKey, 1);
         imperium_self.endTurn();
       }
@@ -5259,7 +5261,7 @@ this.importStrategyCard("trade", {
       imperium_self.addMove("purchase\t" + imperium_self.game.player + "\tcommodities\t" + imperium_self.game.state.players_info[imperium_self.game.player - 1].commodity_limit);
 
       let factions = imperium_self.returnFactions();
-      let html = '<p>You will receive 3 trade goods and ' + imperium_self.game.state.players_info[imperium_self.game.player - 1].commodity_limit + ' commodities. You may choose to replenish the commodities of any other players: </p><ul>';
+      let html = '<p class="status-message">Replenish commodities for any other player?</p><ul>';
       for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
         if (i != imperium_self.game.player - 1) {
           html += '<li class="option" id="' + i + '">' + factions[imperium_self.game.state.players_info[i].faction].name + '</li>';
@@ -5857,8 +5859,8 @@ this.importStrategyCard("imperial", {
       ) {
         imperium_self.playerBuySecretObjective(2);
       } else {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
-        imperium_self.addPublickeyConfirm(this.publicKey, 1);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
         imperium_self.endTurn();
       }
     }
@@ -5883,8 +5885,8 @@ this.importStrategyCard("imperial", {
           imperium_self,
           function (x, vp, objective) {
             imperium_self.updateStatus("scoring completed");
-            imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
-            imperium_self.addPublickeyConfirm(this.publicKey, 1);
+            imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+            imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
 
             if (my_secret_vp > 0) {
               if (imperium_self.secret_objectives[my_secret_objective] != undefined) {
@@ -11136,7 +11138,7 @@ console.log("qe: " + qe);
             imperium_self.addMove("NOTIFY\tdealing two action cards to "+imperium_self.returnFactionNickname(imperium_self.game.player));
 
 	    // and change speaker
-	    let html = 'Make which player the speaker? <ul>';
+	    let html = '<div class="status-message">Make which player the speaker?</div><ul>';
             for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
               html += '<li class="textchoice" id="'+i+'">' + factions[imperium_self.game.state.players_info[i].faction].name + '</li>';
             }
@@ -14396,18 +14398,12 @@ console.log("#");
 	      }
 	    }
 
-	    let notice = "Players still to move: <ul>";
+	    let notice = "<div class=\"status-message\">Players still to move: </div><ul>";
 	    let am_i_still_to_move = 0;
-console.log("STILL TO MOVE: " + JSON.stringify(still_to_move));
-console.log("PLAYERS: " + JSON.stringify(this.game.players));
 	    for (let i = 0; i < still_to_move.length; i++) {
 	      for (let z = 0; z < this.game.players.length; z++) {
 		if (this.game.players[z] === still_to_move[i]) {
 		  if (this.game.players[z] === this.getPublicKey()) { am_i_still_to_move = 1; }
-console.log("WHO - IDX " + z);
-console.log("WHO - PLAYER " + (z+1));
-console.log("WHO: " + this.game.players[z]);
-console.log("WHO: " + this.returnFaction(z+1));
 	          notice += '<li class="option">'+this.returnFaction((z+1))+'</li>';
 		}
 	      }
@@ -15927,9 +15923,9 @@ if (debugging == 0) {
         this.game.queue.push("playerschoosestrategycards_before");
 
         if (this.game.state.round == 1) {
-          this.game.queue.push("ACKNOWLEDGE\tNEXT: all players select a Strategy Card for Round 1.");
+          this.game.queue.push("ACKNOWLEDGE\tAll players select a Strategy Card for Round 1.");
 	} else {
-          this.game.queue.push(`ACKNOWLEDGE\tNEXT: all players select their strategy card(s) for Round ${this.game.state.round}.`);
+          this.game.queue.push(`ACKNOWLEDGE\tAll players select their strategy card(s) for Round ${this.game.state.round}.`);
 	}
 
         if (this.game.state.round == 1) {
@@ -20514,7 +20510,7 @@ console.log("HGL 1: " + z[i].name);
 returnPlayers(num = 0) {
 
   var players = [];
-  let col = '';
+
   let factions = JSON.parse(JSON.stringify(this.returnFactions()));
 
   for (let i = 0; i < num; i++) {
@@ -23795,6 +23791,8 @@ playerScoreVictoryPoints(imperium_self, mycallback, stage = 0) {
       player_build.warsuns = 0;
       imperium_self.production_overlay.reset();
       return;
+    } else {
+      imperium_self.production_overlay.update(stuff_to_build, calculated_total_cost);
     }
 
     //
@@ -24638,6 +24636,8 @@ console.log(JSON.stringify(array_of_cards));
       $(divid).css('opacity', '0.2');
       selected_cost += parseInt(imperium_self.game.planets[array_of_cards[idx]].resources);
     }
+
+console.log(cost + " <= " + selected_cost);
 
     if (cost <= selected_cost) { 
       $('.cardchoice , .textchoice').off();
@@ -25661,9 +25661,7 @@ console.log("DONE!");
       //
       if (id == "clear") {
         salert("To change movement options, please reload!");
-        setTimeout(()=> {
-					window.location.reload(true);
-				}, 300)
+        reloadWindow(300);
         return;
       }
 
@@ -26110,9 +26108,7 @@ playerSelectInfantryToLand(sector) {
     //
     if (id == "clear") {
       salert("To change movement options, just reload!");
-      setTimeout(()=> {
-        window.location.reload(true);
-      }, 300)
+      reloadWindow(300);
       return;
     }
 
@@ -26454,11 +26450,25 @@ playerActivateSystem() {
   imperium_self.updateStatus(html);
 
   $('.sector').off();
+  $('.sector').on('mouseover', function (e) {
+    let id = e.currentTarget.id;
+    let s = document.getElementById(`hex_bg_${id}`);
+    s.style.filter = "brightness(1.5)";
+  });
+  $('.sector').on('mouseout', function (e) {
+    let id = e.currentTarget.id;
+    let s = document.getElementById(`hex_bg_${id}`);
+    s.style.filter = "brightness(1)";
+  });
   $('.sector').on('mousedown', function (e) {
     xpos = e.clientX;
     ypos = e.clientY;
   });
   $('.sector').on('mouseup', function (e) {
+
+    let id = e.currentTarget.id;
+    let s = document.getElementById(`hex_bg_${id}`);
+    s.style.filter = "brightness(1)";
 
     if (Math.abs(xpos-e.clientX) > 4) { return; }
     if (Math.abs(ypos-e.clientY) > 4) { return; }
@@ -32048,7 +32058,6 @@ returnPlanetInformationHTML(planet) {
     powner = "nowner";
   }
 
-
   let html = '';
 
   if (ionp > 0) {
@@ -32067,7 +32076,6 @@ returnPlanetInformationHTML(planet) {
 //    html += '<div class="planet_tech_label tech_'+this.game.planets[planet].bonus+' bold">'+this.game.planets[planet].bonus+' TECH</div><div></div>';
 //  }
 
-//  if (ponp+sonp+ionp > 0 || this.game.planets[planet].bonus != "") {
   if (ponp+sonp+ionp > 0) {
     html = `<div class="sector_information_planetname ${powner}">${p.name}</div><div class="sector_information_planet_content">` + html + `</div>`;
   } else {
@@ -32209,12 +32217,6 @@ showSector(pid) {
   let sector_name = this.game.board[pid].tile;
   this.showSectorHighlight(sector_name);
 
-//  let hex_space = ".sector_graphics_space_" + pid;
-//  let hex_ground = ".sector_graphics_planet_" + pid;
-//
-//  $(hex_space).fadeOut();
-//  $(hex_ground).fadeIn();
-
 }
 hideSector(pid) {
 
@@ -32222,9 +32224,6 @@ hideSector(pid) {
   this.hideSectorHighlight(sector_name);
 
   let hex_space = ".sector_graphics_space_" + pid;
-//  let hex_ground = ".sector_graphics_planet_" + pid;
-//
-//  $(hex_ground).fadeOut();
   $(hex_space).fadeIn();
 
 }
@@ -32331,8 +32330,9 @@ updateLeaderboard() {
 
   showSectorHighlight(sector) { this.addSectorHighlight(sector); }
   hideSectorHighlight(sector) { this.removeSectorHighlight(sector); }
-  addSectorHighlight(sector) {
+  addSectorHighlight(sector, zoom_overlay=0) {
 
+    let orig_sector = sector;
     if (sector.indexOf("_") > -1) { sector = this.game.board[sector].tile; }
 
     let sys = this.returnSectorAndPlanets(sector);
@@ -32350,7 +32350,12 @@ updateLeaderboard() {
     if (this.game.sectors[sector].planets.length == 0) { return;}
 
     //handle writing for one or two planets
-    var info_tile = document.querySelector("#hex_info_" + sys.s.tile);
+    var info_tile;
+    if (zoom_overlay == 0) {
+      info_tile = document.querySelector("#hex_info_" + sys.s.tile);
+    } else {
+      info_tile = document.querySelector(".gameboard-clone .sector_"+orig_sector+" .hexIn .hexLink .hexInfo");
+    }
 
     let html = '';
 
@@ -32368,11 +32373,15 @@ updateLeaderboard() {
       info_tile.classList.add('two_planet');
     }
 
-    document.querySelector("#hexIn_" + sys.s.tile).classList.add('bi');
+    if (zoom_overlay == 0) {
+      document.querySelector("#hexIn_" + sys.s.tile).classList.add('bi');
+    } else {
+      document.querySelector(".gameboard-clone .sector_"+orig_sector+" .hexIn").classList.add('bi');
+    }
     } catch (err) {}
   }
 
-  removeSectorHighlight(sector) {
+  removeSectorHighlight(sector, zoom_overlay=0) {
     try {
     if (sector.indexOf("planet") == 0 || sector == 'new-byzantium') {
       sector = this.game.planets[sector].sector;
@@ -32382,9 +32391,11 @@ updateLeaderboard() {
     let divname = ".sector_graphics_space_" + sys.s.tile;
     $(divname).css('display', 'all');
 
-    //let divname = "#hex_space_" + sys.s.tile;
-    //$(divname).css('background-color', 'transparent');
-    document.querySelector("#hexIn_" + sys.s.tile).classList.remove('bi');
+    if (zoom_overlay == 0) {
+      document.querySelector("#hexIn_" + sys.s.tile).classList.remove('bi');
+    } else {
+      document.querySelector(".gameboard-clone .sector_"+sector+" .hexIn").classList.remove('bi');
+    }
     } catch (err) {}
   }
 

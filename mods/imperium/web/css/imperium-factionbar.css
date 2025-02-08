@@ -4,6 +4,10 @@
 	margin-top: -0.5rem;
 }
 
+.factionbar .sf-readable {
+	font-size: 1.9rem;
+}
+
 .hud-header {
 	display: flex;
 	flex-direction: rows;

@@ -69,7 +69,7 @@
 	border-left: 3px solid var(--color-primary);
 }
 
- div.overlay-input {
+/* div.overlay-input {
 	position: relative;
     display: flex;
     min-width: 16rem;
@@ -96,4 +96,4 @@ div.overlay-input::after {
 	-o-transition: 0.25s all ease;
 	transition: 0.25s all ease;
 	border-radius: 0 1rem 1rem 0;
-}
+}*/

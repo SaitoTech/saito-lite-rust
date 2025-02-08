@@ -2,12 +2,8 @@ const saito = require("./../../lib/saito/saito");
 const MixinModule = require("./lib/mixinmodule");
 const ModTemplate = require("../../lib/templates/modtemplate");
 const fetch = require("node-fetch");
-const forge = require("node-forge");
 const { v4: uuidv4 } = require("uuid");
-const getUuid = require("uuid-by-string");
 const axios = require("axios");
-const { sharedKey: sharedKey } = require("curve25519-js");
-const LittleEndian = require("int64-buffer");
 const JSON = require("json-bigint");
 const PeerService = require("saito-js/lib/peer_service").default;
 const { MixinApi, getED25519KeyPair, signEd25519PIN, base64RawURLEncode, 
@@ -210,7 +206,7 @@ class Mixin extends ModTemplate {
 
       const { privateKey: spendPrivateKey, publicKey: spendPublicKey, seed: sessionSeed } = getED25519KeyPair();
       
-      const spend_private_key = spendPrivateKey;
+      const spend_private_key = sessionSeed;
       const spend_public_key = spendPublicKey.toString('hex');
       const session_seed = sessionSeed.toString('hex');
     

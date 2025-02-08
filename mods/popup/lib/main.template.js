@@ -1,5 +1,8 @@
-module.exports = () => {
-	return `
+module.exports = (mod) => {
+
+console.log("SHOW VOCAB? " + mod.show_vocab);
+
+	let html = `
 
     <div id="saito-container" class="saito-container">
       <div class="saito-sidebar left">
@@ -17,17 +20,29 @@ module.exports = () => {
                 <i class="fa-solid fa-graduation-cap"></i>
                 <span>Lessons</span>
               </li>
+	`;
 
+	if (mod.show_vocab) {
+
+/***
+<!---
               <li class="popup-notifications redsquare-menu-notifications">
                 <i class="fas fa-bell"></i>
                 <span>Notifications</span>
                 <div class="saito-notification-dot" style="display: none;">0</div>
               </li>
+---->
+***/
 
-              <li class="popup-tools redsquare-menu-profile">
-                <i class="fas fa-user"></i>
-                <span>Tools</span>
-              </li>
+		html += `
+              		<li class="popup-vocab redsquare-menu-profile">
+                		<i class="fas fa-user"></i>
+                		<span>Vocab</span>
+              		</li>
+		`;
+	}
+
+	html += `
 
             </ul>
           </div>
@@ -47,4 +62,6 @@ module.exports = () => {
 
     </div>
   `;
+
+  return html;
 };

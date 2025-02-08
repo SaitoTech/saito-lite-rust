@@ -409,7 +409,7 @@ function onWordClick() {
 	}
 	is_tooltip_locked = 1;
 	tooltip.innerHTML =
-		'<img src="/img/icons/close.gif" onmouseup="try {save_tooltip();}catch (err) {is_tooltip_locked=0;hide_tooltip();}" style="float:right;margin-bottom:0px;margin: 0px 0px 0px"/>' +
+		'<img src="/popup/img/icons/close.gif" onmouseup="try {save_tooltip();}catch (err) {is_tooltip_locked=0;hide_tooltip();}" style="float:right;margin-bottom:0px;margin: 0px 0px 0px"/>' +
 		tooltip.innerHTML;
 }
 
@@ -436,7 +436,7 @@ function adso_clicked(evt) {
 		var html_insert =
 			'<center><div style="width=:15px;height:15px;float:right;">';
 		html_insert +=
-			'<img src="/img/icons/close.gif" onmouseup="is_tooltip_locked = 0; hide_tooltip();" style="margin-bottom:0px;margin: 0px 0px 0px"/>';
+			'<img src="/popup/img/icons/close.gif" onmouseup="is_tooltip_locked = 0; hide_tooltip();" style="margin-bottom:0px;margin: 0px 0px 0px"/>';
 		html_insert += '</div>';
 		html_insert +=
 			'<form name="contribute" onsubmit="adso_resegment_submission(); hide_tooltip(); return false;">';
@@ -1648,7 +1648,7 @@ function enable_display_mode(toggle_which_field) {
 		}
 	);
 
-	//document.getElementById("lesson_vocabulary").innerHTML = '<img src="/img/loader-big-circle.gif" alt="re-loading vocabulary" />';
+	//document.getElementById("lesson_vocabulary").innerHTML = '<img src="/popup/img/loader-big-circle.gif" alt="re-loading vocabulary" />';
 }
 
 function toggle_english() {

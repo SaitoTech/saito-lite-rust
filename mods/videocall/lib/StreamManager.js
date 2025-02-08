@@ -18,7 +18,6 @@ class StreamManager {
     this.auto_disconnect = false;
     this.active = true;
 
-    this.terminationEvent = 'onpagehide' in self ? 'pagehide' : 'unload';
 
     this.parseSettings(settings);
 
@@ -82,6 +81,7 @@ class StreamManager {
 
     app.connection.on('stun-toggle-audio', async () => {
       if (!this.active) {
+        console.warn("Stun toggle event when not active...");
         return;
       }
 
@@ -224,43 +224,32 @@ class StreamManager {
       //
       // Note: This happens twice because audio and video are added separately as mediaTracks...
       //
+      let id = (peerId == this.mod.screen_share) ? "presentation" : peerId;
+      
+      const remoteStream = (this.remoteStreams.has(id)) ? this.remoteStreams.get(id): new MediaStream();
 
-      const remoteStream = new MediaStream();
-
-      console.log('STUN: remote stream added for', peerId, event.track, event.streams);
-
-      if (peerId == this.mod.screen_share) {
-        console.log('Expecting presentation stream');
-
-        if (event.streams.length === 0) {
-          remoteStream.addTrack(event.track);
-        } else {
-          event.streams[0].getTracks().forEach((track) => {
-            remoteStream.addTrack(track);
-          });
-        }
-
-        this.app.connection.emit('add-remote-stream-request', 'presentation', remoteStream);
-      } else {
-        if (event.streams.length === 0) {
-          console.log('Use track');
-          remoteStream.addTrack(event.track);
-        } else {
-          console.log('Use stream', event.streams);
-          event.streams[0].getTracks().forEach((track) => {
-            remoteStream.addTrack(track);
-          });
-        }
-
-        this.remoteStreams.set(peerId, {
-          remoteStream
-        });
-        this.app.connection.emit('add-remote-stream-request', peerId, remoteStream);
-
-        if (remoteStream.getAudioTracks()?.length) {
-          this.analyzeAudio(remoteStream, peerId);
-        }
+      if (!this.remoteStreams.has(id)){
+        this.remoteStreams.set(id, remoteStream);
       }
+
+      console.log('STUN: remote stream added for', id, event.track, event.streams);
+
+      if (event.streams.length === 0) {
+        console.log('Use track');
+        remoteStream.addTrack(event.track);
+      } else {
+        console.log('Use stream', event.streams);
+        event.streams[0].getTracks().forEach((track) => {
+          remoteStream.addTrack(track);
+        });
+      }
+
+      this.app.connection.emit('add-remote-stream-request', id, remoteStream);
+
+      if (remoteStream.getAudioTracks()?.length) {
+        this.analyzeAudio(remoteStream, peerId);
+      }
+
     });
 
     //Launch the Stun call
@@ -269,11 +258,7 @@ class StreamManager {
         return;
       }
 
-      window.addEventListener(this.terminationEvent, this.visibilityChange.bind(this));
-      window.addEventListener('beforeunload', this.beforeUnloadHandler);
-      if (this.app.browser.isMobileBrowser()) {
-        document.addEventListener('visibilitychange', this.visibilityChange.bind(this));
-      }
+      this.app.browser.lockNavigation(this.visibilityChange.bind(this));
 
       console.log('STUN: start-stun-call', JSON.parse(JSON.stringify(this.mod.room_obj)));
       this.firstConnect = true;
@@ -323,9 +308,12 @@ class StreamManager {
         peerConnection.firstConnect = true;
 
         console.log('Attach my audio/video!');
+        if (!peerConnection?.senders){
+          peerConnection.senders = [];
+        }
         await this.getLocalMedia();
         this.localStream.getTracks().forEach((track) => {
-          peerConnection.addTrack(track, this.localStream);
+          peerConnection.senders.push(peerConnection.addTrack(track, this.localStream));
         });
       }
     });
@@ -340,23 +328,21 @@ class StreamManager {
   }
 
   parseSettings(settings) {
+    this.videoEnabled = false;
     if (settings?.video) {
       this.videoEnabled = true;
       if (settings.video !== true) {
         this.videoSource = settings.video;
       }
-    } else {
-      this.videoEnabled = false;
-    }
+    } 
 
+    this.audioEnabled = false;
     if (settings?.audio) {
       this.audioEnabled = true;
       if (settings.audio !== true) {
         this.audioSource = settings.audio;
       }
-    } else {
-      this.audioEnabled = false;
-    }
+    } 
 
     this.auto_disconnect = this?.auto_disconnect || settings?.auto_disconnect;
   }
@@ -454,10 +440,11 @@ class StreamManager {
     this.remoteStreams.delete(peer);
 
     if (this.auto_disconnect) {
-      siteMessage(`${this.app.keychain.returnUsername(peer)} hung up`, 2500);
-      this.app.connection.emit('stun-disconnect');
+      siteMessage(`${this.app.keychain.returnUsername(peer)} hung up`, 1500);
+      setTimeout(()=>{this.app.connection.emit('stun-disconnect');}, 1500);
     } else {
       siteMessage(`${this.app.keychain.returnUsername(peer)} ${message}`, 2500);
+      this.app.connection.emit("stun-switch-view");
     }
 
     let sound = new Audio('/saito/sound/Sharp.mp3');
@@ -469,15 +456,9 @@ class StreamManager {
   async leaveCall() {
     console.log('STUN: Hanging up...');
 
-    window.removeEventListener('beforeunload', this.beforeUnloadHandler);
-    window.removeEventListener(this.terminationEvent, this.visibilityChange.bind(this));
-    if (this.app.browser.isMobileBrowser()) {
-      document.removeEventListener('visibilitychange', this.visibilityChange.bind(this));
-    }
+    this.app.browser.unlockNavigation(this.visibilityChange.bind(this));
 
     this.endPresentation();
-
-    await this.mod.sendCallDisconnectTransaction();
 
     if (this.localStream) {
       this.localStream.getTracks().forEach((track) => {
@@ -485,6 +466,8 @@ class StreamManager {
         console.log('STUN: stopping track to leave call');
       });
     }
+
+    await this.mod.sendCallDisconnectTransaction();
 
     this.localStream = null; //My Video Feed
 
@@ -571,11 +554,6 @@ class StreamManager {
     });
 
     this.mod.sendOffChainMessage('broadcast-call-list', peer_list);
-  }
-
-  beforeUnloadHandler(event) {
-    event.preventDefault();
-    event.returnValue = true;
   }
 
   visibilityChange() {

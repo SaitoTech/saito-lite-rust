@@ -1,0 +1,148 @@
+/* App.css */
+
+.app-container {
+    margin: 2rem auto;
+    padding: 2rem;
+    border-radius: 1rem;
+}
+
+
+
+
+button {
+    margin-right: 1rem;
+}
+
+.message-send-container {
+        border: 1px solid var(--saito-border-color);
+        padding: 1rem;
+        margin-bottom: 2rem;
+        
+}
+.message-send-container input {
+    margin-bottom: 1rem;
+}
+
+.message-send-container h1 {
+    
+}
+
+
+.received-messages-container {
+    border: 1px solid var(--saito-border-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    max-height: 15rem;
+    overflow-y: scroll;
+    margin-bottom: 2rem;
+}
+
+
+.received-messages-container h3 {
+}
+
+.received-messages-container p {
+    margin-bottom: 0.5rem;
+}
+
+
+.block-container {
+  border: 1px solid var(--saito-border-color);
+  padding: 1rem;
+  overflow: scroll;
+  height: 30rem;
+}
+
+.block-container p {
+    display: grid;
+    grid-template-columns: 20rem auto;
+    gap: 1rem;
+}
+
+.block-info {
+    padding: 1rem;
+    border: 1px solid var(--saito-border-color);
+}
+
+.block-info h3 {
+    margin-bottom: 1rem;
+}
+
+.block-info ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.block-info li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.block-info li:last-child {
+    border-bottom: none;
+}
+
+.block-info p {
+    margin: 0.5rem 0;
+}
+
+.user-box {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    border: 1px solid var(--saito-border-color);
+}
+
+.identicon {
+    margin-right: 1rem;
+}
+.identicon > img {
+    width: 50px;
+    height: 50px;
+}
+
+
+
+@media (max-width: 768px) {
+    .app-container {
+        padding: 1rem;
+    }
+
+    .message-send-container input, .message-send-container button {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    button {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .received-messages-container, .block-container {
+        max-height: 10rem;
+    }
+
+    .identicon > img {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .app-container {
+        padding: 1rem;
+    }
+
+    .user-box {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .identicon {
+        margin-bottom: 1rem;
+        margin-right: 0;
+    }
+
+
+}

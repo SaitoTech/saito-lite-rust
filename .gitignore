@@ -50,11 +50,17 @@ data/backup/*
 data/backup
 data/issuance/issuance
 data/saito.stats
+data/peer_state.txt
 
 bundler
 bundler/*
 built
 built/*
+
+nettest/nettest.log
+nettest/nodes
+nettest/nodes/*
+nettest/nodes/nettest.log
 
 saito-issuance
 saito-issuance/*
@@ -119,6 +125,14 @@ mods/redsquare/web/tweets*
 mods/graffiti/web/img/snapshots/*
 
 extras/shashmap/build
+
+# Ignore ptau files
+*.ptau
+*/*.ptau
+*/*/ptau
+circuits/*.ptau
+zk/*.ptau
+zk/*/*.ptau
 
 # Ignore vim files:
 *~

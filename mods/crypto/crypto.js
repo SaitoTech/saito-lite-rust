@@ -44,10 +44,13 @@ class Crypto extends ModTemplate {
 
 		app.connection.on('accept-game-stake', async (sobj) => {
 			
+			console.log("accept-game-stake sobj: ", sobj);
+
 			await this.app.wallet.setPreferredCrypto(sobj.ticker);
 
 			let cryptomod = this.app.wallet.returnCryptoModuleByTicker(sobj.ticker);
 			let current_balance = await cryptomod.returnBalance();
+
 			let needed_balance = (typeof sobj.stake == "object") ? parseFloat(sobj.stake.min) : parseFloat(sobj.stake);
 
 			if (needed_balance > current_balance){
@@ -166,13 +169,15 @@ class Crypto extends ModTemplate {
 
 			let game_name = document.querySelector("input[name='game']")?.value;
 			if (game_name){
-				let gm = this.app.modules.returnModuleByName(game_name);
-				if (gm?.opengame){
+				this.gm = this.app.modules.returnModuleByName(game_name);
+				if (this.gm?.opengame){
 					this.min_balance = -1;
 				}
-				if (!gm?.can_bet){
+				if (!this.gm?.can_bet){
 					return;
 				}
+			}else {
+				return;
 			}
 
 			this.attachStyleSheets();
@@ -249,7 +254,25 @@ class Crypto extends ModTemplate {
 	}
 
 
+	includeFeeInMax(ticker) {
+		let fee = 0;
 
+    let crypto_mod = this.app.wallet.returnCryptoModuleByTicker(ticker);
+    crypto_mod.returnWithdrawalFeeForAddress('', function(res){
+      fee = res;
+    });
+
+    let diff = Number(this.max_balance) - Number(fee);
+    diff = parseFloat(diff.toFixed(8));
+
+    if (diff < 0) {
+      this.max_balance = 0;  
+    } else {
+      this.max_balance = diff;
+    }
+
+    return fee;
+	}
 
 
 

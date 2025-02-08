@@ -15,7 +15,6 @@ html[data-theme="midnight"] {
   /* off-white */
   /* Spacing and padding adjustments */
   --border-padding-style: var(--border-padding-wide);
-  --border-padding-style-leaderboard-ranking: var(--border-padding-small);
   /*TINTS COLOR SECTION*/
   --color-tint-primary: #f8f8f8;
   /* bright-off-white */
@@ -27,7 +26,7 @@ html[data-theme="midnight"] {
   /* almost black, transparent */
   /*SHADOW SELECTION*/
   --shadow-primary-button: var(--shadow-shape-glow-big);
-  --shadow-chat-popup: var(--shadow-shape-glow-big);
+  --shadow-draggable-popup: var(--shadow-shape-glow);
   --box-shadow-sidebar-elements: var(--shadow-shape-flat);
   --shadow-chat-message-bottom: 0px 0px 0px var(--color-shadow-bubble);
   /* flattened and centered the shadow */
@@ -78,7 +77,6 @@ html[data-theme="midnight"] {
   --font-color-module-menu-header: var(--font-color-primary);
   --font-color-overlay-form-header: var(--font-color-primary);
   --font-color-overlay-form-text: var(--font-color-primary);
-  --font-color-overlay-subform-recover: var(--font-color-primary);
   /* BORDER RADIUS */
   --border-radius-text-input: var(--border-radius-soft);
   /*chat module*/
@@ -110,7 +108,6 @@ html[data-theme="midnight"] {
   --border-radius-calendar-hover-today: var(--border-radius-round);
   --border-radius-status-message: var(--border-radius-round);
   --border-radius-sidebar-game-module: var(--border-radius-round);
-  --border-radius-identicon-needed: var(--border-radius-voluptuous);
   --border-radius-offset: 0.3rem;
   --border-radius-leaderboard-ranking: var(--border-radius-round);
   /* BORDER THICKNESS */
@@ -138,7 +135,6 @@ html[data-theme="midnight"] {
   /* General Background Colors */
   --saito-background-color: var(--background-color-main);
   --background-color-main: #000;
-  --background-color-shim-normal: #0009;
   --background-color-hover-post: none;
   /* Turns it off for this theme*/
   --background-color-hover-post-preview: var(--background-color-main);

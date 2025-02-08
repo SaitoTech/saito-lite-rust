@@ -7,6 +7,7 @@ class DiplomacyConfirmOverlay {
 		this.app = app;
 		this.mod = mod;
 		this.overlay = new SaitoOverlay(this.app, this.mod, false);
+		this.overlay.clickBackdropToClose = false;
 		this.faction = "";
 		this.proposal_idx = 0;
 	}

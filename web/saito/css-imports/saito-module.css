@@ -164,6 +164,10 @@ fieldset.saito-grid > fieldset.saito-grid{
   grid-column-end: span 2;
 }
 
+fieldset.saito-grid .note {
+    margin-left: 5px;
+}
+
 .saito-module-settings .note {
     font-style: italic;
 }
@@ -175,7 +179,7 @@ fieldset.saito-grid > fieldset.saito-grid{
 
 .saito-grid-extra-button {
     position: absolute;
-    right: 0;
+    right: 1rem;
     height: min(70%, 40px);
 }
 

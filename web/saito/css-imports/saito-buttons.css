@@ -87,3 +87,15 @@ button.fat, saito-button-primary.fat, .saito-button-secondary.fat, saito-button-
   gap: 1rem;
   margin: 0 1rem;
 }
+
+@media (max-width: 600px) { 
+
+  .saito-button-secondary {
+    min-width: 10rem;
+  }
+
+  button, .saito-button-primary { /* controls main post buttons */
+    min-width: 12rem;
+  }
+
+}

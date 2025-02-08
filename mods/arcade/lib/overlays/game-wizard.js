@@ -1,3 +1,4 @@
+const ImportGame = require('./import-game.js');
 const GameWizardTemplate = require('./game-wizard.template.js');
 const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-overlay.js');
 
@@ -9,10 +10,12 @@ const SaitoOverlay = require('./../../../../lib/saito/ui/saito-overlay/saito-ove
 //
 
 class GameWizard {
+
 	constructor(app, mod, game_mod = null, obj = {}) {
 		this.app = app;
 		this.mod = mod;
 		this.game_mod = game_mod;
+		this.import_game = new ImportGame(app, mod, game_mod);
 		this.overlay = new SaitoOverlay(app, mod);
 		this.obj = obj;
 
@@ -27,7 +30,7 @@ class GameWizard {
 					//
 					if (game_mod.doWeHaveAnOngoingGame()) {
 						if (obj.skip){
-							window.location = `/${game_mod.returnSlug()}/`;
+							navigateWindow(`/${game_mod.returnSlug()}/`);
 						}else{
 							console.log('Found existing game', game_mod.game);
 							app.connection.emit(
@@ -87,6 +90,7 @@ class GameWizard {
 			this.meta_overlay.hide();
 		}
 
+		//Hook for Crypto module (if installed) to add button to attach functionality
 		this.app.modules.renderInto("#arcade-advance-opt");
 
 		this.attachEvents();
@@ -190,7 +194,7 @@ class GameWizard {
 							'CreateDirectInvite',
 							options.game
 						);
-					}else if (gameType == 'async'){
+					} else if (gameType == 'async'){
 						if (options['game-wizard-players-select'] > 2) {
 							salert("Asynchronous game creation is experimental and assumes there are only two players!");
 							return;
@@ -208,6 +212,11 @@ class GameWizard {
 							'CreateOpenInvite',
 							options.game
 						);
+					}
+
+					if (gameType === "import") {
+						this.import_game.render(options.game);
+						return;
 					}
 
 					this.mod.makeGameInvite(options, gameType, this.obj);
@@ -267,6 +276,12 @@ class GameWizard {
 			this.meta_overlay.remove();
 		}
 
+		// Check for open table here
+		if (options["game-wizard-players-select"] == "open-table"){
+			options["open-table"] = 1;
+			options["game-wizard-players-select"] = 2;
+			options["game-wizard-players-select-max"] = 6;
+		}
 
 		return options;
 	}

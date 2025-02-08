@@ -12,7 +12,7 @@ class AddAppOverlay {
 
 		this.app.connection.on(
 			'saito-app-app-render-request',
-			(obj) => {
+			() => {
 				this.render();
 			}
 		);

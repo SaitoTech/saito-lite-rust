@@ -21,7 +21,6 @@ export default class Blockchain extends SaitoBlockchain {
 	}
 
 	async resetBlockchain() {
-		console.log('resetting blockchain');
 		this.app.options.blockchain = {
 			last_block_hash: DefaultEmptyBlockHash,
 			last_block_id: 0,
@@ -58,7 +57,6 @@ export default class Blockchain extends SaitoBlockchain {
 			),
 			fork_id: await this.instance.get_fork_id()
 		};
-		// console.log("saveBlockchain : ", this.app.options.blockchain);
 		this.app.storage.saveOptions();
 	}
 
@@ -79,23 +77,42 @@ export default class Blockchain extends SaitoBlockchain {
 		this.app.connection.on(
 			'add-block-success',
 			async ({ blockId, hash }) => {
-				console.log("calling add block success on : " + hash + " with id : " + blockId);
+console.log("before onAddBlockSuccess...");
 				await this.onAddBlockSuccess(blockId, hash);
-				console.log("done calling add block success on : " + hash + " with id : " + blockId);
+console.log("after onAddBlockSuccess...");
 			}
 		);
 	}
 
 	public async affixCallbacks(block: Block) {
-		console.log(' --- AFFIX CALLBACK --- ' + block.id);
-		console.log('affixing callbacks for block : ' + block.hash);
+
+console.log("============");
+console.log("IN BLOCK: " + block.id);
+
 		let callbacks = [];
 		let callbackIndices = [];
+
 		let txs: Transaction[] = block.transactions as Transaction[];
+console.log("how many txs: " + txs.length);
 		let validTxs = 0;
 		for (let z = 0; z < txs.length; z++) {
-			// console.log("tx type : " + (txs[z].type as TransactionType));
 			if (txs[z].type === TransactionType.Normal) {
+				let txmsg2 = txs[z].returnMessage();
+
+        const str_txmsg2 = JSON.stringify(txmsg2);
+        const ellipsis = "\n...\n";
+        const prefixLength = 500, suffixLength = 500;
+        const maxStrLength =
+          prefixLength + ellipsis.length + suffixLength;
+        console.log(
+          "examining tx:",
+          str_txmsg2.length > maxStrLength ?
+              str_txmsg2.slice(0, prefixLength)
+                + ellipsis + str_txmsg2.slice(-suffixLength)
+            : str_txmsg2
+        );
+
+        console.log("processing tx!");
 				await txs[z].decryptMessage(this.app);
 				const txmsg = txs[z].returnMessage();
 				this.app.modules.affixCallbacks(
@@ -113,15 +130,22 @@ export default class Blockchain extends SaitoBlockchain {
 				validTxs++;
 			}
 		}
-		// console.log(`affixed callbacks for : ${validTxs} out of ${txs.length}`);
+console.log("============");
 		this.callbacks.set(block.hash, callbacks);
 		this.callbackIndices.set(block.hash, callbackIndices);
 		this.confirmations.set(block.hash, BigInt(-1));
+	
+		await this.instance.set_safe_to_prune_transaction(block.id);
+
 	}
 
 	public async onNewBlock(block: Block, lc: boolean) {
-		console.log('on new block : ' + block.hash);
 		await this.saveBlockchain();
 		this.app.modules.onNewBlock(block, lc);
+	}
+
+	public async getLastBlockHash() {
+		let hash = await this.instance.get_last_block_hash();
+		return hash;
 	}
 }

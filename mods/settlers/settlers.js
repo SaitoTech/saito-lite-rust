@@ -45,11 +45,8 @@ class Settlers extends GameTemplate {
 		this.sleep_timer = null;
 		this.insert_rankings = true;
 
-		this.recordOptions = {
-			container: 'body',
-			callbackAfterRecord: null,
-			active: false
-		};
+		//Deactivate screen record, but why?
+		this.recordOptions.active = false;
 
 		//
 		// UI components
@@ -173,7 +170,7 @@ class Settlers extends GameTemplate {
 				img: '/settlers/img/cards/devcards/unexpected_bounty.png',
 				title: 'Windfall',
 				subtitle: 'receive any two resources',
-				text: ' may collect any two resources',
+				text: ' collects two resources',
 				action: 2
 			},
 			{
@@ -182,7 +179,7 @@ class Settlers extends GameTemplate {
 				img: '/settlers/img/cards/devcards/monopoly.png',
 				title: 'Legal Monopoly',
 				subtitle: 'get resource from opponents',
-				text: ' may collect all available of any resource',
+				text: ' steals all of any resource',
 				action: 3
 			},
 			{
@@ -372,6 +369,8 @@ class Settlers extends GameTemplate {
 		this.menu.render();
 		this.log.render();
 		this.hexgrid.render('.main');
+		this.cardfan.render();
+        this.cardfan.addClass('bighand');
 
 		try {
 			this.playerbox.render();
@@ -559,7 +558,7 @@ class Settlers extends GameTemplate {
 		// Preliminary DOM set up, adding elements to display
 		//
 		this.generateMap();
-		this.addCitiesToAdjust();
+		this.addCitiesToGameboard();
 		this.addPortsToGameboard();
 
 		this.displayBoard();
@@ -721,16 +720,27 @@ class Settlers extends GameTemplate {
 	}
 
 	endTurn() {
+		this.halted = 0;
+
 		if (this.sleep_timer) {
 			clearTimeout(this.sleep_timer);
 			this.sleep_timer = null;
 		}
+
+		this.clearShotClock();
 		this.clock.stopClock();
 
+		this.updateStatus("submitting game move...");
+		
 		super.endTurn();
 	}
 
 	updateControls(str) {
+
+		if (!this.gameBrowserActive()){
+			return;
+		}
+
 		if (str) {
 			if (str.includes('<i')) {
 				$('.controls .option').css('visibility', 'hidden');
@@ -791,21 +801,10 @@ class Settlers extends GameTemplate {
 		$('#score').addClass('enabled');
 		$('#score').css('visibility', 'visible');
 
-		/* --> rematch -- need to fix arcade-issue-challenge...
+		
 		$('#spend').addClass('enabled');
 		$('#spend').html(`<i class="fa-solid fa-rotate-left"></i>`);
 		$('#spend').css('visibility', 'visible');
-
-		if (document.querySelector('.controls #spend')) {
-			document.querySelector('.controls #spend').onclick = (e) => {
-				e.currentTarget.onclick = null;
-				this.app.connection.emit('arcade-issue-challenge', {
-					game: this.name,
-					players: this.game.players,
-					options: this.game.options
-				});	
-			};
-		}*/
 
 		// --> return
 		$('#rolldice').addClass('enabled');
@@ -816,6 +815,59 @@ class Settlers extends GameTemplate {
 			e.currentTarget.onclick = null;
 			this.exitGame();
 		}
+
+		if (document.getElementById('spend')) {
+			document.getElementById('spend').onclick = (e) => {
+				this.initialize_game_run = 0;
+				e.currentTarget.onclick = null;
+				$("#spend").removeClass('enabled');
+				$("#spend").css('visibility', 'hidden');
+				this.app.connection.emit('arcade-issue-challenge', {
+					game: this.name,
+					players: this.game.players,
+					options: this.game.options
+				});
+			};
+		}
+
+
+
+		////////////////////////////////////////
+		// Attach Listeners for rematch actions
+		////////////////////////////////////////
+		this.app.connection.on("arcade-challenge-issued", tx => {
+			let btn = document.getElementById('spend');
+			if (btn){
+				if (tx.isFrom(this.publicKey)){
+					this.updateStatus("Rematch requested");
+				}else{
+					this.updateStatus("Accept Rematch?");
+				}
+			}
+		});
+
+		this.app.connection.on('arcade-game-initialize-render-request', (game_id) => {
+			this.updateStatus('Preparing rematch...');
+			this.updateControls("WAIT");
+			this.browser_active = 0; //Hack to simulate not being in the game mod
+		});
+
+		this.app.connection.on(
+			'arcade-game-ready-render-request',
+			(game_details) => {
+				let status = document.getElementById("status") || document.querySelector(".status");
+				status.innerHTML = `<div class="player-notice">Set sail for a new island</div>`;
+	 		    
+	 		    $('#rolldice').addClass('enabled');
+				$('#rolldice').html(`<i class="fa-solid fa-anchor"></i>`);
+				$('#rolldice').css('visibility', 'visible');
+				document.getElementById('rolldice').onclick = (e) => {
+					e.currentTarget.onclick = null;
+					navigateWindow('/' + game_details.slug, 100);
+				}
+			}
+		);
+
 
 	}
 

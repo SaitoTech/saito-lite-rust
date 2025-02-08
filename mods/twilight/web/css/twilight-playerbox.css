@@ -6,9 +6,6 @@
 
 .status-header,
 .status-message,
-.status-text-menu,
-.status-text-menu ul,
-.status-text-menu ul li,
 .textchoice {
 	background: unset;
 }
@@ -79,7 +76,6 @@
 	.game-playerbox-manager {
 		margin: 0.25rem;
 		flex-direction: row;
-		top: 5px;
 	}
 
 	.game-playerbox {

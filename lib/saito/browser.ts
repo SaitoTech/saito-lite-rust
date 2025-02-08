@@ -2,7 +2,8 @@
 
 import screenfull, { element } from 'screenfull';
 import { getDiffieHellman } from 'crypto';
-
+import React from 'react';
+import {createRoot} from 'react-dom'
 let marked = require('marked');
 let sanitizeHtml = require('sanitize-html');
 const sanitizer = require('sanitizer');
@@ -56,12 +57,22 @@ class Browser {
 		this.hidden_tab_property = "hidden";
 		this.tab_event_name = "visibilitychange";
 		this.title_interval = null;
+	    this.terminationEvent = 'unload';
+
 	}
 
 	async initialize(app) {
 		if (this.app.BROWSER != 1) {
 			return 0;
 		}
+
+		app.connection.on("saito-render-complete", ()=> {
+			// xclose (loading wallpaper) looks for this class on body
+			setTimeout(()=> {
+				console.log("DOM rendering complete, remove wallpaper");
+				document.querySelector("body").classList.add("xclose");
+			}, 1000);
+		});
 
 		this.app.connection.on('new-version-detected', (version) => {
 			console.log('New wallet version detected: ' + version);
@@ -76,9 +87,7 @@ class Browser {
 				}
 			});
 			if (shouldReload) {
-				setTimeout(() => {
-					window.location.reload();
-				}, 300);
+				reloadWindow(300);
 			}
 		});
 
@@ -103,6 +112,9 @@ class Browser {
 				}
 			}
 
+			if ('onpagehide' in self) {
+				this.terminationEvent = 'pagehide';
+			}
 
 
 			if (!document[this.hidden_tab_property]) {
@@ -323,7 +335,7 @@ class Browser {
 		    this.updateThemeInHeader(theme);
 
 			const updateViewHeight = () => {
-				let vh = window.innerHeight * 0.01;
+				let vh = window.innerHeight / 100;
 				document.documentElement.style.setProperty(
 					'--saito-vh',
 					`${vh}px`
@@ -394,10 +406,6 @@ class Browser {
 				capture: true
 			}
 		);
-
-		window.setHash = function (hash) {
-			window.history.pushState('', '', `/redsquare/#${hash}`);
-		};
 
 		//hide pace-js if its still active
 		setTimeout(function () {
@@ -565,11 +573,11 @@ class Browser {
 		return check;
 	}
 
-	isSupportedBrowser(userAgent) {
+	isSupportedBrowser(userAgent = navigator.userAgent) {
 		//
 		// no to Safari
 		//
-		if (userAgent.toLowerCase().indexOf('safari/') > -1) {
+		if (userAgent.toLowerCase().indexOf('safari') > -1) {
 			if (
 				userAgent.toLowerCase().indexOf('chrome') == -1 &&
 				userAgent.toLowerCase().indexOf('firefox') == -1
@@ -814,19 +822,20 @@ class Browser {
 	}
 
 	addElementAfterId(html, id = null) {
-		if (id == null) {
-			console.warn(
-				`no id provided to addElementAfterId, so adding to DOM`
-			);
-			this.app.browser.addElementToDom(html);
-		} else {
+		if (id) {
 			let obj = document.getElementById(id);
 			if (obj) {
 				this.app.browser.addElementToDom(html, obj);
-			}else{
-				console.warn("ID not found (addelementafterid)");
+				const el = document.createElement('div');
+				el.outerHTML = html;
+				obj.insertAdjacentElement('afterend', el);
+				return;
 			}
 		}
+		console.warn(
+			`no id provided/found to addElementAfterId, so adding to DOM`
+		);
+		this.app.browser.addElementToDom(html);
 	}
 
 	prependElementToId(html, id = null) {
@@ -913,18 +922,24 @@ class Browser {
 	}
 
 	addElementAfterSelector(html, selector = '') {
-		if (selector === '') {
-			console.warn(
-				'no selector provided to addElementAfterSelector, so adding direct to DOM'
-			);
-			console.log(html);
-			this.app.browser.addElementToDom(html);
-		} else {
+		console.log("addElementAfterSelector");
+		if (selector) {
 			let container = document.querySelector(selector);
 			if (container) {
-				this.app.browser.addElementAfterElement(html, container);
+				const el = document.createElement('div');
+				console.log(html);
+				container.insertAdjacentElement('afterend', el);
+				el.outerHTML = html;
+				console.log(el);
+				return;
 			}
 		}
+
+		console.warn(
+			'no selector provided/found to addElementAfterSelector, so adding direct to DOM'
+		);
+		console.log(html, selector);
+		this.app.browser.addElementToDom(html);
 	}
 
 	prependElementToSelector(html, selector = '') {
@@ -1396,10 +1411,6 @@ class Browser {
 
 				e = e || window.event;
 
-				//console.log("DRAG MOUSEDOWN");
-				//console.log(e.clientX);
-				//console.log(e.offsetX);
-
 				if (
 					!e.currentTarget.id ||
 					(e.currentTarget.id != id_to_move &&
@@ -1601,12 +1612,6 @@ class Browser {
 
 				element_to_move.style.transition = 'unset';
 
-				//e.preventDefault();
-				//if (e.stopPropagation) { e.stopPropagation(); }
-				//if (e.preventDefault) { e.preventDefault(); }
-				//e.cancelBubble = true;
-				//e.returnValue = false;
-
 				const rect = element_to_move.getBoundingClientRect();
 				element_start_left = rect.left;
 				element_start_top = rect.top;
@@ -1644,6 +1649,8 @@ class Browser {
 						element_moved = true;
 					}
 
+					element_to_move.classList.add('dragging');
+					
 					// set the element's new position:
 					element_to_move.style.left =
 						element_start_left + adjustmentX + 'px';
@@ -1746,12 +1753,13 @@ class Browser {
 			}
 		};
 	}
-	
+
 	returnAddressHTML(key) {
-		return `<div class="saito-address" data-id="${key}">${this.app.keychain.returnIdentifierByPublicKey(
-			key,
-			true
-		)}</div>`;
+		let identifier = this.app.keychain.returnIdentifierByPublicKey(key, true);
+		if (identifier === key){
+			identifier = 'Anon-' + identifier.substr(0,6);
+		}
+		return `<div class="saito-address" data-id="${key}">${identifier}</div>`;
 	}
 
 	updateAddressHTML(key, id) {
@@ -1906,6 +1914,7 @@ class Browser {
 
 			text = sanitizeHtml(text, {
 				allowedTags: [
+					'a',
 					'h1',
 					'h2',
 					'h3',
@@ -1934,10 +1943,12 @@ class Browser {
 					'tr',
 					'th',
 					'td',
-					'pre',
 					'marquee',
-					'pre',
-					'span'
+					/*'pre',*/
+					'span',
+					'img',
+					'video',
+					'audio'
 				],
 				allowedAttributes: {
 					div: ['class', 'id'],
@@ -2104,11 +2115,24 @@ class Browser {
 		if (typeof window !== 'undefined') {
 			let browser_self = this;
 
+			let mutationThrottle = null;
+			let mutatedNodes = [];
 			let mutationObserver = new MutationObserver(function (mutations) {
 				mutations.forEach(function (mutation) {
 					if (mutation.addedNodes.length > 0) {
-						browser_self.treatElements(mutation.addedNodes);
-						browser_self.treatIdentifiers(mutation.addedNodes);
+						for (let m of mutation.addedNodes){
+							mutatedNodes.push(m);
+						}
+						if (mutationThrottle){
+							clearTimeout(mutationThrottle);
+						}
+						mutationThrottle = setTimeout(()=> {
+							//console.log("treat mutated nodes: ", mutatedNodes.length);
+							browser_self.treatElements(mutatedNodes);
+							browser_self.treatIdentifiers(mutatedNodes);
+							mutatedNodes = [];
+							mutationThrottle = null;
+						}, 120);
 					}
 				});
 			});
@@ -2325,6 +2349,11 @@ class Browser {
 			window.setHash = function (hash) {
 				window.history.pushState('', '', `/redsquare/#${hash}`);
 			};
+
+
+			window.reloadWindow = this.reloadWindow;
+			window.navigateWindow = this.navigateWindow.bind(this);
+
 		}
 	}
 
@@ -2490,9 +2519,7 @@ class Browser {
 				siteMessage(
 					`New software update found: ${receivedBuildNumber}. Updating...`
 				);
-				setTimeout(function () {
-					window.location.reload();
-				}, 3000);
+				reloadWindow(1000);
 			}
 		}
 	}
@@ -2653,6 +2680,106 @@ class Browser {
 	  	number = (number);
 	  	return (string) ? number.toString(): number;  
 	}
+
+	reloadWindow(delay = 0){
+		if (delay > 0) {
+			setTimeout(() => { window.location.reload(); }, delay);		
+		} else {
+			window.location.reload();
+		}
+	}
+
+	lockNavigation(callback){
+		this.navigation_locked = true;
+
+	    window.addEventListener(this.terminationEvent, callback);
+	    if (this.app.browser.isMobileBrowser()) {
+	      document.addEventListener('visibilitychange', callback);
+	    }
+	}
+
+	unlockNavigation(callback){
+		this.navigation_locked = false;
+
+	    window.removeEventListener(this.terminationEvent, callback);
+	    if (this.app.browser.isMobileBrowser()) {
+	      document.removeEventListener('visibilitychange', callback);
+	    }
+
+	}
+
+	async navigateWindow(target, delay = 0){
+		if (this.navigation_locked){
+			let c = await sconfirm("Are you sure you want to leave this page?");
+			if (!c){
+				return;
+			}
+		}
+
+		if (delay > 0){
+			setTimeout(() => { window.location.href = target; }, delay);		
+		}else{
+			window.location.href = target;	
+		}
+		
+	}
+
+		/**
+	* Creates a container div and renders a React component into it
+	* @param Component The React component to render
+	* @param props Props to pass to the component
+	* @param containerId Optional custom container ID (default: auto-generated)
+	* @returns Object containing the container element, root instance, and cleanup function
+	*/
+	createReactRoot(
+		Component: React.ComponentType<any>,
+		props: Record<string, any> = {},
+		containerId?: string
+	) {
+		const id = containerId || `saito-react-root-${Date.now()}`;
+		const container = document.createElement('div');
+		container.id = id;
+		document.body.appendChild(container);
+
+		const root = createRoot(container);
+		root.render(React.createElement(Component, props));
+
+		const cleanup = () => {
+			root.unmount();
+			container.remove();
+		};
+
+		return {
+			container,
+			root,
+			cleanup
+		};
+	}
+
+	  /**
+     * Renders a React component into an existing container element
+     * @param Component The React component to render
+     * @param props Props to pass to the component
+     * @param container The existing container element to render into
+     * @returns Object containing the root instance and cleanup function
+     */
+	  renderReactToExistingContainer(
+        Component: React.ComponentType<any>,
+        props: Record<string, any> = {},
+        container: HTMLElement
+    ) {
+        const root = createRoot(container);
+		root.render(React.createElement(Component, props));
+
+        const cleanup = () => {
+            root.unmount();
+        };
+
+        return {
+            root,
+            cleanup
+        };
+    }
 }
 
 export default Browser;

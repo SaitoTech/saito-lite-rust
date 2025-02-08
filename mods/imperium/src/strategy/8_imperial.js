@@ -172,8 +172,8 @@ this.importStrategyCard("imperial", {
       ) {
         imperium_self.playerBuySecretObjective(2);
       } else {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
-        imperium_self.addPublickeyConfirm(this.publicKey, 1);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+        imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
         imperium_self.endTurn();
       }
     }
@@ -198,8 +198,8 @@ this.importStrategyCard("imperial", {
           imperium_self,
           function (x, vp, objective) {
             imperium_self.updateStatus("scoring completed");
-            imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
-            imperium_self.addPublickeyConfirm(this.publicKey, 1);
+            imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+            imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
 
             if (my_secret_vp > 0) {
               if (imperium_self.secret_objectives[my_secret_objective] != undefined) {

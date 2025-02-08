@@ -18,7 +18,7 @@ class TweetManager {
 
 		this.profile.tab_container = '.tweet-manager';
 
-		this.profile_tabs = ['posts', 'replies', 'retweets', 'likes'];
+		this.profile_tabs = ['posts', 'replies', /*'retweets',*/ 'likes'];
 
 		this.profile.reset(this.mod.publicKey, 'posts', this.profile_tabs);
 
@@ -34,7 +34,7 @@ class TweetManager {
 					if (entry.isIntersecting) {
 						console.log('IntersectionObserver');
 
-						if (this.mode === 'tweet') {
+						if (this.mode === 'tweet' || this.mode == 'loading') {
 							return;
 						}
 
@@ -55,9 +55,7 @@ class TweetManager {
 								console.log(
 									'REDSQUARE: Turn off intersection observer before loading more notifications...'
 								);
-								this.intersectionObserver.unobserve(
-									document.querySelector('#intersection-observer-trigger')
-								);
+								this.intersectionObserver.disconnect();
 							}
 
 							this.loadNotifications();
@@ -70,6 +68,26 @@ class TweetManager {
 						// about not having enough history available
 						//
 						//////////////////////////////////////////////////
+					
+
+						if (this.mode === "profile"){
+							this.intersectionObserver.disconnect();
+							this.showLoader();
+
+							this.loadProfile((txs) => {
+								if (this.mode !== 'profile') {
+									return;
+								}
+
+								this.hideLoader();
+
+								// Sort txs into posts/replies/retweets...
+								this.filterAndRenderProfile(txs);
+
+								this.profile.render();
+							});
+
+						}
 					}
 				});
 			},
@@ -107,6 +125,11 @@ class TweetManager {
 			document.querySelector('.highlight-tweet').classList.remove('highlight-tweet');
 		}
 
+		//
+		// Stop observering while we rebuild the page
+		//
+		this.intersectionObserver.disconnect();
+
 		if (this.mode === "tweets" && new_mode !== "tweets"){
 	      this.app.connection.emit("saito-header-replace-logo", (e) => {
 	        this.app.connection.emit("redsquare-home-render-request");
@@ -124,21 +147,23 @@ class TweetManager {
 
 		let myqs = `.tweet-manager`;
 
-		//
-		// Stop observering while we rebuild the page
-		//
-		this.intersectionObserver.disconnect();
 		this.profile.remove();
 
 		if (!document.querySelector(myqs)) {
-			this.app.browser.addElementToSelector(TweetManagerTemplate(), this.container);
+			this.app.browser.addElementToSelector(TweetManagerTemplate(this.app, this.mod), this.container);
+		}
+
+		if (new_mode == "tweets"){
+			document.querySelector(".redsquare-feed-source").classList.remove("hidden");
+		}else{
+			document.querySelector(".redsquare-feed-source").classList.add("hidden");
 		}
 
 		let holder = document.getElementById('tweet-thread-holder');
 		let managerElem = document.querySelector(myqs);
 
 		if (this.mode == 'tweets' && new_mode !== 'tweets') {
-			console.log('Stash rendered tweets from main feed');
+			//console.log('Stash rendered tweets from main feed');
 			let kids = managerElem.children;
 			holder.replaceChildren(...kids);
 			if (document.getElementById('saito-new-tweets')) {
@@ -146,7 +171,7 @@ class TweetManager {
 			}
 			this.thread_id = null;
 		} else {
-			console.log('Remove temporary content from page');
+			//console.log('Remove temporary content from page');
 			while (managerElem.hasChildNodes()) {
 				managerElem.firstChild.remove();
 			}
@@ -160,19 +185,21 @@ class TweetManager {
 			this.mode = new_mode;
 		}
 
-		console.log('Redsquare manager rendering: ', this.mode);
+		//console.log('Redsquare manager rendering: ', this.mode);
 
 		////////////
 		// tweets //
 		////////////
 		if (this.mode == 'tweets') {
+			// Do curation before rendering...
+			this.mod.reset();
+
 			if (holder) {
 				let kids = holder.children;
 				managerElem.replaceChildren(...kids);
 			}
 
-			for (let i = 0; i < this.mod.tweets.length; i++) {
-				let tweet = this.mod.tweets[i];
+			for (let tweet of this.mod.curated_tweets) {
 				if (!tweet.isRendered()) {
 					tweet.renderWithCriticalChild();
 				}
@@ -195,7 +222,7 @@ class TweetManager {
 				);
 
 				for (let i = 0; i < this.mod.notifications.length; i++) {
-					let notification = new Notification(this.app, this.mod, this.mod.notifications[i].tx);
+					let notification = new Notification(this.app, this.mod, this.mod.notifications[i]);
 					notification.render('.tweet-manager');
 				}
 			}
@@ -224,9 +251,7 @@ class TweetManager {
 					'.tweet-manager'
 				);
 				if (document.querySelector('#intersection-observer-trigger')) {
-					this.intersectionObserver.unobserve(
-						document.querySelector('#intersection-observer-trigger')
-					);
+					this.intersectionObserver.disconnect();
 				}
 
 				if (this.mod.notifications.length == 0) {
@@ -247,36 +272,46 @@ class TweetManager {
 	}
 
 	fetchTweets(){
-		let numActivePeers = this.mod.loadTweets(
+		this.intersectionObserver.disconnect();
+
+		this.numActivePeers = this.mod.loadTweets(
 			'earlier',
 			this.insertOlderTweets.bind(this)
 		);
-		if (!numActivePeers) {
-			console.log('Try again');
+
+		if (!this.numActivePeers) {
+			console.log('RS: Try again');
 			this.mod.tweets_earliest_ts--;
 			numActivePeers = this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this));
 			if (!numActivePeers) {
-				console.log('Give up');
+				console.log('RS: Give up');
 				this.insertOlderTweets(0);
 			}
 		}
 	}
 
 	insertOlderTweets(tx_count, peer = null) {
+
+		this.numActivePeers--;
 		if (this.mode !== 'tweets') {
 			console.log('Not on main feed anymore, currently on: ' + this.mode);
 			return;
 		}
 
-		if (tx_count) {
-			this.hideLoader();
+		// Curation is done after the return so we don't care about tx_count per se 
+		let acceptable_tweet_ct = this.mod.reset();
 
-			for (let i = 0; i < this.mod.tweets.length; i++) {
-				let tweet = this.mod.tweets[i];
+		if (acceptable_tweet_ct > 0) {
+			this.hideLoader();
+			for (let tweet of this.mod.curated_tweets) {
 				if (!tweet.isRendered()) {
 					tweet.renderWithCriticalChild();
 				}
 			}
+
+			this.intersectionObserver.observe(document.getElementById('intersection-observer-trigger'));
+			return;
+
 		} else if (peer?.tweets_earliest_ts) {
 			console.log(
 				`${peer.publicKey} still has tweets as early as ${new Date(
@@ -284,7 +319,7 @@ class TweetManager {
 				)}, keep querying...`
 			);
 			this.mod.tweets_earliest_ts--;
-			this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this), peer);
+			this.numActivePeers += this.mod.loadTweets('earlier', this.insertOlderTweets.bind(this), peer);
 		} else {
 			//If all peers have returned 0, then clear feed...
 
@@ -305,14 +340,9 @@ class TweetManager {
 						'.tweet-manager'
 					);
 				}
-				if (document.querySelector('#intersection-observer-trigger')) {
-					this.intersectionObserver.unobserve(
-						document.querySelector('#intersection-observer-trigger')
-					);
-				}
-			} else {
-				console.log('Waiting on other peers to respond');
-			}
+				this.intersectionObserver.disconnect();
+				console.log("RS: Out of content");
+			} 
 		}
 	}
 
@@ -328,25 +358,27 @@ class TweetManager {
 			this.profile.reset(publicKey, 'posts', this.profile_tabs);
 		}
 
+		this.loader.render();
+
 		this.profile.render();
 
-		this.loader.render();
+		for (let peer of this.mod.peers){
+			peer.profile_ts = new Date().getTime();
+		}
 
 		this.loadProfile((txs) => {
 			if (this.mode !== 'profile') {
 				return;
 			}
 
-			this.loader.remove();
-			
+			this.hideLoader();
+
 			// Sort txs into posts/replies/retweets...
 			this.filterAndRenderProfile(txs);
 
-			this.hideLoader();
 			this.profile.render();
 		});
 
-		this.attachEvents();
 	}
 
 
@@ -358,7 +390,7 @@ class TweetManager {
 			// I already have a list of tweets I liked available
 			this.loadLikes(this.mod.liked_tweets, 'localhost');
 		} else {
-			this.app.storage.loadTransactions(
+			await this.app.storage.loadTransactions(
 				{ field1: 'RedSquareLike', field2: this.profile.publicKey },
 				(txs) => {
 					let liked_tweets = [];
@@ -388,11 +420,12 @@ class TweetManager {
 		}
 
 		for (let peer of this.mod.peers) {
-			this.app.storage.loadTransactions(
+			await this.app.storage.loadTransactions(
 				{
 					field1: 'RedSquare',
 					field2: this.profile.publicKey,
-					limit: 100
+					limit: 100,
+					created_earlier_than: peer.profile_ts
 				},
 				(txs) => {
 					if (mycallback) {
@@ -406,6 +439,11 @@ class TweetManager {
 				    for (let z = 0; z < txs.length; z++) {
       					txs[z].decryptMessage(this.app);
       					this.mod.addTweet(txs[z], `${peer.publicKey}-profile`);
+      					peer.profile_ts = txs[z]?.timestamp;
+      				}
+
+      				if (txs.length == 100) {
+      					this.intersectionObserver.observe(document.getElementById('intersection-observer-trigger'));
       				}
 
 					if (peer.peer !== 'localhost') {
@@ -498,7 +536,6 @@ class TweetManager {
 				insertion_index++;
 			}
 		}
-
 		list.splice(insertion_index, 0, tweet);
 	}
 
@@ -605,12 +642,45 @@ class TweetManager {
 		}, 5);
 
 		let ob = document.getElementById('intersection-observer-trigger');
+
 		if (ob) {
 			//Only set up intersection observer if we have more content than fits on the screen
 			//(so we don't double tap the servers)
 			if (ob.getBoundingClientRect().top > window.innerHeight) {
 				this.intersectionObserver.observe(ob);
 			}
+		}
+
+		if (!this?.eventsAttached){
+
+			if (document.getElementById("curated")){ // for you
+				document.getElementById("curated").onclick = (e) => {
+					e.currentTarget.classList.add("active");
+					document.getElementById("everything").classList.remove("active");
+					this.mod.curated = true;
+					this.mod.saveOptions();
+					this.clearFeed();
+					this.showLoader();
+					setTimeout(() => {
+						this.render();
+					}, 10);
+				}
+			}
+			if (document.getElementById("everything")){ // everything
+				document.getElementById("everything").onclick = (e) => {
+					e.currentTarget.classList.add("active");
+					document.getElementById("curated").classList.remove("active");
+					this.mod.curated = false;
+					this.mod.saveOptions();
+					this.showLoader();
+					this.clearFeed();
+					setTimeout(() => {
+						this.render();
+					}, 10);
+				}
+			}
+
+			this.eventsAttached = true;
 		}
 	}
 

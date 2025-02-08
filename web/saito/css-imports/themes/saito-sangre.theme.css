@@ -42,7 +42,6 @@ html[data-theme="sangre"] {
   --color-shadow-bubble: #000c;
   /*MAIN BACKGROUND COLOR SECTION*/
   --background-color-main: #1f1a1b;
-  --background-color-shim-normal: #0009;
   /*FONTS SECTION*/
   /*quick settings*/
   /* normal */
@@ -85,7 +84,6 @@ html[data-theme="sangre"] {
   --font-color-module-menu-header: var(--font-color-primary);
   --font-color-overlay-form-header: var(--font-color-primary);
   --font-color-overlay-form-text: var(--font-color-primary);
-  --font-color-overlay-subform-recover: var(--font-color-primary);
   /* BORDER RADIUS */
   --border-radius-modal-menu: var(--border-radius-soft);
   /* BORDER THICKNESS */

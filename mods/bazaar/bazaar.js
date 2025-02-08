@@ -49,9 +49,8 @@ class Jaipur extends GameTemplate {
 		await super.render(app);
 
 		this.menu.addMenuOption('game-game', 'Game');
-		this.menu.addMenuOption('game-info', 'Info');
 
-		this.menu.addSubMenuOption('game-info', {
+		this.menu.addSubMenuOption('game-game', {
 			text: 'How to Play',
 			id: 'game-rules',
 			class: 'game-rules',
@@ -67,7 +66,7 @@ class Jaipur extends GameTemplate {
 		this.log.render();
 
 		this.playerbox.render();
-		this.playerbox.addClassAll('poker-seat-', true);
+		//this.playerbox.addClassAll('poker-seat-', true);
 
 		this.hud.card_width = 120;
 		this.hud.draggable_whole = false;
@@ -1014,11 +1013,11 @@ class Jaipur extends GameTemplate {
 	updatePlayers() {
 		let crown = `<i class="fas fa-crown"></i>`;
 
-		this.playerbox.refreshGraphic(
+		this.playerbox.updateGraphics(
 			this.camelHTML(this.game.state.herd, this.game.state.enemyherd),
 			this.game.player
 		);
-		this.playerbox.refreshGraphic(
+		this.playerbox.updateGraphics(
 			this.camelHTML(this.game.state.enemyherd, this.game.state.herd),
 			3 - this.game.player
 		);
@@ -1033,8 +1032,7 @@ class Jaipur extends GameTemplate {
 			html = crown + html;
 		}
 
-		this.playerbox.refreshInfo(html);
-		this.playerbox.refreshLog(this.bonusTokensToHTML(this.game.player));
+		this.playerbox.updateBody(html + this.bonusTokensToHTML(this.game.player));
 
 		let enemy_score =
 			this.game.state.herd < this.game.state.enemyherd ? 5 : 0;
@@ -1051,12 +1049,10 @@ class Jaipur extends GameTemplate {
 			html = crown + html;
 		}
 
-		this.playerbox.refreshInfo(html, 3 - this.game.player);
+		html += this.bonusTokensToHTML(3 - this.game.player);
 
-		this.playerbox.refreshLog(
-			this.bonusTokensToHTML(3 - this.game.player),
-			3 - this.game.player
-		);
+		this.playerbox.updateBody(html, 3 - this.game.player);
+
 	}
 
 	updateStatusWithCards(status) {
@@ -1091,12 +1087,9 @@ class Jaipur extends GameTemplate {
 				);
 			}
 
-			let html = `
-      <div class="status-message">${status}</div>
-      <div class="status-icon-menu rack" id="rack">${card_html}</div>
-    `;
+			this.updateStatus(`<div class="status-message">${status}</div>`); //Attach html to #status box
+			this.updateControls(`<div class="status-icon-menu rack" id="rack">${card_html}</div>`);
 
-			this.updateStatus(html); //Attach html to #status box
 		} catch (err) {
 			console.error(err);
 		}

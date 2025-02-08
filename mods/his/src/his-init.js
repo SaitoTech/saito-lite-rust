@@ -33,6 +33,7 @@ const ConquistadorsOverlay = require('./lib/ui/overlays/conquistadors');
 const UnitsOverlay = require('./lib/ui/overlays/units');
 const WarOverlay = require('./lib/ui/overlays/war');
 const WelcomeOverlay = require('./lib/ui/overlays/welcome');
+const HudPopup = require('./lib/ui/hud-popup');
 const WinterOverlay = require('./lib/ui/overlays/winter');
 const DeckOverlay = require('./lib/ui/overlays/deck');
 const MenuOverlay = require('./lib/ui/overlays/menu');
@@ -102,6 +103,7 @@ class HereIStand extends GameTemplate {
     this.explorers_overlay = new ExplorersOverlay(this.app, this);
     this.conquistadors_overlay = new ConquistadorsOverlay(this.app, this);
     this.schmalkaldic_overlay = new SchmalkaldicOverlay(this.app, this);  // schmalkaldic league
+    this.hud_popup = new HudPopup(this.app, this);  // hud popup
     this.assault_overlay = new AssaultOverlay(this.app, this);  // siege
     this.naval_battle_overlay = new NavalBattleOverlay(this.app, this);  // naval battles
     this.field_battle_overlay = new FieldBattleOverlay(this.app, this);  // field battles

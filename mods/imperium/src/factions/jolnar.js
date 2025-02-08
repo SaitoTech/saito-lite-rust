@@ -144,15 +144,15 @@ this.importTech("faction2-brilliant", {
                 let id = $(this).attr("id");
 
                 if (id === "no") {
-                  imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
-                  imperium_self.addPublickeyConfirm(this.publicKey, 1);
+                  imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+                  imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
                   imperium_self.endTurn();
                   return 0;
                 }
 
                 imperium_self.playerResearchTechnology(function (tech) {
-                  imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
-                  imperium_self.addPublickeyConfirm(this.publicKey, 1);
+                  imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
+                  imperium_self.addPublickeyConfirm(imperium_self.getPublicKey(), 1);
                   imperium_self.addMove("purchase\t" + player + "\ttechnology\t" + tech);
 
                   //

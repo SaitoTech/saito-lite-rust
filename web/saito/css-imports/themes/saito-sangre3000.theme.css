@@ -44,19 +44,18 @@ html[data-theme="sangre3000"] {
   --color-shadow-bubble: #000000E2;
   /* slightly lightened shadow */
   /*SHADOW SELECTION*/
-  --shadow-chat-popup: var(--shadow-shape-glow-big);
+  --shadow-draggable-popup: var(--shadow-shape-glow);
   --box-shadow-sidebar-elements: var(--shadow-shape-flat);
   --shadow-chat-message-bottom: 0px 0px 0px var(--color-shadow-bubble);
+  --shadow-shape-glow: 0 0 5px var(--color-primary);
   /* flattened and centered the shadow */
   --shadow-overlay: 0 0 150px -60px var(--color-primary);
   /* gives it that famous sangre glow */
   /* Spacing and padding adjustments */
   --border-padding-style: var(--border-padding-wide);
-  --border-padding-style-leaderboard-ranking: var(--border-padding-small);
   --border-padding-overlay-post: var(--border-padding-huge);
   /*MAIN BACKGROUND COLOR SECTION*/
   --background-color-main: #1f1a1b;
-  --background-color-shim-normal: #0009;
   /*FONTS SECTION*/
   /*quick settings*/
   /* normal */
@@ -104,7 +103,6 @@ html[data-theme="sangre3000"] {
   --font-color-hover-module-menu: var(--font-color-heavy);
   --font-color-overlay-form-header: var(--font-color-primary);
   --font-color-overlay-form-text: var(--font-color-primary);
-  --font-color-overlay-subform-recover: var(--font-color-primary);
   /* BORDER RADIUS */
   --border-radius-text-input: var(--border-radius-soft);
   /*chat module*/
@@ -136,7 +134,6 @@ html[data-theme="sangre3000"] {
   --border-radius-calendar-hover-today: var(--border-radius-round);
   --border-radius-status-message: var(--border-radius-round);
   --border-radius-sidebar-game-module: var(--border-radius-round);
-  --border-radius-identicon-needed: var(--border-radius-voluptuous);
   --border-radius-leaderboard-ranking: var(--border-radius-comfortable);
   --border-radius-offset: 0.3rem;
   /* BORDER THICKNESS */

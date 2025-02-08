@@ -24,7 +24,7 @@ this.importStrategyCard("politics", {
       // pick the speaker
       //
       let factions = imperium_self.returnFactions();
-      let html = "Make which player the speaker? <ul>";
+      let html = `<div class="status-message">Make which player the speaker?</div><ul>`;
       for (let i = 0; i < imperium_self.game.state.players_info.length; i++) {
         html +=
           '<li class="option" id="' +
@@ -68,7 +68,7 @@ this.importStrategyCard("politics", {
       ) {
         imperium_self.playerBuyActionCards(2);
       } else {
-        imperium_self.addMove("resolve\tstrategy\t1\t" + this.publicKey);
+        imperium_self.addMove("resolve\tstrategy\t1\t" + imperium_self.getPublicKey());
         imperium_self.addPublickeyConfirm(this.publicKey, 1);
         imperium_self.endTurn();
       }

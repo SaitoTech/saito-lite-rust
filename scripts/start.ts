@@ -9,6 +9,8 @@ import Wallet from '../lib/saito/wallet';
 import Blockchain from '../lib/saito/blockchain';
 import { LogLevel } from 'saito-js/saito';
 
+
+
 function getCommandLineArg(key) {
 	const prefix = key + '=';
 	const arg = process.argv.find((arg) => arg.startsWith(prefix));
@@ -16,6 +18,7 @@ function getCommandLineArg(key) {
 }
 
 async function initSaito() {
+	Error.stackTraceLimit = 20;
 	const app = new Saito({
 		mod_paths: mods_config.core
 	});
@@ -45,6 +48,9 @@ async function initSaito() {
 		console.log('saito wasm lib initialized');
 	});
 
+	// enable it for ATR testing
+	//await S.getInstance().disableProducingBlocksByTimer();
+
 	app.wallet = (await S.getInstance().getWallet()) as Wallet;
 	app.wallet.app = app;
 	app.blockchain = (await S.getInstance().getBlockchain()) as Blockchain;
@@ -52,6 +58,10 @@ async function initSaito() {
 	app.server = new Server(app);
 
 	await app.init();
+
+	if (app.options.blockchain.fork_id){
+		await app.blockchain.setForkId(app.options.blockchain.fork_id);
+	}
 
 	S.getInstance().start();
 

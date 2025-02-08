@@ -105,8 +105,16 @@ class FieldBattleOverlay {
 		document.querySelectorAll('.hits-assignable').forEach((el) => {
 try {
 			let obj = el.querySelector('.field-battle-unit .field-battle-desc');
+			let original_factionspace = obj.innerHTML;
 			let factionspace = obj.innerHTML;
+			factionspace = factionspace.replace(/<span[^>]*>.*?<\/span>/gs, '');
+
+			let was_this_guy_besieged = false;
 			let can_i_kill_this_guy = false;
+
+			if (factionspace !== original_factionspace) {
+				was_this_guy_besieged = true;
+			}
 
 			if (
 				factionspace === faction ||
@@ -238,12 +246,20 @@ try {
 
 		if (res.attacker_modified_rolls) {
 			for (let i = 0; i < res.attacker_modified_rolls.length; i++) {
+
 				let roll = res.attacker_modified_rolls[i];
 				let unit_type = '';
 				let faction_name = '';
+				let unit_status = '';
+				let previously_besieged_unit = 0;
+
 				if (i < res.attacker_units.length) {
 					unit_type = res.attacker_units[i];
 					faction_name = res.attacker_units_faction[i];
+					previously_besieged_unit = res.attacker_units_relief_force[i];
+					if (previously_besieged_unit) {
+						unit_status = " (besieged)";
+					}
 				} else {
 					faction_name = 'army leader present';
 					unit_type = 'bonus';
@@ -269,6 +285,13 @@ try {
 					assignable = 'destroyed';
 					faction_name = 'destroyed';
 				}
+				if (unit_status != '') {
+					unit_status = faction_name + "<span>" + unit_status + "</span>";
+				} else {
+					unit_status = faction_name;
+				}
+
+
 				let rrclass = '';
 				if (roll >= 5) {
 					rrclass = 'hit';
@@ -280,10 +303,11 @@ try {
 
 				let html = `
                 <div class="field-battle-row ${assignable}" data-unit-type="${unit_type}" data-faction="${faction_name}">
-                	<div class="field-battle-unit">${unit_type}<div class="field-battle-desc">${faction_name}</div></div>
+                	<div class="field-battle-unit">${unit_type}<div class="field-battle-desc">${unit_status}</div></div>
                 	<div class="field-battle-roll ${rrclass}">${roll}</div>
                 </div>
               `;
+
 				this.app.browser.addElementToSelector(
 					html,
 					'.field-battle-grid .attacker'

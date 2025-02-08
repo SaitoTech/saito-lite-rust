@@ -10,7 +10,7 @@ class Record extends ModTemplate {
 	constructor(app) {
 		super(app);
 		this.app = app;
-		this.name = 'screenrecord';
+		this.name = 'Screenrecord';
 		this.slug = 'screenrecord';
 		this.description = 'Recording Module';
 		this.categories = 'Utilities Communications';
@@ -39,6 +39,17 @@ class Record extends ModTemplate {
 			} catch (error) {
 				console.error('Error updating media recorder:', error);
 			}
+		});
+
+		this.app.connection.on("interrupt-screen-recording", async ()=>{
+
+			// Don't stop until the game ends...
+			if (this.type === 'game') return;
+
+			if (this?.mediaRecorder) {
+				await this.stopRecording();
+			}
+
 		});
 	}
 
@@ -151,13 +162,6 @@ class Record extends ModTemplate {
 			};
 		}
 
-		if (type === 'screenrecord-video-controls') {
-			return {
-				mediaRecorder: this.mediaRecorder,
-				stopRecording: this.stopRecording.bind(this),
-				type: this.type
-			};
-		}
 		if (type === 'game-menu') {
 			this.attachStyleSheets();
 			if (!obj.recordOptions) return;
@@ -396,7 +400,7 @@ class Record extends ModTemplate {
 
 		let options = {
 			mimeType: mimeType,
-			videoBitsPerSecond: stream.getVideoTracks().length > 0 ? 1778000 : undefined,
+			videoBitsPerSecond: stream.getVideoTracks().length > 0 ? 1.5 * 1024 * 1024 : undefined,
 			audioBitsPerSecond: 320 * 1024
 		};
 

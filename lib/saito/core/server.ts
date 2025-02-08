@@ -97,7 +97,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 				}
 			});
 			socket.on('open',()=>{
-				S.getLibInstance().process_new_peer(peer_index)
+				S.getLibInstance().process_new_peer(peer_index, url)
 					.then(() => {
 						console.log(
 							'connected to : ' + url + ' with peer index : ' + peer_index
@@ -216,6 +216,7 @@ export class NodeSharedMethods extends CustomSharedMethods {
 			// console.log("buffer length : " + buffer.byteLength, buffer);
 			newtx.deserialize(buffer);
 			newtx.unpackData();
+			// console.debug("processing peer tx : ", newtx.msg);
 		} catch (error) {
 			console.error(error);
 			newtx.msg = buffer;
@@ -234,6 +235,10 @@ export class NodeSharedMethods extends CustomSharedMethods {
 
 	sendWalletUpdate() {
 		this.app.connection.emit('wallet-updated');
+	}
+
+	sendBlockFetchStatus(count:bigint){
+		this.app.connection.emit('block-fetch-status', {count: count});
 	}
 
 	async saveWallet(): Promise<void> {
@@ -343,9 +348,10 @@ class Server {
 		});
 		wss.on('connection', (socket: any, request: any) => {
 			const { pathname } = parse(request.url);
-			console.log('connection established');
+			console.log('connection established : ', (request.headers['x-forwarded-for']||request.socket.remoteAddress));
 			S.getLibInstance().get_next_peer_index()
 				.then((peer_index: bigint) => {
+					console.log("adding new peer : " + (request.headers['x-forwarded-for']||request.socket.remoteAddress) + " as " + peer_index);
 					S.getInstance().addNewSocket(socket, peer_index);
 
 					socket.on('message', (buffer: any) => {
@@ -360,7 +366,7 @@ class Server {
 						S.getLibInstance().process_peer_disconnection(peer_index);
 					});
 
-					return S.getLibInstance().process_new_peer(peer_index);
+					return S.getLibInstance().process_new_peer(peer_index, request.headers['x-forwarded-for'] || request.socket.remoteAddress);
 				});
 
 		});
@@ -604,11 +610,14 @@ class Server {
 			//
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
+			//
 			const block = await this.app.blockchain.getBlock(bsh);
 
 			if (!block) {
 				console.log(`block : ${bsh} doesn't exist...`);
-				res.sendStatus(404);
+				if (!res.finished) {
+					res.sendStatus(404);
+				}
 				return;
 			}
 
@@ -616,30 +625,28 @@ class Server {
 				block.block_type === BlockType.Full ||
 				!block.hasKeylistTxs(keylist)
 			) {
-				res.writeHead(200, {
-					'Content-Type': 'text/plain',
-					'Content-Transfer-Encoding': 'utf8'
-				});
-				const liteblock = block.generateLiteBlock(keylist);
 
-				// console.log(
-				//   `liteblock : ${bsh} from memory txs count = : ${liteblock.transactions.length}`
-				// );
-				// console.log(
-				//   "valid txs : " +
-				//     liteblock.transactions.filter((tx) => tx.type !== TransactionType.SPV).length
-				// );
-				// liteblock.transactions.forEach((tx) => {
-				// });
+				const liteblock = block.generateLiteBlock(keylist);
 				const buffer = Buffer.from(liteblock.serialize());
-				res.end(buffer, 'utf8');
+
+				if (!res.finished) {
+					res.writeHead(200, {
+						'Content-Type': 'text/plain',
+						'Content-Transfer-Encoding': 'utf8'
+					});
+					return res.end(buffer, 'utf8');
+				}
+
 				return;
 			}
 
 			console.log('loading block from disk : ' + bsh);
 
 			let methods = new NodeSharedMethods(this.app);
+
+			//
 			// TODO - load from disk to ensure we have txs -- slow.
+			//
 			try {
 				let buffer = new Uint8Array();
 				let list = methods.loadBlockFileList();
@@ -650,15 +657,15 @@ class Server {
 					}
 				}
 				if (buffer.byteLength == 0) {
-					res.sendStatus(404);
+					if (!res.finished) {
+						return res.sendStatus(404);
+					}
 					return;
 				}
 				let blk = new Block();
 				blk.deserialize(buffer);
 				const newblk = blk.generateLiteBlock(keylist);
-				// console.log(
-				//   `lite block : ${newblk.hash} generated with txs : ${newblk.transactions.length}`
-				// );
+
 				console.log(
 					`lite block fetch : block  = ${req.params.bhash} key = ${pkey} with txs : ${newblk.transactions.length}`
 				);
@@ -671,20 +678,26 @@ class Server {
 						(tx) => tx.type !== TransactionType.SPV
 					).length
 				);
-
-				res.writeHead(200, {
-					'Content-Type': 'text/plain',
-					'Content-Transfer-Encoding': 'utf8'
-				});
 				const buffer2 = Buffer.from(newblk.serialize());
-				res.end(buffer2);
+
+				if (!res.finished) {
+					res.writeHead(200, {
+						'Content-Type': 'text/plain',
+						'Content-Transfer-Encoding': 'utf8'
+					});
+					return res.end(buffer2);
+				}
 				return;
 			} catch (error) {
 				console.log('failed serving lite block : ' + bsh);
 				console.error(error);
 			}
 			try {
-				res.sendStatus(400);
+				if (!res.finished) {
+					res.sendStatus(400);
+				} 
+				return;
+
 			} catch (error) {
 				console.error(error);
 			}
@@ -696,21 +709,31 @@ class Server {
 				// console.debug("server giving out block : " + hash);
 				if (!hash) {
 					console.warn('hash not provided');
-					return res.sendStatus(400); // Bad request
+					if (!res.finished) {
+						return res.sendStatus(400); // Bad request
+					}
 				}
 
 				const block = await this.app.blockchain.loadBlockAsync(hash);
-				if (!block) {
-					console.warn('block not found for : ' + hash);
-					return res.sendStatus(404); // Not Found
-				}
 				let buffer = block.serialize();
 
-				res.status(200);
-				res.end(buffer);
+				if (!block) {
+					console.warn('block not found for : ' + hash);
+					if (!res.finished) {
+						return res.sendStatus(404); // Not Found
+					}
+					return;
+				}
+
+				if (!res.finished) {
+					res.status(200);
+					res.end(buffer);
+				}
 			} catch (err) {
 				console.log('ERROR: server cannot feed out block');
-				res.sendStatus(404);
+				if (!res.finished) {
+					return res.sendStatus(404);
+				}
 			}
 		});
 
@@ -736,7 +759,10 @@ class Server {
 				res.end(snapshot.toString());
 			} catch (error) {
 				console.error(error);
-				res.sendStatus(404);
+				if (!res.finished) {
+					return res.sendStatus(404);
+				}
+				return;
 			}
 		});
 
@@ -776,6 +802,170 @@ class Server {
 		//   }
 		// });
 
+
+		expressApp.get('/lite-block-disk/:bhash/:pkey?', async (req, res) => {
+			if (req.params.bhash == null) {
+				return;
+			}
+			let pkey = await server_self.app.wallet.getPublicKey();
+			if (req.params.pkey != null) {
+				pkey = req.params.pkey;
+				if (pkey.length == 66) {
+					pkey = toBase58(pkey);
+				}
+			}
+
+			const bsh = req.params.bhash;
+			let keylist = [];
+			let peer: Peer | null = null;
+			let peers: Peer[] = await this.app.network.getPeers();
+			for (let i = 0; i < peers.length; i++) {
+				try {
+					if (peers[i].publicKey === pkey) {
+						peer = peers[i];
+						break;
+					}
+				} catch (error) {
+					console.error(error);
+				}
+			}
+			if (peer == null) {
+				keylist.push(pkey);
+			} else {
+				keylist = peer.keyList;
+				if (!keylist.includes(pkey)) {
+					keylist.push(pkey);
+				}
+			}
+
+			let methods = new NodeSharedMethods(this.app);
+
+			//
+			// TODO - load from disk to ensure we have txs -- slow.
+			//
+			try {
+				let buffer = new Uint8Array();
+				let list = methods.loadBlockFileList();
+				for (let filename of list) {
+					if (filename.includes(bsh)) {
+						buffer = methods.readValue('./data/blocks/' + filename);
+						break;
+					}
+				}
+				if (buffer.byteLength == 0) {
+					if (!res.finished) {
+						return res.sendStatus(404);
+					}
+					return;
+				}
+				let blk = new Block();
+				blk.deserialize(buffer);
+
+				const newblk = blk.generateLiteBlock(keylist);
+				let block = JSON.parse(newblk.toJson());
+
+				var html = '<div class="block-table">';
+				  html += "<div><h4>id</h4></div><div>" + block.id + "</div>";
+				  html += "<div><h4>hash</h4></div><div>" + bsh + "</div>";
+				  html += "<div><h4>creator</h4></div><div>"+ block.creator +"</div>";
+				  html +=
+				    '<div><h4>source</h4></div><div><a href="/explorer/blocksource?hash=' +
+				    bsh +
+				    '">click to view source</a></div>';
+				  html += "</div>";
+
+				if (block.transactions.length > 0) {
+					let nolan_per_saito = 100000000;
+				    html += "<h3>Bundled Transactions:</h3></div>";
+
+				    html += '<div class="block-transactions-table">';
+				    html += '<div class="table-header">id</div>';
+				    html += '<div class="table-header">sender</div>';
+				    html += '<div class="table-header">fee</div>';
+				    html += '<div class="table-header">type</div>';
+				    html += '<div class="table-header">module</div>';
+
+				    for (var mt = 0; mt < block.transactions.length; mt++) {
+				      var tmptx = block.transactions[mt];
+				      tmptx.id = mt;
+
+				      var tx_fees = (0);
+				      //if (tmptx.fees_total == "") {
+
+				      //
+				      // sum inputs
+				      //
+				      let inputs = (0);
+				      if (tmptx.from != null) {
+				        for (let v = 0; v < tmptx.from.length; v++) {
+				          inputs += (tmptx.from[v].amount);
+				        }
+				      }
+
+				      //
+				      // sum outputs
+				      //
+				      let outputs = (0);
+				      for (let v = 0; v < tmptx.to.length; v++) {
+				        //
+				        // only count non-gt transaction outputs
+				        //
+				        if (tmptx.to[v].type != 1 && tmptx.to[v].type != 2) {
+				          outputs += (tmptx.to[v].amount);
+				        }
+				      }
+
+				      tx_fees = inputs - outputs;
+
+				      //}
+				      let tx_from = "fee tx";
+				      if (tmptx.from.length > 0) {
+				        tx_from = tmptx.from[0].publicKey;
+				      } else if (tmptx.type===6){
+				        tx_from = "issuance tx";
+				        tx_fees = 0;
+				      } else if (tmptx.type===7){
+				        tx_from = "block stake tx";
+				      }
+
+				      html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + mt + `</a></div>`;
+				      html += `<div><a onclick="showTransaction('tx-` + tmptx.id + `');">` + tx_from + `</a></div>`;
+				      html += "<div>" + ((tx_fees) * (nolan_per_saito)) + "</div>";
+				      html += "<div>" + tmptx.type + "</div>";
+				      if (tmptx.type == 0) {
+				        if (tmptx.msg?.module) {
+				          html += "<div>" + tmptx.msg?.module + "</div>";
+				        } else {
+				          html += "<div>Money</div>";
+				        }
+				      }
+				      if (tmptx.type == 1) {
+				        html += "<div>" + tmptx.msg?.name + "</div>";
+				      }
+				      if (tmptx.type > 1) {
+				        html += "<div> </div>";
+				      }
+				      html += '<div class="hidden txbox tx-' + tmptx.id + '">' + JSON.stringify(tmptx) + "</div>";
+				    }
+				    html += "</div>";
+				}
+
+				
+				let obj = JSON.stringify({html: html});
+				if (!res.finished) {
+					res.writeHead(200, {
+						'Content-Type': 'application/json',
+						'Content-Transfer-Encoding': 'UTF-8'
+					});
+					return res.end(obj);
+				}
+				return;
+			} catch (error) {
+				console.log('failed serving lite block : ' + bsh);
+				console.error(error);
+			}
+		});
+
 		/////////
 		// web //
 		/////////
@@ -798,12 +988,16 @@ class Server {
 				);
 				fs.closeSync(fd);
 			}
-			res.sendFile(client_options_file);
-			//res.send(this.app.storage.returnClientOptions());
+			if (!res.finished) {
+				return res.sendFile(client_options_file);
+			}
+			return;
 		});
 
 		expressApp.get('/r', (req, res) => {
-			res.sendFile(this.web_dir + 'refer.html');
+			if (!res.finished) {
+				return res.sendFile(this.web_dir + 'refer.html');
+			}
 			return;
 		});
 
@@ -838,12 +1032,14 @@ class Server {
 			process.env.NODE_ENV === "prod"
 			  ? "private max-age=31536000"
 			  : "private, no-cache, no-store, must-revalidate";
-			res.setHeader("Cache-Control", caching);
-			res.setHeader("expires", "-1");
-			res.setHeader("pragma", "no-cache");
+				res.setHeader("Cache-Control", caching);
+				res.setHeader("expires", "-1");
+				res.setHeader("pragma", "no-cache");
 			****/
 
-			res.sendFile(this.web_dir + '/saito/saito.js');
+			if (!res.finished) {
+				return res.sendFile(this.web_dir + '/saito/saito.js');
+			}
 			return;
 		});
 
@@ -859,28 +1055,20 @@ class Server {
 		// res.write -- have to use res.end()
 		// res.send --- is combination of res.write() and res.end()
 		//
-
 		this.app.modules.webServer(expressApp, express);
 
 		expressApp.get('*', (req, res) => {
-
-            res.sendFile(`${this.web_dir}404.html`);
-			//res.sendFile(`${this.web_dir}tabs.html`);
-//
-//			res.status(404).sendFile(`${this.web_dir}404.html`);
-//			res.status(404).sendFile(`${this.web_dir}tabs.html`);
+	            	if (!res.finished) {
+		    		return res.sendFile(`${this.web_dir}404.html`);
+			}
+			return;
 		});
 
-		//     io.on('connection', (socket) => {
-		// console.log("IO CONNECTION on NODE: ");
-		//       this.app.network.addRemotePeer(socket);
-		//     });
 		this.initializeWebSocketServer();
 
 		webserver.listen(this.server.port, () => {
 			console.log('web server is listening');
 		});
-		// try webserver.listen(this.server.port, {cookie: false});
 		this.webserver = webserver;
 	}
 

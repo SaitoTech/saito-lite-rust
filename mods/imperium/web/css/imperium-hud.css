@@ -121,6 +121,7 @@ hud-menu-overlay ul li:hover {
 .status ul li:last-child,
 hud-menu-overlay ul li {
 	border-color: #555;
+	font-size: 2rem;
 }
 
 .hud {

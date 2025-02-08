@@ -78,7 +78,7 @@ class JoinGameOverlay {
 							ticker: this.invite.options.crypto, 
 							stake: this.invite.options.stake, 
 							accept_callback: (input = null) => { 
-								let update_options = input !== null && typeof this.invite.options.stake == "object";
+								let update_options = (input !== null && typeof this.invite.options.stake == "object") ? "stake" : "";
 								if (update_options) {
 									this.invite.options.stake[this.mod.publicKey] = input;
 								}
@@ -101,9 +101,9 @@ class JoinGameOverlay {
 		if (document.getElementById('arcade-game-controls-continue-game')) {
 			document.getElementById('arcade-game-controls-continue-game').onclick = async (e) => {
 				this.app.browser.logMatomoEvent('GameInvite', 'ContinueGame', this.invite.game_mod.name);
-				window.location = `/${this.invite.game_slug}/#gid=${this.app.crypto
+				navigateWindow(`/${this.invite.game_slug}/#gid=${this.app.crypto
 					.hash(this.invite.game_id)
-					.slice(-6)}`;
+					.slice(-6)}`);
 			};
 		}
 
@@ -164,9 +164,7 @@ class JoinGameOverlay {
 		if (document.getElementById('arcade-game-controls-watch-game')) {
 			document.getElementById('arcade-game-controls-watch-game').onclick = (e) => {
 				this.app.connection.emit('league-overlay-remove-request');
-
-				this.mod.observeGame(this.invite.game_id);
-
+				this.mod.observeGame(this.invite.game_id, true);
 				this.overlay.remove();
 				this.app.browser.logMatomoEvent('GameInvite', 'WatchGame', this.invite.game_mod.name);
 			};

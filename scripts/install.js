@@ -288,7 +288,7 @@ function webPack() {
 					},
 					// All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
 					{
-						test: /\.js$/,
+						test: /\.(js|jsx)$/, 
 						use: [
 							'source-map-loader',
 							{
@@ -297,7 +297,7 @@ function webPack() {
 									// configFile: path.resolve(__dirname, './build/babel.config.js'),           
 									root: path.resolve(__dirname, './build'),
 									rootMode: "upward",
-									presets: ["@babel/preset-env"],
+									presets: ["@babel/preset-env", "@babel/preset-react"],
 									sourceMaps: false,
 									cacheCompression: false,
 									cacheDirectory: true,
@@ -339,6 +339,12 @@ function webPack() {
 							path.resolve(__dirname, './mods/devtools/bundler'),
 							path.resolve(__dirname, './mods/devtools/mods')
 						]
+					},
+					{ 
+						test: /\.m?js/, 
+						resolve: { 
+							fullySpecified: false 
+						} 
 					}
 				]
 			},

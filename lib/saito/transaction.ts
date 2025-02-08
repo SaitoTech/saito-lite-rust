@@ -82,9 +82,6 @@ export default class Transaction extends SaitoTransaction {
 					// );
 					this.addFromSlip(slip);
 				}
-				// if (jsonobj.from.length > 0) {
-				//   console.log("important tx: " + jsonobj.from[0].publicKey);
-				// }
 
 				for (let i = 0; i < jsonobj.to.length; i++) {
 					const fslip = jsonobj.to[i];
@@ -246,9 +243,7 @@ export default class Transaction extends SaitoTransaction {
 		return transaction;
 	}
 
-	returnMessage() {
-		//console.log("TRANSACTION:");
-		//console.log(JSON.stringify(this));
+returnMessage() {
 
 		if (this.dmsg) {
 			return this.dmsg;
@@ -284,12 +279,10 @@ export default class Transaction extends SaitoTransaction {
 				console.log('here: ' + JSON.stringify(this.msg));
 			}
 		}
+
 		return this.msg;
 	}
 
-	/*
-  	  Sanka -- maybe these convenience functions should be moved up a level?
-  	*/
 	addTo(publicKey: string) {
 		console.assert(!!this.to, 'to field not found : ', this);
 		for (let s of this.to) {
@@ -337,14 +330,12 @@ export default class Transaction extends SaitoTransaction {
 			m: m.toString('base64'),
 			opt: app.crypto.stringToBase64(opt)
 		};
-		//console.log("serialize_to_web : ", web_obj);
 		return JSON.stringify(web_obj);
 	}
 
 	deserialize_from_web(app: Saito, webstring: string) {
 		try {
-			let web_obj: { t: string; m: string; opt: string } =
-				JSON.parse(webstring);
+			let web_obj: { t: string; m: string; opt: string } = JSON.parse(webstring);
 			this.deserialize_from_base64(web_obj.t);
 			this.data = Buffer.from(web_obj.m, 'base64');
 			this.unpackData();

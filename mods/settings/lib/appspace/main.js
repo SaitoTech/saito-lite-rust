@@ -64,6 +64,55 @@ class SettingsAppspace {
 		} catch (err) {
 			console.log('error creating jsonTree: ' + err);
 		}
+
+		if (document.getElementById("delete_marked")){
+			document.getElementById("delete_marked").onclick = async (e) => {
+				let updated = false;
+				Array.from(document.querySelectorAll(".jsontree_node_marked")).forEach(node => {
+					updated = true;
+					let path = this.getJSONPath(node).replaceAll(`"]`, "").split("[\"");
+
+					let obj = this.app.options;
+					while(path.length > 1){
+						let key = path.shift();
+						if (key){
+							obj = obj[key];
+						}
+					}
+
+					let final_key = path.shift();
+					console.log(obj, final_key);
+					if (Array.isArray(obj)){
+						obj.splice(parseInt(final_key), 1);
+					}else{
+						delete obj[final_key];	
+					}
+
+				});
+				this.renderDebugTree();
+				let c = await sconfirm(`Would you like to save your ${updated ? "updated " : ""}options file?`)
+				if (c) {
+					this.app.storage.saveOptions();
+				}
+			}
+		}
+	}
+
+	getJSONPath(node){
+		if (node.classList.contains("jsontree_tree")){
+			return "";
+		}
+
+		let currentPath = '';
+		//Find the label
+		if (node.classList.contains("jsontree_node")){
+			if (node.children[0].classList.contains("jsontree_label-wrapper")){
+				//currentPath = node.querySelector(".jsontree_label").textContent;
+				currentPath = "[" + node.querySelector(".jsontree_label").textContent + "]";
+			}
+		}
+
+		return this.getJSONPath(node.parentElement) + currentPath;
 	}
 
 	renderCryptoGameSettings(){
@@ -268,9 +317,7 @@ class SettingsAppspace {
 									alert(
 										'Restoration Complete ... click to reload Saito'
 									);
-									setTimeout(() => {
-										window.location.reload();
-									}, 300);
+									reloadWindow(300);
 								} else {
 									let err = result;
 									if (err.name == 'SyntaxError') {
@@ -299,9 +346,7 @@ class SettingsAppspace {
 				if (confirmation) {
 					await app.wallet.onUpgrade('nuke');
 					if (this.app.browser.browser_active == 1) {
-						setTimeout(() => {
-							window.location.reload();
-						}, 300);
+						reloadWindow(300);
 					}
 				}
 			};
@@ -370,9 +415,7 @@ class SettingsAppspace {
 								'Success! Confirm to reload'
 							);
 							if (c) {
-								setTimeout(() => {
-									window.location.reload();
-								}, 300);
+								reloadWindow(300);
 							}
 						} else {
 							let err = result;
@@ -394,12 +437,6 @@ class SettingsAppspace {
 			}
 		}
 
-		if(document.getElementById('settings-edit-json')) {
-			document.getElementById('settings-edit-json').onclick =
-			function (e) {
-				window.location.href = '/debug';
-			};
-		}
 	}
 }
 

@@ -73,13 +73,16 @@
       fnct : this.playerRequestDivorce,
       img : "papal_decree.jpg" ,
     });
-    menu.push({
-      factions : ['papacy'],
-      name : "Approve Divorce",
-      check : this.canPlayerApproveDivorce,
-      fnct : this.playerApproveDivorce,
-      img : "papal_decree.jpg" ,
-    });
+//
+// this means only England can request
+//
+//    menu.push({
+//      factions : ['papacy'],
+//      name : "Approve Divorce",
+//      check : this.canPlayerApproveDivorce,
+//      fnct : this.playerApproveDivorce,
+//      img : "papal_decree.jpg" ,
+//    });
     menu.push({
       factions : ['papacy'],
       name : "Rescind Excommunication",
@@ -139,7 +142,7 @@
 	text.push(`${this.returnFactionName(x[2])} offers ${this.returnFactionName(x[1])} a card`);
       }
       if (x[0] === "returns_captured" || x[0] === "ransom") {
-	text.push(`${this.returnFactionName(x[1])} returns ${x[1]}`);
+	text.push(`${this.returnFactionName(x[1])} returns ${this.returnLeaderName(x[1])}`);
       }
       if (x[0] === "control" || x[0] === "yield_key") {
 	text.push(`${this.returnFactionName(x[3])} yields ${this.returnSpaceName(x[2])} to ${this.returnFactionName(x[1])}`);
@@ -281,6 +284,7 @@
 
   canPlayerYieldTerritory(his_self, player, faction, target="") {
     if (target != "") { 
+      if (target == "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return 0; }
       if (his_self.returnPlayerCommandingFaction(faction) == his_self.returnPlayerCommandingFaction(target)) { return 0; }
     }
     let target_spaces = his_self.countSpacesWithFilter(
@@ -359,6 +363,7 @@
 
   canPlayerGetMercenaries(his_self, player, faction, target="") {
     if (faction == "ottoman" || target == "ottoman") { return 0; }
+    if (faction == "protestant" && his_self.game.state.events.schmalkaldic_league == 0) { return 0; }
     return 0;
   }
 
@@ -840,7 +845,7 @@
     let io = his_self.returnDiplomacyImpulseOrder(faction);
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
-      if (faction != io[i]) {
+      if (faction != io[i] && !(io[i] == "protestant" && his_self.game.state.events.schmalkaldic_league == 0)) {
 	if (target_faction != io[i]) { auto_select_target = false; }
         html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
       }
@@ -946,7 +951,7 @@
     let io = his_self.returnDiplomacyImpulseOrder(faction);
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
-      if (faction != io[i] && his_self.returnPlayerCommandingFaction(faction) != his_self.returnPlayerCommandingFaction(io[i])) {
+      if (faction != io[i] && his_self.returnPlayerCommandingFaction(faction) != his_self.returnPlayerCommandingFaction(io[i]) && !(io[i] == "protestant" && his_self.game.state.events.schmalkaldic_league == 0)) {
 	if (target_faction != io[i]) { auto_select_target = false; }
         html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
       }
@@ -1083,7 +1088,7 @@
     let io = his_self.returnDiplomacyImpulseOrder(faction);
     let html = '<ul>';
     for (let i = 0; i < io.length; i++) {
-      if (faction != io[i] && io[i] != "ottoman") {
+      if (faction != io[i] && io[i] != "ottoman" && !(io[i] == "protestant" && his_self.game.state.events.schmalkaldic_league == 0)) {
         html += `<li class="option" id="${io[i]}">${his_self.returnFactionName(io[i])}</li>`;
       }
     }

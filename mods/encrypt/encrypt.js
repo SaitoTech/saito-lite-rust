@@ -24,7 +24,6 @@
  *********************************************************************************/
 var saito = require('../../lib/saito/saito');
 var ModTemplate = require('../../lib/templates/modtemplate');
-const Big = require('big.js');
 const Transaction = require('../../lib/saito/transaction').default;
 
 class Encrypt extends ModTemplate {

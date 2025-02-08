@@ -7,6 +7,7 @@
     this.game.state.player_last_move = "";
     this.game.state.player_last_spacekey = "";
     this.game.state.field_battle_relief_battle = false;
+    this.game.state.rejected_pre_battle_fortification = [];
 
     //
     // remove foul weather
@@ -19,14 +20,26 @@
     this.game.state.events.spring_preparations = "";
     this.game.state.events.henry_petitions_for_divorce_grant = 0;
     this.game.state.spaces_assaulted_this_turn = [];
-    this.game.state.events.cranmer_active = 0;
     this.game.state.events.more_executed_limits_debates = 0;
     this.game.state.events.more_bonus = 0;
     this.game.state.events.sack_of_rome = 0;
     this.game.state.events.roxelana = 0;
-
     this.game.state.loyola_bonus_active = 0;
 
+    //
+    // add cranmer if needed
+    //
+    if (this.game.state.events.cranmer_active == 1) { 
+      if (this.game.state.round >= 3) {
+        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer-reformer");
+        if (where_is_cranmer) { this.game.state.events.cranmer_active = 0; }
+      }
+    } else {
+      if (this.game.state.round >= 3) {
+        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer-reformer");
+        if (where_is_cranmer) { this.game.state.events.cranmer_active = 1; }
+      }
+    }
 
     //
     // reset impulse commits
@@ -78,10 +91,10 @@
     //
     // add cranmer if needed
     //
-    if (this.game.state.cranmer_active != 1) { 
+    if (this.game.state.events.cranmer_active != 1) { 
       if (this.game.state.round >= 3) {
-        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer");
-        if (where_is_cranmer != "") { this.game.state.cranmer_active = 1; }
+        let where_is_cranmer = this.isPersonageOnMap("england", "cranmer-reformer");
+        if (where_is_cranmer) { this.game.state.events.cranmer_active = 1; }
       }
     }
 
@@ -112,6 +125,7 @@
     this.game.state.cards_evented = [];
     this.game.state.foreign_wars_fought_this_impulse = [];
     this.game.state.henry_viii_pope_approves_divorce = 0;
+    this.game.state.events.cromwell = 0;
 
     this.game.state.may_explore['england'] = 1;
     this.game.state.may_explore['france'] = 1;
@@ -287,10 +301,49 @@
   }
 
   captureLeader(winning_faction, losing_faction, space, unit = false) {
+
     if (!unit) { return; }
     if (unit.personage == false && unit.army_leader == false && unit.navy_leader == false && unit.reformer == false) { return; }
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
     try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
+    winning_faction = this.returnControllingPower(winning_faction);
+
+    let return_to_nearest_fortified_key = false;
+
+    //
+    // special treatment if unaligned minor power captures
+    //
+    // independent factions cannot capture leaders, so we return them to the nearest
+    // friendly, fortified space. edge-case out of rule book. rules determination here
+    // by Ed Beach (Oct 29, 2024 on WhatsApp)
+    //
+    if (["independent","venice","hungary","genoa","scotland"].includes(winning_faction)) {
+
+      let res = this.returnNearestFriendlyFortifiedSpacesTransitPasses(losing_faction, space, 0, 0);
+      let capitals = this.returnCapitals(losing_faction);
+
+      if (res.length > 0) {
+	this.addArmyLeader(losing_faction, res[0].key, unit.type);
+	return;
+      } else {
+	for (let z = 0; z < capitals.length; z++) {
+	  if (this.isSpaceControlled(losing_faction, capitals[z])) {
+	    this.addArmyLeader(losing_faction, capitals[z], unit.type);
+	    return;
+	  }
+	}
+      }
+
+      //
+      // no capital? push problem until next round
+      //
+      // no need to delete, function will sort out after return in this case
+      //
+      this.game.state.military_leaders_removed_until_next_round.push(unit);
+      return;
+
+    }
+
     let winning_player = this.returnPlayerCommandingFaction(winning_faction);
     if (winning_player > 0) {
       let p = this.game.state.players_info[winning_player-1];
@@ -373,6 +426,7 @@
 
   addNavalSquadron(faction, space, num=1) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "squadron"));
     }
@@ -381,6 +435,7 @@
 
   addCorsair(faction, space, num=1) {
     try { if (this.game.spaces[space]) { space = this.game.spaces[space]; } } catch (err) {}
+    try { if (this.game.navalspaces[space]) { space = this.game.navalspaces[space]; } } catch (err) {}
     for (let i = 0; i < num; i++) {
       space.units[faction].push(this.newUnit(faction, "corsair"));
     }
@@ -794,6 +849,7 @@ if (this.game.state.scenario != "is_testing") {
     state.debater_committed_this_impulse = {};
 
     state.cards_left = {};
+    state.rejected_pre_battle_fortification = [];
 
     state.master_of_italy = {};
     state.master_of_italy['ottoman'] = 0;
@@ -871,6 +927,7 @@ if (this.game.state.scenario != "is_testing") {
     state.events.copernicus = "";        // faction that gets VP
     state.events.copernicus_vp = 0;     // 1 or 2 VP
     state.events.scots_raid = 0;	// 1 if active, limits French activities
+    state.events.cromwell = 0;		// 1 if England publishes for 2 CP
 
     state.french_chateaux_vp = 0;
 
@@ -1211,7 +1268,24 @@ if (this.game.state.scenario != "is_testing") {
         let leader = obj.leader;
 	let s = obj.space;
         let faction = obj.faction;
+
+	//	
+	// only return to original space if controlled
+	//
+	let fcs = this.returnFactionControllingSpace(s);
+
+	if (this.returnControllingPower(fcs) == this.returnControllingPower(faction) || this.areAllies(faction, fcs)) {
+	} else {
+	  let capitals = this.returnCapitals(faction);
+	  for (let z = 0; z < capitals.length; z++) {
+	    if (this.returnFactionControllingSpace(capitals[0]) == faction) {
+	      s = capitals[z];
+	    }
+	  }
+	}
+
 	this.restoreMilitaryLeader(leader, s, faction);
+
       }
     }
 

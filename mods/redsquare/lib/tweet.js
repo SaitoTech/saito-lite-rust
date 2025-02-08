@@ -48,6 +48,7 @@ class Tweet {
 		if (!this.tx.optional.thread_id) { this.tx.optional.thread_id = ''; }
 		if (!this.tx.optional.retweeters) { this.tx.optional.retweeters = []; }
 		if (!this.tx.optional.thread_id) { this.tx.optional.thread_id = this.tx.signature; }		//
+		if (!this.tx.optional.source) { this.tx.optional.source = {}; }
 
 		//
 		// keep track of parent_id and thread_id (replies include these vars)
@@ -68,7 +69,7 @@ class Tweet {
 		this.text = '';
 		this.youtube_id = null;
 		this.created_at = this.tx.timestamp;
-		this.updated_at = this.tx.timestamp;
+		this.updated_at = this.tx?.updated_at || this.tx.timestamp;
 
 		//
 		// the notice shows up at the top of the tweet BEFORE the username and
@@ -104,6 +105,8 @@ class Tweet {
 		this.unknown_children = [];
 		this.unknown_children_sigs_hmap = {};
 		this.user.notice = 'new post on ' + this.formatDate(this.created_at);
+		this.source = this.tx.optional.source;
+
 
 		//
 		// transactions can contain more specifi information for 
@@ -297,6 +300,7 @@ class Tweet {
 				this.app.browser.returnAddressHTML(this.tx.from[0].publicKey) +
 				' ' +
 				this.formatDate();
+
 			this.retweet.container = '.tweet-manager';
 			let t = this.mod.returnTweet(this.retweet.tx.signature);
 			if (t) {
@@ -332,7 +336,7 @@ class Tweet {
 		}
 
 		if (this.tx.optional?.update_tx) {
-			this.notice = 'this tweet was edited on ' + this.formatDate(this.updated_at);
+			this.notice = 'this tweet was edited on ' + this.formatDate();
 		}
 
 		if (this.render_after_selector) {
@@ -736,9 +740,7 @@ class Tweet {
 								}
 							}, 50);
 						} else {
-							setTimeout(() => {
-								window.location.href = `/redsquare?tweet_id=${this.thread_id}`;
-							}, 300);
+							navigateWindow(`/redsquare?tweet_id=${this.thread_id}`, 300);
 						}
 					}
 				};
@@ -986,7 +988,7 @@ class Tweet {
 	// Add the given tweet somewhere, it may be a reply or a reply to a reply
 	//
 	addTweet(tweet) {
-		this.updated_at = tweet.updated_at;
+		this.updated_at = Math.max(this.updated_at, tweet.updated_at);
 
 		//
 		// if this tweet is the parent-tweet of a tweet we have already downloaded
@@ -1225,6 +1227,12 @@ class Tweet {
 
 				//check for shorts
 				let split = this.link.split('/shorts/');
+				if (typeof split[1] != 'undefined') {
+					videoId = split[1];
+				}
+
+				//check for live
+				split = this.link.split('/live/');
 				if (typeof split[1] != 'undefined') {
 					videoId = split[1];
 				}

@@ -61,6 +61,8 @@
 }
 
 .strategy-card .text {
+	font-family: helvetica;
+    	font-size: 1.8rem;
 	position: absolute;
 	z-index: 101;
 	padding-left: 1.5vw;
@@ -68,10 +70,11 @@
 	padding-top: 20%;
 	height: inherit;
 	width: inherit;
-	font-size: 1.4vw;
+	font-size: 1.3vw;
 	line-height: 2vw;
 	padding-top: 4vw;
 	color: #fffb;
+	font-family: helvetica;
 }
 
 .strategy-card .text br {

@@ -4,6 +4,41 @@
   }
 
 
+  displayCustomOverlay(c="", msg="") {
+
+    //
+    // move HUD above winter if winter is showing
+    //
+    this.welcome_overlay.pullHudOverOverlay();
+    this.welcome_overlay.pushHudUnderOverlay();
+
+
+    let deck = this.returnDeck(true); // include removed
+    if (deck[c]) {
+      if (deck[c].returnCustomOverlay) {
+
+        let obj = deck[c].returnCustomOverlay();
+        let title = obj.title;
+        let text = obj.text;
+        let img = obj.img;
+        let card = this.returnCardImage(c);
+
+        if (msg == "") {
+          msg = this.popup(c) + " triggers";
+        }
+ 
+        this.welcome_overlay.renderCustom({
+          text : text,
+          title : title,
+          img : img,
+          card : card,
+        });
+      }
+    }
+
+  }
+
+
   addSelectable(el) {
     if (!el.classList.contains("selectable")) {
       el.classList.add('selectable');

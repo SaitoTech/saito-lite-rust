@@ -173,7 +173,7 @@ class Profile extends ModTemplate {
 				if (result){
 					let c = await sconfirm(`Import key ${this.app.keychain.returnUsername(key.publicKey)}?`);
 					if (c){
-						setTimeout(() => { window.location.reload(); }, 300);
+						reloadWindow(300);
 					}
 					return;
 				}
@@ -361,9 +361,12 @@ class Profile extends ModTemplate {
 
 				// Need to insert profile stuff!
 
-				res.setHeader('Content-type', 'text/html');
-				res.charset = 'UTF-8';
-				res.send(pageHome(app, mod_self, app.build_number, updatedSocial));
+				let html = pageHome(app, mod_self, app.build_number, updatedSocial);
+				if (!res.finished) {
+					res.setHeader('Content-type', 'text/html');
+					res.charset = 'UTF-8';
+					return res.send(html);
+				}
 				return;
 			}
 		);

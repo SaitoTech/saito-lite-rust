@@ -19,6 +19,7 @@
 
 .strategy-card-selection-controls .strategy-card img {
 	width: auto;
+	filter: brightness(0.8);
 }
 
 .strat_slot_1 {
@@ -77,6 +78,7 @@
 .strategy-card-popup:hover {
 	transform: scale(1.1) !important;
 	z-index: 20 !important;
+	filter: brightness(1.5);
 }
 
 .strategy-card-selection-controls .strategy-card.strategy-card-popup.opaque {

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Saito Test Keys</title>
+    <link rel="stylesheet" href="/saito/saito.css" />
+    <style>
+        .key-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            padding: 20px;
+        }
+
+        .key-cell {
+            background: var(--saito-white);
+            padding: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+
+        .key-cell:hover {
+            background: var(--saito-white-wash);
+        }
+
+        .header-cell {
+            background: var(--saito-red);
+            color: white;
+            font-weight: bold;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+
+        .copy-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--saito-red);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+            animation: fadeInOut 2s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="key-grid">
+        <div class="header-cell">Private Key</div>
+        <div class="header-cell">Public Key</div>
+        
+        <div class="key-cell" onclick="copyToClipboard(this)">d62cd978a0bac0bcf97eff82f7388c6210f649e2126c332dcee3894cfd77a103</div>
+        <div class="key-cell" onclick="copyToClipboard(this)">wDwNGzgx1yn2N21gHiHs43USRiXPx9H9NAcef1UZjLRX</div>
+        
+        <div class="key-cell" onclick="copyToClipboard(this)">0435658a9dd54ce741b4ce4789711707e8cf4aa7e841a76ff5df0313caf941d1</div>
+        <div class="key-cell" onclick="copyToClipboard(this)">sHs6UQb5TDN5WTJ4nnehSUo79uCMxZaCENrzPzGiV6pJ</div>
+        
+        <div class="key-cell" onclick="copyToClipboard(this)">c8beb43281c53efea632d3a6185577b446ab1403b4b67525f8e8aef4f7513ba6</div>
+        <div class="key-cell" onclick="copyToClipboard(this)">h17F8nAJ6BEsFuUbD4EbQKwHHYQBZxzwQpAsL58akY7m</div>
+        
+        <div class="key-cell" onclick="copyToClipboard(this)">7614198ed41f4214729a7d5957c2e79d969792d3046bfd43348b8bed5567f582</div>
+        <div class="key-cell" onclick="copyToClipboard(this)">xM2vUs5XCpNjYjcgxk4yVhybDcayk3tnwZNWrFg7jRGs</div>
+        
+        <div class="key-cell" onclick="copyToClipboard(this)">45dd08cfa770778c5dcaa9d6c0e63815f16dda79c43cf6aaadbbcae017a8bd5d</div>
+        <div class="key-cell" onclick="copyToClipboard(this)">tFCXYDgmKxTZTKG1wDuLLkLW1T1tZ5uiz4fZDPeYGWfC</div>
+        
+        <div class="key-cell" onclick="copyToClipboard(this)">ce17f5286520182283876638ffc36bc8a0db3e2498dddcc30587cfa94eb4b50d</div>
+        <div class="key-cell" onclick="copyToClipboard(this)">zavTygq2xGHETckJvnMNfgY5UpqWEU46vBXyVz2wUZgz</div>
+        
+        <div class="key-cell" onclick="copyToClipboard(this)">7462b66d116779aafd485d86fce0e7c86e7396e0fb8b6b995bba0a9578ba9466</div>
+        <div class="key-cell" onclick="copyToClipboard(this)">dd4s6mdnYdq4bb7QtcwTRWoq7hApUiQrDGi9CE8hvfdc</div>
+        
+        <div class="key-cell" onclick="copyToClipboard(this)">f2a7da8b170894bac3152957c6b45a0b5af823cef9224df5cb66807042ec8917</div>
+        <div class="key-cell" onclick="copyToClipboard(this)">bujP18K4fkzHvtuRriXqgN6ay8AmUjhoRSj9jjBXohkj</div>
+        
+        <div class="key-cell" onclick="copyToClipboard(this)">503ed5ff51f2a17866ce8ca34013e58bb697a4aae740c40e6d1c1d3cf0d528a0</div>
+        <div class="key-cell" onclick="copyToClipboard(this)">muJ8J1paK3nvHdFtdpakTejgCsAVkFmG7rGkc2dvCNpm</div>
+        
+        <div class="key-cell" onclick="copyToClipboard(this)">5e8baa6faf568242ab7bce2cbdaa7684d50de778f2e873f2423cd0d3c955fbed</div>
+        <div class="key-cell" onclick="copyToClipboard(this)">urxxJT3p3wBNM1FSpF8nCUd8mKbyqGARbgDybr43Umna</div>
+    </div>
+
+    <div id="copyNotification" class="copy-notification">Copied to clipboard!</div>
+
+    <script>
+        function copyToClipboard(element) {
+            const text = element.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const notification = document.getElementById('copyNotification');
+                notification.style.display = 'block';
+                
+                // Reset animation
+                notification.style.animation = 'none';
+                notification.offsetHeight; // Trigger reflow
+                notification.style.animation = 'fadeInOut 2s ease-in-out';
+                
+                // Hide after animation
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html> 

@@ -25,6 +25,8 @@ This alows for a header with a header with title to be added without extra CSS
   padding: unset;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .saito-contact {
@@ -55,7 +57,7 @@ This alows for a header with a header with title to be added without extra CSS
   filter: brightness(0.7) grayscale(1);
 }
 
-.saito-modal .saito-modal-content {
+.saito-modal-title + .saito-modal-content {
   border-top: 1px solid var(--saito-border-color);
   padding: 0.5rem 0;
 }
@@ -137,8 +139,8 @@ This alows for a header with a header with title to be added without extra CSS
   color: var(--font-color-button-hover-modal-oldschool);
 }
 
-.saito-modal-menu-option>i {
-  float: left;
+.saito-modal-menu-option > i {
+  justify-self: center;
   margin-right: 2rem;
 }
 
@@ -386,7 +388,7 @@ This alows for a header with a header with title to be added without extra CSS
   .saito-modal {
     min-width: unset;
     max-width: unset;
-    padding: 0.5rem;
+    padding: 1rem;
     width: 90vw;
     grid-template-columns: 100%;
   }
@@ -409,11 +411,14 @@ This alows for a header with a header with title to be added without extra CSS
 }
 
 @media only screen and (max-width: 768px) {
+  .saito-modal-menu-option{
+    margin: 0 1rem;
+  }
   .saito-modal-menu-option>i {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
   .saito-modal-menu-option>div {
-    font-size: 1.5rem;
+    font-size: 2rem;
   }
 }
 
@@ -422,7 +427,8 @@ This alows for a header with a header with title to be added without extra CSS
     margin: 0;
   }
   .saito-modal-menu-option {
-    margin: 0 1rem;
+    margin: 0;
+    padding: 1.5rem 1rem;
   }
 }
 

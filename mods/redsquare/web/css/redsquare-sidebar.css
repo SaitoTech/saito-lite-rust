@@ -9,6 +9,11 @@
   gap: 1rem;
 }
 
+.saito-sidebar.right, .saito-sidebar.left {
+	padding: 0.5rem 1rem;
+	margin: unset;
+}
+
 
 .redsquare-menu .saito-button-primary{
 	border: var(--border-thickness-button-primary) solid var(--border-color-button-primary);

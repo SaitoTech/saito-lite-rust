@@ -23,15 +23,16 @@ class Post {
 	render(container = '') {
 
 		this.container = container ? '.tweet-manager ' : '.saito-overlay ';
+		this.id = container ? 'tweet-overlay-embedded' : 'tweet-overlay';
 
 		console.log('Post render: ' + this.container);
 
 		if (container) {
-			if (document.getElementById('tweet-overlay')) {
+			if (document.getElementById(this.id)) {
 				console.log('replace');
 				this.app.browser.replaceElementById(
 					PostTemplate(this.app, this.mod, this),
-					'tweet-overlay'
+					this.id
 				);
 			} else {
 				console.log('Insert post form');
@@ -48,7 +49,7 @@ class Post {
 		//
 
 		if (!this.input) {
-			this.input = new SaitoInput(this.app, this.mod, this.container + '.tweet-overlay-content', "tweet-overlay");
+			this.input = new SaitoInput(this.app, this.mod, this.container + '.tweet-overlay-content', this.id);
 		}
 
 		if (!this.user) {
@@ -135,7 +136,7 @@ class Post {
 
 		if (post_self.file_event_added == false) {
 			post_self.app.browser.addDragAndDropFileUploadToElement(
-				'tweet-overlay',
+				this.id,
 				post_self.input.callbackOnUpload,
 				false
 			);
@@ -243,8 +244,8 @@ class Post {
 		// saito-loader
 		//
 		post_self.overlay.remove();
-		if (document.querySelector(this.container + '#tweet-overlay')) {
-			document.querySelector(this.container + '#tweet-overlay').remove();
+		if (document.querySelector(this.container + '#' + this.id)) {
+			document.querySelector(this.container + '#' + this.id).remove();
 		}
 
 		//Edit
@@ -252,8 +253,9 @@ class Post {
 			data = { text: text, tweet_id: this.tweet.tx.signature };
 
 			let qs =
-				this.container + `.tweet-${this.tweet.tx.signature} .tweet-body .tweet-main .tweet-text`;
+				`.tweet-manager > .tweet-${this.tweet.tx.signature} .tweet-body .tweet-main .tweet-text`;
 			let obj = document.querySelector(qs);
+			
 			if (obj) {
 				obj.innerHTML = text;
 			}
@@ -322,7 +324,10 @@ class Post {
 				//
 
 				post_self.mod.sendRetweetTransaction(post_self.app, post_self.mod, data, this.tweet.tx);
-				this.tweet.retweeters.unshift(post_self.mod.publicKey);
+
+				if (!this.tweet.retweeters.includes(post_self.mod.publicKey)){
+					this.tweet.retweeters.unshift(post_self.mod.publicKey);	
+				}
 
 				if (this.mod?.manager?.mode?.includes('tweet')) {
 					this.tweet.render();
@@ -390,13 +395,12 @@ class Post {
 
 	addImg(img) {
 		let post_self = this;
-		this.app.browser.addElementToDom(
-			`<div class="post-tweet-img-preview">
-        <img src="${img}"/>
-        <i class="fa fa-times"></i>
-       </div>`,
-			document.querySelector(this.container + '#post-tweet-img-preview-container')
-		);
+		let html = `<div class="post-tweet-img-preview">
+        				<img src="${img}"/>
+        				<i class="fa fa-times"></i>
+       				</div>`;
+
+		this.app.browser.addElementToSelector(html, this.container + '#post-tweet-img-preview-container');
 		this.images.push(img);
 
 		// attach img preview event

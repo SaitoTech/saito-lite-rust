@@ -1,23 +1,12 @@
 module.exports = AddAppOverlayTemplate = (app, mod) => {
 
 	return `
-  <style>
-    .saito-app-overlay .saito-app-body .saito-app-upload {
-      border: 3px dotted;
-      width: 100%;
-      margin: auto;
-      text-align: center;
-      font-size: 2.2rem;
-      padding: 15rem 0rem;
-    }
-  </style>
-
     <div class="saito-overlay-form saito-app-overlay" id="saito-app-overlay">
 
         <div class="saito-app-body">
           
           <div class="saito-app-upload active-tab paste_event" id="saito-app-upload">
-            drag-and-drop module to install
+            drag-and-drop a .saito module to install
           </div>
 
         </div>

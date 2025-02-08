@@ -22,6 +22,10 @@
   padding-top: 0px;
 }
 
+.tweet-main ul li {
+  line-height: 2rem;
+}
+
 .tweet.has-reply {
   border-bottom: none;
 }
@@ -149,6 +153,10 @@
   margin: 0 0 0 4.5rem;
 }
 
+.tweet-html-markers {
+  display: none;
+}
+
 .tweet-notice .saito-address {
   display: inline;
   margin-right: 0.3rem;
@@ -179,6 +187,32 @@
 
 .tweet-text .saito-mention.saito-address.treated:hover {
   color: var(--font-color-hover-mention);
+}
+
+.tweet-body ul li {
+  list-style-position: inside;
+  line-height: 1.5rem;
+  list-style-type: disc;
+  text-indent: -16px;
+  padding-left: 22px;
+}
+
+.tweet-body ol li {
+  list-style-position: inside;
+  line-height: 1.5rem;
+  list-style-type: decimal;
+  text-indent: -16px;
+  padding-left: 22px;
+}
+
+.tweet-body h1,
+.tweet-body h2,
+.tweet-body h3,
+.tweet-body h4,
+.tweet-body h5,
+.tweet-body h6 {
+  margin-bottom: 0rem;
+  line-height: 1.2em;
 }
 
 /* For overly long tweets, we crop and show that it can be expanded */

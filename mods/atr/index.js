@@ -1,0 +1,43 @@
+module.exports = (app, mod, build_number, og_card, game) => {
+	let html = `
+  
+  <!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <meta name="author" content="Khan" />
+    <link rel="stylesheet" type="text/css" href="/saito/saito.css?v=${build_number}" />
+    <title>Saito ATR</title>
+
+    <link
+      rel="stylesheet"
+      href="/saito/lib/font-awesome-6/css/fontawesome.min.css"
+      type="text/css"
+      media="screen"
+    />
+    <link
+      rel="stylesheet"
+      href="/saito/lib/font-awesome-6/css/all.css"
+      type="text/css"
+      media="screen"
+    />
+    <link rel="stylesheet" type="text/css" href="/saito/style.css" />
+
+  </head>
+
+  <body>
+    <div class="saito-container atr">
+
+    </div>
+
+<script type="text/javascript" src="/saito/saito.js?build=${build_number}" >
+</script>
+  </html>`;
+
+  return html;
+};

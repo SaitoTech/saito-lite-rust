@@ -1,6 +1,6 @@
 #saito-alert-shim {
   z-index: 2000;
-  background-color: var(--background-color-shim-warning);
+  background-color: var(--background-color-shim-dark);
   position: absolute;
   width: 100%;
   height: 100%;

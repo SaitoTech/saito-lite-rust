@@ -57,7 +57,7 @@ class TST extends CryptoModule {
 	//        of the transaction that makes this transfer on the external web3
 	//        crypto.
 	//
-	async sendPayment(amounts = '', recipient = '', unique_hash = '') {
+	async sendPayment(amounts = '', recipient = '', unique_hash = '', fee) {
 		return this.app.crypto.hash(Math.random().toString());
 	}
 
@@ -85,6 +85,11 @@ class TST extends CryptoModule {
 
 	async renderModalSelectCrypto(app, mod, cryptomod) {
 		return WarningTemplate(await this.returnAddress());
+	}
+
+
+	async returnWithdrawalFeeForAddress(address="", callback){
+		callback(0.005);
 	}
 
 	attachEventsModalSelectCrypto(app, mod, cryptomod) {

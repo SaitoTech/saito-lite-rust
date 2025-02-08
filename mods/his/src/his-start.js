@@ -24,6 +24,9 @@
     // preload images
     //
     this.preloadImages();
+    setTimeout(() => {
+      this.preloadMoreImage();
+    }, 20000);
 
 
     // required here so menu will be proper

@@ -1,0 +1,252 @@
+
+input {
+  background-color: var(--saito-background-color);
+}
+
+.blog-widget {
+  padding: 1rem;
+}
+
+.blog-editor {
+  width: 80rem;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: var(--saito-background-color);
+  border: 1px solid var(--saito-border-color);
+  padding: 2rem;
+}
+
+.blog-editor h2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  color: var(--saito-heading-color, inherit);
+}
+
+.title-input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid var(--saito-border-color);
+  border-radius: 4px;
+  background: var(--saito-input-background);
+  color: var(--saito-text-color, inherit);
+}
+
+.title-input:focus {
+  outline: none;
+}
+
+/* Blog posts */
+.blog-posts {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.blog-post {
+  padding: 1.5rem;
+  border: 1px solid var(--saito-border-color);
+  border-radius: 4px;
+  transition: transform 0.2s ease;
+}
+
+.blog-post:hover {
+  transform: translateY(-2px);
+}
+
+.blog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.blog-new-post-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  color: var(--saito-font-color);
+  border: 1px solid var(--saito-border-color);
+}
+
+
+
+.date {
+  display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+
+.post-preview {
+  color: var(--saito-font-color);
+  line-height: 1.6;
+  margin: 1rem 0;
+  opacity: 0.9;
+}
+
+.read-more-btn {
+  background: var(--saito-background-color);
+  color: var(--saito-font-color);
+  border: 1px solid var(--saito-border-color);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.read-more-btn:hover {
+  background: var(--saito-border-color);
+}
+
+.post-meta {
+  font-size: 0.875rem;
+  color: var(--saito-font-color);
+  opacity: 0.7;
+  margin: 0.5rem 0;
+}
+.blog-widget .post-title {
+  color: var(--saito-font-color);
+  margin: 0;
+  font-weight: 600;
+}
+
+.no-posts {
+  text-align: center;
+  padding: 2rem;
+  color: var(--saito-font-color);
+  opacity: 0.7;
+  border: 1px dashed var(--saito-border-color);
+  border-radius: 4px;
+}
+
+/* Editor Actions */
+.editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--saito-border-color);
+}
+
+.editor-actions button {
+  padding: 0.5rem 1.25rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn {
+  background: transparent;
+  border: 1px solid var(--saito-border-color);
+  color: var(--saito-font-color);
+}
+
+.cancel-btn:hover {
+}
+
+.publish-btn {
+  border: 1px solid var(--saito-border-color);
+  color: var(--saito-font-color);
+}
+
+.publish-btn:hover {
+  opacity: 0.9;
+}
+
+.tox.tox-tinymce {
+  margin-bottom: 1rem;
+  border: 1px solid var(--saito-border-color) !important;
+  border-radius: 4px;
+}
+
+
+@media (max-width: 1280px) {
+  .blog-editor {
+    width: 60rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .blog-editor {
+    width: 90vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .blog-editor {
+    width: 95vw;
+    padding: 1rem;
+  }
+
+  .editor-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .editor-actions button {
+    width: 100%;
+  }
+  
+  .blog-post {
+    padding: 1rem;
+  }
+}
+
+/* TinyMCE Theme Overrides */
+.tox.tox-tinymce {
+  border: 1px solid var(--saito-background-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tox .tox-edit-area__iframe {
+  background: var(--saito-background-color) !important;
+}
+
+.tox .tox-menubar {
+  background: var(--saito-background-color) !important;
+}
+
+.tox .tox-toolbar,
+.tox .tox-toolbar__overflow,
+.tox .tox-toolbar__primary {
+  background: var(--saito-background-color) !important;
+  border-bottom: 1px solid var(--saito-border-color);
+}
+
+.tox .tox-mbtn {
+  color: var(--saito-font-color) !important;
+}
+
+.tox-promotion {
+  background: var(--saito-background-color) !important;
+}
+
+.tox .tox-tbtn svg {
+  fill: var(--saito-font-color) !important;
+}
+
+html {
+  color: var(--saito-font-color) !important;
+}
+
+.mce-content-body {
+  color: var(--saito-font-color) !important;
+}
+
+.tox:not(.tox-tinymce-inline) .tox-editor-header {
+  background-color: var(--saito-background-color) !important;
+}
+
+#mce_0_ifr html {
+  color:var(--saito-font-color);
+}

@@ -19,7 +19,7 @@ class DiplomacyOverlay {
 		this.proposal.parties = [];
 		this.proposal.proposer = "";
 		this.proposal.target = "";
-	
+                this.game_menu_zindex = 0;	
 	}
 
         pullHudOverOverlay() {
@@ -54,6 +54,12 @@ class DiplomacyOverlay {
 		this.purgeProposals();
 	        this.is_visible = false;
 		this.overlay.hide();
+          	let gm = document.querySelector("#saito-header");
+		if (this.game_menu_zindex > 0) {
+          	  if (gm) {
+          	    gm.style.zIndex = this.game_menu_zindex;
+		  }
+	        }
 		return;
 	}
 
@@ -63,6 +69,13 @@ class DiplomacyOverlay {
 	  this.is_visible = true;
 	  let num = 0;
 	  this.active_proposal = -1;
+
+          let gm = document.querySelector("#saito-header");
+          if (gm) {
+            this.game_menu_zindex = gm.style.zIndex;
+            gm.style.zIndex = 999;
+          }
+
 
 	  if (faction == "") { faction = this.faction; } else { this.faction = faction; }
 	  if (faction != "" && !this.proposal.parties.includes(faction)) { this.proposal.parties.push(faction); }

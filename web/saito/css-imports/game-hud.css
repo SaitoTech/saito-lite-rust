@@ -37,6 +37,30 @@
   z-index: 40;
   font-size: 1.6rem;
   border-bottom: 0px;
+  overflow: visible;
+}
+
+
+.hud-notice {
+  display: none;
+  border: 3px solid #424143;
+  background-color: #b79e76;
+  border-radius: 1rem 1rem 0 0;
+  height: 65%;
+  position: absolute;
+  top: 0;
+  width: calc(100% - 2rem);
+  margin: 0 0.5rem;
+  transition: all 0.5s ease-in-out;
+  z-index: -1;
+  transform: scale(0.95); /* Slightly scale down */
+}
+
+.hud-notice.show {
+  /*display: block;*/
+  top: -65%;
+  transform: scale(1); /* Slightly scale down */
+  transition: all 1.5s ease-in-out;
 }
 
 .hud-square {
@@ -103,6 +127,7 @@
     height: min-content;
     min-height: fit-content;
     text-align: center;
+    cursor: default;
 }
 
 
@@ -169,7 +194,7 @@
     flex-direction: column;
 }
 
-.controls ul li , .options {
+.controls ul li, .options {
     background-color: whitesmoke;
     height: 8rem;
     border-top: 1px solid var(--saito-border-color);
@@ -182,9 +207,34 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 
-.controls ul li:hover , .options {
+.controls ul li:hover , .options:hover {
    background-color: #e7e7e7;
 }
 
+
+#controls ul li, ul li.option {
+    position: relative;    
+}
+
+@media screen and (orientation: portrait) and (max-width: 600px) {
+
+        .hud-notice {
+                width: calc(100% - 4rem);
+        }
+        .hud-notice.show {
+                top: -65%;
+                margin: 0;
+        }
+
+}
+
+/* Game Hamburger Menu */
+.hamburger-container {
+  padding: 0.5rem;
+  background: #0003;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+}

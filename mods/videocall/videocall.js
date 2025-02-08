@@ -107,8 +107,6 @@ class Videocall extends ModTemplate {
 				this.layout = this.app.options.stun.settings?.layout;
 			}
 
-			console.log('************* LAYOUT', this.layout);
-
 			if (app.browser.returnURLParameter('stun_video_chat')) {
 				this.room_obj = JSON.parse(
 					app.crypto.base64ToString(app.browser.returnURLParameter('stun_video_chat'))
@@ -132,7 +130,6 @@ class Videocall extends ModTemplate {
 		if (app.BROWSER !== 1) {
 			return;
 		}
-
 		if (service.service === 'relay') {
 			this.isRelayConnected = true;
 		}
@@ -191,8 +188,8 @@ class Videocall extends ModTemplate {
 						callback: async (app, public_key) => {
 							console.log('kicking user: ', public_key);
 							app.connection.emit('remove-peer-box', public_key);
-							this.streams.removePeer(public_key, 'was kicked out');
 							await this.sendKickTransaction(public_key);
+							this.streams.removePeer(public_key, 'was kicked out');
 						}
 					}
 				];
@@ -385,6 +382,7 @@ class Videocall extends ModTemplate {
 					icon: 'fa-solid fa-cog',
 					prepend: true,
 					callback: function (app) {
+						console.log("***** 1");
 						app.connection.emit('videocall-show-settings');
 					}
 				}
@@ -505,13 +503,15 @@ class Videocall extends ModTemplate {
 					}
 
 					if (txmsg.request === 'peer-left') {
-						this.disconnect(tx.from[0].publicKey);
+						if (!tx.isFrom(this.publicKey)){
+							this.disconnect(tx.from[0].publicKey);	
+						}
 					}
 
 					if (txmsg.request === 'peer-kicked') {
 						console.log("kicked out of video call...");
-						this.streams.leaveCall();
-						siteMessage(`${this.app.keychain.returnUsername(from)} kicked you out of the call`);
+						this.app.connection.emit('stun-disconnect');
+						siteMessage(`${this.app.keychain.returnUsername(tx.from[0].publicKey)} kicked you out of the call`);
 					}
 
 					if (txmsg.request === 'peer-kick-broadcast') {
@@ -533,6 +533,8 @@ class Videocall extends ModTemplate {
 							'stun-switch-view',
 							this.app.options.stun.settings?.layout || this.layout
 						);
+
+						this.streams.remoteStreams.delete("presentation");
 						this.screen_share = null;
 					}
 					if (txmsg.request === 'broadcast-call-list') {
@@ -597,6 +599,14 @@ class Videocall extends ModTemplate {
 			newtx.addTo(this.room_obj.host_public_key);
 		}
 
+		// Fallback for saved calls when blocks aren't forming correctly
+		let event = this.app.keychain.returnKey(this.room_obj.call_id, true);
+		if (event?.profile?.participants){
+			for (let participant of event.profile.participants){
+				newtx.addTo(participant);
+			}
+		}
+
 		newtx.msg.module = 'Videocall';
 		newtx.msg.request = 'call-list-request';
 		newtx.msg.call_id = this.room_obj.call_id;
@@ -644,8 +654,10 @@ class Videocall extends ModTemplate {
 		}
 
 		// Process if we saved event but are not in the call!
-
+		let event = this.app.keychain.returnKey(txmsg.call_id, true);
+		
 		if (event){
+			console.log("EVENT!!!", event);
 			// I am in a different call
 			if (this.room_obj?.call_id){
 				siteMessage(`${this.app.keychain.returnUsername(from)} joined ${event.identifier}`);
@@ -654,7 +666,7 @@ class Videocall extends ModTemplate {
 				let c = await sconfirm(`${this.app.keychain.returnUsername(from)} ready for ${event.identifier}, join now?`);
 				if (c) {
 					if (event?.link){
-						window.location = event.link;	
+						navigateWindow(event.link);	
 					}else{
 						salert("No saved link");
 					}
@@ -694,6 +706,7 @@ class Videocall extends ModTemplate {
 		console.log('STUN: My peer list: ', this.room_obj.call_peers, 'Received list: ', call_list);
 
 		for (let peer of call_list) {
+			this.addCallParticipant(txmsg.call_id, peer);
 			if (peer !== this.publicKey) {
 				if (!this.room_obj?.call_peers.includes(peer)) {
 					this.room_obj?.call_peers.push(peer);
@@ -858,7 +871,6 @@ class Videocall extends ModTemplate {
 
 	addCallParticipant(call_id, publicKey){
 		let event = this.app.keychain.returnKey(call_id, true);
-		
 		// We will add this key as a call participant...
 		if (event){
 			if (!event?.profile){
@@ -870,13 +882,14 @@ class Videocall extends ModTemplate {
 
 			if (!event.profile.participants.includes(publicKey)){
 				event.profile.participants.push(publicKey);	
+				this.app.keychain.saveKeys();
 			}
-			this.app.keychain.saveKeys();
 		}
 	}
 
 	saveCallToKeychain(){
 
+		console.log("Saving call as event in keychain");
 		let call_link = this.generateCallLink();
 		let name = "Video Call";
 
@@ -949,10 +962,11 @@ class Videocall extends ModTemplate {
 
 			mod_self.social.url = reqBaseURL + encodeURI(mod_self.returnSlug());
 
-			res.setHeader('Content-type', 'text/html');
-			res.charset = 'UTF-8';
-
-			res.send(HomePage(app, mod_self, app.build_number, mod_self.social));
+			if (!res.finished) {
+				res.setHeader('Content-type', 'text/html');
+				res.charset = 'UTF-8';
+				return res.send(HomePage(app, mod_self, app.build_number, mod_self.social));
+			}
 			return;
 		});
 

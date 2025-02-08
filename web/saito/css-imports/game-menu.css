@@ -11,9 +11,14 @@
   margin: 1px 1px 3px 3px;
   z-index: 500;
   font-size: 1.9rem;
-
+  min-width: 20vw;
   cursor: pointer;
   color: black;
+}
+
+#saito-header .game-menu{
+  position: relative;
+  margin: unset;
 }
 
 .game-menu ul,
@@ -189,15 +194,10 @@
 
 @media screen and (orientation: portrait) and (max-width: 600px) {
   .game-menu {
-    width: 250px;
-    height: 100vh;
-    left: -251px;
     border: unset;
     box-shadow: unset;
-    border-radius: 0 0 1rem 0;
-    background-color: #222d;
-    transition: left 0.3s;
     margin: 0;
+    height: 40px;
   }
 
   .game-menu ul {
@@ -205,6 +205,16 @@
     border: unset;
     box-shadow: unset;
     background-color: unset;
+  }
+
+  .game-menu > ul {
+    position: absolute;
+    width: 250px;
+    height: 100vh;
+    left: -251px;
+    border-radius: 0 0 1rem 0;
+    background-color: #222d;
+    transition: left 0.3s;
   }
 
   .game-menu ul li {
@@ -236,8 +246,13 @@
     width: 150px;
   }
 
-  .game-menu.mobile-visible {
+  .game-menu.mobile-visible ul {
     left: 0;
+    margin-left: 2rem;
+  }
+
+  .game-menu.mobile-visible > ul {
+    margin-left: unset;
   }
 
   .game-menu .game-menu-mobile-toggle {

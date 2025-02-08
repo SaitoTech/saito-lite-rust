@@ -146,7 +146,6 @@ class Warehousex extends ModTemplate {
 		let midnight = today.getTime();
 		let yesterday = midnight - 24 * 60 * 60 * 1000;
 
-		let mods = {};
 		let ranked = [];
 		let tx_ct = 0;
 		let unique_user_count = 0;
@@ -173,8 +172,9 @@ class Warehousex extends ModTemplate {
 
 			unique_user_count = uu[0]?.ct;
 			tt.forEach((res) => {
-				mods[res.tx_module] = res.ct;
-				ranked.push(`${res.tx_module} (${res.ct})`);
+				if (res.tx_module !== "spam"){
+					ranked.push(`${res.tx_module} (${res.ct})`);	
+				}
 				tx_ct += res.ct;
 			});
 

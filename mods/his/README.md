@@ -28,6 +28,16 @@ order to speed-up gameplay:
    hold that card. This feature can be disabled by switching into slow gameplay
    mode.
 
+ - consistency in the event of abandoned leaders - this edition enforces some
+   consistent treatment of leaders who are abandoned by their troops while 
+   besieging a space. If the space is independent, the leaders retreat to the 
+   nearest fortified space (or capital) or failing that are removed from play 
+   and returned at the start of the following round. If the space is controlled
+   by another play, the leaders are captured by the controller of that space.
+   Spaces that are controlled by minor allies are independent if those allies 
+   are not allied with a major power, but otherwise treated as if they are 
+   a major power space.
+
  - winter retreat is heavily automated, units are automatically returned to the
    nearest fortified space, or returned to a random capital (with attrition if
    needed) if no such space exists. attrition is automatically assigned to the 

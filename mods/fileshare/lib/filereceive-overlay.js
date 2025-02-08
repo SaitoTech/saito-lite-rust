@@ -185,7 +185,7 @@ class FileReceiveOverlay {
 
 
 	attachEvents(){
-		this.app.browser.makeDraggable(this.divId);
+		this.app.browser.makeDraggable(this.divId, "", true);
 		let div = document.getElementById(this.divId);
 
 		let accept_btn = div.querySelector("#accept-file");

@@ -45,7 +45,7 @@
 	border: 1px solid var(--border-color-general-dividers);
 	box-shadow: -1px -1px #000;
 	background-color: var(--background-color-shim-light);
-  border-radius: var(--border-radius-identicon-needed);
+  	border-radius: var(--border-radius-identicon);
 }
 
 /*

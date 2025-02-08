@@ -34,6 +34,14 @@ class Settings {
       });
     });
 
+    Array.from(document.querySelectorAll("input[name='redsquare-curation']")).forEach(radio => {
+      radio.addEventListener("change", (e) => {
+        this.mod.curationLevel = e.currentTarget.value;
+        this.mod.saveOptions();
+      });
+    });
+
+
     if (document.getElementById("browser_service")){
       document.getElementById("browser_service").addEventListener("change", (e) => {
         if (e.currentTarget.checked){

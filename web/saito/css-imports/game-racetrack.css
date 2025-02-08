@@ -34,9 +34,11 @@ Slide in score track
 
 .racetrack-slot {
   position: relative;
-  height: 5vh;
+  min-height: 5vh;
   background: #5558;
   margin: 3px;
+  display: flex;
+  flex-direction: column;
 }
 
 .racetrack-slot-label {
@@ -56,6 +58,7 @@ Slide in score track
   display: flex;
   flex-direction: column;
   height: 100%;
+  flex-grow: 1;
 }
 
 

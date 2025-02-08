@@ -472,8 +472,9 @@ class Keychain {
 	saveKeys() {
 		this.app.options.keys = [...this.keys];
 		this.app.storage.saveOptions();
-		if (this.returnHash() != this.hash) {
-			this.hash = this.returnHash();
+		let new_hash = this.returnHash();
+		if (new_hash != this.hash) {
+			this.hash = new_hash;
 			this.app.connection.emit('wallet-updated');
 		}
 	}
@@ -613,6 +614,25 @@ class Keychain {
 
 
 
+
+	returnKeyArchiveNodes(publicKey) {
+		const keylist: any = this.app.options.keys;
+		const key = keylist.find(key => key.publicKey === publicKey);
+		if (key && key.profile && Array.isArray(key.profile.archive_nodes)) {
+			const parsedArchiveNodes = key.profile.archive_nodes.map(node => {
+				try {
+					return JSON.parse(node);
+				} catch (error) {
+					console.error(`Failed to parse archive node: ${node}`, error);
+					return null;
+				}
+			}).filter(node => node !== null);
+			return parsedArchiveNodes || [];
+		}else {
+			console.warn('no archive nodes found');
+			return [];
+		}
+	}
 
 	/**
  * Adds a publicKey to the watch list and updates the keys storage.

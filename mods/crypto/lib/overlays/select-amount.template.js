@@ -10,9 +10,15 @@ module.exports = (app, mod, form) => {
         <input autocomplete="off" id="amount_to_stake_input" class="stake" 
         type="number" min="0" max="9999999999.99999999" step="0.00000001" value="${form?.stake || '0.0'}" >`;
 
+      let fee = 0;
+
       if (form.fixed){
         html += `<div class="crypto-ticker">${form.ticker}</div>`;
+        
+        fee = mod.includeFeeInMax(form.ticker);
+
       } else {
+
         html +=  `
                  <div class="token-dropdown"><select class="withdraw-select-crypto" id="stake-select-crypto">`;
         for (let ticker in mod.balances){
@@ -21,11 +27,25 @@ module.exports = (app, mod, form) => {
             form.ticker = ticker;
             mod.max_balance = parseFloat(mod.balances[ticker].balance);
           }
+
+          if (form.ticker == ticker) {
+            fee = mod.includeFeeInMax(ticker);            
+          }
+
           html += `<option value="${ticker}" ${form.ticker == ticker ? "selected" : ""}>${ticker}</option>`;
         }
         html +=  `</select>
           </div>`;
       }
+
+  let warning_msg = "(0 network fees)";
+  if (fee){
+    if (mod.gm?.opengame) {
+      warning_msg = `(${fee} ${form?.ticker} per round)`;
+    } else {
+      warning_msg = `(${fee} ${form?.ticker} at end of game)`;
+    }
+  }
 
   html +=  `<div class="crypto_msg"><div></div><div class="select_max">Max: ${mod.max_balance}</div></div></div>`;
 
@@ -48,7 +68,7 @@ module.exports = (app, mod, form) => {
 
       <div class="crypto-stake-confirm-container">
         <input type="checkbox" checked name="crypto-stake-confirm-input" id="crypto-stake-confirm-input">
-        <label for="crypto-stake-confirm-input" class="commentary">authorize in-game crypto transfer</label>
+        <label for="crypto-stake-confirm-input" class="commentary">authorize in-game crypto transfer ${warning_msg}</label>
       </div>
       <div class="stake-input-error" id="stake-checkbox-error"></div>
 

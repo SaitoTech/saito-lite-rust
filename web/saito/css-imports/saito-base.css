@@ -49,6 +49,12 @@ a:hover {
   opacity: 0.8;
 }
 
+.saito-text-link {
+  font-weight: bold;
+  cursor: pointer;
+  color: var(--font-color-a-link);
+}
+
 /* ----------------------------------------------------------------
 	Headings
 -----------------------------------------------------------------*/
@@ -324,4 +330,12 @@ Media Queries
   body {
     font-size: 1.4rem;
   }
+}
+
+[data-theme^="modern"] .chess-font {
+  font-family: var(--font-chess);
+}
+
+[data-theme^="modern"] .chess7-font {
+  font-family: var(--font-chess7);
 }

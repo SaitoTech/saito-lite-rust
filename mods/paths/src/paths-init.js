@@ -4,11 +4,13 @@ const CombatOverlay = require('./lib/ui/overlays/combat');
 const LossOverlay = require('./lib/ui/overlays/loss');
 const GunsOverlay = require('./lib/ui/overlays/guns');
 const MandatesOverlay = require('./lib/ui/overlays/mandates');
+const WelcomeOverlay = require('./lib/ui/overlays/welcome');
 
 const PathsRules = require('./lib/core/rules.template');
 const PathsOptions = require('./lib/core/advanced-options.template');
 const PathsingularOption = require('./lib/core/options.template');
 
+const htmlTemplate = require('./lib/core/game-html.template').default;
 const JSON = require('json-bigint');
 
 
@@ -41,6 +43,7 @@ class PathsOfGlory extends GameTemplate {
     this.loss_overlay = new LossOverlay(this.app, this); 
     this.guns_overlay = new GunsOverlay(this.app, this); 
     this.mandates_overlay = new MandatesOverlay(this.app, this); 
+    this.welcome_overlay = new WelcomeOverlay(this.app, this); 
 
     //
     // this sets the ratio used for determining
@@ -70,6 +73,11 @@ class PathsOfGlory extends GameTemplate {
   async render(app) {
 
     if (this.browser_active == 0 || this.initialize_game_run) { return; }
+
+    if (this.game_html_injected != 1) {
+      await this.injectGameHTML(htmlTemplate());
+      this.game_html_injected = 1;
+    }
 
     await super.render(app);
 
@@ -104,15 +112,11 @@ class PathsOfGlory extends GameTemplate {
 	if (game_mod.confirm_moves == 0) {
 	  game_mod.confirm_moves = 1;
           game_mod.saveGamePreference('his_expert_mode', 0);
-	  setTimeout(() => {
-								window.location.reload();
-							}, 300);;	
+          reloadWindow(300);
 	} else {
 	  game_mod.confirm_moves = 0;
           game_mod.saveGamePreference('his_expert_mode', 1);
-	  setTimeout(() => {
-								window.location.reload();
-							}, 300);;	
+          reloadWindow(300);
 	}
       }
     });
@@ -248,5 +252,6 @@ console.log("#HOPS: nantes to nevers " + this.returnHopsToDestination("nantes", 
     // initialize game objects
     //
     this.deck = this.returnDeck("all");
-  }}
+
+
 

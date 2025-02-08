@@ -1,0 +1,113 @@
+.zoom-overlay {
+	height: 90vh;
+	width: 90vw;
+	overflow: hidden;
+}
+
+.zoom-overlay .gameboard-clone {
+	scale: 2;
+}
+
+.zoom-overlay .status {
+	position: relative;
+	height: 4rem;
+	line-height: 4rem;
+	min-height: 0;
+	width: 30rem;
+	max-width: 35rem;
+	background-color: whitesmoke;
+	z-index: 10;
+	border-radius: 1rem;
+	top: 0px;
+	left: 0px;
+	white-space: nowrap;
+	float: left;
+	margin-left: 1rem;
+	margin-top: 1rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+
+.zoom-overlay .controls {
+	max-height: 80vh;
+}
+
+.zoom-overlay .controls ul {
+	overflow-y: auto;
+	display: block;
+	position: relative;
+	background-color: whitesmoke;
+	line-height: 4rem;
+	width: 30rem;
+	max-width: 35rem;
+	max-height: 80vh;
+	z-index: 10;
+	border-radius: 1rem;
+	top: 0px;
+	left: 0px;
+	white-space: nowrap;
+	float: left;
+	margin-left: 1rem;
+	margin-top: 1rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
+	clear: both;
+	min-height: max-content;
+	height: auto;
+	cursor: pointer;
+}
+
+.zoom-overlay .status .status-header {
+	box-shadow: none;
+	margin-bottom: 0px;
+}
+
+.zoom-overlay .status .message {
+	padding: 1rem;
+	margin-bottom: 0px;
+	box-shadow: none;
+}
+
+.zoom-overlay .status ul {
+	margin-top: 1rem;
+	background-color: whitesmoke;
+	border-radius: 0.5rem;
+}
+
+.zoom-overlay .status ul {
+	list-style: none;
+}
+
+.zoom-overlay .status ul .option {
+	padding: 1.5rem;
+	cursor: pointer;
+}
+.zoom-overlay .status ul .option:hover {
+	background: #ddd;
+}
+
+.zoom-overlay .gameboard {
+	position: relative;
+}
+
+/*
+.zoom-german {
+	transform: translate(-42%, -20%) scaleX(0.7) scaleY(0.7);
+}
+.zoom-english {
+	transform: translate(-24%, -15%) scaleX(0.7) scaleY(0.7);
+}
+.zoom-french {
+	transform: translate(-32%, -35%) scaleX(0.6) scaleY(0.6);
+}
+.zoom-spanish {
+	transform: translate(-29%, -53%) scaleX(0.6) scaleY(0.6);
+}
+.zoom-italian {
+	transform: translate(-49%, -44%) scaleX(0.6) scaleY(0.6);
+}
+.zoom-ottoman {
+	transform: translate(-60%, -46%) scaleX(0.6) scaleY(0.6);
+}
+*/
+
