@@ -1,5 +1,3 @@
-
-
 import Peer from './peer';
 
 import * as JSON from 'json-bigint';

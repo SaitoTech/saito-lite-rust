@@ -1,6 +1,3 @@
-
-
-
 const CryptoModule = require("../../lib/templates/cryptomodule");
 const { ApiNetworkProvider, ProxyNetworkProvider, 
 Account, UserSigner, Address, UserWallet, Transaction, 
