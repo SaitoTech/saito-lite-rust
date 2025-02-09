@@ -2,10 +2,10 @@ const GameTemplate = require('../../lib/templates/gametemplate');
 const SettlersRules = require('./lib/ui/overlays/rules');
 const SettlersWelcome = require('./lib/ui/overlays/welcome');
 const SettlersStats = require('./lib/ui/overlays/stats');
+const SettlersHud = require('./lib/ui/hud');
 const SettlersGameOptionsTemplate = require('./lib/ui/settlers-game-options.template');
 const htmlTemplate = require('./lib/ui/game-html.template');
 const AppSettings = require('./lib/ui/settlers-settings');
-
 
 const SettlersGameLoop = require('./lib/src/settlers-gameloop.js');
 const SettlersPlayer = require('./lib/src/settlers-player');
@@ -63,6 +63,7 @@ class Settlers extends GameTemplate {
 		this.year_of_plenty = new YearOfPlentyOverlay(this.app, this);
 		this.discard = new DiscardOverlay(this.app, this);
 		this.monopoly = new MonopolyOverlay(this.app, this);
+		this.shud = new SettlersHud(this.app, this);
 
 		//
 		// basic game info
@@ -420,29 +421,10 @@ class Settlers extends GameTemplate {
 		}
 
 		//
-		// add the HUD so we can leverage it
+		// renders HUD
 		//
-		this.hud.minWidth = 600;
-		this.hud.maxWidth = 1;
-		this.hud.render();
 		this.status = [];
-
-		//
-		//Maybe we should standardize addClass() or classlist = [], for our UI components
-		//
-		document.querySelector('#hud-body')?.classList.add('saitoa');
-		$('.hud-body .controls').appendTo('#hud');
-
-		let html = `<ul><li class="option enabled" id="score" title="view game statistics"><i class="fa-solid fa-ranking-star"></i></li>
-	    	<li class="option enabled" id="trade" title="trade with other players"><i class="fa-solid fa-money-bill-transfer"></i></li>
-	    	<li class="option" id="bank" title="trade with the bank"><i class="fa-solid fa-building-columns"></i></li>
-	    	<li class="option" id="playcard" title="play an action card"><i class="fa-solid fa-person-running"></i></li>
-	    	<li class="option" id="spend" title="build or buy"><i class="fa-solid fa-screwdriver-wrench"></i></li>
-	    	<li class="option enabled" id="rolldice"><i class="fa-solid fa-forward"></i></li></ul>
-	    	`;
-
-		this.hud.updateControls(html);
-		this.updateControls();
+		this.shud.render();
 
 		if (this.game.state.placedCity) {
 			$('.option').css('visibility', 'hidden');
