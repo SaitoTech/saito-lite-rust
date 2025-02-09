@@ -30,8 +30,6 @@ export default class Crypto {
 	  if (!bip39.validateMnemonic(mnemonic)) {
 		throw new Error('Invalid mnemonic');
 	  }
-	  // Convert mnemonic back to entropy
-	  // This will give us back our original private key since we used it as entropy
 	  const entropy = bip39.mnemonicToEntropy(mnemonic); 
 	  // Convert to Buffer/hex string as needed
 	  const privateKey = entropy;

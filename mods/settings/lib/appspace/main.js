@@ -387,7 +387,7 @@ class SettingsAppspace {
 								}
 
 							} else {
-								salert("Invalid Mnemonic");
+								salert('Error importing seed phrase: ' + err.message);
 							}
 
 						}

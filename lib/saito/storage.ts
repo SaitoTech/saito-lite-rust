@@ -301,7 +301,6 @@ class Storage {
 
 	async resetOptionsFromKey(publicKey) {
 		let wallet = await localforage.getItem(publicKey);
-		console.log(wallet, "wallet");
 		if (wallet) {
 			console.log(`Found wallet for ${publicKey} in IndexedDB`);
 			//siteMessage(`Found wallet for ${publicKey} in IndexedDB`);

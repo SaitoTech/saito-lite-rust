@@ -63,20 +63,7 @@ class EGLDModule extends CryptoModule {
   }
 
   async getAddress() {
-
-    // get the wallet mnemonic phrase
-
-    // use it in the if condition
-
       try {
-        // let mnemonic = null;
-        // if (mnemonic_text == null) {
-        //     // Generate Ed25519 key pair         
-        //     mnemonic = Mnemonic.generate();            
-        // } else {
-        //     mnemonic = Mnemonic.fromString(mnemonic_text);  
-        // }
-
         let mnemonic =  Mnemonic.fromString(this.app.options.wallet.seed.mnemonic);
         this.secretKey = mnemonic.deriveKey(0);
         const publicKey = this.secretKey.generatePublicKey();

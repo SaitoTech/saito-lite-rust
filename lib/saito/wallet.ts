@@ -1401,18 +1401,12 @@ export default class Wallet extends SaitoWallet {
                     return err.name;
                 }
             } else if (privatekey != '') {
-                // privatekey used for wallet importing
                 try {
                     let publicKey = this.app.crypto.generatePublicKey(privatekey);
-                    // generate seed from private key
                    const result =  this.app.crypto.generateSeedFromPrivateKey(privatekey)
 
                    this.seed_object = result
                    console.log('seed, ', result);
-                    // generate other wallets 
-
-                    // let keypair = this.app.crypto.generateKeypairFromPrivateKey(privatekey)
-                    // let [_, publicKey] = keypair
                     await this.setPublicKey(publicKey);
                     await this.setPrivateKey(privatekey);
                     this.app.options.wallet.version = this.version;
@@ -1420,7 +1414,6 @@ export default class Wallet extends SaitoWallet {
                     this.app.options.wallet.outputs = [];
                     this.app.options.wallet.spends = [];
                     this.app.options.wallet.pending = [];
-                    this.app.options.wallet.mnemonic = result.mnemonic
                     await this.app.storage.resetOptionsFromKey(publicKey);
                     await this.fetchBalanceSnapshot(publicKey);
                 } catch (err) {
