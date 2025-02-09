@@ -343,17 +343,17 @@ class SettingsAppspace {
 				document.getElementById('backup-seed-btn').onclick = async (e) => {
 					try {
 						const seed = await app.options.wallet.seed.mnemonic;
-						   await sconfirm(
-							"You are about to backup your seed phrase, please note that this is only a backup for your keys and cryptos and doesn't include other data"
+						await sconfirm(
+							"You are about to backup your seed phrase, please note that this is only a backup for your keys and cryptos, it doesn't include other data"
 						);
 
 						if (seed) {
-							setTimeout(async()=> {
+							setTimeout(async () => {
 								let confirmBackup = await sconfirm(
 									`${seed}`
 								);
 							}, 500)
-						
+
 						}
 					} catch (err) {
 						salert('Error generating seed phrase: ' + err.message);
@@ -372,7 +372,7 @@ class SettingsAppspace {
 								let result = await app.wallet.onUpgrade(
 									'import',
 									privateKey
-								);			
+								);
 								console.log(privateKey, "private key from seed")
 								if (result === true) {
 									let c = await sconfirm(
@@ -387,8 +387,12 @@ class SettingsAppspace {
 								}
 
 							} else {
-								salert('Error importing seed phrase: ' + err.message);
+								salert('Error importing seed phrase: ' + "Invalid seed phrase");
 							}
+
+						} else {
+
+							salert('Error importing seed phrase: ' + "No seed phrase found")
 
 						}
 					} catch (err) {
