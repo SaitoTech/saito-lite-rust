@@ -651,4 +651,3 @@ class EGLDModule extends CryptoModule {
 module.exports = EGLDModule;
 
 
-
