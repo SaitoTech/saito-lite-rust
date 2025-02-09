@@ -65,7 +65,7 @@ class SettingsAppspace {
 			console.log('error creating jsonTree: ' + err);
 		}
 
-		if (document.getElementById("delete_marked")){
+		if (document.getElementById("delete_marked")) {
 			document.getElementById("delete_marked").onclick = async (e) => {
 				let updated = false;
 				Array.from(document.querySelectorAll(".jsontree_node_marked")).forEach(node => {
@@ -73,19 +73,19 @@ class SettingsAppspace {
 					let path = this.getJSONPath(node).replaceAll(`"]`, "").split("[\"");
 
 					let obj = this.app.options;
-					while(path.length > 1){
+					while (path.length > 1) {
 						let key = path.shift();
-						if (key){
+						if (key) {
 							obj = obj[key];
 						}
 					}
 
 					let final_key = path.shift();
 					console.log(obj, final_key);
-					if (Array.isArray(obj)){
+					if (Array.isArray(obj)) {
 						obj.splice(parseInt(final_key), 1);
-					}else{
-						delete obj[final_key];	
+					} else {
+						delete obj[final_key];
 					}
 
 				});
@@ -98,15 +98,15 @@ class SettingsAppspace {
 		}
 	}
 
-	getJSONPath(node){
-		if (node.classList.contains("jsontree_tree")){
+	getJSONPath(node) {
+		if (node.classList.contains("jsontree_tree")) {
 			return "";
 		}
 
 		let currentPath = '';
 		//Find the label
-		if (node.classList.contains("jsontree_node")){
-			if (node.children[0].classList.contains("jsontree_label-wrapper")){
+		if (node.classList.contains("jsontree_node")) {
+			if (node.children[0].classList.contains("jsontree_label-wrapper")) {
 				//currentPath = node.querySelector(".jsontree_label").textContent;
 				currentPath = "[" + node.querySelector(".jsontree_label").textContent + "]";
 			}
@@ -115,11 +115,11 @@ class SettingsAppspace {
 		return this.getJSONPath(node.parentElement) + currentPath;
 	}
 
-	renderCryptoGameSettings(){
+	renderCryptoGameSettings() {
 		if (this.app.options.gameprefs != null) {
 			let gameprefs = this.app.options.gameprefs;
 			let html = ``;
-			for(var key in gameprefs){
+			for (var key in gameprefs) {
 				if (key.includes('inbound_trusted') || key.includes('outbound_trusted')) {
 					let option_name = key.split('_');
 					html += `<div class="settings-appspace-app">
@@ -144,7 +144,7 @@ class SettingsAppspace {
 			document.querySelector('.settings-appspace-indexdb-info .quota').innerHTML = this.app.browser.formatNumberToLocale(estimate.quota);
 			document.querySelector('.settings-appspace-indexdb-info .usage').innerHTML = this.app.browser.formatNumberToLocale(estimate.usage);
 			document.querySelector('.settings-appspace-indexdb-info .percent').innerHTML = this.app.browser.formatNumberToLocale(percentage);
-    	});
+		});
 
 		function getLocalStorageSize() {
 			let total = 0;
@@ -155,21 +155,21 @@ class SettingsAppspace {
 			}
 			return total;
 		}
-		
+
 		function getLocalStorageUsagePercentage() {
 			const totalSize = getLocalStorageSize();
 			const maxSize = 5 * 1024 * 1024; // Estimated 5MB limit
 			const percentageUsed = (totalSize / maxSize) * 100;
 			return percentageUsed.toFixed(2); // Returns the percentage with 2 decimal points
 		}
-		
+
 		document.querySelector('.settings-appspace-localstorage-info .quota').innerHTML = this.app.browser.formatNumberToLocale(5 * 1024 * 1024);
 		document.querySelector('.settings-appspace-localstorage-info .usage').innerHTML = this.app.browser.formatNumberToLocale(getLocalStorageSize());
 		document.querySelector('.settings-appspace-localstorage-info .percent').innerHTML = this.app.browser.formatNumberToLocale(getLocalStorageUsagePercentage());
 
 
 		console.log(`LocalStorage is ${getLocalStorageUsagePercentage()}% full.`);
-    }
+	}
 
 	async attachEvents() {
 		let app = this.app;
@@ -339,6 +339,65 @@ class SettingsAppspace {
 				};
 			}
 
+			if (document.getElementById('backup-seed-btn')) {
+				document.getElementById('backup-seed-btn').onclick = async (e) => {
+					try {
+						const seed = await app.options.wallet.seed.mnemonic;
+						   await sconfirm(
+							"You are about to backup your seed phrase, please note that this is only a backup for your keys and cryptos and doesn't include other data"
+						);
+
+						if (seed) {
+							setTimeout(async()=> {
+								let confirmBackup = await sconfirm(
+									`${seed}`
+								);
+							}, 500)
+						
+						}
+					} catch (err) {
+						salert('Error generating seed phrase: ' + err.message);
+						console.error('Error in backup seed:', err);
+					}
+				};
+			}
+
+			if (document.getElementById('import-seed-btn')) {
+				document.getElementById('import-seed-btn').onclick = async (e) => {
+					try {
+						let mnemonic = await sprompt('Enter your seed phrase:');
+						if (mnemonic) {
+							if (mnemonic.trim().split(/\s+/g).length == 24) {
+								const privateKey = this.app.crypto.getPrivateKeyFromSeed(mnemonic);
+								let result = await app.wallet.onUpgrade(
+									'import',
+									privateKey
+								);			
+								console.log(privateKey, "private key from seed")
+								if (result === true) {
+									let c = await sconfirm(
+										'Success! Confirm to reload'
+									);
+									if (c) {
+										reloadWindow(300);
+									}
+								} else {
+									let err = result;
+									salert('Something went wrong: ' + err.name);
+								}
+
+							} else {
+								salert("Invalid Mnemonic");
+							}
+
+						}
+					} catch (err) {
+						salert('Error importing seed phrase: ' + err.message);
+						console.error('Error in import seed:', err);
+					}
+				};
+			}
+
 			document.getElementById('nuke-account-btn').onclick = async (e) => {
 				let confirmation = await sconfirm(
 					'This will reset/nuke your account, do you wish to proceed?'
@@ -431,7 +490,7 @@ class SettingsAppspace {
 			console.log('Error in Settings Appspace: ', err);
 		}
 
-		if(document.querySelector('#settings-add-app')) {
+		if (document.querySelector('#settings-add-app')) {
 			document.querySelector('#settings-add-app').onclick = () => {
 				app.connection.emit('saito-app-app-render-request');
 			}

@@ -3,11 +3,49 @@ import Saito from 'saito-js/saito';
 import node_cryptojs from 'node-cryptojs-aes';
 import crypto from 'crypto-browserify';
 import * as Base58 from 'base-58';
+const secp256k1 = require('secp256k1')
+const bip39 = require('bip39');
 
 const CryptoJS = node_cryptojs.CryptoJS;
 const JsonFormatter = node_cryptojs.JsonFormatter;
 
 export default class Crypto {
+
+	generateSeedFromPrivateKey = function (existingPrivateKey:String) {
+		// Create a seed that will deterministically generate your key first
+		let seed = Buffer.from(existingPrivateKey, 'hex');
+		// Generate mnemonic from this seed
+		const mnemonic = bip39.entropyToMnemonic(seed);
+
+		return {
+			mnemonic: mnemonic,
+			seed: seed
+		};
+	}
+
+	
+    getPrivateKeyFromSeed = function (mnemonic:string) {
+	try {
+	  // Validate the mnemonic
+	  if (!bip39.validateMnemonic(mnemonic)) {
+		throw new Error('Invalid mnemonic');
+	  }
+	  // Convert mnemonic back to entropy
+	  // This will give us back our original private key since we used it as entropy
+	  const entropy = bip39.mnemonicToEntropy(mnemonic); 
+	  // Convert to Buffer/hex string as needed
+	  const privateKey = entropy;
+	  // Verify if this is a valid secp256k1 private key
+	  if (!secp256k1.privateKeyVerify(Buffer.from(privateKey, 'hex'))) {
+		throw new Error('Generated private key is not valid for secp256k1');
+	  }
+	  return privateKey;
+	} catch (error) {
+	  console.error('Error getting private key from seed:', error);
+	  throw error;
+	}
+  }
+
 	public hash(buffer: Uint8Array | string): string {
 		// buffer = buffer || "";
 		if (typeof buffer === 'string') {
@@ -215,6 +253,9 @@ export default class Crypto {
 		).toString('hex');
 	}
 
+
+	
+
 	//
 	// TODO - don't pad key this way as it creates attack vectors
 	//
@@ -265,6 +306,8 @@ export default class Crypto {
 			.replace(/\.0$/, '');
 	}
 
+
+
 	convertFloatToSmartPrecision(num, max_precision = 8, min_precision = 0) {
 		let stringx = num
 			.toFixed(max_precision)
@@ -283,30 +326,30 @@ export default class Crypto {
 		return stringx;
 	}
 
-	 isValidPublicKey (key) {
+	isValidPublicKey(key) {
 		if (typeof key !== 'string') {
 			return false;
 		}
-	
+
 		if (key.length !== 44) {
 			return false;
 		}
-	
+
 		const base58Regex = /^[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]+$/;
 		return base58Regex.test(key);
 	};
 
 
-  	isPublicKey(publicKey: string) {
-           if (publicKey){
-                   if (publicKey.indexOf('@') <= 0) {
-                           if (this.isBase58(publicKey)) {
-                                   return 1;
-                           }
-                   }
-           }
-           return 0;
-       }
+	isPublicKey(publicKey: string) {
+		if (publicKey) {
+			if (publicKey.indexOf('@') <= 0) {
+				if (this.isBase58(publicKey)) {
+					return 1;
+				}
+			}
+		}
+		return 0;
+	}
 
 	isBase58(t: string) {
 		return /^[A-HJ-NP-Za-km-z1-9]*$/.test(t);

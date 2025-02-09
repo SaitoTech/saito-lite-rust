@@ -27,6 +27,8 @@ export default class Wallet extends SaitoWallet {
 
     nolan_per_saito = 100000000;
 
+    seed_object: {mnemonic: any, seed: Buffer};
+
     cryptos = new Map<string, any>();
     public saitoCrypto: any;
 
@@ -371,6 +373,8 @@ export default class Wallet extends SaitoWallet {
                     console.log('preserving slips without a wallet reset..... : '+slips.length);
                     await this.addSlips(slips);
                 }
+
+             
             }
 
 
@@ -406,6 +410,11 @@ export default class Wallet extends SaitoWallet {
         ////////////////
         if (!privateKey || !publicKey) {
             await this.resetWallet();
+        }
+
+        if(!this.app.options.wallet.seed){
+            let privateKey = await this.getPrivateKey();
+            let seed = this.app.options.wallet.seed = this.app.crypto.generateSeedFromPrivateKey(privateKey)
         }
     }
 
@@ -1394,7 +1403,16 @@ export default class Wallet extends SaitoWallet {
             } else if (privatekey != '') {
                 // privatekey used for wallet importing
                 try {
-                    publicKey = this.app.crypto.generatePublicKey(privatekey);
+                    let publicKey = this.app.crypto.generatePublicKey(privatekey);
+                    // generate seed from private key
+                   const result =  this.app.crypto.generateSeedFromPrivateKey(privatekey)
+
+                   this.seed_object = result
+                   console.log('seed, ', result);
+                    // generate other wallets 
+
+                    // let keypair = this.app.crypto.generateKeypairFromPrivateKey(privatekey)
+                    // let [_, publicKey] = keypair
                     await this.setPublicKey(publicKey);
                     await this.setPrivateKey(privatekey);
                     this.app.options.wallet.version = this.version;
@@ -1402,7 +1420,7 @@ export default class Wallet extends SaitoWallet {
                     this.app.options.wallet.outputs = [];
                     this.app.options.wallet.spends = [];
                     this.app.options.wallet.pending = [];
-
+                    this.app.options.wallet.mnemonic = result.mnemonic
                     await this.app.storage.resetOptionsFromKey(publicKey);
                     await this.fetchBalanceSnapshot(publicKey);
                 } catch (err) {

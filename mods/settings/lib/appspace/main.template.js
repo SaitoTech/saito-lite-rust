@@ -1,62 +1,64 @@
-module.exports  = (app, mod, main) => {
+module.exports = (app, mod, main) => {
 
-	let publicKey = mod.publicKey;
-	let key = app.keychain.returnKey({ publicKey: publicKey });
-	let identifier_registered;
+  let publicKey = mod.publicKey;
+  let key = app.keychain.returnKey({ publicKey: publicKey });
+  let identifier_registered;
 
-	if (key?.identifier) {
-		identifier_registered = `<div class="username">${key.identifier}</div>`;
-	} else {
-		if (key?.has_registered_username) {
-			identifier_registered = `<div class="register-identifier-btn">Registering...</div>`;
-		} else {
-			identifier_registered = `<div id="register-identifier-btn" class="register-identifier-btn settings-appspace-link">Register a username</div>`;
-		}
-	}
+  if (key?.identifier) {
+    identifier_registered = `<div class="username">${key.identifier}</div>`;
+  } else {
+    if (key?.has_registered_username) {
+      identifier_registered = `<div class="register-identifier-btn">Registering...</div>`;
+    } else {
+      identifier_registered = `<div id="register-identifier-btn" class="register-identifier-btn settings-appspace-link">Register a username</div>`;
+    }
+  }
 
-	let modules_html = '';
+  let modules_html = '';
 
-	try {
-		for (let i = 0; i < app.options.modules.length; i++) {
+  try {
+    for (let i = 0; i < app.options.modules.length; i++) {
 
-			let mod = app.modules.returnModule(app.options.modules[i].name);
+      let mod = app.modules.returnModule(app.options.modules[i].name);
 
-			let shortName = app.options.modules[i].name;
-			let fullName = mod ? mod.returnName() : shortName;
+      let shortName = app.options.modules[i].name;
+      let fullName = mod ? mod.returnName() : shortName;
 
-			let CHECKED = app.options.modules[i].active ? 'CHECKED' : '';
+      let CHECKED = app.options.modules[i].active ? 'CHECKED' : '';
 
       // filter out core modules  
       //if (!mod || mod?.class !== 'utility') {
       //if (!mod) {
 
-  			modules_html += `
+      modules_html += `
         <div class="settings-appspace-app">
             <div class="saito-switch">
               <input type="checkbox"  id="${i}" class="modules_mods_checkbox" name="modules_mods_${i}" ${CHECKED}>
             </div>
             <div id="${shortName}" class="settings-appspace-module settings-appspace-link">${fullName}</div>`;
 
-        if (mod?.hasSettings()){
-          modules_html += `<i class="fas fa-cog"></i>`
-        }
+      if (mod?.hasSettings()) {
+        modules_html += `<i class="fas fa-cog"></i>`
+      }
 
-        modules_html += "</div>";
+      modules_html += "</div>";
       //}
-		}
-	} catch (err) {
-		console.error(err);
-	}
+    }
+  } catch (err) {
+    console.error(err);
+  }
 
-	let html = `
+  let html = `
 
   <div class="settings-appspace">
 
     <div class="settings-appspace-header">
       <div class="settings-actions-container">
+       <div class="saito-button-secondary small" id="import-seed-btn">Import Seed</div>
         <div class="saito-button-secondary small" id="restore-privatekey-btn">Import Key</div>
         <div class="saito-button-secondary small" id="restore-account-btn">Restore Wallet</div>
         <div class="saito-button-secondary small" id="backup-account-btn">Backup Wallet</div>
+          <div class="saito-button-secondary small" id="backup-seed-btn">Backup Seed</div>
         <div class="saito-button-secondary small" id="nuke-account-btn">Nuke Account</div>
         <div class="saito-button-secondary small" id="clear-storage-btn">Clear Local Cache</div>
       </div>
@@ -134,5 +136,5 @@ module.exports  = (app, mod, main) => {
 
   `;
 
-	return html;
+  return html;
 };

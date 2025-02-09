@@ -634,9 +634,7 @@ class Vote extends ModTemplate {
         return new Promise(async (resolve) => {
             await this.app.storage.loadTransactions(
                 { field1: 'Vote', signature: signature },
-                (txs) => {
-
-         
+                (txs) => {  
                     const electionTx = txs.find(tx =>
                         tx.returnMessage().request === "create election" &&
                         tx.returnMessage().data.electionId === electionId
