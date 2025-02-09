@@ -1,3 +1,6 @@
+
+
+
 const CryptoModule = require("../../lib/templates/cryptomodule");
 const { ApiNetworkProvider, ProxyNetworkProvider, 
 Account, UserSigner, Address, UserWallet, Transaction, 
@@ -54,25 +57,22 @@ class EGLDModule extends CryptoModule {
     }
   }
 
-  respondTo(type, obj) {
-    let self = this
-
-    if(type === 'load-crypto') {
-        this.load()
-    }
-  }
-
-  async getAddress() {
+  async getAddress(mnemonic_text = null) {
       try {
-        let mnemonic =  Mnemonic.fromString(this.app.options.wallet.seed.mnemonic);
+        let mnemonic = null;
+        if (mnemonic_text == null) {
+            // Generate Ed25519 key pair
+            mnemonic = Mnemonic.generate();            
+        } else {
+            mnemonic = Mnemonic.fromString(mnemonic_text);  
+        }
+
         this.secretKey = mnemonic.deriveKey(0);
         const publicKey = this.secretKey.generatePublicKey();
         this.address_obj = publicKey.toAddress();
 
         this.egld.mnemonic_text = mnemonic.text;
         this.egld.address = this.address = this.destination = this.address_obj.toBech32();
-
-        console.log(this.egld.address);
       } catch (error) {
         console.error("Error creating EGLD address:", error);
       }
@@ -442,7 +442,7 @@ class EGLDModule extends CryptoModule {
         try {
             if (this.app?.options?.crypto?.EGLD) {
               this.egld = this.app.options.crypto.EGLD;
-
+              //console.log("EGLD OPTIONS: " + JSON.stringify(this.app.options.crypto.EGLD));
               if (this.egld.mnemonic_text) {
                 this.is_initialized = 1;
                 this.account_created = 1;
@@ -652,5 +652,6 @@ class EGLDModule extends CryptoModule {
 }
 
 module.exports = EGLDModule;
+
 
 

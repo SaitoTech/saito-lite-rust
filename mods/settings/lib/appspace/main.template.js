@@ -1,4 +1,6 @@
-module.exports = (app, mod, main) => {
+
+
+module.exports  = (app, mod, main) => {
 
   let publicKey = mod.publicKey;
   let key = app.keychain.returnKey({ publicKey: publicKey });
@@ -30,18 +32,18 @@ module.exports = (app, mod, main) => {
       //if (!mod || mod?.class !== 'utility') {
       //if (!mod) {
 
-      modules_html += `
+        modules_html += `
         <div class="settings-appspace-app">
             <div class="saito-switch">
               <input type="checkbox"  id="${i}" class="modules_mods_checkbox" name="modules_mods_${i}" ${CHECKED}>
             </div>
             <div id="${shortName}" class="settings-appspace-module settings-appspace-link">${fullName}</div>`;
 
-      if (mod?.hasSettings()) {
-        modules_html += `<i class="fas fa-cog"></i>`
-      }
+        if (mod?.hasSettings()){
+          modules_html += `<i class="fas fa-cog"></i>`
+        }
 
-      modules_html += "</div>";
+        modules_html += "</div>";
       //}
     }
   } catch (err) {
@@ -54,11 +56,9 @@ module.exports = (app, mod, main) => {
 
     <div class="settings-appspace-header">
       <div class="settings-actions-container">
-       <div class="saito-button-secondary small" id="import-seed-btn">Import Seed</div>
         <div class="saito-button-secondary small" id="restore-privatekey-btn">Import Key</div>
         <div class="saito-button-secondary small" id="restore-account-btn">Restore Wallet</div>
         <div class="saito-button-secondary small" id="backup-account-btn">Backup Wallet</div>
-          <div class="saito-button-secondary small" id="backup-seed-btn">Backup Seed</div>
         <div class="saito-button-secondary small" id="nuke-account-btn">Nuke Account</div>
         <div class="saito-button-secondary small" id="clear-storage-btn">Clear Local Cache</div>
       </div>
@@ -138,3 +138,4 @@ module.exports = (app, mod, main) => {
 
   return html;
 };
+
