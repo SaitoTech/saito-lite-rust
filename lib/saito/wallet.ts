@@ -119,13 +119,13 @@ export default class Wallet extends SaitoWallet {
 
             async returnHistory(callback = null) {
                 let html = `
-                <a target="_blank" href="/explorer" class="saito-history-msg">
-                    View SAITO history on block explorer 
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                </a>`;
+	      		<a target="_blank" href="/explorer" class="saito-history-msg">
+	      			View SAITO history on block explorer 
+	      			<i class="fa-solid fa-arrow-up-right-from-square"></i>
+	      		</a>`;
 
                 return callback(html);
-            }
+			}
 
             async sendPayment(amount, to_address, unique_hash = '', fee = null) {
                 let nolan_amount = this.app.wallet.convertSaitoToNolan(amount);
@@ -149,10 +149,10 @@ export default class Wallet extends SaitoWallet {
 
             async sendPayments(amounts: bigint[], to_addresses: string[]) {
                 let newTx =
-                    await this.app.wallet.createUnsignedTransactionWithMultiplePayments(
-                        to_addresses,
-                        amounts
-                    );
+					await this.app.wallet.createUnsignedTransactionWithMultiplePayments(
+					    to_addresses,
+					    amounts
+					);
                 await this.app.wallet.signAndEncryptTransaction(newTx);
                 await this.app.network.propagateTransaction(newTx);
                 return newTx.signature;
@@ -247,7 +247,7 @@ export default class Wallet extends SaitoWallet {
         if (this.app.options.wallet != null) {
             if (this.app.options.archive) {
                 this.app.options.archive.wallet_version =
-                    this.app.options.wallet.version;
+					this.app.options.wallet.version;
             }
 
             /////////////
@@ -303,22 +303,22 @@ export default class Wallet extends SaitoWallet {
 
                     // this.app.options.wallet = this.wallet;
                     this.app.options.wallet.preferred_crypto =
-                        this.preferred_crypto;
+						this.preferred_crypto;
                     this.app.options.wallet.preferred_txs = this.preferred_txs;
                     this.app.options.wallet.version = this.version;
                     this.app.options.wallet.default_fee = this.default_fee;
                     this.app.options.wallet.slips = [];
 
                     // if (this.app.options.wallet.slips) {
-                    //  let slips = this.app.options.wallet.slips.map(
-                    //      (json: any) => {
-                    //          let slip = new WalletSlip();
-                    //          slip.copyFrom(json);
-                    //          return slip;
-                    //      }
-                    //  );
-                    //  console.log("preserving slips over a wallet reset... : "+slips.length);
-                    //  await this.addSlips(slips);
+                    // 	let slips = this.app.options.wallet.slips.map(
+                    // 		(json: any) => {
+                    // 			let slip = new WalletSlip();
+                    // 			slip.copyFrom(json);
+                    // 			return slip;
+                    // 		}
+                    // 	);
+                    // 	console.log("preserving slips over a wallet reset... : "+slips.length);
+                    // 	await this.addSlips(slips);
                     // }
                     // reset games and restore game settings
                     this.app.options.games = [];
@@ -355,10 +355,10 @@ export default class Wallet extends SaitoWallet {
             } else {
                 if (
                     typeof this.app.options.wallet.preferred_crypto !=
-                    'undefined'
+					'undefined'
                 ) {
                     this.preferred_crypto =
-                        this.app.options.wallet.preferred_crypto;
+						this.app.options.wallet.preferred_crypto;
                 }
                 if (this.app.options.wallet.slips) {
                     let slips = this.app.options.wallet.slips.map(
@@ -417,12 +417,12 @@ export default class Wallet extends SaitoWallet {
         // this.recreate_pending_transactions = 0;
     }
 
-    
+	
 
     /**
-     * Generates a new keypair for the user, resets all stored wallet info, and saves
-     * the new wallet to local storage.
-     */
+	 * Generates a new keypair for the user, resets all stored wallet info, and saves
+	 * the new wallet to local storage.
+	 */
     async resetWallet() {
         console.log('resetting wallet : ' + (await this.getPublicKey()));
 
@@ -472,8 +472,8 @@ export default class Wallet extends SaitoWallet {
     }
 
     /**
-     * Saves the current wallet state to local storage.
-     */
+	 * Saves the current wallet state to local storage.
+	 */
     async saveWallet() {
         if (!this.app.options.wallet) {
             this.app.options.wallet = {};
@@ -485,7 +485,7 @@ export default class Wallet extends SaitoWallet {
 
         try {
             this.app.options.pending_txs = await this.getPendingTransactions();
-                    if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; }
+                	if (!this.app.options.pending_txs) { this.app.options.pending_txs = []; }
         } catch (err) {
             this.app.options.pending_txs = [];
         }
@@ -503,7 +503,7 @@ export default class Wallet extends SaitoWallet {
 
     returnInstalledCryptos() {
         const cryptoModules =
-            this.app.modules.returnModulesBySubType(CryptoModule);
+			this.app.modules.returnModulesBySubType(CryptoModule);
         if (this.saitoCrypto !== null) {
             cryptoModules.push(this.saitoCrypto);
         }
@@ -684,15 +684,15 @@ export default class Wallet extends SaitoWallet {
     }
 
     /**
-     * Sends payments to the addresses provided if this user is the corresponding
-     * sender. Will not send if similar payment was found after the given timestamp.
-     * @param {Array} senders - Array of addresses -- in web3 currency
-     * @param {Array} receivers - Array of addresses -- in web3 curreny
-     * @param {Array} amounts - Array of amounts to send
-     * @param {Int} timestamp - Timestamp of time after which payment should be made
-     * @param {Function} mycallback - ({hash: {String}}) -> {...}
-     * @param {String} ticker - Ticker of install crypto module
-     */
+	 * Sends payments to the addresses provided if this user is the corresponding
+	 * sender. Will not send if similar payment was found after the given timestamp.
+	 * @param {Array} senders - Array of addresses -- in web3 currency
+	 * @param {Array} receivers - Array of addresses -- in web3 curreny
+	 * @param {Array} amounts - Array of amounts to send
+	 * @param {Int} timestamp - Timestamp of time after which payment should be made
+	 * @param {Function} mycallback - ({hash: {String}}) -> {...}
+	 * @param {String} ticker - Ticker of install crypto module
+	 */
     async sendPayment(
         senders = [],
         receivers = [],
@@ -707,7 +707,7 @@ export default class Wallet extends SaitoWallet {
         // validate inputs
         if (
             senders.length != receivers.length ||
-            senders.length != amounts.length
+			senders.length != amounts.length
         ) {
             //mycallback({err: "Lengths of senders, receivers, and amounts must be the same"});
             return;
@@ -749,13 +749,13 @@ export default class Wallet extends SaitoWallet {
                     );
                     try {
                         let unique_tx_hash =
-                            this.generatePreferredCryptoTransactionHash(
-                                senders,
-                                receivers,
-                                amounts,
-                                unique_hash,
-                                ticker
-                            );
+							this.generatePreferredCryptoTransactionHash(
+							    senders,
+							    receivers,
+							    amounts,
+							    unique_hash,
+							    ticker
+							);
                         const hash = await cryptomod.sendPayment(
                             amounts[i],
                             receivers[i],
@@ -812,15 +812,15 @@ export default class Wallet extends SaitoWallet {
     }
 
     /**
-     * Sends payments to the addresses provided if this user is the corresponding
-     * sender. Will not send if similar payment was found after the given timestamp.
-     * @param {Array} senders - Array of addresses -- in web3 currency
-     * @param {Array} receivers - Array of addresses -- in web3 curreny
-     * @param {Array} amounts - Array of amounts to send
-     * @param {Int} timestamp - Timestamp of time after which payment should be made
-     * @param {Function} mycallback - ({hash: {String}}) -> {...}
-     * @param {String} ticker - Ticker of install crypto module
-     */
+	 * Sends payments to the addresses provided if this user is the corresponding
+	 * sender. Will not send if similar payment was found after the given timestamp.
+	 * @param {Array} senders - Array of addresses -- in web3 currency
+	 * @param {Array} receivers - Array of addresses -- in web3 curreny
+	 * @param {Array} amounts - Array of amounts to send
+	 * @param {Int} timestamp - Timestamp of time after which payment should be made
+	 * @param {Function} mycallback - ({hash: {String}}) -> {...}
+	 * @param {String} ticker - Ticker of install crypto module
+	 */
     async sendPayments(
         senders = [],
         receivers = [],
@@ -834,7 +834,7 @@ export default class Wallet extends SaitoWallet {
         // validate inputs
         if (
             senders.length != receivers.length ||
-            senders.length != amounts.length
+			senders.length != amounts.length
         ) {
             // mycallback({err: "Lengths of senders, receivers, and amounts must be the same"});
             return;
@@ -884,7 +884,7 @@ export default class Wallet extends SaitoWallet {
                         ticker
                     );
                 }
-                
+				
                 if (mycallback) {
                     mycallback({ hash: hash });
                 }
@@ -911,17 +911,17 @@ export default class Wallet extends SaitoWallet {
     }
 
     /**
-     * Checks that a payment has been received if the current user is the receiver.
-     * @param {Array} senders - Array of addresses
-     * @param {Array} receivers - Array of addresses
-     * @param {Array} amounts - Array of amounts to send
-     * @param {Int} timestamp - Timestamp of time after which payment should be made
-     * @param {Function} mycallback - (Array of {address: {String}, balance: {Int}}) -> {...}
-     * @param {String} ticker - Ticker of install crypto module
-     * @param {Int} tries - (default: 36) Number of tries to query the underlying crypto API before giving up. Sending -1 will cause infinite retries.
-     * @param {Int} pollWaitTime - (default: 5000) Amount of time to wait between tries
-     * @return {Array} Array of {address: {String}, balance: {Int}}
-     */
+	 * Checks that a payment has been received if the current user is the receiver.
+	 * @param {Array} senders - Array of addresses
+	 * @param {Array} receivers - Array of addresses
+	 * @param {Array} amounts - Array of amounts to send
+	 * @param {Int} timestamp - Timestamp of time after which payment should be made
+	 * @param {Function} mycallback - (Array of {address: {String}, balance: {Int}}) -> {...}
+	 * @param {String} ticker - Ticker of install crypto module
+	 * @param {Int} tries - (default: 36) Number of tries to query the underlying crypto API before giving up. Sending -1 will cause infinite retries.
+	 * @param {Int} pollWaitTime - (default: 5000) Amount of time to wait between tries
+	 * @return {Array} Array of {address: {String}, balance: {Int}}
+	 */
     async receivePayment(
         senders = [],
         receivers = [],
@@ -943,7 +943,7 @@ export default class Wallet extends SaitoWallet {
 
         if (
             senders.length != receivers.length ||
-            senders.length != amounts.length
+			senders.length != amounts.length
         ) {
             console.log(
                 'receivePayment ERROR. Lengths of senders, receivers, and amounts must be the same'
@@ -1037,8 +1037,8 @@ export default class Wallet extends SaitoWallet {
                     // some hope of figuring out why the game isn't progressing.
                     console.log(
                         'Did not receive payment after ' +
-                            (pollWaitTime * tries) / 1000 +
-                            ' seconds'
+							(pollWaitTime * tries) / 1000 +
+							' seconds'
                     );
                     return;
                     // mycallback({err: "Did not receive payment after " + ((pollWaitTime * tries)/1000) + " seconds"});
@@ -1059,10 +1059,10 @@ export default class Wallet extends SaitoWallet {
         return this.app.crypto.hash(
             Buffer.from(
                 JSON.stringify(senders) +
-                    JSON.stringify(receivers) +
-                    JSON.stringify(amounts) +
-                    unique_hash +
-                    ticker,
+					JSON.stringify(receivers) +
+					JSON.stringify(amounts) +
+					unique_hash +
+					ticker,
                 'utf-8'
             )
         );
@@ -1089,7 +1089,7 @@ export default class Wallet extends SaitoWallet {
         for (let i = this.preferred_txs.length - 1; i >= 0; i--) {
             if (
                 this.preferred_txs[i].timestamp <
-                new Date().getTime() - 100000000
+				new Date().getTime() - 100000000
             ) {
                 this.preferred_txs.splice(i, 1);
             }
@@ -1181,8 +1181,8 @@ export default class Wallet extends SaitoWallet {
     }
 
     /**
-     * Serialized the user's wallet to JSON and downloads it to their local machine
-     */
+	 * Serialized the user's wallet to JSON and downloads it to their local machine
+	 */
     async backupWallet() {
         try {
             if (this.app.BROWSER == 1) {
@@ -1200,7 +1200,7 @@ export default class Wallet extends SaitoWallet {
                 pom.setAttribute(
                     'href',
                     'data:application/json;utf-8,' +
-                        encodeURIComponent(this.exportWallet())
+						encodeURIComponent(this.exportWallet())
                 );
                 pom.setAttribute('download', `saito-wallet-${publicKey}.json`);
                 document.body.appendChild(pom);
@@ -1252,14 +1252,14 @@ export default class Wallet extends SaitoWallet {
     }
 
     /**
-     * If the to field of the transaction contains a pubkey which has previously negotiated a diffie-hellman
-     * key exchange, encrypt the message part of message, attach it to the transaction, and resign the transaction
-     * @param {Transaction}
-     * @return {Transaction}
-     */
+	 * If the to field of the transaction contains a pubkey which has previously negotiated a diffie-hellman
+	 * key exchange, encrypt the message part of message, attach it to the transaction, and resign the transaction
+	 * @param {Transaction}
+	 * @return {Transaction}
+	 */
     async signAndEncryptTransaction(tx: Transaction, recipient = '') {
 
-        
+		
         if (tx == null) {
             return null;
         }
@@ -1446,8 +1446,8 @@ export default class Wallet extends SaitoWallet {
         } else {
             console.error(
                 `convertNolanToSaito: Type ` +
-                    typeof amount +
-                    ` provided. BigInt required`
+					typeof amount +
+					` provided. BigInt required`
             );
         }
 
@@ -1479,4 +1479,3 @@ export default class Wallet extends SaitoWallet {
         return S.getInstance().produceBlockWithoutGt();
     }
 }
-

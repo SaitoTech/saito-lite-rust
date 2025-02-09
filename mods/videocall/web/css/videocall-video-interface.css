@@ -108,7 +108,6 @@
 	top: 7px;
 	right: 7px;
 	width: 25%;
-	flex-direction: column;
 } /* Also for mobile, narrow screens */
 
 .minimize .stun-chatbox .expanded-video {
@@ -146,11 +145,6 @@
 .minimize .stun-chatbox .imported-actions,
 .minimize .stun-chatbox label {
 	display: none;
-}
-
-.minimize .stun-chatbox .gallery {
-	gap: 0.5rem;
-	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 }
 
 .minimize .stun-chatbox .control-panel {
@@ -203,12 +197,13 @@
 	position: relative;
 	padding: 1rem;
 	display: grid;
-	grid-template-rows: minmax(0px, 1fr);
 	gap: 1rem;
+	flex-wrap: wrap;
 }
 
 .gallery-view {
 	grid-template-columns: minmax(0px, 1fr);
+	grid-template-rows: minmax(0px, 1fr);
 }
 
 .split-view {
@@ -267,26 +262,19 @@
 	/* max-width: 66%; */
 }
 
-/*.square .flex-item {
+.square .flex-item {
 	flex-basis: 33%;
-	max-width: 50%;
+	/*  max-width: 50%; */
 }
 
 .side-videos.square .flex-item {
 	flex-basis: 100%;
 	max-width: 100%;
-}*/
+}
 
 .tall {
 	flex-direction: column;
 	flex-wrap: unset;
-}
-
-.tall .flex-item {
-	flex: 2;
-}
-.tall .flex-item.portrait {
-	flex: 3;
 }
 
 .video-fill video {
@@ -504,7 +492,7 @@ video#local {
 }
 
 .video-box-container-large.portrait video {
-	/*width: auto;*/
+	width: auto;
 	height: 100%;
 }
 
@@ -907,7 +895,6 @@ video#presentation {
 		top: 5px;
 		right: 5px;
 		width: 25%;
-		flex-direction: column;
 	}
 	.stun-chatbox .video-container-large.split-view .side-videos .call-icons {
 		display: none;
