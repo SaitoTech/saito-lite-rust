@@ -341,7 +341,7 @@ class SettingsAppspace {
 
 			document.getElementById('nuke-account-btn').onclick = async (e) => {
 				let confirmation = await sconfirm(
-					'This will reset/nuke your account, do you wish to proceed?'
+					'This will reset/nuke your account, do you wish to proceed'
 				);
 				if (confirmation) {
 					await app.wallet.onUpgrade('nuke');
