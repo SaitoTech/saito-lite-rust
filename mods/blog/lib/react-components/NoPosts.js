@@ -15,7 +15,7 @@ const NoPostsAvailable = ({ showModal, isCurrentUser }) => {
       <p className="no-posts-message">
         {isCurrentUser 
           ? "You haven't created any posts yet. Start sharing your thoughts with the community!"
-          : "This user hasn't posted anything yet. Check back later for updates."}
+          : "No posts found under your filter setttings. Check back later for updates."}
       </p>
       
       {/* {isCurrentUser && (
