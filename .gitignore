@@ -37,8 +37,6 @@ node_modules/*
 tests/config/env
 test/
 
-
-
 data/*.sq3
 data/*/*.blk
 data/backup/*
@@ -82,6 +80,7 @@ web/saito/game-full.css
 web/saito/saito-full.css
 web/saito/game.css
 web/saito/saito.css
+web/saito/static/zkey/*.wasm
 
 # ignore all style.css files as these are not compiled
 style.css

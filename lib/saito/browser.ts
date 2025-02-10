@@ -927,10 +927,8 @@ class Browser {
 			let container = document.querySelector(selector);
 			if (container) {
 				const el = document.createElement('div');
-				console.log(html);
 				container.insertAdjacentElement('afterend', el);
 				el.outerHTML = html;
-				console.log(el);
 				return;
 			}
 		}

@@ -225,7 +225,6 @@ class Arcade extends ModTemplate {
 					let my_games = this.games[key];
 					for (let i = my_games.length - 1; i >= 0; i--) {
 						if (my_games[i].timestamp < cutoff) {
-console.log("remove game 1");
 							this.removeGame(my_games[i].signature);
 							this.addGame(my_games[i], 'close');
 							this.app.connection.emit('arcade-invite-manager-render-request');
@@ -328,7 +327,6 @@ console.log("remove game 1");
 						//game.msg.options.desired_opponent_publickey = this.publicKey;
 
 						//Then we have to remove and readd the game so it goes under "mine"
-console.log("remove game 2");
 						arcade_self.removeGame(game.signature);
 						arcade_self.addGame(game, 'private');
 					}
@@ -986,7 +984,6 @@ console.log("remove game 2");
 
 		//Move game to different list
 		if (game) {
-console.log("change game status: " + game_id + " / " + newStatus);
 			this.removeGame(game_id);
 			this.addGame(game, newStatus);
 		}
@@ -1186,18 +1183,8 @@ console.log("change game status: " + game_id + " / " + newStatus);
 				game.msg.players.push(tx.from[0].publicKey);
 				game.msg.players_sigs.push(txmsg.invite_sig);
 
-				//
-				// only
-				//
-				// Necessary because we aren't processing a private invite link as a desired opponent public key
-//
-// ACCEPT is what triggers games, not JOIN -- removing here
-//
-// - Feb 9, 2025
-//
-//console.log("remove game 3");
-//				this.removeGame(txmsg.game_id);
-//				this.addGame(game, 'private');
+				this.removeGame(txmsg.game_id);
+				this.addGame(game);
 
 				//Update UI
 				this.app.connection.emit('arcade-invite-manager-render-request');
@@ -1396,7 +1383,6 @@ console.log("change game status: " + game_id + " / " + newStatus);
         this.app.connection.emit('arcade-invite-manager-render-request', invites[i]);
       } else {
         if (new_status == "private") {
-console.log("remove game 5");
           this.removeGame(txmsg.game_id);
         } else {
           this.addGame(newtx, "open");
@@ -1662,11 +1648,6 @@ console.log("remove game 5");
 
 	removeGame(game_id) {
 		for (let key in this.games) {
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("#");
-console.log("remove game with id: " + game_id);
 			this.games[key] = this.games[key].filter((game) => {
 				if (game.signature) {
 					return game.signature != game_id;
