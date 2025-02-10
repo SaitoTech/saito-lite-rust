@@ -1185,7 +1185,7 @@ class Arcade extends ModTemplate {
 
 				// Necessary because we aren't processing a private invite link as a desired opponent public key
 				this.removeGame(txmsg.game_id);
-				this.addGame(game, 'private');
+				this.addGame(game);
 
 				//Update UI
 				this.app.connection.emit('arcade-invite-manager-render-request');
