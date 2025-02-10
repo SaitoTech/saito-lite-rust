@@ -38,7 +38,7 @@ class Arcade extends ModTemplate {
       but because it is an object in memory, we will update the player list as players join.
       When the game kicks off, we update the server side sql so that anyone else joining the network won't get confused
       the tx.signature becomes the game_id.
-    */
+    		*/
 		this.games = {};
 
 		this.is_game_initializing = false;
@@ -225,6 +225,7 @@ class Arcade extends ModTemplate {
 					let my_games = this.games[key];
 					for (let i = my_games.length - 1; i >= 0; i--) {
 						if (my_games[i].timestamp < cutoff) {
+console.log("remove game 1");
 							this.removeGame(my_games[i].signature);
 							this.addGame(my_games[i], 'close');
 							this.app.connection.emit('arcade-invite-manager-render-request');
@@ -327,6 +328,7 @@ class Arcade extends ModTemplate {
 						//game.msg.options.desired_opponent_publickey = this.publicKey;
 
 						//Then we have to remove and readd the game so it goes under "mine"
+console.log("remove game 2");
 						arcade_self.removeGame(game.signature);
 						arcade_self.addGame(game, 'private');
 					}
@@ -984,6 +986,7 @@ class Arcade extends ModTemplate {
 
 		//Move game to different list
 		if (game) {
+console.log("change game status: " + game_id + " / " + newStatus);
 			this.removeGame(game_id);
 			this.addGame(game, newStatus);
 		}
@@ -1183,9 +1186,18 @@ class Arcade extends ModTemplate {
 				game.msg.players.push(tx.from[0].publicKey);
 				game.msg.players_sigs.push(txmsg.invite_sig);
 
+				//
+				// only
+				//
 				// Necessary because we aren't processing a private invite link as a desired opponent public key
-				this.removeGame(txmsg.game_id);
-				this.addGame(game, 'private');
+//
+// ACCEPT is what triggers games, not JOIN -- removing here
+//
+// - Feb 9, 2025
+//
+//console.log("remove game 3");
+//				this.removeGame(txmsg.game_id);
+//				this.addGame(game, 'private');
 
 				//Update UI
 				this.app.connection.emit('arcade-invite-manager-render-request');
@@ -1384,6 +1396,7 @@ class Arcade extends ModTemplate {
         this.app.connection.emit('arcade-invite-manager-render-request', invites[i]);
       } else {
         if (new_status == "private") {
+console.log("remove game 5");
           this.removeGame(txmsg.game_id);
         } else {
           this.addGame(newtx, "open");
@@ -1576,7 +1589,8 @@ class Arcade extends ModTemplate {
 */
 	}
 
-	/************************************************************
+
+   /************************************************************
    // functions to manipulate the local games list
    ************************************************************/
 
@@ -1648,6 +1662,11 @@ class Arcade extends ModTemplate {
 
 	removeGame(game_id) {
 		for (let key in this.games) {
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("#");
+console.log("remove game with id: " + game_id);
 			this.games[key] = this.games[key].filter((game) => {
 				if (game.signature) {
 					return game.signature != game_id;
