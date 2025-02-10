@@ -2316,6 +2316,8 @@ if (relief_siege == 1) {
       this.updateStatusWithOptions(`Which Faction: ${ops_text}`, html);
       this.attachCardboxEvents(function(selected_faction) {
 
+
+
         menu = this.returnActionMenuOptions(this.game.player, selected_faction, limit);
 
         //
@@ -2354,6 +2356,7 @@ if (relief_siege == 1) {
 
 	let attachEventsToMenuOptions = () => {
 
+        his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.playerPlayOps(card, faction, ops, limit); });
         his_self.updateStatusWithOptions(`${his_self.returnFactionName(selected_faction)}: ${ops} ops remaining`, html);
         this.attachCardboxEvents(async (user_choice) => {      
 
@@ -2676,6 +2679,19 @@ if (relief_siege == 1) {
     // counter_or_acknowledge if the player is the Protestants and Wartburg is not in the discard pile as
     // the Protestants might have it. Otherwise ACKNOWLEDGE to ensure players know what is happening but
     // don't halt the game for the player moving.
+
+    //
+    // Gout can cancel Holy Roman Emperor
+    //
+    if (card === "002") {
+      if (this.game.state.events.intervention_on_movement_possible == 1) {
+        this.addMove("counter_or_acknowledge\t" + this.returnFactionName(faction) + " triggers " + this.popup(card) + "\tevent\t"+card);
+        this.addMove("RESETCONFIRMSNEEDED\tall");
+        this.endTurn();
+        return 0;
+      }
+    }
+
 
     //
     // wartburg is 037 -- mandatory events cannot be cancelled so we use ACKNOWLEDGE
@@ -6081,6 +6097,8 @@ does_units_to_move_have_unit = true; }
   }
   playerBuyMercenary(his_self, player, faction, ops_to_spend, ops_remaining) {
 
+    his_self.bindBackButtonFunction(() => { his_self.displayBoard(); his_self.moves = []; his_self.playerTurn(faction, selected_card); });
+
     //
     // ui for building multiple units
     //
@@ -6233,16 +6251,14 @@ does_units_to_move_have_unit = true; }
         `Select Destination for ${num} Regular(s)`,
 
         function(space) {
-	  if (faction === "ottoman" && his_self.game.state.events.barbary_pirates == 1) {
-	    // can only build corsairs in a pirate haven
-	    if (space.key == "algiers" || space.pirate_haven == 1) { return 0; }
-	  }
   	  if (faction === "ottoman" && his_self.game.state.events.war_in_persia == 1) {
 	    if (his_self.returnFactionLandUnitsInSpace("ottoman", "persia") < 5) {
 	      if (space.key == "persia") { return 1; }
 	      else { return 0; }
 	    } else {
-	      if (space.key == "persia") { return 1; }
+	      if (space.key == "persia") {
+		return 1;
+	      }
 	    }
 	  }
 	  if (faction === "ottoman" && his_self.game.state.events.revolt_in_egypt == 1) {
@@ -6251,6 +6267,12 @@ does_units_to_move_have_unit = true; }
 	      else { return 0; }
 	    } else {
 	      if (space.key == "egypt") { return 1; }
+	    }
+	  }
+	  if (faction === "ottoman" && his_self.game.state.events.barbary_pirates == 1) {
+	    // can only build corsairs in a pirate haven
+	    if (space.key == "algiers" || space.pirate_haven == 1) { 
+	      if (his_self.game.state.events.foreign_recruits != "ottoman") { return 0; }
 	    }
 	  }
 	  if (faction === "england" && his_self.game.state.events.revolt_in_ireland == 1) {
@@ -6365,8 +6387,9 @@ does_units_to_move_have_unit = true; }
 
       function(space) {
 	if (faction === "ottoman" && his_self.game.state.events.barbary_pirates == 1) {
-	  // can only build corsairs in a pirate haven
-	  if (space.key == "algiers" || space.pirate_haven == 1) { return 0; }
+	  if (space.key == "algiers" || space.pirate_haven == 1) { 
+	    if (his_self.game.state.events.foreign_recruits != "ottoman") { return 0; }
+	  }
 	}
         if (space.ports.length === 0) { return 0; }
         if (space.besieged != 0) { return 0; }
@@ -7222,7 +7245,9 @@ does_units_to_move_have_unit = true; }
         function(space) {
 	  if (faction === "ottoman" && his_self.game.state.events.barbary_pirates == 1) {
 	    // can only build corsairs in a pirate haven
-	    if (space.key == "algiers" || space.pirate_haven == 1) { return 0; }
+	    if (space.key == "algiers" || space.pirate_haven == 1) { 
+	      if (his_self.game.state.events.foreign_recruits != "ottoman") { return 0; }
+	    }
 	  }
   	  if (faction === "ottoman" && his_self.game.state.events.war_in_persia == 1) {
 	    if (his_self.returnFactionLandUnitsInSpace("ottoman", "persia") < 5) {
@@ -8471,9 +8496,12 @@ does_units_to_move_have_unit = true; }
     $('.option').off();
     $('.option').on('click', function () {
 
+      his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.playerSueForPeace(his_self, faction); });
+
       let target_faction = $(this).attr("id");
 
       if (target_faction == "skip") {
+	his_self.unbindBackButtonFunction();
         his_self.updateStatus("skipping...");
 	his_self.endTurn();
 	return;
@@ -8563,6 +8591,7 @@ does_units_to_move_have_unit = true; }
             let unittype = $(this).attr("id");
             his_self.updateStatus("removing unit...");
             his_self.removeUnit(faction_to_destroy, spacekey, unittype);
+            his_self.bindBackButtonFunction(() => { his_self.moves = []; his_self.addUnit(faction_to_destroy, spacekey, unittype); his_self.displayBoard(); his_self.playerSueForPeace(his_self, faction); });
             his_self.displaySpace(spacekey);
             his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
             //
@@ -8612,6 +8641,7 @@ does_units_to_move_have_unit = true; }
                   let unittype = $(this).attr("id");
                   his_self.updateStatus("removing unit...");
                   his_self.removeUnit(faction_to_destroy, spacekey, unittype);
+		  his_self.unbindBackButtonFunction();
                   his_self.displaySpace(spacekey);
                   his_self.addMove("remove_unit\t"+land_or_sea+"\t"+faction_to_destroy+"\t"+unittype+"\t"+spacekey+"\t"+his_self.game.player);
                   let z = false;
@@ -8621,15 +8651,14 @@ does_units_to_move_have_unit = true; }
                   his_self.endTurn();
                 });
               },
-              0 ,
+              null ,
               1
             );
           });
         },
-        0 ,
+        null ,
         1
       );
-
     });
    
 

@@ -5148,7 +5148,7 @@ console.log("and we have Siege Mining...");
       turn : 1 ,
       type : "combat" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
-      menuOption  :       function(his_self, menu, player) {
+      menuOption  :       function(his_self, menu, player, extra="") {
         if (menu === "pre_field_battle_rolls") {
           let f = "";
           for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
@@ -5157,7 +5157,19 @@ console.log("and we have Siege Mining...");
               break;
             }
           }
-	  if (f !== "hapsburg") { return {}; }
+	  let are_haps_in_space = false;
+	  if (extra != "") {
+	    if (his_self.game.spaces[extra]) {
+	      for (let f in his_self.game.spaces[extra].units) {
+		if (his_self.game.spaces[extra].units[f].length > 0) {
+		  if (his_self.returnCommandingPower(f) == "hapsburg") {
+		    are_haps_in_space = true;
+		  }
+		}
+	      }
+	    }
+	  }
+	  if (!are_haps_in_space) { return {}; }
           return { faction : f , event : '030', html : `<li class="option" id="030">tercios (${f})</li>` };
         }
         return {};
@@ -5301,6 +5313,14 @@ console.log("and we have Siege Mining...");
       type : "response" ,
       removeFromDeckAfterPlay : function(his_self, player) { return 0; } ,
       menuOption  :       function(his_self, menu, player, extra) {
+        if (menu == "event") {
+	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+	    if (his_self.game.deck[0].fhand[i].includes('032')) {
+              return { faction : f , event : '032', html : '<li class="option blink" id="032">play gout</li>' };
+	    }
+	  }
+	  return {};
+	}
         if (menu == "move" || menu == "assault") {
 	  let f = "";
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
@@ -5361,7 +5381,14 @@ console.log("and we have Siege Mining...");
        }
         return {};
       },
-      menuOptionTriggers:  function(his_self, menu, player, extra) {
+      menuOptionTriggers:  function(his_self, menu, player, extra="") {
+        if (menu == "event" && extra == "002") {
+	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
+	    if (his_self.game.deck[0].fhand[i].includes('032')) {
+	      return 1;
+	    }
+	  }
+	}
         if (menu == "move" || menu == "assault") {
 	  for (let i = 0; i < his_self.game.deck[0].fhand.length; i++) {
 	    if (his_self.game.deck[0].fhand[i].includes('032')) {
@@ -5372,6 +5399,12 @@ console.log("and we have Siege Mining...");
         return 0;
       },
       menuOptionActivated:  function(his_self, menu, player, faction) {
+	// only triggered by Holy Roman Emperor
+	if (menu === "event") {
+	  this.game.queue.push("ops\thapsburg\t002\t5");
+	  return 1;
+	}
+
 	if (menu === "assault") {
 
 	  let faction = null;
@@ -8465,7 +8498,10 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	      }
 	    }
 	  } else {
-
+	    for (let spacekey in his_self.game.spaces) {
+	      let space = his_self.game.spaces[spacekey];
+	      if (space.type == "key" && space.home === "independent" && (space.key == "metz" || space.language == "german" || space.language == "italian") && (space.political !== space.home && space.political !== "" && space.political)) { return 1; }
+	    }
 	  }
 	  return 0;
 	}
@@ -8489,6 +8525,12 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 	      // 2P game - may be played against electorate under Hapsburg Control
 	      //
 	      if (his_self.game.players.length == 2) {
+if (space.key == "milan") {
+  console.log("#");
+  console.log("#");
+  console.log("#");
+  console.log("MILAN CSR: " + JSON.stringify(space));
+}
 		if (his_self.game.state.events.schmalkaldic_league == 1) { if (space.type == "electorate" && space.political == "hapsburg") { return 1; } }
 	        if (space.type == "key" && space.home === "independent" && (space.key == "metz" || space.language == "german" || space.language == "italian") && (space.political !== space.home && space.political !== "" && space.political)) { return 1; }
 	        return 0;
@@ -11875,10 +11917,14 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 		  let regulars_to_delete = 0;
 		  let nonregulars_to_delete = 0;
 
-		  for (let z = his_self.game.spaces[spacekey].units[action].length-1; z >= 0; z--) {
-		    let u = his_self.game.spaces[spacekey].units[action][z];
-		    if (u.type == "regular") { regular_units++; }
-		    if (u.type == "cavalry" || u.type == "regular" || u.type == "mercenary") { total_units++; }
+		  for (let f in his_self.game.spaces[spacekey].units) {
+		    if (his_self.returnControllingPower(f) == his_self.returnControllingPower(action)) {
+		      for (let z = his_self.game.spaces[spacekey].units[f].length-1; z >= 0; z--) {
+		        let u = his_self.game.spaces[spacekey].units[f][z];
+		        if (u.type == "regular") { regular_units++; }
+		        if (u.type == "cavalry" || u.type == "regular" || u.type == "mercenary") { total_units++; }
+		      }
+		    }
 		  }
 
 		  total_to_delete = Math.ceil(total_units/3);
@@ -11887,15 +11933,19 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 		
 	          his_self.addMove("check_for_stranded_leaders\t"+faction);
 
-		  for (let z = his_self.game.spaces[spacekey].units[action].length-1; z >= 0; z--) {
-		    let u = his_self.game.spaces[spacekey].units[action][z];
-		    if (u.type == "regular" && regulars_to_delete > 0) {
-		      his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
-		      regulars_to_delete--;
-		    }
-		    if (u.army_leader != true && u.navy_leader != true && u.type != "regular" && (u.type == "mercenary" || u.type == "cavalry") && nonregulars_to_delete > 0) {
-		      his_self.addMove(`destroy_unit_by_type\t${action}\t${spacekey}\t${u.type}`);
-		      nonregulars_to_delete--;
+		  for (let f in his_self.game.spaces[spacekey].units) {
+		    if (his_self.returnControllingPower(f) == his_self.returnControllingPower(action)) {
+		      for (let z = his_self.game.spaces[spacekey].units[f].length-1; z >= 0; z--) {
+		        let u = his_self.game.spaces[spacekey].units[f][z];
+		        if (u.type == "regular" && regulars_to_delete > 0) {
+		          his_self.addMove(`destroy_unit_by_type\t${f}\t${spacekey}\t${u.type}`);
+		          regulars_to_delete--;
+		        }
+		        if (u.army_leader != true && u.navy_leader != true && u.type != "regular" && (u.type == "mercenary" || u.type == "cavalry") && nonregulars_to_delete > 0) {
+		          his_self.addMove(`destroy_unit_by_type\t${f}\t${spacekey}\t${u.type}`);
+		          nonregulars_to_delete--;
+		        }
+		      }
 		    }
 		  }
 
@@ -12547,7 +12597,7 @@ console.log("POST_GOUT_QUEUE: " + JSON.stringify(his_self.game.queue));
 
 	  his_self.game.queue.push("hand_to_fhand\t1\t"+op+"\t"+"ottoman" + "\t1");
           his_self.game.queue.push(`DEAL\t1\t${op}\t1`);
-	  his_self.game.queue.push("hand_to_fhand\t1\t"+op+"\t"+"france" + "\t1");
+	  his_self.game.queue.push("hand_to_fhand\t1\t"+fp+"\t"+"france" + "\t1");
           his_self.game.queue.push(`DEAL\t1\t${fp}\t1`);
 	
 	}

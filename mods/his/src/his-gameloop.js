@@ -759,13 +759,18 @@ this.updateLog(`###############`);
             } 
           }
         
+	  //
+	  // this lets independent fill their own capitals before major powers...
+	  //
+	  let fs = ["venice","hungary","genoa","scotland","independent","ottoman","hapsburg","england","france","papacy","protestant"];
 
 	  //
 	  // handle non-naval units
 	  //
 	  for (let spacekey in this.game.spaces) {
-	    for (let faction in this.game.spaces[spacekey].units) {
+	    for (let mm = 0; mm < fs.length; mm++) {
 
+	      let faction = fs[mm];
 	      let space = this.game.spaces[spacekey];
 
 	      let fluis = 0;
@@ -2965,10 +2970,12 @@ console.log("----------------------------");
 	          }
 
 		  if ((anyone_else_here == 0 || number_opposing_land_units == 0) && (space.type == "electorate" || space.type == "key" || this.isSpaceFortified(space.key) || space.type == "fortress")) {
+
 		    let f = this.returnFactionControllingSpace(space.key);
 
 		    if (!this.areAllies(f, faction) && f !== faction) {
 		      if (space.besieged != 1) { // not if already besieged
+
 		        //
 		        // besiege the defenders, and lock the attackers (preventing further movement)
 		        //
@@ -3703,6 +3710,8 @@ console.log("----------------------------");
 	  let leaders_left = false;
 	  let leaders_left_factions = [];
 	  let cf = this.returnControllingPower(faction);
+	  let faction_controlling_space = this.returnFactionControllingSpace(spacekey);
+	  faction_controlling_space = this.returnControllingPower(faction_controlling_space);
 
 	  for (let f in space.units) {
 	    if (this.returnControllingPower(f) == cf) {
@@ -3720,15 +3729,32 @@ console.log("----------------------------");
 	  }
 
 	  //
-	  // remove siege, evacuate or capture leaders
+	  // we have stripped the defenders, so do not remove siege
 	  //
-	  if (anyone_left == false) {
- 	    if (space.besieged != 0) {
-	      this.game.queue.push("remove_siege\t"+spacekey);
+	  if (faction_controlling_space == cf) {
+	    if (anyone_left == false) {
+ 	      if (space.besieged != 0) {
+	      } else {
+	        if (leaders_left == true && anyone_left == false) {
+	          for (let i = 0; i < leaders_left_factions.length; i++) {
+	            this.game.queue.push("maybe_evacuate_or_capture_leaders\t"+leaders_left_factions[i]+"\t"+spacekey);
+	          }
+	        }
+	      }
 	    }
-	    if (leaders_left == true) {
-	      for (let i = 0; i < leaders_left_factions.length; i++) {
-	        this.game.queue.push("maybe_evacuate_or_capture_leaders\t"+leaders_left_factions[i]+"\t"+spacekey);
+	  //
+	  // or remove siege, evacuate or capture leaders
+	  //
+	  } else {
+	    if (anyone_left == false) {
+ 	      if (space.besieged != 0) {
+	        this.game.queue.push("remove_siege\t"+spacekey);
+	      } else {
+	        if (leaders_left == true) {
+	          for (let i = 0; i < leaders_left_factions.length; i++) {
+	            this.game.queue.push("maybe_evacuate_or_capture_leaders\t"+leaders_left_factions[i]+"\t"+spacekey);
+	          }
+	        }
 	      }
 	    }
 	  }
@@ -11376,16 +11402,24 @@ defender_hits - attacker_hits;
 	  // specific faction and that specific card.
 	  //
 	  let faction = "";
-	  if (mv[1] && mv[0] === "check_intervention") { 
+	  if (mv[1] && (mv[0] === "check_interventions" || mv[0] === "check_intervention")) { 
 	    this.game.queue.splice(qe, 1);
 	    faction = mv[1];
 	  }
 
+console.log("$");
+console.log("$");
+console.log("$");
+console.log("into check interventions");
+
+	  this.unbindBackButtonFunction();
 	  this.updateStatus("preparing for Action Phase...");
 
 	  let should_i_check = false;
 	  if (this.game.confirms_needed[this.game.player-1] == 1) { should_i_check = true; }
 	  if (faction != "" && this.game.player == this.returnPlayerCommandingFaction(faction)) { should_i_check = true; }
+
+console.log("$hould i check? " + should_i_check);
 
 	  if (should_i_check) {
 
@@ -11632,7 +11666,9 @@ if (this.game.player == this.returnPlayerCommandingFaction("papacy") && this.rou
 
 	  if (this.game.players.length === 2) {
 	    // only papacy moves units
-	    this.game.queue.push("spring_deployment\tpapacy");
+	    let pp = this.returnPlayerOfFaction("papacy");
+            this.game.queue.push("spring_deployment_faction_array\t"+JSON.stringify(["papacy"]));
+            this.game.queue.push("RESETCONFIRMSNEEDED\t"+pp);
 	  } else {
 
 	    if (this.game.players.length == 3) {
@@ -13140,11 +13176,15 @@ console.log("----------------------------");
             let msg = "Select Card to Discard:";
             let html = '<ul>';
 	    let any_choice = false;
+	    let lowest_op = 6;
 	    for (let i = 0; i < cards.length; i++) {
 	      // avoids removed cards crashing game if they sneak through
 	      try {
                 if (his_self.game.deck[0].cards[cards[i]].type != "mandatory" && parseInt(cards[i]) > 7) {
 	  	  any_choice = true;
+		  if (his_self.game.deck[0].cards[cards[i]].ops < lowest_op) {
+		    lowest_op = parseInt(his_self.game.deck[0].cards[cards[i]].ops);
+		  }
                   html += `<li class="option showcard" id="${cards[i]}">${his_self.game.deck[0].cards[cards[i]].name}</li>`;
                 }
 	      } catch (err) {}
@@ -13157,9 +13197,16 @@ console.log("----------------------------");
 
             $('.option').off();
             $('.option').on('click', function () {
+
+              let action = $(this).attr("id");
+	      let ops_discarded = parseInt(his_self.game.deck[0].cards[action].ops);
+	      if (ops_discarded >= lowest_op+2) {
+		let c = confirm("This appears to be a high-value card. Confirm discard?");
+		if (!c) { return; }
+	      }
+
               $('.option').off();
               his_self.updateStatus("acknowledge...");
-              let action = $(this).attr("id");
               his_self.addMove("discard\t"+faction+"\t"+action);
               his_self.addMove("NOTIFY\t"+his_self.returnFactionName(faction)+" discards "+his_self.popup(action));
               his_self.endTurn();

@@ -7,7 +7,7 @@ class BuildOverlay {
 		this.app = app;
 		this.mod = mod;
 		this.visible = false;
-		this.overlay = new SaitoOverlay(app, mod, true, false, false);
+		this.overlay = new SaitoOverlay(app, mod, false, false, false);
 		this.max_units = 1;
 		this.units = 1;
 		this.cost = 0;
@@ -19,7 +19,9 @@ class BuildOverlay {
 		this.overlay.hide();
 		try { 
 		  this.mod.available_units_overlay.hide();
-		} catch (err) {}
+		} catch (err) {
+console.log("error closing available units overlay...");
+		}
 	}
 
 	pullHudOverOverlay() {
@@ -55,6 +57,7 @@ class BuildOverlay {
 	        if ((cost * 2) > this.ops_available) { return; }
 
 		this.overlay.show(BuildTemplate());
+		this.overlay.callback_on_close = () => { this.hide(); }
 
 	 	if (unit === "mercenary") {
 		  document.querySelector(".unit-details").style.backgroundImage = 'linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url(/his/img/backgrounds/move/mercenary.jpg)';
